@@ -1,0 +1,28 @@
+###############################################################################
+# SMALL FONTS
+# Style file for matplotlib plots
+###############################################################################
+
+# Font
+font.sans-serif : Helvetica, Avant Garde, Arial, DejaVu Sans, sans-serif
+font.serif : Palatino, Times New Roman, DejaVu Serin, DejaVu Serif, serif
+font.family : sans-serif
+font.style : normal
+font.variant : normal
+font.weight : normal
+font.stretch : normal
+font.size : 10
+
+# Fontsizes
+axes.labelsize : medium
+axes.titlesize : larger
+xtick.labelsize : medium
+ytick.labelsize : medium
+
+# Object sizes
+lines.linewidth : 1
+lines.markersize : 3
+
+# Axis
+xtick.minor.visible : True
+ytick.minor.visible : True

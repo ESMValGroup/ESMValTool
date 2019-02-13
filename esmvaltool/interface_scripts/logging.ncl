@@ -284,7 +284,7 @@ end
 undef("write_filelist")
 procedure write_filelist(script:string,
                          variable:string,
-                         model:string,
+                         dataset:string,
                          filelist:string,
                          sourcefilelist:string,
                          fixfile:string,
@@ -297,7 +297,7 @@ procedure write_filelist(script:string,
 ;    script: name of the diagnostic script for which the input files are
 ;            written to the log file
 ;    variable: name of variable
-;    model: name of model
+;    dataset: name of dataset
 ;    filelist: list of filenames processed to produce the file to be written
 ;    sourcefilelist: list of filenames processed to produce the input files
 ;                    of the file to be written (e.g., input files used to
@@ -372,7 +372,7 @@ begin
     system("echo " + " >> " + output_refs)
   end if
   gOldVar = variable
-  system(s_open + "    Model: " + model + s_close)
+  system(s_open + "    Dataset: " + dataset + s_close)
   system(s_open + "    Input path: " + path + s_close)
   system(s_open + "    Input file(s):" + s_close)
 
@@ -489,12 +489,12 @@ end
 ; #############################################################################
 undef("inquire_and_save_fileinfo")
 procedure inquire_and_save_fileinfo(filename:string,
-                                    model:string,
+                                    dataset:string,
                                     variable:string)
 ;
 ; Arguments
 ;    filename: file name of input file (netCDF)
-;    model: name of model
+;    dataset: name of dataset
 ;    variable: name of variable
 ;
 ; Description
@@ -636,7 +636,7 @@ begin
   end if
 
   ; Write information on processed files to log-file
-  write_filelist(diag_script, variable, model, filelist(0:n - 1), \
+  write_filelist(diag_script, variable, dataset, filelist(0:n - 1), \
                  sourcefilelist(0:ns), fixfile, sourcefixfile,  \
                  sourcereflist(0:nr), sourcetidlist(0:ns), version)
 

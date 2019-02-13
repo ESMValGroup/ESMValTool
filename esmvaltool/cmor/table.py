@@ -221,19 +221,26 @@ class VariableInfo(JsonInfo):
         super(VariableInfo, self).__init__()
         self.table_type = table_type
         self.short_name = short_name
+        """Short name"""
         self.standard_name = ''
+        """Standard name"""
         self.long_name = ''
+        """Long name"""
         self.units = ''
+        """Data units"""
         self.valid_min = ''
+        """Minimum admitted value"""
         self.valid_max = ''
+        """Maximum admitted value"""
         self.frequency = ''
+        """Data frequency"""
         self.positive = ''
+        """Increasing direction"""
 
         self.dimensions = []
+        """List of dimensions"""
         self.coordinates = {}
-
-        self.derived = False
-        self.required_vars = []
+        """Coordinates"""
 
         self._json_data = None
 
@@ -278,16 +285,31 @@ class CoordinateInfo(JsonInfo):
         self.generic_level = False
 
         self.axis = ""
+        """Axis"""
         self.value = ""
+        """Coordinate value"""
         self.standard_name = ""
+        """Standard name"""
         self.long_name = ""
+        """Long name"""
         self.out_name = ""
+        """
+        Out name
+
+        This is the name of the variable in the file
+        """
         self.var_name = ""
+        """Short name"""
         self.units = ""
+        """Units"""
         self.stored_direction = ""
+        """Direction in which the coordinate increases"""
         self.requested = []
+        """Values requested"""
         self.valid_min = ""
+        """Minimum allowed value"""
         self.valid_max = ""
+        """Maximum allowed value"""
 
     def read_json(self, json_data):
         """
@@ -353,7 +375,6 @@ class CMIP5Info(object):
         return cmor_tables_path
 
     def _load_table(self, table_file, table_name='', frequency=''):
-
         with open(table_file) as self._current_table:
             self._read_line()
             while True:
@@ -383,7 +404,17 @@ class CMIP5Info(object):
                     return
 
     def add_custom_table_file(self, table_file, table_name):
-        """Add a file with custom definitions to table."""
+        """
+        Add a file with custom definitions to table.
+
+        Parameters
+         ----------
+        table_file: basestring
+            Path to the file containing the custom table
+        table_name: basestring
+            Name of the the custom table to add
+
+        """
         random_variable_key = next(iter(self.tables[table_name]))
         random_variable = self.tables[table_name][random_variable_key]
         frequency = random_variable.frequency
@@ -457,3 +488,4 @@ class CMIP5Info(object):
 
 
 CMOR_TABLES = _read_cmor_tables()
+"""dict of str, obj: CMOR info objects"""

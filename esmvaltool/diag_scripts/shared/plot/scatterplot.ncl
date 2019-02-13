@@ -365,7 +365,7 @@ begin
 
   do imod = 0, dimsizes(data(0, :)) - 1
 
-    ; Use a black marker for the reference model (i.e., MVI = 0)
+    ; Use a black marker for the reference dataset (i.e., MVI = 0)
     if (zpts(imod).ne.0) then
       idx = max(ind(zpts(imod).ge.levels))
       resM@gsMarkerColor = colors(idx)

@@ -24,7 +24,7 @@
 # Submit job with: qsub -q <queue> job_PA2-CLUSTER.sh
 
 # Input arguments
-NML=namelist_perfmetrics_CMIP5.yml
+RECIPE=recipe_perfmetrics_CMIP5.yml
 CONFIG=config-user.yml
 
 # Set environment
@@ -36,4 +36,4 @@ ESMVALPATH = # e.g. /home/ESMValTool/esmvaltool
 export PATH=$PATH:$CONDAPATH/bin/
 conda info --envs
 module load ncl
-$CONDAENV/esmvaltool -c $ESMVALPATH/$CONFIG -n $ESMVALPATH/namelists/$NML
+$CONDAENV/esmvaltool -c $ESMVALPATH/$CONFIG -n $ESMVALPATH/recipes/$RECIPE

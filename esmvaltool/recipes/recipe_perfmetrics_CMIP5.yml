@@ -1,0 +1,1484 @@
+###############################################################################
+# recipe_perfmetrics_CMIP5.xml
+---
+documentation:
+  description: |
+    Recipe for plotting the performance metrics for the CMIP5 datasets,
+    including the "standard" ECVs as in Gleckler et al., plus some additional
+    variables (like ozone, sea-ice, aerosol...)
+
+  authors:
+    - fran_fr
+    - righ_ma
+    - eyri_ve
+
+  references:
+    - gleckler08jgr
+
+  projects:
+    - esmval
+    - embrace
+    - crescendo
+    - c3s-magic
+    - cmug
+
+preprocessors:
+  pp850:
+    extract_levels:
+      levels: 85000
+      scheme: linear
+    regrid:
+      target_grid: reference_dataset
+      scheme: linear
+    mask_fillvalues:
+      threshold_fraction: 0.95
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean, median]
+      exclude: [reference_dataset, alternative_dataset]
+
+  pp500:
+    extract_levels:
+      levels: 50000
+      scheme: linear
+    regrid:
+      target_grid: reference_dataset
+      scheme: linear
+    mask_fillvalues:
+      threshold_fraction: 0.95
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean, median]
+      exclude: [reference_dataset, alternative_dataset]
+
+  pp400:
+    extract_levels:
+      levels: 40000
+      scheme: linear
+    regrid:
+      target_grid: reference_dataset
+      scheme: linear
+    mask_fillvalues:
+      threshold_fraction: 0.95
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean, median]
+      exclude: [reference_dataset, alternative_dataset]
+
+  pp200:
+    extract_levels:
+      levels: 20000
+      scheme: linear
+    regrid:
+      target_grid: reference_dataset
+      scheme: linear
+    mask_fillvalues:
+      threshold_fraction: 0.95
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean, median]
+      exclude: [reference_dataset, alternative_dataset]
+
+  pp30:
+    extract_levels:
+      levels: 3000
+      scheme: linear
+    regrid:
+      target_grid: reference_dataset
+      scheme: linear
+    mask_fillvalues:
+      threshold_fraction: 0.95
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean, median]
+      exclude: [reference_dataset, alternative_dataset]
+
+  pp5:
+    extract_levels:
+      levels: 500
+      scheme: linear
+    regrid:
+      target_grid: reference_dataset
+      scheme: linear
+    mask_fillvalues:
+      threshold_fraction: 0.95
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean, median]
+      exclude: [reference_dataset, alternative_dataset]
+
+  ppNOLEV1:
+    regrid:
+      target_grid: reference_dataset
+      scheme: linear
+    mask_fillvalues:
+      threshold_fraction: 0.95
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean, median]
+      exclude: [reference_dataset]
+
+  ppNOLEV2:
+    regrid:
+      target_grid: reference_dataset
+      scheme: linear
+    mask_fillvalues:
+      threshold_fraction: 0.95
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean, median]
+      exclude: [reference_dataset, alternative_dataset]
+
+  ppNOLEV1x1:
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    mask_fillvalues:
+      threshold_fraction: 0.95
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean, median]
+      exclude: [reference_dataset, alternative_dataset]
+
+  ppALL:
+    extract_levels:
+      levels: reference_dataset
+      scheme: linear
+    regrid:
+      target_grid: reference_dataset
+      scheme: linear
+    mask_fillvalues:
+      threshold_fraction: 0.95
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean, median]
+      exclude: [reference_dataset, alternative_dataset]
+
+
+diagnostics:
+
+  ### ta: AIR TEMPERATURE ##############################################################################################################################
+
+  ta850:
+    description: Air temperature at 850 hPa global.
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      ta:
+        preprocessor: pp850
+        reference_dataset: ERA-Interim
+        alternative_dataset: NCEP
+        mip: Amon
+        field: T3M
+    additional_datasets:
+      - {dataset: ACCESS1-0,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: ACCESS1-3,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: bcc-csm1-1,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: bcc-csm1-1-m,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: BNU-ESM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CanCM4,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CanESM2,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CCSM4,            project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CESM1-BGC,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CESM1-CAM5,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CESM1-CAM5-1-FV2, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CESM1-FASTCHEM,   project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CESM1-WACCM,      project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CMCC-CESM,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CMCC-CM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CMCC-CMS,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CNRM-CM5,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CNRM-CM5-2,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CSIRO-Mk3-6-0,    project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: EC-EARTH,         project: CMIP5, exp: historical, ensemble: r6i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: FGOALS-g2,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: FGOALS-s2,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: FIO-ESM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GFDL-CM2p1,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GFDL-CM3,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GFDL-ESM2G,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GFDL-ESM2M,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GISS-E2-H,        project: CMIP5, exp: historical, ensemble: r1i1p2, start_year: 2000, end_year: 2002}
+      - {dataset: GISS-E2-H-CC,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GISS-E2-R,        project: CMIP5, exp: historical, ensemble: r1i1p2, start_year: 2000, end_year: 2002}
+      - {dataset: GISS-E2-R-CC,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: HadCM3,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: HadGEM2-AO,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: HadGEM2-CC,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: HadGEM2-ES,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: inmcm4,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: IPSL-CM5A-LR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: IPSL-CM5A-MR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: IPSL-CM5B-LR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MIROC4h,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MIROC5,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MIROC-ESM,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MIROC-ESM-CHEM,   project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MPI-ESM-LR,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MPI-ESM-MR,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MPI-ESM-P,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MRI-CGCM3,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MRI-ESM1,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: NorESM1-M,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: NorESM1-ME,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: ERA-Interim,      project: OBS, type: reanaly, version: 1, start_year: 2000, end_year: 2002, tier: 3}
+      - {dataset: NCEP,             project: OBS, type: reanaly, version: 1, start_year: 2000, end_year: 2002, tier: 2}
+    scripts:
+      cycle: &cycle_settings
+        script: perfmetrics/main.ncl
+        plot_type: cycle       # Plot type ('cycle' [time], 'zonal' [plev, lat], 'latlon' [lat, lon], 'cycle_latlon' [time, lat, lon])
+        time_avg: monthlyclim  # Time average ('opt' argument of time_operations.ncl)
+        region: Global         # Selected region ('Global', 'Tropics', 'NH extratropics', 'SH extratropics')
+        plot_stddev: ref_model # Plot standard deviation ('all', 'none', 'ref_model' or given dataset name)
+        legend_outside: true   # Plot legend in a separate file
+        styleset: CMIP5        # Plot style
+      grading: &grading_settings
+        <<: *cycle_settings
+        plot_type: cycle_latlon                # Plot type ('cycle' [time], 'zonal' [plev, lat], 'latlon' [lat, lon], 'cycle_latlon' [time, lat, lon])
+        draw_plots: false                      # Do not draw plots
+        calc_grading: true                     # Calculate grading
+        metric: [RMSD, taylor]                 # Metric ('RMSD', 'BIAS', taylor')
+        normalization: [centered_median, none] # Normalization ('mean', 'median', 'centered_median', 'none')
+
+
+  ta200:
+    description: Air temperature at 200 hPa global.
+    variables:
+      ta:
+        preprocessor: pp200
+        reference_dataset: ERA-Interim
+        alternative_dataset: NCEP
+        mip: Amon
+        field: T3M
+    additional_datasets:
+      - {dataset: ACCESS1-0,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: ACCESS1-3,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: bcc-csm1-1,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: bcc-csm1-1-m,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: BNU-ESM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CanCM4,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CanESM2,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CCSM4,            project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CESM1-BGC,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CESM1-CAM5,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CESM1-CAM5-1-FV2, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CESM1-FASTCHEM,   project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CESM1-WACCM,      project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CMCC-CESM,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CMCC-CM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CMCC-CMS,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CNRM-CM5,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CNRM-CM5-2,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CSIRO-Mk3-6-0,    project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: EC-EARTH,         project: CMIP5, exp: historical, ensemble: r6i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: FGOALS-g2,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: FGOALS-s2,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: FIO-ESM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GFDL-CM2p1,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GFDL-CM3,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GFDL-ESM2G,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GFDL-ESM2M,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GISS-E2-H,        project: CMIP5, exp: historical, ensemble: r1i1p2, start_year: 2000, end_year: 2002}
+      - {dataset: GISS-E2-H-CC,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GISS-E2-R,        project: CMIP5, exp: historical, ensemble: r1i1p2, start_year: 2000, end_year: 2002}
+      - {dataset: GISS-E2-R-CC,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: HadCM3,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: HadGEM2-AO,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: HadGEM2-CC,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: HadGEM2-ES,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: inmcm4,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: IPSL-CM5A-LR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: IPSL-CM5A-MR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: IPSL-CM5B-LR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MIROC4h,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MIROC5,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MIROC-ESM,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MIROC-ESM-CHEM,   project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MPI-ESM-LR,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MPI-ESM-MR,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MPI-ESM-P,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MRI-CGCM3,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MRI-ESM1,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: NorESM1-M,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: NorESM1-ME,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: ERA-Interim,      project: OBS, type: reanaly, version: 1, start_year: 2000, end_year: 2002, tier: 3}
+      - {dataset: NCEP,             project: OBS, type: reanaly, version: 1, start_year: 2000, end_year: 2002, tier: 2}
+    scripts:
+      cycle:
+        <<: *cycle_settings
+      grading:
+        <<: *grading_settings
+        metric: [RMSD]                   # Metric ('RMSD', 'BIAS', taylor')
+        normalization: [centered_median] # Normalization ('mean', 'median', 'centered_median', 'none')
+
+
+  ta30:
+    description: Air temperature at 30 hPa global.
+    variables:
+      ta:
+        preprocessor: pp30
+        reference_dataset: ERA-Interim
+        alternative_dataset: NCEP
+        mip: Amon
+        field: T3M
+    additional_datasets:
+      - {dataset: ACCESS1-0,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: ACCESS1-3,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: bcc-csm1-1,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: bcc-csm1-1-m,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: BNU-ESM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CanCM4,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CanESM2,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CCSM4,            project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CESM1-BGC,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CESM1-CAM5,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CESM1-CAM5-1-FV2, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CESM1-FASTCHEM,   project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CESM1-WACCM,      project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CMCC-CESM,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CMCC-CM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CMCC-CMS,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CNRM-CM5,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CNRM-CM5-2,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CSIRO-Mk3-6-0,    project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: EC-EARTH,         project: CMIP5, exp: historical, ensemble: r6i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: FGOALS-g2,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: FGOALS-s2,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: FIO-ESM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GFDL-CM2p1,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GFDL-CM3,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GFDL-ESM2G,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GFDL-ESM2M,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GISS-E2-H,        project: CMIP5, exp: historical, ensemble: r1i1p2, start_year: 2000, end_year: 2002}
+      - {dataset: GISS-E2-H-CC,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GISS-E2-R,        project: CMIP5, exp: historical, ensemble: r1i1p2, start_year: 2000, end_year: 2002}
+      - {dataset: GISS-E2-R-CC,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: HadCM3,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: HadGEM2-AO,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: HadGEM2-CC,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: HadGEM2-ES,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: inmcm4,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: IPSL-CM5A-LR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: IPSL-CM5A-MR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: IPSL-CM5B-LR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MIROC4h,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MIROC5,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MIROC-ESM,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MIROC-ESM-CHEM,   project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MPI-ESM-LR,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MPI-ESM-MR,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MPI-ESM-P,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MRI-CGCM3,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MRI-ESM1,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: NorESM1-M,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: NorESM1-ME,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: ERA-Interim,      project: OBS, type: reanaly, version: 1, start_year: 2000, end_year: 2002, tier: 3}
+      - {dataset: NCEP,             project: OBS, type: reanaly, version: 1, start_year: 2000, end_year: 2002, tier: 2}
+    scripts:
+      cycle:
+        <<: *cycle_settings
+
+
+  ta5:
+    description: Air temperature at 5 hPa global.
+    variables:
+      ta:
+        preprocessor: pp5
+        reference_dataset: ERA-Interim
+        alternative_dataset: NCEP
+        mip: Amon
+        field: T3M
+    additional_datasets:
+      - {dataset: ACCESS1-0,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: ACCESS1-3,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: bcc-csm1-1,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: bcc-csm1-1-m,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: BNU-ESM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CanCM4,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CanESM2,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CCSM4,            project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CESM1-BGC,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CESM1-CAM5,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CESM1-CAM5-1-FV2, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CESM1-FASTCHEM,   project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CESM1-WACCM,      project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CMCC-CESM,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CMCC-CM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CMCC-CMS,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CNRM-CM5,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CNRM-CM5-2,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CSIRO-Mk3-6-0,    project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: EC-EARTH,         project: CMIP5, exp: historical, ensemble: r6i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: FGOALS-g2,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: FGOALS-s2,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: FIO-ESM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GFDL-CM2p1,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GFDL-CM3,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GFDL-ESM2G,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GFDL-ESM2M,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GISS-E2-H,        project: CMIP5, exp: historical, ensemble: r1i1p2, start_year: 2000, end_year: 2002}
+      - {dataset: GISS-E2-H-CC,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GISS-E2-R,        project: CMIP5, exp: historical, ensemble: r1i1p2, start_year: 2000, end_year: 2002}
+      - {dataset: GISS-E2-R-CC,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: HadCM3,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: HadGEM2-AO,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: HadGEM2-CC,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: HadGEM2-ES,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: inmcm4,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: IPSL-CM5A-LR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: IPSL-CM5A-MR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: IPSL-CM5B-LR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MIROC4h,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MIROC5,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MIROC-ESM,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MIROC-ESM-CHEM,   project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MPI-ESM-LR,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MPI-ESM-MR,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MPI-ESM-P,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MRI-CGCM3,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MRI-ESM1,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: NorESM1-M,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: NorESM1-ME,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: ERA-Interim,      project: OBS, type: reanaly, version: 1, start_year: 2000, end_year: 2002, tier: 3}
+      - {dataset: NCEP,             project: OBS, type: reanaly, version: 1, start_year: 2000, end_year: 2002, tier: 2}
+    scripts:
+      cycle:
+        <<: *cycle_settings
+
+
+  taZONAL:
+    description: Air temperature zonal mean
+    variables:
+      ta:
+        preprocessor: ppALL
+        reference_dataset: ERA-Interim
+        alternative_dataset: NCEP
+        mip: Amon
+        field: T3M
+    additional_datasets:
+      - {dataset: ACCESS1-0,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: ACCESS1-3,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: bcc-csm1-1,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: bcc-csm1-1-m,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: BNU-ESM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CanCM4,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CanESM2,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CCSM4,            project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CESM1-BGC,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CESM1-CAM5,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CESM1-CAM5-1-FV2, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CESM1-FASTCHEM,   project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CESM1-WACCM,      project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CMCC-CESM,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CMCC-CM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CMCC-CMS,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CNRM-CM5,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CNRM-CM5-2,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CSIRO-Mk3-6-0,    project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: EC-EARTH,         project: CMIP5, exp: historical, ensemble: r6i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: FGOALS-g2,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: FGOALS-s2,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: FIO-ESM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GFDL-CM2p1,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GFDL-CM3,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GFDL-ESM2G,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GFDL-ESM2M,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GISS-E2-H,        project: CMIP5, exp: historical, ensemble: r1i1p2, start_year: 2000, end_year: 2002}
+      - {dataset: GISS-E2-H-CC,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GISS-E2-R,        project: CMIP5, exp: historical, ensemble: r1i1p2, start_year: 2000, end_year: 2002}
+      - {dataset: GISS-E2-R-CC,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: HadCM3,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: HadGEM2-AO,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: HadGEM2-CC,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: HadGEM2-ES,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: inmcm4,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: IPSL-CM5A-LR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: IPSL-CM5A-MR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: IPSL-CM5B-LR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MIROC4h,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MIROC5,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MIROC-ESM,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MIROC-ESM-CHEM,   project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MPI-ESM-LR,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MPI-ESM-MR,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MPI-ESM-P,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MRI-CGCM3,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MRI-ESM1,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: NorESM1-M,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: NorESM1-ME,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start_year: 2000,  end_year: 2002,  tier: 3}
+      - {dataset: NCEP,         project: OBS,  type: reanaly,  version: 1,  start_year: 2000,  end_year: 2002,  tier: 2}
+    scripts:
+      zonal: &zonal_settings
+        script: perfmetrics/main.ncl
+        plot_type: zonal         # Plot type ('cycle' [time], 'zonal' [plev, lat], 'latlon' [lat, lon], 'cycle_latlon' [time, lat, lon])
+        time_avg: annualclim     # Time average ('opt' argument of time_operations.ncl)
+        region: Global           # Selected region ('Global', 'Tropics', 'NH extratropics', 'SH extratropics')
+        plot_diff: true          # Draw difference plots
+        t_test: true             # Calculate t-test in difference plots
+        conf_level: 0.95         # Confidence level for the t-test
+        stippling: true          # Mask non-significant values with stippling
+        abs_levs: [200, 210, 220, 230, 240, 250, 260, 270, 280, 290, 300] # Contour levels for absolute plot
+        diff_levs: [-10, -8, -6, -4, -2, 0, 2, 4, 6, 8, 10]               # Contour levels for difference plot
+
+
+  ### ua: EASTWARD WIND ################################################################################################################################
+
+  ua850:
+    description: Eastward wind at 850 hPa global.
+    variables:
+      ua:
+        preprocessor: pp850
+        reference_dataset: ERA-Interim
+        alternative_dataset: NCEP
+        mip: Amon
+        field: T3M
+    additional_datasets:
+      - {dataset: ACCESS1-0,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: ACCESS1-3,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: bcc-csm1-1,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: bcc-csm1-1-m,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: BNU-ESM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CanCM4,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CanESM2,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CCSM4,            project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CESM1-BGC,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CESM1-CAM5,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CESM1-CAM5-1-FV2, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CESM1-FASTCHEM,   project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CESM1-WACCM,      project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CMCC-CESM,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CMCC-CM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CMCC-CMS,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CNRM-CM5,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CNRM-CM5-2,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CSIRO-Mk3-6-0,    project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: EC-EARTH,         project: CMIP5, exp: historical, ensemble: r6i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: FGOALS-g2,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: FIO-ESM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GFDL-CM2p1,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GFDL-CM3,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GFDL-ESM2G,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GFDL-ESM2M,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GISS-E2-H,        project: CMIP5, exp: historical, ensemble: r1i1p2, start_year: 2000, end_year: 2002}
+      - {dataset: GISS-E2-H-CC,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GISS-E2-R,        project: CMIP5, exp: historical, ensemble: r1i1p2, start_year: 2000, end_year: 2002}
+      - {dataset: GISS-E2-R-CC,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: HadCM3,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: HadGEM2-AO,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: HadGEM2-CC,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: HadGEM2-ES,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: inmcm4,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: IPSL-CM5A-LR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: IPSL-CM5A-MR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: IPSL-CM5B-LR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MIROC4h,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MIROC5,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MIROC-ESM,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MIROC-ESM-CHEM,   project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MPI-ESM-LR,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MPI-ESM-MR,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MPI-ESM-P,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MRI-CGCM3,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MRI-ESM1,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: NorESM1-M,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: NorESM1-ME,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start_year: 2000,  end_year: 2002,  tier: 3}
+      - {dataset: NCEP,         project: OBS,  type: reanaly,  version: 1,  start_year: 2000,  end_year: 2002,  tier: 2}
+    scripts:
+      grading:
+        <<: *grading_settings
+        metric: [RMSD]                   # Metric ('RMSD', 'BIAS', taylor')
+        normalization: [centered_median] # Normalization ('mean', 'median', 'centered_median', 'none')
+
+
+  ua200:
+    description: Eastward wind at 200 hPa global.
+    variables:
+      ua:
+        preprocessor: pp200
+        reference_dataset: ERA-Interim
+        alternative_dataset: NCEP
+        mip: Amon
+        field: T3M
+    additional_datasets:
+      - {dataset: ACCESS1-0,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: ACCESS1-3,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: bcc-csm1-1,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: bcc-csm1-1-m,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: BNU-ESM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CanCM4,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CanESM2,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CCSM4,            project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CESM1-BGC,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CESM1-CAM5,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CESM1-CAM5-1-FV2, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CESM1-FASTCHEM,   project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CESM1-WACCM,      project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CMCC-CESM,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CMCC-CM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CMCC-CMS,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CNRM-CM5,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CNRM-CM5-2,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CSIRO-Mk3-6-0,    project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: EC-EARTH,         project: CMIP5, exp: historical, ensemble: r6i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: FGOALS-g2,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: FIO-ESM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GFDL-CM2p1,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GFDL-CM3,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GFDL-ESM2G,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GFDL-ESM2M,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GISS-E2-H,        project: CMIP5, exp: historical, ensemble: r1i1p2, start_year: 2000, end_year: 2002}
+      - {dataset: GISS-E2-H-CC,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GISS-E2-R,        project: CMIP5, exp: historical, ensemble: r1i1p2, start_year: 2000, end_year: 2002}
+      - {dataset: GISS-E2-R-CC,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: HadCM3,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: HadGEM2-AO,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: HadGEM2-CC,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: HadGEM2-ES,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: inmcm4,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: IPSL-CM5A-LR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: IPSL-CM5A-MR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: IPSL-CM5B-LR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MIROC4h,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MIROC5,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MIROC-ESM,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MIROC-ESM-CHEM,   project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MPI-ESM-LR,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MPI-ESM-MR,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MPI-ESM-P,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MRI-CGCM3,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MRI-ESM1,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: NorESM1-M,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: NorESM1-ME,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start_year: 2000,  end_year: 2002,  tier: 3}
+      - {dataset: NCEP,         project: OBS,  type: reanaly,  version: 1,  start_year: 2000,  end_year: 2002,  tier: 2}
+    scripts:
+      grading:
+        <<: *grading_settings
+        metric: [RMSD]                   # Metric ('RMSD', 'BIAS', taylor')
+        normalization: [centered_median] # Normalization ('mean', 'median', 'centered_median', 'none')
+
+
+  ### va: NORTHWARD WIND ###############################################################################################################################
+
+  va850:
+    description: Northward wind at 850 hPa global.
+    variables:
+      va:
+        preprocessor: pp850
+        reference_dataset: ERA-Interim
+        alternative_dataset: NCEP
+        mip: Amon
+        field: T3M
+    additional_datasets:
+      - {dataset: ACCESS1-0,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: ACCESS1-3,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: bcc-csm1-1,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: bcc-csm1-1-m,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: BNU-ESM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CanCM4,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CanESM2,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CCSM4,            project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CESM1-BGC,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CESM1-CAM5,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CESM1-FASTCHEM,   project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CESM1-WACCM,      project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CMCC-CESM,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CMCC-CM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CMCC-CMS,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CNRM-CM5,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CNRM-CM5-2,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CSIRO-Mk3-6-0,    project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: EC-EARTH,         project: CMIP5, exp: historical, ensemble: r6i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: FGOALS-g2,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: FIO-ESM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GFDL-CM2p1,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GFDL-CM3,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GFDL-ESM2G,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GFDL-ESM2M,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GISS-E2-H,        project: CMIP5, exp: historical, ensemble: r1i1p2, start_year: 2000, end_year: 2002}
+      - {dataset: GISS-E2-H-CC,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GISS-E2-R,        project: CMIP5, exp: historical, ensemble: r1i1p2, start_year: 2000, end_year: 2002}
+      - {dataset: GISS-E2-R-CC,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: HadCM3,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: HadGEM2-AO,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: HadGEM2-CC,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: HadGEM2-ES,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: inmcm4,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: IPSL-CM5A-LR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: IPSL-CM5A-MR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: IPSL-CM5B-LR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MIROC4h,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MIROC5,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MIROC-ESM,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MIROC-ESM-CHEM,   project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MPI-ESM-LR,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MPI-ESM-MR,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MPI-ESM-P,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MRI-CGCM3,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MRI-ESM1,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: NorESM1-M,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: NorESM1-ME,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start_year: 2000,  end_year: 2002,  tier: 3}
+      - {dataset: NCEP,         project: OBS,  type: reanaly,  version: 1,  start_year: 2000,  end_year: 2002,  tier: 2}
+    scripts:
+      grading:
+        <<: *grading_settings
+        metric: [RMSD]                   # Metric ('RMSD', 'BIAS', taylor')
+        normalization: [centered_median] # Normalization ('mean', 'median', 'centered_median', 'none')
+
+
+  va200:
+    description: Northward wind at 200 hPa global.
+    variables:
+      va:
+        preprocessor: pp200
+        reference_dataset: ERA-Interim
+        alternative_dataset: NCEP
+        mip: Amon
+        field: T3M
+    additional_datasets:
+      - {dataset: ACCESS1-0,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: ACCESS1-3,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: bcc-csm1-1,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: bcc-csm1-1-m,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: BNU-ESM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CanCM4,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CanESM2,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CCSM4,            project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CESM1-BGC,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CESM1-CAM5,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CESM1-FASTCHEM,   project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CESM1-WACCM,      project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CMCC-CESM,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CMCC-CM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CMCC-CMS,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CNRM-CM5,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CNRM-CM5-2,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CSIRO-Mk3-6-0,    project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: EC-EARTH,         project: CMIP5, exp: historical, ensemble: r6i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: FGOALS-g2,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: FIO-ESM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GFDL-CM2p1,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GFDL-CM3,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GFDL-ESM2G,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GFDL-ESM2M,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GISS-E2-H,        project: CMIP5, exp: historical, ensemble: r1i1p2, start_year: 2000, end_year: 2002}
+      - {dataset: GISS-E2-H-CC,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GISS-E2-R,        project: CMIP5, exp: historical, ensemble: r1i1p2, start_year: 2000, end_year: 2002}
+      - {dataset: GISS-E2-R-CC,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: HadCM3,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: HadGEM2-AO,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: HadGEM2-CC,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: HadGEM2-ES,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: inmcm4,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: IPSL-CM5A-LR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: IPSL-CM5A-MR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: IPSL-CM5B-LR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MIROC4h,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MIROC5,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MIROC-ESM,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MIROC-ESM-CHEM,   project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MPI-ESM-LR,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MPI-ESM-MR,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MPI-ESM-P,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MRI-CGCM3,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MRI-ESM1,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: NorESM1-M,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: NorESM1-ME,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start_year: 2000,  end_year: 2002,  tier: 3}
+      - {dataset: NCEP,         project: OBS,  type: reanaly,  version: 1,  start_year: 2000,  end_year: 2002,  tier: 2}
+    scripts:
+      grading:
+        <<: *grading_settings
+        metric: [RMSD]                   # Metric ('RMSD', 'BIAS', taylor')
+        normalization: [centered_median] # Normalization ('mean', 'median', 'centered_median', 'none')
+
+
+  ### zg: GEOPOTENTIAL HEIGHT ##########################################################################################################################
+
+  zg500:
+    description: Geopotential height 500 hPa global.
+    variables:
+      zg:
+        preprocessor: pp500
+        reference_dataset: ERA-Interim
+        alternative_dataset: NCEP
+        mip: Amon
+        field: T3M
+    additional_datasets:
+      - {dataset: ACCESS1-0,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: ACCESS1-3,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: bcc-csm1-1,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: bcc-csm1-1-m,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: BNU-ESM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CanCM4,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CanESM2,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CCSM4,            project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CESM1-BGC,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CESM1-CAM5,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CESM1-CAM5-1-FV2, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CESM1-FASTCHEM,   project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CESM1-WACCM,      project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CMCC-CESM,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CMCC-CM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CMCC-CMS,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CNRM-CM5,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CNRM-CM5-2,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CSIRO-Mk3-6-0,    project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: FGOALS-g2,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: FGOALS-s2,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: FIO-ESM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GFDL-CM2p1,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GFDL-CM3,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GFDL-ESM2G,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GFDL-ESM2M,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GISS-E2-H,        project: CMIP5, exp: historical, ensemble: r1i1p2, start_year: 2000, end_year: 2002}
+      - {dataset: GISS-E2-H-CC,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GISS-E2-R-CC,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: HadCM3,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: HadGEM2-AO,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: HadGEM2-CC,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: HadGEM2-ES,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: inmcm4,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: IPSL-CM5A-LR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: IPSL-CM5A-MR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: IPSL-CM5B-LR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MIROC4h,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MIROC5,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MIROC-ESM,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MIROC-ESM-CHEM,   project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MPI-ESM-LR,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MPI-ESM-MR,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MPI-ESM-P,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MRI-CGCM3,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: NorESM1-M,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: NorESM1-ME,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start_year: 2000,  end_year: 2002,  tier: 3}
+      - {dataset: NCEP,         project: OBS,  type: reanaly,  version: 1,  start_year: 2000,  end_year: 2002,  tier: 2}
+    scripts:
+      grading:
+        <<: *grading_settings
+        metric: [RMSD]                   # Metric ('RMSD', 'BIAS', taylor')
+        normalization: [centered_median] # Normalization ('mean', 'median', 'centered_median', 'none')
+
+
+  ### hus: SPECIFIC HUMIDITY ###########################################################################################################################
+
+  hus400:
+    description: Specific humidity at 400 hPa global.
+    variables:
+      hus:
+        preprocessor: pp400
+        reference_dataset: AIRS
+        alternative_dataset: ERA-Interim
+        mip: Amon
+        field: T3M
+    additional_datasets:
+      - {dataset: ACCESS1-0,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2004}
+      - {dataset: ACCESS1-3,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2004}
+      - {dataset: bcc-csm1-1,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2004}
+      - {dataset: bcc-csm1-1-m,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2004}
+      - {dataset: BNU-ESM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2004}
+      - {dataset: CanESM2,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2004}
+      - {dataset: CCSM4,            project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2004}
+      - {dataset: CESM1-BGC,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2004}
+      - {dataset: CESM1-CAM5,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2004}
+      - {dataset: CESM1-CAM5-1-FV2, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2004}
+      - {dataset: CMCC-CM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2004}
+      - {dataset: CMCC-CMS,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2004}
+      - {dataset: CNRM-CM5,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2004}
+      - {dataset: CSIRO-Mk3-6-0,    project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2004}
+      - {dataset: FGOALS-g2,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2004}
+      - {dataset: FGOALS-s2,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2004}
+      - {dataset: FIO-ESM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2004}
+      - {dataset: GISS-E2-H-CC,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2004}
+      - {dataset: GISS-E2-R-CC,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2004}
+      - {dataset: GFDL-CM2p1,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2004}
+      - {dataset: GFDL-CM3,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2004}
+      - {dataset: GFDL-ESM2G,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2004}
+      - {dataset: GFDL-ESM2M,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2004}
+      - {dataset: HadGEM2-AO,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2004}
+      - {dataset: HadGEM2-CC,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2004}
+      - {dataset: HadGEM2-ES,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2004}
+      - {dataset: inmcm4,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2004}
+      - {dataset: IPSL-CM5A-LR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2004}
+      - {dataset: IPSL-CM5A-MR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2004}
+      - {dataset: IPSL-CM5B-LR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2004}
+      - {dataset: MIROC4h,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2004}
+      - {dataset: MIROC5,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2004}
+      - {dataset: MIROC-ESM,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2004}
+      - {dataset: MIROC-ESM-CHEM,   project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2004}
+      - {dataset: MPI-ESM-LR,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2004}
+      - {dataset: MPI-ESM-MR,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2004}
+      - {dataset: MRI-CGCM3,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2004}
+      - {dataset: MRI-ESM1,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2004}
+      - {dataset: NorESM1-M,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2004}
+      - {dataset: NorESM1-ME,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2003, end_year: 2004}
+      - {dataset: AIRS, project: obs4mips, level: L3, version: RetStd-v5, start_year: 2003, end_year: 2004, tier: 1}
+      - {dataset: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start_year: 2003,  end_year: 2004,  tier: 3}
+    scripts:
+      grading:
+        <<: *grading_settings
+        metric: [RMSD]                   # Metric ('RMSD', 'BIAS', taylor')
+        normalization: [centered_median] # Normalization ('mean', 'median', 'centered_median', 'none')
+
+
+  ### tas: NEAR-SURFACE TEMPERATURE ####################################################################################################################
+
+  tas:
+    description: Near-surface air temperature
+    variables:
+      tas:
+        preprocessor: ppNOLEV2
+        reference_dataset: ERA-Interim
+        alternative_dataset: NCEP
+        mip: Amon
+        field: T2Ms
+    additional_datasets:
+      - {dataset: ACCESS1-0,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: ACCESS1-3,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: bcc-csm1-1,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: bcc-csm1-1-m,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: BNU-ESM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CanCM4,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CanESM2,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CCSM4,            project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CESM1-BGC,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CESM1-CAM5,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CESM1-CAM5-1-FV2, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CESM1-FASTCHEM,   project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CESM1-WACCM,      project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CMCC-CESM,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CMCC-CM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CMCC-CMS,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CNRM-CM5,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CNRM-CM5-2,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CSIRO-Mk3-6-0,    project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: EC-EARTH,         project: CMIP5, exp: historical, ensemble: r6i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: FGOALS-g2,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: FGOALS-s2,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: FIO-ESM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GFDL-CM2p1,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GFDL-CM3,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GFDL-ESM2G,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GFDL-ESM2M,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GISS-E2-H,        project: CMIP5, exp: historical, ensemble: r1i1p2, start_year: 2000, end_year: 2002}
+      - {dataset: GISS-E2-H-CC,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GISS-E2-R,        project: CMIP5, exp: historical, ensemble: r1i1p2, start_year: 2000, end_year: 2002}
+      - {dataset: GISS-E2-R-CC,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: HadCM3,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: HadGEM2-AO,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: HadGEM2-CC,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: HadGEM2-ES,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: inmcm4,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: IPSL-CM5A-LR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: IPSL-CM5A-MR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: IPSL-CM5B-LR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MIROC4h,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MIROC5,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MIROC-ESM,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MIROC-ESM-CHEM,   project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MPI-ESM-LR,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MPI-ESM-MR,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MPI-ESM-P,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MRI-CGCM3,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MRI-ESM1,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: NorESM1-M,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: NorESM1-ME,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start_year: 2000,  end_year: 2002,  tier: 3}
+      - {dataset: NCEP,         project: OBS,  type: reanaly,  version: 1,  start_year: 2000,  end_year: 2002,  tier: 2}
+    scripts:
+      latlon: &latlon_settings
+        script: perfmetrics/main.ncl
+        plot_type: latlon        # Plot type ('cycle' [time], 'zonal' [plev, lat], 'latlon' [lat, lon], 'cycle_latlon' [time, lat, lon])
+        time_avg: annualclim     # Time average ('opt' argument of time_operations.ncl)
+        region: Global           # Selected region ('Global', 'Tropics', 'NH extratropics', 'SH extratropics')
+        plot_diff: true          # Draw difference plots
+        t_test: true             # Calculate t-test in difference plots
+        conf_level: 0.95         # Confidence level for the t-test
+        abs_levs: [240, 243, 246, 249, 252, 255, 258,
+                   261, 264, 267, 270, 273, 276, 279,
+                   282, 285, 288, 291, 294, 297, 300]     # Contour levels for absolute plot
+        diff_levs: [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5] # Contour levels for difference plot
+      grading:
+        <<: *grading_settings
+        metric: [RMSD]                   # Metric ('RMSD', 'BIAS', taylor')
+        normalization: [centered_median] # Normalization ('mean', 'median', 'centered_median', 'none')
+
+
+  ### ts: SEA-SURFACE (SKIN) TEMPERATURE ###############################################################################################################
+
+  ts:
+    description: Sea-surface (skin) temperature
+    variables:
+      ts:
+        preprocessor: ppNOLEV1x1
+        reference_dataset: ESACCI-SST
+        alternative_dataset: HadISST
+        mip: Amon
+        field: T2Ms
+    additional_datasets:
+      - {dataset: ACCESS1-0,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: ACCESS1-3,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: bcc-csm1-1,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: bcc-csm1-1-m,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: BNU-ESM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CanCM4,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CanESM2,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CCSM4,            project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CESM1-BGC,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CESM1-CAM5,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CESM1-CAM5-1-FV2, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CMCC-CM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CMCC-CMS,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CNRM-CM5,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CSIRO-Mk3-6-0,    project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: FGOALS-g2,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: FIO-ESM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GFDL-CM2p1,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GFDL-CM3,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GFDL-ESM2G,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GFDL-ESM2M,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GISS-E2-H,        project: CMIP5, exp: historical, ensemble: r1i1p2, start_year: 2000, end_year: 2002}
+      - {dataset: GISS-E2-H-CC,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GISS-E2-R,        project: CMIP5, exp: historical, ensemble: r1i1p2, start_year: 2000, end_year: 2002}
+      - {dataset: GISS-E2-R-CC,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: HadCM3,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: HadGEM2-AO,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: HadGEM2-CC,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: HadGEM2-ES,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: inmcm4,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: IPSL-CM5A-LR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: IPSL-CM5A-MR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: IPSL-CM5B-LR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MIROC4h,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MIROC5,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MIROC-ESM,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MIROC-ESM-CHEM,   project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MPI-ESM-LR,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MPI-ESM-MR,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MRI-CGCM3,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: NorESM1-M,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: NorESM1-ME,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: ESACCI-SST,       project: OBS, type: sat,     version: L4-GHRSST-SSTdepth-OSTIA-GLOB, start_year: 2000, end_year: 2002, tier: 2}
+      - {dataset: HadISST,          project: OBS, type: reanaly, version: 1,                             start_year: 2000, end_year: 2002, tier: 2}
+    scripts:
+      grading:
+        <<: *grading_settings
+        metric: [RMSD]                   # Metric ('RMSD', 'BIAS', taylor')
+        normalization: [centered_median] # Normalization ('mean', 'median', 'centered_median', 'none')
+
+
+  ### pr: PRECIPITATIONS ###############################################################################################################################
+
+  pr:
+    description: Precipitations
+    variables:
+      pr:
+        preprocessor: ppNOLEV1
+        reference_dataset: GPCP-SG
+        mip: Amon
+        field: T2Ms
+    additional_datasets:
+      - {dataset: ACCESS1-0,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: ACCESS1-3,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: bcc-csm1-1,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: bcc-csm1-1-m,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: BNU-ESM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CanCM4,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CanESM2,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CCSM4,            project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CESM1-BGC,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CESM1-CAM5,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CESM1-CAM5-1-FV2, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CESM1-FASTCHEM,   project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CESM1-WACCM,      project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CMCC-CESM,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CMCC-CM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CMCC-CMS,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CNRM-CM5,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CNRM-CM5-2,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CSIRO-Mk3-6-0,    project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: EC-EARTH,         project: CMIP5, exp: historical, ensemble: r6i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: FGOALS-g2,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: FIO-ESM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GFDL-CM2p1,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GFDL-CM3,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GFDL-ESM2G,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GFDL-ESM2M,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GISS-E2-H,        project: CMIP5, exp: historical, ensemble: r1i1p2, start_year: 2000, end_year: 2002}
+      - {dataset: GISS-E2-H-CC,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GISS-E2-R,        project: CMIP5, exp: historical, ensemble: r1i1p2, start_year: 2000, end_year: 2002}
+      - {dataset: GISS-E2-R-CC,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: HadCM3,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: HadGEM2-AO,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: HadGEM2-CC,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: HadGEM2-ES,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: inmcm4,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: IPSL-CM5A-LR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: IPSL-CM5A-MR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: IPSL-CM5B-LR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MIROC4h,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MIROC5,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MIROC-ESM,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MIROC-ESM-CHEM,   project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MPI-ESM-LR,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MPI-ESM-MR,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MPI-ESM-P,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MRI-CGCM3,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MRI-ESM1,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: NorESM1-M,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: NorESM1-ME,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.2, start_year: 2000, end_year: 2002, tier: 1}
+    scripts:
+      grading:
+        <<: *grading_settings
+        metric: [RMSD]                   # Metric ('RMSD', 'BIAS', taylor')
+        normalization: [centered_median] # Normalization ('mean', 'median', 'centered_median', 'none')
+
+
+  ### clt: TOTAL CLOUD COVER ###########################################################################################################################
+
+  clt:
+    description: Total cloud cover
+    variables:
+      clt:
+        preprocessor: ppNOLEV2
+        reference_dataset: ESACCI-CLOUD
+        alternative_dataset: PATMOS
+        mip: Amon
+        field: T2Ms
+    additional_datasets:
+      - {dataset: ACCESS1-0,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: ACCESS1-3,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: bcc-csm1-1,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: bcc-csm1-1-m,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: BNU-ESM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CanESM2,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CCSM4,            project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CESM1-BGC,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CESM1-CAM5,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CESM1-CAM5-1-FV2, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CMCC-CM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CMCC-CMS,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CNRM-CM5,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: CSIRO-Mk3-6-0,    project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: EC-EARTH,         project: CMIP5, exp: historical, ensemble: r6i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: FGOALS-g2,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: FIO-ESM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GFDL-CM3,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GFDL-ESM2G,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GFDL-ESM2M,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GISS-E2-H,        project: CMIP5, exp: historical, ensemble: r1i1p2, start_year: 2000, end_year: 2002}
+      - {dataset: GISS-E2-H-CC,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: GISS-E2-R,        project: CMIP5, exp: historical, ensemble: r1i1p2, start_year: 2000, end_year: 2002}
+      - {dataset: GISS-E2-R-CC,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: HadCM3,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: HadGEM2-AO,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: HadGEM2-CC,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: HadGEM2-ES,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: inmcm4,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: IPSL-CM5A-LR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: IPSL-CM5A-MR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: IPSL-CM5B-LR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MIROC4h,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MIROC5,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MIROC-ESM,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MIROC-ESM-CHEM,   project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MPI-ESM-LR,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MPI-ESM-MR,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: MRI-CGCM3,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: NorESM1-M,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: NorESM1-ME,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2000, end_year: 2002}
+      - {dataset: ESACCI-CLOUD,     project: OBS, type: sat, version: AVHRR-fv2.0, start_year: 2000, end_year: 2002, tier: 2}
+      - {dataset: PATMOS,           project: OBS, type: sat, version: 1,           start_year: 2000, end_year: 2002, tier: 2}
+    scripts:
+      latlon:
+        <<: *latlon_settings
+        show_global_avg: true
+        abs_levs: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]             # Contour levels for absolute plot
+        diff_levs: [-30, -25, -20, -15, -10, -5, 0, 5, 10, 15, 20, 25, 30] # Contour levels for difference plot
+      grading:
+        <<: *grading_settings
+        metric: [RMSD]                   # Metric ('RMSD', 'BIAS', taylor')
+        normalization: [centered_median] # Normalization ('mean', 'median', 'centered_median', 'none')
+
+
+  ### rlut: ALL-SKY LONGWAVE RADIATION #################################################################################################################
+
+  rlut:
+    description: All-sky longwave radiation
+    variables:
+      rlut:
+        preprocessor: ppNOLEV1
+        reference_dataset: CERES-EBAF
+        mip: Amon
+        field: T2Ms
+    additional_datasets:
+      - {dataset: ACCESS1-0,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: ACCESS1-3,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: bcc-csm1-1,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: bcc-csm1-1-m,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: BNU-ESM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: CanCM4,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: CanESM2,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: CCSM4,            project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: CESM1-BGC,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: CESM1-CAM5,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: CESM1-CAM5-1-FV2, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: CMCC-CM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: CMCC-CMS,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: CNRM-CM5,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: CSIRO-Mk3-6-0,    project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: EC-EARTH,         project: CMIP5, exp: historical, ensemble: r6i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: FGOALS-g2,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: FGOALS-s2,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: FIO-ESM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: GFDL-CM2p1,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: GFDL-CM3,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: GFDL-ESM2G,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: GFDL-ESM2M,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: GISS-E2-H,        project: CMIP5, exp: historical, ensemble: r1i1p2, start_year: 2001, end_year: 2003}
+      - {dataset: GISS-E2-R,        project: CMIP5, exp: historical, ensemble: r1i1p2, start_year: 2001, end_year: 2003}
+      - {dataset: HadCM3,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: HadGEM2-AO,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: HadGEM2-CC,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: HadGEM2-ES,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: inmcm4,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: IPSL-CM5A-LR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: IPSL-CM5A-MR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: IPSL-CM5B-LR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: MIROC4h,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: MIROC5,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: MIROC-ESM,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: MIROC-ESM-CHEM,   project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: MPI-ESM-LR,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: MPI-ESM-MR,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: MRI-CGCM3,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: NorESM1-M,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: NorESM1-ME,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7, start_year: 2001, end_year: 2003, tier: 1}
+    scripts:
+      grading:
+        <<: *grading_settings
+        metric: [RMSD]                   # Metric ('RMSD', 'BIAS', taylor')
+        normalization: [centered_median] # Normalization ('mean', 'median', 'centered_median', 'none')
+
+
+  ### rsut: ALL-SKY SHORTWAVE RADIATION ################################################################################################################
+
+  rsut:
+    description: All-sky shortwave radiation
+    variables:
+      rsut:
+        preprocessor: ppNOLEV1
+        reference_dataset: CERES-EBAF
+        mip: Amon
+        field: T2Ms
+    additional_datasets:
+      - {dataset: ACCESS1-0,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: ACCESS1-3,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: bcc-csm1-1,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: bcc-csm1-1-m,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: BNU-ESM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: CanESM2,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: CCSM4,            project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: CESM1-BGC,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: CESM1-CAM5,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: CESM1-CAM5-1-FV2, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: CMCC-CM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: CMCC-CMS,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: CNRM-CM5,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: CSIRO-Mk3-6-0,    project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: FGOALS-s2,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: FIO-ESM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: GFDL-CM2p1,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: GFDL-CM3,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: GFDL-ESM2G,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: GFDL-ESM2M,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: GISS-E2-H,        project: CMIP5, exp: historical, ensemble: r1i1p2, start_year: 2001, end_year: 2003}
+      - {dataset: GISS-E2-R,        project: CMIP5, exp: historical, ensemble: r1i1p2, start_year: 2001, end_year: 2003}
+      - {dataset: HadCM3,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: HadGEM2-AO,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: HadGEM2-CC,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: HadGEM2-ES,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: inmcm4,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: IPSL-CM5A-LR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: IPSL-CM5A-MR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: IPSL-CM5B-LR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: MIROC4h,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: MIROC5,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: MIROC-ESM,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: MIROC-ESM-CHEM,   project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: MPI-ESM-LR,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: MPI-ESM-MR,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: MRI-CGCM3,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: NorESM1-M,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: NorESM1-ME,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7, start_year: 2001, end_year: 2003, tier: 1}
+    scripts:
+      grading:
+        <<: *grading_settings
+        metric: [RMSD]                   # Metric ('RMSD', 'BIAS', taylor')
+        normalization: [centered_median] # Normalization ('mean', 'median', 'centered_median', 'none')
+
+
+  ### lwcre: LONGWAVE CLOUD FORCING ####################################################################################################################
+  lwcre:
+    description: Longwave cloud radiative effect
+    variables:
+      lwcre:
+        preprocessor: ppNOLEV1
+        reference_dataset: CERES-EBAF
+        mip: Amon
+        field: T2Ms
+        derive: true
+        force_derivation: false
+    additional_datasets:
+      - {dataset: ACCESS1-0,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: ACCESS1-3,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: bcc-csm1-1,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: bcc-csm1-1-m,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: BNU-ESM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: CanESM2,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: CCSM4,            project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: CESM1-BGC,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: CESM1-CAM5,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: CESM1-CAM5-1-FV2, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: CMCC-CM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: CMCC-CMS,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: CNRM-CM5,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: CSIRO-Mk3-6-0,    project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: FGOALS-g2,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: FGOALS-s2,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: FIO-ESM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: GFDL-CM3,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: GFDL-ESM2G,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: GFDL-ESM2M,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: GISS-E2-H,        project: CMIP5, exp: historical, ensemble: r1i1p2, start_year: 2001, end_year: 2003}
+      - {dataset: GISS-E2-R,        project: CMIP5, exp: historical, ensemble: r1i1p2, start_year: 2001, end_year: 2003}
+      - {dataset: HadCM3,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: HadGEM2-AO,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: HadGEM2-CC,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: HadGEM2-ES,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: inmcm4,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: IPSL-CM5A-LR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: IPSL-CM5A-MR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: IPSL-CM5B-LR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: MIROC4h,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: MIROC5,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: MIROC-ESM,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: MIROC-ESM-CHEM,   project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: MPI-ESM-LR,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: MPI-ESM-MR,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: MRI-CGCM3,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: NorESM1-M,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: NorESM1-ME,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: CERES-EBAF,  project: obs4mips,  level: L3B,  version: Ed2-7,  start_year: 2001,  end_year: 2003, tier: 1}
+    scripts:
+      latlon:
+        <<: *latlon_settings
+        abs_levs: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90 , 100]            # Contour levels for absolute plot
+        diff_levs: [-30, -25, -20, -15, -10, -5, 0, 5, 10, 15, 20, 25, 30] # Contour levels for difference plot
+      grading:
+        <<: *grading_settings
+
+
+  ### swcre: SHORTWAVE CLOUD FORCING ###################################################################################################################
+
+  swcre:
+    description: Shortwave cloud radiative effect
+    variables:
+      swcre:
+        preprocessor: ppNOLEV1
+        reference_dataset: CERES-EBAF
+        mip: Amon
+        field: T2Ms
+        derive: true
+        force_derivation: false
+    additional_datasets:
+      - {dataset: ACCESS1-0,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: ACCESS1-3,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: bcc-csm1-1,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: bcc-csm1-1-m,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: BNU-ESM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: CanESM2,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: CCSM4,            project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: CESM1-BGC,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: CESM1-CAM5,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: CESM1-CAM5-1-FV2, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: CMCC-CM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: CNRM-CM5,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: CSIRO-Mk3-6-0,    project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: FGOALS-s2,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: FIO-ESM,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: GFDL-CM3,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: GFDL-ESM2G,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: GFDL-ESM2M,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: GISS-E2-H,        project: CMIP5, exp: historical, ensemble: r1i1p2, start_year: 2001, end_year: 2003}
+      - {dataset: GISS-E2-R,        project: CMIP5, exp: historical, ensemble: r1i1p2, start_year: 2001, end_year: 2003}
+      - {dataset: HadCM3,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: HadGEM2-AO,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: HadGEM2-CC,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: HadGEM2-ES,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: inmcm4,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: IPSL-CM5A-LR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: IPSL-CM5A-MR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: IPSL-CM5B-LR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: MIROC4h,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: MIROC5,           project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: MIROC-ESM,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: MIROC-ESM-CHEM,   project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: MPI-ESM-LR,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: MPI-ESM-MR,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: MRI-CGCM3,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: NorESM1-M,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: NorESM1-ME,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+      - {dataset: CERES-EBAF,  project: obs4mips,  level: L3B,  version: Ed2-7,  start_year: 2001,  end_year: 2003, tier: 1}
+    scripts:
+      latlon:
+        <<: *latlon_settings
+        abs_levs: [-100, -90, -80, -70, -60, -50, -40, -30, -20, -10, 0]   # Contour levels for absolute plot
+        diff_levs: [-30, -25, -20, -15, -10, -5, 0, 5, 10, 15, 20, 25, 30] # Contour levels for difference plot
+      grading:
+        <<: *grading_settings
+        metric: [RMSD]                   # Metric ('RMSD', 'BIAS', taylor')
+        normalization: [centered_median] # Normalization ('mean', 'median', 'centered_median', 'none')
+
+### od550aer: AEROSOL OPTICAL DEPTH AT 550 nm ########################################################################################################
+
+### od870aer: AEROSOL OPTICAL DEPTH AT 870 nm ########################################################################################################
+
+### od550lt1aer: FINE MODE AEROSOL OPTICAL DEPTH AT 550 nm ###########################################################################################
+
+### toz: TOTAL COLUMN OZONE ##########################################################################################################################
+
+### sic: SEA-ICE CONCENTRATION (NH) ##################################################################################################################
+
+### sic: SEA-ICE CONCENTRATION (SH) ##################################################################################################################
+
+### dos: SOIL MOISTURE ###############################################################################################################################
+
+
+### COLLECT METRICS ##################################################################################################################################
+
+  collect:
+    description: Wrapper to collect and plot previously calculated metrics
+    scripts:
+      RMSD:
+        script: perfmetrics/collect.ncl
+        ancestors: ['*/grading']
+        metric: RMSD
+        label_bounds: [-0.5, 0.5]
+        label_scale: 0.1
+        disp_values: false
+        cm_interval: [2, 241]
+        sort: true  # Sort dataset in alphabetic order (excluding MMM)
+      taylor:
+        script: perfmetrics/collect.ncl
+        ancestors: ['*/grading']
+        metric: taylor

@@ -38,17 +38,17 @@ def _load_config(filename=None):
     cfg['reference']['output'] = os.path.abspath(
         os.path.expanduser(cfg['reference']['output']))
 
-    if cfg['test'].get('namelists', []) == []:
+    if cfg['test'].get('recipes', []) == []:
         script_root = esmvaltool.get_script_root()
-        namelist_glob = os.path.join(script_root, 'nml', 'namelist_*.yml')
-        cfg['test']['namelists'] = glob.glob(namelist_glob)
+        recipe_glob = os.path.join(script_root, 'nml', 'recipe_*.yml')
+        cfg['test']['recipes'] = glob.glob(recipe_glob)
 
     return cfg
 
 
 _CFG = _load_config()
 
-NAMELISTS = _CFG['test']['namelists']
+RECIPES = _CFG['test']['recipes']
 
 
 def _create_config_user_file(output_directory):
@@ -72,12 +72,12 @@ def _create_config_user_file(output_directory):
 class ESMValToolTest(EasyTest):
     """Main class for ESMValTool test runs."""
 
-    def __init__(self, namelist, output_directory, ignore='', **kwargs):
+    def __init__(self, recipe, output_directory, ignore='', **kwargs):
         """
         Create ESMValToolTest instance
 
-        namelist: str
-            The filename of the namelist that should be tested.
+        recipe: str
+            The filename of the recipe that should be tested.
         output_directory : str
             The name of a directory where results can be stored.
         ignore: str or iterable of str
@@ -91,13 +91,13 @@ class ESMValToolTest(EasyTest):
 
         script_root = esmvaltool.get_script_root()
 
-        # Set namelist path
-        if not os.path.exists(namelist):
-            namelist = os.path.join(
+        # Set recipe path
+        if not os.path.exists(recipe):
+            recipe = os.path.join(
                 os.path.dirname(script_root),
-                'namelists',
-                namelist)
-        self.namelist_file = os.path.abspath(namelist)
+                'recipes',
+                recipe)
+        self.recipe_file = os.path.abspath(recipe)
 
         # Simulate input data?
         self.simulate_input = _CFG['test']['simulate_input']
@@ -108,19 +108,19 @@ class ESMValToolTest(EasyTest):
         # Define reference output path
         reference_dir = os.path.join(
             _CFG['reference']['output'],
-            os.path.splitext(os.path.basename(self.namelist_file))[0])
+            os.path.splitext(os.path.basename(self.recipe_file))[0])
 
         # If reference data is neither available nor should be generated, skip
         if not (os.path.exists(reference_dir) or self.create_reference_output):
-            raise SkipTest("No reference data available for namelist {} in {}"
-                           .format(namelist, _CFG['reference']['output']))
+            raise SkipTest("No reference data available for recipe {} in {}"
+                           .format(recipe, _CFG['reference']['output']))
 
         # Write ESMValTool configuration file
         self.config_user_file = _create_config_user_file(output_directory)
 
         super(ESMValToolTest, self).__init__(
             exe='esmvaltool',
-            args=['-n', self.namelist_file, '-c', self.config_user_file],
+            args=['-n', self.recipe_file, '-c', self.config_user_file],
             output_directory=output_directory,
             refdirectory=reference_dir,
             **kwargs)
@@ -130,7 +130,7 @@ class ESMValToolTest(EasyTest):
         if self.simulate_input:
             from .data_simulator import simulate_input_data
             simulate_input_data(
-                namelist_file=self.namelist_file,
+                recipe_file=self.recipe_file,
                 config_user_file=self.config_user_file)
 
         if self.create_reference_output:
@@ -142,7 +142,7 @@ class ESMValToolTest(EasyTest):
     def generate_reference_output(self):
         """Generate reference output.
 
-        Generate reference data by executing the namelist and then moving
+        Generate reference data by executing the recipe and then moving
         results to the output directory.
         """
         if not os.path.exists(self.refdirectory):

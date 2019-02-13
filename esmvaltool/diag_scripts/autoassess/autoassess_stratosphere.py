@@ -13,7 +13,7 @@ from esmvaltool.diag_scripts.shared import run_diagnostic
 
 logger = logging.getLogger(__name__)
 
-# Diagnostic that takes two models (control_model and exp_model
+# Diagnostic that takes two datasets (control_model and exp_model
 # and observational data (ERA-Interim and MERRA)
 
 

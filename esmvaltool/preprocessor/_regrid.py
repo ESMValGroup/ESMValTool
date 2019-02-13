@@ -446,7 +446,7 @@ def get_reference_levels(filename, coordinate='air_pressure'):
     Raises
     ------
     ValueError:
-        If the model is not defined, the coordinate does not specify any
+        If the dataset is not defined, the coordinate does not specify any
         levels or the string is badly formatted.
 
     """

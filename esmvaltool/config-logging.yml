@@ -5,11 +5,11 @@ version: 1
 disable_existing_loggers: false
 formatters:
   console:
-    format: '%(asctime)s [%(process)d] %(levelname)-7s %(message)s'
+    format: '%(asctime)s UTC [%(process)d] %(levelname)-7s %(message)s'
   brief:
     format: '%(levelname)-7s [%(process)d] %(message)s'
   debug:
-    format: '%(asctime)s [%(process)d] %(levelname)-7s %(name)s:%(lineno)s %(message)s'
+    format: '%(asctime)s UTC [%(process)d] %(levelname)-7s %(name)s:%(lineno)s %(message)s'
 handlers:
   console:
     class: logging.StreamHandler

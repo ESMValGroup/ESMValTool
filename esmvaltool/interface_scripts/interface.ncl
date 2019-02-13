@@ -15,7 +15,7 @@ begin
   loadscript("$settings")
 end
 
-; Load input_file_info, model_info and variable_info from <variable>_info.ncl
+; Load input_file_info, dataset_info and variable_info from <variable>_info.ncl
 begin
   vardeffiles = \
     str_match_ic_regex(diag_script_info@input_files, ".*_info\" + ".ncl")
