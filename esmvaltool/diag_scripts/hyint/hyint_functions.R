@@ -55,7 +55,7 @@ getfilename_regridded <- function(spath, rgrid, var0, model_idx) {
 }
 
 getfilename_indices <- function(spath, label, model_idx, season, hist = F,
-                                hist_years = hist_years, grid = F) {
+                                hist_years = hist_years, grid = F, topo = F) {
   exp <- models_name[model_idx]
   model_exp <- models_experiment[model_idx]
   model_ens <- models_ensemble[model_idx]
@@ -63,6 +63,11 @@ getfilename_indices <- function(spath, label, model_idx, season, hist = F,
     filename <- paste0(
       spath, "/", label, "_", exp, "_",
       model_exp, "_", model_ens, ".grid"
+    )
+  } else if (topo) {
+       filename <- paste0(
+      spath, "/", label, "_", exp, "_",
+      model_exp, "_", model_ens, "_topo.nc"
     )
   } else {
     year1 <- models_start_year[model_idx]
@@ -467,27 +472,30 @@ create_grid <- function(ref_file = "./reffile", path = idx_dir,
 # Adapted from 20170920-A_maritsandstad
 #
 create_landseamask <- function(regrid = "./gridDef", ref_file = ref_file,
-                loc = "./", regridded_topo = paste0("/", "regridded_topo.nc"),
+                loc = "./", regridded_topo = paste0("./", "regridded_topo.nc"),
                 landmask = "./landSeaMask.nc", topo_only = F) {
 
   # Test if gridfile exists
   # otherwise call function to generate one
   if (!file.exists(regrid)) {
+    if (length(ref_file) == 0) {
+      print("Unable to access grid file")
+      stop
+    }
     create_grid(ref_file = ref_file, loc = regrid)
   }
 
   ## Making topographic map
-  cmd <- paste("cdo -f nc topo ", loc, "topo.nc", sep = "")
+  cmd <- paste("cdo -f nc topo ", loc, "/topo.nc", sep = "")
   print(cmd)
   system(cmd)
-
+  
   ## Regridding the topographic map to chosen grid
-  cmd <- paste("cdo remapcon2,", regrid, " ", loc, paste0("/", "topo.nc"),
-    loc, regridded_topo, sep = ""
+  cmd <- paste("cdo remapcon2,", regrid, " ", loc, paste0("/", "topo.nc "),
+               regridded_topo, sep = ""
   )
   print(cmd)
   system(cmd)
-
   if (!topo_only) {
 
     # Set above sea-level gridpoints to missing
@@ -1131,11 +1139,20 @@ ncdf_opener_time <- function(namefile, namevar = NULL, namelon = NULL,
 scale_figure <- function(plot_type, diag_script_cfg,
                          nfields, npancol, npanrow) {
   source(diag_script_cfg)
-  npanels <- npancol * npanrow
-  if (plot_type == 3) {
-    figure_aspect_ratio[3] <- figure_aspect_ratio[3] / nfields
+  if (plot_type == 1 || plot_type == 11) {
+    npancol <- 1
+    npanrow <- 1
   }
-  if (npanels > 1) {
+  if (plot_type == 2) {
+    npancol <- 1
+    npanrow <- 3
+  }
+  if (plot_type == 3) {
+    npancol <- 3
+    napnrow <- nfields
+  }
+  npanels <- npancol * npanrow
+  if (npancol > 1) {
     png_width <- png_width_multi * npancol
     pdf_width <- pdf_width_multi * npancol
     x11_width <- x11_width_multi * npancol
@@ -1143,21 +1160,22 @@ scale_figure <- function(plot_type, diag_script_cfg,
   png_width <- png_width * figure_rel_width[plot_type]
   pdf_width <- pdf_width * figure_rel_width[plot_type]
   x11_width <- x11_width * figure_rel_width[plot_type]
-  plot_size <- c(png_width, png_width / figure_aspect_ratio[plot_type]
-                                      / npancol * npanrow)
+
+  figure_aspect_ratio[plot_type] <- (figure_aspect_ratio[plot_type] 
+                                    * npancol / npanrow)
+
+  plot_size <- c(png_width, png_width / figure_aspect_ratio[plot_type])
   if (tolower(output_file_type) == "pdf") {
     plot_size[1] <- pdf_width
-    plot_size[2] <- (pdf_width / figure_aspect_ratio[plot_type]
-                               / npancol * npanrow)
+    plot_size[2] <- pdf_width / figure_aspect_ratio[plot_type]
   } else if (tolower(output_file_type) == "eps") {
     plot_size[1] <- pdf_width
-    plot_size[2] <- (pdf_height / figure_aspect_ratio[plot_type]
-                               / npancol * npanrow)
+    plot_size[2] <- pdf_height / figure_aspect_ratio[plot_type]
   } else if (tolower(output_file_type) == "x11") {
     plot_size[1] <- x11_width
-    plot_size[2] <- (x11_width / figure_aspect_ratio[plot_type]
-                               / npancol * npanrow)
+    plot_size[2] <- x11_width / figure_aspect_ratio[plot_type]
   }
+  print(plot_size)
   return(plot_size)
 }
 

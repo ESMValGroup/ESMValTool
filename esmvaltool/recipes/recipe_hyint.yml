@@ -17,9 +17,9 @@ documentation:
     - c3s-magic
 
 datasets:
-  - {dataset: ACCESS1-0,      project: CMIP5, exp: [historical,rcp85], ensemble: r1i1p1, start_year: 2004, end_year: 2006}
-#  - {dataset: ACCESS1-3,      project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2016}
-#  - {dataset: MPI-ESM-MR,      project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2016}
+  - {dataset: ACCESS1-0, exp: [historical,rcp85], ensemble: r1i1p1, start_year: 2004, end_year: 2006}
+#  - {dataset: ACCESS1-3, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2016}
+  - {dataset: MPI-ESM-MR, exp: [historical,rcp85], ensemble: r1i1p1, start_year: 2004, end_year: 2006}
 
 preprocessors:
   preproc:
@@ -33,6 +33,7 @@ diagnostics:
        pr:
  #       preprocessor: preproc
         reference_dataset: "ACCESS1-0"
+        project: CMIP5
         mip: day
         field: T2Ds
     scripts:
@@ -77,7 +78,8 @@ diagnostics:
         # Select one or more fields for timeseries and maps from the following 
         # list (order-sensitive): 
         # SDII, DSL, WSL, HY-INT, ABS_INT, ABS_DSL, ABS_WSL, PA, R95 
-        selfields: [8, 4, 1, 9, 3, 2]
+        # selfields: [8, 4, 1, 9, 3, 2]
+        selfields: [5, 6, 7, 9, 3, 2]
        # Select automated or pre-set range of values in plots
         autolevels: true       
 

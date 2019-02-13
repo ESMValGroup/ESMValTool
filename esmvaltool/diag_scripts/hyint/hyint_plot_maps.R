@@ -40,13 +40,13 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
   # ------- loading reference data ----------
   # load topography if needed
   if (masksealand) {
-    topo_file_idx <- paste0(topography_file, ref_idx, ".nc")
+    topofile <- getfilename_indices(work_dir, diag_base, ref_idx, topo = T)
     gridfile <- getfilename_indices(work_dir, diag_base, ref_idx, grid = T)
-    if (!file.exists(topo_file_idx)) {
-      create_landseamask(regrid = gridfile, regridded_topo = topo_file_idx,
-                        topo_only = T)
+    if (!file.exists(topofile)) {
+      create_landseamask(regrid = gridfile, loc = run_dir,
+                         regridded_topo = topofile, topo_only = T)
     }
-    relevation <- ncdf.opener(topo_file_idx, "topo", "lon", "lat",
+    relevation <- ncdf_opener(topofile, "topo", "lon", "lat",
                               rotate = "no")
   }
   if (highreselevation) {
@@ -166,7 +166,6 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
     # Set figure dimensions
     plot_size <- scale_figure(plot_type, diag_script_cfg, length(selfields),
                               npancol, npanrow)
-
     if (boxregion != 0) {
       # boxregion will plot region boxes over a global map of selected field
       nregions <- 1
@@ -179,7 +178,7 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
 
       # Startup graphics for multiple years in one figure
       if (plot_type == 4) {
-        field_label <- paste(field_names, collapse = "-")
+        field_label <- "multiindex" # paste(field_names, collapse = "-")
         figname <- getfilename_figure(
           plot_dir_exp, field_label, year1, year2, model_idx, season,
           "multiyear", region_codes[iregion], label, "map", output_file_type
@@ -212,7 +211,7 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
 
         #  Startup graphics for multiple fields/quantities in one figure
         if (plot_type == 3) {
-          field_label <- paste(field_names, collapse = "-")
+          field_label <- "multiindex" # paste(field_names, collapse = "-")
           figname <- getfilename_figure(
             plot_dir_exp, field_label, year1, year2, model_idx,
             season, time_label_fig, region_codes[iregion], label, "map",
@@ -287,8 +286,8 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
               tmp.palette <- palette2
               tmp.field <- field_exp - field_ref
               if (is.na(levels_m[ifield, 3]) | is.na(levels_m[ifield, 4])) {
-                tmp.levels <- seq(min(field_ref, na.rm = T),
-                                  max(field_ref, na.rm = T),
+                tmp.field.max <- max(abs(tmp.field), na.rm=T) 
+                tmp.levels <- seq(-tmp.field.max, tmp.field.max,
                                   len = nlev)
               } else {
                 tmp.levels <- seq(levels_m[ifield, 3], levels_m[ifield, 4],
@@ -305,8 +304,9 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
               graphics_startup(figname, output_file_type, plot_size)
               lonlat_aratio <- (max(ics) - min(ics)) /
                                (max(ipsilon) - min(ipsilon))
-              par(cex.main = 2, cex.axis = 1.5, cex.lab = 1.5,
-                  mar = c(5, 5, 4, 8), oma = c(1, 1, 1, 1))
+              par(mfrow = c(3, 1), cex.main = 2, cex.axis = 1.5, cex.lab = 1.5,
+                  #mar = c(5, 5, 4, 8), oma = c(1, 1, 1, 1))
+                  mar = c(3, 3, 4, 8), oma = c(1, 1, 1, 1))
             }
 
             # set active panel
@@ -335,7 +335,7 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
                 lwd = abs(map_continents))
             rect(regions[iregion, 1], regions[iregion, 3],
                  regions[iregion, 2], regions[iregion, 4],
-                 border = "white", lwd = 2)
+                 border = "grey90", lwd = 2)
             # grid points
             if (oplot_grid) {
               # build up grid if needed
@@ -388,8 +388,8 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
               }
             }
             # colorbar
-            if ( (tmp.colorbar[iquantity]) & add_colorbar) {
-              image.scale3(volcano, levels = tmp.levels,
+            if ( (tmp.colorbar[iquantity]) & add_colorbar & plot_type == 2) {
+              image_scale3(volcano, levels = tmp.levels,
                            color.palette = tmp.palette, colorbar.label =
                            paste(title_unit_m[ifield, 1],
                            title_unit_m[ifield, 4]),

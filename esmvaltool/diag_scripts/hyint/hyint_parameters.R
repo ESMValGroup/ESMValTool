@@ -10,8 +10,8 @@
 
 
 run_regridding <- T
-force_regridding <- T
-force_diagnostic <- T
+force_regridding <- F
+force_diagnostic <- F
 
 if (!exists("etccdi_preproc")) {
   etccdi_preproc <- F
@@ -47,7 +47,7 @@ external_r95 <- external_norm # a) F=use internal data for r95 threshold
                            #    the historical experiment associated with the 
                            #    model name
 
-masksealand <- T        # T to mask depending on seaLandElevation threshold
+masksealand <- F        # T to mask depending on seaLandElevation threshold
 sealandelevation <- 0   # a) 0 land; b) positive value: land above given
                         # elevation; c) negative value: sea below given depth.
                         # The topography/bathymetry file is generated with cdo 
@@ -79,7 +79,7 @@ force_ref <- F # set TRUE to force plotting of reference data
 label <- ""
 
 # colorbar
-add_colorbar <- F # T to add colorbar
+add_colorbar <- T # T to add colorbar
 legend_distance <- 3
 
 # timeseries options
@@ -113,7 +113,6 @@ etccdi_yr_list <- c(
 # through the selfields key above
 etccdi_list_import <- etccdi_yr_list
 field_names <- c(hyint_list, etccdi_yr_list)
-
 
 # region box matrix (predefined following Giorgi et al. 2011,2014): 
 # add here further regions and select those needed through iregion
@@ -273,10 +272,10 @@ tlevels_m[40, ] <- c(-100, 300) * 0.01
 
 # Figure aspect ratio (width:height) 
 # (depending on plot_type)
-figure_aspect_ratio <- c(1.6, 0.6, 3, 1.3, 1, 1, 1, 1, 1, 1,
+figure_aspect_ratio <- c(1.6, 1.6, 1, 1.3, 1, 1, 1, 1, 1, 1,
                          1.6, 1.8, 1.8, 1.8, 1.8, 1, 1, 1, 1, 1)
 
-figure_rel_width <- c(0.7, 0.7, 0.8, 1, 1, 1, 1, 1, 1, 1,
+figure_rel_width <- c(0.7, 0.7, 0.7, 1, 1, 1, 1, 1, 1, 1,
                       0.7, 1, 1, 1, 1, 1, 1, 1, 1, 1)
 
 # Figure width

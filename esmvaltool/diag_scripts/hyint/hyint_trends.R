@@ -57,14 +57,14 @@ hyint_trends <- function(work_dir, model_idx, season, provenance) {
 
   # Get seaLandElevation mask
   if (masksealand) {
-    topo_file_idx <- paste0(topography_file, model_idx, ".nc")
-    if (!file.exists(topo_file_idx)) {
+    topofile <- getfilename_indices(work_dir, diag_base, ref_idx, topo = T)
+    if (!file.exists(topofile)) {
       create_landseamask(
-        regrid = gridfile, ref_file = infile,
-        regridded_topo = topo_file_idx, topo_only = T
+        regrid = gridfile, ref_file = infile, loc = run_dir,
+        regridded_topo = topofile, topo_only = T
       )
     }
-    relevation <- ncdf_opener(topo_file_idx, "topo", rotate = "no")
+    relevation <- ncdf_opener(topofile, "topo", rotate = "no")
   }
 
   # remove desert areas if required
