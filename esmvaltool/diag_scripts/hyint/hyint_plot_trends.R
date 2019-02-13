@@ -236,13 +236,11 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_idx, season) {
         }
         if (is.na(levels_m[ifield, 1]) | is.na(levels_m[ifield, 2])) {
           print("No value for range: assigning min and max")
-          tmp.levels <- seq(min(tfield_exp, na.rm = T), max(tfield_exp,
-            na.rm = T
-          ), len = nlev)
+          tmp.levels <- seq(min(tfield_exp, na.rm = T),
+                            max(tfield_exp, na.rm = T), len = nlev)
         } else {
-          tmp.levels <- seq(levels_m[ifield, 1], levels_m[ifield, 2],
-            len = nlev
-          )
+          tmp.levels <- seq(levels_m[ifield, 1],
+                            levels_m[ifield, 2], len = nlev)
         }
 
         #  Startup graphics for one timeseries in one figure
@@ -266,18 +264,25 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_idx, season) {
             par_col <- (ifield - 1) %% npancol + 1
             par(mfg = c(par_row, par_col, npanrow, npancol))
           }
+          # scale autolevels if required
+          if (autolevels && (autolevels_scale != 1)) {
+            autorange <- max(tmp.levels) - min(tmp.levels)
+            meanrange <- mean(tmp.levels)
+            tmp.levels <- seq(meanrange - autorange * autolevels_scale, 
+                              meanrange + autorange * autolevels_scale,
+                              len = nlev)
+          }
+ 
           # Base plot
           if (!(plot_type == 13 & model_idx > 1) & ilabel == 1) {
             ylab <- paste0(title_unit_m[ifield, 1])
             if (title_unit_m[ifield, 4] != "") {
-              ylab <- paste0(ylab, "(", title_unit_m[ifield, 4], ")")
+              ylab <- paste0(ylab, title_unit_m[ifield, 4])
             }
-            plot(time,
-              type = "n", ylim = c(
-                tmp.levels[1], tmp.levels[length(tmp.levels)]
-              ), xlim = xlim,
-              xlab = "Year", ylab = ylab, main = title_unit_m[ifield, 3]
-            )
+            plot(time, type = "n", 
+                 ylim = c(tmp.levels[1], tmp.levels[length(tmp.levels)]),
+                 xlim = xlim, xlab = "Year", ylab = ylab,
+                 main = title_unit_m[ifield, 3])
             # store panel plot limits
             plot_limits[, ifield] <- par("usr")
           }
@@ -369,6 +374,15 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_idx, season) {
               min(trend_exp[, 2] - trend_exp_stat[, 2], na.rm = T),
               max(trend_exp[, 2] + trend_exp_stat[, 2], na.rm = T)
             )
+            # scale autolevels if required
+            if (autolevels && (autolevels_scale_t != 1)) {
+              autorange <- max(ylim) - min(ylim)
+              meanrange <- mean(ylim)
+              ylim <- seq(meanrange - autorange * autolevels_scale_t,
+                          meanrange + autorange * autolevels_scale_t, len = 2)
+            }
+
+
           } else {
             ylim <- tlevels_m[ifield, ]
           }
@@ -472,21 +486,22 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_idx, season) {
               ))
               print(trend_exp_stat[iregion, ])
             }
-            retsig90 <- which(trend_exp_stat[, 4] < 0.1)
-            if (!is.na(retsig90[1])) {
-              points(xregions[retsig90], trend_exp[retsig90, 2],
-                pch = 22,
-                col = "grey70", bg = "grey70", cex = 2
-              )
-            }
-            retsig95 <- which(trend_exp_stat[, 4] < 0.05)
-            if (!is.na(retsig95[1])) {
-              points(xregions[retsig95], trend_exp[retsig95, 2],
-                pch = 22,
-                col = "dodgerblue3", bg = "dodgerblue3", cex = 2
-              )
-            }
           }
+            if (plot_type != 15) {
+              retsig90 <- which(trend_exp_stat[, 4] < 0.1)
+              if (!is.na(retsig90[1])) {
+                points(xregions[retsig90], trend_exp[retsig90, 2],
+                  pch = 22,
+                  col = "grey70", bg = "grey70", cex = 2)
+              }
+              retsig95 <- which(trend_exp_stat[, 4] < 0.05)
+              if (!is.na(retsig95[1])) {
+                points(xregions[retsig95], trend_exp[retsig95, 2],
+                  pch = 22,
+                  col = "dodgerblue3", bg = "dodgerblue3", cex = 2)
+              }
+            }
+#          }
           box()
           if (!( (plot_type == 15) & (model_idx > 1))) {
             if (add_zeroline & (ylim[1] != 0)) {

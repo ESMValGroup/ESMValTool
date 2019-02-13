@@ -17,7 +17,6 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
   if (selfields[1] != F) {
     field_names <- field_names[selfields, drop = F]
     levels_m <- levels_m[selfields, , drop = F]
-    tlevels_m <- tlevels_m[selfields, , drop = F]
     title_unit_m <- title_unit_m[selfields, , drop = F]
   }
   nfields <- length(field_names)
@@ -33,7 +32,6 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
   }
 
   if (autolevels) {
-    tlevels_m[] <- NA
     levels_m[] <- NA
   }
 
@@ -219,7 +217,7 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
           )
           graphics_startup(figname, output_file_type, plot_size)
           par(mfrow = c(nfields, 3), cex.main = 1.3, cex.axis = 1.2,
-              cex.lab = 1.2, mar = c(2, 2, 2, 2), oma = c(1, 1, 1, 1))
+              cex.lab = 1.2, mar = c(2, 2, 2, 6), oma = c(1, 1, 1, 1))
         }
         # LOOP over fields
         for (field in field_names) {
@@ -304,9 +302,9 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
               graphics_startup(figname, output_file_type, plot_size)
               lonlat_aratio <- (max(ics) - min(ics)) /
                                (max(ipsilon) - min(ipsilon))
-              par(mfrow = c(3, 1), cex.main = 2, cex.axis = 1.5, cex.lab = 1.5,
-                  #mar = c(5, 5, 4, 8), oma = c(1, 1, 1, 1))
-                  mar = c(3, 3, 4, 8), oma = c(1, 1, 1, 1))
+              par(mfrow = c(1, 1), cex.main = 2, cex.axis = 1.5, cex.lab = 1.5,
+                  mar = c(5, 5, 4, 8), oma = c(1, 1, 1, 1))
+                  #mar = c(3, 3, 4, 8), oma = c(1, 1, 1, 1))
             }
 
             # set active panel
@@ -316,6 +314,16 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
             if (plot_type == 4) {
               par(mfg = c(iyear, ifield, nyears, nfields))
             }
+
+            # scale autolevels if required
+            if (autolevels && (autolevels_scale != 1)) {
+              autorange <- max(tmp.levels) - min(tmp.levels)
+              meanrange <- mean(tmp.levels)
+              tmp.levels <- seq(meanrange - autorange * autolevels_scale, 
+                                meanrange + autorange * autolevels_scale,
+                                len = nlev)
+            }
+ 
             # contours
             filled_contour3(ics, ipsilon, tmp.field,
               xlab = "Longitude", ylab = "Latitude",
@@ -325,7 +333,7 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
               ylim = c(regions[iregion, 3], regions[iregion, 4]), axes = F,
               asp = 1
             )
-            # continents
+           # continents
             continents_col <- "white"
             if (map_continents <= 0) {
               continents_col <- "gray30"
@@ -335,7 +343,7 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
                 lwd = abs(map_continents))
             rect(regions[iregion, 1], regions[iregion, 3],
                  regions[iregion, 2], regions[iregion, 4],
-                 border = "grey90", lwd = 2)
+                 border = "grey90", lwd = 3)
             # grid points
             if (oplot_grid) {
               # build up grid if needed
@@ -387,14 +395,26 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
                 axis(2, col = "grey40")
               }
             }
+
             # colorbar
-            if ( (tmp.colorbar[iquantity]) & add_colorbar & plot_type == 2) {
+            new_fig_scale <- c(-0.11, -0.04, 0.1, -0.1)
+            line_label <- 2.5
+            if (plot_type == 2) {
+              new_fig_scale <- c(-0.07, -0.02, 0.1, -0.1)
+              line_label <- 2.5
+            }
+             if (plot_type == 3) {
+              new_fig_scale <- c(-0.11, -0.03, 0.1, -0.1)
+              line_label <- 3
+            }
+            if ( (tmp.colorbar[iquantity]) & add_colorbar) {
               image_scale3(volcano, levels = tmp.levels,
+                           new.fig.scale = new_fig_scale,
                            color.palette = tmp.palette, colorbar.label =
                            paste(title_unit_m[ifield, 1],
                            title_unit_m[ifield, 4]),
-                cex.colorbar = 1.0, cex.label = 1.0, colorbar.width = 1,
-                line.label = legend_distance, line.colorbar = 1.0
+                cex.colorbar = 1.0, cex.label = 0.7, colorbar.width = 1,
+                line.label = line_label, line.colorbar = 1.0
               )
             }
           } # close loop over quantity

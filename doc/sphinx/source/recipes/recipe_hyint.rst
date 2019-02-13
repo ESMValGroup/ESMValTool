@@ -51,30 +51,27 @@ User settings
 * norm_years: first and last year of reference normalization period to be used for normalized indices
 
 * selfields: indices to be analysed and plotted. Select one or more fields from the following list (order-sensitive) as a numerical index: 1=SDII, 2=DSL, 3=WSL, 4=HY-INT, 5=ABS_INT, 6=ABS_DSL, 7=ABS_WSL, 8=PA, 9=R95
+
 * selregions: Select regions for timeseries and maps from the following list as a numerical index: 1=World, 2=World60 (60S/60N), 3=Tropics (30S/30N), 4=South 5=America, 6=Africa, 7=North America, 8=India, 9=Europe, 10=East-Asia, 11=Australia
 
 * plot_type: type of figures to be plotted. Select one or more from: 1=lon/lat maps per individual field/exp/multi-year mean, 2=lon/lat maps per individual field exp-ref-diff/multi-year mean, 3=lon/lat maps multi-field/exp-ref-diff/multi-year mean, 11=timeseries over required individual region/exp, 12=timeseries over multiple regions/exp, 13=timeseries with multiple models, 14=summary trend coefficients multiple regions, 15=summary trend coefficients multiple models
 
 *Optional settings for script (with default setting)*
+
 #. Data
 * rgrid (false): Define whether model data should be regridded. (a) false to keep original resolution; (b) set desired regridding resolution in cdo format e.g., "r320x160"; (c) "REF" to use resolution of reference model
 
 #. Plotting
+* npancol (2): number of columns in timeseries/trends multipanel figures
+* npanrow (3): number of rows in timeseries/trends multipanel figures
 * autolevels (true): select automated (T) or pre-set (F) range of values in plots
+* autolevels_scale (1): factor multiplying automated range for maps and timeseries
+* autolevels_scale_t (1.5): factor multiplying automated range for trend coefficients
 
 #. Maps
 * oplot_grid (false): plot grid points over maps
-* removedesert (false) remove (flag as NA) grid points with mean annual pr < 0.5 mm/day (deserts, Giorgi2014)
-* masksealand (false): mask depending on seaLandElevation threshold
-* sealandelevation (0): (a) 0 land; (b) positive value: land above given
-elevation; (c) negative value: sea below given depth. The topography/bathymetry file is generated with cdo from ETOPO data. 
-* reverse_masksealand (false): T to reject what selected, F to keep what selected
-* map_continents (-2): thickness of continents: positive values in white, negative values in gray
-* map_continents_regions (false): plot also regional boundaries
-* ryearplot: years to be plotted for experiments (for maps over individual years):(a) actual years, (b) "FIRST" = first year in dataset or (c) "ALL"  = all years in dataset. E.g., c(1998,2000,2005)   
-* rmultiyear_mean (true): plot multiyear mean (this overrides ryearplot)
-
-
+* boxregion (false): !=0 plot region boxes over global maps with thickness = abs(boxregion); white (>0) or grey (<0). 
+* removedesert (false) remove (flag as NA) grid points with mean annual pr < 0.5 mm/day (deserts, Giorgi2014). This affects timeseries and trends calculations too.
 
 #. Timeseries and trends
 * weight_tseries (true): adopt area weights in timeseries
@@ -89,10 +86,6 @@ elevation; (c) negative value: sea below given depth. The topography/bathymetry 
 * scale100years (true): plot trends scaled as 1/100 years
 * scalepercent (false): plot trends as percent change 
 
-
-        
-
- 
 
 Variables
 ---------

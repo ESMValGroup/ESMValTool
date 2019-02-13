@@ -9,9 +9,10 @@
 #####################################################################
 
 
+run_diagnostic<- T
+force_diagnostic <- F
 run_regridding <- T
 force_regridding <- F
-force_diagnostic <- F
 
 if (!exists("etccdi_preproc")) {
   etccdi_preproc <- F
@@ -80,7 +81,6 @@ label <- ""
 
 # colorbar
 add_colorbar <- T # T to add colorbar
-legend_distance <- 3
 
 # timeseries options
 highreselevation <- F # a) F: neglect; b) value: threshold of minimum elevation

@@ -1287,7 +1287,8 @@ filled_contour3 <-
 image_scale3 <- function(z, levels, color.palette = heat.colors,
                          colorbar.label = "image.scale", extend = T,
                          line.label = 2, line.colorbar = 0, cex.label = 1,
-                         cex.colorbar = 1, colorbar.width = 1, ...) {
+                         cex.colorbar = 1, colorbar.width = 1,
+                         new.fig.scale = c(-0.07, -0.03, 0.1, -0.1), ...) {
 
   # save properties from main plotting region
   old.par <- par(no.readonly = TRUE)
@@ -1299,8 +1300,10 @@ image_scale3 <- function(z, levels, color.palette = heat.colors,
   yscal <- (old.fig[4] - old.fig[3])
   lw <- colorbar.width
   lp <- line.colorbar / 100
-  new.fig <- c(old.fig[2] - 0.07 * xscal * lw - lp, old.fig[2] - 0.03 *
-    xscal - lp, old.fig[3] + 0.1 * yscal, old.fig[4] - 0.1 * yscal)
+  new.fig <- c(old.fig[2] + new.fig.scale[1] * xscal * lw - lp,
+               old.fig[2] + new.fig.scale[2] * xscal - lp,
+               old.fig[3] + new.fig.scale[3] * yscal,
+               old.fig[4] + new.fig.scale[4] * yscal)
 
   if (missing(levels)) {
     levels <- seq(min(z), max(z), , 12)
@@ -1332,7 +1335,6 @@ image_scale3 <- function(z, levels, color.palette = heat.colors,
   for (i in seq(poly)) {
     polygon(c(0, 0, 1, 1), poly[[i]], col = col[i], border = NA)
   }
-
   if (extend) {
     polygon(c(0, 1, 1 / 2), c(levels[1], levels[1], levels[1] - dl),
       col = col[1], border = NA

@@ -17,9 +17,9 @@ documentation:
     - c3s-magic
 
 datasets:
-  - {dataset: ACCESS1-0, exp: [historical,rcp85], ensemble: r1i1p1, start_year: 2004, end_year: 2006}
-#  - {dataset: ACCESS1-3, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2016}
-  - {dataset: MPI-ESM-MR, exp: [historical,rcp85], ensemble: r1i1p1, start_year: 2004, end_year: 2006}
+  - {dataset: ACCESS1-0}
+  - {dataset: ACCESS1-3}
+  - {dataset: MPI-ESM-MR}
 
 preprocessors:
   preproc:
@@ -33,6 +33,10 @@ diagnostics:
        pr:
  #       preprocessor: preproc
         reference_dataset: "ACCESS1-0"
+        exp: [historical,rcp85]
+        ensemble: r1i1p1
+        start_year: 2000
+        end_year: 2010
         project: CMIP5
         mip: day
         field: T2Ds
@@ -40,50 +44,54 @@ diagnostics:
       main:
         script: hyint/hyint.R
         # General
-        run_diagnostic: true
         run_timeseries: true
-        write_netcdf: true
         write_plots: true       
+ 
+        # Reference normalization period to be used for normalized indices 
+        norm_years: [2000,2004]
+
+        # Select one or more fields for timeseries and maps from the following 
+        # list (order-sensitive): 
+        # SDII, DSL, WSL, HY-INT, ABS_INT, ABS_DSL, ABS_WSL, PA, R95 
+        # selfields: [8, 4, 1, 9, 3, 2]
+        selfields: [5, 6, 7, 1, 2, 4]
+
+        # Select regions for timeseries and maps from the following list
+        # 1=World, 2=World60 (60S/60N),3=Tropics (30S/30N), 4=South America, 
+        # 5=Africa,6=North America,7=India,8=Europe,9=East-Asia,
+        # 10=Australia
+        selregions: [2, 3, 4, 5]
+ 
+        # Select type of plot:
+        # 1) single panel lon/lat map per individual index, multi-year mean
+        # 2) 3-panel lon/lat maps per individual index with comparison to reference dataset, multi-year mean
+        # 3) multipanel of indices of lon/lat maps with comparison to reference dataset, multi-year mean
+        # 11) single panel with timeseries over required individual region
+        # 12) multipanel of indices with timeseries over multiple regions
+        # 13) multipanel of indices with timeseries for multiple models
+        # 14) multipanel of indices with summary of trend coefficients over multiple regions
+        # 15) multipanel of indices with summary of trend coefficients for multiple models
+        plot_type: [1, 2, 3, 11, 12, 13, 14, 15]
+
+
+        ## ------- Optional settings ----------
+        # Select number of columns and rows in multi-panel figure
+        npancol: 2 # number of columns for trend/tseries multi-panel figures
+        npanrow: 3 # number of rows for trend/tseries multi-panel figures  
  
         # Define whether model data should be regridded 
         # a) false to keep original resolution
         # b) set desired regridding resolution in cdo format e.g., "r320x160"
         # c) "REF" to use resolution of reference model
         rgrid: false   
-        # Reference normalization period to be used for normalized indices 
-        norm_years: [2004,2006]
 
-        # Select type of plot:
-        # 1) lon/lat maps per individual field/exp/multi-year mean
-        # 2) lon/lat maps per individual field/exp-ref-diff/multi-year mean
-        # 3) lon/lat maps multi-field/exp-ref-diff/multi-year mean
-        # 11) timeseries over required individual region/exp
-        # 12) timeseries over multiple regions/exp
-        # 13) timeseries with multiple models
-        # 14) summary trend coefficients multiple regions
-        # 15) summary trend coefficients multiple models
-        # plot_type: [2, 3, 12, 13, 14, 15]
-        plot_type: [1, 2, 3]
-        # Select single plot or multi-panel figure
-        multipanel: false
-        # Select number of columns and rows in multi-panel figure
-        npancol: 2 # number of columns for trend/tseries multi-panel figures
-        npanrow: 3 # number of rows for trend/tseries multi-panel figures  
-
-        # Select regions for timeseries and maps from the following list
-        # 1=World, 2=World60 (60S/60N),3=Tropics (30S/30N), 4=South America, 
-        # 5=Africa,6=Northi,7=America,8=India,9=Europe,10=East-Asia,
-        # 11=Australia
-        selregions: [2,3] #[2,4,5,6,7]
-        # Select one or more fields for timeseries and maps from the following 
-        # list (order-sensitive): 
-        # SDII, DSL, WSL, HY-INT, ABS_INT, ABS_DSL, ABS_WSL, PA, R95 
-        # selfields: [8, 4, 1, 9, 3, 2]
-        selfields: [5, 6, 7, 9, 3, 2]
-       # Select automated or pre-set range of values in plots
+      # Select automated or pre-set range of values in plots
         autolevels: true       
 
-        ## ------- Advanced settings ----------
+       # Scale autolevels (factor multiplying automated range)
+        autolevels_scale: 1  # for maps and timeseries    
+        autolevels_scale_t: 1.5  # for trend coefficients       
+
         # data and maps
         removedesert: false  # T to remove (flag as NA) grid points with mean 
                              # annual pr < 0.5 mm/day (deserts, Giorgi2014)
@@ -102,7 +110,7 @@ diagnostics:
       
         lm_trend: true              # calculate linear trend
         add_trend: true             # add linear trend to plot
-        add_trend_sd: false         # add stdev range to timeseries
+        add_trend_sd: true           # add stdev range to timeseries
         add_trend_sd_shade: false   # add shade of stdev range to timeseries
         add_tseries_lines: true     # lot lines of timeseries over points
         add_zeroline: true          # plot a dashed line at y=0
