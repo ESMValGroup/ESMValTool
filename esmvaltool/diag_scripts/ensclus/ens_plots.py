@@ -31,8 +31,8 @@ def ens_plots(dir_output, dir_plot, name_outputs, numclus,
     namef = os.path.join(dir_output, 'labels_{0}.txt'.format(name_outputs))
     labels = np.loadtxt(namef, dtype=int)
 
-    vmi = vartoplot.min()
-    vma = vartoplot.max()
+    vmi = np.nanpercentile(vartoplot, 0.1)
+    vma = np.nanpercentile(vartoplot, 99.9)
 
     if field_to_plot == 'anomalies':
         # compute range colorbar for anomalies

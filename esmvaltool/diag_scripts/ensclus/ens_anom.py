@@ -60,7 +60,7 @@ def ens_anom(filenames, dir_output, name_outputs, varname, numens, season,
     elif len(extreme.split("_")) == 2:
         # Compute the chosen percentile over the period, for each ens member
         quant = int(extreme.partition("th")[0])
-        varextreme_ens = [np.percentile(var_ens[i], quant, axis=0)
+        varextreme_ens = [np.nanpercentile(var_ens[i], quant, axis=0)
                           for i in range(numens)]
 
     elif extreme == 'maximum':

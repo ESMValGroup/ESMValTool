@@ -30,6 +30,8 @@ def read_iris(ifile):
     dates = time.units.num2date(time.points)
     var_units = str(cube.units)
     var = cube.data
+    if isinstance(var, np.ma.masked_array):
+        var = var.filled(fill_value=np.nan)
 
     return var, var_units, lat, lon, dates, time_units
 
