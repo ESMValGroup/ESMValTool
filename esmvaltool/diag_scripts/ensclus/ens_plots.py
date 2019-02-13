@@ -64,10 +64,10 @@ def ens_plots(dir_output, dir_plot, name_outputs, numclus,
         if field_to_plot == 'anomalies':
             map_plot = plt.contourf(lon, lat, vartoplot[nens], clevels,
                                     cmap=plt.cm.RdBu_r,
-                                    transform=proj)
+                                    transform=proj, extend='both')
         else:
             map_plot = plt.contourf(lon, lat, vartoplot[nens], clevels,
-                                    transform=proj)
+                                    transform=proj, extend='both')
 
         # Add Title
         title_obj = plt.title(nens, fontsize=32, fontweight='bold')
