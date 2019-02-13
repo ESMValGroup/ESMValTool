@@ -31,25 +31,24 @@ def ens_plots(dir_output, dir_plot, name_outputs, numclus,
     namef = os.path.join(dir_output, 'labels_{0}.txt'.format(name_outputs))
     labels = np.loadtxt(namef, dtype=int)
 
-    vmi = np.nanpercentile(vartoplot, 0.1)
-    vma = np.nanpercentile(vartoplot, 99.9)
+    vmi = round_down(np.nanpercentile(vartoplot, 0.1))
+    vma = round_up(np.nanpercentile(vartoplot, 99.9))
 
     if field_to_plot == 'anomalies':
         # compute range colorbar for anomalies
-        delta = 0.05
-        if abs(math.floor(vmi * 100) / 100) < math.ceil(vma * 100) / 100:
-            rangecbarmin = -math.ceil(vma * 100) / 100
-            rangecbarmax = math.ceil(vma * 100) / 100 + delta
+        if abs(vmi) < abs(vma):
+            rangecbarmin = -abs(vma)
+            rangecbarmax = abs(vma)
         else:
-            rangecbarmin = math.floor(vmi * 100) / 100
-            rangecbarmax = abs(math.floor(vmi * 100) / 100) + delta
+            rangecbarmin = -abs(vmi)
+            rangecbarmax = abs(vmi)
     else:
         # compute range colorbar for climatologies
-        delta = 0.2
-        rangecbarmin = math.floor(vmi)
-        rangecbarmax = math.ceil(vma) + delta
+        rangecbarmin = vmi
+        rangecbarmax = vma
 
-    clevels = np.arange(rangecbarmin, rangecbarmax, delta)
+    delta = round_down((rangecbarmax - rangecbarmin) / 100)
+    clevels = np.arange(rangecbarmin, rangecbarmax + delta, delta)
     colors = ['b', 'g', 'r', 'c', 'm', 'y', 'DarkOrange', 'grey']
     proj = ccrs.PlateCarree()
     xpos = int(np.ceil(np.sqrt(numens * 1.6)))
@@ -78,7 +77,8 @@ def ens_plots(dir_output, dir_plot, name_outputs, numclus,
     cax = plt.axes([0.1, 0.03, 0.8, 0.03])  # horizontal
     cbar = plt.colorbar(map_plot, cax=cax, orientation='horizontal')
     cbar.ax.tick_params(labelsize=18)
-
+    cbar.set_ticks(np.arange(rangecbarmin, rangecbarmax + delta, delta*20))
+    
     plt.suptitle(exp + ' ' + kind + ' ' + varname + ' ' + field_to_plot +
                  ' (' + varunits + ')', fontsize=45, fontweight='bold')
 
@@ -99,3 +99,13 @@ def ens_plots(dir_output, dir_plot, name_outputs, numclus,
           .format(dir_plot))
 
     return namef
+
+
+def round_up(x, sig=2):
+    dig = pow(10., sig - int(math.floor(math.log10(abs(x)))) - 1)
+    return math.ceil(x * dig) / dig
+
+
+def round_down(x, sig=2):
+    dig = pow(10., sig - int(math.floor(math.log10(abs(x)))) - 1)
+    return math.floor(x * dig) / dig

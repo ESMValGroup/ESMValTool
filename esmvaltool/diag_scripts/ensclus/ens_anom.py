@@ -55,7 +55,7 @@ def ens_anom(filenames, dir_output, name_outputs, varname, numens, season,
 
     if extreme == 'mean':
         # Compute the time mean over the entire period, for each ens member
-        varextreme_ens = [np.mean(var_ens[i], axis=0) for i in range(numens)]
+        varextreme_ens = [np.nanmean(var_ens[i], axis=0) for i in range(numens)]
 
     elif len(extreme.split("_")) == 2:
         # Compute the chosen percentile over the period, for each ens member
@@ -65,11 +65,11 @@ def ens_anom(filenames, dir_output, name_outputs, varname, numens, season,
 
     elif extreme == 'maximum':
         # Compute the maximum value over the period, for each ensemble member
-        varextreme_ens = [np.max(var_ens[i], axis=0) for i in range(numens)]
+        varextreme_ens = [np.nanmax(var_ens[i], axis=0) for i in range(numens)]
 
     elif extreme == 'std':
         # Compute the standard deviation over the period, for each ens member
-        varextreme_ens = [np.std(var_ens[i], axis=0) for i in range(numens)]
+        varextreme_ens = [np.nanstd(var_ens[i], axis=0) for i in range(numens)]
 
     elif extreme == 'trend':
         # Compute the linear trend over the period, for each ensemble member
@@ -82,14 +82,14 @@ def ens_anom(filenames, dir_output, name_outputs, varname, numens, season,
                         stats.linregress(range(var_ens[0].shape[0]),
                                          var_ens[i][:, jla, jlo])
                     trendmap[jla, jlo] = slope
-            trendmap_ens.append(trendmap)
+            trendmap_ens.append(trendmap.copy())
         varextreme_ens = trendmap_ens
 
     varextreme_ens_np = np.array(varextreme_ens)
     print('Anomalies are computed with respect to the {0}'.format(extreme))
 
     # Compute and save the anomalies with respect to the ensemble
-    ens_anomalies = varextreme_ens_np - np.mean(varextreme_ens_np, axis=0)
+    ens_anomalies = varextreme_ens_np - np.nanmean(varextreme_ens_np, axis=0)
     varsave = 'ens_anomalies'
     ofile = os.path.join(dir_output, 'ens_anomalies_{0}.nc'
                          .format(name_outputs))
@@ -99,7 +99,6 @@ def ens_anom(filenames, dir_output, name_outputs, varname, numens, season,
     save_n_2d_fields(lat_area, lon_area, ens_anomalies, varsave,
                      varunits, ofile)
     outfiles.append(ofile)
-
     # Compute and save the climatology
     vartimemean_ens = [np.mean(var_ens[i], axis=0) for i in range(numens)]
     ens_climatologies = np.array(vartimemean_ens)
