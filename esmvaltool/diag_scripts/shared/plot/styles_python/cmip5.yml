@@ -164,6 +164,13 @@ CNRM-CM5:
   facecolor: none
   mark: o
   thick: 1
+CNRM-CM6-1:
+  avgstd: 0
+  color: '#1e4c24'
+  dash: --
+  facecolor: none
+  mark: s
+  thick: 1
 CSIRO-Mk3-6-0:
   avgstd: 0
   color: '#f14b20'
@@ -248,6 +255,13 @@ FIO-ESM:
   facecolor: none
   mark: o
   thick: 1
+GFDL-AM4:
+  avgstd: 0
+  color: '#23366d'
+  dash: '-'
+  facecolor: none
+  mark: o
+  thick: 1
 GFDL-CM2p1:
   avgstd: 0
   color: '#23366d'
@@ -275,6 +289,13 @@ GFDL-ESM2M:
   dash: -.
   facecolor: none
   mark: x
+  thick: 1
+GISS-E2-1-G:
+  avgstd: 0
+  color: '#771d7b'
+  dash: '-'
+  facecolor: none
+  mark: o
   thick: 1
 GISS-E2-H:
   avgstd: 0
@@ -318,6 +339,13 @@ HadCM3:
   facecolor: none
   mark: o
   thick: 1
+HadCRUT4:
+  avgstd: 0
+  color: '#000000'
+  dash: '-'
+  facecolor: none
+  mark: x
+  thick: 3
 HadGEM2-A:
   avgstd: 0
   color: '#7a8b26'
@@ -388,6 +416,27 @@ IPSL-CM5B-LR:
   facecolor: none
   mark: ^
   thick: 1
+IPSL-CM6A-LR:
+  avgstd: 0
+  color: '#5b53ae'
+  dash: '-'
+  facecolor: none
+  mark: o
+  thick: 1
+IPSL-CM6A-MR:
+  avgstd: 0
+  color: '#5b53ae'
+  dash: --
+  facecolor: none
+  mark: s
+  thick: 1
+IPSL-CM6B-LR:
+  avgstd: 0
+  color: '#5b53ae'
+  dash: ':'
+  facecolor: none
+  mark: ^
+  thick: 1
 MERRA:
   avgstd: 1
   color: '#000000'
@@ -417,6 +466,13 @@ MIROC4h:
   mark: o
   thick: 1
 MIROC5:
+  avgstd: 0
+  color: '#b85fb6'
+  dash: --
+  facecolor: none
+  mark: s
+  thick: 1
+MIROC6:
   avgstd: 0
   color: '#b85fb6'
   dash: --
