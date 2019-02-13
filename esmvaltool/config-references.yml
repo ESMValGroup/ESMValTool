@@ -82,11 +82,11 @@ authors:
     email: irene.cionni 'at' enea.it
   crez_ba:
     name: Crezee, Bas
-    institute: ETH Zürich, Switzerland
+    institute: ETH Zurich, Switzerland
     email: bas.crezee 'at' env.ethz.ch
   davi_ed:
     name: Davin, Edouard Leopold
-    institute: ETH Zürich, Switzerland
+    institute: ETH Zurich, Switzerland
     email: edouard.davin 'at' env.ethz.ch
   ehbr_ca:
     name: Ehbrecht, Carsten
@@ -482,7 +482,7 @@ references:
   wenzel14jgr: "Wenzel et al., J. Geophys. Res. Biogeosci., 119(5), doi:2013JG002591, 2014."
   williams09climdyn: "Williams and Webb, Clim. Dynam., 33, 141-157, doi:10.1007/s00382-008-0443-1, 2009."
 
-observation references:
+observation_references:
   access2: "ACCESS2 - Roiger et al., accepted"
   aeronet: "AERONET - See http://aeronet.gsfc.nasa.gov/new_web/data_usage.html"
   airs: "AIRS"
