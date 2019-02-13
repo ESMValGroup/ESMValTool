@@ -47,9 +47,6 @@
 ;;
 ;;#############################################################################
 
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/contributed.ncl"
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_code.ncl"
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_csm.ncl"
 load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/shea_util.ncl"
 
 ;load "./interface_data/ncl.interface"
@@ -87,6 +84,7 @@ begin
     do idx_mod = 0, dim_MOD - 1
         data = read_data(idx_mod, var0, field_type0)
     end do
+
 end
 
 ; Load var_info
@@ -94,7 +92,7 @@ begin
     vardeffile = "interface_data/" + var0 + "_info.tmp"
     loadscript(vardeffile)
 end
-
+tool_stop()
 
 begin
     ;; Get environment variables
