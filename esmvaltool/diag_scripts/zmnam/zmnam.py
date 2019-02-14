@@ -1,5 +1,4 @@
 """
-
 Zonal-mean Northern Annular Mode main routine.
 
 Author: Federico Serva (ISAC-CNR & ISMAR-CNR, Italy)
@@ -49,9 +48,9 @@ def get_provenance_record(vatt, ancestor_files):
 
 def main(cfg):
     """
+    Run the zonal-mean NAM diagnostic.
 
-    Run the zonal-mean NAM diagnostic, calling in order:
-
+    Calling in order:
     - preprocessing
     - index calculation
     - regression and plot

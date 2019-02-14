@@ -1,10 +1,8 @@
 """
-
 Zonal-mean annular mode calculation routine.
 
 Author: Federico Serva (ISAC-CNR & ISMAR-CNR, Italy)
 Copernicus C3S 34a lot 2 (MAGIC)
-
 """
 
 import numpy as np
@@ -12,23 +10,23 @@ import netCDF4 as nc4
 from scipy import signal
 
 
-def butter_filter(data, fs, lowcut=None, order=2):
+def butter_filter(data, freq, lowcut=None, order=2):
     """Function to perform time filtering."""
     if lowcut is not None:
         filttype = 'lowpass'
 
     # Sampling determines Nyquist frequency
-    nyq = 0.5 * fs
+    nyq = 0.5 * freq
 
     if filttype == 'lowpass':
         low = lowcut / nyq
         freqs = low
 
-    b, a = signal.butter(order, freqs, btype=filttype)
+    bpoly, apoly = signal.butter(order, freqs, btype=filttype)
     #    _, h = signal.freqs(b, a)
-    y = signal.filtfilt(b, a, data, axis=0)
+    ysig = signal.filtfilt(bpoly, apoly, data, axis=0)
 
-    return y
+    return ysig
 
 
 def zmnam_calc(indir, outdir, src_props):
@@ -92,14 +90,14 @@ def zmnam_calc(indir, outdir, src_props):
     mid_mon = []  # 15th of the month
     end_mon = []  # last day of the month (add +1 when slicing)
 
-    mo = 999
+    mon = 999
     idate = 0
 
     while idate < len(date):
 
         # Save first day of the month
-        if date[idate].month != mo:
-            mo = date[idate].month
+        if date[idate].month != mon:
+            mon = date[idate].month
             sta_mon.append(idate)
 
         # Save month mid-day
@@ -108,8 +106,8 @@ def zmnam_calc(indir, outdir, src_props):
 
         # Save last day of the month
         if ((idate == len(date) - 1) or
-            (date[idate].month == mo and
-             date[idate + 1].month != mo)):
+            (date[idate].month == mon and
+             date[idate + 1].month != mon)):
             end_mon.append(idate)
 
         idate += 1

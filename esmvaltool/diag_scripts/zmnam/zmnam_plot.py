@@ -1,5 +1,4 @@
 """
-
 Zonal-mean annular mode plot routine.
 
 Author: Federico Serva (ISAC-CNR & ISMAR-CNR, Italy)
@@ -86,9 +85,9 @@ def zmnam_plot(datafolder, figfolder, src_props, fig_fmt, write_plots):
     # Save dates for timeseries
     date_list = []
     for i_date in np.arange(len(time_mo)):
-        yy = nc4.num2date(time_mo, time_mo_uni, time_mo_cal)[i_date].year
-        mm = nc4.num2date(time_mo, time_mo_uni, time_mo_cal)[i_date].month
-        date_list.append(str(yy) + '-' + str(mm))
+        yydate = nc4.num2date(time_mo, time_mo_uni, time_mo_cal)[i_date].year
+        mmdate = nc4.num2date(time_mo, time_mo_uni, time_mo_cal)[i_date].month
+        date_list.append(str(yydate) + '-' + str(mmdate))
 
     # Prepare array for outputting regression maps (lev/lat/lon)
     regr_arr = np.zeros((len(lev), len(lat), len(lon)), dtype='f')
@@ -126,10 +125,8 @@ def zmnam_plot(datafolder, figfolder, src_props, fig_fmt, write_plots):
                               alpha=0.75)
 
         # Reference normal Gaussian
-        mu = 0.
-        sigma = 1.
-        plt.plot(bins, 1. / (sigma * np.sqrt(2 * np.pi)) *
-                 np.exp(- (bins - mu)**2 / (2 * sigma**2)),
+        plt.plot(bins, 1. / (np.sqrt(2 * np.pi)) *
+                 np.exp(- bins**2 / 2.),
                  linewidth=2, color='k', linestyle='--')
 
         plt.xlim(min_var, max_var)
@@ -171,7 +168,7 @@ def zmnam_plot(datafolder, figfolder, src_props, fig_fmt, write_plots):
         ccrs.Geodetic()
 
         # Create the geoaxes for an orthographic projection
-        ax = plt.axes(projection=ortho)
+        axis = plt.axes(projection=ortho)
 
         # Add wrap-around point in longitude.
         slopew, lonw = add_cyclic_point(slope, lon)
@@ -197,13 +194,13 @@ def zmnam_plot(datafolder, figfolder, src_props, fig_fmt, write_plots):
 
         mpl.rcParams['contour.negative_linestyle'] = 'dashed'
 
-        for c in inv_map.collections:
-            c.set_visible(False)
+        for cmap in inv_map.collections:
+            cmap.set_visible(False)
 
         plt.clabel(inv_map, fontsize=8, fmt='%1.0f', zorder=15)
 
-        ax.coastlines()
-        ax.set_global()
+        axis.coastlines()
+        axis.set_global()
 
         plt.text(0.20, 0.80, str(int(lev[i_lev])) + ' Pa',
                  fontsize=12, transform=plt.gcf().transFigure)
