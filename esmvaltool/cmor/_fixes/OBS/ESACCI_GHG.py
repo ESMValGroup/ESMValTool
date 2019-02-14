@@ -1,34 +1,35 @@
-"""Fixes for ESA-CCI GHG"""
+# pylint: disable=invalid-name, no-self-use, too-few-public-methods
+"""Fixes for ESA-CCI GHG."""
 import cf_units
 
 from ..fix import Fix
 
 
 class xco2Stderr(Fix):
-    """Fixes for xco2Stderr"""
+    """Fixes for xco2Stderr."""
 
-    def fix_metadata(self, cube):
+    def fix_metadata(self, cubes):
         """
-        Fix metadata
+        Fix metadata.
 
         Fix cube units
 
         Parameters
         ----------
-        cube: iris.cube.Cube
+        cubes: iris.cube.CubeList
             Cube to fix
 
         Returns
         -------
-        iris.cube.Cube
+        iris.cube.CubeList
 
         """
-        cube.units = cf_units.Unit('1.0e-6')
-        return cube
+        self.get_cube_from_list(cubes).units = cf_units.Unit('1.0e-6')
+        return cubes
 
     def fix_data(self, cube):
         """
-        Fix data
+        Fix data.
 
         Fix cube units
 
@@ -49,36 +50,34 @@ class xco2Stderr(Fix):
 
 
 class xco2Stddev(xco2Stderr):
-    """Fixes for xco2Stddev"""
-
-    pass
+    """Fixes for xco2Stddev."""
 
 
 class xch4Stderr(Fix):
-    """Fixes for xch4Stderr"""
+    """Fixes for xch4Stderr."""
 
-    def fix_metadata(self, cube):
+    def fix_metadata(self, cubes):
         """
-        Fix metadata
+        Fix metadata.
 
         Fix cube units
 
         Parameters
         ----------
-        cube: iris.cube.Cube
-            Cube to fix
+        cubes: iris.cube.CubeList
+            Cubes to fix
 
         Returns
         -------
-        iris.cube.Cube
+        iris.cube.CubeList
 
         """
-        cube.units = cf_units.Unit('1.0e-9')
-        return cube
+        self.get_cube_from_list(cubes).units = cf_units.Unit('1.0e-9')
+        return cubes
 
     def fix_data(self, cube):
         """
-        Fix data
+        Fix data.
 
         Fix cube units
 
@@ -99,6 +98,4 @@ class xch4Stderr(Fix):
 
 
 class xch4Stddev(xch4Stderr):
-    """Fixes for xch4Stddev"""
-
-    pass
+    """Fixes for xch4Stddev."""

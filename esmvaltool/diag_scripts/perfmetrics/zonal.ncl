@@ -44,7 +44,7 @@ begin
     var_avg = time_operations(var_zon, start_year, end_year, "average", \
                               diag_script_info@time_avg, True)
     var_std = interannual_variability(var_zon, start_year, end_year, \
-                                      diag_script_info@time_avg)
+                                      diag_script_info@time_avg, "None")
     delete(var_zon)
 
     ; Write output
@@ -96,6 +96,24 @@ begin
     delete(plot_var@res_cnLevels)
     delete(wks)
     delete(plot)
+
+    ; collect meta-data and call ESMValMD function
+    nc_file = "nonexistent"
+    plot_file = outfile+"."+file_type
+    caption = "Zonal plot of variable: " + var0
+    statistics := (/"mean", "rmsd"/)
+    domain = "global"
+    plottype = "zonal"
+    diag_des = "Calculates and (optionally) plots annual/seasonal cycles, " \
+               + "zonal means, lat-lon fields and time-lat-lon fields from " \
+               + "input T3M or T2Ms data. The calculated fields can be also " \
+               + "plotted as difference w.r.t. a given reference dataset. " \
+               + "It also calculates grading and taylor metrics."
+    authors = (/"righ_ma", "fran_fr", "eyri_ve", "gott_kl", "senf_da"/)
+    references = (/"righi15gmd", "gleckler08jgr"/)
+    infiles := (/"infile1", "infile2"/)
+    ESMValMD(nc_file, plot_file, caption, statistics, domain, plottype, \
+             diag_des, authors, references, infiles)
 
     ; Difference plot to the reference
     if (.not.diag_script_info@plot_diff .or. imod.eq.ref_ind) then
@@ -161,6 +179,15 @@ begin
     delete(plot)
     delete(plot2)
     delete(plot_var)
+
+    ; collect meta-data and call ESMValMD function
+    nc_file = "nonexistent"
+    plot_file = outfile+"."+file_type
+    caption = "Difference in zonal plot of variable: " + var0
+    statistics := (/"mean", "rmsd", "diff"/)
+    infiles := (/"infile1", "infile2"/)
+    ESMValMD(nc_file, plot_file, caption, statistics, domain, plottype, \
+             diag_des, authors, references, infiles)
 
   end do
 

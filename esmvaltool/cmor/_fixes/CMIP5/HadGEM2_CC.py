@@ -1,3 +1,4 @@
+# pylint: disable=invalid-name, no-self-use, too-few-public-methods
 """Fixes for HadGEM2_CC"""
 import iris
 import numpy as np
@@ -8,9 +9,9 @@ from ..fix import Fix
 class allvars(Fix):
     """Fixes common to all vars"""
 
-    def fix_metadata(self, cube):
+    def fix_metadata(self, cubes):
         """
-        Fixes latitude
+        Fixes latitude.
 
         Parameters
         ----------
@@ -21,13 +22,14 @@ class allvars(Fix):
         iris.cube.Cube
 
         """
-        lats = cube.coords('latitude')
-        if lats:
-            lat = cube.coord('latitude')
-            lat.points = np.clip(lat.points, -90., 90.)
-            lat.bounds = np.clip(lat.bounds, -90., 90.)
+        for cube in cubes:
+            lats = cube.coords('latitude')
+            if lats:
+                lat = cube.coord('latitude')
+                lat.points = np.clip(lat.points, -90., 90.)
+                lat.bounds = np.clip(lat.bounds, -90., 90.)
 
-        return cube
+        return cubes
 
 
 class o2(Fix):
