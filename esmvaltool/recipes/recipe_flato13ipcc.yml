@@ -721,7 +721,8 @@ diagnostics:
           - {dataset: IPSL-CM5A-MR}
           - {dataset: IPSL-CM5B-LR}
           - {dataset: MIROC-ESM}
-          - {dataset: MIROC-ESM-CHEM}
+          # Shape of fx files and fgco2 differ on mistral
+          # - {dataset: MIROC-ESM-CHEM}
           - {dataset: MPI-ESM-LR}
           - {dataset: MPI-ESM-MR}
           - {dataset: NorESM1-ME}
@@ -771,8 +772,7 @@ diagnostics:
           # Overlapping files for several variables at mistral
           # - {dataset: IPSL-CM5B-LR}
           - {dataset: MIROC-ESM}
-          # Shape of fx files and fgco2 differ on mistral
-          # - {dataset: MIROC-ESM-CHEM}
+          - {dataset: MIROC-ESM-CHEM}
           - {dataset: MPI-ESM-LR}
           - {dataset: MPI-ESM-MR}
           - {dataset: NorESM1-ME}
