@@ -96,8 +96,7 @@ begin
   all_cor!0 = "models"
   all_cor&models = datasetnames(mod_ind_woref)
   ; Pass on alt models
-  if isatt(variable_info, "alternative_dataset").and. \
-    any(dataset_info@dataset.eq.variable_info[0]@alternative_dataset) then
+  if alt_ref then
     all_cor@alt_obs =  variable_info[0]@alternative_dataset
   else
     all_cor@alt_obs = "none"

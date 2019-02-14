@@ -96,7 +96,7 @@ begin
               ; if neq data model is similar to current
               ; entry, write data entry
               if (data_all&models(imod).eq. data_temp&models(imod_temp)) then
-                data_all(imod_temp, ii) = (/data_temp(imod_temp)/)
+                data_all(imod, ii) = (/data_temp(imod_temp)/)
               end if
             end do
           end if
