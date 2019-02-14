@@ -75,6 +75,9 @@ REQUIREMENTS = {
     ],
 }
 
+if sys.version_info.major == 2:
+    REQUIREMENTS['test'].append('more-itertools<6')
+
 
 def discover_python_files(paths, ignore):
     """Discover Python files."""
