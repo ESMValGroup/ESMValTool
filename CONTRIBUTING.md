@@ -14,7 +14,7 @@ To install in development mode, follow these instructions.
   - Update conda: `conda update -y conda`
   - Create a conda environment: `conda create -y -n esmvaltool python=3`
   - Activate the esmvaltool environment: `conda activate esmvaltool`
-  - Clone the ESMValTool github repository: `git clone git@github.com:ESMValGroup/ESMValTool`
+  - Clone the ESMValTool public github repository: `git clone git@github.com:ESMValGroup/ESMValTool`, or one of the private github repositories (e.g. `https://github.com/ESMValGroup/ESMValTool-private`)
   - Go to the esmvaltool directory: `cd ESMValTool`
   - Update the esmvaltool conda environment `conda env update`
   - Install in development mode: `pip install -e '.[develop]'`. If you are installing behind a proxy that does not trust the usual pip-urls you can declare them with the option `--trusted-host`, e.g. `pip install --trusted-host=pypi.python.org --trusted-host=pypi.org --trusted-host=files.pythonhosted.org -e .[develop]`
