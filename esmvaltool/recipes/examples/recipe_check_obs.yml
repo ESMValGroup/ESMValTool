@@ -16,9 +16,9 @@ preprocessors:
 
 diagnostics:
 
-#   ################################################
-#   ### TIER 2 #####################################
-#   ################################################
+  ################################################
+  ### TIER 2 #####################################
+  ################################################
 
   ESACCI-AEROSOL:
     description: ESACCI-AEROSOL
@@ -296,7 +296,8 @@ diagnostics:
     scripts: null
 
   ################################################
-#  - {dataset: WOA,                  project: OBS,  tier: 2,  type: clim,    version: L3,                                          start_year: 2000,  end_year: 2000}
+
+#  - {dataset: WOA, project: OBS, tier: 2, type: clim, version: L3, start_year: 2000, end_year: 2000}
 
 
 
