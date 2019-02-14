@@ -17,8 +17,7 @@ Modification history
 import os
 import logging
 
-from esmvaltool.diag_scripts.shared import run_diagnostic
-from esmvaltool.diag_scripts.shared._base import ProvenanceLogger
+from esmvaltool.diag_scripts.shared import run_diagnostic, ProvenanceLogger
 
 # Import zmnam diagnostic routines
 from zmnam_calc import zmnam_calc
