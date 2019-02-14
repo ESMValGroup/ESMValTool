@@ -83,7 +83,7 @@ def ens_plots(dir_output, dir_plot, name_outputs, numclus,
     cax = plt.axes([0.1, 0.03, 0.8, 0.03])  # horizontal
     cbar = plt.colorbar(map_plot, cax=cax, orientation='horizontal')
     cbar.ax.tick_params(labelsize=18)
-    cbar.set_ticks(np.arange(rangecbarmin, rangecbarmax + delta, delta*20))
+    cbar.set_ticks(np.arange(rangecbarmin, rangecbarmax + delta, delta * 20))
 
     plt.suptitle(exp + ' ' + kind + ' ' + varname + ' ' + field_to_plot +
                  ' (' + varunits + ')', fontsize=45, fontweight='bold')
@@ -108,10 +108,12 @@ def ens_plots(dir_output, dir_plot, name_outputs, numclus,
 
 
 def round_up(x, sig=2):
+    """Round up to a given number of significant digits."""
     dig = pow(10., sig - int(math.floor(math.log10(abs(x)))) - 1)
     return math.ceil(x * dig) / dig
 
 
 def round_down(x, sig=2):
+    """Round down to a given number of significant digits."""
     dig = pow(10., sig - int(math.floor(math.log10(abs(x)))) - 1)
     return math.floor(x * dig) / dig
