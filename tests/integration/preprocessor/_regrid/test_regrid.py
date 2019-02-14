@@ -24,14 +24,8 @@ class Test(tests.Test):
         self.cube = _make_cube(data)
         self.cs = iris.coord_systems.GeogCS(iris.fileformats.pp.EARTH_RADIUS)
 
-    def test_nop(self):
-        result = regrid(self.cube, None, None)
-        self.assertEqual(result, self.cube)
-        self.assertEqual(id(result), id(self.cube))
-
     def test_regrid__linear(self):
         data = np.empty((1, 1))
-        grid = iris.cube.Cube(data)
         lons = iris.coords.DimCoord(
             [1.5],
             standard_name='longitude',
@@ -97,7 +91,6 @@ class Test(tests.Test):
 
     def test_regrid__nearest(self):
         data = np.empty((1, 1))
-        grid = iris.cube.Cube(data)
         lons = iris.coords.DimCoord(
             [1.6],
             standard_name='longitude',
@@ -118,7 +111,6 @@ class Test(tests.Test):
 
     def test_regrid__nearest_extrapolate_with_mask(self):
         data = np.empty((3, 3))
-        grid = iris.cube.Cube(data)
         lons = iris.coords.DimCoord(
             [0, 1.6, 3],
             standard_name='longitude',
@@ -141,7 +133,6 @@ class Test(tests.Test):
 
     def test_regrid__area_weighted(self):
         data = np.empty((1, 1))
-        grid = iris.cube.Cube(data)
         lons = iris.coords.DimCoord(
             [1.6],
             standard_name='longitude',
@@ -162,7 +153,6 @@ class Test(tests.Test):
 
     def test_regrid__unstructured_nearest(self):
         data = np.empty((1, 1))
-        grid = iris.cube.Cube(data)
         lons = iris.coords.DimCoord(
             [1.6],
             standard_name='longitude',

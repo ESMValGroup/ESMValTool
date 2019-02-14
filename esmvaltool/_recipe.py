@@ -24,7 +24,8 @@ from .preprocessor import (DEFAULT_ORDER, FINAL_STEPS, INITIAL_STEPS,
 from .preprocessor._derive import get_required
 from .preprocessor._download import synda_search
 from .preprocessor._io import DATASET_KEYS, concatenate_callback
-from .preprocessor._regrid import get_cmor_levels, get_reference_levels
+from .preprocessor._regrid import (get_cmor_levels, get_reference_levels,
+                                   parse_cell_spec)
 
 logger = logging.getLogger(__name__)
 
@@ -113,8 +114,7 @@ def _add_cmor_info(variable, override=False):
     cmor_table = variable['cmor_table']
     mip = variable['mip']
     short_name = variable['short_name']
-    table_entry = CMOR_TABLES[cmor_table].get_variable(
-        mip, short_name)
+    table_entry = CMOR_TABLES[cmor_table].get_variable(mip, short_name)
 
     if derive and table_entry is None:
         custom_table = CMOR_TABLES['custom']
@@ -205,6 +205,9 @@ def _update_target_grid(variable, variables, settings, config_user):
     elif any(grid == v['dataset'] for v in variables):
         settings['regrid']['target_grid'] = _dataset_to_file(
             _get_dataset_info(grid, variables), config_user)
+    else:
+        # Check that MxN grid spec is correct
+        parse_cell_spec(settings['regrid']['target_grid'])
 
 
 def _get_dataset_info(dataset, variables):

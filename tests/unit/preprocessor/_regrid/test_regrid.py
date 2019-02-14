@@ -77,29 +77,12 @@ class Test(tests.Test):
             self.tgt_grid_coord, self.tgt_grid, self.mock_stock
         ]
 
-    def test_nop(self):
-        cube = mock.sentinel.cube
-        result = regrid(cube, None, None)
-        self.assertEqual(result, cube)
-
-    def test_invalid_tgt_grid__None(self):
-        dummy = mock.sentinel.dummy
-        emsg = 'A target grid must be specified'
-        with self.assertRaisesRegex(ValueError, emsg):
-            regrid(dummy, None, dummy)
-
     def test_invalid_tgt_grid__unknown(self):
         dummy = mock.sentinel.dummy
         scheme = 'linear'
-        emsg = 'Expecting a cube or cell-specification'
+        emsg = 'Expecting a cube'
         with self.assertRaisesRegex(ValueError, emsg):
             regrid(self.src_cube, dummy, scheme)
-
-    def test_invalid_scheme__None(self):
-        dummy = mock.sentinel.dummy
-        emsg = 'A scheme must be specified'
-        with self.assertRaisesRegex(ValueError, emsg):
-            regrid(dummy, dummy, None)
 
     def test_invalid_scheme__unknown(self):
         dummy = mock.sentinel.dummy
