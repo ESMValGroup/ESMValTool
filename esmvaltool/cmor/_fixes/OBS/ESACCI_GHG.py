@@ -52,8 +52,6 @@ class xco2Stderr(Fix):
 class xco2Stddev(xco2Stderr):
     """Fixes for xco2Stddev."""
 
-    pass
-
 
 class xch4Stderr(Fix):
     """Fixes for xch4Stderr."""
@@ -101,5 +99,3 @@ class xch4Stderr(Fix):
 
 class xch4Stddev(xch4Stderr):
     """Fixes for xch4Stddev."""
-
-    pass
