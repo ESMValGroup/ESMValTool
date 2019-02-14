@@ -6,7 +6,7 @@ modeling_realm:    atmos
 !----------------------------------
 ! Variable attributes:
 !----------------------------------
-standard_name:     surface_upwelling_longwave_flux_in_air_assuming_clear_sky
+standard_name:
 units:             W m-2
 cell_methods:      time: mean
 cell_measures:     area: areacella
