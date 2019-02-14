@@ -1,0 +1,26 @@
+SOURCE: CMIP5
+!============
+variable_entry:    prStderr
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     
+units:             kg m-2 s-1
+cell_methods:      time: mean
+cell_measures:     area: areacella
+long_name:         Precipitation Standard Error
+comment:           at surface; includes both liquid and solid phases from all types of clouds (both large-scale and convective)
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          prStderr
+type:              real
+valid_min:         0
+valid_max:         0.001
+ok_min_mean_abs:   0
+ok_max_mean_abs:   0.001
+!----------------------------------
+!
