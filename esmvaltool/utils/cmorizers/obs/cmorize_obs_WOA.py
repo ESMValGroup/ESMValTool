@@ -28,24 +28,61 @@
 # #############################################################################
 """
 
+import datetime
 import logging
 import os
+
 import iris
 from cf_units import Unit
 
+from esmvaltool.utils.cmorizers.obs.utilities import (_add_metadata,
+                                                      _convert_timeunits,
+                                                      _save_variable)
+
 logger = logging.getLogger(__name__)
+
+timestamp = datetime.datetime.utcnow()
+timestamp_format = "%Y-%m-%d %H:%M:%S"
 
 # used vars
 ALL_VARS = ['thetao', 'so', 'no3', 'po4', 'si', 'o2']
 
+# project at hand
+proj = {
+    'dataset': 'WOA',
+    'version': 'L3',
+    'realm': 'clim',
+    'field': 'TO3Y',
+    'frequency': {
+        'thetao': 'Omon',
+        'so': 'Omon',
+        'no3': 'Oyr',
+        'po4': 'Oyr',
+        'si': 'Oyr',
+        'o2': 'Oyr'
+    },
+    'metadata_attributes': {
+        'tier': '2',
+        'source': 'https://data.nodc.noaa.gov/woa/WOA13/DATAv2/',
+        'comment': 'cmorized for ESMValTool v2',
+        'CMOR conventions': 'CF/CMOR3',
+        'CMOR created': timestamp.strftime(timestamp_format)
+    }
+}
+
+# all years to be analyzed
+ALL_YEARS = [
+    2000,
+]
+
 # specific CMOR nomenclature items
 VAR_TO_FILENAME = {
-    'thetao': 'woa13_decav81B0_t00_01.nc',
-    'so': 'woa13_decav81B0_s00_01.nc',
-    'o2': 'woa13_all_o00_01.nc',
-    'no3': 'woa13_all_n00_01.nc',
-    'po4': 'woa13_all_p00_01.nc',
-    'si': 'woa13_all_i00_01.nc'
+    'thetao': 'woa13_decav81B0_t',
+    'so': 'woa13_decav81B0_s',
+    'o2': 'woa13_all_o',
+    'no3': 'woa13_all_n',
+    'po4': 'woa13_all_p',
+    'si': 'woa13_all_i'
 }
 
 # Reference year
@@ -88,14 +125,6 @@ LONG_NAMES = {
 }
 
 
-def _convert_taxis(cube):
-    """Convert time axis from malformed Year 0."""
-    if cube.coord('time').units == 'months since 0000-01-01 00:00:00':
-        real_unit = 'months since {}-01-01 00:00:00'.format(str(REF_YEAR))
-        cube.coord('time').units = real_unit
-    return cube
-
-
 def _fix_coords(cube):
     """Fix the time units and values to something sensible."""
     # fix individual coords
@@ -108,7 +137,7 @@ def _fix_coords(cube):
             if len(cube.coord('time').points) > 1:
                 cube.coord('time').guess_bounds()
         # fix longitude
-        if cube_coord.var_name == 'lon':
+        if cube_coord.var_name in ['lon', 'longitude']:
             logger.info("Fixing longitude...")
             cube.coord('longitude').var_name = 'lon'
             cube.coord('longitude').long_name = 'longitude'
@@ -123,7 +152,7 @@ def _fix_coords(cube):
                 cube.attributes['geospatial_lon_min'] = 0.
                 cube.attributes['geospatial_lon_max'] = 360.
         # fix latitude
-        if cube_coord.var_name == 'lat':
+        if cube_coord.var_name in ['lat', 'latitude']:
             logger.info("Fixing latitude...")
             cube.coord('latitude').var_name = 'lat'
             cube.coord('latitude').long_name = 'latitude'
@@ -164,15 +193,7 @@ def _fix_data(cube, var):
     return cube
 
 
-def _save_variable(cube, var, outdir):
-    """Saver function."""
-    filename = '_'.join([var, 'WOA_L3_clim_TO3Y', var, '20000101-20001231.nc'])
-    outpath = os.path.join(outdir, filename)
-    logger.info('Saving: %s', outpath)
-    iris.save(cube, outpath)
-
-
-def _extract(var, raw_file, out_dir):
+def extract_variable(var, raw_file, out_dir, yr):
     """Extract to all vars."""
     cubes = iris.load(raw_file)
     field = FIELDS[var]
@@ -181,11 +202,12 @@ def _extract(var, raw_file, out_dir):
             cube.standard_name = STANDARD_NAMES[var]
             cube.long_name = LONG_NAMES[var]
             cube.var_name = var
-            _convert_taxis(cube)
+            _convert_timeunits(cube, yr)
             _fix_coords(cube)
             _fix_data(cube, var)
             _fix_metadata(cube, var)
-            _save_variable(cube, var, out_dir)
+            _add_metadata(cube, proj)
+            _save_variable(cube, var, out_dir, yr, proj)
 
 
 def cmorization(in_dir, out_dir):
@@ -196,8 +218,10 @@ def cmorization(in_dir, out_dir):
 
     # run the cmorization
     for var in ALL_VARS:
-        logger.info("CMORizing %s from file %s", var, VAR_TO_FILENAME[var])
-        raw_file = os.path.join(in_dir, VAR_TO_FILENAME[var])
         if not os.path.exists(out_dir):
             os.path.makedirs(out_dir)
-        _extract(var, raw_file, out_dir)
+        for yr in ALL_YEARS:
+            file_suffix = str(yr)[-2:] + '_' + str(yr + 1)[-2:] + '.nc'
+            raw_file = os.path.join(in_dir, VAR_TO_FILENAME[var] + file_suffix)
+            logger.info("CMORizing var %s in file %s", var, raw_file)
+            extract_variable(var, raw_file, out_dir, yr)
