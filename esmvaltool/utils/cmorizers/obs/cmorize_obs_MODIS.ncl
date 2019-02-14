@@ -26,6 +26,7 @@
 ;    fraction as a first guess
 ;
 ; Modification history
+;    20180209-A_righ_ma: fixed bug in lwpStderr.
 ;    20180209-A_hass_bg: adapted to v2.
 ;    20180810-A_righ_ma: fix minor calendar issue.
 ;    20180806-A_righ_ma: code cleaning.
@@ -231,7 +232,6 @@ begin
       end if
       clon := lon_attrib(output&lon)
       output&lon := clon
-      log_info(min(clon) + "  " + max(clon))
       delete(lon)
 
       ; Set global attributes
