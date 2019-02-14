@@ -2,6 +2,7 @@
 """Fixes for GFDL ESM2G"""
 import iris
 from iris.coords import AuxCoord
+
 from ..fix import Fix
 
 
@@ -26,6 +27,8 @@ class allvars(Fix):
         self._get_and_remove(cubes, 'Start time for average period')
         self._get_and_remove(cubes, 'End time for average period')
         self._get_and_remove(cubes, 'Length of average period')
+        self._get_and_remove(cubes, 'Latitude of tracer (h) points')
+        self._get_and_remove(cubes, 'Longitude of tracer (h) points')
         return cubes
 
     def _get_and_remove(self, cubes, long_name):

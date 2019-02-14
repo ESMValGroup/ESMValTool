@@ -5,7 +5,7 @@ from ..fix import Fix
 class fgco2(Fix):
     """Class to fix fgco2."""
 
-    def fix_metadata(self, cube):
+    def fix_metadata(self, cubes):
         """Fix metadata for fgco2.
 
         Longitude is [-180, 180], needs to be [0, 360].
@@ -19,8 +19,9 @@ class fgco2(Fix):
         iris.cube.Cube
 
         """
+        cube = self.get_cube_from_list(cubes)
         cube = cube.intersection(longitude=(0.0, 360.0))
-        return cube
+        return [cube]
 
 
 class nbp(Fix):

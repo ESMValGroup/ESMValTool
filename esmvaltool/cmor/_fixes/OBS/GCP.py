@@ -8,12 +8,13 @@ from ..fix import Fix
 class nbp(Fix):
     """Class to fix nbp."""
 
-    def fix_metadata(self, cube):
+    def fix_metadata(self, cubes):
         """Fix metadata for npb.
 
         Add latitude and longitude coordinates as GCP data is actually T0M.
 
         """
+        cube = self.get_cube_from_list(cubes)
         time_coord = cube.coord('time')
         lat_coord = iris.coords.DimCoord([0],
                                          standard_name='latitude',
@@ -41,18 +42,19 @@ class nbp(Fix):
             **metadata._asdict(),
         )
         cube.attributes['field'] = 'T2Ms'
-        return cube
+        return [cube]
 
 
 class fgco2(Fix):
     """Class to fix fgco2."""
 
-    def fix_metadata(self, cube):
+    def fix_metadata(self, cubes):
         """Fix metadata for fgco2.
 
         Add latitude and longitude coordinates as GCP data is actually T0M.
 
         """
+        cube = self.get_cube_from_list(cubes)
         time_coord = cube.coord('time')
         lat_coord = iris.coords.DimCoord([0],
                                          standard_name='latitude',
@@ -80,4 +82,4 @@ class fgco2(Fix):
             **metadata._asdict(),
         )
         cube.attributes['field'] = 'T2Ms'
-        return cube
+        return [cube]

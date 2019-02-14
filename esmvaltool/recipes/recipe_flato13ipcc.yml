@@ -26,6 +26,9 @@ documentation:
 
 preprocessors:
 
+  noop:
+    {}
+
   clim:
     regrid:
       target_grid: 2x2
@@ -36,6 +39,11 @@ preprocessors:
       span: overlap
       statistics: [mean]
       exclude: [reference_dataset]
+
+  regridding:
+    regrid:
+      target_grid: 2x2
+      scheme: linear
 
   spatial_mean:
     average_region:
