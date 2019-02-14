@@ -730,7 +730,7 @@ diagnostics:
     scripts:
       ecs: &ecs_script
         script: climate_metrics/ecs.py
-        plot_ecs_regression: True
+        plot_ecs_regression: true
 
   fig09-42a_cmip5:
     description: Plot ECS vs. GMSAT for CMIP5 models.
@@ -780,7 +780,7 @@ diagnostics:
         save:
           bbox_inches: tight
           orientation: landscape
-        axes_functions:
+        axes_functions: &axes_functions
           set_title: GMSAT vs. ECS for CMIP5 models
           set_xlabel: ECS / °C
           set_ylabel: GMSAT / °C
@@ -830,3 +830,7 @@ diagnostics:
       fig09-42a:
         <<: *fig09_42a_script
         ancestors: ['tas', 'ecs_cmip6/ecs']
+        axes_functions:
+          <<: *axes_functions
+          set_title: GMSAT vs. ECS for CMIP6 models
+        dataset_style: cmip6

@@ -73,7 +73,7 @@ diagnostics:
     scripts:
       ecs: &ecs_script
         script: climate_metrics/ecs.py
-        plot_ecs_regression: True
+        plot_ecs_regression: true
 
   cmip6:
     description: Calculate ECS for all available CMIP6 models.
