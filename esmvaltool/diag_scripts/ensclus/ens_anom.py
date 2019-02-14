@@ -55,7 +55,8 @@ def ens_anom(filenames, dir_output, name_outputs, varname, numens, season,
 
     if extreme == 'mean':
         # Compute the time mean over the entire period, for each ens member
-        varextreme_ens = [np.nanmean(var_ens[i], axis=0) for i in range(numens)]
+        varextreme_ens = [np.nanmean(var_ens[i], axis=0)
+                          for i in range(numens)]
 
     elif len(extreme.split("_")) == 2:
         # Compute the chosen percentile over the period, for each ens member
