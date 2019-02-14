@@ -23,10 +23,10 @@ axes_functions : dict, optional
     Keyword arguments for the plot appearance functions.
 dataset_style : str, optional
     Dataset style file (located in
-    :mod:`esmvaltool.diag_scripts.shared.plot.styles_python`.
+    :mod:`esmvaltool.diag_scripts.shared.plot.styles_python`).
 matplotlib_style : str, optional
     Dataset style file (located in
-    :mod:`esmvaltool.diag_scripts.shared.plot.styles_python.matplotlib`.
+    :mod:`esmvaltool.diag_scripts.shared.plot.styles_python.matplotlib`).
 
 """
 
