@@ -705,7 +705,7 @@ diagnostics:
         end_year: 2005
         reference_dataset: JMA-TRANSCOM
         plot_units: PgC y-1
-        derive: True
+        derive: true
         additional_datasets:
           - {dataset: JMA-TRANSCOM, project: OBS, type: reanaly, version: 1, tier: 3, start_year: 1986}
           # No data
@@ -737,16 +737,16 @@ diagnostics:
         script: carbon_cycle/main.ncl
         styleset: CMIP5
         region: Global
-        legend_year_outside: False
-        legend_outside: False
-        sort: True
-        anav_month: True
-        seasonal_cycle_plot: False
-        errorbar_plot: False
-        mean_IAV_plot: False
-        evolution_plot: True
-        evolution_plot_volcanoes: False
-        evolution_plot_anomaly: False
+        legend_year_outside: false
+        legend_outside: false
+        sort: true
+        anav_month: true
+        seasonal_cycle_plot: false
+        errorbar_plot: false
+        mean_IAV_plot: false
+        evolution_plot: true
+        evolution_plot_volcanoes: false
+        evolution_plot_anomaly: false
         evolution_plot_ref_dataset: GCP
 
   fig09-26bottom:
@@ -804,8 +804,8 @@ diagnostics:
     scripts:
       main_global: &fig09_27_settings
         <<: *fig09_26_settings
-        errorbar_plot: True
-        evolution_plot: False
+        errorbar_plot: true
+        evolution_plot: false
 
   fig09-27bottom:
     variables:

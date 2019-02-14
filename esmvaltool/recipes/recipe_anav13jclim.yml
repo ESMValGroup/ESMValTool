@@ -6,7 +6,7 @@ documentation:
     This recipe reproduces most of the figures of Anav et al. (2013).
 
   authors:
-    - anav_an
+    - anav_al
     - wenz_sa
     - righ_ma
     - schl_ma
@@ -43,7 +43,7 @@ preprocessors:
     regrid:
       target_grid: ref_dataset
       regrid_scheme: linear
-    mask_fillvalues: True
+    mask_fillvalues: true
 
   regrid_to_ref:
     regrid:
@@ -97,8 +97,8 @@ diagnostics:
     scripts:
       mvi_global: &mvi_global
         script: carbon_cycle/mvi.ncl
-        legend_year_outside: True
-        sort: True
+        legend_year_outside: true
+        sort: true
         styleset: CMIP5
         region: Global
         mean_time_range: [1986, 2005]
@@ -127,18 +127,18 @@ diagnostics:
     scripts:
       main_global: &main_global
         script: carbon_cycle/main.ncl
-        legend_year_outside: False
-        legend_outside: False
-        sort: True
-        seasonal_cycle_plot: True
-        errorbar_plot: True
-        mean_IAV_plot: True
+        legend_year_outside: false
+        legend_outside: false
+        sort: true
+        seasonal_cycle_plot: true
+        errorbar_plot: true
+        mean_IAV_plot: true
         styleset: CMIP5
         region: Global
-        evolution_plot: True
-        evolution_plot_volcanoes: True
+        evolution_plot: true
+        evolution_plot_volcanoes: true
         evolution_plot_ref_dataset: CRU
-        evolution_plot_anomaly: True
+        evolution_plot_anomaly: true
       main_nh: &main_nh
         <<: *main_global
         region: Northern Hemisphere
@@ -276,7 +276,7 @@ diagnostics:
         mip: Lmon
         reference_dataset: JMA-TRANSCOM
         plot_units: PgC y-1
-        derive: True
+        derive: true
         additional_datasets:
           - {dataset: GCP, project: OBS, type: reanaly, version: 1, tier: 2, start_year: 1959, end_year: 2015}
     additional_datasets: &nbp_datasets
@@ -302,23 +302,23 @@ diagnostics:
       main_global:
         <<: *main_global
         evolution_plot_ref_dataset: GCP
-        evolution_plot_anomaly: False
-        anav_month: True
+        evolution_plot_anomaly: false
+        anav_month: true
       main_nh:
         <<: *main_nh
         evolution_plot_ref_dataset: GCP
-        evolution_plot_anomaly: False
-        anav_month: True
+        evolution_plot_anomaly: false
+        anav_month: true
       main_sh:
         <<: *main_sh
         evolution_plot_ref_dataset: GCP
-        evolution_plot_anomaly: False
-        anav_month: True
+        evolution_plot_anomaly: false
+        anav_month: true
       main_trop:
         <<: *main_trop
         evolution_plot_ref_dataset: GCP
-        evolution_plot_anomaly: False
-        anav_month: True
+        evolution_plot_anomaly: false
+        anav_month: true
 
   diag_mvi_lai:
     description: MVI scatter plot for lai (Figure 10).
@@ -337,7 +337,7 @@ diagnostics:
         start_year: 1986
         end_year: 2005
         reference_dataset: LAI3g
-        derive: True
+        derive: true
     additional_datasets: &lai_datasets
       - {dataset: LAI3g, project: OBS, type: reanaly, version: 1, tier: 3}
       - {dataset: bcc-csm1-1}
@@ -384,19 +384,19 @@ diagnostics:
       main_global:
         <<: *main_global
         evolution_plot_ref_dataset: LAI3g
-        evolution_plot_anomaly: False
+        evolution_plot_anomaly: false
       main_nh:
         <<: *main_nh
         evolution_plot_ref_dataset: LAI3g
-        evolution_plot_anomaly: False
+        evolution_plot_anomaly: false
       main_sh:
         <<: *main_sh
         evolution_plot_ref_dataset: LAI3g
-        evolution_plot_anomaly: False
+        evolution_plot_anomaly: false
       main_trop:
         <<: *main_trop
         evolution_plot_ref_dataset: LAI3g
-        evolution_plot_anomaly: False
+        evolution_plot_anomaly: false
 
   diag_mvi_gpp:
     description: MVI scatter plot for gpp (Figure 8).
@@ -457,19 +457,19 @@ diagnostics:
       main_global:
         <<: *main_global
         evolution_plot_ref_dataset: MTE
-        evolution_plot_anomaly: False
+        evolution_plot_anomaly: false
       main_nh:
         <<: *main_nh
         evolution_plot_ref_dataset: MTE
-        evolution_plot_anomaly: False
+        evolution_plot_anomaly: false
       main_sh:
         <<: *main_sh
         evolution_plot_ref_dataset: MTE
-        evolution_plot_anomaly: False
+        evolution_plot_anomaly: false
       main_trop:
         <<: *main_trop
         evolution_plot_ref_dataset: MTE
-        evolution_plot_anomaly: False
+        evolution_plot_anomaly: false
 
   diag_two_vars_scatter:
     description: Two-variable scatter plot for cSoil and cVeg (Figure 12).
@@ -511,7 +511,7 @@ diagnostics:
     scripts:
       scat_global: &scat_glob
         script: carbon_cycle/two_variables.ncl
-        legend_year_outside: False
+        legend_year_outside: false
         styleset: CMIP5
         region: Global
       scat_nh:
@@ -537,7 +537,7 @@ diagnostics:
         mip: Omon
         reference_dataset: JMA-TRANSCOM
         plot_units: PgC y-1
-        derive: True
+        derive: true
         additional_datasets:
           - {dataset: JMA-TRANSCOM, project: OBS, type: reanaly, version: 1, tier: 3, start_year: 1986, end_year: 2005}
           # No data
@@ -564,26 +564,26 @@ diagnostics:
         mip: Omon
         reference_dataset: JMA-TRANSCOM
         plot_units: PgC y-1
-        derive: True
+        derive: true
         additional_datasets:
           - {dataset: GCP, project: OBS, type: reanaly, version: 1, tier: 2, start_year: 1959, end_year: 2015}
     scripts:
       main_global:
         <<: *main_global
         evolution_plot_ref_dataset: GCP
-        evolution_plot_anomaly: False
+        evolution_plot_anomaly: false
       main_nh:
         <<: *main_nh
         evolution_plot_ref_dataset: GCP
-        evolution_plot_anomaly: False
+        evolution_plot_anomaly: false
       main_sh:
         <<: *main_sh
         evolution_plot_ref_dataset: GCP
-        evolution_plot_anomaly: False
+        evolution_plot_anomaly: false
       main_trop:
         <<: *main_trop
         evolution_plot_ref_dataset: GCP
-        evolution_plot_anomaly: False
+        evolution_plot_anomaly: false
 
   diag_grading_tas: &diag_grading
     description: Grading precalculations for tas.
@@ -604,7 +604,7 @@ diagnostics:
         time_avg: monthlyclim
         region: Global
         plot_stddev: all
-        legend_outside: False
+        legend_outside: false
         styleset: CMIP5
       cycle_nh: &cycle_nh
         <<: *cycle_global
@@ -617,8 +617,8 @@ diagnostics:
         region: Tropics
       grading_global: &grading_global
         <<: *cycle_global
-        draw_plots: True
-        calc_grading: True
+        draw_plots: true
+        calc_grading: true
         metric: [RMSD]
         normalization: [maximum]
       grading_nh: &grading_nh
@@ -757,13 +757,13 @@ diagnostics:
         metric: RMSD
         label_bounds: [0.0, 1.0]
         label_scale: 0.1
-        disp_value: False
-        disp_rankings: True
+        disp_value: false
+        disp_rankings: true
         rank_order: -1
         colormap: matlab_jet
-        cm_reverse: True
+        cm_reverse: true
         cm_interval: [2, 63]
-        sort: True
+        sort: true
       collect_nh:
         <<: *collect_global
         ancestors: ['diag_grading_*/grading_nh']
