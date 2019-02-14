@@ -30,6 +30,7 @@ ncwritenew <- function(yml, m, hist, wdir, bins){
   idw <- nc_create(onam, var_hist)
   ncvar_put(idw, "hist", hist)
   nc_close(idw)
+  return(onam)
 }
 
 whfcn <- function(x, ilow, ihigh){
@@ -38,12 +39,19 @@ whfcn <- function(x, ilow, ihigh){
 
 args <- commandArgs(trailingOnly = TRUE)
 params <- read_yaml(args[1])
+metadata <- read_yaml(params$input_files)
+modfile <- names(metadata)
 wdir <- params$work_dir
+rundir <- params$run_dir
 dir.create(wdir, recursive = TRUE)
 pdir <- params$plot_dir
 dir.create(pdir, recursive = TRUE)
 var1_input <- read_yaml(params$input_files[1])
 nmods <- length(names(var1_input))
+
+# setup provenance file and list
+provenance_file <- paste0(rundir, "/", "diagnostic_provenance.yml")
+provenance <- list()
 
 histbrks <- c(-99999, -2, -1.5, -1, 1, 1.5, 2, 99999)
 histnams <- c("Extremely dry", "Moderately dry", "Dry",
@@ -67,6 +75,16 @@ refmsk <- apply(ref, c(1, 2), FUN = mean, na.rm = TRUE)
 refmsk[refmsk > 10000] <- NA
 refmsk[!is.na(refmsk)] <- 1
 
+xprov <- list(ancestors = list(""),
+              authors = list("berg_pe"),
+              references = list("mckee93"),
+              projects = list("c3s-magic"),
+              caption = "",
+              statistics = list("other"),
+              realms = list("atmos"),
+              themes = list("phys"),
+              domains = list("global"))
+
 histarr <- array(NA, c(nmods, length(histnams)))
 for (mod in 1:nmods){
    v1 <- getnc(var1_input, mod)
@@ -89,7 +107,11 @@ for (mod in 1:nmods){
                               ilow = histbrks[nnh],
                               ihigh = histbrks[nnh + 1])
    }
-   ncwritenew(var1_input, mod, hist_spi, wdir, histbrks)
+   filename <- ncwritenew(var1_input, mod, hist_spi, wdir, histbrks)
+   # Set provenance for output files
+   xprov$caption <- "Histogram of SPI index per grid point."
+   xprov$ancestors <- modfile[mod]
+   provenance[[filename]] <- xprov
    # Weight against latitude
    h <- c(1:length(histnams)) * 0
    for (j in 1:d[2]){
@@ -98,8 +120,14 @@ for (mod in 1:nmods){
    }
    histarr[mod, ] <- h / sum(h, na.rm = TRUE)
 }
-save(histarr, file = paste0(params$work_dir,
-                            "/", "histarr.rsav"))
+filehist <- paste0(params$work_dir, "/", "histarr.rsav")
+save(histarr, file = filehist)
+plot_file <- paste0(params$plot_dir, "/", "histplot.png")
+xprov$caption <- "Global latitude-weighted histogram of SPI index."
+xprov$ancestors <- list(modfile)
+xprov[["plot_file"]] <- plot_file
+provenance[[filehist]] <- xprov
+write_yaml(provenance, provenance_file)
 
 bhistarr <- array(NA, c(nmods - 1, 7))
 marr <- c(1:nmods)[c(1:nmods) != nref]
@@ -118,8 +146,7 @@ col_vector <- unlist(mapply(brewer.pal, qual_col_pals$maxcolors, # nolint
                            rownames(qual_col_pals)))
 cols <- c("black", sample(col_vector, nmods - 1))
 
-png(paste0(params$plot_dir, "/", "histplot.png"),
-    width = 1000, height = 500)
+png(plot_file, width = 1000, height = 500)
  par(mfrow = c(2, 1), oma = c(3, 3, 3, 13), mar = c(2, 1, 1, 1))
  barplot(histarr[parr, ], beside = 1, names.arg = histnams,
          col = cols, xaxs = "i")

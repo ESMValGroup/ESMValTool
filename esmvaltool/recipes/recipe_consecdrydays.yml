@@ -1,4 +1,9 @@
 ---
+documentation:
+  description: 'Consecutive dry days'
+  authors: ['berg_pe']
+  projects: ['c3s-magic']
+  references: ['acknow_project']
 
 datasets:
    - {dataset: bcc-csm1-1-m,  project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2002}

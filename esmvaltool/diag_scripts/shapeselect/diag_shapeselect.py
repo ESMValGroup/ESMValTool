@@ -14,12 +14,32 @@ from shapely.geometry import MultiPoint, shape
 from shapely.ops import nearest_points
 
 from esmvaltool.diag_scripts.shared import run_diagnostic
+from esmvaltool.diag_scripts.shared._base import (
+    ProvenanceLogger, get_diagnostic_filename)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
 
+def get_provenance_record(cfg, basename, caption, ancestor_files):
+    """Create a provenance record describing the diagnostic data and plot."""
+    record = {
+        'caption': caption,
+        'statistics': ['other'],
+        'domains': ['global'],
+        'authors': ['berg_pe'],
+        'references': ['acknow_project'],
+        'ancestors': ancestor_files,
+    }
+    diagnostic_file = get_diagnostic_filename(basename, cfg)
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(diagnostic_file, record)
+    return record
+
+
 def main(cfg):
     """Select grid points within shapefiles."""
+    if 'evalplot' not in cfg:
+        cfg['evalplot'] = False
     for filename, attributes in cfg['input_data'].items():
         logger.info("Processing variable %s from dataset %s",
                     attributes['standard_name'], attributes['dataset'])
@@ -34,7 +54,10 @@ def main(cfg):
                 cfg['work_dir'],
                 name + '.nc',
             )
-        write_netcdf(path, ncts, nclon, nclat, cube, cfg)
+            write_netcdf(path, ncts, nclon, nclat, cube, cfg)
+            caption = 'Selected gridpoints within shapefile.'
+            provenance_record = get_provenance_record(
+                cfg, name, caption, ancestor_files=[filename])
 
 
 def write_keyvalue_toxlsx(worksheet, row, key, value):

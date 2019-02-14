@@ -1,4 +1,9 @@
 ---
+documentation:
+  description: 'Selects grid points belonging to a provided shapefile.'
+  authors: ['berg_pe']
+  projects: ['c3s-magic']
+  references: ['acknow_project']
 
 datasets:
   - {dataset: EC-EARTH, project: CMIP5, mip: Amon, exp: historical, ensemble: r12i1p1, start_year: 1990, end_year: 1999}
@@ -23,4 +28,3 @@ diagnostics:
         wgtmet: 'mean_inside'
         write_xlsx: true
         write_netcdf: true
-        evalplot: false
