@@ -1,7 +1,7 @@
 # pylint: disable=invalid-name, no-self-use, too-few-public-methods
 """Fixes for GFDL ESM2M."""
-from ..fix import Fix
 from ..CMIP5.GFDL_ESM2G import allvars as base_allvars
+from ..fix import Fix
 
 
 class allvars(base_allvars):
@@ -52,3 +52,25 @@ class co2(Fix):
         cube *= 1e6
         cube.metadata = metadata
         return cube
+
+
+class tos(Fix):
+    """Fixes for tos."""
+
+    def fix_metadata(self, cubes):
+        """Fix metadata.
+
+        Fixes cube `standard_name`.
+
+        Parameters
+        ----------
+        cube: iris.cube.CubeList
+
+        Returns
+        -------
+        iris.cube.Cube
+
+        """
+        cube = self.get_cube_from_list(cubes)
+        cube.standard_name = 'sea_surface_temperature'
+        return [cube]
