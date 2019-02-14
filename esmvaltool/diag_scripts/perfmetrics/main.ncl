@@ -95,7 +95,7 @@ load "$diag_scripts/shared/scaling.ncl"
 
 load "$diag_scripts/shared/plot/style.ncl"
 
-load "./diag_scripts/shared/meta_data.ncl"
+load "$diag_scripts/shared/meta_data.ncl"
 
 begin
 
