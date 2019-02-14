@@ -24,6 +24,7 @@ from numpy import ma
 from . import _regrid_esmpy
 from ..cmor.fix import fix_file, fix_metadata
 from ..cmor.table import CMOR_TABLES
+from ._io import concatenate_callback, load
 
 # Regular expression to parse a "MxN" cell-specification.
 _CELL_SPEC = re.compile(
@@ -515,12 +516,12 @@ def get_reference_levels(filename,
         levels or the string is badly formatted.
 
     """
+    filename = fix_file(filename, short_name, project, dataset, fix_dir)
+    cubes = load(filename, callback=concatenate_callback)
+    cubes = fix_metadata(cubes, short_name, project, dataset)
+    cube = cubes[0]
     try:
-        filename = fix_file(filename, short_name, project, dataset, fix_dir)
-        cube = iris.load_cube(filename)
-        cube = fix_metadata(cube, short_name, project, dataset)
         coord = cube.coord(coordinate)
-
     except iris.exceptions.CoordinateNotFoundError:
         raise ValueError('Coordinate {} not available in {}'.format(
             coordinate, filename))
