@@ -79,7 +79,7 @@ if sys.version_info.major == 2:
     REQUIREMENTS['test'].append('more-itertools<6')
     for i, req in enumerate(REQUIREMENTS['install']):
         if req.startswith('cdo'):
-            REQUIREMENTS['install'][i] = 'cdo!=1.5'
+            REQUIREMENTS['install'][i] = 'cdo!=1.5.*'
 
 
 def discover_python_files(paths, ignore):
