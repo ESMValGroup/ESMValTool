@@ -168,7 +168,7 @@ begin
         delete(cfin)
         if (VARS(vv).eq."lwpStderr") then
           cfin = fin->Cloud_Fraction_Mean_Mean
-          ctot = tofloat(ctot * cfin@scale_factor + cfin@add_offset)
+          ctot = tofloat(cfin * cfin@scale_factor + cfin@add_offset)
           delete(cfin)
           cif = where(cf.gt.0.999, cf@_FillValue, cf)
           cf = 1.0 - (1.0 - ctot) / (1.0 - cif)
@@ -217,7 +217,6 @@ begin
       end if
       clat := lat_attrib(output&lat)
       output&lat := clat
-      log_info(min(clat) + "  " + max(clat))
       delete(lat)
 
       ; Set reformatted longitude dimension
