@@ -4,7 +4,18 @@ import os
 
 import iris
 
+import yaml
+
 logger = logging.getLogger(__name__)
+
+
+def _read_cmor_config(cmor_config):
+    """Read cmor configuration in a dict."""
+    reg_path = os.path.join(
+        os.path.dirname(__file__), 'cmor_config', cmor_config)
+    with open(reg_path, 'r') as file:
+        cfg = yaml.safe_load(file)
+    return cfg
 
 
 def _convert_timeunits(cube, start_year):

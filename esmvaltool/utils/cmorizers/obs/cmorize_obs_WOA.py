@@ -37,94 +37,33 @@ from cf_units import Unit
 
 from esmvaltool.utils.cmorizers.obs.utilities import (_add_metadata,
                                                       _convert_timeunits,
+                                                      _read_cmor_config,
                                                       _save_variable)
 
 logger = logging.getLogger(__name__)
 
-timestamp = datetime.datetime.utcnow()
-timestamp_format = "%Y-%m-%d %H:%M:%S"
-
 # used vars
 ALL_VARS = ['thetao', 'so', 'no3', 'po4', 'si', 'o2']
-
-# project at hand
-proj = {
-    'dataset': 'WOA',
-    'version': 'L3',
-    'realm': 'clim',
-    'field': 'TO3Y',
-    'frequency': {
-        'thetao': 'Omon',
-        'so': 'Omon',
-        'no3': 'Oyr',
-        'po4': 'Oyr',
-        'si': 'Oyr',
-        'o2': 'Oyr'
-    },
-    'metadata_attributes': {
-        'tier': '2',
-        'source': 'https://data.nodc.noaa.gov/woa/WOA13/DATAv2/',
-        'comment': 'cmorized for ESMValTool v2',
-        'CMOR conventions': 'CF/CMOR3',
-        'CMOR created': timestamp.strftime(timestamp_format)
-    }
-}
 
 # all years to be analyzed
 ALL_YEARS = [
     2000,
 ]
 
-# specific CMOR nomenclature items
-VAR_TO_FILENAME = {
-    'thetao': 'woa13_decav81B0_t',
-    'so': 'woa13_decav81B0_s',
-    'o2': 'woa13_all_o',
-    'no3': 'woa13_all_n',
-    'po4': 'woa13_all_p',
-    'si': 'woa13_all_i'
-}
-
-# Reference year
-REF_YEAR = 2000
-
-# specific fields names from raw obs files
-FIELDS = {
-    'si':
-    'Objectively analyzed mean fields for moles_concentration_of_silicate_in_sea_water at standard depth levels.',
-    'thetao':
-    'Objectively analyzed mean fields for sea_water_temperature at standard depth levels.',
-    'so':
-    'Objectively analyzed mean fields for salinity at standard depth levels.',
-    'po4':
-    'Objectively analyzed mean fields for moles_concentration_of_phosphate_in_sea_water at standard depth levels.',
-    'no3':
-    'Objectively analyzed mean fields for moles_concentration_of_nitrate_in_sea_water at standard depth levels.',
-    'o2':
-    'Average of all unflagged interpolated values at each standard depth level for volume_fraction_of_oxygen_in_sea_water in each grid-square which contain at least one measurement.'
-}
-
-# cmor standard names
-STANDARD_NAMES = {
-    'si': 'mole_concentration_of_silicate_in_sea_water',
-    'thetao': 'sea_water_potential_temperature',
-    'so': 'sea_water_salinity',
-    'po4': 'mole_concentration_of_phosphate_in_sea_water',
-    'no3': 'mole_concentration_of_nitrate_in_sea_water',
-    'o2': 'mole_concentration_of_dissolved_molecular_oxygen_in_sea_water'
-}
-
-# cmor long names
-LONG_NAMES = {
-    'si': 'Dissolved Silicate Concentration',
-    'thetao': 'Sea Water Potential Temperature',
-    'so': 'Sea Water Salinity',
-    'po4': 'Dissolved Phosphate Concentration',
-    'no3': 'Dissolved Nitrate Concentration',
-    'o2': 'Dissolved Oxygen Concentration'
-}
+# read in CMOR configuration
+cfg = _read_cmor_config('WOA.yml')
+proj = cfg['proj']
+timestamp = datetime.datetime.utcnow()
+timestamp_format = "%Y-%m-%d %H:%M:%S"
+now_time = timestamp.strftime(timestamp_format)
+proj['metadata_attributes']['CMORcreated'] = now_time
+VAR_TO_FILENAME = cfg['VAR_TO_FILENAME']
+FIELDS = cfg['FIELDS']
+STANDARD_NAMES = cfg['STANDARD_NAMES']
+LONG_NAMES = cfg['LONG_NAMES']
 
 
+# define cmorization funcs
 def _fix_coords(cube):
     """Fix the time units and values to something sensible."""
     # fix individual coords
