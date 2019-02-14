@@ -501,6 +501,10 @@ begin
     loc_str = str_sub_str(loc_str, "u", "~F33~m~F21~")
   end if
 
+  if (isStrSubset(loc_str, "degC")) then
+    loc_str = str_sub_str(loc_str, "deg", "~F35~J~F~")
+  end if
+
   leave_msg(scriptname, funcname)
   return(loc_str)
 

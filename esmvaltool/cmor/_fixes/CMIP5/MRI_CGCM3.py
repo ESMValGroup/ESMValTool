@@ -1,3 +1,4 @@
+# pylint: disable=invalid-name, no-self-use, too-few-public-methods
 """Fixes for MRI-CGCM3 model."""
 import numpy as np
 from ..fix import Fix

@@ -1,16 +1,19 @@
+# ESMValTool
 ---
 documentation:
   description: |
     This is an example recipe for a personal diagnostic.
-
     You can run any Python diagnostic of your choice
     without installing ESMValTool as developer or git pushing.
-    Simply include the full path to your script of choice in script:
-    see example: script: /path/to/your/my_little_diagnostic.py
-    An example personal diagnostic can be found in:
+    Simply include the full path to your script of choice in script,
+    see example /path/to/your/my_little_diagnostic.py
+    An example personal diagnostic can be found in
     esmvaltool/diag_scripts/examples/my_little_diagnostic.py
 
   authors:
+    - pred_va
+
+  maintainer:
     - pred_va
 
 datasets:
