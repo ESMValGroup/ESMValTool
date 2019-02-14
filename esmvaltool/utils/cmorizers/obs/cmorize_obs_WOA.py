@@ -1,32 +1,31 @@
 """
-############################################################################.
-
-## REFORMAT SCRIPT FOR WOA Oxygen climatology
-
-############################################################################
-##
-## Tier
-##    2 (freely available data set other than obs4MIPs and ana4MIPs)
-##
-## Source
-##    More Information:
-##      https://www.nodc.noaa.gov/OC5/woa13/woa13data.html
-##    Reference:
-##
-## Last access
-##    16/10/2018
-## Modified
-##    13/02/2019
-## Download and processing instructions
-##    Download:
-##      https://www.nodc.noaa.gov/OC5/woa13/woa13data.html
-##    Processing:
-##        this script (reformat_obs_woa_o2.py)
-##
-## Caveats
-##    ...
-##
-## #########################################################################
+# #############################################################################
+# ESMValTool CMORizer for WOA data
+# #############################################################################
+#
+# Tier
+#    Tier 2: other freely-available dataset.
+#
+# Source
+#    https://data.nodc.noaa.gov/woa/WOA13/DATAv2/
+#
+# Last access
+#    20190131
+#
+# Download and processing instructions
+#    Download the following files:
+#      temperature/netcdf/decav81B0/1.00/woa13_decav81B0_t00_01.nc
+#      salinity/netcdf/decav81B0/1.00/woa13_decav81B0_s00_01.nc
+#      oxygen/netcdf/all/1.00/woa13_all_o00_01.nc
+#      nitrate/netcdf/all/1.00/woa13_all_n00_01.nc
+#      phosphate/netcdf/all/1.00/woa13_all_p00_01.nc
+#      silicate/netcdf/all/1.00/woa13_all_i00_01.nc
+#
+# Modification history
+#    20190131-A_pred_va: adapted to v2.
+#    20190131-A_demo_le: written.
+#
+# #############################################################################
 """
 
 import logging
