@@ -37,6 +37,7 @@ from cf_units import Unit
 
 from esmvaltool.utils.cmorizers.obs.utilities import (_add_metadata,
                                                       _convert_timeunits,
+                                                      _roll_cube_data,
                                                       _read_cmor_config,
                                                       _save_variable)
 
@@ -90,6 +91,8 @@ def _fix_coords(cube):
                     cube.coord('longitude').guess_bounds()
                 cube.attributes['geospatial_lon_min'] = 0.
                 cube.attributes['geospatial_lon_max'] = 360.
+                # remember to roll the data as well
+                cube.data = _roll_cube_data(cube.data, 180, -1)
         # fix latitude
         if cube_coord.var_name in ['lat', 'latitude']:
             logger.info("Fixing latitude...")

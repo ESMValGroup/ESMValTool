@@ -3,6 +3,7 @@ import logging
 import os
 
 import iris
+import numpy as np
 
 import yaml
 
@@ -34,6 +35,12 @@ def _add_metadata(cube, proj):
     for att in proj['metadata_attributes']:
         if att not in cube.metadata.attributes:
             cube.metadata.attributes[att] = proj['metadata_attributes'][att]
+
+
+def _roll_cube_data(data, shift, axis):
+    """Roll a cube data on specified axis."""
+    data = np.roll(data, shift, axis=axis)
+    return data
 
 
 def _save_variable(cube, var, outdir, yr, proj):
