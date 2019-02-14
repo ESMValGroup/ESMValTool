@@ -6,7 +6,7 @@ modeling_realm:    land
 !----------------------------------
 ! Variable attributes:
 !----------------------------------
-standard_name:     leaf_area_index_relative_to_grid_cell_area
+standard_name:
 units:             1
 cell_methods:      time: mean area: mean
 cell_measures:     area: areacella
