@@ -4,7 +4,7 @@
 ; ESMVal project
 ; #############################################################################
 
-load "./diag_scripts/shared/plot/xy_line.ncl"
+load "$diag_scripts/shared/plot/xy_line.ncl"
 
 procedure perfmetrics_ptype_script()
 begin
