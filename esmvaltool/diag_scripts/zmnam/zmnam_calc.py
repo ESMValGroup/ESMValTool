@@ -138,19 +138,10 @@ def zmnam_calc(indir, outdir, src_props):
         eigenval_norm = eigenval[:] / sum_eigenval
 
         # Largest eigenvalue
-        max_eigenval = max(
-            range(len(eigenval_norm)), key=lambda x: eigenval_norm[x])
-
-        # print("Maximum eigenvalue", eigenval_norm[max_eigenval])
-
-        # print("Eigen-analysis, vec - var")
-        # print(np.shape(eigenvec), "-", np.shape(eigenval))
+        max_eigenval = eigenval_norm.argmax()
 
         # PC calculation
         pc = np.dot(zg_da_lp_an[:, :], eigenvec)
-
-        # print("PCs")
-        # print(np.shape(pc))
 
         # Latitude de-weighting
         if lat_weighting is True:
