@@ -164,7 +164,7 @@ diagnostics:
     scripts:
       ta_sp100: &ta_sp100
         script: austral_jet/main.ncl
-        average_ens: True
+        average_ens: true
         styleset: CMIP5
         season: ['ONDJ']
         e13fig10_yr_min: 1979
@@ -308,7 +308,7 @@ diagnostics:
         exp: historical
         start_year: 1979
         end_year: 2005
-        derive: True
+        derive: true
     additional_datasets: *ta_datasets
     scripts:
       uajet_sh850: &uajet_sh850
@@ -380,7 +380,7 @@ diagnostics:
         exp: historical
         start_year: 2000
         end_year: 2005
-        derive: True
+        derive: true
     additional_datasets:
       - {dataset: CERES-EBAF,     project: obs4mips, level: L3B, version: Ed2-7, tier: 1, start_year: 2001}
       - {dataset: ACCESS1-0,      ensemble: r1i1p1}
@@ -679,11 +679,11 @@ diagnostics:
         <<: *absolute_correlation
         script: mder/regression_stepwise.ncl
         p_value: 0.05
-        wregr: True
-        wexit: True
-        smooth: True
+        wregr: true
+        wexit: true
+        smooth: true
         iter: 29
-        cross_validation_mode: False
+        cross_validation_mode: false
 
 # TODO: Add diagnostic
 # <diag>

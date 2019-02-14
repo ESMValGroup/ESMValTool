@@ -207,7 +207,7 @@ begin
 
     ; Plot appearance
     res = True
-    res@tiYAxisString = "(index)"             ; add units title
+    res@tiYAxisString = "W m-2"               ; add units title
     res@tiMainString = season + " ASR " + lat_string + " gradient (" + \
       diag_script_info@wdiag_title(0) + ")"
     res@gsnFrame = False                      ; don't draw yet
@@ -297,7 +297,7 @@ begin
       ; Write files
       val = val_grad(case|:, dataset|idat)
       val@var = var0
-      val@units = "(index)"
+      val@units = "W m-2"
       val@diag_script = (/DIAG_SCRIPT/)
       copy_VarAtts(diag_script_info, val)
       val@dataset = DATASETS(idat)
