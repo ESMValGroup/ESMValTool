@@ -37,8 +37,9 @@ from cf_units import Unit
 
 from esmvaltool.utils.cmorizers.obs.utilities import (_add_metadata,
                                                       _convert_timeunits,
-                                                      _roll_cube_data,
+                                                      _fix_coords,
                                                       _read_cmor_config,
+                                                      _roll_cube_data,
                                                       _save_variable)
 
 logger = logging.getLogger(__name__)
@@ -62,55 +63,6 @@ VAR_TO_FILENAME = cfg['VAR_TO_FILENAME']
 FIELDS = cfg['FIELDS']
 STANDARD_NAMES = cfg['STANDARD_NAMES']
 LONG_NAMES = cfg['LONG_NAMES']
-
-
-# define cmorization funcs
-def _fix_coords(cube):
-    """Fix the time units and values to something sensible."""
-    # fix individual coords
-    for cube_coord in cube.coords():
-        # fix time
-        if cube_coord.var_name == 'time':
-            logger.info("Fixing time...")
-            cube.coord('time').convert_units(
-                Unit('days since 1950-1-1 00:00:00', calendar='gregorian'))
-            if len(cube.coord('time').points) > 1:
-                cube.coord('time').guess_bounds()
-        # fix longitude
-        if cube_coord.var_name in ['lon', 'longitude']:
-            logger.info("Fixing longitude...")
-            cube.coord('longitude').var_name = 'lon'
-            cube.coord('longitude').long_name = 'longitude'
-            if cube.coord('longitude').points[0] < 0.:
-                cube.coord('longitude').points = \
-                    cube.coord('longitude').points + 179.5
-                if not cube.coord('longitude').has_bounds():
-                    cube.coord('longitude').guess_bounds()
-                else:
-                    cube.coord('longitude').bounds = None
-                    cube.coord('longitude').guess_bounds()
-                cube.attributes['geospatial_lon_min'] = 0.
-                cube.attributes['geospatial_lon_max'] = 360.
-                # remember to roll the data as well
-                cube.data = _roll_cube_data(cube.data, 180, -1)
-        # fix latitude
-        if cube_coord.var_name in ['lat', 'latitude']:
-            logger.info("Fixing latitude...")
-            cube.coord('latitude').var_name = 'lat'
-            cube.coord('latitude').long_name = 'latitude'
-            if not cube.coord('latitude').has_bounds():
-                cube.coord('latitude').guess_bounds()
-        if cube_coord.var_name == 'depth':
-            logger.info("Fixing depth...")
-            cube.coord('depth').standard_name = 'depth'
-            cube.coord('depth').long_name = 'ocean depth coordinate'
-            cube.coord('depth').var_name = 'lev'
-
-    # remove CS
-    cube.coord('latitude').coord_system = None
-    cube.coord('longitude').coord_system = None
-
-    return cube
 
 
 def _fix_metadata(cube, var):
@@ -146,6 +98,7 @@ def extract_variable(var, raw_file, out_dir, yr):
             cube.var_name = var
             _convert_timeunits(cube, yr)
             _fix_coords(cube)
+            _roll_cube_data(cube, 180, -1)
             _fix_data(cube, var)
             _fix_metadata(cube, var)
             _add_metadata(cube, proj)
