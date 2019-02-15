@@ -2,7 +2,7 @@
 # project at hand
 proj:
   dataset: 'WOA'
-  version: 'L3'
+  version: '2013v2'
   realm: 'clim'
   field: 'TO3Y'
   frequency: {

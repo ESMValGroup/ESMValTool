@@ -203,7 +203,7 @@ diagnostics:
     #     mip: Oyr
     #    fx_files: [volcello,]
     additional_datasets:
-      - {dataset: WOA,  project: OBS,  type: clim,  version: L3,  start_year: 2000,  end_year: 2000,  tier: 2}
+      - {dataset: WOA,  project: OBS,  type: clim,  version: 2013v2,  start_year: 2000,  end_year: 2000,  tier: 2}
     scripts:
       Global_Volume_Average_timeseries:
         script: ocean/diagnostic_timeseries.py
@@ -320,7 +320,7 @@ diagnostics:
     #     mip: Oyr
     #    fx_files: [areacello, ]
     additional_datasets:
-      - {dataset: WOA,  project: OBS,  type: clim,  version: L3,  start_year: 2000,  end_year: 2000,  tier: 2}
+      - {dataset: WOA,  project: OBS,  type: clim,  version: 2013v2,  start_year: 2000,  end_year: 2000,  tier: 2}
     scripts:
       Global_Volume_Average_timeseries:
         script: ocean/diagnostic_timeseries.py
@@ -379,7 +379,7 @@ diagnostics:
     #     mip: Oyr
     #    fx_files: [volcello,]
     additional_datasets:
-      - {dataset: WOA,  project: OBS,  type: clim,  version: L3,  start_year: 2000,  end_year: 2000,  tier: 2}      
+      - {dataset: WOA,  project: OBS,  type: clim,  version: 2013v2,  start_year: 2000,  end_year: 2000,  tier: 2}
     scripts:
       Global_profile_vs_WOA:
         script: ocean/diagnostic_profiles.py
@@ -453,7 +453,7 @@ diagnostics:
     #     mip: Oyr
     #    fx_files: [areacello, ]
     additional_datasets:
-      - {dataset: WOA,  project: OBS,  type: clim,  version: L3,  start_year: 2000,  end_year: 2000,  tier: 2}      
+      - {dataset: WOA,  project: OBS,  type: clim,  version: 2013v2,  start_year: 2000,  end_year: 2000,  tier: 2}
     scripts:
       Global_Ocean_surface_map:
         script: ocean/diagnostic_maps.py
@@ -535,7 +535,7 @@ diagnostics:
     #     field: TO3Y
     #     mip: Oyr
     additional_datasets:
-      - {dataset: WOA,  project: OBS,  type: clim,  version: L3,  start_year: 2000,  end_year: 2000,  tier: 2}      
+      - {dataset: WOA,  project: OBS,  type: clim,  version: 2013v2,  start_year: 2000,  end_year: 2000,  tier: 2}
     scripts:
       Transects_vs_WOA:
         script: ocean/diagnostic_transects.py
