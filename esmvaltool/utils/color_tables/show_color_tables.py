@@ -208,5 +208,11 @@ def main(args):
         main_plot_python_cm(colorpath, outpath)
 
 
+def run():
+    """Run the program."""
+    args = get_args()
+    main(args)
+
+
 if __name__ == '__main__':
-    main(get_args())
+    run()
