@@ -307,8 +307,8 @@ procedure log_provenance(nc_file:string,
 local funcname, scriptname, verbosity
 begin
 
-  funcname = "ESMValMD"
-  scriptname = "diag_scripts/shared/lib/meta_data.ncl"
+  funcname = "log_provenance"
+  scriptname = "interface_scripts/logging.ncl"
   enter_msg(scriptname, funcname)
 
   str0 = "? " + nc_file
