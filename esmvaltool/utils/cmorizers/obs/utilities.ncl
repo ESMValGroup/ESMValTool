@@ -151,7 +151,7 @@ begin
 
   end if
 
-  ; Instantaneous case
+  ; 3-hourly case
   ; Nothing to check
 
   ; Set calendar
@@ -181,7 +181,8 @@ function time_attrib(coord:numeric,
 ;    coord: input time coordinate.
 ;    year1: start year.
 ;    year2: end year.
-;    frequency: time frequency ("M" for monthly, "D" for daily).
+;    frequency: time frequency ("M" for monthly, "D" for daily, other
+;               arguments are ignored)
 ;
 ; Return value
 ;    An array of the same dimensionality of coord.
@@ -457,7 +458,12 @@ begin
     end if
     tmp = ind(str_get_field(data(:, 0), 1, ":").eq."variable_entry")
     if (dimsizes(tmp).gt.1) then
-      idxd = tmp(min(ind(tmp.gt.idxu))) - 2
+      next = min(ind(tmp.gt.idxu))
+      if (.not.ismissing(next))
+        idxd = tmp(min(ind(tmp.gt.idxu))) - 2
+      else
+        idxd = dimsizes(data(:, 0)) - 1
+      end if
       data := data(idxu:idxd, 0)
       delete(idxd)
     else

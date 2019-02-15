@@ -58,11 +58,14 @@ def check_input_data(cfg):
     if len(projects) > 1:
         raise ValueError("This diagnostic supports only unique 'project' "
                          "attributes, got {}".format(projects))
+    project = projects[0]
+    if project not in EXP_4XCO2:
+        raise ValueError("Project '{}' not supported yet".format(project))
     exp_group = group_metadata(input_data, 'exp')
     exps = set(exp_group.keys())
-    if exps != {'piControl', EXP_4XCO2[projects[0]]}:
+    if exps != {'piControl', EXP_4XCO2[project]}:
         raise ValueError("This diagnostic needs 'piControl' and '{}' "
-                         "experiments, got {}".format(EXP_4XCO2[projects[0]],
+                         "experiments, got {}".format(EXP_4XCO2[project],
                                                       exps))
 
 
