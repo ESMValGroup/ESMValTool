@@ -16,7 +16,7 @@ dependencies:
   - ncurses=6.1=hfc679d8_1
   - r-base
   - r-rcpp
-  - cdo
+  - cdo=1.9.3
   # TODO: add julia
 
   - pip:
