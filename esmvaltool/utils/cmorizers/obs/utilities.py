@@ -107,9 +107,14 @@ def _fix_coords(cube):
             _fix_bounds(cube, cube.coord('latitude'))
 
         # fix depth
-        if cube_coord.var_name == 'depth':
+        if cube_coord.var_name == 'lev':
             logger.info("Fixing depth...")
             _fix_bounds(cube, cube.coord('depth'))
+
+        # fix air_pressure
+        if cube_coord.var_name == 'air_pressure':
+            logger.info("Fixing air pressure...")
+            _fix_bounds(cube, cube.coord('air_pressure'))
 
     # remove CS
     cube.coord('latitude').coord_system = None
