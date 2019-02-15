@@ -18,8 +18,8 @@
 ;
 ; #############################################################################
 
-load "./diag_scripts/shared/set_operators.ncl"
-load "./diag_scripts/shared/plot/aux_plotting.ncl"
+load "$diag_scripts/shared/set_operators.ncl"
+load "$diag_scripts/shared/plot/aux_plotting.ncl"
 
 ; #############################################################################
 undef("profile_plev")
