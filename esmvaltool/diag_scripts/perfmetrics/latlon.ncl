@@ -4,7 +4,7 @@
 ; ESMVal project
 ; #############################################################################
 
-load "./diag_scripts/shared/plot/contour_maps.ncl"
+load "$diag_scripts/shared/plot/contour_maps.ncl"
 
 procedure perfmetrics_ptype_script()
 begin
@@ -40,7 +40,7 @@ begin
     var_avg = time_operations(var, start_year, end_year, "average", \
                               diag_script_info@time_avg, True)
     var_std = interannual_variability(var, start_year, end_year, \
-                                      diag_script_info@time_avg)
+                                      diag_script_info@time_avg, "None")
     delete(var)
 
     ; Write output

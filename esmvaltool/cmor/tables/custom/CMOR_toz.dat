@@ -1,6 +1,6 @@
 SOURCE: CCMI1
 !============
-variable_entry:    toz 
+variable_entry:    toz
 !============
 modeling_realm:    atmos
 !----------------------------------
