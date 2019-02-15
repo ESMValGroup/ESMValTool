@@ -24,20 +24,20 @@
 ;
 ; #############################################################################
 
-load "./interface_scripts/auxiliary.ncl"
-load "./interface_scripts/data_handling.ncl"
-load "./interface_scripts/logging.ncl"
+load "$diag_scripts/../interface_scripts/auxiliary.ncl"
+load "$diag_scripts/../interface_scripts/data_handling.ncl"
+load "$diag_scripts/../interface_scripts/logging.ncl"
 
 begin
   loadscript(exact_panel_position_file)
 end
 
-load "./diag_scripts/aux/SAMonsoon/SAMonsoon.ncl"
-load "./diag_scripts/aux/SAMonsoon/SAMonsoon_panel_positions.ncl"
-load "./diag_scripts/aux/SAMonsoon/exact_panel_positions_generic.ncl"
+load "$diag_scripts/aux/SAMonsoon/SAMonsoon.ncl"
+load "$diag_scripts/aux/SAMonsoon/SAMonsoon_panel_positions.ncl"
+load "$diag_scripts/aux/SAMonsoon/exact_panel_positions_generic.ncl"
 
-load "./diag_scripts/shared/plot/style.ncl"
-load "./diag_scripts/shared/plot/xy_line.ncl"
+load "$diag_scripts/shared/plot/style.ncl"
+load "$diag_scripts/shared/plot/xy_line.ncl"
 
 ; #############################################################################
 undef("get_title_suffix")
