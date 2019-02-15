@@ -174,6 +174,17 @@ begin
   output2 = tmp
   delete(tmp)
 
+  ; Add height coordinate
+  output1@coordinates = "height"
+  output2@coordinates = "height"
+  height = 2.d
+  height!0 = "ncl_scalar"
+  height@units = "m"
+  height@axis = "Z"
+  height@positive = "up"
+  height@long_name = "height"
+  height@standard_name = "height"
+
   ; Write temperature time-series
   gAtt = set_global_atts( \
     OBSNAME, TIER, \
@@ -184,6 +195,9 @@ begin
   fout = output_dir_path + "OBS_HadCRUT4_ground_1_" + MIP + "_" + VAR + "_" + \
     YEAR1 + "01-" + YEAR2 + "12.nc"
   write_nc(fout, VAR, output1, gAtt)
+  w = addfile(fout, "w")
+  w->height = height
+  delete(w)
   delete(gAtt)
   delete(output1)
 
@@ -196,6 +210,9 @@ begin
   fout = output_dir_path + "OBS_HadCRUT4_clim_1_" + MIP + "_" + VAR + "_" + \
     "197601-197612.nc"
   write_nc(fout, VAR, output2, gAtt)
+  w = addfile(fout, "w")
+  w->height = height
+  delete(w)
   delete(gAtt)
   delete(output2)
 
