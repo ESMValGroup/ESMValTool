@@ -54,19 +54,20 @@ begin
 
   ; Variable
   VAR0 = variable_info[0]
+  var0 = VAR0@short_name
   DIM_VAR = ListCount(variable_info)
   if (DIM_VAR .gt. 1) then
     error_msg("w", DIAG_SCRIPT, "", "this diagnostic supports only one " + \
-              "variable, processing " + VAR0@short_name)
+              "variable, processing " + var0)
   end if
 
   ; Input data
-  INFO0 = select_metadata_by_name(input_file_info, VAR0@short_name)
+  INFO0 = select_metadata_by_name(input_file_info, var0)
   DATASETS = metadata_att_as_array(INFO0, "dataset")
   DIM_DAT = dimsizes(DATASETS)
 
   log_info("++++++++++++++++++++++++++++++++++++++++++")
-  log_info(DIAG_SCRIPT + " (var: " + VAR0@short_name + ")")
+  log_info(DIAG_SCRIPT + " (var: " + var0 + ")")
   log_info("++++++++++++++++++++++++++++++++++++++++++")
 
   ; Write references (TODO)
@@ -315,7 +316,7 @@ begin
   ; Special case for lai:
   ; Since datasets have different land covers, all sparse vegetated points must
   ; be masked
-  if (isStrSubset(VAR0@short_name, "lai")) then
+  if (isStrSubset(var0, "lai")) then
     all_data_yearly = where(all_data_yearly .ge. 0.025, \
                             all_data_yearly, all_data_yearly@_FillValue)
   end if
@@ -355,7 +356,7 @@ begin
   ; Flux variables need to be integrated and area weighted ("sum"), non-flux
   ; variables need to be averaged, area weighted and normalized ("average")
   if (all_data_mean@units .eq. "kg m-2 s-1" .and. \
-      VAR0@short_name .ne. "pr") then
+      var0 .ne. "pr") then
     sp_opt = "sum"
   else
     sp_opt = "average"
@@ -411,22 +412,22 @@ begin
     system("mkdir -p " + work_dir)
 
     ; Mean
-    new_path = work_dir + "mean_" + VAR0@short_name + ".nc"
-    regional_mean@var = VAR0@short_name
+    new_path = work_dir + "mean_" + var0 + ".nc"
+    regional_mean@var = var0
     regional_mean@diag_script = DIAG_SCRIPT
     regional_mean@ncdf = new_path
     ncdf_outfile = ncdf_write(regional_mean, new_path)
 
     ; Trend
-    new_path = work_dir + "trend_" + VAR0@short_name + ".nc"
-    regional_trend@var = VAR0@short_name
+    new_path = work_dir + "trend_" + var0 + ".nc"
+    regional_trend@var = var0
     regional_trend@diag_script = DIAG_SCRIPT
     regional_trend@ncdf = new_path
     ncdf_outfile = ncdf_write(regional_trend, new_path)
 
     ; MVI
-    new_path = work_dir + "MVI_" + VAR0@short_name + ".nc"
-    regional_mvi@var = VAR0@short_name
+    new_path = work_dir + "MVI_" + var0 + ".nc"
+    regional_mvi@var = var0
     regional_mvi@diag_script = DIAG_SCRIPT
     regional_mvi@ncdf = new_path
     ncdf_outfile = ncdf_write(regional_mvi, new_path)
@@ -438,7 +439,7 @@ begin
 
   if (config_user_info@write_plots) then
     ; Set plot output file
-    outfile = plot_dir + VAR0@short_name + "_" + region@name
+    outfile = plot_dir + var0 + "_" + region@name
     wks = gsn_open_wks(file_type, outfile)
     gsn_define_colormap(wks, "BlAqGrYeOrReVi200")
     gsn_reverse_colormap(wks)
@@ -481,9 +482,9 @@ begin
     delete(tmp)
 
     ; Draw a 3D scatterplot
-    data_arr@res_tiMainString = VAR0@short_name + " - " + \
+    data_arr@res_tiMainString = var0 + " - " + \
       diag_script_info@region
-    plot = scatterplot3D(wks, data_arr, VAR0@short_name, levs)
+    plot = scatterplot3D(wks, data_arr, var0, levs)
     log_info("Wrote " + outfile + "." + file_type)
     draw(plot)
     frame(wks)
@@ -495,7 +496,7 @@ begin
     ; alltags := array_append_record(alltags, \
     ;                                (/"PT_scatter", "PT_zonal", "ST_mean", \
     ;                                 "ST_trend", "ST_clim", "ST_var"/), 0)
-    ; caption =  "Scatterplot for multiyear average " + VAR0@short_name + \
+    ; caption =  "Scatterplot for multiyear average " + var0 + \
     ;            " in x axis, its linear trend in y axis, and MVI." + \
     ;            " Like Anav et al. Fig 1 bottom"
     ; id = DIAG_SCRIPT

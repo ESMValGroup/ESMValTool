@@ -88,10 +88,11 @@ begin
 
   ; Variable
   VAR0 = variable_info[0]
+  var0 = VAR0@short_name
   DIM_VAR = ListCount(variable_info)
   err = False
   if (DIM_VAR .eq. 2) then
-    if (variable_info[1]@short_name .ne. VAR0@short_name) then
+    if (variable_info[1]@short_name .ne. var0) then
       err = True
     end if
   else if (DIM_VAR .gt. 2) then
@@ -100,17 +101,17 @@ begin
   end if
   if (err) then
     error_msg("w", DIAG_SCRIPT, "", "this diagnostic supports only one " + \
-              "variable, processing " + VAR0@short_name)
+              "variable, processing " + var0)
   end if
 
   ; Input data
-  INFO0 = select_metadata_by_name(input_file_info, VAR0@short_name)
+  INFO0 = select_metadata_by_name(input_file_info, var0)
   DATASETS = metadata_att_as_array(INFO0, "dataset")
   DIM_DAT = dimsizes(DATASETS)
   DIM_DAT_ORIG = DIM_DAT
 
   log_info("++++++++++++++++++++++++++++++++++++++++++")
-  log_info(DIAG_SCRIPT + " (var: " + VAR0@short_name + ")")
+  log_info(DIAG_SCRIPT + " (var: " + var0 + ")")
   log_info("++++++++++++++++++++++++++++++++++++++++++")
 
   ; Write references (TODO)
@@ -226,7 +227,7 @@ begin
     ; Set type of area operation (flux vs. non-flux variables)
     ; Flux variables need to be integrated and area weighted ("sum"), non-flux
     ; variables need to be averaged, area weighted and normalized ("average")
-    if (data_var@units .eq. "kg m-2 s-1" .and. VAR0@short_name .ne. "pr") then
+    if (data_var@units .eq. "kg m-2 s-1" .and. var0 .ne. "pr") then
       sp_opt = "sum"
     else
       sp_opt = "average"
@@ -255,7 +256,7 @@ begin
     ; Special case for lai:
     ; Since datasets have different land covers, all sparse vegetated points
     ; must be masked
-    if (isStrSubset(VAR0@short_name, "lai")) then
+    if (isStrSubset(var0, "lai")) then
       data_yearly = where(data_yearly .ge. 0.025, data_yearly, \
                           data_yearly@_FillValue)
       data_monthly = where(data_monthly .ge. 0.025, data_monthly, \
@@ -391,17 +392,17 @@ begin
     system("mkdir -p " + work_dir)
 
     ; Yearly data
-    new_path = work_dir + "_yearly_" + VAR0@short_name + "_" + region@name + \
+    new_path = work_dir + "_yearly_" + var0 + "_" + region@name + \
       ".nc"
-    all_data_yearly@var = VAR0@short_name
+    all_data_yearly@var = var0
     all_data_yearly@diag_script = DIAG_SCRIPT
     all_data_yearly@ncdf = new_path
     ncdf_outfile = ncdf_write(all_data_yearly, new_path)
 
     ; Monthly data
-    new_path = work_dir + "_monthly_" + VAR0@short_name + "_" + region@name + \
+    new_path = work_dir + "_monthly_" + var0 + "_" + region@name + \
       ".nc"
-    all_data_monthly@var = VAR0@short_name
+    all_data_monthly@var = var0
     all_data_monthly@diag_script = DIAG_SCRIPT
     all_data_monthly@ncdf = new_path
     ncdf_outfile = ncdf_write(all_data_monthly, new_path)
@@ -430,20 +431,20 @@ begin
       end if
 
       ; Draw plot
-      outfile = plot_dir + VAR0@short_name + "_cycle_" + region@name
+      outfile = plot_dir + var0 + "_cycle_" + region@name
       wks = gsn_open_wks(file_type, outfile)
       wks@legendfile = outfile + "_legend"
-      data_arr@res_tiYAxisString = VAR0@short_name + " [" + \
+      data_arr@res_tiYAxisString = var0 + " [" + \
         format_units(data_arr@units) + "]"
       data_arr@res_tiMainString = region@name
-      plot = cycle_plot(wks, data_arr, VAR0@short_name, INFO0)
+      plot = cycle_plot(wks, data_arr, var0, INFO0)
       draw(plot)
       frame(wks)
 
       ; ; Add meta data (TODO)
       ; alltags = array_append_record(tags, region@DM_tag, 0)
       ; alltags := array_append_record(alltags, (/"PT_seas", "ST_mean"/), 0)
-      ; caption = "Seasonal Cycle plot for " + VAR0@short_name + \
+      ; caption = "Seasonal Cycle plot for " + var0 + \
       ;   " over the period " + \
       ;   start_year + "-" + end_year + ", similar to Anav et al., 2013, " + \
       ;   "Fig. 9."
@@ -512,10 +513,10 @@ begin
       delete([/annual_mean, annual_std/])
 
       ; Draw plot
-      outfile = plot_dir + VAR0@short_name + "_errorbar_" + region@name
+      outfile = plot_dir + var0 + "_errorbar_" + region@name
       wks = gsn_open_wks(file_type, outfile)
-      data_arr@res_tiMainString = VAR0@short_name + " - " + region@name
-      plot = errorbar_plot(wks, data_arr, VAR0@short_name)
+      data_arr@res_tiMainString = var0 + " - " + region@name
+      plot = errorbar_plot(wks, data_arr, var0)
       draw(plot)
       frame(wks)
 
@@ -523,7 +524,7 @@ begin
       ; alltags = array_append_record(tags, region@DM_tag, 0)
       ; alltags := array_append_record(alltags, (/"PT_errorbar", "ST_stddev", \
       ;                                          "ST_mean"/),  0)
-      ; caption = "Errorbar plot for " + VAR0@short_name + \
+      ; caption = "Errorbar plot for " + var0 + \
       ;   " over the period " + \
       ;   start_year + "-" + end_year + ", similar to Anav et al., 2013, " + \
       ;   "Fig. 6."
@@ -587,18 +588,18 @@ begin
       delete([/annual_mean, annual_std/])
 
       ; Draw plot
-      outfile = plot_dir + VAR0@short_name + "_scatter_" + region@name
+      outfile = plot_dir + var0 + "_scatter_" + region@name
       wks = gsn_open_wks(file_type, outfile)
       wks@legendfile = outfile + "_legend"
-      data_arr@res_tiMainString = VAR0@short_name + " - " + region@name
-      plot = scatterplot_markers(wks, data_arr, VAR0@short_name, INFO0)
+      data_arr@res_tiMainString = var0 + " - " + region@name
+      plot = scatterplot_markers(wks, data_arr, var0, INFO0)
       draw(plot)
       frame(wks)
 
       ; ; Add meta data (TODO)
       ; alltags = array_append_record(tags, region@DM_tag, 0)
       ; alltags := array_append_record(alltags, (/"PT_scatter", "ST_mean"/), 0)
-      ; caption = "Scatterplot for " + VAR0@short_name + \
+      ; caption = "Scatterplot for " + var0 + \
       ;   " over the period " + \
       ;   start_year + "-" + end_year + \
       ;   ", similar to Anav et al., 2013, Fig. 17."
@@ -642,7 +643,7 @@ begin
       end if
 
       ; Get name of plot
-      outfile = plot_dir + VAR0@short_name + "_evolution_" + region@name
+      outfile = plot_dir + var0 + "_evolution_" + region@name
 
       ; Get index of reference dataset
       obs_ind = ind(DATASETS .eq. \
@@ -702,10 +703,10 @@ begin
 
       wks = gsn_open_wks(file_type, outfile)
       wks@legendfile = outfile + "_legend"
-      plot1 = evolution_base_plot(wks, data_arr, VAR0@short_name, anomaly)
+      plot1 = evolution_base_plot(wks, data_arr, var0, anomaly)
 
       ; After overlaying the plots add titles and legend manually
-      wks_out = get_wks(wks, DIAG_SCRIPT, VAR0@short_name)
+      wks_out = get_wks(wks, DIAG_SCRIPT, var0)
       res_lines = True                    ; polyline mods desired
       res_lines@gsLineColor = "black"
       res_lines@gsLineDashPattern = 16
@@ -748,7 +749,7 @@ begin
       ; else
       ;   fignum = "1 top"
       ; end if
-      ; caption = "Time series of " + VAR0@short_name + tagstr + \
+      ; caption = "Time series of " + var0 + tagstr + \
       ;   ", similar to Anav et al., 2013, Fig." + fignum
       ; id = DIAG_SCRIPT
       ; isize = DIM_DAT_ORIG * DIM_VAR
