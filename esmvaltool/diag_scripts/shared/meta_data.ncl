@@ -9,9 +9,9 @@
 ;
 ; #############################################################################
 
-load "interface_scripts/logging.ncl"
-load "interface_scripts/interface.ncl"
-load "interface_scripts/auxiliary.ncl"
+load "$diag_scripts/../interface_scripts/logging.ncl"
+load "$diag_scripts/../interface_scripts/interface.ncl"
+load "$diag_scripts/../interface_scripts/auxiliary.ncl"
 
 ; #############################################################################
 undef("ESMValMD")

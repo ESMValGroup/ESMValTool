@@ -17,16 +17,16 @@
 ;      http://maps.elie.ucl.ac.be/CCI/viewer/download/lc-user-tools-3.14.zip
 ;    Unpack and run the CCI-LC Tools on each of the NetCDF files as follows:
 ;      bash lc-user-tools-3.14/bin/aggregate-map.sh \
-;      -PgridName=GEOGRAPHIC_LAT_LON -PnumMajorityClasses=1 \
-;      -PoutputAccuracy=false -PoutputPFTClasses=true \
-;      -PoutputLCCSClasses=false -PnumRows=360 <inputfile.nc>
-;    Put the resulting processed data in the input_dir_path.
+;        -PgridName=GEOGRAPHIC_LAT_LON -PnumMajorityClasses=1 \
+;        -PoutputAccuracy=false -PoutputPFTClasses=true \
+;        -PoutputLCCSClasses=false -PnumRows=360 <inputfile.nc>
+;    Put the resulting processed data in input_dir_path.
 ;
 ; Caveat
-;   The CCI-LC Tools must be applied before running this script.
-;   The CCI-LC Tools require Java Version 7 or higher.
-;   The input data are available for a single year and are copied over to
-;   generate a time series over their time range of validity.
+;    The CCI-LC Tools must be applied before running this script.
+;    The CCI-LC Tools require Java Version 7 or higher.
+;    The input data are available for a single year and are copied over to
+;    generate a time series over their time range of validity.
 ;
 ; Modification history
 ;    20190110-A_righ_ma: rewritten in NCL for v2.
@@ -52,8 +52,8 @@ begin
   ; Version
   VERSION = "L4-LCCS-Map-300m-P5Y-aggregated-0.500000Deg"
 
-  ; Field
-  FIELD = "T2Ms"
+  ; MIP
+  MIP = "Lmon"
 
   ; CMOR table
   CMOR_TABLE = \
@@ -82,7 +82,7 @@ begin
   do yy = 0, dimsizes(YEARS) - 1
 
     fname = \
-      input_dir_path + "/ESACCI-LC-" + VERSION + "-" + YEARS(yy) + "-v1.6.1.nc"
+      input_dir_path + "ESACCI-LC-" + VERSION + "-" + YEARS(yy) + "-v1.6.1.nc"
 
     f = addfile(fname, "r")
 
@@ -132,7 +132,7 @@ begin
       ; Reapply mask of missing values
       xx = where(lmask, xx@_FillValue, xx)
 
-      ; Define output field
+      ; Define output array
       output = \
         new((/dimsizes(time), dimsizes(xx&lat), dimsizes(xx&lon)/), float)
       output!0 = "time"
@@ -183,23 +183,15 @@ begin
       end if
 
       ; Set global attributes
-      gAtt = True
-      gAtt@history       = "Created on " + systemfunc("date")
-      gAtt@host          = systemfunc("echo $HOST")
-      gAtt@user          = systemfunc("echo $USER")
-      gAtt@period        = YEAR1 + "-" + YEAR2
-      gAtt@field         = FIELD
-      gAtt@tier          = TIER
-      gAtt@source        = "ftp://anon-ftp.ceda.ac.uk/neodc/esacci/" + \
-        "land_cover/data/land_cover_maps/"
-      gAtt@reference     = "Defourny, P., et al., 2015. ESA Land Cover " + \
-        "Climate Change Initiative (ESA LC_cci) data"
-      gAtt@title = OBSNAME + " satellite data CMORized for the ESMValTool v2.0"
-      gAtt@conventions = "CF/CMOR"
+      gAtt = set_global_atts( \
+        OBSNAME, TIER, \
+        "ftp://anon-ftp.ceda.ac.uk/neodc/esacci/land_cover/data/", \
+        "Defourny et al.. ESA Land Cover " + \
+        "Climate Change Initiative (ESA LC_cci) data, 2015", "")
 
       ; Outfile
-      fout = output_dir_path + "/" + \
-        "OBS_" + OBSNAME + "_sat_" + VERSION + "_" + FIELD + "_" + \
+      fout = output_dir_path + \
+        "OBS_" + OBSNAME + "_sat_" + VERSION + "_" + MIP + "_" + \
         VARIABLES(vv) + "_" + YEAR1 + "01-" + YEAR2 + "12.nc"
 
       ; Write variable
