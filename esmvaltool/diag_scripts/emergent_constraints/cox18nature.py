@@ -62,9 +62,16 @@ PSI_ATTRS = {
 }
 
 
-def _get_ancestor_files(cfg, obs_name, project='CMIP5'):
+def _get_ancestor_files(cfg, obs_name, projects=None):
     """Get ancestor files for provenance."""
-    datasets = select_metadata(cfg['input_data'].values(), project=project)
+    if projects is None:
+        projects = _get_project(cfg)
+    if isinstance(projects, str):
+        projects = [projects]
+    datasets = []
+    for project in projects:
+        datasets.extend(
+            select_metadata(cfg['input_data'].values(), project=project))
     datasets.extend(
         select_metadata(cfg['input_data'].values(), dataset=obs_name))
     return [d['filename'] for d in datasets]
@@ -83,7 +90,7 @@ def _get_model_color(model, lambda_cube):
 def _plot_model_point(model, psi_cube, ecs_cube, lambda_cube):
     """Plot a single model point for emergent relationship."""
     col = _get_model_color(model, lambda_cube)
-    style = plot.get_dataset_style(model, 'cox18nature.yml')
+    style = plot.get_dataset_style(model, 'cox18nature')
     AXES.plot(
         psi_cube.extract(iris.Constraint(dataset=model)).data,
         ecs_cube.extract(iris.Constraint(dataset=model)).data,
@@ -96,7 +103,7 @@ def _plot_model_point(model, psi_cube, ecs_cube, lambda_cube):
 
 def _get_line_plot_legend():
     """Add legend for line plots."""
-    color_obs = plot.get_dataset_style('OBS', 'cox18nature.yml')['color']
+    color_obs = plot.get_dataset_style('OBS', 'cox18nature')['color']
     handles = [
         mlines.Line2D([], [],
                       color=COLOR_SMALL_LAMBDA,
@@ -112,6 +119,16 @@ def _get_line_plot_legend():
                       label='Observations'),
     ]
     return AXES.legend(handles=handles, loc='upper left')
+
+
+def _get_project(cfg):
+    """Extract project from cfg."""
+    input_data = cfg['input_data'].values()
+    projects = list(group_metadata(input_data, 'project').keys())
+    projects = [p for p in projects if 'obs' not in p.lower()]
+    if len(projects) == 1:
+        return projects[0]
+    return projects
 
 
 def _save_fig(cfg, basename, legend=None):
@@ -171,12 +188,13 @@ def plot_temperature_anomaly(cfg, tas_cubes, lambda_cube, obs_name):
     filename = 'temperature_anomaly_{}'.format(obs_name)
     netcdf_path = get_diagnostic_filename(filename, cfg)
     io.save_1d_data(tas_cubes, netcdf_path, 'year', TAS_ATTRS)
+    project = _get_project(cfg)
     provenance_record = get_provenance_record(
-        "Simulated change in global temperature from CMIP5 models (coloured "
+        "Simulated change in global temperature from {} models (coloured "
         "lines), compared to the global temperature anomaly from the {} "
         "dataset (black dots). The anomalies are relative to a baseline "
-        "period of 1961-1990.".format(obs_name), ['anomaly'], ['times'],
-        _get_ancestor_files(cfg, obs_name))
+        "period of 1961-1990.".format(project, obs_name), ['anomaly'],
+        ['times'], _get_ancestor_files(cfg, obs_name))
 
     # Plot
     if cfg['write_plots']:
@@ -189,7 +207,7 @@ def plot_temperature_anomaly(cfg, tas_cubes, lambda_cube, obs_name):
                 cube.coord('year').points,
                 cube.data,
                 color=_get_model_color(model, lambda_cube))
-        obs_style = plot.get_dataset_style('OBS', 'cox18nature.yml')
+        obs_style = plot.get_dataset_style('OBS', 'cox18nature')
         obs_cube = tas_cubes[obs_name]
         AXES.plot(
             obs_cube.coord('year').points,
@@ -218,14 +236,15 @@ def plot_psi(cfg, psi_cubes, lambda_cube, obs_name):
     filename = 'temperature_variability_metric_{}'.format(obs_name)
     netcdf_path = get_diagnostic_filename(filename, cfg)
     io.save_1d_data(psi_cubes, netcdf_path, 'year', PSI_ATTRS)
+    project = _get_project(cfg)
     provenance_record = get_provenance_record(
-        "Psi metric of variability versus time, from the CMIP5 models "
-        "(coloured lines), and the {0} observational data (black circles). "
-        "The psi values are calculated for windows of width {1} yr, after "
-        "linear de-trending in each window. These {1}-yr windows are shown "
-        "for different end times.".format(obs_name, cfg.get(
-            'window_length', 55)), ['corr', 'var'], ['times'],
-        _get_ancestor_files(cfg, obs_name))
+        "Psi metric of variability versus time, from the {0} models "
+        "(coloured lines), and the {1} observational data (black circles). "
+        "The psi values are calculated for windows of width {2} yr, after "
+        "linear de-trending in each window. These {2}-yr windows are shown "
+        "for different end times.".format(project, obs_name,
+                                          cfg.get('window_length', 55)),
+        ['corr', 'var'], ['times'], _get_ancestor_files(cfg, obs_name))
 
     # Plot
     if cfg['write_plots']:
@@ -238,7 +257,7 @@ def plot_psi(cfg, psi_cubes, lambda_cube, obs_name):
                 cube.coord('year').points,
                 cube.data,
                 color=_get_model_color(model, lambda_cube))
-        obs_style = plot.get_dataset_style('OBS', 'cox18nature.yml')
+        obs_style = plot.get_dataset_style('OBS', 'cox18nature')
         obs_cube = psi_cubes[obs_name]
         AXES.plot(
             obs_cube.coord('year').points,
@@ -352,10 +371,11 @@ def plot_pdf(cfg, psi_cube, ecs_cube, obs_cube):
     cube.add_aux_coord(
         iris.coords.AuxCoord(ecs_lin, **ih.convert_to_iris(ECS_ATTRS)), 0)
     io.save_iris_cube(cube, netcdf_path)
+    project = _get_project(cfg)
     provenance_record = get_provenance_record(
         "The PDF for ECS. The orange histograms show the prior distributions "
-        "that arise from equal weighting of the CMIP5 models in 0.5 K bins.",
-        ['mean'], ['other'],
+        "that arise from equal weighting of the {} models in 0.5 K bins.".
+        format(project), ['mean'], ['other'],
         _get_ancestor_files(cfg, obs_cube.attributes['dataset']))
 
     # Plot
@@ -372,7 +392,7 @@ def plot_pdf(cfg, psi_cube, ecs_cube, obs_cube):
             range=(2.0, 5.0),
             density=True,
             color='orange',
-            label='CMIP5 models')
+            label='{} models'.format(project))
 
         # Plot appearance
         AXES.set_title('PDF of emergent constraint')
@@ -407,12 +427,13 @@ def plot_cdf(cfg, psi_cube, ecs_cube, obs_cube):
     cube.add_aux_coord(
         iris.coords.AuxCoord(ecs_lin, **ih.convert_to_iris(ECS_ATTRS)), 0)
     io.save_iris_cube(cube, netcdf_path)
+    project = _get_project(cfg)
     provenance_record = get_provenance_record(
         "The CDF for ECS. The horizontal dot-dashed lines show the {}% "
         "confidence limits. The orange histograms show the prior "
-        "distributions that arise from equal weighting of the CMIP5 models in "
-        "0.5 K bins.".format(int(confidence_level * 100)), ['mean'], ['other'],
-        _get_ancestor_files(cfg, obs_cube.attributes['dataset']))
+        "distributions that arise from equal weighting of the {} models in "
+        "0.5 K bins.".format(int(confidence_level * 100), project), ['mean'],
+        ['other'], _get_ancestor_files(cfg, obs_cube.attributes['dataset']))
 
     # Plot
     if cfg['write_plots']:
@@ -429,7 +450,7 @@ def plot_cdf(cfg, psi_cube, ecs_cube, obs_cube):
             cumulative=True,
             density=True,
             color='orange',
-            label='CMIP5 models')
+            label='{} models'.format(project))
         AXES.axhline(
             (1.0 - confidence_level) / 2.0, color='black', linestyle='dashdot')
         AXES.axhline(

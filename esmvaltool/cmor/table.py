@@ -25,18 +25,29 @@ def read_cmor_tables(cfg_developer):
         Parsed config-developer file
 
     """
+    custom = CustomInfo()
+    CMOR_TABLES['custom'] = custom
+
     for table in cfg_developer:
         project = cfg_developer[table]
 
-        table_path = project.get('cmor_tables', '')
+        cmor_type = project.get('cmor_type', 'CMIP5')
+        table_path = project.get('cmor_tables', cmor_type.lower())
         table_path = os.path.expandvars(os.path.expanduser(table_path))
 
-        cmor_type = project.get('cmor_type', 'CMIP5')
-
+        cmor_strict = project.get('cmor_strict', True)
+        if cmor_strict:
+            default = None
+        else:
+            default = custom
         if cmor_type == 'CMIP5':
-            CMOR_TABLES[table] = CMIP5Info(table_path)
+            CMOR_TABLES[table] = CMIP5Info(
+                table_path, default=default,
+            )
         elif cmor_type == 'CMIP6':
-            CMOR_TABLES[table] = CMIP6Info(table_path)
+            CMOR_TABLES[table] = CMIP6Info(
+                table_path, default=default,
+            )
 
 
 class CMIP6Info(object):
@@ -58,10 +69,11 @@ class CMIP6Info(object):
         'tro3': 'o3',
     }
 
-    def __init__(self, cmor_tables_path=None):
+    def __init__(self, cmor_tables_path, default=None):
         cmor_tables_path = self._get_cmor_path(cmor_tables_path)
 
         self._cmor_folder = os.path.join(cmor_tables_path, 'Tables')
+        self.default = default
 
         self.tables = {}
 
@@ -73,9 +85,10 @@ class CMIP6Info(object):
 
     @staticmethod
     def _get_cmor_path(cmor_tables_path):
-        if not cmor_tables_path:
-            cwd = os.path.dirname(os.path.realpath(__file__))
-            cmor_tables_path = os.path.join(cwd, 'tables', 'cmip6')
+        if os.path.isdir(cmor_tables_path):
+            return cmor_tables_path
+        cwd = os.path.dirname(os.path.realpath(__file__))
+        cmor_tables_path = os.path.join(cwd, 'tables', cmor_tables_path)
         return cmor_tables_path
 
     def _load_table(self, json_file):
@@ -85,7 +98,7 @@ class CMIP6Info(object):
                 return
             table = TableInfo()
             header = raw_data['Header']
-            table.name = header['table_id'][6:]
+            table.name = header['table_id'][6:].split('_')[-1]
             self.tables[table.name] = table
 
             generic_levels = header['generic_levels'].split()
@@ -170,6 +183,8 @@ class CMIP6Info(object):
             if short_name in CMIP6Info._CMIP_5to6_varname:
                 new_short_name = CMIP6Info._CMIP_5to6_varname[short_name]
                 return self.get_variable(table, new_short_name)
+            if self.default:
+                return self.default.get_variable(table, short_name)
             return None
 
     @staticmethod
@@ -303,6 +318,8 @@ class VariableInfo(JsonInfo):
         self.valid_min = self._read_json_variable('valid_min')
         self.valid_max = self._read_json_variable('valid_max')
         self.positive = self._read_json_variable('positive')
+        self.modeling_realm = \
+            self._read_json_variable('modeling_realm').split()
 
         self.dimensions = self._read_json_variable('dimensions').split()
 
@@ -390,7 +407,7 @@ class CMIP5Info(object):
 
     """
 
-    def __init__(self, cmor_tables_path=None):
+    def __init__(self, cmor_tables_path, default=None):
         cmor_tables_path = self._get_cmor_path(cmor_tables_path)
 
         self._cmor_folder = os.path.join(cmor_tables_path, 'Tables')
@@ -400,6 +417,7 @@ class CMIP5Info(object):
 
         self.tables = {}
         self.coords = {}
+        self.default = default
         self._current_table = None
         self._last_line_read = None
 
@@ -410,9 +428,10 @@ class CMIP5Info(object):
 
     @staticmethod
     def _get_cmor_path(cmor_tables_path):
-        if not cmor_tables_path:
-            cwd = os.path.dirname(os.path.realpath(__file__))
-            cmor_tables_path = os.path.join(cwd, 'tables', 'cmip5')
+        if os.path.isdir(cmor_tables_path):
+            return cmor_tables_path
+        cwd = os.path.dirname(os.path.realpath(__file__))
+        cmor_tables_path = os.path.join(cwd, 'tables', cmor_tables_path)
         return cmor_tables_path
 
     def _load_table(self, table_file, table_name=''):
@@ -453,20 +472,6 @@ class CMIP5Info(object):
                 if not self._read_line():
                     return
 
-    def add_custom_table_file(self, table_file, table_name):
-        """
-        Add a file with custom definitions to table.
-
-        Parameters
-        ----------
-        table_file: basestring
-            Path to the file containing the custom table
-        table_name: basestring
-            Name of the the custom table to add
-
-        """
-        self._load_table(table_file, table_name)
-
     def _read_line(self):
         line = self._current_table.readline()
         if line == '':
@@ -496,6 +501,7 @@ class CMIP5Info(object):
                 continue
             if hasattr(coord, key):
                 setattr(coord, key, value)
+        return coord
 
     def _read_variable(self, short_name, frequency):
         var = VariableInfo('CMIP5', short_name)
@@ -505,7 +511,7 @@ class CMIP5Info(object):
             if key in ('variable_entry', 'axis_entry'):
                 break
             if key in ('dimensions', 'modeling_realm'):
-                setattr(var, key, value.split(' '))
+                setattr(var, key, value.split())
             elif hasattr(var, key):
                 setattr(var, key, value)
         for dim in var.dimensions:
@@ -548,4 +554,96 @@ class CMIP5Info(object):
             found, returns None if not
 
         """
-        return self.tables.get(table, {}).get(short_name)
+        var_info = self.tables.get(table, {}).get(short_name, None)
+        if not var_info and self.default:
+            return self.default.get_variable(table, short_name)
+        return var_info
+
+
+class CustomInfo(CMIP5Info):
+    """
+    Class to read custom var info for ESMVal.
+
+    Parameters
+    ----------
+    cmor_tables_path: basestring or None
+        Full path to the table or name for the table if it is present in
+        ESMValTool repository
+
+    """
+
+    def __init__(self, cmor_tables_path=None):
+        cwd = os.path.dirname(os.path.realpath(__file__))
+        self._cmor_folder = os.path.join(cwd, 'tables', 'custom')
+        self.tables = {}
+        table = TableInfo()
+        table.name = 'custom'
+        self.tables[table.name] = table
+        self._coordinates_file = os.path.join(
+            self._cmor_folder,
+            'CMOR_coordinates.dat',
+        )
+        self.coords = {}
+        self._read_table_file(self._coordinates_file, self.tables['custom'])
+        for dat_file in glob.glob(os.path.join(self._cmor_folder, '*.dat')):
+            if dat_file == self._coordinates_file:
+                continue
+            self._read_table_file(dat_file, self.tables['custom'])
+
+    def get_table(self, table):
+        """
+        Search and return the table info.
+
+        Parameters
+        ----------
+        table: basestring
+            Table name
+
+        Returns
+        -------
+        TableInfo
+            Return the TableInfo object for the requested table if
+            found, returns None if not
+
+        """
+        return self.tables.get(table)
+
+    def get_variable(self, table, short_name):
+        """
+        Search and return the variable info.
+
+        Parameters
+        ----------
+        table: basestring
+            Table name
+        short_name: basestring
+            Variable's short name
+
+        Returns
+        -------
+        VariableInfo
+            Return the VariableInfo object for the requested variable if
+            found, returns None if not
+
+        """
+        return self.tables['custom'].get(short_name, None)
+
+    def _read_table_file(self, table_file, table=None):
+        with open(table_file) as self._current_table:
+            self._read_line()
+            while True:
+                key, value = self._last_line_read
+                if key == 'generic_levels':
+                    for dim in value.split(' '):
+                        coord = CoordinateInfo(dim)
+                        coord.generic_level = True
+                        coord.axis = 'Z'
+                        self.coords[dim] = coord
+                elif key == 'axis_entry':
+                    self.coords[value] = self._read_coordinate(value)
+                    continue
+                elif key == 'variable_entry':
+                    table[value] = self._read_variable(value, None)
+                    continue
+                if not self._read_line():
+                    return

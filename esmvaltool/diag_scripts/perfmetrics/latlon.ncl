@@ -4,7 +4,7 @@
 ; ESMVal project
 ; #############################################################################
 
-load "./diag_scripts/shared/plot/contour_maps.ncl"
+load "$diag_scripts/shared/plot/contour_maps.ncl"
 
 procedure perfmetrics_ptype_script()
 begin
