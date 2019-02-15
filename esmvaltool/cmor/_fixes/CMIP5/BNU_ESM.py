@@ -1,33 +1,34 @@
-"""Fixes for BNU ESM model"""
+# pylint: disable=invalid-name, no-self-use, too-few-public-methods
+"""Fixes for BNU ESM model."""
 from cf_units import Unit
 
 from ..fix import Fix
 
 
 class fgco2(Fix):
-    """Fixes for fgco2"""
+    """Fixes for fgco2."""
 
-    def fix_metadata(self, cube):
+    def fix_metadata(self, cubes):
         """
-        Fix metadata
+        Fix metadata.
 
         Fixes cube units
 
         Parameters
         ----------
-        cube: iris.cube.Cube
+        cube: iris.cube.CubeList
 
         Returns
         -------
         iris.cube.Cube
 
         """
-        cube.units = Unit('kg m-2 s-1')
-        return cube
+        self.get_cube_from_list(cubes).units = Unit('kg m-2 s-1')
+        return cubes
 
     def fix_data(self, cube):
         """
-        Fix data
+        Fix data.
 
         Fixes cube units
 
@@ -47,29 +48,29 @@ class fgco2(Fix):
 
 
 class ch4(Fix):
-    """Fixes for ch4"""
+    """Fixes for ch4."""
 
-    def fix_metadata(self, cube):
+    def fix_metadata(self, cubes):
         """
-        Fix metadata
+        Fix metadata.
 
         Fixes cube units
 
         Parameters
         ----------
-        cube: iris.cube.Cube
+        cubes: iris.cube.CubeList
 
         Returns
         -------
-        iris.cube.Cube
+        iris.cube.CubeList
 
         """
-        cube.units = Unit('1e-9')
-        return cube
+        self.get_cube_from_list(cubes).units = Unit('1e-9')
+        return cubes
 
     def fix_data(self, cube):
         """
-        Fix metadata
+        Fix metadata.
 
         Fixes cube units
 
@@ -89,29 +90,29 @@ class ch4(Fix):
 
 
 class co2(Fix):
-    """Fixes for co2"""
+    """Fixes for co2."""
 
-    def fix_metadata(self, cube):
+    def fix_metadata(self, cubes):
         """
-        Fix metadata
+        Fix metadata.
 
         Fixes cube units
 
         Parameters
         ----------
-        cube: iris.cube.Cube
+        cubes: iris.cube.CubeList
 
         Returns
         -------
-        iris.cube.Cube
+        iris.cube.CubeList
 
         """
-        cube.units = Unit('1e-6')
-        return cube
+        self.get_cube_from_list(cubes).units = Unit('1e-6')
+        return cubes
 
     def fix_data(self, cube):
         """
-        Fix data
+        Fix data.
 
         Fixes cube units
 
@@ -131,11 +132,11 @@ class co2(Fix):
 
 
 class spco2(Fix):
-    """Fixes for spco2"""
+    """Fixes for spco2."""
 
     def fix_data(self, cube):
         """
-        Fix data
+        Fix data.
 
         Fixes cube units
 

@@ -263,8 +263,6 @@ def test_default_preprocessor(tmp_path, patched_datafinder, config_user):
         'load': {
             'callback':
             concatenate_callback,
-            'constraints': ('mass_concentration_of_phytoplankton_expressed_'
-                            'as_chlorophyll_in_sea_water'),
         },
         'concatenate': {},
         'fix_file': {
@@ -279,6 +277,7 @@ def test_default_preprocessor(tmp_path, patched_datafinder, config_user):
             'short_name': 'chl',
             'cmor_table': 'CMIP5',
             'mip': 'Oyr',
+            'frequency': 'yr',
         },
         'fix_metadata': {
             'project': 'CMIP5',
@@ -286,6 +285,7 @@ def test_default_preprocessor(tmp_path, patched_datafinder, config_user):
             'short_name': 'chl',
             'cmor_table': 'CMIP5',
             'mip': 'Oyr',
+            'frequency': 'yr',
         },
         'extract_time': {
             'start_year': 2000,
@@ -299,11 +299,13 @@ def test_default_preprocessor(tmp_path, patched_datafinder, config_user):
             'cmor_table': 'CMIP5',
             'mip': 'Oyr',
             'short_name': 'chl',
+            'frequency': 'yr',
         },
         'cmor_check_data': {
             'cmor_table': 'CMIP5',
             'mip': 'Oyr',
             'short_name': 'chl',
+            'frequency': 'yr',
         },
         'cleanup': {
             'remove': [fix_dir]
