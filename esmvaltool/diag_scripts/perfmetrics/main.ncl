@@ -18,11 +18,11 @@
 ;              diag_scripts/shared/statistics.ncl)
 ;    region: selected region (see select_region in
 ;            diag_scripts/shared/latlon.ncl)
+;
+; Optional diag_script_info attributes
 ;    styleset (for cycle): as in diag_scripts/shared/plot/style.ncl functions
 ;    plot_stddev (for cycle): plot standard deviation
 ;    legend_outside (for cycle): save legend in a separate file
-;
-; Optional diag_script_info attributes
 ;    t_test (for zonal and latlon): calculate t-test in difference plots
 ;                                   (default: False)
 ;    conf_level (for zonal and latlon): confidence level for the t-test
@@ -44,9 +44,12 @@
 ;    zonal_ymin (for zonal): minimum pressure on the plots (default: 5. hPa)
 ;    latlon_cmap (for latlon): color table (default: "amwg_blueyellowred")
 ;    plot_units: plotting units (if different from standard CMOR units)
-;    aux_info: additional information for stations data
-;    location: additional information for stations data (location)
-;    altitude: additional information for stations data (altitude)
+;
+; Required variable_info attributes:
+;    reference_dataset: reference dataset to compare with (usualy observations)
+;
+; Optional variable_info attributes:
+;    alternative_dataset: a second dataset to compare with
 ;
 ; Caveats
 ;
@@ -82,17 +85,17 @@
 ;
 ; #############################################################################
 
-load "./interface_scripts/interface.ncl"
+load "$diag_scripts/../interface_scripts/interface.ncl"
 
-load "./diag_scripts/shared/latlon.ncl"
-load "./diag_scripts/shared/statistics.ncl"
-load "./diag_scripts/shared/regridding.ncl"
-load "./diag_scripts/shared/ensemble.ncl"
-load "./diag_scripts/shared/scaling.ncl"
+load "$diag_scripts/shared/latlon.ncl"
+load "$diag_scripts/shared/statistics.ncl"
+load "$diag_scripts/shared/regridding.ncl"
+load "$diag_scripts/shared/ensemble.ncl"
+load "$diag_scripts/shared/scaling.ncl"
 
-load "./diag_scripts/shared/plot/style.ncl"
+load "$diag_scripts/shared/plot/style.ncl"
 
-load "./diag_scripts/shared/meta_data.ncl"
+load "$diag_scripts/shared/meta_data.ncl"
 
 begin
 
@@ -277,7 +280,7 @@ begin
   end if
 
   ; Load plot-type-specific script
-  loadscript("diag_scripts/perfmetrics/" + ptype + ".ncl")
+  loadscript("$diag_scripts/perfmetrics/" + ptype + ".ncl")
 
 end
 

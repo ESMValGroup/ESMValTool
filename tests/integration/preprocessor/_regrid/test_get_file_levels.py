@@ -28,6 +28,7 @@ class TestGetFileLevels(unittest.TestCase):
 
         descriptor, self.path = tempfile.mkstemp('.nc')
         os.close(descriptor)
+        print(self.cube)
         iris.save(self.cube, self.path)
 
     def tearDown(self):
