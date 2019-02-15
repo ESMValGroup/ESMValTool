@@ -57,13 +57,13 @@
 ;
 ; ############################################################################
 
-load "interface_scripts/interface.ncl"
+load "$diag_scripts/../interface_scripts/interface.ncl"
 
-load "./diag_scripts/shared/statistics.ncl"
-load "./diag_scripts/shared/plot/style.ncl"
-load "./diag_scripts/shared/plot/contour_maps.ncl"
+load "$diag_scripts/shared/statistics.ncl"
+load "$diag_scripts/shared/plot/style.ncl"
+load "$diag_scripts/shared/plot/contour_maps.ncl"
 
-; load "./diag_scripts/lib/ncl/meta_data.ncl"
+; load "$diag_scripts/lib/ncl/meta_data.ncl"
 
 begin
 
@@ -559,7 +559,7 @@ begin
 
   if ((var0.eq."pr").or.(var0.eq."pr-mmday")) then
     diff@res_mpLandFillColor      = "Black"
-    pal = read_colormap_file("diag_scripts/shared/plot/rgb/" \
+    pal = read_colormap_file("$diag_scripts/shared/plot/rgb/" \
                              + "ipcc-precip-delta.rgb")
     diff@res_cnFillColors         = pal
   end if
