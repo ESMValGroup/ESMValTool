@@ -21,8 +21,8 @@
 
 load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/shea_util.ncl"
 
-load "./diag_scripts/shared/plot/style.ncl"
-load "./diag_scripts/shared/plot/scatterplot.ncl"
+load "$diag_scripts/shared/plot/style.ncl"
+load "$diag_scripts/shared/plot/scatterplot.ncl"
 
 
 ; #############################################################################

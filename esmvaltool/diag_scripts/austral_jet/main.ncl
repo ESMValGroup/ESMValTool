@@ -45,16 +45,14 @@
 ;
 ; #############################################################################
 
-load "interface_scripts/interface.ncl"
+load "$diag_scripts/../interface_scripts/interface.ncl"
 
-load "./diag_scripts/shared/statistics.ncl"
-load "./diag_scripts/shared/set_operators.ncl"
+load "$diag_scripts/shared/statistics.ncl"
+load "$diag_scripts/shared/set_operators.ncl"
 
-load "./diag_scripts/shared/plot/style.ncl"
+load "$diag_scripts/shared/plot/style.ncl"
 
-; load "./diag_scripts/shared/meta_data.ncl"
-
-load "./diag_scripts/shared/mder.ncl"
+load "$diag_scripts/shared/mder.ncl"
 
 
 begin
