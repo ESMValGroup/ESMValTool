@@ -752,7 +752,7 @@ local funcname, scriptname,
     dim_unlim, ii
 begin
 
-  funcname = "write_nc"
+  funcname = "set_global_atts"
   scriptname = "esmvaltool/utils/cmorizers/obs/utilities.ncl"
   enter_msg(scriptname, funcname)
 
