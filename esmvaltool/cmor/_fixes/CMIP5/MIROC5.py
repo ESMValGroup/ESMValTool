@@ -55,8 +55,6 @@ class snw(Fix):
 class snc(snw):
     """Fixes for snc."""
 
-    pass
-
     # dayspermonth = (/31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31/)
 
     # if ((name.eq."snc".or.name.eq."snw").and.FIELD.eq."T2Ds".and. \
