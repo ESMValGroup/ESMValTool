@@ -54,6 +54,10 @@ def _fix_dim_coordnames(cube):
             cube.coord(axis='Z').standard_name = 'depth'
             cube.coord(axis='Z').long_name = 'ocean depth coordinate'
             cube.coord(axis='Z').var_name = 'lev'
+        if cube.coord(axis='Z').var_name == 'pressure':
+            cube.coord(axis='Z').standard_name = 'air_pressure'
+            cube.coord(axis='Z').long_name = 'pressure'
+            cube.coord(axis='Z').var_name = 'air_pressure'
 
     return cube
 
@@ -67,8 +71,9 @@ def _fix_bounds(cube, dim_coord):
             cube.coord(dim_coord).bounds = None
             cube.coord(dim_coord).guess_bounds()
 
-    cube.coord(dim_coord).bounds = np.array(
-        cube.coord(dim_coord).bounds, dtype='float64')
+    if cube.coord(dim_coord).has_bounds():
+        cube.coord(dim_coord).bounds = np.array(
+            cube.coord(dim_coord).bounds, dtype='float64')
     return cube
 
 
