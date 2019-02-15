@@ -191,8 +191,8 @@ begin
       info_hist := select_metadata_by_atts(HIST, atts)
       info_fut := select_metadata_by_atts(FUT, atts)
     else
-      info_hist = NewList("lifo")
-      info_fut = NewList("lifo")
+      info_hist := NewList("lifo")
+      info_fut := NewList("lifo")
       ListAppend(info_hist, HIST[imod])
       ListAppend(info_fut, FUT[imod])
     end if
@@ -290,7 +290,7 @@ begin
 
   ; Adapt units for "int" calculation
   if (calc_type .eq. "int") then
-    VAR0@units = integrate_time_units(0)
+    VAR0@units = integrate_time_units(VAR0@units, 0)
   end if
 
   ; ---------------------------------------------------------------------------
@@ -356,7 +356,10 @@ begin
     end do
     delete(data_temp)
   end do
-  diag_all&diagnostics = wdiag
+  diag_all!0 = "diag"
+  diag_all!1 = "dataset"
+  diag_all&diag = wdiag
+  diag_all&dataset = MODELS
 
   ; Create scatterplots for each diagnostic
   res_scat = True

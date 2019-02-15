@@ -1551,6 +1551,7 @@ begin
   ; Average
   data_array!0 = "dataset"
   data_array := dim_avg_n_Wrap(data_array, 0)
+  copy_VarMeta(data, data_array)
   log_info("Averaged over " + dim_dat + " dataset(s)")
 
   leave_msg(scriptname, funcname)

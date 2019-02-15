@@ -109,12 +109,21 @@ begin
   atts@exp = future_exp
   FUT = select_metadata_by_atts(CMIP5, atts)
   fut_datasets = metadata_att_as_array(FUT, "dataset")
-  if (all(hist_datasets .eq. fut_datasets)) then
-    MODELS = fut_datasets
+  fail = False
+  if (dimsizes(hist_datasets) .ne. dimsizes(fut_datasets)) then
+    fail = True
   else
+    if (all(hist_datasets .ne. fut_datasets)) then
+      fail = True
+    end if
+  end if
+  if (fail) then
     error_msg("f", DIAG_SCRIPT, "", "historical and future experiment do " + \
-              "not cover the same models, got " + hist_datasets + " and " + \
-              fut_datasets)
+              "not cover the same models, got " + dimsizes(hist_datasets) + \
+              " historical models and " + dimsizes(fut_datasets) + \
+              " projection models")
+  else
+    MODELS = fut_datasets
   end if
 
   ; Ensemble averaging (if desired)
@@ -245,8 +254,8 @@ begin
       info_hist := select_metadata_by_atts(HIST, atts)
       info_fut := select_metadata_by_atts(FUT, atts)
     else
-      info_hist = NewList("lifo")
-      info_fut = NewList("lifo")
+      info_hist := NewList("lifo")
+      info_fut := NewList("lifo")
       ListAppend(info_hist, HIST[imod])
       ListAppend(info_fut, FUT[imod])
     end if
@@ -257,14 +266,13 @@ begin
     info_hist := info_hist[0]
     info_fut := info_fut[0]
 
-
-    ; Adapt future values for cumulative quantities
-    ; if (var0 .eq. "cumnbp" .or. var0 .eq. "cumfgco2") then
-    ;   do tt = 0, dimsizes(tmp&time) - 1
-    ;     tmp(tt) = tmp(tt) + tmp_hist(dimsizes(tmp_hist&time) - 1)
-    ;   end do
-    ; end if
-
+    ; Process multi-dimensional variables
+    if (is_multi_dim) then
+      data_hist := area_operations(data_hist, region(0), region(1), \
+                                   region(2), region(3), area_oper, True)
+      data_fut := area_operations(data_fut, region(0), region(1), \
+                                  region(2), region(3), area_oper, True)
+    end if
 
     ; Append future array to historical array
     data_y = array_append_record(data_hist, data_fut, 0)
@@ -417,7 +425,7 @@ begin
         yy_obs(iobs, ymin + tt + 1) = yy_obs(iobs, ymin + tt) + \
           obs_mean(tt + 1)
       end do
-      VAR0@units = integrate_time_units(0)
+      VAR0@units = integrate_time_units(VAR0@units, 0)
       delete(tt)
     end if
     end if
@@ -428,7 +436,7 @@ begin
   ; Add attributes to observations time series
   yy_obs!0 = "name"
   yy_obs!1 = "time"
-  yy_obs&name = OBS_DATASETS
+  yy_obs&name := OBS_DATASETS
   yy_obs&time = YY&time
   yy_obs&time@calendar = "standard"
 
@@ -469,6 +477,7 @@ begin
   log_info("")
   ; Loop over files in the list and append data
   do idiag = 0, DIM_DIAG - 1
+    log_info("Reading " + file_list(idiag))
     data_temp = ncdf_read(file_list(idiag), "diag")
 
     ; Loop over datasets and save diagnostic data
@@ -528,7 +537,7 @@ begin
       end if
     else
       missing_datasets := ind(ismissing(diag_a(idiag, :)))
-      error_msg("w", diag_script, "", \
+      error_msg("w", DIAG_SCRIPT, "", \
                 "in diagnostic " + wdiag(idiag) + \
                 ", some datasets are missing: " + \
                 diag_a&datasets(missing_datasets))
@@ -1004,7 +1013,7 @@ begin
     datasets(2) = "MDER"
     datasets(3:) = MODELS
     YY!0 = "dataset"
-    YY&dataset = datasets
+    YY&dataset := datasets
     NEW_INFO = NewList("lifo")
     do i = 0, 2
       ListAppend(NEW_INFO, True)

@@ -920,10 +920,11 @@ begin
   scriptname = "diag_scripts/shared/plot/mder.ncl"
   enter_msg(scriptname, funcname)
 
-  diag_all!0 = "diags"
-  diag_all!1 = "datasets"
-  diags = diag_all&diags
-  datasets = diag_all&datasets
+  all_diagnostics = diag_all
+  all_diagnostics!0 = "diags"
+  all_diagnostics!1 = "datasets"
+  diags = all_diagnostics&diags
+  datasets = all_diagnostics&datasets
   plotnames = new(dimsizes(diags), string)
 
   ; Name of future projection
@@ -936,7 +937,7 @@ begin
   do id = 0, dimsizes(diags) - 1
     wks = get_wks(0, DIAG_SCRIPT, target_var + "_" + diags(id))
     plotnames(id) = wks@fullname
-    x_var = (/diag_all(id, :), future_diag/)
+    x_var = (/all_diagnostics(id, :), future_diag/)
     x_var!1 = "datasets"
     x_var&datasets = datasets
     copy_VarAtts(res_in, x_var)  ; pass resources

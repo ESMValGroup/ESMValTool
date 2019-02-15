@@ -95,7 +95,8 @@ end
 
 ; #############################################################################
 undef("integrate_time_units")
-function integrate_time_units(opt[1] : integer)
+function integrate_time_units(units[1] : string, \
+                              opt[1] : integer)
 ;
 ; Arguments:
 ;     opt: integer determining how to handle multiple time units.
@@ -124,7 +125,6 @@ begin
   funcname = "integrate_time_units"
   scriptname = "diag_scripts/shared/mder.ncl"
   enter_msg(scriptname, funcname)
-  units = variable_info@units
 
   ; Allowed time units
   allowed_time_units = (/"s", "min", "h", "hr", "d", "day", "mon", "y", "yr", \
@@ -200,11 +200,11 @@ begin
     ; Remove time units
     max_len = max(where(all_matches .eq. max_ind, all_lengths, 0))
     if (max_len .eq. strlen(units)) then
-      units = "1"
+      new_units = "1"
     else
-      units := stringtochar(units)
-      units := chartostring(units(:max_ind - 1)) + \
-        chartostring(units(max_ind + max_len:))
+      new_units = stringtochar(units)
+      new_units := chartostring(new_units(:max_ind - 1)) + \
+        chartostring(new_units(max_ind + max_len:))
     end if
   else
     error_msg("w", scriptname, funcname, "no reciprocal time units " + \
@@ -213,7 +213,7 @@ begin
 
   ; Return file name
   leave_msg(scriptname, funcname)
-  return(str_squeeze(units))
+  return(str_squeeze(new_units))
 
 end
 
