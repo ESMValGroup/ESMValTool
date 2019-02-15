@@ -35,12 +35,12 @@ import os
 import iris
 from cf_units import Unit
 
-from esmvaltool.utils.cmorizers.obs.utilities import (_add_metadata,
-                                                      _convert_timeunits,
-                                                      _fix_coords,
-                                                      _read_cmor_config,
-                                                      _roll_cube_data,
-                                                      _save_variable)
+from .utilities import (_add_metadata,
+                        _convert_timeunits,
+                        _fix_coords,
+                        _read_cmor_config,
+                        _roll_cube_data,
+                        _save_variable)
 
 logger = logging.getLogger(__name__)
 
