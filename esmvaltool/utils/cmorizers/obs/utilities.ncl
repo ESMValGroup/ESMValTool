@@ -259,15 +259,9 @@ begin
   copy_VarCoords(coord, out_coord)
   out_coord@positive = "down"
   out_coord@axis     = "Z"
-  if (coord@units .eq. "m") then
-    out_coord@long_name     = "ocean depth coordinate"
-    out_coord@units         = "m"
-    out_coord@standard_name = "depth"
-  else
-    out_coord@long_name     = "pressure"
-    out_coord@units         = "Pa"
-    out_coord@standard_name = "air_pressure"
-  end if
+  out_coord@long_name     = "pressure"
+  out_coord@units         = "Pa"
+  out_coord@standard_name = "air_pressure"
   if (isatt(out_coord, "_FillValue")) then
     delete(out_coord@_FillValue)
   end if
@@ -764,7 +758,7 @@ local funcname, scriptname,
     dim_unlim, ii
 begin
 
-  funcname = "write_nc"
+  funcname = "set_global_atts"
   scriptname = "esmvaltool/utils/cmorizers/obs/utilities.ncl"
   enter_msg(scriptname, funcname)
 
