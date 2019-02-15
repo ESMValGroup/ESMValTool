@@ -37,7 +37,7 @@ FIELDS:
   so:     'Objectively analyzed mean fields for salinity at standard depth levels.'
   po4:    'Objectively analyzed mean fields for moles_concentration_of_phosphate_in_sea_water at standard depth levels.'
   no3:    'Objectively analyzed mean fields for moles_concentration_of_nitrate_in_sea_water at standard depth levels.'
-  o2:     'Average of all unflagged interpolated values at each standard depth level for volume_fraction_of_oxygen_in_sea_water in each grid-square which contain at least one measurement.'
+  o2:     'Objectively analyzed mean fields for volume_fraction_of_oxygen_in_sea_water at standard depth levels.'
 
 # cmor standard names
 STANDARD_NAMES:
