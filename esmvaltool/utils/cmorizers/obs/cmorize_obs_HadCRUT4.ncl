@@ -25,8 +25,8 @@
 ;    anomaly.
 ;
 ; Modification history
-;    20190208-A_righ_ma: added output for climatology and adapted to v2
-;    20180222-A_laue_ax: bug fix (added swapping of latitudes if needed)
+;    20190208-A_righ_ma: added output for climatology and adapted to v2.
+;    20180222-A_laue_ax: bug fix (added swapping of latitudes if needed).
 ;    20160203-A_laue_ax: written.
 ;
 ; #############################################################################
