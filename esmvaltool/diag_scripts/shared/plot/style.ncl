@@ -15,8 +15,8 @@
 ;
 ; #############################################################################
 
-load "./interface_scripts/auxiliary.ncl"
-load "./interface_scripts/logging.ncl"
+load "$diag_scripts/../interface_scripts/auxiliary.ncl"
+load "$diag_scripts/../interface_scripts/logging.ncl"
 
 ; #############################################################################
 undef("project_style")
@@ -99,7 +99,7 @@ begin
 
   ; Styleset defined, search for corresponding style file
   styleset = str_lower(styleset)
-  stylefile = "./diag_scripts/shared/plot/styles/" + styleset + ".style"
+  stylefile = "$diag_scripts/shared/plot/styles/" + styleset + ".style"
   if (.not.fileexists(stylefile)) then
     error_msg("f", scriptname, funcname, \
               "style file " + stylefile + " not found")
@@ -499,6 +499,10 @@ begin
 
   if (isStrSubset(loc_str, "umol").or.isStrSubset(loc_str, "ug")) then
     loc_str = str_sub_str(loc_str, "u", "~F33~m~F21~")
+  end if
+
+  if (isStrSubset(loc_str, "degC")) then
+    loc_str = str_sub_str(loc_str, "deg", "~F35~J~F~")
   end if
 
   leave_msg(scriptname, funcname)

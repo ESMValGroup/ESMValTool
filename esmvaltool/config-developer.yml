@@ -19,12 +19,124 @@
 ---
 
 CMIP6:
-  input_dir: 'CMIP/[institute]/[dataset]/[exp]/[ensemble]/[mip]/[short_name]/[grid]/[version]'
+  input_dir:
+    default: '/'
+    DKRZ: '[institute]/[dataset]/[exp]/[ensemble]/[mip]/[short_name]/[grid]/[latestversion]'
   input_file: '[short_name]_[mip]_[dataset]_[exp]_[ensemble]_[grid]_*.nc'
   output_file: '[project]_[dataset]_[mip]_[exp]_[ensemble]_[field]_[short_name]_[start_year]-[end_year]'
   cmor_type: 'CMIP6'
+  institutes:
+    'ACCESS-CM2': ['CSIRO-ARCCSS-BoM']
+    'ACCESS-ESM1-5': ['CSIRO']
+    'ARTS-2-3': ['UHH']
+    'AWI-CM-1-1-HR': ['AWI']
+    'AWI-CM-1-1-LR': ['AWI']
+    'AWI-CM-1-1-MR': ['AWI']
+    'AWI-ESM-1-1-LR': ['AWI']
+    'BCC-CSM2-HR': ['BCC']
+    'BCC-CSM2-MR': ['BCC']
+    'BCC-ESM1': ['BCC']
+    'BESM-2-7': ['INPE']
+    'BNU-ESM-1-1': ['BNU']
+    'CAMS-CSM1-0': ['CAMS']
+    'CanESM5': ['CCCma']
+    'CAS-ESM1-0': ['CAS']
+    'CESM2': ['NCAR']
+    'CESM2-SE': ['NCAR']
+    'CESM2-WACCM': ['NCAR']
+    'CIESM': ['THU']
+    'CMCC-CM2-HR4': ['CMCC']
+    'CMCC-CM2-HR5': ['CMCC']
+    'CMCC-CM2-SR5': ['CMCC']
+    'CMCC-CM2-VHR4': ['CMCC']
+    'CMCC-ESM2-HR5': ['CMCC']
+    'CMCC-ESM2-SR5': ['CMCC']
+    'CNRM-CM6-1': ['CNRM-CERFACS']
+    'CNRM-CM6-1-HR': ['CNRM-CERFACS']
+    'CNRM-ESM2-1': ['CNRM-CERFACS']
+    'CNRM-ESM2-1-HR': ['CNRM-CERFACS']
+    'CSIRO-Mk3L-1-3': ['UTAS']
+    'E3SM-1-0': ['E3SM-Project']
+    'EC-Earth3-AerChem': ['EC-Earth-Consortium']
+    'EC-Earth3-CC': ['EC-Earth-Consortium']
+    'EC-Earth3': ['EC-Earth-Consortium']
+    'EC-Earth3-GrIS': ['EC-Earth-Consortium']
+    'EC-Earth3-HR': ['EC-Earth-Consortium']
+    'EC-Earth3-LR': ['EC-Earth-Consortium']
+    'EC-Earth3P': ['EC-Earth-Consortium']
+    'EC-Earth3P-HR': ['EC-Earth-Consortium']
+    'EC-Earth3P-VHR': ['EC-Earth-Consortium']
+    'EC-Earth3-Veg': ['EC-Earth-Consortium']
+    'EC-Earth3-Veg-LR': ['EC-Earth-Consortium']
+    'ECMWF-IFS-HR': ['ECMWF']
+    'ECMWF-IFS-LR': ['ECMWF']
+    'ECMWF-IFS-MR': ['ECMWF']
+    'EMAC-2-53-AerChem': ['MESSy-Consortium']
+    'EMAC-2-53-Vol': ['MESSy-Consortium']
+    'FGOALS-f3-H': ['CAS']
+    'FGOALS-f3-L': ['CAS']
+    'FGOALS-g3': ['CAS']
+    'FIO-ESM-2-0': ['FIO-QLNM']
+    'GFDL-AM4': ['NOAA-GFDL']
+    'GFDL-CM4C192': ['NOAA-GFDL']
+    'GFDL-CM4': ['NOAA-GFDL']
+    'GFDL-ESM2M': ['NOAA-GFDL']
+    'GFDL-ESM4': ['NOAA-GFDL']
+    'GFDL-OM4p5B': ['NOAA-GFDL']
+    'GISS-E2-1-G': ['NASA-GISS']
+    'GISS-E2-1-H': ['NASA-GISS']
+    'GISS-E2-1-MA-G': ['NASA-GISS']
+    'GISS-E3-G': ['NASA-GISS']
+    'HadGEM3-GC31-HH': ['MOHC', 'NERC']
+    'HadGEM3-GC31-HM': ['MOHC', 'NERC']
+    'HadGEM3-GC31-LL': ['MOHC']
+    'HadGEM3-GC31-LM': ['MOHC']
+    'HadGEM3-GC31-MH': ['MOHC']
+    'HadGEM3-GC31-MM': ['MOHC']
+    'ICON-ESM-LR': ['MPI-M']
+    'IITM-ESM': ['CCCR-IITM']
+    'INM-CM4-8': ['INM']
+    'INM-CM5-0': ['INM']
+    'INM-CM5-H': ['INM']
+    'IPSL-CM6A-ATM-HR': ['IPSL']
+    'IPSL-CM6A-LR': ['IPSL']
+    'KACE-1-0-G': ['NIMS-KMA']
+    'KIOST-ESM': ['KIOST']
+    'LBLRTM-12-8': ['AER']
+    'MCM-UA-1-0': ['UA']
+    'MIROC6': ['MIROC']
+    'MIROC-ES2H': ['MIROC']
+    'MIROC-ES2L': ['MIROC']
+    'MPI-ESM-1-2-HAM': ['HAMMOZ-Consortium']
+    'MPI-ESM1-2-HR': ['MPI-M', 'DWD', 'DKRZ']
+    'MPI-ESM1-2-LR': ['MPI-M', 'AWI']
+    'MRI-AGCM3-2': ['MRI']
+    'MRI-ESM2-0': ['MRI']
+    'NESM3': ['NUIST']
+    'NICAM16-7S': ['MIROC']
+    'NICAM16-8S': ['MIROC']
+    'NICAM16-9D-L78': ['MIROC']
+    'NICAM16-9S': ['MIROC']
+    'NorESM2-HH': ['NCC']
+    'NorESM2-LMEC': ['NCC']
+    'NorESM2-LME': ['NCC']
+    'NorESM2-LM': ['NCC']
+    'NorESM2-MH': ['NCC']
+    'NorESM2-MM': ['NCC']
+    'PCMDI-test-1-0': ['PCMDI']
+    'RRTMG-LW-4-91': ['AER']
+    'RRTMG-SW-4-02': ['AER']
+    'RTE-RRTMGP-181204': ['AER']
+    'SAM0-UNICON': ['SNU']
+    'TaiESM1': ['AS-RCEC']
+    'UKESM1-0-LL': ['MOHC', 'NERC', 'NIMS-KMA', 'NIWA']
+    'UKESM1-0-MMh': ['MOHC', 'NERC']
+    'UofT-CCSM4': ['UofT']
+    'VRESM-1-0': ['CSIR-CSIRO']
+
 
 CMIP5:
+  cmor_strict: true
   input_dir:
     default: '/'
     BADC: '[institute]/[dataset]/[exp]/[frequency]/[modeling_realm]/[mip]/[ensemble]/latest/[short_name]'
@@ -37,6 +149,7 @@ CMIP5:
   input_fx_dir:
     default: '/'
     BADC: '[institute]/[dataset]/[exp]/fx/[modeling_realm]/fx/r0i0p0/[latestversion]/[fx_var]'
+    CP4CDS: '[institute]/[dataset]/[exp]/fx/[modeling_realm]/fx/r0i0p0/[fx_var]/latest/'
     DKRZ: '[institute]/[dataset]/[exp]/fx/[modeling_realm]/fx/r0i0p0/[latestversion]/[fx_var]'
     ETHZ: '[exp]/fx/[fx_var]/[dataset]/r0i0p0'
   input_fx_file: '[fx_var]_fx_[dataset]_[exp]_r0i0p0.nc'
@@ -139,7 +252,9 @@ obs4mips:
   input_fx_file:
     default: '[project]_[dataset]_fx_[fx_var].nc'
   output_file: '[project]_[dataset]_[level]_[version]_[field]_[short_name]_[start_year]-[end_year]'
-  cmor_type: 'CMIP5'
+  cmor_type: 'CMIP6'
+  cmor_path: 'obs4mips'
+  cmor_strict: False
 
 ana4mips:
   input_dir:

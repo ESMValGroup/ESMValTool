@@ -33,7 +33,7 @@ class Fix(object):
         """
         return filepath
 
-    def fix_metadata(self, cube):
+    def fix_metadata(self, cubes):
         """
         Apply fixes to the metadata of the cube.
 
@@ -43,16 +43,44 @@ class Fix(object):
 
         Parameters
         ----------
-        cube: iris.cube.Cube
-            Cube to fix
+        cubes: iris.cube.CubeList
+            Cubes to fix
 
         Returns
         -------
-        iris.cube.Cube
-            Fixed cube. It can be a difference instance.
+        iris.cube.CubeList
+            Fixed cubes. They can be different instances.
 
         """
-        return cube
+        return cubes
+
+    def get_cube_from_list(self, cubes, short_name=None):
+        """
+        Get a cube from the list with a given short name.
+
+        Parameters
+        ----------
+        cubes : iris.cube.CubeList
+            List of cubes to search
+        short_name : str
+            Cube's variable short name. If None, short name is the class name
+
+        Raises
+        ------
+        Exception
+            If no cube is found
+
+        Returns
+        -------
+        iris.Cube
+            Variable's cube
+        """
+        if short_name is None:
+            short_name = self.__class__.__name__
+        for cube in cubes:
+            if cube.var_name == short_name:
+                return cube
+        raise Exception('Cube for variable "{}" not found'.format(short_name))
 
     def fix_data(self, cube):
         """
