@@ -17,7 +17,7 @@ import os
 import logging
 import numpy as np
 from esmvaltool.diag_scripts.shared import group_metadata, run_diagnostic
-from esmvaltool.diag_scripts.shared._base import ProvenanceLogger
+from esmvaltool.diag_scripts.shared import ProvenanceLogger, sorted_metadata
 
 # Import user diagnostic routines
 from ens_anom import ens_anom
@@ -50,8 +50,12 @@ def main(cfg):
     """Ensemble Clustering Diagnostics."""
     out_dir = cfg['work_dir']
     write_plots = cfg['write_plots']
-    files_dict = group_metadata(cfg['input_data'].values(), 'filename',
+    input_data = cfg['input_data'].values()
+    input_data = sorted_metadata(input_data, sort='recipe_dataset_index')
+    files_dict = group_metadata(input_data, 'filename',
                                 sort=False)
+    #files_dict = group_metadata(cfg['input_data'].values(), 'filename',
+    #                            sort='recipe_dataset_index')
     numens = len(files_dict)
     logger.info('numens=%d', numens)
 
