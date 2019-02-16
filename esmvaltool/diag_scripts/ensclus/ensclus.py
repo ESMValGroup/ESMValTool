@@ -54,8 +54,6 @@ def main(cfg):
     input_data = sorted_metadata(input_data, sort='recipe_dataset_index')
     files_dict = group_metadata(input_data, 'filename',
                                 sort=False)
-    #files_dict = group_metadata(cfg['input_data'].values(), 'filename',
-    #                            sort='recipe_dataset_index')
     numens = len(files_dict)
     logger.info('numens=%d', numens)
 
