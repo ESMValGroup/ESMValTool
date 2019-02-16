@@ -4,8 +4,13 @@
 ; General purpose functions called by the reformat_obs_*.ncl scripts.
 ;
 ; Contents
-;    function check_time_range
-;    function time_attrib
+;    procedure format_time
+;    procedure format_plev
+;    procedure format_lev
+;    procedure format_lat
+;    procedure format_lon
+;    procedure format_coords
+
 ;    function plev_attrib
 ;    function lev_attrib
 ;    function lat_attrib
@@ -13,7 +18,6 @@
 ;    function read_cmor
 ;    function var_attrib
 ;    function set_size_array
-;    function yyyyfrac_to_ut --> FIX-ME: only used by GLOBALVIEW (remove?)
 ;    function create_timec
 ;    function set_global_atts
 ;    procedure write_nc
@@ -29,91 +33,62 @@ TUNITS = "days since 1950-01-01 00:00:00"
 FILL = 1.e+20
 
 ; #############################################################################
-undef("check_time_range")
-function check_time_range(time:numeric,
-                          year1:numeric,
-                          year2:numeric,
-                          frequency:string)
+undef("format_time")
+procedure format_time(var:numeric,
+                      start_date:string,
+                      end_date:string,
+                      frequency:string)
 ;
 ; Arguments
-;    time: input time coordinate.
-;    year1: start year.
-;    year2: end year.
-;    frequency: time frequency ("M" for monthly, "D" for daily)
-;
-; Return value
-;    An array of the same dimensionality of time.
+;    var: input variable
+;    start_date: start date as YYYYMMDD
+;    end_date: end date as YYYYMMDD
+;    frequency: time frequency ("3hr", "6hr", "day", "mon", "yr")
 ;
 ; Description
-;    Checks the consistency of time coordinate and sets the day to 15th of the
-;    month (for monthly means) and the time to 00:00:00 (for monthly means) and
-;    to 12:00:00 (for daily means).
+;    Check the time range of the time coordinate, set the values depending on
+;    the given frequency and set the standard CMOR attributes.
 ;
 ; Caveats
 ;
 ; References
 ;
 ; Modification history
-;    20190108-A_righ_ma: rewritten for v2.
+;    20190216-A_righ_ma: written.
 ;
-local funcname, verbosity, date, ntime, exp_ntime, tt, yy, mm, calendar, y1, \
-  y2, opt, out
+local funcname, scriptname, ctime, ntime, year1, month1, day1, year2, month2, \
+  day2, calendar, date, exp_ntime, yy, mm, m1, m2, dd, opt, newtime
 begin
 
-  funcname = "check_time_range"
+  funcname = "format_time"
   scriptname = "esmvaltool/utils/cmorizers/obs/utilities.ncl"
   enter_msg(scriptname, funcname)
 
-  date = cd_calendar(time, 0)
-  ntime = dimsizes(time)
+  if (all(frequency.ne.(/"3hr", "6hr", "day", "mon", "yr"/))) then
+    error_msg("f", scriptname, funcname, "unsupported frequency " + frequency)
+  end if
+
+  ; Read coordinate
+  ctime = var&time
+  ntime = dimsizes(ctime)
 
   ; Check monotonicity
-  if (isMonotonic(time).ne.1) then
+  if (isMonotonic(ctime).ne.1) then
     error_msg("f", scriptname, funcname, \
-              "non-monotonically-increasing time coordinate in input data")
+              "non-monotonically-increasing time coordinate")
   end if
 
-  ; Boundaries
-  if (date(0, 0).gt.year1) then
-    error_msg("f", scriptname, funcname, \
-              "selected period outside range (" + year1 + \
-              "<" + date(0, 0) + ")")
-  end if
-  if (date(ntime - 1, 0).lt.year2) then
-    error_msg("f", scriptname, funcname, \
-              "selected period outside range (" + year2 + \
-              ">" + date(ntime - 1, 0) + ")")
-  end if
+  ; Extract expected start/end date
+  year1  = toint(str_get_cols(start_date, 0, 3))
+  month1 = toint(str_get_cols(start_date, 4, 5))
+  day1   = toint(str_get_cols(start_date, 6, 7))
+  year2  = toint(str_get_cols(end_date, 0, 3))
+  month2 = toint(str_get_cols(end_date, 4, 5))
+  day2   = toint(str_get_cols(end_date, 6, 7))
 
-  ; Monthly mean case
-  if (frequency.eq."M") then
-
-    ; Check number of timesteps
-    exp_ntime = 12 * (year2 - year1 + 1)
-    if (ntime.ne.exp_ntime) then
-      error_msg("f", scriptname, funcname, \
-                "incorrect number of timesteps in input data (" + \
-                ntime + " != " + exp_ntime + "). Possibly due to " + \
-                "incomplete years in input.")
-    end if
-
-    ; Set time coordinate to 15th of each month at 00:00:00
-    do tt = 0, ntime - 1
-      yy = year1 + tt / 12
-      mm = mod(tt, 12) + 1
-      if (date(tt, 0).ne.yy .or. date(tt, 1).ne.mm) then
-        error_msg("f", scriptname, funcname, \
-                  "inconsistent time coordinate in input data" + \
-                  yy + sprinti("%0.2i", mm))
-      end if
-    end do
-    date(:, 2) = 15   ; 15th of the month
-    date(:, 3:5) = 0  ; midnight
-  end if
-
-  ; Daily mean case
-  if (frequency.eq."D") then
-    calendar = time@calendar
+  ; Set calendar
+  if (isatt(ctime, "calendar")) then
+    calendar = ctime@calendar
 
     ; Special treatment for proleptic_gregorian calendars
     ; (not supported by 'days_in_month(...)'
@@ -126,150 +101,302 @@ begin
       calendar = "gregorian"
     end if
 
-    ; Check number of timesteps
-    y1 = year1
-    y1@calendar = calendar
-    y2 = year2
-    y2@calendar = calendar
-    opt = 0
-    opt@calendar = calendar
+  else
+    calendar = "standard"
+  end if
 
-    exp_ntime = \
-      cd_inv_calendar(y2, 12, days_in_month(y2, 12), 0, 0, 0, TUNITS, opt) - \
-      cd_inv_calendar(y1, 1, 1, 0, 0, 0, TUNITS, opt) + 1
+  ; Actual date, to be compared with the expected date
+  date = cd_calendar(ctime, 0)
+  delete(ctime)
 
+  ; Yearly frequency
+  if (frequency.eq."yr") then
+
+    ; Check size
+    exp_ntime = year2 - year1 + 1
     if (ntime.ne.exp_ntime) then
       error_msg("f", scriptname, funcname, \
-                "incorrect number of timesteps in input data (" + ntime + \
-                " != " + exp_ntime + "). Possibly due to incomplete " + \
-                "years in input.")
+                "incorrect number of timesteps in input data: " + exp_ntime + \
+                "expected, " + ntime + " found")
     end if
 
-    ; Set time coordinate to 12:00:00
+    ; Reset date (1st of July)
+    do yy = 0, ntime - 1
+      date(yy, 0) = year1 + yy
+    end do
+    date(:, 1) = 7
+    date(:, 2) = 1
+    date(:, 3:5) = 0
+
+  end if
+
+  ; Monthly frequency
+  if (frequency.eq."mon") then
+
+    ; Check size
+    if (year1.eq.year2) then
+      exp_ntime = month2 - month1 + 1
+    else
+      exp_ntime = (12 - month1 + 1) + month2 + \
+        12 * where((year2 - year1 - 1).gt.0, year2 - year1 - 1, 0)
+    end if
+    if (ntime.ne.exp_ntime) then
+      error_msg("f", scriptname, funcname, \
+                "incorrect number of timesteps in input data: " + exp_ntime + \
+                "expected, " + ntime + " found")
+    end if
+
+    ; Reset date (middle of the month)
+    tt = 0
+    do yy = year1, year2
+      date(tt, 0) = yy
+      yy@calendar = calendar
+      m1 = where(yy.eq.year1, month1, 1)
+      m2 = where(yy.eq.year2, month2, 12)
+      do mm = m1, m2
+        date(tt, 1) = mm
+        dm = days_in_month(yy, mm) / 2.
+        date(tt, 2) = toint(dm)
+        date(tt, 3) = toint(24 * (dm - toint(dm)))
+        tt = tt + 1
+      end do
+    end do
+    date(:, 4:5) = 0
+
+  end if
+
+  ; Daily frequency
+  if (frequency.eq."day") then
+
+    ; Check size
+    opt = 0
+    opt@calendar = calendar
+    exp_ntime = \
+      cd_inv_calendar(year2, month2, day2, 0, 0, 0, TUNITS, opt) - \
+      cd_inv_calendar(year1, month1, day1, 0, 0, 0, TUNITS, opt) + 1
+    if (ntime.ne.exp_ntime) then
+      error_msg("f", scriptname, funcname, \
+                "incorrect number of timesteps in input data: " + exp_ntime + \
+                "expected, " + ntime + " found")
+    end if
+    delete(opt)
+
+    ; Reset date (middle of the day)
+    tt = 0
+    do yy = year1, year2
+      date(tt, 0) = yy
+      m1 = where(yy.eq.year1, month1, 1)
+      m2 = where(yy.eq.year2, month2, 12)
+      do mm = m1, m2
+        date(tt, 1) = mm
+        do dd = day1, day2
+          date(tt, 2) = dd
+        end do
+      end do
+    end do
     date(:, 3) = 12
     date(:, 4:5) = 0
 
   end if
 
-  ; 3-hourly case
-  ; Nothing to check
+  ; 6-hourly frequency (check size only)
+  if (frequency.eq."6hr") then
+
+    ; Check size
+    opt = 0
+    opt@calendar = calendar
+    exp_ntime = \
+      cd_inv_calendar(year2, month2, day2, 0, 0, 0, TUNITS, opt) - \
+      cd_inv_calendar(year1, month1, day1, 0, 0, 0, TUNITS, opt) + 1
+    exp_ntime = 4 * exp_ntime
+    if (ntime.ne.exp_ntime) then
+      error_msg("f", scriptname, funcname, \
+                "incorrect number of timesteps in input data: " + exp_ntime + \
+                "expected, " + ntime + " found")
+    end if
+    delete(opt)
+
+  end if
+
+  ; 3-hourly frequency (check size only)
+  if (frequency.eq."3hr") then
+
+    ; Check size
+    opt = 0
+    opt@calendar = calendar
+    exp_ntime = \
+      cd_inv_calendar(year2, month2, day2, 0, 0, 0, TUNITS, opt) - \
+      cd_inv_calendar(year1, month1, day1, 0, 0, 0, TUNITS, opt) + 1
+    exp_ntime = 8 * exp_ntime
+    if (ntime.ne.exp_ntime) then
+      error_msg("f", scriptname, funcname, \
+                "incorrect number of timesteps in input data: " + exp_ntime + \
+                "expected, " + ntime + " found")
+    end if
+    delete(opt)
+
+  end if
 
   ; Set calendar
   opt = 0
-  if (isatt(time, "calendar")) then
-    opt@calendar = time@calendar
+  opt@calendar = calendar
+
+  ; Redefine time coordinate
+  coord = cd_inv_calendar(toint(date(:, 0)), toint(date(:, 1)), \
+                          toint(date(:, 2)), toint(date(:, 3)), \
+                          toint(date(:, 4)), toint(date(:, 5)), \
+                          TUNITS, opt)
+
+  ; Set standard attributes
+  newtime = todouble(coord)  ; this also removes attributes
+  copy_VarCoords(coord, newtime)
+  newtime@bounds = "time_bnds"
+  newtime@calendar = calendar
+  newtime@long_name = "time"
+  newtime@axis = "T"
+  newtime@units = TUNITS
+  newtime@standard_name = "time"
+  if (isatt(newtime, "_FillValue")) then
+    delete(newtime@_FillValue)
   end if
 
-  out = cd_inv_calendar(toint(date(:, 0)), toint(date(:, 1)), \
-                        toint(date(:, 2)), toint(date(:, 3)), \
-                        toint(date(:, 4)), toint(date(:, 5)), \
-                        TUNITS, opt)
+  ; Reset time coordinate
+  delete(var&time)
+  var&time = newtime
 
   leave_msg(scriptname, funcname)
-  return(out)
 
 end
 
 ; #############################################################################
-undef("time_attrib")
-function time_attrib(coord:numeric,
-                     year1:numeric,
-                     year2:numeric,
-                     frequency:string)
+undef("format_plev")
+procedure format_plev(var:numeric)
 ;
 ; Arguments
-;    coord: input time coordinate.
-;    year1: start year.
-;    year2: end year.
-;    frequency: time frequency ("M" for monthly, "D" for daily, other
-;               arguments are ignored)
-;
-; Return value
-;    An array of the same dimensionality of coord.
+;    var: input variable
 ;
 ; Description
-;    Assigns attributes to the time coordinate (including range check).
+;    Check the monotonicity of the plev (pressure) coordinate and set the
+;     standard CMOR attributes.
 ;
 ; Caveats
 ;
 ; References
 ;
 ; Modification history
-;    20130528-A_righ_ma: written.
+;    20190216-A_righ_ma: written.
 ;
-local funcname, scriptname, tmp, cal, outcoord
+local funcname, scriptname, cplev, newplev
 begin
 
-  funcname = "time_attrib"
+  funcname = "format_plev"
   scriptname = "esmvaltool/utils/cmorizers/obs/utilities.ncl"
   enter_msg(scriptname, funcname)
 
-  if (isatt(coord, "calendar")) then
-    cal = coord@calendar
-  else
-    cal = "standard"
+  ; Check monotonicity
+  if (isMonotonic(var&plev) .eq. 0) then
+    error_msg("f", DIAG_SCRIPT, "", "non-monotonic vertical coordinate")
+  end if
+  if (isMonotonic(var&plev).eq.1) then
+    var = var(:, ::-1, :, :)
   end if
 
-  tmp = check_time_range(coord, year1, year2, frequency)
+  ; Read coordinate
+  cplev = var&plev
 
-  out_coord = todouble(tmp)  ; this also removes attributes
-  copy_VarCoords(coord, out_coord)
-  out_coord@calendar = cal
-  out_coord@long_name = "time"
-  out_coord@axis = "T"
-  out_coord@units = TUNITS
-  out_coord@standard_name = "time"
-  if (isatt(out_coord, "_FillValue")) then
-    delete(out_coord@_FillValue)
+  ; Set standard attributes
+  newplev = todouble(cplev)  ; this also removes attributes
+  copy_VarCoords(cplev, newplev)
+  newplev@bnds = "plev_bnds"
+  newplev@positive = "down"
+  newplev@axis = "Z"
+  newplev@long_name = "pressure"
+  newplev@units = "Pa"
+  newplev@standard_name = "air_pressure"
+  if (isatt(newplev, "_FillValue")) then
+    delete(newplev@_FillValue)
   end if
 
-  leave_msg(scriptname, funcname)
-  return(out_coord)
+  ; Reset plev coordinate
+  delete(var&plev)
+  var&plev = newplev
 
 end
 
+
 ; #############################################################################
-undef("plev_attrib")
-function plev_attrib(coord:numeric)
+undef("format_coords")
+procedure format_coords(var:numeric,
+                        date1:string, 
+                        date2:string, 
+                        frequency:string)
 ;
 ; Arguments
-;    coord: input pressure level coordinate.
-;
-; Return value
-;    An array of the same dimensionality of coord.
+;    var: input variable with named dimensions and assiociated coordinates.
+;    date1: start date as YYYYMMDD
+;    date2: end date as YYYYMMDD
+;    frequency: time frequency ("3hr", "6hr", "day", "mon", "yr")
+
 ;
 ; Description
-;    Assigns attributes to the pressure level coordinate.
+;    Format the coordinate according to the CF/CMOR standard.
 ;
 ; Caveats
 ;
 ; References
 ;
 ; Modification history
-;    20130528-A_righ_ma: written.
+;    20190216-A_righ_ma: written.
 ;
-local funcname, scriptname, out_coord
 begin
 
-  funcname = "plev_attrib"
+  funcname = "format_coords"
   scriptname = "esmvaltool/utils/cmorizers/obs/utilities.ncl"
   enter_msg(scriptname, funcname)
 
-  out_coord = todouble(coord)  ; this also removes attributes
-  copy_VarCoords(coord, out_coord)
-  out_coord@positive = "down"
-  out_coord@axis     = "Z"
-  out_coord@long_name     = "pressure"
-  out_coord@units         = "Pa"
-  out_coord@standard_name = "air_pressure"
-  if (isatt(out_coord, "_FillValue")) then
-    delete(out_coord@_FillValue)
-  end if
+  dnames = getvardimnames(var)
+
+  ; Loop over dimensions, call formatting procedures
+  do dd = 0, dimsizes(dnames) - 1
+
+    found = False
+
+    if (dnames(dd).eq."time") then
+      format_time(var, date1, date2, frequency)
+      found = True
+    end if
+
+    if (dnames(dd).eq."plev") then
+;      format_plev(var)
+      found = True
+    end if
+
+    if (dnames(dd).eq."lev") then
+;      format_lev(var)
+      found = True
+    end if
+
+    if (dnames(dd).eq."lat") then
+;      format_lat(var)
+      found = True
+    end if
+
+    if (dnames(dd).eq."lon") then
+;      format_lon(var)
+      found = True
+    end if
+
+    if (.not.found) then
+      error_msg("f", scriptname, funcname, "cannot format coordinate " + \
+                dnames(dd))
+    end if
+
+  end do
 
   leave_msg(scriptname, funcname)
-  return(out_coord)
 
 end
+
 
 ; #############################################################################
 undef("lev_attrib")
@@ -598,96 +725,6 @@ begin
 
   leave_msg(scriptname, funcname)
   return(out)
-
-end
-
-; #############################################################################
-undef("yyyyfrac_to_ut")
-function yyyyfrac_to_ut(frac:numeric,
-                        option:integer,
-                        flag)
-;
-; Arguments
-;    frac: a one dimensional array of UTC decimal dates of the form yyyy.frac,
-;          i.e., year plus fraction of the year
-;    option: determines output format (see "option" of cd_calendar function)
-;    flag: not yet used
-;
-; Return value
-;    The format of the output is dependent upon the value of flag.
-;    In all cases the first dimension is the same size as frac.
-;    See http://www.ncl.ucar.edu/Document/Functions/Built-in/cd_calendar.shtml
-;
-; Description
-;    Converts UTC decimal dates to a form suitable for NCL calendar functions
-;
-; Caveats
-;    Considers leap years, but no leap seconds
-;    -> Not sure, how this is treated in the raw data ...
-;
-; Modification history
-;    20140624-A_gott_kl: written.
-;
-
-local funcname, scriptname, years, YEAR, units, offset, sorted, spy, ileap, \
-    iyears, iy, f, f_sec, time, ut
-begin
-
-  funcname = "yyyyfrac_to_ut"
-  scriptname = "esmvaltool/utils/cmorizers/obs/utilities.ncl"
-  enter_msg(scriptname, funcname)
-
-  ; Seconds per year
-  years = toint(frac)
-  spy = todouble(years)  ; just to create array
-  spy(:) = 365. * 24. * 3600.
-  ileap = ind(isleapyear(years))
-  if(.not.all(ismissing(ileap))) then
-    spy(ileap) = 366. * 24. * 3600.
-  end if
-
-  ; Offset (i.e. previous years) in seconds
-  offset = spy  ; just to create array
-  iyears = UNIQ(years)
-  sorted = new((/3, dimsizes(iyears)/), double)
-  sorted(2, :) = todouble(years(iyears))
-  sorted(1, :) = todouble(spy(iyears))
-  isorted = dim_pqsort(sorted(2, :), 1)
-  sorted(2, :) = sorted(2, isorted)
-  sorted(1, :) = sorted(1, isorted)
-  sorted(0, :) = 0.
-
-  ; Calculate one offset per year
-  sorted(0, 0) = 0.
-  do i = 1, dimsizes(iyears) - 1
-    sorted(0, i) = sorted(0, i - 1) + sorted(1, i - 1)
-  end do
-
-  ; Offsets for all time steps (independent of order)
-  do i = 0, dimsizes(iyears) - 1
-    iy = ind(years.eq.toint(sorted(2, i)))
-    offset(iy) = sorted(0, i)
-    delete(iy)
-  end do
-
-  ; Determine units
-  YEAR = tostring(sorted(2, 0))
-  units = "seconds since " + YEAR + "-01-01 00:00:0.0"
-
-  ; Fractions
-  f = todouble(frac) - todouble(years)  ; decimal fraction
-  f_sec = todouble(spy) * f  ; fraction in seconds
-  time = offset + f_sec
-
-  ; Add attributes
-  time@units = units
-  time@calendar = "standard"
-
-  ; Convert to UT
-  ut = cd_calendar(time, flag)
-
-  leave_msg(scriptname, funcname)
-  return(ut)
 
 end
 
