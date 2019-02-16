@@ -26,6 +26,17 @@
 library(tools)
 library(yaml)
 
+cdo <- function(command, args="", input="", options="", output="") {
+  if (args != "") args <- paste0(",", args)
+  argstr <- paste0(options, " ", command, args, " ", input, " ", output)
+  ret <- system2("cdo", args = argstr)
+  if (ret != 0) {
+    stop(paste("Failed (", ret, "): cdo", argstr))
+  }
+  return(output)
+}
+
+
 # read settings and metadata files
 args <- commandArgs(trailingOnly = TRUE)
 settings <- yaml::read_yaml(args[1])
@@ -84,44 +95,43 @@ for (model_idx in c(1:(length(models_name)))) {
   print(paste0(diag_base, ": pre-processing file: ", infile))
 
   print(paste0(diag_base, ": ", perc_lev, " percent quantile"))
-  system(paste0("cdo selvar,", varname, " ", infile, " tmp_model.nc"))
+
+  # Select variable of interest
+  modf <- cdo("selvar", args = varname, input = infile, output = tempfile())
 
   # Remap reference onto model grid
-  system(paste0("cdo remapcon,tmp_model.nc -selvar,", varname, " ",
-                ref_data_file, " tmp_ref.nc"))
+  reff <- cdo("remapcon", args = modf,
+              input = paste0("-selvar,", varname, " ", ref_data_file),
+              output = tempfile())
 
   # Get (75)th percentile of reference dataset
-  system(paste0("cdo timpctl,", perc_lev, " tmp_ref.nc  -timmin ",
-                "tmp_ref.nc -timmax tmp_ref.nc tmp_ref_perc_p.nc"))
+  ref_perc_pf <- cdo("timpctl", args = perc_lev,
+           input = paste(reff, " -timmin ", reff, " -timmax ", reff),
+           output = tempfile())
 
   # Select points with monthly precipitation greater than (75)th perc
-  system("cdo ge tmp_ref.nc  tmp_ref_perc_p.nc tmp_mask_ref.nc")
-  system("cdo ge tmp_model.nc tmp_ref_perc_p.nc tmp_mask_model.nc")
+  mask_reff <- cdo("ge", input = paste(reff, ref_perc_pf), output = tempfile())
+  mask_modf <- cdo("ge", input = paste(modf, ref_perc_pf), output = tempfile())
 
   # Precipitation sums
-  system("cdo timsum -mul tmp_mask_ref.nc tmp_ref.nc tmp_ref_sum.nc")
-  system("cdo timsum -mul tmp_mask_model.nc tmp_model.nc tmp_model_sum.nc")
+  ref_sumf <- cdo("timsum", input = paste("-mul", mask_reff, reff),
+                  output = tempfile())
+  mod_sumf <- cdo("timsum", input = paste("-mul", mask_modf, modf),
+                  output = tempfile())
 
   # Calculate quantile bias, set name and attributes
-  system("cdo div tmp_model_sum.nc tmp_ref_sum.nc tmp_qb1.nc")
+  qb1f <- cdo("div", input = paste(mod_sumf, ref_sumf), output = tempfile())
   cdo_command <- paste(
-    "cdo ",
     " -setattribute,qb@standard_name='precipitation_quantile_bias'",
     " -setattribute,qb@long_name='Precipitation quantile bias'",
     " -setattribute,qb@units=' '",
-    paste0(" -chname,", varname, ",qb"),
-    " tmp_qb1.nc tmp_qb.nc"
+    paste0(" -chname,", varname, ",qb")
   )
-  print(cdo_command)
-  system(cdo_command)
+  cdo(cdo_command, input = qb1f, output = outfile)
 
-  # Copy file to output destination and remove temporary files
-  mv_command <- paste("mv tmp_qb.nc", outfile)
-  print(mv_command)
-  system(mv_command)
-  rm_command <- paste("rm tmp_*")
-  print(rm_command)
-  system(rm_command)
+  # Remove temporary files
+  unlink(c(modf, reff, ref_perc_pf, mask_reff, mask_modf,
+           ref_sumf, mod_sumf, qb1f))
 
   # Set provenance for this output file
   caption <- paste0("Precipitation quantile bias ", perc_lev, "% for years ",
