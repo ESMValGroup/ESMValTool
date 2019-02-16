@@ -59,7 +59,7 @@ begin
   funcname = "format_time"
   scriptname = "esmvaltool/utils/cmorizers/obs/utilities.ncl"
 
-  ; Check supported frequencys
+  ; Check supported frequency
   if (all(frequency.ne.(/"3hr", "6hr", "day", "mon", "yr"/))) then
     error_msg("f", scriptname, funcname, "unsupported frequency " + frequency)
   end if
@@ -770,22 +770,132 @@ begin
 end
 
 ; #############################################################################
+undef("guess_bounds_time")
+function guess_bounds_time(coord[*]:double,
+                           frequency:string)
+local funcname, scriptname, date, year, month, day, opt
+begin
+
+  funcname = "guess_coord_bounds"
+  scriptname = "esmvaltool/utils/cmorizers/obs/utilities.ncl"
+
+  ; This function assumes that units of days are used
+  if (.not.isStrSubset(coord, "days since")) then
+    error_msg("f", scriptname, funcname, "unsupported units " + \
+              coord@units + ", expected " + TUNITS)
+  end if
+
+  bounds = new((/dimsizes(coord, 2)/), double)
+  delete(bounds@_FillValue)
+  bounds@units = coord@units
+  bounds@calendar = coord@calendar
+
+  date = cd_calendar(coord, 0)
+  year = date(:, 0)
+  month = date(:, 1)
+  day = date(:, 2)
+
+  opt = 0
+  copy_VarAtts(bounds, opt)
+
+  if (frequency.eq."yr") then
+    bounds(:, 0) = cd_calendar(year, 1, 1, 0, 0, 0, opt@units, opt)
+    bounds(:, 1) = cd_calendar(year + 1, 1, 1, 0, 0, 0, opt@units, opt)
+    return(bounds)
+  end if
+
+  if (frequency.eq."mon") then
+    bounds(:, 0) = cd_calendar(year, month, 1, 0, 0, opt@units, opt)
+    bounds(:, 1) = \
+      where(month.ne.12, \
+            cd_calendar(year, month + 1, 1, 0, 0, opt@units, opt), \
+            cd_calendar(year + 1, 1, 1, 0, 0, opt@units, opt)
+    return(bounds)
+  end if
+
+  if (frequency.eq."day") then
+    bounds(:, 0) = coord - 0.5
+    bounds(:, 1) = coord + 0.5
+    return(bounds)
+  end if
+
+  if (frequency.eq."6hr") then
+    bounds(:, 0) = coord - 0.125
+    bounds(:, 1) = coord + 0.125
+    return(bounds)
+  end if
+
+  if (frequency.eq."3hr") then
+    bounds(:, 0) = coord - 0.0625
+    bounds(:, 1) = coord + 0.0625
+    return(bounds)
+  end if
+
+  error_msg("f", scriptname, funcname, "unsupported frequency " + frequency)
+
+end
+
+; #############################################################################
 undef("guess_coord_bounds")
 function guess_coord_bounds(var:numeric, 
                             frequency:string)
-local funcname, scriptname
+local funcname, scriptname, time_bnds, plev_bnds, lev_bnds, lat_bnds, lon_bnds
 begin
 
-  funcname = "format_time"
+  funcname = "guess_coord_bounds"
   scriptname = "esmvaltool/utils/cmorizers/obs/utilities.ncl"
 
-  ; Check supported frequencys
+  ; Check supported frequency
   if (all(frequency.ne.(/"3hr", "6hr", "day", "mon", "yr"/))) then
     error_msg("f", scriptname, funcname, "unsupported frequency " + frequency)
   end if
 
-end
+  ; Initialize list
+  bounds_list = NewList("fifo")
 
+  ; Loop over dimensions, call formatting procedures for each coordinate
+  do dd = 0, dimsizes(dnames) - 1
+
+    found = False
+
+    if (dnames(dd).eq."time") then
+      time_bnds = guess_bounds_time(var&time)
+      ListPush(bounds_list, time_bnds)
+      found = True
+    end if
+
+    if (dnames(dd).eq."plev") then
+      plev_bnds = guess_bounds_lev(var&plev)  ; same function for lev and plev
+      ListPush(bounds_list, plev_bnds)
+      found = True
+    end if
+
+    if (dnames(dd).eq."lev") then
+      lev_bnds = guess_bounds_lev(var&lev)
+      ListPush(bounds_list, lev_bnds)
+      found = True
+    end if
+
+    if (dnames(dd).eq."lat") then
+      lat_bnds = guess_bounds_lat(var&lat)
+      ListPush(bounds_list, lat_bnds)
+      found = True
+    end if
+
+    if (dnames(dd).eq."lon") then
+      lon_bnds = guess_bounds_lon(var&lon)
+      ListPush(bounds_list, lon_bnds)
+      found = True
+    end if
+
+    if (.not.found) then
+      error_msg("f", scriptname, funcname, "cannot guess bounds for " + \
+                "coordinate " + dnames(dd))
+    end if
+
+  end do
+
+end
 
 ; #############################################################################
 undef("create_timec")
