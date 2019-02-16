@@ -10,18 +10,14 @@
 ;    procedure format_lat
 ;    procedure format_lon
 ;    procedure format_coords
-
-;    function plev_attrib
-;    function lev_attrib
-;    function lat_attrib
-;    function lon_attrib
 ;    function read_cmor
-;    function var_attrib
-;    function set_size_array
+;    function format_variable
+;    function guess_coord_bounds
 ;    function create_timec
 ;    function set_global_atts
 ;    procedure write_nc
 ;    procedure write_nc_profile
+;    function set_size_array
 ;    function process_EBAS_data
 ;
 ; #############################################################################
@@ -62,8 +58,8 @@ begin
 
   funcname = "format_time"
   scriptname = "esmvaltool/utils/cmorizers/obs/utilities.ncl"
-  enter_msg(scriptname, funcname)
 
+  ; Check supported frequencys
   if (all(frequency.ne.(/"3hr", "6hr", "day", "mon", "yr"/))) then
     error_msg("f", scriptname, funcname, "unsupported frequency " + frequency)
   end if
@@ -155,10 +151,11 @@ begin
       m2 = where(yy.eq.year2, month2, 12)
       do mm = m1, m2
         date(tt, 1) = mm
-        dm = days_in_month(yy, mm) / 2.
+        dm = days_in_month(yy, mm) / 2. + 1
         date(tt, 2) = toint(dm)
         date(tt, 3) = toint(24 * (dm - toint(dm)))
         tt = tt + 1
+        delete(dm)
       end do
     end do
     date(:, 4:5) = 0
@@ -286,19 +283,29 @@ procedure format_plev(var:numeric)
 ; Modification history
 ;    20190216-A_righ_ma: written.
 ;
-local funcname, scriptname, cplev, newplev
+local funcname, scriptname, rank, cplev, newplev
 begin
 
   funcname = "format_plev"
   scriptname = "esmvaltool/utils/cmorizers/obs/utilities.ncl"
-  enter_msg(scriptname, funcname)
+
+  ; Set rank
+  rank = dimsizes(dimsizes(var))
 
   ; Check monotonicity
   if (isMonotonic(var&plev) .eq. 0) then
-    error_msg("f", DIAG_SCRIPT, "", "non-monotonic vertical coordinate")
+    error_msg("f", scriptname, funcname, "non-monotonic vertical coordinate")
   end if
-  if (isMonotonic(var&plev).eq.1) then
-    var = var(:, ::-1, :, :)
+  if (isMonotonic(var&plev).eq.1) then  ; must be monotonically decreasing
+    if (rank.eq.4) then
+      var = var(:, ::-1, :, :)
+    else if (rank.eq.3) then
+      var = var(:, ::-1, :)
+    else if (rank.eq.2) then
+      var = var(:, ::-1)
+    end if
+    end if
+    end if
   end if
 
   ; Read coordinate
@@ -307,10 +314,10 @@ begin
   ; Set standard attributes
   newplev = todouble(cplev)  ; this also removes attributes
   copy_VarCoords(cplev, newplev)
-  newplev@bnds = "plev_bnds"
+  newplev@bounds = "plev_bnds"
   newplev@positive = "down"
-  newplev@axis = "Z"
   newplev@long_name = "pressure"
+  newplev@axis = "Z"
   newplev@units = "Pa"
   newplev@standard_name = "air_pressure"
   if (isatt(newplev, "_FillValue")) then
@@ -321,14 +328,223 @@ begin
   delete(var&plev)
   var&plev = newplev
 
+  leave_msg(scriptname, funcname)
+
 end
 
+; #############################################################################
+undef("format_lev")
+procedure format_lev(var:numeric)
+;
+; Arguments
+;    var: input variable
+;
+; Description
+;    Check the monotonicity of the lev (depth) coordinate and set the
+;    standard CMOR attributes.
+;
+; Caveats
+;
+; References
+;
+; Modification history
+;    20190216-A_righ_ma: written.
+;
+local funcname, scriptname, rank, clev, newlev
+begin
+
+  funcname = "format_lev"
+  scriptname = "esmvaltool/utils/cmorizers/obs/utilities.ncl"
+
+  ; Set rank
+  rank = dimsizes(dimsizes(var))
+
+  ; Check monotonicity
+  if (isMonotonic(var&lev) .eq. 0) then
+    error_msg("f", scriptname, funcname, "non-monotonic vertical coordinate")
+  end if
+  if (isMonotonic(var&lev).eq.-1) then  ; must be monotonically increasing
+    if (rank.eq.4) then
+      var = var(:, ::-1, :, :)
+    else if (rank.eq.3) then
+      var = var(:, ::-1, :)
+    else if (rank.eq.2) then
+      var = var(:, ::-1)
+    end if
+    end if
+    end if
+  end if
+
+  ; Read coordinate
+  clev = var&lev
+
+  ; Set standard attributes
+  newlev = todouble(clev)  ; this also removes attributes
+  copy_VarCoords(clev, newlev)
+  newlev@bounds = "lev_bnds"
+  newlev@positive = "down"
+  newlev@long_name = "ocean depth coordinate"
+  newlev@axis = "Z"
+  newlev@units = "m"
+  newlev@standard_name = "depth"
+  if (isatt(newlev, "_FillValue")) then
+    delete(newlev@_FillValue)
+  end if
+
+  ; Reset lev coordinate
+  delete(var&lev)
+  var&lev = newlev
+
+  leave_msg(scriptname, funcname)
+
+end
+
+; #############################################################################
+undef("format_lat")
+procedure format_lat(var:numeric)
+;
+; Arguments
+;    var: input variable
+;
+; Description
+;    Check the monotonicity of the lat (N->S) coordinate and set the
+;    standard CMOR attributes.
+;
+; Caveats
+;
+; References
+;
+; Modification history
+;    20190216-A_righ_ma: written.
+;
+local funcname, scriptname, rank, dims, dpos, lcheck, clat, newlat
+begin
+
+  funcname = "format_lat"
+  scriptname = "esmvaltool/utils/cmorizers/obs/utilities.ncl"
+
+  ; Set rank
+  rank = dimsizes(dimsizes(var))
+  dims = getvardims(var)
+  dpos = ind(dims.eq."lat")
+
+  ; Check monotonicity
+  if (isMonotonic(var&lat) .eq. 0) then
+    error_msg("f", scriptname, funcname, "non-monotonic latitude coordinate")
+  end if
+  if (isMonotonic(var&lat) .eq. -1) then  ; must be N->S
+    lcheck = False
+    if (rank.eq.4) then
+      if (dpos.eq.2) then
+        var = var(:, :, ::-1, :)
+        lcheck = True
+      end if
+    end if
+    if (rank.eq.3) then
+      if (dpos.eq.1) then
+        var = var(:, ::-1, :)
+        lcheck = True
+      end if
+      if (dpos.eq.2) then
+        var = var(:, :, ::-1)
+        lcheck = True
+      end if
+    end if
+    if (rank.eq.2) then
+      if (dpos.eq.1) then
+        var = var(:, ::-1)
+        lcheck = True
+      end if
+    end if
+    if (.not.lcheck) then
+      error_msg("f", scriptname, funcname, "cannot locate latitude position")
+    end if
+  end if
+
+  ; Read coordinate
+  clat = var&lat
+
+  ; Set standard attributes
+  newlat = todouble(clat)  ; this also removes attributes
+  copy_VarCoords(clat, newlat)
+  newlat@bounds = "lat_bnds"
+  newlat@long_name = "latitude"
+  newlat@axis = "Y"
+  newlat@units = "degrees_north"
+  newlat@standard_name = "latitude"
+  if (isatt(newlat, "_FillValue")) then
+    delete(newlat@_FillValue)
+  end if
+
+  ; Reset lat coordinate
+  delete(var&lat)
+  var&lat = newlat
+
+  leave_msg(scriptname, funcname)
+
+end
+
+; #############################################################################
+undef("format_lon")
+procedure format_lon(var:numeric)
+;
+; Arguments
+;    var: input variable
+;
+; Description
+;    Check the lon coordinate (0:360) and set the standard CMOR attributes.
+;
+; Caveats
+;
+; References
+;
+; Modification history
+;    20190216-A_righ_ma: written.
+;
+local funcname, scriptname, clon, newlon
+begin
+
+  funcname = "format_lon"
+  scriptname = "esmvaltool/utils/cmorizers/obs/utilities.ncl"
+
+  ; Check monotonicity
+  if (isMonotonic(var&lon) .eq. 0) then
+    error_msg("f", scriptname, funcname, "non-monotonic lonfitude coordinate")
+  end if
+
+  ; Check that lon is 0:360
+  if (any(var&lon.lt.0.)) then
+    var = lonFlip(var)
+  end if
+
+  ; Read coordinate
+  clon = var&lon
+
+  ; Set standard attributes
+  newlon = todouble(clon)  ; this also removes attributes
+  copy_VarCoords(clon, newlon)
+  newlon@bounds = "lon_bnds"
+  newlon@long_name = "longitude"
+  newlon@axis = "X"
+  newlon@units = "degrees_east"
+  newlon@standard_name = "longitude"
+  if (isatt(newlon, "_FillValue")) then
+    delete(newlon@_FillValue)
+  end if
+
+  ; Reset lon coordinate
+  delete(var&lon)
+  var&lon = newlon
+
+  leave_msg(scriptname, funcname)
+
+end
 
 ; #############################################################################
 undef("format_coords")
 procedure format_coords(var:numeric,
-                        date1:string, 
-                        date2:string, 
+                        date1:string,
+                        date2:string,
                         frequency:string)
 ;
 ; Arguments
@@ -352,11 +568,11 @@ begin
 
   funcname = "format_coords"
   scriptname = "esmvaltool/utils/cmorizers/obs/utilities.ncl"
-  enter_msg(scriptname, funcname)
 
-  dnames = getvardimnames(var)
+  ; Get variable dimensions
+  dnames = getvardims(var)
 
-  ; Loop over dimensions, call formatting procedures
+  ; Loop over dimensions, call formatting procedures for each coordinate
   do dd = 0, dimsizes(dnames) - 1
 
     found = False
@@ -367,22 +583,22 @@ begin
     end if
 
     if (dnames(dd).eq."plev") then
-;      format_plev(var)
+      format_plev(var)
       found = True
     end if
 
     if (dnames(dd).eq."lev") then
-;      format_lev(var)
+      format_lev(var)
       found = True
     end if
 
     if (dnames(dd).eq."lat") then
-;      format_lat(var)
+      format_lat(var)
       found = True
     end if
 
     if (dnames(dd).eq."lon") then
-;      format_lon(var)
+      format_lon(var)
       found = True
     end if
 
@@ -394,134 +610,6 @@ begin
   end do
 
   leave_msg(scriptname, funcname)
-
-end
-
-
-; #############################################################################
-undef("lev_attrib")
-function lev_attrib(coord:numeric)
-;
-; Arguments
-;    coord: input ocean level coordinate.
-;
-; Return value
-;    An array of the same dimensionality of coord.
-;
-; Description
-;    Assigns attributes to the ocean level coordinate.
-;
-; Caveats
-;
-; References
-;
-; Modification history
-;    20150415-A_righ_ma: written.
-;
-local funcname, scriptname, out_coord
-begin
-
-  funcname = "lev_attrib"
-  scriptname = "esmvaltool/utils/cmorizers/obs/utilities.ncl"
-  enter_msg(scriptname, funcname)
-
-  out_coord = todouble(coord)  ; this also removes attributes
-  copy_VarCoords(coord, out_coord)
-  out_coord@long_name = "ocean depth coordinate"
-  out_coord@positive = "down"
-  out_coord@axis = "Z"
-  out_coord@units = "m "
-  out_coord@standard_name = "depth"
-  if (isatt(out_coord, "_FillValue")) then
-    delete(out_coord@_FillValue)
-  end if
-
-  leave_msg(scriptname, funcname)
-  return(out_coord)
-
-end
-
-; #############################################################################
-undef("lat_attrib")
-function lat_attrib(coord)
-;
-; Arguments
-;    coord: input latitude coordinate.
-;
-; Return value
-;    An array of the same dimensionality of coord.
-;
-; Description
-;    Assigns attributes to the latitude coordinate.
-;
-; Caveats
-;
-; References
-;
-; Modification history
-;    20130528-A_righ_ma: written.
-;
-local funcname, scriptname, out_coord
-begin
-
-  funcname = "lat_attrib"
-  scriptname = "esmvaltool/utils/cmorizers/obs/utilities.ncl"
-  enter_msg(scriptname, funcname)
-
-  out_coord = todouble(coord)  ; this also removes attributes
-  copy_VarCoords(coord, out_coord)
-  out_coord@long_name = "latitude"
-  out_coord@axis = "Y"
-  out_coord@units = "degrees_north"
-  out_coord@standard_name = "latitude"
-  if (isatt(out_coord, "_FillValue")) then
-    delete(out_coord@_FillValue)
-  end if
-
-  leave_msg(scriptname, funcname)
-  return(out_coord)
-
-end
-
-; #############################################################################
-undef("lon_attrib")
-function lon_attrib(coord)
-;
-; Arguments
-;    coord: input longitude coordinate.
-;
-; Return value
-;    An array of the same dimensionality of coord.
-;
-; Description
-;    Assigns attributes to the longitude coordinate.
-;
-; Caveats
-;
-; References
-;
-; Modification history
-;    20130528-A_righ_ma: written.
-;
-local funcname, scriptname, out_coord
-begin
-
-  funcname = "lon_attrib"
-  scriptname = "esmvaltool/utils/cmorizers/obs/utilities.ncl"
-  enter_msg(scriptname, funcname)
-
-  out_coord = todouble(coord)  ; this also removes attributes
-  copy_VarCoords(coord, out_coord)
-  out_coord@long_name = "longitude"
-  out_coord@axis = "X"
-  out_coord@units = "degrees_east"
-  out_coord@standard_name = "longitude"
-  if (isatt(out_coord, "_FillValue")) then
-    delete(out_coord@_FillValue)
-  end if
-
-  leave_msg(scriptname, funcname)
-  return(out_coord)
 
 end
 
@@ -553,7 +641,6 @@ begin
 
   funcname = "read_cmor"
   scriptname = "esmvaltool/utils/cmorizers/obs/utilities.ncl"
-  enter_msg(scriptname, funcname)
 
   ; Read attributes from cmor table
   if (.not.fileexists(table)) then
@@ -613,15 +700,15 @@ begin
 end
 
 ; #############################################################################
-undef("var_attrib")
-function var_attrib(var:numeric,
-                    name:string,
-                    table:string)
+undef("format_variable")
+function format_variable(var:numeric,
+                         name:string,
+                         table:string)
 ;
 ; Arguments
-;    var: the variable's field.
-;    name: the variable's standard name.
-;    string: full path to the CMOR table of the variable.
+;    var: input variable.
+;    name: standard name of the input variable.
+;    string: full path to the CMOR table containing the variable.
 ;
 ; Return value
 ;    An array of the same dimensionality of var.
@@ -643,7 +730,6 @@ begin
 
   funcname = "var_attrib"
   scriptname = "esmvaltool/utils/cmorizers/obs/utilities.ncl"
-  enter_msg(scriptname, funcname)
 
   ; Set fill value first
   if(isatt(var, "_FillValue")) then
@@ -684,49 +770,22 @@ begin
 end
 
 ; #############################################################################
-undef("set_size_array")
-function set_size_array()
-;
-; Arguments
-;
-; Return value
-;    An array of type double.
-;
-; Description
-;    Sets a logarithmic array of sizes to be used for particle size
-;    distribution calculations.
-;
-; Caveats
-;
-; References
-;
-; Modification history
-;    20130528-A_righ_ma: written.
-;
-local funcname, scriptname, minsize, maxsize, nbins, bin, out
+undef("guess_coord_bounds")
+function guess_coord_bounds(var:numeric, 
+                            frequency:string)
+local funcname, scriptname
 begin
 
-  funcname = "set_size_array"
+  funcname = "format_time"
   scriptname = "esmvaltool/utils/cmorizers/obs/utilities.ncl"
-  enter_msg(scriptname, funcname)
 
-  ; Size range (0.5 nm - 10 um)
-  minsize = 0.5e-9
-  maxsize = 10.e-6
-  nbins = 100
-
-  ; Generate array
-  out = new(nbins, double)
-  bin = 10. ^ (log10(maxsize / minsize) / (nbins - 1))
-  out(0) = minsize
-  do ii = 1, nbins - 1
-    out(ii) = out(ii - 1) * bin
-  end do
-
-  leave_msg(scriptname, funcname)
-  return(out)
+  ; Check supported frequencys
+  if (all(frequency.ne.(/"3hr", "6hr", "day", "mon", "yr"/))) then
+    error_msg("f", scriptname, funcname, "unsupported frequency " + frequency)
+  end if
 
 end
+
 
 ; #############################################################################
 undef("create_timec")
@@ -751,7 +810,6 @@ begin
 
   funcname = "create_timec"
   scriptname = "esmvaltool/utils/cmorizers/obs/utilities.ncl"
-  enter_msg(scriptname, funcname)
 
   out = new(12 * (y2 - y1 + 1), double)
   do yy = y1, y2
@@ -797,7 +855,6 @@ begin
 
   funcname = "set_global_atts"
   scriptname = "esmvaltool/utils/cmorizers/obs/utilities.ncl"
-  enter_msg(scriptname, funcname)
 
   global = True
   global@title = obsname + " data reformatted for the ESMValTool v2.0"
@@ -850,7 +907,6 @@ begin
 
   funcname = "write_nc"
   scriptname = "esmvaltool/utils/cmorizers/obs/utilities.ncl"
-  enter_msg(scriptname, funcname)
 
   ; Open file
   if (fileexists(outfile)) then
@@ -929,7 +985,6 @@ begin
 
   funcname = "write_nc_profile"
   scriptname = "esmvaltool/utils/cmorizers/obs/utilities.ncl"
-  enter_msg(scriptname, funcname)
 
   ; Open file
   if (fileexists(outfile)) then
@@ -988,6 +1043,50 @@ begin
 end
 
 ; #############################################################################
+undef("set_size_array")
+function set_size_array()
+;
+; Arguments
+;
+; Return value
+;    An array of type double.
+;
+; Description
+;    Sets a logarithmic array of sizes to be used for particle size
+;    distribution calculations.
+;
+; Caveats
+;
+; References
+;
+; Modification history
+;    20130528-A_righ_ma: written.
+;
+local funcname, scriptname, minsize, maxsize, nbins, bin, out
+begin
+
+  funcname = "set_size_array"
+  scriptname = "esmvaltool/utils/cmorizers/obs/utilities.ncl"
+
+  ; Size range (0.5 nm - 10 um)
+  minsize = 0.5e-9
+  maxsize = 10.e-6
+  nbins = 100
+
+  ; Generate array
+  out = new(nbins, double)
+  bin = 10. ^ (log10(maxsize / minsize) / (nbins - 1))
+  out(0) = minsize
+  do ii = 1, nbins - 1
+    out(ii) = out(ii - 1) * bin
+  end do
+
+  leave_msg(scriptname, funcname)
+  return(out)
+
+end
+
+; #############################################################################
 undef("process_EBAS_data")
 function process_EBAS_data(in_vars[*]:string,
                            in_units[*]: string,
@@ -1035,7 +1134,6 @@ begin
 
   funcname = "process_EBAS_data"
   scriptname = "esmvaltool/utils/cmorizers/obs/utilities.ncl"
-  enter_msg(scriptname, funcname)
 
   ; EBAS flags for valid measurements
   ; (see http://www.nilu.no/projects/ccc/flags/index.html)
