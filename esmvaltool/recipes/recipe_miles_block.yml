@@ -51,7 +51,7 @@ preprocessors:
     preproc1:
       extract_levels:
         levels: 50000
-        scheme: nearest
+        scheme: linear
       regrid:
         target_grid: 2.5x2.5
         lat_offset: False
