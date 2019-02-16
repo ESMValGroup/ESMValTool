@@ -114,7 +114,7 @@ def fix_metadata(cubes, short_name, project, dataset, cmor_table=None,
                 fail_on_error=False,
                 automatic_fixes=True)
             checker(cube).check_metadata()
-        del cube.attributes['source_file']
+        cube.attributes.pop('source_file', None)
         fixed_cubes.append(cube)
     return fixed_cubes
 
