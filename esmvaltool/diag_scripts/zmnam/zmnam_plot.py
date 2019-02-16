@@ -14,7 +14,8 @@ import cartopy.crs as ccrs
 from cartopy.util import add_cyclic_point
 
 
-def zmnam_plot(datafolder, figfolder, src_props, fig_fmt, write_plots):
+def zmnam_plot(file_gh_mo, datafolder, figfolder, src_props,
+               fig_fmt, write_plots):
     """Plotting of timeseries and maps for zmnam diagnostics."""
     plot_files = []
     # Open daily and monthly PCs
@@ -44,9 +45,9 @@ def zmnam_plot(datafolder, figfolder, src_props, fig_fmt, write_plots):
     in_file.close()
 
     # Open monthly gh field
-    file_name = 'tmp_gh_mo_an_hem.nc'
+    file_name = file_gh_mo
     # print(datafolder + file_name)
-    in_file = nc4.Dataset(datafolder + file_name, "r")
+    in_file = nc4.Dataset(file_name, "r")
     dims = list(in_file.dimensions.keys())[::-1]  # py3
     print('mo full dims', dims)
 

@@ -23,7 +23,6 @@ from esmvaltool.diag_scripts.shared import run_diagnostic, ProvenanceLogger
 from zmnam_calc import zmnam_calc
 from zmnam_plot import zmnam_plot
 from zmnam_preproc import zmnam_preproc
-from zmnam_clean import zmnam_clean
 
 logger = logging.getLogger(__name__)
 
@@ -88,17 +87,15 @@ def main(cfg):
         ifile_props = fileprops_cat[indfile]
 
         # Call diagnostics functions
-        zmnam_preproc(ifile)
-        outfiles = zmnam_calc(out_dir + '/', out_dir + '/', ifile_props)
-        plot_files = zmnam_plot(out_dir + '/', plot_dir +
-                                '/', ifile_props, fig_fmt,
-                                write_plots)
+        (file_da_an_zm, file_mo_an) = zmnam_preproc(ifile)
+        outfiles = zmnam_calc(file_da_an_zm, out_dir + '/', ifile_props)
+        plot_files = zmnam_plot(file_mo_an, out_dir + '/', plot_dir +
+                                '/', ifile_props, fig_fmt, write_plots)
         provenance_record = get_provenance_record(
             list(input_files.values())[0], ancestor_files=ifile)
         if write_plots:
             # plot_file cannot be an array, so only the first plot is provided
             provenance_record['plot_file'] = plot_files[0]
-        zmnam_clean()
         for file in outfiles:
             with ProvenanceLogger(cfg) as provenance_logger:
                 provenance_logger.log(file, provenance_record)

@@ -11,6 +11,8 @@ dependencies:
   - matplotlib<3
   - python-stratify
   - esmpy
+  - python-cdo
+  - xarray
   # Multi language support:
   - ncl
   - ncurses=6.1=hfc679d8_1

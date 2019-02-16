@@ -59,6 +59,8 @@ requirements:
     - six
     - vmprof
     - yamale  # in birdhouse channel
+    - python-cdo
+    - xarray
     # Multi language support:
     - ncl
     - ncurses=6.1=hfc679d8_1

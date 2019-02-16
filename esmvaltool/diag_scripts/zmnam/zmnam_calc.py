@@ -29,7 +29,7 @@ def butter_filter(data, freq, lowcut=None, order=2):
     return ysig
 
 
-def zmnam_calc(indir, outdir, src_props):
+def zmnam_calc(da_fname, outdir, src_props):
     """Function to do EOF/PC decomposition of zg field."""
     deg_to_r = np.pi / 180.
     lat_weighting = True
@@ -39,9 +39,8 @@ def zmnam_calc(indir, outdir, src_props):
     # already subtracted from daily/monthly files
 
     # Open daily data
-    da_fname = 'tmp_gh_da_an_zm_hem.nc'
 
-    in_file = nc4.Dataset(indir + da_fname, "r")
+    in_file = nc4.Dataset(da_fname, "r")
     time_dim = in_file.variables['time'][:]
     time_nam = in_file.variables['time'].long_name
     time_uni = in_file.variables['time'].units
