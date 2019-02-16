@@ -438,7 +438,7 @@ ncdf_opener_universal <- function(namefile, namevar = NULL, namelon = NULL,
       )
     } else if (grepl("day since", units, fixed = TRUE) |
       grepl("days since", units, fixed = TRUE)) {
-      origin <- substr(gsub("[a-zA-Z ]", "", units), 1, 10)
+      origin <- unlist(strsplit(units, "[a-zA-Z ]+"))[2]
       origin.pcict <- as.PCICt(origin, cal = caldata, format = "%Y-%m-%d")
       timeline <- origin.pcict + (floor(time) * 86400)
     } else {
