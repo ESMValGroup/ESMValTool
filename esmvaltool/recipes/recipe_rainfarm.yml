@@ -23,23 +23,22 @@ datasets:
 preprocessors:
   preproc:
     extract_region:    
-      # The selected region needs to have equal and even number of longitude 
+      # The selected region needs to have equal and even number of longitude (in any case it is cut)
       # and latitude grid points (e.g., 2x2, 4x4, ...). 
-      # Warning: downcaling can reach very high resolution so select a limited area.
-      start_longitude: 3
-      end_longitude: 13
-      start_latitude: 43
-      end_latitude: 53
+      # Warning: downcaling can reach very high resolution, so select a limited area.
+      start_longitude: 5
+      end_longitude: 15
+      start_latitude: 40
+      end_latitude: 50
     regrid:
       target_grid: 1x1  # in degrees, can also be the name of one of the datasets to use the grid from that dataset
-      scheme: linear  # can be linear, nearest, area_weighted, unstructured_nearest
+      scheme: area_weighted  # can be linear, nearest, area_weighted, unstructured_nearest
 diagnostics:
   rainfarm:
     description: RainFARM stochastic downscaling of precipitation fields
     variables:
       pr:
         preprocessor: preproc
-        reference_dataset: "EC-EARTH"
         mip: day
         field: T2Ds
     scripts:
