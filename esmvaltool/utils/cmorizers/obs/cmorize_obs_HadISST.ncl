@@ -112,6 +112,9 @@ begin
     output = tmp
     delete(tmp)
 
+    ; Calculate coordinate bounds
+    bounds = guess_coord_bounds(output, FREQ(vv))
+
     ; Set global attributes
     gAtt = set_global_atts(OBSNAME, TIER, SOURCE, REF, COMMENT)
 
@@ -122,7 +125,7 @@ begin
                  MIPS(vv), VARS(vv), DATESTR/), "_") + ".nc"
 
     ; Write variable
-    write_nc(fout, VARS(vv), output, gAtt)
+    write_nc(fout, VARS(vv), output, bounds, gAtt)
     delete(gAtt)
     delete(output)
 

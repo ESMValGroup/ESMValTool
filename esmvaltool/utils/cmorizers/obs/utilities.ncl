@@ -4,6 +4,7 @@
 ; General purpose functions called by the reformat_obs_*.ncl scripts.
 ;
 ; Contents
+;    function create_timec
 ;    procedure format_time
 ;    procedure format_plev
 ;    procedure format_lev
@@ -12,8 +13,11 @@
 ;    procedure format_coords
 ;    function read_cmor
 ;    function format_variable
+;    function guess_bounds_time
+;    function guess_bounds_lev
+;    function guess_bounds_lat
+;    function guess_bounds_lon
 ;    function guess_coord_bounds
-;    function create_timec
 ;    function set_global_atts
 ;    procedure write_nc
 ;    procedure write_nc_profile
@@ -27,6 +31,42 @@ TUNITS = "days since 1950-01-01 00:00:00"
 
 ; CMOR FillValue
 FILL = 1.e+20
+
+; #############################################################################
+undef("create_timec")
+function create_timec(y1:integer,
+                      y2:integer)
+;
+; Arguments
+;    y1: start year of the time range.
+;    y2: end year of the time range.
+;
+; Return value
+;    A one-dimensional array of size 12*(y2-y1+1).
+;
+; Description
+;    Create a monthly time coordinate for the given time range.
+;
+; Modification history
+;    20140124-A_righ_ma: written.
+;
+local funcname, scriptname, yy, mm, out
+begin
+
+  funcname = "create_timec"
+  scriptname = "esmvaltool/utils/cmorizers/obs/utilities.ncl"
+
+  out = new(12 * (y2 - y1 + 1), double)
+  do yy = y1, y2
+    do mm = 1, 12
+      out(12 * (yy - y1) + mm - 1) = \
+        cd_inv_calendar(yy, mm, 15, 0, 0, 0, TUNITS, 0)
+    end do
+  end do
+
+  return(out)
+
+end
 
 ; #############################################################################
 undef("format_time")
@@ -81,6 +121,10 @@ begin
   year2  = toint(str_get_cols(end_date, 0, 3))
   month2 = toint(str_get_cols(end_date, 4, 5))
   day2   = toint(str_get_cols(end_date, 6, 7))
+
+  ; Set array of zeros with the same dimensionality for cd_inv_calendar
+  zero = year1
+  zero = 0
 
   ; Set calendar
   if (isatt(ctime, "calendar")) then
@@ -169,8 +213,8 @@ begin
     opt = 0
     opt@calendar = calendar
     exp_ntime = \
-      cd_inv_calendar(year2, month2, day2, 0, 0, 0, TUNITS, opt) - \
-      cd_inv_calendar(year1, month1, day1, 0, 0, 0, TUNITS, opt) + 1
+      cd_inv_calendar(year2, month2, day2, zero, zero, zero, TUNITS, opt) - \
+      cd_inv_calendar(year1, month1, day1, zero, zero, zero, TUNITS, opt) + 1
     if (ntime.ne.exp_ntime) then
       error_msg("f", scriptname, funcname, \
                 "incorrect number of timesteps in input data: " + exp_ntime + \
@@ -203,8 +247,8 @@ begin
     opt = 0
     opt@calendar = calendar
     exp_ntime = \
-      cd_inv_calendar(year2, month2, day2, 0, 0, 0, TUNITS, opt) - \
-      cd_inv_calendar(year1, month1, day1, 0, 0, 0, TUNITS, opt) + 1
+      cd_inv_calendar(year2, month2, day2, zero, zero, zero, TUNITS, opt) - \
+      cd_inv_calendar(year1, month1, day1, zero, zero, zero, TUNITS, opt) + 1
     exp_ntime = 4 * exp_ntime
     if (ntime.ne.exp_ntime) then
       error_msg("f", scriptname, funcname, \
@@ -222,8 +266,8 @@ begin
     opt = 0
     opt@calendar = calendar
     exp_ntime = \
-      cd_inv_calendar(year2, month2, day2, 0, 0, 0, TUNITS, opt) - \
-      cd_inv_calendar(year1, month1, day1, 0, 0, 0, TUNITS, opt) + 1
+      cd_inv_calendar(year2, month2, day2, zero, zero, zero, TUNITS, opt) - \
+      cd_inv_calendar(year1, month1, day1, zero, zero, zero, TUNITS, opt) + 1
     exp_ntime = 8 * exp_ntime
     if (ntime.ne.exp_ntime) then
       error_msg("f", scriptname, funcname, \
@@ -260,8 +304,6 @@ begin
   ; Reset time coordinate
   delete(var&time)
   var&time = newtime
-
-  leave_msg(scriptname, funcname)
 
 end
 
@@ -314,7 +356,6 @@ begin
   ; Set standard attributes
   newplev = todouble(cplev)  ; this also removes attributes
   copy_VarCoords(cplev, newplev)
-  newplev@bounds = "plev_bnds"
   newplev@positive = "down"
   newplev@long_name = "pressure"
   newplev@axis = "Z"
@@ -327,8 +368,6 @@ begin
   ; Reset plev coordinate
   delete(var&plev)
   var&plev = newplev
-
-  leave_msg(scriptname, funcname)
 
 end
 
@@ -395,8 +434,6 @@ begin
   delete(var&lev)
   var&lev = newlev
 
-  leave_msg(scriptname, funcname)
-
 end
 
 ; #############################################################################
@@ -407,7 +444,7 @@ procedure format_lat(var:numeric)
 ;    var: input variable
 ;
 ; Description
-;    Check the monotonicity of the lat (N->S) coordinate and set the
+;    Check the monotonicity of the latitude coordinat (S->N) and set the
 ;    standard CMOR attributes.
 ;
 ; Caveats
@@ -432,7 +469,7 @@ begin
   if (isMonotonic(var&lat) .eq. 0) then
     error_msg("f", scriptname, funcname, "non-monotonic latitude coordinate")
   end if
-  if (isMonotonic(var&lat) .eq. -1) then  ; must be N->S
+  if (isMonotonic(var&lat) .eq. -1) then  ; must be S->N
     lcheck = False
     if (rank.eq.4) then
       if (dpos.eq.2) then
@@ -479,8 +516,6 @@ begin
   ; Reset lat coordinate
   delete(var&lat)
   var&lat = newlat
-
-  leave_msg(scriptname, funcname)
 
 end
 
@@ -535,8 +570,6 @@ begin
   ; Reset lon coordinate
   delete(var&lon)
   var&lon = newlon
-
-  leave_msg(scriptname, funcname)
 
 end
 
@@ -608,8 +641,6 @@ begin
     end if
 
   end do
-
-  leave_msg(scriptname, funcname)
 
 end
 
@@ -694,7 +725,6 @@ begin
     out@$attn(ii)$ = attv(ii)
   end do
 
-  leave_msg(scriptname, funcname)
   return(out)
 
 end
@@ -714,7 +744,7 @@ function format_variable(var:numeric,
 ;    An array of the same dimensionality of var.
 ;
 ; Description
-;    Sets standard variable attributes.
+;    Set standard variable attributes according to the given CMOR table.
 ;
 ; Caveats
 ;
@@ -764,7 +794,6 @@ begin
     out@coordinates = coordattr
   end if
 
-  leave_msg(scriptname, funcname)
   return(out)
 
 end
@@ -773,59 +802,100 @@ end
 undef("guess_bounds_time")
 function guess_bounds_time(coord[*]:double,
                            frequency:string)
-local funcname, scriptname, date, year, month, day, opt
+;
+; Arguments
+;    coord: input time coordinate.
+;    frequency: time frequency ("3hr", "6hr", "day", "mon", "yr")
+;
+; Return value
+;    A two dimensional array, with the first dimension of the same size of the
+;    input coordinate and the second dimension of size 2.
+;
+; Description
+;    Calculate the boundaries of the time coordinate given the frequency.
+;
+; Caveats
+;
+; References
+;
+; Modification history
+;    20190217-A_righ_ma: written.
+;
+local funcname, scriptname, date, year, month, day, opt, units, tyear, tmonth
 begin
 
-  funcname = "guess_coord_bounds"
+  funcname = "guess_bounds_time"
   scriptname = "esmvaltool/utils/cmorizers/obs/utilities.ncl"
 
   ; This function assumes that units of days are used
-  if (.not.isStrSubset(coord, "days since")) then
+  if (.not.isStrSubset(coord@units, "days since")) then
     error_msg("f", scriptname, funcname, "unsupported units " + \
               coord@units + ", expected " + TUNITS)
   end if
 
-  bounds = new((/dimsizes(coord, 2)/), double)
+  ; Define boundaries
+  bounds = new((/dimsizes(coord), 2/), double)
+  bounds!0 = "time"
+  bounds&time = coord
+  bounds!1 = "bnds"
   delete(bounds@_FillValue)
-  bounds@units = coord@units
-  bounds@calendar = coord@calendar
 
+  ; Get date
   date = cd_calendar(coord, 0)
   year = date(:, 0)
   month = date(:, 1)
   day = date(:, 2)
 
+  ; Set array of constants with the same dimensionality for cd_inv_calendar
+  zero = year
+  zero = 0
+  one = year
+  one = 1
+
+  ; Settings for calendar
+  units = coord@units
   opt = 0
-  copy_VarAtts(bounds, opt)
+  copy_VarAtts(coord, opt)
 
   if (frequency.eq."yr") then
-    bounds(:, 0) = cd_calendar(year, 1, 1, 0, 0, 0, opt@units, opt)
-    bounds(:, 1) = cd_calendar(year + 1, 1, 1, 0, 0, 0, opt@units, opt)
+    ; 1st day of the year
+    bounds(:, 0) = \
+      (/cd_inv_calendar(year, one, one, zero, zero, zero, units, opt)/)
+    ; 1st day of the next year
+    bounds(:, 1) = \
+      (/cd_inv_calendar(year + 1, one, one, zero, zero, zero, units, opt)/)
     return(bounds)
   end if
 
   if (frequency.eq."mon") then
-    bounds(:, 0) = cd_calendar(year, month, 1, 0, 0, opt@units, opt)
+    ; 1st day of the month
+    bounds(:, 0) = \
+      (/cd_inv_calendar(year, month, one, zero, zero, zero, units, opt)/)
+    ; 1st day of the next month (special case December!)
+    tmonth = where(month.eq.12, 1, month + 1)
+    tyear = where(month.eq.12, year + 1, year)
     bounds(:, 1) = \
-      where(month.ne.12, \
-            cd_calendar(year, month + 1, 1, 0, 0, opt@units, opt), \
-            cd_calendar(year + 1, 1, 1, 0, 0, opt@units, opt)
+      (/cd_inv_calendar(tyear, tmonth, one, zero, zero, zero, units, opt)/)
     return(bounds)
+    delete([/tyear, tmonth/])
   end if
 
   if (frequency.eq."day") then
+    ; Shift of half a day
     bounds(:, 0) = coord - 0.5
     bounds(:, 1) = coord + 0.5
     return(bounds)
   end if
 
   if (frequency.eq."6hr") then
+    ; Shift of 3 hours (day/8)
     bounds(:, 0) = coord - 0.125
     bounds(:, 1) = coord + 0.125
     return(bounds)
   end if
 
   if (frequency.eq."3hr") then
+    ; Shift of 1.5 hours (day/16)
     bounds(:, 0) = coord - 0.0625
     bounds(:, 1) = coord + 0.0625
     return(bounds)
@@ -836,8 +906,151 @@ begin
 end
 
 ; #############################################################################
+undef("guess_bounds_lev")
+function guess_bounds_lev(coord[*]:double)
+;
+; Arguments
+;    coord: input level coordinate.
+;
+; Return value
+;    A two dimensional array, with the first dimension of the same size of the
+;    input coordinate and the second dimension of size 2.
+;
+; Description
+;    Calculate the boundaries of the level coordinate as midpoints between
+;    the input levels. The first (top) boundary is set to a maximum of zero.
+;
+; Caveats
+;
+; References
+;
+; Modification history
+;    20190217-A_righ_ma: written.
+;
+local funcname, scriptname, size, top
+begin
+
+  funcname = "guess_bounds_lev"
+  scriptname = "esmvaltool/utils/cmorizers/obs/utilities.ncl"
+
+  bounds = new((/dimsizes(coord), 2/), double)
+  bounds!0 = "lev"
+  bounds&lev = coord
+  bounds!1 = "bnds"
+  delete(bounds@_FillValue)
+
+  size = dimsizes(coord)
+
+  bounds(1:size - 1, 0) = 0.5 * (coord(0:size - 2) + coord(1:size - 1))
+  bounds(0:size - 2, 1) = bounds(1:size - 1, 0)
+
+  ; Set top and bottom separately
+  top = coord(0) - 0.5 * (coord(1) - coord(0))
+  bounds(0, 0) = where(top.ge.0., top, 0.)
+  bounds(size - 1, 1) = \
+    coord(size - 1) + 0.5 * (coord(size - 1) - coord(size - 2))
+
+  return(bounds)
+
+end
+
+; #############################################################################
+undef("guess_bounds_lat")
+function guess_bounds_lat(coord[*]:double)
+;
+; Arguments
+;    coord: input latitude coordinate.
+;
+; Return value
+;    A two dimensional array, with the first dimension of the same size of the
+;    input coordinate and the second dimension of size 2.
+;
+; Description
+;    Calculate the boundaries of the latitude coordinate as midpoints between
+;    the input values. The first and last boundary is set to 90 S and 90 N,
+;    respectively.
+;
+; Caveats
+;    This function works only with regular grids.
+;
+; References
+;
+; Modification history
+;    20190217-A_righ_ma: written.
+;
+local funcname, scriptname
+begin
+
+  funcname = "guess_bounds_lat"
+  scriptname = "esmvaltool/utils/cmorizers/obs/utilities.ncl"
+
+  bounds = new((/dimsizes(coord), 2/), double)
+  bounds!0 = "lat"
+  bounds&lat = coord
+  bounds!1 = "bnds"
+  delete(bounds@_FillValue)
+
+  size = dimsizes(coord)
+
+  bounds(1:size - 1, 0) = 0.5 * (coord(0:size - 2) + coord(1:size - 1))
+  bounds(0:size - 2, 1) = bounds(1:size - 1, 0)
+  bounds(0, 0) = -90.
+  bounds(size - 1, 1) = 90.
+
+  return(bounds)
+
+end
+
+; #############################################################################
+undef("guess_bounds_lon")
+function guess_bounds_lon(coord[*]:double)
+;
+; Arguments
+;    coord: input longitude coordinate.
+;
+; Return value
+;    A two dimensional array, with the first dimension of the same size of the
+;    input coordinate and the second dimension of size 2.
+;
+; Description
+;    Calculate the boundaries of the longitude coordinate as midpoints between
+;    the input values.
+;
+; Caveats
+;    This function works only with regular grids.
+;
+; References
+;
+; Modification history
+;    20190217-A_righ_ma: written.
+;
+local funcname, scriptname
+begin
+
+  funcname = "guess_bounds_lon"
+  scriptname = "esmvaltool/utils/cmorizers/obs/utilities.ncl"
+
+  bounds = new((/dimsizes(coord), 2/), double)
+  bounds!0 = "lon"
+  bounds&lon = coord
+  bounds!1 = "bnds"
+  delete(bounds@_FillValue)
+
+  size = dimsizes(coord)
+
+  bounds(1:size - 1, 0) = 0.5 * (coord(0:size - 2) + coord(1:size - 1))
+  bounds(0:size - 2, 1) = bounds(1:size - 1, 0)
+  bounds(0, 0) = coord(0) - 0.5 * (coord(1) - coord(0))
+  bounds(size - 1, 1) = \
+    coord(size - 1) + 0.5 * (coord(size - 1) - coord(size - 2))
+
+  return(bounds)
+
+end
+
+; #############################################################################
 undef("guess_coord_bounds")
-function guess_coord_bounds(var:numeric, 
+function guess_coord_bounds(var:numeric,
                             frequency:string)
 local funcname, scriptname, time_bnds, plev_bnds, lev_bnds, lat_bnds, lon_bnds
 begin
@@ -850,42 +1063,41 @@ begin
     error_msg("f", scriptname, funcname, "unsupported frequency " + frequency)
   end if
 
+  ; Get variable dimensions
+  dnames = getvardims(var)
+
   ; Initialize list
   bounds_list = NewList("fifo")
 
   ; Loop over dimensions, call formatting procedures for each coordinate
   do dd = 0, dimsizes(dnames) - 1
 
-    found = False
-
     if (dnames(dd).eq."time") then
-      time_bnds = guess_bounds_time(var&time)
+      time_bnds = guess_bounds_time(var&time, frequency)
       ListPush(bounds_list, time_bnds)
-      found = True
+      continue
     end if
 
     if (dnames(dd).eq."plev") then
-      plev_bnds = guess_bounds_lev(var&plev)  ; same function for lev and plev
-      ListPush(bounds_list, plev_bnds)
-      found = True
+      continue  ; plev bounds are not required
     end if
 
     if (dnames(dd).eq."lev") then
       lev_bnds = guess_bounds_lev(var&lev)
       ListPush(bounds_list, lev_bnds)
-      found = True
+      continue
     end if
 
     if (dnames(dd).eq."lat") then
       lat_bnds = guess_bounds_lat(var&lat)
       ListPush(bounds_list, lat_bnds)
-      found = True
+      continue
     end if
 
     if (dnames(dd).eq."lon") then
       lon_bnds = guess_bounds_lon(var&lon)
       ListPush(bounds_list, lon_bnds)
-      found = True
+      continue
     end if
 
     if (.not.found) then
@@ -895,42 +1107,7 @@ begin
 
   end do
 
-end
-
-; #############################################################################
-undef("create_timec")
-function create_timec(y1:integer,
-                      y2:integer)
-;
-; Arguments
-;    y1: start year of the time range.
-;    y2: end year of the time range.
-;
-; Return value
-;    A one-dimensional array of size 12*(y2-y1+1).
-;
-; Description
-;    Create a monthly time coordinate for the given time range.
-;
-; Modification history
-;    20140124-A_righ_ma: written.
-;
-local funcname, scriptname, yy, mm, out
-begin
-
-  funcname = "create_timec"
-  scriptname = "esmvaltool/utils/cmorizers/obs/utilities.ncl"
-
-  out = new(12 * (y2 - y1 + 1), double)
-  do yy = y1, y2
-    do mm = 1, 12
-      out(12 * (yy - y1) + mm - 1) = \
-        cd_inv_calendar(yy, mm, 15, 0, 0, 0, TUNITS, 0)
-    end do
-  end do
-
-  leave_msg(scriptname, funcname)
-  return(out)
+  return(bounds_list)
 
 end
 
@@ -985,28 +1162,27 @@ begin
 
   return(global)
 
-  leave_msg(scriptname, funcname)
-
 end
-
 
 ; #############################################################################
 undef("write_nc")
 procedure write_nc(outfile:string,
                    name:string,
                    var:numeric,
+                   bounds:list,
                    gAtt:logical)
 ;
 ; Arguments
 ;    outfile: the name of the file to be written, including its path.
-;    name: the variable name.
-;    var: the variable field.
+;    name: the variable standard name.
+;    var: the variable array.
+;    bounds: a list containing the bounds of the variable coordinates.
 ;    gAtt: a logical variable, whose attributes are appended as file
 ;          attributes.
 ;
 ; Description
-;    Writes the given variable to the given NetCDF file, appending also the
-;    provided global attributes.
+;    Write the given variable to the given NetCDF file, together with its
+;    coordinates and boundaries, and append the provided global attributes.
 ;
 ; Modification history
 ;    20140123-A_righ_ma: written.
@@ -1064,8 +1240,6 @@ begin
   end do
   w->$name$ = (/var/)
 
-  leave_msg(scriptname, funcname)
-
 end
 
 ; #############################################################################
@@ -1083,7 +1257,7 @@ procedure write_nc_profile(outfile:string,
 ;          attributes.
 ;
 ; Description
-;    Writes the given variable to the given NetCDF file, appending also the
+;    Write the given variable to the given NetCDF file, appending also the
 ;    provided global attributes.
 ;    Designed to write multiple variables for the vertical profiles data.
 ;
@@ -1148,8 +1322,6 @@ begin
 
   end do
 
-  leave_msg(scriptname, funcname)
-
 end
 
 ; #############################################################################
@@ -1162,7 +1334,7 @@ function set_size_array()
 ;    An array of type double.
 ;
 ; Description
-;    Sets a logarithmic array of sizes to be used for particle size
+;    Set a logarithmic array of sizes to be used for particle size
 ;    distribution calculations.
 ;
 ; Caveats
@@ -1191,7 +1363,6 @@ begin
     out(ii) = out(ii - 1) * bin
   end do
 
-  leave_msg(scriptname, funcname)
   return(out)
 
 end
@@ -1225,8 +1396,7 @@ function process_EBAS_data(in_vars[*]:string,
 ;    series of for each of the processed variables.
 ;
 ; Description
-;    This function is used to process the data from the EBAS database (e.g.,
-;    EANET, EMEP).
+;    Process the data from the EBAS database (e.g., EANET, EMEP).
 ;
 ; Caveats
 ;    For the time coordinate in the input data, only units of days are
@@ -1522,7 +1692,6 @@ begin
 
   end do  ; variables
 
-  leave_msg(scriptname, funcname)
   return(data_arr)
 
 end
