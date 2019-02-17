@@ -85,15 +85,27 @@ for (model_idx in c(1:(length(models_name)))) {
   print(paste0(diag_base, ": calling rainfarm"))
   outfilename <- paste0(work_dir, "/", infilename, "_downscaled")
 
-  # call rfarm
   ans <- julia_call("read_netcdf2d", infile, varname, need_return = "R" )
   pr <- ans[[1]]
   lon_mat <- ans[[2]]
   lat_mat <- ans[[3]]
+
+  # Ensure grid is square and with even dims
+  nmin <- min(dim(pr)[1], dim(pr)[2])
+  nmin <- floor(nmin / 2) * 2
+  pr <- pr[1:nmin, 1:nmin, ]
+  if (is.vector(lon_mat)) {
+    lon_mat <- lon_mat[1:nmin]
+    lat_mat <- lat_mat[1:nmin]
+  } else {
+    lon_mat <- lon_mat[1:nmin, 1:nmin]
+    lat_mat <- lat_mat[1:nmin, 1:nmin]
+  }
+
   ans <- julia_call("lon_lat_fine", lon_mat, lat_mat, nf, need_return = "R" )
   lon_f <- ans[[1]]
   lat_f <- ans[[2]]
-  if (slope == 0){
+  if (slope == 0) {
       ans <- julia_call("fft3d", pr, need_return = "R"  )
       fxp <- ans[[1]]
       ftp <- ans[[2]]
