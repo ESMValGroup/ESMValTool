@@ -1,5 +1,6 @@
 # pylint: disable=invalid-name, no-self-use, too-few-public-methods
 """Fixes for BNU ESM model."""
+import numpy as np
 from cf_units import Unit
 
 from ..fix import Fix
@@ -152,6 +153,28 @@ class spco2(Fix):
         metadata = cube.metadata
         cube *= 1.e6
         cube.metadata = metadata
+        return cube
+
+
+class od550aer(Fix):
+    """Fixes for od550aer."""
+
+    def fix_data(self, cube):
+        """
+        Fix data.
+
+        Masks invalid values.
+
+        Parameters
+        ----------
+        cube: iris.cube.Cube
+
+        Returns
+        -------
+        iris.cube.Cube
+
+        """
+        cube.data = np.ma.array(cube.data, mask=(cube.data == 1e36))
         return cube
 
 
