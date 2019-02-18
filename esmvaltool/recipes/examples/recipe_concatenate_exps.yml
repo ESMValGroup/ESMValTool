@@ -1,10 +1,10 @@
 # ESMValTool
 # recipe_concatenate_exps.yml
 ---
-documentation: 
+documentation:
   description: |
     Concatenate time series of different experiments at the preprocessor level.
-    
+
   authors:
     - schl_ma
 

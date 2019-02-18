@@ -72,6 +72,10 @@ authors:
     name: Bock, Lisa
     institute: DLR, Germany
     email: lisa.bock 'at' dlr.de
+  cagn_ch:
+    name: Cagnazzo, Chiara
+    institute: CNR, Italy
+    email: chiara.cagnazzo 'at' cnr.it    
   chen_ja:
     name: Chen, Jack
     institute: NCAR, USA
@@ -80,9 +84,13 @@ authors:
     name: Cionni, Irene
     institute: ENEA, Italy
     email: irene.cionni 'at' enea.it
+  crez_ba:
+    name: Crezee, Bas
+    institute: ETH Zurich, Switzerland
+    email: bas.crezee 'at' env.ethz.ch
   davi_ed:
     name: Davin, Edouard Leopold
-    institute: ETH, CH
+    institute: ETH Zurich, Switzerland
     email: edouard.davin 'at' env.ethz.ch
   ehbr_ca:
     name: Ehbrecht, Carsten
@@ -224,6 +232,10 @@ authors:
     name: Senftleben, Daniel
     institute: DLR, Germany
     email: daniel.senftleben 'at' dlr.de
+  serv_fe:
+    name: Serva, Federico
+    institute: CNR, Italy
+    email: federico.serva 'at' artov.isac.cnr.it    
   somm_ph:
     name: Sommer, Philipp
     institute: Univ. of Hamburg, Germany
@@ -426,12 +438,15 @@ references:
   contact_authors: "Please contact the author(s) to discuss acknowledgment or co-authorship."
   acknow_project: "Please acknowledge the project(s)."
   anav13jclim: "Anav et al., J. Clim., 26, 6801-6843, doi:10.1175/JCLI-D-12-00417.1, 2013."
+  andrews12grl: "Andrews et al., Geophys. Res. Lett., 39, L09712, doi:10.1029/2012GL051607, 2012."
   antonov10usgov: "Antonov, J. I. et al., World Ocean Atlas 2009, Volume 2: Salinity. S. Levitus, Ed. NOAA Atlas NESDIS 69, U.S. Government Printing Office, Washington, D.C., 184 pp., 2010."
   aquila11gmd: "Aquila et al., Geosci. Model Dev. 4, 325-355, doi:10.5194/gmd-4-325-2011, 2011."
   bakker14essd: "Bakker, D. C. E. et al., Earth Syst. Sci. Data, 6, 69-90, doi:10.5194/essd-6-69-2014, 2014."
+  baldwin09qjrms: "Baldwin, D. P. et al., Q. J. R. Meteorol. Soc., 135, 1661-1672, doi:10.1002/qj.479, 2009"
   bianchi12gbc: "Bianchi, D. et al., Global Biogeochem. Cy., 26, GB2009, doi:10.1029/2011GB004209, 2012."
   cionni11acp: "Cionni et al., Atmos. Chem. Phys., 11, 11267-11292, doi:10.5194/acp-11-11267-2011, 2011."
   clivar09jclim: "CLIVAR Madden-Julian Oscillation Working Group, J. Climate, 22, 3006-3030, doi:10.1175/2008JCLI2731.1, 2009."
+  cox18nature: "Cox, P. M. et al., Nature, 553, 319-322, doi:10.1038/nature25450, 2018."
   collins13ipcc: "Collins, M. et al., Long-term climate change: Projections, Commitments, and Irreversibility, in: Climate Change 2013: the Physical Science Basis, contribution of Working Group I to the Fifth Assessment Report of the Intergovernmental Panel on Climate Change, edited by: Stocker, T. F., Qin, D., Plattner, G.-K., Tignor, M., Allen, S. K., Boschung, J., Nauels, A., Xia, Y., Bex, V., and Midgley, P. M., Cambridge University Press, Cambridge, UK and New York, NY, USA (2013)."
   demora2018gmd: "de Mora et al., Geosci. Model Dev., 11, 4215-4240, doi:10.5194/gmd-11-4215-2018, 2018."
   dong08grl: "Dong, S. et al., J. Geophys. Res., 113, C06013, doi:10.1029/2006JC004051, 2008."
@@ -475,52 +490,23 @@ references:
   weedon14wrr: "Weedon, G. P. et al., Water Resour. Res., 50, 7505-7514, doi:10.1002/2014WR015638, 2014."
   wenzel14jgr: "Wenzel et al., J. Geophys. Res. Biogeosci., 119(5), doi:2013JG002591, 2014."
   williams09climdyn: "Williams and Webb, Clim. Dynam., 33, 141-157, doi:10.1007/s00382-008-0443-1, 2009."
-
-observation references:
-  access2: "ACCESS2 - Roiger et al., accepted"
-  aeronet: "AERONET - See http://aeronet.gsfc.nasa.gov/new_web/data_usage.html"
-  airs: "AIRS"
-  auramls: "Aura MLS"
-  cirrus: "CIRRUS - Baumgardner et al., Environ. Res. Lett., 3, 025010, 2008."
-  castnet: "CASTNET - See http://epa.gov/castnet/javaweb/index.html"
-  ceresebaf: "CERES-EBAF"
-  concert: "CONCERT - Dahlkoetter et al., Atmos. Chem. Phys., 14, 6111-6137, 2014."
-  cr-ave: "CR-AVE - Schwarz et al., J. Geophys. Res., 113, D03203, 2008."
-  dc3: "DC3 - B. Weinzierl (DLR)"
-  duemenil00mpi: "GRDC station observations - Duemenil et al., Max Planck Institute for Meteorology Report 307, Hamburg, Germany, 2000."
-  eanet: "EANET - See http://www.eanet.cc/"
-  emep: "EMEP - See http://www.emep.int/"
-  emmons00jgr: "Emmons et al., J. Geophys. Res., 105, D16, 20497-20538, 2000."
-  era40: "ERA40"
-  erainterim: "ERA-Interim"
-  esacci-aerosol: "ESACCI-AEROSOL - Popp, T. et al. (2015): ESA Aerosol Climate Change Initiative (ESA Aerosol_cci) data: AOD v4.21 via Centre for Environmental Data Analysis, May 2016"
-  esacci-landcover: "ESACCI-LANDCOVER - Defourny et al. (2015): ESA Land Cover Climate Change Initiative (ESA LC_cci) data: ESACCI-LC-L4-LCCS-Map-300m-P5Y-[2000,2005,2010]-v1.6.1 via Centre for Environmental Data Analysis"
-  esacci-sm: "ESACCI-SOILMOISTURE - Liu, et al. (2011), Hydrology and Earth System Sciences, 15, 425-436; Liu, et al. (2012), Remote Sensing of Environment, 123, 280-297; Wagner, et al. (2012), Remote Sensing and Spatial Information Sciences, Volume I-7"
-  esacci-sst: "ESACCI-SST - Merchant, et al. (2014): ESA Sea Surface Temperature Climate Change Initiative (ESA SST CCI): Analysis long term product version 1.0, NERC Earth Observation Data Centre, 24th February 2014, doi:10.5285/878bef44-d32a-40cd-a02d-49b6286f0ea4."
-  haloe: "HALOE"
-  hippo: "HIPPO - Schwarz et al., Geophys. Res. Lett., 40, 5542-5547, 2013."
-  improve: "IMPROVE - See http://vista.cira.colostate.edu/improve/data/improve/improve_data.htm"
-  inca: "INCA - Minikin et al., Geophys. Res. Lett., 30, 1503, 2003."
-  isccp_d1: "ISCCP D1 - Rossow and Schiffer, Bull. Amer. Meteor. Soc., 80, 2261-2287, 1999."
-  king03tgrs: "MODIS-CFMIP - King, M. D., et al., IEEE Trans. Geosci. Remote Sens., 41, 442-458, 2003."
-  ncep: "NCEP - Kalnay et al., Bull. Amer. Meteor. Soc., 77, 437-470, 1996."
-  misr: "MISR"
-  modis: "MODIS"
-  niwa: "NIWA"
-  odell08jcli: "UWisc - O'Dell et al., J. Climate, 21, 1721-1739, 2008."
-  lace1: "LACE - Petzold et al., J. Geophys. Res., 107, D21, 8128, 2002."
-  lace2: "LACE - Schroeder et al., J. Geophys. Res., 107, D21, 8126, 2002."
-  oct-ave: "Oct-AVE - Schwarz et al., J. Geophys. Res., 111, D16207, 2006."
-  pincus08jcli: "MODIS-CFMIP - Pincus et al., J. Climate, 25, 4699-4720, 2012."
-  saltrace1: "SALTRACE - B. Weinzierl (DLR)"
-  saltrace2: "SALTRACE - K. Fomba (TROPOS)"
-  samum1: "SAMUM - Weinzierl et al., Tellus B, 2009."
-  samum2: "SAMUM - K. Kandler (TU Darmstadt)"
-  srb: "SRB"
-  tc4: "TC4 - Spackman et al., Geophys. Res. Lett., 38, L09803, 2011."
-  ucnpacific: "UCN-Pacific - Clarke and Kapustin, J. Atmos. Sci. 59, 363, 2002."
-  ukmo: "UKMO"
-  weedon14waterresourres: "WFDEI - Weedon et al., Water Resour. Res. 50, 2014."
+  # Observations
+  aura-tes: "Beer, R., IEEE Trans. Geosci. Rem. Sens., doi:10.1109/TGRS.2005.863716, 2006."
+  ceres-syn1deg: "Wielicki et al., Bull. Amer. Meteor. Soc., doi: 10.1175/1520-0477(1996)077<0853:CATERE>2.0.CO;2, 1996."
+  era-interim: "Dee, D. P. et al., Q. J. Roy. Meteor. Soc., doi:10.1002/qj.828, 2011."
+  esacci-aerosol: "Popp et al., ESA Aerosol Climate Change Initiative (ESA Aerosol_cci) data: AOD v4.21 via Centre for Environmental Data Analysis, 2016."
+  esacci-cloud: "Stengel et al., Earth Syst. Sci. Data, doi:10.5194/essd-9-881-2017, 2017."
+  esacci-fire: "Not available."
+  esacci-landcover: "Defourny et al.. ESA Land Cover Climate Change Initiative (ESA LC_cci) data, 2015."
+  esacci-ozone: "Loyola et al., Int. J. Remote Sens. doi:10.1080/01431160902825016, 2009."
+  esacci-soilmoisture: "Not available."
+  esacci-sst: "Merchant et al., Geosci. Data J., doi:10.1002/gdj3.20, 2014."
+  hadisst: "Rayner et al., J. Geophys. Res., doi:10.1029/2002JD002670, 2013."
+  modis: "Not available."
+  ncep: "Kalnay et al., B. Am. Meteorol. Soc., doi:10.1175/1520-0477(1996)077<0437:TNYRP>2.0.CO;2, 1996."
+  niwa-bs: "Bodeker et al., Atmos. Chem. Phys., doi:10.5194/acp-5-2603-2005, 2005."
+  patmos-x: "Heidinger et al., NOAA National Centers for Environmental Information, doi:10.7289/V5348HCK, last access: 10 February 2019."
+  woa: "Locarnini et al., World Ocean Atlas 2013, Vol. 1: Temperature, 2013."
 
 projects:
   climval: BMBF MiKlip Project ClimVal

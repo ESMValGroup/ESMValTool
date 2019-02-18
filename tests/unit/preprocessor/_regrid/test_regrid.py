@@ -62,39 +62,27 @@ class Test(tests.Test):
         self.tgt_grid = mock.Mock(
             spec=iris.cube.Cube, coord=self.tgt_grid_coord)
         self.regrid_schemes = [
-            'linear', 'nearest', 'area_weighted', 'unstructured_nearest'
+            'linear', 'linear_extrapolate', 'nearest', 'area_weighted',
+            'unstructured_nearest'
         ]
+
+        def _return_mock_stock_cube(spec, lat_offset=True, lon_offset=True):
+            return self.tgt_grid
+
         self.mock_stock = self.patch(
             'esmvaltool.preprocessor._regrid._stock_cube',
-            side_effect=lambda arg: self.tgt_grid)
+            side_effect=_return_mock_stock_cube)
         self.mocks = [
             self.coord_system, self.coords, self.regrid, self.src_cube,
             self.tgt_grid_coord, self.tgt_grid, self.mock_stock
         ]
 
-    def test_nop(self):
-        cube = mock.sentinel.cube
-        result = regrid(cube, None, None)
-        self.assertEqual(result, cube)
-
-    def test_invalid_tgt_grid__None(self):
-        dummy = mock.sentinel.dummy
-        emsg = 'A target grid must be specified'
-        with self.assertRaisesRegex(ValueError, emsg):
-            regrid(dummy, None, dummy)
-
     def test_invalid_tgt_grid__unknown(self):
         dummy = mock.sentinel.dummy
         scheme = 'linear'
-        emsg = 'Expecting a cube or cell-specification'
+        emsg = 'Expecting a cube'
         with self.assertRaisesRegex(ValueError, emsg):
             regrid(self.src_cube, dummy, scheme)
-
-    def test_invalid_scheme__None(self):
-        dummy = mock.sentinel.dummy
-        emsg = 'A scheme must be specified'
-        with self.assertRaisesRegex(ValueError, emsg):
-            regrid(dummy, dummy, None)
 
     def test_invalid_scheme__unknown(self):
         dummy = mock.sentinel.dummy
