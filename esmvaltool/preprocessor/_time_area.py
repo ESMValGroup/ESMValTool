@@ -173,14 +173,14 @@ def seasonal_mean(cube):
 
 def annual_mean(cube, decadal=False):
     """
-    Function to compute annual means.
+    Compute annual means.
 
     Note that this function does not weight the annual or decadal mean if
     uneven time periods are present. Ie, all data inside the year/decade
     are treated equally.
 
-    Arguments
-    ---------
+    Parameters
+    ----------
         cube: iris.cube.Cube
             input cube.
         decadal: bool
