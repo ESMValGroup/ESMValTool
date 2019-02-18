@@ -21,8 +21,7 @@
 ;    anomalies (relative to the 1961-90 climatology), this script calculates
 ;    absolute tas by adding the climatology ("absolute.nc") to the anomalies
 ;    ("HadCRUT.4.6.0.0.median.nc"). It creates two output, one with the
-;    temperature time-series and one with the climatology of the temperature
-;    anomaly.
+;    temperature time-series and one with the climatology of the temperature.
 ;
 ; Modification history
 ;    20190208-A_righ_ma: added output for climatology and adapted to v2.
