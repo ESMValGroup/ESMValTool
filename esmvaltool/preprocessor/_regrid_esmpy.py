@@ -262,14 +262,21 @@ def build_regridder(src_rep, dst_rep, method, mask_threshold=.99):
 def get_grid_representant(cube, horizontal_only=False):
     """Extract the spatial grid from a cube."""
     horizontal_slice = ['latitude', 'longitude']
-    if horizontal_only:
-        ref_to_slice = horizontal_slice
-    else:
+    ref_to_slice = horizontal_slice
+    if not horizontal_only:
         try:
             cube_z_coord = cube.coord(axis='Z')
-            ref_to_slice = [cube_z_coord] + horizontal_slice
+            n_zdims = len(cube.coord_dims(cube_z_coord))
+            if n_zdims == 0:
+                # scalar z coordinate, go on with 2d regridding
+                pass
+            elif n_zdims == 1:
+                ref_to_slice = [cube_z_coord] + horizontal_slice
+            else:
+                raise ValueError("Cube has multidimensional Z coordinate.")
         except iris.exceptions.CoordinateNotFoundError:
-            ref_to_slice = horizontal_slice
+            # no z coordinate, go on with 2d regridding
+            pass
     return get_representant(cube, ref_to_slice)
 
 
