@@ -11,6 +11,7 @@ dependencies:
   - matplotlib<3
   - python-stratify
   - esmpy
+  - libunwind  #  specifically for Python3.7+
   # Multi language support:
   - ncl
   - julia
