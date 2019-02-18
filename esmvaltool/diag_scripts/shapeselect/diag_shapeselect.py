@@ -13,14 +13,15 @@ from netCDF4 import Dataset, num2date
 from shapely.geometry import MultiPoint, shape
 from shapely.ops import nearest_points
 
-from esmvaltool.diag_scripts.shared import run_diagnostic
-from esmvaltool.diag_scripts.shared._base import (
-    ProvenanceLogger, get_diagnostic_filename)
+from esmvaltool.diag_scripts.shared import (
+    run_diagnostic, ProvenanceLogger, get_diagnostic_filename)
+#from esmvaltool.diag_scripts.shared._base import (
+#    ProvenanceLogger, get_diagnostic_filename)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
 
-def get_provenance_record(cfg, basename, caption, ancestor_files):
+def get_provenance_record(cfg, basename, caption, type, ancestor_files):
     """Create a provenance record describing the diagnostic data and plot."""
     record = {
         'caption': caption,
@@ -30,7 +31,11 @@ def get_provenance_record(cfg, basename, caption, ancestor_files):
         'references': ['acknow_project'],
         'ancestors': ancestor_files,
     }
-    diagnostic_file = get_diagnostic_filename(basename, cfg)
+    if type is 'xlsx':
+        diagnostic_file = os.path.join(cfg['work_dir'], basename + '.xlsx')
+    else:
+        diagnostic_file = get_diagnostic_filename(basename, cfg)
+    print(diagnostic_file)
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(diagnostic_file, record)
     return record
@@ -48,7 +53,11 @@ def main(cfg):
         ncts, nclon, nclat = shapeselect(cfg, cube, filename)
         name = os.path.splitext(os.path.basename(filename))[0] + '_polygon'
         if cfg['write_xlsx']:
+            xname = name + '_table'
             writexls(cfg, filename, ncts, nclon, nclat)
+            caption = 'Selected gridpoints within shapefile.'
+            provenance_record = get_provenance_record(
+                cfg, xname, caption, 'xlsx', ancestor_files=[filename])
         if cfg['write_netcdf']:
             path = os.path.join(
                 cfg['work_dir'],
@@ -57,7 +66,7 @@ def main(cfg):
             write_netcdf(path, ncts, nclon, nclat, cube, cfg)
             caption = 'Selected gridpoints within shapefile.'
             provenance_record = get_provenance_record(
-                cfg, name, caption, ancestor_files=[filename])
+                cfg, name, caption, 'nc', ancestor_files=[filename])
 
 
 def write_keyvalue_toxlsx(worksheet, row, key, value):
@@ -83,7 +92,7 @@ def write_keyvalue_toxlsx(worksheet, row, key, value):
 
 def writexls(cfg, filename, ncts, nclon1, nclat1):
     """Write the content of a netcdffile as .xlsx."""
-    name = os.path.splitext(os.path.basename(filename))[0] + '_polygon'
+    name = os.path.splitext(os.path.basename(filename))[0] + '_polygon_table'
     ncfile = Dataset(filename, 'r')
     otime = ncfile.variables['time']
     dtime = num2date(otime[:], otime.units, otime.calendar)
