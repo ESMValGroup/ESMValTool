@@ -44,6 +44,7 @@ REQUIREMENTS = {
         'six',
         'stratify',
         'vmprof',
+        'xarray',
         'yamale',
     ],
     # Test dependencies
