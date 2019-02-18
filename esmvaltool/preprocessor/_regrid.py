@@ -481,16 +481,13 @@ def get_reference_levels(filename,
                          project,
                          dataset,
                          short_name,
-                         fix_dir,
-                         coordinate='air_pressure'):
+                         fix_dir):
     """Get level definition from a CMOR coordinate.
 
     Parameters
     ----------
     filename: str
         Path to the reference file
-    coordinate: str
-        Coordinate name
 
     Returns
     -------
@@ -508,8 +505,7 @@ def get_reference_levels(filename,
     cubes = fix_metadata(cubes, short_name, project, dataset)
     cube = cubes[0]
     try:
-        coord = cube.coord(coordinate)
+        coord = cube.coord(axis='z', dim_coords=True)
     except iris.exceptions.CoordinateNotFoundError:
-        raise ValueError('Coordinate {} not available in {}'.format(
-            coordinate, filename))
+        raise ValueError('z-coordinate not available in {}'.format(filename))
     return coord.points.tolist()
