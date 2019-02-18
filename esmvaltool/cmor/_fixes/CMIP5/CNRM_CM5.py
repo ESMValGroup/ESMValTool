@@ -29,5 +29,3 @@ class msftmyz(Fix):
 
 class msftmyzba(msftmyz):
     """Fixes for msftmyzba."""
-
-    pass

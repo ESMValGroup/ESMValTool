@@ -58,12 +58,14 @@ requirements:
     - shapely
     - six
     - vmprof
+    - xarray
     - yamale  # in birdhouse channel
     # Multi language support:
     - ncl
     - ncurses=6.1=hfc679d8_1
     - r-base
     - r-rcpp
+    - cdo=1.9.3
     # TODO: add julia
 test:
   # TODO: add unit tests? This seems to require installing the tests
