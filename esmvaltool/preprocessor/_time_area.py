@@ -54,9 +54,22 @@ def time_slice(cube, start_year, start_month, start_day, end_year, end_month,
 
     t_1 = time_units.date2num(start_date)
     t_2 = time_units.date2num(end_date)
+    time_points = cube.coord('time').points
     if use_legacy_iris():
+        if not t_1 < time_points[-1] or not t_2 > time_points[0]:
+            logger.debug("Time slice with bounds %f to %f", t_1, t_2)
+            logger.debug("Data with bounds %f to %f", time_points[0],
+                         time_points[-1])
+            raise ValueError("Time slice outside cube time boundaries.")
         constraint = iris.Constraint(time=lambda t: (t_1 < t.point < t_2))
     else:
+        if not t_1 < time_units.date2num(time_points[-1]) or \
+                not t_2 > time_units.date2num(time_points[0]):
+            logger.debug("Time slice with bounds %f to %f", t_1, t_2)
+            logger.warning("Data with bounds %f to %f",
+                           time_units.date2num(time_points[0]),
+                           time_units.date2num(time_points[-1]))
+            raise ValueError("Time slice outside cube time boundaries.")
         constraint = iris.Constraint(
             time=lambda t: (t_1 < time_units.date2num(t.point) < t_2))
 
