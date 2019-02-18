@@ -48,7 +48,6 @@ __all__ = [
     'extract_time',
     'extract_season',
     'extract_month',
-    'annual_mean',
     # Data reformatting/CMORization
     'fix_data',
     # Level extraction
@@ -82,6 +81,7 @@ __all__ = [
     'average_region',
     'average_volume',
     'zonal_means',
+    'annual_mean',
     'seasonal_mean',
     'time_average',
     'cmor_check_data',
