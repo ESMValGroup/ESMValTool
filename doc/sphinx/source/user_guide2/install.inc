@@ -45,11 +45,17 @@ The ESMValTool source code is available on a public GitHub repository:
 https://github.com/ESMValGroup/ESMValTool
 
 The easiest way to obtain it is to clone the repository using git
-(see https://git-scm.com/):
+(see https://git-scm.com/). To clone the public repository:
 
 .. code-block:: bash
 
     git clone https://github.com/ESMValGroup/ESMValTool.git
+
+It is also possible to work in one of the ESMValTool private repository, e.g.:
+
+.. code-block:: bash
+
+    git clone https://github.com/ESMValGroup/ESMValTool-private.git
 
 By default, this command will create a folder called ESMValTool containing the
 source code of the tool.
