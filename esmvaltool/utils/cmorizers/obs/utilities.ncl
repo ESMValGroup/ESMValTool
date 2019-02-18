@@ -1185,6 +1185,7 @@ procedure write_nc(outfile:string,
 ;    coordinates and boundaries, and append the provided global attributes.
 ;
 ; Modification history
+;    20190218_A_righ_ma: extend with coordinate bounds.
 ;    20140123-A_righ_ma: written.
 ;
 local funcname, scriptname, w, gAtt, dim_names, ndims, dim_sizes, dim_types, \
@@ -1221,23 +1222,41 @@ begin
 
   ; Define dimensions
   filedimdef(w, dim_names, dim_sizes, dim_unlim)
+  filedimdef(w, "bnds", 2, False)
   do ii = 0, ndims - 1
+    ; Coordinates
     filevardef(w, dim_names(ii), dim_types(ii), dim_names(ii))
-  end do
-  filevardef(w, name, "float", dim_names)
-  do ii = 0, ndims - 1
     filevarattdef(w, dim_names(ii), var&$dim_names(ii)$)
+    ; Bounds
+    bnds_name = dim_names(ii) + "_bnds"
+    listidx = ListIndexFromName(bounds, bnds_name)
+    if (listidx.ne.-1) then
+      filevardef(w, bnds_name, dim_types(ii), (/dim_names(ii), "bnds"/))
+    end if
+    ; No attributes for the bounds
   end do
+
+  ; Define variable
+  filevardef(w, name, "float", dim_names)
   filevarattdef(w, name, var)
 
   ; Append global attributes
   fileattdef(w, gAtt)
 
-  ; Write
+  ; Write coordinate and corresponding bounds (if available)
   setfileoption(w, "DefineMode", False)
   do ii = 0, ndims - 1
     w->$dim_names(ii)$ = (/var&$dim_names(ii)$/)
+    bnds_name = dim_names(ii) + "_bnds"
+    listidx = ListIndexFromName(bounds, bnds_name)
+    if (listidx.ne.-1) then
+      bound = bounds[listidx]
+      w->$bnds_name$ = (/bound/)
+      delete(bound)
+    end if
   end do
+
+  ; Write variable
   w->$name$ = (/var/)
 
 end
