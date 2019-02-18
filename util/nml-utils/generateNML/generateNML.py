@@ -9,6 +9,12 @@ import os
 from jinja2 import Template
 
 import xmltodict
+import sys
+import yaml
+if os.name == 'posix' and sys.version_info[0] < 3:
+    import subprocess32 as subprocess
+else:
+    import subprocess
 
 t_nml = """
 <namelist>
@@ -95,31 +101,30 @@ def get_modelline(**kwargs):
 
 def get_info_from_freva(**kwargs):
     facets = []
+    freva_cmd = "freva"
+    #freva_cmd = "./mock_freva.sh"
     for key, value in kwargs.items():
         facets.append("{0}={1}".format(key,value))
-    cmd = "freva --databrowser project=cmip6 {0} --all-facets".format(" ".join(facets))
-    print(cmd)
+    module = "module load cmip6-dicad/1.0"
+    #cmd = "freva --databrowser project=cmip6 {0} --all-facets".format(" ".join(facets))
+    cmd = ["{0} &> /dev/null; {1} ".format(module, freva_cmd), "--databrowser", "project=cmip6"] + facets + ["--all-facets"]
+    cmd = " ".join(cmd)
+    freva_out = subprocess.check_output(cmd, shell=True).decode()
+    print(freva_out)
+    print((freva_out.replace(":", ": [").replace("\n", "]\n")))
+    return yaml.load((freva_out.replace(":", ": [").replace("\n", "]\n")))
 
 def get_available_dataset_info(requirements):
     # TODO: tbi
     out = list()
 
-    for item in requirements:
-        for experiment in item['experiment']:
-            for variable in item['variables']:
-                if isinstance(variable, str):
-                    get_info_from_freva(experiment=experiment, variable=variable)
-                elif isinstance(variable, dict):
-                    get_info_from_freva(experiment=experiment, variable=variable['#text'])
-                else:
-                    raise Exception
-
-        out.append([
-            {'model': 'MODEL1', 'institute': 'InstituteXY', 'experiment': 'experiment', 'start_year': "1850",
-            'end_year':"2010", 'mip': 'TESTMIP', 'grid':'grid'},
-            {'model': 'MODEL1', 'institute': 'InstituteXY', 'experiment': 'experiment', 'start_year': "1850",
-            'end_year':"2010", 'mip': 'TESTMIP', 'grid':'grid'}
-            ])
+    for diagnostic in requirements:
+        for experiment in diagnostic['experiment']:
+            available_datasets = get_info_from_freva(experiment=experiment)
+            if len(available_datasets['model']) > 0:
+                for model in available_datasets['model']:
+                    for cmor_table in available_datasets['cmor_table']:
+                        out.append({'model': model, 'experiment': experiment, 'cmor_table': cmor_table })
     return out
 
 def get_namelist(namelist):
@@ -128,7 +133,10 @@ def get_namelist(namelist):
     _check_namelist(namelist)
 
     requirements_per_diagblock = get_namelist_diag_requirements(namelist)
+    print(requirements_per_diagblock)
     available_datasets_per_diagblock = get_available_dataset_info(requirements_per_diagblock)
+    print(type(available_datasets_per_diagblock[0]))
+    print(available_datasets_per_diagblock[0])
 
     with open(namelist, 'r') as f:
         j = xmltodict.parse(f.read())
@@ -137,9 +145,14 @@ def get_namelist(namelist):
         j['namelist']['MODELS'] = ["{{ global_modelline }}"]
 
     for i in range(len(available_datasets_per_diagblock)):
-        j['namelist']['DIAGNOSTICS']['diag'][i]['model'] = [
-                get_modelline(**item) for item in available_datasets_per_diagblock[i]
-        ]
+        l = list()
+        for item in available_datasets_per_diagblock[i]:
+            if not isinstance(item, dict):
+                print("Warning 1")
+                continue
+            l.append(get_modelline(**item))
+        print(j['namelist']['DIAGNOSTICS']['diag'][0])
+        j['namelist']['DIAGNOSTICS']['diag'][i]['model'] = l
 
 
     return xmltodict.unparse(j, pretty=True)
@@ -173,13 +186,24 @@ def _get_variable_str(variable):
 
 def _get_experiments(modellines):
     """Get Experiments used in modellines."""
+    return _get_unique_parts(modellines, flag=True)
+
+def _get_cmor_table(modellines):
+    """Get cmor_table used in modellines."""
+    return _get_unique_parts(modellines, flag=False)
+
+def _get_unique_parts(modellines, flag=True):
     valid_experiments = set([
         'historical', 'piControl', "1pctCO2", "esmFixClim1", "esmHistorical",
         "amip"
     ])
+    valid_cmor_table = set([item.lower() for item in [
+        'Amon','Omon','Lmon', 'aero', 'OImon', 'day', '3hr'
+    ]])
     black_list = [
         "OBS", "obs4mips", "OBS_gridfile", "reanalysis", "observation"
     ]
+
     match = list()
     out = list()
 
@@ -202,11 +226,17 @@ def _get_experiments(modellines):
         if any([item in black_list for item in model_line_parts]):
             continue
 
-        match += list(
-            set.intersection(set(model_line_parts), valid_experiments))
+        if flag is True:
+            match += list(
+                set.intersection(set(model_line_parts), valid_experiments))
+            target = "experiment"
+        else:
+            match += list(
+                set.intersection(set(model_line_parts), valid_cmor_table))
+            target = "cmor_table"
 
         if len(match) == 0:
-            msg = "Unknown experiment for modelline : {}".format(modelline)
+            msg = "Unknown {0} for modelline : {1}".format(target, modelline)
             print(msg)
         out.append(match)
     return list(set(match))
@@ -230,10 +260,11 @@ def get_namelist_diag_requirements(namelist):
         variable = _get_variable_str(diagblock['variable'])
         if 'model' in diagblock.keys():
             experiment = _get_experiments(diagblock['model'])
+            cmor_table = _get_cmor_table(diagblock['model'])
         else:
             experiment = []
         time_span = None
-        out.append({'variables': diagblock['variable'] if isinstance(diagblock['variable'], list) else [diagblock['variable']], 'experiment': experiment})
+        out.append({'variables': diagblock['variable'] if isinstance(diagblock['variable'], list) else [diagblock['variable']], 'experiment': experiment, 'cmor_table': cmor_table})
         #print(
         #    "DiagBlock {0} of namelist {1} needs variable: {2}, experiment {3}, time_span {4}"
         #    .format(cnt, namelist, variable, experiment, time_span))
@@ -265,9 +296,9 @@ def main():
     namelist = kwa['namelist']
     print(get_namelist(namelist))
     #print(get_template_string(namelist))
-    requirements = get_namelist_diag_requirements(namelist)
-    import json
-    print(json.dumps(requirements, indent=4, separators=(',', ': ')))
+    ##requirements = get_namelist_diag_requirements(namelist)
+    ##import json
+    ##print(json.dumps(requirements, indent=4, separators=(',', ': ')))
 
 if __name__ == "__main__":
     main()
