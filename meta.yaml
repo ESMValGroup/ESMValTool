@@ -45,18 +45,21 @@ requirements:
     - cartopy
     - cf_units
     - cython
+    - eofs
     - esmpy
     - matplotlib<3
     - nc-time-axis
     - netCDF4
     - numba
     - numpy
+    - pandas
     - pillow
     - prov
     - psutil
     - pydot
     - python-cdo
     - pyyaml
+    - scikit-learn
     - shapely
     - six
     - vmprof
@@ -67,9 +70,6 @@ requirements:
     - jasper!=1.900.31  # pinned NCL dependency
     - r-base
     - r-rcpp
-    - sklearn
-    - pandas
-    - eofs
     - cdo=1.9.3
     # TODO: add julia
 test:
