@@ -41,7 +41,7 @@ diagnostics:
     additional_datasets:
       - {dataset: ACCESS1-3}
       - {dataset: MPI-ESM-MR}
-      - {dataset: CanESM2}
+      - {dataset: IPSL-CM5A-MR}
       - {dataset: CCSM4}
     scripts:
       main:
