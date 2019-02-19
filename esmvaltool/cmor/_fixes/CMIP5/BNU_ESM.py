@@ -1,7 +1,7 @@
 # pylint: disable=invalid-name, no-self-use, too-few-public-methods
 """Fixes for BNU ESM model."""
-import numpy as np
 from cf_units import Unit
+from dask import array as da
 
 from ..fix import Fix
 
@@ -174,8 +174,8 @@ class od550aer(Fix):
         iris.cube.Cube
 
         """
-        cube.data = np.ma.array(cube.data, mask=(cube.data == 1e36))
-        return cube
+        data = da.ma.masked_equal(cube.core_data(), 1.e36)
+        return cube.copy(data)
 
 
 # No clear way to apply this fix now that we are working with cubes, not files
