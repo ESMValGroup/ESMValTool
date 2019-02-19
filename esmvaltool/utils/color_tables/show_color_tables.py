@@ -6,8 +6,9 @@ import os
 import warnings
 
 import matplotlib
-matplotlib.use('Agg')
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+
 import numpy as np
 from esmvaltool.diag_scripts.shared.plot import __file__ as plot_path
 from jinja2 import Template
@@ -150,8 +151,9 @@ def main_plot_ncl_cm(colorpath, outpath):
 def get_args():
     """Define the commandline arguments."""
     parser = argparse.ArgumentParser(
-        description=
-        "Utility module for inspecting and converting ncl color tables.")
+        description="""
+        Utility module for inspecting and converting 
+        ncl color tables.""")
     parser.add_argument(
         '-c',
         '--colorpath',
@@ -164,8 +166,9 @@ def get_args():
         '--ncl',
         dest='n',
         action='store_true',
-        help=
-        "Create report of all ncl color maps in <COLOR_TABLE_DIR> using ncl.")
+        help="""
+            Create report of all ncl color maps in 
+            <COLOR_TABLE_DIR> using ncl.""")
     parser.add_argument(
         '-p',
         '--python',
