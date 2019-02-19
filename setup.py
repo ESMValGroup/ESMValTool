@@ -47,6 +47,9 @@ REQUIREMENTS = {
         'vmprof',
         'xarray',
         'yamale',
+        'sklearn',
+        'pandas',
+        'eofs',
     ],
     # Test dependencies
     # Execute 'python setup.py test' to run tests
