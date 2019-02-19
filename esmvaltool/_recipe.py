@@ -184,12 +184,10 @@ def _update_target_levels(variable, variables, settings, config_user):
             variable_data = _get_dataset_info(dataset, variables)
             filename = \
                 _dataset_to_file(variable_data, config_user)
-            coordinate = levels.get('coordinate', 'air_pressure')
             settings['extract_levels']['levels'] = get_reference_levels(
                 filename, variable_data['project'], dataset,
                 variable_data['short_name'],
-                os.path.splitext(variable_data['filename'])[0] + '_fixed',
-                coordinate)
+                os.path.splitext(variable_data['filename'])[0] + '_fixed')
 
 
 def _update_target_grid(variable, variables, settings, config_user):
