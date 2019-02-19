@@ -45,18 +45,21 @@ requirements:
     - cartopy
     - cf_units
     - cython
+    - eofs
     - esmpy
     - matplotlib<3
     - nc-time-axis
     - netCDF4
     - numba
     - numpy
+    - pandas
     - pillow
     - prov
     - psutil
     - pydot
     - python-cdo
     - pyyaml
+    - scikit-learn
     - shapely
     - six
     - vmprof

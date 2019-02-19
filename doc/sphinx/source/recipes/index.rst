@@ -11,4 +11,5 @@ Recipes
    recipe_perfmetrics
    recipe_oceans
    recipe_runoff_et
+   recipe_ensclus
    recipe_zmnam
