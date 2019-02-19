@@ -3,8 +3,10 @@
 Allows for selecting data subsets using certain time bounds;
 constructing seasonal and area averages.
 """
+import datetime
 import logging
 
+import cf_units
 import iris
 import iris.coord_categorisation
 import numpy as np
@@ -41,7 +43,6 @@ def time_slice(cube, start_year, start_month, start_day, end_year, end_month,
         Sliced cube.
 
     """
-    import datetime
     time_units = cube.coord('time').units
     if time_units.calendar == '360_day':
         if start_day > 30:
@@ -148,7 +149,7 @@ def time_average(cube):
 # get the seasonal mean
 def seasonal_mean(cube):
     """
-    Function to compute seasonal means with MEAN
+    Compute seasonal means with MEAN.
 
     Chunks time in 3-month periods and computes means over them;
 
@@ -170,10 +171,58 @@ def seasonal_mean(cube):
     cube = cube.aggregated_by(['clim_season', 'season_year'],
                               iris.analysis.MEAN)
 
-    # TODO: This preprocessor is not calendar independent.
+    # this func returns an approximation to 3 months
     def spans_three_months(time):
-        """Check for three months"""
+        """Check for three months."""
         return (time.bound[1] - time.bound[0]) == 2160
 
     three_months_bound = iris.Constraint(time=spans_three_months)
     return cube.extract(three_months_bound)
+
+
+def _regrid_time(cubes):
+    """
+    Unifies time axis for cubes so they can be subtracted.
+
+    Operations on time units, calendars, time points and auxiliary
+    coordinates so that any cube from cubes can be subtracted from any
+    other cube from cubes.
+
+    Arguments
+    ---------
+        cubes: list of iris.cube.Cube
+
+    Returns
+    -------
+    list of iris.cube.Cube instances
+    """
+    for c in cubes:
+        # fix units; leave calendars
+        # this is not normally needed unless working
+        # outside the CMOR standards
+        c.coord('time').convert_units(
+            cf_units.Unit('days since 1950-1-1 00:00:00',
+                          calendar=c.coord('time').units.calendar))
+
+        # fix calendars
+        c.coord('time').units = cf_units.Unit(c.coord('time').units.origin,
+                                              calendar='gregorian')
+
+        # standardize time points
+        time_c = [cell.point for cell in c.coord('time').cells()]
+        c.coord('time').cells = [
+            datetime.datetime(t.year, t.month, 15, 0, 0, 0) for t in time_c
+        ]
+        c.coord('time').points = [
+            c.coord('time').units.date2num(cl) for cl in c.coord('time').cells
+        ]
+
+        # uniformize bounds
+        c.coord('time').bounds = None
+        c.coord('time').guess_bounds()
+
+        # remove aux factories
+        for auxcoord in c.aux_coords:
+            c.remove_coord(auxcoord)
+
+    return cubes
