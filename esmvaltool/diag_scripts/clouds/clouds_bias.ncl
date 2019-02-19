@@ -40,14 +40,14 @@
 ;
 ; ############################################################################
 
-load "interface_scripts/interface.ncl"
+load "$diag_scripts/../interface_scripts/interface.ncl"
 
-load "./diag_scripts/shared/scaling.ncl"
-load "./diag_scripts/shared/statistics.ncl"
-load "./diag_scripts/shared/plot/style.ncl"
-load "./diag_scripts/shared/plot/contour_maps.ncl"
+load "$diag_scripts/shared/scaling.ncl"
+load "$diag_scripts/shared/statistics.ncl"
+load "$diag_scripts/shared/plot/style.ncl"
+load "$diag_scripts/shared/plot/contour_maps.ncl"
 
-; load "./diag_scripts/shared/meta_data.ncl"
+; load "$diag_scripts/shared/meta_data.ncl"
 
 begin
 
@@ -260,30 +260,30 @@ begin
   if (var0.eq."tas") then
     mmdata@res_cnLevels = ispan(-30, 30, 3)
 
-    pal = read_colormap_file("diag_scripts/shared/plot/rgb/" \
+    pal = read_colormap_file("$diag_scripts/shared/plot/rgb/" \
                              + "ipcc-tas.rgb")
     mmdata@res_cnFillColors = pal
-    pal2 = read_colormap_file("diag_scripts/shared/plot/rgb/" \
+    pal2 = read_colormap_file("$diag_scripts/shared/plot/rgb/" \
                               + "ipcc-tas-delta.rgb")
     diff@res_cnFillColors = pal2
     if (plot_abs_diff) then
-      pal3 = read_colormap_file("diag_scripts/shared/plot/rgb/" \
+      pal3 = read_colormap_file("$diag_scripts/shared/plot/rgb/" \
                                 + "ipcc-tas-absdelta.rgb")
     end if
     else if (var0.eq."pr") then
       mmdata@res_cnLevels = ispan(10, 100, 15) * 0.1
 
-      pal = read_colormap_file("diag_scripts/shared/plot/rgb/ipcc-precip.rgb")
+      pal = read_colormap_file("$diag_scripts/shared/plot/rgb/ipcc-precip.rgb")
       mmdata@res_cnFillColors = pal
-      pal2 = read_colormap_file("diag_scripts/shared/plot/rgb/" \
+      pal2 = read_colormap_file("$diag_scripts/shared/plot/rgb/" \
                                 + "ipcc-precip-delta.rgb")
       diff@res_cnFillColors = pal2
       if (plot_abs_diff) then
-        pal3 = read_colormap_file("diag_scripts/shared/plot/rgb/" \
+        pal3 = read_colormap_file("$diag_scripts/shared/plot/rgb/" \
                                   + "ipcc-precip-absdelta.rgb")
       end if
       if (plot_rel_diff) then
-        pal4 = read_colormap_file("diag_scripts/shared/plot/rgb/" \
+        pal4 = read_colormap_file("$diag_scripts/shared/plot/rgb/" \
                                   + "ipcc-precip-reldelta.rgb")
       end if
     else

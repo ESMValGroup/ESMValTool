@@ -85,17 +85,17 @@
 ;
 ; #############################################################################
 
-load "./interface_scripts/interface.ncl"
+load "$diag_scripts/../interface_scripts/interface.ncl"
 
-load "./diag_scripts/shared/latlon.ncl"
-load "./diag_scripts/shared/statistics.ncl"
-load "./diag_scripts/shared/regridding.ncl"
-load "./diag_scripts/shared/ensemble.ncl"
-load "./diag_scripts/shared/scaling.ncl"
+load "$diag_scripts/shared/latlon.ncl"
+load "$diag_scripts/shared/statistics.ncl"
+load "$diag_scripts/shared/regridding.ncl"
+load "$diag_scripts/shared/ensemble.ncl"
+load "$diag_scripts/shared/scaling.ncl"
 
-load "./diag_scripts/shared/plot/style.ncl"
+load "$diag_scripts/shared/plot/style.ncl"
 
-load "./diag_scripts/shared/meta_data.ncl"
+load "$diag_scripts/shared/meta_data.ncl"
 
 begin
 
@@ -280,7 +280,7 @@ begin
   end if
 
   ; Load plot-type-specific script
-  loadscript("diag_scripts/perfmetrics/" + ptype + ".ncl")
+  loadscript("$diag_scripts/perfmetrics/" + ptype + ".ncl")
 
 end
 

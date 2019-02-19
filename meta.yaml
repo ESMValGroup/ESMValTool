@@ -37,8 +37,9 @@ requirements:
   run:
     # esmvaltool
     - python
-    - graphviz    
-    - iris=1.13
+    - libunwind  #  specifically for Python3.7+
+    - graphviz
+    - iris
     - python-stratify
     # Normally installed via pip:
     - cartopy
@@ -46,6 +47,7 @@ requirements:
     - cython
     - esmpy
     - matplotlib<3
+    - nc-time-axis
     - netCDF4
     - numba
     - numpy
@@ -58,13 +60,15 @@ requirements:
     - shapely
     - six
     - vmprof
+    - xarray
     - yamale  # in birdhouse channel
     # Multi language support:
+    - cdo=1.9.3
     - ncl
-    - ncurses=6.1=hfc679d8_1
-    - julia>=1.0.3
+    - jasper!=1.900.31  # pinned NCL dependency
+    - julia
     - r-base
-    - r-rcpp
+
 test:
   # TODO: add unit tests? This seems to require installing the tests
   imports:

@@ -23,6 +23,7 @@ def write_data_file(short_name, filename, field, start_year, end_year):
     """Write a file containing simulated data."""
     from dummydata.model2 import Model2
     from dummydata.model3 import Model3
+
     if 'T2M' in field:
         writer = Model2
     elif 'T3M' in field:

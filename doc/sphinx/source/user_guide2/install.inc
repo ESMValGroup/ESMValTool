@@ -10,9 +10,9 @@ Python 3.6+ if possible.
 
 The ESMValTool supports three different installation methods:
 
-* Installation through Conda package manager (see https://www.continuum.io/);
+* Installation through Conda package manager (see https://www.continuum.io);
 
-* Deployment through a Docker container (see https://www.docker.com/);
+* Deployment through a Docker container (see https://www.docker.com);
 
 * From the source code available at https://github.com/ESMValGroup/ESMValTool.
 
@@ -45,18 +45,24 @@ The ESMValTool source code is available on a public GitHub repository:
 https://github.com/ESMValGroup/ESMValTool
 
 The easiest way to obtain it is to clone the repository using git
-(see https://git-scm.com/):
+(see https://git-scm.com/). To clone the public repository:
 
 .. code-block:: bash
 
     git clone https://github.com/ESMValGroup/ESMValTool.git
 
+It is also possible to work in one of the ESMValTool private repository, e.g.:
+
+.. code-block:: bash
+
+    git clone https://github.com/ESMValGroup/ESMValTool-private.git
+
 By default, this command will create a folder called ESMValTool containing the
 source code of the tool.
 
 .. attention::
-    The newly created clone of the git repository will point by default
-    to the master branch. To change to another branch or release execute:
+    The newly created clone of the git repository will point to the default
+    branch. To change to another branch or release execute:
     git checkout origin/$BRANCH_OR_RELEASE_NAME, i.e git checkout origin/2.0.0.
 
 GitHub also allows to download the source code in as a tar.gz or zip file. If
@@ -76,12 +82,17 @@ repository (``environment.yml`` in the root folder).
     Some systems provides a preinstalled version of conda (e.g., via the module environment).
     Several users however reported problems when installing NCL with such versions. It is
     therefore preferable to use a local, fully user-controlled conda installation.
+	Using an older version of conda can also be a source of problems, so if you have conda
+	installed already, make sure it is up to date by running ``conda update -n base conda``.
 
-Note that the standard conda installation has some issues with the ``csh``/``tcsh``
-login shell. If you are using such shell, do not prepend the install
-location (``<prefix>``) to PATH in your ``.tcshrc`` file (as suggested by
-the standard installation procedure which assumes ``bash``). Instead, add
-the following line to your ``.cshrc``/``.tcshrc`` file: 
+To enable the ``conda`` command, please source the appropriate configuration file
+from your ``~/.bashrc``  file:
+
+.. code-block:: bash
+
+    source <prefix>/etc/profile.d/conda.sh
+
+or ``~/.cshrc``/``~/.tcshrc`` file:
 
 .. code-block:: bash
 
@@ -92,7 +103,7 @@ for those cases in which a conda installation is not possible or advisable.
 From now on, we will assume that the installation is going to be done through
 conda.
 
-Ideally, you should want to create a conda environment for ESMValTool, so it is
+Ideally, you should create a conda environment for ESMValTool, so it is
 independent from any other Python tools present in the system.
 
 Note that it is advisable to update conda to the latest version before 
@@ -117,17 +128,11 @@ To create a environment using Python 2.x
     conda env update --name esmvaltool --file ESMValTool/environment.yml
 
 The environment is called ``esmvaltool`` by default, but it is possible to use
-the option -n $(ENVIRONMENT_NAME) to define a custom name. If you are using the
-``bash`` shell, you can activate the environment using the command:
+the option -n $(ENVIRONMENT_NAME) to define a custom name. You can activate
+the environment using the command:
 
 .. code-block:: bash
 
-    source activate esmvaltool
-
-while for the ``csh``/``tcsh`` you need to use:
-
-.. code-block:: bash
-    
     conda activate esmvaltool
 
 It is also possible to update an existing environment from the environment
@@ -151,6 +156,13 @@ the following command:
 
     cd ESMValTool
     python setup.py install
+
+If you would like to run R diagnostic scripts, you will also need to install the R
+dependencies:
+
+.. code-block:: bash
+
+    Rscript ESMValTool/esmvaltool/install/R/setup.R
 
 The next step is to check that the installation works properly.
 To do this, run the tool with --version:

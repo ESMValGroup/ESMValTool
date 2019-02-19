@@ -7,12 +7,17 @@ channels:
 dependencies:
   # Python packages that cannot be installed from PyPI:
   - iris
-  - graphviz
-  - matplotlib<3
-  - python-stratify
   - esmpy
+  - matplotlib<3  # Can be installed from PyPI, but is a dependency of iris and should be pinned.
+  - python-stratify
+  - xarray  # Can be installed from PyPI, but here to get a consistent set of depencies with iris.
+  # Non-Python dependencies
+  - cdo=1.9.3
+  - graphviz
   - libunwind  #  specifically for Python3.7+
+
   # Multi language support:
   - ncl
+  - jasper!=1.900.31  # pinned NCL dependency
   - julia
   - r-base

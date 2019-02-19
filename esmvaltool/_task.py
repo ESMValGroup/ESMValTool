@@ -237,7 +237,7 @@ class BaseTask(object):
 
         txt = 'ancestors:\n{}'.format(
             '\n\n'.join(_indent(str(task)) for task in self.ancestors)
-            if self.ancestors else 'None', )
+            if self.ancestors else 'None')
         return txt
 
 
@@ -392,16 +392,17 @@ class DiagnosticTask(BaseTask):
                 "There were warnings during the execution of NCL script %s, "
                 "for details, see the log %s", self.script, self.log)
 
-    def _start_diagnostic_script(self, cmd, env, cwd):
+    def _start_diagnostic_script(self, cmd, env):
         """Start the diagnostic script."""
         logger.info("Running command %s", cmd)
         logger.debug("in environment\n%s", pprint.pformat(env))
+        cwd = self.settings['run_dir']
         logger.debug("in current working directory: %s", cwd)
         logger.info("Writing output to %s", self.output_dir)
         logger.info("Writing plots to %s", self.settings['plot_dir'])
         logger.info("Writing log to %s", self.log)
 
-        rerun_msg = '' if cwd is None else 'cd {}; '.format(cwd)
+        rerun_msg = 'cd {}; '.format(cwd)
         if env:
             rerun_msg += ' '.join('{}="{}"'.format(k, env[k]) for k in env
                                   if k not in os.environ)
@@ -434,24 +435,17 @@ class DiagnosticTask(BaseTask):
 
         is_ncl_script = self.script.lower().endswith('.ncl')
         if is_ncl_script:
-            input_files = [
+            self.settings['input_files'] = [
                 f for f in input_files
                 if f.endswith('.ncl') or os.path.isdir(f)
             ]
         else:
-            input_files = [
+            self.settings['input_files'] = [
                 f for f in input_files
                 if f.endswith('.yml') or os.path.isdir(f)
             ]
 
-        self.settings['input_files'] = input_files
-
-        cmd = list(self.cmd)
-        cwd = None
         env = dict(os.environ)
-
-        settings_file = self.write_settings()
-
         if self.script.lower().endswith('.py'):
             # Set non-interactive matplotlib backend
             env['MPLBACKEND'] = 'Agg'
@@ -460,13 +454,14 @@ class DiagnosticTask(BaseTask):
             env['diag_scripts'] = os.path.join(
                 os.path.dirname(__file__), 'diag_scripts')
 
+        cmd = list(self.cmd)
+        settings_file = self.write_settings()
         if is_ncl_script:
-            cwd = os.path.dirname(__file__)
             env['settings'] = settings_file
         else:
             cmd.append(settings_file)
 
-        process = self._start_diagnostic_script(cmd, env, cwd)
+        process = self._start_diagnostic_script(cmd, env)
 
         returncode = None
         last_line = ['']
