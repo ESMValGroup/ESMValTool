@@ -357,9 +357,9 @@ begin
                                               1., 0.)
         else
           sigma_and_sign = where(abs(to_plot(i, :, :)) .gt. \
-                                 abs(2. * natvar_mmm(seas, :, :)), 1., 0.)
+                                 abs(2. * natvar_mmm), 1., 0.)
           to_plot_not_signif(i, :, :) = where(abs(to_plot(i, :, :)) .lt. \
-                                              abs(natvar_mmm(seas, :, :)),\
+                                              abs(natvar_mmm),\
                                               1., 0.)
         end if
         to_plot_signif(i, :, :) = where(signif_and_sign .eq. 1, \
