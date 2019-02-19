@@ -8,10 +8,10 @@ import warnings
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-
 import numpy as np
-from esmvaltool.diag_scripts.shared.plot import __file__ as plot_path
 from jinja2 import Template
+
+from esmvaltool.diag_scripts.shared.plot import __file__ as plot_path
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -58,7 +58,7 @@ def load_ncl_color_map(name):
         out = []
         for item in content.split("\n"):
             if 'ncolors' in item:
-                pass  #ncolors = int(item.split("=")[1])
+                pass  # ncolors = int(item.split("=")[1])
             elif _is_first_character(item, '#') or len(item) == 0:
                 continue
             elif _is_first_character(item, ';') or len(item) == 0:
@@ -91,7 +91,6 @@ def get_color_map(name):
 
     """
     colors = load_ncl_color_map(name)
-    print(colors)
     return matplotlib.colors.ListedColormap(colors, name=name, N=None)
 
 
@@ -150,8 +149,7 @@ def main_plot_ncl_cm(colorpath, outpath):
 
 def get_args():
     """Define the commandline arguments."""
-    parser = argparse.ArgumentParser(
-        description="""
+    parser = argparse.ArgumentParser(description="""
         Utility module for inspecting and converting 
         ncl color tables.""")
     parser.add_argument(
