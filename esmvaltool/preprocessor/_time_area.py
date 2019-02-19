@@ -62,7 +62,10 @@ def time_slice(cube, start_year, start_month, start_day, end_year, end_month,
 
     cube_slice = cube.extract(constraint)
     if cube_slice is None:
-        raise ValueError("Time slice outside cube time boundaries.")
+        raise ValueError("Time slice {} to {} is outside \
+                          cube time boundaries {}.".format(start_date,
+                                                           end_date,
+                                                           constraint))
 
     # Issue when time dimension was removed when only one point as selected.
     if cube_slice.ndim != cube.ndim:
