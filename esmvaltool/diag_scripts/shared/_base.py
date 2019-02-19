@@ -469,6 +469,10 @@ def run_diagnostic():
             continue
         os.makedirs(output_directory)
 
+    provenance_file = os.path.join(cfg['run_dir'], 'diagnostic_provenance.yml')
+    if os.path.exists(provenance_file):
+        os.remove(provenance_file)
+
     yield cfg
 
     logger.info("End of diagnostic script run.")
