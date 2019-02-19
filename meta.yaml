@@ -37,8 +37,9 @@ requirements:
   run:
     # esmvaltool
     - python
+    - libunwind  #  specifically for Python3.7+
     - graphviz    
-    - iris=1.13
+    - iris
     - python-stratify
     # Normally installed via pip:
     - cartopy
@@ -46,6 +47,7 @@ requirements:
     - cython
     - esmpy
     - matplotlib<3
+    - nc-time-axis
     - netCDF4
     - numba
     - numpy
@@ -62,7 +64,7 @@ requirements:
     - yamale  # in birdhouse channel
     # Multi language support:
     - ncl
-    - ncurses=6.1=hfc679d8_1
+    - jasper!=1.900.31  # pinned NCL dependency
     - r-base
     - r-rcpp
     - cdo=1.9.3
