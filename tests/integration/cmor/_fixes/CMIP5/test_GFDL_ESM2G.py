@@ -8,7 +8,7 @@ from esmvaltool.cmor._fixes.CMIP5.GFDL_ESM2G import co2
 
 class TestCo2(unittest.TestCase):
     def setUp(self):
-        self.cube = Cube([1], var_name='co2', units='J')
+        self.cube = Cube([1.0], var_name='co2', units='J')
         self.fix = co2()
 
     def test_fix_data(self):
