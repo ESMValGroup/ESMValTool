@@ -129,7 +129,7 @@ begin
     ; Format pressure level coordinate
     if (output!1.eq."plev") then
       if (isMonotonic(output&plev) .eq. 0) then
-        error_msg("f", diag_script, "", "non-monotonic level coordinate")
+        error_msg("f", DIAG_SCRIPT, "", "non-monotonic level coordinate")
       end if
       cplev = plev_attrib(output&plev)
       delete(output&plev)
@@ -140,7 +140,7 @@ begin
     ; Format latitude coordinate
     if (output!1.eq."lat") then
       if (isMonotonic(output&lat) .eq. 0) then
-        error_msg("f", diag_script, "", "non-monotonic latitude coordinate")
+        error_msg("f", DIAG_SCRIPT, "", "non-monotonic latitude coordinate")
       end if
       if (isMonotonic(output&lat) .eq. -1) then
         output = output(:, ::-1, :)
@@ -154,7 +154,7 @@ begin
     ; Format longitude coordinate
     output!2 = "lon"
     if (isMonotonic(output&lon) .eq. 0) then
-      error_msg("f", diag_script, "", "non-monotonic longitude coordinate")
+      error_msg("f", DIAG_SCRIPT, "", "non-monotonic longitude coordinate")
     end if
     if (any(output&lon.lt.0.)) then
       output = lonFlip(output)
