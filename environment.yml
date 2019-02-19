@@ -17,7 +17,7 @@ dependencies:
 
   # Multi language support:
   - ncl
-  - ncurses=6.1=hfc679d8_1  # pinned NCL dependency
+  - jasper!=1.900.31  # pinned NCL dependency
   - r-base
   - r-rcpp
   - libunwind  #  specifically for Python3.7+
