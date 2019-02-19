@@ -61,7 +61,7 @@ requirements:
     - yamale  # in birdhouse channel
     # Multi language support:
     - ncl
-    - ncurses=6.1=hfc679d8_1
+    - jasper!=1.900.31  # pinned NCL dependency
     - r-base
     - r-rcpp
     # TODO: add julia
