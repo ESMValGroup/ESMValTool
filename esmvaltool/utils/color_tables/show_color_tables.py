@@ -152,7 +152,7 @@ def main_plot_ncl_cm(colorpath, outpath):
 def get_args():
     """Define the commandline arguments."""
     parser = argparse.ArgumentParser(description="""
-        Utility module for inspecting and converting 
+        Utility module for inspecting and converting
         ncl color tables.""")
     parser.add_argument(
         '-c',
@@ -167,7 +167,7 @@ def get_args():
         dest='n',
         action='store_true',
         help="""
-            Create report of all ncl color maps in 
+            Create report of all ncl color maps in
             <COLOR_TABLE_DIR> using ncl.""")
     parser.add_argument(
         '-p',
