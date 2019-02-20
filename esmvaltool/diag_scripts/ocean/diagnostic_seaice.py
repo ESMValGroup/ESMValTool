@@ -46,8 +46,8 @@ An approproate preprocessor would be::
 Note that this recipe may not function on machines with no access to the
 internet, as cartopy may try to download the shapefiles. The solution to
 this issue is the put the relevant cartopy shapefiles on a disk visible to your
-machine, then link that path to ESMValTool via the `download_path` variable.
-The cartopy masking files can be downloaded from::
+machine, then link that path to ESMValTool via the `auxiliary_data_dir`
+variable. The cartopy masking files can be downloaded from::
 
     https://www.naturalearthdata.com/downloads/
 
@@ -665,7 +665,7 @@ def main(cfg):
         the opened global config dictionairy, passed by ESMValTool.
 
     """
-    cartopy.config['data_dir'] = cfg['download_path']
+    cartopy.config['data_dir'] = cfg['auxiliary_data_dir']
 
     for index, metadata_filename in enumerate(cfg['input_files']):
         logger.info(

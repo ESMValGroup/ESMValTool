@@ -36,8 +36,8 @@ the ``config-user.yml`` file.
     output_file_type: pdf
     # Destination directory
     output_dir: ./esmvaltool_output
-    # Download directory (used for some addiional datasets)
-    download_path: ./downloads
+    # Auxiliary data directory (used for some addiional datasets)
+    auxiliary_data_dir: ./auxiliary_data
     # Use netCDF compression true/[false]
     compress_netcdf: false
     # Save intermediary cubes in the preprocessor true/[false]
@@ -82,17 +82,17 @@ turns on or off the writing of netCDF files.
 .. code-block:: yml
 
     # Download directory (used for some addiional datasets)
-    download_path: ./downloads
+    auxiliary_data_dir: ./auxiliary_data
 
-The ``download_path`` setting is the path to place any required downloadable
-data files. This method was necessary because certain Python toolkits such as
-cartopy will attempt to download data files at run time, typically geographic
-data files such as coastlines or land surface maps. This can fail if the
-machine does not have access to the wider internet. This location allows us
-to tell cartopy (and other similar tools) where to find the files if they
-can not be downloaded at runtime. To reiterate, this setting is not for model
-or observational datasets, rather it is for data files used in plotting such as
-coastline descriptions and so on.
+The ``auxiliary_data_dir`` setting is the path to place any required
+additional downloadable data files. This method was necessary because certain
+Python toolkits such as cartopy will attempt to download data files at run
+time, typically geographic data files such as coastlines or land surface maps.
+This can fail if the machine does not have access to the wider internet. This
+location allows us to tell cartopy (and other similar tools) where to find the
+files if they can not be downloaded at runtime. To reiterate, this setting is
+not for model or observational datasets, rather it is for data files used in
+plotting such as coastline descriptions and so on.
 
 
 Tip: You choose your config.yml file at run time, so you could have several

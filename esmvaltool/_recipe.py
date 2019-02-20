@@ -947,7 +947,7 @@ class Recipe(object):
                 settings['exit_on_ncl_warning'] = self._cfg['exit_on_warning']
             for key in ('max_data_filesize', 'output_file_type', 'log_level',
                         'write_plots', 'write_netcdf', 'profile_diagnostic',
-                        'download_path', ):
+                        'auxiliary_data_dir', ):
                 settings[key] = self._cfg[key]
 
             scripts[script_name] = {
