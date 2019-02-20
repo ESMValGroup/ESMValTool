@@ -232,6 +232,7 @@ begin
         date(tt, 1) = mm
         do dd = day1, day2
           date(tt, 2) = dd
+          tt = tt + 1
         end do
       end do
     end do
@@ -484,8 +485,8 @@ begin
       end if
     end if
     if (rank.eq.2) then
-      if (dpos.eq.1) then
-        var = var(:, ::-1)
+      if (dpos.eq.0) then
+        var = var(::-1, :)
         lcheck = True
       end if
     end if
@@ -1055,7 +1056,7 @@ begin
   scriptname = "esmvaltool/utils/cmorizers/obs/utilities.ncl"
 
   ; Check supported frequency
-  if (all(frequency.ne.(/"3hr", "6hr", "day", "mon", "yr"/))) then
+  if (all(frequency.ne.(/"3hr", "6hr", "day", "mon", "yr", "fx"/))) then
     error_msg("f", scriptname, funcname, "unsupported frequency " + frequency)
   end if
 
