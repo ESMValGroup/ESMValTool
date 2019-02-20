@@ -42,18 +42,32 @@ begin
   YEAR1 = 1979
   YEAR2 = 2016
 
-  ; MIP
-  MIP = "Lmon"
-
   ; Selected variable (standard name)
   VARS = (/"sm", "smStderr", "dos", "dosStderr"/)
 
   ; Name in the raw data
   NAME = (/"sm", "sm_uncertainty", "sm", "sm_uncertainty"/)
 
+  ; MIP
+  MIP = "Lmon"
+
+  ; Frequency
+  FREQ = "mon"
+
   ; CMOR table
   CMOR_TABLE = getenv("esmvaltool_root") + \
     "/cmor/tables/custom/CMOR_" + VARS + ".dat"
+
+  ; Type
+  TYPE = "sat"
+
+  ; Version
+  VERSION = "L3S-SSMV-COMBINED-v4.2"
+
+  ; Global attributes
+  SOURCE = "ftp://anon-ftp.ceda.ac.uk/neodc/esacci/soil_moisture/data/"
+  REF = ""
+  COMMENT = ""
 
 end
 
@@ -124,57 +138,35 @@ begin
 
     end do
 
-    ; Format time coordinate
-    ctime = time_attrib(output&time, YEAR1, YEAR2, "M")
-    delete(output&time)
-    output&time = ctime
-    delete(ctime)
-
-    ; Format latitude coordinate
+    ; Format coordinates
+    output!0 = "time"
     output!1 = "lat"
-    if (isMonotonic(output&lat) .eq. 0) then
-      error_msg("f", DIAG_SCRIPT, "", "non-monotonic latitude coordinate")
-    end if
-    if (isMonotonic(output&lat) .eq. -1) then
-      output = output(:, ::-1, :)
-    end if
-    clat = lat_attrib(output&lat)
-    delete(output&lat)
-    output&lat = clat
-    delete(clat)
-
-    ; Format longitude coordinate
     output!2 = "lon"
-    if (isMonotonic(output&lon) .eq. 0) then
-      error_msg("f", DIAG_SCRIPT, "", "non-monotonic longitude coordinate")
-    end if
-    if (any(output&lon.lt.0.)) then
-      output = lonFlip(output)
-    end if
-    clon = lon_attrib(output&lon)
-    delete(output&lon)
-    output&lon = clon
-    delete(clon)
+    format_coords(output, YEAR1 + "0101", YEAR2 + "1231", FREQ)
 
     ; Set variable attributes
-    tmp = var_attrib(output, VARS(vv), CMOR_TABLE(vv))
+    tmp = format_variable(output, VARS(vv), CMOR_TABLE(vv))
     delete(output)
     output = tmp
     delete(tmp)
 
+    ; Calculate coordinate bounds
+    bounds = guess_coord_bounds(output, FREQ)
+
     ; Set global attributes
-    gAtt = set_global_atts( \
-      OBSNAME, TIER, \
-      "ftp://anon-ftp.ceda.ac.uk/neodc/esacci/soil_moisture/data/", "", "")
+    gAtt = set_global_atts(OBSNAME, TIER, SOURCE, REF, COMMENT)
 
     ; Outfile
-    fout = output_dir_path + "OBS_" + OBSNAME + \
-      "_sat_L3S-SSMV-COMBINED-v4.2_" + "Lmon" + "_" + VARS(vv) + "_" + \
-      YEAR1 + "01-" + YEAR2 + "12.nc"
+    DATESTR = YEAR1 + "01-" + YEAR2 + "12"
+    fout = output_dir_path + \
+      str_join((/"OBS", OBSNAME, TYPE, VERSION, \
+                 MIP, VARS(vv), DATESTR/), "_") + ".nc"
 
-    ; Write output
-    write_nc(fout, VARS(vv), output, gAtt)
+    ; Write variable
+    write_nc(fout, VARS(vv), output, bounds, gAtt)
+    delete(gAtt)
     delete(output)
+    delete(bounds)
 
   end do
 
