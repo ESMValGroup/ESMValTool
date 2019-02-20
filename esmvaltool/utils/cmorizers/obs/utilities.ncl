@@ -341,12 +341,10 @@ begin
   if (isMonotonic(var&plev).eq.1) then  ; must be monotonically decreasing
     if (rank.eq.4) then
       var = var(:, ::-1, :, :)
-    else if (rank.eq.3) then
+    elseif (rank.eq.3) then
       var = var(:, ::-1, :)
-    else if (rank.eq.2) then
+    elseif (rank.eq.2) then
       var = var(:, ::-1)
-    end if
-    end if
     end if
   end if
 
@@ -405,12 +403,10 @@ begin
   if (isMonotonic(var&lev).eq.-1) then  ; must be monotonically increasing
     if (rank.eq.4) then
       var = var(:, ::-1, :, :)
-    else if (rank.eq.3) then
+    elseif (rank.eq.3) then
       var = var(:, ::-1, :)
-    else if (rank.eq.2) then
+    elseif (rank.eq.2) then
       var = var(:, ::-1)
-    end if
-    end if
     end if
   end if
 
