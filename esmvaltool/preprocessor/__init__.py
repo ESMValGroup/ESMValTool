@@ -195,6 +195,7 @@ def _run_preproc_function(function, items, kwargs):
 def preprocess(items, step, **settings):
     """Run preprocessor"""
     logger.debug("Running preprocessor step %s", step)
+    logger.debug("Step settings %s", settings)
     function = globals()[step]
     itype = _get_itype(step)
 
@@ -259,8 +260,9 @@ class PreprocessorFile(TrackedFile):
                 "PreprocessorFile {} has no settings for step {}".format(
                     self, step))
         self.cubes = preprocess(self.cubes, step, **self.settings[step])
+        logger.debug("Step: %s; result cube %s", step, self.cubes)
+        logger.debug("Step: %s; result file %s", step, self.filename)
         if debug:
-            logger.debug("Result %s", self.cubes)
             filename = _get_debug_filename(self.filename, step)
             save(self.cubes, filename)
 
@@ -384,12 +386,14 @@ class PreprocessingTask(BaseTask):
             logger.debug("Running block %s", block)
             if block[0] in MULTI_MODEL_FUNCTIONS:
                 for step in block:
+                    logger.debug("Applying step %s", step)
                     self.products = _apply_multimodel(self.products, step,
                                                       self.debug)
             else:
                 for product in self.products:
                     logger.debug("Applying single-model steps to %s", product)
                     for step in block:
+                        logger.debug("Applying step %s", step)
                         if step in product.settings:
                             product.apply(step, self.debug)
                     if block == blocks[-1]:
@@ -399,6 +403,7 @@ class PreprocessingTask(BaseTask):
             product.close()
         metadata_files = write_metadata(self.products,
                                         self.write_ncl_interface)
+        logger.debug("Written metadata files %s", metadata_files)
         return metadata_files
 
     def __str__(self):

@@ -319,6 +319,7 @@ class DiagnosticTask(BaseTask):
             # Also write an NCL file and return the name of that instead.
             return self._write_ncl_settings()
 
+        logger.debug("Will write diagnostic settings to %s", filename)
         return filename
 
     def _write_ncl_settings(self):
