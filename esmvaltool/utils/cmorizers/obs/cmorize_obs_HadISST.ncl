@@ -9,16 +9,16 @@
 ;    http://www.metoffice.gov.uk/hadobs/hadisst/data/download.html
 ;
 ; Last access
-;    02/2019
+;    20190208
 ;
 ; Download and processing instructions
 ;    Download and unzip "HadISST_ice.nc.gz" and "HadISST_sst.nc.gz".
 ;
 ; Modification history
 ;    20190208-A_hass_bg: adapted to v2.
-;    20180530-A_Righ_ma: fixed coordinates and metadata
-;    20170217-A_senf_da: modified so that SST fields are also written as 'tos'
-;    20150422-A_laue_ax: written
+;    20180530-A_righ_ma: fixed coordinates and metadata.
+;    20170217-A_senf_da: modified so that SST fields are also written as 'tos'.
+;    20150422-A_laue_ax: written.
 ;
 ; ############################################################################
 loadscript(getenv("esmvaltool_root") + "/utils/cmorizers/obs/interface.ncl")
