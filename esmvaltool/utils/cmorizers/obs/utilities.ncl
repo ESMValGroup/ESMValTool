@@ -157,7 +157,7 @@ begin
     if (ntime.ne.exp_ntime) then
       error_msg("f", scriptname, funcname, \
                 "incorrect number of timesteps in input data: " + exp_ntime + \
-                "expected, " + ntime + " found")
+                " expected, " + ntime + " found")
     end if
 
     ; Reset date (1st of July)
