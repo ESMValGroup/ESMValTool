@@ -32,22 +32,6 @@ class Test(tests.Test):
             'nearest_horizontal_extrapolate_vertical'
         ]
 
-    def test_nop(self):
-        cube = mock.sentinel.cube
-        result = extract_levels(cube, None, None)
-        self.assertEqual(result, cube)
-
-    def test_invalid_levels__None(self):
-        emsg = 'Target levels must be specified'
-        with self.assertRaisesRegex(ValueError, emsg):
-            extract_levels(self.cube, None, 'linear')
-
-    def test_invalid_scheme__None(self):
-        levels = mock.sentinel.levels
-        emsg = 'A scheme must be specified'
-        with self.assertRaisesRegex(ValueError, emsg):
-            extract_levels(self.cube, levels, None)
-
     def test_invalid_scheme__unknown(self):
         levels = mock.sentinel.levels
         scheme = mock.sentinel.scheme
