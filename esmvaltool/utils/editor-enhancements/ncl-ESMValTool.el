@@ -127,7 +127,7 @@
     ;("\\(\".*?\"\\)" 1 font-lock-string-face )
 
     ;; NCL keywords
-    ("\\<\\(begin\\|break\\|byte\\|character\\|continue\\|create\\|defaultapp\\|do\\|double\\|else\\|end\\|enumeric\\|external\\|file\\|float\\|function\\|getvalues\\|graphic\\|group\\|if\\|integer\\|int64\\|list\\|load\\|local\\|logical\\|long\\|new\\|_Missing\\|Missing\\|new\\|noparent\\|numeric\\|procedure\\|quit\\|QUIT\\|Quit\\|record\\|return\\|setvalues\\|short\\|snumeric\\|stop\\|string\\|then\\|ubyte\\|uint\\|uint64\\|ulong\\|ushort\\|while\\|\\)\\>" 1 font-lock-keyword-face)
+    ("\\<\\(begin\\|break\\|byte\\|character\\|continue\\|create\\|defaultapp\\|do\\|double\\|else\\|elseif\\|end\\|enumeric\\|external\\|file\\|float\\|function\\|getvalues\\|graphic\\|group\\|if\\|integer\\|int64\\|list\\|load\\|local\\|logical\\|long\\|new\\|_Missing\\|Missing\\|new\\|noparent\\|numeric\\|procedure\\|quit\\|QUIT\\|Quit\\|record\\|return\\|setvalues\\|short\\|snumeric\\|stop\\|string\\|then\\|ubyte\\|uint\\|uint64\\|ulong\\|ushort\\|while\\|\\)\\>" 1 font-lock-keyword-face)
 
     ;; Array definition chars and tests - couldn't get to work in list above...
     ("\\(\(\/\\)" 1 font-lock-keyword-face )
