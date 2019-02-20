@@ -14,9 +14,9 @@ import numpy as np
 logger = logging.getLogger(__name__)
 
 
-def volume_slice(cube, z_min, z_max):
+def extract_volume(cube, z_min, z_max):
     """
-    Subset a cube on volume
+    Subset a cube based on a depth range.
 
     Function that subsets a cube on a box (z_min, z_max)
     This function is a restriction of masked_cube_lonlat();
@@ -159,14 +159,14 @@ def calculate_volume(cube, coordz):
     return grid_volume
 
 
-def volume_average(
+def average_volume(
         cube,
         coordz,
         coord1,
         coord2,
         fx_files=None):
     """
-    Determine the volume average.
+    Calculate the average volume.
 
     The volume average is weighted acoording to the cell volume. Cell volume
     is calculated from iris's cartography tool multiplied by the cell

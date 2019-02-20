@@ -1,4 +1,4 @@
-"""Unit test for the :func:`esmvaltool.preprocessor._volume_pp` function"""
+"""Unit test for the :func:`esmvaltool.preprocessor._volume` function"""
 
 from __future__ import absolute_import, division, print_function
 
@@ -9,11 +9,11 @@ import numpy as np
 from cf_units import Unit
 
 import tests
-from esmvaltool.preprocessor._volume_pp import volume_slice
-from esmvaltool.preprocessor._volume_pp import volume_average
-from esmvaltool.preprocessor._volume_pp import depth_integration
-from esmvaltool.preprocessor._volume_pp import extract_transect
-from esmvaltool.preprocessor._volume_pp import extract_trajectory
+from esmvaltool.preprocessor._volume import extract_volume
+from esmvaltool.preprocessor._volume import average_volume
+from esmvaltool.preprocessor._volume import depth_integration
+from esmvaltool.preprocessor._volume import extract_transect
+from esmvaltool.preprocessor._volume import extract_trajectory
 
 
 class Test(tests.Test):
@@ -68,27 +68,27 @@ class Test(tests.Test):
         self.grid_4d_2 = iris.cube.Cube(data3,
                                         dim_coords_and_dims=coords_spec5)
 
-    def test_volume_slice(self):
+    def test_extract_volume(self):
         """Test to extract the top two layers of a 3 layer depth column."""
-        result = volume_slice(self.grid_3d, 0., 10.)
+        result = extract_volume(self.grid_3d, 0., 10.)
         expected = np.ones((2, 2, 2))
         print(result.data, expected.data)
         self.assertArrayEqual(result.data, expected)
 
-    def test_volume_average(self):
+    def test_average_volume(self):
         """Test to take the volume weighted average of a (2,3,2,2) cube."""
-        result = volume_average(self.grid_4d, 'depth', 'latitude', 'longitude')
+        result = average_volume(self.grid_4d, 'depth', 'latitude', 'longitude')
         expected = np.array([1., 1.])
         self.assertArrayEqual(result.data, expected)
 
-    def test_volume_average_long(self):
+    def test_average_volume_long(self):
         """
         Test to take the volume weighted average of a (4,3,2,2) cube.
 
         This extra time is needed, as the volume average calculation uses
         different methods for small and large cubes.
         """
-        result = volume_average(self.grid_4d_2,
+        result = average_volume(self.grid_4d_2,
                                 'depth',
                                 'latitude',
                                 'longitude')

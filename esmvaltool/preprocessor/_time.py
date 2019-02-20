@@ -14,9 +14,9 @@ from .._config import use_legacy_iris
 logger = logging.getLogger(__name__)
 
 
-def time_slice(cube, start_year, start_month, start_day, end_year, end_month,
-               end_day):
-    """Slice cube on time.
+def extract_time(cube, start_year, start_month, start_day, end_year, end_month,
+                 end_day):
+    """Extract a time range from a cube.
 
     Parameters
     ----------
