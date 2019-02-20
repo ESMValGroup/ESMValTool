@@ -60,7 +60,7 @@ class Test(tests.Test):
         expected = np.array([1.])
         self.assertArrayEqual(result.data, expected)
 
-    def test_average_region_negative_longitude(self):
+    def test_average_region_neg_lon(self):
         """Test for area average of a 2D field."""
         result = average_region(self.negative_grid, 'latitude', 'longitude')
         expected = np.array([1.])
@@ -73,7 +73,7 @@ class Test(tests.Test):
         expected = np.ones((2, 2))
         self.assertArrayEqual(result.data, expected)
 
-    def test_extract_region_neg_longitude(self):
+    def test_extract_region_neg_lon(self):
         """Test for extracting a region with a negative longitude field."""
         result = extract_region(self.negative_grid, -0.5, 0.5, -0.5, 0.5)
         expected = np.ones((2, 2))

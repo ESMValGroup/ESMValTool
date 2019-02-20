@@ -1,4 +1,4 @@
-"""Unit test for the :func:`esmvaltool.preprocessor._volume` function"""
+"""Unit test for :func:`esmvaltool.preprocessor._volume`."""
 
 from __future__ import absolute_import, division, print_function
 

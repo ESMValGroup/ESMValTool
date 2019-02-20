@@ -1,1 +1,1 @@
-"""Test suite for _time module"""
+"""Test suite for _time module."""
