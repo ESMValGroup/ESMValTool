@@ -8,9 +8,45 @@ Variable derivation
 ===================
 Documentation of _derive.py
 
-Time and area subsetting
-========================
-Documentation of _time_area.py
+Time preprocessors
+==================
+Documentation of _time_area.py or _time.py (soon to be renamed).
+
+*
+*
+*
+*
+The time preprocessor module contains several tools for manipulating time:
+
+
+annual_mean(cube, decadal=False):
+    """
+    Compute annual means.
+
+    Note that this function does not weight the annual or decadal mean if
+    uneven time periods are present. Ie, all data inside the year/decade
+    are treated equally.
+
+    Parameters
+    ----------
+        cube: iris.cube.Cube
+            input cube.
+        decadal: bool
+            Annual average [True] or decadal average [False] switch
+    Returns
+    -------
+    iris.cube.Cube
+        Annual mean cube
+    """
+
+Area preprocessors
+==================
+Documentation of _area_pp.py or _area.py (soon to be renamed).
+
+Volume preprocessors
+====================
+Documentation of _volume_pp.py or _volume.py (soon to be renamed).
+
 
 CMORization and dataset-specific fixes
 ======================================
@@ -41,7 +77,7 @@ To mask out seas in the preprocessor step, simply add `mask_landsea:` as a prepr
         mask_landsea:
           mask_out: sea
 
-The tool will retrieve the corresponding `fx: stfof` type of mask for each of the used variables and apply the mask so that only the land mass points are 
+The tool will retrieve the corresponding `fx: stfof` type of mask for each of the used variables and apply the mask so that only the land mass points are
 kept in the data after applying the mask; conversely, it will retrieve the `fx: sftlf` files when land needs to be masked out.
 `mask_out` accepts: land or sea as values. If the corresponding fx file is not found (some models are missing these
 type of files; observational data is missing them altogether), then the tool attempts to mask using Natural Earth mask files (that are vectorized rasters).
@@ -94,7 +130,3 @@ Documentation of _mask.py (part 2)
 Multi-model statistics
 ======================
 Documentation of_multimodel.py
-
-Time-area statistics
-====================
-Documentation of _area_pp.py and _volume_pp.py
