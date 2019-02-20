@@ -21,12 +21,12 @@
 ; #############################################################################
 ; A temporary file written by the invoking Python script
 ; Passes on a number of variables from Python to NCL
-load "./interface_scripts/interface.ncl"
+load "$diag_scripts/../interface_scripts/interface.ncl"
 
-load "./diag_scripts/shared/plot/style.ncl"
-load "./diag_scripts/shared/plot/zonalmean_profile.ncl"
-load "./diag_scripts/shared/plot/contourplot.ncl"
-load "./diag_scripts/shared/plot/aux_plotting.ncl"
+load "$diag_scripts/shared/plot/style.ncl"
+load "$diag_scripts/shared/plot/zonalmean_profile.ncl"
+load "$diag_scripts/shared/plot/contourplot.ncl"
+load "$diag_scripts/shared/plot/aux_plotting.ncl"
 
 begin
   ; ##############################################################

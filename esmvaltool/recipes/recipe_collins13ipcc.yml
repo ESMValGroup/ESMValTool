@@ -134,7 +134,7 @@ diagnostics:
         # Plot title
         title: "Annual mean surface air temperature change (RCP4.5: 2081-2100)"
         # Alternative colormap (path to .rgb file or ncl name)
-        colormap: ./diag_scripts/shared/plot/rgb/ipcc_temperature_with_grey.rgb
+        colormap: $diag_scripts/shared/plot/rgb/ipcc_temperature_with_grey.rgb
         # Contour levels for all difference plots
         diff_levs: [-2., -1.5, -1., -0.5, 0, 0.5, 1, 1.5, 2, 3, 4, 5, 7, 9, 11]
         # Span whole colormap (default false)
@@ -378,7 +378,7 @@ diagnostics:
         # to print in plot
         model_nr: true
         # Alternative colormap (path to .rgb file or ncl name)
-        colormap: ./diag_scripts/shared/plot/rgb/ipcc_color_tseries.rgb
+        colormap: $diag_scripts/shared/plot/rgb/ipcc_color_tseries.rgb
         # Minimum and maximum latitudes and longitudes if not global
         # ts_minlat: 43
         # ts_maxlat: 54.5
@@ -476,7 +476,7 @@ diagnostics:
         # to print in plot
         model_nr: true
         # Alternative colormap (path to .rgb file or ncl name)
-        colormap: ./diag_scripts/shared/plot/rgb/ipcc_color_tseries.rgb
+        colormap: $diag_scripts/shared/plot/rgb/ipcc_color_tseries.rgb
         # Minimum and maximum latitude and longitude if not global
         # ts_minlat: 43
         # ts_maxlat: 54.5
@@ -573,7 +573,7 @@ diagnostics:
         # in netcdf to print in plot
         model_nr: true
         # Alternative colormap (path to .rgb file or ncl name)
-        colormap: ./diag_scripts/shared/plot/rgb/ipcc_color_tseries.rgb
+        colormap: $diag_scripts/shared/plot/rgb/ipcc_color_tseries.rgb
         # Minimum and maximum latitude and longitude if not global
         # ts_minlat: 43
         # ts_maxlat: 54.5
@@ -671,7 +671,7 @@ diagnostics:
         # in netcdf to print in plot
         model_nr: true
         # Alternative colormap (path to .rgb file or ncl name)
-        colormap: ./diag_scripts/shared/plot/rgb/ipcc_color_tseries.rgb
+        colormap: $diag_scripts/shared/plot/rgb/ipcc_color_tseries.rgb
         # Minimum and maximum latitude and longitude if not global
         # ts_minlat: 43
         # ts_maxlat: 54.5
@@ -804,7 +804,7 @@ diagnostics:
         # Maximum number of plots in horizontal
         max_hori: 2
         # Alternative colormap (path to .rgb file or ncl name)
-        colormap: ./diag_scripts/shared/plot/rgb/ipcc_temperature_with_grey.rgb
+        colormap: $diag_scripts/shared/plot/rgb/ipcc_temperature_with_grey.rgb
         # Span whole colormap (default false)
         span: false
         # Plot significance as stippling
@@ -937,7 +937,7 @@ diagnostics:
         # Maximum number of plots in horizontal
         max_hori: 2
         # Alternative colormap (path to .rgb file or ncl name)
-        colormap: ./diag_scripts/shared/plot/rgb/ipcc-precip-delta.rgb
+        colormap: $diag_scripts/shared/plot/rgb/ipcc-precip-delta.rgb
         # Span whole colormap (default false)
         # span:
         # Plot significance as stippling
@@ -1076,7 +1076,7 @@ diagnostics:
         # Maximum number of plots in horizontal
         max_hori: 2
         # Alternative colormap (path to .rgb file or ncl name)
-        colormap: ./diag_scripts/shared/plot/rgb/ipcc_colors_blu2red_centered.rgb
+        colormap: $diag_scripts/shared/plot/rgb/ipcc_colors_blu2red_centered.rgb
         # Span whole colormap (default false)
         # span:
         # Plot significance as stippling
@@ -1217,7 +1217,7 @@ diagnostics:
         # Maximum number of plots in horizontal
         max_hori: 2
         # Alternative colormap (path to .rgb file or ncl name)
-        colormap: ./diag_scripts/shared/plot/rgb/ipcc_colors_blu2red_centered.rgb
+        colormap: $diag_scripts/shared/plot/rgb/ipcc_colors_blu2red_centered.rgb
         # Span whole colormap (default false)
         # span:
         # Plot significance as stippling
@@ -1358,7 +1358,7 @@ diagnostics:
         # Maximum number of plots in horizontal
         max_hori: 2
         # Alternative colormap (path to .rgb file or ncl name)
-        colormap: ./diag_scripts/shared/plot/rgb/ipcc_colors_blu2red_centered.rgb
+        colormap: $diag_scripts/shared/plot/rgb/ipcc_colors_blu2red_centered.rgb
         # Span whole colormap (default false)
         # span:
         # Plot significance as stippling
@@ -1489,7 +1489,7 @@ diagnostics:
         # Maximum number of plots in horizontal
         max_hori: 2
         # Alternative colormap (path to .rgb file or ncl name)
-        colormap: ./diag_scripts/shared/plot/rgb/ipcc_colors_red2blu_centered.rgb
+        colormap: $diag_scripts/shared/plot/rgb/ipcc_colors_red2blu_centered.rgb
         # Span whole colormap (default false)
         # span:
         # Plot significance as stippling
@@ -1623,7 +1623,7 @@ diagnostics:
         # Maximum number of plots in horizontal
         max_hori: 3
         # Alternative colormap (path to .rgb file or ncl name)
-        colormap: ./diag_scripts/shared/plot/rgb/ipcc_colors_blu2red_centered.rgb
+        colormap: $diag_scripts/shared/plot/rgb/ipcc_colors_blu2red_centered.rgb
         # Span whole colormap (default false)
         span: false
         # Plot significance as stippling
@@ -1759,7 +1759,7 @@ diagnostics:
         # Maximum number of plots in horizontal
         max_hori: 2
         # Alternative colormap (path to .rgb file or ncl name)
-        colormap: ./diag_scripts/shared/plot/rgb/ipcc_colors_red2blu_centered.rgb
+        colormap: $diag_scripts/shared/plot/rgb/ipcc_colors_red2blu_centered.rgb
         # Span whole colormap (default false)
         # span:
         # Plot significance as stippling
@@ -1912,7 +1912,7 @@ diagnostics:
         # Maximum number of plots in horizontal
         max_hori: 2
         # Alternative colormap (path to .rgb file or ncl name)
-        colormap: ./diag_scripts/shared/plot/rgb/ipcc_colors_blu2red_centered.rgb
+        colormap: $diag_scripts/shared/plot/rgb/ipcc_colors_blu2red_centered.rgb
         # Span whole colormap (default false)
         # span:
         # Plot significance as stippling
@@ -2032,7 +2032,7 @@ diagnostics:
         ### Required attributes
         ancestors: ['ta', 'ch12_calc_zonal_diff_mmm_ta']
         # Alternative colormap (path to .rgb file or ncl name)
-        colormap: ./diag_scripts/shared/plot/rgb/ipcc_temperature_with_grey.rgb
+        colormap: $diag_scripts/shared/plot/rgb/ipcc_temperature_with_grey.rgb
         # Contour levels for all difference plots
         diff_levs: [-2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2, 3, 4, 5, 6, 7, 8]
         # Plot significance as stippling
@@ -2155,7 +2155,7 @@ diagnostics:
         ### Required attributes
         ancestors: ['ua', 'ch12_calc_zonal_diff_mmm_ua']
         # Alternative colormap (path to .rgb file or ncl name)
-        colormap: ./diag_scripts/shared/plot/rgb/ipcc_colors_blu2red_centered.rgb
+        colormap: $diag_scripts/shared/plot/rgb/ipcc_colors_blu2red_centered.rgb
         # Contour levels for all difference plots
         diff_levs: [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
         # Plot significance as stippling
@@ -2272,7 +2272,7 @@ diagnostics:
         # Plot title
         title: "Annual mean ocean temperature change (2081-2100)"
         # Alternative colormap (path to .rgb file or ncl name)
-        colormap: ./diag_scripts/shared/plot/rgb/ipcc_temperature_with_grey.rgb
+        colormap: $diag_scripts/shared/plot/rgb/ipcc_temperature_with_grey.rgb
         # Contour levels for all difference plots
         diff_levs: [-0.5, -0.3, -0.2, -0.1, 0,
                     0.1, 0.2, 0.3, 0.4, 0.5, 0.7, 1, 1.5, 2, 2.5, 3]
@@ -2415,7 +2415,7 @@ diagnostics:
         # Maximum number of plots in horizontal
         max_hori: 2
         # Alternative colormap (path to .rgb file or ncl name)
-        colormap: ./diag_scripts/shared/plot/rgb/ipcc_colors_red2blu_centered.rgb
+        colormap: $diag_scripts/shared/plot/rgb/ipcc_colors_red2blu_centered.rgb
         # Span whole colormap (default false)
         # span:
         # Plot significance as stippling
@@ -2575,7 +2575,7 @@ diagnostics:
         # Maximum number of plots in horizontal
         max_hori: 2
         # Alternative colormap (path to .rgb file or ncl name)
-        colormap: ./diag_scripts/shared/plot/rgb/ipcc_colors_red2blu_centered.rgb
+        colormap: $diag_scripts/shared/plot/rgb/ipcc_colors_red2blu_centered.rgb
         # Span whole colormap (default false)
         # span:
         # Plot significance as stippling
@@ -2735,7 +2735,7 @@ diagnostics:
         # Maximum number of plots in horizontal
         max_hori: 2
         # Alternative colormap (path to .rgb file or ncl name)
-        colormap: ./diag_scripts/shared/plot/rgb/ipcc_colors_red2blu_centered.rgb
+        colormap: $diag_scripts/shared/plot/rgb/ipcc_colors_red2blu_centered.rgb
         # Span whole colormap (default false)
         # span:
         # Plot significance as stippling
@@ -2845,7 +2845,7 @@ diagnostics:
         # Contour levels for all difference plots
         diff_levs: [0, 0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2]
         # Alternative colormap (path to .rgb file or ncl name)
-        colormap: ./diag_scripts/shared/plot/rgb/ipcc_temp_scaling.rgb
+        colormap: $diag_scripts/shared/plot/rgb/ipcc_temp_scaling.rgb
         # Alternative name for output plot
         # (default is diagnostic + varname + time_avg)
         # pltname:
@@ -2948,7 +2948,7 @@ diagnostics:
         # use explicit levels for contour plot
         diff_levs: [-12, -9, -6, -3, 0, 3, 6, 9, 12]
         # use alternative colormap
-        colormap: ./diag_scripts/shared/plot/rgb/ipcc-precip-delta.rgb
+        colormap: $diag_scripts/shared/plot/rgb/ipcc-precip-delta.rgb
         # an alternative name for the output plot,
         # default is diagnostic + varname + time_avg
         # pltname:
@@ -3048,7 +3048,7 @@ diagnostics:
         # Print number of models at top-right of the figure
         model_nr: true
         # Alternative colormap (path to .rgb file or ncl name)
-        colormap: ./diag_scripts/shared/plot/rgb/ipcc_color_tseries.rgb
+        colormap: $diag_scripts/shared/plot/rgb/ipcc_color_tseries.rgb
         # Minimum and maximum latitudes and longitudes if not global
         ts_minlat: 0
         ts_maxlat: 90
