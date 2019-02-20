@@ -90,6 +90,7 @@ if sys.version_info.major == 2:
 
 def discover_python_files(paths, ignore):
     """Discover Python files."""
+
     def _ignore(path):
         """Return True if `path` should be ignored, False otherwise."""
         return any(re.match(pattern, path) for pattern in ignore)
@@ -240,7 +241,8 @@ with open('README.md') as readme:
                 'utils.nclcodestyle.nclcodestyle:_main',
                 'mip_convert_setup = esmvaltool.'
                 'utils.cmorizers.mip_convert.esmvt_mipconv_setup:main',
-                'showcolortables=esmvaltool.utils.color_tables.show_color_tables:run'
+                'showcolortables=esmvaltool.utils.color_tables' +
+                '.show_color_tables:run'
             ],
         },
         cmdclass={
