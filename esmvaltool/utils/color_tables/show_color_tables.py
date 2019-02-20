@@ -4,6 +4,7 @@ import glob
 import logging
 import os
 import warnings
+import yaml
 
 import matplotlib
 matplotlib.use("Agg")
@@ -16,7 +17,7 @@ from esmvaltool.diag_scripts.shared.plot import __file__ as plot_path
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 CONSOLE_HANDLER = logging.StreamHandler()
-CONSOLE_HANDLER.setLevel(logging.DEBUG)
+CONSOLE_HANDLER.setLevel(logging.INFO)
 CONSOLE_HANDLER.setFormatter(
     logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
 logger.addHandler(CONSOLE_HANDLER)
@@ -65,7 +66,7 @@ def load_ncl_color_map(name):
                 continue
             else:
                 out.append([int(elem) / 256
-                            for elem in item.split()[0:2]] + [1])
+                            for elem in item.split()[0:3]] + [1])
         return out
 
     filename = "{0}/{1}.rgb".format(PATH_TO_COLORTABLES, name)
@@ -91,6 +92,7 @@ def get_color_map(name):
 
     """
     colors = load_ncl_color_map(name)
+    logger.debug("RGB values for '%s':\n%s", name, yaml.dump(colors))
     return matplotlib.colors.ListedColormap(colors, name=name, N=None)
 
 
