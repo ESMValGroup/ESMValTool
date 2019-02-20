@@ -109,7 +109,7 @@ begin
   ntime = dimsizes(ctime)
 
   ; Check monotonicity
-  if (isMonotonic(ctime).ne.1) then
+  if (ntime.ne.1 .and. isMonotonic(ctime).ne.1) then
     error_msg("f", scriptname, funcname, \
               "non-monotonically-increasing time coordinate")
   end if
