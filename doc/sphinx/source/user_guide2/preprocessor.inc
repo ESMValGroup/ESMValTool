@@ -8,9 +8,36 @@ Variable derivation
 ===================
 Documentation of _derive.py
 
-Time and area subsetting
-========================
-Documentation of _time_area.py
+Time manipulation
+=================
+The _time.py module contains the following preprocessor functions:
+
+* extract_time: Extract a time range from a cube.
+* extract_season: Extract only the times that occur within a specific season.
+* extract_month: Extract only the times that occur within a specific month.
+* time_average: Take the weighted average over the time dimension.
+* seasonal_mean: Produces a mean for each season (DJF, MAM, JJA, SON)
+
+
+Area manipulation
+=================
+The _area.py module contains the following preprocessor functions:
+
+* extract_region: Extract a region from a cube based on lat/lon corners.
+* zonal_means: Calculates the zonal or meridional means.
+* average_region: Calculates the average value over a region.
+* extract_named_regions: Extract a specific region from in the region cooordinate.
+
+
+Volume manipulation
+===================
+The _volume.py module contains the following preprocessor functions:
+
+* extract_volume: Extract a specific depth range from a cube.
+* average_volume: Calculate the volume-weighted average.
+* depth_integration: Integrate over the depth dimension.
+* extract_transect: Extract data along a line of constant latitude or longitude.
+* extract_trajectory: Extract data along a specified trajectory.
 
 CMORization and dataset-specific fixes
 ======================================
@@ -41,7 +68,7 @@ To mask out seas in the preprocessor step, simply add `mask_landsea:` as a prepr
         mask_landsea:
           mask_out: sea
 
-The tool will retrieve the corresponding `fx: stfof` type of mask for each of the used variables and apply the mask so that only the land mass points are 
+The tool will retrieve the corresponding `fx: stfof` type of mask for each of the used variables and apply the mask so that only the land mass points are
 kept in the data after applying the mask; conversely, it will retrieve the `fx: sftlf` files when land needs to be masked out.
 `mask_out` accepts: land or sea as values. If the corresponding fx file is not found (some models are missing these
 type of files; observational data is missing them altogether), then the tool attempts to mask using Natural Earth mask files (that are vectorized rasters).
@@ -94,7 +121,3 @@ Documentation of _mask.py (part 2)
 Multi-model statistics
 ======================
 Documentation of_multimodel.py
-
-Time-area statistics
-====================
-Documentation of _area_pp.py and _volume_pp.py
