@@ -13,7 +13,9 @@ Author: Lee de Mora (PML)
 import logging
 import os
 import sys
+import iris
 
+import numpy as np
 import cftime
 import matplotlib.pyplot as plt
 import yaml
@@ -257,6 +259,34 @@ def guess_calendar_datetime(cube):
                        time_coord.units.calendar)
         datetime = cftime.DatetimeGregorian
     return datetime
+
+
+def get_decade(coord, value):
+    """
+    Determine the decade.
+
+    Called by iris.coord_categorisation.add_categorised_coord.
+    """
+    date = coord.units.num2date(value)
+    return date.year - date.year % 10
+
+
+def decadal_average(cube):
+    """
+    Calculate the decadal_average.
+
+    Parameters
+    ----------
+    cube: iris.cube.Cube
+        The input cube
+
+    Returns
+    -------
+    iris.cube
+    """
+    iris.coord_categorisation.add_categorised_coord(cube, 'decade', 'time',
+                                                    get_decade)
+    return cube.aggregated_by('decade', iris.analysis.MEAN)
 
 
 def load_thresholds(cfg, metadata):
@@ -574,3 +604,72 @@ def make_cube_layer_dict(cube):
             layer = layer.replace('_', ' ').title()
             cubes[layer] = cube[tuple(slices)]
     return cubes
+
+
+def get_cube_range(cubes):
+    """
+    Determinue the minimum and maximum values of a list of cubes.
+
+    Parameters
+    ----------
+    cubes: list of iris.cube.Cube
+        A list of cubes.
+
+    Returns
+    ----------
+    list:
+        A list of two values: the overall minumum and maximum values of the
+        list of cubes.
+
+    """
+    mins = []
+    maxs = []
+    for cube in cubes:
+        mins.append(cube.data.min())
+        maxs.append(cube.data.max())
+    return [np.min(mins), np.max(maxs), ]
+
+
+def get_cube_range_diff(cubes):
+    """
+    Determinue the largest deviation from zero in an list of cubes.
+
+    Parameters
+    ----------
+    cubes: list of iris.cube.Cube
+        A list of cubes.
+
+    Returns
+    ----------
+    list:
+        A list of two values: the maximum deviation from zero and its opposite.
+    """
+    ranges = []
+    for cube in cubes:
+        ranges.append(np.abs(cube.data.min()))
+        ranges.append(np.abs(cube.data.max()))
+    return [-1. * np.max(ranges), np.max(ranges)]
+
+
+def get_array_range(arrays):
+    """
+    Determinue the minimum and maximum values of a list of arrays..
+
+    Parameters
+    ----------
+    arrays: list of numpy.array
+        A list of numpy.array.
+
+    Returns
+    ----------
+    list:
+        A list of two values, the overall minumum and maximum values of the
+        list of cubes.
+    """
+    mins = []
+    maxs = []
+    for arr in arrays:
+        mins.append(arr.min())
+        maxs.append(arr.max())
+    logger.info('get_array_range: %s, %s', np.min(mins), np.max(maxs))
+    return [np.min(mins), np.max(maxs), ]

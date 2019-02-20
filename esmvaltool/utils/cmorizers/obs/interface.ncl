@@ -15,3 +15,11 @@ loadscript(getenv("esmvaltool_root") + "/interface_scripts/logging.ncl")
 
 ; Load utility functions
 loadscript(getenv("esmvaltool_root") + "/utils/cmorizers/obs/utilities.ncl")
+
+; Check trailing slash
+if (str_get_cols(input_dir_path, -1, -1).ne."/") then
+  input_dir_path = input_dir_path + "/"
+end if
+if (str_get_cols(output_dir_path, -1, -1).ne."/") then
+  output_dir_path = output_dir_path + "/"
+end if

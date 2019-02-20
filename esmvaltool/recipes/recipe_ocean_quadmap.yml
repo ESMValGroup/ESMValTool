@@ -1,5 +1,5 @@
 # ESMValTool
-# recipe_OceanQuadMap.yml
+# recipe_ocean_quadmap.yml
 ---
 documentation:
   description: |
@@ -10,7 +10,7 @@ documentation:
     - demo_le
 
   maintainer:
-    - schl_ma
+    - demo_le
 
   references:
     - demora2018gmd
