@@ -184,4 +184,8 @@ def annual_mean(cube):
     iris.cube.Cube
         Annual mean cube
     """
-    return cube.aggregated_by('year', iris.analysis.MEAN)
+    am = cube.aggregated_by('year', iris.analysis.MEAN)
+    am.remove_coord('day_of_month')
+    am.remove_coord('day_of_year')
+    am.remove_coord('month_number')
+    return am
