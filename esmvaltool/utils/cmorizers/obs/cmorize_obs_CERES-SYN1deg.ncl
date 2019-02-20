@@ -186,6 +186,7 @@ begin
       write_nc(fout, VARS(vv), output, bounds, gAtt)
       delete(gAtt)
       delete(output)
+      delete(bounds)
 
     end do
 
