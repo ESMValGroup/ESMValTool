@@ -9,6 +9,9 @@ documentation:
     - arno_en
     - hard_jo
 
+  maintainer:
+    - hard_jo
+
   references:
     - mehran14jgr
 
