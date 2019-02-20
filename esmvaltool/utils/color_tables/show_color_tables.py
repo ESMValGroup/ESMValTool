@@ -47,8 +47,7 @@ COLOR_SNIPPET = """
 
 
 def load_ncl_color_map(name):
-    """Loads ncl color map to a list that is returned."""
-
+    """Load ncl color map to a list that is returned."""
     def _is_first_character(full_string, single_character):
         full_string = str(full_string).strip()
         if full_string == "":
@@ -78,18 +77,15 @@ def load_ncl_color_map(name):
 
 
 def get_color_map(name):
-    """Converts colormap from ncl to python.
+    """Convert colormap from ncl to python.
 
     Parameters
     ----------
-
     name: str
         Name of ncl color map
-
     Returns
     -------
     matplotlib.colors.ListedColorMap object
-
     """
     colors = load_ncl_color_map(name)
     logger.debug("RGB values for '%s':\n%s", name, yaml.dump(colors))
@@ -127,13 +123,13 @@ def plot_example_for_colormap(name, outdir=TEMPDIR):
 
 
 def main_plot_python_cm(colorpath, outpath):
-    """Main function for python plots."""
+    """Execute functions for python plots."""
     for name in list_ncl_color_maps():
         plot_example_for_colormap(name, outdir=outpath)
 
 
 def main_plot_ncl_cm(colorpath, outpath):
-    """Main function for ncl plots."""
+    """Execute functions for ncl plots."""
     t_color_snippet = Template(COLOR_SNIPPET)
     template = Template(NCL_SCRIPT)
     list_of_snippets = []
@@ -186,8 +182,7 @@ def get_args():
 
 
 def main(args):
-    """Main function."""
-
+    """Call functions according to command line arguments."""
     colorpath = args.colorpath
     outpath = args.outpath
 
