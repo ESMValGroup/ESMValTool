@@ -58,10 +58,10 @@ begin
   YEAR2 = 2018
 
   ; Selected variable (standard name)
-  VARS = (/"zg", "psl", "ta", "zg", "hus", \
-           "ua", "va", "tas", "ps", "tos",  \
-           "tauu", "tauv", "clwvi", "clivi", "sftlf", \
-           "clt", "prw", "ts", "wap", "psl"/)
+  VAR = (/"zg", "psl", "ta", "zg", "hus", \
+          "ua", "va", "tas", "ps", "tos",  \
+          "tauu", "tauv", "clwvi", "clivi", "sftlf", \
+          "clt", "prw", "ts", "wap", "psl"/)
 
   ; Name in the raw data
   NAME = (/"z", "msl", "t", "z", "q", \
@@ -113,9 +113,9 @@ loadscript(getenv("esmvaltool_root") + "/utils/cmorizers/obs/interface.ncl")
 begin
 
   ; Loop over variables
-  do vv = 0, dimsizes(VARS) - 1
+  do vv = 0, dimsizes(VAR) - 1
 
-    log_info("Processing " + VARS(vv))
+    log_info("Processing " + VAR(vv))
 
     l_day = False
     l_fx = False
@@ -189,7 +189,7 @@ begin
         delete(tmp1)
 
         ; Calculate clwvi = lwp + iwp (Amon case only)
-        if (VARS(vv).eq."clwvi") then
+        if (VAR(vv).eq."clwvi") then
 
           if (l_day) then
             error_msg("f", DIAG_SCRIPT, "", "clwvi calculation for daily " + \
@@ -273,7 +273,7 @@ begin
         format_coords(output, start_date, end_date, FREQ(vv))
 
         ; Set variable attributes
-        tmp = format_variable(output, VARS(vv), CMOR_TABLE(vv))
+        tmp = format_variable(output, VAR(vv), CMOR_TABLE(vv))
         delete(output)
         output = tmp
         delete(tmp)
@@ -296,26 +296,26 @@ begin
         if (DATESTR.eq."") then
           fout = output_dir_path + \
             str_join((/"OBS", OBSNAME, TYPE, VERSION, \
-                       MIP(vv), VARS(vv)/), "_") + ".nc"
+                       MIP(vv), VAR(vv)/), "_") + ".nc"
         else
           fout = output_dir_path + \
             str_join((/"OBS", OBSNAME, TYPE, VERSION, \
-                       MIP(vv), VARS(vv), DATESTR/), "_") + ".nc"
+                       MIP(vv), VAR(vv), DATESTR/), "_") + ".nc"
         end if
 
         ; Add height coordinate to tas variable (required by the new backend)
-        if (VARS(vv).eq."tas") then
+        if (VAR(vv).eq."tas") then
           output@coordinates = "height"
         end if
 
         ; Write variable
-        write_nc(fout, VARS(vv), output, bounds, gAtt)
+        write_nc(fout, VAR(vv), output, bounds, gAtt)
         delete(gAtt)
         delete(output)
         delete(bounds)
 
         ; Add height coordinate to tas variable (required by the new backend)
-        if (VARS(vv).eq."tas") then
+        if (VAR(vv).eq."tas") then
           height = 2.d
           height!0 = "ncl_scalar"
           height@units = "m"

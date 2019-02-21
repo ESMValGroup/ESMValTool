@@ -43,7 +43,7 @@ begin
   YEAR2 = 2016
 
   ; Selected variable (standard name)
-  VARS = (/"sm", "smStderr", "dos", "dosStderr"/)
+  VAR = (/"sm", "smStderr", "dos", "dosStderr"/)
 
   ; Name in the raw data
   NAME = (/"sm", "sm_uncertainty", "sm", "sm_uncertainty"/)
@@ -56,7 +56,7 @@ begin
 
   ; CMOR table
   CMOR_TABLE = getenv("esmvaltool_root") + \
-    "/cmor/tables/custom/CMOR_" + VARS + ".dat"
+    "/cmor/tables/custom/CMOR_" + VAR + ".dat"
 
   ; Type
   TYPE = "sat"
@@ -73,9 +73,9 @@ end
 
 begin
 
-  do vv = 0, dimsizes(VARS) - 1
+  do vv = 0, dimsizes(VAR) - 1
 
-    log_info("Processing " + VARS(vv))
+    log_info("Processing " + VAR(vv))
 
     do yy = YEAR1, YEAR2
 
@@ -99,7 +99,7 @@ begin
       delete(f)
 
       ; Derive dos using porosity
-      if (any(VARS(vv).eq.(/"dos", "dosStderr"/))) then
+      if (any(VAR(vv).eq.(/"dos", "dosStderr"/))) then
         g = addfile(input_dir_path + \
                     "/ESACCI-SOILMOISTURE-POROSITY_V01.1.nc", "r")
         zz = g->porosity
@@ -111,7 +111,7 @@ begin
       xx&time = xx&time + 0.1
 
       ; Calculate monthly means
-      if (isStrSubset(VARS(vv), "Stderr")) then
+      if (isStrSubset(VAR(vv), "Stderr")) then
         xx2 = xx
         xx2 = xx ^ 2  ; save metadata
         tmp = calculate_monthly_values(xx2, "avg", 0, False)
@@ -145,7 +145,7 @@ begin
     format_coords(output, YEAR1 + "0101", YEAR2 + "1231", FREQ)
 
     ; Set variable attributes
-    tmp = format_variable(output, VARS(vv), CMOR_TABLE(vv))
+    tmp = format_variable(output, VAR(vv), CMOR_TABLE(vv))
     delete(output)
     output = tmp
     delete(tmp)
@@ -160,10 +160,10 @@ begin
     DATESTR = YEAR1 + "01-" + YEAR2 + "12"
     fout = output_dir_path + \
       str_join((/"OBS", OBSNAME, TYPE, VERSION, \
-                 MIP, VARS(vv), DATESTR/), "_") + ".nc"
+                 MIP, VAR(vv), DATESTR/), "_") + ".nc"
 
     ; Write variable
-    write_nc(fout, VARS(vv), output, bounds, gAtt)
+    write_nc(fout, VAR(vv), output, bounds, gAtt)
     delete(gAtt)
     delete(output)
     delete(bounds)

@@ -39,7 +39,7 @@ begin
   YEAR2 = (/2010, 2010, 2008, 2008/)
 
   ; Selected variable (standard name)
-  VARS = (/"toz", "tozStderr", "tro3prof", "tro3profStderr"/)
+  VAR = (/"toz", "tozStderr", "tro3prof", "tro3profStderr"/)
 
   ; Name in the raw data
   NAME = (/"atmosphere_mole_content_of_ozone", \
@@ -55,7 +55,7 @@ begin
 
   ; CMOR table
   CMOR_TABLE = getenv("esmvaltool_root") + \
-    "/cmor/tables/custom/CMOR_" + VARS + ".dat"
+    "/cmor/tables/custom/CMOR_" + VAR + ".dat"
 
   ; File name
   FNAME = (/"ESACCI-OZONE-L3S-TC-MERGED-DLR_1M-_DATE_??-fv0100.nc", \
@@ -79,9 +79,9 @@ end
 
 begin
 
-  do vv = 0, dimsizes(VARS) - 1
+  do vv = 0, dimsizes(VAR) - 1
 
-    log_info("Processing " + VARS(vv))
+    log_info("Processing " + VAR(vv))
 
     time = create_timec(YEAR1(vv), YEAR2(vv))
     date = cd_calendar(time, 1)
@@ -139,7 +139,7 @@ begin
     format_coords(output, YEAR1(vv) + "0101", YEAR2(vv) + "1231", FREQ)
 
     ; Set variable attributes
-    tmp = format_variable(output, VARS(vv), CMOR_TABLE(vv))
+    tmp = format_variable(output, VAR(vv), CMOR_TABLE(vv))
     delete(output)
     output = tmp
     delete(tmp)
@@ -154,10 +154,10 @@ begin
     DATESTR = YEAR1(vv) + "01-" + YEAR2(vv) + "12"
     fout = output_dir_path + \
       str_join((/"OBS", OBSNAME, TYPE, VERSION, \
-                 MIP, VARS(vv), DATESTR/), "_") + ".nc"
+                 MIP, VAR(vv), DATESTR/), "_") + ".nc"
 
     ; Write variable
-    write_nc(fout, VARS(vv), output, bounds, gAtt)
+    write_nc(fout, VAR(vv), output, bounds, gAtt)
     delete(gAtt)
     delete(output)
     delete(bounds)

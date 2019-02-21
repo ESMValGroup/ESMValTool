@@ -45,7 +45,7 @@ begin
   YEAR2 = 2011
 
   ; Selected variable
-  VARS = "tro3"
+  VAR = "tro3"
 
   ; MIP
   MIP = "Amon"
@@ -153,7 +153,7 @@ begin
   format_coords(output, YEAR1 + "0101", YEAR2 + "1231", FREQ)
 
   ; Set variable attributes
-  tmp = format_variable(output, VARS, CMOR_TABLE)
+  tmp = format_variable(output, VAR, CMOR_TABLE)
   delete(output)
   output = tmp
   delete(tmp)
@@ -168,10 +168,10 @@ begin
   DATESTR = YEAR1 + "01-" + YEAR2 + "12"
   fout = output_dir_path + \
     str_join((/"OBS", OBSNAME, TYPE, VERSION, \
-               MIP, VARS, DATESTR/), "_") + ".nc"
+               MIP, VAR, DATESTR/), "_") + ".nc"
 
   ; Write variable
-  write_nc(fout, VARS, output, bounds, gAtt)
+  write_nc(fout, VAR, output, bounds, gAtt)
   delete(gAtt)
   delete(output)
 

@@ -53,7 +53,7 @@ begin
   YEAR2 = 2016
 
   ; Selected variable (standard name)
-  VARS = (/"clt", "cltStderr", "clivi", "clwvi"/)
+  VAR = (/"clt", "cltStderr", "clivi", "clwvi"/)
 
   ; Name in the raw data
   NAME = (/"cfc", "cfc_unc", "iwp_allsky", "lwp_allsky"/)
@@ -91,9 +91,9 @@ end
 
 begin
 
-  do vv = 0, dimsizes(VARS) - 1
+  do vv = 0, dimsizes(VAR) - 1
 
-    log_info("Processing " + VARS(vv))
+    log_info("Processing " + VAR(vv))
 
     time = create_timec(YEAR1, YEAR2)
     date = cd_calendar(time, 1)
@@ -124,7 +124,7 @@ begin
         xx = xx * CONV(vv)
 
         ; lwp is not a CMOR variable, derive as clwi = lwp + iwp
-        if (VARS(vv).eq."clwvi") then
+        if (VAR(vv).eq."clwvi") then
 
           ; Read 2nd variable containing iwp (variable "iwp_allsky")
           iwpname = "iwp_allsky"
@@ -168,7 +168,7 @@ begin
     format_coords(output, YEAR1 + "0101", YEAR2 + "1231", FREQ)
 
     ; Set variable attributes
-    tmp = format_variable(output, VARS(vv), CMOR_TABLE(vv))
+    tmp = format_variable(output, VAR(vv), CMOR_TABLE(vv))
     delete(output)
     output = tmp
     delete(tmp)
@@ -183,10 +183,10 @@ begin
     DATESTR = YEAR1 + "01-" + YEAR2 + "12"
     fout = output_dir_path + \
       str_join((/"OBS", OBSNAME, TYPE, VERSION, \
-                 MIP, VARS(vv), DATESTR/), "_") + ".nc"
+                 MIP, VAR(vv), DATESTR/), "_") + ".nc"
 
     ; Write variable
-    write_nc(fout, VARS(vv), output, bounds, gAtt)
+    write_nc(fout, VAR(vv), output, bounds, gAtt)
     delete(gAtt)
     delete(output)
     delete(bounds)

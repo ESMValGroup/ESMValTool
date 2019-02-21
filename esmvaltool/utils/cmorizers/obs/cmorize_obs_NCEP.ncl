@@ -67,9 +67,9 @@ begin
   YEAR2 = 2018
 
   ; Selected variable (standard name)
-  VARS = (/"ta", "zg", "hur", "hus", "ua", \
-           "va", "wap", "tas", "pr", \
-           "ua", "va", "pr", "rlut"/)
+  VAR = (/"ta", "zg", "hur", "hus", "ua", \
+          "va", "wap", "tas", "pr", \
+          "ua", "va", "pr", "rlut"/)
 
   ; Name in the raw data
   NAME = (/"air", "hgt", "rhum", "shum", "uwnd", \
@@ -118,9 +118,9 @@ end
 begin
 
   ; Loop over variables
-  do vv = 0, dimsizes(VARS) - 1
+  do vv = 0, dimsizes(VAR) - 1
 
-    log_info("Processing " + VARS(vv))
+    log_info("Processing " + VAR(vv))
 
     do yy = YEAR1, YEAR2
 
@@ -165,18 +165,18 @@ begin
       end if
 
       ; Convert units
-      if (any(VARS(vv).eq.(/"ta", "tas"/)) .and. \
+      if (any(VAR(vv).eq.(/"ta", "tas"/)) .and. \
           output@units.eq."degC") then
         output = output + 273.15
         output@units = "K"
       end if
-      if (VARS(vv).eq."hus" .and. output@units.eq."grams/kg") then
+      if (VAR(vv).eq."hus" .and. output@units.eq."grams/kg") then
         output = output / 1000.
         output@units = "1"
       end if
       if (output@units.ne.EXPUNITS(vv)) then
         error_msg("f", DIAG_SCRIPT, "", \
-                  "possibly wrong input units for " + VARS(vv))
+                  "possibly wrong input units for " + VAR(vv))
       end if
 
       rank = dimsizes(dimsizes(output))
@@ -194,7 +194,7 @@ begin
       format_coords(output, yy + "0101", yy + "1231", FREQ(vv))
 
       ; Set variable attributes
-      tmp = format_variable(output, VARS(vv), CMOR_TABLE(vv))
+      tmp = format_variable(output, VAR(vv), CMOR_TABLE(vv))
       delete(output)
       output = tmp
       delete(tmp)
@@ -218,21 +218,21 @@ begin
       DATESTR = yy + "01-" + yy + "12"
       fout = output_dir_path + \
         str_join((/"OBS", OBSNAME, TYPE, VERSION, \
-                   MIP(vv), VARS(vv), DATESTR/), "_") + ".nc"
+                   MIP(vv), VAR(vv), DATESTR/), "_") + ".nc"
 
       ; Add height coordinate to tas variable (required by the new backend)
-      if (VARS(vv).eq."tas") then
+      if (VAR(vv).eq."tas") then
         output@coordinates = "height"
       end if
 
       ; Write variable
-      write_nc(fout, VARS(vv), output, bounds, gAtt)
+      write_nc(fout, VAR(vv), output, bounds, gAtt)
       delete(gAtt)
       delete(output)
       delete(bounds)
 
       ; Add height coordinate to tas variable (required by the new backend)
-      if (VARS(vv).eq."tas") then
+      if (VAR(vv).eq."tas") then
         height = 2.d
         height!0 = "ncl_scalar"
         height@units = "m"

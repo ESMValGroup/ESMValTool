@@ -50,7 +50,7 @@ begin
   YEARS = (/2000, 2005, 2010/)
 
   ; Variable names
-  VARS = \
+  VAR = \
     (/"baresoilFrac", "cropFrac", "grassFrac", "shrubFrac", "treeFrac"/)
 
   ; Corresponding aggregation classes in the raw data
@@ -103,9 +103,9 @@ begin
     YEAR2 = YEARS(yy) + 2
     time = create_timec(YEAR1, YEAR2)
 
-    do vv = 0, dimsizes(VARS) - 1
+    do vv = 0, dimsizes(VAR) - 1
 
-      log_info("Processing variable " + VARS(vv))
+      log_info("Processing variable " + VAR(vv))
 
       ; Set classes to be added up
       class = CLASSES[vv]
@@ -170,7 +170,7 @@ begin
       format_coords(output, YEAR1 + "0101", YEAR2 + "1231", FREQ)
 
       ; Set variable attributes
-      tmp = format_variable(output, VARS(vv), CMOR_TABLE)
+      tmp = format_variable(output, VAR(vv), CMOR_TABLE)
       delete(output)
       output = tmp
       delete(tmp)
@@ -185,21 +185,21 @@ begin
       DATESTR = YEAR1 + "01-" + YEAR2 + "12"
       fout = output_dir_path + \
         str_join((/"OBS", OBSNAME, TYPE, VERSION, \
-                   MIP, VARS(vv), DATESTR/), "_") + ".nc"
+                   MIP, VAR(vv), DATESTR/), "_") + ".nc"
 
       ; Special case for baresoilFrac: add auxiliary coordinate
-      if (VARS(vv).eq."baresoilFrac") then
+      if (VAR(vv).eq."baresoilFrac") then
         output@coordinates = "type"
       end if
 
       ; Write variable
-      write_nc(fout, VARS(vv), output, bounds, gAtt)
+      write_nc(fout, VAR(vv), output, bounds, gAtt)
       delete(gAtt)
       delete(output)
       delete(bounds)
 
       ; Special case for baresoilFrac: add auxiliary coordinate
-      if (VARS(vv).eq."baresoilFrac") then
+      if (VAR(vv).eq."baresoilFrac") then
         type = tochar("bare_ground")
         type!0 = "strlen"
         type@long_name = "surface type"

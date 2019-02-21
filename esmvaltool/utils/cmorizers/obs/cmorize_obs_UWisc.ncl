@@ -36,7 +36,7 @@ begin
   YEAR2 = 2007
 
   ; Selected variable (standard name)
-  VARS = (/"clwvi", "lwpStderr"/)
+  VAR = (/"clwvi", "lwpStderr"/)
 
   ; Name in the raw data
   NAME = (/"LWP", "LWP_ERROR"/)
@@ -70,9 +70,9 @@ end
 
 begin
 
-  do vv = 0, dimsizes(VARS) - 1
+  do vv = 0, dimsizes(VAR) - 1
 
-    log_info("Processing " + VARS(vv))
+    log_info("Processing " + VAR(vv))
 
     do yr = YEAR1, YEAR2
 
@@ -97,7 +97,7 @@ begin
       format_coords(output, yr + "0101", yr + "1231", FREQ(vv))
 
       ; Set variable attributes
-      tmp = format_variable(output, VARS(vv), CMOR_TABLE(vv))
+      tmp = format_variable(output, VAR(vv), CMOR_TABLE(vv))
       delete(output)
       output = tmp
       delete(tmp)
@@ -114,10 +114,10 @@ begin
       DATESTR = yr + "01-" + yr + "12"
       fout = output_dir_path + \
         str_join((/"OBS", OBSNAME, TYPE, VERSION, \
-                   MIP(vv), VARS(vv), DATESTR/), "_") + ".nc"
+                   MIP(vv), VAR(vv), DATESTR/), "_") + ".nc"
 
       ; Write variable
-      write_nc(fout, VARS(vv), output, bounds, gAtt)
+      write_nc(fout, VAR(vv), output, bounds, gAtt)
       delete(gAtt)
       delete(output)
       delete(bounds)

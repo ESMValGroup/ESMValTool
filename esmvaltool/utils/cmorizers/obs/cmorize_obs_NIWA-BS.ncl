@@ -41,7 +41,7 @@ begin
   YEAR2 = 2016
 
   ; Selected variable (standard name)
-  VARS = (/"toz", "tozStderr"/)
+  VAR = (/"toz", "tozStderr"/)
 
   ; Name in the raw data
   NAME = (/"tco", "tco_uncert"/)
@@ -54,7 +54,7 @@ begin
 
   ; CMOR table
   CMOR_TABLE = getenv("esmvaltool_root") + "/cmor/tables/custom/CMOR_" + \
-    VARS + ".dat"
+    VAR + ".dat"
 
   ; Type
   TYPE = "sat"
@@ -75,9 +75,9 @@ begin
                      "NIWA-BS_CombinedTCO_" + VERSION + \
                      "_????_Monthly_Patched.nc")
 
-  do vv = 0, dimsizes(VARS) - 1
+  do vv = 0, dimsizes(VAR) - 1
 
-    log_info("Processing " + VARS(vv))
+    log_info("Processing " + VAR(vv))
 
     f = addfiles(files, "r")
     output = f[:]->$NAME(vv)$
@@ -89,7 +89,7 @@ begin
     format_coords(output, YEAR1 + "0101", YEAR2 + "1231", FREQ(vv))
 
     ; Set variable attributes
-    tmp = format_variable(output, VARS(vv), CMOR_TABLE(vv))
+    tmp = format_variable(output, VAR(vv), CMOR_TABLE(vv))
     delete(output)
     output = tmp
     delete(tmp)
@@ -104,10 +104,10 @@ begin
     DATESTR = YEAR1 + "01-" + YEAR2 + "12"
     fout = output_dir_path + \
       str_join((/"OBS", OBSNAME, TYPE, str_sub_str(VERSION, "V", "v"), \
-                 MIP(vv), VARS(vv), DATESTR/), "_") + ".nc"
+                 MIP(vv), VAR(vv), DATESTR/), "_") + ".nc"
 
     ; Write variable
-    write_nc(fout, VARS(vv), output, bounds, gAtt)
+    write_nc(fout, VAR(vv), output, bounds, gAtt)
     delete(gAtt)
     delete(output)
     delete(bounds)
