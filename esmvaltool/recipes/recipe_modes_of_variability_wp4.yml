@@ -46,7 +46,7 @@ diagnostics:
       psl:
         preprocessor: preproc
         mip: day
-        field: T2M
+        field: T2D
     scripts:
       main:
         script: magic_bsc/weather_regime.r
