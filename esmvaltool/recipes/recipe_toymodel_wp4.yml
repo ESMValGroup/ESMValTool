@@ -46,7 +46,7 @@ diagnostics:
       tasmax:
         preprocessor: preproc
         mip: day
-        field: T2M
+        field: T2Ds
 
     scripts:
       main:
