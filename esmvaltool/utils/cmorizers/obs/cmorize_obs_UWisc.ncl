@@ -110,7 +110,7 @@ begin
       gAtt@model_id = OBSNAME
       gAtt@project_id = "OBS"
 
-      ; Outfile
+      ; Output file
       DATESTR = yr + "01-" + yr + "12"
       fout = output_dir_path + \
         str_join((/"OBS", OBSNAME, TYPE, VERSION, \

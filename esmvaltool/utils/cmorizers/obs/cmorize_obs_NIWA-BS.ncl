@@ -100,7 +100,7 @@ begin
     ; Set global attributes
     gAtt = set_global_atts(OBSNAME, TIER, SOURCE, REF, COMMENT)
 
-    ; Outfile
+    ; Output file
     DATESTR = YEAR1 + "01-" + YEAR2 + "12"
     fout = output_dir_path + \
       str_join((/"OBS", OBSNAME, TYPE, str_sub_str(VERSION, "V", "v"), \

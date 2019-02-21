@@ -284,7 +284,7 @@ begin
         ; Set global attributes
         gAtt = set_global_atts(OBSNAME, TIER, SOURCE, REF, COMMENT)
 
-        ; Outfile
+        ; Output file
         if (l_fx) then
           DATESTR = ""
         elseif (l_day) then

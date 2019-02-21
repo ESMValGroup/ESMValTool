@@ -214,7 +214,7 @@ begin
       delete(fill_start)
       delete(fill_end)
 
-      ; Outfile
+      ; Output file
       DATESTR = yy + "01-" + yy + "12"
       fout = output_dir_path + \
         str_join((/"OBS", OBSNAME, TYPE, VERSION, \
