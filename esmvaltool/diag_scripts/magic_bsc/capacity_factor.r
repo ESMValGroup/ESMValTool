@@ -161,7 +161,7 @@ PlotLayout( # nolint
     toptitle = title,
     fileout = filepng)
 
-filencdf <- paste0(plot_dir, "/", "capacity_factor_",
+filencdf <- paste0(work_dir, "/", "capacity_factor_",
         model_names,  "_", start_year, "-", end_year, ".nc")
 
 dimlon <- ncdim_def(
