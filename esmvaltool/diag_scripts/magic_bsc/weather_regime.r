@@ -308,7 +308,7 @@ variable_list <- list(
 names(variable_list)[1] <- var0
 attributes(variable_list) <- NULL
 filencdf1 <-   paste0(
-    plot_dir, "/", var0, "_", frequency, "_WR_obs_", model_names, "_",
+    work_dir, "/", var0, "_", frequency, "_WR_obs_", model_names, "_",
     start_projection, "_", end_projection, "_", start_historical, "_",
     end_historical, ".nc")
 
