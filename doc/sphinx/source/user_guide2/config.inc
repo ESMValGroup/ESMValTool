@@ -36,7 +36,7 @@ the ``config-user.yml`` file.
     output_file_type: pdf
     # Destination directory
     output_dir: ./esmvaltool_output
-    # Auxiliary data directory (used for some addiional datasets)
+    # Auxiliary data directory (used for some additional datasets)
     auxiliary_data_dir: ./auxiliary_data
     # Use netCDF compression true/[false]
     compress_netcdf: false
@@ -81,11 +81,11 @@ turns on or off the writing of netCDF files.
 
 .. code-block:: yml
 
-    # Download directory (used for some addiional datasets)
+    # Auxiliary data directory (used for some additional datasets)
     auxiliary_data_dir: ./auxiliary_data
 
 The ``auxiliary_data_dir`` setting is the path to place any required
-additional downloadable data files. This method was necessary because certain
+additional auxiliary data files. This method was necessary because certain
 Python toolkits such as cartopy will attempt to download data files at run
 time, typically geographic data files such as coastlines or land surface maps.
 This can fail if the machine does not have access to the wider internet. This

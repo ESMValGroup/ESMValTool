@@ -17,7 +17,7 @@ exit_on_warning: false
 output_file_type: pdf
 # Destination directory
 output_dir: ./esmvaltool_output
-# Auxiliary data directory (used for some addiional datasets)
+# Auxiliary data directory (used for some additional datasets)
 auxiliary_data_dir: ./auxiliary_data
 # Use netCDF compression true/[false]
 compress_netcdf: false
