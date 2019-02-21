@@ -458,7 +458,7 @@ if (time_series_plot == "single") {
          ")"))
 }
 filepng1 <-  paste0(
-    plot_dir, "/", "Area-averaged ", var0, "_", months, "_multimodel-anomaly_",
+    plot_dir, "/", "Area-averaged_", var0, "_", months, "_multimodel-anomaly_",
     start_anomaly, "_", end_anomaly, "_", start_climatology, "_",
     end_climatology, ".png")
 ggsave(
