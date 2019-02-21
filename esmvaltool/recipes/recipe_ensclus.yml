@@ -13,6 +13,9 @@ documentation:
     - arno_en
     - cort_su
 
+  maintainer:
+    - hard_jo
+
   references:
     - straus07jcli
 
