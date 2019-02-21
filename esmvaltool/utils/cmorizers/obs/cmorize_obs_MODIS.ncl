@@ -73,6 +73,9 @@ begin
   ; MIPS
   MIPS = (/"Amon", "Amon", "Amon", "Amon", "Amon", "aero"/)
 
+  ; Frequency
+  FREQ = (/"mon", "mon", "mon", "mon", "mon", "mon"/)
+
   ; Version
   VERSION = "MYD08_M3"
 
@@ -84,6 +87,14 @@ begin
       "custom/CMOR_lwpStderr.dat", \
       "custom/CMOR_iwpStderr.dat", \
       "cmip5/Tables/CMIP5_aero"/)
+
+  ; Type
+  TYPE = "sat"
+
+  ; Global attributes
+  SOURCE = "https://ladsweb.modaps.eosdis.nasa.gov/search/order"
+  REF = ""
+  COMMENT = ""
 
 end
 
@@ -101,16 +112,7 @@ begin
     date   = yyyyddd_to_yyyymmdd(toint(str_get_cols(infile, 10, 16)))
     year   = toint(str_get_cols(tostring(date), 0, 3))
     month  = toint(str_get_cols(tostring(date), 4, 5))
-    day    = toint(str_get_cols(tostring(date), 6, 7)) + 14  ; center in month
-
-    time = cd_inv_calendar(year, month, day, 0, 0, 0, TUNITS, 0)
-    time@calendar = "standard"
-    time@long_name = "time"
-    time@axis = "T"
-    time@standard_name = "time"
-    if (isatt(time, "_FillValue")) then
-      delete(time@_FillValue)
-    end if
+    dm = days_in_month(year, month)
 
     ; Loop over variables to fetch from input file
     do vv = 0, dimsizes(VARS) - 1
@@ -199,58 +201,44 @@ begin
       lat = fin->YDim
       lon = fin->XDim
       output = new((/1, dimsizes(lat), dimsizes(lon)/), float)
-
-      ; Set variable attributes
-      output(0, :, :) = var_attrib(invar, VARS(vv), CMOR_TABLE(vv))
-
-      ; Set reformatted time dimension
       output!0 = "time"
-      output&time = time
-
-      ; Set reformatted latitude dimension
       output!1 = "lat"
-      output&lat = lat
-      if (isMonotonic(output&lat) .eq. 0) then
-        error_msg("f", DIAG_SCRIPT, "", "non-monotonic latitude coordinate")
-      end if
-      if (isMonotonic(output&lat) .eq. -1) then
-        output = output(:, ::-1, :)
-      end if
-      clat := lat_attrib(output&lat)
-      output&lat := clat
-      delete(lat)
-
-      ; Set reformatted longitude dimension
       output!2 = "lon"
+      output&time = cd_inv_calendar(year, month, 15, 0, 0, 0, TUNITS, 0)
+      output&lat = lat
       output&lon = lon
-
-      if (isMonotonic(output&lon) .eq. 0) then
-        error_msg("f", DIAG_SCRIPT, "", "non-monotonic longitude coordinate")
-      end if
-      if (any(output&lon .lt. 0.)) then
-        output = lonFlip(output)
-      end if
-      clon := lon_attrib(output&lon)
-      output&lon := clon
-      delete(lon)
-
-      ; Set global attributes
-      gAtt = set_global_atts( \
-        OBSNAME, TIER, \
-        "https://ladsweb.modaps.eosdis.nasa.gov/search/order", "", "")
-
-      ; Define output file
-      datestr = sprinti("%0.4i", year) + sprinti("%0.2i", month)
-      fout = output_dir_path + "OBS_" + OBSNAME + "_sat_" + \
-        str_sub_str(VERSION, "_", "-") + "_" + MIPS(vv) + "_" + VARS(vv) + \
-        "_" + datestr + "-" + datestr + ".nc"
-
-      ; Write attribute
-      write_nc(fout, VARS(vv), output, gAtt)
-
+      output(0, :, :) = (/invar/)
       delete(invar)
       delete(invar_coords)
+
+      ; Format coordinates
+      format_coords(output, year + sprinti("%0.2i", month) + "01", \
+                    year + sprinti("%0.2i", month) + dm, FREQ(vv))
+
+      ; Set variable attributes
+      tmp = format_variable(output, VARS(vv), CMOR_TABLE(vv))
       delete(output)
+      output = tmp
+      delete(tmp)
+
+      ; Calculate coordinate bounds
+      bounds = guess_coord_bounds(output, FREQ(vv))
+
+      ; Set global attributes
+      gAtt = set_global_atts(OBSNAME, TIER, SOURCE, REF, COMMENT)
+
+      ; Output file
+      DATESTR = \
+        year + sprinti("%0.2i", month) + "-" + year + sprinti("%0.2i", month)
+      fout = output_dir_path + \
+        str_join((/"OBS", OBSNAME, TYPE, str_sub_str(VERSION, "_", "-"), \
+                   MIPS(vv), VARS(vv), DATESTR/), "_") + ".nc"
+
+      ; Write variable
+      write_nc(fout, VARS(vv), output, bounds, gAtt)
+      delete(gAtt)
+      delete(output)
+      delete(bounds)
 
     end do
 
