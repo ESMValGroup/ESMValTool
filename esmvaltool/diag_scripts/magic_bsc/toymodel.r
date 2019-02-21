@@ -185,7 +185,7 @@ attr(data, "variables") <- metadata
 variable_list <- list(variable = data, time = time)
 names(variable_list)[1] <- var0
 print(str(data))
-filencdf <- paste0(plot_dir, "/", "synthetic_",
+filencdf <- paste0(work_dir, "/", "synthetic_",
               basename(fullpath_filenames))
 ArrayToNetCDF(variable_list, filencdf) #nolint
 
