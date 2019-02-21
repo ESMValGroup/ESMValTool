@@ -277,7 +277,7 @@ for (i in 1 : length(projection_filenames)) {
         longname = paste("Mean", metric[m], long_names)
       )
       filencdf <- paste0(
-          plot_dir, "/", var0, "_", metric[m], "_risk_insurance_index_",
+          work_dir, "/", var0, "_", metric[m], "_risk_insurance_index_",
           model_names, "_", start_projection, "_", end_projection, "_",
           start_reference, "_", end_reference, ".nc")
       file <- nc_create(filencdf, list(defdata))
