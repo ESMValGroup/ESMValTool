@@ -16,13 +16,13 @@ logger = logging.getLogger(__name__)
 
 def extract_volume(cube, z_min, z_max):
     """
-    Subset a cube based on a depth range.
+    Subset a cube based on a range of values in the z-coordinate.
 
     Function that subsets a cube on a box (z_min, z_max)
     This function is a restriction of masked_cube_lonlat();
-    Note that this requires the requested depth range to be the same sign
-    as the iris cube. ie, if the cube has depth as negative, then z_min
-    and z_max need to be negative numbers.
+    Note that this requires the requested z-coordinate range to be the
+    same sign as the iris cube. ie, if the cube has z-coordinate as
+    negative, then z_min and z_max need to be negative numbers.
 
     Arguments
     ---------
@@ -178,7 +178,7 @@ def average_volume(
             input cube.
 
         coordz: str
-            name of depth coordinate
+            name of z-axis coordinate
 
         coord1: str
             name of first coordinate
@@ -194,10 +194,10 @@ def average_volume(
     iris.cube.Cube
         collapsed cube.
     """
-    # TODO: Test sigma depth coordinates.
+    # TODO: Test sigma coordinates.
 
     # ####
-    # Load depth field and figure out which dim is which.
+    # Load z coordinate field and figure out which dim is which.
     t_dim = cube.coord_dims('time')[0]
 
     grid_volume_found = False
@@ -229,7 +229,7 @@ def average_volume(
     # Calculate global volume weighted average
     result = []
     # #####
-    # iterate over time and depth dimensions.
+    # iterate over time and z-coordinate dimensions.
     for time_itr in range(cube.shape[t_dim]):
         # ####
         # create empty output arrays
@@ -237,7 +237,7 @@ def average_volume(
         depth_volume = []
 
         # ####
-        # iterate over time and depth dimensions.
+        # iterate over time and z-coordinate dimensions.
         for z_itr in range(cube.shape[1]):
             # ####
             # Calculate weighted mean for this time and layer
@@ -279,9 +279,9 @@ def depth_integration(cube, coordz):
     """
     Determine the total sum over the vertical component.
 
-    Requires a 3D cube, and the name of the z coordinate. The depth
-    integration is calculated by taking the sum in the z direction
-    of the cell contents multiplied by the cell thickness.
+    Requires a 3D cube, and the name of the z coordinate. The z-coordinate
+    integration is calculated by taking the sum in the z direction of the
+    cell contents multiplied by the cell thickness.
 
     Arguments
     ---------
