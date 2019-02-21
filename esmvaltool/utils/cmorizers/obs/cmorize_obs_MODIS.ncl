@@ -1,5 +1,5 @@
 ; #############################################################################
-; REFORMAT SCRIPT FOR MODIS Level 3 OBSERVATIONAL DATA
+; ESMValTool CMORizer for MODIS data
 ; #############################################################################
 ;
 ; Tier
