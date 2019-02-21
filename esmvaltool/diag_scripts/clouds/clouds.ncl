@@ -134,6 +134,13 @@ begin
     season = (/"DJF", "MAM", "JJA", "SON"/)
   end if
 
+  ; create string for caption (netcdf provenance)
+
+  allseas = season(0)
+  do is = 1, numseas - 1
+    allseas = allseas + "/" + season(i)
+  end do
+
   panel_labels = diag_script_info@panel_labels
 
   treat_var_as_error = diag_script_info@treat_var_as_error
@@ -1038,7 +1045,7 @@ begin
 
     do is = 0, numseas - 1
       caption = "Mean values for variable " + var0 \
-                + " (" + season(is) + ")."
+                + " (" + allseas + ")."
       log_provenance(nc_outfile_mean, outfile(is), caption, statistics, domain, \
                      plottype, "", "", climofiles)
     end do
@@ -1198,9 +1205,13 @@ begin
         end if
         plottype = ("geo")
 
+        ; note: because function log_provenance does not yet support to attach
+        ;       different captions to netcdf (contains all seasons) and plots
+        ;       (contain one season each), the caption cannot specifiy the
+        ;       season plotted; using "annual" or "DJF/MAM/JJA/SON" instead.
+
         caption = "Differences for variable " + var0 \
-                  + " (" + season(is) + "), reference = " \
-                  + refname + "."
+                  + " (" + allseas + "), reference = " + refname + "."
         log_provenance(nc_outfile_bias, outfile_d(is), caption, statistics, \
                        domain, plottype, "", "", climofiles)
       end do
