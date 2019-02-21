@@ -13,7 +13,7 @@ from esmvaltool.cmor._fixes.CMIP5.inmcm4 import gpp, lai, nbp
 
 class TestGpp(unittest.TestCase):
     def setUp(self):
-        self.cube = Cube([1], var_name='gpp', units='J')
+        self.cube = Cube([1.0], var_name='gpp', units='J')
         self.fix = gpp()
 
     def test_fix_data(self):
@@ -24,7 +24,7 @@ class TestGpp(unittest.TestCase):
 
 class TestLai(unittest.TestCase):
     def setUp(self):
-        self.cube = Cube([1], var_name='lai', units='J')
+        self.cube = Cube([1.0], var_name='lai', units='J')
         self.fix = lai()
 
     def test_fix_data(self):
@@ -38,7 +38,7 @@ class TestNbp(unittest.TestCase):
 
     def setUp(self):
         """Prepare temp folder for test."""
-        self.cube = Cube([1], var_name='nbp')
+        self.cube = Cube([1.0], var_name='nbp')
         self.fix = nbp()
         self.temp_folder = tempfile.mkdtemp()
 
