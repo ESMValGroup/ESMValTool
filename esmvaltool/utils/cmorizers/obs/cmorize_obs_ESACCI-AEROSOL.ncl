@@ -53,10 +53,12 @@ begin
            "AOD550_uncertainty", "AOD870_uncertainty"/)
 
   ; MIP
-  MIP = "aero"
+  MIP = (/"aero", "aero", "aero", "aero", \
+          "aero", "aero"/)
 
   ; Frequency
-  FREQ = "mon"
+  FREQ = (/"mon", "mon", "mon", "mon", \
+           "mon", "mon"/)
 
   ; CMOR table
   CMOR_TABLE = getenv("esmvaltool_root") + "/cmor/tables/" + \
@@ -135,7 +137,7 @@ begin
     output!0 = "time"
     output!1 = "lat"
     output!2 = "lon"
-    format_coords(output, YEAR1 + "0101", YEAR2 + "1231", FREQ)
+    format_coords(output, YEAR1 + "0101", YEAR2 + "1231", FREQ(vv))
 
     ; Set variable attributes
     tmp = format_variable(output, VAR(vv), CMOR_TABLE(vv))
@@ -144,7 +146,7 @@ begin
     delete(tmp)
 
     ; Calculate coordinate bounds
-    bounds = guess_coord_bounds(output, FREQ)
+    bounds = guess_coord_bounds(output, FREQ(vv))
 
     ; Set global attributes
     gAtt = set_global_atts(OBSNAME, TIER, SOURCE, REF, COMMENT)
@@ -153,7 +155,7 @@ begin
     DATESTR = YEAR1 + "01-" + YEAR2 + "12"
     fout = output_dir_path + \
       str_join((/"OBS", OBSNAME, TYPE, VERSION, \
-                 MIP, VAR(vv), DATESTR/), "_") + ".nc"
+                 MIP(vv), VAR(vv), DATESTR/), "_") + ".nc"
 
     ; Write variable
     write_nc(fout, VAR(vv), output, bounds, gAtt)

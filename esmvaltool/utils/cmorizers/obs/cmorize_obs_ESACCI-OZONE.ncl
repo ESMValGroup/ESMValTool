@@ -48,10 +48,10 @@ begin
            "uncertainty_of_merged_ozone"/)
 
   ; MIP
-  MIP = "Amon"
+  MIP = (/"Amon", "Amon", "Amon", "Amon"/)
 
   ; Frequency
-  FREQ = "mon"
+  FREQ = (/"mon", "mon", "mon", "mon"/)
 
   ; CMOR table
   CMOR_TABLE = getenv("esmvaltool_root") + \
@@ -136,7 +136,7 @@ begin
     end do
 
     ; Format coordinates
-    format_coords(output, YEAR1(vv) + "0101", YEAR2(vv) + "1231", FREQ)
+    format_coords(output, YEAR1(vv) + "0101", YEAR2(vv) + "1231", FREQ(vv))
 
     ; Set variable attributes
     tmp = format_variable(output, VAR(vv), CMOR_TABLE(vv))
@@ -145,7 +145,7 @@ begin
     delete(tmp)
 
     ; Calculate coordinate bounds
-    bounds = guess_coord_bounds(output, FREQ)
+    bounds = guess_coord_bounds(output, FREQ(vv))
 
     ; Set global attributes
     gAtt = set_global_atts(OBSNAME, TIER, SOURCE, REF, COMMENT)
@@ -154,7 +154,7 @@ begin
     DATESTR = YEAR1(vv) + "01-" + YEAR2(vv) + "12"
     fout = output_dir_path + \
       str_join((/"OBS", OBSNAME, TYPE, VERSION, \
-                 MIP, VAR(vv), DATESTR/), "_") + ".nc"
+                 MIP(vv), VAR(vv), DATESTR/), "_") + ".nc"
 
     ; Write variable
     write_nc(fout, VAR(vv), output, bounds, gAtt)
