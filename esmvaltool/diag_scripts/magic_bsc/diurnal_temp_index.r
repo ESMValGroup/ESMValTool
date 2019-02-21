@@ -193,7 +193,7 @@ defdata <- ncvar_def(
 )
 
 filencdf <- paste0(
-    plot_dir, "/", "Seasonal_DTRindicator_", model_names, "_",
+    work_dir, "/", "Seasonal_DTRindicator_", model_names, "_",
     start_projection, "_", end_projection, "_",
     start_historical, "_", end_historical, ".nc")
 file <- nc_create(filencdf, list(defdata))
