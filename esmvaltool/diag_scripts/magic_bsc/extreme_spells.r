@@ -180,7 +180,7 @@ for (i in 1 : length(projection_filenames)) {
       "quantile obtained from", start_reference, "-", end_reference
     )
   )
-  filencdf <- paste0(plot_dir, "/", var0, "_extreme_spell_duration", season,
+  filencdf <- paste0(work_dir, "/", var0, "_extreme_spell_duration", season,
       "_", model_names, "_", rcp_scenario[i], "_", start_projection, "_",
       end_projection, ".nc")
 
