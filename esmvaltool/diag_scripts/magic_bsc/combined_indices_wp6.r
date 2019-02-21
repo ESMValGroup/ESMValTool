@@ -22,7 +22,7 @@ dir.create(work_dir, recursive = TRUE)
 
 
 # setup provenance file and list
-provenance_file <- paste0(plot_dir, "/", "combined_provenance.yml")
+provenance_file <- paste0(run_dir, "/", "diagnostic_provenance.yml")
 provenance <- list()
 
 input_files_per_var <- yaml::read_yaml(params$input_files[1])
