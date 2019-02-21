@@ -180,9 +180,9 @@ def seasonal_mean(cube):
     return cube.extract(three_months_bound)
 
 
-def _regrid_time(cubes):
+def _align_time_axes(cubes):
     """
-    Unifies time axis for cubes so they can be subtracted.
+    Align time axis for cubes so they can be subtracted.
 
     Operations on time units, calendars, time points and auxiliary
     coordinates so that any cube from cubes can be subtracted from any
@@ -196,33 +196,43 @@ def _regrid_time(cubes):
     -------
     list of iris.cube.Cube instances
     """
-    for c in cubes:
+    for cube in cubes:
         # fix units; leave calendars
         # this is not normally needed unless working
         # outside the CMOR standards
-        c.coord('time').convert_units(
+        cube.coord('time').convert_units(
             cf_units.Unit('days since 1950-1-1 00:00:00',
-                          calendar=c.coord('time').units.calendar))
+                          calendar=cube.coord('time').units.calendar))
 
         # fix calendars
-        c.coord('time').units = cf_units.Unit(c.coord('time').units.origin,
-                                              calendar='gregorian')
+        cube.coord('time').units = \
+            cf_units.Unit(cube.coord('time').units.origin,
+                          calendar='gregorian')
 
         # standardize time points
-        time_c = [cell.point for cell in c.coord('time').cells()]
-        c.coord('time').cells = [
+        time_c = [cell.point for cell in cube.coord('time').cells()]
+        cube.coord('time').cells = [
             datetime.datetime(t.year, t.month, 15, 0, 0, 0) for t in time_c
         ]
-        c.coord('time').points = [
-            c.coord('time').units.date2num(cl) for cl in c.coord('time').cells
+        cube.coord('time').points = [
+            cube.coord('time').units.date2num(cl)
+            for cl in cube.coord('time').cells
         ]
 
         # uniformize bounds
-        c.coord('time').bounds = None
-        c.coord('time').guess_bounds()
+        cube.coord('time').bounds = None
+        cube.coord('time').guess_bounds()
 
-        # remove aux factories
-        for auxcoord in c.aux_coords:
-            c.remove_coord(auxcoord)
+        # remove aux coords that will differ
+        reset_aux = ['day_of_month', 'day_of_year']
+        for auxcoord in cube.aux_coords:
+            if auxcoord.long_name in reset_aux:
+                cube.remove_coord(auxcoord)
+
+        # re-add the converted aux coords
+        iris.coord_categorisation.add_day_of_month(cube, cube.coord('time'),
+                                                   name='day_of_month')
+        iris.coord_categorisation.add_day_of_year(cube, cube.coord('time'),
+                                                  name='day_of_year')
 
     return cubes
