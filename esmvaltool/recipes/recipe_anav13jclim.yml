@@ -213,8 +213,7 @@ diagnostics:
       - {dataset: CanESM2}
       - {dataset: CESM1-BGC}
       - {dataset: GFDL-ESM2G}
-      # Empty output file (only missing values)
-      # - {dataset: GFDL-ESM2M}
+      - {dataset: GFDL-ESM2M}
       - {dataset: HadGEM2-CC}
       - {dataset: HadGEM2-ES}
       - {dataset: inmcm4}
