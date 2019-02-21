@@ -82,7 +82,7 @@ begin
       nfiles = dimsizes(files)
 
       if (nfiles.ne.dm) then
-        error_msg("f", DIAG_SCRIPT, "", "Incomplete data in " + yy + mo + \
+        error_msg("f", DIAG_SCRIPT, "", "incomplete data in " + yy + mo + \
                   " (" + dm + " != " + nfiles + " files found)")
       end if
 

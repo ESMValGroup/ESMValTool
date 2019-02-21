@@ -127,7 +127,7 @@ begin
       ; Special case clwvi as the sum lwp + iwp
       if (VAR(vv).eq."clwvi") then
         if (NAME(vv).ne."Cloud_Water_Path_Liquid_Mean_Mean") then
-          error_msg("f", DIAG_SCRIPT, "", "Cannot calculate clwvi")
+          error_msg("f", DIAG_SCRIPT, "", "cannot calculate clwvi")
         end if
 
         ; Read cirrus fraction
