@@ -216,7 +216,7 @@ if (!is.null(region)) {
     longname = paste("Combination", long_names)
   )
   filencdf <- paste0(
-      plot_dir, "/", var0, "_", paste0(model_names, collapse = "_"),
+      work_dir, "/", var0, "_", paste0(model_names, collapse = "_"),
       "_", timestamp, "_", model_names_filename, "_", start_year,
       "_", end_year, "_", ".nc")
 
