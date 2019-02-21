@@ -66,7 +66,7 @@ begin
                 "Tree_Needleleaf_Evergreen"/)/]
 
   ; MIPs
-  MIPS = "Lmon"
+  MIP = "Lmon"
 
   ; Frequency
   FREQ = "mon"
@@ -185,7 +185,7 @@ begin
       DATESTR = YEAR1 + "01-" + YEAR2 + "12"
       fout = output_dir_path + \
         str_join((/"OBS", OBSNAME, TYPE, VERSION, \
-                   MIPS, VARS(vv), DATESTR/), "_") + ".nc"
+                   MIP, VARS(vv), DATESTR/), "_") + ".nc"
 
       ; Special case for baresoilFrac: add auxiliary coordinate
       if (VARS(vv).eq."baresoilFrac") then

@@ -44,15 +44,15 @@ begin
   ; Name in the raw data
   NAME = (/"sst", "sst", "ice"/)
 
-  ; MIPS
-  MIPS = (/"Amon", "Omon", "OImon"/)
+  ; MIP
+  MIP = (/"Amon", "Omon", "OImon"/)
 
   ; Frequency
   FREQ = (/"mon", "mon", "mon"/)
 
   ; CMOR table
   CMOR_TABLE = getenv("esmvaltool_root") + \
-    "/cmor/tables/cmip5/Tables/CMIP5_" + MIPS
+    "/cmor/tables/cmip5/Tables/CMIP5_" + MIP
 
   ; Type
   TYPE = "reanaly"
@@ -122,7 +122,7 @@ begin
     DATESTR = YEAR1 + "01-" + YEAR2 + "12"
     fout = output_dir_path + \
       str_join((/"OBS", OBSNAME, TYPE, VERSION, \
-                 MIPS(vv), VARS(vv), DATESTR/), "_") + ".nc"
+                 MIP(vv), VARS(vv), DATESTR/), "_") + ".nc"
 
     ; Write variable
     write_nc(fout, VARS(vv), output, bounds, gAtt)

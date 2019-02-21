@@ -80,17 +80,17 @@ begin
            "sfc_comp_lw_down_clr_3h", "sfc_comp_lw_down_all_3h"/)
 
   ; MIP
-  MIPS = (/"Amon", "Amon", \
-           "Amon", "Amon", \
-           "Amon", "Amon", \
-           "Amon", "Amon", \
-           "Amon", "Amon", \
-           "3hr", "3hr", \
-           "3hr", "3hr", \
-           "3hr", "3hr", \
-           "3hr", "3hr", \
-           "3hr", "3hr", \
-           "3hr", "3hr"/)
+  MIP = (/"Amon", "Amon", \
+          "Amon", "Amon", \
+          "Amon", "Amon", \
+          "Amon", "Amon", \
+          "Amon", "Amon", \
+          "3hr", "3hr", \
+          "3hr", "3hr", \
+          "3hr", "3hr", \
+          "3hr", "3hr", \
+          "3hr", "3hr", \
+          "3hr", "3hr"/)
 
   ; Frequency
   FREQ = (/"mon", "mon", \
@@ -107,7 +107,7 @@ begin
 
   ; CMOR table: Amon version is used also for 3hr, since not all variables are
   ; available in 3hr (the tables are identical anyway)
-  CMOR_TABLE = new(dimsizes(MIPS), string)
+  CMOR_TABLE = new(dimsizes(MIP), string)
   CMOR_TABLE = getenv("esmvaltool_root") + \
     "/cmor/tables/cmip5/Tables/CMIP5_Amon"
   CMOR_TABLE(ind(VARS.eq."rluscs")) =  getenv("esmvaltool_root") + \
@@ -131,18 +131,18 @@ begin
 
   do vv = 0, dimsizes(VARS) - 1
 
-    log_info("Processing " + VARS(vv) + " (" + MIPS(vv) + ")")
+    log_info("Processing " + VARS(vv) + " (" + MIP(vv) + ")")
 
     do yy = YEAR1, YEAR2
 
       ; Read file
-      if (MIPS(vv).eq."Amon") then
+      if (MIP(vv).eq."Amon") then
         f = addfile(input_dir_path + "CERES_SYN1deg-Month_Terra-Aqua-" + \
                     "MODIS_" + VERSION + "_Subset_200003-201702.nc", "r")
         xx = f->$NAME(vv)$
         delete(f)
       end if
-      if (MIPS(vv).eq."3hr") then
+      if (MIP(vv).eq."3hr") then
         files = systemfunc("ls " + input_dir_path + "CERES_SYN1deg-3H_" + \
                            "Terra-Aqua-MODIS_" + VERSION + "_Subset_*" + \
                            yy + "*.nc")
@@ -180,7 +180,7 @@ begin
       DATESTR = yy + "01-" + yy + "12"
       fout = output_dir_path + \
         str_join((/"OBS", OBSNAME, TYPE, VERSION, \
-                   MIPS(vv), VARS(vv), DATESTR/), "_") + ".nc"
+                   MIP(vv), VARS(vv), DATESTR/), "_") + ".nc"
 
       ; Write variable
       write_nc(fout, VARS(vv), output, bounds, gAtt)

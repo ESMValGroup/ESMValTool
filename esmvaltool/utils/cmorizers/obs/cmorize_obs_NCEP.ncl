@@ -86,10 +86,10 @@ begin
                "m/s", "Pascal/s", "K", "Kg/m^2/s", \
                "m/s", "m/s", "Kg/m^2/s", "W/m^2"/)
 
-  ; MIPS
-  MIPS = (/"Amon", "Amon", "Amon", "Amon", "Amon", \
-           "Amon", "Amon", "Amon", "Amon", \
-           "day", "day", "day", "day"/)
+  ; MIP
+  MIP = (/"Amon", "Amon", "Amon", "Amon", "Amon", \
+          "Amon", "Amon", "Amon", "Amon", \
+          "day", "day", "day", "day"/)
 
   ; Frequency
   FREQ = (/"mon", "mon", "mon", "mon", "mon", \
@@ -98,7 +98,7 @@ begin
 
   ; CMOR tables
   CMOR_TABLE = getenv("esmvaltool_root") + \
-    "/cmor/tables/cmip5/Tables/CMIP5_" + MIPS
+    "/cmor/tables/cmip5/Tables/CMIP5_" + MIP
 
   ; Type
   TYPE = "reanaly"
@@ -124,11 +124,11 @@ begin
 
     do yy = YEAR1, YEAR2
 
-      if (isStrSubset(MIPS(vv), "mon")) then
+      if (isStrSubset(MIP(vv), "mon")) then
         fname = input_dir_path + SUBDIR(vv) + NAME(vv) + ".mon.mean.nc"
       end if
 
-      if (isStrSubset(MIPS(vv), "day")) then
+      if (isStrSubset(MIP(vv), "day")) then
         flist = systemfunc("ls " + input_dir_path + SUBDIR(vv) + NAME(vv) + \
                            ".*" + yy + ".nc")
         fname = flist(0)
@@ -218,7 +218,7 @@ begin
       DATESTR = yy + "01-" + yy + "12"
       fout = output_dir_path + \
         str_join((/"OBS", OBSNAME, TYPE, VERSION, \
-                   MIPS(vv), VARS(vv), DATESTR/), "_") + ".nc"
+                   MIP(vv), VARS(vv), DATESTR/), "_") + ".nc"
 
       ; Add height coordinate to tas variable (required by the new backend)
       if (VARS(vv).eq."tas") then

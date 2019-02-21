@@ -62,7 +62,7 @@ begin
   CONV = (/100., 1., 0.001, 0.001/)
 
   ; MIP
-  MIPS = "Amon"
+  MIP = "Amon"
 
   ; Frequency
   FREQ = "mon"
@@ -183,7 +183,7 @@ begin
     DATESTR = YEAR1 + "01-" + YEAR2 + "12"
     fout = output_dir_path + \
       str_join((/"OBS", OBSNAME, TYPE, VERSION, \
-                 MIPS, VARS(vv), DATESTR/), "_") + ".nc"
+                 MIP, VARS(vv), DATESTR/), "_") + ".nc"
 
     ; Write variable
     write_nc(fout, VARS(vv), output, bounds, gAtt)

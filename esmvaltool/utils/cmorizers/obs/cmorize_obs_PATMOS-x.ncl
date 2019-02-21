@@ -50,15 +50,15 @@ begin
   ; Name in the raw data
   NAME = (/"cloud_fraction"/)
 
-  ; MIPS
-  MIPS = (/"Amon"/)
+  ; MIP
+  MIP = (/"Amon"/)
 
   ; Frequency
   FREQ = (/"mon"/)
 
   ; CMOR table
   CMOR_TABLE = getenv("esmvaltool_root") + \
-    "/cmor/tables/cmip5/Tables/CMIP5_" + MIPS
+    "/cmor/tables/cmip5/Tables/CMIP5_" + MIP
 
   ; Type
   TYPE = "sat"
@@ -210,7 +210,7 @@ begin
       DATESTR = yy + "01-" + yy + "12"
       fout = output_dir_path + \
         str_join((/"OBS", OBSNAME, TYPE, VERSION, \
-                   MIPS(vv), VARS(vv), DATESTR/), "_") + ".nc"
+                   MIP(vv), VARS(vv), DATESTR/), "_") + ".nc"
 
       ; Write variable
       write_nc(fout, VARS(vv), output, bounds, gAtt)

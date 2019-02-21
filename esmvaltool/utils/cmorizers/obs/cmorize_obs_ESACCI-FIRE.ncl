@@ -44,7 +44,7 @@ begin
   NAME = "burned_area"
 
   ; MIP
-  MIPS = "Lmon"
+  MIP = "Lmon"
 
   ; Frequency
   FREQ = "mon"
@@ -151,7 +151,7 @@ begin
   DATESTR = YEAR1 + "01-" + YEAR2 + "12"
   fout = output_dir_path + \
     str_join((/"OBS", OBSNAME, TYPE, VERSION, \
-               MIPS, VARS, DATESTR/), "_") + ".nc"
+               MIP, VARS, DATESTR/), "_") + ".nc"
 
   ; Write variable
   write_nc(fout, VARS, output, bounds, gAtt)

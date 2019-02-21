@@ -70,8 +70,8 @@ begin
            "Cloud_Water_Path_Ice_Mean_Uncertainty",    \
            "AOD_550_Dark_Target_Deep_Blue_Combined_Mean_Mean"/)
 
-  ; MIPS
-  MIPS = (/"Amon", "Amon", "Amon", "Amon", "Amon", "aero"/)
+  ; MIP
+  MIP = (/"Amon", "Amon", "Amon", "Amon", "Amon", "aero"/)
 
   ; Frequency
   FREQ = (/"mon", "mon", "mon", "mon", "mon", "mon"/)
@@ -232,7 +232,7 @@ begin
         year + sprinti("%0.2i", month) + "-" + year + sprinti("%0.2i", month)
       fout = output_dir_path + \
         str_join((/"OBS", OBSNAME, TYPE, str_sub_str(VERSION, "_", "-"), \
-                   MIPS(vv), VARS(vv), DATESTR/), "_") + ".nc"
+                   MIP(vv), VARS(vv), DATESTR/), "_") + ".nc"
 
       ; Write variable
       write_nc(fout, VARS(vv), output, bounds, gAtt)

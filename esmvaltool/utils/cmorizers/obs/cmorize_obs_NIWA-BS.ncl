@@ -46,8 +46,8 @@ begin
   ; Name in the raw data
   NAME = (/"tco", "tco_uncert"/)
 
-  ; MIPS
-  MIPS = (/"Amon", "Amon"/)
+  ; MIP
+  MIP = (/"Amon", "Amon"/)
 
   ; Frequency
   FREQ = (/"mon", "mon"/)
@@ -104,7 +104,7 @@ begin
     DATESTR = YEAR1 + "01-" + YEAR2 + "12"
     fout = output_dir_path + \
       str_join((/"OBS", OBSNAME, TYPE, str_sub_str(VERSION, "V", "v"), \
-                 MIPS(vv), VARS(vv), DATESTR/), "_") + ".nc"
+                 MIP(vv), VARS(vv), DATESTR/), "_") + ".nc"
 
     ; Write variable
     write_nc(fout, VARS(vv), output, bounds, gAtt)

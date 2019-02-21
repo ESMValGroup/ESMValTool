@@ -81,10 +81,10 @@ begin
                 100., 1., 1., 1., 1./)
 
   ; MIPs
-  MIPS = (/"day", "day", "Amon", "Amon", "Amon", \
-           "Amon", "Amon", "Amon", "Amon", "Omon", \
-           "Amon", "Amon", "Amon", "Amon", "fx", \
-           "Amon", "Amon", "Amon", "Amon", "Amon"/)
+  MIP = (/"day", "day", "Amon", "Amon", "Amon", \
+          "Amon", "Amon", "Amon", "Amon", "Omon", \
+          "Amon", "Amon", "Amon", "Amon", "fx", \
+          "Amon", "Amon", "Amon", "Amon", "Amon"/)
 
   FREQ = (/"day", "day", "mon", "mon", "mon", \
            "mon", "mon", "mon", "mon", "mon", \
@@ -93,7 +93,7 @@ begin
 
   ; CMOR table
   CMOR_TABLE = getenv("esmvaltool_root") + \
-    "/cmor/tables/cmip5/Tables/CMIP5_" + MIPS
+    "/cmor/tables/cmip5/Tables/CMIP5_" + MIP
 
   ; Type
   TYPE = "reanaly"
@@ -119,14 +119,14 @@ begin
 
     l_day = False
     l_fx = False
-    if (isStrSubset(MIPS(vv), "mon")) then
+    if (isStrSubset(MIP(vv), "mon")) then
       freq1 = "monthly"
     end if
-    if (isStrSubset(MIPS(vv), "day")) then
+    if (isStrSubset(MIP(vv), "day")) then
       freq1 = "daily"
       l_day = True
     end if
-    if (isStrSubset(MIPS(vv), "fx")) then
+    if (isStrSubset(MIP(vv), "fx")) then
       l_fx = True
     end if
 
@@ -296,11 +296,11 @@ begin
         if (DATESTR.eq."") then
           fout = output_dir_path + \
             str_join((/"OBS", OBSNAME, TYPE, VERSION, \
-                       MIPS(vv), VARS(vv)/), "_") + ".nc"
+                       MIP(vv), VARS(vv)/), "_") + ".nc"
         else
           fout = output_dir_path + \
             str_join((/"OBS", OBSNAME, TYPE, VERSION, \
-                       MIPS(vv), VARS(vv), DATESTR/), "_") + ".nc"
+                       MIP(vv), VARS(vv), DATESTR/), "_") + ".nc"
         end if
 
         ; Add height coordinate to tas variable (required by the new backend)
