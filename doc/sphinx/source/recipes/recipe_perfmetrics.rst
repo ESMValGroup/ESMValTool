@@ -24,18 +24,18 @@ Diagnostics are stored in diag_scripts/perfmetrics/
 * cycle_latlon.ncl: precalculates the metrics for a time-lat-lon field, with different options for normalization.
 * collect.ncl: collects and plots the metrics previously calculated by cycle_latlon.ncl.
 
-User settings
--------------
+User settings in recipe
+-----------------------
 
-#. main.ncl
+#. Script main.ncl
 
-   *Required diag_script_info attributes*
+   *Required settings (scripts)*
 
    * plot_type: cycle (time), zonal (plev, lat), latlon (lat, lon), cycle_latlon (time, lat, lon)
    * time_avg: type of time average (opt argument of time_operations in diag_scripts/shared/statistics.ncl)
    * region: selected region (see select_region in diag_scripts/shared/latlon.ncl)
    
-   *Optional diag_script_info attributes*
+   *Optional settings (scripts)*
    
    * styleset: for plot_type cycle only (as in diag_scripts/shared/plot/styles/)
    * plot_stddev: for plot_type cycle only, plots standard deviation as shading
@@ -57,26 +57,26 @@ User settings
    * latlon_cmap: for plot_type latlon only, chosen color table (default: "amwg_blueyellowred")
    * plot_units: plotting units (if different from standard CMOR units)
    
-   *Required variable_info attributes*
+   *Required settings (variables)*
    
    * reference_dataset: reference dataset to compare with (usually the observations).
    
-   *Optional variable_info attributes*
+   *Optional settings (variables)*
 
    * alternative_dataset: a second dataset to compare with.
 
-These settings are passed to the other scripts by main.ncl, depending on the selected plot_type.
+   These settings are passed to the other scripts by main.ncl, depending on the selected plot_type.
 
-#. collect.ncl
+#. Script collect.ncl
 
-   *Required diag_script_info attributes*
+   *Required settings (scripts)*
 
    * metric: selected metric (RMSD, BIAS or taylor)
    * label_bounds: for RMSD and BIAS metrics, min and max of the labelbar
    * label_scale: for RMSD and BIAS metrics, bin width of the labelbar
    * colormap: for RMSD and BIAS metrics, color table of the labelbar
    
-   *Optional diag_script_info attributes*
+   *Optional settings (scripts)*
    
    * label_lo: adds lower triange for values outside range
    * label_hi: adds upper triange for values outside range
