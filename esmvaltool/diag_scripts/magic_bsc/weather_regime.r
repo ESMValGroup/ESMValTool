@@ -575,7 +575,7 @@ defrmse <- ncvar_def(
   units = "undim",
   dim = list(observed = dimpattern, experiment = dimpattern),
   longname = title)
-filencdf3 <- paste0(plot_dir, "/", var0, "_", frequency, "_rmse_",
+filencdf3 <- paste0(work_dir, "/", var0, "_", frequency, "_rmse_",
                          model_names, "_", start_projection, "_",
                          end_projection, "_", start_historical, "_",
                          end_historical, ".nc")
