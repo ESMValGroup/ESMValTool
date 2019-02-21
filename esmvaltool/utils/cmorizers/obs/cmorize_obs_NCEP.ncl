@@ -120,7 +120,7 @@ begin
   ; Loop over variables
   do vv = 0, dimsizes(VAR) - 1
 
-    log_info("Processing " + VAR(vv))
+    log_info("Processing " + VAR(vv) + " (" + MIP(vv) + ")")
 
     do yy = YEAR1, YEAR2
 

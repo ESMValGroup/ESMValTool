@@ -105,7 +105,7 @@ begin
 
     do vv = 0, dimsizes(VAR) - 1
 
-      log_info("Processing variable " + VAR(vv))
+      log_info("Processing " + VAR(vv) + " (" + MIP(vv) + ")")
 
       ; Set classes to be added up
       class = CLASSES[vv]

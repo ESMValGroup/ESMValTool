@@ -88,7 +88,7 @@ begin
 
   do vv = 0, dimsizes(VAR) - 1
 
-    log_info("Processing " + VAR(vv))
+    log_info("Processing " + VAR(vv) + " (" + MIP(vv) + ")")
 
     time = create_timec(YEAR1, YEAR2)
     date = cd_calendar(time, 1)

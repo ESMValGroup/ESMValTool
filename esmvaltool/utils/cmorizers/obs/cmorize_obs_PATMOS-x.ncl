@@ -93,7 +93,7 @@ begin
 
   do vv = 0, dimsizes(VAR) - 1
 
-    log_info("Processing " + VAR(vv))
+    log_info("Processing " + VAR(vv) + " (" + MIP(vv) + ")")
 
     do yy = YEAR1, YEAR2
 
@@ -105,8 +105,6 @@ begin
       output&time = create_timec(yy, yy)
       output&lat = lat
       output&lon = lon
-
-      log_info("Year " + yy)
 
       do mm = 1, 12
 

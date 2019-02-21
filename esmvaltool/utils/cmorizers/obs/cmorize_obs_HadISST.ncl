@@ -72,7 +72,7 @@ begin
   ; Loop over variables
   do vv = 0, dimsizes(VAR) - 1
 
-    log_info("Processing " + VAR(vv))
+    log_info("Processing " + VAR(vv) + " (" + MIP(vv) + ")")
 
     ; Read variables
     fname = input_dir_path + "HadISST_" + NAME(vv) + ".nc"
