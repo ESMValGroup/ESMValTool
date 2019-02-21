@@ -13,7 +13,8 @@ from iris.cube import Cube
 
 import tests
 from esmvaltool.preprocessor._time_area import (extract_month, extract_season,
-                                                time_average, time_slice)
+                                                time_average, time_slice,
+                                                _align_time_axes)
 
 
 def _create_sample_cube():
@@ -177,6 +178,50 @@ class TestTimeAverage(tests.Test):
         result = time_average(cube)
         expected = np.array([1.])
         self.assertArrayEqual(result.data, expected)
+
+
+class TestAlignTimeAxes(tests.Test):
+    """Tests for align_time_axes."""
+
+    def setUp(self):
+        """Prepare tests"""
+        self.cube_1 = _create_sample_cube()
+        self.cube_2 = _create_sample_cube()
+        self.cube_2.data = self.cube_2.data * 2.
+        self.cube_2.remove_coord('time')
+        self.cube_2.add_dim_coord(
+            iris.coords.DimCoord(
+                np.arange(14., 719., 30.),
+                standard_name='time',
+                units=Unit('days since 1950-01-01', calendar='360_day')
+            ), 0)
+        iris.coord_categorisation.add_day_of_month(self.cube_1,
+                                                   self.cube_1.coord('time'),
+                                                   name='day_of_month')
+        iris.coord_categorisation.add_day_of_month(self.cube_2,
+                                                   self.cube_2.coord('time'),
+                                                   name='day_of_month')
+        iris.coord_categorisation.add_day_of_year(self.cube_1,
+                                                  self.cube_1.coord('time'),
+                                                  name='day_of_year')
+        iris.coord_categorisation.add_day_of_year(self.cube_2,
+                                                  self.cube_2.coord('time'),
+                                                  name='day_of_year')
+
+    def test_align_time_axis(self):
+        """Test changes to cubes."""
+        newcube_1, newcube_2 = _align_time_axes([self.cube_1, self.cube_2])
+        # no changes to core data
+        self.assertArrayEqual(newcube_1.data, self.cube_1.data)
+        self.assertArrayEqual(newcube_2.data, self.cube_2.data)
+        # no changes to number of coords and aux_coords
+        self.assertTrue(len(newcube_1.coords()), len(self.cube_1.coords()))
+        self.assertTrue(len(newcube_1.aux_coords),
+                        len(self.cube_1.aux_coords))
+        # test difference; also diff is zero
+        expected = self.cube_1.data
+        diff_cube = newcube_2 - newcube_1
+        self.assertArrayEqual(diff_cube.data, expected)
 
 
 if __name__ == '__main__':
