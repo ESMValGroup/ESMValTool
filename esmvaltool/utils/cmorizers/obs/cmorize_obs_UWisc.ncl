@@ -15,6 +15,10 @@
 ;    Contact Ralf Bennartz (Earth and Environmental Sciences, Vanderbilt
 ;    University, USA).
 ;
+; Caveats
+;    A dummy field for clivi is created for the derivation routine of lwp
+;    (see esmvaltool/preprocessor/_derive/lwp.py), containing only zeros.
+;
 ; Modification history
 ;    20190208-A_righ_ma: adapted to v2.
 ;
@@ -36,24 +40,25 @@ begin
   YEAR2 = 2007
 
   ; Selected variable (standard name)
-  VAR = (/"clwvi", "lwpStderr"/)
+  VAR = (/"clwvi", "lwpStderr", "clivi"/)
 
   ; Name in the raw data
-  NAME = (/"LWP", "LWP_ERROR"/)
+  NAME = (/"LWP", "LWP_ERROR", "LWP"/)
 
   ; Conversion factor
-  CONVERSION = (/1.e-3, 1.e-3/)
+  CONVERSION = (/1.e-3, 1.e-3, 0./)
 
   ; MIP
-  MIP = (/"Amon", "Amon"/)
+  MIP = (/"Amon", "Amon", "Amon"/)
 
   ; Frequency
-  FREQ = (/"mon", "mon"/)
+  FREQ = (/"mon", "mon", "mon"/)
 
   ; CMOR table
   CMOR_TABLE = getenv("esmvaltool_root") + \
     (/"/cmor/tables/cmip5/Tables/CMIP5_Amon", \
-      "/cmor/tables/custom/CMOR_lwpStderr.dat"/)
+      "/cmor/tables/custom/CMOR_lwpStderr.dat", \
+      "/cmor/tables/cmip5/Tables/CMIP5_Amon"/)
 
   ; Type
   TYPE = "sat"
@@ -85,7 +90,7 @@ begin
       lon = (/f->lon/)
 
       ; Convert units
-      output = output * CONVERSION(vv)
+      output = output * CONVERSION(vv)  ; for clivi this will be equal 0
 
       ; Format coordinates
       output!0 = "time"
