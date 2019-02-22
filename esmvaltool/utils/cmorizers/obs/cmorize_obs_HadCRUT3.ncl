@@ -106,6 +106,16 @@ begin
   ; Calculate coordinate bounds
   bounds = guess_coord_bounds(output, FREQ)
 
+  ; Add height coordinate
+  output@coordinates = "height"
+  height = 2.d
+  height!0 = "ncl_scalar"
+  height@units = "m"
+  height@axis = "Z"
+  height@positive = "up"
+  height@long_name = "height"
+  height@standard_name = "height"
+
   ; Set global attributes
   gAtt = set_global_atts(OBSNAME, TIER, SOURCE, REF, COMMENT)
 
@@ -117,6 +127,9 @@ begin
 
   ; Write variable
   write_nc(fout, VAR, output, bounds, gAtt)
+  w = addfile(fout, "w")
+  w->height = height
+  delete(w)
   delete(gAtt)
   delete(output)
   delete(bounds)
