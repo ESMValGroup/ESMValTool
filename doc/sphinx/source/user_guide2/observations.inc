@@ -14,7 +14,10 @@ To cmorize one or more datasets, run:
 
     cmorize_obs -c [CONFIG_FILE] -o [DATASET_LIST]
 
-The path to the raw data to be cmorized must be specified in the CONFIG_FILE as RAWOBS. Within this path, the data are expected to be organized in subdirectories corresponding to the data tier: Tier2 for freely-available datasets (other than obs4mips and ana4mips) and Tier3 for restricted datasets (i.e., dataset which requires a registration to be retrieved or provided upon request to the respective contact or PI). The cmorization follows the CMIP5 CMOR tables. The resulting output is saved in the output_dir, again following the Tier structure. At the moment, cmorize_obs supports Python and NCL scripts.
+The path to the raw data to be cmorized must be specified in the CONFIG_FILE as RAWOBS. Within this path, the data are expected to be organized in subdirectories corresponding to the data tier: Tier2 for freely-available datasets (other than obs4mips and ana4mips) and Tier3 for restricted datasets (i.e., dataset which requires a registration to be retrieved or provided upon request to the respective contact or PI). The cmorization follows the CMIP5 CMOR tables. The resulting output is saved in the output_dir, again following the Tier structure. The output file names follow the definition given in ``config-developer.yml`` for the ``OBS`` project: ``OBS_[dataset]_[type]_[version]_[mip]_[short_name]_YYYYMM_YYYYMM.nc``, where ``type`` may be ``sat`` (satellite data), ``reanaly`` (reanalysis data), ``ground`` (ground observations), ``clim`` (derived climatologies), ``campaign`` (aircraft campaign).
+
+
+At the moment, cmorize_obs supports Python and NCL scripts.
 
 A list of the datasets for which a cmorizers is available is provided in the following table.
 
