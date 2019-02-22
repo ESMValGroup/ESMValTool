@@ -1,0 +1,34 @@
+---
+# XXX denotes unknown field
+# project at hand
+proj:
+  dataset: 'CSIRO'
+  version: 'XXX'
+  realm: 'clim'
+  field: 'TO3Y'
+  frequency: {
+        'so': 'Oyr'
+    }
+  metadata_attributes:
+    tier: '2'
+    source: 'XXX'
+    comment: 'cmorized for ESMValTool v2'
+    CMORconventions: 'CF/CMOR3'
+    CMORcreated: ''
+
+
+# specific raw file names
+VAR_TO_FILENAME:
+  so: 'DurackandWijffels_GlobalOceanChanges_'
+
+# specific fields names from raw obs files
+FIELDS:
+  so:     'Salinity change error 1950-2000'
+
+# cmor standard names
+STANDARD_NAMES:
+  so:     'sea_water_salinity'  # wrong: needs custom entry
+
+# cmor long names
+LONG_NAMES:
+  so: 'Sea Water Salinity'  # wrong: needs custom entry

@@ -28,6 +28,10 @@ def _convert_timeunits(cube, start_year):
         real_unit = 'months since {}-01-01 00:00:00'.format(str(start_year))
     if cube.coord('time').units == 'days since 0000-01-01 00:00:00':
         real_unit = 'days since {}-01-01 00:00:00'.format(str(start_year))
+    if cube.coord('time').units == 'days since 1950-1-1':
+        # attempt to get one in for conversion
+        real_unit = 'days since 1950-1-1 00:00:00'
+
     cube.coord('time').units = real_unit
     return cube
 
@@ -139,7 +143,11 @@ def _roll_cube_data(cube, shift, axis):
 def _save_variable(cube, var, outdir, year, proj):
     """Saver function."""
     # CMOR standard
-    time_suffix = '-'.join([str(year) + '01', str(year) + '12'])
+    if not isinstance(year, list):
+        time_suffix = '-'.join([str(year) + '01', str(year) + '12'])
+    else:
+        yr1, yr2 = year
+        time_suffix = '-'.join([str(yr1) + '01', str(yr2) + '12'])
     cmor_prefix = '_'.join([
         'OBS', proj['dataset'], proj['realm'], proj['version'],
         proj['frequency'][var], var
