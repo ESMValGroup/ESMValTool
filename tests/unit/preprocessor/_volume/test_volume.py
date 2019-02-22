@@ -83,7 +83,7 @@ class Test(tests.Test):
 
     def test_average_volume(self):
         """Test to take the volume weighted average of a (2,3,2,2) cube."""
-        result = average_volume(self.grid_4d, 'zcoord',
+        result = average_volume(self.grid_4d,
                                 'latitude', 'longitude')
         expected = np.array([1., 1.])
         self.assertArrayEqual(result.data, expected)
@@ -96,7 +96,6 @@ class Test(tests.Test):
         different methods for small and large cubes.
         """
         result = average_volume(self.grid_4d_2,
-                                'zcoord',
                                 'latitude',
                                 'longitude')
         expected = np.array([1., 1., 1., 1.])
@@ -104,14 +103,14 @@ class Test(tests.Test):
 
     def test_depth_integration_1d(self):
         """Test to take the depth integration of a 3 layer cube."""
-        result = depth_integration(self.grid_3d[:, 0, 0], 'zcoord')
+        result = depth_integration(self.grid_3d[:, 0, 0])
         expected = np.ones((1, 1)) * 250.
         print(result.data, expected.data)
         self.assertArrayEqual(result.data, expected)
 
     def test_depth_integration_3d(self):
         """Test to take the depth integration of a 3 layer cube."""
-        result = depth_integration(self.grid_3d, 'zcoord')
+        result = depth_integration(self.grid_3d)
         expected = np.ones((2, 2)) * 250.
         print(result.data, expected.data)
         self.assertArrayEqual(result.data, expected)

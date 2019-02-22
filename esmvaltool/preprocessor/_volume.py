@@ -133,7 +133,7 @@ def _create_cube_time(src_cube, data, times):
     return result
 
 
-def calculate_volume(cube, coordz):
+def calculate_volume(cube):
     """
     Calculate volume from a cube.
 
@@ -141,8 +141,8 @@ def calculate_volume(cube, coordz):
     """
     # ####
     # Load depth field and figure out which dim is which.
-    depth = cube.coord(coordz)
-    z_dim = cube.coord_dims(coordz)[0]
+    depth = cube.coord(axis='z')
+    z_dim = cube.coord_dims(cube.coord(axis='z'))[0]
 
     # ####
     # Load z direction thickness
@@ -161,7 +161,6 @@ def calculate_volume(cube, coordz):
 
 def average_volume(
         cube,
-        coordz,
         coord1,
         coord2,
         fx_files=None):
@@ -176,9 +175,6 @@ def average_volume(
     ---------
         cube: iris.cube.Cube
             input cube.
-
-        coordz: str
-            name of z-axis coordinate
 
         coord1: str
             name of first coordinate
@@ -214,7 +210,7 @@ def average_volume(
             cube_shape = cube.data.shape
 
     if not grid_volume_found:
-        grid_volume = calculate_volume(cube, coordz)
+        grid_volume = calculate_volume(cube)
 
     # Check whether the dimensions are right.
     if cube.data.ndim == 4 and grid_volume.ndim == 3:
@@ -242,7 +238,7 @@ def average_volume(
             # ####
             # Calculate weighted mean for this time and layer
             total = cube[time_itr, z_itr].collapsed(
-                [coordz, coord1, coord2],
+                [cube.coord(axis='z'), coord1, coord2],
                 iris.analysis.MEAN,
                 weights=grid_volume[time_itr, z_itr]).data
             column.append(total)
@@ -268,14 +264,15 @@ def average_volume(
 
     # #####
     # Create a small dummy output array for the output cube
-    src_cube = cube[:2, :2].collapsed([coordz, coord1, coord2],
+    src_cube = cube[:2, :2].collapsed([cube.coord(axis='z'),
+                                       coord1, coord2],
                                       iris.analysis.MEAN,
                                       weights=grid_volume[:2, :2], )
 
     return _create_cube_time(src_cube, result, times)
 
 
-def depth_integration(cube, coordz):
+def depth_integration(cube):
     """
     Determine the total sum over the vertical component.
 
@@ -288,21 +285,18 @@ def depth_integration(cube, coordz):
         cube: iris.cube.Cube
             input cube.
 
-        coordz: str
-            name of depth coordinate
-
     Returns
     -------
     iris.cube.Cube
         collapsed cube.
     """
     # ####
-    depth = cube.coord(coordz)
+    depth = cube.coord(axis='z')
     thickness = depth.bounds[..., 1] - depth.bounds[..., 0]
 
     if depth.ndim == 1:
         slices = [None for i in cube.shape]
-        coord_dim = cube.coord_dims(coordz)[0]
+        coord_dim = cube.coord_dims(cube.coord(axis='z'))[0]
         slices[coord_dim] = slice(None)
         thickness = np.abs(thickness[tuple(slices)])
 
@@ -310,7 +304,7 @@ def depth_integration(cube, coordz):
 
     weights = thickness * ones
 
-    result = cube.collapsed(coordz, iris.analysis.SUM,
+    result = cube.collapsed(cube.coord(axis='z'), iris.analysis.SUM,
                             weights=weights)
 
     result.rename('Depth_integrated_' + str(cube.name()))
