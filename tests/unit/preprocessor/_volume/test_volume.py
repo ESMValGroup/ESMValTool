@@ -44,7 +44,8 @@ class Test(tests.Test):
             [0.5, 5., 50.],
             standard_name='depth',
             bounds=[[0., 2.5], [2.5, 25.], [25., 250.]],
-            units='m')
+            units='m',
+            attributes={'positive': 'down'})
         lons2 = iris.coords.DimCoord(
             [1.5, 2.5],
             standard_name='longitude',

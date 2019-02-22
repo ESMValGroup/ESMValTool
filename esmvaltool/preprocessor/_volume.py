@@ -42,17 +42,17 @@ def extract_volume(cube, z_min, z_max):
     """
     if z_min > z_max:
         # minimum is below maximum, so switch them around
-        zmax = z_min
-        zmin = z_max
+        zmax = float(z_min)
+        zmin = float(z_max)
     else:
-        zmax = z_max
-        zmin = z_min
+        zmax = float(z_max)
+        zmin = float(z_min)
 
-    subz = iris.Constraint(
-        depth=lambda cell: float(zmin) <= cell <= float(zmax))
+    z_constraint = iris.Constraint(
+        coord_values={
+            cube.coord(axis='Z'): lambda cell: zmin < cell.point < zmax})
 
-    region_subset = cube.extract(subz)
-    return region_subset
+    return cube.extract(z_constraint)
 
 
 def _create_cube_time(src_cube, data, times):
