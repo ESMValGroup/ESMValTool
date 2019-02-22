@@ -72,6 +72,10 @@ authors:
     name: Bock, Lisa
     institute: DLR, Germany
     email: lisa.bock 'at' dlr.de
+  cagn_ch:
+    name: Cagnazzo, Chiara
+    institute: CNR, Italy
+    email: chiara.cagnazzo 'at' cnr.it    
   chen_ja:
     name: Chen, Jack
     institute: NCAR, USA
@@ -88,6 +92,10 @@ authors:
     name: Davin, Edouard Leopold
     institute: ETH Zurich, Switzerland
     email: edouard.davin 'at' env.ethz.ch
+  davi_pa:
+    name: Davini, Paolo
+    institute: CNR-ISAC, Italy
+    email: p.davini 'at' isac.cnr.it
   ehbr_ca:
     name: Ehbrecht, Carsten
     institute: DKRZ, Germany
@@ -183,6 +191,10 @@ authors:
     name: Martin, Gill
     institute: MetOffice, UK
     email: gill.martin 'at' metoffice.gov.uk
+  mavi_ir:
+    name: Mavilia, Irene
+    institute: ISAC-CNR, Bologna, Italy
+    email: i.mavilia 'at' isac.cnr.it
   mell_fe:
     name: Mello, Felipe
     institute: INPE, Brazil
@@ -228,6 +240,10 @@ authors:
     name: Senftleben, Daniel
     institute: DLR, Germany
     email: daniel.senftleben 'at' dlr.de
+  serv_fe:
+    name: Serva, Federico
+    institute: CNR, Italy
+    email: federico.serva 'at' artov.isac.cnr.it    
   somm_ph:
     name: Sommer, Philipp
     institute: Univ. of Hamburg, Germany
@@ -284,6 +300,10 @@ authors:
     name: Charlton-Perez, Andrew
     institute: Univ. of Reading, UK
     email: a.j.charlton-perez 'at' reading.ac.uk
+  cort_su:
+    name: Corti, Susanna
+    institute: ISAC-CNR, Torino, Italy
+    email: s.corti 'at' isac.cnr.it
   denn_jo:
     name: Dennis, John
     institute: NCAR, USA
@@ -434,6 +454,7 @@ references:
   antonov10usgov: "Antonov, J. I. et al., World Ocean Atlas 2009, Volume 2: Salinity. S. Levitus, Ed. NOAA Atlas NESDIS 69, U.S. Government Printing Office, Washington, D.C., 184 pp., 2010."
   aquila11gmd: "Aquila et al., Geosci. Model Dev. 4, 325-355, doi:10.5194/gmd-4-325-2011, 2011."
   bakker14essd: "Bakker, D. C. E. et al., Earth Syst. Sci. Data, 6, 69-90, doi:10.5194/essd-6-69-2014, 2014."
+  baldwin09qjrms: "Baldwin, D. P. et al., Q. J. R. Meteorol. Soc., 135, 1661-1672, doi:10.1002/qj.479, 2009"
   bianchi12gbc: "Bianchi, D. et al., Global Biogeochem. Cy., 26, GB2009, doi:10.1029/2011GB004209, 2012."
   cionni11acp: "Cionni et al., Atmos. Chem. Phys., 11, 11267-11292, doi:10.5194/acp-11-11267-2011, 2011."
   clivar09jclim: "CLIVAR Madden-Julian Oscillation Working Group, J. Climate, 22, 3006-3030, doi:10.1175/2008JCLI2731.1, 2009."
@@ -472,6 +493,7 @@ references:
   roedenbeck13os: "Roedenbeck, C. et al., Ocean Sci., 9, 193-216, doi:10.5194/os-9-193-2013, 2013."
   roehrig13jclim: "Roehrig, R. et al., J. Climate, 26, 6471-6505, doi:10.1175/JCLI-D-12-00505.1, 2013."
   sperber12asl: "Sperber and Kim, Atmos. Sci. Lett., 13, 3, 187-193, doi:10.1002/asl.378, 2012."
+  straus07jcli: "Straus, D.M., S. Corti, and F. Molteni. J. Climate, 20, 2251–2272, doi:10.1175/JCLI4070.1, 2007 " 
   stroeve07grl: "Stroeve, J. et al., Geophys. Res. Lett., 34, L09501, doi:10.1029/2007GL029703, 2007."
   taylor12: "Taylor et al., Nature, 489, 423-426, doi:10.1038/nature11377, 2012."
   takahashi14marchem: "Takahashi et al., Mar. Chem., 164, 95-125, doi:10.1016/j.marchem.2014.06.004, 2014."
