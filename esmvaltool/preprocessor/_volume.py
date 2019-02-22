@@ -276,7 +276,7 @@ def depth_integration(cube):
     """
     Determine the total sum over the vertical component.
 
-    Requires a 3D cube, and the name of the z coordinate. The z-coordinate
+    Requires a 3D cube. The z-coordinate
     integration is calculated by taking the sum in the z direction of the
     cell contents multiplied by the cell thickness.
 
