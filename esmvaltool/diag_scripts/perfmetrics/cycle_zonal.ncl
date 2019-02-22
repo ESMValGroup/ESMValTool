@@ -1,5 +1,5 @@
 ; #############################################################################
-; PROCEDURE FOR THE CYCLE-LATLON PLOT OF THE PERFORMANCE METRICS
+; PROCEDURE FOR THE CYCLE-ZONAL PLOT OF THE PERFORMANCE METRICS
 ; Authors: Mattia Righi (DLR, Germany) and Franziska Frank (DLR, Germany)
 ; ESMVal project
 ; #############################################################################
@@ -8,7 +8,7 @@ procedure perfmetrics_ptype_script()
 begin
 
   ; Set dataset indexes, with reference and alternative datasets first
-  modidx = ispan(0, nDatasets - 1, 1)
+  modidx = ispan(0, dim_MOD - 1, 1)
   if (l_altern) then
     modidx := array_append_record( \
       (/ref_ind, alt_ind/), \
@@ -27,8 +27,8 @@ begin
     ; Set path for saving processed data ; FIX-ME add preproc_id
     fullpath = config_user_info@work_dir + "/"
     system("mkdir -p " + fullpath)
-    fname = basename(systemfunc("basename " + info_items[imod]@filename))
-    fname = fname + "_" + basename(DIAG_SCRIPT) + "_cycle_latlon"
+    fname = basename(systemfunc("basename " + dataset_info@filename(imod)))
+    fname = fname + "_" + basename(diag_script) + "_cycle_latlon"
     fname = fname + "_" + diag_script_info@time_avg
     if (isatt(diag_script_info, "level")) then
       fname = fname + "_" + diag_script_info@level  ; FIX-ME
@@ -37,16 +37,15 @@ begin
     procpath = fullpath + fname + ".nc"
 
     ; Determine start/end year
-    start_year = info_items[imod]@start_year
-    end_year = info_items[imod]@end_year
+    start_year = get_start_year(imod)
+    end_year = get_end_year(imod)
 
     ; Read data
-    var = read_data(info_items[imod])
+    var = read_data(imod, var0, field_type0)
     dnames = getVarDimNames(var)
 
-    ; Extract region
-    var_reg = area_operations(var, region(0), region(1), \
-                              region(2), region(3), "extract", True)
+    ; Calculate zonal mean
+    var_reg = dim_avg_Wrap(var)
     delete(var)
 
     ; Calculate time average
@@ -63,9 +62,9 @@ begin
     var_all&statistic = (/"mean", "stddev"/)
     var_all(:, :, :, 0) = var_avg
     var_all@var = var0
-    var_all@diag_script = (/DIAG_SCRIPT/)
+    var_all@diag_script = (/diag_script/)
     copy_VarAtts(diag_script_info, var_all)
-    var_all@ref_model = variable_info[0]@reference_dataset
+    var_all@ref_model = variable_info@reference_dataset
     if (config_user_info@write_netcdf.eq."True") then
       var_all@ncdf = procpath
       ncdf_outfile = ncdf_write(var_all, procpath)
@@ -103,20 +102,13 @@ begin
           calculate_metric(var_all(:, :, :, 0), var_ref(:, :, :, 0), \
                            "correlation")
       else if (diag_script_info@metric(met).eq."SMPI") then
-        print("it is going in here")
-        print(datasetnames)
-        print(imod)
-        print(smpi&models)
         locidx = ind(datasetnames(imod).eq.smpi&models)
-        print("locidx: " + locidx)
         if (ismissing(locidx)) then
           continue
         end if
-        printVarSummary(var_all)
-        printVarSummary(var_ref)
         smpi(:, locidx) = \
           (/calculate_metric(var_all(:, :, :, 0), var_ref(:, :, :, 0), \
-           "SMPI")/)                     
+                             "SMPI")/)
       else
         locidx = ind(datasetnames(imod).eq.grading&models)
         if (ismissing(locidx)) then
@@ -136,5 +128,4 @@ begin
     end do
 
   end do
-
 end

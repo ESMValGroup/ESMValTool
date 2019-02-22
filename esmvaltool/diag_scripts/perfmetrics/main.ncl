@@ -175,8 +175,17 @@ begin
       error_msg("f", DIAG_SCRIPT, "", "normalization must be " + \
                 "provided for each requested metric")
     end if
+  
+    if (any(diag_script_info@metric.eq."SMPI") .and. \
+        diag_script_info@range_option.eq.0) then
+      error_msg("f", DIAG_SCRIPT, "", "Currently Single Model " + \
+                "Performance Index is only supported for time periods of " + \
+                "the same length for all datasets")
+    end if
+    
   end if
 
+  
   ; Set dataset names
   datasetnames = metadata_att_as_array(info_items, "dataset")
 
@@ -271,6 +280,16 @@ begin
       taylor&models = remove_index(datasetnames, ref_ind)
     end if
 
+    ; Special case SMPI
+    if (any(diag_script_info@metric.eq."SMPI")) then
+      nmodels = dimsizes(datasetnames) - 1  ; always 1 reference model
+      smpi = new((/diag_script_info@smpi_n_bootstrap + 1, nmodels/), float)
+      smpi!0 = "bootstrap_member"
+      smpi!1 = "models"
+      smpi&bootstrap_member = ispan(0, diag_script_info@smpi_n_bootstrap, 1)
+      smpi&models = remove_index(datasetnames, ref_ind)
+    end if    
+    
     ; Define grading filename
     do met = 0, nmetrics - 1
       ncdf_dir(met) = config_user_info@work_dir + "/" + \
@@ -301,11 +320,38 @@ begin
       end if
 
       ; Apply normalization
-      if (diag_script_info@metric(met).ne."taylor") then
+      if (diag_script_info@metric(met).ne."taylor" .and. \
+          diag_script_info@metric(met).ne."SMPI") then
         do iobs = 0, nobs - 1
           metric(:, :, iobs) = \
             normalize_metric(metric(:, :, iobs), \
                              diag_script_info@normalization(met))
+        end do
+      end if      
+
+      ; Special case, SMPI normalization
+      if (diag_script_info@metric(met).eq."SMPI") then
+        ens_idx = new(dimsizes(smpi&models), integer)
+        atts = True
+        atts@project = diag_script_info@normalization(met)
+        info = select_metadata_by_atts(input_file_info, atts)
+        print(info)
+        delete(atts)
+
+        do ii = 0, dimsizes(ens_idx) - 1
+          if (dimsizes(info).ne.0) then
+            ens_idx(ii) = ii
+          end if
+        end do
+        if (all(ismissing(ens_idx))) then
+          error_msg("f", DIAG_SCRIPT, "", "No datasets for the selected " + \
+                    "normalization (" + diag_script_info@normalization(met) + \
+                    ") found")
+        end if
+        ens_idx := ens_idx(ind(.not.ismissing(ens_idx)))
+        ; Apply normalization
+        do iboot = 0, dimsizes(smpi&bootstrap_member)-1
+          smpi(iboot, :) = smpi(iboot, :) / avg(smpi(iboot, ens_idx))
         end do
       end if
 
@@ -315,24 +361,49 @@ begin
         delete(metric@reference)
       end if
 
-      ; Attach attributes to the results
-      metric@title = diag_script_info@metric(met) + " metric"
-      metric@long_name = \
-        "Grading table of metric " + diag_script_info@metric(met)
-      metric@metric = diag_script_info@metric(met)
-      metric@diag_script = (/DIAG_SCRIPT/)
-      metric@var = "grade"
-      metric@region = location
-      metric@num_climofiles = nDatasets
-      do imod = 0, nDatasets - 1
-        num_climo = "climofile_" + imod
-        metric@$num_climo$ = info_items[imod]@filename
-      end do
-      metric@ncdf_dir = ncdf_dir(met)
+      if diag_script_info@metric.eq."SMPI" then
+        ; Attach attributes to results
+        smpi@title = "metrics"
+        smpi@long_name = "1 variable's Performance Index for " + \
+                         "the Single Model Performance Index"
+        ; val_smpi@metric = diag_script_info@metric
+        smpi@diag_script = (/DIAG_SCRIPT/)
+        smpi@var = "performance_index"
+        smpi@invar = var0
+        smpi@region = location
+        smpi@ensemble_name = diag_script_info@normalization(met)
+        smpi@num_climofiles = dimsizes(dataset_info@dataset)  ; FIX-ME ?
+        do imod = 0, dimsizes(dataset_info@dataset) - 1
+          num_climo = "climofile_" + imod
+          smpi@$num_climo$ = input_file_info@filename(imod)
+        end do
+        smpi@ncdf_dir = ncdf_dir(met)
 
-      ; Write NetCDF output
-      ncdf_outfile = ncdf_write(metric, metric@ncdf_dir)
+        ; Write NetCDF output
+        ncdf_outfile = ncdf_write(smpi, smpi@ncdf_dir)
+        
+      else
 
+        ; Attach attributes to the results
+        metric@title = diag_script_info@metric(met) + " metric"
+        metric@long_name = \
+          "Grading table of metric " + diag_script_info@metric(met)
+        metric@metric = diag_script_info@metric(met)
+        metric@diag_script = (/DIAG_SCRIPT/)
+        metric@var = "grade"
+        metric@region = location
+        metric@num_climofiles = nDatasets
+        do imod = 0, nDatasets - 1
+          num_climo = "climofile_" + imod
+          metric@$num_climo$ = info_items[imod]@filename
+        end do
+        metric@ncdf_dir = ncdf_dir(met)
+
+        ; Write NetCDF output
+        ncdf_outfile = ncdf_write(metric, metric@ncdf_dir)
+      
+      end if
+      
       ; Write results of temporary grading list
       temp_dir = config_user_info@work_dir + "/" + \
         diag_script_info@metric(met) + ".nc"
