@@ -45,7 +45,7 @@ anom2regime <- function(ref, target, method = "distance", lat) {
         map_diff[i, j] <- (x[i, j] - y[i, j]) ^ 2
       }
     }
-    rmsdiff <- sqrt(mean(map_diff))
+    rmsdiff <- sqrt(mean(map_diff, na.rm = TRUE))
     return(rmsdiff)
   }
 
@@ -68,9 +68,8 @@ anom2regime <- function(ref, target, method = "distance", lat) {
     for (i in 1 : nclust) {
       rms[i] <- rmsdiff(ref[i, , ] * latWeights, target * latWeights)#nolint
     }
-    assign <- which(rms == min(rms))
+    assign <- which(rms == min(rms, na.rm = TRUE))
   }
-
   return(assign)
 }
 
@@ -97,7 +96,7 @@ RegimesAssign <- function(var_ano, ref_maps, lats, #nolint
   if (length(lats) != dim(ref_maps)[poslat]) {
     stop("latitudes do not match with the maps")
   }
-
+print(str(var_ano))
   assign <-
     Apply(
       data = list(target = var_ano),
@@ -119,6 +118,7 @@ RegimesAssign <- function(var_ano, ref_maps, lats, #nolint
                            dim_order))
 
   rm(var_ano)
+
   index <- as.vector(assign$output1)
   recon <- Composite(var = aperm(anom_array, c(3, 2, 1)), occ = index)
   freqs <- rep(NA, nclust)

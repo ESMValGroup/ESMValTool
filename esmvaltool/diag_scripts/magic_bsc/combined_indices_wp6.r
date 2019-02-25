@@ -6,6 +6,7 @@ library(yaml)
 library(ncdf4)
 library(ClimProjDiags) #nolint
 library(abind)
+library(climdex.pcic)
 
 #Parsing input file paths and creating output dirs
 args <- commandArgs(trailingOnly = TRUE)
@@ -41,6 +42,10 @@ start_year <- lapply(input_files_per_var, function(x) x$start_year)
 start_year <- c(unlist(unname(start_year)))[1]
 end_year <- lapply(input_files_per_var, function(x) x$end_year)
 end_year <- c(unlist(unname(end_year)))[1]
+print(end_year)
+print("H")
+start_year <- as.POSIXct(as.Date(paste0(start_year, "-01-01"), "%Y-%m-%d"))
+end_year <- as.POSIXct(as.Date(paste0(end_year, "-12-31"), "%Y-%m-%d"))
 
 #Parameters for Season() function
 monini <- 1
@@ -62,15 +67,63 @@ data_nc <- nc_open(fullpath_filenames)
 lat <- ncvar_get(data_nc, "lat")
 lon <- ncvar_get(data_nc, "lon")
 units <- ncatt_get(data_nc, var0, "units")$value
-calendar <- ncatt_get(data_nc, "time", "calendar")$value
+calendario <- ncatt_get(data_nc, "time", "calendar")$value
 long_names <-  ncatt_get(data_nc, var0, "long_name")$value
 time <-  ncvar_get(data_nc, "time")
-print(dim(data_nc))
+print(calendario)
+
 data <- InsertDim(ncvar_get(data_nc, var0), 1, 1) # nolint
 print(dim(data))
 start_date <- as.POSIXct(substr(ncatt_get(data_nc, "time",
                                           "units")$value, 11, 29))
-time <- as.Date(time, origin = start_date, calendar = calendar)
+data_type <- ifelse(grepl("day", fullpath_filenames[1]), "day", "month")
+print(start_year)
+print(end_year)
+print(data_type)
+time <- seq(start_year, end_year, data_type)
+print(length(time))
+print(calendario)
+print(time)
+print(dim(data))
+
+if (dim(data)[4] != length(time)) {
+  print("AS")
+  if (
+    calendario == "365" | calendario == "365_days" |
+    calendario == "365_day" | calendario == "noleap"
+  ) {
+time <- time[-which(substr(time, 6, 10) == "02-29")]#nolint
+  }
+}
+
+print(head(time))
+time <- as.Date(time, origin = start_date, calendar = calendario)
+print(head(time))
+time <-  as.POSIXct(time, format = "%Y-%m-%d")
+print(head(time))
+
+time <- as.PCICt(time, cal = calendario)
+time <- as.character(time)
+jdays <- as.numeric(strftime(time, format = "%j"))
+if (data_type == "day") {
+if (calendario == "gregorian" | calendario == "standard" |
+    calendario == "proleptic_gregorian") {
+   year <- as.numeric(strftime(time, format = "%Y"))
+   pos <- ( (year / 100) %% 1 == 0) + ( (year / 4) %% 1 == 0)
+    + ( (year / 400) %% 1 == 0)
+    pos <- which(pos == 1)
+    bisiesto <- which(jdays == 60)
+  if ( length(intersect(pos, bisiesto)) > 0) {
+    time <- time[-intersect(pos, bisiesto)]
+    data <- apply(data, c(1 : length(dim(data)))[-3],
+                  function(x) {
+                      x[-intersect(pos, bisiesto)]
+                  })
+    data <- aperm(data, c(2, 3, 1))
+    names(dim(data)) <- c("lon", "lat", "time")
+  }
+}
+}
 projection <- "NULL"
 nc_close(data_nc)
 if (length(params$input_files) >= 2) {
@@ -131,9 +184,13 @@ print(paste("moninf", moninf))
 if (!is.null(moninf)) {
   months <- paste0(month.abb[moninf], "-", month.abb[monsup])
   print(months)
+print(length(time))
+print(dim(data))
   dims <- dim(data)
-  dims <- append(dims, c(12, dims[time_dim] / 12), after = time_dim)
-  dims <- dims[-time_dim]
+    dims <- append(dims, c(12, dims[time_dim] / 12), after = time_dim)
+    dims <- dims[-time_dim]
+
+print(dims)
   dim(data) <- dims
   names(dim(data))[c(time_dim, time_dim + 1)] <- c("month", "year")
   margins <- list(c(1 : length(dim(data)))[-c(time_dim + 1)])
@@ -205,9 +262,9 @@ if (!is.null(region)) {
     vals = as.vector(lat),
     longname = "latitude")
   dimtime <- ncdim_def(
-    name = "time",
-    units = "days since 1970-01-01 00:00:00",
-    vals = as.vector(time),
+    name = "years",
+    units = "years",
+    vals = substr(start_year, 1, 4) : substr(end_year, 1, 4),
     longname = "time")
   defdata <- ncvar_def(
     name = "data",
@@ -219,7 +276,8 @@ if (!is.null(region)) {
       plot_dir, "/", var0, "_", paste0(model_names, collapse = "_"),
       "_", timestamp, "_", model_names_filename, "_", start_year,
       "_", end_year, "_", ".nc")
-
+print(dim(data))
+print(str(defdata))
   file <- nc_create(filencdf, list(defdata))
   ncvar_put(file, defdata, data)
   nc_close(file)
@@ -255,7 +313,7 @@ if (!is.null(region)) {
   dimtime <- ncdim_def(
     name = "time",
     units = "days since 1970-01-01 00:00:00",
-    vals = as.vector(time),
+    vals = as.vector(as.numeric(time)),
     longname = "time")
   defdata <- ncvar_def(
     name = "data",
@@ -267,7 +325,6 @@ if (!is.null(region)) {
       "_", timestamp, "_", model_names_filename, "_", start_year, "_",
       end_year, "_", ".nc")
   file <- nc_create(filencdf, list(defdata))
-
   ncvar_put(file, defdata, data)
   nc_close(file)
 

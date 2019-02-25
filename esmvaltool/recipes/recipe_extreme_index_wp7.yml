@@ -19,14 +19,14 @@ documentation:
 
 
 datasets:
-  - {dataset: IPSL-CM5A-LR, type: exp, project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 1971,  end_year: 2000}
-  - {dataset: IPSL-CM5A-LR, type: exp, project: CMIP5,  mip: day,  exp: rcp85,  ensemble: r1i1p1,  start_year: 2020,  end_year: 2040}
+  - {dataset: IPSL-CM5A-MR, type: exp, project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 1971,  end_year: 2000}
+  - {dataset: IPSL-CM5A-MR, type: exp, project: CMIP5,  mip: day,  exp: rcp85,  ensemble: r1i1p1,  start_year: 2020,  end_year: 2040}
 
 
 preprocessors:
   preproc:
     regrid:
-      target_grid: IPSL-CM5A-LR
+      target_grid: IPSL-CM5A-MR
       scheme: linear
     mask_fillvalues:
       threshold_fraction: 0.95
@@ -41,7 +41,7 @@ diagnostics:
   extreme_index:
     description: Calculate insurance extreme indices.
     variables:
-      tasmax:
+      sfcWind:
         preprocessor: preproc
         mip: day
         field: T2M
@@ -50,5 +50,5 @@ diagnostics:
       main:
         script: magic_bsc/extreme_index.r #(in diag_scripts)
 
-        metric: t90p # t10p, t90p, cdd, rx5day or Wx
+        metric: Wx # t10p, t90p, cdd, rx5day or Wx
 

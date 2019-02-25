@@ -11,6 +11,7 @@ library("XML")
 #Parsing input file paths and creating output dirs
 args <- commandArgs(trailingOnly = TRUE)
 params <- read_yaml(args[1])
+print(args)
 initial.options <- commandArgs(trailingOnly = FALSE)
 file_arg_name <- "--file="
 script_name <- sub(
@@ -65,15 +66,36 @@ start_date <- as.POSIXct(
 )
 nc_close(data_nc)
 time <- as.Date(time, origin = start_date, calendar = calendar)
+time <-  as.POSIXct(time, format = "%Y-%m-%d")
 
+print(calendar)
+print(str(data))
 time_dim <- which(names(dim(data)) == "time")
+time <- as.PCICt(time, cal = calendar)
+time <- as.character(time)
+jdays <- as.numeric(strftime(time, format = "%j"))
+if (calendar == "gregorian" | calendar == "standard" |
+    calendar == "proleptic_gregorian") {
+   year <- as.numeric(strftime(time, format = "%Y"))
+   pos <- ( (year / 100) %% 1 == 0) + ( (year / 4) %% 1 == 0)
+          + ( (year / 400) %% 1 == 0)
+    pos <- which(pos == 1)
+    bisiesto <- which(jdays == 60)
+  if ( length(intersect(pos, bisiesto)) > 0) {
+    time <- time[-intersect(pos, bisiesto)]
+    data <- apply(data, c(1 : length(dim(data)))[-time_dim],
+                  function(x) {
+                      x[-intersect(pos, bisiesto)]
+                  })
+    data <- aperm(data, c(2, 3, 1))
+    names(dim(data)) <- c("lon", "lat", "time")
+  }
+}
 
-days <- time
 dims <- dim(data)
 dims <- append(
   dims[-time_dim], c(no_of_years, dims[time_dim] / no_of_years), after = 2
 )
-print("CC")
 
 dim(data) <- dims
 
@@ -81,13 +103,13 @@ data <- aperm(data, c(3, 4, 2, 1))
 names(dim(data)) <- c("year", "day", "lat", "lon")
 #####################################
 # Cross with PC
-#####################################
+####################################
 
 #---------------------------
 # Load PC to use and compute CF for 6h values
 #---------------------------
 seas_data <- Mean1Dim(data, 2)
-
+print(power_curves[1])
 pc1 <- read_pc(file.path(script_dirname, power_curves[1]))
 pc2 <- read_pc(file.path(script_dirname, power_curves[2]))
 pc3 <- read_pc(file.path(script_dirname, power_curves[3]))

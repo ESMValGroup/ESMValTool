@@ -19,19 +19,19 @@ documentation:
     - c3s-magic
 
 datasets:
-  - {dataset: IPSL-CM5A-LR,  type: exp, project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 1980,  end_year: 2005}
-
-
+  - {dataset: IPSL-CM5A-MR,  type: exp, project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 1980,  end_year: 2005}
+  #- {dataset: MPI-ESM-MR, type: exp, project: CMIP5, mip: day, exp: rcp26, ensemble: r1i1p1, start_year: 2021, end_year: 2025}
+  #- {dataset: MPI-ESM-MR, type: exp, project: CMIP5, mip: day, exp: rcp45, ensemble: r1i1p1, start_year: 2031, end_year: 2035} 
 preprocessors:
   preproc:
     regrid:
-      target_grid: IPSL-CM5A-LR
+      target_grid: IPSL-CM5A-MR
       scheme: linear
     mask_fillvalues:
       threshold_fraction: 0.95
     extract_region:
-      start_longitude: -10
-      end_longitude: 40
+      start_longitude: 200
+      end_longitude: 300
       start_latitude: 27
       end_latitude: 70
     extract_season:
@@ -49,9 +49,9 @@ diagnostics:
       main:
         script: magic_bsc/capacity_factor.r #(in diag_scripts)
         power_curves:
-          - /PowerCurves/Enercon_E70_2.3MW.txt
-          - /PowerCurves/Gamesa_G80_2.0MW.txt
-          - /PowerCurves/Gamesa_G87_2.0MW.txt
-          - /PowerCurves/Vestas_V100_2.0MW.txt
-          - /PowerCurves/Vestas_V110_2.0MW.txt
+          - PowerCurves/Enercon_E70_2.3MW.txt
+          - PowerCurves/Gamesa_G80_2.0MW.txt
+          - PowerCurves/Gamesa_G87_2.0MW.txt
+          - PowerCurves/Vestas_V100_2.0MW.txt
+          - PowerCurves/Vestas_V110_2.0MW.txt
 

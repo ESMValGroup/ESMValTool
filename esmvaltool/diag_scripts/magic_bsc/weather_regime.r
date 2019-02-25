@@ -68,17 +68,23 @@ EOFS <- params$EOFS
 frequency <- params$frequency
 detrend_order <- params$detrend_order
 
-
+if (grepl("OImon", fullpath_filenames[1])) {
+  var_lat <- "rlat"
+  var_lon <- "rlon"
+} else {
+  var_lat <- "lat"
+  var_lon <- "lon"
+}
 # ---------------------------
 # Reading and formating
 # ---------------------------
 ref_nc <- nc_open(fullpath_filenames[reference_files])
 var0 <- unlist(var0)
 reference_data <- ncvar_get(ref_nc, var0)
-
+print(str(reference_data))
 names(dim(reference_data)) <- rev(names(ref_nc$dim))[-1]
-lat <- ncvar_get(ref_nc, "lat")
-lon <- ncvar_get(ref_nc, "lon")
+lat <- ncvar_get(ref_nc, var_lat)
+lon <- ncvar_get(ref_nc, var_lon)
 units <- ncatt_get(ref_nc, var0, "units")$value
 calendario <- ncatt_get(ref_nc, "time", "calendar")$value
 long_names <-  ncatt_get(ref_nc, var0, "long_name")$value
@@ -87,7 +93,7 @@ start_date <- as.POSIXct(substr(ncatt_get(ref_nc, "time",
                                           "units")$value, 11, 29))
 nc_close(ref_nc)
 
-data_type <- ifelse(grepl("Amon", fullpath_filenames[1]), "month", "day")
+data_type <- ifelse(grepl("day", fullpath_filenames[1]), "day", "month")
 dates_historical <- seq(start_historical, end_historical, data_type)
 
 print(calendario)
@@ -109,6 +115,7 @@ dim(reference_data) <- c(
   lat = length(lat),
   time = length(dates_historical)
 )
+
 reference_data <- aperm(reference_data, c(1, 2, 5, 3, 4))
 attr(reference_data, "Variables")$dat1$time <- dates_historical
 
@@ -129,7 +136,8 @@ months <- c(
 seasons <- c("DJF", "MAM", "JJA", "SON")
 mes <- match(frequency, months)
 sea <- match(frequency, seasons)
-
+print(mes)
+print(frequency)
 if (!is.na(mes)) {
   print("MONTHLY")
   dims <- dim(reference_data)
@@ -168,20 +176,30 @@ dim(reference_data) <- dims
 names(dim(reference_data))[c(time_dim, time_dim + 1)] <- c("sdate", "ftime")
 
 Loess <- function(clim, loess_span) {
+  if (sum(is.na(clim)) != length(clim)) {
   data <- data.frame(ensmean = clim, day = 1 : length(clim))
   loess_filt <- loess(
     ensmean ~ day, data, span = loess_span, degree = detrend_order
   )
   output <- predict(loess_filt)
+  } else {
+   output <- rep(NA, length(clim))
+  }
   return(output)
 }
 # -------------------------------
 ## Computing the WR_obs
 # -------------------------------
+
 clim_obs <- array(
   apply(reference_data, c(1, 2, 3, 5, 6), mean),
   dim = dim(reference_data)[-4]
 )
+print(sea)
+print(data_type)
+save(clim_obs, clim_obs, file = file.path(plot_dir, "ClimObs.RData"))
+print(data_type == "day" | !is.na(sea))
+if (data_type == "day" | !is.na(sea)) {
 clim_obs <- aperm(
   apply(
       clim_obs,
@@ -190,9 +208,11 @@ clim_obs <- aperm(
       loess_span = 1),
   c(2, 3, 1, 4, 5)
 )
+}
 
 anom_obs <- Ano(reference_data, clim_obs)
-
+print(head(anom_obs[which(anom_obs > 0)]))
+print(dim(anom_obs))
 WR_obs <- WeatherRegime( #nolint
   data = anom_obs,
   EOFS = EOFS,
@@ -201,13 +221,14 @@ WR_obs <- WeatherRegime( #nolint
   ncenters = ncenters,
   method = cluster_method
 )
-
-if (cluster_method != "kmeans") {
+print(str(WR_obs))
+print(cluster_method)
+if (cluster_method != "kmeans" & data_type == "day") {
     WR_obs$composite <- aperm(WR_obs$composite, c(2, 1, 3, 4, 5))
 }
 names(dim(WR_obs$composite)) <- c("lat", "lon", "Cluster", "Mod", "exp")
 names(dim(WR_obs$cluster))[1] <- "Evolution"
-
+ print(dim(WR_obs$composite))
 # -------------------------------
 ## Plotting the WR_obs output
 # -------------------------------
@@ -228,9 +249,9 @@ if (cluster_method == "kmeans") {
 }
 
 cosa <- aperm(drop(WR_obs$composite), c(3, 1, 2))
-
-
-lim <- max(abs(cosa / 100))
+print(dim(cosa))
+lim <- max(abs(cosa / 100), na.rm = TRUE)
+print(lim)
 if (lim < 1) {
     x <- floor(log10(lim)) + 1
     lim <- 10 ^ x
@@ -296,6 +317,18 @@ metadata <- list(variable = list(dim = list(list(name = "time",
 dim(WR_obs$frequency) <- c(frequency = length(WR_obs$frequency))
 dim(WR_obs$pvalue) <- c(pvalue = length(WR_obs$pvalue))
 dim(WR_obs$cluster) <- c(cluster = length(WR_obs$cluster))
+print("dimensions")
+print(dim(WR_obs$composite))
+print(dim(WR_obs$pvalue))
+print(dim(WR_obs$cluster))
+print(dim(WR_obs$frequency))
+print(dim(lat))
+print(cluster_method)
+if (cluster_method != "kmeans") {
+print("IN")
+ names(dim(WR_obs$composite))[c(1, 2)] <- c("lon", "lat")
+print(dim(WR_obs$composite))
+}
 variable_list <- list(
   variable = WR_obs$composite,
   pvalue = WR_obs$pvalue,
@@ -417,6 +450,8 @@ clim_ref <- array(
   dim = dim(projection_data)[-4]
 )
 
+
+if (data_type == "day" | !is.na(sea)) {
 clim_ref <- aperm(
   apply(
     clim_ref,
@@ -424,30 +459,43 @@ clim_ref <- aperm(
     Loess,
     loess_span = 1),
     c(2, 3, 1, 4, 5))
-
-
+}
+print(dim(clim_ref))
+print("NOHERE")
 anom_exp <- Ano(projection_data, clim_ref)
-
+print(dim(anom_exp))
 reference <- drop(WR_obs$composite)
-names(dim(reference)) <- c("lat", "lon", "nclust")
+print(dim(reference))
+if (cluster_method == "kmeans") {
+  names(dim(reference)) <- c("lat", "lon", "nclust")
 
-reference <- aperm(reference, c(3, 2, 1))
-names(dim(reference)) <- c("nclust", "lon", "lat")
+  reference <- aperm(reference, c(3, 2, 1))
+  names(dim(reference)) <- c("nclust", "lon", "lat")
+} else {
+  names(dim(reference)) <- c("lon", "lat", "nclust")
+}
+print(head(reference[which(reference > 0)]))
+print(head(anom_exp[which(anom_exp > 0)]))
 
 WR_exp <- RegimesAssign( #nolint
   var_ano = anom_exp, ref_maps = reference, lats = lat, method = "distance"
 )
-print(str(WR_exp))
 
 
 # ---------------------------
 # Plotting WR projection:
 # ---------------------------
-cosa <- aperm(WR_exp$composite, c(3, 2, 1))
-names(dim(WR_exp$composite))[3] <- "nclust"
 
-
-lim <- max(abs(cosa / 100))
+if (cluster_method == "kmeans") {
+  cosa <- aperm(WR_exp$composite, c(3, 2, 1))
+  names(dim(WR_exp$composite))[3] <- "nclust"
+} else {
+  names(dim(WR_exp$composite))[3] <- "nclust"
+}
+print("AAET")
+print(dim(cosa))
+print(dim(WR_exp$composite))
+lim <- max(abs(cosa / 100), na.rm = TRUE)
 if (lim < 1) {
     x <- floor(log10(lim)) + 1
     lim <- 10 ^ x
@@ -487,6 +535,7 @@ if (region == "Polar") {
     brks = seq(-1 * lim, lim, by = lim / 10),
     fileout = filepng2)
 }
+
 
 # -------------------------------
 ## Save the WR_exp output to ncdf
@@ -549,8 +598,16 @@ ArrayToNetCDF(variable_list, filencdf2) #nolint
 # ---------------------------
 # Computing the RMSE:
 # ---------------------------
-cosa <- aperm(WR_exp$composite, c(2, 1, 3))
-
+ if (cluster_method != "kmeans") {
+ print("DOME")
+  cosa <- aperm(cosa, c(2, 3, 1))
+  reference <- aperm(reference, c(3, 1, 2))
+} else {
+  cosa <- aperm(WR_exp$composite, c(2, 1, 3))
+}
+print("JEH")
+print(dim(cosa))
+print(dim(reference))
 rmse <- NULL
 for (i in 1 : ncenters) {
   for (j in 1 : ncenters) {

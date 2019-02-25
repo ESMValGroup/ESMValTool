@@ -11,22 +11,22 @@ documentation:
     - c3s-magic
 
 datasets:
-  #- {dataset: bcc-csm1-1,  project: CMIP5,  mip: Amon,  exp: historicla,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2006}
-  #- {dataset: bcc-csm1-1,  type: exp, project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
-  - {dataset: IPSL-CM5A-LR, type: exp, project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 1981,  end_year: 2000}
+  - {dataset: MPI-ESM-MR,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1950,  end_year: 2005}
+  #- {dataset: bcc-csm1-1,  type: exp, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+  #- {dataset: IPSL-CM5A-MR, type: exp, project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 1981,  end_year: 2000}
 
 preprocessors:
   preproc:
     regrid:
-      target_grid: IPSL-CM5A-LR
+      target_grid: MPI-ESM-MR
       scheme: linear
     mask_fillvalues:
       threshold_fraction: 0.95
     extract_region:
         end_latitude: 70
-        start_latitude: 27
-        end_longitude: 50
-        start_longitude: 5
+        start_latitude: 20
+        end_longitude: 300
+        start_longitude: 200
 
 diagnostics:
   combine_indices:
@@ -34,7 +34,7 @@ diagnostics:
     variables:
       pr:
         preprocessor: preproc
-        mip: day
+        mip: Amon
         field: T2M
     scripts:
       main:
@@ -43,11 +43,11 @@ diagnostics:
         weights: "equal"
 
         # Compute running mean?
-        running_mean: 3 #3
+        running_mean: 5 #3
 
         #Or compute seasons? (NOTE: cant compute both running means and seasons):
-        moninf: NULL  # First month
-        monsup: NULL  # Last month
+        moninf: 1  # First month
+        monsup: 3  # Last month
 
         # Multi-year average?
         multi_year_average: FALSE
