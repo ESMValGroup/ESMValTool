@@ -38,7 +38,7 @@ dir.create(run_dir, recursive = TRUE)
 dir.create(work_dir, recursive = TRUE)
 
 # setup provenance file and list
-provenance_file <- paste0(plot_dir, "/", "multimodel_provenance.yml")
+provenance_file <- paste0(run_dir, "/", "diagnostic_provenance.yml")
 provenance <- list()
 
 input_files_per_var <- yaml::read_yaml(params$input_files)
@@ -458,7 +458,7 @@ if (time_series_plot == "single") {
          ")"))
 }
 filepng1 <-  paste0(
-    plot_dir, "/", "Area-averaged ", var0, "_", months, "_multimodel-anomaly_",
+    plot_dir, "/", "Area-averaged_", var0, "_", months, "_multimodel-anomaly_",
     start_anomaly, "_", end_anomaly, "_", start_climatology, "_",
     end_climatology, ".png")
 ggsave(

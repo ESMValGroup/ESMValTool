@@ -17,7 +17,7 @@ dir.create(run_dir, recursive = TRUE)
 dir.create(work_dir, recursive = TRUE)
 
 # setup provenance file and list
-provenance_file <- paste0(plot_dir, "/", "extremes_provenance.yml")
+provenance_file <- paste0(run_dir, "/", "diagnostic_provenance.yml")
 provenance <- list()
 
 input_files_per_var <- yaml::read_yaml(params$input_files)
@@ -277,7 +277,7 @@ for (i in 1 : length(projection_filenames)) {
         longname = paste("Mean", metric[m], long_names)
       )
       filencdf <- paste0(
-          plot_dir, "/", var0, "_", metric[m], "_risk_insurance_index_",
+          work_dir, "/", var0, "_", metric[m], "_risk_insurance_index_",
           model_names, "_", start_projection, "_", end_projection, "_",
           start_reference, "_", end_reference, ".nc")
       file <- nc_create(filencdf, list(defdata))

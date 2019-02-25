@@ -17,7 +17,7 @@ dir.create(run_dir, recursive = TRUE)
 dir.create(work_dir, recursive = TRUE)
 
 # setup provenance file and list
-provenance_file <- paste0(plot_dir, "/", "toymodel_provenance.yml")
+provenance_file <- paste0(run_dir, "/", "diagnostic_provenance.yml")
 provenance <- list()
 
 input_files_per_var <- yaml::read_yaml(params$input_files)
@@ -185,7 +185,7 @@ attr(data, "variables") <- metadata
 variable_list <- list(variable = data, time = time)
 names(variable_list)[1] <- var0
 print(str(data))
-filencdf <- paste0(plot_dir, "/", "synthetic_",
+filencdf <- paste0(work_dir, "/", "synthetic_",
               basename(fullpath_filenames))
 ArrayToNetCDF(variable_list, filencdf) #nolint
 

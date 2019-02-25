@@ -23,7 +23,7 @@ dir.create(work_dir, recursive = TRUE)
 
 
 # setup provenance file and list
-provenance_file <- paste0(plot_dir, "/", "combined_provenance.yml")
+provenance_file <- paste0(run_dir, "/", "diagnostic_provenance.yml")
 provenance <- list()
 
 input_files_per_var <- yaml::read_yaml(params$input_files[1])
@@ -273,7 +273,7 @@ if (!is.null(region)) {
     longname = paste("Combination", long_names)
   )
   filencdf <- paste0(
-      plot_dir, "/", var0, "_", paste0(model_names, collapse = "_"),
+      work_dir, "/", var0, "_", paste0(model_names, collapse = "_"),
       "_", timestamp, "_", model_names_filename, "_", start_year,
       "_", end_year, "_", ".nc")
 print(dim(data))

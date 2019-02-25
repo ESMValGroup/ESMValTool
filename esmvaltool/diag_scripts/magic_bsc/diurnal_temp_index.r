@@ -19,7 +19,7 @@ dir.create(run_dir, recursive = TRUE)
 dir.create(work_dir, recursive = TRUE)
 
 # setup provenance file and list
-provenance_file <- paste0(plot_dir, "/", "dtr_provenance.yml")
+provenance_file <- paste0(run_dir, "/", "diagnostic_provenance.yml")
 provenance <- list()
 
 #FOR THE FIRST METADATA.yml
@@ -193,7 +193,7 @@ defdata <- ncvar_def(
 )
 
 filencdf <- paste0(
-    plot_dir, "/", "Seasonal_DTRindicator_", model_names, "_",
+    work_dir, "/", "Seasonal_DTRindicator_", model_names, "_",
     start_projection, "_", end_projection, "_",
     start_historical, "_", end_historical, ".nc")
 file <- nc_create(filencdf, list(defdata))
