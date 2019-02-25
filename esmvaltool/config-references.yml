@@ -256,6 +256,10 @@ authors:
     name: Sterl, Andreas
     institute: KNMI, Netherlands
     email: sterl 'at' knmi.nl
+  swam_ra:
+    name: Swaminathan, Ranjini
+    institute: University of Reading, UK
+    email: r.swaminathan 'at' reading.ac.uk
   teic_ca:
     name: Teichmann, Claas
     institute: CSC2, Germany
