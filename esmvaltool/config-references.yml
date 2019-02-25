@@ -75,7 +75,7 @@ authors:
   cagn_ch:
     name: Cagnazzo, Chiara
     institute: CNR, Italy
-    email: chiara.cagnazzo 'at' cnr.it    
+    email: chiara.cagnazzo 'at' cnr.it
   chen_ja:
     name: Chen, Jack
     institute: NCAR, USA
@@ -243,7 +243,7 @@ authors:
   serv_fe:
     name: Serva, Federico
     institute: CNR, Italy
-    email: federico.serva 'at' artov.isac.cnr.it    
+    email: federico.serva 'at' artov.isac.cnr.it
   somm_ph:
     name: Sommer, Philipp
     institute: Univ. of Hamburg, Germany
@@ -458,8 +458,11 @@ references:
   bianchi12gbc: "Bianchi, D. et al., Global Biogeochem. Cy., 26, GB2009, doi:10.1029/2011GB004209, 2012."
   cionni11acp: "Cionni et al., Atmos. Chem. Phys., 11, 11267-11292, doi:10.5194/acp-11-11267-2011, 2011."
   clivar09jclim: "CLIVAR Madden-Julian Oscillation Working Group, J. Climate, 22, 3006-3030, doi:10.1175/2008JCLI2731.1, 2009."
-  cox18nature: "Cox, P. M. et al., Nature, 553, 319-322, doi:10.1038/nature25450, 2018."
   collins13ipcc: "Collins, M. et al., Long-term climate change: Projections, Commitments, and Irreversibility, in: Climate Change 2013: the Physical Science Basis, contribution of Working Group I to the Fifth Assessment Report of the Intergovernmental Panel on Climate Change, edited by: Stocker, T. F., Qin, D., Plattner, G.-K., Tignor, M., Allen, S. K., Boschung, J., Nauels, A., Xia, Y., Bex, V., and Midgley, P. M., Cambridge University Press, Cambridge, UK and New York, NY, USA (2013)."
+  corti99nat: "Corti, S. et al. Nature 398, 799-801, doi:10.1038/19745"
+  cox18nature: "Cox, P. M. et al., Nature, 553, 319-322, doi:10.1038/nature25450, 2018."
+  davini12jclim: "Davini P., C. Cagnazzo, S. Gualdi, and A. Navarra. J. Climate, 25, 6496–6509, doi: 10.1175/JCLI-D-12-00032.1, 2012"
+  davini18: "Davini, P. MiLES - Mid Latitude Evaluation System. Zenodo. doi:10.5281/zenodo.1237837, 2018"
   demora2018gmd: "de Mora et al., Geosci. Model Dev., 11, 4215-4240, doi:10.5194/gmd-11-4215-2018, 2018."
   dong08grl: "Dong, S. et al., J. Geophys. Res., 113, C06013, doi:10.1029/2006JC004051, 2008."
   donofrio14jh: "D'Onofrio et al., J of Hydrometeorology 15, 830-843, 2014."
@@ -493,8 +496,9 @@ references:
   roedenbeck13os: "Roedenbeck, C. et al., Ocean Sci., 9, 193-216, doi:10.5194/os-9-193-2013, 2013."
   roehrig13jclim: "Roehrig, R. et al., J. Climate, 26, 6471-6505, doi:10.1175/JCLI-D-12-00505.1, 2013."
   sperber12asl: "Sperber and Kim, Atmos. Sci. Lett., 13, 3, 187-193, doi:10.1002/asl.378, 2012."
-  straus07jcli: "Straus, D.M., S. Corti, and F. Molteni. J. Climate, 20, 2251–2272, doi:10.1175/JCLI4070.1, 2007 " 
+  straus07jcli: "Straus, D.M., S. Corti, and F. Molteni. J. Climate, 20, 2251-2272, doi:10.1175/JCLI4070.1, 2007"
   stroeve07grl: "Stroeve, J. et al., Geophys. Res. Lett., 34, L09501, doi:10.1029/2007GL029703, 2007."
+  tibaldi90tel: "Tibaldi S. and Molteni F. Tellus A 42(3): 343–365, doi:10.1034/j.1600-0870.1990.t01-2-00003.x, 1990."
   taylor12: "Taylor et al., Nature, 489, 423-426, doi:10.1038/nature11377, 2012."
   takahashi14marchem: "Takahashi et al., Mar. Chem., 164, 95-125, doi:10.1016/j.marchem.2014.06.004, 2014."
   wang99bams: "Wang, B. and Z. Fan, Bull. Amer. Meteor. Soc., 80, 629-638, doi:10.1175/1520-0477(1999)080&lt;0629:COSASM&gt;2.0.CO;2, 1999."
@@ -533,6 +537,7 @@ projects:
   qa4ecv: QA4ECV
   c3s-magic: Copernicus Climate Change Service 34a Lot 2 (MAGIC) project
   ukesm: UKESM, UK Earth System Model project (NERC)
+  c3s-magic: C3S project MAGIC (34a Lot 2)
 
 realms:
   aerosol: aerosol
