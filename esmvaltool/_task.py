@@ -431,6 +431,21 @@ class DiagnosticTask(BaseTask):
             output_files = []
             return output_files
 
+        # interactive scenario
+        if os.path.basename(self.script) == "ipython_diag.py":
+            cmd = list(self.cmd)
+            self.settings['input_files'] = [
+                f for f in input_files
+                if f.endswith('.yml') or os.path.isdir(f)
+            ]
+            settings_file = self.write_settings()
+            env = dict(os.environ)
+            cmd.append(settings_file)
+            logger.info("Running interactive command %s", cmd)
+            process = subprocess.Popen(cmd, env=env)
+            process.communicate()
+            return
+
         is_ncl_script = self.script.lower().endswith('.ncl')
         if is_ncl_script:
             self.settings['input_files'] = [
