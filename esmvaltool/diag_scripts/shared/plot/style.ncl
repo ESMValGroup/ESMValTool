@@ -73,14 +73,6 @@ begin
   dkeys = (/"dataset", "ensemble", "exp", "mip"/)
   l_dkeys = new(dimsizes(dkeys), logical)
   l_dkeys = True
-  do jj = 0, dimsizes(dkeys) - 1
-    do ii = 0, ListCount(items) - 1
-      if (.not.isatt(items[ii], dkeys(jj))) then
-        l_dkeys(jj) = False
-        break
-      end if
-    end do
-  end do
   ckeys = dkeys(ind(l_dkeys))
 
   ; Style information for this flag available as diag_script_info@$flag$
