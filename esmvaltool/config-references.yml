@@ -430,6 +430,10 @@ authors:
     name: Pascoe, Stephen
     institute: STFC, UK
     email: stephen.pascoe 'at' stfc.ac.uk
+  pere_nu:
+    name: Perez_Zanon, Nuria
+    institute: BSC, Spain
+    email: nuria.perez 'at' bsc.es
   stev_ma:
     name: Stevens, Mark
     institute: NCAR, US

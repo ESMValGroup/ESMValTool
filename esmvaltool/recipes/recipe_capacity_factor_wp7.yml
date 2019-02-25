@@ -14,6 +14,7 @@ documentation:
     - caro_lo
     - bojo_dr
     - gonz_nu
+    - pere_nu
 
   projects:
     - c3s-magic
@@ -21,7 +22,7 @@ documentation:
 datasets:
   - {dataset: IPSL-CM5A-MR,  type: exp, project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 1980,  end_year: 2005}
   #- {dataset: MPI-ESM-MR, type: exp, project: CMIP5, mip: day, exp: rcp26, ensemble: r1i1p1, start_year: 2021, end_year: 2025}
-  #- {dataset: MPI-ESM-MR, type: exp, project: CMIP5, mip: day, exp: rcp45, ensemble: r1i1p1, start_year: 2031, end_year: 2035} 
+  #- {dataset: MPI-ESM-MR, type: exp, project: CMIP5, mip: day, exp: rcp45, ensemble: r1i1p1, start_year: 2031, end_year: 2035}
 preprocessors:
   preproc:
     regrid:
