@@ -11,6 +11,9 @@ documentation:
 
   authors:
     - demo_le
+  
+  maintainer:
+    - demo_le
 
   references:
     - demora2018gmd
