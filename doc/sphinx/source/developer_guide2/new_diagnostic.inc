@@ -63,7 +63,14 @@ Python diagnostic in esmvaltool/diag_scripts/examples/diagnostic.py for a comple
 
 Using the interfaces from NCL
 -----------------------------
-TODO: write this
+Always call the ``log_provenance`` procedure after plotting from your NCL diag_script. You could find available shortcuts for
+statistics, domain, plottype, authors and references in the ``config-references.yml`` file.
+
+.. code-block:: bash
+
+        log_provenance(nc-file,plot_file,caption,statistics,domain,plottype,authors,references,input-files)
+
+Have a look at the example NCL diagnostic in ``esmvaltool/diag_scripts/examples/diagnostic.ncl`` for a complete example.
 
 Generic interface between backend and diagnostic
 ------------------------------------------------
