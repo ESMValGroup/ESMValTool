@@ -11,7 +11,9 @@ There are several configuration files in ESMValTool:
   - config-references.yml
   - environment.yml
 
-This section describes those files.
+The ``config-user.yml`` file is described here in the user guide, however, the
+other three files are beyond the scope of the user guide. They are described
+in the Developper guide.
 
 User config file
 ================
@@ -98,60 +100,3 @@ plotting such as coastline descriptions and so on.
 Tip: You choose your config.yml file at run time, so you could have several
 available with different purposes. One for formalised run, one for debugging,
 etc...
-
-Developper config file
-================================
-
-This configuration file describes the file system structure for several
-key projects (CMIP5, CMIP6) on several key machines (BADC, CP4CDS, DKRZ, ETHZ,
-SMHI, BSC).
-
-For instance, the code structure of the CMIP5 project is set up differently
-at each site.
-
-.. code-block:: yml
-
-  CMIP5:
-    input_dir:
-      default: '/'
-      BADC: '[institute]/[dataset]/[exp]/[frequency]/[modeling_realm]/[mip]/[ensemble]/latest/[short_name]'
-      CP4CDS: '[institute]/[dataset]/[exp]/[frequency]/[modeling_realm]/[mip]/[ensemble]/[short_name]/latest/'
-      DKRZ: '[institute]/[dataset]/[exp]/[frequency]/[modeling_realm]/[mip]/[ensemble]/[latestversion]/[short_name]'
-      ETHZ: '[exp]/[mip]/[short_name]/[dataset]/[ensemble]/'
-      SMHI: '[dataset]/[ensemble]/[exp]/[frequency]'
-      BSC: '[project]/[exp]/[dataset.lower]'
-
-So, for instance, a typical file path on BADC would be:
-
-.. code-block:: yml
-
-    MOHC/HadGEM2-CC/rcp85/mon/ocean/Omon/r1i1p1/latest
-
-
-To be more explicit
-
-.. code-block:: yml
-
-    [institute]/[dataset ]/[exp]/[frequency]/[modeling_realm]/[mip]/[ensemble]/latest/[short_name]
-    MOHC       /HadGEM2-CC/rcp85/mon        /ocean           /Omon /r1i1p1    /latest/tos
-
-.. warning::
-    Section to be completed
-
-References config file
-================================
-
-.. warning::
-    Section to be completed
-
-Environment config file
-================================
-
-This is the conda envronment which informs conda as to which packages
-and which versions are needed in order to install ESMValTool.
-It is called in the update and install commands:
-
-.. code-block:: bash
-
-    conda env install --name esmvaltool --file ESMValTool/environment.yml
-    conda env update --name esmvaltool --file ESMValTool/environment.yml
