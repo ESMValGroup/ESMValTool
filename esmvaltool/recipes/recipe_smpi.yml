@@ -22,13 +22,13 @@ documentation:
     - crescendo
 
 datasets:
-  - {dataset: CNRM-CM5,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 1982}
-  - {dataset: CSIRO-Mk3-6-0,  project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 1982}
-#  - {dataset: GFDL-ESM2G,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
-#  - {dataset: MIROC5,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
-#  - {dataset: MIROC-ESM,      project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
-#  - {dataset: MIROC-ESM-CHEM, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
-#  - {dataset: MPI-ESM-LR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
+  - {dataset: CNRM-CM5,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
+  - {dataset: CSIRO-Mk3-6-0,  project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
+  - {dataset: GFDL-ESM2G,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
+  - {dataset: MIROC5,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
+  - {dataset: MIROC-ESM,      project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
+  - {dataset: MIROC-ESM-CHEM, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
+  - {dataset: MPI-ESM-LR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
 #  - {dataset: MPI-ESM-MR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
 #  - {dataset: MRI-CGCM3,      project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
 #  - {dataset: NorESM1-M,      project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
@@ -76,113 +76,113 @@ preprocessors:
 
 diagnostics:
 
-#  ta:
-#    description: Air temperature zonal mean
-#    themes:
-#      - phys
-#    realms:
-#      - atmos
-#    variables:
-#      ta:
-#        preprocessor: ppALL
-#        reference_dataset: ERA-Interim
-#        mip: Amon
-#        field: T3M
-#    additional_datasets:
-#      - {dataset: ERA-Interim,      project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 3}
-#    scripts:
-#      grading: &grading_settings
-#        script: perfmetrics/main.ncl
-#        plot_type: cycle_zonal
-#        time_avg: yearly
-#        region: Global
-#        range_option: 1
-#        draw_plots: false
-#        calc_grading: true
-#        metric: [SMPI]
-#        normalization: CMIP5
-#        smpi_n_bootstrap: 100
+  ta:
+    description: Air temperature zonal mean
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      ta:
+        preprocessor: ppALL
+        reference_dataset: ERA-Interim
+        mip: Amon
+        field: T3M
+    additional_datasets:
+      - {dataset: ERA-Interim,      project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 3}
+    scripts:
+      grading: &grading_settings
+        script: perfmetrics/main.ncl
+        plot_type: cycle_zonal
+        time_avg: yearly
+        region: Global
+        range_option: 1
+        draw_plots: false
+        calc_grading: true
+        metric: [SMPI]
+        normalization: CMIP5
+        smpi_n_bootstrap: 100
 
-#  va:
-#    description: Meridional Wind
-#    themes:
-#      - phys
-#    realms:
-#      - atmos
-#    variables:
-#      va:
-#        preprocessor: ppALL
-#        reference_dataset: ERA-Interim
-#        mip: Amon
-#        field: T3M
-#    additional_datasets:
-#      - {dataset: ERA-Interim,      project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 3}
-#    scripts:
-#      grading:
-#        script: perfmetrics/main.ncl
-#        plot_type: cycle_zonal
-#        time_avg: yearly
-#        region: Global
-#        range_option: 1
-#        draw_plots: false
-#        calc_grading: true
-#        metric: [SMPI]
-#        normalization: CMIP5
-#        smpi_n_bootstrap: 100
+  va:
+    description: Meridional Wind
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      va:
+        preprocessor: ppALL
+        reference_dataset: ERA-Interim
+        mip: Amon
+        field: T3M
+    additional_datasets:
+      - {dataset: ERA-Interim,      project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 3}
+    scripts:
+      grading:
+        script: perfmetrics/main.ncl
+        plot_type: cycle_zonal
+        time_avg: yearly
+        region: Global
+        range_option: 1
+        draw_plots: false
+        calc_grading: true
+        metric: [SMPI]
+        normalization: CMIP5
+        smpi_n_bootstrap: 100
 
-#  ua:
-#    description: Zonal Wind
-#    themes:
-#      - phys
-#    realms:
-#      - atmos
-#    variables:
-#      ua:
-#        preprocessor: ppALL
-#        reference_dataset: ERA-Interim
-#        mip: Amon
-#        field: T3M
-#    additional_datasets:
-#      - {dataset: ERA-Interim,      project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 3}
-#    scripts:
-#      grading:
-#        script: perfmetrics/main.ncl
-#        plot_type: cycle_zonal
-#        time_avg: yearly
-#        region: Global
-#        range_option: 1
-#        draw_plots: false
-#        calc_grading: true
-#        metric: [SMPI]
-#        normalization: CMIP5
-#        smpi_n_bootstrap: 100
+  ua:
+    description: Zonal Wind
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      ua:
+        preprocessor: ppALL
+        reference_dataset: ERA-Interim
+        mip: Amon
+        field: T3M
+    additional_datasets:
+      - {dataset: ERA-Interim,      project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 3}
+    scripts:
+      grading:
+        script: perfmetrics/main.ncl
+        plot_type: cycle_zonal
+        time_avg: yearly
+        region: Global
+        range_option: 1
+        draw_plots: false
+        calc_grading: true
+        metric: [SMPI]
+        normalization: CMIP5
+        smpi_n_bootstrap: 100
 
-#  hus:
-#    description: Near-surface temperature
-#    themes:
-#      - phys
-#    realms:
-#      - atmos
-#    variables:
-#      hus:
-#        preprocessor: ppALL
-#        reference_dataset: ERA-Interim
-#        mip: Amon
-#        field: T3M
-#    additional_datasets:
-#      - {dataset: ERA-Interim,      project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 3}
-#    scripts:
-#      grading:
-#        script: perfmetrics/main.ncl
-#        plot_type: cycle_zonal
-#        time_avg: yearly
-#        region: Global
-#        range_option: 1
-#        draw_plots: false
-#        calc_grading: true
-#        metric: [SMPI]
-#        normalization: CMIP5
-#        smpi_n_bootstrap: 100
+  hus:
+    description: Near-surface temperature
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      hus:
+        preprocessor: ppALL
+        reference_dataset: ERA-Interim
+        mip: Amon
+        field: T3M
+    additional_datasets:
+      - {dataset: ERA-Interim,      project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 3}
+    scripts:
+      grading:
+        script: perfmetrics/main.ncl
+        plot_type: cycle_zonal
+        time_avg: yearly
+        region: Global
+        range_option: 1
+        draw_plots: false
+        calc_grading: true
+        metric: [SMPI]
+        normalization: CMIP5
+        smpi_n_bootstrap: 100
 
   tas:
     description: Near-surface temperature
@@ -197,7 +197,7 @@ diagnostics:
         mip: Amon
         field: T2Ms
     additional_datasets:
-      - {dataset: ERA-Interim,      project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 1982, tier: 3}
+      - {dataset: ERA-Interim,      project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 3}
     scripts:
       grading:
         script: perfmetrics/main.ncl
@@ -224,7 +224,7 @@ diagnostics:
         mip: Amon
         field: T2Ms
     additional_datasets:
-      - {dataset: ERA-Interim,      project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 1982, tier: 3}
+      - {dataset: ERA-Interim,      project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 3}
     scripts:
       grading:
         script: perfmetrics/main.ncl
@@ -238,32 +238,32 @@ diagnostics:
         normalization: CMIP5
         smpi_n_bootstrap: 100
 
-#  pr:
-#    description: Precipitation
-#    themes:
-#      - phys
-#    realms:
-#      - atmos
-#    variables:
-#      pr:
-#        preprocessor: ppNOLEV
-#        reference_dataset: GPCP-SG
-#        mip: Amon
-#        field: T2Ms
-#    additional_datasets:
-#      - {dataset: GPCP-SG,      project: obs4mips, level: L3, version: v2.2, start_year: 1980, end_year: 1982, tier: 1}
-#    scripts:
-#       grading:
-#        script: perfmetrics/main.ncl
-#        plot_type: cycle_latlon
-#        time_avg: yearly
-#        region: Global
-#        range_option: 1
-#        draw_plots: false
-#        calc_grading: true
-#        metric: [SMPI]
-#        normalization: CMIP5
-#        smpi_n_bootstrap: 100
+  pr:
+    description: Precipitation
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      pr:
+        preprocessor: ppNOLEV
+        reference_dataset: GPCP-SG
+        mip: Amon
+        field: T2Ms
+    additional_datasets:
+      - {dataset: GPCP-SG,      project: obs4mips, level: L3, version: v2.2, start_year: 1980, end_year: 2005, tier: 1}
+    scripts:
+       grading:
+        script: perfmetrics/main.ncl
+        plot_type: cycle_latlon
+        time_avg: yearly
+        region: Global
+        range_option: 1
+        draw_plots: false
+        calc_grading: true
+        metric: [SMPI]
+        normalization: CMIP5
+        smpi_n_bootstrap: 100
 
 #  tos:
 #    description: Sea surface temperature
@@ -278,7 +278,7 @@ diagnostics:
 #        mip: Omon
 #        field: T2Ms
 #    additional_datasets:
-#      - {dataset: HadISST,      project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 2}
+#      - {dataset: HadISST,      project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 1982, tier: 2}
 #    scripts:
 #      grading:
 #        script: perfmetrics/main.ncl
@@ -332,7 +332,7 @@ diagnostics:
 #        mip: Omon
 #        field: T2Ms
 #    additional_datasets:
-#      - {dataset: ERA-Interim,      project: OBS, type: reanaly, version: 1, start_year: 2000, end_year: 2005, tier: 3}
+#      - {dataset: ERA-Interim,      project: OBS, type: reanaly, version: 1, start_year: 2000, end_year: 2002, tier: 3}
 #    scripts:
 #      grading:
 #        script: perfmetrics/main.ncl
@@ -346,59 +346,59 @@ diagnostics:
 #        normalization: CMIP5
 #        smpi_n_bootstrap: 100
 
-#  tauu:
-#    description: Zonal Wind Stress
-#    themes:
-#      - phys
-#    realms:
-#      - atmos
-#    variables:
-#      tauu:
-#        preprocessor: ppNOLEV
-#        reference_dataset: ERA-Interim
-#        mip: Amon
-#        field: TO2Ms
-#    additional_datasets:
-#      - {dataset: ERA-Interim,      project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 1982, tier: 3}
-#    scripts:
-#      grading:
-#        script: perfmetrics/main.ncl
-#        plot_type: cycle_latlon
-#        time_avg: yearly
-#        region: Global
-#        range_option: 1
-#        draw_plots: false
-#        calc_grading: true
-#        metric: [SMPI]
-#        normalization: CMIP5
-#        smpi_n_bootstrap: 100
+  tauu:
+    description: Zonal Wind Stress
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      tauu:
+        preprocessor: ppNOLEV
+        reference_dataset: ERA-Interim
+        mip: Amon
+        field: TO2Ms
+    additional_datasets:
+      - {dataset: ERA-Interim,      project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 3}
+    scripts:
+      grading:
+        script: perfmetrics/main.ncl
+        plot_type: cycle_latlon
+        time_avg: yearly
+        region: Global
+        range_option: 1
+        draw_plots: false
+        calc_grading: true
+        metric: [SMPI]
+        normalization: CMIP5
+        smpi_n_bootstrap: 100
 
-#  tauv:
-#    description: Meridional Wind Stress
-#    themes:
-#      - phys
-#    realms:
-#      - atmos
-#    variables:
-#      tauv:
-#        preprocessor: ppNOLEV
-#        reference_dataset: ERA-Interim
-#        mip: Amon
-#        field: TO2Ms
-#    additional_datasets:
-#      - {dataset: ERA-Interim,      project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 3}
-#    scripts:
-#      grading:
-#        script: perfmetrics/main.ncl
-#        plot_type: cycle_latlon
-#        time_avg: yearly
-#        region: Global
-#        range_option: 1
-#        draw_plots: false
-#        calc_grading: true
-#        metric: [SMPI]
-#        normalization: CMIP5
-#        smpi_n_bootstrap: 100
+  tauv:
+    description: Meridional Wind Stress
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      tauv:
+        preprocessor: ppNOLEV
+        reference_dataset: ERA-Interim
+        mip: Amon
+        field: TO2Ms
+    additional_datasets:
+      - {dataset: ERA-Interim,      project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 3}
+    scripts:
+      grading:
+        script: perfmetrics/main.ncl
+        plot_type: cycle_latlon
+        time_avg: yearly
+        region: Global
+        range_option: 1
+        draw_plots: false
+        calc_grading: true
+        metric: [SMPI]
+        normalization: CMIP5
+        smpi_n_bootstrap: 100
 
 ### COLLECT METRICS ###################
   collect:

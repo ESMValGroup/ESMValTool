@@ -116,7 +116,7 @@ begin
   ; Store required attributes
   ptype = diag_script_info@plot_type
 
-  if (all(ptype.ne.(/"cycle", "zonal", "latlon", "cycle_latlon"/))) then
+  if (all(ptype.ne.(/"cycle", "zonal", "latlon", "cycle_latlon", "cycle_zonal"/))) then
     error_msg("f", DIAG_SCRIPT, "", "plot_type " + ptype + " is not a " + \
               "supported plot_type in this diagnostic")
   end if
@@ -139,9 +139,9 @@ begin
       (ptype.eq."cycle" .and. \
       all(field0.ne.(/"T3M", "T2Ms", "T1M", "T0Ms"/))) .or. \
       (ptype.eq."latlon" .and. \
-      all(field0.ne.(/"T3M", "T2Ms"/))) .or. \
+      all(field0.ne.(/"T3M", "T2Ms", "T0Ms"/))) .or. \
       (ptype.eq."cycle_latlon" .and. \
-      all(field0.ne.(/"T3M", "T2Ms"/)))) then
+      all(field0.ne.(/"T3M", "T2Ms", "T0Ms", "TO2Ms"/)))) then
     error_msg("f", DIAG_SCRIPT, "", "input field " + field0 + \
               " is not compatible with plot_type " + ptype)
   end if
