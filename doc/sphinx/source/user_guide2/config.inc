@@ -11,9 +11,9 @@ There are several configuration files in ESMValTool:
   - config-references.yml
   - environment.yml
 
-The ``config-user.yml`` file is described here in the user guide, however, the
+The ``config-user.yml`` file is described here, however, the
 other three files are beyond the scope of the user guide. They are described
-in the Developper guide.
+in the developper guide.
 
 User config file
 ================
