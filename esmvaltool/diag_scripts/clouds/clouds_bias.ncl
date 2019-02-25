@@ -437,11 +437,11 @@ begin
   statistics = (/"clim", "diff"/)
   domain = ("glob")
   plottype = ("geo")
+  prov_caption = caption + " for variable " + var0 \
+                 + " (" + allseas + "), reference = " + names(ref_ind) + "."
 
   do is = 0, numseas - 1
-    prov_caption = caption + " for variable " + var0 \
-      + " (" + allseas + "), reference = " + names(ref_ind) + "."
-    log_provenance(nc_outfile, plotfile(is), caption, statistics, domain, \
+    log_provenance(nc_outfile, plotfile(is), prov_caption, statistics, domain, \
                    plottype, "", "", climofiles)
   end do
 

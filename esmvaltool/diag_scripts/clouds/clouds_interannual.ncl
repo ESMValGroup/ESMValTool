@@ -153,6 +153,12 @@ begin
       error_msg("f", DIAG_SCRIPT, "", "no lon dimension")
     end if
 
+    if (var0.eq."pr") then
+      ; convert from kg m-2 s-1 to mm day-1
+      A0 = A0 * 86400.0
+      A0@units = "mm day-1"
+    end if
+
     ; subtract climatological seasonal cycle from time series
 
     if (isvar("timeseries")) then
@@ -230,12 +236,6 @@ begin
       data1@res_mpLandFillColor    = "Black"
 ;      delete(pal)
 ;      pal = read_colormap_file("$diag_scripts/shared/plot/rgb/qcm3.rgb")
-    end if
-
-    if (var0.eq."pr") then
-      ; convert from kg m-2 s-1 to mm day-1
-      data1 = data1 * 86400.0
-      data1@units = "mm day-1"
     end if
 
     nboxes = dimsizes(data1@res_cnLevels)
