@@ -194,7 +194,7 @@ ArrayToNetCDF(variable_list, filencdf) #nolint
                   authors = list("bell_om"),
                   projects = list("c3s-magic"),
                   caption = title,
-                  statistics = list("Toy Model"),
+                  statistics = list("other"),
                   realms = list("atmos"),
                   themes = list("phys"),
                   plotfile = filepng)

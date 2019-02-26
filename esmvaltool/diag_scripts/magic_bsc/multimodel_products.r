@@ -543,7 +543,7 @@ nc_close(file)
                   authors = list("hunt_al", "manu_ni"),
                   projects = list("c3s-magic"),
                   caption = title,
-                  statistics = list("Anomaly agreement"),
+                  statistics = list("other"),
                   agreement_threshold = params$agreement_threshold,
                   moninf = params$moninf,
                   monsup = params$monsup,

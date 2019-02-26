@@ -353,15 +353,15 @@ ArrayToNetCDF( #nolint
                                  "hunt_al", "manu_ni"),
                   projects = list("c3s-magic"),
                   caption = list("Observed modes of variability"),
-                  statistics = list("EOF"),
-                  ncenters = list(params$ncenters),
-                  cluster_method = list(cluster_method),
-                  EOFS = list(params$EOFS),
-                  frequency = list(params$frequency),
-                  detrend_order = list(params$detrend_order),
+                  statistics = list("eof"),
+                  ncenters = params$ncenters,
+                  cluster_method = cluster_method,
+                  EOFS = params$EOFS,
+                  frequency = params$frequency,
+                  detrend_order = params$detrend_order,
                   realms = list("atmos"),
                   themes = list("phys"),
-                  plotfile = list(filepng1))
+                  plotfile = filepng1)
 
       provenance[[filencdf1]] <- xprov
 # ---------------------------
