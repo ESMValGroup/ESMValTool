@@ -13,7 +13,7 @@ There are several configuration files in ESMValTool:
 
 The ``config-user.yml`` file is described here, however, the
 other three files are beyond the scope of the user guide. They are described
-in the developper guide.
+in the developer guide.
 
 User config file
 ================

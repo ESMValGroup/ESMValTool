@@ -1,4 +1,4 @@
-.. _config_developper:
+.. _config_developer:
 
 *******************
 Configuration files
@@ -19,8 +19,8 @@ The ``config-user.yml`` file is the only user-facing configuration file and is
 described in the user guide section of this document.
 
 
-Developper config file
-======================
+Developer config file
+=====================
 
 This configuration file describes the file system structure for several
 key projects (CMIP5, CMIP6) on several key machines (BADC, CP4CDS, DKRZ, ETHZ,
@@ -82,7 +82,7 @@ documentation section:
       - ukesm
 
 
-All four items here are named people, references and projects listed in the 
+All four items here are named people, references and projects listed in the
 ``config-references.yml`` file.
 
 
