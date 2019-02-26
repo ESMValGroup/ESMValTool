@@ -61,13 +61,13 @@
 ;
 ; ############################################################################
 
-load "interface_scripts/interface.ncl"
+load "$diag_scripts/../interface_scripts/interface.ncl"
 
-load "./diag_scripts/shared/statistics.ncl"
-load "./diag_scripts/shared/plot/style.ncl"
-load "./diag_scripts/shared/plot/contour_maps.ncl"
+load "$diag_scripts/shared/statistics.ncl"
+load "$diag_scripts/shared/plot/style.ncl"
+load "$diag_scripts/shared/plot/contour_maps.ncl"
 
-; load "./diag_scripts/shared/meta_data.ncl"
+; load "$diag_scripts/shared/meta_data.ncl"
 
 begin
 
@@ -342,13 +342,13 @@ begin
       data1@res_mpOutlineOn         = False
       data1@res_mpFillOn            = True
       data1@res_mpLandFillColor     = "Black"
-      pal = read_colormap_file("diag_scripts/shared/plot/rgb/qcm3.rgb")
+      pal = read_colormap_file("$diag_scripts/shared/plot/rgb/qcm3.rgb")
       data1@res_cnFillColors        = pal
     end if
 
     if (var0.eq."tas") then
       data1@res_cnLevels            = ispan(-30, 30, 3)
-      pal = read_colormap_file("diag_scripts/shared/plot/rgb/ipcc-tas.rgb")
+      pal = read_colormap_file("$diag_scripts/shared/plot/rgb/ipcc-tas.rgb")
       data1@res_cnFillColors        = pal
       ; convert from K to degC
       data1 = data1 - 273.15
@@ -673,14 +673,14 @@ begin
 
         if (var0.eq."pr") then
           diff@res_cnLevels = ispan(-30, 30, 5) * 0.1
-          pal = read_colormap_file("diag_scripts/shared/plot/rgb/" \
+          pal = read_colormap_file("$diag_scripts/shared/plot/rgb/" \
                                    + "ipcc-precip-delta.rgb")
           diff@res_cnFillColors = pal
           diff@res_lbOrientation = "horizontal"
         end if
 
         if ((var0.eq."tas") .or. (var0.eq."ts")) then
-          pal = read_colormap_file("diag_scripts/shared/plot/rgb/" \
+          pal = read_colormap_file("$diag_scripts/shared/plot/rgb/" \
                                    + "ipcc-tas-delta.rgb")
           diff@res_cnFillPalette = pal
           if (var0.eq."ts") then
@@ -693,7 +693,7 @@ begin
           diff@res_mpOutlineOn        = False
           diff@res_mpFillOn           = True
           diff@res_mpLandFillColor    = "Black"
-          pal = read_colormap_file("diag_scripts/shared/plot/rgb/qcm3.rgb")
+          pal = read_colormap_file("$diag_scripts/shared/plot/rgb/qcm3.rgb")
           diff@res_cnFillColors       = pal
         end if
 
@@ -736,7 +736,7 @@ begin
           if (isvar("pal")) then
             delete(pal)
           end if
-          pal = read_colormap_file("diag_scripts/shared/plot/rgb/" \
+          pal = read_colormap_file("$diag_scripts/shared/plot/rgb/" \
                                    + "percent100.rgb")
           diff@res_cnFillColors = pal
         end if

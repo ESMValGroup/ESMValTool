@@ -24,7 +24,8 @@ from .preprocessor import (DEFAULT_ORDER, FINAL_STEPS, INITIAL_STEPS,
 from .preprocessor._derive import get_required
 from .preprocessor._download import synda_search
 from .preprocessor._io import DATASET_KEYS, concatenate_callback
-from .preprocessor._regrid import get_cmor_levels, get_reference_levels
+from .preprocessor._regrid import (get_cmor_levels, get_reference_levels,
+                                   parse_cell_spec)
 
 logger = logging.getLogger(__name__)
 
@@ -94,26 +95,6 @@ def _update_from_others(variable, keys, datasets):
                 variable[key] = value
 
 
-def _update_cmor_table(table, mip, short_name):
-    """Try to add an ESMValTool custom CMOR table file."""
-    cmor_table = CMOR_TABLES[table]
-    var_info = cmor_table.get_variable(mip, short_name)
-
-    if var_info is None and hasattr(cmor_table, 'add_custom_table_file'):
-        table_file = os.path.join(
-            os.path.dirname(__file__), 'cmor', 'tables', 'custom',
-            'CMOR_' + short_name + '.dat')
-        if os.path.exists(table_file):
-            logger.debug("Loading custom CMOR table from %s", table_file)
-            cmor_table.add_custom_table_file(table_file, mip)
-            var_info = cmor_table.get_variable(mip, short_name)
-
-    if var_info is None:
-        raise RecipeError(
-            "Unable to load CMOR table '{}' for variable '{}' with mip '{}'".
-            format(table, short_name, mip))
-
-
 def _add_cmor_info(variable, override=False):
     """Add information from CMOR tables to variable."""
     logger.debug("If not present: adding keys from CMOR table to %s", variable)
@@ -125,12 +106,28 @@ def _add_cmor_info(variable, override=False):
     if variable['cmor_table'] not in CMOR_TABLES:
         logger.warning("Unknown CMOR table %s", variable['cmor_table'])
 
+    derive = variable.get('derive', False)
     # Copy the following keys from CMOR table
     cmor_keys = [
         'standard_name', 'long_name', 'units', 'modeling_realm', 'frequency'
     ]
-    table_entry = CMOR_TABLES[variable['cmor_table']].get_variable(
-        variable['mip'], variable['short_name'])
+    cmor_table = variable['cmor_table']
+    mip = variable['mip']
+    short_name = variable['short_name']
+    table_entry = CMOR_TABLES[cmor_table].get_variable(mip, short_name)
+
+    if derive and table_entry is None:
+        custom_table = CMOR_TABLES['custom']
+        table_entry = custom_table.get_variable(mip, short_name)
+
+    if table_entry is None:
+        raise RecipeError(
+            "Unable to load CMOR table '{}' for variable '{}' with mip '{}'".
+            format(cmor_table, short_name, mip))
+
+    mip_info = CMOR_TABLES[cmor_table].get_table(mip)
+    if mip_info:
+        table_entry.frequency = mip_info.frequency
 
     for key in cmor_keys:
         if key not in variable or override:
@@ -208,6 +205,9 @@ def _update_target_grid(variable, variables, settings, config_user):
     elif any(grid == v['dataset'] for v in variables):
         settings['regrid']['target_grid'] = _dataset_to_file(
             _get_dataset_info(grid, variables), config_user)
+    else:
+        # Check that MxN grid spec is correct
+        parse_cell_spec(settings['regrid']['target_grid'])
 
 
 def _get_dataset_info(dataset, variables):
@@ -243,12 +243,12 @@ def _limit_datasets(variables, profile, max_datasets=0):
 
     logger.info("Limiting the number of datasets to %s", max_datasets)
 
-    required_datasets = {
+    required_datasets = [
         (profile.get('extract_levels') or {}).get('levels'),
         (profile.get('regrid') or {}).get('target_grid'),
         variables[0].get('reference_dataset'),
         variables[0].get('alternative_dataset'),
-    }
+    ]
 
     limited = [v for v in variables if v['dataset'] in required_datasets]
     for variable in variables:
@@ -279,8 +279,6 @@ def _get_default_settings(variable, config_user, derive=False):
     settings['load'] = {
         'callback': concatenate_callback,
     }
-    if not derive:
-        settings['load']['constraints'] = variable['standard_name']
     # Configure merge
     settings['concatenate'] = {}
 
@@ -300,6 +298,7 @@ def _get_default_settings(variable, config_user, derive=False):
     if variable.get('cmor_table'):
         fix['cmor_table'] = variable['cmor_table']
         fix['mip'] = variable['mip']
+        fix['frequency'] = variable['frequency']
     settings['fix_data'] = dict(fix)
     settings['fix_metadata'] = dict(fix)
 
@@ -327,6 +326,7 @@ def _get_default_settings(variable, config_user, derive=False):
             'cmor_table': variable['cmor_table'],
             'mip': variable['mip'],
             'short_name': variable['short_name'],
+            'frequency': variable['frequency'],
         }
     # Configure final CMOR data check
     if variable.get('cmor_table'):
@@ -334,6 +334,7 @@ def _get_default_settings(variable, config_user, derive=False):
             'cmor_table': variable['cmor_table'],
             'mip': variable['mip'],
             'short_name': variable['short_name'],
+            'frequency': variable['frequency'],
         }
 
     # Clean up fixed files
@@ -400,14 +401,9 @@ def _update_fx_settings(settings, variable, config_user):
                 fx_files_dict['sftgif'])
 
     for step in ('average_region', 'average_volume'):
-        if step in settings and settings[step].get('fx_files') is not False:
-            var = dict(variable)
-            if step == 'average_region':
-                var['fx_files'] = ['areacello', ]
-            if step == 'average_volume':
-                var['fx_files'] = ['volcello', ]
+        if settings.get(step, {}).get('fx_files'):
             settings[step]['fx_files'] = get_input_fx_filelist(
-                variable=var,
+                variable=variable,
                 rootpath=config_user['rootpath'],
                 drs=config_user['drs'],
             )
@@ -707,11 +703,7 @@ def _get_derive_input_variables(variables, config_user):
         derive_input[group].append(var)
 
     for variable in variables:
-        _update_cmor_table(
-            table=variable['cmor_table'],
-            mip=variable['mip'],
-            short_name=variable['short_name'])
-        _add_cmor_info(variable)
+
         group_prefix = variable['variable_group'] + '_derive_input_'
         if not variable.get('force_derivation') and get_input_filelist(
                 variable=variable,
@@ -726,7 +718,6 @@ def _get_derive_input_variables(variables, config_user):
                                              variable['field'])['vars']:
                 var = copy.deepcopy(variable)
                 var.update(new_variable)
-                _add_cmor_info(var, override=True)
                 append(group_prefix, var)
 
     return derive_input
@@ -746,16 +737,18 @@ def _get_preprocessor_task(variables, profiles, config_user, task_name):
                 variable['preprocessor'], variable['short_name'])
     variables = _limit_datasets(variables, profile,
                                 config_user.get('max_datasets'))
-
+    for variable in variables:
+        _add_cmor_info(variable)
     # Create preprocessor task(s)
     derive_tasks = []
     if variable.get('derive'):
         # Create tasks to prepare the input data for the derive step
         derive_profile, profile = _split_derive_profile(profile)
-
         derive_input = _get_derive_input_variables(variables, config_user)
 
         for derive_variables in derive_input.values():
+            for derive_variable in derive_variables:
+                _add_cmor_info(derive_variable, override=True)
             derive_name = task_name.split(
                 TASKSEP)[0] + TASKSEP + derive_variables[0]['variable_group']
             task = _get_single_preprocessor_task(
@@ -764,10 +757,6 @@ def _get_preprocessor_task(variables, profiles, config_user, task_name):
                 config_user,
                 name=derive_name)
             derive_tasks.append(task)
-
-    # Add CMOR info
-    for variable in variables:
-        _add_cmor_info(variable)
 
     # Create (final) preprocessor task
     task = _get_single_preprocessor_task(

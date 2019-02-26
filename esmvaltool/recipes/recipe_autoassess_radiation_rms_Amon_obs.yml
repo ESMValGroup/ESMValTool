@@ -12,7 +12,7 @@ documentation:
 
   maintainer:
     - pred_va
-  
+
   projects:
     - cmug
 
@@ -35,7 +35,7 @@ preprocessors:
 
 diagnostics:
   radiation_Amon_obs_CERES-EBAF:
-    description: "CMIP5 vs CERES-EBAF" 
+    description: "CMIP5 vs CERES-EBAF"
     variables:
       rtnt: # TOA TOT net
         preprocessor: pp_rad_derive_var
