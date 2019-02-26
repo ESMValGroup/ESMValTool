@@ -1,4 +1,4 @@
-"""Diagnostic to select grid points within a shapefile."""
+"""Diagnostic to calculate consecutive wet days."""
 import logging
 import os
 from copy import deepcopy
@@ -27,7 +27,6 @@ def get_provenance_record(cfg, basename, caption, ancestor_files):
     diagnostic_file = get_diagnostic_filename(basename, cfg)
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(diagnostic_file, record)
-    return record
 
 
 def main(cfg):
@@ -47,7 +46,7 @@ def main(cfg):
             )
             output_basename = name + '_drymax'
             iris.save(drymaxcube, target=path)
-            provenance_record = get_provenance_record(
+            get_provenance_record(
                 cfg, output_basename, dmcap, ancestor_files=[path])
             path = os.path.join(
                 cfg['work_dir'],
@@ -55,7 +54,7 @@ def main(cfg):
             )
             output_basename = name + '_dryfreq'
             iris.save(fqthcube, target=path)
-            provenance_record = get_provenance_record(
+            get_provenance_record(
                 cfg, output_basename, fqcap, ancestor_files=[path])
         if cfg['write_plots'] and cfg.get('quickplot'):
             path = os.path.join(
@@ -75,12 +74,13 @@ def droughtindex(cube, cfg):
         precip[cube.data < plim] = 1
         precip[cube.data >= plim] = 0
         cube.data[0, :, :] = precip[0, :, :]
-        for t in range(1, cube.data.shape[0]):
-            cube.data[t, :, :] = (
-                (precip[t, :, :] + cube.data[t - 1, :, :]) * precip[t, :, :])
+        for ttt in range(1, cube.data.shape[0]):
+            cube.data[ttt, :, :] = (
+                (precip[ttt, :, :] + cube.data[ttt - 1, :, :]) *
+                precip[ttt, :, :])
         dif = cube.data[0:-1, :, :] - cube.data[1:cube.data.shape[0], :, :]
-        wh = np.where(dif != cube.data[0:-1])
-        cube.data[wh] = 0
+        whh = np.where(dif != cube.data[0:-1])
+        cube.data[whh] = 0
         # Longest consecutive period
         drymaxcube = cube.collapsed('time', iris.analysis.MAX)
         dmlong_name = ('The greatest number of consecutive days ' +

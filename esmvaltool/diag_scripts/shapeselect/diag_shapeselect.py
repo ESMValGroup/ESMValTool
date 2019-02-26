@@ -15,13 +15,11 @@ from shapely.ops import nearest_points
 
 from esmvaltool.diag_scripts.shared import (
     run_diagnostic, ProvenanceLogger, get_diagnostic_filename)
-#from esmvaltool.diag_scripts.shared._base import (
-#    ProvenanceLogger, get_diagnostic_filename)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
 
-def get_provenance_record(cfg, basename, caption, type, ancestor_files):
+def get_provenance_record(cfg, basename, caption, dtype, ancestor_files):
     """Create a provenance record describing the diagnostic data and plot."""
     record = {
         'caption': caption,
@@ -31,14 +29,13 @@ def get_provenance_record(cfg, basename, caption, type, ancestor_files):
         'references': ['acknow_project'],
         'ancestors': ancestor_files,
     }
-    if type is 'xlsx':
+    if dtype == 'xlsx':
         diagnostic_file = os.path.join(cfg['work_dir'], basename + '.xlsx')
     else:
         diagnostic_file = get_diagnostic_filename(basename, cfg)
     print(diagnostic_file)
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(diagnostic_file, record)
-    return record
 
 
 def main(cfg):
@@ -56,7 +53,7 @@ def main(cfg):
             xname = name + '_table'
             writexls(cfg, filename, ncts, nclon, nclat)
             caption = 'Selected gridpoints within shapefile.'
-            provenance_record = get_provenance_record(
+            get_provenance_record(
                 cfg, xname, caption, 'xlsx', ancestor_files=[filename])
         if cfg['write_netcdf']:
             path = os.path.join(
@@ -65,7 +62,7 @@ def main(cfg):
             )
             write_netcdf(path, ncts, nclon, nclat, cube, cfg)
             caption = 'Selected gridpoints within shapefile.'
-            provenance_record = get_provenance_record(
+            get_provenance_record(
                 cfg, name, caption, 'nc', ancestor_files=[filename])
 
 
