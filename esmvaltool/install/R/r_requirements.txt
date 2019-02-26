@@ -1,3 +1,8 @@
 lintr
 logging
 yaml
+maps
+ncdf4
+PCICt
+akima
+mapproj
