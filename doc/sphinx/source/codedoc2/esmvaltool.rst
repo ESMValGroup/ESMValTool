@@ -10,3 +10,4 @@ library. This section documents the public API of ESMValTool.
    esmvaltool.cmor
    esmvaltool.diag_scripts.shared
    esmvaltool.diag_scripts
+   esmvaltool.diag_scripts.ocean

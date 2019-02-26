@@ -31,19 +31,25 @@ REQUIREMENTS = {
         'cdo',
         'cf_units',
         'cython',
-        # 'scitools-iris',  # Only iris 2 is on PyPI
+        'scitools-iris',
         'matplotlib<3',
+        'nc-time-axis',  # needed by iris.plot
         'netCDF4',
         'numba',
         'numpy',
         'pillow',
+        'prov[dot]',
         'psutil',
         'pyyaml',
         'shapely',
         'six',
         'stratify',
         'vmprof',
+        'xarray',
         'yamale',
+        'sklearn',
+        'pandas',
+        'eofs',
     ],
     # Test dependencies
     # Execute 'python setup.py test' to run tests
@@ -53,8 +59,9 @@ REQUIREMENTS = {
         'mock',
         'nose',
         'pycodestyle',
-        'pytest',
+        'pytest>=3.9',
         'pytest-cov',
+        'pytest-env',
         'pytest-html',
         'pytest-metadata>=1.5.1',
     ],
@@ -73,10 +80,15 @@ REQUIREMENTS = {
     ],
 }
 
+if sys.version_info.major == 2:
+    REQUIREMENTS['test'].append('more-itertools<6')
+    for i, req in enumerate(REQUIREMENTS['install']):
+        if req.startswith('cdo'):
+            REQUIREMENTS['install'][i] = 'cdo!=1.5.*'
+
 
 def discover_python_files(paths, ignore):
     """Discover Python files."""
-
     def _ignore(path):
         """Return True if `path` should be ignored, False otherwise."""
         return any(re.match(pattern, path) for pattern in ignore)
@@ -128,6 +140,7 @@ class RunTests(CustomCommand):
         args = [
             'tests',
             'esmvaltool',  # for doctests
+            '--ignore=esmvaltool/cmor/tables/',
             '--doctest-modules',
             '--cov=esmvaltool',
             '--cov-report=term',
@@ -220,9 +233,14 @@ with open('README.md') as readme:
         entry_points={
             'console_scripts': [
                 'esmvaltool = esmvaltool._main:run',
-                'nclcodestyle = esmvaltool.utils.nclcodestyle.nclcodestyle:_main',
+                'cmorize_obs = esmvaltool.'
+                'utils.cmorizers.obs.cmorize_obs:execute_cmorize',
+                'nclcodestyle = esmvaltool.'
+                'utils.nclcodestyle.nclcodestyle:_main',
+                'mip_convert_setup = esmvaltool.'
+                'utils.cmorizers.mip_convert.esmvt_mipconv_setup:main',
                 'acsismoc = esmvaltool.utils.acsis.acsismoc:main',
-                'acsisjet = esmvaltool.utils.acsis.acsisjet:main',
+                'acsisjet = esmvaltool.utils.acsis.acsisjet:main'
             ],
         },
         cmdclass={

@@ -1,11 +1,4 @@
-"""
-_regrid.py
-
-A package for performing horizontal regridding,
-and vertical level extraction
-or vertical level interpolation.
-
-"""
+"""Horizontal and vertical regridding module."""
 
 from __future__ import absolute_import, division, print_function
 
@@ -14,23 +7,25 @@ import re
 from copy import deepcopy
 
 import iris
-import iris.exceptions
 import numpy as np
 import six
 import stratify
 from iris.analysis import AreaWeighted, Linear, Nearest, UnstructuredNearest
-from numpy import ma
 
-from ..cmor.table import CMOR_TABLES
 from ..cmor.fix import fix_file, fix_metadata
+from ..cmor.table import CMOR_TABLES
+from ._io import concatenate_callback, load
+from ._regrid_esmpy import ESMF_REGRID_METHODS
+from ._regrid_esmpy import regrid as esmpy_regrid
 
 # Regular expression to parse a "MxN" cell-specification.
-_CELL_SPEC = re.compile(r'''\A
-                            \s*(?P<dx>\d+(\.\d+)?)\s*
-                            x
-                            \s*(?P<dy>\d+(\.\d+)?)\s*
-                            \Z
-                         ''', re.IGNORECASE | re.VERBOSE)
+_CELL_SPEC = re.compile(
+    r'''\A
+        \s*(?P<dlon>\d+(\.\d+)?)\s*
+        x
+        \s*(?P<dlat>\d+(\.\d+)?)\s*
+        \Z
+     ''', re.IGNORECASE | re.VERBOSE)
 
 # Default fill-value.
 _MDI = 1e+20
@@ -44,24 +39,50 @@ _LON_MAX = 360.0
 _LON_RANGE = _LON_MAX - _LON_MIN
 
 # A cached stock of standard horizontal target grids.
-_cache = dict()
+_CACHE = dict()
 
 # Supported horizontal regridding schemes.
-horizontal_schemes = dict(
-    linear=Linear(extrapolation_mode='mask'),
-    nearest=Nearest(extrapolation_mode='mask'),
-    area_weighted=AreaWeighted(),
-    unstructured_nearest=UnstructuredNearest())
+HORIZONTAL_SCHEMES = {
+    'linear': Linear(extrapolation_mode='mask'),
+    'linear_extrapolate': Linear(extrapolation_mode='extrapolate'),
+    'nearest': Nearest(extrapolation_mode='mask'),
+    'area_weighted': AreaWeighted(),
+    'unstructured_nearest': UnstructuredNearest(),
+}
 
 # Supported vertical interpolation schemes.
-vertical_schemes = ['linear', 'nearest',
+VERTICAL_SCHEMES = ('linear', 'nearest',
                     'linear_horizontal_extrapolate_vertical',
-                    'nearest_horizontal_extrapolate_vertical']
+                    'nearest_horizontal_extrapolate_vertical')
 
 
-def _stock_cube(spec):
+def parse_cell_spec(spec):
+    """Parse an MxN cell specification string."""
+    cell_match = _CELL_SPEC.match(spec)
+    if cell_match is None:
+        emsg = 'Invalid MxN cell specification for grid, got {!r}.'
+        raise ValueError(emsg.format(spec))
+
+    cell_group = cell_match.groupdict()
+    dlon = float(cell_group['dlon'])
+    dlat = float(cell_group['dlat'])
+
+    if (np.trunc(_LON_RANGE / dlon) * dlon) != _LON_RANGE:
+        emsg = ('Invalid longitude delta in MxN cell specification '
+                'for grid, got {!r}.')
+        raise ValueError(emsg.format(dlon))
+
+    if (np.trunc(_LAT_RANGE / dlat) * dlat) != _LAT_RANGE:
+        emsg = ('Invalid latitude delta in MxN cell specification '
+                'for grid, got {!r}.')
+        raise ValueError(emsg.format(dlat))
+
+    return dlon, dlat
+
+
+def _stock_cube(spec, lat_offset=True, lon_offset=True):
     """
-    Create a stock cube
+    Create a stock cube.
 
     Create a global cube with M degree-east by N degree-north regular grid
     cells.
@@ -70,52 +91,57 @@ def _stock_cube(spec):
     -90 to 90 degrees. Each cell grid point is calculated as the mid-point of
     the associated MxN cell.
 
-    Paramaters
+    Parameters
     ----------
     spec : str
         Specifies the 'MxN' degree cell-specification for the global grid.
+    lat_offset : bool
+        Offset the grid centers of the latitude coordinate w.r.t. the
+        pole by half a grid step. This argument is ignored if `target_grid`
+        is a cube or file.
+    lon_offset : bool
+        Offset the grid centers of the longitude coordinate w.r.t. Greenwich
+        meridian by half a grid step.
+        This argument is ignored if `target_grid` is a cube or file.
 
     Returns
     -------
         A :class:`~iris.cube.Cube`.
 
     """
-    # Parse the MxN cell specification string.
-    cell_match = _CELL_SPEC.match(spec)
-    if cell_match is None:
-        emsg = 'Invalid MxN cell specification for stock cube, got {!r}.'
-        raise ValueError(emsg.format(spec))
-
-    cell_group = cell_match.groupdict()
-    dx = float(cell_group['dx'])
-    dy = float(cell_group['dy'])
-
-    if (np.trunc(_LON_RANGE / dx) * dx) != _LON_RANGE:
-        emsg = ('Invalid longitude delta in MxN cell specification '
-                'for stock cube, got {!r}.')
-        raise ValueError(emsg.format(dx))
-
-    if (np.trunc(_LAT_RANGE / dy) * dy) != _LAT_RANGE:
-        emsg = ('Invalid latitude delta in MxN cell specification '
-                'for stock cube, got {!r}.')
-        raise ValueError(emsg.format(dy))
-
-    mid_dx, mid_dy = dx / 2, dy / 2
+    dlon, dlat = parse_cell_spec(spec)
+    mid_dlon, mid_dlat = dlon / 2, dlat / 2
 
     # Construct the latitude coordinate, with bounds.
-    ydata = np.linspace(_LAT_MIN + mid_dy, _LAT_MAX - mid_dy, _LAT_RANGE / dy)
+    if lat_offset:
+        latdata = np.linspace(_LAT_MIN + mid_dlat, _LAT_MAX - mid_dlat,
+                              _LAT_RANGE / dlat)
+    else:
+        latdata = np.linspace(_LAT_MIN, _LAT_MAX, _LAT_RANGE / dlat + 1)
+
+    # Construct the longitude coordinat, with bounds.
+    if lon_offset:
+        londata = np.linspace(_LON_MIN + mid_dlon, _LON_MAX - mid_dlon,
+                              _LON_RANGE / dlon)
+    else:
+        londata = np.linspace(_LON_MIN, _LON_MAX - dlon, _LON_RANGE / dlon)
+
     lats = iris.coords.DimCoord(
-        ydata, standard_name='latitude', units='degrees_north', var_name='lat')
+        latdata,
+        standard_name='latitude',
+        units='degrees_north',
+        var_name='lat')
     lats.guess_bounds()
 
-    # Construct the longitude coordinate, with bounds.
-    xdata = np.linspace(_LON_MIN + mid_dx, _LON_MAX - mid_dx, _LON_RANGE / dx)
     lons = iris.coords.DimCoord(
-        xdata, standard_name='longitude', units='degrees_east', var_name='lon')
+        londata,
+        standard_name='longitude',
+        units='degrees_east',
+        var_name='lon')
     lons.guess_bounds()
 
     # Construct the resultant stock cube, with dummy data.
-    shape = (ydata.size, xdata.size)
+    shape = (latdata.size, londata.size)
     dummy = np.empty(shape, dtype=np.dtype('int8'))
     coords_spec = [(lats, 0), (lons, 1)]
     cube = iris.cube.Cube(dummy, dim_coords_and_dims=coords_spec)
@@ -123,13 +149,26 @@ def _stock_cube(spec):
     return cube
 
 
-def regrid(src_cube, target_grid, scheme):
+def _attempt_irregular_regridding(cube, scheme):
+    """Check if irregular regridding with ESMF should be used."""
+    if scheme in ESMF_REGRID_METHODS:
+        try:
+            lat_dim = cube.coord('latitude').ndim
+            lon_dim = cube.coord('longitude').ndim
+            if lat_dim == lon_dim == 2:
+                return True
+        except iris.exceptions.CoordinateNotFoundError:
+            pass
+    return False
+
+
+def regrid(cube, target_grid, scheme, lat_offset=True, lon_offset=True):
     """
     Perform horizontal regridding.
 
     Parameters
     ----------
-    src_cube : cube
+    cube : cube
         The source cube to be regridded.
     tgt_cube : cube or str
         The cube that specifies the target or reference grid for the regridding
@@ -137,7 +176,20 @@ def regrid(src_cube, target_grid, scheme):
         of the form 'MxN', which specifies the extent of the cell, longitude by
         latitude (degrees) for a global, regular target grid.
     scheme : str
-        The regridding scheme to perform, see `regrid.horizontal_schemes`.
+        The regridding scheme to perform, choose from
+        'linear',
+        'linear_extrapolate',
+        'nearest',
+        'area_weighted',
+        'unstructured_nearest'.
+    lat_offset : bool
+        Offset the grid centers of the latitude coordinate w.r.t. the
+        pole by half a grid step. This argument is ignored if `target_grid`
+        is a cube or file.
+    lon_offset : bool
+        Offset the grid centers of the longitude coordinate w.r.t. Greenwich
+        meridian by half a grid step.
+        This argument is ignored if `target_grid` is a cube or file.
 
     Returns
     -------
@@ -145,22 +197,10 @@ def regrid(src_cube, target_grid, scheme):
 
     See Also
     --------
-    vinterp : Perform vertical regridding.
+    extract_levels : Perform vertical regridding.
 
     """
-    if target_grid is None and scheme is None:
-        # nop
-        return src_cube
-
-    if target_grid is None:
-        emsg = 'A target grid must be specified for horizontal regridding.'
-        raise ValueError(emsg)
-
-    if scheme is None:
-        emsg = 'A scheme must be specified for horizontal regridding.'
-        raise ValueError(emsg)
-
-    if horizontal_schemes.get(scheme.lower()) is None:
+    if HORIZONTAL_SCHEMES.get(scheme.lower()) is None:
         emsg = 'Unknown regridding scheme, got {!r}.'
         raise ValueError(emsg.format(scheme))
 
@@ -170,34 +210,38 @@ def regrid(src_cube, target_grid, scheme):
         else:
             # Generate a target grid from the provided cell-specification,
             # and cache the resulting stock cube for later use.
-            target_grid = _cache.setdefault(target_grid,
-                                            _stock_cube(target_grid))
+            target_grid = _CACHE.setdefault(
+                target_grid,
+                _stock_cube(target_grid, lat_offset, lon_offset),
+            )
             # Align the target grid coordinate system to the source
             # coordinate system.
-            src_cs = src_cube.coord_system()
+            src_cs = cube.coord_system()
             xcoord = target_grid.coord(axis='x', dim_coords=True)
             ycoord = target_grid.coord(axis='y', dim_coords=True)
             xcoord.coord_system = src_cs
             ycoord.coord_system = src_cs
 
     if not isinstance(target_grid, iris.cube.Cube):
-        emsg = 'Expecting a cube or cell-specification, got {}.'
-        raise ValueError(emsg.format(type(target_grid)))
+        raise ValueError('Expecting a cube, got {}.'.format(target_grid))
 
     # Unstructured regridding requires x2 2d spatial coordinates,
     # so ensure to purge any 1d native spatial dimension coordinates
     # for the regridder.
     if scheme == 'unstructured_nearest':
         for axis in ['x', 'y']:
-            coords = src_cube.coords(axis=axis, dim_coords=True)
+            coords = cube.coords(axis=axis, dim_coords=True)
             if coords:
                 [coord] = coords
-                src_cube.remove_coord(coord)
+                cube.remove_coord(coord)
 
     # Perform the horizontal regridding.
-    result = src_cube.regrid(target_grid, horizontal_schemes[scheme])
+    if _attempt_irregular_regridding(cube, scheme):
+        cube = esmpy_regrid(cube, target_grid, scheme)
+    else:
+        cube = cube.regrid(target_grid, HORIZONTAL_SCHEMES[scheme])
 
-    return result
+    return cube
 
 
 def _create_cube(src_cube, data, levels):
@@ -282,21 +326,63 @@ def _create_cube(src_cube, data, levels):
     return result
 
 
-def vinterp(src_cube, levels, scheme):
+def _vertical_interpolate(cube, levels, interpolation, extrapolation):
+    """Perform vertical interpolation."""
+    # Determine the source levels and axis for vertical interpolation.
+    src_levels = cube.coord(axis='z', dim_coords=True)
+    z_axis, = cube.coord_dims(src_levels)
+
+    # Broadcast the 1d source cube vertical coordinate to fully
+    # describe the spatial extent that will be interpolated.
+    broadcast_shape = cube.shape[z_axis:]
+    reshape = [1] * len(broadcast_shape)
+    reshape[0] = cube.shape[z_axis]
+    src_levels_reshaped = src_levels.points.reshape(reshape)
+    src_levels_broadcast = np.broadcast_to(src_levels_reshaped,
+                                           broadcast_shape)
+
+    # force mask onto data as nan's
+    if np.ma.is_masked(cube.data):
+        cube.data[cube.data.mask] = np.nan
+
+    # Now perform the actual vertical interpolation.
+    new_data = stratify.interpolate(
+        levels,
+        src_levels_broadcast,
+        cube.data,
+        axis=z_axis,
+        interpolation=interpolation,
+        extrapolation=extrapolation)
+
+    # Calculate the mask based on the any NaN values in the interpolated data.
+    mask = np.isnan(new_data)
+
+    if np.any(mask):
+        # Ensure that the data is masked appropriately.
+        new_data = np.ma.array(new_data, mask=mask, fill_value=_MDI)
+
+    # Construct the resulting cube with the interpolated data.
+    return _create_cube(cube, new_data, levels.astype(float))
+
+
+def extract_levels(cube, levels, scheme):
     """
     Perform vertical interpolation.
 
     Parameters
     ----------
-    src_cube : cube
+    cube : cube
         The source cube to be vertically interpolated.
     levels : array
         One or more target levels for the vertical interpolation. Assumed
         to be in the same S.I. units of the source cube vertical dimension
         coordinate.
     scheme : str
-        The vertical interpolation scheme to perform. Currently supported
-        schemes are 'linear' or 'nearest'.
+        The vertical interpolation scheme to use. Choose from
+        'linear',
+        'nearest',
+        'nearest_horizontal_extrapolate_vertical',
+        'linear_horizontal_extrapolate_vertical'.
 
     Returns
     -------
@@ -307,25 +393,10 @@ def vinterp(src_cube, levels, scheme):
     regrid : Perform horizontal regridding.
 
     """
-    # Default to passing thru the original source cube.
-    result = src_cube
-
-    if levels is None and scheme is None:
-        # nop
-        return src_cube
-
-    if levels is None:
-        emsg = 'Target levels must be specified for vertical interpolation.'
-        raise ValueError(emsg)
-
-    if scheme is None:
-        emsg = 'A scheme must be specified for vertical interpolation.'
-        raise ValueError(emsg)
-
-    if scheme not in vertical_schemes:
+    if scheme not in VERTICAL_SCHEMES:
         emsg = 'Unknown vertical interpolation scheme, got {!r}. '
         emsg += 'Possible schemes: {!r}'
-        raise ValueError(emsg.format(scheme, list(vertical_schemes)))
+        raise ValueError(emsg.format(scheme, VERTICAL_SCHEMES))
 
     # This allows us to put level 0. to load the ocean surface.
     extrap_scheme = 'nan'
@@ -341,62 +412,26 @@ def vinterp(src_cube, levels, scheme):
     levels = np.array(levels, ndmin=1)
 
     # Get the source cube vertical coordinate, if available.
-    src_levels = src_cube.coord(axis='z', dim_coords=True)
+    src_levels = cube.coord(axis='z', dim_coords=True)
 
-    # Only perform vertical extraction/interploation if the source
-    # and target levels are not "similar" enough.
-    if src_levels.shape != levels.shape or \
-       not np.allclose(src_levels.points, levels):
-
-        # Determine whether we can simply extract the target levels,
-        # if they *all* exist in the source cube, otherwise
-        # perform vertical interpolation.
-        if set(levels).issubset(set(src_levels.points)):
-            name = src_levels.name()
-            coord_values = {name: lambda cell: cell.point in set(levels)}
-            constraint = iris.Constraint(coord_values=coord_values)
-            result = src_cube.extract(constraint)
-
-            # Ensure the constraint did not fail.
-            if not isinstance(result, iris.cube.Cube):
-                emsg = 'Failed to extract levels {!r} from cube {!r}.'
-                raise ValueError(emsg.format(list(levels), name))
-        else:
-            # Determine the source axis for vertical interpolation.
-            z_axis, = src_cube.coord_dims(src_levels)
-
-            # Broadcast the 1d source cube vertical coordinate to fully
-            # describe the spatial extent that will be interpolated.
-            broadcast_shape = src_cube.shape[z_axis:]
-            reshape = [1] * len(broadcast_shape)
-            reshape[0] = src_cube.shape[z_axis]
-            src_levels_reshaped = src_levels.points.reshape(reshape)
-            src_levels_broadcast = np.broadcast_to(src_levels_reshaped,
-                                                   broadcast_shape)
-
-            # force mask onto data as nan's
-            if np.ma.is_masked(src_cube.data):
-                src_cube.data[src_cube.data.mask] = np.nan
-
-            # Now perform the actual vertical interpolation.
-            new_data = stratify.interpolate(
-                levels,
-                src_levels_broadcast,
-                src_cube.data,
-                axis=z_axis,
-                interpolation=scheme,
-                extrapolation=extrap_scheme)
-
-            # Calculate the mask based on the any
-            # NaN values in the interpolated data.
-            mask = np.isnan(new_data)
-
-            if np.any(mask):
-                # Ensure that the data is masked appropriately.
-                new_data = ma.array(new_data, mask=mask, fill_value=_MDI)
-
-            # Construct the resulting cube with the interpolated data.
-            result = _create_cube(src_cube, new_data, levels.astype(float))
+    if (src_levels.shape == levels.shape
+            and np.allclose(src_levels.points, levels)):
+        # Only perform vertical extraction/interploation if the source
+        # and target levels are not "similar" enough.
+        result = cube
+    elif set(levels).issubset(set(src_levels.points)):
+        # If all target levels exist in the source cube, simply extract them.
+        name = src_levels.name()
+        coord_values = {name: lambda cell: cell.point in set(levels)}
+        constraint = iris.Constraint(coord_values=coord_values)
+        result = cube.extract(constraint)
+        # Ensure the constraint did not fail.
+        if not result:
+            emsg = 'Failed to extract levels {!r} from cube {!r}.'
+            raise ValueError(emsg.format(list(levels), name))
+    else:
+        # As a last resort, perform vertical interpolation.
+        result = _vertical_interpolate(cube, levels, scheme, extrap_scheme)
 
     return result
 
@@ -423,8 +458,8 @@ def get_cmor_levels(cmor_table, coordinate):
 
     """
     if cmor_table not in CMOR_TABLES:
-        raise ValueError("Level definition cmor_table '{}' not available"
-                         .format(cmor_table))
+        raise ValueError("Level definition cmor_table '{}' not available".
+                         format(cmor_table))
 
     if coordinate not in CMOR_TABLES[cmor_table].coords:
         raise ValueError('Coordinate {} not available for {}'.format(
@@ -434,14 +469,19 @@ def get_cmor_levels(cmor_table, coordinate):
 
     if cmor.requested:
         return [float(level) for level in cmor.requested]
-    elif cmor.value:
+    if cmor.value:
         return [float(cmor.value)]
-    else:
-        raise ValueError('Coordinate {} in {} does not have requested values'
-                         .format(coordinate, cmor_table))
+
+    raise ValueError(
+        'Coordinate {} in {} does not have requested values'.format(
+            coordinate, cmor_table))
 
 
-def get_reference_levels(filename, project, dataset, short_name, fix_dir,
+def get_reference_levels(filename,
+                         project,
+                         dataset,
+                         short_name,
+                         fix_dir,
                          coordinate='air_pressure'):
     """Get level definition from a CMOR coordinate.
 
@@ -463,12 +503,12 @@ def get_reference_levels(filename, project, dataset, short_name, fix_dir,
         levels or the string is badly formatted.
 
     """
+    filename = fix_file(filename, short_name, project, dataset, fix_dir)
+    cubes = load(filename, callback=concatenate_callback)
+    cubes = fix_metadata(cubes, short_name, project, dataset)
+    cube = cubes[0]
     try:
-        filename = fix_file(filename, short_name, project, dataset, fix_dir)
-        cube = iris.load_cube(filename)
-        cube = fix_metadata(cube, short_name, project, dataset)
         coord = cube.coord(coordinate)
-
     except iris.exceptions.CoordinateNotFoundError:
         raise ValueError('Coordinate {} not available in {}'.format(
             coordinate, filename))

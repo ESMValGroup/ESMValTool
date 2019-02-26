@@ -57,11 +57,15 @@ class TestNaming(unittest.TestCase):
 
         This will help us to avoid bad merges with stale branches
         """
+        exclude_paths = ['esmvaltool/diag_scripts/cvdp/cvdp']
+
         for dirpath, dirnames, filenames in os.walk(self.esmvaltool_folder):
             if '.git' in dirpath.split(os.sep):
+                continue
+            if any([item in dirpath for item in exclude_paths]):
                 continue
             self.assertFalse(
                 any('namelist' in name.lower()
                     for name in filenames + dirnames),
-                'Namelist reference found at {}. Please use "recipe" instead'
-                .format(dirpath))
+                'Namelist reference found at {}. Please use "recipe" instead'.
+                format(dirpath))

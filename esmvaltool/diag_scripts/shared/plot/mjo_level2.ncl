@@ -1,12 +1,12 @@
 
-load "./interface_scripts/auxiliary.ncl"
-load "./interface_scripts/data_handling.ncl"
-load "./interface_scripts/logging.ncl"
+load "$diag_scripts/../interface_scripts/auxiliary.ncl"
+load "$diag_scripts/../interface_scripts/data_handling.ncl"
+load "$diag_scripts/../interface_scripts/logging.ncl"
 
-load "./diag_scripts/shared/set_operators.ncl"
-load "./diag_scripts/shared/statistics.ncl"
+load "$diag_scripts/shared/set_operators.ncl"
+load "$diag_scripts/shared/statistics.ncl"
 
-load "./diag_scripts/aux/SAMonsoon/SAMonsoon.ncl"
+load "$diag_scripts/aux/SAMonsoon/SAMonsoon.ncl"
 
 ; #############################################################################
 undef("mjo_wave_freq_plot")
