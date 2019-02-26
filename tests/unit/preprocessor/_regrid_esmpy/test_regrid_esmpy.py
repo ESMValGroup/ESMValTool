@@ -1,5 +1,5 @@
 """Unit tests for the esmvaltool.preprocessor._regrid_esmpy module."""
-# pylint: disable=invalid-name
+# pylint: disable=invalid-name, no-self-use, too-few-public-methods
 from __future__ import absolute_import, division, print_function
 
 import cf_units
@@ -292,7 +292,7 @@ class TestHelpers(tests.Test):
             shape=self.data_3d.shape,
             data=self.data_3d,
             coord=coord_3d,
-            coord_dims=lambda name: self.coord_dims[name],
+            coord_dims=lambda name: self.coord_dims_3d[name],
         )
         self.cube.__getitem__ = mock.Mock(return_value=self.cube)
 
