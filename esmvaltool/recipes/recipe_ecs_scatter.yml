@@ -1,0 +1,250 @@
+# recipe_ecs_scatter.yml
+---
+documentation:
+  description: |
+    Calculates equilibrium climate sensitivity (ECS) versus
+    1) southern ITCZ index, similar to fig. 2 from Tian (2015)
+    2) lower tropospheric mixing index (LTMI), similar to fig. 5 from
+       Sherwood et al. (2014)
+    3) tropical mid-tropospheric humidity asymmetry index, similar to fig. 4
+       from Tian (2015)
+    4) covariance of shortwave cloud reflection (Brient and Schneider, 2016)
+    5) climatological Hadley cell extent (Lipat et al., 2017)
+
+  authors:
+    - laue_ax
+
+  references:
+    - brient16jclim
+    - lipat17grl
+    - sherwood14nat
+    - tian15grl
+
+  projects:
+    - crescendo
+
+
+preprocessors:
+  pp500:
+    extract_levels:
+      levels: 50000
+      scheme: linear
+
+  pp_ltmi_0:
+    extract_levels:
+      levels: [85000, 70000, 60000, 50000, 40000]
+      scheme: linear
+
+  pp_ltmi_1:
+    extract_levels:
+      levels: [85000, 70000]
+      scheme: linear
+
+
+diagnostics:
+
+  itczidx:
+    description: southern ITCZ index
+    themes:
+      - EC
+    realms:
+      - atmos
+    variables:
+      pr:
+        reference_dataset: TRMM-L3
+        mip: Amon
+        field: T2Ms
+        additional_datasets:
+          - {dataset: TRMM-L3, project: obs4mips, level: v7, version: 7A,
+#             start_year: 1998, end_year: 2013, tier: 1}
+             start_year: 2005, end_year: 2005, tier: 1}
+          - {dataset: IPSL-CM5A-LR, project: CMIP5, exp: historical, ensemble: r1i1p1,
+             start_year: 2005, end_year: 2005}
+      prStderr:
+        reference_dataset: TRMM-L3
+        mip: Amon
+        field: T2Ms
+        frequency: mon
+        additional_datasets:
+          - {dataset: TRMM-L3, project: obs4mips, level: v7, version: 7A,
+             start_year: 2005, end_year: 2005, tier: 1}
+    scripts:
+      ecs_scatter:
+        diag: itczidx
+        calcmm: True
+        ecs_file: $diag_scripts/emergent_constraints/ecs_cmip.nc
+        legend_outside: False
+        predef_minmax: True
+        styleset: CMIP5
+        script: emergent_constraints/ecs_scatter.ncl
+
+#  humidx:
+#    description: tropical mid-tropospheric humidity asymmetry index
+#    themes:
+#      - EC
+#    realms:
+#      - atmos
+#    variables:
+#      hus:
+#        preprocessor: pp500
+#        reference_dataset: AIRS
+#        mip: Amon
+#        field: T3M
+#        additional_datasets:
+#          - {dataset: AIRS, project: obs4mips, level: L3, version: RetStd-v5,
+##             start_year: 2003, end_year: 2010, tier: 1}
+#             start_year: 2005, end_year: 2005, tier: 1}
+#          - {dataset: IPSL-CM5A-LR, project: CMIP5, exp: historical, ensemble: r1i1p1,
+#             start_year: 2005, end_year: 2005}
+#      husStderr:
+#        preprocessor: pp500
+#        reference_dataset: AIRS
+#        mip: Amon
+#        field: T3M
+#        frequency: mon
+#        additional_datasets:
+#          - {dataset: AIRS, project: obs4mips, level: L3, version: RetStd-v5,
+#             start_year: 2005, end_year: 2005, tier: 1}
+#    scripts:
+#      ecs_scatter:
+#        diag: humidx
+#        calcmm: True
+#        ecs_file: $diag_scripts/emergent_constraints/ecs_cmip.nc
+#        legend_outside: False
+#        predef_minmax: True
+#        script: emergent_constraints/ecs_scatter.ncl
+
+#  ltmi:
+#    description: lower tropospheric mixing index
+#    themes:
+#      - EC
+#    realms:
+#      - atmos
+#    variables:
+#      hur:
+#        preprocessor: pp_ltmi_1
+#        reference_dataset: ERA-Interim
+#        mip: Amon
+#        field: T3M
+#      ta:
+#        preprocessor: pp_ltmi_1
+#        reference_dataset: ERA-Interim
+#        mip: Amon
+#        field: T3M
+#      wap:
+#        preprocessor: pp_ltmi_0
+#        reference_dataset: ERA-Interim
+#        mip: Amon
+#        field: T3M
+#    additional_datasets:
+#      - {dataset: IPSL-CM5A-LR, project: CMIP5, exp: historical, ensemble: r1i1p1,
+#         start_year: 2005, end_year: 2005}
+#      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1,
+##         start_year: 1980, end_year: 2005, tier: 3}
+#         start_year: 2005, end_year: 2005, tier: 3}
+#    scripts:
+#      ecs_scatter:
+#        diag: ltmi
+#        calcmm: True
+#        ecs_file: $diag_scripts/emergent_constraints/ecs_cmip.nc
+#        legend_outside: False
+#        predef_minmax: True
+#        script: emergent_constraints/ecs_scatter.ncl
+
+#  shhc:
+#    description: climatological Hadley cell extent
+#    themes:
+#      - EC
+#    realms:
+#      - atmos
+#    variables:
+#      va:
+#        reference_dataset: ERA-Interim
+#        mip: Amon
+#        field: T3M
+#    additional_datasets:
+#      - {dataset: IPSL-CM5A-LR, project: CMIP5, exp: historical, ensemble: r1i1p1,
+#         start_year: 2005, end_year: 2005}
+#      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1,
+##         start_year: 1980, end_year: 2005, tier: 3}
+#         start_year: 2005, end_year: 2005, tier: 3}
+#    scripts:
+#      ecs_scatter:
+#        diag: shhc
+#        calcmm: True
+#        ecs_file: $diag_scripts/emergent_constraints/ecs_cmip.nc
+#        legend_outside: False
+#        predef_minmax: True
+#        script: emergent_constraints/ecs_scatter.ncl
+
+#  covrefl:
+#    description: covariance of shortwave cloud reflection
+#    themes:
+#      - EC
+#    realms:
+#      - atmos
+#    variables:
+#      ts:
+#        reference_dataset: HadISST
+#        mip: Amon
+#        field: T2Ms
+#        additional_datasets:
+#          - {dataset: IPSL-CM5A-LR, project: CMIP5, exp: historical, ensemble: r1i1p1,
+#             start_year: 2001, end_year: 2005}
+#          - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: r1i1p1,
+#             start_year: 2001, end_year: 2005}
+#          - {dataset: HadISST, project: OBS, type: reanaly, version: 1,
+#             start_year: 2001, end_year: 2005, tier: 2}
+#      hur:
+#        preprocessor: pp500
+#        reference_dataset: ERA-Interim
+#        mip: Amon
+#        field: T3M
+#        additional_datasets:
+#          - {dataset: IPSL-CM5A-LR, project: CMIP5, exp: historical, ensemble: r1i1p1,
+#             start_year: 2001, end_year: 2005}
+#          - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: r1i1p1,
+#             start_year: 2001, end_year: 2005}
+#          - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1,
+#             start_year: 2001, end_year: 2005, tier: 3}
+#      rsut:
+#        reference_dataset: CERES-EBAF
+#        mip: Amon
+#        field: T2Ms
+#        additional_datasets:
+#          - {dataset: IPSL-CM5A-LR, project: CMIP5, exp: historical, ensemble: r1i1p1,
+#             start_year: 2001, end_year: 2005}
+#          - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: r1i1p1,
+#             start_year: 2001, end_year: 2005}
+#          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
+#             start_year: 2001, end_year: 2005, tier: 1}
+#      rsutcs:
+#        reference_dataset: CERES-EBAF
+#        mip: Amon
+#        field: T2Ms
+#        additional_datasets:
+#          - {dataset: IPSL-CM5A-LR, project: CMIP5, exp: historical, ensemble: r1i1p1,
+#             start_year: 2001, end_year: 2005}
+#          - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: r1i1p1,
+#             start_year: 2001, end_year: 2005}
+#          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
+#             start_year: 2001, end_year: 2005, tier: 1}
+#      rsdt:
+#        reference_dataset: CERES-EBAF
+#        mip: Amon
+#        field: T2Ms
+#        additional_datasets:
+#          - {dataset: IPSL-CM5A-LR, project: CMIP5, exp: historical, ensemble: r1i1p1,
+#             start_year: 2001, end_year: 2005}
+#          - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: r1i1p1,
+#             start_year: 2001, end_year: 2005}
+#          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
+#             start_year: 2001, end_year: 2005, tier: 1}
+#    scripts:
+#      ecs_scatter:
+#        diag: covrefl
+#        calcmm: True
+#        ecs_file: $diag_scripts/emergent_constraints/ecs_cmip.nc
+#        legend_outside: False
+#        predef_minmax: True
+#        script: emergent_constraints/ecs_scatter.ncl
