@@ -14,6 +14,12 @@ import yaml
 
 import logging
 
+if os.name == 'posix' and sys.version_info[0] < 3:
+    import subprocess32 as subprocess
+else:
+    import subprocess
+
+
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 CONSOLE_HANDLER = logging.StreamHandler()
@@ -21,12 +27,6 @@ CONSOLE_HANDLER.setLevel(logging.DEBUG)
 CONSOLE_HANDLER.setFormatter(
             logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
 logger.addHandler(CONSOLE_HANDLER)
-
-
-if os.name == 'posix' and sys.version_info[0] < 3:
-    import subprocess32 as subprocess
-else:
-    import subprocess
 
 T_MLINE = " ".join([
     '{{ project }}', '{{ name }}', '{{ product }}', '{{ institute }}',
@@ -56,7 +56,6 @@ def get_info_from_freva(**kwargs):
     for key, value in kwargs.items():
         facets.append("{0}={1}".format(key,value))
     module = "module load cmip6-dicad/1.0"
-    #cmd = "freva --databrowser project=cmip6 {0} --all-facets".format(" ".join(facets))
     cmd = ["{0} &> /dev/null; {1} ".format(module, freva_cmd), "--databrowser", "project=cmip6"] + facets + ["--all-facets"]
     cmd = " ".join(cmd)
     freva_out = subprocess.check_output(cmd, shell=True).decode()
@@ -65,14 +64,14 @@ def get_info_from_freva(**kwargs):
 
 def get_available_dataset_info(requirements):
     out = list()
-
-    for diagnostic in requirements:
-        for experiment in diagnostic['experiment']:
-            available_datasets = get_info_from_freva(experiment=experiment)
-            if len(available_datasets['model']) > 0:
-                for model in available_datasets['model']:
-                    for cmor_table in available_datasets['cmor_table']:
-                        out.append({'model': model, 'experiment': experiment, 'cmor_table': cmor_table })
+    for requirement in requirements:
+        query = dict()
+        for key, value in requirement.iteritems():
+            query[key] = "'/{0}/'".format("|".join(value))
+            available_datasets = get_info_from_freva(**query)
+            logger.debug("Available Datasets type '%s'", type(available_datasets) )
+            logger.debug("Available Datasets '%s'", available_datasets )
+            out.append(available_datasets)
     return out
 
 def get_namelist(namelist):
@@ -92,14 +91,19 @@ def get_namelist(namelist):
     if j['namelist']['MODELS'] is not None:
         j['namelist']['MODELS'] = ["{{ global_modelline }}"]
 
-    for i in range(len(available_datasets_per_diagblock)):
-        l = list()
-        for item in available_datasets_per_diagblock[i]:
-            if not isinstance(item, dict):
-                logger.debug("Wrong type '%s'. Expected dict(). Continue", type(item))
-                continue
-            l.append(get_modelline(**item))
-        j['namelist']['DIAGNOSTICS']['diag'][i]['model'] = l
+    logger.debug("DIAGNOSTICS %s",j['namelist']['DIAGNOSTICS']['diag'])
+    logger.debug("Available Datasets %s",available_datasets_per_diagblock)
+    l = list()
+    for item in available_datasets_per_diagblock:
+        if not isinstance(item, dict):
+            logger.debug("Wrong type '%s'. Expected dict(). Continue \n %s", type(item), item)
+            continue
+        l.append(get_modelline(**item))
+
+    cnt = -1
+    for k, v in j['namelist']['DIAGNOSTICS']['diag']:
+        cnt += 1
+        j['namelist']['DIAGNOSTICS']['diag'][k]['model'] = l[cnt]
 
 
     return xmltodict.unparse(j, pretty=True)
@@ -144,9 +148,9 @@ def _get_unique_parts(modellines, flag=True):
         'historical', 'piControl', "1pctCO2", "esmFixClim1", "esmHistorical",
         "amip"
     ])
-    valid_cmor_table = set([item.lower() for item in [
+    valid_cmor_table = set([
         'Amon','Omon','Lmon', 'aero', 'OImon', 'day', '3hr'
-    ]])
+    ])
     black_list = [
         "OBS", "obs4mips", "OBS_gridfile", "reanalysis", "observation"
     ]
@@ -157,7 +161,7 @@ def _get_unique_parts(modellines, flag=True):
     if not isinstance(modellines, list):
         modellines = [modellines]
     for modelline in modellines:
-        if not isinstance(modelline, str):
+        if not isinstance(modelline, str) and not isinstance(modelline, unicode):
             try:
                 model_line_parts = modelline['#text'].split()
             except:
@@ -202,7 +206,6 @@ def get_namelist_diag_requirements(namelist):
     diagblocks = j['namelist']['DIAGNOSTICS']['diag']
     if not isinstance(diagblocks, list):
         diagblocks = [diagblocks]
-    cnt = 0
     for diagblock in diagblocks:
         variable = _get_variable_str(diagblock['variable'])
         if 'model' in diagblock.keys():
@@ -212,8 +215,7 @@ def get_namelist_diag_requirements(namelist):
             experiment = []
             cmor_table = []
         time_span = None
-        out.append({'variables': diagblock['variable'] if isinstance(diagblock['variable'], list) else [diagblock['variable']], 'experiment': experiment, 'cmor_table': cmor_table})
-        cnt += 1
+        out.append({'variable': diagblock['variable'] if isinstance(diagblock['variable'], list) else [diagblock['variable']], 'experiment': experiment, 'cmor_table': cmor_table})
     return out
 
 
