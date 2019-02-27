@@ -1,10 +1,11 @@
 """Preprocessor module."""
+import os
 import copy
 import inspect
 import logging
 
 import six
-from iris.cube import Cube, CubeList
+from iris.cube import Cube
 
 from .._provenance import TrackedFile
 from .._task import BaseTask
@@ -393,7 +394,15 @@ class PreprocessingTask(BaseTask):
                 for product in self.products:
                     logger.debug("Applying single-model steps to %s", product)
                     for step in block:
+                        logger.debug("**************************************")
                         logger.debug("Applying step %s", step)
+                        ref_product = product.settings['fix_file']
+                        logger.debug("Dataset %s", ref_product['dataset'])
+                        logger.debug("Variable %s", ref_product['short_name'])
+                        diag_name = \
+                            ref_product['output_dir'].split(os.sep)[-3]
+                        logger.debug("Diagnostic %s", diag_name)
+                        logger.debug("**************************************")
                         if step in product.settings:
                             product.apply(step, self.debug)
                     if block == blocks[-1]:
