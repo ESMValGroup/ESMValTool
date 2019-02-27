@@ -27,6 +27,7 @@
 ;   CMOR units expected: areacello in m2, sic in %
 ;
 ; Modification history
+;   20190227-A_senf_da: Added provenance.
 ;   20190218-A_senf_da: Ported to ESMValTool v2.0a1
 ;   20180620-A_senf_da: Ported to ESMValTool v2
 ;   20160906-A_senf_da: Added option to fill polar observation hole
