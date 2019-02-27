@@ -96,6 +96,7 @@ def parse_settings(settings_file, interactive=False):
     DIAG_NAMES: VARS: DATASETS: DATSET_PROPERTIES eg
     {'validation_basic': {'tas': {'MPI-ESM-LR':{}}}}
     """
+    debug = False
     with open(settings_file, 'r') as file:
         sett_dict = yaml.safe_load(file)
     if sett_dict['log_level'] == 'debug':
