@@ -92,12 +92,16 @@ def writexls(cfg, filename, ncts, nclon1, nclat1):
     name = os.path.splitext(os.path.basename(filename))[0] + '_polygon_table'
     ncfile = Dataset(filename, 'r')
     otime = ncfile.variables['time']
-    dtime = num2date(otime[:], otime.units, otime.calendar)
+    dtime = num2date(ncfile.variables['time'][:],
+                     ncfile.variables['time'].units,
+                     ncfile.variables['time'].calendar)
     wtime = []
-    for tim in range(len(dtime)):
-        wtime.append(str(dtime[tim]))
-    pathx = os.path.join(cfg['work_dir'], name + '.xlsx')
-    workbook = xlsxwriter.Workbook(pathx)
+    for dtim in dtime:
+        wtime.append(str(dtim))
+    workbook = xlsxwriter.Workbook(
+        os.path.join(cfg['work_dir'],
+                     os.path.splitext(os.path.basename(filename))[0] +
+                     '_polygon_table' + '.xlsx'))
     worksheet = workbook.add_worksheet('Data')
     worksheet.write(0, 0, 'Date')
     worksheet.write(0, 1, 'Lon/Lat')
@@ -138,30 +142,6 @@ def shapeselect(cfg, cube, filename):
         logger.info("Support for 2-d coords not implemented!")
         sys.exit(1)
     points = MultiPoint(coordpoints)
-    if cfg['evalplot']:
-        # Set limits for map (This can definitely be improved!)
-        shap = fiona.open(shppath)
-        llcrnrlon = shap.bounds[0] - 1
-        llcrnrlat = max((shap.bounds[1] - 1, -90))
-        urcrnrlon = shap.bounds[2] + 1
-        urcrnrlat = min((shap.bounds[3] + 1, 90))
-        alons = []
-        alats = []
-        for lon, lat in coordpoints:
-            if (lat > llcrnrlat and lat < urcrnrlat and lon > llcrnrlon
-                    and lon < urcrnrlon):
-                alons.append(lon)
-                alats.append(lat)
-        cnt = 0
-        matplotlib.pyplot.gcf().clear()
-        for shapp in shap:
-            xxm = [i[0] for i in shapp['geometry']['coordinates'][0][:]]
-            yym = [i[1] for i in shapp['geometry']['coordinates'][0][:]]
-            matplotlib.pyplot.plot(xxm, yym)
-            matplotlib.pyplot.plot(alons, alats, 'ro', markersize=2)
-            cnt += 1
-        matplotlib.pyplot.xlabel('Longitude')
-        matplotlib.pyplot.ylabel('Latitude')
     with fiona.open(shppath) as shp:
         gpx = []
         gpy = []
@@ -181,16 +161,6 @@ def shapeselect(cfg, cube, filename):
                     pth = 'b+'
             elif wgtmet == 'representative':
                 gpx, gpy = representative(gpx, gpy, points, multi, cube)
-            if cfg['evalplot']:
-                for pnt, val in enumerate(gpx):
-                    xpnt = cube.coord('longitude').points[val]
-                    if xpnt > 180:
-                        xpnt = xpnt - 360.
-                    matplotlib.pyplot.plot(
-                        xpnt,
-                        cube.coord('latitude').points[gpy[pnt]],
-                        pth,
-                        markersize=10)
             if len(gpx) == 1:
                 ncts[:, ishp] = np.reshape(cube.data[:, gpy, gpx],
                                            (cube.data.shape[0], ))
@@ -199,10 +169,6 @@ def shapeselect(cfg, cube, filename):
             gxx, gyy = representative([], [], points, multi, cube)
             nclon[ishp] = cube.coord('longitude').points[gxx]
             nclat[ishp] = cube.coord('latitude').points[gyy]
-    if cfg['evalplot']:
-        name = os.path.splitext(os.path.basename(filename))[0]
-        path = os.path.join(cfg['plot_dir'], name + '.png')
-        matplotlib.pyplot.savefig(path)
     return ncts, nclon, nclat
 
 
@@ -261,7 +227,6 @@ def best_match(iin, jin, pex, pey):
 
 def write_netcdf(path, var, plon, plat, cube, cfg):
     """Write results to a netcdf file."""
-    shppath = cfg['shppath']
     polyid = []
     for row in range(var.shape[1]):
         polyid.append(
@@ -278,7 +243,7 @@ def write_netcdf(path, var, plon, plat, cube, cfg):
     polys = ncout.createVariable('polygon', 'S1', ('polygon'), zlib=True)
     polys.setncattr_string('standard_name', 'polygon')
     polys.setncattr_string('long_name', 'polygon')
-    polys.setncattr_string('shapefile', shppath)
+    polys.setncattr_string('shapefile', cfg['shppath'])
     lon = ncout.createVariable(cube.coord('longitude').var_name,
                                'f8', 'polygon', zlib=True)
     lon.setncattr_string('standard_name',

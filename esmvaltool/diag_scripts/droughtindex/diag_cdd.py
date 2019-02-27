@@ -1,4 +1,4 @@
-"""Diagnostic to calculate consecutive wet days."""
+"""A diagnostic that calculates consecutive dry days."""
 import logging
 import os
 from copy import deepcopy
