@@ -14,7 +14,7 @@ from multiprocessing import Pool, cpu_count
 import psutil
 import yaml
 
-from ._config import TAGS, replace_tags
+from ._config import TAGS, replace_tags, parse_settings
 from ._provenance import TrackedFile, get_task_provenance
 
 logger = logging.getLogger(__name__)
@@ -440,6 +440,8 @@ class DiagnosticTask(BaseTask):
             ]
             settings_file = self.write_settings()
             env = dict(os.environ)
+            env['all_settings'] = parse_settings(settings_file,
+                                                 interactive=True)
             cmd.append(settings_file)
             logger.info("Running interactive command %s", cmd)
             process = subprocess.Popen(cmd, env=env)
