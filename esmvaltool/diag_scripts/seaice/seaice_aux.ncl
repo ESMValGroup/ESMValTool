@@ -1,19 +1,19 @@
-;;#############################################################################
-;;# EXTERNAL SEA ICE FUNCTIONS
-;;#############################################################################
-;; Please consider using of extending existing routines before adding new ones.
-;; Check the header of each routine for documentation.
-;;
-;; Contents:
-;;    function sea_ice_area
-;;
-;;#############################################################################
+; #############################################################################
+; # EXTERNAL SEA ICE FUNCTIONS
+; #############################################################################
+;  Please consider using of extending existing routines before adding new ones.
+;  Check the header of each routine for documentation.
+;
+;  Contents:
+;     function sea_ice_area
+;
+; #############################################################################
 
 load "$diag_scripts/../interface_scripts/interface.ncl"
 load "$diag_scripts/shared/statistics.ncl"
 load "$diag_scripts/shared/latlon.ncl"
 
-;;#############################################################################
+; #############################################################################
 undef("sea_ice_area")
 function sea_ice_area(sic:numeric,
                       imod[1]:integer,
@@ -24,43 +24,43 @@ function sea_ice_area(sic:numeric,
                       month[1]:string,
                       operation[1]:string,
                       fill_pole_hole[1]:logical)
-;;
-;; Arguments:
-;;    sic            : numeric array of rank 3 (time, lon, lat) containing
-;;                     sea ice concentration (sic)
-;;    imod           : index of current model in data_pointer
-;;    data_pointer   : see interface_scripts/data_handling.ncl
-;;    region         : "Arctic" or "Antarctic"
-;;    start_year     : first year averaged time period
-;;    end_year       : last year of averaged time period
-;;    month          : [1, 12] = select month (e.g., "3" = Mar, "9" = Sep)
-;;                     "A" = annual mean
-;;                     "all" = no average, take all input
-;;    operation      : "area" or "extent"
-;;    fill_pole_hole : True = fill northern polar hole with sic=100%
-;;
-;; Return value:
-;;    1-d array (time) containing sea ice area or sea ice extent
-;;
-;; Description:
-;;    Calculates sea ice area or extent from sea ice concentration
-;;
-;; Caveats
-;;
-;; Modification history:
-;;    20180226-A_senf_da: written.
-;;
-local funcname, scriptname, verbosity, l_irreg, aux_vars, area_temp, area_lat, \
-      date, month_ind, sic_month, check_month, smonths, month_string, latstep, \
-      max_lat, lat1D, actual_lat, data1D, i1D, i2D, dim_i2D, npts, ndim, \
-      ring, SIA_tmp, SIA_tmp2
+
+;  Arguments:
+;     sic            : numeric array of rank 3 (time, lon, lat) containing
+;                      sea ice concentration (sic)
+;     imod           : index of current model in data_pointer
+;     data_pointer   : see interface_scripts/data_handling.ncl
+;     region         : "Arctic" or "Antarctic"
+;     start_year     : first year averaged time period
+;     end_year       : last year of averaged time period
+;     month          : [1, 12] = select month (e.g., "3" = Mar, "9" = Sep)
+;                      "A" = annual mean
+;                      "all" = no average, take all input
+;     operation      : "area" or "extent"
+;     fill_pole_hole : True = fill northern polar hole with sic=100%
+;
+;  Return value:
+;     1-d array (time) containing sea ice area or sea ice extent
+;
+;  Description:
+;     Calculates sea ice area or extent from sea ice concentration
+;
+;  Caveats
+;
+;  Modification history:
+;     20180226-A_senf_da: written.
+;
+local funcname, scriptname, verbosity, l_irreg, aux_vars, area_temp, \
+      area_lat, date, month_ind, sic_month, check_month, smonths, \
+      month_string, latstep, max_lat, lat1D, actual_lat, data1D, i1D, i2D, \
+      dim_i2D, npts, ndim, ring, SIA_tmp, SIA_tmp2
 begin
 
   funcname = "sea_ice_area"
   scriptname = "diag_scripts/seaice/seaice_aux.ncl"
   enter_msg(scriptname, funcname)
 
-  ;; Check region and units
+  ;  Check region and units
   if (region.ne."Arctic" .and. region.ne."Antarctic") then
       error_msg("f", scriptname, funcname, "Argument 3 (region) invalid.")
   end if
@@ -69,13 +69,8 @@ begin
     sic@units = "%/100"
   end if
 
-  ;; Check for irregular grid (i.e., if space coordinates are multi-dimensional)
-; if (dimsizes(dimsizes(sic&$sic!1$.ne.1)) .or. \
-;     dimsizes(dimsizes(sic&$sic!2$.ne.1)) then
-;printVarSummary(sic)
-;printVarSummary(sic&$sic!1$)
-;print(data_pointer[imod])
- if (sic!1.ne."lat" .or. sic!2.ne."lon") then
+  ; Check for irregular grid
+  if (sic!1.ne."lat" .or. sic!2.ne."lon") then
     l_irreg = True
     aux_vars = read_fx_data(data_pointer[imod], "areacello")
     area_lat = aux_vars[ListIndexFromName(aux_vars, "lat")]
@@ -84,7 +79,7 @@ begin
     l_irreg = False
   end if
 
-  ;; Calculate time coordinate
+  ;  Calculate time coordinate
   date = cd_calendar(sic&time, 0)  ; Create calendar array
   if (month.eq."A") then
     sic_month = time_operations(sic, start_year, end_year, \
@@ -95,7 +90,7 @@ begin
     sic_month = sic
     month_string = ""
   else  ; "month" must be a number between 1 and 12
-    check_month = tostring(ispan(1,12,1))
+    check_month = tostring(ispan(1, 12, 1))
     if (.not.any(check_month.eq.month)) then
       error_msg("f", scriptname, funcname, "Argument 4 (month) invalid.")
     end if
@@ -103,14 +98,14 @@ begin
                 "June", "July", "August", "September", "October", \
                 "November", "December"/)
     month_string = smonths(ind(check_month.eq.month)) + " "
-    month_ind = ind(date(:,1).eq.toint(month))
+    month_ind = ind(date(:, 1).eq.toint(month))
     sic_month = sic(month_ind, :, :)
   end if
   end if
 
-  ;; Fill pole hole
+  ;  Fill pole hole
   if (fill_pole_hole .and. region.eq."Arctic") then
-    if (.not.l_irreg) then 
+    if (.not.l_irreg) then
       ; Make 2D grid compatible with irregular grid handling below
       area_lat = conform_dims(dimsizes(map_area(sic&lat, sic&lon)), \
                               sic&lat, 0)
@@ -118,26 +113,25 @@ begin
     latstep = 0.1
     max_lat = 90.
     lat1D = ndtooned(area_lat)
-    do itime=0, dimsizes(sic&time)-1  ; Hole depends on time
+    do itime = 0, dimsizes(sic&time) - 1  ; Hole depends on time
       actual_lat = max_lat
-      data1D = ndtooned(sic(itime,:,:))
+      data1D = ndtooned(sic(itime, :, :))
       if (all(ismissing(data1D))) then  ; Time step missing
         continue
       end if
       do while(True)  ; Will break when hole is filled
-        i1D = ind(lat1D.ge.actual_lat .and. \
-        lat1D.lt.actual_lat+latstep)
+        i1D = ind(lat1D.ge.actual_lat .and. lat1D.lt.actual_lat+latstep)
         if (.not. all(ismissing(i1D))) then
           i2D     = ind_resolve(ind(lat1D.ge.actual_lat),\
-          dimsizes(area_lat))
+                                dimsizes(area_lat))
           dim_i2D = dimsizes(i2D)
           npts    = dim_i2D(0)  ; Number of elements
-          ndim    = dim_i2D(1)  ; Rank of "lat" 
+          ndim    = dim_i2D(1)  ; Rank of "lat"
           if (any(ismissing(data1D(i1D)))) then
-            do n=0, npts-1
-              ring = sic(itime,i2D(n,0),i2D(n,1))
-              sic(itime,i2D(n,0),i2D(n,1)) = \
-              where(ismissing(ring), 1., ring)
+            do n = 0, npts - 1
+              ring = sic(itime, i2D(n, 0), i2D(n, 1))
+              sic(itime, i2D(n, 0), i2D(n, 1)) = \
+                where(ismissing(ring), 1., ring)
               delete(ring)
             end do
           else  ; Out of the hole!
@@ -146,14 +140,14 @@ begin
           end if
           delete([/i2D, dim_i2D, npts, ndim/])
         end if
-        delete([/i1D/])  
+        delete([/i1D/])
         actual_lat = actual_lat - latstep
       end do  ; while
       delete(data1D)
     end do  ; itime
   end if
 
-  ;; Calculate sea ice area or extent
+  ; Calculate sea ice area or extent
   if (operation.eq."extent") then
     sic_month = where(sic_month.ge.0.15, 1., 0.)  ; Make sic binary for SIE
   end if

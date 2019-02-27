@@ -106,7 +106,7 @@ begin
   if (isatt(diag_script_info, "multi_model_mean")) then
     multi_model_mean = diag_script_info@multi_model_mean
   else
-    multi_model_mean = False    
+    multi_model_mean = False
   end if
 
   ; Determine time range
@@ -313,7 +313,7 @@ begin
       outfile_ext = outfile_ext + "." + output_type()
     end if
     caption_ext = "Timeseries of " + diag_script_info@month + " " + \
-                diag_script_info@region + " sea ice extent in " + val_ext@units
+      diag_script_info@region + " sea ice extent in " + val_ext@units
     nc_file_ext = ncdf_write(val_ext, outfile_ext + ".nc")
     log_provenance(nc_file_ext, outfile_ext, caption_ext, statistics, \
                    domain, plottype, authors, references, infiles)
@@ -325,7 +325,7 @@ begin
       outfile_area = outfile_area + "." + output_type()
     end if
     caption_area = "Timeseries of " + diag_script_info@month + " " + \
-                 diag_script_info@region + " sea ice area in " + val_area@units
+      diag_script_info@region + " sea ice area in " + val_area@units
     nc_file_area = ncdf_write(val_area, outfile_area + ".nc")
     log_provenance(nc_file_area, outfile_area, caption_area, statistics, \
                    domain, plottype, authors, references, infiles)
