@@ -11,6 +11,18 @@ from jinja2 import Template
 import xmltodict
 import sys
 import yaml
+
+import logging
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+CONSOLE_HANDLER = logging.StreamHandler()
+CONSOLE_HANDLER.setLevel(logging.DEBUG)
+CONSOLE_HANDLER.setFormatter(
+            logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+logger.addHandler(CONSOLE_HANDLER)
+
+
 if os.name == 'posix' and sys.version_info[0] < 3:
     import subprocess32 as subprocess
 else:
@@ -48,8 +60,7 @@ def get_info_from_freva(**kwargs):
     cmd = ["{0} &> /dev/null; {1} ".format(module, freva_cmd), "--databrowser", "project=cmip6"] + facets + ["--all-facets"]
     cmd = " ".join(cmd)
     freva_out = subprocess.check_output(cmd, shell=True).decode()
-    print(freva_out)
-    print((freva_out.replace(":", ": [").replace("\n", "]\n")))
+    logger.debug("Output of command '%s': '%s'", cmd, freva_out)
     return yaml.load((freva_out.replace(":", ": [").replace("\n", "]\n")))
 
 def get_available_dataset_info(requirements):
@@ -70,13 +81,10 @@ def get_namelist(namelist):
     _check_namelist(namelist)
 
     requirements_per_diagblock = get_namelist_diag_requirements(namelist)
-    print(requirements_per_diagblock)
+    logger.debug("Requirements per diagblock '%s'", requirements_per_diagblock)
     available_datasets_per_diagblock = get_available_dataset_info(requirements_per_diagblock)
-    if available_datasets_per_diagblock:
-        print(type(available_datasets_per_diagblock[0]))
-        print(available_datasets_per_diagblock[0])
-    else:
-        print("No data available")
+    if not available_datasets_per_diagblock:
+        logger.debug("No data available")
 
     with open(namelist, 'r') as f:
         j = xmltodict.parse(f.read())
@@ -88,10 +96,9 @@ def get_namelist(namelist):
         l = list()
         for item in available_datasets_per_diagblock[i]:
             if not isinstance(item, dict):
-                print("Warning 1")
+                logger.debug("Wrong type '%s'. Expected dict(). Continue", type(item))
                 continue
             l.append(get_modelline(**item))
-        print(j['namelist']['DIAGNOSTICS']['diag'][0])
         j['namelist']['DIAGNOSTICS']['diag'][i]['model'] = l
 
 
@@ -154,14 +161,14 @@ def _get_unique_parts(modellines, flag=True):
             try:
                 model_line_parts = modelline['#text'].split()
             except:
-                print("Modelline is of type: {0}".format(type(modelline)))
+                logger.debug("Modelline is of type: '%s'", type(modelline))
                 model_line_parts = []
         else:
             model_line_parts = modelline.split()
 
         if len(model_line_parts) == 0:
             msg = "Empty modelline"
-            print(msg)
+            logger.debug(msg)
 
         if any([item in black_list for item in model_line_parts]):
             continue
@@ -177,7 +184,7 @@ def _get_unique_parts(modellines, flag=True):
 
         if len(match) == 0:
             msg = "Unknown {0} for modelline : {1}".format(target, modelline)
-            print(msg)
+            logger.debug(msg)
         out.append(match)
     return list(set(match))
 
@@ -206,9 +213,6 @@ def get_namelist_diag_requirements(namelist):
             cmor_table = []
         time_span = None
         out.append({'variables': diagblock['variable'] if isinstance(diagblock['variable'], list) else [diagblock['variable']], 'experiment': experiment, 'cmor_table': cmor_table})
-        #print(
-        #    "DiagBlock {0} of namelist {1} needs variable: {2}, experiment {3}, time_span {4}"
-        #    .format(cnt, namelist, variable, experiment, time_span))
         cnt += 1
     return out
 
@@ -224,10 +228,6 @@ def main():
 
     namelist = kwa['namelist']
     print(get_namelist(namelist))
-    #print(get_template_string(namelist))
-    ##requirements = get_namelist_diag_requirements(namelist)
-    ##import json
-    ##print(json.dumps(requirements, indent=4, separators=(',', ': ')))
 
 if __name__ == "__main__":
     main()
