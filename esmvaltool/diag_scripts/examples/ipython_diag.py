@@ -20,6 +20,7 @@ def main(cfg):
         ALL_SETTINGS = yaml.safe_load(file)
     embed()
 
+
 if __name__ == '__main__':
 
     with run_diagnostic_interactive() as config:
