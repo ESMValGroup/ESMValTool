@@ -5,7 +5,7 @@ write_plots: True
 write_netcdf: True
 log_level: debug
 exit_on_warning: False
-output_file_type: ps
+output_file_type: png
 
 output_dir: /work/bd0854/b309143/ESMValTool/
 

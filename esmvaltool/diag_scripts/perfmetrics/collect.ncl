@@ -390,4 +390,28 @@ begin
 
   leave_msg(DIAG_SCRIPT, "")
 
+  ; collect meta-data and call ESMValMD function
+  nc_file = ncdf_outfile
+  plot_file = outfile_plot
+  statistics = ("mean")
+  domain = ("glob")
+  if (diag_script_info@metric.eq."SMPI") then
+    caption = "Performance index I2. Similar to Figure 1 of Reichler and Kim (2008)."
+    plottype = ("circle")
+    authors = (/"righ_ma", "fran_fr", "gier_be", "hass_bg"/)
+    references = (/"rk2008bams"/)
+  else 
+    caption = "Performance metric."
+    plottype = ("taylor")
+    authors = (/"righ_ma", "fran_fr"/)
+    references = (/"righi15gmd", "gleckler08jgr"/)
+  end if
+  var0 = variable_info[0]@short_name
+  info_items = select_metadata_by_name(input_file_info, var0)
+  infiles = metadata_att_as_array(info_items, "filename")
+  ;infiles = (/"not clear yet", "not clear yet 2"/)
+  log_provenance(nc_file, plot_file, caption, statistics, domain, plottype, \
+                 authors, references, infiles)
+  
+  
 end
