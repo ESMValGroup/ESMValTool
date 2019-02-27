@@ -440,8 +440,13 @@ class DiagnosticTask(BaseTask):
             ]
             settings_file = self.write_settings()
             env = dict(os.environ)
-            env['all_settings'] = parse_settings(settings_file,
-                                                 interactive=True)
+            parsed_settings = parse_settings(settings_file,
+                                             interactive=True)
+            parsed_settings_file = os.path.join(self.settings['run_dir'],
+                                                'parsed_settings.yml')
+            with open(parsed_settings_file, 'w') as file:
+                yaml.safe_dump(parsed_settings, file)
+            env['parsed_settings'] = parsed_settings_file
             cmd.append(settings_file)
             logger.info("Running interactive command %s", cmd)
             process = subprocess.Popen(cmd, env=env)
