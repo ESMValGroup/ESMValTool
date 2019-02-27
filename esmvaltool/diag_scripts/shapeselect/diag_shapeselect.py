@@ -6,7 +6,6 @@ from copy import deepcopy
 
 import fiona
 import iris
-import matplotlib
 import numpy as np
 import xlsxwriter
 from netCDF4 import Dataset, num2date
@@ -47,7 +46,7 @@ def main(cfg):
                     attributes['standard_name'], attributes['dataset'])
         logger.debug("Loading %s", filename)
         cube = iris.load_cube(filename)
-        ncts, nclon, nclat = shapeselect(cfg, cube, filename)
+        ncts, nclon, nclat = shapeselect(cfg, cube)
         name = os.path.splitext(os.path.basename(filename))[0] + '_polygon'
         if cfg['write_xlsx']:
             xname = name + '_table'
@@ -89,9 +88,7 @@ def write_keyvalue_toxlsx(worksheet, row, key, value):
 
 def writexls(cfg, filename, ncts, nclon1, nclat1):
     """Write the content of a netcdffile as .xlsx."""
-    name = os.path.splitext(os.path.basename(filename))[0] + '_polygon_table'
     ncfile = Dataset(filename, 'r')
-    otime = ncfile.variables['time']
     dtime = num2date(ncfile.variables['time'][:],
                      ncfile.variables['time'].units,
                      ncfile.variables['time'].calendar)
@@ -127,7 +124,7 @@ def writexls(cfg, filename, ncts, nclon1, nclat1):
     workbook.close()
 
 
-def shapeselect(cfg, cube, filename):
+def shapeselect(cfg, cube):
     """Select data inside a shapefile."""
     shppath = cfg['shppath']
     wgtmet = cfg['wgtmet']
@@ -156,9 +153,6 @@ def shapeselect(cfg, cube, filename):
                 gpx, gpy = mean_inside(gpx, gpy, points, multi, cube)
                 if not gpx:
                     gpx, gpy = representative(gpx, gpy, points, multi, cube)
-                    pth = 'g+'
-                else:
-                    pth = 'b+'
             elif wgtmet == 'representative':
                 gpx, gpy = representative(gpx, gpy, points, multi, cube)
             if len(gpx) == 1:
