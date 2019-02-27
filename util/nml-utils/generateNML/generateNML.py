@@ -14,6 +14,8 @@ import yaml
 
 import logging
 
+from collections import OrderedDict
+
 if os.name == 'posix' and sys.version_info[0] < 3:
     import subprocess32 as subprocess
 else:
@@ -68,14 +70,13 @@ def get_available_dataset_info(requirements):
         query = dict()
         for key, value in requirement.iteritems():
             query[key] = "'/{0}/'".format("|".join(value))
-            available_datasets = get_info_from_freva(**query)
-            logger.debug("Available Datasets type '%s'", type(available_datasets) )
-            logger.debug("Available Datasets '%s'", available_datasets )
-            out.append(available_datasets)
+        available_datasets = get_info_from_freva(**query)
+        logger.debug("Available Datasets type '%s'", type(available_datasets) )
+        logger.debug("Available Datasets '%s'", available_datasets )
+        out.append(available_datasets)
     return out
 
 def get_namelist(namelist):
-
 
     _check_namelist(namelist)
 
@@ -100,11 +101,15 @@ def get_namelist(namelist):
             continue
         l.append(get_modelline(**item))
 
-    cnt = -1
-    for k, v in j['namelist']['DIAGNOSTICS']['diag']:
-        cnt += 1
-        j['namelist']['DIAGNOSTICS']['diag'][k]['model'] = l[cnt]
-
+    if isinstance(j['namelist']['DIAGNOSTICS']['diag'], OrderedDict):
+        j['namelist']['DIAGNOSTICS']['diag']['model'] = l
+    else:
+        raise Exception
+    # cnt = -1
+    # for k, v in j['namelist']['DIAGNOSTICS']['diag'].iteritems():
+    #     cnt += 1
+    #     logger.debug("Key: %s Value: %s", k, v)
+    #     j['namelist']['DIAGNOSTICS']['diag'][k]['model'] = l[cnt]
 
     return xmltodict.unparse(j, pretty=True)
 
