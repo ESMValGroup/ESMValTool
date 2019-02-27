@@ -217,6 +217,8 @@ begin
   end if
 
   ; Some attributes for extent plot
+  val_ext!0 = "model"
+  val_ext&model = metadata_att_as_array(info, "dataset")
   val_ext!1 = "time"
   val_ext&time = int2dble(all_years)
   if diag_script_info@month .eq. "A" then   ; weighted annual mean
@@ -228,6 +230,8 @@ begin
   val_ext@long_name = "Sea Ice Extent"
 
   ; Some attributes for area plot
+  val_area!0 = "model"
+  val_area&model = metadata_att_as_array(info, "dataset")
   val_area!1 = "time"
   val_area&time = int2dble(all_years)
   if diag_script_info@month .eq. "A" then   ; weighted annual mean
@@ -300,7 +304,8 @@ begin
     authors = (/"senf_da", "gott_kl"/)
     references = "stroeve07grl"
     infiles = metadata_att_as_array(info, "filename")
-    nc_file_ext = ncdf_write(val_ext, outfile_ext + ".nc")
+    val_ext@var = var0
+    val_ext@diag_script = DIAG_SCRIPT
     if (isatt(wks_ext, "fullname")) then
       outfile_ext = wks_ext@fullname
     else
@@ -308,20 +313,11 @@ begin
     end if
     caption_ext = "Timeseries of " + diag_script_info@month + " " + \
                 diag_script_info@region + " sea ice extent in " + val_ext@units
+    nc_file_ext = ncdf_write(val_ext, outfile_ext + ".nc")
     log_provenance(nc_file_ext, outfile_ext, caption_ext, statistics, \
                    domain, plottype, authors, references, infiles)
-
-print(nc_file_ext)
-print(outfile_ext)
-print(caption_ext)
-print(statistics)
-print(domain)
-print(plottype)
-print(authors)
-print(references)
-print(infiles)
-
-    nc_file_area = ncdf_write(val_area, outfile_area + ".nc")
+    val_area@var = var0
+    val_area@diag_script = DIAG_SCRIPT
     if (isatt(wks_area, "fullname")) then
       outfile_area = wks_area@fullname
     else
@@ -329,6 +325,7 @@ print(infiles)
     end if
     caption_area = "Timeseries of " + diag_script_info@month + " " + \
                  diag_script_info@region + " sea ice area in " + val_area@units
+    nc_file_area = ncdf_write(val_area, outfile_area + ".nc")
     log_provenance(nc_file_area, outfile_area, caption_area, statistics, \
                    domain, plottype, authors, references, infiles)
 
