@@ -95,7 +95,6 @@ begin
     diag_script_info@fill_pole_hole = False
   else
     if (diag_script_info@fill_pole_hole) then
-print(diag_script_info@region)
       if (diag_script_info@region.eq."Antarctic") then
         diag_script_info@fill_pole_hole = False
         error_msg("w", DIAG_SCRIPT, "", "No pole hole at Antarctic " + \
