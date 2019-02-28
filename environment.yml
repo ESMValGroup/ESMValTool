@@ -17,7 +17,6 @@ dependencies:
   - r-base
   - r-rcpp
   - r-xml
-  - libgfortran-ng # needed by r packages
   # TODO: add julia
 
   - pip:
