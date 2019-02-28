@@ -23,7 +23,8 @@ documentation:
     - c3s-magic
 
 datasets:
-  - {dataset: CNRM-CM6-1, project: CMIP6, mip: day, exp: historical, ensemble: r1i1p1f2, grid: gr, start_year: 1979, end_year: 2008}
+  - {dataset: GISS-E2-1-G, project: CMIP6, mip: day, exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 1979, end_year: 2008}
+  #- {dataset: CNRM-CM6-1, project: CMIP6, mip: day, exp: historical, ensemble: r1i1p1f2, grid: gr, start_year: 1979, end_year: 2008}
   #- {dataset: MPI-ESM-MR, project: CMIP5, mip: day, exp: amip, ensemble: r1i1p1, start_year: 1979, end_year: 2008}
   #- {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
     #- {model: MPI-ESM-MR, project: CMIP5, mip: day, exp: historical, ensemble: r1i1p1, start_year: 1979, end_year: 2008}
