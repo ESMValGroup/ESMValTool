@@ -189,6 +189,9 @@ begin
   ; Set dataset names
   datasetnames = metadata_att_as_array(info_items, "dataset")
 
+  ; Get climofile information
+  climofiles = metadata_att_as_array(info_items, "filename")
+
   ; Check for reference dataset definition
   if (variable_info[0]@reference_dataset.eq."None") then
     error_msg("f", DIAG_SCRIPT, "", "no reference dataset is specified")
@@ -335,7 +338,7 @@ begin
         atts = True
         atts@project = diag_script_info@normalization(met)
         info = select_metadata_by_atts(input_file_info, atts)
-        print(info)
+        ;print(info)
         delete(atts)
 
         do ii = 0, dimsizes(ens_idx) - 1
@@ -372,10 +375,11 @@ begin
         smpi@invar = var0
         smpi@region = location
         smpi@ensemble_name = diag_script_info@normalization(met)
-        smpi@num_climofiles = dimsizes(dataset_info@dataset)  ; FIX-ME ?
-        do imod = 0, dimsizes(dataset_info@dataset) - 1
+        ;smpi@num_climofiles = dimsizes(datasetnames)  ; FIX-ME ?
+        smpi@num_climofiles = dimsizes(climofiles)
+        do imod = 0, smpi@num_climofiles - 1
           num_climo = "climofile_" + imod
-          smpi@$num_climo$ = input_file_info@filename(imod)
+          smpi@$num_climo$ = climofiles(imod)
         end do
         smpi@ncdf_dir = ncdf_dir(met)
 

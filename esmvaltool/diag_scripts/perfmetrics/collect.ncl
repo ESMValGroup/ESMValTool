@@ -103,6 +103,19 @@ begin
 
       end if
 
+      ; Define the string array for input file provenance 
+      if (ii.eq.0) then 
+        climofiles = new(dimsizes(input_files)*data_all_smpi@num_climofiles, string)
+      end if
+      
+      ; Add the input file info to the file for provenance
+      do iclim = 0, toint(data_all_smpi@num_climofiles) - 1
+        num_climo = "climofile_" + iclim
+        climo_idx = iclim + ii*data_all_smpi@num_climofiles
+        climofiles(climo_idx) = data_temp_smpi@$num_climo$
+      end do
+      
+      
     ; Make sure dataset coordinate is consistent
       consistent = False
       if (dimsizes(data_temp_smpi&models).eq. \
@@ -393,23 +406,22 @@ begin
   ; collect meta-data and call ESMValMD function
   nc_file = ncdf_outfile
   plot_file = outfile_plot
-  statistics = ("mean")
   domain = ("glob")
   if (diag_script_info@metric.eq."SMPI") then
+    statistics = ("smpi")
     caption = "Performance index I2. Similar to Figure 1 of Reichler and Kim (2008)."
     plottype = ("circle")
     authors = (/"righ_ma", "fran_fr", "gier_be", "hass_bg"/)
     references = (/"rk2008bams"/)
+    infiles = climofiles
   else 
+    statistics = ("mean")
     caption = "Performance metric."
     plottype = ("taylor")
     authors = (/"righ_ma", "fran_fr"/)
     references = (/"righi15gmd", "gleckler08jgr"/)
+    infiles = "will still have to be defined!"     ; TO FIX!
   end if
-  var0 = variable_info[0]@short_name
-  info_items = select_metadata_by_name(input_file_info, var0)
-  infiles = metadata_att_as_array(info_items, "filename")
-  ;infiles = (/"not clear yet", "not clear yet 2"/)
   log_provenance(nc_file, plot_file, caption, statistics, domain, plottype, \
                  authors, references, infiles)
   

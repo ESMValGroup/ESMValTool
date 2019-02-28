@@ -577,6 +577,7 @@ domains:
 plot_types:
   errorbar: error bar plot
   bar: bar chart
+  circle: different overlapping circles
   diurn: diurnal cycle
   geo: geographical distribution
   portrait: portrait diagram
@@ -607,4 +608,5 @@ statistics:
   perc: percentiles
   median: median
   detrend: detrend
+  smpi: single metric performance index statistics
   other: other statistics
