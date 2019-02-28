@@ -108,7 +108,7 @@ def get_available_dataset_info(requirements):
         available_datasets = get_info_from_freva(**query)
         logger.debug("Available Datasets type '%s'", type(available_datasets))
         logger.debug("Available Datasets '%s'", available_datasets)
-        out.append(available_datasets)
+        out.append(sorted(available_datasets))
     return out
 
 
