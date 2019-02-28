@@ -9,7 +9,7 @@ datasets:
   - {dataset: EC-EARTH, project: CMIP5, mip: Amon, exp: historical, ensemble: r12i1p1, start_year: 1990, end_year: 1999}
 #  - {dataset: CRU, mip: Amon, project: OBS, type: reanaly, version: 1, start_year: 1990, end_year: 1994, tier: 3}
 #  - {dataset: bcc-csm1-1-m,  project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 1998,  end_year: 1999}
- 
+
 
 diagnostics:
   diagnostic1:
@@ -24,7 +24,7 @@ diagnostics:
         script: shapeselect/diag_shapeselect.py
         #shppath: 'esmvaltool/diag_scripts/shapeselect/testdata/Elbe.shp'
         #shppath: 'esmvaltool/diag_scripts/shapeselect/testdata/MotalaStrom.shp'
-        shppath: '/home/a001850/WORK/git/ESMValTool/esmvaltool/diag_scripts/shapeselect/testdata/Thames.shp'
+        shppath: 'esmvaltool/diag_scripts/shapeselect/testdata/Thames.shp'
         wgtmet: 'mean_inside'
         write_xlsx: true
         write_netcdf: true
