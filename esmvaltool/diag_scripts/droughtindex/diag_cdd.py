@@ -8,13 +8,13 @@ import numpy as np
 
 from esmvaltool.diag_scripts.shared import run_diagnostic
 from esmvaltool.diag_scripts.shared.plot import quickplot
-from esmvaltool.diag_scripts.shared._base import (
-    ProvenanceLogger, get_diagnostic_filename)
+from esmvaltool.diag_scripts.shared._base import (ProvenanceLogger,
+                                                  get_diagnostic_filename)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
 
-def get_provenance_record(cfg, basename, caption, ancestor_files):
+def write_provenance_record(cfg, diagnostic_file, caption, ancestor_files):
     """Create a provenance record describing the diagnostic data and plot."""
     record = {
         'caption': caption,
@@ -24,7 +24,6 @@ def get_provenance_record(cfg, basename, caption, ancestor_files):
         'references': ['acknow_project'],
         'ancestors': ancestor_files,
     }
-    diagnostic_file = get_diagnostic_filename(basename, cfg)
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(diagnostic_file, record)
 
@@ -40,22 +39,15 @@ def main(cfg):
         name = os.path.splitext(os.path.basename(filename))[0]
         # Write to file
         if cfg['write_netcdf']:
-            path = os.path.join(
-                cfg['work_dir'],
-                name + '_drymax.nc',
-            )
-            output_basename = name + '_drymax'
-            iris.save(drymaxcube, target=path)
-            get_provenance_record(
-                cfg, output_basename, dmcap, ancestor_files=[path])
-            path = os.path.join(
-                cfg['work_dir'],
-                name + '_dryfreq.nc',
-            )
-            output_basename = name + '_dryfreq'
-            iris.save(fqthcube, target=path)
-            get_provenance_record(
-                cfg, output_basename, fqcap, ancestor_files=[path])
+            drymax_file = get_diagnostic_filename(name + '_drymax', cfg)
+            iris.save(drymaxcube, target=drymax_file)
+            write_provenance_record(
+                cfg, drymax_file, dmcap, ancestor_files=[filename])
+
+            fqth_file = get_diagnostic_filename(name + '_dryfreq', cfg)
+            iris.save(fqthcube, target=fqth_file)
+            write_provenance_record(
+                cfg, fqth_file, fqcap, ancestor_files=[filename])
         if cfg['write_plots'] and cfg.get('quickplot'):
             path = os.path.join(
                 cfg['plot_dir'],
@@ -91,10 +83,10 @@ def droughtindex(cube, cfg):
         cube.data = cube.data * 0
         cube.data[whth] = 1
         fqthcube = cube.collapsed('time', iris.analysis.SUM)
-        fqthlong_name = ('The number of consecutive dry day periods ' +
-                         'of at least ' + str(cfg['frlim']) + ' days ' +
-                         'with precipitation below ' + str(cfg['plim']) +
-                         ' mm each day.')
+        fqthlong_name = (
+            'The number of consecutive dry day periods ' + 'of at least ' +
+            str(cfg['frlim']) + ' days ' + 'with precipitation below ' + str(
+                cfg['plim']) + ' mm each day.')
         fqthcube.long_name = fqthlong_name
     return drymaxcube, dmlong_name, fqthcube, fqthlong_name
 
