@@ -6,10 +6,10 @@ Overview
 --------
 
 Atmospheric blocking is a recurrent mid-latitude weather pattern identified by a large-amplitude, quasi-stationary, long-lasting, high-pressure anomaly that ‘‘blocks’’ the westerly flow forcing the jet stream to split or meander 
-`(Rex, 1950) <https://doi.org/10.1111/j.2153-3490.1950.tb00339.x>`_.
+`(Rex, 1950) <https://onlinelibrary.wiley.com/action/showCitFormats?doi=10.1111%2Fj.2153-3490.1950.tb00331.x>`_.
 
 It is typically initiated by the breaking of a Rossby wave in a diffluence region at the exit of the storm track, where it amplifies the underlying stationary ridge `(Tibaldi and Molteni, 1990) <https://doi.org/10.1034/j.1600-0870.1990.t01-2-00003.x>`_. 
-Blocking occurs more frequently in the Northern Hemisphere cold season, with larger frequencies observed over the Euro-Atlantic and North Pacific sectors. Its lifetime oscillates from a few days up to several weeks '(Davini et al., 2012 <https://doi.org/10.1175/JCLI-D-12-00032.1)>`_ sometimes leading to winter cold spells or summer heat waves. 
+Blocking occurs more frequently in the Northern Hemisphere cold season, with larger frequencies observed over the Euro-Atlantic and North Pacific sectors. Its lifetime oscillates from a few days up to several weeks `(Davini et al., 2012)  <https://doi.org/10.1175/JCLI-D-12-00032.1)>`_ sometimes leading to winter cold spells or summer heat waves. 
 
 To this end, the MId-Latitude Evaluation System (MiLES) was developed as stand-alone package (https://github.com/oloapinivad/MiLES) to support analysis of mid-latitude weather patterns in terms of atmospheric blocking, teleconnections and weather regimes. 
 The package was then implemented as recipe. 
