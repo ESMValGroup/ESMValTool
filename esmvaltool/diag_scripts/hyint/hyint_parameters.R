@@ -10,9 +10,9 @@
 
 
 run_regridding <- T
-force_regridding <- T
+force_regridding <- F
 run_diagnostic <- T
-force_diagnostic <- T
+force_diagnostic <- F
 run_timeseries <- T
 
 if (!exists("write_ncdf")) {
