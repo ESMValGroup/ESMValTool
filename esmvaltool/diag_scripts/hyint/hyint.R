@@ -84,14 +84,23 @@ diag_script_cfg <- paste0(spath, "hyint_parameters.R")
 args <- commandArgs(trailingOnly = TRUE)
 settings_file <- args[1]
 settings <- yaml::read_yaml(settings_file)
-
 # load data from settings
 for (myname in names(settings)) {
   temp <- get(myname, settings)
   assign(myname, temp)
 }
-
 metadata <- yaml::read_yaml(settings$input_files)
+
+## check required settings
+if (max(selregions) > length(region_names)) {
+  stop("requested region outside available range")
+}
+if (!all(plot_type %in% c(1, 2, 3, 11, 12, 13, 14, 15) ) ) {
+  stop("requested plot_type not available")
+}
+if (max(selfields) > length(field_names) ) {
+  stop("requested field not available")
+}
 
 # setup provenance file and list
 provenance_file <- paste0(run_dir, "/", "diagnostic_provenance.yml")

@@ -82,7 +82,12 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
         print("skipping multi-year plot_type 4 with multiyear mean")
         return(0)
       }
-      field_ref[, , 1] <- apply(field_ref, c(1, 2), mean, na.rm = T)
+      # exclude normalization years from multiyear mean
+      retyears <- 1:length(years_ref)
+      skipyears <- which(as.logical(match(years_ref, norm_years)))
+      retyears[skipyears] <- NA
+      field_ref[, , 1] <- apply(field_ref[, ,retyears],
+                                c(1, 2), mean, na.rm = T)
     }
     assign(paste(field, "_ref", sep = ""), field_ref)
   }
@@ -143,14 +148,17 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
       }
       # if requested calculate multiyear average and store it at time=1
       if (rmultiyear_mean) {
-        field_exp[, , 1] <- apply(field_exp, c(1, 2), mean, na.rm = T)
+        retyears <- 1:length(years)
+        skipyears <- which(as.logical(match(years, norm_years)))
+        retyears[skipyears] <- NA
+        field_exp[, , 1] <- apply(field_exp[, , retyears],
+                                  c(1, 2), mean, na.rm = T)
       }
       if (highreselevation_only) {
         field_exp[] <- NA
       }
       assign(paste(field, "_exp", sep = ""), field_exp)
     }
-
 
     #---------------Multiyear mean-----#
     if (rmultiyear_mean) {
@@ -324,6 +332,21 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
                                 len = nlev)
             }
 
+            cex_main <- 1.4
+            if (plot_type == 1) {
+              cex_main <- 1.3 
+            }
+
+            # drop data outside region limits
+            retlon <- which(ics < regions[iregion, 1]
+                          | ics > regions[iregion, 2])
+            retlat <- which(ipsilon < regions[iregion, 3]
+                          | ipsilon > regions[iregion, 4])
+            mask_field <- tmp_field
+            mask_field[retlon, ] <- NA
+            mask_field[, retlat] <- NA
+            tmp_field <- mask_field
+
             # contours
             filled_contour3(ics, ipsilon, tmp_field,
               xlab = "Longitude", ylab = "Latitude",
@@ -331,7 +354,7 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
                      color.palette = tmp.palette,
               xlim = c(regions[iregion, 1], regions[iregion, 2]),
               ylim = c(regions[iregion, 3], regions[iregion, 4]), axes = F,
-              asp = 1
+              asp = 1, cex.main = cex_main
             )
            # continents
             continents_col <- "white"
@@ -341,9 +364,9 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
             map("world", regions = ".", interior = map_continents_regions,
                 exact = F, boundary = T, add = T, col = continents_col,
                 lwd = abs(map_continents))
-            rect(regions[iregion, 1], regions[iregion, 3],
-                 regions[iregion, 2], regions[iregion, 4],
-                 border = "grey90", lwd = 3)
+            #rect(regions[iregion, 1], regions[iregion, 3],
+            #     regions[iregion, 2], regions[iregion, 4],
+            #     border = "grey90", lwd = 3)
             # grid points
             if (oplot_grid) {
               # build up grid if needed
@@ -378,34 +401,66 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
             }
             # axis
             if (plot_type <= 2) {
-              axis(1, col = "grey40")
-              axis(2, col = "grey40")
-            } else if (plot_type == 3) {
-              if (iquantity == 1) {
+              if ( (regions[iregion, 2] - regions[iregion, 1] > 90)
+                 | (regions[iregion, 4] - regions[iregion, 3] > 90)) {
+                axis(1, col = "grey40", at = seq(-180, 180, 45))
+                axis(2, col = "grey40", at = seq(-90, 90, 30))
+              } else {
+                axis(1, col = "grey40")
                 axis(2, col = "grey40")
               }
+            } else if (plot_type == 3) {
+                if (iquantity == 1) {
+                  if ( (regions[iregion, 2] - regions[iregion, 1] > 90)
+                     | (regions[iregion, 4] - regions[iregion, 3] > 90)) {
+                    axis(2, col = "grey40", at = seq(-90, 90, 30))
+                  } else {
+                  axis(2, col = "grey40")
+                }
+              }
               if (ifield == length(field_names)) {
-                axis(1, col = "grey40")
+                if ( (regions[iregion, 2] - regions[iregion, 1] > 90)
+                   | (regions[iregion, 4] - regions[iregion, 3] > 90)) {
+                  axis(1, col = "grey40", at = seq(-180, 180, 45))
+                } else {
+                  axis(1, col = "grey40")
+                }
               }
             } else if (plot_type == 4) {
               if (iyear == nyears) {
-                axis(1, col = "grey40")
+                if ( (regions[iregion, 2] - regions[iregion, 1] > 90)
+                   | (regions[iregion, 4] - regions[iregion, 3] > 90)) {
+                 axis(1, col = "grey40", at = seq(-180, 180, 45))
+                } else {
+                  axis(1, col = "grey40")
+                }
               }
               if (field == "int_norm") {
-                axis(2, col = "grey40")
+               if ( (regions[iregion, 2] - regions[iregion, 1] > 90)
+                  | (regions[iregion, 4] - regions[iregion, 3] > 90)) {
+                  axis(2, col = "grey40", at = seq(-90, 90, 30))
+                } else {
+                  axis(2, col = "grey40")
+                }
               }
             }
 
             # colorbar
             new_fig_scale <- c(-0.11, -0.04, 0.1, -0.1)
-            line_label <- 2.5
+            line_label <- 2.7
+            cex_label <- 1.2
+            cex_colorbar <- 1
             if (plot_type == 2) {
               new_fig_scale <- c(-0.07, -0.02, 0.1, -0.1)
-              line_label <- 2.5
+              line_label <- 2.7
+              cex_label <- 1
+              cex_colorbar <- 1.5
             }
              if (plot_type == 3) {
               new_fig_scale <- c(-0.11, -0.03, 0.1, -0.1)
               line_label <- 3
+              cex_label <- 1
+              cex_colorbar <- 1.2
             }
             if ( (tmp.colorbar[iquantity]) & add_colorbar) {
               image_scale3(volcano, levels = tmp.levels,
@@ -413,8 +468,9 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
                            color.palette = tmp.palette, colorbar.label =
                            paste(title_unit_m[ifield, 1],
                            title_unit_m[ifield, 4]),
-                cex.colorbar = 1.0, cex.label = 0.7, colorbar.width = 1,
-                line.label = line_label, line.colorbar = 1.0
+                cex.colorbar = cex_colorbar, cex.label = cex_label,
+                colorbar.width = 1, line.label = line_label,
+                line.colorbar = 1.0
               )
             }
           } # close loop over quantity

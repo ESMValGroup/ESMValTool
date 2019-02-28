@@ -54,7 +54,7 @@ diagnostics:
  
         # Reference normalization period to be used for normalized indices 
         norm_years: [2000, 2004]
-
+ 
         # Select one or more fields for timeseries and maps from the following 
         # list (order-sensitive): 
         # SDII, DSL, WSL, HY-INT, ABS_INT, ABS_DSL, ABS_WSL, PA, R95 

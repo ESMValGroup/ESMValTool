@@ -9,10 +9,11 @@
 #####################################################################
 
 
-run_diagnostic <- T
-force_diagnostic <- F
 run_regridding <- T
 force_regridding <- F
+run_diagnostic <- T
+force_diagnostic <- F
+run_timeseries <- F
 
 if (!exists("etccdi_preproc")) {
   etccdi_preproc <- F
@@ -90,7 +91,7 @@ highreselevation_only <- F # T to plot only high resolution elevation contours
 # timeseries and trend plotting options
 add_legend <- 5       # a) F=no legend; b) n>0 list disposed in n column;
                       # c) <0 horizontal legend 
-xy_legend <- c(0.03, 0.4) # position of legend in fraction of plotting panel
+xy_legend <- c(0.03, 0.8) # position of legend in fraction of plotting panel
 tag_legend <- c(T, F, F) # 1=model name, 2=model experiment, 3=model ensemble
                        # (select one or more)
 
@@ -270,7 +271,9 @@ tlevels_m[38, ] <- c(2, 8) * 0.01
 tlevels_m[39, ] <- c(0, 8) * 0.01
 tlevels_m[40, ] <- c(-100, 300) * 0.01
 
-# Figure aspect ratio (width:height) 
+# Figure details
+
+# Aspect ratio (width:height) 
 # (depending on plot_type)
 figure_aspect_ratio <- c(1.6, 1.6, 1, 1.3, 1, 1, 1, 1, 1, 1,
                          1.6, 1.8, 1.8, 1.8, 1.8, 1, 1, 1, 1, 1)
@@ -298,3 +301,7 @@ palette_giorgi2011 <- colorRampPalette(c(
   "white", "khaki1", "darkseagreen2", "mediumseagreen", "lightskyblue1",
   "lightskyblue", "deepskyblue2", "dodgerblue2", "dodgerblue3", "royalblue4"
 ))
+ palette_ts <- c("#377EB8", "#4DAF4A", "#984EA3", "#FF7F00", "#A65628",
+                 "#F781BF", "#E41A1C", "#8DD3C7", "#BEBADA", "#FB8072",
+                 "#80B1D3", "#FDB462", "#B3DE69", "#FCCDE5", "#D9D9D9",
+                 "#BC80BD", "#CCEBC5", "#FFED6F")

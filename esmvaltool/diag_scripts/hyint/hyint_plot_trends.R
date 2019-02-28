@@ -11,6 +11,9 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_idx, season) {
   # Set main paths
   dir.create(plot_dir, recursive = T)
 
+  # Load palette
+  palette(palette_ts)
+
   # Number of models
   nmodels <- length(models_name)
 
@@ -49,13 +52,8 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_idx, season) {
     field_label <- field_names
   }
 
-  # Rescale or remove preset range of values for plotting if needed
+  # Remove preset range of values for plotting if needed
   nyears <- models_end_year[ref_idx] - models_start_year[ref_idx]
-  if (nyears < 50) {
-    tlevels_m <- tlevels_m * 3
-    levels_m <- levels_m * 3
-  }
-
   if (autolevels) {
     tlevels_m[] <- NA
     levels_m[] <- NA
@@ -69,7 +67,7 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_idx, season) {
   year2_ref <- models_end_year[ref_idx]
 
   # Handle label tag when overplotting data from tseries
-  # files with different labels in plot_type 14,15,16
+  # files with different labels in plot_type 14 and 15
   label_figname <- label[1]
   if (length(label) > 1 & plot_type >= 10) {
     label_figname <- paste0(label[1], "-plus")
@@ -149,6 +147,7 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_idx, season) {
     if (model_idx == 1) {
       store_label <- label
     }
+
     # ----- Loop over label when plotting more files in the same panel ----
     for (ilabel in 1:length(store_label)) {
       label <- store_label[ilabel]
@@ -215,6 +214,7 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_idx, season) {
       # LOOP over fields
       for (field in field_names) {
         ifield <- which(field == field_names)
+
         if (anyNA(title_unit_m[ifield, 1:3])) {
           title_unit_m[ifield, 1] <- field_names[ifield]
           title_unit_m[ifield, 2:3] <- field_long_names[ifield]
@@ -236,11 +236,21 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_idx, season) {
         }
         if (is.na(levels_m[ifield, 1]) | is.na(levels_m[ifield, 2])) {
           print("No value for range: assigning min and max")
-          tmp.levels <- seq(min(tfield_exp, na.rm = T),
+          tmp.levels <- c(min(tfield_exp, na.rm = T),
                             max(tfield_exp, na.rm = T), len = nlev)
+          if (add_trend_sd || add_trend_sd_shade) {
+            tmp.levels <- c(min(tfield_exp - tfield_exp_sd, na.rm = T),
+                              max(tfield_exp + tfield_exp_sd, na.rm = T))
+          }
         } else {
-          tmp.levels <- seq(levels_m[ifield, 1],
-                            levels_m[ifield, 2], len = nlev)
+          tmp.levels <- c(levels_m[ifield, 1], levels_m[ifield, 2])
+        }
+
+        if (nyears < 20 & (!autolevels)) {
+          levrange <- max(tmp.levels, na.rm = T) - min(tmp.levels, na.rm = T)
+          meanrange <- mean(tmp.levels, na.rm = T)
+          tmp.levels <- c(meanrange - levrange * 1.5,
+                          meanrange + levrange * 1.5)
         }
 
         #  Startup graphics for one timeseries in one figure
@@ -264,13 +274,14 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_idx, season) {
             par_col <- (ifield - 1) %% npancol + 1
             par(mfg = c(par_row, par_col, npanrow, npancol))
           }
+ 
           # scale autolevels if required
           if (autolevels && (autolevels_scale != 1)) {
-            autorange <- max(tmp.levels) - min(tmp.levels)
-            meanrange <- mean(tmp.levels)
-            tmp.levels <- seq(meanrange - autorange * autolevels_scale,
-                              meanrange + autorange * autolevels_scale,
-                              len = nlev)
+            autorange <- max(tmp.levels, nat.rm = T)
+                          - min(tmp.levels, na.rm = T)
+            meanrange <- mean(tmp.levels, na.rm = T)
+            tmp.levels <- c(meanrange - autorange * autolevels_scale,
+                              meanrange + autorange * autolevels_scale)
           }
 
           # Base plot
@@ -280,9 +291,9 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_idx, season) {
               ylab <- paste0(ylab, title_unit_m[ifield, 4])
             }
             plot(time, type = "n",
-                 ylim = c(tmp.levels[1], tmp.levels[length(tmp.levels)]),
+                 ylim = c(tmp.levels[1], tmp.levels[2]),
                  xlim = xlim, xlab = "Year", ylab = ylab,
-                 main = title_unit_m[ifield, 3])
+                 main = title_unit_m[ifield, 3], xaxs = "i")
             # store panel plot limits
             plot_limits[, ifield] <- par("usr")
           }
@@ -350,8 +361,6 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_idx, season) {
               - plot_limits[3, ifield]) * xy_legend[2]
             )
             ncol <- 1
-            #    text((xlim[1]+(xlim[2]-xlim[1])*ireg/nregions),
-            #        tmp.levels[1],region_codes[iselreg],col=col_ts,offset=0.5)
             if (add_legend < 0) {
               ncol <- nregions
             }
@@ -362,6 +371,7 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_idx, season) {
               text.col = (1:nregions), ncol = ncol
             )
           }
+          box(lwd = 2)
           if (plot_type == 11) {
             graphics_close(figname)
           }
@@ -371,15 +381,23 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_idx, season) {
           if (anyNA(tlevels_m[ifield, ])) {
             print("No value for range: assigning min and max")
             ylim <- c(
-              min(trend_exp[, 2] - trend_exp_stat[, 2], na.rm = T),
-              max(trend_exp[, 2] + trend_exp_stat[, 2], na.rm = T)
-            )
+              min(trend_exp_stat[, 1] - trend_exp_stat[, 2], na.rm = T),
+              max(trend_exp_stat[, 1] + trend_exp_stat[, 2], na.rm = T))
+            if (plot_type == 15) {
+              ylim <- c(
+                min(trend_exp_stat[1, 1] - trend_exp_stat[1, 2], na.rm = T),
+                max(trend_exp_stat[1, 1] + trend_exp_stat[1, 2], na.rm = T))
+                modelrange <- max(ylim, na.rm = T) - min(ylim, na.rm = T)
+                meanmodelrange <- mean(ylim, na.rm = T)
+                ylim <- c(meanmodelrange - modelrange * 3,
+                          meanmodelrange + modelrange * 3)
+            }
             # scale autolevels if required
             if (autolevels && (autolevels_scale_t != 1)) {
-              autorange <- max(ylim) - min(ylim)
-              meanrange <- mean(ylim)
-              ylim <- seq(meanrange - autorange * autolevels_scale_t,
-                          meanrange + autorange * autolevels_scale_t, len = 2)
+              autorange <- max(ylim, na.rm = T) - min(ylim, na.rm = T)
+              meanrange <- mean(ylim, na.rm = T)
+              ylim <- c(meanrange - autorange * autolevels_scale_t,
+                          meanrange + autorange * autolevels_scale_t)
             }
 
 
@@ -455,24 +473,20 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_idx, season) {
                 col = "grey40", bg = "white", cex = 2
               )
               # add filled points for significant (95% level)
-              col90 <- c(
-                "dodgerblue3", "darkseagreen3", "goldenrod3",
-                "coral3", "grey", "mediumorchid1", "black"
-              )
-              col95 <- c(
-                "dodgerblue4", "darkseagreen4", "goldenrod4",
-                "coral4", "grey", "mediumorchid1", "black"
-              )
+              col90 <- "grey70"
+              col95 <- "dodgerblue3"
+              if (length(label) > 1) {
+                col90 <- c("dodgerblue3", "darkseagreen3", "goldenrod3",
+                           "coral3", "grey", "mediumorchid1", "black")
+                col95 <- c("dodgerblue4", "darkseagreen4", "goldenrod4",
+                           "coral4", "grey", "mediumorchid1", "black")
+              }
               if (trend_exp_stat[iregion, 4] <= 0.1) {
                 points(xregions[ixregion], trend_exp[iregion, 2],
                   pch = 22,
                   col = col90[ilabel], bg = col90[ilabel], cex = 2
                 )
               }
-              points(xregions[ixregion], trend_exp[iregion, 2],
-                pch = 22,
-                col = col95[ilabel], bg = col95[ilabel], cex = 2
-              )
               if (trend_exp_stat[iregion, 4] <= 0.05) {
                 points(xregions[ixregion], trend_exp[iregion, 2],
                   pch = 22,
@@ -487,7 +501,7 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_idx, season) {
               print(trend_exp_stat[iregion, ])
             }
           }
-            if (plot_type != 15) {
+            if (length(label) >  1) {
               retsig90 <- which(trend_exp_stat[, 4] < 0.1)
               if (!is.na(retsig90[1])) {
                 points(xregions[retsig90], trend_exp[retsig90, 2],
