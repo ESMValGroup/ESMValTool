@@ -29,7 +29,7 @@ diagnostics:
     description: HyInt hydroclimatic indices calculation and plotting
     variables:
       pr:
- #       preprocessor: preproc
+#       preprocessor: preproc
         project: CMIP5
         exp: [historical,rcp85]
         ensemble: r1i1p1
@@ -46,11 +46,6 @@ diagnostics:
     scripts:
       main:
         script: hyint/hyint.R
-        # General
-        run_diagnostic: true
-        run_timeseries: true
-        write_netcdf: true
-        write_plots: true       
  
         # Reference normalization period to be used for normalized indices 
         norm_years: [2000, 2004]
@@ -94,7 +89,7 @@ diagnostics:
 
        # Scale autolevels (factor multiplying automated range)
         autolevels_scale: 1  # for maps and timeseries    
-        autolevels_scale_t: 1.5  # for trend coefficients       
+        autolevels_scale_t: 1  # for trend coefficients       
 
         # data and maps
         removedesert: false  # T to remove (flag as NA) grid points with mean 
@@ -111,16 +106,14 @@ diagnostics:
                               # c) c(year1,year2,year3,year4) to apply trend to
                               # two separate time intervals (year1<=y's<=year2) 
                               # and (year3<=y's<=year4)
-      
+
         lm_trend: true              # calculate linear trend
         add_trend: true             # add linear trend to plot
-        add_trend_sd: true           # add stdev range to timeseries
-        add_trend_sd_shade: false   # add shade of stdev range to timeseries
+        add_trend_sd: true          # add stdev range to timeseries
+        add_trend_sd_shade: true    # add shade of stdev range to timeseries
         add_tseries_lines: true     # lot lines of timeseries over points
         add_zeroline: true          # plot a dashed line at y=0
         trend_years_only: false     # limit timeseries plotting to trend_years
                                     # time interval
         scale100years: true         # plot trends as 1/100 years
-        scalepercent: false         # plot trends as % change (excluding hyint) 
-        
-
+        scalepercent: false         # plot trends as % change (excluding hyint)
