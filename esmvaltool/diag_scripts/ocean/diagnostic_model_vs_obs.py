@@ -63,7 +63,8 @@ logger = logging.getLogger(os.path.basename(__file__))
 logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
 
-def add_map_subplot(subplot, cube, nspace, title='', cmap='', extend='neither', log=False):
+def add_map_subplot(subplot, cube, nspace, title='', 
+                    cmap='', extend='neither', log=False):
     """
     Add a map subplot to the current pyplot figure.
 
@@ -163,7 +164,7 @@ def make_model_vs_obs_plots(
     obs = metadata[filenames['obs']]['dataset']
 
     long_name = cubes['model'][list(layers.keys())[0]].long_name
-    units = str( cubes['model'][list(layers.keys())[0]].units )
+    units = str(cubes['model'][list(layers.keys())[0]].units)
 
     # Load image format extention
     image_extention = diagtools.get_image_format(cfg)
@@ -181,15 +182,15 @@ def make_model_vs_obs_plots(
         cube224 = cubes['model'][layer] / cubes['obs'][layer]
 
         # create the z axis for plots 2, 3, 4.
-        extend='neither'
+        extend = 'neither'
         zrange12 = diagtools.get_cube_range([cube221, cube222])
         if 'map_range' in cfg:
             zrange12 = cfg['map_range']
-            extend='both'
+            extend = 'both'
         zrange3 = diagtools.get_cube_range_diff([cube223])
         if 'dif_range' in cfg:
             zrange3 = cfg['dif_range']
-            extend='both'
+            extend = 'both'
 
         cube224.data = np.ma.clip(cube224.data, 0.1, 10.)
 
@@ -209,9 +210,9 @@ def make_model_vs_obs_plots(
             cube223,
             linspace3,
             cmap='bwr',
-            title=' '.join([model, 'minus', obs]), 
+            title=' '.join([model, 'minus', obs]),
             extend=extend)
-        if np.min(zrange12) > 0. :
+        if np.min(zrange12) > 0.:
             add_map_subplot(
                 224,
                 cube224,
@@ -221,7 +222,7 @@ def make_model_vs_obs_plots(
                 log=True)
 
         # Add overall title
-        fig.suptitle(long_name+' ['+units+']', fontsize=14)
+        fig.suptitle(long_name + ' [' + units + ']', fontsize=14)
 
         # Determine image filename:
         fn_list = ['model_vs_obs', long_name, model, obs, str(layer), 'maps']
@@ -403,8 +404,8 @@ def make_scatter(
         if np.min(zrange) * np.max(zrange) < -1:
             x_scale = 'linear'
         if np.min(zrange) < 0.:
-           logger.info('Skip scatter plot for %s. Data min range is negative!', long_name) 
-           return
+            logger.info('Skip plot for %s. Min range < 0', long_name)
+            return
 
         pyplot.hexbin(
             model_data,

@@ -26,10 +26,8 @@
 import datetime
 import logging
 import os
-import glob
 
 import iris
-import netCDF4 as nc
 from cf_units import Unit
 import numpy as np
 
@@ -37,8 +35,7 @@ from .utilities import (_add_metadata,
                         _convert_timeunits,
                         _fix_coords,
                         _read_cmor_config,
-                        _roll_cube_data,
-                        _save_variable)
+                        _roll_cube_data)
 
 logger = logging.getLogger(__name__)
 
@@ -55,15 +52,15 @@ STANDARD_NAMES = cfg['STANDARD_NAMES']
 LONG_NAMES = cfg['LONG_NAMES']
 NC4_ZIP = cfg['NC4_ZIP']
 # 
-ALLVARS=list(VAR_TO_CMOR.keys())
+ALLVARS = list(VAR_TO_CMOR.keys())
 
 
 def _fix_metadata(cube, var):
     """Fix all aspects of metadata for different vars."""
     logger.info("Fixing units...")
-    if var in ['fgco2',] :
+    if var in ['fgco2', ]:
         cube.units = Unit('kg m-2 s-1')
-    if var in ['spco2','dpco2' ] :
+    if var in ['spco2','dpco2', ]:
         cube.units = Unit('Pa')
     return cube
 
@@ -71,14 +68,14 @@ def _fix_metadata(cube, var):
 def _fix_data(cube, var):
     """Specific data fixes for different variables."""
     logger.info("Fixing data ...")
-    # fix for missing value definition 
-    cube.data=np.ma.masked_values(cube.data, cube.data.fill_value)
-    if var in ['fgco2'] :
+    """ fix for bad missing value definition """
+    cube.data = np.ma.masked_values(cube.data, cube.data.fill_value)
+    if var in ['fgco2', ]:
         """ Assume standard year 365_day"""
-        cube.data = cube.data * -12.01 / 1000. / (86400. * 365.)   # Reverse flux sign & Convert from mol m^{-2} yr^{-1} to kg m-2 s-1
-        dict.__setitem__(cube.attributes, 'positive', 'down')
-    if var in ['spco2','dpco2' ] :
-        cube.data = cube.data * 101325. / 1.e06  # Convert from muatm to Pa
+        cube.data = cube.data * -12.01 / 1000. / (86400. * 365.)
+        cube.attributes['positive'] = 'down'
+    if var in ['spco2','dpco2', ]:
+        cube.data = cube.data * 101325. / 1.e06
     return cube
 
 
@@ -100,18 +97,43 @@ def extract_variable(var, raw_file, out_dir, yr):
             _save_variable(cube, var, out_dir, proj)
 
 
+def _save_variable(cube, var, outdir, proj, zip='False'):
+    """Saver function."""
+    # CMOR standard
+    yrbeg = cube.coord('time').cell(0).point.strftime('%Y')
+    mobeg = cube.coord('time').cell(0).point.strftime('%m')
+    yrend = cube.coord('time').cell(-1).point.strftime('%Y')
+    moend = cube.coord('time').cell(-1).point.strftime('%m')
+    time_suffix = '-'.join([yrbeg + mobeg, yrend + moend])
+
+    cmor_prefix = '_'.join([
+        'OBS', proj['dataset'], proj['realm'], proj['version'],
+        proj['field'], var, proj['frequency'][var]
+    ])
+    file_name = cmor_prefix + '_' + time_suffix + '.nc'
+    file_path = os.path.join(outdir, file_name)
+    fillvalue = cube.data.fill_value
+    if (zip):
+        logger.info('Saving as NC4-ZIP : %s ', file_path)
+        iris.save(cube, file_path, fill_value=fillvalue, local_keys=['positive'], zlib=True, complevel=4)
+    else:
+        logger.info('Saving: %s', file_path)
+        iris.save(cube, file_path, fill_value=fillvalue, local_keys=['positive'])
+
+
+
 def cmorization(in_dir, out_dir):
     """Cmorization func call."""
     logger.info("Starting cmorization for WOA OBS files: Tier2")
     logger.info("Input data from: %s", in_dir)
     logger.info("Output will be written to: %s", out_dir)
    
-    yrdummy=2000
+    yrdummy = 2000
 
     # run the cmorization
     for var in ALLVARS:
         if not os.path.exists(out_dir):
-            os.path.makedirs(out_dir)
+            os.makedirs(out_dir)
         raw_file = os.path.join(in_dir, VAR_TO_FILENAME[var] + '.nc')
         logger.info("CMORizing var %s in file %s", var, raw_file)
         extract_variable(var, raw_file, out_dir, yrdummy)

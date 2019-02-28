@@ -28,7 +28,7 @@ def _convert_timeunits(cube, start_year):
         real_unit = 'months since {}-01-01 00:00:00'.format(str(start_year))
     if cube.coord('time').units == 'days since 0000-01-01 00:00:00':
         real_unit = 'days since {}-01-01 00:00:00'.format(str(start_year))
-    else :
+    else:
         real_unit = cube.coord('time').units
     cube.coord('time').units = real_unit
     return cube
@@ -51,8 +51,8 @@ def _fix_dim_coordnames(cube):
         cube.coord(axis='Y').long_name = 'latitude coordinate'
         cube.coord(axis='Y').units = Unit('degrees')
 
-    """ Here assume time is always present """
-    if len(cube.dim_coords) > 3 : 
+# TODO cube.coord(axis='Z') fails for 2D vars. Use dim_coords assuming time always exist
+    if len(cube.dim_coords) > 3:
         if cube.coord(axis='Z') in cube.coords():
             if cube.coord(axis='Z').var_name == 'depth':
                 cube.coord(axis='Z').standard_name = 'depth'
@@ -140,25 +140,15 @@ def _roll_cube_data(cube, shift, axis):
     return cube
 
 
-def _save_variable(cube, var, outdir, proj, zip='False'):
+def _save_variable(cube, var, outdir, year, proj):
     """Saver function."""
     # CMOR standard
-    yrbeg=cube.coord('time').cell(0).point.strftime('%Y')
-    mobeg=cube.coord('time').cell(0).point.strftime('%m')
-    yrend=cube.coord('time').cell(-1).point.strftime('%Y')
-    moend=cube.coord('time').cell(-1).point.strftime('%m')
-    time_suffix = '-'.join([yrbeg + mobeg, yrend + moend])
-
+    time_suffix = '-'.join([str(year) + '01', str(year) + '12'])
     cmor_prefix = '_'.join([
         'OBS', proj['dataset'], proj['realm'], proj['version'],
-        proj['field'], var, proj['frequency'][var]
+        proj['frequency'][var], var
     ])
     file_name = cmor_prefix + '_' + time_suffix + '.nc'
     file_path = os.path.join(outdir, file_name)
-    fillvalue=cube.data.fill_value
-    if ( zip ) :
-        logger.info('Saving as NC4-ZIP : %s ', file_path)
-        iris.save(cube, file_path, fill_value=fillvalue, local_keys=['positive'], zlib=True, complevel=4)
-    else : 
-        logger.info('Saving: %s', file_path)
-        iris.save(cube, file_path, fill_value=fillvalue, local_keys=['positive'])
+    logger.info('Saving: %s', file_path)
+    iris.save(cube, file_path)

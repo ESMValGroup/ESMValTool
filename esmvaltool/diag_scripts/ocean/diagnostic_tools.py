@@ -136,8 +136,8 @@ def bgc_units(cube, name):
 
     if name in ['fgco2', ]:
         new_units = 'g m-2 d-1'
-   
-    if name in ['spco2', 'dpco2' ]:
+
+    if name in ['spco2', 'dpco2', ]:
         new_units = 'uatm'
 
     if name in ['mfo', 'amoc', 'msftmyz']:
