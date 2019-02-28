@@ -123,7 +123,7 @@ begin
         ; Convert units
         xx = xx * CONV(vv)
 
-        ; lwp is not a CMOR variable, derive as clwi = lwp + iwp
+        ; lwp is not a CMOR variable, derive as clwvi = lwp + iwp
         if (VAR(vv).eq."clwvi") then
 
           ; Read 2nd variable containing iwp (variable "iwp_allsky")
