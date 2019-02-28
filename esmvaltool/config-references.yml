@@ -443,6 +443,11 @@ authors:
     name: Tilmes, Simone
     institute: NCAR, US
     email: tilmes 'at' ucar.edu
+  lova_to:
+    name: Lovato, Tomas
+    institute: CMCC, IT
+    email: tomas.lovato 'at' cmcc.it
+    
 
 
 references:
@@ -520,6 +525,9 @@ references:
   niwa-bs: "Bodeker et al., Atmos. Chem. Phys., doi:10.5194/acp-5-2603-2005, 2005."
   patmos-x: "Heidinger et al., NOAA National Centers for Environmental Information, doi:10.7289/V5348HCK, last access: 10 February 2019."
   woa: "Locarnini et al., World Ocean Atlas 2013, Vol. 1: Temperature, 2013."
+  esacci-oc: "Grant, M., et al. Ocean Colour Climate Change Initiative (OC_CCI)-Phase Two Product User Guide. Tech. Rep. 3.1. 0, 2017."
+  eppley-vgpm-modis: "Behrenfeld, M.J., Falkowski, P.G., Limnology and Oceanography, doi:10.4319/lo.1997.42.1.0001, 1997." 
+  Landschutzer2014: "Landschutzer, P., et al., CDIAC ORNL, Oak Ridge, Tennessee (2014). doi: 10.3334/CDIAC/OTG.SPCO2_1998_2011_ETH_SOM-FFN"
 
 projects:
   climval: BMBF MiKlip Project ClimVal

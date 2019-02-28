@@ -1,0 +1,92 @@
+# ESMValTool
+# recipe_ocean_chlsat.yml
+---
+documentation:
+  description: |
+    Recipe to evaluate Primary Production of marine biogeochemistry models of CMIP5
+    using satellite-derived data products.
+    Written by Tomas Lovato, CMCC, tomas.lovato@cmcc.it
+
+  authors:
+    - lova_to
+  
+  maintainer:
+    - lova_to
+
+  references:
+    - acknow_project
+
+  projects:
+    - crescendo
+
+
+datasets:
+# working datasets
+  - {dataset: CanESM2,       project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+#  - {dataset: GISS-E2-H,    project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 1990,  end_year: 2004}
+#  - {dataset: HadGEM2-AO,    project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 1990,  end_year: 2004}
+#  - {dataset: HadCM3,    project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 1990,  end_year: 2004}
+#  - {dataset: CanCM4,    project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 1990,  end_year: 2004}
+#  - {dataset: CSIRO-Mk3-6-0,    project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 1990,  end_year: 2004}
+
+
+
+# --------------------------------------------------
+# Preprocessors
+# --------------------------------------------------
+preprocessors:
+  # --------------------------------------------------
+  # map preprocessors
+  # --------------------------------------------------
+  # For a 2D global surface map
+  prep_surface_map_2D:
+    time_average:
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+
+diagnostics:
+  # --------------------------------------------------
+  # Map diagnostics vs ESACCI-OC
+  # --------------------------------------------------
+  diag_surface_maps_vs_ESACCI-OC:
+    description: Global Ocean Surface maps vs ESACCI-OC
+    variables:
+      chl:
+        preprocessor: prep_surface_map_2D
+        field: TO2M
+        mip: Omon
+        fx_files: [areacello, ]
+    additional_datasets:
+      - {dataset: ESACCI-OC,  project: OBS,  type: sat,  version: L3S-fv3.1,  start_year: 1998,  end_year: 2016,  tier: 2}
+    scripts:
+      Global_Ocean_surface_map:
+        script: ocean/diagnostic_maps.py
+      Global_Ocean_model_vs_obs:
+        script: ocean/diagnostic_model_vs_obs.py
+        observational_dataset: {dataset: ESACCI-OC, project: OBS}
+        map_range: [ 0., 1.]
+        dif_range: [-1., 1.]
+
+  diag_surface_maps_vs_VGPM-MODIS:
+    description: Global Ocean Surface maps vs VGPM-MODIS
+    variables:
+      intpp:
+        preprocessor: prep_surface_map_2D
+        field: TO2M
+        mip: Omon
+        fx_files: [areacello, ]
+    additional_datasets:
+      - {dataset: Eppley-VGPM-MODIS,  project: OBS,  type: sat,  version: R2017,  start_year: 2003,  end_year: 2016,  tier: 2}
+    scripts:
+      Global_Ocean_surface_map:
+        script: ocean/diagnostic_maps.py
+      Global_Ocean_model_vs_obs:
+        script: ocean/diagnostic_model_vs_obs.py
+        observational_dataset: {dataset: Eppley-VGPM-MODIS, project: OBS}
+        map_range: [ 0., 100.]
+        dif_range: [-75., 75.]
+
+
+
+

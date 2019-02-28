@@ -1,0 +1,118 @@
+# ESMValTool
+# Landschutzer2014.yml
+---
+documentation:
+  description: |
+    Recipe to evaluate CO2 Fluxes of marine biogeochemistry models of CMIP5
+    using Landschutzer et al (2.014) dataset.
+    Written by Tomas Lovato, CMCC, tomas.lovato@cmcc.it
+
+  authors:
+    - lova_to
+  
+  maintainer:
+    - lova_to
+
+  references:
+    - acknow_project
+
+  projects:
+    - crescendo
+
+
+datasets:
+# working datasets
+  - {dataset: CanESM2,       project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+#  - {dataset: HadGEM2-ES,    project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+#  - {dataset: GISS-E2-H,    project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 1990,  end_year: 2004}
+#  - {dataset: HadGEM2-AO,    project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 1990,  end_year: 2004}
+#  - {dataset: HadCM3,    project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 1990,  end_year: 2004}
+#  - {dataset: CanCM4,    project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 1990,  end_year: 2004}
+#  - {dataset: CSIRO-Mk3-6-0,    project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 1990,  end_year: 2004}
+
+
+
+# --------------------------------------------------
+# Preprocessors
+# --------------------------------------------------
+preprocessors:
+  # --------------------------------------------------
+  # map preprocessors
+  # --------------------------------------------------
+  # For a 2D global surface map
+  prep_surface_map_2D:
+    time_average:
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+
+diagnostics:
+  # --------------------------------------------------
+  # Map diagnostics vs OBS
+  # --------------------------------------------------
+  diag_surface_maps_dpco2:
+    description: Global Ocean Surface maps vs OBS
+    variables:
+      dpco2:
+        preprocessor: prep_surface_map_2D
+        field: TO2M
+        mip: Omon
+        fx_files: [areacello, ]
+    additional_datasets:
+      - {dataset: Landschutzer2014,  project: OBS,  type: clim,  version: CDIAC_G05,  start_year: 2000,  end_year: 2010,  tier: 2}
+    scripts:
+      Global_Ocean_surface_map:
+        script: ocean/diagnostic_maps.py
+      Global_Ocean_model_vs_obs:
+        script: ocean/diagnostic_model_vs_obs.py
+        observational_dataset: {dataset: Landschutzer2014, project: OBS}
+        map_range: [-90., 90.]
+        dif_range: [-50., 50.]
+
+  # --------------------------------------------------
+  # Map diagnostics vs OBS
+  # --------------------------------------------------
+  diag_surface_maps_spco2:
+    description: Global Ocean Surface maps vs OBS
+    variables:
+      spco2:
+        preprocessor: prep_surface_map_2D
+        field: TO2M
+        mip: Omon
+        fx_files: [areacello, ]
+    additional_datasets:
+      - {dataset: Landschutzer2014,  project: OBS,  type: clim,  version: CDIAC_G05,  start_year: 2000,  end_year: 2010,  tier: 2}
+    scripts:
+      Global_Ocean_surface_map:
+        script: ocean/diagnostic_maps.py
+      Global_Ocean_model_vs_obs:
+        script: ocean/diagnostic_model_vs_obs.py
+        observational_dataset: {dataset: Landschutzer2014, project: OBS}
+        map_range: [300., 400.]
+        dif_range: [-50., 50.]
+
+  # --------------------------------------------------
+  # Map diagnostics vs OBS
+  # --------------------------------------------------
+  diag_surface_maps_fgco2:
+    description: Global Ocean Surface maps vs OBS
+    variables:
+      fgco2:
+        preprocessor: prep_surface_map_2D
+        field: TO2M
+        mip: Omon
+        fx_files: [areacello, ]
+    additional_datasets:
+      - {dataset: Landschutzer2014,  project: OBS,  type: clim,  version: CDIAC_G05,  start_year: 2000,  end_year: 2010,  tier: 2}
+    scripts:
+      Global_Ocean_surface_map:
+        script: ocean/diagnostic_maps.py
+      Global_Ocean_model_vs_obs:
+        script: ocean/diagnostic_model_vs_obs.py
+        observational_dataset: {dataset: Landschutzer2014, project: OBS}
+        map_range: [-0.2, 0.2]
+        dif_range: [-0.1, 0.1]
+
+
+
+
