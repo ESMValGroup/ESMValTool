@@ -8,7 +8,6 @@ import os
 
 import xmltodict
 import sys
-import yaml
 
 import logging
 
@@ -70,7 +69,6 @@ def get_modelline(path_to_infile):
 def get_info_from_freva(**kwargs):
     facets = []
     freva_cmd = "freva"
-    #freva_cmd = "./mock_freva.sh"
     for key, value in kwargs.items():
         facets.append("{0}={1}".format(key, value))
     module = "module load cmip6-dicad/1.0"
@@ -81,7 +79,6 @@ def get_info_from_freva(**kwargs):
     cmd = " ".join(cmd)
     freva_out = subprocess.check_output(cmd, shell=True).decode().split('\n')
     logger.debug("Output of command '%s': '%s'", cmd, freva_out)
-    #return yaml.load((freva_out.replace(":", ": [").replace("\n", "]\n")))
     return get_modellines(freva_out)
 
 
@@ -168,23 +165,23 @@ def _check_namelist(namelist):
     return True
 
 
-def _get_variable_str(variable):
-    if isinstance(variable, str):
-        out = variable
-    elif isinstance(variable, list):
-        if len(variable) != 0:
-            try:
-                out = ";".join(variable)
-            except:
-                out = ";".join([item.__repr__() for item in variable])
-        else:
-            out = None
-    else:
-        try:
-            out = variable['#text']
-        except:
-            out = None
-    return out
+#def _get_variable_str(variable):
+#    if isinstance(variable, str):
+#        out = variable
+#    elif isinstance(variable, list):
+#        if variable:
+#            try:
+#                out = ";".join(variable)
+#            except:
+#                out = ";".join([item.__repr__() for item in variable])
+#        else:
+#            out = None
+#    else:
+#        try:
+#            out = variable['#text']
+#        except:
+#            out = None
+#    return out
 
 
 def _get_experiments(modellines):
@@ -221,7 +218,7 @@ def _get_unique_parts(modellines, flag=True):
         else:
             model_line_parts = modelline.split()
 
-        if len(model_line_parts) == 0:
+        if not model_line_parts:
             msg = "Empty modelline"
             logger.debug(msg)
 
@@ -237,7 +234,7 @@ def _get_unique_parts(modellines, flag=True):
                 set.intersection(set(model_line_parts), valid_cmor_table))
             target = "cmor_table"
 
-        if len(match) == 0:
+        if not match:
             msg = "Unknown {0} for modelline : {1}".format(target, modelline)
             logger.debug(msg)
         out.append(match)
@@ -258,14 +255,13 @@ def get_namelist_diag_requirements(namelist):
     if not isinstance(diagblocks, list):
         diagblocks = [diagblocks]
     for diagblock in diagblocks:
-        variable = _get_variable_str(diagblock['variable'])
+        #variable = _get_variable_str(diagblock['variable'])
         if 'model' in diagblock.keys():
             experiment = _get_experiments(diagblock['model'])
             cmor_table = _get_cmor_table(diagblock['model'])
         else:
             experiment = []
             cmor_table = []
-        time_span = None
         out.append({
             'variable':
             diagblock['variable'] if isinstance(diagblock['variable'], list)
@@ -299,10 +295,7 @@ def main():
 
     args = parser.parse_args()
 
-    kwa = dict(args._get_kwargs())
-
-    namelist = kwa['namelist']
-    write_xml(namelist, get_namelist(namelist))
+    write_xml(args.namelist, get_namelist(args.namelist))
 
 
 if __name__ == "__main__":
