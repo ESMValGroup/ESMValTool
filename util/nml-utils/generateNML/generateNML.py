@@ -55,33 +55,19 @@ def get_modelline(path_to_infile):
     d['Amon'] = {'time_freq': 'mon', 'realm': 'atmos'}
     d['Omon'] = {'time_freq': 'mon', 'realm': 'ocean'}
     d['Lmon'] = {'time_freq': 'mon', 'realm': 'land'}
+    d['AERmon'] = {'time_freq': 'mon', 'realm': 'aerosol'}
 
     parts = path_to_infile.split('/')
     start, end = _get_times(parts[-1])
     indices = [10, 8, 9, 10, 11]
-    try:
-        out = "ESGF_CMIP6 " + " ".join(
-            [parts[i]
-             for i in indices]) + " " + d[parts[13]]['time_freq'] + " " + d[
-                 parts[13]]['realm'] + " " + parts[13] + " " + parts[
-                     12] + " latest " + parts[15] + " " + start + " " + end + " CMIP6_template"
-    except:
-        logger.debug("Path:  %s", path_to_infile)
+    out = "ESGF_CMIP6 " + " ".join(
+        [parts[i]
+         for i in indices]) + " " + d[parts[13]]['time_freq'] + " " + d[
+             parts[13]]['realm'] + " " + parts[13] + " " + parts[
+                 12] + " latest " + parts[15] + " " + start + " " + end + " CMIP6_template"
     logger.debug("Got this: %s", path_to_infile)
     logger.debug("Give this: %s", out)
     return out
-    #d = dict()
-    #d['Amon'] = {'time_freq': 'mon', 'realm': 'atmos'}
-    #d['Omon'] = {'time_freq': 'mon', 'realm': 'ocean'}
-    #d['Lmon'] = {'time_freq': 'mon', 'realm': 'land'}
-
-    #kwargs.update({'version': 'latest', 'ptid': 'CMIP6_template'})
-    #if 'mip' in kwargs.keys():
-    #    if kwargs['mip'] in d.keys():
-    #        kwargs.update(d[kwargs['mip']])
-    #tt_mline = Template(T_MLINE)
-    #return tt_mline.render(**kwargs)
-
 
 def get_info_from_freva(**kwargs):
     facets = []
@@ -100,13 +86,29 @@ def get_info_from_freva(**kwargs):
     #return yaml.load((freva_out.replace(":", ": [").replace("\n", "]\n")))
     return get_modellines(freva_out)
 
+def _to_strings(content):
+    if isinstance(content, list):
+        out = list()
+        for item in content:
+            if isinstance(item, str):
+                out.append(item)
+            elif isinstance(item, OrderedDict) and '#text' in item.keys():
+                out.append(item['#text'])
+            else:
+                logger.error("Wrong type %s", type(content))
+                raise Exception
+        return out
+    else:
+        logger.error("Wrong type %s", type(content))
+        raise Exception
+
 
 def get_available_dataset_info(requirements):
     out = list()
     for requirement in requirements:
         query = dict()
         for key, value in requirement.iteritems():
-            query[key] = "'/{0}/'".format("|".join(value))
+            query[key] = "'/{0}/'".format("|".join(_to_strings(value)))
         available_datasets = get_info_from_freva(**query)
         logger.debug("Available Datasets type '%s'", type(available_datasets))
         logger.debug("Available Datasets '%s'", available_datasets)
@@ -188,7 +190,7 @@ def _get_unique_parts(modellines, flag=True):
         "amip"
     ])
     valid_cmor_table = set(
-        ['Amon', 'Omon', 'Lmon', 'aero', 'OImon', 'day', '3hr'])
+        ['Amon', 'Omon', 'Lmon', 'aero', 'OImon', 'day', '3hr', 'AERmon'])
     black_list = [
         "OBS", "obs4mips", "OBS_gridfile", "reanalysis", "observation"
     ]
