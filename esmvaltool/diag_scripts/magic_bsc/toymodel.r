@@ -197,7 +197,7 @@ ArrayToNetCDF(variable_list, filencdf) #nolint
                   statistics = list("other"),
                   realms = list("atmos"),
                   themes = list("phys"),
-                  plotfile = filepng)
+                  plot_file = filepng)
 
       provenance[[filencdf]] <- xprov
 

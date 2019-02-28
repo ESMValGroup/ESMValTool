@@ -27,7 +27,7 @@ dir.create(run_dir, recursive = TRUE)
 dir.create(work_dir, recursive = TRUE)
 
 # setup provenance file and list
-provenance_file <- paste0(plot_dir, "/", "modesvariability_provenance.yml")
+provenance_file <- paste0(run_dir, "/", "diagnostic_provenance.yml")
 provenance <- list()
 
 input_files_per_var <- yaml::read_yaml(params$input_files)
@@ -361,7 +361,7 @@ ArrayToNetCDF( #nolint
                   detrend_order = params$detrend_order,
                   realms = list("atmos"),
                   themes = list("phys"),
-                  plotfile = filepng1)
+                  plot_file = filepng1)
 
       provenance[[filencdf1]] <- xprov
 # ---------------------------
@@ -572,7 +572,7 @@ names(variable_list)[1] <- var0
 
 attributes(variable_list) <- NULL
 filencdf2 <-   paste0(
-    plot_dir, "/", var0, "_", frequency, "_WR_exp_", model_names, "_",
+    work_dir, "/", var0, "_", frequency, "_WR_exp_", model_names, "_",
     start_projection, "_", end_projection, "_", start_historical, "_",
     end_historical, ".nc")
 ArrayToNetCDF(variable_list, filencdf2) #nolint
@@ -583,16 +583,16 @@ ArrayToNetCDF(variable_list, filencdf2) #nolint
                   authors = list("torr_ve", "fuck_ne","cort_ni", "guem_vi",
                                  "hunt_al", "manu_ni"),
                   projects = list("c3s-magic"),
-                  caption = list("Predicted modes of variability"),
-                  statistics = list("distance"),
-                  ncenters = list(params$ncenters),
-                  cluster_method = list(cluster_method),
-                  EOFS = list(params$EOFS),
-                  frequency = list(params$frequency),
-                  detrend_order = list(params$detrend_order),
+                  caption = "Predicted modes of variability",
+                  statistics = list("other"),
+                  ncenters = params$ncenters,
+                  cluster_method = cluster_method,
+                  EOFS = params$EOFS,
+                  frequency = params$frequency,
+                  detrend_order = params$detrend_order,
                   realms = list("atmos"),
                   themes = list("phys"),
-                  plotfile = list(filepng2))
+                  plot_file = list(filepng2))
 
       provenance[[filencdf2]] <- xprov
 # ---------------------------
@@ -656,16 +656,16 @@ dev.off()
                   authors = list("torr_ve", "fuck_ne","cort_ni", "guem_vi",
                                  "hunt_al", "manu_ni"),
                   projects = list("c3s-magic"),
-                  caption = list(title),
-                  statistics = list("RMSE"),
-                  ncenters = list(params$ncenters),
-                  cluster_method = list(cluster_method),
-                  EOFS = list(params$EOFS),
-                  frequency = list(params$frequency),
-                  detrend_order = list(params$detrend_order),
+                  caption = title,
+                  statistics = list("rmsd"),
+                  ncenters = params$ncenters,
+                  cluster_method = cluster_method,
+                  EOFS = params$EOFS,
+                  frequency = params$frequency,
+                  detrend_order = params$detrend_order,
                   realms = list("atmos"),
                   themes = list("phys"),
-                  plotfile = list(filepng3))
+                  plot_file = list(filepng3))
 
       provenance[[filencdf3]] <- xprov
 

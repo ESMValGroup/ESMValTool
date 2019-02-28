@@ -314,7 +314,7 @@ for (i in 1 : length(projection_filenames)) {
                   metric = params$metric,
                   realms = list("atmos"),
                   themes = list("phys"),
-                  plotfile = filepng)
+                  plot_file = filepng)
 
       provenance[[filencdf]] <- xprov
     }

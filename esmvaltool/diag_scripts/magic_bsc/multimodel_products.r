@@ -529,7 +529,7 @@ defagreement <- ncvar_def(
   dim = list(lat = dimlat, lon = dimlon),
   longname = "Agremeent between models")
 filencdf <- paste0(
-    plot_dir, "/", var0, "_", months, "_multimodel-anomaly_",
+    work_dir, "/", var0, "_", months, "_multimodel-anomaly_",
     model_names_filename, "_", start_anomaly, "_", end_anomaly, "_",
     start_climatology, "_", end_climatology, ".nc")
 file <- nc_create(filencdf, list(defdata, defagreement))
@@ -551,7 +551,7 @@ nc_close(file)
                   time_series_plot = params$time_series_plot,
                   realms = list("atmos"),
                   themes = list("phys"),
-                  plotfile = list(filepng1, filepng2))
+                  plot_file = list(filepng1, filepng2))
 
       provenance[[filencdf]] <- xprov
 

@@ -25,7 +25,7 @@ run_dir <- params$run_dir
 work_dir <- params$work_dir
 
 # setup provenance file and list
-provenance_file <- paste0(plot_dir, "/", "capcityfactor_provenance.yml")
+provenance_file <- paste0(run_dir, "/", "diagnostic_provenance.yml")
 provenance <- list()
 
 ## Create working dirs if they do not exist
@@ -233,7 +233,7 @@ nc_close(file)
                                  "bojo_dr", "gonz_nu"),
                   projects = list("c3s-magic"),
                   caption = title,
-                  statistics = list("Capacity Factor"),
+                  statistics = list("other"),
                   realms = list("atmos"),
                   themes = list("phys"),
                   plot_file = filepng)
