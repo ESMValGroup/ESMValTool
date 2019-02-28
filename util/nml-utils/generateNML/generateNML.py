@@ -37,19 +37,35 @@ T_MLINE = " ".join([
     '{{ start_year }}', '{{ end_year }}', '{{ ptid }}'
 ])
 
+def get_modellines(infiles):
+    modellines = list()
+    for path_to_infile in infiles:
+        if not path_to_infile:
+            continue
+        modellines.append(get_modelline(path_to_infile))
+    return modellines
 
-def get_modelline(**kwargs):
-    d = dict()
-    d['Amon'] = {'time_freq': 'mon', 'realm': 'atmos'}
-    d['Omon'] = {'time_freq': 'mon', 'realm': 'ocean'}
-    d['Lmon'] = {'time_freq': 'mon', 'realm': 'land'}
+def get_modelline(path_to_infile):
+    parts = path_to_infile.split('/')
+    indices = [8,9,10,11,12,13]
+    try:
+        out =  " ".join([parts[i] for i in indices])
+    except:
+        logger.debug("Path:  %s", path_to_infile)
+    logger.debug("Got this: %s", path_to_infile)
+    logger.debug("Give this: %s", out)
+    return out
+    #d = dict()
+    #d['Amon'] = {'time_freq': 'mon', 'realm': 'atmos'}
+    #d['Omon'] = {'time_freq': 'mon', 'realm': 'ocean'}
+    #d['Lmon'] = {'time_freq': 'mon', 'realm': 'land'}
 
-    kwargs.update({'version': 'latest', 'ptid': 'CMIP6_template'})
-    if 'mip' in kwargs.keys():
-        if kwargs['mip'] in d.keys():
-            kwargs.update(d[kwargs['mip']])
-    tt_mline = Template(T_MLINE)
-    return tt_mline.render(**kwargs)
+    #kwargs.update({'version': 'latest', 'ptid': 'CMIP6_template'})
+    #if 'mip' in kwargs.keys():
+    #    if kwargs['mip'] in d.keys():
+    #        kwargs.update(d[kwargs['mip']])
+    #tt_mline = Template(T_MLINE)
+    #return tt_mline.render(**kwargs)
 
 def get_info_from_freva(**kwargs):
     facets = []
@@ -58,11 +74,12 @@ def get_info_from_freva(**kwargs):
     for key, value in kwargs.items():
         facets.append("{0}={1}".format(key,value))
     module = "module load cmip6-dicad/1.0"
-    cmd = ["{0} &> /dev/null; {1} ".format(module, freva_cmd), "--databrowser", "project=cmip6"] + facets + ["--all-facets"]
+    cmd = ["{0} &> /dev/null; {1} ".format(module, freva_cmd), "--databrowser", "project=cmip6"] + facets
     cmd = " ".join(cmd)
-    freva_out = subprocess.check_output(cmd, shell=True).decode()
+    freva_out = subprocess.check_output(cmd, shell=True).decode().split('\n')
     logger.debug("Output of command '%s': '%s'", cmd, freva_out)
-    return yaml.load((freva_out.replace(":", ": [").replace("\n", "]\n")))
+    #return yaml.load((freva_out.replace(":", ": [").replace("\n", "]\n")))
+    return get_modellines(freva_out)
 
 def get_available_dataset_info(requirements):
     out = list()
@@ -94,15 +111,9 @@ def get_namelist(namelist):
 
     logger.debug("DIAGNOSTICS %s",j['namelist']['DIAGNOSTICS']['diag'])
     logger.debug("Available Datasets %s",available_datasets_per_diagblock)
-    l = list()
-    for item in available_datasets_per_diagblock:
-        if not isinstance(item, dict):
-            logger.debug("Wrong type '%s'. Expected dict(). Continue \n %s", type(item), item)
-            continue
-        l.append(get_modelline(**item))
 
     if isinstance(j['namelist']['DIAGNOSTICS']['diag'], OrderedDict):
-        j['namelist']['DIAGNOSTICS']['diag']['model'] = l
+        j['namelist']['DIAGNOSTICS']['diag']['model'] = available_datasets_per_diagblock[0]
     else:
         raise Exception
     # cnt = -1
