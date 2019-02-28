@@ -352,7 +352,7 @@ ArrayToNetCDF( #nolint
                   authors = list("torr_ve", "fuck_ne","cort_ni", "guem_vi",
                                  "hunt_al", "manu_ni"),
                   projects = list("c3s-magic"),
-                  caption = list("Observed modes of variability"),
+                  caption = "Observed modes of variability",
                   statistics = list("eof"),
                   ncenters = params$ncenters,
                   cluster_method = cluster_method,
