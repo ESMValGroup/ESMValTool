@@ -6,10 +6,9 @@ from copy import deepcopy
 import iris
 import numpy as np
 
-from esmvaltool.diag_scripts.shared import run_diagnostic
+from esmvaltool.diag_scripts.shared import (
+    ProvenanceLogger, get_diagnostic_filename, run_diagnostic)
 from esmvaltool.diag_scripts.shared.plot import quickplot
-from esmvaltool.diag_scripts.shared._base import (ProvenanceLogger,
-                                                  get_diagnostic_filename)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
