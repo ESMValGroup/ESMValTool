@@ -127,6 +127,9 @@ if (length(etccdi_dir) != 1) {
 dir.create(plot_dir, recursive = T, showWarnings = F)
 dir.create(work_dir, recursive = T, showWarnings = F)
 
+# Set dir
+setwd(run_dir)
+
 # extract metadata
 models_name <- unname(sapply(metadata, "[[", "dataset"))
 reference_model <- unname(sapply(metadata, "[[", "reference_dataset"))[1]
