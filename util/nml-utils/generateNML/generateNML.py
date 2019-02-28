@@ -86,12 +86,12 @@ def _to_strings(content):
     if isinstance(content, list):
         out = list()
         for item in content:
-            if isinstance(item, str):
+            if isinstance(item, str) or isinstance(item, unicode):
                 out.append(item)
             elif isinstance(item, OrderedDict) and '#text' in item.keys():
                 out.append(item['#text'])
             else:
-                logger.error("Wrong type %s", type(content))
+                logger.error("Wrong type %s", type(item))
                 raise Exception
         return out
     else:
