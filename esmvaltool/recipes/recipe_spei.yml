@@ -28,33 +28,26 @@ datasets:
 #  - {dataset: NorESM1-M, project: CMIP5, mip: Amon, exp: historical, ensemble: r1i1p1, start_year: 1990, end_year: 1999}
 
 preprocessors:
-  preprocessor1:
+  preprocessor:
     regrid:
       target_grid: reference_dataset
       scheme: linear
 
 diagnostics:
-#  diagnostic1:
-#    description: Calculating SPI index
-#    variables:
-#      pr:
-#        reference_dataset: CRU
-#        preprocessor: preprocessor1
-#        field: T2Ms
-#    scripts:
-#      script1:
-#        script: droughtindex/diag_spi.r
-  diagnostic2:
-    description: Calculating SPEI index
+  diagnostic:
+    description: Calculating SPI and SPEI index
     variables:
       pr:
         reference_dataset: CRU
-        preprocessor: preprocessor1
+        preprocessor: preprocessor
         field: T2Ms
       tas:
         reference_dataset: CRU
-        preprocessor: preprocessor1
+        preprocessor: preprocessor
         field: T2Ms
     scripts:
-      script1:
+      spi:
+        script: droughtindex/diag_spi.r
+        ancestors: [pr]
+      spei:
         script: droughtindex/diag_spei.r
