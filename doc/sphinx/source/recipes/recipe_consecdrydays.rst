@@ -13,17 +13,18 @@ Recipes are stored in recipes/
 
     * recipe_consecdrydays.yml
 
-
 Diagnostics are stored in diag_scripts/droughtindex/
-    * diag_cdd.py: calculates the longest period of consecutive dry days, and the frequency of dry day periods longer than a user defined length
+
+    * diag_cdd.py: calculates the longest period of consecutive dry days, and
+      the frequency of dry day periods longer than a user defined length
 
 
-User settings
--------------
+User settings in recipe
+-----------------------
 
-recipe_consecdrydays.yml
+#. Script diag_cdd.py
 
-   *Required settings for script*
+   *Required settings (script)*
 
    * plim: limit for a day to be considered dry [mm/day]
 

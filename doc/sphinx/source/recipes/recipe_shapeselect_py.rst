@@ -1,5 +1,5 @@
 Shapeselect
-=============
+===========
 
 Overview
 --------
@@ -15,15 +15,17 @@ Recipes are stored in recipes/
 
 
 Diagnostics are stored in diag_scripts/shapeselect/
-    * diag_shapeselect.py: calculate the average of grid points inside the user provided shapefile and returns the result as a NetCDF or Excel sheet.
+
+    * diag_shapeselect.py: calculate the average of grid points inside the
+      user provided shapefile and returns the result as a NetCDF or Excel sheet.
 
 
-User settings
--------------
+User settings in recipe
+-----------------------
 
-recipe_consecdrydays.yml
+#. Script diag_shapeselect.py
 
-   *Required settings for script*
+   *Required settings (scripts)*
 
    * shppath: path to the user provided shapefile.
 
