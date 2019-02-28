@@ -19,6 +19,10 @@ if os.name == 'posix' and sys.version_info[0] < 3:
 else:
     import subprocess
 
+NON_MODEL_LIST = [
+    "OBS", "obs4mips", "OBS_gridfile", "reanalysis", "observation"
+]
+
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 CONSOLE_HANDLER = logging.StreamHandler()
@@ -26,6 +30,7 @@ CONSOLE_HANDLER.setLevel(logging.DEBUG)
 CONSOLE_HANDLER.setFormatter(
     logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
 logger.addHandler(CONSOLE_HANDLER)
+
 
 def get_modellines(infiles):
     modellines = list()
@@ -37,7 +42,9 @@ def get_modellines(infiles):
 
 
 def _get_times(filename):
-    return tuple([item[0:4] for item in filename.split(".")[0].split('_')[-1].split('-')])
+    return tuple([
+        item[0:4] for item in filename.split(".")[0].split('_')[-1].split('-')
+    ])
 
 
 def get_modelline(path_to_infile):
@@ -50,14 +57,15 @@ def get_modelline(path_to_infile):
     parts = path_to_infile.split('/')
     start, end = _get_times(parts[-1])
     indices = [10, 8, 9, 10, 11]
-    out = "ESGF_CMIP6 " + " ".join(
-        [parts[i]
-         for i in indices]) + " " + d[parts[13]]['time_freq'] + " " + d[
-             parts[13]]['realm'] + " " + parts[13] + " " + parts[
-                 12] + " latest " + parts[15] + " " + start + " " + end + " CMIP6_template"
+    out = "ESGF_CMIP6 " + " ".join([
+        parts[i] for i in indices
+    ]) + " " + d[parts[13]]['time_freq'] + " " + d[parts[13]][
+        'realm'] + " " + parts[13] + " " + parts[12] + " latest " + parts[
+            15] + " " + start + " " + end + " CMIP6_template"
     logger.debug("Got this: %s", path_to_infile)
     logger.debug("Give this: %s", out)
     return out
+
 
 def get_info_from_freva(**kwargs):
     facets = []
@@ -75,6 +83,7 @@ def get_info_from_freva(**kwargs):
     logger.debug("Output of command '%s': '%s'", cmd, freva_out)
     #return yaml.load((freva_out.replace(":", ": [").replace("\n", "]\n")))
     return get_modellines(freva_out)
+
 
 def _to_strings(content):
     if isinstance(content, list):
@@ -106,6 +115,13 @@ def get_available_dataset_info(requirements):
     return out
 
 
+def _extract_non_models(liste):
+    def _is_non_model(d):
+        return any([item in NON_MODEL_LIST for item in d.split()])
+
+    return [item for item in liste if _is_non_model(item)]
+
+
 def get_namelist(namelist):
 
     _check_namelist(namelist)
@@ -127,11 +143,18 @@ def get_namelist(namelist):
     logger.debug("Available Datasets %s", available_datasets_per_diagblock)
 
     if isinstance(j['namelist']['DIAGNOSTICS']['diag'], OrderedDict):
+        non_models = _extract_non_models(
+            j['namelist']['DIAGNOSTICS']['diag']['model'])
+        logger.debug("Non models %s", non_models)
         j['namelist']['DIAGNOSTICS']['diag'][
-            'model'] = available_datasets_per_diagblock[0]
+            'model'] = available_datasets_per_diagblock[0] + non_models
     elif isinstance(j['namelist']['DIAGNOSTICS']['diag'], list):
         for i in range(len(j['namelist']['DIAGNOSTICS']['diag'])):
-            j['namelist']['DIAGNOSTICS']['diag'][i]['model'] = available_datasets_per_diagblock[i]
+            non_models = _extract_non_models(
+                j['namelist']['DIAGNOSTICS']['diag'][i]['model'])
+            logger.debug("Non models %s", non_models)
+            j['namelist']['DIAGNOSTICS']['diag'][i][
+                'model'] = available_datasets_per_diagblock[i] + non_models
     else:
         raise Exception
 
@@ -181,9 +204,6 @@ def _get_unique_parts(modellines, flag=True):
     ])
     valid_cmor_table = set(
         ['Amon', 'Omon', 'Lmon', 'aero', 'OImon', 'day', '3hr', 'AERmon'])
-    black_list = [
-        "OBS", "obs4mips", "OBS_gridfile", "reanalysis", "observation"
-    ]
 
     match = list()
     out = list()
@@ -205,7 +225,7 @@ def _get_unique_parts(modellines, flag=True):
             msg = "Empty modelline"
             logger.debug(msg)
 
-        if any([item in black_list for item in model_line_parts]):
+        if any([item in NON_MODEL_LIST for item in model_line_parts]):
             continue
 
         if flag is True:
@@ -257,6 +277,7 @@ def get_namelist_diag_requirements(namelist):
         })
     return out
 
+
 def write_xml(filename, content, same_folder=False):
     head, tail = os.path.split(filename)
     if same_folder:
@@ -266,9 +287,10 @@ def write_xml(filename, content, same_folder=False):
     if os.path.exists(newfilename):
         logger.error("File %s already exists", newfilename)
         raise Exception
-    with open(newfilename,'w') as f:
+    with open(newfilename, 'w') as f:
         f.write(content)
     logger.debug("Created new file %s", newfilename)
+
 
 def main():
     parser = argparse.ArgumentParser(
