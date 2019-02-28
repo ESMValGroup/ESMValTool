@@ -334,7 +334,7 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
 
             cex_main <- 1.4
             if (plot_type == 1) {
-              cex_main <- 1.3 
+              cex_main <- 1.3
             }
 
             # drop data outside region limits

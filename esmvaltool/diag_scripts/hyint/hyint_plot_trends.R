@@ -274,7 +274,7 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_idx, season) {
             par_col <- (ifield - 1) %% npancol + 1
             par(mfg = c(par_row, par_col, npanrow, npancol))
           }
- 
+
           # scale autolevels if required
           if (autolevels && (autolevels_scale != 1)) {
             autorange <- max(tmp.levels, nat.rm = T)
