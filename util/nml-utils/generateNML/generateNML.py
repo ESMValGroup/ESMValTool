@@ -6,8 +6,6 @@ python util/nml-utils/generateNML/generateNML.py --namelist <NAMELIST>
 import argparse
 import os
 
-from jinja2 import Template
-
 import xmltodict
 import sys
 import yaml
@@ -28,14 +26,6 @@ CONSOLE_HANDLER.setLevel(logging.DEBUG)
 CONSOLE_HANDLER.setFormatter(
     logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
 logger.addHandler(CONSOLE_HANDLER)
-
-T_MLINE = " ".join([
-    '{{ project }}', '{{ name }}', '{{ product }}', '{{ institute }}',
-    '{{ model }}', '{{ experiment }}', '{{ time_freq }}', '{{ realm }}',
-    '{{ mip }}', '{{ ensemble }}', '{{ version }}', '{{ grid }}',
-    '{{ start_year }}', '{{ end_year }}', '{{ ptid }}'
-])
-
 
 def get_modellines(infiles):
     modellines = list()
