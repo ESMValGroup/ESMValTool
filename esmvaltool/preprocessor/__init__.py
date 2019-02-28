@@ -4,7 +4,7 @@ import inspect
 import logging
 
 import six
-from iris.cube import Cube
+from iris.cube import Cube, CubeList
 
 from .._provenance import TrackedFile
 from .._task import BaseTask
@@ -35,7 +35,7 @@ __all__ = [
     'download',
     # File reformatting/CMORization
     'fix_file',
-    # Load cube from file
+    # Load cubes from file
     'load',
     # Derive variable
     'derive',
@@ -207,7 +207,8 @@ def preprocess(items, step, **settings):
 
     items = []
     for item in result:
-        if isinstance(item, (PreprocessorFile, Cube, six.string_types)):
+        if isinstance(item,
+                      (PreprocessorFile, Cube, six.string_types)):
             items.append(item)
         else:
             items.extend(item)

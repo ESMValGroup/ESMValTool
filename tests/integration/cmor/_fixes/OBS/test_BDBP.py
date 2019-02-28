@@ -8,13 +8,13 @@ from esmvaltool.cmor._fixes.OBS.BDBP import tro3prof
 
 class TestTro3prof(unittest.TestCase):
     def setUp(self):
-        self.cube = Cube([1, 2], var_name='tro3prof', units='J')
+        self.cube = Cube([1.0, 2.0], var_name='tro3prof', units='J')
         self.cube.add_dim_coord(
-            DimCoord([1, 2], standard_name='air_pressure', units='hPa'), 0)
+            DimCoord([1.0, 2.0], standard_name='air_pressure', units='hPa'), 0)
         self.fix = tro3prof()
 
     def test_fix_metadata(self):
-        cube = self.fix.fix_metadata(self.cube)
+        cube = self.fix.fix_metadata([self.cube])[0]
         self.assertEqual(cube.coord('air_pressure').units.origin, 'Pa')
         self.assertEqual(cube.coord('air_pressure').points[0], 100)
         self.assertEqual(cube.coord('air_pressure').points[1], 200)
@@ -28,7 +28,7 @@ class TestTro3prof(unittest.TestCase):
                 standard_name='air_pressure',
                 units='hPa',
                 bounds=[[0.5, 1.5], [1.5, 2.5]]), 0)
-        cube = self.fix.fix_metadata(self.cube)
+        cube = self.fix.fix_metadata([self.cube])[0]
 
         plev = cube.coord('air_pressure')
         self.assertEqual(plev.units.origin, 'Pa')

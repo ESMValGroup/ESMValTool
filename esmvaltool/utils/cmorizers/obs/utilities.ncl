@@ -15,6 +15,7 @@
 ;    function set_size_array
 ;    function yyyyfrac_to_ut --> FIX-ME: only used by GLOBALVIEW (remove?)
 ;    function create_timec
+;    function set_global_atts
 ;    procedure write_nc
 ;    procedure write_nc_profile
 ;    function process_EBAS_data
@@ -60,7 +61,7 @@ local funcname, verbosity, date, ntime, exp_ntime, tt, yy, mm, calendar, y1, \
 begin
 
   funcname = "check_time_range"
-  scriptname = "cmor/cmorizers/obs/utilities.ncl"
+  scriptname = "esmvaltool/utils/cmorizers/obs/utilities.ncl"
   enter_msg(scriptname, funcname)
 
   date = cd_calendar(time, 0)
@@ -150,7 +151,7 @@ begin
 
   end if
 
-  ; Instantaneous case
+  ; 3-hourly case
   ; Nothing to check
 
   ; Set calendar
@@ -180,7 +181,8 @@ function time_attrib(coord:numeric,
 ;    coord: input time coordinate.
 ;    year1: start year.
 ;    year2: end year.
-;    frequency: time frequency ("M" for monthly, "D" for daily).
+;    frequency: time frequency ("M" for monthly, "D" for daily, other
+;               arguments are ignored)
 ;
 ; Return value
 ;    An array of the same dimensionality of coord.
@@ -199,7 +201,7 @@ local funcname, scriptname, tmp, cal, outcoord
 begin
 
   funcname = "time_attrib"
-  scriptname = "cmor/cmorizers/obs/utilities.ncl"
+  scriptname = "esmvaltool/utils/cmorizers/obs/utilities.ncl"
   enter_msg(scriptname, funcname)
 
   if (isatt(coord, "calendar")) then
@@ -250,22 +252,16 @@ local funcname, scriptname, out_coord
 begin
 
   funcname = "plev_attrib"
-  scriptname = "cmor/cmorizers/obs/utilities.ncl"
+  scriptname = "esmvaltool/utils/cmorizers/obs/utilities.ncl"
   enter_msg(scriptname, funcname)
 
   out_coord = todouble(coord)  ; this also removes attributes
   copy_VarCoords(coord, out_coord)
   out_coord@positive = "down"
   out_coord@axis     = "Z"
-  if (coord@units .eq. "m") then
-    out_coord@long_name     = "ocean depth coordinate"
-    out_coord@units         = "m"
-    out_coord@standard_name = "depth"
-  else
-    out_coord@long_name     = "pressure"
-    out_coord@units         = "Pa"
-    out_coord@standard_name = "air_pressure"
-  end if
+  out_coord@long_name     = "pressure"
+  out_coord@units         = "Pa"
+  out_coord@standard_name = "air_pressure"
   if (isatt(out_coord, "_FillValue")) then
     delete(out_coord@_FillValue)
   end if
@@ -299,7 +295,7 @@ local funcname, scriptname, out_coord
 begin
 
   funcname = "lev_attrib"
-  scriptname = "cmor/cmorizers/obs/utilities.ncl"
+  scriptname = "esmvaltool/utils/cmorizers/obs/utilities.ncl"
   enter_msg(scriptname, funcname)
 
   out_coord = todouble(coord)  ; this also removes attributes
@@ -342,7 +338,7 @@ local funcname, scriptname, out_coord
 begin
 
   funcname = "lat_attrib"
-  scriptname = "cmor/cmorizers/obs/utilities.ncl"
+  scriptname = "esmvaltool/utils/cmorizers/obs/utilities.ncl"
   enter_msg(scriptname, funcname)
 
   out_coord = todouble(coord)  ; this also removes attributes
@@ -384,7 +380,7 @@ local funcname, scriptname, out_coord
 begin
 
   funcname = "lon_attrib"
-  scriptname = "cmor/cmorizers/obs/utilities.ncl"
+  scriptname = "esmvaltool/utils/cmorizers/obs/utilities.ncl"
   enter_msg(scriptname, funcname)
 
   out_coord = todouble(coord)  ; this also removes attributes
@@ -429,7 +425,7 @@ local funcname, scriptname, data, idxu, idxd, attn, attv, out
 begin
 
   funcname = "read_cmor"
-  scriptname = "cmor/cmorizers/obs/utilities.ncl"
+  scriptname = "esmvaltool/utils/cmorizers/obs/utilities.ncl"
   enter_msg(scriptname, funcname)
 
   ; Read attributes from cmor table
@@ -456,7 +452,12 @@ begin
     end if
     tmp = ind(str_get_field(data(:, 0), 1, ":").eq."variable_entry")
     if (dimsizes(tmp).gt.1) then
-      idxd = tmp(min(ind(tmp.gt.idxu))) - 2
+      next = min(ind(tmp.gt.idxu))
+      if (.not.ismissing(next))
+        idxd = tmp(min(ind(tmp.gt.idxu))) - 2
+      else
+        idxd = dimsizes(data(:, 0)) - 1
+      end if
       data := data(idxu:idxd, 0)
       delete(idxd)
     else
@@ -514,7 +515,7 @@ local funcname, scriptname, coordattr, out, tmp, att, ii
 begin
 
   funcname = "var_attrib"
-  scriptname = "cmor/cmorizers/obs/utilities.ncl"
+  scriptname = "esmvaltool/utils/cmorizers/obs/utilities.ncl"
   enter_msg(scriptname, funcname)
 
   ; Set fill value first
@@ -579,7 +580,7 @@ local funcname, scriptname, minsize, maxsize, nbins, bin, out
 begin
 
   funcname = "set_size_array"
-  scriptname = "cmor/cmorizers/obs/utilities.ncl"
+  scriptname = "esmvaltool/utils/cmorizers/obs/utilities.ncl"
   enter_msg(scriptname, funcname)
 
   ; Size range (0.5 nm - 10 um)
@@ -633,7 +634,7 @@ local funcname, scriptname, years, YEAR, units, offset, sorted, spy, ileap, \
 begin
 
   funcname = "yyyyfrac_to_ut"
-  scriptname = "cmor/cmorizers/obs/utilities.ncl"
+  scriptname = "esmvaltool/utils/cmorizers/obs/utilities.ncl"
   enter_msg(scriptname, funcname)
 
   ; Seconds per year
@@ -712,7 +713,7 @@ local funcname, scriptname, yy, mm, out
 begin
 
   funcname = "create_timec"
-  scriptname = "cmor/cmorizers/obs/utilities.ncl"
+  scriptname = "esmvaltool/utils/cmorizers/obs/utilities.ncl"
   enter_msg(scriptname, funcname)
 
   out = new(12 * (y2 - y1 + 1), double)
@@ -727,6 +728,63 @@ begin
   return(out)
 
 end
+
+; #############################################################################
+undef("set_global_atts")
+function set_global_atts(obsname:string,
+                         tier:integer,
+                         source:string,
+                         reference:string,
+                         comment:string)
+;
+; Argument
+;    obsname: name of the observational dataset.
+;    reference: reference for the dataset, or leave empty if not available.
+;    source: link to the data source.
+;    tier: tier number (2 or 3).
+;    comment: additional information if required, or leave empty.
+;
+; Return value
+;    A logical containing the arguments as attributes.
+;
+; Description
+;    Generate the global attribute for the output file by combining user
+;    provided information with default ones (author, host, date, etc.).
+;
+; Modification history
+;    20190202-A_righ_ma: written.
+;
+local funcname, scriptname,
+    dim_unlim, ii
+begin
+
+  funcname = "set_global_atts"
+  scriptname = "esmvaltool/utils/cmorizers/obs/utilities.ncl"
+  enter_msg(scriptname, funcname)
+
+  global = True
+  global@title = obsname + " data reformatted for the ESMValTool v2.0"
+  global@tier = tier
+  global@source = source
+  if (strlen(str_squeeze(reference)).ne.0) then
+    global@reference = reference
+  else
+    global@reference = "not available"
+  end if
+  if (strlen(str_squeeze(comment)).ne.0) then
+    global@comment = comment
+  end if
+  global@user = systemfunc("echo $USER")
+  global@host = systemfunc("hostname -f")
+  global@history = "Created on " + systemfunc("date")
+  global@conventions = "CF/CMOR"
+
+  return(global)
+
+  leave_msg(scriptname, funcname)
+
+end
+
 
 ; #############################################################################
 undef("write_nc")
@@ -754,7 +812,7 @@ local funcname, scriptname, w, gAtt, dim_names, ndims, dim_sizes, dim_types, \
 begin
 
   funcname = "write_nc"
-  scriptname = "cmor/cmorizers/obs/utilities.ncl"
+  scriptname = "esmvaltool/utils/cmorizers/obs/utilities.ncl"
   enter_msg(scriptname, funcname)
 
   ; Open file
@@ -833,7 +891,7 @@ local funcname, scriptname, w, coords, cc, jj, locname, locvar, cname
 begin
 
   funcname = "write_nc_profile"
-  scriptname = "cmor/cmorizers/obs/utilities.ncl"
+  scriptname = "esmvaltool/utils/cmorizers/obs/utilities.ncl"
   enter_msg(scriptname, funcname)
 
   ; Open file
@@ -939,7 +997,7 @@ local timec, datec, vID, fID, bn, en, head, hh, cline, syear, smonth, sday, \
 begin
 
   funcname = "process_EBAS_data"
-  scriptname = "cmor/cmorizers/obs/utilities.ncl"
+  scriptname = "esmvaltool/utils/cmorizers/obs/utilities.ncl"
   enter_msg(scriptname, funcname)
 
   ; EBAS flags for valid measurements

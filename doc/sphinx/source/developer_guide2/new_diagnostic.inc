@@ -59,11 +59,18 @@ Using the interfaces from Python
 --------------------------------
 Always use :meth:`esmvaltool.diag_scripts.shared.run_diagnostic` to start your script and make use of a
 :class:`esmvaltool.diag_scripts.shared.ProvenanceLogger` to log provenance. Have a look at the example
-Python diagnostic in esmvaltool/recipes/examples/diagnostic.py for a complete example.
+Python diagnostic in esmvaltool/diag_scripts/examples/diagnostic.py for a complete example.
 
 Using the interfaces from NCL
 -----------------------------
-TODO: write this
+Always call the ``log_provenance`` procedure after plotting from your NCL diag_script. You could find available shortcuts for
+statistics, domain, plottype, authors and references in the ``config-references.yml`` file.
+
+.. code-block:: bash
+
+        log_provenance(nc-file,plot_file,caption,statistics,domain,plottype,authors,references,input-files)
+
+Have a look at the example NCL diagnostic in ``esmvaltool/diag_scripts/examples/diagnostic.ncl`` for a complete example.
 
 Generic interface between backend and diagnostic
 ------------------------------------------------
@@ -145,10 +152,10 @@ Generic interface between diagnostic and backend
 ------------------------------------------------
 
 After the diagnostic script has finished running, the backend will try to store provenance information. In order to
-link the produced files to input data, the diagnostic script needs to store a file called diagnostic_provenance.yml
+link the produced files to input data, the diagnostic script needs to store a YAML file called :code:`diagnostic_provenance.yml`
 in it's :code:`run_dir`.
 
-For output file produced by the diagnostic script, there should be an entry in the diagnostic_provenance.yml file.
+For output file produced by the diagnostic script, there should be an entry in the :code:`diagnostic_provenance.yml` file.
 The name of each entry should be the path to the output file.
 Each file entry should at least contain the following items
 
@@ -156,11 +163,11 @@ Each file entry should at least contain the following items
 - :code:`caption` a caption text for the plot
 - :code:`plot_file` if the diagnostic also created a plot file, e.g. in .png format.
 
-Each file entry can also contain items from the categories defined in the file esmvaltool/config_references.yml.
+Each file entry can also contain items from the categories defined in the file :code:`esmvaltool/config_references.yml`.
 The short entries will automatically be replaced by their longer equivalent in the final provenance records.
 It is possible to add custom provenance information by adding custom items to entries.
 
-An example preprocessor diagnostic_provenance.yml file could look like this
+An example :code:`diagnostic_provenance.yml` file could look like this
 
 .. code:: yaml
 
@@ -187,7 +194,8 @@ An example preprocessor diagnostic_provenance.yml file could look like this
 
 You can check whether your diagnostic script successfully provided the provenance information to the backend by
 verifying that
+  - for each output file in the :code:`work_dir`, a file with the same name, but ending with _provenance.xml is created
+  - any NetCDF files created by your diagnostic script contain a 'provenance' global attribute
+  - any PNG plots created by your diagnostic script contain the provenance information in the 'Image History' attribute
 
-- for each output file in the :code:`work_dir`, a file with the same name, but ending with _provenance.xml is created
-- any NetCDF files created by your diagnostic script contain a 'provenance' global attribute
-- any PNG plots created by your diagnostic script contain the provenance information in the 'Image History' attribute
+Note that this is done automatically by the ESMValTool backend.

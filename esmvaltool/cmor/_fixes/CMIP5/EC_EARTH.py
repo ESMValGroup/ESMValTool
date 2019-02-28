@@ -1,13 +1,14 @@
-"""Fixes for EC-Earth model"""
+# pylint: disable=invalid-name, no-self-use, too-few-public-methods
+"""Fixes for EC-Earth model."""
 from ..fix import Fix
 
 
 class sic(Fix):
-    """Fixes for sic"""
+    """Fixes for sic."""
 
     def fix_data(self, cube):
         """
-        Fix data
+        Fix data.
 
         Fixes discrepancy between declared units and real units
 
@@ -27,11 +28,11 @@ class sic(Fix):
 
 
 class sftlf(Fix):
-    """Fixes for sftlf"""
+    """Fixes for sftlf."""
 
     def fix_data(self, cube):
         """
-        Fix data
+        Fix data.
 
         Fixes discrepancy between declared units and real units
 

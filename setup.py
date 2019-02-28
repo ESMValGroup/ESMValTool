@@ -31,8 +31,9 @@ REQUIREMENTS = {
         'cdo',
         'cf_units',
         'cython',
-        # 'scitools-iris',  # Only iris 2 is on PyPI
+        'scitools-iris',
         'matplotlib<3',
+        'nc-time-axis',  # needed by iris.plot
         'netCDF4',
         'numba',
         'numpy',
@@ -44,7 +45,11 @@ REQUIREMENTS = {
         'six',
         'stratify',
         'vmprof',
+        'xarray',
         'yamale',
+        'sklearn',
+        'pandas',
+        'eofs',
     ],
     # Test dependencies
     # Execute 'python setup.py test' to run tests
@@ -74,6 +79,12 @@ REQUIREMENTS = {
         'yapf',
     ],
 }
+
+if sys.version_info.major == 2:
+    REQUIREMENTS['test'].append('more-itertools<6')
+    for i, req in enumerate(REQUIREMENTS['install']):
+        if req.startswith('cdo'):
+            REQUIREMENTS['install'][i] = 'cdo!=1.5.*'
 
 
 def discover_python_files(paths, ignore):
@@ -129,6 +140,7 @@ class RunTests(CustomCommand):
         args = [
             'tests',
             'esmvaltool',  # for doctests
+            '--ignore=esmvaltool/cmor/tables/',
             '--doctest-modules',
             '--cov=esmvaltool',
             '--cov-report=term',
