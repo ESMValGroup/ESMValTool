@@ -500,7 +500,6 @@ begin
   wks = get_wks(wks_in, DIAG_SCRIPT, var)
 
   ; Define style
-; A_laue_ax+
   ; new: if data array has attributes annots, colors, markers, use those instead of
   ;      function project_style
   if (isatt(data, "annots")) then
@@ -518,7 +517,6 @@ begin
   else
     markers = project_style(inlist, diag_script_info, "markers")
   end if
-; A_laue_ax-
 
   ; Create a 2D scatter plot
   res = True
@@ -542,7 +540,6 @@ begin
       " [" + format_units(data@units(1)) + "]"
   end if
 
-; A_laue_ax+
   if (isatt(data, "trYMinF")) then
     res@trYMinF = data@trYMinF        ; min value on y-axis
   end if
@@ -561,7 +558,6 @@ begin
   if (isatt(data, "trYReverse")) then
     res@trYReverse = data@trYReverse  ; flip the y axis
   end if
-; A_laue_ax-
 
   ; Override defaults with "res_" attributes of "data"
   res_new = att2var(data, "res_")
