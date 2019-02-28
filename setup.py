@@ -38,7 +38,7 @@ REQUIREMENTS = {
         'netCDF4',
         'numba',
         'numpy',
-        'pandas',        
+        'pandas',
         'pillow',
         'prov[dot]',
         'psutil',
