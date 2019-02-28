@@ -376,7 +376,7 @@ hyint_diagnostic <- function(work_dir, infile, model_idx, season,
                      " according to ", models_name[model_idx])
   xbase <- list(list(infile), list("arno_en", "hard_jo"), list("c3s-magic"),
                 list("giorgi11jc", "giorgi14jgr"), caption,
-                list("variability", "other"),
+                list("var", "other"),
                 list("atmos"), list("phys"), list("global"))
   names(xbase) <- c("ancestors", "authors", "projects", "references",
                     "caption", "statistics", "realms",
