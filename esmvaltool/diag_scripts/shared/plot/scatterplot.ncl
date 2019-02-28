@@ -500,8 +500,8 @@ begin
   wks = get_wks(wks_in, DIAG_SCRIPT, var)
 
   ; Define style
-  ; new: if data array has attributes annots, colors, markers, use those instead of
-  ;      function project_style
+  ; new: if data array has attributes annots, colors, markers, use those
+  ;      instead of function project_style
   if (isatt(data, "annots")) then
     annots = data@annots
   else
