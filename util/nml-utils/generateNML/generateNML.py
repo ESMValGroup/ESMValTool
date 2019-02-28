@@ -265,9 +265,12 @@ def get_namelist_diag_requirements(namelist):
         })
     return out
 
-def write_xml(filename, content):
+def write_xml(filename, content, same_folder=False):
     head, tail = os.path.split(filename)
-    newfilename = os.path.join(head, "new_" + tail)
+    if same_folder:
+        newfilename = os.path.join(head, "new_" + tail)
+    else:
+        newfilename = "new_" + tail
     if os.path.exists(newfilename):
         logger.error("File %s already exists", newfilename)
         raise Exception
