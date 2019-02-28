@@ -137,13 +137,11 @@ def get_namelist(namelist):
     if isinstance(j['namelist']['DIAGNOSTICS']['diag'], OrderedDict):
         j['namelist']['DIAGNOSTICS']['diag'][
             'model'] = available_datasets_per_diagblock[0]
+    elif isinstance(j['namelist']['DIAGNOSTICS']['diag'], list):
+        for i in range(len(j['namelist']['DIAGNOSTICS']['diag'])):
+            j['namelist']['DIAGNOSTICS']['diag'][i]['model'] = available_datasets_per_diagblock[i]
     else:
         raise Exception
-    # cnt = -1
-    # for k, v in j['namelist']['DIAGNOSTICS']['diag'].iteritems():
-    #     cnt += 1
-    #     logger.debug("Key: %s Value: %s", k, v)
-    #     j['namelist']['DIAGNOSTICS']['diag'][k]['model'] = l[cnt]
 
     return xmltodict.unparse(j, pretty=True)
 
