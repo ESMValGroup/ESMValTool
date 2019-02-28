@@ -34,10 +34,10 @@ User setting files are stored in recipes/
 
    *Required settings for script*
 
-   * start_historical: start year of the reference dataset to be used
-   * end_historical: end year of the reference dataset to be used
-   * start_projection: start year of the projection dataset to be used
-   * end_projection: end year of the projection dataset to be used
+   * start_historical: start date of the reference dataset to be used (please make sure this matches the available data)
+   * end_historical: end date of the reference dataset to be used (please make sure this matches the available data)
+   * start_projection: start date of the projection dataset to be used
+   * end_projection: end date of the projection dataset to be used
    * ncenters: number of centers to be computed by the k-means clustering algorithm
    * detrend_order: the order of the polynomial detrending to be applied
    * EOFs: logical indicating wether the k-means clustering algorithm is applied directly to the spatial data ('FALSE') or to the EOFs ('TRUE')

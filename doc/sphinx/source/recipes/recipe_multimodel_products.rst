@@ -44,7 +44,7 @@ User setting files are stored in recipes/
    * monsup: integer specifying the last month of the seasonal mean period to be computed
    * agreement_threshold: integer between 0 and 100 indicating the threshold in percent for the minimum agreement between models on the sign of the multi-model mean anomaly for the stipling to be plotted
    * running_mean: integer indictating the length of the window for the runiing mean to be computed
-   * time_series_plot: either null or mean or maxmin
+   * time_series_plot: either null or mean or maxmin (does not work yet)
 
 
 Variables
