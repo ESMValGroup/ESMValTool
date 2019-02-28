@@ -28,12 +28,8 @@ User setting files are stored in recipes/
 
 #. recipe_heatwaves_coldwaves.yml
 
-   *diag_script_info attributes*
+   *Required settings for script*
 
-   * start_longitude: minimum longitude
-   * end_longitude: maximum longitude
-   * start_latitude: minimum longitude
-   * end_latitude: maximum latitude
    * quantile: quantile defining the exceedance/non-exceedance threshold
    * min_duration: Min duration of a heatwave/coldwave event
    * Operator: either '>' for exceedances or '<' for non-exceedances 

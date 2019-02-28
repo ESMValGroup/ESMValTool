@@ -32,12 +32,8 @@ User setting files are stored in recipes/
 
 #. recipe_modes_of_variability_wp4.yml
 
-   *diag_script_info attributes*
+   *Required settings for script*
 
-   * start_longitude: minimum longitude
-   * end_longitude: maximum longitude
-   * start_latitude: minimum longitude
-   * end_latitude: maximum latitude
    * start_historical: start year of the reference dataset to be used
    * end_historical: end year of the reference dataset to be used
    * start_projection: start year of the projection dataset to be used

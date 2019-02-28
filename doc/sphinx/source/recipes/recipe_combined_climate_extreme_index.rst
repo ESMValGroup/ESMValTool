@@ -39,26 +39,18 @@ User setting files are stored in recipes/
 
 #. recipe_combined_indices_wp6.yml
 
-   *diag_script_info attributes*
+   *Required settings for script*
 
-   * start_longitude: minimum longitude
-   * end_longitude: maximum longitude
-   * start_latitude: minimum longitude
-   * end_latitude: maximum latitude
    * weights: either ‘equal’, for equal weights, ‘null’ for no weights, or a vector of integers the same length as the number of input datasets.
    * running_mean: an integer specifying the length of the window to be used for computing the running mean
    * moninf : instead of running_mean an integer can be given to determine the first season of the seasonal mean to be computed
    * monsup: an integer specifying the last month to be computed
-   * Multi_year_average: ‘TRUE’ or ‘FALSE’ to specify whether to compute the mean across all input years.
+   * Multi_year_average: ‘TRUE’ or ‘FALSE’ to specify whether to compute the mean across all input years. (does not work yet)
 
 #. recipe_extreme_index_wp7.yml
 
-   *diag_script_info attributes*
+   *Required settings for script*
 
-   * start_longitude: minimum longitude
-   * end_longitude: maximum longitude
-   * start_latitude: minimum longitude
-   * end_latitude: maximum latitude
    * metric: the metric to be computed, t90p, t10p, Wx, cdd, rx5day (see overview for a description of the different metrics.)
 
 

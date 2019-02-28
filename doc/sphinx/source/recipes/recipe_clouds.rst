@@ -44,11 +44,11 @@ User settings
 
 #. clouds.ncl
 
-   *Required diag_script_info attributes*
+   *Required settings for script*
 
    none
 
-   *Optional diag_scipt_info attributes*
+   *Optional settings for script*
 
    * embracesetup: true = 2 plots per line, false = 4 plots per line (default)
    * explicit_cn_levels: explicit contour levels (array)
@@ -88,11 +88,11 @@ User settings
 
 #. clouds_bias.ncl
 
-   *Required diag_script_info attributes*
+   *Required settings for script*
 
    none
 
-   *Optional diag_scipt_info attributes*
+   *Optional settings for script*
 
    * plot_abs_diff: additionally also plot absolute differences (true, false)
    * plot_rel_diff: additionally also plot relative differences (true, false)
@@ -117,11 +117,11 @@ User settings
 
 #. clouds_interannual.ncl
 
-   *Required diag_script_info attributes (diagnostic specific)*
+   *Required settings for script (diagnostic specific)*
 
    none
 
-   *Optional diag_script_info attributes (diagnostic specific)*
+   *Optional settings for script (diagnostic specific)*
 
    * colormap: e.g., WhiteBlueGreenYellowRed, rainbow
    * explicit_cn_levels: use these contour levels for plotting
@@ -144,11 +144,11 @@ User settings
 
 #. clouds_ipcc.ncl
 
-   *Required diag_script_info attributes (diagnostic specific)*
+   *Required settings for script (diagnostic specific)*
 
    none
 
-   *Optional diag_script_info attributes (diagnostic specific)*
+   *Optional settings for script (diagnostic specific)*
 
    * explicit_cn_levels: contour levels
    * mask_ts_sea_ice: true = mask T < 272 K as sea ice (only for variable "ts");
@@ -175,11 +175,11 @@ User settings
 
 #. clouds_taylor.ncl
 
-   *Required diag_script_info attributes (diagnostic specific)*
+   *Required settings for script (diagnostic specific)*
 
    none
 
-   *Optional diag_script_info attributes (diagnostic specific)*
+   *Optional settings for script (diagnostic specific)*
 
    * embracelegend: false (default) = include legend in plot, max. 2 columns
      with dataset names in legend; true = write extra file with legend, max. 7

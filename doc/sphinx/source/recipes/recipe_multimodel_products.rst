@@ -33,12 +33,8 @@ User setting files are stored in recipes/
 
 #. ???	recipe_multimodel_products_wp5.yml
 
-   *diag_script_info attributes*
+   *Required settings for script*
 
-   * start_longitude: minimum longitude
-   * end_longitude: maximum longitude
-   * start_latitude: minimum longitude
-   * end_latitude: maximum latitude
    * climatology_class: the class to be used for computing the climatology, e.g. 'historical' or 'rcp26' etc
    * climatology_start_year: start year for the climatology
    * climatology_end_year: end year for the climatology

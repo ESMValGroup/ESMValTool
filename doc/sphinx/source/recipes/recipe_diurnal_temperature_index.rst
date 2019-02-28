@@ -33,12 +33,8 @@ User setting files are stored in recipes/
 
 #. recipe_diurnal_temperature_index_wp7.yml
 
-   *diag_script_info attributes*
+   *Required settings for script*
 
-   * start_longitude: minimum longitude
-   * end_longitude: maximum longitude
-   * start_latitude: minimum longitude
-   * end_latitude: maximum latitude
    * extract_season: the season for which the capacity factor will be computed, either, djf, mam, jja, son
 
 Variables
