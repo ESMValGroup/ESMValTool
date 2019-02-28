@@ -9,10 +9,10 @@ from esmvaltool.cmor._fixes.CMIP5.FGOALS_g2 import allvars
 
 class TestAll(unittest.TestCase):
     def setUp(self):
-        self.cube = Cube([1, 2], var_name='co2', units='J')
+        self.cube = Cube([1.0, 2.0], var_name='co2', units='J')
         self.cube.add_dim_coord(
             DimCoord(
-                [0, 1],
+                [0.0, 1.0],
                 standard_name='time',
                 units=Unit('days since 0001-01', calendar='gregorian')),
             0)

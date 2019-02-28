@@ -8,9 +8,9 @@ from esmvaltool.cmor._fixes.OBS.ESACCI_OZONE import tro3prof
 
 class TestTro3prof(unittest.TestCase):
     def setUp(self):
-        self.cube = Cube([1, 2], var_name='tro3prof', units='J')
+        self.cube = Cube([1.0, 2.0], var_name='tro3prof', units='J')
         self.cube.add_dim_coord(
-            DimCoord([1, 2], standard_name='air_pressure', units='hPa'), 0)
+            DimCoord([1.0, 2.0], standard_name='air_pressure', units='hPa'), 0)
         self.fix = tro3prof()
 
     def test_fix_metadata(self):
