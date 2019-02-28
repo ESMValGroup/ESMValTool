@@ -9,6 +9,9 @@ documentation:
     - arno_en
     - hard_jo
 
+  maintainer:
+    - arno_en
+
   references:
     - giorgi11jc
     - giorgi14jgr
