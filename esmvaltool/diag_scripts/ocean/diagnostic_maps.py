@@ -111,7 +111,7 @@ def make_map_plots(
         if cfg['write_plots']:
 
             logger.info('Saving plots to %s', path)
-            plt.savefig(path)
+            plt.savefig(path, dpi=200)
 
         plt.close()
 
