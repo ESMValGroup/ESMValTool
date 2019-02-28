@@ -43,7 +43,7 @@ def get_modellines(infiles):
         if not path_to_infile:
             continue
         modellines.append(get_modelline(path_to_infile))
-    return modellines
+    return list(set(modellines))
 
 def get_modelline(path_to_infile):
     parts = path_to_infile.split('/')
