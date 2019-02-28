@@ -15,10 +15,6 @@
 ;    Contact Ralf Bennartz (Earth and Environmental Sciences, Vanderbilt
 ;    University, USA).
 ;
-; Caveats
-;    A dummy field for clivi is created for the derivation routine of lwp
-;    (see esmvaltool/preprocessor/_derive/lwp.py), containing only zeros.
-;
 ; Modification history
 ;    20190208-A_righ_ma: adapted to v2.
 ;
@@ -40,25 +36,23 @@ begin
   YEAR2 = 2007
 
   ; Selected variable (standard name)
-  VAR = (/"clwvi", "lwpStderr", "clivi"/)
+  VAR = (/"lwp", "lwpStderr"/)
 
   ; Name in the raw data
-  NAME = (/"LWP", "LWP_ERROR", "LWP"/)
+  NAME = (/"LWP", "LWP_ERROR"/)
 
   ; Conversion factor
-  CONVERSION = (/1.e-3, 1.e-3, 0./)
+  CONVERSION = (/1.e-3, 1.e-3/)
 
   ; MIP
-  MIP = (/"Amon", "Amon", "Amon"/)
+  MIP = (/"Amon", "Amon"/)
 
   ; Frequency
-  FREQ = (/"mon", "mon", "mon"/)
+  FREQ = (/"mon", "mon"/)
 
   ; CMOR table
   CMOR_TABLE = getenv("esmvaltool_root") + \
-    (/"/cmor/tables/cmip5/Tables/CMIP5_Amon", \
-      "/cmor/tables/custom/CMOR_lwpStderr.dat", \
-      "/cmor/tables/cmip5/Tables/CMIP5_Amon"/)
+    "/cmor/tables/custom/CMOR_" + VAR + ".dat"
 
   ; Type
   TYPE = "sat"
@@ -112,8 +106,6 @@ begin
 
       ; Set global attributes
       gAtt = set_global_atts(OBSNAME, TIER, SOURCE, REF, COMMENT)
-      gAtt@model_id = OBSNAME
-      gAtt@project_id = "OBS"
 
       ; Output file
       DATESTR = yr + "01-" + yr + "12"
