@@ -551,7 +551,7 @@ nc_close(file)
                   time_series_plot = params$time_series_plot,
                   realms = list("atmos"),
                   themes = list("phys"),
-                  plot_file = list(filepng1, filepng2))
+                  plot_file = filepng1)
 
       provenance[[filencdf]] <- xprov
 

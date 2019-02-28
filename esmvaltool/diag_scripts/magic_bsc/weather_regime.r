@@ -592,7 +592,7 @@ ArrayToNetCDF(variable_list, filencdf2) #nolint
                   detrend_order = params$detrend_order,
                   realms = list("atmos"),
                   themes = list("phys"),
-                  plot_file = list(filepng2))
+                  plot_file = filepng2)
 
       provenance[[filencdf2]] <- xprov
 # ---------------------------
@@ -665,7 +665,7 @@ dev.off()
                   detrend_order = params$detrend_order,
                   realms = list("atmos"),
                   themes = list("phys"),
-                  plot_file = list(filepng3))
+                  plot_file = filepng3)
 
       provenance[[filencdf3]] <- xprov
 
