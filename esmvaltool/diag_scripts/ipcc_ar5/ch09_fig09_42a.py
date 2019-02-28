@@ -5,8 +5,7 @@
 Description
 -----------
 Calculate and plot the equilibrium climate sensitivity (ECS) vs. the global
-mean surface temperature (GMSAT) for several CMIP5 models (see IPCC AR5 WG1 ch.
-9, fig. 9.42a).
+mean surface temperature (GMSAT) (see IPCC AR5 WG1 ch.9, fig. 9.42a).
 
 Author
 ------
@@ -22,6 +21,12 @@ save : dict, optional
     Keyword arguments for the `fig.saveplot()` function.
 axes_functions : dict, optional
     Keyword arguments for the plot appearance functions.
+dataset_style : str, optional
+    Dataset style file (located in
+    :mod:`esmvaltool.diag_scripts.shared.plot.styles_python`).
+matplotlib_style : str, optional
+    Dataset style file (located in
+    :mod:`esmvaltool.diag_scripts.shared.plot.styles_python.matplotlib`).
 
 """
 
@@ -33,18 +38,20 @@ from iris import Constraint
 
 from esmvaltool.diag_scripts.shared import (
     ProvenanceLogger, extract_variables, get_diagnostic_filename,
-    get_plot_filename, io, plot, run_diagnostic, variables_available)
+    get_plot_filename, group_metadata, io, plot, run_diagnostic,
+    variables_available)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
 
-def get_provenance_record(ancestor_files):
+def get_provenance_record(project, ancestor_files):
     """Create a provenance record describing the diagnostic data and plot."""
     record = {
-        'caption': ('Equilibrium climate sensitivity (ECS) against the global '
-                    'mean surface temperature of CMIP5 models, both for the '
-                    'period 1961-1990 (larger symbols) and for the '
-                    'pre-industrial control runs (smaller symbols).'),
+        'caption':
+        ('Equilibrium climate sensitivity (ECS) against the global '
+         'mean surface temperature of {} models, both for the '
+         'period 1961-1990 (larger symbols) and for the '
+         'pre-industrial control runs (smaller symbols).'.format(project)),
         'statistics': ['mean'],
         'domains': ['global'],
         'plot_types': ['scatter'],
@@ -99,7 +106,10 @@ def plot_data(cfg, hist_cubes, pi_cubes, ecs_cube):
         path,
         plot_kwargs=plot_kwargs,
         save_kwargs=cfg.get('save', {}),
-        axes_functions=cfg.get('axes_functions', {}))
+        axes_functions=cfg.get('axes_functions', {}),
+        dataset_style_file=cfg.get('dataset_style'),
+        mpl_style_file=cfg.get('matplotlib_style'),
+    )
     return path
 
 
@@ -142,6 +152,10 @@ def write_data(cfg, hist_cubes, pi_cubes, ecs_cube):
 def main(cfg):
     """Run the diagnostic."""
     input_data = cfg['input_data'].values()
+    project = list(group_metadata(input_data, 'project').keys())
+    project = [p for p in project if 'obs' not in p.lower()]
+    if len(project) == 1:
+        project = project[0]
 
     # Check if tas is available
     if not variables_available(cfg, ['tas']):
@@ -179,7 +193,7 @@ def main(cfg):
 
     # Provenance
     ancestor_files = [d['filename'] for d in input_data]
-    provenance_record = get_provenance_record(ancestor_files)
+    provenance_record = get_provenance_record(project, ancestor_files)
     if plot_path is not None:
         provenance_record['plot_file'] = plot_path
     with ProvenanceLogger(cfg) as provenance_logger:

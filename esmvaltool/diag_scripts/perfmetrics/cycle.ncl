@@ -4,7 +4,7 @@
 ; ESMVal project
 ; #############################################################################
 
-load "./diag_scripts/shared/plot/xy_line.ncl"
+load "$diag_scripts/shared/plot/xy_line.ncl"
 
 procedure perfmetrics_ptype_script()
 begin
@@ -171,7 +171,7 @@ begin
   authors = (/"righ_ma", "fran_fr", "eyri_ve", "gott_kl", "senf_da"/)
   references = (/"righi15gmd", "gleckler08jgr"/)
   infiles = (/"infile1", "infile2"/)
-  ESMValMD(nc_file, plot_file, caption, statistics, domain, plottype, \
-           diag_des, authors, references, infiles)
+  ; ESMValMD(nc_file, plot_file, caption, statistics, domain, plottype, \
+  ;          diag_des, authors, references, infiles)
 
 end

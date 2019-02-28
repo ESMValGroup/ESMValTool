@@ -8,7 +8,11 @@ ClimProjDiags
 ggplot2
 gridExtra
 multiApply
-ncdf4
 RColorBrewer
 s2dverification
 plyr
+maps
+ncdf4
+PCICt
+akima
+mapproj

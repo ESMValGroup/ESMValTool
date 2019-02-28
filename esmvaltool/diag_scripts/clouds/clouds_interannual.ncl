@@ -48,14 +48,14 @@
 ; A temporary file written by the invoking Python script
 ; Passes on a number of variables from Python to NCL
 
-load "interface_scripts/interface.ncl"
+load "$diag_scripts/../interface_scripts/interface.ncl"
 
-load "./diag_scripts/shared/plot/aux_plotting.ncl"
-load "./diag_scripts/shared/statistics.ncl"
-load "./diag_scripts/shared/plot/style.ncl"
-load "./diag_scripts/shared/plot/contour_maps.ncl"
+load "$diag_scripts/shared/plot/aux_plotting.ncl"
+load "$diag_scripts/shared/statistics.ncl"
+load "$diag_scripts/shared/plot/style.ncl"
+load "$diag_scripts/shared/plot/contour_maps.ncl"
 
-; load "./diag_scripts/lib/ncl/meta_data.ncl"
+; load "$diag_scripts/lib/ncl/meta_data.ncl"
 
 begin
   enter_msg(DIAG_SCRIPT, "")
@@ -253,7 +253,7 @@ begin
       data1@res_mpFillOn           = True
       data1@res_mpLandFillColor    = "Black"
 ;      delete(pal)
-;      pal = read_colormap_file("diag_scripts/shared/plot/rgb/qcm3.rgb")
+;      pal = read_colormap_file("$diag_scripts/shared/plot/rgb/qcm3.rgb")
     end if
 
     nboxes = dimsizes(data1@res_cnLevels)
