@@ -265,6 +265,15 @@ def get_namelist_diag_requirements(namelist):
         })
     return out
 
+def write_xml(filename, content):
+    head, tail = os.path.split(filename)
+    newfilename = os.path.join(head, "new_" + tail)
+    if os.path.exists(newfilename):
+        logger.error("File %s already exists", newfilename)
+        raise Exception
+    with open(newfilename,'w') as f:
+        f.write(content)
+    logger.debug("Created new file %s", newfilename)
 
 def main():
     parser = argparse.ArgumentParser(
@@ -276,7 +285,7 @@ def main():
     kwa = dict(args._get_kwargs())
 
     namelist = kwa['namelist']
-    print(get_namelist(namelist))
+    write_xml(namelist, get_namelist(namelist))
 
 
 if __name__ == "__main__":
