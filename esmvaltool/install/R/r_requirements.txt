@@ -4,6 +4,16 @@ lintr
 logging
 ncdf4
 yaml
+dotCall64
+abind
+climdex.pcic
+ClimProjDiags
+ggplot2
+gridExtra
+multiApply
+RColorBrewer
+s2dverification
+plyr
 maps
 ncdf4
 PCICt
