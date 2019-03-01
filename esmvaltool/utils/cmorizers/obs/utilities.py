@@ -153,7 +153,7 @@ def _roll_cube_data(cube, shift, axis):
     return cube
 
 
-def _save_variable(cube, var, outdir, year, proj):
+def _save_variable(cube, var, outdir, year, proj, **kwargs):
     """Saver function."""
     # CMOR standard
     if not isinstance(year, list):
@@ -168,4 +168,4 @@ def _save_variable(cube, var, outdir, year, proj):
     file_name = cmor_prefix + '_' + time_suffix + '.nc'
     file_path = os.path.join(outdir, file_name)
     logger.info('Saving: %s', file_path)
-    iris.save(cube, file_path)
+    iris.save(cube, file_path, **kwargs)
