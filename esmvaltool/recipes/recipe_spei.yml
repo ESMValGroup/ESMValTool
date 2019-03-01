@@ -38,8 +38,8 @@ diagnostics:
       pr: &var
         reference_dataset: ERA-Interim
         preprocessor: preprocessor
-        start_year: 1990
-        end_year: 1999
+        start_year: 2000
+        end_year: 2005
         mip: Amon
         field: T2Ms
       tas: *var
