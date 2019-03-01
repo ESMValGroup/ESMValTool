@@ -48,18 +48,21 @@ def _fix_dim_coordnames(cube):
 
     if cube.coord(axis='T') in cube.coords():
         cube.coord(axis='T').var_name = 'time'
+        cube.coord(axis='T').attributes = {}
 
     if cube.coord(axis='X') in cube.coords():
         cube.coord(axis='X').var_name = 'lon'
         cube.coord(axis='X').standard_name = 'longitude'
         cube.coord(axis='X').long_name = 'longitude coordinate'
         cube.coord(axis='X').units = Unit('degrees')
+        cube.coord(axis='X').attributes = {}
 
     if cube.coord(axis='Y') in cube.coords():
         cube.coord(axis='Y').var_name = 'lat'
         cube.coord(axis='Y').standard_name = 'latitude'
         cube.coord(axis='Y').long_name = 'latitude coordinate'
         cube.coord(axis='Y').units = Unit('degrees')
+        cube.coord(axis='Y').attributes = {}
 
     if cube.coord(axis='Z') in cube.coords():
         if cube.coord(axis='Z').var_name == 'depth':
