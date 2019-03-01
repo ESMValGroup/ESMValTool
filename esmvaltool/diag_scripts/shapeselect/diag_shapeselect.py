@@ -17,7 +17,7 @@ from esmvaltool.diag_scripts.shared import (run_diagnostic, ProvenanceLogger,
 logger = logging.getLogger(os.path.basename(__file__))
 
 
-def get_provenance_record(cfg, basename, caption, dtype, ancestor_files):
+def get_provenance_record(cfg, basename, caption, extension, ancestor_files):
     """Create a provenance record describing the diagnostic data and plot."""
     record = {
         'caption': caption,
@@ -27,11 +27,7 @@ def get_provenance_record(cfg, basename, caption, dtype, ancestor_files):
         'references': ['acknow_project'],
         'ancestors': ancestor_files,
     }
-    if dtype == 'xlsx':
-        diagnostic_file = os.path.join(cfg['work_dir'], basename + '.xlsx')
-    else:
-        diagnostic_file = get_diagnostic_filename(basename, cfg)
-    print(diagnostic_file)
+    diagnostic_file = get_diagnostic_filename(basename, cfg, extension)
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(diagnostic_file, record)
 
