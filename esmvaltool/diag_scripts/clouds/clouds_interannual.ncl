@@ -346,7 +346,7 @@ begin
       ; ##########################################
 
       nc_filename = work_dir + "clouds_interannual_" + var0 + "_" \
-                    + annots(imod) + ".nc"
+        + annots(imod) + ".nc"
       nc_outfile = ncdf_write(data1, nc_filename)
 
       ; -------------------------------------------------------------------

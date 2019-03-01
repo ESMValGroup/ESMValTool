@@ -1046,8 +1046,8 @@ begin
     do is = 0, numseas - 1
       caption = "Mean values for variable " + var0 \
                 + " (" + allseas + ")."
-      log_provenance(nc_outfile_mean, outfile(is), caption, statistics, domain, \
-                     plottype, "", "", climofiles)
+      log_provenance(nc_outfile_mean, outfile(is), caption, statistics, \
+                     domain, plottype, "", "", climofiles)
     end do
 
     ; ========================================================================
@@ -1193,9 +1193,9 @@ begin
       do is = 0, numseas - 1
         log_info(" Wrote " + outfile(is))
 
-        ; ------------------------------------------------------------------------
+        ; --------------------------------------------------------------------
         ; write provenance to netcdf output and plot file(s) (bias)
-        ; ------------------------------------------------------------------------
+        ; --------------------------------------------------------------------
 
         statistics = (/"clim", "diff"/)
         if (isatt(diag_script_info, "region")) then

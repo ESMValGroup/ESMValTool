@@ -438,11 +438,11 @@ begin
   domain = ("glob")
   plottype = ("geo")
   prov_caption = caption + " for variable " + var0 \
-                 + " (" + allseas + "), reference = " + names(ref_ind) + "."
+    + " (" + allseas + "), reference = " + names(ref_ind) + "."
 
   do is = 0, numseas - 1
-    log_provenance(nc_outfile, plotfile(is), prov_caption, statistics, domain, \
-                   plottype, "", "", climofiles)
+    log_provenance(nc_outfile, plotfile(is), prov_caption, statistics, \
+                   domain, plottype, "", "", climofiles)
   end do
 
   leave_msg(DIAG_SCRIPT, "")
