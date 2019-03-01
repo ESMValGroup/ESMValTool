@@ -6,8 +6,9 @@ from copy import deepcopy
 import iris
 import numpy as np
 
-from esmvaltool.diag_scripts.shared import (
-    ProvenanceLogger, get_diagnostic_filename, run_diagnostic)
+from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
+                                            get_diagnostic_filename,
+                                            get_plot_filename, run_diagnostic)
 from esmvaltool.diag_scripts.shared.plot import quickplot
 
 logger = logging.getLogger(os.path.basename(__file__))
@@ -48,10 +49,7 @@ def main(cfg):
             write_provenance_record(
                 cfg, fqth_file, fqcap, ancestor_files=[filename])
         if cfg['write_plots'] and cfg.get('quickplot'):
-            path = os.path.join(
-                cfg['plot_dir'],
-                name + '.' + cfg['output_file_type'],
-            )
+            path = get_plot_filename(name, cfg)
             logger.debug("Plotting analysis results to %s", path)
             quickplot(drymaxcube, filename=path, **cfg['quickplot'])
 
