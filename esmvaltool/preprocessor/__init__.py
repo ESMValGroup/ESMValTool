@@ -195,8 +195,12 @@ def _run_preproc_function(function, items, kwargs):
 
 def preprocess(items, step, **settings):
     """Run preprocessor"""
-    logger.debug("Running preprocessor step %s", step)
-    logger.debug("Step settings %s", settings)
+    logger.debug("Running preprocessor: %s", step)
+    logger.debug("Preprocessor settings:")
+    for index, value in settings.items():
+        logger.debug("%s:\t%s", index, value)
+    logger.debug("**************************************")
+
     function = globals()[step]
     itype = _get_itype(step)
 
@@ -387,7 +391,7 @@ class PreprocessingTask(BaseTask):
             logger.debug("Running block %s", block)
             if block[0] in MULTI_MODEL_FUNCTIONS:
                 for step in block:
-                    logger.debug("Applying step %s", step)
+                    logger.debug("Applying step: %s", step)
                     self.products = _apply_multimodel(self.products, step,
                                                       self.debug)
             else:
@@ -395,13 +399,13 @@ class PreprocessingTask(BaseTask):
                     logger.debug("Applying single-model steps to %s", product)
                     for step in block:
                         logger.debug("**************************************")
-                        logger.debug("Applying step %s", step)
+                        logger.debug("Applying step: %s", step)
                         ref_product = product.settings['fix_file']
-                        logger.debug("Dataset %s", ref_product['dataset'])
-                        logger.debug("Variable %s", ref_product['short_name'])
+                        logger.debug("Dataset: %s", ref_product['dataset'])
+                        logger.debug("Variable: %s", ref_product['short_name'])
                         diag_name = \
                             ref_product['output_dir'].split(os.sep)[-3]
-                        logger.debug("Diagnostic %s", diag_name)
+                        logger.debug("Diagnostic: %s", diag_name)
                         logger.debug("**************************************")
                         if step in product.settings:
                             product.apply(step, self.debug)
