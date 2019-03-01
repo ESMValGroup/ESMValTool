@@ -71,9 +71,6 @@ begin
 
   ; Check for the available dictonary keys to be used for the annotations
   dkeys = (/"dataset", "ensemble", "exp", "mip"/)
-  l_dkeys = new(dimsizes(dkeys), logical)
-  l_dkeys = True
-  ckeys = dkeys(ind(l_dkeys))
 
   ; Style information for this flag available as diag_script_info@$flag$
   if (isatt(info, flag)) then
@@ -105,12 +102,12 @@ begin
   if (flag.eq."annots") then
 
     ; Start with highest priority
-    result = metadata_att_as_array(items, ckeys(0))
+    result = metadata_att_as_array(items, dkeys(0))
 
     unique = get_unique_values(result)
     iprio = 1
     do while (dimsizes(unique) .ne. dimsizes(result))
-      if (iprio .eq. dimsizes(l_dkeys)) then
+      if (iprio .eq. dimsizes(dkeys)) then
         error_msg("w", scriptname, funcname, "non-unique labels in dataset" + \
                   "annotations")
         unique := result
@@ -118,7 +115,7 @@ begin
         do i = 0, dimsizes(unique) - 1
           index = ind(result .eq. unique(i))
           if (dimsizes(index) .gt. 1) then  ; More than one occurence
-            append = metadata_att_as_array(items, ckeys(iprio))
+            append = metadata_att_as_array(items, dkeys(iprio))
             result(index) = result(index) + "_" + append(index)
           end if
           delete(index)
