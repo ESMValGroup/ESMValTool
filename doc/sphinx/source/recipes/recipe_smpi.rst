@@ -64,14 +64,14 @@ These settings are passed to the other scripts by main.ncl, depending on the sel
 
 #. collect.ncl
 
-   *Required diag_script_info attributes*
+   *Required settings for script*
 
    * metric: selected metric (RMSD, BIAS or taylor)
    * label_bounds: for RMSD and BIAS metrics, min and max of the labelbar
    * label_scale: for RMSD and BIAS metrics, bin width of the labelbar
    * colormap: for RMSD and BIAS metrics, color table of the labelbar
    
-   *Optional diag_script_info attributes*
+   *Optional settings for script*
    
    * label_lo: adds lower triange for values outside range
    * label_hi: adds upper triange for values outside range
