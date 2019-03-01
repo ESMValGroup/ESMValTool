@@ -24,13 +24,13 @@ User settings
 
 #. main.ncl
 
-   *Required diag_script_info attributes*
+   *Required settings for script*
 
    * plot_type: cycle (time), zonal (plev, lat), latlon (lat, lon), cycle_latlon (time, lat, lon)
    * time_avg: type of time average (opt argument of time_operations in diag_scripts/shared/statistics.ncl)
    * region: selected region (see select_region in diag_scripts/shared/latlon.ncl)
    
-   *Optional diag_script_info attributes*
+   *Optional settings for script*
    
    * styleset: for plot_type cycle only (as in diag_scripts/shared/plot/styles/)
    * plot_stddev: for plot_type cycle only, plots standard deviation as shading
@@ -52,11 +52,11 @@ User settings
    * latlon_cmap: for plot_type latlon only, chosen color table (default: "amwg_blueyellowred")
    * plot_units: plotting units (if different from standard CMOR units)
    
-   *Required variable_info attributes*
+   *Required settings for variables*
    
    * reference_dataset: reference dataset to compare with (usually the observations).
    
-   *Optional variable_info attributes*
+   *Optional settings for variables*
 
    * alternative_dataset: a second dataset to compare with.
 
