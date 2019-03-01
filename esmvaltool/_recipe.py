@@ -116,7 +116,7 @@ def _add_cmor_info(variable, override=False):
     short_name = variable['short_name']
     table_entry = CMOR_TABLES[cmor_table].get_variable(mip, short_name)
 
-    if derive and table_entry is None:
+    if table_entry is None and (derive or cmor_table == 'OBS'):
         custom_table = CMOR_TABLES['custom']
         table_entry = custom_table.get_variable(mip, short_name)
 
