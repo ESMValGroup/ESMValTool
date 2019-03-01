@@ -46,7 +46,7 @@ recipe_shapeselect.yml:
     - MotalaStrom.shp
     - Elbe.shp
     - multicatchment.shp
-    - shp
+    - testfile.shp
     - Thames.shp
   weighting_method:
     - mean_inside
