@@ -15,7 +15,7 @@
 # Download and processing instructions
 #    Download the following file in ${RAWOBS}/Tier2/Landschutzer2014:
 #     pco2_1998-2011_ETH_SOM-FFN_CDIAC_G05.nc
-#      
+#
 #
 # Modification history
 #    20190227-A_lova_to: written.
@@ -35,7 +35,8 @@ from .utilities import (_add_metadata,
                         _convert_timeunits,
                         _fix_coords,
                         _read_cmor_config,
-                        _roll_cube_data)
+                        _roll_cube_data,
+                        _save_variable)
 
 logger = logging.getLogger(__name__)
 
@@ -51,7 +52,6 @@ VAR_TO_FILENAME = cfg['VAR_TO_FILENAME']
 STANDARD_NAMES = cfg['STANDARD_NAMES']
 LONG_NAMES = cfg['LONG_NAMES']
 NC4_ZIP = cfg['NC4_ZIP']
-# 
 ALLVARS = list(VAR_TO_CMOR.keys())
 
 
@@ -60,7 +60,7 @@ def _fix_metadata(cube, var):
     logger.info("Fixing units...")
     if var in ['fgco2', ]:
         cube.units = Unit('kg m-2 s-1')
-    if var in ['spco2','dpco2', ]:
+    if var in ['spco2', 'dpco2', ]:
         cube.units = Unit('Pa')
     return cube
 
@@ -68,13 +68,13 @@ def _fix_metadata(cube, var):
 def _fix_data(cube, var):
     """Specific data fixes for different variables."""
     logger.info("Fixing data ...")
-    """ fix for bad missing value definition """
+    # fix for bad missing value definition
     cube.data = np.ma.masked_values(cube.data, cube.data.fill_value)
     if var in ['fgco2', ]:
-        """ Assume standard year 365_day"""
+        # Assume standard year 365_day
         cube.data = cube.data * -12.01 / 1000. / (86400. * 365.)
         cube.attributes['positive'] = 'down'
-    if var in ['spco2','dpco2', ]:
+    if var in ['spco2', 'dpco2', ]:
         cube.data = cube.data * 101325. / 1.e06
     return cube
 
@@ -94,32 +94,12 @@ def extract_variable(var, raw_file, out_dir, yr):
             _fix_data(cube, var)
             _fix_metadata(cube, var)
             _add_metadata(cube, proj)
-            _save_variable(cube, var, out_dir, proj)
-
-
-def _save_variable(cube, var, outdir, proj, zip='False'):
-    """Saver function."""
-    # CMOR standard
-    yrbeg = cube.coord('time').cell(0).point.strftime('%Y')
-    mobeg = cube.coord('time').cell(0).point.strftime('%m')
-    yrend = cube.coord('time').cell(-1).point.strftime('%Y')
-    moend = cube.coord('time').cell(-1).point.strftime('%m')
-    time_suffix = '-'.join([yrbeg + mobeg, yrend + moend])
-
-    cmor_prefix = '_'.join([
-        'OBS', proj['dataset'], proj['realm'], proj['version'],
-        proj['field'], var, proj['frequency'][var]
-    ])
-    file_name = cmor_prefix + '_' + time_suffix + '.nc'
-    file_path = os.path.join(outdir, file_name)
-    fillvalue = cube.data.fill_value
-    if (zip):
-        logger.info('Saving as NC4-ZIP : %s ', file_path)
-        iris.save(cube, file_path, fill_value=fillvalue, local_keys=['positive'], zlib=True, complevel=4)
-    else:
-        logger.info('Saving: %s', file_path)
-        iris.save(cube, file_path, fill_value=fillvalue, local_keys=['positive'])
-
+            yr1 = cube.coord('time').cell(0).point.strftime('%Y')
+            yr2 = cube.coord('time').cell(-1).point.strftime('%Y')
+            fillvalue = cube.data.fill_value
+            _save_variable(cube, var, out_dir,
+                           [yr1, yr2], proj, fillvalue=fillvalue,
+                           local_keys=['positive'])
 
 
 def cmorization(in_dir, out_dir):
@@ -127,7 +107,7 @@ def cmorization(in_dir, out_dir):
     logger.info("Starting cmorization for WOA OBS files: Tier2")
     logger.info("Input data from: %s", in_dir)
     logger.info("Output will be written to: %s", out_dir)
-   
+
     yrdummy = 2000
 
     # run the cmorization
