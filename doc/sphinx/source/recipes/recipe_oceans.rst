@@ -424,9 +424,9 @@ diagnostic_model_vs_obs.py
 The diagnostic_model_vs_obs.py_ diagnostic makes model vs observations maps
 and scatter plots. The map plots shows four latitude vs longitude maps:
 
-=================            =======================
+========================     =======================
 Model                        Observations
------------------            -----------------------
+------------------------     -----------------------
 Model minus Observations     Model over Observations
 ========================     =======================
 
