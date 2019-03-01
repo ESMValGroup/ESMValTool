@@ -42,15 +42,15 @@ recipe_ensclus.yml:
     - 'no'
 
 recipe_shapeselect_py.yml:
-  shppath:
-    - ESMValTool/esmvaltool/diag_scripts/shapeselect/testdata/MotalaStrom.shp
-    - ESMValTool/esmvaltool/diag_scripts/shapeselect/testdata/Elbe.shp
-    - ESMValTool/esmvaltool/diag_scripts/shapeselect/testdata/multicatchment.shp
-    - ESMValTool/esmvaltool/diag_scripts/shapeselect/testdata/testfile.shp
-    - ESMValTool/esmvaltool/diag_scripts/shapeselect/testdata/Thames.shp
-  wgtmet:
+  shapefile:
+    - MotalaStrom.shp
+    - Elbe.shp
+    - multicatchment.shp
+    - shp
+    - Thames.shp
+  weighting_method:
     - mean_inside
-    - representative  # only works with evalplot: false
+    - representative
 
 recipe_capacity_factor_wp7.yml:
 
