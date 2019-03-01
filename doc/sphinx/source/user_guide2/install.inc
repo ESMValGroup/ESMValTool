@@ -82,7 +82,7 @@ repository (``environment.yml`` in the root folder).
     Some systems provides a preinstalled version of conda (e.g., via the module environment).
     Several users however reported problems when installing NCL with such versions. It is
     therefore preferable to use a local, fully user-controlled conda installation.
-	Using an older version of conda can also be a source of problems, so if you have conda
+    Using an older version of conda can also be a source of problems, so if you have conda
 	installed already, make sure it is up to date by running ``conda update -n base conda``.
 
 To enable the ``conda`` command, please source the appropriate configuration file
@@ -106,7 +106,7 @@ conda.
 Ideally, you should create a conda environment for ESMValTool, so it is
 independent from any other Python tools present in the system.
 
-Note that it is advisable to update conda to the latest version before 
+Note that it is advisable to update conda to the latest version before
 installing ESMValTool. Using the following command:
 
 .. code-block::bash
