@@ -175,7 +175,7 @@ for (i in 1 : length(projection_filenames)) {
     name = "duration", units = "days",
     dim = list(season = dimtime, lat = dimlat, lon = dimlon),
     longname = paste(
-     "Number of days during the peiode", start_projection, "-", end_projection,
+     "Number of days during the period", start_projection, "-", end_projection,
       "for", season, "in which", var0, "is", op, "than the", qtile,
       "quantile obtained from", start_reference, "-", end_reference
     )

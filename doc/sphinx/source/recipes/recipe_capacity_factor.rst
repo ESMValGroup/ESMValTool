@@ -1,7 +1,7 @@
 .. _yml_capacity_factor:
 
 Capacity factor of wind power: Ratio of average estimated power to theoretical maximum power
-====================================================
+============================================================================================
 
 Overview
 --------
@@ -10,7 +10,7 @@ The goal of this diagnostic is to compute the wind capacity factor,  taking as i
 .
 
 Available recipes and diagnostics
------------------------------------
+---------------------------------
 
 Recipes are stored in recipes/
 
@@ -18,7 +18,7 @@ Recipes are stored in recipes/
 
 Diagnostics are stored in diag_scripts/magic_bsc/
 
-* capacity_factor.R: calculates the capacity factor for the three turbine classes. 
+* capacity_factor.R: calculates the capacity factor for the three turbine classes.
 * PC.r: calculates the power curves for the three turbine classes.
 
 
@@ -31,7 +31,7 @@ User setting files are stored in recipes/
 
    *Required settings for script*
 
-   * extract_season: the season for which the capacity factor will be computed, either, djf, mam, jja, son
+   * power_curves: (should not be changed)
 
 Variables
 ---------
@@ -52,7 +52,7 @@ References
 * Lledó, L. (2017). Computing capacity factor. Technical note BSC-ESS-2017-001, Barcelona Supercomputing Center. Available online at https://earth.bsc.es/wiki/lib/exe/fetch.php?media=library:external:bsc-ess-2017-001-c4e_capacity_factor.pdf [last accessed 11 October 2018]
 
 Example plots
-----------
+-------------
 
 .. _fig_capfactor1:
 .. figure::  /recipes/figures/capacity_factor/capacity_factor_IPSL-CM5A-LR_1980-2005.png

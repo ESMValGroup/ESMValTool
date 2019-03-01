@@ -42,16 +42,16 @@ User setting files are stored in recipes/
    *Required settings for script*
 
    * weights: either ‘equal’, for equal weights, ‘null’ for no weights, or a vector of integers the same length as the number of input datasets.
-   * running_mean: an integer specifying the length of the window to be used for computing the running mean
-   * moninf : instead of running_mean an integer can be given to determine the first season of the seasonal mean to be computed
-   * monsup: an integer specifying the last month to be computed
-   * Multi_year_average: ‘TRUE’ or ‘FALSE’ to specify whether to compute the mean across all input years. (does not work yet)
+   * running_mean: an integer specifying the length of the window to be used for computing the running mean (does not work yet).
+   * moninf: instead of running_mean an integer can be given to determine the first month of the seasonal mean to be computed (does not work yet).
+   * monsup: an integer specifying the last month to be computed (does not work yet).
+   * Multi_year_average: ‘true’ or ‘false’ to specify whether to compute the mean across all input years (does not work yet).
 
 #. recipe_extreme_index_wp7.yml
 
    *Required settings for script*
 
-   * metric: the metric to be computed, t90p, t10p, Wx, cdd, rx5day (see overview for a description of the different metrics.)
+   * metric: the metric to be computed, t90p, t10p, Wx, cdd, rx5day. See overview for a description of the different metrics (cdd does not work yet).
 
 
 Variables
@@ -69,7 +69,8 @@ References
 ----------
 
 * Alexander L.V.  and Coauthors (2006). Global observed changes in daily climate extremes of temperature and precipitation. J. Geophys. Res., 111, D05109, doi:10.1029/2005JD006290.
-American Academy of Actuaries, Canadian Institute of Actuaries, Casualty Actuarial Society and Society of Actuaries. Actuaries Climate Index. http://actuariesclimateindex.org (2018-10-06).
+
+* American Academy of Actuaries, Canadian Institute of Actuaries, Casualty Actuarial Society and Society of Actuaries. Actuaries Climate Index. http://actuariesclimateindex.org (2018-10-06).
 
 * Donat, M., and Coauthors (2013). Updated analyses of temperature and precipitation extreme indices since the beginning of the twentieth century: The HadEX2 dataset. J.  Geophys. Res., 118, 2098–2118, doi:10.1002/jgrd.50150.
 

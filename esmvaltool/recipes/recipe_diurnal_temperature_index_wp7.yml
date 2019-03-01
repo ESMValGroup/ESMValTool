@@ -44,13 +44,11 @@ diagnostics:
       tasmax:
         preprocessor: preproc
         mip: day
-        field: T2M
+        field: T2D
       tasmin:
         preprocessor: preproc
         mip: day
-        field: T2M
+        field: T2D
     scripts:
       main:
-        script: magic_bsc/diurnal_temp_index.r #(in diag_scripts/bsc_magic)
-
-
+        script: magic_bsc/diurnal_temp_index.r

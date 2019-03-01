@@ -1,3 +1,6 @@
+# ESMValTool
+# recipe_combined_indices_wp6.yml
+---
 documentation:
   description: |
     Recipe for for computing seasonal means or running avergaes,
@@ -23,10 +26,10 @@ preprocessors:
     mask_fillvalues:
       threshold_fraction: 0.95
     extract_region:
-        end_latitude: 70
-        start_latitude: 20
-        end_longitude: 300
-        start_longitude: 200
+      end_latitude: 70
+      start_latitude: 20
+      end_longitude: 300
+      start_longitude: 200
 
 diagnostics:
   combine_indices:
@@ -35,10 +38,10 @@ diagnostics:
       pr:
         preprocessor: preproc
         mip: Amon
-        field: T2M
+        field: T2Ms
     scripts:
       main:
-        script: magic_bsc/combined_indices_wp6.r #(in diag_scripts)
+        script: magic_bsc/combined_indices_wp6.r
         ## Weights for combining indices - if not "equal" or "NULL", must be the same length as the number of indices
         weights: "equal"
 
@@ -50,4 +53,4 @@ diagnostics:
         monsup: 3  # Last month
 
         # Multi-year average?
-        multi_year_average: FALSE
+        multi_year_average: false

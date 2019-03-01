@@ -21,10 +21,9 @@ documentation:
 
 
 datasets:
-
-   # - {dataset: IPSL-CM5A-LR, type: exp, project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1999,  end_year: 2000}
-   # - {dataset: MPI-ESM-LR, type: exp, project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2020, end_year: 2050}
-    - {dataset: bcc-csm1-1, type: exp, project: CMIP5, exp: rcp45, ensemble: r1i1p1, start_year: 2051, end_year: 2060}
+#  - {dataset: IPSL-CM5A-LR, type: exp, project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1999,  end_year: 2000}
+#  - {dataset: MPI-ESM-LR, type: exp, project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2020, end_year: 2050}
+  - {dataset: bcc-csm1-1, type: exp, project: CMIP5, exp: rcp45, ensemble: r1i1p1, start_year: 2051, end_year: 2060}
 
 preprocessors:
   preproc:
@@ -51,8 +50,6 @@ diagnostics:
 
     scripts:
       main:
-        script: magic_bsc/toymodel.r #(in diag_scripts)
+        script: magic_bsc/toymodel.r
         beta: 0.7
         number_of_members: 2
-
-

@@ -6,7 +6,7 @@ Toymodel
 Overview
 --------
 
-The goal of this diagnostic is to simulate single-model ensembles from an observational dataset to investigate the effect of observational uncertain.  For further discussion of this synthetic value generator, its general application to forecasts and its limitations, see Weigel et al. (2008). The output is a netcdf file containing the synthetic observations. Due to the sampling of the perturbations from a Gaussian distribution, running the recipe multiple times, with the same observation dataset and input parameters, will result in different outputs.  
+The goal of this diagnostic is to simulate single-model ensembles from an observational dataset to investigate the effect of observational uncertain.  For further discussion of this synthetic value generator, its general application to forecasts and its limitations, see Weigel et al. (2008). The output is a netcdf file containing the synthetic observations. Due to the sampling of the perturbations from a Gaussian distribution, running the recipe multiple times, with the same observation dataset and input parameters, will result in different outputs.
 
 
 Available recipes and diagnostics
@@ -33,8 +33,8 @@ User setting files are stored in recipes/
 
    *Required settings for script*
 
-   * Number_of_members: integer specifying the number of members to be generated
-   * Beta: the user defined underdispersion
+   * number_of_members: integer specifying the number of members to be generated
+   * beta: the user defined underdispersion
 
 
 Variables
@@ -56,16 +56,6 @@ References
 * Massonet, F., Bellprat, O. Guemas, V., & Doblas-Reyes, F. J. (2016). Using climate models to estimate the quality of global observational data sets. Science, aaf6369.
 
 * Weigel, A. P., Liniger, M. A., & Appenzeller, C. (2008). Can multi-model combinations really enhance the prediction skill of probabilistic ensemble forecasts? Quarterly Journal of the Royal Meteorological Society, 134(630), 241-260.
-
-Example plots
--------------
-
-.. centered:: |pic_toymodel|
-
-.. |pic_toymodel| image:: /esmvaltool/recipes/figures/toymodel/toymodel.png
-   :width: 80%
-
-
 
 
 Example plots

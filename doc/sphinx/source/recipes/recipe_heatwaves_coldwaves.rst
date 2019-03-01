@@ -31,8 +31,8 @@ User setting files are stored in recipes/
    *Required settings for script*
 
    * quantile: quantile defining the exceedance/non-exceedance threshold
-   * min_duration: Min duration of a heatwave/coldwave event
-   * Operator: either '>' for exceedances or '<' for non-exceedances 
+   * min_duration: Min duration in days of a heatwave/coldwave event
+   * Operator: either '>' for exceedances or '<' for non-exceedances
    * season: 'summer' or 'winter
 
 Variables
