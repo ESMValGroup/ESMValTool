@@ -1,5 +1,5 @@
-Conseqdrydays
-=============
+Consecutive dry days
+====================
 
 Overview
 --------
