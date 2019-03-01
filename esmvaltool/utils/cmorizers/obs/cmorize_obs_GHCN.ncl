@@ -9,11 +9,11 @@
 ;    https://www.esrl.noaa.gov/psd/data/gridded/data.ghcngridded.html
 ;
 ; References
-;    Jones, P. D., and A. Moberg, 2003: Hemispheric and Largescale Surface Air 
-;      Temperature Variations: An extensive Revision and an Update to 2001, 
+;    Jones, P. D., and A. Moberg, 2003: Hemispheric and Largescale Surface Air
+;      Temperature Variations: An extensive Revision and an Update to 2001,
 ;      J. Climate, 16, 206-223.
-;    Peterson, Thomas C. and Russell S. Vose, 1997: An Overview of the Global 
-;      Historical Climatology Network Temperature Data Base, Bulletin of the 
+;    Peterson, Thomas C. and Russell S. Vose, 1997: An Overview of the Global
+;      Historical Climatology Network Temperature Data Base, Bulletin of the
 ;      American Meteorological Society, 78, 2837-2849.
 ;
 ; Last access
@@ -62,8 +62,8 @@ begin
   f = addfile(fname, "r")
   setfileoption("nc", "MissingToFillValue", False)
 
-  ; Read absolute precipitation
-  output = f->precip(time|0:1379,lat|:,lon|:)
+  ; Read absolute precipitation without last incomplete year
+  output = f->precip(time|0:1379, lat|:, lon|:)
 
   ; Calculate days per month
   date = cd_calendar(output&time, 0)
@@ -105,7 +105,8 @@ begin
   ; Format longitude coordinate
   output!2 = "lon"
   if (isMonotonic(output&lon) .eq. 0) then
-    error_msg("f", cmorization_script, "", "non-monotonic longitude coordinate")
+    error_msg("f", cmorization_script, "", \
+              "non-monotonic longitude coordinate")
   end if
   if (any(output&lon.lt.0.)) then
     output1 = lonFlip(output)
