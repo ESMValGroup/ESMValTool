@@ -144,7 +144,7 @@ CMIP5:
     DKRZ: '[institute]/[dataset]/[exp]/[frequency]/[modeling_realm]/[mip]/[ensemble]/[latestversion]/[short_name]'
     ETHZ: '[exp]/[mip]/[short_name]/[dataset]/[ensemble]/'
     SMHI: '[dataset]/[ensemble]/[exp]/[frequency]'
-    BSC: '[project]/[exp]/[dataset.lower]'
+    BSC: '[type]/[project]/[exp]/[dataset.lower]'
   input_file: '[short_name]_[mip]_[dataset]_[exp]_[ensemble]_*.nc'
   input_fx_dir:
     default: '/'
