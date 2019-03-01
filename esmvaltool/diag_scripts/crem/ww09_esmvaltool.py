@@ -358,7 +358,7 @@ def read_and_check(srcfilename, varname, lons2, lats2, time2):
     try:
         data = np.ma.masked_equal(src_data, getattr(src_data, "_FillValue"))
         rgmasked = np.ma.masked_invalid(data)
-    except:
+    except AttributeError:
         rgmasked = np.ma.masked_invalid(src_data)
     np.ma.set_fill_value(rgmasked, 0.0)
 
