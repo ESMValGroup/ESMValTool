@@ -600,7 +600,9 @@ open_plot_device <- function(figname, output_file_type, special = FALSE) {
       png(filename = figname, width = png_width, height = png_height)
     } else if (tolower(output_file_type) == "pdf") {
       pdf(file = figname, width = pdf_width, height = pdf_height, onefile = T)
-    } else if (tolower(output_file_type) == "eps") {
+    } else if ( (tolower(output_file_type) == "eps") |
+                (tolower(output_file_type) == "epsi") |
+                (tolower(output_file_type) == "ps") ) {
       setEPS(
         width = pdf_width, height = pdf_height, onefile = T,
         paper = "special"
