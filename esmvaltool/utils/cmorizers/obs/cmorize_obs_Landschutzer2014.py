@@ -51,7 +51,7 @@ VAR_TO_CMOR = cfg['VAR_TO_CMOR']
 VAR_TO_FILENAME = cfg['VAR_TO_FILENAME']
 STANDARD_NAMES = cfg['STANDARD_NAMES']
 LONG_NAMES = cfg['LONG_NAMES']
-NC4_ZIP = cfg['NC4_ZIP']
+
 ALLVARS = list(VAR_TO_CMOR.keys())
 
 
@@ -98,7 +98,7 @@ def extract_variable(var, raw_file, out_dir, yr):
             yr2 = cube.coord('time').cell(-1).point.strftime('%Y')
             fillvalue = cube.data.fill_value
             _save_variable(cube, var, out_dir,
-                           [yr1, yr2], proj, fillvalue=fillvalue,
+                           [yr1, yr2], proj, fill_value=fillvalue,
                            local_keys=['positive'])
 
 

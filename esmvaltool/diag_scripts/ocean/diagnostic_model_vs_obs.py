@@ -63,7 +63,7 @@ logger = logging.getLogger(os.path.basename(__file__))
 logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
 
-def add_map_subplot(subplot, cube, nspace, title='', 
+def add_map_subplot(subplot, cube, nspace, title='',
                     cmap='', extend='neither', log=False):
     """
     Add a map subplot to the current pyplot figure.
@@ -202,9 +202,13 @@ def make_model_vs_obs_plots(
         logspace4 = np.logspace(-1., 1., 12, endpoint=True)
 
         # Add the sub plots to the figure.
-        add_map_subplot(221, cube221, linspace12, cmap='viridis', title=model, extend=extend)
         add_map_subplot(
-            222, cube222, linspace12, cmap='viridis', title=' '.join([obs]), extend=extend)
+            221, cube221, linspace12, cmap='viridis', title=model,
+            extend=extend)
+        add_map_subplot(
+            222, cube222, linspace12, cmap='viridis',
+            title=' '.join([obs]),
+            extend=extend)
         add_map_subplot(
             223,
             cube223,

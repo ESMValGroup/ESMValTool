@@ -17,9 +17,6 @@ proj:
     CMORconventions: 'CF/CMOR3'
     CMORcreated: ''
 
-# Output Compressed NETCDF4
-NC4_ZIP: False
-
 # Match CMOR variables with input file one(s)
 VAR_TO_CMOR:
   fgco2: 'fgco2_smoothed' 
