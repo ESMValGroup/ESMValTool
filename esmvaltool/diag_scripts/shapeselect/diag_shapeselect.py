@@ -1,7 +1,6 @@
 """Diagnostic to select grid points within a shapefile."""
 import logging
 import os
-import sys
 from copy import deepcopy
 
 import fiona
@@ -12,8 +11,8 @@ from netCDF4 import Dataset, num2date
 from shapely.geometry import MultiPoint, shape
 from shapely.ops import nearest_points
 
-from esmvaltool.diag_scripts.shared import (
-    run_diagnostic, ProvenanceLogger, get_diagnostic_filename)
+from esmvaltool.diag_scripts.shared import (run_diagnostic, ProvenanceLogger,
+                                            get_diagnostic_filename)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -96,9 +95,10 @@ def writexls(cfg, filename, ncts, nclon1, nclat1):
     for dtim in dtime:
         wtime.append(str(dtim))
     workbook = xlsxwriter.Workbook(
-        os.path.join(cfg['work_dir'],
-                     os.path.splitext(os.path.basename(filename))[0] +
-                     '_polygon_table' + '.xlsx'))
+        os.path.join(
+            cfg['work_dir'],
+            os.path.splitext(os.path.basename(filename))[0] + '_polygon_table'
+            + '.xlsx'))
     worksheet = workbook.add_worksheet('Data')
     worksheet.write(0, 0, 'Date')
     worksheet.write(0, 1, 'Lon/Lat')
@@ -126,8 +126,10 @@ def writexls(cfg, filename, ncts, nclon1, nclat1):
 
 def shapeselect(cfg, cube):
     """Select data inside a shapefile."""
-    shppath = cfg['shppath']
-    wgtmet = cfg['wgtmet']
+    shppath = cfg['shapefile']
+    if not os.path.isabs(shppath):
+        shppath = os.path.join(cfg['auxiliary_data_dir'], shppath)
+    wgtmet = cfg['weighting_method']
     if ((cube.coord('latitude').ndim == 1
          and cube.coord('longitude').ndim == 1)):
         coordpoints = [(x, y) for x in cube.coord('longitude').points
@@ -136,8 +138,7 @@ def shapeselect(cfg, cube):
             if crd[0] > 180:
                 coordpoints[i] = (coordpoints[i][0] - 360., coordpoints[i][1])
     else:
-        logger.info("Support for 2-d coords not implemented!")
-        sys.exit(1)
+        raise ValueError("Support for 2-d coords not implemented!")
     points = MultiPoint(coordpoints)
     with fiona.open(shppath) as shp:
         gpx = []
@@ -237,9 +238,9 @@ def write_netcdf(path, var, plon, plat, cube, cfg):
     polys = ncout.createVariable('polygon', 'S1', ('polygon'), zlib=True)
     polys.setncattr_string('standard_name', 'polygon')
     polys.setncattr_string('long_name', 'polygon')
-    polys.setncattr_string('shapefile', cfg['shppath'])
-    lon = ncout.createVariable(cube.coord('longitude').var_name,
-                               'f8', 'polygon', zlib=True)
+    polys.setncattr_string('shapefile', cfg['shapefile'])
+    lon = ncout.createVariable(
+        cube.coord('longitude').var_name, 'f8', 'polygon', zlib=True)
     lon.setncattr_string('standard_name',
                          cube.coord('longitude').standard_name)
     lon.setncattr_string('long_name', cube.coord('longitude').long_name)

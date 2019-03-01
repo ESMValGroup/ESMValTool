@@ -20,7 +20,7 @@ Recipes
    recipe_oceans
    recipe_perfmetrics
    recipe_runoff_et
-   recipe_shapeselect_py
+   recipe_shapeselect
    recipe_spei
    recipe_toymodel
    recipe_zmnam

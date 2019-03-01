@@ -11,7 +11,7 @@ Available recipes and diagnostics
 
 Recipes are stored in recipes/
 
-    * recipe_shapeselect_py
+    * recipe_shapeselect.yml
 
 
 Diagnostics are stored in diag_scripts/shapeselect/
@@ -27,9 +27,9 @@ User settings in recipe
 
    *Required settings (scripts)*
 
-   * shppath: path to the user provided shapefile.
+   * shapefile: path to the user provided shapefile. A relative path is relative to the auxiliary_data_dir as configured in config-user.yml.
 
-   * wgtmet: the preferred weighting method 'mean_inside' - mean of all grid points inside polygon; 'representative' - one point inside or close to the polygon is used to represent the complete area.
+   * weighting_method: the preferred weighting method 'mean_inside' - mean of all grid points inside polygon; 'representative' - one point inside or close to the polygon is used to represent the complete area.
 
    * write_xlsx: true or false to write output as Excel sheet or not.
 
