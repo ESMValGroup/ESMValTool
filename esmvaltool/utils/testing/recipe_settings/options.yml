@@ -58,25 +58,42 @@ recipe_combined_indices_wp6.yml:
   weights:
     - equal
     - null
+    - [2]
   running_mean:
+    - 5
     - 3
   # Or compute seasons? (NOTE: cant compute both running means and seasons):
+  # -> does this mean that running_mean should be null?
   moninf:
-    - null  # First month
+    - 1  # First month
+    - 12
+    - null
   monsup:
-    - null  # Last month
+    - 3  # Last month
+    - 5
   multi_year_average:
     - false
     - true
+
+recipe_extreme_index_wp7.yml:
+  metric:
+    - t90p
+    - t10p
+    - Wx
+    - cdd
+    - rx5day
 
 recipe_diurnal_temperature_index_wp7.yml:
 
 recipe_heatwaves_coldwaves_wp7.yml:
   # test result: works with bcc-csm1-1 from badc
   quantile:
+    - 0.8
     - 0.9    # quantile defining the exceedance/non-exceedance threshold
+    - 0.7
   min_duration:
     - 5  # Min duration of a heatwave/coldwave event
+    - 30
   operator:
     - '>'  # or lessthan
     - '<'
@@ -106,12 +123,14 @@ recipe_modes_of_variability_wp4.yml:
     - "2026-12-31"
   ncenters:
     - 3
+    - 5
   detrend_order:
     - 2
+    - 1
   cluster_method:
     # If null it computes hcluster else specify kmeans
     - kmeans
-    - null
+    - complete
   EOFS:
     - true
     - false
@@ -119,6 +138,16 @@ recipe_modes_of_variability_wp4.yml:
     # Select a month (format: JAN, FEB, ...) or should work with season also but not jet format: JJA, SON, MAM, DJF
     - JAN
     - FEB
+    - MAR
+    - APR
+    - MAY
+    - JUN
+    - JUL
+    - AUG
+    - SEP
+    - OCT
+    - NOV
+    - DEC
     - JJA
     - SON
     - MAM
@@ -131,23 +160,29 @@ recipe_multimodel_products_wp5.yml:
     - null
   monsup:
     - 6
+    - 9
   agreement_threshold:
     - 80
+    - 50
   # Time series plot options
   running_mean:
     - 5  # Length of running mean to use for the time series plot
+    - 1
   # Timeseries plot
   time_series_plot:
     # Either mean or maxmin (plot the mean with/without shading between the max and min.
-    - null
-    - mean
+    - single
     - maxmin
 
 recipe_toymodel_wp4.yml:
   beta:
     - 0.3
+    - 0.5
+    - 0.7
   number_of_members:
+    - 2
     - 5
+    - 3
 
 recipe_miles_block.yml:
   seasons:
@@ -171,7 +206,7 @@ recipe_miles_eof.yml:
     - AO
     - PNA
     - "0_10_80_100"  #  custom area as "lon1_lon2_lat1_lat2"
-    - "0_20_150_180"
+    - "150_180_0_20"
     - "-10_10_40_50"
 
 recipe_miles_regimes.yml:
