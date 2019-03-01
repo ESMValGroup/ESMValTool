@@ -393,8 +393,12 @@ class DiagnosticTask(BaseTask):
 
     def _start_diagnostic_script(self, cmd, env):
         """Start the diagnostic script."""
+        logger.debug("**************************************")
         logger.info("Running command %s", cmd)
-        logger.debug("in environment\n%s", pprint.pformat(env))
+        logger.debug("In environment:")
+        for index, value in env.items():
+            logger.debug("env: %s:%s", index, value)
+        logger.debug("**************************************")
         cwd = self.settings['run_dir']
         logger.debug("in current working directory: %s", cwd)
         logger.info("Writing output to %s", self.output_dir)
