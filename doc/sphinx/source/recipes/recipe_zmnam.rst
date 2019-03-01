@@ -31,7 +31,6 @@ Diagnostics are stored in diag_scripts/zmnam/
 and subroutines
  
 * zmnam_calc.py
-* zmnam_clean.py
 * zmnam_plot.py
 * zmnam_preproc.py
  
@@ -58,6 +57,9 @@ References
 ----------
  
 * Baldwin, M. P. and Thompson, D. W. (2009), A critical comparison of stratosphere–troposphere coupling indices. Q.J.R. Meteorol. Soc., 135: 1661-1672. doi:10.1002/qj.479
+* Baldwin, M. P and Dunkerton, T. J. (2001), Stratospheric Harbingers of Anomalous Weather Regimes. Science  294 (5542): 581-584. doi:10.1126/science.1063315
+* Wallace, J. M. (2000), North Atlantic Oscillation/annular mode: Two paradigms-one phenomenon. Q.J.R. Meteorol. Soc., 126 (564): 791-805. doi:10.1002/qj.49712656402
+
  
 
 Example plots
