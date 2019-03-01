@@ -41,7 +41,7 @@ recipe_ensclus.yml:
   numpcs:  # number of PCs
     - 'no'
 
-recipe_shapeselect_py.yml:
+recipe_shapeselect.yml:
   shapefile:
     - MotalaStrom.shp
     - Elbe.shp
