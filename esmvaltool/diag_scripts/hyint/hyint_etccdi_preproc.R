@@ -15,30 +15,26 @@ hyint_etccdi_preproc <- function(work_dir, etccdi_dir, etccdi_list_import,
   hyint_file <- getfilename_indices(work_dir, diag_base, model_idx, season)
   etccdi_files <- getfilename_etccdi(etccdi_dir, etccdi_list_import, model_idx,
                                      yrmon = "yr")
+  etccdi_files_tmp <- c()
   for (sfile in etccdi_files) {
-    cdo_command <- paste0(
-      "cdo -sellonlatbox,-180,180,-90,90  -delvar,time_bnds ", sfile,
-      " ", sfile, "_tmp")
     if (rgrid != F) {
-      cdo_command <- paste0("cdo setgrid,", cdo_grid, " -delvar,time_bnds ",
-        sfile, " ", sfile, "_tmp")
+      sfile_tmp <- cdo("setgrid", args = cdo_grid,
+        input = paste("-delvar,time_bnds", sfile), output = tempfile())
+    } else {
+      sfile_tmp <- cdo("sellonlatbox", args = "-180,180,-90,90",
+        input = paste("-delvar,time_bnds", sfile), output = tempfile())
     }
-    system(cdo_command)
+    etccdi_files_tmp <- c(etccdi_files_tmp, sfile_tmp)
   }
-  mv_command <- paste("mv -n ", hyint_file, paste0(hyint_file, "_tmp"))
-  etccdi_files_tmp <- paste(etccdi_files, "_tmp", sep = "", collapse = " ")
-  print(paste0("HyInt: merging ", length(etccdi_files), " ETCCDI files"))
-  cdo_command <- paste0(
-    "cdo -O merge -sellonlatbox,-180,180,-90,90 ",
-    paste0(hyint_file, "_tmp "), etccdi_files_tmp, " ", hyint_file
-  )
-  rm_command <- paste("rm ", etccdi_files_tmp)
-  print(mv_command)
-  print(cdo_command)
-  print(rm_command)
+  hyint_file_tmp <- tempfile()
+  mv_command <- paste("mv -n ", hyint_file, hyint_file_tmp)
   system(mv_command)
-  system(cdo_command)
-  system(rm_command)
+  print(paste0("HyInt: merging ", length(etccdi_files), " ETCCDI files"))
+  cdo("merge", options = "-O",
+      input = paste("-sellonlatbox,-180,180,-90,90",
+                  hyint_file_tmp, etccdi_files_tmp),
+      output = hyint_file)
+  unlink(c(etccdi_files_tmp, hyint_file_tmp))
 
   return(0)
 }

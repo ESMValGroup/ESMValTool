@@ -1,22 +1,18 @@
 # #############################################################################
 # hyint_functions.R
 #
-# Author: Enrico Arnone, Paolo Davini (ISAC-CNR, Italy)
-#
+# Author: Enrico Arnone (ISAC-CNR, Italy)
 #
 # #############################################################################
 # Description
 #     Functions used in HyInt routines
 #
-#
 # Modification history
 #    20170901-A_arno_en: adapted to HyInt and extended
 #    20170522-A_davi_pa: Creation for MiLES
-#
 # #############################################################################
 
 # basis functions
-
 
 ##########################################################
 #------------------------Packages------------------------#
@@ -159,24 +155,6 @@ getfilename_figure <- function(spath, var, year1, year2, model_idx, season,
 ##########################################################
 #-----------------Basic functions------------------------#
 ##########################################################
-
-# read cdo_resolution from cdo_griddes file
-get_cdo_res <- function(grid_file) {
-  temp_grid <- read.table(grid_file, nrows = 13, sep = "=")
-
-  print("----------============_------------")
-  print(temp_grid)
-  xsize_pos <- which(gsub(" ", "", as.character(temp_grid$V1)) == "xsize")
-  ysize_pos <- which(gsub(" ", "", as.character(temp_grid$V1)) == "ysize")
-  print(xsize_pos)
-  print(ysize_pos)
-  rgrid <- gsub(" ", "", paste0(
-    "r", as.character(temp_grid$V2[xsize_pos]),
-    "x", as.character(temp_grid$V2[ysize_pos])
-  ))
-
-  return(rgrid)
-}
 
 # normalize a time series
 standardize <- function(timeseries) {
@@ -453,16 +431,14 @@ calc_region_timeseries <- function(x, y, indata, region, calc_sd = F,
 # Adapted from 20170920-A_maritsandstad
 #
 create_grid <- function(ref_file = "./reffile", path = idx_dir,
-                        loc = "./gridDef") {
+                        out_file = "./gridDef") {
 
   ## Picking the grid found in reference file to regrid over
   if (!file.exists(ref_file)) {
     ## Picking the grid found in the first file to regrid over
     ref_file <- list.files(path, pattern = "*.nc", full.names = TRUE)[1]
   }
-  cmd <- paste("cdo griddes ", ref_file, " > ", loc, sep = "")
-  print(cmd)
-  system(cmd)
+  cdo("griddes", input = paste(ref_file, ">", out_file))
 }
 
 #
@@ -482,45 +458,30 @@ create_landseamask <- function(regrid = "./gridDef", ref_file = ref_file,
       print("Unable to access grid file")
       stop
     }
-    create_grid(ref_file = ref_file, loc = regrid)
+    create_grid(ref_file = ref_file, out_file = regrid)
   }
 
   ## Making topographic map
-  cmd <- paste("cdo -f nc topo ", loc, "/", "topo.nc", sep = "")
-  print(cmd)
-  system(cmd)
+  ftopo <- cdo("topo", options = "-f nc", output = tempfile())
 
   ## Regridding the topographic map to chosen grid
-  cmd <- paste("cdo remapcon2,", regrid, " ", loc, paste0("/", "topo.nc "),
-               regridded_topo, sep = ""
-  )
-  print(cmd)
-  system(cmd)
+  cdo("remapcon2", args = regrid, input = ftopo, output = regridded_topo)
+
   if (!topo_only) {
 
     # Set above sea-level gridpoints to missing
-    cmd <- paste("cdo setrtomiss,0,9000 ", loc, regridded_topo, loc,
-      paste0("/", "regridded_topo_miss1.nc"), sep = ""
-    )
-    print(cmd)
-    system(cmd)
+    ftopomiss1 <- cdo("setrtomiss", args = "0,9000", input = regridded_topo,
+                  output = tempfile())
 
     # Set above sea-level gridpoints to 1
-    cmd <- paste("cdo setmisstoc,1 ", loc,
-      paste0("/", "regridded_topo_miss1.nc"),
-      loc, paste0("/", "regridded_topo_1pos.nc"), sep = ""
-    )
-    print(cmd)
-    system(cmd)
+    ftopo1pos <- cdo("setmisstoc", args = "1", input = ftopomiss1,
+                 output = tempfile())
 
     # Set below sea-level gridpoints to missing
-    cmd <- paste("cdo setrtomiss,-9000,0 ", loc,
-      paste0("/", "regridded_topo_1pos.nc"),
-      landmask, sep = ""
-    )
-    print(cmd)
-    system(cmd)
+    cdo("setrtomiss", args = "-9000,0", input = ftopo1pos, output = landmask)
+    unlink(c(ftopomiss1, ftopo1pos))
   }
+  unlink(ftopo)
 }
 
 ##
@@ -619,9 +580,10 @@ get_elevation <- function(filename = NULL, elev_range = c(-1000, 10000),
                           mask = F, elev_plot = F) {
   # get elevation data from a high resolution topography file.
 
+  funlink <- F
   if (is.null(filename)) {
-    cdo_command <- paste0("cdo -f nc topo tmp_topography.nc")
-    filename <- "tmp_topography.nc"
+    filename <- cdo("topo", options = "-f nc", output = tempfile())
+    funlink <- T
   }
   elevation <- ncdf_opener(filename,
     namevar = "elevation",
@@ -642,6 +604,7 @@ get_elevation <- function(filename = NULL, elev_range = c(-1000, 10000),
     )
   }
   el_list <- list(elevation = elevation, lon_el = lon_el, lat_el = lat_el)
+  if (funlink) unlink(filename)
   return(el_list)
 }
 
@@ -702,19 +665,14 @@ ncdf_opener_universal <- function(namefile, namevar = NULL, namelon = NULL,
   # interpolation made with CDO: second order conservative remapping
   if (interp2grid) {
     print(paste("Remapping with CDO on", grid, "grid"))
-    filename <- basename(normalizePath(namefile))
-    filedir <- dirname(normalizePath(namefile))
-    cdo <- Sys.which("cdo")
-    tempfile <- paste0(file.path(filedir, paste0("tempfile_", filename)))
     if (is.null(namevar)) {
-      cdo_args <- c(paste0(remap_method, ",", grid), namefile, tempfile)
+      namefile <- cdo(remap_method, args = grid, input = namefile,
+                      output = tempfile())
     } else {
-      cdo_args <- c(paste0(remap_method, ",", grid),
-                  paste0("-selvar,", namevar),
-                  namefile, tempfile)
+      namefile <- cdo(remap_method, args = grid,
+                      input = paste0("-selvar,", namevar, " ", namefile),
+                      output = tempfile())
     }
-    system2(cdo, args = cdo_args)
-    namefile <- tempfile
   }
 
   # define rotate function (faster than with apply)
@@ -895,7 +853,7 @@ with namevar=yourvar")
 
   # remove interpolated file
   if (interp2grid) {
-    system2("rm", tempfile)
+    unlink(namefile)
   }
 
   # showing array properties
@@ -957,12 +915,8 @@ ncdf_opener_time <- function(namefile, namevar = NULL, namelon = NULL,
   # interpolation made with CDO: second order conservative remapping
   if (interp2grid) {
     print(paste("Remapping with CDO on", grid, "grid"))
-    filename <- basename(normalizePath(namefile))
-    filedir <- dirname(normalizePath(namefile))
-    cdo <- Sys.which("cdo")
-    tempfile <- paste0(file.path(filedir, paste0("tempfile_", filename)))
-    system2(cdo, args = c(paste0(remap_method, ",", grid), namefile, tempfile))
-    namefile <- tempfile
+    namefile <- cdo(remap_method, args = grid, input = namefile,
+                    output = tempfile())
   }
 
   # define rotate function (faster than with apply)
@@ -1119,7 +1073,7 @@ ncdf_opener_time <- function(namefile, namevar = NULL, namelon = NULL,
 
   # remove interpolated file
   if (interp2grid) {
-    system2("rm", tempfile)
+    unlink(namefile)
   }
 
   # showing array properties
@@ -1369,4 +1323,15 @@ image_scale3 <- function(z, levels, color.palette = heat.colors,
   par(old.par)
   par(mfg = mfg.save, new = FALSE)
   invisible()
+}
+
+cdo <- function(command, args="", input="", options="", output="") {
+  if (args != "") args <- paste0(",", args)
+  argstr <- paste0(options, " ", command, args, " ", input, " ", output)
+  print(paste("cdo", argstr))
+  ret <- system2("cdo", args = argstr)
+  if (ret != 0) {
+    stop(paste("Failed (", ret, "): cdo", argstr))
+  }
+  return(output)
 }

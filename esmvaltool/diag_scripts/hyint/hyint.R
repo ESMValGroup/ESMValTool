@@ -61,8 +61,6 @@ library(tools)
 library(yaml)
 library(ncdf4)
 
-
-
 # get path to script and source subroutines (if needed)
 args <- commandArgs(trailingOnly = FALSE)
 spath <- paste0(dirname(unlist(strsplit(grep("--file", args,
@@ -165,8 +163,7 @@ if (write_netcdf) {
       } else {
         gridfile <- getfilename_indices(work_dir, diag_base, model_idx,
                                         grid = T)
-        grid_command <- paste("cdo griddes ", regfile, " > ", gridfile)
-        system(grid_command)
+        cdo("griddes", input = paste(regfile, ">", gridfile))
         print(paste0(diag_base, ": data file exists: ", regfile))
         print(paste0(diag_base, ": corresponding grid: ", gridfile))
       }
