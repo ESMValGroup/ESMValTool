@@ -96,6 +96,15 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_idx, season) {
     )
   }
 
+  n_noplot <- 1
+  if ( (plot_type == 13 | plot_type == 15) & autolevels) {
+    n_noplot <- 2
+  }
+  minmax_levels <- c(NA, NA)
+
+  # if requested, loop twice over all models to get range of values for plots
+  for (noplot in n_noplot:1) {
+  
   # Loop over models
   for (model_idx in 1:nmodels) {
     # setting up path and parameters
@@ -215,6 +224,13 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_idx, season) {
       for (field in field_names) {
         ifield <- which(field == field_names)
 
+        if (noplot == 2 & model_idx == 1) {
+          minmax_levels <- c(NA, NA)
+          minmax_tlevels <- c(NA, NA)
+          assign(paste0(field, "_levels"), minmax_levels)
+          assign(paste0(field, "_tlevels"), minmax_tlevels)
+        }
+
         if (anyNA(title_unit_m[ifield, 1:3])) {
           title_unit_m[ifield, 1] <- field_names[ifield]
           title_unit_m[ifield, 2:3] <- field_long_names[ifield]
@@ -234,11 +250,19 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_idx, season) {
           trend_exp <- array(trend_exp, c(1, length(trend_exp)))
           trend_exp_stat <- array(trend_exp_stat, c(1, length(trend_exp_stat)))
         }
+        if (plot_type == 13 | plot_type == 15) {
+          # get only first region if working on multimodel
+          tfield_exp <- tfield_exp[1, , drop = F]
+          tfield_exp_sd <- tfield_exp_sd[1, , drop = F]
+          trend_exp <- trend_exp[1, , drop = F]
+          trend_exp_stat <- trend_exp_stat[1, , drop = F]
+        }
+
         if (is.na(levels_m[ifield, 1]) | is.na(levels_m[ifield, 2])) {
           print("No value for range: assigning min and max")
           tmp.levels <- c(min(tfield_exp, na.rm = T),
-                            max(tfield_exp, na.rm = T), len = nlev)
-          if (add_trend_sd || add_trend_sd_shade) {
+                            max(tfield_exp, na.rm = T))
+          if (add_trend_sd | add_trend_sd_shade) {
             tmp.levels <- c(min(tfield_exp - tfield_exp_sd, na.rm = T),
                               max(tfield_exp + tfield_exp_sd, na.rm = T))
           }
@@ -282,6 +306,26 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_idx, season) {
             meanrange <- mean(tmp.levels, na.rm = T)
             tmp.levels <- c(meanrange - autorange * autolevels_scale,
                               meanrange + autorange * autolevels_scale)
+          }
+
+          if (noplot == 2 & autolevels & plot_type == 13) {
+            # Recursively store min and max values to be plotted
+            # NOTE: this works as long as only one region at the time is used
+            minmax_levels <- get(paste0(field, "_levels"))
+            print("================")
+            print(minmax_levels)
+            print(tmp.levels)
+            minmax_levels[1] <- min(c(minmax_levels[1], tmp.levels[1])
+                                                      , na.rm = T)
+            minmax_levels[2] <- max(c(minmax_levels[2], tmp.levels[2])
+                                                      , na.rm = T)
+            assign(paste0(field, "_levels"), minmax_levels)
+            next
+          }
+
+          if (noplot == 1 & autolevels & plot_type == 13) {
+            tmp.levels[1] <- (get(paste0(field, "_levels")))[1]
+            tmp.levels[2] <- (get(paste0(field, "_levels")))[2]
           }
 
           # Base plot
@@ -383,15 +427,6 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_idx, season) {
             ylim <- c(
               min(trend_exp_stat[, 1] - trend_exp_stat[, 2], na.rm = T),
               max(trend_exp_stat[, 1] + trend_exp_stat[, 2], na.rm = T))
-            if (plot_type == 15) {
-              ylim <- c(
-                min(trend_exp_stat[1, 1] - trend_exp_stat[1, 2], na.rm = T),
-                max(trend_exp_stat[1, 1] + trend_exp_stat[1, 2], na.rm = T))
-                modelrange <- max(ylim, na.rm = T) - min(ylim, na.rm = T)
-                meanmodelrange <- mean(ylim, na.rm = T)
-                ylim <- c(meanmodelrange - modelrange * 3,
-                          meanmodelrange + modelrange * 3)
-            }
             # scale autolevels if required
             if (autolevels && (autolevels_scale_t != 1)) {
               autorange <- max(ylim, na.rm = T) - min(ylim, na.rm = T)
@@ -399,8 +434,6 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_idx, season) {
               ylim <- c(meanrange - autorange * autolevels_scale_t,
                           meanrange + autorange * autolevels_scale_t)
             }
-
-
           } else {
             ylim <- tlevels_m[ifield, ]
           }
@@ -438,6 +471,22 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_idx, season) {
           par_row <- (ifield - 1) %/% npancol + 1
           par_col <- (ifield - 1) %% npancol + 1
           par(mfg = c(par_row, par_col, npanrow, npancol))
+
+          if (noplot == 2 & autolevels & plot_type == 15) {
+            # Recursively store min and max values to be plotted
+            # NOTE: this works as long as only one region at the time is used
+            minmax_tlevels <- get(paste0(field, "_tlevels"))
+            minmax_tlevels[1] <- min(c(minmax_tlevels[1], ylim[1])
+                                                        , na.rm = T)
+            minmax_tlevels[2] <- max(c(minmax_tlevels[2], ylim[2])
+                                                        , na.rm = T)
+            assign(paste0(field, "_tlevels"), minmax_tlevels)
+            next
+          }
+          if (noplot == 1 & autolevels & plot_type == 15) {
+            ylim[1] <- (get(paste0(field, "_tlevels")))[1]
+            ylim[2] <- (get(paste0(field, "_tlevels")))[2]
+          }
 
           # Base plot
           if (!(plot_type == 15 & model_idx > 1) & ilabel == 1) {
@@ -540,6 +589,7 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_idx, season) {
       graphics_close(figname)
     }
   } # close loop over model
+  } # close miniloop over noplot
 
   # Legend for plot_type 13
   if (abs(add_legend) & (plot_type == 13)) {
