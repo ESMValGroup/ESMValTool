@@ -1122,9 +1122,11 @@ scale_figure <- function(plot_type, diag_script_cfg,
   if (tolower(output_file_type) == "pdf") {
     plot_size[1] <- pdf_width
     plot_size[2] <- pdf_width / figure_aspect_ratio[plot_type]
-  } else if (tolower(output_file_type) == "eps") {
+  } else if ( (tolower(output_file_type) == "eps") |
+              (tolower(output_file_type) == "epsi") |
+              (tolower(output_file_type) == "ps") ) {
     plot_size[1] <- pdf_width
-    plot_size[2] <- pdf_height / figure_aspect_ratio[plot_type]
+    plot_size[2] <- pdf_width / figure_aspect_ratio[plot_type]
   } else if (tolower(output_file_type) == "x11") {
     plot_size[1] <- x11_width
     plot_size[2] <- x11_width / figure_aspect_ratio[plot_type]
@@ -1141,7 +1143,9 @@ graphics_startup <- function(figname, output_file_type, plot_size) {
   } else if (tolower(output_file_type) == "pdf") {
     pdf(file = figname, width = plot_size[1],
                height = plot_size[2], onefile = T)
-  } else if (tolower(output_file_type) == "eps") {
+  } else if ( (tolower(output_file_type) == "eps") |
+              (tolower(output_file_type) == "epsi") |
+              (tolower(output_file_type) == "ps") ) {
     setEPS(
       width = plot_size[1], height = plot_size[2],
       onefile = T, paper = "special"
