@@ -104,7 +104,7 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_idx, season) {
 
   # if requested, loop twice over all models to get range of values for plots
   for (noplot in n_noplot:1) {
-  
+
   # Loop over models
   for (model_idx in 1:nmodels) {
     # setting up path and parameters
