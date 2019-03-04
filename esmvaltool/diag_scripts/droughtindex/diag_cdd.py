@@ -14,18 +14,26 @@ from esmvaltool.diag_scripts.shared.plot import quickplot
 logger = logging.getLogger(os.path.basename(__file__))
 
 
-def write_provenance_record(cfg, diagnostic_file, caption, ancestor_files):
+def save_results(cfg, cube, basename, ancestor_files):
     """Create a provenance record describing the diagnostic data and plot."""
-    record = {
-        'caption': caption,
+    basename = basename + '_' + cube.var_name
+    provenance = {
+        'caption': cube.long_name.replace('\n', ' '),
         'statistics': ['other'],
         'domains': ['global'],
         'authors': ['berg_pe'],
         'references': ['acknow_project'],
         'ancestors': ancestor_files,
     }
-    with ProvenanceLogger(cfg) as provenance_logger:
-        provenance_logger.log(diagnostic_file, record)
+    if cfg['write_plots'] and cfg.get('quickplot'):
+        plot_file = get_plot_filename(basename, cfg)
+        quickplot(cube, plot_file, **cfg['quickplot'])
+        provenance['plot_file'] = plot_file
+    if cfg['write_netcdf']:
+        netcdf_file = get_diagnostic_filename(basename, cfg)
+        iris.save(cube, target=netcdf_file)
+        with ProvenanceLogger(cfg) as provenance_logger:
+            provenance_logger.log(netcdf_file, provenance)
 
 
 def main(cfg):
@@ -35,23 +43,10 @@ def main(cfg):
                     attributes['standard_name'], attributes['dataset'])
         logger.debug("Loading %s", filename)
         cube = iris.load_cube(filename)
-        drymaxcube, dmcap, fqthcube, fqcap = droughtindex(cube, cfg)
-        name = os.path.splitext(os.path.basename(filename))[0]
-        # Write to file
-        if cfg['write_netcdf']:
-            drymax_file = get_diagnostic_filename(name + '_drymax', cfg)
-            iris.save(drymaxcube, target=drymax_file)
-            write_provenance_record(
-                cfg, drymax_file, dmcap, ancestor_files=[filename])
-
-            fqth_file = get_diagnostic_filename(name + '_dryfreq', cfg)
-            iris.save(fqthcube, target=fqth_file)
-            write_provenance_record(
-                cfg, fqth_file, fqcap, ancestor_files=[filename])
-        if cfg['write_plots'] and cfg.get('quickplot'):
-            path = get_plot_filename(name, cfg)
-            logger.debug("Plotting analysis results to %s", path)
-            quickplot(drymaxcube, filename=path, **cfg['quickplot'])
+        drymaxcube, fqthcube = droughtindex(cube, cfg)
+        basename = os.path.splitext(os.path.basename(filename))[0]
+        save_results(cfg, drymaxcube, basename, ancestor_files=[filename])
+        save_results(cfg, fqthcube, basename, ancestor_files=[filename])
 
 
 def droughtindex(cube, cfg):
@@ -72,20 +67,25 @@ def droughtindex(cube, cfg):
         cube.data[whh] = 0
         # Longest consecutive period
         drymaxcube = cube.collapsed('time', iris.analysis.MAX)
-        dmlong_name = ('The greatest number of consecutive days ' +
-                       'per time period with daily precipitation ' +
-                       'amount below ' + str(cfg['plim']) + ' mm.')
-        drymaxcube.long_name = dmlong_name
+        drymaxcube.long_name = (
+            'The greatest number of consecutive days per time period\n'
+            'with daily precipitation amount below {plim} mm.').format(**cfg)
+        drymaxcube.var_name = 'drymax'
+        drymaxcube.standard_name = None
+        drymaxcube.units = 'days'
+
         whth = np.where(cube.data > frlim)
         cube.data = cube.data * 0
         cube.data[whth] = 1
         fqthcube = cube.collapsed('time', iris.analysis.SUM)
-        fqthlong_name = (
-            'The number of consecutive dry day periods ' + 'of at least ' +
-            str(cfg['frlim']) + ' days ' + 'with precipitation below ' + str(
-                cfg['plim']) + ' mm each day.')
-        fqthcube.long_name = fqthlong_name
-    return drymaxcube, dmlong_name, fqthcube, fqthlong_name
+        fqthcube.long_name = (
+            'The number of consecutive dry day periods of at least {frlim} '
+            'days\nwith precipitation below {plim} mm each day.').format(**cfg)
+        fqthcube.var_name = 'dryfreq'
+        fqthcube.standard_name = None
+        fqthcube.units = None
+
+    return drymaxcube, fqthcube
 
 
 if __name__ == '__main__':

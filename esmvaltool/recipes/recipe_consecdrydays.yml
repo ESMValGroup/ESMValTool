@@ -21,3 +21,5 @@ diagnostics:
         dryindex: 'cdd'
         plim: 1
         frlim: 5
+        quickplot:
+          plot_type: pcolormesh
