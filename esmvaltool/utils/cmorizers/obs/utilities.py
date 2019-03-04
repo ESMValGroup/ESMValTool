@@ -64,7 +64,8 @@ def _fix_dim_coordnames(cube):
         if coord_type == 'Z':
             if cube.coord(axis=coord_type).var_name == 'depth':
                 cube.coord(axis=coord_type).standard_name = 'depth'
-                cube.coord(axis=coord_type).long_name = 'ocean depth coordinate'
+                cube.coord(axis=coord_type).long_name = \
+                                 'ocean depth coordinate'
                 cube.coord(axis=coord_type).var_name = 'lev'
                 cube.coord(axis=coord_type).attributes['positive'] = 'down'
             if cube.coord(axis=coord_type).var_name == 'pressure':

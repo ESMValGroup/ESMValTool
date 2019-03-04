@@ -45,7 +45,11 @@ preprocessors:
       target_grid: 2x2
       scheme: linear
 
+# --------------------------------------------------
+# Diagnostics
+# --------------------------------------------------
 diagnostics:
+
   # --------------------------------------------------
   # Map diagnostics vs ESACCI-OC
   # --------------------------------------------------
@@ -57,6 +61,8 @@ diagnostics:
         field: TO2M
         mip: Omon
         fx_files: [areacello, ]
+        maps_range: [ 0., 1.]
+        diff_range: [-1., 1.]
     additional_datasets:
       - {dataset: ESACCI-OC,  project: OBS,  type: sat,  version: L3S-fv3.1,  start_year: 1998,  end_year: 2016,  tier: 2}
     scripts:
@@ -65,8 +71,6 @@ diagnostics:
       Global_Ocean_model_vs_obs:
         script: ocean/diagnostic_model_vs_obs.py
         observational_dataset: {dataset: ESACCI-OC, project: OBS}
-        map_range: [ 0., 1.]
-        dif_range: [-1., 1.]
 
   diag_surface_maps_vs_VGPM-MODIS:
     description: Global Ocean Surface maps vs VGPM-MODIS
@@ -76,6 +80,8 @@ diagnostics:
         field: TO2M
         mip: Omon
         fx_files: [areacello, ]
+        maps_range: [ 0., 100.]
+        diff_range: [-75., 75.]
     additional_datasets:
       - {dataset: Eppley-VGPM-MODIS,  project: OBS,  type: sat,  version: R2017,  start_year: 2003,  end_year: 2016,  tier: 2}
     scripts:
@@ -84,8 +90,6 @@ diagnostics:
       Global_Ocean_model_vs_obs:
         script: ocean/diagnostic_model_vs_obs.py
         observational_dataset: {dataset: Eppley-VGPM-MODIS, project: OBS}
-        map_range: [ 0., 100.]
-        dif_range: [-75., 75.]
 
 
 
