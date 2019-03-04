@@ -26,11 +26,14 @@
 library(tools)
 library(yaml)
 
-cdo <- function(command, args="", input="", options="", output="") {
+cdo <- function(command, args="", input="", options="", output="",
+                stdout="") {
   if (args != "") args <- paste0(",", args)
   if (input != "") input <- paste0("'", input, "'")
-  if (output != "") output <- paste0("'", output, "'")    
-  argstr <- paste0(options, " ", command, args, " ", input, " ", output)
+  if (output != "") output <- paste0("'", output, "'")
+  if (stdout != "") stdout <- paste0(" > '", stdout, "'")
+  argstr <- paste0(options, " ", command, args, " ", input, " ", output,
+                   " ", stdout)
   ret <- system2("cdo", args = argstr)
   if (ret != 0) {
     stop(paste("Failed (", ret, "): cdo", argstr))
