@@ -438,7 +438,7 @@ create_grid <- function(ref_file = "./reffile", path = idx_dir,
     ## Picking the grid found in the first file to regrid over
     ref_file <- list.files(path, pattern = "*.nc", full.names = TRUE)[1]
   }
-  cdo("griddes", input = paste(ref_file, ">", out_file))
+  cdo("griddes", input = ref_file, stdout = out_file)
 }
 
 #
@@ -1329,11 +1329,14 @@ image_scale3 <- function(z, levels, color.palette = heat.colors,
   invisible()
 }
 
-cdo <- function(command, args="", input="", options="", output="") {
+cdo <- function(command, args="", input="", options="", output="",
+                stdout="") {
   if (args != "") args <- paste0(",", args)
   if (input != "") input <- paste0("'", input, "'")
-  if (output != "") output <- paste0("'", output, "'")  
-  argstr <- paste0(options, " ", command, args, " ", input, " ", output)
+  if (output != "") output <- paste0("'", output, "'")
+  if (stdout != "") stdout <- paste0(" > '", stdout, "'")  
+  argstr <- paste0(options, " ", command, args, " ", input, " ", output, " ",
+                   stdout)
   print(paste("cdo", argstr))
   ret <- system2("cdo", args = argstr)
   if (ret != 0) {

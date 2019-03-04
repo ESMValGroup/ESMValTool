@@ -12,7 +12,7 @@ hyint_preproc <- function(work_dir, model_idx, climofile, regfile) {
 
   # generate grid file
   gridfile <- getfilename_indices(work_dir, diag_base, model_idx, grid = T)
-  cdo("griddes", input = paste(regfile, ">", gridfile))
+  cdo("griddes", input = regfile, stdout = gridfile)
 
   print(paste0(diag_base, ": pre-processed file: ", regfile))
 
