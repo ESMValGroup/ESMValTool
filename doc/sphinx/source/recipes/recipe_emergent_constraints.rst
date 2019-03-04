@@ -23,8 +23,7 @@ Note: this recipe requires pre-calulation of the equilibrium climate
       $diag_scripts/emergent_constraints/ecs_cmip.cdl (recommended method):
       1) save script given at the end of this namelist as ecs_cmip.cdl
       2) run command: ncgen -o ecs_cmip.nc ecs_cmip.cdl
-      3) copy ecs_cmip.nc to directory given by diag_script_info@ecs_file
-         (e.g. $diag_scripts/emergent_constraints/ecs_cmip.nc)
+      3) copy ecs_cmip.nc to directory given by diag_script_info@ecs_file (e.g. $diag_scripts/emergent_constraints/ecs_cmip.nc)
 
 
 Available recipes and diagnostics
@@ -47,7 +46,7 @@ User settings in recipe
    *Required settings (scripts)*
 
    * diag: emergent constraint to calculate ("itczidx", "humidx", "ltmi",
-     "covrefl", "shhc"
+     "covrefl", "shhc")
 
    *Optional settings (scripts)*
 
