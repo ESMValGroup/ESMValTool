@@ -9,7 +9,7 @@ documentation:
     - senf_da
 
   maintainer:
-    - senf_da
+    - laue_ax
 
   references:
     - stroeve07grl

@@ -41,7 +41,6 @@
 ;   20130405-A_gott_kl: Implemented.
 ;
 ; #############################################################################
-load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/shea_util.ncl"
 
 load "$diag_scripts/../interface_scripts/interface.ncl"
 load "$diag_scripts/../interface_scripts/logging.ncl"
@@ -63,7 +62,6 @@ begin
 
   n_variables = ListCount(variable_info)
   var0 = variable_info[0]@short_name
-  field_type0 = variable_info[0]@field
 
 end
 
@@ -74,14 +72,6 @@ begin
   info = select_metadata_by_name(input_file_info, var0)
   n_datasets = ListCount(info)
 
-  ; Check field type
-  plot_fields = (/"T2Ms"/)
-  ind_f = any(field_type0.eq.plot_fields)
-  if (all(ismissing(ind_f))) then
-    error_msg("f", DIAG_SCRIPT, "", "can't use field " + field_type0)
-  end if
-  delete(plot_fields)
-  delete(ind_f)
   ; Check required diag_script_info attributes
   exit_if_missing_atts(diag_script_info, (/"region", "month"/))
 
@@ -124,8 +114,7 @@ begin
   smonths = (/"January", "February", "March", "April", \
               "May", "June", "July", "August", \
               "September", "October", "November", "December"/)
-  i2months = (/"01", "02", "03", "04", "05", "06",\
-               "07", "08", "09", "10", "11", "12"/)
+  i2months = sprinti("%0.2i", ispan(1, 12, 1))
 
   ; Output file name specifications
   ; (passed to get_wks for final output file name)
@@ -333,6 +322,6 @@ begin
 
   end if  ; More than 1 time step
 
-  log_info(">>>>>>>> Leaving " + DIAG_SCRIPT)
+  leave_msg(DIAG_SCRIPT, "")
 
 end
