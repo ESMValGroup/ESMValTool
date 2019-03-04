@@ -724,21 +724,21 @@ The following WOA datasets are used by the ocean diagnostics:
  - Dissolved Oxygen
 
 These files need to be reformatted using the `cmorize_obs_py` script
-using the processing configuration file `WOA.yml` with output name `WOA`.
+wth processing configuration file `WOA.yml` and output name `WOA`.
 
 Landschutzer 2014
 -----------------
 These data can be downloaded from:
-ftp://ftp.nodc.noaa.gov/nodc/archive/arc0105/0160558/1.1/data/0-data/
+ftp://ftp.nodc.noaa.gov/nodc/archive/arc0105/0160558/1.1/data/0-data/spco2_1998-2011_ETH_SOM-FFN_CDIAC_G05.nc
 (last access 02/28/2019)
 
 The following variables are used by the ocean diagnostics:
-- fgco2, Surface Downward Flux of Total CO2
-- spco2, Surface Aqueous Partial Pressure of CO2
-- dpco2, Delta CO2 Partial Pressure
+ - fgco2, Surface Downward Flux of Total CO2
+ - spco2, Surface Aqueous Partial Pressure of CO2
+ - dpco2, Delta CO2 Partial Pressure
 
-These files need to be reformatted using the `cmorize_obs_py` script
-using the processing configuration file `Landschutzer2014.yml` with output name `Landschutzer2014`.
+The file needs to be reformatted using the `cmorize_obs_py` script
+with processing configuration file `Landschutzer2014.yml` and output name `Landschutzer2014`.
 
 
 
