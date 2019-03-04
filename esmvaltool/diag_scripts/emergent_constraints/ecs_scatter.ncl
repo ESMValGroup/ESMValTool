@@ -23,12 +23,12 @@
 ; Required diag_script_info attributes (diagnostics specific)
 ;   diag: emergent constraint to calculate ("itczidx", "humidx", "ltmi",
 ;         "covrefl", "shhc")
+;   ecs_file:  path + file name of netCDF containing precalculated
+;              ECS values
 ;
 ; Optional diag_script_info attributes (diagnostic specific)
 ;   calcmm:         - False (default) = do not calculate multi-model mean
 ;                   - True = calculate multi-model mean
-;   ecs_file:       path relative to ESMValTool work_dir + file name of netCDF
-;                   containing precalculated ECS values; default = "ECS/ECS.nc"
 ;   legend_outside: True, False
 ;   predef_minmax:  True, False
 ;   styleset:       "CMIP5" (if not set, ECS_SCATTER will create a color table
@@ -1086,7 +1086,7 @@ begin
   ; Set default values for non-required diag_script_info attributes
 
   set_default_att(diag_script_info, "calcmm", False)
-  set_default_att(diag_script_info, "ecs_file", "ECS/ECS.nc")
+  set_default_att(diag_script_info, "ecs_file", "ECS.nc")
   set_default_att(diag_script_info, "legend_outside", False)
   set_default_att(diag_script_info, "predef_minmax", False)
 
@@ -1141,7 +1141,7 @@ begin
 
   diagdata = new(dim_MOD, float)
   diagminmax = new((/2/), float)
-  debug_out = True
+  debug_out = False
 
   ; southern ITCZ index (Tian, 2015)
 
