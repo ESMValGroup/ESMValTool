@@ -72,6 +72,10 @@ authors:
     name: Bellprat, Omar
     institute: BSC, Spain
     email: omar.bellprat 'at' bsc.es
+  berg_pe:
+    name: Berg, Peter
+    institute: SMHI, Sweden
+    email: peter.berg 'at' smhi.se  
   bock_ls:
     name: Bock, Lisa
     institute: DLR, Germany
@@ -542,6 +546,7 @@ references:
   lloyd-hughes02jclim: "Lloyd-Hughes, B. and Saunders, M. A., Int. J. Climatol., 22, 1571-1592, doi:10.1002/joc.846, 2002."
   locarini10usgov: "Locarnini, R. A. et al., World Ocean Atlas 2009, Volume 1: Temperature. S. Levitus, Ed. NOAA Atlas NESDIS 68, U.S. Government Printing Office, Washington, D.C., 184 pp.,2010."
   manubens:  "Manubens, N., et al., ENVIRON MODELL SOFTW 103, 29-42. doi:10.1016/j.envsoft.2018.01.018"
+  mckee93: "McKee, T. B. and Doesken, N. J. and Kleist, J.  In Proceedings of the 8th Conference on Applied Climatology, 17(22), 179-183, Boston, MA: American Meteorological Society, 1993."
   mueller14grl: "Mueller, B. and Seneviratne, S. I. Geophys. Res. Lett., 41, 128-134, doi:10.1002/2013GL058055, 2014."
   mueller13hess: "Mueller, B. et al., Hydrol. Earth Syst. Sci., 17, 3707-3720, doi:10.5194/hess-17-3707-2013, 2013."
   phillips14eos: "Phillips, A. S. et al., EOS T. Am. Geophys. Un., 95, 453-455, 2014."
@@ -556,6 +561,7 @@ references:
   tibaldi90tel: "Tibaldi S. and Molteni F. Tellus A 42(3): 343-365, doi:10.1034/j.1600-0870.1990.t01-2-00003.x, 1990."
   taylor12: "Taylor et al., Nature, 489, 423-426, doi:10.1038/nature11377, 2012."
   takahashi14marchem: "Takahashi et al., Mar. Chem., 164, 95-125, doi:10.1016/j.marchem.2014.06.004, 2014."
+  vicente10jclim: "Vicente-Serrano, S. M. and Beguería, S. and López-Moreno, J. I., Journal of climate, 23(7), 1696-1718, 10.1175/2009JCLI2909.1, 2010"
   wang99bams: "Wang, B. and Z. Fan, Bull. Amer. Meteor. Soc., 80, 629-638, doi:10.1175/1520-0477(1999)080&lt;0629:COSASM&gt;2.0.CO;2, 1999."
   wang11climdyn: "Wang, B. et al., Clim. Dyn., 39, 1123-1135, doi:10.1007/s00382-011-1266-z, 2011."
   webster92qjrms: "Webster, P. J. and Yang, S., Q.J.R. Meteorol. Soc., 118: 877-926. doi:10.1002/qj.49711850705, 1992."
