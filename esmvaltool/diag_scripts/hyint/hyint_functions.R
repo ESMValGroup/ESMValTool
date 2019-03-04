@@ -1332,9 +1332,7 @@ image_scale3 <- function(z, levels, color.palette = heat.colors,
 cdo <- function(command, args="", input="", options="", output="",
                 stdout="") {
   if (args != "") args <- paste0(",", args)
-  if (input != "") input <- paste0("'", input, "'")
-  if (output != "") output <- paste0("'", output, "'")
-  if (stdout != "") stdout <- paste0(" > '", stdout, "'")  
+  if (stdout != "") stdout <- paste0(" > ", stdout)
   argstr <- paste0(options, " ", command, args, " ", input, " ", output, " ",
                    stdout)
   print(paste("cdo", argstr))
