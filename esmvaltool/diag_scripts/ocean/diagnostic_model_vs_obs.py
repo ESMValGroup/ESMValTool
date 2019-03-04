@@ -80,6 +80,8 @@ def add_map_subplot(subplot, cube, nspace, title='',
         A string to set as the subplot title.
     cmap: str
         A string to describe the matplotlib colour map.
+    extend: str
+        Contourf-coloring of values outside the levels range
     log: bool
         Flag to plot the colour scale linearly (False) or
         logarithmically (True)
@@ -184,12 +186,12 @@ def make_model_vs_obs_plots(
         # create the z axis for plots 2, 3, 4.
         extend = 'neither'
         zrange12 = diagtools.get_cube_range([cube221, cube222])
-        if 'map_range' in cfg:
-            zrange12 = cfg['map_range']
+        if 'maps_range' in metadata[input_file]:
+            zrange12 = metadata[input_file]['maps_range']
             extend = 'both'
         zrange3 = diagtools.get_cube_range_diff([cube223])
-        if 'dif_range' in cfg:
-            zrange3 = cfg['dif_range']
+        if 'diff_range' in metadata[input_file]:
+            zrange3 = metadata[input_file]['diff_range']
             extend = 'both'
 
         cube224.data = np.ma.clip(cube224.data, 0.1, 10.)
@@ -408,7 +410,7 @@ def make_scatter(
         if np.min(zrange) * np.max(zrange) < -1:
             x_scale = 'linear'
         if np.min(zrange) < 0.:
-            logger.info('Skip plot for %s. Min range < 0', long_name)
+            logger.info('Skip scatter for %s. Min is < 0', long_name)
             return
 
         pyplot.hexbin(
