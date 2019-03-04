@@ -13,7 +13,7 @@ dependencies:
   - xarray  # Can be installed from PyPI, but here to get a consistent set of depencies with iris.
   # Non-Python dependencies
   - graphviz
-  - cdo=1.9.3
+  - cdo=1.9.5
 
   # Multi language support:
   - ncl
