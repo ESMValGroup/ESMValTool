@@ -28,6 +28,8 @@ library(yaml)
 
 cdo <- function(command, args="", input="", options="", output="") {
   if (args != "") args <- paste0(",", args)
+  if (input != "") input <- paste0("'", input, "'")
+  if (output != "") output <- paste0("'", output, "'")    
   argstr <- paste0(options, " ", command, args, " ", input, " ", output)
   ret <- system2("cdo", args = argstr)
   if (ret != 0) {
