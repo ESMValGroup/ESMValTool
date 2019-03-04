@@ -354,7 +354,6 @@ def do_full_report(full_report, report_title, work_dir,
                     # if the input data are a list of filenames (plots),
                     # we simply put all figures with their corresponding caption
                     # read from the plot meta data into the report
-    
                     for key in report_data["listtext"]:
                         if isinstance(report_data["listtext"][key], dict):
                             outfile.write("* " + key + "\n\n")
@@ -392,35 +391,47 @@ def do_full_report(full_report, report_title, work_dir,
             if "freetext" in report_data.keys():
     
                 this_title = "Description"
-    
+                
+                logger.warning(report_data["freetext"])
                 if isinstance(report_data["freetext"], (str)):
-    
-                    if os.path.isfile(report_data["freetext"]):
-                        with open(report_data["freetext"], "r") as freetext:
-                            with open(os.path.dirname(os.path.abspath(__file__)) +
-                                      os.sep + "predef/empty.txt", "r") \
-                                    as empty:
-                                text = freetext.read()
-                                if len(set(text) - set(empty.read())):
-                                    outfile.write(this_title + "\n")
-                                    outfile.write("-" * len(this_title) + "\n\n")
-                                    outfile.write(text)
-                                    outfile.write("\n\n")
-    
-                                    outfile.write(".. raw:: latex \n\n")
-                                    outfile.write("   \clearpage \n")
-    
-                                else:
-                                    logger.info("There is still the empty " +
-                                                "description from empty.txt!")
-                    else:
-                        outfile.write(this_title + "\n")
-                        outfile.write("-" * len(this_title) + "\n\n")
-                        outfile.write(report_data["freetext"] + "\n\n")
-    
-                        outfile.write(".. raw:: latex \n\n")
-                        outfile.write("   \clearpage \n")
-    
+                    
+                    report_data["freetext"] = [report_data["freetext"]]
+                    
+                if isinstance(report_data["freetext"], (list)):
+                    
+                    outfile.write(this_title + "\n")
+                    outfile.write("-" * len(this_title) + "\n\n")
+                        
+                    for ft in report_data["freetext"]:
+                        
+                        if isinstance(ft, (str)):
+                    
+                            if os.path.isfile(ft):
+                                with open(ft, "r") as freetext:
+                                    with open(os.path.dirname(os.path.abspath(__file__)) +
+                                              os.sep + "predef/empty.txt", "r") \
+                                            as empty:
+                                        text = freetext.read()
+                                        if len(set(text) - set(empty.read())):
+#                                            outfile.write(this_title + "\n")
+#                                            outfile.write("-" * len(this_title) + "\n\n")
+                                            outfile.write(text)
+                                            outfile.write("\n\n")
+            
+#                                            outfile.write(".. raw:: latex \n\n")
+#                                            outfile.write("   \clearpage \n")
+            
+                                        else:
+                                            logger.info("There is still the empty " +
+                                                        "description from empty.txt!")
+                            else:
+#                                outfile.write(this_title + "\n")
+#                                outfile.write("-" * len(this_title) + "\n\n")
+                                outfile.write(report_data["freetext"] + "\n\n")
+            
+                    outfile.write(".. raw:: latex \n\n")
+                    outfile.write("   \clearpage \n")
+            
                 else:
                     logger.error(
                         "Wrong format in text entry, nothing can be written!")

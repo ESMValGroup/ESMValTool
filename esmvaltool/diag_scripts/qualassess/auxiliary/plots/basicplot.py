@@ -828,7 +828,7 @@ class Plot2D_blank(Plot2D):
 class Plot1D(object):
     """
     Description
-        Basic class for 21-dimensional plotting
+        Basic class for 1-dimensional plotting
 
     Contents
         method plot
@@ -839,7 +839,7 @@ class Plot1D(object):
     LONS = ['longitude']    # accepted lon names
     TIME = ['time']         # accepted time names
     TIME_LABEL = ''
-    TIME_FORMAT = '%Y-%m-%d %H:%M:%S'
+    TIME_FORMAT = '%Y-%m-%d' #'%Y-%m-%d %H:%M:%S'
 
     def __init__(self, cube):
         """
@@ -873,8 +873,8 @@ class Plot1D(object):
 
         # Get dimension names
         dim_names = [list(
-            set(dim.standard_name for dim in c.dim_coords)
-        )[0] for c in cube]
+                set(dim.standard_name for dim in c.dim_coords)
+                        )[0] for c in cube]
         for dim in dim_names:
             if (dim in self.__class__.LATS):
                 self.lat_var = dim
@@ -916,7 +916,7 @@ class Plot1D(object):
 
 ###############################################################################
 
-    def plot(self, title=None, ax=None):
+    def plot(self, title=None, ax=None, colors=None):
         """
         Arguments
             title          : title of the plot
@@ -933,19 +933,30 @@ class Plot1D(object):
         """
         #brewer_cmap = mpl_cm.get_cmap('brewer_Spectral_11')
 
+        if not (len(colors) == len(self.cube) 
+                and len(title) == len(self.cube)):
+            raise ValueError("Invalid input: color or title length not" +
+                                 " compatibplotcubes_std_p,le:" + str(len(self.cube))) 
+
+
         # check axes
         if ax is None:
             ax = [plt.gca()]
         try:
             if len(ax) >= 2:
-                raise ValueError("Invalid input: axes should not be more "
+                raise ValueError("Invalid input: axes should not be more " + 
                                  "than 1!")
         except TypeError:
             ax = [ax]
 
-        cols = mpl_cm.gist_rainbow(np.linspace(0, 1, len(self.cube)))
-
+        if colors is None:
+            cols = mpl_cm.gist_rainbow(np.linspace(0, 1, len(self.cube)))
+        else:
+            cols = colors
+            
         plt.sca(ax[0])
+
+        ymin = ymax = np.nan
 
         # plot line
         try:
@@ -955,9 +966,10 @@ class Plot1D(object):
                     c.data,
                     color=cols[ind],
                     label=title[ind])
+                ymin=np.nanmin([ymin,np.nanmin(c.data)])
+                ymax=np.nanmax([ymax,np.nanmax(c.data)])
             plt.gca().set_ylabel(self.name + " " + str(self.units),
                                  rotation=90)
-            plt.grid()
 
         except Exception as e:
             exc_type, exc_obj, exc_tb = sys.exc_info()
@@ -997,20 +1009,24 @@ class Plot1D(object):
 
             plt.xticks(locs, labels, rotation=25)
             plt.xlabel(self.__class__.TIME_LABEL)
+            buffer = 0.1 * (ymax - ymin)
+            plt.ylim(ymin - buffer, ymax + buffer)
+            plt.grid()
 
         if len(self.cube) > 1:
             box = plt.gca().get_position()
-            plt.gca().set_position([box.x0, box.y0,
-                                    box.width, box.y1 - box.height * 0.1])
+            plt.gca().set_position([box.x0, box.y0 + 0.05 * box.height,
+                                    box.width, box.y1 - box.height * 0.15])
 
-            # Put a legend below current axis
+            # Put a legend above current axis
             plt.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
                        ncol=3, mode="expand", borderaxespad=0.)
 
-        try:
-            plt.tight_layout()
-        except BaseException:
-            pass
+#        removes ylabel instead of whitespace?!
+#        try:
+#            plt.tight_layout()
+#        except BaseException:
+#            pass
 
         return
 

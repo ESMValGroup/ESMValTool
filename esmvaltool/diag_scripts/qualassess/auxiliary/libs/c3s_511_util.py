@@ -14,6 +14,7 @@ import cf_units
 #import matplotlib.pyplot as plt
 #import time
 import iris
+import collections
 
 # sys.path.insert(0,
 #                os.path.abspath(os.path.join(os.path.join(
@@ -392,3 +393,31 @@ def weighted_STD_DEV(cube, dim, weights=None):
                 dim,
                 iris.analysis.MEAN,
                 weights=weights)**2)**0.5
+
+def dict_merge(dct, merge_dct):
+    """ Recursive dict merge. Inspired by :meth:``dict.update()``, instead of
+    updating only top-level keys, dict_merge recurses down into dicts nested
+    to an arbitrary depth, updating and merging keys. The ``merge_dct`` is 
+    merged into ``dct``.
+    :param dct: dict onto which the merge is executed
+    :param merge_dct: dct merged into dct
+    :return: None
+    """
+    for k, v in merge_dct.items():
+        if (k in dct and isinstance(dct[k], dict)
+                and isinstance(merge_dct[k], collections.Mapping)):
+            dict_merge(dct[k], merge_dct[k])
+        else:
+            if not k in dct:
+                dct[k] = merge_dct[k]
+            else:
+                if isinstance(dct[k],list):
+                    if isinstance(merge_dct[k],list):
+                        dct[k] = dct[k] + merge_dct[k]
+                    else:
+                        dct[k] = dct[k] + [merge_dct[k]]
+                else:
+                    if isinstance(merge_dct[k],list):
+                        dct[k] = [dct[k]] + merge_dct[k]
+                    else:
+                        dct[k] = [dct[k], merge_dct[k]]

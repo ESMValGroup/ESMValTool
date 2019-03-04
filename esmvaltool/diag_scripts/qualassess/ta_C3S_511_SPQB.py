@@ -43,6 +43,12 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 def main(cfg):
     logger.info('>>>>>>>> ta_C3S_511_SPQB.py is running! <<<<<<<<<<<<')
+#
+#    if len(cfg['input_data'].items()) == 0:
+#        logger.info("Preparing diagnostic")
+#        Diag = ta_Diagnostic_SP()
+#        logger.info("Running computation")
+#        Diag.run_diagnostic(cfg=cfg)
 
     for filename, attributes in cfg['input_data'].items():
         logger.info("Processing variable %s from data set %s",
