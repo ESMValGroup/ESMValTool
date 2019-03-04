@@ -3,6 +3,17 @@
 ***********************
 ESMValTool Preprocessor
 ***********************
+The ESMValTool climate data preprocessor can be used to perform all types of climate data pre-processing needed before indices or diagnostics can be calculated. It is a base component for many other diagnostics and metrics shown on this portal. It can be applied to tailor the climate model data to the need of the user for its own calculations.
+
+Features of the ESMValTool Climate data pre-processor are:
+
+* Regridding 
+* Geographical area selection
+* Aggregation of data
+* Provenance tracking of the calculations
+* Model statistics
+* Multi-model mean
+* and many more
 
 Variable derivation
 ===================
