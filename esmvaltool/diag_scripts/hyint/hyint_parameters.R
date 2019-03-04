@@ -289,7 +289,7 @@ figure_rel_width <- c(0.7, 0.7, 0.7, 1, 1, 1, 1, 1, 1, 1,
 
 # Figure width
 png_width <- 960
-pdf_width <- 24
+pdf_width <- 10
 x11_width <- 7
 
 # Panel width when adopting multi-panel
