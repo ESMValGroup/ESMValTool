@@ -117,16 +117,18 @@ begin
           output = new(dims, typeof(xx))
           output!0 = "time"
           output&time = time
-          if (dimnames(0).eq."latitude") then
-            output!1 = "lat"
-            output&lat = f->latitude
-          end if
-          if (dimnames(0).eq."air_pressure") then
-            output!1 = "plev"
-            output&plev = f->air_pressure
-          end if
-          output!2 = "lon"
-          output&lon = f->$dimnames(1)$
+          do ii = 0, dimsizes(dimnames) - 1
+            if (dimnames(ii).eq."air_pressure") then
+              output!(ii+1) = "plev"
+              output&plev = f->$dimnames(ii)$
+            elseif (isStrSubset(dimnames(ii), "latitude")) then
+              output!(ii+1) = "lat"
+              output&lat = f->$dimnames(ii)$
+            elseif (dimnames(ii).eq."longitude")
+              output!(ii+1) = "lon"
+              output&lon = f->$dimnames(ii)$
+            end if
+          end do
         end if
         output(ind(toint(ldate).eq.date), :, :) = (/xx/)
         delete(fname)

@@ -18,9 +18,8 @@ preprocessors:
 
 diagnostics:
 
-  ### TIER 2 #####################################
+  ### TIER 2 ##################################################################
 
-  ################################################
   ESACCI-AEROSOL:
     description: ESACCI-AEROSOL
     variables:
@@ -32,10 +31,10 @@ diagnostics:
         preproc: nopp
         mip: aero
         field: T2Ms
-      # od550aerStderr:
-      #   preproc: nopp
-      #   mip: aero
-      #   field: T2Ms
+      od550aerStderr:
+        preproc: nopp
+        mip: aero
+        field: T2Ms
       od550lt1aer:
         preproc: nopp
         mip: aero
@@ -44,15 +43,15 @@ diagnostics:
         preproc: nopp
         mip: aero
         field: T2Ms
-      # od870aerStderr:
-      #   preproc: nopp
-      #   mip: aero
-      #   field: T2Ms
+      od870aerStderr:
+        preproc: nopp
+        mip: aero
+        field: T2Ms
     additional_datasets:
       - {dataset: ESACCI-AEROSOL, project: OBS, tier: 2, type: sat, version: SU-v4.21, start_year: 1997, end_year: 2011}
     scripts: null
 
-  ################################################
+
   ESACCI-CLOUD:
     description: ESACCI-CLOUD
     variables:
@@ -64,10 +63,10 @@ diagnostics:
         preproc: nopp
         mip: Amon
         field: T2Ms
-      # cltStderr:
-      #   preproc: nopp
-      #   mip: Amon
-      #   field: T2Ms
+      cltStderr:
+        preproc: nopp
+        mip: Amon
+        field: T2Ms
       clwvi:
         preproc: nopp
         mip: Amon
@@ -76,7 +75,7 @@ diagnostics:
       - {dataset: ESACCI-CLOUD, project: OBS, tier: 2, type: sat, version: AVHRR-fv3.0, start_year: 1982, end_year: 2016}
     scripts: null
 
-  ################################################
+
   ESACCI-FIRE:
     description: ESACCI-FIRE
     variables:
@@ -88,7 +87,7 @@ diagnostics:
       - {dataset: ESACCI-FIRE, project: OBS, tier: 2, type: sat, version: L4-BA-MERIS-fv4.1, start_year: 2005, end_year: 2011}
     scripts: null
 
-  ################################################
+
   ESACCI-LANDCOVER:
     description: ESACCI-LANDCOVER
     variables:
@@ -116,61 +115,61 @@ diagnostics:
       - {dataset: ESACCI-LANDCOVER, project: OBS, tier: 2, type: sat, version: L4-LCCS-Map-300m-P5Y-aggregated-0.500000Deg, start_year: 1998, end_year: 2012}
     scripts: null
 
-  ################################################
-  # ESACCI-OZONE:
-  #   description: ESACCI-OZONE
-  #   variables:
-  #     toz:
-  #       preproc: nopp
-  #       mip: Amon
-  #       field: T2Ms
-  #       additional_datasets:
-  #         - {dataset: ESACCI-OZONE, project: OBS, tier: 2, type: sat, version: L3, start_year: 1997, end_year: 2010}
-  #     tozStderr:
-  #       preproc: nopp
-  #       mip: Amon
-  #       field: T2Ms
-  #       additional_datasets:
-  #         - {dataset: ESACCI-OZONE, project: OBS, tier: 2, type: sat, version: L3, start_year: 1997, end_year: 2010}
-  #     tro3prof:
-  #       preproc: nopp
-  #       mip: Amon
-  #       field: T2Ms
-  #       additional_datasets:
-  #         - {dataset: ESACCI-OZONE, project: OBS, tier: 2, type: sat, version: L3, start_year: 2007, end_year: 2008}
-  #     tro3profStderr:
-  #       preproc: nopp
-  #       mip: Amon
-  #       field: T2Ms
-  #       additional_datasets:
-  #         - {dataset: ESACCI-OZONE, project: OBS, tier: 2, type: sat, version: L3, start_year: 2007, end_year: 2008}
-  #   scripts: null
 
-  ################################################
-  # ESACCI-SOILMOISTURE:
-  #   description: ESACCI-SOILMOISTURE
-  #   variables:
-  #     dos:
-  #       preproc: nopp
-  #       mip: Lmon
-  #       field: T2Ms
-  #     dosStderr:
-  #       preproc: nopp
-  #       mip: Lmon
-  #       field: T2Ms
-  #     sm:
-  #       preproc: nopp
-  #       mip: Lmon
-  #       field: T2Ms
-  #     smStderr:
-  #       preproc: nopp
-  #       mip: Lmon
-  #       field: T2Ms
-  #   additional_datasets:
-  #     - {dataset: ESACCI-SOILMOISTURE, project: OBS, tier: 2, type: sat, version: L3S-SSMV-COMBINED-v4.2, start_year: 2005, end_year: 2011}
-  #   scripts: null
+  ESACCI-OZONE:
+    description: ESACCI-OZONE
+    variables:
+      toz:
+        preproc: nopp
+        mip: Amon
+        field: T2Ms
+        additional_datasets:
+          - {dataset: ESACCI-OZONE, project: OBS, tier: 2, type: sat, version: L3, start_year: 1997, end_year: 2010}
+      tozStderr:
+        preproc: nopp
+        mip: Amon
+        field: T2Ms
+        additional_datasets:
+          - {dataset: ESACCI-OZONE, project: OBS, tier: 2, type: sat, version: L3, start_year: 1997, end_year: 2010}
+      tro3prof:
+        preproc: nopp
+        mip: Amon
+        field: T2Ms
+        additional_datasets:
+          - {dataset: ESACCI-OZONE, project: OBS, tier: 2, type: sat, version: L3, start_year: 2007, end_year: 2008}
+      tro3profStderr:
+        preproc: nopp
+        mip: Amon
+        field: T2Ms
+        additional_datasets:
+          - {dataset: ESACCI-OZONE, project: OBS, tier: 2, type: sat, version: L3, start_year: 2007, end_year: 2008}
+    scripts: null
 
-  ################################################
+
+  ESACCI-SOILMOISTURE:
+    description: ESACCI-SOILMOISTURE
+    variables:
+      dos:
+        preproc: nopp
+        mip: Lmon
+        field: T2Ms
+      dosStderr:
+        preproc: nopp
+        mip: Lmon
+        field: T2Ms
+      sm:
+        preproc: nopp
+        mip: Lmon
+        field: T2Ms
+      smStderr:
+        preproc: nopp
+        mip: Lmon
+        field: T2Ms
+    additional_datasets:
+      - {dataset: ESACCI-SOILMOISTURE, project: OBS, tier: 2, type: sat, version: L3S-SSMV-COMBINED-v4.2, start_year: 2005, end_year: 2011}
+    scripts: null
+
+
   ESACCI-SST:
     description: ESACCI-SST
     variables:
@@ -178,15 +177,28 @@ diagnostics:
         preproc: nopp
         mip: Amon
         field: T2Ms
-      # tsStderr:
-      #   preproc: nopp
-      #   mip: Amon
-      #   field: T2Ms
+      tsStderr:
+        preproc: nopp
+        mip: Amon
+        field: T2Ms
     additional_datasets:
       - {dataset: ESACCI-SST, project: OBS, tier: 2, type: sat, version: L4-GHRSST-SSTdepth-OSTIA-GLOB, start_year: 1992, end_year: 2010}
     scripts: null
 
-  ################################################
+
+  HadCRUT3:
+    description: HadCRUT3
+    variables:
+      tasa:
+        preproc: nopp
+        mip: Amon
+        field: T2Ms
+    additional_datasets:
+      - {dataset: HadCRUT3, project: OBS, tier: 2, type: ground, version: 1, start_year: 1850, end_year: 2013}
+    scripts: null
+
+
+
   HadCRUT4:
     description: HadCRUT4
     variables:
@@ -194,23 +206,15 @@ diagnostics:
         preproc: nopp
         mip: Amon
         field: T2Ms
-    additional_datasets:
-      - {dataset: HadCRUT4, project: OBS, tier: 2, type: ground, version: 1, start_year: 1850, end_year: 2018}
-    scripts: null
-
-  ################################################
-  HadCRUT4-clim:
-    description: HadCRUT4 climatology
-    variables:
-      tas:
+      tasa:
         preproc: nopp
         mip: Amon
         field: T2Ms
     additional_datasets:
-      - {dataset: HadCRUT4, project: OBS, tier: 2, type: clim, version: 1, start_year: 1976, end_year: 1976}
+      - {dataset: HadCRUT4, project: OBS, tier: 2, type: ground, version: 1, start_year: 1850, end_year: 2018}
     scripts: null
 
-  ################################################
+
   HadISST:
     description: HadISST
     variables:
@@ -230,8 +234,8 @@ diagnostics:
       - {dataset: HadISST, project: OBS, tier: 2, type: reanaly, version: 1, start_year: 1870, end_year: 2017}
     scripts: null
 
-  ################################################
-  NCEP_mon:
+
+  NCEP:
     description: NCEP monthly data
     variables:
       hur:
@@ -242,9 +246,19 @@ diagnostics:
         preproc: nopp
         mip: Amon
         field: T2Ms
-      pr:
+      pr_month:
+        short_name: pr
         preproc: nopp
         mip: Amon
+        field: T2Ms
+      pr_day:
+        short_name: pr
+        preproc: nopp
+        mip: day
+        field: T2Ms
+      rlut:
+        preproc: nopp
+        mip: day
         field: T2Ms
       ta:
         preproc: nopp
@@ -254,13 +268,25 @@ diagnostics:
         preproc: nopp
         mip: Amon
         field: T2Ms
-      ua:
+      ua_month:
+        short_name: ua
         preproc: nopp
         mip: Amon
         field: T2Ms
-      va:
+      ua_day:
+        short_name: ua
+        preproc: nopp
+        mip: day
+        field: T2Ms
+      va_month:
+        short_name: va
         preproc: nopp
         mip: Amon
+        field: T2Ms
+      va_day:
+        short_name: va
+        preproc: nopp
+        mip: day
         field: T2Ms
       wap:
         preproc: nopp
@@ -274,31 +300,7 @@ diagnostics:
       - {dataset: NCEP, project: OBS, tier: 2, type: reanaly, version: 1, start_year: 1948, end_year: 2018}
     scripts: null
 
-  ##############################################
-  NCEP_day:
-    description: NCEP daily data
-    variables:
-      pr:
-        preproc: nopp
-        mip: day
-        field: T2Ms
-      rlut:
-        preproc: nopp
-        mip: day
-        field: T2Ms
-      ua:
-        preproc: nopp
-        mip: day
-        field: T2Ms
-      va:
-        preproc: nopp
-        mip: day
-        field: T2Ms
-    additional_datasets:
-      - {dataset: NCEP, project: OBS, tier: 2, type: reanaly, version: 1, start_year: 1948, end_year: 2018}
-    scripts: null
 
-  ##############################################
   PATMOS-x:
     description: PATMOS-x
     variables:
@@ -310,14 +312,41 @@ diagnostics:
       - {dataset: PATMOS-x, project: OBS, tier: 2, type: sat, version: NOAA, start_year: 1982, end_year: 1985}#2018}
     scripts: null
 
-  ################################################
 
-#  - {dataset: WOA, project: OBS, tier: 2, type: clim, version: L3, start_year: 2000, end_year: 2000}
+  WOA:
+    description: WOA
+    variables:
+      so:
+        preproc: nopp
+        mip: Omon
+        field: TO3M
+      thetao:
+        preproc: nopp
+        mip: Omon
+        field: TO3M
+      no3:
+        preproc: nopp
+        mip: Oyr
+        field: TO3Y
+      o2:
+        preproc: nopp
+        mip: Oyr
+        field: TO3Y
+      po4:
+        preproc: nopp
+        mip: Oyr
+        field: TO3Y
+      si:
+        preproc: nopp
+        mip: Oyr
+        field: TO3Y
+    additional_datasets:
+      - {dataset: WOA, project: OBS, tier: 2, type: clim, version: 2013v2, start_year: 2000, end_year: 2000}
+    scripts: null
 
 
-  ### TIER 3 #####################################
-  
-  ################################################
+  ### TIER 3 ##################################################################
+
   AURA-TES:
     description: AURA-TES
     variables:
@@ -329,83 +358,71 @@ diagnostics:
       - {dataset: AURA-TES, project: OBS, tier: 3, type: sat, version: 1, start_year: 2005, end_year: 2011}
     scripts: null
 
-  ################################################
+
   CERES_mon:
     description: CERES-SYN1deg monthly data
     variables:
-      rlds:
+      rlds_month:
+        short_name: rlds
         preproc: nopp
         mip: Amon
         field: T2Ms
-      rldscs:
-        preproc: nopp
-        mip: Amon
-        field: T2Ms
-      rlus:
-        preproc: nopp
-        mip: Amon
-        field: T2Ms
-      rlut:
-        preproc: nopp
-        mip: Amon
-        field: T2Ms
-      rlutcs:
-        preproc: nopp
-        mip: Amon
-        field: T2Ms
-      rsds:
-        preproc: nopp
-        mip: Amon
-        field: T2Ms
-      rsdt:
-        preproc: nopp
-        mip: Amon
-        field: T2Ms
-      rsus:
-        preproc: nopp
-        mip: Amon
-        field: T2Ms
-      rsut:
-        preproc: nopp
-        mip: Amon
-        field: T2Ms
-      rsutcs:
-        preproc: nopp
-        mip: Amon
-        field: T2Ms
-    additional_datasets:
-      - {dataset: CERES-SYN1deg, project: OBS, tier: 3, type: sat, version: Ed3A, start_year: 2001, end_year: 2016}
-    scripts: null
-
-  ################################################
-  CERES-3hr:
-    description: CERES-SYN1deg 3-hourly data
-    variables:
-      rlds:
+      rlds_3hr:
+        short_name: rlds
         preproc: nopp
         mip: 3hr
         field: T2Ms
-      rldscs:
+      rldscs_month:
+        short_name: rldscs
+        preproc: nopp
+        mip: Amon
+        field: T2Ms
+      rldscs_3hr:
+        short_name: rldscs
         preproc: nopp
         mip: 3hr
         field: T2Ms
-      rlus:
+      rlus_month:
+        short_name: rlus
+        preproc: nopp
+        mip: Amon
+        field: T2Ms
+      rlus_3hr:
+        short_name: rlus
         preproc: nopp
         mip: 3hr
         field: T2Ms
-      # rluscs:
-      #   preproc: nopp
-      #   mip: 3hr
-      #   field: T2Ms
-      # rlut:
-      #   preproc: nopp
-      #   mip: 3hr
-      #   field: T2Ms
-      # rlutcs:
-      #   preproc: nopp
-      #   mip: 3hr
-      #   field: T2Ms
-      rsds:
+      rluscs:
+        preproc: nopp
+        mip: 3hr
+        field: T2Ms
+      rlut_month:
+        short_name: rlut
+        preproc: nopp
+        mip: Amon
+        field: T2Ms
+      rlut_3hr:
+        short_name: rlut
+        preproc: nopp
+        mip: 3hr
+        field: T2Ms
+      rlutcs_month:
+        short_name: rlutcs
+        preproc: nopp
+        mip: Amon
+        field: T2Ms
+      rlutcs_3hr:
+        short_name: rlutcs
+        preproc: nopp
+        mip: 3hr
+        field: T2Ms
+      rsds_month:
+        short_name: rsds
+        preproc: nopp
+        mip: Amon
+        field: T2Ms
+      rsds_3hr:
+        short_name: rsds
         preproc: nopp
         mip: 3hr
         field: T2Ms
@@ -413,7 +430,17 @@ diagnostics:
         preproc: nopp
         mip: 3hr
         field: T2Ms
-      rsus:
+      rsdt:
+        preproc: nopp
+        mip: Amon
+        field: T2Ms
+      rsus_month:
+        short_name: rsus
+        preproc: nopp
+        mip: Amon
+        field: T2Ms
+      rsus_3hr:
+        short_name: rsus
         preproc: nopp
         mip: 3hr
         field: T2Ms
@@ -421,21 +448,33 @@ diagnostics:
         preproc: nopp
         mip: 3hr
         field: T2Ms
-      # rsut:
-      #   preproc: nopp
-      #   mip: 3hr
-      #   field: T2Ms
-      # rsutcs:
-      #   preproc: nopp
-      #   mip: 3hr
-      #   field: T2Ms
+      rsut_month:
+        short_name: rsut
+        preproc: nopp
+        mip: Amon
+        field: T2Ms
+      rsut_3hr:
+        short_name: rsut
+        preproc: nopp
+        mip: 3hr
+        field: T2Ms
+      rsutcs_month:
+        short_name: rsutcs
+        preproc: nopp
+        mip: Amon
+        field: T2Ms
+      rsutcs_3hr:
+        short_name: rsutcs
+        preproc: nopp
+        mip: 3hr
+        field: T2Ms
     additional_datasets:
-      - {dataset: CERES-SYN1deg, project: OBS, tier: 3, type: sat, version: Ed3A, start_year: 2004, end_year: 2005}
+      - {dataset: CERES-SYN1deg, project: OBS, tier: 3, type: sat, version: Ed3A, start_year: 2001, end_year: 2016}
     scripts: null
 
-  ################################################
-  ERA-Interim_mon:
-    description: ERA-Interim monthly data
+
+  ERA-Interim:
+    description: ERA-Interim
     variables:
       clivi:
         preproc: nopp
@@ -462,9 +501,15 @@ diagnostics:
         preproc: nopp
         mip: Amon
         field: T2Ms
-      psl:
+      psl_month:
+        short_name: psl
         preproc: nopp
         mip: Amon
+        field: T2Ms
+      psl_day:
+        short_name: psl
+        preproc: nopp
+        mip: day
         field: T2Ms
       ta:
         preproc: nopp
@@ -510,19 +555,7 @@ diagnostics:
       - {dataset: ERA-Interim, project: OBS, tier: 3, type: reanaly, version: 1, start_year: 1979, end_year: 2018}
     scripts: null
 
-  ################################################
-  ERA-Interim_day:
-    description: ERA-Interim daily data
-    variables:
-      psl:
-        preproc: nopp
-        mip: day
-        field: T2Ms
-    additional_datasets:
-      - {dataset: ERA-Interim, project: OBS, tier: 3, type: reanaly, version: 1, start_year: 1979, end_year: 2018}
-    scripts: null
 
-  ################################################
   MODIS:
     description: MODIS
     variables:
@@ -542,30 +575,46 @@ diagnostics:
         preproc: nopp
         mip: Amon
         field: T2Ms
-      # lwpStderr:
-      #   preproc: nopp
-      #   mip: Amon
-      #   field: T2Ms
-      # iwpStderr:
-      #   preproc: nopp
-      #   mip: Amon
-      #   field: T2Ms
+      lwpStderr:
+        preproc: nopp
+        mip: Amon
+        field: T2Ms
+      iwpStderr:
+        preproc: nopp
+        mip: Amon
+        field: T2Ms
     additional_datasets:
       - {dataset: MODIS, project: OBS, tier: 3, type: sat, version: MYD08-M3, start_year: 2003, end_year: 2018}
     scripts: null
 
-  ################################################
-  # NIWA-BS:
-  #   description: NIWA-BS
-  #   variables:
-  #     toz:
-  #       preproc: nopp
-  #       mip: mon
-  #       field: T2Ms
-  #     tozStderr:
-  #       preproc: nopp
-  #       mip: mon
-  #       field: T2Ms
-  #   additional_datasets:
-  #     - {dataset: NIWA-BS,  project: OBS,  tier: 3,  type: sat,  version: v3.3,  start_year: 1979,  end_year: 2016}
-  #   scripts: null
+
+  NIWA-BS:
+    description: NIWA-BS
+    variables:
+      toz:
+        preproc: nopp
+        mip: Amon
+        field: T2Ms
+      tozStderr:
+        preproc: nopp
+        mip: Amon
+        field: T2Ms
+    additional_datasets:
+      - {dataset: NIWA-BS,  project: OBS,  tier: 3,  type: sat,  version: v3.3,  start_year: 1979,  end_year: 2016}
+    scripts: null
+
+
+  UWisc:
+    description: UWisc
+    variables:
+      lwp:
+        preproc: nopp
+        mip: Amon
+        field: T2Ms
+      lwpStderr:
+        preproc: nopp
+        mip: Amon
+        field: T2Ms
+    additional_datasets:
+      - {dataset: UWisc,  project: OBS,  tier: 3,  type: sat,  version: v2,  start_year: 1988,  end_year: 2007}
+    scripts: null

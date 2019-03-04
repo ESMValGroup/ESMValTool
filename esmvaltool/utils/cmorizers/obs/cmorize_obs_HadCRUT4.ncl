@@ -202,7 +202,6 @@ begin
                MIP, "tasa", DATESTR/), "_") + ".nc"
   write_nc(fout, "tasa", output2, bounds2, gAtt2)
   w = addfile(fout, "w")
-  w->height = height
   delete(w)
   delete(gAtt2)
   delete(bounds2)
