@@ -295,7 +295,7 @@ x11_width <- 7
 # Panel width when adopting multi-panel
 # (this overrides figure width)
 png_width_multi <- 480
-pdf_width_multi <- 12
+pdf_width_multi <- 5
 x11_width_multi <- 4
 
 # color palette to be used
