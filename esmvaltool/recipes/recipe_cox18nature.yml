@@ -19,6 +19,14 @@ documentation:
     - crescendo
 
 
+preprocessors:
+
+  spatial_mean:
+    average_region:
+      coord1: latitude
+      coord2: longitude
+
+
 diagnostics:
 
   diag_ecs:
@@ -32,6 +40,7 @@ diagnostics:
     description: Calculate temperature variability metric psi.
     variables:
       tas: &tas_settings
+        preprocessor: spatial_mean
         project: CMIP5
         ensemble: r1i1p1
         mip: Amon
@@ -75,4 +84,5 @@ diagnostics:
           'diag_ecs/ecs',
           'diag_psi/psi',
           'diag_psi/tas',
+          'diag_psi/tasa',
         ]
