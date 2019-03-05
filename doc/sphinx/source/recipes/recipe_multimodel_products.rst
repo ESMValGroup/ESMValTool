@@ -1,15 +1,18 @@
 .. _recipes_multimodel_products:
 
-Multimodel agreement
+Generic multi-model products
 ====================================================
 
 Overview
 --------
 
-The goal of this diagnostic is to compute the multi-model ensemble mean for a set of models selected by the user for individual variables and different temporal resolutions (annual, seasonal, monthly). After selecting the region (defined by the lowermost and uppermost longitudes and latitudes), the mean for the selected reference period is subtracted from the projections in order to obtain the anomalies for the desired period. In addition, the recipe computes the percentage of models agreeing on the sign of this anomaly, thus providing some indication on the robustness of the climate signal.
-The output of the recipe consists of a colored map showing the time average of the multi-model mean anomaly and stippling to indicate locations where the percentage of models agreeing on the sign of the anomaly exceeds a threshold selected by the user. Furthermore, a time series of the area-weighted mean anomaly for the projections is plotted. For the plots, the user can select the length of the running window for temporal smoothing and choose to display the ensemble mean with a light shading to represent the spread of the ensemble or choose to display each individual models.  
+The goal of this diagnostic is to compute the multi-model ensemble mean for a set of models selected by the user for individual variables and different temporal resolutions (annual, seasonal, monthly). 
 
- 
+After selecting the region (defined by the lowermost and uppermost longitudes and latitudes), the mean for the selected reference period is subtracted from the projections in order to obtain the anomalies for the desired period. In addition, the recipe computes the percentage of models agreeing on the sign of this anomaly, thus providing some indication on the robustness of the climate signal.
+
+The output of the recipe consists of a colored map showing the time average of the multi-model mean anomaly and stippling to indicate locations where the percentage of models agreeing on the sign of the anomaly exceeds a threshold selected by the user. Furthermore, a time series of the area-weighted mean anomaly for the projections is plotted. For the plots, the user can select the length of the running window for temporal smoothing and choose to display the ensemble mean with a light shading to represent the spread of the ensemble or choose to display each individual models.
+
+
 
 Available recipes and diagnostics
 -----------------------------------
@@ -31,14 +34,10 @@ User settings
 
 User setting files are stored in recipes/
 
-#. ???	recipe_multimodel_products_wp5.yml
+#. recipe_multimodel_products_wp5.yml
 
-   *diag_script_info attributes*
+   *Required settings for script*
 
-   * start_longitude: minimum longitude
-   * end_longitude: maximum longitude
-   * start_latitude: minimum longitude
-   * end_latitude: maximum latitude
    * climatology_class: the class to be used for computing the climatology, e.g. 'historical' or 'rcp26' etc
    * climatology_start_year: start year for the climatology
    * climatology_end_year: end year for the climatology
@@ -47,8 +46,8 @@ User setting files are stored in recipes/
    * moninf: integer specifying the first month of the seasonal mean period to be computed, if left blank the monthly anomalies will be computed
    * monsup: integer specifying the last month of the seasonal mean period to be computed
    * agreement_threshold: integer between 0 and 100 indicating the threshold in percent for the minimum agreement between models on the sign of the multi-model mean anomaly for the stipling to be plotted
-   * running_mean: integer indictating the length of the window for the runiing mean to be computed
-   * time_series_plot: either null or mean or maxmin
+   * running_mean: integer indictating the length of the window for the running mean to be computed
+   * time_series_plot: either null or mean or maxmin (does not work yet)
 
 
 Variables

@@ -63,5 +63,5 @@ diagnostics:
         ncenters: 3
         detrend_order: 2
         cluster_method: "kmeans" # select hclust or kmeans
-        EOFS: TRUE
+        EOFS: true
         frequency: 'JAN' # Select a month (format: JAN, FEB, ...) or should work with season also but not jet format: JJA, SON, MAM, DJF

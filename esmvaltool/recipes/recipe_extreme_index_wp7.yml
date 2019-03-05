@@ -18,11 +18,9 @@ documentation:
   references:
     - alexander
 
-
 datasets:
   - {dataset: IPSL-CM5A-MR, type: exp, project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 1971,  end_year: 2000}
   - {dataset: IPSL-CM5A-MR, type: exp, project: CMIP5,  mip: day,  exp: rcp85,  ensemble: r1i1p1,  start_year: 2020,  end_year: 2040}
-
 
 preprocessors:
   preproc:
@@ -37,7 +35,6 @@ preprocessors:
       start_latitude: 30
       end_latitude: 70
 
-
 diagnostics:
   extreme_index:
     description: Calculate insurance extreme indices.
@@ -45,11 +42,10 @@ diagnostics:
       sfcWind:
         preprocessor: preproc
         mip: day
-        field: T2M
+        field: T2D
 
     scripts:
       main:
-        script: magic_bsc/extreme_index.r #(in diag_scripts)
+        script: magic_bsc/extreme_index.r
 
         metric: Wx # t10p, t90p, cdd, rx5day or Wx
-

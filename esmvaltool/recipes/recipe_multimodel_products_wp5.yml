@@ -26,7 +26,6 @@ datasets:
   - {dataset: bcc-csm1-1, type: exp, project: CMIP5,  mip: Amon,  exp: rcp26,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2099}
   - {dataset: MIROC5,     type: exp, project: CMIP5,  mip: Amon,  exp: rcp26,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2099}
 
-
 preprocessors:
   preproc:
     regrid:
@@ -50,7 +49,7 @@ diagnostics:
         field: T2M
     scripts:
       main:
-        script: magic_bsc/multimodel_products.r #(in diag_scripts)
+        script: magic_bsc/multimodel_products.r
 
         #Specify datasets to be used for computing climatology and anomaly
         climatology_class: historical
@@ -71,4 +70,3 @@ diagnostics:
 
         # Timeseries plot
         time_series_plot: single # Either single or maxmin (plot the mean with/without shading between the max and min.
-

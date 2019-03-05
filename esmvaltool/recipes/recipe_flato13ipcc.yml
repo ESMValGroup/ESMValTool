@@ -661,7 +661,7 @@ diagnostics:
       - {dataset: HadCRUT4, project: OBS, type: ground, version: 1,
          start_year: 1870, end_year: 2017, tier: 2}
       - {dataset: HadCRUT4-clim, project: OBS, type: ground, version: 1,
-         start_year: 1990, end_year: 1990, tier: 2}
+         start_year: 1976, end_year: 1976, tier: 2}
     scripts:
       fig09-8:
         script: ipcc_ar5/tsline.ncl
@@ -682,8 +682,8 @@ diagnostics:
   #
   # **********************************************************************
 
-  ecs:
-    description: Calculate ECS.
+  ecs_cmip5:
+    description: Calculate ECS for CMIP5 models.
     variables:
       tas: &ecs_settings
         preprocessor: spatial_mean
@@ -728,12 +728,12 @@ diagnostics:
       # - {dataset: ACCESS1-0, exp: piControl, start_year: 300, end_year: 449}
       # - {dataset: ACCESS1-0, exp: abrupt4xCO2, start_year: 300, end_year: 449}
     scripts:
-      ecs:
+      ecs: &ecs_script
         script: climate_metrics/ecs.py
-        plot_ecs_regression: True
+        plot_ecs_regression: true
 
-  fig09-42a:
-    description: Plot ECS vs. GMSAT.
+  fig09-42a_cmip5:
+    description: Plot ECS vs. GMSAT for CMIP5 models.
     variables:
       tas:
         <<: *ecs_settings
@@ -773,14 +773,14 @@ diagnostics:
       # - {dataset: ACCESS1-0, exp: historical, start_year: 1961,
       #    end_year: 1990}
     scripts:
-      fig09-42a:
+      fig09-42a: &fig09_42a_script
         script: ipcc_ar5/ch09_fig09_42a.py
-        ancestors: ['tas', 'ecs/ecs']
+        ancestors: ['tas', 'ecs_cmip5/ecs']
         tas_units: celsius
         save:
           bbox_inches: tight
           orientation: landscape
-        axes_functions:
+        axes_functions: &axes_functions
           set_title: GMSAT vs. ECS for CMIP5 models
           set_xlabel: ECS / °C
           set_ylabel: GMSAT / °C
@@ -791,3 +791,46 @@ diagnostics:
               bbox_to_anchor: [1.05, 0.5]
               borderaxespad: 0.0
               ncol: 2
+
+  ecs_cmip6:
+    description: Calculate ECS for CMIP6 models.
+    variables:
+      tas:
+        <<: *ecs_settings
+        project: CMIP6
+      rtmt:
+        <<: *ecs_settings
+        project: CMIP6
+    additional_datasets:
+      # - {dataset: GISS-E2-1-G,  exp: piControl,    ensemble: r1i1p1f1, grid: gn, start_year: 4550, end_year: 4699}
+      # - {dataset: GISS-E2-1-G,  exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 1999}
+      - {dataset: IPSL-CM6A-LR, exp: piControl,    ensemble: r1i1p1f1, grid: gr, start_year: 1850, end_year: 1999}
+      - {dataset: IPSL-CM6A-LR, exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gr, start_year: 1850, end_year: 1999}
+      - {dataset: MIROC6,       exp: piControl,    ensemble: r1i1p1f1, grid: gn, start_year: 3200, end_year: 3349}
+      - {dataset: MIROC6,       exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn, start_year: 3200, end_year: 3349}
+    scripts:
+      ecs:
+        <<: *ecs_script
+
+  fig09-42a_cmip6:
+    description: Plot ECS vs. GMSAT for CMIP6 models.
+    variables:
+      tas:
+        <<: *ecs_settings
+        project: CMIP6
+    additional_datasets:
+      # - {dataset: GISS-E2-1-G,  exp: piControl,    ensemble: r1i1p1f1, grid: gn, start_year: 4550, end_year: 4699}
+      # - {dataset: GISS-E2-1-G,  exp: historical,   ensemble: r1i1p1f1, grid: gn, start_year: 1961, end_year: 1990}
+      - {dataset: IPSL-CM6A-LR, exp: piControl,    ensemble: r1i1p1f1, grid: gr, start_year: 1850, end_year: 1999}
+        # TODO
+      - {dataset: IPSL-CM6A-LR, exp: historical,   ensemble: r29i1p1f1, grid: gr, start_year: 1961, end_year: 1990}
+      - {dataset: MIROC6,       exp: piControl,    ensemble: r1i1p1f1, grid: gn, start_year: 3200, end_year: 3349}
+      - {dataset: MIROC6,       exp: historical,   ensemble: r1i1p1f1, grid: gn, start_year: 1961, end_year: 1990}
+    scripts:
+      fig09-42a:
+        <<: *fig09_42a_script
+        ancestors: ['tas', 'ecs_cmip6/ecs']
+        axes_functions:
+          <<: *axes_functions
+          set_title: GMSAT vs. ECS for CMIP6 models
+        dataset_style: cmip6

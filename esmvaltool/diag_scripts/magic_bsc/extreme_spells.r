@@ -175,7 +175,7 @@ for (i in 1 : length(projection_filenames)) {
     name = "duration", units = "days",
     dim = list(season = dimtime, lat = dimlat, lon = dimlon),
     longname = paste(
-     "Number of days during the peiode", start_projection, "-", end_projection,
+     "Number of days during the period", start_projection, "-", end_projection,
       "for", season, "in which", var0, "is", op, "than the", qtile,
       "quantile obtained from", start_reference, "-", end_reference
     )
@@ -220,14 +220,14 @@ for (i in 1 : length(projection_filenames)) {
                   authors = list("hunt_al", "manu_ni", "caro_lo"),
                   projects = list("c3s-magic"),
                   caption = title,
-                  statistics = list("spells"),
+                  statistics = list("other"),
                   op = as.character(params$operator),
                   qtile = params$quantile,
                   spell_length = params$min_duration,
                   season = params$season,
                   realms = list("atmos"),
                   themes = list("phys"),
-                  plot_file = list(filepng))
+                  plot_file = filepng)
 
       provenance[[filencdf]] <- xprov
 }

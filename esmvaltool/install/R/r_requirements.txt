@@ -1,5 +1,8 @@
+RColorBrewer
+SPEI
 lintr
 logging
+ncdf4
 yaml
 dotCall64
 abind
@@ -8,7 +11,11 @@ ClimProjDiags
 ggplot2
 gridExtra
 multiApply
-ncdf4
 RColorBrewer
 s2dverification
 plyr
+maps
+ncdf4
+PCICt
+akima
+mapproj

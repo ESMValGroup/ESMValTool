@@ -60,6 +60,9 @@ autodoc_default_flags = [
     'show-inheritance',
 ]
 
+#autodoc_mock_imports = ['cf_units', 'iris', 'matplotlib', 'numpy', 'cartopy', 'cftime', 'netCDF4', 'yaml', 'PIL', 'prov', 'scipy', 'psutil', 'shapely', 'stratify', 'ESMF']
+autodoc_mock_imports = ['iris',  'cftime', 'PIL', 'prov', 'scipy', 'stratify', 'ESMF', 'cartopy', 'cf_units']
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 

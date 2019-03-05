@@ -1,21 +1,21 @@
 .. _recipe_diurnal_temperature_index_wp7:
 
 Diurnal temperature variation indicator: Difference between Tmax and Tmin for a specific day
-====================================================
+============================================================================================
 
 Overview
 --------
 
-The goal of this diagnostic is to compute a vulnerability indicator for the diurnal temperature range (DTR); the maximum variation in temperature within a period of 24 hours at a given location.  This indicator was first proposed by the energy sector, to identify locations which may experience increased diurnal temperature variation in the future, which would put additional stress on the operational management of district heating systems. This indicator was defined as the DTR exceeding 5 degrees celsius at a given location and day of the year (Deandreis et al., N.D.). Projections of this indicator currently present high uncertainties, uncertainties associated to both Tmax and Tmin in future climate projections. 
+The goal of this diagnostic is to compute a vulnerability indicator for the diurnal temperature range (DTR); the maximum variation in temperature within a period of 24 hours at a given location.  This indicator was first proposed by the energy sector, to identify locations which may experience increased diurnal temperature variation in the future, which would put additional stress on the operational management of district heating systems. This indicator was defined as the DTR exceeding 5 degrees celsius at a given location and day of the year (Deandreis et al., N.D.). Projections of this indicator currently present high uncertainties, uncertainties associated to both Tmax and Tmin in future climate projections.
 
 As well as being of use to the energy sector, the global‐average DTR has been evaluated using both observations and climate model simulations (Braganza et. al., 2004) and changes in the mean and variability of the DTR have been shown to have a wide range of impacts on society, such as on the transmission of diseases (Lambrechts et al., 2011;  Paaijmans et al., 2010) and energy consumption (Deandreis et al., N.D.).
 
-The recipe recipe_diurnal_temperature_index_wp7.yml computes first a mean DTR for a reference period using historical simulations and then, the number of days when the DTR from the future climate projections exceeds that of the reference period by 5 degrees or more. The user can define both the reference and projection periods, and the region to be considered.  The output produced by this recipe consists of a four panel plot showing the maps of the projected mean DTR indicator for each season and a netcdf file containing the corresponding data.  
+The recipe recipe_diurnal_temperature_index_wp7.yml computes first a mean DTR for a reference period using historical simulations and then, the number of days when the DTR from the future climate projections exceeds that of the reference period by 5 degrees or more. The user can define both the reference and projection periods, and the region to be considered.  The output produced by this recipe consists of a four panel plot showing the maps of the projected mean DTR indicator for each season and a netcdf file containing the corresponding data.
 
 
 
 Available recipes and diagnostics
------------------------------------
+---------------------------------
 
 Recipes are stored in recipes/
 
@@ -23,7 +23,7 @@ Recipes are stored in recipes/
 
 Diagnostics are stored in diag_scripts/magic_bsc/
 
-* diurnal_temp_index.r : calculates the diaurnal temperature vulnerability index. 
+* diurnal_temp_index.r : calculates the diaurnal temperature vulnerability index.
 
 
 User settings
@@ -33,13 +33,9 @@ User setting files are stored in recipes/
 
 #. recipe_diurnal_temperature_index_wp7.yml
 
-   *diag_script_info attributes*
+   *Required settings for script*
 
-   * start_longitude: minimum longitude
-   * end_longitude: maximum longitude
-   * start_latitude: minimum longitude
-   * end_latitude: maximum latitude
-   * extract_season: the season for which the capacity factor will be computed, either, djf, mam, jja, son
+   * None
 
 Variables
 ---------
@@ -59,7 +55,7 @@ References
 
 * Braganza, K., Karoly, D. J., & Arblaster, J. M. (2004). Diurnal temperature range as an index of global climate change during the twentieth century. Geophysical Research Letters, 31(13), n/a – n/a. https://doi.org/10.1029/2004GL019998
 
-* C. Déandreis (IPSL), P. Braconnot (IPSL), S. Planton (CNRMGAME). Study performed for the DALKIA company 
+* C. Déandreis (IPSL), P. Braconnot (IPSL), S. Planton (CNRMGAME). Study performed for the DALKIA company
 
 * Lambrechts, L., Paaijmans, K. P., Fansiri, T., Carrington, L. B., Kramer, L. D., Thomas, M. B., & Scott, T. W. (2011). Impact of daily temperature fluctuations on dengue virus transmission by Aedes aegypti. Proceedings of the National Academy of Sciences of the United States of America, 108(18), 7460–7465. https://doi.org/10.1073/pnas.1101377108
 

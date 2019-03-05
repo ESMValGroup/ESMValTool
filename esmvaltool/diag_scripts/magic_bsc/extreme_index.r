@@ -310,11 +310,11 @@ for (i in 1 : length(projection_filenames)) {
                   authors = list("hunt_al", "manu_ni", "caro_lo"),
                   projects = list("c3s-magic"),
                   caption = title,
-                  statistics = list("extremes"),
+                  statistics = list("other"),
                   metric = params$metric,
                   realms = list("atmos"),
                   themes = list("phys"),
-                  plotfile = filepng)
+                  plot_file = filepng)
 
       provenance[[filencdf]] <- xprov
     }

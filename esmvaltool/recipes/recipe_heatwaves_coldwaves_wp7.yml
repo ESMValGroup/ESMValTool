@@ -41,13 +41,11 @@ diagnostics:
       tasmin:
         preprocessor: preproc
         mip: day
-        field: T2M
+        field: T2D
     scripts:
       main:
-        script: magic_bsc/extreme_spells.r #(in diag_scripts)
-
-        quantile: 0.80    # quantile defining the exceedance/non-exceedance threshold
-        min_duration: 5  # Min duration of a heatwave/coldwave event
-        operator: '<' #or lessthan
-        season: 'winter' # or 'winter
-
+        script: magic_bsc/extreme_spells.r
+        quantile: 0.80   # quantile defining the exceedance/non-exceedance threshold
+        min_duration: 5  # Min duration of a heatwave/coldwave event in days
+        operator: '<'    # or '>'
+        season: winter   # or summer

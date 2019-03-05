@@ -1,16 +1,21 @@
 .. _recipes_modes_of_variability:
 
 Modes of variability
-====================================================
+====================
 
 Overview
 --------
 
-The goal of this recipe is to compute modes of variability from a reference/observational dataset and a set of climate projections and calculate the root-mean-square error between the mean anomalies obtained for the clusters from the reference and projection data sets. This is done through K-means clustering applied either directly to the spatial data or after computing the EOFs. The user can specify the number of clusters to be computed. The recipe output consist of netcdf files of the time series of the cluster occurrences, the mean anomaly corresponding to each cluster at each location and the corresponding p-value, for both the observed and projected weather regimes and the RMSE between them. 
- 
+The goal of this recipe is to compute modes of variability from a reference/observational dataset and a set of climate projections and calculate the root-mean-square error between the mean anomalies obtained for the clusters from the reference and projection data sets. 
+This is done through K-means clustering applied either directly to the spatial data or after computing the EOFs. 
+
+The user can specify the number of clusters to be computed. 
+
+The recipe's output consist of netcdf files of the time series of the cluster occurrences, the mean anomaly corresponding to each cluster at each location and the corresponding p-value, for both the observed and projected weather regimes and the RMSE between them.
+
 
 Available recipes and diagnostics
------------------------------------
+---------------------------------
 
 Recipes are stored in recipes/
 
@@ -19,9 +24,9 @@ Recipes are stored in recipes/
 
 Diagnostics are stored in diag_scripts/magic_bsc/
 
-* WeatherRegime.R - function for computing the EOFs and k-means clusters.
+* WeatherRegime.r - function for computing the EOFs and k-means clusters.
 
-* weather_regime.r: applies the above weather regimes function to the datasets 
+* weather_regime.r - applies the above weather regimes function to the datasets
 
 
 
@@ -32,20 +37,17 @@ User setting files are stored in recipes/
 
 #. recipe_modes_of_variability_wp4.yml
 
-   *diag_script_info attributes*
+   *Required settings for script*
 
-   * start_longitude: minimum longitude
-   * end_longitude: maximum longitude
-   * start_latitude: minimum longitude
-   * end_latitude: maximum latitude
-   * start_historical: start year of the reference dataset to be used
-   * end_historical: end year of the reference dataset to be used
-   * start_projection: start year of the projection dataset to be used
-   * end_projection: end year of the projection dataset to be used
-   * ncenters: number of centers to be computed by the k-means clustering algorithm
+   * start_historical: start date (YYYY-MM-DD) of the reference dataset to be used (please make sure this matches the available data)
+   * end_historical: end date (YYYY-MM-DD) of the reference dataset to be used (please make sure this matches the available data)
+   * start_projection: start date (YYYY-MM-DD) of the projection dataset to be used (please make sure this matches the available data)
+   * end_projection: end date (YYYY-MM-DD) of the projection dataset to be used (please make sure this matches the available data)
+   * region: North-Atlantic or Polar
+   * ncenters: number of centers to be computed by the k-means clustering algorithm (does not work yet)
    * detrend_order: the order of the polynomial detrending to be applied
-   * EOFs: logical indicating wether the k-means clustering algorithm is applied directly to the spatial data ('FALSE') or to the EOFs ('TRUE')
-   * frequency: select the month or season for the diagnostic to be computed for
+   * EOFs: logical indicating wether the k-means clustering algorithm is applied directly to the spatial data ('false') or to the EOFs ('true')
+   * frequency: select the month (format: JAN, FEB, ...) or season (format: JJA, SON, MAM, DJF) for the diagnostic to be computed for (does not work yet for MAM).
 
 
 Variables
@@ -66,7 +68,7 @@ References
 
 * Ferranti, L., S. Corti, and M. Janousek, 2015: Flow-dependent verification of the ECMWF ensemble over the Euro-Atlantic sector. Quarterly Journal of the Royal Meteorological Society, 141 (688), 916-924, doi: 10.1002/qj.2411.
 
-* Grams, C. M., Beerli, R., Pfenninger, S., Staffell, I., & Wernli, H. (2017). Balancing Europe's wind-power output through spatial deployment informed by weather regimes. Nature climate change, 7(8), 557.
+* Grams, C. M., Beerli, R., Pfenninger, S., Staffell, I., & Wernli, H. (2017). Balancing Europe's wind-power output through spatial deployment informed by weather regimes. Nature climate change, 7(8), 557, doi: 10.1038/nclimate3338.
 
 * Hannachi, A., D. M. Straus, C. L. E. Franzke, S. Corti, and T. Woollings, 2017: Low Frequency Nonlinearity and Regime Behavior in the Northern Hemisphere Extra-Tropical Atmosphere. Reviews of Geophysics, doi: 10.1002/2015RG000509.
 

@@ -208,11 +208,11 @@ nc_close(file)
                                    filename_tasmax[[projection_files[i]]]),
                   authors = list("hunt_al", "manu_ni", "caro_lo"),
                   projects = list("c3s-magic"),
-                  caption = list(title),
-                  statistics = list("DTR"),
+                  caption = title,
+                  statistics = list("other"),
                   realms = list("atmos"),
                   themes = list("phys"),
-                  plotfile = file.path(plot_dir, "rcp85.png"))
+                  plot_file = file.path(plot_dir, "rcp85.png"))
 
       provenance[[filencdf]] <- xprov
 }
