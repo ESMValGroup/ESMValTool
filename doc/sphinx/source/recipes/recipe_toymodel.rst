@@ -6,7 +6,7 @@ Toymodel
 Overview
 --------
 
-The goal of this diagnostic is to simulate single-model ensembles from an observational dataset to investigate the effect of observational uncertain.  For further discussion of this synthetic value generator, its general application to forecasts and its limitations, see Weigel et al. (2008). The output is a netcdf file containing the synthetic observations. Due to the sampling of the perturbations from a Gaussian distribution, running the recipe multiple times, with the same observation dataset and input parameters, will result in different outputs.  
+The goal of this diagnostic is to simulate single-model ensembles from an observational dataset to investigate the effect of observational uncertain.  For further discussion of this synthetic value generator, its general application to forecasts and its limitations, see Weigel et al. (2008). The output is a netcdf file containing the synthetic observations. Due to the sampling of the perturbations from a Gaussian distribution, running the recipe multiple times, with the same observation dataset and input parameters, will result in different outputs.
 
 
 Available recipes and diagnostics
@@ -38,7 +38,7 @@ User setting files are stored in recipes/
    * start_latitude: minimum longitude
    * end_latitude: maximum latitude
    * Number_of_members: integer specifying the number of members to be generated
-   * Beta: the user defined underdispersion
+   * Beta: the user defined underdispersion (Beta >= 0)
 
 
 Variables
