@@ -91,7 +91,7 @@ def iris_project_constraint(projects, cfg, negate=False):
     datasets = []
     grouped_data = group_metadata(cfg['input_data'].values(), 'project')
     for project in projects:
-        for data in grouped_data[project]:
+        for data in grouped_data.get(project, {}):
             datasets.append(data['dataset'])
 
     def project_constraint(cell):
