@@ -31,7 +31,7 @@
 ;    base_cnMaxLevel: max level for base contours
 ;
 ; Modification history
-;    20181024-A_lore_ru: ported to v2, regridding, zonal means in preprocessor
+;    20181024-A_lore_ru: ported to v2, regridding in preprocessor
 ;    20170517-A_lore_ru: changed to regrid to common grid first before
 ;                        calculating zonal average and added ability to use
 ;                        irregular grids (e.g. thetao)
