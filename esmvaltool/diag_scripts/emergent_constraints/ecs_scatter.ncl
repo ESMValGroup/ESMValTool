@@ -630,7 +630,7 @@ begin
 
   rh = read_data(info[0])
   delete(info)
-  
+
   rh_mean = time_operations(rh, -1, -1, "average", "annualclim", True)
   delete(rh)
 
@@ -946,7 +946,7 @@ begin
   names = get_unique_values(tmp)  ; note: get_unique_values sorts array!
   delete(tmp)
   dim_MOD = dimsizes(names)
-  
+
   infiles = metadata_att_as_array(input_file_info, "filename")
   var0 = variables(0)
 
@@ -1136,7 +1136,7 @@ begin
   end if
 
   climofiles = array_append_record(infiles, ecsfile, 0)
- 
+
   ; ============================ calculations ==============================
 
   diagdata = new(dim_MOD, float)
