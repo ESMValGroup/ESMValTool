@@ -32,6 +32,7 @@ function scatterplot(wks_in[1],
 ;    varname: variable name in the file.
 ;    reflines: show/hide reference lines (1:1 and +/- factor 2).
 ;    stats: show/hide summary of statistical values on the plot.
+;    inlist: list of input_file_info items
 ;
 ; Source prototype
 ;    source = (2, npoints)
@@ -448,6 +449,7 @@ function scatterplot_markers(wks_in[1],
 ;    source: data to be plotted (see source prototype above) or a NetCDF
 ;            filename with data.
 ;    varname: variable name in the file.
+;    inlist: list of input_file_info items
 ;
 ; Source prototype
 ;    source = (2, npoints)
@@ -499,9 +501,8 @@ begin
   wks = get_wks(wks_in, DIAG_SCRIPT, var)
 
   ; Define style
-; A_laue_ax+
-  ; new: if data array has attributes annots, colors, markers, use those instead of
-  ;      function project_style
+  ; new: if data array has attributes annots, colors, markers, use those
+  ;      instead of function project_style
   if (isatt(data, "annots")) then
     annots = data@annots
   else
@@ -517,7 +518,6 @@ begin
   else
     markers = project_style(inlist, diag_script_info, "markers")
   end if
-; A_laue_ax-
 
   ; Create a 2D scatter plot
   res = True
@@ -541,7 +541,6 @@ begin
       " [" + format_units(data@units(1)) + "]"
   end if
 
-; A_laue_ax+
   if (isatt(data, "trYMinF")) then
     res@trYMinF = data@trYMinF        ; min value on y-axis
   end if
@@ -560,7 +559,6 @@ begin
   if (isatt(data, "trYReverse")) then
     res@trYReverse = data@trYReverse  ; flip the y axis
   end if
-; A_laue_ax-
 
   ; Override defaults with "res_" attributes of "data"
   res_new = att2var(data, "res_")

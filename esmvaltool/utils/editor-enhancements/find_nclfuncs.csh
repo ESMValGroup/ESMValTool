@@ -1,6 +1,6 @@
 #!/bin/csh
 
-set list = `find ../../interface_scripts/ ../../diag_scripts/ -type f -name "*.ncl" -exec grep 'undef(' {} \; | awk -F '"' '{print $2}'`
+set list = `find ../../interface_scripts/ ../../diag_scripts/ ../cmorizers/obs/ -type f -name "*.ncl" -exec grep 'undef(' {} \; | awk -F '"' '{print $2}'`
 
 echo $#list
 
