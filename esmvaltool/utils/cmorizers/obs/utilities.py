@@ -39,41 +39,40 @@ def _convert_timeunits(cube, start_year):
 def _fix_dim_coordnames(cube):
     """Perform a check on dim coordinate names."""
     # first check for CMOR standard coord;
-    # guess the CMOR-standard x, y, z and t axes if not there
     for coord in cube.coords():
-        # z-axis assigns only if attr positive (up/down) is present
-        if coord.var_name in ['depth', 'pressure']:
-            coord.attributes['positive'] = 'up'
-        iris.util.guess_coord_axis(coord)
+        # guess the CMOR-standard x, y, z and t axes if not there
+        coord_type = iris.util.guess_coord_axis(coord)
 
-    if cube.coord(axis='T') in cube.coords():
-        cube.coord(axis='T').var_name = 'time'
-        cube.coord(axis='T').attributes = {}
+        if coord_type == 'T':
+            cube.coord(axis=coord_type).var_name = 'time'
+            cube.coord(axis=coord_type).attributes = {}
 
-    if cube.coord(axis='X') in cube.coords():
-        cube.coord(axis='X').var_name = 'lon'
-        cube.coord(axis='X').standard_name = 'longitude'
-        cube.coord(axis='X').long_name = 'longitude coordinate'
-        cube.coord(axis='X').units = Unit('degrees')
-        cube.coord(axis='X').attributes = {}
+        if coord_type == 'X':
+            cube.coord(axis=coord_type).var_name = 'lon'
+            cube.coord(axis=coord_type).standard_name = 'longitude'
+            cube.coord(axis=coord_type).long_name = 'longitude coordinate'
+            cube.coord(axis=coord_type).units = Unit('degrees')
+            cube.coord(axis=coord_type).attributes = {}
 
-    if cube.coord(axis='Y') in cube.coords():
-        cube.coord(axis='Y').var_name = 'lat'
-        cube.coord(axis='Y').standard_name = 'latitude'
-        cube.coord(axis='Y').long_name = 'latitude coordinate'
-        cube.coord(axis='Y').units = Unit('degrees')
-        cube.coord(axis='Y').attributes = {}
+        if coord_type == 'Y':
+            cube.coord(axis=coord_type).var_name = 'lat'
+            cube.coord(axis=coord_type).standard_name = 'latitude'
+            cube.coord(axis=coord_type).long_name = 'latitude coordinate'
+            cube.coord(axis=coord_type).units = Unit('degrees')
+            cube.coord(axis=coord_type).attributes = {}
 
-    if cube.coord(axis='Z') in cube.coords():
-        if cube.coord(axis='Z').var_name == 'depth':
-            cube.coord(axis='Z').standard_name = 'depth'
-            cube.coord(axis='Z').long_name = 'ocean depth coordinate'
-            cube.coord(axis='Z').var_name = 'lev'
-            cube.coord(axis='Z').attributes['positive'] = 'down'
-        if cube.coord(axis='Z').var_name == 'pressure':
-            cube.coord(axis='Z').standard_name = 'air_pressure'
-            cube.coord(axis='Z').long_name = 'pressure'
-            cube.coord(axis='Z').var_name = 'air_pressure'
+        if coord_type == 'Z':
+            if cube.coord(axis=coord_type).var_name == 'depth':
+                cube.coord(axis=coord_type).standard_name = 'depth'
+                cube.coord(axis=coord_type).long_name = \
+                    'ocean depth coordinate'
+                cube.coord(axis=coord_type).var_name = 'lev'
+                cube.coord(axis=coord_type).attributes['positive'] = 'down'
+            if cube.coord(axis=coord_type).var_name == 'pressure':
+                cube.coord(axis=coord_type).standard_name = 'air_pressure'
+                cube.coord(axis=coord_type).long_name = 'pressure'
+                cube.coord(axis=coord_type).var_name = 'air_pressure'
+                cube.coord(axis=coord_type).attributes['positive'] = 'up'
 
     return cube
 
