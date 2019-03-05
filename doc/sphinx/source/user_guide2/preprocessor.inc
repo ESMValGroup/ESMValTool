@@ -3,50 +3,53 @@
 ***********************
 ESMValTool Preprocessor
 ***********************
+The ESMValTool preprocessor can be used to perform all types of climate data pre-processing needed before indices or diagnostics can be calculated. It is a base component for many other diagnostics and metrics shown on this portal. It can be applied to tailor the climate model data to the need of the user for its own calculations.
+
+Features of the ESMValTool Climate data pre-processor are:
+
+* Regridding
+* Geographical area selection
+* Aggregation of data
+* Provenance tracking of the calculations
+* Model statistics
+* Multi-model mean
+* and many more
 
 Variable derivation
 ===================
 Documentation of _derive.py
 
-Time preprocessors
-==================
-Documentation of _time_area.py or _time.py (soon to be renamed).
 
-*
-*
-*
-*
-The time preprocessor module contains several tools for manipulating time:
+Time manipulation
+=================
+The _time.py module contains the following preprocessor functions:
+
+* extract_time: Extract a time range from a cube.
+* extract_season: Extract only the times that occur within a specific season.
+* extract_month: Extract only the times that occur within a specific month.
+* time_average: Take the weighted average over the time dimension.
+* seasonal_mean: Produces a mean for each season (DJF, MAM, JJA, SON)
+* annual_mean: Produces an annual or decadal mean.
+
+Area manipulation
+=================
+The _area.py module contains the following preprocessor functions:
+
+* extract_region: Extract a region from a cube based on lat/lon corners.
+* zonal_means: Calculates the zonal or meridional means.
+* average_region: Calculates the average value over a region.
+* extract_named_regions: Extract a specific region from in the region cooordinate.
 
 
-annual_mean(cube, decadal=False):
-    """
-    Compute annual means.
+Volume manipulation
+===================
+The _volume.py module contains the following preprocessor functions:
 
-    Note that this function does not weight the annual or decadal mean if
-    uneven time periods are present. Ie, all data inside the year/decade
-    are treated equally.
-
-    Parameters
-    ----------
-        cube: iris.cube.Cube
-            input cube.
-        decadal: bool
-            Annual average [True] or decadal average [False] switch
-    Returns
-    -------
-    iris.cube.Cube
-        Annual mean cube
-    """
-
-Area preprocessors
-==================
-Documentation of _area_pp.py or _area.py (soon to be renamed).
-
-Volume preprocessors
-====================
-Documentation of _volume_pp.py or _volume.py (soon to be renamed).
-
+* extract_volume: Extract a specific depth range from a cube.
+* average_volume: Calculate the volume-weighted average.
+* depth_integration: Integrate over the depth dimension.
+* extract_transect: Extract data along a line of constant latitude or longitude.
+* extract_trajectory: Extract data along a specified trajectory.
 
 CMORization and dataset-specific fixes
 ======================================

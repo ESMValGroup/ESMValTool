@@ -6,7 +6,7 @@ modeling_realm:    aerosol
 !----------------------------------
 ! Variable attributes:
 !----------------------------------
-standard_name:     atmosphere_optical_thickness_due_to_ambient_aerosol_error
+standard_name:     
 units:             1
 cell_methods:      time: mean
 cell_measures:     area: areacella

@@ -661,7 +661,7 @@ diagnostics:
       - {dataset: HadCRUT4, project: OBS, type: ground, version: 1,
          start_year: 1870, end_year: 2017, tier: 2}
       - {dataset: HadCRUT4-clim, project: OBS, type: ground, version: 1,
-         start_year: 1990, end_year: 1990, tier: 2}
+         start_year: 1976, end_year: 1976, tier: 2}
     scripts:
       fig09-8:
         script: ipcc_ar5/tsline.ncl
