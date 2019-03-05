@@ -1,4 +1,4 @@
-"""Unit test for the :func:`esmvaltool.preprocessor._volume_pp` function"""
+"""Unit test for :func:`esmvaltool.preprocessor._volume`."""
 
 from __future__ import absolute_import, division, print_function
 
@@ -9,11 +9,11 @@ import numpy as np
 from cf_units import Unit
 
 import tests
-from esmvaltool.preprocessor._volume_pp import volume_slice
-from esmvaltool.preprocessor._volume_pp import volume_average
-from esmvaltool.preprocessor._volume_pp import depth_integration
-from esmvaltool.preprocessor._volume_pp import extract_transect
-from esmvaltool.preprocessor._volume_pp import extract_trajectory
+from esmvaltool.preprocessor._volume import extract_volume
+from esmvaltool.preprocessor._volume import average_volume
+from esmvaltool.preprocessor._volume import depth_integration
+from esmvaltool.preprocessor._volume import extract_transect
+from esmvaltool.preprocessor._volume import extract_trajectory
 
 
 class Test(tests.Test):
@@ -40,11 +40,12 @@ class Test(tests.Test):
             bounds=[[0.5, 1.5], [1.5, 2.5], [2.5, 3.5], [3.5, 4.5], ],
             units=Unit('days since 1950-01-01', calendar='gregorian'))
 
-        depth = iris.coords.DimCoord(
+        zcoord = iris.coords.DimCoord(
             [0.5, 5., 50.],
-            standard_name='depth',
+            long_name='zcoord',
             bounds=[[0., 2.5], [2.5, 25.], [25., 250.]],
-            units='m')
+            units='m',
+            attributes={'positive': 'down'})
         lons2 = iris.coords.DimCoord(
             [1.5, 2.5],
             standard_name='longitude',
@@ -58,38 +59,43 @@ class Test(tests.Test):
             units='degrees_north',
             coord_system=coord_sys)
 
-        coords_spec3 = [(depth, 0), (lats2, 1), (lons2, 2)]
+        coords_spec3 = [(zcoord, 0), (lats2, 1), (lons2, 2)]
         self.grid_3d = iris.cube.Cube(data1, dim_coords_and_dims=coords_spec3)
 
-        coords_spec4 = [(time, 0), (depth, 1), (lats2, 2), (lons2, 3)]
+        coords_spec4 = [(time, 0), (zcoord, 1), (lats2, 2), (lons2, 3)]
         self.grid_4d = iris.cube.Cube(data2, dim_coords_and_dims=coords_spec4)
 
-        coords_spec5 = [(time2, 0), (depth, 1), (lats2, 2), (lons2, 3)]
+        coords_spec5 = [(time2, 0), (zcoord, 1), (lats2, 2), (lons2, 3)]
         self.grid_4d_2 = iris.cube.Cube(data3,
                                         dim_coords_and_dims=coords_spec5)
 
-    def test_volume_slice(self):
+        # allow iris to figure out the axis='z' coordinate
+        iris.util.guess_coord_axis(self.grid_3d.coord('zcoord'))
+        iris.util.guess_coord_axis(self.grid_4d.coord('zcoord'))
+        iris.util.guess_coord_axis(self.grid_4d_2.coord('zcoord'))
+
+    def test_extract_volume(self):
         """Test to extract the top two layers of a 3 layer depth column."""
-        result = volume_slice(self.grid_3d, 0., 10.)
+        result = extract_volume(self.grid_3d, 0., 10.)
         expected = np.ones((2, 2, 2))
         print(result.data, expected.data)
         self.assertArrayEqual(result.data, expected)
 
-    def test_volume_average(self):
+    def test_average_volume(self):
         """Test to take the volume weighted average of a (2,3,2,2) cube."""
-        result = volume_average(self.grid_4d, 'depth', 'latitude', 'longitude')
+        result = average_volume(self.grid_4d,
+                                'latitude', 'longitude')
         expected = np.array([1., 1.])
         self.assertArrayEqual(result.data, expected)
 
-    def test_volume_average_long(self):
+    def test_average_volume_long(self):
         """
         Test to take the volume weighted average of a (4,3,2,2) cube.
 
         This extra time is needed, as the volume average calculation uses
         different methods for small and large cubes.
         """
-        result = volume_average(self.grid_4d_2,
-                                'depth',
+        result = average_volume(self.grid_4d_2,
                                 'latitude',
                                 'longitude')
         expected = np.array([1., 1., 1., 1.])
@@ -97,14 +103,14 @@ class Test(tests.Test):
 
     def test_depth_integration_1d(self):
         """Test to take the depth integration of a 3 layer cube."""
-        result = depth_integration(self.grid_3d[:, 0, 0], 'depth')
+        result = depth_integration(self.grid_3d[:, 0, 0])
         expected = np.ones((1, 1)) * 250.
         print(result.data, expected.data)
         self.assertArrayEqual(result.data, expected)
 
     def test_depth_integration_3d(self):
         """Test to take the depth integration of a 3 layer cube."""
-        result = depth_integration(self.grid_3d, 'depth')
+        result = depth_integration(self.grid_3d)
         expected = np.ones((2, 2)) * 250.
         print(result.data, expected.data)
         self.assertArrayEqual(result.data, expected)

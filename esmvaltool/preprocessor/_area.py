@@ -24,10 +24,10 @@ def _guess_bounds(cube, coords):
 
 
 # slice cube over a restricted area (box)
-def area_slice(cube, start_longitude, end_longitude, start_latitude,
-               end_latitude):
+def extract_region(cube, start_longitude, end_longitude, start_latitude,
+                   end_latitude):
     """
-    Subset a cube on area.
+    Extract a region from a cube.
 
     Function that subsets a cube on a box (start_longitude, end_longitude,
     start_latitude, end_latitude)
@@ -123,7 +123,7 @@ def zonal_means(cube, coordinate, mean_type):
 
 
 # get the area average
-def area_average(cube, coord1, coord2, fx_files=None):
+def average_region(cube, coord1, coord2, fx_files=None):
     """
     Determine the area average.
 
@@ -169,7 +169,7 @@ def area_average(cube, coord1, coord2, fx_files=None):
                                      [cube_shape[0], 1, 1])
 
     if not fx_files and cube.coord('latitude').points.ndim == 2:
-        logger.error('area_average ERROR: fx_file needed to calculate grid'
+        logger.error('average_region ERROR: fx_file needed to calculate grid'
                      + ' cell area for irregular grids.')
         raise iris.exceptions.CoordinateMultiDimError(cube.coord('latitude'))
 

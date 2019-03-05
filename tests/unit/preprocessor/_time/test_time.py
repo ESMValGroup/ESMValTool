@@ -1,4 +1,4 @@
-"""Unit tests for the :func:`esmvaltool.preprocessor._time_pp` module"""
+"""Unit tests for the :func:`esmvaltool.preprocessor._time` module."""
 
 from __future__ import absolute_import, division, print_function
 
@@ -12,8 +12,8 @@ from cf_units import Unit
 from iris.cube import Cube
 
 import tests
-from esmvaltool.preprocessor._time_area import (extract_month, extract_season,
-                                                time_average, time_slice)
+from esmvaltool.preprocessor._time import (extract_month, extract_season,
+                                           time_average, extract_time)
 
 
 def _create_sample_cube():
@@ -43,31 +43,31 @@ class TestExtractMonth(tests.Test):
 
 
 class TestTimeSlice(tests.Test):
-    """Tests for time_slice."""
+    """Tests for extract_time."""
 
     def setUp(self):
         """Prepare tests"""
         self.cube = _create_sample_cube()
 
-    def test_time_slice(self):
-        """Test time_slice."""
-        sliced = time_slice(self.cube, 1950, 1, 1, 1950, 12, 31)
+    def test_extract_time(self):
+        """Test extract_time."""
+        sliced = extract_time(self.cube, 1950, 1, 1, 1950, 12, 31)
         print(sliced)
         self.assertTrue(
             (np.arange(1, 13, 1) == sliced.coord('month_number').points).all())
 
-    def test_time_slice_one_time(self):
-        """Test time_slice with one time step."""
+    def test_extract_time_one_time(self):
+        """Test extract_time with one time step."""
         cube = _create_sample_cube()
         cube = cube.collapsed('time', iris.analysis.MEAN)
-        sliced = time_slice(cube, 1950, 1, 1, 1952, 12, 31)
+        sliced = extract_time(cube, 1950, 1, 1, 1952, 12, 31)
         print(sliced.coord('time').points)
         self.assertTrue(np.array([360., ]) == sliced.coord('time').points)
 
-    def test_time_slice_no_time(self):
-        """Test time_slice with no time step."""
+    def test_extract_time_no_time(self):
+        """Test extract_time with no time step."""
         cube = _create_sample_cube()[0]
-        sliced = time_slice(cube, 1950, 1, 1, 1950, 12, 31)
+        sliced = extract_time(cube, 1950, 1, 1, 1950, 12, 31)
         print('sliced', sliced, sliced.shape)
         print('cube', cube, cube.shape)
         self.assertTrue(cube == sliced)
