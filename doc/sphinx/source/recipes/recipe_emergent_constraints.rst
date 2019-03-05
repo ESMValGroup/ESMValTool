@@ -23,8 +23,7 @@ Note: this recipe requires pre-calulation of the equilibrium climate
       $diag_scripts/emergent_constraints/ecs_cmip.cdl (recommended method):
       1) save script given at the end of this namelist as ecs_cmip.cdl
       2) run command: ncgen -o ecs_cmip.nc ecs_cmip.cdl
-      3) copy ecs_cmip.nc to directory given by diag_script_info@ecs_file
-         (e.g. $diag_scripts/emergent_constraints/ecs_cmip.nc)
+      3) copy ecs_cmip.nc to directory given by diag_script_info@ecs_file (e.g. $diag_scripts/emergent_constraints/ecs_cmip.nc)
 
 
 Available recipes and diagnostics
@@ -47,7 +46,7 @@ User settings in recipe
    *Required settings (scripts)*
 
    * diag: emergent constraint to calculate ("itczidx", "humidx", "ltmi",
-     "covrefl", "shhc"
+     "covrefl", "shhc")
 
    *Optional settings (scripts)*
 
@@ -119,30 +118,30 @@ Example plots
    Lower tropospheric mixing index (LTMI; Sherwood et al., 2014) vs.
    equilibrium climate sensitivity from CMIP5 models.
 
-   .. _fig_ecs_2:
-   .. figure::  /recipes/figures/emergent_constraints/shhc.png
-      :align:   center
+.. _fig_ecs_2:
+.. figure::  /recipes/figures/emergent_constraints/shhc.png
+   :align:   center
 
    Climatological Hadley cell extent (Lipat et al., 2017) vs.
    equilibrium climate sensitivity from CMIP5 models.
 
-  .. _fig_ecs_3:
-  .. figure::  /recipes/figures/emergent_constraints/humidx.png
-     :align:   center
+.. _fig_ecs_3:
+.. figure::  /recipes/figures/emergent_constraints/humidx.png
+   :align:   center
 
    Tropical mid-tropospheric humidity asymmetry index (Tian, 2015) vs.
    equilibrium climate sensitivity from CMIP5 models.
 
-   .. _fig_ecs_4:
-   .. figure::  /recipes/figures/emergent_constraints/itczidx.png
-      :align:   center
+.. _fig_ecs_4:
+.. figure::  /recipes/figures/emergent_constraints/itczidx.png
+   :align:   center
 
-    Southern ITCZ index (Tian, 2015) vs.
-    equilibrium climate sensitivity from CMIP5 models.
+   Southern ITCZ index (Tian, 2015) vs.
+   equilibrium climate sensitivity from CMIP5 models.
 
-    .. _fig_ecs_5:
-    .. figure::  /recipes/figures/emergent_constraints/covrefl.png
-       :align:   center
+.. _fig_ecs_5:
+.. figure::  /recipes/figures/emergent_constraints/covrefl.png
+   :align:   center
 
-     Covariance of shortwave cloud reflection (Brient and Schneider, 2016) vs.
-     equilibrium climate sensitivity from CMIP5 models.
+   Covariance of shortwave cloud reflection (Brient and Schneider, 2016) vs.
+   equilibrium climate sensitivity from CMIP5 models.
