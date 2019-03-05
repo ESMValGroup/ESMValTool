@@ -1,4 +1,4 @@
-.. _nml_oceans:
+.. _XML_oceans:
 
 Recipes for evaluating models of the ocean
 ==========================================
@@ -424,9 +424,9 @@ diagnostic_model_vs_obs.py
 The diagnostic_model_vs_obs.py_ diagnostic makes model vs observations maps
 and scatter plots. The map plots shows four latitude vs longitude maps:
 
-=================            =======================
+========================     =======================
 Model                        Observations
------------------            -----------------------
+------------------------     -----------------------
 Model minus Observations     Model over Observations
 ========================     =======================
 
@@ -693,6 +693,29 @@ We just show a simple description here, each individual function is more fully
 documented in the diagnostic_tools.py_ module.
 
 
+A note on the auxiliary data directory
+......................................
+
+Some of these diagnostic scripts may not function on machines with no access
+to the internet, as cartopy may try to download the shape files. The solution
+to this issue is the put the relevant cartopy shapefiles in a directory which
+is visible to esmvaltool, then link that path to ESMValTool via
+the `auxiliary_data_dir` variable in your config-user.yml file.
+
+The cartopy masking files can be downloaded from:
+https://www.naturalearthdata.com/downloads/
+
+
+In these recipes, cartopy uses the 1:10, physical coastlines and land files::
+
+      110m_coastline.dbf
+      110m_coastline.shp
+      110m_coastline.shx
+      110m_land.dbf
+      110m_land.shp
+      110m_land.shx
+
+
 Associated Observational datasets
 ........................................
 
@@ -714,8 +737,7 @@ The following WOA datasets are used by the ocean diagnostics:
  - Silicate
  - Dissolved Oxygen
 
-These files need to be reformatted using the `reformat_obs_woa_o2.py` script
-in the `reformat_scripts/obs/` directory.
+These files need to be reformatted using the WOA cmoriser utility tools.
 
 
 .. Links:

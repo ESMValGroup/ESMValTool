@@ -27,6 +27,9 @@ loadscript(getenv("esmvaltool_root") + "/utils/cmorizers/obs/interface.ncl")
 
 begin
 
+  ; Script name (for logger)
+  DIAG_SCRIPT = "cmorize_obs_NIWA-BS.ncl"
+
   ; Source name
   OBSNAME = "NIWA-BS"
 
@@ -38,89 +41,76 @@ begin
   YEAR2 = 2016
 
   ; Selected variable (standard name)
-  VARS = (/"toz", "tozStderr"/)
+  VAR = (/"toz", "tozStderr"/)
 
   ; Name in the raw data
   NAME = (/"tco", "tco_uncert"/)
 
-  ; MIPS
-  MIPS = "Amon"
+  ; MIP
+  MIP = (/"Amon", "Amon"/)
+
+  ; Frequency
+  FREQ = (/"mon", "mon"/)
 
   ; CMOR table
   CMOR_TABLE = getenv("esmvaltool_root") + "/cmor/tables/custom/CMOR_" + \
-    VARS + ".dat"
+    VAR + ".dat"
+
+  ; Type
+  TYPE = "sat"
 
   ; Version
-  VERSION = "3.3"
+  VERSION = "V3.3"
+
+  ; Global attributes
+  SOURCE = "http://www.bodekerscientific.com/data/total-column-ozone"
+  REF = "Bodeker et al., Atmos. Chem. Phys., doi:10.5194/acp-5-2603-2005, 2005"
+  COMMENT = ""
 
 end
 
 begin
 
   files = systemfunc("ls " + input_dir_path + \
-                     "NIWA-BS_CombinedTCO_V" + VERSION + \
+                     "NIWA-BS_CombinedTCO_" + VERSION + \
                      "_????_Monthly_Patched.nc")
 
-  do vv = 0, dimsizes(VARS) - 1
+  do vv = 0, dimsizes(VAR) - 1
 
-    log_info("Processing " + VARS(vv))
+    log_info("Processing " + VAR(vv) + " (" + MIP(vv) + ")")
 
     f = addfiles(files, "r")
     output = f[:]->$NAME(vv)$
 
-    ; Format time coordinate
-    ctime = time_attrib(output&time, YEAR1, YEAR2, "M")
-    delete(output&time)
-    output&time = ctime
-    delete(ctime)
-
-    ; Format latitude coordinate
+    ; Format coordinates
+    output!0 = "time"
     output!1 = "lat"
-    if (isMonotonic(output&lat) .eq. 0) then
-      error_msg("f", diag_script, "", "non-monotonic latitude coordinate")
-    end if
-    if (isMonotonic(output&lat) .eq. -1) then
-      output = output(:, :, ::-1, :)
-    end if
-    clat = lat_attrib(output&lat)
-    delete(output&lat)
-    output&lat = clat
-    delete(clat)
-
-    ; Format longitude coordinate
     output!2 = "lon"
-    if (isMonotonic(output&lon) .eq. 0) then
-      error_msg("f", diag_script, "", "non-monotonic longitude coordinate")
-    end if
-    if (any(output&lon.lt.0.)) then
-      output = lonFlip(output)
-    end if
-    clon = lon_attrib(output&lon)
-    delete(output&lon)
-    output&lon = clon
-    delete(clon)
+    format_coords(output, YEAR1 + "0101", YEAR2 + "1231", FREQ(vv))
 
     ; Set variable attributes
-    tmp = var_attrib(output, VARS(vv), CMOR_TABLE(vv))
+    tmp = format_variable(output, VAR(vv), CMOR_TABLE(vv))
     delete(output)
     output = tmp
     delete(tmp)
 
-    ; Set global attributes
-    gAtt = set_global_atts( \
-      OBSNAME, TIER, \
-      "http://www.bodekerscientific.com/data/total-column-ozone", \
-      "Bodeker et al., Atmos. Chem. Phys., " + \
-      "doi:10.5194/acp-5-2603-2005, 2005", "")
+    ; Calculate coordinate bounds
+    bounds = guess_coord_bounds(output, FREQ(vv))
 
-    ; Outfile
-    fout = output_dir_path + "OBS_" + OBSNAME + "_sat_v" + VERSION + "_" + \
-      MIPS + "_" + VARS(vv) + "_" + YEAR1 + "01-" + YEAR2 + "12.nc"
+    ; Set global attributes
+    gAtt = set_global_atts(OBSNAME, TIER, SOURCE, REF, COMMENT)
+
+    ; Output file
+    DATESTR = YEAR1 + "01-" + YEAR2 + "12"
+    fout = output_dir_path + \
+      str_join((/"OBS", OBSNAME, TYPE, str_sub_str(VERSION, "V", "v"), \
+                 MIP(vv), VAR(vv), DATESTR/), "_") + ".nc"
 
     ; Write variable
-    write_nc(fout, VARS(vv), output, gAtt)
+    write_nc(fout, VAR(vv), output, bounds, gAtt)
     delete(gAtt)
     delete(output)
+    delete(bounds)
 
   end do
 

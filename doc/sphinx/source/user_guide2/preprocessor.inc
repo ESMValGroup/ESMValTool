@@ -3,14 +3,52 @@
 ***********************
 ESMValTool Preprocessor
 ***********************
+The ESMValTool preprocessor can be used to perform all types of climate data pre-processing needed before indices or diagnostics can be calculated. It is a base component for many other diagnostics and metrics shown on this portal. It can be applied to tailor the climate model data to the need of the user for its own calculations.
+
+Features of the ESMValTool Climate data pre-processor are:
+
+* Regridding 
+* Geographical area selection
+* Aggregation of data
+* Provenance tracking of the calculations
+* Model statistics
+* Multi-model mean
+* and many more
 
 Variable derivation
 ===================
 Documentation of _derive.py
 
-Time and area subsetting
-========================
-Documentation of _time_area.py
+Time manipulation
+=================
+The _time.py module contains the following preprocessor functions:
+
+* extract_time: Extract a time range from a cube.
+* extract_season: Extract only the times that occur within a specific season.
+* extract_month: Extract only the times that occur within a specific month.
+* time_average: Take the weighted average over the time dimension.
+* seasonal_mean: Produces a mean for each season (DJF, MAM, JJA, SON)
+
+
+Area manipulation
+=================
+The _area.py module contains the following preprocessor functions:
+
+* extract_region: Extract a region from a cube based on lat/lon corners.
+* zonal_means: Calculates the zonal or meridional means.
+* average_region: Calculates the average value over a region.
+* extract_named_regions: Extract a specific region from in the region cooordinate.
+
+
+Volume manipulation
+===================
+The _volume.py module contains the following preprocessor functions:
+
+* extract_volume: Extract a specific depth range from a cube.
+* average_volume: Calculate the volume-weighted average.
+* depth_integration: Integrate over the depth dimension.
+* extract_transect: Extract data along a line of constant latitude or longitude.
+* extract_trajectory: Extract data along a specified trajectory.
 
 CMORization and dataset-specific fixes
 ======================================
@@ -41,7 +79,7 @@ To mask out seas in the preprocessor step, simply add `mask_landsea:` as a prepr
         mask_landsea:
           mask_out: sea
 
-The tool will retrieve the corresponding `fx: stfof` type of mask for each of the used variables and apply the mask so that only the land mass points are 
+The tool will retrieve the corresponding `fx: stfof` type of mask for each of the used variables and apply the mask so that only the land mass points are
 kept in the data after applying the mask; conversely, it will retrieve the `fx: sftlf` files when land needs to be masked out.
 `mask_out` accepts: land or sea as values. If the corresponding fx file is not found (some models are missing these
 type of files; observational data is missing them altogether), then the tool attempts to mask using Natural Earth mask files (that are vectorized rasters).
@@ -123,3 +161,4 @@ so for cases when we deal with a lot of datasets (R + N = N), data is fully real
 
 Ms = 1.5 x (N - 1) GB
 Mm = 1.5 x (N - 2) GB
+=======

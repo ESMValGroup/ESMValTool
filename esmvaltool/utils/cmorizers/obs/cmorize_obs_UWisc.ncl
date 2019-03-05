@@ -31,18 +31,12 @@ begin
   ; Tier
   TIER = 3
 
-  ; Field
-  FIELD = "T2Ms"
-
   ; Period
   YEAR1 = 1988
   YEAR2 = 2007
 
-  ; MIP
-  MIP = "Amon"
-
   ; Selected variable (standard name)
-  VARS = (/"clwvi", "lwpStderr"/)
+  VAR = (/"lwp", "lwpStderr"/)
 
   ; Name in the raw data
   NAME = (/"LWP", "LWP_ERROR"/)
@@ -50,85 +44,80 @@ begin
   ; Conversion factor
   CONVERSION = (/1.e-3, 1.e-3/)
 
+  ; MIP
+  MIP = (/"Amon", "Amon"/)
+
+  ; Frequency
+  FREQ = (/"mon", "mon"/)
+
   ; CMOR table
   CMOR_TABLE = getenv("esmvaltool_root") + \
-    (/"/cmor/tables/cmip5/Tables/CMIP5_Amon", \
-      "/cmor/tables/custom/CMOR_lwpStderr.dat"/)
+    "/cmor/tables/custom/CMOR_" + VAR + ".dat"
+
+  ; Type
+  TYPE = "sat"
+
+  ; Version
+  VERSION = "v2"
+
+  ; Global attributes
+  SOURCE = "Data provided by Ralf Bennartz (Vanderbilt University, USA)"
+  REF = "O'Dell et al., J. Clim., doi:10.1175/2007JCLI1958.1, 2008"
+  COMMENT = ""
 
 end
 
 begin
 
-  do vv = 0, dimsizes(VARS) - 1
+  do vv = 0, dimsizes(VAR) - 1
 
-    log_info("Processing " + VARS(vv))
+    log_info("Processing " + VAR(vv) + " (" + MIP(vv) + ")")
 
     do yr = YEAR1, YEAR2
 
       fname = input_dir_path + "UWisc_LWPMEAN_" + yr + "_v2.nc"
 
       f = addfile(fname, "r")
-
       output = (/f->$NAME(vv)$/)
 
       lat = (/f->lat/)
       lon = (/f->lon/)
 
-      ; Format time coordinate
-      output!0 = "time"
-      output&time = create_timec(yr, yr)
-      ctime = time_attrib(output&time, yr, yr, "M")
-      delete(output&time)
-      output&time = ctime
-      delete(ctime)
-
-      ; Format latitude coordinate
-      output!1 = "lat"
-      output&lat = lat
-      if (isMonotonic(output&lat) .eq. -1) then
-        output = output(:, ::-1, :)
-      end if
-      clat = lat_attrib(output&lat)
-      delete(output&lat)
-      output&lat = clat
-      delete(clat)
-
-      ; Format longitude coordinate
-      output!2 = "lon"
-      output&lon = lon
-      if (any(output&lon.lt.0.)) then
-        output = lonFlip(output)
-      end if
-      clon = lon_attrib(output&lon)
-      delete(output&lon)
-      output&lon = clon
-      delete(clon)
-
       ; Convert units
-      output = output * CONVERSION(vv)
+      output = output * CONVERSION(vv)  ; for clivi this will be equal 0
+
+      ; Format coordinates
+      output!0 = "time"
+      output!1 = "lat"
+      output!2 = "lon"
+      output&time = create_timec(yr, yr)
+      output&lat = lat
+      output&lon = lon
+      format_coords(output, yr + "0101", yr + "1231", FREQ(vv))
 
       ; Set variable attributes
-      tmp = var_attrib(output, VARS(vv), CMOR_TABLE(vv))
+      tmp = format_variable(output, VAR(vv), CMOR_TABLE(vv))
       delete(output)
       output = tmp
       delete(tmp)
 
-      ; Set global attributes
-      gAtt = set_global_atts( \
-        OBSNAME, TIER, \
-        "Data provided by Ralf Bennartz (Vanderbilt University, USA)", \
-        "O'Dell et al., J. Clim., doi:10.1175/2007JCLI1958.1, 2008", "")
-      gAtt@model_id = OBSNAME
-      gAtt@project_id = "OBS"
+      ; Calculate coordinate bounds
+      bounds = guess_coord_bounds(output, FREQ(vv))
 
-      ; Outfile
-      fout = output_dir_path + "OBS_" + OBSNAME + "_sat_v2_" + MIP + \
-        "_" + VARS(vv) + "_" + yr + "01-" + yr + "12.nc"
+      ; Set global attributes
+      gAtt = set_global_atts(OBSNAME, TIER, SOURCE, REF, COMMENT)
+
+      ; Output file
+      DATESTR = yr + "01-" + yr + "12"
+      fout = output_dir_path + \
+        str_join((/"OBS", OBSNAME, TYPE, VERSION, \
+                   MIP(vv), VAR(vv), DATESTR/), "_") + ".nc"
 
       ; Write variable
-      write_nc(fout, VARS(vv), output, gAtt)
+      write_nc(fout, VAR(vv), output, bounds, gAtt)
       delete(gAtt)
       delete(output)
+      delete(bounds)
 
     end do
 
