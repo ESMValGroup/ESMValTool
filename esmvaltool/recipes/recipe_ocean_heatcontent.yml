@@ -1,0 +1,100 @@
+# ESMValTool
+# recipe_ocean_example.yml
+---
+documentation:
+  description: |
+    Recipe to demonstrate several simple plots based on the monthly ocean
+    temperature. Please use this file as a template for adding additional
+    fields into the ocean. This work based on the BGC-val toolkit GMD-2018-103.
+
+  authors:
+    - demo_le
+
+  maintainer:
+    - schl_ma
+
+  references:
+    - demora2018gmd
+
+  projects:
+    - ukesm
+
+
+datasets:
+  # working datasets
+  # - {dataset: CanESM2, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 1970, end_year: 2004}
+  # - {dataset: GISS-E2-H, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 1970, end_year: 2004}
+  # - {dataset: HadGEM2-AO, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+  # - {dataset: HadCM3, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 1970, end_year: 2004}
+  # - {dataset: CanCM4, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+  # temporarily unavailable ### - {dataset: CSIRO-Mk3-6-0, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 1970, end_year: 2004}
+  - {dataset: HadGEM2-CC, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 1970, end_year: 2004}
+#  - {dataset: HadGEM2-CC, project: CMIP5, mip: Omon, exp: piControl, ensemble: r1i1p1, start_year: 1970, end_year: 1980}
+  - {dataset: HadGEM2-ES, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 1970, end_year: 2004}
+  # - {dataset: HadGEM2-ES, project: CMIP5, mip: Omon, exp: piControl, ensemble: r1i1p1, start_year: 1970, end_year: 2004}
+  - {dataset: IPSL-CM5A-LR, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 1970, end_year: 2004}
+  
+  # CMIP6 datasets (Feb 2019)
+  # - {dataset: CNRM-CM6-1, project: CMIP6, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 1970, end_year: 2004}
+  # - {dataset: CNRM-ESM2-1, project: CMIP6, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 1970, end_year: 2004}
+  # - {dataset: IPSL-CM6A-LR, project: CMIP6, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 1970, end_year: 2004}
+  # - {dataset: GISS-E2-1-G, project: CMIP6, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 1970, end_year: 2004}
+  # - {dataset: BCC-ESM1, project: CMIP6, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 1970, end_year: 2004}
+  # - {dataset: BCC-CSM2-MR, project: CMIP6, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 1970, end_year: 2004}
+
+  #####
+  # Data with Errors right now -June 2018
+  ###
+  # Problem with times
+#  - {dataset: MIROC-ESM, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+#  - {dataset: MIROC-ESM-CHEM, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+
+  # Unstructured grids
+ # - {dataset: MPI-ESM-LR, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+ # - {dataset: MPI-ESM-MR, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+#  - {dataset: ACCESS1-0, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+#  - {dataset: ACCESS1-3, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+
+# TODO: All multi-model statistics are turned off until the preprocessor order is fixed.
+
+preprocessors:
+  # --------------------------------------------------
+  # Time series preprocessors
+  # --------------------------------------------------
+  prep_timeseries_1: # For 2D fields
+    custom_order: true
+#    extract_levels:
+#      levels: [700]
+#      scheme: nearest
+#    time_average:
+#
+#    extract_volume:
+#      z_min: 0
+#      z_max: 700
+#    average_volume:
+#      coordz: depth
+#      coord1: longitude
+#      coord2: latitude
+#    multi_model_statistics:
+#      span: overlap
+#      statistics: [mean ]
+
+diagnostics:
+
+  # --------------------------------------------------
+  # Time series diagnostics
+  # --------------------------------------------------
+
+  diag_timeseries_2:
+    description: Global Ocean Depth Layers mean timeseries
+    variables:
+      ohc: # Temperature ocean 3D
+        preprocessor: prep_timeseries_1
+        derive: true
+        force_derivation: false
+        field: TO3M
+        mip: Omon
+
+    scripts:
+      Global_Ocean_DepthLayers_integral_timeseries: &Global_Ocean_DepthLayers_integral_timeseries
+        script: ipcc_ar5/ch09_fig09_17.py
