@@ -20,6 +20,8 @@ dependencies:
   - jasper!=1.900.31  # pinned NCL dependency
   - r-base
   - r-rcpp
+  - r-curl
+  - r-igraph
   - r-xml
   - libunwind  #  specifically for Python3.7+
   - julia=0.6.1
