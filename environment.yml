@@ -6,23 +6,21 @@ channels:
 
 dependencies:
   # Python packages that cannot be installed from PyPI:
-  - iris=1.13
-  - graphviz
-  - matplotlib<3
+  - iris
+  - matplotlib<3  # Can be installed from PyPI, but is a dependency of iris and should be pinned.
   - python-stratify
   - esmpy
+  - xarray  # Can be installed from PyPI, but here to get a consistent set of depencies with iris.
+  # Non-Python dependencies
+  - graphviz
+  - cdo=1.9.3
+
   # Multi language support:
   - ncl
-  - ncurses=6.1=hfc679d8_1
-  - julia=0.6.1
-  - hdf5
-  - cdo=1.9.3
+  - jasper!=1.900.31  # pinned NCL dependency
   - r-base
   - r-rcpp
-  - r-curl
-  - r-igraph
-
-  - pip:
-      # TODO: include dummydata in esmvaltool repository and move to setup.py
-      # dummydata fetched from github as a zip file, contains latest version
-      - https://github.com/ESMValGroup/dummydata/archive/dev.zip
+  - r-xml
+  - libunwind  #  specifically for Python3.7+
+  - julia=0.6.1
+  - hdf5

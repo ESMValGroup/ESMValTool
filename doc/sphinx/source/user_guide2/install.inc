@@ -45,11 +45,17 @@ The ESMValTool source code is available on a public GitHub repository:
 https://github.com/ESMValGroup/ESMValTool
 
 The easiest way to obtain it is to clone the repository using git
-(see https://git-scm.com/):
+(see https://git-scm.com/). To clone the public repository:
 
 .. code-block:: bash
 
     git clone https://github.com/ESMValGroup/ESMValTool.git
+
+It is also possible to work in one of the ESMValTool private repository, e.g.:
+
+.. code-block:: bash
+
+    git clone https://github.com/ESMValGroup/ESMValTool-private.git
 
 By default, this command will create a folder called ESMValTool containing the
 source code of the tool.
@@ -76,7 +82,7 @@ repository (``environment.yml`` in the root folder).
     Some systems provides a preinstalled version of conda (e.g., via the module environment).
     Several users however reported problems when installing NCL with such versions. It is
     therefore preferable to use a local, fully user-controlled conda installation.
-	Using an older version of conda can also be a source of problems, so if you have conda
+    Using an older version of conda can also be a source of problems, so if you have conda
 	installed already, make sure it is up to date by running ``conda update -n base conda``.
 
 To enable the ``conda`` command, please source the appropriate configuration file
@@ -100,7 +106,7 @@ conda.
 Ideally, you should create a conda environment for ESMValTool, so it is
 independent from any other Python tools present in the system.
 
-Note that it is advisable to update conda to the latest version before 
+Note that it is advisable to update conda to the latest version before
 installing ESMValTool. Using the following command:
 
 .. code-block::bash
