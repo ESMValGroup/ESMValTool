@@ -167,14 +167,6 @@ jobs:
             conda install -y esmvaltool --use-local -c conda-forge -c birdhouse
             conda env export > /logs/test_environment3.yml
             esmvaltool -h
-            set +x; conda deactivate; set -x
-            # Install Python 2 conda package
-            conda create -y --name esmvaltool2 python=2 > /logs/conda_esmvaltool2.txt 2>&1
-            set +x; conda activate esmvaltool2; set -x
-            conda install -y esmvaltool --use-local -c conda-forge -c birdhouse
-            conda env export > /logs/environment2.yml
-            esmvaltool -h
-            set +x; conda deactivate; set -x
       - store_artifacts:
           path: /logs
 
