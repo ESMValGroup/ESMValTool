@@ -68,23 +68,23 @@ Observations and reformat scripts
 References
 ----------
 
-* Alexander L.V.  and Coauthors (2006). Global observed changes in daily climate extremes of temperature and precipitation. J. Geophys. Res., 111, D05109, doi:10.1029/2005JD006290.
+* Alexander L.V.  and Coauthors (2006). Global observed changes in daily climate extremes of temperature and precipitation. J. Geophys. Res., 111, D05109. https://doi.org/10.1029/2005JD006290
 
 * American Academy of Actuaries, Canadian Institute of Actuaries, Casualty Actuarial Society and Society of Actuaries. Actuaries Climate Index. http://actuariesclimateindex.org (2018-10-06).
 
-* Donat, M., and Coauthors (2013). Updated analyses of temperature and precipitation extreme indices since the beginning of the twentieth century: The HadEX2 dataset. J.  Geophys. Res., 118, 2098–2118, doi:10.1002/jgrd.50150.
+* Donat, M., and Coauthors (2013). Updated analyses of temperature and precipitation extreme indices since the beginning of the twentieth century: The HadEX2 dataset. J.  Geophys. Res., 118, 2098–2118, https://doi.org/10.1002/jgrd.50150.
 
-* Fouillet, A., Rey, G., Laurent, F., Pavillon, G. Bellec, S., Guihenneuc-Jouyaux, C., Clavel J., Jougla, E. and Hémon, D. (2006) Excess mortality related to the August 2003 heat wave in France. Int. Arch. Occup. Environ. Health, 80, 16–24.
+* Fouillet, A., Rey, G., Laurent, F., Pavillon, G. Bellec, S., Guihenneuc-Jouyaux, C., Clavel J., Jougla, E. and Hémon, D. (2006) Excess mortality related to the August 2003 heat wave in France. Int. Arch. Occup. Environ. Health, 80, 16–24. https://doi.org/10.1007/s00420-006-0089-4
 
-* Gleason, K.L., J.H. Lawrimore, D.H. Levinson, T.R. Karl, and D.J. Karoly (2008). A Revised U.S. Climate Extremes Index. J. Climate, 21, 2124-2137
+* Gleason, K.L., J.H. Lawrimore, D.H. Levinson, T.R. Karl, and D.J. Karoly (2008). A Revised U.S. Climate Extremes Index. J. Climate, 21, 2124-2137 https://doi.org/10.1175/2007JCLI1883.1
 
-* Meehl, G. A., and Coauthors (2000). An introduction to trends inextreme weather and climate events: Observations, socio-economic impacts, terrestrial ecological impacts, and model projections. Bull. Amer. Meteor. Soc., 81, 413–416.
+* Meehl, G. A., and Coauthors (2000). An introduction to trends inextreme weather and climate events: Observations, socio-economic impacts, terrestrial ecological impacts, and model projections. Bull. Amer. Meteor. Soc., 81, 413–416. `doi: 10.1175/1520-0477(2000)081<0413:AITTIE>2.3.CO;2 <https://journals.ametsoc.org/doi/abs/10.1175/1520-0477%282000%29081%3C0413%3AAITTIE%3E2.3.CO%3B2>`_ 
 
-* Whitman, S., G. Good, E. R. Donoghue, N. Benbow, W. Y. Shou and S. X. Mou (1997). Mortality in Chicago attributed to the July 1995 heat wave. Amer. J. Public Health, 87, 1515–1518.
+* Whitman, S., G. Good, E. R. Donoghue, N. Benbow, W. Y. Shou and S. X. Mou (1997). Mortality in Chicago attributed to the July 1995 heat wave. Amer. J. Public Health, 87, 1515–1518. https://doi.org/10.2105/AJPH.87.9.1515
 
-* Zhang, Y., M. Nitschke, and P. Bi (2013). Risk factors for direct heat-related hospitalization during the 2009 Adelaide heat-wave: A case crossover study. Sci. Total Environ., 442, 1–5.
+* Zhang, Y., M. Nitschke, and P. Bi (2013). Risk factors for direct heat-related hospitalization during the 2009 Adelaide heat-wave: A case crossover study. Sci. Total Environ., 442, 1–5. https://doi.org/10.1016/j.scitotenv.2012.10.042
 
-* Zhang, X. , Alexander, L. , Hegerl, G. C., Jones, P. , Tank, A. K.,  Peterson, T. C., Trewin, B.  and Zwiers, F. W. (2011). Indices for  monitoring changes in extremes based on daily temperature and  precipitation data. WIREs Clim Change, 2: 851-870. doi:10.1002/wcc.147
+* Zhang, X. , Alexander, L. , Hegerl, G. C., Jones, P. , Tank, A. K.,  Peterson, T. C., Trewin, B.  and Zwiers, F. W. (2011). Indices for  monitoring changes in extremes based on daily temperature and  precipitation data. WIREs Clim Change, 2: 851-870. doi:10.1002/wcc.147 https://doi.org/10.1002/wcc.147
 
 
 
