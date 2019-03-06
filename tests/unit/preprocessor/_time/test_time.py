@@ -13,7 +13,8 @@ from iris.cube import Cube
 
 import tests
 from esmvaltool.preprocessor._time import (extract_month, extract_season,
-                                           time_average, extract_time)
+                                           time_average, extract_time,
+                                           annual_mean)
 
 
 def _create_sample_cube():
