@@ -84,8 +84,10 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
       }
       # exclude normalization years from multiyear mean
       retyears <- 1:length(years_ref)
-      skipyears <- which(as.logical(match(years_ref, norm_years)))
+      skipyears <- which(as.logical(match(years_ref,
+                         norm_years[1]:norm_years[2])))
       retyears[skipyears] <- NA
+      retyears <- retyears[which(is.finite(retyears))]
       field_ref[, , 1] <- apply(field_ref[, ,retyears],
                                 c(1, 2), mean, na.rm = T)
     }
@@ -148,9 +150,12 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
       }
       # if requested calculate multiyear average and store it at time=1
       if (rmultiyear_mean) {
+        years <- year1:year2
         retyears <- 1:length(years)
-        skipyears <- which(as.logical(match(years, norm_years)))
+        skipyears <- which(as.logical(match(years,
+                           norm_years[1]:norm_years[2])))
         retyears[skipyears] <- NA
+        retyears <- retyears[which(is.finite(retyears))]
         field_exp[, , 1] <- apply(field_exp[, , retyears],
                                   c(1, 2), mean, na.rm = T)
       }
