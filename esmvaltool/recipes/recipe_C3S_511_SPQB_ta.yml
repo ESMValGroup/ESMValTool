@@ -76,11 +76,15 @@ diagnostics:
         script: qualassess/ta_C3S_511_SPQB.py
         requests: [custom]
         levels: [3.00e+04,8.50e+04,1.00e+02]
+      diag_tables:
+        script: qualassess/ta_C3S_511_SPQB.py
+        requests: [SMM, GCOS, ESM]
       report:
         script: qualassess/ta_C3S_511_SPQB.py
         ancestors: ['ta', '*/diag_*']
         requests: [report]
-        order: [diag_MV_ts, diag_MV_mean ,diag_MV_std_dev, diag_MV_perc, diag_MV_clim, diag_MV_anom, diag_custom]
+        order: [diag_tables, diag_MV_ts, diag_MV_mean ,diag_MV_std_dev, diag_MV_perc, diag_MV_clim, diag_MV_anom, diag_custom]
+#        order: [diag_MV_mean, diag_MV_std_dev]
         show_latex: False #options are: True/False/no_latex
         
 #  diagnostic1:
