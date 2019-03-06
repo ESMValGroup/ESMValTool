@@ -1,0 +1,78 @@
+INFO    [78558] 
+______________________________________________________________________
+          _____ ____  __  ____     __    _ _____           _
+         | ____/ ___||  \/  \ \   / /_ _| |_   _|__   ___ | |
+         |  _| \___ \| |\/| |\ \ / / _` | | | |/ _ \ / _ \| |
+         | |___ ___) | |  | | \ V / (_| | | | | (_) | (_) | |
+         |_____|____/|_|  |_|  \_/ \__,_|_| |_|\___/ \___/|_|
+______________________________________________________________________
+
+ESMValTool - Earth System Model Evaluation Tool.
+
+http://www.esmvaltool.org
+
+CORE DEVELOPMENT TEAM AND CONTACTS:
+  Veronika Eyring (PI; DLR, Germany - veronika.eyring@dlr.de)
+  Bouwe Andela (NLESC, Netherlands - b.andela@esciencecenter.nl)
+  Bjoern Broetz (DLR, Germany - bjoern.broetz@dlr.de)
+  Lee de Mora (PML, UK - ledm@pml.ac.uk)
+  Niels Drost (NLESC, Netherlands - n.drost@esciencecenter.nl)
+  Nikolay Koldunov (AWI, Germany - nikolay.koldunov@awi.de)
+  Axel Lauer (DLR, Germany - axel.lauer@dlr.de)
+  Benjamin Mueller (LMU, Germany - b.mueller@iggf.geo.uni-muenchen.de)
+  Valeriu Predoi (URead, UK - valeriu.predoi@ncas.ac.uk)
+  Mattia Righi (DLR, Germany - mattia.righi@dlr.de)
+  Manuel Schlund (DLR, Germany - manuel.schlund@dlr.de)
+  Javier Vegas-Regidor (BSC, Spain - javier.vegas@bsc.es)
+
+For further help, please read the documentation at
+http://esmvaltool.readthedocs.io. Have fun!
+
+INFO    [78558] Using config file /div/pdo/extreme/masan/V2/ESMValTool/esmvaltool/config-user.yml
+INFO    [78558] Writing program log files to:
+/div/pdo/extreme/masan/V2/ESMValTool/esmvaltool_output/recipe_perfmetrics_CMIP5_20190306_140850/run/main_log.txt
+/div/pdo/extreme/masan/V2/ESMValTool/esmvaltool_output/recipe_perfmetrics_CMIP5_20190306_140850/run/main_log_debug.txt
+INFO    [78558] Starting the Earth System Model Evaluation Tool v2.0a1 at time: 2019-03-06 14:08:50 UTC
+INFO    [78558] ----------------------------------------------------------------------
+INFO    [78558] RECIPE   = /div/pdo/extreme/masan/V2/ESMValTool/esmvaltool/recipes/recipe_perfmetrics_CMIP5.yml
+INFO    [78558] RUNDIR     = /div/pdo/extreme/masan/V2/ESMValTool/esmvaltool_output/recipe_perfmetrics_CMIP5_20190306_140850/run
+INFO    [78558] WORKDIR    = /div/pdo/extreme/masan/V2/ESMValTool/esmvaltool_output/recipe_perfmetrics_CMIP5_20190306_140850/work
+INFO    [78558] PREPROCDIR = /div/pdo/extreme/masan/V2/ESMValTool/esmvaltool_output/recipe_perfmetrics_CMIP5_20190306_140850/preproc
+INFO    [78558] PLOTDIR    = /div/pdo/extreme/masan/V2/ESMValTool/esmvaltool_output/recipe_perfmetrics_CMIP5_20190306_140850/plots
+INFO    [78558] ----------------------------------------------------------------------
+INFO    [78558] Running tasks using at most 1 processes
+INFO    [78558] If your system hangs during execution, it may not have enough memory for keeping this number of tasks in memory. In that case, try reducing 'max_parallel_tasks' in your user configuration file.
+INFO    [78558] NCL script detected, checking NCL version
+INFO    [78558] Found NCL version 6.5.0
+INFO    [78558] Creating tasks from recipe
+INFO    [78558] Creating tasks for diagnostic ta850
+INFO    [78558] Creating preprocessor task ta850/ta
+INFO    [78558] Creating preprocessor 'pp850' task for variable 'ta'
+ERROR   [78558] Program terminated abnormally, see stack trace below for more information
+Traceback (most recent call last):
+  File "/div/pdo/extreme/masan/V2/ESMValTool/esmvaltool/_main.py", line 230, in run
+    conf = main(args)
+  File "/div/pdo/extreme/masan/V2/ESMValTool/esmvaltool/_main.py", line 158, in main
+    process_recipe(recipe_file=recipe, config_user=cfg)
+  File "/div/pdo/extreme/masan/V2/ESMValTool/esmvaltool/_main.py", line 204, in process_recipe
+    recipe = read_recipe_file(recipe_file, config_user)
+  File "/div/pdo/extreme/masan/V2/ESMValTool/esmvaltool/_recipe.py", line 71, in read_recipe_file
+    raw_recipe, config_user, initialize_tasks, recipe_file=filename)
+  File "/div/pdo/extreme/masan/V2/ESMValTool/esmvaltool/_recipe.py", line 792, in __init__
+    self.tasks = self.initialize_tasks() if initialize_tasks else None
+  File "/div/pdo/extreme/masan/V2/ESMValTool/esmvaltool/_recipe.py", line 1000, in initialize_tasks
+    task_name=task_name)
+  File "/div/pdo/extreme/masan/V2/ESMValTool/esmvaltool/_recipe.py", line 767, in _get_preprocessor_task
+    name=task_name)
+  File "/div/pdo/extreme/masan/V2/ESMValTool/esmvaltool/_recipe.py", line 636, in _get_single_preprocessor_task
+    config_user=config_user,
+  File "/div/pdo/extreme/masan/V2/ESMValTool/esmvaltool/_recipe.py", line 602, in _get_preprocessor_products
+    config_user=config_user)
+  File "/div/pdo/extreme/masan/V2/ESMValTool/esmvaltool/_recipe.py", line 207, in _update_target_grid
+    _get_dataset_info(grid, variables), config_user)
+  File "/div/pdo/extreme/masan/V2/ESMValTool/esmvaltool/_recipe.py", line 235, in _dataset_to_file
+    check.data_availability(files, variable)
+  File "/div/pdo/extreme/masan/V2/ESMValTool/esmvaltool/_recipe_checks.py", line 96, in data_availability
+    raise RecipeError("No input files found for variable {}".format(var))
+esmvaltool._recipe_checks.RecipeError: No input files found for variable {'preprocessor': 'pp850', 'reference_dataset': 'ERA-Interim', 'alternative_dataset': 'NCEP', 'mip': 'Amon', 'field': 'T3M', 'project': 'OBS', 'exp': 'historical', 'ensemble': 'r1i1p1', 'start_year': 2000, 'end_year': 2002, 'variable_group': 'ta', 'short_name': 'ta', 'diagnostic': 'ta850', 'dataset': 'ERA-Interim', 'type': 'reanaly', 'version': 1, 'tier': 3, 'recipe_dataset_index': 50, 'cmor_table': 'OBS', 'standard_name': 'air_temperature', 'long_name': 'Air Temperature', 'units': 'K', 'modeling_realm': ['atmos'], 'frequency': 'mon', 'filename': '/div/pdo/extreme/masan/V2/ESMValTool/esmvaltool_output/recipe_perfmetrics_CMIP5_20190306_140850/preproc/ta850/ta/OBS_ERA-Interim_reanaly_1_T3M_ta_2000-2002.nc'}
+INFO    [78558] If you suspect this is a bug or need help, please open an issue on https://github.com/ESMValGroup/ESMValTool/issues and attach the run/recipe_*.yml and run/main_log_debug.txt files from the output directory.

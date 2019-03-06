@@ -1,0 +1,1210 @@
+2019-03-06 14:08:50,575 UTC [78558] INFO    esmvaltool._main:137 
+______________________________________________________________________
+          _____ ____  __  ____     __    _ _____           _
+         | ____/ ___||  \/  \ \   / /_ _| |_   _|__   ___ | |
+         |  _| \___ \| |\/| |\ \ / / _` | | | |/ _ \ / _ \| |
+         | |___ ___) | |  | | \ V / (_| | | | | (_) | (_) | |
+         |_____|____/|_|  |_|  \_/ \__,_|_| |_|\___/ \___/|_|
+______________________________________________________________________
+
+ESMValTool - Earth System Model Evaluation Tool.
+
+http://www.esmvaltool.org
+
+CORE DEVELOPMENT TEAM AND CONTACTS:
+  Veronika Eyring (PI; DLR, Germany - veronika.eyring@dlr.de)
+  Bouwe Andela (NLESC, Netherlands - b.andela@esciencecenter.nl)
+  Bjoern Broetz (DLR, Germany - bjoern.broetz@dlr.de)
+  Lee de Mora (PML, UK - ledm@pml.ac.uk)
+  Niels Drost (NLESC, Netherlands - n.drost@esciencecenter.nl)
+  Nikolay Koldunov (AWI, Germany - nikolay.koldunov@awi.de)
+  Axel Lauer (DLR, Germany - axel.lauer@dlr.de)
+  Benjamin Mueller (LMU, Germany - b.mueller@iggf.geo.uni-muenchen.de)
+  Valeriu Predoi (URead, UK - valeriu.predoi@ncas.ac.uk)
+  Mattia Righi (DLR, Germany - mattia.righi@dlr.de)
+  Manuel Schlund (DLR, Germany - manuel.schlund@dlr.de)
+  Javier Vegas-Regidor (BSC, Spain - javier.vegas@bsc.es)
+
+For further help, please read the documentation at
+http://esmvaltool.readthedocs.io. Have fun!
+
+2019-03-06 14:08:50,575 UTC [78558] INFO    esmvaltool._main:139 Using config file /div/pdo/extreme/masan/V2/ESMValTool/esmvaltool/config-user.yml
+2019-03-06 14:08:50,575 UTC [78558] INFO    esmvaltool._main:140 Writing program log files to:
+/div/pdo/extreme/masan/V2/ESMValTool/esmvaltool_output/recipe_perfmetrics_CMIP5_20190306_140850/run/main_log.txt
+/div/pdo/extreme/masan/V2/ESMValTool/esmvaltool_output/recipe_perfmetrics_CMIP5_20190306_140850/run/main_log_debug.txt
+2019-03-06 14:08:50,576 UTC [78558] INFO    esmvaltool._main:173 Starting the Earth System Model Evaluation Tool v2.0a1 at time: 2019-03-06 14:08:50 UTC
+2019-03-06 14:08:50,577 UTC [78558] INFO    esmvaltool._main:175 ----------------------------------------------------------------------
+2019-03-06 14:08:50,577 UTC [78558] INFO    esmvaltool._main:176 RECIPE   = /div/pdo/extreme/masan/V2/ESMValTool/esmvaltool/recipes/recipe_perfmetrics_CMIP5.yml
+2019-03-06 14:08:50,577 UTC [78558] INFO    esmvaltool._main:177 RUNDIR     = /div/pdo/extreme/masan/V2/ESMValTool/esmvaltool_output/recipe_perfmetrics_CMIP5_20190306_140850/run
+2019-03-06 14:08:50,577 UTC [78558] INFO    esmvaltool._main:178 WORKDIR    = /div/pdo/extreme/masan/V2/ESMValTool/esmvaltool_output/recipe_perfmetrics_CMIP5_20190306_140850/work
+2019-03-06 14:08:50,577 UTC [78558] INFO    esmvaltool._main:179 PREPROCDIR = /div/pdo/extreme/masan/V2/ESMValTool/esmvaltool_output/recipe_perfmetrics_CMIP5_20190306_140850/preproc
+2019-03-06 14:08:50,577 UTC [78558] INFO    esmvaltool._main:180 PLOTDIR    = /div/pdo/extreme/masan/V2/ESMValTool/esmvaltool_output/recipe_perfmetrics_CMIP5_20190306_140850/plots
+2019-03-06 14:08:50,577 UTC [78558] INFO    esmvaltool._main:181 ----------------------------------------------------------------------
+2019-03-06 14:08:50,577 UTC [78558] INFO    esmvaltool._main:184 Running tasks using at most 1 processes
+2019-03-06 14:08:50,577 UTC [78558] INFO    esmvaltool._main:187 If your system hangs during execution, it may not have enough memory for keeping this number of tasks in memory. In that case, try reducing 'max_parallel_tasks' in your user configuration file.
+2019-03-06 14:08:50,578 UTC [78558] DEBUG   esmvaltool._recipe_checks:45 Checking recipe against schema /div/pdo/extreme/masan/V2/ESMValTool/esmvaltool/recipe_schema.yml
+2019-03-06 14:08:51,484 UTC [78558] INFO    esmvaltool._recipe:803 NCL script detected, checking NCL version
+2019-03-06 14:08:52,187 UTC [78558] INFO    esmvaltool._recipe_checks:34 Found NCL version 6.5.0
+2019-03-06 14:08:52,189 UTC [78558] DEBUG   esmvaltool._recipe:819 Retrieving diagnostics from recipe
+2019-03-06 14:08:52,189 UTC [78558] DEBUG   esmvaltool._recipe:904 Populating list of variables for diagnostic ta850
+2019-03-06 14:08:52,190 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset ACCESS1-0
+2019-03-06 14:08:52,190 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset ACCESS1-3
+2019-03-06 14:08:52,190 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset bcc-csm1-1
+2019-03-06 14:08:52,190 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset bcc-csm1-1-m
+2019-03-06 14:08:52,191 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset BNU-ESM
+2019-03-06 14:08:52,191 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CanCM4
+2019-03-06 14:08:52,191 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CanESM2
+2019-03-06 14:08:52,191 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CCSM4
+2019-03-06 14:08:52,191 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-BGC
+2019-03-06 14:08:52,191 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-CAM5
+2019-03-06 14:08:52,191 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-CAM5-1-FV2
+2019-03-06 14:08:52,191 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-FASTCHEM
+2019-03-06 14:08:52,191 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-WACCM
+2019-03-06 14:08:52,191 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CMCC-CESM
+2019-03-06 14:08:52,191 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CMCC-CM
+2019-03-06 14:08:52,191 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CMCC-CMS
+2019-03-06 14:08:52,191 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CNRM-CM5
+2019-03-06 14:08:52,191 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CNRM-CM5-2
+2019-03-06 14:08:52,192 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CSIRO-Mk3-6-0
+2019-03-06 14:08:52,192 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset EC-EARTH
+2019-03-06 14:08:52,192 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset FGOALS-g2
+2019-03-06 14:08:52,192 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset FGOALS-s2
+2019-03-06 14:08:52,192 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset FIO-ESM
+2019-03-06 14:08:52,192 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-CM2p1
+2019-03-06 14:08:52,192 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-CM3
+2019-03-06 14:08:52,192 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-ESM2G
+2019-03-06 14:08:52,192 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-ESM2M
+2019-03-06 14:08:52,192 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-H
+2019-03-06 14:08:52,192 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-H-CC
+2019-03-06 14:08:52,192 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-R
+2019-03-06 14:08:52,192 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-R-CC
+2019-03-06 14:08:52,192 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadCM3
+2019-03-06 14:08:52,192 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadGEM2-AO
+2019-03-06 14:08:52,193 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadGEM2-CC
+2019-03-06 14:08:52,193 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadGEM2-ES
+2019-03-06 14:08:52,193 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset inmcm4
+2019-03-06 14:08:52,193 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset IPSL-CM5A-LR
+2019-03-06 14:08:52,193 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset IPSL-CM5A-MR
+2019-03-06 14:08:52,193 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset IPSL-CM5B-LR
+2019-03-06 14:08:52,193 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC4h
+2019-03-06 14:08:52,193 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC5
+2019-03-06 14:08:52,193 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC-ESM
+2019-03-06 14:08:52,193 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC-ESM-CHEM
+2019-03-06 14:08:52,193 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MPI-ESM-LR
+2019-03-06 14:08:52,193 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MPI-ESM-MR
+2019-03-06 14:08:52,193 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MPI-ESM-P
+2019-03-06 14:08:52,193 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MRI-CGCM3
+2019-03-06 14:08:52,193 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MRI-ESM1
+2019-03-06 14:08:52,194 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset NorESM1-M
+2019-03-06 14:08:52,194 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset NorESM1-ME
+2019-03-06 14:08:52,194 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset ERA-Interim
+2019-03-06 14:08:52,194 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset NCEP
+2019-03-06 14:08:52,194 UTC [78558] DEBUG   esmvaltool._recipe:926 Setting script for diagnostic ta850
+2019-03-06 14:08:52,194 UTC [78558] DEBUG   esmvaltool._recipe:904 Populating list of variables for diagnostic ta200
+2019-03-06 14:08:52,195 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset ACCESS1-0
+2019-03-06 14:08:52,195 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset ACCESS1-3
+2019-03-06 14:08:52,195 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset bcc-csm1-1
+2019-03-06 14:08:52,195 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset bcc-csm1-1-m
+2019-03-06 14:08:52,195 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset BNU-ESM
+2019-03-06 14:08:52,195 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CanCM4
+2019-03-06 14:08:52,195 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CanESM2
+2019-03-06 14:08:52,195 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CCSM4
+2019-03-06 14:08:52,195 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-BGC
+2019-03-06 14:08:52,195 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-CAM5
+2019-03-06 14:08:52,195 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-CAM5-1-FV2
+2019-03-06 14:08:52,195 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-FASTCHEM
+2019-03-06 14:08:52,195 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-WACCM
+2019-03-06 14:08:52,195 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CMCC-CESM
+2019-03-06 14:08:52,195 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CMCC-CM
+2019-03-06 14:08:52,196 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CMCC-CMS
+2019-03-06 14:08:52,196 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CNRM-CM5
+2019-03-06 14:08:52,196 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CNRM-CM5-2
+2019-03-06 14:08:52,196 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CSIRO-Mk3-6-0
+2019-03-06 14:08:52,196 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset EC-EARTH
+2019-03-06 14:08:52,196 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset FGOALS-g2
+2019-03-06 14:08:52,196 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset FGOALS-s2
+2019-03-06 14:08:52,196 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset FIO-ESM
+2019-03-06 14:08:52,196 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-CM2p1
+2019-03-06 14:08:52,196 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-CM3
+2019-03-06 14:08:52,196 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-ESM2G
+2019-03-06 14:08:52,196 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-ESM2M
+2019-03-06 14:08:52,196 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-H
+2019-03-06 14:08:52,196 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-H-CC
+2019-03-06 14:08:52,196 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-R
+2019-03-06 14:08:52,197 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-R-CC
+2019-03-06 14:08:52,197 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadCM3
+2019-03-06 14:08:52,197 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadGEM2-AO
+2019-03-06 14:08:52,197 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadGEM2-CC
+2019-03-06 14:08:52,197 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadGEM2-ES
+2019-03-06 14:08:52,197 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset inmcm4
+2019-03-06 14:08:52,197 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset IPSL-CM5A-LR
+2019-03-06 14:08:52,197 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset IPSL-CM5A-MR
+2019-03-06 14:08:52,197 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset IPSL-CM5B-LR
+2019-03-06 14:08:52,197 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC4h
+2019-03-06 14:08:52,197 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC5
+2019-03-06 14:08:52,197 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC-ESM
+2019-03-06 14:08:52,197 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC-ESM-CHEM
+2019-03-06 14:08:52,197 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MPI-ESM-LR
+2019-03-06 14:08:52,197 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MPI-ESM-MR
+2019-03-06 14:08:52,197 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MPI-ESM-P
+2019-03-06 14:08:52,198 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MRI-CGCM3
+2019-03-06 14:08:52,198 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MRI-ESM1
+2019-03-06 14:08:52,198 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset NorESM1-M
+2019-03-06 14:08:52,198 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset NorESM1-ME
+2019-03-06 14:08:52,198 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset ERA-Interim
+2019-03-06 14:08:52,198 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset NCEP
+2019-03-06 14:08:52,198 UTC [78558] DEBUG   esmvaltool._recipe:926 Setting script for diagnostic ta200
+2019-03-06 14:08:52,198 UTC [78558] DEBUG   esmvaltool._recipe:904 Populating list of variables for diagnostic ta30
+2019-03-06 14:08:52,199 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset ACCESS1-0
+2019-03-06 14:08:52,199 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset ACCESS1-3
+2019-03-06 14:08:52,199 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset bcc-csm1-1
+2019-03-06 14:08:52,199 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset bcc-csm1-1-m
+2019-03-06 14:08:52,199 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset BNU-ESM
+2019-03-06 14:08:52,199 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CanCM4
+2019-03-06 14:08:52,199 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CanESM2
+2019-03-06 14:08:52,199 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CCSM4
+2019-03-06 14:08:52,199 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-BGC
+2019-03-06 14:08:52,199 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-CAM5
+2019-03-06 14:08:52,199 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-CAM5-1-FV2
+2019-03-06 14:08:52,199 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-FASTCHEM
+2019-03-06 14:08:52,199 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-WACCM
+2019-03-06 14:08:52,199 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CMCC-CESM
+2019-03-06 14:08:52,200 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CMCC-CM
+2019-03-06 14:08:52,200 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CMCC-CMS
+2019-03-06 14:08:52,200 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CNRM-CM5
+2019-03-06 14:08:52,200 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CNRM-CM5-2
+2019-03-06 14:08:52,200 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CSIRO-Mk3-6-0
+2019-03-06 14:08:52,200 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset EC-EARTH
+2019-03-06 14:08:52,200 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset FGOALS-g2
+2019-03-06 14:08:52,200 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset FGOALS-s2
+2019-03-06 14:08:52,200 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset FIO-ESM
+2019-03-06 14:08:52,200 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-CM2p1
+2019-03-06 14:08:52,200 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-CM3
+2019-03-06 14:08:52,200 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-ESM2G
+2019-03-06 14:08:52,200 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-ESM2M
+2019-03-06 14:08:52,200 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-H
+2019-03-06 14:08:52,200 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-H-CC
+2019-03-06 14:08:52,200 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-R
+2019-03-06 14:08:52,201 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-R-CC
+2019-03-06 14:08:52,201 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadCM3
+2019-03-06 14:08:52,201 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadGEM2-AO
+2019-03-06 14:08:52,201 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadGEM2-CC
+2019-03-06 14:08:52,201 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadGEM2-ES
+2019-03-06 14:08:52,201 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset inmcm4
+2019-03-06 14:08:52,201 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset IPSL-CM5A-LR
+2019-03-06 14:08:52,201 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset IPSL-CM5A-MR
+2019-03-06 14:08:52,201 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset IPSL-CM5B-LR
+2019-03-06 14:08:52,201 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC4h
+2019-03-06 14:08:52,201 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC5
+2019-03-06 14:08:52,201 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC-ESM
+2019-03-06 14:08:52,201 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC-ESM-CHEM
+2019-03-06 14:08:52,201 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MPI-ESM-LR
+2019-03-06 14:08:52,201 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MPI-ESM-MR
+2019-03-06 14:08:52,201 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MPI-ESM-P
+2019-03-06 14:08:52,202 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MRI-CGCM3
+2019-03-06 14:08:52,202 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MRI-ESM1
+2019-03-06 14:08:52,202 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset NorESM1-M
+2019-03-06 14:08:52,202 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset NorESM1-ME
+2019-03-06 14:08:52,202 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset ERA-Interim
+2019-03-06 14:08:52,202 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset NCEP
+2019-03-06 14:08:52,202 UTC [78558] DEBUG   esmvaltool._recipe:926 Setting script for diagnostic ta30
+2019-03-06 14:08:52,202 UTC [78558] DEBUG   esmvaltool._recipe:904 Populating list of variables for diagnostic ta5
+2019-03-06 14:08:52,203 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset ACCESS1-0
+2019-03-06 14:08:52,203 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset ACCESS1-3
+2019-03-06 14:08:52,203 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset bcc-csm1-1
+2019-03-06 14:08:52,203 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset bcc-csm1-1-m
+2019-03-06 14:08:52,203 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset BNU-ESM
+2019-03-06 14:08:52,203 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CanCM4
+2019-03-06 14:08:52,203 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CanESM2
+2019-03-06 14:08:52,203 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CCSM4
+2019-03-06 14:08:52,203 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-BGC
+2019-03-06 14:08:52,203 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-CAM5
+2019-03-06 14:08:52,203 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-CAM5-1-FV2
+2019-03-06 14:08:52,203 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-FASTCHEM
+2019-03-06 14:08:52,203 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-WACCM
+2019-03-06 14:08:52,203 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CMCC-CESM
+2019-03-06 14:08:52,203 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CMCC-CM
+2019-03-06 14:08:52,204 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CMCC-CMS
+2019-03-06 14:08:52,204 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CNRM-CM5
+2019-03-06 14:08:52,204 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CNRM-CM5-2
+2019-03-06 14:08:52,204 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CSIRO-Mk3-6-0
+2019-03-06 14:08:52,204 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset EC-EARTH
+2019-03-06 14:08:52,204 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset FGOALS-g2
+2019-03-06 14:08:52,204 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset FGOALS-s2
+2019-03-06 14:08:52,204 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset FIO-ESM
+2019-03-06 14:08:52,204 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-CM2p1
+2019-03-06 14:08:52,204 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-CM3
+2019-03-06 14:08:52,204 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-ESM2G
+2019-03-06 14:08:52,204 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-ESM2M
+2019-03-06 14:08:52,204 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-H
+2019-03-06 14:08:52,204 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-H-CC
+2019-03-06 14:08:52,204 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-R
+2019-03-06 14:08:52,204 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-R-CC
+2019-03-06 14:08:52,205 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadCM3
+2019-03-06 14:08:52,205 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadGEM2-AO
+2019-03-06 14:08:52,205 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadGEM2-CC
+2019-03-06 14:08:52,205 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadGEM2-ES
+2019-03-06 14:08:52,205 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset inmcm4
+2019-03-06 14:08:52,205 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset IPSL-CM5A-LR
+2019-03-06 14:08:52,205 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset IPSL-CM5A-MR
+2019-03-06 14:08:52,205 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset IPSL-CM5B-LR
+2019-03-06 14:08:52,205 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC4h
+2019-03-06 14:08:52,205 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC5
+2019-03-06 14:08:52,205 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC-ESM
+2019-03-06 14:08:52,205 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC-ESM-CHEM
+2019-03-06 14:08:52,205 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MPI-ESM-LR
+2019-03-06 14:08:52,205 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MPI-ESM-MR
+2019-03-06 14:08:52,205 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MPI-ESM-P
+2019-03-06 14:08:52,205 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MRI-CGCM3
+2019-03-06 14:08:52,206 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MRI-ESM1
+2019-03-06 14:08:52,206 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset NorESM1-M
+2019-03-06 14:08:52,206 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset NorESM1-ME
+2019-03-06 14:08:52,206 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset ERA-Interim
+2019-03-06 14:08:52,206 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset NCEP
+2019-03-06 14:08:52,206 UTC [78558] DEBUG   esmvaltool._recipe:926 Setting script for diagnostic ta5
+2019-03-06 14:08:52,206 UTC [78558] DEBUG   esmvaltool._recipe:904 Populating list of variables for diagnostic taZONAL
+2019-03-06 14:08:52,206 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset ACCESS1-0
+2019-03-06 14:08:52,206 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset ACCESS1-3
+2019-03-06 14:08:52,207 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset bcc-csm1-1
+2019-03-06 14:08:52,207 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset bcc-csm1-1-m
+2019-03-06 14:08:52,207 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset BNU-ESM
+2019-03-06 14:08:52,207 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CanCM4
+2019-03-06 14:08:52,207 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CanESM2
+2019-03-06 14:08:52,207 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CCSM4
+2019-03-06 14:08:52,207 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-BGC
+2019-03-06 14:08:52,207 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-CAM5
+2019-03-06 14:08:52,207 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-CAM5-1-FV2
+2019-03-06 14:08:52,207 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-FASTCHEM
+2019-03-06 14:08:52,207 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-WACCM
+2019-03-06 14:08:52,207 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CMCC-CESM
+2019-03-06 14:08:52,207 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CMCC-CM
+2019-03-06 14:08:52,207 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CMCC-CMS
+2019-03-06 14:08:52,207 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CNRM-CM5
+2019-03-06 14:08:52,207 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CNRM-CM5-2
+2019-03-06 14:08:52,208 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CSIRO-Mk3-6-0
+2019-03-06 14:08:52,208 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset EC-EARTH
+2019-03-06 14:08:52,208 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset FGOALS-g2
+2019-03-06 14:08:52,208 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset FGOALS-s2
+2019-03-06 14:08:52,208 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset FIO-ESM
+2019-03-06 14:08:52,208 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-CM2p1
+2019-03-06 14:08:52,208 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-CM3
+2019-03-06 14:08:52,208 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-ESM2G
+2019-03-06 14:08:52,208 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-ESM2M
+2019-03-06 14:08:52,208 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-H
+2019-03-06 14:08:52,208 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-H-CC
+2019-03-06 14:08:52,208 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-R
+2019-03-06 14:08:52,208 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-R-CC
+2019-03-06 14:08:52,208 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadCM3
+2019-03-06 14:08:52,208 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadGEM2-AO
+2019-03-06 14:08:52,208 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadGEM2-CC
+2019-03-06 14:08:52,209 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadGEM2-ES
+2019-03-06 14:08:52,209 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset inmcm4
+2019-03-06 14:08:52,209 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset IPSL-CM5A-LR
+2019-03-06 14:08:52,209 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset IPSL-CM5A-MR
+2019-03-06 14:08:52,209 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset IPSL-CM5B-LR
+2019-03-06 14:08:52,209 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC4h
+2019-03-06 14:08:52,209 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC5
+2019-03-06 14:08:52,209 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC-ESM
+2019-03-06 14:08:52,209 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC-ESM-CHEM
+2019-03-06 14:08:52,209 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MPI-ESM-LR
+2019-03-06 14:08:52,209 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MPI-ESM-MR
+2019-03-06 14:08:52,209 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MPI-ESM-P
+2019-03-06 14:08:52,209 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MRI-CGCM3
+2019-03-06 14:08:52,209 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MRI-ESM1
+2019-03-06 14:08:52,209 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset NorESM1-M
+2019-03-06 14:08:52,209 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset NorESM1-ME
+2019-03-06 14:08:52,210 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset ERA-Interim
+2019-03-06 14:08:52,210 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset NCEP
+2019-03-06 14:08:52,210 UTC [78558] DEBUG   esmvaltool._recipe:926 Setting script for diagnostic taZONAL
+2019-03-06 14:08:52,210 UTC [78558] DEBUG   esmvaltool._recipe:904 Populating list of variables for diagnostic ua850
+2019-03-06 14:08:52,210 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset ACCESS1-0
+2019-03-06 14:08:52,210 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset ACCESS1-3
+2019-03-06 14:08:52,210 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset bcc-csm1-1
+2019-03-06 14:08:52,210 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset bcc-csm1-1-m
+2019-03-06 14:08:52,211 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset BNU-ESM
+2019-03-06 14:08:52,211 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CanCM4
+2019-03-06 14:08:52,211 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CanESM2
+2019-03-06 14:08:52,211 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CCSM4
+2019-03-06 14:08:52,211 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-BGC
+2019-03-06 14:08:52,211 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-CAM5
+2019-03-06 14:08:52,211 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-CAM5-1-FV2
+2019-03-06 14:08:52,211 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-FASTCHEM
+2019-03-06 14:08:52,211 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-WACCM
+2019-03-06 14:08:52,211 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CMCC-CESM
+2019-03-06 14:08:52,211 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CMCC-CM
+2019-03-06 14:08:52,211 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CMCC-CMS
+2019-03-06 14:08:52,211 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CNRM-CM5
+2019-03-06 14:08:52,211 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CNRM-CM5-2
+2019-03-06 14:08:52,211 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CSIRO-Mk3-6-0
+2019-03-06 14:08:52,211 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset EC-EARTH
+2019-03-06 14:08:52,212 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset FGOALS-g2
+2019-03-06 14:08:52,212 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset FIO-ESM
+2019-03-06 14:08:52,212 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-CM2p1
+2019-03-06 14:08:52,212 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-CM3
+2019-03-06 14:08:52,212 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-ESM2G
+2019-03-06 14:08:52,212 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-ESM2M
+2019-03-06 14:08:52,212 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-H
+2019-03-06 14:08:52,212 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-H-CC
+2019-03-06 14:08:52,212 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-R
+2019-03-06 14:08:52,212 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-R-CC
+2019-03-06 14:08:52,212 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadCM3
+2019-03-06 14:08:52,212 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadGEM2-AO
+2019-03-06 14:08:52,212 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadGEM2-CC
+2019-03-06 14:08:52,212 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadGEM2-ES
+2019-03-06 14:08:52,212 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset inmcm4
+2019-03-06 14:08:52,212 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset IPSL-CM5A-LR
+2019-03-06 14:08:52,213 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset IPSL-CM5A-MR
+2019-03-06 14:08:52,213 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset IPSL-CM5B-LR
+2019-03-06 14:08:52,213 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC4h
+2019-03-06 14:08:52,213 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC5
+2019-03-06 14:08:52,213 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC-ESM
+2019-03-06 14:08:52,213 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC-ESM-CHEM
+2019-03-06 14:08:52,213 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MPI-ESM-LR
+2019-03-06 14:08:52,213 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MPI-ESM-MR
+2019-03-06 14:08:52,213 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MPI-ESM-P
+2019-03-06 14:08:52,213 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MRI-CGCM3
+2019-03-06 14:08:52,213 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MRI-ESM1
+2019-03-06 14:08:52,213 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset NorESM1-M
+2019-03-06 14:08:52,213 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset NorESM1-ME
+2019-03-06 14:08:52,213 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset ERA-Interim
+2019-03-06 14:08:52,213 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset NCEP
+2019-03-06 14:08:52,213 UTC [78558] DEBUG   esmvaltool._recipe:926 Setting script for diagnostic ua850
+2019-03-06 14:08:52,214 UTC [78558] DEBUG   esmvaltool._recipe:904 Populating list of variables for diagnostic ua200
+2019-03-06 14:08:52,214 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset ACCESS1-0
+2019-03-06 14:08:52,214 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset ACCESS1-3
+2019-03-06 14:08:52,214 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset bcc-csm1-1
+2019-03-06 14:08:52,214 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset bcc-csm1-1-m
+2019-03-06 14:08:52,214 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset BNU-ESM
+2019-03-06 14:08:52,214 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CanCM4
+2019-03-06 14:08:52,214 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CanESM2
+2019-03-06 14:08:52,214 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CCSM4
+2019-03-06 14:08:52,215 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-BGC
+2019-03-06 14:08:52,215 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-CAM5
+2019-03-06 14:08:52,215 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-CAM5-1-FV2
+2019-03-06 14:08:52,215 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-FASTCHEM
+2019-03-06 14:08:52,215 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-WACCM
+2019-03-06 14:08:52,215 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CMCC-CESM
+2019-03-06 14:08:52,215 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CMCC-CM
+2019-03-06 14:08:52,215 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CMCC-CMS
+2019-03-06 14:08:52,215 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CNRM-CM5
+2019-03-06 14:08:52,215 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CNRM-CM5-2
+2019-03-06 14:08:52,215 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CSIRO-Mk3-6-0
+2019-03-06 14:08:52,215 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset EC-EARTH
+2019-03-06 14:08:52,215 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset FGOALS-g2
+2019-03-06 14:08:52,215 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset FIO-ESM
+2019-03-06 14:08:52,215 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-CM2p1
+2019-03-06 14:08:52,215 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-CM3
+2019-03-06 14:08:52,216 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-ESM2G
+2019-03-06 14:08:52,216 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-ESM2M
+2019-03-06 14:08:52,216 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-H
+2019-03-06 14:08:52,216 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-H-CC
+2019-03-06 14:08:52,216 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-R
+2019-03-06 14:08:52,216 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-R-CC
+2019-03-06 14:08:52,216 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadCM3
+2019-03-06 14:08:52,216 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadGEM2-AO
+2019-03-06 14:08:52,216 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadGEM2-CC
+2019-03-06 14:08:52,216 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadGEM2-ES
+2019-03-06 14:08:52,216 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset inmcm4
+2019-03-06 14:08:52,216 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset IPSL-CM5A-LR
+2019-03-06 14:08:52,216 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset IPSL-CM5A-MR
+2019-03-06 14:08:52,216 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset IPSL-CM5B-LR
+2019-03-06 14:08:52,216 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC4h
+2019-03-06 14:08:52,216 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC5
+2019-03-06 14:08:52,217 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC-ESM
+2019-03-06 14:08:52,217 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC-ESM-CHEM
+2019-03-06 14:08:52,217 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MPI-ESM-LR
+2019-03-06 14:08:52,217 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MPI-ESM-MR
+2019-03-06 14:08:52,217 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MPI-ESM-P
+2019-03-06 14:08:52,217 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MRI-CGCM3
+2019-03-06 14:08:52,217 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MRI-ESM1
+2019-03-06 14:08:52,217 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset NorESM1-M
+2019-03-06 14:08:52,217 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset NorESM1-ME
+2019-03-06 14:08:52,217 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset ERA-Interim
+2019-03-06 14:08:52,217 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset NCEP
+2019-03-06 14:08:52,217 UTC [78558] DEBUG   esmvaltool._recipe:926 Setting script for diagnostic ua200
+2019-03-06 14:08:52,217 UTC [78558] DEBUG   esmvaltool._recipe:904 Populating list of variables for diagnostic va850
+2019-03-06 14:08:52,218 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset ACCESS1-0
+2019-03-06 14:08:52,218 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset ACCESS1-3
+2019-03-06 14:08:52,218 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset bcc-csm1-1
+2019-03-06 14:08:52,218 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset bcc-csm1-1-m
+2019-03-06 14:08:52,218 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset BNU-ESM
+2019-03-06 14:08:52,218 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CanCM4
+2019-03-06 14:08:52,218 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CanESM2
+2019-03-06 14:08:52,218 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CCSM4
+2019-03-06 14:08:52,218 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-BGC
+2019-03-06 14:08:52,218 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-CAM5
+2019-03-06 14:08:52,218 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-FASTCHEM
+2019-03-06 14:08:52,218 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-WACCM
+2019-03-06 14:08:52,219 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CMCC-CESM
+2019-03-06 14:08:52,219 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CMCC-CM
+2019-03-06 14:08:52,219 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CMCC-CMS
+2019-03-06 14:08:52,219 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CNRM-CM5
+2019-03-06 14:08:52,219 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CNRM-CM5-2
+2019-03-06 14:08:52,219 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CSIRO-Mk3-6-0
+2019-03-06 14:08:52,219 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset EC-EARTH
+2019-03-06 14:08:52,219 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset FGOALS-g2
+2019-03-06 14:08:52,219 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset FIO-ESM
+2019-03-06 14:08:52,219 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-CM2p1
+2019-03-06 14:08:52,219 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-CM3
+2019-03-06 14:08:52,219 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-ESM2G
+2019-03-06 14:08:52,219 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-ESM2M
+2019-03-06 14:08:52,219 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-H
+2019-03-06 14:08:52,219 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-H-CC
+2019-03-06 14:08:52,219 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-R
+2019-03-06 14:08:52,219 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-R-CC
+2019-03-06 14:08:52,220 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadCM3
+2019-03-06 14:08:52,220 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadGEM2-AO
+2019-03-06 14:08:52,220 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadGEM2-CC
+2019-03-06 14:08:52,220 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadGEM2-ES
+2019-03-06 14:08:52,220 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset inmcm4
+2019-03-06 14:08:52,220 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset IPSL-CM5A-LR
+2019-03-06 14:08:52,220 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset IPSL-CM5A-MR
+2019-03-06 14:08:52,220 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset IPSL-CM5B-LR
+2019-03-06 14:08:52,220 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC4h
+2019-03-06 14:08:52,220 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC5
+2019-03-06 14:08:52,220 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC-ESM
+2019-03-06 14:08:52,220 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC-ESM-CHEM
+2019-03-06 14:08:52,220 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MPI-ESM-LR
+2019-03-06 14:08:52,220 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MPI-ESM-MR
+2019-03-06 14:08:52,220 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MPI-ESM-P
+2019-03-06 14:08:52,220 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MRI-CGCM3
+2019-03-06 14:08:52,220 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MRI-ESM1
+2019-03-06 14:08:52,221 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset NorESM1-M
+2019-03-06 14:08:52,221 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset NorESM1-ME
+2019-03-06 14:08:52,221 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset ERA-Interim
+2019-03-06 14:08:52,221 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset NCEP
+2019-03-06 14:08:52,221 UTC [78558] DEBUG   esmvaltool._recipe:926 Setting script for diagnostic va850
+2019-03-06 14:08:52,221 UTC [78558] DEBUG   esmvaltool._recipe:904 Populating list of variables for diagnostic va200
+2019-03-06 14:08:52,221 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset ACCESS1-0
+2019-03-06 14:08:52,221 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset ACCESS1-3
+2019-03-06 14:08:52,221 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset bcc-csm1-1
+2019-03-06 14:08:52,222 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset bcc-csm1-1-m
+2019-03-06 14:08:52,222 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset BNU-ESM
+2019-03-06 14:08:52,222 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CanCM4
+2019-03-06 14:08:52,222 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CanESM2
+2019-03-06 14:08:52,222 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CCSM4
+2019-03-06 14:08:52,222 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-BGC
+2019-03-06 14:08:52,222 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-CAM5
+2019-03-06 14:08:52,222 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-FASTCHEM
+2019-03-06 14:08:52,222 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-WACCM
+2019-03-06 14:08:52,222 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CMCC-CESM
+2019-03-06 14:08:52,222 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CMCC-CM
+2019-03-06 14:08:52,222 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CMCC-CMS
+2019-03-06 14:08:52,222 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CNRM-CM5
+2019-03-06 14:08:52,222 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CNRM-CM5-2
+2019-03-06 14:08:52,222 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CSIRO-Mk3-6-0
+2019-03-06 14:08:52,222 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset EC-EARTH
+2019-03-06 14:08:52,222 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset FGOALS-g2
+2019-03-06 14:08:52,223 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset FIO-ESM
+2019-03-06 14:08:52,223 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-CM2p1
+2019-03-06 14:08:52,223 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-CM3
+2019-03-06 14:08:52,223 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-ESM2G
+2019-03-06 14:08:52,223 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-ESM2M
+2019-03-06 14:08:52,223 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-H
+2019-03-06 14:08:52,223 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-H-CC
+2019-03-06 14:08:52,223 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-R
+2019-03-06 14:08:52,223 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-R-CC
+2019-03-06 14:08:52,223 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadCM3
+2019-03-06 14:08:52,223 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadGEM2-AO
+2019-03-06 14:08:52,223 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadGEM2-CC
+2019-03-06 14:08:52,223 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadGEM2-ES
+2019-03-06 14:08:52,223 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset inmcm4
+2019-03-06 14:08:52,223 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset IPSL-CM5A-LR
+2019-03-06 14:08:52,223 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset IPSL-CM5A-MR
+2019-03-06 14:08:52,223 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset IPSL-CM5B-LR
+2019-03-06 14:08:52,224 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC4h
+2019-03-06 14:08:52,224 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC5
+2019-03-06 14:08:52,224 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC-ESM
+2019-03-06 14:08:52,224 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC-ESM-CHEM
+2019-03-06 14:08:52,224 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MPI-ESM-LR
+2019-03-06 14:08:52,224 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MPI-ESM-MR
+2019-03-06 14:08:52,224 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MPI-ESM-P
+2019-03-06 14:08:52,224 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MRI-CGCM3
+2019-03-06 14:08:52,224 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MRI-ESM1
+2019-03-06 14:08:52,224 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset NorESM1-M
+2019-03-06 14:08:52,224 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset NorESM1-ME
+2019-03-06 14:08:52,224 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset ERA-Interim
+2019-03-06 14:08:52,224 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset NCEP
+2019-03-06 14:08:52,224 UTC [78558] DEBUG   esmvaltool._recipe:926 Setting script for diagnostic va200
+2019-03-06 14:08:52,224 UTC [78558] DEBUG   esmvaltool._recipe:904 Populating list of variables for diagnostic zg500
+2019-03-06 14:08:52,225 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset ACCESS1-0
+2019-03-06 14:08:52,225 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset ACCESS1-3
+2019-03-06 14:08:52,225 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset bcc-csm1-1
+2019-03-06 14:08:52,225 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset bcc-csm1-1-m
+2019-03-06 14:08:52,225 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset BNU-ESM
+2019-03-06 14:08:52,225 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CanCM4
+2019-03-06 14:08:52,225 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CanESM2
+2019-03-06 14:08:52,225 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CCSM4
+2019-03-06 14:08:52,225 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-BGC
+2019-03-06 14:08:52,225 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-CAM5
+2019-03-06 14:08:52,225 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-CAM5-1-FV2
+2019-03-06 14:08:52,226 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-FASTCHEM
+2019-03-06 14:08:52,226 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-WACCM
+2019-03-06 14:08:52,226 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CMCC-CESM
+2019-03-06 14:08:52,226 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CMCC-CM
+2019-03-06 14:08:52,226 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CMCC-CMS
+2019-03-06 14:08:52,226 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CNRM-CM5
+2019-03-06 14:08:52,226 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CNRM-CM5-2
+2019-03-06 14:08:52,226 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CSIRO-Mk3-6-0
+2019-03-06 14:08:52,226 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset FGOALS-g2
+2019-03-06 14:08:52,226 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset FGOALS-s2
+2019-03-06 14:08:52,226 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset FIO-ESM
+2019-03-06 14:08:52,226 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-CM2p1
+2019-03-06 14:08:52,226 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-CM3
+2019-03-06 14:08:52,226 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-ESM2G
+2019-03-06 14:08:52,226 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-ESM2M
+2019-03-06 14:08:52,226 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-H
+2019-03-06 14:08:52,226 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-H-CC
+2019-03-06 14:08:52,227 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-R-CC
+2019-03-06 14:08:52,227 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadCM3
+2019-03-06 14:08:52,227 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadGEM2-AO
+2019-03-06 14:08:52,227 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadGEM2-CC
+2019-03-06 14:08:52,227 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadGEM2-ES
+2019-03-06 14:08:52,227 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset inmcm4
+2019-03-06 14:08:52,227 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset IPSL-CM5A-LR
+2019-03-06 14:08:52,227 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset IPSL-CM5A-MR
+2019-03-06 14:08:52,227 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset IPSL-CM5B-LR
+2019-03-06 14:08:52,227 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC4h
+2019-03-06 14:08:52,227 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC5
+2019-03-06 14:08:52,227 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC-ESM
+2019-03-06 14:08:52,227 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC-ESM-CHEM
+2019-03-06 14:08:52,227 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MPI-ESM-LR
+2019-03-06 14:08:52,227 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MPI-ESM-MR
+2019-03-06 14:08:52,227 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MPI-ESM-P
+2019-03-06 14:08:52,227 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MRI-CGCM3
+2019-03-06 14:08:52,228 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset NorESM1-M
+2019-03-06 14:08:52,228 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset NorESM1-ME
+2019-03-06 14:08:52,228 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset ERA-Interim
+2019-03-06 14:08:52,228 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset NCEP
+2019-03-06 14:08:52,228 UTC [78558] DEBUG   esmvaltool._recipe:926 Setting script for diagnostic zg500
+2019-03-06 14:08:52,228 UTC [78558] DEBUG   esmvaltool._recipe:904 Populating list of variables for diagnostic hus400
+2019-03-06 14:08:52,228 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset ACCESS1-0
+2019-03-06 14:08:52,228 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset ACCESS1-3
+2019-03-06 14:08:52,228 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset bcc-csm1-1
+2019-03-06 14:08:52,228 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset bcc-csm1-1-m
+2019-03-06 14:08:52,228 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset BNU-ESM
+2019-03-06 14:08:52,229 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CanESM2
+2019-03-06 14:08:52,229 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CCSM4
+2019-03-06 14:08:52,229 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-BGC
+2019-03-06 14:08:52,229 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-CAM5
+2019-03-06 14:08:52,229 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-CAM5-1-FV2
+2019-03-06 14:08:52,229 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CMCC-CM
+2019-03-06 14:08:52,229 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CMCC-CMS
+2019-03-06 14:08:52,229 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CNRM-CM5
+2019-03-06 14:08:52,229 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CSIRO-Mk3-6-0
+2019-03-06 14:08:52,229 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset FGOALS-g2
+2019-03-06 14:08:52,229 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset FGOALS-s2
+2019-03-06 14:08:52,229 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset FIO-ESM
+2019-03-06 14:08:52,229 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-H-CC
+2019-03-06 14:08:52,229 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-R-CC
+2019-03-06 14:08:52,229 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-CM2p1
+2019-03-06 14:08:52,229 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-CM3
+2019-03-06 14:08:52,229 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-ESM2G
+2019-03-06 14:08:52,230 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-ESM2M
+2019-03-06 14:08:52,230 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadGEM2-AO
+2019-03-06 14:08:52,230 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadGEM2-CC
+2019-03-06 14:08:52,230 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadGEM2-ES
+2019-03-06 14:08:52,230 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset inmcm4
+2019-03-06 14:08:52,230 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset IPSL-CM5A-LR
+2019-03-06 14:08:52,230 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset IPSL-CM5A-MR
+2019-03-06 14:08:52,230 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset IPSL-CM5B-LR
+2019-03-06 14:08:52,230 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC4h
+2019-03-06 14:08:52,230 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC5
+2019-03-06 14:08:52,230 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC-ESM
+2019-03-06 14:08:52,230 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC-ESM-CHEM
+2019-03-06 14:08:52,230 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MPI-ESM-LR
+2019-03-06 14:08:52,230 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MPI-ESM-MR
+2019-03-06 14:08:52,230 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MRI-CGCM3
+2019-03-06 14:08:52,230 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MRI-ESM1
+2019-03-06 14:08:52,230 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset NorESM1-M
+2019-03-06 14:08:52,231 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset NorESM1-ME
+2019-03-06 14:08:52,231 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset AIRS
+2019-03-06 14:08:52,231 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset ERA-Interim
+2019-03-06 14:08:52,231 UTC [78558] DEBUG   esmvaltool._recipe:926 Setting script for diagnostic hus400
+2019-03-06 14:08:52,231 UTC [78558] DEBUG   esmvaltool._recipe:904 Populating list of variables for diagnostic tas
+2019-03-06 14:08:52,231 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset ACCESS1-0
+2019-03-06 14:08:52,231 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset ACCESS1-3
+2019-03-06 14:08:52,231 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset bcc-csm1-1
+2019-03-06 14:08:52,231 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset bcc-csm1-1-m
+2019-03-06 14:08:52,232 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset BNU-ESM
+2019-03-06 14:08:52,232 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CanCM4
+2019-03-06 14:08:52,232 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CanESM2
+2019-03-06 14:08:52,232 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CCSM4
+2019-03-06 14:08:52,232 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-BGC
+2019-03-06 14:08:52,232 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-CAM5
+2019-03-06 14:08:52,232 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-CAM5-1-FV2
+2019-03-06 14:08:52,232 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-FASTCHEM
+2019-03-06 14:08:52,232 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-WACCM
+2019-03-06 14:08:52,232 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CMCC-CESM
+2019-03-06 14:08:52,232 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CMCC-CM
+2019-03-06 14:08:52,232 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CMCC-CMS
+2019-03-06 14:08:52,232 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CNRM-CM5
+2019-03-06 14:08:52,232 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CNRM-CM5-2
+2019-03-06 14:08:52,232 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CSIRO-Mk3-6-0
+2019-03-06 14:08:52,232 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset EC-EARTH
+2019-03-06 14:08:52,232 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset FGOALS-g2
+2019-03-06 14:08:52,233 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset FGOALS-s2
+2019-03-06 14:08:52,233 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset FIO-ESM
+2019-03-06 14:08:52,233 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-CM2p1
+2019-03-06 14:08:52,233 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-CM3
+2019-03-06 14:08:52,233 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-ESM2G
+2019-03-06 14:08:52,233 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-ESM2M
+2019-03-06 14:08:52,233 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-H
+2019-03-06 14:08:52,233 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-H-CC
+2019-03-06 14:08:52,233 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-R
+2019-03-06 14:08:52,233 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-R-CC
+2019-03-06 14:08:52,233 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadCM3
+2019-03-06 14:08:52,233 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadGEM2-AO
+2019-03-06 14:08:52,233 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadGEM2-CC
+2019-03-06 14:08:52,233 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadGEM2-ES
+2019-03-06 14:08:52,233 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset inmcm4
+2019-03-06 14:08:52,233 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset IPSL-CM5A-LR
+2019-03-06 14:08:52,233 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset IPSL-CM5A-MR
+2019-03-06 14:08:52,234 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset IPSL-CM5B-LR
+2019-03-06 14:08:52,234 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC4h
+2019-03-06 14:08:52,234 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC5
+2019-03-06 14:08:52,234 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC-ESM
+2019-03-06 14:08:52,234 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC-ESM-CHEM
+2019-03-06 14:08:52,234 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MPI-ESM-LR
+2019-03-06 14:08:52,234 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MPI-ESM-MR
+2019-03-06 14:08:52,234 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MPI-ESM-P
+2019-03-06 14:08:52,234 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MRI-CGCM3
+2019-03-06 14:08:52,234 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MRI-ESM1
+2019-03-06 14:08:52,234 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset NorESM1-M
+2019-03-06 14:08:52,234 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset NorESM1-ME
+2019-03-06 14:08:52,234 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset ERA-Interim
+2019-03-06 14:08:52,234 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset NCEP
+2019-03-06 14:08:52,234 UTC [78558] DEBUG   esmvaltool._recipe:926 Setting script for diagnostic tas
+2019-03-06 14:08:52,235 UTC [78558] DEBUG   esmvaltool._recipe:904 Populating list of variables for diagnostic ts
+2019-03-06 14:08:52,235 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset ACCESS1-0
+2019-03-06 14:08:52,235 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset ACCESS1-3
+2019-03-06 14:08:52,235 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset bcc-csm1-1
+2019-03-06 14:08:52,235 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset bcc-csm1-1-m
+2019-03-06 14:08:52,235 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset BNU-ESM
+2019-03-06 14:08:52,235 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CanCM4
+2019-03-06 14:08:52,235 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CanESM2
+2019-03-06 14:08:52,236 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CCSM4
+2019-03-06 14:08:52,236 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-BGC
+2019-03-06 14:08:52,236 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-CAM5
+2019-03-06 14:08:52,236 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-CAM5-1-FV2
+2019-03-06 14:08:52,236 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CMCC-CM
+2019-03-06 14:08:52,236 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CMCC-CMS
+2019-03-06 14:08:52,236 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CNRM-CM5
+2019-03-06 14:08:52,236 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CSIRO-Mk3-6-0
+2019-03-06 14:08:52,236 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset FGOALS-g2
+2019-03-06 14:08:52,236 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset FIO-ESM
+2019-03-06 14:08:52,236 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-CM2p1
+2019-03-06 14:08:52,236 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-CM3
+2019-03-06 14:08:52,236 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-ESM2G
+2019-03-06 14:08:52,236 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-ESM2M
+2019-03-06 14:08:52,236 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-H
+2019-03-06 14:08:52,236 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-H-CC
+2019-03-06 14:08:52,236 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-R
+2019-03-06 14:08:52,237 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-R-CC
+2019-03-06 14:08:52,237 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadCM3
+2019-03-06 14:08:52,237 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadGEM2-AO
+2019-03-06 14:08:52,237 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadGEM2-CC
+2019-03-06 14:08:52,237 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadGEM2-ES
+2019-03-06 14:08:52,237 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset inmcm4
+2019-03-06 14:08:52,237 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset IPSL-CM5A-LR
+2019-03-06 14:08:52,237 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset IPSL-CM5A-MR
+2019-03-06 14:08:52,237 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset IPSL-CM5B-LR
+2019-03-06 14:08:52,237 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC4h
+2019-03-06 14:08:52,237 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC5
+2019-03-06 14:08:52,237 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC-ESM
+2019-03-06 14:08:52,237 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC-ESM-CHEM
+2019-03-06 14:08:52,237 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MPI-ESM-LR
+2019-03-06 14:08:52,237 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MPI-ESM-MR
+2019-03-06 14:08:52,237 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MRI-CGCM3
+2019-03-06 14:08:52,237 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset NorESM1-M
+2019-03-06 14:08:52,238 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset NorESM1-ME
+2019-03-06 14:08:52,238 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset ESACCI-SST
+2019-03-06 14:08:52,238 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadISST
+2019-03-06 14:08:52,238 UTC [78558] DEBUG   esmvaltool._recipe:926 Setting script for diagnostic ts
+2019-03-06 14:08:52,238 UTC [78558] DEBUG   esmvaltool._recipe:904 Populating list of variables for diagnostic pr
+2019-03-06 14:08:52,238 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset ACCESS1-0
+2019-03-06 14:08:52,238 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset ACCESS1-3
+2019-03-06 14:08:52,238 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset bcc-csm1-1
+2019-03-06 14:08:52,238 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset bcc-csm1-1-m
+2019-03-06 14:08:52,238 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset BNU-ESM
+2019-03-06 14:08:52,239 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CanCM4
+2019-03-06 14:08:52,239 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CanESM2
+2019-03-06 14:08:52,239 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CCSM4
+2019-03-06 14:08:52,239 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-BGC
+2019-03-06 14:08:52,239 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-CAM5
+2019-03-06 14:08:52,239 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-CAM5-1-FV2
+2019-03-06 14:08:52,239 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-FASTCHEM
+2019-03-06 14:08:52,239 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-WACCM
+2019-03-06 14:08:52,239 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CMCC-CESM
+2019-03-06 14:08:52,239 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CMCC-CM
+2019-03-06 14:08:52,239 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CMCC-CMS
+2019-03-06 14:08:52,239 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CNRM-CM5
+2019-03-06 14:08:52,239 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CNRM-CM5-2
+2019-03-06 14:08:52,239 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CSIRO-Mk3-6-0
+2019-03-06 14:08:52,239 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset EC-EARTH
+2019-03-06 14:08:52,239 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset FGOALS-g2
+2019-03-06 14:08:52,240 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset FIO-ESM
+2019-03-06 14:08:52,240 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-CM2p1
+2019-03-06 14:08:52,240 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-CM3
+2019-03-06 14:08:52,240 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-ESM2G
+2019-03-06 14:08:52,240 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-ESM2M
+2019-03-06 14:08:52,240 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-H
+2019-03-06 14:08:52,240 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-H-CC
+2019-03-06 14:08:52,240 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-R
+2019-03-06 14:08:52,240 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-R-CC
+2019-03-06 14:08:52,240 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadCM3
+2019-03-06 14:08:52,240 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadGEM2-AO
+2019-03-06 14:08:52,240 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadGEM2-CC
+2019-03-06 14:08:52,240 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadGEM2-ES
+2019-03-06 14:08:52,240 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset inmcm4
+2019-03-06 14:08:52,240 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset IPSL-CM5A-LR
+2019-03-06 14:08:52,240 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset IPSL-CM5A-MR
+2019-03-06 14:08:52,240 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset IPSL-CM5B-LR
+2019-03-06 14:08:52,241 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC4h
+2019-03-06 14:08:52,241 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC5
+2019-03-06 14:08:52,241 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC-ESM
+2019-03-06 14:08:52,241 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC-ESM-CHEM
+2019-03-06 14:08:52,241 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MPI-ESM-LR
+2019-03-06 14:08:52,241 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MPI-ESM-MR
+2019-03-06 14:08:52,241 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MPI-ESM-P
+2019-03-06 14:08:52,241 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MRI-CGCM3
+2019-03-06 14:08:52,241 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MRI-ESM1
+2019-03-06 14:08:52,241 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset NorESM1-M
+2019-03-06 14:08:52,241 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset NorESM1-ME
+2019-03-06 14:08:52,241 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GPCP-SG
+2019-03-06 14:08:52,241 UTC [78558] DEBUG   esmvaltool._recipe:926 Setting script for diagnostic pr
+2019-03-06 14:08:52,241 UTC [78558] DEBUG   esmvaltool._recipe:904 Populating list of variables for diagnostic clt
+2019-03-06 14:08:52,242 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset ACCESS1-0
+2019-03-06 14:08:52,242 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset ACCESS1-3
+2019-03-06 14:08:52,242 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset bcc-csm1-1
+2019-03-06 14:08:52,242 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset bcc-csm1-1-m
+2019-03-06 14:08:52,242 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset BNU-ESM
+2019-03-06 14:08:52,242 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CanESM2
+2019-03-06 14:08:52,242 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CCSM4
+2019-03-06 14:08:52,242 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-BGC
+2019-03-06 14:08:52,242 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-CAM5
+2019-03-06 14:08:52,242 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-CAM5-1-FV2
+2019-03-06 14:08:52,242 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CMCC-CM
+2019-03-06 14:08:52,242 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CMCC-CMS
+2019-03-06 14:08:52,242 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CNRM-CM5
+2019-03-06 14:08:52,243 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CSIRO-Mk3-6-0
+2019-03-06 14:08:52,243 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset EC-EARTH
+2019-03-06 14:08:52,243 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset FGOALS-g2
+2019-03-06 14:08:52,243 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset FIO-ESM
+2019-03-06 14:08:52,243 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-CM3
+2019-03-06 14:08:52,243 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-ESM2G
+2019-03-06 14:08:52,243 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-ESM2M
+2019-03-06 14:08:52,243 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-H
+2019-03-06 14:08:52,243 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-H-CC
+2019-03-06 14:08:52,243 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-R
+2019-03-06 14:08:52,243 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-R-CC
+2019-03-06 14:08:52,243 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadCM3
+2019-03-06 14:08:52,243 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadGEM2-AO
+2019-03-06 14:08:52,243 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadGEM2-CC
+2019-03-06 14:08:52,243 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadGEM2-ES
+2019-03-06 14:08:52,243 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset inmcm4
+2019-03-06 14:08:52,243 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset IPSL-CM5A-LR
+2019-03-06 14:08:52,243 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset IPSL-CM5A-MR
+2019-03-06 14:08:52,244 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset IPSL-CM5B-LR
+2019-03-06 14:08:52,244 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC4h
+2019-03-06 14:08:52,244 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC5
+2019-03-06 14:08:52,244 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC-ESM
+2019-03-06 14:08:52,244 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC-ESM-CHEM
+2019-03-06 14:08:52,244 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MPI-ESM-LR
+2019-03-06 14:08:52,244 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MPI-ESM-MR
+2019-03-06 14:08:52,244 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MRI-CGCM3
+2019-03-06 14:08:52,244 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset NorESM1-M
+2019-03-06 14:08:52,244 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset NorESM1-ME
+2019-03-06 14:08:52,244 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset ESACCI-CLOUD
+2019-03-06 14:08:52,244 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset PATMOS
+2019-03-06 14:08:52,244 UTC [78558] DEBUG   esmvaltool._recipe:926 Setting script for diagnostic clt
+2019-03-06 14:08:52,244 UTC [78558] DEBUG   esmvaltool._recipe:904 Populating list of variables for diagnostic rlut
+2019-03-06 14:08:52,245 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset ACCESS1-0
+2019-03-06 14:08:52,245 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset ACCESS1-3
+2019-03-06 14:08:52,245 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset bcc-csm1-1
+2019-03-06 14:08:52,245 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset bcc-csm1-1-m
+2019-03-06 14:08:52,245 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset BNU-ESM
+2019-03-06 14:08:52,245 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CanCM4
+2019-03-06 14:08:52,245 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CanESM2
+2019-03-06 14:08:52,245 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CCSM4
+2019-03-06 14:08:52,245 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-BGC
+2019-03-06 14:08:52,245 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-CAM5
+2019-03-06 14:08:52,245 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-CAM5-1-FV2
+2019-03-06 14:08:52,245 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CMCC-CM
+2019-03-06 14:08:52,246 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CMCC-CMS
+2019-03-06 14:08:52,246 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CNRM-CM5
+2019-03-06 14:08:52,246 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CSIRO-Mk3-6-0
+2019-03-06 14:08:52,246 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset EC-EARTH
+2019-03-06 14:08:52,246 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset FGOALS-g2
+2019-03-06 14:08:52,246 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset FGOALS-s2
+2019-03-06 14:08:52,246 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset FIO-ESM
+2019-03-06 14:08:52,246 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-CM2p1
+2019-03-06 14:08:52,246 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-CM3
+2019-03-06 14:08:52,246 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-ESM2G
+2019-03-06 14:08:52,246 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-ESM2M
+2019-03-06 14:08:52,246 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-H
+2019-03-06 14:08:52,246 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-R
+2019-03-06 14:08:52,246 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadCM3
+2019-03-06 14:08:52,246 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadGEM2-AO
+2019-03-06 14:08:52,246 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadGEM2-CC
+2019-03-06 14:08:52,246 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadGEM2-ES
+2019-03-06 14:08:52,247 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset inmcm4
+2019-03-06 14:08:52,247 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset IPSL-CM5A-LR
+2019-03-06 14:08:52,247 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset IPSL-CM5A-MR
+2019-03-06 14:08:52,247 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset IPSL-CM5B-LR
+2019-03-06 14:08:52,247 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC4h
+2019-03-06 14:08:52,247 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC5
+2019-03-06 14:08:52,247 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC-ESM
+2019-03-06 14:08:52,247 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC-ESM-CHEM
+2019-03-06 14:08:52,247 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MPI-ESM-LR
+2019-03-06 14:08:52,247 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MPI-ESM-MR
+2019-03-06 14:08:52,247 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MRI-CGCM3
+2019-03-06 14:08:52,247 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset NorESM1-M
+2019-03-06 14:08:52,247 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset NorESM1-ME
+2019-03-06 14:08:52,247 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CERES-EBAF
+2019-03-06 14:08:52,247 UTC [78558] DEBUG   esmvaltool._recipe:926 Setting script for diagnostic rlut
+2019-03-06 14:08:52,247 UTC [78558] DEBUG   esmvaltool._recipe:904 Populating list of variables for diagnostic rsut
+2019-03-06 14:08:52,248 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset ACCESS1-0
+2019-03-06 14:08:52,248 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset ACCESS1-3
+2019-03-06 14:08:52,248 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset bcc-csm1-1
+2019-03-06 14:08:52,248 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset bcc-csm1-1-m
+2019-03-06 14:08:52,248 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset BNU-ESM
+2019-03-06 14:08:52,248 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CanESM2
+2019-03-06 14:08:52,248 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CCSM4
+2019-03-06 14:08:52,248 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-BGC
+2019-03-06 14:08:52,248 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-CAM5
+2019-03-06 14:08:52,248 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-CAM5-1-FV2
+2019-03-06 14:08:52,248 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CMCC-CM
+2019-03-06 14:08:52,248 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CMCC-CMS
+2019-03-06 14:08:52,249 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CNRM-CM5
+2019-03-06 14:08:52,249 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CSIRO-Mk3-6-0
+2019-03-06 14:08:52,249 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset FGOALS-s2
+2019-03-06 14:08:52,249 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset FIO-ESM
+2019-03-06 14:08:52,249 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-CM2p1
+2019-03-06 14:08:52,249 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-CM3
+2019-03-06 14:08:52,249 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-ESM2G
+2019-03-06 14:08:52,249 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-ESM2M
+2019-03-06 14:08:52,249 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-H
+2019-03-06 14:08:52,249 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-R
+2019-03-06 14:08:52,249 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadCM3
+2019-03-06 14:08:52,249 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadGEM2-AO
+2019-03-06 14:08:52,249 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadGEM2-CC
+2019-03-06 14:08:52,249 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadGEM2-ES
+2019-03-06 14:08:52,249 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset inmcm4
+2019-03-06 14:08:52,249 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset IPSL-CM5A-LR
+2019-03-06 14:08:52,249 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset IPSL-CM5A-MR
+2019-03-06 14:08:52,250 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset IPSL-CM5B-LR
+2019-03-06 14:08:52,250 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC4h
+2019-03-06 14:08:52,250 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC5
+2019-03-06 14:08:52,250 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC-ESM
+2019-03-06 14:08:52,250 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC-ESM-CHEM
+2019-03-06 14:08:52,250 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MPI-ESM-LR
+2019-03-06 14:08:52,250 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MPI-ESM-MR
+2019-03-06 14:08:52,250 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MRI-CGCM3
+2019-03-06 14:08:52,250 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset NorESM1-M
+2019-03-06 14:08:52,250 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset NorESM1-ME
+2019-03-06 14:08:52,250 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CERES-EBAF
+2019-03-06 14:08:52,250 UTC [78558] DEBUG   esmvaltool._recipe:926 Setting script for diagnostic rsut
+2019-03-06 14:08:52,250 UTC [78558] DEBUG   esmvaltool._recipe:904 Populating list of variables for diagnostic lwcre
+2019-03-06 14:08:52,251 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset ACCESS1-0
+2019-03-06 14:08:52,251 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset ACCESS1-3
+2019-03-06 14:08:52,251 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset bcc-csm1-1
+2019-03-06 14:08:52,251 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset bcc-csm1-1-m
+2019-03-06 14:08:52,251 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset BNU-ESM
+2019-03-06 14:08:52,251 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CanESM2
+2019-03-06 14:08:52,251 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CCSM4
+2019-03-06 14:08:52,251 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-BGC
+2019-03-06 14:08:52,251 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-CAM5
+2019-03-06 14:08:52,251 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-CAM5-1-FV2
+2019-03-06 14:08:52,251 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CMCC-CM
+2019-03-06 14:08:52,251 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CMCC-CMS
+2019-03-06 14:08:52,251 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CNRM-CM5
+2019-03-06 14:08:52,251 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CSIRO-Mk3-6-0
+2019-03-06 14:08:52,251 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset FGOALS-g2
+2019-03-06 14:08:52,252 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset FGOALS-s2
+2019-03-06 14:08:52,252 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset FIO-ESM
+2019-03-06 14:08:52,252 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-CM3
+2019-03-06 14:08:52,252 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-ESM2G
+2019-03-06 14:08:52,252 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-ESM2M
+2019-03-06 14:08:52,252 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-H
+2019-03-06 14:08:52,252 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-R
+2019-03-06 14:08:52,252 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadCM3
+2019-03-06 14:08:52,252 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadGEM2-AO
+2019-03-06 14:08:52,252 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadGEM2-CC
+2019-03-06 14:08:52,252 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadGEM2-ES
+2019-03-06 14:08:52,252 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset inmcm4
+2019-03-06 14:08:52,252 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset IPSL-CM5A-LR
+2019-03-06 14:08:52,252 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset IPSL-CM5A-MR
+2019-03-06 14:08:52,252 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset IPSL-CM5B-LR
+2019-03-06 14:08:52,252 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC4h
+2019-03-06 14:08:52,252 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC5
+2019-03-06 14:08:52,253 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC-ESM
+2019-03-06 14:08:52,253 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC-ESM-CHEM
+2019-03-06 14:08:52,253 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MPI-ESM-LR
+2019-03-06 14:08:52,253 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MPI-ESM-MR
+2019-03-06 14:08:52,253 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MRI-CGCM3
+2019-03-06 14:08:52,253 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset NorESM1-M
+2019-03-06 14:08:52,253 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset NorESM1-ME
+2019-03-06 14:08:52,253 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CERES-EBAF
+2019-03-06 14:08:52,253 UTC [78558] DEBUG   esmvaltool._recipe:926 Setting script for diagnostic lwcre
+2019-03-06 14:08:52,253 UTC [78558] DEBUG   esmvaltool._recipe:904 Populating list of variables for diagnostic swcre
+2019-03-06 14:08:52,253 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset ACCESS1-0
+2019-03-06 14:08:52,254 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset ACCESS1-3
+2019-03-06 14:08:52,254 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset bcc-csm1-1
+2019-03-06 14:08:52,254 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset bcc-csm1-1-m
+2019-03-06 14:08:52,254 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset BNU-ESM
+2019-03-06 14:08:52,254 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CanESM2
+2019-03-06 14:08:52,254 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CCSM4
+2019-03-06 14:08:52,254 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-BGC
+2019-03-06 14:08:52,254 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-CAM5
+2019-03-06 14:08:52,254 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-CAM5-1-FV2
+2019-03-06 14:08:52,254 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CMCC-CM
+2019-03-06 14:08:52,254 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CNRM-CM5
+2019-03-06 14:08:52,254 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CSIRO-Mk3-6-0
+2019-03-06 14:08:52,254 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset FGOALS-s2
+2019-03-06 14:08:52,254 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset FIO-ESM
+2019-03-06 14:08:52,254 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-CM3
+2019-03-06 14:08:52,254 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-ESM2G
+2019-03-06 14:08:52,254 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-ESM2M
+2019-03-06 14:08:52,255 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-H
+2019-03-06 14:08:52,255 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-R
+2019-03-06 14:08:52,255 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadCM3
+2019-03-06 14:08:52,255 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadGEM2-AO
+2019-03-06 14:08:52,255 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadGEM2-CC
+2019-03-06 14:08:52,255 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadGEM2-ES
+2019-03-06 14:08:52,255 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset inmcm4
+2019-03-06 14:08:52,255 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset IPSL-CM5A-LR
+2019-03-06 14:08:52,255 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset IPSL-CM5A-MR
+2019-03-06 14:08:52,255 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset IPSL-CM5B-LR
+2019-03-06 14:08:52,255 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC4h
+2019-03-06 14:08:52,255 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC5
+2019-03-06 14:08:52,255 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC-ESM
+2019-03-06 14:08:52,255 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC-ESM-CHEM
+2019-03-06 14:08:52,255 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MPI-ESM-LR
+2019-03-06 14:08:52,255 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MPI-ESM-MR
+2019-03-06 14:08:52,256 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MRI-CGCM3
+2019-03-06 14:08:52,256 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset NorESM1-M
+2019-03-06 14:08:52,256 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset NorESM1-ME
+2019-03-06 14:08:52,256 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CERES-EBAF
+2019-03-06 14:08:52,256 UTC [78558] DEBUG   esmvaltool._recipe:926 Setting script for diagnostic swcre
+2019-03-06 14:08:52,256 UTC [78558] DEBUG   esmvaltool._recipe:904 Populating list of variables for diagnostic od550aer
+2019-03-06 14:08:52,256 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset ACCESS1-0
+2019-03-06 14:08:52,256 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset ACCESS1-3
+2019-03-06 14:08:52,256 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset BNU-ESM
+2019-03-06 14:08:52,256 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-CAM5
+2019-03-06 14:08:52,256 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CSIRO-Mk3-6-0
+2019-03-06 14:08:52,257 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-CM3
+2019-03-06 14:08:52,257 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-ESM2G
+2019-03-06 14:08:52,257 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-ESM2M
+2019-03-06 14:08:52,257 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-H
+2019-03-06 14:08:52,257 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-R
+2019-03-06 14:08:52,257 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadGEM2-CC
+2019-03-06 14:08:52,257 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadGEM2-ES
+2019-03-06 14:08:52,257 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset IPSL-CM5B-LR
+2019-03-06 14:08:52,257 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC4h
+2019-03-06 14:08:52,257 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC5
+2019-03-06 14:08:52,257 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC-ESM
+2019-03-06 14:08:52,257 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC-ESM-CHEM
+2019-03-06 14:08:52,257 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MRI-CGCM3
+2019-03-06 14:08:52,257 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset NorESM1-M
+2019-03-06 14:08:52,257 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset NorESM1-ME
+2019-03-06 14:08:52,257 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset ESACCI-AEROSOL
+2019-03-06 14:08:52,257 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MODIS
+2019-03-06 14:08:52,258 UTC [78558] DEBUG   esmvaltool._recipe:926 Setting script for diagnostic od550aer
+2019-03-06 14:08:52,258 UTC [78558] DEBUG   esmvaltool._recipe:904 Populating list of variables for diagnostic od870aer
+2019-03-06 14:08:52,258 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset ACCESS1-0
+2019-03-06 14:08:52,258 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset ACCESS1-3
+2019-03-06 14:08:52,258 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CSIRO-Mk3-6-0
+2019-03-06 14:08:52,258 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-CM3
+2019-03-06 14:08:52,258 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-ESM2G
+2019-03-06 14:08:52,258 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-ESM2M
+2019-03-06 14:08:52,258 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadGEM2-CC
+2019-03-06 14:08:52,258 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset HadGEM2-ES
+2019-03-06 14:08:52,258 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC5
+2019-03-06 14:08:52,258 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC-ESM
+2019-03-06 14:08:52,258 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC-ESM-CHEM
+2019-03-06 14:08:52,258 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MRI-CGCM3
+2019-03-06 14:08:52,258 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset ESACCI-AEROSOL
+2019-03-06 14:08:52,259 UTC [78558] DEBUG   esmvaltool._recipe:926 Setting script for diagnostic od870aer
+2019-03-06 14:08:52,259 UTC [78558] DEBUG   esmvaltool._recipe:904 Populating list of variables for diagnostic abs550aer
+2019-03-06 14:08:52,259 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CSIRO-Mk3-6-0
+2019-03-06 14:08:52,259 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-CM3
+2019-03-06 14:08:52,259 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-ESM2G
+2019-03-06 14:08:52,259 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-ESM2M
+2019-03-06 14:08:52,259 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-H
+2019-03-06 14:08:52,259 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-R
+2019-03-06 14:08:52,259 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset IPSL-CM5B-LR
+2019-03-06 14:08:52,259 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC5
+2019-03-06 14:08:52,259 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC-ESM
+2019-03-06 14:08:52,259 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC-ESM-CHEM
+2019-03-06 14:08:52,259 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset NorESM1-M
+2019-03-06 14:08:52,259 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset NorESM1-ME
+2019-03-06 14:08:52,260 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset ESACCI-AEROSOL
+2019-03-06 14:08:52,260 UTC [78558] DEBUG   esmvaltool._recipe:926 Setting script for diagnostic abs550aer
+2019-03-06 14:08:52,260 UTC [78558] DEBUG   esmvaltool._recipe:904 Populating list of variables for diagnostic od550lt1aer
+2019-03-06 14:08:52,260 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CSIRO-Mk3-6-0
+2019-03-06 14:08:52,260 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-CM3
+2019-03-06 14:08:52,260 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-ESM2G
+2019-03-06 14:08:52,260 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-ESM2M
+2019-03-06 14:08:52,260 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-H
+2019-03-06 14:08:52,260 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-R
+2019-03-06 14:08:52,260 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset IPSL-CM5B-LR
+2019-03-06 14:08:52,260 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC5
+2019-03-06 14:08:52,260 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC-ESM
+2019-03-06 14:08:52,260 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC-ESM-CHEM
+2019-03-06 14:08:52,260 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MRI-CGCM3
+2019-03-06 14:08:52,261 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset ESACCI-AEROSOL
+2019-03-06 14:08:52,261 UTC [78558] DEBUG   esmvaltool._recipe:926 Setting script for diagnostic od550lt1aer
+2019-03-06 14:08:52,261 UTC [78558] DEBUG   esmvaltool._recipe:904 Populating list of variables for diagnostic toz
+2019-03-06 14:08:52,261 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CESM1-WACCM
+2019-03-06 14:08:52,261 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset CNRM-CM5
+2019-03-06 14:08:52,261 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GFDL-CM3
+2019-03-06 14:08:52,261 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-H
+2019-03-06 14:08:52,261 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset GISS-E2-R
+2019-03-06 14:08:52,261 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset MIROC-ESM-CHEM
+2019-03-06 14:08:52,261 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset ESACCI-OZONE
+2019-03-06 14:08:52,261 UTC [78558] DEBUG   esmvaltool._config:174 Retrieving institutes for dataset NIWA
+2019-03-06 14:08:52,261 UTC [78558] DEBUG   esmvaltool._recipe:926 Setting script for diagnostic toz
+2019-03-06 14:08:52,261 UTC [78558] DEBUG   esmvaltool._recipe:904 Populating list of variables for diagnostic collect
+2019-03-06 14:08:52,262 UTC [78558] DEBUG   esmvaltool._recipe:926 Setting script for diagnostic collect
+2019-03-06 14:08:52,263 UTC [78558] INFO    esmvaltool._recipe:985 Creating tasks from recipe
+2019-03-06 14:08:52,263 UTC [78558] INFO    esmvaltool._recipe:989 Creating tasks for diagnostic ta850
+2019-03-06 14:08:52,263 UTC [78558] INFO    esmvaltool._recipe:994 Creating preprocessor task ta850/ta
+2019-03-06 14:08:52,263 UTC [78558] INFO    esmvaltool._recipe:737 Creating preprocessor 'pp850' task for variable 'ta'
+2019-03-06 14:08:52,263 UTC [78558] DEBUG   esmvaltool._recipe:100 If not present: adding keys from CMOR table to {'preprocessor': 'pp850', 'reference_dataset': 'ERA-Interim', 'alternative_dataset': 'NCEP', 'mip': 'Amon', 'field': 'T3M', 'project': 'CMIP5', 'exp': 'historical', 'ensemble': 'r1i1p1', 'start_year': 2000, 'end_year': 2002, 'variable_group': 'ta', 'short_name': 'ta', 'diagnostic': 'ta850', 'dataset': 'ACCESS1-0', 'recipe_dataset_index': 0, 'cmor_table': 'CMIP5', 'institute': ['CSIRO-BOM']}
+2019-03-06 14:08:52,263 UTC [78558] DEBUG   esmvaltool._recipe:100 If not present: adding keys from CMOR table to {'preprocessor': 'pp850', 'reference_dataset': 'ERA-Interim', 'alternative_dataset': 'NCEP', 'mip': 'Amon', 'field': 'T3M', 'project': 'CMIP5', 'exp': 'historical', 'ensemble': 'r1i1p1', 'start_year': 2000, 'end_year': 2002, 'variable_group': 'ta', 'short_name': 'ta', 'diagnostic': 'ta850', 'dataset': 'ACCESS1-3', 'recipe_dataset_index': 1, 'cmor_table': 'CMIP5', 'institute': ['CSIRO-BOM']}
+2019-03-06 14:08:52,263 UTC [78558] DEBUG   esmvaltool._recipe:100 If not present: adding keys from CMOR table to {'preprocessor': 'pp850', 'reference_dataset': 'ERA-Interim', 'alternative_dataset': 'NCEP', 'mip': 'Amon', 'field': 'T3M', 'project': 'CMIP5', 'exp': 'historical', 'ensemble': 'r1i1p1', 'start_year': 2000, 'end_year': 2002, 'variable_group': 'ta', 'short_name': 'ta', 'diagnostic': 'ta850', 'dataset': 'bcc-csm1-1', 'recipe_dataset_index': 2, 'cmor_table': 'CMIP5', 'institute': ['BCC']}
+2019-03-06 14:08:52,263 UTC [78558] DEBUG   esmvaltool._recipe:100 If not present: adding keys from CMOR table to {'preprocessor': 'pp850', 'reference_dataset': 'ERA-Interim', 'alternative_dataset': 'NCEP', 'mip': 'Amon', 'field': 'T3M', 'project': 'CMIP5', 'exp': 'historical', 'ensemble': 'r1i1p1', 'start_year': 2000, 'end_year': 2002, 'variable_group': 'ta', 'short_name': 'ta', 'diagnostic': 'ta850', 'dataset': 'bcc-csm1-1-m', 'recipe_dataset_index': 3, 'cmor_table': 'CMIP5', 'institute': ['BCC']}
+2019-03-06 14:08:52,264 UTC [78558] DEBUG   esmvaltool._recipe:100 If not present: adding keys from CMOR table to {'preprocessor': 'pp850', 'reference_dataset': 'ERA-Interim', 'alternative_dataset': 'NCEP', 'mip': 'Amon', 'field': 'T3M', 'project': 'CMIP5', 'exp': 'historical', 'ensemble': 'r1i1p1', 'start_year': 2000, 'end_year': 2002, 'variable_group': 'ta', 'short_name': 'ta', 'diagnostic': 'ta850', 'dataset': 'BNU-ESM', 'recipe_dataset_index': 4, 'cmor_table': 'CMIP5', 'institute': ['BNU']}
+2019-03-06 14:08:52,264 UTC [78558] DEBUG   esmvaltool._recipe:100 If not present: adding keys from CMOR table to {'preprocessor': 'pp850', 'reference_dataset': 'ERA-Interim', 'alternative_dataset': 'NCEP', 'mip': 'Amon', 'field': 'T3M', 'project': 'CMIP5', 'exp': 'historical', 'ensemble': 'r1i1p1', 'start_year': 2000, 'end_year': 2002, 'variable_group': 'ta', 'short_name': 'ta', 'diagnostic': 'ta850', 'dataset': 'CanCM4', 'recipe_dataset_index': 5, 'cmor_table': 'CMIP5', 'institute': ['CCCma']}
+2019-03-06 14:08:52,264 UTC [78558] DEBUG   esmvaltool._recipe:100 If not present: adding keys from CMOR table to {'preprocessor': 'pp850', 'reference_dataset': 'ERA-Interim', 'alternative_dataset': 'NCEP', 'mip': 'Amon', 'field': 'T3M', 'project': 'CMIP5', 'exp': 'historical', 'ensemble': 'r1i1p1', 'start_year': 2000, 'end_year': 2002, 'variable_group': 'ta', 'short_name': 'ta', 'diagnostic': 'ta850', 'dataset': 'CanESM2', 'recipe_dataset_index': 6, 'cmor_table': 'CMIP5', 'institute': ['CCCma']}
+2019-03-06 14:08:52,264 UTC [78558] DEBUG   esmvaltool._recipe:100 If not present: adding keys from CMOR table to {'preprocessor': 'pp850', 'reference_dataset': 'ERA-Interim', 'alternative_dataset': 'NCEP', 'mip': 'Amon', 'field': 'T3M', 'project': 'CMIP5', 'exp': 'historical', 'ensemble': 'r1i1p1', 'start_year': 2000, 'end_year': 2002, 'variable_group': 'ta', 'short_name': 'ta', 'diagnostic': 'ta850', 'dataset': 'CCSM4', 'recipe_dataset_index': 7, 'cmor_table': 'CMIP5', 'institute': ['NCAR']}
+2019-03-06 14:08:52,264 UTC [78558] DEBUG   esmvaltool._recipe:100 If not present: adding keys from CMOR table to {'preprocessor': 'pp850', 'reference_dataset': 'ERA-Interim', 'alternative_dataset': 'NCEP', 'mip': 'Amon', 'field': 'T3M', 'project': 'CMIP5', 'exp': 'historical', 'ensemble': 'r1i1p1', 'start_year': 2000, 'end_year': 2002, 'variable_group': 'ta', 'short_name': 'ta', 'diagnostic': 'ta850', 'dataset': 'CESM1-BGC', 'recipe_dataset_index': 8, 'cmor_table': 'CMIP5', 'institute': ['NSF-DOE-NCAR']}
+2019-03-06 14:08:52,264 UTC [78558] DEBUG   esmvaltool._recipe:100 If not present: adding keys from CMOR table to {'preprocessor': 'pp850', 'reference_dataset': 'ERA-Interim', 'alternative_dataset': 'NCEP', 'mip': 'Amon', 'field': 'T3M', 'project': 'CMIP5', 'exp': 'historical', 'ensemble': 'r1i1p1', 'start_year': 2000, 'end_year': 2002, 'variable_group': 'ta', 'short_name': 'ta', 'diagnostic': 'ta850', 'dataset': 'CESM1-CAM5', 'recipe_dataset_index': 9, 'cmor_table': 'CMIP5', 'institute': ['NSF-DOE-NCAR']}
+2019-03-06 14:08:52,264 UTC [78558] DEBUG   esmvaltool._recipe:100 If not present: adding keys from CMOR table to {'preprocessor': 'pp850', 'reference_dataset': 'ERA-Interim', 'alternative_dataset': 'NCEP', 'mip': 'Amon', 'field': 'T3M', 'project': 'CMIP5', 'exp': 'historical', 'ensemble': 'r1i1p1', 'start_year': 2000, 'end_year': 2002, 'variable_group': 'ta', 'short_name': 'ta', 'diagnostic': 'ta850', 'dataset': 'CESM1-CAM5-1-FV2', 'recipe_dataset_index': 10, 'cmor_table': 'CMIP5', 'institute': ['NSF-DOE-NCAR']}
+2019-03-06 14:08:52,264 UTC [78558] DEBUG   esmvaltool._recipe:100 If not present: adding keys from CMOR table to {'preprocessor': 'pp850', 'reference_dataset': 'ERA-Interim', 'alternative_dataset': 'NCEP', 'mip': 'Amon', 'field': 'T3M', 'project': 'CMIP5', 'exp': 'historical', 'ensemble': 'r1i1p1', 'start_year': 2000, 'end_year': 2002, 'variable_group': 'ta', 'short_name': 'ta', 'diagnostic': 'ta850', 'dataset': 'CESM1-FASTCHEM', 'recipe_dataset_index': 11, 'cmor_table': 'CMIP5', 'institute': ['NSF-DOE-NCAR']}
+2019-03-06 14:08:52,264 UTC [78558] DEBUG   esmvaltool._recipe:100 If not present: adding keys from CMOR table to {'preprocessor': 'pp850', 'reference_dataset': 'ERA-Interim', 'alternative_dataset': 'NCEP', 'mip': 'Amon', 'field': 'T3M', 'project': 'CMIP5', 'exp': 'historical', 'ensemble': 'r1i1p1', 'start_year': 2000, 'end_year': 2002, 'variable_group': 'ta', 'short_name': 'ta', 'diagnostic': 'ta850', 'dataset': 'CESM1-WACCM', 'recipe_dataset_index': 12, 'cmor_table': 'CMIP5', 'institute': ['NSF-DOE-NCAR']}
+2019-03-06 14:08:52,264 UTC [78558] DEBUG   esmvaltool._recipe:100 If not present: adding keys from CMOR table to {'preprocessor': 'pp850', 'reference_dataset': 'ERA-Interim', 'alternative_dataset': 'NCEP', 'mip': 'Amon', 'field': 'T3M', 'project': 'CMIP5', 'exp': 'historical', 'ensemble': 'r1i1p1', 'start_year': 2000, 'end_year': 2002, 'variable_group': 'ta', 'short_name': 'ta', 'diagnostic': 'ta850', 'dataset': 'CMCC-CESM', 'recipe_dataset_index': 13, 'cmor_table': 'CMIP5', 'institute': ['CMCC']}
+2019-03-06 14:08:52,264 UTC [78558] DEBUG   esmvaltool._recipe:100 If not present: adding keys from CMOR table to {'preprocessor': 'pp850', 'reference_dataset': 'ERA-Interim', 'alternative_dataset': 'NCEP', 'mip': 'Amon', 'field': 'T3M', 'project': 'CMIP5', 'exp': 'historical', 'ensemble': 'r1i1p1', 'start_year': 2000, 'end_year': 2002, 'variable_group': 'ta', 'short_name': 'ta', 'diagnostic': 'ta850', 'dataset': 'CMCC-CM', 'recipe_dataset_index': 14, 'cmor_table': 'CMIP5', 'institute': ['CMCC']}
+2019-03-06 14:08:52,264 UTC [78558] DEBUG   esmvaltool._recipe:100 If not present: adding keys from CMOR table to {'preprocessor': 'pp850', 'reference_dataset': 'ERA-Interim', 'alternative_dataset': 'NCEP', 'mip': 'Amon', 'field': 'T3M', 'project': 'CMIP5', 'exp': 'historical', 'ensemble': 'r1i1p1', 'start_year': 2000, 'end_year': 2002, 'variable_group': 'ta', 'short_name': 'ta', 'diagnostic': 'ta850', 'dataset': 'CMCC-CMS', 'recipe_dataset_index': 15, 'cmor_table': 'CMIP5', 'institute': ['CMCC']}
+2019-03-06 14:08:52,264 UTC [78558] DEBUG   esmvaltool._recipe:100 If not present: adding keys from CMOR table to {'preprocessor': 'pp850', 'reference_dataset': 'ERA-Interim', 'alternative_dataset': 'NCEP', 'mip': 'Amon', 'field': 'T3M', 'project': 'CMIP5', 'exp': 'historical', 'ensemble': 'r1i1p1', 'start_year': 2000, 'end_year': 2002, 'variable_group': 'ta', 'short_name': 'ta', 'diagnostic': 'ta850', 'dataset': 'CNRM-CM5', 'recipe_dataset_index': 16, 'cmor_table': 'CMIP5', 'institute': ['CNRM-CERFACS']}
+2019-03-06 14:08:52,264 UTC [78558] DEBUG   esmvaltool._recipe:100 If not present: adding keys from CMOR table to {'preprocessor': 'pp850', 'reference_dataset': 'ERA-Interim', 'alternative_dataset': 'NCEP', 'mip': 'Amon', 'field': 'T3M', 'project': 'CMIP5', 'exp': 'historical', 'ensemble': 'r1i1p1', 'start_year': 2000, 'end_year': 2002, 'variable_group': 'ta', 'short_name': 'ta', 'diagnostic': 'ta850', 'dataset': 'CNRM-CM5-2', 'recipe_dataset_index': 17, 'cmor_table': 'CMIP5', 'institute': ['CNRM-CERFACS']}
+2019-03-06 14:08:52,265 UTC [78558] DEBUG   esmvaltool._recipe:100 If not present: adding keys from CMOR table to {'preprocessor': 'pp850', 'reference_dataset': 'ERA-Interim', 'alternative_dataset': 'NCEP', 'mip': 'Amon', 'field': 'T3M', 'project': 'CMIP5', 'exp': 'historical', 'ensemble': 'r1i1p1', 'start_year': 2000, 'end_year': 2002, 'variable_group': 'ta', 'short_name': 'ta', 'diagnostic': 'ta850', 'dataset': 'CSIRO-Mk3-6-0', 'recipe_dataset_index': 18, 'cmor_table': 'CMIP5', 'institute': ['CSIRO-QCCCE']}
+2019-03-06 14:08:52,265 UTC [78558] DEBUG   esmvaltool._recipe:100 If not present: adding keys from CMOR table to {'preprocessor': 'pp850', 'reference_dataset': 'ERA-Interim', 'alternative_dataset': 'NCEP', 'mip': 'Amon', 'field': 'T3M', 'project': 'CMIP5', 'exp': 'historical', 'ensemble': 'r6i1p1', 'start_year': 2000, 'end_year': 2002, 'variable_group': 'ta', 'short_name': 'ta', 'diagnostic': 'ta850', 'dataset': 'EC-EARTH', 'recipe_dataset_index': 19, 'cmor_table': 'CMIP5', 'institute': ['ICHEC']}
+2019-03-06 14:08:52,265 UTC [78558] DEBUG   esmvaltool._recipe:100 If not present: adding keys from CMOR table to {'preprocessor': 'pp850', 'reference_dataset': 'ERA-Interim', 'alternative_dataset': 'NCEP', 'mip': 'Amon', 'field': 'T3M', 'project': 'CMIP5', 'exp': 'historical', 'ensemble': 'r1i1p1', 'start_year': 2000, 'end_year': 2002, 'variable_group': 'ta', 'short_name': 'ta', 'diagnostic': 'ta850', 'dataset': 'FGOALS-g2', 'recipe_dataset_index': 20, 'cmor_table': 'CMIP5', 'institute': ['LASG-CESS']}
+2019-03-06 14:08:52,265 UTC [78558] DEBUG   esmvaltool._recipe:100 If not present: adding keys from CMOR table to {'preprocessor': 'pp850', 'reference_dataset': 'ERA-Interim', 'alternative_dataset': 'NCEP', 'mip': 'Amon', 'field': 'T3M', 'project': 'CMIP5', 'exp': 'historical', 'ensemble': 'r1i1p1', 'start_year': 2000, 'end_year': 2002, 'variable_group': 'ta', 'short_name': 'ta', 'diagnostic': 'ta850', 'dataset': 'FGOALS-s2', 'recipe_dataset_index': 21, 'cmor_table': 'CMIP5', 'institute': ['LASG-IAP']}
+2019-03-06 14:08:52,265 UTC [78558] DEBUG   esmvaltool._recipe:100 If not present: adding keys from CMOR table to {'preprocessor': 'pp850', 'reference_dataset': 'ERA-Interim', 'alternative_dataset': 'NCEP', 'mip': 'Amon', 'field': 'T3M', 'project': 'CMIP5', 'exp': 'historical', 'ensemble': 'r1i1p1', 'start_year': 2000, 'end_year': 2002, 'variable_group': 'ta', 'short_name': 'ta', 'diagnostic': 'ta850', 'dataset': 'FIO-ESM', 'recipe_dataset_index': 22, 'cmor_table': 'CMIP5', 'institute': ['FIO']}
+2019-03-06 14:08:52,265 UTC [78558] DEBUG   esmvaltool._recipe:100 If not present: adding keys from CMOR table to {'preprocessor': 'pp850', 'reference_dataset': 'ERA-Interim', 'alternative_dataset': 'NCEP', 'mip': 'Amon', 'field': 'T3M', 'project': 'CMIP5', 'exp': 'historical', 'ensemble': 'r1i1p1', 'start_year': 2000, 'end_year': 2002, 'variable_group': 'ta', 'short_name': 'ta', 'diagnostic': 'ta850', 'dataset': 'GFDL-CM2p1', 'recipe_dataset_index': 23, 'cmor_table': 'CMIP5', 'institute': ['NOAA-GFDL']}
+2019-03-06 14:08:52,265 UTC [78558] DEBUG   esmvaltool._recipe:100 If not present: adding keys from CMOR table to {'preprocessor': 'pp850', 'reference_dataset': 'ERA-Interim', 'alternative_dataset': 'NCEP', 'mip': 'Amon', 'field': 'T3M', 'project': 'CMIP5', 'exp': 'historical', 'ensemble': 'r1i1p1', 'start_year': 2000, 'end_year': 2002, 'variable_group': 'ta', 'short_name': 'ta', 'diagnostic': 'ta850', 'dataset': 'GFDL-CM3', 'recipe_dataset_index': 24, 'cmor_table': 'CMIP5', 'institute': ['NOAA-GFDL']}
+2019-03-06 14:08:52,265 UTC [78558] DEBUG   esmvaltool._recipe:100 If not present: adding keys from CMOR table to {'preprocessor': 'pp850', 'reference_dataset': 'ERA-Interim', 'alternative_dataset': 'NCEP', 'mip': 'Amon', 'field': 'T3M', 'project': 'CMIP5', 'exp': 'historical', 'ensemble': 'r1i1p1', 'start_year': 2000, 'end_year': 2002, 'variable_group': 'ta', 'short_name': 'ta', 'diagnostic': 'ta850', 'dataset': 'GFDL-ESM2G', 'recipe_dataset_index': 25, 'cmor_table': 'CMIP5', 'institute': ['NOAA-GFDL']}
+2019-03-06 14:08:52,265 UTC [78558] DEBUG   esmvaltool._recipe:100 If not present: adding keys from CMOR table to {'preprocessor': 'pp850', 'reference_dataset': 'ERA-Interim', 'alternative_dataset': 'NCEP', 'mip': 'Amon', 'field': 'T3M', 'project': 'CMIP5', 'exp': 'historical', 'ensemble': 'r1i1p1', 'start_year': 2000, 'end_year': 2002, 'variable_group': 'ta', 'short_name': 'ta', 'diagnostic': 'ta850', 'dataset': 'GFDL-ESM2M', 'recipe_dataset_index': 26, 'cmor_table': 'CMIP5', 'institute': ['NOAA-GFDL']}
+2019-03-06 14:08:52,265 UTC [78558] DEBUG   esmvaltool._recipe:100 If not present: adding keys from CMOR table to {'preprocessor': 'pp850', 'reference_dataset': 'ERA-Interim', 'alternative_dataset': 'NCEP', 'mip': 'Amon', 'field': 'T3M', 'project': 'CMIP5', 'exp': 'historical', 'ensemble': 'r1i1p2', 'start_year': 2000, 'end_year': 2002, 'variable_group': 'ta', 'short_name': 'ta', 'diagnostic': 'ta850', 'dataset': 'GISS-E2-H', 'recipe_dataset_index': 27, 'cmor_table': 'CMIP5', 'institute': ['NASA-GISS']}
+2019-03-06 14:08:52,265 UTC [78558] DEBUG   esmvaltool._recipe:100 If not present: adding keys from CMOR table to {'preprocessor': 'pp850', 'reference_dataset': 'ERA-Interim', 'alternative_dataset': 'NCEP', 'mip': 'Amon', 'field': 'T3M', 'project': 'CMIP5', 'exp': 'historical', 'ensemble': 'r1i1p1', 'start_year': 2000, 'end_year': 2002, 'variable_group': 'ta', 'short_name': 'ta', 'diagnostic': 'ta850', 'dataset': 'GISS-E2-H-CC', 'recipe_dataset_index': 28, 'cmor_table': 'CMIP5', 'institute': ['NASA-GISS']}
+2019-03-06 14:08:52,265 UTC [78558] DEBUG   esmvaltool._recipe:100 If not present: adding keys from CMOR table to {'preprocessor': 'pp850', 'reference_dataset': 'ERA-Interim', 'alternative_dataset': 'NCEP', 'mip': 'Amon', 'field': 'T3M', 'project': 'CMIP5', 'exp': 'historical', 'ensemble': 'r1i1p2', 'start_year': 2000, 'end_year': 2002, 'variable_group': 'ta', 'short_name': 'ta', 'diagnostic': 'ta850', 'dataset': 'GISS-E2-R', 'recipe_dataset_index': 29, 'cmor_table': 'CMIP5', 'institute': ['NASA-GISS']}
+2019-03-06 14:08:52,265 UTC [78558] DEBUG   esmvaltool._recipe:100 If not present: adding keys from CMOR table to {'preprocessor': 'pp850', 'reference_dataset': 'ERA-Interim', 'alternative_dataset': 'NCEP', 'mip': 'Amon', 'field': 'T3M', 'project': 'CMIP5', 'exp': 'historical', 'ensemble': 'r1i1p1', 'start_year': 2000, 'end_year': 2002, 'variable_group': 'ta', 'short_name': 'ta', 'diagnostic': 'ta850', 'dataset': 'GISS-E2-R-CC', 'recipe_dataset_index': 30, 'cmor_table': 'CMIP5', 'institute': ['NASA-GISS']}
+2019-03-06 14:08:52,266 UTC [78558] DEBUG   esmvaltool._recipe:100 If not present: adding keys from CMOR table to {'preprocessor': 'pp850', 'reference_dataset': 'ERA-Interim', 'alternative_dataset': 'NCEP', 'mip': 'Amon', 'field': 'T3M', 'project': 'CMIP5', 'exp': 'historical', 'ensemble': 'r1i1p1', 'start_year': 2000, 'end_year': 2002, 'variable_group': 'ta', 'short_name': 'ta', 'diagnostic': 'ta850', 'dataset': 'HadCM3', 'recipe_dataset_index': 31, 'cmor_table': 'CMIP5', 'institute': ['MOHC']}
+2019-03-06 14:08:52,266 UTC [78558] DEBUG   esmvaltool._recipe:100 If not present: adding keys from CMOR table to {'preprocessor': 'pp850', 'reference_dataset': 'ERA-Interim', 'alternative_dataset': 'NCEP', 'mip': 'Amon', 'field': 'T3M', 'project': 'CMIP5', 'exp': 'historical', 'ensemble': 'r1i1p1', 'start_year': 2000, 'end_year': 2002, 'variable_group': 'ta', 'short_name': 'ta', 'diagnostic': 'ta850', 'dataset': 'HadGEM2-AO', 'recipe_dataset_index': 32, 'cmor_table': 'CMIP5', 'institute': ['NIMR-KMA']}
+2019-03-06 14:08:52,266 UTC [78558] DEBUG   esmvaltool._recipe:100 If not present: adding keys from CMOR table to {'preprocessor': 'pp850', 'reference_dataset': 'ERA-Interim', 'alternative_dataset': 'NCEP', 'mip': 'Amon', 'field': 'T3M', 'project': 'CMIP5', 'exp': 'historical', 'ensemble': 'r1i1p1', 'start_year': 2000, 'end_year': 2002, 'variable_group': 'ta', 'short_name': 'ta', 'diagnostic': 'ta850', 'dataset': 'HadGEM2-CC', 'recipe_dataset_index': 33, 'cmor_table': 'CMIP5', 'institute': ['MOHC']}
+2019-03-06 14:08:52,266 UTC [78558] DEBUG   esmvaltool._recipe:100 If not present: adding keys from CMOR table to {'preprocessor': 'pp850', 'reference_dataset': 'ERA-Interim', 'alternative_dataset': 'NCEP', 'mip': 'Amon', 'field': 'T3M', 'project': 'CMIP5', 'exp': 'historical', 'ensemble': 'r1i1p1', 'start_year': 2000, 'end_year': 2002, 'variable_group': 'ta', 'short_name': 'ta', 'diagnostic': 'ta850', 'dataset': 'HadGEM2-ES', 'recipe_dataset_index': 34, 'cmor_table': 'CMIP5', 'institute': ['INPE', 'MOHC']}
+2019-03-06 14:08:52,266 UTC [78558] DEBUG   esmvaltool._recipe:100 If not present: adding keys from CMOR table to {'preprocessor': 'pp850', 'reference_dataset': 'ERA-Interim', 'alternative_dataset': 'NCEP', 'mip': 'Amon', 'field': 'T3M', 'project': 'CMIP5', 'exp': 'historical', 'ensemble': 'r1i1p1', 'start_year': 2000, 'end_year': 2002, 'variable_group': 'ta', 'short_name': 'ta', 'diagnostic': 'ta850', 'dataset': 'inmcm4', 'recipe_dataset_index': 35, 'cmor_table': 'CMIP5', 'institute': ['INM']}
+2019-03-06 14:08:52,266 UTC [78558] DEBUG   esmvaltool._recipe:100 If not present: adding keys from CMOR table to {'preprocessor': 'pp850', 'reference_dataset': 'ERA-Interim', 'alternative_dataset': 'NCEP', 'mip': 'Amon', 'field': 'T3M', 'project': 'CMIP5', 'exp': 'historical', 'ensemble': 'r1i1p1', 'start_year': 2000, 'end_year': 2002, 'variable_group': 'ta', 'short_name': 'ta', 'diagnostic': 'ta850', 'dataset': 'IPSL-CM5A-LR', 'recipe_dataset_index': 36, 'cmor_table': 'CMIP5', 'institute': ['IPSL']}
+2019-03-06 14:08:52,266 UTC [78558] DEBUG   esmvaltool._recipe:100 If not present: adding keys from CMOR table to {'preprocessor': 'pp850', 'reference_dataset': 'ERA-Interim', 'alternative_dataset': 'NCEP', 'mip': 'Amon', 'field': 'T3M', 'project': 'CMIP5', 'exp': 'historical', 'ensemble': 'r1i1p1', 'start_year': 2000, 'end_year': 2002, 'variable_group': 'ta', 'short_name': 'ta', 'diagnostic': 'ta850', 'dataset': 'IPSL-CM5A-MR', 'recipe_dataset_index': 37, 'cmor_table': 'CMIP5', 'institute': ['IPSL']}
+2019-03-06 14:08:52,266 UTC [78558] DEBUG   esmvaltool._recipe:100 If not present: adding keys from CMOR table to {'preprocessor': 'pp850', 'reference_dataset': 'ERA-Interim', 'alternative_dataset': 'NCEP', 'mip': 'Amon', 'field': 'T3M', 'project': 'CMIP5', 'exp': 'historical', 'ensemble': 'r1i1p1', 'start_year': 2000, 'end_year': 2002, 'variable_group': 'ta', 'short_name': 'ta', 'diagnostic': 'ta850', 'dataset': 'IPSL-CM5B-LR', 'recipe_dataset_index': 38, 'cmor_table': 'CMIP5', 'institute': ['IPSL']}
+2019-03-06 14:08:52,266 UTC [78558] DEBUG   esmvaltool._recipe:100 If not present: adding keys from CMOR table to {'preprocessor': 'pp850', 'reference_dataset': 'ERA-Interim', 'alternative_dataset': 'NCEP', 'mip': 'Amon', 'field': 'T3M', 'project': 'CMIP5', 'exp': 'historical', 'ensemble': 'r1i1p1', 'start_year': 2000, 'end_year': 2002, 'variable_group': 'ta', 'short_name': 'ta', 'diagnostic': 'ta850', 'dataset': 'MIROC4h', 'recipe_dataset_index': 39, 'cmor_table': 'CMIP5', 'institute': ['MIROC']}
+2019-03-06 14:08:52,266 UTC [78558] DEBUG   esmvaltool._recipe:100 If not present: adding keys from CMOR table to {'preprocessor': 'pp850', 'reference_dataset': 'ERA-Interim', 'alternative_dataset': 'NCEP', 'mip': 'Amon', 'field': 'T3M', 'project': 'CMIP5', 'exp': 'historical', 'ensemble': 'r1i1p1', 'start_year': 2000, 'end_year': 2002, 'variable_group': 'ta', 'short_name': 'ta', 'diagnostic': 'ta850', 'dataset': 'MIROC5', 'recipe_dataset_index': 40, 'cmor_table': 'CMIP5', 'institute': ['MIROC']}
+2019-03-06 14:08:52,266 UTC [78558] DEBUG   esmvaltool._recipe:100 If not present: adding keys from CMOR table to {'preprocessor': 'pp850', 'reference_dataset': 'ERA-Interim', 'alternative_dataset': 'NCEP', 'mip': 'Amon', 'field': 'T3M', 'project': 'CMIP5', 'exp': 'historical', 'ensemble': 'r1i1p1', 'start_year': 2000, 'end_year': 2002, 'variable_group': 'ta', 'short_name': 'ta', 'diagnostic': 'ta850', 'dataset': 'MIROC-ESM', 'recipe_dataset_index': 41, 'cmor_table': 'CMIP5', 'institute': ['MIROC']}
+2019-03-06 14:08:52,266 UTC [78558] DEBUG   esmvaltool._recipe:100 If not present: adding keys from CMOR table to {'preprocessor': 'pp850', 'reference_dataset': 'ERA-Interim', 'alternative_dataset': 'NCEP', 'mip': 'Amon', 'field': 'T3M', 'project': 'CMIP5', 'exp': 'historical', 'ensemble': 'r1i1p1', 'start_year': 2000, 'end_year': 2002, 'variable_group': 'ta', 'short_name': 'ta', 'diagnostic': 'ta850', 'dataset': 'MIROC-ESM-CHEM', 'recipe_dataset_index': 42, 'cmor_table': 'CMIP5', 'institute': ['MIROC']}
+2019-03-06 14:08:52,266 UTC [78558] DEBUG   esmvaltool._recipe:100 If not present: adding keys from CMOR table to {'preprocessor': 'pp850', 'reference_dataset': 'ERA-Interim', 'alternative_dataset': 'NCEP', 'mip': 'Amon', 'field': 'T3M', 'project': 'CMIP5', 'exp': 'historical', 'ensemble': 'r1i1p1', 'start_year': 2000, 'end_year': 2002, 'variable_group': 'ta', 'short_name': 'ta', 'diagnostic': 'ta850', 'dataset': 'MPI-ESM-LR', 'recipe_dataset_index': 43, 'cmor_table': 'CMIP5', 'institute': ['MPI-M']}
+2019-03-06 14:08:52,266 UTC [78558] DEBUG   esmvaltool._recipe:100 If not present: adding keys from CMOR table to {'preprocessor': 'pp850', 'reference_dataset': 'ERA-Interim', 'alternative_dataset': 'NCEP', 'mip': 'Amon', 'field': 'T3M', 'project': 'CMIP5', 'exp': 'historical', 'ensemble': 'r1i1p1', 'start_year': 2000, 'end_year': 2002, 'variable_group': 'ta', 'short_name': 'ta', 'diagnostic': 'ta850', 'dataset': 'MPI-ESM-MR', 'recipe_dataset_index': 44, 'cmor_table': 'CMIP5', 'institute': ['MPI-M']}
+2019-03-06 14:08:52,267 UTC [78558] DEBUG   esmvaltool._recipe:100 If not present: adding keys from CMOR table to {'preprocessor': 'pp850', 'reference_dataset': 'ERA-Interim', 'alternative_dataset': 'NCEP', 'mip': 'Amon', 'field': 'T3M', 'project': 'CMIP5', 'exp': 'historical', 'ensemble': 'r1i1p1', 'start_year': 2000, 'end_year': 2002, 'variable_group': 'ta', 'short_name': 'ta', 'diagnostic': 'ta850', 'dataset': 'MPI-ESM-P', 'recipe_dataset_index': 45, 'cmor_table': 'CMIP5', 'institute': ['MPI-M']}
+2019-03-06 14:08:52,267 UTC [78558] DEBUG   esmvaltool._recipe:100 If not present: adding keys from CMOR table to {'preprocessor': 'pp850', 'reference_dataset': 'ERA-Interim', 'alternative_dataset': 'NCEP', 'mip': 'Amon', 'field': 'T3M', 'project': 'CMIP5', 'exp': 'historical', 'ensemble': 'r1i1p1', 'start_year': 2000, 'end_year': 2002, 'variable_group': 'ta', 'short_name': 'ta', 'diagnostic': 'ta850', 'dataset': 'MRI-CGCM3', 'recipe_dataset_index': 46, 'cmor_table': 'CMIP5', 'institute': ['MRI']}
+2019-03-06 14:08:52,267 UTC [78558] DEBUG   esmvaltool._recipe:100 If not present: adding keys from CMOR table to {'preprocessor': 'pp850', 'reference_dataset': 'ERA-Interim', 'alternative_dataset': 'NCEP', 'mip': 'Amon', 'field': 'T3M', 'project': 'CMIP5', 'exp': 'historical', 'ensemble': 'r1i1p1', 'start_year': 2000, 'end_year': 2002, 'variable_group': 'ta', 'short_name': 'ta', 'diagnostic': 'ta850', 'dataset': 'MRI-ESM1', 'recipe_dataset_index': 47, 'cmor_table': 'CMIP5', 'institute': ['MRI']}
+2019-03-06 14:08:52,267 UTC [78558] DEBUG   esmvaltool._recipe:100 If not present: adding keys from CMOR table to {'preprocessor': 'pp850', 'reference_dataset': 'ERA-Interim', 'alternative_dataset': 'NCEP', 'mip': 'Amon', 'field': 'T3M', 'project': 'CMIP5', 'exp': 'historical', 'ensemble': 'r1i1p1', 'start_year': 2000, 'end_year': 2002, 'variable_group': 'ta', 'short_name': 'ta', 'diagnostic': 'ta850', 'dataset': 'NorESM1-M', 'recipe_dataset_index': 48, 'cmor_table': 'CMIP5', 'institute': ['NCC']}
+2019-03-06 14:08:52,267 UTC [78558] DEBUG   esmvaltool._recipe:100 If not present: adding keys from CMOR table to {'preprocessor': 'pp850', 'reference_dataset': 'ERA-Interim', 'alternative_dataset': 'NCEP', 'mip': 'Amon', 'field': 'T3M', 'project': 'CMIP5', 'exp': 'historical', 'ensemble': 'r1i1p1', 'start_year': 2000, 'end_year': 2002, 'variable_group': 'ta', 'short_name': 'ta', 'diagnostic': 'ta850', 'dataset': 'NorESM1-ME', 'recipe_dataset_index': 49, 'cmor_table': 'CMIP5', 'institute': ['NCC']}
+2019-03-06 14:08:52,267 UTC [78558] DEBUG   esmvaltool._recipe:100 If not present: adding keys from CMOR table to {'preprocessor': 'pp850', 'reference_dataset': 'ERA-Interim', 'alternative_dataset': 'NCEP', 'mip': 'Amon', 'field': 'T3M', 'project': 'OBS', 'exp': 'historical', 'ensemble': 'r1i1p1', 'start_year': 2000, 'end_year': 2002, 'variable_group': 'ta', 'short_name': 'ta', 'diagnostic': 'ta850', 'dataset': 'ERA-Interim', 'type': 'reanaly', 'version': 1, 'tier': 3, 'recipe_dataset_index': 50, 'cmor_table': 'OBS'}
+2019-03-06 14:08:52,267 UTC [78558] DEBUG   esmvaltool._recipe:100 If not present: adding keys from CMOR table to {'preprocessor': 'pp850', 'reference_dataset': 'ERA-Interim', 'alternative_dataset': 'NCEP', 'mip': 'Amon', 'field': 'T3M', 'project': 'OBS', 'exp': 'historical', 'ensemble': 'r1i1p1', 'start_year': 2000, 'end_year': 2002, 'variable_group': 'ta', 'short_name': 'ta', 'diagnostic': 'ta850', 'dataset': 'NCEP', 'type': 'reanaly', 'version': 1, 'tier': 2, 'recipe_dataset_index': 51, 'cmor_table': 'OBS'}
+2019-03-06 14:08:52,267 UTC [78558] DEBUG   esmvaltool._config:166 Retrieving CMIP5 configuration
+2019-03-06 14:08:52,268 UTC [78558] DEBUG   esmvaltool._config:166 Retrieving CMIP5 configuration
+2019-03-06 14:08:52,268 UTC [78558] DEBUG   esmvaltool._config:166 Retrieving CMIP5 configuration
+2019-03-06 14:08:52,268 UTC [78558] DEBUG   esmvaltool._config:166 Retrieving CMIP5 configuration
+2019-03-06 14:08:52,268 UTC [78558] DEBUG   esmvaltool._config:166 Retrieving CMIP5 configuration
+2019-03-06 14:08:52,268 UTC [78558] DEBUG   esmvaltool._config:166 Retrieving CMIP5 configuration
+2019-03-06 14:08:52,268 UTC [78558] DEBUG   esmvaltool._config:166 Retrieving CMIP5 configuration
+2019-03-06 14:08:52,269 UTC [78558] DEBUG   esmvaltool._config:166 Retrieving CMIP5 configuration
+2019-03-06 14:08:52,269 UTC [78558] DEBUG   esmvaltool._config:166 Retrieving CMIP5 configuration
+2019-03-06 14:08:52,269 UTC [78558] DEBUG   esmvaltool._config:166 Retrieving CMIP5 configuration
+2019-03-06 14:08:52,269 UTC [78558] DEBUG   esmvaltool._config:166 Retrieving CMIP5 configuration
+2019-03-06 14:08:52,269 UTC [78558] DEBUG   esmvaltool._config:166 Retrieving CMIP5 configuration
+2019-03-06 14:08:52,269 UTC [78558] DEBUG   esmvaltool._config:166 Retrieving CMIP5 configuration
+2019-03-06 14:08:52,269 UTC [78558] DEBUG   esmvaltool._config:166 Retrieving CMIP5 configuration
+2019-03-06 14:08:52,269 UTC [78558] DEBUG   esmvaltool._config:166 Retrieving CMIP5 configuration
+2019-03-06 14:08:52,269 UTC [78558] DEBUG   esmvaltool._config:166 Retrieving CMIP5 configuration
+2019-03-06 14:08:52,270 UTC [78558] DEBUG   esmvaltool._config:166 Retrieving CMIP5 configuration
+2019-03-06 14:08:52,270 UTC [78558] DEBUG   esmvaltool._config:166 Retrieving CMIP5 configuration
+2019-03-06 14:08:52,270 UTC [78558] DEBUG   esmvaltool._config:166 Retrieving CMIP5 configuration
+2019-03-06 14:08:52,270 UTC [78558] DEBUG   esmvaltool._config:166 Retrieving CMIP5 configuration
+2019-03-06 14:08:52,270 UTC [78558] DEBUG   esmvaltool._config:166 Retrieving CMIP5 configuration
+2019-03-06 14:08:52,270 UTC [78558] DEBUG   esmvaltool._config:166 Retrieving CMIP5 configuration
+2019-03-06 14:08:52,270 UTC [78558] DEBUG   esmvaltool._config:166 Retrieving CMIP5 configuration
+2019-03-06 14:08:52,270 UTC [78558] DEBUG   esmvaltool._config:166 Retrieving CMIP5 configuration
+2019-03-06 14:08:52,270 UTC [78558] DEBUG   esmvaltool._config:166 Retrieving CMIP5 configuration
+2019-03-06 14:08:52,270 UTC [78558] DEBUG   esmvaltool._config:166 Retrieving CMIP5 configuration
+2019-03-06 14:08:52,271 UTC [78558] DEBUG   esmvaltool._config:166 Retrieving CMIP5 configuration
+2019-03-06 14:08:52,271 UTC [78558] DEBUG   esmvaltool._config:166 Retrieving CMIP5 configuration
+2019-03-06 14:08:52,271 UTC [78558] DEBUG   esmvaltool._config:166 Retrieving CMIP5 configuration
+2019-03-06 14:08:52,271 UTC [78558] DEBUG   esmvaltool._config:166 Retrieving CMIP5 configuration
+2019-03-06 14:08:52,271 UTC [78558] DEBUG   esmvaltool._config:166 Retrieving CMIP5 configuration
+2019-03-06 14:08:52,271 UTC [78558] DEBUG   esmvaltool._config:166 Retrieving CMIP5 configuration
+2019-03-06 14:08:52,271 UTC [78558] DEBUG   esmvaltool._config:166 Retrieving CMIP5 configuration
+2019-03-06 14:08:52,271 UTC [78558] DEBUG   esmvaltool._config:166 Retrieving CMIP5 configuration
+2019-03-06 14:08:52,271 UTC [78558] DEBUG   esmvaltool._config:166 Retrieving CMIP5 configuration
+2019-03-06 14:08:52,272 UTC [78558] DEBUG   esmvaltool._config:166 Retrieving CMIP5 configuration
+2019-03-06 14:08:52,272 UTC [78558] DEBUG   esmvaltool._config:166 Retrieving CMIP5 configuration
+2019-03-06 14:08:52,272 UTC [78558] DEBUG   esmvaltool._config:166 Retrieving CMIP5 configuration
+2019-03-06 14:08:52,272 UTC [78558] DEBUG   esmvaltool._config:166 Retrieving CMIP5 configuration
+2019-03-06 14:08:52,272 UTC [78558] DEBUG   esmvaltool._config:166 Retrieving CMIP5 configuration
+2019-03-06 14:08:52,272 UTC [78558] DEBUG   esmvaltool._config:166 Retrieving CMIP5 configuration
+2019-03-06 14:08:52,272 UTC [78558] DEBUG   esmvaltool._config:166 Retrieving CMIP5 configuration
+2019-03-06 14:08:52,272 UTC [78558] DEBUG   esmvaltool._config:166 Retrieving CMIP5 configuration
+2019-03-06 14:08:52,272 UTC [78558] DEBUG   esmvaltool._config:166 Retrieving CMIP5 configuration
+2019-03-06 14:08:52,272 UTC [78558] DEBUG   esmvaltool._config:166 Retrieving CMIP5 configuration
+2019-03-06 14:08:52,273 UTC [78558] DEBUG   esmvaltool._config:166 Retrieving CMIP5 configuration
+2019-03-06 14:08:52,273 UTC [78558] DEBUG   esmvaltool._config:166 Retrieving CMIP5 configuration
+2019-03-06 14:08:52,273 UTC [78558] DEBUG   esmvaltool._config:166 Retrieving CMIP5 configuration
+2019-03-06 14:08:52,273 UTC [78558] DEBUG   esmvaltool._config:166 Retrieving CMIP5 configuration
+2019-03-06 14:08:52,273 UTC [78558] DEBUG   esmvaltool._config:166 Retrieving CMIP5 configuration
+2019-03-06 14:08:52,273 UTC [78558] DEBUG   esmvaltool._config:166 Retrieving OBS configuration
+2019-03-06 14:08:52,273 UTC [78558] DEBUG   esmvaltool._config:166 Retrieving OBS configuration
+2019-03-06 14:08:52,274 UTC [78558] DEBUG   esmvaltool._data_finder:234 Looking for input files for variable ta of dataset ERA-Interim
+2019-03-06 14:08:52,274 UTC [78558] DEBUG   esmvaltool._config:166 Retrieving OBS configuration
+2019-03-06 14:08:52,282 UTC [78558] DEBUG   esmvaltool._data_finder:218 Skipping non-existent /uio/kant/div-cicero-u1/masan/obs_inputpath/Tier3/ERA-Interim
+2019-03-06 14:08:52,282 UTC [78558] DEBUG   esmvaltool._config:166 Retrieving OBS configuration
+2019-03-06 14:08:52,282 UTC [78558] DEBUG   esmvaltool._data_finder:22 Looking for files matching ['OBS_ERA-Interim_reanaly_1_T3M_ta_*.nc'] in []
+2019-03-06 14:08:52,716 UTC [78558] ERROR   esmvaltool._main:238 Program terminated abnormally, see stack trace below for more information
+Traceback (most recent call last):
+  File "/div/pdo/extreme/masan/V2/ESMValTool/esmvaltool/_main.py", line 230, in run
+    conf = main(args)
+  File "/div/pdo/extreme/masan/V2/ESMValTool/esmvaltool/_main.py", line 158, in main
+    process_recipe(recipe_file=recipe, config_user=cfg)
+  File "/div/pdo/extreme/masan/V2/ESMValTool/esmvaltool/_main.py", line 204, in process_recipe
+    recipe = read_recipe_file(recipe_file, config_user)
+  File "/div/pdo/extreme/masan/V2/ESMValTool/esmvaltool/_recipe.py", line 71, in read_recipe_file
+    raw_recipe, config_user, initialize_tasks, recipe_file=filename)
+  File "/div/pdo/extreme/masan/V2/ESMValTool/esmvaltool/_recipe.py", line 792, in __init__
+    self.tasks = self.initialize_tasks() if initialize_tasks else None
+  File "/div/pdo/extreme/masan/V2/ESMValTool/esmvaltool/_recipe.py", line 1000, in initialize_tasks
+    task_name=task_name)
+  File "/div/pdo/extreme/masan/V2/ESMValTool/esmvaltool/_recipe.py", line 767, in _get_preprocessor_task
+    name=task_name)
+  File "/div/pdo/extreme/masan/V2/ESMValTool/esmvaltool/_recipe.py", line 636, in _get_single_preprocessor_task
+    config_user=config_user,
+  File "/div/pdo/extreme/masan/V2/ESMValTool/esmvaltool/_recipe.py", line 602, in _get_preprocessor_products
+    config_user=config_user)
+  File "/div/pdo/extreme/masan/V2/ESMValTool/esmvaltool/_recipe.py", line 207, in _update_target_grid
+    _get_dataset_info(grid, variables), config_user)
+  File "/div/pdo/extreme/masan/V2/ESMValTool/esmvaltool/_recipe.py", line 235, in _dataset_to_file
+    check.data_availability(files, variable)
+  File "/div/pdo/extreme/masan/V2/ESMValTool/esmvaltool/_recipe_checks.py", line 96, in data_availability
+    raise RecipeError("No input files found for variable {}".format(var))
+esmvaltool._recipe_checks.RecipeError: No input files found for variable {'preprocessor': 'pp850', 'reference_dataset': 'ERA-Interim', 'alternative_dataset': 'NCEP', 'mip': 'Amon', 'field': 'T3M', 'project': 'OBS', 'exp': 'historical', 'ensemble': 'r1i1p1', 'start_year': 2000, 'end_year': 2002, 'variable_group': 'ta', 'short_name': 'ta', 'diagnostic': 'ta850', 'dataset': 'ERA-Interim', 'type': 'reanaly', 'version': 1, 'tier': 3, 'recipe_dataset_index': 50, 'cmor_table': 'OBS', 'standard_name': 'air_temperature', 'long_name': 'Air Temperature', 'units': 'K', 'modeling_realm': ['atmos'], 'frequency': 'mon', 'filename': '/div/pdo/extreme/masan/V2/ESMValTool/esmvaltool_output/recipe_perfmetrics_CMIP5_20190306_140850/preproc/ta850/ta/OBS_ERA-Interim_reanaly_1_T3M_ta_2000-2002.nc'}
+2019-03-06 14:08:52,717 UTC [78558] INFO    esmvaltool._main:240 If you suspect this is a bug or need help, please open an issue on https://github.com/ESMValGroup/ESMValTool/issues and attach the run/recipe_*.yml and run/main_log_debug.txt files from the output directory.

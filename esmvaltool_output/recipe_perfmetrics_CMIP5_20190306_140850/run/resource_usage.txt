@@ -1,0 +1,2 @@
+Date and time (UTC)	Real time (s)	CPU time (s)	CPU (%)	Memory (GB)	Memory (%)	Disk read (GB)	Disk write (GB)
+2019-03-06 14:08:51.714998	1.1	16.6	0	0.2	0	0.034	0.0

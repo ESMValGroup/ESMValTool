@@ -1,0 +1,58 @@
+# ESMValTool
+#recipe_ExtremeEvents.yml 
+---
+documentation:
+  description: |
+     Calculate indices for monitoring changes in extremes based on daily temperature
+     and precipitation data. Producing Glecker and timeline plots of this as
+     shown in the IPCC_AR4 report
+
+  authors:
+    - broe_bj
+    - maritsandstad
+    - cwmohr
+
+  maintainer:
+    - maritsandstad
+
+  references:
+    - zhang-2011
+
+  projects:
+    - crescendo   
+
+preprocessor:
+  prep0:
+    
+
+diagnostics:
+  ExtremeEvents:
+    description: calculate extreme events
+    variables:
+      pr:
+        #preprocessor: prep0
+        project: CMIP5
+        mip: day
+        field: T2Ds
+      tas:
+        #preprocessor: prep0
+        project: CMIP5
+        mip: day
+        field: T2Ds
+      tasmax:
+        #preprocessor: prep0
+        project: CMIP5
+        mip: day
+        field: T2Ds
+      tasmin:
+        #preprocessor: prep0
+        project: CMIP5
+        mip: day
+        field: T2Ds
+    additional_datasets:
+      - {dataset: MERRA2, project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 3}
+      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, start_year: 1979, end_year: 2016, tier: 3}
+    scripts:
+      ExtremeEvents:
+        script: ExtremeEvents.r
+

@@ -104,6 +104,10 @@ authors:
     name: Crezee, Bas
     institute: ETH Zurich, Switzerland
     email: bas.crezee 'at' env.ethz.ch
+  cwmohr:
+    name: Mohr, Christian Wilhelm
+    institute: Cicero, Norway
+    email: c.w.mohr 'at' cicero.oslo.no
   davi_ed:
     name: Davin, Edouard Leopold
     institute: ETH Zurich, Switzerland
@@ -220,6 +224,10 @@ authors:
     name: Mason, Erik
     institute: NOAA, USA
     email: erik.mason 'at' noaa.gov
+  maritsandstad:
+    name: Sandstad, Marit
+    institute: Cicero, Norway
+    email: marit.sandstad 'at' cicero.oslo.no
   mass_fr:
     name: Massonnet, Francois
     institute: Spain
@@ -580,6 +588,7 @@ references:
   niwa-bs: "Bodeker et al., Atmos. Chem. Phys., doi:10.5194/acp-5-2603-2005, 2005."
   patmos-x: "Heidinger et al., NOAA National Centers for Environmental Information, doi:10.7289/V5348HCK, last access: 10 February 2019."
   woa: "Locarnini et al., World Ocean Atlas 2013, Vol. 1: Temperature, 2013."
+  zhang-2011: "Zhang, X. et al., WIREs Clim. Change, doi:10.1002/wcc.147, 2011"
 
 projects:
   climval: BMBF MiKlip Project ClimVal
