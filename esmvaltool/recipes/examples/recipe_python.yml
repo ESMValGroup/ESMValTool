@@ -1,3 +1,5 @@
+# ESMValTool
+# recipe_python.yml
 ---
 documentation:
   description: |
@@ -6,6 +8,9 @@ documentation:
   authors:
     - ande_bo
     - righ_ma
+
+  maintainer:
+    - schl_ma
 
   references:
     - acknow_project

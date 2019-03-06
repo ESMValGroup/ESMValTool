@@ -1,3 +1,5 @@
+# ESMValTool
+# recipe_ncl.yml
 ---
 documentation:
   description: |
@@ -6,6 +8,9 @@ documentation:
   authors:
     - righ_ma
 
+  maintainer:
+    - righ_ma
+    
   references:
     - acknow_project
 
@@ -30,6 +35,10 @@ preprocessors:
 diagnostics:
   example:
     description: Example diagnostic
+    themes:
+      - phys
+    realms:
+      - atmos
     variables:
       ta:
         preprocessor: preprocessor_1

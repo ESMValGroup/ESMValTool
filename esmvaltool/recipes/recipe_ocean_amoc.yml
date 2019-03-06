@@ -1,14 +1,17 @@
-###############################################################################
-# recipe_amoc.yml
+# ESMValTool
+# recipe_ocean_amoc.yml
 
 documentation:
-  description:
+  description: |
     Recipe to produce time series figures of the derived variable, the
     Atlantic meriodinal overturning circulation (AMOC).
     This recipe also produces transect figures of the stream functions for
     the years 2001-2004.
 
   authors:
+    - demo_le
+
+  maintainer:
     - demo_le
 
   references:
@@ -130,7 +133,7 @@ diagnostics:
         field: TO2M
         mip: Omon
     additional_datasets:
-     - {dataset: CanESM2,          project: CMIP5,    exp: historical,  ensemble: r1i1p1,  start_year: 1860,  end_year: 2004}
+     - {dataset: CanESM2,          project: CMIP5,    exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2004}
      - {dataset: CCSM4,            project: CMIP5,    exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2004}
      - {dataset: CESM1-BGC,        project: CMIP5,    exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2004}
      - {dataset: CESM1-CAM5-1-FV2, project: CMIP5,    exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2004}

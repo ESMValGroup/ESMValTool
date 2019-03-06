@@ -1,15 +1,16 @@
-"""Fixes for inmcm4 model"""
+# pylint: disable=invalid-name, no-self-use, too-few-public-methods
+"""Fixes for inmcm4 model."""
 import iris
 
 from ..fix import Fix
 
 
 class gpp(Fix):
-    """Fixes for gpp"""
+    """Fixes for gpp."""
 
     def fix_data(self, cube):
         """
-        Fix data
+        Fix data.
 
         Fixes discrepancy between declared units and real units
 
@@ -29,11 +30,11 @@ class gpp(Fix):
 
 
 class lai(Fix):
-    """Fixes for lai"""
+    """Fixes for lai."""
 
     def fix_data(self, cube):
         """
-        Fix data
+        Fix data.
 
         Fixes discrepancy between declared units and real units
 
@@ -53,7 +54,7 @@ class lai(Fix):
 
 
 class nbp(Fix):
-    """Fixes for nbp"""
+    """Fixes for nbp."""
 
     def fix_file(self, filepath, output_dir):
         """

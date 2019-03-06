@@ -4,7 +4,7 @@
 ; ESMVal project
 ; #############################################################################
 
-load "./diag_scripts/shared/plot/zonalmean_profile.ncl"
+load "$diag_scripts/shared/plot/zonalmean_profile.ncl"
 
 procedure perfmetrics_ptype_script()
 begin
@@ -44,7 +44,7 @@ begin
     var_avg = time_operations(var_zon, start_year, end_year, "average", \
                               diag_script_info@time_avg, True)
     var_std = interannual_variability(var_zon, start_year, end_year, \
-                                      diag_script_info@time_avg)
+                                      diag_script_info@time_avg, "None")
     delete(var_zon)
 
     ; Write output
@@ -112,8 +112,8 @@ begin
     authors = (/"righ_ma", "fran_fr", "eyri_ve", "gott_kl", "senf_da"/)
     references = (/"righi15gmd", "gleckler08jgr"/)
     infiles := (/"infile1", "infile2"/)
-    ESMValMD(nc_file, plot_file, caption, statistics, domain, plottype, \
-             diag_des, authors, references, infiles)
+    ; ESMValMD(nc_file, plot_file, caption, statistics, domain, plottype, \
+    ;          diag_des, authors, references, infiles)
 
     ; Difference plot to the reference
     if (.not.diag_script_info@plot_diff .or. imod.eq.ref_ind) then
@@ -186,8 +186,8 @@ begin
     caption = "Difference in zonal plot of variable: " + var0
     statistics := (/"mean", "rmsd", "diff"/)
     infiles := (/"infile1", "infile2"/)
-    ESMValMD(nc_file, plot_file, caption, statistics, domain, plottype, \
-             diag_des, authors, references, infiles)
+    ; ESMValMD(nc_file, plot_file, caption, statistics, domain, plottype, \
+    ;          diag_des, authors, references, infiles)
 
   end do
 

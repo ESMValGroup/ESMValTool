@@ -1,0 +1,27 @@
+SOURCE: CMIP5 (adapted from mrso)
+!============
+variable_entry:    dos
+!============
+modeling_realm:    land
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     
+units:             m3 m-3
+cell_methods:      time: mean area: mean where land
+cell_measures:     area: areacella
+long_name:         Degree of Soil Saturation
+comment:           (unitless) degree of soil saturation for comparing mass based models with volumetric observations.
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          dos
+type:              real
+valid_min:         0
+valid_max:         2
+ok_min_mean_abs:   0
+ok_max_mean_abs:   1
+!----------------------------------
+!
+
