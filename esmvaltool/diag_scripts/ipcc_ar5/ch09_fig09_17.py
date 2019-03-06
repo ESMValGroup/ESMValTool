@@ -417,8 +417,6 @@ def main(cfg):
             cfg,
             metadatas,
         )
-        logger.info("SUMMED UP CUBE")
-        print(cubedic)
         #######
         # Multi model time series
         multi_model_time_series(
