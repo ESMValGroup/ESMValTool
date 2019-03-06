@@ -103,7 +103,36 @@ def extract_month(cube, month):
     month: int
         Month to extract as a number from 1 to 12
     """
+    if month not in range(1, 13):
+        raise ValueError('Please provide a month number between 1 and 12.')
     return cube.extract(iris.Constraint(month_number=month))
+
+
+def get_time_weights(cube):
+    """
+    Compute the weighting of the time axis.
+
+    Parameters
+    ----------
+        cube: iris.cube.Cube
+            input cube.
+
+    Returns
+    -------
+    numpy.array
+        Array of time weights for averaging.
+    """
+    time = cube.coord('time')
+    time_thickness = time.bounds[..., 1] - time.bounds[..., 0]
+
+    # The weights need to match the dimensionality of the cube.
+    slices = [None for i in cube.shape]
+    coord_dim = cube.coord_dims('time')[0]
+    slices[coord_dim] = slice(None)
+    time_thickness = np.abs(time_thickness[tuple(slices)])
+    ones = np.ones_like(cube.data)
+    time_weights = time_thickness * ones
+    return time_weights
 
 
 def time_average(cube):
@@ -123,16 +152,7 @@ def time_average(cube):
     iris.cube.Cube
         time averaged cube.
     """
-    time = cube.coord('time')
-    time_thickness = time.bounds[..., 1] - time.bounds[..., 0]
-
-    # The weights need to match the dimensionality of the cube.
-    slices = [None for i in cube.shape]
-    coord_dim = cube.coord_dims('time')[0]
-    slices[coord_dim] = slice(None)
-    time_thickness = np.abs(time_thickness[tuple(slices)])
-    ones = np.ones_like(cube.data)
-    time_weights = time_thickness * ones
+    time_weights = get_time_weights(cube)
 
     return cube.collapsed('time', iris.analysis.MEAN, weights=time_weights)
 
@@ -173,7 +193,7 @@ def seasonal_mean(cube):
 
 def annual_mean(cube, decadal=False):
     """
-    Compute annual means.
+    Compute annual or decadal means.
 
     Note that this function does not weight the annual or decadal mean if
     uneven time periods are present. Ie, all data inside the year/decade
@@ -194,6 +214,11 @@ def annual_mean(cube, decadal=False):
         """Callback function to get decades from cube."""
         date = coord.units.num2date(value)
         return date.year - date.year % 10
+
+    # time_weights = get_time_weights(cube)
+
+    # TODO: Add weighting in time dimension. See iris issue 3290
+    # https://github.com/SciTools/iris/issues/3290
 
     if decadal:
         iris.coord_categorisation.add_categorised_coord(cube, 'decade',
