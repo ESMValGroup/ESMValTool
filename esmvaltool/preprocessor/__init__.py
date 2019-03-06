@@ -22,7 +22,7 @@ from ._reformat import (cmor_check_data, cmor_check_metadata, fix_data,
                         fix_file, fix_metadata)
 from ._regrid import extract_levels, regrid
 from ._time import (extract_month, extract_season, seasonal_mean,
-                    time_average, extract_time)
+                    time_average, extract_time, annual_mean)
 from ._volume import (depth_integration, extract_trajectory, extract_transect,
                       average_volume, extract_volume)
 
