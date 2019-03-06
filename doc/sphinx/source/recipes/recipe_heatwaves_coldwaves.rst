@@ -55,7 +55,7 @@ References
 
 * Wang, Y., Shi, L., Zanobetti, A., & Schwartz, J. D. (2016). Estimating and projecting the effect of cold waves on mortality in 209 US cities. Environment International, 94, 141-149. https://doi.org/10.1016/j.envint.2016.05.008
 
-* Zhang, X., Hegerl, G., Zwiers, F. W., & Kenyon, J. (2005). Avoiding inhomogeneity in percentile-based indices of temperature extremes. Journal of Climate, 18(11), 1641-1651.
+* Zhang, X., Hegerl, G., Zwiers, F. W., & Kenyon, J. (2005). Avoiding inhomogeneity in percentile-based indices of temperature extremes. Journal of Climate, 18(11), 1641-1651. https://doi.org/10.1175/JCLI3366.1
 
 
 Example plots
