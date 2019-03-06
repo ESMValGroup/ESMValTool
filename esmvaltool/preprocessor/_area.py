@@ -81,7 +81,8 @@ def extract_region(cube, start_longitude, end_longitude, start_latitude,
 
 def get_iris_analysis_operation(operator):
     """
-    This function takes a string and returns an operator
+    Determine the iris analysis operator from a string.
+
     Arguments
     ---------
         operator: string
