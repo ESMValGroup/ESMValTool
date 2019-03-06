@@ -71,7 +71,7 @@ diagnostics:
         preprocessor: preproc1
         mip: day
         field: T3D
-        reference_dataset: "ERA-Interim"
+        reference_dataset: ERA-Interim
     scripts:
         miles_block: 
             script: miles/miles_block.R
