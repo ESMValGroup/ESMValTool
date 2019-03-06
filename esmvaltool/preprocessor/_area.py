@@ -79,7 +79,38 @@ def extract_region(cube, start_longitude, end_longitude, start_latitude,
     return cube
 
 
-# get zonal means
+def get_iris_analysis_operation(operator):
+    """
+    This function takes a string and returns an operator
+    Arguments
+    ---------
+        operator: string
+            A named operator.
+    Returns
+    -------
+        function: A function from iris.analysis
+    """
+    operators = ['mean', 'median', 'stdev', 'variance', 'min', 'minimum',
+                 'max', 'maximum']
+    operator = operator.lower()
+    if operator == 'mean':
+        operation = iris.analysis.MEAN
+    elif operator == 'median':
+        operation = iris.analysis.MEDIAN
+    elif operator == 'stdev':
+        operation = iris.analysis.STD_DEV
+    elif operator == 'variance':
+        operation = iris.analysis.VARIANCE
+    elif operator in ['minimum', 'min']:
+        operation = iris.analysis.MIN
+    elif operator in ['maximum', 'max']:
+        operation = iris.analysis.MAX
+    else:
+        raise ValueError('operator ({}) not recognised. Accepted values are: '
+                         '{}', operator, operators)
+    return operation
+
+
 def zonal_means(cube, coordinate, mean_type):
     """
     Get zonal means.
@@ -88,6 +119,7 @@ def zonal_means(cube, coordinate, mean_type):
     the type of mean is controlled by mean_type variable (string)::
 
         'mean' -> MEAN
+        'median' -> MEDIAN
         'stdev' -> STD_DEV
         'variance' -> VARIANCE
         'min' -> MIN
@@ -109,21 +141,12 @@ def zonal_means(cube, coordinate, mean_type):
     iris.cube.Cube
         Returns a cube
     """
-    if mean_type == 'mean':
-        result = cube.collapsed(coordinate, iris.analysis.MEAN)
-    elif mean_type == 'stdev':
-        result = cube.collapsed(coordinate, iris.analysis.STD_DEV)
-    elif mean_type == 'variance':
-        result = cube.collapsed(coordinate, iris.analysis.VARIANCE)
-    elif mean_type.lower() in ['minimum', 'min']:
-        result = cube.collapsed(coordinate, iris.analysis.MIN)
-    elif mean_type.lower() in ['maximum', 'max']:
-        result = cube.collapsed(coordinate, iris.analysis.MAX)
-    return result
+    operation = get_iris_analysis_operation(mean_type)
+    return cube.collapsed(coordinate, operation)
 
 
 # get the area average
-def average_region(cube, coord1, coord2, fx_files=None):
+def average_region(cube, coord1, coord2, operator='mean', fx_files=None):
     """
     Determine the area average.
 
@@ -134,10 +157,12 @@ def average_region(cube, coord1, coord2, fx_files=None):
     ---------
         cube: iris.cube.Cube
             input cube.
-
-        coord1, coord2: str, str
-            coords to use
-
+        coord1: str
+            Name of the firct coordinate dimension
+        coord2: str
+            Name of the second coordinate dimension
+        operator: str
+            Name of the operation to apply (default: mean)
         fx_files: dictionary
             dictionary of field:filename for the fx_files
 
@@ -179,14 +204,21 @@ def average_region(cube, coord1, coord2, fx_files=None):
         logger.info('Calculated grid area:{}'.format(grid_areas.shape))
 
     if cube.data.shape != grid_areas.shape:
-
         raise ValueError('Cube shape ({}) doesn`t match grid area shape '
                          '({})'.format(cube.data.shape, grid_areas.shape))
 
-    result = cube.collapsed([coord1, coord2],
-                            iris.analysis.MEAN,
-                            weights=grid_areas)
-    return result
+    operation = get_iris_analysis_operation(operator)
+
+    # TODO: implement weighted stdev, median, and var when available in iris.
+    # See iris issue: https://github.com/SciTools/iris/issues/3208
+
+    if operator in ['mean', ]:
+        return cube.collapsed([coord1, coord2],
+                              operation,
+                              weights=grid_areas)
+
+    # Many IRIS analysis functions do not accept weights arguments.
+    return cube.collapsed([coord1, coord2], operation)
 
 
 def extract_named_regions(cube, regions):

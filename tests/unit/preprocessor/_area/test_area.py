@@ -54,10 +54,45 @@ class Test(tests.Test):
         self.negative_grid = iris.cube.Cube(ndata,
                                             dim_coords_and_dims=coords_spec)
 
-    def test_average_region_2d(self):
+    def test_average_region_mean(self):
         """Test for area average of a 2D field."""
         result = average_region(self.grid, 'latitude', 'longitude')
         expected = np.array([1.])
+        self.assertArrayEqual(result.data, expected)
+
+    def test_average_region_min(self):
+        """Test for area average of a 2D field."""
+        result = average_region(self.grid, 'latitude', 'longitude',
+                                operator='min')
+        expected = np.array([1.])
+        self.assertArrayEqual(result.data, expected)
+
+    def test_average_region_max(self):
+        """Test for area average of a 2D field."""
+        result = average_region(self.grid, 'latitude', 'longitude',
+                                operator='max')
+        expected = np.array([1.])
+        self.assertArrayEqual(result.data, expected)
+
+    def test_average_region_median(self):
+        """Test for area average of a 2D field."""
+        result = average_region(self.grid, 'latitude', 'longitude',
+                                operator='median')
+        expected = np.array([1.])
+        self.assertArrayEqual(result.data, expected)
+
+    def test_average_region_stdev(self):
+        """Test for area average of a 2D field."""
+        result = average_region(self.grid, 'latitude', 'longitude',
+                                operator='stdev')
+        expected = np.array([0.])
+        self.assertArrayEqual(result.data, expected)
+
+    def test_average_region_variance(self):
+        """Test for area average of a 2D field."""
+        result = average_region(self.grid, 'latitude', 'longitude',
+                                operator='variance')
+        expected = np.array([0.])
         self.assertArrayEqual(result.data, expected)
 
     def test_average_region_neg_lon(self):
