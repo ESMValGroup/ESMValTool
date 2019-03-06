@@ -58,6 +58,7 @@ import numpy as np
 
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic
+from esmvaltool.diag_scripts.shared import group_metadata
 
 # This part sends debug statements to stdout
 logger = logging.getLogger(os.path.basename(__file__))
@@ -90,88 +91,88 @@ def timeplot(cube, **kwargs):
     plt.plot(times, cubedata, **kwargs)
 
 
-def moving_average(cube, window):
-    """
-    Calculate a moving average.
+#def moving_average(cube, window):
+    #"""
+    #Calculate a moving average.
 
-    The window is a string which is a number and a measuremet of time.
-    For instance, the following are acceptable window strings:
+    #The window is a string which is a number and a measuremet of time.
+    #For instance, the following are acceptable window strings:
 
-    * ``5 days``
-    * ``12 years``
-    * ``1 month``
-    * ``5 yr``
+    #* ``5 days``
+    #* ``12 years``
+    #* ``1 month``
+    #* ``5 yr``
 
-    Also note the the value used is the total width of the window.
-    For instance, if the window provided was '10 years', the the moving
-    average returned would be the average of all values within 5 years
-    of the central value.
+    #Also note the the value used is the total width of the window.
+    #For instance, if the window provided was '10 years', the the moving
+    #average returned would be the average of all values within 5 years
+    #of the central value.
 
-    In the case of edge conditions, at the start an end of the data, they
-    only include the average of the data available. Ie the first value
-    in the moving average of a ``10 year`` window will only include the average
-    of the five subsequent years.
+    #In the case of edge conditions, at the start an end of the data, they
+    #only include the average of the data available. Ie the first value
+    #in the moving average of a ``10 year`` window will only include the average
+    #of the five subsequent years.
 
-    Parameters
-    ----------
-    cube: iris.cube.Cube
-        Input cube
-    window: str
-        A description of the window to use for the
+    #Parameters
+    #----------
+    #cube: iris.cube.Cube
+        #Input cube
+    #window: str
+        #A description of the window to use for the
 
-    Returns
-    ----------
-    iris.cube.Cube:
-        A cube with the movinage average set as the data points.
+    #Returns
+    #----------
+    #iris.cube.Cube:
+        #A cube with the movinage average set as the data points.
 
-    """
-    window = window.split()
-    window_len = int(window[0]) / 2.
-    win_units = str(window[1])
+    #"""
+    #window = window.split()
+    #window_len = int(window[0]) / 2.
+    #win_units = str(window[1])
 
-    if win_units not in [
-            'days', 'day', 'dy', 'months', 'month', 'mn', 'years', 'yrs',
-            'year', 'yr'
-    ]:
-        raise ValueError("Moving average window units not recognised: " +
-                         "{}".format(win_units))
+    #if win_units not in [
+            #'days', 'day', 'dy', 'months', 'month', 'mn', 'years', 'yrs',
+            #'year', 'yr'
+    #]:
+        #raise ValueError("Moving average window units not recognised: " +
+                         #"{}".format(win_units))
 
-    times = cube.coord('time').units.num2date(cube.coord('time').points)
+    #times = cube.coord('time').units.num2date(cube.coord('time').points)
 
-    datetime = diagtools.guess_calendar_datetime(cube)
+    #datetime = diagtools.guess_calendar_datetime(cube)
 
-    output = []
+    #output = []
 
-    times = np.array([
-        datetime(time_itr.year, time_itr.month, time_itr.day, time_itr.hour,
-                 time_itr.minute) for time_itr in times
-    ])
+    #times = np.array([
+        #datetime(time_itr.year, time_itr.month, time_itr.day, time_itr.hour,
+                 #time_itr.minute) for time_itr in times
+    #])
 
-    for time_itr in times:
-        if win_units in ['years', 'yrs', 'year', 'yr']:
-            tmin = datetime(time_itr.year - window_len, time_itr.month,
-                            time_itr.day, time_itr.hour, time_itr.minute)
-            tmax = datetime(time_itr.year + window_len, time_itr.month,
-                            time_itr.day, time_itr.hour, time_itr.minute)
+    #for time_itr in times:
+        #if win_units in ['years', 'yrs', 'year', 'yr']:
+            #tmin = datetime(time_itr.year - window_len, time_itr.month,
+                            #time_itr.day, time_itr.hour, time_itr.minute)
+            #tmax = datetime(time_itr.year + window_len, time_itr.month,
+                            #time_itr.day, time_itr.hour, time_itr.minute)
 
-        if win_units in ['months', 'month', 'mn']:
-            tmin = datetime(time_itr.year, time_itr.month - window_len,
-                            time_itr.day, time_itr.hour, time_itr.minute)
-            tmax = datetime(time_itr.year, time_itr.month + window_len,
-                            time_itr.day, time_itr.hour, time_itr.minute)
+        #if win_units in ['months', 'month', 'mn']:
+            #tmin = datetime(time_itr.year, time_itr.month - window_len,
+                            #time_itr.day, time_itr.hour, time_itr.minute)
+            #tmax = datetime(time_itr.year, time_itr.month + window_len,
+                            #time_itr.day, time_itr.hour, time_itr.minute)
 
-        if win_units in ['days', 'day', 'dy']:
-            tmin = datetime(time_itr.year, time_itr.month,
-                            time_itr.day - window_len, time_itr.hour,
-                            time_itr.minute)
-            tmax = datetime(time_itr.year, time_itr.month,
-                            time_itr.day + window_len, time_itr.hour,
-                            time_itr.minute)
+        #if win_units in ['days', 'day', 'dy']:
+            #tmin = datetime(time_itr.year, time_itr.month,
+                            #time_itr.day - window_len, time_itr.hour,
+                            #time_itr.minute)
+            #tmax = datetime(time_itr.year, time_itr.month,
+                            #time_itr.day + window_len, time_itr.hour,
+                            #time_itr.minute)
 
-        arr = np.ma.masked_where((times < tmin) + (times > tmax), cube.data)
-        output.append(arr.mean())
-    cube.data = np.array(output)
-    return cube
+        #arr = np.ma.masked_where((times < tmin) + (times > tmax), cube.data)
+        #output.append(arr.mean())
+    #cube.data = np.array(output)
+    #return cube
 
 
 def make_time_series_plots(
@@ -282,11 +283,10 @@ def multi_model_time_series(
         The metadata dictionairy for a specific model.
 
     """
-
     # Load image format extention
     image_extention = diagtools.get_image_format(cfg)
 
-    # Make the plot 
+    # Make the plot
     plot_details = {}
     cmap = plt.cm.get_cmap('viridis')
 
@@ -296,7 +296,6 @@ def multi_model_time_series(
             color = cmap(index / (len(metadata) - 1.))
         else:
             color = 'blue'
-
 
         cube = cubedic[filename]
 
@@ -321,21 +320,21 @@ def multi_model_time_series(
                 # label=metadata[filename]['dataset'])
                 ls='-',
                 lw=2.,
-                title = 'Ocean heat content anomaly [J]/n(with respect to 1971)',
-                xlabel = 'Year',
-                ylabel = 'Joule',
+#                title = 'Ocean heat content anomaly [J]/n(with respect to 1971)',
+#                xlabel = 'Year',
+#                ylabel = 'Joule',
             )
             plot_details[filename] = {
                 'c': color,
                 'ls': '-',
                 'lw': 2.,
                 'label': metadata[filename]['dataset'],
-                'title': 'Ocean heat content anomaly [J]/n(with respect to 1971)',
-                'xlabel': 'Year',
-                'ylabel': 'Joule',
+#                'title': 'Ocean heat content anomaly [J]/n(with respect to 1971)',
+#                'xlabel': 'Year',
+#                'ylabel': 'Joule',
             }
 
-#            title = metadata[filename]['long_name']
+            title = metadata[filename]['long_name']
 
     # Saving files:
     if cfg['write_plots']:
@@ -376,19 +375,21 @@ def global_sum(
         The metadata dictioniary for a specific model.
 
     """
-    cubedic={}
+    cubedic = {}
     for filename in sorted(metadata):
         cube = iris.load_cube(filename)
         cube = diagtools.bgc_units(cube, metadata[filename]['short_name'])
-        cube = cube.collapsed(['longitude', 'latitude', 'depth'],iris.analysis.SUM)
+        cube = cube.collapsed(['longitude', 'latitude', 'depth'], 
+        iris.analysis.SUM)
+#   the following line can go very soon when we've got the preprocessor for annual means                
         cube = cube.aggregated_by('year', iris.analysis.MEAN)
         cube.remove_coord('day_of_month')
         cube.remove_coord('day_of_year')
         cube.remove_coord('month_number')
         #######
         # subtract reference year value 1971
-        refvalue = cube.extract(iris.Constraint(year = 1971))
-        cube.data -= refvalue.data
+        refvalue = cube.extract(iris.Constraint(year=1971))
+        cube -= refvalue
         cubedic[filename] = cube
     return cubedic
 
@@ -407,8 +408,9 @@ def main(cfg):
     for index, metadata_filename in enumerate(cfg['input_files']):
         logger.info('metadata filename:\t%s', metadata_filename)
 
-        metadatas = diagtools.get_input_files(cfg, index=index)
-
+#        metadatas = diagtools.get_input_files(cfg, index=index)
+        input_data = cfg['input_files'].values()
+        metadatas = group_metadata(input_data, 'dataset')
         #######
         # Sum up the cube over global domain
         cubedic = global_sum(
