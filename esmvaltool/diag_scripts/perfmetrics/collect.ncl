@@ -129,17 +129,19 @@ begin
       if (consistent) then
         data_all_smpi(ii, :, :) = (/data_temp_smpi/)
         copy_VarCoords(data_temp_smpi, data_all_smpi(ii, :, :))
+        print("schleife 1")
       else
       ; Loop over datasets in new data entry
         do imod_temp = 0, dimsizes(data_temp_smpi&models) - 1
         ; If current dataset is not already part of the model coordinate
           if (.not.any(data_temp_smpi&models(imod_temp) .eq. \
               data_all_smpi&models)) then
+            print("schleife 2")
             ; Append record for dataset(imod)
             data_new = extend_var_at(data_all_smpi, 2, \
                                      dimsizes(data_all_smpi&models))
             data_new(ii, :, dimsizes(data_all_smpi&models)) = \
-              (/data_temp_smpi(0, :, imod_temp)/)
+              (/data_temp_smpi(:, imod_temp)/)
             data_new&models(dimsizes(data_all_smpi&models)) = \
               (/data_temp_smpi&models(imod_temp)/)
             delete(data_all_smpi)
@@ -148,14 +150,17 @@ begin
           else
             ; Loop over datasets of data
             do imod = 0, dimsizes(data_all_smpi&models) - 1
+              print("Schleife 3")
+              printVarSummary(data_all_smpi)
+              printVarSummary(data_temp_smpi)
               ; if new dataset is identical to current
               ; entry, write data entry
               if (data_all_smpi&models(imod).eq. \
                   data_temp_smpi&models(imod_temp)) then
                 data_all_smpi(ii, :, imod) = \
-                  (/data_temp_smpi(0, :, imod_temp)/)
+                  (/data_temp_smpi(:, imod_temp)/)
                 copy_VarCoords( \
-                  data_temp_smpi(0:0, :, imod_temp), \
+                  data_temp_smpi(:, imod_temp), \
                   data_all_smpi(ii:ii, :, imod))
               end if
             end do
