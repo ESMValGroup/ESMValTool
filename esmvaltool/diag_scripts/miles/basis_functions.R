@@ -172,7 +172,7 @@ fig_builder <- function(FIGDIR, dir_name, file_name, dataset, expid,
                         ens, year1, year2, season, output_file_type) {
 
   # loop on descriptors that are concatenated to create dir and file name
-  descriptors <- c(dataset, expid, ens, paste0(year1, "_", year2), season)
+  descriptors <- c(dataset, expid, ens, paste0(year1, "-", year2), season)
   for (dcode in descriptors) {
     if (dcode != "NO") {
       FIGDIR <- file.path(FIGDIR, dcode)
