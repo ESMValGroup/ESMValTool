@@ -26,10 +26,23 @@
 library(tools)
 library(yaml)
 
-cdo <- function(command, args="", input="", options="", output="",
-                stdout="") {
+cdo <- function(command, args = "", input = "", options = "", output = "",
+                stdout = "", noout = F) {
   if (args != "") args <- paste0(",", args)
-  if (stdout != "") stdout <- paste0(" > ", stdout)
+  if (stdout != "") stdout <- paste0(" > '", stdout, "'")
+  if (input[1] != "") {
+    for (i in 1:length(input)) {
+      input[i] <- paste0("'", input[i], "'")
+    }
+    input <- paste(input, collapse = " ")
+  }
+  output0 <- output
+  if (output != "") {
+    output <- paste0("'", output, "'")
+  } else if ( !noout ) {
+    output <- tempfile()
+    output0 <- output
+  }
   argstr <- paste0(options, " ", command, args, " ", input, " ", output,
                    " ", stdout)
   print(paste("cdo", argstr))
@@ -37,7 +50,7 @@ cdo <- function(command, args="", input="", options="", output="",
   if (ret != 0) {
     stop(paste("Failed (", ret, "): cdo", argstr))
   }
-  return(output)
+  return(output0)
 }
 
 
@@ -101,41 +114,44 @@ for (model_idx in c(1:(length(models_name)))) {
   print(paste0(diag_base, ": ", perc_lev, " percent quantile"))
 
   # Select variable of interest
-  modf <- cdo("selvar", args = varname, input = infile, output = tempfile())
+  modf <- cdo("selvar", args = varname, input = infile)
 
   # Remap reference onto model grid
-  reff <- cdo("remapcon", args = modf,
-              input = paste0("-selvar,", varname, " ", ref_data_file),
-              output = tempfile())
+  selectf <- cdo("selvar", args = varname, input = ref_data_file)
+  reff <- cdo("remapcon", args = modf, input = selectf)
 
-  # Get (75)th percentile of reference dataset
+  # Get (X)th percentile of reference dataset
+  refminf <- cdo("timmin", input = reff)
+  refmaxf <- cdo("timmax", input = reff)
   ref_perc_pf <- cdo("timpctl", args = perc_lev,
-           input = paste(reff, " -timmin ", reff, " -timmax ", reff),
-           output = tempfile())
+                     input = c(reff, refminf, refmaxf))
 
   # Select points with monthly precipitation greater than (75)th perc
-  mask_reff <- cdo("ge", input = paste(reff, ref_perc_pf), output = tempfile())
-  mask_modf <- cdo("ge", input = paste(modf, ref_perc_pf), output = tempfile())
+  mask_reff <- cdo("ge", input = c(reff, ref_perc_pf))
+  mask_modf <- cdo("ge", input = c(modf, ref_perc_pf))
 
   # Precipitation sums
-  ref_sumf <- cdo("timsum", input = paste("-mul", mask_reff, reff),
-                  output = tempfile())
-  mod_sumf <- cdo("timsum", input = paste("-mul", mask_modf, modf),
-                  output = tempfile())
+  mask_ref2f <- cdo("mul", input = c(mask_reff, reff))
+  mask_mod2f <- cdo("mul", input = c(mask_modf, modf))
+  ref_sumf <- cdo("timsum", input = mask_ref2f)
+  mod_sumf <- cdo("timsum", input = mask_mod2f)
 
   # Calculate quantile bias, set name and attributes
-  qb1f <- cdo("div", input = paste(mod_sumf, ref_sumf), output = tempfile())
-  cdo_command <- paste(
-    " -setattribute,qb@standard_name='precipitation_quantile_bias'",
-    " -setattribute,qb@long_name='Precipitation quantile bias'",
-    " -setattribute,qb@units=' '",
-    paste0(" -chname,", varname, ",qb")
-  )
-  cdo(cdo_command, input = qb1f, output = outfile)
+  qb1f <- cdo("div", input = c(mod_sumf, ref_sumf))
+  tempfile <- tempfile()
+
+  temp1f <- cdo("chname", args = paste0(varname, ",qb"), input = qb1f)
+  temp2f <- cdo("setattribute", args = "qb@units=' '", input = temp1f)
+  temp1f <- cdo("setattribute",
+                args = "qb@long_name='Precipitation quantile bias'",
+                input = temp2f, output = temp1f)
+  cdo("setattribute", args = "qb@standard_name='precipitation_quantile_bias'",
+      input = temp1f, output = outfile)
 
   # Remove temporary files
   unlink(c(modf, reff, ref_perc_pf, mask_reff, mask_modf,
-           ref_sumf, mod_sumf, qb1f))
+           ref_sumf, mod_sumf, qb1f, refminf, refmaxf, selectf,
+           mask_mod2f, mask_ref2f, temp1f, temp2f))
 
   # Set provenance for this output file
   caption <- paste0("Precipitation quantile bias ", perc_lev, "% for years ",
