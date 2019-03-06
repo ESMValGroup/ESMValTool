@@ -17,16 +17,16 @@
 ;      http://maps.elie.ucl.ac.be/CCI/viewer/download/lc-user-tools-3.14.zip
 ;    Unpack and run the CCI-LC Tools on each of the NetCDF files as follows:
 ;      bash lc-user-tools-3.14/bin/aggregate-map.sh \
-;      -PgridName=GEOGRAPHIC_LAT_LON -PnumMajorityClasses=1 \
-;      -PoutputAccuracy=false -PoutputPFTClasses=true \
-;      -PoutputLCCSClasses=false -PnumRows=360 <inputfile.nc>
-;    Put the resulting processed data in the input_dir_path.
+;        -PgridName=GEOGRAPHIC_LAT_LON -PnumMajorityClasses=1 \
+;        -PoutputAccuracy=false -PoutputPFTClasses=true \
+;        -PoutputLCCSClasses=false -PnumRows=360 <inputfile.nc>
+;    Put the resulting processed data in input_dir_path.
 ;
 ; Caveat
-;   The CCI-LC Tools must be applied before running this script.
-;   The CCI-LC Tools require Java Version 7 or higher.
-;   The input data are available for a single year and are copied over to
-;   generate a time series over their time range of validity.
+;    The CCI-LC Tools must be applied before running this script.
+;    The CCI-LC Tools require Java Version 7 or higher.
+;    The input data are available for a single year and are copied over to
+;    generate a time series over their time range of validity.
 ;
 ; Modification history
 ;    20190110-A_righ_ma: rewritten in NCL for v2.
@@ -49,18 +49,8 @@ begin
   ; Years
   YEARS = (/2000, 2005, 2010/)
 
-  ; Version
-  VERSION = "L4-LCCS-Map-300m-P5Y-aggregated-0.500000Deg"
-
-  ; Field
-  FIELD = "T2Ms"
-
-  ; CMOR table
-  CMOR_TABLE = \
-    getenv("esmvaltool_root") + "/cmor/tables/cmip5/Tables/CMIP5_Lmon"
-
   ; Variable names
-  VARIABLES = \
+  VAR = \
     (/"baresoilFrac", "cropFrac", "grassFrac", "shrubFrac", "treeFrac"/)
 
   ; Corresponding aggregation classes in the raw data
@@ -75,6 +65,28 @@ begin
                 "Tree_Needleleaf_Deciduous", \
                 "Tree_Needleleaf_Evergreen"/)/]
 
+  ; MIPs
+  MIP = (/"Lmon", "Lmon", "Lmon", "Lmon", "Lmon"/)
+
+  ; Frequency
+  FREQ = (/"mon", "mon", "mon", "mon", "mon"/)
+
+  ; CMOR table
+  CMOR_TABLE = \
+    getenv("esmvaltool_root") + "/cmor/tables/cmip5/Tables/CMIP5_Lmon"
+
+  ; Type
+  TYPE = "sat"
+
+  ; Version
+  VERSION = "L4-LCCS-Map-300m-P5Y-aggregated-0.500000Deg"
+
+  ; Global attributes
+  SOURCE = "ftp://anon-ftp.ceda.ac.uk/neodc/esacci/land_cover/data/"
+  REF = "Defourny et al.. ESA Land Cover Climate Change Initiative " + \
+    "(ESA LC_cci) data, 2015"
+  COMMENT = ""
+
 end
 
 begin
@@ -82,7 +94,7 @@ begin
   do yy = 0, dimsizes(YEARS) - 1
 
     fname = \
-      input_dir_path + "/ESACCI-LC-" + VERSION + "-" + YEARS(yy) + "-v1.6.1.nc"
+      input_dir_path + "ESACCI-LC-" + VERSION + "-" + YEARS(yy) + "-v1.6.1.nc"
 
     f = addfile(fname, "r")
 
@@ -91,9 +103,9 @@ begin
     YEAR2 = YEARS(yy) + 2
     time = create_timec(YEAR1, YEAR2)
 
-    do vv = 0, dimsizes(VARIABLES) - 1
+    do vv = 0, dimsizes(VAR) - 1
 
-      log_info("Processing variable " + VARIABLES(vv))
+      log_info("Processing " + VAR(vv) + " (" + MIP(vv) + ")")
 
       ; Set classes to be added up
       class = CLASSES[vv]
@@ -132,7 +144,7 @@ begin
       ; Reapply mask of missing values
       xx = where(lmask, xx@_FillValue, xx)
 
-      ; Define output field
+      ; Define output array
       output = \
         new((/dimsizes(time), dimsizes(xx&lat), dimsizes(xx&lon)/), float)
       output!0 = "time"
@@ -151,64 +163,43 @@ begin
       output = output * 100
       output@units = "%"
 
-      ; Format time coordinate
-      ctime = time_attrib(output&time, YEAR1, YEAR2, "M")
-      delete(output&time)
-      output&time = ctime
-      delete(ctime)
-
-      ; Format latitude coordinate
-      output = output(:, ::-1, :)
-      clat = lat_attrib(output&lat)
-      delete(output&lat)
-      output&lat = clat
-      delete(clat)
-
-      ; Format longitude coordinate
-      output = lonFlip(output)
-      clon = lon_attrib(output&lon)
-      delete(output&lon)
-      output&lon = clon
-      delete(clon)
+      ; Format coordinates
+      output!0 = "time"
+      output!1 = "lat"
+      output!2 = "lon"
+      format_coords(output, YEAR1 + "0101", YEAR2 + "1231", FREQ(vv))
 
       ; Set variable attributes
-      tmp = var_attrib(output, VARIABLES(vv), CMOR_TABLE)
+      tmp = format_variable(output, VAR(vv), CMOR_TABLE)
       delete(output)
       output = tmp
       delete(tmp)
 
+      ; Calculate coordinate bounds
+      bounds = guess_coord_bounds(output, FREQ(vv))
+
+      ; Set global attributes
+      gAtt = set_global_atts(OBSNAME, TIER, SOURCE, REF, COMMENT)
+
+      ; Output file
+      DATESTR = YEAR1 + "01-" + YEAR2 + "12"
+      fout = output_dir_path + \
+        str_join((/"OBS", OBSNAME, TYPE, VERSION, \
+                   MIP(vv), VAR(vv), DATESTR/), "_") + ".nc"
+
       ; Special case for baresoilFrac: add auxiliary coordinate
-      if (VARIABLES(vv).eq."baresoilFrac") then
+      if (VAR(vv).eq."baresoilFrac") then
         output@coordinates = "type"
       end if
 
-      ; Set global attributes
-      gAtt = True
-      gAtt@history       = "Created on " + systemfunc("date")
-      gAtt@host          = systemfunc("echo $HOST")
-      gAtt@user          = systemfunc("echo $USER")
-      gAtt@period        = YEAR1 + "-" + YEAR2
-      gAtt@field         = FIELD
-      gAtt@tier          = TIER
-      gAtt@source        = "ftp://anon-ftp.ceda.ac.uk/neodc/esacci/" + \
-        "land_cover/data/land_cover_maps/"
-      gAtt@reference     = "Defourny, P., et al., 2015. ESA Land Cover " + \
-        "Climate Change Initiative (ESA LC_cci) data"
-      gAtt@title = OBSNAME + " satellite data CMORized for the ESMValTool v2.0"
-      gAtt@conventions = "CF/CMOR"
-
-      ; Outfile
-      fout = output_dir_path + "/" + \
-        "OBS_" + OBSNAME + "_sat_" + VERSION + "_" + FIELD + "_" + \
-        VARIABLES(vv) + "_" + YEAR1 + "01-" + YEAR2 + "12.nc"
-
       ; Write variable
-      write_nc(fout, VARIABLES(vv), output, gAtt)
+      write_nc(fout, VAR(vv), output, bounds, gAtt)
       delete(gAtt)
       delete(output)
+      delete(bounds)
 
       ; Special case for baresoilFrac: add auxiliary coordinate
-      if (VARIABLES(vv).eq."baresoilFrac") then
+      if (VAR(vv).eq."baresoilFrac") then
         type = tochar("bare_ground")
         type!0 = "strlen"
         type@long_name = "surface type"

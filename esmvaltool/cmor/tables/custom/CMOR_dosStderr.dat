@@ -1,0 +1,24 @@
+SOURCE: CMIP5 (adapted from mrso)
+!============
+variable_entry:    dosStderr
+!============
+modeling_realm:    land
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     
+units:             m3 m-3
+cell_methods:      time: mean area: mean where land
+cell_measures:     area: areacella
+long_name:         Degree of Soil Saturation Error
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          dosStderr
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+

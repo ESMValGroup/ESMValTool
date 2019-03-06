@@ -6,9 +6,9 @@ import shutil
 from collections import OrderedDict
 from itertools import groupby
 
+import numpy as np
 import iris
 import iris.exceptions
-import numpy as np
 import yaml
 
 from .._config import use_legacy_iris
@@ -51,15 +51,15 @@ def concatenate_callback(raw_cube, field, _):
                 coord.units = units
 
 
-def load(files, constraints=None, callback=None):
+def load(file, callback=None):
     """Load iris cubes from files."""
-    logger.debug("Loading:\n%s", "\n".join(files))
-    cubes = iris.load_raw(files, constraints=constraints, callback=callback)
-    iris.util.unify_time_units(cubes)
-    if not cubes:
-        raise Exception('Can not load cubes from {0}'.format(files))
-
-    return cubes
+    logger.debug("Loading:\n%s", file)
+    raw_cubes = iris.load_raw(file, callback=callback)
+    if not raw_cubes:
+        raise Exception('Can not load cubes from {0}'.format(file))
+    for cube in raw_cubes:
+        cube.attributes['source_file'] = file
+    return raw_cubes
 
 
 def _fix_cube_attributes(cubes):

@@ -21,11 +21,11 @@
 ;
 ; #############################################################################
 
-load "./interface_scripts/auxiliary.ncl"
-load "./interface_scripts/logging.ncl"
+load "$diag_scripts/../interface_scripts/auxiliary.ncl"
+load "$diag_scripts/../interface_scripts/logging.ncl"
 
-load "./diag_scripts/shared/latlon.ncl"
-load "./diag_scripts/shared/regridding.ncl"
+load "$diag_scripts/shared/latlon.ncl"
+load "$diag_scripts/shared/regridding.ncl"
 
 ; #############################################################################
 undef("dim_stddev_wgt_Wrap")
