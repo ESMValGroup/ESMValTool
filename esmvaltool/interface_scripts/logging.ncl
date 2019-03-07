@@ -371,3 +371,5 @@ begin
   log_info(" write meta data to " + yaml_file)
 
   leave_msg(scriptname, funcname)
+
+end
