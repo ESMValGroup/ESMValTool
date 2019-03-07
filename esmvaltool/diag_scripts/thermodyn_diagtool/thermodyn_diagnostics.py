@@ -187,18 +187,19 @@ considered as equal to the kinetic energy dissipated to heating.
 #############################################################################
 """
 
-import os
-import warnings
 # New packages for version 2.0 of ESMValTool
 import logging
+import os
+import warnings
+
 import esmvaltool.diag_scripts.shared as e
-from netCDF4 import Dataset
-import numpy as np
 import matplotlib
+import numpy as np
 # Locally used modules
-from esmvaltool.diag_scripts.thermodyn_diagtool import computations, mkthe,\
-                                                       lorenz_cycle,\
-                                                       plot_script
+from esmvaltool.diag_scripts.thermodyn_diagtool import (
+    computations, lorenz_cycle, mkthe, plot_script)
+from netCDF4 import Dataset
+
 matplotlib.use('Agg')
 warnings.filterwarnings("ignore", message="numpy.dtype size changed")
 logger = logging.getLogger(os.path.basename(__file__))
@@ -289,8 +290,8 @@ def main(cfg):
             model, wdir, filenames, flags)
         te_all[i_m] = te_gmean_constant
         logger.info('Computing energy budgets\n')
-        eb_gmean, eb_file, toab_ymm_file = comp.budgets(model, wdir, aux_file,
-                                                        filenames)
+        eb_gmean, eb_file, toab_ymm_file = comp.budgets(
+            model, wdir, aux_file, filenames)
         toab_all[i_m, 0] = np.nanmean(eb_gmean[0])
         toab_all[i_m, 1] = np.nanstd(eb_gmean[0])
         atmb_all[i_m, 0] = np.nanmean(eb_gmean[1])
@@ -314,10 +315,9 @@ def main(cfg):
         # Water mass budget
         if wat is True:
             logger.info('Computing water mass and latent energy budgets\n')
-            _, _, _, aux_list = mkthe.init_mkthe(
-                model, wdir, filenames, flags)
-            wm_gmean, wm_file = comp.wmbudg(model, wdir, aux_file,
-                                            filenames, aux_list)
+            _, _, _, aux_list = mkthe.init_mkthe(model, wdir, filenames, flags)
+            wm_gmean, wm_file = comp.wmbudg(model, wdir, aux_file, filenames,
+                                            aux_list)
             wmb_all[i_m, 0] = np.nanmean(wm_gmean[0])
             wmb_all[i_m, 1] = np.nanstd(wm_gmean[0])
             logger.info('Water mass budget: %s\n', wmb_all[i_m, 0])
@@ -333,45 +333,38 @@ def main(cfg):
             pass
         if lsm is True:
             logger.info('Computing energy budgets over land and oceans\n')
-            toab_oc_gmean, toab_la_gmean = comp.landoc_budg(model, wdir,
-                                                            eb_file[0],
-                                                            sftlf_fx, 'toab')
+            toab_oc_gmean, toab_la_gmean = comp.landoc_budg(
+                model, wdir, eb_file[0], sftlf_fx, 'toab')
             toab_oc_all[i_m] = toab_oc_gmean
             toab_la_all[i_m] = toab_la_gmean
-            logger.info('TOA energy budget over oceans: %s\n',
-                        toab_oc_gmean)
+            logger.info('TOA energy budget over oceans: %s\n', toab_oc_gmean)
             logger.info('TOA energy budget over land: %s\n', toab_la_gmean)
-            atmb_oc_gmean, atmb_la_gmean = comp.landoc_budg(model, wdir,
-                                                            eb_file[1],
-                                                            sftlf_fx, 'atmb')
+            atmb_oc_gmean, atmb_la_gmean = comp.landoc_budg(
+                model, wdir, eb_file[1], sftlf_fx, 'atmb')
             atmb_oc_all[i_m] = atmb_oc_gmean
             atmb_la_all[i_m] = atmb_la_gmean
             logger.info('Atmospheric energy budget over oceans: %s\n',
                         atmb_oc_gmean)
             logger.info('Atmospheric energy budget over land: %s\n',
                         atmb_la_gmean)
-            surb_oc_gmean, surb_la_gmean = comp.landoc_budg(model, wdir,
-                                                            eb_file[2],
-                                                            sftlf_fx, 'surb')
+            surb_oc_gmean, surb_la_gmean = comp.landoc_budg(
+                model, wdir, eb_file[2], sftlf_fx, 'surb')
             surb_oc_all[i_m] = surb_oc_gmean
             surb_la_all[i_m] = surb_la_gmean
             logger.info('Surface energy budget over oceans: %s\n',
                         surb_oc_gmean)
-            logger.info('Surface energy budget over land: %s\n',
-                        surb_la_gmean)
+            logger.info('Surface energy budget over land: %s\n', surb_la_gmean)
             logger.info('Done\n')
             if wat is True:
                 logger.info('Computing water mass and latent energy'
                             ' budgets over land and oceans\n')
-                wmb_oc_gmean, wmb_la_gmean = comp.landoc_budg(model, wdir,
-                                                              wm_file[0],
-                                                              sftlf_fx, 'wmb')
+                wmb_oc_gmean, wmb_la_gmean = comp.landoc_budg(
+                    model, wdir, wm_file[0], sftlf_fx, 'wmb')
                 wmb_oc_all[i_m] = wmb_oc_gmean
                 wmb_la_all[i_m] = wmb_la_gmean
                 logger.info('Water mass budget over oceans: %s\n',
                             wmb_oc_gmean)
-                logger.info('Water mass budget over land: %s\n',
-                            wmb_la_gmean)
+                logger.info('Water mass budget over land: %s\n', wmb_la_gmean)
                 latent_oc_gmean, latent_la_gmean = comp.landoc_budg(
                     model, wdir, wm_file[1], sftlf_fx, 'latent')
                 latent_oc_all[i_m] = latent_oc_gmean
@@ -391,29 +384,34 @@ def main(cfg):
             lect = lorenz.preproc_lec(model, wdir, pdir, filenames)
             lec_all[i_m, 0] = np.nanmean(lect)
             lec_all[i_m, 1] = np.nanstd(lect)
-            logger.info('Intensity of the annual mean Lorenz Energy '
-                        'Cycle: %s\n', lec_all[i_m, 0])
+            logger.info(
+                'Intensity of the annual mean Lorenz Energy '
+                'Cycle: %s\n', lec_all[i_m, 0])
             logger.info('Done\n')
         else:
             pass
         if entr is True:
             if met in {'1', '3'}:
-                _, _, te_file, _ = mkthe.init_mkthe(
-                    model, wdir, filenames, flags)
+                _, _, te_file, _ = mkthe.init_mkthe(model, wdir, filenames,
+                                                    flags)
                 logger.info('Computation of the material entropy production '
                             'with the indirect method\n')
-                indentr_list = [rlds_file, rlus_file, rsds_file, rsus_file,
-                                te_file, eb_file[0], ts_file]
+                indentr_list = [
+                    rlds_file, rlus_file, rsds_file, rsus_file, te_file,
+                    eb_file[0], ts_file
+                ]
                 horzentr_mean, vertentr_mean, vertentr_file = comp.indentr(
                     model, wdir, indentr_list, aux_file, eb_gmean[0])
                 horzentr_all[i_m, 0] = np.nanmean(horzentr_mean)
                 horzentr_all[i_m, 1] = np.nanstd(horzentr_mean)
                 vertentr_all[i_m, 0] = np.nanmean(vertentr_mean)
                 vertentr_all[i_m, 1] = np.nanstd(vertentr_mean)
-                logger.info('Horizontal component of the material entropy '
-                            'production: %s\n', horzentr_all[i_m, 0])
-                logger.info('Vertical component of the material entropy '
-                            'production: %s\n', vertentr_all[i_m, 0])
+                logger.info(
+                    'Horizontal component of the material entropy '
+                    'production: %s\n', horzentr_all[i_m, 0])
+                logger.info(
+                    'Vertical component of the material entropy '
+                    'production: %s\n', vertentr_all[i_m, 0])
                 logger.info('Done\n')
                 logger.info('Running the plotting module for the material '
                             'entropy production (indirect method)\n')
@@ -425,9 +423,8 @@ def main(cfg):
                     logger, model, wdir, filenames, aux_file, lect, lec, flags)
                 matentr_all[i_m, 0] = matentr
                 if met in {'3'}:
-                    diffentr = (float(np.nanmean(vertentr_mean))
-                                + float(np.nanmean(horzentr_mean))
-                                - matentr)
+                    diffentr = (float(np.nanmean(vertentr_mean)) + float(
+                        np.nanmean(horzentr_mean)) - matentr)
                     logger.info('Difference between the two '
                                 'methods: %s\n', diffentr)
                     diffentr_all[i_m, 0] = diffentr
@@ -450,8 +447,10 @@ def main(cfg):
     logger.info('Meridional heat transports\n')
     plotsmod.plot_mm_transp(model_names, wdir_up, pdir_up)
     logger.info('Scatter plots')
-    summary_varlist = [atmb_all, baroc_eff_all, horzentr_all, lec_all,
-                       matentr_all, te_all, toab_all, vertentr_all]
+    summary_varlist = [
+        atmb_all, baroc_eff_all, horzentr_all, lec_all, matentr_all, te_all,
+        toab_all, vertentr_all
+    ]
     plotsmod.plot_mm_summaryscat(pdir_up, summary_varlist)
     logger.info('Scatter plots for inter-annual variability of'
                 ' some quantities')

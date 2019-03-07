@@ -19,8 +19,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from matplotlib import pyplot as plt
 import matplotlib
+from matplotlib import pyplot as plt
+
 matplotlib.use('Agg')
 
 
@@ -53,13 +54,14 @@ class Fluxogram():
 
     def add_storage(self, name, amount, order, offset):
         """Add a storage to the storages of the fluxogram."""
-        self.storages.append(Storage(name, self.grid_size, len(self.storages),
-                                     amount, order, offset))
+        self.storages.append(
+            Storage(name, self.grid_size, len(self.storages), amount, order,
+                    offset))
 
     def add_flux(self, name, from_storage, to_storage, amount):
         """Add a flux to the fluxes of the fluxogram."""
-        self.fluxes.append(Flux(name, self.grid_size, from_storage, to_storage,
-                                amount))
+        self.fluxes.append(
+            Flux(name, self.grid_size, from_storage, to_storage, amount))
 
     def update_all_storages(self, amounts):
         """Update the amount of all storages."""
@@ -102,30 +104,55 @@ class Fluxogram():
         frame1.axes.get_xaxis().set_visible(False)
         frame1.axes.get_yaxis().set_visible(False)
         # draw all fluxes
-        dict_r = {'AZ+': listv[0], 'ASE+': listv[2], 'ATE+': listv[4],
-                  'A2KS': listv[6], 'A2KT': listv[7], 'KTE-': listv[8],
-                  'KSE-': listv[10], 'KZ-': listv[12]}
-        dict_oth = {'l': listv[14], 'dn': listv[15], 'rdn': listv[16],
-                    'ldn': listv[17], 'up': listv[18], 'lup': listv[19],
-                    'rup': listv[20]}
-        switcher = {'l': self.leftarr_txt, 'dn': self.dnarr_txt,
-                    'rdn': self.rdnarr_txt, 'ldn': self.ldnarr_txt,
-                    'up': self.uparr_txt, 'lup': self.luparr_txt,
-                    'rup': self.ruparr_txt}
+        dict_r = {
+            'AZ+': listv[0],
+            'ASE+': listv[2],
+            'ATE+': listv[4],
+            'A2KS': listv[6],
+            'A2KT': listv[7],
+            'KTE-': listv[8],
+            'KSE-': listv[10],
+            'KZ-': listv[12]
+        }
+        dict_oth = {
+            'l': listv[14],
+            'dn': listv[15],
+            'rdn': listv[16],
+            'ldn': listv[17],
+            'up': listv[18],
+            'lup': listv[19],
+            'rup': listv[20]
+        }
+        switcher = {
+            'l': self.leftarr_txt,
+            'dn': self.dnarr_txt,
+            'rdn': self.rdnarr_txt,
+            'ldn': self.ldnarr_txt,
+            'up': self.uparr_txt,
+            'lup': self.luparr_txt,
+            'rup': self.ruparr_txt
+        }
         for flux in self.fluxes:
             idb = flux.name
             # scale the amount
             scaled_amount_flux = self.scaler(flux.amount, self.max_flux)
             # width multiplied  because if not, the arrows are so tiny
-            arrow = plt.Arrow(flux.x_start, flux.y_start, flux.d_x, flux.d_y,
-                              width=scaled_amount_flux * 1.7, alpha=0.8)
+            arrow = plt.Arrow(
+                flux.x_start,
+                flux.y_start,
+                flux.d_x,
+                flux.d_y,
+                width=scaled_amount_flux * 1.7,
+                alpha=0.8)
             if flux.dire == 'r':
                 for key in dict_r:
                     value = dict_r[key]
                     if idb == key:
-                        plt.text(flux.x_start + 0.25 * self.grid_size,
-                                 flux.y_start + 0.05 * self.grid_size,
-                                 value, size=self.grid_size * 0.7)
+                        plt.text(
+                            flux.x_start + 0.25 * self.grid_size,
+                            flux.y_start + 0.05 * self.grid_size,
+                            value,
+                            size=self.grid_size * 0.7)
             else:
                 for key in dict_oth:
                     value = dict_oth[key]
@@ -140,24 +167,38 @@ class Fluxogram():
                 scaled_amount_stor = 0.0001
             # change_x and y, so the storages are centered to the middle
             # of their position and not to upper left
-            x_p = (storage.x_p + (1 - storage.amount / self.max_storage) * 0.5
-                   * self.grid_size)
-            y_p = (storage.y_p - (1 - storage.amount / self.max_storage) * 0.5
-                   * self.grid_size)
-            rectangle = plt.Rectangle((x_p, y_p), scaled_amount_stor,
-                                      -scaled_amount_stor, alpha=0.4)
+            x_p = (
+                storage.x_p +
+                (1 - storage.amount / self.max_storage) * 0.5 * self.grid_size)
+            y_p = (
+                storage.y_p -
+                (1 - storage.amount / self.max_storage) * 0.5 * self.grid_size)
+            rectangle = plt.Rectangle((x_p, y_p),
+                                      scaled_amount_stor,
+                                      -scaled_amount_stor,
+                                      alpha=0.4)
             # label all storages
-            plt.text(storage.x_p + 0.6 * self.grid_size,
-                     storage.y_p - 0.65 * self.grid_size, storage.name,
-                     fontsize=0.7 * self.grid_size)
-            dict_s = {'AZ': listv[1], 'ASE': listv[3], 'ATE': listv[5],
-                      'KTE': listv[9], 'KSE': listv[11], 'KZ': listv[13]}
+            plt.text(
+                storage.x_p + 0.6 * self.grid_size,
+                storage.y_p - 0.65 * self.grid_size,
+                storage.name,
+                fontsize=0.7 * self.grid_size)
+            dict_s = {
+                'AZ': listv[1],
+                'ASE': listv[3],
+                'ATE': listv[5],
+                'KTE': listv[9],
+                'KSE': listv[11],
+                'KZ': listv[13]
+            }
             for key in dict_s:
                 value = dict_s[key]
                 if storage.name == key:
-                    plt.text(storage.x_p + 0.6 * self.grid_size,
-                             storage.y_p - 0.85 * self.grid_size, value,
-                             fontsize=0.7 * self.grid_size)
+                    plt.text(
+                        storage.x_p + 0.6 * self.grid_size,
+                        storage.y_p - 0.85 * self.grid_size,
+                        value,
+                        fontsize=0.7 * self.grid_size)
             # draw a date
             plt.gca().add_patch(rectangle)
         plt.savefig(filen)
@@ -167,63 +208,77 @@ class Fluxogram():
         """Write text on arrow pointing down."""
         x_start = flux.x_start
         y_start = flux.y_start
-        pltt.text(x_start - 0.2 * self.grid_size,
-                  y_start - 0.45 * self.grid_size,
-                  value, size=self.grid_size * 0.7,
-                  rotation=-90)
+        pltt.text(
+            x_start - 0.2 * self.grid_size,
+            y_start - 0.45 * self.grid_size,
+            value,
+            size=self.grid_size * 0.7,
+            rotation=-90)
 
     def leftarr_txt(self, value, flux, pltt):
         """Write text on arrow pointing left."""
         x_start = flux.x_start
         y_start = flux.y_start
-        pltt.text(x_start - 1.35 * self.grid_size,
-                  y_start + 0.05 * self.grid_size,
-                  value, size=self.grid_size * 0.7)
+        pltt.text(
+            x_start - 1.35 * self.grid_size,
+            y_start + 0.05 * self.grid_size,
+            value,
+            size=self.grid_size * 0.7)
 
     def ldnarr_txt(self, value, flux, pltt):
         """Write text on arrow pointing down-left."""
         x_start = flux.x_start
         y_start = flux.y_start
-        pltt.text(x_start - 0.35 * self.grid_size,
-                  y_start - 0.25 * self.grid_size,
-                  value, size=self.grid_size * 0.5,
-                  rotation=-110)
+        pltt.text(
+            x_start - 0.35 * self.grid_size,
+            y_start - 0.25 * self.grid_size,
+            value,
+            size=self.grid_size * 0.5,
+            rotation=-110)
 
     def luparr_txt(self, value, flux, pltt):
         """Write text on arrow pointing up-left."""
         x_start = flux.x_start
         y_start = flux.y_start
-        pltt.text(x_start - 0.35 * self.grid_size,
-                  y_start + 0.45 * self.grid_size,
-                  value, size=self.grid_size * 0.5,
-                  rotation=110)
+        pltt.text(
+            x_start - 0.35 * self.grid_size,
+            y_start + 0.45 * self.grid_size,
+            value,
+            size=self.grid_size * 0.5,
+            rotation=110)
 
     def rdnarr_txt(self, value, flux, pltt):
         """Write text on arrow pointing down-right."""
         x_start = flux.x_start
         y_start = flux.y_start
-        pltt.text(x_start + 0.05 * self.grid_size,
-                  y_start - 0.25 * self.grid_size,
-                  value, size=self.grid_size * 0.5,
-                  rotation=-75)
+        pltt.text(
+            x_start + 0.05 * self.grid_size,
+            y_start - 0.25 * self.grid_size,
+            value,
+            size=self.grid_size * 0.5,
+            rotation=-75)
 
     def ruparr_txt(self, value, flux, pltt):
         """Write text on arrow pointing up-right."""
         x_start = flux.x_start
         y_start = flux.y_start
-        pltt.text(x_start - 0.1 * self.grid_size,
-                  y_start + 0.45 * self.grid_size,
-                  value, size=self.grid_size * 0.5,
-                  rotation=75)
+        pltt.text(
+            x_start - 0.1 * self.grid_size,
+            y_start + 0.45 * self.grid_size,
+            value,
+            size=self.grid_size * 0.5,
+            rotation=75)
 
     def uparr_txt(self, value, flux, pltt):
         """Write text on arrow pointing up."""
         x_start = flux.x_start
         y_start = flux.y_start
-        pltt.text(x_start + 0.05 * self.grid_size,
-                  y_start + 0.75 * self.grid_size,
-                  value, size=self.grid_size * 0.7,
-                  rotation=90)
+        pltt.text(
+            x_start + 0.05 * self.grid_size,
+            y_start + 0.75 * self.grid_size,
+            value,
+            size=self.grid_size * 0.7,
+            rotation=90)
 
     def scaler(self, value_in, base_max):
         """Scale the values in the blocks of the diagram.
@@ -243,8 +298,8 @@ class Fluxogram():
         # prevents wrong use of scaler
         if value_in > base_max:
             raise ValueError("Input value larger than base max")
-        return (((limit_max - limit_min) * (value_in - base_min)
-                 / (base_max - base_min)) + limit_min)
+        return (((limit_max - limit_min) * (value_in - base_min) /
+                 (base_max - base_min)) + limit_min)
 
 
 class Flux:
@@ -280,8 +335,8 @@ class Flux:
         returns the start and end xy coordinates of the arrow as tuples.
         """
         # arrow pointing to left up
-        if (self.from_storage.offset > self.to_storage.offset and
-                self.from_storage.order > self.to_storage.order):
+        if (self.from_storage.offset > self.to_storage.offset
+                and self.from_storage.order > self.to_storage.order):
             x_start = self.from_storage.x_p + 0.85 * self.grid_size
             y_start = self.from_storage.y_p - self.grid_size * 0.5
             x_end = self.to_storage.x_p + self.grid_size * 0.65
@@ -290,8 +345,8 @@ class Flux:
             d_y = abs(y_start - y_end)
             dire = 'lup'
         # arrow pointing up
-        elif (self.from_storage.offset == self.to_storage.offset and
-              self.from_storage.order > self.to_storage.order):
+        elif (self.from_storage.offset == self.to_storage.offset
+              and self.from_storage.order > self.to_storage.order):
             x_start = self.from_storage.x_p + 0.85 * self.grid_size
             y_start = self.from_storage.y_p - 0.5 * self.grid_size
             x_end = self.to_storage.x_p + 0.85 * self.grid_size
@@ -300,8 +355,8 @@ class Flux:
             d_y = abs(y_start - y_end)
             dire = 'up'
         # arrow pointing right up
-        elif (self.from_storage.offset < self.to_storage.offset and
-              self.from_storage.order > self.to_storage.order):
+        elif (self.from_storage.offset < self.to_storage.offset
+              and self.from_storage.order > self.to_storage.order):
             x_start = (self.from_storage.x_p + self.grid_size)
             y_start = self.from_storage.y_p - 0.5 * self.grid_size
             x_end = self.to_storage.x_p + 0.05 * self.grid_size
@@ -310,8 +365,8 @@ class Flux:
             d_y = abs(y_start - y_end)
             dire = 'rup'
         # arrow pointing right
-        elif (self.from_storage.offset < self.to_storage.offset and
-              self.from_storage.order == self.to_storage.order):
+        elif (self.from_storage.offset < self.to_storage.offset
+              and self.from_storage.order == self.to_storage.order):
             x_start = (self.from_storage.x_p + self.grid_size)
             y_start = self.from_storage.y_p - 0.8 * self.grid_size
             x_end = self.to_storage.x_p + 1.25 * self.grid_size
@@ -320,8 +375,8 @@ class Flux:
             d_y = abs(y_start - y_end)
             dire = 'r'
         # arrow pointing right down
-        elif (self.from_storage.offset < self.to_storage.offset and
-              self.from_storage.order < self.to_storage.order):
+        elif (self.from_storage.offset < self.to_storage.offset
+              and self.from_storage.order < self.to_storage.order):
             x_start = (self.from_storage.x_p + 0.85 * self.grid_size)
             y_start = self.from_storage.y_p - 1.12 * self.grid_size
             x_end = self.to_storage.x_p + 0.85 * self.grid_size
@@ -330,8 +385,8 @@ class Flux:
             d_y = abs(y_start - y_end) * (-1)
             dire = 'rdn'
         # arrow pointing down
-        elif (self.from_storage.offset == self.to_storage.offset and
-              self.from_storage.order < self.to_storage.order):
+        elif (self.from_storage.offset == self.to_storage.offset
+              and self.from_storage.order < self.to_storage.order):
             x_start = self.from_storage.x_p + 0.8 * self.grid_size
             y_start = (self.from_storage.y_p - 1.12 * self.grid_size)
             x_end = self.to_storage.x_p + 0.8 * self.grid_size
@@ -340,8 +395,8 @@ class Flux:
             d_y = abs(y_start - y_end) * (-1)
             dire = 'dn'
         # arrow pointing left down
-        elif (self.from_storage.offset > self.to_storage.offset and
-              self.from_storage.order < self.to_storage.order):
+        elif (self.from_storage.offset > self.to_storage.offset
+              and self.from_storage.order < self.to_storage.order):
             x_start = self.from_storage.x_p + 0.75 * self.grid_size
             y_start = (self.from_storage.y_p - 1.1 * self.grid_size)
             x_end = self.to_storage.x_p + 0.6 * self.grid_size
@@ -350,8 +405,8 @@ class Flux:
             d_y = abs(y_start - y_end) * (-1)
             dire = 'ldn'
         # arrow pointing left
-        elif (self.from_storage.offset > self.to_storage.offset and
-              self.from_storage.order == self.to_storage.order):
+        elif (self.from_storage.offset > self.to_storage.offset
+              and self.from_storage.order == self.to_storage.order):
             x_start = self.from_storage.x_p + 0.5 * self.grid_size
             y_start = self.from_storage.y_p - 0.75 * self.grid_size
             x_end = self.to_storage.x_p + 0.25 * self.grid_size

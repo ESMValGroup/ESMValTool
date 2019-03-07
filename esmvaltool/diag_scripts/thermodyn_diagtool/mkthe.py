@@ -24,25 +24,27 @@ Created on Fri Jun 15 10:06:30 2018
 """
 import os
 from shutil import move
-from netCDF4 import Dataset
-import numpy as np
-from cdo import Cdo
-from esmvaltool.diag_scripts.thermodyn_diagtool import fourier_coefficients
 
-ALV = 2.5008e6    # Latent heat of vaporization
-G_0 = 9.81        # Gravity acceleration
-P_0 = 100000.     # reference pressure
-RV = 461.51       # Gas constant for water vapour
-T_MELT = 273.15   # freezing temp.
-AKAP = 0.286      # Kappa (Poisson constant R/Cp)
-GAS_CON = 287.0   # Gas constant
-RA_1 = 610.78     # Parameter for Magnus-Teten-Formula
-H_S = 300.        # stable boundary layer height (m)
-H_U = 1000.       # unstable boundary layer height (m)
-RIC_RS = 0.39     # Critical Richardson number for stable layer
-RIC_RU = 0.28     # Critical Richardson number for unstable layer
-L_C = 2501000 		        # latent heat of condensation
-SIGMAINV = 17636684.3034 	# inverse of the Stefan-Boltzmann constant
+import numpy as np
+from esmvaltool.diag_scripts.thermodyn_diagtool import fourier_coefficients
+from netCDF4 import Dataset
+
+from cdo import Cdo
+
+ALV = 2.5008e6  # Latent heat of vaporization
+G_0 = 9.81  # Gravity acceleration
+P_0 = 100000.  # reference pressure
+RV = 461.51  # Gas constant for water vapour
+T_MELT = 273.15  # freezing temp.
+AKAP = 0.286  # Kappa (Poisson constant R/Cp)
+GAS_CON = 287.0  # Gas constant
+RA_1 = 610.78  # Parameter for Magnus-Teten-Formula
+H_S = 300.  # stable boundary layer height (m)
+H_U = 1000.  # unstable boundary layer height (m)
+RIC_RS = 0.39  # Critical Richardson number for stable layer
+RIC_RU = 0.28  # Critical Richardson number for unstable layer
+L_C = 2501000  # latent heat of condensation
+SIGMAINV = 17636684.3034  # inverse of the Stefan-Boltzmann constant
 
 
 # pylint: disable-msg=R0914
@@ -80,22 +82,31 @@ def init_mkthe(model, wdir, filelist, flags):
     cdo.selvar('tas', input=tas_file, output=aux_file)
     move(aux_file, tas_file)
     tasmn_file = wdir + '/{}_tas_mm.nc'.format(model)
-    cdo.selvar('tas', input='-monmean {}'.format(tas_file),
-               option='-b F32', output=tasmn_file)
+    cdo.selvar(
+        'tas',
+        input='-monmean {}'.format(tas_file),
+        option='-b F32',
+        output=tasmn_file)
     cdo.selvar('uas', input=uas_file, output=aux_file)
     move(aux_file, uas_file)
     uasmn_file = wdir + '/{}_uas_mm.nc'.format(model)
-    cdo.selvar('uas', input='-monmean {}'.format(uas_file),
-               option='-b F32', output=uasmn_file)
+    cdo.selvar(
+        'uas',
+        input='-monmean {}'.format(uas_file),
+        option='-b F32',
+        output=uasmn_file)
     cdo.selvar('vas', input=vas_file, output=aux_file)
     move(aux_file, vas_file)
     vasmn_file = wdir + '/{}_vas_mm.nc'.format(model)
-    cdo.selvar('vas', input='-monmean {}'.format(vas_file),
-               option='-b F32', output=vasmn_file)
+    cdo.selvar(
+        'vas',
+        input='-monmean {}'.format(vas_file),
+        option='-b F32',
+        output=vasmn_file)
     # emission temperature
     te_file = wdir + '/{}_te.nc'.format(model)
-    cdo.sqrt(input="-sqrt -mulc,{} {}".format(SIGMAINV, rlut_file),
-             output=te_file)
+    cdo.sqrt(
+        input="-sqrt -mulc,{} {}".format(SIGMAINV, rlut_file), output=te_file)
     te_ymm_file = wdir + '/{}_te_ymm.nc'.format(model)
     cdo.yearmonmean(input=te_file, output=te_ymm_file)
     te_gmean_file = wdir + '/{}_te_gmean.nc'.format(model)
@@ -108,27 +119,37 @@ def init_mkthe(model, wdir, filelist, flags):
     elif entr in {'y', 'yes'}:
         if met in {'2', '3'}:
             evspsbl_file, prr_file = wfluxes(model, wdir, filelist)
-            mk_list = [ts_file, hus_file, ps_file, uasmn_file, vasmn_file,
-                       hfss_file, te_file]
+            mk_list = [
+                ts_file, hus_file, ps_file, uasmn_file, vasmn_file, hfss_file,
+                te_file
+            ]
             htop_file, tabl_file, tlcl_file = mkthe_main(wdir, mk_list, model)
             # Working temperatures for the hydrological cycle
             tcloud_file = (wdir + '/{}_tcloud.nc'.format(model))
             removeif(tcloud_file)
-            cdo.mulc('0.5', input='-add {} {}'.format(tlcl_file, te_file),
-                     options='-b F32', output=tcloud_file)
+            cdo.mulc(
+                '0.5',
+                input='-add {} {}'.format(tlcl_file, te_file),
+                options='-b F32',
+                output=tcloud_file)
             tcolumn_file = (wdir + '/{}_t_vertav_pot.nc'.format(model))
             removeif(tcolumn_file)
-            cdo.mulc('0.5', input='-add {} {}'.format(ts_file, tcloud_file),
-                     options='-b F32', output=tcolumn_file)
+            cdo.mulc(
+                '0.5',
+                input='-add {} {}'.format(ts_file, tcloud_file),
+                options='-b F32',
+                output=tcolumn_file)
             # Working temperatures for the kin. en. diss. (updated)
             tasvert_file = (wdir + '/{}_tboundlay.nc'.format(model))
             removeif(tasvert_file)
-            cdo.fldmean(input='-mulc,0.5 -add {} {}'
-                        .format(ts_file, tabl_file), options='-b F32',
-                        output=tasvert_file)
-            aux_files = [evspsbl_file, htop_file, prr_file, tabl_file,
-                         tasvert_file, tcloud_file, tcolumn_file,
-                         tlcl_file]
+            cdo.fldmean(
+                input='-mulc,0.5 -add {} {}'.format(ts_file, tabl_file),
+                options='-b F32',
+                output=tasvert_file)
+            aux_files = [
+                evspsbl_file, htop_file, prr_file, tabl_file, tasvert_file,
+                tcloud_file, tcolumn_file, tlcl_file
+            ]
         else:
             pass
     else:
@@ -150,7 +171,7 @@ def mkthe_main(wdir, file_list, modelname):
     h_bl = H_U
     ricr = np.where(hfss >= 0.75, ricr, RIC_RS)
     h_bl = np.where(hfss >= 0.75, h_bl, H_S)
-    ev_p = huss * p_s / (huss + GAS_CON / RV)      # Water vapour pressure
+    ev_p = huss * p_s / (huss + GAS_CON / RV)  # Water vapour pressure
     td_inv = (1 / T_MELT) - (RV / ALV) * np.log(ev_p / RA_1)  # Dewpoint t.
     t_d = 1 / td_inv
     hlcl = 125. * (t_s - t_d)  # Empirical formula for LCL height
@@ -161,16 +182,15 @@ def mkthe_main(wdir, file_list, modelname):
     ztlcl = t_s - (G_0 / cp_d) * hlcl
     # Compute the pseudo-adiabatic lapse rate to obtain the height of cloud
     # top knowing emission temperature.
-    gw_pa = (G_0 / cp_d) * (1 + ((ALV * huss) / (GAS_CON * ztlcl)) /
-                            (1 + ((ALV ** 2 * huss * 0.622) /
-                                  (cp_d * GAS_CON * ztlcl ** 2))))
-    htop = - (t_e - ztlcl) / gw_pa + hlcl
+    gw_pa = (G_0 / cp_d) * (1 + ((ALV * huss) / (GAS_CON * ztlcl)) / (1 + (
+        (ALV**2 * huss * 0.622) / (cp_d * GAS_CON * ztlcl**2))))
+    htop = -(t_e - ztlcl) / gw_pa + hlcl
     #  Use potential temperature and critical Richardson number to compute
     #  temperature and height of the boundary layer top
-    ths = t_s * (P_0 / p_s) ** AKAP
-    thz = ths + 0.03 * ricr * (vv_hor) ** 2 / h_bl
-    p_z = p_s * np.exp((- G_0 * h_bl) / (GAS_CON * t_s))  # Barometric eq.
-    t_z = thz * (P_0 / p_z) ** (-AKAP)
+    ths = t_s * (P_0 / p_s)**AKAP
+    thz = ths + 0.03 * ricr * (vv_hor)**2 / h_bl
+    p_z = p_s * np.exp((-G_0 * h_bl) / (GAS_CON * t_s))  # Barometric eq.
+    t_z = thz * (P_0 / p_z)**(-AKAP)
     outlist = [ztlcl, t_z, htop]
     htop_file, tabl_file, tlcl_file = write_output(wdir, modelname, file_list,
                                                    outlist)
@@ -202,9 +222,10 @@ def input_data(wdir, file_list):
     removeif(vv_missfile)
     vv_file = wdir + '/V_miss.nc'
     removeif(vv_file)
-    cdo.sqrt(input='-add -sqr {} -sqr {}'.format(file_list[3],
-                                                 file_list[4]),
-             options='-b F32', output=vv_file)
+    cdo.sqrt(
+        input='-add -sqr {} -sqr {}'.format(file_list[3], file_list[4]),
+        options='-b F32',
+        output=vv_file)
     cdo.setctomiss('0', input=vv_file, output=vv_missfile)
     hfss_miss_file = wdir + '/hfss.nc'
     removeif(hfss_miss_file)
@@ -260,12 +281,10 @@ def wfluxes(model, wdir, filelist):
     prsn_file = filelist[4]
     aux_file = wdir + '/aux.nc'
     evspsbl_file = (wdir + '/{}_evspsbl.nc'.format(model))
-    cdo.divc(str(L_C), input="{}".format(hfls_file),
-             output=evspsbl_file)
+    cdo.divc(str(L_C), input="{}".format(hfls_file), output=evspsbl_file)
     # Rainfall precipitation
     prr_file = wdir + '/{}_prr.nc'.format(model)
-    cdo.sub(input="{} {}".format(pr_file, prsn_file),
-            output=aux_file)
+    cdo.sub(input="{} {}".format(pr_file, prsn_file), output=aux_file)
     cdo.chname('pr,prr', input=aux_file, output=prr_file)
     return evspsbl_file, prr_file
 
@@ -294,67 +313,82 @@ def write_output(wdir, model, file_list, varlist):
     tlcl_temp = wdir + '/tlcl.nc'
     removeif(tlcl_temp)
     w_nc_fid = Dataset(tlcl_temp, 'w', format='NETCDF4')
-    w_nc_fid.description = ("Monthly mean LCL temperature from {} model. "
-                            .format(model),
-                            "Calculated by Thermodynamics model diagnostics ",
-                            "in ESMValTool. Author Valerio Lembo, ",
-                            "Meteorologisches Institut, Universitaet ",
-                            "Hamburg.")
+    w_nc_fid.description = (
+        "Monthly mean LCL temperature from {} model. ".format(model),
+        "Calculated by Thermodynamics model diagnostics ",
+        "in ESMValTool. Author Valerio Lembo, ",
+        "Meteorologisches Institut, Universitaet ", "Hamburg.")
     fourc.extr_time(dataset, w_nc_fid)
     fourc.extr_lat(dataset, w_nc_fid)
     fourc.extr_lon(dataset, w_nc_fid)
-    w_nc_var = w_nc_fid.createVariable('tlcl', 'f8',
-                                       ('time', 'lat', 'lon'))
-    w_nc_var.setncatts({'long_name': u"LCL Temperature",
-                        'units': u"K", 'level_desc': u"surface",
-                        'var_desc': (u"LCL temperature from LCL ",
-                                     "height (Magnus formulas and dry ",
-                                     "adiabatic lapse ratio)"),
-                        'statistic': 'monthly mean'})
+    w_nc_var = w_nc_fid.createVariable('tlcl', 'f8', ('time', 'lat', 'lon'))
+    w_nc_var.setncatts({
+        'long_name':
+        u"LCL Temperature",
+        'units':
+        u"K",
+        'level_desc':
+        u"surface",
+        'var_desc':
+        (u"LCL temperature from LCL ", "height (Magnus formulas and dry ",
+         "adiabatic lapse ratio)"),
+        'statistic':
+        'monthly mean'
+    })
     w_nc_fid.variables['tlcl'][:] = ztlcl
     w_nc_fid.close()  # close the new file
     tabl_temp = wdir + '/tabl.nc'
     removeif(tabl_temp)
     w_nc_fid = Dataset(tabl_temp, 'w', format='NETCDF4')
-    w_nc_fid.description = ("Monthly mean temperature at BL top for {} model. "
-                            .format(model),
-                            "Calculated by Thermodynamics model diagnostics ",
-                            "in ESMValTool. Author Valerio ",
-                            "Lembo, Meteorologisches Institut, ",
-                            "Universitaet Hamburg.")
+    w_nc_fid.description = (
+        "Monthly mean temperature at BL top for {} model. ".format(model),
+        "Calculated by Thermodynamics model diagnostics ",
+        "in ESMValTool. Author Valerio ", "Lembo, Meteorologisches Institut, ",
+        "Universitaet Hamburg.")
     fourc.extr_time(dataset, w_nc_fid)
     fourc.extr_lat(dataset, w_nc_fid)
     fourc.extr_lon(dataset, w_nc_fid)
-    w_nc_var = w_nc_fid.createVariable('tabl', 'f8',
-                                       ('time', 'lat', 'lon'))
-    w_nc_var.setncatts({'long_name': u"Temperature at BL top",
-                        'units': u"K", 'level_desc': u"surface",
-                        'var_desc': (u"Temperature at the Boundary Layer ",
-                                     "top, from boundary layer thickness and ",
-                                     "barometric equation"),
-                        'statistic': u'monthly mean'})
+    w_nc_var = w_nc_fid.createVariable('tabl', 'f8', ('time', 'lat', 'lon'))
+    w_nc_var.setncatts({
+        'long_name':
+        u"Temperature at BL top",
+        'units':
+        u"K",
+        'level_desc':
+        u"surface",
+        'var_desc':
+        (u"Temperature at the Boundary Layer ",
+         "top, from boundary layer thickness and ", "barometric equation"),
+        'statistic':
+        u'monthly mean'
+    })
     w_nc_fid.variables['tabl'][:] = t_z
     w_nc_fid.close()  # close the new file
     htop_temp = wdir + '/htop.nc'
     removeif(htop_temp)
     w_nc_fid = Dataset(htop_temp, 'w', format='NETCDF4')
-    w_nc_fid.description = ("Monthly mean height of the BL top for {} model. "
-                            .format(model),
-                            "Calculated by Thermodynamics model diagnostics ",
-                            "in ESMValTool. Author Valerio ",
-                            "Lembo, Meteorologisches Institut, ",
-                            "Universitaet Hamburg.")
+    w_nc_fid.description = (
+        "Monthly mean height of the BL top for {} model. ".format(model),
+        "Calculated by Thermodynamics model diagnostics ",
+        "in ESMValTool. Author Valerio ", "Lembo, Meteorologisches Institut, ",
+        "Universitaet Hamburg.")
     fourc.extr_time(dataset, w_nc_fid)
     fourc.extr_lat(dataset, w_nc_fid)
     fourc.extr_lon(dataset, w_nc_fid)
-    w_nc_var = w_nc_fid.createVariable('htop', 'f8',
-                                       ('time', 'lat', 'lon'))
-    w_nc_var.setncatts({'long_name': u"Height at BL top",
-                        'units': u"m", 'level_desc': u"surface",
-                        'var_desc': (u"Height at the Boundary Layer top, ",
-                                     "from boundary layer thickness and ",
-                                     "barometric equation"),
-                        'statistic': u'monthly mean'})
+    w_nc_var = w_nc_fid.createVariable('htop', 'f8', ('time', 'lat', 'lon'))
+    w_nc_var.setncatts({
+        'long_name':
+        u"Height at BL top",
+        'units':
+        u"m",
+        'level_desc':
+        u"surface",
+        'var_desc':
+        (u"Height at the Boundary Layer top, ",
+         "from boundary layer thickness and ", "barometric equation"),
+        'statistic':
+        u'monthly mean'
+    })
     w_nc_fid.variables['htop'][:] = htop
     w_nc_fid.close()  # close the new file
     tlcl_file = wdir + '/{}_tlcl.nc'.format(model)

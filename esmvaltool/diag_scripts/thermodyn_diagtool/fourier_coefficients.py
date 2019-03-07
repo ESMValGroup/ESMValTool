@@ -18,11 +18,11 @@ from netCDF4 import Dataset
 
 GP_RES = np.array([16, 32, 48, 64, 96, 128, 256, 384, 512, 1024, 2048, 4096])
 FC_RES = np.array([5, 10, 15, 21, 31, 43, 85, 127, 171, 341, 683, 1365])
-G_0 = 9.81              # Gravity acceleration
-GAM = 0.0065            # Standard atmosphere lapse rate
-GAS_CON = 287.0         # Gas constant
+G_0 = 9.81  # Gravity acceleration
+GAM = 0.0065  # Standard atmosphere lapse rate
+GAS_CON = 287.0  # Gas constant
 # rho_0 = 1.2           # Mean air density
-P_0 = 10000             # Reference tropospheric pressure
+P_0 = 10000  # Reference tropospheric pressure
 
 
 def fourier_coeff(tadiagfile, outfile, ta_input, tas_input):
@@ -57,31 +57,25 @@ def fourier_coeff(tadiagfile, outfile, ta_input, tas_input):
     deltat = np.zeros([ntime, nlev, nlat, nlon])
     p_s = np.full([ntime, nlat, nlon], P_0)
     for i in np.arange(nlev - 1, 0, -1):
-        h_1 = np.ma.masked_where(ta1_fx[:, i, :, :] != 0,
-                                 ta1_fx[:, i, :, :])
+        h_1 = np.ma.masked_where(ta1_fx[:, i, :, :] != 0, ta1_fx[:, i, :, :])
         if np.any(h_1.mask > 0):
             deltat[:, i - 1, :, :] = np.where(ta1_fx[:, i - 1, :, :] != 0,
                                               deltat[:, i - 1, :, :],
                                               (ta1_fx[:, i, :, :] - tas))
-            deltat[:, i - 1, :, :] = ((1 * np.array(h_1.mask))
-                                      * np.array(deltat[:, i - 1, :, :]))
-            d_p = -((P_0 * G_0 / (GAM * GAS_CON)) *
-                    deltat[:, i - 1, :, :] / tas)
-            p_s = np.where(ta1_fx[:, i - 1, :, :] != 0,
-                           p_s, lev[i - 1] + d_p)
+            deltat[:, i - 1, :, :] = (
+                (1 * np.array(h_1.mask)) * np.array(deltat[:, i - 1, :, :]))
+            d_p = -(
+                (P_0 * G_0 / (GAM * GAS_CON)) * deltat[:, i - 1, :, :] / tas)
+            p_s = np.where(ta1_fx[:, i - 1, :, :] != 0, p_s, lev[i - 1] + d_p)
             for k in np.arange(0, nlev - i - 1, 1):
                 h_3 = np.ma.masked_where(ta1_fx[:, i + k, :, :] != 0,
                                          ta1_fx[:, i + k, :, :])
                 if np.any(h_3.mask > 0):
-                    deltat[:, i - 1, :, :] = np.where(ta1_fx[:, i + k,
-                                                             :, :] != 0,
-                                                      deltat[:, i - 1,
-                                                             :, :],
-                                                      (ta1_fx[:, i + k + 1,
-                                                              :, :]
-                                                       - tas))
-                    d_p = -((P_0 * G_0 / (GAM * GAS_CON)) *
-                            deltat[:, i - 1, :, :] / tas)
+                    deltat[:, i - 1, :, :] = np.where(
+                        ta1_fx[:, i + k, :, :] != 0, deltat[:, i - 1, :, :],
+                        (ta1_fx[:, i + k + 1, :, :] - tas))
+                    d_p = -((P_0 * G_0 /
+                             (GAM * GAS_CON)) * deltat[:, i - 1, :, :] / tas)
                     p_s = np.where(ta1_fx[:, i + k, :, :] != 0, p_s,
                                    lev[i + k] + d_p)
                 else:
@@ -95,14 +89,12 @@ def fourier_coeff(tadiagfile, outfile, ta_input, tas_input):
     deltap = np.zeros([ntime, nlev, nlat, nlon])
     for i in np.arange(nlev):
         deltap[:, i, :, :] = p_s - lev[i]
-        h_2 = np.ma.masked_where(ta2_fx[:, i, :, :] == 0,
-                                 ta2_fx[:, i, :, :])
+        h_2 = np.ma.masked_where(ta2_fx[:, i, :, :] == 0, ta2_fx[:, i, :, :])
         mask[i, :, :, :] = np.array(h_2.mask)
-        tafr_bar[i, :, :, :] = (1 * np.array(mask[i, :, :, :])
-                                * (tas - GAM * GAS_CON / (G_0 * p_s)
-                                   * deltap[:, i, :, :] * tas))
-        dat[i, :, :, :] = (ta2_fx[:, i, :, :]
-                           * (1 - 1 * np.array(mask[i, :, :, :])))
+        tafr_bar[i, :, :, :] = (1 * np.array(mask[i, :, :, :]) * (
+            tas - GAM * GAS_CON / (G_0 * p_s) * deltap[:, i, :, :] * tas))
+        dat[i, :, :, :] = (
+            ta2_fx[:, i, :, :] * (1 - 1 * np.array(mask[i, :, :, :])))
         t_a[:, i, :, :] = dat[i, :, :, :] + tafr_bar[i, :, :, :]
     pr_output_diag(t_a, ta_input, tadiagfile, 'ta')
     tafft_p = np.fft.fft(t_a, axis=3)[:, :, :, :trunc / 2] / (nlon)
@@ -156,14 +148,13 @@ def pr_output(dict_v, nc_f, fileo, file_desc, wave2):
     # Write the wave dimension
     var_nc_fid.createDimension('wave', len(wave2))
     var_nc_fid.createVariable('wave', nc_fid.variables['plev'].dtype,
-                              ('wave',))
+                              ('wave', ))
     var_nc_fid.variables['wave'][:] = wave2
     nc_fid.close()
     for key in dict_v:
         value = dict_v[key]
-        var1_nc_var = var_nc_fid.createVariable(key, 'f8',
-                                                ('time', 'plev',
-                                                 'lat', 'wave'))
+        var1_nc_var = var_nc_fid.createVariable(
+            key, 'f8', ('time', 'plev', 'lat', 'wave'))
         varatts(var1_nc_var, key)
         var_nc_fid.variables[key][:, :, :, :] = value
     var_nc_fid.close()  # close the new file
@@ -218,12 +209,10 @@ def extr_lat(nc_fid, var_nc_fid):
     # Extract coordinates from NetCDF file
     lats = nc_fid.variables['lat'][:]
     var_nc_fid.createDimension('lat', len(lats))
-    var_nc_dim = var_nc_fid.createVariable('lat',
-                                           nc_fid.variables['lat'].dtype,
-                                           ('lat',))
+    var_nc_dim = var_nc_fid.createVariable(
+        'lat', nc_fid.variables['lat'].dtype, ('lat', ))
     for ncattr in nc_fid.variables['lat'].ncattrs():
-        var_nc_dim.setncattr(ncattr,
-                             nc_fid.variables['lat'].getncattr(ncattr))
+        var_nc_dim.setncattr(ncattr, nc_fid.variables['lat'].getncattr(ncattr))
     var_nc_fid.variables['lat'][:] = lats
 
 
@@ -242,12 +231,10 @@ def extr_lon(nc_fid, var_nc_fid):
     # Extract coordinates from NetCDF file
     lons = nc_fid.variables['lon'][:]
     var_nc_fid.createDimension('lon', len(lons))
-    var_nc_dim = var_nc_fid.createVariable('lon',
-                                           nc_fid.variables['lon'].dtype,
-                                           ('lon',))
+    var_nc_dim = var_nc_fid.createVariable(
+        'lon', nc_fid.variables['lon'].dtype, ('lon', ))
     for ncattr in nc_fid.variables['lon'].ncattrs():
-        var_nc_dim.setncattr(ncattr,
-                             nc_fid.variables['lon'].getncattr(ncattr))
+        var_nc_dim.setncattr(ncattr, nc_fid.variables['lon'].getncattr(ncattr))
     var_nc_fid.variables['lon'][:] = lons
 
 
@@ -265,9 +252,8 @@ def extr_plev(nc_fid, var_nc_fid):
     """
     plev = nc_fid.variables['plev'][:]
     var_nc_fid.createDimension('plev', len(plev))
-    var_nc_dim = var_nc_fid.createVariable('plev',
-                                           nc_fid.variables['plev'].dtype,
-                                           ('plev',))
+    var_nc_dim = var_nc_fid.createVariable(
+        'plev', nc_fid.variables['plev'].dtype, ('plev', ))
     for ncattr in nc_fid.variables['plev'].ncattrs():
         var_nc_dim.setncattr(ncattr,
                              nc_fid.variables['plev'].getncattr(ncattr))
@@ -290,9 +276,8 @@ def extr_time(nc_fid, var_nc_fid):
     time = nc_fid.variables['time'][:]
     # Using our previous dimension info, we can create the new dimensions.
     var_nc_fid.createDimension('time', len(time))
-    var_nc_dim = var_nc_fid.createVariable('time',
-                                           nc_fid.variables['time'].dtype,
-                                           ('time',))
+    var_nc_dim = var_nc_fid.createVariable(
+        'time', nc_fid.variables['time'].dtype, ('time', ))
     for ncattr in nc_fid.variables['time'].ncattrs():
         var_nc_dim.setncattr(ncattr,
                              nc_fid.variables['time'].getncattr(ncattr))
@@ -307,19 +292,27 @@ def varatts(w_nc_var, varname):
     - varname: the name of the variable, among ta, ua, va and wap.
     """
     if varname == 'ta':
-        w_nc_var.setncatts({'long_name': u"Air temperature",
-                            'units': u"K",
-                            'level_desc': 'pressure levels'})
+        w_nc_var.setncatts({
+            'long_name': u"Air temperature",
+            'units': u"K",
+            'level_desc': 'pressure levels'
+        })
     elif varname == 'ua':
-        w_nc_var.setncatts({'long_name': u"Eastward wind",
-                            'units': u"m s-1",
-                            'level_desc': 'pressure levels'})
+        w_nc_var.setncatts({
+            'long_name': u"Eastward wind",
+            'units': u"m s-1",
+            'level_desc': 'pressure levels'
+        })
     elif varname == 'va':
-        w_nc_var.setncatts({'long_name': u"Northward wind",
-                            'units': u"m s-1",
-                            'level_desc': 'pressure levels'})
+        w_nc_var.setncatts({
+            'long_name': u"Northward wind",
+            'units': u"m s-1",
+            'level_desc': 'pressure levels'
+        })
     elif varname == 'wap':
-        w_nc_var.setncatts({'long_name': u'Lagrangian tendency of '
-                                         'air pressure',
-                            'units': u"Pa s-1",
-                            'level_desc': 'pressure levels'})
+        w_nc_var.setncatts({
+            'long_name': u'Lagrangian tendency of '
+            'air pressure',
+            'units': u"Pa s-1",
+            'level_desc': 'pressure levels'
+        })

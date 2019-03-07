@@ -58,19 +58,21 @@ Authors:
     Contact author: valerio.lembo@uni-hamburg.de.
 """
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import division
-import sys
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
+
 import math
 import os
+import sys
 import warnings
-from cdo import Cdo
-from netCDF4 import Dataset
-from esmvaltool.diag_scripts.thermodyn_diagtool import fluxogram,\
-    fourier_coefficients
+
 import numpy as np
+from esmvaltool.diag_scripts.thermodyn_diagtool import (fluxogram,
+                                                        fourier_coefficients)
+from netCDF4 import Dataset
+
+from cdo import Cdo
+
 warnings.filterwarnings("ignore")
 
 G = 9.81
@@ -187,9 +189,10 @@ def lorenz(outpath, model, year, filenc, plotfile, logfile):
                       ntp, nlev)
     ke2kz_stgmn = globall_cg(ke2kz_st, g_w, d_s, dims)
     table(ke2kz_stgmn, ntp, 'KZ <-> KE (stat)', log, flag=1)
-    list_diag = [ape_tgmn, ape_stgmn, ek_tgmn, ek_stgmn, ae2az_tgmn,
-                 ae2az_stgmn, a2k_tgmn, a2k_stgmn, at2as_tgmn, kt2ks_tgmn,
-                 ke2kz_tgmn, ke2kz_stgmn]
+    list_diag = [
+        ape_tgmn, ape_stgmn, ek_tgmn, ek_stgmn, ae2az_tgmn, ae2az_stgmn,
+        a2k_tgmn, a2k_stgmn, at2as_tgmn, kt2ks_tgmn, ke2kz_tgmn, ke2kz_stgmn
+    ]
     lec_strength = diagram(plotfile, list_diag, dims)
     nc_f = outpath + '/ek_tmap_{}_{}.nc'.format(model, year)
     output(e_k, d_s, filenc, 'ek', nc_f)
@@ -244,19 +247,21 @@ def bsslzr(kdim):
     """
     ndim = 50
     p_i = math.pi
-    zbes = [2.4048255577, 5.5200781103, 8.6537279129, 11.7915344391,
-            14.9309177086, 18.0710639679, 21.2116366299, 24.3524715308,
-            27.4934791320, 30.6346064684, 33.7758202136, 36.9170983537,
-            40.0584257646, 43.1997917132, 46.3411883717, 49.4826098974,
-            52.6240518411, 55.7655107550, 58.9069839261, 62.0484691902,
-            65.1899648002, 68.3314693299, 71.4729816036, 74.6145006437,
-            77.7560256304, 80.8975558711, 84.0390907769, 87.1806298436,
-            90.3221726372, 93.4637187819, 96.6052679510, 99.7468198587,
-            102.8883742542, 106.0299309165, 109.1714896498, 112.3130502805,
-            115.4546126537, 118.5961766309, 121.7377420880, 124.8793089132,
-            128.0208770059, 131.1624462752, 134.3040166383, 137.4455880203,
-            140.5871603528, 143.7287335737, 146.8703076258, 150.0118824570,
-            153.1534580192, 156.2950342685]
+    zbes = [
+        2.4048255577, 5.5200781103, 8.6537279129, 11.7915344391, 14.9309177086,
+        18.0710639679, 21.2116366299, 24.3524715308, 27.4934791320,
+        30.6346064684, 33.7758202136, 36.9170983537, 40.0584257646,
+        43.1997917132, 46.3411883717, 49.4826098974, 52.6240518411,
+        55.7655107550, 58.9069839261, 62.0484691902, 65.1899648002,
+        68.3314693299, 71.4729816036, 74.6145006437, 77.7560256304,
+        80.8975558711, 84.0390907769, 87.1806298436, 90.3221726372,
+        93.4637187819, 96.6052679510, 99.7468198587, 102.8883742542,
+        106.0299309165, 109.1714896498, 112.3130502805, 115.4546126537,
+        118.5961766309, 121.7377420880, 124.8793089132, 128.0208770059,
+        131.1624462752, 134.3040166383, 137.4455880203, 140.5871603528,
+        143.7287335737, 146.8703076258, 150.0118824570, 153.1534580192,
+        156.2950342685
+    ]
     pbes = np.zeros(kdim)
     idim = min([kdim, ndim])
     pbes[0:idim] = zbes[0:idim]
@@ -308,9 +313,10 @@ def diagram(filen, listf, dims):
     kteout = '{:.2f}'.format(float(at2kt) - float(ks2kt) - float(kt2kz))
     kseout = '{:.2f}'.format(float(ks2kt) + float(as2ks) - float(ks2kz))
     kzout = '{:.2f}'.format(float(kt2kz) + float(ks2kz) - float(az2kz))
-    list_lorenz = [azin, apz, asein, aps, atein, apt, as2ks, at2kt, kteout,
-                   kte, kseout, kse, kzout, k_z, az2kz, az2at, az2as, as2at,
-                   kt2kz, ks2kt, ks2kz]
+    list_lorenz = [
+        azin, apz, asein, aps, atein, apt, as2ks, at2kt, kteout, kte, kseout,
+        kse, kzout, k_z, az2kz, az2at, az2as, as2at, kt2kz, ks2kt, ks2kz
+    ]
     flux = fluxogram.Fluxogram(1000, 1000)
     flux.add_storage("AZ", 600, 0, 0)
     flux.add_storage("ASE", 600, 0.75, 0.25)
@@ -349,34 +355,33 @@ def gauaw(n_y):
 
     @author: Valerio Lembo
     """
-    c_c = (1 - (2 / math.pi) ** 2) / 4
+    c_c = (1 - (2 / math.pi)**2) / 4
     eps = 0.00000000000001
     k_k = n_y / 2
     p_a = np.zeros(n_y)
     p_a[0:k_k] = bsslzr(k_k)
     p_w = np.zeros(n_y)
     for i_l in range(k_k):
-        x_z = np.cos(p_a[i_l] / math.sqrt((n_y + 0.5) ** 2 + c_c))
+        x_z = np.cos(p_a[i_l] / math.sqrt((n_y + 0.5)**2 + c_c))
         iterr = 0.
         zsp = 1.0
         while (abs(zsp) > eps and iterr <= 10):
             pkm1 = x_z
             pkm2 = 1.0
             for n_n in range(2, n_y, 1):
-                p_k = ((n_n * 2 - 1.0) * x_z
-                       * pkm1 - (n_n - 1.0) * pkm2) / n_n
+                p_k = ((n_n * 2 - 1.0) * x_z * pkm1 - (n_n - 1.0) * pkm2) / n_n
                 pkm2 = pkm1
                 pkm1 = p_k
             pkm1 = pkm2
-            pkmrk = (n_y * (pkm1 - x_z * p_k)) / (1.0 - x_z ** 2)
+            pkmrk = (n_y * (pkm1 - x_z * p_k)) / (1.0 - x_z**2)
             zsp = p_k / pkmrk
             x_z = x_z - zsp
             iterr = iterr + 1
         if iterr > 15:
             sys.exit("*** no convergence in gauaw ***")
         p_a[i_l] = x_z
-        p_w[i_l] = (2.0 * (1.0 - x_z ** 2)) / ((n_y ** 2) * (pkm1 ** 2))
-        p_a[n_y - 1 - i_l] = - p_a[i_l]
+        p_w[i_l] = (2.0 * (1.0 - x_z**2)) / ((n_y**2) * (pkm1**2))
+        p_a[n_y - 1 - i_l] = -p_a[i_l]
         p_w[n_y - 1 - i_l] = p_w[i_l]
     psi = p_a
     pgw = p_w
@@ -401,14 +406,12 @@ def globall_cg(d3v, g_w, d_s, dims):
     for l_l in range(nlev):
         for i_h in range(nhem):
             aux1[l_l, i_h, :] = fac * np.real(d3v[l_l, i_h, :]) * g_w[i_h]
-            aux2[l_l, i_h, :] = (fac * np.real(d3v[l_l, i_h + nhem - 1, :])
-                                 * g_w[i_h + nhem - 1])
-        aux1v[l_l, :] = (np.nansum(aux1[l_l, :, :], axis=0)
-                         / np.nansum(g_w[0:nhem])
-                         * d_s[l_l])
-        aux2v[l_l, :] = (np.nansum(aux2[l_l, :, :], axis=0)
-                         / np.nansum(g_w[0:nhem])
-                         * d_s[l_l])
+            aux2[l_l, i_h, :] = (fac * np.real(d3v[l_l, i_h + nhem - 1, :]) *
+                                 g_w[i_h + nhem - 1])
+        aux1v[l_l, :] = (np.nansum(aux1[l_l, :, :], axis=0) / np.nansum(
+            g_w[0:nhem]) * d_s[l_l])
+        aux2v[l_l, :] = (np.nansum(aux2[l_l, :, :], axis=0) / np.nansum(
+            g_w[0:nhem]) * d_s[l_l])
     gmn[1, :] = (np.nansum(aux1v, axis=0) / np.nansum(d_s))
     gmn[2, :] = (np.nansum(aux2v, axis=0) / np.nansum(d_s))
     gmn[0, :] = 0.5 * (gmn[1, :] + gmn[2, :])
@@ -499,8 +502,8 @@ def makek(u_t, v_t, nlat, ntp, nlev):
     ck1 = u_t * np.conj(u_t)
     ck2 = v_t * np.conj(v_t)
     e_k = np.real(ck1 + ck2)
-    e_k[:, :, 0] = 0.5 * np.real(u_t[:, :, 0] * u_t[:, :, 0]
-                                 + v_t[:, :, 0] * v_t[:, :, 0])
+    e_k[:, :, 0] = 0.5 * np.real(u_t[:, :, 0] * u_t[:, :, 0] +
+                                 v_t[:, :, 0] * v_t[:, :, 0])
     return e_k
 
 
@@ -510,9 +513,9 @@ def makea(t_t, t_g, gam):
     @author: Valerio Lembo
     """
     ape = gam[:, np.newaxis, np.newaxis] * np.real(t_t * np.conj(t_t))
-    ape[:, :, 0] = (gam[:, np.newaxis] * 0.5
-                    * np.real((t_t[:, :, 0] - t_g[:, np.newaxis]) *
-                              (t_t[:, :, 0] - t_g[:, np.newaxis])))
+    ape[:, :, 0] = (gam[:, np.newaxis] * 0.5 * np.real(
+        (t_t[:, :, 0] - t_g[:, np.newaxis]) *
+        (t_t[:, :, 0] - t_g[:, np.newaxis])))
     return ape
 
 
@@ -521,11 +524,11 @@ def mka2k(wap, t_t, w_g, t_g, p_l):
 
     @author: Valerio Lembo
     """
-    a2k = - (R / p_l[:, np.newaxis, np.newaxis]
-             * (t_t * np.conj(wap) + np.conj(t_t) * wap))
-    a2k[:, :, 0] = - (R / p_l[:, np.newaxis]
-                      * (t_t[:, :, 0] - t_g[:, np.newaxis])
-                      * (wap[:, :, 0] - w_g[:, np.newaxis]))
+    a2k = -(R / p_l[:, np.newaxis, np.newaxis] *
+            (t_t * np.conj(wap) + np.conj(t_t) * wap))
+    a2k[:, :, 0] = -(R / p_l[:, np.newaxis] *
+                     (t_t[:, :, 0] - t_g[:, np.newaxis]) *
+                     (wap[:, :, 0] - w_g[:, np.newaxis]))
     return a2k
 
 
@@ -552,9 +555,9 @@ def mkaeaz(v_t, wap, t_t, ttt, ttg, p_l, lat, gam, nlat, nlev):
             t_2 = t_1
             t_1 = np.real(ttt[l_l - 1, :, 0]) - ttg[l_l - 1]
             dtdp2 = (t_2 - t_1) / (p_l[l_l] - p_l[l_l - 1])
-            dtdp[l_l, :] = ((dtdp1 * (p_l[l_l] - p_l[l_l - 1]) +
-                             dtdp2 * (p_l[l_l + 1] - p_l[l_l]))
-                            / (p_l[l_l + 1] - p_l[l_l - 1]))
+            dtdp[l_l, :] = (
+                (dtdp1 * (p_l[l_l] - p_l[l_l - 1]) + dtdp2 *
+                 (p_l[l_l + 1] - p_l[l_l])) / (p_l[l_l + 1] - p_l[l_l - 1]))
         dtdp[l_l, :] = dtdp[l_l, :] - (R / (CP * p_l[l_l]) *
                                        (ttt[l_l, :, 0] - ttg[l_l]))
     for i_l in np.arange(nlat):
@@ -573,9 +576,8 @@ def mkaeaz(v_t, wap, t_t, ttt, ttg, p_l, lat, gam, nlat, nlev):
     dtdy = dtdy / AA
     c_1 = np.real(v_t * np.conj(t_t) + t_t * np.conj(v_t))
     c_2 = np.real(wap * np.conj(t_t) + t_t * np.conj(wap))
-    ae2az = (gam[:, np.newaxis, np.newaxis]
-             * (dtdy[:, :, np.newaxis] * c_1 +
-                dtdp[:, :, np.newaxis] * c_2))
+    ae2az = (gam[:, np.newaxis, np.newaxis] *
+             (dtdy[:, :, np.newaxis] * c_1 + dtdp[:, :, np.newaxis] * c_2))
     ae2az[:, :, 0] = 0.
     return ae2az
 
@@ -591,47 +593,45 @@ def mkkekz(u_t, v_t, wap, utt, vtt, p_l, lat, nlat, ntp, nlev):
     dvdy = np.zeros([nlev, nlat])
     for l_l in np.arange(nlev):
         if l_l == 0:
-            dudp[l_l, :] = ((np.real(utt[l_l + 1, :, 0] - utt[l_l, :, 0]))
-                            / (p_l[l_l + 1] - p_l[l_l]))
-            dvdp[l_l, :] = ((np.real(vtt[l_l + 1, :, 0] - vtt[l_l, :, 0]))
-                            / (p_l[l_l + 1] - p_l[l_l]))
+            dudp[l_l, :] = ((np.real(utt[l_l + 1, :, 0] - utt[l_l, :, 0])) /
+                            (p_l[l_l + 1] - p_l[l_l]))
+            dvdp[l_l, :] = ((np.real(vtt[l_l + 1, :, 0] - vtt[l_l, :, 0])) /
+                            (p_l[l_l + 1] - p_l[l_l]))
         elif l_l == nlev - 1:
-            dudp[l_l, :] = ((np.real(utt[l_l, :, 0] - utt[l_l - 1, :, 0]))
-                            / (p_l[l_l] - p_l[l_l - 1]))
-            dvdp[l_l, :] = ((np.real(vtt[l_l, :, 0] - vtt[l_l - 1, :, 0]))
-                            / (p_l[l_l] - p_l[l_l - 1]))
+            dudp[l_l, :] = ((np.real(utt[l_l, :, 0] - utt[l_l - 1, :, 0])) /
+                            (p_l[l_l] - p_l[l_l - 1]))
+            dvdp[l_l, :] = ((np.real(vtt[l_l, :, 0] - vtt[l_l - 1, :, 0])) /
+                            (p_l[l_l] - p_l[l_l - 1]))
         else:
-            dudp1 = ((np.real(utt[l_l + 1, :, 0] - utt[l_l, :, 0]))
-                     / (p_l[l_l + 1] - p_l[l_l]))
-            dvdp1 = ((np.real(vtt[l_l + 1, :, 0] - vtt[l_l, :, 0]))
-                     / (p_l[l_l + 1] - p_l[l_l]))
-            dudp2 = ((np.real(utt[l_l, :, 0] - utt[l_l - 1, :, 0]))
-                     / (p_l[l_l] - p_l[l_l - 1]))
-            dvdp2 = ((np.real(vtt[l_l, :, 0] - vtt[l_l - 1, :, 0]))
-                     / (p_l[l_l] - p_l[l_l - 1]))
-            dudp[l_l, :] = ((dudp1 * (p_l[l_l] - p_l[l_l - 1]) +
-                             dudp2 * (p_l[l_l + 1] - p_l[l_l]))
-                            / (p_l[l_l + 1] - p_l[l_l - 1]))
-            dvdp[l_l, :] = ((dvdp1 * (p_l[l_l] - p_l[l_l - 1]) +
-                             dvdp2 * (p_l[l_l + 1] - p_l[l_l]))
-                            / (p_l[l_l + 1] - p_l[l_l - 1]))
+            dudp1 = ((np.real(utt[l_l + 1, :, 0] - utt[l_l, :, 0])) /
+                     (p_l[l_l + 1] - p_l[l_l]))
+            dvdp1 = ((np.real(vtt[l_l + 1, :, 0] - vtt[l_l, :, 0])) /
+                     (p_l[l_l + 1] - p_l[l_l]))
+            dudp2 = ((np.real(utt[l_l, :, 0] - utt[l_l - 1, :, 0])) /
+                     (p_l[l_l] - p_l[l_l - 1]))
+            dvdp2 = ((np.real(vtt[l_l, :, 0] - vtt[l_l - 1, :, 0])) /
+                     (p_l[l_l] - p_l[l_l - 1]))
+            dudp[l_l, :] = (
+                (dudp1 * (p_l[l_l] - p_l[l_l - 1]) + dudp2 *
+                 (p_l[l_l + 1] - p_l[l_l])) / (p_l[l_l + 1] - p_l[l_l - 1]))
+            dvdp[l_l, :] = (
+                (dvdp1 * (p_l[l_l] - p_l[l_l - 1]) + dvdp2 *
+                 (p_l[l_l + 1] - p_l[l_l])) / (p_l[l_l + 1] - p_l[l_l - 1]))
     for i_l in np.arange(nlat):
         if i_l == 0:
-            dudy[:, i_l] = ((np.real(utt[:, i_l + 1, 0] - utt[:, i_l, 0]))
-                            / (lat[i_l + 1] - lat[i_l]))
-            dvdy[:, i_l] = ((np.real(vtt[:, i_l + 1, 0] - vtt[:, i_l, 0]))
-                            / (lat[i_l + 1] - lat[i_l]))
+            dudy[:, i_l] = ((np.real(utt[:, i_l + 1, 0] - utt[:, i_l, 0])) /
+                            (lat[i_l + 1] - lat[i_l]))
+            dvdy[:, i_l] = ((np.real(vtt[:, i_l + 1, 0] - vtt[:, i_l, 0])) /
+                            (lat[i_l + 1] - lat[i_l]))
         elif i_l == nlat - 1:
-            dudy[:, i_l] = ((np.real(utt[:, i_l, 0] - utt[:, i_l - 1, 0]))
-                            / (lat[i_l] - lat[i_l - 1]))
-            dvdy[:, i_l] = ((np.real(vtt[:, i_l, 0] - vtt[:, i_l - 1, 0]))
-                            / (lat[i_l] - lat[i_l - 1]))
+            dudy[:, i_l] = ((np.real(utt[:, i_l, 0] - utt[:, i_l - 1, 0])) /
+                            (lat[i_l] - lat[i_l - 1]))
+            dvdy[:, i_l] = ((np.real(vtt[:, i_l, 0] - vtt[:, i_l - 1, 0])) /
+                            (lat[i_l] - lat[i_l - 1]))
         else:
-            dudy[:, i_l] = ((np.real(utt[:, i_l + 1, 0] -
-                                     utt[:, i_l - 1, 0]))
+            dudy[:, i_l] = ((np.real(utt[:, i_l + 1, 0] - utt[:, i_l - 1, 0]))
                             / (lat[i_l + 1] - lat[i_l - 1]))
-            dvdy[:, i_l] = ((np.real(vtt[:, i_l + 1, 0] -
-                                     vtt[:, i_l - 1, 0]))
+            dvdy[:, i_l] = ((np.real(vtt[:, i_l + 1, 0] - vtt[:, i_l - 1, 0]))
                             / (lat[i_l + 1] - lat[i_l - 1]))
     dudy = dudy / AA
     dvdy = dvdy / AA
@@ -649,12 +649,10 @@ def mkkekz(u_t, v_t, wap, utt, vtt, p_l, lat, nlat, ntp, nlev):
     for i_l in np.arange(nlat):
         c_1[:, i_l, :] = dudy[:, i_l][:, np.newaxis] * u_v[:, i_l, :]
         c_2[:, i_l, :] = dvdy[:, i_l][:, np.newaxis] * v_v[:, i_l, :]
-        c_5[:, i_l, :] = (np.tan(lat[i_l]) / AA *
-                          np.real(utt[:, i_l, 0])[:, np.newaxis] *
-                          (u_v[:, i_l, :]))
-        c_6[:, i_l, :] = - (np.tan(lat[i_l]) / AA *
-                            np.real(vtt[:, i_l, 0])[:, np.newaxis] *
-                            (u_u[:, i_l, :]))
+        c_5[:, i_l, :] = (np.tan(lat[i_l]) / AA * np.real(
+            utt[:, i_l, 0])[:, np.newaxis] * (u_v[:, i_l, :]))
+        c_6[:, i_l, :] = -(np.tan(lat[i_l]) / AA * np.real(
+            vtt[:, i_l, 0])[:, np.newaxis] * (u_u[:, i_l, :]))
     for l_l in np.arange(nlev):
         c_3[l_l, :, :] = dudp[l_l, :][:, np.newaxis] * u_w[l_l, :, :]
         c_4[l_l, :, :] = dvdp[l_l, :][:, np.newaxis] * v_w[l_l, :, :]
@@ -687,56 +685,51 @@ def mkatas(u_t, v_t, wap, t_t, ttt, g_w, p_l, lat, nlat, ntp, nlev):
     c_5 = np.zeros([nlev, nlat, ntp - 1])
     for i_l in range(nlat):
         if i_l == 0:
-            c_2[:, i_l, :] = (t_v[:, i_l, :] /
-                              (AA * (lat[i_l + 1] - lat[i_l])) *
-                              np.conj(ttt[:, i_l + 1, np.newaxis] -
-                                      ttt[:, i_l, np.newaxis]))
-            c_3[:, i_l, :] = (np.conj(t_v[:, i_l, :]) /
-                              (AA * (lat[i_l + 1] - lat[i_l])) *
-                              (ttt[:, i_l + 1, np.newaxis] -
-                               ttt[:, i_l, np.newaxis]))
+            c_2[:, i_l, :] = (
+                t_v[:, i_l, :] / (AA * (lat[i_l + 1] - lat[i_l])) *
+                np.conj(ttt[:, i_l + 1, np.newaxis] - ttt[:, i_l, np.newaxis]))
+            c_3[:, i_l, :] = (
+                np.conj(t_v[:, i_l, :]) / (AA * (lat[i_l + 1] - lat[i_l])) *
+                (ttt[:, i_l + 1, np.newaxis] - ttt[:, i_l, np.newaxis]))
         elif i_l == nlat - 1:
-            c_2[:, i_l, :] = (t_v[:, i_l, :] /
-                              (AA * (lat[i_l] - lat[i_l - 1])) *
-                              np.conj(ttt[:, i_l, np.newaxis] -
-                                      ttt[:, i_l - 1, np.newaxis]))
-            c_3[:, i_l, :] = (np.conj(t_v[:, i_l, :]) /
-                              (AA * (lat[i_l] - lat[i_l - 1])) *
-                              (ttt[:, i_l, np.newaxis] -
-                               ttt[:, i_l - 1, np.newaxis]))
+            c_2[:, i_l, :] = (
+                t_v[:, i_l, :] / (AA * (lat[i_l] - lat[i_l - 1])) *
+                np.conj(ttt[:, i_l, np.newaxis] - ttt[:, i_l - 1, np.newaxis]))
+            c_3[:, i_l, :] = (
+                np.conj(t_v[:, i_l, :]) / (AA * (lat[i_l] - lat[i_l - 1])) *
+                (ttt[:, i_l, np.newaxis] - ttt[:, i_l - 1, np.newaxis]))
         else:
-            c_2[:, i_l, :] = (t_v[:, i_l, :] /
-                              (AA * (lat[i_l + 1] - lat[i_l - 1])) *
-                              np.conj(ttt[:, i_l + 1, np.newaxis] -
-                                      ttt[:, i_l - 1, np.newaxis]))
-            c_3[:, i_l, :] = (np.conj(t_v[:, i_l, :]) /
-                              (AA * (lat[i_l + 1] - lat[i_l - 1])) *
-                              (ttt[:, i_l + 1, np.newaxis] -
-                               ttt[:, i_l - 1, np.newaxis]))
+            c_2[:, i_l, :] = (
+                t_v[:, i_l, :] / (AA * (lat[i_l + 1] - lat[i_l - 1])) *
+                np.conj(ttt[:, i_l + 1, np.newaxis] -
+                        ttt[:, i_l - 1, np.newaxis]))
+            c_3[:, i_l, :] = (
+                np.conj(t_v[:, i_l, :]) / (AA * (lat[i_l + 1] - lat[i_l - 1]))
+                * (ttt[:, i_l + 1, np.newaxis] - ttt[:, i_l - 1, np.newaxis]))
     for l_l in range(nlev):
         if l_l == 0:
-            c_5[l_l, :, :] = ((ttt[l_l + 1, :, np.newaxis] -
-                               ttt[l_l, :, np.newaxis]) /
-                              (p_l[l_l + 1] - p_l[l_l]))
+            c_5[l_l, :, :] = (
+                (ttt[l_l + 1, :, np.newaxis] - ttt[l_l, :, np.newaxis]) /
+                (p_l[l_l + 1] - p_l[l_l]))
         elif l_l == nlev - 1:
-            c_5[l_l, :, :] = ((ttt[l_l, :, np.newaxis] -
-                               ttt[l_l - 1, :, np.newaxis]) /
-                              (p_l[l_l] - p_l[l_l - 1]))
+            c_5[l_l, :, :] = (
+                (ttt[l_l, :, np.newaxis] - ttt[l_l - 1, :, np.newaxis]) /
+                (p_l[l_l] - p_l[l_l - 1]))
         else:
-            c51 = ((ttt[l_l + 1, :, np.newaxis] - ttt[l_l, :, np.newaxis])
-                   / (p_l[l_l + 1] - p_l[l_l]))
-            c52 = ((ttt[l_l, :, np.newaxis] - ttt[l_l - 1, :, np.newaxis])
-                   / (p_l[l_l] - p_l[l_l - 1]))
-            c_5[l_l, :, :] = ((c51 * (p_l[l_l] - p_l[l_l - 1]) +
-                               c52 * (p_l[l_l + 1] - p_l[l_l]))
-                              / (p_l[l_l + 1] - p_l[l_l - 1]))
+            c51 = ((ttt[l_l + 1, :, np.newaxis] - ttt[l_l, :, np.newaxis]) /
+                   (p_l[l_l + 1] - p_l[l_l]))
+            c52 = ((ttt[l_l, :, np.newaxis] - ttt[l_l - 1, :, np.newaxis]) /
+                   (p_l[l_l] - p_l[l_l - 1]))
+            c_5[l_l, :, :] = (
+                (c51 * (p_l[l_l] - p_l[l_l - 1]) + c52 *
+                 (p_l[l_l + 1] - p_l[l_l])) / (p_l[l_l + 1] - p_l[l_l - 1]))
     k_k = np.arange(0, ntp - 1)
-    at2as = (((k_k - 1)[np.newaxis, np.newaxis, :] * np.imag(c_1)
-              / (AA * np.cos(lat[np.newaxis, :, np.newaxis]))
-              + np.real(t_w * np.conj(c_5) + np.conj(t_w) * c_5)
-              + np.real(c_2 + c_3)
-              + R / (CP * p_l[:, np.newaxis, np.newaxis])
-              * np.real(c_6)) * g_w[:, :, np.newaxis])
+    at2as = (
+        ((k_k - 1)[np.newaxis, np.newaxis, :] * np.imag(c_1) /
+         (AA * np.cos(lat[np.newaxis, :, np.newaxis])) +
+         np.real(t_w * np.conj(c_5) + np.conj(t_w) * c_5) + np.real(c_2 + c_3)
+         + R / (CP * p_l[:, np.newaxis, np.newaxis]) * np.real(c_6)) *
+        g_w[:, :, np.newaxis])
     at2as[:, :, 0] = 0.
     return at2as
 
@@ -779,11 +772,10 @@ def mkktks(u_t, v_t, utt, vtt, lat, nlat, ntp, nlev):
     c41 = np.conj(v_v) * dvt / dlat[np.newaxis, :, np.newaxis]
     c42 = v_v * np.conj(dvt) / dlat[np.newaxis, :, np.newaxis]
     k_k = np.arange(0, ntp - 1)
-    kt2ks = (np.real(c21 + c22 + c41 + c42) / AA
-             + np.tan(lat)[np.newaxis, :, np.newaxis]
-             * np.real(c_1 - c_5) / AA + np.imag(c_1 + c_6)
-             * (k_k - 1)[np.newaxis, np.newaxis, :]
-             / (AA * np.cos(lat)[np.newaxis, :, np.newaxis]))
+    kt2ks = (np.real(c21 + c22 + c41 + c42) / AA +
+             np.tan(lat)[np.newaxis, :, np.newaxis] * np.real(c_1 - c_5) / AA +
+             np.imag(c_1 + c_6) * (k_k - 1)[np.newaxis, np.newaxis, :] /
+             (AA * np.cos(lat)[np.newaxis, :, np.newaxis]))
     kt2ks[:, :, 0] = 0
     return kt2ks
 
@@ -833,12 +825,10 @@ def pr_output(varo, varname, filep, nc_f):
     w_nc_fid.description = "Outputs of LEC program"
     fourc.extr_lat(nc_fid, w_nc_fid)
     w_nc_fid.createDimension('wave', ntp)
-    w_nc_dim = w_nc_fid.createVariable('wave',
-                                       nc_fid.variables['wave'].dtype,
-                                       ('wave',))
+    w_nc_dim = w_nc_fid.createVariable('wave', nc_fid.variables['wave'].dtype,
+                                       ('wave', ))
     for ncattr in nc_fid.variables['wave'].ncattrs():
-        w_nc_dim.setncattr(ncattr,
-                           nc_fid.variables['wave'].getncattr(ncattr))
+        w_nc_dim.setncattr(ncattr, nc_fid.variables['wave'].getncattr(ncattr))
     w_nc_fid.variables['wave'][:] = wave[0:ntp]
     nc_fid.close()
     w_nc_var = w_nc_fid.createVariable(varname, 'f8', ('lat', 'wave'))
@@ -890,22 +880,30 @@ def preproc_lec(model, wdir, pdir, filelist):
     ua_file_mask = wdir + '/ua_fill.nc'
     va_file_mask = wdir + '/va_fill.nc'
     energy3_file = wdir + '/energy_short.nc'
-    cdo.setmisstoc('0', input='-setmisstoc,1 -sub {} {}'
-                   .format(ua_file, ua_file), options='-b F32',
-                   output=maskorog)
-    cdo.add(input=('-setmisstoc,0 -selvar,ua {} '
-                   '-setmisstoc,0 -mul {} -selvar,ua {}')
-            .format(ua_file, uas_file, maskorog), options='-b F32',
-            output=ua_file_mask)
-    cdo.add(input=('-setmisstoc,0 -selvar,va {} '
-                   '-setmisstoc,0 -mul {} -selvar,ua {}')
-            .format(va_file, vas_file, maskorog), options='-b F32',
-            output=va_file_mask)
-    cdo.setmisstoc('0', input=('-invertlat -sellevel,10000/90000 '
-                               '-merge {} {} {} {}')
-                   .format(ta_file, ua_file_mask,
-                           va_file_mask, wap_file),
-                   options='-b F32', output=energy3_file)
+    cdo.setmisstoc(
+        '0',
+        input='-setmisstoc,1 -sub {} {}'.format(ua_file, ua_file),
+        options='-b F32',
+        output=maskorog)
+    cdo.add(
+        input=('-setmisstoc,0 -selvar,ua {} '
+               '-setmisstoc,0 -mul {} -selvar,ua {}').format(
+                   ua_file, uas_file, maskorog),
+        options='-b F32',
+        output=ua_file_mask)
+    cdo.add(
+        input=('-setmisstoc,0 -selvar,va {} '
+               '-setmisstoc,0 -mul {} -selvar,ua {}').format(
+                   va_file, vas_file, maskorog),
+        options='-b F32',
+        output=va_file_mask)
+    cdo.setmisstoc(
+        '0',
+        input=('-invertlat -sellevel,10000/90000 '
+               '-merge {} {} {} {}').format(ta_file, ua_file_mask,
+                                            va_file_mask, wap_file),
+        options='-b F32',
+        output=energy3_file)
     yrs = cdo.showyear(input=energy3_file)
     yrs = str(yrs)
     yrs2 = yrs.split()
@@ -917,10 +915,9 @@ def preproc_lec(model, wdir, pdir, filelist):
         tasfile_yr = wdir + '/tas_yr.nc'
         tadiag_file = wdir + '/ta_filled.nc'
         ncfile = wdir + '/fourier_coeff.nc'
-        cdo.selyear(y_r, input=energy3_file, options='-b F32',
-                    output=enfile_yr)
-        cdo.selyear(y_r, input=tas_file, options='-b F32',
-                    output=tasfile_yr)
+        cdo.selyear(
+            y_r, input=energy3_file, options='-b F32', output=enfile_yr)
+        cdo.selyear(y_r, input=tas_file, options='-b F32', output=tasfile_yr)
         fourc.fourier_coeff(tadiag_file, ncfile, enfile_yr, tasfile_yr)
         diagfile = (ldir + '/{}_{}_lec_diagram.png'.format(model, y_r))
         logfile = (ldir + '/{}_{}_lec_table.txt'.format(model, y_r))
@@ -952,9 +949,9 @@ def stabil(ta_gmn, p_l, nlev):
         else:
             dtdp1 = (t_g[i_l + 1] - t_g[i_l]) / (p_l[i_l + 1] - p_l[i_l])
             dtdp2 = (t_g[i_l] - t_g[i_l - 1]) / (p_l[i_l] - p_l[i_l - 1])
-            dtdp = ((dtdp1 * (p_l[i_l] - p_l[i_l - 1]) +
-                     dtdp2 * (p_l[i_l + 1] - p_l[i_l]))
-                    / (p_l[i_l + 1] - p_l[i_l - 1]))
+            dtdp = (
+                (dtdp1 * (p_l[i_l] - p_l[i_l - 1]) + dtdp2 *
+                 (p_l[i_l + 1] - p_l[i_l])) / (p_l[i_l + 1] - p_l[i_l - 1]))
         g_s[i_l] = CP / (t_g[i_l] - p_l[i_l] * dtdp * cpdr)
     return g_s
 
@@ -996,25 +993,37 @@ def varatts(w_nc_var, varname, tres, vres):
     elif vres == 1:
         vatt = u"Vertically integrated\n"
     if varname == 'a':
-        w_nc_var.setncatts({'long_name': u"Available Potential Energy",
-                            'units': u"W m-2", 'level_desc': vatt,
-                            'var_desc': u"APE -> KE",
-                            'statistic': tatt})
+        w_nc_var.setncatts({
+            'long_name': u"Available Potential Energy",
+            'units': u"W m-2",
+            'level_desc': vatt,
+            'var_desc': u"APE -> KE",
+            'statistic': tatt
+        })
     elif varname == 'ek':
-        w_nc_var.setncatts({'long_name': u"Kinetic Energy",
-                            'units': u"W m-2", 'level_desc': vatt,
-                            'var_desc': u"APE -> KE",
-                            'statistic': tatt})
+        w_nc_var.setncatts({
+            'long_name': u"Kinetic Energy",
+            'units': u"W m-2",
+            'level_desc': vatt,
+            'var_desc': u"APE -> KE",
+            'statistic': tatt
+        })
     elif varname == 'a2k':
-        w_nc_var.setncatts({'long_name': u"Conversion between APE and KE",
-                            'units': u"W m-2", 'level_desc': vatt,
-                            'var_desc': u"APE <-> KE",
-                            'statistic': tatt})
+        w_nc_var.setncatts({
+            'long_name': u"Conversion between APE and KE",
+            'units': u"W m-2",
+            'level_desc': vatt,
+            'var_desc': u"APE <-> KE",
+            'statistic': tatt
+        })
     elif varname == 'k':
-        w_nc_var.setncatts({'long_name': u"Kinetic Energy",
-                            'units': u"W m-2", 'level_desc': vatt,
-                            'var_desc': u"APE -> KE",
-                            'statistic': tatt})
+        w_nc_var.setncatts({
+            'long_name': u"Kinetic Energy",
+            'units': u"W m-2",
+            'level_desc': vatt,
+            'var_desc': u"APE -> KE",
+            'statistic': tatt
+        })
 
 
 def weights(lev, nlev, lat):
@@ -1035,8 +1044,8 @@ def weights(lev, nlev, lat):
     for j_l in range(1, nlev - 1, 1):
         d_s[j_l] = 0.5 * abs(sig[j_l + 1] - sig[j_l - 1])
     d_s[0] = sig[0] + 0.5 * abs(sig[1] - sig[0])
-    d_s[nlev - 1] = 1 - sig[nlev - 1] + 0.5 * abs(sig[nlev - 1] -
-                                                  sig[nlev - 2])
+    d_s[nlev -
+        1] = 1 - sig[nlev - 1] + 0.5 * abs(sig[nlev - 1] - sig[nlev - 2])
     # Compute Gaussian weights
     y_l = np.deg2rad(lat)
     g_w = np.cos(y_l)
@@ -1057,21 +1066,21 @@ def write_to_tab(log, name, vared, varzon):
     Valerio Lembo, University of Hamburg (2019).
     """
     vartot = varzon + vared[0]
-    log.write(' {} TOTAL    {: 4.3f}  {: 4.3f}  {: 4.3f}\n'
-              .format(name, vartot[0], vartot[1], vartot[2]))
+    log.write(' {} TOTAL    {: 4.3f}  {: 4.3f}  {: 4.3f}\n'.format(
+        name, vartot[0], vartot[1], vartot[2]))
     log.write('--------------------------------------\n')
-    log.write(' {} ZONAL    {: 4.3f}  {: 4.3f}  {: 4.3f}\n'
-              .format(name, varzon[0], varzon[1], varzon[2]))
+    log.write(' {} ZONAL    {: 4.3f}  {: 4.3f}  {: 4.3f}\n'.format(
+        name, varzon[0], varzon[1], varzon[2]))
     log.write('--------------------------------------\n')
-    log.write(' {} EDDY     {: 4.3f}  {: 4.3f}  {: 4.3f}\n'
-              .format(name, vared[0][0], vared[0][1], vared[0][2]))
+    log.write(' {} EDDY     {: 4.3f}  {: 4.3f}  {: 4.3f}\n'.format(
+        name, vared[0][0], vared[0][1], vared[0][2]))
     log.write('--------------------------------------\n')
-    log.write(' {} EDDY(LW) {: 4.3f}  {: 4.3f}  {: 4.3f}\n'
-              .format(name, vared[1][0], vared[1][1], vared[1][2]))
+    log.write(' {} EDDY(LW) {: 4.3f}  {: 4.3f}  {: 4.3f}\n'.format(
+        name, vared[1][0], vared[1][1], vared[1][2]))
     log.write('--------------------------------------\n')
-    log.write(' {} EDDY(SW) {: 4.3f}  {: 4.3f}  {: 4.3f}\n'
-              .format(name, vared[2][0], vared[2][1], vared[2][2]))
+    log.write(' {} EDDY(SW) {: 4.3f}  {: 4.3f}  {: 4.3f}\n'.format(
+        name, vared[2][0], vared[2][1], vared[2][2]))
     log.write('--------------------------------------\n')
-    log.write(' {} EDDY(KW) {: 4.3f}  {: 4.3f}  {: 4.3f}\n'
-              .format(name, vared[3][0], vared[3][1], vared[3][2]))
+    log.write(' {} EDDY(KW) {: 4.3f}  {: 4.3f}  {: 4.3f}\n'.format(
+        name, vared[3][0], vared[3][1], vared[3][2]))
     log.write('--------------------------------------\n')

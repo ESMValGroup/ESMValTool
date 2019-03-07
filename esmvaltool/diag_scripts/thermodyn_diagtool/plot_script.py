@@ -15,18 +15,20 @@ The module provides plots for a single model of:
 @author: Valerio Lembo, University of Hamburg, 2018.
 """
 from __future__ import division
+
+import math
 import os
 from shutil import move
-import math
-from matplotlib import rcParams
-import matplotlib.pyplot as plt
-from netCDF4 import Dataset
-import numpy as np
-from scipy import interpolate
-from scipy import stats
+
 import cartopy.crs as ccrs
-from cdo import Cdo
+import matplotlib.pyplot as plt
+import numpy as np
 from esmvaltool.diag_scripts.thermodyn_diagtool import fourier_coefficients
+from matplotlib import rcParams
+from netCDF4 import Dataset
+from scipy import interpolate, stats
+
+from cdo import Cdo
 
 
 def balances(wdir, plotpath, filena, name, model):
@@ -59,13 +61,15 @@ def balances(wdir, plotpath, filena, name, model):
     lim = [55, 55, 25]
     for i_f in np.arange(nsub):
         transp = transport(zmean[i_f, :, :], timeser[i_f, :, 0], dims[1])
-        transp_mean[i_f, :], list_peak = transports_preproc(dims[1], ndims[3],
-                                                            lim[i_f], transp)
+        transp_mean[i_f, :], list_peak = transports_preproc(
+            dims[1], ndims[3], lim[i_f], transp)
         lat_maxm[i_f, :, :] = list_peak[0]
         tr_maxm[i_f, :, :] = list_peak[1]
     if nsub == 3:
-        ext_name = ['TOA Energy Budget', 'Atmospheric Energy Budget',
-                    'Surface Energy Budget']
+        ext_name = [
+            'TOA Energy Budget', 'Atmospheric Energy Budget',
+            'Surface Energy Budget'
+        ]
         transpty = (-6E15, 6E15)
         timesery[0, :] = (-2, 2)
         timesery[1, :] = (-1, 1)
@@ -88,11 +92,12 @@ def balances(wdir, plotpath, filena, name, model):
             pr_output(transp_mean[i, :], filename, nc_f, nameout)
             name_model = '{}_{}'.format(nameout, model)
             lat_model = 'lat_{}'.format(model)
-            cdo.chname('{},{}'.format(nameout, name_model), input=nc_f,
-                       output='aux.nc')
+            cdo.chname(
+                '{},{}'.format(nameout, name_model),
+                input=nc_f,
+                output='aux.nc')
             move('aux.nc', nc_f)
-            cdo.chname('lat,{}'.format(lat_model), input=nc_f,
-                       output='aux.nc')
+            cdo.chname('lat,{}'.format(lat_model), input=nc_f, output='aux.nc')
             move('aux.nc', nc_f)
             plot_1m_transp(lats, transp_mean[i, :], transpty, strings)
         plt.grid()
@@ -138,8 +143,11 @@ def balances(wdir, plotpath, filena, name, model):
         plt.title('Annual mean {}'.format(ext_name[i_f]))
         plt.xlabel('Years')
         plt.ylabel('[W/m2]')
-        axi.legend(loc='upper center', bbox_to_anchor=(0.5, -0.07),
-                   shadow=True, ncol=3)
+        axi.legend(
+            loc='upper center',
+            bbox_to_anchor=(0.5, -0.07),
+            shadow=True,
+            ncol=3)
         plt.tight_layout()
         plt.ylim(timesery[i_f, :])
         plt.grid()
@@ -268,14 +276,14 @@ def hemean(hem, lat, inp):
         if j_end % 2 == 0:
             hmean = np.nansum(zmn[:, j_end / 2 + 1:j_end], axis=1)
         else:
-            hmean = (np.nansum(zmn[:, (j_end + 3) / 2:j_end], axis=1)
-                     + 0.5 * zmn[:, (j_end + 3) / 2 - 1])
+            hmean = (np.nansum(zmn[:, (j_end + 3) / 2:j_end], axis=1) +
+                     0.5 * zmn[:, (j_end + 3) / 2 - 1])
     else:
         if j_end % 2 == 0:
             hmean = np.nansum(zmn[:, 1:j_end / 2], axis=1)
         else:
-            hmean = (np.nansum(zmn[:, 1:(j_end - 1) / 2], axis=1)
-                     + 0.5 * zmn[:, (j_end - 1) / 2 + 1])
+            hmean = (np.nansum(zmn[:, 1:(j_end - 1) / 2], axis=1) +
+                     0.5 * zmn[:, (j_end - 1) / 2 + 1])
     return hmean
 
 
@@ -400,8 +408,14 @@ def plot_climap(axi, coords, fld, title, rrange, c_m):
     """
     axi.coastlines()
     plt.contourf(coords[0], coords[1], fld, 60, transform=ccrs.PlateCarree())
-    plt.pcolor(coords[0], coords[1], fld, vmin=rrange[0], vmax=rrange[1],
-               cmap=c_m, antialiaseds='True')
+    plt.pcolor(
+        coords[0],
+        coords[1],
+        fld,
+        vmin=rrange[0],
+        vmax=rrange[1],
+        cmap=c_m,
+        antialiaseds='True')
     plt.colorbar()
     plt.title(title)
     plt.grid()
@@ -430,7 +444,7 @@ def plot_ellipse(semimaj, semimin, phi, x_cent, y_cent, a_x):
     @author: Nicholas Kern, 2016 - revised by Valerio Lembo, 2018
     """
     theta = np.linspace(0, 2 * np.pi, 100)
-    r_r = 1 / np.sqrt((np.cos(theta)) ** 2 + (np.sin(theta)) ** 2)
+    r_r = 1 / np.sqrt((np.cos(theta))**2 + (np.sin(theta))**2)
     x_x = r_r * np.cos(theta)
     y_x = r_r * np.sin(theta)
     data = np.array([x_x, y_x])
@@ -480,19 +494,15 @@ def plot_1m_scatter(model, pdir, lat_maxm, tr_maxm):
     axi.set_figsize = (50, 50)
     plt.scatter(lat_maxm[1, 0, :], lat_maxm[2, 0, :], c=(0, 0, 0), alpha=1)
     plt.title('(c) Atm. vs ocean location - SH', fontsize=13, y=1.02)
-    plt.xlabel('Atmos. trans. position [degrees of latitude]',
-               fontsize=11)
-    plt.ylabel('Oceanic trans. position [degrees of latitude]',
-               fontsize=11)
+    plt.xlabel('Atmos. trans. position [degrees of latitude]', fontsize=11)
+    plt.ylabel('Oceanic trans. position [degrees of latitude]', fontsize=11)
     plt.grid()
     axi = plt.subplot(224)
     axi.set_figsize = (50, 50)
     plt.scatter(lat_maxm[1, 1, :], lat_maxm[2, 1, :], c=(0, 0, 0), alpha=1)
     plt.title('(d) Atm. vs ocean location - NH', fontsize=13, y=1.02)
-    plt.xlabel('Atmos. trans. position [degrees of latitude]',
-               fontsize=11)
-    plt.ylabel('Oceanic trans. position [degrees of latitude]',
-               fontsize=11)
+    plt.xlabel('Atmos. trans. position [degrees of latitude]', fontsize=11)
+    plt.ylabel('Oceanic trans. position [degrees of latitude]', fontsize=11)
     plt.grid()
     plt.savefig(pdir + '/{}_scatpeak.png'.format(model))
     plt.close(fig)
@@ -570,9 +580,13 @@ def plot_mm_ebscatter(pdir, eb_list):
     varlist = [surb_all[:, 0], surb_all[:, 1]]
     axi = plt.subplot(224)
     axi.set_figsize = (50, 50)
-    plt.errorbar(x=atmb_all[:, 0], y=surb_all[:, 0],
-                 xerr=atmb_all[:, 1], yerr=surb_all[:, 1],
-                 fmt='none', ecolor=(0, 0, 0))
+    plt.errorbar(
+        x=atmb_all[:, 0],
+        y=surb_all[:, 0],
+        xerr=atmb_all[:, 1],
+        yerr=surb_all[:, 1],
+        fmt='none',
+        ecolor=(0, 0, 0))
     title = '(b) Atmospheric vs. Surface budget'
     xlabel = 'F_a [W m-2]'
     ylabel = 'F_s [W m-2]'
@@ -606,8 +620,12 @@ def plot_mm_scatter(axi, varlist, title, xlabel, ylabel):
     plt.scatter(np.nanmean(xval), np.nanmean(yval), c='red')
     s_l, _, _, _, _ = stats.linregress(xval, yval)
     plot_ellipse(
-        semimaj=np.nanstd(xval), semimin=np.nanstd(yval), phi=np.arctan(s_l),
-        x_cent=np.nanmean(xval), y_cent=np.nanmean(yval), a_x=axi)
+        semimaj=np.nanstd(xval),
+        semimin=np.nanstd(yval),
+        phi=np.arctan(s_l),
+        x_cent=np.nanmean(xval),
+        y_cent=np.nanmean(yval),
+        a_x=axi)
     plt.title(title, fontsize=12)
     rcParams['axes.titlepad'] = 1
     rcParams['axes.labelpad'] = 1
@@ -616,9 +634,10 @@ def plot_mm_scatter(axi, varlist, title, xlabel, ylabel):
     d_x = 0.01 * (max(xval) - min(xval))
     d_y = 0.01 * (max(yval) - min(yval))
     for i_m in np.arange(modnum):
-        axi.annotate(str(i_m + 1), (xval[i_m], yval[i_m]),
-                     xytext=(xval[i_m] + d_x, yval[i_m] + d_y),
-                     fontsize=12)
+        axi.annotate(
+            str(i_m + 1), (xval[i_m], yval[i_m]),
+            xytext=(xval[i_m] + d_x, yval[i_m] + d_y),
+            fontsize=12)
     axi.tick_params(axis='both', which='major', labelsize=12)
     plt.subplots_adjust(hspace=.3)
     plt.grid()
@@ -653,8 +672,8 @@ def plot_mm_scatter_spec(axi, varlist, title, xlabel, ylabel):
     y_y = np.linspace(min(yval) - 0.1 * yrang, max(yval) + 0.1 * yrang, 10)
     x_m, y_m = np.meshgrid(x_x, y_y)
     z_m = x_m + y_m
-    c_p = plt.contour(x_m, y_m, z_m, colors='black', linestyles='dashed',
-                      linewidths=1.)
+    c_p = plt.contour(
+        x_m, y_m, z_m, colors='black', linestyles='dashed', linewidths=1.)
     plt.clabel(c_p, inline=True, inline_spacing=-4, fontsize=8)
     plot_mm_scatter(axi, varlist, title, xlabel, ylabel)
 
@@ -852,10 +871,9 @@ def transport(zmean, gmean, lat):
     cumb = np.zeros((np.shape(zmean)[0], np.shape(zmean)[1]))
     transp = np.zeros((np.shape(zmean)[0], np.shape(zmean)[1]))
     for j_l in range(len(lat) - 1):
-        cumb[:, j_l] = (-2 * np.nansum(latwgt(lat[j_l:len(lat)],
-                                              zmn_ub[:, j_l:len(lat)]),
-                                       axis=1))
-    r_earth = 6.371 * 10 ** 6
+        cumb[:, j_l] = (-2 * np.nansum(
+            latwgt(lat[j_l:len(lat)], zmn_ub[:, j_l:len(lat)]), axis=1))
+    r_earth = 6.371 * 10**6
     transp = 2 * p_i * cumb * r_earth * r_earth
     return [zmn_ub, transp]
 
@@ -879,8 +897,7 @@ def transp_max(lat, transp, lim):
     for value in x_c:
         if abs(value) <= lim:
             xc_cut[j_p] = value
-            y_i[j_p] = interpolate.interp1d(lat, transp,
-                                            kind='cubic')(value)
+            y_i[j_p] = interpolate.interp1d(lat, transp, kind='cubic')(value)
             j_p = j_p + 1
             if j_p == 2:
                 break
@@ -934,21 +951,35 @@ def varatts(w_nc_var, varname):
     @author: Chris Slocum (2014), modified by Valerio Lembo (2018).
     """
     if varname == 'total':
-        w_nc_var.setncatts({'long_name': u"Total merid. heat transport",
-                            'units': u"W", 'level_desc': 'TOA'})
+        w_nc_var.setncatts({
+            'long_name': u"Total merid. heat transport",
+            'units': u"W",
+            'level_desc': 'TOA'
+        })
     elif varname == 'atmos':
-        w_nc_var.setncatts({'long_name': u"Atmos. merid. heat transport",
-                            'units': u"W",
-                            'level_desc': 'Vertically integrated'})
+        w_nc_var.setncatts({
+            'long_name': u"Atmos. merid. heat transport",
+            'units': u"W",
+            'level_desc': 'Vertically integrated'
+        })
     elif varname == 'ocean':
-        w_nc_var.setncatts({'long_name': u"Ocean. merid. heat transport",
-                            'units': u"W", 'level_desc': 'sfc'})
+        w_nc_var.setncatts({
+            'long_name': u"Ocean. merid. heat transport",
+            'units': u"W",
+            'level_desc': 'sfc'
+        })
     elif varname == 'wmb':
-        w_nc_var.setncatts({'long_name': u"Merid. water mass transport",
-                            'units': u"Kg*s-1", 'level_desc': 'sfc'})
+        w_nc_var.setncatts({
+            'long_name': u"Merid. water mass transport",
+            'units': u"Kg*s-1",
+            'level_desc': 'sfc'
+        })
     elif varname == 'latent':
-        w_nc_var.setncatts({'long_name': u"Merid. latent heat transport",
-                            'units': u"W", 'level_desc': 'sfc'})
+        w_nc_var.setncatts({
+            'long_name': u"Merid. latent heat transport",
+            'units': u"W",
+            'level_desc': 'sfc'
+        })
 
 
 def zerocross1d(x_x, y_y):
@@ -974,7 +1005,7 @@ def zerocross1d(x_x, y_y):
     indi = np.where(y_y[1:] * y_y[0:-1] < 0.0)[0]
     d_x = x_x[indi + 1] - x_x[indi]
     d_y = y_y[indi + 1] - y_y[indi]
-    z_c = - y_y[indi] * (d_x / d_y) + x_x[indi]
+    z_c = -y_y[indi] * (d_x / d_y) + x_x[indi]
     z_i = np.where(y_y == 0.0)[0]
     z_i = z_i[np.where((z_i > 0) & (z_i < x_x.size - 1))]
     z_i = z_i[np.where(y_y[z_i - 1] * y_y[z_i + 1] < 0.0)]
