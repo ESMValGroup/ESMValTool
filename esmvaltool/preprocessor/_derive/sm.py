@@ -32,9 +32,9 @@ class DerivedVariable(DerivedVariableBase):
             Constraint(name='moisture_content_of_soil_layer'))
 
         depth = mrsos_cube.coord('depth').bounds
-        height = depth[..., 1] - depth[..., 0]
+        layer_thickness = depth[..., 1] - depth[..., 0]
 
-        sm_cube = mrsos_cube / height / 998.2
+        sm_cube = mrsos_cube / layer_thickness / 998.2
         sm_cube.units = cf_units.Unit('m3 m^-3')
         sm_cube.data = np.ma.array(sm_cube.data, dtype=np.dtype('float32'))
 
