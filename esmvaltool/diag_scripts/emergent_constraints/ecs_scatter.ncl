@@ -943,7 +943,9 @@ begin
   log_info("++++++++++++++++++++++++++++++++++++++++++")
 
   tmp = metadata_att_as_array(input_file_info, "dataset")
+
   names = get_unique_values(tmp)  ; note: get_unique_values sorts array!
+
   delete(tmp)
   dim_MOD = dimsizes(names)
 
@@ -1074,7 +1076,7 @@ begin
 
   model_ind_woref = ind(model_ind.ge.0)
   if (flag_mean) then
-    model_ind_worefmmm = ind(model_ind_woref.ne.mmm_ind)
+    model_ind_worefmmm = model_ind_woref(ind(model_ind_woref.ne.mmm_ind))
   else
     model_ind_worefmmm = model_ind_woref
   end if
@@ -1599,6 +1601,7 @@ begin
   ECS&model = names
   ECS@var = "ECS"
   ECS@diag_script = DIAG_SCRIPT
+
   nc_outfile = ncdf_write(ECS, nc_filename)
 
   ; ------------------------------------------------------------------------

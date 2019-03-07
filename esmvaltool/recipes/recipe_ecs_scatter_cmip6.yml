@@ -11,7 +11,7 @@ documentation:
     4) covariance of shortwave cloud reflection (Brient and Schneider, 2016)
     5) climatological Hadley cell extent (Lipat et al., 2017)
 
-    *******************************************************************************
+    ***************************************************************************
     Note: this recipe requires pre-calulation of the equilirium climate
           sensitivites (ECS) for all models. The ECS values are calculated
           with recipe_ecs.yml. The netcdf file containing the ECS values
@@ -23,7 +23,7 @@ documentation:
           2) run command: ncgen -o ecs_cmip.nc ecs_cmip.cdl
           3) copy ecs_cmip.nc to directory given by diag_script_info@ecs_file
              (e.g. $diag_scripts/emergent_constraints/ecs_cmip.nc)
-*******************************************************************************
+    ***************************************************************************
 
   authors:
     - laue_ax
@@ -95,7 +95,6 @@ diagnostics:
         ecs_file: $diag_scripts/emergent_constraints/ecs_cmip.nc
         legend_outside: False
         predef_minmax: True
-        styleset: CMIP5
         script: emergent_constraints/ecs_scatter.ncl
 
   humidx:
