@@ -61,16 +61,6 @@ References
 
 * Weigel, A. P., Liniger, M. A., & Appenzeller, C. (2008). Can multi-model combinations really enhance the prediction skill of probabilistic ensemble forecasts? Quarterly Journal of the Royal Meteorological Society, 134(630), 241-260.
 
-Example plots
--------------
-
-.. centered:: |pic_toymodel|
-
-.. |pic_toymodel| image:: /esmvaltool/recipes/figures/toymodel/toymodel.png
-   :width: 80%
-
-
-
 
 Example plots
 -------------
