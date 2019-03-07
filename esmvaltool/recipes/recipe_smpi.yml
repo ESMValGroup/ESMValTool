@@ -17,7 +17,7 @@ documentation:
     - eyri_ve
 
   references:
-    - rk2008bams 
+    - rk2008bams
 
   projects:
     - crescendo
@@ -255,7 +255,7 @@ diagnostics:
     additional_datasets:
       - {dataset: GPCP-SG,      project: obs4mips, level: L3, version: v2.2, start_year: 1980, end_year: 1982, tier: 1}
     scripts:
-       grading:
+      grading:
         script: perfmetrics/main.ncl
         plot_type: cycle_latlon
         time_avg: yearly
