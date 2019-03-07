@@ -32,10 +32,6 @@ class Fluxogram():
     and fluxes.
     """
 
-    # disable-msg=R0914
-    # pylint: disable-msg=R0914
-    # pylint: disable=too-many-arguments
-    # pylint: disable=too-many-branches
     def __init__(self, max_flux, max_storage, grid_size=20):
         """Initialize a fluxogram. must be called with.
 
@@ -80,7 +76,6 @@ class Fluxogram():
         self.update_all_fluxes(amounts_fluxes)
         self.update_all_storages(amounts_storages)
 
-    # flake8: noqa
     def draw(self, filen, listv):
         """Draw all fluxes and storages."""
         fig = plt.figure()
@@ -255,13 +250,6 @@ class Fluxogram():
 class Flux:
     """Contain a flux of a fluxogram."""
 
-    # pylint: disable=too-many-instance-attributes
-    # Twelve is reasonable in this case.
-    # pylint: disable=too-many-arguments
-    # Six is reasonable in this case.
-    # pylint: disable-msg=R0915
-    # Sixtyseven is reasonable in this case.
-
     def __init__(self, name, grid_size, from_storage, to_storage, amount=0):
         """Initialize a flux.
 
@@ -379,11 +367,6 @@ class Flux:
 
 class Storage:
     """Contain a storage of a fluxogram."""
-
-    # pylint: disable=too-many-instance-attributes
-    # Eight is reasonable in this case.
-    # pylint: disable=too-many-arguments
-    # Seven is reasonable in this case.
 
     def __init__(self, name, grid_size, number, amount=0, order=0, offset=0):
         """Initialize a storage.

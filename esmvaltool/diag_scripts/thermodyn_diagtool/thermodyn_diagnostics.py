@@ -187,7 +187,6 @@ considered as equal to the kinetic energy dissipated to heating.
 #############################################################################
 """
 
-# pylint: disable-msg=C0412
 import os
 import warnings
 # New packages for version 2.0 of ESMValTool
@@ -205,13 +204,6 @@ warnings.filterwarnings("ignore", message="numpy.dtype size changed")
 logger = logging.getLogger(os.path.basename(__file__))
 
 
-# pylint: disable=C0302
-# pylint: disable-msg=C0302
-# pylint: disable-msg=R0914
-# pylint: disable-msg=R0915
-# pylint: disable=too-many-branches
-# pylint: disable-msg=unused-argument
-# flake8: noqa
 def main(cfg):
     """Execute the program.
 
@@ -320,7 +312,7 @@ def main(cfg):
                           ['toab', 'atmb', 'surb'], model)
         logger.info('Done\n')
         # Water mass budget
-        if wat in {'y', 'yes'}:
+        if wat is True:
             logger.info('Computing water mass and latent energy budgets\n')
             _, _, _, aux_list = mkthe.init_mkthe(
                 model, wdir, filenames, flags)
@@ -339,7 +331,7 @@ def main(cfg):
             logger.info('Done\n')
         else:
             pass
-        if lsm in {'y', 'yes'}:
+        if lsm is True:
             logger.info('Computing energy budgets over land and oceans\n')
             toab_oc_gmean, toab_la_gmean = comp.landoc_budg(model, wdir,
                                                             eb_file[0],
@@ -368,7 +360,7 @@ def main(cfg):
             logger.info('Surface energy budget over land: %s\n',
                         surb_la_gmean)
             logger.info('Done\n')
-            if wat in {'y', 'yes'}:
+            if wat is True:
                 logger.info('Computing water mass and latent energy'
                             ' budgets over land and oceans\n')
                 wmb_oc_gmean, wmb_la_gmean = comp.landoc_budg(model, wdir,
@@ -393,7 +385,7 @@ def main(cfg):
                 pass
         else:
             pass
-        if lec in {'y', 'yes'}:
+        if lec is True:
             logger.info('Computation of the Lorenz Energy'
                         'Cycle (year by year)\n')
             lect = lorenz.preproc_lec(model, wdir, pdir, filenames)
@@ -404,7 +396,7 @@ def main(cfg):
             logger.info('Done\n')
         else:
             pass
-        if entr in {'y', 'yes'}:
+        if entr is True:
             if met in {'1', '3'}:
                 _, _, te_file, _ = mkthe.init_mkthe(
                     model, wdir, filenames, flags)

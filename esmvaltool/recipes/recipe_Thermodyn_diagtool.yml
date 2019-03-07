@@ -21,112 +21,15 @@ documentation:
         - trr181
 
 datasets:
-    #- {dataset: ACCESS1-0, project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 436, end_year: 455}
-    #- {dataset: ACCESS1-0, project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 1984, end_year: 2003}
-    #- {dataset: ACCESS1-0, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 1999}
-    #- {dataset: ACCESS1-0, project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2071, end_year: 2100}
-    #- {dataset: ACCESS1-3, project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 399, end_year: 404}
-    #- {dataset: ACCESS1-3, project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 386, end_year: 405}
-    #- {dataset: ACCESS1-3, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1994, end_year: 1999}
-    #- {dataset: ACCESS1-3, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 1999}
-    #- {dataset: ACCESS1-3, project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2071, end_year: 2100}
-    #- {dataset: ACCESS1-3, project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2071, end_year: 2073}
-    #- {dataset: BNU-ESM, project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 2002, end_year: 2007}
     - {dataset: BNU-ESM, project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 1980, end_year: 1999}
-    #- {dataset: BNU-ESM, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1994, end_year: 1999}
-    #- {dataset: BNU-ESM, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 1999}
-    #- {dataset: BNU-ESM, project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2081, end_year: 2099}
-    #- {dataset: BNU-ESM, project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2071, end_year: 2074}
-    #- {dataset: CanESM2, project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 2451, end_year: 2456}
     - {dataset: CanESM2, project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 2441, end_year: 2460}
-    #- {dataset: CanESM2, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1995, end_year: 2000}
-    #- {dataset: CanESM2, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1981, end_year: 2000}
-    #- {dataset: CanESM2, project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2081, end_year: 2099}
-     - {dataset: ACCESS1-3, project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 386, end_year: 405}
-    #- {dataset: ACCESS1-3, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1994, end_year: 1999}
-    #- {dataset: ACCESS1-3, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1970, end_year: 1999}
-    #- {dataset: ACCESS1-3, project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2071, end_year: 2100}
-    #- {dataset: ACCESS1-3, project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2071, end_year: 2073}
+    - {dataset: ACCESS1-3, project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 386, end_year: 405}
     - {dataset: BNU-ESM, project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 1979, end_year: 2007}
-    #- {dataset: BNU-ESM, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1994, end_year: 1999}
-    #- {dataset: BNU-ESM, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1970, end_year: 1999}
-    #- {dataset: BNU-ESM, project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2071, end_year: 2099}
-    #- {dataset: BNU-ESM, project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2071, end_year: 2074}
-    #- {dataset: CanESM2, project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 2441, end_year: 2446}
-    #- {dataset: CanESM2, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1995, end_year: 2000}
-    #- {dataset: CanESM2, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1971, end_year: 2000}
-    #- {dataset: CanESM2, project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2071, end_year: 2099}
-    #- {dataset: CanESM2, project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2071, end_year: 2074}
-    #- {dataset: HadGEM2-ES, project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 1985, end_year: 2008}
-    #- {dataset: HadGEM2-ES, project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2071, end_year: 2098}
-    #- {dataset: HadGEM2-ES, project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2071, end_year: 2074}
-    #- {dataset: IPSL-CM5A-LR, project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 2001, end_year: 2006}
-    #- {dataset: IPSL-CM5A-LR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1994, end_year: 1999}
-    #- {dataset: IPSL-CM5A-LR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 1999}
-    #- {dataset: IPSL-CM5A-LR, project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2071, end_year: 2074}
-    #- {dataset: IPSL-CM5A-MR, project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 2040, end_year: 2045}
     - {dataset: IPSL-CM5A-MR, project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 2030, end_year: 2049}
-    #- {dataset: IPSL-CM5A-MR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1994, end_year: 1999}
-    #- {dataset: IPSL-CM5A-MR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 1999}
-    #- {dataset: IPSL-CM5A-MR, project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2071, end_year: 2074}
-    #- {dataset: IPSL-CM5A-MR, project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2081, end_year: 2099}
     - {dataset: MIROC5, project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 2310, end_year: 2314}
-    #- {dataset: MIROC5, project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 2300, end_year: 2319}
-    #- {dataset: MIROC5, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1994, end_year: 1999}
-    #- {dataset: MIROC5, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 1999}
-    #- {dataset: MIROC5, project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2081, end_year: 2099}
-    #- {dataset: MIROC5, project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2070, end_year: 2073}
-    #- {dataset: MIROC-ESM, project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 2311, end_year: 2316}
-    #- {dataset: MIROC-ESM, project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 2311, end_year: 2330}
-    #- {dataset: MIROC-ESM, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 1999}
-    #- {dataset: MIROC-ESM, project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2081, end_year: 2099}
     - {dataset: MIROC-ESM-CHEM, project: CMIP5,  exp: piControl, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
-    #- {dataset: MIROC-ESM-CHEM, project: CMIP5,  exp: piControl, ensemble: r1i1p1, start_year: 1996, end_year: 2000}
-    #- {dataset: MIROC-ESM-CHEM, project: CMIP5,  exp: historical, ensemble: r1i1p1, start_year: 1994, end_year: 1999}
-    #- {dataset: MIROC-ESM-CHEM, project: CMIP5,  exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 1999}
-    #- {dataset: MIROC-ESM-CHEM, project: CMIP5,  exp: rcp85, ensemble: r1i1p1, start_year: 2081, end_year: 2099}
-    #- {dataset: MIROC-ESM-CHEM, project: CMIP5,  exp: rcp85, ensemble: r1i1p1, start_year: 2070, end_year: 2073}
-    #- {dataset: MPI-ESM-LR, project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 2016, end_year: 2020}
     - {dataset: MPI-ESM-LR, project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 2016, end_year: 2035}
-    #- {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1994, end_year: 1999}
-    #- {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 1999}
-    #- {dataset: MPI-ESM-LR, project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2081, end_year: 2099}
-    #- {dataset: MPI-ESM-LR, project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2070, end_year: 2073}
     - {dataset: MPI-ESM-MR, project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
-    #- {dataset: MPI-ESM-MR, project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 1986, end_year: 1991}
-    #- {dataset: MPI-ESM-MR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1994, end_year: 1999}
-    #- {dataset: MPI-ESM-MR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 1999}
-    #- {dataset: MPI-ESM-MR, project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2081, end_year: 2099}
-    #- {dataset: IPSL-CM5A-MR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1994, end_year: 1999}
-    #- {dataset: IPSL-CM5A-MR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1970, end_year: 1999}
-    #- {dataset: IPSL-CM5A-MR, project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 2030, end_year: 2059}
-    #- {dataset: IPSL-CM5A-MR, project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2071, end_year: 2074}
-    #- {dataset: MIROC5, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1994, end_year: 1999}
-    #- {dataset: MIROC5, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1970, end_year: 1999}
-    #- {dataset: MIROC5, project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 2300, end_year: 2329}
-    #- {dataset: MIROC5, project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2070, end_year: 2099}
-    #- {dataset: MIROC5, project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2070, end_year: 2073}
-    #- {dataset: MIROC-ESM, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1970, end_year: 1999}
-    #- {dataset: MIROC-ESM, project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 2311, end_year: 2313}
-    #- {dataset: MIROC-ESM-CHEM, project: CMIP5,  exp: historical, ensemble: r1i1p1, start_year: 1994, end_year: 1999}
-    #- {dataset: MIROC-ESM-CHEM, project: CMIP5,  exp: historical, ensemble: r1i1p1, start_year: 1975, end_year: 1999}
-    #- {dataset: MIROC-ESM-CHEM, project: CMIP5,  exp: piControl, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
-    #- {dataset: MIROC-ESM-CHEM, project: CMIP5,  exp: rcp85, ensemble: r1i1p1, start_year: 2070, end_year: 2099}
-    #- {dataset: MIROC-ESM-CHEM, project: CMIP5,  exp: rcp85, ensemble: r1i1p1, start_year: 2070, end_year: 2073}
-    #- {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1994, end_year: 1999}
-    #- {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1970, end_year: 1999}
-    #- {dataset: MPI-ESM-LR, project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 2016, end_year: 2035}
-    #- {dataset: MPI-ESM-LR, project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 2016, end_year: 2018}
-    #- {dataset: MPI-ESM-LR, project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2070, end_year: 2099}
-    #- {dataset: MPI-ESM-LR, project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2070, end_year: 2073}
-    #- {dataset: MPI-ESM-MR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1994, end_year: 1999}
-    #- {dataset: MPI-ESM-MR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1970, end_year: 1999}
-    #- {dataset: MPI-ESM-MR, project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
-    #- {dataset: MPI-ESM-MR, project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2070, end_year: 2099}
-    #- {dataset: MPI-ESM-MR, project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2070, end_year: 2073}
-    #- {dataset: MPI-ESM-P, project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 2986, end_year: 3005}
-    #- {dataset: MPI-ESM-P, project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 2986, end_year: 2991}
-    #- {dataset: MPI-ESM-P, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 1999}
 preprocessors:
   prep0: {}
 
@@ -184,22 +87,10 @@ diagnostics:
          preprocessor: prep0
          mip: Amon
          field: T2Ms
-       #sftlf:
-     # #  preprocessor: prep0
-     # #  mip: fx
-     # #  field: F2Ms
        ts:
          preprocessor: prep0
          mip: Amon
          field: T2Ms
-       #uas:
-      #   preprocessor: prep0
-      #   mip: Amon
-      #   field: T2Ms
-      # vas:
-      #   preprocessor: prep0
-      #   mip: Amon
-      #   field: T2Ms
        hus:
          preprocessor: prep0
          mip: Amon
@@ -236,10 +127,10 @@ diagnostics:
     scripts:
       Thermodyn_Diag:
         script: Thermodyn_diagtool/thermodyn_diagnostics.py
-        eb: y
-        lsm: y
-        wat: y
-        lec: y
-        entr: y
+        eb: true
+        lsm: true
+        wat: true
+        lec: true
+        entr: true
         met: 3
 

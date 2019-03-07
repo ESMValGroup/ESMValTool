@@ -1,5 +1,3 @@
-# pylint: disable=C0302
-# pylint: disable=R0801
 """PROGRAM FOR LEC COMPUTATION.
 
 The module contains the following functions:

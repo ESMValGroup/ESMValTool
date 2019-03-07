@@ -25,8 +25,6 @@ GAS_CON = 287.0         # Gas constant
 P_0 = 10000             # Reference tropospheric pressure
 
 
-# pylint: disable-msg=R0914
-# pylint: disable-msg=R0915
 def fourier_coeff(tadiagfile, outfile, ta_input, tas_input):
     """Main script for Fourier coefficients computation.
 
