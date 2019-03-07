@@ -1,7 +1,6 @@
 """Derivation of variable `sm`."""
 
 import cf_units
-import iris
 from iris import Constraint
 import numpy as np
 
