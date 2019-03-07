@@ -6,6 +6,8 @@ channels:
   - r
 
 dependencies:
+  # Compiler that conda uses
+  - gxx_linux-64
   # Python packages that cannot be installed from PyPI:
   - iris
   - matplotlib<3  # Can be installed from PyPI, but is a dependency of iris and should be pinned.
@@ -19,7 +21,6 @@ dependencies:
   # Multi language support:
   - ncl
   - jasper!=1.900.31  # pinned NCL dependency
-  - r
   - r-base
   - r-rcpp
   - r-xml
