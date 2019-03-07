@@ -252,6 +252,7 @@ class TestHelpers(tests.Test):
             return list(self.coords.values())
         self.cube = mock.Mock(
             spec=iris.cube.Cube,
+            dtype=np.float32,
             long_name='longname',
             ndim=2,
             shape=self.data.shape,
@@ -263,6 +264,7 @@ class TestHelpers(tests.Test):
         self.cube.__getitem__ = mock.Mock(return_value=self.cube)
         self.unmasked_cube = mock.Mock(
             spec=iris.cube.Cube,
+            dtype=np.float32,
             long_name='longname',
         )
         self.coord_dims_3d = {
@@ -282,6 +284,7 @@ class TestHelpers(tests.Test):
             return self.coords[name]
         self.cube_3d = mock.Mock(
             spec=iris.cube.Cube,
+            dtype=np.float32,
             standard_name=None,
             long_name='longname',
             var_name='ln',
@@ -546,7 +549,7 @@ class TestHelpers(tests.Test):
         )
         mock_regrid.return_value = field_regridder
         regrid_method = mock.sentinel.rm_bilinear
-        src_rep = mock.MagicMock(data=self.data)
+        src_rep = mock.MagicMock(data=self.data, dtype=np.float32)
         dst_rep = mock.MagicMock(shape=(4, 4))
         regridder = build_regridder_2d(src_rep,
                                        dst_rep,
