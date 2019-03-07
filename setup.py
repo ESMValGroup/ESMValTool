@@ -28,7 +28,6 @@ REQUIREMENTS = {
     # Use with pip install . to install from source
     'install': [
         'cartopy',
-        'cdo',
         'cf_units',
         'cython',
         'eofs',

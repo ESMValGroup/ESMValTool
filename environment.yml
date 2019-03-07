@@ -3,6 +3,7 @@
 name: esmvaltool
 channels:
   - conda-forge
+  - r
 
 dependencies:
   # Python packages that cannot be installed from PyPI:
@@ -13,7 +14,7 @@ dependencies:
   - xarray  # Can be installed from PyPI, but here to get a consistent set of depencies with iris.
   # Non-Python dependencies
   - graphviz
-  - cdo=1.9.3
+  - cdo=1.9.6
 
   # Multi language support:
   - ncl
