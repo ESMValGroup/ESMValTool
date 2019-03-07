@@ -22,8 +22,13 @@ CMIP6:
   input_dir:
     default: '/'
     DKRZ: '[institute]/[dataset]/[exp]/[ensemble]/[mip]/[short_name]/[grid]/[latestversion]'
+    CMCC: '[project]/[dataset]/[exp]'
   input_file: '[short_name]_[mip]_[dataset]_[exp]_[ensemble]_[grid]_*.nc'
   output_file: '[project]_[dataset]_[mip]_[exp]_[ensemble]_[field]_[short_name]_[start_year]-[end_year]'
+  input_fx_dir:
+    default: '/'
+    CMCC: '[project]/[dataset]/fx'
+  input_fx_file: '[fx_var]_fx_[dataset]_[exp]_[ensemble]*.nc'
   cmor_type: 'CMIP6'
   institutes:
     'ACCESS-CM2': ['CSIRO-ARCCSS-BoM']
@@ -145,6 +150,7 @@ CMIP5:
     ETHZ: '[exp]/[mip]/[short_name]/[dataset]/[ensemble]/'
     SMHI: '[dataset]/[ensemble]/[exp]/[frequency]'
     BSC: '[type]/[project]/[exp]/[dataset.lower]'
+    CMCC: '[project]/[dataset]/[exp]'
   input_file: '[short_name]_[mip]_[dataset]_[exp]_[ensemble]_*.nc'
   input_fx_dir:
     default: '/'
@@ -152,6 +158,7 @@ CMIP5:
     CP4CDS: '[institute]/[dataset]/[exp]/fx/[modeling_realm]/fx/r0i0p0/[fx_var]/latest/'
     DKRZ: '[institute]/[dataset]/[exp]/fx/[modeling_realm]/fx/r0i0p0/[latestversion]/[fx_var]'
     ETHZ: '[exp]/fx/[fx_var]/[dataset]/r0i0p0'
+    CMCC: '[project]/[dataset]/fx'
   input_fx_file: '[fx_var]_fx_[dataset]_[exp]_r0i0p0.nc'
   fx_mip_change:
     'areacella': 'Amon'
