@@ -342,8 +342,7 @@ def multi_model_time_series(
             cfg,
             metadata[filename],
             prefix='MultipleModels_',
-            suffix='_'.join(['timeseries',
-                             str(layer) + image_extention]),
+            suffix='_'.join(['timeseries_0', image_extention]),
             metadata_id_list=[
                 'field', 'short_name', 'preprocessor', 'diagnostic',
                 'start_year', 'end_year'
@@ -408,9 +407,9 @@ def main(cfg):
     for index, metadata_filename in enumerate(cfg['input_files']):
         logger.info('metadata filename:\t%s', metadata_filename)
 
-#        metadatas = diagtools.get_input_files(cfg, index=index)
-        input_data = cfg['input_files'].values()
-        metadatas = group_metadata(input_data, 'dataset')
+        metadatas = diagtools.get_input_files(cfg, index=index)
+#        input_data = cfg['input_files'].values()
+#        metadatas = group_metadata(input_data, 'dataset')
         #######
         # Sum up the cube over global domain
         cubedic = global_sum(

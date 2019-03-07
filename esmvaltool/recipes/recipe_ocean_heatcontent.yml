@@ -28,13 +28,13 @@ datasets:
   # - {dataset: HadCM3, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 1970, end_year: 2004}
   # - {dataset: CanCM4, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
   # temporarily unavailable ### - {dataset: CSIRO-Mk3-6-0, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 1970, end_year: 2004}
-  - {dataset: HadGEM2-CC, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 1970, end_year: 2004}
+#  - {dataset: HadGEM2-CC, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 1970, end_year: 2004}
 #  - {dataset: HadGEM2-CC, project: CMIP5, mip: Omon, exp: piControl, ensemble: r1i1p1, start_year: 1970, end_year: 1980}
-  - {dataset: HadGEM2-ES, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 1970, end_year: 2004}
+  - {dataset: HadGEM2-ES, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 1970, end_year: 1980}
   # - {dataset: HadGEM2-ES, project: CMIP5, mip: Omon, exp: piControl, ensemble: r1i1p1, start_year: 1970, end_year: 2004}
-  - {dataset: IPSL-CM5A-LR, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 1970, end_year: 2004}
+  - {dataset: IPSL-CM5A-LR, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 1970, end_year: 1980}
   
-  # CMIP6 datasets (Feb 2019)
+  # CMIP6 datasets (Feb 2019: not present on JASMIN)
   # - {dataset: CNRM-CM6-1, project: CMIP6, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 1970, end_year: 2004}
   # - {dataset: CNRM-ESM2-1, project: CMIP6, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 1970, end_year: 2004}
   # - {dataset: IPSL-CM6A-LR, project: CMIP6, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 1970, end_year: 2004}
