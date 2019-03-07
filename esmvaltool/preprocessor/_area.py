@@ -91,24 +91,13 @@ def get_iris_analysis_operation(operator):
     -------
         function: A function from iris.analysis
     """
-    operators = ['mean', 'median', 'stdev', 'variance', 'min', 'minimum',
-                 'max', 'maximum']
+    operators = ['mean', 'median', 'std_dev', 'variance', 'min', 'max']
     operator = operator.lower()
-    if operator == 'mean':
-        operation = iris.analysis.MEAN
-    elif operator == 'median':
-        operation = iris.analysis.MEDIAN
-    elif operator == 'stdev':
-        operation = iris.analysis.STD_DEV
-    elif operator == 'variance':
-        operation = iris.analysis.VARIANCE
-    elif operator in ['minimum', 'min']:
-        operation = iris.analysis.MIN
-    elif operator in ['maximum', 'max']:
-        operation = iris.analysis.MAX
-    else:
-        raise ValueError('operator ({}) not recognised. Accepted values are: '
-                         '{}'.format(operator, operators))
+    if operator not in operators:
+        raise ValueError("operator {} not recognised. "
+                         "Accepted values are: {}."
+                         "".format(operator, ', '.join(operators)))
+    operation = getattr(iris.analysis, operator.upper())
     return operation
 
 

@@ -81,10 +81,10 @@ class Test(tests.Test):
         expected = np.array([1.])
         self.assertArrayEqual(result.data, expected)
 
-    def test_average_region_stdev(self):
+    def test_average_region_std_dev(self):
         """Test for area average of a 2D field."""
         result = average_region(self.grid, 'latitude', 'longitude',
-                                operator='stdev')
+                                operator='std_dev')
         expected = np.array([0.])
         self.assertArrayEqual(result.data, expected)
 
