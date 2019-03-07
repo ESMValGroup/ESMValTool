@@ -38,7 +38,6 @@ REQUIREMENTS = {
         'netCDF4',
         'numba',
         'numpy',
-        'readline',  # v6 needed by pypi R packages
         'pandas',
         'pillow',
         'prov[dot]',
