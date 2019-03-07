@@ -193,6 +193,7 @@ import os
 import warnings
 
 import esmvaltool.diag_scripts.shared as e
+from esmvaltool.diag_scripts.shared._base import ProvenanceLogger
 import matplotlib
 import numpy as np
 # Locally used modules
