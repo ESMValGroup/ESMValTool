@@ -1,7 +1,5 @@
 """Unit tests for the :func:`esmvaltool.preprocessor._area` module."""
 
-from __future__ import absolute_import, division, print_function
-
 import unittest
 
 import iris
@@ -9,9 +7,8 @@ import numpy as np
 from cf_units import Unit
 
 import tests
-
-from esmvaltool.preprocessor._area import (extract_region, average_region,
-                                           extract_named_regions)
+from esmvaltool.preprocessor._area import (
+    average_region, extract_named_regions, extract_region)
 
 
 class Test(tests.Test):
@@ -28,12 +25,11 @@ class Test(tests.Test):
             bounds=[[i, i + 1.] for i in range(5)],  # [0,1] to [4,5]
             units='degrees_east',
             coord_system=self.coord_sys)
-        lats = iris.coords.DimCoord(
-            [i + .5 for i in range(5)],
-            standard_name='latitude',
-            bounds=[[i, i + 1.] for i in range(5)],
-            units='degrees_north',
-            coord_system=self.coord_sys)
+        lats = iris.coords.DimCoord([i + .5 for i in range(5)],
+                                    standard_name='latitude',
+                                    bounds=[[i, i + 1.] for i in range(5)],
+                                    units='degrees_north',
+                                    coord_system=self.coord_sys)
         coords_spec = [(lats, 0), (lons, 1)]
         self.grid = iris.cube.Cube(data, dim_coords_and_dims=coords_spec)
 
@@ -51,8 +47,8 @@ class Test(tests.Test):
             units='degrees_north',
             coord_system=self.coord_sys)
         coords_spec = [(nlats, 0), (nlons, 1)]
-        self.negative_grid = iris.cube.Cube(ndata,
-                                            dim_coords_and_dims=coords_spec)
+        self.negative_grid = iris.cube.Cube(
+            ndata, dim_coords_and_dims=coords_spec)
 
     def test_average_region_2d(self):
         """Test for area average of a 2D field."""
@@ -95,12 +91,14 @@ class Test(tests.Test):
         region = iris.coords.AuxCoord(
             regions,
             standard_name='region',
-            units='1', )
+            units='1',
+        )
 
         data = np.ones((3, 3))
-        region_cube = iris.cube.Cube(data,
-                                     dim_coords_and_dims=[(time, 0)],
-                                     aux_coords_and_dims=[(region, 1)])
+        region_cube = iris.cube.Cube(
+            data,
+            dim_coords_and_dims=[(time, 0)],
+            aux_coords_and_dims=[(region, 1)])
 
         # test string region
         result1 = extract_named_regions(region_cube, 'region1')
