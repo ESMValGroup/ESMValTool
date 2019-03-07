@@ -57,7 +57,7 @@ install.packages(
     dependencies = c("Depends", "Imports", "LinkingTo")
 )
 
-failed = list()
+failed <- list()
 for (package_name in dependencies) {
     success <- library(
         package_name,
@@ -65,7 +65,7 @@ for (package_name in dependencies) {
         logical.return = TRUE
     )
     if ( ! success ) {
-        failed = c(failed, package_name)
+        failed <- c(failed, package_name)
     }
 }
 if ( length(failed) != 0 ) {
