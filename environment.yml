@@ -19,6 +19,7 @@ dependencies:
   # Multi language support:
   - ncl
   - jasper!=1.900.31  # pinned NCL dependency
+  - r
   - r-base
   - r-rcpp
   - r-xml

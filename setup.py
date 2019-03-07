@@ -48,7 +48,7 @@ REQUIREMENTS = {
         'six',
         'sklearn',
         'stratify',
-        #'vmprof',
+        # 'vmprof',
         'xarray',
         'xlsxwriter',
         'yamale',
