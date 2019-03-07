@@ -465,7 +465,8 @@ create_landseamask <- function(regrid = "./gridDef", ref_file = ref_file,
   ftopo <- cdo("topo", options = "-f nc")
 
   ## Regridding the topographic map to chosen grid
-  cdo("remapcon2", args = regrid, input = ftopo, output = regridded_topo)
+  cdo("remapcon2", args = paste0("'", regrid, "'"),
+      input = ftopo, output = regridded_topo)
 
   if (!topo_only) {
 
@@ -664,11 +665,13 @@ ncdf_opener_universal <- function(namefile, namevar = NULL, namelon = NULL,
   if (interp2grid) {
     print(paste("Remapping with CDO on", grid, "grid"))
     if (is.null(namevar)) {
-      namefile <- cdo(remap_method, args = grid, input = namefile)
+      namefile <- cdo(remap_method, args = paste0("'", grid, "'"),
+                      input = namefile)
     } else {
       selectf <- cdo("selvar", args = namevar, input = namefile)
-      namefile <- cdo(remap_method, args = grid, input = selectf)
-      unnlik(selectf)}
+      namefile <- cdo(remap_method, args = paste0("'", grid, "'"),
+                      input = selectf)
+      unlik(selectf)}
   }
 
   # define rotate function (faster than with apply)
@@ -911,7 +914,8 @@ ncdf_opener_time <- function(namefile, namevar = NULL, namelon = NULL,
   # interpolation made with CDO: second order conservative remapping
   if (interp2grid) {
     print(paste("Remapping with CDO on", grid, "grid"))
-    namefile <- cdo(remap_method, args = grid, input = namefile)
+    namefile <- cdo(remap_method, args = paste0("'", grid, "'"),
+                    input = namefile)
   }
 
   # define rotate function (faster than with apply)
