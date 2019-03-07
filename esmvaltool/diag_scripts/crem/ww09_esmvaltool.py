@@ -52,9 +52,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 from netCDF4 import Dataset
 
-from esmvaltool.diag_scripts.shared import (group_metadata, run_diagnostic,
-                                            select_metadata)
-from esmvaltool.diag_scripts.shared._base import (ProvenanceLogger)
+from esmvaltool.diag_scripts.shared import (
+    group_metadata, ProvenanceLogger, run_diagnostic, select_metadata)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
