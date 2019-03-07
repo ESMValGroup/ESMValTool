@@ -50,12 +50,14 @@ if (is.na(Ncpus)) {
 }
 
 log("Installing packages:", package_list)
-install.packages(
-    package_list,
-    repos = pkg_mirror,
-    Ncpus = Ncpus,
-    dependencies = c("Depends", "Imports", "LinkingTo")
-)
+if ( length(package_list) != 0 ) {
+    install.packages(
+        package_list,
+        repos = pkg_mirror,
+        Ncpus = Ncpus,
+        dependencies = c("Depends", "Imports", "LinkingTo")
+    )
+}
 
 failed <- list()
 for (package_name in dependencies) {
