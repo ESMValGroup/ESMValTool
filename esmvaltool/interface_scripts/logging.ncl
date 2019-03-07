@@ -273,6 +273,7 @@ begin
 
 end
 
+
 ; #############################################################################
 undef("log_provenance")
 procedure log_provenance(nc_file:string,
@@ -370,5 +371,3 @@ begin
   log_info(" write meta data to " + yaml_file)
 
   leave_msg(scriptname, funcname)
-
-end
