@@ -39,55 +39,6 @@ jobs:
           path: test-reports/
       - store_artifacts:
           path: test-reports/
-      - run:
-          # Upload Python 3 test coverage to codacy, even when the actual
-          # running of the tests fails.
-          when: always
-          command: |
-            pip install codacy-coverage
-            python-codacy-coverage -r test-reports/python3/coverage.xml
-
-  python2_test:
-    # Run Python 2 tests
-    working_directory: /python2_test
-    docker:
-      - image: continuumio/miniconda3
-    steps:
-      - checkout
-      - run:
-          command: |
-            apt update && apt -y install build-essential gfortran
-            # Create a file to checksum as cache key
-            date --rfc-3339 date > cache_key.txt
-            cat environment.yml >> cache_key.txt
-            cat esmvaltool/install/R/r_requirements.txt >> cache_key.txt
-      - restore_cache:
-          key: deps2-{{ .Branch }}-{{ checksum "cache_key.txt" }}
-      - run:
-          # Update/Create Conda Environment
-          command: |
-            . /opt/conda/etc/profile.d/conda.sh
-            conda update -y conda
-            if ! test -d "/opt/conda/envs/esmvaltool"; then
-              conda create -y --name esmvaltool python=2
-            fi
-            conda env update
-            conda activate esmvaltool
-            Rscript esmvaltool/install/R/setup.R
-      - save_cache:
-          key: deps2-{{ .Branch }}-{{ checksum "cache_key.txt" }}
-          paths:
-            - "/opt/conda/envs/esmvaltool"
-      - run:
-          # Activate Conda environment and run tests
-          command: |
-            . /opt/conda/etc/profile.d/conda.sh
-            conda activate esmvaltool
-            python setup.py test
-      - store_test_results:
-          path: test-reports/
-      - store_artifacts:
-          path: test-reports/
 
   python3_install:
     # Test Python 3 installation
@@ -119,38 +70,15 @@ jobs:
             ncl -V
       - store_artifacts:
           path: /logs
-
-  python2_install:
-    # Test Python 2 installation
-    working_directory: /python2_install
-    docker:
-      - image: continuumio/miniconda3
-    steps:
-      - checkout
-      - run:
-          command: |
-            . /opt/conda/etc/profile.d/conda.sh
-            set -x
-            mkdir /logs
-            # Install
-            apt update > /logs/apt.txt 2>&1
-            apt -y install build-essential gfortran >> /logs/apt.txt 2>&1
-            conda update -y conda > /logs/conda.txt 2>&1
-            conda create -y --name esmvaltool python=2 > /logs/conda.txt 2>&1
-            conda env update >> /logs/conda.txt 2>&1
-            set +x; conda activate esmvaltool; set -x
-            pip install . > /logs/install.txt 2>&1
-            Rscript ./esmvaltool/install/R/setup.R > /logs/R_install.txt 2>&1
-            # Log versions
-            dpkg -l > /logs/versions.txt
-            conda env export > /logs/environment.yml
-            pip freeze > /logs/requirements.txt
-            # Test installation
-            python setup.py test --installation
-            esmvaltool -h
-            ncl -V
       - store_artifacts:
-          path: /logs
+          path: test-reports/
+      - store_test_results:
+          path: test-reports/
+      - run:
+          when: always
+          command: |
+            pip install codacy-coverage
+            python-codacy-coverage -r test-reports/python3/coverage.xml
 
   develop:
     # Test development installation
@@ -239,14 +167,6 @@ jobs:
             conda install -y esmvaltool --use-local -c conda-forge -c birdhouse
             conda env export > /logs/test_environment3.yml
             esmvaltool -h
-            set +x; conda deactivate; set -x
-            # Install Python 2 conda package
-            conda create -y --name esmvaltool2 python=2 > /logs/conda_esmvaltool2.txt 2>&1
-            set +x; conda activate esmvaltool2; set -x
-            conda install -y esmvaltool --use-local -c conda-forge -c birdhouse
-            conda env export > /logs/environment2.yml
-            esmvaltool -h
-            set +x; conda deactivate; set -x
       - store_artifacts:
           path: /logs
 
@@ -308,7 +228,6 @@ workflows:
   commit:
     jobs:
       - python3_test
-      - python2_test
       - python3_install
   nightly:
     triggers:
@@ -321,9 +240,7 @@ workflows:
                 - version2_master
     jobs:
       - python3_test
-      - python2_test
       - python3_install
-      - python2_install
       - develop
       - doc
       - conda_build

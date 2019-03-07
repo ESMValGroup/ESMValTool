@@ -1,30 +1,20 @@
-#### summary
-#recipe_autoassess_radiation_rms_Amon_all.yml
-#
-#Description
-#Diagnostics of spatial RMS errors of radiation and clouds
-#
-#Author
-#Yoko Tsushima (Met Office, United Kingdom - yoko.tsushima@metoffice.gov.uk)
-#
-#Contributor
-#Simon Read (University of Reading,  United Kingdom)
-#
-#Author version2
-#Valeriu Predoi: VP (University of Reading, UK)
-#
-#Project
-#CMUG
-#
-#Port to ESMValTool v2: July 2018
-# Final version of recipe: July 2018
-#
-#References
-#Technical report or a paper will be written in the future.
-#
-#This recipe is part of the ESMValTool
-###########################################################################################################
+# ESMValTool
+# recipe_autoassess_radiation_rms_Amon_obs.yml
 ---
+documentation:
+  description: |
+    Diagnostics of spatial RMS errors of radiation and clouds.
+
+  authors:
+    - read_si
+    - pred_va
+    - sell_al
+
+  maintainer:
+    - pred_va
+
+  projects:
+    - cmug
 
 datasets:
   # ESMValTool v1 has no specific models here; it says use whatever you want but no more than what Amon_all uses
@@ -45,7 +35,7 @@ preprocessors:
 
 diagnostics:
   radiation_Amon_obs_CERES-EBAF:
-    description: "CMIP5 vs CERES-EBAF" 
+    description: "CMIP5 vs CERES-EBAF"
     variables:
       rtnt: # TOA TOT net
         preprocessor: pp_rad_derive_var
@@ -88,7 +78,7 @@ diagnostics:
         field: T2Ms
     additional_datasets:
       - {dataset: CERES-EBAF,    project: obs4mips,  level: L3B,  version: Ed2-7,  start_year: 2001,  end_year: 2012, tier: 1}
-      - {dataset: CERES-SYN1deg, project: OBS,       type: comp,  version: Ed3A,   start_year: 2001,  end_year: 2015, tier: 2}
+      - {dataset: CERES-SYN1deg, project: OBS,       type: sat,  version: Ed3A,   start_year: 2001,  end_year: 2015, tier: 3}
     scripts:
       autoassess_Radiation_rms_Amon_obs:
         script: autoassess/autoassess_radiation_rms.py
@@ -110,7 +100,7 @@ diagnostics:
         field: T2Ms
     additional_datasets:
       - {dataset: JRA-55,        project: ana4mips,  type: reanalysis,          start_year: 2001,  end_year: 2005, tier: 1}
-      - {dataset: CERES-SYN1deg, project: OBS,       type: comp, version: Ed3A, start_year: 2001,  end_year: 2015, tier: 2}
+      - {dataset: CERES-SYN1deg, project: OBS,       type: sat, version: Ed3A, start_year: 2001,  end_year: 2015, tier: 3}
     scripts:
       autoassess_Radiation_rms_Amon_obs:
         script: autoassess/autoassess_radiation_rms.py

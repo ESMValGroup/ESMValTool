@@ -1,12 +1,11 @@
 """Integration tests for :func:`esmvaltool.preprocessor._io.concatenate`."""
 
-from __future__ import absolute_import, division, print_function
-
 import unittest
 
 import numpy as np
 from iris.coords import DimCoord
 from iris.cube import Cube
+from iris.exceptions import ConcatenateError
 
 from esmvaltool.preprocessor import _io
 
@@ -41,13 +40,13 @@ class TestConcatenate(unittest.TestCase):
     def test_fail_with_duplicates(self):
         """Test exception raised if two cubes are overlapping."""
         self.raw_cubes.append(self.raw_cubes[0].copy())
-        with self.assertRaises(_io.ConcatenationError):
+        with self.assertRaises(ConcatenateError):
             _io.concatenate(self.raw_cubes)
 
     def test_fail_metadata_differs(self):
         """Test exception raised if two cubes have different metadata."""
         self.raw_cubes[0].units = 'm'
-        with self.assertRaises(_io.ConcatenationError):
+        with self.assertRaises(ConcatenateError):
             _io.concatenate(self.raw_cubes)
 
     def test_fix_attributes(self):

@@ -1,7 +1,8 @@
+# ESMValTool
 # recipe_runoff_et.yml
 ---
 documentation:
-  description:
+  description: |
     Recipe for plotting runoff and ET diagnostics. The diagnostics calculates water
     balance components for different catchments and compares the results against
     observations. Currently, the required catchment mask needs to be downloaded manually
@@ -12,9 +13,12 @@ documentation:
     - loew_al
     - stac_to
 
+  maintainer:
+    - righ_ma
+
   references:
     - duemenil00mpimr
-    - hagemann13jadvmodelearthsyst
+    - hagemann13james
     - weedon14wrr
 
   projects:

@@ -1,5 +1,6 @@
 .. _git_repository:
 
+**************
 Git repository
 **************
 
@@ -161,7 +162,7 @@ Do-s
 * Comment your code as much as possible and in English.
 * Use short but self-explanatory variable names (e.g., model_input and reference_input instead of xm and xr).
 * Consider a modular/functional programming style. This often makes code easier to read and deletes intermediate variables immediately. If possible, separate diagnostic calculations from plotting routines.
-* Consider reusing or extending existing code. General-purpose code can be found in diag_scripts/lib/ and in plot_scripts/.
+* Consider reusing or extending existing code. General-purpose code can be found in esmvaltool/diag_scripts/shared/.
 * Comment all switches and parameters including a list of all possible settings/options in the header section of your code (see also Section :ref:`std_diag`).
 * Use templates for recipes (Section :ref:`std_recipe`) and diagnostics (Section :ref:`std_diag`) to help with proper documentation.
 * Keep your *FEATURE BRANCH* regularly synchronized with the *DEVELOPMENT BRANCH* (git merge).
@@ -174,5 +175,5 @@ Don't-s
 * Do not develop without proper version control (see do-s above).
 * Avoid large (memory, disk space) intermediate results. Delete intermediate files/variables or see modular/functional programming style.
 * Do not use hard-coded pathnames or filenames.
-* Do not mix developments / modifications of the ESMValTool framework and developments / modifications of diagnotics in the same *FEATURE BRANCH*.
+* Do not mix developments / modifications of the ESMValTool framework and developments / modifications of diagnostics in the same *FEATURE BRANCH*.
 

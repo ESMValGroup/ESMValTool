@@ -37,6 +37,7 @@ def read_config_user_file(config_file, recipe_name):
         'max_data_filesize': 100,
         'output_file_type': 'ps',
         'output_dir': './output_dir',
+        'auxiliary_data_dir': './auxiliary_data',
         'save_intermediary_cubes': False,
         'remove_preproc_dir': False,
         'max_parallel_tasks': 1,
@@ -48,12 +49,14 @@ def read_config_user_file(config_file, recipe_name):
 
     for key in defaults:
         if key not in cfg:
-            logger.warning(
+            logger.info(
                 "No %s specification in config file, "
                 "defaulting to %s", key, defaults[key])
             cfg[key] = defaults[key]
 
     cfg['output_dir'] = _normalize_path(cfg['output_dir'])
+    cfg['auxiliary_data_dir'] = _normalize_path(cfg['auxiliary_data_dir'])
+
     cfg['config_developer_file'] = _normalize_path(
         cfg['config_developer_file'])
 
@@ -94,10 +97,9 @@ def get_config_user_file():
 
 
 def _normalize_path(path):
-    """
-    Normalize paths.
+    """Normalize paths.
 
-    Expand ~ character and environment variables and convert path to absolute
+    Expand ~ character and environment variables and convert path to absolute.
 
     Parameters
     ----------
@@ -154,6 +156,7 @@ def configure_logging(cfg_file=None, output=None, console_log_level=None):
 
     logging.config.dictConfig(cfg)
     logging.Formatter.converter = time.gmtime
+    logging.captureWarnings(True)
 
     return log_files
 
@@ -182,3 +185,34 @@ def replace_mip_fx(fx_file):
     new_mip = CFG['CMIP5']['fx_mip_change'].get(fx_file, default_mip)
     logger.debug("Switching mip for fx file finding to %s", new_mip)
     return new_mip
+
+
+TAGS_CONFIG_FILE = os.path.join(
+    os.path.dirname(__file__), 'config-references.yml')
+
+
+def _load_tags(filename=TAGS_CONFIG_FILE):
+    """Load the refence tags used for provenance recording."""
+    logger.debug("Loading tags from %s", filename)
+    with open(filename) as file:
+        return yaml.safe_load(file)
+
+
+TAGS = _load_tags()
+
+
+def get_tag_value(section, tag):
+    """Retrieve the value of a tag."""
+    if section not in TAGS:
+        raise ValueError("Section '{}' does not exist in {}".format(
+            section, TAGS_CONFIG_FILE))
+    if tag not in TAGS[section]:
+        raise ValueError(
+            "Tag '{}' does not exist in section '{}' of {}".format(
+                tag, section, TAGS_CONFIG_FILE))
+    return TAGS[section][tag]
+
+
+def replace_tags(section, tags):
+    """Replace a list of tags with their values."""
+    return tuple(get_tag_value(section, tag) for tag in tags)
