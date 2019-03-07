@@ -1,0 +1,26 @@
+SOURCE: CMIP5
+!============
+variable_entry:    cltStderr
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     
+units:             %
+cell_methods:      time: mean
+cell_measures:     area: areacella
+long_name:         Total Cloud Fraction Error
+comment:           for the whole atmospheric column, as seen from the surface or the top of the atmosphere. Include both large-scale and convective cloud.
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          cltStderr
+type:              real
+valid_min:         0
+valid_max:         0.01
+ok_min_mean_abs:   0
+ok_max_mean_abs:   0.01
+!----------------------------------
+!

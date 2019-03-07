@@ -61,8 +61,7 @@ class DerivedVariable(DerivedVariableBase):
             'MPI-ESM-LR',
             'MPI-ESM-P',
         ]
-        if ((project in ["CMIP5", "CMIP5_ETHZ"] and dataset in bad_datasets)
-                or (project == 'OBS' and dataset == 'UWisc')):
+        if (project in ["CMIP5", "CMIP5_ETHZ"] and dataset in bad_datasets):
             logger.info(
                 "Assuming that variable clwvi from %s dataset %s "
                 "contains only liquid water", project, dataset)

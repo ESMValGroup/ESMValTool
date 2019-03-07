@@ -46,13 +46,12 @@
 ;
 ; #############################################################################
 
-load "interface_scripts/interface.ncl"  ; load metadata
+load "$diag_scripts/../interface_scripts/interface.ncl"  ; load metadata
 
-load "./diag_scripts/shared/statistics.ncl"  ; load statistics functions
+load "$diag_scripts/shared/statistics.ncl"  ; load statistics functions
 
-load "./diag_scripts/shared/plot/style.ncl"  ; load plot style functions
-load "./diag_scripts/shared/plot/contour_maps.ncl"  ; load plot function
-
+load "$diag_scripts/shared/plot/style.ncl"  ; load plot style functions
+load "$diag_scripts/shared/plot/contour_maps.ncl"  ; load plot function
 
 begin
 
@@ -62,6 +61,7 @@ begin
   ; Shortcuts to current variable and field
   ; For multiple variables, use different indices of variable_info
   var0 = variable_info[0]@short_name
+  info0 = select_metadata_by_name(input_file_info, var0)
   field_type0 = variable_info[0]@field
 
   ; The number of variables is the size of the variable_info list
@@ -99,7 +99,7 @@ begin
   ; where also auxiliary coordinates are stored (if available).
   ; If no fx-variable is found a missing value is returned
   fx_var = read_fx_data(info[1], "sftlf")
-  printVarSummary(fx_var[0])
+  printVarSummary(fx_var)
 
   ; Retrieve metadata item for the reference dataset
   atts = True
@@ -186,5 +186,18 @@ begin
   ; Option 2: pass data via netCDF file
   ; -> useful for non-NCL routines & metrics
   ; map = contour_map("dummy_for_wks", ncdf_outfile,"dummy_for_var")
+
+  ; collect meta-data and call ESMValMD function
+  nc_file = ncdf_outfile
+  plot_file = map@outfile
+  caption = "Mean of variable: " + var0
+  statistics = ("mean")
+  domain = ("glob")
+  plottype = ("geo")
+  authors = (/"righ_ma", "gott_kl"/)
+  references = (/"acknow_author"/)
+  infiles = metadata_att_as_array(info0, "filename")
+  log_provenance(nc_file, plot_file, caption, statistics, domain, plottype, \
+                 authors, references, infiles)
 
 end

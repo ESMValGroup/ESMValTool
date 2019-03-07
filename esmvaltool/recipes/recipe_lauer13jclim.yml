@@ -1,11 +1,15 @@
+# ESMValTool
 # recipe_lauer13jclim.yml
 ---
 documentation:
   description: |
     Diagnostics of clouds and hydrological cycle reproducing selected figures
-    from Lauer and Hamilton (2013)
+    from Lauer and Hamilton (2013).
 
   authors:
+    - laue_ax
+
+  maintainer:
     - laue_ax
 
   references:

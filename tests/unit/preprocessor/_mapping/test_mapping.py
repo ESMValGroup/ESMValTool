@@ -1,5 +1,5 @@
 """Unit tests for the esmvaltool.preprocessor._mapping module."""
-# pylint: disable=invalid-name
+# pylint: disable=invalid-name, no-self-use, too-few-public-methods
 from __future__ import absolute_import, division, print_function
 
 import cf_units
@@ -43,6 +43,7 @@ class TestHelpers(tests.Test):
                 raise iris.exceptions.CoordinateNotFoundError('')
         self.cube = mock.Mock(
             spec=iris.cube.Cube,
+            dtype=np.float32,
             coord_system=self.coord_system,
             coords=self.coords,
             coord=coord,
@@ -209,6 +210,7 @@ class Test(tests.Test):
             return [self.scalar_coord] + dim_coords
         self.src_cube = mock.Mock(
             spec=iris.cube.Cube,
+            dtype=np.float32,
             coord_system=self.coord_system,
             coords=src_coords,
             coord=src_coord,
@@ -225,11 +227,13 @@ class Test(tests.Test):
         )
         self.src_repr = mock.Mock(
             spec=iris.cube.Cube,
+            dtype=np.float32,
             coords=src_repr_coords,
             ndim=2,
         )
         self.dst_repr = mock.Mock(
             spec=iris.cube.Cube,
+            dtype=np.float32,
             coords=dst_repr_coords,
             shape=(2, 2),
         )

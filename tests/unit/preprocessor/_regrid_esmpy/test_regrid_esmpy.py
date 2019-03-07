@@ -1,5 +1,5 @@
 """Unit tests for the esmvaltool.preprocessor._regrid_esmpy module."""
-# pylint: disable=invalid-name
+# pylint: disable=invalid-name, no-self-use, too-few-public-methods
 from __future__ import absolute_import, division, print_function
 
 import cf_units
@@ -252,6 +252,7 @@ class TestHelpers(tests.Test):
             return list(self.coords.values())
         self.cube = mock.Mock(
             spec=iris.cube.Cube,
+            dtype=np.float32,
             long_name='longname',
             ndim=2,
             shape=self.data.shape,
@@ -263,6 +264,7 @@ class TestHelpers(tests.Test):
         self.cube.__getitem__ = mock.Mock(return_value=self.cube)
         self.unmasked_cube = mock.Mock(
             spec=iris.cube.Cube,
+            dtype=np.float32,
             long_name='longname',
         )
         self.coord_dims_3d = {
@@ -282,6 +284,7 @@ class TestHelpers(tests.Test):
             return self.coords[name]
         self.cube_3d = mock.Mock(
             spec=iris.cube.Cube,
+            dtype=np.float32,
             standard_name=None,
             long_name='longname',
             var_name='ln',
@@ -292,7 +295,7 @@ class TestHelpers(tests.Test):
             shape=self.data_3d.shape,
             data=self.data_3d,
             coord=coord_3d,
-            coord_dims=lambda name: self.coord_dims[name],
+            coord_dims=lambda name: self.coord_dims_3d[name],
         )
         self.cube.__getitem__ = mock.Mock(return_value=self.cube)
 
@@ -546,7 +549,7 @@ class TestHelpers(tests.Test):
         )
         mock_regrid.return_value = field_regridder
         regrid_method = mock.sentinel.rm_bilinear
-        src_rep = mock.MagicMock(data=self.data)
+        src_rep = mock.MagicMock(data=self.data, dtype=np.float32)
         dst_rep = mock.MagicMock(shape=(4, 4))
         regridder = build_regridder_2d(src_rep,
                                        dst_rep,

@@ -12,17 +12,17 @@ import mock
 
 import tests
 from esmvaltool.preprocessor import regrid
-from esmvaltool.preprocessor._regrid import _cache, horizontal_schemes
+from esmvaltool.preprocessor._regrid import _CACHE, HORIZONTAL_SCHEMES
 
 
 class Test(tests.Test):
     def _check(self, tgt_grid, scheme, spec=False):
-        expected_scheme = horizontal_schemes[scheme]
+        expected_scheme = HORIZONTAL_SCHEMES[scheme]
 
         if spec:
             spec = tgt_grid
-            self.assertIn(spec, _cache)
-            self.assertEqual(_cache[spec], self.tgt_grid)
+            self.assertIn(spec, _CACHE)
+            self.assertEqual(_CACHE[spec], self.tgt_grid)
             self.coord_system.asset_called_once()
             expected_calls = [
                 mock.call(axis='x', dim_coords=True),
@@ -62,39 +62,27 @@ class Test(tests.Test):
         self.tgt_grid = mock.Mock(
             spec=iris.cube.Cube, coord=self.tgt_grid_coord)
         self.regrid_schemes = [
-            'linear', 'nearest', 'area_weighted', 'unstructured_nearest'
+            'linear', 'linear_extrapolate', 'nearest', 'area_weighted',
+            'unstructured_nearest'
         ]
+
+        def _return_mock_stock_cube(spec, lat_offset=True, lon_offset=True):
+            return self.tgt_grid
+
         self.mock_stock = self.patch(
             'esmvaltool.preprocessor._regrid._stock_cube',
-            side_effect=lambda arg: self.tgt_grid)
+            side_effect=_return_mock_stock_cube)
         self.mocks = [
             self.coord_system, self.coords, self.regrid, self.src_cube,
             self.tgt_grid_coord, self.tgt_grid, self.mock_stock
         ]
 
-    def test_nop(self):
-        cube = mock.sentinel.cube
-        result = regrid(cube, None, None)
-        self.assertEqual(result, cube)
-
-    def test_invalid_tgt_grid__None(self):
-        dummy = mock.sentinel.dummy
-        emsg = 'A target grid must be specified'
-        with self.assertRaisesRegex(ValueError, emsg):
-            regrid(dummy, None, dummy)
-
     def test_invalid_tgt_grid__unknown(self):
         dummy = mock.sentinel.dummy
         scheme = 'linear'
-        emsg = 'Expecting a cube or cell-specification'
+        emsg = 'Expecting a cube'
         with self.assertRaisesRegex(ValueError, emsg):
             regrid(self.src_cube, dummy, scheme)
-
-    def test_invalid_scheme__None(self):
-        dummy = mock.sentinel.dummy
-        emsg = 'A scheme must be specified'
-        with self.assertRaisesRegex(ValueError, emsg):
-            regrid(dummy, dummy, None)
 
     def test_invalid_scheme__unknown(self):
         dummy = mock.sentinel.dummy
@@ -103,8 +91,8 @@ class Test(tests.Test):
             regrid(dummy, dummy, 'wibble')
 
     def test_horizontal_schemes(self):
-        self.assertEqual(set(horizontal_schemes.keys()),
-                         set(self.regrid_schemes))
+        self.assertEqual(
+            set(HORIZONTAL_SCHEMES.keys()), set(self.regrid_schemes))
 
     def test_regrid__horizontal_schemes(self):
         for scheme in self.regrid_schemes:
@@ -119,7 +107,7 @@ class Test(tests.Test):
             result = regrid(self.src_cube, spec, scheme)
             self.assertEqual(result, self.regridded_cube)
             self._check(spec, scheme, spec=True)
-        self.assertEqual(set(_cache.keys()), set(specs))
+        self.assertEqual(set(_CACHE.keys()), set(specs))
 
 
 if __name__ == '__main__':

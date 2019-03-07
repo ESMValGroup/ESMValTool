@@ -1,0 +1,22 @@
+SOURCE: CMIP5
+!============
+variable_entry:    od550aerStderr
+!============
+modeling_realm:    aerosol
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     
+units:             1
+cell_methods:      time: mean
+cell_measures:     area: areacella
+long_name:         Ambient Aerosol Optical Thickness at 550 nm Error
+comment:           AOD error from the ambient aerosls (i.e., includes aerosol water).  Does not include AOD from stratospheric aerosols if these are prescribed but includes other possible background aerosol types.
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          od550aerStderr
+type:              real
+!----------------------------------
+!

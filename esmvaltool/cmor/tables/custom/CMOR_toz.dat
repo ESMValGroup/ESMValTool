@@ -1,12 +1,12 @@
 SOURCE: CCMI1
 !============
-variable_entry:    toz 
+variable_entry:    toz
 !============
 modeling_realm:    atmos
 !----------------------------------
 ! Variable attributes:
 !----------------------------------
-standard_name:     equivalent_thickness_at_stp_of_atmosphere_ozone_content
+standard_name:     
 units:             DU
 cell_methods:      time: mean
 cell_measures:     area: areacella
