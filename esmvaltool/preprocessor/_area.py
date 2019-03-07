@@ -108,7 +108,7 @@ def get_iris_analysis_operation(operator):
         operation = iris.analysis.MAX
     else:
         raise ValueError('operator ({}) not recognised. Accepted values are: '
-                         '{}', operator, operators)
+                         '{}'.format(operator, operators))
     return operation
 
 
