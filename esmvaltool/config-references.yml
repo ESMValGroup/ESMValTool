@@ -499,6 +499,11 @@ authors:
     name: Tilmes, Simone
     institute: NCAR, US
     email: tilmes 'at' ucar.edu
+  lova_to:
+    name: Lovato, Tomas
+    institute: CMCC, IT
+    email: tomas.lovato 'at' cmcc.it
+
 
 
 references:
