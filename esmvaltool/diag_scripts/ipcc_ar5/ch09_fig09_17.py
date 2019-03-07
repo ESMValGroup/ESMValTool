@@ -90,91 +90,6 @@ def timeplot(cube, **kwargs):
     times = diagtools.cube_time_to_float(cube)
     plt.plot(times, cubedata, **kwargs)
 
-
-#def moving_average(cube, window):
-    #"""
-    #Calculate a moving average.
-
-    #The window is a string which is a number and a measuremet of time.
-    #For instance, the following are acceptable window strings:
-
-    #* ``5 days``
-    #* ``12 years``
-    #* ``1 month``
-    #* ``5 yr``
-
-    #Also note the the value used is the total width of the window.
-    #For instance, if the window provided was '10 years', the the moving
-    #average returned would be the average of all values within 5 years
-    #of the central value.
-
-    #In the case of edge conditions, at the start an end of the data, they
-    #only include the average of the data available. Ie the first value
-    #in the moving average of a ``10 year`` window will only include the average
-    #of the five subsequent years.
-
-    #Parameters
-    #----------
-    #cube: iris.cube.Cube
-        #Input cube
-    #window: str
-        #A description of the window to use for the
-
-    #Returns
-    #----------
-    #iris.cube.Cube:
-        #A cube with the movinage average set as the data points.
-
-    #"""
-    #window = window.split()
-    #window_len = int(window[0]) / 2.
-    #win_units = str(window[1])
-
-    #if win_units not in [
-            #'days', 'day', 'dy', 'months', 'month', 'mn', 'years', 'yrs',
-            #'year', 'yr'
-    #]:
-        #raise ValueError("Moving average window units not recognised: " +
-                         #"{}".format(win_units))
-
-    #times = cube.coord('time').units.num2date(cube.coord('time').points)
-
-    #datetime = diagtools.guess_calendar_datetime(cube)
-
-    #output = []
-
-    #times = np.array([
-        #datetime(time_itr.year, time_itr.month, time_itr.day, time_itr.hour,
-                 #time_itr.minute) for time_itr in times
-    #])
-
-    #for time_itr in times:
-        #if win_units in ['years', 'yrs', 'year', 'yr']:
-            #tmin = datetime(time_itr.year - window_len, time_itr.month,
-                            #time_itr.day, time_itr.hour, time_itr.minute)
-            #tmax = datetime(time_itr.year + window_len, time_itr.month,
-                            #time_itr.day, time_itr.hour, time_itr.minute)
-
-        #if win_units in ['months', 'month', 'mn']:
-            #tmin = datetime(time_itr.year, time_itr.month - window_len,
-                            #time_itr.day, time_itr.hour, time_itr.minute)
-            #tmax = datetime(time_itr.year, time_itr.month + window_len,
-                            #time_itr.day, time_itr.hour, time_itr.minute)
-
-        #if win_units in ['days', 'day', 'dy']:
-            #tmin = datetime(time_itr.year, time_itr.month,
-                            #time_itr.day - window_len, time_itr.hour,
-                            #time_itr.minute)
-            #tmax = datetime(time_itr.year, time_itr.month,
-                            #time_itr.day + window_len, time_itr.hour,
-                            #time_itr.minute)
-
-        #arr = np.ma.masked_where((times < tmin) + (times > tmax), cube.data)
-        #output.append(arr.mean())
-    #cube.data = np.array(output)
-    #return cube
-
-
 def make_time_series_plots(
         cfg,
         metadata,
@@ -334,7 +249,6 @@ def multi_model_time_series(
 #                'ylabel': 'Joule',
             }
 
-            title = metadata[filename]['long_name']
 
     # Saving files:
     if cfg['write_plots']:
@@ -353,7 +267,8 @@ def multi_model_time_series(
     plt.gcf().set_size_inches(9., 6.)
     diagtools.add_legend_outside_right(
         plot_details, plt.gca(), column_width=0.15)
-
+    plt.ylabel(metadata[filename]['short_name'])
+    plt.title(metadata[filename]['standard_name'])
     logger.info('Saving plots to %s', path)
     plt.savefig(path)
     plt.close()
@@ -405,7 +320,8 @@ def main(cfg):
 
     """
     for index, metadata_filename in enumerate(cfg['input_files']):
-        logger.info('metadata filename:\t%s', metadata_filename)
+        logger.info('metadata-filename:')
+        print(metadata_filename)
 
         metadatas = diagtools.get_input_files(cfg, index=index)
 #        input_data = cfg['input_files'].values()
@@ -416,13 +332,13 @@ def main(cfg):
             cfg,
             metadatas,
         )
-        #######
-        # Multi model time series
-        multi_model_time_series(
-            cfg,
-            metadatas,
-            cubedic,
-        )
+    #######
+    # Multi model time series
+    multi_model_time_series(
+        cfg,
+        metadatas,
+        cubedic,
+    )
 
 
 if __name__ == '__main__':

@@ -6,7 +6,6 @@ from cf_units import Unit
 
 from ._derived_variable_base import DerivedVariableBase
 
-
 RHO_CP = iris.cube.Cube(4.09169e+6, units=Unit('kg m-3 J kg-1 K-1'))
 
 
@@ -42,6 +41,7 @@ class DerivedVariable(DerivedVariableBase):
             c.var_name == 'volcello'))
         # 2. multiply with each other and with cprho0
         # try working with cubes here to save memory
+        # this might not be possible because of non-broadcasting in Iris
 #        cube *= volume * RHO_CP
         cube.data *= volume.data * RHO_CP.data
         cube.units *= volume.units * RHO_CP.units
