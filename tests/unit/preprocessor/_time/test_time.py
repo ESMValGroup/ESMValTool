@@ -4,17 +4,17 @@ from __future__ import absolute_import, division, print_function
 
 import unittest
 
+import numpy as np
+from esmvaltool.preprocessor._time import (_align_time_axes, extract_month,
+                                           extract_season, extract_time,
+                                           time_average)
+
 import iris
 import iris.coord_categorisation
 import iris.coords
-import numpy as np
+import tests
 from cf_units import Unit
 from iris.cube import Cube
-
-import tests
-from esmvaltool.preprocessor._time import (extract_month, extract_season,
-                                           time_average, extract_time,
-                                           _align_time_axes)
 
 
 def _create_sample_cube():

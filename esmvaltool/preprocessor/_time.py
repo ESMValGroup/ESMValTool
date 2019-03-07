@@ -65,11 +65,9 @@ def extract_time(cube, start_year, start_month, start_day, end_year, end_month,
     if cube_slice is None:
         start_cube = str(cube.coord('time').points[0])
         end_cube = str(cube.coord('time').points[-1])
-        raise ValueError("Time slice {} to {} is outside \
-                          cube time bounds {} to {}.".format(str(start_date),
-                                                             str(end_date),
-                                                             start_cube,
-                                                             end_cube))
+        raise ValueError(
+            f"Time slice {start_date} to {end_date} is outside cube "
+            f"time bounds {start_cube} to {end_cube}.")
 
     # Issue when time dimension was removed when only one point as selected.
     if cube_slice.ndim != cube.ndim:
@@ -180,7 +178,7 @@ def seasonal_mean(cube):
     return cube.extract(three_months_bound)
 
 
-def _align_time_axes(cubes):
+def _align_time_axes(cubes, frequency='monthly'):
     """
     Align time axis for cubes so they can be subtracted.
 
@@ -191,6 +189,9 @@ def _align_time_axes(cubes):
     Arguments
     ---------
         cubes: list of iris.cube.Cube
+        frequency: str
+            data frequency: monthly, daily, etc
+            default: monthly
 
     Returns
     -------
@@ -205,15 +206,28 @@ def _align_time_axes(cubes):
                           calendar=cube.coord('time').units.calendar))
 
         # fix calendars
-        cube.coord('time').units = \
-            cf_units.Unit(cube.coord('time').units.origin,
-                          calendar='gregorian')
+        cube.coord('time').units = cf_units.Unit(
+            cube.coord('time').units.origin,
+            calendar='gregorian'
+        )
 
         # standardize time points
         time_c = [cell.point for cell in cube.coord('time').cells()]
-        cube.coord('time').cells = [
-            datetime.datetime(t.year, t.month, 15, 0, 0, 0) for t in time_c
-        ]
+        if frequency == 'monthly':
+            cube.coord('time').cells = [
+                datetime.datetime(t.year, t.month,
+                                  15, 0, 0, 0) for t in time_c
+            ]
+        if frequency == 'daily':
+            cube.coord('time').cells = [
+                datetime.datetime(t.year, t.month,
+                                  t.day, 0, 0, 0) for t in time_c
+            ]
+        if frequency == 'hourly':
+            cube.coord('time').cells = [
+                datetime.datetime(t.year, t.month,
+                                  t.day, t.hour, 0, 0) for t in time_c
+            ]
         cube.coord('time').points = [
             cube.coord('time').units.date2num(cl)
             for cl in cube.coord('time').cells
