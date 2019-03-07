@@ -671,7 +671,8 @@ ncdf_opener_universal <- function(namefile, namevar = NULL, namelon = NULL,
       selectf <- cdo("selvar", args = namevar, input = namefile)
       namefile <- cdo(remap_method, args = paste0("'", grid, "'"),
                       input = selectf)
-      unlink(selectf)}
+      unlink(selectf)
+    }
   }
 
   # define rotate function (faster than with apply)
