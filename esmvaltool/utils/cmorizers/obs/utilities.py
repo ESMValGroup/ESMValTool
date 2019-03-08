@@ -1,4 +1,5 @@
 """Utils module for Python cmorizers."""
+import datetime
 import logging
 import os
 
@@ -18,6 +19,10 @@ def _read_cmor_config(cmor_config):
         os.path.dirname(__file__), 'cmor_config', cmor_config)
     with open(reg_path, 'r') as file:
         cfg = yaml.safe_load(file)
+    timestamp = datetime.datetime.utcnow()
+    timestamp_format = "%Y-%m-%d %H:%M:%S"
+    now_time = timestamp.strftime(timestamp_format)
+    cfg['proj']['metadata_attributes']['CMORcreated'] = now_time
     return cfg
 
 

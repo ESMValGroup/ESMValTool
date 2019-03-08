@@ -1,4 +1,5 @@
 """
+
 # #############################################################################
 # ESMValTool CMORizer for Landschutzer2014 data
 # #############################################################################
@@ -23,7 +24,6 @@
 # #############################################################################
 """
 
-import datetime
 import logging
 import os
 
@@ -32,7 +32,6 @@ from cf_units import Unit
 import numpy as np
 
 from .utilities import (_add_metadata,
-                        _convert_timeunits,
                         _fix_coords,
                         _read_cmor_config,
                         _roll_cube_data,
@@ -41,16 +40,12 @@ from .utilities import (_add_metadata,
 logger = logging.getLogger(__name__)
 
 # read in CMOR configuration
-cfg = _read_cmor_config('Landschutzer2014.yml')
-proj = cfg['proj']
-timestamp = datetime.datetime.utcnow()
-timestamp_format = "%Y-%m-%d %H:%M:%S"
-now_time = timestamp.strftime(timestamp_format)
-proj['metadata_attributes']['CMORcreated'] = now_time
-VAR_TO_CMOR = cfg['VAR_TO_CMOR']
-VAR_TO_FILENAME = cfg['VAR_TO_FILENAME']
-STANDARD_NAMES = cfg['STANDARD_NAMES']
-LONG_NAMES = cfg['LONG_NAMES']
+CFG = _read_cmor_config('Landschutzer2014.yml')
+PROJ = CFG['proj']
+VAR_TO_CMOR = CFG['VAR_TO_CMOR']
+VAR_TO_FILENAME = CFG['VAR_TO_FILENAME']
+STANDARD_NAMES = CFG['STANDARD_NAMES']
+LONG_NAMES = CFG['LONG_NAMES']
 
 ALLVARS = list(VAR_TO_CMOR.keys())
 
@@ -92,12 +87,12 @@ def extract_variable(var, raw_file, out_dir):
             _roll_cube_data(cube, 180, -1)
             _fix_data(cube, var)
             _fix_metadata(cube, var)
-            _add_metadata(cube, proj)
+            _add_metadata(cube, PROJ)
             yr1 = cube.coord('time').cell(0).point.strftime('%Y')
             yr2 = cube.coord('time').cell(-1).point.strftime('%Y')
             fillvalue = cube.data.fill_value
             _save_variable(cube, var, out_dir,
-                           [yr1, yr2], proj, fill_value=fillvalue,
+                           [yr1, yr2], PROJ, fill_value=fillvalue,
                            local_keys=['positive'])
 
 
