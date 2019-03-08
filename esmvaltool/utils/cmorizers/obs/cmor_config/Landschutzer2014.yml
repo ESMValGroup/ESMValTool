@@ -4,7 +4,6 @@ proj:
   dataset: 'Landschutzer2014'
   version: 'CDIAC_G05'
   realm: 'clim'
-  field: 'TO2M'
   frequency: {
         'fgco2': 'Omon',
         'spco2': 'Omon',
