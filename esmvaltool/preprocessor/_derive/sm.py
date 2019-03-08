@@ -6,6 +6,7 @@ import numpy as np
 
 from ._derived_variable_base import DerivedVariableBase
 
+
 class DerivedVariable(DerivedVariableBase):
     """Derivation of variable `sm`."""
 
