@@ -5,26 +5,24 @@ function.
 
 """
 
-from __future__ import absolute_import, division, print_function
-
-import unittest
-import iris
-import iris.cube
-import iris.coords
-import numpy as np
-import tempfile
 import os
+import tempfile
+import unittest
+
+import iris
+import iris.coords
+import iris.cube
+import numpy as np
 
 from esmvaltool.preprocessor import _regrid
 
 
 class TestGetFileLevels(unittest.TestCase):
-
     def setUp(self):
         """Prepare the sample file for the test"""
         self.cube = iris.cube.Cube(np.ones([2, 2, 2]), var_name='var')
-        self.cube.add_dim_coord(iris.coords.DimCoord(np.arange(0, 2),
-                                                     var_name='coord'), 0)
+        self.cube.add_dim_coord(
+            iris.coords.DimCoord(np.arange(0, 2), var_name='coord'), 0)
 
         self.cube.coord('coord').attributes['positive'] = 'up'
         iris.util.guess_coord_axis(self.cube.coord('coord'))

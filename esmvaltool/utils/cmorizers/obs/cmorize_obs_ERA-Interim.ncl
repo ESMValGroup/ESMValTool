@@ -58,35 +58,35 @@ begin
   YEAR2 = 2018
 
   ; Selected variable (standard name)
-  VAR = (/"zg", "psl", "ta", "zg", "hus", \
+  VAR = (/"zg", "psl", "ta", "zg", "hus", "hur", \
           "ua", "va", "tas", "ps", "tos",  \
           "tauu", "tauv", "clwvi", "clivi", "sftlf", \
           "clt", "prw", "ts", "wap", "psl"/)
 
   ; Name in the raw data
-  NAME = (/"z", "msl", "t", "z", "q", \
+  NAME = (/"z", "msl", "t", "z", "q", "r", \
            "u", "v", "t2m", "sp", "sst", \
            "iews", "inss", "p56.162", "p57.162", "lsm", \
            "tcc", "tcwv", "skt", "w", "msl"/)
 
   ; Units in the input  data and corresponding conversion facto to CMOR units
-  RAWUNITS = (/"m**2 s**-2", "Pa", "K", "m**2 s**-2", "kg kg**-1", \
+  RAWUNITS = (/"m**2 s**-2", "Pa", "K", "m**2 s**-2", "kg kg**-1", "%", \
                "m s**-1", "m s**-1", "K", "Pa", "K", \
                "N m**-2", "N m**-2", "kg m**-2", "kg m**-2", "(0 - 1)", \
                "(0 - 1)", "kg m**-2", "K", "Pa s**-1", "Pa"/)
 
-  CONVERSION = (/1./9.80665, 1., 1., 1./9.80665, 1., \
+  CONVERSION = (/1./9.80665, 1., 1., 1./9.80665, 1., 1., \
                 1., 1., 1., 1., 1., \
                 1., 1., 1., 1., 100., \
                 100., 1., 1., 1., 1./)
 
   ; MIPs
-  MIP = (/"day", "day", "Amon", "Amon", "Amon", \
+  MIP = (/"day", "day", "Amon", "Amon", "Amon", "Amon", \
           "Amon", "Amon", "Amon", "Amon", "Omon", \
           "Amon", "Amon", "Amon", "Amon", "fx", \
           "Amon", "Amon", "Amon", "Amon", "Amon"/)
 
-  FREQ = (/"day", "day", "mon", "mon", "mon", \
+  FREQ = (/"day", "day", "mon", "mon", "mon", "mon", \
            "mon", "mon", "mon", "mon", "mon", \
            "mon", "mon", "mon", "mon", "fx", \
            "mon", "mon", "mon", "mon", "mon"/)

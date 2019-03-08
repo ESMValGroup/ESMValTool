@@ -1,21 +1,18 @@
 """Unit tests for the :func:`esmvaltool.preprocessor._time` module."""
 
-from __future__ import absolute_import, division, print_function
-
 import unittest
-
-import numpy as np
-from esmvaltool.preprocessor._time import (_align_time_axes, extract_month,
-                                           extract_season, extract_time,
-                                           time_average)
 
 import iris
 import iris.coord_categorisation
 import iris.coords
-import tests
+import numpy as np
 from cf_units import Unit
 from iris.cube import Cube
 
+import tests
+from esmvaltool.preprocessor._time import (_align_time_axes, extract_month,
+                                           extract_season, extract_time,
+                                           time_average)
 
 def _create_sample_cube():
     cube = Cube(np.arange(1, 25), var_name='co2', units='J')
@@ -63,7 +60,9 @@ class TestTimeSlice(tests.Test):
         cube = cube.collapsed('time', iris.analysis.MEAN)
         sliced = extract_time(cube, 1950, 1, 1, 1952, 12, 31)
         print(sliced.coord('time').points)
-        self.assertTrue(np.array([360., ]) == sliced.coord('time').points)
+        self.assertTrue(np.array([
+            360.,
+        ]) == sliced.coord('time').points)
 
     def test_extract_time_no_time(self):
         """Test extract_time with no time step."""

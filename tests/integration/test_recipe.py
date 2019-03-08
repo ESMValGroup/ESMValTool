@@ -261,8 +261,7 @@ def test_default_preprocessor(tmp_path, patched_datafinder, config_user):
         'CMIP5_CanESM2_Oyr_historical_r1i1p1_TO3Y_chl_2000-2005_fixed')
     defaults = {
         'load': {
-            'callback':
-            concatenate_callback,
+            'callback': concatenate_callback,
         },
         'concatenate': {},
         'fix_file': {
