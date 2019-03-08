@@ -67,7 +67,11 @@ jobs:
             python setup.py test --installation
             esmvaltool -h
             ncl -V
+            # cdo tests
             cdo --version
+            echo 'netcdf tmp { variables: float test; data: test = 0; }' > tmp.cdl
+            ncgen -k hdf5 tmp.cdl
+            cdo -f nc copy tmp.nc tmp2.nc
       - store_artifacts:
           path: /logs
       - store_artifacts:
