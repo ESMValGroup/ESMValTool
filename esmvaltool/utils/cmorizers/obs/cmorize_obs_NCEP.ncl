@@ -53,6 +53,9 @@ loadscript(getenv("esmvaltool_root") + "/utils/cmorizers/obs/interface.ncl")
 
 begin
 
+  ; Script name (for logger)
+  DIAG_SCRIPT = "cmorize_obs_NCEP.ncl"
+
   ; Source name
   OBSNAME = "NCEP"
 
@@ -64,9 +67,9 @@ begin
   YEAR2 = 2018
 
   ; Selected variable (standard name)
-  VARS = (/"ta", "zg", "hur", "hus", "ua", \
-           "va", "wap", "tas", "pr", \
-           "ua", "va", "pr", "rlut"/)
+  VAR = (/"ta", "zg", "hur", "hus", "ua", \
+          "va", "wap", "tas", "pr", \
+          "ua", "va", "pr", "rlut"/)
 
   ; Name in the raw data
   NAME = (/"air", "hgt", "rhum", "shum", "uwnd", \
@@ -83,39 +86,57 @@ begin
                "m/s", "Pascal/s", "K", "Kg/m^2/s", \
                "m/s", "m/s", "Kg/m^2/s", "W/m^2"/)
 
-  ; MIPS
-  MIPS = (/"Amon", "Amon", "Amon", "Amon", "Amon", \
-           "Amon", "Amon", "Amon", "Amon", \
+  ; MIP
+  MIP = (/"Amon", "Amon", "Amon", "Amon", "Amon", \
+          "Amon", "Amon", "Amon", "Amon", \
+          "day", "day", "day", "day"/)
+
+  ; Frequency
+  FREQ = (/"mon", "mon", "mon", "mon", "mon", \
+           "mon", "mon", "mon", "mon", \
            "day", "day", "day", "day"/)
 
   ; CMOR tables
   CMOR_TABLE = getenv("esmvaltool_root") + \
-    "/cmor/tables/cmip5/Tables/CMIP5_" + MIPS
+    "/cmor/tables/cmip5/Tables/CMIP5_" + MIP
+
+  ; Type
+  TYPE = "reanaly"
+
+  ; Version
+  VERSION = "1"
+
+  ; Global attributes
+  SOURCE = "http://www.esrl.noaa.gov/psd/data/gridded/" + \
+    "data.ncep.reanalysis.html"
+  REF = "Kalnay et al., B. Am. Meteorol. Soc., " + \
+    "doi:10.1175/1520-0477(1996)077<0437:TNYRP>2.0.CO;2, 1996"
+  COMMENT = ""
 
 end
 
 begin
 
   ; Loop over variables
-  do vID = 0, dimsizes(VARS) - 1
+  do vv = 0, dimsizes(VAR) - 1
 
-    log_info("Processing " + VARS(vID))
+    log_info("Processing " + VAR(vv) + " (" + MIP(vv) + ")")
 
     do yy = YEAR1, YEAR2
 
-      if (isStrSubset(MIPS(vID), "mon")) then
-        fname = input_dir_path + SUBDIR(vID) + NAME(vID) + ".mon.mean.nc"
+      if (isStrSubset(MIP(vv), "mon")) then
+        fname = input_dir_path + SUBDIR(vv) + NAME(vv) + ".mon.mean.nc"
       end if
 
-      if (isStrSubset(MIPS(vID), "day")) then
-        flist = systemfunc("ls " + input_dir_path + SUBDIR(vID) + NAME(vID) + \
+      if (isStrSubset(MIP(vv), "day")) then
+        flist = systemfunc("ls " + input_dir_path + SUBDIR(vv) + NAME(vv) + \
                            ".*" + yy + ".nc")
         fname = flist(0)
         delete(flist)
       end if
 
       f = addfile(fname, "r")
-      tmp = f->$NAME(vID)$
+      tmp = f->$NAME(vv)$
       delete(fname)
       delete(f)
       fill_start = num(ismissing(tmp))
@@ -144,135 +165,75 @@ begin
       end if
 
       ; Convert units
-      if (any(VARS(vID).eq.(/"ta", "tas"/)) .and. \
+      if (any(VAR(vv).eq.(/"ta", "tas"/)) .and. \
           output@units.eq."degC") then
         output = output + 273.15
         output@units = "K"
       end if
-      if (VARS(vID).eq."hus" .and. output@units.eq."grams/kg") then
+      if (VAR(vv).eq."hus" .and. output@units.eq."grams/kg") then
         output = output / 1000.
         output@units = "1"
       end if
-      if (output@units.ne.EXPUNITS(vID)) then
-        error_msg("f", diag_script, "", \
-                  "possibly wrong input units for " + VARS(vID))
+      if (output@units.ne.EXPUNITS(vv)) then
+        error_msg("f", DIAG_SCRIPT, "", \
+                  "possibly wrong input units for " + VAR(vv))
       end if
 
       rank = dimsizes(dimsizes(output))
-
-      ; Format time coordinate
-      if (isStrSubset(MIPS(vID), "mon")) then
-        ctime = time_attrib(output&time, yy, yy, "M")
-      end if
-      if (isStrSubset(MIPS(vID), "day")) then
-        ctime = time_attrib(output&time, yy, yy, "D")
-      end if
-      delete(output&time)
-      output&time = ctime
-      delete(ctime)
-
-      ; Format vertical coordinate
+      output!0 = "time"
       if (rank.eq.4) then
         output!1 = "plev"
-        if (isMonotonic(output&plev) .eq. 0) then
-          error_msg("f", diag_script, "", "non-monotonic vertical coordinate")
-        end if
-        if (isMonotonic(output&plev).eq.1) then
-          output = output(:, ::-1, :, :)
-        end if
-        if (output&plev@units.eq."millibar") then
-          output&plev = output&plev * 100
-        else
-          error_msg("f", diag_script, "", \
-                    "unexpected units for plev " + output&plev@units)
-        end if
-        cplev = plev_attrib(output&plev)
-        delete(output&plev)
-        output&plev = cplev
-        delete(cplev)
-      end if
-
-      ; Format latitude coordinate
-      if (rank.eq.4) then
         output!2 = "lat"
-        if (isMonotonic(output&lat) .eq. 0) then
-          error_msg("f", diag_script, "", "non-monotonic latitude coordinate")
-        end if
-        if (isMonotonic(output&lat) .eq. -1) then
-          output = output(:, :, ::-1, :)
-        end if
-      end if
-      if (rank.eq.3)
-        output!1 = "lat"
-        if (isMonotonic(output&lat) .eq. 0) then
-          error_msg("f", diag_script, "", "non-monotonic latitude coordinate")
-        end if
-        if (isMonotonic(output&lat) .eq. -1) then
-          output = output(:, ::-1, :)
-        end if
-      end if
-      clat = lat_attrib(output&lat)
-      delete(output&lat)
-      output&lat = clat
-      delete(clat)
-
-      ; Format longitude coordinate
-      if (rank.eq.4) then
         output!3 = "lon"
-      end if
-      if (rank.eq.3) then
+        output&plev = output&plev * 100.  ; [mb] --> [Pa]
+      elseif (rank.eq.3)
+        output!1 = "lat"
         output!2 = "lon"
       end if
-      if (isMonotonic(output&lon) .eq. 0) then
-        error_msg("f", diag_script, "", "non-monotonic longitude coordinate")
-      end if
-      if (any(output&lon.lt.0.)) then
-        output = lonFlip(output)
-      end if
-      clon = lon_attrib(output&lon)
-      delete(output&lon)
-      output&lon = clon
-      delete(clon)
+
+      ; Format coordinates
+      format_coords(output, yy + "0101", yy + "1231", FREQ(vv))
 
       ; Set variable attributes
-      tmp = var_attrib(output, VARS(vID), CMOR_TABLE(vID))
+      tmp = format_variable(output, VAR(vv), CMOR_TABLE(vv))
       delete(output)
       output = tmp
       delete(tmp)
 
+      ; Calculate coordinate bounds
+      bounds = guess_coord_bounds(output, FREQ(vv))
+
       ; Set global attributes
-      gAtt = set_global_atts( \
-        OBSNAME, TIER, \
-        "http://www.esrl.noaa.gov/psd/data/gridded/" + \
-        "data.ncep.reanalysis.html", \
-        "Kalnay et al., B. Am. Meteorol. Soc., " + \
-        "doi:10.1175/1520-0477(1996)077<0437:TNYRP>2.0.CO;2, 1996", "")
+      gAtt = set_global_atts(OBSNAME, TIER, SOURCE, REF, COMMENT)
 
       ; Check fill values
       fill_end = num(ismissing(output))
       if (fill_start.ne.fill_end) then
-        error_msg("f", diag_script, "", \
+        error_msg("f", DIAG_SCRIPT, "", \
                   "missing values lost during conversion")
       end if
       delete(fill_start)
       delete(fill_end)
 
-      ; Outfile
-      fout = output_dir_path + "OBS_" + OBSNAME + "_reanaly_1_" + MIPS(vID) + \
-        "_" + VARS(vID) + "_" + yy + "01-" + yy + "12.nc"
+      ; Output file
+      DATESTR = yy + "01-" + yy + "12"
+      fout = output_dir_path + \
+        str_join((/"OBS", OBSNAME, TYPE, VERSION, \
+                   MIP(vv), VAR(vv), DATESTR/), "_") + ".nc"
 
       ; Add height coordinate to tas variable (required by the new backend)
-      if (VARS(vID).eq."tas") then
+      if (VAR(vv).eq."tas") then
         output@coordinates = "height"
       end if
 
       ; Write variable
-      write_nc(fout, VARS(vID), output, gAtt)
+      write_nc(fout, VAR(vv), output, bounds, gAtt)
       delete(gAtt)
       delete(output)
+      delete(bounds)
 
       ; Add height coordinate to tas variable (required by the new backend)
-      if (VARS(vID).eq."tas") then
+      if (VAR(vv).eq."tas") then
         height = 2.d
         height!0 = "ncl_scalar"
         height@units = "m"
