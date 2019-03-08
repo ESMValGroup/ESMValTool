@@ -31,18 +31,26 @@ REQUIREMENTS = {
         'cdo',
         'cf_units',
         'cython',
-        # 'scitools-iris',  # Only iris 2 is on PyPI
+        'eofs',
+        'fiona',
         'matplotlib<3',
+        'nc-time-axis',  # needed by iris.plot
         'netCDF4',
         'numba',
         'numpy',
+        'pandas',
         'pillow',
+        'prov[dot]',
         'psutil',
         'pyyaml',
+        'scitools-iris',
         'shapely',
         'six',
+        'sklearn',
         'stratify',
         'vmprof',
+        'xarray',
+        'xlsxwriter',
         'yamale',
     ],
     # Test dependencies
@@ -53,7 +61,7 @@ REQUIREMENTS = {
         'mock',
         'nose',
         'pycodestyle',
-        'pytest',
+        'pytest>=3.9',
         'pytest-cov',
         'pytest-env',
         'pytest-html',
@@ -129,6 +137,7 @@ class RunTests(CustomCommand):
         args = [
             'tests',
             'esmvaltool',  # for doctests
+            '--ignore=esmvaltool/cmor/tables/',
             '--doctest-modules',
             '--cov=esmvaltool',
             '--cov-report=term',
@@ -206,8 +215,8 @@ with open('README.md') as readme:
             'Environment :: Console',
             'License :: OSI Approved :: Apache Software License',
             'Programming Language :: Python',
-            'Programming Language :: Python :: 2.7',
             'Programming Language :: Python :: 3.6',
+            'Programming Language :: Python :: 3.7',
         ],
         packages=PACKAGES,
         # Include all version controlled files
@@ -221,7 +230,12 @@ with open('README.md') as readme:
         entry_points={
             'console_scripts': [
                 'esmvaltool = esmvaltool._main:run',
-                'nclcodestyle = esmvaltool.utils.nclcodestyle.nclcodestyle:_main',
+                'cmorize_obs = esmvaltool.'
+                'utils.cmorizers.obs.cmorize_obs:execute_cmorize',
+                'nclcodestyle = esmvaltool.'
+                'utils.nclcodestyle.nclcodestyle:_main',
+                'mip_convert_setup = esmvaltool.'
+                'utils.cmorizers.mip_convert.esmvt_mipconv_setup:main'
             ],
         },
         cmdclass={

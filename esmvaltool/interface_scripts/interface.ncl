@@ -17,46 +17,50 @@
 
 ; Load config_user_info and diag_script_info from settings.ncl
 begin
-  print("INFO    Loading settings from " + getenv("settings"))
-  loadscript("$settings")
+  if .not. isvar("__interface_ncl__") then
+    print("INFO    Loading settings from " + getenv("settings"))
+    loadscript("$settings")
+  end if
 end
 
 ; #############################################################################
 
 ; Load input_file_info, dataset_info and variable_info from <variable>_info.ncl
 begin
-  vardeffiles = diag_script_info@input_files
-  nvdf = dimsizes(vardeffiles)
-  do i = 0, nvdf - 1
-    isncl = .not.ismissing(str_match_ic_regex(vardeffiles(i), \
-                                              ".*_info\" + ".ncl"))
-    if (.not. ismissing(vardeffiles(i)) .and. isncl) then
-      vardeffile = vardeffiles(i)
-      print("INFO    Loading input data description from " + vardeffile)
-      loadscript(vardeffile)
-    end if
-  end do
+  if .not. isvar("__interface_ncl__") then
+    vardeffiles = diag_script_info@input_files
+    nvdf = dimsizes(vardeffiles)
+    do i = 0, nvdf - 1
+      isncl = .not.ismissing(str_match_ic_regex(vardeffiles(i), \
+                                                ".*_info\" + ".ncl"))
+      if (.not. ismissing(vardeffiles(i)) .and. isncl) then
+        vardeffile = vardeffiles(i)
+        print("INFO    Loading input data description from " + vardeffile)
+        loadscript(vardeffile)
+      end if
+    end do
+  end if
 end
 
 ; #############################################################################
 
 begin
+  if .not. isvar("__interface_ncl__") then
+    ; Add trailing slash to paths
+    config_user_info@plot_dir = config_user_info@plot_dir + "/"
+    config_user_info@run_dir = config_user_info@run_dir + "/"
+    config_user_info@work_dir = config_user_info@work_dir + "/"
 
-  ; Add trailing slash to paths
-  config_user_info@plot_dir = config_user_info@plot_dir + "/"
-  config_user_info@run_dir = config_user_info@run_dir + "/"
-  config_user_info@work_dir = config_user_info@work_dir + "/"
-
-  ; Define current script name as global variable (following Python syntax)
-  DIAG_SCRIPT = diag_script_info@script
-
+    ; Define current script name as global variable (following Python syntax)
+    DIAG_SCRIPT = diag_script_info@script
+  end if
 end
 
 ; #############################################################################
 ; Load standard interface scripts
-load "./interface_scripts/logging.ncl"
-load "./interface_scripts/auxiliary.ncl"
-load "./interface_scripts/data_handling.ncl"
+load "$diag_scripts/../interface_scripts/logging.ncl"
+load "$diag_scripts/../interface_scripts/auxiliary.ncl"
+load "$diag_scripts/../interface_scripts/data_handling.ncl"
 
 ; #############################################################################
 ; Convenience functions for selecting input_file_info and related attributes
@@ -187,12 +191,15 @@ begin
   scriptname = "interface_scripts/auxiliary.ncl"
   enter_msg(scriptname, funcname)
 
-  out = new(ListCount(inlist), string)
   do ii = 0, ListCount(inlist) - 1
     if (isatt(inlist[ii], att)) then
-      if (typeof(inlist[ii]@$att$).ne."string") then
-        error_msg("f", scriptname, funcname, "non-string attributes not " + \
-                  "supported")
+      if (.not.isdefined("out")) then
+        set_type = typeof(inlist[ii]@$att$)
+        out = new(ListCount(inlist), set_type)
+      end if
+      if (typeof(inlist[ii]@$att$).ne.set_type) then
+        error_msg("f", scriptname, funcname, "attributes must be of the " + \
+                  "same type")
       end if
       out(ii) = inlist[ii]@$att$
     end if
@@ -206,4 +213,9 @@ begin
   return(out)
   leave_msg(scriptname, funcname)
 
+end
+
+; Remember that the interface is now loaded.
+begin
+  __interface_ncl__ = True
 end

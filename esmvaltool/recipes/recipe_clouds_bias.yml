@@ -1,11 +1,15 @@
+# ESMValTool
 # recipe_clouds_bias.yml
 ---
 documentation:
   description: |
-    Diagnostics of clouds and hydrological cycle: multi-model mean, mean bias,
-    absolute bias, relative bias
+    Diagnostics of clouds and hydrological cycle multi-model mean, mean bias,
+    absolute bias, relative bias.
 
   authors:
+    - laue_ax
+
+  maintainer:
     - laue_ax
 
   references:
@@ -126,6 +130,10 @@ diagnostics:
 
   clouds_bias_tas:
     description: IPCC AR5 Ch. 9, Fig. 9.2 (near-surface temperature)
+    themes:
+      - clouds
+    realms:
+      - atmos
     variables:
       tas:
         preprocessor: clim
@@ -153,6 +161,10 @@ diagnostics:
 
   clouds_bias_pr:
     description: IPCC AR5 Ch. 9, Fig. 9.4 (precipitation)
+    themes:
+      - clouds
+    realms:
+      - atmos
     variables:
       pr:
         preprocessor: clim
@@ -176,6 +188,10 @@ diagnostics:
   clouds_bias_clt:
     description: multi-model mean bias of annual mean compared with a
                  reference dataset (observations).
+    themes:
+      - clouds
+    realms:
+      - atmos
     variables:
       clt:
         preprocessor: clim
