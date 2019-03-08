@@ -40,12 +40,11 @@ dependencies:
   # Non-Python dependencies
   - graphviz
   - cdo=1.9.5  # see notes for future version
+  - hdf5=1.10.3
 
   # Multi language support:
   - ncl=6.5.0  # see notes for future version
   - jasper!=1.900.31  # pinned NCL dependency
   - r-base
-  - r-rcpp
-  - r-xml
   - libunwind  #  specifically for Python3.7+
   # TODO: add julia
