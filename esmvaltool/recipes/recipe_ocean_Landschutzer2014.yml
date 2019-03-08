@@ -23,13 +23,6 @@ documentation:
 datasets:
 # working datasets
   - {dataset: CanESM2,       project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
-#  - {dataset: HadGEM2-ES,    project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
-#  - {dataset: GISS-E2-H,    project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 1990,  end_year: 2004}
-#  - {dataset: HadGEM2-AO,    project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 1990,  end_year: 2004}
-#  - {dataset: HadCM3,    project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 1990,  end_year: 2004}
-#  - {dataset: CanCM4,    project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 1990,  end_year: 2004}
-#  - {dataset: CSIRO-Mk3-6-0,    project: CMIP5,  mip: Oyr,  exp: historical,  ensemble: r1i1p1,  start_year: 1990,  end_year: 2004}
-
 
 
 # --------------------------------------------------
@@ -82,8 +75,8 @@ diagnostics:
         field: TO2M
         mip: Omon
         fx_files: [areacello, ]
-    additional_datasets:
-      - {dataset: Landschutzer2014,  project: OBS,  type: clim,  version: CDIAC_G05,  start_year: 2000,  end_year: 2010,  tier: 2}
+#    additional_datasets:
+#      - {dataset: Landschutzer2014,  project: OBS,  type: clim,  version: CDIAC_G05,  start_year: 2000,  end_year: 2010,  tier: 2}
     scripts:
       Global_surface_timeseries:
         script: ocean/diagnostic_timeseries.py
@@ -117,8 +110,8 @@ diagnostics:
         fx_files: [areacello, ]
         maps_range: [-0.2, 0.2]
         diff_range: [-0.1, 0.1]
-    additional_datasets:
-      - {dataset: Landschutzer2014,  project: OBS,  type: clim,  version: CDIAC_G05,  start_year: 2000,  end_year: 2010,  tier: 2}
+#    additional_datasets:
+#      - {dataset: Landschutzer2014,  project: OBS,  type: clim,  version: CDIAC_G05,  start_year: 2000,  end_year: 2010,  tier: 2}
     scripts:
       Global_Ocean_surface_map:
         script: ocean/diagnostic_maps.py
