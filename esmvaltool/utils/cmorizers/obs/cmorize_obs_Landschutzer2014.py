@@ -109,8 +109,6 @@ def cmorization(in_dir, out_dir):
 
     # run the cmorization
     for var in ALLVARS:
-        if not os.path.exists(out_dir):
-            os.makedirs(out_dir)
         raw_file = os.path.join(in_dir, VAR_TO_FILENAME[var] + '.nc')
         logger.info("CMORizing var %s in file %s", var, raw_file)
         extract_variable(var, raw_file, out_dir)
