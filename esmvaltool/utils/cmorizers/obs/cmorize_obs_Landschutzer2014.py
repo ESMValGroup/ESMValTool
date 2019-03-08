@@ -79,7 +79,7 @@ def _fix_data(cube, var):
     return cube
 
 
-def extract_variable(var, raw_file, out_dir, yr):
+def extract_variable(var, raw_file, out_dir):
     """Extract to all vars."""
     cubes = iris.load(raw_file)
     rawvar = VAR_TO_CMOR[var]
@@ -88,7 +88,6 @@ def extract_variable(var, raw_file, out_dir, yr):
             cube.standard_name = STANDARD_NAMES[var]
             cube.long_name = LONG_NAMES[var]
             cube.var_name = var
-            _convert_timeunits(cube, yr)
             _fix_coords(cube)
             _roll_cube_data(cube, 180, -1)
             _fix_data(cube, var)
@@ -108,12 +107,10 @@ def cmorization(in_dir, out_dir):
     logger.info("Input data from: %s", in_dir)
     logger.info("Output will be written to: %s", out_dir)
 
-    yrdummy = 2000
-
     # run the cmorization
     for var in ALLVARS:
         if not os.path.exists(out_dir):
             os.makedirs(out_dir)
         raw_file = os.path.join(in_dir, VAR_TO_FILENAME[var] + '.nc')
         logger.info("CMORizing var %s in file %s", var, raw_file)
-        extract_variable(var, raw_file, out_dir, yrdummy)
+        extract_variable(var, raw_file, out_dir)
