@@ -1,7 +1,5 @@
 """Unit tests for the :func:`esmvaltool.preprocessor._time` module."""
 
-from __future__ import absolute_import, division, print_function
-
 import unittest
 
 import iris
@@ -63,7 +61,9 @@ class TestTimeSlice(tests.Test):
         cube = cube.collapsed('time', iris.analysis.MEAN)
         sliced = extract_time(cube, 1950, 1, 1, 1952, 12, 31)
         print(sliced.coord('time').points)
-        self.assertTrue(np.array([360., ]) == sliced.coord('time').points)
+        self.assertTrue(np.array([
+            360.,
+        ]) == sliced.coord('time').points)
 
     def test_extract_time_no_time(self):
         """Test extract_time with no time step."""
