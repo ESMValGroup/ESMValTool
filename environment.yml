@@ -13,6 +13,7 @@ dependencies:
   - xarray  # Can be installed from PyPI, but here to get a consistent set of depencies with iris.
   # Non-Python dependencies
   - cdo=1.9.5
+  - hdf5=1.10.3
   - graphviz
   - libunwind  #  specifically for Python3.7+
 
