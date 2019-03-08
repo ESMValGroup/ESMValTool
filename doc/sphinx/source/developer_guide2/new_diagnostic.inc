@@ -63,7 +63,14 @@ Python diagnostic in esmvaltool/diag_scripts/examples/diagnostic.py for a comple
 
 Using the interfaces from NCL
 -----------------------------
-TODO: write this
+Always call the ``log_provenance`` procedure after plotting from your NCL diag_script. You could find available shortcuts for
+statistics, domain, plottype, authors and references in the ``config-references.yml`` file.
+
+.. code-block:: bash
+
+        log_provenance(nc-file,plot_file,caption,statistics,domain,plottype,authors,references,input-files)
+
+Have a look at the example NCL diagnostic in ``esmvaltool/diag_scripts/examples/diagnostic.ncl`` for a complete example.
 
 Generic interface between backend and diagnostic
 ------------------------------------------------
@@ -187,8 +194,9 @@ An example :code:`diagnostic_provenance.yml` file could look like this
 
 You can check whether your diagnostic script successfully provided the provenance information to the backend by
 verifying that
-  - for each output file in the :code:`work_dir`, a file with the same name, but ending with _provenance.xml is created
-  - any NetCDF files created by your diagnostic script contain a 'provenance' global attribute
-  - any PNG plots created by your diagnostic script contain the provenance information in the 'Image History' attribute
+
+- for each output file in the :code:`work_dir`, a file with the same name, but ending with _provenance.xml is created
+- any NetCDF files created by your diagnostic script contain a 'provenance' global attribute
+- any PNG plots created by your diagnostic script contain the provenance information in the 'Image History' attribute
 
 Note that this is done automatically by the ESMValTool backend.

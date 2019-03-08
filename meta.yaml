@@ -45,26 +45,31 @@ requirements:
     - cartopy
     - cf_units
     - cython
+    - eofs
     - esmpy
     - matplotlib<3
     - nc-time-axis
     - netCDF4
     - numba
     - numpy
+    - pandas
     - pillow
     - prov
     - psutil
     - pydot
     - python-cdo
     - pyyaml
+    - scikit-learn
     - shapely
     - six
     - vmprof
     - xarray
     - yamale  # in birdhouse channel
+    - fiona
+    - xlsxwriter
     # Multi language support:
-    - cdo=1.9.3
-    - ncl
+    - cdo=1.9.5
+    - ncl=6.5
     - jasper!=1.900.31  # pinned NCL dependency
     - julia
     - r-base

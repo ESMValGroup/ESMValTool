@@ -34,8 +34,7 @@ import esmvaltool.diag_scripts.emergent_constraints as ec
 import esmvaltool.diag_scripts.shared.iris_helpers as ih
 from esmvaltool.diag_scripts.shared import (
     ProvenanceLogger, get_diagnostic_filename, get_plot_filename,
-    group_metadata, io, plot, run_diagnostic, select_metadata,
-    variables_available)
+    group_metadata, io, plot, run_diagnostic, select_metadata)
 
 logger = logging.getLogger(os.path.basename(__file__))
 plt.style.use(plot.get_path_to_mpl_style())
@@ -49,10 +48,9 @@ ECS_ATTRS = {
     'long_name': 'Equilibrium Climate Sensitivity (ECS)',
     'units': 'K',
 }
-TAS_ATTRS = {
-    'standard_name': 'air_temperature',
-    'short_name': 'tas',
-    'long_name': 'Near-Surface Air Temperature',
+TASA_ATTRS = {
+    'short_name': 'tasa',
+    'long_name': 'Near-Surface Air Temperature Anomaly',
     'units': 'K',
 }
 PSI_ATTRS = {
@@ -187,7 +185,7 @@ def plot_temperature_anomaly(cfg, tas_cubes, lambda_cube, obs_name):
     # Save netcdf file and provencance
     filename = 'temperature_anomaly_{}'.format(obs_name)
     netcdf_path = get_diagnostic_filename(filename, cfg)
-    io.save_1d_data(tas_cubes, netcdf_path, 'year', TAS_ATTRS)
+    io.save_1d_data(tas_cubes, netcdf_path, 'year', TASA_ATTRS)
     project = _get_project(cfg)
     provenance_record = get_provenance_record(
         "Simulated change in global temperature from {} models (coloured "
@@ -494,14 +492,16 @@ def get_ecs_range(cfg, psi_cube, ecs_cube, obs_cube):
 
 def main(cfg):
     """Run the diagnostic."""
-    if not variables_available(cfg, ['tas']):
-        raise ValueError("This diagnostic needs 'tas' variable")
+    input_data = (
+        select_metadata(cfg['input_data'].values(), short_name='tas') +
+        select_metadata(cfg['input_data'].values(), short_name='tasa'))
+    if not input_data:
+        raise ValueError("This diagnostics needs 'tas' or 'tasa' variable")
 
     # Get tas data
     tas_cubes = {}
     tas_obs = []
-    for (dataset, [data]) in group_metadata(cfg['input_data'].values(),
-                                            'dataset').items():
+    for (dataset, [data]) in group_metadata(input_data, 'dataset').items():
         cube = iris.load_cube(data['filename'])
         cube = cube.aggregated_by('year', iris.analysis.MEAN)
         tas_cubes[dataset] = cube
