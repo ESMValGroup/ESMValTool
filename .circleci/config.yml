@@ -68,6 +68,11 @@ jobs:
             python setup.py test --installation
             esmvaltool -h
             ncl -V
+            # cdo tests
+            cdo --version
+            echo 'netcdf tmp { variables: float test; data: test = 0; }' > tmp.cdl
+            ncgen -k hdf5 tmp.cdl
+            cdo -f nc copy tmp.nc tmp2.nc
       - store_artifacts:
           path: /logs
       - store_artifacts:
@@ -108,6 +113,7 @@ jobs:
             esmvaltool -h
             python setup.py test --installation
             ncl -V
+            cdo --version
       - store_artifacts:
           path: /logs
 
@@ -195,9 +201,10 @@ jobs:
             # Test installation
             esmvaltool -h
             ncl -V
+            cdo --version
 
-  ncl:
-    # Test ncl conda package
+  ncl_cdo_test:
+    # Test ncl and cdo conda packages
     working_directory: /ncl
     docker:
       - image: continuumio/miniconda3
@@ -214,12 +221,13 @@ jobs:
             conda update -y conda > /logs/conda.txt 2>&1
             conda create -y --name ncl > /logs/conda.txt 2>&1
             set +x; conda activate ncl; set -x
-            conda install -y --channel conda-forge ncl >> /logs/conda.txt 2>&1
+            conda install -y --channel conda-forge ncl cdo >> /logs/conda.txt 2>&1
             # Log versions
             dpkg -l > /logs/versions.txt
             conda env export > /logs/environment.yml
             # Test if NCL installed successfully
             ncl -V
+            cdo --version
       - store_artifacts:
           path: /logs
 
@@ -245,4 +253,4 @@ workflows:
       - doc
       - conda_build
       - conda_install
-      - ncl
+      - ncl_cdo_test
