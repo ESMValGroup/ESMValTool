@@ -185,6 +185,7 @@ begin
         output!1 = "plev"
         output!2 = "lat"
         output!3 = "lon"
+        output&plev = output&plev * 100.  ; [mb] --> [Pa]
       elseif (rank.eq.3)
         output!1 = "lat"
         output!2 = "lon"
