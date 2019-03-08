@@ -1,7 +1,5 @@
 """Horizontal and vertical regridding module."""
 
-from __future__ import absolute_import, division, print_function
-
 import os
 import re
 from copy import deepcopy
@@ -12,11 +10,11 @@ import six
 import stratify
 from iris.analysis import AreaWeighted, Linear, Nearest, UnstructuredNearest
 
-from ..cmor.fix import fix_file, fix_metadata
-from ..cmor.table import CMOR_TABLES
 from ._io import concatenate_callback, load
 from ._regrid_esmpy import ESMF_REGRID_METHODS
 from ._regrid_esmpy import regrid as esmpy_regrid
+from ..cmor.fix import fix_file, fix_metadata
+from ..cmor.table import CMOR_TABLES
 
 # Regular expression to parse a "MxN" cell-specification.
 _CELL_SPEC = re.compile(
@@ -469,8 +467,9 @@ def get_cmor_levels(cmor_table, coordinate):
 
     """
     if cmor_table not in CMOR_TABLES:
-        raise ValueError("Level definition cmor_table '{}' not available".
-                         format(cmor_table))
+        raise ValueError(
+            "Level definition cmor_table '{}' not available".format(
+                cmor_table))
 
     if coordinate not in CMOR_TABLES[cmor_table].coords:
         raise ValueError('Coordinate {} not available for {}'.format(
