@@ -26,7 +26,7 @@ P_0 = 10000  # Reference tropospheric pressure
 
 
 def fourier_coeff(tadiagfile, outfile, ta_input, tas_input):
-    """Main script for Fourier coefficients computation.
+    """Compute Fourier coefficients in lon direction.
 
     Receive as input:
     - tadiagfile: the name of a file to store modified t fields;

@@ -47,7 +47,7 @@ Constants:
     NW_2: wavenumber limit for synoptic waves;
     NW_3: wavenumber limit for short waves;
 
-References:
+References.
     Ulbrich P. and P. Speth (1991) The global energy cycle of stationary
     and transient atmospheric waves: Results from ECMWF analyses, Met.
 
@@ -67,11 +67,11 @@ import sys
 import warnings
 
 import numpy as np
-from esmvaltool.diag_scripts.thermodyn_diagtool import (fluxogram,
-                                                        fourier_coefficients)
+from cdo import Cdo
 from netCDF4 import Dataset
 
-from cdo import Cdo
+from esmvaltool.diag_scripts.thermodyn_diagtool import (fluxogram,
+                                                        fourier_coefficients)
 
 warnings.filterwarnings("ignore")
 
@@ -85,16 +85,8 @@ NW_2 = 9
 NW_3 = 21
 
 
-# disable-msg=R0914
-# pylint: disable-msg=R0914
-# One hundred and fortyseven is reasonable in this case.
-# pylint: disable=too-many-arguments
-# Seven is reasonable in this case.
-# pylint: disable-msg=R0915
-# Two hundreds and fortyeight is reasonable in this case.
-# from lorenz_cycle import LorenzCycle
 def lorenz(outpath, model, year, filenc, plotfile, logfile):
-    """Main script, managing input and output fields and calling functions.
+    """Manage input and output fields and calling functions.
 
     Receive fields t,u,v,w as input fields in Fourier
     coefficients (time,level,wave,lon) and compute the LEC.
@@ -141,7 +133,7 @@ def lorenz(outpath, model, year, filenc, plotfile, logfile):
         _, ta_tgan = averages(ta_tan, g_w)
         _, wap_tgan = averages(wap_tan, g_w)
         # Compute kinetic energy
-        e_k[:, t_t, :, :] = makek(ua_tan, va_tan, nlat, ntp, nlev)
+        e_k[:, t_t, :, :] = makek(ua_tan, va_tan)
         # Compute available potential energy
         ape[:, t_t, :, :] = makea(ta_tan, ta_tgan, gam_tmn)
         # Compute conversion between kin.en. and pot.en.
@@ -172,7 +164,7 @@ def lorenz(outpath, model, year, filenc, plotfile, logfile):
     table(at2as_tgmn, ntp, 'ASE  <->  ATE   ', log, flag=1)
     kt2ks_tgmn = averages_comp(kt2ks, g_w, d_s, dims)
     table(kt2ks_tgmn, ntp, 'KSE  <->  KTE   ', log, flag=1)
-    ek_st = makek(ua_tmn, va_tmn, nlat, ntp, nlev)
+    ek_st = makek(ua_tmn, va_tmn)
     ek_stgmn = globall_cg(ek_st, g_w, d_s, dims)
     table(ek_stgmn, ntp, 'STAT. KIN. EN.    ', log, flag=0)
     ape_st = makea(ta_tmn, ta_gmn, gam_tmn)
@@ -494,7 +486,7 @@ def init(logfile, filep):
     return ta_c, ua_c, va_c, wap_c, dims, lev, lat, log
 
 
-def makek(u_t, v_t, nlat, ntp, nlev):
+def makek(u_t, v_t):
     """Compute the kinetic energy reservoirs from u and v.
 
     @author: Valerio Lembo
@@ -882,7 +874,7 @@ def preproc_lec(model, wdir, pdir, filelist):
     energy3_file = wdir + '/energy_short.nc'
     cdo.setmisstoc(
         '0',
-        input='-setmisstoc,1 -sub {} {}'.format(ua_file, ua_file),
+        input='-setmisstoc,1 -sub {0} {0}'.format(ua_file),
         options='-b F32',
         output=maskorog)
     cdo.add(
@@ -1047,7 +1039,8 @@ def weights(lev, nlev, lat):
     d_s[nlev -
         1] = 1 - sig[nlev - 1] + 0.5 * abs(sig[nlev - 1] - sig[nlev - 2])
     # Compute Gaussian weights
-    y_l = np.deg2rad(lat)
+    y_l = np.zeros(lat.shape)
+    np.deg2rad(lat, out=y_l)
     g_w = np.cos(y_l)
     return d_s, y_l, g_w
 

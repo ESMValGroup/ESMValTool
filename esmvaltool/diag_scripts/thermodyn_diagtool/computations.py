@@ -33,10 +33,10 @@ import os
 from shutil import move
 
 import numpy as np
-from esmvaltool.diag_scripts.thermodyn_diagtool import mkthe
+from cdo import Cdo
 from netCDF4 import Dataset
 
-from cdo import Cdo
+from esmvaltool.diag_scripts.thermodyn_diagtool import mkthe
 
 L_C = 2501000  # latent heat of condensation
 LC_SUB = 2835000  # latent heat of sublimation
@@ -92,13 +92,13 @@ def baroceff(model, wdir, aux_file, toab_file, te_file):
         output=teloss_file)
     tegainm_file = wdir + '/{}_teGainm.nc'.format(model)
     cdo.div(
-        input='-fldmean {} -fldmean -div {} {} '.format(
-            toabgain_file, toabgain_file, tegain_file),
+        input='-fldmean {0} -fldmean -div {0} {1} '.format(
+            toabgain_file, tegain_file),
         output=tegainm_file)
     telossm_file = wdir + '/{}_teLossm.nc'.format(model)
     cdo.div(
-        input='-fldmean {} -fldmean -div {} {} '.format(
-            toabloss_file, toabloss_file, teloss_file),
+        input='-fldmean {0} -fldmean -div {0} {1} '.format(
+            toabloss_file, teloss_file),
         output=telossm_file)
     aux_baroceff_file = (wdir + '/{}_aux_barocEff.nc'.format(model))
     cdo.sub(

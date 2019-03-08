@@ -192,14 +192,15 @@ import logging
 import os
 import warnings
 
-import esmvaltool.diag_scripts.shared as e
-from esmvaltool.diag_scripts.shared._base import ProvenanceLogger
 import matplotlib
 import numpy as np
+from netCDF4 import Dataset
+
+import esmvaltool.diag_scripts.shared as e
+from esmvaltool.diag_scripts.shared._base import ProvenanceLogger
 # Locally used modules
 from esmvaltool.diag_scripts.thermodyn_diagtool import (
     computations, lorenz_cycle, mkthe, plot_script)
-from netCDF4 import Dataset
 
 matplotlib.use('Agg')
 warnings.filterwarnings("ignore", message="numpy.dtype size changed")

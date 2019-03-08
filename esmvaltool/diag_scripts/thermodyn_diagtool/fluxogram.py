@@ -328,7 +328,8 @@ class Flux:
         self.amount = amount
 
     def calc_start_end_dx_dy(self):
-        """A scaler for the arrows.
+        """Scale the arrows.
+
         Calculate the starting and ending point of an arrow depending on the
         order and offset of the starting and ending storages. This helps
         determine the direction of the arrow

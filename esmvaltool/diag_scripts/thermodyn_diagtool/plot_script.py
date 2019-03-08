@@ -23,16 +23,16 @@ from shutil import move
 import cartopy.crs as ccrs
 import matplotlib.pyplot as plt
 import numpy as np
-from esmvaltool.diag_scripts.thermodyn_diagtool import fourier_coefficients
+from cdo import Cdo
 from matplotlib import rcParams
 from netCDF4 import Dataset
 from scipy import interpolate, stats
 
-from cdo import Cdo
+from esmvaltool.diag_scripts.thermodyn_diagtool import fourier_coefficients
 
 
 def balances(wdir, plotpath, filena, name, model):
-    """Method for various plots related to energy and water mass budgets.
+    """Plot everything related to energy and water mass budgets.
 
     This method provides climatological annal mean maps of TOA, atmospheric
     and surface energy budgets, time series of annual mean anomalies in the
@@ -156,7 +156,7 @@ def balances(wdir, plotpath, filena, name, model):
 
 
 def entropy(plotpath, filename, name, ext_name, model):
-    """Method for plots of annual mean maps of mat. entr. prod.
+    """Plot everything rleated to annual mean maps of mat. entr. prod.
 
     Arguments:
     - plotpath: the path where the plot has to be saved;
@@ -290,7 +290,7 @@ def hemean(hem, lat, inp):
 def init_plotentr(model, pdir, flist):
     """Define options for plotting maps of entropy production components.
 
-    Attributes:
+    Arguments:
     - model: the name of the model;
     - path: the path to the plots directory;
     - flist: a list of files containing the components of the entropy
@@ -422,7 +422,7 @@ def plot_climap(axi, coords, fld, title, rrange, c_m):
 
 
 def plot_ellipse(semimaj, semimin, phi, x_cent, y_cent, a_x):
-    """A simple method for plotting ellipses in Python.
+    """Plot ellipses in Python in a simple way.
 
     This method plots ellipses with matplotlib.
 
