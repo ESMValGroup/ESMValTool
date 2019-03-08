@@ -1137,7 +1137,8 @@ begin
               ecsfile + ") not available for all models.")
   end if
 
-  climofiles = array_append_record(infiles, ecsfile, 0)
+  f = addfile(ecsfile, "r")
+  climofiles = array_append_record(infiles, getfilepath(f), 0)
 
   ; ============================ calculations ==============================
 
