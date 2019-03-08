@@ -48,24 +48,21 @@ from esmvaltool.diag_scripts.shared import ProvenanceLogger
 logger = logging.getLogger(os.path.basename(__file__))
 
 
-def write_plotdata(cfg, regnam, modnam, values, var):
+def write_plotdata(infos, modnam, values):
     """Write region values for all datasets of one variable.
 
     Parameters
     ----------
-    cfg : dict
-        Configuration dictionary of the recipe
-    regname : list
-        list containing the region names
+    infos : list
+        contains infos about configuration, regions and provenance
     modnam : dict
         containing list of dataset names for specific metrics
     values : dict
         dictionary of nested list containing the keys
         area --> region sums in 1.0e+6 km2
         frac --> region average fractions in %
-    var : str
-        variable short name
     """
+    cfg, regnam, prov_rec, var = infos
     # Header information for different metrics
     filehead = {
         'area':
@@ -93,6 +90,11 @@ def write_plotdata(cfg, regnam, modnam, values, var):
             for irow, row in enumerate(values[metric]):
                 line = [modnam[metric][irow]] + row
                 fout.write(body.format(*line))
+
+    # provenance tracking, only if comparison == variable
+    if prov_rec is not None:
+        with ProvenanceLogger(cfg) as provenance_logger:
+            provenance_logger.log(filepath, prov_rec[var])
 
 
 def init_plot(cfg, var):
@@ -510,14 +512,16 @@ def main(cfg):
     # Reshuffle data if models are the comparison target
     if cfg.get('comparison', 'variable') == 'model':
         focus2model(cfg, lcdata, refset)
+        prov_rec = None
     elif cfg.get('comparison', 'variable') != 'variable':
         raise ValueError('Only variable or model are valid comparison targets')
 
     # Output ascii files and plots
     for target in lcdata.keys():
         # Write plotdata as ascii files for user information
-        write_plotdata(cfg, regnam, lcdata[target]['groups'],
-                       lcdata[target]['values'], target)
+        infos = [cfg, regnam, prov_rec, target]
+        write_plotdata(infos, lcdata[target]['groups'],
+                       lcdata[target]['values'])
 
         # Plot area values
         make_landcover_bars(cfg, regnam, lcdata[target]['groups'],
