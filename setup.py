@@ -82,15 +82,10 @@ REQUIREMENTS = {
     ],
 }
 
-if sys.version_info.major == 2:
-    REQUIREMENTS['test'].append('more-itertools<6')
-    for i, req in enumerate(REQUIREMENTS['install']):
-        if req.startswith('cdo'):
-            REQUIREMENTS['install'][i] = 'cdo!=1.5.*'
-
 
 def discover_python_files(paths, ignore):
     """Discover Python files."""
+
     def _ignore(path):
         """Return True if `path` should be ignored, False otherwise."""
         return any(re.match(pattern, path) for pattern in ignore)
@@ -220,8 +215,8 @@ with open('README.md') as readme:
             'Environment :: Console',
             'License :: OSI Approved :: Apache Software License',
             'Programming Language :: Python',
-            'Programming Language :: Python :: 2.7',
             'Programming Language :: Python :: 3.6',
+            'Programming Language :: Python :: 3.7',
         ],
         packages=PACKAGES,
         # Include all version controlled files
