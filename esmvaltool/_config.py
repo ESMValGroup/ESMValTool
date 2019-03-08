@@ -37,6 +37,7 @@ def read_config_user_file(config_file, recipe_name):
         'max_data_filesize': 100,
         'output_file_type': 'ps',
         'output_dir': './output_dir',
+        'auxiliary_data_dir': './auxiliary_data',
         'save_intermediary_cubes': False,
         'remove_preproc_dir': False,
         'max_parallel_tasks': 1,
@@ -54,6 +55,8 @@ def read_config_user_file(config_file, recipe_name):
             cfg[key] = defaults[key]
 
     cfg['output_dir'] = _normalize_path(cfg['output_dir'])
+    cfg['auxiliary_data_dir'] = _normalize_path(cfg['auxiliary_data_dir'])
+
     cfg['config_developer_file'] = _normalize_path(
         cfg['config_developer_file'])
 
