@@ -14,6 +14,7 @@ from esmvaltool.preprocessor._time import (_align_time_axes, extract_month,
                                            extract_season, extract_time,
                                            time_average)
 
+
 def _create_sample_cube():
     cube = Cube(np.arange(1, 25), var_name='co2', units='J')
     cube.add_dim_coord(
