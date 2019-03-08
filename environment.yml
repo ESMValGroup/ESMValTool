@@ -19,6 +19,9 @@
 # For older Anacondas you may need gxx_linux-64 since 
 # anaconda uses its internal compilers but they point
 # to an empty executable (thank you, Anaconda!)
+#
+# To use cdo from command line there may be the need to
+# downgrade hdf5 to 1.10.2 (1.10.2; hc401514_3; conda-forge)
 
 name: esmvaltool
 channels:
