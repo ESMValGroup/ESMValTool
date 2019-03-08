@@ -7,6 +7,7 @@ Recipes
    recipe_capacity_factor
    recipe_clouds
    recipe_combined_climate_extreme_index
+   recipe_consecdrydays
    recipe_crem
    recipe_cvdp
    recipe_diurnal_temperature_index
@@ -19,5 +20,7 @@ Recipes
    recipe_oceans
    recipe_perfmetrics
    recipe_runoff_et
+   recipe_shapeselect
+   recipe_spei
    recipe_toymodel
    recipe_zmnam

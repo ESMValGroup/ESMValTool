@@ -6,7 +6,12 @@ Modes of variability
 Overview
 --------
 
-The goal of this recipe is to compute modes of variability from a reference/observational dataset and a set of climate projections and calculate the root-mean-square error between the mean anomalies obtained for the clusters from the reference and projection data sets. This is done through K-means clustering applied either directly to the spatial data or after computing the EOFs. The user can specify the number of clusters to be computed. The recipe output consist of netcdf files of the time series of the cluster occurrences, the mean anomaly corresponding to each cluster at each location and the corresponding p-value, for both the observed and projected weather regimes and the RMSE between them.
+The goal of this recipe is to compute modes of variability from a reference/observational dataset and a set of climate projections and calculate the root-mean-square error between the mean anomalies obtained for the clusters from the reference and projection data sets. 
+This is done through K-means clustering applied either directly to the spatial data or after computing the EOFs. 
+
+The user can specify the number of clusters to be computed. 
+
+The recipe's output consist of netcdf files of the time series of the cluster occurrences, the mean anomaly corresponding to each cluster at each location and the corresponding p-value, for both the observed and projected weather regimes and the RMSE between them.
 
 
 Available recipes and diagnostics
@@ -59,19 +64,19 @@ Observations and reformat scripts
 References
 ----------
 
-* Dawson, A., T. N. Palmer, and S. Corti, 2012: Simulating regime structures in weather and climate prediction models. Geophysical Research Letters, 39 (21), doi: 10.1029/2012GL053284.
+* Dawson, A., T. N. Palmer, and S. Corti, 2012: Simulating regime structures in weather and climate prediction models. Geophysical Research Letters, 39 (21), https://doi.org/10.1029/2012GL053284.
 
-* Ferranti, L., S. Corti, and M. Janousek, 2015: Flow-dependent verification of the ECMWF ensemble over the Euro-Atlantic sector. Quarterly Journal of the Royal Meteorological Society, 141 (688), 916-924, doi: 10.1002/qj.2411.
+* Ferranti, L., S. Corti, and M. Janousek, 2015: Flow-dependent verification of the ECMWF ensemble over the Euro-Atlantic sector. Quarterly Journal of the Royal Meteorological Society, 141 (688), 916-924, https://doi.org/10.1002/qj.2411.
 
-* Grams, C. M., Beerli, R., Pfenninger, S., Staffell, I., & Wernli, H. (2017). Balancing Europe's wind-power output through spatial deployment informed by weather regimes. Nature climate change, 7(8), 557.
+* Grams, C. M., Beerli, R., Pfenninger, S., Staffell, I., & Wernli, H. (2017). Balancing Europe's wind-power output through spatial deployment informed by weather regimes. Nature climate change, 7(8), 557, https://doi.org/10.1038/nclimate3338.
 
-* Hannachi, A., D. M. Straus, C. L. E. Franzke, S. Corti, and T. Woollings, 2017: Low Frequency Nonlinearity and Regime Behavior in the Northern Hemisphere Extra-Tropical Atmosphere. Reviews of Geophysics, doi: 10.1002/2015RG000509.
+* Hannachi, A., D. M. Straus, C. L. E. Franzke, S. Corti, and T. Woollings, 2017: Low Frequency Nonlinearity and Regime Behavior in the Northern Hemisphere Extra-Tropical Atmosphere. Reviews of Geophysics, https://doi.org/10.1002/2015RG000509.
 
-* Michelangeli, P.-A., R. Vautard, and B. Legras, 1995: Weather regimes: Recurrence and quasi stationarity. Journal of the atmospheric sciences, 52 (8), 1237-1256, doi: 10.1175/1520-0469(1995)052<1237:WRRAQS>2.0.CO
+* Michelangeli, P.-A., R. Vautard, and B. Legras, 1995: Weather regimes: Recurrence and quasi stationarity. Journal of the atmospheric sciences, 52 (8), 1237-1256, doi: 10.1175/1520-0469(1995)052<1237:WRRAQS>2.0.CO. `link <https://journals.ametsoc.org/doi/10.1175/1520-0469%281995%29052%3C1237%3AWRRAQS%3E2.0.CO%3B2>`_ 
 
-* Vautard, R., 1990: Multiple weather regimes over the North Atlantic: Analysis of precursors and successors. Monthly weather review, 118 (10), 2056-2081, doi: 10.1175/1520-0493(1990)118<2056:MWROTN>2.0.CO;2.
+* Vautard, R., 1990: Multiple weather regimes over the North Atlantic: Analysis of precursors and successors. Monthly weather review, 118 (10), 2056-2081, doi: 10.1175/1520-0493(1990)118<2056:MWROTN>2.0.CO;2. `link <https://journals.ametsoc.org/doi/10.1175/1520-0493%281990%29118%3C2056%3AMWROTN%3E2.0.CO%3B2>`_
 
-* Yiou, P., K. Goubanova, Z. X. Li, and M. Nogaj, 2008: Weather regime dependence of extreme value statistics for summer temperature and precipitation. Nonlinear Processes in Geophysics, 15 (3), 365-378, doi: 10.5194/npg-15-365-2008.
+* Yiou, P., K. Goubanova, Z. X. Li, and M. Nogaj, 2008: Weather regime dependence of extreme value statistics for summer temperature and precipitation. Nonlinear Processes in Geophysics, 15 (3), 365-378, https://doi.org/10.5194/npg-15-365-2008.
 
 
 
