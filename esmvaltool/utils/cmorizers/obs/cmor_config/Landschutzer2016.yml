@@ -1,8 +1,8 @@
 ---
 # project at hand
 proj:
-  dataset: 'Landschutzer2014'
-  version: 'CDIAC_G05'
+  dataset: 'Landschutzer2016'
+  version: 'v2016'
   realm: 'clim'
   frequency: {
         'fgco2': 'Omon',
@@ -24,9 +24,9 @@ VAR_TO_CMOR:
 
 # specific raw file names (implicitly assumed to be .nc)
 VAR_TO_FILENAME:
-  fgco2: 'spco2_1998-2011_ETH_SOM-FFN_CDIAC_G05'
-  spco2: 'spco2_1998-2011_ETH_SOM-FFN_CDIAC_G05'
-  dpco2: 'spco2_1998-2011_ETH_SOM-FFN_CDIAC_G05'
+  fgco2: 'spco2_1982-2015_MPI_SOM-FFN_v2016'
+  spco2: 'spco2_1982-2015_MPI_SOM-FFN_v2016'
+  dpco2: 'spco2_1982-2015_MPI_SOM-FFN_v2016'
 
 # cmor standard names
 STANDARD_NAMES:

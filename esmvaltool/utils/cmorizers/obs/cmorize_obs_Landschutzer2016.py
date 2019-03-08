@@ -6,14 +6,14 @@
 #    Tier 2: other freely-available dataset.
 #
 # Source
-#    ftp://ftp.nodc.noaa.gov/nodc/archive/arc0105/0160558/1.1/data/0-data/
+#    https://www.nodc.noaa.gov/archive/arc0105/0160558/3.3/data/0-data/
 #
 # Last access
-#    20190227
+#    20190308
 #
 # Download and processing instructions
-#    Download the following file in ${RAWOBS}/Tier2/Landschutzer2014:
-#     pco2_1998-2011_ETH_SOM-FFN_CDIAC_G05.nc
+#    Download the following file in ${RAWOBS}/Tier2/Landschutzer2016:
+#     spco2_1982-2015_MPI_SOM-FFN_v2016.nc
 #
 #
 # Modification history
@@ -37,7 +37,7 @@ from .utilities import (_add_metadata,
 logger = logging.getLogger(__name__)
 
 # read in CMOR configuration
-CFG = _read_cmor_config('Landschutzer2014.yml')
+CFG = _read_cmor_config('Landschutzer2016.yml')
 PROJ = CFG['proj']
 VAR_TO_CMOR = CFG['VAR_TO_CMOR']
 VAR_TO_FILENAME = CFG['VAR_TO_FILENAME']
