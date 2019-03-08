@@ -199,8 +199,10 @@ from netCDF4 import Dataset
 import esmvaltool.diag_scripts.shared as e
 from esmvaltool.diag_scripts.shared._base import ProvenanceLogger
 # Locally used modules
-from esmvaltool.diag_scripts.thermodyn_diagtool import (
-    computations, lorenz_cycle, mkthe, plot_script)
+from esmvaltool.diag_scripts.thermodyn_diagtool import (computations,
+                                                        lorenz_cycle, mkthe,
+                                                        plot_script,
+                                                        provenance_meta)
 
 matplotlib.use('Agg')
 warnings.filterwarnings("ignore", message="numpy.dtype size changed")
@@ -213,6 +215,7 @@ def main(cfg):
     Argument cfg, containing directory paths, preprocessed input dataset
     filenames and user-defined options, is passed by ESMValTool preprocessor.
     """
+    provlog = ProvenanceLogger(cfg)
     lorenz = lorenz_cycle
     comp = computations
     logger.info('Entering the diagnostic tool')
@@ -294,6 +297,22 @@ def main(cfg):
         logger.info('Computing energy budgets\n')
         eb_gmean, eb_file, toab_ymm_file = comp.budgets(
             model, wdir, aux_file, filenames)
+        prov_rec = provenance_meta.get_prov_map(
+            ['TOA energy budgets', model],
+            [filenames[10], filenames[12], filenames[8]])
+        provlog.log(eb_file[0], prov_rec)
+        prov_rec = provenance_meta.get_prov_map(
+            ['atmospheric energy budgets', model], [
+                filenames[1], filenames[6], filenames[7], filenames[8],
+                filenames[9], filenames[10], filenames[11], filenames[12]
+            ])
+        provlog.log(eb_file[0], prov_rec)
+        prov_rec = provenance_meta.get_prov_map(
+            ['surface energy budgets', model], [
+                filenames[1], filenames[6], filenames[7], filenames[9],
+                filenames[11]
+            ])
+        provlog.log(eb_file[0], prov_rec)
         toab_all[i_m, 0] = np.nanmean(eb_gmean[0])
         toab_all[i_m, 1] = np.nanstd(eb_gmean[0])
         atmb_all[i_m, 0] = np.nanmean(eb_gmean[1])
@@ -311,7 +330,8 @@ def main(cfg):
         logger.info('Baroclinic efficiency (Lucarini et al., 2011): %s\n',
                     baroc_eff_all[i_m])
         logger.info('Running the plotting module for the budgets\n')
-        plotsmod.balances(wdir_up, pdir, [eb_file[0], eb_file[1], eb_file[2]],
+        plotsmod.balances(cfg, wdir_up, pdir,
+                          [eb_file[0], eb_file[1], eb_file[2]],
                           ['toab', 'atmb', 'surb'], model)
         logger.info('Done\n')
         # Water mass budget
@@ -328,9 +348,11 @@ def main(cfg):
             logger.info('Latent energy budget: %s\n', latent_all[i_m, 0])
             logger.info('Done\n')
             logger.info('Plotting the water mass and latent energy budgets\n')
-            plotsmod.balances(wdir_up, pdir, [wm_file[0], wm_file[1]],
+            plotsmod.balances(cfg, wdir_up, pdir, [wm_file[0], wm_file[1]],
                               ['wmb', 'latent'], model)
             logger.info('Done\n')
+            for filen in aux_list:
+                os.remove(filen)
         else:
             pass
         if lsm is True:
@@ -402,12 +424,14 @@ def main(cfg):
                     rlds_file, rlus_file, rsds_file, rsus_file, te_file,
                     eb_file[0], ts_file
                 ]
-                horzentr_mean, vertentr_mean, vertentr_file = comp.indentr(
+                horz_mn, vert_mn, horzentr_file, vertentr_file = comp.indentr(
                     model, wdir, indentr_list, aux_file, eb_gmean[0])
-                horzentr_all[i_m, 0] = np.nanmean(horzentr_mean)
-                horzentr_all[i_m, 1] = np.nanstd(horzentr_mean)
-                vertentr_all[i_m, 0] = np.nanmean(vertentr_mean)
-                vertentr_all[i_m, 1] = np.nanstd(vertentr_mean)
+                listind = [horzentr_file, vertentr_file]
+                provenance_meta.meta_indentr(cfg, model, filenames, listind)
+                horzentr_all[i_m, 0] = np.nanmean(horz_mn)
+                horzentr_all[i_m, 1] = np.nanstd(horz_mn)
+                vertentr_all[i_m, 0] = np.nanmean(vert_mn)
+                vertentr_all[i_m, 1] = np.nanstd(vert_mn)
                 logger.info(
                     'Horizontal component of the material entropy '
                     'production: %s\n', horzentr_all[i_m, 0])
@@ -423,10 +447,11 @@ def main(cfg):
             if met in {'2', '3'}:
                 matentr, irrevers, entr_list = comp.direntr(
                     logger, model, wdir, filenames, aux_file, lect, lec, flags)
+                provenance_meta.meta_direntr(cfg, model, filenames, entr_list)
                 matentr_all[i_m, 0] = matentr
                 if met in {'3'}:
-                    diffentr = (float(np.nanmean(vertentr_mean)) + float(
-                        np.nanmean(horzentr_mean)) - matentr)
+                    diffentr = (float(np.nanmean(vert_mn)) + float(
+                        np.nanmean(horz_mn)) - matentr)
                     logger.info('Difference between the two '
                                 'methods: %s\n', diffentr)
                     diffentr_all[i_m, 0] = diffentr

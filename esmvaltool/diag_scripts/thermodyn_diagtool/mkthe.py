@@ -47,9 +47,6 @@ L_C = 2501000  # latent heat of condensation
 SIGMAINV = 17636684.3034  # inverse of the Stefan-Boltzmann constant
 
 
-# pylint: disable-msg=R0914
-# pylint: disable-msg=R0915
-# flake8: noqa
 def init_mkthe(model, wdir, filelist, flags):
     """Compute auxiliary fields or perform time averaging of existing fields.
 
@@ -154,47 +151,10 @@ def init_mkthe(model, wdir, filelist, flags):
             pass
     else:
         pass
+    remove_files = [tasmn_file, uasmn_file, vasmn_file, te_gmean_file]
+    for filen in remove_files:
+        os.remove(filen)
     return te_ymm_file, te_gmean_constant, te_file, aux_files
-
-
-def mkthe_main(wdir, file_list, modelname):
-    """The main script in the module for computation of aux. variables.
-
-    Arguments:
-    - wdir: the working directory path;
-    - file_list: the list of file containing ts, hus,
-    ps, uas, vas, hfss, te;
-    - modelname: the name of the model from which the fields are;
-    """
-    hfss, huss, p_s, t_e, t_s, vv_hor = input_data(wdir, file_list)
-    ricr = RIC_RU
-    h_bl = H_U
-    ricr = np.where(hfss >= 0.75, ricr, RIC_RS)
-    h_bl = np.where(hfss >= 0.75, h_bl, H_S)
-    ev_p = huss * p_s / (huss + GAS_CON / RV)  # Water vapour pressure
-    td_inv = (1 / T_MELT) - (RV / ALV) * np.log(ev_p / RA_1)  # Dewpoint t.
-    t_d = 1 / td_inv
-    hlcl = 125. * (t_s - t_d)  # Empirical formula for LCL height
-    #  Negative heights are replaced by the height of the stable
-    #  boundary layer (lower constraint to the height of the cloud layer)
-    hlcl = np.where(hlcl >= 0., hlcl, h_bl)
-    cp_d = GAS_CON / AKAP
-    ztlcl = t_s - (G_0 / cp_d) * hlcl
-    # Compute the pseudo-adiabatic lapse rate to obtain the height of cloud
-    # top knowing emission temperature.
-    gw_pa = (G_0 / cp_d) * (1 + ((ALV * huss) / (GAS_CON * ztlcl)) / (1 + (
-        (ALV**2 * huss * 0.622) / (cp_d * GAS_CON * ztlcl**2))))
-    htop = -(t_e - ztlcl) / gw_pa + hlcl
-    #  Use potential temperature and critical Richardson number to compute
-    #  temperature and height of the boundary layer top
-    ths = t_s * (P_0 / p_s)**AKAP
-    thz = ths + 0.03 * ricr * (vv_hor)**2 / h_bl
-    p_z = p_s * np.exp((-G_0 * h_bl) / (GAS_CON * t_s))  # Barometric eq.
-    t_z = thz * (P_0 / p_z)**(-AKAP)
-    outlist = [ztlcl, t_z, htop]
-    htop_file, tabl_file, tlcl_file = write_output(wdir, modelname, file_list,
-                                                   outlist)
-    return htop_file, tabl_file, tlcl_file
 
 
 def input_data(wdir, file_list):
@@ -253,7 +213,53 @@ def input_data(wdir, file_list):
         aux = hus[:, l_l, :, :]
         aux = np.where((p_s >= lev[l_l]), aux, 0.)
         huss = huss + aux
+    remove_files = [
+        ts_miss_file, hus_miss_file, ps_miss_file, vv_missfile, hfss_miss_file,
+        te_miss_file
+    ]
+    for filen in remove_files:
+        os.remove(filen)
     return hfss, huss, p_s, t_e, t_s, vv_hor
+
+
+def mkthe_main(wdir, file_list, modelname):
+    """Compute the auxiliary variables for the Thermodynamic diagnostic tool.
+
+    Arguments:
+    - wdir: the working directory path;
+    - file_list: the list of file containing ts, hus,
+    ps, uas, vas, hfss, te;
+    - modelname: the name of the model from which the fields are;
+    """
+    hfss, huss, p_s, t_e, t_s, vv_hor = input_data(wdir, file_list)
+    ricr = RIC_RU
+    h_bl = H_U
+    ricr = np.where(hfss >= 0.75, ricr, RIC_RS)
+    h_bl = np.where(hfss >= 0.75, h_bl, H_S)
+    ev_p = huss * p_s / (huss + GAS_CON / RV)  # Water vapour pressure
+    td_inv = (1 / T_MELT) - (RV / ALV) * np.log(ev_p / RA_1)  # Dewpoint t.
+    t_d = 1 / td_inv
+    hlcl = 125. * (t_s - t_d)  # Empirical formula for LCL height
+    #  Negative heights are replaced by the height of the stable
+    #  boundary layer (lower constraint to the height of the cloud layer)
+    hlcl = np.where(hlcl >= 0., hlcl, h_bl)
+    cp_d = GAS_CON / AKAP
+    ztlcl = t_s - (G_0 / cp_d) * hlcl
+    # Compute the pseudo-adiabatic lapse rate to obtain the height of cloud
+    # top knowing emission temperature.
+    gw_pa = (G_0 / cp_d) * (1 + ((ALV * huss) / (GAS_CON * ztlcl)) / (1 + (
+        (ALV**2 * huss * 0.622) / (cp_d * GAS_CON * ztlcl**2))))
+    htop = -(t_e - ztlcl) / gw_pa + hlcl
+    #  Use potential temperature and critical Richardson number to compute
+    #  temperature and height of the boundary layer top
+    ths = t_s * (P_0 / p_s)**AKAP
+    thz = ths + 0.03 * ricr * (vv_hor)**2 / h_bl
+    p_z = p_s * np.exp((-G_0 * h_bl) / (GAS_CON * t_s))  # Barometric eq.
+    t_z = thz * (P_0 / p_z)**(-AKAP)
+    outlist = [ztlcl, t_z, htop]
+    htop_file, tabl_file, tlcl_file = write_output(wdir, modelname, file_list,
+                                                   outlist)
+    return htop_file, tabl_file, tlcl_file
 
 
 def removeif(filename):

@@ -111,6 +111,12 @@ def baroceff(model, wdir, aux_file, toab_file, te_file):
         output=baroceff_file)
     f_l = Dataset(baroceff_file)
     baroc = f_l.variables['toab'][0, 0, 0]
+    remove_files = [
+        gain_file, loss_file, toabgain_file, toabloss_file, tegain_file,
+        teloss_file, tegainm_file, telossm_file, aux_baroceff_file
+    ]
+    for filen in remove_files:
+        os.remove(filen)
     return baroc
 
 
@@ -173,6 +179,12 @@ def budgets(model, wdir, aux_file, filelist):
     atmb_gmean = write_eb('toab', 'atmb', aux_file, atmb_file, atmb_gmean_file)
     eb_gmean = [toab_gmean, atmb_gmean, surb_gmean]
     eb_file = [toab_file, atmb_file, surb_file]
+    # Delete files
+    filenames = [
+        aux_surb_file, toab_gmean_file, atmb_gmean_file, surb_gmean_file
+    ]
+    for filen in filenames:
+        os.remove(filen)
     return eb_gmean, eb_file, toab_ymm_file
 
 
@@ -201,7 +213,7 @@ def direntr(logger, model, wdir, filelist, aux_file, lect, lec, flags):
     and energy budgets are computed, if the material entropy production has to
     be computed, if using the indirect, the direct method, or both methods;
 
-    Author:
+    Author:r
     Valerio Lembo, University of Hamburg (2019).
     """
     _, _, _, aux_files = mkthe.init_mkthe(model, wdir, filelist, flags)
@@ -240,12 +252,13 @@ def direntr(logger, model, wdir, filelist, aux_file, lect, lec, flags):
         'Material entropy production associated with '
         'rainfall: %s\n', srain)
     logger.info('2.3 Snowfall precipitation\n')
-    infile_rain = [prsnmask_file, tcloud_file]
-    ssnow, latsnow_file, snowentr_file = snowentr(model, wdir, infile_rain,
+    infile_snow = [prsnmask_file, tcloud_file]
+    ssnow, latsnow_file, snowentr_file = snowentr(model, wdir, infile_snow,
                                                   aux_file)
     logger.info(
         'Material entropy production associated with '
         'snowfall: %s\n', ssnow)
+    os.remove(tcloud_file)
     logger.info('2.4 Melting of snow at the surface \n')
     smelt, meltentr_file = meltentr(model, wdir, latsnow_file, aux_file)
     logger.info(
@@ -257,6 +270,8 @@ def direntr(logger, model, wdir, filelist, aux_file, lect, lec, flags):
     logger.info(
         'Material entropy production associated with '
         'potential energy of the droplet: %s\n', spot)
+    os.remove(prrmask_file)
+    os.remove(prsnmask_file)
     logger.info('3. Kinetic energy dissipation\n')
     skin = kinentr(logger, aux_file, tasvert_file, lect, lec)
     matentr = (float(ssens) - float(sevap) + float(srain) + float(ssnow) +
@@ -264,6 +279,8 @@ def direntr(logger, model, wdir, filelist, aux_file, lect, lec, flags):
     logger.info('Material entropy production with '
                 'the direct method: %s\n', matentr)
     irrevers = ((matentr - float(skin)) / float(skin))
+    for filen in aux_files:
+        os.remove(filen)
     entr_list = [
         sensentr_file, evapentr_file, rainentr_file, snowentr_file,
         meltentr_file, potentr_file
@@ -326,6 +343,7 @@ def evapentr(model, wdir, infile, aux_file):
     evapentr_gmean = entr(flist, 'hfls', 'sevap', evapentr_file,
                           evapentr_mean_file)
     evapentr_gmean = masktonull(evapentr_gmean)
+    os.remove(evapentr_mean_file)
     return evapentr_gmean, evapentr_file
 
 
@@ -374,7 +392,12 @@ def indentr(model, wdir, infile, aux_file, toab_gmean):
         output=aux_file)
     vertentr_mean = write_eb('rlds', 'sver', aux_file, vertentropy_file,
                              vertentropy_mean_file)
-    return horzentr_mean, vertentr_mean, vertentropy_file
+    remove_files = [
+        horzentropy_mean_file, vertenergy_file, vertentropy_mean_file
+    ]
+    for filen in remove_files:
+        os.remove(filen)
+    return horzentr_mean, vertentr_mean, horzentropy_file, vertentropy_file
 
 
 def kinentr(logger, aux_file, tasvert_file, lect, lec):
@@ -446,6 +469,11 @@ def landoc_budg(model, wdir, infile, mask, name):
     cdo.timmean(input='-fldmean {}'.format(land_file), output=la_gmean_file)
     f_l = Dataset(la_gmean_file)
     la_gmean = f_l.variables[name][0, 0, 0]
+    remove_files = [
+        ocean_file, oc_gmean_file, land_file, la_gmean_file, aux_file
+    ]
+    for filen in remove_files:
+        os.remove(filen)
     return oc_gmean, la_gmean
 
 
@@ -530,6 +558,13 @@ def mask_precip(model, wdir, infile):
         input='{} {}'.format(maskvap_file, prsn_file),
         options='-b F32',
         output=prsnvap_file)
+    remove_files = [
+        maskrain_file, masksnow_file, tliq_file, tsol_file, tdegl_file,
+        tdegs_file, maskice_file, ticer_file, prrice_file, maskvap_file,
+        tvaps_file, prsnvap_file
+    ]
+    for filen in remove_files:
+        os.remove(filen)
     return prrmask_file, prsnmask_file
 
 
@@ -580,6 +615,9 @@ def meltentr(model, wdir, latsnow_file, aux_file):
     f_l = Dataset(meltentr_mean_file)
     meltentr_gmean = f_l.variables['smelt'][0, 0, 0]
     meltentr_gmean = masktonull(meltentr_gmean)
+    remove_files = [latmelt_file, meltentr_mean_file]
+    for filen in remove_files:
+        os.remove(filen)
     return meltentr_gmean, meltentr_file
 
 
@@ -622,6 +660,9 @@ def potentr(model, wdir, infile, aux_file):
     potentr_gmean = entr(flist, 'htop', 'spotp', potentr_file,
                          potentr_mean_file)
     potentr_gmean = masktonull(potentr_gmean)
+    remove_files = [poten_file, potentr_mean_file]
+    for filen in remove_files:
+        os.remove(filen)
     return potentr_gmean, potentr_file
 
 
@@ -657,6 +698,9 @@ def rainentr(model, wdir, infile, aux_file):
     rainentr_gmean = entr(flist, 'prr', 'srain', rainentr_file,
                           rainentr_mean_file)
     rainentr_gmean = masktonull(rainentr_gmean)
+    remove_files = [latrain_file, rainentr_mean_file]
+    for filen in remove_files:
+        os.remove(filen)
     return rainentr_gmean, rainentr_file
 
 
@@ -697,6 +741,9 @@ def sensentr(model, wdir, infile, aux_file):
     sensentr_gmean = entr(flist, 'hfss', 'ssens', sensentr_file,
                           sensentr_mean_file)
     sensentr_gmean = masktonull(sensentr_gmean)
+    remove_files = [difftemp_file, sensentr_mean_file]
+    for filen in remove_files:
+        os.remove(filen)
     return sensentr_gmean, sensentr_file
 
 
@@ -732,6 +779,7 @@ def snowentr(model, wdir, infile, aux_file):
     snowentr_gmean = entr(flist, 'prsn', 'ssnow', snowentr_file,
                           snowentr_mean_file)
     snowentr_gmean = masktonull(snowentr_gmean)
+    os.remove(snowentr_mean_file)
     return snowentr_gmean, latsnow_file, snowentr_file
 
 
@@ -771,6 +819,9 @@ def wmbudg(model, wdir, aux_file, filelist, auxlist):
                             latene_gmean_file)
     varlist = [wmass_gmean, latent_gmean]
     filelist = [wmbudg_file, latene_file]
+    remove_files = [wm_gmean_file, latene_gmean_file]
+    for filen in remove_files:
+        os.remove(filen)
     return varlist, filelist
 
 

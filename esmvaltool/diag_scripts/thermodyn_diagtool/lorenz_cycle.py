@@ -919,6 +919,7 @@ def preproc_lec(model, wdir, pdir, filelist):
         os.remove(tasfile_yr)
         os.remove(tadiag_file)
         os.remove(ncfile)
+    os.remove(maskorog)
     os.remove(ua_file_mask)
     os.remove(va_file_mask)
     os.remove(energy3_file)

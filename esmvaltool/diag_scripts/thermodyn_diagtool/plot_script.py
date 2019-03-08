@@ -22,16 +22,18 @@ from shutil import move
 
 import cartopy.crs as ccrs
 import matplotlib.pyplot as plt
-from matplotlib import rcParams
 import numpy as np
 from cdo import Cdo
+from matplotlib import rcParams
 from netCDF4 import Dataset
 from scipy import interpolate, stats
 
-from esmvaltool.diag_scripts.thermodyn_diagtool import fourier_coefficients
+from esmvaltool.diag_scripts.shared._base import ProvenanceLogger
+from esmvaltool.diag_scripts.thermodyn_diagtool import (fourier_coefficients,
+                                                        provenance_meta)
 
 
-def balances(wdir, plotpath, filena, name, model):
+def balances(cfg, wdir, plotpath, filena, name, model):
     """Plot everything related to energy and water mass budgets.
 
     This method provides climatological annal mean maps of TOA, atmospheric
@@ -43,7 +45,7 @@ def balances(wdir, plotpath, filena, name, model):
     Arguments:
     - wdir: the working directory;
     - plotpath: the path where the plot has to be saved;
-    - filena: the file containing input fields;
+    - filena: the files containing input fields;
     - name: the name of the variable associated with the input field;
     - model: the name of the model to be analysed;
 
@@ -51,8 +53,13 @@ def balances(wdir, plotpath, filena, name, model):
     Valerio Lembo, University of Hamburg (2018).
     """
     cdo = Cdo()
+    provlog = ProvenanceLogger(cfg)
     nsub = len(filena)
     pdir = plotpath
+    plotentname = pdir + '/{}_transp.png'.format(model)
+    plotwmbname = pdir + '/{}_transp.png'.format(model)
+    plotlatname = pdir + '/{}_transp.png'.format(model)
+
     timesery = np.zeros([nsub, 2])
     dims, ndims, tmean, zmean, timeser = global_averages(nsub, filena, name)
     transp_mean = np.zeros([nsub, ndims[1]])
@@ -99,9 +106,13 @@ def balances(wdir, plotpath, filena, name, model):
             move('aux.nc', nc_f)
             cdo.chname('lat,{}'.format(lat_model), input=nc_f, output='aux.nc')
             move('aux.nc', nc_f)
+            attr = ['{} meridional enthalpy transports'.format(nameout), model]
+            provrec = provenance_meta.get_prov_transp(attr, filename,
+                                                      plotentname)
+            provlog.log(nc_f, provrec)
             plot_1m_transp(lats, transp_mean[i, :], transpty, strings)
         plt.grid()
-        plt.savefig(pdir + '/{}_transp.png'.format(model))
+        plt.savefig(plotentname)
         plt.close(fig)
         plot_1m_scatter(model, pdir, lat_maxm, tr_maxm)
     elif nsub == 2:
@@ -117,22 +128,28 @@ def balances(wdir, plotpath, filena, name, model):
         filena[0] = filena[0].split('.nc', 1)[0]
         filename = filena[0] + '.nc'
         pr_output(transp_mean[0, :], filename, nc_f, 'wmb')
+        attr = ['water mass transport', model]
+        provrec = provenance_meta.get_prov_transp(attr, filename, plotwmbname)
+        provlog.log(nc_f, provrec)
         nc_f = wdir + '/{}_transp_mean_{}.nc'.format('latent', model)
         removeif(nc_f)
         filena[1] = filena[1].split('.nc', 1)[0]
         filename = filena[1] + '.nc'
         pr_output(transp_mean[1, :], filename, nc_f, 'latent')
+        attr = ['latent energy transport', model]
+        provrec = provenance_meta.get_prov_transp(attr, filename, plotlatname)
+        provlog.log(nc_f, provrec)
         strings = ['Water mass transports', 'Latitude [deg]', '[kg*s-1]']
         fig = plt.figure()
         plot_1m_transp(dims[1], transp_mean[0, :], transpwy, strings)
         plt.grid()
-        plt.savefig(pdir + '/{}_wmb_transp.png'.format(model))
+        plt.savefig(plotwmbname)
         plt.close(fig)
         strings = ['Latent heat transports', 'Latitude [deg]', '[W]']
         fig = plt.figure()
         plot_1m_transp(dims[1], transp_mean[1, :], transply, strings)
         plt.grid()
-        plt.savefig(pdir + '/{}_latent_transp.png'.format(model))
+        plt.savefig(plotlatname)
         plt.close(fig)
     for i_f in np.arange(nsub):
         fig = plt.figure()
@@ -185,12 +202,6 @@ def entropy(plotpath, filename, name, ext_name, model):
         c_m = 'YlOrBr'
     elif ext_name == 'Snowfall precipitation entropy production':
         rangec = [0, 0.25]
-        c_m = 'YlOrBr'
-    elif ext_name == 'Phase changes ice -> rain entropy production':
-        rangec = [0, 0.05]
-        c_m = 'YlOrBr'
-    elif ext_name == 'Phase changes vapor -> snow entropy production':
-        rangec = [0, 0.001]
         c_m = 'YlOrBr'
     elif ext_name == 'Snow melting entropy production':
         rangec = [0, 0.05]
