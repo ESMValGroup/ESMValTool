@@ -91,18 +91,18 @@ class nbp(Fix):
 class baresoilFrac(Fix):
     """Fixes for baresoilFrac."""
 
-    def fix_metadata(self, cube):
+    def fix_metadata(self, cubelist):
         """
         Fix missing scalar dimension.
 
         Parameters
         ----------
-        cube: iris.cube.Cube
-            Cube to fix
+        cubelist: iris CubeList
+            List of cubes to fix
 
         Returns
         -------
-        iris.cube.Cube
+        iris.cube.CubeList
 
         """
         typebare = iris.coords.AuxCoord(
@@ -112,5 +112,6 @@ class baresoilFrac(Fix):
             var_name='type',
             units='1',
             bounds=None)
-        cube.add_aux_coord(typebare)
-        return cube
+        for cube in cubelist:
+            cube.add_aux_coord(typebare)
+        return cubelist
