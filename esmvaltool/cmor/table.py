@@ -639,7 +639,16 @@ class CustomInfo(CMIP5Info):
             found, returns None if not
 
         """
-        return self.tables['custom'].get(short_name, None)
+        var_info = self.tables['custom'].get(short_name, None)
+        if not var_info:
+            for alias_list in self.alias:
+                if short_name in alias_list:
+                    for alias in alias_list:
+                        try:
+                            return self.tables['custom'][alias]
+                        except KeyError:
+                            pass
+        return var_info
 
     def _read_table_file(self, table_file, table=None):
         with open(table_file) as self._current_table:
