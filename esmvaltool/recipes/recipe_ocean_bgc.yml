@@ -120,7 +120,7 @@ preprocessors:
 
   prep_global_profile_decadal:
     annual_mean:
-       decadal: True
+       decadal: true
     average_region:
       coord1: longitude
       coord2: latitude
