@@ -22,9 +22,9 @@ from shutil import move
 
 import cartopy.crs as ccrs
 import matplotlib.pyplot as plt
+from matplotlib import rcParams
 import numpy as np
 from cdo import Cdo
-from matplotlib import rcParams
 from netCDF4 import Dataset
 from scipy import interpolate, stats
 
