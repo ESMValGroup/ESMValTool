@@ -23,7 +23,7 @@ jobs:
             conda update -y conda
             conda env update
             conda activate esmvaltool
-            conda install -y r-lintr
+            conda install -yS r-lintr
       - save_cache:
           key: deps3-{{ .Branch }}-{{ checksum "cache_key.txt" }}
           paths:
