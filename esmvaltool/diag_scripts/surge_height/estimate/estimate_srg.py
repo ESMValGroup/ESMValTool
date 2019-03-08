@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 
 #from .load import load_betas_intercept as llbi
-from load.load_monmean_srgclim import load_monmean_srgclim
+from ..load.load_monmean_srgclim import load_monmean_srgclim
 
 
 def estimate_srg(X, dates, stat, betas, intercept, data_dir):

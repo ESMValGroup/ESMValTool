@@ -57,7 +57,7 @@ import xarray as xr
 from eofs.standard import Eof
 from eofs.xarray import Eof as xrEof
 
-from dataprep.calc_eofs import calc_eofs
+from .dataprep.calc_eofs import calc_eofs
 #import .dataprep.grad_psl as dpgrd
 #import .estimate.build_predictX as ebX
 #import .estimate.estimate_srg as ees
@@ -65,19 +65,19 @@ from dataprep.calc_eofs import calc_eofs
 #import .load.load_EOFs
 #import .output.plot_tseries as opt
 #import .output.save_netCDF as osn
-from dataprep.calc_monanom import calc_monanom
-from dataprep.cut_NS_xarray import cut_NS
-from dataprep.grad_psl import grad_psl
-from dataprep.Xtrms_xarray import Xtrms
-from estimate.build_predictX import build_predictX
-from estimate.estimate_srg import estimate_srg
-from load.check_solver import check_solver
-from load.load_betas_intercept import load_betas_intercept
-from load.load_config import load_config
-from load.load_EOFs import load_eofs
-from output.plot_map_cartopy import plot_map_cartopy
-from output.plot_tseries import plot_tseries
-from output.save_netCDF import save_netCDF
+from .dataprep.calc_monanom import calc_monanom
+from .dataprep.cut_NS_xarray import cut_NS
+from .dataprep.grad_psl import grad_psl
+from .dataprep.Xtrms_xarray import Xtrms
+from .estimate.build_predictX import build_predictX
+from .estimate.estimate_srg import estimate_srg
+from .load.check_solver import check_solver
+from .load.load_betas_intercept import load_betas_intercept
+from .load.load_config import load_config
+from .load.load_EOFs import load_eofs
+from .output.plot_map_cartopy import plot_map_cartopy
+from .output.plot_tseries import plot_tseries
+from .output.save_netCDF import save_netCDF
 
 #from regression.train_model import train_model
 
