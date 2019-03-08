@@ -233,17 +233,6 @@ def regrid(cube, target_grid, scheme, lat_offset=True, lon_offset=True):
                 [coord] = coords
                 cube.remove_coord(coord)
 
-    # Guess bounds for area weighted regridding if necessary
-    if scheme.lower() == 'area_weighted':
-        if not cube.coord('latitude').has_bounds():
-            cube.coord('latitude').guess_bounds()
-        if not cube.coord('longitude').has_bounds():
-            cube.coord('longitude').guess_bounds()
-        if not target_grid.coord('latitude').has_bounds():
-            target_grid.coord('latitude').guess_bounds()
-        if not target_grid.coord('longitude').has_bounds():
-            target_grid.coord('longitude').guess_bounds()
-
     # Perform the horizontal regridding.
     if _attempt_irregular_regridding(cube, scheme):
         cube = esmpy_regrid(cube, target_grid, scheme)
