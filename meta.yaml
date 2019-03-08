@@ -38,7 +38,7 @@ requirements:
     # esmvaltool
     - python
     - libunwind  #  specifically for Python3.7+
-    - graphviz    
+    - graphviz
     - iris
     - python-stratify
     # Normally installed via pip:
@@ -68,11 +68,11 @@ requirements:
     - fiona
     - xlsxwriter
     # Multi language support:
-    - ncl
+    - ncl=6.5
     - jasper!=1.900.31  # pinned NCL dependency
     - r-base
     - r-rcpp
-    - cdo=1.9.6
+    - cdo=1.9.5
     # TODO: add julia
 
 test:

@@ -16,7 +16,7 @@
 # cdo needs to be installed BOTH from conda and PyPI since
 # conda installs only the command-line executable;
 #
-# For older Anacondas you may need gxx_linux-64 since 
+# For older Anacondas you may need gxx_linux-64 since
 # anaconda uses its internal compilers but they point
 # to an empty executable (thank you, Anaconda!)
 #
@@ -39,7 +39,7 @@ dependencies:
   - xarray  # Can be installed from PyPI, but here to get a consistent set of depencies with iris.
   # Non-Python dependencies
   - graphviz
-  - cdo=1.9.3  # see notes for future version
+  - cdo=1.9.5  # see notes for future version
 
   # Multi language support:
   - ncl=6.5.0  # see notes for future version
