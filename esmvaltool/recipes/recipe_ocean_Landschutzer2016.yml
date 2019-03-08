@@ -76,11 +76,11 @@ diagnostics:
         mip: Omon
         fx_files: [areacello, ]
     additional_datasets:
-      - {dataset: Landschutzer2014,  project: OBS,  type: clim,  version: CDIAC_G05,  start_year: 2000,  end_year: 2010,  tier: 2}
+      - {dataset: Landschutzer2016,  project: OBS,  type: clim,  version: v2016,  start_year: 2000,  end_year: 2010,  tier: 2}
     scripts:
       Global_surface_timeseries:
         script: ocean/diagnostic_timeseries.py
-        observational_dataset: {dataset: Landschutzer2014, project: OBS}
+        observational_dataset: {dataset: Landschutzer2016, project: OBS}
 
 
   # --------------------------------------------------
@@ -111,13 +111,13 @@ diagnostics:
         maps_range: [-0.2, 0.2]
         diff_range: [-0.1, 0.1]
     additional_datasets:
-      - {dataset: Landschutzer2014,  project: OBS,  type: clim,  version: CDIAC_G05,  start_year: 2000,  end_year: 2010,  tier: 2}
+      - {dataset: Landschutzer2016,  project: OBS,  type: clim,  version: v2016,  start_year: 2000,  end_year: 2010,  tier: 2}
     scripts:
       Global_Ocean_surface_map:
         script: ocean/diagnostic_maps.py
       Global_Ocean_model_vs_obs:
         script: ocean/diagnostic_model_vs_obs.py
-        observational_dataset: {dataset: Landschutzer2014, project: OBS}
+        observational_dataset: {dataset: Landschutzer2016, project: OBS}
 
 
 
