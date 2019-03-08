@@ -14,7 +14,6 @@ jobs:
             # Create a file to checksum as cache key
             date --rfc-3339 date > cache_key.txt
             cat environment.yml >> cache_key.txt
-            cat esmvaltool/install/R/r_requirements.txt >> cache_key.txt
       - restore_cache:
           key: deps3-{{ .Branch }}-{{ checksum "cache_key.txt" }}
       - run:
@@ -24,7 +23,7 @@ jobs:
             conda update -y conda
             conda env update
             conda activate esmvaltool
-            Rscript esmvaltool/install/R/setup.R
+            conda install -y r-lintr
       - save_cache:
           key: deps3-{{ .Branch }}-{{ checksum "cache_key.txt" }}
           paths:
@@ -68,6 +67,7 @@ jobs:
             python setup.py test --installation
             esmvaltool -h
             ncl -V
+            cdo --version
       - store_artifacts:
           path: /logs
       - store_artifacts:
@@ -108,6 +108,7 @@ jobs:
             esmvaltool -h
             python setup.py test --installation
             ncl -V
+            cdo --version
       - store_artifacts:
           path: /logs
 
@@ -195,9 +196,10 @@ jobs:
             # Test installation
             esmvaltool -h
             ncl -V
+            cdo --version
 
-  ncl:
-    # Test ncl conda package
+  ncl_cdo_test:
+    # Test ncl and cdo conda packages
     working_directory: /ncl
     docker:
       - image: continuumio/miniconda3
@@ -214,12 +216,13 @@ jobs:
             conda update -y conda > /logs/conda.txt 2>&1
             conda create -y --name ncl > /logs/conda.txt 2>&1
             set +x; conda activate ncl; set -x
-            conda install -y --channel conda-forge ncl >> /logs/conda.txt 2>&1
+            conda install -y --channel conda-forge ncl cdo >> /logs/conda.txt 2>&1
             # Log versions
             dpkg -l > /logs/versions.txt
             conda env export > /logs/environment.yml
             # Test if NCL installed successfully
             ncl -V
+            cdo --version
       - store_artifacts:
           path: /logs
 
@@ -245,4 +248,4 @@ workflows:
       - doc
       - conda_build
       - conda_install
-      - ncl
+      - ncl_cdo_test
