@@ -1,0 +1,13 @@
+###############################################################################
+# Variable short name aliases
+###############################################################################
+# This file contains the list of variable short name aliases that are used
+# in different projects. Will allow us to keep track of changes in variable
+# short names across projects to simplify the usage for the users
+#
+# This file contains a list of lists
+###############################################################################
+---
+- ['sic', 'siconc']
+- ['sit', 'sithick']
+- ['tro3', 'o3']

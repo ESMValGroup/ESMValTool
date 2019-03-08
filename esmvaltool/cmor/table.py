@@ -9,6 +9,7 @@ import glob
 import json
 import logging
 import os
+import yaml
 
 logger = logging.getLogger(__name__)
 
@@ -25,6 +26,10 @@ def read_cmor_tables(cfg_developer):
         Parsed config-developer file
 
     """
+    cwd = os.path.dirname(os.path.realpath(__file__))
+    alias_file = os.path.join(cwd, 'variable_alias.yml')
+    with open(alias_file, 'r') as yfile:
+        alias = yaml.safe_load(yfile)
     custom = CustomInfo()
     CMOR_TABLES['custom'] = custom
 
@@ -42,11 +47,11 @@ def read_cmor_tables(cfg_developer):
             default = custom
         if cmor_type == 'CMIP5':
             CMOR_TABLES[table] = CMIP5Info(
-                table_path, default=default,
+                table_path, default=default, alias=alias
             )
         elif cmor_type == 'CMIP6':
             CMOR_TABLES[table] = CMIP6Info(
-                table_path, default=default,
+                table_path, default=default, alias=alias
             )
 
 
@@ -63,17 +68,12 @@ class CMIP6Info(object):
 
     """
 
-    _CMIP_5to6_varname = {
-        'sic': 'siconc',
-        'sit': 'sithick',
-        'tro3': 'o3',
-    }
-
-    def __init__(self, cmor_tables_path, default=None):
+    def __init__(self, cmor_tables_path, default=None, alias={}):
         cmor_tables_path = self._get_cmor_path(cmor_tables_path)
 
         self._cmor_folder = os.path.join(cmor_tables_path, 'Tables')
         self.default = default
+        self.alias = alias
 
         self.tables = {}
 
@@ -180,9 +180,13 @@ class CMIP6Info(object):
         try:
             return self.tables[table][short_name]
         except KeyError:
-            if short_name in CMIP6Info._CMIP_5to6_varname:
-                new_short_name = CMIP6Info._CMIP_5to6_varname[short_name]
-                return self.get_variable(table, new_short_name)
+            for alias_list in self.alias:
+                if short_name in alias_list:
+                    for alias in alias_list:
+                        try:
+                            return self.tables[table][alias]
+                        except KeyError:
+                            pass
             if self.default:
                 return self.default.get_variable(table, short_name)
             return None
@@ -407,7 +411,7 @@ class CMIP5Info(object):
 
     """
 
-    def __init__(self, cmor_tables_path, default=None):
+    def __init__(self, cmor_tables_path, default=None, alias=None):
         cmor_tables_path = self._get_cmor_path(cmor_tables_path)
 
         self._cmor_folder = os.path.join(cmor_tables_path, 'Tables')
@@ -418,6 +422,7 @@ class CMIP5Info(object):
         self.tables = {}
         self.coords = {}
         self.default = default
+        self.alias = alias
         self._current_table = None
         self._last_line_read = None
 
@@ -555,6 +560,14 @@ class CMIP5Info(object):
 
         """
         var_info = self.tables.get(table, {}).get(short_name, None)
+        if not var_info:
+            for alias_list in self.alias:
+                if short_name in alias_list:
+                    for alias in alias_list:
+                        try:
+                            return self.tables[table][alias]
+                        except KeyError:
+                            pass
         if not var_info and self.default:
             return self.default.get_variable(table, short_name)
         return var_info

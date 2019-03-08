@@ -16,7 +16,11 @@ class TestCMIP6Info(unittest.TestCase):
 
         We read CMIP6Info once to keep tests times manageable
         """
-        cls.variables_info = CMIP6Info('cmip6', default=CustomInfo())
+        cls.variables_info = CMIP6Info(
+            'cmip6',
+            default=CustomInfo(),
+            alias=[['siconc', 'sic']]
+        )
 
     def test_custom_tables_location(self):
         """Test constructor with custom tables location."""
@@ -53,7 +57,8 @@ class Testobs4mipsInfo(unittest.TestCase):
         """
         cls.variables_info = CMIP6Info(
             cmor_tables_path='obs4mips',
-            default=CustomInfo()
+            default=CustomInfo(),
+            alias=[['siconc', 'sic']]
         )
 
     def test_custom_tables_location(self):
@@ -84,7 +89,11 @@ class TestCMIP5Info(unittest.TestCase):
 
         We read CMIP5Info once to keep testing times manageable
         """
-        cls.variables_info = CMIP5Info('cmip5', default=CustomInfo())
+        cls.variables_info = CMIP5Info(
+            'cmip5',
+            default=CustomInfo(),
+            alias=[['siconc', 'sic']]
+        )
 
     def test_custom_tables_location(self):
         """Test constructor with custom tables location."""
@@ -98,6 +107,11 @@ class TestCMIP5Info(unittest.TestCase):
         """Get tas variable."""
         var = self.variables_info.get_variable('Amon', 'tas')
         self.assertEqual(var.short_name, 'tas')
+
+    def test_get_variable_from_alias(self):
+        """Get a variable from a known alias."""
+        var = self.variables_info.get_variable('OImon', 'siconc')
+        self.assertEqual(var.short_name, 'sic')
 
     def test_get_bad_variable(self):
         """Get none if a variable is not in the given table."""
