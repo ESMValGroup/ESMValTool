@@ -25,7 +25,8 @@ def estimate_srg(X, dates, stat, betas, intercept, data_dir):
         monanom_srg[s] = load_monmean_srgclim(s, srg_dir)
         srg_est_full[s] = []
         for t in range(len(dates)):
-            srg_est_t = (srg_est[s][t] + monanom_srg[s][dates[t].month - 1])/100.
+            srg_est_t = (
+                srg_est[s][t] + monanom_srg[s][dates[t].month - 1]) / 100.
             srg_est_full[s].append(srg_est_t)
 
     return srg_est_full

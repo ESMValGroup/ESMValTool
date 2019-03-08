@@ -108,10 +108,8 @@ def save_netCDF(dates, stat, srg_est_full, cfg, dataset):
                      attrs={
                          'description':
                          'Estimate of surge height along the North Sea coast.',
-                         'history':
-                         'created ' + now,
-                         'featureType':
-                         'timeSeries'
+                         'history': 'created ' + now,
+                         'featureType': 'timeSeries'
                      })
     #
     path = os.path.join(

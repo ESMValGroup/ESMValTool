@@ -13,10 +13,10 @@ def load_betas_intercept(stat, inpath):
 
     filename_int = 'intercepts_all_stations.nc'
     filename_bs = 'betas_all_stations.nc'
-    fin = os.path.join(inpath,filename_bs)
+    fin = os.path.join(inpath, filename_bs)
     betas_in = xr.open_dataarray(fin)
 
-    fin = os.path.join(inpath,filename_int)
+    fin = os.path.join(inpath, filename_int)
     interc = xr.open_dataarray(fin)
 
     for s in stat:

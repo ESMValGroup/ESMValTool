@@ -98,7 +98,7 @@ def plot_map_cartopy(date, srg, tidx, cfg, dataset):
     srg_plt = {}
     for stat in srg.keys():
         srg_plt[stat] = srg[stat][tidx]
-    crange = max(abs(max(srg_plt.values())),abs(min(srg_plt.values())))
+    crange = max(abs(max(srg_plt.values())), abs(min(srg_plt.values())))
     for stat in srg.keys():
         scat = plt.scatter(
             lons[coords[stat][0]],
@@ -106,7 +106,7 @@ def plot_map_cartopy(date, srg, tidx, cfg, dataset):
             c=srg[stat][tidx],
             edgecolors='k',
             cmap=plt.get_cmap(cfg["colormap"], 20),
-            vmin=-1*crange,
+            vmin=-1 * crange,
             vmax=crange,
             zorder=50)
     #

@@ -83,6 +83,7 @@ from .output.save_netCDF import save_netCDF
 
 logger = logging.getLogger(os.path.basename(__file__))
 
+
 def surge_estimator_main(psl_in, uas_in, vas_in, cfg, dataset):
     # ---------------
     # I. Definitions
@@ -90,17 +91,18 @@ def surge_estimator_main(psl_in, uas_in, vas_in, cfg, dataset):
     # I.1 Stations
     # I.1a Names
     allstats = [
-        'aberdeen', 'aukalpha', 'bg2', 'borkums', 'bremerha', 'cadzand', 'cromer', 
-        'cuxhaven', 'delfzijl', 'denhelde', 'denoever', 'devonpor', 'dover', 
-        'duinkerk', 'ekofisk', 'esbjerg', 'europlat', 'f3', 'felixsto', 'goeree',  
-        'harlinge', 'helgeroa', 'helgolan', 'hoekvanh', 'holyhead', 'huibertg',  
-        'husum', 'ijmuiden', 'ilfracom', 'immingha', 'innerdow', 'k13a',  
-        'kornwerd', 'lauwerso', 'leith', 'lerwick', 'lowestof', 'meetpost',  
-        'newhaven', 'newlyn', 'northcor', 'northshi', 'offharwi', 'oostende',  
-        'os11', 'os15', 'oscarsbo', 'portsmou', 'roompotb', 'scarboro', 'scheveni',  
-        'scillyis', 'sheernes', 'southend', 'stavange', 'stmarys', 'stornowa',  
-        'terschel', 'texelnoo', 'torsmind', 'tregde', 'vidaa', 'vlaktevd',  
-        'vlissing', 'westkape', 'westters', 'weymouth', 'wick', 'zeebrugg'
+        'aberdeen', 'aukalpha', 'bg2', 'borkums', 'bremerha', 'cadzand',
+        'cromer', 'cuxhaven', 'delfzijl', 'denhelde', 'denoever', 'devonpor',
+        'dover', 'duinkerk', 'ekofisk', 'esbjerg', 'europlat', 'f3',
+        'felixsto', 'goeree', 'harlinge', 'helgeroa', 'helgolan', 'hoekvanh',
+        'holyhead', 'huibertg', 'husum', 'ijmuiden', 'ilfracom', 'immingha',
+        'innerdow', 'k13a', 'kornwerd', 'lauwerso', 'leith', 'lerwick',
+        'lowestof', 'meetpost', 'newhaven', 'newlyn', 'northcor', 'northshi',
+        'offharwi', 'oostende', 'os11', 'os15', 'oscarsbo', 'portsmou',
+        'roompotb', 'scarboro', 'scheveni', 'scillyis', 'sheernes', 'southend',
+        'stavange', 'stmarys', 'stornowa', 'terschel', 'texelnoo', 'torsmind',
+        'tregde', 'vidaa', 'vlaktevd', 'vlissing', 'westkape', 'westters',
+        'weymouth', 'wick', 'zeebrugg'
     ]
     # I.1b Selection
     if cfg['stations'] == 'all':
@@ -116,8 +118,10 @@ def surge_estimator_main(psl_in, uas_in, vas_in, cfg, dataset):
             if plt_stat in allstats:
                 stat_tseries.append(plt_stat)
             else:
-                logger.info('Station ' + str(cfg["plt_station"]) +
-                      ' is not available -> timeseries plot cannot be generated.')
+                logger.info(
+                    'Station ' + str(cfg["plt_station"]) +
+                    ' is not available -> timeseries plot cannot be generated.'
+                )
                 cfg["plt_tseries"] = False
 
     # 2. Date for map plot
@@ -170,15 +174,18 @@ def surge_estimator_main(psl_in, uas_in, vas_in, cfg, dataset):
     solvers_exist = check_solver(data_dir)
 
     if dataset == 'ERA-Interim' and not solvers_exist:
-        [psl_solver, gradpsl_solver, 
-          uas_solver, vas_solver] = calc_eofs(psl, uas, vas, gradpsl, data_dir)
+        [psl_solver, gradpsl_solver, uas_solver, vas_solver] = calc_eofs(
+            psl, uas, vas, gradpsl, data_dir)
         logger.info('EOF solvers generated and saved to ' + data_dir)
         exit()
     elif not dataset == 'ERA-Interim' and not solvers_exist:
-        logger.info('No EOF solvers found. Please rerun the script with ERA-Interim to produce them.')
+        logger.info(
+            'No EOF solvers found. Please rerun the script with ERA-Interim to produce them.'
+        )
         exit('ERROR - no EOF solvers found')
     else:
-        psl_solver, gradpsl_solver, uas_solver, vas_solver = load_eofs(data_dir)
+        psl_solver, gradpsl_solver, uas_solver, vas_solver = load_eofs(
+            data_dir)
 
     # -----------------------------------------
     # VI. Project fields onto ERA-Interim EOFs
@@ -195,14 +202,12 @@ def surge_estimator_main(psl_in, uas_in, vas_in, cfg, dataset):
     logger.debug("Generating predictor array")
     X = {}
     for s in stat:
-        X[s] = build_predictX(
-            dates,
-            pseudo_pcs_slp.values,
-            pseudo_pcs_gradpsl,
-            pseudo_pcs_us.values,
-            pseudo_pcs_vs.values)
+        X[s] = build_predictX(dates, pseudo_pcs_slp.values, pseudo_pcs_gradpsl,
+                              pseudo_pcs_us.values, pseudo_pcs_vs.values)
 
-    np.save('/usr/people/ridder/Documents/0_models/scripts/python/0_MAGIC/predictor_array_X.npy',X)
+    np.save(
+        '/usr/people/ridder/Documents/0_models/scripts/python/0_MAGIC/predictor_array_X.npy',
+        X)
     exit()
     # -----------------------------------------------------------
     # VIII. Load regression coefficients or train model
@@ -210,8 +215,8 @@ def surge_estimator_main(psl_in, uas_in, vas_in, cfg, dataset):
     #if cfg['train_model']:
     #    logger.info("Training the model")
     #    data_in = cfg['path2traindata']
-    #    strt_date = dates[0] 
-    #    end_date = dates[-1] 
+    #    strt_date = dates[0]
+    #    end_date = dates[-1]
     #    betas, intercept = train_model(X, stats, data_in, data_dir, strt_date, end_date)
     #else:
     #    betas, intercept = load_betas_intercept(stat, data_dir)
@@ -239,8 +244,8 @@ def surge_estimator_main(psl_in, uas_in, vas_in, cfg, dataset):
     # if write_plots:
     if cfg["coastal_map"]:  # generate geographical map with surge levels on day specified in config file
         logger.info("Plotting and saving geographical map with surge heights")
-        plot_map_cartopy(dates_map[0], srg_estim,
-                         dates.index(dates_map[0]), cfg, dataset)
+        plot_map_cartopy(dates_map[0], srg_estim, dates.index(dates_map[0]),
+                         cfg, dataset)
     #
     if cfg["plt_tseries"]:  # generate timeseries plot
         logger.info("Plotting and saving surge timeseries")
