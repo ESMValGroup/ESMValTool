@@ -147,7 +147,7 @@ def make_model_vs_obs_plots(
     logger.debug('make_model_vs_obs_plots filenames: %s', filenames)
     # ####
     # Load the data for each layer as a separate cube
-    input_file = None 
+    input_file = None
     layers = {}
     cubes = {}
     for model_type, input_file in filenames.items():
