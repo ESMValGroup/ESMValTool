@@ -64,7 +64,6 @@ def ens_plots(dir_output, dir_plot, name_outputs, numclus,
     else:
         clon = 0.
 
-    numens=72
     numens0 = min(numens,numensmax)
     nfigs = int(np.ceil(numens/numens0))
 
