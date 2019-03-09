@@ -100,7 +100,8 @@ def main(cfg):
     if write_plots:
         plot_file = ens_plots(out_dir, cfg['plot_dir'], name_outputs,
                               cfg['numclus'], 'anomalies',
-                              cfg['output_file_type'])
+                              cfg['output_file_type'], cfg['season'],
+                              cfg['area'], cfg['extreme'])
         provenance_record['plot_file'] = plot_file
 
     for file in outfiles:
