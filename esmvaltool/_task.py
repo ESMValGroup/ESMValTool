@@ -221,7 +221,10 @@ class BaseTask(object):
                 input_files = []
             for task in self.ancestors:
                 input_files.extend(task.run())
+            logger.info("Starting task %s in process [%s]", self.name,
+                        os.getpid())
             self.output_files = self._run(input_files)
+            logger.info("Successfully completed task %s", self.name)
 
         return self.output_files
 
