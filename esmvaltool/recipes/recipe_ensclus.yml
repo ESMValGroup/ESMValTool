@@ -101,3 +101,4 @@ diagnostics:
         perc: 80               #cluster analysis is applied on a number of PCs such as they explain
                                #'perc' of total variance
         numpcs: 'no'           #number of PCs
+        max_plot_panels: 72    #threshold in number of panels in a plot to create multiple figures

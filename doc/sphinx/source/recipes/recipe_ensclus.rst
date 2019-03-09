@@ -50,6 +50,10 @@ User settings
 * perc: percentage of variance to be explained by PCs (select either this or numpcs)
 * numpcs: number of PCs to retain (select either this or perc)
 
+*Optional settings for script*
+
+* max_plot_panels: maximum number of panels (datasets) in a plot. When exceeded multiple plots are created. Default: 72
+
 
 Variables
 ---------

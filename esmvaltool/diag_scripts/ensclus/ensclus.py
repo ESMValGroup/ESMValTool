@@ -65,6 +65,8 @@ def main(cfg):
     logger.info('The name of the output files will be <variable>_%s.txt',
                 name_outputs)
     variable_name = element['short_name']
+    max_plot_panels = cfg.get('max_plot_panels',72)
+    print("PLOT PANELS", max_plot_panels)
 
     filenames_cat = []
     legend_cat = []
@@ -101,7 +103,7 @@ def main(cfg):
         plot_file = ens_plots(out_dir, cfg['plot_dir'], name_outputs,
                               cfg['numclus'], 'anomalies',
                               cfg['output_file_type'], cfg['season'],
-                              cfg['area'], cfg['extreme'])
+                              cfg['area'], cfg['extreme'], max_plot_panels)
         provenance_record['plot_file'] = plot_file
 
     for file in outfiles:
