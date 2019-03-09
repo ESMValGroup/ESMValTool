@@ -31,6 +31,9 @@ def ens_plots(dir_output, dir_plot, name_outputs, numclus,
     namef = os.path.join(dir_output, 'labels_{0}.txt'.format(name_outputs))
     labels = np.loadtxt(namef, dtype=int)
 
+    namef = os.path.join(dir_output, 'repr_ens_{0}.txt'.format(name_outputs))
+    reprens = np.loadtxt(namef, dtype=int)
+
     vmi = round_down(np.nanpercentile(vartoplot, 0.1))
     vma = round_up(np.nanpercentile(vartoplot, 99.9))
 
@@ -73,6 +76,14 @@ def ens_plots(dir_output, dir_plot, name_outputs, numclus,
         else:
             map_plot = plt.contourf(lon, lat, vartoplot[nens], clevels,
                                     transform=proj, extend='both')
+
+        if nens in reprens:
+            rect = plt.Rectangle((-0.01,-0.01), 1.02, 1.02, fill = False,
+                                 transform = axes.transAxes, clip_on = False,
+                                 zorder = 10)
+            rect.set_edgecolor(colors[labels[nens]])
+            rect.set_linewidth(6.0)
+            axes.add_artist(rect)
 
         # Add Title
         title_obj = plt.title(nens, fontsize=32, fontweight='bold')
