@@ -150,7 +150,7 @@ def ens_eof_kmeans(dir_output, name_outputs, numens, numpcs, perc, numclus):
                       members[np.where(norm[nclus] ==
                                        norm[nclus].min())[0][0]]))
         repres.append(members[np.where(norm[nclus] ==
-                      norm[nclus].min())[0][0]])
+                                       norm[nclus].min())[0][0]])
         print('MAXIMUM DISTANCE WITHIN CLUSTER {0} IS {1} --> member #{2}'
               .format(nclus, round(norm[nclus].max(), 3),
                       members[np.where(norm[nclus] ==

@@ -65,7 +65,7 @@ def main(cfg):
     logger.info('The name of the output files will be <variable>_%s.txt',
                 name_outputs)
     variable_name = element['short_name']
-    max_plot_panels = cfg.get('max_plot_panels',72)
+    max_plot_panels = cfg.get('max_plot_panels', 72)
     print("PLOT PANELS", max_plot_panels)
 
     filenames_cat = []
@@ -104,7 +104,7 @@ def main(cfg):
                               cfg['numclus'], 'anomalies',
                               cfg['output_file_type'], cfg['season'],
                               cfg['area'], cfg['extreme'], max_plot_panels)
-        provenance_record['plot_file'] = plot_file
+        provenance_record['plot_file'] = plot_file[0] # waiting for @801
 
     for file in outfiles:
         with ProvenanceLogger(cfg) as provenance_logger:

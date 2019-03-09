@@ -64,17 +64,17 @@ def ens_plots(dir_output, dir_plot, name_outputs, numclus,
     else:
         clon = 0.
 
-    numens0 = min(numens,numensmax)
-    nfigs = int(np.ceil(numens/numens0))
+    numens0 = min(numens, numensmax)
+    nfigs = int(np.ceil(numens / numens0))
 
     ypos = int(np.ceil(np.sqrt(numens0 / 2.0)))
     xpos = int(np.ceil(numens0 / ypos))
-    fsize = int(min(max(4./ypos*15, 10), 32))
+    fsize = int(min(max(4. / ypos * 15, 10), 32))
 
     namef_list = []
     for ifig in range(nfigs):
         fig = plt.figure(figsize=(24, 14))
-        for iens in range(ifig*numens0, min((ifig+1)*numens0, numens)):
+        for iens in range(ifig * numens0, min((ifig + 1) * numens0, numens)):
             axes = plt.subplot(ypos, xpos, iens + 1 - ifig*numens0,
                                projection=ccrs.PlateCarree(central_longitude=clon))
             axes.set_extent([min(lon), max(lon), min(lat), max(lat)],
