@@ -27,8 +27,6 @@ http://esmvaltool.readthedocs.io. Have fun!
 # Valeriu Predoi (URead, UK - valeriu.predoi@ncas.ac.uk)
 # Mattia Righi (DLR, Germany - mattia.righi@dlr.de)
 
-from __future__ import print_function
-
 import argparse
 import datetime
 import errno
@@ -41,7 +39,7 @@ from multiprocessing import cpu_count
 
 from . import __version__
 from ._config import configure_logging, read_config_user_file
-from ._recipe import read_recipe_file, TASKSEP
+from ._recipe import TASKSEP, read_recipe_file
 from ._task import resource_usage_logger
 
 # set up logging
