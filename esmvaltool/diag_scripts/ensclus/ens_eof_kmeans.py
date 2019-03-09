@@ -81,7 +81,8 @@ def ens_eof_kmeans(dir_output, name_outputs, numens, numpcs, perc, numclus):
 
     pcs = pcs_unscal0[:, :numpcs]
 
-    clus = KMeans(n_clusters=numclus, n_init=600, max_iter=1000)
+    clus = KMeans(n_clusters=numclus, n_init=600,
+                  max_iter=1000, random_state=42)
 
     start = datetime.datetime.now()
     clus.fit(pcs)
