@@ -75,12 +75,9 @@ def ens_plots(dir_output, dir_plot, name_outputs, numclus,
     namef_list = []
     for ifig in range(nfigs):
         fig = plt.figure(figsize=(24, 14))
-        for iens0 in range(ifig*numens0, min((ifig+1)*numens0, numens)):
-            iens=iens0
+        for iens in range(ifig*numens0, min((ifig+1)*numens0, numens)):
             axes = plt.subplot(ypos, xpos, iens + 1 - ifig*numens0,
                                projection=ccrs.PlateCarree(central_longitude=clon))
-            if iens > 31:
-                iens = 31 
             axes.set_extent([min(lon), max(lon), min(lat), max(lat)],
                             crs=ccrs.PlateCarree())
             axes.coastlines("110m")
