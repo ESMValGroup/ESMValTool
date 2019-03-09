@@ -62,7 +62,7 @@ def ens_plots(dir_output, dir_plot, name_outputs, numclus,
     else:
         clon = 0.
     for nens in range(numens):
-        axes = plt.subplot(xpos, ypos, nens + 1,
+        axes = plt.subplot(ypos, xpos, nens + 1,
                            projection=ccrs.PlateCarree(central_longitude=clon))
         axes.set_extent([min(lon), max(lon), min(lat), max(lat)],
                         crs=ccrs.PlateCarree())
