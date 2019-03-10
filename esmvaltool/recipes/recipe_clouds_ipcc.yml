@@ -131,6 +131,10 @@ diagnostics:
 
   clouds_ipcc_swcre:
     description: differences of multi-model mean and reference dataset
+    themes:
+      - clouds
+    realms:
+      - atmos
     variables:
       swcre:
         preprocessor: clim
@@ -150,6 +154,10 @@ diagnostics:
 
   clouds_ipcc_lwcre:
     description: differences of multi-model mean and reference dataset
+    themes:
+      - clouds
+    realms:
+      - atmos
     variables:
       lwcre:
         preprocessor: clim
@@ -166,6 +174,10 @@ diagnostics:
 
   clouds_ipcc_netcre:
     description: differences of multi-model mean and reference dataset
+    themes:
+      - clouds
+    realms:
+      - atmos
     variables:
       netcre:
         preprocessor: clim
