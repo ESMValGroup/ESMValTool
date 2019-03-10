@@ -4,9 +4,7 @@
 Installing ESMValTool
 *********************
 
-ESMValTool 2.0 requires a Unix(-like) operating system and Python 2.7+ or 3.6+.
-Python 2.7+ will be discontinued in the near future, so we encourage you to use
-Python 3.6+ if possible.
+ESMValTool 2.0 requires a Unix(-like) operating system and Python 3.6+.
 
 The ESMValTool supports three different installation methods:
 
@@ -113,18 +111,11 @@ installing ESMValTool. Using the following command:
 
     conda update -n base conda
 
-To create a environment using Python 3.x
+To create an environment
 
 .. code-block:: bash
 
     conda create --name esmvaltool python=3
-    conda env update --name esmvaltool --file ESMValTool/environment.yml
-
-To create a environment using Python 2.x
-
-.. code-block:: bash
-
-    conda create --name esmvaltool python=2
     conda env update --name esmvaltool --file ESMValTool/environment.yml
 
 The environment is called ``esmvaltool`` by default, but it is possible to use
