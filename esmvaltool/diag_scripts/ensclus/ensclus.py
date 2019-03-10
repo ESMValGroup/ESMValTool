@@ -95,20 +95,25 @@ def main(cfg):
                                cfg['perc'], cfg['numclus'])
 
     outfiles = outfiles + outfiles2
-    provenance_record = get_provenance_record(
+    nc_provenance_record = get_provenance_record(
         cfg, list(files_dict.values())[0][0], ancestor_files=filenames_cat)
+    fig_provenance_record = get_provenance_record(
+        cfg, list(files_dict.values())[0][0], ancestor_files=outfiles)
 
     # ###################### PLOT AND SAVE FIGURES ##########################
     if write_plots:
-        plot_file = ens_plots(out_dir, cfg['plot_dir'], name_outputs,
+        plotfiles = ens_plots(out_dir, cfg['plot_dir'], name_outputs,
                               cfg['numclus'], 'anomalies',
                               cfg['output_file_type'], cfg['season'],
                               cfg['area'], cfg['extreme'], max_plot_panels)
-        provenance_record['plot_file'] = plot_file[0] # waiting for @801
+        nc_provenance_record['plot_file'] = plotfiles[0] # waiting for #801
 
     for file in outfiles:
         with ProvenanceLogger(cfg) as provenance_logger:
-            provenance_logger.log(file, provenance_record)
+            provenance_logger.log(file, nc_provenance_record)
+    for file in plotfiles:
+        with ProvenanceLogger(cfg) as provenance_logger:
+            provenance_logger.log(file, fig_provenance_record)
 
     logger.info('\n>>>>>>>>>>>> ENDED SUCCESSFULLY!! <<<<<<<<<<<<\n')
 
