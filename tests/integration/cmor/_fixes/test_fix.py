@@ -1,7 +1,7 @@
-import unittest
-import tempfile
 import os
 import shutil
+import tempfile
+import unittest
 
 from iris.cube import Cube
 
@@ -62,5 +62,4 @@ class TestFix(unittest.TestCase):
         output_dir = os.path.join(self.temp_folder, 'fixed')
         os.makedirs(output_dir)
         fixed_filepath = Fix().get_fixed_filepath(output_dir, filepath)
-        self.assertTrue(fixed_filepath,
-                        os.path.join(output_dir, 'file.nc'))
+        self.assertTrue(fixed_filepath, os.path.join(output_dir, 'file.nc'))
