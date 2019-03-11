@@ -156,12 +156,12 @@ for (model_idx in c(1:(length(models_name)))) {
   # Set provenance for this output file
   caption <- paste0("Precipitation quantile bias ", perc_lev, "% for years ",
                     year1, " to ", year2, " according to ", exp)
-  xbase <- list(list(infile), list("arno_en", "hard_jo"), list("c3s-magic"),
-                list("mehran14jgr"), caption, list("perc"), list("atmos"),
-                list("phys"), list("global"), ref_data_file)
-  names(xbase) <- c("ancestors", "authors", "projects", "references",
-                    "caption", "statistics", "realms",
-                    "themes", "domains", "reference_dataset")
+  xbase <- list(ancestors = list(infile, ref_data_file),
+                authors = list("arno_en", "hard_jo"),
+                projects = list("c3s-magic"), references = list("mehran14jgr"),
+                caption = caption, statistics = list("perc"),
+                realms = list("atmos"), themes = list("phys"),
+                domains = list("global"), reference_dataset = ref_data_file)
 
   # Store provenance in main provenance list
   provenance[[outfile]] <- xbase
