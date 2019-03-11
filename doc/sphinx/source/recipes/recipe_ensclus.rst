@@ -47,8 +47,8 @@ User settings
 * area: region of interest (EAT=Euro-Atlantic, PNA=Pacific North American, NH=Northern Hemisphere, EU=Europe)
 * extreme: extreme to consider: XXth_percentile (XX can be set arbitrarily, e.g. 75th_percentile), mean (mean value over the period), maximum (maximum value over the period), std (standard deviation), trend (linear trend over the period)
 * numclus: number of clusters to be computed
-* perc: percentage of variance to be explained by PCs (select either this or numpcs)
-* numpcs: number of PCs to retain (select either this or perc)
+* perc: percentage of variance to be explained by PCs (select either this or numpcs, default=80)
+* numpcs: number of PCs to retain (has priority over perc unless it is set to 0 (default))
 
 *Optional settings for script*
 

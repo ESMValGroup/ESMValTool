@@ -67,6 +67,7 @@ def main(cfg):
     variable_name = element['short_name']
     max_plot_panels = cfg.get('max_plot_panels', 72)
     numpcs = cfg.get('numpcs', 0)
+    perc = cfg.get('numpcs', 80)
 
     filenames_cat = []
     legend_cat = []
@@ -92,7 +93,7 @@ def main(cfg):
 
     # ###################### EOF AND K-MEANS ANALYSES #######################
     outfiles2 = ens_eof_kmeans(out_dir, name_outputs, numens, numpcs,
-                               cfg['perc'], cfg['numclus'])
+                               perc, cfg['numclus'])
 
     outfiles = outfiles + outfiles2
     nc_provenance_record = get_provenance_record(
