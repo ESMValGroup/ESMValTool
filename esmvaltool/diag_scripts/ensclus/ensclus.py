@@ -66,7 +66,7 @@ def main(cfg):
                 name_outputs)
     variable_name = element['short_name']
     max_plot_panels = cfg.get('max_plot_panels', 72)
-    print("PLOT PANELS", max_plot_panels)
+    numpcs = cfg.get('numpcs', 0)
 
     filenames_cat = []
     legend_cat = []
@@ -91,7 +91,7 @@ def main(cfg):
                         numens, cfg['season'], cfg['area'], cfg['extreme'])
 
     # ###################### EOF AND K-MEANS ANALYSES #######################
-    outfiles2 = ens_eof_kmeans(out_dir, name_outputs, numens, cfg['numpcs'],
+    outfiles2 = ens_eof_kmeans(out_dir, name_outputs, numens, numpcs,
                                cfg['perc'], cfg['numclus'])
 
     outfiles = outfiles + outfiles2

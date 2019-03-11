@@ -33,17 +33,13 @@ def ens_eof_kmeans(dir_output, name_outputs, numens, numpcs, perc, numclus):
     print('Model: {0}'.format(model))
     # Either perc (cluster analysis is applied on a number of PCs
     # such as they explain 'perc' of total variance) or numpcs
-    # (number of PCs to retain) is set:
-    if numpcs != 'no':
+    # (number of PCs to retain) is set.
+    # numpcs has priority over perc, ignored if it is set to 0
+    if numpcs:
         numpcs = int(numpcs)
         print('Number of principal components: {0}'.format(numpcs))
-
-    if perc != 'no':
-        perc = int(perc)
-        print('Percentage of explained variance: {0}%'.format(perc))
-
-    if (perc == 'no' and numpcs == 'no') or (perc != 'no' and numpcs != 'no'):
-        raise ValueError('You have to specify either "perc" or "numpcs".')
+    else:
+        print('Percentage of variance explained: {0}'.format(perc))
 
     print('Number of clusters: {0}'.format(numclus))
 
@@ -61,7 +57,9 @@ def ens_eof_kmeans(dir_output, name_outputs, numens, numpcs, perc, numclus):
     _, _, _, pcs_unscal0, eofs_unscal0, varfrac = eof_computation(var, lat)
 
     acc = np.cumsum(varfrac * 100)
-    if perc != 'no':
+    if numpcs:
+        exctperc = acc[numpcs - 1]
+    else:
         # Find how many PCs explain a certain percentage of variance
         # (find the mode relative to the percentage closest to perc,
         #  but bigger than perc)
@@ -70,8 +68,6 @@ def ens_eof_kmeans(dir_output, name_outputs, numens, numpcs, perc, numclus):
               'to {0}% of variance (but grater than {0}%) is {1}'
               .format(perc, numpcs))
         exctperc = min(enumerate(acc), key=lambda x: x[1] <= perc)[1]
-    if numpcs != 'no':
-        exctperc = acc[numpcs - 1]
     print('(the first {0} PCs explain exactly the {1}% of variance)'
           .format(numpcs, "%.2f" % exctperc))
 
