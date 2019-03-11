@@ -1,36 +1,16 @@
 ---
-# This is a stable and tested environment as of
-# March 2019; notes on ncl-cdo-R packages relation
-# for future releases are included here
-#
+# Notes on ncl-cdo-R packages relation for future releases:
 # cdo=1.9.6 works only with ncl=6.6.2 but that
 # implies the use of R packages from the r channel
 # and those packages are R=3.2.2 << 3.5.1 and are
 # obsolete (installing ncl=6.6.2 automatically removes
-# the conda-forge-installed R (3.5.1) packages; esmvaltool
-# environment and functionality works fine though;
-#
-# cdo=1.9.5 and ncl=6.5.0 renders the conda
-# environment unsolvable;
-#
-# cdo needs to be installed BOTH from conda and PyPI since
-# conda installs only the command-line executable;
-#
-# For older Anacondas you may need gxx_linux-64 since
-# anaconda uses its internal compilers but they point
-# to an empty executable (thank you, Anaconda!)
-#
-# To use cdo from command line there may be the need to
-# downgrade hdf5 to 1.10.2 (1.10.2; hc401514_3; conda-forge)
+# the conda-forge-installed R (3.5.1) packages
 
 name: esmvaltool
 channels:
   - conda-forge
-  # - r  may need to add this in the future
 
 dependencies:
-  # Compiler that conda uses
-  # - gxx_linux-64  may be needed in the future
   # Python packages that cannot be installed from PyPI:
   - iris
   - matplotlib<3  # Can be installed from PyPI, but is a dependency of iris and should be pinned.
@@ -39,12 +19,12 @@ dependencies:
   - xarray  # Can be installed from PyPI, but here to get a consistent set of depencies with iris.
   # Non-Python dependencies
   - graphviz
-  - cdo=1.9.5  # see notes for future version
-  - hdf5=1.10.3
+  - cdo=1.9.5
+  - hdf5=1.10.3  # Pinned to help conda resolve the ncl/cdo combination
 
   # Multi language support:
-  - ncl=6.5.0  # see notes for future version
+  - ncl=6.5.0
   - jasper!=1.900.31  # pinned NCL dependency
   - r-base
-  - libunwind  #  specifically for Python3.7+
+  - libunwind  # Needed for Python3.7+
   # TODO: add julia
