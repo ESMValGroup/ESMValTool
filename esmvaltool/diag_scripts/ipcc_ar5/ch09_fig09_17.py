@@ -235,18 +235,12 @@ def multi_model_time_series(
                 # label=metadata[filename]['dataset'])
                 ls='-',
                 lw=2.,
-#                title = 'Ocean heat content anomaly [J]/n(with respect to 1971)',
-#                xlabel = 'Year',
-#                ylabel = 'Joule',
             )
             plot_details[filename] = {
                 'c': color,
                 'ls': '-',
                 'lw': 2.,
                 'label': metadata[filename]['dataset'],
-#                'title': 'Ocean heat content anomaly [J]/n(with respect to 1971)',
-#                'xlabel': 'Year',
-#                'ylabel': 'Joule',
             }
 
 
@@ -262,7 +256,12 @@ def multi_model_time_series(
                 'start_year', 'end_year'
             ],
         )
-
+    
+    # Writing files: 
+    if cfg['write_netcdf']:
+        # suitable code to go here
+        pass
+            
     # Resize and add legend outside the axes.
     plt.gcf().set_size_inches(9., 6.)
     diagtools.add_legend_outside_right(
@@ -324,8 +323,6 @@ def main(cfg):
         print(metadata_filename)
 
         metadatas = diagtools.get_input_files(cfg, index=index)
-#        input_data = cfg['input_files'].values()
-#        metadatas = group_metadata(input_data, 'dataset')
         #######
         # Sum up the cube over global domain
         cubedic = global_sum(

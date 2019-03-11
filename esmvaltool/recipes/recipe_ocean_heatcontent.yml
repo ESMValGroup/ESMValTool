@@ -22,38 +22,38 @@ documentation:
 
 datasets:
   # working datasets
-  #OO - {dataset: CanESM2, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 1970, end_year: 2004}
-  # - {dataset: GISS-E2-H, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 1970, end_year: 2004}
-  # - {dataset: HadGEM2-AO, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
-  # - {dataset: HadCM3, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 1970, end_year: 2004}
-  # - {dataset: CanCM4, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
-  - {dataset: CSIRO-Mk3-6-0, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 1970, end_year: 1980}
-  # - {dataset: HadGEM2-CC, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 1970, end_year: 2004}
-#  - {dataset: HadGEM2-CC, project: CMIP5, mip: Omon, exp: piControl, ensemble: r1i1p1, start_year: 1970, end_year: 1980}
-  - {dataset: HadGEM2-ES, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 1970, end_year: 1980}
-  # - {dataset: HadGEM2-ES, project: CMIP5, mip: Omon, exp: piControl, ensemble: r1i1p1, start_year: 1970, end_year: 2004}
-  - {dataset: IPSL-CM5A-LR, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 1970, end_year: 1980}
+  # - {dataset: CanESM2, project: CMIP5, ensemble: r1i1p1}
+  # - {dataset: GISS-E2-H, project: CMIP5, ensemble: r1i1p1}
+  # - {dataset: HadGEM2-AO, project: CMIP5, ensemble: r1i1p1}
+  # - {dataset: HadCM3, project: CMIP5, ensemble: r1i1p1}
+  # - {dataset: CanCM4, project: CMIP5, ensemble: r1i1p1}
+  # - {dataset: CSIRO-Mk3-6-0, project: CMIP5, exp: historical, ensemble: r1i1p1}
+  # - {dataset: HadGEM2-CC, project: CMIP5, ensemble: r1i1p1}
+  - {dataset: HadGEM2-ES, project: CMIP5, exp: historical, ensemble: r1i1p1}
+#  - {dataset: HadGEM2-ES, project: CMIP5, exp: piControl, ensemble: r1i1p1}
+  - {dataset: IPSL-CM5A-LR, project: CMIP5, exp: historical, ensemble: r1i1p1}
+#  - {dataset: IPSL-CM5A-LR, project: CMIP5, exp: piControl, ensemble: r1i1p1}
   
   # CMIP6 datasets (Feb 2019: not present on JASMIN)
-  # - {dataset: CNRM-CM6-1, project: CMIP6, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 1970, end_year: 2004}
-  # - {dataset: CNRM-ESM2-1, project: CMIP6, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 1970, end_year: 2004}
-  # - {dataset: IPSL-CM6A-LR, project: CMIP6, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 1970, end_year: 2004}
-  # - {dataset: GISS-E2-1-G, project: CMIP6, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 1970, end_year: 2004}
-  # - {dataset: BCC-ESM1, project: CMIP6, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 1970, end_year: 2004}
-  # - {dataset: BCC-CSM2-MR, project: CMIP6, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 1970, end_year: 2004}
+  # - {dataset: CNRM-CM6-1, project: CMIP6, exp: historical, ensemble: r1i1p1}
+  # - {dataset: CNRM-ESM2-1, project: CMIP6, exp: historical, ensemble: r1i1p1}
+  # - {dataset: IPSL-CM6A-LR, project: CMIP6, exp: historical, ensemble: r1i1p1}
+  # - {dataset: GISS-E2-1-G, project: CMIP6, exp: historical, ensemble: r1i1p1}
+  # - {dataset: BCC-ESM1, project: CMIP6, exp: historical, ensemble: r1i1p1}
+  # - {dataset: BCC-CSM2-MR, project: CMIP6, exp: historical, ensemble: r1i1p1}
 
   #####
   # Data with Errors right now -June 2018
   ###
   # Problem with times
-#  - {dataset: MIROC-ESM, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
-#  - {dataset: MIROC-ESM-CHEM, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+#  - {dataset: MIROC-ESM, project: CMIP5, exp: historical, ensemble: r1i1p1}
+#  - {dataset: MIROC-ESM-CHEM, project: CMIP5, exp: historical, ensemble: r1i1p1}
 
   # Unstructured grids
- # - {dataset: MPI-ESM-LR, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
- # - {dataset: MPI-ESM-MR, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
-#  - {dataset: ACCESS1-0, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
-#  - {dataset: ACCESS1-3, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+ # - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: r1i1p1}
+ # - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical, ensemble: r1i1p1}
+#  - {dataset: ACCESS1-0, project: CMIP5, exp: historical, ensemble: r1i1p1}
+#  - {dataset: ACCESS1-3, project: CMIP5, exp: historical, ensemble: r1i1p1}
 
 # TODO: All multi-model statistics are turned off until the preprocessor order is fixed.
 
@@ -94,6 +94,8 @@ diagnostics:
         force_derivation: false
         field: TO3M
         mip: Omon
+        start_year: 1970
+        end_year: 1980
 
     scripts:
       Global_Ocean_DepthLayers_integral_timeseries: &Global_Ocean_DepthLayers_integral_timeseries
