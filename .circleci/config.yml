@@ -71,8 +71,7 @@ jobs:
             # cdo test, check that it supports hdf5
             cdo --version
             echo 0 | cdo -f nc input,r1x1 tmp.nc
-            ncdump tmp.nc > tmp.cdl
-            ncgen -k hdf5 tmp.cdl
+            ncdump tmp.nc | ncgen -k hdf5 -o tmp.nc
             cdo -f nc copy tmp.nc tmp2.nc
       - store_artifacts:
           path: /logs
