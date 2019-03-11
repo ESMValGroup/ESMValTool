@@ -411,7 +411,7 @@ begin
   ; collect meta-data and call ESMValMD function
   nc_file = ncdf_outfile
   plot_file = outfile_plot
-  domain = ("glob")
+  domains = ("global")
   if (diag_script_info@metric.eq."SMPI") then
     statistics = ("smpi")
     caption = "Performance index I2. Similar to Figure 1 of Reichler and Kim (2008)."
@@ -427,7 +427,7 @@ begin
     references = (/"righi15gmd", "gleckler08jgr"/)
     infiles = "will still have to be defined!"     ; TO FIX!
   end if
-  log_provenance(nc_file, plot_file, caption, statistics, domain, plottype, \
+  log_provenance(nc_file, plot_file, caption, statistics, domains, plottype, \
                  authors, references, infiles)
   
   
