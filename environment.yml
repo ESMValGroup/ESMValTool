@@ -14,12 +14,11 @@ dependencies:
   # Non-Python dependencies
   - graphviz
   - cdo=1.9.5
+  - hdf5=1.10.3  # Pinned to help conda resolve the ncl/cdo combination
 
   # Multi language support:
   - ncl
   - jasper!=1.900.31  # pinned NCL dependency
   - r-base
-  - r-rcpp
-  - r-xml
   - libunwind  #  specifically for Python3.7+
   # TODO: add julia
