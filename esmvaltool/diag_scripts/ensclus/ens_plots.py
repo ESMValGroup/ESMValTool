@@ -76,7 +76,7 @@ def ens_plots(dir_output, dir_plot, name_outputs, numclus,
         fig = plt.figure(figsize=(24, 14))
         for iens in range(ifig * numens0, min((ifig + 1) * numens0, numens)):
             axes = plt.subplot(
-                ypos, xpos, iens + 1 - ifig*numens0,
+                ypos, xpos, iens + 1 - ifig * numens0,
                 projection=ccrs.PlateCarree(central_longitude=clon)
             )
             axes.set_extent([min(lon), max(lon), min(lat), max(lat)],
@@ -101,7 +101,7 @@ def ens_plots(dir_output, dir_plot, name_outputs, numclus,
                 axes.add_artist(rect)
 
             # Add Title
-            title_obj = plt.title(iens, fontsize=int(fsize*1.8),
+            title_obj = plt.title(iens, fontsize=int(fsize * 1.8),
                                   fontweight='bold', loc='left')
             title_obj.set_backgroundcolor(colors[labels[iens]])
             title_obj = plt.title(legends[iens], fontsize=fsize, loc='right')
@@ -133,7 +133,7 @@ def ens_plots(dir_output, dir_plot, name_outputs, numclus,
 
         # plot the selected fields
         namef = os.path.join(dir_plot, ('{0}_{1}.fig{2}.' + plot_type)
-                             .format(field_to_plot, name_outputs, ifig+1))
+                             .format(field_to_plot, name_outputs, ifig + 1))
         fig.savefig(namef)  # bbox_inches='tight')
         print('A ', plot_type, ' figure for the selected fields saved in {0}'
               .format(dir_plot))
