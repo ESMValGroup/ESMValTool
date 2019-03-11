@@ -2,7 +2,7 @@
 ---
 
 # Build commmand:
-# conda build . -c conda-forge -c r -c birdhouse
+# conda build . -c conda-forge -c birdhouse
 
 # Package version number
 {% set version = "2.0a1" %}
@@ -71,8 +71,8 @@ requirements:
     - ncl=6.5
     - jasper!=1.900.31  # pinned NCL dependency
     - r-base
-    - r-rcpp
     - cdo=1.9.5
+    - hdf5=1.10.3
     # TODO: add julia
 
 test:
