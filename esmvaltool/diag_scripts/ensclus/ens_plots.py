@@ -75,8 +75,10 @@ def ens_plots(dir_output, dir_plot, name_outputs, numclus,
     for ifig in range(nfigs):
         fig = plt.figure(figsize=(24, 14))
         for iens in range(ifig * numens0, min((ifig + 1) * numens0, numens)):
-            axes = plt.subplot(ypos, xpos, iens + 1 - ifig*numens0,
-                               projection=ccrs.PlateCarree(central_longitude=clon))
+            axes = plt.subplot(
+                ypos, xpos, iens + 1 - ifig*numens0,
+                projection=ccrs.PlateCarree(central_longitude=clon)
+            )
             axes.set_extent([min(lon), max(lon), min(lat), max(lat)],
                             crs=ccrs.PlateCarree())
             axes.coastlines("110m")
@@ -99,8 +101,8 @@ def ens_plots(dir_output, dir_plot, name_outputs, numclus,
                 axes.add_artist(rect)
 
             # Add Title
-            title_obj = plt.title(iens, fontsize=int(fsize*1.8), fontweight='bold',
-                                  loc='left')
+            title_obj = plt.title(iens, fontsize=int(fsize*1.8),
+                                  fontweight='bold', loc='left')
             title_obj.set_backgroundcolor(colors[labels[iens]])
             title_obj = plt.title(legends[iens], fontsize=fsize, loc='right')
 
@@ -124,8 +126,8 @@ def ens_plots(dir_output, dir_plot, name_outputs, numclus,
         bottom = 0.12  # the bottom of the subplots of the figure
         left = 0.02    # the left side of the subplots of the figure
         right = 0.98   # the right side of the subplots of the figure
-        hspace = 0.36  # amount of height reserved for white space between subplots
-        wspace = 0.14  # amount of width reserved for blank space between subplots
+        hspace = 0.36  # height reserved for white space between subplots
+        wspace = 0.14  # width reserved for blank space between subplots
         plt.subplots_adjust(left=left, bottom=bottom, right=right, top=top,
                             wspace=wspace, hspace=hspace)
 

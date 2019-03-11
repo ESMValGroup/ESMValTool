@@ -107,7 +107,7 @@ def main(cfg):
                               cfg['numclus'], 'anomalies',
                               cfg['output_file_type'], cfg['season'],
                               cfg['area'], cfg['extreme'], max_plot_panels)
-        nc_provenance_record['plot_file'] = plotfiles[0] # waiting for #801
+        nc_provenance_record['plot_file'] = plotfiles[0]  # waiting for #801
 
     for file in outfiles:
         with ProvenanceLogger(cfg) as provenance_logger:
