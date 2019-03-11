@@ -149,7 +149,7 @@ an zonal or meridional direction.
  This function takes two arguments:
 
 * coordinate: Which direction to apply the operation: latitude or longitude
-* mean_type: Which operation to apply: mean, stdev, variance, median, min or max
+* mean_type: Which operation to apply: mean, std_dev, variance, median, min or max
 
 See also :func:`esmvaltool.preprocessor.zonal_means`.
 
