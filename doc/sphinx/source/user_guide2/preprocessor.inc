@@ -107,7 +107,7 @@ See also :func:`esmvaltool.preprocessor.seasonal_mean`.
 --------------
 
 This function produces an annual or a decadal mean. The only argument is the
-decadal boolean switch. When this switch is set to True, this function
+decadal boolean switch. When this switch is set to true, this function
 will output the decadal averages.
 
 See also :func:`esmvaltool.preprocessor.annual_mean`.
