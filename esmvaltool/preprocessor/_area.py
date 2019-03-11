@@ -110,7 +110,7 @@ def zonal_means(cube, coordinate, mean_type):
 
         'mean' -> MEAN
         'median' -> MEDIAN
-        'stdev' -> STD_DEV
+        'std_dev' -> STD_DEV
         'variance' -> VARIANCE
         'min' -> MIN
         'max' -> MAX
