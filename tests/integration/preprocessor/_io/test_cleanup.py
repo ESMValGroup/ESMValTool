@@ -1,10 +1,8 @@
 """Integration tests for :func:`esmvaltool.preprocessor._io.cleanup`"""
 
-from __future__ import absolute_import, division, print_function
-
-import unittest
 import os
 import tempfile
+import unittest
 
 from esmvaltool.preprocessor import _io
 
