@@ -163,7 +163,7 @@ if (write_netcdf) {
       } else {
         gridfile <- getfilename_indices(work_dir, diag_base, model_idx,
                                         grid = T)
-        cdo("griddes", input = regfile, stdout = gridfile, noout = T)
+        cdo("griddes", input = regfile, stdout = gridfile)
         print(paste0(diag_base, ": data file exists: ", regfile))
         print(paste0(diag_base, ": corresponding grid: ", gridfile))
       }

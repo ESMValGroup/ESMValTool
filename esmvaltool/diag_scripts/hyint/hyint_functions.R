@@ -438,7 +438,7 @@ create_grid <- function(ref_file = "./reffile", path = idx_dir,
     ## Picking the grid found in the first file to regrid over
     ref_file <- list.files(path, pattern = "*.nc", full.names = TRUE)[1]
   }
-  cdo("griddes", input = ref_file, stdout = out_file, noout = T)
+  cdo("griddes", input = ref_file, stdout = out_file)
 }
 
 #
@@ -669,9 +669,10 @@ ncdf_opener_universal <- function(namefile, namevar = NULL, namelon = NULL,
                       input = namefile)
     } else {
       selectf <- cdo("selvar", args = namevar, input = namefile)
-      namefile <- cdo(remap_method, args = paste0("'", grid, "'"),
-                      input = selectf)
-      unlink(selectf)
+      gridf <- tempfile()
+      cdo("griddes", input = grid, stdout = gridf)
+      namefile <- cdo(remap_method, args = gridf, input = selectf)
+      unlink(c(selectf, gridf))
     }
   }
 
@@ -1332,7 +1333,10 @@ image_scale3 <- function(z, levels, color.palette = heat.colors,
 cdo <- function(command, args = "", input = "", options = "", output = "",
                 stdout = "", noout = F) {
   if (args != "") args <- paste0(",", args)
-  if (stdout != "") stdout <- paste0(" > '", stdout, "'")
+  if (stdout != "") {
+    stdout <- paste0(" > '", stdout, "'")
+    noout <- T
+  }
   if (input[1] != "") {
     for (i in 1:length(input)) {
       input[i] <- paste0("'", input[i], "'")
