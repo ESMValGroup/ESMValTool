@@ -755,6 +755,8 @@ def whitespace_before_parameters(logical_line, tokens):
             (prev_type == tokenize.NAME or prev_text in '}])') and
             # Syntax "class A (B):" is allowed, but avoid it
             (index < 2 or tokens[index - 2][1] != 'class') and
+            # Syntax "elseif (": is allowed (special case NCL 6.5.0)
+            (tokens[index - 1][1] != 'elseif') and
                 # Allow "return (a.foo for a in range(5))"
                 not keyword.iskeyword(prev_text)):
             yield prev_end, "E211 whitespace before '%s'" % text
