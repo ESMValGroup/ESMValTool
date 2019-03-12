@@ -11,8 +11,8 @@ channels:
 
 dependencies:
   # Python packages that cannot be installed from PyPI:
-  - gxx_linux-64  # needed for conda compilations
-  - pyke  # needed by iris
+  - gxx_linux-64  # needed since conda uses internal compiler which is empty 
+  - iris
   - matplotlib<3  # Can be installed from PyPI, but is a dependency of iris and should be pinned.
   - python-stratify
   - esmpy
@@ -22,7 +22,7 @@ dependencies:
   - cdo
 
   # Multi language support:
-  - ncl=6.5.0  # Pinned for now
+  - ncl
   - jasper!=1.900.31  # pinned NCL dependency
   # - r-base conflicts with ncl>=6.5.0; need to find alternative
   - libunwind  # Needed for Python3.7+
