@@ -356,8 +356,6 @@ begin
                                               abs(natvar_mmm(seas, :, :)),\
                                               1., 0.)
         else
-          printVarSummary(natvar_mmm)
-          printVarSummary(to_plot)
           sigma_and_sign = where(abs(to_plot(i, :, :)) .gt. \
                                  abs(2. * natvar_mmm), 1., 0.)
           to_plot_not_signif(i, :, :) = where(abs(to_plot(i, :, :)) .lt. \
