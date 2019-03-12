@@ -137,7 +137,7 @@ def zonal_means(cube, coordinate, mean_type):
 
 def tile_grid_areas(cube, fx_files):
     """
-    Tiles the grid area to match the
+    Tile the grid area data to match the dataset cube.
 
     Arguments
     ---------
@@ -170,6 +170,10 @@ def tile_grid_areas(cube, fx_files):
             elif cube.data.ndim == 3 and grid_areas.ndim == 2:
                 grid_areas = np.tile(grid_areas,
                                      [cube_shape[0], 1, 1])
+            else:
+                raise ValueError('Grid and dataset number of dimensions not '
+                                 'recognised: {} and {}.'
+                                 ''.format(cube.data.ndim, grid_areas.ndim))
     return grid_areas
 
 
@@ -228,7 +232,7 @@ def average_region(cube, coord1, coord2, operator='mean', fx_files=None):
                      'cell area for irregular grids.')
         raise iris.exceptions.CoordinateMultiDimError(cube.coord('latitude'))
 
-    if not len(grid_areas):
+    if not grid_areas.any():
         cube = _guess_bounds(cube, [coord1, coord2])
         grid_areas = iris.analysis.cartography.area_weights(cube)
         logger.info('Calculated grid area:{}'.format(grid_areas.shape))
