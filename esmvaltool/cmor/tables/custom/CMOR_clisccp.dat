@@ -1,0 +1,21 @@
+SOURCE: CMIP5
+!============
+variable_entry:    clisccp
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     
+units:             %
+cell_methods:      time: mean
+cell_measures:     area: areacella
+long_name:         ISCCP Cloud Area Fraction
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude plevs tau time
+out_name:          clisccp
+type:              real
+!----------------------------------
+!

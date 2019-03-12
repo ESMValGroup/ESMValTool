@@ -11,12 +11,13 @@ documentation:
 
   maintainer:
     - laue_ax
-    
+
   references:
     - lauer13jclim
 
   projects:
     - esmval
+    - embrace
 
 datasets:
   - {dataset: ACCESS1-0, project: CMIP5, exp: historical, ensemble: r1i1p1,
@@ -127,6 +128,10 @@ diagnostics:
 
   clouds_fig1_lwp:
     description: climatological annual means
+    themes:
+      - clouds
+    realms:
+      - atmos
     variables:
       lwp:
         preprocessor: clim
@@ -153,6 +158,10 @@ diagnostics:
 
   clouds_fig1_clt:
     description: climatological annual means
+    themes:
+      - clouds
+    realms:
+      - atmos
     variables:
       clt:
         preprocessor: clim
@@ -168,6 +177,10 @@ diagnostics:
 
   clouds_fig1_pr:
     description: climatological annual means
+    themes:
+      - clouds
+    realms:
+      - atmos
     variables:
       pr:
         preprocessor: clim
@@ -183,6 +196,11 @@ diagnostics:
 
   clouds_fig1_swcre:
     description: climatological annual means
+    themes:
+      - clouds
+      - phys
+    realms:
+      - atmos
     variables:
       swcre:
         preprocessor: clim
@@ -199,6 +217,11 @@ diagnostics:
 
   clouds_fig1_lwcre:
     description: climatological annual means
+    themes:
+      - clouds
+      - phys
+    realms:
+      - atmos
     variables:
       lwcre:
         preprocessor: clim
@@ -220,6 +243,10 @@ diagnostics:
 
   clouds_fig3_clt:
     description: climatological annual means
+    themes:
+      - clouds
+    realms:
+      - atmos
     variables:
       clt:
         preprocessor: clim
@@ -272,6 +299,11 @@ diagnostics:
 
   clouds_fig3_lwp:
     description: climatological annual means
+    themes:
+      - clouds
+      - phys
+    realms:
+      - atmos
     variables:
       lwp:
         preprocessor: clim
@@ -288,6 +320,11 @@ diagnostics:
 
   clouds_fig3_swcre:
     description: climatological annual means
+    themes:
+      - clouds
+      - phys
+    realms:
+      - atmos
     variables:
       swcre:
         preprocessor: clim
@@ -304,6 +341,11 @@ diagnostics:
 
   clouds_fig3_lwcre:
     description: climatological annual means
+    themes:
+      - clouds
+      - phys
+    realms:
+      - atmos
     variables:
       lwcre:
         preprocessor: clim
@@ -320,6 +362,10 @@ diagnostics:
 
   clouds_fig3_pr:
     description: climatological annual means
+    themes:
+      - clouds
+    realms:
+      - atmos
     variables:
       pr:
         preprocessor: clim
@@ -342,6 +388,10 @@ diagnostics:
 
   clouds_fig8_lwp:
     description: interannual variability
+    themes:
+      - clouds
+    realms:
+      - atmos
     variables:
       lwp:
         preprocessor: clim
@@ -375,6 +425,10 @@ diagnostics:
 
   clouds_fig8_clt:
     description: interannual variability
+    themes:
+      - clouds
+    realms:
+      - atmos
     variables:
       clt:
         preprocessor: clim
@@ -390,6 +444,11 @@ diagnostics:
 
   clouds_fig8_swcre:
     description: interannual variability
+    themes:
+      - clouds
+      - phys
+    realms:
+      - atmos
     variables:
       swcre:
         preprocessor: clim
@@ -406,6 +465,11 @@ diagnostics:
 
   clouds_fig8_lwcre:
     description: interannual variability
+    themes:
+      - clouds
+      - phys
+    realms:
+      - atmos
     variables:
       lwcre:
         preprocessor: clim
@@ -422,6 +486,10 @@ diagnostics:
 
   clouds_fig8_pr:
     description: interannual variability
+    themes:
+      - clouds
+    realms:
+      - atmos
     variables:
       pr:
         preprocessor: clim

@@ -12,6 +12,9 @@ documentation:
   authors:
     - demo_le
 
+  maintainer:
+    - demo_le
+
   references:
     - demora2018gmd
 
@@ -56,7 +59,6 @@ preprocessors:
     average_volume:
       coord1: longitude
       coord2: latitude
-      coordz: depth
     multi_model_statistics:
       span: overlap
       statistics: [mean ]
@@ -132,7 +134,6 @@ preprocessors:
 #   # 2D map global depth integration
 #   prep_depth_integration:
 #     depth_integration:
-#       coordz: depth
 # #      new_units: kg m-2 # need to specify in advance, as cf_units has strange behaviour.
 #     time_average:
 #
@@ -140,7 +141,6 @@ preprocessors:
 #   prep_depth_integration_timeseries:
 #     custom_order: true
 #     depth_integration:
-#       coordz: depth
 #     average_region:
 #       coord1: longitude
 #       coord2: latitude
@@ -203,8 +203,7 @@ diagnostics:
     #     mip: Oyr
     #    fx_files: [volcello,]
     additional_datasets:
-      # https://data.nodc.noaa.gov/woa/WOA13/DATAv2/
-        - {dataset: WOA,  project: obs4mips,  level: L3,  version: clim,  tier: 3, start_year: 2000,  end_year: 2000}
+      - {dataset: WOA,  project: OBS,  type: clim,  version: 2013v2,  start_year: 2000,  end_year: 2000,  tier: 2}
     scripts:
       Global_Volume_Average_timeseries:
         script: ocean/diagnostic_timeseries.py
@@ -292,12 +291,12 @@ diagnostics:
     variables:
       thetao: # Temperature ocean surface
         preprocessor: prep_global_Surface_average_timeseries_3D
-        field: TO2M
+        field: TO3M
         mip: Omon
         fx_files: [areacello, ]
       so: # Salinity ocean surface
         preprocessor: prep_global_Surface_average_timeseries_3D
-        field: TO2M
+        field: TO3M
         mip: Omon
         fx_files: [areacello, ]
       no3: # Nitrate ocean surface
@@ -321,12 +320,11 @@ diagnostics:
     #     mip: Oyr
     #    fx_files: [areacello, ]
     additional_datasets:
-      # https://data.nodc.noaa.gov/woa/WOA13/DATAv2/
-      - {dataset: WOA,  project: obs4mips,  level: L3,  version: clim,  tier: 3, start_year: 2000,  end_year: 2000,}
+      - {dataset: WOA,  project: OBS,  type: clim,  version: 2013v2,  start_year: 2000,  end_year: 2000,  tier: 2}
     scripts:
       Global_Volume_Average_timeseries:
         script: ocean/diagnostic_timeseries.py
-        observational_dataset: {dataset: WOA, project: obs4mips,}
+        observational_dataset: {dataset: WOA, project: OBS}
 
 
   # --------------------------------------------------
@@ -352,12 +350,12 @@ diagnostics:
     variables:
       thetao: # Temperature ocean surface
         preprocessor: prep_global_profile
-        field: TO2M
+        field: TO3M
         mip: Omon
         fx_files: [volcello,]
       so: # Salinity ocean surface
         preprocessor: prep_global_profile
-        field: TO2M
+        field: TO3M
         mip: Omon
         fx_files: [volcello,]
       no3: # Nitrate ocean surface
@@ -381,12 +379,11 @@ diagnostics:
     #     mip: Oyr
     #    fx_files: [volcello,]
     additional_datasets:
-      # https://data.nodc.noaa.gov/woa/WOA13/DATAv2/
-      - {dataset: WOA,  project: obs4mips,  level: L3,  version: clim,  tier: 3, start_year: 2000,  end_year: 2000,}
+      - {dataset: WOA,  project: OBS,  type: clim,  version: 2013v2,  start_year: 2000,  end_year: 2000,  tier: 2}
     scripts:
       Global_profile_vs_WOA:
         script: ocean/diagnostic_profiles.py
-        observational_dataset: {dataset: WOA, project: obs4mips,}
+        observational_dataset: {dataset: WOA, project: OBS}
 
   # --------------------------------------------------
   # Profile diagnostics - no data
@@ -427,12 +424,12 @@ diagnostics:
     variables:
       thetao:
         preprocessor: prep_surface_map_regrid_3D
-        field: TO2M
+        field: TO3M
         mip: Omon
         fx_files: [areacello, ]
       so:
         preprocessor: prep_surface_map_regrid_3D
-        field: TO2M
+        field: TO3M
         mip: Omon
         fx_files: [areacello, ]
       no3:
@@ -456,14 +453,13 @@ diagnostics:
     #     mip: Oyr
     #    fx_files: [areacello, ]
     additional_datasets:
-      # https://data.nodc.noaa.gov/woa/WOA13/DATAv2/
-      - {dataset: WOA,  project: obs4mips,  level: L3,  version: clim,  tier: 3, start_year: 2000,  end_year: 2000,}
+      - {dataset: WOA,  project: OBS,  type: clim,  version: 2013v2,  start_year: 2000,  end_year: 2000,  tier: 2}
     scripts:
       Global_Ocean_surface_map:
         script: ocean/diagnostic_maps.py
       Global_Ocean_model_vs_obs:
         script: ocean/diagnostic_model_vs_obs.py
-        observational_dataset: {dataset: WOA, project: obs4mips,}
+        observational_dataset: {dataset: WOA, project: OBS}
 
   # --------------------------------------------------
   # Map diagnostics - no data
@@ -513,12 +509,12 @@ diagnostics:
     variables:
       thetao:
         preprocessor: prep_transect_AMT
-        field: TO2M
+        field: TO3M
         mip: Omon
         thresholds: [0., 5., 10., 15., 20., 25., 30.]
       so:
         preprocessor: prep_transect_AMT
-        field: TO2M
+        field: TO3M
         mip: Omon
       no3:
         preprocessor: prep_transect_AMT
@@ -539,12 +535,11 @@ diagnostics:
     #     field: TO3Y
     #     mip: Oyr
     additional_datasets:
-      # https://data.nodc.noaa.gov/woa/WOA13/DATAv2/
-      - {dataset: WOA,  project: obs4mips,  level: L3,  version: clim,  tier: 3, start_year: 2000,  end_year: 2000,}
+      - {dataset: WOA,  project: OBS,  type: clim,  version: 2013v2,  start_year: 2000,  end_year: 2000,  tier: 2}
     scripts:
       Transects_vs_WOA:
         script: ocean/diagnostic_transects.py
-        # observational_dataset: {dataset: WOA, project: obs4mips,}
+        # observational_dataset: {dataset: WOA, project: OBS}
 
   # # --------------------------------------------------
   # # Map diagnostics - no data
