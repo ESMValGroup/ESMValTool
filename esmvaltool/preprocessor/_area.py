@@ -31,7 +31,7 @@ def extract_region(cube, start_longitude, end_longitude, start_latitude,
 
     Function that subsets a cube on a box (start_longitude, end_longitude,
     start_latitude, end_latitude)
-    This function is a restriction of masked_cube_lonlat();
+    This function is a restriction of masked_cube_lonlat().
 
     Arguments
     ---------
@@ -140,8 +140,30 @@ def average_region(cube, coord1, coord2, operator='mean', fx_files=None):
     """
     Determine the area average.
 
-    Can be used with coord1 and coord2 (strings,
-    usually 'longitude' and 'latitude' but depends on the cube);
+    The average in the horizontal direction requires the coord1 and coord2
+    arguments. These strings are usually 'longitude' and 'latitude' but
+    may depends on the cube.
+
+    While this function is named `average_region`, it can be used to apply
+    several different operations in the horizonal plane: mean, standard
+    deviation, median variance, minimum and maximum. These options are
+    specified using the `operator` argument and the following key word
+    arguments:
+
+    +------------+--------------------------------------------------+
+    | `mean`     | Area weighted mean.                              |
+    +------------+--------------------------------------------------+
+    | `median`   | Median (not area weighted)                       |
+    +------------+--------------------------------------------------+
+    | `std_dev`  | Standard Deviation (not area weighted)           |
+    +------------+--------------------------------------------------+
+    | `variance` | Variance (not area weighted)                     |
+    +------------+--------------------------------------------------+
+    | `min`:     | Minimum value                                    |
+    +------------+--------------------------------------------------+
+    | `max`      | Maximum value                                    |
+    +------------+--------------------------------------------------+
+
 
     Arguments
     ---------
@@ -184,8 +206,8 @@ def average_region(cube, coord1, coord2, operator='mean', fx_files=None):
                                      [cube_shape[0], 1, 1])
 
     if not fx_files and cube.coord('latitude').points.ndim == 2:
-        logger.error('average_region ERROR: fx_file needed to calculate grid'
-                     + ' cell area for irregular grids.')
+        logger.error('average_region ERROR: fx_file needed to calculate grid '
+                     'cell area for irregular grids.')
         raise iris.exceptions.CoordinateMultiDimError(cube.coord('latitude'))
 
     if not grid_areas_found:
