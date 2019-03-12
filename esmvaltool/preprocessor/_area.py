@@ -135,6 +135,44 @@ def zonal_means(cube, coordinate, mean_type):
     return cube.collapsed(coordinate, operation)
 
 
+def tile_grid_areas(cube, fx_files):
+    """
+    Tiles the grid area to match the
+
+    Arguments
+    ---------
+        cube: iris.cube.Cube
+            input cube.
+        fx_files: dictionary
+            dictionary of field:filename for the fx_files
+
+    Returns
+    -------
+    iris.cube.Cube
+        Freshly tiled grid areas cube.
+    """
+    grid_areas = np.empty(0)
+    if fx_files:
+        for key, fx_file in fx_files.items():
+            if fx_file is None:
+                continue
+            logger.info('Attempting to load %s from file: %s', key, fx_file)
+            fx_cube = iris.load_cube(fx_file)
+
+            grid_areas = fx_cube.data
+            cube_shape = cube.data.shape
+            if cube.data.ndim == 4 and grid_areas.ndim == 2:
+                grid_areas = np.tile(grid_areas,
+                                     [cube_shape[0], cube_shape[1], 1, 1])
+            elif cube.data.ndim == 4 and grid_areas.ndim == 3:
+                grid_areas = np.tile(grid_areas,
+                                     [cube_shape[0], 1, 1, 1])
+            elif cube.data.ndim == 3 and grid_areas.ndim == 2:
+                grid_areas = np.tile(grid_areas,
+                                     [cube_shape[0], 1, 1])
+    return grid_areas
+
+
 # get the area average
 def average_region(cube, coord1, coord2, operator='mean', fx_files=None):
     """
@@ -183,34 +221,14 @@ def average_region(cube, coord1, coord2, operator='mean', fx_files=None):
     iris.cube.Cube
         collapsed cube.
     """
-    grid_areas_found = False
-    grid_areas = None
-    if fx_files:
-        for key, fx_file in fx_files.items():
-            if fx_file is None:
-                continue
-            logger.info('Attempting to load %s from file: %s', key, fx_file)
-            fx_cube = iris.load_cube(fx_file)
-
-            grid_areas = fx_cube.data
-            grid_areas_found = True
-            cube_shape = cube.data.shape
-            if cube.data.ndim == 4 and grid_areas.ndim == 2:
-                grid_areas = np.tile(grid_areas,
-                                     [cube_shape[0], cube_shape[1], 1, 1])
-            elif cube.data.ndim == 4 and grid_areas.ndim == 3:
-                grid_areas = np.tile(grid_areas,
-                                     [cube_shape[0], 1, 1, 1])
-            elif cube.data.ndim == 3 and grid_areas.ndim == 2:
-                grid_areas = np.tile(grid_areas,
-                                     [cube_shape[0], 1, 1])
+    grid_areas = tile_grid_areas(cube, fx_files)
 
     if not fx_files and cube.coord('latitude').points.ndim == 2:
         logger.error('average_region ERROR: fx_file needed to calculate grid '
                      'cell area for irregular grids.')
         raise iris.exceptions.CoordinateMultiDimError(cube.coord('latitude'))
 
-    if not grid_areas_found:
+    if not len(grid_areas):
         cube = _guess_bounds(cube, [coord1, coord2])
         grid_areas = iris.analysis.cartography.area_weights(cube)
         logger.info('Calculated grid area:{}'.format(grid_areas.shape))
