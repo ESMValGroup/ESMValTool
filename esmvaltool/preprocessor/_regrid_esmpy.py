@@ -178,7 +178,7 @@ def build_regridder_2d(src_rep, dst_rep, regrid_method, mask_threshold):
 
     def regridder(src):
         """Regrid 2d for irregular grids."""
-        res = get_empty_data(dst_rep.shape)
+        res = get_empty_data(dst_rep.shape, src.dtype)
         data = src.data
         if np.ma.is_masked(data):
             data = data.data
@@ -205,7 +205,7 @@ def build_regridder_3d(src_rep, dst_rep, regrid_method, mask_threshold):
 
     def regridder(src):
         """Regrid 2.5d for irregular grids."""
-        res = get_empty_data(dst_rep.shape)
+        res = get_empty_data(dst_rep.shape, src.dtype)
         for i, esmf_regridder in enumerate(esmf_regridders):
             res[i, ...] = esmf_regridder(src[i])
         return res
@@ -228,14 +228,21 @@ def build_regridder(src_rep, dst_rep, method, mask_threshold=.99):
 def get_grid_representant(cube, horizontal_only=False):
     """Extract the spatial grid from a cube."""
     horizontal_slice = ['latitude', 'longitude']
-    if horizontal_only:
-        ref_to_slice = horizontal_slice
-    else:
+    ref_to_slice = horizontal_slice
+    if not horizontal_only:
         try:
             cube_z_coord = cube.coord(axis='Z')
-            ref_to_slice = [cube_z_coord] + horizontal_slice
+            n_zdims = len(cube.coord_dims(cube_z_coord))
+            if n_zdims == 0:
+                # scalar z coordinate, go on with 2d regridding
+                pass
+            elif n_zdims == 1:
+                ref_to_slice = [cube_z_coord] + horizontal_slice
+            else:
+                raise ValueError("Cube has multidimensional Z coordinate.")
         except iris.exceptions.CoordinateNotFoundError:
-            ref_to_slice = horizontal_slice
+            # no z coordinate, go on with 2d regridding
+            pass
     return get_representant(cube, ref_to_slice)
 
 
@@ -271,7 +278,7 @@ def get_grid_representants(src, dst):
     dim_coords += dst_horiz_rep.coords(dim_coords=True)
     dim_coords_and_dims = [(c, i) for i, c in enumerate(dim_coords)]
     dst_rep = iris.cube.Cube(
-        data=get_empty_data(dst_shape),
+        data=get_empty_data(dst_shape, src.dtype),
         standard_name=src.standard_name,
         long_name=src.long_name,
         var_name=src.var_name,

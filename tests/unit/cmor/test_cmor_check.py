@@ -2,6 +2,7 @@
 
 import sys
 import unittest
+from io import StringIO
 
 import iris
 import iris.coord_categorisation
@@ -112,10 +113,6 @@ class TestCMORCheck(unittest.TestCase):
 
     def test_warning_fail_on_error(self):
         """Test report warning function with fail_on_error"""
-        if sys.version_info[0] == 2:
-            from StringIO import StringIO
-        else:
-            from io import StringIO
         checker = CMORCheck(self.cube, self.var_info, fail_on_error=True)
         stdout = sys.stdout
         sys.stdout = StringIO()
@@ -130,9 +127,10 @@ class TestCMORCheck(unittest.TestCase):
 
     def _check_cube(self, automatic_fixes=False, frequency=None):
         checker = CMORCheck(
-            self.cube, self.var_info,
-            automatic_fixes=automatic_fixes, frequency=frequency
-        )
+            self.cube,
+            self.var_info,
+            automatic_fixes=automatic_fixes,
+            frequency=frequency)
         checker.check_metadata()
         checker.check_data()
 
@@ -201,8 +199,7 @@ class TestCMORCheck(unittest.TestCase):
     def test_rank_with_scalar_coords(self):
         """Check succeeds even if a required coordinate is a scalar coord"""
         self.cube = self.cube.extract(
-            iris.Constraint(time=self.cube.coord('time').points[0])
-        )
+            iris.Constraint(time=self.cube.coord('time').cell(0)))
         self._check_cube()
 
     def test_rank_unestructured_grid(self):
@@ -272,8 +269,8 @@ class TestCMORCheck(unittest.TestCase):
         cube_points = self.cube.coord('latitude').points
         reference = numpy.linspace(90, -90, 20, endpoint=True)
         for index in range(20):
-            self.assertTrue(iris.util.approx_equal(cube_points[index],
-                                                   reference[index]))
+            self.assertTrue(
+                iris.util.approx_equal(cube_points[index], reference[index]))
 
     def test_not_correct_lons(self):
         """Fail if longitudes are not correct in metadata step"""
@@ -344,8 +341,7 @@ class TestCMORCheck(unittest.TestCase):
         self._check_cube()
         self.assertEquals(
             self.cube.coord('time').units.origin,
-            'days since 1950-1-1 00:00:00'
-        )
+            'days since 1950-1-1 00:00:00')
 
     def test_time_automatic_fix_failed(self):
         """Test automatic fix fail for incompatible time units"""

@@ -11,7 +11,7 @@ documentation:
     - demo_le
 
   maintainer:
-    - schl_ma
+    - demo_le
 
   references:
     - demora2018gmd
@@ -108,7 +108,6 @@ preprocessors:
     average_volume:
       coord1: longitude
       coord2: latitude
-      coordz: depth
     multi_model_statistics:
       span: overlap
       statistics: [mean ]
@@ -123,7 +122,6 @@ preprocessors:
     average_volume:
       coord1: longitude
       coord2: latitude
-      coordz: depth
     multi_model_statistics:
       span: overlap
       statistics: [mean ]
@@ -141,7 +139,6 @@ preprocessors:
     average_volume:
       coord1: longitude
       coord2: latitude
-      coordz: depth
     multi_model_statistics:
       span: overlap
       statistics: [mean ]
@@ -258,7 +255,6 @@ preprocessors:
   # --------------------------------------------------
   prep_depth_integration_1: # For a 2D map global profile
     depth_integration:
-      coordz: depth
     time_average:
 
 
