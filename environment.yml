@@ -20,10 +20,11 @@ dependencies:
   # Non-Python dependencies
   - graphviz
   - cdo
+  # - gtk2=2.24.31=hde048ef_0 # works with r-base=3.5.1=he45234b_1005
 
   # Multi language support:
-  - ncl
+  - ncl  # doesn't work with gtk for ncl<6.6 and r-base for ncl>=6.6
   - jasper!=1.900.31  # pinned NCL dependency
-  # - r-base conflicts with ncl>=6.5.0; need to find alternative
+   # - r-base=3.5.1=he45234b_1005  # works with gtk2=2.24.31=hde048ef_0
   - libunwind  # Needed for Python3.7+
   # TODO: add julia
