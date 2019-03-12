@@ -204,7 +204,7 @@ def annual_mean(cube, decadal=False):
         cube: iris.cube.Cube
             input cube.
         decadal: bool
-            Annual average (:obj:`True`) or decadal average (:obj:`False`) switch
+            Annual average (:obj:`True`) or decadal average (:obj:`False`)
     Returns
     -------
     iris.cube.Cube
