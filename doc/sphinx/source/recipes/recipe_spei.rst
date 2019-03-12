@@ -48,8 +48,8 @@ User settings
 Variables
 ---------
 
-* pr      (atmos, daily mean, time latitude longitude)
-* tas     (atmos, daily mean, time latitude longitude)
+* pr      (atmos, monthly mean, time latitude longitude)
+* tas     (atmos, monthly mean, time latitude longitude)
 
 
 References
