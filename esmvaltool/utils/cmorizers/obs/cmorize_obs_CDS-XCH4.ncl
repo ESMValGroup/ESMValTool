@@ -84,15 +84,6 @@ begin
     idx = ind(date(:, 0).ge.YEAR1 .and. date(:, 0).le.YEAR2)
     output := output(idx, :, :)
 
-    ;; fix the longitude
-    ;if (any(OUTPUT&lon.lt.0.)) then
-    ;  OUTPUT = lonFlip(OUTPUT)
-    ;end if
-    ;clon = lon_attrib(OUTPUT&lon)
-    ;delete(OUTPUT&lon)
-    ;OUTPUT&lon = clon
-    ;delete(clon)
-    
     ; Format coordinates
     output!0 = "time"
     output!1 = "lat"
