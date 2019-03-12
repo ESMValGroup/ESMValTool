@@ -29,8 +29,8 @@ REQUIREMENTS = {
     'install': [
         'cartopy',
         'cdo',
-        'cf_units',
-        'cython',
+        'cf_units==2.0.2',  # latest 2.1.1 but fails at install
+        'Cython',
         'eofs',
         'fiona',
         'matplotlib<3',
