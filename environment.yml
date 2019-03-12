@@ -1,10 +1,9 @@
 ---
-# Notes on ncl-cdo-R packages relation for future releases:
-# cdo=1.9.6 works only with ncl=6.6.2 but that
+# Notes on ncl-cdo-R packages relation: cdo=1.9.6
 # implies the use of R packages from the r channel
 # and those packages are R=3.2.2 << 3.5.1 and are
-# obsolete (installing ncl=6.6.2 automatically removes
-# the conda-forge-installed R (3.5.1) packages
+# obsolete (installing ncl=6.5.0/6.6.2 automatically
+# removes the conda-forge-installed R (3.5.1) packages.
 
 name: esmvaltool
 channels:
@@ -12,7 +11,8 @@ channels:
 
 dependencies:
   # Python packages that cannot be installed from PyPI:
-  - iris
+  - gxx_linux-64  # needed for conda compilations
+  - pyke  # needed by iris
   - matplotlib<3  # Can be installed from PyPI, but is a dependency of iris and should be pinned.
   - python-stratify
   - esmpy
@@ -22,8 +22,8 @@ dependencies:
   - cdo
 
   # Multi language support:
-  - ncl=6.4.0
+  - ncl=6.5.0  # Pinned for now
   - jasper!=1.900.31  # pinned NCL dependency
-  - r-base=3.4.1
+  # - r-base conflicts with ncl>=6.5.0; need to find alternative
   - libunwind  # Needed for Python3.7+
   # TODO: add julia
