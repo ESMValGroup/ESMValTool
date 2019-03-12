@@ -1,5 +1,5 @@
 ; #############################################################################
-; ESMValTool CMORizer for HadISST data
+; ESMValTool CMORizer for ESACCI XCH4 data (available on the CDS)
 ; #############################################################################
 ;
 ; Tier
