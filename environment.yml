@@ -1,4 +1,10 @@
 ---
+# Notes on ncl-cdo-R packages relation for future releases:
+# cdo=1.9.6 works only with ncl=6.6.2 but that
+# implies the use of R packages from the r channel
+# and those packages are R=3.2.2 << 3.5.1 and are
+# obsolete (installing ncl=6.6.2 automatically removes
+# the conda-forge-installed R (3.5.1) packages
 
 name: esmvaltool
 channels:
@@ -17,8 +23,8 @@ dependencies:
   - hdf5=1.10.3  # Pinned to help conda resolve the ncl/cdo combination
 
   # Multi language support:
-  - ncl
+  - ncl=6.5.0
   - jasper!=1.900.31  # pinned NCL dependency
   - r-base
-  - libunwind  #  specifically for Python3.7+
+  - libunwind  # Needed for Python3.7+
   # TODO: add julia

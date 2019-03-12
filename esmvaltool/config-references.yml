@@ -600,7 +600,6 @@ projects:
   qa4ecv: QA4ECV
   c3s-magic: Copernicus Climate Change Service 34a Lot 2 (MAGIC) project
   ukesm: UKESM, UK Earth System Model project (NERC)
-  c3s-magic: C3S project MAGIC (34a Lot 2)
 
 realms:
   aerosol: aerosol
