@@ -9,7 +9,6 @@
 name: esmvaltool
 channels:
   - conda-forge
-  # - r
 
 dependencies:
   # Python packages that cannot be installed from PyPI:
@@ -21,10 +20,9 @@ dependencies:
   # Non-Python dependencies
   - graphviz
   - cdo
-  #- hdf5=1.10.4  # Pinned to help conda resolve the ncl/cdo combination
 
   # Multi language support:
-  - ncl=6.4.0
+  - ncl=6.5.0
   - jasper!=1.900.31  # pinned NCL dependency
   - r-base=3.4.1
   - libunwind  # Needed for Python3.7+
