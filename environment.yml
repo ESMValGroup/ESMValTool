@@ -22,7 +22,7 @@ dependencies:
   - cdo
 
   # Multi language support:
-  - ncl=6.5.0
+  - ncl=6.4.0
   - jasper!=1.900.31  # pinned NCL dependency
   - r-base=3.4.1
   - libunwind  # Needed for Python3.7+
