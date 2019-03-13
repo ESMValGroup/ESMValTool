@@ -71,7 +71,7 @@ requirements:
     # Multi language support:
     - ncl
     - jasper!=1.900.31  # pinned NCL dependency
-    # - r-base
+    # - r-base  # not working with ncl-gtk2
     - cdo
     - hdf5
     # TODO: add julia
