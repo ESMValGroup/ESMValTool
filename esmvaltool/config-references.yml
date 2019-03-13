@@ -55,6 +55,10 @@ authors:
     name: Vegas-Regidor, Javier
     institute: BSC, Spain
     email: javier.vegas 'at' bsc.es
+  zimm_kl:
+    name: Zimmermann, Klaus
+    institute: SMHI, Sweden
+    email: klaus.zimmermann 'at' smhi.se
   # Development team
   anav_al:
     name: Anav, Alessandro
