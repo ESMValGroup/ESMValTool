@@ -16,10 +16,13 @@
 # (it fails); the upgrade from poppler=0.67.0 -> 0.71.0 removes ncl
 # no questions asked and a further installation of ncl>=6.5.0 will
 # remove r-base no questions asked. Absolute FUBAR!
+#
+# SOLVED BY conda-forge freeze at cf201901 (this is working but for
+# how long?); see explanation at https://github.com/NCAR/ncl/issues/87
 
 name: esmvaltool
 channels:
-  - conda-forge
+  - conda-forge/label/cf201901
 
 dependencies:
   # Python packages that cannot be installed from PyPI:
@@ -35,6 +38,7 @@ dependencies:
 
   # Multi language support:
   - ncl  # must be >=6.5.0
+  - r-base
   - jasper!=1.900.31  # pinned NCL dependency
   - libunwind  # Needed for Python3.7+
   # TODO: add julia
