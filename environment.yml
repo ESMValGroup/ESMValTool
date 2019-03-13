@@ -1,16 +1,20 @@
 ---
-# as of 12 March 2019 cdo=1.9.6 and ncl=6.6.2 (latest versions
-# for each) are working well; installing ncl(>=6.5.0) will
-# automatically remove r-base (>=3.4.x) beacuse gtk2=2.24.31
+# Environment solvability 13 March 2019
+
+# cdo=1.9.6 and ncl=6.6.2 (latest versions
+# for each) are working well;
+
+# installing ncl(>=6.5.0) will
+# automatically remove r-base (>=3.4.x) becuse gtk2=2.24.31
 # and ncl are in conflict with r-base; compatibility between gtk2
-# and r-base is limited to only gtk2=2.24.31=hde048ef_0 and
-# r-base=3.5.1=he45234b_1005 but that gtk2 hash has conflict with
-# all ncl versions because of *[track_features=blas_openblas].
+# and r-base is limited to only gtk2=2.24.31=hde048ef_0/h5baeb44_1000
+# and r-base=3.5.1=he45234b_1005 but those gtk2 hashes have conflicts
+# either ncl=(6.5.0, 6.6.2) versions.
 #
-# Lst working ncl-r-base compatibility: ncl=6.4.0/r-base=3.4.1
+# Last working ncl+r-base compatibility: ncl=6.4.0/r-base=3.4.1
 # DO NOT use ncl=6.4.0 since the executable needs poppler=0.71.0
 # (it fails); the upgrade from poppler=0.67.0 -> 0.71.0 removes ncl
-# no questions asked and afurther installation of ncls>=6.5.0 will
+# no questions asked and a further installation of ncl>=6.5.0 will
 # remove r-base no questions asked. Absolute FUBAR!
 
 name: esmvaltool
@@ -30,7 +34,7 @@ dependencies:
   - cdo
 
   # Multi language support:
-  - ncl
+  - ncl  # must be >=6.5.0
   - jasper!=1.900.31  # pinned NCL dependency
   - libunwind  # Needed for Python3.7+
   # TODO: add julia
