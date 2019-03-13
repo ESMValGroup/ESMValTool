@@ -368,6 +368,18 @@ diagnostics:
     scripts: null
 
 
+  CDS-XCH4:
+    description: CDS-XCH4
+    variables:
+      xch4:
+        preproc: nopp
+        mip: Amon
+        field: T2Ms
+    additional_datasets:
+      - {dataset: CDS-XCH4, project: OBS, tier: 3, type: sat, version: L3, start_year: 2003, end_year: 2016}
+    scripts: null
+
+
   CERES_mon:
     description: CERES-SYN1deg monthly data
     variables:
