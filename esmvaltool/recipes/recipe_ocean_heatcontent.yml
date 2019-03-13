@@ -22,7 +22,7 @@ documentation:
 
 datasets:
   # working datasets
-  # - {dataset: CanESM2, project: CMIP5, ensemble: r1i1p1}
+#  - {dataset: CanESM2, project: CMIP5, ensemble: r1i1p1}
   # - {dataset: GISS-E2-H, project: CMIP5, ensemble: r1i1p1}
   # - {dataset: HadGEM2-AO, project: CMIP5, ensemble: r1i1p1}
   # - {dataset: HadCM3, project: CMIP5, ensemble: r1i1p1}
@@ -32,7 +32,7 @@ datasets:
   - {dataset: HadGEM2-ES, project: CMIP5, exp: historical, ensemble: r1i1p1}
 #  - {dataset: HadGEM2-ES, project: CMIP5, exp: piControl, ensemble: r1i1p1}
   - {dataset: IPSL-CM5A-LR, project: CMIP5, exp: historical, ensemble: r1i1p1}
-#  - {dataset: IPSL-CM5A-LR, project: CMIP5, exp: piControl, ensemble: r1i1p1}
+  - {dataset: IPSL-CM5A-LR, project: CMIP5, exp: piControl, ensemble: r1i1p1}
   
   # CMIP6 datasets (Feb 2019: not present on JASMIN)
   # - {dataset: CNRM-CM6-1, project: CMIP6, exp: historical, ensemble: r1i1p1}
@@ -68,9 +68,9 @@ preprocessors:
 #      scheme: nearest
 #    time_average:
 #
-#    extract_volume:
-#      z_min: 0
-#      z_max: 700
+    extract_volume:
+      z_min: 700.
+      z_max: 0.
 #    average_volume:
 #      coordz: depth
 #      coord1: longitude

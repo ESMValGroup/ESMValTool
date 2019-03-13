@@ -259,8 +259,8 @@ def multi_model_time_series(
     
     # Writing files: 
     if cfg['write_netcdf']:
-        # suitable code to go here
-        pass
+        path = cfg['work_dir']
+        iris.save(cube,path+'/file.nc')
             
     # Resize and add legend outside the axes.
     plt.gcf().set_size_inches(9., 6.)
