@@ -55,10 +55,13 @@ jobs:
             # Install
             apt update > /logs/apt.txt 2>&1
             apt -y install build-essential gfortran >> /logs/apt.txt 2>&1
+            apt -y install r-base >> /logs/apt.txt 2>&1
             conda update -y conda > /logs/conda.txt 2>&1
             conda env update >> /logs/conda.txt 2>&1
             set +x; conda activate esmvaltool; set -x
             pip install . > /logs/install.txt 2>&1
+            R --version
+            Rscript --version
             Rscript ./esmvaltool/install/R/setup.R > /logs/R_install.txt 2>&1
             # Log versions
             dpkg -l > /logs/versions.txt
@@ -100,10 +103,13 @@ jobs:
             # Install
             apt update > /logs/apt.txt 2>&1
             apt -y install build-essential gfortran >> /logs/apt.txt 2>&1
+            apt -y install r-base >> /logs/apt.txt 2>&1
             conda update -y conda > /logs/conda.txt 2>&1
             conda env update >> /logs/conda.txt 2>&1
             set +x; conda activate esmvaltool; set -x
             pip install -e .[develop] > /logs/install.txt 2>&1
+            R --version
+            Rscript --version
             Rscript ./esmvaltool/install/R/setup.R > /logs/R_install.txt 2>&1
             # Log versions
             dpkg -l > /logs/versions.txt
@@ -132,6 +138,7 @@ jobs:
             # Install
             apt update > /logs/apt.txt 2>&1
             apt -y install build-essential gfortran >> /logs/apt.txt 2>&1
+            apt -y install r-base >> /logs/apt.txt 2>&1
             conda update -y conda > /logs/conda.txt 2>&1
             conda env update >> /logs/conda.txt 2>&1
             set +x; conda activate esmvaltool; set -x
@@ -160,6 +167,7 @@ jobs:
             mkdir /logs
             apt update > /logs/apt.txt 2>&1
             apt -y install build-essential gfortran >> /logs/apt.txt 2>&1
+            apt -y install r-base >> /logs/apt.txt 2>&1
             conda update -y conda > /logs/conda_base.txt 2>&1
             conda install -y conda-build conda-verify >> /logs/conda_base.txt 2>&1
             # Log versions
@@ -190,6 +198,7 @@ jobs:
             mkdir /logs
             apt update > /logs/apt.txt 2>&1
             apt -y install build-essential gfortran >> /logs/apt.txt 2>&1
+            apt -y install r-base >> /logs/apt.txt 2>&1
             conda update -y conda > /logs/conda.txt 2>&1
             # Create and activate conda environment
             conda create -y --name esmvaltool
@@ -199,6 +208,8 @@ jobs:
             # Log versions
             conda env export > /logs/environment.yml
             # Test installation
+            R --version
+            Rscript --version
             esmvaltool -h
             ncl -V
             cdo --version
@@ -218,6 +229,7 @@ jobs:
             # Install
             apt update > /logs/apt.txt 2>&1
             apt -y install build-essential gfortran >> /logs/apt.txt 2>&1
+            apt -y install r-base >> /logs/apt.txt 2>&1
             conda update -y conda > /logs/conda.txt 2>&1
             conda create -y --name ncl > /logs/conda.txt 2>&1
             set +x; conda activate ncl; set -x
@@ -226,6 +238,8 @@ jobs:
             dpkg -l > /logs/versions.txt
             conda env export > /logs/environment.yml
             # Test if NCL installed successfully
+            R --version
+            Rscript --version
             ncl -V
             cdo --version
       - store_artifacts:
