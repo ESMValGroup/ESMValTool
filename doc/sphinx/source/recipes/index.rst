@@ -14,6 +14,7 @@ Recipes
    recipe_ensclus
    recipe_flato13ipcc
    recipe_heatwaves_coldwaves
+   recipe_landcover
    recipe_miles
    recipe_modes_of_variability
    recipe_multimodel_products
