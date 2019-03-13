@@ -55,7 +55,7 @@ jobs:
             # Install
             apt update > /logs/apt.txt 2>&1
             apt -y install build-essential gfortran >> /logs/apt.txt 2>&1
-            apt -y install r-base >> /logs/apt.txt 2>&1
+            apt -y install r-base r-base-core r-recommended >> /logs/apt.txt 2>&1
             conda update -y conda > /logs/conda.txt 2>&1
             conda env update >> /logs/conda.txt 2>&1
             set +x; conda activate esmvaltool; set -x
@@ -103,7 +103,7 @@ jobs:
             # Install
             apt update > /logs/apt.txt 2>&1
             apt -y install build-essential gfortran >> /logs/apt.txt 2>&1
-            apt -y install r-base >> /logs/apt.txt 2>&1
+            apt -y install r-base r-base-core r-recommended >> /logs/apt.txt 2>&1
             conda update -y conda > /logs/conda.txt 2>&1
             conda env update >> /logs/conda.txt 2>&1
             set +x; conda activate esmvaltool; set -x
@@ -138,7 +138,7 @@ jobs:
             # Install
             apt update > /logs/apt.txt 2>&1
             apt -y install build-essential gfortran >> /logs/apt.txt 2>&1
-            apt -y install r-base >> /logs/apt.txt 2>&1
+            apt -y install r-base r-base-core r-recommended >> /logs/apt.txt 2>&1
             conda update -y conda > /logs/conda.txt 2>&1
             conda env update >> /logs/conda.txt 2>&1
             set +x; conda activate esmvaltool; set -x
@@ -167,7 +167,7 @@ jobs:
             mkdir /logs
             apt update > /logs/apt.txt 2>&1
             apt -y install build-essential gfortran >> /logs/apt.txt 2>&1
-            apt -y install r-base >> /logs/apt.txt 2>&1
+            apt -y install r-base r-base-core r-recommended >> /logs/apt.txt 2>&1
             conda update -y conda > /logs/conda_base.txt 2>&1
             conda install -y conda-build conda-verify >> /logs/conda_base.txt 2>&1
             # Log versions
@@ -198,7 +198,7 @@ jobs:
             mkdir /logs
             apt update > /logs/apt.txt 2>&1
             apt -y install build-essential gfortran >> /logs/apt.txt 2>&1
-            apt -y install r-base >> /logs/apt.txt 2>&1
+            apt -y install r-base r-base-core r-recommended >> /logs/apt.txt 2>&1
             conda update -y conda > /logs/conda.txt 2>&1
             # Create and activate conda environment
             conda create -y --name esmvaltool
@@ -229,7 +229,7 @@ jobs:
             # Install
             apt update > /logs/apt.txt 2>&1
             apt -y install build-essential gfortran >> /logs/apt.txt 2>&1
-            apt -y install r-base >> /logs/apt.txt 2>&1
+            apt -y install r-base r-base-core r-recommended >> /logs/apt.txt 2>&1
             conda update -y conda > /logs/conda.txt 2>&1
             conda create -y --name ncl > /logs/conda.txt 2>&1
             set +x; conda activate ncl; set -x
