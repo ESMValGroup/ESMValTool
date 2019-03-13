@@ -47,6 +47,7 @@ requirements:
     - cython
     - eofs
     - esmpy
+    - gxx_linux-64
     - matplotlib<3
     - nc-time-axis
     - netCDF4
@@ -68,11 +69,11 @@ requirements:
     - fiona
     - xlsxwriter
     # Multi language support:
-    - ncl=6.5
+    - ncl
     - jasper!=1.900.31  # pinned NCL dependency
-    - r-base
-    - cdo=1.9.5
-    - hdf5=1.10.3
+    # - r-base
+    - cdo
+    - hdf5
     # TODO: add julia
 
 test:
