@@ -12,11 +12,9 @@ ClimProjDiags
 ggplot2
 gridExtra
 multiApply
-RColorBrewer
 s2dverification
 plyr
 maps
-ncdf4
 PCICt
 akima
 mapproj
