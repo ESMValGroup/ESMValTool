@@ -27,14 +27,14 @@ Diagnostics are stored in diag_scripts/landcover/
 User settings
 -------------
 
-landcover.yml
+script landcover.py
 
    *Required settings for script*
 
    * reference_dataset: land cover extent dataset for comparison. The script was developed using
      ESACCI-LANDCOVER observations.
 
-   *Optional settings for variables*
+   *Optional settings for script*
 
    * comparison: [variable, model] Choose whether one plot per land cover class is generated comparing
      the different experiments (default) or one plot per model comparing the different
