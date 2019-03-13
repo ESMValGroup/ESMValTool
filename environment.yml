@@ -1,9 +1,11 @@
 ---
-# Notes on ncl-cdo-R packages relation: cdo=1.9.6
-# implies the use of R packages from the r channel
-# and those packages are R=3.2.2 << 3.5.1 and are
-# obsolete (installing ncl=6.5.0/6.6.2 automatically
-# removes the conda-forge-installed R (3.5.1) packages.
+# as of 12 March 2019 cdo=1.9.6 and ncl=6.6.2 (latest versions
+# for each) are working well; installing ncl(>=6.5.0) will
+# automatically remove r-base (>=3.4.x) beacuse gtk2=2.24.31
+# and ncl are in conflict with r-base; compatibility between gtk2
+# and r-base is limited to only gtk2=2.24.31=hde048ef_0 and
+# r-base=3.5.1=he45234b_1005 but that gtk2 hash has conflict with
+# all ncl versions because of *[track_features=blas_openblas].
 
 name: esmvaltool
 channels:
@@ -11,7 +13,7 @@ channels:
 
 dependencies:
   # Python packages that cannot be installed from PyPI:
-  - gxx_linux-64  # needed since conda uses internal compiler which is empty 
+  - gxx_linux-64  # needed since conda uses internal compiler which is empty by default
   - iris
   - matplotlib<3  # Can be installed from PyPI, but is a dependency of iris and should be pinned.
   - python-stratify
@@ -20,11 +22,9 @@ dependencies:
   # Non-Python dependencies
   - graphviz
   - cdo
-  # - gtk2=2.24.31=hde048ef_0 # works with r-base=3.5.1=he45234b_1005
 
   # Multi language support:
-  - ncl  # doesn't work with gtk for ncl<6.6 and r-base for ncl>=6.6
+  - ncl
   - jasper!=1.900.31  # pinned NCL dependency
-   # - r-base=3.5.1=he45234b_1005  # works with gtk2=2.24.31=hde048ef_0
   - libunwind  # Needed for Python3.7+
   # TODO: add julia
