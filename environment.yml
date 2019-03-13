@@ -1,6 +1,6 @@
 ---
 
-name: mydemon
+name: esmvaltool
 channels:
   - conda-forge
 
