@@ -184,6 +184,9 @@ def execute_cmorize():
         timestamp1.strftime(timestamp_format))
 
     logger.info(70 * "-")
+    # check if the inputdir actually exists
+    if not os.path.isdir(config_user["rootpath"]["RAWOBS"][0]):
+        logger.error("input_dir does not exist")
     logger.info("input_dir  = %s", config_user["rootpath"]["RAWOBS"][0])
     logger.info("output_dir = %s", config_user["output_dir"])
     logger.info(70 * "-")
