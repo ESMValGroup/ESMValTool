@@ -55,7 +55,7 @@ References
 
 * Braganza, K., Karoly, D. J., & Arblaster, J. M. (2004). Diurnal temperature range as an index of global climate change during the twentieth century. Geophysical Research Letters, 31(13), n/a – n/a. https://doi.org/10.1029/2004GL019998
 
-* C. Déandreis (IPSL), P. Braconnot (IPSL), S. Planton (CNRMGAME). Study performed for the DALKIA company
+* Déandreis C. (IPSL), Braconnot P. (IPSL), Planton S. (CNRMGAME). Study performed for the DALKIA company. http://secif.ipsl.fr/images/SECIF/documents/Communication/fiche_invulnerable/RC_indicateur_EN.pdf
 
 * Lambrechts, L., Paaijmans, K. P., Fansiri, T., Carrington, L. B., Kramer, L. D., Thomas, M. B., & Scott, T. W. (2011). Impact of daily temperature fluctuations on dengue virus transmission by Aedes aegypti. Proceedings of the National Academy of Sciences of the United States of America, 108(18), 7460–7465. https://doi.org/10.1073/pnas.1101377108
 

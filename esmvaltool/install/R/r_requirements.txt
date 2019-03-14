@@ -1,5 +1,9 @@
+RColorBrewer
+Rcpp
+SPEI
 lintr
 logging
+ncdf4
 yaml
 dotCall64
 abind

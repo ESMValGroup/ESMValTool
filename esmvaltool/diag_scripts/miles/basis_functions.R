@@ -172,7 +172,7 @@ fig_builder <- function(FIGDIR, dir_name, file_name, dataset, expid,
                         ens, year1, year2, season, output_file_type) {
 
   # loop on descriptors that are concatenated to create dir and file name
-  descriptors <- c(dataset, expid, ens, paste0(year1, "_", year2), season)
+  descriptors <- c(dataset, expid, ens, paste0(year1, "-", year2), season)
   for (dcode in descriptors) {
     if (dcode != "NO") {
       FIGDIR <- file.path(FIGDIR, dcode)
@@ -594,34 +594,36 @@ ncdf_opener <- function(namefile, namevar = NULL, namelon = NULL,
 
 # function to open devices
 open_plot_device <- function(figname, output_file_type, special = FALSE) {
-  # Chose output format for figure - by JvH
+  # Choose output format for figure
+  output_file_type <- tolower(output_file_type)
   if (special == FALSE) {
-    if (tolower(output_file_type) == "png") {
+    if (output_file_type == "png") {
       png(filename = figname, width = png_width, height = png_height)
-    } else if (tolower(output_file_type) == "pdf") {
+    } else if (output_file_type == "pdf") {
       pdf(file = figname, width = pdf_width, height = pdf_height, onefile = T)
-    } else if (tolower(output_file_type) == "eps") {
+    } else if ( (output_file_type == "eps") |
+                (output_file_type == "epsi") |
+                (output_file_type == "ps") ) {
       setEPS(
         width = pdf_width, height = pdf_height, onefile = T,
         paper = "special"
       )
       postscript(figname)
     }
-  }
-
-  # special case for TM90
-  if (special == TRUE) {
-    if (tolower(output_file_type) == "png") {
+  } else {
+    if (output_file_type == "png") {
       png(
         filename = figname, width = png_width / af,
         height = png_height * af / 2
       )
-    } else if (tolower(output_file_type) == "pdf") {
+    } else if (output_file_type == "pdf") {
       pdf(
         file = figname, width = pdf_width / af,
         height = pdf_height * af / 2, onefile = T
       )
-    } else if (tolower(output_file_type) == "eps") {
+    } else if ( (output_file_type == "eps") |
+                (output_file_type == "epsi") |
+                (output_file_type == "ps") ) {
       setEPS(
         width = pdf_width / af,
         height = pdf_height * af / 2, onefile = T, paper = "special"
@@ -1318,7 +1320,6 @@ regimes <- function(lon, lat, field, ncluster = 4, ntime = 1000,
 
   # Reduce the phase space with EOFs: use SVD and do not standardize PCs
   print("Launching EOFs...")
-  t0 <- proc.time()
   reducedspace <- eofs(lon, lat, field,
     neof = neof, xlim = xlim, ylim = ylim,
     method = "SVD", do_regression = F, do_standardize = F
@@ -1330,7 +1331,6 @@ regimes <- function(lon, lat, field, ncluster = 4, ntime = 1000,
 
   # k-means computation repeat for ntime to find best solution.
   print("Computing k-means...")
-  t0 <- proc.time()
   print(str(ncluster))
   regimes <- kmeans(PC, as.numeric(ncluster),
     nstart = ntime,
@@ -1371,7 +1371,6 @@ regimes2 <- function(lon, lat, field, ncluster = 4, ntime = 1000, minvar = 0.8,
 
   # Reduce the phase space with EOFs: use SVD and do not standardize PCs
   print("Launching EOFs...")
-  t0 <- proc.time()
   reducedspace <- eofs(lon, lat, field,
     neof = 20, xlim = xlim, ylim = ylim,
     method = "SVD", do_regression = F, do_standardize = F
@@ -1388,7 +1387,6 @@ regimes2 <- function(lon, lat, field, ncluster = 4, ntime = 1000, minvar = 0.8,
 
   # k-means computation repeat for ntime to find best solution.
   print("Computing k-means...")
-  t0 <- proc.time()
   print(str(ncluster))
   regimes <- kmeans(PC, as.numeric(ncluster),
     nstart = ntime,

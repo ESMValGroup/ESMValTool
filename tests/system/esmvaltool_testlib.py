@@ -1,7 +1,5 @@
 """Provide a class for testing esmvaltool."""
 
-from __future__ import print_function
-
 import glob
 import os
 import shutil
@@ -84,8 +82,8 @@ class ESMValToolTest(EasyTest):
             Glob patterns of files to be ignored when testing.
         """
         if not _CFG['test']['run']:
-            raise SkipTest("System tests disabled in {}"
-                           .format(_CFG['configfile']))
+            raise SkipTest("System tests disabled in {}".format(
+                _CFG['configfile']))
 
         self.ignore = (ignore, ) if isinstance(ignore, str) else ignore
 
@@ -94,9 +92,7 @@ class ESMValToolTest(EasyTest):
         # Set recipe path
         if not os.path.exists(recipe):
             recipe = os.path.join(
-                os.path.dirname(script_root),
-                'recipes',
-                recipe)
+                os.path.dirname(script_root), 'recipes', recipe)
         self.recipe_file = os.path.abspath(recipe)
 
         # Simulate input data?
@@ -112,8 +108,9 @@ class ESMValToolTest(EasyTest):
 
         # If reference data is neither available nor should be generated, skip
         if not (os.path.exists(reference_dir) or self.create_reference_output):
-            raise SkipTest("No reference data available for recipe {} in {}"
-                           .format(recipe, _CFG['reference']['output']))
+            raise SkipTest(
+                "No reference data available for recipe {} in {}".format(
+                    recipe, _CFG['reference']['output']))
 
         # Write ESMValTool configuration file
         self.config_user_file = _create_config_user_file(output_directory)
@@ -174,9 +171,10 @@ class ESMValToolTest(EasyTest):
                 output.append(path)
 
         if not output:
-            raise OSError("Output directory not found in location {}. "
-                          "Probably ESMValTool failed to create any output."
-                          .format(output_directory))
+            raise OSError(
+                "Output directory not found in location {}. "
+                "Probably ESMValTool failed to create any output.".format(
+                    output_directory))
 
         if len(output) > 1:
             print("Warning: found multiple output directories:\n{}\nin output "
