@@ -8,7 +8,7 @@
 
 name: esmvaltool
 channels:
-  - conda-forge
+  - conda-forge/label/cf201901
 
 dependencies:
   # Python packages that cannot be installed from PyPI:
