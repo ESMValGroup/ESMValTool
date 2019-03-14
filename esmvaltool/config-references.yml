@@ -535,6 +535,7 @@ references:
   flato13ipcc: "Flato, G. et al., Evaluation of climate models, in: Climate Change 2013: the Physical Science Basis, 2013."
   fuckar: "Fuckar et al., Clima Dynam, 47, 5-6, 1527-1543, doi:10.1007/s00382-015-2917-2, 2016."
   gen14jclim: "Gen, L. et al., J. Climate, 27, 1765-1780, doi:10.1175/JCLI-D-13-00337.1, 2014."
+  georgievski18tac: "Georgievski, G. & Hagemann, S. Theor Appl Climatol (2018). https://doi.org/10.1007/s00704-018-2675-2"
   gleckler08jgr: "Gleckler et al., J. Geophys. Res., 113, D06104, doi:10.1029/2007JD008972, 2008."
   goswami99qjrms: "Goswami, B., V. Krishnamurthy, and H. Annamalai, Q. J. R. Meteorol. Soc., 125, 611-633, doi:10.1002/qj.49712555412, 1999."
   hagemann13james: "Hagemann et al., J. Adv. Model. Earth Syst., 5, doi:10.1029/2012MS000173, 2013."
@@ -604,7 +605,6 @@ projects:
   qa4ecv: QA4ECV
   c3s-magic: Copernicus Climate Change Service 34a Lot 2 (MAGIC) project
   ukesm: UKESM, UK Earth System Model project (NERC)
-  c3s-magic: C3S project MAGIC (34a Lot 2)
 
 realms:
   aerosol: aerosol
