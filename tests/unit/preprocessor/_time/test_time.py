@@ -1,6 +1,4 @@
-"""Unit tests for the :func:`esmvaltool.preprocessor._time_pp` module"""
-
-from __future__ import absolute_import, division, print_function
+"""Unit tests for the :func:`esmvaltool.preprocessor._time` module."""
 
 import unittest
 
@@ -12,8 +10,9 @@ from cf_units import Unit
 from iris.cube import Cube
 
 import tests
-from esmvaltool.preprocessor._time_area import (extract_month, extract_season,
-                                                time_average, time_slice)
+from esmvaltool.preprocessor._time import (annual_mean, extract_month,
+                                           extract_season, extract_time,
+                                           time_average)
 
 
 def _create_sample_cube():
@@ -43,38 +42,40 @@ class TestExtractMonth(tests.Test):
 
 
 class TestTimeSlice(tests.Test):
-    """Tests for time_slice."""
+    """Tests for extract_time."""
 
     def setUp(self):
         """Prepare tests"""
         self.cube = _create_sample_cube()
 
-    def test_time_slice(self):
-        """Test time_slice."""
-        sliced = time_slice(self.cube, 1950, 1, 1, 1950, 12, 31)
+    def test_extract_time(self):
+        """Test extract_time."""
+        sliced = extract_time(self.cube, 1950, 1, 1, 1950, 12, 31)
         print(sliced)
         self.assertTrue(
             (np.arange(1, 13, 1) == sliced.coord('month_number').points).all())
 
-    def test_time_slice_one_time(self):
-        """Test time_slice with one time step."""
+    def test_extract_time_one_time(self):
+        """Test extract_time with one time step."""
         cube = _create_sample_cube()
         cube = cube.collapsed('time', iris.analysis.MEAN)
-        sliced = time_slice(cube, 1950, 1, 1, 1952, 12, 31)
+        sliced = extract_time(cube, 1950, 1, 1, 1952, 12, 31)
         print(sliced.coord('time').points)
-        self.assertTrue(np.array([360., ]) == sliced.coord('time').points)
+        self.assertTrue(np.array([
+            360.,
+        ]) == sliced.coord('time').points)
 
-    def test_time_slice_no_time(self):
-        """Test time_slice with no time step."""
+    def test_extract_time_no_time(self):
+        """Test extract_time with no time step."""
         cube = _create_sample_cube()[0]
-        sliced = time_slice(cube, 1950, 1, 1, 1950, 12, 31)
+        sliced = extract_time(cube, 1950, 1, 1, 1950, 12, 31)
         print('sliced', sliced, sliced.shape)
         print('cube', cube, cube.shape)
         self.assertTrue(cube == sliced)
 
 
 class TestExtractSeason(tests.Test):
-    """Tests for extract_season"""
+    """Tests for extract_season."""
 
     def setUp(self):
         """Prepare tests"""
@@ -177,6 +178,48 @@ class TestTimeAverage(tests.Test):
         result = time_average(cube)
         expected = np.array([1.])
         self.assertArrayEqual(result.data, expected)
+
+
+class TestAnnualAverage(tests.Test):
+    """Test class for the :func:`esmvaltool.preprocessor._time_area` module."""
+
+    @staticmethod
+    def make_time_series(number_years=2):
+        """Make a cube with time only dimension."""
+        times = np.array([i * 30 + 15 for i in range(0, 12 * number_years, 1)])
+        bounds = np.array([i * 30 for i in range(0, 12 * number_years + 1, 1)])
+        bounds = np.array([[bnd, bounds[index + 1]]
+                           for index, bnd in enumerate(bounds[:-1])])
+        data = np.ones_like(times)
+        cube = iris.cube.Cube(data)
+        time = iris.coords.DimCoord(
+            times,
+            bounds=bounds,
+            standard_name='time',
+            units=Unit('days since 1950-01-01', calendar='360_day'))
+        cube = iris.cube.Cube(data, dim_coords_and_dims=[(time, 0)])
+        iris.coord_categorisation.add_year(cube, 'time')
+        return cube
+
+    def test_annual_average(self):
+        """Test for annual average."""
+        cube = self.make_time_series(number_years=2)
+
+        result = annual_mean(cube, decadal=False)
+        expected = np.array([1., 1.])
+        self.assertArrayEqual(result.data, expected)
+        expected_time = np.array([180., 540.])
+        self.assertArrayEqual(result.coord('time').points, expected_time)
+
+    def test_decadal_average(self):
+        """Test for annual average."""
+        cube = self.make_time_series(number_years=20)
+        result = annual_mean(cube, decadal=True)
+
+        expected = np.array([1., 1.])
+        self.assertArrayEqual(result.data, expected)
+        expected_time = np.array([1800., 5400.])
+        self.assertArrayEqual(result.coord('time').points, expected_time)
 
 
 if __name__ == '__main__':
