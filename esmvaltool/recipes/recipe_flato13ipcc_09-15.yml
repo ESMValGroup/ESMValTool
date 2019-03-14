@@ -1,57 +1,32 @@
-#
-# ###############################################################################
-# namelist_flato13ipcc.xml
-#
-# Description
-# Reproducing selected figures from IPCC AR5, chap. 9 (Flato et al., 2013):
-# Figs. 9.2a/b/c, 9.3, 9.4, 9.5, 9.6, 9,7, 9.8, 9.9, 9.10, 9.14, 9.15, 9.24a,
-# 9.26, 9.27, 9.28, 9.29, 9.30, 9.31, 9.32, 9.35, 9.36, 9.38, 9.39, 9.40, 9.41,
-# 9.42, 9.45
-#
-# Authors
-# Axel Lauer (DLR, Germany - axel.lauer@dlr.de)
-# Veronika Eyring (DLR, Germany - veronika.eyring@dlr.de)
-#
-# Contributors
-# Lisa Bock, DLR (Fig. 9.8)
-# Irene Cionni, ENEA (Figs. 9.38, 9.39, 9.40, 9.41)
-#     namelist_eyring13jgr.xml (Fig. 9.10)
-# Bettina Gier, DLR, Germany (Figs. 9.6, 9.9, 9.26, 9.27)
-# Ricard Levine, UK Met Office, namelist_SAMonsoon.xml (Fig. 9.32)
-# Ricarda Rettinger, DLR, Germany, namelist_ECS.xml (Fig. 9.42b)
-# Mattia Righi, DLR, namelist_perfmetrics_CMIP5.xml (Fig. 9.7),
-#     namelist_aerosol_CMIP5.xml (Figs. 9.28, 9.29)
-# Manuel Schlund, DLR, namelist_ipcc_fig9-42a.xml (Fig. 9.42a)
-# Daniel Senftleben, DLR, namelist_SeaIce.xml (Fig. 9.24)
-# Sabrina Wenzel, DLR, namelist_wenzel14jgr.xml (Fig. 9.45b)
-# Klaus Zimmermann, SMHI (Figs. 9.14, 9.15)
-#
-# Projects
-# CRESCENDO
-# EMBRACE
-# ESA CCI CMUG
-# ESMVal
-#
-# Reference
-# Flato, G. et al., Evaluation of climate models, in: Climate Change 2013: the
-# Physical Science Basis, contribution of Working Group I to the Fifth Assessment
-# Report of the Intergovernmental Panel on Climate Change, edited by: Stocker,
-# T. F., Qin, D., Plattner, G.-K., Tignor, M., Allen, S. K., Boschung, J.,
-# Nauels, A., Xia, Y., Bex, V., and Midgley, P. M., Cambridge University Press,
-# Cambridge, UK and New York, NY, USA (2013)
-#
-# This namelist is part of the ESMValTool
-# ###############################################################################
-#
-
 ---
+documentation:
+
+  description: |
+    Reproducing selected figures from IPCC AR5, chap. 9 (Flato et al., 2013)
+    9.2, 9.4, 9.5, 9.8, 9.42a.
+
+  authors:
+    - zimm_kl
+
+  maintainer:
+    - zimm_kl
+
+  references:
+    - flato13ipcc
+
+  projects:
+    - crescendo
+
 preprocessors:
   prep0:
+    custom_order: True
+    extract_month:
+      month: 8
+    extract_bottom_layer:
+    time_average:
     regrid:
-      target_grid: 4x4
-      # target_grid: reference_dataset
+      target_grid: 1x1
       scheme: linear
-      # scheme: area_weighted
 
 diagnostics:
   ipcc_fig_9_15:
@@ -60,7 +35,7 @@ diagnostics:
       thetao:
         project: CMIP5
         start_year: 1986
-        end_year: 1986
+        end_year: 2005
         exp: historical
         ensemble: r1i1p1
         preprocessor: prep0
@@ -82,19 +57,17 @@ diagnostics:
       #   additional_datasets:
       #     - {dataset: HadISST, project: OBS, type: reanaly, version: 20130524, start_year: 1986, end_year: 2005, tier: 2}
     additional_datasets:
-      # - {dataset: CanESM2, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
-      # - {dataset: CNRM-CM5, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 1986}
+      - {dataset: CanESM2}
       - {dataset: CNRM-CM5}
-    #   - {dataset: CSIRO-Mk3-6-0, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
-    #   # - {dataset: GFDL-ESM2M, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
-    #   - {dataset: GISS-E2-R, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
-    #   # - {dataset: HadGEM2-ES, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
-    #   - {dataset: IPSL-CM5A-LR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 1986}
-      # - {dataset: IPSL-CM5A-LR}
-    #   - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
-    #   - {dataset: MRI-CGCM3, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
-    #   # - {dataset: NorESM1-M, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
-    #   # - {dataset: GFDL-ESM2G, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1986, end_year: 2005}
+      - {dataset: CSIRO-Mk3-6-0}
+      # - {dataset: GFDL-ESM2M}
+      - {dataset: GISS-E2-R}
+      # - {dataset: HadGEM2-ES}
+      - {dataset: IPSL-CM5A-LR}
+      - {dataset: MPI-ESM-LR}
+      - {dataset: MRI-CGCM3}
+      # - {dataset: NorESM1-M}
+      # - {dataset: GFDL-ESM2G}
     scripts:
       ipcc_fig_9_15:
-        script: ipcc_fig_9_15.py
+        script: ipcc_ar5/ch09_fig09_15.py
