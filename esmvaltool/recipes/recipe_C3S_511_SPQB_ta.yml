@@ -48,44 +48,50 @@ diagnostics:
         derive: False
         mip: Amon
     scripts:
-      diag_MV_ts:
-        script: qualassess/ta_C3S_511_SPQB.py
-        requests: [time_series]
-        levels: [3.00e+04,8.50e+04,1.00e+02]
+#      diag_MV_ts:
+#        script: qualassess/ta_C3S_511_SPQB.py
+#        requests: [time_series]
+#        levels: [3.00e+04,8.50e+04,1.00e+02]
       diag_MV_mean:
         script: qualassess/ta_C3S_511_SPQB.py
         requests: [mean]
-        levels: [3.00e+04,8.50e+04,1.00e+02]
-      diag_MV_std_dev:
-        script: qualassess/ta_C3S_511_SPQB.py
-        requests: [std_dev]
-        levels: [3.00e+04,8.50e+04,1.00e+02]
-      diag_MV_perc:
-        script: qualassess/ta_C3S_511_SPQB.py
-        requests: [percentiles]
-        levels: [3.00e+04,8.50e+04,1.00e+02]
-      diag_MV_clim:
-        script: qualassess/ta_C3S_511_SPQB.py
-        requests: [climatology]
-        levels: [3.00e+04,8.50e+04,1.00e+02]
-      diag_MV_anom:
-        script: qualassess/ta_C3S_511_SPQB.py
-        requests: [anomalies]
-        levels: [3.00e+04,8.50e+04,1.00e+02]
-      diag_custom:
-        script: qualassess/ta_C3S_511_SPQB.py
-        requests: [custom]
-        levels: [3.00e+04,8.50e+04,1.00e+02]
-      diag_tables:
-        script: qualassess/ta_C3S_511_SPQB.py
-        requests: [SMM, GCOS, ESM]
-      report:
-        script: qualassess/ta_C3S_511_SPQB.py
-        ancestors: ['ta', '*/diag_*']
-        requests: [report]
-        order: [diag_tables, diag_MV_ts, diag_MV_mean ,diag_MV_std_dev, diag_MV_perc, diag_MV_clim, diag_MV_anom, diag_custom]
-#        order: [diag_MV_mean, diag_MV_std_dev]
-        show_latex: False #options are: True/False/no_latex
+        levels: [8.50e+04]
+#      diag_MV_std_dev:
+#        script: qualassess/ta_C3S_511_SPQB.py
+#        requests: [std_dev]
+#        levels: [3.00e+04,8.50e+04,1.00e+02]
+#      diag_MV_perc:
+#        script: qualassess/ta_C3S_511_SPQB.py
+#        requests: [percentiles]
+#        levels: [3.00e+04,8.50e+04,1.00e+02]
+#      diag_MV_clim:
+#        script: qualassess/ta_C3S_511_SPQB.py
+#        requests: [climatology]
+#        levels: [3.00e+04,8.50e+04,1.00e+02]
+#      diag_MV_anom:
+#        script: qualassess/ta_C3S_511_SPQB.py
+#        requests: [anomalies]
+#        levels: [3.00e+04,8.50e+04,1.00e+02]
+#      diag_custom:
+#        script: qualassess/ta_C3S_511_SPQB.py
+#        requests: [custom]
+#        levels: [3.00e+04,8.50e+04,1.00e+02]
+#      diag_tables:
+#        script: qualassess/ta_C3S_511_SPQB.py
+#        requests: [SMM, GCOS, ESM]
+#      diag_o_hist:
+#        script: qualassess/ta_C3S_511_SPQB.py
+#        requests: [histogram]
+#        levels: [3.00e+04,8.50e+04,1.00e+02]
+#      report:
+#        script: qualassess/ta_C3S_511_SPQB.py
+#        ancestors: ['ta', '*/diag_*']
+#        requests: [report]
+##        order: [diag_tables, diag_MV_ts, diag_MV_mean ,diag_MV_std_dev, diag_MV_perc, diag_MV_clim, diag_MV_anom, diag_custom]
+##        order: [diag_tables, diag_MV_ts, diag_MV_mean ,diag_MV_std_dev, diag_MV_clim, diag_MV_anom, diag_custom]
+##        order: [diag_MV_mean]
+#        order: [diag_MV_ts, iag_MV_mean, diag_MV_std_dev]
+#        show_latex: False #options are: True/False/no_latex
         
 #  diagnostic1:
 #    description: Multi-product quality brief.

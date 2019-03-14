@@ -412,26 +412,64 @@ class __Diagnostic_skeleton__(object):
         """
         applies function to a sliced cube (memory saving)
         """
+        self.__logger__.info("====================================================")
+        self.__logger__.info("Running apply_fun2_cube")
+#        self.__logger__.info(cube)
+        self.__logger__.info(dims)
+        self.__logger__.info(kwargs)
+        self.__logger__.info("still lazy?")
+        self.__logger__.info(cube.has_lazy_data())
         
         try:
-            latlon_list = []
-            
-            for latlon in cube.slices(["latitude","longitude"]):
+#        for i in [1]:
+            if "time" not in dims:
+    #        if "latitude" in dims:
+                latlon_list = []
                 
-                if incl_weights:
-                    latlon = latlon * self.map_area
-
-                latlon = latlon.collapsed(dims,
-                                          function,
-                                          **kwargs)
-                latlon_list.append(latlon)
-        
-            cube_list = iris.cube.CubeList(latlon_list)
-            new_cube = cube_list.concatenate_cube(check_aux_coords=False)
-        
-        except:  
-            new_cube = cube.collapsed(dims, function, **kwargs)
+                for latlon in cube.slices(["latitude","longitude"]):
+                    
+    #                self.__logger__.info(latlon)
+                    
+                    latlon.remove_coord("day_of_month")
+                    latlon.remove_coord("day_of_year")
+                    latlon.remove_coord("month_number")
+                    latlon.remove_coord("year")
+                    
+                    if incl_weights and "latitude" in dims:
+                        iris.analysis.maths.multiply(latlon, self.map_area / np.mean(self.map_area,axis=0), in_place=True)
+                        latlon.standard_name = cube.standard_name
+                        latlon.long_name = cube.long_name
+                        
+    #                self.__logger__.info(latlon)
+    
+                    latlon = latlon.collapsed(dims,
+                                              function,
+                                              **kwargs)
+                    latlon_list.append(latlon)
             
+                cube_list = iris.cube.CubeList(latlon_list)
+    #            self.__logger__.info(cube_list)
+    #            self.__logger__.info([c.coords for c in cube_list])
+                
+                new_cube = cube_list.merge_cube()
+                
+                self.__logger__.info("going path one")
+        
+#        except: 
+            else:
+                new_cube = cube.collapsed(dims, function, **kwargs)
+                self.__logger__.info("going path two")
+        except:
+            new_cube = cube.collapsed(dims, function, **kwargs)
+            self.__logger__.info("going path three")
+            
+#        self.__logger__.info(new_cube)
+            
+#        self.__logger__.info(function)
+        self.__logger__.info("still lazy?")
+        self.__logger__.info(cube.has_lazy_data())
+        self.__logger__.info("====================================================")
+        
         return new_cube
 
 class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
@@ -613,7 +651,7 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
         
         self.map_area = iris.analysis.cartography.area_weights(
                 next(self.sp_data.slices(["latitude","longitude"])))
-        self.map_area = self.map_area / np.mean(self.map_area)
+#        self.map_area = self.map_area / np.sum(self.map_area)
         
         return
 
@@ -641,6 +679,10 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
 #                      open(self.__report_dir__ + 'custom_reporting.yml', 'w'),
 #                      Dumper=yamlordereddictloader.SafeDumper,
 #                      default_flow_style=False)
+            
+        self.__logger__.info("Is the cube still lazy?")
+            
+        self.__logger__.info(self.sp_data.has_lazy_data())
 
         #######################################################################
 #        # TODO delete after debugging
@@ -1026,9 +1068,7 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                 
                 long_left_over = [rd for rd in reg_dimensions if rd != d]
             
-                plotcube = self.__apply_fun2cube__(cube,
-                                                   dims=d,
-                                                   function=iris.analysis.MEAN)
+                plotcube = utils.dask_weighted_mean_wrapper(cube,self.map_area,dims=d)
                 
                 try: 
                     vminmax = np.nanpercentile(plotcube.data.compressed(),
@@ -1049,20 +1089,42 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
     
             del plotcube
             
+            for d in reg_dimensions:
+                
+                long_left_over = [rd for rd in reg_dimensions if rd != d]
+            
+                plotcube =cube.collapsed(d,iris.analysis.MEAN,weights=iris.analysis.cartography.area_weights(cube))
+                
+                try: 
+                    vminmax = np.nanpercentile(plotcube.data.compressed(),
+                                               [5, 95])
+                except:
+                    vminmax = np.nanpercentile(plotcube.data,
+                                               [5, 95])
+                
+                
+                data_info.append(dict({"name":"mean2",
+                                       "data": plotcube,
+                                       "dim":d,
+                                       "llo":long_left_over,
+                                       "ctype":"Data",
+                                       "vminmax":vminmax,
+                                       "mmtype":"abs",
+                                       }))
+    
+            del plotcube
+            
         if "std_dev" in self.__requested_diags__:
             
             for d in reg_dimensions:
                 
                 long_left_over = [rd for rd in reg_dimensions if rd != d]
             
-                plotcube = (self.__apply_fun2cube__(cube,
-                                                    dims=d,
-                                                    function=iris.analysis.RMS
-                                                    )**2 - \
-                            self.__apply_fun2cube__(cube,
-                                                    dims=d,
-                                                    function=iris.analysis.MEAN
-                                                    )**2)**0.5
+#                plotcube = self.__apply_fun2cube__(cube,
+#                                                   dims=d,
+#                                                   function=iris.analysis.STD_DEV
+#                                                   )
+                plotcube = cube.collapsed(d,iris.analysis.STD_DEV)
                 
                 try: 
                     vminmax = np.nanpercentile(plotcube.data.compressed(),
@@ -1091,12 +1153,13 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                 
                 long_left_over = [rd for rd in reg_dimensions if rd != d]
             
-                plotcubes = self.__apply_fun2cube__(cube,
-                                                    dims=d,
-                                                    function=iris.analysis.PERCENTILE,
-                                                    incl_weights = False,
-                                                    percent=percentiles
-                                                    )
+#                plotcubes = self.__apply_fun2cube__(cube,
+#                                                    dims=d,
+#                                                    function=iris.analysis.PERCENTILE,
+#                                                    incl_weights = False,
+#                                                    percent=percentiles
+#                                                    )
+                plotcubes = cube.collapsed(d,iris.analysis.PERCENTILE)
                 
                 percentile_list = list()
 
@@ -1232,15 +1295,17 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                 
                 long_left_over = [rd for rd in reg_dimensions if rd != d]
             
-                plotcubes_m = cube.collapsed(long_left_over,iris.analysis.MEAN)
-                plotcubes_std = (self.__apply_fun2cube__(cube,
-                                                         dims=long_left_over,
-                                                         function=iris.analysis.RMS
-                                                         )**2 - \
-                                 self.__apply_fun2cube__(cube,
-                                                         dims=long_left_over,
-                                                         function=iris.analysis.MEAN
-                                                         )**2)**0.5
+                plotcubes_m = self.__apply_fun2cube__(cube,
+                                                      dims=long_left_over,
+                                                      function=iris.analysis.MEAN
+                                                      )
+                plotcubes_std = self.__apply_fun2cube__(cube,
+                                                        dims=long_left_over,
+                                                        function=iris.analysis.STD_DEV,
+                                                        incl_weights = False
+                                                        )
+#                plotcubes_std = cube.collapsed(long_left_over, iris.analysis.STD_DEV)
+                
                 plotcubes_std_p = plotcubes_m + plotcubes_std
                 plotcubes_std_m = plotcubes_m - plotcubes_std
     
@@ -1424,9 +1489,16 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                 long_agg = [rd for rd in reg_dimensions if rd != d]
                 long_left_over = [d,self.level_dim]
             
-                plotcube = self.__apply_fun2cube__(cube,
-                                                   dims=long_agg,
-                                                   function=iris.analysis.MEAN)
+                plotcube = utils.dask_weighted_mean_wrapper(cube,self.map_area,dims=long_agg)
+#                
+#                for d_agg in long_agg:
+#                    
+#                    self.__logger__.info(d_agg)
+#            
+#                    plotcube = self.__apply_fun2cube__(plotcube,
+#                                                       dims=d_agg,
+#                                                       function=iris.analysis.MEAN)
+#                    self.__logger__.info(plotcube)
                 
                 try: 
                     vminmax = np.nanpercentile(plotcube.data.compressed(),
@@ -1446,6 +1518,41 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                                        }))
         
             del plotcube
+            
+            for d in reg_dimensions:
+                
+                long_agg = [rd for rd in reg_dimensions if rd != d]
+                long_left_over = [d,self.level_dim]
+            
+                plotcube = cube.collapsed(long_agg,iris.analysis.MEAN,weights=iris.analysis.cartography.area_weights(cube))
+#                
+#                for d_agg in long_agg:
+#                    
+#                    self.__logger__.info(d_agg)
+#            
+#                    plotcube = self.__apply_fun2cube__(plotcube,
+#                                                       dims=d_agg,
+#                                                       function=iris.analysis.MEAN)
+#                    self.__logger__.info(plotcube)
+                
+                try: 
+                    vminmax = np.nanpercentile(plotcube.data.compressed(),
+                                               [5, 95])
+                except:
+                    vminmax = np.nanpercentile(plotcube.data,
+                                               [5, 95])
+                
+                
+                data_info.append(dict({"name":"mean2",
+                                       "data": plotcube,
+                                       "dim":d,
+                                       "llo":long_left_over,
+                                       "ctype":"Data",
+                                       "vminmax":vminmax,
+                                       "mmtype":"abs",
+                                       }))
+        
+            del plotcube
     
         if "std_dev" in self.__requested_diags__:
             
@@ -1454,14 +1561,21 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                 long_agg = [rd for rd in reg_dimensions if rd != d]
                 long_left_over = [d,self.level_dim]
             
-                plotcube = (self.__apply_fun2cube__(cube,
-                                                    dims=long_agg,
-                                                    function=iris.analysis.RMS
-                                                    )**2 - \
-                            self.__apply_fun2cube__(cube,
-                                                    dims=long_agg,
-                                                    function=iris.analysis.MEAN
-                                                    )**2)**0.5
+                plotcube = cube.collapsed(long_agg,iris.analysis.STD_DEV)
+                
+#                plotcube = cube.copy()
+#                
+#                for d_agg in long_agg:
+#                    
+#                    self.__logger__.info(d_agg)
+#            
+##                    plotcube = self.__apply_fun2cube__(plotcube,
+##                                                       dims=d_agg,
+##                                                       function=iris.analysis.STD_DEV
+##                                                       )
+#                    
+#    
+#                    self.__logger__.info(plotcube)
                 
                 try: 
                     vminmax = np.nanpercentile(plotcube.data.compressed(),
