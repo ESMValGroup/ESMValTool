@@ -31,7 +31,7 @@ def extract_region(cube, start_longitude, end_longitude, start_latitude,
 
     Function that subsets a cube on a box (start_longitude, end_longitude,
     start_latitude, end_latitude)
-    This function is a restriction of masked_cube_lonlat();
+    This function is a restriction of masked_cube_lonlat().
 
     Arguments
     ---------
@@ -79,7 +79,28 @@ def extract_region(cube, start_longitude, end_longitude, start_latitude,
     return cube
 
 
-# get zonal means
+def get_iris_analysis_operation(operator):
+    """
+    Determine the iris analysis operator from a string.
+
+    Arguments
+    ---------
+        operator: string
+            A named operator.
+    Returns
+    -------
+        function: A function from iris.analysis
+    """
+    operators = ['mean', 'median', 'std_dev', 'variance', 'min', 'max']
+    operator = operator.lower()
+    if operator not in operators:
+        raise ValueError("operator {} not recognised. "
+                         "Accepted values are: {}."
+                         "".format(operator, ', '.join(operators)))
+    operation = getattr(iris.analysis, operator.upper())
+    return operation
+
+
 def zonal_means(cube, coordinate, mean_type):
     """
     Get zonal means.
@@ -88,7 +109,8 @@ def zonal_means(cube, coordinate, mean_type):
     the type of mean is controlled by mean_type variable (string)::
 
         'mean' -> MEAN
-        'stdev' -> STD_DEV
+        'median' -> MEDIAN
+        'std_dev' -> STD_DEV
         'variance' -> VARIANCE
         'min' -> MIN
         'max' -> MAX
@@ -109,45 +131,27 @@ def zonal_means(cube, coordinate, mean_type):
     iris.cube.Cube
         Returns a cube
     """
-    if mean_type == 'mean':
-        result = cube.collapsed(coordinate, iris.analysis.MEAN)
-    elif mean_type == 'stdev':
-        result = cube.collapsed(coordinate, iris.analysis.STD_DEV)
-    elif mean_type == 'variance':
-        result = cube.collapsed(coordinate, iris.analysis.VARIANCE)
-    elif mean_type.lower() in ['minimum', 'min']:
-        result = cube.collapsed(coordinate, iris.analysis.MIN)
-    elif mean_type.lower() in ['maximum', 'max']:
-        result = cube.collapsed(coordinate, iris.analysis.MAX)
-    return result
+    operation = get_iris_analysis_operation(mean_type)
+    return cube.collapsed(coordinate, operation)
 
 
-# get the area average
-def average_region(cube, coord1, coord2, fx_files=None):
+def tile_grid_areas(cube, fx_files):
     """
-    Determine the area average.
-
-    Can be used with coord1 and coord2 (strings,
-    usually 'longitude' and 'latitude' but depends on the cube);
+    Tile the grid area data to match the dataset cube.
 
     Arguments
     ---------
         cube: iris.cube.Cube
             input cube.
-
-        coord1, coord2: str, str
-            coords to use
-
         fx_files: dictionary
             dictionary of field:filename for the fx_files
 
     Returns
     -------
     iris.cube.Cube
-        collapsed cube.
+        Freshly tiled grid areas cube.
     """
-    grid_areas_found = False
-    grid_areas = None
+    grid_areas = np.empty(0)
     if fx_files:
         for key, fx_file in fx_files.items():
             if fx_file is None:
@@ -156,7 +160,6 @@ def average_region(cube, coord1, coord2, fx_files=None):
             fx_cube = iris.load_cube(fx_file)
 
             grid_areas = fx_cube.data
-            grid_areas_found = True
             cube_shape = cube.data.shape
             if cube.data.ndim == 4 and grid_areas.ndim == 2:
                 grid_areas = np.tile(grid_areas,
@@ -167,26 +170,89 @@ def average_region(cube, coord1, coord2, fx_files=None):
             elif cube.data.ndim == 3 and grid_areas.ndim == 2:
                 grid_areas = np.tile(grid_areas,
                                      [cube_shape[0], 1, 1])
+            else:
+                raise ValueError('Grid and dataset number of dimensions not '
+                                 'recognised: {} and {}.'
+                                 ''.format(cube.data.ndim, grid_areas.ndim))
+    return grid_areas
+
+
+# get the area average
+def average_region(cube, coord1, coord2, operator='mean', fx_files=None):
+    """
+    Determine the area average.
+
+    The average in the horizontal direction requires the coord1 and coord2
+    arguments. These strings are usually 'longitude' and 'latitude' but
+    may depends on the cube.
+
+    While this function is named `average_region`, it can be used to apply
+    several different operations in the horizonal plane: mean, standard
+    deviation, median variance, minimum and maximum. These options are
+    specified using the `operator` argument and the following key word
+    arguments:
+
+    +------------+--------------------------------------------------+
+    | `mean`     | Area weighted mean.                              |
+    +------------+--------------------------------------------------+
+    | `median`   | Median (not area weighted)                       |
+    +------------+--------------------------------------------------+
+    | `std_dev`  | Standard Deviation (not area weighted)           |
+    +------------+--------------------------------------------------+
+    | `variance` | Variance (not area weighted)                     |
+    +------------+--------------------------------------------------+
+    | `min`:     | Minimum value                                    |
+    +------------+--------------------------------------------------+
+    | `max`      | Maximum value                                    |
+    +------------+--------------------------------------------------+
+
+
+    Arguments
+    ---------
+        cube: iris.cube.Cube
+            input cube.
+        coord1: str
+            Name of the firct coordinate dimension
+        coord2: str
+            Name of the second coordinate dimension
+        operator: str
+            Name of the operation to apply (default: mean)
+        fx_files: dictionary
+            dictionary of field:filename for the fx_files
+
+    Returns
+    -------
+    iris.cube.Cube
+        collapsed cube.
+    """
+    grid_areas = tile_grid_areas(cube, fx_files)
 
     if not fx_files and cube.coord('latitude').points.ndim == 2:
-        logger.error('average_region ERROR: fx_file needed to calculate grid'
-                     + ' cell area for irregular grids.')
+        logger.error('average_region ERROR: fx_file needed to calculate grid '
+                     'cell area for irregular grids.')
         raise iris.exceptions.CoordinateMultiDimError(cube.coord('latitude'))
 
-    if not grid_areas_found:
+    if not grid_areas.any():
         cube = _guess_bounds(cube, [coord1, coord2])
         grid_areas = iris.analysis.cartography.area_weights(cube)
         logger.info('Calculated grid area:{}'.format(grid_areas.shape))
 
     if cube.data.shape != grid_areas.shape:
-
         raise ValueError('Cube shape ({}) doesn`t match grid area shape '
                          '({})'.format(cube.data.shape, grid_areas.shape))
 
-    result = cube.collapsed([coord1, coord2],
-                            iris.analysis.MEAN,
-                            weights=grid_areas)
-    return result
+    operation = get_iris_analysis_operation(operator)
+
+    # TODO: implement weighted stdev, median, and var when available in iris.
+    # See iris issue: https://github.com/SciTools/iris/issues/3208
+
+    if operator in ['mean', ]:
+        return cube.collapsed([coord1, coord2],
+                              operation,
+                              weights=grid_areas)
+
+    # Many IRIS analysis functions do not accept weights arguments.
+    return cube.collapsed([coord1, coord2], operation)
 
 
 def extract_named_regions(cube, regions):
