@@ -169,6 +169,7 @@ def seasonal_mean(cube):
     cube = cube.aggregated_by(['clim_season', 'season_year'],
                               iris.analysis.MEAN)
 
+    # TODO: This preprocessor is not calendar independent.
     # this func returns an approximation to 3 months
     def spans_three_months(time):
         """Check for three months."""
@@ -198,12 +199,6 @@ def _align_time_axes(cubes, frequency='monthly'):
     list of iris.cube.Cube instances
     """
     for cube in cubes:
-        # fix units; leave calendars
-        # this is not normally needed unless working
-        # outside the CMOR standards
-        cube.coord('time').convert_units(
-            cf_units.Unit('days since 1950-1-1 00:00:00',
-                          calendar=cube.coord('time').units.calendar))
 
         # fix calendars
         cube.coord('time').units = cf_units.Unit(
@@ -218,12 +213,12 @@ def _align_time_axes(cubes, frequency='monthly'):
                 datetime.datetime(t.year, t.month,
                                   15, 0, 0, 0) for t in time_c
             ]
-        if frequency == 'daily':
+        elif frequency == 'daily':
             cube.coord('time').cells = [
                 datetime.datetime(t.year, t.month,
                                   t.day, 0, 0, 0) for t in time_c
             ]
-        if frequency == 'hourly':
+        elif frequency == 'hourly':
             cube.coord('time').cells = [
                 datetime.datetime(t.year, t.month,
                                   t.day, t.hour, 0, 0) for t in time_c
