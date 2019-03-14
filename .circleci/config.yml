@@ -195,7 +195,7 @@ jobs:
             conda create -y --name esmvaltool
             set +x; conda activate esmvaltool; set -x
             # Install
-            conda install -y esmvaltool -c esmvalgroup -c conda-forge/label/cf201901 -c birdhouse
+            conda install -y esmvaltool -c esmvalgroup -c conda-forge -c birdhouse
             # Log versions
             conda env export > /logs/environment.yml
             # Test installation
@@ -238,7 +238,6 @@ workflows:
       - python3_test
       - python3_install
       - conda_build
-      - conda_install
   nightly:
     triggers:
       - schedule:
