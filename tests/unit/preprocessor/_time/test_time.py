@@ -21,9 +21,21 @@ def _create_sample_cube():
         iris.coords.DimCoord(
             np.arange(15., 720., 30.),
             standard_name='time',
-            units=Unit('days since 1950-01-01', calendar='gregorian')), 0)
+            units=Unit('days since 1950-01-01 00:00:00',
+                       calendar='gregorian')), 0)
     iris.coord_categorisation.add_month_number(cube, 'time')
     return cube
+
+
+def add_auxiliary_coordinate(cubeList):
+    """Add AuxCoords to cubes in cubeList."""
+    for cube in cubeList:
+        iris.coord_categorisation.add_day_of_month(cube,
+                                                   cube.coord('time'),
+                                                   name='day_of_month')
+        iris.coord_categorisation.add_day_of_year(cube,
+                                                  cube.coord('time'),
+                                                  name='day_of_year')
 
 
 class TestExtractMonth(tests.Test):
@@ -36,7 +48,6 @@ class TestExtractMonth(tests.Test):
     def test_get_january(self):
         """Test january extraction"""
         sliced = extract_month(self.cube, 1)
-        print(sliced)
         self.assertTrue(
             (np.array([1, 1]) == sliced.coord('month_number').points).all())
 
@@ -51,7 +62,6 @@ class TestTimeSlice(tests.Test):
     def test_extract_time(self):
         """Test extract_time."""
         sliced = extract_time(self.cube, 1950, 1, 1, 1950, 12, 31)
-        print(sliced)
         self.assertTrue(
             (np.arange(1, 13, 1) == sliced.coord('month_number').points).all())
 
@@ -60,7 +70,6 @@ class TestTimeSlice(tests.Test):
         cube = _create_sample_cube()
         cube = cube.collapsed('time', iris.analysis.MEAN)
         sliced = extract_time(cube, 1950, 1, 1, 1952, 12, 31)
-        print(sliced.coord('time').points)
         self.assertTrue(np.array([
             360.,
         ]) == sliced.coord('time').points)
@@ -69,8 +78,6 @@ class TestTimeSlice(tests.Test):
         """Test extract_time with no time step."""
         cube = _create_sample_cube()[0]
         sliced = extract_time(cube, 1950, 1, 1, 1950, 12, 31)
-        print('sliced', sliced, sliced.shape)
-        print('cube', cube, cube.shape)
         self.assertTrue(cube == sliced)
 
 
@@ -84,7 +91,6 @@ class TestExtractSeason(tests.Test):
     def test_get_djf(self):
         """Test function for winter"""
         sliced = extract_season(self.cube, 'djf')
-        print(sliced)
         self.assertTrue(
             (np.array([1, 2, 12, 1, 2,
                        12]) == sliced.coord('month_number').points).all())
@@ -92,7 +98,6 @@ class TestExtractSeason(tests.Test):
     def test_get_djf_caps(self):
         """Test function works when season specified in caps"""
         sliced = extract_season(self.cube, 'DJF')
-        print(sliced)
         self.assertTrue(
             (np.array([1, 2, 12, 1, 2,
                        12]) == sliced.coord('month_number').points).all())
@@ -100,21 +105,18 @@ class TestExtractSeason(tests.Test):
     def test_get_mam(self):
         """Test function for spring"""
         sliced = extract_season(self.cube, 'mam')
-        print(sliced)
         self.assertTrue((np.array(
             [3, 4, 5, 3, 4, 5]) == sliced.coord('month_number').points).all())
 
     def test_get_jja(self):
         """Test function for summer"""
         sliced = extract_season(self.cube, 'jja')
-        print(sliced)
         self.assertTrue((np.array(
             [6, 7, 8, 6, 7, 8]) == sliced.coord('month_number').points).all())
 
     def test_get_son(self):
         """Test function for summer"""
         sliced = extract_season(self.cube, 'son')
-        print(sliced)
         self.assertTrue(
             (np.array([9, 10, 11, 9, 10,
                        11]) == sliced.coord('month_number').points).all())
@@ -180,8 +182,8 @@ class TestTimeAverage(tests.Test):
         self.assertArrayEqual(result.data, expected)
 
 
-class TestAlignTimeAxes(tests.Test):
-    """Tests for align_time_axes."""
+class TestAlignTimeAxesMonthly(tests.Test):
+    """Tests for align_time_axes monthly."""
 
     def setUp(self):
         """Prepare tests"""
@@ -193,29 +195,69 @@ class TestAlignTimeAxes(tests.Test):
             iris.coords.DimCoord(
                 np.arange(14., 719., 30.),
                 standard_name='time',
-                units=Unit('days since 1950-01-01', calendar='360_day')
+                units=Unit('days since 1950-01-01 00:00:00',
+                           calendar='360_day')
             ), 0)
-        iris.coord_categorisation.add_day_of_month(self.cube_1,
-                                                   self.cube_1.coord('time'),
-                                                   name='day_of_month')
-        iris.coord_categorisation.add_day_of_month(self.cube_2,
-                                                   self.cube_2.coord('time'),
-                                                   name='day_of_month')
-        iris.coord_categorisation.add_day_of_year(self.cube_1,
-                                                  self.cube_1.coord('time'),
-                                                  name='day_of_year')
-        iris.coord_categorisation.add_day_of_year(self.cube_2,
-                                                  self.cube_2.coord('time'),
-                                                  name='day_of_year')
+        add_auxiliary_coordinate([self.cube_1, self.cube_2])
 
-    def test_align_time_axis(self):
+    def test_align_time_axis_mon(self):
         """Test changes to cubes."""
-        newcube_1, newcube_2 = _align_time_axes([self.cube_1, self.cube_2])
+        # test monthly
+        newcube_1, newcube_2 = _align_time_axes([self.cube_1,
+                                                 self.cube_2],
+                                                frequency='monthly')
         # no changes to core data
         self.assertArrayEqual(newcube_1.data, self.cube_1.data)
         self.assertArrayEqual(newcube_2.data, self.cube_2.data)
         # no changes to number of coords and aux_coords
-        self.assertTrue(len(newcube_1.coords()), len(self.cube_1.coords()))
+        self.assertTrue(len(newcube_1.coords()),
+                        len(self.cube_1.coords()))
+        self.assertTrue(len(newcube_1.aux_coords),
+                        len(self.cube_1.aux_coords))
+        # test difference; also diff is zero
+        expected = self.cube_1.data
+        diff_cube = newcube_2 - newcube_1
+        self.assertArrayEqual(diff_cube.data, expected)
+
+
+class TestAlignTimeAxesDaily(tests.Test):
+    """Tests for align_time_axes monthly."""
+
+    def setUp(self):
+        """Prepare tests"""
+        self.cube_1 = _create_sample_cube()
+        self.cube_2 = _create_sample_cube()
+        self.cube_2.data = self.cube_2.data * 2.
+        self.cube_1.remove_coord('time')
+        self.cube_2.remove_coord('time')
+        self.cube_1.add_dim_coord(
+            iris.coords.DimCoord(
+                np.arange(14. * 24. + 6., 38. * 24. + 6., 24.),
+                standard_name='time',
+                units=Unit('hours since 1950-01-01 00:00:00',
+                           calendar='360_day')
+            ), 0)
+        self.cube_2.add_dim_coord(
+            iris.coords.DimCoord(
+                np.arange(14. * 24. + 3., 38. * 24. + 3., 24.),
+                standard_name='time',
+                units=Unit('hours since 1950-01-01 00:00:00',
+                           calendar='360_day')
+            ), 0)
+        add_auxiliary_coordinate([self.cube_1, self.cube_2])
+
+    def test_align_time_axis_day(self):
+        """Test changes to cubes."""
+        # test daily
+        newcube_1, newcube_2 = _align_time_axes([self.cube_1,
+                                                 self.cube_2],
+                                                frequency='daily')
+        # no changes to core data
+        self.assertArrayEqual(newcube_1.data, self.cube_1.data)
+        self.assertArrayEqual(newcube_2.data, self.cube_2.data)
+        # no changes to number of coords and aux_coords
+        self.assertTrue(len(newcube_1.coords()),
+                        len(self.cube_1.coords()))
         self.assertTrue(len(newcube_1.aux_coords),
                         len(self.cube_1.aux_coords))
         # test difference; also diff is zero
