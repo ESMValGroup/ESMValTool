@@ -75,7 +75,7 @@ class TestTimeSlice(tests.Test):
 
 
 class TestExtractSeason(tests.Test):
-    """Tests for extract_season"""
+    """Tests for extract_season."""
 
     def setUp(self):
         """Prepare tests"""
