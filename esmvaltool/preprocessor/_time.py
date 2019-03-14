@@ -218,11 +218,8 @@ def _align_time_axes(cubes, frequency='monthly'):
                 datetime.datetime(t.year, t.month,
                                   t.day, 0, 0, 0) for t in time_c
             ]
-        elif frequency == 'hourly':
-            cube.coord('time').cells = [
-                datetime.datetime(t.year, t.month,
-                                  t.day, t.hour, 0, 0) for t in time_c
-            ]
+        # TODO add correct handling of hourly data
+        # this is a bit more complicated since it can be 3h, 6h etc
         cube.coord('time').points = [
             cube.coord('time').units.date2num(cl)
             for cl in cube.coord('time').cells
