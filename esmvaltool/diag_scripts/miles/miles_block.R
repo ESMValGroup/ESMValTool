@@ -28,7 +28,22 @@
 library(tools)
 library(yaml)
 
+provenance_record <- function(infile) {
+  xprov <- list(ancestors = infile,
+                authors = list("hard_jo", "davi_pa", "arno_en"),
+                references = list("davini18", "davini12jclim",
+                                  "tibaldi90tel"),
+                projects = list("c3s-magic"),
+                caption = "MiLES blocking statistics",
+                statistics = list("other"),
+                realms = list("atmos"),
+                themes = list("phys"),
+                domains = list("nh"))
+  return(xprov)
+}   
+
 diag_scripts_dir <- Sys.getenv("diag_scripts")
+
 source(paste0(diag_scripts_dir, "/miles/basis_functions.R"))
 source(paste0(diag_scripts_dir, "/miles/block_figures.R"))
 source(paste0(diag_scripts_dir, "/miles/block_fast.R"))
@@ -97,25 +112,12 @@ for (model_idx in c(1:(length(models_dataset)))) {
       FILESDIR = work_dir, doforce = TRUE
     )
     # Set provenance for output files
-    caption <- paste0("MiLES blocking statistics")
-    xprov <- list(ancestors = list(infile),
-                  authors = list("hard_jo", "davi_pa", "arno_en"),
-                  references = list("davini18", "davini12jclim",
-                                    "tibaldi90tel"),
-                  projects = list("c3s-magic"),
-                  caption = caption,
-                  statistics = list("other"),
-                  realms = list("atmos"),
-                  themes = list("phys"),
-                  domains = list("nh"))
+    xprov <- provenance_record(list(infile))
     for (fname in filenames) {
       provenance[[fname]] <- xprov
     }
   }
 }
-
-# Write provenance to file
-write_yaml(provenance, provenance_file)
 
 ##
 ## Make the plots
@@ -139,7 +141,7 @@ if (write_plots) {
       year1 <- models_start_year[model_idx]
       year2 <- models_end_year[model_idx]
       for (seas in seasons) {
-        miles_block_figures(
+        filenames <- miles_block_figures(
           year1 = year1, year2 = year2, expid = exp,
           dataset = dataset, ens = ensemble,
           dataset_ref = dataset_ref, year1_ref = year1_ref,
@@ -148,7 +150,15 @@ if (write_plots) {
           FIGDIR = plot_dir, FILESDIR = work_dir,
           REFDIR = work_dir
         )
+        # Set provenance for output files
+        xprov <- provenance_record(list(filenames$mod, filenames$ref))
+        for (fname in filenames$figs) {
+          provenance[[fname]] <- xprov
+        }
       }
     }
   }
 }
+
+# Write provenance to file
+write_yaml(provenance, provenance_file)

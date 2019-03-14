@@ -65,6 +65,7 @@ miles_block_figures <- function(dataset, expid, ens, year1, year2,
     year2_ref, season
   )
 
+  filenames <- c()
   # loop on fields
   for (field in fieldlist) {
 
@@ -81,6 +82,7 @@ miles_block_figures <- function(dataset, expid, ens, year1, year2,
       year2, season, output_file_type
     )
     print(figname)
+    filenames=c(filenames, figname)
 
     # special treatment for TM90: it is a 1D field!
     if (field == "TM90") {
@@ -180,4 +182,5 @@ miles_block_figures <- function(dataset, expid, ens, year1, year2,
 
     dev.off()
   }
+  return(list(figs = filenames, mod = nomefile, ref = nomefile_ref))
 }
