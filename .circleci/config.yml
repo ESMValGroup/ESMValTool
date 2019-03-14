@@ -237,7 +237,6 @@ workflows:
     jobs:
       - python3_test
       - python3_install
-      - conda_build
   nightly:
     triggers:
       - schedule:
