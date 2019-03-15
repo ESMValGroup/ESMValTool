@@ -220,7 +220,7 @@ begin
     if (diag_script_info@iavmode .eq. "each") then
       ; Calculate multi-model mean of iav
       log_info("Calculate multi-model mean of natural variability")
-      natvar_mmm = dim_avg_n(iav, 0) * sqrt(2.)
+      natvar_mmm = rm_single_dims(dim_avg_n(iav, 0) * sqrt(2.))
     else if (diag_script_info@iavmode .eq. "mmm") then
       log_info("Read precalculated natural variability for multi-model")
       natvar_file = addfile(input_dir + "/" + "IAV_mmm_piControl_" + \
@@ -231,9 +231,12 @@ begin
           (diag_script_info@time_avg .ne. "annualclim")) then
         tmp = natvar_mmm
         delete(natvar_mmm)
-        natvar_mmm = new((/dimsizes(diag_script_info@seasons), \
-                          dimsizes(A0&lat), dimsizes(A0&lon)/), float)
-        natvar_mmm = tmp(diag_script_info@seasons, :, :)
+        natvar_mmm = rm_single_dims(tmp(diag_script_info@seasons, :, :))
+      else if (diag_script_info@time_avg .eq. "annualclim") then
+        tmp = natvar_mmm
+        delete(natvar_mmm)
+        natvar_mmm = rm_single_dims(tmp)
+      end if
       end if
     else
       error_msg("f", DIAG_SCRIPT, "", "Error: This iavmode is not know")
@@ -250,9 +253,12 @@ begin
         (diag_script_info@time_avg .ne. "annualclim")) then
       tmp = natvar_mmm
       delete(natvar_mmm)
-      natvar_mmm = new((/dimsizes(diag_script_info@seasons), \
-                        dimsizes(A0&lat), dimsizes(A0&lon)/), float)
-      natvar_mmm = tofloat(tmp(diag_script_info@seasons, :, :))
+      natvar_mmm = rm_single_dims(tmp(diag_script_info@seasons, :, :))
+    else if (diag_script_info@time_avg .eq. "annualclim") then
+      tmp = natvar_mmm
+      delete(natvar_mmm)
+      natvar_mmm = rm_single_dims(tmp)
+    end if
     end if
   end if
   data2!0 = "models"
