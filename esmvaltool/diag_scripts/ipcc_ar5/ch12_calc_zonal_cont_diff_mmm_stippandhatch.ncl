@@ -153,12 +153,15 @@ begin
     error_msg("f", DIAG_SCRIPT, "", "wrong number of labels, needs to be " + \
               "seasons * scenarios * periods")
   end if
+  ; Average over time (function in ./diag_scripts/lib/ncl/statistics.ncl)
+  data1 = time_operations(A0, -1, -1, "average", diag_script_info@time_avg, \
+                          True)
 
   ;annots = project_style(info_items, diag_script_info, "annots")
-  Fill = default_fillvalue(typeof(A0))
+  Fill = default_fillvalue(typeof(data1))
 
   var_reg = new((/dim_MOD, dim_seas, dimsizes(A0&$lev_name$), \
-                 dimsizes(A0&lat)/), typeof(A0), Fill)
+                 dimsizes(A0&lat)/), typeof(data1), Fill)
 
   var_reg!0 = "models"
   var_reg!1 = "season"
@@ -179,9 +182,6 @@ begin
       copy_VarMeta(var_reg, iav)
     end if
   end if
-  ; Average over time (function in ./diag_scripts/lib/ncl/statistics.ncl)
-  data1 = time_operations(A0, -1, -1, "average", diag_script_info@time_avg, \
-                          True)
   do imod = 0, dim_MOD - 1
     if (imod .ne. 0) then
       A0 = read_data(info_items[imod])
@@ -201,12 +201,12 @@ begin
     end if
     if ((dim_seas .eq. 1) .and. \
         (diag_script_info@time_avg .eq. "annualclim")) then
-      var_reg(imod, 0, :, :) = data1
+      var_reg(imod, 0, :, :) = (/data1/)
     else if ((dim_seas .eq. 1) .and. \
         (diag_script_info@time_avg .eq. "seasonalclim")) then
-      var_reg(imod, 0, :, :) = data1(diag_script_info@seasons, :, :)
+      var_reg(imod, 0, :, :) = (/data1(diag_script_info@seasons, :, :)/)
     else
-      var_reg(imod, :, :, :) = data1(diag_script_info@seasons, :, :)
+      var_reg(imod, :, :, :) = (/data1(diag_script_info@seasons, :, :)/)
     end if
     end if
     if (isatt(diag_script_info, "iavmode")) then
@@ -246,20 +246,7 @@ begin
     if (diag_script_info@iavmode .eq. "each") then
       ; calculate multi-model mean of iav
       tmp_pow = dim_avg_n(iav ^ 2, 0)
-      if (diag_script_info@time_avg .eq. "annualclim") then
-        natvar_mmm = tmp_pow * sqrt(2.)
-      else
-        natvar_mmm = rm_single_dims(tmp_pow * sqrt(2.))
-      end if
-      ; if ((dim_seas .ne. 4) .and. \
-      ;     (diag_script_info@time_avg .ne. "annualclim")) then
-      ;   tmp = natvar_mmm
-      ;   delete(natvar_mmm)
-      ;   natvar_mmm = new((/dimsizes(diag_script_info@seasons), \
-      ;                     dimsizes(tmp&$lev_name$), dimsizes(tmp&lat)/), \
-      ;                      typeof(tmp))
-      ;   natvar_mmm = tmp(diag_script_info@seasons, :, :)
-      ; end if
+      natvar_mmm = rm_single_dims(tmp_pow * sqrt(2.))
     else if (diag_script_info@iavmode .eq. "mmm") then
       log_info("Read precalculated natural variability for multi-model")
       ; read already calculated mmm iav
@@ -272,10 +259,12 @@ begin
           (diag_script_info@time_avg .ne. "annualclim")) then
         tmp = natvar_mmm
         delete(natvar_mmm)
-        natvar_mmm = new((/dimsizes(diag_script_info@seasons), \
-                          dimsizes(tmp&$lev_name$), dimsizes(tmp&lat)/), \
-                          typeof(tmp))
-        natvar_mmm = tmp(diag_script_info@seasons, :, :)
+        natvar_mmm = rm_single_dims(tmp(diag_script_info@seasons, :, :))
+      else if (diag_script_info@time_avg .eq. "annualclim") then
+        tmp = natvar_mmm
+        delete(natvar_mmm)
+        natvar_mmm = rm_single_dims(tmp)
+      end if
       end if
     else
       error_msg("f", DIAG_SCRIPT, "", "Error: This iavmode is not know")
@@ -293,10 +282,12 @@ begin
         (diag_script_info@time_avg .ne. "annualclim")) then
       tmp = natvar_mmm
       delete(natvar_mmm)
-      natvar_mmm = new((/dimsizes(diag_script_info@seasons), \
-                        dimsizes(A0&$lev_name$), dimsizes(A0&lat)/), \
-                        typeof(tmp))
-      natvar_mmm = tmp(diag_script_info@seasons, :, :)
+      natvar_mmm = rm_single_dims(tmp(diag_script_info@seasons, :, :))
+    else if (diag_script_info@time_avg .eq. "annualclim") then
+      tmp = natvar_mmm
+      delete(natvar_mmm)
+      natvar_mmm = rm_single_dims(tmp)
+    end if
     end if
   end if
   ; ##############################################
