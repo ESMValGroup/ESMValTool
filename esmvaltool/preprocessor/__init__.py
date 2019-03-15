@@ -8,8 +8,8 @@ from iris.cube import Cube, CubeList
 
 from .._provenance import TrackedFile
 from .._task import BaseTask
-from ._area import (zonal_means, extract_named_regions,
-                    average_region, extract_region)
+from ._area import (average_region, extract_named_regions, extract_region,
+                    zonal_means)
 from ._derive import derive
 from ._download import download
 from ._io import (_get_debug_filename, cleanup, concatenate, load, save,
@@ -21,10 +21,10 @@ from ._multimodel import multi_model_statistics
 from ._reformat import (cmor_check_data, cmor_check_metadata, fix_data,
                         fix_file, fix_metadata)
 from ._regrid import extract_levels, regrid
-from ._time import (extract_month, extract_season, seasonal_mean,
-                    time_average, extract_time)
-from ._volume import (depth_integration, extract_trajectory, extract_transect,
-                      average_volume, extract_volume)
+from ._time import (annual_mean, extract_month, extract_season, extract_time,
+                    seasonal_mean, time_average)
+from ._volume import (average_volume, depth_integration, extract_trajectory,
+                      extract_transect, extract_volume)
 
 logger = logging.getLogger(__name__)
 
@@ -45,7 +45,6 @@ __all__ = [
     'extract_time',
     'extract_season',
     'extract_month',
-    'annual_mean',
     # Data reformatting/CMORization
     'fix_data',
     # Level extraction
@@ -79,6 +78,7 @@ __all__ = [
     'average_region',
     'average_volume',
     'zonal_means',
+    'annual_mean',
     'seasonal_mean',
     'time_average',
     'cmor_check_data',
