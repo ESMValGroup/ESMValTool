@@ -35,7 +35,6 @@ import numpy as np
 from .utilities import (_add_metadata,
                         _fix_coords,
                         _read_cmor_config,
-                        _roll_cube_data,
                         _save_variable)
 
 logger = logging.getLogger(__name__)
@@ -85,7 +84,6 @@ def extract_variable(var, raw_file, out_dir):
             cube.long_name = LONG_NAMES[var]
             cube.var_name = var
             _fix_coords(cube)
-            _roll_cube_data(cube, 180, -1)
             _fix_data(cube, var)
             _fix_metadata(cube, var)
             _add_metadata(cube, PROJ)
@@ -94,7 +92,8 @@ def extract_variable(var, raw_file, out_dir):
             fillvalue = cube.data.fill_value
             _save_variable(cube, var, out_dir,
                            [yr1, yr2], PROJ, fill_value=fillvalue,
-                           local_keys=['positive'])
+                           local_keys=['positive'],
+                           unlimited_dimensions = ['time'])
 
 
 def cmorization(in_dir, out_dir):
