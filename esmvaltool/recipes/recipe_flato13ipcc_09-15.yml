@@ -18,32 +18,72 @@ documentation:
     - crescendo
 
 preprocessors:
-  prep0:
+  bottom_layer_ts_to_clim_thetao:
     custom_order: True
     extract_month:
       month: 8
-    extract_bottom_layer:
     time_average:
+    extract_volume:
+      z_min: 1000
+      z_max: 99999
+    extract_bottom_layer:
     regrid:
       target_grid: 1x1
       scheme: linear
+    convert_units:
+      units: degC
+  bottom_layer_clim_thetao:
+    custom_order: True
+    extract_volume:
+      z_min: 1000
+      z_max: 99999
+    extract_bottom_layer:
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    convert_units:
+      units: degC
 
 diagnostics:
   ipcc_fig_9_15:
     description: Ocean bottom layer potential temperature (fig 9.15)
     variables:
-      thetao:
+      thetao_models:
+        short_name: thetao
         project: CMIP5
         start_year: 1986
         end_year: 2005
         exp: historical
         ensemble: r1i1p1
-        preprocessor: prep0
         reference_dataset: WOCE
         mip: Omon
         field: TO3M
-        # additional_datasets:
-        #   - {dataset: WOCE, project: OBS, type: reanaly, version: 2004, start_year: 1990, end_year: 1999, tier: 2}
+        preprocessor: bottom_layer_ts_to_clim_thetao
+        additional_datasets:
+          - dataset: CanESM2
+          - dataset: CNRM-CM5
+          - dataset: CSIRO-Mk3-6-0
+          - dataset: GFDL-ESM2M
+          - dataset: GISS-E2-R
+          - dataset: HadGEM2-ES
+          - dataset: IPSL-CM5A-LR
+          - dataset: MPI-ESM-LR
+          - dataset: MRI-CGCM3
+          - dataset: NorESM1-M
+          - dataset: GFDL-ESM2G
+      thetao_obs:
+        short_name: thetao
+        project: OBS
+        start_year: 1990
+        end_year: 1998
+        mip: Omon
+        field: TO3M
+        preprocessor: bottom_layer_clim_thetao
+        additional_datasets:
+          - dataset: WOCE
+            type: clim
+            version: 2004
+            tier: 2
       # sic:
       #   project: CMIP5
       #   start_year: 1986
@@ -56,18 +96,6 @@ diagnostics:
       #   field: T2Ms
       #   additional_datasets:
       #     - {dataset: HadISST, project: OBS, type: reanaly, version: 20130524, start_year: 1986, end_year: 2005, tier: 2}
-    additional_datasets:
-      - {dataset: CanESM2}
-      - {dataset: CNRM-CM5}
-      - {dataset: CSIRO-Mk3-6-0}
-      # - {dataset: GFDL-ESM2M}
-      - {dataset: GISS-E2-R}
-      # - {dataset: HadGEM2-ES}
-      - {dataset: IPSL-CM5A-LR}
-      - {dataset: MPI-ESM-LR}
-      - {dataset: MRI-CGCM3}
-      # - {dataset: NorESM1-M}
-      # - {dataset: GFDL-ESM2G}
     scripts:
       ipcc_fig_9_15:
         script: ipcc_ar5/ch09_fig09_15.py
