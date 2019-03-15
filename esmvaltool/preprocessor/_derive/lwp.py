@@ -4,7 +4,7 @@ import logging
 
 from iris import Constraint
 
-from ._derived_variable_base import DerivedVariableBase
+from ._baseclass import DerivedVariableBase
 
 logger = logging.getLogger(__name__)
 
@@ -13,15 +13,14 @@ class DerivedVariable(DerivedVariableBase):
     """Derivation of variable `lwp`."""
 
     # Required variables
-    _required_variables = {
-        'vars': [{
-            'short_name': 'clwvi',
-            'field': 'T2{frequency}s'
-        }, {
-            'short_name': 'clivi',
-            'field': 'T2{frequency}s'
-        }]
-    }
+    required = [
+        {
+            'short_name': 'clwvi'
+        },
+        {
+            'short_name': 'clivi'
+        },
+    ]
 
     def calculate(self, cubes):
         """Compute liquid water path.

@@ -2,22 +2,21 @@
 
 from iris import Constraint
 
-from ._derived_variable_base import DerivedVariableBase
+from ._baseclass import DerivedVariableBase
 
 
 class DerivedVariable(DerivedVariableBase):
     """Derivation of variable `swcre`."""
 
     # Required variables
-    _required_variables = {
-        'vars': [{
-            'short_name': 'rsut',
-            'field': 'T2{frequency}s'
-        }, {
-            'short_name': 'rsutcs',
-            'field': 'T2{frequency}s'
-        }]
-    }
+    required = [
+        {
+            'short_name': 'rsut'
+        },
+        {
+            'short_name': 'rsutcs'
+        },
+    ]
 
     def calculate(self, cubes):
         """Compute shortwave cloud radiative effect."""

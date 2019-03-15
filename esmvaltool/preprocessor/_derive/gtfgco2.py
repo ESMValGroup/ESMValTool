@@ -1,10 +1,9 @@
 """Derivation of variable `gtfgco2`."""
 import iris
+import numpy as np
 from iris import Constraint
 
-import numpy as np
-
-from ._derived_variable_base import DerivedVariableBase
+from ._baseclass import DerivedVariableBase
 
 
 def calculate_total_flux(fgco2_cube, cube_area):
@@ -48,29 +47,34 @@ class DerivedVariable(DerivedVariableBase):
     """Derivation of variable `gtfgco2`."""
 
     # Required variables
-    _required_variables = {
-        'vars': [{
+    required = [
+        {
             'short_name': 'fgco2',
-            'field': 'TO2M', }],
-        'fx_files': ['areacello', ]}
+            'mip': 'Omon',
+            'fx_files': [
+                'areacello',
+            ],
+        },
+    ]
 
     def calculate(self, cubes):
         """Compute longwave cloud radiative effect."""
         fgco2_cube = cubes.extract_strict(
             Constraint(name='surface_downward_mass_flux_of_carbon_dioxide'
-                            '_expressed_as_carbon'))
+                       '_expressed_as_carbon'))
 
         try:
-            cube_area = cubes.extract_strict(
-                Constraint(name='cell_area'))
+            cube_area = cubes.extract_strict(Constraint(name='cell_area'))
         except iris.exceptions.ConstraintMismatchError:
             pass
 
         total_flux = calculate_total_flux(fgco2_cube, cube_area)
 
         # Dummy result cube
-        result = fgco2_cube.collapsed(['latitude', 'longitude'],
-                                      iris.analysis.MEAN,)
+        result = fgco2_cube.collapsed(
+            ['latitude', 'longitude'],
+            iris.analysis.MEAN,
+        )
         result.units = fgco2_cube.units * cube_area.units
 
         result.data = total_flux

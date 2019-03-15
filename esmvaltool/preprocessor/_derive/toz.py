@@ -2,12 +2,12 @@
 
 import cf_units
 import iris
-from iris import Constraint
 import numba
 import numpy as np
+from iris import Constraint
 from scipy import constants
 
-from ._derived_variable_base import DerivedVariableBase
+from ._baseclass import DerivedVariableBase
 
 # Constants
 AVOGADRO_CONST = constants.value('Avogadro constant')
@@ -25,15 +25,14 @@ class DerivedVariable(DerivedVariableBase):
     """Derivation of variable `toz`."""
 
     # Required variables
-    _required_variables = {
-        'vars': [{
-            'short_name': 'tro3',
-            'field': 'T3{frequency}'
-        }, {
-            'short_name': 'ps',
-            'field': 'T2{frequency}s'
-        }]
-    }
+    required = [
+        {
+            'short_name': 'tro3'
+        },
+        {
+            'short_name': 'ps'
+        },
+    ]
 
     def calculate(self, cubes):
         """Compute total column ozone.
