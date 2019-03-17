@@ -5,8 +5,6 @@ ClimProjDiags
 dotCall64
 ggplot2
 gridExtra
-JuliaCall
-lintr
 logging
 mapproj
 maps
@@ -19,3 +17,4 @@ Rcpp
 s2dverification
 SPEI
 yaml
+JuliaCall

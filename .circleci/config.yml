@@ -24,6 +24,7 @@ jobs:
             conda update -y conda
             conda env update
             conda activate esmvaltool
+            conda install -yS r-lintr
             Rscript esmvaltool/install/R/setup.R
       - save_cache:
           key: deps3-{{ .Branch }}-{{ checksum "cache_key.txt" }}

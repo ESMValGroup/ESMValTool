@@ -72,7 +72,7 @@ requirements:
     - jasper!=1.900.31  # pinned NCL dependency
     - r-base
     - cdo
-    - julia
+    - julia=0.6.1 # 1.0.3 from conda-forge does not work properly
 
 test:
   # TODO: add unit tests? This seems to require installing the tests
