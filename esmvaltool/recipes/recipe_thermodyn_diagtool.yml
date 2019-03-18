@@ -1,0 +1,135 @@
+# recipe_thermodyn_diagtool.yml
+
+---
+documentation:
+  description: |
+        Recipe for the computation of various aspects associated with
+        the thermodynamics of the climate system, such as energy and
+        water mass budgets, meridional enthalpy transports, the Lorenz
+        Energy Cycle and the material entropy production.
+
+  authors:
+    - lemb_va
+    - kold_ni
+
+  references:
+    - lembo16climdyn
+    - lucarini14revgeop
+
+  projects:
+    - esmval
+    - trr181
+
+datasets:
+  - {dataset: BNU-ESM, project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 1994, end_year: 1999}
+  - {dataset: CanESM2, project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 2456, end_year: 2460}
+  - {dataset: ACCESS1-3, project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 400, end_year: 405}
+  - {dataset: BNU-ESM, project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 2002, end_year: 2007}
+  - {dataset: IPSL-CM5A-MR, project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 2044, end_year: 2049}
+  - {dataset: MIROC5, project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 2310, end_year: 2314}
+  - {dataset: MIROC-ESM-CHEM, project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 2001, end_year: 2005}
+  - {dataset: MPI-ESM-LR, project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 2031, end_year: 2035}
+  - {dataset: MPI-ESM-MR, project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 2001, end_year: 2005}
+preprocessors:
+  prep0: {}
+
+diagnostics:
+  Thermodyn_Diag:
+    description: Thermodynamics diagnostics
+    themes: phys
+    realms: atmos
+    variables:
+      hfls:
+        preprocessor: prep0
+        mip: Amon
+        field: T2Ms
+      hfss:
+        preprocessor: prep0
+        mip: Amon
+        field: T2Ms
+      pr:
+        preprocessor: prep0
+        mip: Amon
+        field: T2Ms
+      ps:
+        preprocessor: prep0
+        mip: Amon
+        field: T2Ms
+      prsn:
+        preprocessor: prep0
+        mip: Amon
+        field: T2Ms
+      rlds:
+        preprocessor: prep0
+        mip: Amon
+        field: T2Ms
+      rlus:
+        preprocessor: prep0
+        mip: Amon
+        field: T2Ms
+      rlut:
+        preprocessor: prep0
+        mip: Amon
+        field: T2Ms
+      rsds:
+        preprocessor: prep0
+        mip: Amon
+        field: T2Ms
+      rsus:
+        preprocessor: prep0
+        mip: Amon
+        field: T2Ms
+      rsdt:
+        preprocessor: prep0
+        mip: Amon
+        field: T2Ms
+      rsut:
+        preprocessor: prep0
+        mip: Amon
+        field: T2Ms
+      ts:
+        preprocessor: prep0
+        mip: Amon
+        field: T2Ms
+      hus:
+        preprocessor: prep0
+        mip: Amon
+        field: T3M
+      tas:
+        preprocessor: prep0
+        mip: day
+        field: T2Ds
+      uas:
+        preprocessor: prep0
+        mip: day
+        field: T2Ds
+      vas:
+        preprocessor: prep0
+        mip: day
+        field: T2Ds
+      ta:
+        preprocessor: prep0
+        fx_files: [sftlf]
+        mip: day
+        field: T3D
+      ua:
+        preprocessor: prep0
+        mip: day
+        field: T3D
+      va:
+        preprocessor: prep0
+        mip: day
+        field: T3D
+      wap:
+        preprocessor: prep0
+        mip: day
+        field: T3D
+    scripts:
+      Thermodyn_Diag:
+        script: thermodyn_diagtool/thermodyn_diagnostics.py
+        eb: true
+        lsm: true
+        wat: true
+        lec: false
+        entr: true
+        met: 3
