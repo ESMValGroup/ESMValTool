@@ -121,7 +121,7 @@ def _fix_coords(cube):
                 cube.attributes['geospatial_lon_min'] = 0.
                 cube.attributes['geospatial_lon_max'] = 360.
                 nlon = len(cube.coord('longitude').points)
-                _roll_cube_data(cube, int(nlon/2) , -1)
+                _roll_cube_data(cube, int(nlon / 2), -1)
 
         # fix latitude
         if cube_coord.var_name == 'lat':

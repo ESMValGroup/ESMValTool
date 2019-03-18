@@ -93,7 +93,7 @@ def extract_variable(var, raw_file, out_dir):
             _save_variable(cube, var, out_dir,
                            [yr1, yr2], PROJ, fill_value=fillvalue,
                            local_keys=['positive'],
-                           unlimited_dimensions = ['time'])
+                           unlimited_dimensions=['time'])
 
 
 def cmorization(in_dir, out_dir):
