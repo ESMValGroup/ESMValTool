@@ -17,24 +17,19 @@ jobs:
       - restore_cache:
           key: deps3-{{ .Branch }}-{{ checksum "cache_key.txt" }}
       - run:
-          # Update/Create Conda Environment
+          # Update/Create Conda environment and run tests
           command: |
             . /opt/conda/etc/profile.d/conda.sh
             conda update -y conda
             conda env update
             conda activate esmvaltool
             conda install -yS r-lintr
+            python setup.py test
       - save_cache:
           key: deps3-{{ .Branch }}-{{ checksum "cache_key.txt" }}
           paths:
             - "/opt/conda/envs/esmvaltool"
             - ".eggs"
-      - run:
-          # Activate Conda environment and run tests
-          command: |
-            . /opt/conda/etc/profile.d/conda.sh
-            conda activate esmvaltool
-            python setup.py test
       - store_test_results:
           path: test-reports/
       - store_artifacts:
