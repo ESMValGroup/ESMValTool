@@ -14,8 +14,6 @@ The module provides plots for a single model of:
 
 @author: Valerio Lembo, University of Hamburg, 2018.
 """
-from __future__ import division
-
 import math
 import os
 from shutil import move
@@ -23,14 +21,14 @@ from shutil import move
 import cartopy.crs as ccrs
 import matplotlib.pyplot as plt
 import numpy as np
-from cdo import Cdo
 from matplotlib import rcParams
 from netCDF4 import Dataset
 from scipy import interpolate, stats
 
-from esmvaltool.diag_scripts.shared._base import ProvenanceLogger
-from esmvaltool.diag_scripts.thermodyn_diagtool import (fourier_coefficients,
-                                                        provenance_meta)
+from cdo import Cdo
+from esmvaltool.diag_scripts.shared import ProvenanceLogger
+
+from . import fourier_coefficients, provenance_meta
 
 
 def balances(cfg, wdir, plotpath, filena, name, model):
@@ -56,11 +54,11 @@ def balances(cfg, wdir, plotpath, filena, name, model):
     provlog = ProvenanceLogger(cfg)
     nsub = len(filena)
     pdir = plotpath
-    plotentname = pdir + '/{}_transp.png'.format(model)
-    plotwmbname = pdir + '/{}_transp.png'.format(model)
-    plotlatname = pdir + '/{}_transp.png'.format(model)
+    plotentname = pdir + '/{}_heat_transp.png'.format(model)
+    plotwmbname = pdir + '/{}_wmb_transp.png'.format(model)
+    plotlatname = pdir + '/{}_latent_transp.png'.format(model)
 
-    timesery = np.zeros([nsub, 2])
+    # timesery = np.zeros([nsub, 2])
     dims, ndims, tmean, zmean, timeser = global_averages(nsub, filena, name)
     transp_mean = np.zeros([nsub, ndims[1]])
     lat_maxm = np.zeros([nsub, 2, len(dims[3])])
@@ -78,9 +76,9 @@ def balances(cfg, wdir, plotpath, filena, name, model):
             'Surface Energy Budget'
         ]
         transpty = (-6E15, 6E15)
-        timesery[0, :] = (-2, 2)
-        timesery[1, :] = (-1, 1)
-        timesery[2, :] = (-3, 3)
+        # timesery[0, :] = (-3, 3)
+        # timesery[1, :] = (-1, 1)
+        # timesery[2, :] = (-3, 3)
         coords = [dims[0], dims[1]]
         plot_climap_eb(model, pdir, coords, tmean, ext_name)
         fig = plt.figure()
@@ -117,8 +115,8 @@ def balances(cfg, wdir, plotpath, filena, name, model):
         plot_1m_scatter(model, pdir, lat_maxm, tr_maxm)
     elif nsub == 2:
         ext_name = ['Water mass budget', 'Latent heat budget']
-        timesery[0, :] = (-3E-6, 3E-6)
-        timesery[1, :] = (-20, 20)
+        # timesery[0, :] = (-3E-6, 3E-6)
+        # timesery[1, :] = (-20, 20)
         transpwy = (-2E9, 2E9)
         transply = (-6E15, 6E15)
         coords = [dims[0], dims[1]]
@@ -166,7 +164,7 @@ def balances(cfg, wdir, plotpath, filena, name, model):
             shadow=True,
             ncol=3)
         plt.tight_layout()
-        plt.ylim(timesery[i_f, :])
+        # plt.ylim(timesery[i_f, :])
         plt.grid()
         plt.savefig(pdir + '/{}_{}_timeser.png'.format(model, name[i_f]))
         plt.close(fig)
@@ -211,10 +209,10 @@ def entropy(plotpath, filename, name, ext_name, model):
         c_m = 'YlOrBr'
     else:
         quit()
-    dataset = Dataset(filename)
-    var = dataset.variables[name][:, :, :]
-    lats = dataset.variables['lat'][:]
-    lons = dataset.variables['lon'][:]
+    with Dataset(filename) as dataset:
+        var = dataset.variables[name][:, :, :]
+        lats = dataset.variables['lat'][:]
+        lons = dataset.variables['lon'][:]
     tmean = np.nanmean(var, axis=0)
     fig = plt.figure()
     axi = plt.axes(projection=ccrs.PlateCarree())
@@ -239,14 +237,14 @@ def global_averages(nsub, filena, name):
     sep = '.nc'
     filena[0] = filena[0].split(sep, 1)[0]
     filename = filena[0] + sep
-    dataset = Dataset(filename)
-    lats = dataset.variables['lat'][:]
-    lons = dataset.variables['lon'][:]
-    time = dataset.variables['time'][:]
+    with Dataset(filename) as dataset:
+        lats = dataset.variables['lat'][:]
+        lons = dataset.variables['lon'][:]
+        time = dataset.variables['time'][:]
     nlats = len(lats)
     nlons = len(lons)
     ntime = len(time)
-    yr_0 = len(time) / 12
+    yr_0 = int(len(time) / 12)
     timey = np.linspace(0, yr_0 - 1, num=yr_0)
     dims = [lons, lats, time, timey]
     ndims = [nlons, nlats, ntime, yr_0]
@@ -254,9 +252,11 @@ def global_averages(nsub, filena, name):
     for i in np.arange(nsub):
         filena[i] = filena[i].split(sep, 1)[0]
         filename = filena[i] + '.nc'
-        dataset = Dataset(filename)
-        var[i, :, :, :] = dataset.variables[name[i]][:, :, :]
-    var_r = np.reshape(var, (nsub, np.shape(var)[1] / 12, 12, nlats, nlons))
+        with Dataset(filename) as dataset:
+            dataset = Dataset(filename)
+            var[i, :, :, :] = dataset.variables[name[i]][:, :, :]
+    var_r = np.reshape(var,
+                       (nsub, int(np.shape(var)[1] / 12), 12, nlats, nlons))
     vary = np.nanmean(var_r, axis=2)
     zmean = np.nanmean(vary, axis=3)
     tmean = np.nanmean(vary, axis=1)
@@ -285,16 +285,14 @@ def hemean(hem, lat, inp):
     hmean = []
     if hem == 1:
         if j_end % 2 == 0:
-            hmean = np.nansum(zmn[:, j_end / 2 + 1:j_end], axis=1)
+            hmean = 2 * np.nansum(zmn[:, int(j_end / 2):j_end], axis=1)
         else:
-            hmean = (np.nansum(zmn[:, (j_end + 3) / 2:j_end], axis=1) +
-                     0.5 * zmn[:, (j_end + 3) / 2 - 1])
+            hmean = 2 * np.nansum(zmn[:, int((j_end + 1) / 2):j_end], axis=1)
     else:
         if j_end % 2 == 0:
-            hmean = np.nansum(zmn[:, 1:j_end / 2], axis=1)
+            hmean = 2 * np.nansum(zmn[:, 1:int(j_end / 2)], axis=1)
         else:
-            hmean = (np.nansum(zmn[:, 1:(j_end - 1) / 2], axis=1) +
-                     0.5 * zmn[:, (j_end - 1) / 2 + 1])
+            hmean = 2 * np.nansum(zmn[:, 1:int((j_end - 1) / 2)], axis=1)
     return hmean
 
 
@@ -418,9 +416,10 @@ def plot_climap(axi, coords, fld, title, rrange, c_m):
     Valerio Lembo, University of Hamburg (2019).
     """
     axi.coastlines()
-    plt.contourf(coords[0], coords[1], fld, 60, transform=ccrs.PlateCarree())
+    lons = np.linspace(0, 360, len(coords[0])) - (coords[0][1] - coords[0][0])
+    plt.contourf(lons, coords[1], fld, 60, transform=ccrs.PlateCarree())
     plt.pcolor(
-        coords[0],
+        lons,
         coords[1],
         fld,
         vmin=rrange[0],
@@ -583,12 +582,14 @@ def plot_mm_ebscatter(pdir, eb_list):
     xlabel = 'F_a [W m-2]'
     ylabel = 'Sigma (F_a) [W m-2]'
     varlist = [atmb_all[:, 0], atmb_all[:, 1]]
+    plot_mm_scatter(axi, varlist, title, xlabel, ylabel)
     axi = plt.subplot(223)
     plt.ylim(bottom=0)
     title = '(b) Surface energy budget'
     xlabel = 'F_s [W m-2]'
     ylabel = 'Sigma (F_s) [W m-2]'
     varlist = [surb_all[:, 0], surb_all[:, 1]]
+    plot_mm_scatter(axi, varlist, title, xlabel, ylabel)
     axi = plt.subplot(224)
     axi.set_figsize = (50, 50)
     plt.errorbar(
@@ -602,6 +603,7 @@ def plot_mm_ebscatter(pdir, eb_list):
     xlabel = 'F_a [W m-2]'
     ylabel = 'F_s [W m-2]'
     varlist = [atmb_all[:, 0], surb_all[:, 0]]
+    plot_mm_scatter(axi, varlist, title, xlabel, ylabel)
     plt.savefig(pdir + '/scatters_variability.png')
     plt.close(fig)
 
@@ -630,9 +632,11 @@ def plot_mm_scatter(axi, varlist, title, xlabel, ylabel):
     plt.scatter(xval, yval, c=(0, 0, 0), alpha=1)
     plt.scatter(np.nanmean(xval), np.nanmean(yval), c='red')
     s_l, _, _, _, _ = stats.linregress(xval, yval)
+    semimaj = np.max([np.nanstd(xval), np.nanstd(yval)])
+    semimin = np.min([np.nanstd(xval), np.nanstd(yval)])
     plot_ellipse(
-        semimaj=np.nanstd(xval),
-        semimin=np.nanstd(yval),
+        semimaj,
+        semimin,
         phi=np.arctan(s_l),
         x_cent=np.nanmean(xval),
         y_cent=np.nanmean(yval),
@@ -806,10 +810,10 @@ def plot_mm_transp_panel(model_names, wdir, axi, domn, yrange):
     axi.set_figsize = (50, 50)
     for model in model_names:
         tot_transp_file = (wdir + '/{}_transp_mean_{}.nc'.format(domn, model))
-        dataset = Dataset(tot_transp_file)
         name = '{}_{}'.format(domn, model)
-        toat = dataset.variables[name][:]
-        lats = dataset.variables['lat'][:]
+        with Dataset(tot_transp_file) as dataset:
+            toat = dataset.variables[name][:]
+            lats = dataset.variables['lat_{}'.format(model)][:]
         plt.plot(np.array(lats), np.array(toat), color='black', linewidth=1.)
     plt.title('(a) {} heat transports'.format(domn), fontsize=18)
     plt.xlabel('Latitude [deg]', fontsize=14)
@@ -912,8 +916,6 @@ def transp_max(lat, transp, lim):
             j_p = j_p + 1
             if j_p == 2:
                 break
-        else:
-            pass
     return [xc_cut, y_i]
 
 
@@ -963,32 +965,32 @@ def varatts(w_nc_var, varname):
     """
     if varname == 'total':
         w_nc_var.setncatts({
-            'long_name': u"Total merid. heat transport",
-            'units': u"W",
+            'long_name': "Total merid. heat transport",
+            'units': "W",
             'level_desc': 'TOA'
         })
     elif varname == 'atmos':
         w_nc_var.setncatts({
-            'long_name': u"Atmos. merid. heat transport",
-            'units': u"W",
+            'long_name': "Atmos. merid. heat transport",
+            'units': "W",
             'level_desc': 'Vertically integrated'
         })
     elif varname == 'ocean':
         w_nc_var.setncatts({
-            'long_name': u"Ocean. merid. heat transport",
-            'units': u"W",
+            'long_name': "Ocean. merid. heat transport",
+            'units': "W",
             'level_desc': 'sfc'
         })
     elif varname == 'wmb':
         w_nc_var.setncatts({
-            'long_name': u"Merid. water mass transport",
-            'units': u"Kg*s-1",
+            'long_name': "Merid. water mass transport",
+            'units': "Kg*s-1",
             'level_desc': 'sfc'
         })
     elif varname == 'latent':
         w_nc_var.setncatts({
-            'long_name': u"Merid. latent heat transport",
-            'units': u"W",
+            'long_name': "Merid. latent heat transport",
+            'units': "W",
             'level_desc': 'sfc'
         })
 

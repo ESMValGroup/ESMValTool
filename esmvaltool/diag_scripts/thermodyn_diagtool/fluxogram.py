@@ -19,10 +19,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import matplotlib
 from matplotlib import pyplot as plt
-
-matplotlib.use('Agg')
 
 
 class Fluxogram():
@@ -169,10 +166,10 @@ class Fluxogram():
             # of their position and not to upper left
             x_p = (
                 storage.x_p +
-                (1 - storage.amount / self.max_storage) * 0.5 * self.grid_size)
+                (1 - storage.amount / self.max_storage) * 1.3 * self.grid_size)
             y_p = (
                 storage.y_p -
-                (1 - storage.amount / self.max_storage) * 0.5 * self.grid_size)
+                (1 - storage.amount / self.max_storage) * 1.3 * self.grid_size)
             rectangle = plt.Rectangle((x_p, y_p),
                                       scaled_amount_stor,
                                       -scaled_amount_stor,

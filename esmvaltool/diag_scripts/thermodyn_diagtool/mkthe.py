@@ -26,10 +26,11 @@ import os
 from shutil import move
 
 import numpy as np
-from cdo import Cdo
 from netCDF4 import Dataset
 
-from esmvaltool.diag_scripts.thermodyn_diagtool import fourier_coefficients
+from cdo import Cdo
+
+from . import fourier_coefficients
 
 ALV = 2.5008e6  # Latent heat of vaporization
 G_0 = 9.81  # Gravity acceleration
@@ -108,12 +109,12 @@ def init_mkthe(model, wdir, filelist, flags):
     cdo.yearmonmean(input=te_file, output=te_ymm_file)
     te_gmean_file = wdir + '/{}_te_gmean.nc'.format(model)
     cdo.timmean(input='-fldmean {}'.format(te_ymm_file), output=te_gmean_file)
-    f_l = Dataset(te_gmean_file)
-    te_gmean_constant = f_l.variables['rlut'][0, 0, 0]
-    if wat in {'y', 'yes'} and entr in {'n', 'no'}:
+    with Dataset(te_gmean_file) as f_l:
+        te_gmean_constant = f_l.variables['rlut'][0, 0, 0]
+    if wat is True and entr is False:
         evspsbl_file, prr_file = wfluxes(model, wdir, filelist)
         aux_files = [evspsbl_file, prr_file]
-    elif entr in {'y', 'yes'}:
+    if entr:
         if met in {'2', '3'}:
             evspsbl_file, prr_file = wfluxes(model, wdir, filelist)
             mk_list = [
@@ -147,10 +148,6 @@ def init_mkthe(model, wdir, filelist, flags):
                 evspsbl_file, htop_file, prr_file, tabl_file, tasvert_file,
                 tcloud_file, tcolumn_file, tlcl_file
             ]
-        else:
-            pass
-    else:
-        pass
     remove_files = [tasmn_file, uasmn_file, vasmn_file, te_gmean_file]
     for filen in remove_files:
         os.remove(filen)
@@ -193,19 +190,19 @@ def input_data(wdir, file_list):
     te_miss_file = wdir + '/te.nc'
     removeif(te_miss_file)
     cdo.setctomiss('0', input=file_list[6], output=te_miss_file)
-    dataset = Dataset(ts_miss_file)
-    t_s = dataset.variables['ts'][:, :, :]
-    dataset = Dataset(hus_miss_file)
-    hus = dataset.variables['hus'][:, :, :, :]
-    lev = dataset.variables['plev'][:]
-    dataset = Dataset(ps_miss_file)
-    p_s = dataset.variables['ps'][:, :, :]
-    dataset = Dataset(vv_missfile)
-    vv_hor = dataset.variables['uas'][:, :, :]
-    dataset = Dataset(hfss_miss_file)
-    hfss = dataset.variables['hfss'][:, :, :]
-    dataset = Dataset(te_miss_file)
-    t_e = dataset.variables['rlut'][:, :, :]
+    with Dataset(ts_miss_file) as dataset:
+        t_s = dataset.variables['ts'][:, :, :]
+    with Dataset(hus_miss_file) as dataset:
+        hus = dataset.variables['hus'][:, :, :, :]
+        lev = dataset.variables['plev'][:]
+    with Dataset(ps_miss_file) as dataset:
+        p_s = dataset.variables['ps'][:, :, :]
+    with Dataset(vv_missfile) as dataset:
+        vv_hor = dataset.variables['uas'][:, :, :]
+    with Dataset(hfss_miss_file) as dataset:
+        hfss = dataset.variables['hfss'][:, :, :]
+    with Dataset(te_miss_file) as dataset:
+        t_e = dataset.variables['rlut'][:, :, :]
     huss = hus[:, 0, :, :]
     huss = np.where(lev[0] >= p_s, huss, 0.)
     nlev = len(lev)
@@ -330,13 +327,13 @@ def write_output(wdir, model, file_list, varlist):
     w_nc_var = w_nc_fid.createVariable('tlcl', 'f8', ('time', 'lat', 'lon'))
     w_nc_var.setncatts({
         'long_name':
-        u"LCL Temperature",
+        "LCL Temperature",
         'units':
-        u"K",
+        "K",
         'level_desc':
-        u"surface",
+        "surface",
         'var_desc':
-        (u"LCL temperature from LCL ", "height (Magnus formulas and dry ",
+        ("LCL temperature from LCL ", "height (Magnus formulas and dry ",
          "adiabatic lapse ratio)"),
         'statistic':
         'monthly mean'
@@ -357,16 +354,16 @@ def write_output(wdir, model, file_list, varlist):
     w_nc_var = w_nc_fid.createVariable('tabl', 'f8', ('time', 'lat', 'lon'))
     w_nc_var.setncatts({
         'long_name':
-        u"Temperature at BL top",
+        "Temperature at BL top",
         'units':
-        u"K",
+        "K",
         'level_desc':
-        u"surface",
+        "surface",
         'var_desc':
-        (u"Temperature at the Boundary Layer ",
+        ("Temperature at the Boundary Layer ",
          "top, from boundary layer thickness and ", "barometric equation"),
         'statistic':
-        u'monthly mean'
+        'monthly mean'
     })
     w_nc_fid.variables['tabl'][:] = t_z
     w_nc_fid.close()  # close the new file
@@ -384,19 +381,20 @@ def write_output(wdir, model, file_list, varlist):
     w_nc_var = w_nc_fid.createVariable('htop', 'f8', ('time', 'lat', 'lon'))
     w_nc_var.setncatts({
         'long_name':
-        u"Height at BL top",
+        "Height at BL top",
         'units':
-        u"m",
+        "m",
         'level_desc':
-        u"surface",
+        "surface",
         'var_desc':
-        (u"Height at the Boundary Layer top, ",
+        ("Height at the Boundary Layer top, ",
          "from boundary layer thickness and ", "barometric equation"),
         'statistic':
-        u'monthly mean'
+        'monthly mean'
     })
     w_nc_fid.variables['htop'][:] = htop
     w_nc_fid.close()  # close the new file
+    dataset.close()
     tlcl_file = wdir + '/{}_tlcl.nc'.format(model)
     cdo.setrtomiss('400,1e36', input=tlcl_temp, output=tlcl_file)
     tabl_file = wdir + '/{}_tabl.nc'.format(model)

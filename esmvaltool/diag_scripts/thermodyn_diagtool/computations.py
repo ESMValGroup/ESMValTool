@@ -33,10 +33,11 @@ import os
 from shutil import move
 
 import numpy as np
-from cdo import Cdo
 from netCDF4 import Dataset
 
-from esmvaltool.diag_scripts.thermodyn_diagtool import mkthe
+from cdo import Cdo
+
+from . import mkthe
 
 L_C = 2501000  # latent heat of condensation
 LC_SUB = 2835000  # latent heat of sublimation
@@ -109,8 +110,8 @@ def baroceff(model, wdir, aux_file, toab_file, te_file):
         input='{} -mulc,0.5 -add -reci {} -reci {}'.format(
             aux_baroceff_file, tegainm_file, telossm_file),
         output=baroceff_file)
-    f_l = Dataset(baroceff_file)
-    baroc = f_l.variables['toab'][0, 0, 0]
+    with Dataset(baroceff_file) as f_l:
+        baroc = f_l.variables['toab'][0, 0, 0]
     remove_files = [
         gain_file, loss_file, toabgain_file, toabloss_file, tegain_file,
         teloss_file, tegainm_file, telossm_file, aux_baroceff_file
@@ -258,7 +259,6 @@ def direntr(logger, model, wdir, filelist, aux_file, lect, lec, flags):
     logger.info(
         'Material entropy production associated with '
         'snowfall: %s\n', ssnow)
-    os.remove(tcloud_file)
     logger.info('2.4 Melting of snow at the surface \n')
     smelt, meltentr_file = meltentr(model, wdir, latsnow_file, aux_file)
     logger.info(
@@ -418,10 +418,10 @@ def kinentr(logger, aux_file, tasvert_file, lect, lec):
     """
     cdo = Cdo()
     removeif(aux_file)
-    if lec in {'y', 'yes'}:
+    if lec is True:
         cdo.yearmonmean(input=tasvert_file, output=aux_file)
-        f_l = Dataset(aux_file)
-        tabl_mean = f_l.variables['ts'][:, 0, 0]
+        with Dataset(aux_file) as f_l:
+            tabl_mean = f_l.variables['ts'][:, 0, 0]
         minentr_mean = np.nanmean(lect / tabl_mean)
         logger.info(
             'Material entropy production associated with '
@@ -455,23 +455,21 @@ def landoc_budg(model, wdir, infile, mask, name):
     oc_gmean_file = wdir + '/{}_{}_oc_gmean.nc'.format(model, name)
     land_file = wdir + '/{}_{}_land.nc'.format(model, name)
     la_gmean_file = wdir + '/{}_{}_la_gmean.nc'.format(model, name)
-    aux_file = wdir + 'aux.nc'
+    aux_file = wdir + '/aux.nc'
     removeif(aux_file)
     cdo.mul(input='{} -eqc,0 {}'.format(infile, mask), output=ocean_file)
     cdo.timmean(input='-fldmean {}'.format(ocean_file), output=oc_gmean_file)
-    f_l = Dataset(oc_gmean_file)
-    oc_gmean = f_l.variables[name][0, 0, 0]
+    with Dataset(oc_gmean_file) as f_l:
+        oc_gmean = f_l.variables[name][0, 0, 0]
     cdo.sub(input='{} {}'.format(infile, ocean_file), output=land_file)
     cdo.setctomiss('0', input=ocean_file, output=aux_file)
     move(aux_file, ocean_file)
     cdo.setctomiss('0', input=land_file, output=aux_file)
     move(aux_file, land_file)
     cdo.timmean(input='-fldmean {}'.format(land_file), output=la_gmean_file)
-    f_l = Dataset(la_gmean_file)
-    la_gmean = f_l.variables[name][0, 0, 0]
-    remove_files = [
-        ocean_file, oc_gmean_file, land_file, la_gmean_file, aux_file
-    ]
+    with Dataset(la_gmean_file) as f_l:
+        la_gmean = f_l.variables[name][0, 0, 0]
+    remove_files = [ocean_file, oc_gmean_file, land_file, la_gmean_file]
     for filen in remove_files:
         os.remove(filen)
     return oc_gmean, la_gmean
@@ -612,8 +610,8 @@ def meltentr(model, wdir, latsnow_file, aux_file):
         'prsn,smelt', input=aux_file, options='-b F32', output=meltentr_file)
     cdo.fldmean(
         input=meltentr_file, options='-b F32', output=meltentr_mean_file)
-    f_l = Dataset(meltentr_mean_file)
-    meltentr_gmean = f_l.variables['smelt'][0, 0, 0]
+    with Dataset(meltentr_mean_file) as f_l:
+        meltentr_gmean = f_l.variables['smelt'][0, 0, 0]
     meltentr_gmean = masktonull(meltentr_gmean)
     remove_files = [latmelt_file, meltentr_mean_file]
     for filen in remove_files:
@@ -843,6 +841,6 @@ def write_eb(namein, nameout, aux_file, d3_file, gmean_file):
     ch_name = '{},{}'.format(namein, nameout)
     cdo.chname(ch_name, input=aux_file, options='-b F32', output=d3_file)
     cdo.fldmean(input='-yearmonmean {}'.format(d3_file), output=gmean_file)
-    f_l = Dataset(gmean_file)
-    constant = f_l.variables[nameout][0, 0, 0]
+    with Dataset(gmean_file) as f_l:
+        constant = f_l.variables[nameout][:]
     return constant

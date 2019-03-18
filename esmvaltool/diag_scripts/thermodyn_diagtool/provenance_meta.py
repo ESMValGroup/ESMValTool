@@ -15,7 +15,7 @@ The module provides plots for a single model of:
 @author: Valerio Lembo, University of Hamburg, 2019.
 """
 
-from esmvaltool.diag_scripts.shared._base import ProvenanceLogger
+from esmvaltool.diag_scripts.shared import ProvenanceLogger
 
 
 def get_prov_map(attr, ancestor_files):

@@ -34,11 +34,15 @@ def fourier_coeff(tadiagfile, outfile, ta_input, tas_input):
     - ta_input: the name of a file containing t,u,v,w fields;
     - tas_input: the name of a file containing t2m field.
     """
-    dataset = Dataset(ta_input)
-    lon = dataset.variables['lon'][:]
-    lat = dataset.variables['lat'][:]
-    lev = dataset.variables['plev'][:]
-    time = dataset.variables['time'][:]
+    with Dataset(ta_input) as dataset:
+        lon = dataset.variables['lon'][:]
+        lat = dataset.variables['lat'][:]
+        lev = dataset.variables['plev'][:]
+        time = dataset.variables['time'][:]
+        t_a = dataset.variables['ta'][:, :, :, :]
+        u_a = dataset.variables['ua'][:, :, :, :]
+        v_a = dataset.variables['va'][:, :, :, :]
+        wap = dataset.variables['wap'][:, :, :, :]
     nlon = len(lon)
     nlat = len(lat)
     nlev = len(lev)
@@ -46,12 +50,8 @@ def fourier_coeff(tadiagfile, outfile, ta_input, tas_input):
     i = np.min(np.where(2 * nlat <= GP_RES))
     trunc = FC_RES[i] + 1
     wave2 = np.linspace(0, trunc - 1, trunc)
-    t_a = dataset.variables['ta'][:, :, :, :]
-    u_a = dataset.variables['ua'][:, :, :, :]
-    v_a = dataset.variables['va'][:, :, :, :]
-    wap = dataset.variables['wap'][:, :, :, :]
-    dataset = Dataset(tas_input)
-    tas = dataset.variables['tas'][:, :, :]
+    with Dataset(tas_input) as dataset:
+        tas = dataset.variables['tas'][:, :, :]
     tas = tas[:, ::-1, :]
     ta1_fx = np.array(t_a)
     deltat = np.zeros([ntime, nlev, nlat, nlon])
@@ -78,10 +78,6 @@ def fourier_coeff(tadiagfile, outfile, ta_input, tas_input):
                              (GAM * GAS_CON)) * deltat[:, i - 1, :, :] / tas)
                     p_s = np.where(ta1_fx[:, i + k, :, :] != 0, p_s,
                                    lev[i + k] + d_p)
-                else:
-                    pass
-        else:
-            pass
     ta2_fx = np.array(t_a)
     mask = np.zeros([nlev, ntime, nlat, nlon])
     dat = np.zeros([nlev, ntime, nlat, nlon])
@@ -97,10 +93,10 @@ def fourier_coeff(tadiagfile, outfile, ta_input, tas_input):
             ta2_fx[:, i, :, :] * (1 - 1 * np.array(mask[i, :, :, :])))
         t_a[:, i, :, :] = dat[i, :, :, :] + tafr_bar[i, :, :, :]
     pr_output_diag(t_a, ta_input, tadiagfile, 'ta')
-    tafft_p = np.fft.fft(t_a, axis=3)[:, :, :, :trunc / 2] / (nlon)
-    uafft_p = np.fft.fft(u_a, axis=3)[:, :, :, :trunc / 2] / (nlon)
-    vafft_p = np.fft.fft(v_a, axis=3)[:, :, :, :trunc / 2] / (nlon)
-    wapfft_p = np.fft.fft(wap, axis=3)[:, :, :, :trunc / 2] / (nlon)
+    tafft_p = np.fft.fft(t_a, axis=3)[:, :, :, :int(trunc / 2)] / (nlon)
+    uafft_p = np.fft.fft(u_a, axis=3)[:, :, :, :int(trunc / 2)] / (nlon)
+    vafft_p = np.fft.fft(v_a, axis=3)[:, :, :, :int(trunc / 2)] / (nlon)
+    wapfft_p = np.fft.fft(wap, axis=3)[:, :, :, :int(trunc / 2)] / (nlon)
     tafft = np.zeros([ntime, nlev, nlat, trunc])
     uafft = np.zeros([ntime, nlev, nlat, trunc])
     vafft = np.zeros([ntime, nlev, nlat, trunc])
@@ -293,26 +289,26 @@ def varatts(w_nc_var, varname):
     """
     if varname == 'ta':
         w_nc_var.setncatts({
-            'long_name': u"Air temperature",
-            'units': u"K",
+            'long_name': "Air temperature",
+            'units': "K",
             'level_desc': 'pressure levels'
         })
     elif varname == 'ua':
         w_nc_var.setncatts({
-            'long_name': u"Eastward wind",
-            'units': u"m s-1",
+            'long_name': "Eastward wind",
+            'units': "m s-1",
             'level_desc': 'pressure levels'
         })
     elif varname == 'va':
         w_nc_var.setncatts({
-            'long_name': u"Northward wind",
-            'units': u"m s-1",
+            'long_name': "Northward wind",
+            'units': "m s-1",
             'level_desc': 'pressure levels'
         })
     elif varname == 'wap':
         w_nc_var.setncatts({
-            'long_name': u'Lagrangian tendency of '
-            'air pressure',
-            'units': u"Pa s-1",
+            'long_name': 'Lagrangian tendency of '
+                         'air pressure',
+            'units': "Pa s-1",
             'level_desc': 'pressure levels'
         })

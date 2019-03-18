@@ -192,19 +192,14 @@ import logging
 import os
 import warnings
 
-import matplotlib
 import numpy as np
-from netCDF4 import Dataset
 
 import esmvaltool.diag_scripts.shared as e
-from esmvaltool.diag_scripts.shared._base import ProvenanceLogger
-# Locally used modules
-from esmvaltool.diag_scripts.thermodyn_diagtool import (computations,
-                                                        lorenz_cycle, mkthe,
-                                                        plot_script,
-                                                        provenance_meta)
+from esmvaltool.diag_scripts.shared import ProvenanceLogger
 
-matplotlib.use('Agg')
+# Locally used modules
+from . import computations, lorenz_cycle, mkthe, plot_script, provenance_meta
+
 warnings.filterwarnings("ignore", message="numpy.dtype size changed")
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -284,12 +279,9 @@ def main(cfg):
         ta_file = filenames[13]
         ts_file = filenames[15]
         # Read path to land-sea mask
-        head = Dataset(ta_file)
-        info = getattr(head, 'metadata')
-        attr = info.split()
-        diction = {attr[i_m]: attr[i_m + 1] for i_m in range(len(attr) - 1)}
-        sftlf_fx = str(diction['{sftlf:'])
-        sftlf_fx = sftlf_fx.replace("}", "")
+        for filename, attributes in cfg['input_data'].items():
+            if filename == ta_file:
+                sftlf_fx = attributes['fx_files']['sftlf']
         aux_file = wdir + '/aux.nc'
         te_ymm_file, te_gmean_constant, _, _ = mkthe.init_mkthe(
             model, wdir, filenames, flags)
@@ -306,13 +298,13 @@ def main(cfg):
                 filenames[1], filenames[6], filenames[7], filenames[8],
                 filenames[9], filenames[10], filenames[11], filenames[12]
             ])
-        provlog.log(eb_file[0], prov_rec)
+        provlog.log(eb_file[1], prov_rec)
         prov_rec = provenance_meta.get_prov_map(
             ['surface energy budgets', model], [
                 filenames[1], filenames[6], filenames[7], filenames[9],
                 filenames[11]
             ])
-        provlog.log(eb_file[0], prov_rec)
+        provlog.log(eb_file[2], prov_rec)
         toab_all[i_m, 0] = np.nanmean(eb_gmean[0])
         toab_all[i_m, 1] = np.nanstd(eb_gmean[0])
         atmb_all[i_m, 0] = np.nanmean(eb_gmean[1])
@@ -335,7 +327,7 @@ def main(cfg):
                           ['toab', 'atmb', 'surb'], model)
         logger.info('Done\n')
         # Water mass budget
-        if wat is True:
+        if wat == 'True':
             logger.info('Computing water mass and latent energy budgets\n')
             _, _, _, aux_list = mkthe.init_mkthe(model, wdir, filenames, flags)
             wm_gmean, wm_file = comp.wmbudg(model, wdir, aux_file, filenames,
@@ -353,9 +345,7 @@ def main(cfg):
             logger.info('Done\n')
             for filen in aux_list:
                 os.remove(filen)
-        else:
-            pass
-        if lsm is True:
+        if lsm == 'True':
             logger.info('Computing energy budgets over land and oceans\n')
             toab_oc_gmean, toab_la_gmean = comp.landoc_budg(
                 model, wdir, eb_file[0], sftlf_fx, 'toab')
@@ -379,7 +369,7 @@ def main(cfg):
                         surb_oc_gmean)
             logger.info('Surface energy budget over land: %s\n', surb_la_gmean)
             logger.info('Done\n')
-            if wat is True:
+            if wat == 'True':
                 logger.info('Computing water mass and latent energy'
                             ' budgets over land and oceans\n')
                 wmb_oc_gmean, wmb_la_gmean = comp.landoc_budg(
@@ -398,11 +388,7 @@ def main(cfg):
                 logger.info('Latent energy budget over land: %s\n',
                             latent_la_gmean)
                 logger.info('Done\n')
-            else:
-                pass
-        else:
-            pass
-        if lec is True:
+        if lec == 'True':
             logger.info('Computation of the Lorenz Energy'
                         'Cycle (year by year)\n')
             lect = lorenz.preproc_lec(model, wdir, pdir, filenames)
@@ -413,8 +399,10 @@ def main(cfg):
                 'Cycle: %s\n', lec_all[i_m, 0])
             logger.info('Done\n')
         else:
-            pass
-        if entr is True:
+            lect = np.repeat(2.0, len(eb_gmean[0]))
+            lec_all[i_m, 0] = 2.0
+            lec_all[i_m, 1] = 0.2
+        if entr == 'True':
             if met in {'1', '3'}:
                 _, _, te_file, _ = mkthe.init_mkthe(model, wdir, filenames,
                                                     flags)
@@ -455,8 +443,6 @@ def main(cfg):
                     logger.info('Difference between the two '
                                 'methods: %s\n', diffentr)
                     diffentr_all[i_m, 0] = diffentr
-                else:
-                    pass
                 logger.info('Degree of irreversibility of the '
                             'system: %s\n', irrevers)
                 irrevers_all[i_m] = irrevers
@@ -464,10 +450,6 @@ def main(cfg):
                             'entropy production (direct method)\n')
                 plotsmod.init_plotentr(model, pdir, entr_list)
                 logger.info('Done\n')
-            else:
-                pass
-        else:
-            pass
         logger.info('Done for model: %s \n', model)
         i_m = i_m + 1
     logger.info('I will now start multi-model plots')

@@ -58,22 +58,16 @@ Authors:
     Contact author: valerio.lembo@uni-hamburg.de.
 """
 
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
-
 import math
 import os
 import sys
-import warnings
 
 import numpy as np
-from cdo import Cdo
 from netCDF4 import Dataset
 
-from esmvaltool.diag_scripts.thermodyn_diagtool import (fluxogram,
-                                                        fourier_coefficients)
+from cdo import Cdo
 
-warnings.filterwarnings("ignore")
+from . import fluxogram, fourier_coefficients
 
 G = 9.81
 R = 287.00
@@ -100,15 +94,15 @@ def lorenz(outpath, model, year, filenc, plotfile, logfile):
         - logfile: name of the file containing the table as a .txt file.
     """
     ta_c, ua_c, va_c, wap_c, dims, lev, lat, log = init(logfile, filenc)
-    nlev = dims[0]
-    ntime = dims[1]
-    nlat = dims[2]
-    ntp = dims[3]
+    nlev = int(dims[0])
+    ntime = int(dims[1])
+    nlat = int(dims[2])
+    ntp = int(dims[3])
     d_s, y_l, g_w = weights(lev, nlev, lat)
     # Compute time mean
     ta_tmn = np.nanmean(ta_c, axis=1)
     ta_ztmn, ta_gmn = averages(ta_tmn, g_w)
-    ua_tmn = np.nanmean(ta_c, axis=1)
+    ua_tmn = np.nanmean(ua_c, axis=1)
     va_tmn = np.nanmean(va_c, axis=1)
     wap_tmn = np.nanmean(wap_c, axis=1)
     _, wap_gmn = averages(wap_tmn, g_w)
@@ -151,36 +145,36 @@ def lorenz(outpath, model, year, filenc, plotfile, logfile):
         kt2ks[:, t_t, :, :] = mkktks(ua_tan, va_tan, ua_tmn, va_tmn, y_l, nlat,
                                      ntp, nlev)
     ek_tgmn = averages_comp(e_k, g_w, d_s, dims)
-    table(ek_tgmn, ntp, 'TOT. KIN. EN.    ', log, flag=0)
+    table(ek_tgmn, ntp, 'TOT. KIN. EN.    ', logfile, flag=0)
     ape_tgmn = averages_comp(ape, g_w, d_s, dims)
-    table(ape_tgmn, ntp, 'TOT. POT. EN.   ', log, flag=0)
+    table(ape_tgmn, ntp, 'TOT. POT. EN.   ', logfile, flag=0)
     a2k_tgmn = averages_comp(a2k, g_w, d_s, dims)
-    table(a2k_tgmn, ntp, 'KE -> APE (trans) ', log, flag=1)
+    table(a2k_tgmn, ntp, 'KE -> APE (trans) ', logfile, flag=1)
     ae2az_tgmn = averages_comp(ae2az, g_w, d_s, dims)
-    table(ae2az_tgmn, ntp, 'AZ <-> AE (trans) ', log, flag=1)
+    table(ae2az_tgmn, ntp, 'AZ <-> AE (trans) ', logfile, flag=1)
     ke2kz_tgmn = averages_comp(ke2kz, g_w, d_s, dims)
-    table(ke2kz_tgmn, ntp, 'KZ <-> KE (trans) ', log, flag=1)
+    table(ke2kz_tgmn, ntp, 'KZ <-> KE (trans) ', logfile, flag=1)
     at2as_tgmn = averages_comp(at2as, g_w, d_s, dims)
-    table(at2as_tgmn, ntp, 'ASE  <->  ATE   ', log, flag=1)
+    table(at2as_tgmn, ntp, 'ASE  <->  ATE   ', logfile, flag=1)
     kt2ks_tgmn = averages_comp(kt2ks, g_w, d_s, dims)
-    table(kt2ks_tgmn, ntp, 'KSE  <->  KTE   ', log, flag=1)
+    table(kt2ks_tgmn, ntp, 'KSE  <->  KTE   ', logfile, flag=1)
     ek_st = makek(ua_tmn, va_tmn)
     ek_stgmn = globall_cg(ek_st, g_w, d_s, dims)
-    table(ek_stgmn, ntp, 'STAT. KIN. EN.    ', log, flag=0)
+    table(ek_stgmn, ntp, 'STAT. KIN. EN.    ', logfile, flag=0)
     ape_st = makea(ta_tmn, ta_gmn, gam_tmn)
     ape_stgmn = globall_cg(ape_st, g_w, d_s, dims)
-    table(ape_stgmn, ntp, 'STAT. POT. EN.    ', log, flag=0)
+    table(ape_stgmn, ntp, 'STAT. POT. EN.    ', logfile, flag=0)
     a2k_st = mka2k(wap_tmn, ta_tmn, wap_gmn, ta_gmn, lev)
     a2k_stgmn = globall_cg(a2k_st, g_w, d_s, dims)
-    table(a2k_stgmn, ntp, 'KE -> APE (stat)', log, flag=1)
+    table(a2k_stgmn, ntp, 'KE -> APE (stat)', logfile, flag=1)
     ae2az_st = mkaeaz(va_tmn, wap_tmn, ta_tmn, ta_tmn, ta_gmn, lev, y_l,
                       gam_tmn, nlat, nlev)
     ae2az_stgmn = globall_cg(ae2az_st, g_w, d_s, dims)
-    table(ae2az_stgmn, ntp, 'AZ <-> AE (stat)', log, flag=1)
+    table(ae2az_stgmn, ntp, 'AZ <-> AE (stat)', logfile, flag=1)
     ke2kz_st = mkkekz(ua_tmn, va_tmn, wap_tmn, ua_tmn, va_tmn, lev, y_l, nlat,
                       ntp, nlev)
     ke2kz_stgmn = globall_cg(ke2kz_st, g_w, d_s, dims)
-    table(ke2kz_stgmn, ntp, 'KZ <-> KE (stat)', log, flag=1)
+    table(ke2kz_stgmn, ntp, 'KZ <-> KE (stat)', logfile, flag=1)
     list_diag = [
         ape_tgmn, ape_stgmn, ek_tgmn, ek_stgmn, ae2az_tgmn, ae2az_stgmn,
         a2k_tgmn, a2k_stgmn, at2as_tgmn, kt2ks_tgmn, ke2kz_tgmn, ke2kz_stgmn
@@ -271,7 +265,7 @@ def diagram(filen, listf, dims):
 
     @author: Valerio Lembo
     """
-    ntp = dims[3]
+    ntp = int(dims[3])
     apet = listf[0]
     apes = listf[1]
     ekt = listf[2]
@@ -385,9 +379,9 @@ def globall_cg(d3v, g_w, d_s, dims):
 
     @author: Valerio Lembo
     """
-    nlev = dims[0]
-    nlat = dims[2]
-    ntp = dims[3]
+    nlev = int(dims[0])
+    nlat = int(dims[2])
+    ntp = int(dims[3])
     gmn = np.zeros([3, ntp - 1])
     aux1 = np.zeros([nlev, int(nlat / 2), ntp - 1])
     aux2 = np.zeros([nlev, int(nlat / 2), ntp - 1])
@@ -424,23 +418,23 @@ def init(logfile, filep):
     Author:
     Valerio Lembo, University of Hamburg, 2019
     """
-    log = open(logfile, 'w')
-    log.write('########################################################\n')
-    log.write('#                                                      #\n')
-    log.write('#      LORENZ     ENERGY    CYCLE                      #\n')
-    log.write('#                                                      #\n')
-    log.write('########################################################\n')
-    dataset0 = Dataset(filep)
-    t_a = dataset0.variables['ta'][:, :, :, :]
-    u_a = dataset0.variables['ua'][:, :, :, :]
-    v_a = dataset0.variables['va'][:, :, :, :]
-    wap = dataset0.variables['wap'][:, :, :, :]
+    with open(logfile, 'w') as log:
+        log.write('########################################################\n')
+        log.write('#                                                      #\n')
+        log.write('#      LORENZ     ENERGY    CYCLE                      #\n')
+        log.write('#                                                      #\n')
+        log.write('########################################################\n')
+    with Dataset(filep) as dataset0:
+        t_a = dataset0.variables['ta'][:, :, :, :]
+        u_a = dataset0.variables['ua'][:, :, :, :]
+        v_a = dataset0.variables['va'][:, :, :, :]
+        wap = dataset0.variables['wap'][:, :, :, :]
+        lev = dataset0.variables['plev'][:]
+        time = dataset0.variables['time'][:]
+        lat = dataset0.variables['lat'][:]
     nfc = np.shape(t_a)[3]
-    lev = dataset0.variables['plev'][:]
     nlev = len(lev)
-    time = dataset0.variables['time'][:]
     ntime = len(time)
-    lat = dataset0.variables['lat'][:]
     nlat = len(lat)
     ntp = nfc / 2 + 1
     dims = [nlev, ntime, nlat, ntp]
@@ -463,26 +457,27 @@ def init(logfile, filep):
     ua_c = ua_r + 1j * ua_i
     va_c = va_r + 1j * va_i
     wap_c = wap_r + 1j * wap_i
-    log.write(' \n')
-    log.write(' \n')
-    log.write('INPUT DATA:\n')
-    log.write('-----------\n')
-    log.write(' \n')
-    log.write('SPECTRAL RESOLUTION : {}\n'.format(nfc))
-    log.write('NUMBER OF LATITUDES : {}\n'.format(nlat))
-    log.write('NUMBER OF LEVEL : {}'.format(nlev))
-    log.write('LEVEL  : {} Pa\n'.format(lev))
-    log.write(' \n')
-    log.write('WAVES:\n')
-    log.write(' \n')
-    log.write('(1) : 1 - {}\n'.format(NW_1))
-    log.write('(2) : {} - {}\n'.format(NW_1, NW_2))
-    log.write('(3) : {} - {}\n'.format(NW_2, NW_3))
-    log.write(' \n')
-    log.write('GLOBAL DIAGNOSTIC: \n')
-    log.write('  \n')
-    log.write('                            I GLOBAL I NORTH I SOUTH I\n')
-    log.write('------------------------------------------------------\n')
+    with open(logfile, 'w') as log:
+        log.write(' \n')
+        log.write(' \n')
+        log.write('INPUT DATA:\n')
+        log.write('-----------\n')
+        log.write(' \n')
+        log.write('SPECTRAL RESOLUTION : {}\n'.format(nfc))
+        log.write('NUMBER OF LATITUDES : {}\n'.format(nlat))
+        log.write('NUMBER OF LEVEL : {}'.format(nlev))
+        log.write('LEVEL  : {} Pa\n'.format(lev))
+        log.write(' \n')
+        log.write('WAVES:\n')
+        log.write(' \n')
+        log.write('(1) : 1 - {}\n'.format(NW_1))
+        log.write('(2) : {} - {}\n'.format(NW_1, NW_2))
+        log.write('(3) : {} - {}\n'.format(NW_2, NW_3))
+        log.write(' \n')
+        log.write('GLOBAL DIAGNOSTIC: \n')
+        log.write('  \n')
+        log.write('                            I GLOBAL I NORTH I SOUTH I\n')
+        log.write('------------------------------------------------------\n')
     return ta_c, ua_c, va_c, wap_c, dims, lev, lat, log
 
 
@@ -811,7 +806,7 @@ def pr_output(varo, varname, filep, nc_f):
     nc_fid = Dataset(filep, 'r')
     # Extract data from NetCDF file
     wave = nc_fid.variables['wave'][:]
-    ntp = len(wave) / 2
+    ntp = int(len(wave) / 2)
     # Writing NetCDF files
     w_nc_fid = Dataset(nc_f, 'w', format='NETCDF4')
     w_nc_fid.description = "Outputs of LEC program"
@@ -902,18 +897,24 @@ def preproc_lec(model, wdir, pdir, filelist):
     y_i = 0
     lect = np.zeros(len(yrs2))
     for y_r in yrs2:
-        y_r = int(filter(str.isdigit, y_r))
+        y_rl = [y_n for y_n in y_r]
+        y_ro = ''
+        for e_l in y_rl:
+            e_l = str(e_l)
+            if e_l.isdigit() is True:
+                y_ro += e_l
+        # print(filter(str.isdigit, str(y_r)))
         enfile_yr = wdir + '/inputen.nc'
         tasfile_yr = wdir + '/tas_yr.nc'
         tadiag_file = wdir + '/ta_filled.nc'
         ncfile = wdir + '/fourier_coeff.nc'
         cdo.selyear(
-            y_r, input=energy3_file, options='-b F32', output=enfile_yr)
-        cdo.selyear(y_r, input=tas_file, options='-b F32', output=tasfile_yr)
+            y_ro, input=energy3_file, options='-b F32', output=enfile_yr)
+        cdo.selyear(y_ro, input=tas_file, options='-b F32', output=tasfile_yr)
         fourc.fourier_coeff(tadiag_file, ncfile, enfile_yr, tasfile_yr)
-        diagfile = (ldir + '/{}_{}_lec_diagram.png'.format(model, y_r))
-        logfile = (ldir + '/{}_{}_lec_table.txt'.format(model, y_r))
-        lect[y_i] = lorenz(wdir, model, y_r, ncfile, diagfile, logfile)
+        diagfile = (ldir + '/{}_{}_lec_diagram.png'.format(model, y_ro))
+        logfile = (ldir + '/{}_{}_lec_table.txt'.format(model, y_ro))
+        lect[y_i] = lorenz(wdir, model, y_ro, ncfile, diagfile, logfile)
         y_i = y_i + 1
         os.remove(enfile_yr)
         os.remove(tasfile_yr)
@@ -949,7 +950,7 @@ def stabil(ta_gmn, p_l, nlev):
     return g_s
 
 
-def table(varin, ntp, name, log, flag):
+def table(varin, ntp, name, logfile, flag):
     """Write global and hem. storage terms to .txt table.
 
     @author: Valerio Lembo
@@ -963,7 +964,7 @@ def table(varin, ntp, name, log, flag):
     vared2 = np.nansum(varin[:, NW_1:NW_2 - 1], axis=1)
     vared3 = np.nansum(varin[:, NW_2:NW_3 - 1], axis=1)
     vared_tog = [vared, vared1, vared2, vared3]
-    write_to_tab(log, name, vared_tog, varzon)
+    write_to_tab(logfile, name, vared_tog, varzon)
 
 
 def varatts(w_nc_var, varname, tres, vres):
@@ -978,43 +979,43 @@ def varatts(w_nc_var, varname, tres, vres):
     @author: Chris Slocum (2014), modified by Valerio Lembo (2018).
     """
     if tres == 0:
-        tatt = u"Daily\nM"
+        tatt = "Daily\nM"
     elif tres == 1:
-        tatt = u"Annual mean\nM"
+        tatt = "Annual mean\nM"
     if vres == 0:
-        vatt = u"Pressure levels\n"
+        vatt = "Pressure levels\n"
     elif vres == 1:
-        vatt = u"Vertically integrated\n"
+        vatt = "Vertically integrated\n"
     if varname == 'a':
         w_nc_var.setncatts({
-            'long_name': u"Available Potential Energy",
-            'units': u"W m-2",
+            'long_name': "Available Potential Energy",
+            'units': "W m-2",
             'level_desc': vatt,
-            'var_desc': u"APE -> KE",
+            'var_desc': "APE -> KE",
             'statistic': tatt
         })
     elif varname == 'ek':
         w_nc_var.setncatts({
-            'long_name': u"Kinetic Energy",
-            'units': u"W m-2",
+            'long_name': "Kinetic Energy",
+            'units': "W m-2",
             'level_desc': vatt,
-            'var_desc': u"APE -> KE",
+            'var_desc': "APE -> KE",
             'statistic': tatt
         })
     elif varname == 'a2k':
         w_nc_var.setncatts({
-            'long_name': u"Conversion between APE and KE",
-            'units': u"W m-2",
+            'long_name': "Conversion between APE and KE",
+            'units': "W m-2",
             'level_desc': vatt,
-            'var_desc': u"APE <-> KE",
+            'var_desc': "APE <-> KE",
             'statistic': tatt
         })
     elif varname == 'k':
         w_nc_var.setncatts({
-            'long_name': u"Kinetic Energy",
-            'units': u"W m-2",
+            'long_name': "Kinetic Energy",
+            'units': "W m-2",
             'level_desc': vatt,
-            'var_desc': u"APE -> KE",
+            'var_desc': "APE -> KE",
             'statistic': tatt
         })
 
@@ -1046,7 +1047,7 @@ def weights(lev, nlev, lat):
     return d_s, y_l, g_w
 
 
-def write_to_tab(log, name, vared, varzon):
+def write_to_tab(logfile, name, vared, varzon):
     """Specify the formats for table entries.
 
     Arguments:
@@ -1060,21 +1061,22 @@ def write_to_tab(log, name, vared, varzon):
     Valerio Lembo, University of Hamburg (2019).
     """
     vartot = varzon + vared[0]
-    log.write(' {} TOTAL    {: 4.3f}  {: 4.3f}  {: 4.3f}\n'.format(
-        name, vartot[0], vartot[1], vartot[2]))
-    log.write('--------------------------------------\n')
-    log.write(' {} ZONAL    {: 4.3f}  {: 4.3f}  {: 4.3f}\n'.format(
-        name, varzon[0], varzon[1], varzon[2]))
-    log.write('--------------------------------------\n')
-    log.write(' {} EDDY     {: 4.3f}  {: 4.3f}  {: 4.3f}\n'.format(
-        name, vared[0][0], vared[0][1], vared[0][2]))
-    log.write('--------------------------------------\n')
-    log.write(' {} EDDY(LW) {: 4.3f}  {: 4.3f}  {: 4.3f}\n'.format(
-        name, vared[1][0], vared[1][1], vared[1][2]))
-    log.write('--------------------------------------\n')
-    log.write(' {} EDDY(SW) {: 4.3f}  {: 4.3f}  {: 4.3f}\n'.format(
-        name, vared[2][0], vared[2][1], vared[2][2]))
-    log.write('--------------------------------------\n')
-    log.write(' {} EDDY(KW) {: 4.3f}  {: 4.3f}  {: 4.3f}\n'.format(
-        name, vared[3][0], vared[3][1], vared[3][2]))
-    log.write('--------------------------------------\n')
+    with open(logfile, 'w') as log:
+        log.write(' {} TOTAL    {: 4.3f}  {: 4.3f}  {: 4.3f}\n'.format(
+            name, vartot[0], vartot[1], vartot[2]))
+        log.write('--------------------------------------\n')
+        log.write(' {} ZONAL    {: 4.3f}  {: 4.3f}  {: 4.3f}\n'.format(
+            name, varzon[0], varzon[1], varzon[2]))
+        log.write('--------------------------------------\n')
+        log.write(' {} EDDY     {: 4.3f}  {: 4.3f}  {: 4.3f}\n'.format(
+            name, vared[0][0], vared[0][1], vared[0][2]))
+        log.write('--------------------------------------\n')
+        log.write(' {} EDDY(LW) {: 4.3f}  {: 4.3f}  {: 4.3f}\n'.format(
+            name, vared[1][0], vared[1][1], vared[1][2]))
+        log.write('--------------------------------------\n')
+        log.write(' {} EDDY(SW) {: 4.3f}  {: 4.3f}  {: 4.3f}\n'.format(
+            name, vared[2][0], vared[2][1], vared[2][2]))
+        log.write('--------------------------------------\n')
+        log.write(' {} EDDY(KW) {: 4.3f}  {: 4.3f}  {: 4.3f}\n'.format(
+            name, vared[3][0], vared[3][1], vared[3][2]))
+        log.write('--------------------------------------\n')
