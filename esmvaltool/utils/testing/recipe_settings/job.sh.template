@@ -2,7 +2,7 @@
 #BSUB -q par-single
 #BSUB -o %J.stdout.txt
 #BSUB -e %J.stderr.txt
-#BSUB -W 0:30
+#BSUB -W 2:00
 #BSUB -R "rusage[mem=10000]"
 #BSUB -M 15000
 #BSUB -n 16
@@ -13,4 +13,4 @@ module load contrib/gnu/gcc/7.3.0
 . conda/etc/profile.d/conda.sh
 conda activate esmvaltool
 
-esmvaltool -c {config} {recipe} --skip-nonexistent
+esmvaltool -c "{config}" "{recipe}" --skip-nonexistent
