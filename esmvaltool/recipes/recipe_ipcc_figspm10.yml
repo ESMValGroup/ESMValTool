@@ -12,172 +12,165 @@ documentation:
   maintainer:
     - schl_ma
 
+  references:
+    - collins13ipcc
+
+  domains:
+    - global
+
+  realms:
+    - atmos
+
+  themes:
+    - carbon
+    - bgphys
+
   projects:
-    - crecendo
+    - crescendo
 
 
 DATASET_ANCHOR: &datasets
   - {dataset: BNU-ESM}
-  - {dataset: CESM1-BGC}
-  - {dataset: CanESM2}
-  - {dataset: GFDL-ESM2G}
-  - {dataset: HadGEM2-CC}
-  - {dataset: HadGEM2-ES}
-  - {dataset: IPSL-CM5A-LR}
-  - {dataset: IPSL-CM5A-MR}
+  # - {dataset: CESM1-BGC}
+  # - {dataset: CanESM2}
+  # - {dataset: GFDL-ESM2G}
+  # - {dataset: HadGEM2-CC}
+  # - {dataset: HadGEM2-ES}
+  # - {dataset: IPSL-CM5A-LR}
+  # - {dataset: IPSL-CM5A-MR}
   - {dataset: MIROC-ESM}
-  - {dataset: MPI-ESM-LR}
-  - {dataset: NorESM1-ME}
+  # - {dataset: MPI-ESM-LR}
+  # - {dataset: NorESM1-ME}
 
 
 diagnostics:
-  variables:
-    tas_historical: &historical
-      short_name: tas
-      project: CMIP5
-      mip: Amon
-      exp: historical
-      start_year: 1861
-      end_year: 2005
-      ensemble: r1i1p1
-      additional_datasets: *datasets
-    tas_1pctCO2: &1pctCO2
-      <<: *historical
-      exp: historical
-      end_year: 1989
-      additional_datasets:
-        - {dataset: BNU-ESM}
-        - {dataset: CESM1-BGC}
-        - {dataset: CanESM2}
-        - {dataset: GFDL-ESM2G, start_year: 1, end_year: 129}
-        - {dataset: HadGEM2-CC}
-        - {dataset: HadGEM2-ES}
-        - {dataset: IPSL-CM5A-LR}
-        - {dataset: IPSL-CM5A-MR}
-        - {dataset: MIROC-ESM}
-        - {dataset: MPI-ESM-LR}
-        - {dataset: NorESM1-ME}
-    tas_rcp26: &rcp26
-      <<: *historical
-      exp: rcp26
-      start_year: 2010
-      end_year: 2099
-    tas_rcp45: &rcp45
-      <<: *rcp26
-      exp: rcp45
-    tas_rcp60: &rcp60
-      <<: *rcp26
-      exp: rcp60
-    tas_rcp45: &rcp85
-      <<: *rcp26
-      exp: rcp85
-      start_year: 2006
-    co2mass_historical:
-      <<: *historical
-      short_name: co2mass
-    co2mass_1pctCO2:
-      <<: *1pctCO2
-      short_name: co2mass
-    co2mass_rcp26:
-      <<: *rcp26
-      short_name: co2mass
-    co2mass_rcp45:
-      <<: *rcp45
-      short_name: co2mass
-    co2mass_rcp60:
-      <<: *rcp60
-      short_name: co2mass
-    co2mass_rcp85:
-      <<: *rcp85
-      short_name: co2mass
-
-
-
-
-
-</namelist_summary>
-<!-- ********************************************************************** -->
-
-    <diag>
-        <description> GMSAT vs. CO2 emissions                </description>
-        <variable_def_dir>                  ./variable_defs/ </variable_def_dir>
-        <variable mip="Amon">               tas              </variable>
-        <variable mip="Amon" exclude="co2"> co2mass          </variable>
-        <variable mip="Lmon">               nbp              </variable>
-        <variable mip="Omon">               fgco2            </variable>
-        <field_type>                        T2Ms             </field_type>
-        <field_type>                        T0M              </field_type>
-        <field_type>                        T2Ms             </field_type>
-        <field_type>                        T2Ms             </field_type>
-        <diag_script_cfg_dir>               ./nml/cfg_TCRE/  </diag_script_cfg_dir>
-        <tags> D_collins13ipcc, R_atmos, T_carbon, T_bgphys  </tags>
-
-        <diag_script cfg="cfg_ipcc_fig_spm10.conf"> ipcc_fig_spm10.py </diag_script>
-
-        <!-- Check time range: every variable except 'fgco2' runs with (1861, 1989)...
-        <model id="co2">  CMIP5_ETHZ  CESM1-BGC   MIP_VAR_DEF  1pctCO2     r1i1p1  1861 1989  @{MODELPATH}/ETHZ_CMIP5/ </model>
-        -->
-        <!-- Lat/lon indices labeled with (x,y), not (i,j)
-        <model id="co2">  CMIP5_ETHZ  MPI-ESM-LR  MIP_VAR_DEF  1pctCO2     r1i1p1  1861 1999  @{MODELPATH}/ETHZ_CMIP5/ </model>
-        -->
-        <!-- Contains only (rlat,rlon), no areacello for fgco2
-        -->
-
-        <model id="co2">  CMIP5_ETHZ  BNU-ESM       MIP_VAR_DEF  1pctCO2     r1i1p1  1861 1989  @{MODELPATH}/ETHZ_CMIP5/ </model>
-        <model id="co2">  CMIP5_ETHZ  BNU-ESM       MIP_VAR_DEF  historical  r1i1p1  1861 2005  @{MODELPATH}/ETHZ_CMIP5/ </model>
-        <model id="co2">  CMIP5_ETHZ  BNU-ESM       MIP_VAR_DEF  rcp26       r1i1p1  2010 2099  @{MODELPATH}/ETHZ_CMIP5/ </model>
-        <model id="co2">  CMIP5_ETHZ  BNU-ESM       MIP_VAR_DEF  rcp45       r1i1p1  2010 2099  @{MODELPATH}/ETHZ_CMIP5/ </model>
-        <model id="co2">  CMIP5_ETHZ  BNU-ESM       MIP_VAR_DEF  rcp85       r1i1p1  2006 2099  @{MODELPATH}/ETHZ_CMIP5/ </model>
-        <model id="co2">  CMIP5_ETHZ  CESM1-BGC     MIP_VAR_DEF  historical  r1i1p1  1861 2005  @{MODELPATH}/ETHZ_CMIP5/ </model>
-        <model id="co2">  CMIP5_ETHZ  CanESM2       MIP_VAR_DEF  1pctCO2     r1i1p1  1861 1989  @{MODELPATH}/ETHZ_CMIP5/ </model>
-        <model id="co2">  CMIP5_ETHZ  CanESM2       MIP_VAR_DEF  historical  r1i1p1  1861 2005  @{MODELPATH}/ETHZ_CMIP5/ </model>
-        <model id="co2">  CMIP5_ETHZ  CanESM2       MIP_VAR_DEF  rcp26       r1i1p1  2010 2099  @{MODELPATH}/ETHZ_CMIP5/ </model>
-        <model id="co2">  CMIP5_ETHZ  CanESM2       MIP_VAR_DEF  rcp45       r1i1p1  2010 2099  @{MODELPATH}/ETHZ_CMIP5/ </model>
-        <model id="co2">  CMIP5_ETHZ  CanESM2       MIP_VAR_DEF  rcp85       r1i1p1  2006 2099  @{MODELPATH}/ETHZ_CMIP5/ </model>
-        <model id="co2">  CMIP5_ETHZ  GFDL-ESM2G    MIP_VAR_DEF  1pctCO2     r1i1p1  0001 0129  @{MODELPATH}/ETHZ_CMIP5/ </model>
-        <model id="co2">  CMIP5_ETHZ  GFDL-ESM2G    MIP_VAR_DEF  historical  r1i1p1  1861 2005  @{MODELPATH}/ETHZ_CMIP5/ </model>
-        <model id="co2">  CMIP5_ETHZ  GFDL-ESM2G    MIP_VAR_DEF  rcp26       r1i1p1  2010 2099  @{MODELPATH}/ETHZ_CMIP5/ </model>
-        <model id="co2">  CMIP5_ETHZ  GFDL-ESM2G    MIP_VAR_DEF  rcp45       r1i1p1  2010 2099  @{MODELPATH}/ETHZ_CMIP5/ </model>
-        <model id="co2">  CMIP5_ETHZ  GFDL-ESM2G    MIP_VAR_DEF  rcp60       r1i1p1  2010 2099  @{MODELPATH}/ETHZ_CMIP5/ </model>
-        <model id="co2">  CMIP5_ETHZ  GFDL-ESM2G    MIP_VAR_DEF  rcp85       r1i1p1  2006 2099  @{MODELPATH}/ETHZ_CMIP5/ </model>
-        <model id="co2">  CMIP5_ETHZ  HadGEM2-CC    MIP_VAR_DEF  historical  r1i1p1  1861 2004  @{MODELPATH}/ETHZ_CMIP5/ </model>
-        <model id="co2">  CMIP5_ETHZ  HadGEM2-CC    MIP_VAR_DEF  rcp45       r1i1p1  2010 2099  @{MODELPATH}/ETHZ_CMIP5/ </model>
-        <model id="co2">  CMIP5_ETHZ  HadGEM2-CC    MIP_VAR_DEF  rcp85       r1i1p1  2006 2099  @{MODELPATH}/ETHZ_CMIP5/ </model>
-        <model id="co2">  CMIP5_ETHZ  HadGEM2-ES    MIP_VAR_DEF  1pctCO2     r1i1p1  1861 1989  @{MODELPATH}/ETHZ_CMIP5/ </model>
-        <model id="co2">  CMIP5_ETHZ  HadGEM2-ES    MIP_VAR_DEF  historical  r1i1p1  1861 2004  @{MODELPATH}/ETHZ_CMIP5/ </model>
-        <model id="co2">  CMIP5_ETHZ  HadGEM2-ES    MIP_VAR_DEF  rcp26       r1i1p1  2010 2099  @{MODELPATH}/ETHZ_CMIP5/ </model>
-        <model id="co2">  CMIP5_ETHZ  HadGEM2-ES    MIP_VAR_DEF  rcp45       r1i1p1  2010 2099  @{MODELPATH}/ETHZ_CMIP5/ </model>
-        <model id="co2">  CMIP5_ETHZ  HadGEM2-ES    MIP_VAR_DEF  rcp60       r1i1p1  2010 2098  @{MODELPATH}/ETHZ_CMIP5/ </model>
-        <model id="co2">  CMIP5_ETHZ  HadGEM2-ES    MIP_VAR_DEF  rcp85       r1i1p1  2006 2099  @{MODELPATH}/ETHZ_CMIP5/ </model>
-        <model id="co2">  CMIP5_ETHZ  IPSL-CM5A-LR  MIP_VAR_DEF  1pctCO2     r1i1p1  1861 1989  @{MODELPATH}/ETHZ_CMIP5/ </model>
-        <model id="co2">  CMIP5_ETHZ  IPSL-CM5A-LR  MIP_VAR_DEF  historical  r1i1p1  1861 2005  @{MODELPATH}/ETHZ_CMIP5/ </model>
-        <model id="co2">  CMIP5_ETHZ  IPSL-CM5A-LR  MIP_VAR_DEF  rcp26       r1i1p1  2010 2099  @{MODELPATH}/ETHZ_CMIP5/ </model>
-        <model id="co2">  CMIP5_ETHZ  IPSL-CM5A-LR  MIP_VAR_DEF  rcp45       r1i1p1  2010 2099  @{MODELPATH}/ETHZ_CMIP5/ </model>
-        <model id="co2">  CMIP5_ETHZ  IPSL-CM5A-LR  MIP_VAR_DEF  rcp60       r1i1p1  2010 2099  @{MODELPATH}/ETHZ_CMIP5/ </model>
-        <model id="co2">  CMIP5_ETHZ  IPSL-CM5A-LR  MIP_VAR_DEF  rcp85       r1i1p1  2006 2099  @{MODELPATH}/ETHZ_CMIP5/ </model>
-        <model id="co2">  CMIP5_ETHZ  IPSL-CM5A-MR  MIP_VAR_DEF  1pctCO2     r1i1p1  1861 1989  @{MODELPATH}/ETHZ_CMIP5/ </model>
-        <model id="co2">  CMIP5_ETHZ  IPSL-CM5A-MR  MIP_VAR_DEF  historical  r1i1p1  1861 2005  @{MODELPATH}/ETHZ_CMIP5/ </model>
-        <model id="co2">  CMIP5_ETHZ  IPSL-CM5A-MR  MIP_VAR_DEF  rcp26       r1i1p1  2010 2099  @{MODELPATH}/ETHZ_CMIP5/ </model>
-        <model id="co2">  CMIP5_ETHZ  IPSL-CM5A-MR  MIP_VAR_DEF  rcp45       r1i1p1  2010 2099  @{MODELPATH}/ETHZ_CMIP5/ </model>
-        <model id="co2">  CMIP5_ETHZ  IPSL-CM5A-MR  MIP_VAR_DEF  rcp85       r1i1p1  2006 2099  @{MODELPATH}/ETHZ_CMIP5/ </model>
-        <model>           CMIP5_ETHZ  MIROC-ESM     MIP_VAR_DEF  1pctCO2     r1i1p1  1861 1989  @{MODELPATH}/ETHZ_CMIP5/ </model>
-        <model>           CMIP5_ETHZ  MIROC-ESM     MIP_VAR_DEF  historical  r1i1p1  1861 2005  @{MODELPATH}/ETHZ_CMIP5/ </model>
-        <model>           CMIP5_ETHZ  MIROC-ESM     MIP_VAR_DEF  rcp26       r1i1p1  2010 2099  @{MODELPATH}/ETHZ_CMIP5/ </model>
-        <model>           CMIP5_ETHZ  MIROC-ESM     MIP_VAR_DEF  rcp45       r1i1p1  2010 2099  @{MODELPATH}/ETHZ_CMIP5/ </model>
-        <model>           CMIP5_ETHZ  MIROC-ESM     MIP_VAR_DEF  rcp60       r1i1p1  2010 2099  @{MODELPATH}/ETHZ_CMIP5/ </model>
-        <model>           CMIP5_ETHZ  MIROC-ESM     MIP_VAR_DEF  rcp85       r1i1p1  2006 2099  @{MODELPATH}/ETHZ_CMIP5/ </model>
-        <model id="co2">  CMIP5_ETHZ  MPI-ESM-LR    MIP_VAR_DEF  historical  r1i1p1  1861 2005  @{MODELPATH}/ETHZ_CMIP5/ </model>
-        <model id="co2">  CMIP5_ETHZ  MPI-ESM-LR    MIP_VAR_DEF  rcp26       r1i1p1  2010 2099  @{MODELPATH}/ETHZ_CMIP5/ </model>
-        <model id="co2">  CMIP5_ETHZ  MPI-ESM-LR    MIP_VAR_DEF  rcp45       r1i1p1  2010 2099  @{MODELPATH}/ETHZ_CMIP5/ </model>
-        <model id="co2">  CMIP5_ETHZ  MPI-ESM-LR    MIP_VAR_DEF  rcp85       r1i1p1  2006 2099  @{MODELPATH}/ETHZ_CMIP5/ </model>
-        <model id="co2">  CMIP5_ETHZ  NorESM1-ME    MIP_VAR_DEF  1pctCO2     r1i1p1  1861 1989  @{MODELPATH}/ETHZ_CMIP5/ </model>
-        <model id="co2">  CMIP5_ETHZ  NorESM1-ME    MIP_VAR_DEF  historical  r1i1p1  1861 2005  @{MODELPATH}/ETHZ_CMIP5/ </model>
-        <model id="co2">  CMIP5_ETHZ  NorESM1-ME    MIP_VAR_DEF  rcp26       r1i1p1  2010 2099  @{MODELPATH}/ETHZ_CMIP5/ </model>
-        <model id="co2">  CMIP5_ETHZ  NorESM1-ME    MIP_VAR_DEF  rcp45       r1i1p1  2010 2099  @{MODELPATH}/ETHZ_CMIP5/ </model>
-        <model id="co2">  CMIP5_ETHZ  NorESM1-ME    MIP_VAR_DEF  rcp60       r1i1p1  2010 2099  @{MODELPATH}/ETHZ_CMIP5/ </model>
-        <model id="co2">  CMIP5_ETHZ  NorESM1-ME    MIP_VAR_DEF  rcp85       r1i1p1  2006 2099  @{MODELPATH}/ETHZ_CMIP5/ </model>
-    </diag>
-
-</DIAGNOSTICS>
-
-</namelist>
+  diag_figspm10:
+    variables:
+      tas_historical: &historical
+        short_name: tas
+        project: CMIP5
+        mip: Amon
+        field: T2Ms
+        exp: historical
+        start_year: 1861
+        end_year: 2005
+        ensemble: r1i1p1
+        additional_datasets: *datasets
+      tas_1pctCO2: &1pctCO2
+        <<: *historical
+        exp: 1pctCO2
+        end_year: 1989
+        additional_datasets:
+          - {dataset: BNU-ESM}
+          # - {dataset: CESM1-BGC}
+          # - {dataset: CanESM2}
+          # - {dataset: GFDL-ESM2G, start_year: 1, end_year: 129}
+          # - {dataset: HadGEM2-CC}
+          # - {dataset: HadGEM2-ES}
+          # - {dataset: IPSL-CM5A-LR}
+          # - {dataset: IPSL-CM5A-MR}
+          - {dataset: MIROC-ESM}
+          # - {dataset: MPI-ESM-LR}
+          # - {dataset: NorESM1-ME}
+      tas_rcp26: &rcp26
+        <<: *historical
+        exp: rcp26
+        start_year: 2010
+        end_year: 2099
+      tas_rcp45: &rcp45
+        <<: *rcp26
+        exp: rcp45
+      tas_rcp60: &rcp60
+        <<: *rcp26
+        exp: rcp60
+      tas_rcp85: &rcp85
+        <<: *rcp26
+        exp: rcp85
+        start_year: 2006
+      co2mass_historical:
+        <<: *historical
+        short_name: co2mass
+        field: T0M
+      co2mass_1pctCO2:
+        <<: *1pctCO2
+        short_name: co2mass
+        field: T0M
+      co2mass_rcp26:
+        <<: *rcp26
+        short_name: co2mass
+        field: T0M
+      co2mass_rcp45:
+        <<: *rcp45
+        short_name: co2mass
+        field: T0M
+      co2mass_rcp60:
+        <<: *rcp60
+        short_name: co2mass
+        field: T0M
+      co2mass_rcp85:
+        <<: *rcp85
+        short_name: co2mass
+        field: T0M
+      nbp_historical:
+        <<: *historical
+        short_name: nbp_grid
+        mip: Lmon
+        derive: true
+      nbp_1pctCO2:
+        <<: *1pctCO2
+        short_name: nbp_grid
+        mip: Lmon
+        derive: true
+      nbp_rcp26:
+        <<: *rcp26
+        short_name: nbp_grid
+        mip: Lmon
+        derive: true
+      nbp_rcp45:
+        <<: *rcp45
+        short_name: nbp_grid
+        mip: Lmon
+        derive: true
+      nbp_rcp60:
+        <<: *rcp60
+        short_name: nbp_grid
+        mip: Lmon
+        derive: true
+      nbp_rcp85:
+        <<: *rcp85
+        short_name: nbp_grid
+        mip: Lmon
+        derive: true
+      fgco2_historical:
+        <<: *historical
+        short_name: fgco2_grid
+        mip: Omon
+        derive: true
+      fgco2_1pctCO2:
+        <<: *1pctCO2
+        short_name: fgco2_grid
+        mip: Omon
+        derive: true
+      fgco2_rcp26:
+        <<: *rcp26
+        short_name: fgco2_grid
+        mip: Omon
+        derive: true
+      fgco2_rcp45:
+        <<: *rcp45
+        short_name: fgco2_grid
+        mip: Omon
+        derive: true
+      fgco2_rcp60:
+        <<: *rcp60
+        short_name: fgco2_grid
+        mip: Omon
+        derive: true
+      fgco2_rcp85:
+        <<: *rcp85
+        short_name: fgco2_grid
+        mip: Omon
+        derive: true
+    scripts:
+      figspm10:
+        script: ipcc_ar5/spm_fig10.py
