@@ -81,7 +81,7 @@ repository (``environment.yml`` in the root folder).
     Several users however reported problems when installing NCL with such versions. It is
     therefore preferable to use a local, fully user-controlled conda installation.
     Using an older version of conda can also be a source of problems, so if you have conda
-	installed already, make sure it is up to date by running ``conda update -n base conda``.
+    installed already, make sure it is up to date by running ``conda update -n base conda``.
 
 To enable the ``conda`` command, please source the appropriate configuration file
 from your ``~/.bashrc``  file:
@@ -156,11 +156,11 @@ dependencies:
     Rscript ESMValTool/esmvaltool/install/R/setup.R
 
 The next step is to check that the installation works properly.
-To do this, run the tool with --version:
+To do this, run the tool with --help:
 
 .. code-block:: bash
 
-    esmvaltool --version
+    esmvaltool --help
 
 If everything was installed properly, ESMValTool should have printed the
 version number at the console and exited.
@@ -170,5 +170,5 @@ confirm that no errors are reported:
 
 .. code-block:: bash
 
-    python setup.py test
+    python setup.py test --installation
 
