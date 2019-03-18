@@ -309,92 +309,97 @@ def write_output(wdir, model, file_list, varlist):
     """
     cdo = Cdo()
     fourc = fourier_coefficients
+
     dataset = Dataset(file_list[0])
     ztlcl = varlist[0]
     t_z = varlist[1]
     htop = varlist[2]
     tlcl_temp = wdir + '/tlcl.nc'
     removeif(tlcl_temp)
-    w_nc_fid = Dataset(tlcl_temp, 'w', format='NETCDF4')
-    w_nc_fid.description = (
-        "Monthly mean LCL temperature from {} model. ".format(model),
-        "Calculated by Thermodynamics model diagnostics ",
-        "in ESMValTool. Author Valerio Lembo, ",
-        "Meteorologisches Institut, Universitaet ", "Hamburg.")
-    fourc.extr_time(dataset, w_nc_fid)
-    fourc.extr_lat(dataset, w_nc_fid)
-    fourc.extr_lon(dataset, w_nc_fid)
-    w_nc_var = w_nc_fid.createVariable('tlcl', 'f8', ('time', 'lat', 'lon'))
-    w_nc_var.setncatts({
-        'long_name':
-        "LCL Temperature",
-        'units':
-        "K",
-        'level_desc':
-        "surface",
-        'var_desc':
-        ("LCL temperature from LCL ", "height (Magnus formulas and dry ",
-         "adiabatic lapse ratio)"),
-        'statistic':
-        'monthly mean'
-    })
-    w_nc_fid.variables['tlcl'][:] = ztlcl
-    w_nc_fid.close()  # close the new file
+    with Dataset(tlcl_temp, 'w', format='NETCDF4') as w_nc_fid:
+        w_nc_fid.description = (
+            "Monthly mean LCL temperature from {} model. ".format(model),
+            "Calculated by Thermodynamics model diagnostics ",
+            "in ESMValTool. Author Valerio Lembo, ",
+            "Meteorologisches Institut, Universitaet ", "Hamburg.")
+        with Dataset(file_list[0]) as dataset:
+            fourc.extr_time(dataset, w_nc_fid)
+            fourc.extr_lat(dataset, w_nc_fid)
+            fourc.extr_lon(dataset, w_nc_fid)
+        w_nc_var = w_nc_fid.createVariable(
+            'tlcl', 'f8', ('time', 'lat', 'lon'))
+        w_nc_var.setncatts({
+            'long_name':
+            "LCL Temperature",
+            'units':
+            "K",
+            'level_desc':
+            "surface",
+            'var_desc':
+            ("LCL temperature from LCL ", "height (Magnus formulas and dry ",
+             "adiabatic lapse ratio)"),
+            'statistic':
+            'monthly mean'
+        })
+        w_nc_fid.variables['tlcl'][:] = ztlcl
     tabl_temp = wdir + '/tabl.nc'
     removeif(tabl_temp)
-    w_nc_fid = Dataset(tabl_temp, 'w', format='NETCDF4')
-    w_nc_fid.description = (
-        "Monthly mean temperature at BL top for {} model. ".format(model),
-        "Calculated by Thermodynamics model diagnostics ",
-        "in ESMValTool. Author Valerio ", "Lembo, Meteorologisches Institut, ",
-        "Universitaet Hamburg.")
-    fourc.extr_time(dataset, w_nc_fid)
-    fourc.extr_lat(dataset, w_nc_fid)
-    fourc.extr_lon(dataset, w_nc_fid)
-    w_nc_var = w_nc_fid.createVariable('tabl', 'f8', ('time', 'lat', 'lon'))
-    w_nc_var.setncatts({
-        'long_name':
-        "Temperature at BL top",
-        'units':
-        "K",
-        'level_desc':
-        "surface",
-        'var_desc':
-        ("Temperature at the Boundary Layer ",
-         "top, from boundary layer thickness and ", "barometric equation"),
-        'statistic':
-        'monthly mean'
-    })
-    w_nc_fid.variables['tabl'][:] = t_z
-    w_nc_fid.close()  # close the new file
+    with Dataset(tabl_temp, 'w', format='NETCDF4') as w_nc_fid:
+        w_nc_fid.description = (
+            "Monthly mean temperature at BL top for {} model. ".format(model),
+            "Calculated by Thermodynamics model diagnostics ",
+            "in ESMValTool. Author Valerio ",
+            "Lembo, Meteorologisches Institut, ",
+            "Universitaet Hamburg.")
+        with Dataset(file_list[0]) as dataset:
+            fourc.extr_time(dataset, w_nc_fid)
+            fourc.extr_lat(dataset, w_nc_fid)
+            fourc.extr_lon(dataset, w_nc_fid)
+        w_nc_var = w_nc_fid.createVariable(
+            'tabl', 'f8', ('time', 'lat', 'lon'))
+        w_nc_var.setncatts({
+            'long_name':
+            "Temperature at BL top",
+            'units':
+            "K",
+            'level_desc':
+            "surface",
+            'var_desc':
+            ("Temperature at the Boundary Layer ",
+             "top, from boundary layer thickness and ", "barometric equation"),
+            'statistic':
+            'monthly mean'
+        })
+        w_nc_fid.variables['tabl'][:] = t_z
     htop_temp = wdir + '/htop.nc'
     removeif(htop_temp)
-    w_nc_fid = Dataset(htop_temp, 'w', format='NETCDF4')
-    w_nc_fid.description = (
-        "Monthly mean height of the BL top for {} model. ".format(model),
-        "Calculated by Thermodynamics model diagnostics ",
-        "in ESMValTool. Author Valerio ", "Lembo, Meteorologisches Institut, ",
-        "Universitaet Hamburg.")
-    fourc.extr_time(dataset, w_nc_fid)
-    fourc.extr_lat(dataset, w_nc_fid)
-    fourc.extr_lon(dataset, w_nc_fid)
-    w_nc_var = w_nc_fid.createVariable('htop', 'f8', ('time', 'lat', 'lon'))
-    w_nc_var.setncatts({
-        'long_name':
-        "Height at BL top",
-        'units':
-        "m",
-        'level_desc':
-        "surface",
-        'var_desc':
-        ("Height at the Boundary Layer top, ",
-         "from boundary layer thickness and ", "barometric equation"),
-        'statistic':
-        'monthly mean'
-    })
-    w_nc_fid.variables['htop'][:] = htop
-    w_nc_fid.close()  # close the new file
-    dataset.close()
+    with Dataset(htop_temp, 'w', format='NETCDF4') as w_nc_fid:
+        w_nc_fid.description = (
+            "Monthly mean height of the BL top for {} model. ".format(model),
+            "Calculated by Thermodynamics model diagnostics ",
+            "in ESMValTool. Author Valerio ",
+            "Lembo, Meteorologisches Institut, ",
+            "Universitaet Hamburg.")
+        with Dataset(file_list[0]) as dataset:
+            fourc.extr_time(dataset, w_nc_fid)
+            fourc.extr_lat(dataset, w_nc_fid)
+            fourc.extr_lon(dataset, w_nc_fid)
+        w_nc_var = w_nc_fid.createVariable(
+            'htop', 'f8', ('time', 'lat', 'lon'))
+        w_nc_var.setncatts({
+            'long_name':
+            "Height at BL top",
+            'units':
+            "m",
+            'level_desc':
+            "surface",
+            'var_desc':
+            ("Height at the Boundary Layer top, ",
+             "from boundary layer thickness and ", "barometric equation"),
+            'statistic':
+            'monthly mean'
+        })
+        w_nc_fid.variables['htop'][:] = htop
     tlcl_file = wdir + '/{}_tlcl.nc'.format(model)
     cdo.setrtomiss('400,1e36', input=tlcl_temp, output=tlcl_file)
     tabl_file = wdir + '/{}_tabl.nc'.format(model)

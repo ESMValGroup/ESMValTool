@@ -134,26 +134,24 @@ def pr_output(dict_v, nc_f, fileo, file_desc, wave2):
     PROGRAMMER(S)
         Chris Slocum (2014), modified by Valerio Lembo (2018).
     """
-    nc_fid = Dataset(nc_f, 'r')
     # Writing NetCDF files
-    var_nc_fid = Dataset(fileo, 'w', format='NETCDF4')
-    var_nc_fid.description = file_desc
-    extr_time(nc_fid, var_nc_fid)
-    extr_lat(nc_fid, var_nc_fid)
-    extr_plev(nc_fid, var_nc_fid)
-    # Write the wave dimension
-    var_nc_fid.createDimension('wave', len(wave2))
-    var_nc_fid.createVariable('wave', nc_fid.variables['plev'].dtype,
-                              ('wave', ))
-    var_nc_fid.variables['wave'][:] = wave2
-    nc_fid.close()
-    for key in dict_v:
-        value = dict_v[key]
-        var1_nc_var = var_nc_fid.createVariable(
-            key, 'f8', ('time', 'plev', 'lat', 'wave'))
-        varatts(var1_nc_var, key)
-        var_nc_fid.variables[key][:, :, :, :] = value
-    var_nc_fid.close()  # close the new file
+    with Dataset(fileo, 'w', format='NETCDF4') as var_nc_fid:
+        var_nc_fid.description = file_desc
+        with Dataset(nc_f, 'r') as nc_fid:
+            extr_time(nc_fid, var_nc_fid)
+            extr_lat(nc_fid, var_nc_fid)
+            extr_plev(nc_fid, var_nc_fid)
+            # Write the wave dimension
+            var_nc_fid.createDimension('wave', len(wave2))
+            var_nc_fid.createVariable('wave', nc_fid.variables['plev'].dtype,
+                                      ('wave', ))
+        var_nc_fid.variables['wave'][:] = wave2
+        for key in dict_v:
+            value = dict_v[key]
+            var1_nc_var = var_nc_fid.createVariable(
+                key, 'f8', ('time', 'plev', 'lat', 'wave'))
+            varatts(var1_nc_var, key)
+            var_nc_fid.variables[key][:, :, :, :] = value
 
 
 def pr_output_diag(var1, nc_f, fileo, name1):
@@ -173,21 +171,19 @@ def pr_output_diag(var1, nc_f, fileo, name1):
     PROGRAMMER(S)
         Chris Slocum (2014), modified by Valerio Lembo (2018).
     """
-    nc_fid = Dataset(nc_f, 'r')
-    # Writing NetCDF files
-    var_nc_fid = Dataset(fileo, 'w', format='NETCDF4')
-    var_nc_fid.description = "Fourier coefficients"
-    # Extract data from NetCDF file nad write them to the new file
-    extr_time(nc_fid, var_nc_fid)
-    extr_lat(nc_fid, var_nc_fid)
-    extr_lon(nc_fid, var_nc_fid)
-    extr_plev(nc_fid, var_nc_fid)
-    nc_fid.close()
-    var1_nc_var = var_nc_fid.createVariable(name1, 'f8',
-                                            ('time', 'plev', 'lat', 'lon'))
-    varatts(var1_nc_var, name1)
-    var_nc_fid.variables[name1][:, :, :, :] = var1
-    var_nc_fid.close()  # close the new file
+    with Dataset(fileo, 'w', format='NETCDF4') as var_nc_fid:
+        var_nc_fid.description = "Fourier coefficients"
+        with Dataset(nc_f, 'r') as nc_fid:
+            # Extract data from NetCDF file nad write them to the new file
+            extr_time(nc_fid, var_nc_fid)
+            extr_lat(nc_fid, var_nc_fid)
+            extr_lon(nc_fid, var_nc_fid)
+            extr_plev(nc_fid, var_nc_fid)
+        var1_nc_var = var_nc_fid.createVariable(name1, 'f8',
+                                                ('time', 'plev', 'lat', 'lon'))
+        varatts(var1_nc_var, name1)
+        var_nc_fid.variables[name1][:, :, :, :] = var1
+        var_nc_fid.close()  # close the new file
 
 
 def extr_lat(nc_fid, var_nc_fid):

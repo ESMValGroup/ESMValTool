@@ -803,25 +803,24 @@ def pr_output(varo, varname, filep, nc_f):
         Chris Slocum (2014), modified by Valerio Lembo (2018).
     """
     fourc = fourier_coefficients
-    nc_fid = Dataset(filep, 'r')
-    # Extract data from NetCDF file
-    wave = nc_fid.variables['wave'][:]
-    ntp = int(len(wave) / 2)
-    # Writing NetCDF files
-    w_nc_fid = Dataset(nc_f, 'w', format='NETCDF4')
-    w_nc_fid.description = "Outputs of LEC program"
-    fourc.extr_lat(nc_fid, w_nc_fid)
-    w_nc_fid.createDimension('wave', ntp)
-    w_nc_dim = w_nc_fid.createVariable('wave', nc_fid.variables['wave'].dtype,
-                                       ('wave', ))
-    for ncattr in nc_fid.variables['wave'].ncattrs():
-        w_nc_dim.setncattr(ncattr, nc_fid.variables['wave'].getncattr(ncattr))
-    w_nc_fid.variables['wave'][:] = wave[0:ntp]
-    nc_fid.close()
-    w_nc_var = w_nc_fid.createVariable(varname, 'f8', ('lat', 'wave'))
-    varatts(w_nc_var, varname, 1, 0)
-    w_nc_fid.variables[varname][:] = varo
-    w_nc_fid.close()
+    with Dataset(nc_f, 'w', format='NETCDF4') as w_nc_fid:
+        w_nc_fid.description = "Outputs of LEC program"
+        with Dataset(filep, 'r') as nc_fid:
+            # Extract data from NetCDF file
+            wave = nc_fid.variables['wave'][:]
+            ntp = int(len(wave) / 2)
+            # Writing NetCDF files
+            fourc.extr_lat(nc_fid, w_nc_fid)
+            w_nc_fid.createDimension('wave', ntp)
+            w_nc_dim = w_nc_fid.createVariable(
+                'wave', nc_fid.variables['wave'].dtype, ('wave', ))
+            for ncattr in nc_fid.variables['wave'].ncattrs():
+                w_nc_dim.setncattr(
+                    ncattr, nc_fid.variables['wave'].getncattr(ncattr))
+        w_nc_fid.variables['wave'][:] = wave[0:ntp]
+        w_nc_var = w_nc_fid.createVariable(varname, 'f8', ('lat', 'wave'))
+        varatts(w_nc_var, varname, 1, 0)
+        w_nc_fid.variables[varname][:] = varo
 
 
 def removeif(filename):
