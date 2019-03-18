@@ -37,23 +37,78 @@ def extract_bottom_layer(cube, coordinate='depth'):
         collapsed cube.
     """
     def extractor_1d(column):
+        """
+        Extract the bottom layer in a 1d column.
+
+        Extracts the last point that is not masked in a 1d numpy array.
+
+        Arguments
+        ---------
+            column: numpy.ma.MaskedArray
+                one dimensional masked numpy array
+
+        Returns
+        -------
+        numeric
+            single value of the bottom point
+        """
         try:
             # For every point find the depth index of the first mask point.
             # In columns with no masked points the result will be 0.
-            m = column.mask.argmax()
+            bottom_index = column.mask.argmax()
             # Subtract one to get to the last non mask point per column.
             # In columns with 0 this will become -1,
             # i.e. the last point of the column.
-            m -= 1
+            bottom_index -= 1
         except AttributeError:
             # In case there is no mask just use the last entry.
-            m = -1
-        return column[m]
+            bottom_index = -1
+        return column[bottom_index]
 
     def extractor(data, axis):
+        """
+        Extract the bottom layer in axis direction.
+
+        Extracts the bottom layer of a multi-dimensional masked numpy array.
+
+        Arguments
+        ---------
+            data: numpy.ma.MaskedArray
+                input array
+            axis: int
+                axis along which to look for bottom
+
+        Returns
+        -------
+        numpy.ma.MaskedArray
+            bottom layer of the input array with the same shape as the input
+            array except that the chosen axis is removed.
+        """
         return np.ma.apply_along_axis(extractor_1d, axis, data)
 
     def lazy_extractor(data, axis):
+        """
+        Extract the bottom layer in axis direction lazily.
+
+        Extracts the bottom layer of a multi-dimensional dask array lazily.
+
+        Arguments
+        ---------
+            data: dask.array.ma.MaskedArray
+                input array
+            axis: int
+                axis along which to look for bottom
+
+        Returns
+        -------
+        dask.array.ma..MaskedArray
+            bottom layer of the input array with the same shape as the input
+            array except that the chosen axis is removed.
+        """
+        # Note that even the dask version of apply_along_axis passes a
+        # one dimensional *numpy* array to the applied function.
+        # Hence, the lazy version uses the same numpy based 1d function
+        # as the non-lazy version.
         return da.apply_along_axis(extractor_1d, axis, data)
     aggregator = iris.analysis.Aggregator('{}: point'.format(coordinate),
                                           extractor,
