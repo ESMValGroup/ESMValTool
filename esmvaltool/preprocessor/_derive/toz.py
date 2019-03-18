@@ -4,7 +4,6 @@ import cf_units
 import iris
 import numba
 import numpy as np
-from iris import Constraint
 from scipy import constants
 
 from ._baseclass import DerivedVariableBase
@@ -45,8 +44,9 @@ class DerivedVariable(DerivedVariableBase):
 
         """
         tro3_cube = cubes.extract_strict(
-            Constraint(name='mole_fraction_of_ozone_in_air'))
-        ps_cube = cubes.extract_strict(Constraint(name='surface_air_pressure'))
+            iris.Constraint(name='mole_fraction_of_ozone_in_air'))
+        ps_cube = cubes.extract_strict(
+            iris.Constraint(name='surface_air_pressure'))
 
         p_layer_widths = _pressure_level_widths(
             tro3_cube, ps_cube, top_limit=0.0)

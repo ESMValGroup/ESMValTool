@@ -1,7 +1,6 @@
 """Derivation of variable `gtfgco2`."""
 import iris
 import numpy as np
-from iris import Constraint
 
 from ._baseclass import DerivedVariableBase
 
@@ -61,11 +60,11 @@ class DerivedVariable(DerivedVariableBase):
     def calculate(cubes):
         """Compute longwave cloud radiative effect."""
         fgco2_cube = cubes.extract_strict(
-            Constraint(name='surface_downward_mass_flux_of_carbon_dioxide'
-                       '_expressed_as_carbon'))
+            iris.Constraint(name='surface_downward_mass_flux_of_carbon_dioxide'
+                            '_expressed_as_carbon'))
 
         try:
-            cube_area = cubes.extract_strict(Constraint(name='cell_area'))
+            cube_area = cubes.extract_strict(iris.Constraint(name='cell_area'))
         except iris.exceptions.ConstraintMismatchError:
             pass
 
