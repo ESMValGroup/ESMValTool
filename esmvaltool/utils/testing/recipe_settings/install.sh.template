@@ -8,7 +8,7 @@
 #BSUB -n 16
 
 set -eo pipefail
-module load contrib/gnu/gcc/8.2.0
+module load contrib/gnu/gcc/7.3.0
 wget -nv https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
 bash Miniconda3-latest-Linux-x86_64.sh -b -p conda
 . conda/etc/profile.d/conda.sh
