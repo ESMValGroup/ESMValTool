@@ -187,7 +187,8 @@ def execute_cmorize():
     logger.info("input_dir  = %s", config_user["rootpath"]["RAWOBS"][0])
     # check if the inputdir actually exists
     if not os.path.isdir(config_user["rootpath"]["RAWOBS"][0]):
-        logger.error("Directory %s does not exist", config_user["rootpath"]["RAWOBS"][0])
+        logger.error("Directory %s does not exist",
+                     config_user["rootpath"]["RAWOBS"][0])
         raise ValueError
     logger.info("output_dir = %s", config_user["output_dir"])
     logger.info(70 * "-")
