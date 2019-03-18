@@ -18,6 +18,7 @@ documentation:
     - crescendo
 
 preprocessors:
+
   bottom_layer_ts_to_clim_thetao:
     custom_order: True
     extract_month:
@@ -27,11 +28,12 @@ preprocessors:
       z_min: 1000
       z_max: 99999
     extract_bottom_layer:
-    regrid:
+    regrid: &fig_9_15_regrid
       target_grid: 1x1
       scheme: linear
     convert_units:
       units: degC
+
   bottom_layer_clim_thetao:
     custom_order: True
     extract_volume:
@@ -39,23 +41,38 @@ preprocessors:
       z_max: 99999
     extract_bottom_layer:
     regrid:
-      target_grid: 1x1
-      scheme: linear
+      <<: *fig_9_15_regrid
     convert_units:
       units: degC
+
+  feb_climatology:
+    custom_order: True
+    extract_month:
+      month: 2
+    time_average:
+    regrid:
+      <<: *fig_9_15_regrid
+
+  aug_climatology:
+    custom_order: True
+    extract_month:
+      month: 8
+    time_average:
+    regrid:
+      <<: *fig_9_15_regrid
+
 
 diagnostics:
   ipcc_fig_9_15:
     description: Ocean bottom layer potential temperature (fig 9.15)
     variables:
-      thetao_models:
-        short_name: thetao
+      thetao_models: &fig_9_15_thetao_models
         project: CMIP5
         start_year: 1986
         end_year: 2005
         exp: historical
         ensemble: r1i1p1
-        reference_dataset: WOCE
+        short_name: thetao
         mip: Omon
         field: TO3M
         preprocessor: bottom_layer_ts_to_clim_thetao
@@ -71,31 +88,41 @@ diagnostics:
           - dataset: MRI-CGCM3
           - dataset: NorESM1-M
           - dataset: GFDL-ESM2G
-      thetao_obs:
-        short_name: thetao
+      thetao_obs: &fig_9_15_thetao_obs
+        <<: *fig_9_15_thetao_models
         project: OBS
         start_year: 1990
         end_year: 1998
-        mip: Omon
-        field: TO3M
         preprocessor: bottom_layer_clim_thetao
         additional_datasets:
           - dataset: WOCE
+            tier: 2
             type: clim
             version: 2004
+      sic_models_feb: &fig_9_15_sic_models_feb
+        <<: *fig_9_15_thetao_models
+        short_name: sic
+        mip: OImon
+        field: T2Ms
+        preprocessor: feb_climatology
+      sic_obs_feb: &fig_9_15_sic_obs_feb
+        <<: *fig_9_15_thetao_models
+        short_name: sic
+        mip: OImon
+        field: T2Ms
+        preprocessor: feb_climatology
+        additional_datasets:
+          - dataset: HadISST
+            project: OBS
             tier: 2
-      # sic:
-      #   project: CMIP5
-      #   start_year: 1986
-      #   end_year: 1987
-      #   exp: historical
-      #   ensemble: r1i1p1
-      #   preprocessor: prep0
-      #   reference_dataset: HadISST
-      #   mip: OImon
-      #   field: T2Ms
-      #   additional_datasets:
-      #     - {dataset: HadISST, project: OBS, type: reanaly, version: 20130524, start_year: 1986, end_year: 2005, tier: 2}
+            type: reanaly
+            version: 1
+      sic_models_aug:
+        <<: *fig_9_15_sic_models_feb
+        preprocessor: aug_climatology
+      sic_obs_aug:
+        <<: *fig_9_15_sic_obs_feb
+        preprocessor: aug_climatology
     scripts:
       ipcc_fig_9_15:
         script: ipcc_ar5/ch09_fig09_15.py
