@@ -17,7 +17,7 @@ class DerivedVariable(DerivedVariableBase):
             'short_name': 'fgco2',
             'field': 'T2{frequency}s'
         }],
-        'fx_files': ['areacello', 'sftof']
+        'fx_files': ['areacella', 'areacello', 'sftof', 'sftlf']
     }
 
     def calculate(self, cubes):
@@ -35,4 +35,4 @@ class DerivedVariable(DerivedVariableBase):
         return grid_area_correction(
             cubes,
             'surface_downward_mass_flux_of_carbon_dioxide_expressed_as_carbon',
-            fraction_var='sea_area_fraction')
+            sea_var=True)
