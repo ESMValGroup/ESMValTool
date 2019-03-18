@@ -18,7 +18,8 @@ class DerivedVariable(DerivedVariableBase):
         },
     ]
 
-    def calculate(self, cubes):
+    @staticmethod
+    def calculate(cubes):
         """Compute surface net downward shortwave radiation."""
         rsds_cube = cubes.extract_strict(
             Constraint(name='surface_downwelling_shortwave_flux_in_air'))

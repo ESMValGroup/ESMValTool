@@ -18,7 +18,8 @@ class DerivedVariable(DerivedVariableBase):
         },
     ]
 
-    def calculate(self, cubes):
+    @staticmethod
+    def calculate(cubes):
         """Compute toa net downward shortwave radiation."""
         rsdt_cube = cubes.extract_strict(
             Constraint(name='toa_incoming_shortwave_flux'))

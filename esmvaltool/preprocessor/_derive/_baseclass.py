@@ -6,12 +6,14 @@ class DerivedVariableBase:
     """Base class for derived variables."""
 
     @property
+    @staticmethod
     @abstractmethod
-    def required(self):
+    def required():
         """List of required variables for derivation."""
 
+    @staticmethod
     @abstractmethod
-    def calculate(self, cubes):
+    def calculate(cubes):
         """Compute desired derived variable.
 
         This method needs to be overridden in the child class belonging to the

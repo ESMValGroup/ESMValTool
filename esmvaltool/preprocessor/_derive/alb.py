@@ -23,7 +23,8 @@ class DerivedVariable(DerivedVariableBase):
         },
     ]
 
-    def calculate(self, cubes):
+    @staticmethod
+    def calculate(cubes):
         """Compute surface albedo."""
         rsds_cube = cubes.extract_strict(
             Constraint(name='surface_downwelling_shortwave_flux_in_air'))

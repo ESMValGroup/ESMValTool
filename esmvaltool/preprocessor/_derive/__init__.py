@@ -55,10 +55,8 @@ def get_required(short_name):
         and occasionally mip or fx_files.
 
     """
-    deriver = ALL_DERIVED_VARIABLES[short_name]
-    variables = []
-    for variable in deriver().required:
-        variables.append(deepcopy(variable))
+    DerivedVariable = ALL_DERIVED_VARIABLES[short_name]
+    variables = deepcopy(DerivedVariable().required)
     return variables
 
 
@@ -107,15 +105,17 @@ def derive(cubes,
                     "Requested fx variable '%s' for derivation of "
                     "'%s' not found", fx_var, short_name)
 
-    # Derive correct variable
-    deriver = ALL_DERIVED_VARIABLES[short_name]
-    cube = deriver().calculate(cubes)
+    # Derive variable
+    DerivedVariable = ALL_DERIVED_VARIABLES[short_name]
+    cube = DerivedVariable().calculate(cubes)
 
     # Set standard attributes
     cube.var_name = short_name
     cube.standard_name = standard_name if standard_name else None
     cube.long_name = long_name
     cube.units = units
-    cube.attributes['source_file'] = cubes[0].attributes['source_file']
+    for temp in cubes:
+        if 'source_file' in temp.attributes:
+            cube.attributes['source_file'] = temp.attributes['source_file']
 
     return cube

@@ -265,20 +265,6 @@ ana4mips:
   output_file: '[project]_[mip]_[type]_[dataset]_[short_name]_[start_year]-[end_year]'
   cmor_type: 'CMIP5'
 
-CCMVal1:
-  input_dir:
-    default: '[exp]/[dataset]'
-  input_file: '[project]_[exp]_[name]_[ensemble]_[mip]_[short_name].nc'
-  output_file: '[project]name]_[ensemble]_[short_name]_[start_year]-[end_year]'
-  cmor_type: 'CMIP5'
-
-CCMVal2:
-  input_dir:
-    default: '[exp]/[dataset]'
-  input_file: '[project]_[exp]_[name]_[ensemble]_[mip]_[short_name].nc'
-  output_file: '[project]_[exp]_[name]_[ensemble]_[short_name]_[start_year]-[end_year]'
-  cmor_type: 'CMIP5'
-
 EMAC:
   input_dir:
     default: '[dataset]'

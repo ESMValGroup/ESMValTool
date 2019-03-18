@@ -12,7 +12,8 @@ class DerivedVariable(DerivedVariableBase):
     # Required variables
     required = [{'short_name': 'clisccp'}]
 
-    def calculate(self, cubes):
+    @staticmethod
+    def calculate(cubes):
         """Compute ISCCP middle level thick cloud area fraction."""
         tau = Constraint(
             atmosphere_optical_thickness_due_to_cloud=lambda t: t > 23.)

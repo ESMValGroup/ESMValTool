@@ -1,7 +1,6 @@
 """Derivation of variable `amoc`."""
 import iris
 import numpy as np
-from iris import Constraint
 
 from ._baseclass import DerivedVariableBase
 
@@ -12,12 +11,9 @@ class DerivedVariable(DerivedVariableBase):
     # Required variables
     required = [{'short_name': 'msftmyz', 'mip': 'Omon'}]
 
-    def calculate(
-            self,
-            cubes,
-    ):
-        """
-        Compute Atlantic meriodinal overturning circulation.
+    @staticmethod
+    def calculate(cubes):
+        """Compute Atlantic meriodinal overturning circulation.
 
         Arguments
         ---------
@@ -31,8 +27,8 @@ class DerivedVariable(DerivedVariableBase):
         """
         # 0. Load the msftmyz cube.
         cube = cubes.extract_strict(
-            Constraint(name='ocean_meridional_overturning_mass_'
-                       'streamfunction'))
+            iris.Constraint(
+                name='ocean_meridional_overturning_mass_streamfunction'))
 
         # 1: find the relevant region
         atlantic_region = 'atlantic_arctic_ocean'

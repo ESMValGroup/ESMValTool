@@ -15,7 +15,8 @@ class DerivedVariable(DerivedVariableBase):
         'fx_files': ['sftlf'],
     }]
 
-    def calculate(self, cubes):
+    @staticmethod
+    def calculate(cubes):
         """Compute net biome production relative to grid cell area.
 
         Note
