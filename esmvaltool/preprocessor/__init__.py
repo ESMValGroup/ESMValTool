@@ -23,8 +23,9 @@ from ._reformat import (cmor_check_data, cmor_check_metadata, fix_data,
 from ._regrid import extract_levels, regrid
 from ._time import (annual_mean, extract_month, extract_season, extract_time,
                     seasonal_mean, time_average)
-from ._volume import (average_volume, depth_integration, extract_trajectory,
-                      extract_transect, extract_volume)
+from ._volume import (average_volume, depth_integration, extract_bottom_layer,
+                      extract_trajectory, extract_transect, extract_volume)
+
 
 logger = logging.getLogger(__name__)
 
@@ -54,6 +55,7 @@ __all__ = [
     # Mask landseaice, sftgif only
     'mask_landseaice',
     # Regridding
+    'extract_bottom_layer',
     'regrid',
     # Masking missing values
     'mask_fillvalues',

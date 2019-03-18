@@ -8,10 +8,57 @@ from copy import deepcopy
 
 import logging
 
+import dask.array as da
 import iris
 import numpy as np
 
 logger = logging.getLogger(__name__)
+
+
+def extract_bottom_layer(cube, coordinate='depth'):
+    """
+    Extract the bottom layer of a cube, following its mask.
+
+    This extracts point for point the data with the highest index
+    that is not masked. This is useful for example to extract variables at
+    the bottom of the ocean.
+
+    Arguments
+    ---------
+        cube: iris.cube.Cube
+            input cube
+
+        coordinate: str
+            name of the coordinate
+
+    Returns
+    -------
+    iris.cube.Cube
+        collapsed cube.
+    """
+    def extractor_1d(column):
+        try:
+            # For every point find the depth index of the first mask point.
+            # In columns with no masked points the result will be 0.
+            m = column.mask.argmax()
+            # Subtract one to get to the last non mask point per column.
+            # In columns with 0 this will become -1,
+            # i.e. the last point of the column.
+            m -= 1
+        except AttributeError:
+            # In case there is no mask just use the last entry.
+            m = -1
+        return column[m]
+
+    def extractor(data, axis):
+        return np.ma.apply_along_axis(extractor_1d, axis, data)
+
+    def lazy_extractor(data, axis):
+        return da.apply_along_axis(extractor_1d, axis, data)
+    aggregator = iris.analysis.Aggregator('{}: point'.format(coordinate),
+                                          extractor,
+                                          lazy_func=lazy_extractor)
+    return cube.collapsed(coordinate, aggregator)
 
 
 def extract_volume(cube, z_min, z_max):
