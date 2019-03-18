@@ -8,7 +8,7 @@ To get started developing, follow the instructions below. More detailed instruct
 
 ## Getting started
 To install in development mode, follow these instructions.
-  - Install gcc, g++ and gfortran if these are not available on your system. On Debian based systems, this can be done by running `apt install build-essential gfortran`, on managed systems you can often use the `module avail` command to see what compilers are available (note on gcc version: gcc 7.3.0 is the preferred version; gcc 8.2.0 is currently not supporting correct installation of the R packages; example of loading gcc7 on Jasmin: `module load contrib/gnu/gcc/7.3.0`).
+  - Install gcc, g++ and gfortran if these are not available on your system. On Debian based systems, this can be done by running `apt install build-essential gfortran`, on managed systems you can often use the `module avail` command to see what compilers are available (note on gcc version: gcc 7.3.0 is the preferred version; gcc 8.2.0 is currently not supporting correct installation of the R packages; example of loading gcc7 on the CEDA Jasmin cluster: `module load contrib/gnu/gcc/7.3.0`, similar module loading functionality should be present at your local cluster as well).
   - [Download and install conda](https://conda.io/projects/conda/en/latest/user-guide/install/linux.html) (this should be done even if the system in use already has a preinstalled version of conda, as problems have been reported with NCL when using such a version)
   - To make the `conda` command availble, add `source <prefix>/etc/profile.d/conda.sh` to your `.bashrc` file and restart your shell. If using (t)csh shell, add `source <prefix>/etc/profile.d/conda.csh` to your `.cshrc`/`.tcshrc` file instead.
   - Update conda: `conda update -y conda`
