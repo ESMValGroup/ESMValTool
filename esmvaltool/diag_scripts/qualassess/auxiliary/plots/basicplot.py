@@ -738,12 +738,12 @@ class Plot2D(object):
                     [coord.name() for coord in cube.coords()],
                     iris.analysis.MEAN,
                     weights=iris.analysis.cartography.area_weights(cube)
-                ).data
+                        ).data
                 std = utils.weighted_STD_DEV(
                     cube,
                     [coord.name() for coord in cube.coords()],
                     weights=iris.analysis.cartography.area_weights(cube)
-                ).data
+                        ).data
                 plt.gca().coastlines()
                 plt.gca().gridlines(crs=ccrs.Geodetic(), color="k",
                                     linestyle=':')

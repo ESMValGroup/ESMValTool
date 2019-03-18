@@ -393,6 +393,7 @@ def weighted_STD_DEV(cube, dim, weights=None):
                 dim,
                 iris.analysis.MEAN,
                 weights=weights)**2)**0.5
+                    
 
 def dict_merge(dct, merge_dct):
     """ Recursive dict merge. Inspired by :meth:``dict.update()``, instead of
@@ -424,33 +425,25 @@ def dict_merge(dct, merge_dct):
 
 def dask_weighted_mean_wrapper(cube, spatial_weights, dims=None):
     
-#    newcube = cube.collapsed(dims,iris.analysis.MEAN,weights=iris.analysis.cartography.area_weights(cube))
-    
     if not isinstance(dims,list):
         dims = [dims]
-        
-    logger.info(dims)
-    logger.info(type(spatial_weights))
     
+    # weights only necessary if latitude is aggregated
     if "latitude" in dims:
         latlon_list = []
         
         for latlon in cube.slices(["latitude","longitude"]):
             
+            # adjust cube to slicing
             latlon.remove_coord("day_of_month")
             latlon.remove_coord("day_of_year")
             latlon.remove_coord("month_number")
             latlon.remove_coord("year")
-            logger.info(type(latlon.data))
-            iris.analysis.maths.multiply(latlon, 
-                                         spatial_weights / 
-                                         np.mean(spatial_weights,axis=0), 
-                                         in_place=True)
-            logger.info(type(latlon.data))
-            latlon.standard_name = cube.standard_name
-            latlon.long_name = cube.long_name
+#            latlon.standard_name = cube.standard_name
+#            latlon.long_name = cube.long_name
     
-            latlon = latlon.collapsed("latitude", iris.analysis.MEAN)
+            latlon = latlon.collapsed("latitude", iris.analysis.MEAN,
+                                      weights = spatial_weights.compute())
             latlon_list.append(latlon)
     
         dims.remove("latitude")
@@ -461,34 +454,12 @@ def dask_weighted_mean_wrapper(cube, spatial_weights, dims=None):
         
         if len(dims):
             new_cube = new_cube.collapsed(dims, iris.analysis.MEAN)
-        
-        logger.info("going path one")
-    
+            
     else:
         new_cube = cube.collapsed(dims, iris.analysis.MEAN)
-        logger.info("going path two")
-#    
-#    if "latitude" in dims:
-#        newcube.remove_coord("day_of_month")
-#        newcube.remove_coord("day_of_year")
-#        newcube.remove_coord("month_number")
-#        newcube.remove_coord("year")
-#        
-#    try:
-#        logger.info(newcube.coords("air_pressure"))
-#        logger.info(new_cube.coords("air_pressure"))
-#        if len(new_cube.coord("air_pressure").points)>1:  
-#            nc = new_cube.data.copy()
-#            nc = np.flip(nc,axis=0)
-#            new_cube.data = nc
-#    except:
-#        pass
-#    
-#    logger.info(newcube)
-#    logger.info(new_cube)
-#    logger.info(newcube.data)
-#    logger.info(new_cube.data)
-#    
-#    newcube.data = new_cube.data-newcube.data
     
     return new_cube
+
+#def dask_weighted_stddev_wrapper(cube, spatial_weights, dims=None):
+#
+#    return dask_weighted_mean_wrapper(cube, spatial_weights, dims=dims)
