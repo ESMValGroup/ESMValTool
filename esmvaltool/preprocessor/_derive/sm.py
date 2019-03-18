@@ -13,7 +13,8 @@ class DerivedVariable(DerivedVariableBase):
     # Required variables
     required = [{'short_name': 'mrsos'}]
 
-    def calculate(self, cubes):
+    @staticmethod
+    def calculate(cubes):
         """Compute soil moisture.
 
         Note

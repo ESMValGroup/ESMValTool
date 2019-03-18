@@ -24,7 +24,8 @@ class DerivedVariable(DerivedVariableBase):
         },
     ]
 
-    def calculate(self, cubes):
+    @staticmethod
+    def calculate(cubes):
         """Compute net cloud radiative effect.
 
         Note

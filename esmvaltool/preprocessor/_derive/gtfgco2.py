@@ -57,7 +57,8 @@ class DerivedVariable(DerivedVariableBase):
         },
     ]
 
-    def calculate(self, cubes):
+    @staticmethod
+    def calculate(cubes):
         """Compute longwave cloud radiative effect."""
         fgco2_cube = cubes.extract_strict(
             Constraint(name='surface_downward_mass_flux_of_carbon_dioxide'

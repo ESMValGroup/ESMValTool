@@ -34,7 +34,8 @@ class DerivedVariable(DerivedVariableBase):
         },
     ]
 
-    def calculate(self, cubes):
+    @staticmethod
+    def calculate(cubes):
         """Compute total column ozone.
 
         Note

@@ -12,12 +12,9 @@ class DerivedVariable(DerivedVariableBase):
     # Required variables
     required = [{'short_name': 'msftmyz', 'mip': 'Omon'}]
 
-    def calculate(
-            self,
-            cubes,
-    ):
-        """
-        Compute Atlantic meriodinal overturning circulation.
+    @staticmethod
+    def calculate(cubes):
+        """Compute Atlantic meriodinal overturning circulation.
 
         Arguments
         ---------

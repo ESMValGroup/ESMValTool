@@ -18,7 +18,8 @@ class DerivedVariable(DerivedVariableBase):
         },
     ]
 
-    def calculate(self, cubes):
+    @staticmethod
+    def calculate(cubes):
         """Compute longwave cloud radiative effect."""
         rlut_cube = cubes.extract_strict(
             Constraint(name='toa_outgoing_longwave_flux'))
