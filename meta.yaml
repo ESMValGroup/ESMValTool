@@ -70,7 +70,6 @@ requirements:
     # Multi language support:
     - ncl>=6.5.0
     - jasper!=1.900.31  # pinned NCL dependency
-    - julia
     - r-base
     - cdo
 

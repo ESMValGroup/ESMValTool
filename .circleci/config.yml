@@ -28,6 +28,7 @@ jobs:
           key: deps3-{{ .Branch }}-{{ checksum "cache_key.txt" }}
           paths:
             - "/opt/conda/envs/esmvaltool"
+            - ".eggs"
       - run:
           # Activate Conda environment and run tests
           command: |
@@ -110,11 +111,15 @@ jobs:
             # Install
             apt update > /logs/apt.txt 2>&1
             apt -y install build-essential gfortran >> /logs/apt.txt 2>&1
+            wget https://julialang-s3.julialang.org/bin/linux/x64/1.0/julia-1.0.3-linux-x86_64.tar.gz
+            tar xfz julia-*-linux-x86_64.tar.gz
+            ln -s $(pwd)/julia-*/bin/julia /usr/bin/julia
             conda update -y conda > /logs/conda.txt 2>&1
             conda env update >> /logs/conda.txt 2>&1
             set +x; conda activate esmvaltool; set -x
             pip install -e .[develop] > /logs/install.txt 2>&1
-            Rscript ./esmvaltool/install/R/setup.R > /logs/R_install.txt 2>&1
+            Rscript esmvaltool/install/R/setup.R > /logs/R_install.txt 2>&1
+            julia esmvaltool/install/Julia/setup.jl > /logs/julia_install.txt 2>&1
             # Log versions
             dpkg -l > /logs/versions.txt
             conda env export > /logs/environment.yml
@@ -170,6 +175,9 @@ jobs:
             mkdir /logs
             apt update > /logs/apt.txt 2>&1
             apt -y install build-essential gfortran >> /logs/apt.txt 2>&1
+            wget https://julialang-s3.julialang.org/bin/linux/x64/1.0/julia-1.0.3-linux-x86_64.tar.gz
+            tar xfz julia-*-linux-x86_64.tar.gz
+            ln -s $(pwd)/julia-*/bin/julia /usr/bin/julia
             conda update -y conda > /logs/conda_base.txt 2>&1
             conda install -y conda-build conda-verify >> /logs/conda_base.txt 2>&1
             # Log versions
@@ -200,6 +208,9 @@ jobs:
             mkdir /logs
             apt update > /logs/apt.txt 2>&1
             apt -y install build-essential gfortran >> /logs/apt.txt 2>&1
+            wget https://julialang-s3.julialang.org/bin/linux/x64/1.0/julia-1.0.3-linux-x86_64.tar.gz
+            tar xfz julia-*-linux-x86_64.tar.gz
+            ln -s $(pwd)/julia-*/bin/julia /usr/bin/julia
             conda update -y conda > /logs/conda.txt 2>&1
             # Create and activate conda environment
             conda create -y --name esmvaltool
