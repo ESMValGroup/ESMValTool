@@ -1,23 +1,24 @@
 {
     "Header": {
-        "data_specs_version": "01.00.10", 
+        "data_specs_version": "01.00.30", 
+        "cmor_version": "3.4", 
         "table_id": "Table CFmon", 
         "realm": "atmos", 
-        "frequency": "mon", 
-        "cmor_version": "3.2", 
-        "table_date": "10 May 2017", 
+        "table_date": "11 March 2019", 
         "missing_value": "1e20", 
+        "int_missing_value": "-999", 
         "product": "model-output", 
         "approx_interval": "30.00000", 
         "generic_levels": "alevel alevhalf", 
         "mip_era": "CMIP6", 
-        "Conventions": "CF-1.7 CMIP-6.0"
+        "Conventions": "CF-1.7 CMIP-6.2"
     }, 
     "variable_entry": {
         "albisccp": {
+            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "cloud_albedo", 
-            "units": "1.0", 
+            "units": "1", 
             "cell_methods": "area: time: mean where cloud", 
             "cell_measures": "area: areacella", 
             "long_name": "ISCCP Mean Cloud Albedo", 
@@ -32,12 +33,13 @@
             "ok_max_mean_abs": ""
         }, 
         "clc": {
+            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "convective_cloud_area_fraction_in_atmosphere_layer", 
             "units": "%", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
-            "long_name": "Convective Cloud Area Fraction", 
+            "long_name": "Convective Cloud Area Percentage", 
             "comment": "Include only convective cloud.", 
             "dimensions": "longitude latitude alevel time", 
             "out_name": "clc", 
@@ -49,13 +51,14 @@
             "ok_max_mean_abs": ""
         }, 
         "clcalipso": {
+            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "cloud_area_fraction_in_atmosphere_layer", 
             "units": "%", 
             "cell_methods": "time: mean", 
             "cell_measures": "area: areacella", 
             "long_name": "CALIPSO Percentage Cloud Cover", 
-            "comment": "Percentage cloud cover at CALIPSO standard heights.", 
+            "comment": "Percentage cloud cover in CALIPSO standard atmospheric layers.", 
             "dimensions": "longitude latitude alt40 time", 
             "out_name": "clcalipso", 
             "type": "real", 
@@ -66,12 +69,13 @@
             "ok_max_mean_abs": ""
         }, 
         "clhcalipso": {
+            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "cloud_area_fraction_in_atmosphere_layer", 
             "units": "%", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
-            "long_name": "CALIPSO Percentage High Level Cloud", 
+            "long_name": "CALIPSO High Level Cloud Area Percentage", 
             "comment": "Percentage cloud cover in layer centred on 220hPa", 
             "dimensions": "longitude latitude time p220", 
             "out_name": "clhcalipso", 
@@ -83,9 +87,10 @@
             "ok_max_mean_abs": ""
         }, 
         "clic": {
+            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "mass_fraction_of_convective_cloud_ice_in_air", 
-            "units": "1.0", 
+            "units": "1", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
             "long_name": "Mass Fraction of Convective Cloud Ice", 
@@ -100,9 +105,10 @@
             "ok_max_mean_abs": ""
         }, 
         "clis": {
+            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "mass_fraction_of_stratiform_cloud_ice_in_air", 
-            "units": "1.0", 
+            "units": "1", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
             "long_name": "Mass Fraction of Stratiform Cloud Ice", 
@@ -117,12 +123,13 @@
             "ok_max_mean_abs": ""
         }, 
         "clisccp": {
+            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "cloud_area_fraction_in_atmosphere_layer", 
             "units": "%", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
-            "long_name": "ISCCP Percentage Cloud Area", 
+            "long_name": "ISCCP Cloud Area Percentage", 
             "comment": "Percentage cloud cover in optical depth categories.", 
             "dimensions": "longitude latitude plev7c tau time", 
             "out_name": "clisccp", 
@@ -134,12 +141,13 @@
             "ok_max_mean_abs": ""
         }, 
         "cllcalipso": {
+            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "cloud_area_fraction_in_atmosphere_layer", 
             "units": "%", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
-            "long_name": "CALIPSO Percentage Low Level Cloud", 
+            "long_name": "CALIPSO Low Level Cloud Cover Percentage", 
             "comment": "Percentage cloud cover in layer centred on 840hPa", 
             "dimensions": "longitude latitude time p840", 
             "out_name": "cllcalipso", 
@@ -151,12 +159,13 @@
             "ok_max_mean_abs": ""
         }, 
         "clmcalipso": {
+            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "cloud_area_fraction_in_atmosphere_layer", 
             "units": "%", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
-            "long_name": "CALIPSO Percentage Mid Level Cloud", 
+            "long_name": "CALIPSO Mid Level Cloud Cover Percentage", 
             "comment": "Percentage cloud cover in layer centred on 560hPa", 
             "dimensions": "longitude latitude time p560", 
             "out_name": "clmcalipso", 
@@ -168,13 +177,14 @@
             "ok_max_mean_abs": ""
         }, 
         "cls": {
+            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "stratiform_cloud_area_fraction_in_atmosphere_layer", 
             "units": "%", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
-            "long_name": "Stratiform Cloud Area Fraction", 
-            "comment": "", 
+            "long_name": "Percentage Cover of Stratiform Cloud", 
+            "comment": "Cloud area fraction (reported as a percentage) for the whole atmospheric column due to stratiform clouds, as seen from the surface or the top of the atmosphere. Includes both large-scale and convective cloud.", 
             "dimensions": "longitude latitude alevel time", 
             "out_name": "cls", 
             "type": "real", 
@@ -185,13 +195,14 @@
             "ok_max_mean_abs": ""
         }, 
         "cltcalipso": {
+            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "cloud_area_fraction", 
             "units": "%", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
-            "long_name": "CALIPSO Percentage Total Cloud", 
-            "comment": "", 
+            "long_name": "CALIPSO Total Cloud Cover Percentage", 
+            "comment": "Total cloud area fraction (reported as a percentage) for the whole atmospheric column, as seen by the  Cloud-Aerosol Lidar and Infrared Pathfinder Satellite Observation (CALIPSO) instrument. Includes both large-scale and convective cloud.", 
             "dimensions": "longitude latitude time", 
             "out_name": "cltcalipso", 
             "type": "real", 
@@ -202,13 +213,14 @@
             "ok_max_mean_abs": ""
         }, 
         "cltisccp": {
+            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "cloud_area_fraction", 
             "units": "%", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
-            "long_name": "ISCCP Total Cloud Fraction", 
-            "comment": "Percentage total cloud cover, simulating ISCCP observations.", 
+            "long_name": "ISCCP Total Cloud Cover Percentage", 
+            "comment": "Total cloud area fraction (reported as a percentage) for the whole atmospheric column, as seen by the International Satellite Cloud Climatology Project (ISCCP) analysis. Includes both large-scale and convective cloud.  (MODIS). Includes both large-scale and convective cloud.", 
             "dimensions": "longitude latitude time", 
             "out_name": "cltisccp", 
             "type": "real", 
@@ -219,9 +231,10 @@
             "ok_max_mean_abs": ""
         }, 
         "clwc": {
+            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "mass_fraction_of_convective_cloud_liquid_water_in_air", 
-            "units": "1.0", 
+            "units": "1", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
             "long_name": "Mass Fraction of Convective Cloud Liquid Water", 
@@ -236,9 +249,10 @@
             "ok_max_mean_abs": ""
         }, 
         "clws": {
+            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "mass_fraction_of_stratiform_cloud_liquid_water_in_air", 
-            "units": "1.0", 
+            "units": "1", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
             "long_name": "Mass Fraction of Stratiform Cloud Liquid Water", 
@@ -253,6 +267,7 @@
             "ok_max_mean_abs": ""
         }, 
         "dmc": {
+            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "atmosphere_net_upward_deep_convective_mass_flux", 
             "units": "kg m-2 s-1", 
@@ -270,12 +285,13 @@
             "ok_max_mean_abs": ""
         }, 
         "edt": {
+            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "atmosphere_heat_diffusivity", 
             "units": "m2 s-1", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
-            "long_name": "Eddy Diffusivity Coefficients for Temperature", 
+            "long_name": "Eddy Diffusivity Coefficient for Temperature", 
             "comment": "Vertical diffusion coefficient for temperature due to parametrised eddies", 
             "dimensions": "longitude latitude alevel time", 
             "out_name": "edt", 
@@ -287,12 +303,13 @@
             "ok_max_mean_abs": ""
         }, 
         "evu": {
+            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "atmosphere_momentum_diffusivity", 
             "units": "m2 s-1", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
-            "long_name": "Eddy Viscosity Coefficients for Momentum", 
+            "long_name": "Eddy Viscosity Coefficient for Momentum", 
             "comment": "Vertical diffusion coefficient for momentum due to parametrised eddies", 
             "dimensions": "longitude latitude alevel time", 
             "out_name": "evu", 
@@ -304,6 +321,7 @@
             "ok_max_mean_abs": ""
         }, 
         "hur": {
+            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "relative_humidity", 
             "units": "%", 
@@ -321,13 +339,14 @@
             "ok_max_mean_abs": ""
         }, 
         "hus": {
+            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "specific_humidity", 
-            "units": "1.0", 
+            "units": "1", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
             "long_name": "Specific Humidity", 
-            "comment": "", 
+            "comment": "Specific humidity is the mass fraction of water vapor in (moist) air.", 
             "dimensions": "longitude latitude alevel time", 
             "out_name": "hus", 
             "type": "real", 
@@ -338,6 +357,7 @@
             "ok_max_mean_abs": ""
         }, 
         "mcd": {
+            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "atmosphere_downdraft_convective_mass_flux", 
             "units": "kg m-2 s-1", 
@@ -355,12 +375,13 @@
             "ok_max_mean_abs": ""
         }, 
         "mcu": {
+            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "atmosphere_updraft_convective_mass_flux", 
             "units": "kg m-2 s-1", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
-            "long_name": "Updraft Convective Mass Flux", 
+            "long_name": "Convective Updraft Mass Flux", 
             "comment": "In accordance with common usage in geophysical disciplines, 'flux' implies per unit area, called 'flux density' in physics. The atmosphere convective mass flux is the vertical transport of mass for a field of cumulus clouds or thermals, given by the product of air density and vertical velocity. For an area-average, cell_methods should specify whether the average is over all the area or the area of updrafts only.", 
             "dimensions": "longitude latitude alevhalf time", 
             "out_name": "mcu", 
@@ -372,6 +393,7 @@
             "ok_max_mean_abs": ""
         }, 
         "pctisccp": {
+            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "air_pressure_at_cloud_top", 
             "units": "Pa", 
@@ -389,16 +411,17 @@
             "ok_max_mean_abs": ""
         }, 
         "ps": {
+            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "surface_air_pressure", 
             "units": "Pa", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
-            "long_name": "Surface Pressure", 
+            "long_name": "Surface Air Pressure", 
             "comment": "surface pressure (not mean sea-level pressure), 2-D field to calculate the 3-D pressure field from hybrid coordinates", 
             "dimensions": "longitude latitude time", 
             "out_name": "ps", 
-            "type": "float", 
+            "type": "real", 
             "positive": "", 
             "valid_min": "", 
             "valid_max": "", 
@@ -406,6 +429,7 @@
             "ok_max_mean_abs": ""
         }, 
         "rld": {
+            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "downwelling_longwave_flux_in_air", 
             "units": "W m-2", 
@@ -423,6 +447,7 @@
             "ok_max_mean_abs": ""
         }, 
         "rld4co2": {
+            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "downwelling_longwave_flux_in_air", 
             "units": "W m-2", 
@@ -440,6 +465,7 @@
             "ok_max_mean_abs": ""
         }, 
         "rldcs": {
+            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "downwelling_longwave_flux_in_air_assuming_clear_sky", 
             "units": "W m-2", 
@@ -457,6 +483,7 @@
             "ok_max_mean_abs": ""
         }, 
         "rldcs4co2": {
+            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "downwelling_longwave_flux_in_air_assuming_clear_sky", 
             "units": "W m-2", 
@@ -474,6 +501,7 @@
             "ok_max_mean_abs": ""
         }, 
         "rlu": {
+            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "upwelling_longwave_flux_in_air", 
             "units": "W m-2", 
@@ -491,6 +519,7 @@
             "ok_max_mean_abs": ""
         }, 
         "rlu4co2": {
+            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "upwelling_longwave_flux_in_air", 
             "units": "W m-2", 
@@ -508,6 +537,7 @@
             "ok_max_mean_abs": ""
         }, 
         "rlucs": {
+            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "upwelling_longwave_flux_in_air_assuming_clear_sky", 
             "units": "W m-2", 
@@ -525,6 +555,7 @@
             "ok_max_mean_abs": ""
         }, 
         "rlucs4co2": {
+            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "upwelling_longwave_flux_in_air_assuming_clear_sky", 
             "units": "W m-2", 
@@ -542,6 +573,7 @@
             "ok_max_mean_abs": ""
         }, 
         "rlut4co2": {
+            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "toa_outgoing_longwave_flux", 
             "units": "W m-2", 
@@ -559,6 +591,7 @@
             "ok_max_mean_abs": ""
         }, 
         "rlutcs4co2": {
+            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "toa_outgoing_longwave_flux_assuming_clear_sky", 
             "units": "W m-2", 
@@ -576,6 +609,7 @@
             "ok_max_mean_abs": ""
         }, 
         "rsd": {
+            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "downwelling_shortwave_flux_in_air", 
             "units": "W m-2", 
@@ -593,6 +627,7 @@
             "ok_max_mean_abs": ""
         }, 
         "rsd4co2": {
+            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "downwelling_shortwave_flux_in_air", 
             "units": "W m-2", 
@@ -610,6 +645,7 @@
             "ok_max_mean_abs": ""
         }, 
         "rsdcs": {
+            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "downwelling_shortwave_flux_in_air_assuming_clear_sky", 
             "units": "W m-2", 
@@ -627,6 +663,7 @@
             "ok_max_mean_abs": ""
         }, 
         "rsdcs4co2": {
+            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "downwelling_shortwave_flux_in_air_assuming_clear_sky", 
             "units": "W m-2", 
@@ -644,6 +681,7 @@
             "ok_max_mean_abs": ""
         }, 
         "rsu": {
+            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "upwelling_shortwave_flux_in_air", 
             "units": "W m-2", 
@@ -661,6 +699,7 @@
             "ok_max_mean_abs": ""
         }, 
         "rsu4co2": {
+            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "upwelling_shortwave_flux_in_air", 
             "units": "W m-2", 
@@ -678,6 +717,7 @@
             "ok_max_mean_abs": ""
         }, 
         "rsucs": {
+            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "upwelling_shortwave_flux_in_air_assuming_clear_sky", 
             "units": "W m-2", 
@@ -695,6 +735,7 @@
             "ok_max_mean_abs": ""
         }, 
         "rsucs4co2": {
+            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "upwelling_shortwave_flux_in_air_assuming_clear_sky", 
             "units": "W m-2", 
@@ -712,6 +753,7 @@
             "ok_max_mean_abs": ""
         }, 
         "rsut4co2": {
+            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "toa_outgoing_shortwave_flux", 
             "units": "W m-2", 
@@ -729,6 +771,7 @@
             "ok_max_mean_abs": ""
         }, 
         "rsutcs4co2": {
+            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "toa_outgoing_shortwave_flux_assuming_clear_sky", 
             "units": "W m-2", 
@@ -746,6 +789,7 @@
             "ok_max_mean_abs": ""
         }, 
         "smc": {
+            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "atmosphere_net_upward_shallow_convective_mass_flux", 
             "units": "kg m-2 s-1", 
@@ -763,6 +807,7 @@
             "ok_max_mean_abs": ""
         }, 
         "ta": {
+            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "air_temperature", 
             "units": "K", 
@@ -780,6 +825,7 @@
             "ok_max_mean_abs": ""
         }, 
         "tnhus": {
+            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "tendency_of_specific_humidity", 
             "units": "s-1", 
@@ -797,12 +843,13 @@
             "ok_max_mean_abs": ""
         }, 
         "tnhusa": {
+            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "tendency_of_specific_humidity_due_to_advection", 
             "units": "s-1", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
-            "long_name": "Tendency of Specific Humidity due to Advection", 
+            "long_name": "Tendency of Specific Humidity Due to Advection", 
             "comment": "Tendency of Specific Humidity due to Advection", 
             "dimensions": "longitude latitude alevel time", 
             "out_name": "tnhusa", 
@@ -814,12 +861,13 @@
             "ok_max_mean_abs": ""
         }, 
         "tnhusc": {
+            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "tendency_of_specific_humidity_due_to_convection", 
             "units": "s-1", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
-            "long_name": "Tendency of Specific Humidity due to Convection", 
+            "long_name": "Tendency of Specific Humidity Due to Convection", 
             "comment": "Tendencies from cumulus convection scheme.", 
             "dimensions": "longitude latitude alevel time", 
             "out_name": "tnhusc", 
@@ -831,12 +879,13 @@
             "ok_max_mean_abs": ""
         }, 
         "tnhusd": {
+            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "tendency_of_specific_humidity_due_to_diffusion", 
             "units": "s-1", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
-            "long_name": "Tendency of Specific Humidity due to Numerical Diffusion", 
+            "long_name": "Tendency of Specific Humidity Due to Numerical Diffusion", 
             "comment": "Tendency of specific humidity due to numerical diffusion.This includes any horizontal or vertical numerical moisture diffusion not associated with the parametrized moist physics or the resolved dynamics.  For example, any vertical diffusion which is part of the boundary layer mixing scheme should be excluded, as should any diffusion which is included in the terms from the resolved dynamics.   This term is required to check the closure of the moisture budget.", 
             "dimensions": "longitude latitude alevel time", 
             "out_name": "tnhusd", 
@@ -848,13 +897,14 @@
             "ok_max_mean_abs": ""
         }, 
         "tnhusmp": {
+            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "tendency_of_specific_humidity_due_to_model_physics", 
             "units": "s-1", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
-            "long_name": "Tendency of Specific Humidity due to Model Physics", 
-            "comment": "Tendency of specific humidity due to model physics. This includes sources and sinks from parametrized moist physics (e.g. convection, boundary layer, stratiform condensation/evaporation, etc.) and excludes sources and sinks from resolved dynamics or from horizontal or vertical numerical diffusion not associated with model physicsl.  For example any diffusive mixing by the boundary layer scheme would be included.", 
+            "long_name": "Tendency of Specific Humidity Due to Model Physics", 
+            "comment": "Tendency of specific humidity due to model physics. This includes sources and sinks from parametrized moist physics (e.g. convection, boundary layer, stratiform condensation/evaporation, etc.) and excludes sources and sinks from resolved dynamics or from horizontal or vertical numerical diffusion not associated with model physics.  For example any diffusive mixing by the boundary layer scheme would be included.", 
             "dimensions": "longitude latitude alevel time", 
             "out_name": "tnhusmp", 
             "type": "real", 
@@ -865,13 +915,14 @@
             "ok_max_mean_abs": ""
         }, 
         "tnhusscpbl": {
+            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "tendency_of_specific_humidity_due_to_stratiform_cloud_and_precipitation_and_boundary_layer_mixing", 
             "units": "s-1", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
             "long_name": "Tendency of Specific Humidity Due to Stratiform Cloud and Precipitation and Boundary Layer Mixing", 
-            "comment": "Tendency of Specific Humidity Due to Stratiform Cloud and Precipitation and Boundary Layer Mixing  (to be specified only in  models which do not separate budget terms for stratiform cloud, precipitation and boundary layer schemes.  Includes all bounday layer terms including and diffusive terms.)", 
+            "comment": "Tendency of Specific Humidity Due to Stratiform Cloud and Precipitation and Boundary Layer Mixing  (to be specified only in  models which do not separate budget terms for stratiform cloud, precipitation and boundary layer schemes.  Includes all boundary layer terms including and diffusive terms.)", 
             "dimensions": "longitude latitude alevel time", 
             "out_name": "tnhusscpbl", 
             "type": "real", 
@@ -882,6 +933,7 @@
             "ok_max_mean_abs": ""
         }, 
         "tnt": {
+            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "tendency_of_air_temperature", 
             "units": "K s-1", 
@@ -899,12 +951,13 @@
             "ok_max_mean_abs": ""
         }, 
         "tnta": {
+            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "tendency_of_air_temperature_due_to_advection", 
             "units": "K s-1", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
-            "long_name": "Tendency of Air Temperature due to Advection", 
+            "long_name": "Tendency of Air Temperature Due to Advection", 
             "comment": "Tendency of Air Temperature due to Advection", 
             "dimensions": "longitude latitude alevel time", 
             "out_name": "tnta", 
@@ -916,12 +969,13 @@
             "ok_max_mean_abs": ""
         }, 
         "tntc": {
+            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "tendency_of_air_temperature_due_to_convection", 
             "units": "K s-1", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
-            "long_name": "Tendency of Air Temperature due to Convection", 
+            "long_name": "Tendency of Air Temperature Due to Convection", 
             "comment": "Tendencies from cumulus convection scheme.", 
             "dimensions": "longitude latitude alevel time", 
             "out_name": "tntc", 
@@ -933,12 +987,13 @@
             "ok_max_mean_abs": ""
         }, 
         "tntmp": {
+            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "tendency_of_air_temperature_due_to_model_physics", 
             "units": "K s-1", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
-            "long_name": "Tendency of Air Temperature due to Model Physics", 
+            "long_name": "Tendency of Air Temperature Due to Model Physics", 
             "comment": "Tendency of air temperature due to model physics. This includes sources and sinks from parametrized physics (e.g. radiation, convection, boundary layer, stratiform condensation/evaporation, etc.). It excludes sources and sinks from resolved dynamics and numerical diffusion not associated with parametrized physics.  For example, any vertical diffusion which is part of the boundary layer mixing scheme should be included, while numerical diffusion applied in addition to physics or resolved dynamics should be excluded.  This term is required to check the closure of the heat budget.", 
             "dimensions": "longitude latitude alevel time", 
             "out_name": "tntmp", 
@@ -950,12 +1005,13 @@
             "ok_max_mean_abs": ""
         }, 
         "tntr": {
+            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "tendency_of_air_temperature_due_to_radiative_heating", 
             "units": "K s-1", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
-            "long_name": "Tendency of Air Temperature due to Radiative Heating", 
+            "long_name": "Tendency of Air Temperature Due to Radiative Heating", 
             "comment": "Tendency of Air Temperature due to Radiative Heating", 
             "dimensions": "longitude latitude alevel time", 
             "out_name": "tntr", 
@@ -967,6 +1023,7 @@
             "ok_max_mean_abs": ""
         }, 
         "tntscpbl": {
+            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "tendency_of_air_temperature_due_to_stratiform_cloud_and_precipitation_and_boundary_layer_mixing", 
             "units": "K s-1", 
