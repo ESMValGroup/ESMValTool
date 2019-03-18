@@ -274,4 +274,3 @@ class ta_Diagnostic_SP(Basic_Diagnostic_SP):
         
 
         return list_of_plots
-        

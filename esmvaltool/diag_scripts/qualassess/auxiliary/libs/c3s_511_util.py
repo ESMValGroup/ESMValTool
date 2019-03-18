@@ -14,6 +14,7 @@ import cf_units
 #import matplotlib.pyplot as plt
 #import time
 import iris
+import collections
 
 # sys.path.insert(0,
 #                os.path.abspath(os.path.join(os.path.join(
@@ -392,3 +393,73 @@ def weighted_STD_DEV(cube, dim, weights=None):
                 dim,
                 iris.analysis.MEAN,
                 weights=weights)**2)**0.5
+                    
+
+def dict_merge(dct, merge_dct):
+    """ Recursive dict merge. Inspired by :meth:``dict.update()``, instead of
+    updating only top-level keys, dict_merge recurses down into dicts nested
+    to an arbitrary depth, updating and merging keys. The ``merge_dct`` is 
+    merged into ``dct``.
+    :param dct: dict onto which the merge is executed
+    :param merge_dct: dct merged into dct
+    :return: None
+    """
+    for k, v in merge_dct.items():
+        if (k in dct and isinstance(dct[k], dict)
+                and isinstance(merge_dct[k], collections.Mapping)):
+            dict_merge(dct[k], merge_dct[k])
+        else:
+            if not k in dct:
+                dct[k] = merge_dct[k]
+            else:
+                if isinstance(dct[k],list):
+                    if isinstance(merge_dct[k],list):
+                        dct[k] = dct[k] + merge_dct[k]
+                    else:
+                        dct[k] = dct[k] + [merge_dct[k]]
+                else:
+                    if isinstance(merge_dct[k],list):
+                        dct[k] = [dct[k]] + merge_dct[k]
+                    else:
+                        dct[k] = [dct[k], merge_dct[k]]
+
+def dask_weighted_mean_wrapper(cube, spatial_weights, dims=None):
+    
+    if not isinstance(dims,list):
+        dims = [dims]
+    
+    # weights only necessary if latitude is aggregated
+    if "latitude" in dims:
+        latlon_list = []
+        
+        for latlon in cube.slices(["latitude","longitude"]):
+            
+            # adjust cube to slicing
+            latlon.remove_coord("day_of_month")
+            latlon.remove_coord("day_of_year")
+            latlon.remove_coord("month_number")
+            latlon.remove_coord("year")
+#            latlon.standard_name = cube.standard_name
+#            latlon.long_name = cube.long_name
+    
+            latlon = latlon.collapsed("latitude", iris.analysis.MEAN,
+                                      weights = spatial_weights.compute())
+            latlon_list.append(latlon)
+    
+        dims.remove("latitude")
+    
+        cube_list = iris.cube.CubeList(latlon_list)
+        
+        new_cube = cube_list.merge_cube()
+        
+        if len(dims):
+            new_cube = new_cube.collapsed(dims, iris.analysis.MEAN)
+            
+    else:
+        new_cube = cube.collapsed(dims, iris.analysis.MEAN)
+    
+    return new_cube
+
+#def dask_weighted_stddev_wrapper(cube, spatial_weights, dims=None):
+#
+#    return dask_weighted_mean_wrapper(cube, spatial_weights, dims=dims)

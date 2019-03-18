@@ -21,8 +21,11 @@ import matplotlib
 #matplotlib.use('Agg')
 import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
+import dask
 #from scipy import stats
 import datetime
+from json import load,dump
+
 from .libs import c3s_511_util as utils
 from .libs.customErrors import \
     ImplementationError, ConfigurationError, PathError, EmptyContentError
@@ -65,6 +68,7 @@ class __Diagnostic_skeleton__(object):
 
         self.__plot_dir__ = '.' + os.sep  # default plot directory
         self.__work_dir__ = '.' + os.sep  # default work dir
+        self.__report_dir__ = self.__work_dir__ + os.sep + "c3s_511" + os.sep
 
         self.__varname__ = 'var'  # default value
         self.__output_type__ = 'png'  # default ouput file type
@@ -87,6 +91,7 @@ class __Diagnostic_skeleton__(object):
         self.levels = [None]
 
         self.sp_data = None
+        self.map_area_frac = None
         self.mp_data = None
         self.var3D = None
         self.__basic_filename__ = "someFile"
@@ -94,6 +99,10 @@ class __Diagnostic_skeleton__(object):
         self.level_dim = None
         self.__time_read__ = []
         self.__avg_timestep__ = None
+        
+        self.__requested_diags__ = []
+        self.__report_directories__ = None
+        self.__report_order__ = []
         
         self.reporting_structure = collections.OrderedDict()
 
@@ -227,6 +236,9 @@ class __Diagnostic_skeleton__(object):
         """
         reporting function for use with all diagnostics
         """
+        
+        self.__gather_content__()
+        
         for content in self.reporting_structure:
             if not isinstance(self.reporting_structure[content], (list, dict)):
                 raise TypeError("contents of reporting_structure",
@@ -244,6 +256,33 @@ class __Diagnostic_skeleton__(object):
                     signature=self.CDS_ID,
                     latex_opts=self.__latex_output__)
         return
+    
+    def __gather_content__(self):
+        """
+        gather all other diagnostic information for reporting
+        """
+        self.__logger__.info(self.reporting_structure)
+        self.__logger__.info(self.__report_order__)
+        for theme in self.__report_order__:
+            directory = [s for s in self.__cfg__["input_files"] if theme in s]
+            if len(directory) == 1: 
+                if os.path.isdir(directory[0]):
+                    self.__logger__.info("gathering from directory " + 
+                                         directory[0])
+                    repstruct = load(open(directory[0] + os.sep + 
+                                          'c3s_511' + os.sep + 
+                                          'custom_reporting.json'))
+#                    repstruct = yaml.load(open(directory[0] + os.sep + 
+#                                               'c3s_511' + os.sep + 
+#                                               'custom_reporting.yml'),
+#                                    Loader=yamlordereddictloader.SafeLoader)
+                    utils.dict_merge(self.reporting_structure, repstruct)
+            else:
+                raise ConfigurationError("self.__report_order__", 
+                                         "Requested theme " + theme +
+                                         " could not be found!")
+        
+        self.__logger__.info(self.reporting_structure)
 
     def __file_anouncement__(
             self,
@@ -368,7 +407,71 @@ class __Diagnostic_skeleton__(object):
                 str(subset_cubes))
 
         return subset_cubes
-
+    
+    def __apply_fun2cube__(self, cube, dims=None, function=None,
+                           incl_weights = True, **kwargs):
+        """
+        applies function to a sliced cube (memory saving)
+        """
+        self.__logger__.info("====================================================")
+        self.__logger__.info("Running apply_fun2_cube")
+#        self.__logger__.info(cube)
+        self.__logger__.info(dims)
+        self.__logger__.info(kwargs)
+        self.__logger__.info("still lazy?")
+        self.__logger__.info(cube.has_lazy_data())
+        
+        try:
+#        for i in [1]:
+            if "time" not in dims:
+    #        if "latitude" in dims:
+                latlon_list = []
+                
+                for latlon in cube.slices(["latitude","longitude"]):
+                    
+    #                self.__logger__.info(latlon)
+                    
+                    latlon.remove_coord("day_of_month")
+                    latlon.remove_coord("day_of_year")
+                    latlon.remove_coord("month_number")
+                    latlon.remove_coord("year")
+                    
+                    if incl_weights and "latitude" in dims:
+                        iris.analysis.maths.multiply(latlon, self.map_area_frac, in_place=True)
+                        latlon.standard_name = cube.standard_name
+                        latlon.long_name = cube.long_name
+                        
+    #                self.__logger__.info(latlon)
+    
+                    latlon = latlon.collapsed(dims,
+                                              function,
+                                              **kwargs)
+                    latlon_list.append(latlon)
+            
+                cube_list = iris.cube.CubeList(latlon_list)
+    #            self.__logger__.info(cube_list)
+    #            self.__logger__.info([c.coords for c in cube_list])
+                
+                new_cube = cube_list.merge_cube()
+                
+                self.__logger__.info("going path one")
+        
+#        except: 
+            else:
+                new_cube = cube.collapsed(dims, function, **kwargs)
+                self.__logger__.info("going path two")
+        except:
+            new_cube = cube.collapsed(dims, function, **kwargs)
+            self.__logger__.info("going path three")
+            
+#        self.__logger__.info(new_cube)
+            
+#        self.__logger__.info(function)
+        self.__logger__.info("still lazy?")
+        self.__logger__.info(cube.has_lazy_data())
+        self.__logger__.info("====================================================")
+        
+        return new_cube
 
 class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
     """
@@ -399,13 +502,13 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
         self.__cfg__ = kwargs.get('cfg', None)
         
         #######################################################################
-        # TODO delete after debugging
-#        self.__logger__.info("Object content pre:")
-        self.li3 = [method_name for method_name in dir(
-            self) if callable(getattr(self, method_name))].copy()
-#        self.__logger__.info(np.sort(self.li3))
-        self. li1 = self.__dict__.copy().keys()
-#        self.__logger__.info(np.sort([*self.li1]))
+#        # TODO delete after debugging
+##        self.__logger__.info("Object content pre:")
+#        self.li3 = [method_name for method_name in dir(
+#            self) if callable(getattr(self, method_name))].copy()
+##        self.__logger__.info(np.sort(self.li3))
+#        self. li1 = self.__dict__.copy().keys()
+##        self.__logger__.info(np.sort([*self.li1]))
         #######################################################################
 
         if not isinstance(self.__cfg__, dict) or len(self.__cfg__) == 0:
@@ -420,9 +523,20 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
             self.levels = self.__cfg__['levels']
         except BaseException:
             pass
+        
+        try:
+            self.__requested_diags__ = self.__cfg__['requests']
+        except BaseException:
+            pass
+        
+        try:
+            self.__report_order__ = self.__cfg__['order']
+        except BaseException:
+            self.__report_order__ = self.__cfg__["input_files"]
 
         self.__plot_dir__ = self.__cfg__['plot_dir']
         self.__work_dir__ = self.__cfg__['work_dir']
+        self.__report_dir__ = self.__work_dir__ + os.sep + "c3s_511" + os.sep
 
         self.__infile__ = list(self.__cfg__['input_data'].keys())
         if not len(self.__infile__) == 1:
@@ -535,43 +649,74 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
             time_coord.units.calendar)
 
         self.__time_read__ = time_read
-
+        
+        # provide weights
+        
+        self.map_area_frac = iris.analysis.cartography.area_weights(
+                next(self.sp_data.slices(["latitude","longitude"])))
+        self.map_area_frac = dask.array.from_array(self.map_area_frac,chunks="auto")
+        
+        # save timestep for other diagnostics
+        
+        tim_range = self.sp_data.coord("time").points
+        tim_freq = np.diff(tim_range)
+        tim_freq_spec = utils.__minmeanmax__(tim_freq)
+        self.__avg_timestep__ = tim_freq_spec
+        
         return
 
-    def run_diagnostic(self):
+    def run_diagnostic(self, cfg = None):
 #        self.sp_data = self.__spatiotemp_subsets__(self.sp_data)['Europe_2000']
         self.__do_overview__()
         self.__do_mean_var__()
-        self.__do_trends__()
+        if "lintrend" in self.__requested_diags__:
+            self.__do_trends__()
         self.__do_extremes__()
         self.__do_sectors__()
-        self.__do_maturity_matrix__()
-        self.__do_gcos_requirements__()
-        self.__do_esm_evaluation__()
+        if "SMM" in self.__requested_diags__:
+            self.__do_maturity_matrix__()
+        if "GCOS" in self.__requested_diags__:
+            self.__do_gcos_requirements__()
+        if "ESM" in self.__requested_diags__:
+            self.__do_esm_evaluation__()
         self.__do_app_perf_matrix__()
         
-        self.__do_full_report__()
+        if "report" in self.__requested_diags__:
+            self.__do_full_report__()
+        else:    
+            dump(self.reporting_structure,
+                      open(self.__report_dir__ + 'custom_reporting.json', 'w'))
+#            yaml.dump(self.reporting_structure,
+#                      open(self.__report_dir__ + 'custom_reporting.yml', 'w'),
+#                      Dumper=yamlordereddictloader.SafeDumper,
+#                      default_flow_style=False)
+            
+        
+            
+        self.__logger__.info("Is the main cube still lazy?")
+            
+        self.__logger__.info(self.sp_data.has_lazy_data())
 
         #######################################################################
-        # TODO delete after debugging
-#        self.__logger__.info("Object content post:")
-        li4 = [method_name for method_name in dir(
-            self) if callable(getattr(self, method_name))]
-#        self.__logger__.info(np.sort(li4))
-        li2 = self.__dict__.keys()
-#        self.__logger__.info(np.sort([*li2]))
-
-        self.__logger__.info("Object content diff:")
-# self.__logger__.info(np.sort([x for x in [*li2] if x not in [*self.li1]
-# + ['li1']]))
-        self.__logger__.info({y: self.__dict__[y] for y in np.sort([x for x in [*li2] if x not in [*self.li1] + ['li1']])})
-        self.__logger__.info(np.sort([x for x in li4 if x not in self.li3])) 
-        self.__logger__.info("attributes")
-        self.__logger__.info(li2)
-        for l in li2:
-            self.__logger__.info(self.__dict__[l])
-            self.__logger__.info(type(self.__dict__[l]))
-            self.__logger__.info("-----------------------------------------------------------")
+#        # TODO delete after debugging
+##        self.__logger__.info("Object content post:")
+#        li4 = [method_name for method_name in dir(
+#            self) if callable(getattr(self, method_name))]
+##        self.__logger__.info(np.sort(li4))
+#        li2 = self.__dict__.keys()
+##        self.__logger__.info(np.sort([*li2]))
+#
+#        self.__logger__.info("Object content diff:")
+## self.__logger__.info(np.sort([x for x in [*li2] if x not in [*self.li1]
+## + ['li1']]))
+#        self.__logger__.info({y: self.__dict__[y] for y in np.sort([x for x in [*li2] if x not in [*self.li1] + ['li1']])})
+#        self.__logger__.info(np.sort([x for x in li4 if x nopasst in self.li3])) 
+#        self.__logger__.info("attributes")
+#        self.__logger__.info(li2)
+#        for l in li2:
+#            self.__logger__.info(self.__dict__[l])
+#            self.__logger__.info(type(self.__dict__[l]))
+#            self.__logger__.info("-----------------------------------------------------------")
         #######################################################################
         pass
 
@@ -591,11 +736,11 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
             for lev in self.levels:
                 loc_cube = self.sp_data.extract(iris.Constraint(
                     coord_values={str(self.level_dim): lambda cell: cell == lev}))
-                if loc_cube is None:
-                    raise ValueError("Invalid input: at least one of " +
-                                     "the requested levels seem " +
-                                     "not to be available in the analyzed " +
-                                     "cube.")
+#                if loc_cube is None:
+#                    raise ValueError("Invalid input: at least one of " +
+#                                     "the requested levels seem " +
+#                                     "not to be available in the analyzed " +
+#                                     "cube.")
                 lop = self.__overview_procedures_2D__(loc_cube, level=lev)
                 list_of_plots = list_of_plots + lop
                 lop = self.__add_overview_procedures_2D__(loc_cube, level=lev)
@@ -605,67 +750,66 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
             lop = self.__add_overview_procedures_3D__()
             list_of_plots = list_of_plots + lop
 
-        # dimension information
-        lon_range = self.sp_data.coord("longitude").points
-        lat_range = self.sp_data.coord("latitude").points
-        tim_range = self.sp_data.coord("time").points
-        t_info = str(self.sp_data.coord("time").units)
+        overview_dict = None
 
-        lon_range_spec = utils.__minmeanmax__(lon_range)
-        lat_range_spec = utils.__minmeanmax__(lat_range)
-        tim_range_spec = utils.__minmeanmax__(tim_range)
+        if "info" in self.__requested_diags__:
+    
+            # dimension information
+            lon_range = self.sp_data.coord("longitude").points
+            lat_range = self.sp_data.coord("latitude").points
+            tim_range = self.sp_data.coord("time").points
+            t_info = str(self.sp_data.coord("time").units)
+    
+            lon_range_spec = utils.__minmeanmax__(lon_range)
+            lat_range_spec = utils.__minmeanmax__(lat_range)
+            tim_range_spec = utils.__minmeanmax__(tim_range)
+    
+            tim_range_spec_read = unit.num2date(
+                tim_range_spec,
+                self.sp_data.coord("time").units.name,
+                self.sp_data.coord("time").units.calendar)
+    
+            lon_freq = np.diff(lon_range)
+            lat_freq = np.diff(lat_range)
+    
+            lon_freq_spec = utils.__minmeanmax__(lon_freq)
+            lat_freq_spec = utils.__minmeanmax__(lat_freq)
+    
+            overview_dict = collections.OrderedDict()
+    
+            overview_dict.update({'longitude range [' + str(self.sp_data.coord("longitude").units) + ']': collections.OrderedDict(
+                [("min", str(lon_range_spec[0])), ("max", str(lon_range_spec[2]))])})
+            overview_dict.update({'longitude frequency [' + str(self.sp_data.coord("longitude").units) + ']': collections.OrderedDict(
+                [("min", str(lon_freq_spec[0])), ("average", str(lon_freq_spec[1])), ("max", str(lon_freq_spec[2]))])})
+            overview_dict.update({'latitude range [' + str(self.sp_data.coord("latitude").units) + ']': collections.OrderedDict(
+                [("min", str(lat_range_spec[0])), ("max", str(lat_range_spec[2]))])})
+            overview_dict.update({'latitude frequency [' + str(self.sp_data.coord("latitude").units) + ']': collections.OrderedDict(
+                [("min", str(lat_freq_spec[0])), ("average", str(lat_freq_spec[1])), ("max", str(lat_freq_spec[2]))])})
+            overview_dict.update({'temporal range': collections.OrderedDict(
+                [("min", str(tim_range_spec_read[0])), ("max", str(tim_range_spec_read[2]))])})
+            overview_dict.update({'temporal frequency [' + t_info.split(" ")[0] + ']': collections.OrderedDict(
+                [("min", str(self.__avg_timestep__[0])), ("average", str(round(self.__avg_timestep__[1], 2))), ("max", str(self.__avg_timestep__[2]))])})
+    
+            try:
+                lev_range = self.sp_data.coord(self.level_dim).points
+                lev_range_spec = utils.__minmeanmax__(lev_range)
+                lev_freq_spec = utils.__minmeanmax__(np.diff(lev_range))
+                overview_dict.update({'level range [' + str(self.sp_data.coord(self.level_dim).units) + ']': collections.OrderedDict(
+                    [("min", str(lev_range_spec[0])), ("max", str(lev_range_spec[2]))])})
+                overview_dict.update({'level frequency [' + str(self.sp_data.coord(self.level_dim).units) + ']': collections.OrderedDict(
+                    [("min", str(lev_freq_spec[0])), ("average", str(lev_freq_spec[1])), ("max", str(lev_freq_spec[2]))])})
+            except BaseException:
+                pass
 
-        tim_range_spec_read = unit.num2date(
-            tim_range_spec,
-            self.sp_data.coord("time").units.name,
-            self.sp_data.coord("time").units.calendar)
-
-        lon_freq = np.diff(lon_range)
-        lat_freq = np.diff(lat_range)
-        tim_freq = np.diff(tim_range)
-
-        lon_freq_spec = utils.__minmeanmax__(lon_freq)
-        lat_freq_spec = utils.__minmeanmax__(lat_freq)
-        tim_freq_spec = utils.__minmeanmax__(tim_freq)
-
-        overview_dict = collections.OrderedDict()
-
-        overview_dict.update({'longitude range [' + str(self.sp_data.coord("longitude").units) + ']': collections.OrderedDict(
-            [("min", str(lon_range_spec[0])), ("max", str(lon_range_spec[2]))])})
-        overview_dict.update({'longitude frequency [' + str(self.sp_data.coord("longitude").units) + ']': collections.OrderedDict(
-            [("min", str(lon_freq_spec[0])), ("average", str(lon_freq_spec[1])), ("max", str(lon_freq_spec[2]))])})
-        overview_dict.update({'latitude range [' + str(self.sp_data.coord("latitude").units) + ']': collections.OrderedDict(
-            [("min", str(lat_range_spec[0])), ("max", str(lat_range_spec[2]))])})
-        overview_dict.update({'latitude frequency [' + str(self.sp_data.coord("latitude").units) + ']': collections.OrderedDict(
-            [("min", str(lat_freq_spec[0])), ("average", str(lat_freq_spec[1])), ("max", str(lat_freq_spec[2]))])})
-        overview_dict.update({'temporal range': collections.OrderedDict(
-            [("min", str(tim_range_spec_read[0])), ("max", str(tim_range_spec_read[2]))])})
-        overview_dict.update({'temporal frequency [' + t_info.split(" ")[0] + ']': collections.OrderedDict(
-            [("min", str(tim_freq_spec[0])), ("average", str(round(tim_freq_spec[1], 2))), ("max", str(tim_freq_spec[2]))])})
-
-        try:
-            lev_range = self.sp_data.coord(self.level_dim).points
-            lev_range_spec = utils.__minmeanmax__(lev_range)
-            lev_freq_spec = utils.__minmeanmax__(np.diff(lev_range))
-            overview_dict.update({'level range [' + str(self.sp_data.coord(self.level_dim).units) + ']': collections.OrderedDict(
-                [("min", str(lev_range_spec[0])), ("max", str(lev_range_spec[2]))])})
-            overview_dict.update({'level frequency [' + str(self.sp_data.coord(self.level_dim).units) + ']': collections.OrderedDict(
-                [("min", str(lev_freq_spec[0])), ("average", str(lev_freq_spec[1])), ("max", str(lev_freq_spec[2]))])})
-        except BaseException:
-            pass
-
-        # save GCOS requirements
-        self.__gcos_dict__.update(
-                {"Frequency": {"value": round(tim_freq_spec[1], 2),
-                               "unit": t_info.split(" ")[0]}})
-        self.__gcos_dict__.update(
-                {"Resolution": {"value": round(np.mean([lon_freq_spec[1],
-                                                        lat_freq_spec[1]]), 2),
-                                "unit": str(self.sp_data.coord(
-                                        "longitude").units)}})
-
-        # save values for other diagnostics
-        self.__avg_timestep__ = tim_freq_spec[1]
+            # save GCOS requirements
+            self.__gcos_dict__.update(
+                    {"Frequency": {"value": round(self.__avg_timestep__[1], 2),
+                                   "unit": t_info.split(" ")[0]}})
+            self.__gcos_dict__.update(
+                    {"Resolution": {"value": round(np.mean([lon_freq_spec[1],
+                                                            lat_freq_spec[1]]), 2),
+                                    "unit": str(self.sp_data.coord(
+                                            "longitude").units)}})
 
         # produce report
         expected_input, found = \
@@ -674,6 +818,9 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                                       protofile="empty.txt",
                                       function=this_function)
 
+        self.__logger__.info(found)
+        self.__logger__.info(overview_dict)
+
         if found:
 #            self.__do_report__(
 #                content={
@@ -681,22 +828,33 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
 #                    "plots": list_of_plots,
 #                    "freetext": expected_input},
 #                filename=this_function.upper())
-            self.reporting_structure.update(
-                    {"Overview": 
-                        {"listtext": overview_dict,
-                         "plots": list_of_plots,
-                         "freetext": expected_input}})
+            if not overview_dict is None:
+                self.reporting_structure.update(
+                        {"Overview": 
+                            {"listtext": overview_dict,
+                             "plots": list_of_plots,
+                             "freetext": expected_input}})
+            else:
+                self.reporting_structure.update(
+                        {"Overview": 
+                            {"plots": list_of_plots,
+                             "freetext": expected_input}})
         else:
 #            self.__do_report__(
 #                content={
 #                    "listtext": overview_dict,
 #                    "plots": list_of_plots},
 #                filename=this_function.upper())
-            self.reporting_structure.update(
-                    {"Overview": 
-                        {"listtext": overview_dict,
-                         "plots": list_of_plots}})
-
+            if not overview_dict is None:
+                self.reporting_structure.update(
+                        {"Overview": 
+                            {"listtext": overview_dict,
+                             "plots": list_of_plots}})
+            else:
+                self.reporting_structure.update(
+                        {"Overview": 
+                            {"plots": list_of_plots}})
+    
         return
 
     def __overview_procedures_2D__(self, cube=None, level=None):
@@ -718,135 +876,138 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                           item not in set([self.level_dim])]
         maxnumtemp = float(len(cube.coord("time").points))
 
-        try:
-            sp_masked_vals = cube.collapsed(
-                "time", iris.analysis.COUNT,
-                function=lambda values: values.mask)
-            sp_masked_vals.data.mask = sp_masked_vals.data == maxnumtemp
-            sp_masked_vals.data = sp_masked_vals.data * 0. + 1.
-        except BaseException:
-            sp_masked_vals = cube.collapsed(
-                "time", iris.analysis.MEAN) * 0. + 1.  # errors when data is not correctly masked!
+        if "availability" in self.__requested_diags__:
+    
+            try:
+                sp_masked_vals = cube.collapsed(
+                    "time", iris.analysis.COUNT,
+                    function=lambda values: values.mask)
+                sp_masked_vals.data.mask = sp_masked_vals.data == maxnumtemp
+                sp_masked_vals.data = sp_masked_vals.data * 0. + 1.
+            except BaseException:
+                sp_masked_vals = cube.collapsed(
+                    "time", iris.analysis.MEAN) * 0. + 1.  # errors when data is not correctly masked!
+    
+            for d in reg_dimensions:
+    
+                long_left_over = [rd for rd in reg_dimensions if rd != d]
+                short_left_over = np.array([sl[0:3] for sl in long_left_over])
+    
+                num_available_vals = cube.collapsed(d, iris.analysis.COUNT,
+                                                    function=lambda values: values >= cube.collapsed(reg_dimensions, iris.analysis.MIN).data)
+                if d in ["time"]:
+                    frac_available_vals = iris.analysis.maths.divide(
+                        num_available_vals, maxnumtemp)
+                else:
+                    sp_agg_array = sp_masked_vals.collapsed(d, iris.analysis.SUM)
+                    frac_available_vals = iris.analysis.maths.divide(
+                        num_available_vals, sp_agg_array.data)
+    
+                try:
+                    # plotting routine
+                    filename = self.__plot_dir__ + os.sep + basic_filename + \
+                        "_frac_avail_" + "_".join(short_left_over) + "." + \
+                        self.__output_type__
+                    list_of_plots.append(filename)
+                    frac_available_vals.rename("availability as a fraction")
+                    x = Plot2D(frac_available_vals)
+    
+                    fig = plt.figure()
+                    (fig, ax, _) = plot_setup(d=d, fig=fig)
+                    x.plot(ax=ax,
+                           vminmax=[0., 1.],
+                           color={"Sequential": "YlGn"},
+                           color_type="Sequential",
+                           title=" ".join([self.__dataset_id__[idx] for 
+                                           idx in [0, 2, 1, 3]]) + " (" + 
+                        self.__time_period__ + ")")
+                    fig.savefig(filename)
+                    plt.close(fig.number)
+    
+                    ESMValMD("meta",
+                             filename,
+                             self.__basetags__ + ['DM_global', 'C3S_overview'],
+                             str('Overview on ' + "/".join(long_left_over) +
+                                 ' availablility of ' + 
+                                 ecv_lookup(self.__varname__) +
+                                 ' for the data set ' + " ".join(dataset_id) +
+                                 ' (' + self.__time_period__ +
+                                 '). NA-values are shown in grey.'),
+                             '#C3S' + 'frav' + "".join(short_left_over) +
+                             self.__varname__,
+                             self.__infile__,
+                             self.diagname,
+                             self.authors)
+    
+                except Exception as e:
+                    exc_type, exc_obj, exc_tb = sys.exc_info()
+                    fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+                    self.__logger__.error(exc_type, fname, exc_tb.tb_lineno)
+                    self.__logger__.error("Availability in " + d)
+                    self.__logger__.error('Warning: blank figure!')
+    
+                    x = Plot2D_blank(frac_available_vals)
+    
+                    fig = plt.figure()
+    
+                    (fig, ax, _) = plot_setup(d=d, fig=fig)
+                    x.plot(ax=ax,
+                           color=self.colormaps,
+                           title=" ".join([self.__dataset_id__[indx] for 
+                                           indx in [0, 2, 1, 3]]) + " (" + 
+                                 self.__time_period__ + ")")
+                    fig.savefig(filename)
+                    plt.close(fig.number)
+    
+                    ESMValMD("meta",
+                             filename,
+                             self.__basetags__ + ['DM_global', 'C3S_mean_var'],
+                             str('Availability plot for the data set "' +
+                                 "_".join(dataset_id) + '" (' +
+                                 self.__time_period__ +'); Data can not be ' + 
+                                 'displayed due to cartopy error!'),
+                             '#C3S' + 'frav' + "".join(short_left_over) +
+                             self.__varname__,
+                             self.__infile__,
+                             self.diagname,
+                             self.authors)
+    
+            del sp_masked_vals
+            del num_available_vals
+            del frac_available_vals
 
-        for d in reg_dimensions:
-
-            long_left_over = [rd for rd in reg_dimensions if rd != d]
-            short_left_over = np.array([sl[0:3] for sl in long_left_over])
-
-            num_available_vals = cube.collapsed(d, iris.analysis.COUNT,
-                                                function=lambda values: values >= cube.collapsed(reg_dimensions, iris.analysis.MIN).data)
-            if d in ["time"]:
-                frac_available_vals = iris.analysis.maths.divide(
-                    num_available_vals, maxnumtemp)
-            else:
-                sp_agg_array = sp_masked_vals.collapsed(d, iris.analysis.SUM)
-                frac_available_vals = iris.analysis.maths.divide(
-                    num_available_vals, sp_agg_array.data)
-
+        if "availability" in self.__requested_diags__:
+            # histogram plot of available measurements
+            all_data = cube.copy()
+    
             try:
                 # plotting routine
                 filename = self.__plot_dir__ + os.sep + basic_filename + \
-                    "_frac_avail_" + "_".join(short_left_over) + "." + \
-                    self.__output_type__
+                    "_hist_all_vals" + "." + self.__output_type__
                 list_of_plots.append(filename)
-                frac_available_vals.rename("availability as a fraction")
-                x = Plot2D(frac_available_vals)
-
-                fig = plt.figure()
-                (fig, ax, _) = plot_setup(d=d, fig=fig)
-                x.plot(ax=ax,
-                       vminmax=[0., 1.],
-                       color={"Sequential": "YlGn"},
-                       color_type="Sequential",
-                       title=" ".join([self.__dataset_id__[idx] for 
-                                       idx in [0, 2, 1, 3]]) + " (" + 
-                    self.__time_period__ + ")")
+                x = PlotHist(all_data)
+                fig = x.plot(title=" ".join([self.__dataset_id__[idx] for idx in [
+                             0, 2, 1, 3]]) + " (" + self.__time_period__ + ")")
                 fig.savefig(filename)
-                plt.close(fig.number)
-
+                plt.close(fig)
+    
                 ESMValMD("meta",
                          filename,
                          self.__basetags__ + ['DM_global', 'C3S_overview'],
-                         str('Overview on ' + "/".join(long_left_over) +
-                             ' availablility of ' + 
-                             ecv_lookup(self.__varname__) +
-                             ' for the data set ' + " ".join(dataset_id) +
-                             ' (' + self.__time_period__ +
-                             '). NA-values are shown in grey.'),
-                         '#C3S' + 'frav' + "".join(short_left_over) +
-                         self.__varname__,
+                         str('Full spatio-temporal histogram of ' +
+                             self.__varname__ + ' for the data set ' +
+                             " ".join(dataset_id) + ' (' + self.__time_period__ +
+                             ').'),
+                         '#C3S' + 'histall' + self.__varname__,
                          self.__infile__,
                          self.diagname,
                          self.authors)
-
-            except Exception as e:
-                exc_type, exc_obj, exc_tb = sys.exc_info()
-                fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-                self.__logger__.error(exc_type, fname, exc_tb.tb_lineno)
-                self.__logger__.error("Availability in " + d)
-                self.__logger__.error('Warning: blank figure!')
-
-                x = Plot2D_blank(frac_available_vals)
-
-                fig = plt.figure()
-
-                (fig, ax, _) = plot_setup(d=d, fig=fig)
-                x.plot(ax=ax,
-                       color=self.colormaps,
-                       title=" ".join([self.__dataset_id__[indx] for 
-                                       indx in [0, 2, 1, 3]]) + " (" + 
-                             self.__time_period__ + ")")
-                fig.savefig(filename)
-                plt.close(fig.number)
-
-                ESMValMD("meta",
-                         filename,
-                         self.__basetags__ + ['DM_global', 'C3S_mean_var'],
-                         str('Availability plot for the data set "' +
-                             "_".join(dataset_id) + '" (' +
-                             self.__time_period__ +'); Data can not be ' + 
-                             'displayed due to cartopy error!'),
-                         '#C3S' + 'frav' + "".join(short_left_over) +
-                         self.__varname__,
-                         self.__infile__,
-                         self.diagname,
-                         self.authors)
-
-        del sp_masked_vals
-        del num_available_vals
-        del frac_available_vals
-
-        # histogram plot of available measurements
-        all_data = cube.copy()
-
-        try:
-            # plotting routine
-            filename = self.__plot_dir__ + os.sep + basic_filename + \
-                "_hist_all_vals" + "." + self.__output_type__
-            list_of_plots.append(filename)
-            x = PlotHist(all_data)
-            fig = x.plot(title=" ".join([self.__dataset_id__[idx] for idx in [
-                         0, 2, 1, 3]]) + " (" + self.__time_period__ + ")")
-            fig.savefig(filename)
-            plt.close(fig)
-
-            ESMValMD("meta",
-                     filename,
-                     self.__basetags__ + ['DM_global', 'C3S_overview'],
-                     str('Full spatio-temporal histogram of ' +
-                         self.__varname__ + ' for the data set ' +
-                         " ".join(dataset_id) + ' (' + self.__time_period__ +
-                         ').'),
-                     '#C3S' + 'histall' + self.__varname__,
-                     self.__infile__,
-                     self.diagname,
-                     self.authors)
-                     
-        except BaseException:
-            self.__logger__.error('Something is probably wrong with the ' + 
-                                  'plotting routines/modules!')
-
-        del all_data
+                         
+            except BaseException:
+                self.__logger__.error('Something is probably wrong with the ' + 
+                                      'plotting routines/modules!')
+    
+            del all_data
 
         return list_of_plots
     
@@ -861,48 +1022,6 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
 
     def __do_mean_var__(self):
         
-        self.__logger__.warning("cube being lazy")
-        self.__logger__.warning(self.sp_data.has_lazy_data())
-        
-        map_area = iris.analysis.cartography.area_weights(next(self.sp_data.slices(["latitude","longitude"])))
-        map_area = map_area / np.mean(map_area)
-        self.__logger__.warning(map_area)
-        
-        self.__logger__.warning("cube being lazy")
-        self.__logger__.warning(self.sp_data.has_lazy_data())
-                
-        latlon_list = []
-        
-        for latlon in self.sp_data.slices(["latitude","longitude"]):
-            latlon = latlon * map_area
-            latlon.remove_coord("month_number")
-            latlon.remove_coord("year")
-            latlon.remove_coord("day_of_month")
-            latlon.remove_coord("day_of_year")
-            latlon_list.append(latlon)
-            
-        cube_list = iris.cube.CubeList(latlon_list)
-        
-        old_data=self.sp_data.copy()
-        
-        self.sp_data = cube_list.merge_cube()
-        
-        self.__logger__.warning(old_data.__dict__.keys())
-        self.__logger__.warning(old_data.__dict__["_standard_name"])
-        self.__logger__.warning(old_data.__dict__["long_name"])
-        self.__logger__.warning(old_data.__dict__["_var_name"])
-        self.__logger__.warning(self.sp_data.__dict__.keys())
-        self.__logger__.warning(self.sp_data.__dict__["_standard_name"])
-        self.__logger__.warning(self.sp_data.__dict__["long_name"])
-        self.__logger__.warning(self.sp_data.__dict__["_var_name"])
-        
-        self.sp_data.standard_name = old_data.standard_name
-        self.sp_data.long_name = old_data.long_name
-        self.sp_data.var_name = old_data.var_name
-            
-        self.__logger__.warning("cube being lazy")
-        self.__logger__.warning(self.sp_data.has_lazy_data())
-        
         this_function = "mean and variability"
 
         list_of_plots = []
@@ -910,8 +1029,9 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
         if not self.var3D:
             lop = self.__mean_var_procedures_2D__(cube=self.sp_data)
             list_of_plots = list_of_plots + lop
-            lop = self.__add_mean_var_procedures_2D__(cube=self.sp_data)
-            list_of_plots = list_of_plots + lop
+            if "custom" in self.__requested_diags__:
+                lop = self.__add_mean_var_procedures_2D__(cube=self.sp_data)
+                list_of_plots = list_of_plots + lop
         else:
             list_of_plots = []
             for lev in self.levels:
@@ -919,97 +1039,364 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                         iris.Constraint(coord_values={str(self.level_dim): lambda cell: cell == lev}))
                 lop = self.__mean_var_procedures_2D__(loc_cube, level=lev)
                 list_of_plots = list_of_plots + lop
-                lop = self.__add_mean_var_procedures_2D__(loc_cube, level=lev)
-                list_of_plots = list_of_plots + lop
+                if "custom" in self.__requested_diags__:
+                    lop = self.__add_mean_var_procedures_2D__(loc_cube, level=lev)
+                    list_of_plots = list_of_plots + lop
             lop = self.__mean_var_procedures_3D__()
             list_of_plots = list_of_plots + lop
-            lop = self.__add_mean_var_procedures_3D__()
-            list_of_plots = list_of_plots + lop
+            if "custom" in self.__requested_diags__:
+                lop = self.__add_mean_var_procedures_3D__()
+                list_of_plots = list_of_plots + lop
 
-        # produce report
-        expected_input, found = \
-            self.__file_anouncement__(subdir="c3s_511/single_mean_var_input",
-                                      expfile="_mean_var.txt",
-                                      protofile="empty.txt",
-                                      function=this_function)
-
-        if found:
-#            self.__do_report__(
-#                content={
-#                    "plots": list_of_plots,
-#                    "freetext": expected_input},
-#                filename=this_function.upper())
-            self.reporting_structure.update(
-                    {"Mean and Variability": 
-                        {"plots": list_of_plots,
-                         "freetext": expected_input}})
-        else:
-#            self.__do_report__(
-#                content={
-#                    "plots": list_of_plots},
-#                filename=this_function.upper())
-            self.reporting_structure.update(
-                    {"Mean and Variability": 
-                        {"plots": list_of_plots}})
-
+        if len(list_of_plots)>0:
+            # produce report
+            expected_input, found = \
+                self.__file_anouncement__(subdir="c3s_511/single_mean_var_input",
+                                          expfile="_mean_var.txt",
+                                          protofile="empty.txt",
+                                          function=this_function)
+    
+            if found:
+                self.reporting_structure.update(
+                        {"Mean and Variability": 
+                            {"plots": list_of_plots,
+                             "freetext": expected_input}})
+            else:
+                self.reporting_structure.update(
+                        {"Mean and Variability": 
+                            {"plots": list_of_plots}})
+        
         return
 
     def __mean_var_procedures_2D__(self, cube=None, level=None):
 
-        if cube is None:
-            cube = self.sp_data
-
-        if level is not None:
-            basic_filename = self.__basic_filename__ + "_lev" + str(level)
-            dataset_id = [self.__dataset_id__[0], "at", "level", str(
-                level), str(self.sp_data.coord(self.level_dim).units)]
-        else:
-            basic_filename = self.__basic_filename__
-            dataset_id = [self.__dataset_id__[0]]
-
+        try:
+            if cube is None:
+                cube = self.sp_data
+    
+            if level is not None:
+                basic_filename = self.__basic_filename__ + "_lev" + str(level)
+                dataset_id = [self.__dataset_id__[0], "at", "level", str(
+                    level), str(self.sp_data.coord(self.level_dim).units)]
+            else:
+                basic_filename = self.__basic_filename__
+                dataset_id = [self.__dataset_id__[0]]
+    
+            reg_dimensions = [item for item in self.__dimensions__ if 
+                              item not in set([self.level_dim])]
+        except:
+            return []
+        
+        data_info = []
         list_of_plots = []
 
-        reg_dimensions = [item for item in self.__dimensions__ if 
-                          item not in set([self.level_dim])]
 
-        maths = ["MEAN",
-                 "STD_DEV",
-                 #"LOG_COV",
-                 "PERCENTILE",
-                 "CLIMATOLOGY",
-                 ]
+        if "mean" in self.__requested_diags__:
+            
+            for d in reg_dimensions:
+                
+                long_left_over = [rd for rd in reg_dimensions if rd != d]
+            
+                plotcube = utils.dask_weighted_mean_wrapper(cube,self.map_area_frac,dims=d)
+                
+                try: 
+                    vminmax = np.nanpercentile(plotcube.data.compressed(),
+                                               [5, 95])
+                except:
+                    vminmax = np.nanpercentile(plotcube.data,
+                                               [5, 95])
+                
+                
+                data_info.append(dict({"name":"mean",
+                                       "data": plotcube,
+                                       "dim":d,
+                                       "llo":long_left_over,
+                                       "ctype":"Data",
+                                       "vminmax":vminmax,
+                                       "mmtype":"abs",
+                                       }))
+    
+            del plotcube
+            
+#            for d in reg_dimensions:
+#                
+#                long_left_over = [rd for rd in reg_dimensions if rd != d]
+#            
+#                plotcube =cube.collapsed(d,iris.analysis.MEAN,weights=iris.analysis.cartography.area_weights(cube))
+#                
+#                try: 
+#                    vminmax = np.nanpercentile(plotcube.data.compressed(),
+#                                               [5, 95])
+#                except:
+#                    vminmax = np.nanpercentile(plotcube.data,
+#                                               [5, 95])
+#                
+#                
+#                data_info.append(dict({"name":"meanREF",
+#                                       "data": plotcube,
+#                                       "dim":d,
+#                                       "llo":long_left_over,
+#                                       "ctype":"Data",
+#                                       "vminmax":vminmax,
+#                                       "mmtype":"abs",
+#                                       }))
+#    
+#            del plotcube
+            
+        if "std_dev" in self.__requested_diags__:
+            
+            for d in reg_dimensions:
+                
+                long_left_over = [rd for rd in reg_dimensions if rd != d]
+            
+#                plotcube = self.__apply_fun2cube__(cube,
+#                                                   dims=d,
+#                                                   function=iris.analysis.STD_DEV
+#                                                   )
+                plotcube = utils.weighted_STD_DEV(
+                    cube,
+                    d,
+                    weights=iris.analysis.cartography.area_weights(cube)
+                        )
+                
+                try: 
+                    vminmax = np.nanpercentile(plotcube.data.compressed(),
+                                               [5, 95])
+                except:
+                    vminmax = np.nanpercentile(plotcube.data,
+                                               [5, 95])
+                
+                
+                data_info.append(dict({"name":"std_dev",
+                                       "data": plotcube,
+                                       "dim":d,
+                                       "llo":long_left_over,
+                                       "ctype":"Sequential",
+                                       "vminmax":vminmax,
+                                       "mmtype":None,
+                                       }))
+    
+            del plotcube
+            
+#            for d in reg_dimensions:
+#                
+#                long_left_over = [rd for rd in reg_dimensions if rd != d]
+#            
+##                plotcube = self.__apply_fun2cube__(cube,
+##                                                   dims=d,
+##                                                   function=iris.analysis.STD_DEV
+##                                                   )
+#                plotcube =  utils.dask_weighted_stddev_wrapper(cube,self.map_area_frac,dims=d)
+#                
+#                try: 
+#                    vminmax = np.nanpercentile(plotcube.data.compressed(),
+#                                               [5, 95])
+#                except:
+#                    vminmax = np.nanpercentile(plotcube.data,
+#                                               [5, 95])
+#                
+#                
+#                data_info.append(dict({"name":"std_dev",
+#                                       "data": plotcube,
+#                                       "dim":d,
+#                                       "llo":long_left_over,
+#                                       "ctype":"Sequential",
+#                                       "vminmax":vminmax,
+#                                       "mmtype":None,
+#                                       }))
+#    
+#            del plotcube
+            
+        if "percentiles" in self.__requested_diags__:
+            
+            percentiles = [1., 5., 10., 50., 90., 95., 99.]
+            
+            for d in ["time"]:
+                
+                long_left_over = [rd for rd in reg_dimensions if rd != d]
+            
+#                plotcubes = self.__apply_fun2cube__(cube,
+#                                                    dims=d,
+#                                                    function=iris.analysis.PERCENTILE,
+#                                                    incl_weights = False,
+#                                                    percent=percentiles
+#                                                    )
+                plotcubes = cube.collapsed(d,iris.analysis.PERCENTILE, percent=percentiles)
+                
+                percentile_list = list()
 
-        percentiles = [1., 5., 10., 50., 90., 95., 99.]
+                for p in percentiles:
 
-        for d in reg_dimensions:
+                    loc_data = plotcubes.extract(
+                            iris.Constraint(percentile_over_time=p))
 
-            long_left_over = [rd for rd in reg_dimensions if rd != d]
-            short_left_over = np.array([sl[0:3] for sl in long_left_over])
+                    percentile_list.append(loc_data)
+                    
+                plotcubes = percentile_list
+                
+                try: 
+                    vminmax = [np.nanpercentile(
+                            plotcube.data.compressed(),[5, 95]) 
+                               for plotcube in plotcubes]
+                except:
+                    vminmax = [np.nanpercentile(
+                            plotcube.data,[5, 95]) 
+                               for plotcube in plotcubes]
+                    
+                vmin = np.min([v[0] for v in vminmax])
+                vmax = np.max([v[1] for v in vminmax])
+                vminmax = [vmin,vmax]
+                
+                
+                data_info.append(dict({"name":"percentiles",
+                                       "data": plotcubes,
+                                       "dim":d,
+                                       "llo":long_left_over,
+                                       "ctype":"Data",
+                                       "vminmax":vminmax,
+                                       "mmtype":"abs",
+                                       }))
+    
+            del plotcubes
+            
+        if "climatology" in self.__requested_diags__:
+            
+            for d in ["time"]:
+                
+                long_left_over = [rd for rd in reg_dimensions if rd != d]
+            
+                plotcubes = cube.aggregated_by('month_number', iris.analysis.MEAN)
+                
+                clim_comp_list = list()
+                
+                for mon in np.sort(
+                        plotcubes.coord('month_number').points):
 
-            if d in ["time"]:
-                temp_series_1d = cube.collapsed(
-                    long_left_over,
-                    iris.analysis.MEAN,
-#                    weights=iris.analysis.cartography.area_weights(cube)
-                    )
+                    loc_data = plotcubes.extract(
+                        iris.Constraint(month_number=mon))
 
+                    clim_comp_list.append(loc_data)
+                    
+                plotcubes = clim_comp_list
+                
+                try: 
+                    vminmax = [np.nanpercentile(
+                            plotcube.data.compressed(),[5, 95]) 
+                               for plotcube in plotcubes]
+                except:
+                    vminmax = [np.nanpercentile(
+                            plotcube.data,[5, 95]) 
+                               for plotcube in plotcubes]
+                    
+                vmin = np.min([v[0] for v in vminmax])
+                vmax = np.max([v[1] for v in vminmax])
+                vminmax = [vmin,vmax]
+                
+                
+                data_info.append(dict({"name":"climatology",
+                                       "data": plotcubes,
+                                       "dim":d,
+                                       "llo":long_left_over,
+                                       "ctype":"Data",
+                                       "vminmax":vminmax,
+                                       "mmtype":"abs",
+                                       }))
+    
+            del plotcubes
+            
+        if "anomalies" in self.__requested_diags__:
+            
+            for d in ["time"]:
+                
+                long_left_over = [rd for rd in reg_dimensions if rd != d]
+            
+                plotcubes = cube.aggregated_by('year', iris.analysis.MEAN)
+                plotcubes = plotcubes - cube.collapsed(d,iris.analysis.MEAN)
+                
+                clim_comp_list = list()
+                
+                for y in np.sort(
+                        plotcubes.coord('year').points):
+
+                    loc_data = plotcubes.extract(
+                        iris.Constraint(year=y))
+
+                    clim_comp_list.append(loc_data)
+                    
+                plotcubes = clim_comp_list
+                
+                try: 
+                    vminmax = [np.nanpercentile(
+                            plotcube.data.compressed(),[5, 95]) 
+                               for plotcube in plotcubes]
+                except:
+                    vminmax = [np.nanpercentile(
+                            plotcube.data,[5, 95]) 
+                               for plotcube in plotcubes]
+                    
+                vmin = np.min([v[0] for v in vminmax])
+                vmax = np.max([v[1] for v in vminmax])
+                vminmax = [vmin,vmax]
+                
+                
+                data_info.append(dict({"name":"anomalies",
+                                       "data": plotcubes,
+                                       "dim":d,
+                                       "llo":long_left_over,
+                                       "ctype":"Diverging",
+                                       "vminmax":vminmax,
+                                       "mmtype":"diff",
+                                       }))
+    
+            del plotcubes
+            
+            
+        if "time_series" in self.__requested_diags__:
+            
+            for d in ["time"]:
+                
+                long_left_over = [rd for rd in reg_dimensions if rd != d]
+            
+                plotcubes_m = utils.dask_weighted_mean_wrapper(cube,self.map_area_frac, dims=long_left_over)
+#                plotcubes_std = self.__apply_fun2cube__(cube,
+#                                                        dims=long_left_over,
+#                                                        function=iris.analysis.STD_DEV,
+#                                                        incl_weights = True
+#                                                        )
+#                plotcubes_std = cube.collapsed(long_left_over, iris.analysis.STD_DEV)
+#                plotcubes_std.remove_coord("day_of_month")
+#                plotcubes_std.remove_coord("day_of_year")
+#                plotcubes_std.remove_coord("month_number")
+#                plotcubes_std.remove_coord("year")
+#                
+#                plotcubes_std_p = plotcubes_m + plotcubes_std
+#                plotcubes_std_m = plotcubes_m - plotcubes_std
+#    
                 filename = self.__plot_dir__ + os.sep + basic_filename + \
                     "_" + "temp_series_1d" + "." + self.__output_type__
                 list_of_plots.append(filename)
-
-                x = Plot1D(temp_series_1d)
-
+    
+                x = Plot1D(iris.cube.CubeList([#plotcubes_std_p,
+                                               plotcubes_m,
+                                               #plotcubes_std_m
+                                               ]))
+    
                 fig = plt.figure()
-
+    
                 ax = [plt.subplot(1, 1, 1)]
                 fig.set_figheight(1.2 * fig.get_figheight())
                 x.plot(ax=ax,
-                       title=" ".join([self.__dataset_id__[indx] for 
-                                       indx in [0, 2, 1, 3]]) + " (" + 
-                self.__time_period__ + ")")
+                       title=[#"+ std",
+                              "mean",
+                              #"- std"
+                              ],
+                       colors=[#"blue",
+                               "red",
+                               #"blue"
+                               ])
                 fig.savefig(filename)
                 plt.close(fig.number)
-
+    
                 ESMValMD("meta",
                          filename,
                          self.__basetags__ + ['DM_global', 'C3S_mean_var'],
@@ -1018,298 +1405,129 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                              ecv_lookup(self.__varname__) + 
                              ' for the data set ' + " ".join(dataset_id) +
                              ' (' + self.__time_period__ + ').'),
-                         '#C3S' + d + 'series' + "".join(short_left_over) +
+                         '#C3S' + d + 'series' + "".join(
+                             np.array([sl[0:3] for sl in long_left_over])) +
+                         self.__varname__,
+                         self.__infile__,
+                         self.diagname,
+                         self.authors)
+            
+        # Check mins and maxs
+            
+        abs_mins = [np.min(di["vminmax"]) for di in data_info 
+                    if di["mmtype"]=="abs"]
+        abs_maxs = [np.max(di["vminmax"]) for di in data_info 
+                    if di["mmtype"]=="abs"]
+        [di.update({"vminmax":[np.min(abs_mins),np.max(abs_maxs)]}) 
+         for di in data_info if di["mmtype"]=="abs"]
+        
+        diff_mins = [np.min(di["vminmax"]) for di in data_info 
+                    if di["mmtype"]=="diff"]
+        diff_maxs = [np.max(di["vminmax"]) for di in data_info 
+                    if di["mmtype"]=="diff"]
+        [di.update({"vminmax":[np.min(diff_mins),np.max(diff_maxs)]}) 
+         for di in data_info if di["mmtype"]=="diff"]
+        
+        # plotting (2D maps only)
+        for di in data_info:
+            
+            filename = self.__plot_dir__ + os.sep + basic_filename + \
+                    "_" + "_" + di["name"] + "_" + \
+                    "_".join(np.array([sl[0:3] for sl in di["llo"]])) + \
+                    "." + self.__output_type__
+            list_of_plots.append(filename)
+
+            try:
+                x = Plot2D(di["data"])
+
+                caption = str("/".join(di["llo"]).title() +
+                              ' ' +
+                              di["name"] +
+                              ' maps of ' +
+                              ecv_lookup(self.__varname__) +
+                              ' for the data set ' +
+                              " ".join(dataset_id) + ' (' +
+                              self.__time_period__ + ').')
+
+                try:
+                    numfigs = len(di["data"])
+                except BaseException:
+                    numfigs = 1
+
+                fig = plt.figure()
+
+                (fig, ax, caption) = plot_setup(d=di["dim"], m=di["name"],
+                                                numfigs=numfigs,
+                                                fig=fig,
+                                                caption=caption)
+
+                x.plot(ax=ax,
+                       color=self.colormaps,
+                       color_type=di["ctype"],
+                       title=" ".join([self.__dataset_id__[indx] for
+                                       indx in [0, 2, 1, 3]]) + \
+                             " (" + self.__time_period__ + ")",
+                       vminmax=di["vminmax"],
+                       ext_cmap="both")
+                fig.savefig(filename)
+                plt.close(fig.number)
+
+                ESMValMD("meta",
+                         filename,
+                         self.__basetags__ + 
+                         ['DM_global', 'C3S_mean_var'],
+                         caption + " NA-values are shown in grey.",
+                         '#C3S' + "mymean" + "".join(
+                             np.array([sl[0:3] for sl in di["llo"]])) + \
                          self.__varname__,
                          self.__infile__,
                          self.diagname,
                          self.authors)
 
-                del temp_series_1d
-
-            mean_std_cov = collections.OrderedDict()
-            disp_min_max = collections.OrderedDict()
-            disp_min_max.update({"abs_vals": np.array([np.nan])})
-            disp_min_max.update({"diff_vals": np.array([np.nan])})
-
-            for m in maths:
-
-                if m == "PERCENTILE":
-
-                    try:
-                        perc = cube.collapsed(
-                            d,
-                            iris.analysis.__dict__["W" + m],
-                            percent=percentiles,
-#                            weights=iris.analysis.cartography.area_weights(
-#                                    cube)
-                            )
-
-                        precentile_list = list()
-
-                        for p in percentiles:
-
-                            loc_data = perc.extract(iris.Constraint(
-                                weighted_percentile_over_time=p))
-
-                            precentile_list.append(loc_data)
-
-                            try:
-                                disp_min_max.update({"abs_vals": np.nanpercentile(np.concatenate(
-                                    [disp_min_max["abs_vals"], np.percentile(loc_data.data.compressed(), [5, 95])]), [0, 100])})
-                            except BaseException:
-                                disp_min_max.update({"abs_vals": np.nanpercentile(np.concatenate(
-                                    [disp_min_max["abs_vals"], np.percentile(loc_data.data, [5, 95])]), [0, 100])})
-
-                        mean_std_cov.update({m: precentile_list})
-
-                        del precentile_list
-                        del perc
-                    except BaseException:
-                        pass
-
-                elif m == "CLIMATOLOGY":
-
-                    try:
-                        clim = cube.copy()
-                        iris.coord_categorisation.add_month_number(
-                            clim, d, name='month_num')
-                        clim_comp = clim.aggregated_by(
-                            'month_num', iris.analysis.MEAN)
-
-                        clim_anom = clim.copy()
-
-                        del clim
-
-                        for mn in range(
-                                len(clim_anom.coord('month_num').points)):
-
-                            idx = clim_comp.coord('month_num').points.tolist(
-                                    ).index(clim_anom.coord(
-                                            'month_num').points[mn])
-                            clim_anom.data[mn,:,:] = \
-                            clim_anom.data[mn,:,:] - clim_comp.data[idx,:,:]
-
-                        iris.coord_categorisation.add_year(
-                            clim_anom, d, name='yr')
-                        clim_anom = clim_anom.aggregated_by(
-                            'yr', iris.analysis.MEAN)
-
-                        clim_comp_list = list()
-
-                        for mon in np.sort(
-                                clim_comp.coord('month_num').points):
-
-                            loc_data = clim_comp.extract(
-                                iris.Constraint(month_num=mon))
-
-                            clim_comp_list.append(loc_data)
-
-                            try:
-                                disp_min_max.update({"abs_vals": np.nanpercentile(np.concatenate(
-                                    [disp_min_max["abs_vals"], np.nanpercentile(loc_data.data.compressed(), [5, 95])]), [0, 100])})
-                            except BaseException:
-                                disp_min_max.update({"abs_vals": np.nanpercentile(np.concatenate(
-                                    [disp_min_max["abs_vals"], np.nanpercentile(loc_data.data, [5, 95])]), [0, 100])})
-
-                        mean_std_cov.update({m: clim_comp_list})
-
-                        del clim_comp
-                        del clim_comp_list
-
-                        clim_anom_list = list()
-
-                        year_list = np.sort(clim_anom.coord('yr').points)
-
-                        for y in year_list:
-
-                            loc_data = clim_anom.extract(iris.Constraint(yr=y))
-
-                            try:
-                                pot_min_max = np.concatenate(
-                                    [disp_min_max["diff_vals"],
-                                     np.nanpercentile(
-                                             loc_data.data.compressed(),
-                                             [5, 95])
-                                     ])
-                            except BaseException:
-                                pot_min_max = np.concatenate(
-                                    [disp_min_max["diff_vals"],
-                                     np.nanpercentile(loc_data.data, [5, 95])
-                                     ])
-
-                            disp_min_max.update({"diff_vals": list(set(np.nanpercentile(
-                                np.concatenate([pot_min_max, -1. * pot_min_max]), [0, 100])))})
-
-                            if len(disp_min_max["diff_vals"]) == 1:
-                                disp_min_max["diff_vals"] *= 2
-
-                            clim_anom_list.append(loc_data)
-
-                        mean_std_cov.update(
-                            {"mean anomalies from " + m: clim_anom_list})
-
-                        del clim_anom
-                        del clim_anom_list
-
-                    except BaseException:
-                        pass
-
-                elif m == "MEAN":
-
-                    loc_data = cube.collapsed(
-                        d,
-                        iris.analysis.__dict__[m],
-#                        weights=iris.analysis.cartography.area_weights(cube)
-                        )
-
-                    mean_std_cov.update({m: loc_data})
-
-                    disp_min_max.update({"abs_vals": np.nanpercentile(np.concatenate(
-                        [disp_min_max["abs_vals"], np.nanpercentile(loc_data.data.compressed(), [5, 95])]), [0, 100])})
-
-                elif m == "STD_DEV":
-
-                    mean_std_cov.update({m: utils.weighted_STD_DEV(
-                        cube,
-                        d,
-#                        weights=iris.analysis.cartography.area_weights(cube)
-                        )})
-
-                elif m == "LOG_COV":
-
-                    mean_std_cov.update({m: iris.analysis.maths.log(
-                        iris.analysis.maths.divide(mean_std_cov["STD_DEV"],
-                                                   mean_std_cov["MEAN"]))})
-
-                else:
-                    raise ConfigurationError(m, "This maths functionality " + 
-                                             "is not available and " +
-                                             "has to be implemented in " + 
-                                             "_do_mean_var_.")
-
-            for m in mean_std_cov.keys():
-
-                # plotting routine
-                vminmax = None
-                ctype = None
-                
-                if np.any([m_typ in m for m_typ in [
-                          "MEAN", "PERCENTILE", "CLIMATOLOGY"]]):
-                    vminmax = disp_min_max["abs_vals"]
-                    ctype = "Data"
-
-                if np.any([m_typ in m for m_typ in ["STD_DEV"]]):
-                    ctype = "Sequential"
-
-                if np.any([m_typ in m for m_typ in ["anomalies"]]):
-                    vminmax = disp_min_max["diff_vals"]
-                    ctype = "Diverging"
-
-                if mean_std_cov[m] is not None:
-                    # this needs to be done due to an error in cartopy
-                    filename = self.__plot_dir__ + os.sep + basic_filename + \
-                        "_" + "_".join(m.split(" ")) + "_" + \
-                        "_".join(short_left_over) + "." + self.__output_type__
-                    list_of_plots.append(filename)
-
-                    try:
-                        x = Plot2D(mean_std_cov[m])
-
-                        caption = str("/".join(long_left_over).title() +
-                                      ' ' +
-                                      m.lower() +
-                                      ' maps of ' +
-                                      ecv_lookup(self.__varname__) +
-                                      ' for the data set ' +
-                                      " ".join(dataset_id) + ' (' +
-                                      self.__time_period__ + ').')
-
-                        try:
-                            numfigs = len(mean_std_cov[m])
-                        except BaseException:
-                            numfigs = 1
-
-                        fig = plt.figure()
-
-                        (fig, ax, caption) = plot_setup(d=d, m=m,
-                                                        numfigs=numfigs,
-                                                        fig=fig,
-                                                        caption=caption)
-
-                        x.plot(ax=ax,
-                               color=self.colormaps,
-                               color_type=ctype,
-                               title=" ".join([self.__dataset_id__[indx] for
-                                               indx in [0, 2, 1, 3]]) + \
-                                " (" + self.__time_period__ + ")",
-                               vminmax=vminmax,
-                               ext_cmap="both")
-                        fig.savefig(filename)
-                        plt.close(fig.number)
-
-                        ESMValMD("meta",
-                                 filename,
-                                 self.__basetags__ + 
-                                 ['DM_global', 'C3S_mean_var'],
-                                 caption + " NA-values are shown in grey.",
-                                 '#C3S' + m + "".join(short_left_over) + \
-                                 self.__varname__,
-                                 self.__infile__,
-                                 self.diagname,
-                                 self.authors)
-
-                    except Exception as e:
-                        exc_type, exc_obj, exc_tb = sys.exc_info()
-                        fname = os.path.split(
-                            exc_tb.tb_frame.f_code.co_filename)[1]
-                        self.__logger__.error(
-                            exc_type, fname, exc_tb.tb_lineno)
-                        self.__logger__.error(mean_std_cov[m])
-                        self.__logger__.error('Warning: blank figure!')
-
-                        x = Plot2D_blank(mean_std_cov[m])
-
-                        try:
-                            numfigs = len(mean_std_cov[m])
-                        except BaseException:
-                            numfigs = 1
-
-                        fig = plt.figure()
-
-                        (fig, ax, caption) = plot_setup(d=d, m=m,
-                                                        numfigs=numfigs,
-                                                        fig=fig,
-                                                        caption=caption)
-
-                        x.plot(ax=ax,
-                               color=self.colormaps,
-                               title=" ".join([self.__dataset_id__[indx] for 
-                                               indx in [0, 2, 1, 3]]) + \
-                                    " (" + self.__time_period__ + ")")
-                        fig.savefig(filename)
-                        plt.close(fig.number)
-
-                        del mean_std_cov[m]
-
-                        ESMValMD("meta",
-                                 filename,
-                                 self.__basetags__ +
-                                 ['DM_global', 'C3S_mean_var'],
-                                 str("/".join(long_left_over).title() +
-                                     ' ' + m.lower() + ' values of ' +
-                                     ecv_lookup(self.__varname__) + 
-                                     ' for the data set ' + 
-                                     " ".join(dataset_id) +
-                                     ' (' + self.__time_period__ + 
-                                     '); Data can ' +
-                                     'not be displayed due to cartopy error!'),
-                                 '#C3S' + m + "".join(short_left_over) +
-                                 self.__varname__,
-                                 self.__infile__, 
-                                 self.diagname, 
-                                 self.authors)
-
-            del mean_std_cov
+            except Exception as e:
+                exc_type, exc_obj, exc_tb = sys.exc_info()
+                fname = os.path.split(
+                    exc_tb.tb_frame.f_code.co_filename)[1]
+                self.__logger__.error(
+                    exc_type, fname, exc_tb.tb_lineno)
+                self.__logger__.error(di["name"])
+                self.__logger__.error('Warning: blank figure!')
+
+                x = Plot2D_blank(di["data"])
+
+                fig = plt.figure()
+
+                (fig, ax, caption) = plot_setup(d=d, m=di["name"],
+                                                numfigs=numfigs,
+                                                fig=fig,
+                                                caption=caption)
+
+                x.plot(ax=ax,
+                       color=self.colormaps,
+                       title=" ".join([self.__dataset_id__[indx] for 
+                                       indx in [0, 2, 1, 3]]) + \
+                             " (" + self.__time_period__ + ")")
+                fig.savefig(filename)
+                plt.close(fig.number)
+
+                ESMValMD("meta",
+                         filename,
+                         self.__basetags__ +
+                         ['DM_global', 'C3S_mean_var'],
+                         str("/".join(long_left_over).title() +
+                             ' ' + di["name"] + ' values of ' +
+                             ecv_lookup(self.__varname__) + 
+                             ' for the data set ' + 
+                             " ".join(dataset_id) +
+                             ' (' + self.__time_period__ + 
+                             '); Data can ' +
+                             'not be displayed due to cartopy error!'),
+                         '#C3S' + "mymean" + "".join(
+                             np.array([sl[0:3] for sl in di["llo"]])) +
+                         self.__varname__,
+                         self.__infile__, 
+                         self.diagname, 
+                         self.authors)
 
         return list_of_plots
     
@@ -1318,211 +1536,241 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
     
     def __mean_var_procedures_3D__(self, cube=None):
         
-        if cube is None:
-            cube=self.sp_data
-            
-        basic_filename = self.__basic_filename__
-        dataset_id = self.__dataset_id__[0]
-        
-        list_of_plots = []
-        
-        reg_dimensions = [item for item in self.__dimensions__ if 
-                          item not in set([self.level_dim])]
-        vminmaxmean=vminmaxstd=np.array([np.nan])
-        stat_dict=dict()
-
-        
-        for d in reg_dimensions:
-            stat_dict.update({d:dict()})
-            
-            long_agg = [rd for rd in reg_dimensions if rd!=d]
-            long_left_over = [d,self.level_dim]
-            short_left_over = np.array([sl[0:3] for sl in long_left_over])
-            
-            stat_dict[d].update({"slo":short_left_over,"llo":long_left_over})
-#            weights=iris.analysis.cartography.area_weights(cube)
-            
-            stat_dict[d].update({"level_dim_mean":cube.collapsed(long_agg,
-                     iris.analysis.MEAN,
-#                     weights=weights
-                     )})
-            vminmaxmean=np.nanpercentile(np.concatenate([vminmaxmean,np.nanpercentile(stat_dict[d]["level_dim_mean"].data,[5,95])]),[0,100])
-            stat_dict[d].update({"level_dim_std":utils.weighted_STD_DEV(cube,
-                     long_agg,
-#                     weights=weights
-                     )})
-            vminmaxstd=np.nanpercentile(np.concatenate([vminmaxstd,np.nanpercentile(stat_dict[d]["level_dim_std"].data,[5,95])]),[0,100])
-            
-        for d in reg_dimensions:
-        
-            filename = self.__plot_dir__ + os.sep + basic_filename + "_" + \
-                "_".join(stat_dict[d]["slo"]) + "_mean" + "." + \
-                self.__output_type__
-            list_of_plots.append(filename)
-            
-            try:
-                x=Plot2D(stat_dict[d]["level_dim_mean"])
+        try:
+            if cube is None:
+                cube=self.sp_data
                 
+            basic_filename = self.__basic_filename__
+            dataset_id = self.__dataset_id__[0]
+              
+            data_info = []
+            list_of_plots = []
+            
+            reg_dimensions = [item for item in self.__dimensions__ if 
+                              item not in set([self.level_dim])]
+            
+        except:
+            return []
+
+        if "mean" in self.__requested_diags__:
+            
+            for d in reg_dimensions:
+                
+                long_agg = [rd for rd in reg_dimensions if rd != d]
+                long_left_over = [d,self.level_dim]
+            
+                plotcube = utils.dask_weighted_mean_wrapper(cube,self.map_area_frac,dims=long_agg)
+#                
+#                for d_agg in long_agg:
+#                    
+#                    self.__logger__.info(d_agg)
+#            
+#                    plotcube = self.__apply_fun2cube__(plotcube,
+#                                                       dims=d_agg,
+#                                                       function=iris.analysis.MEAN)
+#                    self.__logger__.info(plotcube)
+                
+                try: 
+                    vminmax = np.nanpercentile(plotcube.data.compressed(),
+                                               [5, 95])
+                except:
+                    vminmax = np.nanpercentile(plotcube.data,
+                                               [5, 95])
+                
+                
+                data_info.append(dict({"name":"mean",
+                                       "data": plotcube,
+                                       "dim":d,
+                                       "llo":long_left_over,
+                                       "ctype":"Data",
+                                       "vminmax":vminmax,
+                                       "mmtype":"abs",
+                                       }))
+        
+            del plotcube
+            
+#            for d in reg_dimensions:
+#                
+#                long_agg = [rd for rd in reg_dimensions if rd != d]
+#                long_left_over = [d,self.level_dim]
+#            
+#                plotcube = cube.collapsed(long_agg,iris.analysis.MEAN,weights=iris.analysis.cartography.area_weights(cube))
+##                
+##                for d_agg in long_agg:
+##                    
+##                    self.__logger__.info(d_agg)
+##            
+##                    plotcube = self.__apply_fun2cube__(plotcube,
+##                                                       dims=d_agg,
+##                                                       function=iris.analysis.MEAN)
+##                    self.__logger__.info(plotcube)
+#                
+#                try: 
+#                    vminmax = np.nanpercentile(plotcube.data.compressed(),
+#                                               [5, 95])
+#                except:
+#                    vminmax = np.nanpercentile(plotcube.data,
+#                                               [5, 95])
+#                
+#                
+#                data_info.append(dict({"name":"mean2",
+#                                       "data": plotcube,
+#                                       "dim":d,
+#                                       "llo":long_left_over,
+#                                       "ctype":"Data",
+#                                       "vminmax":vminmax,
+#                                       "mmtype":"abs",
+#                                       }))
+#        
+#            del plotcube
+    
+        if "std_dev" in self.__requested_diags__:
+            
+            for d in reg_dimensions:
+                
+                long_agg = [rd for rd in reg_dimensions if rd != d]
+                long_left_over = [d,self.level_dim]
+            
+                plotcube = utils.weighted_STD_DEV(
+                    cube,
+                    long_agg,
+                    weights=iris.analysis.cartography.area_weights(cube)
+                        )
+                
+#                plotcube = cube.copy()
+#                
+#                for d_agg in long_agg:
+#                    
+#                    self.__logger__.info(d_agg)
+#            
+##                    plotcube = self.__apply_fun2cube__(plotcube,
+##                                                       dims=d_agg,
+##                                                       function=iris.analysis.STD_DEV
+##                                                       )
+#                    
+#    
+#                    self.__logger__.info(plotcube)
+                
+                try: 
+                    vminmax = np.nanpercentile(plotcube.data.compressed(),
+                                               [5, 95])
+                except:
+                    vminmax = np.nanpercentile(plotcube.data,
+                                               [5, 95])
+                
+                
+                data_info.append(dict({"name":"std_dev",
+                                       "data": plotcube,
+                                       "dim":d,
+                                       "llo":long_left_over,
+                                       "ctype":"Sequential",
+                                       "vminmax":vminmax,
+                                       "mmtype":None,
+                                       }))
+    
+            del plotcube
+
+        for di in data_info:
+        
+            filename = self.__plot_dir__ + os.sep + basic_filename + \
+                    "_" + "_" + di["name"] + "_" + \
+                    "_".join(np.array([sl[0:3] for sl in di["llo"]])) + \
+                    "." + self.__output_type__
+            
+            list_of_plots.append(filename)
+
+            try:
+                x = Plot2D(di["data"])
+
+                caption = str("/".join(di["llo"]).title() +
+                              ' ' +
+                              di["name"] +
+                              ' maps of ' +
+                              ecv_lookup(self.__varname__) +
+                              ' for the data set ' +
+                              dataset_id + ' (' +
+                              self.__time_period__ + ').')
+
+                try:
+                    numfigs = len(di["data"])
+                except BaseException:
+                    numfigs = 1
+
                 fig = plt.figure()
-                (fig,ax,_) = plot_setup(d="levels",fig=fig)
+
+                (fig, ax, caption) = plot_setup(d="levels", m=di["name"],
+                                                numfigs=numfigs,
+                                                fig=fig,
+                                                caption=caption)
+
                 x.plot(ax=ax,
                        color=self.colormaps,
-                       ext_cmap="both",
-                       color_type="Data",
-                       title=" ".join([self.__dataset_id__[indx] for 
-                                       indx in [0,2,1,3]]) + " (" + 
-                                     self.__time_period__ + ")",
-                       vminmax=vminmaxmean,
-                       y_log=True)
+                       color_type=di["ctype"],
+                       title=" ".join([self.__dataset_id__[indx] for
+                                       indx in [0, 2, 1, 3]]) + \
+                             " (" + self.__time_period__ + ")",
+                       vminmax=di["vminmax"],
+                       ext_cmap="both")
                 fig.savefig(filename)
                 plt.close(fig.number)
-            
-                del stat_dict[d]["level_dim_mean"]
-                
+
                 ESMValMD("meta",
                          filename,
-                         self.__basetags__ + ['DM_global', 'C3S_mean_var'],
-                         str("/".join(stat_dict[d]["llo"]).title() + ' ' +
-                             "mean" + ' values of ' +
-                             ecv_lookup(self.__varname__) +
-                             ' for the data set ' + "".join(dataset_id) +
-                             ' (' + self.__time_period__ +
-                             '). NA-values are shown in grey.'),
-                         '#C3S' + "mean" + "".join(stat_dict[d]["slo"]) +
+                         self.__basetags__ + 
+                         ['DM_global', 'C3S_mean_var'],
+                         caption + " NA-values are shown in grey.",
+                         '#C3S' + "mymean" + "".join(
+                             np.array([sl[0:3] for sl in di["llo"]])) + \
                          self.__varname__,
                          self.__infile__,
                          self.diagname,
                          self.authors)
-                
+
             except Exception as e:
                 exc_type, exc_obj, exc_tb = sys.exc_info()
-                fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-                self.__logger__.error(exc_type, fname, exc_tb.tb_lineno)
-                self.__logger__.error(stat_dict[d]["level_dim_mean"])
+                fname = os.path.split(
+                    exc_tb.tb_frame.f_code.co_filename)[1]
+                self.__logger__.error(
+                    exc_type, fname, exc_tb.tb_lineno)
+                self.__logger__.error(di["name"])
                 self.__logger__.error('Warning: blank figure!')
-                
-                x=Plot2D_blank(stat_dict[d]["level_dim_mean"])
-                
-                gs = gridspec.GridSpec(10, 5)
-                ax = np.array([plt.subplot(gs[:-2, :-1]),
-                               plt.subplot(gs[:-2, -1]),
-                               plt.subplot(gs[-2:, :])])
-                fig.set_figwidth(1.7*fig.get_figwidth())
-                fig.set_figheight(1.2*fig.get_figheight())
-                
-                x.plot(ax=ax,
-                       ext_cmap="both",
-                       color=self.colormaps,
-                       title=" ".join([self.__dataset_id__[indx] for 
-                                       indx in [0,2,1,3]]) + " (" + 
-                           self.__time_period__ + ")")
-                fig.savefig(filename)
-                plt.close(fig.number)
-            
-                del stat_dict[d]["level_dim_mean"]
-                
-                ESMValMD("meta",
-                         filename,
-                         self.__basetags__ + ['DM_global', 'C3S_mean_var'],
-                         str("/".join(stat_dict[d]["llo"]).title() + ' ' + 
-                             "mean" + ' values of ' + 
-                             ecv_lookup(self.__varname__) + 
-                             ' for the data set ' + "".join(dataset_id) + 
-                             ' (' + self.__time_period__ + '); ' + 
-                             'Data can not be displayed due to ' + 
-                             'cartopy error!'),
-                         '#C3S' + "mean""mean" + "".join(stat_dict[d]["slo"]) +
-                         self.__varname__,
-                         self.__infile__,
-                         self.diagname,
-                         self.authors)
-                
-            filename = self.__plot_dir__ + os.sep + basic_filename + "_" + \
-                "_".join(stat_dict[d]["slo"]) + "_std" + "." + \
-                self.__output_type__
-            list_of_plots.append(filename)
-            try:
-                x=Plot2D(stat_dict[d]["level_dim_std"])
-                
+
+                x = Plot2D_blank(di["data"])
+
                 fig = plt.figure()
 
-                gs = gridspec.GridSpec(10, 5)
-                ax = np.array([plt.subplot(gs[:-2, :-1]),
-                               plt.subplot(gs[:-2, -1]),
-                               plt.subplot(gs[-2:, :])])
-                fig.set_figwidth(1.7*fig.get_figwidth())
-                fig.set_figheight(1.2*fig.get_figheight())
-            
-                x.plot(ax=ax,
-                       ext_cmap="both",
-                       color=self.colormaps,
-                       color_type="Sequential",
-                       title=" ".join([self.__dataset_id__[indx] for 
-                                       indx in [0,2,1,3]]) + " (" + 
-                                        self.__time_period__ + ")",
-                       vminmax=vminmaxstd,
-                       y_log=True)
-                fig.savefig(filename)
-                plt.close(fig.number)
-            
-                del stat_dict[d]["level_dim_std"]
-                
-                ESMValMD("meta",
-                         filename,
-                         self.__basetags__ + ['DM_global', 'C3S_mean_var'],
-                         str("/".join(stat_dict[d]["llo"]).title() + ' ' + 
-                             "std_dev" + ' values of ' + 
-                             ecv_lookup(self.__varname__) + 
-                             ' for the data set ' + "".join(dataset_id) + 
-                             ' (' + self.__time_period__ + '). ' + 
-                             'NA-values are shown in grey.'),
-                         '#C3S' + "std_dev" + "".join(stat_dict[d]["slo"]) + 
-                         self.__varname__,
-                         self.__infile__,
-                         self.diagname,
-                         self.authors)
-                
-            except Exception as e:
-                exc_type, exc_obj, exc_tb = sys.exc_info()
-                fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-                self.__logger__.error(exc_type, fname, exc_tb.tb_lineno)
-                self.__logger__.error(stat_dict[d]["level_dim_std"])
-                self.__logger__.error('Warning: blank figure!')
-                
-                x=Plot2D_blank(stat_dict[d]["level_dim_std"])
-                
-                gs = gridspec.GridSpec(6, 5)
-                ax = np.array([plt.subplot(gs[:-1, :-1]),
-                               plt.subplot(gs[:-1, -1]),
-                               plt.subplot(gs[-1, :])])
-                fig.set_figwidth(1.7*fig.get_figwidth())
-                fig.set_figheight(1.2*fig.get_figheight())
-                
+                (fig, ax, caption) = plot_setup(d=d, m=di["name"],
+                                                numfigs=numfigs,
+                                                fig=fig,
+                                                caption=caption)
+
                 x.plot(ax=ax,
                        color=self.colormaps,
                        title=" ".join([self.__dataset_id__[indx] for 
-                                       indx in [0,2,1,3]]) + " (" + 
-                    self.__time_period__ + ")")
+                                       indx in [0, 2, 1, 3]]) + \
+                             " (" + self.__time_period__ + ")")
                 fig.savefig(filename)
                 plt.close(fig.number)
-            
-                del stat_dict[d]["level_dim_mean"]
-                
+
                 ESMValMD("meta",
                          filename,
-                         self.__basetags__ + ['DM_global', 'C3S_mean_var'],
-                         str("/".join(stat_dict[d]["llo"]).title() + ' ' + 
-                             "std_dev" + ' values of ' + 
+                         self.__basetags__ +
+                         ['DM_global', 'C3S_mean_var'],
+                         str("/".join(long_left_over).title() +
+                             ' ' + di["name"] + ' values of ' +
                              ecv_lookup(self.__varname__) + 
-                             ' for the data set ' + "".join(dataset_id) + 
-                             ' (' + self.__time_period__ + '); Data can not ' + 
-                             'be displayed due to cartopy error!'),
-                         '#C3S' + "std_dev" + "".join(stat_dict[d]["slo"]) + 
+                             ' for the data set ' + 
+                             " ".join(dataset_id) +
+                             ' (' + self.__time_period__ + 
+                             '); Data can ' +
+                             'not be displayed due to cartopy error!'),
+                         '#C3S' + "mymean" + "".join(
+                             np.array([sl[0:3] for sl in di["llo"]])) +
                          self.__varname__,
-                         self.__infile__,
-                         self.diagname,
+                         self.__infile__, 
+                         self.diagname, 
                          self.authors)
-        
+                    
         return list_of_plots
     
     def __add_mean_var_procedures_3D__(self, cube=None):
@@ -1989,14 +2237,14 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
         # for easy output in the reports
         esmeval_dict = collections.OrderedDict()
 
-        for num_entries in range(
-            0, len(
-                np.nonzero(
+        for num_entries in range(0, len(np.nonzero(
                 esmeval_data == self.__varname__)[0])):
             insert_dict = collections.OrderedDict()
             for column in range(1, len(esmeval_data[0, :])):
-                insert_dict.update({esmeval_data[0, column]: esmeval_data[np.nonzero(
-                    esmeval_data == self.__varname__)[0][num_entries], column]})
+                insert_dict.update({esmeval_data[0, column]:
+                    esmeval_data[np.nonzero(esmeval_data ==
+                                            self.__varname__)[0][num_entries],
+                    column]})
             esmeval_dict.update({'R' + str(num_entries + 1): insert_dict})
 
         ESMValMD("meta",
