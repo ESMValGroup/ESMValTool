@@ -47,7 +47,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: {{ .Branch }}-python3-install
+          key: python3-install-{{ .Branch }}
       - run:
           command: |
             . /opt/conda/etc/profile.d/conda.sh
@@ -75,7 +75,7 @@ jobs:
             ncdump tmp.nc | ncgen -k hdf5 -o tmp.nc
             cdo -f nc copy tmp.nc tmp2.nc
       - save_cache:
-          key: {{ .Branch }}-python3-install
+          key: python3-install-{{ .Branch }}
           paths:
             - "/opt/conda/pkgs"
       - store_artifacts:
