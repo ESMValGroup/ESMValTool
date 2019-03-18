@@ -46,6 +46,8 @@ jobs:
       - image: continuumio/miniconda3
     steps:
       - checkout
+      - restore_cache:
+          key: {{ .Branch }}-python3-install
       - run:
           command: |
             . /opt/conda/etc/profile.d/conda.sh
@@ -72,6 +74,10 @@ jobs:
             echo 0 | cdo -f nc input,r1x1 tmp.nc
             ncdump tmp.nc | ncgen -k hdf5 -o tmp.nc
             cdo -f nc copy tmp.nc tmp2.nc
+      - save_cache:
+          key: {{ .Branch }}-python3-install
+          paths:
+            - "/opt/conda/pkgs"
       - store_artifacts:
           path: /logs
       - store_artifacts:
