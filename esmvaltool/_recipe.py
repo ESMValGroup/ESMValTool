@@ -873,7 +873,7 @@ class Recipe(object):
             variables.append(variable)
 
         required_keys = {
-            'short_name', 'dataset', 'project', 'start_year',
+            'short_name', 'field', 'dataset', 'project', 'start_year',
             'end_year', 'preprocessor', 'diagnostic'
         }
 
