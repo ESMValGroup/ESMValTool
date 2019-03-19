@@ -1,14 +1,23 @@
 """Barebone example of executing an interactive diagnostic."""
 import logging
 import os
+import subprocess
+import sys
 
-# import subprocess
-from IPython import embed
 import yaml
-from esmvaltool.diag_scripts.shared import run_diagnostic_interactive
-
+from esmvaltool.diag_scripts.shared import run_diagnostic
 
 logger = logging.getLogger(os.path.basename(__file__))
+
+
+def execute(cmd, env):
+    """Execute a command and return error if fails."""
+    popen = subprocess.Popen(cmd, stdout=sys.stdout,
+                             universal_newlines=True, env=env)
+    yield "Something something dark"
+    return_code = popen.wait()
+    if return_code:
+        raise subprocess.CalledProcessError(return_code, cmd)
 
 
 def parse_settings(settings_file):
@@ -53,17 +62,10 @@ def main(cfg):
 
 if __name__ == '__main__':
 
-    with run_diagnostic_interactive() as config:
+    with run_diagnostic() as config:
         # launching ipython
         env = dict(os.environ)
         env['parsed_settings'] = main(config)
-        logger.info("Running interactive ipython")
 
-    # This is waiting for process to communicate to task
-    # since task.run(stdout=subprocess.PIPE) but ipython
-    # desnt work with PIPE
-    # process = subprocess.Popen(['ipython'], env=env)
-    # process.communicate()
-
-# task.run still waiting and not launching ipython console
-embed()
+logger.info("Running interactive ipython")
+execute(['ipython'], env)
