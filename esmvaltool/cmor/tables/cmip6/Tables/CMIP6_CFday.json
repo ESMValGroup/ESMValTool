@@ -1,23 +1,24 @@
 {
     "Header": {
-        "data_specs_version": "01.00.10", 
+        "data_specs_version": "01.00.30", 
+        "cmor_version": "3.4", 
         "table_id": "Table CFday", 
         "realm": "atmos", 
-        "frequency": "day", 
-        "cmor_version": "3.2", 
-        "table_date": "10 May 2017", 
+        "table_date": "11 March 2019", 
         "missing_value": "1e20", 
+        "int_missing_value": "-999", 
         "product": "model-output", 
         "approx_interval": "1.00000", 
         "generic_levels": "alevel alevhalf", 
         "mip_era": "CMIP6", 
-        "Conventions": "CF-1.7 CMIP-6.0"
+        "Conventions": "CF-1.7 CMIP-6.2"
     }, 
     "variable_entry": {
         "albisccp": {
+            "frequency": "day", 
             "modeling_realm": "atmos", 
             "standard_name": "cloud_albedo", 
-            "units": "1.0", 
+            "units": "1", 
             "cell_methods": "area: time: mean where cloud", 
             "cell_measures": "area: areacella", 
             "long_name": "ISCCP Mean Cloud Albedo", 
@@ -32,6 +33,7 @@
             "ok_max_mean_abs": ""
         }, 
         "ccb": {
+            "frequency": "day", 
             "modeling_realm": "atmos", 
             "standard_name": "air_pressure_at_convective_cloud_base", 
             "units": "Pa", 
@@ -49,6 +51,7 @@
             "ok_max_mean_abs": ""
         }, 
         "cct": {
+            "frequency": "day", 
             "modeling_realm": "atmos", 
             "standard_name": "air_pressure_at_convective_cloud_top", 
             "units": "Pa", 
@@ -66,12 +69,13 @@
             "ok_max_mean_abs": ""
         }, 
         "cl": {
+            "frequency": "day", 
             "modeling_realm": "atmos", 
             "standard_name": "cloud_area_fraction_in_atmosphere_layer", 
             "units": "%", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
-            "long_name": "Cloud Area Fraction in Atmosphere Layer", 
+            "long_name": "Percentage Cloud Cover", 
             "comment": "Percentage cloud cover, including both large-scale and convective cloud.", 
             "dimensions": "longitude latitude alevel time", 
             "out_name": "cl", 
@@ -83,13 +87,14 @@
             "ok_max_mean_abs": ""
         }, 
         "clcalipso": {
+            "frequency": "day", 
             "modeling_realm": "atmos", 
             "standard_name": "cloud_area_fraction_in_atmosphere_layer", 
             "units": "%", 
             "cell_methods": "time: mean", 
             "cell_measures": "area: areacella", 
-            "long_name": "CALIPSO Cloud Fraction", 
-            "comment": "Percentage cloud cover at CALIPSO standard heights.", 
+            "long_name": "CALIPSO Percentage Cloud Cover", 
+            "comment": "Percentage cloud cover in CALIPSO standard atmospheric layers.", 
             "dimensions": "longitude latitude alt40 time", 
             "out_name": "clcalipso", 
             "type": "real", 
@@ -100,12 +105,13 @@
             "ok_max_mean_abs": ""
         }, 
         "clhcalipso": {
+            "frequency": "day", 
             "modeling_realm": "atmos", 
             "standard_name": "cloud_area_fraction_in_atmosphere_layer", 
             "units": "%", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
-            "long_name": "CALIPSO High Level Cloud Fraction", 
+            "long_name": "CALIPSO High Level Cloud Area Percentage", 
             "comment": "Percentage cloud cover in layer centred on 220hPa", 
             "dimensions": "longitude latitude time p220", 
             "out_name": "clhcalipso", 
@@ -117,6 +123,7 @@
             "ok_max_mean_abs": ""
         }, 
         "cli": {
+            "frequency": "day", 
             "modeling_realm": "atmos", 
             "standard_name": "mass_fraction_of_cloud_ice_in_air", 
             "units": "kg kg-1", 
@@ -134,12 +141,13 @@
             "ok_max_mean_abs": ""
         }, 
         "clisccp": {
+            "frequency": "day", 
             "modeling_realm": "atmos", 
             "standard_name": "cloud_area_fraction_in_atmosphere_layer", 
             "units": "%", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
-            "long_name": "ISCCP Cloud Area Fraction", 
+            "long_name": "ISCCP Cloud Area Percentage", 
             "comment": "Percentage cloud cover in optical depth categories.", 
             "dimensions": "longitude latitude plev7c tau time", 
             "out_name": "clisccp", 
@@ -151,8 +159,9 @@
             "ok_max_mean_abs": ""
         }, 
         "clivi": {
+            "frequency": "day", 
             "modeling_realm": "atmos", 
-            "standard_name": "atmosphere_cloud_ice_content", 
+            "standard_name": "atmosphere_mass_content_of_cloud_ice", 
             "units": "kg m-2", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
@@ -168,12 +177,13 @@
             "ok_max_mean_abs": ""
         }, 
         "cllcalipso": {
+            "frequency": "day", 
             "modeling_realm": "atmos", 
             "standard_name": "cloud_area_fraction_in_atmosphere_layer", 
             "units": "%", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
-            "long_name": "CALIPSO Low Level Cloud Fraction", 
+            "long_name": "CALIPSO Low Level Cloud Cover Percentage", 
             "comment": "Percentage cloud cover in layer centred on 840hPa", 
             "dimensions": "longitude latitude time p840", 
             "out_name": "cllcalipso", 
@@ -185,12 +195,13 @@
             "ok_max_mean_abs": ""
         }, 
         "clmcalipso": {
+            "frequency": "day", 
             "modeling_realm": "atmos", 
             "standard_name": "cloud_area_fraction_in_atmosphere_layer", 
             "units": "%", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
-            "long_name": "CALIPSO Mid Level Cloud Fraction", 
+            "long_name": "CALIPSO Mid Level Cloud Cover Percentage", 
             "comment": "Percentage cloud cover in layer centred on 560hPa", 
             "dimensions": "longitude latitude time p560", 
             "out_name": "clmcalipso", 
@@ -202,13 +213,14 @@
             "ok_max_mean_abs": ""
         }, 
         "cltcalipso": {
+            "frequency": "day", 
             "modeling_realm": "atmos", 
             "standard_name": "cloud_area_fraction", 
             "units": "%", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
-            "long_name": "CALIPSO Total Cloud Fraction", 
-            "comment": "", 
+            "long_name": "CALIPSO Total Cloud Cover Percentage", 
+            "comment": "Total cloud area fraction (reported as a percentage) for the whole atmospheric column, as seen by the  Cloud-Aerosol Lidar and Infrared Pathfinder Satellite Observation (CALIPSO) instrument. Includes both large-scale and convective cloud.", 
             "dimensions": "longitude latitude time", 
             "out_name": "cltcalipso", 
             "type": "real", 
@@ -219,13 +231,14 @@
             "ok_max_mean_abs": ""
         }, 
         "cltisccp": {
+            "frequency": "day", 
             "modeling_realm": "atmos", 
             "standard_name": "cloud_area_fraction", 
             "units": "%", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
-            "long_name": "ISCCP Total Total Cloud Fraction", 
-            "comment": "Percentage total cloud cover, simulating ISCCP observations.", 
+            "long_name": "ISCCP Total Cloud Cover Percentage", 
+            "comment": "Total cloud area fraction (reported as a percentage) for the whole atmospheric column, as seen by the International Satellite Cloud Climatology Project (ISCCP) analysis. Includes both large-scale and convective cloud.  (MODIS). Includes both large-scale and convective cloud.", 
             "dimensions": "longitude latitude time", 
             "out_name": "cltisccp", 
             "type": "real", 
@@ -236,6 +249,7 @@
             "ok_max_mean_abs": ""
         }, 
         "clw": {
+            "frequency": "day", 
             "modeling_realm": "atmos", 
             "standard_name": "mass_fraction_of_cloud_liquid_water_in_air", 
             "units": "kg kg-1", 
@@ -253,8 +267,9 @@
             "ok_max_mean_abs": ""
         }, 
         "clwvi": {
+            "frequency": "day", 
             "modeling_realm": "atmos", 
-            "standard_name": "atmosphere_cloud_condensed_water_content", 
+            "standard_name": "atmosphere_mass_content_of_cloud_condensed_water", 
             "units": "kg m-2", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
@@ -270,6 +285,7 @@
             "ok_max_mean_abs": ""
         }, 
         "hur": {
+            "frequency": "day", 
             "modeling_realm": "atmos", 
             "standard_name": "relative_humidity", 
             "units": "%", 
@@ -287,13 +303,14 @@
             "ok_max_mean_abs": ""
         }, 
         "hus": {
+            "frequency": "day", 
             "modeling_realm": "atmos", 
             "standard_name": "specific_humidity", 
-            "units": "1.0", 
+            "units": "1", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
             "long_name": "Specific Humidity", 
-            "comment": "", 
+            "comment": "Specific humidity is the mass fraction of water vapor in (moist) air.", 
             "dimensions": "longitude latitude alevel time", 
             "out_name": "hus", 
             "type": "real", 
@@ -304,6 +321,7 @@
             "ok_max_mean_abs": ""
         }, 
         "mc": {
+            "frequency": "day", 
             "modeling_realm": "atmos", 
             "standard_name": "atmosphere_net_upward_convective_mass_flux", 
             "units": "kg m-2 s-1", 
@@ -321,6 +339,7 @@
             "ok_max_mean_abs": ""
         }, 
         "pctisccp": {
+            "frequency": "day", 
             "modeling_realm": "atmos", 
             "standard_name": "air_pressure_at_cloud_top", 
             "units": "Pa", 
@@ -338,12 +357,13 @@
             "ok_max_mean_abs": ""
         }, 
         "pfull": {
+            "frequency": "day", 
             "modeling_realm": "atmos", 
             "standard_name": "air_pressure", 
             "units": "Pa", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
-            "long_name": "Pressure on Model Levels", 
+            "long_name": "Pressure at Model Full-Levels", 
             "comment": "Air pressure on model levels", 
             "dimensions": "longitude latitude alevel time", 
             "out_name": "pfull", 
@@ -355,6 +375,7 @@
             "ok_max_mean_abs": ""
         }, 
         "phalf": {
+            "frequency": "day", 
             "modeling_realm": "atmos", 
             "standard_name": "air_pressure", 
             "units": "Pa", 
@@ -372,6 +393,7 @@
             "ok_max_mean_abs": ""
         }, 
         "ps": {
+            "frequency": "day", 
             "modeling_realm": "atmos", 
             "standard_name": "surface_air_pressure", 
             "units": "Pa", 
@@ -389,6 +411,7 @@
             "ok_max_mean_abs": ""
         }, 
         "rldscs": {
+            "frequency": "day", 
             "modeling_realm": "atmos", 
             "standard_name": "surface_downwelling_longwave_flux_in_air_assuming_clear_sky", 
             "units": "W m-2", 
@@ -406,13 +429,14 @@
             "ok_max_mean_abs": ""
         }, 
         "rlutcs": {
+            "frequency": "day", 
             "modeling_realm": "atmos", 
             "standard_name": "toa_outgoing_longwave_flux_assuming_clear_sky", 
             "units": "W m-2", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
             "long_name": "TOA Outgoing Clear-Sky Longwave Radiation", 
-            "comment": "", 
+            "comment": "Upwelling clear-sky longwave radiation at top of atmosphere", 
             "dimensions": "longitude latitude time", 
             "out_name": "rlutcs", 
             "type": "real", 
@@ -423,13 +447,14 @@
             "ok_max_mean_abs": ""
         }, 
         "rsdscs": {
+            "frequency": "day", 
             "modeling_realm": "atmos", 
             "standard_name": "surface_downwelling_shortwave_flux_in_air_assuming_clear_sky", 
             "units": "W m-2", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
             "long_name": "Surface Downwelling Clear-Sky Shortwave Radiation", 
-            "comment": "surface solar irradiance clear sky for UV calculations", 
+            "comment": "Surface solar irradiance clear sky for UV calculations", 
             "dimensions": "longitude latitude time", 
             "out_name": "rsdscs", 
             "type": "real", 
@@ -440,6 +465,7 @@
             "ok_max_mean_abs": ""
         }, 
         "rsdt": {
+            "frequency": "day", 
             "modeling_realm": "atmos", 
             "standard_name": "toa_incoming_shortwave_flux", 
             "units": "W m-2", 
@@ -457,6 +483,7 @@
             "ok_max_mean_abs": ""
         }, 
         "rsuscs": {
+            "frequency": "day", 
             "modeling_realm": "atmos", 
             "standard_name": "surface_upwelling_shortwave_flux_in_air_assuming_clear_sky", 
             "units": "W m-2", 
@@ -474,6 +501,7 @@
             "ok_max_mean_abs": ""
         }, 
         "rsut": {
+            "frequency": "day", 
             "modeling_realm": "atmos", 
             "standard_name": "toa_outgoing_shortwave_flux", 
             "units": "W m-2", 
@@ -491,6 +519,7 @@
             "ok_max_mean_abs": ""
         }, 
         "rsutcs": {
+            "frequency": "day", 
             "modeling_realm": "atmos", 
             "standard_name": "toa_outgoing_shortwave_flux_assuming_clear_sky", 
             "units": "W m-2", 
@@ -508,6 +537,7 @@
             "ok_max_mean_abs": ""
         }, 
         "ta": {
+            "frequency": "day", 
             "modeling_realm": "atmos", 
             "standard_name": "air_temperature", 
             "units": "K", 
@@ -525,6 +555,7 @@
             "ok_max_mean_abs": ""
         }, 
         "ta700": {
+            "frequency": "day", 
             "modeling_realm": "atmos", 
             "standard_name": "air_temperature", 
             "units": "K", 
@@ -542,13 +573,14 @@
             "ok_max_mean_abs": ""
         }, 
         "ua": {
+            "frequency": "day", 
             "modeling_realm": "atmos", 
             "standard_name": "eastward_wind", 
             "units": "m s-1", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
             "long_name": "Eastward Wind", 
-            "comment": "", 
+            "comment": "Zonal wind (positive in a eastward direction).", 
             "dimensions": "longitude latitude alevel time", 
             "out_name": "ua", 
             "type": "real", 
@@ -559,13 +591,14 @@
             "ok_max_mean_abs": ""
         }, 
         "va": {
+            "frequency": "day", 
             "modeling_realm": "atmos", 
             "standard_name": "northward_wind", 
             "units": "m s-1", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
             "long_name": "Northward Wind", 
-            "comment": "", 
+            "comment": "Meridional wind (positive in a northward direction).", 
             "dimensions": "longitude latitude alevel time", 
             "out_name": "va", 
             "type": "real", 
@@ -576,12 +609,13 @@
             "ok_max_mean_abs": ""
         }, 
         "wap": {
+            "frequency": "day", 
             "modeling_realm": "atmos", 
             "standard_name": "lagrangian_tendency_of_air_pressure", 
             "units": "Pa s-1", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
-            "long_name": "omega (=dp/dt)", 
+            "long_name": "Omega (=dp/dt)", 
             "comment": "Omega (vertical velocity in pressure coordinates, positive downwards)", 
             "dimensions": "longitude latitude alevel time", 
             "out_name": "wap", 
@@ -593,13 +627,14 @@
             "ok_max_mean_abs": ""
         }, 
         "wap500": {
+            "frequency": "day", 
             "modeling_realm": "atmos", 
             "standard_name": "lagrangian_tendency_of_air_pressure", 
             "units": "Pa s-1", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
-            "long_name": "omega (=dp/dt)", 
-            "comment": "Omega (vertical velocity in pressure coordinates, positive downwards) at 500 hPa level;", 
+            "long_name": "Pressure Tendency", 
+            "comment": "Omega (vertical velocity in pressure coordinates, positive downwards) at 500hPa level;", 
             "dimensions": "longitude latitude time p500", 
             "out_name": "wap500", 
             "type": "real", 
@@ -610,13 +645,14 @@
             "ok_max_mean_abs": ""
         }, 
         "zg": {
+            "frequency": "day", 
             "modeling_realm": "atmos", 
             "standard_name": "geopotential_height", 
             "units": "m", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
             "long_name": "Geopotential Height", 
-            "comment": "", 
+            "comment": "Geopotential is the sum of the specific gravitational potential energy relative to the geoid and the specific centripetal potential energy. Geopotential height is the geopotential divided by the standard acceleration due to gravity. It is numerically similar to the altitude (or geometric height) and not to the quantity with standard name height, which is relative to the surface.", 
             "dimensions": "longitude latitude alevel time", 
             "out_name": "zg", 
             "type": "real", 
