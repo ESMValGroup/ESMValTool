@@ -31,16 +31,16 @@ documentation:
 
 DATASET_ANCHOR: &datasets
   - {dataset: BNU-ESM}
-  # - {dataset: CESM1-BGC}
-  # - {dataset: CanESM2}
-  # - {dataset: GFDL-ESM2G}
-  # - {dataset: HadGEM2-CC}
-  # - {dataset: HadGEM2-ES}
-  # - {dataset: IPSL-CM5A-LR}
-  # - {dataset: IPSL-CM5A-MR}
+  - {dataset: CESM1-BGC}
+  - {dataset: CanESM2}
+  - {dataset: GFDL-ESM2G}
+  - {dataset: HadGEM2-CC}
+  - {dataset: HadGEM2-ES}
+  - {dataset: IPSL-CM5A-LR}
+  - {dataset: IPSL-CM5A-MR}
   - {dataset: MIROC-ESM}
-  # - {dataset: MPI-ESM-LR}
-  # - {dataset: NorESM1-ME}
+  - {dataset: MPI-ESM-LR}
+  - {dataset: NorESM1-ME}
 
 
 diagnostics:
@@ -51,10 +51,11 @@ diagnostics:
         project: CMIP5
         mip: Amon
         field: T2Ms
-        exp: historical
+        exp: [historical, rcp85]
         start_year: 1861
-        end_year: 2005
+        end_year: 2009
         ensemble: r1i1p1
+        fx_files: ['areacella']
         additional_datasets: *datasets
       tas_1pctCO2: &1pctCO2
         <<: *historical
@@ -62,16 +63,16 @@ diagnostics:
         end_year: 1989
         additional_datasets:
           - {dataset: BNU-ESM}
-          # - {dataset: CESM1-BGC}
-          # - {dataset: CanESM2}
-          # - {dataset: GFDL-ESM2G, start_year: 1, end_year: 129}
-          # - {dataset: HadGEM2-CC}
-          # - {dataset: HadGEM2-ES}
-          # - {dataset: IPSL-CM5A-LR}
-          # - {dataset: IPSL-CM5A-MR}
-          - {dataset: MIROC-ESM}
-          # - {dataset: MPI-ESM-LR}
-          # - {dataset: NorESM1-ME}
+          - {dataset: CESM1-BGC}
+          - {dataset: CanESM2}
+          - {dataset: GFDL-ESM2G, start_year: 1, end_year: 129}
+          - {dataset: HadGEM2-CC}
+          - {dataset: HadGEM2-ES}
+          - {dataset: IPSL-CM5A-LR}
+          - {dataset: IPSL-CM5A-MR}
+          - {dataset: MIROC-ESM, start_year: 1, end_year: 129}
+          - {dataset: MPI-ESM-LR}
+          - {dataset: NorESM1-ME}
       tas_rcp26: &rcp26
         <<: *historical
         exp: rcp26
@@ -86,31 +87,42 @@ diagnostics:
       tas_rcp85: &rcp85
         <<: *rcp26
         exp: rcp85
-        start_year: 2006
       co2mass_historical:
         <<: *historical
         short_name: co2mass
         field: T0M
+        additional_datasets:
+        - {dataset: MIROC-ESM}
       co2mass_1pctCO2:
         <<: *1pctCO2
         short_name: co2mass
         field: T0M
+        additional_datasets:
+          - {dataset: MIROC-ESM, start_year: 1, end_year: 129}
       co2mass_rcp26:
         <<: *rcp26
         short_name: co2mass
         field: T0M
+        additional_datasets:
+        - {dataset: MIROC-ESM}
       co2mass_rcp45:
         <<: *rcp45
         short_name: co2mass
         field: T0M
+        additional_datasets:
+        - {dataset: MIROC-ESM}
       co2mass_rcp60:
         <<: *rcp60
         short_name: co2mass
         field: T0M
+        additional_datasets:
+        - {dataset: MIROC-ESM}
       co2mass_rcp85:
         <<: *rcp85
         short_name: co2mass
         field: T0M
+        additional_datasets:
+        - {dataset: MIROC-ESM}
       nbp_historical:
         <<: *historical
         short_name: nbp_grid

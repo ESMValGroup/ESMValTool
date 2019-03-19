@@ -69,8 +69,14 @@ def _get_fx_cube(cubes, standard_name, fx_land_name, fx_sea_name=None):
                 "Cannot correct cube '%s' with '%s', fx file not found",
                 standard_name, fx_land_name)
         else:
-            logger.debug("Using fx cube '%s' to fix '%s'", fx_land_name,
-                         standard_name)
+            if not shape_is_broadcastable(fx_cube.shape, cube.shape):
+                fx_cube = None
+                invert = False
+                logger.debug("Cannot broadcast fx cube '%s' to cube '%s'",
+                             fx_land_name, standard_name)
+            else:
+                logger.debug("Using fx cube '%s' to fix '%s'", fx_land_name,
+                             standard_name)
     return (fx_cube, invert)
 
 
