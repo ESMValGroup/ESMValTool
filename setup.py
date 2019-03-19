@@ -32,7 +32,6 @@ REQUIREMENTS = {
         'cf_units',
         'cython',
         'scitools-iris',
-        'ipython',
         'matplotlib<3',
         'nc-time-axis',  # needed by iris.plot
         'netCDF4',

@@ -3,16 +3,13 @@ from . import io, iris_helpers, names, plot
 from ._base import (ProvenanceLogger, extract_variables, get_cfg,
                     get_diagnostic_filename, get_plot_filename, group_metadata,
                     run_diagnostic, select_metadata, sorted_group_metadata,
-                    sorted_metadata, variables_available,
-                    run_diagnostic_interactive)
+                    sorted_metadata, variables_available)
 from ._diag import Datasets, Variable, Variables
 from ._validation import apply_supermeans, get_control_exper_obs
 
 __all__ = [
     # Main entry point for diagnostics
     'run_diagnostic',
-    # interactive equivalent
-    'run_diagnostic_interactive',
     # Define output filenames
     'get_diagnostic_filename',
     'get_plot_filename',

@@ -476,19 +476,3 @@ def run_diagnostic():
     yield cfg
 
     logger.info("End of diagnostic script run.")
-
-
-@contextlib.contextmanager
-def run_diagnostic_interactive():
-    """Interactive run of diagnostic."""
-    # Implemented as context manager so we can support clean up actions later
-    parser = argparse.ArgumentParser(description="Diagnostic script")
-    parser.add_argument('filename', help="Path to settings.yml")
-    args = parser.parse_args()
-
-    cfg = get_cfg(args.filename)
-
-    # Read input metadata
-    cfg['input_data'] = _get_input_data_files(cfg)
-
-    yield cfg
