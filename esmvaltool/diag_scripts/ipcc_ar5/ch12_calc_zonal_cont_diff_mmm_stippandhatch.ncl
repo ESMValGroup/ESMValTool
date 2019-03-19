@@ -157,7 +157,7 @@ begin
   data1 = time_operations(A0, -1, -1, "average", diag_script_info@time_avg, \
                           True)
 
-  ;annots = project_style(info_items, diag_script_info, "annots")
+  annots = project_style(info_items, diag_script_info, "annots")
   Fill = default_fillvalue(typeof(data1))
 
   var_reg = new((/dim_MOD, dim_seas, dimsizes(A0&$lev_name$), \
@@ -166,7 +166,7 @@ begin
   var_reg!0 = "models"
   var_reg!1 = "season"
   var_reg!3 = "lat"
-  ;var_reg&models = annots
+  var_reg&models = annots
   if (isatt(diag_script_info, "seasons")) then
     var_reg&season = (/ispan(0, dim_seas - 1, 1)/)
   else
@@ -203,7 +203,7 @@ begin
         (diag_script_info@time_avg .eq. "annualclim")) then
       var_reg(imod, 0, :, :) = (/data1/)
     else if ((dim_seas .eq. 1) .and. \
-        (diag_script_info@time_avg .eq. "seasonalclim")) then
+             (diag_script_info@time_avg .eq. "seasonalclim")) then
       var_reg(imod, 0, :, :) = (/data1(diag_script_info@seasons, :, :)/)
     else
       var_reg(imod, :, :, :) = (/data1(diag_script_info@seasons, :, :)/)
