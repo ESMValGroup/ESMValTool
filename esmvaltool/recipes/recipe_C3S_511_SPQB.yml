@@ -36,7 +36,6 @@ documentation:
 datasets:
 #  - {dataset: MRI-CGCM3,  project: CMIP5,  mip: Amon,  exp: decadal1980,  ensemble: r1i1p1,  start_year: 1999,  end_year: 2000}
   - {dataset: CDS-XCH4, project: OBS, tier: 3, type: sat,  version: L3, start_year: 2003,  end_year: 2016}
-# looks for: '[project]_[dataset]_[type]_[version]_[mip]_[short_name]_*.nc'
 
 preprocessors:
   noop: {}
