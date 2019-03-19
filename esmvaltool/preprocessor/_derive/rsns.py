@@ -9,7 +9,7 @@ class DerivedVariable(DerivedVariableBase):
     """Derivation of variable `rsns`."""
 
     # Required variables
-    required_variables = [
+    required = [
         {
             'short_name': 'rsds'
         },
