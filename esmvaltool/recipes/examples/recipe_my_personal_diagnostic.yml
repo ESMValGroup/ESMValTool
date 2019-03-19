@@ -32,7 +32,6 @@ diagnostics:
     variables:
       ta:
         preprocessor: pp
-        field: T3M
         mip: Amon
         fx_files: [sftlf, sftof, areacello]
     scripts:

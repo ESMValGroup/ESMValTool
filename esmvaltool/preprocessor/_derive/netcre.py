@@ -1,6 +1,6 @@
 """Derivation of variable `netcre`."""
 
-from ._derived_variable_base import DerivedVariableBase
+from ._baseclass import DerivedVariableBase
 from .lwcre import DerivedVariable as Lwcre
 from .swcre import DerivedVariable as Swcre
 
@@ -9,23 +9,23 @@ class DerivedVariable(DerivedVariableBase):
     """Derivation of variable `netcre`."""
 
     # Required variables
-    _required_variables = {
-        'vars': [{
-            'short_name': 'rlut',
-            'field': 'T2{frequency}s'
-        }, {
-            'short_name': 'rlutcs',
-            'field': 'T2{frequency}s'
-        }, {
-            'short_name': 'rsut',
-            'field': 'T2{frequency}s'
-        }, {
-            'short_name': 'rsutcs',
-            'field': 'T2{frequency}s'
-        }]
-    }
+    required = [
+        {
+            'short_name': 'rlut'
+        },
+        {
+            'short_name': 'rlutcs'
+        },
+        {
+            'short_name': 'rsut'
+        },
+        {
+            'short_name': 'rsutcs'
+        },
+    ]
 
-    def calculate(self, cubes):
+    @staticmethod
+    def calculate(cubes):
         """Compute net cloud radiative effect.
 
         Note
