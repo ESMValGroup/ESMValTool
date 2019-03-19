@@ -66,6 +66,5 @@ if __name__ == '__main__':
         # launching ipython
         env = dict(os.environ)
         env['parsed_settings'] = main(config)
-
-logger.info("Running interactive ipython")
-execute(['ipython'], env)
+        logger.info("Running interactive ipython")
+        execute(['ipython'], env)
