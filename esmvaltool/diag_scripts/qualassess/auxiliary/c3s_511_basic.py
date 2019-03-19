@@ -818,9 +818,6 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                                       protofile="empty.txt",
                                       function=this_function)
 
-        self.__logger__.info(found)
-        self.__logger__.info(overview_dict)
-
         if found:
 #            self.__do_report__(
 #                content={
