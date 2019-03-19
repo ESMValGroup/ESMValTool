@@ -148,6 +148,13 @@ the following command:
     cd ESMValTool
     python setup.py install
 
+If you would like to run Julia diagnostic scripts, you will also need to
+`install Julia <https://julialang.org/downloads/>`_ and the Julia dependencies:
+
+.. code-block:: bash
+
+    julia ESMValTool/esmvaltool/install/Julia/setup.jl
+
 If you would like to run R diagnostic scripts, you will also need to install the R
 dependencies:
 
