@@ -17,12 +17,30 @@
 # This namelist is part of the ESMValTool
 ###############################################################################
 
+documentation:
+  description: 
+    Independent assessment of single products for the C3S_511 quality brief.
+    
+  authors:
+    - muel_bn
+    - hass_bg
+
+  maintainer:
+    - hass_bg
+    
+  projects:
+    - c3s_511
+
+
+
 datasets:
 #  - {dataset: MRI-CGCM3,  project: CMIP5,  mip: Amon,  exp: decadal1980,  ensemble: r1i1p1,  start_year: 1999,  end_year: 2000}
-  - {dataset: XCH4, type: sat, project: OBS,  level: L3, version: CDS, start_year: 2003,  end_year: 2016}
-# looks for: [project]_[obssystem]_[dataset]_[level]_[field]_[short_name]*
+  - {dataset: CDS-XCH4, project: OBS, tier: 3, type: sat,  version: L3, start_year: 2003,  end_year: 2016}
+# looks for: '[project]_[dataset]_[type]_[version]_[mip]_[short_name]_*.nc'
+
 preprocessors:
   noop: {}
+
 
 diagnostics:
   SPQB:
@@ -33,14 +51,15 @@ diagnostics:
         preprocessor: noop
         field: T2Ms
 #        field: T3Ms
-        derive: False
         mip: Amon
     scripts:
       SPQB_basic_report:
         script: qualassess/DUMMY_C3S_511_SPQB.py
         data_colors: RdYlGn
-        levels: [30000.]
-        show_latex: no_latex #options are: True/False/no_latex
+#        levels: [30000.]
+        show_latex: no_latex   
+               #options are: True/False/no_latex
+
         
 #  diagnostic1:
 #    description: Multi-product quality brief.
