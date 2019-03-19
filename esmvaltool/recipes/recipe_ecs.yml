@@ -33,7 +33,6 @@ diagnostics:
         project: CMIP5
         ensemble: r1i1p1
         mip: Amon
-        field: T2Ms
       rtmt:
         <<: *variable_settings
     additional_datasets:
