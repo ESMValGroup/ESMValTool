@@ -14,7 +14,7 @@ from multiprocessing import Pool, cpu_count
 import psutil
 import yaml
 
-from ._config import TAGS, replace_tags, parse_settings
+from ._config import TAGS, replace_tags
 from ._provenance import TrackedFile, get_task_provenance
 
 logger = logging.getLogger(__name__)
@@ -430,28 +430,6 @@ class DiagnosticTask(BaseTask):
         if self.script is None:  # Run only preprocessor
             output_files = []
             return output_files
-
-        # interactive scenario
-        if os.path.basename(self.script) == "ipython_diag.py":
-            cmd = list(self.cmd)
-            self.settings['input_files'] = [
-                f for f in input_files
-                if f.endswith('.yml') or os.path.isdir(f)
-            ]
-            settings_file = self.write_settings()
-            env = dict(os.environ)
-            parsed_settings = parse_settings(settings_file,
-                                             interactive=True)
-            parsed_settings_file = os.path.join(self.settings['run_dir'],
-                                                'parsed_settings.yml')
-            with open(parsed_settings_file, 'w') as file:
-                yaml.safe_dump(parsed_settings, file)
-            env['parsed_settings'] = parsed_settings_file
-            cmd.append(settings_file)
-            logger.info("Running interactive command %s", cmd)
-            process = subprocess.Popen(cmd, env=env)
-            process.communicate()
-            return
 
         is_ncl_script = self.script.lower().endswith('.ncl')
         if is_ncl_script:

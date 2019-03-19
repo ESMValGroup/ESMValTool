@@ -88,41 +88,6 @@ def read_config_user_file(config_file, recipe_name):
     return cfg
 
 
-def parse_settings(settings_file, interactive=False):
-    """
-    Read and output the contents of the settings file.
-
-    Returns a nested dictionary that has the shape:
-    DIAG_NAMES: VARS: DATASETS: DATSET_PROPERTIES eg
-    {'validation_basic': {'tas': {'MPI-ESM-LR':{}}}}
-    """
-    debug = False
-    with open(settings_file, 'r') as file:
-        sett_dict = yaml.safe_load(file)
-    if sett_dict['log_level'] == 'debug':
-        debug = True
-    if debug or interactive:
-        parser_meta = {}
-        for metadata_file in sett_dict['input_files']:
-            diag = metadata_file.split(os.sep)[-3]
-            parser_meta[diag] = {}
-            var = metadata_file.split(os.sep)[-2]
-            parser_meta[diag][var] = {}
-            logger.debug("Diagnostic %s for variable %s", diag, var)
-            with open(metadata_file, 'r') as file:
-                meta_dict = yaml.safe_load(file)
-            for key in meta_dict:
-                dataset = meta_dict[key]['dataset']
-                parser_meta[diag][var][dataset] = {}
-                for sub_key in meta_dict[key]:
-                    parser_meta[diag][var][dataset][sub_key] = \
-                        meta_dict[key][sub_key]
-        logger.debug("****************************************")
-        logger.debug("Global configuration dictionary: %s ", parser_meta)
-        logger.debug("****************************************")
-        return parser_meta
-
-
 def get_config_user_file():
     """Return user configuration dictionary."""
     return CFG_USER
