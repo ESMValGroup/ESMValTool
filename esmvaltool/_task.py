@@ -221,7 +221,10 @@ class BaseTask(object):
                 input_files = []
             for task in self.ancestors:
                 input_files.extend(task.run())
+            logger.info("Starting task %s in process [%s]", self.name,
+                        os.getpid())
             self.output_files = self._run(input_files)
+            logger.info("Successfully completed task %s", self.name)
 
         return self.output_files
 
@@ -279,6 +282,7 @@ class DiagnosticTask(BaseTask):
                     'py': [which('python')],
                     'ncl': [which('ncl'), '-n', '-p'],
                     'r': [which('Rscript')],
+                    'jl': [which('julia')],
                 }
             else:
                 profile_file = os.path.join(self.settings['run_dir'],
@@ -290,6 +294,7 @@ class DiagnosticTask(BaseTask):
                     ],
                     'ncl': [which('ncl'), '-n', '-p'],
                     'r': [which('Rscript')],
+                    'jl': [which('julia')],
                 }
 
             if extension not in executables:

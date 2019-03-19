@@ -38,11 +38,8 @@ begin
   YEAR1 = (/1997, 1997, 2007, 2007/)
   YEAR2 = (/2010, 2010, 2008, 2008/)
 
-  ; MIP
-  MIP = "Amon"
-
   ; Selected variable (standard name)
-  VARS = (/"toz", "tozStderr", "tro3prof", "tro3profStderr"/)
+  VAR = (/"toz", "tozStderr", "tro3prof", "tro3profStderr"/)
 
   ; Name in the raw data
   NAME = (/"atmosphere_mole_content_of_ozone", \
@@ -50,36 +47,54 @@ begin
            "merged_ozone_vmr", \
            "uncertainty_of_merged_ozone"/)
 
+  ; MIP
+  MIP = (/"Amon", "Amon", "Amon", "Amon"/)
+
+  ; Frequency
+  FREQ = (/"mon", "mon", "mon", "mon"/)
+
+  ; CMOR table
+  CMOR_TABLE = getenv("esmvaltool_root") + \
+    "/cmor/tables/custom/CMOR_" + VAR + ".dat"
+
   ; File name
   FNAME = (/"ESACCI-OZONE-L3S-TC-MERGED-DLR_1M-_DATE_??-fv0100.nc", \
             "ESACCI-OZONE-L3S-TC-MERGED-DLR_1M-_DATE_??-fv0100.nc", \
             "ESACCI-OZONE-L3-LP-MERGED-MZM-_DATE_-fv0002.nc", \
             "ESACCI-OZONE-L3-LP-MERGED-MZM-_DATE_-fv0002.nc"/)
 
-  ; CMOR table
-  CMOR_TABLE = getenv("esmvaltool_root") + \
-    "/cmor/tables/custom/CMOR_" + VARS + ".dat"
+  ; Type
+  TYPE = "sat"
+
+  ; Version
+  VERSION = "L3"
+
+  ; Global attributes
+  SOURCE = "ftp://anon-ftp.ceda.ac.uk/neodc/esacci/ozone/data/"
+  REF = "Loyola et al., Int. J. Remote Sens. doi:10.1080/" + \
+    "01431160902825016, 2009."
+  COMMENT = ""
 
 end
 
 begin
 
-  do vID = 0, dimsizes(VARS) - 1
+  do vv = 0, dimsizes(VAR) - 1
 
-    log_info("Processing " + VARS(vID))
+    log_info("Processing " + VAR(vv) + " (" + MIP(vv) + ")")
 
-    time = create_timec(YEAR1(vID), YEAR2(vID))
+    time = create_timec(YEAR1(vv), YEAR2(vv))
     date = cd_calendar(time, 1)
 
     ; Create timeseries
-    do yy = YEAR1(vID), YEAR2(vID)
+    do yy = YEAR1(vv), YEAR2(vv)
       do mm = 1, 12
 
         ldate = yy + sprinti("%0.2i", mm)
 
         ; File name
         fname = systemfunc("ls " + input_dir_path + \
-                           str_sub_str(FNAME(vID), "_DATE_", ldate))
+                           str_sub_str(FNAME(vv), "_DATE_", ldate))
 
         ; Check
         if (all(ismissing(fname))) then
@@ -88,7 +103,7 @@ begin
 
         ; Extract data
         f = addfile(fname(0), "r")
-        xx = f->$NAME(vID)$
+        xx = f->$NAME(vv)$
         xx@_FillValue = FILL
         xx@missing_value = xx@_FillValue
         xx = where(xx.lt.0., xx@_FillValue, xx)
@@ -102,16 +117,18 @@ begin
           output = new(dims, typeof(xx))
           output!0 = "time"
           output&time = time
-          if (dimnames(0).eq."latitude") then
-            output!1 = "lat"
-            output&lat = f->latitude
-          end if
-          if (dimnames(0).eq."air_pressure") then
-            output!1 = "plev"
-            output&plev = f->air_pressure
-          end if
-          output!2 = "lon"
-          output&lon = f->$dimnames(1)$
+          do ii = 0, dimsizes(dimnames) - 1
+            if (dimnames(ii).eq."air_pressure") then
+              output!(ii+1) = "plev"
+              output&plev = f->$dimnames(ii)$
+            elseif (isStrSubset(dimnames(ii), "latitude")) then
+              output!(ii+1) = "lat"
+              output&lat = f->$dimnames(ii)$
+            elseif (dimnames(ii).eq."longitude")
+              output!(ii+1) = "lon"
+              output&lon = f->$dimnames(ii)$
+            end if
+          end do
         end if
         output(ind(toint(ldate).eq.date), :, :) = (/xx/)
         delete(fname)
@@ -120,71 +137,32 @@ begin
       end do
     end do
 
-    ; Format time coordinate
-    ctime = time_attrib(output&time, YEAR1(vID), YEAR2(vID), "M")
-    delete(output&time)
-    output&time = ctime
-    delete(ctime)
-
-    ; Format pressure level coordinate
-    if (output!1.eq."plev") then
-      if (isMonotonic(output&plev) .eq. 0) then
-        error_msg("f", DIAG_SCRIPT, "", "non-monotonic level coordinate")
-      end if
-      cplev = plev_attrib(output&plev)
-      delete(output&plev)
-      output&plev = cplev
-      delete(cplev)
-    end if
-
-    ; Format latitude coordinate
-    if (output!1.eq."lat") then
-      if (isMonotonic(output&lat) .eq. 0) then
-        error_msg("f", DIAG_SCRIPT, "", "non-monotonic latitude coordinate")
-      end if
-      if (isMonotonic(output&lat) .eq. -1) then
-        output = output(:, ::-1, :)
-      end if
-      clat = lat_attrib(output&lat)
-      delete(output&lat)
-      output&lat = clat
-      delete(clat)
-    end if
-
-    ; Format longitude coordinate
-    output!2 = "lon"
-    if (isMonotonic(output&lon) .eq. 0) then
-      error_msg("f", DIAG_SCRIPT, "", "non-monotonic longitude coordinate")
-    end if
-    if (any(output&lon.lt.0.)) then
-      output = lonFlip(output)
-    end if
-    clon = lon_attrib(output&lon)
-    delete(output&lon)
-    output&lon = clon
-    delete(clon)
+    ; Format coordinates
+    format_coords(output, YEAR1(vv) + "0101", YEAR2(vv) + "1231", FREQ(vv))
 
     ; Set variable attributes
-    tmp = var_attrib(output, VARS(vID), CMOR_TABLE(vID))
+    tmp = format_variable(output, VAR(vv), CMOR_TABLE(vv))
     delete(output)
     output = tmp
     delete(tmp)
 
-    ; Set global attributes
-    gAtt = set_global_atts( \
-      OBSNAME, TIER, \
-      "ftp://anon-ftp.ceda.ac.uk/neodc/esacci/ozone/data/", \
-      "Loyola et al., Int. J. Remote Sens. " + \
-      "doi:10.1080/01431160902825016, 2009.", "")
+    ; Calculate coordinate bounds
+    bounds = guess_coord_bounds(output, FREQ(vv))
 
-    ; Outfile
-    fout = output_dir_path + "OBS_" + OBSNAME + "_sat_L3_" + MIP + \
-      "_" + VARS(vID) + "_" + YEAR1(vID) + "01-" + YEAR2(vID) + "12.nc"
+    ; Set global attributes
+    gAtt = set_global_atts(OBSNAME, TIER, SOURCE, REF, COMMENT)
+
+    ; Output file
+    DATESTR = YEAR1(vv) + "01-" + YEAR2(vv) + "12"
+    fout = output_dir_path + \
+      str_join((/"OBS", OBSNAME, TYPE, VERSION, \
+                 MIP(vv), VAR(vv), DATESTR/), "_") + ".nc"
 
     ; Write variable
-    write_nc(fout, VARS(vID), output, gAtt)
+    write_nc(fout, VAR(vv), output, bounds, gAtt)
     delete(gAtt)
     delete(output)
+    delete(bounds)
     delete(time)
     delete(date)
 

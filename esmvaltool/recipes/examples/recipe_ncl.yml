@@ -35,6 +35,10 @@ preprocessors:
 diagnostics:
   example:
     description: Example diagnostic
+    themes:
+      - phys
+    realms:
+      - atmos
     variables:
       ta:
         preprocessor: preprocessor_1
