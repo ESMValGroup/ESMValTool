@@ -380,6 +380,18 @@ diagnostics:
     scripts: null
 
 
+  CDS-XCO2:
+    description: CDS-XCO2
+    variables:
+      xco2:
+        preproc: nopp
+        mip: Amon
+        field: T2Ms
+    additional_datasets:
+      - {dataset: CDS-XCO2, project: OBS, tier: 3, type: sat, version: L3, start_year: 2003, end_year: 2016}
+    scripts: null
+
+
   CERES_mon:
     description: CERES-SYN1deg monthly data
     variables:
