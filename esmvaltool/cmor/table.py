@@ -76,6 +76,7 @@ class CMIP6Info(object):
         self.default = default
 
         self.tables = {}
+        self.var_to_freq = {}
 
         self._load_coordinates()
         for json_file in glob.glob(os.path.join(self._cmor_folder, '*.json')):
@@ -98,22 +99,23 @@ class CMIP6Info(object):
                 return
             table = TableInfo()
             header = raw_data['Header']
-            table.name = header['table_id'][6:].split('_')[-1]
-            self.tables[table.name] = table
-
+            table.name = header['table_id'].split(' ')[-1]
             generic_levels = header['generic_levels'].split()
-            table.frequency = header.get('frequency', '')
-            table.realm = header.get('realm', '')
+            table.realm = header['realm'].split()
+            self.var_to_freq[table.name] = {}
 
             for var_name, var_data in raw_data['variable_entry'].items():
                 var = VariableInfo('CMIP6', var_name)
                 if 'frequency' in var_data:
-                    var.frequency = var_data['frequency']
+                    frequency = var_data['frequency']
                 else:
-                    var.frequency = table.frequency
+                    frequency = header['frequency']
                 var.read_json(var_data)
+                var.frequency = frequency
                 self._assign_dimensions(var, generic_levels)
                 table[var_name] = var
+                self.var_to_freq[table.name][var_name] = frequency
+            self.tables[table.name] = table
 
     def _assign_dimensions(self, var, generic_levels):
         for dimension in var.dimensions:
@@ -178,6 +180,8 @@ class CMIP6Info(object):
 
         """
         try:
+            self.tables[table][short_name].frequency = \
+                self.var_to_freq[table][short_name]
             return self.tables[table][short_name]
         except KeyError:
             if short_name in CMIP6Info._CMIP_5to6_varname:
@@ -320,6 +324,7 @@ class VariableInfo(JsonInfo):
         self.positive = self._read_json_variable('positive')
         self.modeling_realm = \
             self._read_json_variable('modeling_realm').split()
+        self.frequency = self._read_json_variable('frequency')
 
         self.dimensions = self._read_json_variable('dimensions').split()
 

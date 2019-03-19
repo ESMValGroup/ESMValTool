@@ -66,7 +66,7 @@ class CMORCheck(object):
         self._errors = list()
         self._warnings = list()
         self._cmor_var = var_info
-        if frequency is None:
+        if frequency is None or frequency == '':
             frequency = self._cmor_var.frequency
         self.frequency = frequency
         self.automatic_fixes = automatic_fixes
