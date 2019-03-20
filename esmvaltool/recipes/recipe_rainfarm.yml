@@ -40,7 +40,6 @@ diagnostics:
       pr:
         preprocessor: preproc
         mip: day
-        field: T2Ds
     scripts:
       rainfarm:
         script: rainfarm/rainfarm.R
