@@ -1,26 +1,19 @@
 """Derivation of variable `nbp_grid`."""
-
-import logging
-
-from ._derived_variable_base import DerivedVariableBase
+from ._baseclass import DerivedVariableBase
 from ._shared import grid_area_correction
-
-logger = logging.getLogger(__name__)
 
 
 class DerivedVariable(DerivedVariableBase):
     """Derivation of variable `nbp_grid`."""
 
     # Required variables
-    _required_variables = {
-        'vars': [{
-            'short_name': 'nbp',
-            'field': 'T2{frequency}s'
-        }],
-        'fx_files': ['areacella', 'sftlf']
-    }
+    required = [{
+        'short_name': 'nbp',
+        'fx_files': ['sftlf'],
+    }]
 
-    def calculate(self, cubes):
+    @staticmethod
+    def calculate(cubes):
         """Compute net biome production per grid cell.
 
         Note
