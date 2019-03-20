@@ -195,7 +195,6 @@ diagnostics:
         reference_dataset: ERA-Interim
         alternative_dataset: NCEP
         mip: Amon
-        field: T3M
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
@@ -295,7 +294,6 @@ diagnostics:
         reference_dataset: ERA-Interim
         alternative_dataset: NCEP
         mip: Amon
-        field: T3M
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
@@ -377,7 +375,6 @@ diagnostics:
         reference_dataset: ERA-Interim
         alternative_dataset: NCEP
         mip: Amon
-        field: T3M
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
@@ -453,7 +450,6 @@ diagnostics:
         reference_dataset: ERA-Interim
         alternative_dataset: NCEP
         mip: Amon
-        field: T3M
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
@@ -529,7 +525,6 @@ diagnostics:
         reference_dataset: ERA-Interim
         alternative_dataset: NCEP
         mip: Amon
-        field: T3M
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
@@ -624,7 +619,6 @@ diagnostics:
         reference_dataset: ERA-Interim
         alternative_dataset: NCEP
         mip: Amon
-        field: T3M
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
@@ -703,7 +697,6 @@ diagnostics:
         reference_dataset: ERA-Interim
         alternative_dataset: NCEP
         mip: Amon
-        field: T3M
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
@@ -783,7 +776,6 @@ diagnostics:
         reference_dataset: ERA-Interim
         alternative_dataset: NCEP
         mip: Amon
-        field: T3M
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
@@ -861,7 +853,6 @@ diagnostics:
         reference_dataset: ERA-Interim
         alternative_dataset: NCEP
         mip: Amon
-        field: T3M
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
@@ -940,7 +931,6 @@ diagnostics:
         reference_dataset: ERA-Interim
         alternative_dataset: NCEP
         mip: Amon
-        field: T3M
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
@@ -1018,7 +1008,6 @@ diagnostics:
         reference_dataset: AIRS
         alternative_dataset: ERA-Interim
         mip: Amon
-        field: T3M
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
@@ -1089,7 +1078,6 @@ diagnostics:
         reference_dataset: ERA-Interim
         alternative_dataset: NCEP
         mip: Amon
-        field: T2Ms
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
@@ -1191,7 +1179,6 @@ diagnostics:
         reference_dataset: ESACCI-SST
         alternative_dataset: HadISST
         mip: Amon
-        field: T2Ms
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
@@ -1263,7 +1250,6 @@ diagnostics:
         preprocessor: ppNOLEV1
         reference_dataset: GPCP-SG
         mip: Amon
-        field: T2Ms
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
@@ -1342,7 +1328,6 @@ diagnostics:
         reference_dataset: ESACCI-CLOUD
         alternative_dataset: PATMOS-x
         mip: Amon
-        field: T2Ms
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
@@ -1421,7 +1406,6 @@ diagnostics:
         preprocessor: ppNOLEV1
         reference_dataset: CERES-EBAF
         mip: Amon
-        field: T2Ms
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
@@ -1492,7 +1476,6 @@ diagnostics:
         preprocessor: ppNOLEV1
         reference_dataset: CERES-EBAF
         mip: Amon
-        field: T2Ms
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
@@ -1560,7 +1543,6 @@ diagnostics:
         preprocessor: ppNOLEV1
         reference_dataset: CERES-EBAF
         mip: Amon
-        field: T2Ms
         derive: true
         force_derivation: false
         project: CMIP5
@@ -1632,7 +1614,6 @@ diagnostics:
         preprocessor: ppNOLEV1
         reference_dataset: CERES-EBAF
         mip: Amon
-        field: T2Ms
         derive: true
         force_derivation: false
         project: CMIP5
@@ -1703,7 +1684,6 @@ diagnostics:
         reference_dataset: ESACCI-AEROSOL
         alternative_dataset: MODIS
         mip: aero
-        field: T2Ms
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
@@ -1749,7 +1729,6 @@ diagnostics:
         preprocessor: ppNOLEV1thr10
         reference_dataset: ESACCI-AEROSOL
         mip: aero
-        field: T2Ms
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
@@ -1786,7 +1765,6 @@ diagnostics:
         preprocessor: ppNOLEV1thr10
         reference_dataset: ESACCI-AEROSOL
         mip: aero
-        field: T2Ms
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
@@ -1823,7 +1801,6 @@ diagnostics:
         preprocessor: ppNOLEV1thr10
         reference_dataset: ESACCI-AEROSOL
         mip: aero
-        field: T2Ms
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
@@ -1860,7 +1837,6 @@ diagnostics:
         reference_dataset: ESACCI-OZONE
         alternative_dataset: NIWA-BS
         mip: Amon
-        field: T2Ms
         derive: true
         force_derivation: false
         project: CMIP5
@@ -1905,7 +1881,6 @@ diagnostics:
         preprocessor: ppNOLEV1thr10
         reference_dataset: ESACCI-SOILMOISTURE
         mip: Lmon
-        field: T2Ms
         derive: true
         force_derivation: false
         project: CMIP5
