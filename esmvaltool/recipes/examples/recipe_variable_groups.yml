@@ -40,7 +40,6 @@ diagnostics:
         short_name: tas
         project: CMIP5
         mip: Amon
-        field: T2Ms
         exp: historical
         ensemble: r1i1p1
         start_year: 2000
