@@ -78,6 +78,10 @@ diagnostics:
         exp: rcp26
         start_year: 2010
         end_year: 2099
+        additional_datasets:
+          - {dataset: MIROC-ESM}
+          - {dataset: MPI-ESM-LR, start_year: 2030}
+          - {dataset: NorESM1-ME, end_year: 2079}
       tas_rcp45: &rcp45
         <<: *rcp26
         exp: rcp45
@@ -186,3 +190,11 @@ diagnostics:
     scripts:
       figspm10:
         script: ipcc_ar5/spm_fig10.py
+        historical-rcp85_color: black
+        rcp26_color: navy
+        rcp45_color: aqua
+        rcp60_color: orange
+        rcp85_color: red
+        1pctCO2_color: black
+        1pctCO2_marker: null
+        1pctCO2_linewidth: 1

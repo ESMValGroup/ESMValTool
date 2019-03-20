@@ -33,41 +33,23 @@ matplotlib_style : str, optional
 
 import logging
 import os
-from pprint import pformat
 
 import iris
 import iris.coord_categorisation as iris_cat
+import matplotlib.lines as mlines
+import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 import numpy as np
+from cf_units import Unit
+from scipy.spatial import ConvexHull
 
+import esmvaltool.diag_scripts.shared.iris_helpers as ih
 from esmvaltool.diag_scripts.shared import (
-    ProvenanceLogger, extract_variables, get_diagnostic_filename,
-    get_plot_filename, group_metadata, io, plot, run_diagnostic,
+    get_plot_filename, group_metadata, plot, run_diagnostic, select_metadata,
     variables_available)
 
 logger = logging.getLogger(os.path.basename(__file__))
-
-# # ESMValTool python packages
-# from auxiliary import info, warning
-# from constants import Constant
-# from esmval_lib import ESMValProject
-
-# # Iris
-# import iris
-# import iris.coord_categorisation as iris_cat
-
-# # Basic python packages
-# from collections import OrderedDict
-# import numpy as np
-# import os
-# import scipy.spatial
-
-# # Matplotlib with 'Agg' backend
-# import matplotlib
-# matplotlib.use('Agg')
-# import matplotlib.pyplot as plt
-# import matplotlib.lines as mlines
-# import matplotlib.patches as mpatches
+plt.style.use(plot.get_path_to_mpl_style('small_font'))
 
 
 def main(cfg):
@@ -81,14 +63,28 @@ def main(cfg):
         raise ValueError(
             f"This diagnostic needs the variables {necessary_vars}")
 
-    # Iterate over all variables
+    # Get name of historical experiment
+    hist_exps = [
+        name for name in group_metadata(input_data, 'exp').keys()
+        if 'historical' in name
+    ]
+    if not hist_exps:
+        raise ValueError("This diagnostic needs a historical experiment")
+    hist_exp = hist_exps[0]
+    if len(hist_exps) > 1:
+        logger.warning("Found multiple historical experiments, using '%s'",
+                       hist_exp)
+
+    # Preprocess data
+    max_decades = {}
     for (var, datasets) in grouped_data.items():
+        logger.info("Processing %s", var)
         for dataset in datasets:
             cube = iris.load_cube(dataset['filename'])
 
-            # co2mass: no preprocessing necessary
+            # co2mass: convert units from kgCO2 to kgC
             if var == 'co2mass':
-                pass
+                cube *= 12.0 / 44.0
 
             # tas: weighted mean
             elif var == 'tas':
@@ -99,8 +95,9 @@ def main(cfg):
                 else:
                     area_weights = iris.analysis.cartography.area_weights(cube)
                     logger.warning(
-                        "'areacella' file not found, estimated cell areas by "
-                        "bounds")
+                        "'areacella' file for experiment '%s' of '%s' not "
+                        "found, estimated cell areas by bounds",
+                        dataset['exp'], dataset['dataset'])
                 cube = cube.collapsed(['latitude', 'longitude'],
                                       iris.analysis.MEAN,
                                       weights=area_weights)
@@ -115,14 +112,13 @@ def main(cfg):
                 logger.warning("Variable '%s' not supported, skipping", var)
                 continue
 
-            # Add aux coordinate for for decade
-
             def time_to_decade(coord, value):
                 """Convert time into decade, e.g. 2050 means 2040-2049."""
                 dec = 10
                 year = coord.units.num2date(value).year
                 return year + dec - year % dec
 
+            # Add aux coordinate for for decade
             iris_cat.add_categorised_coord(
                 cube, 'decade', 'time', time_to_decade, units='yr')
 
@@ -132,358 +128,423 @@ def main(cfg):
 
                 def end_of_decade_value(data, axis):
                     """Return last element of decade."""
-                    return numpy.take(data, -1, axis=axis)
+                    return np.take(data, -1, axis=axis)
 
                 aggregator = iris.analysis.Aggregator('decade: point',
                                                       end_of_decade_value)
                 cube = cube.aggregated_by('decade', aggregator)
-                cube.data -= np.hstack(initial_co2mass, cube.data[:-1])
+                cube.data -= np.hstack((initial_co2mass, cube.data[:-1]))
             else:
                 cube = cube.aggregated_by('decade', iris.analysis.MEAN)
+
+            # Replace time coordinate
+            time_idx = cube.coord_dims('time')
+            new_coord = iris.coords.DimCoord.from_coord(cube.coord('decade'))
+            cube.remove_coord('time')
+            cube.remove_coord('decade')
+            cube.add_dim_coord(new_coord, time_idx)
+
+            # Add dataset coordinate and experiment
+            cube.attributes = {}
+            cube.cell_methods = ()
+            for coord in cube.coords(dim_coords=False):
+                cube.remove_coord(coord)
+            dataset_coord = iris.coords.AuxCoord(
+                dataset['dataset'], var_name='dataset', long_name='dataset')
+            cube.add_aux_coord(dataset_coord, [])
+
+            # nbp_grid and fgco2_grid: temporal integration
+            if var in ('nbp_grid', 'fgco2_grid'):
+                years = Unit('year')
+                seconds = Unit('s')
+                seconds_per_year = years.convert(10.0, seconds)
+                cube *= seconds_per_year
+                cube.units *= seconds
+
+            # Save cube
             dataset['cube'] = cube
 
-            print(cube)
-            print(cube.data)
-            print(cube.coord('time'))
-            print(cube.coord('decade'))
-    logger.info(pformat(grouped_data))
+            # Save maximum number of decades
+            exp = dataset['exp']
+            if (max_decades.get(exp, np.array([])).size <
+                    cube.coord('decade').shape[0]):
+                max_decades[exp] = cube.coord('decade').points
 
-    # Get maximum total number of decades
-    # try:
-    #     max_decades[exp] = max(max_decades[exp],
-    #                            len(cube.coord(DECADE).points))
-    # except KeyError:
-    #     max_decades[exp] = len(cube.coord(DECADE).points)
+    # Adapt time coordinate of 1pctCO2 run to historical run
+    for dataset in select_metadata(input_data, exp='1pctCO2'):
+        coord = dataset['cube'].coord('decade')
+        start_year = max_decades[hist_exp][0]
+        end_year = start_year + (coord.shape[0] - 1) * 10
+        coord.points = np.linspace(start_year, end_year, coord.shape[0])
 
-    # ###########################################################################
-    # # Process data
-    # ###########################################################################
-    # CO2EMISS = 'co2emiss'
-    # CO2EMISS_CUM = 'co2emiss_cum'
-    # MM_MEAN = 'Multimodel mean'
+    # Unify decade coordinates
+    for (exp, datasets) in group_metadata(input_data, 'exp').items():
+        cubes = [d['cube'] for d in datasets]
+        cubes = ih.unify_1d_cubes(cubes, 'decade')
+        for (idx, dataset) in enumerate(datasets):
+            dataset['cube'] = cubes[idx]
 
-    # # Append RCP85 scenarios to end of historical period (2005-2009)
-    # # tas: use weighted mean
-    # for m in data[VARS['TAS']][EXPS['HIST']]:
-    #     if (m not in data[VARS['TAS']][EXPS['RCP85']]):
-    #         continue
-    #     data[VARS['TAS']][EXPS['HIST']][m][-1] = (
-    #         hist_last_dec[m] * data[VARS['TAS']][EXPS['HIST']][m][-1] +
-    #         rcp85_first_dec[m] * data[VARS['TAS']][EXPS['RCP85']][m][0]) / \
-    #         (hist_last_dec[m] + rcp85_first_dec[m])
-    #     data[VARS['TAS']][EXPS['RCP85']][m] = np.delete(
-    #         data[VARS['TAS']][EXPS['RCP85']][m], 0)
-    #     decades[VARS['TAS']][EXPS['RCP85']][m] = np.delete(
-    #         decades[VARS['TAS']][EXPS['RCP85']][m], 0)
-    # max_decades[EXPS['RCP85']] -= 1
+    # Calculate temperature anomalies for 1pctCO2 and historical
+    # (relative to 1861-1880)
+    tas = {}
+    for (exp, datasets) in group_metadata(grouped_data['tas'], 'exp').items():
+        tas[exp] = {}
+        for dataset in datasets:
+            cube = dataset['cube'].copy()
 
-    # # Calculate temperature anomaly relative to base period
-    # # (including multi model mean and decades)
-    # for exp in data[VARS['TAS']]:
-    #     decades_mean = np.zeros(max_decades[exp])
-    #     tas_mean = np.zeros(max_decades[exp])
-    #     number_of_models = np.zeros(max_decades[exp])
-    #     for model in data[VARS['TAS']][exp]:
-    #         len_data = len(data[VARS['TAS']][exp][model])
-    #         tas_data = np.pad(data[VARS['TAS']][exp][model],
-    #                           (0, max_decades[exp]-len_data),
-    #                           'constant')
-    #         decade_data = np.pad(decades[VARS['TAS']][exp][model],
-    #                              (0, max_decades[exp]-len_data),
-    #                              'constant')
-    #         number_of_models += np.pad(np.ones(len_data),
-    #                                    (0, max_decades[exp]-len_data),
-    #                                    'constant')
+            # PiControl: relative to itself
+            if exp == '1pctCO2':
+                base_tas = np.ma.mean(cube.data[:2])
 
-    #         # Calculate mean
-    #         decades_mean += decade_data
-    #         tas_mean += tas_data
+            # Others: relative to historical run
+            else:
+                hist_data = select_metadata(
+                    grouped_data['tas'],
+                    exp=hist_exp,
+                    dataset=dataset['dataset'])
+                if not hist_data:
+                    logger.warning(
+                        "Temperature data for historical experiment of '%s' "
+                        "not available, skipping", dataset['dataset'])
+                    continue
+                base_tas = np.ma.mean(hist_data[0]['cube'].data[:2])
+            cube -= base_tas
 
-    #     decades_mean /= number_of_models
-    #     tas_mean /= number_of_models
+            # Drop first element for historical and 1pctCO2 run
+            if exp in (hist_exp, '1pctCO2'):
+                cube = cube[1:]
 
-    #     # Save tas relative to base period
-    #     base_tas = tas_mean[0]
-    #     for model in data[VARS['TAS']][exp]:
-    #         E.add_to_data(data, VARS['TAS'], exp, model,
-    #                       data[VARS['TAS']][exp][model]-base_tas, warn=False)
-    #     E.add_to_data(decades, VARS['TAS'], exp, MM_MEAN, decades_mean)
-    #     E.add_to_data(data, VARS['TAS'], exp, MM_MEAN, tas_mean-base_tas)
+            # For future runs, include one earlier decade to match hist
+            else:
+                decade_coord = iris.coords.DimCoord(
+                    np.insert(
+                        cube.coord('decade').points, 0,
+                        max_decades[hist_exp][-1]),
+                    var_name='decade',
+                    units='yr')
+                dataset_coord = iris.coords.AuxCoord(
+                    dataset['dataset'],
+                    var_name='dataset',
+                    long_name='dataset')
+                metadata = cube.metadata
+                cube = iris.cube.Cube(
+                    np.ma.hstack([0.0, cube.data]),
+                    dim_coords_and_dims=[(decade_coord, 0)],
+                    aux_coords_and_dims=[(dataset_coord, [])])
+                cube.metadata = metadata
+            cube.attributes['exp'] = exp
+            tas[exp][dataset['dataset']] = cube
 
-    # # Convert carbon fluxes to annual changes
-    # seconds = DEC * 365.0 * 24.0 * 3600.0  # Decade in seconds
+    # Calculate cumultive CO2 emissions for every experiment
+    # dC_E = dC_A + dC_L + dC_O = co2mass + nbp + fgco2
+    co2_emiss = {}
+    for (exp, datasets) in group_metadata(input_data, 'exp').items():
+        co2_emiss[exp] = {}
 
-    # # nbp (Note: units already in kgC, not kgCO2)
-    # for exp in data[VARS['NBP']]:
-    #     for model in data[VARS['NBP']][exp]:
-    #         data[VARS['NBP']][exp][model] *= seconds * \
-    #             areas[VARS['NBP']][exp][model] / 1E12
-    # units[VARS['NBP']] = 'GtC'
+        # CO2 mass is equal for every dataset
+        co2_mass_datasets = select_metadata(datasets, short_name='co2mass')
+        if co2_mass_datasets:
+            co2_mass = co2_mass_datasets[0]['cube']
+        else:
+            logger.warning("No 'co2mass' data found for exp '%s', skipping",
+                           exp)
+            continue
 
-    # # fgco2 (Note: units already in kgC, not kgCO2)
-    # for exp in data[VARS['FGCO2']]:
-    #     for model in data[VARS['FGCO2']][exp]:
-    #         data[VARS['FGCO2']][exp][model] *= seconds * \
-    #             areas[VARS['FGCO2']][exp][model] / 1E12
-    # units[VARS['FGCO2']] = 'GtC'
+        # nbp_grid and fgco2_grid
+        for (name, name_datasets) in group_metadata(datasets,
+                                                    'dataset').items():
+            data_avail = True
+            co2_emiss[exp][name] = co2_mass.copy()
+            for var in ('nbp_grid', 'fgco2_grid'):
+                var_data = select_metadata(name_datasets, short_name=var)
+                if not var_data:
+                    logger.warning(
+                        "No '%s' data available for experiment '%s' of '%s', "
+                        "skipping", var, exp, name)
+                    data_avail = False
+                else:
+                    co2_emiss[exp][name] += var_data[0]['cube'].data
+            if not data_avail:
+                co2_emiss[exp].pop(name)
+            else:
+                cube = co2_emiss[exp][name]
+                cube.data = cube.data.cumsum()
 
-    # # Convert CO2 mass changes from [kgCO2] to [GtC]
-    # for exp in data[VARS['CO2MASS']]:
-    #     data[VARS['CO2MASS']][exp][VARS['CO2MASS']] *= Constant.kgCO2_to_GtC
-    # units[VARS['CO2MASS']] = 'GtC'
+                # For historical run and 1pctCO2: relative to 1870
+                if exp in (hist_exp, '1pctCO2'):
+                    cube -= cube[0]
+                    cube = cube[1:]
 
-    # # Calculate annual CO2 emissions
-    # # dC_E = dC_A + dC_L + dC_L = co2mass + nbp + fgco2
-    # for exp in data[VARS['CO2MASS']]:
-    #     for model in data[VARS['NBP']][exp]:
-    #         co2emiss_data = data[VARS['CO2MASS']][exp][VARS['CO2MASS']] + \
-    #                         data[VARS['NBP']][exp][model] + \
-    #                         data[VARS['FGCO2']][exp][model]
-    #         E.add_to_data(data, CO2EMISS, exp, model, co2emiss_data)
-    # units[CO2EMISS] = 'GtC'
+                # For future runs, include one earlier decade to match hist
+                else:
+                    decade_coord = iris.coords.DimCoord(
+                        np.insert(
+                            cube.coord('decade').points, 0,
+                            max_decades[hist_exp][-1]),
+                        var_name='decade',
+                        units='yr')
+                    dataset_coord = iris.coords.AuxCoord(
+                        name, var_name='dataset', long_name='dataset')
+                    metadata = cube.metadata
+                    cube = iris.cube.Cube(
+                        np.ma.hstack([0.0, cube.data]),
+                        dim_coords_and_dims=[(decade_coord, 0)],
+                        aux_coords_and_dims=[(dataset_coord, [])])
+                    cube.metadata = metadata
+                cube.coord('dataset').points = name
+                cube.standard_name = None
+                cube.long_name = 'Anthropogenic CO2 emissions'
+                cube.convert_units('Gt')
+                cube.attributes['exp'] = exp
 
-    # # Append RCP85 scenarios to end of historical period (2005-2009)
-    # # co2emiss: simply add years
-    # for m in data[CO2EMISS][EXPS['HIST']]:
-    #     if (m not in data[CO2EMISS][EXPS['RCP85']]):
-    #         continue
-    #     data[CO2EMISS][EXPS['HIST']][m][-1] = (
-    #         data[CO2EMISS][EXPS['HIST']][m][-1] +
-    #         data[CO2EMISS][EXPS['RCP85']][m][0])
-    #     data[CO2EMISS][EXPS['RCP85']][m] = np.delete(
-    #         data[CO2EMISS][EXPS['RCP85']][m], 0)
+                # Save cube and experiment
+                cube.attributes['exp'] = exp
+                co2_emiss[exp][name] = cube
 
-    # # Calculate cumulative CO2 emissions (including multi model mean)
-    # for exp in data[CO2EMISS]:
-    #     co2emiss_cum_mean = np.zeros(max_decades[exp])
-    #     for model in data[CO2EMISS][exp]:
-    #         co2emiss_cum_data = np.cumsum(data[CO2EMISS][exp][model])
-    #         len_data = len(co2emiss_cum_data)
-    #         if (len_data < max_decades[exp]):
-    #             warning("Model {0} [{1}] does not ".format(model, exp) +
-    #                     "cover all decadces", verbosity, 0, exit_on_warning)
-    #             co2emiss_cum_data = np.pad(co2emiss_cum_data,
-    #                                        (0, max_decades[exp]-len_data),
-    #                                        'constant')
-    #         co2emiss_cum_mean += co2emiss_cum_data
-    #         E.add_to_data(data, CO2EMISS_CUM, exp, model, co2emiss_cum_data)
-    #     co2emiss_cum_mean /= len(data[CO2EMISS_CUM][exp])
+    # Calculate multi-model means
+    for dict_ in (tas, co2_emiss):
+        for exp in dict_:
+            cubes = iris.cube.CubeList(dict_[exp].values())
+            mmm_cube = cubes.merge_cube()
+            mmm_cube = mmm_cube.collapsed('dataset', iris.analysis.MEAN)
+            dict_[exp]['MultiModelMean'] = mmm_cube
 
-    #     # Save co2emiss_cum relative to base period
-    #     base_co2emiss_cum = co2emiss_cum_mean[0]
-    #     for model in data[CO2EMISS_CUM][exp]:
-    #         E.add_to_data(data, CO2EMISS_CUM, exp, model,
-    #                       data[CO2EMISS_CUM][exp][model]-base_co2emiss_cum,
-    #                       warn=False)
-    #     E.add_to_data(decades, CO2EMISS_CUM, exp, MM_MEAN,
-    #                   decades[VARS['TAS']][exp][MM_MEAN])
-    #     E.add_to_data(data, CO2EMISS_CUM, exp, MM_MEAN,
-    #                   co2emiss_cum_mean-base_co2emiss_cum)
-    # units[CO2EMISS_CUM] = 'GtC'
+    # Start future runs at temperature of historical run
+    for exp in tas:
+        if not exp.startswith('rcp'):
+            continue
+        for dataset in tas[exp]:
+            if dataset not in tas[hist_exp]:
+                logger.warning(
+                    "Temperature for historical experiment of '%s' not "
+                    "available, skipping", dataset)
+                tas[exp].pop(dataset)
+                continue
+            tas[exp][dataset].data[0] = tas[hist_exp][dataset].data[-1]
 
-    # # Start RCP scenarios at end of historical period
-    # for exp in data[VARS['TAS']]:
-    #     if (not exp.startswith('rcp')):
-    #         continue
-    #     for model in data[VARS['TAS']][exp]:
-    #         if (model not in data[VARS['TAS']][EXPS['HIST']]):
-    #             continue
-    #         tas_hist = data[VARS['TAS']][EXPS['HIST']][model][-1]
-    #         tas_rcp = data[VARS['TAS']][exp][model]
-    #         tas_rcp += tas_hist - tas_rcp[0]
-    # for exp in data[CO2EMISS_CUM]:
-    #     if (not exp.startswith('rcp')):
-    #         continue
-    #     for model in data[CO2EMISS_CUM][exp]:
-    #         if (model not in data[CO2EMISS_CUM][EXPS['HIST']]):
-    #             continue
-    #         co2emiss_cum_hist = data[CO2EMISS_CUM][EXPS['HIST']][model][-1]
-    #         co2emiss_cum_rcp = data[CO2EMISS_CUM][exp][model]
-    #         co2emiss_cum_rcp += co2emiss_cum_hist - co2emiss_cum_rcp[0]
+    # Start future runs at emission level of historical run
+    for exp in co2_emiss:
+        if not exp.startswith('rcp'):
+            continue
+        for dataset in co2_emiss[exp]:
+            if dataset not in co2_emiss[hist_exp]:
+                logger.warning(
+                    "CO2 emissions for historical experiment of '%s' not "
+                    "available, skipping", dataset)
+                co2_emiss[exp].pop(dataset)
+                continue
+            co2_emiss[exp][dataset].data += (
+                co2_emiss[hist_exp][dataset].data[-1])
 
-    # # Calculate ranges (with given model range)
-    # model_range = E.get_config_option(modelconfig, 'plot', 'model_range', 0.9)
+    # Calculate ranges (with given model range)
+    model_range = cfg.get('range', 1.0)
 
-    # # Calculate historical and RCP range
-    # tas_vs_co2emiss_cum_rcp = []
-    # for exp in EXPS.values():
-    #     if (exp == EXPS['1PCTCO2']):
-    #         continue
-    #     valid_models_tas = []
-    #     valid_models_co2emiss_cum = []
-    #     for model in data[VARS['TAS']][exp]:
-    #         if (model not in data[CO2EMISS_CUM][exp]):
-    #             continue
-    #         valid_models_tas.append(data[VARS['TAS']][exp][model])
-    #         valid_models_co2emiss_cum.append(data[CO2EMISS_CUM][exp][model])
-    #     valid_models_tas = np.stack(valid_models_tas, axis=-1)
-    #     valid_models_co2emiss_cum = np.stack(valid_models_co2emiss_cum,
-    #                                          axis=-1)
+    # Calculate historical and RCP range
+    hist_rcp_tas = []
+    hist_rcp_co2_emiss = []
+    for exp in tas:
+        if exp == '1pctCO2':
+            continue
+        valid_models_tas = []
+        valid_models_co2_emiss = []
+        for dataset in tas[exp]:
+            if dataset not in co2_emiss[exp]:
+                logger.warning(
+                    "For temperature data of '%s' of experiment '%s': no "
+                    "emission data available, skipping", dataset, exp)
+                continue
+            valid_models_tas.append(tas[exp][dataset].data)
+            valid_models_co2_emiss.append(co2_emiss[exp][dataset].data)
+        valid_models_tas = np.ma.array(valid_models_tas)
+        valid_models_co2_emiss = np.ma.array(valid_models_co2_emiss)
 
-    #     # Get desired range for every time step
-    #     for time_idx in xrange(len(valid_models_tas)):
-    #         time_slice = valid_models_tas[time_idx]
-    #         mean = np.mean(time_slice)
-    #         err = model_range * (np.amax(time_slice) - np.amin(time_slice)) * \
-    #             0.5
-    #         for idx in xrange(len(time_slice)):
-    #             tas_val = time_slice[idx]
-    #             if (tas_val < mean-err or tas_val > mean+err):
-    #                 continue
-    #             co2emiss_cum_val = valid_models_co2emiss_cum[time_idx][idx]
-    #             tas_vs_co2emiss_cum_rcp.append(np.array([co2emiss_cum_val,
-    #                                                      tas_val]))
+        # Get all points in desired range for every dataset
+        err = model_range * (np.ma.amax(valid_models_tas, axis=0) - np.ma.amin(
+            valid_models_tas, axis=0)) * 0.5
+        mean_tas = np.ma.mean(valid_models_tas, axis=0)
+        mean_co2_emiss = np.ma.mean(valid_models_co2_emiss, axis=0)
+        hist_rcp_tas.append(mean_tas - err)
+        hist_rcp_tas.append(mean_tas + err)
+        hist_rcp_co2_emiss.append(mean_co2_emiss)
+        hist_rcp_co2_emiss.append(mean_co2_emiss)
+    hist_rcp_tas = np.ma.hstack(hist_rcp_tas).ravel()
+    hist_rcp_co2_emiss = np.ma.hstack(hist_rcp_co2_emiss).ravel()
+    hist_rcp_points = np.ma.vstack([hist_rcp_co2_emiss, hist_rcp_tas])
+    hist_rcp_points = np.ma.swapaxes(hist_rcp_points, 0, 1)
+    hist_rcp_points = np.ma.compress_rows(hist_rcp_points)
+    hist_rcp_range = ConvexHull(hist_rcp_points)
 
-    # tas_vs_co2emiss_cum_rcp = np.array(tas_vs_co2emiss_cum_rcp)
-    # hist_rcp_range = scipy.spatial.ConvexHull(tas_vs_co2emiss_cum_rcp)
+    # Calculate 1pctCO2 range
+    exp = '1pctCO2'
+    onepct_tas = []
+    onepct_co2_emiss = []
+    valid_models_tas = []
+    valid_models_co2_emiss = []
+    for dataset in tas[exp]:
+        if dataset not in co2_emiss[exp]:
+            logger.warning(
+                "For temperature data of '%s' of experiment '%s': no "
+                "emission data available, skipping", dataset, exp)
+            continue
+        valid_models_tas.append(tas[exp][dataset].data)
+        valid_models_co2_emiss.append(co2_emiss[exp][dataset].data)
+    valid_models_tas = np.ma.array(valid_models_tas)
+    valid_models_co2_emiss = np.ma.array(valid_models_co2_emiss)
 
-    # # Calculate 1pctCO2 range
-    # tas_vs_co2emiss_cum_1pct = []
-    # for exp in EXPS.values():
-    #     if (exp != EXPS['1PCTCO2']):
-    #         continue
-    #     valid_models_tas = []
-    #     valid_models_co2emiss_cum = []
-    #     for model in data[VARS['TAS']][exp]:
-    #         if (model not in data[CO2EMISS_CUM][exp]):
-    #             continue
-    #         valid_models_tas.append(data[VARS['TAS']][exp][model])
-    #         valid_models_co2emiss_cum.append(data[CO2EMISS_CUM][exp][model])
-    #     valid_models_tas = np.stack(valid_models_tas, axis=-1)
-    #     valid_models_co2emiss_cum = np.stack(valid_models_co2emiss_cum,
-    #                                          axis=-1)
+    # Get all points in desired range for every dataset
+    err = model_range * (np.ma.amax(valid_models_tas, axis=0) - np.ma.amin(
+        valid_models_tas, axis=0)) * 0.5
+    mean_tas = np.ma.mean(valid_models_tas, axis=0)
+    mean_co2_emiss = np.ma.mean(valid_models_co2_emiss, axis=0)
+    onepct_tas.append(mean_tas - err)
+    onepct_tas.append(mean_tas + err)
+    onepct_co2_emiss.append(mean_co2_emiss)
+    onepct_co2_emiss.append(mean_co2_emiss)
+    onepct_tas = np.ma.hstack(onepct_tas).ravel()
+    onepct_co2_emiss = np.ma.hstack(onepct_co2_emiss).ravel()
+    onepct_points = np.ma.vstack([onepct_co2_emiss, onepct_tas])
+    onepct_points = np.ma.swapaxes(onepct_points, 0, 1)
+    onepct_points = np.ma.compress_rows(onepct_points)
+    onepct_range = ConvexHull(onepct_points)
 
-    #     # Get desired range for every time step
-    #     for time_idx in xrange(len(valid_models_tas)):
-    #         time_slice = valid_models_tas[time_idx]
-    #         mean = np.mean(time_slice)
-    #         err = model_range * (np.amax(time_slice) - np.amin(time_slice)) * \
-    #             0.5
-    #         for idx in xrange(len(time_slice)):
-    #             tas_val = time_slice[idx]
-    #             if (tas_val < mean-err or tas_val > mean+err):
-    #                 continue
-    #             co2emiss_cum_val = valid_models_co2emiss_cum[time_idx][idx]
-    #             tas_vs_co2emiss_cum_1pct.append(np.array([co2emiss_cum_val,
-    #                                                       tas_val]))
-    # tas_vs_co2emiss_cum_1pct = np.array(tas_vs_co2emiss_cum_1pct)
-    # onepctco2_range = scipy.spatial.ConvexHull(tas_vs_co2emiss_cum_1pct)
+    if cfg['write_plots']:
+        (fig, axes) = plt.subplots()
+        handles = []
 
-    # ###########################################################################
-    # # Plot data
-    # ###########################################################################
-    # if (write_plots):
-    #     E.ensure_directory(plot_dir)
-    #     style_file = E.get_path_to_mpl_style('small_font.mplstyle')
-    #     plt.style.use(style_file)
-    #     fig, ax = plt.subplots()
-    #     handles = []
+        # Plot 1pctco2 range
+        alph_1pctco2_range = 0.3
+        c_1pctco2_range = 'black'
+        axes.fill(
+            onepct_points[:, 0][onepct_range.vertices],
+            onepct_points[:, 1][onepct_range.vertices],
+            color=c_1pctco2_range,
+            alpha=alph_1pctco2_range,
+            linewidth=0.0)
 
-    #     # Plot 1pctco2 range
-    #     alph_1pctco2_range = 0.3
-    #     c_1pctco2_range = 'black'
-    #     ax.fill(tas_vs_co2emiss_cum_1pct[:, 0][onepctco2_range.vertices],
-    #             tas_vs_co2emiss_cum_1pct[:, 1][onepctco2_range.vertices],
-    #             color=c_1pctco2_range, alpha=alph_1pctco2_range, linewidth=0.0)
+        # Plot historical and rcp range
+        alph_hist_rcp_range = 0.3
+        c_hist_rcp_range = 'red'
+        axes.fill(
+            hist_rcp_points[:, 0][hist_rcp_range.vertices],
+            hist_rcp_points[:, 1][hist_rcp_range.vertices],
+            color=c_hist_rcp_range,
+            alpha=alph_hist_rcp_range,
+            linewidth=0.0)
 
-    #     # Plot historical and rcp range
-    #     alph_hist_rcp_range = 0.3
-    #     c_hist_rcp_range = 'red'
-    #     ax.fill(tas_vs_co2emiss_cum_rcp[:, 0][hist_rcp_range.vertices],
-    #             tas_vs_co2emiss_cum_rcp[:, 1][hist_rcp_range.vertices],
-    #             color=c_hist_rcp_range, alpha=alph_hist_rcp_range,
-    #             linewidth=0.0)
+        # Years which should be plotted
+        text_years = {
+            '1pctCO2': [],
+            hist_exp: [1890, 1950, 1980, 2000, 2010],
+            'rcp26': [2030, 2050, 2100],
+            'rcp45': [2030, 2050, 2100],
+            'rcp60': [2050, 2100],
+            'rcp85': [2050, 2100],
+        }
+        text_shifts = {
+            '1pctCO2': [],
+            hist_exp: [(20, -0.1), (-63, 0.14), (20, -0.12), (-160, 0.1),
+                       (-160, 0.1)],
+            'rcp26': [(-170, 0.1), (-150, 0.1), (0, -0.18)],
+            'rcp45': [(20, -0.1), (30, -0.08), (20, -0.1)],
+            'rcp60': [(20, -0.1), (40, 0)],
+            'rcp85': [(-170, 0.1), (40, 0)],
+        }
 
-    #     # Years which should be plotted
-    #     text_years = {EXPS['1PCTCO2']: [],
-    #                   EXPS['HIST']: [1890, 1950, 1980, 2000, 2010],
-    #                   EXPS['RCP26']: [2030, 2050, 2100],
-    #                   EXPS['RCP45']: [2030, 2050, 2100],
-    #                   EXPS['RCP60']: [2050, 2100],
-    #                   EXPS['RCP85']: [2050, 2100]}
-    #     text_shifts = {EXPS['1PCTCO2']: [],
-    #                    EXPS['HIST']: [(20, -0.1), (-63, 0.14), (20, -0.12),
-    #                                   (-160, 0.1), (-160, 0.1)],
-    #                    EXPS['RCP26']: [(-170, 0.1), (-150, 0.1), (0, -0.18)],
-    #                    EXPS['RCP45']: [(20, -0.1), (30, -0.08), (20, -0.1)],
-    #                    EXPS['RCP60']: [(20, -0.1), (40, 0)],
-    #                    EXPS['RCP85']: [(-170, 0.1), (40, 0)]}
+        # Plot all the selected models for all experiments
+        for exp in tas:
+            color = cfg.get(f'{exp}_color', 'red')
+            linewidth = cfg.get(f'{exp}_linewidth', 2)
+            marker = cfg.get(f'{exp}_marker', 'o')
+            label = cfg.get(f'{exp}_label', exp)
+            axes.plot(
+                co2_emiss[exp]['MultiModelMean'].data,
+                tas[exp]['MultiModelMean'].data,
+                color=color,
+                linewidth=linewidth,
+                marker=marker,
+                markerfacecolor=color,
+                markeredgecolor=color)
 
-    #     # Plot all the selected models for all experiments
-    #     for exp in EXPS.values():
-    #         c = E.get_config_option(modelconfig, exp, 'color', 'black')
-    #         lw = E.get_config_option(modelconfig, exp, 'linewidth', 1)
-    #         m = E.get_config_option(modelconfig, exp, 'marker', 'o')
-    #         lab = E.get_config_option(modelconfig, exp, 'label', 'Unknowm')
-    #         ax.plot(data[CO2EMISS_CUM][exp][MM_MEAN],
-    #                 data[VARS['TAS']][exp][MM_MEAN],
-    #                 color=c, linewidth=lw, marker=m,
-    #                 markerfacecolor=c, markeredgecolor=c)
+            # Append historical and RCPs to legend
+            if exp != '1pctCO2':
+                handles.append(
+                    mlines.Line2D([], [],
+                                  color=color,
+                                  label=label,
+                                  linewidth=linewidth))
 
-    #         # Append historical and RCPs to legend
-    #         if (exp != EXPS['1PCTCO2']):
-    #             handles.append(mlines.Line2D([], [], color=c, label=lab,
-    #                                          linewidth=lw))
+            # Add years
+            for idx in range(len(text_years[exp])):
+                txt_year = text_years[exp][idx]
+                try:
+                    x_idx = np.where(co2_emiss[exp]['MultiModelMean'].coord(
+                        'decade').points == txt_year)[0]
+                    y_idx = np.where(tas[exp]['MultiModelMean'].coord(
+                        'decade').points == txt_year)[0]
+                    x_pos = (co2_emiss[exp]['MultiModelMean'].data[x_idx][0] +
+                             text_shifts[exp][idx][0])
+                    y_pos = (tas[exp]['MultiModelMean'].data[y_idx][0] +
+                             text_shifts[exp][idx][1])
+                    axes.text(
+                        x_pos,
+                        y_pos,
+                        '{:d}'.format(txt_year),
+                        ha='left',
+                        va='center',
+                        color=color,
+                        fontsize='smaller')
+                except IndexError:
+                    pass
 
-    #         # Add years
-    #         for idx in xrange(len(text_years[exp])):
-    #             txt_year = text_years[exp][idx]
-    #             try:
-    #                 x_idx = np.where(
-    #                     decades[CO2EMISS_CUM][exp][MM_MEAN] == txt_year)[0]
-    #                 y_idx = np.where(
-    #                     decades[VARS['TAS']][exp][MM_MEAN] == txt_year)[0]
-    #                 x_pos = data[CO2EMISS_CUM][exp][MM_MEAN][x_idx][0] + \
-    #                     text_shifts[exp][idx][0]
-    #                 y_pos = data[VARS['TAS']][exp][MM_MEAN][y_idx][0] + \
-    #                     text_shifts[exp][idx][1]
-    #                 ax.text(x_pos, y_pos, '{:d}'.format(txt_year), ha='left',
-    #                         va='center', color=c, fontsize='smaller')
-    #             except IndexError:
-    #                 pass
+        # Append historical and RCP range to legend
+        handles.append(
+            mpatches.Patch(
+                color=c_hist_rcp_range,
+                alpha=alph_hist_rcp_range,
+                linewidth=0.0,
+                label='RCP range'))
 
-    #     # Append historical and RCP range to legend
-    #     handles.append(mpatches.Patch(color=c_hist_rcp_range,
-    #                                   alpha=alph_hist_rcp_range,
-    #                                   linewidth=0.0, label='RCP range'))
+        # Append 1pctCO2 to legend
+        color = cfg.get('1pctCO2_color', 'red')
+        linewidth = cfg.get('1pctCO2_linewidth', 2)
+        marker = cfg.get('1pctCO2_marker', 'o')
+        label = cfg.get('1pctCO2_label', '1pctCO2')
+        handles.append(
+            mlines.Line2D([], [],
+                          color=color,
+                          label=label,
+                          linewidth=linewidth))
+        handles.append(
+            mpatches.Patch(
+                color=c_1pctco2_range,
+                alpha=alph_1pctco2_range,
+                linewidth=0.0,
+                label=label + ' range'))
 
-    #     # Append 1pctCO2 to legend
-    #     c = E.get_config_option(modelconfig, EXPS['1PCTCO2'], 'color', 'black')
-    #     lw = E.get_config_option(modelconfig, EXPS['1PCTCO2'], 'linewidth', 1)
-    #     m = E.get_config_option(modelconfig, EXPS['1PCTCO2'], 'marker', 'o')
-    #     lab = E.get_config_option(modelconfig, EXPS['1PCTCO2'], 'label',
-    #                               EXPS['1PCTCO2'])
-    #     handles.append(mlines.Line2D([], [], color=c, label=lab, linewidth=lw))
-    #     handles.append(mpatches.Patch(color=c_1pctco2_range,
-    #                                   alpha=alph_1pctco2_range,
-    #                                   linewidth=0.0, label=lab+' range'))
+        # Create legend
+        legend = axes.legend(
+            handles=handles, loc='lower right', fontsize='smaller', ncol=2)
 
-    #     # Create legend
-    #     legend = ax.legend(handles=handles, loc='lower right',
-    #                        fontsize='smaller', ncol=2)
+        # General plot appearance
+        xlim_left = cfg.get('xlim_left', 0.0)
+        xlim_right = cfg.get('xlim_right', 2500.0)
+        ylim_top = cfg.get('ylim_top', 5.0)
+        axes.set_xlim(left=xlim_left, right=xlim_right)
+        axes.set_ylim(top=ylim_top)
+        axes.set_xlabel(r'Cumulative total anthropogenic CO$_2$ emissions '
+                        'from 1870 [GtC]')
+        axes.set_ylabel(
+            r'Temperature anomaly relative to 1861-1880 [$^\circ$C]')
 
-    #     # General plot appearance
-    #     sec = 'plot'
-    #     xlim_left = E.get_config_option(modelconfig, sec, 'xlim_left',
-    #                                     0.0)
-    #     xlim_right = E.get_config_option(modelconfig, sec, 'xlim_right',
-    #                                      2500.0)
-    #     ylim_top = E.get_config_option(modelconfig, sec, 'ylim_top',
-    #                                    5.0)
-    #     ax.set_xlim(left=xlim_left, right=xlim_right)
-    #     ax.set_ylim(top=ylim_top)
-    #     ax.set_xlabel(r"Cumulative total anthropogenic CO$_2$ emissions " +
-    #                   "from 1870 [GtC]")
-    #     ax.set_ylabel(r"Temperature anomaly relative to 1861-1880 [$^\circ$C]")
-
-    #     # Save file
-    #     filename = "TCRE" + "." + plot_file_type
-    #     filepath = os.path.join(plot_dir, filename)
-    #     info("Creating {0}".format(filepath), verbosity, 1)
-    #     fig.savefig(filepath, additional_artists=[legend],
-    #                 bbox_inches='tight', orientation='landscape')
-
-    #     plt.close()
+        # Save file
+        path = get_plot_filename('TCRE', cfg)
+        logger.info("Wrote %s", path)
+        fig.savefig(
+            path,
+            additional_artists=[legend],
+            bbox_inches='tight',
+            orientation='landscape')
+        plt.close()
 
 
 if __name__ == '__main__':
