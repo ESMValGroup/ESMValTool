@@ -581,6 +581,7 @@ class CustomInfo(CMIP5Info):
         cwd = os.path.dirname(os.path.realpath(__file__))
         self._cmor_folder = os.path.join(cwd, 'tables', 'custom')
         self.tables = {}
+        self.var_to_freq = {}
         table = TableInfo()
         table.name = 'custom'
         self.tables[table.name] = table
@@ -631,9 +632,20 @@ class CustomInfo(CMIP5Info):
             found, returns None if not
 
         """
-        return self.tables['custom'].get(short_name, None)
+        var_info = self.tables['custom'].get(short_name, None)
+        if var_info is not None:
+            var_info.frequency = self.var_to_freq[short_name]
+        return var_info
 
     def _read_table_file(self, table_file, table=None):
+        with open(table_file, 'r') as cmor_table:
+            all_lines = cmor_table.readlines()
+        all_lines = [x.strip() for x in all_lines]
+        keys_vals = [x.split(':') for x in all_lines]
+        var_frequency = None
+        for key in keys_vals:
+            if key[0] == 'frequency':
+                var_frequency = key[1].strip()
         with open(table_file) as self._current_table:
             self._read_line()
             while True:
@@ -648,7 +660,8 @@ class CustomInfo(CMIP5Info):
                     self.coords[value] = self._read_coordinate(value)
                     continue
                 elif key == 'variable_entry':
-                    table[value] = self._read_variable(value, None)
+                    self.var_to_freq[value] = var_frequency
+                    table[value] = self._read_variable(value, var_frequency)
                     continue
                 if not self._read_line():
                     return
