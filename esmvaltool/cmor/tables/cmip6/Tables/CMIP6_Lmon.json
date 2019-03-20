@@ -1,10 +1,10 @@
 {
     "Header": {
-        "data_specs_version": "01.00.30", 
-        "cmor_version": "3.4", 
+        "data_specs_version": "01.00.29", 
+        "cmor_version": "3.3", 
         "table_id": "Table Lmon", 
         "realm": "land", 
-        "table_date": "11 March 2019", 
+        "table_date": "13 December 2018", 
         "missing_value": "1e20", 
         "int_missing_value": "-999", 
         "product": "model-output", 
@@ -472,7 +472,7 @@
             "cell_methods": "area: mean where land over all_area_types time: mean", 
             "cell_measures": "area: areacella", 
             "long_name": "Natural Grass Area Percentage", 
-            "comment": "Percentage of entire grid cell that is covered by natural grass.", 
+            "comment": "Fraction of entire grid cell that is covered by natural grass.", 
             "dimensions": "longitude latitude time typenatgr", 
             "out_name": "grassFrac", 
             "type": "real", 

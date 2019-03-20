@@ -1,10 +1,10 @@
 {
     "Header": {
-        "data_specs_version": "01.00.30", 
-        "cmor_version": "3.4", 
+        "data_specs_version": "01.00.29", 
+        "cmor_version": "3.3", 
         "table_id": "Table E6hrZ", 
         "realm": "atmos", 
-        "table_date": "11 March 2019", 
+        "table_date": "13 December 2018", 
         "missing_value": "1e20", 
         "int_missing_value": "-999", 
         "product": "model-output", 
@@ -35,7 +35,7 @@
         "zmlwaero": {
             "frequency": "6hrPt", 
             "modeling_realm": "atmos", 
-            "standard_name": "tendency_of_air_temperature_due_to_longwave_heating_from_volcanic_ambient_aerosol_particles", 
+            "standard_name": "tendency_of_air_temperature_due_to_shortwave_heating_from_volcanic_ambient_aerosol_particles", 
             "units": "K s-1", 
             "cell_methods": "longitude: mean time: point", 
             "cell_measures": "", 
@@ -53,7 +53,7 @@
         "zmswaero": {
             "frequency": "6hrPt", 
             "modeling_realm": "atmos", 
-            "standard_name": "tendency_of_air_temperature_due_to_shortwave_heating_from_volcanic_ambient_aerosol_particles", 
+            "standard_name": "tendency_of_air_temperature_due_to_longwave_heating_from_volcanic_ambient_aerosol_particles", 
             "units": "K s-1", 
             "cell_methods": "longitude: mean time: point", 
             "cell_measures": "", 

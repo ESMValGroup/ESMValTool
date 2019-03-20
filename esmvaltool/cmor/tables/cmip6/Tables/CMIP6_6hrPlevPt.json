@@ -1,10 +1,10 @@
 {
     "Header": {
-        "data_specs_version": "01.00.30", 
-        "cmor_version": "3.4", 
+        "data_specs_version": "01.00.29", 
+        "cmor_version": "3.3", 
         "table_id": "Table 6hrPlevPt", 
         "realm": "atmos", 
-        "table_date": "11 March 2019", 
+        "table_date": "13 December 2018", 
         "missing_value": "1e20", 
         "int_missing_value": "-999", 
         "product": "model-output", 
@@ -195,15 +195,15 @@
             "ok_max_mean_abs": ""
         }, 
         "mrsol": {
-            "frequency": "6hrPt", 
+            "frequency": "6hr", 
             "modeling_realm": "land", 
             "standard_name": "mass_content_of_water_in_soil_layer", 
             "units": "kg m-2", 
-            "cell_methods": "area: mean time: point", 
+            "cell_methods": "area: mean where land time: point", 
             "cell_measures": "area: areacella", 
             "long_name": "Total Water Content of Soil Layer", 
             "comment": "in each soil layer, the mass of water in all phases, including ice.  Reported as 'missing' for grid cells occupied entirely by 'sea'", 
-            "dimensions": "longitude latitude sdepth time1", 
+            "dimensions": "longitude latitude time1 sdepth1", 
             "out_name": "mrsol", 
             "type": "real", 
             "positive": "", 
@@ -213,7 +213,7 @@
             "ok_max_mean_abs": ""
         }, 
         "mrsos": {
-            "frequency": "6hrPt", 
+            "frequency": "6hr", 
             "modeling_realm": "land", 
             "standard_name": "mass_content_of_water_in_soil_layer", 
             "units": "kg m-2", 
@@ -465,7 +465,7 @@
             "ok_max_mean_abs": ""
         }, 
         "tsl": {
-            "frequency": "6hrPt", 
+            "frequency": "6hr", 
             "modeling_realm": "land", 
             "standard_name": "soil_temperature", 
             "units": "K", 

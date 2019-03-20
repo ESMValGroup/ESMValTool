@@ -1,10 +1,10 @@
 {
     "Header": {
-        "data_specs_version": "01.00.30", 
-        "cmor_version": "3.4", 
+        "data_specs_version": "01.00.29", 
+        "cmor_version": "3.3", 
         "table_id": "Table EmonZ", 
         "realm": "atmos", 
-        "table_date": "11 March 2019", 
+        "table_date": "13 December 2018", 
         "missing_value": "1e20", 
         "int_missing_value": "-999", 
         "product": "model-output", 
@@ -183,7 +183,7 @@
             "units": "K s-1", 
             "cell_methods": "longitude: mean time: mean", 
             "cell_measures": "", 
-            "long_name": "Temperature Tendency Due to Non-Orographic Gravity Wave Dissipation", 
+            "long_name": "Temperature Tendency due to Non-orographic Gravity Wave Dissipation", 
             "comment": "Temperature tendency due to dissipation of parameterized nonorographic gravity waves.", 
             "dimensions": "latitude plev39 time", 
             "out_name": "tntnogw", 
