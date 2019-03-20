@@ -1,5 +1,5 @@
 ; #############################################################################
-; ESMValTool CMORizer for CDS-XCO2 data 
+; ESMValTool CMORizer for CDS-XCO2 data
 ; #############################################################################
 ;
 ; Tier
@@ -14,8 +14,8 @@
 ;
 ; Download and processing instructions
 ;    Select Processing level "Level 3", variable "Column-average dry-air mole
-;    fraction of atmospheric carbon dioxide (XCO2) and related variables", Sensor and
-;    algorithm "MERGED and OBS4MIPS".
+;    fraction of atmospheric carbon dioxide (XCO2) and related variables",
+;    Sensor and algorithm "MERGED and OBS4MIPS".
 ;    A registration is required to download the data.
 ;
 ; Modification history
