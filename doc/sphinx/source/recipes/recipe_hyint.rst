@@ -24,7 +24,6 @@ Available recipes and diagnostics
 Recipes are stored in recipes/
  
 * recipe_hyint.yml (evaluating the 6 hydroclimatic indices) 
-* recipe_hyintex.yml (also including a selection of ETCCDI indices)
  
 Diagnostics are stored in diag_scripts/hyint/
  
@@ -53,7 +52,7 @@ User settings
 
 * selfields: indices to be analysed and plotted. Select one or more fields from the following list (order-sensitive) as a numerical index: 1=SDII, 2=DSL, 3=WSL, 4=HY-INT, 5=ABS_INT, 6=ABS_DSL, 7=ABS_WSL, 8=PA, 9=R95
 
-* selregions: Select regions for timeseries and maps from the following list as a numerical index: 1=World, 2=World60 (60S/60N), 3=Tropics (30S/30N), 4=South 5=America, 6=Africa, 7=North America, 8=India, 9=Europe, 10=East-Asia, 11=Australia
+* selregions: Select regions for timeseries and maps from the following list as a numerical index: 1=World, 2=World60 (60S/60N), 3=Tropics (30S/30N), 4=South America, 5=Africa, 6=North America, 7=India, 8=Europe, 9=East-Asia, 10=Australia
 
 * plot_type: type of figures to be plotted. Select one or more from: 1=lon/lat maps per individual field/exp/multi-year mean, 2=lon/lat maps per individual field exp-ref-diff/multi-year mean, 3=lon/lat maps multi-field/exp-ref-diff/multi-year mean, 11=timeseries over required individual region/exp, 12=timeseries over multiple regions/exp, 13=timeseries with multiple models, 14=summary trend coefficients multiple regions, 15=summary trend coefficients multiple models
 
@@ -80,7 +79,7 @@ User settings
 #. Timeseries and trends
 
    * weight_tseries (true): adopt area weights in timeseries
-   * trend_years (false): (a) F=all; (b) c(year1,year2) to apply trend calculation and plotting only to a limited time interval (year1<=years<=year2); (c) c(year1,year2,year3,year4) to apply trend to two separate time intervals (year1<=y's<=year2) and (year3<=y's<=year4)
+   * trend_years (false): (a) false = apply trend to all years in dataset; (b) [year1, year2] to apply trend calculation and plotting only to a limited time interval
    * lm_trend (true): calculate linear trend
    * add_trend (true): add linear trend to plot
    * add_trend_sd (false): add dashed lines of stdev range to timeseries
