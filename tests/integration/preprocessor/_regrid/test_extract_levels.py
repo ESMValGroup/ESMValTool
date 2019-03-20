@@ -4,8 +4,6 @@ function.
 
 """
 
-from __future__ import absolute_import, division, print_function
-
 import unittest
 
 import iris
@@ -37,11 +35,6 @@ class Test(tests.Test):
         coord = self.cube.coord(axis='z', dim_coords=True)
         self.shape = list(self.cube.shape)
         [self.z_dim] = self.cube.coord_dims(coord)
-
-    def test_nop(self):
-        result = extract_levels(self.cube, None, None)
-        self.assertEqual(result, self.cube)
-        self.assertEqual(id(result), id(self.cube))
 
     def test_nop__levels_match(self):
         vcoord = _make_vcoord(self.z)

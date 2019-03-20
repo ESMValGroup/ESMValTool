@@ -1,30 +1,29 @@
 """Test diagnostic script runs."""
 import contextlib
-import os
 import sys
 from textwrap import dedent
 
 import pytest
 import yaml
+from six import text_type
 
 from esmvaltool._main import run
 
 
 def write_config_user_file(dirname):
-    config_file = os.path.join(dirname, 'config-user.yml')
+    config_file = dirname / 'config-user.yml'
     cfg = {
-        'output_dir': os.path.join(dirname, 'output_dir'),
+        'output_dir': str(dirname / 'output_dir'),
         'rootpath': {
-            'default': os.path.join(dirname, 'input_dir'),
+            'default': str(dirname / 'input_dir'),
         },
         'drs': {
             'CMIP5': 'BADC',
         },
         'log_level': 'debug',
     }
-    with open(config_file, 'w') as file:
-        yaml.safe_dump(cfg, file)
-    return config_file
+    config_file.write_text(yaml.safe_dump(cfg, encoding=None))
+    return str(config_file)
 
 
 @contextlib.contextmanager
@@ -37,8 +36,7 @@ def arguments(*args):
 
 def check(result_file):
     """Check the results."""
-    with open(result_file, 'r') as file:
-        result = yaml.safe_load(file)
+    result = yaml.safe_load(result_file.read_text())
 
     print(result)
 
@@ -94,20 +92,30 @@ SCRIPTS = {
         print(paste0("INFO    Writing settings to ", settings$setting_name))
         yaml::write_yaml(settings, settings$setting_name)
         """),
+    'diagnostic.jl':
+    dedent("""
+        import YAML
+        @info "Starting diagnostic script with" ARGS
+        config_file = ARGS[1]
+        cfg = YAML.load_file(config_file)
+        out_file = cfg["setting_name"]
+        @info "Copying file to" out_file
+        Base.Filesystem.cp(config_file, out_file)
+        @info "Done"
+    """),
 }
 
 
 @pytest.mark.install
 @pytest.mark.parametrize('script_file, script', SCRIPTS.items())
-def test_diagnostic_run(tmpdir, script_file, script):
+def test_diagnostic_run(tmp_path, script_file, script):
 
-    recipe_file = os.path.join(tmpdir, 'recipe_test.yml')
-    script_file = os.path.join(tmpdir, script_file)
-    result_file = os.path.join(tmpdir, 'result.yml')
+    recipe_file = tmp_path / 'recipe_test.yml'
+    script_file = tmp_path / script_file
+    result_file = tmp_path / 'result.yml'
 
     # Write script to file
-    with open(script_file, 'w') as file:
-        file.write(script)
+    script_file.write_text(text_type(script))
 
     # Create recipe
     recipe = dedent("""
@@ -122,11 +130,15 @@ def test_diagnostic_run(tmpdir, script_file, script):
                 script: {}
                 setting_name: {}
         """.format(script_file, result_file))
-    with open(recipe_file, 'w') as file:
-        file.write(recipe)
+    recipe_file.write_text(text_type(recipe))
 
-    config_user_file = write_config_user_file(tmpdir)
-    with arguments('esmvaltool', '-c', config_user_file, recipe_file):
+    config_user_file = write_config_user_file(tmp_path)
+    with arguments(
+            'esmvaltool',
+            '-c',
+            config_user_file,
+            str(recipe_file),
+    ):
         run()
 
     check(result_file)

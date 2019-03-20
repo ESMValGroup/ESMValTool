@@ -1,0 +1,25 @@
+SOURCE: obs4mips
+!============
+variable_entry:    husStderr
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     
+units:             1
+cell_methods:      time: mean
+cell_measures:     area: areacella
+long_name:         Specific Humidity Error
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude plevs time
+out_name:          husStderr
+type:              real
+valid_min:         -0.000299
+valid_max:         0.02841
+ok_min_mean_abs:   -0.0003539
+ok_max_mean_abs:   0.01041
+!----------------------------------
+!

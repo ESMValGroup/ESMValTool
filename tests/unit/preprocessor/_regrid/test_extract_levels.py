@@ -1,7 +1,5 @@
 """Unit tests for :func:`esmvaltool.preprocessor.regrid.extract_levels`."""
 
-from __future__ import absolute_import, division, print_function
-
 import unittest
 
 import iris
@@ -31,22 +29,6 @@ class Test(tests.Test):
             'linear', 'nearest', 'linear_horizontal_extrapolate_vertical',
             'nearest_horizontal_extrapolate_vertical'
         ]
-
-    def test_nop(self):
-        cube = mock.sentinel.cube
-        result = extract_levels(cube, None, None)
-        self.assertEqual(result, cube)
-
-    def test_invalid_levels__None(self):
-        emsg = 'Target levels must be specified'
-        with self.assertRaisesRegex(ValueError, emsg):
-            extract_levels(self.cube, None, 'linear')
-
-    def test_invalid_scheme__None(self):
-        levels = mock.sentinel.levels
-        emsg = 'A scheme must be specified'
-        with self.assertRaisesRegex(ValueError, emsg):
-            extract_levels(self.cube, levels, None)
 
     def test_invalid_scheme__unknown(self):
         levels = mock.sentinel.levels

@@ -5,7 +5,7 @@ documentation:
   description: |
     Recipe that runs the Autoassess Land-surface assessment area diagnostic.
     Climatological files are stored externally to avoid overloading the
-    ESMValTool source. See /group_workspaces/jasmin4/esmeval/for_vp/obs_etc
+    ESMValTool source. See /group_workspaces/jasmin4/esmeval/autoassess_specific_files
     (on JASMIN).
     Missing variable mass_fraction_of_unfrozen_water_in_soil_moisture and
     mass_fraction_of_frozen_water_in_soil_moisture.
@@ -32,7 +32,6 @@ diagnostics:
     variables:
       mrsos: # moisture_content_of_soil_layer
         mip: Lmon
-        field: T2Ms
       # TODO: mass_fraction_of_unfrozen_water_in_soil_moisture
       # TODO: mass_fraction_of_frozen_water_in_soil_moisture
     scripts:
@@ -45,7 +44,7 @@ diagnostics:
         obs_models: []
         start: 1997/12/01
         end: 2002/12/01
-        climfiles_root: '/group_workspaces/jasmin4/esmeval/for_vp/obs_etc'
+        climfiles_root: '/group_workspaces/jasmin4/esmeval/autoassess_specific_files/files'
 
   plot_standard:
     description: Wrapper to collect and plot previously calculated metrics
