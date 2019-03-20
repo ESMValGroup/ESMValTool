@@ -72,7 +72,6 @@ requirements:
     - jasper!=1.900.31  # pinned NCL dependency
     - r-base
     - cdo
-    # TODO: add julia
 
 test:
   # TODO: add unit tests? This seems to require installing the tests
