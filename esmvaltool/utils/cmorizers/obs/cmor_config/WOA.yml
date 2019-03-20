@@ -4,15 +4,13 @@ proj:
   dataset: 'WOA'
   version: '2013v2'
   realm: 'clim'
-  field: 'TO3Y'
-  frequency: {
-        'thetao': 'Omon',
-        'so': 'Omon',
-        'no3': 'Oyr',
-        'po4': 'Oyr',
-        'si': 'Oyr',
-        'o2': 'Oyr'
-    }
+  frequency:
+    'thetao': 'Omon'
+    'so': 'Omon'
+    'no3': 'Oyr'
+    'po4': 'Oyr'
+    'si': 'Oyr'
+    'o2': 'Oyr'
   metadata_attributes:
     tier: '2'
     source: 'https://data.nodc.noaa.gov/woa/WOA13/DATAv2/'
