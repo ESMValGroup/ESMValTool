@@ -44,7 +44,6 @@ diagnostics:
         project: CMIP5
         ensemble: r1i1p1
         mip: Amon
-        field: T2Ms
         exp: [historical, rcp85]
         start_year: 1880
         end_year: 2015

@@ -42,7 +42,6 @@ diagnostics:
     variables:
       ta:
         preprocessor: preprocessor_1
-        field: T3M
         reference_dataset: ERA-Interim
         fx_files: [sftlf]
     additional_datasets:
