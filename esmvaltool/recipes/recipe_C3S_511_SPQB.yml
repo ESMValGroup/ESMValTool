@@ -52,66 +52,66 @@ diagnostics:
         mip: Amon
         
     scripts:
-      diag_O_info:
+      diag_O_info: # lazy
         script: qualassess/DUMMY_C3S_511_SPQB.py
-        requests: [info, GCOS]
+        requests: [info, GCOS] # GCOS depending on info data. If not called here, it stays blank
 
-#      diag_O_avail:
+#      diag_O_avail: # not lazy
 #        script: qualassess/DUMMY_C3S_511_SPQB.py
 #        requests: [availability]
 #        levels: [3.00e+04,8.50e+04,1.00e+02]
 
-#      diag_O_hist:
+#      diag_O_hist: # not lazy
 #        script: qualassess/DUMMY_C3S_511_SPQB.py
 #        requests: [histogram]
 #        levels: [3.00e+04,8.50e+04,1.00e+02]
 
-#      diag_MV_ts:
+#      diag_MV_ts: # lazy
 #        script: qualassess/DUMMY_C3S_511_SPQB.py
 #        requests: [time_series]
 #        levels: [3.00e+04,8.50e+04,1.00e+02]
 
-      diag_MV_mean:
-        script: qualassess/DUMMY_C3S_511_SPQB.py
+      diag_MV_mean: # lazy
+        script: qualassess/DUMMY_C3S_511_SPQB.py 
         requests: [mean]
 #        levels: [3.00e+04,8.50e+04,1.00e+02]
 
-#      diag_MV_std_dev:
+#      diag_MV_std_dev: # not lazy
 #        script: qualassess/DUMMY_C3S_511_SPQB.py
 #        requests: [std_dev]
 #        levels: [3.00e+04,8.50e+04,1.00e+02]
 
-#      diag_MV_perc:
+#      diag_MV_perc: # not lazy
 #        script: qualassess/DUMMY_C3S_511_SPQB.py
 #        requests: [percentiles]
 #        levels: [3.00e+04,8.50e+04,1.00e+02]
 
-#      diag_MV_clim:
+#      diag_MV_clim: # lazy
 #        script: qualassess/DUMMY_C3S_511_SPQB.py
 #        requests: [climatology]
 #        levels: [3.00e+04,8.50e+04,1.00e+02]
 
-#      diag_MV_anom:
+#      diag_MV_anom: # lazy
 #        script: qualassess/DUMMY_C3S_511_SPQB.py
 #        requests: [anomalies]
 #        levels: [3.00e+04,8.50e+04,1.00e+02]
 
-#      diag_T_trend:
+#      diag_T_trend: # not lazy
 #        script: qualassess/DUMMY_C3S_511_SPQB.py
 #        requests: [lintrend]
 #        levels: [3.00e+04,8.50e+04,1.00e+02]
 
-#      diag_custom:
+#      diag_custom: # ECV specific developer's choice
 #        script: qualassess/DUMMY_C3S_511_SPQB.py
 #        requests: [custom]
 #        levels: [3.00e+04,8.50e+04,1.00e+02]
 
-      diag_tables:
+      diag_tables: # lazy
         script: qualassess/DUMMY_C3S_511_SPQB.py
 #        requests: [SMM, GCOS, ESM]
         requests: [SMM, ESM]
 
-      report:
+      report: # lazy
         script: qualassess/DUMMY_C3S_511_SPQB.py
         ancestors: ['xch4', '*/diag_*']
         requests: [report]
