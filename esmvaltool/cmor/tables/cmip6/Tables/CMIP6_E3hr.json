@@ -1,30 +1,29 @@
 {
     "Header": {
-        "data_specs_version": "01.00.29", 
-        "cmor_version": "3.3", 
+        "data_specs_version": "01.00.10", 
         "table_id": "Table E3hr", 
-        "realm": "land", 
-        "table_date": "13 December 2018", 
+        "realm": "atmos", 
+        "frequency": "3hr", 
+        "cmor_version": "3.2", 
+        "table_date": "10 May 2017", 
         "missing_value": "1e20", 
-        "int_missing_value": "-999", 
         "product": "model-output", 
         "approx_interval": "0.125000", 
-        "generic_levels": "alevel alevhalf", 
+        "generic_levels": "alevel", 
         "mip_era": "CMIP6", 
-        "Conventions": "CF-1.7 CMIP-6.2"
+        "Conventions": "CF-1.7 CMIP-6.0"
     }, 
     "variable_entry": {
-        "clivi": {
-            "frequency": "3hr", 
+        "clisccp": {
             "modeling_realm": "atmos", 
-            "standard_name": "atmosphere_mass_content_of_cloud_ice", 
-            "units": "kg m-2", 
+            "standard_name": "cloud_area_fraction_in_atmosphere_layer", 
+            "units": "%", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
-            "long_name": "Ice Water Path", 
-            "comment": "mass of ice water in the column divided by the area of the column (not just the area of the cloudy portion of the column). Includes precipitating frozen hydrometeors ONLY if the precipitating hydrometeor affects the calculation of radiative transfer in model.", 
-            "dimensions": "longitude latitude time", 
-            "out_name": "clivi", 
+            "long_name": "ISCCP Percentage Cloud Area", 
+            "comment": "Percentage cloud cover in optical depth categories.", 
+            "dimensions": "longitude latitude plev7c tau time", 
+            "out_name": "clisccp", 
             "type": "real", 
             "positive": "", 
             "valid_min": "", 
@@ -32,10 +31,26 @@
             "ok_min_mean_abs": "", 
             "ok_max_mean_abs": ""
         }, 
-        "clwvi": {
-            "frequency": "3hr", 
+        "clivi": {
             "modeling_realm": "atmos", 
-            "standard_name": "atmosphere_mass_content_of_cloud_condensed_water", 
+            "standard_name": "atmosphere_cloud_ice_content", 
+            "units": "kg m-2", 
+            "cell_methods": "area: time: mean", 
+            "cell_measures": "area: areacella", 
+            "long_name": "Ice Water Path", 
+            "comment": "mass of ice water in the column divided by the area of the column (not just the area of the cloudy portion of the column). Includes precipitating frozen hydrometeors ONLY if the precipitating hydrometeor affects the calculation of radiative transfer in model.", 
+            "dimensions": "longitude latitude time", 
+            "out_name": "clivi", 
+            "type": "", 
+            "positive": "", 
+            "valid_min": "", 
+            "valid_max": "", 
+            "ok_min_mean_abs": "", 
+            "ok_max_mean_abs": ""
+        }, 
+        "clwvi": {
+            "modeling_realm": "atmos", 
+            "standard_name": "atmosphere_cloud_condensed_water_content", 
             "units": "kg m-2", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
@@ -51,27 +66,25 @@
             "ok_max_mean_abs": ""
         }, 
         "gpp": {
-            "frequency": "3hr", 
             "modeling_realm": "land", 
             "standard_name": "gross_primary_productivity_of_biomass_expressed_as_carbon", 
             "units": "kg m-2 s-1", 
             "cell_methods": "area: mean where land time: mean", 
             "cell_measures": "area: areacella", 
-            "long_name": "Carbon Mass Flux out of Atmosphere Due to Gross Primary Production on Land", 
-            "comment": "The rate of synthesis of biomass from inorganic precursors by autotrophs ('producers') expressed as the mass of carbon which it contains. For example, photosynthesis in plants or phytoplankton. The producers also respire some of this biomass and the difference is referred to as the net primary production. ", 
+            "long_name": "Carbon Mass Flux out of Atmosphere due to Gross Primary Production on Land", 
+            "comment": "", 
             "dimensions": "longitude latitude time", 
             "out_name": "gpp", 
             "type": "real", 
-            "positive": "", 
+            "positive": "down", 
             "valid_min": "", 
             "valid_max": "", 
             "ok_min_mean_abs": "", 
             "ok_max_mean_abs": ""
         }, 
         "prcsh": {
-            "frequency": "3hr", 
             "modeling_realm": "atmos", 
-            "standard_name": "shallow_convective_precipitation_flux", 
+            "standard_name": "hallow_convective_precipitation_flux", 
             "units": "kg m-2 s-1", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
@@ -79,7 +92,7 @@
             "comment": "Convection precipitation from shallow convection", 
             "dimensions": "longitude latitude time", 
             "out_name": "prcsh", 
-            "type": "real", 
+            "type": "", 
             "positive": "", 
             "valid_min": "", 
             "valid_max": "", 
@@ -87,14 +100,13 @@
             "ok_max_mean_abs": ""
         }, 
         "prra": {
-            "frequency": "3hr", 
             "modeling_realm": "atmos", 
             "standard_name": "rainfall_flux", 
             "units": "kg m-2 s-1", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
-            "long_name": "Rainfall Flux", 
-            "comment": "In accordance with common usage in geophysical disciplines, 'flux' implies per unit area, called 'flux density' in physics.", 
+            "long_name": "Rainfall Flux where Ice Free Ocean over Sea", 
+            "comment": "", 
             "dimensions": "longitude latitude time", 
             "out_name": "prra", 
             "type": "real", 
@@ -105,17 +117,16 @@
             "ok_max_mean_abs": ""
         }, 
         "prrc": {
-            "frequency": "3hr", 
             "modeling_realm": "atmos", 
             "standard_name": "convective_rainfall_flux", 
             "units": "kg m-2 s-1", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
-            "long_name": "Convective Rainfall Rate", 
-            "comment": "In accordance with common usage in geophysical disciplines, 'flux' implies per unit area, called 'flux density' in physics.", 
+            "long_name": "Convective Rainfall rate", 
+            "comment": "", 
             "dimensions": "longitude latitude time", 
             "out_name": "prrc", 
-            "type": "real", 
+            "type": "", 
             "positive": "", 
             "valid_min": "", 
             "valid_max": "", 
@@ -123,7 +134,6 @@
             "ok_max_mean_abs": ""
         }, 
         "prsnc": {
-            "frequency": "3hr", 
             "modeling_realm": "atmos", 
             "standard_name": "convective_snowfall_flux", 
             "units": "kg m-2 s-1", 
@@ -141,9 +151,8 @@
             "ok_max_mean_abs": ""
         }, 
         "prw": {
-            "frequency": "3hr", 
             "modeling_realm": "atmos", 
-            "standard_name": "atmosphere_mass_content_of_water_vapor", 
+            "standard_name": "atmosphere_water_vapor_content", 
             "units": "kg m-2", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
@@ -159,9 +168,8 @@
             "ok_max_mean_abs": ""
         }, 
         "psl": {
-            "frequency": "3hr", 
             "modeling_realm": "atmos", 
-            "standard_name": "air_pressure_at_mean_sea_level", 
+            "standard_name": "air_pressure_at_sea_level", 
             "units": "Pa", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
@@ -177,13 +185,12 @@
             "ok_max_mean_abs": ""
         }, 
         "ra": {
-            "frequency": "3hr", 
             "modeling_realm": "land", 
-            "standard_name": "surface_upward_mass_flux_of_carbon_dioxide_expressed_as_carbon_due_to_plant_respiration", 
+            "standard_name": "plant_respiration_carbon_flux", 
             "units": "kg m-2 s-1", 
             "cell_methods": "area: mean where land time: mean", 
             "cell_measures": "area: areacella", 
-            "long_name": "Carbon Mass Flux into Atmosphere Due to Autotrophic (Plant) Respiration on Land", 
+            "long_name": "Carbon Mass Flux into Atmosphere due to Autotrophic (Plant) Respiration on Land", 
             "comment": "Carbon mass flux per unit area into atmosphere due to autotrophic respiration on land (respiration by producers) [see rh for heterotrophic production]", 
             "dimensions": "longitude latitude time", 
             "out_name": "ra", 
@@ -195,13 +202,12 @@
             "ok_max_mean_abs": ""
         }, 
         "rh": {
-            "frequency": "3hr", 
             "modeling_realm": "land", 
-            "standard_name": "surface_upward_mass_flux_of_carbon_dioxide_expressed_as_carbon_due_to_heterotrophic_respiration", 
+            "standard_name": "heterotrophic_respiration_carbon_flux", 
             "units": "kg m-2 s-1", 
             "cell_methods": "area: mean where land time: mean", 
             "cell_measures": "area: areacella", 
-            "long_name": "Carbon Mass Flux into Atmosphere Due to Heterotrophic Respiration on Land", 
+            "long_name": "Carbon Mass Flux into Atmosphere due to Heterotrophic Respiration on Land", 
             "comment": "Carbon mass flux per unit area into atmosphere due to heterotrophic respiration on land (respiration by consumers)", 
             "dimensions": "longitude latitude time", 
             "out_name": "rh", 
@@ -213,17 +219,16 @@
             "ok_max_mean_abs": ""
         }, 
         "rlut": {
-            "frequency": "3hr", 
             "modeling_realm": "atmos", 
             "standard_name": "toa_outgoing_longwave_flux", 
             "units": "W m-2", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
-            "long_name": "TOA Outgoing Longwave Radiation", 
+            "long_name": "TOA Outgoing Longwave Radiatio", 
             "comment": "at the top of the atmosphere (to be compared with satellite measurements)", 
             "dimensions": "longitude latitude time", 
             "out_name": "rlut", 
-            "type": "real", 
+            "type": "", 
             "positive": "up", 
             "valid_min": "", 
             "valid_max": "", 
@@ -231,17 +236,16 @@
             "ok_max_mean_abs": ""
         }, 
         "rlutcs": {
-            "frequency": "3hr", 
             "modeling_realm": "atmos", 
             "standard_name": "toa_outgoing_longwave_flux_assuming_clear_sky", 
             "units": "W m-2", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
-            "long_name": "TOA Outgoing Clear-Sky Longwave Radiation", 
-            "comment": "Upwelling clear-sky longwave radiation at top of atmosphere", 
+            "long_name": "TOA Outgoing Clear-sky Longwave Radiation", 
+            "comment": "", 
             "dimensions": "longitude latitude time", 
             "out_name": "rlutcs", 
-            "type": "real", 
+            "type": "", 
             "positive": "up", 
             "valid_min": "", 
             "valid_max": "", 
@@ -249,7 +253,6 @@
             "ok_max_mean_abs": ""
         }, 
         "rsdt": {
-            "frequency": "3hr", 
             "modeling_realm": "atmos", 
             "standard_name": "toa_incoming_shortwave_flux", 
             "units": "W m-2", 
@@ -267,17 +270,16 @@
             "ok_max_mean_abs": ""
         }, 
         "rsut": {
-            "frequency": "3hr", 
             "modeling_realm": "atmos", 
             "standard_name": "toa_outgoing_shortwave_flux", 
             "units": "W m-2", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
-            "long_name": "TOA Outgoing Shortwave Radiation", 
+            "long_name": "Top-of-Atmosphere Outgoing Shortwave Radiation", 
             "comment": "at the top of the atmosphere", 
             "dimensions": "longitude latitude time", 
             "out_name": "rsut", 
-            "type": "real", 
+            "type": "", 
             "positive": "up", 
             "valid_min": "", 
             "valid_max": "", 
@@ -285,7 +287,6 @@
             "ok_max_mean_abs": ""
         }, 
         "rsutcs": {
-            "frequency": "3hr", 
             "modeling_realm": "atmos", 
             "standard_name": "toa_outgoing_shortwave_flux_assuming_clear_sky", 
             "units": "W m-2", 
@@ -295,7 +296,7 @@
             "comment": "Calculated in the absence of clouds.", 
             "dimensions": "longitude latitude time", 
             "out_name": "rsutcs", 
-            "type": "real", 
+            "type": "", 
             "positive": "up", 
             "valid_min": "", 
             "valid_max": "", 
@@ -303,7 +304,6 @@
             "ok_max_mean_abs": ""
         }, 
         "sfcWind": {
-            "frequency": "3hr", 
             "modeling_realm": "atmos", 
             "standard_name": "wind_speed", 
             "units": "m s-1", 
@@ -321,7 +321,6 @@
             "ok_max_mean_abs": ""
         }, 
         "uas": {
-            "frequency": "3hr", 
             "modeling_realm": "atmos", 
             "standard_name": "eastward_wind", 
             "units": "m s-1", 
@@ -331,7 +330,7 @@
             "comment": "Eastward component of the near-surface (usually, 10 meters)  wind", 
             "dimensions": "longitude latitude time height10m", 
             "out_name": "uas", 
-            "type": "real", 
+            "type": "float", 
             "positive": "", 
             "valid_min": "", 
             "valid_max": "", 
@@ -339,7 +338,6 @@
             "ok_max_mean_abs": ""
         }, 
         "vas": {
-            "frequency": "3hr", 
             "modeling_realm": "atmos", 
             "standard_name": "northward_wind", 
             "units": "m s-1", 

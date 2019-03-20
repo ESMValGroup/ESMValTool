@@ -1,28 +1,27 @@
 {
     "Header": {
-        "data_specs_version": "01.00.29", 
-        "cmor_version": "3.3", 
+        "data_specs_version": "01.00.10", 
         "table_id": "Table Oclim", 
         "realm": "ocean", 
-        "table_date": "13 December 2018", 
+        "frequency": "monClim", 
+        "cmor_version": "3.2", 
+        "table_date": "10 May 2017", 
         "missing_value": "1e20", 
-        "int_missing_value": "-999", 
         "product": "model-output", 
         "approx_interval": "30.00000", 
         "generic_levels": "olevel", 
         "mip_era": "CMIP6", 
-        "Conventions": "CF-1.7 CMIP-6.2"
+        "Conventions": "CF-1.7 CMIP-6.0"
     }, 
     "variable_entry": {
         "difmxybo": {
-            "frequency": "monC", 
             "modeling_realm": "ocean", 
             "standard_name": "ocean_momentum_xy_biharmonic_diffusivity", 
             "units": "m4 s-1", 
             "cell_methods": "area: mean time: mean within years time: mean over years", 
             "cell_measures": "area: areacello volume: volcello", 
             "long_name": "Ocean Momentum XY Biharmonic Diffusivity", 
-            "comment": "Lateral biharmonic viscosity applied to the momentum equations.", 
+            "comment": "Lateral biharmonic viscosity applied to the momentum equitions.", 
             "dimensions": "longitude latitude olevel time2", 
             "out_name": "difmxybo", 
             "type": "real", 
@@ -33,14 +32,13 @@
             "ok_max_mean_abs": ""
         }, 
         "difmxybo2d": {
-            "frequency": "monC", 
             "modeling_realm": "ocean", 
             "standard_name": "ocean_momentum_xy_biharmonic_diffusivity", 
             "units": "m4 s-1", 
             "cell_methods": "area: mean time: mean within years time: mean over years", 
             "cell_measures": "area: areacello", 
             "long_name": "Ocean Momentum XY Biharmonic Diffusivity", 
-            "comment": "Lateral biharmonic viscosity applied to the momentum equations.", 
+            "comment": "Lateral biharmonic viscosity applied to the momentum equitions.", 
             "dimensions": "longitude latitude time2", 
             "out_name": "difmxybo", 
             "type": "real", 
@@ -51,14 +49,13 @@
             "ok_max_mean_abs": ""
         }, 
         "difmxylo": {
-            "frequency": "monC", 
             "modeling_realm": "ocean", 
             "standard_name": "ocean_momentum_xy_laplacian_diffusivity", 
             "units": "m2 s-1", 
             "cell_methods": "area: mean time: mean within years time: mean over years", 
             "cell_measures": "area: areacello volume: volcello", 
             "long_name": "Ocean Momentum XY Laplacian Diffusivity", 
-            "comment": "Lateral Laplacian viscosity applied to the momentum equations.", 
+            "comment": "Lateral Laplacian viscosity applied to the momentum equitions.", 
             "dimensions": "longitude latitude olevel time2", 
             "out_name": "difmxylo", 
             "type": "real", 
@@ -69,14 +66,13 @@
             "ok_max_mean_abs": ""
         }, 
         "difmxylo2d": {
-            "frequency": "monC", 
             "modeling_realm": "ocean", 
             "standard_name": "ocean_momentum_xy_laplacian_diffusivity", 
             "units": "m2 s-1", 
             "cell_methods": "area: mean time: mean within years time: mean over years", 
             "cell_measures": "area: areacello", 
             "long_name": "Ocean Momentum XY Laplacian Diffusivity", 
-            "comment": "Lateral Laplacian viscosity applied to the momentum equations.", 
+            "comment": "Lateral Laplacian viscosity applied to the momentum equitions.", 
             "dimensions": "longitude latitude time2", 
             "out_name": "difmxylo", 
             "type": "real", 
@@ -87,14 +83,13 @@
             "ok_max_mean_abs": ""
         }, 
         "diftrbbo": {
-            "frequency": "monC", 
             "modeling_realm": "ocean", 
-            "standard_name": "ocean_tracer_biharmonic_diffusivity_due_to_parameterized_mesoscale_eddy_advection", 
+            "standard_name": "ocean_tracer_bolus_biharmonic_diffusivity", 
             "units": "m4 s-1", 
             "cell_methods": "area: mean time: mean within years time: mean over years", 
             "cell_measures": "area: areacello volume: volcello", 
             "long_name": "Ocean Tracer Bolus Biharmonic Diffusivity", 
-            "comment": "Parameterized mesoscale eddy advection occurs on a spatial scale of many tens of kilometres and an evolutionary time of weeks(sometimes called bolus advection). Reference: James C. McWilliams 2016, Submesoscale currents in the ocean, Proceedings of the Royal Society A: Mathematical, Physical and Engineering Sciences, volume 472, issue 2189. DOI: 10.1098/rspa.2016.0117. ", 
+            "comment": "", 
             "dimensions": "longitude latitude olevel time2", 
             "out_name": "diftrbbo", 
             "type": "real", 
@@ -105,14 +100,13 @@
             "ok_max_mean_abs": ""
         }, 
         "diftrbbo2d": {
-            "frequency": "monC", 
             "modeling_realm": "ocean", 
-            "standard_name": "ocean_tracer_biharmonic_diffusivity_due_to_parameterized_mesoscale_eddy_advection", 
+            "standard_name": "ocean_tracer_bolus_biharmonic_diffusivity", 
             "units": "m4 s-1", 
             "cell_methods": "area: mean time: mean within years time: mean over years", 
             "cell_measures": "area: areacello", 
             "long_name": "Ocean Tracer Bolus Biharmonic Diffusivity", 
-            "comment": "Parameterized mesoscale eddy advection occurs on a spatial scale of many tens of kilometres and an evolutionary time of weeks(sometimes called bolus advection). Reference: James C. McWilliams 2016, Submesoscale currents in the ocean, Proceedings of the Royal Society A: Mathematical, Physical and Engineering Sciences, volume 472, issue 2189. DOI: 10.1098/rspa.2016.0117. ", 
+            "comment": "", 
             "dimensions": "longitude latitude time2", 
             "out_name": "diftrbbo", 
             "type": "real", 
@@ -123,13 +117,12 @@
             "ok_max_mean_abs": ""
         }, 
         "diftrblo": {
-            "frequency": "monC", 
             "modeling_realm": "ocean", 
-            "standard_name": "ocean_tracer_laplacian_diffusivity_due_to_parameterized_mesoscale_eddy_advection", 
+            "standard_name": "ocean_tracer_bolus_laplacian_diffusivity", 
             "units": "m2 s-1", 
             "cell_methods": "area: mean time: mean within years time: mean over years", 
             "cell_measures": "area: areacello volume: volcello", 
-            "long_name": "Ocean Tracer Diffusivity due to Parameterized Mesoscale Advection", 
+            "long_name": "Ocean Tracer Bolus Laplacian Diffusivity", 
             "comment": "Ocean tracer diffusivity associated with parameterized eddy-induced advective transport. Sometimes this diffusivity is called the 'thickness' diffusivity. For CMIP5, this diagnostic was called 'ocean tracer bolus laplacian diffusivity'.  The CMIP6 name is physically more relevant.", 
             "dimensions": "longitude latitude olevel time2", 
             "out_name": "diftrblo", 
@@ -141,13 +134,12 @@
             "ok_max_mean_abs": ""
         }, 
         "diftrblo2d": {
-            "frequency": "monC", 
             "modeling_realm": "ocean", 
-            "standard_name": "ocean_tracer_laplacian_diffusivity_due_to_parameterized_mesoscale_eddy_advection", 
+            "standard_name": "ocean_tracer_bolus_laplacian_diffusivity", 
             "units": "m2 s-1", 
             "cell_methods": "area: mean time: mean within years time: mean over years", 
             "cell_measures": "area: areacello", 
-            "long_name": "Ocean Tracer Diffusivity due to Parameterized Mesoscale Advection", 
+            "long_name": "Ocean Tracer Bolus Laplacian Diffusivity", 
             "comment": "Ocean tracer diffusivity associated with parameterized eddy-induced advective transport. Sometimes this diffusivity is called the 'thickness' diffusivity. For CMIP5, this diagnostic was called 'ocean tracer bolus laplacian diffusivity'.  The CMIP6 name is physically more relevant.", 
             "dimensions": "longitude latitude time2", 
             "out_name": "diftrblo", 
@@ -159,14 +151,13 @@
             "ok_max_mean_abs": ""
         }, 
         "diftrebo": {
-            "frequency": "monC", 
             "modeling_realm": "ocean", 
             "standard_name": "ocean_tracer_epineutral_biharmonic_diffusivity", 
             "units": "m4 s-1", 
             "cell_methods": "area: mean time: mean within years time: mean over years", 
             "cell_measures": "area: areacello volume: volcello", 
             "long_name": "Ocean Tracer Epineutral Biharmonic Diffusivity", 
-            "comment": "Epineutral diffusivity means a lateral diffusivity along a either a neutral or isopycnal density surface due to motion which is not resolved on the grid scale of an ocean model. The type of density surface is dependent on the model formulation. ", 
+            "comment": "", 
             "dimensions": "longitude latitude olevel time2", 
             "out_name": "diftrebo", 
             "type": "real", 
@@ -177,14 +168,13 @@
             "ok_max_mean_abs": ""
         }, 
         "diftrebo2d": {
-            "frequency": "monC", 
             "modeling_realm": "ocean", 
             "standard_name": "ocean_tracer_epineutral_biharmonic_diffusivity", 
             "units": "m4 s-1", 
             "cell_methods": "area: mean time: mean within years time: mean over years", 
             "cell_measures": "area: areacello", 
             "long_name": "Ocean Tracer Epineutral Biharmonic Diffusivity", 
-            "comment": "Epineutral diffusivity means a lateral diffusivity along a either a neutral or isopycnal density surface due to motion which is not resolved on the grid scale of an ocean model. The type of density surface is dependent on the model formulation. ", 
+            "comment": "", 
             "dimensions": "longitude latitude time2", 
             "out_name": "diftrebo", 
             "type": "real", 
@@ -195,7 +185,6 @@
             "ok_max_mean_abs": ""
         }, 
         "diftrelo": {
-            "frequency": "monC", 
             "modeling_realm": "ocean", 
             "standard_name": "ocean_tracer_epineutral_laplacian_diffusivity", 
             "units": "m2 s-1", 
@@ -213,7 +202,6 @@
             "ok_max_mean_abs": ""
         }, 
         "diftrelo2d": {
-            "frequency": "monC", 
             "modeling_realm": "ocean", 
             "standard_name": "ocean_tracer_epineutral_laplacian_diffusivity", 
             "units": "m2 s-1", 
@@ -231,14 +219,13 @@
             "ok_max_mean_abs": ""
         }, 
         "diftrxybo": {
-            "frequency": "monC", 
             "modeling_realm": "ocean", 
             "standard_name": "ocean_tracer_xy_biharmonic_diffusivity", 
             "units": "m4 s-1", 
             "cell_methods": "area: mean time: mean within years time: mean over years", 
             "cell_measures": "area: areacello volume: volcello", 
             "long_name": "Ocean Tracer XY Biharmonic Diffusivity", 
-            "comment": "Diffusivity is also sometimes known as the coefficient of diffusion. Diffusion occurs as a result of a gradient in the spatial distribution of mass concentration, temperature or momentum.  The diffusivity may be very different in the vertical and horizontal directions. 'xy diffusivity' means the lateral along_coordinate component of diffusivity due to motion which is not resolved on the grid scale of the model.  xy diffusivities are used in some ocean models to counteract the numerical instabilities inherent in certain implementations of rotated neutral diffusion. 'biharmonic diffusivity' means diffusivity for use with a biharmonic diffusion operator.", 
+            "comment": "", 
             "dimensions": "longitude latitude olevel time2", 
             "out_name": "diftrxybo", 
             "type": "real", 
@@ -249,14 +236,13 @@
             "ok_max_mean_abs": ""
         }, 
         "diftrxybo2d": {
-            "frequency": "monC", 
             "modeling_realm": "ocean", 
             "standard_name": "ocean_tracer_xy_biharmonic_diffusivity", 
             "units": "m4 s-1", 
             "cell_methods": "area: mean time: mean within years time: mean over years", 
             "cell_measures": "area: areacello", 
             "long_name": "Ocean Tracer XY Biharmonic Diffusivity", 
-            "comment": "Diffusivity is also sometimes known as the coefficient of diffusion. Diffusion occurs as a result of a gradient in the spatial distribution of mass concentration, temperature or momentum.  The diffusivity may be very different in the vertical and horizontal directions. 'xy diffusivity' means the lateral along_coordinate component of diffusivity due to motion which is not resolved on the grid scale of the model.  xy diffusivities are used in some ocean models to counteract the numerical instabilities inherent in certain implementations of rotated neutral diffusion. 'biharmonic diffusivity' means diffusivity for use with a biharmonic diffusion operator.", 
+            "comment": "", 
             "dimensions": "longitude latitude time2", 
             "out_name": "diftrxybo", 
             "type": "real", 
@@ -267,14 +253,13 @@
             "ok_max_mean_abs": ""
         }, 
         "diftrxylo": {
-            "frequency": "monC", 
             "modeling_realm": "ocean", 
             "standard_name": "ocean_tracer_xy_laplacian_diffusivity", 
             "units": "m2 s-1", 
             "cell_methods": "area: mean time: mean within years time: mean over years", 
             "cell_measures": "area: areacello volume: volcello", 
             "long_name": "Ocean Tracer XY Laplacian Diffusivity", 
-            "comment": "Diffusivity is also sometimes known as the coefficient of diffusion. Diffusion occurs as a result of a gradient in the spatial distribution of mass concentration, temperature or momentum.  The diffusivity may be very different in the vertical and horizontal directions. 'xy diffusivity' means the lateral along_coordinate component of diffusivity due to motion which is not resolved on the grid scale of the model.  xy diffusivities are used in some ocean models to counteract the numerical instabilities inherent in certain implementations of rotated neutral diffusion. 'laplacian diffusivity' means diffusivity for use with a Laplacian diffusion operator.", 
+            "comment": "", 
             "dimensions": "longitude latitude olevel time2", 
             "out_name": "diftrxylo", 
             "type": "real", 
@@ -285,14 +270,13 @@
             "ok_max_mean_abs": ""
         }, 
         "diftrxylo2d": {
-            "frequency": "monC", 
             "modeling_realm": "ocean", 
             "standard_name": "ocean_tracer_xy_laplacian_diffusivity", 
             "units": "m2 s-1", 
             "cell_methods": "area: mean time: mean within years time: mean over years", 
             "cell_measures": "area: areacello", 
             "long_name": "Ocean Tracer XY Laplacian Diffusivity", 
-            "comment": "Diffusivity is also sometimes known as the coefficient of diffusion. Diffusion occurs as a result of a gradient in the spatial distribution of mass concentration, temperature or momentum.  The diffusivity may be very different in the vertical and horizontal directions. 'xy diffusivity' means the lateral along_coordinate component of diffusivity due to motion which is not resolved on the grid scale of the model.  xy diffusivities are used in some ocean models to counteract the numerical instabilities inherent in certain implementations of rotated neutral diffusion. 'laplacian diffusivity' means diffusivity for use with a Laplacian diffusion operator.", 
+            "comment": "", 
             "dimensions": "longitude latitude time2", 
             "out_name": "diftrxylo", 
             "type": "real", 
@@ -303,7 +287,6 @@
             "ok_max_mean_abs": ""
         }, 
         "difvho": {
-            "frequency": "monC", 
             "modeling_realm": "ocean", 
             "standard_name": "ocean_vertical_heat_diffusivity", 
             "units": "m2 s-1", 
@@ -321,14 +304,13 @@
             "ok_max_mean_abs": ""
         }, 
         "difvmbo": {
-            "frequency": "monC", 
             "modeling_realm": "ocean", 
             "standard_name": "ocean_vertical_momentum_diffusivity_due_to_background", 
             "units": "m2 s-1", 
             "cell_methods": "area: mean time: mean within years time: mean over years", 
             "cell_measures": "area: areacello volume: volcello", 
-            "long_name": "Ocean Vertical Momentum Diffusivity Due to Background", 
-            "comment": "Vertical/dianeutral diffusivity applied to momentum due to the background (i.e. caused by a time invariant imposed field which may be either constant over the globe or spatially varying, depending on the ocean model used).", 
+            "long_name": "Ocean Vertical Momentum Diffusivity due to Background", 
+            "comment": "", 
             "dimensions": "longitude latitude olevel time2", 
             "out_name": "difvmbo", 
             "type": "real", 
@@ -339,14 +321,13 @@
             "ok_max_mean_abs": ""
         }, 
         "difvmfdo": {
-            "frequency": "monC", 
             "modeling_realm": "ocean", 
             "standard_name": "ocean_vertical_momentum_diffusivity_due_to_form_drag", 
             "units": "m2 s-1", 
             "cell_methods": "area: mean time: mean within years time: mean over years", 
             "cell_measures": "area: areacello volume: volcello", 
-            "long_name": "Ocean Vertical Momentum Diffusivity Due to Form Drag", 
-            "comment": "Vertical/dianeutral diffusivity applied to momentum due to form drag (i.e. resulting from a model scheme representing  mesoscale eddy-induced form drag).", 
+            "long_name": "Ocean Vertical Momentum Diffusivity due to Form Drag", 
+            "comment": "", 
             "dimensions": "longitude latitude olevel time2", 
             "out_name": "difvmfdo", 
             "type": "real", 
@@ -357,14 +338,13 @@
             "ok_max_mean_abs": ""
         }, 
         "difvmo": {
-            "frequency": "monC", 
             "modeling_realm": "ocean", 
             "standard_name": "ocean_vertical_momentum_diffusivity", 
             "units": "m2 s-1", 
             "cell_methods": "area: mean time: mean within years time: mean over years", 
             "cell_measures": "area: areacello volume: volcello", 
             "long_name": "Ocean Vertical Momentum Diffusivity", 
-            "comment": "Vertical/dianeutral diffusivity applied to momentum.", 
+            "comment": "", 
             "dimensions": "longitude latitude olevel time2", 
             "out_name": "difvmo", 
             "type": "real", 
@@ -375,14 +355,13 @@
             "ok_max_mean_abs": ""
         }, 
         "difvmto": {
-            "frequency": "monC", 
             "modeling_realm": "ocean", 
             "standard_name": "ocean_vertical_momentum_diffusivity_due_to_tides", 
             "units": "m2 s-1", 
             "cell_methods": "area: mean time: mean within years time: mean over years", 
             "cell_measures": "area: areacello volume: volcello", 
-            "long_name": "Ocean Vertical Momentum Diffusivity Due to Tides", 
-            "comment": "Diffusivity is also sometimes known as the coefficient of diffusion. Diffusion occurs as a result of a gradient in the spatial distribution of mass concentration, temperature or momentum.  The diffusivity may be very different in the vertical and horizontal directions. The construction vertical_X_diffusivity means the vertical component of the diffusivity of X due to motion which is not resolved on the grid scale of the model. 'Due to tides' means due to all astronomical gravity changes which manifest as tides. No distinction is made between different tidal components. The specification of a physical process by the phrase due_to_process means that the quantity named is a  single term in a sum of terms which together compose the general quantity  named by omitting the phrase.", 
+            "long_name": "Ocean Vertical Momentum Diffusivity due to Tides", 
+            "comment": "", 
             "dimensions": "longitude latitude olevel time2", 
             "out_name": "difvmto", 
             "type": "real", 
@@ -393,7 +372,6 @@
             "ok_max_mean_abs": ""
         }, 
         "difvso": {
-            "frequency": "monC", 
             "modeling_realm": "ocean", 
             "standard_name": "ocean_vertical_salt_diffusivity", 
             "units": "m2 s-1", 
@@ -411,14 +389,13 @@
             "ok_max_mean_abs": ""
         }, 
         "difvtrbo": {
-            "frequency": "monC", 
             "modeling_realm": "ocean", 
             "standard_name": "ocean_vertical_tracer_diffusivity_due_to_background", 
             "units": "m2 s-1", 
             "cell_methods": "area: mean time: mean within years time: mean over years", 
             "cell_measures": "area: areacello volume: volcello", 
-            "long_name": "Ocean Vertical Tracer Diffusivity Due to Background", 
-            "comment": "Vertical/dianeutral diffusivity applied to tracers due to the background (i.e. caused by a time invariant imposed field which may be either constant over the globe or spatially varying, depending on the ocean model used).", 
+            "long_name": "Ocean Vertical Tracer Diffusivity due to Background", 
+            "comment": "", 
             "dimensions": "longitude latitude olevel time2", 
             "out_name": "difvtrbo", 
             "type": "real", 
@@ -429,14 +406,13 @@
             "ok_max_mean_abs": ""
         }, 
         "difvtrto": {
-            "frequency": "monC", 
             "modeling_realm": "ocean", 
             "standard_name": "ocean_vertical_tracer_diffusivity_due_to_tides", 
             "units": "m2 s-1", 
             "cell_methods": "area: mean time: mean within years time: mean over years", 
             "cell_measures": "area: areacello volume: volcello", 
-            "long_name": "Ocean Vertical Tracer Diffusivity Due to Tides", 
-            "comment": "Vertical/dianeutral diffusivity applied to tracers due to tides (i.e. caused by astronomical gravity changes which manifest as tides).", 
+            "long_name": "Ocean Vertical Tracer Diffusivity due to Tides", 
+            "comment": "", 
             "dimensions": "longitude latitude olevel time2", 
             "out_name": "difvtrto", 
             "type": "real", 
@@ -447,14 +423,13 @@
             "ok_max_mean_abs": ""
         }, 
         "dispkevfo": {
-            "frequency": "monC", 
             "modeling_realm": "ocean", 
             "standard_name": "ocean_kinetic_energy_dissipation_per_unit_area_due_to_vertical_friction", 
             "units": "W m-2", 
             "cell_methods": "area: mean time: mean within years time: mean over years", 
             "cell_measures": "area: areacello volume: volcello", 
-            "long_name": "Ocean Kinetic Energy Dissipation per Unit Area Due to Vertical Friction", 
-            "comment": "Friction, leading to the dissipation of kinetic energy, arises in ocean models as a result of the viscosity of sea water.  Generally, the  lateral (xy) viscosity is given a large value to maintain the numerical stability of the model.  In contrast, the vertical viscosity is usually much smaller. The specification of a physical process by the phrase due_to_process means that the quantity named is a  single term in a sum of terms which together compose the general quantity  named by omitting the phrase.", 
+            "long_name": "Ocean Kinetic Energy Dissipation Per Unit Area due to Vertical Friction", 
+            "comment": "", 
             "dimensions": "longitude latitude olevel time2", 
             "out_name": "dispkevfo", 
             "type": "real", 
@@ -465,13 +440,12 @@
             "ok_max_mean_abs": ""
         }, 
         "dispkexyfo": {
-            "frequency": "monC", 
             "modeling_realm": "ocean", 
             "standard_name": "ocean_kinetic_energy_dissipation_per_unit_area_due_to_xy_friction", 
             "units": "W m-2", 
             "cell_methods": "area: mean time: mean within years time: mean over years", 
             "cell_measures": "area: areacello volume: volcello", 
-            "long_name": "Ocean Kinetic Energy Dissipation per Unit Area Due to XY Friction", 
+            "long_name": "Ocean Kinetic Energy Dissipation Per Unit Area due to XY Friction", 
             "comment": "Depth integrated impacts on kinetic energy arising from lateral frictional dissipation associated with Laplacian and/or biharmonic viscosity. For CMIP5, this diagnostic was 3d, whereas the CMIP6 depth integrated diagnostic is sufficient for many purposes and reduces archive requirements.", 
             "dimensions": "longitude latitude olevel time2", 
             "out_name": "dispkexyfo", 
@@ -483,13 +457,12 @@
             "ok_max_mean_abs": ""
         }, 
         "dispkexyfo2d": {
-            "frequency": "monC", 
             "modeling_realm": "ocean", 
             "standard_name": "ocean_kinetic_energy_dissipation_per_unit_area_due_to_xy_friction", 
             "units": "W m-2", 
             "cell_methods": "area: mean time: mean within years time: mean over years", 
             "cell_measures": "area: areacello", 
-            "long_name": "Ocean Kinetic Energy Dissipation per Unit Area Due to XY Friction", 
+            "long_name": "Ocean Kinetic Energy Dissipation Per Unit Area due to XY Friction", 
             "comment": "Depth integrated impacts on kinetic energy arising from lateral frictional dissipation associated with Laplacian and/or biharmonic viscosity. For CMIP5, this diagnostic was 3d, whereas the CMIP6 depth integrated diagnostic is sufficient for many purposes and reduces archive requirements.", 
             "dimensions": "longitude latitude time2", 
             "out_name": "dispkexyfo", 
@@ -501,13 +474,12 @@
             "ok_max_mean_abs": ""
         }, 
         "tnkebto": {
-            "frequency": "monC", 
             "modeling_realm": "ocean", 
-            "standard_name": "tendency_of_ocean_eddy_kinetic_energy_content_due_to_parameterized_eddy_advection", 
+            "standard_name": "tendency_of_ocean_eddy_kinetic_energy_content_due_to_bolus_transport", 
             "units": "W m-2", 
             "cell_methods": "area: mean time: mean within years time: mean over years", 
             "cell_measures": "area: areacello volume: volcello", 
-            "long_name": "Tendency of Ocean Eddy Kinetic Energy Content due to Parameterized Eddy Advection", 
+            "long_name": "Tendency of Ocean Eddy Kinetic Energy Content due to Bolus Transport", 
             "comment": "Depth integrated impacts on kinetic energy arising from parameterized eddy-induced advection. For CMIP5, this diagnostic was 3d, whereas the CMIP6 depth integrated diagnostic is sufficient for many purposes and reduces archive requirements.", 
             "dimensions": "longitude latitude olevel time2", 
             "out_name": "tnkebto", 
@@ -519,13 +491,12 @@
             "ok_max_mean_abs": ""
         }, 
         "tnkebto2d": {
-            "frequency": "monC", 
             "modeling_realm": "ocean", 
-            "standard_name": "tendency_of_ocean_eddy_kinetic_energy_content_due_to_parameterized_eddy_advection", 
+            "standard_name": "tendency_of_ocean_eddy_kinetic_energy_content_due_to_bolus_transport", 
             "units": "W m-2", 
             "cell_methods": "area: mean time: mean within years time: mean over years", 
             "cell_measures": "area: areacello", 
-            "long_name": "Tendency of Ocean Eddy Kinetic Energy Content due to Parameterized Eddy Advection", 
+            "long_name": "Tendency of Ocean Eddy Kinetic Energy Content due to Bolus Transport", 
             "comment": "Depth integrated impacts on kinetic energy arising from parameterized eddy-induced advection. For CMIP5, this diagnostic was 3d, whereas the CMIP6 depth integrated diagnostic is sufficient for many purposes and reduces archive requirements.", 
             "dimensions": "longitude latitude time2", 
             "out_name": "tnkebto", 
@@ -537,7 +508,6 @@
             "ok_max_mean_abs": ""
         }, 
         "tnpeo": {
-            "frequency": "monC", 
             "modeling_realm": "ocean", 
             "standard_name": "tendency_of_ocean_potential_energy_content", 
             "units": "W m-2", 
@@ -555,14 +525,13 @@
             "ok_max_mean_abs": ""
         }, 
         "tnpeot": {
-            "frequency": "monC", 
             "modeling_realm": "ocean", 
             "standard_name": "tendency_of_ocean_potential_energy_content_due_to_tides", 
             "units": "W m-2", 
             "cell_methods": "area: mean time: mean within years time: mean over years", 
             "cell_measures": "area: areacello volume: volcello", 
-            "long_name": "Tendency of Ocean Potential Energy Content Due to Tides", 
-            "comment": "'Content' indicates a quantity per unit area.  Potential energy is the sum of the gravitational potential energy relative to the geoid and the centripetal potential energy. (The geopotential is the specific potential energy.)  'Due to tides' means due to all astronomical gravity changes which manifest as tides.  No distinction is made between different tidal components. The specification of a physical process by the phrase due_to_process means that the quantity named is a  single term in a sum of terms which together compose the general quantity  named by omitting the phrase.  'tendency_of_X' means derivative of X with respect to time.", 
+            "long_name": "Tendency of Ocean Potential Energy Content due to Tides", 
+            "comment": "", 
             "dimensions": "longitude latitude olevel time2", 
             "out_name": "tnpeot", 
             "type": "real", 
@@ -573,14 +542,13 @@
             "ok_max_mean_abs": ""
         }, 
         "tnpeotb": {
-            "frequency": "monC", 
             "modeling_realm": "ocean", 
             "standard_name": "tendency_of_ocean_potential_energy_content_due_to_background", 
             "units": "W m-2", 
             "cell_methods": "area: mean time: mean within years time: mean over years", 
             "cell_measures": "area: areacello volume: volcello", 
-            "long_name": "Tendency of Ocean Potential Energy Content Due to Background", 
-            "comment": "'Content' indicates a quantity per unit area.  Potential energy is the sum of the gravitational potential energy relative to the geoid and the centripetal potential energy. (The geopotential is the specific potential energy.)  'Due to background' means caused by a time invariant imposed field which may be either constant over the globe or spatially varying, depending on the ocean model used. The specification of a physical process by the phrase due_to_process means that the quantity named is a  single term in a sum of terms which together compose the general quantity  named by omitting the phrase.  'tendency_of_X' means derivative of X with respect to time.", 
+            "long_name": "Tendency of Ocean Potential Energy Content due to Background", 
+            "comment": "", 
             "dimensions": "longitude latitude olevel time2", 
             "out_name": "tnpeotb", 
             "type": "real", 
@@ -591,7 +559,6 @@
             "ok_max_mean_abs": ""
         }, 
         "zfullo": {
-            "frequency": "monC", 
             "modeling_realm": "ocean", 
             "standard_name": "depth_below_geoid", 
             "units": "m", 
@@ -609,15 +576,14 @@
             "ok_max_mean_abs": ""
         }, 
         "zhalfo": {
-            "frequency": "monC", 
             "modeling_realm": "ocean", 
             "standard_name": "depth_below_geoid", 
             "units": "m", 
             "cell_methods": "area: mean time: mean within years time: mean over years", 
-            "cell_measures": "area: areacello", 
+            "cell_measures": "area: areacello volume: volcello", 
             "long_name": "Depth Below Geoid of Interfaces Between Ocean Layers", 
             "comment": "Depth below geoid", 
-            "dimensions": "longitude latitude olevhalf time2", 
+            "dimensions": "longitude latitude olevel time2", 
             "out_name": "zhalfo", 
             "type": "real", 
             "positive": "", 

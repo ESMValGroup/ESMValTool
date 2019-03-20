@@ -1,21 +1,20 @@
 {
     "Header": {
-        "data_specs_version": "01.00.29", 
-        "cmor_version": "3.3", 
+        "data_specs_version": "01.00.10", 
         "table_id": "Table Amon", 
         "realm": "atmos atmosChem", 
-        "table_date": "13 December 2018", 
+        "frequency": "mon", 
+        "cmor_version": "3.2", 
+        "table_date": "10 May 2017", 
         "missing_value": "1e20", 
-        "int_missing_value": "-999", 
         "product": "model-output", 
         "approx_interval": "30.00000", 
         "generic_levels": "alevel alevhalf", 
         "mip_era": "CMIP6", 
-        "Conventions": "CF-1.7 CMIP-6.2"
+        "Conventions": "CF-1.7 CMIP-6.0"
     }, 
     "variable_entry": {
         "ccb": {
-            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "air_pressure_at_convective_cloud_base", 
             "units": "Pa", 
@@ -33,7 +32,6 @@
             "ok_max_mean_abs": ""
         }, 
         "cct": {
-            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "air_pressure_at_convective_cloud_top", 
             "units": "Pa", 
@@ -51,14 +49,13 @@
             "ok_max_mean_abs": ""
         }, 
         "cfc113global": {
-            "frequency": "mon", 
             "modeling_realm": "atmos atmosChem", 
             "standard_name": "mole_fraction_of_cfc113_in_air", 
             "units": "1e-12", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "", 
             "long_name": "Global Mean Mole Fraction of CFC113", 
-            "comment": "Mole fraction is used in the construction mole_fraction_of_X_in_Y, where X is a material constituent of Y.  The chemical formula of CFC113 is CCl2FCClF2.  The IUPAC name for CFC113 is 1,1,2-trichloro-1,2,2-trifluoro-ethane.", 
+            "comment": "", 
             "dimensions": "time", 
             "out_name": "cfc113global", 
             "type": "real", 
@@ -69,14 +66,13 @@
             "ok_max_mean_abs": ""
         }, 
         "cfc11global": {
-            "frequency": "mon", 
             "modeling_realm": "atmos atmosChem", 
             "standard_name": "mole_fraction_of_cfc11_in_air", 
             "units": "1e-12", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "", 
             "long_name": "Global Mean Mole Fraction of CFC11", 
-            "comment": "Mole fraction is used in the construction mole_fraction_of_X_in_Y, where X is a material constituent of Y.  The chemical formula of CFC11 is CFCl3.  The IUPAC name for CFC11 is trichloro-fluoro-methane.", 
+            "comment": "", 
             "dimensions": "time", 
             "out_name": "cfc11global", 
             "type": "real", 
@@ -87,14 +83,13 @@
             "ok_max_mean_abs": ""
         }, 
         "cfc12global": {
-            "frequency": "mon", 
             "modeling_realm": "atmos atmosChem", 
             "standard_name": "mole_fraction_of_cfc12_in_air", 
             "units": "1e-12", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "", 
             "long_name": "Global Mean Mole Fraction of CFC12", 
-            "comment": "Mole fraction is used in the construction mole_fraction_of_X_in_Y, where X is a material constituent of Y.  The chemical formula of CFC12 is CF2Cl2.  The IUPAC name for CFC12 is dichloro-difluoro-methane.", 
+            "comment": "", 
             "dimensions": "time", 
             "out_name": "cfc12global", 
             "type": "real", 
@@ -105,14 +100,13 @@
             "ok_max_mean_abs": ""
         }, 
         "ch4": {
-            "frequency": "mon", 
             "modeling_realm": "atmos atmosChem", 
             "standard_name": "mole_fraction_of_methane_in_air", 
             "units": "mol mol-1", 
             "cell_methods": "time: mean", 
             "cell_measures": "area: areacella", 
             "long_name": "Mole Fraction of CH4", 
-            "comment": "Mole fraction is used in the construction mole_fraction_of_X_in_Y, where X is a material constituent of Y.", 
+            "comment": "", 
             "dimensions": "longitude latitude plev19 time", 
             "out_name": "ch4", 
             "type": "real", 
@@ -123,14 +117,13 @@
             "ok_max_mean_abs": ""
         }, 
         "ch4Clim": {
-            "frequency": "monC", 
             "modeling_realm": "atmos atmosChem", 
             "standard_name": "mole_fraction_of_methane_in_air", 
             "units": "mol mol-1", 
             "cell_methods": "area: mean time: mean within years time: mean over years", 
             "cell_measures": "area: areacella", 
             "long_name": "Mole Fraction of CH4", 
-            "comment": "Mole fraction is used in the construction mole_fraction_of_X_in_Y, where X is a material constituent of Y.", 
+            "comment": "", 
             "dimensions": "longitude latitude plev19 time2", 
             "out_name": "ch4", 
             "type": "real", 
@@ -141,7 +134,6 @@
             "ok_max_mean_abs": ""
         }, 
         "ch4global": {
-            "frequency": "mon", 
             "modeling_realm": "atmos atmosChem", 
             "standard_name": "mole_fraction_of_methane_in_air", 
             "units": "1e-09", 
@@ -159,7 +151,6 @@
             "ok_max_mean_abs": ""
         }, 
         "ch4globalClim": {
-            "frequency": "monC", 
             "modeling_realm": "atmos atmosChem", 
             "standard_name": "mole_fraction_of_methane_in_air", 
             "units": "1e-09", 
@@ -177,13 +168,12 @@
             "ok_max_mean_abs": ""
         }, 
         "ci": {
-            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "convection_time_fraction", 
-            "units": "1", 
+            "units": "1.0", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
-            "long_name": "Fraction of Time Convection Occurs in Cell", 
+            "long_name": "Fraction of Time Convection Occurs", 
             "comment": "Fraction of time that convection occurs in the grid cell.", 
             "dimensions": "longitude latitude time", 
             "out_name": "ci", 
@@ -195,13 +185,12 @@
             "ok_max_mean_abs": ""
         }, 
         "cl": {
-            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "cloud_area_fraction_in_atmosphere_layer", 
             "units": "%", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
-            "long_name": "Percentage Cloud Cover", 
+            "long_name": "Cloud Area Fraction", 
             "comment": "Percentage cloud cover, including both large-scale and convective cloud.", 
             "dimensions": "longitude latitude alevel time", 
             "out_name": "cl", 
@@ -213,7 +202,6 @@
             "ok_max_mean_abs": ""
         }, 
         "cli": {
-            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "mass_fraction_of_cloud_ice_in_air", 
             "units": "kg kg-1", 
@@ -231,9 +219,8 @@
             "ok_max_mean_abs": ""
         }, 
         "clivi": {
-            "frequency": "mon", 
             "modeling_realm": "atmos", 
-            "standard_name": "atmosphere_mass_content_of_cloud_ice", 
+            "standard_name": "atmosphere_cloud_ice_content", 
             "units": "kg m-2", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
@@ -249,13 +236,12 @@
             "ok_max_mean_abs": ""
         }, 
         "clt": {
-            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "cloud_area_fraction", 
             "units": "%", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
-            "long_name": "Total Cloud Cover Percentage", 
+            "long_name": "Total Cloud Fraction", 
             "comment": "Total cloud area fraction for the whole atmospheric column, as seen from the surface or the top of the atmosphere. Includes both large-scale and convective cloud.", 
             "dimensions": "longitude latitude time", 
             "out_name": "clt", 
@@ -267,7 +253,6 @@
             "ok_max_mean_abs": ""
         }, 
         "clw": {
-            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "mass_fraction_of_cloud_liquid_water_in_air", 
             "units": "kg kg-1", 
@@ -285,9 +270,8 @@
             "ok_max_mean_abs": ""
         }, 
         "clwvi": {
-            "frequency": "mon", 
             "modeling_realm": "atmos", 
-            "standard_name": "atmosphere_mass_content_of_cloud_condensed_water", 
+            "standard_name": "atmosphere_cloud_condensed_water_content", 
             "units": "kg m-2", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
@@ -303,14 +287,13 @@
             "ok_max_mean_abs": ""
         }, 
         "co2": {
-            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "mole_fraction_of_carbon_dioxide_in_air", 
             "units": "mol mol-1", 
             "cell_methods": "time: mean", 
             "cell_measures": "area: areacella", 
             "long_name": "Mole Fraction of CO2", 
-            "comment": "Mole fraction is used in the construction mole_fraction_of_X_in_Y, where X is a material constituent of Y.", 
+            "comment": "", 
             "dimensions": "longitude latitude plev19 time", 
             "out_name": "co2", 
             "type": "real", 
@@ -321,14 +304,13 @@
             "ok_max_mean_abs": ""
         }, 
         "co2Clim": {
-            "frequency": "monC", 
             "modeling_realm": "atmos", 
             "standard_name": "mole_fraction_of_carbon_dioxide_in_air", 
             "units": "mol mol-1", 
             "cell_methods": "area: mean time: mean within years time: mean over years", 
             "cell_measures": "area: areacella", 
             "long_name": "Mole Fraction of CO2", 
-            "comment": "Mole fraction is used in the construction mole_fraction_of_X_in_Y, where X is a material constituent of Y.", 
+            "comment": "", 
             "dimensions": "longitude latitude plev19 time2", 
             "out_name": "co2", 
             "type": "real", 
@@ -339,7 +321,6 @@
             "ok_max_mean_abs": ""
         }, 
         "co2mass": {
-            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "atmosphere_mass_of_carbon_dioxide", 
             "units": "kg", 
@@ -357,7 +338,6 @@
             "ok_max_mean_abs": ""
         }, 
         "co2massClim": {
-            "frequency": "monC", 
             "modeling_realm": "atmos", 
             "standard_name": "atmosphere_mass_of_carbon_dioxide", 
             "units": "kg", 
@@ -375,14 +355,13 @@
             "ok_max_mean_abs": ""
         }, 
         "evspsbl": {
-            "frequency": "mon", 
             "modeling_realm": "atmos", 
-            "standard_name": "water_evapotranspiration_flux", 
+            "standard_name": "water_evaporation_flux", 
             "units": "kg m-2 s-1", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
-            "long_name": "Evaporation Including Sublimation and Transpiration", 
-            "comment": "Evaporation at surface (also known as evapotranspiration): flux of water into the atmosphere due to conversion of both liquid and solid phases to vapor (from underlying surface and vegetation)", 
+            "long_name": "Evaporation", 
+            "comment": "Evaporation at surface: flux of water into the atmosphere due to conversion of both liquid and solid phases to vapor (from underlying surface and vegetation)", 
             "dimensions": "longitude latitude time", 
             "out_name": "evspsbl", 
             "type": "real", 
@@ -393,7 +372,6 @@
             "ok_max_mean_abs": ""
         }, 
         "fco2antt": {
-            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "tendency_of_atmosphere_mass_content_of_carbon_dioxide_expressed_as_carbon_due_to_anthropogenic_emission", 
             "units": "kg m-2 s-1", 
@@ -404,14 +382,13 @@
             "dimensions": "longitude latitude time", 
             "out_name": "fco2antt", 
             "type": "real", 
-            "positive": "", 
+            "positive": "up", 
             "valid_min": "", 
             "valid_max": "", 
             "ok_min_mean_abs": "", 
             "ok_max_mean_abs": ""
         }, 
         "fco2fos": {
-            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "tendency_of_atmosphere_mass_content_of_carbon_dioxide_expressed_as_carbon_due_to_emission_from_fossil_fuel_combustion", 
             "units": "kg m-2 s-1", 
@@ -422,14 +399,13 @@
             "dimensions": "longitude latitude time", 
             "out_name": "fco2fos", 
             "type": "real", 
-            "positive": "", 
+            "positive": "up", 
             "valid_min": "", 
             "valid_max": "", 
             "ok_min_mean_abs": "", 
             "ok_max_mean_abs": ""
         }, 
         "fco2nat": {
-            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "surface_upward_mass_flux_of_carbon_dioxide_expressed_as_carbon_due_to_emission_from_natural_sources", 
             "units": "kg m-2 s-1", 
@@ -440,21 +416,20 @@
             "dimensions": "longitude latitude time", 
             "out_name": "fco2nat", 
             "type": "real", 
-            "positive": "", 
+            "positive": "up", 
             "valid_min": "", 
             "valid_max": "", 
             "ok_min_mean_abs": "", 
             "ok_max_mean_abs": ""
         }, 
         "hcfc22global": {
-            "frequency": "mon", 
             "modeling_realm": "atmos atmosChem", 
             "standard_name": "mole_fraction_of_hcfc22_in_air", 
             "units": "1e-12", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "", 
             "long_name": "Global Mean Mole Fraction of HCFC22", 
-            "comment": "Mole fraction is used in the construction mole_fraction_of_X_in_Y, where X is a material constituent of Y.  A chemical species denoted by X may be described by a single term such as 'nitrogen' or a phrase such as 'nox_expressed_as_nitrogen'. The chemical formula for HCFC22 is CHClF2.  The IUPAC name for HCFC22 is chloro-difluoro-methane.", 
+            "comment": "", 
             "dimensions": "time", 
             "out_name": "hcfc22global", 
             "type": "real", 
@@ -465,14 +440,13 @@
             "ok_max_mean_abs": ""
         }, 
         "hfls": {
-            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "surface_upward_latent_heat_flux", 
             "units": "W m-2", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
             "long_name": "Surface Upward Latent Heat Flux", 
-            "comment": "The surface called 'surface' means the lower boundary of the atmosphere. 'Upward' indicates a vector component which is positive when directed upward (negative downward). The surface latent heat flux is the exchange of heat between the surface and the air on account of evaporation (including sublimation). In accordance with common usage in geophysical disciplines, 'flux' implies per unit area, called 'flux density' in physics.", 
+            "comment": "", 
             "dimensions": "longitude latitude time", 
             "out_name": "hfls", 
             "type": "real", 
@@ -483,14 +457,13 @@
             "ok_max_mean_abs": ""
         }, 
         "hfss": {
-            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "surface_upward_sensible_heat_flux", 
             "units": "W m-2", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
             "long_name": "Surface Upward Sensible Heat Flux", 
-            "comment": "The surface sensible heat flux, also called turbulent heat flux, is the exchange of heat between the surface and the air by motion of air.", 
+            "comment": "", 
             "dimensions": "longitude latitude time", 
             "out_name": "hfss", 
             "type": "real", 
@@ -501,7 +474,6 @@
             "ok_max_mean_abs": ""
         }, 
         "hur": {
-            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "relative_humidity", 
             "units": "%", 
@@ -519,7 +491,6 @@
             "ok_max_mean_abs": ""
         }, 
         "hurs": {
-            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "relative_humidity", 
             "units": "%", 
@@ -537,14 +508,13 @@
             "ok_max_mean_abs": ""
         }, 
         "hus": {
-            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "specific_humidity", 
-            "units": "1", 
+            "units": "1.0", 
             "cell_methods": "time: mean", 
             "cell_measures": "area: areacella", 
             "long_name": "Specific Humidity", 
-            "comment": "Specific humidity is the mass fraction of water vapor in (moist) air.", 
+            "comment": "", 
             "dimensions": "longitude latitude plev19 time", 
             "out_name": "hus", 
             "type": "real", 
@@ -555,10 +525,9 @@
             "ok_max_mean_abs": ""
         }, 
         "huss": {
-            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "specific_humidity", 
-            "units": "1", 
+            "units": "1.0", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
             "long_name": "Near-Surface Specific Humidity", 
@@ -573,7 +542,6 @@
             "ok_max_mean_abs": ""
         }, 
         "mc": {
-            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "atmosphere_net_upward_convective_mass_flux", 
             "units": "kg m-2 s-1", 
@@ -591,14 +559,13 @@
             "ok_max_mean_abs": ""
         }, 
         "n2o": {
-            "frequency": "mon", 
             "modeling_realm": "atmos atmosChem", 
             "standard_name": "mole_fraction_of_nitrous_oxide_in_air", 
             "units": "mol mol-1", 
             "cell_methods": "time: mean", 
             "cell_measures": "area: areacella", 
             "long_name": "Mole Fraction of N2O", 
-            "comment": "Mole fraction is used in the construction mole_fraction_of_X_in_Y, where X is a material constituent of Y.   The chemical formula of  nitrous oxide is N2O.", 
+            "comment": "", 
             "dimensions": "longitude latitude plev19 time", 
             "out_name": "n2o", 
             "type": "real", 
@@ -609,14 +576,13 @@
             "ok_max_mean_abs": ""
         }, 
         "n2oClim": {
-            "frequency": "monC", 
             "modeling_realm": "atmos atmosChem", 
             "standard_name": "mole_fraction_of_nitrous_oxide_in_air", 
             "units": "mol mol-1", 
             "cell_methods": "area: mean time: mean within years time: mean over years", 
             "cell_measures": "area: areacella", 
             "long_name": "Mole Fraction of N2O", 
-            "comment": "Mole fraction is used in the construction mole_fraction_of_X_in_Y, where X is a material constituent of Y.   The chemical formula of  nitrous oxide is N2O.", 
+            "comment": "", 
             "dimensions": "longitude latitude plev19 time2", 
             "out_name": "n2o", 
             "type": "real", 
@@ -627,7 +593,6 @@
             "ok_max_mean_abs": ""
         }, 
         "n2oglobal": {
-            "frequency": "mon", 
             "modeling_realm": "atmos atmosChem", 
             "standard_name": "mole_fraction_of_nitrous_oxide_in_air", 
             "units": "1e-09", 
@@ -645,7 +610,6 @@
             "ok_max_mean_abs": ""
         }, 
         "n2oglobalClim": {
-            "frequency": "monC", 
             "modeling_realm": "atmos atmosChem", 
             "standard_name": "mole_fraction_of_nitrous_oxide_in_air", 
             "units": "1e-09", 
@@ -663,14 +627,13 @@
             "ok_max_mean_abs": ""
         }, 
         "o3": {
-            "frequency": "mon", 
             "modeling_realm": "atmos atmosChem", 
             "standard_name": "mole_fraction_of_ozone_in_air", 
             "units": "mol mol-1", 
             "cell_methods": "time: mean", 
             "cell_measures": "area: areacella", 
             "long_name": "Mole Fraction of O3", 
-            "comment": "Mole fraction is used in the construction mole_fraction_of_X_in_Y, where X is a material constituent of Y.", 
+            "comment": "", 
             "dimensions": "longitude latitude plev19 time", 
             "out_name": "o3", 
             "type": "real", 
@@ -681,14 +644,13 @@
             "ok_max_mean_abs": ""
         }, 
         "o3Clim": {
-            "frequency": "monC", 
             "modeling_realm": "atmos atmosChem", 
             "standard_name": "mole_fraction_of_ozone_in_air", 
             "units": "mol mol-1", 
             "cell_methods": "area: mean time: mean within years time: mean over years", 
             "cell_measures": "area: areacella", 
             "long_name": "Mole Fraction of O3", 
-            "comment": "Mole fraction is used in the construction mole_fraction_of_X_in_Y, where X is a material constituent of Y.", 
+            "comment": "", 
             "dimensions": "longitude latitude plev19 time2", 
             "out_name": "o3", 
             "type": "real", 
@@ -699,13 +661,12 @@
             "ok_max_mean_abs": ""
         }, 
         "pfull": {
-            "frequency": "monC", 
             "modeling_realm": "atmos", 
             "standard_name": "air_pressure", 
             "units": "Pa", 
             "cell_methods": "area: mean time: mean within years time: mean over years", 
             "cell_measures": "area: areacella", 
-            "long_name": "Pressure at Model Full-Levels", 
+            "long_name": "Pressure on Model Levels", 
             "comment": "Air pressure on model levels", 
             "dimensions": "longitude latitude alevel time2", 
             "out_name": "pfull", 
@@ -717,7 +678,6 @@
             "ok_max_mean_abs": ""
         }, 
         "phalf": {
-            "frequency": "monC", 
             "modeling_realm": "atmos", 
             "standard_name": "air_pressure", 
             "units": "Pa", 
@@ -735,7 +695,6 @@
             "ok_max_mean_abs": ""
         }, 
         "pr": {
-            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "precipitation_flux", 
             "units": "kg m-2 s-1", 
@@ -753,7 +712,6 @@
             "ok_max_mean_abs": ""
         }, 
         "prc": {
-            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "convective_precipitation_flux", 
             "units": "kg m-2 s-1", 
@@ -771,14 +729,13 @@
             "ok_max_mean_abs": ""
         }, 
         "prsn": {
-            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "snowfall_flux", 
             "units": "kg m-2 s-1", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
             "long_name": "Snowfall Flux", 
-            "comment": "At surface; includes precipitation of all forms of water in the solid phase", 
+            "comment": "at surface; includes precipitation of all forms of water in the solid phase", 
             "dimensions": "longitude latitude time", 
             "out_name": "prsn", 
             "type": "real", 
@@ -789,9 +746,8 @@
             "ok_max_mean_abs": ""
         }, 
         "prw": {
-            "frequency": "mon", 
             "modeling_realm": "atmos", 
-            "standard_name": "atmosphere_mass_content_of_water_vapor", 
+            "standard_name": "atmosphere_water_vapor_content", 
             "units": "kg m-2", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
@@ -807,7 +763,6 @@
             "ok_max_mean_abs": ""
         }, 
         "ps": {
-            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "surface_air_pressure", 
             "units": "Pa", 
@@ -825,9 +780,8 @@
             "ok_max_mean_abs": ""
         }, 
         "psl": {
-            "frequency": "mon", 
             "modeling_realm": "atmos", 
-            "standard_name": "air_pressure_at_mean_sea_level", 
+            "standard_name": "air_pressure_at_sea_level", 
             "units": "Pa", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
@@ -843,14 +797,13 @@
             "ok_max_mean_abs": ""
         }, 
         "rlds": {
-            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "surface_downwelling_longwave_flux_in_air", 
             "units": "W m-2", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
             "long_name": "Surface Downwelling Longwave Radiation", 
-            "comment": "The surface called 'surface' means the lower boundary of the atmosphere. 'longwave' means longwave radiation. Downwelling radiation is radiation from above. It does not mean 'net downward'. When thought of as being incident on a surface, a radiative flux is sometimes called 'irradiance'. In addition, it is identical with the quantity measured by a cosine-collector light-meter and sometimes called 'vector irradiance'. In accordance with common usage in geophysical disciplines, 'flux' implies per unit area, called 'flux density' in physics.", 
+            "comment": "", 
             "dimensions": "longitude latitude time", 
             "out_name": "rlds", 
             "type": "real", 
@@ -861,7 +814,6 @@
             "ok_max_mean_abs": ""
         }, 
         "rldscs": {
-            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "surface_downwelling_longwave_flux_in_air_assuming_clear_sky", 
             "units": "W m-2", 
@@ -879,14 +831,13 @@
             "ok_max_mean_abs": ""
         }, 
         "rlus": {
-            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "surface_upwelling_longwave_flux_in_air", 
             "units": "W m-2", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
             "long_name": "Surface Upwelling Longwave Radiation", 
-            "comment": "The surface called 'surface' means the lower boundary of the atmosphere. 'longwave' means longwave radiation. Upwelling radiation is radiation from below. It does not mean 'net upward'. When thought of as being incident on a surface, a radiative flux is sometimes called 'irradiance'. In addition, it is identical with the quantity measured by a cosine-collector light-meter and sometimes called 'vector irradiance'. In accordance with common usage in geophysical disciplines, 'flux' implies per unit area, called 'flux density' in physics.", 
+            "comment": "", 
             "dimensions": "longitude latitude time", 
             "out_name": "rlus", 
             "type": "real", 
@@ -897,7 +848,6 @@
             "ok_max_mean_abs": ""
         }, 
         "rlut": {
-            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "toa_outgoing_longwave_flux", 
             "units": "W m-2", 
@@ -915,14 +865,13 @@
             "ok_max_mean_abs": ""
         }, 
         "rlutcs": {
-            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "toa_outgoing_longwave_flux_assuming_clear_sky", 
             "units": "W m-2", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
             "long_name": "TOA Outgoing Clear-Sky Longwave Radiation", 
-            "comment": "Upwelling clear-sky longwave radiation at top of atmosphere", 
+            "comment": "", 
             "dimensions": "longitude latitude time", 
             "out_name": "rlutcs", 
             "type": "real", 
@@ -933,14 +882,13 @@
             "ok_max_mean_abs": ""
         }, 
         "rsds": {
-            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "surface_downwelling_shortwave_flux_in_air", 
             "units": "W m-2", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
             "long_name": "Surface Downwelling Shortwave Radiation", 
-            "comment": "Surface solar irradiance for UV calculations.", 
+            "comment": "surface solar irradiance for UV calculations", 
             "dimensions": "longitude latitude time", 
             "out_name": "rsds", 
             "type": "real", 
@@ -951,14 +899,13 @@
             "ok_max_mean_abs": ""
         }, 
         "rsdscs": {
-            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "surface_downwelling_shortwave_flux_in_air_assuming_clear_sky", 
             "units": "W m-2", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
             "long_name": "Surface Downwelling Clear-Sky Shortwave Radiation", 
-            "comment": "Surface solar irradiance clear sky for UV calculations", 
+            "comment": "surface solar irradiance clear sky for UV calculations", 
             "dimensions": "longitude latitude time", 
             "out_name": "rsdscs", 
             "type": "real", 
@@ -969,7 +916,6 @@
             "ok_max_mean_abs": ""
         }, 
         "rsdt": {
-            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "toa_incoming_shortwave_flux", 
             "units": "W m-2", 
@@ -987,14 +933,13 @@
             "ok_max_mean_abs": ""
         }, 
         "rsus": {
-            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "surface_upwelling_shortwave_flux_in_air", 
             "units": "W m-2", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
             "long_name": "Surface Upwelling Shortwave Radiation", 
-            "comment": "The surface called 'surface' means the lower boundary of the atmosphere. 'shortwave' means shortwave radiation. Upwelling radiation is radiation from below. It does not mean 'net upward'. When thought of as being incident on a surface, a radiative flux is sometimes called 'irradiance'. In addition, it is identical with the quantity measured by a cosine-collector light-meter and sometimes called 'vector irradiance'. In accordance with common usage in geophysical disciplines, 'flux' implies per unit area, called 'flux density' in physics.", 
+            "comment": "", 
             "dimensions": "longitude latitude time", 
             "out_name": "rsus", 
             "type": "real", 
@@ -1005,7 +950,6 @@
             "ok_max_mean_abs": ""
         }, 
         "rsuscs": {
-            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "surface_upwelling_shortwave_flux_in_air_assuming_clear_sky", 
             "units": "W m-2", 
@@ -1023,7 +967,6 @@
             "ok_max_mean_abs": ""
         }, 
         "rsut": {
-            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "toa_outgoing_shortwave_flux", 
             "units": "W m-2", 
@@ -1041,7 +984,6 @@
             "ok_max_mean_abs": ""
         }, 
         "rsutcs": {
-            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "toa_outgoing_shortwave_flux_assuming_clear_sky", 
             "units": "W m-2", 
@@ -1059,13 +1001,12 @@
             "ok_max_mean_abs": ""
         }, 
         "rtmt": {
-            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "net_downward_radiative_flux_at_top_of_atmosphere_model", 
             "units": "W m-2", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
-            "long_name": "Net Downward Radiative Flux at Top of Model", 
+            "long_name": "Net Downward Flux at Top of Model", 
             "comment": "Net Downward Radiative Flux at Top of Model : I.e., at the top of that portion of the atmosphere where dynamics are explicitly treated by the model. This is reported only if it differs from the net downward radiative flux at the top of the atmosphere.", 
             "dimensions": "longitude latitude time", 
             "out_name": "rtmt", 
@@ -1077,9 +1018,8 @@
             "ok_max_mean_abs": ""
         }, 
         "sbl": {
-            "frequency": "mon", 
             "modeling_realm": "landIce", 
-            "standard_name": "tendency_of_atmosphere_mass_content_of_water_vapor_due_to_sublimation_of_surface_snow_and_ice", 
+            "standard_name": "surface_snow_and_ice_sublimation_flux", 
             "units": "kg m-2 s-1", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
@@ -1095,10 +1035,9 @@
             "ok_max_mean_abs": ""
         }, 
         "sci": {
-            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "shallow_convection_time_fraction", 
-            "units": "1", 
+            "units": "1.0", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
             "long_name": "Fraction of Time Shallow Convection Occurs", 
@@ -1113,7 +1052,6 @@
             "ok_max_mean_abs": ""
         }, 
         "sfcWind": {
-            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "wind_speed", 
             "units": "m s-1", 
@@ -1131,7 +1069,6 @@
             "ok_max_mean_abs": ""
         }, 
         "ta": {
-            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "air_temperature", 
             "units": "K", 
@@ -1149,7 +1086,6 @@
             "ok_max_mean_abs": ""
         }, 
         "tas": {
-            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "air_temperature", 
             "units": "K", 
@@ -1167,7 +1103,6 @@
             "ok_max_mean_abs": ""
         }, 
         "tasmax": {
-            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "air_temperature", 
             "units": "K", 
@@ -1185,7 +1120,6 @@
             "ok_max_mean_abs": ""
         }, 
         "tasmin": {
-            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "air_temperature", 
             "units": "K", 
@@ -1203,7 +1137,6 @@
             "ok_max_mean_abs": ""
         }, 
         "tauu": {
-            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "surface_downward_eastward_stress", 
             "units": "Pa", 
@@ -1221,7 +1154,6 @@
             "ok_max_mean_abs": ""
         }, 
         "tauv": {
-            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "surface_downward_northward_stress", 
             "units": "Pa", 
@@ -1239,7 +1171,6 @@
             "ok_max_mean_abs": ""
         }, 
         "ts": {
-            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "surface_temperature", 
             "units": "K", 
@@ -1257,14 +1188,13 @@
             "ok_max_mean_abs": ""
         }, 
         "ua": {
-            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "eastward_wind", 
             "units": "m s-1", 
             "cell_methods": "time: mean", 
             "cell_measures": "area: areacella", 
             "long_name": "Eastward Wind", 
-            "comment": "Zonal wind (positive in a eastward direction).", 
+            "comment": "", 
             "dimensions": "longitude latitude plev19 time", 
             "out_name": "ua", 
             "type": "real", 
@@ -1275,7 +1205,6 @@
             "ok_max_mean_abs": ""
         }, 
         "uas": {
-            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "eastward_wind", 
             "units": "m s-1", 
@@ -1293,14 +1222,13 @@
             "ok_max_mean_abs": ""
         }, 
         "va": {
-            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "northward_wind", 
             "units": "m s-1", 
             "cell_methods": "time: mean", 
             "cell_measures": "area: areacella", 
             "long_name": "Northward Wind", 
-            "comment": "Meridional wind (positive in a northward direction).", 
+            "comment": "", 
             "dimensions": "longitude latitude plev19 time", 
             "out_name": "va", 
             "type": "real", 
@@ -1311,7 +1239,6 @@
             "ok_max_mean_abs": ""
         }, 
         "vas": {
-            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "northward_wind", 
             "units": "m s-1", 
@@ -1329,13 +1256,12 @@
             "ok_max_mean_abs": ""
         }, 
         "wap": {
-            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "lagrangian_tendency_of_air_pressure", 
             "units": "Pa s-1", 
             "cell_methods": "time: mean", 
             "cell_measures": "area: areacella", 
-            "long_name": "Omega (=dp/dt)", 
+            "long_name": "omega (=dp/dt)", 
             "comment": "Omega (vertical velocity in pressure coordinates, positive downwards)", 
             "dimensions": "longitude latitude plev19 time", 
             "out_name": "wap", 
@@ -1347,14 +1273,13 @@
             "ok_max_mean_abs": ""
         }, 
         "zg": {
-            "frequency": "mon", 
             "modeling_realm": "atmos", 
             "standard_name": "geopotential_height", 
             "units": "m", 
             "cell_methods": "time: mean", 
             "cell_measures": "area: areacella", 
             "long_name": "Geopotential Height", 
-            "comment": "Geopotential is the sum of the specific gravitational potential energy relative to the geoid and the specific centripetal potential energy. Geopotential height is the geopotential divided by the standard acceleration due to gravity. It is numerically similar to the altitude (or geometric height) and not to the quantity with standard name height, which is relative to the surface.", 
+            "comment": "", 
             "dimensions": "longitude latitude plev19 time", 
             "out_name": "zg", 
             "type": "real", 
