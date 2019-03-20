@@ -1,0 +1,32 @@
+---
+# project at hand
+proj:
+  dataset: 'CDS-SATELLITE-ALBEDO'
+  version: 'L3'
+  realm: 'sat'
+  frequency:
+    'bhalb': 'Lmon'
+  metadata_attributes:
+    tier: '2'
+    source: ''
+    comment: 'cmorized for ESMValTool v2'
+    CMORconventions: 'CF/CMOR3'
+    CMORcreated: ''
+
+
+# specific raw file names
+VAR_TO_FILENAME:
+  bhalb: 'bhalb'
+
+# specific fields names from raw obs files
+FIELDS:
+  bhalb:     'Broadband directional albedo over total spectrum'
+
+# cmor standard names
+STANDARD_NAMES:
+  bhalb:     'surface_albedo'
+
+# cmor long names
+LONG_NAMES:
+  bhalb:     'Bihemispheric surface albedo over total spectrum.'
+
