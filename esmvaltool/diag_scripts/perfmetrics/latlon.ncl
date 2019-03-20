@@ -108,7 +108,7 @@ begin
     plottype = "geo"
     diag_des = "Calculates and (optionally) plots annual/seasonal cycles, " \
                + "zonal means, lat-lon fields and time-lat-lon fields from " \
-               + "input T3M or T2Ms data. The calculated fields can be also " \
+               + "input 2D/3D monthly data. The calculated fields can be " \
                + "plotted as difference w.r.t. a given reference dataset. " \
                + "It also calculates grading and taylor metrics."
     authors = (/"righ_ma", "fran_fr", "eyri_ve", "gott_kl", "senf_da"/)
