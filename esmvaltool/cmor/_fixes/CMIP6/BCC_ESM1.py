@@ -1,9 +1,9 @@
 # pylint: disable=invalid-name, no-self-use, too-few-public-methods
 """Fixes for BCC-ESM1."""
-from ..fix import Fix
-
 import numpy as np
 import iris
+
+from ..fix import Fix
 
 
 class allvars(Fix):
