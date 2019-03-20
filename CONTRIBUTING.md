@@ -19,7 +19,7 @@ To install in development mode, follow these instructions.
   - Update the esmvaltool conda environment `conda env update`
   - Install in development mode: `pip install -e '.[develop]'`. If you are installing behind a proxy that does not trust the usual pip-urls you can declare them with the option `--trusted-host`, e.g. `pip install --trusted-host=pypi.python.org --trusted-host=pypi.org --trusted-host=files.pythonhosted.org -e .[develop]`
   - If you want to use R diagnostics, run `Rscript esmvaltool/install/R/setup.R` to install the R dependences.
-  - If you want to use Julia diagnostics, run `./esmvaltool/install/Julia/setup.jl` to install the Julia dependences.
+  - If you want to use Julia diagnostics, run `julia esmvaltool/install/Julia/setup.jl` to install the Julia dependences.
   - Test that your installation was succesful by running `esmvaltool -h`.
 
 ## Running tests

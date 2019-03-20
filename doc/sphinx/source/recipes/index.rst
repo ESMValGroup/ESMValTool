@@ -1,5 +1,7 @@
+.. _recipes:
+
 Recipes
-------------
+-------
 
 .. toctree::
    :maxdepth: 1
@@ -20,6 +22,7 @@ Recipes
    recipe_multimodel_products
    recipe_oceans
    recipe_perfmetrics
+   recipe_quantilebias
    recipe_runoff_et
    recipe_rainfarm
    recipe_shapeselect

@@ -14,28 +14,22 @@ jobs:
             # Create a file to checksum as cache key
             date --rfc-3339 date > cache_key.txt
             cat environment.yml >> cache_key.txt
-            cat esmvaltool/install/R/r_requirements.txt >> cache_key.txt
       - restore_cache:
           key: deps3-{{ .Branch }}-{{ checksum "cache_key.txt" }}
       - run:
-          # Update/Create Conda Environment
+          # Update/Create Conda environment and run tests
           command: |
             . /opt/conda/etc/profile.d/conda.sh
             conda update -y conda
             conda env update
             conda activate esmvaltool
             conda install -yS r-lintr
-            Rscript esmvaltool/install/R/setup.R
+            python setup.py test
       - save_cache:
           key: deps3-{{ .Branch }}-{{ checksum "cache_key.txt" }}
           paths:
             - "/opt/conda/envs/esmvaltool"
-      - run:
-          # Activate Conda environment and run tests
-          command: |
-            . /opt/conda/etc/profile.d/conda.sh
-            conda activate esmvaltool
-            python setup.py test
+            - ".eggs"
       - store_test_results:
           path: test-reports/
       - store_artifacts:
@@ -48,6 +42,8 @@ jobs:
       - image: continuumio/miniconda3
     steps:
       - checkout
+      - restore_cache:
+          key: python3-install-{{ .Branch }}
       - run:
           command: |
             . /opt/conda/etc/profile.d/conda.sh
@@ -55,13 +51,16 @@ jobs:
             mkdir /logs
             # Install
             apt update > /logs/apt.txt 2>&1
-            apt -y install build-essential gfortran julia >> /logs/apt.txt 2>&1
+            apt -y install build-essential gfortran >> /logs/apt.txt 2>&1
+            wget https://julialang-s3.julialang.org/bin/linux/x64/1.0/julia-1.0.3-linux-x86_64.tar.gz
+            tar xfz julia-*-linux-x86_64.tar.gz
+            ln -s $(pwd)/julia-*/bin/julia /usr/bin/julia
             conda update -y conda > /logs/conda.txt 2>&1
             conda env update >> /logs/conda.txt 2>&1
             set +x; conda activate esmvaltool; set -x
             pip install . > /logs/install.txt 2>&1
-            conda install -yS r-lintr
-            Rscript ./esmvaltool/install/R/setup.R > /logs/R_install.txt 2>&1
+            Rscript esmvaltool/install/R/setup.R > /logs/R_install.txt 2>&1
+            julia esmvaltool/install/Julia/setup.jl > /logs/julia_install.txt 2>&1
             # Log versions
             dpkg -l > /logs/versions.txt
             conda env export > /logs/environment.yml
@@ -75,6 +74,11 @@ jobs:
             echo 0 | cdo -f nc input,r1x1 tmp.nc
             ncdump tmp.nc | ncgen -k hdf5 -o tmp.nc
             cdo -f nc copy tmp.nc tmp2.nc
+      - save_cache:
+          key: python3-install-{{ .Branch }}
+          paths:
+            - "/opt/conda/pkgs"
+            - ".eggs"
       - store_artifacts:
           path: /logs
       - store_artifacts:
@@ -101,12 +105,16 @@ jobs:
             mkdir /logs
             # Install
             apt update > /logs/apt.txt 2>&1
-            apt -y install build-essential gfortran julia >> /logs/apt.txt 2>&1
+            apt -y install build-essential gfortran >> /logs/apt.txt 2>&1
+            wget https://julialang-s3.julialang.org/bin/linux/x64/1.0/julia-1.0.3-linux-x86_64.tar.gz
+            tar xfz julia-*-linux-x86_64.tar.gz
+            ln -s $(pwd)/julia-*/bin/julia /usr/bin/julia
             conda update -y conda > /logs/conda.txt 2>&1
             conda env update >> /logs/conda.txt 2>&1
             set +x; conda activate esmvaltool; set -x
             pip install -e .[develop] > /logs/install.txt 2>&1
-            Rscript ./esmvaltool/install/R/setup.R > /logs/R_install.txt 2>&1
+            Rscript esmvaltool/install/R/setup.R > /logs/R_install.txt 2>&1
+            julia esmvaltool/install/Julia/setup.jl > /logs/julia_install.txt 2>&1
             # Log versions
             dpkg -l > /logs/versions.txt
             conda env export > /logs/environment.yml
@@ -161,7 +169,10 @@ jobs:
             # Install prerequisites
             mkdir /logs
             apt update > /logs/apt.txt 2>&1
-            apt -y install build-essential gfortran julia >> /logs/apt.txt 2>&1
+            apt -y install build-essential gfortran >> /logs/apt.txt 2>&1
+            wget https://julialang-s3.julialang.org/bin/linux/x64/1.0/julia-1.0.3-linux-x86_64.tar.gz
+            tar xfz julia-*-linux-x86_64.tar.gz
+            ln -s $(pwd)/julia-*/bin/julia /usr/bin/julia
             conda update -y conda > /logs/conda_base.txt 2>&1
             conda install -y conda-build conda-verify >> /logs/conda_base.txt 2>&1
             # Log versions
@@ -191,7 +202,10 @@ jobs:
             # Install prerequisites
             mkdir /logs
             apt update > /logs/apt.txt 2>&1
-            apt -y install build-essential gfortran julia >> /logs/apt.txt 2>&1
+            apt -y install build-essential gfortran >> /logs/apt.txt 2>&1
+            wget https://julialang-s3.julialang.org/bin/linux/x64/1.0/julia-1.0.3-linux-x86_64.tar.gz
+            tar xfz julia-*-linux-x86_64.tar.gz
+            ln -s $(pwd)/julia-*/bin/julia /usr/bin/julia
             conda update -y conda > /logs/conda.txt 2>&1
             # Create and activate conda environment
             conda create -y --name esmvaltool
