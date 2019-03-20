@@ -583,8 +583,14 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                 fileinfo["ensemble"],
                 fileinfo["short_name"]]
         except BaseException:
-            # obs
-            self.__dataset_id__ = [fileinfo]  # TODO adjust to OBS
+            # obs/reanalysis
+            self.__dataset_id__ = [
+                fileinfo["cmor_table"],
+                fileinfo["dataset"],
+                fileinfo["mip"],
+                fileinfo["type"],
+                fileinfo["version"],
+                fileinfo["short_name"]]
 
         self.__basic_filename__ = "_".join(
             self.__dataset_id__ + [self.__time_period__])
