@@ -6,8 +6,8 @@
 ;
 ; Description
 ;    Calculates and (optionally) plots annual/seasonal cycles, zonal means,
-;    lat-lon fields and time-lat-lon fields from input T3M or T2Ms data.
-;    The calculated fields can be also plotted as difference w.r.t. a given
+;    lat-lon fields and time-lat-lon fields from input 2D/3D monthly data.
+;    The calculated fields can be plotted as difference w.r.t. a given
 ;    reference dataset. It also calculates grading and taylor metrics.
 ;    Input data have to be regridded to a common grid in the preprocessor.
 ;
@@ -101,7 +101,6 @@ begin
 
   ; Get variables and datasets
   var0 = variable_info[0]@short_name
-  field0 = variable_info[0]@field
   info_items = select_metadata_by_name(input_file_info, var0)
   nDatasets = ListCount(info_items)
 
@@ -129,19 +128,6 @@ begin
       diag_script_info@region.ne."Global") then
     error_msg("f", DIAG_SCRIPT, "", "plot_type " + ptype + \
               " implemented only for region='Global'")
-  end if
-
-  ; Check valid field
-  if ((ptype.eq."zonal" .and. \
-      all(field0.ne.(/"T3M", "T2Mz"/))) .or. \
-      (ptype.eq."cycle" .and. \
-      all(field0.ne.(/"T3M", "T2Ms", "T1M", "T0Ms"/))) .or. \
-      (ptype.eq."latlon" .and. \
-      all(field0.ne.(/"T3M", "T2Ms"/))) .or. \
-      (ptype.eq."cycle_latlon" .and. \
-      all(field0.ne.(/"T3M", "T2Ms"/)))) then
-    error_msg("f", DIAG_SCRIPT, "", "input field " + field0 + \
-              " is not compatible with plot_type " + ptype)
   end if
 
   ; Set default values for non-required diag_script_info attributes
@@ -213,31 +199,27 @@ begin
     ; Define variable name
     region_name = ""  ; priority 3
     location = ""  ; priority 3
-    if(isatt(diag_script_info, "aux_info")) then
+    if (isatt(diag_script_info, "aux_info")) then
       region_name = "_" + diag_script_info@aux_info  ; priority 2
       location = " - " + diag_script_info@aux_info  ; priority 2
     end if
-    if(isatt(diag_script_info, "location")) then
+    if (isatt(diag_script_info, "location")) then
       location = " - " + diag_script_info@location  ; priority 1
     end if
-    if(isatt(diag_script_info, "region")) then
+    if (isatt(diag_script_info, "region")) then
       region_name = "_" + region@name  ; priority 1
       location = " - " + diag_script_info@region
     end if
     altitude = ""  ; priority 2
-    if(any(field0.eq.(/"T0M", "T0Ms"/))) then
-      if(isatt(diag_script_info, "altitude")) then
-        altitude = " - " + diag_script_info@altitude  ; priority 1
-      end if
-    else
-      if(isatt(diag_script_info, "level")) then
-        altitude = " - " + diag_script_info@level + " hPa"  ; priority 1
-      end if
+    if (isatt(diag_script_info, "altitude")) then
+      altitude = " - " + diag_script_info@altitude  ; priority 1
+    end if
+    if (isatt(diag_script_info, "level")) then
+      altitude = " - " + diag_script_info@level + " hPa"  ; priority 1
     end if
     var0_grade = var0
     var0_grade = var0_grade + region_name
-    if(isatt(diag_script_info, "level").and. \
-       any(field0.eq.(/"T3M", "T1M"/))) then
+    if (isatt(diag_script_info, "level")) then
       var0_grade = var0_grade + "-" + diag_script_info@level  ; FIX-ME
     end if
 

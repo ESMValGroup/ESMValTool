@@ -137,7 +137,6 @@ diagnostics:
         preprocessor: clim
         reference_dataset: UWisc
         mip: Amon
-        field: T2Ms
         derive: true
     additional_datasets:
       - {dataset: UWisc, project: OBS, type: sat, version: v2,
@@ -167,7 +166,6 @@ diagnostics:
         preprocessor: clim
         reference_dataset: MODIS
         mip: Amon
-        field: T2Ms
     additional_datasets:
       - {dataset: MODIS, project: obs4mips, level: L3, version: C5,
          start_year: 2001, end_year: 2010, tier: 1}
@@ -186,7 +184,6 @@ diagnostics:
         preprocessor: clim
         reference_dataset: GPCP-SG
         mip: Amon
-        field: T2Ms
     additional_datasets:
       - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.2,
          start_year: 1986, end_year: 2005, tier: 1}
@@ -206,7 +203,6 @@ diagnostics:
         preprocessor: clim
         reference_dataset: CERES-EBAF
         mip: Amon
-        field: T2Ms
         derive: true
     additional_datasets:
       - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
@@ -227,7 +223,6 @@ diagnostics:
         preprocessor: clim
         reference_dataset: CERES-EBAF
         mip: Amon
-        field: T2Ms
         derive: true
     additional_datasets:
       - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
@@ -252,7 +247,6 @@ diagnostics:
         preprocessor: clim
         reference_dataset: MODIS
         mip: Amon
-        field: T2Ms
     additional_datasets:
       - {dataset: MODIS, project: obs4mips, level: L3, version: C5,
          start_year: 2001, end_year: 2010, tier: 1}
@@ -309,7 +303,6 @@ diagnostics:
         preprocessor: clim
         reference_dataset: UWisc
         mip: Amon
-        field: T2Ms
         derive: true
     additional_datasets:
       - {dataset: UWisc, project: OBS, type: sat, version: v2,
@@ -330,7 +323,6 @@ diagnostics:
         preprocessor: clim
         reference_dataset: CERES-EBAF
         mip: Amon
-        field: T2Ms
         derive: true
     additional_datasets:
       - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
@@ -351,7 +343,6 @@ diagnostics:
         preprocessor: clim
         reference_dataset: CERES-EBAF
         mip: Amon
-        field: T2Ms
         derive: true
     additional_datasets:
       - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
@@ -371,7 +362,6 @@ diagnostics:
         preprocessor: clim
         reference_dataset: GPCP-SG
         mip: Amon
-        field: T2Ms
     additional_datasets:
       - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.2,
          start_year: 1986, end_year: 2005, tier: 1}
@@ -397,7 +387,6 @@ diagnostics:
         preprocessor: clim
         reference_dataset: UWisc
         mip: Amon
-        field: T2Ms
         derive: true
     additional_datasets:
       - {dataset: UWisc, project: OBS, type: sat, version: v2,
@@ -434,7 +423,6 @@ diagnostics:
         preprocessor: clim
         reference_dataset: MODIS
         mip: Amon
-        field: T2Ms
     additional_datasets:
       - {dataset: MODIS, project: obs4mips, level: L3, version: C5,
          start_year: 2001, end_year: 2010, tier: 1}
@@ -454,7 +442,6 @@ diagnostics:
         preprocessor: clim
         reference_dataset: CERES-EBAF
         mip: Amon
-        field: T2Ms
         derive: true
     additional_datasets:
       - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
@@ -475,7 +462,6 @@ diagnostics:
         preprocessor: clim
         reference_dataset: CERES-EBAF
         mip: Amon
-        field: T2Ms
         derive: true
     additional_datasets:
       - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
@@ -495,7 +481,6 @@ diagnostics:
         preprocessor: clim
         reference_dataset: GPCP-SG
         mip: Amon
-        field: T2Ms
     additional_datasets:
       - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.2,
          start_year: 1986, end_year: 2005, tier: 1}
