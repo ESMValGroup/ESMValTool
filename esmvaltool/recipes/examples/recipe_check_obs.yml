@@ -444,7 +444,7 @@ diagnostics:
         mip: Amon
       hfds:
         preproc: nopp
-        mip: Amon
+        mip: Omon
       hus:
         preproc: nopp
         mip: Amon
