@@ -79,7 +79,6 @@ diagnostics:
     variables:
       pr:
         preprocessor: preproc
-        field: T2Ms
     scripts:
       main:
         script: ensclus/ensclus.py
