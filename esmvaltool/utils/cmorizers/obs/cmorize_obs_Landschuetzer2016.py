@@ -2,7 +2,7 @@
 """ESMValTool CMORizer script.
 
 # #############################################################################
-  Landschutzer 2016
+  Landschuetzer 2016
 # #############################################################################
 
   Tier
@@ -15,7 +15,7 @@
      20190308
 
   Download and processing instructions
-     Download the following file in ${RAWOBS}/Tier2/Landschutzer2016:
+     Download the following file in ${RAWOBS}/Tier2/Landschuetzer2016:
       spco2_1982-2015_MPI_SOM-FFN_v2016.nc
 
 
@@ -41,7 +41,7 @@ from .utilities import (_add_metadata,
 logger = logging.getLogger(__name__)
 
 # read in CMOR configuration
-CFG = _read_cmor_config('Landschutzer2016.yml')
+CFG = _read_cmor_config('Landschuetzer2016.yml')
 PROJ = CFG['proj']
 VAR_TO_CMOR = CFG['VAR_TO_CMOR']
 VAR_TO_FILENAME = CFG['VAR_TO_FILENAME']

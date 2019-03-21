@@ -1,7 +1,7 @@
 ---
 # project at hand
 proj:
-  dataset: 'Landschutzer2016'
+  dataset: 'Landschuetzer2016'
   version: 'v2016'
   realm: 'clim'
   frequency: {
