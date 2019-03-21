@@ -46,7 +46,6 @@ diagnostics:
       psl:
         preprocessor: preproc
         mip: Amon
-        field: T2M
 
     scripts:
       main:
