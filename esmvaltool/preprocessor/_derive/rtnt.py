@@ -2,27 +2,27 @@
 
 from iris import Constraint
 
-from ._derived_variable_base import DerivedVariableBase
+from ._baseclass import DerivedVariableBase
 
 
 class DerivedVariable(DerivedVariableBase):
     """Derivation of variable `rtnt`."""
 
     # Required variables
-    _required_variables = {
-        'vars': [{
-            'short_name': 'rsdt',
-            'field': 'T2{frequency}s'
-        }, {
-            'short_name': 'rsut',
-            'field': 'T2{frequency}s'
-        }, {
-            'short_name': 'rlut',
-            'field': 'T2{frequency}s'
-        }]
-    }
+    required = [
+        {
+            'short_name': 'rsdt'
+        },
+        {
+            'short_name': 'rsut'
+        },
+        {
+            'short_name': 'rlut'
+        },
+    ]
 
-    def calculate(self, cubes):
+    @staticmethod
+    def calculate(cubes):
         """Compute toa net downward total radiation."""
         rsdt_cube = cubes.extract_strict(
             Constraint(name='toa_incoming_shortwave_flux'))

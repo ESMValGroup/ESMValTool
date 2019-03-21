@@ -1,27 +1,5 @@
 {
     "axis_entry": {
-        "alev1": {
-            "standard_name": "", 
-            "units": "", 
-            "axis": "Z", 
-            "long_name": "lowest atmospheric model level", 
-            "climatology": "", 
-            "formula": "", 
-            "must_have_bounds": "yes", 
-            "out_name": "lev", 
-            "positive": "", 
-            "requested": "", 
-            "requested_bounds": "", 
-            "stored_direction": "", 
-            "tolerance": "", 
-            "type": "double", 
-            "valid_max": "", 
-            "valid_min": "", 
-            "value": "", 
-            "z_bounds_factors": "", 
-            "z_factors": "", 
-            "bounds_values": ""
-        }, 
         "alt16": {
             "standard_name": "altitude", 
             "units": "m", 
@@ -92,7 +70,8 @@
             "value": "", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "alt40": {
             "standard_name": "altitude", 
@@ -236,7 +215,8 @@
             "value": "", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "alternate_hybrid_sigma": {
             "standard_name": "atmosphere_hybrid_sigma_pressure_coordinate", 
@@ -258,7 +238,31 @@
             "value": "", 
             "z_bounds_factors": "ap: ap_bnds b: b_bnds ps: ps", 
             "z_factors": "ap: ap b: b ps: ps", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": "alevel"
+        }, 
+        "alternate_hybrid_sigma_half": {
+            "standard_name": "atmosphere_hybrid_sigma_pressure_coordinate", 
+            "units": "1", 
+            "axis": "Z", 
+            "long_name": "hybrid sigma pressure coordinate", 
+            "climatology": "", 
+            "formula": "p = ap + b*ps", 
+            "must_have_bounds": "no", 
+            "out_name": "lev", 
+            "positive": "down", 
+            "requested": "", 
+            "requested_bounds": "", 
+            "stored_direction": "decreasing", 
+            "tolerance": "", 
+            "type": "", 
+            "valid_max": "1.0", 
+            "valid_min": "0.0", 
+            "value": "", 
+            "z_bounds_factors": "ap: ap_bnds b: b_bnds ps: ps", 
+            "z_factors": "ap: ap b: b ps: ps", 
+            "bounds_values": "", 
+            "generic_level_name": "alevhalf"
         }, 
         "basin": {
             "standard_name": "region", 
@@ -284,7 +288,8 @@
             "value": "", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "dbze": {
             "standard_name": "equivalent_reflectivity_factor", 
@@ -353,7 +358,8 @@
             "value": "", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "depth0m": {
             "standard_name": "depth", 
@@ -375,7 +381,8 @@
             "value": "0.", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "depth100m": {
             "standard_name": "depth", 
@@ -397,7 +404,8 @@
             "value": "100.", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "depth2000m": {
             "standard_name": "depth", 
@@ -406,7 +414,7 @@
             "long_name": "depth", 
             "climatology": "", 
             "formula": "", 
-            "must_have_bounds": "no", 
+            "must_have_bounds": "yes", 
             "out_name": "depth", 
             "positive": "down", 
             "requested": "", 
@@ -414,12 +422,13 @@
             "stored_direction": "increasing", 
             "tolerance": "", 
             "type": "double", 
-            "valid_max": "2200.0", 
-            "valid_min": "1980.0", 
-            "value": "2000", 
+            "valid_max": "2000.0", 
+            "valid_min": "0.0", 
+            "value": "1000.", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "0.0 2000.0", 
+            "generic_level_name": ""
         }, 
         "depth300m": {
             "standard_name": "depth", 
@@ -428,7 +437,7 @@
             "long_name": "depth", 
             "climatology": "", 
             "formula": "", 
-            "must_have_bounds": "no", 
+            "must_have_bounds": "yes", 
             "out_name": "depth", 
             "positive": "down", 
             "requested": "", 
@@ -436,12 +445,13 @@
             "stored_direction": "increasing", 
             "tolerance": "", 
             "type": "double", 
-            "valid_max": "320.0", 
-            "valid_min": "280.0", 
-            "value": "300", 
+            "valid_max": "300.0", 
+            "valid_min": "0.0", 
+            "value": "150.", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "0.0 300.0", 
+            "generic_level_name": ""
         }, 
         "depth700m": {
             "standard_name": "depth", 
@@ -450,7 +460,7 @@
             "long_name": "depth", 
             "climatology": "", 
             "formula": "", 
-            "must_have_bounds": "no", 
+            "must_have_bounds": "yes", 
             "out_name": "depth", 
             "positive": "down", 
             "requested": "", 
@@ -458,12 +468,13 @@
             "stored_direction": "increasing", 
             "tolerance": "", 
             "type": "double", 
-            "valid_max": "720.0", 
-            "valid_min": "680.0", 
-            "value": "700", 
+            "valid_max": "700.0", 
+            "valid_min": "0.0", 
+            "value": "350.", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "0.0 700.0", 
+            "generic_level_name": ""
         }, 
         "depth_coord": {
             "standard_name": "depth", 
@@ -485,7 +496,31 @@
             "value": "", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": "olevel"
+        }, 
+        "depth_coord_half": {
+            "standard_name": "depth", 
+            "units": "m", 
+            "axis": "Z", 
+            "long_name": "ocean depth coordinate", 
+            "climatology": "", 
+            "formula": "", 
+            "must_have_bounds": "no", 
+            "out_name": "lev", 
+            "positive": "down", 
+            "requested": "", 
+            "requested_bounds": "", 
+            "stored_direction": "increasing", 
+            "tolerance": "", 
+            "type": "", 
+            "valid_max": "12000.0", 
+            "valid_min": "0.0", 
+            "value": "", 
+            "z_bounds_factors": "", 
+            "z_factors": "", 
+            "bounds_values": "", 
+            "generic_level_name": "olevhalf"
         }, 
         "effectRadIc": {
             "standard_name": "", 
@@ -527,7 +562,8 @@
             "value": "", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "effectRadLi": {
             "standard_name": "", 
@@ -569,7 +605,31 @@
             "value": "", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
+        }, 
+        "gridlatitude": {
+            "standard_name": "grid_latitude", 
+            "units": "degrees", 
+            "axis": "Y", 
+            "long_name": "Grid Latitude", 
+            "climatology": "", 
+            "formula": "", 
+            "must_have_bounds": "yes", 
+            "out_name": "rlat", 
+            "positive": "", 
+            "requested": "", 
+            "requested_bounds": "", 
+            "stored_direction": "increasing", 
+            "tolerance": "", 
+            "type": "double", 
+            "valid_max": "90.0", 
+            "valid_min": "-90.0", 
+            "value": "", 
+            "z_bounds_factors": "", 
+            "z_factors": "", 
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "height100m": {
             "standard_name": "height", 
@@ -591,7 +651,8 @@
             "value": "100.", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "height10m": {
             "standard_name": "height", 
@@ -613,7 +674,8 @@
             "value": "10.", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "height2m": {
             "standard_name": "height", 
@@ -635,7 +697,8 @@
             "value": "2.", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "hybrid_height": {
             "standard_name": "atmosphere_hybrid_height_coordinate", 
@@ -657,7 +720,31 @@
             "value": "", 
             "z_bounds_factors": "a: lev_bnds b: b_bnds orog: orog", 
             "z_factors": "a: lev b: b orog: orog", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": "alevel"
+        }, 
+        "hybrid_height_half": {
+            "standard_name": "atmosphere_hybrid_height_coordinate", 
+            "units": "m", 
+            "axis": "Z", 
+            "long_name": "hybrid height coordinate", 
+            "climatology": "", 
+            "formula": "z = a + b*orog", 
+            "must_have_bounds": "no", 
+            "out_name": "lev", 
+            "positive": "up", 
+            "requested": "", 
+            "requested_bounds": "", 
+            "stored_direction": "increasing", 
+            "tolerance": "", 
+            "type": "", 
+            "valid_max": "", 
+            "valid_min": "0.0", 
+            "value": "", 
+            "z_bounds_factors": "a: lev_bnds b: b_bnds orog: orog", 
+            "z_factors": "a: lev b: b orog: orog", 
+            "bounds_values": "", 
+            "generic_level_name": "alevhalf"
         }, 
         "iceband": {
             "standard_name": "sea_ice_thickness", 
@@ -679,32 +766,31 @@
             "value": "", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
-        "icesheet": {
-            "standard_name": "region", 
-            "units": "", 
+        "lambda550nm": {
+            "standard_name": "radiation_wavelength", 
+            "units": "nm", 
             "axis": "", 
-            "long_name": "Ice Sheet", 
+            "long_name": "Radiation Wavelength 550 nanometers", 
             "climatology": "", 
             "formula": "", 
-            "must_have_bounds": "no", 
-            "out_name": "region", 
+            "must_have_bounds": "", 
+            "out_name": "wavelength", 
             "positive": "", 
-            "requested": [
-                "antarctic", 
-                "greenland"
-            ], 
+            "requested": "", 
             "requested_bounds": "", 
             "stored_direction": "", 
             "tolerance": "", 
-            "type": "character", 
+            "type": "double", 
             "valid_max": "", 
             "valid_min": "", 
-            "value": "", 
+            "value": "550.0", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "landUse": {
             "standard_name": "area_type", 
@@ -731,13 +817,14 @@
             "value": "", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "latitude": {
             "standard_name": "latitude", 
             "units": "degrees_north", 
             "axis": "Y", 
-            "long_name": "latitude", 
+            "long_name": "Latitude", 
             "climatology": "", 
             "formula": "", 
             "must_have_bounds": "yes", 
@@ -753,7 +840,8 @@
             "value": "", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "location": {
             "standard_name": "", 
@@ -775,13 +863,14 @@
             "value": "", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "longitude": {
             "standard_name": "longitude", 
             "units": "degrees_east", 
             "axis": "X", 
-            "long_name": "longitude", 
+            "long_name": "Longitude", 
             "climatology": "", 
             "formula": "", 
             "must_have_bounds": "yes", 
@@ -797,29 +886,8 @@
             "value": "", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
-        }, 
-        "misrBands": {
-            "standard_name": "wave_frequency", 
-            "units": "s-1", 
-            "axis": "", 
-            "long_name": "MISR Spectral Frequency Band", 
-            "climatology": "", 
-            "formula": "", 
-            "must_have_bounds": "yes", 
-            "out_name": "spectband", 
-            "positive": "", 
-            "requested": "", 
-            "requested_bounds": "", 
-            "stored_direction": "", 
-            "tolerance": "", 
-            "type": "double", 
-            "valid_max": "", 
-            "valid_min": "", 
-            "value": "", 
-            "z_bounds_factors": "", 
-            "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "natural_log_pressure": {
             "standard_name": "atmosphere_ln_pressure_coordinate", 
@@ -841,7 +909,31 @@
             "value": "", 
             "z_bounds_factors": "p0: p0 lev: lev_bnds", 
             "z_factors": "p0: p0 lev: lev", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": "alevel"
+        }, 
+        "natural_log_pressure_half": {
+            "standard_name": "atmosphere_ln_pressure_coordinate", 
+            "units": "", 
+            "axis": "Z", 
+            "long_name": "atmosphere natural log pressure coordinate", 
+            "climatology": "", 
+            "formula": "p = p0 * exp(-lev)", 
+            "must_have_bounds": "no", 
+            "out_name": "lev", 
+            "positive": "down", 
+            "requested": "", 
+            "requested_bounds": "", 
+            "stored_direction": "decreasing", 
+            "tolerance": "", 
+            "type": "", 
+            "valid_max": "20.0", 
+            "valid_min": "-1.0", 
+            "value": "", 
+            "z_bounds_factors": "p0: p0 lev: lev_bnds", 
+            "z_factors": "p0: p0 lev: lev", 
+            "bounds_values": "", 
+            "generic_level_name": "alevhalf"
         }, 
         "ocean_double_sigma": {
             "standard_name": "ocean_double_sigma", 
@@ -863,7 +955,8 @@
             "value": "", 
             "z_bounds_factors": "sigma: sigma_bnds depth: depth z1: z1 z2: z2 a: a href: href k_c: k_c", 
             "z_factors": "sigma: sigma depth: depth z1: z1 z2: z2 a: a_coeff href: href k_c: k_c", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": "olevel"
         }, 
         "ocean_s": {
             "standard_name": "ocean_s_coordinate", 
@@ -885,7 +978,8 @@
             "value": "", 
             "z_bounds_factors": "s: lev_bnds eta: eta depth: depth a: a b: b depth_c: depth_c", 
             "z_factors": "s: lev eta: eta depth: depth a: a_coeff b: b_coeff depth_c: depth_c", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": "olevel"
         }, 
         "ocean_sigma": {
             "standard_name": "ocean_sigma_coordinate", 
@@ -907,7 +1001,8 @@
             "value": "", 
             "z_bounds_factors": "sigma: lev_bnds eta: eta depth: depth", 
             "z_factors": "sigma: lev eta: eta depth: depth", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": "olevel"
         }, 
         "ocean_sigma_z": {
             "standard_name": "ocean_sigma_z", 
@@ -929,7 +1024,8 @@
             "value": "", 
             "z_bounds_factors": "sigma: sigma_bnds eta: eta depth: depth depth_c: depth_c nsigma: nsigma zlev: zlev_bnds", 
             "z_factors": "sigma: sigma eta: eta depth: depth depth_c: depth_c nsigma: nsigma zlev: zlev", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": "olevel"
         }, 
         "olayer100m": {
             "standard_name": "depth", 
@@ -938,7 +1034,7 @@
             "long_name": "depth", 
             "climatology": "", 
             "formula": "", 
-            "must_have_bounds": "no", 
+            "must_have_bounds": "yes", 
             "out_name": "depth", 
             "positive": "down", 
             "requested": "", 
@@ -951,7 +1047,31 @@
             "value": "50.", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": "0.0 100.0"
+            "bounds_values": "0.0 100.0", 
+            "generic_level_name": ""
+        }, 
+        "olevhalf": {
+            "standard_name": "", 
+            "units": "", 
+            "axis": "Z", 
+            "long_name": "ocean model half levels", 
+            "climatology": "", 
+            "formula": "", 
+            "must_have_bounds": "no", 
+            "out_name": "lev", 
+            "positive": "down", 
+            "requested": "", 
+            "requested_bounds": "", 
+            "stored_direction": "", 
+            "tolerance": "", 
+            "type": "double", 
+            "valid_max": "", 
+            "valid_min": "", 
+            "value": "", 
+            "z_bounds_factors": "", 
+            "z_factors": "", 
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "oline": {
             "standard_name": "region", 
@@ -966,19 +1086,20 @@
             "requested": [
                 "barents_opening", 
                 "bering_strait", 
-                "canadian_archipelago", 
+                "windward_passage", 
+                "davis_strait", 
                 "denmark_strait", 
                 "drake_passage", 
                 "english_channel", 
-                "pacific_equatorial_undercurrent", 
                 "faroe_scotland_channel", 
                 "florida_bahamas_strait", 
                 "fram_strait", 
+                "gibraltar_strait", 
                 "iceland_faroe_channel", 
                 "indonesian_throughflow", 
                 "mozambique_channel", 
-                "taiwan_luzon_straits", 
-                "windward_passage"
+                "pacific_equatorial_undercurrent", 
+                "taiwan_luzon_straits"
             ], 
             "requested_bounds": "", 
             "stored_direction": "", 
@@ -989,7 +1110,8 @@
             "value": "", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "p10": {
             "standard_name": "air_pressure", 
@@ -1011,7 +1133,8 @@
             "value": "1000.", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "p100": {
             "standard_name": "air_pressure", 
@@ -1033,7 +1156,8 @@
             "value": "10000.", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "p1000": {
             "standard_name": "air_pressure", 
@@ -1055,7 +1179,8 @@
             "value": "100000.", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "p200": {
             "standard_name": "air_pressure", 
@@ -1077,7 +1202,8 @@
             "value": "20000.", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "p220": {
             "standard_name": "air_pressure", 
@@ -1099,7 +1225,8 @@
             "value": "22000.", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": "44000.0 0.0"
+            "bounds_values": "44000.0 0.0", 
+            "generic_level_name": ""
         }, 
         "p500": {
             "standard_name": "air_pressure", 
@@ -1121,7 +1248,8 @@
             "value": "50000.", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "p560": {
             "standard_name": "air_pressure", 
@@ -1143,7 +1271,8 @@
             "value": "56000.", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": "68000.0 44000.0"
+            "bounds_values": "68000.0 44000.0", 
+            "generic_level_name": ""
         }, 
         "p700": {
             "standard_name": "air_pressure", 
@@ -1165,7 +1294,8 @@
             "value": "70000.", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "p840": {
             "standard_name": "air_pressure", 
@@ -1187,7 +1317,8 @@
             "value": "84000.", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": "100000.0 68000.0"
+            "bounds_values": "100000.0 68000.0", 
+            "generic_level_name": ""
         }, 
         "p850": {
             "standard_name": "air_pressure", 
@@ -1209,7 +1340,8 @@
             "value": "85000.", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "pl700": {
             "standard_name": "air_pressure", 
@@ -1231,40 +1363,8 @@
             "value": "70000.", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": "85000.0 60000.0"
-        }, 
-        "plev10": {
-            "standard_name": "air_pressure", 
-            "units": "Pa", 
-            "axis": "Z", 
-            "long_name": "pressure", 
-            "climatology": "", 
-            "formula": "", 
-            "must_have_bounds": "no", 
-            "out_name": "plev", 
-            "positive": "down", 
-            "requested": [
-                "100000.", 
-                "85000.", 
-                "70000.", 
-                "50000.", 
-                "25000.", 
-                "15000.", 
-                "10000.", 
-                "7000.", 
-                "5000.", 
-                "1000."
-            ], 
-            "requested_bounds": "", 
-            "stored_direction": "decreasing", 
-            "tolerance": "", 
-            "type": "double", 
-            "valid_max": "", 
-            "valid_min": "", 
-            "value": "", 
-            "z_bounds_factors": "", 
-            "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "85000.0 60000.0", 
+            "generic_level_name": ""
         }, 
         "plev19": {
             "standard_name": "air_pressure", 
@@ -1306,7 +1406,8 @@
             "value": "", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "plev23": {
             "standard_name": "air_pressure", 
@@ -1352,7 +1453,8 @@
             "value": "", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "plev27": {
             "standard_name": "air_pressure", 
@@ -1402,7 +1504,8 @@
             "value": "", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "plev3": {
             "standard_name": "air_pressure", 
@@ -1428,7 +1531,8 @@
             "value": "", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "plev39": {
             "standard_name": "air_pressure", 
@@ -1490,7 +1594,8 @@
             "value": "", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "plev3h": {
             "standard_name": "air_pressure", 
@@ -1516,7 +1621,8 @@
             "value": "", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "plev4": {
             "standard_name": "air_pressure", 
@@ -1543,7 +1649,8 @@
             "value": "", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "plev7": {
             "standard_name": "air_pressure", 
@@ -1588,7 +1695,8 @@
             "value": "", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "plev7c": {
             "standard_name": "air_pressure", 
@@ -1633,7 +1741,8 @@
             "value": "", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "plev7h": {
             "standard_name": "air_pressure", 
@@ -1663,7 +1772,8 @@
             "value": "", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "plev8": {
             "standard_name": "air_pressure", 
@@ -1694,7 +1804,8 @@
             "value": "", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "rho": {
             "standard_name": "sea_water_potential_density", 
@@ -1716,11 +1827,12 @@
             "value": "", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "scatratio": {
             "standard_name": "backscattering_ratio", 
-            "units": "1.0", 
+            "units": "1", 
             "axis": "", 
             "long_name": "lidar backscattering ratio", 
             "climatology": "", 
@@ -1782,10 +1894,34 @@
             "type": "double", 
             "valid_max": "", 
             "valid_min": "", 
-            "value": "0.005, 0.605, 2.1, 4, 6, 8.5, 12.5, 17.5, 22.5, 27.5, 35, 45, 55, 70, 50040", 
+            "value": "", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": "0.0 0.01 1.2 3.0 5.0 7.0 10.0 15.0 20.0 25.0 30.0 40.0 50.0 60.0 80.0 100000.0"
+            "bounds_values": "", 
+            "generic_level_name": ""
+        }, 
+        "scatter180": {
+            "standard_name": "scattering_angle", 
+            "units": "degree", 
+            "axis": "", 
+            "long_name": "Scattering Angle", 
+            "climatology": "", 
+            "formula": "", 
+            "must_have_bounds": "no", 
+            "out_name": "scatangle", 
+            "positive": "", 
+            "requested": "", 
+            "requested_bounds": "", 
+            "stored_direction": "", 
+            "tolerance": "", 
+            "type": "double", 
+            "valid_max": "", 
+            "valid_min": "", 
+            "value": "180.0", 
+            "z_bounds_factors": "", 
+            "z_factors": "", 
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "sdepth": {
             "standard_name": "depth", 
@@ -1807,7 +1943,8 @@
             "value": "", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "sdepth1": {
             "standard_name": "depth", 
@@ -1824,12 +1961,36 @@
             "stored_direction": "increasing", 
             "tolerance": "", 
             "type": "double", 
-            "valid_max": "0.2", 
+            "valid_max": "0.1", 
             "valid_min": "0.0", 
             "value": "0.05", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": "0.0 0.1"
+            "bounds_values": "0.0 0.1", 
+            "generic_level_name": ""
+        }, 
+        "sdepth10": {
+            "standard_name": "depth", 
+            "units": "m", 
+            "axis": "Z", 
+            "long_name": "depth", 
+            "climatology": "", 
+            "formula": "", 
+            "must_have_bounds": "yes", 
+            "out_name": "depth", 
+            "positive": "down", 
+            "requested": "", 
+            "requested_bounds": "", 
+            "stored_direction": "increasing", 
+            "tolerance": "", 
+            "type": "double", 
+            "valid_max": "1.0", 
+            "valid_min": "0.0", 
+            "value": "0.5", 
+            "z_bounds_factors": "", 
+            "z_factors": "", 
+            "bounds_values": "0.0 1.0", 
+            "generic_level_name": ""
         }, 
         "siline": {
             "standard_name": "region", 
@@ -1842,14 +2003,10 @@
             "out_name": "line", 
             "positive": "", 
             "requested": [
-                "Fram", 
-                "Strait,", 
-                "Canadian", 
-                "Archipelego,", 
-                "Barents", 
-                "opening,", 
-                "Bering", 
-                "Strait"
+                "fram_strait,", 
+                "canadian_archipelego,", 
+                "barents_opening,", 
+                "bering_strait"
             ], 
             "requested_bounds": "", 
             "stored_direction": "", 
@@ -1860,7 +2017,8 @@
             "value": "", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "site": {
             "standard_name": "", 
@@ -1882,7 +2040,31 @@
             "value": "", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
+        }, 
+        "sithreshold": {
+            "standard_name": "sea_ice_area_fraction", 
+            "units": "%", 
+            "axis": "", 
+            "long_name": "Sea Ice Area Fraction Threshold", 
+            "climatology": "", 
+            "formula": "", 
+            "must_have_bounds": "no", 
+            "out_name": "threshold", 
+            "positive": "", 
+            "requested": "", 
+            "requested_bounds": "", 
+            "stored_direction": "", 
+            "tolerance": "", 
+            "type": "double", 
+            "valid_max": "", 
+            "valid_min": "", 
+            "value": "15.0", 
+            "z_bounds_factors": "", 
+            "z_factors": "", 
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "smooth_level": {
             "standard_name": "atmosphere_sleve_coordinate", 
@@ -1904,7 +2086,31 @@
             "value": "", 
             "z_bounds_factors": "a: a_bnds b1: b1_bnds b2: b2_bnds ztop: ztop zsurf1: zsurf1 zsurf2: zsurf2", 
             "z_factors": "a: a b1: b1 b2: b2 ztop: ztop zsurf1: zsurf1 zsurf2: zsurf2", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": "alevel"
+        }, 
+        "smooth_level_half": {
+            "standard_name": "atmosphere_sleve_coordinate", 
+            "units": "m", 
+            "axis": "Z", 
+            "long_name": "atmosphere smooth level vertical (SLEVE) coordinate", 
+            "climatology": "", 
+            "formula": "z = a*ztop + b1*zsurf1 + b2*zsurf2", 
+            "must_have_bounds": "no", 
+            "out_name": "lev", 
+            "positive": "up", 
+            "requested": "", 
+            "requested_bounds": "", 
+            "stored_direction": "increasing", 
+            "tolerance": "", 
+            "type": "", 
+            "valid_max": "800000.0", 
+            "valid_min": "-200.0", 
+            "value": "", 
+            "z_bounds_factors": "a: a_bnds b1: b1_bnds b2: b2_bnds ztop: ztop zsurf1: zsurf1 zsurf2: zsurf2", 
+            "z_factors": "a: a b1: b1 b2: b2 ztop: ztop zsurf1: zsurf1 zsurf2: zsurf2", 
+            "bounds_values": "", 
+            "generic_level_name": "alevhalf"
         }, 
         "snowband": {
             "standard_name": "surface_snow_thickness", 
@@ -1926,29 +2132,31 @@
             "value": "", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
-        "snowdepth": {
-            "standard_name": "depth", 
-            "units": "m", 
-            "axis": "Z", 
-            "long_name": "depth", 
+        "soilpools": {
+            "standard_name": "", 
+            "units": "", 
+            "axis": "", 
+            "long_name": "Soil Pools", 
             "climatology": "", 
             "formula": "", 
-            "must_have_bounds": "yes", 
-            "out_name": "depth", 
-            "positive": "down", 
+            "must_have_bounds": "no", 
+            "out_name": "type", 
+            "positive": "", 
             "requested": "", 
             "requested_bounds": "", 
-            "stored_direction": "increasing", 
+            "stored_direction": "", 
             "tolerance": "", 
-            "type": "double", 
-            "valid_max": "200.0", 
-            "valid_min": "0.0", 
+            "type": "character", 
+            "valid_max": "", 
+            "valid_min": "", 
             "value": "", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "spectband": {
             "standard_name": "sensor_band_central_radiation_wavenumber", 
@@ -1970,7 +2178,8 @@
             "value": "", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "standard_hybrid_sigma": {
             "standard_name": "atmosphere_hybrid_sigma_pressure_coordinate", 
@@ -1992,7 +2201,31 @@
             "value": "", 
             "z_bounds_factors": "p0: p0 a: a_bnds b: b_bnds ps: ps", 
             "z_factors": "p0: p0 a: a b: b ps: ps", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": "alevel"
+        }, 
+        "standard_hybrid_sigma_half": {
+            "standard_name": "atmosphere_hybrid_sigma_pressure_coordinate", 
+            "units": "1", 
+            "axis": "Z", 
+            "long_name": "hybrid sigma pressure coordinate", 
+            "climatology": "", 
+            "formula": "p = a*p0 + b*ps", 
+            "must_have_bounds": "no", 
+            "out_name": "lev", 
+            "positive": "down", 
+            "requested": "", 
+            "requested_bounds": "", 
+            "stored_direction": "decreasing", 
+            "tolerance": "", 
+            "type": "", 
+            "valid_max": "1.0", 
+            "valid_min": "0.0", 
+            "value": "", 
+            "z_bounds_factors": "p0: p0 a: a_bnds b: b_bnds ps: ps", 
+            "z_factors": "p0: p0 a: a b: b ps: ps", 
+            "bounds_values": "", 
+            "generic_level_name": "alevhalf"
         }, 
         "standard_sigma": {
             "standard_name": "atmosphere_sigma_coordinate", 
@@ -2014,7 +2247,54 @@
             "value": "", 
             "z_bounds_factors": "ptop: ptop sigma: lev_bnds ps: ps", 
             "z_factors": "ptop: ptop sigma: lev ps: ps", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": "alevel"
+        }, 
+        "standard_sigma_half": {
+            "standard_name": "atmosphere_sigma_coordinate", 
+            "units": "", 
+            "axis": "Z", 
+            "long_name": "sigma coordinate", 
+            "climatology": "", 
+            "formula": "p = ptop + sigma*(ps - ptop)", 
+            "must_have_bounds": "no", 
+            "out_name": "lev", 
+            "positive": "down", 
+            "requested": "", 
+            "requested_bounds": "", 
+            "stored_direction": "decreasing", 
+            "tolerance": "", 
+            "type": "", 
+            "valid_max": "1.0", 
+            "valid_min": "0.0", 
+            "value": "", 
+            "z_bounds_factors": "ptop: ptop sigma: lev_bnds ps: ps", 
+            "z_factors": "ptop: ptop sigma: lev ps: ps", 
+            "bounds_values": "", 
+            "generic_level_name": "alevhalf"
+        }, 
+        "stempzero": {
+            "standard_name": "soil_temperature", 
+            "units": "degC", 
+            "axis": "Z", 
+            "long_name": "Soil Temperature Zero", 
+            "climatology": "", 
+            "formula": "", 
+            "must_have_bounds": "no", 
+            "out_name": "stempzero", 
+            "positive": "", 
+            "requested": "", 
+            "requested_bounds": "", 
+            "stored_direction": "", 
+            "tolerance": "", 
+            "type": "double", 
+            "valid_max": "", 
+            "valid_min": "", 
+            "value": "0.0", 
+            "z_bounds_factors": "", 
+            "z_factors": "", 
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "sza5": {
             "standard_name": "solar_zenith_angle", 
@@ -2042,11 +2322,12 @@
             "value": "", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "tau": {
             "standard_name": "atmosphere_optical_thickness_due_to_cloud", 
-            "units": "1.0", 
+            "units": "1", 
             "axis": "", 
             "long_name": "cloud optical thickness", 
             "climatology": "", 
@@ -2087,7 +2368,8 @@
             "value": "", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "time": {
             "standard_name": "time", 
@@ -2109,7 +2391,8 @@
             "value": "", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "time1": {
             "standard_name": "time", 
@@ -2131,51 +2414,8 @@
             "value": "", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
-        }, 
-        "time2": {
-            "standard_name": "time", 
-            "units": "days since ?", 
-            "axis": "T", 
-            "long_name": "time", 
-            "climatology": "", 
-            "formula": "", 
-            "must_have_bounds": "yes", 
-            "out_name": "time", 
-            "positive": "", 
-            "requested": "", 
-            "requested_bounds": "", 
-            "stored_direction": "increasing", 
-            "tolerance": "", 
-            "type": "double", 
-            "valid_max": "", 
-            "valid_min": "", 
-            "value": "", 
-            "z_bounds_factors": "", 
-            "z_factors": "", 
-            "bounds_values": ""
-        }, 
-        "time3": {
-            "standard_name": "time", 
-            "units": "days since ?", 
-            "axis": "T", 
-            "long_name": "time", 
-            "climatology": "", 
-            "formula": "", 
-            "must_have_bounds": "yes", 
-            "out_name": "time", 
-            "positive": "", 
-            "requested": "", 
-            "requested_bounds": "", 
-            "stored_direction": "increasing", 
-            "tolerance": "", 
-            "type": "double", 
-            "valid_max": "", 
-            "valid_min": "", 
-            "value": "", 
-            "z_bounds_factors": "", 
-            "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "typebare": {
             "standard_name": "area_type", 
@@ -2197,7 +2437,8 @@
             "value": "bare_ground", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "typeburnt": {
             "standard_name": "area_type", 
@@ -2219,7 +2460,77 @@
             "value": "burnt_vegetation", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
+        }, 
+        "typec3crop": {
+            "standard_name": "area_type", 
+            "units": "", 
+            "axis": "", 
+            "long_name": "surface type", 
+            "climatology": "", 
+            "formula": "", 
+            "must_have_bounds": "no", 
+            "out_name": "type", 
+            "positive": "", 
+            "requested": "", 
+            "requested_bounds": "", 
+            "stored_direction": "", 
+            "tolerance": "", 
+            "type": "character", 
+            "valid_max": "", 
+            "valid_min": "", 
+            "value": "crops_of_c3_plant_functional_types", 
+            "z_bounds_factors": "", 
+            "z_factors": "", 
+            "bounds_values": "", 
+            "generic_level_name": ""
+        }, 
+        "typec3natg": {
+            "standard_name": "area_type", 
+            "units": "", 
+            "axis": "", 
+            "long_name": "C3 Natural grass area type", 
+            "climatology": "", 
+            "formula": "", 
+            "must_have_bounds": "no", 
+            "out_name": "type", 
+            "positive": "", 
+            "requested": "", 
+            "requested_bounds": "", 
+            "stored_direction": "", 
+            "tolerance": "", 
+            "type": "character", 
+            "valid_max": "", 
+            "valid_min": "", 
+            "value": "natural_grasses_of_c3_plant_functional_types", 
+            "z_bounds_factors": "", 
+            "z_factors": "", 
+            "bounds_values": "", 
+            "generic_level_name": ""
+        }, 
+        "typec3pastures": {
+            "standard_name": "area_type", 
+            "units": "", 
+            "axis": "", 
+            "long_name": "C3 Pastures area type", 
+            "climatology": "", 
+            "formula": "", 
+            "must_have_bounds": "no", 
+            "out_name": "type", 
+            "positive": "", 
+            "requested": "", 
+            "requested_bounds": "", 
+            "stored_direction": "", 
+            "tolerance": "", 
+            "type": "character", 
+            "valid_max": "", 
+            "valid_min": "", 
+            "value": "pastures_of_c3_plant_functional_types", 
+            "z_bounds_factors": "", 
+            "z_factors": "", 
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "typec3pft": {
             "standard_name": "area_type", 
@@ -2241,7 +2552,77 @@
             "value": "c3_plant_functional_types", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
+        }, 
+        "typec4crop": {
+            "standard_name": "area_type", 
+            "units": "", 
+            "axis": "", 
+            "long_name": "surface type", 
+            "climatology": "", 
+            "formula": "", 
+            "must_have_bounds": "no", 
+            "out_name": "type", 
+            "positive": "", 
+            "requested": "", 
+            "requested_bounds": "", 
+            "stored_direction": "", 
+            "tolerance": "", 
+            "type": "character", 
+            "valid_max": "", 
+            "valid_min": "", 
+            "value": "crops_of_c4_plant_functional_types", 
+            "z_bounds_factors": "", 
+            "z_factors": "", 
+            "bounds_values": "", 
+            "generic_level_name": ""
+        }, 
+        "typec4natg": {
+            "standard_name": "area_type", 
+            "units": "", 
+            "axis": "", 
+            "long_name": "C4 Natural grass area type", 
+            "climatology": "", 
+            "formula": "", 
+            "must_have_bounds": "no", 
+            "out_name": "type", 
+            "positive": "", 
+            "requested": "", 
+            "requested_bounds": "", 
+            "stored_direction": "", 
+            "tolerance": "", 
+            "type": "character", 
+            "valid_max": "", 
+            "valid_min": "", 
+            "value": "natural_grasses_of_c4_plant_functional_types", 
+            "z_bounds_factors": "", 
+            "z_factors": "", 
+            "bounds_values": "", 
+            "generic_level_name": ""
+        }, 
+        "typec4pastures": {
+            "standard_name": "area_type", 
+            "units": "", 
+            "axis": "", 
+            "long_name": "C4 Pastures area type", 
+            "climatology": "", 
+            "formula": "", 
+            "must_have_bounds": "no", 
+            "out_name": "type", 
+            "positive": "", 
+            "requested": "", 
+            "requested_bounds": "", 
+            "stored_direction": "", 
+            "tolerance": "", 
+            "type": "character", 
+            "valid_max": "", 
+            "valid_min": "", 
+            "value": "pastures_of_c4_plant_functional_types", 
+            "z_bounds_factors": "", 
+            "z_factors": "", 
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "typec4pft": {
             "standard_name": "area_type", 
@@ -2263,7 +2644,8 @@
             "value": "c4_plant_functional_types", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "typecloud": {
             "standard_name": "area_type", 
@@ -2285,7 +2667,8 @@
             "value": "cloud", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "typecrop": {
             "standard_name": "area_type", 
@@ -2307,7 +2690,8 @@
             "value": "crops", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "typefis": {
             "standard_name": "area_type", 
@@ -2329,7 +2713,8 @@
             "value": "floating_ice_shelf", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "typegis": {
             "standard_name": "area_type", 
@@ -2351,7 +2736,8 @@
             "value": "grounded_ice_sheet", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "typeland": {
             "standard_name": "area_type", 
@@ -2373,7 +2759,8 @@
             "value": "land", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "typeli": {
             "standard_name": "area_type", 
@@ -2395,7 +2782,8 @@
             "value": "land_ice", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "typemp": {
             "standard_name": "area_type", 
@@ -2417,7 +2805,8 @@
             "value": "sea_ice_melt_pond", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "typenatgr": {
             "standard_name": "area_type", 
@@ -2439,7 +2828,8 @@
             "value": "natural_grasses", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "typenwd": {
             "standard_name": "area_type", 
@@ -2458,10 +2848,11 @@
             "type": "character", 
             "valid_max": "", 
             "valid_min": "", 
-            "value": "non_woody_vegetation", 
+            "value": "herbaceous_vegetation", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "typepasture": {
             "standard_name": "area_type", 
@@ -2483,7 +2874,8 @@
             "value": "pastures", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "typepdec": {
             "standard_name": "area_type", 
@@ -2505,7 +2897,8 @@
             "value": "primary_deciduous_trees", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "typepever": {
             "standard_name": "area_type", 
@@ -2527,7 +2920,8 @@
             "value": "primary_evergreen_trees", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "typeresidual": {
             "standard_name": "", 
@@ -2549,7 +2943,8 @@
             "value": "residual", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "typesdec": {
             "standard_name": "area_type", 
@@ -2571,7 +2966,8 @@
             "value": "secondary_decidous_trees", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "typesea": {
             "standard_name": "area_type", 
@@ -2593,7 +2989,8 @@
             "value": "sea", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "typesever": {
             "standard_name": "area_type", 
@@ -2615,7 +3012,8 @@
             "value": "secondary_evergreen_trees", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "typeshrub": {
             "standard_name": "area_type", 
@@ -2637,7 +3035,8 @@
             "value": "shrubs", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "typesi": {
             "standard_name": "area_type", 
@@ -2659,7 +3058,31 @@
             "value": "sea_ice", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
+        }, 
+        "typesirdg": {
+            "standard_name": "area_type", 
+            "units": "", 
+            "axis": "", 
+            "long_name": "Sea Ice Ridge  area type", 
+            "climatology": "", 
+            "formula": "", 
+            "must_have_bounds": "no", 
+            "out_name": "type", 
+            "positive": "", 
+            "requested": "", 
+            "requested_bounds": "", 
+            "stored_direction": "", 
+            "tolerance": "", 
+            "type": "character", 
+            "valid_max": "", 
+            "valid_min": "", 
+            "value": "sea_ice_ridges", 
+            "z_bounds_factors": "", 
+            "z_factors": "", 
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "typetree": {
             "standard_name": "area_type", 
@@ -2681,7 +3104,8 @@
             "value": "trees", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "typetreebd": {
             "standard_name": "area_type", 
@@ -2703,7 +3127,8 @@
             "value": "trees", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "typetreebe": {
             "standard_name": "area_type", 
@@ -2725,13 +3150,14 @@
             "value": "trees", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "typetreend": {
             "standard_name": "area_type", 
             "units": "", 
             "axis": "", 
-            "long_name": "Tree area type (Narrowleaf Deciduous)", 
+            "long_name": "Tree area type (Needleleaf Deciduous)", 
             "climatology": "", 
             "formula": "", 
             "must_have_bounds": "no", 
@@ -2747,13 +3173,14 @@
             "value": "trees", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "typetreene": {
             "standard_name": "area_type", 
             "units": "", 
             "axis": "", 
-            "long_name": "Tree area type (Narrowleaf Evergreen)", 
+            "long_name": "Tree area type (Needleleaf Evergreen)", 
             "climatology": "", 
             "formula": "", 
             "must_have_bounds": "no", 
@@ -2769,7 +3196,8 @@
             "value": "trees", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "typeveg": {
             "standard_name": "area_type", 
@@ -2791,7 +3219,8 @@
             "value": "vegetation", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "typewetla": {
             "standard_name": "area_type", 
@@ -2810,16 +3239,17 @@
             "type": "character", 
             "valid_max": "", 
             "valid_min": "", 
-            "value": "", 
+            "value": "wetland", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "vegtype": {
             "standard_name": "", 
             "units": "", 
             "axis": "", 
-            "long_name": "plant functional type", 
+            "long_name": "Vegetation or Land Cover Type", 
             "climatology": "", 
             "formula": "", 
             "must_have_bounds": "no", 
@@ -2835,13 +3265,14 @@
             "value": "", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "xant": {
             "standard_name": "projection_x_coordinate", 
             "units": "km", 
             "axis": "", 
-            "long_name": "", 
+            "long_name": "X-coordinate of Antarctic grid", 
             "climatology": "", 
             "formula": "", 
             "must_have_bounds": "", 
@@ -2857,13 +3288,14 @@
             "value": "", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "xgre": {
             "standard_name": "projection_x_coordinate", 
             "units": "km", 
             "axis": "", 
-            "long_name": "", 
+            "long_name": "X-coordinate of Greenland grid", 
             "climatology": "", 
             "formula": "", 
             "must_have_bounds": "", 
@@ -2879,13 +3311,14 @@
             "value": "", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "yant": {
             "standard_name": "projection_y_coordinate", 
             "units": "km", 
             "axis": "", 
-            "long_name": "", 
+            "long_name": "Y-coordinate of Antarctic grid", 
             "climatology": "", 
             "formula": "", 
             "must_have_bounds": "", 
@@ -2901,13 +3334,14 @@
             "value": "", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
         }, 
         "ygre": {
             "standard_name": "projection_y_coordinate", 
             "units": "km", 
             "axis": "", 
-            "long_name": "", 
+            "long_name": "Y-coordinate of Greenland grid", 
             "climatology": "", 
             "formula": "", 
             "must_have_bounds": "", 
@@ -2923,7 +3357,54 @@
             "value": "", 
             "z_bounds_factors": "", 
             "z_factors": "", 
-            "bounds_values": ""
+            "bounds_values": "", 
+            "generic_level_name": ""
+        }, 
+        "time2": {
+            "standard_name": "time", 
+            "units": "days since ?", 
+            "axis": "T", 
+            "long_name": "time", 
+            "climatology": "yes", 
+            "formula": "", 
+            "must_have_bounds": "yes", 
+            "out_name": "time", 
+            "positive": "", 
+            "requested": "", 
+            "requested_bounds": "", 
+            "stored_direction": "increasing", 
+            "tolerance": "", 
+            "type": "double", 
+            "valid_max": "", 
+            "valid_min": "", 
+            "value": "", 
+            "z_bounds_factors": "", 
+            "z_factors": "", 
+            "bounds_values": "", 
+            "generic_level_name": ""
+        }, 
+        "time3": {
+            "standard_name": "time", 
+            "units": "days since ?", 
+            "axis": "T", 
+            "long_name": "time", 
+            "climatology": "yes", 
+            "formula": "", 
+            "must_have_bounds": "yes", 
+            "out_name": "time", 
+            "positive": "", 
+            "requested": "", 
+            "requested_bounds": "", 
+            "stored_direction": "increasing", 
+            "tolerance": "", 
+            "type": "double", 
+            "valid_max": "", 
+            "valid_min": "", 
+            "value": "", 
+            "z_bounds_factors": "", 
+            "z_factors": "", 
+            "bounds_values": "", 
+            "generic_level_name": ""
         }
     }
 }
