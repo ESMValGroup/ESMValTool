@@ -3,7 +3,7 @@
 ; #############################################################################
 ;
 ; Tier
-;    Tier 2 other freely-available dataset.
+;    Tier 2 - other freely-available dataset.
 ;
 ; Source
 ;    https://cds.climate.copernicus.eu/cdsapp#!/dataset/
