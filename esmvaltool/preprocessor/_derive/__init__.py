@@ -2,13 +2,10 @@
 
 import importlib
 import logging
-import os
 from copy import deepcopy
 from pathlib import Path
 
 import iris
-
-from ._baseclass import DerivedVariableBase
 
 logger = logging.getLogger(__name__)
 
@@ -55,8 +52,8 @@ def get_required(short_name):
         and occasionally mip or fx_files.
 
     """
-    DerivedVariable = ALL_DERIVED_VARIABLES[short_name]
-    variables = deepcopy(DerivedVariable().required)
+    derived_variable = ALL_DERIVED_VARIABLES[short_name]
+    variables = deepcopy(derived_variable().required)
     return variables
 
 
@@ -99,15 +96,19 @@ def derive(cubes,
     if fx_files:
         for (fx_var, fx_path) in fx_files.items():
             if fx_path is not None:
-                cubes.append(iris.load_cube(fx_path))
+                fx_cube = iris.load_cube(
+                    fx_path,
+                    constraint=iris.Constraint(
+                        cube_func=lambda c, var=fx_var: c.var_name == var))
+                cubes.append(fx_cube)
             else:
                 logger.debug(
                     "Requested fx variable '%s' for derivation of "
                     "'%s' not found", fx_var, short_name)
 
     # Derive variable
-    DerivedVariable = ALL_DERIVED_VARIABLES[short_name]
-    cube = DerivedVariable().calculate(cubes)
+    derived_variable = ALL_DERIVED_VARIABLES[short_name]
+    cube = derived_variable().calculate(cubes)
 
     # Set standard attributes
     cube.var_name = short_name
