@@ -30,7 +30,7 @@ documentation:
 
 
 datasets:
-  - {dataset: MRI-CGCM3,  project: CMIP5,  mip: Amon,  exp: decadal1980,  ensemble: r1i1p1,  start_year: 1991,  end_year: 2000}
+  - {dataset: MRI-CGCM3,  project: CMIP5,  mip: Amon,  exp: decadal1980,  ensemble: r1i1p1,  start_year: 1999,  end_year: 2000}
 #  - {dataset: XCH4, type: sat, project: OBS,  level: L3, version: CDS, start_year: 2003,  end_year: 2016}
 # looks for: [project]_[obssystem]_[dataset]_[level]_[field]_[short_name]*
 preprocessors:
@@ -59,18 +59,18 @@ diagnostics:
 #        script: qualassess/ta_C3S_511_SPQB.py
 #        requests: [histogram]
 #        levels: [3.00e+04,8.50e+04,1.00e+02]
-#      diag_MV_ts:
-#        script: qualassess/ta_C3S_511_SPQB.py
-#        requests: [time_series]
-#        levels: [3.00e+04,8.50e+04,1.00e+02]
-#      diag_MV_mean:
-#        script: qualassess/ta_C3S_511_SPQB.py
-#        requests: [mean]
-#        levels: [3.00e+04,8.50e+04,1.00e+02]
-#      diag_MV_std_dev:
-#        script: qualassess/ta_C3S_511_SPQB.py
-#        requests: [std_dev]
-#        levels: [3.00e+04,8.50e+04,1.00e+02]
+      diag_MV_ts:
+        script: qualassess/ta_C3S_511_SPQB.py
+        requests: [time_series]
+        levels: [3.00e+04,8.50e+04,1.00e+02]
+      diag_MV_mean:
+        script: qualassess/ta_C3S_511_SPQB.py
+        requests: [mean]
+        levels: [3.00e+04,8.50e+04,1.00e+02]
+      diag_MV_std_dev:
+        script: qualassess/ta_C3S_511_SPQB.py
+        requests: [std_dev]
+        levels: [3.00e+04,8.50e+04,1.00e+02]
 #      diag_MV_perc:
 #        script: qualassess/ta_C3S_511_SPQB.py
 #        requests: [percentiles]
@@ -83,10 +83,10 @@ diagnostics:
 #        script: qualassess/ta_C3S_511_SPQB.py
 #        requests: [anomalies]
 #        levels: [3.00e+04,8.50e+04,1.00e+02]
-      diag_T_trend: #worst for memory
-        script: qualassess/ta_C3S_511_SPQB.py
-        requests: [lintrend]
-        levels: [3.00e+04,8.50e+04,1.00e+02]
+#      diag_T_trend: #worst for memory
+#        script: qualassess/ta_C3S_511_SPQB.py
+#        requests: [lintrend]
+#        levels: [3.00e+04,8.50e+04,1.00e+02]
 #      diag_custom:
 #        script: qualassess/ta_C3S_511_SPQB.py
 #        requests: [custom]
@@ -102,9 +102,9 @@ diagnostics:
 #        order: [diag_O_info, diag_tables, diag_O_hist, diag_O_avail,
 #                diag_MV_ts, diag_MV_mean, diag_MV_std_dev, diag_MV_perc, 
 #                diag_MV_clim, diag_MV_anom, diag_T_trend, diag_custom]
-#        order: [diag_tables, diag_MV_ts, diag_MV_mean ,diag_MV_std_dev, diag_MV_clim, diag_MV_anom, diag_custom]
-#        order: [diag_tables, diag_MV_mean]
-#        order: [diag_MV_ts, iag_MV_mean, diag_MV_std_dev]
+##        order: [diag_tables, diag_MV_ts, diag_MV_mean ,diag_MV_std_dev, diag_MV_clim, diag_MV_anom, diag_custom]
+##        order: [diag_tables, diag_MV_mean]
+##        order: [diag_MV_ts, iag_MV_mean, diag_MV_std_dev]
 #        show_latex: False #options are: True/False/no_latex
         
 #  diagnostic1:

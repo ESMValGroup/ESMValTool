@@ -1121,46 +1121,13 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
     
             del plotcube
             
-#            for d in reg_dimensions:
-#                
-#                long_left_over = [rd for rd in reg_dimensions if rd != d]
-#            
-#                plotcube =cube.collapsed(d,iris.analysis.MEAN,weights=iris.analysis.cartography.area_weights(cube))
-#                
-#                try: 
-#                    vminmax = np.nanpercentile(plotcube.data.compressed(),
-#                                               [5, 95])
-#                except:
-#                    vminmax = np.nanpercentile(plotcube.data,
-#                                               [5, 95])
-#                
-#                
-#                data_info.append(dict({"name":"meanREF",
-#                                       "data": plotcube,
-#                                       "dim":d,
-#                                       "llo":long_left_over,
-#                                       "ctype":"Data",
-#                                       "vminmax":vminmax,
-#                                       "mmtype":"abs",
-#                                       }))
-#    
-#            del plotcube
-            
         if "std_dev" in self.__requested_diags__:
             
             for d in reg_dimensions:
                 
                 long_left_over = [rd for rd in reg_dimensions if rd != d]
-            
-#                plotcube = self.__apply_fun2cube__(cube,
-#                                                   dims=d,
-#                                                   function=iris.analysis.STD_DEV
-#                                                   )
-                plotcube = utils.weighted_STD_DEV(
-                    cube,
-                    d,
-                    weights=iris.analysis.cartography.area_weights(cube)
-                        )
+
+                plotcube =  utils.dask_weighted_stddev_wrapper(cube,self.map_area_frac,dims=d)
                 
                 try: 
                     vminmax = np.nanpercentile(plotcube.data.compressed(),
@@ -1180,35 +1147,6 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                                        }))
     
             del plotcube
-            
-#            for d in reg_dimensions:
-#                
-#                long_left_over = [rd for rd in reg_dimensions if rd != d]
-#            
-##                plotcube = self.__apply_fun2cube__(cube,
-##                                                   dims=d,
-##                                                   function=iris.analysis.STD_DEV
-##                                                   )
-#                plotcube =  utils.dask_weighted_stddev_wrapper(cube,self.map_area_frac,dims=d)
-#                
-#                try: 
-#                    vminmax = np.nanpercentile(plotcube.data.compressed(),
-#                                               [5, 95])
-#                except:
-#                    vminmax = np.nanpercentile(plotcube.data,
-#                                               [5, 95])
-#                
-#                
-#                data_info.append(dict({"name":"std_dev",
-#                                       "data": plotcube,
-#                                       "dim":d,
-#                                       "llo":long_left_over,
-#                                       "ctype":"Sequential",
-#                                       "vminmax":vminmax,
-#                                       "mmtype":None,
-#                                       }))
-#    
-#            del plotcube
             
         if "percentiles" in self.__requested_diags__:
             
@@ -1361,27 +1299,18 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                 long_left_over = [rd for rd in reg_dimensions if rd != d]
             
                 plotcubes_m = utils.dask_weighted_mean_wrapper(cube,self.map_area_frac, dims=long_left_over)
-#                plotcubes_std = self.__apply_fun2cube__(cube,
-#                                                        dims=long_left_over,
-#                                                        function=iris.analysis.STD_DEV,
-#                                                        incl_weights = True
-#                                                        )
-#                plotcubes_std = cube.collapsed(long_left_over, iris.analysis.STD_DEV)
-#                plotcubes_std.remove_coord("day_of_month")
-#                plotcubes_std.remove_coord("day_of_year")
-#                plotcubes_std.remove_coord("month_number")
-#                plotcubes_std.remove_coord("year")
-#                
-#                plotcubes_std_p = plotcubes_m + plotcubes_std
-#                plotcubes_std_m = plotcubes_m - plotcubes_std
-#    
+                plotcubes_std = utils.dask_weighted_stddev_wrapper(cube,self.map_area_frac, dims=long_left_over)
+
+                plotcubes_std_p = plotcubes_m + plotcubes_std
+                plotcubes_std_m = plotcubes_m - plotcubes_std
+    
                 filename = self.__plot_dir__ + os.sep + basic_filename + \
                     "_" + "temp_series_1d" + "." + self.__output_type__
                 list_of_plots.append(filename)
     
-                x = Plot1D(iris.cube.CubeList([#plotcubes_std_p,
+                x = Plot1D(iris.cube.CubeList([plotcubes_std_p,
                                                plotcubes_m,
-                                               #plotcubes_std_m
+                                               plotcubes_std_m
                                                ]))
     
                 fig = plt.figure()
@@ -1389,13 +1318,13 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                 ax = [plt.subplot(1, 1, 1)]
                 fig.set_figheight(1.2 * fig.get_figheight())
                 x.plot(ax=ax,
-                       title=[#"+ std",
+                       title=["+ std",
                               "mean",
-                              #"- std"
+                              "- std"
                               ],
-                       colors=[#"blue",
+                       colors=["blue",
                                "red",
-                               #"blue"
+                               "blue"
                                ])
                 fig.savefig(filename)
                 plt.close(fig.number)
@@ -1563,15 +1492,6 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                 long_left_over = [d,self.level_dim]
             
                 plotcube = utils.dask_weighted_mean_wrapper(cube,self.map_area_frac,dims=long_agg)
-#                
-#                for d_agg in long_agg:
-#                    
-#                    self.__logger__.info(d_agg)
-#            
-#                    plotcube = self.__apply_fun2cube__(plotcube,
-#                                                       dims=d_agg,
-#                                                       function=iris.analysis.MEAN)
-#                    self.__logger__.info(plotcube)
                 
                 try: 
                     vminmax = np.nanpercentile(plotcube.data.compressed(),
@@ -1591,41 +1511,6 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                                        }))
         
             del plotcube
-            
-#            for d in reg_dimensions:
-#                
-#                long_agg = [rd for rd in reg_dimensions if rd != d]
-#                long_left_over = [d,self.level_dim]
-#            
-#                plotcube = cube.collapsed(long_agg,iris.analysis.MEAN,weights=iris.analysis.cartography.area_weights(cube))
-##                
-##                for d_agg in long_agg:
-##                    
-##                    self.__logger__.info(d_agg)
-##            
-##                    plotcube = self.__apply_fun2cube__(plotcube,
-##                                                       dims=d_agg,
-##                                                       function=iris.analysis.MEAN)
-##                    self.__logger__.info(plotcube)
-#                
-#                try: 
-#                    vminmax = np.nanpercentile(plotcube.data.compressed(),
-#                                               [5, 95])
-#                except:
-#                    vminmax = np.nanpercentile(plotcube.data,
-#                                               [5, 95])
-#                
-#                
-#                data_info.append(dict({"name":"mean2",
-#                                       "data": plotcube,
-#                                       "dim":d,
-#                                       "llo":long_left_over,
-#                                       "ctype":"Data",
-#                                       "vminmax":vminmax,
-#                                       "mmtype":"abs",
-#                                       }))
-#        
-#            del plotcube
     
         if "std_dev" in self.__requested_diags__:
             
@@ -1634,25 +1519,7 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                 long_agg = [rd for rd in reg_dimensions if rd != d]
                 long_left_over = [d,self.level_dim]
             
-                plotcube = utils.weighted_STD_DEV(
-                    cube,
-                    long_agg,
-                    weights=iris.analysis.cartography.area_weights(cube)
-                        )
-                
-#                plotcube = cube.copy()
-#                
-#                for d_agg in long_agg:
-#                    
-#                    self.__logger__.info(d_agg)
-#            
-##                    plotcube = self.__apply_fun2cube__(plotcube,
-##                                                       dims=d_agg,
-##                                                       function=iris.analysis.STD_DEV
-##                                                       )
-#                    
-#    
-#                    self.__logger__.info(plotcube)
+                plotcube = utils.dask_weighted_stddev_wrapper(cube,self.map_area_frac,dims=long_agg)
                 
                 try: 
                     vminmax = np.nanpercentile(plotcube.data.compressed(),

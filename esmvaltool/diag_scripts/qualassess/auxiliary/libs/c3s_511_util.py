@@ -9,6 +9,7 @@ import imp
 import os
 import sys
 import numpy as np
+import dask
 from scipy import stats
 import cf_units
 #import matplotlib.pyplot as plt
@@ -434,13 +435,12 @@ def dask_weighted_mean_wrapper(cube, spatial_weights, dims=None):
         
         for latlon in cube.slices(["latitude","longitude"]):
             
-            # adjust cube to slicing
-            latlon.remove_coord("day_of_month")
-            latlon.remove_coord("day_of_year")
-            latlon.remove_coord("month_number")
-            latlon.remove_coord("year")
-#            latlon.standard_name = cube.standard_name
-#            latlon.long_name = cube.long_name
+            for rcoord in ["day_of_month", "day_of_year", "month_number", "year"]:
+                if rcoord in [coord.name() for coord in latlon.coords()]:
+                    try:
+                        latlon.remove_coord(rcoord)
+                    except:
+                        latlon.remove_aux_factory(rcoord)
     
             latlon = latlon.collapsed("latitude", iris.analysis.MEAN,
                                       weights = spatial_weights.compute())
@@ -455,11 +455,42 @@ def dask_weighted_mean_wrapper(cube, spatial_weights, dims=None):
         if len(dims):
             new_cube = new_cube.collapsed(dims, iris.analysis.MEAN)
             
+        dims.append("latitude")
+            
     else:
         new_cube = cube.collapsed(dims, iris.analysis.MEAN)
     
     return new_cube
 
-#def dask_weighted_stddev_wrapper(cube, spatial_weights, dims=None):
-#
-#    return dask_weighted_mean_wrapper(cube, spatial_weights, dims=dims)
+def dask_weighted_stddev_wrapper(cube, spatial_weights, dims=None):    
+    weighted_mean = dask_weighted_mean_wrapper(cube,
+                                               spatial_weights,
+                                               dims=dims)
+    
+    for rcoord in ["day_of_month", "day_of_year", "month_number", "year"]:
+        if (rcoord in [coord.name() for coord in weighted_mean.coords()] or
+            rcoord in [coord.name() for coord in cube.coords()]):
+            logger.info("removing " + rcoord)
+            try:
+                cube.remove_coord(rcoord)
+            except:
+                cube.remove_aux_factory(rcoord)
+    
+    if "air_pressure" in [coord.name() for coord in cube.coords()]:
+        if np.all((dask.array.flip(weighted_mean.coord("air_pressure").core_points(),0) == cube.coord("air_pressure").core_points()).compute()):
+            latlontim_list = []
+            for latlontim in cube.slices(["time","latitude","longitude"]):
+                latlontim_list.append(latlontim)
+               
+            cube_list = iris.cube.CubeList(latlontim_list)
+            cube = cube_list.merge_cube()
+
+    sqdifference = (cube - weighted_mean) ** 2
+    
+    variance = dask_weighted_mean_wrapper(sqdifference,
+                                          spatial_weights,
+                                          dims=dims)
+    
+    std_dev = variance ** 0.5
+
+    return std_dev
