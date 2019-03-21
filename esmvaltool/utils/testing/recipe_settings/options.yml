@@ -217,8 +217,11 @@ recipe_rainfarm.yml:
     - 0
   nens:  # number of ensemble members to be calculated
     - 2
+    - 3
+    - 5
   nf:  # subdivisions for downscaling
     - 8
+    - 3
   conserv_glob:  # conserve precipitation over full domain (choose either glob or smooth, glob has priority)
     - false
     - true
@@ -227,6 +230,7 @@ recipe_rainfarm.yml:
     - true
   weights_climo:   # orographic weights: set to false or full path to a fine-scale precipitation climatology file
     - false
+    #TODO: test with file
 
 recipe_zmnam.yml:
 
