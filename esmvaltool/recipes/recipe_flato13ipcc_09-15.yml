@@ -62,35 +62,74 @@ preprocessors:
       <<: *fig_9_15_regrid
 
 
+FIG_9_15_PARAMS:
+  GENERAL: &fig_9_15_params
+    start_year: 1986
+    end_year: 2005
+  CMIP5_MODELS: &fig_9_15_CMIP5_models
+    project: CMIP5
+    ensemble: r1i1p1
+    exp: historical
+    additional_datasets:
+      - dataset: CanESM2
+      - dataset: CNRM-CM5
+      - dataset: CSIRO-Mk3-6-0
+      - dataset: GFDL-ESM2M
+      - dataset: GISS-E2-R
+      # - dataset: HadGEM2-ES
+      - dataset: IPSL-CM5A-LR
+      # - dataset: MPI-ESM-LR
+      # - dataset: MRI-CGCM3
+      # - dataset: NorESM1-M
+      # - dataset: GFDL-ESM2G
+      # - dataset: MIROC-ESM-CHEM
+  CMIP6_PARAMS: &fig_9_15_CMIP6_params
+    project: CMIP6
+    activity: CMIP
+    grid: gn
+    exp: historical
+    ensemble: r1i1p1f1
+  CMIP6_MODELS_THETAO: &fig_9_15_CMIP6_models_thetao
+    additional_datasets:
+      # - dataset: BCC-CSM2-MR  # only thetao
+      # - dataset: BCC-ESM1  # only thetao
+      - dataset: GISS-E2-1-G  # only thetao
+      - dataset: IPSL-CM6A-LR
+      - dataset: CESM2
+  CMIP6_MODELS_SICONC: &fig_9_15_CMIP6_models_siconc
+    additional_datasets:
+      # - dataset: EC-Earth3-Veg
+      - dataset: CESM2
+      - dataset: IPSL-CM6A-LR
+      # - dataset: MIROC6
+      # - dataset: CESM2-WACCM  # broken record
+
+
 diagnostics:
   ipcc_fig_9_15:
     description: Ocean bottom layer potential temperature (fig 9.15)
     variables:
-      thetao_models: &fig_9_15_thetao_models
-        project: CMIP5
-        start_year: 1986
-        end_year: 2005
-        exp: historical
-        ensemble: r1i1p1
+      thetao_CMIP5_models:
+        <<: *fig_9_15_params
         short_name: thetao
         mip: Omon
         field: TO3M
         preprocessor: bottom_layer_ts_to_clim_thetao
-        additional_datasets:
-          - dataset: CanESM2
-          - dataset: CNRM-CM5
-          - dataset: CSIRO-Mk3-6-0
-          - dataset: GFDL-ESM2M
-          - dataset: GISS-E2-R
-          - dataset: HadGEM2-ES
-          - dataset: IPSL-CM5A-LR
-          - dataset: MPI-ESM-LR
-          - dataset: MRI-CGCM3
-          - dataset: NorESM1-M
-          - dataset: GFDL-ESM2G
-      thetao_obs: &fig_9_15_thetao_obs
-        <<: *fig_9_15_thetao_models
+        <<: *fig_9_15_CMIP5_models
+      thetao_CMIP6_models:
+        <<: *fig_9_15_params
+        <<: *fig_9_15_CMIP6_params
+        short_name: thetao
+        mip: Omon
+        field: TO3M
+        preprocessor: bottom_layer_ts_to_clim_thetao
+        <<: *fig_9_15_CMIP6_models_thetao
+      thetao_obs:
+        <<: *fig_9_15_params
         project: OBS
+        short_name: thetao
+        mip: Omon
+        field: TO3M
         start_year: 1990
         end_year: 1998
         preprocessor: bottom_layer_clim_thetao
@@ -99,14 +138,23 @@ diagnostics:
             tier: 2
             type: clim
             version: 2004
-      sic_models_feb: &fig_9_15_sic_models_feb
-        <<: *fig_9_15_thetao_models
+      sic_CMIP5_models_feb: &fig_9_15_sic_CMIP5_models_feb
+        <<: *fig_9_15_params
         short_name: sic
         mip: OImon
         field: T2Ms
         preprocessor: feb_climatology
+        <<: *fig_9_15_CMIP5_models
+      sic_CMIP6_models_feb: &fig_9_15_sic_CMIP6_models_feb
+        <<: *fig_9_15_params
+        <<: *fig_9_15_CMIP6_params
+        short_name: siconc
+        mip: SImon
+        field: T2Ms
+        preprocessor: feb_climatology
+        <<: *fig_9_15_CMIP6_models_siconc
       sic_obs_feb: &fig_9_15_sic_obs_feb
-        <<: *fig_9_15_thetao_models
+        <<: *fig_9_15_params
         short_name: sic
         mip: OImon
         field: T2Ms
@@ -117,8 +165,11 @@ diagnostics:
             tier: 2
             type: reanaly
             version: 1
-      sic_models_aug:
-        <<: *fig_9_15_sic_models_feb
+      sic_CMIP5_models_aug:
+        <<: *fig_9_15_sic_CMIP5_models_feb
+        preprocessor: aug_climatology
+      sic_CMIP6_models_aug:
+        <<: *fig_9_15_sic_CMIP6_models_feb
         preprocessor: aug_climatology
       sic_obs_aug:
         <<: *fig_9_15_sic_obs_feb
@@ -126,3 +177,5 @@ diagnostics:
     scripts:
       ipcc_fig_9_15:
         script: ipcc_ar5/ch09_fig09_15.py
+        thetao_reference: WOCE
+        sic_reference: HadISST

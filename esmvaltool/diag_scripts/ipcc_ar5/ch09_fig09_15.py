@@ -66,27 +66,17 @@ def cm_to_inch(cm):
     CM_PER_INCH = 2.54
     return cm/CM_PER_INCH
 
-# from auxiliary import info, warning, error  # noqa: F401
-# from smhi import regrid_esmpy
-# from smhi.pipeline import (build_var_constraint,
-#                            load,
-#                            LoadingStep, ProcessingStep)
-# from smhi.tools import (
-#     calc_error,
-#     ensure_dir_exists,
-#     get_plot_options,
-#     prepare_project_info,
-#     tag_output_file,
-# )
-
+def inch_to_cm(inch):
+    CM_PER_INCH = 2.54
+    return inch*CM_PER_INCH
 
 def calc_error(data, reference=None):
     if reference is None:
         return None
-    error = data[1] - reference[1]
-    error.metadata = data[1].metadata
+    error = data - reference
+    error.metadata = data.metadata
     error.long_name += ' error'
-    return data[0], error
+    return error
 
 
 def setup_figure(no_plots, auto_arrange=False):
@@ -121,23 +111,31 @@ def plot_field(ax, data, index=None, show_rms=True, **kwargs):
     mesh = iplt.pcolormesh(field, axes=ax, **kwargs)
     mesh.set_rasterized(True)
     ax.coastlines()
+    # Calculate fontsize. Empirically determined as 1/12 of axes height to
+    # optimally use antarctica space.
+    POINTS_PER_INCH = 72.
+    scale_transform = ax.figure.dpi_scale_trans.inverted()
+    ax_height = ax.get_window_extent().transformed(scale_transform).height
+    fontsize = int(ax_height/12.*POINTS_PER_INCH)
     ax.text(
-        0.54, 0.49,
+        0.54, 0.485,
         model,
         horizontalalignment='center',
         verticalalignment='center',
         transform=ax.transAxes,
+        fontsize=fontsize,
     )
     if show_rms:
         weights = area_weights(field)
         rms = field.collapsed(['latitude', 'longitude'],
                               iris.analysis.RMS, weights=weights)
         ax.text(
-            0.72, 0.37,
+            0.71, 0.38,
             '{:.2f}'.format(rms.data),
             horizontalalignment='right',
             verticalalignment='center',
             transform=ax.transAxes,
+            fontsize=fontsize,
         )
     if index is not None:
         ax.text(
@@ -160,12 +158,18 @@ def plot_sea_ice_extents(ax, sic, **kwargs):
 
 
 def plot_antarctic(ax, data, i_plot, **kwargs):
-    bottom_layer = (data[0], data[1]['tob'])
-    mesh = plot_field(ax, bottom_layer, i_plot, **kwargs)
-    plot_sea_ice_extents(ax, data[1]['sic_feb'],
-                         colors='k', linestyles='solid', linewidths=1.)
-    plot_sea_ice_extents(ax, data[1]['sic_aug'],
-                         colors='k', linestyles='dashed', linewidths=1.)
+    name = data[0]
+    data_dict = data[1]
+    bottom_layer = data_dict.get('tob', None)
+    mesh = plot_field(ax, (name, bottom_layer), i_plot, **kwargs)
+    sic_feb = data_dict.get('sic_feb', None)
+    sic_aug = data_dict.get('sic_aug', None)
+    if sic_feb is not None:
+        plot_sea_ice_extents(ax, sic_feb,
+                             colors='k', linestyles='solid', linewidths=1.)
+    if sic_aug is not None:
+        plot_sea_ice_extents(ax, sic_aug,
+                             colors='k', linestyles='dashed', linewidths=1.)
     return mesh
 
 
@@ -178,7 +182,7 @@ def add_colorbars(fig, ref_mesh, model_mesh):
     model_cb = fig.colorbar(model_mesh,
                             cax=model_cbaxes, orientation='horizontal')
     model_cb.solids.set_rasterized(True)
-    fig.text(.5, .05, u'(\u00b0C)', {'fontsize': 22},
+    fig.text(.5, .05, u'(\u00b0C)', {'fontsize': 12},
              horizontalalignment='center', verticalalignment='center')
 
 
@@ -188,9 +192,9 @@ def produce_plots(cfg, data):
     fig, ax = setup_figure(no_models)
     reference_data = data.pop('REFERENCE')
     ref_mesh = plot_antarctic(ax[0], ('WOCE', reference_data), 0,
-                              show_rms=False, cmap='jet', vmin=-2., vmax=3.)
+                              show_rms=False, cmap='viridis', vmin=-2., vmax=3.)
     model_data = [(dataset_id, data[dataset_id]) for dataset_id in data.keys()]
-    meshes = [plot_antarctic(a, d, i+1, cmap='bwr', vmin=-2., vmax=2.)
+    meshes = [plot_antarctic(a, d, i+1, cmap='coolwarm', vmin=-3., vmax=3.)
               for i, (a, d) in enumerate(zip(ax[1:], model_data))]
     add_colorbars(fig, ref_mesh, meshes[0])
     fig.savefig(output_path)
@@ -211,72 +215,55 @@ def load_data(config):
         config['input_data'][key]['cube'] = iris.load_cube(fn)
 
 
-def get_dataset(entry, dataset_id=None):
-    cube = entry['cube']
-    if dataset_id == None:
-        # try CMIP6 style source identification
-        dataset_id = cube.attributes.get('source_id', None)
-    if dataset_id is None:
-        # try CMIP5 style source identification
-        dataset_id = cube.attributes.get('model_id', None)
-    if dataset_id is None:
-        # take name from recipe
-        dataset_id = entry['dataset']
-    return dataset_id, cube
+def prepare_reference(config, groups):
+    thetao_obs = groups.pop(config['thetao_reference'])
+    assert len(thetao_obs) == 1
+    thetao_obs = thetao_obs[0]['cube']
+    sic_obs = groups.pop(config['sic_reference'])
+    sic_obs_feb = [entry['cube'] for entry in sic_obs
+                   if entry['variable_group'] == 'sic_obs_feb'][0]
+    sic_obs_aug = [entry['cube'] for entry in sic_obs
+                   if entry['variable_group'] == 'sic_obs_aug'][0]
+    data = {
+        'tob': thetao_obs,
+        'sic_feb': sic_obs_feb,
+        'sic_aug': sic_obs_aug,
+    }
+    return data
 
 
-def prepare_tob(obs, models):
-    assert len(obs) == 1
-    obs = get_dataset(obs[0], 'REFERENCE')
-    models = map(get_dataset, models)
-    errors = map(partial(calc_error, reference=obs), models)
-    res = {
-        obs[0]: {
-            'tob': obs[1],
+def prepare_dataset(name, dataset, reference):
+    thetao = [entry['cube'] for entry in dataset
+              if entry['variable_group'].startswith('thetao')][0]
+    sic_feb = [entry['cube'] for entry in dataset
+               if (entry['variable_group'].startswith('sic')
+                   and entry['variable_group'].endswith('feb'))]
+    sic_aug = [entry['cube'] for entry in dataset
+               if (entry['variable_group'].startswith('sic')
+                   and entry['variable_group'].endswith('aug'))]
+    error = calc_error(thetao, reference['tob'])
+    data = {
+        name: {
+            'tob': error,
         }
     }
-    res.update({
-        model[0]: {
-            'tob': model[1],
-        } for model in errors
-    })
-    return res
-
-
-def prepare_sic(obs_feb, obs_aug, models_feb, models_aug):
-    assert len(obs_feb) == 1
-    assert len(obs_aug) == 1
-    obs_feb = get_dataset(obs_feb[0], 'REFERENCE')
-    obs_aug = get_dataset(obs_aug[0], 'REFERENCE')
-    assert obs_feb[0] == obs_aug[0]
-    models_feb = map(get_dataset, models_feb)
-    models_aug = map(get_dataset, models_aug)
-    res = {
-        obs_feb[0]: {
-            'sic_feb': obs_feb[1],
-            'sic_aug': obs_feb[1],
-        }
-    }
-    res.update({
-        model[0][0]: {
-            'sic_feb': model[0][1],
-            'sic_aug': model[1][1],
-        } for model in zip(models_feb, models_aug)
-    })
-    return res
+    if len(sic_feb) == 1:
+        data[name]['sic_feb'] = sic_feb[0]
+    if len(sic_aug) == 1:
+        data[name]['sic_aug'] = sic_aug[0]
+    return data
 
 
 def prepare_data(config):
-    groups = group_metadata(config['input_data'].values(), 'variable_group')
-    tob = prepare_tob(groups['thetao_obs'],
-                      groups['thetao_models'])
-    sic = prepare_sic(groups['sic_obs_feb'],
-                      groups['sic_obs_aug'],
-                      groups['sic_models_feb'],
-                      groups['sic_models_aug'])
-    data = {}
-    for key in tob.keys():
-        data[key] = {**tob[key], **sic[key]}
+    groups = group_metadata(config['input_data'].values(), 'dataset')
+    reference = prepare_reference(config, groups)
+    models = [prepare_dataset(name, dataset, reference)
+              for name, dataset in groups.items()]
+    data = {
+        'REFERENCE': reference,
+    }
+    for model in models:
+        data.update(model)
     return data
 
 
