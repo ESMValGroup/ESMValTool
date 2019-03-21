@@ -15,7 +15,7 @@ import numpy as np
 logger = logging.getLogger(__name__)
 
 
-def extract_bottom_layer(cube, coordinate='depth'):
+def extract_bottom_layer(cube, coordinate=None):
     """
     Extract the bottom layer of a cube, following its mask.
 
@@ -101,7 +101,7 @@ def extract_bottom_layer(cube, coordinate='depth'):
 
         Returns
         -------
-        dask.array.ma..MaskedArray
+        dask.array.ma.MaskedArray
             bottom layer of the input array with the same shape as the input
             array except that the chosen axis is removed.
         """
@@ -110,6 +110,22 @@ def extract_bottom_layer(cube, coordinate='depth'):
         # Hence, the lazy version uses the same numpy based 1d function
         # as the non-lazy version.
         return da.apply_along_axis(extractor_1d, axis, data)
+
+    DEFAULT_COORD_STD_NAMES = ['depth']
+    DEFAULT_COORD_VAR_NAMES = ['olevel', 'lev']
+    if coordinate is None:
+        candidates_by_std_name = sum([cube.coords(standard_name=name)
+                                      for name in DEFAULT_COORD_STD_NAMES], [])
+        candidates_by_var_name = sum([cube.coords(var_name=name)
+                                      for name in DEFAULT_COORD_VAR_NAMES], [])
+        coord_candidates = set(candidates_by_std_name + candidates_by_var_name)
+        if len(coord_candidates) != 1:
+            std_names = [c.var_name for c in cube.coords()]
+            raise RuntimeError(
+                "Could not determine depth coordinate uniquely. Found {},"
+                "cube has {}".format(coord_candidates, std_names)
+            )
+        coordinate = coord_candidates.pop().name()
     aggregator = iris.analysis.Aggregator('{}: point'.format(coordinate),
                                           extractor,
                                           lazy_func=lazy_extractor)
