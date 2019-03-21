@@ -1,26 +1,19 @@
 """Derivation of variable `fgco2_grid`."""
-
-import logging
-
-from ._derived_variable_base import DerivedVariableBase
+from ._baseclass import DerivedVariableBase
 from ._shared import grid_area_correction
-
-logger = logging.getLogger(__name__)
 
 
 class DerivedVariable(DerivedVariableBase):
     """Derivation of variable `fgco2_grid`."""
 
     # Required variables
-    _required_variables = {
-        'vars': [{
-            'short_name': 'fgco2',
-            'field': 'T2{frequency}s'
-        }],
-        'fx_files': ['areacella', 'areacello', 'sftof', 'sftlf']
-    }
+    required = [{
+        'short_name': 'fgco2',
+        'fx_files': ['areacella', 'areacello', 'sftof', 'sftlf'],
+    }]
 
-    def calculate(self, cubes):
+    @staticmethod
+    def calculate(cubes):
         """Compute gas exchange flux of CO2 per grid cell.
 
         Note
