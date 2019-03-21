@@ -21,3 +21,4 @@ conda env create --name esmvaltool
 conda activate esmvaltool
 pip install -e .
 Rscript esmvaltool/install/R/setup.R
+julia esmvaltool/install/Julia/setup.jl
