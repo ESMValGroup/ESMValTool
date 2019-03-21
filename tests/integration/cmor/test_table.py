@@ -64,9 +64,10 @@ class Testobs4mipsInfo(unittest.TestCase):
         cmor_tables_path = os.path.abspath(cmor_tables_path)
         CMIP6Info(cmor_tables_path)
 
-    def test_get_variable_tas(self):
-        """Get tas variable."""
-        var = self.variables_info.get_variable('monStderr', 'ndviStderr')
+    def test_get_variable_ndvi(self):
+        """Get ndviStderr variable. Note table name obs4MIPs_[mip]"""
+        var = self.variables_info.get_variable('obs4MIPs_monStderr',
+                                               'ndviStderr')
         self.assertEqual(var.short_name, 'ndviStderr')
 
     def test_get_bad_variable(self):
