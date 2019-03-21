@@ -28,7 +28,7 @@ remove_preproc_dir: true
 # Run at most this many tasks in parallel null/[1]/2/3/4/..
 # Set to null to use the number of available CPUs.
 # Make sure your system has enough memory for the specified number of tasks.
-max_parallel_tasks: 1
+max_parallel_tasks: 8
 # Path to custom config-developer file, to customise project configurations.
 # See config-developer.yml for an example. Set to None to use the default
 config_developer_file: null
@@ -38,12 +38,16 @@ profile_diagnostic: false
 
 # Rootpaths to the data from different projects (lists are also possible)
 rootpath:
-  CMIP5: [~/cmip5_inputpath1, ~/cmip5_inputpath2]
-  OBS: ~/
-  RAWOBS: ~/
-  auxiliary_data_dir: ~/
+#  CMIP5: [~/cmip5_inputpath1, ~/cmip5_inputpath2]
+  OBS: ~/esmvaltool-obs-mod/C3S_511/obsdata/
+  RAWOBS: ~/esmvaltool-obs-mod/C3S_511/rawobsdata/
+  default: ~/esmvaltool-obs-mod/C3S_511/
 
 # Directory structure for input data: [default]/BADC/DKRZ/ETHZ/etc
 # See config-developer.yml for definitions.
-drs:
-  CMIP5: default
+#drs:
+#  CMIP5: default
+
+# User specific directories
+output_dir: ~/esmvaltool-obs-mod/C3S_511/output/
+auxiliary_data_dir: ~/esmvaltool-obs-mod/C3S_511/auxiliary/

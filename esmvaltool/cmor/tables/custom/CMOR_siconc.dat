@@ -1,0 +1,26 @@
+SOURCE: CMIP6
+!============
+variable_entry:    siconc
+!============
+modeling_realm:    seaIce
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     
+units:             %
+cell_methods:      area: mean where sea time: mean
+cell_measures:     area: areacello
+long_name:         Sea Ice Area Fraction
+comment:           Area fraction of grid cell covered by sea ice.
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time typesi
+out_name:          siconc
+type:              real
+valid_min:         
+valid_max:         
+ok_min_mean_abs:   
+ok_max_mean_abs:   
+!----------------------------------
+!
