@@ -16,9 +16,7 @@ diagnostics:
     description: Extracting data for user defined shapefile.
     variables:
       tas:
-        field: T2Ms
       pr:
-        field: T2Ms
     scripts:
       script1:
         script: shapeselect/diag_shapeselect.py

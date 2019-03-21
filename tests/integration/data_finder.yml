@@ -11,7 +11,6 @@ get_output_file:
       frequency: mon
       modeling_realm: [atmos]
       mip: Amon
-      field: T3M
       exp: historical
       ensemble: r1i1p1
       start_year: 1960
@@ -19,13 +18,13 @@ get_output_file:
       diagnostic: test_diag
       preprocessor: test_preproc
     preproc_dir: this/is/a/path
-    output_file: this/is/a/path/test_diag/test/CMIP5_HadGEM2-ES_Amon_historical_r1i1p1_T3M_ta_1960-1980.nc
+    output_file: this/is/a/path/test_diag/test/CMIP5_HadGEM2-ES_Amon_historical_r1i1p1_ta_1960-1980.nc
 
   - variable:
       <<: *variable
       exp: [historical, rcp85]
     preproc_dir: /test
-    output_file: /test/test_diag/test/CMIP5_HadGEM2-ES_Amon_historical-rcp85_r1i1p1_T3M_ta_1960-1980.nc
+    output_file: /test/test_diag/test/CMIP5_HadGEM2-ES_Amon_historical-rcp85_r1i1p1_ta_1960-1980.nc
 
 
 get_input_filelist:
