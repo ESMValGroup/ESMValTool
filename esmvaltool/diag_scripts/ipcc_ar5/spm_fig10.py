@@ -93,6 +93,10 @@ def main(cfg):
                         dataset['fx_files']['areacella'])
                     area_weights = np.broadcast_to(area_cube.data, cube.shape)
                 else:
+                    for coord_name in ('latitude', 'longitude'):
+                        coord = cube.coord(coord_name)
+                        if not coord.has_bounds():
+                            coord.guess_bounds()
                     area_weights = iris.analysis.cartography.area_weights(cube)
                     logger.warning(
                         "'areacella' file for experiment '%s' of '%s' not "
@@ -302,9 +306,21 @@ def main(cfg):
                 co2_emiss[exp][name] = cube
 
     # Calculate multi-model means
+    multi_model_sizes = {}
     for dict_ in (tas, co2_emiss):
         for exp in dict_:
             cubes = iris.cube.CubeList(dict_[exp].values())
+
+            # Check length of ensembles
+            if exp not in multi_model_sizes:
+                multi_model_sizes[exp] = len(cubes)
+            else:
+                if multi_model_sizes[exp] != len(cubes):
+                    logger.warning(
+                        "Got different number of climate models for "
+                        "multi-model averaging for temperature and CO2 "
+                        "emissions of experiment '%s', expected %i, got %i",
+                        exp, multi_model_sizes[exp], len(cubes))
             mmm_cube = cubes.merge_cube()
             mmm_cube = mmm_cube.collapsed('dataset', iris.analysis.MEAN)
             dict_[exp]['MultiModelMean'] = mmm_cube
@@ -350,8 +366,10 @@ def main(cfg):
         for dataset in tas[exp]:
             if dataset not in co2_emiss[exp]:
                 logger.warning(
-                    "For temperature data of '%s' of experiment '%s': no "
-                    "emission data available, skipping", dataset, exp)
+                    "For temperature data of '%s' for experiment '%s': no "
+                    "emission data available, skipping it for range "
+                    "calculation (it is included in multi-model mean, though)",
+                    dataset, exp)
                 continue
             valid_models_tas.append(tas[exp][dataset].data)
             valid_models_co2_emiss.append(co2_emiss[exp][dataset].data)
@@ -367,6 +385,8 @@ def main(cfg):
         hist_rcp_tas.append(mean_tas + err)
         hist_rcp_co2_emiss.append(mean_co2_emiss)
         hist_rcp_co2_emiss.append(mean_co2_emiss)
+
+    # Get all points on the range boundary
     hist_rcp_tas = np.ma.hstack(hist_rcp_tas).ravel()
     hist_rcp_co2_emiss = np.ma.hstack(hist_rcp_co2_emiss).ravel()
     hist_rcp_points = np.ma.vstack([hist_rcp_co2_emiss, hist_rcp_tas])
@@ -376,15 +396,15 @@ def main(cfg):
 
     # Calculate 1pctCO2 range
     exp = '1pctCO2'
-    onepct_tas = []
-    onepct_co2_emiss = []
     valid_models_tas = []
     valid_models_co2_emiss = []
     for dataset in tas[exp]:
         if dataset not in co2_emiss[exp]:
             logger.warning(
-                "For temperature data of '%s' of experiment '%s': no "
-                "emission data available, skipping", dataset, exp)
+                "For temperature data of '%s' for experiment '%s': no "
+                "emission data available, skipping it for range "
+                "calculation (it is included in multi-model mean, though)",
+                dataset, exp)
             continue
         valid_models_tas.append(tas[exp][dataset].data)
         valid_models_co2_emiss.append(co2_emiss[exp][dataset].data)
@@ -395,18 +415,11 @@ def main(cfg):
     err = model_range * (np.ma.amax(valid_models_tas, axis=0) - np.ma.amin(
         valid_models_tas, axis=0)) * 0.5
     mean_tas = np.ma.mean(valid_models_tas, axis=0)
-    mean_co2_emiss = np.ma.mean(valid_models_co2_emiss, axis=0)
-    onepct_tas.append(mean_tas - err)
-    onepct_tas.append(mean_tas + err)
-    onepct_co2_emiss.append(mean_co2_emiss)
-    onepct_co2_emiss.append(mean_co2_emiss)
-    onepct_tas = np.ma.hstack(onepct_tas).ravel()
-    onepct_co2_emiss = np.ma.hstack(onepct_co2_emiss).ravel()
-    onepct_points = np.ma.vstack([onepct_co2_emiss, onepct_tas])
-    onepct_points = np.ma.swapaxes(onepct_points, 0, 1)
-    onepct_points = np.ma.compress_rows(onepct_points)
-    onepct_range = ConvexHull(onepct_points)
+    onepct_mean_co2_emiss = np.ma.mean(valid_models_co2_emiss, axis=0)
+    onepct_mean_tas_minus_err = mean_tas - err
+    onepct_mean_tas_plus_err = mean_tas + err
 
+    # Plot
     if cfg['write_plots']:
         (fig, axes) = plt.subplots()
         handles = []
@@ -414,9 +427,10 @@ def main(cfg):
         # Plot 1pctco2 range
         alph_1pctco2_range = 0.3
         c_1pctco2_range = 'black'
-        axes.fill(
-            onepct_points[:, 0][onepct_range.vertices],
-            onepct_points[:, 1][onepct_range.vertices],
+        axes.fill_between(
+            onepct_mean_co2_emiss,
+            onepct_mean_tas_minus_err,
+            onepct_mean_tas_plus_err,
             color=c_1pctco2_range,
             alpha=alph_1pctco2_range,
             linewidth=0.0)
@@ -442,7 +456,7 @@ def main(cfg):
         }
         text_shifts = {
             '1pctCO2': [],
-            hist_exp: [(20, -0.1), (-63, 0.14), (20, -0.12), (-160, 0.1),
+            hist_exp: [(50, -0.15), (-63, 0.14), (20, -0.12), (-160, 0.1),
                        (-160, 0.1)],
             'rcp26': [(-170, 0.1), (-150, 0.1), (0, -0.18)],
             'rcp45': [(20, -0.1), (30, -0.08), (20, -0.1)],
@@ -502,7 +516,7 @@ def main(cfg):
                 color=c_hist_rcp_range,
                 alpha=alph_hist_rcp_range,
                 linewidth=0.0,
-                label='RCP range'))
+                label=cfg.get('historical_future_label', 'RCP range')))
 
         # Append 1pctCO2 to legend
         color = cfg.get('1pctCO2_color', 'red')
@@ -519,7 +533,7 @@ def main(cfg):
                 color=c_1pctco2_range,
                 alpha=alph_1pctco2_range,
                 linewidth=0.0,
-                label=label + ' range'))
+                label=cfg.get('1pctCO2_range_label', '1pctCO2 range')))
 
         # Create legend
         legend = axes.legend(
@@ -535,6 +549,8 @@ def main(cfg):
                         'from 1870 [GtC]')
         axes.set_ylabel(
             r'Temperature anomaly relative to 1861-1880 [$^\circ$C]')
+        if cfg.get('plot_title'):
+            axes.set_title(cfg['plot_title'])
 
         # Save file
         path = get_plot_filename('TCRE', cfg)

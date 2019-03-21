@@ -29,21 +29,21 @@ documentation:
     - crescendo
 
 
-DATASET_ANCHOR: &datasets
-  - {dataset: BCC-CSM2-MR,  grid: gn}
-  - {dataset: BCC-ESM1,     grid: gn}
-  - {dataset: FGOALS-f3-L,  grid: gn}
-  - {dataset: CNRM-CM6-1,   grid: gn}
-  - {dataset: CNRM-ESM2-1,  grid: gn}
-  - {dataset: E3SM-1-0,     grid: gn}
-  - {dataset: IPSL-CM6A-LR, grid: gr}
-  - {dataset: MIROC6,       grid: gn}
-  - {dataset: MRI-ESM2-0,   grid: gn}
-  - {dataset: GISS-E2-1-G,  grid: gn}
-  - {dataset: CESM2,        grid: gn}
-  - {dataset: CESM2-WACCM,  grid: gn}
-  - {dataset: GFDL-AM4,     grid: gn}
-  - {dataset: GFDL-CM4,     grid: gn}
+# DATASET_ANCHOR: &datasets
+#   - {dataset: BCC-CSM2-MR,  grid: gn}
+#   - {dataset: BCC-ESM1,     grid: gn}
+#   - {dataset: FGOALS-f3-L,  grid: gn}
+#   - {dataset: CNRM-CM6-1,   grid: gn}
+#   - {dataset: CNRM-ESM2-1,  grid: gn}
+#   - {dataset: E3SM-1-0,     grid: gn}
+#   - {dataset: IPSL-CM6A-LR, grid: gr}
+#   - {dataset: MIROC6,       grid: gn}
+#   - {dataset: MRI-ESM2-0,   grid: gn}
+#   - {dataset: GISS-E2-1-G,  grid: gn}
+#   - {dataset: CESM2,        grid: gn}
+#   - {dataset: CESM2-WACCM,  grid: gn}
+#   - {dataset: GFDL-AM4,     grid: gn}
+#   - {dataset: GFDL-CM4,     grid: gn}
 
 
 diagnostics:
@@ -53,29 +53,28 @@ diagnostics:
         short_name: tas
         project: CMIP6
         mip: Amon
-        field: T2Ms
         exp: historical
         start_year: 1861
         end_year: 2009
-        # fx_files: ['areacella']
+        fx_files: ['areacella']
         additional_datasets:
-          - {dataset: BCC-CSM2-MR,  ensemble: r1i1p1f1,  grid: gn}
+          # - {dataset: BCC-CSM2-MR,  ensemble: r1i1p1f1,  grid: gn}
           - {dataset: CNRM-ESM2-1,  ensemble: r1i1p1f2,  grid: gr}
-          - {dataset: GISS-E2-1-G,  ensemble: r1i1p1f1,  grid: gn}
+          # - {dataset: GISS-E2-1-G,  ensemble: r1i1p1f1,  grid: gn}
           - {dataset: IPSL-CM6A-LR, ensemble: r29i1p1f1, grid: gr}
-          - {dataset: MIROC6,       ensemble: r1i1p1f1,  grid: gn}
-          - {dataset: MRI-ESM2-0,   ensemble: r1i1p1f1,  grid: gn}
+          # - {dataset: MIROC6,       ensemble: r1i1p1f1,  grid: gn}
+          # - {dataset: MRI-ESM2-0,   ensemble: r1i1p1f1,  grid: gn}
       tas_1pctCO2: &1pctCO2
         <<: *historical
         exp: 1pctCO2
         end_year: 1989
         additional_datasets:
-          - {dataset: BCC-CSM2-MR,  ensemble: r1i1p1f1, grid: gn}
+          # - {dataset: BCC-CSM2-MR,  ensemble: r1i1p1f1, grid: gn}
           - {dataset: CNRM-ESM2-1,  ensemble: r1i1p1f2, grid: gr}
-          - {dataset: GISS-E2-1-G,  ensemble: r1i1p1f1, grid: gn}
+          # - {dataset: GISS-E2-1-G,  ensemble: r1i1p1f1, grid: gn}
           - {dataset: IPSL-CM6A-LR, ensemble: r1i1p1f1, grid: gr}
-          - {dataset: MIROC6,       ensemble: r1i1p1f1, grid: gn}
-          - {dataset: MRI-ESM2-0,   ensemble: r1i1p1f1, grid: gn}
+          # - {dataset: MIROC6,       ensemble: r1i1p1f1, grid: gn}
+          # - {dataset: MRI-ESM2-0,   ensemble: r1i1p1f1, grid: gn}
       # tas_rcp26: &rcp26
       #   <<: *historical
       #   exp: rcp26
@@ -97,37 +96,31 @@ diagnostics:
       co2mass_historical:
         <<: *historical
         short_name: co2mass
-        field: T0M
         additional_datasets:
           - {dataset: CNRM-CM6-1, ensemble: r1i1p1f2, grid: gr}
       co2mass_1pctCO2:
         <<: *1pctCO2
         short_name: co2mass
-        field: T0M
         additional_datasets:
           - {dataset: CNRM-CM6-1, ensemble: r1i1p1f2, grid: gr}
       # co2mass_rcp26:
       #   <<: *rcp26
       #   short_name: co2mass
-      #   field: T0M
       #   additional_datasets:
       #   - {dataset: MIROC-ESM}
       # co2mass_rcp45:
       #   <<: *rcp45
       #   short_name: co2mass
-      #   field: T0M
       #   additional_datasets:
       #   - {dataset: MIROC-ESM}
       # co2mass_rcp60:
       #   <<: *rcp60
       #   short_name: co2mass
-      #   field: T0M
       #   additional_datasets:
       #   - {dataset: MIROC-ESM}
       # co2mass_rcp85:
       #   <<: *rcp85
       #   short_name: co2mass
-      #   field: T0M
       #   additional_datasets:
       #   - {dataset: MIROC-ESM}
       nbp_historical:
@@ -137,7 +130,7 @@ diagnostics:
         derive: true
         additional_datasets:
           - {dataset: CNRM-ESM2-1,  ensemble: r1i1p1f2, grid: gr}
-          - {dataset: GISS-E2-1-G,  ensemble: r1i1p1f1, grid: gn}
+          # - {dataset: GISS-E2-1-G,  ensemble: r1i1p1f1, grid: gn}
           - {dataset: IPSL-CM6A-LR, ensemble: r6i1p1f1, grid: gr}
       nbp_1pctCO2:
         <<: *1pctCO2
@@ -146,7 +139,7 @@ diagnostics:
         derive: true
         a6dditional_datasets:
           - {dataset: CNRM-ESM2-1,  ensemble: r1i1p1f2, grid: gr}
-          - {dataset: GISS-E2-1-G,  ensemble: r1i1p1f1, grid: gn}
+          # - {dataset: GISS-E2-1-G,  ensemble: r1i1p1f1, grid: gn}
           - {dataset: IPSL-CM6A-LR, ensemble: r1i1p1f1, grid: gr}
       # nbp_rcp26:
       #   <<: *rcp26
@@ -174,7 +167,7 @@ diagnostics:
         mip: Omon
         derive: true
         additional_datasets:
-          - {dataset: BCC-CSM2-MR,  ensemble: r1i1p1f1,  grid: gn}
+          # - {dataset: BCC-CSM2-MR,  ensemble: r1i1p1f1,  grid: gn}
           - {dataset: CNRM-ESM2-1,  ensemble: r1i1p1f2,  grid: gn}
           - {dataset: IPSL-CM6A-LR, ensemble: r31i1p1f1, grid: gn}
       fgco2_1pctCO2:
@@ -183,7 +176,7 @@ diagnostics:
         mip: Omon
         derive: true
         additional_datasets:
-          - {dataset: BCC-CSM2-MR,  ensemble: r1i1p1f1, grid: gn}
+          # - {dataset: BCC-CSM2-MR,  ensemble: r1i1p1f1, grid: gn}
           - {dataset: CNRM-ESM2-1,  ensemble: r1i1p1f2, grid: gn}
           - {dataset: IPSL-CM6A-LR, ensemble: r1i1p1f1, grid: gn}
       # fgco2_rcp26:
@@ -209,3 +202,9 @@ diagnostics:
     scripts:
       figspm10:
         script: ipcc_ar5/spm_fig10.py
+        historical_color: black
+        1pctCO2_color: black
+        1pctCO2_marker: null
+        1pctCO2_linewidth: 1
+        historical_future_label: 'historical range'
+        plot_title: 'CMIP6: CNRM-ESM2-1 and IPSL-CM6A-LR'

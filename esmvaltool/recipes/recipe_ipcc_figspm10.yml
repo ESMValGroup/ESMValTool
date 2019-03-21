@@ -50,7 +50,6 @@ diagnostics:
         short_name: tas
         project: CMIP5
         mip: Amon
-        field: T2Ms
         exp: [historical, rcp85]
         start_year: 1861
         end_year: 2009
@@ -94,37 +93,31 @@ diagnostics:
       co2mass_historical:
         <<: *historical
         short_name: co2mass
-        field: T0M
         additional_datasets:
         - {dataset: MIROC-ESM}
       co2mass_1pctCO2:
         <<: *1pctCO2
         short_name: co2mass
-        field: T0M
         additional_datasets:
           - {dataset: MIROC-ESM, start_year: 1, end_year: 129}
       co2mass_rcp26:
         <<: *rcp26
         short_name: co2mass
-        field: T0M
         additional_datasets:
         - {dataset: MIROC-ESM}
       co2mass_rcp45:
         <<: *rcp45
         short_name: co2mass
-        field: T0M
         additional_datasets:
         - {dataset: MIROC-ESM}
       co2mass_rcp60:
         <<: *rcp60
         short_name: co2mass
-        field: T0M
         additional_datasets:
         - {dataset: MIROC-ESM}
       co2mass_rcp85:
         <<: *rcp85
         short_name: co2mass
-        field: T0M
         additional_datasets:
         - {dataset: MIROC-ESM}
       nbp_historical:
@@ -198,3 +191,4 @@ diagnostics:
         1pctCO2_color: black
         1pctCO2_marker: null
         1pctCO2_linewidth: 1
+        historical_future_label: 'RCP range'
