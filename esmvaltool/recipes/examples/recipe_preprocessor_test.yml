@@ -80,7 +80,6 @@ diagnostics:
     variables:
       ta:
         preprocessor: preprocessor_1
-        field: T3M
         fx_files: [orog, sftlf]
     additional_datasets:
       - {dataset: NCEP,        project: OBS,    tier: 2,    type: reanaly,    version: 1,        start_year: 2000,  end_year: 2002}
@@ -91,7 +90,6 @@ diagnostics:
     variables:
       ta:
         preprocessor: preprocessor_2
-        field: T3M
     scripts: null
 
   diagnostic_3_and_4:
@@ -99,8 +97,6 @@ diagnostics:
     variables:
       ta:
         preprocessor: preprocessor_3
-        field: T3M
       pr:
         preprocessor: preprocessor_4
-        field: T2Ms
     scripts: null

@@ -1,26 +1,27 @@
 {
     "Header": {
-        "data_specs_version": "01.00.10", 
+        "data_specs_version": "01.00.30", 
+        "cmor_version": "3.4", 
         "table_id": "Table Oday", 
-        "realm": "ocnBgChem", 
-        "frequency": "day", 
-        "cmor_version": "3.2", 
-        "table_date": "10 May 2017", 
+        "realm": "ocnBgchem", 
+        "table_date": "11 March 2019", 
         "missing_value": "1e20", 
+        "int_missing_value": "-999", 
         "product": "model-output", 
         "approx_interval": "1.00000", 
-        "generic_levels": "", 
+        "generic_levels": "olevel", 
         "mip_era": "CMIP6", 
-        "Conventions": "CF-1.7 CMIP-6.0"
+        "Conventions": "CF-1.7 CMIP-6.2"
     }, 
     "variable_entry": {
         "chlos": {
-            "modeling_realm": "ocnBgChem", 
+            "frequency": "day", 
+            "modeling_realm": "ocnBgchem", 
             "standard_name": "mass_concentration_of_phytoplankton_expressed_as_chlorophyll_in_sea_water", 
             "units": "kg m-3", 
             "cell_methods": "area: mean where sea time: mean", 
             "cell_measures": "area: areacello", 
-            "long_name": "Sea Surface Total Chlorophyll Mass Concentration", 
+            "long_name": "Surface Mass Concentration of Total Phytoplankton Expressed as Chlorophyll in Sea Water", 
             "comment": "Sum of chlorophyll from all phytoplankton group concentrations at the sea surface.  In most models this is equal to chldiat+chlmisc, that is the sum of 'Diatom Chlorophyll Mass Concentration' plus 'Other Phytoplankton Chlorophyll Mass Concentration'", 
             "dimensions": "longitude latitude time", 
             "out_name": "chlos", 
@@ -32,13 +33,14 @@
             "ok_max_mean_abs": ""
         }, 
         "omldamax": {
+            "frequency": "day", 
             "modeling_realm": "ocean", 
             "standard_name": "ocean_mixed_layer_thickness_defined_by_mixing_scheme", 
             "units": "m", 
             "cell_methods": "area: mean time: maximum", 
             "cell_measures": "area: areacello", 
-            "long_name": "Daily Maximum Ocean Mixed Layer Thickness Defined by Mixing Scheme", 
-            "comment": "", 
+            "long_name": "Mean Daily Maximum Ocean Mixed Layer Thickness Defined by Mixing Scheme", 
+            "comment": "The ocean mixed layer is the upper part of the ocean, regarded as being well-mixed. The base of the mixed layer defined by the mixing scheme is a diagnostic of ocean models. 'Thickness' means the vertical extent of a layer.", 
             "dimensions": "longitude latitude time", 
             "out_name": "omldamax", 
             "type": "real", 
@@ -49,7 +51,8 @@
             "ok_max_mean_abs": ""
         }, 
         "phycos": {
-            "modeling_realm": "ocnBgChem", 
+            "frequency": "day", 
+            "modeling_realm": "ocnBgchem", 
             "standard_name": "mole_concentration_of_phytoplankton_expressed_as_carbon_in_sea_water", 
             "units": "mol m-3", 
             "cell_methods": "area: mean where sea time: mean", 
@@ -66,13 +69,14 @@
             "ok_max_mean_abs": ""
         }, 
         "sos": {
+            "frequency": "day", 
             "modeling_realm": "ocean", 
             "standard_name": "sea_surface_salinity", 
             "units": "0.001", 
             "cell_methods": "area: mean where sea time: mean", 
             "cell_measures": "area: areacello", 
             "long_name": "Sea Surface Salinity", 
-            "comment": "", 
+            "comment": "Sea water salinity is the salt content of sea water, often on the Practical Salinity Scale of 1978. However, the unqualified term 'salinity' is generic and does not necessarily imply any particular method of calculation. The units of salinity are dimensionless and the units attribute should normally be given as 1e-3 or 0.001 i.e. parts per thousand. ", 
             "dimensions": "longitude latitude time", 
             "out_name": "sos", 
             "type": "real", 
@@ -83,13 +87,14 @@
             "ok_max_mean_abs": ""
         }, 
         "sossq": {
+            "frequency": "day", 
             "modeling_realm": "ocean", 
             "standard_name": "square_of_sea_surface_salinity", 
             "units": "1e-06", 
             "cell_methods": "area: mean where sea time: mean", 
             "cell_measures": "area: areacello", 
             "long_name": "Square of Sea Surface Salinity", 
-            "comment": "", 
+            "comment": "Sea water salinity is the salt content of sea water, often on the Practical Salinity Scale of 1978. However, the unqualified term 'salinity' is generic and does not necessarily imply any particular method of calculation. The units of salinity are dimensionless and the units attribute should normally be given as 1e-3 or 0.001 i.e. parts per thousand. ", 
             "dimensions": "longitude latitude time", 
             "out_name": "sossq", 
             "type": "real", 
@@ -100,13 +105,14 @@
             "ok_max_mean_abs": ""
         }, 
         "tos": {
+            "frequency": "day", 
             "modeling_realm": "ocean", 
             "standard_name": "sea_surface_temperature", 
-            "units": "K", 
+            "units": "degC", 
             "cell_methods": "area: mean where sea time: mean", 
             "cell_measures": "area: areacello", 
             "long_name": "Sea Surface Temperature", 
-            "comment": "temperature of liquid ocean.  Note that the correct standard_name for this variable is 'sea_surface_temperature', not 'surface_temperature', but this was discovered too late to correct.  To maintain consistency across CMIP5 models, the wrong standard_name will continue to be used.", 
+            "comment": "Temperature of upper boundary of the liquid ocean, including temperatures below sea-ice and floating ice shelves.", 
             "dimensions": "longitude latitude time", 
             "out_name": "tos", 
             "type": "real", 
@@ -117,13 +123,14 @@
             "ok_max_mean_abs": ""
         }, 
         "tossq": {
+            "frequency": "day", 
             "modeling_realm": "ocean", 
             "standard_name": "square_of_sea_surface_temperature", 
             "units": "degC2", 
             "cell_methods": "area: mean where sea time: mean", 
             "cell_measures": "area: areacello", 
             "long_name": "Square of Sea Surface Temperature", 
-            "comment": "square of temperature of liquid ocean, averaged over the day.", 
+            "comment": "Square of temperature of liquid ocean.", 
             "dimensions": "longitude latitude time", 
             "out_name": "tossq", 
             "type": "real", 
