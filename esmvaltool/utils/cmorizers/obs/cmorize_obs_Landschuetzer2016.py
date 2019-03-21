@@ -70,7 +70,9 @@ def _fix_data(cube, var):
         # Assume standard year 365_day
         cube.data = cube.data * -12.01 / 1000. / (86400. * 365.)
         cube.attributes['positive'] = 'down'
-    if var in ['spco2', 'dpco2', ]:
+    if var in ['dpco2', ]:
+        cube.data = cube.data * -1.0 * 101325. / 1.e06
+    if var in ['spco2', ]:
         cube.data = cube.data * 101325. / 1.e06
     return cube
 
