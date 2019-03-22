@@ -28,7 +28,7 @@ from scipy import interpolate, stats
 from cdo import Cdo
 from esmvaltool.diag_scripts.shared import ProvenanceLogger
 
-import fourier_coefficients, provenance_meta
+from . import fourier_coefficients, provenance_meta
 
 
 def balances(cfg, wdir, plotpath, filena, name, model):

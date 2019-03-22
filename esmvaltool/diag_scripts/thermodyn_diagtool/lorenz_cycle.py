@@ -67,7 +67,7 @@ from netCDF4 import Dataset
 
 from cdo import Cdo
 
-import fluxogram, fourier_coefficients
+from . import fluxogram, fourier_coefficients
 
 G = 9.81
 R = 287.00

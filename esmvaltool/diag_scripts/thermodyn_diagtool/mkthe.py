@@ -30,7 +30,7 @@ from netCDF4 import Dataset
 
 from cdo import Cdo
 
-import fourier_coefficients
+from . import fourier_coefficients
 
 ALV = 2.5008e6  # Latent heat of vaporization
 G_0 = 9.81  # Gravity acceleration

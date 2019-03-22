@@ -37,7 +37,7 @@ from netCDF4 import Dataset
 
 from cdo import Cdo
 
-import mkthe
+from . import mkthe
 
 L_C = 2501000  # latent heat of condensation
 LC_SUB = 2835000  # latent heat of sublimation
