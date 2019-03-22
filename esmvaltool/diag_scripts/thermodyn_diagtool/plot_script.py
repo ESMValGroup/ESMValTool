@@ -28,7 +28,7 @@ from scipy import interpolate, stats
 from cdo import Cdo
 from esmvaltool.diag_scripts.shared import ProvenanceLogger
 
-from . import fourier_coefficients, provenance_meta
+import fourier_coefficients, provenance_meta
 
 
 def balances(cfg, wdir, plotpath, filena, name, model):
@@ -849,7 +849,7 @@ def pr_output(varout, filep, nc_f, nameout, latn):
     w_nc_fid.description = ("Total, atmospheric and oceanic annual ",
                             "mean meridional heat transports")
     fourc.extr_lat(nc_fid, w_nc_fid, latn)
-    w_nc_var = w_nc_fid.createVariable(nameout, 'f8', ('lat'))
+    w_nc_var = w_nc_fid.createVariable(nameout, 'f8', (latn))
     varatts(w_nc_var, nameout)
     w_nc_fid.variables[nameout][:] = varout
     w_nc_fid.close()

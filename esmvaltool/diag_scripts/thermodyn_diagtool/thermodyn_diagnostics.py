@@ -1,6 +1,6 @@
 """MAIN PROGRAM.
 
-The diagnostic tool for climate system thermodynamics.
+TheDiaTo - The diagnostic tool for climate system thermodynamics.
 
 Author
 Valerio Lembo
@@ -22,20 +22,9 @@ PREREQUISITES
 The program shares the same prerequisites with the overall ESMValTool
 architecture (see http://esmvaltool.readthedocs.io/en/latest/install.html)
 
-ADDITIONAL REQUIREMENTS
-- NCO: NCO command operators are required for attributes and coordinates
-       manipulation on NetCDF files. The programme has been tested with
-       the following  versions of NCO precompiled libraries:
-       * Unix:   nco-4.6.7
-       * Mac-OS: nco-4.6.6
-- PyAstronomy: Python package PyAstronomy contains a function "zeocross1d"
-               which is needed for the computation of transport maxima
-               locations. We tested the method with v. 0.12.0 of the
-               package, available in pip repositories.
-
 USAGE
 
-1: Obtain the datasets: the programme accepts the following variables as
+1: Obtain the datasets: the program accepts the following variables as
    input for the computations:
      Monthly mean resolution or higher:
      - TOA shortwave radiation downwards;
@@ -49,10 +38,10 @@ USAGE
      - Surface turbulent sensible heat fluxes;
      - Surface temperature;
      - Specific humidity;
-     - Near-surface (or 10m) zonal velocity;
-     - Near-surface (or 10m) meridional velocity;
      Daily mean resolution or higher:
      - Near-surface temperature;
+     - Near-surface (or 10m) zonal velocity;
+     - Near-surface (or 10m) meridional velocity;
      - Air temperature (on pressure levels);
      - Horizontal velocity (on pressure levels);
      - Meridional velocity (on pressure levels);
@@ -70,7 +59,7 @@ USAGE
   MODELPATH2, OBSPATH or OBSPATH2 output datasets are stored in WORKPATH,
   plots in PLOTPATH (refer to the manual for ESMValTool).
 
-3: Set the namelist with your own input datasets. Here you can also set the
+3: Go to the recipe file in Set the namelist with your own input datasets. Here you can also set the
    length of the dataset you want to subset, the time resolution, and
    whether you are working on a MacOS or Linux machine.
 4: Run the tool by typing:
@@ -198,7 +187,7 @@ import esmvaltool.diag_scripts.shared as e
 from esmvaltool.diag_scripts.shared import ProvenanceLogger
 
 # Locally used modules
-from . import computations, lorenz_cycle, mkthe, plot_script, provenance_meta
+import computations, lorenz_cycle, mkthe, plot_script, provenance_meta
 
 warnings.filterwarnings("ignore", message="numpy.dtype size changed")
 logger = logging.getLogger(os.path.basename(__file__))
