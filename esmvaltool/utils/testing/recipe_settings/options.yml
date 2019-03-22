@@ -335,6 +335,6 @@ recipe_hyint.yml:
   scale100years:
     - true
     - false
-  scalepercent
+  scalepercent:
     - true
     - false
