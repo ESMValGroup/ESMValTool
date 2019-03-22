@@ -1,7 +1,7 @@
 SOURCE: CMIP6
-!=============
+!============
 variable_entry:    siconc
-!=============
+!============
 modeling_realm:    seaIce
 !----------------------------------
 ! Variable attributes:
