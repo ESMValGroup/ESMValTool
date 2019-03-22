@@ -100,6 +100,3 @@ doc/sphinx/build
 
 # ESMF log files
 *.ESMF_LogFile
-
-# User config file
-~/ESMValTool-private/esmvaltool/config-AR.yml
