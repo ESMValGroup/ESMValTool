@@ -116,6 +116,9 @@ for (model_idx in c(1:(length(models_name)))) {
       print(paste0("Fixed spatial spectral slope: ", sx))
   }
   if (weights_climo != F) {
+      if (!startsWith(weights_climo, "/")) {
+        weights_climo <- paste0(settings$auxiliary_data_dir, "/", weights_climo)
+      }
       print(paste0("Using external climatology for weights: ", weights_climo))
       fileweights <- paste0(work_dir, "/", infilename, "_w.nc")
       ww <- julia_call("rfweights", weights_climo, infile, nf,
