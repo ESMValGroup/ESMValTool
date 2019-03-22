@@ -41,7 +41,6 @@ diagnostics:
       tasmin:
         preprocessor: preproc
         mip: day
-        field: T2D
     scripts:
       main:
         script: magic_bsc/extreme_spells.r
