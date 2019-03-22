@@ -66,7 +66,7 @@ User settings
 
    * npancol (2): number of columns in timeseries/trends multipanel figures
    * npanrow (3): number of rows in timeseries/trends multipanel figures
-   * autolevels (true): select automated (T) or pre-set (F) range of values in plots
+   * autolevels (true): select automated (true) or pre-set (false) range of values in plots
    * autolevels_scale (1): factor multiplying automated range for maps and timeseries
    * autolevels_scale_t (1.5): factor multiplying automated range for trend coefficients
 
