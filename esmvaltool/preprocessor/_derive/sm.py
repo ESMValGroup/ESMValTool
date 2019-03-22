@@ -1,24 +1,20 @@
 """Derivation of variable `sm`."""
 
 import cf_units
-from iris import Constraint
 import numpy as np
+from iris import Constraint
 
-from ._derived_variable_base import DerivedVariableBase
+from ._baseclass import DerivedVariableBase
 
 
 class DerivedVariable(DerivedVariableBase):
     """Derivation of variable `sm`."""
 
     # Required variables
-    _required_variables = {
-        'vars': [{
-            'short_name': 'mrsos',
-            'field': 'T2{frequency}s'
-        }]
-    }
+    required = [{'short_name': 'mrsos'}]
 
-    def calculate(self, cubes):
+    @staticmethod
+    def calculate(cubes):
         """Compute soil moisture.
 
         Note
