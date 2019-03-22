@@ -2,6 +2,8 @@
 # User's configuration file for the ESMValTool
 ###############################################################################
 ---
+# ESMValTool User's configuration file for LMU Desktop
+# Author: Ben Mueller - LMU
 
 # Diagnostics create plots? [true]/false
 write_plots: true
