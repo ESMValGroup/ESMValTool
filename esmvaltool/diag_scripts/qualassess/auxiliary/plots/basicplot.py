@@ -866,7 +866,7 @@ class Plot1D(object):
         if not all([c.ndim == 1] for c in self.cube):
             raise TypeError("Invalid input: expected 1-dimensional iris cube")
         try:
-            self.name = list(set(c.long_name for c in cube))[0]
+            self.name = list(filter(None,list(set(c.long_name for c in cube))))[0]
         except BaseException:
             pass
         self.units = ' [' + str(list(set(c.units for c in cube))[0]) + ']'

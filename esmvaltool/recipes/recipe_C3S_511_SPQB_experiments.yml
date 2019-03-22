@@ -59,18 +59,18 @@ diagnostics:
 #        script: qualassess/ta_C3S_511_SPQB.py
 #        requests: [histogram]
 #        levels: [3.00e+04,8.50e+04,1.00e+02]
-      diag_MV_ts:
-        script: qualassess/ta_C3S_511_SPQB.py
-        requests: [time_series]
-        levels: [3.00e+04,8.50e+04,1.00e+02]
-      diag_MV_mean:
-        script: qualassess/ta_C3S_511_SPQB.py
-        requests: [mean]
-        levels: [3.00e+04,8.50e+04,1.00e+02]
-      diag_MV_std_dev:
-        script: qualassess/ta_C3S_511_SPQB.py
-        requests: [std_dev]
-        levels: [3.00e+04,8.50e+04,1.00e+02]
+#      diag_MV_ts:
+#        script: qualassess/ta_C3S_511_SPQB.py
+#        requests: [time_series]
+#        levels: [3.00e+04,8.50e+04,1.00e+02]
+#      diag_MV_mean:
+#        script: qualassess/ta_C3S_511_SPQB.py
+#        requests: [mean]
+#        levels: [3.00e+04,8.50e+04,1.00e+02]
+#      diag_MV_std_dev:
+#        script: qualassess/ta_C3S_511_SPQB.py
+#        requests: [std_dev]
+#        levels: [3.00e+04,8.50e+04,1.00e+02]
 #      diag_MV_perc:
 #        script: qualassess/ta_C3S_511_SPQB.py
 #        requests: [percentiles]
