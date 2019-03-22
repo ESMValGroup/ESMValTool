@@ -76,7 +76,7 @@ diagnostics:
         requests: [mean]
 #        levels: [3.00e+04,8.50e+04,1.00e+02]
 
-#      diag_MV_std_dev: # not lazy
+#      diag_MV_std_dev: # lazy
 #        script: qualassess/DUMMY_C3S_511_SPQB.py
 #        requests: [std_dev]
 #        levels: [3.00e+04,8.50e+04,1.00e+02]
