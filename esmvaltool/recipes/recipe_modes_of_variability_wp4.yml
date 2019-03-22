@@ -49,7 +49,6 @@ diagnostics:
       psl:
         preprocessor: preproc
         mip: Amon
-        field: T2M
     scripts:
       main:
         script: magic_bsc/weather_regime.r
