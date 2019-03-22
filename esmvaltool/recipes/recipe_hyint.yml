@@ -22,17 +22,17 @@ documentation:
 datasets:
   - {dataset: ACCESS1-0, project: CMIP5, exp: [historical, rcp85],  ensemble: r1i1p1, start_year: 2000, end_year: 2010}
 
-#preprocessors:
-#  preproc:
-#    mask_landsea:
-#      mask_out: sea
+preprocessors:
+  preproc:
+    mask_landsea:
+      mask_out: sea
 
 diagnostics:
   hyint:
     description: HyInt hydroclimatic indices calculation and plotting
     variables:
       pr:
-#       preprocessor: preproc
+       preprocessor: preproc
         project: CMIP5
         exp: [historical,rcp85]
         ensemble: r1i1p1
@@ -86,7 +86,7 @@ diagnostics:
         # c) "REF" to use resolution of reference model
         rgrid: false   
 
-      # Select automated or pre-set range of values in plots
+       # Select automated or pre-set range of values in plots
         autolevels: true       
 
        # Scale autolevels (factor multiplying automated range)
@@ -104,11 +104,7 @@ diagnostics:
         weight_tseries: true  # adopt area weights in timeseries
         trend_years: false    # (a) F=all; (b) c(year1,year2) to apply trend 
                               # calculation and plotting only to a limited 
-                              # time interval (year1<=years<=year2) 
-                              # c) c(year1,year2,year3,year4) to apply trend to
-                              # two separate time intervals (year1<=y's<=year2) 
-                              # and (year3<=y's<=year4)
-
+                              # time interval
         lm_trend: true              # calculate linear trend
         add_trend: true             # add linear trend to plot
         add_trend_sd: true          # add stdev range to timeseries
