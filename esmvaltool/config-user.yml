@@ -39,9 +39,9 @@ profile_diagnostic: false
 # Rootpaths to the data from different projects (lists are also possible)
 rootpath:
   CMIP5: [~/cmip5_inputpath1, ~/cmip5_inputpath2]
-  OBS: ~/path/to/dir/
-  RAWOBS: ~/path/to/dir/
-  auxiliary_data_dir: ~/path/to/dir/
+  OBS: ~/
+  RAWOBS: ~/
+  auxiliary_data_dir: ~/
 
 # Directory structure for input data: [default]/BADC/DKRZ/ETHZ/etc
 # See config-developer.yml for definitions.
