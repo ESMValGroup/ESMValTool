@@ -46,7 +46,6 @@ diagnostics:
       tas:
         preprocessor: preproc
         mip: Amon
-        field: T2M
     scripts:
       main:
         script: magic_bsc/multimodel_products.r
