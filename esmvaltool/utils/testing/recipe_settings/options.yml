@@ -258,14 +258,13 @@ recipe_hyint.yml:
     - [1]  # World
     - [2]  # World60 (60S/60N)
     - [3]  # Tropics (30S/30N)
-    - [4]  # South
-    - [5]  # America
-    - [6]  # Africa
-    - [7]  # North America
-    - [8]  # India
-    - [9]  # Europe
-    - [10]  # East-Asia
-    - [11]  # Australia
+    - [4]  # South America
+    - [5]  # Africa
+    - [6]  # North America
+    - [7]  # India
+    - [8]  # Europe
+    - [9]  # East-Asia
+    - [10]  # Australia
     - [2, 4, 5, 6, 7]
   plot_type:  # type of figures to be plotted. Select one or more from:
     - [1]  # lon/lat maps per individual field/exp/multi-year mean
@@ -277,17 +276,65 @@ recipe_hyint.yml:
     - [14]  # summary trend coefficients multiple regions
     - [15]  # summary trend coefficients multiple models
     - [2, 3, 12, 13, 14, 15]
-  # Undocumented options
-  # Select single plot or multi-panel figure
-  multipanel:
+  rgrid:
+    - false
+    - r100x50
+    - REF
+  npancol:
+    - 2
+    - 4
+  npanrow:
+    - 3
+    - 5
+  autolevels:
     - true
     - false
-  # Select number of columns and rows in multi-panel figure
-  npancol:  # number of columns for trend/tseries multi-panel figures
-    - 2
-  npanrow:  # number of rows for trend/tseries multi-panel figures
+  autolevels_scale:
+    - 1
+    - 1.7
+  autolevels_scale_t:
+    - 1.5
+    - 1
+  oplot_grid:
+    - false
+    - true
+  boxregion:
+    - false
+    - -10
     - 3
-  # Select automated or pre-set range of values in plots
-  autolevels:
+  removedesert:
+    - false
+    - true
+  weight_tseries:
+    - true
+    - false
+  trend_years:
+    - false
+    - [2002,2005]
+  lm_trend:
+    - true
+    - false
+  add_trend:
+    - true
+    - false
+  add_trend_sd:
+    - true
+    - false
+  add_trend_sd_shade:
+    - true
+    - false
+  add_tseries_lines:
+    - true
+    - false
+  add_zeroline:
+    - true
+    - false
+  trend_years_only:
+    - true
+    - false
+  scale100years:
+    - true
+    - false
+  scalepercent
     - true
     - false
