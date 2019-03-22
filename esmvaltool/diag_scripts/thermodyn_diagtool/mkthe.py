@@ -324,7 +324,7 @@ def write_output(wdir, model, file_list, varlist):
             "Meteorologisches Institut, Universitaet ", "Hamburg.")
         with Dataset(file_list[0]) as dataset:
             fourc.extr_time(dataset, w_nc_fid)
-            fourc.extr_lat(dataset, w_nc_fid)
+            fourc.extr_lat(dataset, w_nc_fid, 'lat')
             fourc.extr_lon(dataset, w_nc_fid)
         w_nc_var = w_nc_fid.createVariable(
             'tlcl', 'f8', ('time', 'lat', 'lon'))
@@ -353,7 +353,7 @@ def write_output(wdir, model, file_list, varlist):
             "Universitaet Hamburg.")
         with Dataset(file_list[0]) as dataset:
             fourc.extr_time(dataset, w_nc_fid)
-            fourc.extr_lat(dataset, w_nc_fid)
+            fourc.extr_lat(dataset, w_nc_fid, 'lat')
             fourc.extr_lon(dataset, w_nc_fid)
         w_nc_var = w_nc_fid.createVariable(
             'tabl', 'f8', ('time', 'lat', 'lon'))
@@ -382,7 +382,7 @@ def write_output(wdir, model, file_list, varlist):
             "Universitaet Hamburg.")
         with Dataset(file_list[0]) as dataset:
             fourc.extr_time(dataset, w_nc_fid)
-            fourc.extr_lat(dataset, w_nc_fid)
+            fourc.extr_lat(dataset, w_nc_fid, 'lat')
             fourc.extr_lon(dataset, w_nc_fid)
         w_nc_var = w_nc_fid.createVariable(
             'htop', 'f8', ('time', 'lat', 'lon'))

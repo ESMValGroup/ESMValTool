@@ -810,7 +810,7 @@ def pr_output(varo, varname, filep, nc_f):
             wave = nc_fid.variables['wave'][:]
             ntp = int(len(wave) / 2)
             # Writing NetCDF files
-            fourc.extr_lat(nc_fid, w_nc_fid)
+            fourc.extr_lat(nc_fid, w_nc_fid, 'lat')
             w_nc_fid.createDimension('wave', ntp)
             w_nc_dim = w_nc_fid.createVariable(
                 'wave', nc_fid.variables['wave'].dtype, ('wave', ))

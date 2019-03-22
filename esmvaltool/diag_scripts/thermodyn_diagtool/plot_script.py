@@ -94,9 +94,9 @@ def balances(cfg, wdir, plotpath, filena, name, model):
                 nameout = 'ocean'
             nc_f = wdir + '/{}_transp_mean_{}.nc'.format(nameout, model)
             removeif(nc_f)
-            pr_output(transp_mean[i, :], filename, nc_f, nameout)
-            name_model = '{}_{}'.format(nameout, model)
             lat_model = 'lat_{}'.format(model)
+            pr_output(transp_mean[i, :], filename, nc_f, nameout, lat_model)
+            name_model = '{}_{}'.format(nameout, model)
             cdo.chname(
                 '{},{}'.format(nameout, name_model),
                 input=nc_f,
@@ -125,7 +125,7 @@ def balances(cfg, wdir, plotpath, filena, name, model):
         removeif(nc_f)
         filena[0] = filena[0].split('.nc', 1)[0]
         filename = filena[0] + '.nc'
-        pr_output(transp_mean[0, :], filename, nc_f, 'wmb')
+        pr_output(transp_mean[0, :], filename, nc_f, 'wmb', 'lat')
         attr = ['water mass transport', model]
         provrec = provenance_meta.get_prov_transp(attr, filename, plotwmbname)
         provlog.log(nc_f, provrec)
@@ -133,7 +133,7 @@ def balances(cfg, wdir, plotpath, filena, name, model):
         removeif(nc_f)
         filena[1] = filena[1].split('.nc', 1)[0]
         filename = filena[1] + '.nc'
-        pr_output(transp_mean[1, :], filename, nc_f, 'latent')
+        pr_output(transp_mean[1, :], filename, nc_f, 'latent', 'lat')
         attr = ['latent energy transport', model]
         provrec = provenance_meta.get_prov_transp(attr, filename, plotlatname)
         provlog.log(nc_f, provrec)
@@ -825,7 +825,7 @@ def plot_mm_transp_panel(model_names, wdir, axi, domn, yrange):
     plt.grid()
 
 
-def pr_output(varout, filep, nc_f, nameout):
+def pr_output(varout, filep, nc_f, nameout, latn):
     """Print processed ta field to NetCDF file.
 
     Save fields to NetCDF, retrieving information from an existing
@@ -838,6 +838,7 @@ def pr_output(varout, filep, nc_f, nameout):
           same dimension as the fields to be saved to the new files;
         - nc_f: the name of the output file;
         - nameout: the name of the variable to be saved;
+        - latn: the name of the latitude dimension;
 
     PROGRAMMER(S)
         Chris Slocum (2014), modified by Valerio Lembo (2018).
@@ -847,7 +848,7 @@ def pr_output(varout, filep, nc_f, nameout):
     w_nc_fid = Dataset(nc_f, 'w', format='NETCDF4')
     w_nc_fid.description = ("Total, atmospheric and oceanic annual ",
                             "mean meridional heat transports")
-    fourc.extr_lat(nc_fid, w_nc_fid)
+    fourc.extr_lat(nc_fid, w_nc_fid, latn)
     w_nc_var = w_nc_fid.createVariable(nameout, 'f8', ('lat'))
     varatts(w_nc_var, nameout)
     w_nc_fid.variables[nameout][:] = varout

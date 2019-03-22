@@ -139,7 +139,7 @@ def pr_output(dict_v, nc_f, fileo, file_desc, wave2):
         var_nc_fid.description = file_desc
         with Dataset(nc_f, 'r') as nc_fid:
             extr_time(nc_fid, var_nc_fid)
-            extr_lat(nc_fid, var_nc_fid)
+            extr_lat(nc_fid, var_nc_fid, 'lat')
             extr_plev(nc_fid, var_nc_fid)
             # Write the wave dimension
             var_nc_fid.createDimension('wave', len(wave2))
@@ -176,7 +176,7 @@ def pr_output_diag(var1, nc_f, fileo, name1):
         with Dataset(nc_f, 'r') as nc_fid:
             # Extract data from NetCDF file nad write them to the new file
             extr_time(nc_fid, var_nc_fid)
-            extr_lat(nc_fid, var_nc_fid)
+            extr_lat(nc_fid, var_nc_fid, 'lat')
             extr_lon(nc_fid, var_nc_fid)
             extr_plev(nc_fid, var_nc_fid)
         var1_nc_var = var_nc_fid.createVariable(name1, 'f8',
@@ -186,7 +186,7 @@ def pr_output_diag(var1, nc_f, fileo, name1):
         var_nc_fid.close()  # close the new file
 
 
-def extr_lat(nc_fid, var_nc_fid):
+def extr_lat(nc_fid, var_nc_fid, latn):
     """Extract lat coord. from NC files and save them to a new NC file.
 
     Arguments:
@@ -194,18 +194,19 @@ def extr_lat(nc_fid, var_nc_fid):
           retrieved. Time,level and lon dimensions
           are retrieved;
         - var_nc_fid: the id of the new NC dataset previously created;
+        - latn: the name of the latitude dimension;
 
     PROGRAMMER(S)
         Valerio Lembo (2018).
     """
     # Extract coordinates from NetCDF file
     lats = nc_fid.variables['lat'][:]
-    var_nc_fid.createDimension('lat', len(lats))
+    var_nc_fid.createDimension(latn, len(lats))
     var_nc_dim = var_nc_fid.createVariable(
-        'lat', nc_fid.variables['lat'].dtype, ('lat', ))
+        latn, nc_fid.variables['lat'].dtype, (latn, ))
     for ncattr in nc_fid.variables['lat'].ncattrs():
         var_nc_dim.setncattr(ncattr, nc_fid.variables['lat'].getncattr(ncattr))
-    var_nc_fid.variables['lat'][:] = lats
+    var_nc_fid.variables[latn][:] = lats
 
 
 def extr_lon(nc_fid, var_nc_fid):
