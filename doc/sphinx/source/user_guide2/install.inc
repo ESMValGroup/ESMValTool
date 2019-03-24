@@ -156,7 +156,7 @@ If you would like to run Julia diagnostic scripts, you will also need to
     julia ESMValTool/esmvaltool/install/Julia/setup.jl
 
 If you would like to run R diagnostic scripts, you will also need to install the R
-dependencies:
+dependencies. To do that you will need to install gcc, if gcc is not available on your system or it is too old. On Debian based systems, this can be done by running `apt install build-essential gcc`, on managed systems you can often use the `module avail` command to see what compilers are available (note on gcc version: gcc 7.3.0 works well; gcc 8.2.0 is reported to have issues installing the R packages; example of loading gcc7 on the CEDA Jasmin cluster: `module load contrib/gnu/gcc/7.3.0`, similar module loading functionality should be present at your local cluster as well). Install the R dependency packages:
 
 .. code-block:: bash
 
