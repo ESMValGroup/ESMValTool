@@ -199,19 +199,21 @@ def seasonal_mean(cube):
     return cube.extract(three_months_bound)
 
 
-def _align_time_axes(cubes, frequency='monthly'):
+def regrid_time(cubes, frequency='monthly'):
     """
     Align time axis for cubes so they can be subtracted.
 
     Operations on time units, calendars, time points and auxiliary
     coordinates so that any cube from cubes can be subtracted from any
-    other cube from cubes.
+    other cube from cubes. Currently this function supports only monthly
+    and daily data time frequencies, but it will be adapted for sub-day
+    frequencies in the future.
 
     Arguments
     ---------
         cubes: list of iris.cube.Cube
         frequency: str
-            data frequency: monthly, daily, etc
+            data frequency: monthly or daily
             default: monthly
 
     Returns

@@ -10,10 +10,10 @@ from cf_units import Unit
 from iris.cube import Cube
 
 import tests
-from esmvaltool.preprocessor._time import (_align_time_axes, annual_mean,
+from esmvaltool.preprocessor._time import (annual_mean,
                                            extract_month,
                                            extract_season, extract_time,
-                                           time_average)
+                                           regrid_time, time_average)
 
 
 def _create_sample_cube():
@@ -198,8 +198,8 @@ class TestTimeAverage(tests.Test):
         self.assertArrayEqual(result.data, expected)
 
 
-class TestAlignTimeAxesMonthly(tests.Test):
-    """Tests for align_time_axes monthly."""
+class TestRegridTimeMonthly(tests.Test):
+    """Tests for regrid_time with monthly frequency."""
 
     def setUp(self):
         """Prepare tests"""
@@ -216,12 +216,12 @@ class TestAlignTimeAxesMonthly(tests.Test):
             ), 0)
         add_auxiliary_coordinate([self.cube_1, self.cube_2])
 
-    def test_align_time_axis_mon(self):
+    def test_regrid_time_mon(self):
         """Test changes to cubes."""
         # test monthly
-        newcube_1, newcube_2 = _align_time_axes([self.cube_1,
-                                                 self.cube_2],
-                                                frequency='monthly')
+        newcube_1, newcube_2 = regrid_time([self.cube_1,
+                                            self.cube_2],
+                                           frequency='monthly')
         # no changes to core data
         self.assertArrayEqual(newcube_1.data, self.cube_1.data)
         self.assertArrayEqual(newcube_2.data, self.cube_2.data)
@@ -236,8 +236,8 @@ class TestAlignTimeAxesMonthly(tests.Test):
         self.assertArrayEqual(diff_cube.data, expected)
 
 
-class TestAlignTimeAxesDaily(tests.Test):
-    """Tests for align_time_axes monthly."""
+class TestRegridTimeDaily(tests.Test):
+    """Tests for regrid_time with daily frequency."""
 
     def setUp(self):
         """Prepare tests"""
@@ -262,12 +262,12 @@ class TestAlignTimeAxesDaily(tests.Test):
             ), 0)
         add_auxiliary_coordinate([self.cube_1, self.cube_2])
 
-    def test_align_time_axis_day(self):
+    def test_regrid_time_day(self):
         """Test changes to cubes."""
         # test daily
-        newcube_1, newcube_2 = _align_time_axes([self.cube_1,
-                                                 self.cube_2],
-                                                frequency='daily')
+        newcube_1, newcube_2 = regrid_time([self.cube_1,
+                                            self.cube_2],
+                                           frequency='daily')
         # no changes to core data
         self.assertArrayEqual(newcube_1.data, self.cube_1.data)
         self.assertArrayEqual(newcube_2.data, self.cube_2.data)
