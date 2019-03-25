@@ -146,7 +146,7 @@ See also :func:`esmvaltool.preprocessor.extract_region`.
 The function calculates the zonal or meridional means. While this function is
 named `zonal_mean`, it can be used to apply several different operations in
 an zonal or meridional direction.
- This function takes two arguments:
+This function takes two arguments:
 
 * coordinate: Which direction to apply the operation: latitude or longitude
 * mean_type: Which operation to apply: mean, std_dev, variance, median, min or max

@@ -189,11 +189,11 @@ def seasonal_mean(cube):
     cube = cube.aggregated_by(['clim_season', 'season_year'],
                               iris.analysis.MEAN)
 
-    # TODO: This preprocessor is not calendar independent.
-    # this func returns an approximation to 3 months
+    # CMOR Units are days so we are safe to operate on days
+    # Ranging on [90, 92] days makes this calendar-independent
     def spans_three_months(time):
-        """Check for three months."""
-        return (time.bound[1] - time.bound[0]) == 2160
+        """Check for three months"""
+        return 90 <= (time.bound[1] - time.bound[0]).days <= 92
 
     three_months_bound = iris.Constraint(time=spans_three_months)
     return cube.extract(three_months_bound)
