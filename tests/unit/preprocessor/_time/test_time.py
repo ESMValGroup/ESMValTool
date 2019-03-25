@@ -68,6 +68,11 @@ class TestTimeSlice(tests.Test):
         self.assertTrue(
             (np.arange(1, 13, 1) == sliced.coord('month_number').points).all())
 
+    def test_extract_time_no_slice(self):
+        """Test fail of extract_time."""
+        with self.assertRaises(ValueError):
+            extract_time(self.cube, 2200, 1, 1, 2200, 12, 31)
+
     def test_extract_time_one_time(self):
         """Test extract_time with one time step."""
         cube = _create_sample_cube()
