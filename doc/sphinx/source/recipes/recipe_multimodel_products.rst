@@ -6,7 +6,7 @@ Generic multi-model products
 Overview
 --------
 
-The goal of this diagnostic is to compute the multi-model ensemble mean for a set of models selected by the user for individual variables and different temporal resolutions (annual, seasonal, monthly). 
+The goal of this diagnostic is to compute the multi-model ensemble mean for a set of models selected by the user for individual variables and different temporal resolutions (annual, seasonal, monthly).
 
 After selecting the region (defined by the lowermost and uppermost longitudes and latitudes), the mean for the selected reference period is subtracted from the projections in order to obtain the anomalies for the desired period. In addition, the recipe computes the percentage of models agreeing on the sign of this anomaly, thus providing some indication on the robustness of the climate signal.
 
@@ -47,7 +47,7 @@ User setting files are stored in recipes/
    * monsup: integer specifying the last month of the seasonal mean period to be computed
    * agreement_threshold: integer between 0 and 100 indicating the threshold in percent for the minimum agreement between models on the sign of the multi-model mean anomaly for the stipling to be plotted
    * running_mean: integer indictating the length of the window for the running mean to be computed
-   * time_series_plot: either null or mean or maxmin (does not work yet)
+   * time_series_plot: Either single or maxmin (plot the individual or the mean with shading between the max and min).
 
 
 Variables
