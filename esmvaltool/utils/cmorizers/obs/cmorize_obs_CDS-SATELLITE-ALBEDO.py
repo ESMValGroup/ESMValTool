@@ -1,6 +1,6 @@
 """
 # #############################################################################
-# ESMValTool CMORizer for WOA data
+# ESMValTool CMORizer for CDS-SATELLITE-ALBEDO dataset
 # #############################################################################
 #
 # Tier
@@ -13,11 +13,16 @@
 # Last access
 #    20190311
 #
-# Caveats: 
-#    -Fix coordinates, not good yet! 
 #
-# Download and processing instructions
-#    Download the following files:
+#
+# Instructions:
+#    - Download the raw datafiles from the source above
+#    - Run the non-ESMValTool regridding script (cmorize_obs_CDS-SATELLITE-ALBEDO_with_gdal.py)
+#
+# Caveats
+#    - This dataset is at 1-km  resolution originally, therefore a first preprocessing step
+#      is taken outside ESMValTool making use of gdalwarp to regrid from 1 km to 0.25 deg resolution
+#    - Potentially, this can be implemented within Python, using the gdal bindings. import gdal; gdal.Translate; gdal.Warp etc. 
 #
 # Modification history
 #    20190320-A_crez_ba: adapted from cmorize_obs_WOA.py
@@ -26,11 +31,9 @@
 """
 
 
-#TODO fix coordinates
 import datetime
 import logging
 import os
-
 import iris
 from cf_units import Unit
 
@@ -43,12 +46,10 @@ from .utilities import (_add_metadata,
 
 logger = logging.getLogger(__name__)
 
-# used vars
-ALL_VARS = ['bhalb']
-
-# all years to be analyzed
-START_YYYYMM = '200301'
-END_YYYYMM = '200312'
+# Set these parameters
+ALL_VARS = ['bhalb','dhalb']
+yr_start,yr_end = '2003','2003'
+delta_lon = 0.25  # The resolution of data in the longitudinal direction.
 
 # read in CMOR configuration
 cfg = _read_cmor_config('CDS-SATELLITE-ALBEDO.yml')
@@ -57,24 +58,25 @@ timestamp = datetime.datetime.utcnow()
 timestamp_format = "%Y-%m-%d %H:%M:%S"
 now_time = timestamp.strftime(timestamp_format)
 proj['metadata_attributes']['CMORcreated'] = now_time
-VAR_TO_FILENAME = cfg['VAR_TO_FILENAME']
+
+RAWFILENAMES = cfg['RAWFILENAMES']
 FIELDS = cfg['FIELDS']
 STANDARD_NAMES = cfg['STANDARD_NAMES']
 LONG_NAMES = cfg['LONG_NAMES']
-
 
 def extract_variable(var, raw_file, out_dir, yr):
     """Extract to all vars."""
     cubes = iris.load(raw_file)
     field = FIELDS[var]
     for cube in cubes:
+        print(cube.long_name,field)
         if cube.long_name == field:
             cube.standard_name = STANDARD_NAMES[var]
             cube.long_name = LONG_NAMES[var]
             cube.var_name = var
-            _convert_timeunits(cube, yr)
             _fix_coords(cube)
-            _roll_cube_data(cube, 180, -1)
+            # Shift the data in the longitudinal direction (needed because coords are shifted in _fix_coords)
+            _roll_cube_data(cube,int(180/delta_lon), -1) 
             _add_metadata(cube, proj)
             _save_variable(cube, var, out_dir, yr, proj)
 
@@ -88,6 +90,7 @@ def cmorization(in_dir, out_dir):
     for var in ALL_VARS:
         if not os.path.exists(out_dir):
             os.path.makedirs(out_dir)
-        raw_file = os.path.join(in_dir,'OBS_CDS-SATELLITE-ALBEDO-025deg_sat_L3_' + VAR_TO_FILENAME[var] + '_' + START_YYYYMM + '-' + END_YYYYMM+'.nc')
+        rawfilename = RAWFILENAMES[var]
+        raw_file = os.path.join(in_dir,rawfilename)
         logger.info("CMORizing var %s in file %s", var, raw_file)
-        extract_variable(var, raw_file, out_dir, '2003')
+        extract_variable(var, raw_file, out_dir, [yr_start,yr_end])

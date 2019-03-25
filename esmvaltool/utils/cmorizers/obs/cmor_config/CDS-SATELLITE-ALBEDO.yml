@@ -6,6 +6,7 @@ proj:
   realm: 'sat'
   frequency:
     'bhalb': 'Lmon'
+    'dhalb': 'Lmon'
   metadata_attributes:
     tier: '2'
     source: ''
@@ -13,20 +14,22 @@ proj:
     CMORconventions: 'CF/CMOR3'
     CMORcreated: ''
 
-
 # specific raw file names
-VAR_TO_FILENAME:
-  bhalb: 'bhalb'
+RAWFILENAMES:
+  bhalb: 'CDS-SATELLITE-ALBEDO_AL_BH_BB.nc'
+  dhalb: 'CDS-SATELLITE-ALBEDO_AL_DH_BB.nc'
 
 # specific fields names from raw obs files
 FIELDS:
-  bhalb:     'Broadband directional albedo over total spectrum'
+  bhalb:     'Broadband hemispherical albedo over total spectrum'
+  dhalb:     'Broadband directional albedo over total spectrum'
 
-# cmor standard names
+# cmor standard names #TODO: try changing standard names, now they are the same
 STANDARD_NAMES:
   bhalb:     'surface_albedo'
+  dhalb:     'surface_albedo'
 
-# cmor long names
+# cmor long names needed, they are the same as the fields.
 LONG_NAMES:
-  bhalb:     'Bihemispheric surface albedo over total spectrum.'
-
+  bhalb:     'Broadband hemispherical albedo over total spectrum'
+  dhalb:     'Broadband directional albedo over total spectrum'
