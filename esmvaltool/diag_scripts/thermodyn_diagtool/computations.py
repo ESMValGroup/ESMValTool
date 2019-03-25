@@ -285,6 +285,9 @@ def direntr(logger, model, wdir, filelist, aux_file, lect, lec, flags):
         sensentr_file, evapentr_file, rainentr_file, snowentr_file,
         meltentr_file, potentr_file
     ]
+    os.remove(htop_file)
+    os.remove(tabl_file)
+    os.remove(tlcl_file)
     return matentr, irrevers, entr_list
 
 
@@ -616,6 +619,7 @@ def meltentr(model, wdir, latsnow_file, aux_file):
     remove_files = [latmelt_file, meltentr_mean_file]
     for filen in remove_files:
         os.remove(filen)
+    os.remove(latsnow_file)
     return meltentr_gmean, meltentr_file
 
 

@@ -51,98 +51,160 @@ USAGE
    converting known grids and recognized datasets to CMOR standards. For a
    a list of known formats, see
       http://esmvaltool.readthedocs.io/en/latest/running.html#tab-obs-dat
-   Whether you need to use non-recognized datasets (provided that they are
-   globally gridded), ask for support!
 
 2: A configuration template is available in the ESMValTool release. Set your
   own paths to local directories here. Input datasets are read in MODELPATH,
   MODELPATH2, OBSPATH or OBSPATH2 output datasets are stored in WORKPATH,
   plots in PLOTPATH (refer to the manual for ESMValTool).
 
-3: Go to the recipe file in Set the namelist with your own input datasets. Here you can also set the
-   length of the dataset you want to subset, the time resolution, and
-   whether you are working on a MacOS or Linux machine.
+3: Go to the recipe file in ~/recipes/recipe_thermodyn_diagtool.yml.
+   Set the namelist with the datasets that you neeed, following the ESMValTool
+   naming convention. Here you can also set the length of the dataset you want
+   to subset. 
+   In the 'scripts' section, set the options with the modules that you want the
+   program to use:
+       - wat: if set to true, the program will compute the water mass and
+              latent energy budget,
+       - lec: if set to true, the program will compute the Lorenz Energy Cycle
+              (LEC) averaged on each year;
+       - entr: if set to true, the program will compute the material entropy
+               production (MEP);
+       - met: if set to 1, the program will compute the MEP with the indirect
+              method, if set to 2 with the direct method, if set to 3, both
+              methods will be computed and compared with each other;
 4: Run the tool by typing:
-         python main.py nml/namelist_lembo17.xml
-5: After the data preprocessing, choose the options as required by the
-   program;
+         esmvaltool -c $CONFIG_FILE \\
+             esmvaltool/recipes/recipe_thermodyn_diagtool.yml
 
 OUTPUT
 
-In the output directory, NetCDF files containing annual mean fields and
-global mean time series for budgets and material entropy production time
-series.
-Log files containing the values of the LEC components are stored in
-subdirectories, identified by the year for which they are computed. LEC
-quantities are stored in different files, one for each year.
-- energy_gns_* contains global, NH and SH time mean fields as a function of
-  wavenumbers;
-- energy_mean_* contains time mean (lon,wave,plev) fields;
-- energy_ts3d_* contains (time,lon,wave,plev) fields;
-- <MODELNAME>_energy_*.ps is a diagram flux displaying annual mean
-  components of the LEC;
+The output directory contains the following NetCDF files:
+    - (output directory):
+        atmos_transp_mean_<model_name>.nc
+        latent_transp_mean_<model_name>.nc
+        ocean_transp_mean_<model_name>.nc
+        total_transp_mean_<model_name>.nc
+        wmb_transp_mean_<model_name>.nc
+        
+        contain annual mean meridional sections of heat transports in the
+        atmosphere, oceans, and as a total; latent energy transports and water
+        mass transports;
+        
+    - (output directory)/<model_name>:
+        <model-name>_atmb.nc
+        (<model-name>_latent.nc; if wat is set to true)
+        <model-name>_surb.nc
+        <model-name>_toab.nc
+        (<model-name>_wmb.nc; is wat is set to true)
+        
+        contain annual mean 2D fields of energy budget, latent heat and water
+        mass budgets;
+        
+        <model-name>_barocEff.nc
+        
+        contains the evolution of annual mean baroclinic efficiency
+        (Lucarini et al., 2011).
+        
+        (if entr is set to true):
+        <model-name>_evap_entr.nc (if met is set to 2 or 3)
+        <model-name>_horizEntropy.nc (if met is set to 1 or 3)
+        <model-name>_pot_drop_entr.nc (if met is set to 2 or 3)
+        <model-name>_rain_entr.nc (if met is set to 2 or 3)
+        <model-name>_sens_entr.nc (if met is set to 2 or 3)
+        <model-name>_snow_entr.nc (if met is set to 2 or 3)
+        <model-name>_snowmelt_entr.nc (if met is set to 2 or 3)
+        <model-name>_verticalEntropy.nc (if met is set to 1 or 3)
+        contain the evolution of annual mean components of the material entropy
+        production.
 
-In the plot directory figures are stored as PNG files in each model subdir.
+    - (plots directory):
+        meridional_transp.png: contains the model inter-comparison of total,
+        atmospheric and oceanic of meridional sections in zonally averaged
+        meridional heat transports;
+        scatters_summary.png: contains the scatter plots of
+        model intercomparisons of various metrics retrieved in the program;
+        scattes_variability: contains scatter plots of model intercomparisons
+        between TOA, atmospheric and surface global mean energy budgets and
+        their inter-annual variability;
+        
+    - (plots directory)/<model-name>:
+        <model-name>_atmb_timeser.png: the atmospheric budget annual mean
+        global and hemispheric time series;
+        <model-name>_energy_climap.png: the TOA, atmospheric and surface
+        climatological mean fields;
+        <model-name>_heat_transp.png: the meridional sections of total,
+        atmospheric and oceanic meridional heat transports (implied from energy
+        budgets);
+        <model-name>_latent_climap.png: the climatological mean latent heat
+        field;
+        <model-name>_latent_timeser.png: the latent heat annual mean global and
+        hemispheric evolutions;
+        <model-name>_latent_transp.png: the meridional section of annual mean
+        meridional latent heat transport;
+        <model-name>_scatpeak.png: the scatter plots of atmospheric vs. oceanic
+        peak magnitude in both hemispheres;
+        <model-name>_sevap_climap.png: the annual mean field of material
+        entropy production due to evaporation;
+        <model-name>_smelt_climap.png: the annual mean field of material
+        entropy production due to snow melting;
+        <model-name>_spotp_climap.png: the annual mean field of material
+        entropy production due to potential energy of the droplet;
+        <model-name>_srain_climap.png: the annual mean field of material
+        entropy production due to rainfall precipitation;
+        <model-name>_ssens_climap.png: the annual mean field of material
+        entropy production due to sensible heat fluxes;
+        <model-name>_ssnow_climap.png: the annual mean field of material
+        entropy production due to snowfall precipitation;
+        <model-name>_surb_timeser.png: the surface budget annual mean
+        global and hemispheric time series;
+        <model-name>_sver_climap.png: the annual mean field of vertical
+        material entropy production through the indirect method;
+        <model-name>_toab_timeser.png: the TOA budget annual mean
+        global and hemispheric time series;
+        <model-name>_wmb_climap.png: the climatological mean water mass budget
+        field;
+        <model-name>_wmb_timeser.png: the water mass annual mean global and
+        hemispheric evolutions;
+        <model-name>_wmb_transp.png: the meridional section of annual mean
+        meridional water mass transport;
+    
+    - (plots directory)/<model-name>/LEC_results:
+        <model-name>_<year>_lec_diagram.png: the flux diagram for the annual
+        mean LEC cycle in a specific year;
+        <model-name>_<year>_lec_table.txt: the table containing the storage and
+        conversion terms for the annual mean LEC cycle in a specific year;
+        
+The file log.txt in the '$WORK_PATH/recipe_thermodyn_diagtool_date_hour/run'
+sub-directory contains the values for the metrics and all useful information
+for immediate model intercomparison.
 
-For the budgets (toab: TOA energy budget, atmb: atmospheric energy budget,
-surb: surface energy budget, latent: latent energy budget, wmb: water mass
-budget) there can be found:
- - climatological mean fields (*_climap.png);
- - time series evolution of global, NH and SH mean fields (*_timeser.png)
- - meridional transports (*_transp.pdf);
- - scatter plots of annual peak magnitudes vs. locations (*_scatpeak.png)
- - LEC diagrams for each year (*_lec_diagram.png)
-
-For the multi-model ensembles scatter plots of EB mean values vs. their
-interannual variability are provided (scatters_variability.png), a summary
-panel of the main thermodynamic quantities averaged for each model
-(scatters_summary.png), and the zonal mean meridional heat transports for
-each model (meridional_transp.png).
-
-For the material entropy production (sver: vertical, shor: horizontal
-(indirect method), sevap: evaporation component, slatpr: ice-rain
-phase changes, slatps: vapor-snow phase changes, spotp: potential energy,
-srain: rainfall, ssens: sensible heat, ssnow: snowfall) climatological mean
-fields are shown.
-
-In the working directory, a log file (lembo17_log.txt) is produced,
-containing the global mean values of all the quantities.
-
-N.B.: multi-model ensembles and means are performed on the results of the
-      analysis. No multi-model mean analysis is performed on input fields.
-      It is thus a deliberate choice not to use the multi-model mean tools
-      provided by the postprocessor.
-
-SOFTWARE TREE DESCRIPTION
+SOFTWARE DESCRIPTION
 
 The tool is divided in three modules; one for the
-computation of energy and water mass budgets (and related meridional
-transports), one for the Lorenz Energy Cycle (LEC), one for the material
-entropy production.
+computation of energy budgets and transports, one for the water mass budgets
+(and related meridional transports), one for the Lorenz Energy Cycle (LEC),
+one for the material entropy production.
 
-Module Dependencies:
-  - MODULE 1: Budgets and Transports --> none;
-  - MODULE 2: Lorenz Energy Cycle    --> none;
-  - MODULE 3: Material Entropy Production:
-                                 * Indirect method --> requires Budgets
-                                 * Direct method   --> requires Budgets and
-                                                       LEC
+The first module is run by default, the others are optional. If the lsm option
+is set to true, the module 1 and the module 2 will be run with additional
+separate results over land and oceans. The land-sea mask is provided by the
+ESMValTool preprocessor.
 
-- MODULE 1
+- MODULE 1 (default)
 Earth's energy budgets from radiative and heat fluxes at Top-of-Atmosphere,
 at the surface and in the atmosphere (as a residual).
-If required by the user, water mass and latent energy budgets are computed
-from rainfall, snowfall and evaporation fluxes.
-If required by the user, computations are also separately performed over
-land and oceans. A land-sea mask (either binary or percentual) has to be
-provided.
 Meridional transports, magnitude and location of the peaks in each
 hemisphere (only for heat transports) are also computed.
 The baroclinic efficiency is computed from TOA energy budgets, emission
 temperature (in turn retrieved from OLR) and near-surface temperature.
 
-- MODULE 2
+- MODULE 2 (optional)
+Water mass and latent energy budgets and meridional transports are computed
+from latent heat fluxes, snowfall and rainfall precipitation fluxes. Magnitude
+and location of the peaks in each hemisphere (only for heat transports) are
+also computed, as for module 1.
 
+- MODULE 3 (optional)
 The Lorenz Energy Cycle (LEC) is computed in spectral components from near-
 surface temperatures, temperatures and the three components of velocities
 over pressure levels.
@@ -151,8 +213,7 @@ sinks are retrieved as residuals.
 Components are grouped into a zonal mean, stationary and transient eddy
 part.
 
-- MODULE 3
-
+- MODULE 4 (optional)
 The material entropy production is computed using the indirect method, the
 direct method or both (following Lucarini et al., 2014).
 For the indirect method a vertical and a horizontal component are provided.
@@ -161,9 +222,9 @@ hydrological cycle (attributable to evaporation, rainfall and snowfall
 precipitation, phase changes and potential energy of the droplet), to the
 sensible heat fluxes and to kinetic energy dissipation. For the latter the
 LEC computation is required, given that the strength of the LEC can be
-considered as equal to the kinetic energy dissipated to heating.
-
-
+considered as equal to the kinetic energy dissipated to heating. If the option
+for module 3 is set to false, a reference value for the material entropy
+production related to the kinetic energy dissipation is provided.
 
 
 #############################################################################
@@ -171,7 +232,7 @@ considered as equal to the kinetic energy dissipated to heating.
 20170803-A_lemb_va: Modified header with description and caveats
 20170629-A_kold_ni: Atmospheric budgets diagnostics written
 20180524-A_lemb_va: first complete working thermodynamics diagnostics
-
+20190325-A_lemb_va: complete updated version for ESMValTool v2.0b
 
 #############################################################################
 """
@@ -420,6 +481,7 @@ def main(cfg):
                             'entropy production (indirect method)\n')
                 plotsmod.entropy(pdir, vertentr_file, 'sver',
                                  'Vertical entropy production', model)
+                os.remove(te_file)
                 logger.info('Done\n')
             if met in {'2', '3'}:
                 matentr, irrevers, entr_list = comp.direntr(
@@ -439,6 +501,7 @@ def main(cfg):
                             'entropy production (direct method)\n')
                 plotsmod.init_plotentr(model, pdir, entr_list)
                 logger.info('Done\n')
+        os.remove(te_ymm_file)
         logger.info('Done for model: %s \n', model)
         i_m = i_m + 1
     logger.info('I will now start multi-model plots')

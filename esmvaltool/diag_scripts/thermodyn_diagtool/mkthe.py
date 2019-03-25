@@ -184,6 +184,7 @@ def input_data(wdir, file_list):
         options='-b F32',
         output=vv_file)
     cdo.setctomiss('0', input=vv_file, output=vv_missfile)
+    os.remove(vv_file)
     hfss_miss_file = wdir + '/hfss.nc'
     removeif(hfss_miss_file)
     cdo.setctomiss('0', input=file_list[5], output=hfss_miss_file)
