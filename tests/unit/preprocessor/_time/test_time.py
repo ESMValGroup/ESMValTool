@@ -49,6 +49,7 @@ class TestExtractMonth(tests.Test):
     def test_get_january(self):
         """Test january extraction"""
         sliced = extract_month(self.cube, 1)
+        print(sliced)
         self.assertTrue(
             (np.array([1, 1]) == sliced.coord('month_number').points).all())
 
@@ -63,6 +64,7 @@ class TestTimeSlice(tests.Test):
     def test_extract_time(self):
         """Test extract_time."""
         sliced = extract_time(self.cube, 1950, 1, 1, 1950, 12, 31)
+        print(sliced)
         self.assertTrue(
             (np.arange(1, 13, 1) == sliced.coord('month_number').points).all())
 
@@ -71,6 +73,7 @@ class TestTimeSlice(tests.Test):
         cube = _create_sample_cube()
         cube = cube.collapsed('time', iris.analysis.MEAN)
         sliced = extract_time(cube, 1950, 1, 1, 1952, 12, 31)
+        print(sliced)
         self.assertTrue(np.array([
             360.,
         ]) == sliced.coord('time').points)
@@ -79,6 +82,8 @@ class TestTimeSlice(tests.Test):
         """Test extract_time with no time step."""
         cube = _create_sample_cube()[0]
         sliced = extract_time(cube, 1950, 1, 1, 1950, 12, 31)
+        print('sliced', sliced, sliced.shape)
+        print('cube', cube, cube.shape)
         self.assertTrue(cube == sliced)
 
 
@@ -92,6 +97,7 @@ class TestExtractSeason(tests.Test):
     def test_get_djf(self):
         """Test function for winter"""
         sliced = extract_season(self.cube, 'djf')
+        print(sliced)
         self.assertTrue(
             (np.array([1, 2, 12, 1, 2,
                        12]) == sliced.coord('month_number').points).all())
@@ -99,6 +105,7 @@ class TestExtractSeason(tests.Test):
     def test_get_djf_caps(self):
         """Test function works when season specified in caps"""
         sliced = extract_season(self.cube, 'DJF')
+        print(sliced)
         self.assertTrue(
             (np.array([1, 2, 12, 1, 2,
                        12]) == sliced.coord('month_number').points).all())
@@ -106,18 +113,21 @@ class TestExtractSeason(tests.Test):
     def test_get_mam(self):
         """Test function for spring"""
         sliced = extract_season(self.cube, 'mam')
+        print(sliced)
         self.assertTrue((np.array(
             [3, 4, 5, 3, 4, 5]) == sliced.coord('month_number').points).all())
 
     def test_get_jja(self):
         """Test function for summer"""
         sliced = extract_season(self.cube, 'jja')
+        print(sliced)
         self.assertTrue((np.array(
             [6, 7, 8, 6, 7, 8]) == sliced.coord('month_number').points).all())
 
     def test_get_son(self):
         """Test function for summer"""
         sliced = extract_season(self.cube, 'son')
+        print(sliced)
         self.assertTrue(
             (np.array([9, 10, 11, 9, 10,
                        11]) == sliced.coord('month_number').points).all())
