@@ -19,7 +19,7 @@ Available recipes and diagnostics
 
 Recipes are stored in recipes/
 
-* recipe_multimodel_products_wp5.yml
+* recipe_multimodel_products.yml
 
 
 Diagnostics are stored in diag_scripts/magic_bsc/
@@ -34,7 +34,7 @@ User settings
 
 User setting files are stored in recipes/
 
-#. recipe_multimodel_products_wp5.yml
+#. recipe_multimodel_products.yml
 
    *Required settings for script*
 
