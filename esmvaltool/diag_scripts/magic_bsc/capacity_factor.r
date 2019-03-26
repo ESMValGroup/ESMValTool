@@ -174,7 +174,7 @@ filepng <- paste0(
 title <- paste0(seasons, " CF from ",
         model_names, " (", start_year, "-", end_year, ")")
 
-PW_names<- c("Enercon E70", "Gamesa G80", "Gamesa G87",
+PW_names <- c("Enercon E70", "Gamesa G80", "Gamesa G87",
          "Vestas V100", "Vestas V110")
 PlotLayout( # nolint
     PlotEquiMap, # nolint
