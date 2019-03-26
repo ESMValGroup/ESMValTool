@@ -43,21 +43,17 @@ Diagnostics are stored in diag_scripts/thermodyn_diagtool/
 
     * thermodyn_diagnostics.py: the main script, handling input files, calling computation and plotting scricpts;
     
-    - computations.py: a module containing all the main computations that are carried out by the program;
+    * computations.py: a module containing all the main computations that are carried out by the program;
 
-    * fluxogram.py: a module for the retrieval of the block diagrams displaying the reservoirs and conversion terms
-		    of the LEC
+    * fluxogram.py: a module for the retrieval of the block diagrams displaying the reservoirs and conversion terms of the LEC
     
     * fourier_coefficients.py: a module for the computation of the Fourier coefficients from the lonlat input grid
 
     * lorenz_cycle.py: a module for the computation of the LEC components in Fourier coefficients
 
-    * mkthe.py: a module for the computation of indirect variables obtained from the input fields, such as
-                LCL height, boundary layer top height and temperature, potential temperature
+    * mkthe.py: a module for the computation of indirect variables obtained from the input fields, such as LCL height, boundary layer top height and temperature, potential temperature
 
-    * plot_script.py: a module for the computation of maps, scatter plots, time series and meridional sections of some 
-		      derived quantities for each model in the ensemble. The meridional heat and water mass
-                      transports are also computed here, as well as the peak magnitudes and locations;
+    * plot_script.py: a module for the computation of maps, scatter plots, time series and meridional sections of some derived quantities for each model in the ensemble. The meridional heat and water mass transports are also computed here, as well as the peak magnitudes and locations;
 
 
 User settings
@@ -68,14 +64,10 @@ recipe_Thermodyn_diagtool.yml
    *Optional settings for variables*
 
    * wat: if set to 'true', computations are performed of the water mass and latent energy budgets and transports
-   * lsm: if set to true, the computations of the energy budgets, meridional energy transports,
-          water mass and latent energy budgets and transports are performed separately over land and oceans
+   * lsm: if set to true, the computations of the energy budgets, meridional energy transports, water mass and latent energy budgets and transports are performed separately over land and oceans
    * lec:: if set to 'true', computation of the LEC are performed
    * entr: if set to 'true', computations of the material entropy production are performed
-   * met (1, 2 or 3): the computation of the material entropy production must be performed with the indirect method 
-		      (1), the direct method (2), or both methods. If 2 or 3 options are chosen, the intensity of the LEC
-                      is needed for the entropy production related to the kinetic energy dissipation. 
-                      If lec is set to 'n', a default value is provided.
+   * met (1, 2 or 3): the computation of the material entropy production must be performed with the indirect method (1), the direct method (2), or both methods. If 2 or 3 options are chosen, the intensity of the LEC is needed for the entropy production related to the kinetic energy dissipation. If lec is set to 'n', a default value is provided.
 
    These options apply to all models provided for the multi-model ensemble computations
 
