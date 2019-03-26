@@ -17,6 +17,54 @@ CRC - TRR 181 "Energy transfers in Atmosphere and Ocean"
 
 #############################################################################
 
+SOFTWARE DESCRIPTION
+
+The tool consists of three modules; one for the
+computation of energy budgets and transports, one for the water mass budgets
+(and related meridional transports), one for the Lorenz Energy Cycle (LEC),
+one for the material entropy production.
+
+The first module is run by default, the others are optional. If the lsm option
+is set to true, the module 1 and the module 2 will be run with additional
+separate results over land and oceans. The land-sea mask is provided by the
+ESMValTool preprocessor.
+
+- MODULE 1 (default)
+Earth's energy budgets from radiative and heat fluxes at Top-of-Atmosphere,
+at the surface and in the atmosphere (as a residual).
+Meridional transports, magnitude and location of the peaks in each
+hemisphere (only for heat transports) are also computed.
+The baroclinic efficiency is computed from TOA energy budgets, emission
+temperature (in turn retrieved from OLR) and near-surface temperature.
+
+- MODULE 2 (optional)
+Water mass and latent energy budgets and meridional transports are computed
+from latent heat fluxes, snowfall and rainfall precipitation fluxes. Magnitude
+and location of the peaks in each hemisphere (only for heat transports) are
+also computed, as for module 1.
+
+- MODULE 3 (optional)
+The Lorenz Energy Cycle (LEC) is computed in spectral components from near-
+surface temperatures, temperatures and the three components of velocities
+over pressure levels.
+The storage and conversion terms are directly computed, the sources and
+sinks are retrieved as residuals.
+Components are grouped into a zonal mean, stationary and transient eddy
+part.
+
+- MODULE 4 (optional)
+The material entropy production is computed using the indirect method, the
+direct method or both (following Lucarini et al., 2014).
+For the indirect method a vertical and a horizontal component are provided.
+For the direct method, all components are combined, related to the
+hydrological cycle (attributable to evaporation, rainfall and snowfall
+precipitation, phase changes and potential energy of the droplet), to the
+sensible heat fluxes and to kinetic energy dissipation. For the latter the
+LEC computation is required, given that the strength of the LEC can be
+considered as equal to the kinetic energy dissipated to heating. If the option
+for module 3 is set to false, a reference value for the material entropy
+production related to the kinetic energy dissipation is provided.
+
 PREREQUISITES
 
 The program shares the same prerequisites with the overall ESMValTool
@@ -177,54 +225,6 @@ The output directory contains the following NetCDF files:
 The file log.txt in the '$WORK_PATH/recipe_thermodyn_diagtool_date_hour/run'
 sub-directory contains the values for the metrics and all useful information
 for immediate model intercomparison.
-
-SOFTWARE DESCRIPTION
-
-The tool is divided in three modules; one for the
-computation of energy budgets and transports, one for the water mass budgets
-(and related meridional transports), one for the Lorenz Energy Cycle (LEC),
-one for the material entropy production.
-
-The first module is run by default, the others are optional. If the lsm option
-is set to true, the module 1 and the module 2 will be run with additional
-separate results over land and oceans. The land-sea mask is provided by the
-ESMValTool preprocessor.
-
-- MODULE 1 (default)
-Earth's energy budgets from radiative and heat fluxes at Top-of-Atmosphere,
-at the surface and in the atmosphere (as a residual).
-Meridional transports, magnitude and location of the peaks in each
-hemisphere (only for heat transports) are also computed.
-The baroclinic efficiency is computed from TOA energy budgets, emission
-temperature (in turn retrieved from OLR) and near-surface temperature.
-
-- MODULE 2 (optional)
-Water mass and latent energy budgets and meridional transports are computed
-from latent heat fluxes, snowfall and rainfall precipitation fluxes. Magnitude
-and location of the peaks in each hemisphere (only for heat transports) are
-also computed, as for module 1.
-
-- MODULE 3 (optional)
-The Lorenz Energy Cycle (LEC) is computed in spectral components from near-
-surface temperatures, temperatures and the three components of velocities
-over pressure levels.
-The storage and conversion terms are directly computed, the sources and
-sinks are retrieved as residuals.
-Components are grouped into a zonal mean, stationary and transient eddy
-part.
-
-- MODULE 4 (optional)
-The material entropy production is computed using the indirect method, the
-direct method or both (following Lucarini et al., 2014).
-For the indirect method a vertical and a horizontal component are provided.
-For the direct method, all components are combined, related to the
-hydrological cycle (attributable to evaporation, rainfall and snowfall
-precipitation, phase changes and potential energy of the droplet), to the
-sensible heat fluxes and to kinetic energy dissipation. For the latter the
-LEC computation is required, given that the strength of the LEC can be
-considered as equal to the kinetic energy dissipated to heating. If the option
-for module 3 is set to false, a reference value for the material entropy
-production related to the kinetic energy dissipation is provided.
 
 
 #############################################################################
