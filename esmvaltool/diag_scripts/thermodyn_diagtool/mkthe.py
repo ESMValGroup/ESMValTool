@@ -26,9 +26,8 @@ import os
 from shutil import move
 
 import numpy as np
-from netCDF4 import Dataset
-
 from cdo import Cdo
+from netCDF4 import Dataset
 
 from . import fourier_coefficients
 
