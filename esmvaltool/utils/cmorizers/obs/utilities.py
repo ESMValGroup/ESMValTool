@@ -31,7 +31,7 @@ def _read_cmor_config(cmor_config):
 
 
 def _fix_format(cube, var_info):
-    """Fix var metadata from CMOR table"""
+    """Fix var metadata from CMOR table."""
     cube.var_name = var_info.short_name
     cube.standard_name = var_info.standard_name
     cube.long_name = var_info.long_name

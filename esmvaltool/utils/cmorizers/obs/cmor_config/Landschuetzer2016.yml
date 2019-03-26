@@ -18,7 +18,7 @@ proj:
     CMORcreated: ''
 
 # Match CMOR variables with input file one(s)
-RAW_VAR:
+RAW_VARS:
   fgco2: 'fgco2_smoothed' 
   spco2: 'spco2_smoothed' 
   dpco2: 'dco2_smoothed' 

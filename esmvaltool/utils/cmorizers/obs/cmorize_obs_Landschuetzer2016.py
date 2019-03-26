@@ -30,11 +30,10 @@ import logging
 import os
 
 import iris
-from cf_units import Unit
 import numpy as np
 
 from .utilities import (_add_metadata,
-                        _fix_format,
+                        _fix_var_metadata,
                         _fix_coords,
                         _read_cmor_config,
                         _save_variable)
@@ -44,7 +43,7 @@ logger = logging.getLogger(__name__)
 # read in CMOR configuration
 CFG = _read_cmor_config('Landschuetzer2016.yml')
 PROJ = CFG['proj']
-RAW_VAR = CFG['RAW_VAR']
+RAW_VARS = CFG['RAW_VARS']
 RAW_FILE = CFG['RAW_FILE']
 
 
@@ -68,11 +67,11 @@ def extract_variable(var_info, raw_file, out_dir):
     """Extract to all vars."""
     var = var_info.short_name
     cubes = iris.load(raw_file)
-    rawvar = RAW_VAR[var]
-    
+    rawvar = RAW_VARS[var]
+
     for cube in cubes:
         if cube.var_name == rawvar:
-            _fix_format(cube, var_info)
+            _fix_var_metadata(cube, var_info)
             _fix_coords(cube)
             _fix_data(cube, var)
             _add_metadata(cube, PROJ)
