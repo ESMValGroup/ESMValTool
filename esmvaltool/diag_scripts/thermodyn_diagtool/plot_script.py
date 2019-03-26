@@ -21,11 +21,11 @@ from shutil import move
 import cartopy.crs as ccrs
 import matplotlib.pyplot as plt
 import numpy as np
+from cdo import Cdo
 from matplotlib import rcParams
 from netCDF4 import Dataset
 from scipy import interpolate, stats
 
-from cdo import Cdo
 from esmvaltool.diag_scripts.shared import ProvenanceLogger
 
 from . import fourier_coefficients, provenance_meta

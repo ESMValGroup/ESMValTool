@@ -63,9 +63,8 @@ import os
 import sys
 
 import numpy as np
-from netCDF4 import Dataset
-
 from cdo import Cdo
+from netCDF4 import Dataset
 
 from . import fluxogram, fourier_coefficients
 
