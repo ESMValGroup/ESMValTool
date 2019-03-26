@@ -34,6 +34,7 @@ from cf_units import Unit
 import numpy as np
 
 from .utilities import (_add_metadata,
+                        _fix_format,
                         _fix_coords,
                         _read_cmor_config,
                         _save_variable)
@@ -43,22 +44,8 @@ logger = logging.getLogger(__name__)
 # read in CMOR configuration
 CFG = _read_cmor_config('Landschuetzer2016.yml')
 PROJ = CFG['proj']
-VAR_TO_CMOR = CFG['VAR_TO_CMOR']
-VAR_TO_FILENAME = CFG['VAR_TO_FILENAME']
-STANDARD_NAMES = CFG['STANDARD_NAMES']
-LONG_NAMES = CFG['LONG_NAMES']
-
-ALLVARS = list(VAR_TO_CMOR.keys())
-
-
-def _fix_metadata(cube, var):
-    """Fix all aspects of metadata for different vars."""
-    logger.info("Fixing units...")
-    if var in ['fgco2', ]:
-        cube.units = Unit('kg m-2 s-1')
-    if var in ['spco2', 'dpco2', ]:
-        cube.units = Unit('Pa')
-    return cube
+RAW_VAR = CFG['RAW_VAR']
+RAW_FILE = CFG['RAW_FILE']
 
 
 def _fix_data(cube, var):
@@ -77,18 +64,17 @@ def _fix_data(cube, var):
     return cube
 
 
-def extract_variable(var, raw_file, out_dir):
+def extract_variable(var_info, raw_file, out_dir):
     """Extract to all vars."""
+    var = var_info.short_name
     cubes = iris.load(raw_file)
-    rawvar = VAR_TO_CMOR[var]
+    rawvar = RAW_VAR[var]
+    
     for cube in cubes:
         if cube.var_name == rawvar:
-            cube.standard_name = STANDARD_NAMES[var]
-            cube.long_name = LONG_NAMES[var]
-            cube.var_name = var
+            _fix_format(cube, var_info)
             _fix_coords(cube)
             _fix_data(cube, var)
-            _fix_metadata(cube, var)
             _add_metadata(cube, PROJ)
             yr1 = cube.coord('time').cell(0).point.strftime('%Y')
             yr2 = cube.coord('time').cell(-1).point.strftime('%Y')
@@ -105,8 +91,11 @@ def cmorization(in_dir, out_dir):
     logger.info("Input data from: %s", in_dir)
     logger.info("Output will be written to: %s", out_dir)
 
+    cmor_table = PROJ['cmip_table']
+
     # run the cmorization
-    for var in ALLVARS:
-        raw_file = os.path.join(in_dir, VAR_TO_FILENAME[var] + '.nc')
+    for var in PROJ['vars']:
+        raw_file = os.path.join(in_dir, RAW_FILE[var] + '.nc')
         logger.info("CMORizing var %s in file %s", var, raw_file)
-        extract_variable(var, raw_file, out_dir)
+        var_info = cmor_table.get_variable(PROJ['frequency'][var], var)
+        extract_variable(var_info, raw_file, out_dir)

@@ -4,6 +4,7 @@ proj:
   dataset: 'Landschuetzer2016'
   version: 'v2016'
   realm: 'clim'
+  project: 'CMIP5'
   frequency: {
         'fgco2': 'Omon',
         'spco2': 'Omon',
@@ -17,25 +18,13 @@ proj:
     CMORcreated: ''
 
 # Match CMOR variables with input file one(s)
-VAR_TO_CMOR:
+RAW_VAR:
   fgco2: 'fgco2_smoothed' 
   spco2: 'spco2_smoothed' 
   dpco2: 'dco2_smoothed' 
 
 # specific raw file names (implicitly assumed to be .nc)
-VAR_TO_FILENAME:
+RAW_FILE:
   fgco2: 'spco2_1982-2015_MPI_SOM-FFN_v2016'
   spco2: 'spco2_1982-2015_MPI_SOM-FFN_v2016'
   dpco2: 'spco2_1982-2015_MPI_SOM-FFN_v2016'
-
-# cmor standard names
-STANDARD_NAMES:
-  fgco2: 'surface_downward_mass_flux_of_carbon_dioxide_expressed_as_carbon'
-  spco2: 'surface_partial_pressure_of_carbon_dioxide_in_sea_water'
-  dpco2: 'surface_carbon_dioxide_partial_pressure_difference_between_sea_water_and_air'
-
-# cmor long names
-LONG_NAMES:
-  fgco2: 'Surface Downward Flux of Total CO2'
-  spco2: 'Surface Aqueous Partial Pressure of CO2'
-  dpco2: 'Delta CO2 Partial Pressure'

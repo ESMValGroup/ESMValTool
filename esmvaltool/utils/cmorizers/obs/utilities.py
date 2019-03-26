@@ -9,6 +9,8 @@ from cf_units import Unit
 
 import yaml
 
+from esmvaltool.cmor.table import CMOR_TABLES
+
 logger = logging.getLogger(__name__)
 
 
@@ -23,7 +25,18 @@ def _read_cmor_config(cmor_config):
     timestamp_format = "%Y-%m-%d %H:%M:%S"
     now_time = timestamp.strftime(timestamp_format)
     cfg['proj']['metadata_attributes']['CMORcreated'] = now_time
+    cfg['proj']['cmip_table'] = CMOR_TABLES[cfg['proj']['project']]
+    cfg['proj']['vars'] = list(cfg['proj']['frequency'].keys())
     return cfg
+
+
+def _fix_format(cube, var_info):
+    """Fix var metadata from CMOR table"""
+    cube.var_name = var_info.short_name
+    cube.standard_name = var_info.standard_name
+    cube.long_name = var_info.long_name
+    cube.units = Unit(var_info.units)
+    return cube
 
 
 def _convert_timeunits(cube, start_year):
