@@ -1,4 +1,4 @@
-.. _recipes_insurance_risk_index_wp7:
+.. _recipes_insurance_risk_index:
 
 Combined Climate Extreme Index
 ====================================================
@@ -20,13 +20,13 @@ Available recipes and diagnostics
 
 Recipes are stored in recipes/
 
-* recipe_combined_indices_wp6.yml
+* recipe_combined_indices.yml
 
-* recipe_extreme_index_wp7.yml
+* recipe_extreme_index.yml
 
 Diagnostics are stored in diag_scripts/magic_bsc/
 
-* combined_indices_wp6.r : calculates the area-weighted means and multi-model means, with or without weights
+* combined_indices.r : calculates the area-weighted means and multi-model means, with or without weights
 
 * risk_index.r
 
@@ -37,7 +37,7 @@ User settings
 
 User setting files are stored in recipes/
 
-#. recipe_combined_indices_wp6.yml
+#. recipe_combined_indices.yml
 
    *Required settings for script*
 
@@ -47,7 +47,7 @@ User setting files are stored in recipes/
    * monsup: an integer specifying the last month to be computed (does not work yet).
    * Multi_year_average: ‘true’ or ‘false’ to specify whether to compute the mean across all input years (does not work yet).
 
-#. recipe_extreme_index_wp7.yml
+#. recipe_extreme_index.yml
 
    *Required settings for script*
 
@@ -78,7 +78,7 @@ References
 
 * Gleason, K.L., J.H. Lawrimore, D.H. Levinson, T.R. Karl, and D.J. Karoly (2008). A Revised U.S. Climate Extremes Index. J. Climate, 21, 2124-2137 https://doi.org/10.1175/2007JCLI1883.1
 
-* Meehl, G. A., and Coauthors (2000). An introduction to trends inextreme weather and climate events: Observations, socio-economic impacts, terrestrial ecological impacts, and model projections. Bull. Amer. Meteor. Soc., 81, 413–416. `doi: 10.1175/1520-0477(2000)081<0413:AITTIE>2.3.CO;2 <https://journals.ametsoc.org/doi/abs/10.1175/1520-0477%282000%29081%3C0413%3AAITTIE%3E2.3.CO%3B2>`_ 
+* Meehl, G. A., and Coauthors (2000). An introduction to trends inextreme weather and climate events: Observations, socio-economic impacts, terrestrial ecological impacts, and model projections. Bull. Amer. Meteor. Soc., 81, 413–416. `doi: 10.1175/1520-0477(2000)081<0413:AITTIE>2.3.CO;2 <https://journals.ametsoc.org/doi/abs/10.1175/1520-0477%282000%29081%3C0413%3AAITTIE%3E2.3.CO%3B2>`_
 
 * Whitman, S., G. Good, E. R. Donoghue, N. Benbow, W. Y. Shou and S. X. Mou (1997). Mortality in Chicago attributed to the July 1995 heat wave. Amer. J. Public Health, 87, 1515–1518. https://doi.org/10.2105/AJPH.87.9.1515
 
