@@ -43,8 +43,8 @@ User setting files are stored in recipes/
    * climatology_end_year: end year for the climatology
    * anomaly_start_year: start year for the anomalies
    * anomaly_end_year: end year for the anomalies
-   * moninf: integer specifying the first month of the seasonal mean period to be computed, if left blank the monthly anomalies will be computed
-   * monsup: integer specifying the last month of the seasonal mean period to be computed
+   * moninf: integer specifying the first month of the seasonal mean period to be computed
+   * monsup: integer specifying the last month of the seasonal mean period to be computed, if it's NULL the anomaly of month indicated in moninf will be computed
    * agreement_threshold: integer between 0 and 100 indicating the threshold in percent for the minimum agreement between models on the sign of the multi-model mean anomaly for the stipling to be plotted
    * running_mean: integer indictating the length of the window for the running mean to be computed
    * time_series_plot: Either single or maxmin (plot the individual or the mean with shading between the max and min).
