@@ -8,7 +8,7 @@ To get started developing, follow the instructions below. More detailed instruct
 
 ## Getting started
 To install in development mode, follow these instructions.
-  - Install gcc, g++ and gfortran if these are not available on your system. On Debian based systems, this can be done by running `apt install build-essential gfortran`, on managed systems you can often use the `module avail` command to see what compilers are available.
+  - Install gcc, g++ and gfortran if these are not available on your system. On Debian based systems, this can be done by running `apt install build-essential gfortran`, on managed systems you can often use the `module avail` command to see what compilers are available (note on gcc version: gcc 7.3.0 works well; gcc 8.2.0 is reported to have issues installing the R packages; example of loading gcc7 on the CEDA Jasmin cluster: `module load contrib/gnu/gcc/7.3.0`, similar module loading functionality should be present at your local cluster as well).
   - [Download and install conda](https://conda.io/projects/conda/en/latest/user-guide/install/linux.html) (this should be done even if the system in use already has a preinstalled version of conda, as problems have been reported with NCL when using such a version)
   - To make the `conda` command availble, add `source <prefix>/etc/profile.d/conda.sh` to your `.bashrc` file and restart your shell. If using (t)csh shell, add `source <prefix>/etc/profile.d/conda.csh` to your `.cshrc`/`.tcshrc` file instead.
   - Update conda: `conda update -y conda`
@@ -21,6 +21,7 @@ To install in development mode, follow these instructions.
   - If you want to use R diagnostics, run `Rscript esmvaltool/install/R/setup.R` to install the R dependences.
   - If you want to use Julia diagnostics, run `julia esmvaltool/install/Julia/setup.jl` to install the Julia dependences.
   - Test that your installation was succesful by running `esmvaltool -h`.
+  - If you log into a cluster or other device via `ssh` and your origin machine sends the `locale` environment via the `ssh` connection, make sure the environment is set correctly, specifically `LANG` and `LC_ALL` are set correctly (for GB English UTF-8 encoding these variables must be set to `en_GB.UTF-8`; you can set them by adding `export LANG=en_GB.UTF-8` and `export LC_ALL=en_GB.UTF-8` in your origin or login machines' `.profile`)
 
 ## Running tests
 Go to the directory where the repository is cloned and run `python setup.py test --installation`. Tests will also be run automatically by [CircleCI](https://circleci.com/gh/ESMValGroup/ESMValTool).
