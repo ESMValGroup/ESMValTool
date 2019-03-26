@@ -12,7 +12,16 @@
 ;    20190314
 ;
 ; Download and processing instructions
-;    - Download the data (daily files) from source
+;    - Download the data from source as follows:
+;          - Variable: Volumetric surface soil moisture
+;          - Time aggregation: Day average
+;          - Year: as you wish
+;          - Month: as you wish
+;          - Day: as you wish
+;          - Format: 'tar.gz' (recommended)
+;          - Type of sensor: Combined passive and active
+;          - Type of record: CDR
+;          - Version: v201812.0.0
 ;    - Decompress the files and put them in a single directory (no subdirectories with years)
 ;
 ; Modification history
