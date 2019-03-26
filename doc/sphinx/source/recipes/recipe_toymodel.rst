@@ -14,7 +14,7 @@ Available recipes and diagnostics
 
 Recipes are stored in recipes/
 
-* recipe_toymodel_wp4.yml
+* recipe_toymodel.yml
 
 
 Diagnostics are stored in diag_scripts/magic_bsc/
@@ -29,7 +29,7 @@ User settings
 
 User setting files are stored in recipes/
 
-#.	recipe_toymodel_wp4.yml
+#.	recipe_toymodel.yml
 
    *diag_script_info attributes*
 
