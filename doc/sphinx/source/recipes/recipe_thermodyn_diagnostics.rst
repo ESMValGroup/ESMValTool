@@ -1,5 +1,5 @@
-Runoff_ET
-=========
+TheDiaTo v1.0
+============
 
 Overview
 --------
@@ -14,21 +14,21 @@ of the zonal mean energy budgets. When a land-sea mask is provided, results are 
 land and oceans, separately.
 
 The water mass budget is obtained from monthly mean latent heat fluxes (for evaporation), total and snowfall 
-precipitation (cfr. Liepert et al., 2012). Latent energy budget is obtained by multiplying each component of 
-the water mass budget by the respective latent heat constant.  When a land-sea mask is provided, results are 
+precipitation (cfr. Liepert et al., 2012). The latent energy budget is obtained multiplying each component of 
+the water mass budget by the respective latent heat constant. When a land-sea mask is provided, results are 
 also available for land and oceans, separately.
 
 The LEC is computed from 3D fields of daily mean velocity and temperature fields in the troposphere over 
 pressure levels. The analysis is carried on in spectral fields, converting lonlat grids in Fourier coefficients. 
-The components of the LEC are computed as in Ulbrich and Speth, 1991.
+The components of the LEC are computed as in Ulbrich and Speth, 1991. In order to account for possible gaps
+in pressure levels, the daily fields of 2D near-surface temperature and horizontal velocities.
 
-The material entropy production is computed by using the indirect or the direct method (or both), the former 
-relying on the convergence of radiative heat in the atmosphere (cfr. Lucarini et al., 2011; Pascale et al., 2011), 
-the latter on the computation of entropy production  of all viscous and non-viscous dissipative processes occurring 
-in the atmosphere (namely the sensible heat fluxes, the hydrological cycle with its components and the kinetic energy 
-dissipation).
+The material entropy production is computed by using the indirect or the direct method (or both). The former
+method relies on the convergence of radiative heat in the atmosphere (cfr. Lucarini et al., 2011; Pascale et al., 2011), 
+the latter on all viscous and non-viscous dissipative processes occurring in the atmosphere
+(namely the sensible heat fluxes, the hydrological cycle with its components and the kinetic energy dissipation).
 
-A comprehensive report of this new method is currently in preparation for Geosciences Model Development.
+For a comprehensive report on the methods used and some descriptive results, please refer to Lembo et al., 2019.
 
 
 
@@ -37,28 +37,27 @@ Available recipes and diagnostics
 
 Recipes are stored in recipes/
 
-    * recipe_Thermodyn_diagtool.yml
+    * recipe_thermodyn_diagtool.yml
 
-Diagnostics are stored in diag_scripts/Thermodyn_diagtool/
+Diagnostics are stored in diag_scripts/thermodyn_diagtool/
 
-    * thermodyn_diagnostics.py: the main script, where computations are performed and the multi-model ensemble plots
-				created
+    * thermodyn_diagnostics.py: the main script, handling input files, calling computation and plotting scricpts;
+    
+    - computations.py: a module containing all the main computations that are carried out by the program;
 
-    * mkthe.py: an auxiliary script for the computation of LCL height, boundary layer top height and temperature, potential
-		temperature
-
-    * fourier_coefficients.py: an auxiliary script for the computation of the Fourier coefficients from the lonlat grid
-
-    * lorenz_cycle.py: an auxiliary script for the computation of the LEC components in Fourier coefficients
-
-    * fluxogram.py: an auxiliary script for the computation of the block diagram displaying the reservoirs and conversion terms
+    * fluxogram.py: a module for the retrieval of the block diagrams displaying the reservoirs and conversion terms
 		    of the LEC
+    
+    * fourier_coefficients.py: a module for the computation of the Fourier coefficients from the lonlat input grid
 
-    * diagram_module.py: an auxiliary script containing information that is needed by fluxogram.py
+    * lorenz_cycle.py: a module for the computation of the LEC components in Fourier coefficients
 
-    * plot_script.py: an auxiliary script for the computation of maps, scatter plots, time series and meridional sections of some 
-		      derived quantities for each model in the ensemble. The meridional heat and water mass transports are also
-		      computed here, as well as the peak magnitudes and locations;
+    * mkthe.py: a module for the computation of indirect variables obtained from the input fields, such as
+                LCL height, boundary layer top height and temperature, potential temperature
+
+    * plot_script.py: a module for the computation of maps, scatter plots, time series and meridional sections of some 
+		      derived quantities for each model in the ensemble. The meridional heat and water mass
+                      transports are also computed here, as well as the peak magnitudes and locations;
 
 
 User settings
@@ -68,16 +67,15 @@ recipe_Thermodyn_diagtool.yml
 
    *Optional settings for variables*
 
-   * eb (y or n): this flag is set to 'y' for computation of TOA, atmospheric and surface energy budgets and meridional energy transports.
-		  In the current version, such computations are compulsory for the succesful completion of the program
-   * wat (y or n): if set to 'y', this flag allows for computation of the water mass and latent energy budgets and transports
-   * lsm (y or n): if set to 'y', this flag allows for computation of the energy budgets, meridional energy transports, 
-		   water mass and latent energy budgets and transports separately over land and oceans
-   * lec (y or n): if set to 'y', this flag allows for computation of the LEC
-   * entr (y or n): if set to 'y', this flag allows for computation of the material entropy production
-   * met (1, 2 or 3): this flas specifies if the computation of the material entropy production must be performed with the indirect method 
-		      (1), the direct method (2), or both methods. If 2 or 3 options are chosen, the intensity of the LEC is needed for the 
-		      entropy production related to the kinetic energy dissipation. If lec is set to 'n', a default value is provided.
+   * wat: if set to 'true', computations are performed of the water mass and latent energy budgets and transports
+   * lsm: if set to true, the computations of the energy budgets, meridional energy transports,
+          water mass and latent energy budgets and transports are performed separately over land and oceans
+   * lec:: if set to 'true', computation of the LEC are performed
+   * entr: if set to 'true', computations of the material entropy production are performed
+   * met (1, 2 or 3): the computation of the material entropy production must be performed with the indirect method 
+		      (1), the direct method (2), or both methods. If 2 or 3 options are chosen, the intensity of the LEC
+                      is needed for the entropy production related to the kinetic energy dissipation. 
+                      If lec is set to 'n', a default value is provided.
 
    These options apply to all models provided for the multi-model ensemble computations
 
@@ -99,16 +97,18 @@ Variables
 * rsus    (atmos,  monthly mean, time latitude longitude)
 * rsut    (atmos,  monthly mean, time latitude longitude)
 * ta      (atmos,  daily   mean, time plev latitude longitude)
-* tas     (atmos,  monthly mean, time latitude longitude)
+* tas     (atmos,  daily   mean, time latitude longitude)
 * ts      (atmos,  monthly mean, time latitude longitude)
 * ua      (atmos,  daily   mean, time plev latitude longitude)
+* uas     (atmos,  daily   mean, time latitude longitude)
 * va      (atmos,  daily   mean, time plev latitude longitude)
+* vas     (atmos,  daily   mean, time latitude longitude)
 * wap     (atmos,  daily   mean, time plev latitude longitude)
 
 
 References
 ----------
-* Lembo V, Lunkeit F, Lucarini V (2019) A new diagnostic tool for diagnosing water, energy and entropy budgets in climate models. Geophys Mod Dev, in prep.
+* Lembo V, Lunkeit F, Lucarini V (2019) A new diagnostic tool for diagnosing water, energy and entropy budgets in climate models. Geophys Mod Dev Disc, in review.
 * Liepert BG, Previdi M (2012) Inter-model variability and biases of the global water cycle in CMIP3 coupled climate models. Environ Res Lett 7:014006. doi: 10.1088/1748-9326/7/1/014006
 * Lorenz EN (1955) Available Potential Energy and the Maintenance of the General Circulation. Tellus 7:157–167. doi: 10.1111/j.2153-3490.1955.tb01148.x
 * Lucarini V, Fraedrich K, Ragone F (2010) New Results on the Thermodynamical Properties of the Climate System. J Atmo 68:. doi: 10.1175/2011JAS3713.1
