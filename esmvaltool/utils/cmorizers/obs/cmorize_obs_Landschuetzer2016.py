@@ -75,11 +75,9 @@ def extract_variable(var_info, raw_file, out_dir):
             _fix_coords(cube)
             _fix_data(cube, var)
             _add_metadata(cube, PROJ)
-            yr1 = cube.coord('time').cell(0).point.strftime('%Y')
-            yr2 = cube.coord('time').cell(-1).point.strftime('%Y')
             fillvalue = cube.data.fill_value
-            _save_variable(cube, var, out_dir,
-                           [yr1, yr2], PROJ, fill_value=fillvalue,
+            _save_variable(cube, var, out_dir, PROJ,
+                           fill_value=fillvalue,
                            local_keys=['positive'],
                            unlimited_dimensions=['time'])
 

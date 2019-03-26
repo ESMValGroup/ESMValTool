@@ -172,14 +172,20 @@ def _roll_cube_data(cube, shift, axis):
     return cube
 
 
-def _save_variable(cube, var, outdir, year, proj, **kwargs):
+def _save_variable(cube, var, outdir, proj, **kwargs):
     """Saver function."""
     # CMOR standard
-    if not isinstance(year, list):
-        time_suffix = '-'.join([str(year) + '01', str(year) + '12'])
+    cube_time = cube.coord('time')
+    reftime = Unit(cube_time.units.origin, cube_time.units.calendar)
+    dates = reftime.num2date(cube_time.points[[0,-1]])
+    if len(cube_time.points) == 1 :
+        year = str(dates[0].year)
+        time_suffix ='-'.join([ year + '01', year + '12'])
     else:
-        yr1, yr2 = year
-        time_suffix = '-'.join([str(yr1) + '01', str(yr2) + '12'])
+        date1 = str(dates[0].year) + '%02d' % dates[0].month
+        date2 = str(dates[1].year) + '%02d' % dates[1].month
+        time_suffix ='-'.join([ date1, date2 ])
+
     cmor_prefix = '_'.join([
         'OBS', proj['dataset'], proj['realm'], proj['version'],
         proj['frequency'][var], var

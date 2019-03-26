@@ -100,7 +100,7 @@ def extract_variable(var, raw_file, out_dir, yr):
             _fix_data(cube, var)
             _fix_metadata(cube, var)
             _add_metadata(cube, proj)
-            _save_variable(cube, var, out_dir, yr, proj)
+            _save_variable(cube, var, out_dir, proj)
 
 
 def cmorization(in_dir, out_dir):

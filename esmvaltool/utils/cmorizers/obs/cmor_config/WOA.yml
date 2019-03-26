@@ -4,6 +4,7 @@ proj:
   dataset: 'WOA'
   version: '2013v2'
   realm: 'clim'
+  project: 'CMIP5'
   frequency:
     'thetao': 'Omon'
     'so': 'Omon'
