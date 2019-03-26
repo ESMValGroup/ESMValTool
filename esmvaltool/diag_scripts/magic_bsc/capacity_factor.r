@@ -173,6 +173,9 @@ filepng <- paste0(
         model_names,  "_", start_year, "-", end_year, ".png")
 title <- paste0(seasons, " CF from ",
         model_names, " (", start_year, "-", end_year, ")")
+
+PW_names<- c("Enercon E70", "Gamesa G80", "Gamesa G87",
+         "Vestas V100", "Vestas V110")
 PlotLayout( # nolint
     PlotEquiMap, # nolint
     c(3, 2),
@@ -181,6 +184,7 @@ PlotLayout( # nolint
     lat,
     filled.continents = F,
     toptitle = title,
+    titles = PW_names,
     fileout = filepng)
 
 filencdf <- paste0(work_dir, "/", "capacity_factor_",
