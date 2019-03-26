@@ -108,7 +108,7 @@ USAGE
 3: Go to the recipe file in ~/recipes/recipe_thermodyn_diagtool.yml.
    Set the namelist with the datasets that you neeed, following the ESMValTool
    naming convention. Here you can also set the length of the dataset you want
-   to subset. 
+   to subset.
    In the 'scripts' section, set the options with the modules that you want the
    program to use:
        - wat: if set to true, the program will compute the water mass and
@@ -133,26 +133,26 @@ The output directory contains the following NetCDF files:
         ocean_transp_mean_<model_name>.nc
         total_transp_mean_<model_name>.nc
         wmb_transp_mean_<model_name>.nc
-        
+
         contain annual mean meridional sections of heat transports in the
         atmosphere, oceans, and as a total; latent energy transports and water
         mass transports;
-        
+
     - (output directory)/<model_name>:
         <model-name>_atmb.nc
         (<model-name>_latent.nc; if wat is set to true)
         <model-name>_surb.nc
         <model-name>_toab.nc
         (<model-name>_wmb.nc; is wat is set to true)
-        
+
         contain annual mean 2D fields of energy budget, latent heat and water
         mass budgets;
-        
+
         <model-name>_barocEff.nc
-        
+
         contains the evolution of annual mean baroclinic efficiency
         (Lucarini et al., 2011).
-        
+
         (if entr is set to true):
         <model-name>_evap_entr.nc (if met is set to 2 or 3)
         <model-name>_horizEntropy.nc (if met is set to 1 or 3)
@@ -174,7 +174,7 @@ The output directory contains the following NetCDF files:
         scattes_variability: contains scatter plots of model intercomparisons
         between TOA, atmospheric and surface global mean energy budgets and
         their inter-annual variability;
-        
+
     - (plots directory)/<model-name>:
         <model-name>_atmb_timeser.png: the atmospheric budget annual mean
         global and hemispheric time series;
@@ -215,13 +215,13 @@ The output directory contains the following NetCDF files:
         hemispheric evolutions;
         <model-name>_wmb_transp.png: the meridional section of annual mean
         meridional water mass transport;
-    
+
     - (plots directory)/<model-name>/LEC_results:
         <model-name>_<year>_lec_diagram.png: the flux diagram for the annual
         mean LEC cycle in a specific year;
         <model-name>_<year>_lec_table.txt: the table containing the storage and
         conversion terms for the annual mean LEC cycle in a specific year;
-        
+
 The file log.txt in the '$WORK_PATH/recipe_thermodyn_diagtool_date_hour/run'
 sub-directory contains the values for the metrics and all useful information
 for immediate model intercomparison.
