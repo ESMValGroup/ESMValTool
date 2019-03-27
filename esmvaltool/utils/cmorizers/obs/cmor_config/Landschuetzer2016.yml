@@ -6,7 +6,7 @@ attributes:
   tier: 2
   modeling_realm: clim
   project_id: CMIP5
-  source: 'CRESCENDO WP5 (CMCC)'
+  source: 'https://www.nodc.noaa.gov/archive/arc0105/0160558/3.3/data/0-data/'
 
 # Variables to cmorize
 variables:

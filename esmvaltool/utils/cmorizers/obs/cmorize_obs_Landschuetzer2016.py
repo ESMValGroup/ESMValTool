@@ -18,7 +18,6 @@
      Download the following file in ${RAWOBS}/Tier2/Landschuetzer2016:
       spco2_1982-2015_MPI_SOM-FFN_v2016.nc
 
-
   Modification history
      20190227-A_lova_to: written.
 
