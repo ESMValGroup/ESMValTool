@@ -1,4 +1,4 @@
-"""ATRRIBUTES FOR PROVENANCE TAGGING.
+"""ATTRIBUTES FOR PROVENANCE TAGGING.
 
 Module containing functions to create the metadata for the output files.
 
