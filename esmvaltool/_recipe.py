@@ -1,9 +1,9 @@
 """Recipe parser."""
-import copy
 import fnmatch
 import logging
 import os
 from collections import OrderedDict
+from copy import deepcopy
 
 import yaml
 from netCDF4 import Dataset
@@ -34,7 +34,6 @@ TASKSEP = os.sep
 
 def ordered_safe_load(stream):
     """Load a YAML file using OrderedDict instead of dict."""
-
     class OrderedSafeLoader(yaml.SafeLoader):
         """Loader class that uses OrderedDict to load a map."""
 
@@ -218,6 +217,13 @@ def _get_dataset_info(dataset, variables):
                       "{}".format(dataset))
 
 
+def _augment(base, update):
+    """Update dict base with values from dict update."""
+    for key in update:
+        if key not in base:
+            base[key] = update[key]
+
+
 def _dataset_to_file(variable, config_user):
     """Find the first file belonging to dataset from variable info."""
     files = get_input_filelist(
@@ -225,11 +231,10 @@ def _dataset_to_file(variable, config_user):
         rootpath=config_user['rootpath'],
         drs=config_user['drs'])
     if not files and variable.get('derive'):
-        variable = copy.deepcopy(variable)
-        required_var = get_required(variable['short_name'], variable['field'])
-        variable.update(required_var['vars'][0])
+        first_required = get_required(variable['short_name'])[0]
+        _augment(first_required, variable)
         files = get_input_filelist(
-            variable=variable,
+            variable=first_required,
             rootpath=config_user['rootpath'],
             drs=config_user['drs'])
     check.data_availability(files, variable)
@@ -353,15 +358,16 @@ def _update_fx_settings(settings, variable, config_user):
     """Find and set the FX derive/mask settings."""
     # update for derive
     if 'derive' in settings:
-        fx_files = get_required(variable['short_name'],
-                                variable['field']).get('fx_files')
-        if fx_files:
-            var = dict(variable)
-            var['fx_files'] = fx_files
-            settings['derive']['fx_files'] = get_input_fx_filelist(
-                variable=var,
-                rootpath=config_user['rootpath'],
-                drs=config_user['drs'])
+        fx_files = {}
+        for var in get_required(variable['short_name']):
+            if 'fx_files' in var:
+                _augment(var, variable)
+                fx_files.update(
+                    get_input_fx_filelist(
+                        variable=var,
+                        rootpath=config_user['rootpath'],
+                        drs=config_user['drs']))
+        settings['derive']['fx_files'] = fx_files
 
     # update for landsea
     if 'mask_landsea' in settings:
@@ -452,7 +458,7 @@ def _get_input_files(variable, config_user):
 
 def _apply_preprocessor_profile(settings, profile_settings):
     """Apply settings from preprocessor profile."""
-    profile_settings = copy.deepcopy(profile_settings)
+    profile_settings = deepcopy(profile_settings)
     for step, args in profile_settings.items():
         # Remove disabled preprocessor functions
         if args is False:
@@ -710,14 +716,12 @@ def _get_derive_input_variables(variables, config_user):
                 rootpath=config_user['rootpath'],
                 drs=config_user['drs']):
             # No need to derive, just process normally up to derive step
-            var = copy.deepcopy(variable)
+            var = deepcopy(variable)
             append(group_prefix, var)
         else:
             # Process input data needed to derive variable
-            for new_variable in get_required(variable['short_name'],
-                                             variable['field'])['vars']:
-                var = copy.deepcopy(variable)
-                var.update(new_variable)
+            for var in get_required(variable['short_name']):
+                _augment(var, variable)
                 append(group_prefix, var)
 
     return derive_input
@@ -732,7 +736,7 @@ def _get_preprocessor_task(variables, profiles, config_user, task_name):
         raise RecipeError(
             "Unknown preprocessor {} in variable {} of diagnostic {}".format(
                 preproc_name, variable['short_name'], variable['diagnostic']))
-    profile = copy.deepcopy(profiles[variable['preprocessor']])
+    profile = deepcopy(profiles[variable['preprocessor']])
     logger.info("Creating preprocessor '%s' task for variable '%s'",
                 variable['preprocessor'], variable['short_name'])
     variables = _limit_datasets(variables, profile,
@@ -769,7 +773,7 @@ def _get_preprocessor_task(variables, profiles, config_user, task_name):
     return task
 
 
-class Recipe(object):
+class Recipe:
     """Recipe object."""
 
     def __init__(self,
@@ -778,7 +782,7 @@ class Recipe(object):
                  initialize_tasks=True,
                  recipe_file=None):
         """Parse a recipe file into an object."""
-        self._cfg = copy.deepcopy(config_user)
+        self._cfg = deepcopy(config_user)
         self._cfg['write_ncl_interface'] = self._need_ncl(
             raw_recipe['diagnostics'])
         self._filename = os.path.basename(recipe_file)
@@ -843,7 +847,7 @@ class Recipe(object):
     @staticmethod
     def _initialize_datasets(raw_datasets):
         """Define datasets used by variable."""
-        datasets = copy.deepcopy(raw_datasets)
+        datasets = deepcopy(raw_datasets)
 
         for dataset in datasets:
             for key in dataset:
@@ -873,8 +877,14 @@ class Recipe(object):
             variables.append(variable)
 
         required_keys = {
-            'short_name', 'field', 'dataset', 'project', 'start_year',
-            'end_year', 'preprocessor', 'diagnostic'
+            'short_name',
+            'mip',
+            'dataset',
+            'project',
+            'start_year',
+            'end_year',
+            'preprocessor',
+            'diagnostic',
         }
 
         for variable in variables:
@@ -934,7 +944,7 @@ class Recipe(object):
                 if TASKSEP not in id_glob:
                     id_glob = diagnostic_name + TASKSEP + id_glob
                 ancestors.append(id_glob)
-            settings = copy.deepcopy(raw_settings)
+            settings = deepcopy(raw_settings)
             settings['recipe'] = self._filename
             settings['version'] = __version__
             settings['script'] = script_name
@@ -945,9 +955,15 @@ class Recipe(object):
             # Copy other settings
             if self._cfg['write_ncl_interface']:
                 settings['exit_on_ncl_warning'] = self._cfg['exit_on_warning']
-            for key in ('max_data_filesize', 'output_file_type', 'log_level',
-                        'write_plots', 'write_netcdf', 'profile_diagnostic',
-                        'auxiliary_data_dir', ):
+            for key in (
+                    'max_data_filesize',
+                    'output_file_type',
+                    'log_level',
+                    'write_plots',
+                    'write_netcdf',
+                    'profile_diagnostic',
+                    'auxiliary_data_dir',
+            ):
                 settings[key] = self._cfg[key]
 
             scripts[script_name] = {
