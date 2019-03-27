@@ -1,6 +1,7 @@
-"""
+"""ESMValTool CMORizer script.
+
 # #############################################################################
-# ESMValTool CMORizer for WOA data
+# WOA data
 # #############################################################################
 #
 # Tier
@@ -22,6 +23,7 @@
 #      silicate/netcdf/all/1.00/woa13_all_i00_01.nc
 #
 # Modification history
+#    20130328-A_lova_to: cmorizer revision
 #    20190131-A_pred_va: adapted to v2.
 #    20190131-A_demo_le: written.
 #
@@ -33,18 +35,15 @@ import logging
 import os
 
 import iris
-from cf_units import Unit
 
 from .utilities import (_add_metadata,
                         _convert_timeunits,
+                        _fix_var_metadata,
                         _fix_coords,
                         _read_cmor_config,
                         _save_variable)
 
 logger = logging.getLogger(__name__)
-
-# used vars
-ALL_VARS = ['thetao', 'so', 'no3', 'po4', 'si', 'o2']
 
 # all years to be analyzed
 ALL_YEARS = [
@@ -52,32 +51,12 @@ ALL_YEARS = [
 ]
 
 # read in CMOR configuration
-cfg = _read_cmor_config('WOA.yml')
-proj = cfg['proj']
-timestamp = datetime.datetime.utcnow()
-timestamp_format = "%Y-%m-%d %H:%M:%S"
-now_time = timestamp.strftime(timestamp_format)
-proj['metadata_attributes']['CMORcreated'] = now_time
-VAR_TO_FILENAME = cfg['VAR_TO_FILENAME']
-FIELDS = cfg['FIELDS']
-STANDARD_NAMES = cfg['STANDARD_NAMES']
-LONG_NAMES = cfg['LONG_NAMES']
-
-
-def _fix_metadata(cube, var):
-    """Fix all aspects of metadata for different vars."""
-    mol_m3 = ['si', 'po4', 'no3', 'o2']
-    if var in mol_m3:
-        cube.units = Unit('mol m-3')
-    if var == 'thetao':
-        cube.convert_units(Unit('kelvin'))
-    if var == 'so':
-        cube.units = Unit('Unknown')
-    return cube
+CFG = _read_cmor_config('WOA.yml')
 
 
 def _fix_data(cube, var):
     """Specific data fixes for different variables."""
+    logger.info("Fixing data ...")
     mll_to_mol = ['po4', 'si', 'no3']
     if var in mll_to_mol:
         cube.data = cube.data / 1000.  # Convert from ml/l to mol/m^3
@@ -86,21 +65,21 @@ def _fix_data(cube, var):
     return cube
 
 
-def extract_variable(var, raw_file, out_dir, yr):
+def extract_variable(var_info, raw_info, out_dir, attrs, yr):
     """Extract to all vars."""
-    cubes = iris.load(raw_file)
-    field = FIELDS[var]
+    var = var_info.short_name
+    cubes = iris.load(raw_info['file'])
+    rawvar = raw_info['name']
+
     for cube in cubes:
-        if cube.long_name == field:
-            cube.standard_name = STANDARD_NAMES[var]
-            cube.long_name = LONG_NAMES[var]
-            cube.var_name = var
+        if cube.var_name == rawvar:
+            _fix_var_metadata(cube, var_info)
             _convert_timeunits(cube, yr)
             _fix_coords(cube)
             _fix_data(cube, var)
-            _fix_metadata(cube, var)
-            _add_metadata(cube, proj)
-            _save_variable(cube, var, out_dir, proj)
+            _add_metadata(cube, attrs)
+            _save_variable(cube, var, out_dir, attrs,
+                           unlimited_dimensions=['time'])
 
 
 def cmorization(in_dir, out_dir):
@@ -109,12 +88,16 @@ def cmorization(in_dir, out_dir):
     logger.info("Input data from: %s", in_dir)
     logger.info("Output will be written to: %s", out_dir)
 
+    cmor_table = CFG['cmor_table']
+    glob_attrs = CFG['attributes']
+
     # run the cmorization
-    for var in ALL_VARS:
-        if not os.path.exists(out_dir):
-            os.path.makedirs(out_dir)
+    for var, vals in CFG['variables'].items():
         for yr in ALL_YEARS:
             file_suffix = str(yr)[-2:] + '_' + str(yr + 1)[-2:] + '.nc'
-            raw_file = os.path.join(in_dir, VAR_TO_FILENAME[var] + file_suffix)
-            logger.info("CMORizing var %s in file %s", var, raw_file)
-            extract_variable(var, raw_file, out_dir, yr)
+            inpfile = os.path.join(in_dir, vals['file'] + file_suffix)
+            logger.info("CMORizing var %s from file %s", var, inpfile)
+            var_info = cmor_table.get_variable(vals['mip'], var)
+            raw_info = {'name': vals['raw'], 'file': inpfile}
+            glob_attrs['mip'] = vals['mip']
+        extract_variable(var_info, raw_info, out_dir, glob_attrs, yr)

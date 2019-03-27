@@ -37,9 +37,17 @@ def _fix_var_metadata(cube, var_info):
     cube.var_name = var_info.short_name
     cube.standard_name = var_info.standard_name
     cube.long_name = var_info.long_name
-    cube.units = Unit(var_info.units)
+    _set_units(cube, var_info.units)
     return cube
 
+def _set_units(cube, units):
+    """Set units in compliance with cf_unit."""
+    special={'psu': 1.e-3 , 'Sv': '1e6 m3 s-1'}
+    if units in list(special.keys()): 
+        cube.units = special[units]
+    else:
+        cube.units = Unit(units)
+    return cube
 
 def _convert_timeunits(cube, start_year):
     """Convert time axis from malformed Year 0."""
