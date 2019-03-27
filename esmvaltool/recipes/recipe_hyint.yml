@@ -19,9 +19,6 @@ documentation:
   projects:
     - c3s-magic
 
-datasets:
-  - {dataset: ACCESS1-0, project: CMIP5, exp: [historical, rcp85],  ensemble: r1i1p1, start_year: 2000, end_year: 2010}
-
 preprocessors:
   preproc:
     mask_landsea:
@@ -32,16 +29,17 @@ diagnostics:
     description: HyInt hydroclimatic indices calculation and plotting
     variables:
       pr:
-       preprocessor: preproc
+        preprocessor: preproc
         project: CMIP5
         exp: [historical,rcp85]
         ensemble: r1i1p1
-        start_year: 2000
-        end_year: 2010
+        start_year: 1980
+        end_year: 2020
         reference_dataset: "ACCESS1-0"
         mip: day
+        field: T2Ds
     additional_datasets:
-      - {dataset: ACCESS1-3}
+      - {dataset: ACCESS1-0}
       - {dataset: MPI-ESM-MR}
       - {dataset: IPSL-CM5A-MR}
       - {dataset: CCSM4}
@@ -50,12 +48,12 @@ diagnostics:
         script: hyint/hyint.R
  
         # Reference normalization period to be used for normalized indices 
-        norm_years: [2000, 2004]
+        norm_years: [1980, 1999]
  
-        # Select one or more fields for timeseries and maps from the following 
+        # Select one or more indices for timeseries and maps from the following 
         # list (order-sensitive): 
-        # SDII, DSL, WSL, HY-INT, ABS_INT, ABS_DSL, ABS_WSL, PA, R95 
-        selfields: [8, 4, 1, 9, 3, 2]
+        # "pa_norm", "hyint",  "int_norm", "r95_norm", "wsl_norm", "dsl_norm", "int", "dsl", "wsl"
+        select_indices: ["pa_norm", "hyint",  "int_norm", "r95_norm", "wsl_norm", "dsl_norm"]
 
         # Select regions for timeseries and maps from the following list
         # GL=Globe, GL60=Globe 60S/60N, TR=Tropics (30S/30N), SA=South America, 
@@ -74,6 +72,7 @@ diagnostics:
         # 15) multipanel of indices with summary of trend coefficients for multiple models
         plot_type: [1, 2, 3, 11, 12, 13, 14, 15]
 
+
         ## ------- Optional settings ----------
         # Select number of columns and rows in multi-panel figure
         npancol: 2 # number of columns for trend/tseries multi-panel figures
@@ -83,9 +82,9 @@ diagnostics:
         # a) false to keep original resolution
         # b) set desired regridding resolution in cdo format e.g., "r320x160"
         # c) "REF" to use resolution of reference model
-        rgrid: false   
+        rgrid: "REF"   
 
-       # Select automated or pre-set range of values in plots
+      # Select automated or pre-set range of values in plots
         autolevels: true       
 
        # Scale autolevels (factor multiplying automated range)

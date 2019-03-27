@@ -93,9 +93,6 @@ metadata <- yaml::read_yaml(settings$input_files)
 if (!all(plot_type %in% c(1, 2, 3, 11, 12, 13, 14, 15) ) ) {
   stop("requested plot_type not available")
 }
-if (max(selfields) > length(field_names) ) {
-  stop("requested field not available")
-}
 
 # setup provenance file and list
 provenance_file <- paste0(run_dir, "/", "diagnostic_provenance.yml")
@@ -139,10 +136,14 @@ if (length(ref_idx) == 0) {
   ref_idx <- length(models_name)
 }
 
-# Select regions to be adopted and test selection
+# Select regions and indices to be adopted and test selection
 selregions <- match(select_regions, region_codes)
 if (anyNA(selregions)) {
   stop("requested region not available")
+}
+selfields <- match(select_indices, field_names)
+if (anyNA(selfields)) {
+  stop("requested field not available")
 }
 
 ## Run regridding and diagnostic
