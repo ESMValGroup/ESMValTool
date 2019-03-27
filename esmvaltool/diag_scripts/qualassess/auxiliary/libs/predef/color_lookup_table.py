@@ -105,7 +105,7 @@ def color_lookup(ecv_name):
                      "Diverging":"RdBu_r"}),
         "sm": dict({"Data": "RdYlGn",
                     "Sequential":"YlGn",
-                    "Diverging":"BrBg"}),
+                    "Diverging":"BrBG"}),
         "snc": dict(),
         "snd": dict(),
         "swe": dict(),
