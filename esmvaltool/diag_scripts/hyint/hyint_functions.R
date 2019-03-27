@@ -753,10 +753,14 @@ with namevar=yourvar")
 
     # break if the data requested is not there
     lastday_base <- paste0(max(tyears), "-", max(tmonths), "-28")
+    maxdays <- number_days_month(lastday_base)
+    if (caldata == "360_day") {
+      maxdays <- 30
+    }
     # uses number_days_month, which loops to get the month change
     lastday <- as.PCICt(paste0(
       max(tyears), "-", max(tmonths), "-",
-      number_days_month(lastday_base)
+      maxdays
     ),
     cal = caldata,
     format = "%Y-%m-%d"
@@ -764,7 +768,6 @@ with namevar=yourvar")
     firstday <- as.PCICt(paste0(min(tyears), "-", min(tmonths), "-01"),
       cal = caldata, format = "%Y-%m-%d"
     )
-
     if (max(timeline) < lastday | min(timeline) > firstday) {
       stop("You requested a time interval that is not present in the NetCDF")
     }
