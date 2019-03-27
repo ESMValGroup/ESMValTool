@@ -1,28 +1,27 @@
 {
     "Header": {
-        "data_specs_version": "01.00.30", 
-        "cmor_version": "3.4", 
+        "data_specs_version": "01.00.10", 
         "table_id": "Table day", 
         "realm": "atmos", 
-        "table_date": "11 March 2019", 
+        "frequency": "day", 
+        "cmor_version": "3.2", 
+        "table_date": "10 May 2017", 
         "missing_value": "1e20", 
-        "int_missing_value": "-999", 
         "product": "model-output", 
         "approx_interval": "1.00000", 
         "generic_levels": "", 
         "mip_era": "CMIP6", 
-        "Conventions": "CF-1.7 CMIP-6.2"
+        "Conventions": "CF-1.7 CMIP-6.0"
     }, 
     "variable_entry": {
         "clt": {
-            "frequency": "day", 
             "modeling_realm": "atmos", 
             "standard_name": "cloud_area_fraction", 
             "units": "%", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
-            "long_name": "Total Cloud Cover Percentage", 
-            "comment": "Total cloud area fraction (reported as a percentage) for the whole atmospheric column, as seen from the surface or the top of the atmosphere. Includes both large-scale and convective cloud.", 
+            "long_name": "Total Cloud Fraction", 
+            "comment": "Total cloud area fraction for the whole atmospheric column, as seen from the surface or the top of the atmosphere. Includes both large-scale and convective cloud.", 
             "dimensions": "longitude latitude time", 
             "out_name": "clt", 
             "type": "real", 
@@ -33,14 +32,13 @@
             "ok_max_mean_abs": ""
         }, 
         "hfls": {
-            "frequency": "day", 
             "modeling_realm": "atmos", 
             "standard_name": "surface_upward_latent_heat_flux", 
             "units": "W m-2", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
             "long_name": "Surface Upward Latent Heat Flux", 
-            "comment": "The surface called 'surface' means the lower boundary of the atmosphere. 'Upward' indicates a vector component which is positive when directed upward (negative downward). The surface latent heat flux is the exchange of heat between the surface and the air on account of evaporation (including sublimation). In accordance with common usage in geophysical disciplines, 'flux' implies per unit area, called 'flux density' in physics.", 
+            "comment": "", 
             "dimensions": "longitude latitude time", 
             "out_name": "hfls", 
             "type": "real", 
@@ -51,14 +49,13 @@
             "ok_max_mean_abs": ""
         }, 
         "hfss": {
-            "frequency": "day", 
             "modeling_realm": "atmos", 
             "standard_name": "surface_upward_sensible_heat_flux", 
             "units": "W m-2", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
             "long_name": "Surface Upward Sensible Heat Flux", 
-            "comment": "The surface sensible heat flux, also called turbulent heat flux, is the exchange of heat between the surface and the air by motion of air.", 
+            "comment": "", 
             "dimensions": "longitude latitude time", 
             "out_name": "hfss", 
             "type": "real", 
@@ -69,7 +66,6 @@
             "ok_max_mean_abs": ""
         }, 
         "hur": {
-            "frequency": "day", 
             "modeling_realm": "atmos", 
             "standard_name": "relative_humidity", 
             "units": "%", 
@@ -87,7 +83,6 @@
             "ok_max_mean_abs": ""
         }, 
         "hurs": {
-            "frequency": "day", 
             "modeling_realm": "atmos", 
             "standard_name": "relative_humidity", 
             "units": "%", 
@@ -105,14 +100,13 @@
             "ok_max_mean_abs": ""
         }, 
         "hursmax": {
-            "frequency": "day", 
             "modeling_realm": "atmos", 
             "standard_name": "relative_humidity", 
             "units": "%", 
             "cell_methods": "area: mean time: maximum", 
             "cell_measures": "area: areacella", 
-            "long_name": "Daily Maximum Near-Surface Relative Humidity", 
-            "comment": "The relative humidity with respect to liquid water for T> 0 C, and with respect to ice for T<0 C.", 
+            "long_name": "Surface Daily Maximum Relative Humidity", 
+            "comment": "", 
             "dimensions": "longitude latitude time height2m", 
             "out_name": "hursmax", 
             "type": "real", 
@@ -123,14 +117,13 @@
             "ok_max_mean_abs": ""
         }, 
         "hursmin": {
-            "frequency": "day", 
             "modeling_realm": "atmos", 
             "standard_name": "relative_humidity", 
             "units": "%", 
             "cell_methods": "area: mean time: minimum", 
             "cell_measures": "area: areacella", 
-            "long_name": "Daily Minimum Near-Surface Relative Humidity", 
-            "comment": "The relative humidity with respect to liquid water for T> 0 C, and with respect to ice for T<0 C.", 
+            "long_name": "Surface Daily Minimum Relative Humidity", 
+            "comment": "", 
             "dimensions": "longitude latitude time height2m", 
             "out_name": "hursmin", 
             "type": "real", 
@@ -141,14 +134,13 @@
             "ok_max_mean_abs": ""
         }, 
         "hus": {
-            "frequency": "day", 
             "modeling_realm": "atmos", 
             "standard_name": "specific_humidity", 
-            "units": "1", 
+            "units": "1.0", 
             "cell_methods": "time: mean", 
             "cell_measures": "area: areacella", 
             "long_name": "Specific Humidity", 
-            "comment": "Specific humidity is the mass fraction of water vapor in (moist) air.", 
+            "comment": "", 
             "dimensions": "longitude latitude plev8 time", 
             "out_name": "hus", 
             "type": "real", 
@@ -159,10 +151,9 @@
             "ok_max_mean_abs": ""
         }, 
         "huss": {
-            "frequency": "day", 
             "modeling_realm": "atmos", 
             "standard_name": "specific_humidity", 
-            "units": "1", 
+            "units": "1.0", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
             "long_name": "Near-Surface Specific Humidity", 
@@ -177,7 +168,6 @@
             "ok_max_mean_abs": ""
         }, 
         "mrro": {
-            "frequency": "day", 
             "modeling_realm": "land", 
             "standard_name": "runoff_flux", 
             "units": "kg m-2 s-1", 
@@ -195,9 +185,8 @@
             "ok_max_mean_abs": ""
         }, 
         "mrso": {
-            "frequency": "day", 
             "modeling_realm": "land", 
-            "standard_name": "mass_content_of_water_in_soil", 
+            "standard_name": "soil_moisture_content", 
             "units": "kg m-2", 
             "cell_methods": "area: mean where land time: mean", 
             "cell_measures": "area: areacella", 
@@ -213,9 +202,8 @@
             "ok_max_mean_abs": ""
         }, 
         "mrsos": {
-            "frequency": "day", 
             "modeling_realm": "land", 
-            "standard_name": "mass_content_of_water_in_soil_layer", 
+            "standard_name": "moisture_content_of_soil_layer", 
             "units": "kg m-2", 
             "cell_methods": "area: mean where land time: mean", 
             "cell_measures": "area: areacella", 
@@ -231,7 +219,6 @@
             "ok_max_mean_abs": ""
         }, 
         "pr": {
-            "frequency": "day", 
             "modeling_realm": "atmos", 
             "standard_name": "precipitation_flux", 
             "units": "kg m-2 s-1", 
@@ -249,7 +236,6 @@
             "ok_max_mean_abs": ""
         }, 
         "prc": {
-            "frequency": "day", 
             "modeling_realm": "atmos", 
             "standard_name": "convective_precipitation_flux", 
             "units": "kg m-2 s-1", 
@@ -267,14 +253,13 @@
             "ok_max_mean_abs": ""
         }, 
         "prsn": {
-            "frequency": "day", 
             "modeling_realm": "atmos", 
             "standard_name": "snowfall_flux", 
             "units": "kg m-2 s-1", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
             "long_name": "Snowfall Flux", 
-            "comment": "At surface; includes precipitation of all forms of water in the solid phase", 
+            "comment": "at surface; includes precipitation of all forms of water in the solid phase", 
             "dimensions": "longitude latitude time", 
             "out_name": "prsn", 
             "type": "real", 
@@ -285,9 +270,8 @@
             "ok_max_mean_abs": ""
         }, 
         "psl": {
-            "frequency": "day", 
             "modeling_realm": "atmos", 
-            "standard_name": "air_pressure_at_mean_sea_level", 
+            "standard_name": "air_pressure_at_sea_level", 
             "units": "Pa", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
@@ -303,14 +287,13 @@
             "ok_max_mean_abs": ""
         }, 
         "rlds": {
-            "frequency": "day", 
             "modeling_realm": "atmos", 
             "standard_name": "surface_downwelling_longwave_flux_in_air", 
             "units": "W m-2", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
             "long_name": "Surface Downwelling Longwave Radiation", 
-            "comment": "The surface called 'surface' means the lower boundary of the atmosphere. 'longwave' means longwave radiation. Downwelling radiation is radiation from above. It does not mean 'net downward'. When thought of as being incident on a surface, a radiative flux is sometimes called 'irradiance'. In addition, it is identical with the quantity measured by a cosine-collector light-meter and sometimes called 'vector irradiance'. In accordance with common usage in geophysical disciplines, 'flux' implies per unit area, called 'flux density' in physics.", 
+            "comment": "", 
             "dimensions": "longitude latitude time", 
             "out_name": "rlds", 
             "type": "real", 
@@ -320,33 +303,14 @@
             "ok_min_mean_abs": "", 
             "ok_max_mean_abs": ""
         }, 
-        "rls": {
-            "frequency": "day", 
-            "modeling_realm": "atmos", 
-            "standard_name": "surface_net_downward_longwave_flux", 
-            "units": "W m-2", 
-            "cell_methods": "area: time: mean", 
-            "cell_measures": "area: areacella", 
-            "long_name": "Net Longwave Surface Radiation", 
-            "comment": "Net longwave surface radiation", 
-            "dimensions": "longitude latitude time", 
-            "out_name": "rls", 
-            "type": "real", 
-            "positive": "down", 
-            "valid_min": "", 
-            "valid_max": "", 
-            "ok_min_mean_abs": "", 
-            "ok_max_mean_abs": ""
-        }, 
         "rlus": {
-            "frequency": "day", 
             "modeling_realm": "atmos", 
             "standard_name": "surface_upwelling_longwave_flux_in_air", 
             "units": "W m-2", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
             "long_name": "Surface Upwelling Longwave Radiation", 
-            "comment": "The surface called 'surface' means the lower boundary of the atmosphere. 'longwave' means longwave radiation. Upwelling radiation is radiation from below. It does not mean 'net upward'. When thought of as being incident on a surface, a radiative flux is sometimes called 'irradiance'. In addition, it is identical with the quantity measured by a cosine-collector light-meter and sometimes called 'vector irradiance'. In accordance with common usage in geophysical disciplines, 'flux' implies per unit area, called 'flux density' in physics.", 
+            "comment": "", 
             "dimensions": "longitude latitude time", 
             "out_name": "rlus", 
             "type": "real", 
@@ -357,7 +321,6 @@
             "ok_max_mean_abs": ""
         }, 
         "rlut": {
-            "frequency": "day", 
             "modeling_realm": "atmos", 
             "standard_name": "toa_outgoing_longwave_flux", 
             "units": "W m-2", 
@@ -375,14 +338,13 @@
             "ok_max_mean_abs": ""
         }, 
         "rsds": {
-            "frequency": "day", 
             "modeling_realm": "atmos", 
             "standard_name": "surface_downwelling_shortwave_flux_in_air", 
             "units": "W m-2", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
             "long_name": "Surface Downwelling Shortwave Radiation", 
-            "comment": "Surface solar irradiance for UV calculations.", 
+            "comment": "surface solar irradiance for UV calculations", 
             "dimensions": "longitude latitude time", 
             "out_name": "rsds", 
             "type": "real", 
@@ -392,33 +354,14 @@
             "ok_min_mean_abs": "", 
             "ok_max_mean_abs": ""
         }, 
-        "rss": {
-            "frequency": "day", 
-            "modeling_realm": "atmos", 
-            "standard_name": "surface_net_downward_shortwave_flux", 
-            "units": "W m-2", 
-            "cell_methods": "area: time: mean", 
-            "cell_measures": "area: areacella", 
-            "long_name": "Net Shortwave Surface Radiation", 
-            "comment": "Net downward shortwave radiation at the surface", 
-            "dimensions": "longitude latitude time", 
-            "out_name": "rss", 
-            "type": "real", 
-            "positive": "down", 
-            "valid_min": "", 
-            "valid_max": "", 
-            "ok_min_mean_abs": "", 
-            "ok_max_mean_abs": ""
-        }, 
         "rsus": {
-            "frequency": "day", 
             "modeling_realm": "atmos", 
             "standard_name": "surface_upwelling_shortwave_flux_in_air", 
             "units": "W m-2", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
             "long_name": "Surface Upwelling Shortwave Radiation", 
-            "comment": "The surface called 'surface' means the lower boundary of the atmosphere. 'shortwave' means shortwave radiation. Upwelling radiation is radiation from below. It does not mean 'net upward'. When thought of as being incident on a surface, a radiative flux is sometimes called 'irradiance'. In addition, it is identical with the quantity measured by a cosine-collector light-meter and sometimes called 'vector irradiance'. In accordance with common usage in geophysical disciplines, 'flux' implies per unit area, called 'flux density' in physics.", 
+            "comment": "", 
             "dimensions": "longitude latitude time", 
             "out_name": "rsus", 
             "type": "real", 
@@ -429,7 +372,6 @@
             "ok_max_mean_abs": ""
         }, 
         "sfcWind": {
-            "frequency": "day", 
             "modeling_realm": "atmos", 
             "standard_name": "wind_speed", 
             "units": "m s-1", 
@@ -447,7 +389,6 @@
             "ok_max_mean_abs": ""
         }, 
         "sfcWindmax": {
-            "frequency": "day", 
             "modeling_realm": "atmos", 
             "standard_name": "wind_speed", 
             "units": "m s-1", 
@@ -465,14 +406,13 @@
             "ok_max_mean_abs": ""
         }, 
         "snc": {
-            "frequency": "day", 
             "modeling_realm": "landIce land", 
             "standard_name": "surface_snow_area_fraction", 
             "units": "%", 
             "cell_methods": "area: time: mean", 
             "cell_measures": "area: areacella", 
-            "long_name": "Snow Area Percentage", 
-            "comment": "Percentage of each grid cell that is occupied by snow that rests on land portion of cell.", 
+            "long_name": "Snow Area Fraction", 
+            "comment": "Fraction of each grid cell that is occupied by snow that rests on land portion of cell.", 
             "dimensions": "longitude latitude time", 
             "out_name": "snc", 
             "type": "real", 
@@ -483,7 +423,6 @@
             "ok_max_mean_abs": ""
         }, 
         "snw": {
-            "frequency": "day", 
             "modeling_realm": "landIce land", 
             "standard_name": "surface_snow_amount", 
             "units": "kg m-2", 
@@ -501,7 +440,6 @@
             "ok_max_mean_abs": ""
         }, 
         "ta": {
-            "frequency": "day", 
             "modeling_realm": "atmos", 
             "standard_name": "air_temperature", 
             "units": "K", 
@@ -519,7 +457,6 @@
             "ok_max_mean_abs": ""
         }, 
         "tas": {
-            "frequency": "day", 
             "modeling_realm": "atmos", 
             "standard_name": "air_temperature", 
             "units": "K", 
@@ -537,7 +474,6 @@
             "ok_max_mean_abs": ""
         }, 
         "tasmax": {
-            "frequency": "day", 
             "modeling_realm": "atmos", 
             "standard_name": "air_temperature", 
             "units": "K", 
@@ -555,7 +491,6 @@
             "ok_max_mean_abs": ""
         }, 
         "tasmin": {
-            "frequency": "day", 
             "modeling_realm": "atmos", 
             "standard_name": "air_temperature", 
             "units": "K", 
@@ -573,14 +508,13 @@
             "ok_max_mean_abs": ""
         }, 
         "tslsi": {
-            "frequency": "day", 
             "modeling_realm": "land", 
             "standard_name": "surface_temperature", 
             "units": "K", 
             "cell_methods": "area: time: mean (comment: over land and sea ice)", 
             "cell_measures": "area: areacella", 
             "long_name": "Surface Temperature Where Land or Sea Ice", 
-            "comment": "Surface temperature of all surfaces except open ocean.", 
+            "comment": "'skin' temperature of all surfaces except open ocean.", 
             "dimensions": "longitude latitude time", 
             "out_name": "tslsi", 
             "type": "real", 
@@ -591,14 +525,13 @@
             "ok_max_mean_abs": ""
         }, 
         "ua": {
-            "frequency": "day", 
             "modeling_realm": "atmos", 
             "standard_name": "eastward_wind", 
             "units": "m s-1", 
             "cell_methods": "time: mean", 
             "cell_measures": "area: areacella", 
             "long_name": "Eastward Wind", 
-            "comment": "Zonal wind (positive in a eastward direction).", 
+            "comment": "", 
             "dimensions": "longitude latitude plev8 time", 
             "out_name": "ua", 
             "type": "real", 
@@ -609,7 +542,6 @@
             "ok_max_mean_abs": ""
         }, 
         "uas": {
-            "frequency": "day", 
             "modeling_realm": "atmos", 
             "standard_name": "eastward_wind", 
             "units": "m s-1", 
@@ -627,14 +559,13 @@
             "ok_max_mean_abs": ""
         }, 
         "va": {
-            "frequency": "day", 
             "modeling_realm": "atmos", 
             "standard_name": "northward_wind", 
             "units": "m s-1", 
             "cell_methods": "time: mean", 
             "cell_measures": "area: areacella", 
             "long_name": "Northward Wind", 
-            "comment": "Meridional wind (positive in a northward direction).", 
+            "comment": "", 
             "dimensions": "longitude latitude plev8 time", 
             "out_name": "va", 
             "type": "real", 
@@ -645,7 +576,6 @@
             "ok_max_mean_abs": ""
         }, 
         "vas": {
-            "frequency": "day", 
             "modeling_realm": "atmos", 
             "standard_name": "northward_wind", 
             "units": "m s-1", 
@@ -663,13 +593,12 @@
             "ok_max_mean_abs": ""
         }, 
         "wap": {
-            "frequency": "day", 
             "modeling_realm": "atmos", 
             "standard_name": "lagrangian_tendency_of_air_pressure", 
             "units": "Pa s-1", 
             "cell_methods": "time: mean", 
             "cell_measures": "area: areacella", 
-            "long_name": "Omega (=dp/dt)", 
+            "long_name": "omega (=dp/dt)", 
             "comment": "Omega (vertical velocity in pressure coordinates, positive downwards)", 
             "dimensions": "longitude latitude plev8 time", 
             "out_name": "wap", 
@@ -681,14 +610,13 @@
             "ok_max_mean_abs": ""
         }, 
         "zg": {
-            "frequency": "day", 
             "modeling_realm": "atmos", 
             "standard_name": "geopotential_height", 
             "units": "m", 
             "cell_methods": "time: mean", 
             "cell_measures": "area: areacella", 
             "long_name": "Geopotential Height", 
-            "comment": "Geopotential is the sum of the specific gravitational potential energy relative to the geoid and the specific centripetal potential energy. Geopotential height is the geopotential divided by the standard acceleration due to gravity. It is numerically similar to the altitude (or geometric height) and not to the quantity with standard name height, which is relative to the surface.", 
+            "comment": "", 
             "dimensions": "longitude latitude plev8 time", 
             "out_name": "zg", 
             "type": "real", 
