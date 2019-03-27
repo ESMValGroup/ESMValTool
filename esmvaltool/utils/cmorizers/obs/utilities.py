@@ -177,14 +177,14 @@ def _save_variable(cube, var, outdir, proj, **kwargs):
     # CMOR standard
     cube_time = cube.coord('time')
     reftime = Unit(cube_time.units.origin, cube_time.units.calendar)
-    dates = reftime.num2date(cube_time.points[[0,-1]])
-    if len(cube_time.points) == 1 :
+    dates = reftime.num2date(cube_time.points[[0, -1]])
+    if len(cube_time.points) == 1:
         year = str(dates[0].year)
-        time_suffix ='-'.join([ year + '01', year + '12'])
+        time_suffix = '-'.join([year + '01', year + '12'])
     else:
         date1 = str(dates[0].year) + '%02d' % dates[0].month
         date2 = str(dates[1].year) + '%02d' % dates[1].month
-        time_suffix ='-'.join([ date1, date2 ])
+        time_suffix = '-'.join([date1, date2])
 
     cmor_prefix = '_'.join([
         'OBS', proj['dataset'], proj['realm'], proj['version'],
