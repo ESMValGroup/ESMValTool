@@ -52,7 +52,7 @@ begin
   NAME = (/"sm", "sm_uncertainty"/)
 
   ; MIP
-  MIP = (/"Lmon", "Lmon"/)
+  MIP = (/"day", "day"/)
 
   ; Frequency
   FREQ = (/"day", "day"/)
@@ -65,7 +65,7 @@ begin
   TYPE = "sat"
 
   ; Version
-  VERSION = "L3S-SSMV-COMBINED-v4.2"; BAS should be changed
+  VERSION = "COMBINED-TCDR-v201812.0.0"
 
   ; Global attributes
   SOURCE = "https://cds.climate.copernicus.eu/cdsapp#!/dataset/satellite-soil-moisture"
