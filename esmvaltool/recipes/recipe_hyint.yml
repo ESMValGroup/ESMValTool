@@ -105,7 +105,6 @@ diagnostics:
         trend_years: false    # (a) F=all; (b) c(year1,year2) to apply trend 
                               # calculation and plotting only to a limited 
                               # time interval
-        lm_trend: true              # calculate linear trend
         add_trend: true             # add linear trend to plot
         add_trend_sd: true          # add stdev range to timeseries
         add_trend_sd_shade: true    # add shade of stdev range to timeseries

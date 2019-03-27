@@ -80,7 +80,6 @@ User settings
 
    * weight_tseries (true): adopt area weights in timeseries
    * trend_years (false): (a) false = apply trend to all years in dataset; (b) [year1, year2] to apply trend calculation and plotting only to a limited time interval
-   * lm_trend (true): calculate linear trend
    * add_trend (true): add linear trend to plot
    * add_trend_sd (false): add dashed lines of stdev range to timeseries
    * add_trend_sd_shade (false): add shade of stdev range to timeseries

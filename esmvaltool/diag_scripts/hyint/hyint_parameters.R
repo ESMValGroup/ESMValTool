@@ -83,6 +83,9 @@ ryearplot_ref <- c("EXP") # year to be plotted for reference dataset: options
 force_ref <- F # set TRUE to force plotting of reference data
                # as any other experiment
 
+# settings for trend calculation
+lm_trend <- T  # calculate linear trend
+
 # user defined extra label for figure file name
 label <- ""
 

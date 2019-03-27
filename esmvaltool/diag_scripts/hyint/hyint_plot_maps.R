@@ -13,6 +13,11 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
   year2_ref <- models_end_year[ref_idx]
   years_ref <- year1_ref:year2_ref
 
+  # set main paths
+  work_dir_exp <- work_dir
+  plot_dir_exp <- plot_dir
+  dir.create(plot_dir_exp, recursive = T)
+
   # Define fields to be used
   if (selfields[1] != F) {
     field_names <- field_names[selfields, drop = F]
@@ -54,13 +59,14 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
   # produce desert areas map if required from reference file
   # (mean annual precipitation <0.5 mm, Giorgi et al. 2014)
   if (removedesert) {
+    # reference model
     ref_filename <- getfilename_indices(ref_dir, diag_base, ref_idx, season)
     pry <- ncdf_opener(ref_filename, "pry", "lon", "lat", rotate = "no")
     retdes <- which(pry < 0.5)
     pry[retdes] <- NA
     # create mask with NAs for deserts and 1's for non-desert
-    retdes2D <- apply(pry * 0, c(1, 2), sum) + 1
-    retdes3D <- replicate(dim(pry)[length(dim(pry))], retdes2D)
+    ref_retdes2D <- apply(pry * 0, c(1, 2), sum) + 1
+    ref_retdes3D <- replicate(dim(pry)[length(dim(pry))], ref_retdes2D)
   }
 
   # open reference field
@@ -69,7 +75,7 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
   for (field in field_names) {
     field_ref <- ncdf_opener(ref_filename, field, "lon", "lat", rotate = "no")
     if (removedesert) {
-      field_ref <- field_ref * retdes3D
+      field_ref <- field_ref * ref_retdes3D
     }
     if (masksealand) {
       field_ref <- apply_elevation_mask(field_ref, relevation,
@@ -110,11 +116,6 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
     year1 <- models_start_year[model_idx]
     year2 <- models_end_year[model_idx]
 
-    # set main paths
-    work_dir_exp <- work_dir
-    plot_dir_exp <- plot_dir
-    dir.create(plot_dir_exp, recursive = T)
-
     # Years to be considered based on namelist and cfg_file
     years <- year1:year2
     if (ryearplot[1] == "ALL") {
@@ -126,6 +127,18 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
       years <- years[!is.na(years)]
     }
     nyears <- length(years)
+
+    # Remove deserts if required
+    if (removedesert) {
+      filename <- getfilename_indices(work_dir_exp, diag_base, model_idx,
+                                        season)
+      pry <- ncdf_opener(filename, "pry", "lon", "lat", rotate = "no")
+      retdes <- which(pry < 0.5)
+      pry[retdes] <- NA
+      # create mask with NAs for deserts and 1's for non-desert
+      exp_retdes2D <- apply(pry * 0, c(1, 2), sum) + 1
+      exp_retdes3D <- replicate(dim(pry)[length(dim(pry))], exp_retdes2D)
+    }
 
     #-----------------Loading data-----------------------#
 
@@ -142,7 +155,9 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
         field_exp <- ncdf_opener(filename, field, "lon", "lat", rotate = "no")
       }
       if (removedesert) {
-        field_exp <- field_exp * retdes3D
+print(str(field_exp))
+print(str(exp_retdes3D))
+        field_exp <- field_exp * exp_retdes3D
       }
       if (masksealand) {
         field_exp <- apply_elevation_mask(field_exp, relevation,
