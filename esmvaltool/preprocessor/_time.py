@@ -199,7 +199,7 @@ def seasonal_mean(cube):
     return cube.extract(three_months_bound)
 
 
-def regrid_time(cubes, frequency='monthly'):
+def regrid_time(cube, frequency='monthly'):
     """
     Align time axis for cubes so they can be subtracted.
 
@@ -211,59 +211,57 @@ def regrid_time(cubes, frequency='monthly'):
 
     Arguments
     ---------
-        cubes: list of iris.cube.Cube
+        cube: iris.cube.Cube
         frequency: str
             data frequency: monthly or daily
             default: monthly
 
     Returns
     -------
-    list of iris.cube.Cube instances
+    iris.cube.Cube instance
     """
-    for cube in cubes:
+    # fix calendars
+    cube.coord('time').units = cf_units.Unit(
+        cube.coord('time').units.origin,
+        calendar='gregorian'
+    )
 
-        # fix calendars
-        cube.coord('time').units = cf_units.Unit(
-            cube.coord('time').units.origin,
-            calendar='gregorian'
-        )
-
-        # standardize time points
-        time_c = [cell.point for cell in cube.coord('time').cells()]
-        if frequency == 'monthly':
-            cube.coord('time').cells = [
-                datetime.datetime(t.year, t.month,
-                                  15, 0, 0, 0) for t in time_c
-            ]
-        elif frequency == 'daily':
-            cube.coord('time').cells = [
-                datetime.datetime(t.year, t.month,
-                                  t.day, 0, 0, 0) for t in time_c
-            ]
-        # TODO add correct handling of hourly data
-        # this is a bit more complicated since it can be 3h, 6h etc
-        cube.coord('time').points = [
-            cube.coord('time').units.date2num(cl)
-            for cl in cube.coord('time').cells
+    # standardize time points
+    time_c = [cell.point for cell in cube.coord('time').cells()]
+    if frequency == 'monthly':
+        cube.coord('time').cells = [
+            datetime.datetime(t.year, t.month,
+                              15, 0, 0, 0) for t in time_c
         ]
+    elif frequency == 'daily':
+        cube.coord('time').cells = [
+            datetime.datetime(t.year, t.month,
+                              t.day, 0, 0, 0) for t in time_c
+        ]
+    # TODO add correct handling of hourly data
+    # this is a bit more complicated since it can be 3h, 6h etc
+    cube.coord('time').points = [
+        cube.coord('time').units.date2num(cl)
+        for cl in cube.coord('time').cells
+    ]
 
-        # uniformize bounds
-        cube.coord('time').bounds = None
-        cube.coord('time').guess_bounds()
+    # uniformize bounds
+    cube.coord('time').bounds = None
+    cube.coord('time').guess_bounds()
 
-        # remove aux coords that will differ
-        reset_aux = ['day_of_month', 'day_of_year']
-        for auxcoord in cube.aux_coords:
-            if auxcoord.long_name in reset_aux:
-                cube.remove_coord(auxcoord)
+    # remove aux coords that will differ
+    reset_aux = ['day_of_month', 'day_of_year']
+    for auxcoord in cube.aux_coords:
+        if auxcoord.long_name in reset_aux:
+            cube.remove_coord(auxcoord)
 
-        # re-add the converted aux coords
-        iris.coord_categorisation.add_day_of_month(cube, cube.coord('time'),
-                                                   name='day_of_month')
-        iris.coord_categorisation.add_day_of_year(cube, cube.coord('time'),
-                                                  name='day_of_year')
+    # re-add the converted aux coords
+    iris.coord_categorisation.add_day_of_month(cube, cube.coord('time'),
+                                               name='day_of_month')
+    iris.coord_categorisation.add_day_of_year(cube, cube.coord('time'),
+                                              name='day_of_year')
 
-    return cubes
+    return cube
 
 
 def annual_mean(cube, decadal=False):

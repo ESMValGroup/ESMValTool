@@ -30,6 +30,7 @@ The _time.py module contains the following preprocessor functions:
 * time_average: Take the weighted average over the time dimension.
 * seasonal_mean: Produces a mean for each season (DJF, MAM, JJA, SON)
 * annual_mean: Produces an annual or decadal mean.
+* regrid_time: Aligns the time axis of each dataset to have common time points and calendars.
 
 1. extract_time
 ---------------
@@ -111,6 +112,16 @@ decadal boolean switch. When this switch is set to true, this function
 will output the decadal averages.
 
 See also :func:`esmvaltool.preprocessor.annual_mean`.
+
+
+7. regrid_time
+--------------
+
+This function aligns the time points of each component dataset so that the dataset
+iris cubes can be subtracted. The operation makes the datasets time points common and
+sets common calendars; it also resets the time bounds and auxiliary coordinates to
+reflect the shifted time points. Current implementation for monthly and daily data; set
+the desired frequency (monthly or daily) in the recipe using frequency argument.
 
 
 Area manipulation
