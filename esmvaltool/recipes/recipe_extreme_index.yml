@@ -42,7 +42,6 @@ diagnostics:
       sfcWind:
         preprocessor: preproc
         mip: day
-        field: T2D
 
     scripts:
       main:
