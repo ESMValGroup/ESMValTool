@@ -131,7 +131,7 @@ region_names <- c(
   "North-America", "India", "Europe", "East-Asia", "Australia"
 )
 region_codes <- c(
-  "Globe", "GL", "TR", "SA", "AF",
+  "GL", "GL60", "TR", "SA", "AF",
   "NA", "IN", "EU", "EA", "AU"
 )
 # Select one or more index values through selregions in the standard 

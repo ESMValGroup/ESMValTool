@@ -90,9 +90,6 @@ for (myname in names(settings)) {
 metadata <- yaml::read_yaml(settings$input_files)
 
 ## check required settings
-if (max(selregions) > length(region_names)) {
-  stop("requested region outside available range")
-}
 if (!all(plot_type %in% c(1, 2, 3, 11, 12, 13, 14, 15) ) ) {
   stop("requested plot_type not available")
 }
@@ -140,6 +137,12 @@ models_ensemble <- unname(sapply(metadata, "[[", "ensemble"))
 ref_idx <- which(models_name == reference_model)
 if (length(ref_idx) == 0) {
   ref_idx <- length(models_name)
+}
+
+# Select regions to be adopted and test selection
+selregions <- match(select_regions, region_codes)
+if (anyNA(selregions)) {
+  stop("requested region not available")
 }
 
 ## Run regridding and diagnostic

@@ -52,7 +52,7 @@ User settings
 
 * selfields: indices to be analysed and plotted. Select one or more fields from the following list (order-sensitive) as a numerical index: 1=SDII, 2=DSL, 3=WSL, 4=HY-INT, 5=ABS_INT, 6=ABS_DSL, 7=ABS_WSL, 8=PA, 9=R95
 
-* selregions: Select regions for timeseries and maps from the following list as a numerical index: 1=World, 2=World60 (60S/60N), 3=Tropics (30S/30N), 4=South America, 5=Africa, 6=North America, 7=India, 8=Europe, 9=East-Asia, 10=Australia
+* select_regions: Select regions for timeseries and maps from the following list: GL=Globe, GL60=Global 60S/60N, TR=Tropics (30S/30N), SA=South America, AF=Africa, NA=North America, IN=India, EU=Europe, EA=East-Asia, AU=Australia
 
 * plot_type: type of figures to be plotted. Select one or more from: 1=lon/lat maps per individual field/exp/multi-year mean, 2=lon/lat maps per individual field exp-ref-diff/multi-year mean, 3=lon/lat maps multi-field/exp-ref-diff/multi-year mean, 11=timeseries over required individual region/exp, 12=timeseries over multiple regions/exp, 13=timeseries with multiple models, 14=summary trend coefficients multiple regions, 15=summary trend coefficients multiple models
 

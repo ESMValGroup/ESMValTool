@@ -58,10 +58,10 @@ diagnostics:
         selfields: [8, 4, 1, 9, 3, 2]
 
         # Select regions for timeseries and maps from the following list
-        # 1=World, 2=World60 (60S/60N),3=Tropics (30S/30N), 4=South America, 
-        # 5=Africa,6=North America,7=India,8=Europe,9=East-Asia,
-        # 10=Australia
-        selregions: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        # GL=Globe, GL60=Globe 60S/60N, TR=Tropics (30S/30N), SA=South America, 
+        # AF =Africa,6NA=North America, IN=India, EU=Europe, EA=East-Asia,
+        # AU=Australia
+        select_regions: ["GL", "GL60", "TR", "SA", "AF", "NA", "IN", "EU", "EA", "AU"]
  
         # Select type of plot:
         # 1) single panel lon/lat map per individual index, multi-year mean
@@ -73,7 +73,6 @@ diagnostics:
         # 14) multipanel of indices with summary of trend coefficients over multiple regions
         # 15) multipanel of indices with summary of trend coefficients for multiple models
         plot_type: [1, 2, 3, 11, 12, 13, 14, 15]
-
 
         ## ------- Optional settings ----------
         # Select number of columns and rows in multi-panel figure
