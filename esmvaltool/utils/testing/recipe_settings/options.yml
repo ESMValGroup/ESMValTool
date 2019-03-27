@@ -230,7 +230,7 @@ recipe_rainfarm.yml:
     - true
   weights_climo:   # orographic weights: set to false or full path to a fine-scale precipitation climatology file
     - false
-    #TODO: test with file
+    # TODO: test with file
 
 recipe_zmnam.yml:
 
@@ -241,7 +241,7 @@ recipe_quantilebias.yml:
 
 recipe_hyint.yml:
   norm_years:  # first and last year of reference normalization period to be used for normalized indices
-    - [2004,2006]
+    - [2004, 2006]
   selfields:  # indices to be plotted. Select one or more fields from the following list (order-sensitive) as a numerical index:
     - [1]  # SDII
     - [2]  # DSL
@@ -310,7 +310,7 @@ recipe_hyint.yml:
     - false
   trend_years:
     - false
-    - [2002,2005]
+    - [2002, 2005]
   lm_trend:
     - true
     - false
@@ -338,3 +338,38 @@ recipe_hyint.yml:
   scalepercent:
     - true
     - false
+
+recipe_smpi.yml:
+  plot_type:
+    - cycle
+    - zonal
+    - latlon
+    - cycle_latlon
+  time_avg:
+    - annualclim
+    - seasonalclim
+    - monthlyclim
+    - mymm
+    - yearly
+    - MAM
+    - SONDJ
+    - 1
+    - 5
+    - 12
+  region:
+    - Global
+    - Tropics
+    - NH extratropics
+    - SH extratropics
+    - NH equatorial
+    - SH equatorial
+    - Northern Hemisphere
+    - Southern Hemisphere
+    - NH midlatitudes
+    - SH midlatitudes
+    - Arctic
+    - Antarctic
+    - Equatorial
+  draw_plots:
+    - false
+    - true
