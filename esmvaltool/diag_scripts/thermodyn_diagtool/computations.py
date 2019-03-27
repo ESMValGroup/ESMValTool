@@ -25,8 +25,7 @@ The functions that are here contained are:
 - wmbudg: function for water mass and latent energy budgets;
 - write_eb: function for writing global mean energy budgets to file;
 
-Author:
-Valerio Lembo, University of Hamburg (2019).
+@author: valerio.lembo@uni-hamburg.de, Valerio Lembo, Hamburg University, 2019.
 """
 
 import os
@@ -60,9 +59,6 @@ def baroceff(model, wdir, aux_file, toab_file, te_file):
       (time,lon,lat);
     - te_file: a file containing the annual mean emission temperature
       (time,lon,lat);
-
-    Author:
-    Valerio Lembo, University of Hamburg (2019).
     """
     cdo = Cdo()
     removeif(aux_file)
@@ -137,9 +133,6 @@ def budgets(model, wdir, aux_file, filelist):
     - wdir: the working directory where the outputs are stored;
     - aux_file: the name of a dummy aux. file to be used for computations;
     - filelist: a list of file names containing the input fields;
-
-    Author:
-    Valerio Lembo, University of Hamburg (2019).
     """
     cdo = Cdo()
     hfls_file = filelist[0]
@@ -212,9 +205,6 @@ def direntr(logger, model, wdir, filelist, aux_file, lect, lec, flags):
     - flags: a list of flags containing information on whether the water mass
     and energy budgets are computed, if the material entropy production has to
     be computed, if using the indirect, the direct method, or both methods;
-
-    Author:r
-    Valerio Lembo, University of Hamburg (2019).
     """
     _, _, _, aux_files = mkthe.init_mkthe(model, wdir, filelist, flags)
     htop_file = aux_files[1]
@@ -305,9 +295,6 @@ def entr(filelist, nin, nout, entr_file, entr_mean_file):
     - entr_file: the name of the file containing the 3D entropy fluxes;
     - entr_mean_file: the name of the file containing the global annual mean
       entropy value;
-
-    Author:
-    Valerio Lembo, University of Hamburg (2019).
     """
     cdo = Cdo()
     en_file = filelist[0]
@@ -335,9 +322,6 @@ def evapentr(model, wdir, infile, aux_file):
     - infile: a list of file containing hfls and ts, respectively
       (with dimensions (time,lat,lon);
     - aux_file: the name of a dummy aux. file to be used for computations;
-
-    Author:
-    Valerio Lembo, University of Hamburg (2019).
     """
     evapentr_file = wdir + '/{}_evap_entr.nc'.format(model)
     evapentr_mean_file = wdir + '/{}_evapEntropy_gmean.nc'.format(model)
@@ -367,9 +351,6 @@ def indentr(model, wdir, infile, aux_file, toab_gmean):
       (time,lon,lat);
     - aux_file: the name of a dummy aux. file to be used for computations;
     - toab_gmean: the climatological annaul mean TOA energy budget;
-
-    Author:
-    Valerio Lembo, University of Hamburg (2019).
     """
     cdo = Cdo()
     horzentropy_file = wdir + '/{}_horizEntropy.nc'.format(model)
@@ -414,9 +395,6 @@ def kinentr(logger, aux_file, tasvert_file, lect, lec):
       temperature;
     - lect: an array containing the annual mean LEC intensity;
     - lec: a flag marking whether the LEC has been previously computed or not
-
-    Author:
-    Valerio Lembo, University of Hamburg (2019).
     """
     cdo = Cdo()
     removeif(aux_file)
@@ -448,9 +426,6 @@ def landoc_budg(model, wdir, infile, mask, name):
     - infile: the file containing the original budget field as (time,lat,lon);
     - mask: the file containing the land-sea mask;
     - name: the variable name as in the input file;
-
-    Author:
-    Valerio Lembo, University of Hamburg (2019).
     """
     cdo = Cdo()
     ocean_file = wdir + '/{}_{}_ocean.nc'.format(model, name)
@@ -490,9 +465,6 @@ def mask_precip(model, wdir, infile):
     - wdir: the working directory where the outputs are stored;
     - infile: a list of input file, containing rainfall precipitation (prr) and
       prsn, respectively (dimensions (time,lat,lon));
-
-    Author:
-    Valerio Lembo, University of Hamburg (2019).
     """
     cdo = Cdo()
     prr_file = infile[0]
@@ -589,9 +561,6 @@ def meltentr(model, wdir, latsnow_file, aux_file):
     - wdir: the working directory where the outputs are stored;
     - infile: the latent energy associated with snowfall precipitation;
     - aux_file: the name of a dummy aux. file to be used for computations;
-
-    Author:
-    Valerio Lembo, University of Hamburg (2019).
     """
     cdo = Cdo()
     removeif(aux_file)
@@ -638,9 +607,6 @@ def potentr(model, wdir, infile, aux_file):
       precipitation (prsnmask), the temperature of the vertical column between
       the cloud top and the ground (tcolumn);
     - aux_file: the name of a dummy aux. file to be used for computations;
-
-    Author:
-    Valerio Lembo, University of Hamburg (2019).
     """
     cdo = Cdo()
     removeif(aux_file)
@@ -680,9 +646,6 @@ def rainentr(model, wdir, infile, aux_file):
     - infile: a list of file containing the masked rainfall precipitation
       (prrmask) and the temperature of the cloud (tcloud);
     - aux_file: the name of a dummy aux. file to be used for computations;
-
-    Author:
-    Valerio Lembo, University of Hamburg (2019).
     """
     cdo = Cdo()
     prrmask_file = infile[0]
@@ -726,9 +689,6 @@ def sensentr(model, wdir, infile, aux_file):
     - infile: a list of file containing hfss, the temperature at the boundary
     layer top (tabl), ts, respectively (with dimensions (time,lat,lon);
     - aux_file: the name of a dummy aux. file to be used for computations;
-
-    Author:
-    Valerio Lembo, University of Hamburg (2019).
     """
     cdo = Cdo()
     difftemp_file = wdir + '/{}_difftemp_bl.nc'.format(model)
@@ -761,9 +721,6 @@ def snowentr(model, wdir, infile, aux_file):
     - infile: a list of file containing the masked snowfall precipitation
       (prsnmask) and the temperature of the cloud (tcloud);
     - aux_file: the name of a dummy aux. file to be used for computations;
-
-    Author:
-    Valerio Lembo, University of Hamburg (2019).
     """
     cdo = Cdo()
     prsnmask_file = infile[0]
@@ -799,9 +756,6 @@ def wmbudg(model, wdir, aux_file, filelist, auxlist):
     - aux_file: the name of a dummy aux. file to be used for computations;
     - filelist: a list of file names containing the input fields;
     - auxlist: a list of auxiliary files;
-
-    Author:
-    Valerio Lembo, University of Hamburg (2019).
     """
     cdo = Cdo()
     wmbudg_file = wdir + '/{}_wmb.nc'.format(model)
@@ -836,9 +790,6 @@ def write_eb(namein, nameout, aux_file, d3_file, gmean_file):
     - d3_file: the file containing (time,lat,lon) fields;
     - gmean_file: the name of a file where to put the annual and globally
       averaged fields;
-
-    Author:
-    Valerio Lembo, University of Hamburg (2019).
     """
     cdo = Cdo()
     ch_name = '{},{}'.format(namein, nameout)

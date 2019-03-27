@@ -12,12 +12,11 @@ The module provides plots for a single model of:
 - scatter plots of atmospheric vs. oceani peak magnitudes in the two hem.;
 - climatological mean maps of every component of the entropy budget.
 
-@author: Valerio Lembo, University of Hamburg, 2018.
+@author: valerio.lembo@uni-hamburg.de, Valerio Lembo, Hamburg University, 2018.
 """
 import math
 import os
 from shutil import move
-
 import cartopy.crs as ccrs
 import matplotlib.pyplot as plt
 import numpy as np
@@ -25,9 +24,7 @@ from cdo import Cdo
 from matplotlib import rcParams
 from netCDF4 import Dataset
 from scipy import interpolate, stats
-
 from esmvaltool.diag_scripts.shared import ProvenanceLogger
-
 from . import fourier_coefficients, provenance_meta
 
 
@@ -46,9 +43,6 @@ def balances(cfg, wdir, plotpath, filena, name, model):
     - filena: the files containing input fields;
     - name: the name of the variable associated with the input field;
     - model: the name of the model to be analysed;
-
-    Author:
-    Valerio Lembo, University of Hamburg (2018).
     """
     cdo = Cdo()
     provlog = ProvenanceLogger(cfg)
@@ -76,9 +70,6 @@ def balances(cfg, wdir, plotpath, filena, name, model):
             'Surface Energy Budget'
         ]
         transpty = (-6E15, 6E15)
-        # timesery[0, :] = (-3, 3)
-        # timesery[1, :] = (-1, 1)
-        # timesery[2, :] = (-3, 3)
         coords = [dims[0], dims[1]]
         plot_climap_eb(model, pdir, coords, tmean, ext_name)
         fig = plt.figure()
@@ -115,8 +106,6 @@ def balances(cfg, wdir, plotpath, filena, name, model):
         plot_1m_scatter(model, pdir, lat_maxm, tr_maxm)
     elif nsub == 2:
         ext_name = ['Water mass budget', 'Latent heat budget']
-        # timesery[0, :] = (-3E-6, 3E-6)
-        # timesery[1, :] = (-20, 20)
         transpwy = (-2E9, 2E9)
         transply = (-6E15, 6E15)
         coords = [dims[0], dims[1]]
@@ -164,7 +153,6 @@ def balances(cfg, wdir, plotpath, filena, name, model):
             shadow=True,
             ncol=3)
         plt.tight_layout()
-        # plt.ylim(timesery[i_f, :])
         plt.grid()
         plt.savefig(pdir + '/{}_{}_timeser.png'.format(model, name[i_f]))
         plt.close(fig)
@@ -179,8 +167,6 @@ def entropy(plotpath, filename, name, ext_name, model):
     - name: the name of the variable associated with the input field;
     - ext_name: the long name of the input field
     - model: the name of the model to be analysed;
-
-    @author: Valerio Lembo, 2018.
     """
     pdir = plotpath
     if ext_name == 'Vertical entropy production':
@@ -230,9 +216,6 @@ def global_averages(nsub, filena, name):
     - nsub: the number of variables for which averages must be computed;
     - filena: the name of the file containing the variable (without extension);
     - name: the names of the variables;
-
-    Author:
-    Valerio Lembo, University of Hamburg (2019).
     """
     sep = '.nc'
     filena[0] = filena[0].split(sep, 1)[0]
@@ -277,8 +260,6 @@ def hemean(hem, lat, inp):
     - hem: a parameter for the choice of the hemisphere (1 stands for SH);
     - lat: latitude (in degrees);
     - inp: input field;
-
-    @author: Valerio Lembo, 2018.
     """
     j_end = np.shape(inp)[1]
     zmn = latwgt(lat, inp)
@@ -304,9 +285,6 @@ def init_plotentr(model, pdir, flist):
     - path: the path to the plots directory;
     - flist: a list of files containing the components of the entropy
       production with the direct method;
-
-    Author:
-    Valerio Lembo, University of Hamburg (2019).
     """
     entropy(pdir, flist[0], 'ssens', 'Sensible Heat entropy production', model)
     entropy(pdir, flist[1], 'sevap', 'Evaporation entropy production', model)
@@ -325,9 +303,6 @@ def latwgt(lat, t_r):
     Arguments:
     - lat: latitude (in degrees);
     - tr: the field to be averaged (time,lat);
-
-    Author:
-    Valerio Lembo, University of Hamburg (2018).
     """
     p_i = math.pi
     conv = 2 * p_i / 360
@@ -352,9 +327,6 @@ def plot_climap_eb(model, pdir, coords, tmean, ext_name):
     - coords: the lon and lat coordinates;
     - tmean: the climatological mean (3,lat,lon) maps of the three budgets;
     - ext_name: the extended name of the budget, to be used for the title;
-
-    Author:
-    Valerio Lembo, University of Hamburg (2019).
     """
     rangect = [-100, 100]
     fig = plt.figure(figsize=(12, 22))
@@ -381,9 +353,6 @@ def plot_climap_wm(model, pdir, coords, tmean, ext_name, name):
     - tmean: the climatological mean (3,lat,lon) maps of the three budgets;
     - ext_name: the extended name of the budget, to be used for the title;
     - name: the variable name, used for the file name of the figure;
-
-    Author:
-    Valerio Lembo, University of Hamburg (2019).
     """
     rangecw = [-1E-4, 1E-4]
     rangecl = [-150, 150]
@@ -411,9 +380,6 @@ def plot_climap(axi, coords, fld, title, rrange, c_m):
     - title: the title to appear on the figure;
     - rrange: the range for the color bar;
     - c_m: a color map identifier;
-
-    Author:
-    Valerio Lembo, University of Hamburg (2019).
     """
     axi.coastlines()
     lons = np.linspace(0, 360, len(coords[0])) - (coords[0][1] - coords[0][0])
@@ -450,8 +416,6 @@ def plot_ellipse(semimaj, semimin, phi, x_cent, y_cent, a_x):
     - cov: a 2x2 covariance matrix;
     - mass_level: a number defining the fractional probability enclosed, if
     cov is given;
-
-    @author: Nicholas Kern, 2016 - revised by Valerio Lembo, 2018
     """
     theta = np.linspace(0, 2 * np.pi, 100)
     r_r = 1 / np.sqrt((np.cos(theta))**2 + (np.sin(theta))**2)
@@ -480,9 +444,6 @@ def plot_1m_scatter(model, pdir, lat_maxm, tr_maxm):
     - pdir: a plots directory;
     - lat_maxm: the positions of the peaks;
     - tr_maxm: the magnitudes of the peaks;
-
-    Author:
-    Valerio Lembo, University of Hamburg (2019).
     """
     fig = plt.figure()
     fig.set_size_inches(12, 12)
@@ -531,9 +492,6 @@ def plot_1m_transp(lats, yval, ylim, strings):
     - ylim: a range for the y-axis;
     - strings: a list of strings containing the title of the figure, the names
     of the x and y axes;
-
-    Author:
-    Valerio Lembo, University of Hamburg (2019).
     """
     plt.subplot(111)
     plt.plot(lats, yval)
@@ -560,9 +518,6 @@ def plot_mm_ebscatter(pdir, eb_list):
     - eb_list: a list containing the TOA, atmospheri and surface energy budgets
     as a 2D array (model, 2), with the first column being the mean value and
     the second column being the inter-annual variance;
-
-    Author:
-    Valerio Lembo, University of Hamburg (2019).
     """
     toab_all = eb_list[0]
     atmb_all = eb_list[1]
@@ -621,9 +576,6 @@ def plot_mm_scatter(axi, varlist, title, xlabel, ylabel):
     - title: a string containing the title of the plot;
     - xlabel: a string containing the x-axis label;
     - ylabel: a string containing the y-axis label;
-
-    Author:
-    Valerio Lembo, University of Hamburg (2019).
     """
     xval = varlist[0]
     yval = varlist[1]
@@ -672,9 +624,6 @@ def plot_mm_scatter_spec(axi, varlist, title, xlabel, ylabel):
     - title: a string containing the title of the plot;
     - xlabel: a string containing the x-axis label;
     - ylabel: a string containing the y-axis label;
-
-    Author:
-    Valerio Lembo, University of Hamburg (2019).
     """
     xval = varlist[0]
     yval = varlist[1]
@@ -709,9 +658,6 @@ def plot_mm_summaryscat(pdir, summary_varlist):
     - summary_varlist: a list containing the quantities to be plotted as a 1D
     (model) array, or a 2D array (model, 2), with the first column being the
     mean value and the second column being the inter-annual variance;
-
-    Author:
-    Valerio Lembo, University of Hamburg (2019).
     """
     atmb_all = summary_varlist[0]
     baroceff_all = summary_varlist[1]
@@ -775,9 +721,6 @@ def plot_mm_transp(model_names, wdir, pdir):
     - model_names: a list of model names contained in the ensemble;
     - wdir: a working directory;
     - pdir: a plots directory;
-
-    Author:
-    Valerio Lembo, University of Hamburg (2019).
     """
     fig = plt.figure()
     fig.set_size_inches(12, 22)
@@ -803,9 +746,6 @@ def plot_mm_transp_panel(model_names, wdir, axi, domn, yrange):
     - axis: the axis of the pllot;
     - domn: the domain (total, atmospheric or oceanic);
     - yrange: a range for the y-axis;
-
-    Author:
-    Valerio Lembo, University of Hamburg (2019).
     """
     axi.set_figsize = (50, 50)
     for model in model_names:
@@ -831,6 +771,7 @@ def pr_output(varout, filep, nc_f, nameout, latn):
     Save fields to NetCDF, retrieving information from an existing
     NetCDF file. Metadata are transferred from the existing file to the
     new one.
+
     Arguments:
         - varout: the field to be stored, with shape (time,level,lat,lon);
         - filep: the existing dataset, from where the metadata are
@@ -871,8 +812,6 @@ def transport(zmean, gmean, lat):
     - zmean: zonal mean input fields;
     - gmean: the global mean of the input fields;
     - lat: a latitudinal array (in degrees of latitude);
-
-    @author: Valerio Lembo, 2018.
     """
     p_i = math.pi
     dlat = np.zeros(len(lat))
@@ -902,8 +841,6 @@ def transp_max(lat, transp, lim):
     - transp: the meridional transport a 1D array (lat);
     - lim: limits to constrain the peak search in
     (necessary for ocean transp.)
-
-    @author: Valerio Lembo, 2018.
     """
     deriv = np.gradient(transp)
     x_c = zerocross1d(lat, deriv)
@@ -932,9 +869,6 @@ def transports_preproc(lats, yrs, lim, transp):
     - lim: the range (-lim,lim) in which the function transp_max has to search
     for the peaks;
     - transp: the array containing the transport;
-
-    Author:
-    Valerio Lembo, University of Hamburg (2019).
     """
     transpp = transp[1]
     transp_mean = np.nanmean(transpp, axis=0)
@@ -961,8 +895,6 @@ def varatts(w_nc_var, varname):
     - w_nc_var: a variable object;
     - varname: the name of the variable, among total, atmos, ocean, wmb,
     latent;
-
-    @author: Chris Slocum (2014), modified by Valerio Lembo (2018).
     """
     if varname == 'total':
         w_nc_var.setncatts({

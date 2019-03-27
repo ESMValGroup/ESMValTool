@@ -27,4 +27,5 @@ Recipes
    recipe_shapeselect
    recipe_spei
    recipe_toymodel
+   recipe_thermodyn_diagtool
    recipe_zmnam

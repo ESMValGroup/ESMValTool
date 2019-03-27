@@ -8,9 +8,7 @@ gridsteps. The outputs are given as (time,level,wave,lat) where wave stands
 for the zonal wavenumber. In the context of the thermodynamic diagnostic tool,
 this is used for the computation of the Lorenz Energy Cycle.
 
-Created on Mon Oct  8 15:40:08 2018
-
-@author: Valerio Lembo
+@author: valerio.lembo@uni-hamburg.de, Valerio Lembo, Hamburg University, 2018.
 """
 
 import numpy as np
@@ -21,7 +19,6 @@ FC_RES = np.array([5, 10, 15, 21, 31, 43, 85, 127, 171, 341, 683, 1365])
 G_0 = 9.81  # Gravity acceleration
 GAM = 0.0065  # Standard atmosphere lapse rate
 GAS_CON = 287.0  # Gas constant
-# rho_0 = 1.2           # Mean air density
 P_0 = 10000  # Reference tropospheric pressure
 
 
@@ -195,9 +192,6 @@ def extr_lat(nc_fid, var_nc_fid, latn):
           are retrieved;
         - var_nc_fid: the id of the new NC dataset previously created;
         - latn: the name of the latitude dimension;
-
-    PROGRAMMER(S)
-        Valerio Lembo (2018).
     """
     # Extract coordinates from NetCDF file
     lats = nc_fid.variables['lat'][:]
@@ -217,9 +211,6 @@ def extr_lon(nc_fid, var_nc_fid):
           retrieved. Time,level and lon dimensions
           are retrieved;
         - var_nc_fid: the id of the new NC dataset previously created;
-
-    PROGRAMMER(S)
-        Valerio Lembo (2018).
     """
     # Extract coordinates from NetCDF file
     lons = nc_fid.variables['lon'][:]
@@ -239,9 +230,6 @@ def extr_plev(nc_fid, var_nc_fid):
           retrieved. Time,level and lon dimensions
           are retrieved;
         - var_nc_fid: the id of the new NC dataset previously created;
-
-    PROGRAMMER(S)
-        Valerio Lembo (2018).
     """
     plev = nc_fid.variables['plev'][:]
     var_nc_fid.createDimension('plev', len(plev))
@@ -261,9 +249,6 @@ def extr_time(nc_fid, var_nc_fid):
           retrieved. Time,level and lon dimensions
           are retrieved;
         - var_nc_fid: the id of the new NC dataset previously created;
-
-    PROGRAMMER(S)
-        Valerio Lembo (2018).
     """
     # Extract coordinates from NetCDF file
     time = nc_fid.variables['time'][:]

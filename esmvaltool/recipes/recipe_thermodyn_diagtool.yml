@@ -123,9 +123,8 @@ diagnostics:
     scripts:
       Thermodyn_Diag:
         script: thermodyn_diagtool/thermodyn_diagnostics.py
-        eb: true
-        lsm: true
         wat: true
         lec: false
         entr: true
         met: 3
+        lsm: true

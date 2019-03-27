@@ -1,4 +1,4 @@
-"""MAIN PROGRAM.
+r"""MAIN PROGRAM.
 
 TheDiaTo - The diagnostic tool for climate system thermodynamics.
 

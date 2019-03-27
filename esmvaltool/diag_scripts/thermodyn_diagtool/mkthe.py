@@ -346,7 +346,7 @@ def write_output(wdir, model, file_list, varlist):
     removeif(tabl_temp)
     with Dataset(tabl_temp, 'w', format='NETCDF4') as w_nc_fid:
         w_nc_fid.description = (
-            "Monthly mean temperature at BL top for {} model. ".format(model),
+            "Monthly mean BL top temperature for {} model. ".format(model),
             "Calculated by Thermodynamics model diagnostics ",
             "in ESMValTool. Author Valerio ",
             "Lembo, Meteorologisches Institut, ",

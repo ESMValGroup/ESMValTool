@@ -1,14 +1,12 @@
 """PROGRAM FOR LEC COMPUTATION.
 
 The module contains the following functions:
-    - lorenz: it is the main program, controlling the file input,
-              separating the real from imaginary part of the Fourier
-              coefficients, reordering the latitudinal dimension
-              (from N to S), interpolating on a reference sigma coordinate,
-              then computing the reservoirs and conversion terms, storing
-              them separately in NetCDF files and providing a flux diagram
-              and a table outputs, the latter separately for the two
-              hemispheres;
+    - lorenz: it is the main program, calling functions that compute the
+              reservoirs and conversion terms, storing them separately in
+              NetCDF files and providing a flux diagram and a table outputs,
+              the latter separately for the two hemispheres;
+    - averages: a script computing time, global and zonal averages;
+    - averages_comp: a script computing global mean of the output fields;
     - bsslzr: it contains the coefficients for the conversion from regular
               lonlat grid to Gaussian grid;
     - diagram: it is the interface between the main program and a
@@ -25,6 +23,11 @@ The module contains the following functions:
     - mkkekz: computes the zonal KE - eddy KE conversion terms;
     - mkatas: computes the stationay eddy - transient eddy APE conversions;
     - mkktks: computes the stationay eddy - transient eddy KE conversions;
+    - output: compute vertical integrals and print NC output;
+    - preprocess_lec: a script handling the input files, separating the real
+                      from imaginary part of the Fourier coefficients,
+                      reordering the latitudinal dimension (from N to S),
+                      interpolating on a reference sigma coordinate,
     - pr_output: prints a single component of the LEC computations to a
                  single Nc file;
     - removeif: removes a file if it exists;
@@ -36,36 +39,21 @@ The module contains the following functions:
     - varatts: prints the attributes of a variable in a Nc file;
     - weights: computes the weights for vertical integrations and meridional
                averages;
-
-Constants:
-    G: gravitational acceleration;
-    R: gas constant;
-    CP: specific heat of dry air;
-    AA: planet radius;
-    PS: mean surface pressure;
-    NW_1: wavenumber limit for long waves;
-    NW_2: wavenumber limit for synoptic waves;
-    NW_3: wavenumber limit for short waves;
+    - write_to_tab: a script for writing global and hemispheric means to table;
 
 References.
     Ulbrich P. and P. Speth (1991) The global energy cycle of stationary
     and transient atmospheric waves: Results from ECMWF analyses, Met.
 
-Authors:
-    Frank Lunkeit, Meteorology Department, University of Hamburg
-    Valerio Lembo, Meteorology Department, University of Hamburg
-
-    Contact author: valerio.lembo@uni-hamburg.de.
+@author: valerio.lembo@uni-hamburg.de, Valerio Lembo, Hamburg University, 2018.
 """
 
 import math
 import os
 import sys
-
 import numpy as np
 from cdo import Cdo
 from netCDF4 import Dataset
-
 from . import fluxogram, fourier_coefficients
 
 G = 9.81
@@ -199,9 +187,6 @@ def averages(x_c, g_w):
     Arguments:
     - x_c: the input field as (lev, lat, wave);
     - g_w: the Gaussian weights for meridional averaging;
-
-    Author:
-    Valerio Lembo, University of Hamburg (2019).
     """
     xc_ztmn = np.squeeze(np.real(x_c[:, :, 0]))
     xc_gmn = np.nansum(xc_ztmn * g_w[np.newaxis, :], axis=1) / np.nansum(g_w)
@@ -216,9 +201,6 @@ def averages_comp(fld, g_w, d_s, dims):
     - g_w: the Gaussian weights for meridional averaging;
     - d_s: the Delta sigma of the sigma levels;
     - dims: a list containing the dimensions length0;
-
-    Author:
-    Valerio Lembo, University of Hamburg (2019).
     """
     fld_tmn = np.nanmean(fld, axis=1)
     fld_tgmn = globall_cg(fld_tmn, g_w, d_s, dims)
@@ -262,7 +244,10 @@ def diagram(filen, listf, dims):
     interface between the main script and the class for flux
     diagrams design.
 
-    @author: Valerio Lembo
+    Arguments:
+    - filen: the filename of the diagram flux;
+    - listf: a list containing the fluxes and storages;
+    - dims: the dimensions of the variables;
     """
     ntp = int(dims[3])
     apet = listf[0]
@@ -338,7 +323,8 @@ def diagram(filen, listf, dims):
 def gauaw(n_y):
     """Compute the Gaussian coefficients for the Gaussian grid conversion.
 
-    @author: Valerio Lembo
+    Arguments:
+    - n_y: the latitude dimension;
     """
     c_c = (1 - (2 / math.pi)**2) / 4
     eps = 0.00000000000001
@@ -376,7 +362,11 @@ def gauaw(n_y):
 def globall_cg(d3v, g_w, d_s, dims):
     """Compute the global and hemispheric averages.
 
-    @author: Valerio Lembo
+    Arguments:
+    - d3v: the 3D dataset to be averaged;
+    - g_w: the gaussian weights;
+    - d_s: the vertical levels;
+    - dims: a list containing the sizes of the dimensions;
     """
     nlev = int(dims[0])
     nlat = int(dims[2])
@@ -413,9 +403,6 @@ def init(logfile, filep):
     Arguments:
         - filenc: name of the file containing the input fields;
         - logfile: name of the file containing the table as a .txt file.
-
-    Author:
-    Valerio Lembo, University of Hamburg, 2019
     """
     with open(logfile, 'w') as log:
         log.write('########################################################\n')
@@ -483,7 +470,9 @@ def init(logfile, filep):
 def makek(u_t, v_t):
     """Compute the kinetic energy reservoirs from u and v.
 
-    @author: Valerio Lembo
+    Arguments:
+    - u_t: a 3D zonal velocity field;
+    - v_t: a 3D meridional velocity field;
     """
     ck1 = u_t * np.conj(u_t)
     ck2 = v_t * np.conj(v_t)
@@ -496,7 +485,10 @@ def makek(u_t, v_t):
 def makea(t_t, t_g, gam):
     """Compute the kinetic energy reservoirs from t.
 
-    @author: Valerio Lembo
+    Arguments:
+    - t_t_ a 3D temperature field;
+    - t_g: a temperature vertical profile;
+    - gam: a vertical profile of the stability parameter;
     """
     ape = gam[:, np.newaxis, np.newaxis] * np.real(t_t * np.conj(t_t))
     ape[:, :, 0] = (gam[:, np.newaxis] * 0.5 * np.real(
@@ -508,7 +500,12 @@ def makea(t_t, t_g, gam):
 def mka2k(wap, t_t, w_g, t_g, p_l):
     """Compute the KE to APE energy conversions from t and w.
 
-    @author: Valerio Lembo
+    Arguments:
+    - wap: a 3D vertical velocity field;
+    - t_t: a 3D temperature field;
+    - w_g: a vertical velocity vertical profile;
+    - t_g: a temperature vertical profile;
+    - p_l: the pressure levels;
     """
     a2k = -(R / p_l[:, np.newaxis, np.newaxis] *
             (t_t * np.conj(wap) + np.conj(t_t) * wap))
@@ -521,7 +518,16 @@ def mka2k(wap, t_t, w_g, t_g, p_l):
 def mkaeaz(v_t, wap, t_t, ttt, ttg, p_l, lat, gam, nlat, nlev):
     """Compute the zonal mean - eddy APE conversions from t and v.
 
-    @author: Valerio Lembo
+    Arguments:
+    - v_t: a 3D meridional velocity field;
+    - wap: a 3D vertical velocity field;
+    - t_t: a 3D temperature field;
+    - ttt: a climatological mean 3D temperature field;
+    - p_l: the pressure levels;
+    - lat: the latudinal dimension;
+    - gam: a vertical profile of the stability parameter;
+    - nlat: the number of latitudes;
+    - nlev: the number of levels;
     """
     dtdp = np.zeros([nlev, nlat])
     dtdy = np.zeros([nlev, nlat])
@@ -571,7 +577,17 @@ def mkaeaz(v_t, wap, t_t, ttt, ttg, p_l, lat, gam, nlat, nlev):
 def mkkekz(u_t, v_t, wap, utt, vtt, p_l, lat, nlat, ntp, nlev):
     """Compute the zonal mean - eddy KE conversions from u and v.
 
-    @author: Valerio Lembo
+    Arguments:
+    - u_t: a 3D zonal velocity field;
+    - v_t: a 3D meridional velocity field;
+    - wap: a 3D vertical velocity field;
+    - utt: a climatological mean 3D zonal velocity field;
+    - vtt: a climatological mean 3D meridional velocity field;
+    - p_l: the pressure levels;
+    - lat: the latitude dimension;
+    - nlat: the number of latitudes;
+    - ntp: the number of wavenumbers;
+    - nlev: the number of vertical levels;
     """
     dudp = np.zeros([nlev, nlat])
     dvdp = np.zeros([nlev, nlat])
@@ -650,7 +666,18 @@ def mkkekz(u_t, v_t, wap, utt, vtt, p_l, lat, nlat, ntp, nlev):
 def mkatas(u_t, v_t, wap, t_t, ttt, g_w, p_l, lat, nlat, ntp, nlev):
     """Compute the stat.-trans. eddy APE conversions from u, v, wap and t.
 
-    @author: Valerio Lembo
+    Arguments:
+    - u_t: a 3D zonal velocity field;
+    - v_t: a 3D meridional velocity field;
+    - wap: a 3D vertical velocity field;
+    - t_t: a 3D temperature field;
+    - ttt: a climatological mean 3D temperature field;
+    - g_w: the gaussian weights;
+    - p_l: the pressure levels;
+    - lat: the latitude dimension;
+    - nlat: the number of latitudes;
+    - ntp: the number of wavenumbers;
+    - nlev: the number of vertical levels;
     """
     t_r = np.fft.ifft(t_t, axis=2)
     u_r = np.fft.ifft(u_t, axis=2)
@@ -723,7 +750,15 @@ def mkatas(u_t, v_t, wap, t_t, ttt, g_w, p_l, lat, nlat, ntp, nlev):
 def mkktks(u_t, v_t, utt, vtt, lat, nlat, ntp, nlev):
     """Compute the stat.-trans. eddy KE conversions from u, v and t.
 
-    @author: Valerio Lembo
+    Arguments:
+    - u_t: a 3D zonal velocity field;
+    - v_t: a 3D meridional velocity field;
+    - utt: a climatological mean 3D zonal velocity field;
+    - vtt: a climatological mean 3D meridional velocity field;
+    - lat: the latitude dimension;
+    - nlat: the number of latitudes;
+    - ntp: the number of wavenumbers;
+    - nlev: the number of vertical levels;
     """
     dut = np.zeros([nlev, nlat, ntp - 1])
     dvt = np.zeros([nlev, nlat, ntp - 1])
@@ -775,9 +810,6 @@ def output(fld, d_s, filenc, name, nc_f):
     - filenc: the input file containing the Fourier coefficients of t,u,v,w;
     - name: the variable name;
     - nc_f: the name of the output file (with path)
-
-    Author:
-    Valerio Lembo, University of Hamburg (2018).
     """
     fld_tmn = np.nanmean(fld, axis=1)
     fld_aux = fld_tmn * d_s[:, np.newaxis, np.newaxis]
@@ -793,10 +825,10 @@ def pr_output(varo, varname, filep, nc_f):
     NetCDF file. Metadata are transferred from the existing file to the
     new one.
     Arguments:
-        - varo: the field to be stored;
-        - varname: the name of the variables to be saved;
-        - filep: the existing dataset, containing the metadata;
-        - nc_f: the name of the output file;
+    - varo: the field to be stored;
+    - varname: the name of the variables to be saved;
+    - filep: the existing dataset, containing the metadata;
+    - nc_f: the name of the output file;
 
     PROGRAMMER(S)
         Chris Slocum (2014), modified by Valerio Lembo (2018).
@@ -846,9 +878,6 @@ def preproc_lec(model, wdir, pdir, filelist):
       to store tables of conversion/reservoir terms and the flux diagram for
       year;
     - filelist: a list of file names containing the input fields;
-
-    Author:
-    Valerio Lembo, University of Hamburg (2019).
     """
     cdo = Cdo()
     fourc = fourier_coefficients
@@ -928,7 +957,10 @@ def preproc_lec(model, wdir, pdir, filelist):
 def stabil(ta_gmn, p_l, nlev):
     """Compute the stability parameter from temp. and pressure levels.
 
-    @author: Valerio Lembo
+    Arguments
+    - ta_gmn: a temperature vertical profile;
+    - p_l: the vertical levels;
+    - nlev: the number of vertical levels;
     """
     cpdr = CP / R
     t_g = ta_gmn
@@ -951,7 +983,12 @@ def stabil(ta_gmn, p_l, nlev):
 def table(varin, ntp, name, logfile, flag):
     """Write global and hem. storage terms to .txt table.
 
-    @author: Valerio Lembo
+    Arguments:
+    - varin: the variable to be printed out;
+    - ntp: the number of wavenumbers;
+    - name: the name of the variable to be printed out;
+    - logfile: the filename of the .txt where the variable is printed out;
+    - flag: a flag for NH, SH, global;
     """
     if flag is True:
         fac = 1e5
@@ -1026,9 +1063,6 @@ def weights(lev, nlev, lat):
     - nlev: the number of pressure levels;
     - lat: the latitudes in degrees;
     - nlat: the number of latitudinal gridsteps;
-
-    Author:
-    Valerio Lembo, University of Hamburg (2019).
     """
     # Compute sigma level and dsigma
     sig = lev / PS
@@ -1054,9 +1088,6 @@ def write_to_tab(logfile, name, vared, varzon):
     - vared: a list of arrays containing the overall eddy components, the LW,
       the SW and the KW components;
     - varzon: an array containing the zonal mean component;
-
-    Author:
-    Valerio Lembo, University of Hamburg (2019).
     """
     vartot = varzon + vared[0]
     with open(logfile, 'w') as log:

@@ -1,16 +1,14 @@
 """ATRRIBUTES FOR PROVENANCE TAGGING.
 
-Module containing functions to tag plots from Thermodyn_diagtool.
+Module containing functions to create the metadata for the output files.
 
-The module provides plots for a single model of:
-- climatological mean maps of TOA, atmospheric and surface energy budgets;
-- annual mean time series of TOA, atmospheric and surface energy budgets anom.;
-- climatological mean maps of latent energy and water mass budgets;
-- annual mean time series of latent energy and water mass budget anom.;
-- meridional section of meridional enthalpy transports;
-- meridional section of meridional water mass transports;
-- scatter plots of atmospheric vs. oceani peak magnitudes in the two hem.;
-- climatological mean maps of every component of the entropy budget.
+The module contains the following functions:
+- get_prov_map: create a record of metadata for 2D outputs;
+- get_prov_transp: create a record of metadata for 1D outputs (e.g. transports)
+- meta_direntr: write metadata to a file containing one of the components of
+                the material entropy production with the direct method;
+- meta_indentr: write metadata to a file containing one of the components of
+                the material entropy production with the indirect method;
 
 @author: Valerio Lembo, University of Hamburg, 2019.
 """
@@ -97,7 +95,7 @@ def meta_direntr(cfg, model, inlist, flist):
 
 
 def meta_indentr(cfg, model, inlist, flist):
-    """Write metadata to components of the inddirect entropy prod maps.
+    """Write metadata to components of the indirect entropy prod maps.
 
     Arguments:
     - model: the name of the model;
