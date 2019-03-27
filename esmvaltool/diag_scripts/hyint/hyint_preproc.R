@@ -9,7 +9,8 @@ hyint_preproc <- function(work_dir, model_idx, climofile, regfile) {
   #  add absolute axis, remove leap year days
   # cdo delete and copy do not like files with whitespace
   tempf <- cdo("addc", args = "0", input = climofile)
-  cdo("delete", options = "-L -f nc -a", args = "month=2,day=29",
+  #cdo("delete", options = "-L -f nc -a", args = "month=2,day=29",
+  cdo("-copy", options = "-L -f nc -a",
       input = tempf, output = regfile)
   unlink(tempf)
 

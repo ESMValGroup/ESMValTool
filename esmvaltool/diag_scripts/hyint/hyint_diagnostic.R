@@ -87,6 +87,7 @@ hyint_diagnostic <- function(work_dir, infile, model_idx, season,
       rotate = "no"
     )
   }
+  r95_threshold360 <- replicate(360, r95_threshold)
   r95_threshold365 <- replicate(365, r95_threshold)
   r95_threshold366 <- replicate(366, r95_threshold)
 
@@ -97,9 +98,13 @@ hyint_diagnostic <- function(work_dir, infile, model_idx, season,
     pr_year <- pr[, , ret_year]
 
     r95_thresh_year <- r95_threshold365
+    if (length(pr_year[1, 1, ]) == 360) {
+      r95_thresh_year <- r95_threshold360
+    }
     if (length(pr_year[1, 1, ]) == 366) {
       r95_thresh_year <- r95_threshold366
     }
+
 
     # Identify dry and wet days (Salinger and Griffiths 2001)
     ret_dry <- (pr_year < 1) # Dry days when pr < 1 mm
