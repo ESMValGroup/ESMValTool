@@ -351,10 +351,10 @@ def write_output(wdir, model, file_list, varlist):
             "in ESMValTool. Author Valerio ",
             "Lembo, Meteorologisches Institut, ",
             "Universitaet Hamburg.")
-        with Dataset(file_list[0]) as dataset:
-            fourc.extr_time(dataset, w_nc_fid)
-            fourc.extr_lat(dataset, w_nc_fid, 'lat')
-            fourc.extr_lon(dataset, w_nc_fid)
+        with Dataset(file_list[0]) as dataset_tabl:
+            fourc.extr_time(dataset_tabl, w_nc_fid)
+            fourc.extr_lat(dataset_tabl, w_nc_fid, 'lat')
+            fourc.extr_lon(dataset_tabl, w_nc_fid)
         w_nc_var = w_nc_fid.createVariable(
             'tabl', 'f8', ('time', 'lat', 'lon'))
         w_nc_var.setncatts({
@@ -380,10 +380,10 @@ def write_output(wdir, model, file_list, varlist):
             "in ESMValTool. Author Valerio ",
             "Lembo, Meteorologisches Institut, ",
             "Universitaet Hamburg.")
-        with Dataset(file_list[0]) as dataset:
-            fourc.extr_time(dataset, w_nc_fid)
-            fourc.extr_lat(dataset, w_nc_fid, 'lat')
-            fourc.extr_lon(dataset, w_nc_fid)
+        with Dataset(file_list[0]) as dataset_htop:
+            fourc.extr_time(dataset_htop, w_nc_fid)
+            fourc.extr_lat(dataset_htop, w_nc_fid, 'lat')
+            fourc.extr_lon(dataset_htop, w_nc_fid)
         w_nc_var = w_nc_fid.createVariable(
             'htop', 'f8', ('time', 'lat', 'lon'))
         w_nc_var.setncatts({
