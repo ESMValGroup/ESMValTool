@@ -208,6 +208,16 @@ def _update_target_grid(variable, variables, settings, config_user):
         parse_cell_spec(settings['regrid']['target_grid'])
 
 
+def _update_regrid_time(variable, settings):
+    """Input data frequency automatically for regrid_time preprocessor."""
+    regrid_time = settings.get('regrid_time')
+    if regrid_time is None:
+        return
+    frequency = settings.get('regrid_time', {}).get('frequency')
+    if not frequency:
+        settings['regrid_time']['frequency'] = variable['frequency']
+
+
 def _get_dataset_info(dataset, variables):
     for var in variables:
         if var['dataset'] == dataset:
@@ -604,6 +614,7 @@ def _get_preprocessor_products(variables, profile, order, ancestor_products,
             variables=variables,
             settings=settings,
             config_user=config_user)
+        _update_regrid_time(variable, settings)
         ancestors = grouped_ancestors.get(variable['filename'])
         if not ancestors:
             ancestors = _get_input_files(variable, config_user)

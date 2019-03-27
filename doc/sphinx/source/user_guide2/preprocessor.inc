@@ -120,8 +120,9 @@ See also :func:`esmvaltool.preprocessor.annual_mean`.
 This function aligns the time points of each component dataset so that the dataset
 iris cubes can be subtracted. The operation makes the datasets time points common and
 sets common calendars; it also resets the time bounds and auxiliary coordinates to
-reflect the shifted time points. Current implementation for monthly and daily data; set
-the desired frequency (monthly or daily) in the recipe using frequency argument.
+reflect the artifically shifted time points. Current implementation for monthly
+and daily data; the frequency is set automatically from the variable CMOR table
+unless a custom frequency is set manually by the user in recipe.
 
 
 Area manipulation

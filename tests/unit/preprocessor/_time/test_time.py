@@ -219,10 +219,8 @@ class TestRegridTimeMonthly(tests.Test):
     def test_regrid_time_mon(self):
         """Test changes to cubes."""
         # test monthly
-        newcube_1 = regrid_time(self.cube_1,
-                                frequency='monthly')
-        newcube_2 = regrid_time(self.cube_2,
-                                frequency='monthly')
+        newcube_1 = regrid_time(self.cube_1, frequency='mon')
+        newcube_2 = regrid_time(self.cube_2, frequency='mon')
         # no changes to core data
         self.assertArrayEqual(newcube_1.data, self.cube_1.data)
         self.assertArrayEqual(newcube_2.data, self.cube_2.data)
@@ -266,10 +264,8 @@ class TestRegridTimeDaily(tests.Test):
     def test_regrid_time_day(self):
         """Test changes to cubes."""
         # test daily
-        newcube_1 = regrid_time(self.cube_1,
-                                frequency='daily')
-        newcube_2 = regrid_time(self.cube_2,
-                                frequency='daily')
+        newcube_1 = regrid_time(self.cube_1, frequency='day')
+        newcube_2 = regrid_time(self.cube_2, frequency='day')
         # no changes to core data
         self.assertArrayEqual(newcube_1.data, self.cube_1.data)
         self.assertArrayEqual(newcube_2.data, self.cube_2.data)

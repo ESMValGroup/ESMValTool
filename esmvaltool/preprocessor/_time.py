@@ -199,7 +199,7 @@ def seasonal_mean(cube):
     return cube.extract(three_months_bound)
 
 
-def regrid_time(cube, frequency='monthly'):
+def regrid_time(cube, frequency):
     """
     Align time axis for cubes so they can be subtracted.
 
@@ -207,13 +207,15 @@ def regrid_time(cube, frequency='monthly'):
     coordinates so that any cube from cubes can be subtracted from any
     other cube from cubes. Currently this function supports only monthly
     and daily data time frequencies, but it will be adapted for sub-day
-    frequencies in the future.
+    frequencies in the future. Frequency is passed in straight from
+    CMOR table via variable object, unless explicitly specified by use
+    in recipe.
 
     Arguments
     ---------
         cube: iris.cube.Cube
         frequency: str
-            data frequency: monthly or daily
+            data frequency: mon or day
             default: monthly
 
     Returns
@@ -228,12 +230,12 @@ def regrid_time(cube, frequency='monthly'):
 
     # standardize time points
     time_c = [cell.point for cell in cube.coord('time').cells()]
-    if frequency == 'monthly':
+    if frequency == 'mon':
         cube.coord('time').cells = [
             datetime.datetime(t.year, t.month,
                               15, 0, 0, 0) for t in time_c
         ]
-    elif frequency == 'daily':
+    elif frequency == 'day':
         cube.coord('time').cells = [
             datetime.datetime(t.year, t.month,
                               t.day, 0, 0, 0) for t in time_c
