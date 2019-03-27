@@ -92,6 +92,7 @@ def cmorization(in_dir, out_dir):
     glob_attrs = CFG['attributes']
 
     # run the cmorization
+    yr = []
     for var, vals in CFG['variables'].items():
         for yr in ALL_YEARS:
             file_suffix = str(yr)[-2:] + '_' + str(yr + 1)[-2:] + '.nc'
