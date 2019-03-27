@@ -10,7 +10,7 @@ from cf_units import Unit
 import yaml
 
 from esmvaltool.cmor.table import CMOR_TABLES
-from esmvaltool import __version__ as EVTver
+from esmvaltool import __version__ as version
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +28,7 @@ def _read_cmor_config(cmor_config):
     cfg['cmor_table'] = \
         CMOR_TABLES[cfg['attributes']['project_id']]
     cfg['attributes']['CMORcreated'] = now_time
-    cfg['attributes']['comment'] = 'cmorized by ESMValTool v' + EVTver
+    cfg['attributes']['comment'] = 'cmorized by ESMValTool v' + version
     return cfg
 
 
