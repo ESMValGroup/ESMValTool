@@ -34,7 +34,6 @@ TASKSEP = os.sep
 
 def ordered_safe_load(stream):
     """Load a YAML file using OrderedDict instead of dict."""
-
     class OrderedSafeLoader(yaml.SafeLoader):
         """Loader class that uses OrderedDict to load a map."""
 
@@ -368,6 +367,7 @@ def _update_fx_settings(settings, variable, config_user):
                         variable=var,
                         rootpath=config_user['rootpath'],
                         drs=config_user['drs']))
+        settings['derive']['fx_files'] = fx_files
 
     # update for landsea
     if 'mask_landsea' in settings:
