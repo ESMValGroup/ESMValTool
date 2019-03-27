@@ -1,30 +1,26 @@
 ---
-# project at hand
-proj:
-  dataset: 'Landschuetzer2016'
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: Landschuetzer2016
   version: 'v2016'
-  realm: 'clim'
-  project: 'CMIP5'
-  frequency: {
-        'fgco2': 'Omon',
-        'spco2': 'Omon',
-        'dpco2': 'Omon',
-    }
-  metadata_attributes:
-    tier: '2'
-    source: 'CRESCENDO WP5 (CMCC)'
-    comment: 'cmorized for ESMValTool v2'
-    CMORconventions: 'CF/CMOR3'
-    CMORcreated: ''
+  tier: 2
+  modeling_realm: clim
+  project_id: CMIP5
+  source: 'CRESCENDO WP5 (CMCC)'
 
-# Match CMOR variables with input file one(s)
-RAW_VARS:
-  fgco2: 'fgco2_smoothed' 
-  spco2: 'spco2_smoothed' 
-  dpco2: 'dco2_smoothed' 
-
-# specific raw file names (implicitly assumed to be .nc)
-RAW_FILE:
-  fgco2: 'spco2_1982-2015_MPI_SOM-FFN_v2016'
-  spco2: 'spco2_1982-2015_MPI_SOM-FFN_v2016'
-  dpco2: 'spco2_1982-2015_MPI_SOM-FFN_v2016'
+# Variables to cmorize
+variables:
+  fgco2:
+    table: Omon
+    # Match CMOR variables with input file one
+    raw: fgco2_smoothed
+    # input file name
+    file: spco2_1982-2015_MPI_SOM-FFN_v2016.nc
+  spco2:
+    table: Omon
+    raw: spco2_smoothed
+    file: spco2_1982-2015_MPI_SOM-FFN_v2016.nc
+  dpco2:
+    table: Omon
+    raw: dco2_smoothed
+    file: spco2_1982-2015_MPI_SOM-FFN_v2016.nc

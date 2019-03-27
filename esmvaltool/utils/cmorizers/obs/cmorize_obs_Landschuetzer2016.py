@@ -42,9 +42,6 @@ logger = logging.getLogger(__name__)
 
 # read in CMOR configuration
 CFG = _read_cmor_config('Landschuetzer2016.yml')
-PROJ = CFG['proj']
-RAW_VARS = CFG['RAW_VARS']
-RAW_FILE = CFG['RAW_FILE']
 
 
 def _fix_data(cube, var):
@@ -63,20 +60,20 @@ def _fix_data(cube, var):
     return cube
 
 
-def extract_variable(var_info, raw_file, out_dir):
+def extract_variable(var_info, raw_info, out_dir, attrs):
     """Extract to all vars."""
     var = var_info.short_name
-    cubes = iris.load(raw_file)
-    rawvar = RAW_VARS[var]
+    cubes = iris.load(raw_info['file'])
+    rawvar = raw_info['name']
 
     for cube in cubes:
         if cube.var_name == rawvar:
             _fix_var_metadata(cube, var_info)
             _fix_coords(cube)
             _fix_data(cube, var)
-            _add_metadata(cube, PROJ)
+            _add_metadata(cube, attrs)
             fillvalue = cube.data.fill_value
-            _save_variable(cube, var, out_dir, PROJ,
+            _save_variable(cube, var, out_dir, attrs,
                            fill_value=fillvalue,
                            local_keys=['positive'],
                            unlimited_dimensions=['time'])
@@ -88,11 +85,14 @@ def cmorization(in_dir, out_dir):
     logger.info("Input data from: %s", in_dir)
     logger.info("Output will be written to: %s", out_dir)
 
-    cmor_table = PROJ['cmip_table']
+    cmor_table = CFG['cmor_table']
+    glob_attrs = CFG['attributes']
 
     # run the cmorization
-    for var in PROJ['vars']:
-        raw_file = os.path.join(in_dir, RAW_FILE[var] + '.nc')
-        logger.info("CMORizing var %s in file %s", var, raw_file)
-        var_info = cmor_table.get_variable(PROJ['frequency'][var], var)
-        extract_variable(var_info, raw_file, out_dir)
+    for var, vals in CFG['variables'].items():
+        inpfile = os.path.join(in_dir, vals['file'])
+        logger.info("CMORizing var %s from file %s", var, inpfile)
+        var_info = cmor_table.get_variable(vals['table'], var)
+        raw_info = {'name':vals['raw'], 'file':inpfile}
+        glob_attrs['table'] = vals['table']
+        extract_variable(var_info, raw_info, out_dir, glob_attrs)

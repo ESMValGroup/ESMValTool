@@ -10,6 +10,7 @@ from cf_units import Unit
 import yaml
 
 from esmvaltool.cmor.table import CMOR_TABLES
+from esmvaltool import __version__ as EVTver
 
 logger = logging.getLogger(__name__)
 
@@ -24,9 +25,10 @@ def _read_cmor_config(cmor_config):
     timestamp = datetime.datetime.utcnow()
     timestamp_format = "%Y-%m-%d %H:%M:%S"
     now_time = timestamp.strftime(timestamp_format)
-    cfg['proj']['metadata_attributes']['CMORcreated'] = now_time
-    cfg['proj']['cmip_table'] = CMOR_TABLES[cfg['proj']['project']]
-    cfg['proj']['vars'] = list(cfg['proj']['frequency'].keys())
+    cfg['cmor_table'] = \
+        CMOR_TABLES[cfg['attributes']['project_id']]
+    cfg['attributes']['CMORcreated'] = now_time
+    cfg['attributes']['comment'] = 'cmorized by ESMValTool v' + EVTver
     return cfg
 
 
@@ -158,12 +160,12 @@ def _fix_coords(cube):
     return cube
 
 
-def _add_metadata(cube, proj):
+def _add_metadata(cube, attrs):
     """Complete the cmorized file with useful metadata."""
     logger.info("Add Global metadata...")
-    for att in proj['metadata_attributes']:
+    for att, value in attrs.items():
         if att not in cube.metadata.attributes:
-            cube.metadata.attributes[att] = proj['metadata_attributes'][att]
+            cube.metadata.attributes[att] = value
 
 
 def _roll_cube_data(cube, shift, axis):
@@ -172,7 +174,7 @@ def _roll_cube_data(cube, shift, axis):
     return cube
 
 
-def _save_variable(cube, var, outdir, proj, **kwargs):
+def _save_variable(cube, var, outdir, attrs, **kwargs):
     """Saver function."""
     # CMOR standard
     cube_time = cube.coord('time')
@@ -187,8 +189,8 @@ def _save_variable(cube, var, outdir, proj, **kwargs):
         time_suffix = '-'.join([date1, date2])
 
     cmor_prefix = '_'.join([
-        'OBS', proj['dataset'], proj['realm'], proj['version'],
-        proj['frequency'][var], var
+        'OBS', attrs['dataset_id'], attrs['modeling_realm'],
+        attrs['version'], attrs['table'], var
     ])
     file_name = cmor_prefix + '_' + time_suffix + '.nc'
     file_path = os.path.join(outdir, file_name)
