@@ -190,7 +190,7 @@ def _save_variable(cube, var, outdir, attrs, **kwargs):
 
     cmor_prefix = '_'.join([
         'OBS', attrs['dataset_id'], attrs['modeling_realm'],
-        attrs['version'], attrs['table'], var
+        attrs['version'], attrs['mip'], var
     ])
     file_name = cmor_prefix + '_' + time_suffix + '.nc'
     file_path = os.path.join(outdir, file_name)

@@ -11,16 +11,16 @@ attributes:
 # Variables to cmorize
 variables:
   fgco2:
-    table: Omon
+    mip: Omon
     # Match CMOR variables with input file one
     raw: fgco2_smoothed
     # input file name
     file: spco2_1982-2015_MPI_SOM-FFN_v2016.nc
   spco2:
-    table: Omon
+    mip: Omon
     raw: spco2_smoothed
     file: spco2_1982-2015_MPI_SOM-FFN_v2016.nc
   dpco2:
-    table: Omon
+    mip: Omon
     raw: dco2_smoothed
     file: spco2_1982-2015_MPI_SOM-FFN_v2016.nc

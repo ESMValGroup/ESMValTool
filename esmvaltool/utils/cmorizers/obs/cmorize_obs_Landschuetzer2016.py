@@ -92,7 +92,7 @@ def cmorization(in_dir, out_dir):
     for var, vals in CFG['variables'].items():
         inpfile = os.path.join(in_dir, vals['file'])
         logger.info("CMORizing var %s from file %s", var, inpfile)
-        var_info = cmor_table.get_variable(vals['table'], var)
+        var_info = cmor_table.get_variable(vals['mip'], var)
         raw_info = {'name': vals['raw'], 'file': inpfile}
-        glob_attrs['table'] = vals['table']
+        glob_attrs['mip'] = vals['mip']
         extract_variable(var_info, raw_info, out_dir, glob_attrs)
