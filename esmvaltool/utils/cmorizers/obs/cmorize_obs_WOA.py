@@ -65,7 +65,7 @@ def _fix_data(cube, var):
     return cube
 
 
-def extract_variable(var_info, raw_info, out_dir, attrs, yr):
+def extract_variable(var_info, raw_info, out_dir, attrs, year):
     """Extract to all vars."""
     var = var_info.short_name
     cubes = iris.load(raw_info['file'])
@@ -74,7 +74,7 @@ def extract_variable(var_info, raw_info, out_dir, attrs, yr):
     for cube in cubes:
         if cube.var_name == rawvar:
             _fix_var_metadata(cube, var_info)
-            _convert_timeunits(cube, yr)
+            _convert_timeunits(cube, year)
             _fix_coords(cube)
             _fix_data(cube, var)
             _add_metadata(cube, attrs)

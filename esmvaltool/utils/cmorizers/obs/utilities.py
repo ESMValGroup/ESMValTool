@@ -40,10 +40,11 @@ def _fix_var_metadata(cube, var_info):
     _set_units(cube, var_info.units)
     return cube
 
+
 def _set_units(cube, units):
     """Set units in compliance with cf_unit."""
-    special={'psu': 1.e-3 , 'Sv': '1e6 m3 s-1'}
-    if units in list(special.keys()): 
+    special = {'psu': 1.e-3, 'Sv': '1e6 m3 s-1'}
+    if units in list(special.keys()):
         cube.units = special[units]
     else:
         cube.units = Unit(units)
