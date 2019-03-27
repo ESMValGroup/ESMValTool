@@ -38,7 +38,6 @@ diagnostics:
       pr:
         preprocessor: preproc
         mip: Amon
-        field: T2Ms
     scripts:
       main:
         script: magic_bsc/combined_indices_wp6.r
