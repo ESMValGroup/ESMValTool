@@ -51,7 +51,7 @@ User setting files are stored in recipes/
 
    *Required settings for script*
 
-   * metric: the metric to be computed, t90p, t10p, Wx, cdd, rx5day. See overview for a description of the different metrics (cdd does not work yet).
+   * metric: the metric to be computed, t90p (to be applied on maximum temperature), t10p (to be applied on minimum temperature), Wx (to be applied on wind), cdd and rx5day (to be applied on precipiation).
 
 
 Variables
