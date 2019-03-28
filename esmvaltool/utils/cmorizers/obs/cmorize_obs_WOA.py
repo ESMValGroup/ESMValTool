@@ -1,4 +1,4 @@
-# pylint: disable=invalid-name
+# pylint: disable=invalid-name, disable=duplicate-code
 """ESMValTool CMORizer script.
 
 # #############################################################################
@@ -90,6 +90,7 @@ def cmorization(in_dir, out_dir):
 
     # run the cmorization
     for var, vals in CFG['variables'].items():
+        yr = None
         for yr in ALL_YEARS:
             file_suffix = str(yr)[-2:] + '_' + str(yr + 1)[-2:] + '.nc'
             inpfile = os.path.join(in_dir, vals['file'] + file_suffix)
