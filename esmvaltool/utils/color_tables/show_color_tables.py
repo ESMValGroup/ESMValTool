@@ -5,6 +5,7 @@ import logging
 import os
 import warnings
 import yaml
+import tempfile
 
 import matplotlib
 matplotlib.use("Agg")
@@ -23,8 +24,6 @@ CONSOLE_HANDLER.setFormatter(
 logger.addHandler(CONSOLE_HANDLER)
 
 PATH_TO_COLORTABLES = os.path.join(os.path.dirname(plot_path), "rgb")
-
-TEMPDIR = "/tmp/color_maps"
 
 NCL_SCRIPT = """
 load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/gsn_code.ncl"
@@ -108,7 +107,7 @@ def list_ncl_color_maps():
     return out
 
 
-def plot_example_for_colormap(name, outdir=TEMPDIR):
+def plot_example_for_colormap(name, outdir='./'):
     """Create plots of given color map using python."""
     logger.info("Plotting example for '%s'", name)
     fig = plt.figure(1)
@@ -136,12 +135,11 @@ def main_plot_ncl_cm(colorpath, outpath):
     for path in glob.glob(colorpath + "/*rgb"):
         head, tail = os.path.split(path)
         list_of_snippets.append(t_color_snippet.render(path=path, name=tail))
-    filename = os.path.join(TEMPDIR, "show_color_tables.ncl")
-    with open(filename, "w") as fname:
+    with tempfile.NamedTemporaryFile(mode='w',suffix='ncl') as fname:
         fname.write(
             template.render(
                 list_of_snippets=sorted(list_of_snippets), outdir=outpath))
-    if os.system("ncl " + filename) != 0:
+    if os.system("ncl " + fname.name) != 0:
         logger.warning("External command failed")
 
 
@@ -176,8 +174,8 @@ def get_args():
         '-o',
         '--outpath',
         metavar='OUTDIR',
-        default=TEMPDIR,
-        help="Set out directory to <OUTDIR>. Default is {0}".format(TEMPDIR))
+        default='./',
+        help="Set out directory to <OUTDIR>. Default is the current directory")
     return parser.parse_args()
 
 
@@ -193,10 +191,6 @@ def main(args):
     if not os.path.isdir(outpath) and not os.path.exists(outpath):
         logger.info("Creating directory '%s'", outpath)
         os.mkdir(outpath)
-
-    if not os.path.isdir(TEMPDIR) and not os.path.exists(TEMPDIR):
-        logger.info("Creating directory '%s'", TEMPDIR)
-        os.mkdir(TEMPDIR)
 
     if args.n:
         logger.info("Creating report with ncl")
