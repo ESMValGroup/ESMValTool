@@ -34,7 +34,6 @@ TASKSEP = os.sep
 
 def ordered_safe_load(stream):
     """Load a YAML file using OrderedDict instead of dict."""
-
     class OrderedSafeLoader(yaml.SafeLoader):
         """Loader class that uses OrderedDict to load a map."""
 
@@ -368,6 +367,7 @@ def _update_fx_settings(settings, variable, config_user):
                         variable=var,
                         rootpath=config_user['rootpath'],
                         drs=config_user['drs']))
+        settings['derive']['fx_files'] = fx_files
 
     # update for landsea
     if 'mask_landsea' in settings:
@@ -811,7 +811,7 @@ class Recipe:
 
     def _initalize_provenance(self, raw_documentation):
         """Initialize the recipe provenance."""
-        doc = dict(raw_documentation)
+        doc = deepcopy(raw_documentation)
         for key in doc:
             if key in TAGS:
                 doc[key] = replace_tags(key, doc[key])
@@ -860,11 +860,12 @@ class Recipe:
         """Define variables for all datasets."""
         variables = []
 
+        raw_variable = deepcopy(raw_variable)
         datasets = self._initialize_datasets(
             raw_datasets + raw_variable.pop('additional_datasets', []))
 
         for index, dataset in enumerate(datasets):
-            variable = dict(raw_variable)
+            variable = deepcopy(raw_variable)
             variable.update(dataset)
             variable['recipe_dataset_index'] = index
             if ('cmor_table' not in variable
@@ -916,6 +917,7 @@ class Recipe:
         preprocessor_output = {}
 
         for variable_group, raw_variable in raw_variables.items():
+            raw_variable = deepcopy(raw_variable)
             raw_variable['variable_group'] = variable_group
             if 'short_name' not in raw_variable:
                 raw_variable['short_name'] = variable_group
@@ -938,13 +940,13 @@ class Recipe:
         scripts = {}
 
         for script_name, raw_settings in raw_scripts.items():
-            raw_script = raw_settings.pop('script')
+            settings = deepcopy(raw_settings)
+            script = settings.pop('script')
             ancestors = []
-            for id_glob in raw_settings.pop('ancestors', variable_names):
+            for id_glob in settings.pop('ancestors', variable_names):
                 if TASKSEP not in id_glob:
                     id_glob = diagnostic_name + TASKSEP + id_glob
                 ancestors.append(id_glob)
-            settings = deepcopy(raw_settings)
             settings['recipe'] = self._filename
             settings['version'] = __version__
             settings['script'] = script_name
@@ -967,7 +969,7 @@ class Recipe:
                 settings[key] = self._cfg[key]
 
             scripts[script_name] = {
-                'script': raw_script,
+                'script': script,
                 'output_dir': settings['work_dir'],
                 'settings': settings,
                 'ancestors': ancestors,
