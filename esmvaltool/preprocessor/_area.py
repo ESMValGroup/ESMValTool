@@ -7,8 +7,7 @@ selecting geographical regions; constructing area averages; etc.
 import logging
 
 import iris
-import numpy as np
-
+from dask import array as da
 
 logger = logging.getLogger(__name__)
 
@@ -70,13 +69,11 @@ def extract_region(cube, start_longitude, end_longitude, start_latitude,
     # irregular grids
     lats = cube.coord('latitude').points
     lons = cube.coord('longitude').points
-    mask = np.ma.array(cube.data).mask
-    mask += np.ma.masked_where(lats < start_latitude, lats).mask
-    mask += np.ma.masked_where(lats > end_latitude, lats).mask
-    mask += np.ma.masked_where(lons > start_longitude, lons).mask
-    mask += np.ma.masked_where(lons > end_longitude, lons).mask
-    cube.data = np.ma.masked_where(mask, cube.data)
-    return cube
+    select_lats = start_latitude < lats < end_latitude
+    select_lons = start_longitude < lons < end_longitude
+    selection = select_lats & select_lons
+    data = da.ma.masked_where(~selection, cube.core_data())
+    return cube.copy(data)
 
 
 def get_iris_analysis_operation(operator):
@@ -87,6 +84,7 @@ def get_iris_analysis_operation(operator):
     ---------
         operator: string
             A named operator.
+
     Returns
     -------
         function: A function from iris.analysis
@@ -151,7 +149,7 @@ def tile_grid_areas(cube, fx_files):
     iris.cube.Cube
         Freshly tiled grid areas cube.
     """
-    grid_areas = np.empty(0)
+    grid_areas = None
     if fx_files:
         for key, fx_file in fx_files.items():
             if fx_file is None:
@@ -159,21 +157,18 @@ def tile_grid_areas(cube, fx_files):
             logger.info('Attempting to load %s from file: %s', key, fx_file)
             fx_cube = iris.load_cube(fx_file)
 
-            grid_areas = fx_cube.data
-            cube_shape = cube.data.shape
-            if cube.data.ndim == 4 and grid_areas.ndim == 2:
-                grid_areas = np.tile(grid_areas,
-                                     [cube_shape[0], cube_shape[1], 1, 1])
-            elif cube.data.ndim == 4 and grid_areas.ndim == 3:
-                grid_areas = np.tile(grid_areas,
-                                     [cube_shape[0], 1, 1, 1])
-            elif cube.data.ndim == 3 and grid_areas.ndim == 2:
-                grid_areas = np.tile(grid_areas,
-                                     [cube_shape[0], 1, 1])
+            grid_areas = fx_cube.core_data()
+            if cube.ndim == 4 and grid_areas.ndim == 2:
+                grid_areas = da.tile(grid_areas,
+                                     [cube.shape[0], cube.shape[1], 1, 1])
+            elif cube.ndim == 4 and grid_areas.ndim == 3:
+                grid_areas = da.tile(grid_areas, [cube.shape[0], 1, 1, 1])
+            elif cube.ndim == 3 and grid_areas.ndim == 2:
+                grid_areas = da.tile(grid_areas, [cube.shape[0], 1, 1])
             else:
                 raise ValueError('Grid and dataset number of dimensions not '
                                  'recognised: {} and {}.'
-                                 ''.format(cube.data.ndim, grid_areas.ndim))
+                                 ''.format(cube.ndim, grid_areas.ndim))
     return grid_areas
 
 
@@ -228,28 +223,26 @@ def average_region(cube, coord1, coord2, operator='mean', fx_files=None):
     grid_areas = tile_grid_areas(cube, fx_files)
 
     if not fx_files and cube.coord('latitude').points.ndim == 2:
-        logger.error('average_region ERROR: fx_file needed to calculate grid '
+        logger.error('fx_file needed to calculate grid '
                      'cell area for irregular grids.')
         raise iris.exceptions.CoordinateMultiDimError(cube.coord('latitude'))
 
-    if not grid_areas.any():
+    if grid_areas is None or not grid_areas.any():
         cube = _guess_bounds(cube, [coord1, coord2])
         grid_areas = iris.analysis.cartography.area_weights(cube)
-        logger.info('Calculated grid area:{}'.format(grid_areas.shape))
+        logger.info('Calculated grid area shape: %s', grid_areas.shape)
 
-    if cube.data.shape != grid_areas.shape:
+    if cube.shape != grid_areas.shape:
         raise ValueError('Cube shape ({}) doesn`t match grid area shape '
-                         '({})'.format(cube.data.shape, grid_areas.shape))
+                         '({})'.format(cube.shape, grid_areas.shape))
 
     operation = get_iris_analysis_operation(operator)
 
     # TODO: implement weighted stdev, median, and var when available in iris.
     # See iris issue: https://github.com/SciTools/iris/issues/3208
 
-    if operator in ['mean', ]:
-        return cube.collapsed([coord1, coord2],
-                              operation,
-                              weights=grid_areas)
+    if operator == 'mean':
+        return cube.collapsed([coord1, coord2], operation, weights=grid_areas)
 
     # Many IRIS analysis functions do not accept weights arguments.
     return cube.collapsed([coord1, coord2], operation)
@@ -277,17 +270,17 @@ def extract_named_regions(cube, regions):
     """
     # Make sure regions is a list of strings
     if isinstance(regions, str):
-        regions = [regions, ]
+        regions = [regions]
 
     if not isinstance(regions, (list, tuple, set)):
-        raise ValueError('Regions "{}" is not an acceptable format.'
-                         ''.format(regions))
+        raise TypeError(
+            'Regions "{}" is not an acceptable format.'.format(regions))
 
     available_regions = set(cube.coord('region').points)
     invalid_regions = set(regions) - available_regions
     if invalid_regions:
-        raise ValueError('Region(s) "{}" not in cube region(s): '
-                         '{}'.format(invalid_regions, available_regions))
+        raise ValueError('Region(s) "{}" not in cube region(s): {}'.format(
+            invalid_regions, available_regions))
 
     constraints = iris.Constraint(region=lambda r: r in regions)
     cube = cube.extract(constraint=constraints)
