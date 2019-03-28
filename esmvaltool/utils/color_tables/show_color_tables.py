@@ -6,6 +6,7 @@ import os
 import warnings
 import yaml
 import tempfile
+import subprocess
 
 import matplotlib
 matplotlib.use("Agg")
@@ -139,8 +140,7 @@ def main_plot_ncl_cm(colorpath, outpath):
         fname.write(
             template.render(
                 list_of_snippets=sorted(list_of_snippets), outdir=outpath))
-    if os.system("ncl " + fname.name) != 0:
-        logger.warning("External command failed")
+        subprocess.check_call(["ncl", fname.name])
 
 
 def get_args():
