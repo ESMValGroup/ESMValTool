@@ -34,3 +34,8 @@ variables:
     mip: Oyr
     raw: i_an
     file: woa13_all_i
+
+# Custom dictionary for this cmorizer
+custom:
+  # years to be analyzed
+  years: [2000, ]

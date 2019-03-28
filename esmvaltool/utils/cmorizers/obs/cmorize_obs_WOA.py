@@ -45,13 +45,9 @@ from .utilities import (_add_metadata,
 
 logger = logging.getLogger(__name__)
 
-# all years to be analyzed
-ALL_YEARS = [
-    2000,
-]
-
 # read in CMOR configuration
 CFG = _read_cmor_config('WOA.yml')
+ALL_YEARS = CFG['custom']['years']
 
 
 def _fix_data(cube, var):
@@ -92,7 +88,6 @@ def cmorization(in_dir, out_dir):
     glob_attrs = CFG['attributes']
 
     # run the cmorization
-    yr = None
     for var, vals in CFG['variables'].items():
         for yr in ALL_YEARS:
             file_suffix = str(yr)[-2:] + '_' + str(yr + 1)[-2:] + '.nc'
