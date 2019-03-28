@@ -58,8 +58,7 @@ def load_ncl_color_map(name):
 
     filename = "{0}/{1}.rgb".format(PATH_TO_COLORTABLES, name)
     if not os.path.exists(filename):
-        warnings.warn("Path {0} does not exist.".format(filename))
-        raise Exception
+        raise ValueError("Path {0} does not exist.".format(filename))
     with open(filename, 'r') as ncl_color_map:
         return _format(ncl_color_map.read())
 
