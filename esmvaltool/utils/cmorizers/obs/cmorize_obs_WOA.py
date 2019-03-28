@@ -80,12 +80,14 @@ def extract_variable(var_info, raw_info, out_dir, attrs, year):
 
 def cmorization(in_dir, out_dir):
     """Cmorization func call."""
-    logger.info("Starting cmorization for WOA OBS files: Tier2")
-    logger.info("Input data from: %s", in_dir)
-    logger.info("Output will be written to: %s", out_dir)
 
     cmor_table = CFG['cmor_table']
     glob_attrs = CFG['attributes']
+
+    logger.info("Starting cmorization for Tier%s OBS files: %s",
+                glob_attrs['tier'], glob_attrs['dataset_id'])
+    logger.info("Input data from: %s", in_dir)
+    logger.info("Output will be written to: %s", out_dir)
 
     # run the cmorization
     for var, vals in CFG['variables'].items():
