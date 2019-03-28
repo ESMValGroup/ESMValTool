@@ -979,18 +979,16 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
             del num_available_vals
             del frac_available_vals
 
-        if "availability" in self.__requested_diags__:
+        if "histogram" in self.__requested_diags__:
             # histogram plot of available measurements
-            all_data = cube.copy()
     
             try:
                 # plotting routine
                 filename = self.__plot_dir__ + os.sep + basic_filename + \
                     "_hist_all_vals" + "." + self.__output_type__
                 list_of_plots.append(filename)
-                x = PlotHist(all_data)
-                fig = x.plot(title=" ".join([self.__dataset_id__[idx] for idx in [
-                             0, 2, 1, 3]]) + " (" + self.__time_period__ + ")")
+                x = PlotHist(cube)
+                fig = x.plot()
                 fig.savefig(filename)
                 plt.close(fig)
     
@@ -1010,8 +1008,6 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                 self.__logger__.error('Something is probably wrong with the ' + 
                                       'plotting routines/modules!')
     
-            del all_data
-
         return list_of_plots
     
     def __add_overview_procedures_2D__(self, cube=None, level=None):

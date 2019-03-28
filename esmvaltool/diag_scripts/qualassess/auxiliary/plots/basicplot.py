@@ -38,6 +38,174 @@ MPLSTYLE = os.path.dirname(
 ) + os.sep + 'default.mplstyle'
 
 
+#class PlotHist2(object):
+#    """
+#    Description
+#        Basic class for plotting histograms
+#
+#    Contents
+#        method plot
+#    """
+#
+################################################################################
+#
+#    def __init__(self, data):
+#        """
+#        Arguments
+#            data : input data (iris cube or array)
+#
+#        Description
+#            Initializes the class.
+#
+#        Modification history
+#            20180209-A_schl_ma: written
+#        """
+#        self.logger = logging.getLogger(os.path.basename(__file__))
+#        # Check arguments
+#        if isinstance(data, iris.cube.Cube):
+#            try:
+#                self.name = data.long_name
+#            except BaseException:
+#                pass
+#            self.units = ' [' + str(data.units) + ']'
+#            self.data = np.ravel(data.data)
+#        elif isinstance(data, np.ndarray):
+#            self.name = 'data'
+#            self.units = ''
+#            self.data = data
+#        elif isinstance(data, list):
+#            self.name = []
+#            self.units = []
+#            self.data = []
+#            for d in data:
+#                if isinstance(d, iris.cube.Cube):
+#                    try:
+#                        self.name.append(d.long_name)
+#                    except BaseException:
+#                        pass
+#                    self.units.append(' [' + str(d.units) + ']')
+#                    self.data.append(np.ravel(d.data))
+#                elif isinstance(d, np.ndarray):
+#                    self.name.append('data')
+#                    self.units.append('')
+#                    self.data.append(d)
+#
+#        else:
+#            raise TypeError(
+#                "Invalid input: expected iris cube(s) or numpy array(s)")
+#
+#        # Matplotlib
+#        plt.style.use(MPLSTYLE)
+#        self.fig, self.ax = plt.subplots()
+#
+################################################################################
+#
+#    def plot(self, nbins=20, x_label=None, y_label=None, title=None,
+#             color='#15b01a', alpha=1.):
+#        """
+#        Arguments
+#            bins    : number of bins
+#            x_label : label of x-axis
+#            y_label : label of y-axis
+#            title   : title of the plot
+#            color   : color of the histogramm
+#            alpha   : transparency of the historgramm
+#
+#        Returns
+#            Matplotlib figure instance
+#
+#        Description
+#            Actual plotting routine
+#
+#        Modification history
+#            20180209-A_schl_ma: written
+#        """
+#
+#        # Parse arguments
+#        if (x_label is None):
+#            x_label = self.name + self.units
+#        if (y_label is None):
+#            y_label = 'frequency'
+#
+#        # Create historgramm
+##        self.ax.hist(self.data, bins, density=False, facecolor=color, alpha=alpha)
+##        print self.ax.__dict__.keys()
+#        if isinstance(self.data, list):
+#            x_label = (" [").join(list(set(self.name)) +
+#                                  list(set([su.split("[")[1]
+#                                            for su in self.units]))) + "]"
+#            cols = mpl_cm.gist_rainbow(np.linspace(0, 1, len(self.data)))
+#            labels = title
+#            vmin = np.inf
+#            vmax = -np.inf
+#            for d in self.data:
+#                vmin = np.min([np.min(d), vmin])
+#                vmax = np.max([np.max(d), vmax])
+#            rounder = int(np.ceil(-np.log10((vmax + vmin) / 2) + 2))
+##            vmin, vmax = np.round([vmin, vmax], rounder)
+#            vmin = np.floor(vmin * 10**rounder) / 10**rounder
+#            vmax = np.ceil(vmax * 10**rounder) / 10**rounder
+#            levels = np.round(np.linspace(
+#                vmin, vmax, num=nbins * len(self.data)), rounder)
+#
+#            for ind, _ in enumerate(self.data):
+#                try:
+#                    n, bins, patches = self.ax.hist(self.data[ind].
+#                                                    compressed(),
+#                                                    bins=levels,
+#                                                    density=True,
+#                                                    facecolor=cols[ind],
+#                                                    alpha=alpha /
+#                                                    len(self.data),
+#                                                    label=labels[ind])
+#                except BaseException:
+#                    n, bins, patches = self.ax.hist(self.data[ind].data,
+#                                                    bins=levels,
+#                                                    density=True,
+#                                                    facecolor=cols[ind],
+#                                                    alpha=alpha /
+#                                                    len(self.data),
+#                                                    label=labels[ind])
+#        else:
+#            vmin = np.min(self.data)
+#            vmax = np.max(self.data)
+#            rounder = int(np.ceil(-np.log10((vmax + vmin) / 2) + 2))
+#            vmin = np.floor(vmin * 10**rounder) / 10**rounder
+#            vmax = np.ceil(vmax * 10**rounder) / 10**rounder
+#            levels = np.round(np.linspace(vmin, vmax, num=nbins), rounder)
+#
+#            try:
+#                n, bins, patches = self.ax.hist(
+#                    self.data.compressed(),
+#                    bins=levels, density=True, facecolor=color, alpha=alpha)
+#
+#            except BaseException:
+#                n, bins, patches = self.ax.hist(
+#                    self.data.data,
+#                    bins=levels, density=True, facecolor=color, alpha=alpha)
+#
+#        self.ax.set_xlabel(x_label)
+#        self.ax.set_ylabel(y_label)
+#        if isinstance(self.data, list):
+#            self.ax.yaxis.set_major_formatter(
+#                FuncFormatter(label_in_perc_multiple))
+#            box = self.ax.get_position()
+#            self.ax.set_position([box.x0, box.y0,
+#                                  box.width, box.y1 - box.height * 0.1])
+#
+#            # Put a legend above current axis
+#            self.ax.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
+#                           ncol=3, mode="expand", borderaxespad=0.)
+#        else:
+#            self.ax.yaxis.set_major_formatter(
+#                FuncFormatter(label_in_perc_single))
+#            if (title is not None):
+#                self.ax.set_title(title)
+#
+#        self.fig.tight_layout()
+#        return self.fig
+
+
 class PlotHist(object):
     """
     Description
@@ -68,7 +236,7 @@ class PlotHist(object):
             except BaseException:
                 pass
             self.units = ' [' + str(data.units) + ']'
-            self.data = np.ravel(data.data)
+            self.data = data
         elif isinstance(data, np.ndarray):
             self.name = 'data'
             self.units = ''
@@ -126,81 +294,39 @@ class PlotHist(object):
             x_label = self.name + self.units
         if (y_label is None):
             y_label = 'frequency'
+            
+        vmin = np.min(self.data.core_data())
+        vmax = np.max(self.data.core_data())
+        rounder = int(np.ceil(-np.log10((vmax + vmin) / 2) + 5))
+        vmin = np.floor(vmin * 10**rounder) / 10**rounder
+        vmax = np.ceil(vmax * 10**rounder) / 10**rounder
+        levels = np.round(np.linspace(vmin, vmax, num=nbins), rounder)
 
         # Create historgramm
-#        self.ax.hist(self.data, bins, density=False, facecolor=color, alpha=alpha)
-#        print self.ax.__dict__.keys()
-        if isinstance(self.data, list):
-            x_label = (" [").join(list(set(self.name)) +
-                                  list(set([su.split("[")[1]
-                                            for su in self.units]))) + "]"
-            cols = mpl_cm.gist_rainbow(np.linspace(0, 1, len(self.data)))
-            labels = title
-            vmin = np.inf
-            vmax = -np.inf
-            for d in self.data:
-                vmin = np.min([np.min(d), vmin])
-                vmax = np.max([np.max(d), vmax])
-            rounder = int(np.ceil(-np.log10((vmax + vmin) / 2) + 2))
-#            vmin, vmax = np.round([vmin, vmax], rounder)
-            vmin = np.floor(vmin * 10**rounder) / 10**rounder
-            vmax = np.ceil(vmax * 10**rounder) / 10**rounder
-            levels = np.round(np.linspace(
-                vmin, vmax, num=nbins * len(self.data)), rounder)
-
-            for ind, _ in enumerate(self.data):
-                try:
-                    n, bins, patches = self.ax.hist(self.data[ind].
-                                                    compressed(),
-                                                    bins=levels,
-                                                    density=True,
-                                                    facecolor=cols[ind],
-                                                    alpha=alpha /
-                                                    len(self.data),
-                                                    label=labels[ind])
-                except BaseException:
-                    n, bins, patches = self.ax.hist(self.data[ind].data,
-                                                    bins=levels,
-                                                    density=True,
-                                                    facecolor=cols[ind],
-                                                    alpha=alpha /
-                                                    len(self.data),
-                                                    label=labels[ind])
-        else:
-            vmin = np.min(self.data)
-            vmax = np.max(self.data)
-            rounder = int(np.ceil(-np.log10((vmax + vmin) / 2) + 2))
-            vmin = np.floor(vmin * 10**rounder) / 10**rounder
-            vmax = np.ceil(vmax * 10**rounder) / 10**rounder
-            levels = np.round(np.linspace(vmin, vmax, num=nbins), rounder)
-
-            try:
-                n, bins, patches = self.ax.hist(
-                    self.data.compressed(),
-                    bins=levels, density=True, facecolor=color, alpha=alpha)
-
-            except BaseException:
-                n, bins, patches = self.ax.hist(
-                    self.data.data,
-                    bins=levels, density=True, facecolor=color, alpha=alpha)
-
+        counts_all = np.array(levels[1:]) * 0.
+        
+        for subset in self.data.slices(["latitude","longitude"]):
+            counts = np.array(utils.count_cube_vals_for_levels(subset,levels))
+            counts[np.isnan(counts)] = 0
+            counts_all = counts_all + counts
+            
+        freqs = counts_all/np.sum(counts_all)
+            
+        mid_levels = []
+        for i in np.arange(1,len(levels)):
+            mid_levels.append(np.mean(levels[(i-1):(i+1)]))
+        
+        self.ax.bar(mid_levels,
+                    freqs,
+                    np.diff(levels),
+                    color = color)
+        
+        self.ax.yaxis.set_major_formatter(FuncFormatter(label_in_perc_single))
+        if (title is not None):
+            self.ax.set_title(title)
         self.ax.set_xlabel(x_label)
         self.ax.set_ylabel(y_label)
-        if isinstance(self.data, list):
-            self.ax.yaxis.set_major_formatter(
-                FuncFormatter(label_in_perc_multiple))
-            box = self.ax.get_position()
-            self.ax.set_position([box.x0, box.y0,
-                                  box.width, box.y1 - box.height * 0.1])
-
-            # Put a legend above current axis
-            self.ax.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
-                           ncol=3, mode="expand", borderaxespad=0.)
-        else:
-            self.ax.yaxis.set_major_formatter(
-                FuncFormatter(label_in_perc_single))
-            if (title is not None):
-                self.ax.set_title(title)
+        self.ax.set_ylim(0,np.max(freqs) * 1.1)
 
         self.fig.tight_layout()
         return self.fig
@@ -251,7 +377,15 @@ class PlotScatter(object):
         self.fig, self.ax = plt.subplots()
 
 ###############################################################################
-
+#        
+#        
+#        counts_all = np.array(levels[1:]) * 0
+#        
+#        for subset in self.data.slices(["latitude","longitude"]):
+#            counts = np.array(utils.count_cube_vals_for_levels(subset,levels))
+#            counts_all = counts_all + counts
+#        
+#        plt.text(1.58,1.90,counts)
     def plot(self, x_label=None, y_label=None, title=None, add_info=None):
         """
         Arguments
