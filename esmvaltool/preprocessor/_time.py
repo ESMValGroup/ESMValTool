@@ -206,17 +206,13 @@ def regrid_time(cube, frequency):
     Operations on time units, calendars, time points and auxiliary
     coordinates so that any cube from cubes can be subtracted from any
     other cube from cubes. Currently this function supports only monthly
-    and daily data time frequencies, but it will be adapted for sub-day
-    frequencies in the future. Frequency is passed in straight from
-    CMOR table via variable object, unless explicitly specified by use
-    in recipe.
+    (frequency=mon) and daily (frequency=day) data time frequencies.
 
     Arguments
     ---------
         cube: iris.cube.Cube
         frequency: str
             data frequency: mon or day
-            default: monthly
 
     Returns
     -------
