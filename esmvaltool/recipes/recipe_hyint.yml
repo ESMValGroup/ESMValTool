@@ -31,7 +31,7 @@ diagnostics:
       pr:
         preprocessor: preproc
         project: CMIP5
-        exp: [historical,rcp85]
+        exp: [historical, rcp85]
         ensemble: r1i1p1
         start_year: 1980
         end_year: 2020
@@ -46,21 +46,21 @@ diagnostics:
     scripts:
       main:
         script: hyint/hyint.R
- 
-        # Reference normalization period to be used for normalized indices 
+
+        # Reference normalization period to be used for normalized indices
         norm_years: [1980, 1999]
- 
-        # Select one or more indices for timeseries and maps from the following 
-        # list (order-sensitive): 
+
+        # Select one or more indices for timeseries and maps from the following
+        # list (order-sensitive):
         # "pa_norm", "hyint",  "int_norm", "r95_norm", "wsl_norm", "dsl_norm", "int", "dsl", "wsl"
-        select_indices: ["pa_norm", "hyint",  "int_norm", "r95_norm", "wsl_norm", "dsl_norm"]
+        select_indices: ["pa_norm", "hyint", "int_norm", "r95_norm", "wsl_norm", "dsl_norm"]
 
         # Select regions for timeseries and maps from the following list
-        # GL=Globe, GL60=Globe 60S/60N, TR=Tropics (30S/30N), SA=South America, 
+        # GL=Globe, GL60=Globe 60S/60N, TR=Tropics (30S/30N), SA=South America,
         # AF =Africa,6NA=North America, IN=India, EU=Europe, EA=East-Asia,
         # AU=Australia
         select_regions: ["GL", "GL60", "TR", "SA", "AF", "NA", "IN", "EU", "EA", "AU"]
- 
+
         # Select type of plot:
         # 1) single panel lon/lat map per individual index, multi-year mean
         # 2) 3-panel lon/lat maps per individual index with comparison to reference dataset, multi-year mean
@@ -75,33 +75,33 @@ diagnostics:
 
         ## ------- Optional settings ----------
         # Select number of columns and rows in multi-panel figure
-        npancol: 2 # number of columns for trend/tseries multi-panel figures
-        npanrow: 3 # number of rows for trend/tseries multi-panel figures  
- 
-        # Define whether model data should be regridded 
+        npancol: 2  # number of columns for trend/tseries multi-panel figures
+        npanrow: 3  # number of rows for trend/tseries multi-panel figures
+
+        # Define whether model data should be regridded
         # a) false to keep original resolution
         # b) set desired regridding resolution in cdo format e.g., "r320x160"
         # c) "REF" to use resolution of reference model
-        rgrid: "REF"   
+        rgrid: "REF"
 
-      # Select automated or pre-set range of values in plots
-        autolevels: true       
+        # Select automated or pre-set range of values in plots
+        autolevels: true
 
-       # Scale autolevels (factor multiplying automated range)
-        autolevels_scale: 1  # for maps and timeseries    
-        autolevels_scale_t: 1  # for trend coefficients       
+        # Scale autolevels (factor multiplying automated range)
+        autolevels_scale: 1  # for maps and timeseries
+        autolevels_scale_t: 1  # for trend coefficients
 
-        # data and maps
-        removedesert: false  # T to remove (flag as NA) grid points with mean 
+        # data and maps
+        removedesert: false  # T to remove (flag as NA) grid points with mean
                              # annual pr < 0.5 mm/day (deserts, Giorgi2014)
-        oplot_grid: false           # plot grid points over maps
-        boxregion: false # !=0 plot region boxes over global maps with 
-                         # thickness = abs(boxregion); white (>0) or grey (<0).  
+        oplot_grid: false  # plot grid points over maps
+        boxregion: false  # !=0 plot region boxes over global maps with
+                          # thickness = abs(boxregion); white (>0) or grey (<0).
 
         # timeseries and trends
         weight_tseries: true  # adopt area weights in timeseries
-        trend_years: false    # (a) F=all; (b) c(year1,year2) to apply trend 
-                              # calculation and plotting only to a limited 
+        trend_years: false    # (a) F=all; (b) c(year1,year2) to apply trend
+                              # calculation and plotting only to a limited
                               # time interval
         add_trend: true             # add linear trend to plot
         add_trend_sd: true          # add stdev range to timeseries
