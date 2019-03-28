@@ -80,7 +80,6 @@ def extract_variable(var_info, raw_info, out_dir, attrs):
 
 def cmorization(in_dir, out_dir):
     """Cmorization func call."""
-
     cmor_table = CFG['cmor_table']
     glob_attrs = CFG['attributes']
 
