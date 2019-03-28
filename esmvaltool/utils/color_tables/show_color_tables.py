@@ -48,24 +48,12 @@ COLOR_SNIPPET = """
 
 def load_ncl_color_map(name):
     """Load ncl color map to a list that is returned."""
-    def _is_first_character(full_string, single_character):
-        full_string = str(full_string).strip()
-        if full_string == "":
-            return False
-        return single_character == full_string[0]
-
     def _format(content):
         out = []
         for item in content.split("\n"):
-            if 'ncolors' in item:
-                pass  # ncolors = int(item.split("=")[1])
-            elif _is_first_character(item, '#') or len(item) == 0:
-                continue
-            elif _is_first_character(item, ';') or len(item) == 0:
-                continue
-            else:
-                out.append([int(elem) / 256
-                            for elem in item.split()[0:3]] + [1])
+            item = item.strip()
+            if item and not ('ncolors' in item or item.startswith('#') or item.startswith(';')):
+                out.append([int(elem) / 256 for elem in item.split()[0:3]] + [1])
         return out
 
     filename = "{0}/{1}.rgb".format(PATH_TO_COLORTABLES, name)
