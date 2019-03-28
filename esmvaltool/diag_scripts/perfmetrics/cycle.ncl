@@ -62,14 +62,11 @@ begin
     dnames = getVarDimNames(var)
 
     ; Extract region and average over latitude and longitude
-    if (any(field0.eq.(/"T0M", "T0Ms", "T1M"/))) then
-      var_reg = var
-    else if (any(dnames.eq."lat") .and. any(dnames.eq."lon")) then
+    if (any(dnames.eq."lat") .and. any(dnames.eq."lon")) then
       var_reg = area_operations(var, region(0), region(1), \
                                 region(2), region(3), "average", True)
     else
-      error_msg("f", DIAG_SCRIPT, "", "dimensionality not implemented")
-    end if
+      var_reg = var
     end if
     delete(var)
 
@@ -132,15 +129,12 @@ begin
     varstring = var0  ; priority 1
   end if
   altitude = ""  ; priority 2
-  if (any(field0.eq.(/"T0M", "T0Ms"/))) then
-    if (isatt(diag_script_info, "altitude")) then
-      altitude = " - " + diag_script_info@altitude  ; priority 1
-    end if
-  else
-    if (isatt(diag_script_info, "level")) then  ; FIX-ME
-      if (diag_script_info@level.ne."all") then
-        altitude = " - " + diag_script_info@level + " hPa"
-      end if
+  if (isatt(diag_script_info, "altitude")) then
+    altitude = " - " + diag_script_info@altitude  ; priority 1
+  end if
+  if (isatt(diag_script_info, "level")) then  ; FIX-ME
+    if (diag_script_info@level.ne."all") then
+      altitude = " - " + diag_script_info@level + " hPa"
     end if
   end if
   outfile = config_user_info@plot_dir + var0 + "_cycle_" + \
@@ -165,13 +159,13 @@ begin
   plottype = "seas"
   diag_des = "Calculates and (optionally) plots annual/seasonal cycles, " \
              + "zonal means, lat-lon fields and time-lat-lon fields from " \
-             + "input T3M or T2Ms data. The calculated fields can be also " \
+             + "input 2D/3D monthly data. The calculated fields can be " \
              + "plotted as difference w.r.t. a given reference dataset. It " \
              + "also calculates grading and taylor metrics."
   authors = (/"righ_ma", "fran_fr", "eyri_ve", "gott_kl", "senf_da"/)
   references = (/"righi15gmd", "gleckler08jgr"/)
   infiles = (/"infile1", "infile2"/)
-  ESMValMD(nc_file, plot_file, caption, statistics, domain, plottype, \
-           diag_des, authors, references, infiles)
+  ; ESMValMD(nc_file, plot_file, caption, statistics, domain, plottype, \
+  ;          diag_des, authors, references, infiles)
 
 end

@@ -108,7 +108,6 @@ preprocessors:
     average_volume:
       coord1: longitude
       coord2: latitude
-      coordz: depth
     multi_model_statistics:
       span: overlap
       statistics: [mean ]
@@ -123,7 +122,6 @@ preprocessors:
     average_volume:
       coord1: longitude
       coord2: latitude
-      coordz: depth
     multi_model_statistics:
       span: overlap
       statistics: [mean ]
@@ -141,7 +139,6 @@ preprocessors:
     average_volume:
       coord1: longitude
       coord2: latitude
-      coordz: depth
     multi_model_statistics:
       span: overlap
       statistics: [mean ]
@@ -258,7 +255,6 @@ preprocessors:
   # --------------------------------------------------
   prep_depth_integration_1: # For a 2D map global profile
     depth_integration:
-      coordz: depth
     time_average:
 
 
@@ -271,7 +267,6 @@ diagnostics:
     variables:
       thetao: # Temperature ocean
         preprocessor: prep_depth_integration_1
-        field: TO3M
     scripts:
       Global_Ocean_DepthIntegration_map:
         script: ocean/diagnostic_maps.py
@@ -284,7 +279,6 @@ diagnostics:
     variables:
       tos: # Temperature ocean surface
         preprocessor: prep_timeseries_1
-        field: TO2Ms
     scripts:
       Global_Ocean_Surface_mean_timeseries: &Global_Ocean_Surface_mean_timeseries
         script: ocean/diagnostic_timeseries.py
@@ -294,7 +288,6 @@ diagnostics:
     variables:
       thetao: # Temperature ocean 3D
         preprocessor: prep_timeseries_2
-        field: TO3M
     scripts:
       Global_Ocean_DepthLayers_mean_timeseries: &Global_Ocean_DepthLayers_mean_timeseries
         script: ocean/diagnostic_timeseries.py
@@ -304,7 +297,6 @@ diagnostics:
     variables:
       tos: # Temperature ocean surface
         preprocessor: prep_timeseries_3
-        field: TO2Ms
     scripts:
       Regional_Ocean_Surface_mean_timeseries: &Regional_Ocean_Surface_mean_timeseries
         script: ocean/diagnostic_timeseries.py
@@ -314,7 +306,6 @@ diagnostics:
     variables:
       thetao: # Temperature ocean 3D
         preprocessor: prep_timeseries_4
-        field: TO3M
     scripts:
       Regional_Ocean_DepthLayers_mean_timeseries: &Regional_Ocean_DepthLayers_mean_timeseries
         script: ocean/diagnostic_timeseries.py
@@ -324,7 +315,6 @@ diagnostics:
     variables:
       thetao: # Temperature ocean 3D
         preprocessor: prep_timeseries_5
-        field: TO3M
     scripts:
       Global_VolumeAverage_Ocean_Physics_timeseries: &Global_VolumeAverage_Ocean_Physics_timeseries
         script: ocean/diagnostic_timeseries.py
@@ -334,7 +324,6 @@ diagnostics:
     variables:
       thetao: # Temperature ocean 3D
         preprocessor: prep_timeseries_6
-        field: TO3M
     scripts:
       Regional_VolumeAverage_Ocean_Physics_timeseries: &Regional_VolumeAverage_Ocean_Physics_timeseries
         script: ocean/diagnostic_timeseries.py
@@ -344,7 +333,6 @@ diagnostics:
     variables:
       thetao: # Temperature ocean 3D averaged over top 100m
         preprocessor: prep_timeseries_7
-        field: TO3M
     scripts:
       Regional_Volume100mAverage_Ocean_Physics_timeseries: &Regional_Volume100mAverage_Ocean_Physics_timeseries
         script: ocean/diagnostic_timeseries.py
@@ -357,7 +345,6 @@ diagnostics:
     variables:
       tos: # Temperature ocean surface
         preprocessor: prep_map_1
-        field: TO2Ms
     scripts:
       Global_Ocean_Surface_mean_map: &Global_Ocean_Surface_mean_map
         script: ocean/diagnostic_maps.py
@@ -367,7 +354,6 @@ diagnostics:
     variables:
       tos: # Temperature ocean surface
         preprocessor: prep_map_2
-        field: TO2Ms
     scripts:
       Global_Ocean_Surface_regrid_map: &Global_Ocean_Surface_regrid_map
         script: ocean/diagnostic_maps.py
@@ -377,7 +363,6 @@ diagnostics:
     variables:
       thetao: # Temperature ocean 3D
         preprocessor: prep_map_3
-        field: TO3M
     scripts:
       Global_Ocean_DepthLayers_regrid_map: &Global_Ocean_DepthLayers_regrid_map
         script: ocean/diagnostic_maps.py
@@ -387,7 +372,6 @@ diagnostics:
     variables:
       tos: # Temperature ocean surface
         preprocessor: prep_map_4
-        field: TO2Ms
     scripts:
       Regional_Ocean_Surface_regrid_map: &Regional_Ocean_Surface_regrid_map
         script: ocean/diagnostic_maps.py
@@ -397,7 +381,6 @@ diagnostics:
     variables:
       thetao: # Temperature ocean 3D
         preprocessor: prep_map_5
-        field: TO3M
     scripts:
       Regional_Ocean_DepthLayers_mean_map: &Regional_Ocean_DepthLayers_mean_map
         script: ocean/diagnostic_maps.py
@@ -410,7 +393,6 @@ diagnostics:
     variables:
       thetao: # Temperature ocean 3D
         preprocessor: prep_transect_1
-        field: TO3M
     scripts:
       Regional_Ocean_DepthLayers_regrid_transect: &Regional_Ocean_DepthLayers_regrid_transect
         script: ocean/diagnostic_transects.py
@@ -420,7 +402,6 @@ diagnostics:
     variables:
       thetao: # Temperature ocean 3D
         preprocessor: prep_transect_2
-        field: TO3M
     scripts:
       Regional_Ocean_DepthLayers_slice_regrid_mmmean_transect: &Regional_Ocean_DepthLayers_slice_regrid_mmmean_transect
         script: ocean/diagnostic_transects.py
@@ -430,7 +411,6 @@ diagnostics:
     variables:
       thetao: # Temperature ocean 3D
         preprocessor: prep_transect_3
-        field: TO3M
     scripts:
       Regional_Ocean_DepthLayers_AMTslice_regrid_mmmean_transect: &Regional_Ocean_DepthLayers_AMTslice_regrid_mmmean_transect
         script: ocean/diagnostic_transects.py
@@ -444,7 +424,6 @@ diagnostics:
     variables:
       thetao: # Temperature ocean surface
         preprocessor: prep_profile_1
-        field: TO3M
     scripts:
       Global_Ocean_mean_profile: &Global_Ocean_mean_profile
         script: ocean/diagnostic_profiles.py
@@ -454,7 +433,6 @@ diagnostics:
     variables:
       thetao: # Temperature ocean surface
         preprocessor: prep_profile_2
-        field: TO3M
     scripts:
       Regional_Ocean_mean_profile: &Regional_Ocean_mean_profile
         script: ocean/diagnostic_profiles.py

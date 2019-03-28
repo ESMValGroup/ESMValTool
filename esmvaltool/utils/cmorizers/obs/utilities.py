@@ -26,38 +26,53 @@ def _convert_timeunits(cube, start_year):
     # TODO any more weird cases?
     if cube.coord('time').units == 'months since 0000-01-01 00:00:00':
         real_unit = 'months since {}-01-01 00:00:00'.format(str(start_year))
-    if cube.coord('time').units == 'days since 0000-01-01 00:00:00':
+    elif cube.coord('time').units == 'days since 0000-01-01 00:00:00':
         real_unit = 'days since {}-01-01 00:00:00'.format(str(start_year))
+    elif cube.coord('time').units == 'days since 1950-1-1':
+        real_unit = 'days since 1950-1-1 00:00:00'
+    else:
+        real_unit = cube.coord('time').units
     cube.coord('time').units = real_unit
     return cube
 
 
 def _fix_dim_coordnames(cube):
     """Perform a check on dim coordinate names."""
-    if cube.coord(axis='T') in cube.coords():
-        cube.coord(axis='T').var_name = 'time'
+    # first check for CMOR standard coord;
+    for coord in cube.coords():
+        # guess the CMOR-standard x, y, z and t axes if not there
+        coord_type = iris.util.guess_coord_axis(coord)
 
-    if cube.coord(axis='X') in cube.coords():
-        cube.coord(axis='X').var_name = 'lon'
-        cube.coord(axis='X').standard_name = 'longitude'
-        cube.coord(axis='X').long_name = 'longitude coordinate'
-        cube.coord(axis='X').units = Unit('degrees')
+        if coord_type == 'T':
+            cube.coord(axis=coord_type).var_name = 'time'
+            cube.coord(axis=coord_type).attributes = {}
 
-    if cube.coord(axis='Y') in cube.coords():
-        cube.coord(axis='Y').var_name = 'lat'
-        cube.coord(axis='Y').standard_name = 'latitude'
-        cube.coord(axis='Y').long_name = 'latitude coordinate'
-        cube.coord(axis='Y').units = Unit('degrees')
+        if coord_type == 'X':
+            cube.coord(axis=coord_type).var_name = 'lon'
+            cube.coord(axis=coord_type).standard_name = 'longitude'
+            cube.coord(axis=coord_type).long_name = 'longitude coordinate'
+            cube.coord(axis=coord_type).units = Unit('degrees')
+            cube.coord(axis=coord_type).attributes = {}
 
-    if cube.coord(axis='Z') in cube.coords():
-        if cube.coord(axis='Z').var_name == 'depth':
-            cube.coord(axis='Z').standard_name = 'depth'
-            cube.coord(axis='Z').long_name = 'ocean depth coordinate'
-            cube.coord(axis='Z').var_name = 'lev'
-        if cube.coord(axis='Z').var_name == 'pressure':
-            cube.coord(axis='Z').standard_name = 'air_pressure'
-            cube.coord(axis='Z').long_name = 'pressure'
-            cube.coord(axis='Z').var_name = 'air_pressure'
+        if coord_type == 'Y':
+            cube.coord(axis=coord_type).var_name = 'lat'
+            cube.coord(axis=coord_type).standard_name = 'latitude'
+            cube.coord(axis=coord_type).long_name = 'latitude coordinate'
+            cube.coord(axis=coord_type).units = Unit('degrees')
+            cube.coord(axis=coord_type).attributes = {}
+
+        if coord_type == 'Z':
+            if cube.coord(axis=coord_type).var_name == 'depth':
+                cube.coord(axis=coord_type).standard_name = 'depth'
+                cube.coord(axis=coord_type).long_name = \
+                    'ocean depth coordinate'
+                cube.coord(axis=coord_type).var_name = 'lev'
+                cube.coord(axis=coord_type).attributes['positive'] = 'down'
+            if cube.coord(axis=coord_type).var_name == 'pressure':
+                cube.coord(axis=coord_type).standard_name = 'air_pressure'
+                cube.coord(axis=coord_type).long_name = 'pressure'
+                cube.coord(axis=coord_type).var_name = 'air_pressure'
+                cube.coord(axis=coord_type).attributes['positive'] = 'up'
 
     return cube
 
@@ -125,6 +140,7 @@ def _fix_coords(cube):
 
 def _add_metadata(cube, proj):
     """Complete the cmorized file with useful metadata."""
+    logger.info("Add Global metadata...")
     for att in proj['metadata_attributes']:
         if att not in cube.metadata.attributes:
             cube.metadata.attributes[att] = proj['metadata_attributes'][att]
@@ -136,10 +152,14 @@ def _roll_cube_data(cube, shift, axis):
     return cube
 
 
-def _save_variable(cube, var, outdir, year, proj):
+def _save_variable(cube, var, outdir, year, proj, **kwargs):
     """Saver function."""
     # CMOR standard
-    time_suffix = '-'.join([str(year) + '01', str(year) + '12'])
+    if not isinstance(year, list):
+        time_suffix = '-'.join([str(year) + '01', str(year) + '12'])
+    else:
+        yr1, yr2 = year
+        time_suffix = '-'.join([str(yr1) + '01', str(yr2) + '12'])
     cmor_prefix = '_'.join([
         'OBS', proj['dataset'], proj['realm'], proj['version'],
         proj['frequency'][var], var
@@ -147,4 +167,4 @@ def _save_variable(cube, var, outdir, year, proj):
     file_name = cmor_prefix + '_' + time_suffix + '.nc'
     file_path = os.path.join(outdir, file_name)
     logger.info('Saving: %s', file_path)
-    iris.save(cube, file_path)
+    iris.save(cube, file_path, **kwargs)

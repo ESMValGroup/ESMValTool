@@ -13,6 +13,9 @@ documentation:
     - arno_en
     - cort_su
 
+  maintainer:
+    - hard_jo
+
   references:
     - straus07jcli
 
@@ -76,7 +79,6 @@ diagnostics:
     variables:
       pr:
         preprocessor: preproc
-        field: T2Ms
     scripts:
       main:
         script: ensclus/ensclus.py

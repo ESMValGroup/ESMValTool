@@ -13,6 +13,9 @@ documentation:
     - arno_en
     - cagn_ch  
 
+  maintainer:
+    - serv_fe
+
   references:
     - baldwin09qjrms
 
@@ -44,7 +47,6 @@ diagnostics:
     variables: 
       zg:
         preprocessor: preproc
-        field: T3D
     scripts: 
       main: 
         script: zmnam/zmnam.py                              
