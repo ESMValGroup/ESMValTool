@@ -494,3 +494,18 @@ def dask_weighted_stddev_wrapper(cube, spatial_weights, dims=None):
     std_dev = variance ** 0.5
 
     return std_dev
+
+def count_cube_vals_for_levels(cube,levels):
+    
+    counts = np.array(levels[1:]) * 0.
+    
+    for i in np.arange(1,len(levels)):
+        counts[i-1] = count_cube_vals_in_breaks(cube,levels[i-1],levels[i])
+        
+    return counts
+
+def count_cube_vals_in_breaks(cube,start,stop):
+    dims = [c.name() for c in cube.coords()]
+    thiscount = cube.collapsed(dims, iris.analysis.COUNT,function=lambda values: np.logical_and(values >= start,values < stop))
+    
+    return thiscount.data
