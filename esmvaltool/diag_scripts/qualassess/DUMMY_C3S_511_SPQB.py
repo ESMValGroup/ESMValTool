@@ -46,7 +46,7 @@ def main(cfg):
 
     for filename, attributes in cfg['input_data'].items():
         logger.info("Processing variable %s from data set %s",
-                    attributes['standard_name'], attributes['dataset'])
+                    attributes['short_name'], attributes['dataset'])
         logger.info("Preparing diagnostic")
         Diag = Basic_Diagnostic_SP()
         Diag.set_info(cfg=cfg)
