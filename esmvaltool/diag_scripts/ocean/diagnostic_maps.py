@@ -68,9 +68,9 @@ def make_map_plots(
     Parameters
     ----------
     cfg: dict
-        the opened global config dictionairy, passed by ESMValTool.
+        the opened global config dictionary, passed by ESMValTool.
     metadata: dict
-        the metadata dictionairy
+        the metadata dictionary
     filename: str
         the preprocessed model file.
 
@@ -140,9 +140,9 @@ def make_map_contour(
     Parameters
     ----------
     cfg: dict
-        the opened global config dictionairy, passed by ESMValTool.
+        the opened global config dictionary, passed by ESMValTool.
     metadata: dict
-        the metadata dictionairy
+        the metadata dictionary
     filename: str
         the preprocessed model file.
 
@@ -243,9 +243,9 @@ def multi_model_contours(
     Parameters
     ----------
     cfg: dict
-        the opened global config dictionairy, passed by ESMValTool.
+        the opened global config dictionary, passed by ESMValTool.
     metadata: dict
-        the metadata dictionairy.
+        the metadata dictionary.
 
     """
     ####
@@ -366,7 +366,7 @@ def main(cfg):
     Parameters
     ----------
     cfg: dict
-        the opened global config dictionairy, passed by ESMValTool.
+        the opened global config dictionary, passed by ESMValTool.
 
     """
     cartopy.config['data_dir'] = cfg['auxiliary_data_dir']
