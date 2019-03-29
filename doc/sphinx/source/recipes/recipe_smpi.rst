@@ -24,7 +24,7 @@ Diagnostics are stored in diag_scripts/perfmetrics/
 User settings
 -------------
 
-#. main.ncl
+#. perfmetrics/main.ncl
 
    *Required settings for script*
 
