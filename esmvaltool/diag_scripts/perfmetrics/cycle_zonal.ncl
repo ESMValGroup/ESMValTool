@@ -1,6 +1,6 @@
 ; #############################################################################
 ; PROCEDURE FOR THE CYCLE-ZONAL PLOT OF THE PERFORMANCE METRICS
-; Authors: Mattia Righi (DLR, Germany) and Franziska Frank (DLR, Germany)
+; Author: Bettina Gier (University of Bremen, Germany)
 ; ESMVal project
 ; #############################################################################
 
