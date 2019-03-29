@@ -48,14 +48,16 @@ def _fix_data(cube, var):
     logger.info("Fixing data ...")
     # fix for bad missing value definition
     cube.data = np.ma.masked_values(cube.data, cube.data.fill_value)
+    metadata = cube.metadata
     if var in ['fgco2', ]:
         # Assume standard year 365_day
-        cube.data = cube.data * -12.01 / 1000. / (86400. * 365.)
-        cube.attributes['positive'] = 'down'
+        cube *= -12.01 / 1000. / (86400. * 365.)
+        metadata.attributes['positive'] = 'down'
     if var in ['dpco2', ]:
-        cube.data = cube.data * -1.0 * 101325. / 1.e06
+        cube *= -1.0 * 101325. / 1.e06
     if var in ['spco2', ]:
-        cube.data = cube.data * 101325. / 1.e06
+        cube *= 101325. / 1.e06
+    cube.metadata = metadata
     return cube
 
 

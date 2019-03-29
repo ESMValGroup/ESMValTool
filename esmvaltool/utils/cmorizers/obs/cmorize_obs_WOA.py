@@ -1,4 +1,4 @@
-# pylint: disable=invalid-name, disable=duplicate-code
+# pylint: disable=invalid-name
 """ESMValTool CMORizer script.
 
 # #############################################################################
