@@ -1474,8 +1474,8 @@ begin
     if (dim_names(0).eq."year") then
       time_weights = new(dims_var(0), float)
       time_weights = 1.
-    end if    
-    
+    end if
+
     if (dim_names(1).eq."lat" .and. dim_names(2).eq."lon") then
       area_weights = map_area(var&lat, var&lon)
     end if
@@ -1490,8 +1490,8 @@ begin
       wdims = dimsizes(area_weights)
       area_weights = conform_dims(wdims, delta_p, 0) * \
         conform_dims(wdims, areas(:, 0), 1)
-    end if    
-    
+    end if
+
     if (isdefined("time_weights").and.isdefined("area_weights")) then
       weights = new(dimsizes(var), float)
       do ii = 0, dimsizes(time_weights) - 1
@@ -1584,28 +1584,29 @@ begin
       delete(wgt1d)
       if (isdim(obs, "lon").and.isdim(obs, "lat")) then
         weights = map_area(obs&lat, obs&lon)
-      else if (isdim(obs, "plev").and.isdim(obs, "lat")) then
+      elseif (isdim(obs, "plev").and.isdim(obs, "lat")) then
         areas = map_area(obs&lat, (/1.0, 2.0/))
         nlev = dimsizes(obs&plev)
-        ptop = obs&plev(nlev - 1) - 0.5 * (obs&plev(nlev - 2) - obs&plev(nlev - 1))
+        ptop = \
+          obs&plev(nlev - 1) - 0.5 * (obs&plev(nlev - 2) - obs&plev(nlev - 1))
         delta_p = dpres_plevel(obs&plev, 101325., ptop, 0)
         weights = new((/dimsizes(obs&plev), dimsizes(obs&lat)/), float)
         wdims = dimsizes(weights)
-        weights = conform_dims(wdims, delta_p, 0) * conform_dims(wdims, areas(:, 0), 1)
+        weights = \
+          conform_dims(wdims, delta_p, 0) * conform_dims(wdims, areas(:, 0), 1)
       else
-        error_msg("f", diag_script, "", "Ups. This should not happen. Unknown dimensions in variable obs.")
-      end if
+        error_msg("f", diag_script, "", "Unknown dimensions in variable obs.")
       end if
 
       wgt1d = ndtooned(weights)
-      out(ibootstrap) = dim_avg_wgt_Wrap((mod1D - ref1D)^2 \
-                                            / sig1D^2, wgt1d, 1)
-      
+      out(ibootstrap) = \
+        dim_avg_wgt_Wrap((mod1D - ref1D) ^ 2 / sig1D ^ 2, wgt1d, 1)
+
     end do
     leave_msg(scriptname, funcname)
     return(out)
   end if
-  
+
   error_msg("f", scriptname, funcname, "metric " + metric + " not available")
 
 end
