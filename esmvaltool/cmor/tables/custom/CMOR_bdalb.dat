@@ -1,6 +1,6 @@
 SOURCE: CMIP5
 !============
-variable_entry:    dhalb
+variable_entry:    bdalb
 !============
 modeling_realm:    land
 !----------------------------------
