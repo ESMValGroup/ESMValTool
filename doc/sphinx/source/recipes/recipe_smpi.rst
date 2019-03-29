@@ -31,14 +31,14 @@ User settings
    * plot_type: cycle (time), zonal (plev, lat), latlon (lat, lon), cycle_latlon (time, lat, lon)
    * time_avg: type of time average (opt argument of time_operations in diag_scripts/shared/statistics.ncl)
    * region: selected region (see select_region in diag_scripts/shared/latlon.ncl)
-   * normalization: metric normalization (for RMSD and BIAS metrics only)
-   * calc_grading: calculates grading metrics (default: False; has to be set to "true")
+   * normalization: metric normalization ("CMIP5" for analysis of CMIP5 simulations; to be adjusted accordingly for a different CMIP phase)
+   * calc_grading: calculates grading metrics (has to be set to "true" in the recipe)
    * metric: chosen grading metric(s) (if calc_grading is True; has to be set to "SMPI")
-   * smpi_n_bootstrap: number of bootstrapping members used to determine uncertainties on model-reference differences
+   * smpi_n_bootstrap: number of bootstrapping members used to determine uncertainties on model-reference differences (typical number of bootstrapping members: 100)
    
    *Optional settings for script*
   
-   * draw_plots: draws plots (default: True)
+   * draw_plots: draws plots (set to "false" for SMPI)
    
    *Required settings for variables*
    
