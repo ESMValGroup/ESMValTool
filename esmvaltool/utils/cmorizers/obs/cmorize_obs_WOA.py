@@ -75,6 +75,7 @@ def extract_variable(var_info, raw_info, out_dir, attrs, year):
             _fix_data(cube, var)
             _add_metadata(cube, attrs)
             _save_variable(cube, var, out_dir, attrs,
+                           fill_value=cube.data.fill_value,
                            unlimited_dimensions=['time'])
 
 

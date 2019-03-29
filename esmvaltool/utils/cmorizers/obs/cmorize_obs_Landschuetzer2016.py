@@ -30,6 +30,7 @@ import os
 
 import iris
 import numpy as np
+from dask import array as da
 
 from .utilities import (_add_metadata,
                         _fix_var_metadata,
@@ -47,7 +48,6 @@ def _fix_data(cube, var):
     """Specific data fixes for different variables."""
     logger.info("Fixing data ...")
     # fix for bad missing value definition
-    cube.data = np.ma.masked_values(cube.data, cube.data.fill_value)
     metadata = cube.metadata
     if var in ['fgco2', ]:
         # Assume standard year 365_day
@@ -61,10 +61,16 @@ def _fix_data(cube, var):
     return cube
 
 
+def _fix_fillvalue(cube, field, filename):
+    if hasattr(field.cf_data, 'missing_value'):
+        cube.data = da.ma.masked_equal(cube.core_data(),
+                    field.cf_data.missing_value)
+
+
 def extract_variable(var_info, raw_info, out_dir, attrs):
     """Extract to all vars."""
     var = var_info.short_name
-    cubes = iris.load(raw_info['file'])
+    cubes = iris.load(raw_info['file'], callback=_fix_fillvalue)
     rawvar = raw_info['name']
 
     for cube in cubes:
@@ -73,9 +79,8 @@ def extract_variable(var_info, raw_info, out_dir, attrs):
             _fix_coords(cube)
             _fix_data(cube, var)
             _add_metadata(cube, attrs)
-            fillvalue = cube.data.fill_value
             _save_variable(cube, var, out_dir, attrs,
-                           fill_value=fillvalue,
+                           fill_value=cube.data.fill_value,
                            local_keys=['positive'],
                            unlimited_dimensions=['time'])
 
