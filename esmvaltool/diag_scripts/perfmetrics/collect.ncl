@@ -28,6 +28,7 @@
 ; Caveats
 ;
 ; Modification history
+;    20190315-A_hass_bg: added SMPI case
 ;    20180508-A_righ_ma: renamed and generalized
 ;    20151027-A_laue_ax: moved call to 'write_references' to the beginning
 ;                        of the code
@@ -57,14 +58,6 @@ begin
     file_type = "ps"
   end if
 
-  ; Write references  ; FIX-ME to be replaced by new method
-  ; write_references(diag_script, "A_fran_fr", \
-  ;                  (/"A_righ_ma", "A_eyri_ve", "A_gott_kl"/), \
-  ;                  (/"D_righi15gmd", "D_gleckler08jgr"/), \
-  ;                  (/"E_ncep", "E_erainterim", "E_airs", "E_ceresebaf", \
-  ;                    "E_srb"/), \
-  ;                  (/"P_embrace", "P_esmval"/))
-
   ; List of grading files
   input_files = diag_script_info@input_files + "/" + \
     diag_script_info@metric + ".nc"
@@ -79,7 +72,7 @@ begin
     f = addfile(input_files(ii), "r")
     curr_file = tostring(f->temp_list)
 
-    if diag_script_info@metric.eq."SMPI" then
+    if (diag_script_info@metric.eq."SMPI") then
       data_temp_smpi = ncdf_read(curr_file, "performance_index")
 
       if (.not.isdefined("data_all_smpi")) then
@@ -99,44 +92,40 @@ begin
         data_all_smpi&models = data_temp_smpi&models
         data_all_smpi&bootstrap_member = data_temp_smpi&bootstrap_member
 
-        i_climo_cnt = 0
-
       end if
 
-      ; Define the string array for input file provenance 
-      if (ii.eq.0) then 
-        climofiles = new(dimsizes(input_files)*data_all_smpi@num_climofiles, string)
+      ; Define the string array for input file provenance
+      if (ii.eq.0) then
+        climofiles = new(dimsizes(input_files) * \
+                         data_all_smpi@num_climofiles, string)
       end if
-      
+
       ; Add the input file info to the file for provenance
       do iclim = 0, toint(data_all_smpi@num_climofiles) - 1
         num_climo = "climofile_" + iclim
         climo_idx = iclim + ii*data_all_smpi@num_climofiles
         climofiles(climo_idx) = data_temp_smpi@$num_climo$
       end do
-      
-      
-    ; Make sure dataset coordinate is consistent
+
+      ; Make sure dataset coordinate is consistent
       consistent = False
       if (dimsizes(data_temp_smpi&models).eq. \
-         dimsizes(data_all_smpi&models)) then
+          dimsizes(data_all_smpi&models)) then
         if (all(data_temp_smpi&models.eq.data_all_smpi&models)) then
           consistent = True
         end if
       end if
 
-    ; Append data
+      ; Append data
       if (consistent) then
         data_all_smpi(ii, :, :) = (/data_temp_smpi/)
         copy_VarCoords(data_temp_smpi, data_all_smpi(ii, :, :))
-        print("schleife 1")
       else
-      ; Loop over datasets in new data entry
+        ; Loop over datasets in new data entry
         do imod_temp = 0, dimsizes(data_temp_smpi&models) - 1
-        ; If current dataset is not already part of the model coordinate
+          ; If current dataset is not already part of the model coordinate
           if (.not.any(data_temp_smpi&models(imod_temp) .eq. \
               data_all_smpi&models)) then
-            print("schleife 2")
             ; Append record for dataset(imod)
             data_new = extend_var_at(data_all_smpi, 2, \
                                      dimsizes(data_all_smpi&models))
@@ -150,18 +139,12 @@ begin
           else
             ; Loop over datasets of data
             do imod = 0, dimsizes(data_all_smpi&models) - 1
-              print("Schleife 3")
-              printVarSummary(data_all_smpi)
-              printVarSummary(data_temp_smpi)
-              ; if new dataset is identical to current
-              ; entry, write data entry
+              ; if new dataset is identical to current entry, write data entry
               if (data_all_smpi&models(imod).eq. \
                   data_temp_smpi&models(imod_temp)) then
-                data_all_smpi(ii, :, imod) = \
-                  (/data_temp_smpi(:, imod_temp)/)
-                copy_VarCoords( \
-                  data_temp_smpi(:, imod_temp), \
-                  data_all_smpi(ii:ii, :, imod))
+                data_all_smpi(ii, :, imod) = (/data_temp_smpi(:, imod_temp)/)
+                copy_VarCoords(data_temp_smpi(:, imod_temp), \
+                               data_all_smpi(ii:ii, :, imod))
               end if
             end do
           end if
@@ -171,18 +154,17 @@ begin
       vars(ii) = data_temp_smpi@invar
       delete(data_temp_smpi)
 
-    else      ; Metric not SMPI
+    else  ; metric not SMPI
+
       data_temp = ncdf_read(curr_file, "grade")
-      
+
       ; Change to 3 dimensional
       if (dimsizes(dimsizes(data_temp)).eq.2) then
-
         dim_temp = array_append_record(dimsizes(data_temp), 2, 0)
         temp = new(dim_temp, typeof(data_temp))
         temp(:, :, 0) = data_temp
         data_temp := temp
         delete(temp)
-
       end if
 
       ; Create array for collecting all datasets
@@ -235,11 +217,9 @@ begin
     end if  ; metric distinction end 1
   end do
 
-  if diag_script_info@metric.eq."SMPI" then
+  if (diag_script_info@metric.eq."SMPI") then
     data_all_smpi&vars = vars
     delete(vars)
-
-    ;data_all_smpi@num_climofiles = i_climo_cnt
 
     ; Check for incomplete array, SMPI only for datasets with all vars
     if any(ismissing(data_all_smpi)) then
@@ -294,18 +274,17 @@ begin
 
     data_smpi!1 = "statistic"
     data_smpi&statistic = (/"SMPI", "95_conf"/)
-    name = ""  ; str_sub_str(xml_name, suffix, "")
-    data_smpi@ncdf_dir = config_user_info@work_dir + "/" + \
-      name + "_SMPI.nc"
+    name = ""
+    data_smpi@ncdf_dir = config_user_info@work_dir + "/" + name + "_SMPI.nc"
     data_smpi@diag_script = DIAG_SCRIPT
     data_smpi@var = "SMPI"
     data_smpi@ensemble_name = data_all_smpi@ensemble_name
+
     ; Create outfile directory
     system("mkdir -p " + config_user_info@work_dir)
     ncdf_outfile = ncdf_write(data_smpi, data_smpi@ncdf_dir)
 
     ; Sort datasets in alphabetical order (exclude MMM and set to end)
-
     pid = sort_alphabetically(data_smpi&models, \
                               ind(data_smpi&models.eq."Mean-model".or. \
                                   data_smpi&models.eq."Median-model"), "end")
@@ -330,7 +309,7 @@ begin
     outfile_plot = config_user_info@plot_dir + diags + "_SMPI"
 
   else  ; if metric not SMPI
-  
+
     ; Reduce size if all entries have only one reference
     if (all(ismissing(data_all(:, :, 1)))) then
       data_new = data_all(:, :, 0)
@@ -385,8 +364,8 @@ begin
     if (isatt(data_all, "metric")) then
       outfile_plot = outfile_plot + "_" + data_all@metric
     end if
-  end if 
- 
+  end if
+
   ; Create workspace
   wks = gsn_open_wks(file_type, outfile_plot)
   if (diag_script_info@metric.eq."taylor") then
@@ -408,27 +387,27 @@ begin
 
   leave_msg(DIAG_SCRIPT, "")
 
-  ; collect meta-data and call ESMValMD function
+  ; Collect meta-data and call ESMValMD function
   nc_file = ncdf_outfile
   plot_file = outfile_plot
   domains = ("global")
   if (diag_script_info@metric.eq."SMPI") then
     statistics = ("smpi")
-    caption = "Performance index I2. Similar to Figure 1 of Reichler and Kim (2008)."
+    caption = \
+      "Performance index I2. Similar to Figure 1 of Reichler and Kim (2008)."
     plottype = ("circle")
     authors = (/"righ_ma", "fran_fr", "gier_be", "hass_bg"/)
     references = (/"rk2008bams"/)
     infiles = climofiles
-  else 
+  else
     statistics = ("mean")
     caption = "Performance metric."
     plottype = ("taylor")
     authors = (/"righ_ma", "fran_fr"/)
     references = (/"righi15gmd", "gleckler08jgr"/)
-    infiles = "will still have to be defined!"     ; TO FIX!
+    infiles = climofiles
   end if
   log_provenance(nc_file, plot_file, caption, statistics, domains, plottype, \
                  authors, references, infiles)
-  
-  
+
 end

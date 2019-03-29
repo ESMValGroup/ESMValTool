@@ -54,6 +54,7 @@
 ; Caveats
 ;
 ; Modification history
+;    20190315-A_hass_bg: extended to smpi metric
 ;    20180503-A_righ_ma: completely rewritten and modularized
 ;    20171215-A_righ_ma: merged with perfmetrics_grading and
 ;                        permetrics_taylor.ncl
@@ -113,7 +114,8 @@ begin
   ; Store required attributes
   ptype = diag_script_info@plot_type
 
-  if (all(ptype.ne.(/"cycle", "zonal", "latlon", "cycle_latlon", "cycle_zonal"/))) then
+  if (all(ptype.ne. \
+          (/"cycle", "zonal", "latlon", "cycle_latlon", "cycle_zonal"/))) then
     error_msg("f", DIAG_SCRIPT, "", "plot_type " + ptype + " is not a " + \
               "supported plot_type in this diagnostic")
   end if
@@ -159,17 +161,8 @@ begin
       error_msg("f", DIAG_SCRIPT, "", "normalization must be " + \
                 "provided for each requested metric")
     end if
-  
-    if (any(diag_script_info@metric.eq."SMPI") .and. \
-        diag_script_info@range_option.eq.0) then
-      error_msg("f", DIAG_SCRIPT, "", "Currently Single Model " + \
-                "Performance Index is only supported for time periods of " + \
-                "the same length for all datasets")
-    end if
-    
   end if
 
-  
   ; Set dataset names
   datasetnames = metadata_att_as_array(info_items, "dataset")
 
@@ -265,14 +258,14 @@ begin
 
     ; Special case SMPI
     if (any(diag_script_info@metric.eq."SMPI")) then
-      nmodels = dimsizes(datasetnames) - 1  ; always 1 reference model
-      smpi = new((/diag_script_info@smpi_n_bootstrap + 1, nmodels/), float)
+      nModels = dimsizes(datasetnames) - 1  ; always 1 reference model
+      smpi = new((/diag_script_info@smpi_n_bootstrap + 1, nModels/), float)
       smpi!0 = "bootstrap_member"
       smpi!1 = "models"
       smpi&bootstrap_member = ispan(0, diag_script_info@smpi_n_bootstrap, 1)
       smpi&models = remove_index(datasetnames, ref_ind)
-    end if    
-    
+    end if
+
     ; Define grading filename
     do met = 0, nmetrics - 1
       ncdf_dir(met) = config_user_info@work_dir + "/" + \
@@ -310,7 +303,7 @@ begin
             normalize_metric(metric(:, :, iobs), \
                              diag_script_info@normalization(met))
         end do
-      end if      
+      end if
 
       ; Special case, SMPI normalization
       if (diag_script_info@metric(met).eq."SMPI") then
@@ -318,7 +311,6 @@ begin
         atts = True
         atts@project = diag_script_info@normalization(met)
         info = select_metadata_by_atts(input_file_info, atts)
-        ;print(info)
         delete(atts)
 
         do ii = 0, dimsizes(ens_idx) - 1
@@ -344,18 +336,17 @@ begin
         delete(metric@reference)
       end if
 
-      if diag_script_info@metric.eq."SMPI" then
-        ; Attach attributes to results
+      ; Attach attributes to results and write NetCDF output
+      if (diag_script_info@metric.eq."SMPI") then
+
         smpi@title = "metrics"
         smpi@long_name = "1 variable's Performance Index for " + \
-                         "the Single Model Performance Index"
-        ; val_smpi@metric = diag_script_info@metric
+          "the Single Model Performance Index"
         smpi@diag_script = (/DIAG_SCRIPT/)
         smpi@var = "performance_index"
         smpi@invar = var0
         smpi@region = location
         smpi@ensemble_name = diag_script_info@normalization(met)
-        ;smpi@num_climofiles = dimsizes(datasetnames)  ; FIX-ME ?
         smpi@num_climofiles = dimsizes(climofiles)
         do imod = 0, smpi@num_climofiles - 1
           num_climo = "climofile_" + imod
@@ -363,12 +354,10 @@ begin
         end do
         smpi@ncdf_dir = ncdf_dir(met)
 
-        ; Write NetCDF output
         ncdf_outfile = ncdf_write(smpi, smpi@ncdf_dir)
-        
+
       else
 
-        ; Attach attributes to the results
         metric@title = diag_script_info@metric(met) + " metric"
         metric@long_name = \
           "Grading table of metric " + diag_script_info@metric(met)
@@ -383,11 +372,10 @@ begin
         end do
         metric@ncdf_dir = ncdf_dir(met)
 
-        ; Write NetCDF output
         ncdf_outfile = ncdf_write(metric, metric@ncdf_dir)
-      
+
       end if
-      
+
       ; Write results of temporary grading list
       temp_dir = config_user_info@work_dir + "/" + \
         diag_script_info@metric(met) + ".nc"

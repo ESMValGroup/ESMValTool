@@ -64,7 +64,7 @@ begin
     var_all@var = var0
     var_all@diag_script = (/DIAG_SCRIPT/)
     copy_VarAtts(diag_script_info, var_all)
-    var_all@ref_model = variable_info@reference_dataset
+    var_all@ref_model = variable_info[0]@reference_dataset
     if (config_user_info@write_netcdf.eq."True") then
       var_all@ncdf = procpath
       ncdf_outfile = ncdf_write(var_all, procpath)
@@ -91,6 +91,7 @@ begin
     do met = 0, nmetrics - 1
 
       if (diag_script_info@metric(met).eq."taylor") then
+
         locidx = ind(datasetnames(imod).eq.taylor&models)
         if (ismissing(locidx)) then
           continue
@@ -101,7 +102,9 @@ begin
         taylor(0, locidx, 1) = \
           calculate_metric(var_all(:, :, :, 0), var_ref(:, :, :, 0), \
                            "correlation")
-      else if (diag_script_info@metric(met).eq."SMPI") then
+
+      elseif (diag_script_info@metric(met).eq."SMPI") then
+
         locidx = ind(datasetnames(imod).eq.smpi&models)
         if (ismissing(locidx)) then
           continue
@@ -109,7 +112,9 @@ begin
         smpi(:, locidx) = \
           (/calculate_metric(var_all(:, :, :, 0), var_ref(:, :, :, 0), \
                              "SMPI")/)
+
       else
+
         locidx = ind(datasetnames(imod).eq.grading&models)
         if (ismissing(locidx)) then
           continue
@@ -122,7 +127,7 @@ begin
             calculate_metric(var_all(:, :, :, 0), var_alt(:, :, :, 0), \
                              diag_script_info@metric(met))
         end if
-      end if
+
       end if
 
     end do
