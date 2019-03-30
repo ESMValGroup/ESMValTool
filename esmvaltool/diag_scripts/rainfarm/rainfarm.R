@@ -26,6 +26,7 @@
 library(tools)
 library(yaml)
 library(JuliaCall)  #nolint
+library(ncdf4)
 
 julia_setup()
 julia_library("RainFARM")
@@ -115,19 +116,35 @@ for (model_idx in c(1:(length(models_name)))) {
     sx <- slope
     print(paste0("Fixed spatial spectral slope: ", sx))
   }
+
   if (weights_climo != F) {
     if (!startsWith(weights_climo, "/")) {
       weights_climo <- file.path(settings$auxiliary_data_dir, weights_climo)
     }
     print(paste0("Using external climatology for weights: ", weights_climo))
     fileweights <- paste0(work_dir, "/", infilename, "_w.nc")
-    ww <- julia_call("rfweights", weights_climo, infile, nf,
-                     weightsfn = fileweights, varname = varname,
+
+    # Create support reference file
+    # This is temporary until the original Julia library is fixed
+    xvar <- ncdim_def("lon", "degrees_east", lon_mat, longname = "longitude")
+    yvar <- ncdim_def("lat", "degrees_north", lat_mat, longname = "latitude")
+    tvar <- ncdim_def("time", "days since 01-01-2000", 0., longname = "time",
+                      unlim = T)
+    my_ncdf <- ncvar_def("grid", "m", list(xvar, yvar, tvar), -999,
+                         longname = "grid", prec = "single")
+    reffile <- tempfile()
+    ncfile <- nc_create(reffile, my_ncdf, force_v4 = FALSE)
+    nc_close(ncfile)
+
+    ww <- julia_call("rfweights", weights_climo, reffile, nf,
+                     weightsfn = fileweights, varname = "grid",
                      fsmooth = conserv_smooth, need_return = "R");
+    unlink(reffile)
   } else {
     print("Not using weights")
     ww <- 1.
   }
+
   if (conserv_glob) {
     print("Conserving global field")
   } else if (conserv_smooth) {
