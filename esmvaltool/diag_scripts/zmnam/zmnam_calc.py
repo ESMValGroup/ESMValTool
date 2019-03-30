@@ -128,8 +128,6 @@ def zmnam_calc(da_fname, outdir, src_props):
         # Compute eigenvectors and eigenvalues
         eigenval, eigenvec = np.linalg.eig(cov)
 
-        print(eigenvec)
-
         sum_eigenval = np.sum(eigenval)
 
         eigenval_norm = eigenval[:] / sum_eigenval
