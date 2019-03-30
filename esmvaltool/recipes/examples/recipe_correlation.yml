@@ -40,7 +40,6 @@ diagnostics:
       ta:
         preprocessor: preprocess_3d_data
         reference_dataset: ERA-Interim
-        field: T3M
         start_year: 2000
         end_year: 2002
         project: CMIP5

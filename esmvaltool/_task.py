@@ -282,6 +282,7 @@ class DiagnosticTask(BaseTask):
                     'py': [which('python')],
                     'ncl': [which('ncl'), '-n', '-p'],
                     'r': [which('Rscript')],
+                    'jl': [which('julia')],
                 }
             else:
                 profile_file = os.path.join(self.settings['run_dir'],
@@ -293,6 +294,7 @@ class DiagnosticTask(BaseTask):
                     ],
                     'ncl': [which('ncl'), '-n', '-p'],
                     'r': [which('Rscript')],
+                    'jl': [which('julia')],
                 }
 
             if extension not in executables:
@@ -508,6 +510,7 @@ class DiagnosticTask(BaseTask):
             table = yaml.safe_load(file)
 
         ignore = (
+            'auxiliary_data_dir',
             'exit_on_ncl_warning',
             'input_files',
             'log_level',

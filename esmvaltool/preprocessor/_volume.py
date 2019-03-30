@@ -326,12 +326,11 @@ def extract_transect(cube, latitude=None, longitude=None):
     A pair of floats indicate the range that the transect should be
     extracted along the secondairy axis.
 
-    ie:
-      extract_transect(cube, longitude=-28)
-        will produce a transect along 28 West.
+    For instance `'extract_transect(cube, longitude=-28)'` will produce a
+    transect along 28 West.
 
-      extract_transect(cube, longitude=-28, latitude=[-50, 50])
-        will produce a transect along 28 West  between 50 south and 50 North.
+    Also, `'extract_transect(cube, longitude=-28, latitude=[-50, 50])'` will
+    produce a transect along 28 West  between 50 south and 50 North.
 
     This function is not yet implemented for irregular arrays - instead
     try the extract_trajectory function, but note that it is currently
