@@ -105,6 +105,8 @@ def main(cfg):
                               cfg['numclus'], 'anomalies',
                               cfg['output_file_type'], cfg['season'],
                               cfg['area'], cfg['extreme'], max_plot_panels)
+    else:
+        plotfiles = []
 
     for file in outfiles + plotfiles:
         with ProvenanceLogger(cfg) as provenance_logger:
