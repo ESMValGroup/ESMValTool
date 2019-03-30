@@ -60,6 +60,7 @@ miles_regimes_figures <- function(dataset, expid, ens, year1, year2,
   info_ref <- info_builder(dataset_ref, expid_ref, ens_ref,
                            year1_ref, year2_ref, season)
 
+  filenames <- c()
   kk0 <- 1
   # loop on regimes
   for (name in names_ref) {
@@ -81,6 +82,7 @@ miles_regimes_figures <- function(dataset, expid, ens, year1, year2,
                            dataset, expid, ens, year1, year2,
                            season, output_file_type)
     print(figname)
+    filenames <- c(filenames, figname)
 
     # Chose output format for figure - by JvH
     open_plot_device(figname, output_file_type)
@@ -136,4 +138,5 @@ miles_regimes_figures <- function(dataset, expid, ens, year1, year2,
 
     dev.off()
   }
+  return(list(figs = filenames, mod = nomefile, ref = nomefile_ref))
 }

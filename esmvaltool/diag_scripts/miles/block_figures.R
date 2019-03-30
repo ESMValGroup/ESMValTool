@@ -82,7 +82,7 @@ miles_block_figures <- function(dataset, expid, ens, year1, year2,
       year2, season, output_file_type
     )
     print(figname)
-    filenames=c(filenames, figname)
+    filenames <- c(filenames, figname)
 
     # special treatment for TM90: it is a 1D field!
     if (field == "TM90") {

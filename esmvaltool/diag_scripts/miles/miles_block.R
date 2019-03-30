@@ -5,19 +5,12 @@
 #                E. Arnone (ISAC-CNR, Italy) (ESMValTool v2.0 adaptation)
 # #############################################################################
 # Description
-# MiLES is a tool for estimating properties of mid-latitude climate originally
-# thought for EC-Earth output and then extended to any model data.
+# MiLES is a tool for estimating properties of mid-latitude climate.
 # It works on daily 500hPa geopotential height data and it produces
 # climatological figures for the chosen time period. Data are interpolated
 # on a common 2.5x2.5 grid.
-# Model data are compared against ECMWF ERA-INTERIM reanalysis
-# for a standard period (1989-2010).
-# It supports analysis for the 4 standard seasons.#
-# Required
-#
-# Optional
-#
-# Caveats
+# Model data are compared against a reference field such as the
+# ECMWF ERA-Interim reanalysis.
 #
 # Modification history
 #   20180525-arno_en: Conversion to v2.0
@@ -40,7 +33,7 @@ provenance_record <- function(infile) {
                 themes = list("phys"),
                 domains = list("nh"))
   return(xprov)
-}   
+}
 
 diag_scripts_dir <- Sys.getenv("diag_scripts")
 
@@ -150,8 +143,9 @@ if (write_plots) {
           FIGDIR = plot_dir, FILESDIR = work_dir,
           REFDIR = work_dir
         )
-        # Set provenance for output files
-        xprov <- provenance_record(list(filenames$mod, filenames$ref))
+        # Set provenance for output files (same as diagnostic files)
+        xprov <- provenance_record(list(climofiles[model_idx],
+                                        climofiles[ref_idx]))
         for (fname in filenames$figs) {
           provenance[[fname]] <- xprov
         }
