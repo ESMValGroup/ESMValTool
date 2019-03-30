@@ -106,60 +106,59 @@ for (model_idx in c(1:(length(models_name)))) {
   lon_f <- ans[[1]]
   lat_f <- ans[[2]]
   if (slope == 0) {
-      ans <- julia_call("fft3d", pr, need_return = "R"  )
-      fxp <- ans[[1]]
-      ftp <- ans[[2]]
-      sx <- julia_call("fitslopex", fxp, kmin = 1, need_return = "R" )
-      print(paste0("Computed spatial spectral slope: ", sx))
+    ans <- julia_call("fft3d", pr, need_return = "R"  )
+    fxp <- ans[[1]]
+    ftp <- ans[[2]]
+    sx <- julia_call("fitslopex", fxp, kmin = 1, need_return = "R" )
+    print(paste0("Computed spatial spectral slope: ", sx))
   } else {
-      sx <- slope
-      print(paste0("Fixed spatial spectral slope: ", sx))
+    sx <- slope
+    print(paste0("Fixed spatial spectral slope: ", sx))
   }
   if (weights_climo != F) {
-      if (!startsWith(weights_climo, "/")) {
-        weights_climo <- file.path(settings$auxiliary_data_dir, weights_climo)
-      }
-      print(paste0("Using external climatology for weights: ", weights_climo))
-      fileweights <- paste0(work_dir, "/", infilename, "_w.nc")
-      ww <- julia_call("rfweights", weights_climo, infile, nf,
-                      weightsfn = fileweights, varname = varname,
-                      fsmooth = conserv_smooth, need_return = "R");
+    if (!startsWith(weights_climo, "/")) {
+      weights_climo <- file.path(settings$auxiliary_data_dir, weights_climo)
+    }
+    print(paste0("Using external climatology for weights: ", weights_climo))
+    fileweights <- paste0(work_dir, "/", infilename, "_w.nc")
+    ww <- julia_call("rfweights", weights_climo, infile, nf,
+                     weightsfn = fileweights, varname = varname,
+                     fsmooth = conserv_smooth, need_return = "R");
   } else {
     print("Not using weights")
     ww <- 1.
   }
   if (conserv_glob) {
-     print("Conserving global field")
+    print("Conserving global field")
   } else if (conserv_smooth) {
-     print("Smooth conservation")
+    print("Smooth conservation")
   } else {
-     print("Box conservation")
+    print("Box conservation")
   }
   for (iens in 1:nens) {
-      print(paste0("Realization ", iens))
-      rd <- julia_call("rainfarm", pr, sx, nf, ww,
-                              fglob = conserv_glob,
-                              fsmooth = conserv_smooth,
-                              verbose = T, need_return = "R")
-      fname <- sprintf("%s_%04d.nc", outfilename, iens)
-      julia_call("write_netcdf2d", fname, rd, lon_f, lat_f, varname, infile )
+    print(paste0("Realization ", iens))
+    rd <- julia_call("rainfarm", pr, sx, nf, ww, fglob = conserv_glob,
+                     fsmooth = conserv_smooth, verbose = T, need_return = "R")
+    fname <- sprintf("%s_%04d.nc", outfilename, iens)
+    julia_call("write_netcdf2d", fname, rd, lon_f, lat_f, varname, infile )
 
-      # Set provenance for this output file
-      caption <- paste0("RainFARM precipitation downscaling")
-      xbase <- list(ancestors = list(infile),
-                    authors = list("arno_en", "hard_jo"),
-                    references = list("donofrio14jh", "rebora06jhm",
-                                      "terzago18nhess"),
-                    projects = list("c3s-magic"),
-                    caption = caption,
-                    statistics = list("other"),
-                    realms = list("atmos"),
-                    themes = list("phys"),
-                    domains = list("reg"))
+    # Set provenance for this output file
+    caption <- paste0("RainFARM precipitation downscaling")
+    xprov <- list(ancestors = list(infile),
+                  authors = list("arno_en", "hard_jo"),
+                  references = list("donofrio14jh", "rebora06jhm",
+                                    "terzago18nhess"),
+                  projects = list("c3s-magic"),
+                  caption = caption,
+                  statistics = list("other"),
+                  realms = list("atmos"),
+                  themes = list("phys"),
+                  domains = list("reg"))
 
       # Store provenance in main provenance list
-      provenance[[fname]] <- xbase
+    provenance[[fname]] <- xprov
   }
-  # Write provenance to file
-  write_yaml(provenance, provenance_file)
 }
+
+# Write provenance to file
+write_yaml(provenance, provenance_file)
