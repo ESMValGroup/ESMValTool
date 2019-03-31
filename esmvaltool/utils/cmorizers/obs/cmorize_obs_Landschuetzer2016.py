@@ -66,7 +66,7 @@ def _fix_fillvalue(cube, field, filename):
     if hasattr(field.cf_data, 'missing_value'):
         cube.data = da.ma.masked_equal(cube.core_data(),
             field.cf_data.missing_value
-        )
+    )
 
 
 def extract_variable(var_info, raw_info, out_dir, attrs):
