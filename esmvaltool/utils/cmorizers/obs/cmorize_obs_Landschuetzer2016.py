@@ -29,7 +29,6 @@ import logging
 import os
 
 import iris
-import numpy as np
 from dask import array as da
 
 from .utilities import (_add_metadata,
@@ -62,9 +61,11 @@ def _fix_data(cube, var):
 
 
 def _fix_fillvalue(cube, field, filename):
+    """ Create masked array from missing_value."""
+    #pylint: disable=unused-argument
     if hasattr(field.cf_data, 'missing_value'):
         cube.data = da.ma.masked_equal(cube.core_data(),
-                    field.cf_data.missing_value)
+            field.cf_data.missing_value)
 
 
 def extract_variable(var_info, raw_info, out_dir, attrs):
