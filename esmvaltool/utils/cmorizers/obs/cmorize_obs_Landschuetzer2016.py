@@ -59,12 +59,14 @@ def _fix_data(cube, var):
     cube.metadata = metadata
     return cube
 
+
 # pylint: disable=unused-argument
 def _fix_fillvalue(cube, field, filename):
     """Create masked array from missing_value."""
     if hasattr(field.cf_data, 'missing_value'):
         cube.data = da.ma.masked_equal(cube.core_data(),
-            field.cf_data.missing_value)
+            field.cf_data.missing_value
+        )
 
 
 def extract_variable(var_info, raw_info, out_dir, attrs):
