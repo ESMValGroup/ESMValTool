@@ -20,8 +20,8 @@ channels:
 
 dependencies:
   # Python packages that cannot be installed from PyPI:
-  - iris
   - esmpy
+  - iris>=2.2
   - matplotlib<3  # Can be installed from PyPI, but is a dependency of iris and should be pinned.
   - python-stratify
   - xarray  # Can be installed from PyPI, but here to get a consistent set of depencies with iris.
