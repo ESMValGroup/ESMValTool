@@ -1,4 +1,4 @@
-# pylint: disable=invalid-name
+# pylint: disable=invalid-name, disable=unused-argument
 """ESMValTool CMORizer script.
 
 # #############################################################################
@@ -61,8 +61,7 @@ def _fix_data(cube, var):
 
 
 def _fix_fillvalue(cube, field, filename):
-    """ Create masked array from missing_value."""
-    #pylint: disable=unused-argument
+    """Create masked array from missing_value."""
     if hasattr(field.cf_data, 'missing_value'):
         cube.data = da.ma.masked_equal(cube.core_data(),
             field.cf_data.missing_value)
