@@ -26,6 +26,7 @@ from .preprocessor._download import synda_search
 from .preprocessor._io import DATASET_KEYS, concatenate_callback
 from .preprocessor._regrid import (get_cmor_levels, get_reference_levels,
                                    parse_cell_spec)
+from .preprocessor._reformat import cmor_fix_fx
 
 logger = logging.getLogger(__name__)
 
@@ -375,6 +376,7 @@ def _update_fx_settings(settings, variable, config_user):
                         variable=var,
                         rootpath=config_user['rootpath'],
                         drs=config_user['drs']))
+                fx_files = cmor_fix_fx(fx_files, var)
         settings['derive']['fx_files'] = fx_files
 
     # update for landsea
@@ -390,6 +392,7 @@ def _update_fx_settings(settings, variable, config_user):
             variable=var,
             rootpath=config_user['rootpath'],
             drs=config_user['drs'])
+        fx_files_dict = cmor_fix_fx(fx_files_dict, var)
 
         # allow both sftlf and sftof
         if fx_files_dict['sftlf']:
@@ -408,6 +411,7 @@ def _update_fx_settings(settings, variable, config_user):
             variable=var,
             rootpath=config_user['rootpath'],
             drs=config_user['drs'])
+        fx_files_dict = cmor_fix_fx(fx_files_dict, var)
 
         # allow sftgif (only, for now)
         if fx_files_dict['sftgif']:
@@ -416,11 +420,13 @@ def _update_fx_settings(settings, variable, config_user):
 
     for step in ('average_region', 'average_volume'):
         if settings.get(step, {}).get('fx_files'):
-            settings[step]['fx_files'] = get_input_fx_filelist(
+            fx_files_dict = get_input_fx_filelist(
                 variable=variable,
                 rootpath=config_user['rootpath'],
                 drs=config_user['drs'],
             )
+            fx_files_dict = cmor_fix_fx(fx_files_dict, variable)
+            settings[step]['fx_files'] = fx_files_dict
 
 
 def _read_attributes(filename):

@@ -95,13 +95,15 @@ class CMORCheck(object):
         self._check_fill_value()
         self._check_dim_names()
         self._check_coords()
-        self._check_time_coord()
+        if self.frequency != 'fx':
+            self._check_time_coord()
         self._check_rank()
 
         self.report_warnings(logger)
         self.report_errors()
 
-        self._add_auxiliar_time_coordinates()
+        if self.frequency != 'fx':
+            self._add_auxiliar_time_coordinates()
         return self._cube
 
     def report_errors(self):
