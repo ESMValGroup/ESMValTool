@@ -384,8 +384,7 @@ def test_reference_dataset(tmp_path, patched_datafinder, config_user,
         'CMIP5',
         'MPI-ESM-LR',
         'ta',
-        fix_dir,
-        'air_pressure',
+        fix_dir
     )
 
     assert 'regrid' not in reference.settings
