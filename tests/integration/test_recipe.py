@@ -2,19 +2,21 @@ import os
 from pprint import pformat
 from textwrap import dedent
 
-import iris
+import esmvaltool
+import numpy as np
 import pytest
 import yaml
-from mock import create_autospec
-from six import text_type
-
-import esmvaltool
 from esmvaltool._recipe import TASKSEP, read_recipe_file
 from esmvaltool._task import DiagnosticTask
-from esmvaltool.diag_scripts.shared import (
-    ProvenanceLogger, get_diagnostic_filename, get_plot_filename)
+from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
+                                            get_diagnostic_filename,
+                                            get_plot_filename)
 from esmvaltool.preprocessor import DEFAULT_ORDER, PreprocessingTask
 from esmvaltool.preprocessor._io import concatenate_callback
+from six import text_type
+
+import iris
+from mock import create_autospec
 
 from .test_diagnostic_run import write_config_user_file
 from .test_provenance import check_provenance
@@ -76,7 +78,28 @@ def create_test_file(filename, tracking_id=None):
     attributes = {}
     if tracking_id is not None:
         attributes['tracking_id'] = tracking_id
-    cube = iris.cube.Cube([], attributes=attributes)
+    # create real cube for fx file
+    if os.path.basename(filename) == 'sftlf_fx_GFDL-CM3_historical_r0i0p0.nc':
+        coord_sys = iris.coord_systems.GeogCS(
+            iris.fileformats.pp.EARTH_RADIUS)
+        data = np.ones((5, 5))
+        lons = iris.coords.DimCoord(
+            [i + .5 for i in range(5)],
+            standard_name='longitude', var_name='lon',
+            bounds=[[i, i + 1.] for i in range(5)],
+            units='degrees_east',
+            coord_system=coord_sys)
+        lats = iris.coords.DimCoord([i + .5 for i in range(5)],
+                                    standard_name='latitude',
+                                    var_name='lat',
+                                    bounds=[[i, i + 1.] for i in range(5)],
+                                    units='degrees_north',
+                                    coord_system=coord_sys)
+        coords_spec = [(lats, 0), (lons, 1)]
+        cube = iris.cube.Cube(data, dim_coords_and_dims=coords_spec)
+        cube.standard_name = 'land_area_fraction'
+    else:
+        cube = iris.cube.Cube([], attributes=attributes)
 
     iris.save(cube, filename)
 
