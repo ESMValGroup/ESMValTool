@@ -3,6 +3,8 @@ def ecv_lookup(ecv_name):
         "albdiffbnd": "diffuse surface albedo for each band",
         "albdirbnd": "direct surface albedo for each band",
         "albisccp": "single scattering cloud albedo",
+        "bdalb" : "broadband directional albedo at the surface",
+        "bhalb" : "broadband bihemispherical albedo at the surface",
         "burntArea": "fraction of grid cell that is covered by burnt vegetation",
         "cct": "air pressure at convective cloud top",
         "cfc11": "mole concentration of CFC-11 in sea water",

@@ -4,6 +4,12 @@ def color_lookup(ecv_name):
         "example": dict({"Data": "RdYlGn",
                          "Sequential":"YlGn",
                          "Diverging":"BrBG"}),
+        "bdalb" : dict({"Data": "RdYlGn",
+                         "Sequential":"YlGn",
+                         "Diverging":"BrBG"}),
+        "bhalb" : dict({"Data": "RdYlGn",
+                         "Sequential":"YlGn",
+                         "Diverging":"BrBG"}),
         "albdiffbnd": dict(),
         "albdirbnd": dict(),
         "albisccp": dict({"Data": "RdYlGn",
@@ -105,7 +111,7 @@ def color_lookup(ecv_name):
                      "Diverging":"RdBu_r"}),
         "sm": dict({"Data": "RdYlGn",
                     "Sequential":"YlGn",
-                    "Diverging":"BrBg"}),
+                    "Diverging":"BrBG"}),
         "snc": dict(),
         "snd": dict(),
         "swe": dict(),
@@ -176,7 +182,6 @@ def color_lookup(ecv_name):
                     "Sequential":"GnBu",
                     "Diverging":"RdBu_r"}),
     }
-
     if ecv_name in color_dict.keys():
         if color_dict[ecv_name]:
             return color_dict[ecv_name]
