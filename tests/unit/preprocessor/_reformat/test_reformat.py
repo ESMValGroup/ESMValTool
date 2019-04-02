@@ -3,6 +3,7 @@ import os
 import unittest
 
 import numpy as np
+from esmvaltool.cmor.check import CMORCheckError
 from esmvaltool.preprocessor._reformat import cmor_fix_fx
 
 import iris
@@ -83,6 +84,10 @@ class Test(tests.Test):
             'mrsofc_fx_HadGEM2-ES_historical_r0i0p0.nc')
         if not os.path.exists(os.path.dirname(var['filename'])):
             os.makedirs(os.path.dirname(var['filename']))
+
+        # break the units a bit
+        self.to_fix_cube.units = "kg"
+
         iris.save(self.to_fix_cube,
                   os.path.join(os.path.dirname(var['filename']),
                                'mrsofc_fx_HadGEM2-ES_historical_r0i0p0.nc'))
@@ -90,7 +95,15 @@ class Test(tests.Test):
             'mrsofc': os.path.join(
                 os.path.dirname(var['filename']),
                 'mrsofc_fx_HadGEM2-ES_historical_r0i0p0.nc')}
-        cmor_fix_fx(fx_files, var)
+        with self.assertRaises(CMORCheckError):
+            cmor_fix_fx(fx_files, var)
+
+        # re-fix the units and re-test
+        self.to_fix_cube.units = "kg m-2"
+        iris.save(self.to_fix_cube,
+                  os.path.join(os.path.dirname(var['filename']),
+                               'mrsofc_fx_HadGEM2-ES_historical_r0i0p0.nc'))
+
         saved_cube = iris.load_cube(var['filename'])
         self.assertArrayEqual(self.to_fix_cube.data, saved_cube.data)
         self.assertArrayEqual(self.to_fix_cube.coord('longitude').points,
@@ -100,6 +113,28 @@ class Test(tests.Test):
         self.assertArrayEqual(np.array([86., 87., 88., 89., 92.000000073]),
                               saved_cube.coord('latitude').points)
 
+    def test_cmor_fix_fx_fail(self):
+        """Test the checks and fixes on the two fx test files."""
+        var = {}
+        var['project'] = 'CMIP6'
+        var['dataset'] = 'HadGEM2-ES'
+        var['cmor_table'] = 'CMIP6'
+        var['filename'] = os.path.join(
+            'test-reports', 'fx_files', 'mrsofc',
+            'mrsofc_fx_HadGEM2-ES_historical_r0i0p0.nc')
+        if not os.path.exists(os.path.dirname(var['filename'])):
+            os.makedirs(os.path.dirname(var['filename']))
+
+        iris.save(self.to_fix_cube,
+                  os.path.join(os.path.dirname(var['filename']),
+                               'mrsofc_fx_HadGEM2-ES_historical_r0i0p0.nc'))
+        fx_files = {
+            'mrsofc': os.path.join(
+                os.path.dirname(var['filename']),
+                'mrsofc_fx_HadGEM2-ES_historical_r0i0p0.nc')}
+
+        with self.assertRaises(CMORCheckError):
+            cmor_fix_fx(fx_files, var)
 
 if __name__ == '__main__':
     unittest.main()
