@@ -2,13 +2,10 @@
 
 import importlib
 import logging
-import os
 from copy import deepcopy
 from pathlib import Path
 
 import iris
-
-from ._baseclass import DerivedVariableBase
 
 logger = logging.getLogger(__name__)
 
@@ -99,7 +96,11 @@ def derive(cubes,
     if fx_files:
         for (fx_var, fx_path) in fx_files.items():
             if fx_path is not None:
-                cubes.append(iris.load_cube(fx_path))
+                fx_cube = iris.load_cube(
+                    fx_path,
+                    constraint=iris.Constraint(
+                        cube_func=lambda c, var=fx_var: c.var_name == var))
+                cubes.append(fx_cube)
             else:
                 logger.debug(
                     "Requested fx variable '%s' for derivation of "
