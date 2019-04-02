@@ -122,5 +122,6 @@ class Test(tests.Test):
         with self.assertRaises(CMORCheckError):
             cmor_fix_fx(fx_files, var)
 
+
 if __name__ == '__main__':
     unittest.main()
