@@ -10,6 +10,33 @@ import iris
 import tests
 
 
+def set_paths(fx_var):
+    """Set paths and make dirs."""
+    in_path = os.path.join('test-reports', 'fx_files', fx_var)
+    if not os.path.exists(in_path):
+        os.makedirs(in_path)
+    out_path = os.path.join(
+        'test-reports', 'fx_files_fixed', fx_var)
+    if not os.path.exists(out_path):
+        os.makedirs(out_path)
+    return in_path, out_path
+
+
+def make_dicts(cube, project, dataset, fx_var, file_name):
+    """Make the variable and fx_files dicts."""
+    var = {}
+    var['project'] = project
+    var['dataset'] = dataset
+    var['cmor_table'] = project
+
+    # make paths and dirs
+    in_path, out_path = set_paths(fx_var)
+    iris.save(cube, os.path.join(in_path, file_name))
+    fx_files = {fx_var: os.path.join(in_path, file_name)}
+    var['filename'] = os.path.join(out_path, file_name)
+    return var, fx_files
+
+
 class Test(tests.Test):
     """Test class for the :func:`esmvaltool.preprocessor._reformat` module."""
 
@@ -50,89 +77,48 @@ class Test(tests.Test):
 
     def test_cmor_fix_fx_nofix(self):
         """Test the checks and fixes on the two fx test files."""
-        var = {}
-        var['project'] = 'CMIP5'
-        var['dataset'] = 'GFDL-CM3'
-        var['cmor_table'] = 'CMIP5'
-        var['filename'] = os.path.join(
-            'test-reports', 'fx_files', 'sftlf',
-            'sftlf_fx_GFDL-CM3_historical_r0i0p0.nc')
-        if not os.path.exists(os.path.dirname(var['filename'])):
-            os.makedirs(os.path.dirname(var['filename']))
-        iris.save(self.good_cube,
-                  os.path.join(os.path.dirname(var['filename']),
-                               'sftlf_fx_GFDL-CM3_historical_r0i0p0.nc'))
-        fx_files = {
-            'sftlf': os.path.join(os.path.dirname(var['filename']),
-                                  'sftlf_fx_GFDL-CM3_historical_r0i0p0.nc')}
-        cmor_fix_fx(fx_files, var)
-        saved_cube = iris.load_cube(var['filename'])
-        self.assertArrayEqual(self.good_cube.data, saved_cube.data)
+        var, fx_files = make_dicts(self.good_cube, 'CMIP5',
+                                   'GFDL-CM3', 'sftlf',
+                                   'sftlf_fx_GFDL-CM3_historical_r0i0p0.nc')
+        fixed_cubes = cmor_fix_fx(fx_files, var)
+        fixed_cube = iris.load_cube(fixed_cubes['sftlf'])
+        self.assertArrayEqual(self.good_cube.data, fixed_cube.data)
         self.assertArrayEqual(self.good_cube.coord('longitude').points,
-                              saved_cube.coord('longitude').points)
+                              fixed_cube.coord('longitude').points)
         self.assertArrayEqual(self.good_cube.coord('latitude').points,
-                              saved_cube.coord('latitude').points)
+                              fixed_cube.coord('latitude').points)
 
     def test_cmor_fix_fx_withfix(self):
         """Test the checks and fixes on the two fx test files."""
-        var = {}
-        var['project'] = 'CMIP5'
-        var['dataset'] = 'HadGEM2-ES'
-        var['cmor_table'] = 'CMIP5'
-        var['filename'] = os.path.join(
-            'test-reports', 'fx_files', 'mrsofc',
-            'mrsofc_fx_HadGEM2-ES_historical_r0i0p0.nc')
-        if not os.path.exists(os.path.dirname(var['filename'])):
-            os.makedirs(os.path.dirname(var['filename']))
-
-        # break the units a bit
+        # break the units a bit and compute
         self.to_fix_cube.units = "kg"
-
-        iris.save(self.to_fix_cube,
-                  os.path.join(os.path.dirname(var['filename']),
-                               'mrsofc_fx_HadGEM2-ES_historical_r0i0p0.nc'))
-        fx_files = {
-            'mrsofc': os.path.join(
-                os.path.dirname(var['filename']),
-                'mrsofc_fx_HadGEM2-ES_historical_r0i0p0.nc')}
+        var, fx_files = make_dicts(
+            self.to_fix_cube, 'CMIP5',
+            'HadGEM2-ES', 'mrsofc',
+            'mrsofc_fx_HadGEM2-ES_historical_r0i0p0.nc')
         with self.assertRaises(CMORCheckError):
             cmor_fix_fx(fx_files, var)
 
         # re-fix the units and re-test
         self.to_fix_cube.units = "kg m-2"
-        iris.save(self.to_fix_cube,
-                  os.path.join(os.path.dirname(var['filename']),
-                               'mrsofc_fx_HadGEM2-ES_historical_r0i0p0.nc'))
-
-        saved_cube = iris.load_cube(var['filename'])
-        self.assertArrayEqual(self.to_fix_cube.data, saved_cube.data)
+        var, fx_files = make_dicts(
+            self.to_fix_cube, 'CMIP5',
+            'HadGEM2-ES', 'mrsofc',
+            'mrsofc_fx_HadGEM2-ES_historical_r0i0p0.nc')
+        fixed_cubes = cmor_fix_fx(fx_files, var)
+        fixed_cube = iris.load_cube(fixed_cubes['mrsofc'])
+        self.assertArrayEqual(self.to_fix_cube.data, fixed_cube.data)
         self.assertArrayEqual(self.to_fix_cube.coord('longitude').points,
-                              saved_cube.coord('longitude').points)
-        # TODO cmor checks in CMIP5 are loose: this case should return
-        # a CMORCheckError as it does for CMIP6
-        self.assertArrayEqual(np.array([86., 87., 88., 89., 92.000000073]),
-                              saved_cube.coord('latitude').points)
+                              fixed_cube.coord('longitude').points)
+        self.assertArrayEqual(np.array([86., 87., 88., 89., 90.]),
+                              fixed_cube.coord('latitude').points)
 
     def test_cmor_fix_fx_fail(self):
         """Test the checks and fixes on the two fx test files."""
-        var = {}
-        var['project'] = 'CMIP6'
-        var['dataset'] = 'HadGEM2-ES'
-        var['cmor_table'] = 'CMIP6'
-        var['filename'] = os.path.join(
-            'test-reports', 'fx_files', 'mrsofc',
+        var, fx_files = make_dicts(
+            self.good_cube, 'CMIP6',
+            'HadGEM2-ES', 'mrsofc',
             'mrsofc_fx_HadGEM2-ES_historical_r0i0p0.nc')
-        if not os.path.exists(os.path.dirname(var['filename'])):
-            os.makedirs(os.path.dirname(var['filename']))
-
-        iris.save(self.to_fix_cube,
-                  os.path.join(os.path.dirname(var['filename']),
-                               'mrsofc_fx_HadGEM2-ES_historical_r0i0p0.nc'))
-        fx_files = {
-            'mrsofc': os.path.join(
-                os.path.dirname(var['filename']),
-                'mrsofc_fx_HadGEM2-ES_historical_r0i0p0.nc')}
-
         with self.assertRaises(CMORCheckError):
             cmor_fix_fx(fx_files, var)
 
