@@ -2836,6 +2836,7 @@ diagnostics:
 
         ### Required attributes
         ancestors: ['tas', 'ch12_calc_map_diff_scaleT_tas']
+        diagscript: 'ch12_calc_map_diff_scaleT_mmm_stipp'
 
         ### Optional attributes
         # Map projection (any valid ncl projection, default Robinson)
@@ -2868,6 +2869,7 @@ diagnostics:
         mip: Amon
         field: T2Ms
         ensemble: r1i1p1
+        exp: historical
       pr:
         preprocessor: preproc_map
         project: CMIP5
@@ -2939,6 +2941,7 @@ diagnostics:
         <<: *pr_scale_settings
         script: ipcc_ar5/ch12_plot_map_diff_mmm_stipp.ncl
         ancestors: ['pr', 'pr_change_scaleT/ch12_calc_map_diff_scaleT_pr']
+        diagscript: 'ch12_calc_map_diff_scaleT_mmm_stipp'
 
         # Optional attributes:
         # map projection, any valid ncl projection
