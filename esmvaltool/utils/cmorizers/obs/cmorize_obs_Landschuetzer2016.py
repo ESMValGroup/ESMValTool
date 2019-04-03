@@ -27,15 +27,13 @@
 
 import logging
 import os
+from warnings import catch_warnings, filterwarnings
 
 import iris
 from dask import array as da
 
-from .utilities import (_add_metadata,
-                        _fix_var_metadata,
-                        _fix_coords,
-                        _read_cmor_config,
-                        _save_variable)
+from .utilities import (_add_metadata, _fix_coords, _fix_var_metadata,
+                        _read_cmor_config, _save_variable, constant_metadata)
 
 logger = logging.getLogger(__name__)
 
@@ -46,17 +44,15 @@ CFG = _read_cmor_config('Landschuetzer2016.yml')
 def _fix_data(cube, var):
     """Specific data fixes for different variables."""
     logger.info("Fixing data ...")
-    # fix for bad missing value definition
-    metadata = cube.metadata
-    if var in ['fgco2', ]:
-        # Assume standard year 365_day
-        cube *= -12.01 / 1000. / (86400. * 365.)
-        metadata.attributes['positive'] = 'down'
-    if var in ['dpco2', ]:
-        cube *= -1.0 * 101325. / 1.e06
-    if var in ['spco2', ]:
-        cube *= 101325. / 1.e06
-    cube.metadata = metadata
+    with constant_metadata(cube) as metadata:
+        if var == 'fgco2':
+            # Assume standard year 365_day
+            cube *= -12.01 / 1000. / (86400. * 365.)
+            metadata.attributes['positive'] = 'down'
+        elif var == 'dpco2':
+            cube *= -1.0 * 101325. / 1.e06
+        elif var == 'spco2':
+            cube *= 101325. / 1.e06
     return cube
 
 
@@ -64,6 +60,7 @@ def _fix_data(cube, var):
 def _fix_fillvalue(cube, field, filename):
     """Create masked array from missing_value."""
     if hasattr(field.cf_data, 'missing_value'):
+        # fix for bad missing value definition
         cube.data = da.ma.masked_equal(cube.core_data(),
                                        field.cf_data.missing_value)
 
@@ -71,7 +68,14 @@ def _fix_fillvalue(cube, field, filename):
 def extract_variable(var_info, raw_info, out_dir, attrs):
     """Extract to all vars."""
     var = var_info.short_name
-    cubes = iris.load(raw_info['file'], callback=_fix_fillvalue)
+    with catch_warnings():
+        filterwarnings(
+            action='ignore',
+            message='Ignoring netCDF variable .* invalid units .*',
+            category=UserWarning,
+            module='iris',
+        )
+        cubes = iris.load(raw_info['file'], callback=_fix_fillvalue)
     rawvar = raw_info['name']
 
     for cube in cubes:
@@ -80,10 +84,14 @@ def extract_variable(var_info, raw_info, out_dir, attrs):
             _fix_coords(cube)
             _fix_data(cube, var)
             _add_metadata(cube, attrs)
-            _save_variable(cube, var, out_dir, attrs,
-                           fill_value=cube.data.fill_value,
-                           local_keys=['positive'],
-                           unlimited_dimensions=['time'])
+            _save_variable(
+                cube,
+                var,
+                out_dir,
+                attrs,
+                local_keys=['positive'],
+                unlimited_dimensions=['time'],
+            )
 
 
 def cmorization(in_dir, out_dir):
@@ -103,4 +111,12 @@ def cmorization(in_dir, out_dir):
         var_info = cmor_table.get_variable(vals['mip'], var)
         raw_info = {'name': vals['raw'], 'file': inpfile}
         glob_attrs['mip'] = vals['mip']
-        extract_variable(var_info, raw_info, out_dir, glob_attrs)
+        with catch_warnings():
+            filterwarnings(
+                action='ignore',
+                message=('WARNING: missing_value not used since it\n'
+                         'cannot be safely cast to variable data type'),
+                category=UserWarning,
+                module='iris',
+            )
+            extract_variable(var_info, raw_info, out_dir, glob_attrs)

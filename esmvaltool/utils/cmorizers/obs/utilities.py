@@ -2,22 +2,29 @@
 import datetime
 import logging
 import os
+from contextlib import contextmanager
 
 import iris
-import numpy as np
-from cf_units import Unit
-
 import yaml
+from cf_units import Unit
+from dask import array as da
 
-from esmvaltool.cmor.table import CMOR_TABLES
 from esmvaltool import __version__ as version
+from esmvaltool.cmor.table import CMOR_TABLES
 
 logger = logging.getLogger(__name__)
 
 
-# read the associated dataset-specific config file
+@contextmanager
+def constant_metadata(cube):
+    """Do cube math without modifying units etc."""
+    metadata = cube.metadata
+    yield metadata
+    cube.metadata = metadata
+
+
 def _read_cmor_config(cmor_config):
-    """Read cmor configuration in a dict."""
+    """Read the associated dataset-specific config file."""
     reg_path = os.path.join(
         os.path.dirname(__file__), 'cmor_config', cmor_config)
     with open(reg_path, 'r') as file:
@@ -110,15 +117,13 @@ def _fix_dim_coordnames(cube):
 def _fix_bounds(cube, dim_coord):
     """Reset and fix all bounds."""
     if len(cube.coord(dim_coord).points) > 1:
-        if not cube.coord(dim_coord).has_bounds():
-            cube.coord(dim_coord).guess_bounds()
-        else:
+        if cube.coord(dim_coord).has_bounds():
             cube.coord(dim_coord).bounds = None
-            cube.coord(dim_coord).guess_bounds()
+        cube.coord(dim_coord).guess_bounds()
 
     if cube.coord(dim_coord).has_bounds():
-        cube.coord(dim_coord).bounds = np.array(
-            cube.coord(dim_coord).bounds, dtype='float64')
+        cube.coord(dim_coord).bounds = da.array(
+            cube.coord(dim_coord).core_bounds(), dtype='float64')
     return cube
 
 
@@ -180,7 +185,7 @@ def _add_metadata(cube, attrs):
 
 def _roll_cube_data(cube, shift, axis):
     """Roll a cube data on specified axis."""
-    cube.data = np.roll(cube.data, shift, axis=axis)
+    cube.data = da.roll(cube.core_data(), shift, axis=axis)
     return cube
 
 
@@ -198,11 +203,17 @@ def _save_variable(cube, var, outdir, attrs, **kwargs):
         date2 = str(dates[1].year) + '%02d' % dates[1].month
         time_suffix = '-'.join([date1, date2])
 
-    cmor_prefix = '_'.join([
-        'OBS', attrs['dataset_id'], attrs['modeling_realm'],
-        attrs['version'], attrs['mip'], var
-    ])
-    file_name = cmor_prefix + '_' + time_suffix + '.nc'
+    file_name = '_'.join([
+        'OBS',
+        attrs['dataset_id'],
+        attrs['modeling_realm'],
+        attrs['version'],
+        attrs['mip'],
+        var,
+        time_suffix,
+    ]) + '.nc'
     file_path = os.path.join(outdir, file_name)
     logger.info('Saving: %s', file_path)
+    status = 'lazy' if cube.has_lazy_data() else 'realized'
+    logger.info('Cube has %s data [lazy is preferred]', status)
     iris.save(cube, file_path, **kwargs)

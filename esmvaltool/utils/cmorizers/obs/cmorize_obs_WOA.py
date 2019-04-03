@@ -36,28 +36,25 @@ import os
 
 import iris
 
-from .utilities import (_add_metadata,
-                        _convert_timeunits,
-                        _fix_var_metadata,
-                        _fix_coords,
-                        _read_cmor_config,
-                        _save_variable)
+from .utilities import (_add_metadata, _convert_timeunits, _fix_coords,
+                        _fix_var_metadata, _read_cmor_config, _save_variable,
+                        constant_metadata)
 
 logger = logging.getLogger(__name__)
 
 # read in CMOR configuration
 CFG = _read_cmor_config('WOA.yml')
-ALL_YEARS = CFG['custom']['years']
 
 
 def _fix_data(cube, var):
     """Specific data fixes for different variables."""
     logger.info("Fixing data ...")
-    mll_to_mol = ['po4', 'si', 'no3']
-    if var in mll_to_mol:
-        cube.data = cube.data / 1000.  # Convert from ml/l to mol/m^3
-    if var == 'o2':
-        cube.data = cube.data * 44.661 / 1000.  # Convert from ml/l to mol/m^3
+    with constant_metadata(cube):
+        mll_to_mol = ['po4', 'si', 'no3']
+        if var in mll_to_mol:
+            cube /= 1000.  # Convert from ml/l to mol/m^3
+        elif var == 'o2':
+            cube *= 44.661 / 1000.  # Convert from ml/l to mol/m^3
     return cube
 
 
@@ -74,9 +71,8 @@ def extract_variable(var_info, raw_info, out_dir, attrs, year):
             _fix_coords(cube)
             _fix_data(cube, var)
             _add_metadata(cube, attrs)
-            _save_variable(cube, var, out_dir, attrs,
-                           fill_value=cube.data.fill_value,
-                           unlimited_dimensions=['time'])
+            _save_variable(
+                cube, var, out_dir, attrs, unlimited_dimensions=['time'])
 
 
 def cmorization(in_dir, out_dir):
@@ -92,7 +88,7 @@ def cmorization(in_dir, out_dir):
     # run the cmorization
     for var, vals in CFG['variables'].items():
         yr = None
-        for yr in ALL_YEARS:
+        for yr in CFG['custom']['years']:
             file_suffix = str(yr)[-2:] + '_' + str(yr + 1)[-2:] + '.nc'
             inpfile = os.path.join(in_dir, vals['file'] + file_suffix)
             logger.info("CMORizing var %s from file %s", var, inpfile)
