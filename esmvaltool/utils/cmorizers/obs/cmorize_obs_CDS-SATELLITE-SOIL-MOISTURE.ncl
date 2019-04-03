@@ -3,26 +3,26 @@
 ; #############################################################################
 ;
 ; Tier
-;    Tier 2: other freely-available dataset.
+;    Tier 3: restricted dataset.
 ;
 ; Source
-;    https://cds.climate.copernicus.eu/cdsapp#!/dataset/satellite-soil-moisture?tab=form
+;    https://cds.climate.copernicus.eu/cdsapp#!/dataset/
+;    satellite-soil-moisture?tab=form
 ;
 ; Last access
 ;    20190314
 ;
 ; Download and processing instructions
-;    - Download the data from source as follows:
-;          - Variable: Volumetric surface soil moisture
-;          - Time aggregation: Day average
-;          - Year: as you wish
-;          - Month: as you wish
-;          - Day: as you wish
-;          - Format: 'tar.gz' (recommended)
-;          - Type of sensor: Combined passive and active
-;          - Type of record: CDR
-;          - Version: v201812.0.0
-;    - Decompress the files and put them in a single directory (no subdirectories with years)
+;    Download the data from source as follows:
+;      Variable: Volumetric surface soil moisture
+;      Time aggregation: Day average
+;      All Years, Month and Days
+;      Format: 'tar.gz' (recommended)
+;      Type of sensor: Combined passive and active
+;      Type of record: CDR
+;      Version: v201812.0.0
+;    Decompress the files and put them in a single directory (no subdirectories
+;    with years)
 ;
 ; Modification history
 ;    20190314-A_crez_ba: adapted from file cmorize_obs_ESACCI-SOILMOISTURE.ncl
@@ -36,10 +36,10 @@ begin
   DIAG_SCRIPT = "cmorize_obs_CDS-SATELLITE-SOIL-MOISTURE.ncl"
 
   ; Source name
-  OBSNAME = "CDS-SATELLITE-SOIL-MOISTURE" ;
+  OBSNAME = "CDS-SATELLITE-SOIL-MOISTURE"
 
   ; Tier
-  TIER = 2
+  TIER = 3
 
   ; Period
   YEAR1 = 1979
@@ -68,7 +68,8 @@ begin
   VERSION = "COMBINED-TCDR-v201812.0.0"
 
   ; Global attributes
-  SOURCE = "https://cds.climate.copernicus.eu/cdsapp#!/dataset/satellite-soil-moisture"
+  SOURCE = "https://cds.climate.copernicus.eu/cdsapp#!/" + \
+    "dataset/satellite-soil-moisture"
   REF = ""
   COMMENT = ""
 
@@ -85,7 +86,8 @@ begin
       ; Set list of files
       files = systemfunc("ls " + input_dir_path + \
                          "C3S-SOILMOISTURE-L3S-SSMV-" + \
-                         "COMBINED-DAILY-" + yy + "????000000-TCDR-v201812.0.0.nc")
+                         "COMBINED-DAILY-" + yy + "????000000-" + \
+                         "TCDR-v201812.0.0.nc")
       f = addfiles(files, "r")
       delete(files)
 
