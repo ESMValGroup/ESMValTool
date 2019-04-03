@@ -510,6 +510,7 @@ class DiagnosticTask(BaseTask):
             table = yaml.safe_load(file)
 
         ignore = (
+            'auxiliary_data_dir',
             'exit_on_ncl_warning',
             'input_files',
             'log_level',

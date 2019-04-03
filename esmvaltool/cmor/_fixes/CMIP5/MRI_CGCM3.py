@@ -27,3 +27,29 @@ class msftmyz(Fix):
                                        cube.data)
 
         return cube
+
+
+class thetao(Fix):
+    """Fixes for thetao."""
+
+    def fix_data(self, cube):
+        """
+        Fix thetao data.
+
+        Fixes mask
+
+        Parameters
+        ----------
+        cube: iris.cube.Cube
+
+        Returns
+        -------
+        iris.cube.Cube
+
+        """
+        cube.data = np.ma.array(cube.data)
+        cube.data = np.ma.masked_where(np.logical_or(cube.data.mask,
+                                                     cube.data == 0.),
+                                       cube.data)
+
+        return cube
