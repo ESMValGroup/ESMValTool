@@ -413,7 +413,9 @@ begin
   end if
 
   ; Check units and adjust for plotting if necessary
-  to_plot@units = variable_info[0]@units
+  if (percent .eq. 0) then
+    to_plot@units = variable_info[0]@units
+  end if
   ; difference in K is the same as difference in degC, only change label
   if (to_plot@units.eq."K") then
     to_plot@units = "degC"
