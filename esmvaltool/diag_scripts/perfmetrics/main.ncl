@@ -337,7 +337,7 @@ begin
       end if
 
       ; Attach attributes to results and write NetCDF output
-      if (diag_script_info@metric.eq."SMPI") then
+      if (diag_script_info@metric(met).eq."SMPI") then
 
         smpi@title = "metrics"
         smpi@long_name = "1 variable's Performance Index for " + \
