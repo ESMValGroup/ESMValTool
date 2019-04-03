@@ -28,6 +28,9 @@ documentation:
   authors:
     - laue_ax
 
+  maintainer:
+    - laue_ax
+
   references:
     - brient16jclim
     - lipat17grl
@@ -67,7 +70,6 @@ diagnostics:
       va:
         reference_dataset: ERA-Interim
         mip: Amon
-        field: T3M
         start_year: 1986
         end_year: 2005
         additional_datasets:
@@ -117,7 +119,6 @@ diagnostics:
       pr:
         reference_dataset: TRMM-L3
         mip: Amon
-        field: T2Ms
         start_year: 1986
         end_year: 2005
         additional_datasets:
@@ -152,7 +153,6 @@ diagnostics:
       prStderr:
         reference_dataset: TRMM-L3
         mip: Amon
-        field: T2Ms
         frequency: mon
         additional_datasets:
           - {dataset: TRMM-L3, project: obs4mips, level: v7, version: 7A,
@@ -177,7 +177,6 @@ diagnostics:
         preprocessor: pp500
         reference_dataset: AIRS
         mip: Amon
-        field: T3M
         start_year: 1986
         end_year: 2005
         additional_datasets:
@@ -213,7 +212,6 @@ diagnostics:
         preprocessor: pp500
         reference_dataset: AIRS
         mip: Amon
-        field: T3M
         frequency: mon
         additional_datasets:
           - {dataset: AIRS, project: obs4mips, level: L3, version: RetStd-v5,
@@ -238,21 +236,18 @@ diagnostics:
         preprocessor: pp_ltmi_1
         reference_dataset: ERA-Interim
         mip: Amon
-        field: T3M
         start_year: 1986
         end_year: 2005
       ta:
         preprocessor: pp_ltmi_1
         reference_dataset: ERA-Interim
         mip: Amon
-        field: T3M
         start_year: 1986
         end_year: 2005
       wap:
         preprocessor: pp_ltmi_0
         reference_dataset: ERA-Interim
         mip: Amon
-        field: T3M
         start_year: 1986
         end_year: 2005
     additional_datasets:
@@ -355,7 +350,6 @@ diagnostics:
       ts:
         reference_dataset: HadISST
         mip: Amon
-        field: T2Ms
         additional_datasets:
           - {dataset: HadISST, project: OBS, type: reanaly, version: 1,
              start_year: 2001, end_year: 2005, tier: 2}
@@ -363,28 +357,24 @@ diagnostics:
         preprocessor: pp500
         reference_dataset: ERA-Interim
         mip: Amon
-        field: T3M
         additional_datasets:
           - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1,
              start_year: 2001, end_year: 2005, tier: 3}
       rsut:
         reference_dataset: CERES-EBAF
         mip: Amon
-        field: T2Ms
         additional_datasets:
           - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
              start_year: 2001, end_year: 2005, tier: 1}
       rsutcs:
         reference_dataset: CERES-EBAF
         mip: Amon
-        field: T2Ms
         additional_datasets:
           - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
              start_year: 2001, end_year: 2005, tier: 1}
       rsdt:
         reference_dataset: CERES-EBAF
         mip: Amon
-        field: T2Ms
         additional_datasets:
           - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
              start_year: 2001, end_year: 2005, tier: 1}

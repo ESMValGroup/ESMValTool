@@ -28,6 +28,9 @@ documentation:
   authors:
     - laue_ax
 
+  maintainer:
+    - laue_ax
+
   references:
     - brient16jclim
     - lipat17grl
@@ -66,7 +69,6 @@ diagnostics:
     variables:
       pr:
         reference_dataset: TRMM-L3
-        field: T2Ms
         start_year: 1998
         end_year: 2013
         exp: historical
@@ -82,7 +84,6 @@ diagnostics:
       prStderr:
         reference_dataset: TRMM-L3
         mip: Amon
-        field: T2Ms
         frequency: mon
         start_year: 1998
         end_year: 2013
@@ -107,7 +108,6 @@ diagnostics:
       hus:
         preprocessor: pp500
         reference_dataset: AIRS
-        field: T3M
         start_year: 2003
         end_year: 2010
         exp: historical
@@ -124,7 +124,6 @@ diagnostics:
         preprocessor: pp500
         reference_dataset: AIRS
         mip: Amon
-        field: T3M
         frequency: mon
         start_year: 2003
         end_year: 2010
@@ -149,7 +148,6 @@ diagnostics:
       hur:
         preprocessor: pp_ltmi_1
         reference_dataset: ERA-Interim
-        field: T3M
         start_year: 1980
         end_year: 2005
         exp: historical
@@ -158,7 +156,6 @@ diagnostics:
       ta:
         preprocessor: pp_ltmi_1
         reference_dataset: ERA-Interim
-        field: T3M
         start_year: 1980
         end_year: 2005
         exp: historical
@@ -167,7 +164,6 @@ diagnostics:
       wap:
         preprocessor: pp_ltmi_0
         reference_dataset: ERA-Interim
-        field: T3M
         start_year: 1980
         end_year: 2005
         exp: historical
@@ -198,7 +194,6 @@ diagnostics:
     variables:
       va:
         reference_dataset: ERA-Interim
-        field: T3M
         start_year: 1980
         end_year: 2005
         exp: historical
@@ -229,7 +224,6 @@ diagnostics:
     variables:
       ts:
         reference_dataset: HadISST
-        field: T2Ms
         start_year: 2001
         end_year: 2012
         exp: historical
@@ -245,7 +239,6 @@ diagnostics:
       hur:
         preprocessor: pp500
         reference_dataset: ERA-Interim
-        field: T3M
         start_year: 2001
         end_year: 2012
         exp: historical
@@ -260,7 +253,6 @@ diagnostics:
 #          - {dataset: MIROC6, grid: gn, ensemble: r1i1p1f1}
       rsut:
         reference_dataset: CERES-EBAF
-        field: T2Ms
         start_year: 2001
         end_year: 2012
         exp: historical
@@ -275,7 +267,6 @@ diagnostics:
 #          - {dataset: MIROC6, grid: gn, ensemble: r1i1p1f1}
       rsutcs:
         reference_dataset: CERES-EBAF
-        field: T2Ms
         start_year: 2001
         end_year: 2012
         exp: historical
@@ -290,7 +281,6 @@ diagnostics:
 #          - {dataset: MIROC6, grid: gn, ensemble: r1i1p1f1}
       rsdt:
         reference_dataset: CERES-EBAF
-        field: T2Ms
         start_year: 2001
         end_year: 2012
         exp: historical
