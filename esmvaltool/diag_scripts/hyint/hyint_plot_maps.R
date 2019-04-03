@@ -132,7 +132,13 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
     if (removedesert) {
       filename <- getfilename_indices(work_dir_exp, diag_base, model_idx,
                                         season)
-      pry <- ncdf_opener(filename, "pry", "lon", "lat", rotate = "no")
+      if ( (rgrid == F) & ( (plot_type == 2) | (plot_type == 3) ) ) {
+        # regrid when comparing
+        pry <- ncdf_opener(filename, "pry", "lon", "lat", rotate = "no",
+                                   interp2grid = T, grid = ref_filename)
+      } else {
+        pry <- ncdf_opener(filename, "pry", "lon", "lat", rotate = "no")
+      }
       retdes <- which(pry < 0.5)
       pry[retdes] <- NA
       # create mask with NAs for deserts and 1's for non-desert
@@ -147,7 +153,7 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
       filename <- getfilename_indices(work_dir_exp, diag_base, model_idx,
                                       season)
       print(paste("Reading experiment ", filename))
-      if ( (plot_type == 2) | (plot_type == 3)) {
+      if ( (rgrid == F) & ( (plot_type == 2) | (plot_type == 3) ) ) {
         # regrid when comparing
         field_exp <- ncdf_opener(filename, field, "lon", "lat", rotate = "no",
                                  interp2grid = T, grid = ref_filename)
@@ -155,8 +161,6 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
         field_exp <- ncdf_opener(filename, field, "lon", "lat", rotate = "no")
       }
       if (removedesert) {
-print(str(field_exp))
-print(str(exp_retdes3D))
         field_exp <- field_exp * exp_retdes3D
       }
       if (masksealand) {
