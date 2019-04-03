@@ -417,4 +417,20 @@ begin
     ; Function in ~/interface_scripts/auxiliary.ncl
     ncdf_outfile = ncdf_write(IAV_mmm, work_dir + outfile)
   end if
+
+  ; collect meta-data
+  nc_file = ncdf_outfile
+  plot_file = "None"
+  caption = "Inter-annual variability based on piControl runs."
+  statistics = ("var")
+  domain = ("glob")
+  plottype = ("other")
+  authors = (/"lore_ru"/)
+  references = (/"collins13ipcc"/)
+  infiles = metadata_att_as_array(info_items, "filename")
+  log_provenance(nc_file, plot_file, caption, statistics, domain, plottype, \
+                 authors, references, infiles)
+
+  leave_msg(DIAG_SCRIPT, "")
+
 end

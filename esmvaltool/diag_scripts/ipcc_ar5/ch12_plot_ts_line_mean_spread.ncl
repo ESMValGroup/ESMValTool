@@ -254,5 +254,35 @@ begin
   frame(wks)
 
   log_info(" Wrote " + plot_dir + "/" + outfile + "." + file_type)
+
+  ; collect meta-data
+  nc_file = datapath
+  plot_file = outfile
+
+  if (isatt(diag_script_info, "spread")) then
+    spread_str = diag_script_info@spread
+  else
+    spread_str = "1.0"
+  end if
+  caption = "Time series of global annual mean  " + \
+    variable_info[0]@long_name + " anomalies (relative to " + \
+    diag_script_info@begin_ref_year + "-" + diag_script_info@end_ref_year + \
+    ") from  concentration driven experiments. " + \
+    "Projections are shown for each RCP for the " + \
+    "multi-model mean (solid lines) and the 5 to 95% range (+-" \
+    + spread_str + " standard deviation) across the" + \
+    " distribution of individual models (shading). " + \
+    "Only one ensemble member is used from each model and numbers in" + \
+    " the figure indicate the number of different models " + \
+    "contributing to the different time periods."
+  statistics = ("mean")
+  domain = ("glob")
+  plottype = ("times")
+  authors = (/"lore_ru"/)
+  references = (/"collins13ipcc"/)
+  infiles = metadata_att_as_array(info_items, "filename")
+  log_provenance(nc_file, plot_file, caption, statistics, domain, plottype, \
+                 authors, references, infiles)
+
   leave_msg(DIAG_SCRIPT, "")
 end

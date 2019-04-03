@@ -368,5 +368,32 @@ begin
   outfile = panelling(wks, maps, nvert, nhori, psles)
 
   log_info(" Wrote " + outfile)
+
+  ; collect meta-data
+  nc_file = datapath
+  plot_file = outfile
+  caption = "Multi-model changes in zonal mean " + \
+            variable_info[0]@long_name + \
+            " relative to " + info_items[0]@start_year + "-" +  \
+            info_items[0]@end_year + " for 20 year periods starting in " + \
+            str_join(diag_script_info@periods, ", ") + " under the " + \
+            str_join(diag_script_info@scenarios, ", ") + \
+            " forcing scenarios. Hatching indicates regions where the " + \
+            "multi-model mean change is less than one standard " + \
+            "deviation of internal variability. Stippling indicates " + \
+            "regions  where the multi-model change mean is greater " + \
+            "than two standard deviations of internal variability and " + \
+            "where at least 90% of the models agree on the sign of " + \
+            "change. Similar to Figure 12.12" + \
+            " of Collins et al. (2013)."
+  statistics = ("mean")
+  domain = ("glob")
+  plottype = ("zonal")
+  authors = (/"lore_ru"/)
+  references = (/"collins13ipcc"/)
+  infiles = metadata_att_as_array(info_items, "filename")
+  log_provenance(nc_file, plot_file, caption, statistics, domain, plottype, \
+                 authors, references, infiles)
+
   leave_msg(DIAG_SCRIPT, "")
 end
