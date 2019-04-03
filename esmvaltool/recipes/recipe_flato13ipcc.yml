@@ -63,12 +63,15 @@ diagnostics:
 
   fig09-2:
     description: IPCC AR5 Ch. 9, Fig. 9.2 (near-surface temperature)
+    themes:
+      - phys
+    realms:
+      - atmos
     variables:
       tas:
         preprocessor: clim
         reference_dataset: ERA-Interim
         mip: Amon
-        field: T2Ms
     additional_datasets:
       - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1,
          start_year: 1986, end_year: 2005, tier: 3}
@@ -174,12 +177,15 @@ diagnostics:
 
   fig09-4:
     description: IPCC AR5 Ch. 9, Fig. 9.4 (precipitation)
+    themes:
+      - clouds
+    realms:
+      - atmos
     variables:
       pr:
         preprocessor: clim
         reference_dataset: GPCP-SG
         mip: Amon
-        field: T2Ms
     additional_datasets:
       - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.2,
          start_year: 1986, end_year: 2005, tier: 1}
@@ -284,12 +290,15 @@ diagnostics:
 
   fig09-5a:
     description: differences of multi-model mean and reference dataset
+    themes:
+      - clouds
+    realms:
+      - atmos
     variables:
       swcre:
         preprocessor: clim
         reference_dataset: CERES-EBAF
         mip: Amon
-        field: T2Ms
         derive: true
     additional_datasets:
       - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
@@ -387,12 +396,15 @@ diagnostics:
 
   fig09-5b:
     description: differences of multi-model mean and reference dataset
+    themes:
+      - clouds
+    realms:
+      - atmos
     variables:
       lwcre:
         preprocessor: clim
         reference_dataset: CERES-EBAF
         mip: Amon
-        field: T2Ms
         derive: true
     additional_datasets:
       - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
@@ -487,12 +499,15 @@ diagnostics:
 
   fig09-5c:
     description: differences of multi-model mean and reference dataset
+    themes:
+      - clouds
+    realms:
+      - atmos
     variables:
       netcre:
         preprocessor: clim
         reference_dataset: CERES-EBAF
         mip: Amon
-        field: T2Ms
         derive: true
     additional_datasets:
       - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
@@ -595,6 +610,10 @@ diagnostics:
 
   fig09-8:
     description: IPCC AR5 Ch. 9, Fig. 9.8 (near-surface temperature)
+    themes:
+      - phys
+    realms:
+      - atmos
     variables:
       tas:
         preprocessor: clim_ref
@@ -684,13 +703,16 @@ diagnostics:
 
   ecs_cmip5:
     description: Calculate ECS for CMIP5 models.
+    themes:
+      - EC
+    realms:
+      - atmos
     variables:
       tas: &ecs_settings
         preprocessor: spatial_mean
         project: CMIP5
         ensemble: r1i1p1
         mip: Amon
-        field: T2Ms
       rtmt:
         <<: *ecs_settings
     additional_datasets:
@@ -734,6 +756,11 @@ diagnostics:
 
   fig09-42a_cmip5:
     description: Plot ECS vs. GMSAT for CMIP5 models.
+    themes:
+      - EC
+      - phys
+    realms:
+      - atmos
     variables:
       tas:
         <<: *ecs_settings
@@ -794,6 +821,10 @@ diagnostics:
 
   ecs_cmip6:
     description: Calculate ECS for CMIP6 models.
+    themes:
+      - EC
+    realms:
+      - atmos
     variables:
       tas:
         <<: *ecs_settings
@@ -814,6 +845,11 @@ diagnostics:
 
   fig09-42a_cmip6:
     description: Plot ECS vs. GMSAT for CMIP6 models.
+    themes:
+      - EC
+      - phys
+    realms:
+      - atmos
     variables:
       tas:
         <<: *ecs_settings
