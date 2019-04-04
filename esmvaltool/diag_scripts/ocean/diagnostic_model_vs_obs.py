@@ -63,7 +63,8 @@ logger = logging.getLogger(os.path.basename(__file__))
 logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
 
-def add_map_subplot(subplot, cube, nspace, title='', cmap='', log=False):
+def add_map_subplot(subplot, cube, nspace, title='',
+                    cmap='', extend='neither', log=False):
     """
     Add a map subplot to the current pyplot figure.
 
@@ -79,6 +80,8 @@ def add_map_subplot(subplot, cube, nspace, title='', cmap='', log=False):
         A string to set as the subplot title.
     cmap: str
         A string to describe the matplotlib colour map.
+    extend: str
+        Contourf-coloring of values outside the levels range
     log: bool
         Flag to plot the colour scale linearly (False) or
         logarithmically (True)
@@ -101,6 +104,7 @@ def add_map_subplot(subplot, cube, nspace, title='', cmap='', log=False):
             nspace,
             linewidth=0,
             cmap=plt.cm.get_cmap(cmap),
+            extend=extend,
             zmin=nspace.min(),
             zmax=nspace.max())
         cbar = pyplot.colorbar(orientation='horizontal')
@@ -143,6 +147,7 @@ def make_model_vs_obs_plots(
     logger.debug('make_model_vs_obs_plots filenames: %s', filenames)
     # ####
     # Load the data for each layer as a separate cube
+    input_file = None
     layers = {}
     cubes = {}
     for model_type, input_file in filenames.items():
@@ -162,6 +167,7 @@ def make_model_vs_obs_plots(
     obs = metadata[filenames['obs']]['dataset']
 
     long_name = cubes['model'][list(layers.keys())[0]].long_name
+    units = str(cubes['model'][list(layers.keys())[0]].units)
 
     # Load image format extention
     image_extention = diagtools.get_image_format(cfg)
@@ -179,8 +185,15 @@ def make_model_vs_obs_plots(
         cube224 = cubes['model'][layer] / cubes['obs'][layer]
 
         # create the z axis for plots 2, 3, 4.
+        extend = 'neither'
         zrange12 = diagtools.get_cube_range([cube221, cube222])
+        if 'maps_range' in metadata[input_file]:
+            zrange12 = metadata[input_file]['maps_range']
+            extend = 'both'
         zrange3 = diagtools.get_cube_range_diff([cube223])
+        if 'diff_range' in metadata[input_file]:
+            zrange3 = metadata[input_file]['diff_range']
+            extend = 'both'
 
         cube224.data = np.ma.clip(cube224.data, 0.1, 10.)
 
@@ -192,27 +205,31 @@ def make_model_vs_obs_plots(
         logspace4 = np.logspace(-1., 1., 12, endpoint=True)
 
         # Add the sub plots to the figure.
-        add_map_subplot(221, cube221, linspace12, cmap='viridis', title=model)
         add_map_subplot(
-            222, cube222, linspace12, cmap='viridis', title=' '.join([
-                obs,
-            ]))
+            221, cube221, linspace12, cmap='viridis', title=model,
+            extend=extend)
+        add_map_subplot(
+            222, cube222, linspace12, cmap='viridis',
+            title=' '.join([obs]),
+            extend=extend)
         add_map_subplot(
             223,
             cube223,
             linspace3,
             cmap='bwr',
-            title=' '.join([model, 'minus', obs]))
-        add_map_subplot(
-            224,
-            cube224,
-            logspace4,
-            cmap='bwr',
-            title=' '.join([model, 'over', obs]),
-            log=True)
+            title=' '.join([model, 'minus', obs]),
+            extend=extend)
+        if np.min(zrange12) > 0.:
+            add_map_subplot(
+                224,
+                cube224,
+                logspace4,
+                cmap='bwr',
+                title=' '.join([model, 'over', obs]),
+                log=True)
 
         # Add overall title
-        fig.suptitle(long_name, fontsize=14)
+        fig.suptitle(long_name + ' [' + units + ']', fontsize=14)
 
         # Determine image filename:
         fn_list = ['model_vs_obs', long_name, model, obs, str(layer), 'maps']
@@ -222,7 +239,7 @@ def make_model_vs_obs_plots(
         # Saving files:
         if cfg['write_plots']:
             logger.info('Saving plots to %s', path)
-            plt.savefig(path)
+            plt.savefig(path, dpi=200)
 
         plt.close()
 
@@ -393,6 +410,9 @@ def make_scatter(
         x_scale = 'log'
         if np.min(zrange) * np.max(zrange) < -1:
             x_scale = 'linear'
+        if np.min(zrange) < 0.:
+            logger.info('Skip scatter for %s. Min is < 0', long_name)
+            return
 
         pyplot.hexbin(
             model_data,
