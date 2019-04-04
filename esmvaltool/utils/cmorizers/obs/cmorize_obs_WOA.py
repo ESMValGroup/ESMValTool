@@ -53,6 +53,8 @@ def _fix_data(cube, var):
         mll_to_mol = ['po4', 'si', 'no3']
         if var in mll_to_mol:
             cube /= 1000.  # Convert from ml/l to mol/m^3
+        elif var == 'thetao':
+            cube += 273.15  # Convert to Kelvin
         elif var == 'o2':
             cube *= 44.661 / 1000.  # Convert from ml/l to mol/m^3
     return cube
