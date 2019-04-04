@@ -26,9 +26,9 @@ def _convert_timeunits(cube, start_year):
     # TODO any more weird cases?
     if cube.coord('time').units == 'months since 0000-01-01 00:00:00':
         real_unit = 'months since {}-01-01 00:00:00'.format(str(start_year))
-    if cube.coord('time').units == 'days since 0000-01-01 00:00:00':
+    elif cube.coord('time').units == 'days since 0000-01-01 00:00:00':
         real_unit = 'days since {}-01-01 00:00:00'.format(str(start_year))
-    if cube.coord('time').units == 'days since 1950-1-1':
+    elif cube.coord('time').units == 'days since 1950-1-1':
         real_unit = 'days since 1950-1-1 00:00:00'
     else:
         real_unit = cube.coord('time').units
