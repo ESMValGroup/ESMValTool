@@ -32,7 +32,7 @@ from warnings import catch_warnings, filterwarnings
 import iris
 from dask import array as da
 
-from .utilities import (_add_metadata, _fix_coords, _fix_var_metadata,
+from .utilities import (_set_global_atts, _fix_coords, _fix_var_metadata,
                         _read_cmor_config, _save_variable, constant_metadata)
 
 logger = logging.getLogger(__name__)
@@ -83,7 +83,7 @@ def extract_variable(var_info, raw_info, out_dir, attrs):
             _fix_var_metadata(cube, var_info)
             _fix_coords(cube)
             _fix_data(cube, var)
-            _add_metadata(cube, attrs)
+            _set_global_atts(cube, attrs)
             _save_variable(
                 cube,
                 var,

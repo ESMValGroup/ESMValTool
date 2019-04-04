@@ -36,7 +36,7 @@ import os
 
 import iris
 
-from .utilities import (_add_metadata, _convert_timeunits, _fix_coords,
+from .utilities import (_set_global_atts, _convert_timeunits, _fix_coords,
                         _fix_var_metadata, _read_cmor_config, _save_variable,
                         constant_metadata)
 
@@ -72,7 +72,7 @@ def extract_variable(var_info, raw_info, out_dir, attrs, year):
             _convert_timeunits(cube, year)
             _fix_coords(cube)
             _fix_data(cube, var)
-            _add_metadata(cube, attrs)
+            _set_global_atts(cube, attrs)
             _save_variable(
                 cube, var, out_dir, attrs, unlimited_dimensions=['time'])
 
