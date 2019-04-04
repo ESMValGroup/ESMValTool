@@ -11,6 +11,7 @@ from dask import array as da
 
 from esmvaltool import __version__ as version
 from esmvaltool.cmor.table import CMOR_TABLES
+from esmvaltool._config import get_tag_value
 
 logger = logging.getLogger(__name__)
 
@@ -29,13 +30,10 @@ def _read_cmor_config(cmor_config):
         os.path.dirname(__file__), 'cmor_config', cmor_config)
     with open(reg_path, 'r') as file:
         cfg = yaml.safe_load(file)
-    timestamp = datetime.datetime.utcnow()
-    timestamp_format = "%Y-%m-%d %H:%M:%S"
-    now_time = timestamp.strftime(timestamp_format)
     cfg['cmor_table'] = \
         CMOR_TABLES[cfg['attributes']['project_id']]
-    cfg['attributes']['CMORcreated'] = now_time
-    cfg['attributes']['comment'] = 'cmorized by ESMValTool v' + version
+    if 'comment' not in cfg.keys():
+        cfg['attributes']['comment'] = ''
     return cfg
 
 
@@ -175,12 +173,29 @@ def _fix_coords(cube):
     return cube
 
 
-def _add_metadata(cube, attrs):
-    """Complete the cmorized file with useful metadata."""
-    logger.info("Add Global metadata...")
-    for att, value in attrs.items():
-        if att not in cube.metadata.attributes:
-            cube.metadata.attributes[att] = value
+def _set_global_atts(cube, attrs):
+    """Complete the cmorized file with global metadata."""
+    logger.info("Set global metadata...")
+
+    if bool(cube.metadata.attributes):
+        cube.metadata.attributes.clear()
+
+    timestamp = datetime.datetime.utcnow()
+    timestamp_format = "%Y-%m-%d %H:%M:%S"
+    now_time = timestamp.strftime(timestamp_format)
+    glob_dict = {
+        'title': attrs['dataset_id'] + ' data reformatted for ESMValTool v' + version,
+        'version': attrs['version'],
+        'tier': str(attrs['tier']),
+        'source': attrs['source'],
+        'reference': get_tag_value('references', attrs['reference']),
+        'comment': attrs['comment'],
+        'user': os.environ["USER"],
+        'host': os.environ["HOSTNAME"],
+        'history': 'Created on ' + now_time }
+
+    for att, value in glob_dict.items():
+        cube.metadata.attributes[att] = value
 
 
 def _roll_cube_data(cube, shift, axis):
