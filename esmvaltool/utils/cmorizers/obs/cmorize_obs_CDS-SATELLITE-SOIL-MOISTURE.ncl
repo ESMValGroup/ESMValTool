@@ -92,56 +92,40 @@ begin
       delete(files)
 
       ; Read data
-      xx = f[:]->$NAME(vv)$
-      if (isatt(xx, "scale_factor")) then
-        tmp = tofloat(xx * xx@scale_factor)
-        copy_VarAtts(xx, tmp)
-        copy_VarCoords(xx, tmp)
-        delete(xx)
-        xx = tmp
-        delete(tmp)
-      end if
+      output = f[:]->$NAME(vv)$
       delete(f)
 
-      ; Append to time-series
-      if (.not.isdefined("output")) then
-        output = xx
-      else
-        output := array_append_record(output, xx, 0)
-      end if
-      delete(xx)
+      ; Format coordinates
+      output!0 = "time"
+      output!1 = "lat"
+      output!2 = "lon"
+      format_coords(output, yy + "0101", yy + "1231", FREQ(vv))
+
+      ; Set variable attributes
+      tmp = format_variable(output, VAR(vv), CMOR_TABLE(vv))
+      delete(output)
+      output = tmp
+      delete(tmp)
+
+      ; Calculate coordinate bounds
+      bounds = guess_coord_bounds(output, FREQ(vv))
+
+      ; Set global attributes
+      gAtt = set_global_atts(OBSNAME, TIER, SOURCE, REF, COMMENT)
+
+      ; Output file
+      DATESTR = yy + "01-" + yy + "12"
+      fout = output_dir_path + \
+        str_join((/"OBS", OBSNAME, TYPE, VERSION, \
+                   MIP(vv), VAR(vv), DATESTR/), "_") + ".nc"
+
+      ; Write variable
+      write_nc(fout, VAR(vv), output, bounds, gAtt)
+      delete(gAtt)
+      delete(output)
+      delete(bounds)
 
     end do
-
-    ; Format coordinates
-    output!0 = "time"
-    output!1 = "lat"
-    output!2 = "lon"
-    format_coords(output, YEAR1 + "0101", YEAR2 + "1231", FREQ(vv))
-
-    ; Set variable attributes
-    tmp = format_variable(output, VAR(vv), CMOR_TABLE(vv))
-    delete(output)
-    output = tmp
-    delete(tmp)
-
-    ; Calculate coordinate bounds
-    bounds = guess_coord_bounds(output, FREQ(vv))
-
-    ; Set global attributes
-    gAtt = set_global_atts(OBSNAME, TIER, SOURCE, REF, COMMENT)
-
-    ; Output file
-    DATESTR = YEAR1 + "01-" + YEAR2 + "12"
-    fout = output_dir_path + \
-      str_join((/"OBS", OBSNAME, TYPE, VERSION, \
-                 MIP(vv), VAR(vv), DATESTR/), "_") + ".nc"
-
-    ; Write variable
-    write_nc(fout, VAR(vv), output, bounds, gAtt)
-    delete(gAtt)
-    delete(output)
-    delete(bounds)
 
   end do
 
