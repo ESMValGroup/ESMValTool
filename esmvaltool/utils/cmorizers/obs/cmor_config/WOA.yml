@@ -7,6 +7,8 @@ attributes:
   modeling_realm: clim
   project_id: CMIP5
   source: 'https://data.nodc.noaa.gov/woa/WOA13/DATAv2/'
+  reference: 'woa'
+  comment: ''
 
 # Variables to cmorize (here use only filename prefix)
 variables:
