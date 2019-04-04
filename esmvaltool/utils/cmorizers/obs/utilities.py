@@ -184,7 +184,8 @@ def _set_global_atts(cube, attrs):
     timestamp_format = "%Y-%m-%d %H:%M:%S"
     now_time = timestamp.strftime(timestamp_format)
     glob_dict = {
-        'title': attrs['dataset_id'] + ' data reformatted for ESMValTool v' + version,
+        'title':
+        attrs['dataset_id'] + ' data reformatted for ESMValTool v' + version,
         'version': attrs['version'],
         'tier': str(attrs['tier']),
         'source': attrs['source'],
@@ -192,7 +193,8 @@ def _set_global_atts(cube, attrs):
         'comment': attrs['comment'],
         'user': os.environ["USER"],
         'host': os.environ["HOSTNAME"],
-        'history': 'Created on ' + now_time }
+        'history': 'Created on ' + now_time
+    }
 
     for att, value in glob_dict.items():
         cube.metadata.attributes[att] = value
