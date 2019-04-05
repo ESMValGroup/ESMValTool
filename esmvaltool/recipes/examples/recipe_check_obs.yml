@@ -331,6 +331,20 @@ diagnostics:
     scripts: null
 
 
+  CDS-SATELLITE-SOIL-MOISTURE:
+    description: CDS-SATELLITE-SOIL-MOISTURE
+    variables:
+      sm:
+        preproc: nopp
+        mip: day
+      smStderr:
+        preproc: nopp
+        mip: day
+    additional_datasets:
+      - {dataset: CDS-SATELLITE-SOIL-MOISTURE, project: OBS, tier: 3, type: sat, version: COMBINED-TCDR-v201812.0.0, start_year: 1979, end_year: 2018}
+    scripts: null
+
+
   CDS-XCH4:
     description: CDS-XCH4
     variables:
