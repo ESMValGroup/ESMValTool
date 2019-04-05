@@ -1,5 +1,5 @@
 # pylint: disable=invalid-name
-"""ESMValTool CMORizer for Landschuetzer2016 data
+"""ESMValTool CMORizer for Landschuetzer2016 data.
 
 Tier
    Tier 2: other freely-available dataset.
