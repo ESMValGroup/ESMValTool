@@ -385,13 +385,11 @@ begin
 
   log_info(" gv " + outfile_plot + "." + file_type)
 
-  leave_msg(DIAG_SCRIPT, "")
-
-  ; Collect meta-data and call ESMValMD function
-  nc_file = ncdf_outfile
-  plot_file = outfile_plot
-  domains = ("global")
+  ; Collect meta-data and call provenance function
   if (diag_script_info@metric.eq."SMPI") then
+    nc_file = ncdf_outfile
+    plot_file = outfile_plot
+    domains = ("global")
     statistics = ("smpi")
     caption = \
       "Performance index I2. Similar to Figure 1 of Reichler and Kim (2008)."
@@ -399,15 +397,20 @@ begin
     authors = (/"righ_ma", "fran_fr", "gier_be", "hass_bg"/)
     references = (/"rk2008bams"/)
     infiles = climofiles
+    log_provenance(nc_file, plot_file, caption, statistics, domains, plottype, \
+                   authors, references, infiles)
   else
     statistics = ("mean")
     caption = "Performance metric."
     plottype = ("taylor")
     authors = (/"righ_ma", "fran_fr"/)
     references = (/"righi15gmd", "gleckler08jgr"/)
-    infiles = climofiles
+    ; FIX-ME
+    ; infiles = climofiles
+    ; log_provenance(nc_file, plot_file, caption, statistics, domains, plottype, \
+    ;                authors, references, infiles)
   end if
-  log_provenance(nc_file, plot_file, caption, statistics, domains, plottype, \
-                 authors, references, infiles)
+
+  leave_msg(DIAG_SCRIPT, "")
 
 end
