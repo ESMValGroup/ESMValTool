@@ -211,6 +211,23 @@ diagnostics:
     scripts: null
 
 
+  Landschuetzer2016:
+    description: Landschuetzer2016
+    variables:
+      dpco2:
+        preproc: nopp
+        mip: Omon
+      fgco2:
+        preproc: nopp
+        mip: Omon        
+      spco2:
+        preproc: nopp
+        mip: Omon        
+    additional_datasets:
+      - {dataset: Landschuetzer2016, project: OBS, tier: 2, type: clim, version: v2016, start_year: 1982, end_year: 2015}
+    scripts: null
+
+
   NCEP:
     description: NCEP monthly data
     variables:
