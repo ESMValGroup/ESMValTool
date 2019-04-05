@@ -215,7 +215,7 @@ procedure tool_stop()
 ; Arguments
 ;
 ; Description
-;    Forces the tool execution to stop at any point of an ncl script.
+;    Force the tool execution to stop at any point of an ncl script.
 ;    For dubugging purposes only.
 ;
 ; Caveats
@@ -286,24 +286,29 @@ procedure log_provenance(nc_file:string,
                          infiles[*]:string)
 ;
 ; Arguments
-;  nc_file: netcdf file with data related to the plot
-;  outfile: file name of the figure (including path)
-;  caption: figure caption
-;  statistics: list of metrics/statistics calculated
-;  domain: of the data displayed
-;  plottype: plot type of the figure
-;  diag_authors: authors related to the diagnostic
-;  diag_refs: references related to the diagnotic
+;    nc_file: netcdf file with data related to the plot
+;    outfile: file name of the figure (including path)
+;    caption: figure caption
+;    statistics: list of metrics/statistics calculated
+;    domain: of the data displayed
+;    plottype: plot type of the figure
+;    diag_authors: authors related to the diagnostic
+;    diag_refs: references related to the diagnotic
+;    infiles: input files (from preproc) used to generate the plot
 ;
 ; Description
-;   Creates a yaml file with meta data from the diagnostic
-;   script and save it in the plot directory
+;    Create a yaml file with meta data from the diagnostic script and save it
+;    in the plot directory
 ;
 ; Caveats
 ;
 ; References
 ;
-local funcname, scriptname, verbosity
+; Modification history
+;    20190225-A_bock_li: written.
+;
+local funcname, scriptname, str0, n, str1, str2, str3, str4, str5, str6, \
+  str7, str8, str, yaml_file
 begin
 
   funcname = "log_provenance"
