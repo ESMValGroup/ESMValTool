@@ -24,7 +24,6 @@ import glob
 import xarray as xr
 
 import iris
-from cf_units import Unit
 import numpy as np
 
 from .utilities import (_set_global_atts, _fix_coords, _fix_var_metadata,
@@ -47,7 +46,7 @@ def _fix_data(cube, var):
 
 def _fix_attr_cmip5(out_dir, var):
     """Adjust for CMIP5 standard"""
-    logger.info("Fix for CMIP5...")
+    logger.info("Fix to CMIP5 standard...")
     in_file = glob.glob(out_dir + '/OBS*' + var + '*.nc')[0]
     DS = xr.open_dataset(in_file)
     DS[var].attrs['coordinates'] = 'depth'
@@ -113,6 +112,7 @@ def merge_data(in_dir, out_dir, raw_info, bin):
     do_bin = True if (bin % 2 == 0) & (bin != 0) else False
     comment = ''
     merged_file = os.path.join(out_dir, file + '_merged.nc')
+    #TODO remove 1997* here below before final publication
     in_files = glob.glob(in_dir + '/' + file + '*1997*.nc')
     for ff in in_files:
         DS = xr.open_dataset(ff)
@@ -131,8 +131,11 @@ def merge_data(in_dir, out_dir, raw_info, bin):
                     'license','sensor','processing_level']
             DSmeta = dict((k, DS.attrs[k]) for k in selkey)
             if (do_bin):
-                comment = 'Data binned using ' + str(bin) + ' by ' 
-                    + str(bin) + ' cells average'
+                comment = ' '.join([
+                    'Data binned using ',
+                    str(bin), 'by',
+                    str(bin), 'cells average'
+                ])
                 DSmeta['BINNING'] = comment
             continue
         newda = xr.concat((newda, da), dim='time')
@@ -142,10 +145,20 @@ def merge_data(in_dir, out_dir, raw_info, bin):
     for x, y in DSmeta.items():
         DS.attrs[x] = y
     #TODO test encoding with xarray at v0.12+
-    encoding = { 'lat': {'_FillValue': False},
-                 'lon': {'_FillValue': False},
-                 'time' : {'calendar': 'gregorian'},
-                  var : {'_FillValue': 1.e20} }
+    encoding = {
+        'lat': {
+            '_FillValue': False
+        },
+        'lon': {
+            '_FillValue': False
+        },
+        'time': {
+            'calendar': 'gregorian'
+        },
+        var: {
+            '_FillValue': 1.e20
+        }
+    }
     DS.to_netcdf(merged_file, encoding=encoding, unlimited_dims='time')
 
     logger.info("Merged data written to: %s", merged_file)
