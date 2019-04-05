@@ -80,8 +80,10 @@ class DerivedVariable(DerivedVariableBase):
 
         # approximation of the gravitational acceleration including the
         # free air correction
+        # note: the formula for g given in Buchwitz & Reuter contains a typo
+        #       and should read: g0**2 - 2*f*zg (i.e. minus instead of +)
         g_4d_array = iris.util.broadcast_to_shape(g0**2, zg_cube.shape, [2])
-        g_4d_array = np.sqrt(g_4d_array.data + 2. * FAIR_COR * zg_cube.data)
+        g_4d_array = np.sqrt(g_4d_array.data - 2. * FAIR_COR * zg_cube.data)
 
         # outcube = co2_cube.copy(g_4d_array)
         # iris.save(
