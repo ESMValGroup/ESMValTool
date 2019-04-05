@@ -115,7 +115,7 @@ diagnostics:
         project: CMIP6
         additional_datasets:
           - {dataset: AIRS, project: obs4mips, level: L3, version: RetStd-v5, tier: 1}
-          - {dataset: IPSL-CM6A-LR, grid: gr, ensemble: r19i1p1f1}
+#          - {dataset: IPSL-CM6A-LR, grid: gr, ensemble: r19i1p1f1}
           - {dataset: MIROC6, grid: gn, ensemble: r1i1p1f1}
           - {dataset: GISS-E2-1-G, grid: gn, ensemble: r1i1p1f1}
 #          - {dataset: CNRM-ESM2-1, grid: gr, ensemble: r1i1p1f2}
