@@ -1,5 +1,4 @@
-"""Fixes for ESA-CCI GHG"""
-import numpy as np
+"""Fixes for ESACCI-GHG"""
 import cf_units
 
 from iris.cube import CubeList
