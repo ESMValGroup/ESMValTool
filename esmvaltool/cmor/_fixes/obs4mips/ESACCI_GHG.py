@@ -2,13 +2,15 @@
 import numpy as np
 import cf_units
 
+from iris.cube import CubeList
+
 from ..fix import Fix
 
 
 class xco2(Fix):
     """Fixes for xco2"""
 
-    def fix_metadata(self, cube):
+    def fix_metadata(self, cubes):
         """
         Fix metadata
 
@@ -16,23 +18,18 @@ class xco2(Fix):
 
         Parameters
         ----------
-        cube: iris.cube.Cube
+        cube: iris.cube.CubeList
             Cube to fix
 
         Returns
         -------
-        iris.cube.Cube
+        iris.cube.CubeList
 
         """
+        cube = cubes[0]
         cube.units = cf_units.Unit('1.0e-6')
-        rlon = cube.coord('longitude').points
-        if (np.amin(rlon) < 0.):
-            n = int(len(rlon) / 2)
-            rlon = np.where(rlon < 0., rlon + 360., rlon)
-            cube.coord('longitude').points = np.roll(rlon, n)
-
-        print("*** FIX XCO2 METADATA ***")
-        return cube
+        cube = cube.intersection(longitude=(0, 360))
+        return CubeList([cube])
 
     def fix_data(self, cube):
         """
@@ -51,16 +48,8 @@ class xco2(Fix):
         iris.cube.Cube
 
         """
-        print("*** FIX XCO2 DATA ***")
         metadata = cube.metadata
         cube *= 1.0e6
-
-        rlon = cube.coord('longitude').points
-        n = int(len(rlon) / 2)
-        # longitude is assumed to be the last dimension in the numpy array
-        ax = len(cube.shape) - 1
-        cube.data = np.roll(cube.data, n, axis=ax)
-
         cube.metadata = metadata
 
         return cube
