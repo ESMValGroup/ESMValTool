@@ -638,13 +638,22 @@ themes:
   varmodes: modes of variability
 
 domains:
+  eq: equatorial
   et: extra tropics
   global: global
-  midlat: mid-latittudes
+  midlat: mid-latitudes
   nh: northern hemisphere
+  nhext: northern extra tropics
+  nhmidlat: northern mid-latitudes
+  nhpolar: northern polar
+  nhtrop: northern tropics
   polar: polar
   reg: regional
   sh: southern hemisphere
+  shext: southern extra tropics
+  shmidlat: southern mid-latitudes
+  shpolar: southern polar
+  shtrop: southern tropics
   trop: tropics
 
 plot_types:
