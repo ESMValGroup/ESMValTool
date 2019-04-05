@@ -1678,6 +1678,10 @@ diagnostics:
   ### od550aer: AEROSOL OPTICAL DEPTH AT 550 nm ###############################
   od550aer:
     description: Aerosol optical depth at 550 nm
+    themes:
+      - aerosols
+    realms:
+      - atmos
     variables:
       od550aer:
         preprocessor: ppNOLEV2thr10
@@ -1724,6 +1728,10 @@ diagnostics:
   ### od870aer: AEROSOL OPTICAL DEPTH AT 870 nm ###############################
   od870aer:
     description: Aerosol optical depth at 870 nm
+    themes:
+      - aerosols
+    realms:
+      - atmos
     variables:
       od870aer:
         preprocessor: ppNOLEV1thr10
@@ -1760,6 +1768,10 @@ diagnostics:
   ### abs550aer: ABSORPTION OPTICAL DEPTH AT 550 nm ###########################
   abs550aer:
     description: Absorption optical depth at 550 nm
+    themes:
+      - aerosols
+    realms:
+      - atmos
     variables:
       abs550aer:
         preprocessor: ppNOLEV1thr10
@@ -1796,6 +1808,10 @@ diagnostics:
   ### od550lt1aer: FINE MODE AEROSOL OPTICAL DEPTH AT 550 nm ##################
   od550lt1aer:
     description: Fine mode optical depth at 550 nm
+    themes:
+      - aerosols
+    realms:
+      - atmos
     variables:
       od550lt1aer:
         preprocessor: ppNOLEV1thr10
@@ -1831,6 +1847,11 @@ diagnostics:
   ### toz: TOTAL COLUMN OZONE #################################################
   toz:
     description: Total column ozone
+    themes:
+      - chem
+      - ghg
+    realms:
+      - atmosChem
     variables:
       toz:
         preprocessor: ppNOLEV2thr10
@@ -1876,6 +1897,10 @@ diagnostics:
   ### sm: SOIL MOISTURE #######################################################
   sm:
     description: Soil moisture
+    themes:
+      - phys
+    realms:
+      - land
     variables:
       sm:
         preprocessor: ppNOLEV1thr10
