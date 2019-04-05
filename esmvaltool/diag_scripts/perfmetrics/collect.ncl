@@ -397,8 +397,8 @@ begin
     authors = (/"righ_ma", "fran_fr", "gier_be", "hass_bg"/)
     references = (/"rk2008bams"/)
     infiles = climofiles
-    log_provenance(nc_file, plot_file, caption, statistics, domains, plottype, \
-                   authors, references, infiles)
+    log_provenance(nc_file, plot_file, caption, statistics, domains, \
+                   plottype, authors, references, infiles)
   else
     statistics = ("mean")
     caption = "Performance metric."
@@ -407,8 +407,8 @@ begin
     references = (/"righi15gmd", "gleckler08jgr"/)
     ; FIX-ME
     ; infiles = climofiles
-    ; log_provenance(nc_file, plot_file, caption, statistics, domains, plottype, \
-    ;                authors, references, infiles)
+    ; log_provenance(nc_file, plot_file, caption, statistics, domains, \
+    ;                plottype, authors, references, infiles)
   end if
 
   leave_msg(DIAG_SCRIPT, "")
