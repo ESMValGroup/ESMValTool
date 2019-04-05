@@ -586,6 +586,7 @@ function select_region(region:string)
 ;    name as an attribute.
 ;
 ; Modification history
+;    20190405-A_righ_ma: change name attribute to match provenance.
 ;    20141205-A_gott_kl: adjusted names to Righi et al. (2015).
 ;    20140410-A_fran_fr: extended to midlat, equatorial and polar regions.
 ;    20140129-A_fran_fr: written.
@@ -599,91 +600,91 @@ begin
 
   if (region.eq."Global") then
     region_array = (/-90., 90., 0., 360./)
-    region_array@name = "Glob"
+    region_array@name = "global"
     leave_msg(scriptname, funcname)
     return(region_array)
   end if
 
   if (region.eq."Tropics") then
     region_array = (/-20., 20., 0., 360./)
-    region_array@name = "Trop"
+    region_array@name = "trop"
     leave_msg(scriptname, funcname)
     return(region_array)
   end if
 
   if (region.eq."NH extratropics") then
     region_array = (/20., 90., 0., 360./)
-    region_array@name = "NHext"
+    region_array@name = "nhext"
     leave_msg(scriptname, funcname)
     return(region_array)
   end if
 
   if (region.eq."SH extratropics") then
     region_array = (/-90., -20., 0., 360./)
-    region_array@name = "SHext"
+    region_array@name = "shext"
     leave_msg(scriptname, funcname)
     return(region_array)
   end if
 
   if (region.eq."NH equatorial") then
     region_array = (/0., 30., 0., 360./)
-    region_array@name = "NHtrop"
+    region_array@name = "nhtrop"
     leave_msg(scriptname, funcname)
     return(region_array)
   end if
 
   if (region.eq."SH equatorial") then
     region_array = (/-30., 0., 0., 360./)
-    region_array@name = "SHtrop"
+    region_array@name = "shtrop"
     leave_msg(scriptname, funcname)
     return(region_array)
   end if
 
   if (region.eq."Northern Hemisphere") then
     region_array = (/20., 90., 0., 360./)
-    region_array@name = "NH"
+    region_array@name = "nh"
     leave_msg(scriptname, funcname)
     return(region_array)
   end if
 
   if (region.eq."Southern Hemisphere") then
     region_array = (/-90., -20., 0., 360./)
-    region_array@name = "SH"
+    region_array@name = "nh"
     leave_msg(scriptname, funcname)
     return(region_array)
   end if
 
   if (region.eq."NH midlatitudes") then
     region_array = (/35., 60., 0., 360./)
-    region_array@name = "NHmidlat"
+    region_array@name = "nhmidlat"
     leave_msg(scriptname, funcname)
     return(region_array)
   end if
 
   if (region.eq."SH midlatitudes") then
     region_array = (/-60., -35., 0., 360./)
-    region_array@name = "SHmidlat"
+    region_array@name = "shmidlat"
     leave_msg(scriptname, funcname)
     return(region_array)
   end if
 
   if (region.eq."Arctic") then
     region_array = (/60., 90., 0., 360./)
-    region_array@name = "NHpolar"
+    region_array@name = "nhpolar"
     leave_msg(scriptname, funcname)
     return(region_array)
   end if
 
   if (region.eq."Antarctic") then
     region_array = (/-90., -60., 0., 360./)
-    region_array@name = "SHpolar"
+    region_array@name = "shpolar"
     leave_msg(scriptname, funcname)
     return(region_array)
   end if
 
   if (region.eq."Equatorial") then
     region_array = (/-10., 10., 0., 360./)
-    region_array@name = "EQ"
+    region_array@name = "eq"
     leave_msg(scriptname, funcname)
     return(region_array)
   end if
