@@ -590,6 +590,7 @@ references:
   esacci-cloud: "Stengel et al., Earth Syst. Sci. Data, doi:10.5194/essd-9-881-2017, 2017."
   esacci-fire: "Not available."
   esacci-landcover: "Defourny et al.. ESA Land Cover Climate Change Initiative (ESA LC_cci) data, 2015."
+  esacci-oc: "Volpe, G., et al., 2018. PRODUCT USER MANUAL. http://resources.marine.copernicus.eu/documents/PUM/CMEMS-OC-PUM-009-ALL.pdf"
   esacci-ozone: "Loyola et al., Int. J. Remote Sens. doi:10.1080/01431160902825016, 2009."
   esacci-soilmoisture: "Not available."
   esacci-sst: "Merchant et al., Geosci. Data J., doi:10.1002/gdj3.20, 2014."
