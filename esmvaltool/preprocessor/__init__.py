@@ -22,7 +22,7 @@ from ._reformat import (cmor_check_data, cmor_check_metadata, fix_data,
                         fix_file, fix_metadata)
 from ._regrid import extract_levels, regrid
 from ._time import (annual_mean, extract_month, extract_season, extract_time,
-                    seasonal_mean, time_average)
+                    regrid_time, seasonal_mean, time_average)
 from ._volume import (average_volume, depth_integration, extract_trajectory,
                       extract_transect, extract_volume)
 
@@ -68,19 +68,20 @@ __all__ = [
     'extract_transect',
     # 'average_zone': average_zone,
     # 'cross_section': cross_section,
-    # Time operations
-    # 'annual_cycle': annual_cycle,
-    # 'diurnal_cycle': diurnal_cycle,
     'multi_model_statistics',
     # Grid-point operations
     'extract_named_regions',
     'depth_integration',
     'average_region',
     'average_volume',
+    # Time operations
+    # 'annual_cycle': annual_cycle,
+    # 'diurnal_cycle': diurnal_cycle,
     'zonal_means',
     'annual_mean',
     'seasonal_mean',
     'time_average',
+    'regrid_time',
     'cmor_check_data',
     # Save to file
     'save',
