@@ -26,5 +26,5 @@ class fgco2(Fix):
         cube.coord('latitude', dim_coord=True).rename('lat_idx')
         cube.coord('lat_idx').var_name = 'y'
         cube.coord('longitude', dim_coord=True).rename('lon_idx')
-        cube.coord('lon_idx').var_name = 'y'
+        cube.coord('lon_idx').var_name = 'x'
         return [cube]
