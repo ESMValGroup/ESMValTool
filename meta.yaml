@@ -39,7 +39,7 @@ requirements:
     - python
     - libunwind  #  specifically for Python3.7+
     - graphviz
-    - iris
+    - iris>=2.2
     - python-stratify
     # Normally installed via pip:
     - cartopy
