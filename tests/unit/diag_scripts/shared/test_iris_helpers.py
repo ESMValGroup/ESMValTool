@@ -139,24 +139,25 @@ DICTS_TO_CONVERT = [
     (DICT_3, DICT_3),
     ({
         **DICT_1,
-        **DICT_2
+        **DICT_2,
     }, {
         **DICT_1,
-        **DICT_3
+        **DICT_3,
     }),
     ({
         **DICT_1,
-        **DICT_3
+        **DICT_3,
     }, {
         **DICT_1,
-        **DICT_3
+        **DICT_3,
     }),
     ({
         **DICT_1,
-        **DICT_2, 'var_name': ':('
+        **DICT_2,
+        'var_name': ':(',
     }, {
         **DICT_1,
-        **DICT_3
+        **DICT_3,
     }),
 ]
 
@@ -190,19 +191,19 @@ def test_iris_project_constraint(mock_logger, constr, negate, data, points):
         'input_data': {
             'p1': {
                 'project': 'ONE',
-                'dataset': 'a'
+                'dataset': 'a',
             },
             'p2': {
                 'project': 'TWO',
-                'dataset': 'b'
+                'dataset': 'b',
             },
             'p3': {
                 'project': 'THREE',
-                'dataset': 'c'
+                'dataset': 'c',
             },
             'p4': {
                 'project': 'ONE',
-                'dataset': 'e'
+                'dataset': 'e',
             },
         },
         'does_not_matter': 'oh no',
@@ -228,20 +229,20 @@ def test_iris_project_constraint(mock_logger, constr, negate, data, points):
 ATTRS = [
     {
         'test': 1,
-        'oh': 'yeah'
+        'oh': 'yeah',
     },
     {
-        'a2': 'c2'
+        'a2': 'c2',
     },
 ]
 VAR_ATTRS = [
     {
         'var_name': 'var',
-        'long_name': 'LOOONG NAME'
+        'long_name': 'LOOONG NAME',
     },
     {
         'standard_name': 'air_temperature',
-        'units': 'K'
+        'units': 'K',
     },
 ]
 DATSET_COORD_1 = iris.coords.AuxCoord(['x', 'b', 'c', 'a', 'y', 'z'],

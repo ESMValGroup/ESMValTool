@@ -213,37 +213,37 @@ ATTRS = [
     {
         'dataset': 'a',
         'filename': 'path/to/model1.nc',
-        'project': 'CMIP42'
+        'project': 'CMIP42',
     },
     {
         'dataset': 'b',
         'filename': 'path/to/model2.nc',
-        'project': 'CMIP42'
+        'project': 'CMIP42',
     },
     {
         'dataset': 'c',
-        'filename': 'path/to/model3.nc'
+        'filename': 'path/to/model3.nc',
     },
     {
         'dataset': 'd',
         'filename': 'path/to/model4.nc',
-        'project': 'CMIP42'
+        'project': 'CMIP42',
     },
 ]
 VAR_ATTRS = [
     {
         'long_name': LONG_NAME,
         'var_name': SHORT_NAME,
-        'units': UNITS
+        'units': UNITS,
     },
     {
         'long_name': LONG_NAME,
         'var_name': SHORT_NAME,
-        'units': UNITS
+        'units': UNITS,
     },
     {
         'long_name': LONG_NAME,
-        'var_name': SHORT_NAME
+        'var_name': SHORT_NAME,
     },
     {
         'long_name': LONG_NAME,
@@ -288,12 +288,12 @@ PATH = 'path/to/super/cube'
 VAR_ATTRS_NEW = [
     {
         'long_name': 'I do not have units :(',
-        'short_name': 'sad'
+        'short_name': 'sad',
     },
     {
         'long_name': 'Long name',
         'short_name': 'var',
-        'units': '1'
+        'units': '1',
     },
     {
         'short_name': SHORT_NAME,
@@ -307,7 +307,7 @@ ATTRS_NEW = [
     {},
     {
         'test': '123',
-        'answer': 42
+        'answer': 42,
     },
 ]
 ATTRIBUTES_FOR_1D_CUBE = zip(VAR_ATTRS_NEW, ATTRS_NEW)
