@@ -317,6 +317,8 @@ def extract_variables(cfg, as_iris=False):
         # Replace short_name by var_name if desired
         if as_iris:
             info['var_name'] = info.pop('short_name')
+            if info['standard_name'] == '':
+                info['standard_name'] = None
 
     return variables
 

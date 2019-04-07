@@ -1,0 +1,188 @@
+_has_necessary_attributes:
+  - input:
+    - dataset: model
+      filename: path/to/model
+      long_name: 'Loooong name'
+      project: CMIP42
+      short_name: var
+      units: KiB
+    - dataset: model
+      filename: path/to/model
+      long_name: 'Loooong name'
+      project: CMIP42
+      short_name: var
+      units: KiB
+    output: true
+  - input:
+    - dataset: model
+      filename: path/to/model
+      long_name: 'Loooong name'
+      project: CMIP42
+      short_name: var
+      units: KiB
+    output: true
+  - input:
+    - filename: path/to/model
+      long_name: 'Loooong name'
+      project: CMIP42
+      short_name: var
+      units: KiB
+    output: false
+  - input:
+    - dataset: model
+      long_name: 'Loooong name'
+      project: CMIP42
+      short_name: var
+      units: KiB
+    output: false
+  - input:
+    - dataset: model
+      filename: path/to/model
+      project: CMIP42
+      short_name: var
+      units: KiB
+    output: false
+  - input:
+    - dataset: model
+      filename: path/to/model
+      long_name: 'Loooong name'
+      short_name: var
+      units: KiB
+    output: false
+  - input:
+    - dataset: model
+      filename: path/to/model
+      long_name: 'Loooong name'
+      project: CMIP42
+      units: KiB
+    output: false
+  - input:
+    - dataset: model
+      filename: path/to/model
+      long_name: 'Loooong name'
+      project: CMIP42
+      short_name: var
+    output: false
+  - input:
+    - dataset: model
+      long_name: 'Loooong name'
+      project: CMIP42
+      short_name: var
+      units: KiB
+    - dataset: model
+      filename: path/to/model
+      long_name: 'Loooong name'
+      project: CMIP42
+      short_name: var
+      units: KiB
+    output: false
+  - input:
+    - dataset: model
+      filename: path/to/model
+      long_name: 'Loooong name'
+      project: CMIP42
+      short_name: var
+      units: KiB
+    - dataset: model
+      filename: path/to/model
+      long_name: 'Loooong name'
+      short_name: var
+      units: KiB
+    output: false
+  - input:
+    - dataset: model
+      long_name: 'Loooong name'
+      project: CMIP42
+      short_name: var
+      units: KiB
+    - dataset: model
+      filename: path/to/model
+      long_name: 'Loooong name'
+      project: CMIP42
+      short_name: var
+    output: false
+  - input:
+    - dataset: model
+      long_name: 'Loooong name'
+      project: CMIP42
+      short_name: var
+      units: KiB
+    - dataset: model
+      filename: path/to/model
+      short_name: var
+      units: KiB
+    output: false
+  - kwargs:
+      only_var_attrs: true
+    input:
+    - dataset: model
+      filename: path/to/model
+      long_name: 'Loooong name'
+      project: CMIP42
+      short_name: var
+      units: KiB
+    - dataset: model
+      filename: path/to/model
+      long_name: 'Loooong name'
+      project: CMIP42
+      short_name: var
+      units: KiB
+    output: true
+  - kwargs:
+      only_var_attrs: true
+    input:
+    - dataset: model
+      filename: path/to/model
+      long_name: 'Loooong name'
+      project: CMIP42
+      short_name: var
+      units: KiB
+    output: true
+  - kwargs:
+      only_var_attrs: true
+    input:
+    - long_name: 'Loooong name'
+      short_name: var
+      units: KiB
+    - long_name: 'Loooong name'
+      units: KiB
+    output: false
+  - kwargs:
+      only_var_attrs: true
+    input:
+    - long_name: 'Loooong name'
+      short_name: var
+      units: KiB
+    - long_name: 'Loooong name'
+      short_name: var
+      units: KiB
+    output: true
+  - kwargs:
+      only_var_attrs: true
+    input:
+    - dataset: model
+      filename: path/to/model
+      project: CMIP42
+      short_name: var
+      units: KiB
+    output: false
+  - kwargs:
+      only_var_attrs: true
+    input:
+    - dataset: model
+      filename: path/to/model
+      long_name: 'Loooong name'
+      project: CMIP42
+      short_name: var
+      units: KiB
+    - dataset: model
+      filename: path/to/model
+      long_name: 'Loooong name'
+      project: CMIP42
+      short_name: var
+    output: false
+  - kwargs:
+      only_var_attrs: true
+    input:
+    - {}
+    output: false

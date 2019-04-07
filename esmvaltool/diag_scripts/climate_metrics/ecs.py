@@ -4,7 +4,7 @@
 
 Description
 -----------
-Calculate the equilibrium climate sensitivity (ECS) using the regression method
+Calculate the effective climate sensitivity (ECS) using the regression method
 proposed by Andrews et al. (2012).
 
 Author
@@ -17,8 +17,6 @@ CRESCENDO
 
 Configuration options in recipe
 -------------------------------
-plot_ecs_regression : bool, optional (default: False)
-    Plot the linear regression graph.
 read_external_file : str, optional
     Read ECS from external file.
 
@@ -120,9 +118,9 @@ def get_provenance_record(caption):
 def read_external_file(cfg):
     """Read external file to get ECS."""
     ecs = {}
-    clim_sens = {}
+    feedback_parameter = {}
     if not cfg.get('read_external_file'):
-        return (ecs, clim_sens)
+        return (ecs, feedback_parameter)
     base_dir = os.path.dirname(__file__)
     filepath = os.path.join(base_dir, cfg['read_external_file'])
     if os.path.isfile(filepath):
@@ -130,20 +128,20 @@ def read_external_file(cfg):
             external_data = yaml.safe_load(infile)
     else:
         logger.error("Desired external file %s does not exist", filepath)
-        return (ecs, clim_sens)
+        return (ecs, feedback_parameter)
     ecs = external_data.get('ecs', {})
-    clim_sens = external_data.get('climate_sensitivity', {})
+    feedback_parameter = external_data.get('feedback_parameter', {})
     logger.info("External file %s", filepath)
     logger.info("Found ECS (K):")
     logger.info("%s", pformat(ecs))
-    logger.info("Found climate sensitivities (W m-2 K-1):")
-    logger.info("%s", pformat(clim_sens))
-    return (ecs, clim_sens, filepath)
+    logger.info("Found climate feedback parameters (W m-2 K-1):")
+    logger.info("%s", pformat(feedback_parameter))
+    return (ecs, feedback_parameter, filepath)
 
 
 def plot_ecs_regression(cfg, dataset_name, tas_cube, rtmt_cube, reg_stats):
     """Plot linear regression used to calculate ECS."""
-    if not (cfg['write_plots'] and cfg.get('plot_ecs_regression')):
+    if not cfg['write_plots']:
         return (None, None)
     ecs = -reg_stats.intercept / (2 * reg_stats.slope)
 
@@ -196,7 +194,7 @@ def plot_ecs_regression(cfg, dataset_name, tas_cube, rtmt_cube, reg_stats):
         'regression_r_value': reg_stats.rvalue,
         'regression_slope': reg_stats.slope,
         'regression_interception': reg_stats.intercept,
-        'climate_sensitivity': -reg_stats.slope,
+        'Climate Feedback Parameter': -reg_stats.slope,
         'ECS': ecs,
     }
     cube = iris.cube.Cube(
@@ -206,7 +204,7 @@ def plot_ecs_regression(cfg, dataset_name, tas_cube, rtmt_cube, reg_stats):
         **extract_variables(cfg, as_iris=True)['rtmt'])
     netcdf_path = get_diagnostic_filename('ecs_regression_' + dataset_name,
                                           cfg)
-    io.save_iris_cube(cube, netcdf_path)
+    io.iris_save(cube, netcdf_path)
 
     # Provenance
     provenance_record = get_provenance_record(
@@ -221,18 +219,18 @@ def plot_ecs_regression(cfg, dataset_name, tas_cube, rtmt_cube, reg_stats):
     return (netcdf_path, provenance_record)
 
 
-def write_data(ecs_data, clim_sens_data, ancestor_files, cfg):
+def write_data(ecs_data, feedback_parameter_data, ancestor_files, cfg):
     """Write netcdf files."""
-    data = [ecs_data, clim_sens_data]
+    data = [ecs_data, feedback_parameter_data]
     var_attrs = [
         {
             'short_name': 'ecs',
-            'long_name': 'Equilibrium Climate Sensitivity (ECS)',
+            'long_name': 'Effective Climate Sensitivity (ECS)',
             'units': cf_units.Unit('K'),
         },
         {
             'short_name': 'lambda',
-            'long_name': 'Climate Sensitivity',
+            'long_name': 'Climate Feedback Parameter',
             'units': cf_units.Unit('W m-2 K-1'),
         },
     ]
@@ -252,18 +250,18 @@ def main(cfg):
 
     # Read external file if desired
     if cfg.get('read_external_file'):
-        (ecs, clim_sens, external_file) = read_external_file(cfg)
+        (ecs, feedback_parameter, external_file) = read_external_file(cfg)
     else:
         check_input_data(cfg)
         ecs = {}
-        clim_sens = {}
+        feedback_parameter = {}
         external_file = None
 
     # Read data
     tas_data = select_metadata(input_data, short_name='tas')
     rtmt_data = select_metadata(input_data, short_name='rtmt')
 
-    # Iterate over all datasets and save ECS and climate sensitivity
+    # Iterate over all datasets and save ECS and feedback parameter
     for dataset in group_metadata(tas_data, 'dataset'):
         logger.info("Processing %s", dataset)
         (tas_cube, rtmt_cube, ancestor_files) = get_anomaly_data(
@@ -285,16 +283,16 @@ def main(cfg):
         # Save data
         if cfg.get('read_external_file') and dataset in ecs:
             logger.info(
-                "Overwriting external given ECS and climate "
-                "sensitivity for %s", dataset)
+                "Overwriting external given ECS and climate feedback "
+                "parameter for %s", dataset)
         ecs[dataset] = -reg.intercept / (2 * reg.slope)
-        clim_sens[dataset] = -reg.slope
+        feedback_parameter[dataset] = -reg.slope
 
     # Write data
     ancestor_files = [d['filename'] for d in tas_data + rtmt_data]
     if external_file is not None:
         ancestor_files.append(external_file)
-    write_data(ecs, clim_sens, ancestor_files, cfg)
+    write_data(ecs, feedback_parameter, ancestor_files, cfg)
 
 
 if __name__ == '__main__':

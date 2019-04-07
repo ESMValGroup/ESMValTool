@@ -752,7 +752,6 @@ diagnostics:
     scripts:
       ecs: &ecs_script
         script: climate_metrics/ecs.py
-        plot_ecs_regression: true
 
   fig09-42a_cmip5:
     description: Plot ECS vs. GMSAT for CMIP5 models.

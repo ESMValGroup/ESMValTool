@@ -26,7 +26,8 @@ def _has_necessary_attributes(metadata,
                               only_var_attrs=False,
                               log_level='debug'):
     """Check if dataset metadata has necessary attributes."""
-    keys_to_check = VAR_KEYS if only_var_attrs else NECESSARY_KEYS
+    keys_to_check = (VAR_KEYS + ['short_name']
+                     if only_var_attrs else NECESSARY_KEYS)
     for dataset in metadata:
         for key in keys_to_check:
             if key not in dataset:
@@ -131,6 +132,8 @@ def netcdf_to_metadata(cfg, pattern=None, root=None):
         dataset_info = dict(cube.attributes)
         for var_key in VAR_KEYS:
             dataset_info[var_key] = getattr(cube, var_key)
+        if cube.standard_name is not None:
+            dataset_info['standard_name'] = cube.standard_name
         dataset_info['short_name'] = cube.var_name
         dataset_info['filename'] = path
 
@@ -144,7 +147,7 @@ def netcdf_to_metadata(cfg, pattern=None, root=None):
 
 
 def metadata_to_netcdf(cube, metadata):
-    """Convert list of metadata to netcdf files.
+    """Convert single metadata dictionary to netcdf file.
 
     Parameters
     ----------
@@ -155,7 +158,7 @@ def metadata_to_netcdf(cube, metadata):
 
     """
     metadata = dict(metadata)
-    if not _has_necessary_attributes([metadata], 'error'):
+    if not _has_necessary_attributes([metadata], log_level='error'):
         logger.error("Cannot save cube %s", cube)
         return
     for var_key in VAR_KEYS:
@@ -171,7 +174,7 @@ def metadata_to_netcdf(cube, metadata):
         if isinstance(val, bool):
             metadata[attr] = str(val)
     cube.attributes.update(metadata)
-    save_iris_cube(cube, metadata['filename'])
+    iris_save(cube, metadata['filename'])
 
 
 def save_1d_data(cubes, path, coord_name, var_attrs, attributes=None):
@@ -179,6 +182,11 @@ def save_1d_data(cubes, path, coord_name, var_attrs, attributes=None):
 
     Create 1D cube with the auxiliary dimension `dataset` and save scalar data
     for every appearing dataset.
+
+    Note
+    ----
+    Does not check metadata of the `cubes`, i.e. difference names or units
+    will be ignored.
 
     Parameters
     ----------
@@ -216,26 +224,26 @@ def save_1d_data(cubes, path, coord_name, var_attrs, attributes=None):
 
     # Create new cube
     cube = iris.cube.Cube(
-        np.array(data),
+        np.ma.array(data),
         aux_coords_and_dims=[(dataset_coord, 0), (coord, 1)],
         attributes=attributes,
         **var_attrs)
     cube.attributes['filename'] = path
-    save_iris_cube(cube, path)
+    iris_save(cube, path)
 
 
-def save_iris_cube(cube, path):
-    """Save `iris.cube.Cube`.
+def iris_save(source, path):
+    """Use :mod:`iris` save function and log output.
 
     Parameters
     ----------
-    cube : iris.cube.Cube
-        Cube to be saved.
+    source : iris.cube.Cube or iris.cube.CubeList
+        Cube(s) to be saved.
     path : str
         Path to the new file.
 
     """
-    iris.save(cube, path)
+    iris.save(source, path)
     logger.info("Wrote %s", path)
 
 
@@ -245,6 +253,10 @@ def save_scalar_data(data, path, var_attrs, aux_coord=None, attributes=None):
     Create 1D cube with the auxiliary dimension `dataset` and save scalar data
     for every appearing dataset.
 
+    Note
+    ----
+    Missing values can be added by `np.nan`.
+
     Parameters
     ----------
     data : dict
@@ -252,7 +264,7 @@ def save_scalar_data(data, path, var_attrs, aux_coord=None, attributes=None):
     path : str
         Path to the new file.
     var_attrs : dict
-        Attributes for the variable (`short_name`, `long_name`, or `units`).
+        Attributes for the variable (`short_name`, `long_name` and `units`).
     aux_coord : iris.coords.AuxCoord, optional
         Optional auxiliary coordinate.
     attributes : dict, optional
@@ -260,6 +272,9 @@ def save_scalar_data(data, path, var_attrs, aux_coord=None, attributes=None):
 
     """
     var_attrs = dict(var_attrs)
+    if not data:
+        logger.error("No data given")
+        return
     if not _has_necessary_attributes(
             [var_attrs], only_var_attrs=True, log_level='error'):
         logger.error("Cannot write file '%s'", path)
@@ -272,9 +287,9 @@ def save_scalar_data(data, path, var_attrs, aux_coord=None, attributes=None):
     if aux_coord is not None:
         coords.append((aux_coord, 0))
     cube = iris.cube.Cube(
-        list(data.values()),
+        np.ma.masked_invalid(list(data.values())),
         aux_coords_and_dims=coords,
         attributes=attributes,
         **var_attrs)
     cube.attributes['filename'] = path
-    save_iris_cube(cube, path)
+    iris_save(cube, path)
