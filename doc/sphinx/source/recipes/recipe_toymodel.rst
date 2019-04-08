@@ -44,7 +44,7 @@ User setting files are stored in recipes/
 Variables
 ---------
 
-* (atmos, daily, longitude, latitude, time)
+* (atmos, daily-monthly, longitude, latitude, time)
 
 
 Observations and reformat scripts
