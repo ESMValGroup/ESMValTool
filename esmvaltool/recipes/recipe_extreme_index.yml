@@ -36,15 +36,49 @@ preprocessors:
       end_latitude: 70
 
 diagnostics:
-  extreme_index:
-    description: Calculate insurance extreme indices.
+  extreme_index_tasmax:
+    description: Calculate insurance extreme indices t90p for maximum near surface temperature.
+    variables:
+      tasmax:
+        preprocessor: preproc
+        mip: day
+    scripts:
+      t90p:
+        script: magic_bsc/extreme_index.r
+        metric: t90p
+
+  extreme_index_tasmin:
+    description: Calculate insurance extreme index t10p from minimum near-surface temperature.
+    variables:
+      tasmin:
+        preprocessor: preproc
+        mip: day
+    scripts:
+      t10p:
+        script: magic_bsc/extreme_index.r
+        metric: t10p
+
+  extreme_index_sfcWind:
+    description: Calculate insurance extreme index Wx from near-surface wind speed.
     variables:
       sfcWind:
         preprocessor: preproc
         mip: day
-
     scripts:
-      main:
+      wx:
         script: magic_bsc/extreme_index.r
+        metric: Wx
 
-        metric: Wx # t10p, t90p, cdd, rx5day or Wx
+  extreme_index_pr:
+    description: Calculate insurance extreme indices rx5day and cdd from precipitation flux.
+    variables:
+      pr:
+        preprocessor: preproc
+        mip: day
+    scripts:
+       rx5day:
+        script: magic_bsc/extreme_index.r
+        metric: rx5day
+       cdd:
+        script: magic_bsc/extreme_index.r
+        metric: cdd
