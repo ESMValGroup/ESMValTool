@@ -15,6 +15,9 @@ documentation:
     - wenz_sa
     - will_ul
 
+  maintainer:
+    - laue_ax
+
   references:
     - lauer17rse
 
@@ -370,15 +373,15 @@ diagnostics:
     variables:
       xco2:
 #        preprocessor: clim_5x5
-#        derive: true
+        derive: true
         mip: Amon
         field: T2Ms
         start_year: 2003
-#        end_year: 2003
-        end_year: 2014
-#        exp: [esmHistorical, esmrcp85]
+        end_year: 2003
+#        end_year: 2014
+        exp: [esmHistorical, esmrcp85]
         frequency: mon
-        reference_dataset: ESACCI-GHG
+        reference_dataset: ghgcci
         additional_datasets:
 #          - {dataset: BNU-ESM, project: CMIP5, ensemble: r1i1p1}
 #          - {dataset: CanESM2, project: CMIP5, ensemble: r1i1p1}
@@ -387,10 +390,10 @@ diagnostics:
 #          - {dataset: GFDL-ESM2G, project: CMIP5, ensemble: r1i1p1}
 #          - {dataset: GFDL-ESM2M, project: CMIP5, ensemble: r1i1p1}
 #          - {dataset: MIROC-ESM, project: CMIP5, ensemble: r1i1p1}
-#          - {dataset: MPI-ESM-LR, project: CMIP5, ensemble: r1i1p1}
+          - {dataset: MPI-ESM-LR, project: CMIP5, ensemble: r1i1p1}
 #          - {dataset: MRI-ESM1, project: CMIP5, ensemble: r1i1p1}
 #          - {dataset: NorESM1-ME, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: ESACCI-GHG, project: obs4mips, level: l3, version: v100, tier: 1}
+          - {dataset: ghgcci, project: obs4mips, level: l3, version: v100, tier: 1}
     scripts:
       tsline:
         script: ipcc_ar5/tsline.ncl
@@ -401,7 +404,7 @@ diagnostics:
         ts_maxlon: 360
         multi_model_mean: true
         dont_add_per_year: true
-        ts_diff_ref: ESACCI-GHG
+        ts_diff_ref: ghgcci
         ts_lsmask: refmodel
 
 
