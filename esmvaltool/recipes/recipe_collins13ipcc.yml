@@ -3,8 +3,9 @@
 ---
 documentation:
   description: |
-    Recipe reproducing selected figures from IPCC AR5, chap. 12 (Collins et al., 2013)
-    mainly difference maps between future and present (no observations included), timeseries,
+    Recipe reproducing selected figures from IPCC AR5,
+    chap. 12 (Collins et al., 2013) mainly difference maps between
+    future and present (no observations included), timeseries,
     changes scaled by mean global temperature change.
     Only a subset of models are included for most examples!
 
@@ -35,6 +36,14 @@ preprocessors:
       target_grid: 1x1
       scheme: linear
 
+  preproc_atm:
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    extract_levels:
+      levels: reference_dataset
+      scheme: linear
+
   preproc_zonal_atm:
     regrid:
       target_grid: 1x1
@@ -45,6 +54,17 @@ preprocessors:
     zonal_means:
       coordinate: longitude
       mean_type: mean
+
+  preproc_ocean:
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    extract_levels:
+      levels: [5., 15., 25., 35., 45., 56., 66., 77., 88., 100, 112., 125.,
+               140., 155., 170., 190., 215., 245., 275., 315., 370., 430.,
+               510., 610., 725., 870., 1040., 1240., 1450., 1725., 2010.,
+               2315., 2640., 2985., 3340., 3705., 4075., 4460., 4845., 5200.]
+      scheme: linear_horizontal_extrapolate_vertical
 
   preproc_zonal_ocean:
     regrid:
@@ -76,22 +96,23 @@ diagnostics:
         field: T2Ms
         project: CMIP5
         ensemble: r1i1p1
+        exp: historical
     additional_datasets:
-      - {dataset: CanESM2,        exp: historical, start_year: 1986, end_year: 2005}
-      - {dataset: CCSM4,          exp: historical, start_year: 1986, end_year: 2005}
-      - {dataset: CESM1-CAM5,     exp: historical, start_year: 1986, end_year: 2005}
-      - {dataset: CSIRO-Mk3-6-0,  exp: historical, start_year: 1986, end_year: 2005}
-      - {dataset: GFDL-ESM2G,     exp: historical, start_year: 1986, end_year: 2005}
-      - {dataset: IPSL-CM5A-LR,   exp: historical, start_year: 1986, end_year: 2005}
-      - {dataset: MPI-ESM-LR,     exp: historical, start_year: 1986, end_year: 2005}
+      - {dataset: CanESM2,       start_year: 1986, end_year: 2005}
+      - {dataset: CCSM4,         start_year: 1986, end_year: 2005}
+      - {dataset: CESM1-CAM5,    start_year: 1986, end_year: 2005}
+      - {dataset: CSIRO-Mk3-6-0, start_year: 1986, end_year: 2005}
+      - {dataset: GFDL-ESM2G,    start_year: 1986, end_year: 2005}
+      - {dataset: IPSL-CM5A-LR,  start_year: 1986, end_year: 2005}
+      - {dataset: MPI-ESM-LR,    start_year: 1986, end_year: 2005}
 
-      - {dataset: CanESM2,        exp: rcp45, start_year: 2081, end_year: 2100}
-      - {dataset: CCSM4,          exp: rcp45, start_year: 2081, end_year: 2100}
-      - {dataset: CESM1-CAM5,     exp: rcp45, start_year: 2081, end_year: 2100}
-      - {dataset: CSIRO-Mk3-6-0,  exp: rcp45, start_year: 2081, end_year: 2100}
-      - {dataset: GFDL-ESM2G,     exp: rcp45, start_year: 2081, end_year: 2100}
-      - {dataset: IPSL-CM5A-LR,   exp: rcp45, start_year: 2081, end_year: 2100}
-      - {dataset: MPI-ESM-LR,     exp: rcp45, start_year: 2081, end_year: 2100}
+      - {dataset: CanESM2,       exp: rcp45, start_year: 2081, end_year: 2100}
+      - {dataset: CCSM4,         exp: rcp45, start_year: 2081, end_year: 2100}
+      - {dataset: CESM1-CAM5,    exp: rcp45, start_year: 2081, end_year: 2100}
+      - {dataset: CSIRO-Mk3-6-0, exp: rcp45, start_year: 2081, end_year: 2100}
+      - {dataset: GFDL-ESM2G,    exp: rcp45, start_year: 2081, end_year: 2100}
+      - {dataset: IPSL-CM5A-LR,  exp: rcp45, start_year: 2081, end_year: 2100}
+      - {dataset: MPI-ESM-LR,    exp: rcp45, start_year: 2081, end_year: 2100}
 
     scripts:
       ch12_map_diff_each_model_fig12-9: &settings
@@ -113,7 +134,7 @@ diagnostics:
         # Plot title
         title: "Annual mean surface air temperature change (RCP4.5: 2081-2100)"
         # Alternative colormap (path to .rgb file or ncl name)
-        colormap: ./diag_scripts/shared/plot/rgb/ipcc_temperature_with_grey.rgb
+        colormap: $diag_scripts/shared/plot/rgb/ipcc_temperature_with_grey.rgb
         # Contour levels for all difference plots
         diff_levs: [-2., -1.5, -1., -0.5, 0, 0.5, 1, 1.5, 2, 3, 4, 5, 7, 9, 11]
         # Span whole colormap (default false)
@@ -121,7 +142,7 @@ diagnostics:
         # Unit for colorbar, only affects label
         units: (~F35~J~F~C)
         # Plot units, triggers conversion into this unit
-        #plot_units: 
+        # plot_units:
 
   ### Time series plots #######################################################
   ts_line_tas:
@@ -137,162 +158,189 @@ diagnostics:
         ensemble: r1i1p1
         mip: Amon
         field: T2Ms
+        exp: historical
     additional_datasets:
-      - {dataset: bcc-csm1-1-m,     exp: historical, start_year: 1850, end_year: 2005}
-      - {dataset: BNU-ESM,          exp: historical, start_year: 1850, end_year: 2005}
-      - {dataset: CESM1-BGC,        exp: historical, start_year: 1850, end_year: 2005}
-      - {dataset: CESM1-CAM5,       exp: historical, start_year: 1850, end_year: 2005}
-      - {dataset: CESM1-CAM5-1-FV2, exp: historical, start_year: 1850, end_year: 2005}
-      - {dataset: CESM1-FASTCHEM,   exp: historical, start_year: 1850, end_year: 2005}
-      - {dataset: CESM1-WACCM,      exp: historical, start_year: 1955, end_year: 2005, ensemble: r2i1p1}
-      - {dataset: CMCC-CESM,        exp: historical, start_year: 1850, end_year: 2005}
-      - {dataset: CMCC-CMS,         exp: historical, start_year: 1850, end_year: 2005}
-      - {dataset: CNRM-CM5,         exp: historical, start_year: 1850, end_year: 2005}
-      - {dataset: CNRM-CM5-2,       exp: historical, start_year: 1850, end_year: 2005}
-      - {dataset: CSIRO-Mk3-6-0,    exp: historical, start_year: 1850, end_year: 2005}
-      - {dataset: CSIRO-Mk3L-1-2,   exp: historical, start_year: 1851, end_year: 2005, ensemble: r1i2p1}
-      - {dataset: EC-EARTH,         exp: historical, start_year: 1850, end_year: 2005, ensemble: r8i1p1}
-      - {dataset: FGOALS-s2,        exp: historical, start_year: 1850, end_year: 2005, ensemble: r2i1p1}
-      - {dataset: FGOALS-g2,        exp: historical, start_year: 1850, end_year: 2005}
-      - {dataset: FIO-ESM,          exp: historical, start_year: 1850, end_year: 2005}
-      - {dataset: GFDL-CM2p1,       exp: historical, start_year: 1861, end_year: 2005, ensemble: r2i1p1}
-      - {dataset: GFDL-CM3,         exp: historical, start_year: 1860, end_year: 2005}
-      - {dataset: GFDL-ESM2G,       exp: historical, start_year: 1861, end_year: 2005}
-      - {dataset: GFDL-ESM2M,       exp: historical, start_year: 1861, end_year: 2005}
-      - {dataset: GISS-E2-H,        exp: historical, start_year: 1850, end_year: 2005}
-      - {dataset: GISS-E2-H,        exp: historical, start_year: 1850, end_year: 2005, ensemble: r1i1p2}
-      - {dataset: GISS-E2-H,        exp: historical, start_year: 1850, end_year: 2005, ensemble: r1i1p3}
-      - {dataset: GISS-E2-H-CC,     exp: historical, start_year: 1850, end_year: 2005}
-      - {dataset: GISS-E2-R,        exp: historical, start_year: 1850, end_year: 2005}
-      - {dataset: GISS-E2-R,        exp: historical, start_year: 1850, end_year: 2005, ensemble: r1i1p2}
-      - {dataset: GISS-E2-R,        exp: historical, start_year: 1850, end_year: 2005, ensemble: r1i1p3}
-      - {dataset: GISS-E2-R-CC,     exp: historical, start_year: 1850, end_year: 2005}
-      - {dataset: HadGEM2-AO,       exp: historical, start_year: 1860, end_year: 2005}
-      - {dataset: IPSL-CM5A-LR,     exp: historical, start_year: 1850, end_year: 2005}
-      - {dataset: IPSL-CM5A-MR,     exp: historical, start_year: 1850, end_year: 2005}
-      - {dataset: MIROC4h,          exp: historical, start_year: 1950, end_year: 2005}
-      - {dataset: MIROC5,           exp: historical, start_year: 1850, end_year: 2005}
-      - {dataset: MIROC-ESM,        exp: historical, start_year: 1850, end_year: 2005}
-      - {dataset: MIROC-ESM-CHEM,   exp: historical, start_year: 1850, end_year: 2005}
-      - {dataset: MPI-ESM-LR,       exp: historical, start_year: 1850, end_year: 2005}
-      - {dataset: MPI-ESM-MR,       exp: historical, start_year: 1850, end_year: 2005}
-      - {dataset: MPI-ESM-P,        exp: historical, start_year: 1850, end_year: 2005}
-      - {dataset: MRI-CGCM3,        exp: historical, start_year: 1850, end_year: 2005}
-      - {dataset: MRI-ESM1,         exp: historical, start_year: 1851, end_year: 2005}
-      - {dataset: NorESM1-M,        exp: historical, start_year: 1850, end_year: 2005}
+      - {dataset: bcc-csm1-1-m,     start_year: 1850, end_year: 2005}
+      - {dataset: BNU-ESM,          start_year: 1850, end_year: 2005}
+      - {dataset: CESM1-BGC,        start_year: 1850, end_year: 2005}
+      - {dataset: CESM1-CAM5,       start_year: 1850, end_year: 2005}
+      - {dataset: CESM1-CAM5-1-FV2, start_year: 1850, end_year: 2005}
+      - {dataset: CESM1-FASTCHEM,   start_year: 1850, end_year: 2005}
+      - {dataset: CESM1-WACCM,      start_year: 1955, end_year: 2005,
+         ensemble: r2i1p1}
+      - {dataset: CMCC-CESM,      start_year: 1850, end_year: 2005}
+      - {dataset: CMCC-CMS,       start_year: 1850, end_year: 2005}
+      - {dataset: CNRM-CM5,       start_year: 1850, end_year: 2005}
+      - {dataset: CNRM-CM5-2,     start_year: 1850, end_year: 2005}
+      - {dataset: CSIRO-Mk3-6-0,  start_year: 1850, end_year: 2005}
+      - {dataset: CSIRO-Mk3L-1-2, start_year: 1851, end_year: 2005,
+         ensemble: r1i2p1}
+      - {dataset: EC-EARTH,  start_year: 1850, end_year: 2005, ensemble: r8i1p1}
+      - {dataset: FGOALS-s2, start_year: 1850, end_year: 2005, ensemble: r2i1p1}
+      - {dataset: FGOALS-g2,      start_year: 1850, end_year: 2005}
+      - {dataset: FIO-ESM,        start_year: 1850, end_year: 2005}
+      - {dataset: GFDL-CM2p1,     start_year: 1861, end_year: 2005,
+         ensemble: r2i1p1}
+      - {dataset: GFDL-CM3,       start_year: 1860, end_year: 2005}
+      - {dataset: GFDL-ESM2G,     start_year: 1861, end_year: 2005}
+      - {dataset: GFDL-ESM2M,     start_year: 1861, end_year: 2005}
+      - {dataset: GISS-E2-H,      start_year: 1850, end_year: 2005}
+      - {dataset: GISS-E2-H, start_year: 1850, end_year: 2005, ensemble: r1i1p2}
+      - {dataset: GISS-E2-H, start_year: 1850, end_year: 2005, ensemble: r1i1p3}
+      - {dataset: GISS-E2-H-CC,   start_year: 1850, end_year: 2005}
+      - {dataset: GISS-E2-R,      start_year: 1850, end_year: 2005}
+      - {dataset: GISS-E2-R, start_year: 1850, end_year: 2005, ensemble: r1i1p2}
+      - {dataset: GISS-E2-R, start_year: 1850, end_year: 2005, ensemble: r1i1p3}
+      - {dataset: GISS-E2-R-CC,   start_year: 1850, end_year: 2005}
+      - {dataset: HadGEM2-AO,     start_year: 1860, end_year: 2005}
+      - {dataset: IPSL-CM5A-LR,   start_year: 1850, end_year: 2005}
+      - {dataset: IPSL-CM5A-MR,   start_year: 1850, end_year: 2005}
+      - {dataset: MIROC4h,        start_year: 1950, end_year: 2005}
+      - {dataset: MIROC5,         start_year: 1850, end_year: 2005}
+      - {dataset: MIROC-ESM,      start_year: 1850, end_year: 2005}
+      - {dataset: MIROC-ESM-CHEM, start_year: 1850, end_year: 2005}
+      - {dataset: MPI-ESM-LR,     start_year: 1850, end_year: 2005}
+      - {dataset: MPI-ESM-MR,     start_year: 1850, end_year: 2005}
+      - {dataset: MPI-ESM-P,      start_year: 1850, end_year: 2005}
+      - {dataset: MRI-CGCM3,      start_year: 1850, end_year: 2005}
+      - {dataset: MRI-ESM1,       start_year: 1851, end_year: 2005}
+      - {dataset: NorESM1-M,      start_year: 1850, end_year: 2005}
 
-      - {dataset: bcc-csm1-1-m,     exp: rcp26, start_year: 2006, end_year: 2100}
-      - {dataset: BNU-ESM,          exp: rcp26, start_year: 2006, end_year: 2100}
-      - {dataset: CESM1-WACCM,      exp: rcp26, start_year: 2006, end_year: 2099, ensemble: r2i1p1}
-      - {dataset: CNRM-CM5,         exp: rcp26, start_year: 2006, end_year: 2100}
-      - {dataset: CSIRO-Mk3-6-0,    exp: rcp26, start_year: 2006, end_year: 2100}
-      - {dataset: EC-EARTH,         exp: rcp26, start_year: 2006, end_year: 2100, ensemble: r8i1p1}
-      - {dataset: FGOALS-g2,        exp: rcp26, start_year: 2006, end_year: 2100}
-      - {dataset: FIO-ESM,          exp: rcp26, start_year: 2006, end_year: 2100}
-      - {dataset: GFDL-CM3,         exp: rcp26, start_year: 2006, end_year: 2100}
-      - {dataset: GFDL-ESM2G,       exp: rcp26, start_year: 2006, end_year: 2100}
-      - {dataset: GFDL-ESM2M,       exp: rcp26, start_year: 2006, end_year: 2100}
-      - {dataset: GISS-E2-H,        exp: rcp26, start_year: 2006, end_year: 2300}
-      - {dataset: GISS-E2-H,        exp: rcp26, start_year: 2006, end_year: 2300, ensemble: r1i1p2}
-      - {dataset: GISS-E2-H,        exp: rcp26, start_year: 2006, end_year: 2300, ensemble: r1i1p3}
-      - {dataset: GISS-E2-R,        exp: rcp26, start_year: 2006, end_year: 2300}
-      - {dataset: GISS-E2-R,        exp: rcp26, start_year: 2006, end_year: 2300, ensemble: r1i1p2}
-      - {dataset: GISS-E2-R,        exp: rcp26, start_year: 2006, end_year: 2300, ensemble: r1i1p3}
-      - {dataset: HadGEM2-AO,       exp: rcp26, start_year: 2006, end_year: 2100}
-      - {dataset: IPSL-CM5A-LR,     exp: rcp26, start_year: 2006, end_year: 2300}
-      - {dataset: IPSL-CM5A-MR,     exp: rcp26, start_year: 2006, end_year: 2100}
-      - {dataset: MIROC5,           exp: rcp26, start_year: 2006, end_year: 2100}
-      - {dataset: MIROC-ESM,        exp: rcp26, start_year: 2006, end_year: 2100}
-      - {dataset: MIROC-ESM-CHEM,   exp: rcp26, start_year: 2006, end_year: 2100}
-      - {dataset: MPI-ESM-LR,       exp: rcp26, start_year: 2006, end_year: 2100}
-      - {dataset: MPI-ESM-MR,       exp: rcp26, start_year: 2006, end_year: 2100}
-      - {dataset: MRI-CGCM3,        exp: rcp26, start_year: 2006, end_year: 2100}
-      - {dataset: NorESM1-M,        exp: rcp26, start_year: 2006, end_year: 2100}
+      - {dataset: bcc-csm1-1-m,   exp: rcp26, start_year: 2006, end_year: 2100}
+      - {dataset: BNU-ESM,        exp: rcp26, start_year: 2006, end_year: 2100}
+      - {dataset: CESM1-WACCM,    exp: rcp26, start_year: 2006, end_year: 2099,
+         ensemble: r2i1p1}
+      - {dataset: CNRM-CM5,       exp: rcp26, start_year: 2006, end_year: 2100}
+      - {dataset: CSIRO-Mk3-6-0,  exp: rcp26, start_year: 2006, end_year: 2100}
+      - {dataset: EC-EARTH,       exp: rcp26, start_year: 2006, end_year: 2100,
+         ensemble: r8i1p1}
+      - {dataset: FGOALS-g2,      exp: rcp26, start_year: 2006, end_year: 2100}
+      - {dataset: FIO-ESM,        exp: rcp26, start_year: 2006, end_year: 2100}
+      - {dataset: GFDL-CM3,       exp: rcp26, start_year: 2006, end_year: 2100}
+      - {dataset: GFDL-ESM2G,     exp: rcp26, start_year: 2006, end_year: 2100}
+      - {dataset: GFDL-ESM2M,     exp: rcp26, start_year: 2006, end_year: 2100}
+      - {dataset: GISS-E2-H,      exp: rcp26, start_year: 2006, end_year: 2300}
+      - {dataset: GISS-E2-H,      exp: rcp26, start_year: 2006, end_year: 2300,
+         ensemble: r1i1p2}
+      - {dataset: GISS-E2-H,      exp: rcp26, start_year: 2006, end_year: 2300,
+         ensemble: r1i1p3}
+      - {dataset: GISS-E2-R,      exp: rcp26, start_year: 2006, end_year: 2300}
+      - {dataset: GISS-E2-R,      exp: rcp26, start_year: 2006, end_year: 2300,
+         ensemble: r1i1p2}
+      - {dataset: GISS-E2-R,      exp: rcp26, start_year: 2006, end_year: 2300,
+         ensemble: r1i1p3}
+      - {dataset: HadGEM2-AO,     exp: rcp26, start_year: 2006, end_year: 2100}
+      - {dataset: IPSL-CM5A-LR,   exp: rcp26, start_year: 2006, end_year: 2300}
+      - {dataset: IPSL-CM5A-MR,   exp: rcp26, start_year: 2006, end_year: 2100}
+      - {dataset: MIROC5,         exp: rcp26, start_year: 2006, end_year: 2100}
+      - {dataset: MIROC-ESM,      exp: rcp26, start_year: 2006, end_year: 2100}
+      - {dataset: MIROC-ESM-CHEM, exp: rcp26, start_year: 2006, end_year: 2100}
+      - {dataset: MPI-ESM-LR,     exp: rcp26, start_year: 2006, end_year: 2100}
+      - {dataset: MPI-ESM-MR,     exp: rcp26, start_year: 2006, end_year: 2100}
+      - {dataset: MRI-CGCM3,      exp: rcp26, start_year: 2006, end_year: 2100}
+      - {dataset: NorESM1-M,      exp: rcp26, start_year: 2006, end_year: 2100}
 
-      - {dataset: bcc-csm1-1-m,     exp: rcp45, start_year: 2006, end_year: 2100}
-      - {dataset: BNU-ESM,          exp: rcp45, start_year: 2006, end_year: 2100}
-      - {dataset: CESM1-BGC,        exp: rcp45, start_year: 2006, end_year: 2100}
-      - {dataset: CESM1-WACCM,      exp: rcp45, start_year: 2006, end_year: 2099, ensemble: r2i1p1}
-      - {dataset: CMCC-CMS,         exp: rcp45, start_year: 2006, end_year: 2100}
-      - {dataset: CSIRO-Mk3L-1-2,   exp: rcp45, start_year: 2006, end_year: 2300, ensemble: r1i2p1}
-      - {dataset: EC-EARTH,         exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r8i1p1}
-      - {dataset: FGOALS-g2,        exp: rcp45, start_year: 2006, end_year: 2100}
-      - {dataset: FIO-ESM,          exp: rcp45, start_year: 2006, end_year: 2100}
-      - {dataset: GFDL-CM3,         exp: rcp45, start_year: 2006, end_year: 2300}
-      - {dataset: GFDL-ESM2G,       exp: rcp45, start_year: 2006, end_year: 2100}
-      - {dataset: GFDL-ESM2M,       exp: rcp45, start_year: 2006, end_year: 2200}
-      - {dataset: GISS-E2-H,        exp: rcp45, start_year: 2006, end_year: 2200}
-      - {dataset: GISS-E2-H,        exp: rcp45, start_year: 2006, end_year: 2300, ensemble: r1i1p2}
-      - {dataset: GISS-E2-H,        exp: rcp45, start_year: 2006, end_year: 2300, ensemble: r1i1p3}
-      - {dataset: GISS-E2-H-CC,     exp: rcp45, start_year: 2006, end_year: 2100}
-      - {dataset: GISS-E2-R,        exp: rcp45, start_year: 2006, end_year: 2300}
-      - {dataset: GISS-E2-R,        exp: rcp45, start_year: 2006, end_year: 2300, ensemble: r1i1p2}
-      - {dataset: GISS-E2-R,        exp: rcp45, start_year: 2006, end_year: 2300, ensemble: r1i1p3}
-      - {dataset: GISS-E2-R-CC,     exp: rcp45, start_year: 2006, end_year: 2100}
-      - {dataset: HadGEM2-AO,       exp: rcp45, start_year: 2006, end_year: 2100}
-      - {dataset: HadGEM2-CC,       exp: rcp45, start_year: 2006, end_year: 2100}
-      - {dataset: IPSL-CM5A-LR,     exp: rcp45, start_year: 2006, end_year: 2300}
-      - {dataset: IPSL-CM5A-MR,     exp: rcp45, start_year: 2006, end_year: 2300}
-      - {dataset: MIROC5,           exp: rcp45, start_year: 2006, end_year: 2100}
-      - {dataset: MIROC-ESM,        exp: rcp45, start_year: 2006, end_year: 2300}
-      - {dataset: MIROC-ESM-CHEM,   exp: rcp45, start_year: 2006, end_year: 2100}
-      - {dataset: MPI-ESM-LR,       exp: rcp45, start_year: 2006, end_year: 2300}
-      - {dataset: MPI-ESM-MR,       exp: rcp45, start_year: 2006, end_year: 2100}
-      - {dataset: MRI-CGCM3,        exp: rcp45, start_year: 2006, end_year: 2100}
+      - {dataset: bcc-csm1-1-m,   exp: rcp45, start_year: 2006, end_year: 2100}
+      - {dataset: BNU-ESM,        exp: rcp45, start_year: 2006, end_year: 2100}
+      - {dataset: CESM1-BGC,      exp: rcp45, start_year: 2006, end_year: 2100}
+      - {dataset: CESM1-WACCM,    exp: rcp45, start_year: 2006, end_year: 2099,
+         ensemble: r2i1p1}
+      - {dataset: CMCC-CMS,       exp: rcp45, start_year: 2006, end_year: 2100}
+      - {dataset: CSIRO-Mk3L-1-2, exp: rcp45, start_year: 2006, end_year: 2300,
+         ensemble: r1i2p1}
+      - {dataset: EC-EARTH,       exp: rcp45, start_year: 2006, end_year: 2100,
+         ensemble: r8i1p1}
+      - {dataset: FGOALS-g2,      exp: rcp45, start_year: 2006, end_year: 2100}
+      - {dataset: FIO-ESM,        exp: rcp45, start_year: 2006, end_year: 2100}
+      - {dataset: GFDL-CM3,       exp: rcp45, start_year: 2006, end_year: 2300}
+      - {dataset: GFDL-ESM2G,     exp: rcp45, start_year: 2006, end_year: 2100}
+      - {dataset: GFDL-ESM2M,     exp: rcp45, start_year: 2006, end_year: 2200}
+      - {dataset: GISS-E2-H,      exp: rcp45, start_year: 2006, end_year: 2200}
+      - {dataset: GISS-E2-H,      exp: rcp45, start_year: 2006, end_year: 2300,
+         ensemble: r1i1p2}
+      - {dataset: GISS-E2-H,      exp: rcp45, start_year: 2006, end_year: 2300,
+         ensemble: r1i1p3}
+      - {dataset: GISS-E2-H-CC,   exp: rcp45, start_year: 2006, end_year: 2100}
+      - {dataset: GISS-E2-R,      exp: rcp45, start_year: 2006, end_year: 2300}
+      - {dataset: GISS-E2-R,      exp: rcp45, start_year: 2006, end_year: 2300,
+         ensemble: r1i1p2}
+      - {dataset: GISS-E2-R,      exp: rcp45, start_year: 2006, end_year: 2300,
+         ensemble: r1i1p3}
+      - {dataset: GISS-E2-R-CC,   exp: rcp45, start_year: 2006, end_year: 2100}
+      - {dataset: HadGEM2-AO,     exp: rcp45, start_year: 2006, end_year: 2100}
+      - {dataset: HadGEM2-CC,     exp: rcp45, start_year: 2006, end_year: 2100}
+      - {dataset: IPSL-CM5A-LR,   exp: rcp45, start_year: 2006, end_year: 2300}
+      - {dataset: IPSL-CM5A-MR,   exp: rcp45, start_year: 2006, end_year: 2300}
+      - {dataset: MIROC5,         exp: rcp45, start_year: 2006, end_year: 2100}
+      - {dataset: MIROC-ESM,      exp: rcp45, start_year: 2006, end_year: 2300}
+      - {dataset: MIROC-ESM-CHEM, exp: rcp45, start_year: 2006, end_year: 2100}
+      - {dataset: MPI-ESM-LR,     exp: rcp45, start_year: 2006, end_year: 2300}
+      - {dataset: MPI-ESM-MR,     exp: rcp45, start_year: 2006, end_year: 2100}
+      - {dataset: MRI-CGCM3,      exp: rcp45, start_year: 2006, end_year: 2100}
 
-      - {dataset: bcc-csm1-1-m,     exp: rcp60, start_year: 2006, end_year: 2100}
-      - {dataset: CSIRO-Mk3-6-0,    exp: rcp60, start_year: 2006, end_year: 2100}
-      - {dataset: FIO-ESM,          exp: rcp60, start_year: 2006, end_year: 2100}
-      - {dataset: GFDL-CM3,         exp: rcp60, start_year: 2006, end_year: 2100}
-      - {dataset: GFDL-ESM2G,       exp: rcp60, start_year: 2006, end_year: 2100}
-      - {dataset: GFDL-ESM2M,       exp: rcp60, start_year: 2006, end_year: 2100}
-      - {dataset: GISS-E2-H,        exp: rcp60, start_year: 2006, end_year: 2100}
-      - {dataset: GISS-E2-H,        exp: rcp60, start_year: 2006, end_year: 2100, ensemble: r1i1p2}
-      - {dataset: GISS-E2-H,        exp: rcp60, start_year: 2006, end_year: 2100, ensemble: r1i1p3}
-      - {dataset: GISS-E2-R,        exp: rcp60, start_year: 2006, end_year: 2100}
-      - {dataset: GISS-E2-R,        exp: rcp60, start_year: 2006, end_year: 2100, ensemble: r1i1p2}
-      - {dataset: GISS-E2-R,        exp: rcp60, start_year: 2006, end_year: 2100, ensemble: r1i1p3}
-      - {dataset: HadGEM2-AO,       exp: rcp60, start_year: 2006, end_year: 2100}
-      - {dataset: IPSL-CM5A-LR,     exp: rcp60, start_year: 2006, end_year: 2100}
-      - {dataset: IPSL-CM5A-MR,     exp: rcp60, start_year: 2006, end_year: 2100}
-      - {dataset: MIROC5,           exp: rcp60, start_year: 2006, end_year: 2100}
-      - {dataset: MIROC-ESM,        exp: rcp60, start_year: 2006, end_year: 2100}
-      - {dataset: MIROC-ESM-CHEM,   exp: rcp60, start_year: 2006, end_year: 2100}
-      - {dataset: MRI-CGCM3,        exp: rcp60, start_year: 2006, end_year: 2100}
-      - {dataset: NorESM1-M,        exp: rcp60, start_year: 2006, end_year: 2100}
+      - {dataset: bcc-csm1-1-m,   exp: rcp60, start_year: 2006, end_year: 2100}
+      - {dataset: CSIRO-Mk3-6-0,  exp: rcp60, start_year: 2006, end_year: 2100}
+      - {dataset: FIO-ESM,        exp: rcp60, start_year: 2006, end_year: 2100}
+      - {dataset: GFDL-CM3,       exp: rcp60, start_year: 2006, end_year: 2100}
+      - {dataset: GFDL-ESM2G,     exp: rcp60, start_year: 2006, end_year: 2100}
+      - {dataset: GFDL-ESM2M,     exp: rcp60, start_year: 2006, end_year: 2100}
+      - {dataset: GISS-E2-H,      exp: rcp60, start_year: 2006, end_year: 2100}
+      - {dataset: GISS-E2-H,      exp: rcp60, start_year: 2006, end_year: 2100,
+         ensemble: r1i1p2}
+      - {dataset: GISS-E2-H,      exp: rcp60, start_year: 2006, end_year: 2100,
+         ensemble: r1i1p3}
+      - {dataset: GISS-E2-R,      exp: rcp60, start_year: 2006, end_year: 2100}
+      - {dataset: GISS-E2-R,      exp: rcp60, start_year: 2006, end_year: 2100,
+         ensemble: r1i1p2}
+      - {dataset: GISS-E2-R,      exp: rcp60, start_year: 2006, end_year: 2100,
+         ensemble: r1i1p3}
+      - {dataset: HadGEM2-AO,     exp: rcp60, start_year: 2006, end_year: 2100}
+      - {dataset: IPSL-CM5A-LR,   exp: rcp60, start_year: 2006, end_year: 2100}
+      - {dataset: IPSL-CM5A-MR,   exp: rcp60, start_year: 2006, end_year: 2100}
+      - {dataset: MIROC5,         exp: rcp60, start_year: 2006, end_year: 2100}
+      - {dataset: MIROC-ESM,      exp: rcp60, start_year: 2006, end_year: 2100}
+      - {dataset: MIROC-ESM-CHEM, exp: rcp60, start_year: 2006, end_year: 2100}
+      - {dataset: MRI-CGCM3,      exp: rcp60, start_year: 2006, end_year: 2100}
+      - {dataset: NorESM1-M,      exp: rcp60, start_year: 2006, end_year: 2100}
 
-      - {dataset: bcc-csm1-1-m,     exp: rcp85, start_year: 2006, end_year: 2100}
-      - {dataset: BNU-ESM,          exp: rcp85, start_year: 2006, end_year: 2100}
-      - {dataset: CESM1-BGC,        exp: rcp85, start_year: 2006, end_year: 2100}
-      - {dataset: CESM1-WACCM,      exp: rcp85, start_year: 2006, end_year: 2099, ensemble: r2i1p1}
-      - {dataset: CMCC-CMS,         exp: rcp85, start_year: 2006, end_year: 2100}
-      - {dataset: CSIRO-Mk3-6-0,    exp: rcp85, start_year: 2006, end_year: 2300}
-      - {dataset: EC-EARTH,         exp: rcp85, start_year: 2006, end_year: 2100, ensemble: r8i1p1}
-      - {dataset: FGOALS-g2,        exp: rcp85, start_year: 2006, end_year: 2100}
-      - {dataset: FIO-ESM,          exp: rcp85, start_year: 2006, end_year: 2100}
-      - {dataset: GFDL-CM3,         exp: rcp85, start_year: 2006, end_year: 2100}
-      - {dataset: GFDL-ESM2G,       exp: rcp85, start_year: 2006, end_year: 2100}
-      - {dataset: GFDL-ESM2M,       exp: rcp85, start_year: 2006, end_year: 2200}
-      - {dataset: GISS-E2-H,        exp: rcp85, start_year: 2006, end_year: 2300}
-      - {dataset: GISS-E2-H,        exp: rcp85, start_year: 2006, end_year: 2300, ensemble: r1i1p2}
-      - {dataset: GISS-E2-H,        exp: rcp85, start_year: 2006, end_year: 2300, ensemble: r1i1p3}
-      - {dataset: GISS-E2-H-CC,     exp: rcp85, start_year: 2006, end_year: 2100}
-      - {dataset: GISS-E2-R,        exp: rcp85, start_year: 2006, end_year: 2300}
-      - {dataset: GISS-E2-R,        exp: rcp85, start_year: 2006, end_year: 2300, ensemble: r1i1p2}
-      - {dataset: GISS-E2-R,        exp: rcp85, start_year: 2006, end_year: 2300, ensemble: r1i1p3}
-      - {dataset: GISS-E2-R-CC,     exp: rcp85, start_year: 2006, end_year: 2100}
-      - {dataset: HadGEM2-AO,       exp: rcp85, start_year: 2006, end_year: 2100}
-      - {dataset: HadGEM2-CC,       exp: rcp85, start_year: 2006, end_year: 2100}
-      - {dataset: IPSL-CM5A-LR,     exp: rcp85, start_year: 2006, end_year: 2300}
-      - {dataset: IPSL-CM5A-MR,     exp: rcp85, start_year: 2006, end_year: 2100}
-      - {dataset: MIROC5,           exp: rcp85, start_year: 2006, end_year: 2100}
-      - {dataset: MIROC-ESM,        exp: rcp85, start_year: 2006, end_year: 2100}
-      - {dataset: MIROC-ESM-CHEM,   exp: rcp85, start_year: 2006, end_year: 2100}
-      - {dataset: MPI-ESM-LR,       exp: rcp85, start_year: 2006, end_year: 2300}
-      - {dataset: MPI-ESM-MR,       exp: rcp85, start_year: 2006, end_year: 2100}
-      - {dataset: MRI-CGCM3,        exp: rcp85, start_year: 2006, end_year: 2100}
-      - {dataset: MRI-ESM1,         exp: rcp85, start_year: 2006, end_year: 2100}
-      - {dataset: NorESM1-M,        exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: bcc-csm1-1-m,   exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: BNU-ESM,        exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: CESM1-BGC,      exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: CESM1-WACCM,    exp: rcp85, start_year: 2006, end_year: 2099,
+         ensemble: r2i1p1}
+      - {dataset: CMCC-CMS,       exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: CSIRO-Mk3-6-0,  exp: rcp85, start_year: 2006, end_year: 2300}
+      - {dataset: EC-EARTH,       exp: rcp85, start_year: 2006, end_year: 2100,
+         ensemble: r8i1p1}
+      - {dataset: FGOALS-g2,      exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: FIO-ESM,        exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: GFDL-CM3,       exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: GFDL-ESM2G,     exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: GFDL-ESM2M,     exp: rcp85, start_year: 2006, end_year: 2200}
+      - {dataset: GISS-E2-H,      exp: rcp85, start_year: 2006, end_year: 2300}
+      - {dataset: GISS-E2-H,      exp: rcp85, start_year: 2006, end_year: 2300,
+         ensemble: r1i1p2}
+      - {dataset: GISS-E2-H,      exp: rcp85, start_year: 2006, end_year: 2300,
+         ensemble: r1i1p3}
+      - {dataset: GISS-E2-H-CC,   exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: GISS-E2-R,      exp: rcp85, start_year: 2006, end_year: 2300}
+      - {dataset: GISS-E2-R,      exp: rcp85, start_year: 2006, end_year: 2300,
+         ensemble: r1i1p2}
+      - {dataset: GISS-E2-R,      exp: rcp85, start_year: 2006, end_year: 2300,
+         ensemble: r1i1p3}
+      - {dataset: GISS-E2-R-CC,   exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: HadGEM2-AO,     exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: HadGEM2-CC,     exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: IPSL-CM5A-LR,   exp: rcp85, start_year: 2006, end_year: 2300}
+      - {dataset: IPSL-CM5A-MR,   exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: MIROC5,         exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: MIROC-ESM,      exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: MIROC-ESM-CHEM, exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: MPI-ESM-LR,     exp: rcp85, start_year: 2006, end_year: 2300}
+      - {dataset: MPI-ESM-MR,     exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: MRI-CGCM3,      exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: MRI-ESM1,       exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: NorESM1-M,      exp: rcp85, start_year: 2006, end_year: 2100}
 
     scripts:
       ch12_ts_line_mean_spread_tas: &ts_settings
@@ -303,7 +351,7 @@ diagnostics:
         # styleset: CMIP5
         # List of scenarios to be included
         scenarios: [rcp26, rcp45, rcp60, rcp85]
-        # Start years in time periods (e.g. start of historical period and rcps)
+        # Start years in time periods (e.g. start of historical runs and rcps)
         syears: [1850, 2006, 2101]
         # End years in time periods (e.g. end of historical runs and rcps)
         eyears: [2005, 2100, 2300]
@@ -317,7 +365,8 @@ diagnostics:
         ### Optional attributes
         # Plot title
         title: "Global surface temperature change (~S~o~N~ C)"
-        # Standard deviations to calculate the spread with (default 1., ipcc tas used 1.64)
+        # Standard deviations to calculate the spread with
+        # (default 1., ipcc tas used 1.64)
         spread: 1.64
         # y-axis title
         yaxis: "(~S~o~N~ C)"
@@ -325,10 +374,11 @@ diagnostics:
         ymin: -2
         # Maximum value on y-axis
         ymax: 12
-        # Save number of model runs per period and scenario in netcdf to print in plot
+        # Save number of model runs per period and scenario in netcdf
+        # to print in plot
         model_nr: true
         # Alternative colormap (path to .rgb file or ncl name)
-        colormap: ./diag_scripts/shared/plot/rgb/ipcc_color_tseries.rgb
+        colormap: $diag_scripts/shared/plot/rgb/ipcc_color_tseries.rgb
         # Minimum and maximum latitudes and longitudes if not global
         # ts_minlat: 43
         # ts_maxlat: 54.5
@@ -356,38 +406,39 @@ diagnostics:
         ensemble: r1i1p1
         mip: Amon
         field: T2Ms
+        exp: historical
     additional_datasets:
-      - {dataset: CanESM2,          exp: historical, start_year: 1850, end_year: 2005}
-      - {dataset: CCSM4,            exp: historical, start_year: 1850, end_year: 2005}
-      - {dataset: CESM1-CAM5,       exp: historical, start_year: 1850, end_year: 2005}
-      - {dataset: CSIRO-Mk3-6-0,    exp: historical, start_year: 1850, end_year: 2005}
-      - {dataset: GFDL-ESM2G,       exp: historical, start_year: 1861, end_year: 2005}
-      - {dataset: IPSL-CM5A-LR,     exp: historical, start_year: 1850, end_year: 2005}
-      - {dataset: MPI-ESM-LR,       exp: historical, start_year: 1850, end_year: 2005}
+      - {dataset: CanESM2,       start_year: 1850, end_year: 2005}
+      - {dataset: CCSM4,         start_year: 1850, end_year: 2005}
+      - {dataset: CESM1-CAM5,    start_year: 1850, end_year: 2005}
+      - {dataset: CSIRO-Mk3-6-0, start_year: 1850, end_year: 2005}
+      - {dataset: GFDL-ESM2G,    start_year: 1861, end_year: 2005}
+      - {dataset: IPSL-CM5A-LR,  start_year: 1850, end_year: 2005}
+      - {dataset: MPI-ESM-LR,    start_year: 1850, end_year: 2005}
 
-      - {dataset: CanESM2,          exp: rcp26, start_year: 2006, end_year: 2100}
-      - {dataset: CCSM4,            exp: rcp26, start_year: 2006, end_year: 2100}
-      - {dataset: CSIRO-Mk3-6-0,    exp: rcp26, start_year: 2006, end_year: 2100}
-      - {dataset: MPI-ESM-LR,       exp: rcp26, start_year: 2006, end_year: 2100}
+      - {dataset: CanESM2,       exp: rcp26, start_year: 2006, end_year: 2100}
+      - {dataset: CCSM4,         exp: rcp26, start_year: 2006, end_year: 2100}
+      - {dataset: CSIRO-Mk3-6-0, exp: rcp26, start_year: 2006, end_year: 2100}
+      - {dataset: MPI-ESM-LR,    exp: rcp26, start_year: 2006, end_year: 2100}
 
-      - {dataset: CanESM2,          exp: rcp45, start_year: 2006, end_year: 2100}
-      - {dataset: CCSM4,            exp: rcp45, start_year: 2006, end_year: 2100}
-      - {dataset: CESM1-CAM5,       exp: rcp45, start_year: 2006, end_year: 2100}
-      - {dataset: CSIRO-Mk3-6-0,    exp: rcp45, start_year: 2006, end_year: 2100}
-      - {dataset: MPI-ESM-LR,       exp: rcp45, start_year: 2006, end_year: 2100}
+      - {dataset: CanESM2,       exp: rcp45, start_year: 2006, end_year: 2100}
+      - {dataset: CCSM4,         exp: rcp45, start_year: 2006, end_year: 2100}
+      - {dataset: CESM1-CAM5,    exp: rcp45, start_year: 2006, end_year: 2100}
+      - {dataset: CSIRO-Mk3-6-0, exp: rcp45, start_year: 2006, end_year: 2100}
+      - {dataset: MPI-ESM-LR,    exp: rcp45, start_year: 2006, end_year: 2100}
 
-      - {dataset: CCSM4,            exp: rcp60, start_year: 2006, end_year: 2100}
-      - {dataset: CESM1-CAM5,       exp: rcp60, start_year: 2006, end_year: 2100}
-      - {dataset: CSIRO-Mk3-6-0,    exp: rcp60, start_year: 2006, end_year: 2100}
-      - {dataset: IPSL-CM5A-LR,     exp: rcp60, start_year: 2006, end_year: 2100}
-      - {dataset: GFDL-ESM2G,       exp: rcp60, start_year: 2006, end_year: 2100}
+      - {dataset: CCSM4,         exp: rcp60, start_year: 2006, end_year: 2100}
+      - {dataset: CESM1-CAM5,    exp: rcp60, start_year: 2006, end_year: 2100}
+      - {dataset: CSIRO-Mk3-6-0, exp: rcp60, start_year: 2006, end_year: 2100}
+      - {dataset: IPSL-CM5A-LR,  exp: rcp60, start_year: 2006, end_year: 2100}
+      - {dataset: GFDL-ESM2G,    exp: rcp60, start_year: 2006, end_year: 2100}
 
-      - {dataset: CanESM2,          exp: rcp85, start_year: 2006, end_year: 2100}
-      - {dataset: CCSM4,            exp: rcp85, start_year: 2006, end_year: 2100}
-      - {dataset: CESM1-CAM5,       exp: rcp85, start_year: 2006, end_year: 2100}
-      - {dataset: CSIRO-Mk3-6-0,    exp: rcp85, start_year: 2006, end_year: 2100}
-      - {dataset: MPI-ESM-LR,       exp: rcp85, start_year: 2006, end_year: 2100}
-      - {dataset: GFDL-ESM2G,       exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: CanESM2,       exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: CCSM4,         exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: CESM1-CAM5,    exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: CSIRO-Mk3-6-0, exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: MPI-ESM-LR,    exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: GFDL-ESM2G,    exp: rcp85, start_year: 2006, end_year: 2100}
 
     scripts:
       ch12_ts_line_mean_spread_rsut: &ts_settings_rsut
@@ -398,7 +449,7 @@ diagnostics:
         # styleset: CMIP5
         # List of scenarios to be included
         scenarios: [rcp26, rcp45, rcp60, rcp85]
-        # Start years in time periods (e.g. start of historical period and rcps)
+        # Start years in time periods (e.g. start of historical runs and rcps)
         syears: [1850, 2006]
         # End years in time periods (e.g. end of historical runs and rcps)
         eyears: [2005, 2100]
@@ -412,7 +463,8 @@ diagnostics:
         ### Optional attributes
         # Plot title
         title: "Global TOA short wave radiation change"
-        # Standard deviations to calculate the spread with (default 1., ipcc tas used 1.64)
+        # Standard deviations to calculate the spread with
+        # (default 1., ipcc tas used 1.64)
         spread: 1.0
         # y-axis title
         yaxis: "(Wm~S~-2~N~)"
@@ -420,10 +472,11 @@ diagnostics:
         ymin: -3
         # Maximum value on y-axis
         ymax: 6
-        # Save number of model runs per period and scenario in netcdf to print in plot
+        # Save number of model runs per period and scenario in netcdf
+        # to print in plot
         model_nr: true
         # Alternative colormap (path to .rgb file or ncl name)
-        colormap: ./diag_scripts/shared/plot/rgb/ipcc_color_tseries.rgb
+        colormap: $diag_scripts/shared/plot/rgb/ipcc_color_tseries.rgb
         # Minimum and maximum latitude and longitude if not global
         # ts_minlat: 43
         # ts_maxlat: 54.5
@@ -453,36 +506,36 @@ diagnostics:
         exp: historical
         ensemble: r1i1p1
     additional_datasets:
-      - {dataset: CanESM2,          start_year: 1850, end_year: 2005}
-      - {dataset: CCSM4,            start_year: 1850, end_year: 2005}
-      - {dataset: CESM1-CAM5,       start_year: 1850, end_year: 2005}
-      - {dataset: GFDL-ESM2G,       start_year: 1861, end_year: 2005}
-      - {dataset: IPSL-CM5A-LR,     start_year: 1850, end_year: 2005}
-      - {dataset: MPI-ESM-LR,       start_year: 1850, end_year: 2005}
+      - {dataset: CanESM2,       start_year: 1850, end_year: 2005}
+      - {dataset: CCSM4,         start_year: 1850, end_year: 2005}
+      - {dataset: CESM1-CAM5,    start_year: 1850, end_year: 2005}
+      - {dataset: GFDL-ESM2G,    start_year: 1861, end_year: 2005}
+      - {dataset: IPSL-CM5A-LR,  start_year: 1850, end_year: 2005}
+      - {dataset: MPI-ESM-LR,    start_year: 1850, end_year: 2005}
 
-      - {dataset: CanESM2,          exp: rcp26, start_year: 2006, end_year: 2100}
-      - {dataset: CCSM4,            exp: rcp26, start_year: 2006, end_year: 2100}
-      - {dataset: CESM1-CAM5,       exp: rcp26, start_year: 2006, end_year: 2100}
-      - {dataset: IPSL-CM5A-LR,     exp: rcp26, start_year: 2006, end_year: 2100}
-      - {dataset: MPI-ESM-LR,       exp: rcp26, start_year: 2006, end_year: 2100}
+      - {dataset: CanESM2,       exp: rcp26, start_year: 2006, end_year: 2100}
+      - {dataset: CCSM4,         exp: rcp26, start_year: 2006, end_year: 2100}
+      - {dataset: CESM1-CAM5,    exp: rcp26, start_year: 2006, end_year: 2100}
+      - {dataset: IPSL-CM5A-LR,  exp: rcp26, start_year: 2006, end_year: 2100}
+      - {dataset: MPI-ESM-LR,    exp: rcp26, start_year: 2006, end_year: 2100}
 
-      - {dataset: CanESM2,          exp: rcp45, start_year: 2006, end_year: 2100}
-      - {dataset: CCSM4,            exp: rcp45, start_year: 2006, end_year: 2100}
-      - {dataset: CESM1-CAM5,       exp: rcp45, start_year: 2006, end_year: 2100}
-      - {dataset: IPSL-CM5A-LR,     exp: rcp45, start_year: 2006, end_year: 2100}
-      - {dataset: MPI-ESM-LR,       exp: rcp45, start_year: 2006, end_year: 2100}
+      - {dataset: CanESM2,       exp: rcp45, start_year: 2006, end_year: 2100}
+      - {dataset: CCSM4,         exp: rcp45, start_year: 2006, end_year: 2100}
+      - {dataset: CESM1-CAM5,    exp: rcp45, start_year: 2006, end_year: 2100}
+      - {dataset: IPSL-CM5A-LR,  exp: rcp45, start_year: 2006, end_year: 2100}
+      - {dataset: MPI-ESM-LR,    exp: rcp45, start_year: 2006, end_year: 2100}
 
-      - {dataset: CCSM4,            exp: rcp60, start_year: 2006, end_year: 2100}
-      - {dataset: CESM1-CAM5,       exp: rcp60, start_year: 2006, end_year: 2100}
-      - {dataset: CSIRO-Mk3-6-0,    exp: rcp60, start_year: 2006, end_year: 2100}
-      - {dataset: IPSL-CM5A-LR,     exp: rcp60, start_year: 2006, end_year: 2100}
-      - {dataset: GFDL-ESM2G,       exp: rcp60, start_year: 2006, end_year: 2100}
+      - {dataset: CCSM4,         exp: rcp60, start_year: 2006, end_year: 2100}
+      - {dataset: CESM1-CAM5,    exp: rcp60, start_year: 2006, end_year: 2100}
+      - {dataset: CSIRO-Mk3-6-0, exp: rcp60, start_year: 2006, end_year: 2100}
+      - {dataset: IPSL-CM5A-LR,  exp: rcp60, start_year: 2006, end_year: 2100}
+      - {dataset: GFDL-ESM2G,    exp: rcp60, start_year: 2006, end_year: 2100}
 
-      - {dataset: CanESM2,          exp: rcp85, start_year: 2006, end_year: 2100}
-      - {dataset: CCSM4,            exp: rcp85, start_year: 2006, end_year: 2100}
-      - {dataset: IPSL-CM5A-LR,     exp: rcp85, start_year: 2006, end_year: 2100}
-      - {dataset: GFDL-ESM2G,       exp: rcp85, start_year: 2006, end_year: 2100}
-      - {dataset: MPI-ESM-LR,       exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: CanESM2,      exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: CCSM4,        exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: IPSL-CM5A-LR, exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: GFDL-ESM2G,   exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: MPI-ESM-LR,   exp: rcp85, start_year: 2006, end_year: 2100}
 
     scripts:
       ch12_ts_line_mean_spread_rlut: &ts_settings_rlut
@@ -493,7 +546,7 @@ diagnostics:
         styleset: CMIP5
         # List of scenarios to be included
         scenarios: [rcp26, rcp45, rcp60, rcp85]
-        # Start years in time periods (e.g. start of historical period and rcps)
+        # Start years in time periods (e.g. start of historical runs and rcps)
         syears: [1850, 2006]
         # End years in time periods (e.g. end of historical runs and rcps)
         eyears: [2005, 2100]
@@ -507,7 +560,8 @@ diagnostics:
         ### Optional attributes
         # Plot title
         title: "Global TOA long wave radiation change"
-        # Standard deviations to calculate the spread with (default 1., ipcc tas used 1.64)
+        # Standard deviations to calculate the spread with
+        # (default 1., ipcc tas used 1.64)
         spread: 1.0
         # y-axis title
         yaxis: "(Wm~S~-2~N~)"
@@ -515,10 +569,11 @@ diagnostics:
         ymin: -3
         # Maximum value on y-axis
         ymax: 4
-        # Save number of model runs per period and scenario in netcdf to print in plot
+        # Save number of model runs per period and scenario
+        # in netcdf to print in plot
         model_nr: true
         # Alternative colormap (path to .rgb file or ncl name)
-        colormap: ./diag_scripts/shared/plot/rgb/ipcc_color_tseries.rgb
+        colormap: $diag_scripts/shared/plot/rgb/ipcc_color_tseries.rgb
         # Minimum and maximum latitude and longitude if not global
         # ts_minlat: 43
         # ts_maxlat: 54.5
@@ -548,37 +603,37 @@ diagnostics:
         exp: historical
         ensemble: r1i1p1
     additional_datasets:
-      - {dataset: CanESM2,          exp: historical, start_year: 1850, end_year: 2005}
-      - {dataset: CCSM4,            exp: historical, start_year: 1850, end_year: 2005}
-      - {dataset: CESM1-CAM5,       exp: historical, start_year: 1850, end_year: 2005}
-      - {dataset: CSIRO-Mk3-6-0,    exp: historical, start_year: 1850, end_year: 2005}
-      - {dataset: GFDL-CM3,         exp: historical, start_year: 1860, end_year: 2005}
-      - {dataset: IPSL-CM5A-LR,     exp: historical, start_year: 1850, end_year: 2005}
-      - {dataset: MPI-ESM-LR,       exp: historical, start_year: 1850, end_year: 2005}
+      - {dataset: CanESM2,       start_year: 1850, end_year: 2005}
+      - {dataset: CCSM4,         start_year: 1850, end_year: 2005}
+      - {dataset: CESM1-CAM5,    start_year: 1850, end_year: 2005}
+      - {dataset: CSIRO-Mk3-6-0, start_year: 1850, end_year: 2005}
+      - {dataset: GFDL-CM3,      start_year: 1860, end_year: 2005}
+      - {dataset: IPSL-CM5A-LR,  start_year: 1850, end_year: 2005}
+      - {dataset: MPI-ESM-LR,    start_year: 1850, end_year: 2005}
 
-      - {dataset: CanESM2,          exp: rcp26, start_year: 2006, end_year: 2100}
-      - {dataset: CCSM4,            exp: rcp26, start_year: 2006, end_year: 2100}
-      - {dataset: CESM1-CAM5,       exp: rcp26, start_year: 2006, end_year: 2100}
-      - {dataset: IPSL-CM5A-LR,     exp: rcp26, start_year: 2006, end_year: 2100}
-      - {dataset: MPI-ESM-LR,       exp: rcp26, start_year: 2006, end_year: 2100}
+      - {dataset: CanESM2,       exp: rcp26, start_year: 2006, end_year: 2100}
+      - {dataset: CCSM4,         exp: rcp26, start_year: 2006, end_year: 2100}
+      - {dataset: CESM1-CAM5,    exp: rcp26, start_year: 2006, end_year: 2100}
+      - {dataset: IPSL-CM5A-LR,  exp: rcp26, start_year: 2006, end_year: 2100}
+      - {dataset: MPI-ESM-LR,    exp: rcp26, start_year: 2006, end_year: 2100}
 
-      - {dataset: CanESM2,          exp: rcp45, start_year: 2006, end_year: 2100}
-      - {dataset: CCSM4,            exp: rcp45, start_year: 2006, end_year: 2100}
-      - {dataset: CESM1-CAM5,       exp: rcp45, start_year: 2006, end_year: 2100}
-      - {dataset: IPSL-CM5A-LR,     exp: rcp45, start_year: 2006, end_year: 2100}
-      - {dataset: MPI-ESM-LR,       exp: rcp45, start_year: 2006, end_year: 2100}
+      - {dataset: CanESM2,       exp: rcp45, start_year: 2006, end_year: 2100}
+      - {dataset: CCSM4,         exp: rcp45, start_year: 2006, end_year: 2100}
+      - {dataset: CESM1-CAM5,    exp: rcp45, start_year: 2006, end_year: 2100}
+      - {dataset: IPSL-CM5A-LR,  exp: rcp45, start_year: 2006, end_year: 2100}
+      - {dataset: MPI-ESM-LR,    exp: rcp45, start_year: 2006, end_year: 2100}
 
-      - {dataset: CCSM4,            exp: rcp60, start_year: 2006, end_year: 2100}
-      - {dataset: CESM1-CAM5,       exp: rcp60, start_year: 2006, end_year: 2100}
-      - {dataset: CSIRO-Mk3-6-0,    exp: rcp60, start_year: 2006, end_year: 2100}
-      - {dataset: IPSL-CM5A-LR,     exp: rcp60, start_year: 2006, end_year: 2100}
-      - {dataset: GFDL-CM3,         exp: rcp60, start_year: 2006, end_year: 2100}
+      - {dataset: CCSM4,         exp: rcp60, start_year: 2006, end_year: 2100}
+      - {dataset: CESM1-CAM5,    exp: rcp60, start_year: 2006, end_year: 2100}
+      - {dataset: CSIRO-Mk3-6-0, exp: rcp60, start_year: 2006, end_year: 2100}
+      - {dataset: IPSL-CM5A-LR,  exp: rcp60, start_year: 2006, end_year: 2100}
+      - {dataset: GFDL-CM3,      exp: rcp60, start_year: 2006, end_year: 2100}
 
-      - {dataset: CanESM2,          exp: rcp85, start_year: 2006, end_year: 2100}
-      - {dataset: CCSM4,            exp: rcp85, start_year: 2006, end_year: 2100}
-      - {dataset: CESM1-CAM5,       exp: rcp85, start_year: 2006, end_year: 2100}
-      - {dataset: IPSL-CM5A-LR,     exp: rcp85, start_year: 2006, end_year: 2100}
-      - {dataset: MPI-ESM-LR,       exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: CanESM2,       exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: CCSM4,         exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: CESM1-CAM5,    exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: IPSL-CM5A-LR,  exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: MPI-ESM-LR,    exp: rcp85, start_year: 2006, end_year: 2100}
 
     scripts:
       ch12_ts_line_mean_spread_rtmt: &ts_settings_rtmt
@@ -589,7 +644,7 @@ diagnostics:
         styleset: CMIP5
         # List of scenarios to be included
         scenarios: [rcp26, rcp45, rcp60, rcp85]
-        # Start years in time periods (e.g. start of historical period and rcps)
+        # Start years in time periods (e.g. start of historical runs and rcps)
         syears: [1850, 2006]
         # End years in time periods (e.g. end of historical runs and rcps)
         eyears: [2005, 2100]
@@ -603,7 +658,8 @@ diagnostics:
         ### Optional attributes
         # Plot title
         title: "Global TOA net radiation change"
-        # Standard deviations to calculate the spread with (default 1., ipcc tas used 1.64)
+        # Standard deviations to calculate the spread with
+        # (default 1., ipcc tas used 1.64)
         spread: 1.0
         # y-axis title
         yaxis: "(Wm~S~-2~N~)"
@@ -611,10 +667,11 @@ diagnostics:
         ymin: -3
         # Maximum value on y-axis
         ymax: 6
-        # Save number of model runs per period and scenario in netcdf to print in plot
+        # Save number of model runs per period and scenario
+        # in netcdf to print in plot
         model_nr: true
         # Alternative colormap (path to .rgb file or ncl name)
-        colormap: ./diag_scripts/shared/plot/rgb/ipcc_color_tseries.rgb
+        colormap: $diag_scripts/shared/plot/rgb/ipcc_color_tseries.rgb
         # Minimum and maximum latitude and longitude if not global
         # ts_minlat: 43
         # ts_maxlat: 54.5
@@ -662,13 +719,16 @@ diagnostics:
         ### Required attributes
         # Plot style
         styleset: CMIP5
-        # Time average ('opt' argument of time_operations.ncl, annualclim, seasonalclim)
+        # Time average ('opt' argument of time_operations.ncl,
+        # annualclim, seasonalclim)
         time_avg: annualclim
 
         ### Optional attributes
-        # Length of period in years to calculate variability over (default total time period)
+        # Length of period in years to calculate variability over
+        # (default total time period)
         periodlength: 20.
-        # Calculate IAV from multi-model mean (mmm, default) or save individual models (each)
+        # Calculate IAV from multi-model mean (mmm, default) or
+        # save individual models (each)
         # iavmode:
 
 
@@ -687,14 +747,14 @@ diagnostics:
         mip: Amon
         field: T2Ms
     additional_datasets:
-      - {dataset: GFDL-ESM2G,   exp: historical, start_year: 1986, end_year: 2005}
-      - {dataset: MPI-ESM-LR,   exp: historical, start_year: 1986, end_year: 2005}
+      - {dataset: GFDL-ESM2G, exp: historical, start_year: 1986, end_year: 2005}
+      - {dataset: MPI-ESM-LR, exp: historical, start_year: 1986, end_year: 2005}
 
-      - {dataset: GFDL-ESM2G,   exp: rcp45, start_year: 2081, end_year: 2100}
-      - {dataset: MPI-ESM-LR,   exp: rcp45, start_year: 2081, end_year: 2100}
+      - {dataset: GFDL-ESM2G, exp: rcp45, start_year: 2081, end_year: 2100}
+      - {dataset: MPI-ESM-LR, exp: rcp45, start_year: 2081, end_year: 2100}
 
-      - {dataset: GFDL-ESM2G,   exp: rcp85, start_year: 2081, end_year: 2100}
-      - {dataset: MPI-ESM-LR,   exp: rcp85, start_year: 2081, end_year: 2100}
+      - {dataset: GFDL-ESM2G, exp: rcp85, start_year: 2081, end_year: 2100}
+      - {dataset: MPI-ESM-LR, exp: rcp85, start_year: 2081, end_year: 2100}
 
     scripts:
       ch12_calc_map_diff_mmm_tas: &tas_map_settings
@@ -708,7 +768,8 @@ diagnostics:
         reference_run: historical
         # List with start years of periods to be included
         periods: [2081]
-        # Time average ('opt' argument of time_operations.ncl, annualclim, seasonalclim)
+        # Time average ('opt' argument of time_operations.ncl,
+        # annualclim, seasonalclim)
         time_avg: annualclim
         # Labels on top of each panel (loop is seasons, scenarios, periods)
         label: ["RCP4.5 2081-2100", "RCP8.5 2081-2100"]
@@ -717,8 +778,9 @@ diagnostics:
         # List with seasons index (required if time_avg "seasonalclim")
         # (DJF:0, MAM:1, JJA:2, SON:3)
         # seasons: [2]
-        # Calculate IAV from multi-model mean (mmm, default) or save individual models (each)
-        # (if "each", make sure to have them in IAV_calc_tas and set iavmode to "each" there too)
+        # Calculate IAV from multi-model mean (mmm, default) or
+        # save individual models (each) (if "each", make sure to have them in
+        # IAV_calc_tas and set iavmode to "each" there too)
         iavmode: mmm
         # Show difference in percent (1, default 0)
         # percent:
@@ -742,14 +804,15 @@ diagnostics:
         # Maximum number of plots in horizontal
         max_hori: 2
         # Alternative colormap (path to .rgb file or ncl name)
-        colormap: ./diag_scripts/shared/plot/rgb/ipcc_temperature_with_grey.rgb
+        colormap: $diag_scripts/shared/plot/rgb/ipcc_temperature_with_grey.rgb
         # Span whole colormap (default false)
         span: false
         # Plot significance as stippling
         sig: true
         # Plot uncertainty as hatching
         not_sig: true
-        # Alternative name for output plot (default diagnostic + varname + time_avg)
+        # Alternative name for output plot
+        # (default diagnostic + varname + time_avg)
         # pltname:
         # Print number of models at top-right of the figure
         model_nr: true
@@ -783,13 +846,16 @@ diagnostics:
         ### Required attributes
         # Plot style
         styleset: CMIP5
-        # Time average ('opt' argument of time_operations.ncl, seasonalclim, annualclim)
+        # Time average ('opt' argument of time_operations.ncl,
+        # seasonalclim, annualclim)
         time_avg: seasonalclim
 
         ### Optional attributes
-        # Calculate IAV from multi-model mean (mmm, default) or save individual models (each)
+        # Calculate IAV from multi-model mean (mmm, default) or
+        # save individual models (each)
         iavmode: mmm
-        # Length of period in years to calculate variability over (default total time period)
+        # Length of period in years to calculate variability over
+        # (default total time period)
         periodlength: 20.
 
 
@@ -807,11 +873,12 @@ diagnostics:
         ensemble: r1i1p1
         mip: Amon
         field: T2Ms
+        exp: historical
     additional_datasets:
-      - {dataset: CSIRO-Mk3-6-0, exp: historical, start_year: 1986, end_year: 2005}
-      - {dataset: GFDL-ESM2G,    exp: historical, start_year: 1986, end_year: 2005}
-      - {dataset: IPSL-CM5A-LR,  exp: historical, start_year: 1986, end_year: 2005}
-      - {dataset: MPI-ESM-LR,    exp: historical, start_year: 1986, end_year: 2005}
+      - {dataset: CSIRO-Mk3-6-0, start_year: 1986, end_year: 2005}
+      - {dataset: GFDL-ESM2G,    start_year: 1986, end_year: 2005}
+      - {dataset: IPSL-CM5A-LR,  start_year: 1986, end_year: 2005}
+      - {dataset: MPI-ESM-LR,    start_year: 1986, end_year: 2005}
 
       - {dataset: CSIRO-Mk3-6-0, exp: rcp85, start_year: 2081, end_year: 2100}
       - {dataset: GFDL-ESM2G,    exp: rcp85, start_year: 2081, end_year: 2100}
@@ -832,19 +899,22 @@ diagnostics:
         scenarios: [rcp85]
         # Start years of periods to be included as list
         periods: [2081, 2181]
-        # Time average ('opt' argument of time_operations.ncl, seasonalclim, annualclim)
+        # Time average ('opt' argument of time_operations.ncl,
+        # seasonalclim, annualclim)
         time_avg: seasonalclim
         # Labels on top of each panel (loop is seasons, scenarios, periods)
-        label: ["RCP8.5 2081-2100 DJF", "RCP8.5 2081-2100 MAM", "RCP8.5 2081-2100 JJA",
-                "RCP8.5 2081-2100 SON", "RCP8.5 2181-2200 DJF", "RCP8.5 2181-2200 MAM",
-                "RCP8.5 2181-2200 JJA", "RCP8.5 2181-2200 SON"]
+        label: ["RCP8.5 2081-2100 DJF", "RCP8.5 2181-2200 DJF",
+                "RCP8.5 2081-2100 MAM", "RCP8.5 2181-2200 MAM",
+                "RCP8.5 2081-2100 JJA", "RCP8.5 2181-2200 JJA", 
+                "RCP8.5 2081-2100 SON", "RCP8.5 2181-2200 SON"]
 
         ### Optional attributes
         # List with seasons index (required if time_avg "seasonalclim")
         # (DJF:0, MAM:1, JJA:2, SON:3)
         seasons: [0, 1, 2, 3]
-        # Calculate IAV from multi-model mean (mmm, default) or save individual models (each)
-        # (if "each", make sure to have them in IAV_calc_pr and set iavmode to "each" there too)
+        # Calculate IAV from multi-model mean (mmm, default) or
+        # save individual models (each) (if "each", make sure to have them in
+        # IAV_calc_pr and set iavmode to "each" there too)
         iavmode: mmm
         # Show difference in percent (1, default 0)
         percent: 1
@@ -867,19 +937,20 @@ diagnostics:
         # Maximum number of plots in horizontal
         max_hori: 2
         # Alternative colormap (path to .rgb file or ncl name)
-        colormap: ./diag_scripts/shared/plot/rgb/ipcc-precip-delta.rgb
+        colormap: $diag_scripts/shared/plot/rgb/ipcc-precip-delta.rgb
         # Span whole colormap (default false)
         # span:
         # Plot significance as stippling
         sig: true
         # Plot uncertainty as hatching
         not_sig: true
-        # Alternative name for output plot (default diagnostic + varname + time_avg)
+        # Alternative name for output plot
+        # (default diagnostic + varname + time_avg)
         # pltname:
         # Print number of models at top-right of the figure
         model_nr: true
-
-
+        
+        
   ###  Mean Total Radiation change in RCPs for multi model mean ###############
   IAV_calc_rtmt:
     description: Calculate total radiation interannual variability
@@ -920,13 +991,16 @@ diagnostics:
         ### Required attributes
         # Plot style
         styleset: CMIP5
-        # Time average ('opt' argument of time_operations.ncl, seasonalclim, annualclim)
+        # Time average ('opt' argument of time_operations.ncl,
+        # seasonalclim, annualclim)
         time_avg: annualclim
 
         ### Optional attributes
-        # Calculate IAV from multi-model mean (mmm, default) or save individual models (each)
+        # Calculate IAV from multi-model mean (mmm, default) or
+        # save individual models (each)
         iavmode: mmm
-        # Length of period in years to calculate variability over (default total time period)
+        # Length of period in years to calculate variability over
+        # (default total time period)
         periodlength: 20.
 
 
@@ -944,11 +1018,12 @@ diagnostics:
         ensemble: r1i1p1
         mip: Amon
         field: T2Ms
+        exp: historical
     additional_datasets:
 
-      - {dataset: CESM1-CAM5,   exp: historical, start_year: 1900, end_year: 1950}
-      - {dataset: IPSL-CM5A-LR, exp: historical, start_year: 1900, end_year: 1950}
-      - {dataset: NorESM1-ME,   exp: historical, start_year: 1900, end_year: 1950}
+      - {dataset: CESM1-CAM5,   start_year: 1900, end_year: 1950}
+      - {dataset: IPSL-CM5A-LR, start_year: 1900, end_year: 1950}
+      - {dataset: NorESM1-ME,   start_year: 1900, end_year: 1950}
 
       - {dataset: CESM1-CAM5,   exp: rcp45, start_year: 2081, end_year: 2100}
       - {dataset: IPSL-CM5A-LR, exp: rcp45, start_year: 2081, end_year: 2100}
@@ -959,12 +1034,14 @@ diagnostics:
         script: ipcc_ar5/ch12_calc_map_diff_mmm_stippandhatch.ncl
 
         ### Required attributes
-        ancestors: ['rtmt', 'IAV_calc_rtmt/ch12_calc_IAV_for_stippandhatch_rtmt']
+        ancestors: ['rtmt',
+                    'IAV_calc_rtmt/ch12_calc_IAV_for_stippandhatch_rtmt']
         # List of scenarios to be included
         scenarios: [rcp45]
         # Start years of periods to be included as list
         periods: [2081]
-        # Time average ('opt' argument of time_operations.ncl, seasonalclim, annualclim)
+        # Time average ('opt' argument of time_operations.ncl,
+        # seasonalclim, annualclim)
         time_avg: annualclim
         # Labels on top of each panel (loop is seasons, scenarios, periods)
         label: ["RCP4.5 2081-2100"]
@@ -973,8 +1050,9 @@ diagnostics:
         # List with seasons index (required if time_avg "seasonalclim")
         # (DJF:0, MAM:1, JJA:2, SON:3)
         # seasons: [2]
-        # Calculate IAV from multi-model mean (mmm, default) or save individual models (each)
-        # (if "each", make sure to have them in IAV_calc_rtmt and set iavmode to "each" there too)
+        # Calculate IAV from multi-model mean (mmm, default) or
+        # save individual models (each)(if "each", make sure to have them in
+        # IAV_calc_rtmt and set iavmode to "each" there too)
         iavmode: mmm
         # Show difference in percent (1, default 0)
         percent: 0
@@ -991,20 +1069,22 @@ diagnostics:
         # projection: Robinson
         title: "Annual mean TOA net radiation change"
         # Contour levels for all difference plots
-        diff_levs: [-6., -5.25, -4.5, -3.75, -3., -2.25, -1.5, -0.75, 0, 0.75, 1.5, 2.25, 3., 3.75, 4.5, 5.25, 6.]
+        diff_levs: [-6., -5.25, -4.5, -3.75, -3., -2.25, -1.5, -0.75, 0,
+                    0.75, 1.5, 2.25, 3., 3.75, 4.5, 5.25, 6.]
         # Maximum number of plots in vertical
         max_vert: 2
         # Maximum number of plots in horizontal
         max_hori: 2
         # Alternative colormap (path to .rgb file or ncl name)
-        colormap: ./diag_scripts/shared/plot/rgb/ipcc_colors_blu2red_centered.rgb
+        colormap: $diag_scripts/shared/plot/rgb/ipcc_colors_blu2red_centered.rgb
         # Span whole colormap (default false)
         # span:
         # Plot significance as stippling
         sig: true
         # Plot uncertainty as hatching
         not_sig: true
-        # Alternative name for output plot (default diagnostic + varname + time_avg)
+        # Alternative name for output plot
+        # (default diagnostic + varname + time_avg)
         # pltname:
         # Print number of models at top-right of the figure
         model_nr: true
@@ -1050,13 +1130,16 @@ diagnostics:
         ### Required attributes
         # Plot style
         styleset: CMIP5
-        # Time average ('opt' argument of time_operations.ncl, seasonalclim, annualclim)
+        # Time average ('opt' argument of time_operations.ncl,
+        # seasonalclim, annualclim)
         time_avg: annualclim
 
         ### Optional attributes
-        # Calculate IAV from multi-model mean (mmm, default) or save individual models (each)
+        # Calculate IAV from multi-model mean (mmm, default) or
+        # save individual models (each)
         iavmode: mmm
-        # Length of period in years to calculate variability over (default total time period)
+        # Length of period in years to calculate variability over
+        # (default total time period)
         periodlength: 20.
 
 
@@ -1074,11 +1157,12 @@ diagnostics:
         ensemble: r1i1p1
         mip: Amon
         field: T2Ms
+        exp: historical
     additional_datasets:
 
-      - {dataset: CESM1-CAM5,   exp: historical, start_year: 1900, end_year: 1950}
-      - {dataset: IPSL-CM5A-LR, exp: historical, start_year: 1900, end_year: 1950}
-      - {dataset: NorESM1-ME,   exp: historical, start_year: 1900, end_year: 1950}
+      - {dataset: CESM1-CAM5,   start_year: 1900, end_year: 1950}
+      - {dataset: IPSL-CM5A-LR, start_year: 1900, end_year: 1950}
+      - {dataset: NorESM1-ME,   start_year: 1900, end_year: 1950}
 
       - {dataset: CESM1-CAM5,   exp: rcp45, start_year: 2081, end_year: 2100}
       - {dataset: IPSL-CM5A-LR, exp: rcp45, start_year: 2081, end_year: 2100}
@@ -1089,12 +1173,14 @@ diagnostics:
         script: ipcc_ar5/ch12_calc_map_diff_mmm_stippandhatch.ncl
 
         ### Required attributes
-        ancestors: ['rlut', 'IAV_calc_rlut/ch12_calc_IAV_for_stippandhatch_rlut']
+        ancestors: ['rlut',
+                    'IAV_calc_rlut/ch12_calc_IAV_for_stippandhatch_rlut']
         # List of scenarios to be included
         scenarios: [rcp45]
         # Start years of periods to be included as list
         periods: [2081]
-        # Time average ('opt' argument of time_operations.ncl, seasonalclim, annualclim)
+        # Time average ('opt' argument of time_operations.ncl,
+        # seasonalclim, annualclim)
         time_avg: annualclim
         # Labels on top of each panel (loop is seasons, scenarios, periods)
         label: ["RCP4.5 2081-2100"]
@@ -1103,8 +1189,9 @@ diagnostics:
         # List with seasons index (required if time_avg "seasonalclim")
         # (DJF:0, MAM:1, JJA:2, SON:3)
         # seasons: [2]
-        # Calculate IAV from multi-model mean (mmm, default) or save individual models (each)
-        # (if "each", make sure to have them in IAV_calc_rlut and set iavmode to "each" there too)
+        # Calculate IAV from multi-model mean (mmm, default) or
+        # save individual models (each) (if "each", make sure to have them in
+        # IAV_calc_rlut and set iavmode to "each" there too)
         iavmode: mmm
         # Show difference in percent (1, default 0)
         percent: 0
@@ -1123,20 +1210,22 @@ diagnostics:
         # projection: Robinson
         title: "Annual mean long wave TOA radiation change"
         # Contour levels for all difference plots
-        diff_levs: [-6., -5.25, -4.5, -3.75, -3., -2.25, -1.5, -0.75, 0, 0.75, 1.5, 2.25, 3., 3.75, 4.5, 5.25, 6.]
+        diff_levs: [-6., -5.25, -4.5, -3.75, -3., -2.25, -1.5, -0.75, 0,
+                    0.75, 1.5, 2.25, 3., 3.75, 4.5, 5.25, 6.]
         # Maximum number of plots in vertical
         max_vert: 2
         # Maximum number of plots in horizontal
         max_hori: 2
         # Alternative colormap (path to .rgb file or ncl name)
-        colormap: ./diag_scripts/shared/plot/rgb/ipcc_colors_blu2red_centered.rgb
+        colormap: $diag_scripts/shared/plot/rgb/ipcc_colors_blu2red_centered.rgb
         # Span whole colormap (default false)
         # span:
         # Plot significance as stippling
         sig: true
         # Plot uncertainty as hatching
         not_sig: true
-        # Alternative name for output plot (default diagnostic + varname + time_avg)
+        # Alternative name for output plot
+        # (default diagnostic + varname + time_avg)
         # pltname:
         # Print number of models at top-right of the figure
         model_nr: true
@@ -1182,13 +1271,16 @@ diagnostics:
         ### Required attributes
         # Plot style
         styleset: CMIP5
-        # Time average ('opt' argument of time_operations.ncl, seasonalclim, annualclim)
+        # Time average ('opt' argument of time_operations.ncl,
+        # seasonalclim, annualclim)
         time_avg: annualclim
 
         ### Optional attributes
-        # Calculate IAV from multi-model mean (mmm, default) or save individual models (each)
+        # Calculate IAV from multi-model mean (mmm, default) or
+        # save individual models (each)
         iavmode: mmm
-        # Length of period in years to calculate variability over (default total time period)
+        # Length of period in years to calculate variability over
+        # (default total time period)
         periodlength: 20.
 
 
@@ -1206,11 +1298,12 @@ diagnostics:
         ensemble: r1i1p1
         mip: Amon
         field: T2Ms
+        exp: historical
     additional_datasets:
 
-      - {dataset: CESM1-CAM5,   exp: historical, start_year: 1900, end_year: 1950}
-      - {dataset: IPSL-CM5A-LR, exp: historical, start_year: 1900, end_year: 1950}
-      - {dataset: NorESM1-ME,   exp: historical, start_year: 1900, end_year: 1950}
+      - {dataset: CESM1-CAM5,   start_year: 1900, end_year: 1950}
+      - {dataset: IPSL-CM5A-LR, start_year: 1900, end_year: 1950}
+      - {dataset: NorESM1-ME,   start_year: 1900, end_year: 1950}
 
       - {dataset: CESM1-CAM5,   exp: rcp45, start_year: 2081, end_year: 2100}
       - {dataset: IPSL-CM5A-LR, exp: rcp45, start_year: 2081, end_year: 2100}
@@ -1221,12 +1314,14 @@ diagnostics:
         script: ipcc_ar5/ch12_calc_map_diff_mmm_stippandhatch.ncl
 
         ### Required attributes
-        ancestors: ['rsut', 'IAV_calc_rsut/ch12_calc_IAV_for_stippandhatch_rsut']
+        ancestors: ['rsut',
+                    'IAV_calc_rsut/ch12_calc_IAV_for_stippandhatch_rsut']
         # List of scenarios to be included
         scenarios: [rcp45]
         # Start years of periods to be included as list
         periods: [2081]
-        # Time average ('opt' argument of time_operations.ncl, seasonalclim, annualclim)
+        # Time average ('opt' argument of time_operations.ncl,
+        # seasonalclim, annualclim)
         time_avg: annualclim
         # Labels on top of each panel (loop is seasons, scenarios, periods)
         label: ["RCP4.5 2081-2100"]
@@ -1235,8 +1330,9 @@ diagnostics:
         # List with seasons index (required if time_avg "seasonalclim")
         # (DJF:0, MAM:1, JJA:2, SON:3)
         # seasons: [2]
-        # Calculate IAV from multi-model mean (mmm, default) or save individual models (each)
-        # (if "each", make sure to have them in IAV_calc_rsut and set iavmode to "each" there too)
+        # Calculate IAV from multi-model mean (mmm, default) or
+        # save individual models (each) (if "each", make sure to have them in
+        # IAV_calc_rsut and set iavmode to "each" there too)
         iavmode: mmm
         # Show difference in percent (1, default 0)
         percent: 0
@@ -1255,20 +1351,22 @@ diagnostics:
         # projection: Robinson
         title: "Annual mean short wave TOA radiation change"
         # Contour levels for all difference plots
-        diff_levs: [-6., -5.25, -4.5, -3.75, -3., -2.25, -1.5, -0.75, 0, 0.75, 1.5, 2.25, 3., 3.75, 4.5, 5.25, 6.]
+        diff_levs: [-6., -5.25, -4.5, -3.75, -3., -2.25, -1.5, -0.75, 0,
+                    0.75, 1.5, 2.25, 3., 3.75, 4.5, 5.25, 6.]
         # Maximum number of plots in vertical
         max_vert: 2
         # Maximum number of plots in horizontal
         max_hori: 2
         # Alternative colormap (path to .rgb file or ncl name)
-        colormap: ./diag_scripts/shared/plot/rgb/ipcc_colors_blu2red_centered.rgb
+        colormap: $diag_scripts/shared/plot/rgb/ipcc_colors_blu2red_centered.rgb
         # Span whole colormap (default false)
         # span:
         # Plot significance as stippling
         sig: true
         # Plot uncertainty as hatching
         not_sig: true
-        # Alternative name for output plot (default diagnostic + varname + time_avg)
+        # Alternative name for output plot
+        # (default diagnostic + varname + time_avg)
         # pltname:
         # Print number of models at top-right of the figure
         model_nr: true
@@ -1305,13 +1403,16 @@ diagnostics:
         ### Required attributes
         # Plot style
         styleset: CMIP5
-        # Time average ('opt' argument of time_operations.ncl, annualclim, seasonalclim)
+        # Time average ('opt' argument of time_operations.ncl,
+        # annualclim, seasonalclim)
         time_avg: annualclim
 
         ### Optional attributes
-        # Length of period in years to calculate variability over, default total time period
+        # Length of period in years to calculate variability over,
+        # default total time period
         periodlength: 20.
-        # Calculate IAV from multi-model mean (mmm, default) or save individual models (each)
+        # Calculate IAV from multi-model mean (mmm, default) or
+        # save individual models (each)
         # iavmode:
 
 
@@ -1330,17 +1431,17 @@ diagnostics:
         mip: Amon
         field: T2Ms
     additional_datasets:
-      - {dataset: GFDL-ESM2G,   exp: historical, start_year: 1986, end_year: 2005}
-      - {dataset: MPI-ESM-LR,   exp: historical, start_year: 1986, end_year: 2005}
+      - {dataset: GFDL-ESM2G, exp: historical, start_year: 1986, end_year: 2005}
+      - {dataset: MPI-ESM-LR, exp: historical, start_year: 1986, end_year: 2005}
 
-      - {dataset: GFDL-ESM2G,   exp: rcp26, start_year: 2081, end_year: 2100}
-      - {dataset: MPI-ESM-LR,   exp: rcp26, start_year: 2081, end_year: 2100}
+      - {dataset: GFDL-ESM2G, exp: rcp26, start_year: 2081, end_year: 2100}
+      - {dataset: MPI-ESM-LR, exp: rcp26, start_year: 2081, end_year: 2100}
 
-      - {dataset: GFDL-ESM2G,   exp: rcp45, start_year: 2081, end_year: 2100}
-      - {dataset: MPI-ESM-LR,   exp: rcp45, start_year: 2081, end_year: 2100}
+      - {dataset: GFDL-ESM2G, exp: rcp45, start_year: 2081, end_year: 2100}
+      - {dataset: MPI-ESM-LR, exp: rcp45, start_year: 2081, end_year: 2100}
 
-      - {dataset: GFDL-ESM2G,   exp: rcp85, start_year: 2081, end_year: 2100}
-      - {dataset: MPI-ESM-LR,   exp: rcp85, start_year: 2081, end_year: 2100}
+      - {dataset: GFDL-ESM2G, exp: rcp85, start_year: 2081, end_year: 2100}
+      - {dataset: MPI-ESM-LR, exp: rcp85, start_year: 2081, end_year: 2100}
 
     scripts:
       ch12_calc_map_diff_mmm_clt: &clt_map_settings
@@ -1352,7 +1453,8 @@ diagnostics:
         scenarios: [rcp26, rcp45, rcp85]
         # List with start years of periods to be included
         periods: [2081]
-        # Time average ('opt' argument of time_operations.ncl, annualclim, seasonalclim)
+        # Time average ('opt' argument of time_operations.ncl,
+        # annualclim, seasonalclim)
         time_avg: annualclim
         # Labels on top of each panel (loop is seasons, scenarios, periods)
         label: ["RCP2.6 2081-2100", "RCP4.5 2081-2100", "RCP8.5 2081-2100"]
@@ -1361,8 +1463,9 @@ diagnostics:
         # List with seasons index (required if time_avg "seasonalclim")
         # (DJF:0, MAM:1, JJA:2, SON:3)
         # seasons: [2]
-        # Calculate IAV from multi-model mean (mmm, default) or save individual models (each)
-        # (if "each", make sure to have them in IAV_calc_clt and set iavmode to "each" there too)
+        # Calculate IAV from multi-model mean (mmm, default) or
+        # save individual models (each) (if "each", make sure to have them in
+        # IAV_calc_clt and set iavmode to "each" there too)
         # iavmode:
         # Show difference in percent (1, default 0)
         # percent:
@@ -1379,20 +1482,22 @@ diagnostics:
         # projection: Robinson
         title: "Annula mean cloud fraction change"
         # Contour levels for all difference plots
-        diff_levs: [-10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        diff_levs: [-10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0,
+                    1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
         # Maximum number of plots in vertical
         max_vert: 2
         # Maximum number of plots in horizontal
         max_hori: 2
         # Alternative colormap (path to .rgb file or ncl name)
-        colormap: ./diag_scripts/shared/plot/rgb/ipcc_colors_red2blu_centered.rgb
+        colormap: $diag_scripts/shared/plot/rgb/ipcc_colors_red2blu_centered.rgb
         # Span whole colormap (default false)
         # span:
         # Plot significance as stippling
         sig: true
         # Plot uncertainty as hatching
         not_sig: true
-        # Alternative name for output plot (default diagnostic + varname + time_avg)
+        # Alternative name for output plot
+        # (default diagnostic + varname + time_avg)
         # pltname:
         # Print number of models at top-right of the figure
         model_nr: true
@@ -1429,13 +1534,16 @@ diagnostics:
         ### Required attributes
         # Plot style
         styleset: CMIP5
-        # Time average ('opt' argument of time_operations.ncl, annualclim, seasonalclim)
+        # Time average ('opt' argument of time_operations.ncl,
+        # annualclim, seasonalclim)
         time_avg: seasonalclim
 
         ### Optional attributes
-        # Length of period in years to calculate variability over, default total time period
+        # Length of period in years to calculate variability over,
+        # default total time period
         periodlength: 20.
-        # Calculate IAV from multi-model mean (mmm, default) or save individual models (each)
+        # Calculate IAV from multi-model mean (mmm, default) or
+        # save individual models (each)
         # iavmode:
 
   psl_change_mmm:
@@ -1453,17 +1561,17 @@ diagnostics:
         mip: Amon
         field: T2Ms
     additional_datasets:
-      - {dataset: GFDL-ESM2G,   exp: historical, start_year: 1986, end_year: 2005}
-      - {dataset: MPI-ESM-LR,   exp: historical, start_year: 1986, end_year: 2005}
+      - {dataset: GFDL-ESM2G, exp: historical, start_year: 1986, end_year: 2005}
+      - {dataset: MPI-ESM-LR, exp: historical, start_year: 1986, end_year: 2005}
 
-      - {dataset: GFDL-ESM2G,   exp: rcp26, start_year: 2081, end_year: 2100}
-      - {dataset: MPI-ESM-LR,   exp: rcp26, start_year: 2081, end_year: 2100}
+      - {dataset: GFDL-ESM2G, exp: rcp26, start_year: 2081, end_year: 2100}
+      - {dataset: MPI-ESM-LR, exp: rcp26, start_year: 2081, end_year: 2100}
 
-      - {dataset: GFDL-ESM2G,   exp: rcp45, start_year: 2081, end_year: 2100}
-      - {dataset: MPI-ESM-LR,   exp: rcp45, start_year: 2081, end_year: 2100}
+      - {dataset: GFDL-ESM2G, exp: rcp45, start_year: 2081, end_year: 2100}
+      - {dataset: MPI-ESM-LR, exp: rcp45, start_year: 2081, end_year: 2100}
 
-      - {dataset: GFDL-ESM2G,   exp: rcp85, start_year: 2081, end_year: 2100}
-      - {dataset: MPI-ESM-LR,   exp: rcp85, start_year: 2081, end_year: 2100}
+      - {dataset: GFDL-ESM2G, exp: rcp85, start_year: 2081, end_year: 2100}
+      - {dataset: MPI-ESM-LR, exp: rcp85, start_year: 2081, end_year: 2100}
 
     scripts:
       ch12_calc_map_diff_mmm_psl: &psl_map_settings
@@ -1475,18 +1583,21 @@ diagnostics:
         scenarios: [rcp26, rcp45, rcp85]
         # List with start years of periods to be included
         periods: [2081]
-        # Time average ('opt' argument of time_operations.ncl, annualclim, seasonalclim)
+        # Time average ('opt' argument of time_operations.ncl,
+        # annualclim, seasonalclim)
         time_avg: seasonalclim
         # Labels on top of each panel (loop is seasons, scenarios, periods)
-        label: ["DJF RCP2.6 2081-2100", "DJF RCP4.5 2081-2100", "DJF RCP8.5 2081-2100",
-                "JJA RCP2.6 2081-2100", "JJA RCP4.5 2081-2100", "JJA RCP8.5 2081-2100"]
+        label: ["DJF RCP2.6 2081-2100", "DJF RCP4.5 2081-2100",
+                "DJF RCP8.5 2081-2100", "JJA RCP2.6 2081-2100",
+                "JJA RCP4.5 2081-2100", "JJA RCP8.5 2081-2100"]
 
         ### Optional attributes
         # List with seasons index (required if time_avg "seasonalclim")
         # (DJF:0, MAM:1, JJA:2, SON:3)
         seasons: [0, 2]
-        # Calculate IAV from multi-model mean (mmm, default) or save individual models (each)
-        # (if "each", make sure to have them in IAV_calc_psl and set iavmode to "each" there too)
+        # Calculate IAV from multi-model mean (mmm, default) or
+        # save individual models (each) (if "each", make sure to have them in
+        # IAV_calc_psl and set iavmode to "each" there too)
         # iavmode:
         # Show difference in percent (1, default 0)
         # percent:
@@ -1505,20 +1616,22 @@ diagnostics:
         # projection: Robinson
         title: "Seasonal mean sea level pressure change"
         # Contour levels for all difference plots
-        diff_levs: [-4, -3.5, -3, -2.5, -2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4]
+        diff_levs: [-4, -3.5, -3, -2.5, -2, -1.5, -1, -0.5, 0,
+                    0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4]
         # Maximum number of plots in vertical
         max_vert: 2
         # Maximum number of plots in horizontal
         max_hori: 3
         # Alternative colormap (path to .rgb file or ncl name)
-        colormap: ./diag_scripts/shared/plot/rgb/ipcc_colors_blu2red_centered.rgb
+        colormap: $diag_scripts/shared/plot/rgb/ipcc_colors_blu2red_centered.rgb
         # Span whole colormap (default false)
         span: false
         # Plot significance as stippling
         sig: true
         # Plot uncertainty as hatching
         not_sig: true
-        # Alternative name for output plot (default diagnostic + varname + time_avg)
+        # Alternative name for output plot
+        # (default diagnostic + varname + time_avg)
         # pltname:
         # Print number of models at top-right of the figure
         model_nr: true
@@ -1562,13 +1675,16 @@ diagnostics:
         ### Required attributes
         # Plot style
         styleset: CMIP5
-        # Time average ('opt' argument of time_operations.ncl, seasonalclim, annualclim)
+        # Time average ('opt' argument of time_operations.ncl,
+        # seasonalclim, annualclim)
         time_avg: seasonalclim
 
         ### Optional attributes
-        # Calculate IAV from multi-model mean (mmm, default) or save individual models (each)
+        # Calculate IAV from multi-model mean (mmm, default) or
+        # save individual models (each)
         iavmode: mmm
-        # Length of period in years to calculate variability over (default total time period)
+        # Length of period in years to calculate variability over
+        # (default total time period)
         periodlength: 20.
 
 
@@ -1587,25 +1703,27 @@ diagnostics:
         mip: Amon
         field: T2Ms
     additional_datasets:
-      - {dataset: CESM1-CAM5,   exp: historical, start_year: 1986, end_year: 2005}
-      - {dataset: GFDL-ESM2G,   exp: historical, start_year: 1986, end_year: 2005}
-      - {dataset: NorESM1-ME,   exp: historical, start_year: 1986, end_year: 2005}
+      - {dataset: CESM1-CAM5, exp: historical, start_year: 1986, end_year: 2005}
+      - {dataset: GFDL-ESM2G, exp: historical, start_year: 1986, end_year: 2005}
+      - {dataset: NorESM1-ME, exp: historical, start_year: 1986, end_year: 2005}
 
-      - {dataset: CESM1-CAM5,   exp: rcp85, start_year: 2081, end_year: 2100}
-      - {dataset: GFDL-ESM2G,   exp: rcp85, start_year: 2081, end_year: 2100}
-      - {dataset: NorESM1-ME,   exp: rcp85, start_year: 2081, end_year: 2100}
+      - {dataset: CESM1-CAM5, exp: rcp85, start_year: 2081, end_year: 2100}
+      - {dataset: GFDL-ESM2G, exp: rcp85, start_year: 2081, end_year: 2100}
+      - {dataset: NorESM1-ME, exp: rcp85, start_year: 2081, end_year: 2100}
 
     scripts:
       ch12_calc_map_diff_mmm_hurs: &hurs_map_settings
         script: ipcc_ar5/ch12_calc_map_diff_mmm_stippandhatch.ncl
 
         ### Required attributes
-        ancestors: ['hurs', 'IAV_calc_hurs/ch12_calc_IAV_for_stippandhatch_hurs']
+        ancestors: ['hurs',
+                    'IAV_calc_hurs/ch12_calc_IAV_for_stippandhatch_hurs']
         # List of scenarios to be included
         scenarios: [rcp85]
         # Start years of periods to be included as list
         periods: [2081]
-        # Time average ('opt' argument of time_operations.ncl, seasonalclim, annualclim)
+        # Time average ('opt' argument of time_operations.ncl,
+        # seasonalclim, annualclim)
         time_avg: seasonalclim
         # Labels on top of each panel (loop is seasons, scenarios, periods)
         label: ["RCP8.5 DJF 2081-2100", "RCP8.5 JJA 2081-2100"]
@@ -1614,8 +1732,9 @@ diagnostics:
         # List with seasons index (required if time_avg "seasonalclim")
         # (DJF:0, MAM:1, JJA:2, SON:3)
         seasons: [0, 2]
-        # Calculate IAV from multi-model mean (mmm, default) or save individual models (each)
-        # (if "each", make sure to have them in IAV_calc_hurs and set iavmode to "each" there too)
+        # Calculate IAV from multi-model mean (mmm, default) or
+        # save individual models (each) (if "each", make sure to have them in
+        # IAV_calc_hurs and set iavmode to "each" there too)
         iavmode: mmm
         # Show difference in percent (1, default 0)
         percent: 1
@@ -1633,20 +1752,22 @@ diagnostics:
         # title above plot
         title: "Mean relative humidity change"
         # Contour levels for all difference plots
-        diff_levs: [-10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        diff_levs: [-10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0,
+                    1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
         # Maximum number of plots in vertical
         max_vert: 2
         # Maximum number of plots in horizontal
         max_hori: 2
         # Alternative colormap (path to .rgb file or ncl name)
-        colormap: ./diag_scripts/shared/plot/rgb/ipcc_colors_red2blu_centered.rgb
+        colormap: $diag_scripts/shared/plot/rgb/ipcc_colors_red2blu_centered.rgb
         # Span whole colormap (default false)
         # span:
         # Plot significance as stippling
         sig: true
         # Plot uncertainty as hatching
         not_sig: true
-        # Alternative name for output plot (default diagnostic + varname + time_avg)
+        # Alternative name for output plot
+        # (default diagnostic + varname + time_avg)
         # pltname:
         # Print number of models at top-right of the figure
         model_nr: true
@@ -1681,13 +1802,16 @@ diagnostics:
         ### Required attributes
         # Plot style
         styleset: CMIP5
-        # Time average ('opt' argument of time_operations.ncl, seasonalclim, annualclim)
+        # Time average ('opt' argument of time_operations.ncl,
+        # seasonalclim, annualclim)
         time_avg: annualclim
 
         ### Optional attributes
-        # Calculate IAV from multi-model mean (mmm, default) or save individual models (each)
+        # Calculate IAV from multi-model mean (mmm, default) or
+        # save individual models (each)
         iavmode: mmm
-        # Length of period in years to calculate variability over (default total time period)
+        # Length of period in years to calculate variability over
+        # (default total time period)
         periodlength: 20.
 
 
@@ -1705,30 +1829,39 @@ diagnostics:
         ensemble: r1i1p1
         mip: Omon
         field: T2Ms
+        exp: historical
     additional_datasets:
-      - {dataset: CSIRO-Mk3-6-0,  exp: historical, start_year: 1986, end_year: 2005}
-      - {dataset: GISS-E2-H,      exp: historical, start_year: 1986, end_year: 2005}
-      - {dataset: GISS-E2-H,      exp: historical, start_year: 1986, end_year: 2005, ensemble: r1i1p2}
-      - {dataset: GISS-E2-H,      exp: historical, start_year: 1986, end_year: 2005, ensemble: r1i1p3}
-      - {dataset: GISS-E2-H-CC,   exp: historical, start_year: 1986, end_year: 2005}
-      - {dataset: GISS-E2-R-CC,   exp: historical, start_year: 1986, end_year: 2005}
-      - {dataset: GISS-E2-R,      exp: historical, start_year: 1986, end_year: 2005}
-      - {dataset: GISS-E2-R,      exp: historical, start_year: 1986, end_year: 2005, ensemble: r1i1p2}
-      - {dataset: GISS-E2-R,      exp: historical, start_year: 1986, end_year: 2005, ensemble: r1i1p3}
-      - {dataset: HadGEM2-AO,     exp: historical, start_year: 1986, end_year: 2005}
-      - {dataset: HadGEM2-CC,     exp: historical, start_year: 1986, end_year: 2004}
-      - {dataset: MIROC-ESM,      exp: historical, start_year: 1986, end_year: 2005}
-      - {dataset: MIROC-ESM-CHEM, exp: historical, start_year: 1986, end_year: 2005}
+      - {dataset: CSIRO-Mk3-6-0,  start_year: 1986, end_year: 2005}
+      - {dataset: GISS-E2-H,      start_year: 1986, end_year: 2005}
+      - {dataset: GISS-E2-H,      start_year: 1986, end_year: 2005,
+         ensemble: r1i1p2}
+      - {dataset: GISS-E2-H,      start_year: 1986, end_year: 2005,
+         ensemble: r1i1p3}
+      - {dataset: GISS-E2-H-CC,   start_year: 1986, end_year: 2005}
+      - {dataset: GISS-E2-R-CC,   start_year: 1986, end_year: 2005}
+      - {dataset: GISS-E2-R,      start_year: 1986, end_year: 2005}
+      - {dataset: GISS-E2-R,      start_year: 1986, end_year: 2005,
+         ensemble: r1i1p2}
+      - {dataset: GISS-E2-R,      start_year: 1986, end_year: 2005,
+         ensemble: r1i1p3}
+      - {dataset: HadGEM2-AO,     start_year: 1986, end_year: 2005}
+      - {dataset: HadGEM2-CC,     start_year: 1986, end_year: 2004}
+      - {dataset: MIROC-ESM,      start_year: 1986, end_year: 2005}
+      - {dataset: MIROC-ESM-CHEM, start_year: 1986, end_year: 2005}
 
       - {dataset: CSIRO-Mk3-6-0,  exp: rcp85, start_year: 2081, end_year: 2100}
       - {dataset: GISS-E2-H,      exp: rcp85, start_year: 2081, end_year: 2100}
-      - {dataset: GISS-E2-H,      exp: rcp85, start_year: 2081, end_year: 2100, ensemble: r1i1p2}
-      - {dataset: GISS-E2-H,      exp: rcp85, start_year: 2081, end_year: 2100, ensemble: r1i1p3}
+      - {dataset: GISS-E2-H,      exp: rcp85, start_year: 2081, end_year: 2100,
+         ensemble: r1i1p2}
+      - {dataset: GISS-E2-H,      exp: rcp85, start_year: 2081, end_year: 2100,
+         ensemble: r1i1p3}
       - {dataset: GISS-E2-H-CC,   exp: rcp85, start_year: 2081, end_year: 2100}
       - {dataset: GISS-E2-R-CC,   exp: rcp85, start_year: 2081, end_year: 2100}
       - {dataset: GISS-E2-R,      exp: rcp85, start_year: 2081, end_year: 2100}
-      - {dataset: GISS-E2-R,      exp: rcp85, start_year: 2081, end_year: 2100, ensemble: r1i1p2}
-      - {dataset: GISS-E2-R,      exp: rcp85, start_year: 2081, end_year: 2100, ensemble: r1i1p3}
+      - {dataset: GISS-E2-R,      exp: rcp85, start_year: 2081, end_year: 2100,
+         ensemble: r1i1p2}
+      - {dataset: GISS-E2-R,      exp: rcp85, start_year: 2081, end_year: 2100,
+         ensemble: r1i1p3}
       - {dataset: HadGEM2-AO,     exp: rcp85, start_year: 2081, end_year: 2100}
       - {dataset: HadGEM2-CC,     exp: rcp85, start_year: 2081, end_year: 2100}
       - {dataset: MIROC-ESM,      exp: rcp85, start_year: 2081, end_year: 2100}
@@ -1744,7 +1877,8 @@ diagnostics:
         scenarios: [rcp85]
         # Start years of periods to be included as list
         periods: [2081]
-        # Time average ('opt' argument of time_operations.ncl, seasonalclim, annualclim)
+        # Time average ('opt' argument of time_operations.ncl,
+        # seasonalclim, annualclim)
         time_avg: annualclim
         # Labels on top of each panel (loop is seasons, scenarios, periods)
         label: ["RCP8.5 2081-2100"]
@@ -1753,8 +1887,9 @@ diagnostics:
         # List with seasons index (required if time_avg "seasonalclim")
         # (DJF:0, MAM:1, JJA:2, SON:3)
         # seasons: [0, 2]
-        # Calculate IAV from multi-model mean (mmm, default) or save individual models (each)
-        # (if "each", make sure to have them in IAV_calc_sos and set iavmode to "each" there too)
+        # Calculate IAV from multi-model mean (mmm, default) or
+        # save individual models (each) (if "each", make sure to have them in
+        # IAV_calc_sos and set iavmode to "each" there too)
         iavmode: mmm
         # Show difference in percent (1, default 0)
         # percent: 1
@@ -1777,14 +1912,15 @@ diagnostics:
         # Maximum number of plots in horizontal
         max_hori: 2
         # Alternative colormap (path to .rgb file or ncl name)
-        colormap: ./diag_scripts/shared/plot/rgb/ipcc_colors_blu2red_centered.rgb
+        colormap: $diag_scripts/shared/plot/rgb/ipcc_colors_blu2red_centered.rgb
         # Span whole colormap (default false)
         # span:
         # Plot significance as stippling
         sig: true
         # Plot uncertainty as hatching
         not_sig: true
-        # Alternative name for output plot (default diagnostic + varname + time_avg)
+        # Alternative name for output plot
+        # (default diagnostic + varname + time_avg)
         # pltname:
         # Print number of models at top-right of the figure
         model_nr: true
@@ -1800,16 +1936,17 @@ diagnostics:
       - atmos
     variables:
       ta:
-        preprocessor: preproc_zonal_atm
+        preprocessor: preproc_atm
         reference_dataset: CanESM2
         project: CMIP5
         mip: Amon
         field: T3Ms
         ensemble: r1i1p1
+        exp: piControl
     additional_datasets:
-      - {dataset: CanESM2,        exp: piControl, start_year: 2015, end_year: 3010}
-      - {dataset: GFDL-ESM2G,     exp: piControl, start_year:    1, end_year:  500}
-      - {dataset: IPSL-CM5A-LR,   exp: piControl, start_year: 1800, end_year: 2799}
+      - {dataset: CanESM2,      start_year: 2015, end_year: 3010}
+      - {dataset: GFDL-ESM2G,   start_year:    1, end_year:  500}
+      - {dataset: IPSL-CM5A-LR, start_year: 1800, end_year: 2799}
 
     scripts:
       ch12_calc_IAV_for_stippandhatch_ta:
@@ -1822,7 +1959,8 @@ diagnostics:
         time_avg: annualclim
 
         ### Optional attributes
-        # Length of period in years to calculate variability over (default total time period)
+        # Length of period in years to calculate variability over
+        # (default total time period)
         periodlength: 20.
 
 
@@ -1843,21 +1981,21 @@ diagnostics:
         field: T3Ms
         ensemble: r1i1p1
     additional_datasets:
-      - {dataset: CanESM2,        exp: historical, start_year: 1986, end_year: 2005}
-      - {dataset: GFDL-ESM2G,     exp: historical, start_year: 1986, end_year: 2005}
-      - {dataset: MPI-ESM-LR,     exp: historical, start_year: 1986, end_year: 2005}
+      - {dataset: CanESM2,    exp: historical, start_year: 1986, end_year: 2005}
+      - {dataset: GFDL-ESM2G, exp: historical, start_year: 1986, end_year: 2005}
+      - {dataset: MPI-ESM-LR, exp: historical, start_year: 1986, end_year: 2005}
 
-      - {dataset: CanESM2,        exp: rcp26, start_year: 2081, end_year: 2100}
-      - {dataset: GFDL-ESM2G,     exp: rcp26, start_year: 2081, end_year: 2100}
-      - {dataset: MPI-ESM-LR,     exp: rcp26, start_year: 2081, end_year: 2100}
+      - {dataset: CanESM2,    exp: rcp26, start_year: 2081, end_year: 2100}
+      - {dataset: GFDL-ESM2G, exp: rcp26, start_year: 2081, end_year: 2100}
+      - {dataset: MPI-ESM-LR, exp: rcp26, start_year: 2081, end_year: 2100}
 
-      - {dataset: CanESM2,        exp: rcp45, start_year: 2081, end_year: 2100}
-      - {dataset: GFDL-ESM2G,     exp: rcp45, start_year: 2081, end_year: 2100}
-      - {dataset: MPI-ESM-LR,     exp: rcp45, start_year: 2081, end_year: 2100}
+      - {dataset: CanESM2,    exp: rcp45, start_year: 2081, end_year: 2100}
+      - {dataset: GFDL-ESM2G, exp: rcp45, start_year: 2081, end_year: 2100}
+      - {dataset: MPI-ESM-LR, exp: rcp45, start_year: 2081, end_year: 2100}
 
-      - {dataset: CanESM2,        exp: rcp85, start_year: 2081, end_year: 2100}
-      - {dataset: GFDL-ESM2G,     exp: rcp85, start_year: 2081, end_year: 2100}
-      - {dataset: MPI-ESM-LR,     exp: rcp85, start_year: 2081, end_year: 2100}
+      - {dataset: CanESM2,    exp: rcp85, start_year: 2081, end_year: 2100}
+      - {dataset: GFDL-ESM2G, exp: rcp85, start_year: 2081, end_year: 2100}
+      - {dataset: MPI-ESM-LR, exp: rcp85, start_year: 2081, end_year: 2100}
 
     scripts:
       ch12_calc_zonal_diff_mmm_ta: &ta_settings
@@ -1869,7 +2007,8 @@ diagnostics:
         scenarios: [rcp26, rcp45, rcp85]
         # List with start years of periods to be included
         periods: [2081]
-        # Time average ('opt' argument of time_operations.ncl), if seasonalclim seasons needed
+        # Time average ('opt' argument of time_operations.ncl),
+        # if seasonalclim seasons is required
         time_avg: annualclim
         # Labels on top of each panel (loop is seasons, scenarios, periods)
         label: ["RCP2.6 2081-2100", "RCP4.5 2081-2100", "RCP8.5 2081-2100"]
@@ -1880,7 +2019,8 @@ diagnostics:
         # List with seasons index (required if time_avg "seasonalclim")
         # (DJF:0, MAM:1, JJA:2, SON:3)
         # seasons:
-        # Calculate IAV from multi-model mean (mmm, default) or save individual models (each)
+        # Calculate IAV from multi-model mean (mmm, default) or
+        # save individual models (each)
         # iavmode:
         # Show difference in percent (1, default 0)
         # percent:
@@ -1892,7 +2032,7 @@ diagnostics:
         ### Required attributes
         ancestors: ['ta', 'ch12_calc_zonal_diff_mmm_ta']
         # Alternative colormap (path to .rgb file or ncl name)
-        colormap: ./diag_scripts/shared/plot/rgb/ipcc_temperature_with_grey.rgb
+        colormap: $diag_scripts/shared/plot/rgb/ipcc_temperature_with_grey.rgb
         # Contour levels for all difference plots
         diff_levs: [-2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2, 3, 4, 5, 6, 7, 8]
         # Plot significance as stippling
@@ -1915,7 +2055,7 @@ diagnostics:
       - atmos
     variables:
       ua:
-        preprocessor: preproc_zonal_atm
+        preprocessor: preproc_atm
         reference_dataset: CanESM2
         project: CMIP5
         mip: Amon
@@ -1923,9 +2063,9 @@ diagnostics:
         exp: piControl
         ensemble: r1i1p1
     additional_datasets:
-      - {dataset: CanESM2,        start_year: 2015, end_year: 3010}
-      - {dataset: GFDL-ESM2G,     start_year:    1, end_year:  500}
-      - {dataset: IPSL-CM5A-LR,   start_year: 1800, end_year: 2799}
+      - {dataset: CanESM2,      start_year: 2015, end_year: 3010}
+      - {dataset: GFDL-ESM2G,   start_year:    1, end_year:  500}
+      - {dataset: IPSL-CM5A-LR, start_year: 1800, end_year: 2799}
 
     scripts:
       ch12_calc_IAV_for_stippandhatch_ua:
@@ -1938,7 +2078,8 @@ diagnostics:
         time_avg: annualclim
 
         ### Optional attributes
-        # Length of period in years to calculate variability over (default total time period)
+        # Length of period in years to calculate variability over
+        # (default total time period)
         periodlength: 20.
 
 
@@ -1959,21 +2100,21 @@ diagnostics:
         field: T3Ms
         ensemble: r1i1p1
     additional_datasets:
-      - {dataset: CanESM2,        exp: historical, start_year: 1986, end_year: 2005}
-      - {dataset: GFDL-ESM2G,     exp: historical, start_year: 1986, end_year: 2005}
-      - {dataset: MPI-ESM-LR,     exp: historical, start_year: 1986, end_year: 2005}
+      - {dataset: CanESM2,    exp: historical, start_year: 1986, end_year: 2005}
+      - {dataset: GFDL-ESM2G, exp: historical, start_year: 1986, end_year: 2005}
+      - {dataset: MPI-ESM-LR, exp: historical, start_year: 1986, end_year: 2005}
 
-      - {dataset: CanESM2,        exp: rcp26, start_year: 2081, end_year: 2100}
-      - {dataset: GFDL-ESM2G,     exp: rcp26, start_year: 2081, end_year: 2100}
-      - {dataset: MPI-ESM-LR,     exp: rcp26, start_year: 2081, end_year: 2100}
+      - {dataset: CanESM2,    exp: rcp26, start_year: 2081, end_year: 2100}
+      - {dataset: GFDL-ESM2G, exp: rcp26, start_year: 2081, end_year: 2100}
+      - {dataset: MPI-ESM-LR, exp: rcp26, start_year: 2081, end_year: 2100}
 
-      - {dataset: CanESM2,        exp: rcp45, start_year: 2081, end_year: 2100}
-      - {dataset: GFDL-ESM2G,     exp: rcp45, start_year: 2081, end_year: 2100}
-      - {dataset: MPI-ESM-LR,     exp: rcp45, start_year: 2081, end_year: 2100}
+      - {dataset: CanESM2,    exp: rcp45, start_year: 2081, end_year: 2100}
+      - {dataset: GFDL-ESM2G, exp: rcp45, start_year: 2081, end_year: 2100}
+      - {dataset: MPI-ESM-LR, exp: rcp45, start_year: 2081, end_year: 2100}
 
-      - {dataset: CanESM2,        exp: rcp85, start_year: 2081, end_year: 2100}
-      - {dataset: GFDL-ESM2G,     exp: rcp85, start_year: 2081, end_year: 2100}
-      - {dataset: MPI-ESM-LR,     exp: rcp85, start_year: 2081, end_year: 2100}
+      - {dataset: CanESM2,    exp: rcp85, start_year: 2081, end_year: 2100}
+      - {dataset: GFDL-ESM2G, exp: rcp85, start_year: 2081, end_year: 2100}
+      - {dataset: MPI-ESM-LR, exp: rcp85, start_year: 2081, end_year: 2100}
 
     scripts:
       ch12_calc_zonal_diff_mmm_ua: &ua_settings
@@ -1985,7 +2126,8 @@ diagnostics:
         scenarios: [rcp26, rcp45, rcp85]
         # List with start years of periods to be included
         periods: [2081]
-        # Time average ('opt' argument of time_operations.ncl), if seasonalclim seasons needed
+        # Time average ('opt' argument of time_operations.ncl),
+        # if seasonalclim seasons is required
         time_avg: annualclim
         # Map projection (any valid ncl projection, default Robinson)
         # projection: Robinson
@@ -2000,7 +2142,8 @@ diagnostics:
         # List with seasons index (required if time_avg "seasonalclim")
         # (DJF:0, MAM:1, JJA:2, SON:3)
         # seasons:
-        # Calculate IAV from multi-model mean (mmm, default) or save individual models (each)
+        # Calculate IAV from multi-model mean (mmm, default) or
+        # save individual models (each)
         # iavmode:
         # Show difference in percent (1, default 0)
         # percent:
@@ -2012,7 +2155,7 @@ diagnostics:
         ### Required attributes
         ancestors: ['ua', 'ch12_calc_zonal_diff_mmm_ua']
         # Alternative colormap (path to .rgb file or ncl name)
-        colormap: ./diag_scripts/shared/plot/rgb/ipcc_colors_blu2red_centered.rgb
+        colormap: $diag_scripts/shared/plot/rgb/ipcc_colors_blu2red_centered.rgb
         # Contour levels for all difference plots
         diff_levs: [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
         # Plot significance as stippling
@@ -2039,16 +2182,16 @@ diagnostics:
       - ocean
     variables:
       thetao:
-        preprocessor: preproc_zonal_ocean
+        preprocessor: preproc_ocean
         project: CMIP5
         mip: Omon
         field: T3Ms
         exp: piControl
         ensemble: r1i1p1
     additional_datasets:
-      - {dataset: CanESM2,        start_year: 2015, end_year: 3010}
-      - {dataset: CSIRO-Mk3-6-0,  start_year:    1, end_year:  500}
-      - {dataset: HadGEM2-CC,     start_year: 1860, end_year: 2099}
+      - {dataset: CanESM2,       start_year: 2015, end_year: 3010}
+      - {dataset: CSIRO-Mk3-6-0, start_year:    1, end_year:  500}
+      - {dataset: HadGEM2-CC,    start_year: 1860, end_year: 2099}
 
     scripts:
       ch12_calc_IAV_for_stippandhatch_thetao:
@@ -2061,7 +2204,8 @@ diagnostics:
         time_avg: annualclim
 
         ### Optional attributes
-        # Length of period in years to calculate variability over (default total time period)
+        # Length of period in years to calculate variability over
+        # (default total time period)
         periodlength: 20.
 
 
@@ -2081,21 +2225,23 @@ diagnostics:
         mip: Omon
         field: T3Ms
         ensemble: r1i1p1
+        exp: historical
     additional_datasets:
-      - {dataset: CanESM2,        exp: historical, start_year: 1986, end_year: 2005}
-      - {dataset: CSIRO-Mk3-6-0,  exp: historical, start_year: 1986, end_year: 2005}
-      - {dataset: HadGEM2-CC,     exp: historical, start_year: 1986, end_year: 2004}
+      - {dataset: CanESM2,       start_year: 1986, end_year: 2005}
+      - {dataset: CSIRO-Mk3-6-0, start_year: 1986, end_year: 2005}
+      - {dataset: HadGEM2-CC,    start_year: 1986, end_year: 2004}
 
-      - {dataset: CanESM2,        exp: rcp85, start_year: 2081, end_year: 2100}
-      - {dataset: CSIRO-Mk3-6-0,  exp: rcp85, start_year: 2081, end_year: 2100}
-      - {dataset: HadGEM2-CC,     exp: rcp85, start_year: 2081, end_year: 2100}
+      - {dataset: CanESM2,       exp: rcp85, start_year: 2081, end_year: 2100}
+      - {dataset: CSIRO-Mk3-6-0, exp: rcp85, start_year: 2081, end_year: 2100}
+      - {dataset: HadGEM2-CC,    exp: rcp85, start_year: 2081, end_year: 2100}
 
     scripts:
       ch12_calc_zonal_diff_mmm_thetao: &thetao_settings
         script: ipcc_ar5/ch12_calc_zonal_cont_diff_mmm_stippandhatch.ncl
 
         ### Required attributes
-        ancestors: ['thetao', 'IAV_calc_thetao/ch12_calc_IAV_for_stippandhatch_thetao']
+        ancestors: ['thetao',
+                    'IAV_calc_thetao/ch12_calc_IAV_for_stippandhatch_thetao']
         # List of scenarios to be included
         scenarios: [rcp85]
         # List with start years of periods to be included
@@ -2111,7 +2257,8 @@ diagnostics:
         # List with seasons index (required if time_avg "seasonalclim")
         # (DJF:0, MAM:1, JJA:2, SON:3)
         # seasons:
-        # Calculate IAV from multi-model mean (mmm, default) or save individual models (each)
+        # Calculate IAV from multi-model mean (mmm, default) or
+        # save individual models (each)
         # iavmode:
         # Show difference in percent (1, default 0)
         # percent:
@@ -2125,9 +2272,10 @@ diagnostics:
         # Plot title
         title: "Annual mean ocean temperature change (2081-2100)"
         # Alternative colormap (path to .rgb file or ncl name)
-        colormap: ./diag_scripts/shared/plot/rgb/ipcc_temperature_with_grey.rgb
+        colormap: $diag_scripts/shared/plot/rgb/ipcc_temperature_with_grey.rgb
         # Contour levels for all difference plots
-        diff_levs: [-0.5, -0.3, -0.2, -0.1, 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.7, 1, 1.5, 2, 2.5, 3]
+        diff_levs: [-0.5, -0.3, -0.2, -0.1, 0,
+                    0.1, 0.2, 0.3, 0.4, 0.5, 0.7, 1, 1.5, 2, 2.5, 3]
         # Plot significance as stippling
         sig: true
         # Plot uncertainty as hatching
@@ -2152,11 +2300,11 @@ diagnostics:
         exp: piControl
         ensemble: r1i1p1
     additional_datasets:
-      - {dataset: CanESM2,          start_year: 2015, end_year: 3010}
-      - {dataset: CESM1-CAM5,       start_year: 1, end_year: 319}
-      - {dataset: CSIRO-Mk3-6-0,    start_year: 1, end_year: 500}
-      - {dataset: GFDL-ESM2G,       start_year: 1, end_year: 500}
-      - {dataset: IPSL-CM5A-LR,     start_year: 1800, end_year: 2799}
+      - {dataset: CanESM2,       start_year: 2015, end_year: 3010}
+      - {dataset: CESM1-CAM5,    start_year: 1, end_year: 319}
+      - {dataset: CSIRO-Mk3-6-0, start_year: 1, end_year: 500}
+      - {dataset: GFDL-ESM2G,    start_year: 1, end_year: 500}
+      - {dataset: IPSL-CM5A-LR,  start_year: 1800, end_year: 2799}
 
     scripts:
       ch12_calc_IAV_for_stippandhatch_mrsos: &IAV_settings_mrsos
@@ -2169,7 +2317,8 @@ diagnostics:
         time_avg: annualclim
 
         ### Optional attributes
-        # Length of period in years to calculate variability over (default total time period)
+        # Length of period in years to calculate variability over
+        # (default total time period)
         periodlength: 20.
 
 
@@ -2187,12 +2336,13 @@ diagnostics:
         mip: Lmon
         field: T2Ms
         ensemble: r1i1p1
+        exp: historical
     additional_datasets:
-      - {dataset: CanESM2,       exp: historical, start_year: 1986, end_year: 2005}
-      - {dataset: CCSM4,         exp: historical, start_year: 1986, end_year: 2005}
-      - {dataset: CESM1-CAM5,    exp: historical, start_year: 1986, end_year: 2005}
-      - {dataset: CSIRO-Mk3-6-0, exp: historical, start_year: 1986, end_year: 2005}
-      - {dataset: GFDL-CM3,      exp: historical, start_year: 1986, end_year: 2005}
+      - {dataset: CanESM2,       start_year: 1986, end_year: 2005}
+      - {dataset: CCSM4,         start_year: 1986, end_year: 2005}
+      - {dataset: CESM1-CAM5,    start_year: 1986, end_year: 2005}
+      - {dataset: CSIRO-Mk3-6-0, start_year: 1986, end_year: 2005}
+      - {dataset: GFDL-CM3,      start_year: 1986, end_year: 2005}
 
       - {dataset: CanESM2,       exp: rcp26, start_year: 2081, end_year: 2100}
       - {dataset: CCSM4,         exp: rcp26, start_year: 2081, end_year: 2100}
@@ -2222,22 +2372,26 @@ diagnostics:
         script: ipcc_ar5/ch12_calc_map_diff_mmm_stippandhatch.ncl
 
         ### Required attributes
-        ancestors: ['mrsos', 'IAV_calc_mrsos/ch12_calc_IAV_for_stippandhatch_mrsos']
+        ancestors: ['mrsos',
+                    'IAV_calc_mrsos/ch12_calc_IAV_for_stippandhatch_mrsos']
         # List of scenarios to be included
         scenarios: [rcp26, rcp45, rcp60, rcp85]
         # List with start years of periods to be included
         periods: [2081]
-        # Time average ('opt' argument of time_operations.ncl, seasonalclim, annualclim)
+        # Time average ('opt' argument of time_operations.ncl,
+        # seasonalclim, annualclim)
         time_avg: annualclim
         # Labels on top of each panel (loop is seasons, scenarios, periods)
-        label: ["RCP2.6 2081-2100", "RCP4.5 2081-2100", "RCP6.0 2081-2100", "RCP8.5 2081-2100"]
+        label: ["RCP2.6 2081-2100", "RCP4.5 2081-2100",
+                "RCP6.0 2081-2100", "RCP8.5 2081-2100"]
 
         ### Optional attributes
         # List with seasons index (required if time_avg "seasonalclim")
         # (DJF:0, MAM:1, JJA:2, SON:3)
         # seasons: [2]
-        # Calculate IAV from multi-model mean (mmm, default) or save individual models (each)
-        # (if "each", make sure to have them in IAV_calc_mrsos and set iavmode to "each" there too)
+        # Calculate IAV from multi-model mean (mmm, default) or
+        # save individual models (each) (if "each", make sure to have them in
+        # IAV_calc_mrsos and set iavmode to "each" there too)
         # iavmode:
         # Show difference in percent (1, default 0)
         # percent:
@@ -2261,14 +2415,15 @@ diagnostics:
         # Maximum number of plots in horizontal
         max_hori: 2
         # Alternative colormap (path to .rgb file or ncl name)
-        colormap: ./diag_scripts/shared/plot/rgb/ipcc_colors_red2blu_centered.rgb
+        colormap: $diag_scripts/shared/plot/rgb/ipcc_colors_red2blu_centered.rgb
         # Span whole colormap (default false)
         # span:
         # Plot significance as stippling
         sig: true
         # Plot uncertainty as hatching
         not_sig: true
-        # Alternative name for output plot (default diagnostic + varname + time_avg)
+        # Alternative name for output plot
+        # (default diagnostic + varname + time_avg)
         # pltname:
         # Print number of models at top-right of the figure
         model_nr: true
@@ -2314,13 +2469,16 @@ diagnostics:
         ### Required attributes
         # Plot style
         styleset: CMIP5
-        # Time average ('opt' argument of time_operations.ncl, seasonalclim, annualclim)
+        # Time average ('opt' argument of time_operations.ncl,
+        # seasonalclim, annualclim)
         time_avg: annualclim
 
         ### Optional attributes
-        # Calculate IAV from multi-model mean (mmm, default) or save individual models (each)
+        # Calculate IAV from multi-model mean (mmm, default) or
+        # save individual models (each)
         iavmode: mmm
-        # Length of period in years to calculate variability over (default total time period)
+        # Length of period in years to calculate variability over
+        # (default total time period)
         periodlength: 20.
 
 
@@ -2338,12 +2496,13 @@ diagnostics:
         ensemble: r1i1p1
         mip: Lmon
         field: T2Ms
+        exp: historical
     additional_datasets:
-      - {dataset: CanESM2,       exp: historical, start_year: 1986, end_year: 2005}
-      - {dataset: CCSM4,         exp: historical, start_year: 1986, end_year: 2005}
-      - {dataset: CESM1-CAM5,    exp: historical, start_year: 1986, end_year: 2005}
-      - {dataset: CSIRO-Mk3-6-0, exp: historical, start_year: 1986, end_year: 2005}
-      - {dataset: GFDL-CM3,      exp: historical, start_year: 1986, end_year: 2005}
+      - {dataset: CanESM2,       start_year: 1986, end_year: 2005}
+      - {dataset: CCSM4,         start_year: 1986, end_year: 2005}
+      - {dataset: CESM1-CAM5,    start_year: 1986, end_year: 2005}
+      - {dataset: CSIRO-Mk3-6-0, start_year: 1986, end_year: 2005}
+      - {dataset: GFDL-CM3,      start_year: 1986, end_year: 2005}
 
       - {dataset: CanESM2,       exp: rcp26, start_year: 2081, end_year: 2100}
       - {dataset: CCSM4,         exp: rcp26, start_year: 2081, end_year: 2100}
@@ -2373,22 +2532,26 @@ diagnostics:
         script: ipcc_ar5/ch12_calc_map_diff_mmm_stippandhatch.ncl
 
         ### Required attributes
-        ancestors: ['mrro', 'IAV_calc_mrro/ch12_calc_IAV_for_stippandhatch_mrro']
+        ancestors: ['mrro',
+                    'IAV_calc_mrro/ch12_calc_IAV_for_stippandhatch_mrro']
         # List of scenarios to be included
         scenarios: [rcp26, rcp45, rcp60, rcp85]
         # Start years of periods to be included as list
         periods: [2081]
-        # Time average ('opt' argument of time_operations.ncl, seasonalclim, annualclim)
+        # Time average ('opt' argument of time_operations.ncl,
+        # seasonalclim, annualclim)
         time_avg: annualclim
         # Labels on top of each panel (loop is seasons, scenarios, periods)
-        label: ["RCP2.6 2081-2100", "RCP4.5 2081-2100", "RCP6.0 2081-2100", "RCP8.5 2081-2100"]
+        label: ["RCP2.6 2081-2100", "RCP4.5 2081-2100",
+                "RCP6.0 2081-2100", "RCP8.5 2081-2100"]
 
         ### Optional attributes
         # List with seasons index (required if time_avg "seasonalclim")
         # (DJF:0, MAM:1, JJA:2, SON:3)
         # seasons: [0, 2]
-        # Calculate IAV from multi-model mean (mmm, default) or save individual models (each)
-        # (if "each", make sure to have them in IAV_calc_mrro and set iavmode to "each" there too)
+        # Calculate IAV from multi-model mean (mmm, default) or
+        # save individual models (each) (if "each", make sure to have them in
+        # IAV_calc_mrro and set iavmode to "each" there too)
         iavmode: mmm
         # Show difference in percent (1, default 0)
         # percent: 1
@@ -2412,14 +2575,15 @@ diagnostics:
         # Maximum number of plots in horizontal
         max_hori: 2
         # Alternative colormap (path to .rgb file or ncl name)
-        colormap: ./diag_scripts/shared/plot/rgb/ipcc_colors_red2blu_centered.rgb
+        colormap: $diag_scripts/shared/plot/rgb/ipcc_colors_red2blu_centered.rgb
         # Span whole colormap (default false)
         # span:
         # Plot significance as stippling
         sig: true
         # Plot uncertainty as hatching
         not_sig: true
-        # Alternative name for output plot (default diagnostic + varname + time_avg)
+        # Alternative name for output plot
+        # (default diagnostic + varname + time_avg)
         # pltname:
         # Print number of models at top-right of the figure
         model_nr: true
@@ -2465,13 +2629,16 @@ diagnostics:
         ### Required attributes
         # Plot style
         styleset: CMIP5
-        # Time average ('opt' argument of time_operations.ncl, seasonalclim, annualclim)
+        # Time average ('opt' argument of time_operations.ncl,
+        # seasonalclim, annualclim)
         time_avg: annualclim
 
         ### Optional attributes
-        # Calculate IAV from multi-model mean (mmm, default) or save individual models (each)
+        # Calculate IAV from multi-model mean (mmm, default)
+        # or save individual models (each)
         iavmode: mmm
-        # Length of period in years to calculate variability over (default total time period)
+        # Length of period in years to calculate variability over
+        # (default total time period)
         periodlength: 20.
 
 
@@ -2489,12 +2656,13 @@ diagnostics:
         ensemble: r1i1p1
         mip: Amon
         field: T2Ms
+        exp: historical
     additional_datasets:
-      - {dataset: CanESM2,       exp: historical, start_year: 1986, end_year: 2005}
-      - {dataset: CCSM4,         exp: historical, start_year: 1986, end_year: 2005}
-      - {dataset: CESM1-CAM5,    exp: historical, start_year: 1986, end_year: 2005}
-      - {dataset: CSIRO-Mk3-6-0, exp: historical, start_year: 1986, end_year: 2005}
-      - {dataset: GFDL-CM3,      exp: historical, start_year: 1986, end_year: 2005}
+      - {dataset: CanESM2,       start_year: 1986, end_year: 2005}
+      - {dataset: CCSM4,         start_year: 1986, end_year: 2005}
+      - {dataset: CESM1-CAM5,    start_year: 1986, end_year: 2005}
+      - {dataset: CSIRO-Mk3-6-0, start_year: 1986, end_year: 2005}
+      - {dataset: GFDL-CM3,      start_year: 1986, end_year: 2005}
 
       - {dataset: CanESM2,       exp: rcp26, start_year: 2081, end_year: 2100}
       - {dataset: CCSM4,         exp: rcp26, start_year: 2081, end_year: 2100}
@@ -2524,22 +2692,26 @@ diagnostics:
         script: ipcc_ar5/ch12_calc_map_diff_mmm_stippandhatch.ncl
 
         ### Required attributes
-        ancestors: ['evspsbl', 'IAV_calc_evspsbl/ch12_calc_IAV_for_stippandhatch_evspsbl']
+        ancestors: ['evspsbl',
+                    'IAV_calc_evspsbl/ch12_calc_IAV_for_stippandhatch_evspsbl']
         # List of scenarios to be included
         scenarios: [rcp26, rcp45, rcp60, rcp85]
         # Start years of periods to be included as list
         periods: [2081]
-        # Time average ('opt' argument of time_operations.ncl, seasonalclim, annualclim)
+        # Time average ('opt' argument of time_operations.ncl,
+        # seasonalclim, annualclim)
         time_avg: annualclim
         # Labels on top of each panel (loop is seasons, scenarios, periods)
-        label: ["RCP2.6 2081-2100", "RCP4.5 2081-2100", "RCP6.0 2081-2100", "RCP8.5 2081-2100"]
+        label: ["RCP2.6 2081-2100", "RCP4.5 2081-2100",
+                "RCP6.0 2081-2100", "RCP8.5 2081-2100"]
 
         ### Optional attributes
         # List with seasons index (required if time_avg "seasonalclim")
         # (DJF:0, MAM:1, JJA:2, SON:3)
         # seasons: [0, 2]
-        # Calculate IAV from multi-model mean (mmm, default) or save individual models (each)
-        # (if "each", make sure to have them in IAV_calc_evspsbl and set iavmode to "each" there too)
+        # Calculate IAV from multi-model mean (mmm, default) or
+        # save individual models (each) (if "each", make sure to have them
+        # in IAV_calc_evspsbl and set iavmode to "each" there too)
         iavmode: mmm
         # Show difference in percent (1, default 0)
         # percent: 1
@@ -2563,14 +2735,15 @@ diagnostics:
         # Maximum number of plots in horizontal
         max_hori: 2
         # Alternative colormap (path to .rgb file or ncl name)
-        colormap: ./diag_scripts/shared/plot/rgb/ipcc_colors_red2blu_centered.rgb
+        colormap: $diag_scripts/shared/plot/rgb/ipcc_colors_red2blu_centered.rgb
         # Span whole colormap (default false)
         # span:
         # Plot significance as stippling
         sig: true
         # Plot uncertainty as hatching
         not_sig: true
-        # Alternative name for output plot (default diagnostic + varname + time_avg)
+        # Alternative name for output plot
+        # (default is diagnostic + varname + time_avg)
         # pltname:
         # Print number of models at top-right of the figure
         model_nr: true
@@ -2595,44 +2768,45 @@ diagnostics:
         ensemble: r1i1p1
         mip: Amon
         field: T2Ms
+        exp: historical
     additional_datasets:
-      - {dataset: CCSM4,            exp: historical, start_year: 1986, end_year: 2005}
-      - {dataset: CESM1-CAM5,       exp: historical, start_year: 1986, end_year: 2005}
-      - {dataset: GFDL-ESM2G,       exp: historical, start_year: 1986, end_year: 2005}
-      - {dataset: IPSL-CM5A-LR,     exp: historical, start_year: 1986, end_year: 2005}
-      - {dataset: IPSL-CM5A-MR,     exp: historical, start_year: 1986, end_year: 2005}
-      - {dataset: MPI-ESM-LR,       exp: historical, start_year: 1986, end_year: 2005}
-      - {dataset: MPI-ESM-MR,       exp: historical, start_year: 1986, end_year: 2005}
+      - {dataset: CCSM4,        start_year: 1986, end_year: 2005}
+      - {dataset: CESM1-CAM5,   start_year: 1986, end_year: 2005}
+      - {dataset: GFDL-ESM2G,   start_year: 1986, end_year: 2005}
+      - {dataset: IPSL-CM5A-LR, start_year: 1986, end_year: 2005}
+      - {dataset: IPSL-CM5A-MR, start_year: 1986, end_year: 2005}
+      - {dataset: MPI-ESM-LR,   start_year: 1986, end_year: 2005}
+      - {dataset: MPI-ESM-MR,   start_year: 1986, end_year: 2005}
 
-      - {dataset: GFDL-ESM2G,       exp: rcp26, start_year: 2081, end_year: 2100}
-      - {dataset: MPI-ESM-LR,       exp: rcp26, start_year: 2081, end_year: 2100}
+      - {dataset: GFDL-ESM2G,   exp: rcp26, start_year: 2081, end_year: 2100}
+      - {dataset: MPI-ESM-LR,   exp: rcp26, start_year: 2081, end_year: 2100}
 
-      - {dataset: IPSL-CM5A-LR,     exp: rcp26, start_year: 2181, end_year: 2200}
-      - {dataset: MPI-ESM-LR,       exp: rcp26, start_year: 2181, end_year: 2200}
+      - {dataset: IPSL-CM5A-LR, exp: rcp26, start_year: 2181, end_year: 2200}
+      - {dataset: MPI-ESM-LR,   exp: rcp26, start_year: 2181, end_year: 2200}
 
-      - {dataset: GFDL-ESM2G,       exp: rcp45, start_year: 2081, end_year: 2100}
-      - {dataset: IPSL-CM5A-LR,     exp: rcp45, start_year: 2081, end_year: 2100}
-      - {dataset: MPI-ESM-LR,       exp: rcp45, start_year: 2081, end_year: 2100}
+      - {dataset: GFDL-ESM2G,   exp: rcp45, start_year: 2081, end_year: 2100}
+      - {dataset: IPSL-CM5A-LR, exp: rcp45, start_year: 2081, end_year: 2100}
+      - {dataset: MPI-ESM-LR,   exp: rcp45, start_year: 2081, end_year: 2100}
 
-      - {dataset: IPSL-CM5A-MR,     exp: rcp45, start_year: 2181, end_year: 2200}
-      - {dataset: MPI-ESM-LR,       exp: rcp45, start_year: 2181, end_year: 2200}
+      - {dataset: IPSL-CM5A-MR, exp: rcp45, start_year: 2181, end_year: 2200}
+      - {dataset: MPI-ESM-LR,   exp: rcp45, start_year: 2181, end_year: 2200}
 
-      - {dataset: GFDL-ESM2G,       exp: rcp60, start_year: 2081, end_year: 2100}
-      - {dataset: IPSL-CM5A-LR,     exp: rcp60, start_year: 2081, end_year: 2100}
-      - {dataset: IPSL-CM5A-MR,     exp: rcp60, start_year: 2081, end_year: 2100}
+      - {dataset: GFDL-ESM2G,   exp: rcp60, start_year: 2081, end_year: 2100}
+      - {dataset: IPSL-CM5A-LR, exp: rcp60, start_year: 2081, end_year: 2100}
+      - {dataset: IPSL-CM5A-MR, exp: rcp60, start_year: 2081, end_year: 2100}
 
-      - {dataset: CCSM4,            exp: rcp60, start_year: 2181, end_year: 2200}
-      - {dataset: CESM1-CAM5,       exp: rcp60, start_year: 2181, end_year: 2200}
+      - {dataset: CCSM4,        exp: rcp60, start_year: 2181, end_year: 2200}
+      - {dataset: CESM1-CAM5,   exp: rcp60, start_year: 2181, end_year: 2200}
 
-      - {dataset: GFDL-ESM2G,       exp: rcp85, start_year: 2081, end_year: 2100}
-      - {dataset: IPSL-CM5A-LR,     exp: rcp85, start_year: 2081, end_year: 2100}
-      - {dataset: IPSL-CM5A-MR,     exp: rcp85, start_year: 2081, end_year: 2100}
-      - {dataset: MPI-ESM-LR,       exp: rcp85, start_year: 2081, end_year: 2100}
-      - {dataset: MPI-ESM-MR,       exp: rcp85, start_year: 2081, end_year: 2100}
+      - {dataset: GFDL-ESM2G,   exp: rcp85, start_year: 2081, end_year: 2100}
+      - {dataset: IPSL-CM5A-LR, exp: rcp85, start_year: 2081, end_year: 2100}
+      - {dataset: IPSL-CM5A-MR, exp: rcp85, start_year: 2081, end_year: 2100}
+      - {dataset: MPI-ESM-LR,   exp: rcp85, start_year: 2081, end_year: 2100}
+      - {dataset: MPI-ESM-MR,   exp: rcp85, start_year: 2081, end_year: 2100}
 
-      - {dataset: CCSM4,            exp: rcp85, start_year: 2181, end_year: 2200}
-      - {dataset: IPSL-CM5A-LR,     exp: rcp85, start_year: 2181, end_year: 2200}
-      - {dataset: MPI-ESM-LR,       exp: rcp85, start_year: 2181, end_year: 2200}
+      - {dataset: CCSM4,        exp: rcp85, start_year: 2181, end_year: 2200}
+      - {dataset: IPSL-CM5A-LR, exp: rcp85, start_year: 2181, end_year: 2200}
+      - {dataset: MPI-ESM-LR,   exp: rcp85, start_year: 2181, end_year: 2200}
 
     scripts:
       ch12_calc_map_diff_scaleT_tas: &tas_scale_settings
@@ -2643,7 +2817,8 @@ diagnostics:
         scenarios: [rcp26, rcp45, rcp60, rcp85]
         # List with start years of periods to be included
         periods: [2081, 2181]
-        # Time average ('opt' argument of time_operations.ncl, seasonalclim, annualclim)
+        # Time average ('opt' argument of time_operations.ncl,
+        # seasonalclim, annualclim)
         time_avg: annualclim
         # Labels on top of each panel (loop is seasons, scenarios, periods)
         label: ["2081-2100", "2181-2200"]
@@ -2661,6 +2836,7 @@ diagnostics:
 
         ### Required attributes
         ancestors: ['tas', 'ch12_calc_map_diff_scaleT_tas']
+        diagscript: 'ch12_calc_map_diff_scaleT_mmm_stipp'
 
         ### Optional attributes
         # Map projection (any valid ncl projection, default Robinson)
@@ -2670,8 +2846,9 @@ diagnostics:
         # Contour levels for all difference plots
         diff_levs: [0, 0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2]
         # Alternative colormap (path to .rgb file or ncl name)
-        colormap: ./diag_scripts/shared/plot/rgb/ipcc_temp_scaling.rgb
-        # Alternative name for output plot (default diagnostic + varname + time_avg)
+        colormap: $diag_scripts/shared/plot/rgb/ipcc_temp_scaling.rgb
+        # Alternative name for output plot
+        # (default is diagnostic + varname + time_avg)
         # pltname:
         # Maximum number of plots in vertical
         # max_vert: 2
@@ -2679,7 +2856,8 @@ diagnostics:
         # max_hori: 2
 
   pr_change_scaleT:
-    description: Multi-model mean precipitation change scaled by global tas change, map with significance
+    description: Multi-model mean precipitation change scaled by
+                 global tas change, map with significance
     themes:
       - phys
     realms:
@@ -2690,75 +2868,97 @@ diagnostics:
         project: CMIP5
         mip: Amon
         field: T2Ms
-        ensemble: r1i1p1 
+        ensemble: r1i1p1
+        exp: historical
       pr:
         preprocessor: preproc_map
         project: CMIP5
         mip: Amon
         field: T2Ms
         ensemble: r1i1p1
+        exp: historical
     additional_datasets:
-      - {dataset: CCSM4,            exp: historical, start_year: 1986, end_year: 2005}
-      - {dataset: CESM1-CAM5,       exp: historical, start_year: 1986, end_year: 2005}
-      - {dataset: GFDL-ESM2G,       exp: historical, start_year: 1986, end_year: 2005}
-      - {dataset: IPSL-CM5A-LR,     exp: historical, start_year: 1986, end_year: 2005}
-      - {dataset: IPSL-CM5A-MR,     exp: historical, start_year: 1986, end_year: 2005}
-      - {dataset: MPI-ESM-LR,       exp: historical, start_year: 1986, end_year: 2005}
-      - {dataset: MPI-ESM-MR,       exp: historical, start_year: 1986, end_year: 2005}
+      - {dataset: CCSM4,        start_year: 1986, end_year: 2005}
+      - {dataset: CESM1-CAM5,   start_year: 1986, end_year: 2005}
+      - {dataset: GFDL-ESM2G,   start_year: 1986, end_year: 2005}
+      - {dataset: IPSL-CM5A-LR, start_year: 1986, end_year: 2005}
+      - {dataset: IPSL-CM5A-MR, start_year: 1986, end_year: 2005}
+      - {dataset: MPI-ESM-LR,   start_year: 1986, end_year: 2005}
+      - {dataset: MPI-ESM-MR,   start_year: 1986, end_year: 2005}
 
-      - {dataset: GFDL-ESM2G,       exp: rcp26, start_year: 2081, end_year: 2100}
-      - {dataset: MPI-ESM-LR,       exp: rcp26, start_year: 2081, end_year: 2100}
+      - {dataset: GFDL-ESM2G,   exp: rcp26, start_year: 2081, end_year: 2100}
+      - {dataset: MPI-ESM-LR,   exp: rcp26, start_year: 2081, end_year: 2100}
 
-      - {dataset: IPSL-CM5A-LR,     exp: rcp26, start_year: 2181, end_year: 2200}
-      - {dataset: MPI-ESM-LR,       exp: rcp26, start_year: 2181, end_year: 2200}
+      - {dataset: IPSL-CM5A-LR, exp: rcp26, start_year: 2181, end_year: 2200}
+      - {dataset: MPI-ESM-LR,   exp: rcp26, start_year: 2181, end_year: 2200}
 
-      - {dataset: GFDL-ESM2G,       exp: rcp45, start_year: 2081, end_year: 2100}
-      - {dataset: IPSL-CM5A-LR,     exp: rcp45, start_year: 2081, end_year: 2100}
-      - {dataset: MPI-ESM-LR,       exp: rcp45, start_year: 2081, end_year: 2100}
+      - {dataset: GFDL-ESM2G,   exp: rcp45, start_year: 2081, end_year: 2100}
+      - {dataset: IPSL-CM5A-LR, exp: rcp45, start_year: 2081, end_year: 2100}
+      - {dataset: MPI-ESM-LR,   exp: rcp45, start_year: 2081, end_year: 2100}
 
-      - {dataset: IPSL-CM5A-MR,     exp: rcp45, start_year: 2181, end_year: 2200}
-      - {dataset: MPI-ESM-LR,       exp: rcp45, start_year: 2181, end_year: 2200}
+      - {dataset: IPSL-CM5A-MR, exp: rcp45, start_year: 2181, end_year: 2200}
+      - {dataset: MPI-ESM-LR,   exp: rcp45, start_year: 2181, end_year: 2200}
 
-      - {dataset: GFDL-ESM2G,       exp: rcp60, start_year: 2081, end_year: 2100}
-      - {dataset: IPSL-CM5A-LR,     exp: rcp60, start_year: 2081, end_year: 2100}
-      - {dataset: IPSL-CM5A-MR,     exp: rcp60, start_year: 2081, end_year: 2100}
+      - {dataset: GFDL-ESM2G,   exp: rcp60, start_year: 2081, end_year: 2100}
+      - {dataset: IPSL-CM5A-LR, exp: rcp60, start_year: 2081, end_year: 2100}
+      - {dataset: IPSL-CM5A-MR, exp: rcp60, start_year: 2081, end_year: 2100}
 
-      - {dataset: CCSM4,            exp: rcp60, start_year: 2181, end_year: 2200}
-      - {dataset: CESM1-CAM5,       exp: rcp60, start_year: 2181, end_year: 2200}
+      - {dataset: CCSM4,        exp: rcp60, start_year: 2181, end_year: 2200}
+      - {dataset: CESM1-CAM5,   exp: rcp60, start_year: 2181, end_year: 2200}
 
-      - {dataset: GFDL-ESM2G,       exp: rcp85, start_year: 2081, end_year: 2100}
-      - {dataset: IPSL-CM5A-LR,     exp: rcp85, start_year: 2081, end_year: 2100}
-      - {dataset: IPSL-CM5A-MR,     exp: rcp85, start_year: 2081, end_year: 2100}
-      - {dataset: MPI-ESM-LR,       exp: rcp85, start_year: 2081, end_year: 2100}
-      - {dataset: MPI-ESM-MR,       exp: rcp85, start_year: 2081, end_year: 2100}
+      - {dataset: GFDL-ESM2G,   exp: rcp85, start_year: 2081, end_year: 2100}
+      - {dataset: IPSL-CM5A-LR, exp: rcp85, start_year: 2081, end_year: 2100}
+      - {dataset: IPSL-CM5A-MR, exp: rcp85, start_year: 2081, end_year: 2100}
+      - {dataset: MPI-ESM-LR,   exp: rcp85, start_year: 2081, end_year: 2100}
+      - {dataset: MPI-ESM-MR,   exp: rcp85, start_year: 2081, end_year: 2100}
 
-      - {dataset: CCSM4,            exp: rcp85, start_year: 2181, end_year: 2200}
-      - {dataset: IPSL-CM5A-LR,     exp: rcp85, start_year: 2181, end_year: 2200}
-      - {dataset: MPI-ESM-LR,       exp: rcp85, start_year: 2181, end_year: 2200}
+      - {dataset: CCSM4,        exp: rcp85, start_year: 2181, end_year: 2200}
+      - {dataset: IPSL-CM5A-LR, exp: rcp85, start_year: 2181, end_year: 2200}
+      - {dataset: MPI-ESM-LR,   exp: rcp85, start_year: 2181, end_year: 2200}
 
     scripts:
       ch12_calc_map_diff_scaleT_pr: &pr_scale_settings
         script: ipcc_ar5/ch12_calc_map_diff_scaleT_mmm_stipp.ncl
+
         # Required attributes:
-        scenarios: [rcp26, rcp45, rcp60, rcp85]      #list with scenarios to be included
-        periods: [2081, 2181]         #list with start years of periods to be included
-        time_avg: annualclim  #seasonal or annual means
-        label: ["2081-2100", "2181-2200"]   # labels on top of each panel, loop to plot is seasons, periods
+        # list with scenarios to be included
+        scenarios: [rcp26, rcp45, rcp60, rcp85]
+        # list with start years of periods to be included
+        periods: [2081, 2181]
+        # seasonal or annual means
+        time_avg: annualclim
+        # labels on top of each panel, loop to plot is seasons, periods
+        label: ["2081-2100", "2181-2200"]
+
         # Optional attributes:
-        #seasons: [0, 2]  # list with seasons index to be included if averagetime is "seasonalclim" (required),  DJF:0, MAM:1, JJA:2, SON:3
-        percent: 1 # difference in percent? percent = 1, default = 0
+        # list with seasons index to be included if averagetime is
+        # "seasonalclim" (required),  DJF:0, MAM:1, JJA:2, SON:3
+        # seasons: [0, 2]
+        # difference in percent? percent = 1, default = 0
+        percent: 1
+
       ch12_plot_map_diff_scaleT_pr:
         <<: *pr_scale_settings
         script: ipcc_ar5/ch12_plot_map_diff_mmm_stipp.ncl
         ancestors: ['pr', 'pr_change_scaleT/ch12_calc_map_diff_scaleT_pr']
+        diagscript: 'ch12_calc_map_diff_scaleT_mmm_stipp'
+
         # Optional attributes:
-        projection: Robinson   # map projection, any valid ncl projection
-        sig: True # plot significance as stippling?
-        diff_levs: [-12, -9, -6, -3, 0, 3, 6, 9, 12] # use explicit levels for contour plot?
-        colormap: ./diag_scripts/shared/plot/rgb/ipcc-precip-delta.rgb # use alternative colormap
-        #pltname: # an alternative name for the output plot, default is diagnostic + varname + time_avg
-        #max_vert: 2  # maximum number of plots in vertical
-        #max_hori: 2  # maximum number of plots in horizontal
+        # map projection, any valid ncl projection
+        projection: Robinson
+        # plot significance as stippling?
+        sig: true
+        # use explicit levels for contour plot
+        diff_levs: [-12, -9, -6, -3, 0, 3, 6, 9, 12]
+        # use alternative colormap
+        colormap: $diag_scripts/shared/plot/rgb/ipcc-precip-delta.rgb
+        # an alternative name for the output plot,
+        # default is diagnostic + varname + time_avg
+        # pltname:
+        # maximum number of plots in vertical
+        max_vert: 2
+        # maximum number of plots in horizontal
+        max_hori: 2
 
   ###  Northern Hemisphere relative snow cover change timeseries ##############
   snw_line:
@@ -2774,17 +2974,18 @@ diagnostics:
         mip: LImon
         field: T2Ms
         ensemble: r1i1p1
+        exp: historical
         fx_files: [sftlf, sftgif]
 
     additional_datasets:
-      - {dataset: CanESM2,       exp: historical, start_year: 1980, end_year: 2005}
-      - {dataset: CCSM4,         exp: historical, start_year: 1980, end_year: 2005}
-      - {dataset: CESM1-CAM5,    exp: historical, start_year: 1980, end_year: 2005}
-      - {dataset: CSIRO-Mk3-6-0, exp: historical, start_year: 1980, end_year: 2005}
-      - {dataset: GFDL-CM3,      exp: historical, start_year: 1980, end_year: 2005}
-      - {dataset: MPI-ESM-LR,    exp: historical, start_year: 1980, end_year: 2005}
-      - {dataset: MPI-ESM-MR,    exp: historical, start_year: 1980, end_year: 2005}
-      - {dataset: NorESM1-M,     exp: historical, start_year: 1980, end_year: 2005}
+      - {dataset: CanESM2,       start_year: 1980, end_year: 2005}
+      - {dataset: CCSM4,         start_year: 1980, end_year: 2005}
+      - {dataset: CESM1-CAM5,    start_year: 1980, end_year: 2005}
+      - {dataset: CSIRO-Mk3-6-0, start_year: 1980, end_year: 2005}
+      - {dataset: GFDL-CM3,      start_year: 1980, end_year: 2005}
+      - {dataset: MPI-ESM-LR,    start_year: 1980, end_year: 2005}
+      - {dataset: MPI-ESM-MR,    start_year: 1980, end_year: 2005}
+      - {dataset: NorESM1-M,     start_year: 1980, end_year: 2005}
 
       - {dataset: CanESM2,       exp: rcp26, start_year: 2006, end_year: 2100}
       - {dataset: CCSM4,         exp: rcp26, start_year: 2006, end_year: 2100}
@@ -2825,7 +3026,7 @@ diagnostics:
         styleset: CMIP5
         # List of scenarios to be included
         scenarios: [rcp26, rcp45, rcp60, rcp85]
-        # Start years in time periods (e.g. start of historical period and rcps)
+        # Start years in time periods (e.g. start of historical runs and rcps)
         syears: [1980, 2006]
         # End years in time periods (e.g. end of historical runs and rcps)
         eyears: [2005, 2100]
@@ -2850,7 +3051,7 @@ diagnostics:
         # Print number of models at top-right of the figure
         model_nr: true
         # Alternative colormap (path to .rgb file or ncl name)
-        colormap: ./diag_scripts/shared/plot/rgb/ipcc_color_tseries.rgb
+        colormap: $diag_scripts/shared/plot/rgb/ipcc_color_tseries.rgb
         # Minimum and maximum latitudes and longitudes if not global
         ts_minlat: 0
         ts_maxlat: 90

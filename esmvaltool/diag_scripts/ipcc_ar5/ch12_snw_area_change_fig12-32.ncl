@@ -17,10 +17,10 @@
 
 ; A temporary file written by the invoking Python script
 ; Passes on a number of variables from Python to NCL
-load "./interface_scripts/interface.ncl"
+load "$diag_scripts/../interface_scripts/interface.ncl"
 
-load "./diag_scripts/shared/latlon.ncl"
-load "./diag_scripts/shared/statistics.ncl"
+load "$diag_scripts/shared/latlon.ncl"
+load "$diag_scripts/shared/statistics.ncl"
 
 begin
   ; ##############################################################

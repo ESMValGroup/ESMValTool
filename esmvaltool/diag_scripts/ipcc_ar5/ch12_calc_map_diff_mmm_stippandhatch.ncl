@@ -22,13 +22,13 @@
 
 ; A temporary file written by the invoking Python script
 ; Passes on a number of variables from Python to NCL
-load "./interface_scripts/interface.ncl"
+load "$diag_scripts/../interface_scripts/interface.ncl"
 
-load "./diag_scripts/shared/statistics.ncl"
-load "./diag_scripts/shared/ensemble.ncl"
-load "./diag_scripts/shared/scaling.ncl"
+load "$diag_scripts/shared/statistics.ncl"
+load "$diag_scripts/shared/ensemble.ncl"
+load "$diag_scripts/shared/scaling.ncl"
 
-load "./diag_scripts/shared/plot/style.ncl"
+load "$diag_scripts/shared/plot/style.ncl"
 
 begin
 
@@ -220,7 +220,7 @@ begin
     if (diag_script_info@iavmode .eq. "each") then
       ; Calculate multi-model mean of iav
       log_info("Calculate multi-model mean of natural variability")
-      natvar_mmm = dim_avg_n(iav, 0) * sqrt(2.)
+      natvar_mmm = rm_single_dims(dim_avg_n(iav, 0) * sqrt(2.))
     else if (diag_script_info@iavmode .eq. "mmm") then
       log_info("Read precalculated natural variability for multi-model")
       natvar_file = addfile(input_dir + "/" + "IAV_mmm_piControl_" + \
@@ -231,9 +231,12 @@ begin
           (diag_script_info@time_avg .ne. "annualclim")) then
         tmp = natvar_mmm
         delete(natvar_mmm)
-        natvar_mmm = new((/dimsizes(diag_script_info@seasons), \
-                          dimsizes(A0&lat), dimsizes(A0&lon)/), float)
-        natvar_mmm = tmp(diag_script_info@seasons, :, :)
+        natvar_mmm = rm_single_dims(tmp(diag_script_info@seasons, :, :))
+      else if (diag_script_info@time_avg .eq. "annualclim") then
+        tmp = natvar_mmm
+        delete(natvar_mmm)
+        natvar_mmm = rm_single_dims(tmp)
+      end if
       end if
     else
       error_msg("f", DIAG_SCRIPT, "", "Error: This iavmode is not know")
@@ -250,9 +253,12 @@ begin
         (diag_script_info@time_avg .ne. "annualclim")) then
       tmp = natvar_mmm
       delete(natvar_mmm)
-      natvar_mmm = new((/dimsizes(diag_script_info@seasons), \
-                        dimsizes(A0&lat), dimsizes(A0&lon)/), float)
-      natvar_mmm = tmp(diag_script_info@seasons, :, :)
+      natvar_mmm = rm_single_dims(tmp(diag_script_info@seasons, :, :))
+    else if (diag_script_info@time_avg .eq. "annualclim") then
+      tmp = natvar_mmm
+      delete(natvar_mmm)
+      natvar_mmm = rm_single_dims(tmp)
+    end if
     end if
   end if
   data2!0 = "models"
@@ -357,9 +363,9 @@ begin
                                               1., 0.)
         else
           sigma_and_sign = where(abs(to_plot(i, :, :)) .gt. \
-                                 abs(2. * natvar_mmm(seas, :, :)), 1., 0.)
+                                 abs(2. * natvar_mmm), 1., 0.)
           to_plot_not_signif(i, :, :) = where(abs(to_plot(i, :, :)) .lt. \
-                                              abs(natvar_mmm(seas, :, :)),\
+                                              abs(natvar_mmm),\
                                               1., 0.)
         end if
         to_plot_signif(i, :, :) = where(signif_and_sign .eq. 1, \
@@ -407,7 +413,9 @@ begin
   end if
 
   ; Check units and adjust for plotting if necessary
-  to_plot@units = variable_info[0]@units
+  if (percent .eq. 0) then
+    to_plot@units = variable_info[0]@units
+  end if
   ; difference in K is the same as difference in degC, only change label
   if (to_plot@units.eq."K") then
     to_plot@units = "degC"

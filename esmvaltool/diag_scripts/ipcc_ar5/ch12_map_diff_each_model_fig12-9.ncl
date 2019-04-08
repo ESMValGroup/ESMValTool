@@ -17,14 +17,14 @@
 ;
 ; #############################################################################
 
-load "./interface_scripts/interface.ncl"
+load "$diag_scripts/../interface_scripts/interface.ncl"
 
-load "./diag_scripts/shared/statistics.ncl"
-load "./diag_scripts/shared/ensemble.ncl"
-load "./diag_scripts/shared/scaling.ncl"
+load "$diag_scripts/shared/statistics.ncl"
+load "$diag_scripts/shared/ensemble.ncl"
+load "$diag_scripts/shared/scaling.ncl"
 
-load "./diag_scripts/shared/plot/contour_maps.ncl"
-load "./diag_scripts/shared/plot/style.ncl"
+load "$diag_scripts/shared/plot/contour_maps.ncl"
+load "$diag_scripts/shared/plot/style.ncl"
 
 begin
   ; ##############################################################
@@ -160,7 +160,7 @@ begin
     end if
 
     ; ###########################################
-    ; # Optional output to netCDF               #
+    ; # Output to netCDF               #
     ; ###########################################
     to_plot@ncdf = work_dir + "/" + info_items[imod]@dataset + "_" + \
       info_items[imod]@ensemble + "_" + variable_info[0]@diagnostic + ".nc"
@@ -280,6 +280,24 @@ begin
   outfile = panelling(wks, maps, nvert, nhori, pres)
 
   log_info(" Wrote " + outfile)
+
+  ; collect meta-data
+  nc_file = ncdf_outfile
+  plot_file = outfile
+  caption = "Change in " + var0 + " in " + info_items[dim_MOD-1]@start_year + \
+    "-" + info_items[dim_MOD - 1]@end_year + \
+    " displayed as anomalies with respect to " + info_items[0]@start_year + \
+    "-" + info_items[0]@end_year + " for " + \
+    diag_script_info@experiment + "."
+  statistics = ("mean")
+  domain = ("glob")
+  plottype = ("geo")
+  authors = (/"lore_ru"/)
+  references = (/"collins13ipcc"/)
+  infiles = metadata_att_as_array(info_items, "filename")
+  log_provenance(nc_file, plot_file, caption, statistics, domain, plottype, \
+                 authors, references, infiles)
+
   leave_msg(DIAG_SCRIPT, "")
 
 end

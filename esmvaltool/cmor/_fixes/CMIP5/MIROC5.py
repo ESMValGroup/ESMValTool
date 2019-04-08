@@ -1,10 +1,11 @@
+# pylint: disable=invalid-name, no-self-use, too-few-public-methods
 """Fixes for MIROC5 model."""
 import numpy as np
 from ..fix import Fix
 
 
 class sftof(Fix):
-    """Fixes for sftof"""
+    """Fixes for sftof."""
 
     def fix_data(self, cube):
         """
@@ -30,9 +31,9 @@ class sftof(Fix):
 class snw(Fix):
     """Fixes for snw."""
 
-    def fix_metadata(self, cube):
+    def fix_data(self, cube):
         """
-        Fix data
+        Fix data.
 
         Fixes discrepancy between declared units and real units
 
@@ -53,8 +54,6 @@ class snw(Fix):
 
 class snc(snw):
     """Fixes for snc."""
-
-    pass
 
     # dayspermonth = (/31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31/)
 
@@ -91,7 +90,7 @@ class msftmyz(Fix):
 
     def fix_data(self, cube):
         """
-        Fix data
+        Fix data.
 
         Fixes mask
 

@@ -31,7 +31,7 @@
 ;    base_cnMaxLevel: max level for base contours
 ;
 ; Modification history
-;    20181024-A_lore_ru: ported to v2, regridding, zonal means in preprocessor
+;    20181024-A_lore_ru: ported to v2, regridding in preprocessor
 ;    20170517-A_lore_ru: changed to regrid to common grid first before
 ;                        calculating zonal average and added ability to use
 ;                        irregular grids (e.g. thetao)
@@ -44,13 +44,13 @@
 ; #############################################################################
 ; A temporary file written by the invoking Python script
 ; Passes on a number of variables from Python to NCL
-load "./interface_scripts/interface.ncl"
+load "$diag_scripts/../interface_scripts/interface.ncl"
 
-load "./diag_scripts/shared/statistics.ncl"
-load "./diag_scripts/shared/ensemble.ncl"
-load "./diag_scripts/shared/scaling.ncl"
+load "$diag_scripts/shared/statistics.ncl"
+load "$diag_scripts/shared/ensemble.ncl"
+load "$diag_scripts/shared/scaling.ncl"
 
-load "./diag_scripts/shared/plot/style.ncl"
+load "$diag_scripts/shared/plot/style.ncl"
 
 begin
   ; ##############################################################
@@ -153,12 +153,15 @@ begin
     error_msg("f", DIAG_SCRIPT, "", "wrong number of labels, needs to be " + \
               "seasons * scenarios * periods")
   end if
+  ; Average over time (function in ./diag_scripts/lib/ncl/statistics.ncl)
+  data1 = time_operations(A0, -1, -1, "average", diag_script_info@time_avg, \
+                          True)
 
   annots = project_style(info_items, diag_script_info, "annots")
-  Fill = default_fillvalue(typeof(A0))
+  Fill = default_fillvalue(typeof(data1))
 
   var_reg = new((/dim_MOD, dim_seas, dimsizes(A0&$lev_name$), \
-                 dimsizes(A0&lat)/), typeof(A0), Fill)
+                 dimsizes(A0&lat)/), typeof(data1), Fill)
 
   var_reg!0 = "models"
   var_reg!1 = "season"
@@ -174,19 +177,16 @@ begin
   var_reg&lat = A0&lat
   if (isatt(diag_script_info, "iavmode")) then
     if (diag_script_info@iavmode .eq. "each") then
-      iav = new((/dim_MOD, dim_seas, dimsizes(A0&lev), \
+      iav = new((/dim_MOD, dim_seas, dimsizes(A0&$lev_name$), \
                  dimsizes(A0&lat)/), typeof(A0), Fill)
       copy_VarMeta(var_reg, iav)
     end if
   end if
-  ; Average over time (function in ./diag_scripts/lib/ncl/statistics.ncl)
-  data1 = time_operations(A0, -1, -1, "average", diag_script_info@time_avg, \
-                          True)
-
   do imod = 0, dim_MOD - 1
     if (imod .ne. 0) then
       A0 = read_data(info_items[imod])
-      data1 = time_operations(A0, -1, -1, "average", "annualclim", True)
+      data1 = time_operations(A0, -1, -1, "average",  \
+                              diag_script_info@time_avg, True)
       dims = getvardims(A0)
       idx = ind(dims .eq. "lat" .or. dims .eq. "rlat" .or. dims .eq. "j")
       if (ismissing(idx)) then
@@ -199,11 +199,15 @@ begin
       end if
       lev_name = dims(idx)
     end if
-
-    if (dim_seas .eq. 1) then
-      var_reg(imod, 0, :, :) = data1
+    if ((dim_seas .eq. 1) .and. \
+        (diag_script_info@time_avg .eq. "annualclim")) then
+      var_reg(imod, 0, :, :) = (/data1/)
+    else if ((dim_seas .eq. 1) .and. \
+             (diag_script_info@time_avg .eq. "seasonalclim")) then
+      var_reg(imod, 0, :, :) = (/data1(diag_script_info@seasons, :, :)/)
     else
-      var_reg(imod, :, :, :) = data1
+      var_reg(imod, :, :, :) = (/data1(diag_script_info@seasons, :, :)/)
+    end if
     end if
     if (isatt(diag_script_info, "iavmode")) then
       if (diag_script_info@iavmode .eq. "each") then
@@ -216,21 +220,27 @@ begin
                            info_items[imod]@ensemble + "_" + field_type0 \
                            + "_" + var0 + "_" + \
                            diag_script_info@time_avg + ".nc", "r")
-        iav_zon = iav_file->iav
+        iav_native = iav_file->iav
         if ((dim_seas .eq. 1) .and. \
             (diag_script_info@time_avg .eq. "annualclim")) then
+          ; Average over longitudes for zonal mean
+          iav_zon = dim_avg_n_Wrap(iav_native, 2)
           iav(imod, 0, :, :) = iav_zon
         else if ((dim_seas .eq. 1) .and. \
                  (diag_script_info@time_avg .eq. "seasonalclim")) then
-          tmp_iav = iav_zon
-          iav(imod, 0, :, :) = tmp_iav(diag_script_info@seasons, :, :)
+          ; Average over longitudes for zonal mean
+          iav_zon = dim_avg_n_Wrap(iav_native, 3)
+          iav(imod, 0, :, :) = iav_zon(diag_script_info@seasons, :, :)
         else
-          iav(imod, :, :, :) = iav_zon
+          ; Average over longitudes for zonal mean
+          iav_zon = dim_avg_n_Wrap(iav_native, 3)
+          iav(imod, :, :, :) = iav_zon(diag_script_info@seasons, :, :)
         end if
         end if
       end if
     end if
     delete(A0)
+    delete(data1)
   end do
   if (isatt(diag_script_info, "iavmode")) then
     if (diag_script_info@iavmode .eq. "each") then
@@ -249,9 +259,12 @@ begin
           (diag_script_info@time_avg .ne. "annualclim")) then
         tmp = natvar_mmm
         delete(natvar_mmm)
-        natvar_mmm = new((/dimsizes(diag_script_info@seasons), \
-                          dimsizes(A0&lev), dimsizes(A0&lat)/), float)
-        natvar_mmm = tmp(diag_script_info@seasons, :, :)
+        natvar_mmm = rm_single_dims(tmp(diag_script_info@seasons, :, :))
+      else if (diag_script_info@time_avg .eq. "annualclim") then
+        tmp = natvar_mmm
+        delete(natvar_mmm)
+        natvar_mmm = rm_single_dims(tmp)
+      end if
       end if
     else
       error_msg("f", DIAG_SCRIPT, "", "Error: This iavmode is not know")
@@ -269,12 +282,14 @@ begin
         (diag_script_info@time_avg .ne. "annualclim")) then
       tmp = natvar_mmm
       delete(natvar_mmm)
-      natvar_mmm = new((/dimsizes(diag_script_info@seasons), \
-                        dimsizes(A0&lev), dimsizes(A0&lat)/), float)
-      natvar_mmm = tmp(diag_script_info@seasons, :, :)
+      natvar_mmm = rm_single_dims(tmp(diag_script_info@seasons, :, :))
+    else if (diag_script_info@time_avg .eq. "annualclim") then
+      tmp = natvar_mmm
+      delete(natvar_mmm)
+      natvar_mmm = rm_single_dims(tmp)
+    end if
     end if
   end if
-
   ; ##############################################
   ; # Calculate change from hist to periods      #
   ; ##############################################
@@ -360,9 +375,9 @@ begin
                                               1., 0.)
         else
           sigma_and_sign = where(abs(to_plot(i, :, :)) .gt. \
-                                 abs(2. * natvar_mmm(seas, :, :)), 1., 0.)
+                                 abs(2. * natvar_mmm), 1., 0.)
           to_plot_not_signif(i, :, :) = where(abs(to_plot(i, :, :)) .lt. \
-                                              abs(natvar_mmm(seas, :, :)), \
+                                              abs(natvar_mmm), \
                                               1., 0.)
         end if
         to_plot_signif(i, :, :) = where(signif_and_sign .eq. 1, \
