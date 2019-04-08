@@ -1,4 +1,4 @@
-"""Fixes for ESA-CCI GHG"""
+"""Fixes for ghgcci (ESA-CCI GHG)"""
 import numpy as np
 import cf_units
 
@@ -26,7 +26,10 @@ class xco2(Fix):
         iris.cube.CubeList
 
         """
-        cube = cubes[0]
+        # the obs4MIPs file contains different variables
+        # (xco2, xco2_nobs, xco2_stddev, xco2_stderr), so
+        # we have to manually pick the "xco2" cube.
+        cube = cubes.extract('dry_atmosphere_mole_fraction_of_carbon_dioxide')[0]
         cube.units = cf_units.Unit('1.0e-6')
         cube = cube.intersection(longitude=(0, 360))
         return CubeList([cube])

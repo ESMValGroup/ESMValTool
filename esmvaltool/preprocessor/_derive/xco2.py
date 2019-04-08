@@ -5,7 +5,7 @@ from iris import Constraint
 import numba
 import numpy as np
 
-from ._derived_variable_base import DerivedVariableBase
+from ._baseclass import DerivedVariableBase
 
 # Constants
 
@@ -23,23 +23,23 @@ class DerivedVariable(DerivedVariableBase):
     """Derivation of variable `xco2`."""
 
     # Required variables
-    _required_variables = {
-        'vars': [{
-            'short_name': 'co2',
-            'field': 'T3{frequency}'
-        }, {
-            'short_name': 'hus',
-            'field': 'T3{frequency}'
-        }, {
-            'short_name': 'zg',
-            'field': 'T3{frequency}'
-        }, {
-            'short_name': 'ps',
-            'field': 'T2{frequency}'
-        }]
-    }
+    required = [
+        {
+            'short_name': 'co2'
+        },
+        {
+            'short_name': 'hus'
+        },
+        {
+            'short_name': 'zg'
+        },
+        {
+            'short_name': 'ps'
+        },
+    ]
 
-    def calculate(self, cubes):
+    @staticmethod
+    def calculate(cubes):
         """Calculate the average-column atmospheric CO2 [1e-6].
 
         The calculation follows the method described in the obs4MIPs
@@ -106,10 +106,10 @@ class DerivedVariable(DerivedVariableBase):
             n_dry.collapsed('air_pressure', iris.analysis.SUM))
         xco2_cube.units = co2_cube.units
 
-        # iris.save(
-        #     xco2_cube,
-        #     '/pf/b/b380103/workesm/esmvaltool_output/xco2_new.nc'
-        # )
+        #iris.save(
+        #    xco2_cube,
+        #    '/pf/b/b380103/workesm/esmvaltool_output/xco2_new.nc'
+        #)
 
         return xco2_cube
 
