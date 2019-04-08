@@ -2,10 +2,8 @@
 import logging
 
 import cf_units
-import iris
 import iris.coord_categorisation
 import iris.coords
-import iris.cube
 import iris.exceptions
 import iris.util
 import numpy as np
@@ -104,6 +102,7 @@ class CMORCheck(object):
         self.report_errors()
 
         self._add_auxiliar_time_coordinates()
+        return self._cube
 
     def report_errors(self):
         """Report detected errors.
@@ -162,6 +161,7 @@ class CMORCheck(object):
 
         self.report_warnings(logger)
         self.report_errors()
+        return self._cube
 
     def _check_fill_value(self):
         """Check fill value."""
@@ -190,9 +190,10 @@ class CMORCheck(object):
             units = self._get_efective_units()
 
             if not self._cube.units.is_convertible(units):
-                self.report_error('Variable {0} units () can not be '
-                                  'converted to {2}', self._cube.var_name,
-                                  self._cmor_var.units, self._cube.units)
+                self.report_error(
+                    'Variable {0} units () can not be '
+                    'converted to {2}', self._cube.var_name,
+                    self._cmor_var.units, self._cube.units)
 
         # Check other variable attributes that match entries in cube.attributes
         attrs = ('positive', )
@@ -245,23 +246,25 @@ class CMORCheck(object):
                 try:
                     cube_coord = self._cube.coord(var_name=coordinate.out_name)
                     if cube_coord.standard_name != coordinate.standard_name:
-                        self.report_error(self._attr_msg, coordinate.out_name,
-                                          'standard_name',
-                                          coordinate.standard_name,
-                                          cube_coord.standard_name)
+                        self.report_error(
+                            self._attr_msg,
+                            coordinate.out_name,
+                            'standard_name',
+                            coordinate.standard_name,
+                            cube_coord.standard_name,
+                        )
                 except iris.exceptions.CoordinateNotFoundError:
                     try:
                         coord = self._cube.coord(coordinate.standard_name)
                         self.report_error(
                             'Coordinate {0} has var name {1} instead of {2}',
                             coordinate.name,
-                            coord.var_name, coordinate.out_name
+                            coord.var_name,
+                            coordinate.out_name,
                         )
-
                     except iris.exceptions.CoordinateNotFoundError:
-                        self.report_error(
-                            self._does_msg, coordinate.name, 'exist'
-                        )
+                        self.report_error(self._does_msg, coordinate.name,
+                                          'exist')
 
     def _check_coords(self):
         """Check coordinates."""
@@ -341,9 +344,8 @@ class CMORCheck(object):
     def _reverse_coord(self, coord):
         """Reverse coordinate."""
         if coord.ndim == 1:
-            self._cube.data = iris.util.reverse(self._cube.data,
-                                                self._cube.coord_dims(coord))
-            coord.points = iris.util.reverse(coord.points, 0)
+            self._cube = iris.util.reverse(self._cube,
+                                           self._cube.coord_dims(coord))
 
     def _check_coord_values(self, coord_info, coord, var_name):
         """Check coordinate values."""
@@ -407,35 +409,30 @@ class CMORCheck(object):
             coord.units = cf_units.Unit(coord.units.origin, simplified_cal)
 
         tol = 0.001
-        intervals = {
-            'dec': (3600, 3660),
-            'day': (1, 1)
-        }
+        intervals = {'dec': (3600, 3660), 'day': (1, 1)}
         if self.frequency == 'mon':
-            with iris.FUTURE.context(cell_datetime_objects=True):
-                for i in range(len(coord.points) - 1):
-                    first = coord.cell(i).point
-                    second = coord.cell(i + 1).point
-                    second_month = first.month + 1
-                    second_year = first.year
-                    if second_month == 13:
-                        second_month = 1
-                        second_year += 1
-                    if second_month != second.month or \
-                       second_year != second.year:
-                        msg = '{}: Frequency {} does not match input data'
-                        self.report_error(msg, var_name, self.frequency)
-                        break
+            for i in range(len(coord.points) - 1):
+                first = coord.cell(i).point
+                second = coord.cell(i + 1).point
+                second_month = first.month + 1
+                second_year = first.year
+                if second_month == 13:
+                    second_month = 1
+                    second_year += 1
+                if second_month != second.month or \
+                   second_year != second.year:
+                    msg = '{}: Frequency {} does not match input data'
+                    self.report_error(msg, var_name, self.frequency)
+                    break
         elif self.frequency == 'yr':
-            with iris.FUTURE.context(cell_datetime_objects=True):
-                for i in range(len(coord.points) - 1):
-                    first = coord.cell(i).point
-                    second = coord.cell(i + 1).point
-                    second_month = first.month + 1
-                    if first.year + 1 != second.year:
-                        msg = '{}: Frequency {} does not match input data'
-                        self.report_error(msg, var_name, self.frequency)
-                        break
+            for i in range(len(coord.points) - 1):
+                first = coord.cell(i).point
+                second = coord.cell(i + 1).point
+                second_month = first.month + 1
+                if first.year + 1 != second.year:
+                    msg = '{}: Frequency {} does not match input data'
+                    self.report_error(msg, var_name, self.frequency)
+                    break
         else:
             if self.frequency in intervals:
                 interval = intervals[self.frequency]
@@ -558,9 +555,10 @@ def _get_cmor_checker(table,
                       automatic_fixes=False):
     """Get a CMOR checker/fixer."""
     if table not in CMOR_TABLES:
-        raise NotImplementedError("No CMOR checker implemented for table {}."
-                                  "\nThe following options are available: {}"
-                                  .format(table, ', '.join(CMOR_TABLES)))
+        raise NotImplementedError(
+            "No CMOR checker implemented for table {}."
+            "\nThe following options are available: {}".format(
+                table, ', '.join(CMOR_TABLES)))
 
     cmor_table = CMOR_TABLES[table]
     var_info = cmor_table.get_variable(mip, short_name)
