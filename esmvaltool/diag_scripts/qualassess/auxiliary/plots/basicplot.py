@@ -13,6 +13,7 @@ import iris.plot as iplt
 import iris.quickplot as qplt
 import cf_units as unit
 import matplotlib.cm as mpl_cm
+import matplotlib.colors as colors
 import cartopy.crs as ccrs
 from ..libs import c3s_511_util as utils
 #import random
@@ -448,6 +449,7 @@ class Plot2D(object):
     MAX_COLUMNS = 3
     TIME_LABEL = ''
     TIME_FORMAT = '%Y-%m-%d'
+    VALSCALE = None
 
     def __init__(self, cubes):
         """
@@ -778,16 +780,16 @@ class Plot2D(object):
 
 
         # Setup axes for plotting multiple cubes
-        n_columns = min([self.n_cubes, self.__class__.MAX_COLUMNS])
+        n_columns = min([self.n_cubes, self.MAX_COLUMNS])
         rel_plots_cbar = 4
         n_rows = rel_plots_cbar * \
-            ((self.n_cubes - 1) // self.__class__.MAX_COLUMNS + 1) + 1
+            ((self.n_cubes - 1) // self.MAX_COLUMNS + 1) + 1
         gs = gridspec.GridSpec(n_rows, n_columns)
 
         # Iterate over cubes
         for (idx, cube) in enumerate(self.cubes):
-            column = idx % self.__class__.MAX_COLUMNS
-            row = idx // self.__class__.MAX_COLUMNS
+            column = idx % self.MAX_COLUMNS
+            row = idx // self.MAX_COLUMNS
             if self.n_cubes > 1:
                 curplot = gs[
                     (rel_plots_cbar * row):(rel_plots_cbar * (row + 1)),
@@ -826,7 +828,8 @@ class Plot2D(object):
                 iplt.pcolormesh(cube,
                                 cmap=brewer_cmap,
                                 vmin=vmin,
-                                vmax=vmax)
+                                vmax=vmax,
+                                )
                 if y_logarithmic:
 #                    (locs, _) = plt.yticks()
 #                    (bottom, top) = plt.ylim()
@@ -881,10 +884,12 @@ class Plot2D(object):
                 plt.gca().coastlines()
                 plt.gca().gridlines(crs=ccrs.Geodetic(), color="k",
                                     linestyle=':')
-                plt.gca().text(-180, -112,
-                               r'mean: {0} $\pm$ {1} '.format(
-                                   str(np.round(mean, 2)),
-                                   str(np.round(std, 2))))
+                plt.gca().text(0,
+                       - 0.1 * ((self.n_cubes // n_columns) * 0.7 if self.n_cubes>n_columns else 1),
+                       r'mean: {0} $\pm$ {1} '.format(
+                           str(np.round(mean, 2)),
+                           str(np.round(std, 2))),
+                       transform=plt.gca().transAxes)
 
             # Label plots (supports at most 26 figures at the moment)
             if self.n_cubes > 1:

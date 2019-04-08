@@ -673,8 +673,8 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
 
     def run_diagnostic(self, cfg = None):
 #        self.sp_data = self.__spatiotemp_subsets__(self.sp_data)['Europe_2000']
-        self.__do_overview__()
-        self.__do_mean_var__()
+        self.__do_overview__() # granular, requests in overview code
+        self.__do_mean_var__() # granular, requests in mean_var code
         if "lintrend" in self.__requested_diags__:
             self.__do_trends__()
         self.__do_extremes__()
