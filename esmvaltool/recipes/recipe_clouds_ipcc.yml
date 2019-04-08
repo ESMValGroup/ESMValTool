@@ -131,14 +131,16 @@ diagnostics:
 
   clouds_ipcc_swcre:
     description: differences of multi-model mean and reference dataset
+    themes:
+      - clouds
+    realms:
+      - atmos
     variables:
       swcre:
         preprocessor: clim
         reference_dataset: CERES-EBAF
         mip: Amon
-        field: T2Ms
         derive: true
-        frequency: mon
     additional_datasets:
       - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
          start_year: 2001, end_year: 2010, tier: 1}
@@ -151,14 +153,16 @@ diagnostics:
 
   clouds_ipcc_lwcre:
     description: differences of multi-model mean and reference dataset
+    themes:
+      - clouds
+    realms:
+      - atmos
     variables:
       lwcre:
         preprocessor: clim
         reference_dataset: CERES-EBAF
         mip: Amon
-        field: T2Ms
         derive: true
-        frequency: mon
     additional_datasets:
       - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
          start_year: 2001, end_year: 2010, tier: 1}
@@ -168,14 +172,16 @@ diagnostics:
 
   clouds_ipcc_netcre:
     description: differences of multi-model mean and reference dataset
+    themes:
+      - clouds
+    realms:
+      - atmos
     variables:
       netcre:
         preprocessor: clim
         reference_dataset: CERES-EBAF
         mip: Amon
-        field: T2Ms
         derive: true
-        frequency: mon
     additional_datasets:
       - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
          start_year: 2001, end_year: 2010, tier: 1}

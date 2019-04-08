@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 SOURCE: CMIP5
 !============
 variable_entry:    xco2
@@ -6,11 +7,12 @@ modeling_realm:    atmos
 !----------------------------------
 ! Variable attributes:
 !----------------------------------
-standard_name:     dry_atmosphere_mole_fraction_of_carbon_dioxide
+standard_name:     
 units:             1e-6
 cell_methods:      time: mean
 cell_measures:     area: areacella
-long_name:         column-average dry-air mole fraction of atmospheric carbon dioxide
+long_name:         Column-average Dry-air Mole Fraction of Atmospheric Carbon Dioxide
+comment:           Satellite retrieved column-average dry-air mole fraction of atmospheric carbon dioxide (XCO2)
 !----------------------------------
 ! Additional variable information:
 !----------------------------------
@@ -19,3 +21,4 @@ out_name:          xco2
 type:              real
 !----------------------------------
 !
+

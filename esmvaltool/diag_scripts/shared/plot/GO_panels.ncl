@@ -23,8 +23,8 @@
 ;
 ; #############################################################################
 
-load "./interface_scripts/auxiliary.ncl"
-load "./interface_scripts/logging.ncl"
+load "$diag_scripts/../interface_scripts/auxiliary.ncl"
+load "$diag_scripts/../interface_scripts/logging.ncl"
 
 ; #############################################################################
 
@@ -34,12 +34,12 @@ end
 
 ; #############################################################################
 
-load "./diag_scripts/aux/SAMonsoon/SAMonsoon.ncl"
-load "./diag_scripts/aux/SAMonsoon/SAMonsoon_panel_positions.ncl"
-load "./diag_scripts/aux/SAMonsoon/exact_panel_positions_generic.ncl"
+load "$diag_scripts/aux/SAMonsoon/SAMonsoon.ncl"
+load "$diag_scripts/aux/SAMonsoon/SAMonsoon_panel_positions.ncl"
+load "$diag_scripts/aux/SAMonsoon/exact_panel_positions_generic.ncl"
 
-load "./diag_scripts/shared/plot/style.ncl"
-load "./diag_scripts/shared/plot/xy_line.ncl"
+load "$diag_scripts/shared/plot/style.ncl"
+load "$diag_scripts/shared/plot/xy_line.ncl"
 
 ; #############################################################################
 
