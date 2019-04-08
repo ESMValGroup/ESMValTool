@@ -2078,9 +2078,9 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
             '" (' +
             self.__time_period__ +
             ')' +
-            ' (Green: data set is recommended for this application; ' + 
-            'Red: data set is not recommended for this application; ' + 
-            'Yellow: no decision about applicability of ' +
+            ' (Petrol: data set is recommended for this application; ' + 
+            'Brown: data set is not recommended for this application; ' + 
+            'Grey: no decision about applicability of ' +
             'the data set can be made (e.g. uncertainty too high)).')
 
         # PART 2 of ESM evaluation: bullet point list
