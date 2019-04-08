@@ -44,15 +44,17 @@ begin
     end if
   end if
 
-  ; Set path for saving processed data ; FIX-ME add preproc_id
+  ; Set path for saving processed data
   system("mkdir -p " + config_user_info@work_dir)
-  fname = "perfmetrics_cycle_" + var0
   if (isdefined("level")) then
-    fname = fname + level
+    vv = var0
+  else
+    vv = var0 + level
   end if
-  fname = fname + "_" + diag_script_info@time_avg
-  fname = fname + "_" + str_sub_str(diag_script_info@region, " ", "")
-  procpath = config_user_info@work_dir + fname + ".nc"
+  fname = str_join((/"perfmetrics", "cycle", vv, \
+                     diag_script_info@time_avg, region@name/), "_")
+  workpath = config_user_info@work_dir + fname + ".nc"
+  plotpath = config_user_info@plot_dir + fname
 
   ; Loop over datasets
   do imod = 0, nDatasets - 1
@@ -99,8 +101,8 @@ begin
 
   ; Write output
   if (config_user_info@write_netcdf.eq."True") then
-    var_all@ncdf = procpath
-    ncdf_outfile = ncdf_write(var_all, procpath)
+    var_all@ncdf = workpath
+    ncdf_outfile = ncdf_write(var_all, workpath)
   end if
 
   ; Plotting
@@ -124,8 +126,8 @@ begin
   delete(level)
 
   ; Draw plot
-  wks = gsn_open_wks(file_type, config_user_info@plot_dir + fname)
-  wks@legendfile = config_user_info@plot_dir + fname + "_legend"
+  wks = gsn_open_wks(file_type, plotpath)
+  wks@legendfile = plotpath + "_legend"
   var_all@res_tiMainString = title
   plot = cycle_plot(wks, var_all, var0, info_items)
   draw(plot)
@@ -133,7 +135,7 @@ begin
 
   ; Call provenance logger
   log_provenance(ncdf_outfile, \
-                 fname + "." + file_type, \
+                 plotpath + "." + file_type, \
                  "Cycle plot of variable " + caption, \
                  (/"mean", "stddev"/), \
                  region@name, \
