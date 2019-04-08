@@ -54,6 +54,7 @@
 ; Caveats
 ;
 ; Modification history
+;    20190405-A_righ_ma: added provenance logging
 ;    20190315-A_hass_bg: extended to smpi metric
 ;    20180503-A_righ_ma: completely rewritten and modularized
 ;    20171215-A_righ_ma: merged with perfmetrics_grading and
