@@ -270,18 +270,24 @@ for (i in 1 : length(projection_filenames)) {
         vals = as.vector(lat),
         longname = "latitude"
       )
+      dimtime <- ncdim_def(
+        name = "time",
+        units = "Years",
+        vals = start_projection : end_projection,
+        unlim = TRUE,
+        longname = "Time in years") 
       defdata <- ncvar_def(
         name = "data",
         units = units,
         dim = list(lat = dimlat, lon = dimlon),
-        longname = paste("Mean", metric[m], long_names)
+        longname = paste("Anual", metric[m], long_names)
       )
       filencdf <- paste0(
           work_dir, "/", var0, "_", metric[m], "_risk_insurance_index_",
           model_names, "_", start_projection, "_", end_projection, "_",
           start_reference, "_", end_reference, ".nc")
       file <- nc_create(filencdf, list(defdata))
-      ncvar_put(file, defdata, data)
+      ncvar_put(file, defdata, projection_index_standardized)
       nc_close(file)
 
 
