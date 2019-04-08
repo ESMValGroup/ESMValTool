@@ -126,13 +126,17 @@ class TestCMORCheck(unittest.TestCase):
         self._check_cube()
 
     def _check_cube(self, automatic_fixes=False, frequency=None):
-        checker = CMORCheck(
-            self.cube,
-            self.var_info,
-            automatic_fixes=automatic_fixes,
-            frequency=frequency)
-        checker.check_metadata()
-        checker.check_data()
+        """Apply checks and optionally automatic fixes to self.cube."""
+
+        def checker(cube):
+            return CMORCheck(
+                cube,
+                self.var_info,
+                automatic_fixes=automatic_fixes,
+                frequency=frequency)
+
+        self.cube = checker(self.cube).check_metadata()
+        self.cube = checker(self.cube).check_data()
 
     def test_check_with_month_number(self):
         """Test checks succeeds for a good cube with month number"""
@@ -339,9 +343,8 @@ class TestCMORCheck(unittest.TestCase):
         """Test automatic fix for time units"""
         self.cube.coord('time').units = 'days since 1860-1-1 00:00:00'
         self._check_cube()
-        self.assertEquals(
-            self.cube.coord('time').units.origin,
-            'days since 1950-1-1 00:00:00')
+        assert (self.cube.coord('time').units.origin ==
+                'days since 1950-1-1 00:00:00')
 
     def test_time_automatic_fix_failed(self):
         """Test automatic fix fail for incompatible time units"""
