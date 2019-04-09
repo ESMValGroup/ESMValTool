@@ -1,0 +1,57 @@
+ECV;Product;Dataset(s);Title of reference;Author(s) of reference;Year of publication;DOI (reference);Keywords
+Ozone;toz;ESA-CCI;Long-term ozone changes and associated climate impacts in CMIP5 simulations;Eyring, V., et al.;2013;https://doi.org/10.1002/jgrd.50316;climatology, mean, trend, differences
+Temperature;ta;ERA40;Performance metrics for climate models;Gleckler, P.J., et al.;2008;https://doi.org/10.1029/2007JD008972;climatologie, standard deviation
+Sea Ice;sithick;IceSat;Using records from submarine, aircraft and satellites to evaluate climate model simulations of Arctic sea ice thickness;Stroeve, J., et al.;2014;https://doi.org/10.5194/tc-8-1839-2014;mean, spatial patterns, correlation, RMSE
+Cloud Properties;clt;CLARA-A2;Benchmarking CMIP5 models with a subset of ESA CCI Phase 2 data using the ESMValTool;Lauer, A., et al.;2017;https://doi.org/10.1016/j.rse.2017.01.007;mean, variability
+Wind Air Speed;;;;;;;
+Water Vapor;;;;;;;
+TOA Radiation Budget;;;;;;;
+Surface Radiation Budget;;;;;;;
+Precipitation;;;;;;;
+Carbon Dioxide;xco2;ESA CCI;Benchmarking CMIP5 models with a subset of ESA CCI Phase 2 data using the ESMValTool;Lauer, A., et al.;2017;https://doi.org/10.1016/j.rse.2017.01.007;climatology, mean
+Aerosol;abs550aer;ESA CCI;Benchmarking CMIP5 models with a subset of ESA CCI Phase 2 data using the ESMValTool;Lauer, A., et al.;2017;https://doi.org/10.1016/j.rse.2017.01.007;mean 
+Methane;xch4;na;;;;na;na
+Long-lived GHGs;;;;;;;
+Sea Surface Temperature;;;;;;;
+Sea Level;sea level;"PSMSL; AVISO Altimetry; ESA CCI; CSIRO";Vertical land motion as a key to understanding sea level change and variability;W”ppelmann, G., et al.;2016;http://dx.doi.org/10.1002/2015RG000502;coastal sea level
+Sea Level;sla;GESLA;Improved satellite altimeter mapped sea level anomalies in the Mediterranean Sea: A comparison with tide gauges;Marcos, M., et al.;2015;http://dx.doi.org/10.1016/j.asr.2015.04.027;"Mediterranean Sea; Sea level; Satellite altimetry; Tide gauges"
+Sea Level;sea level;PSMSL ;Comparing tide gauge observations to regional patterns of sea-level change (1961-2003);Slangen, A.B.A., et al.;2014;https://doi.org/10.5194/esd-5-243-2014;"tide gauges; climate models"
+Sea Level;sea level;"MOG2D;HAMSOM; AVISO; SONEL; IGN; APAT; ESEAS; MedGLOSS ";Comparing the sea level response to pressure and wind forcing of two barotropic models: Validation with tide gauge and altimetry data;Pascual, A., et al.;2008;https://doi.org/10.1029/2007JC004459;"barotropic model; Mediterranean Sea; NE Atlantic; tide gauge; satellite altimetry"
+Surface Currents;surface current;AVISO;Mesoscale mapping capabilities of multisatelliteÿ altimeter missions: First results with real data in the Mediterranean Sea;Pascual, A., et al.;2007;https://doi.org/10.1016/j.jmarsys.2004.12.004;"Satellite altimetry; Sea level; Surface currents; Eddy Kinetic Energy; Mesoscale ocean circulation; Mediterranean Sea"
+Surface Currents;surface current;"AVISO; DAAC; SVP;CODE;CMOP";Surface Geostrophic Circulation of the Mediterranean Sea Derived from Drifter and Satellite Altimeter Data;Poulain, P., et al.;2012;https://doi.org/10.1175/JPO-D-11-0159.1;"surface currents; Mediterranean Sea; drifters; remote sensing"
+Surface Currents;surface current;AVISO;Improved description of the ocean mesoscale variability by combining four satellite altimeters;Pascual, A., et al.;2006;https://doi.org/10.1029/2005GL024633;"satelite altimetry; drifter; surface currents"
+Surface Currents;surface current;"AVISO; GLOSS; CLIVAR";On the Quality of Real-Time Altimeter Gridded Fields: Comparison with In Situ Data;Pascual, A., et al.;2009;https://doi.org/10.1175/2008JTECHO556.1;"satellite observations; currents; sea level; data quality control; in situ data"
+Ocean Surface Heat Flux;;;;;;;
+Ocean Surface Stress;;;;;;;
+Surface Salinity;;;;;;;
+Soil Moisture;soil moisture, for ERA top layer (0-7 cm);ERA-Interim and CCI;Sensitivity analysis of different parameterization schemes using RegCM4.3 for the Carpathian region;Pieczka, I., et al.;2017;https://doi.org/10.1007/s00704-016-1941-4;climate validation, yearly cycle
+Soil Moisture;soil moisture;ESA-CCI;Seasonal soil moisture and drought occurrence in Europe in CMIP5 projections for the 21st century;Ruosteenoja, K., et al.;2018;https://doi.org/10.1007/s00382-017-3671-4;trend, long term mean, correlation
+Soil Moisture;soil moisture;ESA-CCI;LS3MIP (v1.0) contribution to CMIP6: the Land Surface, Snow and Soil moisture Model Intercomparison Project ? aims, setup and expected outcome ;van der Hurk, B., et al.;2016;https://doi.org/10.5194/gmd-9-2809-2016;nudging of regional runs
+Soil Moisture;soil moisture;ESA-CCI;Evaluation of hydrologic components of community land model 4 and bias identification;Du, E., et al.;2016;https://doi.org/10.1016/j.jag.2015.03.013;bias, correlation, temporal dynamics
+Soil Moisture;soil moisture;ESA-CCI;Evaluating the drought response of CMIP5 models using global gross primary productivity, leaf area, precipitation, and soil moisture data;Huang, Y., et al.;2016;https://doi.org/10.1002/2016GB005480;drought response
+Soil Moisture;soil moisture;ESA-CCI;Benchmarking CMIP5 models with a subset of ESA CCI Phase 2 data using the ESMValTool;Lauer, A., et al.;2017;https://doi.org/10.1016/j.rse.2017.01.007;climatological mean state and seasonal cycle
+Soil Moisture;soil moisture;ESA-CCI;Evaluation of soil moisture in CMIP5 simulations over the contiguous United States using in situ and satellite observations;Yuan, S., et al.;2017;https://doi.org/10.5194/hess-21-2203-2017;Pearson correlation, mean absolute error, coefficient of efficiency, Taylor?s skill score 
+Albedo;albedo;MODIS;Evaluation of MODIS albedo product (MCD43A) over grassland, agriculture and forest surface types during dormant and snow-covered periods;Zhuosen, W., et al.;2014;https://doi.org/10.1016/j.rse.2013.08.025;
+Snow;;;;;;;
+Glaciers;;;;;;;
+Land Cover;;;Benchmarking CMIP5 models with a subset of ESA CCI Phase 2 data using the ESMValTool;Lauer, A., et al.;2017;https://doi.org/10.1016/j.rse.2017.01.007;PFT comparison
+FAPAR;na;na;A 30+ Year AVHRR LAI and FAPAR Climate Data Record: Algorithm Description and Validation;Claverie, M., et al.;2016;https://doi.org/10.3390/rs8030263;na
+Leaf Area Index;;;A global reanalysis of vegetation phenology;St”ckli, R., et al.;2011;https://doi.org/10.1029/2010JG001545;
+Leaf Area Index;na;na;A 30+ Year AVHRR LAI and FAPAR Climate Data Record: Algorithm Description and Validation;Claverie, M., et al.;2016;https://doi.org/10.3390/rs8030263;na
+Ice Sheets & Ice Shelves;;;;;;;
+Ice Caps;;;;;;;
+Lakes;na;na;;;;na;na
+Fires;;;;;;;
+Permafrost;;;;;;;
+Inorganic Carbon;surface partial pressure of CO2;"SOCATv2; ETH SOM-FFN";An update to the Surface Ocean CO2 Atlas (SOCAT version 2);Bakker, D.C.E., et al.;2014;"https://doi.org/10.5194/essd-6-69-2014
+http://cdiac.ess-dive.lbl.gov/ftp/oceans/spco2_1998_2011_ETH_SOM-FFN";
+Transient Tracers;;;;;;;
+Ocean Color;;;;;;;
+Sea State;wave height;ERA40 ; Calibration of a new wind-wave hindcast in the Western Mediterranean;Mart¡nez-Asensio, A., et al.;2013;https://doi.org/10.1016/j.jmarsys.2013.04.006;"Wind-wave hindcast; SWH calibration; Mediterranean Sea"
+Sea State;wave height;"ERA40; NOAA WWIII";Waves and climate change on the Australian coast;Hemer, M., et al.;2007;https://www.researchgate.net/publication/228909967_Waves_and_Climate_Change_on_the_Australian_Coast;Climatology, waves, Australia
+Subsurface Currents;subsurface current;ARGO GDAC; Intermediate Zonal Jets in the Tropical Pacific Ocean Observed by Argo Floats;Cravatte, S., et al.;2012;https://doi.org/10.1175/JPO-D-11-0206.1;"Pacific Ocean; Argo; subsurface currents; intermediate waters"
+Subsurface Currents;subsurface current;"AVISO; GLORIS1V1; ANDRO";A new estimate of the global 3D geostrophic ocean circulation based on satellite data and in-situ measurements;Mulet, S., et al.;2012;https://doi.org/10.1016/j.dsr2.2012.04.012;"geostrophic flow; medirional oceanic circulation; theral wind equation; altimetry; in situ measurements"
+Subsurface Currents;subsurface current;CEPOM;Transport estimates at the western section of the Strait of Gibraltar: A combined experimental and numerical modeling study;Sanchez-Roman, A., et al.;2009;https://doi.org/10.1029/2008JC005023;"Strait of Gibraltar; in situ measurements; numerical model; 3D currents"
+Subsurface Currents;subsurface current;SAMPA;Reconstruction of transports through the Strait of Gibraltar from limited observations;Jord…, G., et al.;2017;https://doi.org/10.1007/s00382-016-3113-8;"Gibraltar Strait; Mediterrean Sea; transports; reconstruction"
+Subsurface Salinity;;;;;;;
+Subsurface Temperature;;;;;;;

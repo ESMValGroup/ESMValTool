@@ -1,0 +1,3 @@
+"ECV","Product","dataset","reference","URL (reference)","Keywords"
+"ozone","toz","ESA-CCI","Eyring, V., et al. (2013), Long-term ozone changes and associated climate impacts in CMIP5 simulations, J. Geophys. Res. Atmos., 118, doi:10.1002/jgrd.50316.","http://onlinelibrary.wiley.com/doi/10.1002/jgrd.50316/abstract","climatology, mean, trend, differences"
+"air temperature","ta","ERA-Interim","Gleckler, P. J., K. E. Taylor, and C. Doutriaux (2008), Performance metrics for climate models, J. Geophys. Res., 113, D06104, doi:10.1029/2007JD008972.","http://onlinelibrary.wiley.com/doi/10.1029/2007JD008972/abstract","correlations, differences, mean, standard deviation"

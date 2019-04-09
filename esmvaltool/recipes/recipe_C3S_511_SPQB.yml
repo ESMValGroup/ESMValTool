@@ -1,0 +1,124 @@
+###############################################################################
+# recipe_C3S_51_SPQB.yml
+#
+# Description
+# Independent assessment of single products for the C3S_511 quality brief
+#
+# Author
+# Benjamin Mueller (LMU, Germany - b.mueller@iggf.geo.uni-muenchen.de)
+# Birgit Hassler (DLR, Germany - birgit.hassler@dlr.de)
+#
+# Project
+# C3S_511
+#
+# Reference
+
+#
+# This namelist is part of the ESMValTool
+###############################################################################
+
+documentation:
+  description: 
+    Independent assessment of single products for the C3S_511 quality brief.
+    
+  authors:
+    - muel_bn
+    - hass_bg
+
+  maintainer:
+    - hass_bg
+    
+  projects:
+    - c3s_511
+
+
+
+datasets:
+#  - {dataset: MRI-CGCM3,  project: CMIP5,  mip: Amon,  exp: decadal1980,  ensemble: r1i1p1,  start_year: 1999,  end_year: 2000}
+  - {dataset: CDS-XCH4, project: OBS, tier: 3, type: sat,  version: L3, start_year: 2003,  end_year: 2016}
+
+preprocessors:
+  noop: {}
+
+
+diagnostics:
+  SPQB:
+    description: Single product quality brief for C3S_511.
+    
+    variables:
+      xch4:
+        preprocessor: noop
+        field: T2Ms
+        mip: Amon
+        
+    scripts:
+      diag_O_info: # lazy
+        script: qualassess/DUMMY_C3S_511_SPQB.py
+        requests: [info, GCOS] # GCOS depending on info data. If not called here, it stays blank
+
+#      diag_O_avail: # not lazy
+#        script: qualassess/DUMMY_C3S_511_SPQB.py
+#        requests: [availability]
+#        levels: [3.00e+04,8.50e+04,1.00e+02]
+
+#      diag_O_hist: # not lazy
+#        script: qualassess/DUMMY_C3S_511_SPQB.py
+#        requests: [histogram]
+#        levels: [3.00e+04,8.50e+04,1.00e+02]
+
+#      diag_MV_ts: # lazy
+#        script: qualassess/DUMMY_C3S_511_SPQB.py
+#        requests: [time_series]
+#        levels: [3.00e+04,8.50e+04,1.00e+02]
+
+      diag_MV_mean: # lazy
+        script: qualassess/DUMMY_C3S_511_SPQB.py 
+        requests: [mean]
+#        levels: [3.00e+04,8.50e+04,1.00e+02]
+
+#      diag_MV_std_dev: # lazy
+#        script: qualassess/DUMMY_C3S_511_SPQB.py
+#        requests: [std_dev]
+#        levels: [3.00e+04,8.50e+04,1.00e+02]
+
+#      diag_MV_perc: # not lazy
+#        script: qualassess/DUMMY_C3S_511_SPQB.py
+#        requests: [percentiles]
+#        levels: [3.00e+04,8.50e+04,1.00e+02]
+
+#      diag_MV_clim: # lazy
+#        script: qualassess/DUMMY_C3S_511_SPQB.py
+#        requests: [climatology]
+#        levels: [3.00e+04,8.50e+04,1.00e+02]
+
+#      diag_MV_anom: # lazy
+#        script: qualassess/DUMMY_C3S_511_SPQB.py
+#        requests: [anomalies]
+#        levels: [3.00e+04,8.50e+04,1.00e+02]
+
+#      diag_T_trend: # not lazy
+#        script: qualassess/DUMMY_C3S_511_SPQB.py
+#        requests: [lintrend]
+#        levels: [3.00e+04,8.50e+04,1.00e+02]
+
+#      diag_custom: # ECV specific developer's choice
+#        script: qualassess/DUMMY_C3S_511_SPQB.py
+#        requests: [custom]
+#        levels: [3.00e+04,8.50e+04,1.00e+02]
+
+      diag_tables: # lazy
+        script: qualassess/DUMMY_C3S_511_SPQB.py
+#        requests: [SMM, GCOS, ESM]
+        requests: [SMM, ESM]
+
+      report: # lazy
+        script: qualassess/DUMMY_C3S_511_SPQB.py
+        ancestors: ['xch4', '*/diag_*']
+        requests: [report]
+#        order: [diag_O_info, diag_tables, diag_O_hist, diag_O_avail,
+#                diag_MV_ts, diag_MV_mean, diag_MV_std_dev, diag_MV_perc, 
+#                diag_MV_clim, diag_MV_anom, diag_T_trend, diag_custom]
+#        order: [diag_tables, diag_MV_ts, diag_MV_mean ,diag_MV_std_dev, diag_MV_clim, diag_MV_anom, diag_custom]
+        order: [diag_O_info, diag_tables, diag_MV_mean]
+#        order: [diag_MV_ts, iag_MV_mean, diag_MV_std_dev]
+        show_latex: False #options are: True/False/no_latex

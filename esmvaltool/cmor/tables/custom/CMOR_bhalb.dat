@@ -1,0 +1,20 @@
+SOURCE: CMIP5
+!============
+variable_entry:    bhalb
+!============
+modeling_realm:    land
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     
+units:             1
+cell_methods:      time: mean
+cell_measures:     area: areacella
+long_name:         Broadband bihemispherical albedo at the surface
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+type:              real
+!----------------------------------
+!

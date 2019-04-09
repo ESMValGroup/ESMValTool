@@ -94,32 +94,25 @@ def concatenate(cubes):
 def save(cubes, filename, optimize_access='', compress=False, **kwargs):
     """
     Save iris cubes to file.
-
     Parameters
     ----------
     cubes: iterable of iris.cube.Cube
         Data cubes to be saved
-
     filename: str
         Name of target file
-
     optimize_access: str
         Set internal NetCDF chunking to favour a reading scheme
-
         Values can be map or timeseries, which improve performance when
         reading the file one map or time series at a time.
         Users can also provide a coordinate or a list of coordinates. In that
         case the better performance will be avhieved by loading all the values
         in that coordinate at a time
-
     compress: bool, optional
         Use NetCDF internal compression.
-
     Returns
     -------
     str
         filename
-
     """
     # Rename some arguments
     kwargs['target'] = filename

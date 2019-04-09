@@ -1,0 +1,29 @@
+###############################################################################
+# DEFAULT
+# Style file for matplotlib plots
+###############################################################################
+
+# Font
+font.sans-serif : Helvetica, Avant Garde, Arial, DejaVu Sans, sans-serif
+font.serif : Palatino, Times New Roman, DejaVu Serin, DejaVu Serif, serif
+font.family : sans-serif
+font.style : normal
+font.variant : normal
+font.weight : normal
+font.stretch : normal
+font.size : 20
+
+# Fontsizes
+axes.labelsize : medium
+axes.titlesize : larger
+xtick.labelsize : medium
+ytick.labelsize : medium
+
+# Object sizes
+figure.figsize : 15.0, 7.0
+lines.linewidth : 1
+lines.markersize : 10
+
+# Axes appearance
+axes.xmargin : 0
+axes.ymargin : 0
