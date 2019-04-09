@@ -253,7 +253,7 @@ begin
       data_dtr = dtrend_quadratic_msg_n(data_tmp, False, False, 0)
       if (typeof(data_dtr) .ne. typeof(data1)) then
         if ((typeof(data_dtr) .eq. "double") .and. \
-          (typeof(data1) .eq. "float")) then
+            (typeof(data1) .eq. "float")) then
           tmp = data_dtr
           delete(data_dtr)
           data_dtr = doubletofloat(tmp)
@@ -264,10 +264,10 @@ begin
           data_dtr = floattodouble(tmp)
         else
           error_msg("f", DIAG_SCRIPT, "", "Type conversion issue, " + \
-          "data_dtr has a different type than data1 which is " + \
-          "neither float or double.")
-        end if  
-        end if  
+                    "data_dtr has a different type than data1 which is " + \
+                    "neither float or double.")
+        end if
+        end if
       end if
       if (field_type0 .eq. "T2Ms") then
         data1(imod, :, :, :) = dim_stddev_n(data_dtr, 0)
@@ -372,7 +372,7 @@ begin
           rm_single_dims(dim_avg_n(data1(:, s, :, :), 0) * sqrt(2.))
       else if (field_type0 .eq. "T3Ms") then
         ; Calculate the zonal average
-        tmp_zon = dim_avg_n_Wrap(data1, 4) ; data1(mon, seas, lev, lat, lon)
+        tmp_zon = dim_avg_n_Wrap(data1, 4)  ; data1(mon, seas, lev, lat, lon)
         ; Calculate multi-model mean
         IAV_mmm(s, :, :) = \
           rm_single_dims(dim_avg_n(tmp_zon(:, s, :, :), 0) * sqrt(2.))
