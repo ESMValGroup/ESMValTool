@@ -72,7 +72,6 @@ diagnostics:
         preprocessor: clim
         reference_dataset: ERA-Interim
         mip: Amon
-        field: T2Ms
     additional_datasets:
       - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1,
          start_year: 1986, end_year: 2005, tier: 3}
@@ -187,7 +186,6 @@ diagnostics:
         preprocessor: clim
         reference_dataset: GPCP-SG
         mip: Amon
-        field: T2Ms
     additional_datasets:
       - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.2,
          start_year: 1986, end_year: 2005, tier: 1}
@@ -301,7 +299,6 @@ diagnostics:
         preprocessor: clim
         reference_dataset: CERES-EBAF
         mip: Amon
-        field: T2Ms
         derive: true
     additional_datasets:
       - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
@@ -408,7 +405,6 @@ diagnostics:
         preprocessor: clim
         reference_dataset: CERES-EBAF
         mip: Amon
-        field: T2Ms
         derive: true
     additional_datasets:
       - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
@@ -512,7 +508,6 @@ diagnostics:
         preprocessor: clim
         reference_dataset: CERES-EBAF
         mip: Amon
-        field: T2Ms
         derive: true
     additional_datasets:
       - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
@@ -718,7 +713,6 @@ diagnostics:
         project: CMIP5
         ensemble: r1i1p1
         mip: Amon
-        field: T2Ms
       rtmt:
         <<: *ecs_settings
     additional_datasets:

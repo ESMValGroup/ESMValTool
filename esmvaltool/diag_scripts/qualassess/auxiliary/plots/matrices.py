@@ -376,8 +376,7 @@ def do_eval_table(varname, eval_expert, eval_data, ecv_length):
     """
     Author  : Arun Rana
     Creation: July 26th, 2018
-    Updated : August 08th, 2018; April 07th, 2019
-    
+    Updated : August 08th, 2018; April 07th, 2019 [BM]
 
     Inputs:
         - varname: the variable name to read the right evaluation/validation table parts
@@ -462,7 +461,7 @@ def do_eval_table(varname, eval_expert, eval_data, ecv_length):
     # making sure that the conversion to integers does not crash the namelist
 #    try:
 #        # conversion to integer for comparison to ECV data length
-#        time_range = [np.int(i) for i in time_range]
+#        time_range = [int(i) for i in time_range]
 #    except BaseException:
 #        time_range = [np.nan for i in time_range]
     for inx,tr in enumerate(time_range):
@@ -471,7 +470,7 @@ def do_eval_table(varname, eval_expert, eval_data, ecv_length):
         except:
             time_range[inx] = np.nan
     # print time_range - done during coding
-    
+
     for i in range(len(time_range)):
         # it's ok if the data are just as long as the limit given by the expert
         # user
@@ -480,9 +479,9 @@ def do_eval_table(varname, eval_expert, eval_data, ecv_length):
         elif time_range[i] > ecv_length:
             grades[0][i] = 1
         else:
-            grades[0][i] = 2 # only happens for strange values (e.g. nan)
+            grades[0][i] = 2  # only happens for strange values (e.g. nan)
         # print grades.item (i)
-        
+
     # Create the figure
     fig = plt.figure(figsize=(6, 3))
     # X-Y mesh to plot the color array
@@ -491,7 +490,6 @@ def do_eval_table(varname, eval_expert, eval_data, ecv_length):
     x_grid, y_grid = np.meshgrid(np.arange(nx + 1), np.arange(ny, -1, -1))
 
     # The color map
-#    cmap = plt.get_cmap('RdYlGn', max_grade_eval)
     cmap = plt.get_cmap('BrBG', max_grade_eval)
 
     # Plot the cells in color
