@@ -2,21 +2,19 @@
 
 from iris import Constraint
 
-from ._derived_variable_base import DerivedVariableBase
+from ._baseclass import DerivedVariableBase
 
 
 class DerivedVariable(DerivedVariableBase):
     """Derivation of variable `xch4`."""
 
     # Required variables
-    _required_variables = {
-        'vars': [{
-            'short_name': 'xch4',
-            'field': 'T2{frequency}s'
-        }]
-    }
+    required = [{
+                'short_name': 'xch4'
+                }]
 
-    def calculate(self, cubes):
+    @staticmethod
+    def calculate(cubes):
         """Compute/forward xch4."""
         xch4_cube = cubes.extract_strict(
             Constraint(name='column_averaged_methane'))
