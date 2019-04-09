@@ -40,6 +40,71 @@ The _area.py module contains the following preprocessor functions:
 * extract_named_regions: Extract a specific region from in the region cooordinate.
 
 
+1. extract_region
+-----------------
+
+This function masks data outside a rectagular region requested. The boundairies
+of the region are provided as latitude and longitude coordinates in the
+arguments:
+
+* start_longitude
+* end_longitude
+* start_latitude
+* end_latitude
+
+Note that this function can only be used to extract a rectangular region.
+
+See also :func:`esmvaltool.preprocessor.extract_region`.
+
+
+2. zonal_means
+--------------
+
+The function calculates the zonal or meridional means. While this function is
+named `zonal_mean`, it can be used to apply several different operations in
+an zonal or meridional direction.
+This function takes two arguments:
+
+* coordinate: Which direction to apply the operation: latitude or longitude
+* mean_type: Which operation to apply: mean, std_dev, variance, median, min or max
+
+See also :func:`esmvaltool.preprocessor.zonal_means`.
+
+
+3. average_region
+-----------------
+
+This function calculates the average value over a region - weighted by the
+cell areas of the region.
+
+This function takes three arguments:
+coord1: the name of the coordinate in the first direction.
+coord2: the name of the coordinate in the second dimension.
+operator: the name of the operation to apply (default: mean).
+
+While this function is named `average_region`, it can be used to apply several
+different operations in the horizonal plane: mean, standard deviation, median
+variance, minimum and maximum.
+
+Note that this function is applied over the entire dataset. If only a specific
+region, depth layer or time period is required, then those regions need to be
+removed using other preprocessor operations in advance.
+
+See also :func:`esmvaltool.preprocessor.average_region`.
+
+
+4. extract_named_regions
+------------------------
+
+This function extract a specific named region from the data. This function
+takes the following argument: `regions` which is either a string or a list
+of strings of named regions. Note that the dataset must have a `region`
+cooordinate which includes a list of strings as values. This function then
+matches the named regions against the requested string.
+
+See also :func:`esmvaltool.preprocessor.extract_named_regions`.
+
+
 Volume manipulation
 ===================
 The _volume.py module contains the following preprocessor functions:

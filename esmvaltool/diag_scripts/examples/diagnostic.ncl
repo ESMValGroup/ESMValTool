@@ -62,7 +62,6 @@ begin
   ; For multiple variables, use different indices of variable_info
   var0 = variable_info[0]@short_name
   info0 = select_metadata_by_name(input_file_info, var0)
-  field_type0 = variable_info[0]@field
 
   ; The number of variables is the size of the variable_info list
   n_variables = ListCount(variable_info)
@@ -79,7 +78,6 @@ begin
   ; Retrieve metadata items by attribute (short_name and field)
   atts = True
   atts@short_name = var0
-  atts@field = field_type0
   info = select_metadata_by_atts(input_file_info, atts)
   delete(atts)
 
@@ -104,7 +102,6 @@ begin
   ; Retrieve metadata item for the reference dataset
   atts = True
   atts@short_name = var0
-  atts@field = field_type0
   atts@dataset = variable_info[0]@reference_dataset
   info_ref = select_metadata_by_atts(input_file_info, atts)
   delete(atts)
