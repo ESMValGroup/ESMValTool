@@ -159,7 +159,7 @@ def metadata_to_netcdf(cube, metadata):
     """
     metadata = dict(metadata)
     if not _has_necessary_attributes([metadata], log_level='error'):
-        logger.error("Cannot save cube %s", cube)
+        logger.error("Cannot save cube\n%s", cube)
         return
     for var_key in VAR_KEYS:
         setattr(cube, var_key, metadata.pop(var_key))
@@ -178,14 +178,16 @@ def metadata_to_netcdf(cube, metadata):
 
 
 def save_1d_data(cubes, path, coord_name, var_attrs, attributes=None):
-    """Save scalar data for multiple datasets.
+    """Save 1D data for multiple datasets.
 
-    Create 1D cube with the auxiliary dimension `dataset` and save scalar data
-    for every appearing dataset.
+    Create 2D cube with the dimensionsal coordinate `coord_name` and the
+    auxiliary coordinate `dataset` and save 1D data for every dataset given.
+    The cube is filled with missing values where no data exists for a dataset
+    at a certain point.
 
     Note
     ----
-    Does not check metadata of the `cubes`, i.e. difference names or units
+    Does not check metadata of the `cubes`, i.e. different names or units
     will be ignored.
 
     Parameters
@@ -251,7 +253,7 @@ def save_scalar_data(data, path, var_attrs, aux_coord=None, attributes=None):
     """Save scalar data for multiple datasets.
 
     Create 1D cube with the auxiliary dimension `dataset` and save scalar data
-    for every appearing dataset.
+    for every dataset given.
 
     Note
     ----

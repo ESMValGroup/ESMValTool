@@ -16,6 +16,11 @@ def _transform_coord_to_ref(cubes, ref_coord):
         ref_coord = iris.coords.DimCoord.from_coord(ref_coord)
     except ValueError:
         pass
+    if not np.array_equal(
+            np.unique(ref_coord.points), np.sort(ref_coord.points)):
+        raise ValueError(
+            f"Expected unique coordinate '{ref_coord.name()}', got "
+            f"{ref_coord}")
     coord_name = ref_coord.name()
     (cubes_iterable, new_cubes) = (cubes.items(), {}) if isinstance(
         cubes, dict) else (enumerate(cubes), list(range(len(cubes))))
@@ -26,12 +31,8 @@ def _transform_coord_to_ref(cubes, ref_coord):
                 f"Coordinate {coord} of cube\n{cube}\nis not subset of "
                 f"reference coordinate {ref_coord}")
         new_data = np.full(ref_coord.shape, np.nan)
-
-        # Iteration over numpy arrays necessary because of possible duplicates
-        for (idx, point) in enumerate(ref_coord.points):
-            idx_old = np.where(coord.points == point)
-            if point in coord.points:
-                new_data[idx] = np.ma.filled(cube.data, np.nan)[idx_old]
+        indices = np.where(np.in1d(ref_coord.points, coord.points))
+        new_data[indices] = np.ma.filled(cube.data, np.nan)
         new_cube = iris.cube.Cube(np.ma.masked_invalid(new_data))
         if isinstance(ref_coord, iris.coords.DimCoord):
             new_cube.add_dim_coord(ref_coord, 0)
@@ -83,7 +84,7 @@ def check_coordinate(cubes, coord_name):
             new_coord = cube.coord(coord_name)
         except iris.exceptions.CoordinateNotFoundError:
             raise iris.exceptions.CoordinateNotFoundError(
-                f"'{coord_name}' is not a coordinate of cube {cube}")
+                f"'{coord_name}' is not a coordinate of cube\n{cube}")
         if coord is None:
             coord = new_coord
         else:
@@ -192,11 +193,11 @@ def intersect_dataset_coordinates(cubes):
             coord_points = cube.coord('dataset').points
         except iris.exceptions.CoordinateNotFoundError:
             raise iris.exceptions.CoordinateNotFoundError(
-                f"'dataset' is not a coordinate of cube {cube}")
+                f"'dataset' is not a coordinate of cube\n{cube}")
         if len(set(coord_points)) != len(coord_points):
             raise ValueError(
-                f"Coordinate 'dataset' of the following cube contains "
-                f"duplicate elements:\n{cube}")
+                f"Coordinate 'dataset' of cube\n{cube}\n contains duplicate "
+                f"elements")
         if common_elements is None:
             common_elements = set(coord_points)
         else:
@@ -223,10 +224,10 @@ def intersect_dataset_coordinates(cubes):
 
 
 def unify_1d_cubes(cubes, coord_name):
-    """Unify 1D cubes by transforming them to identical coordinate.
+    """Unify 1D cubes by transforming them to identical coordinates.
 
-    Use longest coordinate as reference and transform other cubes to it by
-    adding missing values.
+    Use union of all coordinates as reference and transform other cubes to it
+    by adding missing values.
 
     Parameters
     ----------
@@ -253,17 +254,22 @@ def unify_1d_cubes(cubes, coord_name):
     # Get reference coordinate
     for cube in cubes_iterable:
         if cube.ndim != 1:
-            raise ValueError(f"Dimension of cube {cube} is not 1")
+            raise ValueError(f"Dimension of cube\n{cube}\nis not 1")
         try:
             new_coord = cube.coord(coord_name)
         except iris.exceptions.CoordinateNotFoundError:
             raise iris.exceptions.CoordinateNotFoundError(
-                f"'{coord_name}' is not a coordinate of cube {cube}")
+                f"'{coord_name}' is not a coordinate of cube\n{cube}")
+        if not np.array_equal(
+                np.unique(new_coord.points), np.sort(new_coord.points)):
+            raise ValueError(
+                f"Coordinate '{coord_name}' of cube\n{cube}\n is not unique, "
+                f"unifying not possible")
         if ref_coord is None:
             ref_coord = new_coord
         else:
-            if ref_coord.shape[0] < new_coord.shape[0]:
-                ref_coord = new_coord
+            new_points = np.union1d(ref_coord.points, new_coord.points)
+            ref_coord = ref_coord.copy(new_points)
     if coord_name == 'time':
         iris.util.unify_time_units(cubes_iterable)
 

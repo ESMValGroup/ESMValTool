@@ -321,11 +321,14 @@ def test_save_1d_data(mock_logger, mock_save, var_attrs, attrs):
     coord_name = 'inclination'
     data = [
         np.ma.masked_invalid([1.0, np.nan, -1.0]),
-        np.arange(5.0),
+        np.arange(2.0) + 100.0,
+        np.ma.masked_invalid([33.0, 22.0, np.nan, np.nan, -77.0]),
     ]
     coords = [
-        iris.coords.DimCoord(np.ma.arange(3.0), long_name=coord_name),
-        iris.coords.DimCoord(np.ma.arange(5.0), long_name=coord_name),
+        iris.coords.DimCoord(np.arange(3.0) - 3.0, long_name=coord_name),
+        iris.coords.DimCoord(np.arange(2.0) + 2.0, long_name=coord_name),
+        iris.coords.DimCoord(
+            np.array([-7.0, -3.0, -2.71, 3.0, 314.15]), long_name=coord_name),
     ]
     cubes = OrderedDict([
         ('model1',
@@ -342,11 +345,21 @@ def test_save_1d_data(mock_logger, mock_save, var_attrs, attrs):
              units='1',
              attributes={},
              dim_coords_and_dims=[(coords[1], 0)])),
+        ('model3',
+         iris.cube.Cube(
+             data[2],
+             var_name='wa',
+             units='unknown',
+             attributes={'very': 'long cube'},
+             dim_coords_and_dims=[(coords[2], 0)])),
     ])
     dataset_dim = iris.coords.AuxCoord(list(cubes.keys()), long_name='dataset')
-    output_data = np.ma.masked_invalid([[1.0, np.nan, -1.0, np.nan, np.nan],
-                                        [0.0, 1.0, 2.0, 3.0, 4.0]])
-    output_dims = [(dataset_dim, 0), (coords[1], 1)]
+    dim_1 = coords[0].copy([-7.0, -3.0, -2.71, -2.0, -1.0, 2.0, 3.0, 314.15])
+    output_data = np.ma.masked_invalid(
+        [[np.nan, 1.0, np.nan, np.nan, -1.0, np.nan, np.nan, np.nan],
+         [np.nan, np.nan, np.nan, np.nan, np.nan, 100.0, 101.0, np.nan],
+         [33.0, 22.0, np.nan, np.nan, np.nan, np.nan, np.nan, -77.0]])
+    output_dims = [(dataset_dim, 0), (dim_1, 1)]
 
     # Without cubes
     io.save_1d_data({}, PATH, coord_name, var_attrs, attrs)

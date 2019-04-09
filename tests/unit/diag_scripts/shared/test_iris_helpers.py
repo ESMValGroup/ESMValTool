@@ -13,17 +13,20 @@ DIM_COORD_1 = iris.coords.DimCoord(np.arange(3.0) - 1.0, long_name=LONG_NAME)
 AUX_COORD_1 = iris.coords.AuxCoord(np.arange(3.0) - 1.0, long_name=LONG_NAME)
 AUX_COORD_2 = iris.coords.AuxCoord([10.0, 20.0, 30.0], long_name='longer')
 SMALL_COORD = iris.coords.DimCoord([0.0], long_name=LONG_NAME)
-LONG_COORD = iris.coords.AuxCoord([-1.0, 0.0, 1.0, 1.0], long_name=LONG_NAME)
-WRONG_COORD = iris.coords.DimCoord([3.0, 4.0], long_name=LONG_NAME)
+LONG_COORD_1 = iris.coords.AuxCoord([-1.0, 0.0, 1.0, 1.], long_name=LONG_NAME)
+LONG_COORD_2 = iris.coords.DimCoord([-1.0, -0.5, 0.0, 1.0],
+                                    long_name=LONG_NAME)
+WRONG_COORD = iris.coords.DimCoord([-200.0, +200.0], long_name=LONG_NAME)
 SCALAR_COORD = iris.coords.AuxCoord(2.71, long_name='e')
+DUP_COORD = iris.coords.AuxCoord([-1.0, 0.0, 1.0, 1.0], long_name=LONG_NAME)
 CUBE_1 = iris.cube.Cube(
-    np.ma.arange(3.0) + 1.0,
+    np.ma.masked_invalid([-1.0, np.nan, 2.0]),
     var_name='a',
     attributes={'1': '2'},
     dim_coords_and_dims=[(DIM_COORD_1, 0)],
     aux_coords_and_dims=[(SCALAR_COORD, []), (AUX_COORD_2, 0)])
 CUBE_2 = iris.cube.Cube(
-    np.ma.arange(3.0) + 1.0,
+    np.ma.masked_invalid([-1.0, np.nan, 2.0]),
     var_name='a',
     attributes={'1': '2'},
     dim_coords_and_dims=[(DIM_COORD_1, 0)],
@@ -37,40 +40,70 @@ CUBE_4 = iris.cube.Cube(
     np.ma.masked_invalid([1.0, 2.0, 3.0, 3.0]),
     var_name='a',
     attributes={'1': '2'},
-    aux_coords_and_dims=[(SCALAR_COORD, []), (LONG_COORD, 0)])
+    aux_coords_and_dims=[(SCALAR_COORD, []), (LONG_COORD_1, 0)])
 CUBE_5 = iris.cube.Cube(
     np.ma.masked_invalid([np.nan, 3.14, np.nan, np.nan]),
     var_name='a',
     attributes={'1': '2'},
-    aux_coords_and_dims=[(LONG_COORD, 0)])
+    aux_coords_and_dims=[(LONG_COORD_1, 0)])
 CUBE_SMALL = iris.cube.Cube([3.14],
                             var_name='a',
                             attributes={'1': '2'},
                             dim_coords_and_dims=[(SMALL_COORD, 0)])
+CUBE_LONG = iris.cube.Cube(
+    np.ma.masked_invalid([-1.0, np.nan, np.nan, 2.0]),
+    var_name='a',
+    attributes={'1': '2'},
+    dim_coords_and_dims=[(LONG_COORD_2, 0)],
+    aux_coords_and_dims=[(SCALAR_COORD, [])])
+CUBE_SMALL_LONG = iris.cube.Cube(
+    np.ma.masked_invalid([np.nan, np.nan, 3.14, np.nan]),
+    var_name='a',
+    attributes={'1': '2'},
+    dim_coords_and_dims=[(LONG_COORD_2, 0)])
 CUBE_WRONG = iris.cube.Cube(
     np.arange(2.0),
     var_name='a',
     attributes={'1': '2'},
     dim_coords_and_dims=[(WRONG_COORD, 0)])
+CUBE_DUP = iris.cube.Cube(
+    np.ma.masked_invalid([np.nan, 3.14, 2.71, 6.28]),
+    var_name='a',
+    attributes={'1': '2'},
+    aux_coords_and_dims=[(DUP_COORD, 0)])
 CUBES_TO_TRANSFORM = [
     (DIM_COORD_1, [CUBE_1, CUBE_1], [CUBE_2, CUBE_2]),
     (DIM_COORD_1, [CUBE_SMALL, CUBE_1], [CUBE_3, CUBE_2]),
     (DIM_COORD_1, [CUBE_WRONG, CUBE_1], ValueError),
+    (DIM_COORD_1, [CUBE_DUP, CUBE_1], ValueError),
     (AUX_COORD_1, [CUBE_1, CUBE_1], [CUBE_2, CUBE_2]),
     (AUX_COORD_1, [CUBE_SMALL, CUBE_1], [CUBE_3, CUBE_2]),
     (AUX_COORD_1, [CUBE_WRONG, CUBE_1], ValueError),
-    (LONG_COORD, [CUBE_1, CUBE_1], [CUBE_4, CUBE_4]),
-    (LONG_COORD, [CUBE_SMALL, CUBE_1], [CUBE_5, CUBE_4]),
-    (LONG_COORD, [CUBE_WRONG, CUBE_1], ValueError),
+    (AUX_COORD_1, [CUBE_DUP, CUBE_1], ValueError),
+    (LONG_COORD_1, [CUBE_1, CUBE_1], ValueError),
+    (LONG_COORD_1, [CUBE_SMALL, CUBE_1], ValueError),
+    (LONG_COORD_1, [CUBE_WRONG, CUBE_1], ValueError),
+    (LONG_COORD_1, [CUBE_DUP, CUBE_1], ValueError),
+    (LONG_COORD_2, [CUBE_1, CUBE_1], [CUBE_LONG, CUBE_LONG]),
+    (LONG_COORD_2, [CUBE_SMALL, CUBE_1], [CUBE_SMALL_LONG, CUBE_LONG]),
+    (LONG_COORD_2, [CUBE_WRONG, CUBE_1], ValueError),
+    (LONG_COORD_2, [CUBE_DUP, CUBE_1], ValueError),
     (DIM_COORD_1, [CUBE_1], [CUBE_2]),
     (DIM_COORD_1, [CUBE_SMALL], [CUBE_3]),
     (DIM_COORD_1, [CUBE_WRONG], ValueError),
+    (DIM_COORD_1, [CUBE_DUP], ValueError),
     (AUX_COORD_1, [CUBE_1], [CUBE_2]),
     (AUX_COORD_1, [CUBE_SMALL], [CUBE_3]),
     (AUX_COORD_1, [CUBE_WRONG], ValueError),
-    (LONG_COORD, [CUBE_1], [CUBE_4]),
-    (LONG_COORD, [CUBE_SMALL], [CUBE_5]),
-    (LONG_COORD, [CUBE_WRONG], ValueError),
+    (AUX_COORD_1, [CUBE_DUP], ValueError),
+    (LONG_COORD_1, [CUBE_1], ValueError),
+    (LONG_COORD_1, [CUBE_SMALL], ValueError),
+    (LONG_COORD_1, [CUBE_WRONG], ValueError),
+    (LONG_COORD_1, [CUBE_DUP], ValueError),
+    (LONG_COORD_2, [CUBE_1], [CUBE_LONG]),
+    (LONG_COORD_2, [CUBE_SMALL], [CUBE_SMALL_LONG]),
+    (LONG_COORD_2, [CUBE_WRONG], ValueError),
+    (LONG_COORD_2, [CUBE_DUP], ValueError),
 ]
 
 
@@ -329,6 +362,7 @@ def test_intersect_dataset_coords(cubes_in, output):
 
 DIM_COORD_4 = DIM_COORD_1.copy([100.0, 150.0, 160.0])
 DIM_COORD_4.rename('time')
+DIM_COORD_LONGEST = DIM_COORD_1.copy([-200.0, -1.0, 0.0, 1.0, 2.0, 3.0, 200.0])
 CUBE_8 = CUBE_1.copy()
 CUBE_8.coord(LONG_NAME).points = np.array([100.0, 150.0, 160.0])
 CUBE_8.coord(LONG_NAME).rename('time')
@@ -347,8 +381,8 @@ CUBES_TO_UNIFY = [
         LONG_NAME,
         iris.exceptions.CoordinateNotFoundError,
     ),
-    ([CUBE_1, CUBE_4, CUBE_3], LONG_NAME, LONG_COORD),
-    ([CUBE_7, CUBE_1, CUBE_2], LONG_NAME, DIM_COORD_3),
+    ([CUBE_1, CUBE_4, CUBE_3], LONG_NAME, ValueError),
+    ([CUBE_7, CUBE_1, CUBE_WRONG], LONG_NAME, DIM_COORD_LONGEST),
     ([CUBE_8], 'time', DIM_COORD_4),
 ]
 
@@ -362,7 +396,7 @@ def test_unify_1d_cubes(mock_unify_time, mock_transform, cubes, coord_name,
                         output):
     """Test unifying 1D cubes."""
     cubes_list = iris.cube.CubeList(cubes)
-    cubes_dict = OrderedDict(list(zip(['a', 'b'], cubes)))
+    cubes_dict = OrderedDict(list(zip(['a', 'b', 'c'], cubes)))
     for cubes_in in (cubes, cubes_list, cubes_dict):
         if isinstance(output, type):
             with pytest.raises(output):
