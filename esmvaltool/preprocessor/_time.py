@@ -281,7 +281,6 @@ def annual_mean(cube, decadal=False):
     iris.cube.Cube
         Annual mean cube
     """
-
     def get_decade(coord, value):
         """Callback function to get decades from cube."""
         date = coord.units.num2date(value)
@@ -297,8 +296,4 @@ def annual_mean(cube, decadal=False):
                                                         'time', get_decade)
         return cube.aggregated_by('decade', iris.analysis.MEAN)
 
-    am = cube.aggregated_by('year', iris.analysis.MEAN)
-    am.remove_coord('day_of_month')
-    am.remove_coord('day_of_year')
-    am.remove_coord('month_number')
-    return am
+    return cube.aggregated_by('year', iris.analysis.MEAN)
