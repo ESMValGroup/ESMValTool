@@ -42,6 +42,7 @@ Available recipes
 * recipe_ocean_scalar_fields.yml_
 * recipe_ocean_bgc.yml_
 * recipe_ocean_quadmap.yml_
+* recipe_ocean_Landschutzer2014.yml_
 
 
 recipe_ocean_amoc.yml
@@ -435,6 +436,13 @@ hard work, and that the cube received by this diagnostic (via the settings.yml
 and metadata.yml files) has no time component, a small number of depth layers,
 and a latitude and longitude coordinates.
 
+This diagnostic also includes the optional arguments, `maps_range` and
+`diff_range` to manually define plot ranges. Both arguments are a list of two floats
+to set plot range minimun and maximum values respectively for Model and Observations
+maps (Top panels) and for the Model minus Observations panel (bottom left).
+Note that if input data have negative values the Model over Observations map 
+(bottom right) is not produced.
+
 The scatter plots plot the matched model coordinate on the x axis, and the
 observational dataset on the y coordinate, then performs a linear
 regression of those data and plots the line of best fit on the plot.
@@ -737,7 +745,22 @@ The following WOA datasets are used by the ocean diagnostics:
  - Silicate
  - Dissolved Oxygen
 
-These files need to be reformatted using the WOA cmoriser utility tools.
+These files need to be reformatted using the `cmorize_obs_py` script with output name `WOA`.
+
+
+Landschutzer 2014
+-----------------
+These data can be downloaded from:
+ftp://ftp.nodc.noaa.gov/nodc/archive/arc0105/0160558/1.1/data/0-data/spco2_1998-2011_ETH_SOM-FFN_CDIAC_G05.nc
+(last access 02/28/2019)
+
+The following variables are used by the ocean diagnostics:
+ - fgco2, Surface Downward Flux of Total CO2
+ - spco2, Surface Aqueous Partial Pressure of CO2
+ - dpco2, Delta CO2 Partial Pressure
+
+The file needs to be reformatted using the `cmorize_obs_py` script with output name `Landschutzer2014`.
+
 
 
 .. Links:
@@ -748,6 +771,7 @@ These files need to be reformatted using the WOA cmoriser utility tools.
 .. _recipe_ocean_scalar_fields.yml: https://github.com/ESMValGroup/ESMValTool/tree/version2_development/esmvaltool/recipes/recipe_ocean_scalar_fields.yml
 .. _recipe_ocean_bgc.yml: https://github.com/ESMValGroup/ESMValTool/tree/version2_development/esmvaltool/recipes/recipe_ocean_bgc.yml
 .. _recipe_ocean_quadmap.yml: https://github.com/ESMValGroup/ESMValTool/tree/version2_development/esmvaltool/recipes/recipe_ocean_quadmap.yml
+.. _recipe_ocean_Landschutzer2014.yml: https://github.com/ESMValGroup/ESMValTool/tree/version2_development/esmvaltool/recipes/recipe_ocean_Landschutzer2014.yml
 
 .. Diagnostics:
 .. _ocean: https://github.com/ESMValGroup/ESMValTool/tree/version2_development/esmvaltool/diag_scripts/ocean/:
