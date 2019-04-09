@@ -87,6 +87,12 @@ User settings
    * diff_levs: list with contour levels for plots
    * span: span whole colormap? (True, False, default = False)
 
+   *Required settings (variables)*
+
+   * project: CMIP5 (or CMIP6)
+   * mip: variable mip, generally Amon or Omon
+   * field: T2Ms
+  
 #. Script ch12_ts_line_mean_spread.ncl
 
    *Required settings (script)*
@@ -110,6 +116,12 @@ User settings
    * ts_maxlat: maximum latitude if not global
    * ts_minlon: minimum longitude if not global
    * ts_maxlon: maximum longitude if not global
+
+   *Required settings (variables)*
+
+   * project: CMIP5 (or CMIP6)
+   * mip: variable mip, generally Amon or Omon
+   * field: T2Ms
 
 #. Script ch12_plot_ts_line_mean_spread.ncl: 
 
@@ -140,6 +152,21 @@ User settings
      ("each": save individual models, "mmm": multi-model mean, default),
      needs to be consistent with ch12_calc_map_diff_mmm_stippandhatch.ncl
 
+   *Required settings (variables)*
+
+   * project: CMIP5 (or CMIP6)
+   * mip: variable mip, generally Amon or Omon
+   * field: T2Ms or T3Ms
+   * exp: piControl
+   * preprocessor: which preprocessor to use, depends on field, for T2Ms
+     preprocessor only needs to regrid, for T3Ms we need to extract levels
+     either based on reference_dataset or specify levels.
+
+   *Optional settings (variables)*
+
+   * reference_dataset: the reference dataset for level extraction in case of
+     field T3Ms.
+
 #. Script ch12_calc_map_diff_mmm_stippandhatch.ncl:
 
    *Required settings (script)*
@@ -159,6 +186,13 @@ User settings
      ("each": save individual models, "mmm": multi-model mean, default),
      needs to be consistent with ch12_calc_IAV_for_stippandhatch.ncl
    * percent: determines if difference expressed in percent (0, 1, default = 0)
+
+   *Required settings (variables)*
+
+   * project: CMIP5 (or CMIP6)
+   * mip: variable mip, generally Amon or Omon
+   * field: T2Ms
+   * preprocessor: which preprocessor to use, preprocessor only needs to regrid
 
 #. Script ch12_plot_map_diff_mmm_stipp.ncl:
 
@@ -204,6 +238,18 @@ User settings
      needs to be consistent with ch12_calc_IAV_for_stippandhatch.ncl
    * percent: determines if difference expressed in percent (0, 1, default = 0)
 
+   *Required settings (variables)*
+
+   * project: CMIP5 (or CMIP6)
+   * mip: variable mip, generally Amon or Omon
+   * field: T3Ms
+   * preprocessor: which preprocessor to use, preprocessor needs to regrid,
+     extract leves and calculate the zonal mean.
+
+   *Optional settings (variables)*
+
+   * reference_dataset: the reference dataset for level extraction
+
 #. Script ch12_plot_zonal_diff_mmm_stipp.ncl:
 
    *Required settings (script)*
@@ -246,6 +292,13 @@ User settings
      (then required),  DJF:0, MAM:1, JJA:2, SON:3
    * percent: determines if difference expressed in percent (0, 1, default = 0)
 
+   *Required settings (variables)*
+
+   * project: CMIP5 (or CMIP6)
+   * mip: variable mip, generally Amon or Omon
+   * field: T2Ms
+   * preprocessor: which preprocessor to use, preprocessor only needs to regrid
+
 #. Script ch12_snw_area_change_fig12-32.ncl:
 
    *Required settings (script)*
@@ -272,6 +325,13 @@ User settings
    * ts_maxlat: maximum latitude if not global
    * ts_minlon: minimum longitude if not global
    * ts_maxlon: maximum longitude if not global
+
+   *Required settings (variables)*
+
+   * project: CMIP5 (or CMIP6)
+   * mip: variable mip, LImon
+   * field: T2Ms
+   * fx_files: [sftlf, sftgif]
 
 Variables
 ---------
