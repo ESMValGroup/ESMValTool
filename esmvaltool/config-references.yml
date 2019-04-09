@@ -14,7 +14,7 @@ authors:
   ande_bo:
     name: Andela, Bouwe
     institute: NLeSC, Netherlands
-    email: b.andela 'atcecenter.nl
+    email: b.andela 'at' esciencecenter.nl
   broe_bj:
     name: Broetz, Bjoern
     institute: DLR, Germany
@@ -210,6 +210,10 @@ authors:
     name: Lorenz, Ruth
     institute: ETH Zurich, Switzerland
     email: ruth.lorenz 'at' env.ethz.ch
+  lova_to:
+    name: Lovato, Tomas
+    institute: CMCC, IT
+    email: tomas.lovato 'at' cmcc.it
   maek_ja:
     name: Makela, Jarmo
   malo_er:
@@ -499,6 +503,12 @@ authors:
     name: Tilmes, Simone
     institute: NCAR, US
     email: tilmes 'at' ucar.edu
+  lova_to:
+    name: Lovato, Tomas
+    institute: CMCC, IT
+    email: tomas.lovato 'at' cmcc.it
+    
+
 
 
 references:
@@ -539,6 +549,7 @@ references:
   kim09jclim: "Kim, D. et al., J. Climate, 22, 6413-6436, doi:10.1175/2009JCLI3063.1, 2009."
   kim12grl: "Kim and Yu, Geophys. Res. Lett., 39, L11704, doi:10.1029/2012GL052006, 2012."
   key04gbc: "Key, R. M. et al., Global Biogeochem. Cy., 18, GB4031, doi:10.109/2004GB002247, 2004."
+  landschuetzer2016: "Landschuetzer, P., Gruber, N., Bakker, D. C. E.: Decadal variations and trends of the global ocean carbon sink, Global Biogeochemical Cycles, 30, doi:10.1002/2015GB005359 (2016)"
   lauer05acp: "Lauer et al., Atmos. Chem. Phys., 5, 3251-3276, doi:10.5194/acp-5-3251-2005, 2005."
   lauer13jclim: "Lauer and Hamilton, J. Climate, 26, 3823-3845, doi:10.1175/JCLI-D-12-00451.1, 2013."
   lauer17rse: "Lauer et al., Remote Sens. Environ., 203, 9-39, doi:10.1016/j.rse.2017.01.007, 2017."

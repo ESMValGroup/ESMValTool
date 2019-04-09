@@ -28,6 +28,100 @@ The _time.py module contains the following preprocessor functions:
 * extract_month: Extract only the times that occur within a specific month.
 * time_average: Take the weighted average over the time dimension.
 * seasonal_mean: Produces a mean for each season (DJF, MAM, JJA, SON)
+* annual_mean: Produces an annual or decadal mean.
+* regrid_time: Aligns the time axis of each dataset to have common time points and calendars.
+
+1. extract_time
+---------------
+
+This function subsets a dataset between two points in times. It removes all
+times in the dataset before the first time and after the last time point.
+The required arguments are relatively self explanatory:
+
+* start_year
+* start_month
+* start_day
+* end_year
+* end_month
+* end_day
+
+These start and end points are set using the datasets native calendar.
+All six arguments should be given as integers - the named month string
+will not be accepted.
+
+See also :func:`esmvaltool.preprocessor.extract_time`.
+
+
+2. extract_season
+-----------------
+
+Extract only the times that occur within a specific season.
+
+This function only has one argument: `season`. This is the named season to
+extract. ie: DJF, MAM, JJA, SON.
+
+Note that this function does not change the time resolution. If your original
+data is in monthly time resolution, then this function will return three
+monthly datapoints per year.
+
+If you want the seasonal average, then this function needs to be combined with
+the seasonal_mean function, below.
+
+See also :func:`esmvaltool.preprocessor.extract_season`.
+
+
+3. extract_month
+----------------
+
+The function extracts the times that occur within a specific month.
+This function only has one argument: `month`. This value should be an integer
+between 1 and 12 as the named month string will not be accepted.
+
+See also :func:`esmvaltool.preprocessor.extract_month`.
+
+
+4. time_average
+---------------
+
+This functions takes the weighted average over the time dimension. This
+function requires no arguments and removes the time dimension of the cube.
+
+See also :func:`esmvaltool.preprocessor.time_average`.
+
+
+5. seasonal_mean
+----------------
+
+This function produces a seasonal mean for each season (DJF, MAM, JJA, SON).
+Note that this function will not check for missing time points. For instance,
+if you are looking at the DJF field, but your datasets starts on January 1st,
+the first DJF field will only contain data from January and February.
+
+We recommend using the extract_time to start the dataset from the following
+December and remove such biased initial datapoints.
+
+See also :func:`esmvaltool.preprocessor.seasonal_mean`.
+
+
+6. annual_mean
+--------------
+
+This function produces an annual or a decadal mean. The only argument is the
+decadal boolean switch. When this switch is set to true, this function
+will output the decadal averages.
+
+See also :func:`esmvaltool.preprocessor.annual_mean`.
+
+
+7. regrid_time
+--------------
+
+This function aligns the time points of each component dataset so that the dataset
+iris cubes can be subtracted. The operation makes the datasets time points common and
+sets common calendars; it also resets the time bounds and auxiliary coordinates to
+reflect the artifically shifted time points. Current implementation for monthly
+and daily data; the frequency is set automatically from the variable CMOR table
+unless a custom frequency is set manually by the user in recipe.
 
 
 Area manipulation
@@ -197,3 +291,33 @@ Documentation of _mask.py (part 2)
 Multi-model statistics
 ======================
 Documentation of_multimodel.py
+
+Time-area statistics
+====================
+Documentation of _area_pp.py and _volume_pp.py
+
+Information on maximum memory required
+======================================
+In the most general case, we can set upper limits on the maximum memory the anlysis will require:
+
+
+Ms = (R + N) x F_eff - F_eff - when no multimodel analysis is performed;
+Mm = (2R + N) x F_eff - 2F_eff - when multimodel analysis is performed;
+
+where
+
+Ms: maximum memory for non-multimodel module
+Mm: maximum memory for multimodel module
+R: computational efficiency of module; R is typically 2-3
+N: number of datasets
+F_eff: average size of data per dataset where F_eff = e x f x F
+where e is the factor that describes how lazy the data is (e = 1 for fully realized data)
+and f describes how much the data was shrunk by the immediately previous module eg
+time extraction, area selection or level extraction; note that for fix_data f relates only to the time extraction, if data is exact in time (no time selection) f = 1 for fix_data
+
+so for cases when we deal with a lot of datasets (R + N = N), data is fully realized, assuming an average size of 1.5GB for 10 years of 3D netCDF data, N datasets will require
+
+
+Ms = 1.5 x (N - 1) GB
+Mm = 1.5 x (N - 2) GB
+=======
