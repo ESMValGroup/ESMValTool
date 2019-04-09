@@ -25,8 +25,7 @@
 ;                   if not given whole time period calculated at once
 ;
 ;  Caveats
-;     List possible caveats or limitations of this diagnostic
-;     Features to-be-implemented shall also be mentioned here
+;     Needs lots of memory for 3D ocean variables
 ;
 ;  Modification history
 ;     20161219-A_lore_ru: remove seasonal cycle before std if seasonal
@@ -212,12 +211,6 @@ begin
       end if
       end if
 
-;      if (diag_script_info@time_avg .eq. "seasonalclim") then
-;        ; remove seasonal cycle
-;        deseas_data = rmMonAnnCycTLL(A0)
-;        delete(A0)
-;        A0 = deseas_data
-;      end if
       do per = 0, nr_periods - 1
         if ((rest .gt. 0) .and. (per .eq. nr_periods - 1)) then
           new_end_yr = end_yr_int
@@ -278,9 +271,6 @@ begin
       delete(start_yrs)
       delete(data_tmp)
       delete(data_dtr)
-;      if (diag_script_info@time_avg .eq. "seasonalclim") then
-;        delete(deseas_data)
-;      end if
     else
       data1_tmp = interannual_variability(A0, new_start_yr, end_yr_int, \
                                           diag_script_info@time_avg, \
