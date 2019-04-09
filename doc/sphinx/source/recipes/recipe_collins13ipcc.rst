@@ -69,15 +69,15 @@ Diagnostics are stored in diag_scripts/ipcc_ar5/
 User settings
 -------------
 
-#. ch12_map_diff_each_model_fig12-9.ncl
+#. Script ch12_map_diff_each_model_fig12-9.ncl
 
-   *Required attributes*
+   *Required settings (script)*
 
    * time_avg: time averaging ("annualclim", "seasonalclim")
    * experiment: IPCC Scenario, used to pair historical and rcp runs from
      same model
 
-   *Optional attributes*
+   *Optional settings (script)*
 
    * projection: map projection, any valid ncl projection, default = Robinson
    * max_vert: maximum number of plots in vertical
@@ -87,9 +87,9 @@ User settings
    * diff_levs: list with contour levels for plots
    * span: span whole colormap? (True, False, default = False)
 
-#. ch12_ts_line_mean_spread.ncl
+#. Script ch12_ts_line_mean_spread.ncl
 
-   *Required attributes*
+   *Required settings (script)*
 
    * scenarios: list with scenarios included in figure
    * syears: list with start years in time periods (e.g. start of historical
@@ -100,7 +100,7 @@ User settings
    * end_ref_year: end year of reference period (e.g 2005)
    * label: list with labels to use in legend depending on scenarios
 
-   *Optional attributes*
+   *Optional settings (script)*
 
    * spread: how many standard deviations to calculate the spread with?
      default is 1., ipcc tas used 1.64
@@ -111,13 +111,13 @@ User settings
    * ts_minlon: minimum longitude if not global
    * ts_maxlon: maximum longitude if not global
 
-#. ch12_plot_ts_line_mean_spread.ncl: 
+#. Script ch12_plot_ts_line_mean_spread.ncl: 
 
-   *Required attributes*
+   *Required settings (script)*
 
    * ancestors: variable and diagnostics that calculated data to be plotted
 
-   *Optional attributes*
+   *Optional settings (script)*
 
    * title: specify plot title
    * yaxis: specify y-axis title
@@ -125,14 +125,14 @@ User settings
    * ymax: maximum value on y-axis
    * colormap: alternative colormap, path to rgb file or ncl name
 
-#. ch12_calc_IAV_for_stippandhatch.ncl:
+#. Script ch12_calc_IAV_for_stippandhatch.ncl:
 
-   *Required attributes*
+   *Required settings (script)*
 
    * time_avg: time averaging ("annualclim", "seasonalclim"), needs to be
      consistent with calculation in ch12_calc_map_diff_mmm_stippandhatch.ncl
 
-   *Optional attributes*
+   *Optional settings (script)*
 
    * periodlength: length of period in years to calculate variability over,
      default is total time period
@@ -140,9 +140,9 @@ User settings
      ("each": save individual models, "mmm": multi-model mean, default),
      needs to be consistent with ch12_calc_map_diff_mmm_stippandhatch.ncl
 
-#. ch12_calc_map_diff_mmm_stippandhatch.ncl:
+#. Script ch12_calc_map_diff_mmm_stippandhatch.ncl:
 
-   *Required attributes*
+   *Required settings (script)*
 
    * ancestors: variable and diagnostics that calculated interannual
      variability for stippling and hatching
@@ -151,7 +151,7 @@ User settings
    * periods: list with start years of periods to be included
    * label: list with labels to use in legend depending on scenarios
 
-   *Optional attributes*
+   *Optional settings (script)*
 
    * seasons: list with seasons index if time_avg "seasonalclim" (then
      required),  DJF:0, MAM:1, JJA:2, SON:3
@@ -160,13 +160,13 @@ User settings
      needs to be consistent with ch12_calc_IAV_for_stippandhatch.ncl
    * percent: determines if difference expressed in percent (0, 1, default = 0)
 
-#. ch12_plot_map_diff_mmm_stipp.ncl:
+#. Script ch12_plot_map_diff_mmm_stipp.ncl:
 
-   *Required attributes*
+   *Required settings (script)*
 
    * ancestors: variable and diagnostics that calculated field to be plotted
 
-   *Optional attributes*
+   *Optional settings (script)*
 
    * projection: map projection, any valid ncl projection, default = Robinson
    * diff_levs: list with explicit levels for all contour plots
@@ -182,9 +182,9 @@ User settings
      varname + time_avg
    * units: units written next to colorbar, e.g (~F35~J~F~C)
 
-#. ch12_calc_zonal_cont_diff_mmm_stippandhatch.ncl:
+#. Script ch12_calc_zonal_cont_diff_mmm_stippandhatch.ncl:
 
-   *Required attributes*
+   *Required settings (script)*
 
    * ancestors: variable and diagnostics that calculated interannual
      variability for stippling and hatching
@@ -193,7 +193,7 @@ User settings
    * periods: list with start years of periods to be included
    * label: list with labels to use in legend depending on scenarios
 
-   *Optional attributes*
+   *Optional settings (script)*
 
    * base_cn: if want contours of base period as contour lines, need to save
      base period field (True, False)
@@ -204,13 +204,13 @@ User settings
      needs to be consistent with ch12_calc_IAV_for_stippandhatch.ncl
    * percent: determines if difference expressed in percent (0, 1, default = 0)
 
-#. ch12_plot_zonal_diff_mmm_stipp.ncl:
+#. Script ch12_plot_zonal_diff_mmm_stipp.ncl:
 
-   *Required attributes*
+   *Required settings (script)*
 
    * ancestors: variable and diagnostics that calculated field to be plotted
 
-   *Optional attributes*
+   *Optional settings (script)*
 
    * diff_levs: list with explicit levels for all contour plots
    * max_vert: maximum number of plots in vertical
@@ -231,24 +231,24 @@ User settings
      * base_cnMinLevel: minimum contour line
      * base_cnMaxLevel: maximum contour line
 
-#. ch12_calc_map_diff_scaleT_mmm_stipp.ncl:
+#. Script ch12_calc_map_diff_scaleT_mmm_stipp.ncl:
 
-   *Required attributes*
+   *Required settings (script)*
 
    * time_avg: time averaging ("annualclim", "seasonalclim")
    * scenarios: list with scenarios to be included
    * periods: list with start years of periods to be included
    * label: list with labels to use in legend depending on scenarios
 
-   *Optional attributes*
+   *Optional settings (script)*
 
    * seasons: list with seasons index if time_avg "seasonalclim"
      (then required),  DJF:0, MAM:1, JJA:2, SON:3
    * percent: determines if difference expressed in percent (0, 1, default = 0)
 
-#. ch12_snw_area_change_fig12-32.ncl:
+#. Script ch12_snw_area_change_fig12-32.ncl:
 
-   *Required attributes*
+   *Required settings (script)*
 
    * scenarios: list with scenarios included in figure
    * syears: list with start years in time periods (e.g. start of historical
@@ -261,7 +261,7 @@ User settings
      (March + April) for Northern Hemisphere
    * label: list with labels to use in legend depending on scenarios
 
-   *Optional attributes*
+   *Optional settings (script)*
 
    * spread: how many standard deviations to calculate the spread with?
      default is 1., ipcc tas used 1.64
