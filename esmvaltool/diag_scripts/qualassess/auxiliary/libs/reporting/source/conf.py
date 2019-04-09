@@ -46,7 +46,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'ESMValTool C3S_511 Report'
-copyright = u'2018, ESMValTool Development Team'
+copyright = u'2019, ESMValTool Development Team'
 author = u'ESMValTool Development Team'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -128,11 +128,13 @@ latex_elements = {
     # Additional stuff for the LaTeX preamble.
     #
     'preamble': r'''
+    \usepackage{fancyhdr}
 	\usepackage[section]{placeins}
         \usepackage{setspace}
         \usepackage{ragged2e}
 	\usepackage{caption}
 	\pagestyle{fancy}
+    \fancypagestyle{plain}{}
 	\extrafloats{1000}
         \renewcommand{\familydefault}{\sfdefault}
 	''',
