@@ -21,7 +21,6 @@
 CMIP6:
   input_dir:
     default: '/'
-    ETHZ: '[exp]/[mip]/[short_name]/[dataset]/[ensemble]/[grid]/'
     DKRZ: '[institute]/[dataset]/[exp]/[ensemble]/[mip]/[short_name]/[grid]/[latestversion]'
     ETHZ: '[exp]/[mip]/[short_name]/[dataset]/[ensemble]/[grid]/'
   input_file: '[short_name]_[mip]_[dataset]_[exp]_[ensemble]_[grid]_*.nc'
