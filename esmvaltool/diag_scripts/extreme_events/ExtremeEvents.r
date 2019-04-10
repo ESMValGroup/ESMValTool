@@ -26,26 +26,28 @@ library(ncdf4.helpers)
 
 #source('../backup_scripts/r.interface_test')
 
-#source(diag_script_cfg)
-#source('diag_scripts/lib/R/info_output.r')
-#source('diag_scripts/lib/R/meta_data.r')
+source(diag_script_cfg)
+source('diag_scripts/lib/R/info_output.r')
+source('diag_scripts/lib/R/meta_data.r')
 
 ## Load in climdex index dataframe
-source('diag_scripts/extreme_events/cfg_climdex.r')
+source('nml/cfg_ExtremeEvents/cfg_climdex.r')
 
 ## Script for pre-processing climdex data
-source('diag_scripts/extreme_events/common_climdex_preprocessing_for_plots.r')
+source('diag_scripts/aux/ExtremeEvents/common_climdex_preprocessing_for_plots.r')
 
 ## Scripts for plotting
-source('diag_scripts/extreme_events/make_timeseries_plot.r')
-source('diag_scripts/extreme_events/make_Glecker_plot2.r')
+source('diag_scripts/aux/ExtremeEvents/make_timeseries_plot.r')
+source('diag_scripts/aux/ExtremeEvents/make_Glecker_plot2.r')
 
 
-write(paste0("<<<<<<<< Entering ", diag_script), verbosity, 4)
-write("+++++++++++++++++++++++++++++++++++++++++++++++++", verbosity, 1)
-write(diag_script, verbosity, 1)
-write(paste0("var: ", variables), verbosity, 1)
-write("+++++++++++++++++++++++++++++++++++++++++++++++++", verbosity, 1)
+
+
+info_output(paste0("<<<<<<<< Entering ", diag_script), verbosity, 4)
+info_output("+++++++++++++++++++++++++++++++++++++++++++++++++", verbosity, 1)
+info_output(diag_script, verbosity, 1)
+info_output(paste0("var: ", variables), verbosity, 1)
+info_output("+++++++++++++++++++++++++++++++++++++++++++++++++", verbosity, 1)
 
 library(tools)
 diag_base = file_path_sans_ext(diag_script)
@@ -79,12 +81,12 @@ for (model_idx in c(1:length(models_name))) {
                 models_ensemble[model_idx], "_", models_start_year[model_idx],
                 "01-", models_end_year[model_idx], "12.nc", sep = "", collapse = "")
     print("")
-    write(paste0(">>>>>>>> Template name: ", template), verbosity, 4)
+    info_output(paste0(">>>>>>>> Template name: ", template), verbosity, 4)
     print("")
     idx_select <- unique(c(timeseries_idx, gleckler_idx))
     climdex.idx.subset  <- unique(idx_df$idxETCCDI[which(idx_df$idxETCCDI_time %in% idx_select)])
     print("")
-    write(paste0(">>>>>>>> Indices required: ", paste(climdex.idx.subset, collapse = ", ")), verbosity, 4)
+    info_output(paste0(">>>>>>>> Indices required: ", paste(climdex.idx.subset, collapse = ", ")), verbosity, 4)
     print("")
     
     base.period <- c(max(strtoi(models_start_year)), min(strtoi(models_end_year)))
@@ -106,7 +108,7 @@ for (model_idx in c(1:length(models_name))) {
     if(!all(check_control)){
       #print(fullpath_filenames)
       print("")
-      write(paste0(">>>>>>>> Producing Indices for ", models_name[model_idx]), verbosity, 4)
+      info_output(paste0(">>>>>>>> Producing Indices for ", models_name[model_idx]), verbosity, 4)
       print("")
       create.indices.from.files(fullpath_filenames, out_dir, template, author.data, 
                                    base.range=base.period, parallel = 25, verbose = TRUE, max.vals.millions = 20) # Procuce selected indicesd
@@ -135,7 +137,7 @@ models_name <- models_name[models_project != "OBS"]
 if(chk.ts_plt){
   print("")
   print("")
-  write(paste0(">>>>>>>> TIME SERIE PROCESSING INITIATION"), verbosity, 4)
+  info_output(paste0(">>>>>>>> TIME SERIE PROCESSING INITIATION"), verbosity, 4)
   timeseries_main(path = out_dir, idx_list =  timeseries_idx, model_list = models_name , obs_list = obs_name, plot_dir = paste(plot_dir, "/", diag_base, sep = ""), normalize=normalize)
 }
 
@@ -146,7 +148,7 @@ if(chk.ts_plt){
 if(chk.glc_plt){
   print("")
   print("")
-  write(paste0(">>>>>>>> GLECKLER PROCESSING INITIATION"), verbosity, 4)
+  info_output(paste0(">>>>>>>> GLECKLER PROCESSING INITIATION"), verbosity, 4)
     
   ## Check if Gleckler Array already exists
   nidx <- length(gleckler_idx) # number of indices
@@ -168,5 +170,5 @@ if(chk.glc_plt){
                 model_list = models_name, obs_list = obs_name, plot_dir = paste(plot_dir, "/", diag_base, sep = ""), promptInput=promptInput)
   
   print(cfgpar)
-  write(paste0(">>>>>>>> Leaving ", diag_script), verbosity, 4)
+  info_output(paste0(">>>>>>>> Leaving ", diag_script), verbosity, 4)
 }

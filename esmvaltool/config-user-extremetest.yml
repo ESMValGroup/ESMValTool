@@ -39,7 +39,9 @@ profile_diagnostic: false
 # Rootpaths to the data from different projects (lists are also possible)
 rootpath:
   CMIP5: [/div/pdo/extreme/chriswm/cmip5, ~/cmip5_inputpath2]
-  OBS: /div/pdo/extreme/chriswm/obs
+  OBS: /div/pdo/extreme/masan/obs
+  obs4mips: /div/pdo/extreme/masan/obs
+  ana4mips: /div/pdo/extreme/masan/obs
   RAWOBS: /div/pdo/extreme/chriswm/rawobs
   default: ~/default_inputpath
 

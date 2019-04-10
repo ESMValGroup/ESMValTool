@@ -50,9 +50,11 @@ diagnostics:
         mip: day
         field: T2Ds
     additional_datasets:
-      - {dataset: MERRA2, project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 3}
-      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, start_year: 1979, end_year: 2016, tier: 3}
+      #- {dataset: MERRA2, project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 3}
+      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, start_year: 1979, end_year: 2018, tier: 3}
+    
     scripts:
-      ExtremeEvents:
+      main:
         script: ExtremeEvents.r
+
 
