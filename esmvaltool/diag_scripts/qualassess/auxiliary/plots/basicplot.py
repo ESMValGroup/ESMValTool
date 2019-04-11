@@ -19,6 +19,7 @@ from ..libs import c3s_511_util as utils
 import sys
 import string
 from matplotlib.ticker import FuncFormatter
+import matplotlib.colors as colors
 import logging
 
 
@@ -269,7 +270,7 @@ class PlotHist(object):
 ###############################################################################
 
     def plot(self, nbins=20, x_label=None, y_label=None, title=None,
-             color='#15b01a', alpha=1.):
+             dat_log=False, color='#15b01a', alpha=1.):
         """
         Arguments
             bins    : number of bins
@@ -321,12 +322,17 @@ class PlotHist(object):
                     np.diff(levels),
                     color = color)
         
+        if dat_log:
+            self.ax.set_yscale('log', nonposy='clip')
+#            self.ax.set_ylim(np.min(freqs)*0.1, np.max(freqs) * 1.1)
+        self.ax.set_ylim(top=np.max(freqs) * 1.1)
+        
         self.ax.yaxis.set_major_formatter(FuncFormatter(label_in_perc_single))
         if (title is not None):
             self.ax.set_title(title)
         self.ax.set_xlabel(x_label)
         self.ax.set_ylabel(y_label)
-        self.ax.set_ylim(0,np.max(freqs) * 1.1)
+        
 
         self.fig.tight_layout()
         return self.fig
@@ -589,6 +595,7 @@ class Plot2D(object):
         color_reverse=False,
         ext_cmap='neither',
         y_log=False,
+        dat_log=False,
         contour_levels=None,
     ):
         """
@@ -642,7 +649,7 @@ class Plot2D(object):
 
         # Vminmax
         if vminmax is None:
-            vmin, vmax = 1E99, -1E99
+            vmin, vmax = np.inf, -np.inf
             for cube in self.cubes:
                 try:
                     if cube.data is np.ma.masked:
@@ -784,6 +791,22 @@ class Plot2D(object):
             ((self.n_cubes - 1) // self.__class__.MAX_COLUMNS + 1) + 1
         gs = gridspec.GridSpec(n_rows, n_columns)
 
+        if dat_log:
+        
+            vmin = np.inf
+            
+            for cube in self.cubes:
+                
+                loc_cube = cube.copy()
+                loc_data = loc_cube.core_data()
+                loc_data.mask = np.logical_or(loc_data.mask,loc_data<=0.0)
+                loc_cube.data = loc_data
+                
+                temp_min=np.min(loc_data)
+                temp_min=10**np.floor(np.log10(temp_min))
+                if temp_min<vmin:
+                    vmin = temp_min
+
         # Iterate over cubes
         for (idx, cube) in enumerate(self.cubes):
             column = idx % self.__class__.MAX_COLUMNS
@@ -823,17 +846,38 @@ class Plot2D(object):
                                          contour_levels,
                                          **options)
                     plt.clabel(cs, cs.levels)
-                iplt.pcolormesh(cube,
-                                cmap=brewer_cmap,
-                                vmin=vmin,
-                                vmax=vmax)
+                if dat_log:
+                    loc_cube = cube.copy()
+                    loc_data = loc_cube.core_data()
+                    loc_data.mask = np.logical_or(loc_data.mask,loc_data<=0.0)
+                    loc_cube.data = loc_data
+                    
+                    logticks=np.linspace(np.log10(vmin),
+                                            np.log10(vmax),
+                                            len(levels)+1)
+                    ticks = 10**logticks
+                    
+                    self.logger.info(logticks)
+                    self.logger.info(ticks)
+                    
+                    pcm = iplt.pcolormesh(loc_cube,
+                                    cmap=brewer_cmap,
+                                    vmin=vmin,
+                                    vmax=vmax,
+                                    norm=colors.LogNorm())
+                else:
+                    pcm = iplt.pcolormesh(cube,
+                                    cmap=brewer_cmap,
+                                    vmin=vmin,
+                                    vmax=vmax)
                 if y_logarithmic:
 #                    (locs, _) = plt.yticks()
 #                    (bottom, top) = plt.ylim()
 #                    labels = np.round(10**locs, decimals=1)
 #                    plt.yticks(locs, labels)
                     plt.ylim(levrange[::-1])
-                    plt.gca().yaxis.set_major_formatter(FuncFormatter(label_in_exp))
+                    plt.gca().yaxis.set_major_formatter(
+                            FuncFormatter(label_in_exp))
                 if 'time' in self.plot_type:
                     time_coord = cube.coord(self.time_vars[idx])
                     locs = [tp for tp in time_coord.points if
@@ -861,7 +905,8 @@ class Plot2D(object):
                 exc_type, exc_obj, exc_tb = sys.exc_info()
                 fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
                 self.logger.debug(exc_type, fname, exc_tb.tb_lineno)
-                qplt.pcolormesh(cube, cmap=brewer_cmap, vmin=vmin, vmax=vmax)
+                qplt.pcolormesh(cube, cmap=brewer_cmap,
+                                vmin=vmin, vmax=vmax, norm=None)
                 plt.text(0.5, 0.5, 'Data cannot be displayed as intended due '
                          'to cartopy issues with the data cube!',
                          horizontalalignment='center',
@@ -898,12 +943,27 @@ class Plot2D(object):
             cax = plt.subplot(gs[n_rows - 1, :])
         else:
             cax = ax[len(ax) - 1]
-        plt.colorbar(
-            cax=cax,
-            orientation='horizontal',
-            fraction=1.,
-            extend=ext_cmap,
-            boundaries=levels)
+        
+        if dat_log:
+            cbar = plt.colorbar(pcm,
+                cax=cax,
+                orientation='horizontal',
+                spacing='proportional',
+                fraction=1.,
+                extend=ext_cmap,
+                ticks = ticks,
+#                boundaries=(levels)
+                )
+            self.logger.info([str(np.max([-int(np.log10(x)),0])) for x in ticks])
+            cbar.ax.set_xticklabels([('{:.'+str(2)+'g}').format(x) for x in ticks])
+#            pass
+        else:
+            plt.colorbar(pcm,
+                cax=cax,
+                orientation='horizontal',
+                fraction=1.,
+                extend=ext_cmap,
+                boundaries=levels)
         cax.set_xlabel((list(set(self.names))[0] if list(
             set(self.names))[0] else "") + list(set(self.units))[0])
 
