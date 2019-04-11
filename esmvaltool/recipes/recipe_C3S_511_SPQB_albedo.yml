@@ -30,7 +30,7 @@ diagnostics:
     scripts:
       diag_O_info:
         script: qualassess/albedo_C3S_511_SPQB.py
-        requests: [info]#, GCOS]
+        requests: [info, GCOS]
       diag_O_avail:
         script: qualassess/albedo_C3S_511_SPQB.py
         requests: [availability]
