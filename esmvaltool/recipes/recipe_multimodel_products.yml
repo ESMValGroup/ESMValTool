@@ -50,15 +50,6 @@ diagnostics:
       main:
         script: magic_bsc/multimodel_products.r
 
-        #Specify datasets to be used for computing climatology and anomaly
-        climatology_class: historical
-        anomaly_class: rcp26
-
-        climatology_start_year: 1961
-        climatology_end_year: 1990
-
-        anomaly_start_year: 2006
-        anomaly_end_year: 2099
         #Parameters for Season() function
         moninf: 6   #If this is null, then the monthly anomalies will be computed
         monsup: 6
