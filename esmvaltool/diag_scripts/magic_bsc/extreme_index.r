@@ -22,8 +22,6 @@ provenance <- list()
 
 input_files_per_var <- yaml::read_yaml(params$input_files)
 
-model_names <- lapply(input_files_per_var, function(x) x$model)
-model_names <- unname(model_names)
 var0 <- lapply(input_files_per_var, function(x) x$short_name)
 fullpath_filenames <- names(var0)
 var0 <- unname(var0)[1]
