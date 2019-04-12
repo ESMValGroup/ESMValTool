@@ -375,9 +375,7 @@ def test_save_1d_data(mock_logger, mock_save, var_attrs, attrs):
     new_cube = iris.cube.Cube(
         output_data,
         aux_coords_and_dims=output_dims,
-        attributes={
-            **attrs, 'filename': PATH
-        },
+        attributes=attrs,
         **iris_var_attrs)
     if 'units' not in var_attrs:
         mock_logger.error.assert_called()
@@ -387,13 +385,34 @@ def test_save_1d_data(mock_logger, mock_save, var_attrs, attrs):
         assert mock_save.call_args_list == [mock.call(new_cube, PATH)]
 
 
+CUBELIST = [
+    iris.cube.Cube(1),
+    iris.cube.Cube(2, attributes={
+        'filename': 'a',
+        'x': 'y',
+    }),
+]
+CUBELIST_OUT = [
+    iris.cube.Cube(1, attributes={'filename': PATH}),
+    iris.cube.Cube(2, attributes={
+        'filename': PATH,
+        'x': 'y',
+    }),
+]
+CUBES_TO_SAVE = [
+    (iris.cube.Cube(0), iris.cube.Cube(0, attributes={'filename': PATH})),
+    (CUBELIST, CUBELIST_OUT),
+    (iris.cube.CubeList(CUBELIST), iris.cube.CubeList(CUBELIST_OUT)),
+]
+
+
+@pytest.mark.parametrize('source,output', CUBES_TO_SAVE)
 @mock.patch.object(io, 'iris', autospec=True)
 @mock.patch.object(io, 'logger', autospec=True)
-def test_iris_save(mock_logger, mock_iris):
+def test_iris_save(mock_logger, mock_iris, source, output):
     """Test iris save function."""
-    cube = iris.cube.Cube(0)
-    io.iris_save(cube, PATH)
-    mock_iris.save.assert_called_once_with(cube, PATH)
+    io.iris_save(source, PATH)
+    mock_iris.save.assert_called_once_with(output, PATH)
     mock_logger.info.assert_called_once()
 
 
@@ -433,9 +452,7 @@ def test_save_scalar_data(mock_logger, mock_save, var_attrs, attrs, aux_coord):
     new_cube = iris.cube.Cube(
         output_data,
         aux_coords_and_dims=[(dataset_dim, 0)],
-        attributes={
-            **attrs, 'filename': PATH
-        },
+        attributes=attrs,
         **iris_var_attrs)
     if aux_coord is not None:
         new_cube.add_aux_coord(aux_coord, 0)

@@ -230,21 +230,27 @@ def save_1d_data(cubes, path, coord_name, var_attrs, attributes=None):
         aux_coords_and_dims=[(dataset_coord, 0), (coord, 1)],
         attributes=attributes,
         **var_attrs)
-    cube.attributes['filename'] = path
     iris_save(cube, path)
 
 
 def iris_save(source, path):
-    """Use :mod:`iris` save function and log output.
+    """Save :mod:`iris` objects with correct attributes.
 
     Parameters
     ----------
-    source : iris.cube.Cube or iris.cube.CubeList
+    source : iris.cube.Cube or iterable of iris.cube.Cube
         Cube(s) to be saved.
     path : str
         Path to the new file.
 
     """
+    try:
+        iter(source)
+    except TypeError:
+        source.attributes['filename'] = path
+    else:
+        for cube in source:
+            cube.attributes['filename'] = path
     iris.save(source, path)
     logger.info("Wrote %s", path)
 
@@ -293,5 +299,4 @@ def save_scalar_data(data, path, var_attrs, aux_coord=None, attributes=None):
         aux_coords_and_dims=coords,
         attributes=attributes,
         **var_attrs)
-    cube.attributes['filename'] = path
     iris_save(cube, path)
