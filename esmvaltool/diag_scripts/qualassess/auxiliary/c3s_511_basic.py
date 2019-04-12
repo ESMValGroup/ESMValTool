@@ -89,6 +89,7 @@ class __Diagnostic_skeleton__(object):
         self.colormaps = dict({"default": "binary"})
         self.__latex_output__ = False
         self.levels = [None]
+        self.log_level = False
 
         self.sp_data = None
         self.map_area_frac = None
@@ -227,7 +228,7 @@ class __Diagnostic_skeleton__(object):
                filename,
                self.__work_dir__,
                ecv=ecv_lookup(self.__varname__),
-               dataset="".join(str(self.__dataset_id__[0])),
+               dataset="".join(str(self.__dataset_id__[1])),
                signature=self.CDS_ID,
                latex_opts=self.__latex_output__)
         return
@@ -252,7 +253,7 @@ class __Diagnostic_skeleton__(object):
                     filename,
                     self.__work_dir__,
                     ecv=ecv_lookup(self.__varname__),
-                    dataset="".join(str(self.__dataset_id__[0])),
+                    dataset="".join(str(self.__dataset_id__[1])),
                     signature=self.CDS_ID,
                     latex_opts=self.__latex_output__)
         return
@@ -521,6 +522,11 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
 
         try:
             self.levels = self.__cfg__['levels']
+        except BaseException:
+            pass
+        
+        try:
+            self.log_level = self.__cfg__['log_level']
         except BaseException:
             pass
         
@@ -867,11 +873,11 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
 
         if level is not None:
             basic_filename = self.__basic_filename__ + "_lev" + str(level)
-            dataset_id = [self.__dataset_id__[0], "at", "level", str(
+            dataset_id = [self.__dataset_id__[1], "at", "level", str(
                 level), str(self.sp_data.coord(self.level_dim).units)]
         else:
             basic_filename = self.__basic_filename__
-            dataset_id = [self.__dataset_id__[0]]
+            dataset_id = [self.__dataset_id__[1]]
 
         list_of_plots = []
 
@@ -1024,7 +1030,7 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
         this_function = "mean and variability"
 
         list_of_plots = []
-
+        
         if not self.var3D:
             lop = self.__mean_var_procedures_2D__(cube=self.sp_data)
             list_of_plots = list_of_plots + lop
@@ -1074,12 +1080,12 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                 cube = self.sp_data
     
             if level is not None:
-                basic_filename = self.__basic_filename__ + "_lev" + str(level)
-                dataset_id = [self.__dataset_id__[0], "at", "level", str(
+                basic_filename = self.__basic_filename__ + "_ledataset_idv" + str(level)
+                dataset_id = [self.__dataset_id__[1], "at", "level", str(
                     level), str(self.sp_data.coord(self.level_dim).units)]
             else:
                 basic_filename = self.__basic_filename__
-                dataset_id = [self.__dataset_id__[0]]
+                dataset_id = [self.__dataset_id__[1]]
     
             reg_dimensions = [item for item in self.__dimensions__ if 
                               item not in set([self.level_dim])]
@@ -1365,6 +1371,9 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                     "." + self.__output_type__
             list_of_plots.append(filename)
 
+            self.__logger__.info(di)
+            self.__logger__.info(di["data"])
+
             try:
                 x = Plot2D(di["data"])
 
@@ -1469,7 +1478,7 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                 cube=self.sp_data
                 
             basic_filename = self.__basic_filename__
-            dataset_id = self.__dataset_id__[0]
+            dataset_id = self.__dataset_id__[1]
               
             data_info = []
             list_of_plots = []
@@ -1576,6 +1585,7 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                                        indx in [0, 2, 1, 3]]) + \
                              " (" + self.__time_period__ + ")",
                        vminmax=di["vminmax"],
+                       y_log=self.log_level,
                        ext_cmap="both")
                 fig.savefig(filename)
                 plt.close(fig.number)
@@ -1704,11 +1714,11 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
 
         if level is not None:
             basic_filename = self.__basic_filename__ + "_lev" + str(level)
-            dataset_id = [self.__dataset_id__[0], "at", "level", str(
+            dataset_id = [self.__dataset_id__[1], "at", "level", str(
                 level), str(self.sp_data.coord(self.level_dim).units)]
         else:
             basic_filename = self.__basic_filename__
-            dataset_id = [self.__dataset_id__[0]]
+            dataset_id = [self.__dataset_id__[1]]
 
         list_of_plots = []
 
@@ -1909,7 +1919,7 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                         ecv_lookup(
                             self.__varname__) +
                         ' in the data set "' +
-                        self.__dataset_id__[0] +
+                        self.__dataset_id__[1] +
                         '" (' +
                         self.__time_period__ +
                         ')')
@@ -1993,7 +2003,7 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
             ecv_lookup(
                 self.__varname__) +
             ' in the data set "' +
-            self.__dataset_id__[0] +
+            self.__dataset_id__[1] +
             '" (' +
             self.__time_period__ +
             ').')
@@ -2074,13 +2084,13 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
             ecv_lookup(
                 self.__varname__) +
             ' in the data set "' +
-            self.__dataset_id__[0] +
+            self.__dataset_id__[1] +
             '" (' +
             self.__time_period__ +
             ')' +
-            ' (Green: data set is recommended for this application; ' + 
-            'Red: data set is not recommended for this application; ' + 
-            'Yellow: no decision about applicability of ' +
+            ' (Petrol: data set is recommended for this application; ' + 
+            'Brown: data set is not recommended for this application; ' + 
+            'Grey: no decision about applicability of ' +
             'the data set can be made (e.g. uncertainty too high)).')
 
         # PART 2 of ESM evaluation: bullet point list

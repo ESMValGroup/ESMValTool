@@ -376,7 +376,7 @@ def do_eval_table(varname, eval_expert, eval_data, ecv_length):
     """
     Author  : Arun Rana
     Creation: July 26th, 2018
-    Updated : August 08th, 2018
+    Updated : August 08th, 2018; April 07th, 2019 [BM]
 
     Inputs:
         - varname: the variable name to read the right evaluation/validation table parts
@@ -459,11 +459,16 @@ def do_eval_table(varname, eval_expert, eval_data, ecv_length):
     time_range = time_range[1][:]
 
     # making sure that the conversion to integers does not crash the namelist
-    try:
-        # conversion to integer for comparison to ECV data length
-        time_range = [int(i) for i in time_range]
-    except BaseException:
-        time_range = [np.nan for i in time_range]
+#    try:
+#        # conversion to integer for comparison to ECV data length
+#        time_range = [int(i) for i in time_range]
+#    except BaseException:
+#        time_range = [np.nan for i in time_range]
+    for inx,tr in enumerate(time_range):
+        try:
+            time_range[inx] = int(tr)
+        except:
+            time_range[inx] = np.nan
     # print time_range - done during coding
 
     for i in range(len(time_range)):
@@ -474,25 +479,25 @@ def do_eval_table(varname, eval_expert, eval_data, ecv_length):
         elif time_range[i] > ecv_length:
             grades[0][i] = 1
         else:
-            grades[0][i] = 2
+            grades[0][i] = 2  # only happens for strange values (e.g. nan)
         # print grades.item (i)
 
     # Create the figure
-    fig = plt.figure(figsize=(6, 2))
+    fig = plt.figure(figsize=(6, 3))
     # X-Y mesh to plot the color array
     # The Y dimension is written from ny to zero as to write items in visually
     # descending order.
     x_grid, y_grid = np.meshgrid(np.arange(nx + 1), np.arange(ny, -1, -1))
 
     # The color map
-    cmap = plt.get_cmap('RdYlGn', max_grade_eval)
+    cmap = plt.get_cmap('BrBG', max_grade_eval)
 
     # Plot the cells in color
     plt.pcolor(x_grid, y_grid, grades, cmap=cmap, vmin=-0.5,
-               vmax=max_grade_eval + 1.5)
+               vmax=max_grade_eval + 1.5, alpha=0.7)
 
     # Finish polishing the figure
-    plt.title("ESM Evaluation Table and Grading", fontsize=18)
+    plt.title("ESM Evaluation Table", fontsize=18)
     # Grid lines
     [plt.plot((0, nx), (y, y), color='k') for y in range(ny)]
     [plt.plot((x, x), (0, ny), color='k') for x in range(nx)]
@@ -512,6 +517,8 @@ def do_eval_table(varname, eval_expert, eval_data, ecv_length):
             plt.text(x + 0.5, y + 0.5, instring, ha='center', va='center',
                      fontweight=fontweight, fontsize=fontsize)
 
+    cbar = plt.colorbar(orientation = "horizontal",ticks=[1./3., 2., 11./3.])
+    cbar.ax.set_xticklabels(['Not Recommended', 'Unassessable', 'Recommended'])#,rotation=10, ha="right")
     plt.xticks([])
     plt.yticks([])
     plt.xlim(0, nx)
