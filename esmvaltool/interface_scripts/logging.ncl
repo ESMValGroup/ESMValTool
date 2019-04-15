@@ -273,7 +273,6 @@ begin
 
 end
 
-
 ; #############################################################################
 undef("log_provenance")
 procedure log_provenance(nc_file:string,
