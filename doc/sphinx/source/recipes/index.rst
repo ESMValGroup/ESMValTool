@@ -15,6 +15,7 @@ Recipes
    recipe_diurnal_temperature_index
    recipe_ensclus
    recipe_flato13ipcc
+   recipe_collins13ipcc
    recipe_heatwaves_coldwaves
    recipe_landcover
    recipe_miles
