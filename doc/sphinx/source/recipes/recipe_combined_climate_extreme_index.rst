@@ -84,7 +84,7 @@ References
 
 * Zhang, Y., M. Nitschke, and P. Bi (2013). Risk factors for direct heat-related hospitalization during the 2009 Adelaide heat-wave: A case crossover study. Sci. Total Environ., 442, 1–5. https://doi.org/10.1016/j.scitotenv.2012.10.042
 
-* Zhang, X. , Alexander, L. , Hegerl, G. C., Jones, P. , Tank, A. K.,  Peterson, T. C., Trewin, B.  and Zwiers, F. W. (2011). Indices for  monitoring changes in extremes based on daily temperature and  precipitation data. WIREs Clim Change, 2: 851-870. doi:10.1002/wcc.147 https://doi.org/10.1002/wcc.147
+* Zhang, X. , Alexander, L. , Hegerl, G. C., Jones, P. , Tank, A. K.,  Peterson, T. C., Trewin, B.  and Zwiers, F. W. (2011). Indices for  monitoring changes in extremes based on daily temperature and  precipitation data. WIREs Clim Change, 2: 851-870. doi:10.1002/wcc.147. https://doi.org/10.1002/wcc.147
 
 
 

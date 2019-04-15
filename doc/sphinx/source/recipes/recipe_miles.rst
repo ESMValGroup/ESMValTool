@@ -19,10 +19,12 @@ The tool works on daily 500hPa geopotential height data (with data interpolated 
 `Tibaldi and Molteni (1990) <https://doi.org/10.1034/j.1600-0870.1990.t01-2-00003.x>`_ index for Northern Hemisphere. Computed at fixed latitude of 60N, with delta of -5,-2.5,0,2.5,5 deg, fiN=80N and fiS=40N. Full timeseries and climatologies are provided in NetCDF4 Zip format. 
 
 * **2D Atmospheric blocking:**
-Following the index by `Davini et al. (2012) <https://doi.org/10.1175/JCLI-D-12-00032.1>`_. It is a 2D version of `Tibaldi and Molteni (1990) <https://doi.org/10.1034/j.1600-0870.1990.t01-2-00003.x>`_ for Northern Hemisphere atmospheric blocking evaluating meridional gradient reversal at 500hPa. It computes both Instantaneous Blocking and Blocking Events frequency, where the latter allows the estimation of the each blocking duration. It includes also two blocking intensity indices, i.e. the Meridional Gradient Index and the Blocking Intensity index. In addition the orientation (i.e. cyclonic or anticyclonic) of the Rossby wave breaking is computed, A supplementary Instantaneous Blocking index with the GHGS2 condition (see `Davini et al., 2012 <https://doi.org/10.1175/JCLI-D-12-00032.1>`_) is also evaluated. Full timeseries and climatologies are provided in NetCDF4 Zip format. 
+Following the index by `Davini et al. (2012) <https://doi.org/10.1175/JCLI-D-12-00032.1>`_. It is a 2D version of `Tibaldi and Molteni (1990) <https://doi.org/10.1034/j.1600-0870.1990.t01-2-00003.x>`_ for Northern Hemisphere atmospheric blocking evaluating meridional gradient reversal at 500hPa. It computes both Instantaneous Blocking and Blocking Events frequency, where the latter allows the estimation of the each blocking duration. It includes also two blocking intensity indices, i.e. the Meridional Gradient Index and the Blocking Intensity index. In addition the orientation (i.e. cyclonic or anticyclonic) of the Rossby wave breaking is computed. A supplementary Instantaneous Blocking index with the GHGS2 condition (see `Davini et al., 2012 <https://doi.org/10.1175/JCLI-D-12-00032.1>`_) is also evaluated. 
+Full timeseries and climatologies are provided in NetCDF4 Zip format. 
 
 * **Z500 Empirical Orthogonal Functions:** 
-Based on SVD. The first 4 EOFs for North Atlantic (over the 90W-40E 20N-85N box) and Northern Hemisphere (20N-85N) or a custom region are computed. North Atlantic Oscillation, East Atlantic Pattern, and Arctic Oscillation can be evaluated. Figures showing linear regression of PCs on monthly Z500 are provided. PCs and eigenvectors, as well as the variances explained are provided in NetCDF4 Zip format. 
+Based on SVD. The first 4 EOFs for North Atlantic (over the 90W-40E 20N-85N box) and Northern Hemisphere (20N-85N) or a custom region are computed. North Atlantic Oscillation, East Atlantic Pattern, and Arctic Oscillation can be evaluated. 
+Figures showing linear regression of PCs on monthly Z500 are provided. PCs and eigenvectors, as well as the variances explained are provided in NetCDF4 Zip format. 
 
 * **North Atlantic Weather Regimes:** 
 Following k-means clustering of 500hPa geopotential height. 4 weather regimes over North Atlantic (80W-40E 30N-87.5N) are evaluated using anomalies from daily seasonal cycle. This is done retaining the first North Atlantic EOFs which explains the 80% of the variance to reduce the phase-space dimensions and then applying k-means clustering using Hartigan-Wong algorithm with k=4. Figures report patterns and frequencies of occurrence. NetCDF4 Zip data are saved. Only 4 regimes and DJF supported so far.
@@ -105,9 +107,9 @@ Observations and reformat scripts
  
 References
 ----------
- 
-* Davini, P., C. Cagnazzo, S. Gualdi, and A. Navarra: Bidimensional Diagnostics, Variability, and Trends of Northern Hemisphere Blocking. J. Climate, 25, 6496–6509, doi: 10.1175/JCLI-D-12-00032.1, 2012.
-* Tibaldi S, Molteni F.: On the operational predictability of blocking. Tellus A 42(3): 343–365, doi:10.1034/j.1600- 0870.1990.t01- 2- 00003.x, 1990.
+* REX, D. F. (1950), Blocking Action in the Middle Troposphere and its Effect upon Regional Climate. Tellus, 2: 196-211. doi: http://doi.org/10.1111/j.2153-3490.1950.tb00331.x 
+* Davini, P., C. Cagnazzo, S. Gualdi, and A. Navarra (2012): Bidimensional Diagnostics, Variability, and Trends of Northern Hemisphere Blocking. J. Climate, 25, 6496–6509, doi: http://doi.org/10.1175/JCLI-D-12-00032.1.
+* Tibaldi S, Molteni F.: On the operational predictability of blocking. Tellus A 42(3): 343–365, doi: 10.1034/j.1600- 0870.1990.t01- 2- 00003.x, 1990. https://doi.org/10.1034/j.1600-0870.1990.t01-2-00003.x
 * Paolo Davini. (2018, April 30). MiLES - Mid Latitude Evaluation System (Version v0.51). Zenodo. http://doi.org/10.5281/zenodo.1237838
  
 

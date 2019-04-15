@@ -1,7 +1,5 @@
 """Unit test for :func:`esmvaltool.preprocessor._volume`."""
 
-from __future__ import absolute_import, division, print_function
-
 import unittest
 
 import iris
@@ -9,11 +7,9 @@ import numpy as np
 from cf_units import Unit
 
 import tests
-from esmvaltool.preprocessor._volume import extract_volume
-from esmvaltool.preprocessor._volume import average_volume
-from esmvaltool.preprocessor._volume import depth_integration
-from esmvaltool.preprocessor._volume import extract_transect
-from esmvaltool.preprocessor._volume import extract_trajectory
+from esmvaltool.preprocessor._volume import (average_volume, depth_integration,
+                                             extract_trajectory,
+                                             extract_transect, extract_volume)
 
 
 class Test(tests.Test):
@@ -29,35 +25,40 @@ class Test(tests.Test):
         mask3[0, 0, 0, 0] = True
         data3 = np.ma.array(data3, mask=mask3)
 
-        time = iris.coords.DimCoord(
-            [15, 45],
-            standard_name='time',
-            bounds=[[1., 30.], [30., 60.]],
-            units=Unit('days since 1950-01-01', calendar='gregorian'))
-        time2 = iris.coords.DimCoord(
-            [1., 2., 3., 4.],
-            standard_name='time',
-            bounds=[[0.5, 1.5], [1.5, 2.5], [2.5, 3.5], [3.5, 4.5], ],
-            units=Unit('days since 1950-01-01', calendar='gregorian'))
+        time = iris.coords.DimCoord([15, 45],
+                                    standard_name='time',
+                                    bounds=[[1., 30.], [30., 60.]],
+                                    units=Unit(
+                                        'days since 1950-01-01',
+                                        calendar='gregorian'))
+        time2 = iris.coords.DimCoord([1., 2., 3., 4.],
+                                     standard_name='time',
+                                     bounds=[
+                                         [0.5, 1.5],
+                                         [1.5, 2.5],
+                                         [2.5, 3.5],
+                                         [3.5, 4.5],
+                                     ],
+                                     units=Unit(
+                                         'days since 1950-01-01',
+                                         calendar='gregorian'))
 
-        zcoord = iris.coords.DimCoord(
-            [0.5, 5., 50.],
-            long_name='zcoord',
-            bounds=[[0., 2.5], [2.5, 25.], [25., 250.]],
-            units='m',
-            attributes={'positive': 'down'})
-        lons2 = iris.coords.DimCoord(
-            [1.5, 2.5],
-            standard_name='longitude',
-            bounds=[[1., 2.], [2., 3.]],
-            units='degrees_east',
-            coord_system=coord_sys)
-        lats2 = iris.coords.DimCoord(
-            [1.5, 2.5],
-            standard_name='latitude',
-            bounds=[[1., 2.], [2., 3.]],
-            units='degrees_north',
-            coord_system=coord_sys)
+        zcoord = iris.coords.DimCoord([0.5, 5., 50.],
+                                      long_name='zcoord',
+                                      bounds=[[0., 2.5], [2.5, 25.],
+                                              [25., 250.]],
+                                      units='m',
+                                      attributes={'positive': 'down'})
+        lons2 = iris.coords.DimCoord([1.5, 2.5],
+                                     standard_name='longitude',
+                                     bounds=[[1., 2.], [2., 3.]],
+                                     units='degrees_east',
+                                     coord_system=coord_sys)
+        lats2 = iris.coords.DimCoord([1.5, 2.5],
+                                     standard_name='latitude',
+                                     bounds=[[1., 2.], [2., 3.]],
+                                     units='degrees_north',
+                                     coord_system=coord_sys)
 
         coords_spec3 = [(zcoord, 0), (lats2, 1), (lons2, 2)]
         self.grid_3d = iris.cube.Cube(data1, dim_coords_and_dims=coords_spec3)
@@ -66,8 +67,8 @@ class Test(tests.Test):
         self.grid_4d = iris.cube.Cube(data2, dim_coords_and_dims=coords_spec4)
 
         coords_spec5 = [(time2, 0), (zcoord, 1), (lats2, 2), (lons2, 3)]
-        self.grid_4d_2 = iris.cube.Cube(data3,
-                                        dim_coords_and_dims=coords_spec5)
+        self.grid_4d_2 = iris.cube.Cube(
+            data3, dim_coords_and_dims=coords_spec5)
 
         # allow iris to figure out the axis='z' coordinate
         iris.util.guess_coord_axis(self.grid_3d.coord('zcoord'))
@@ -83,8 +84,7 @@ class Test(tests.Test):
 
     def test_average_volume(self):
         """Test to take the volume weighted average of a (2,3,2,2) cube."""
-        result = average_volume(self.grid_4d,
-                                'latitude', 'longitude')
+        result = average_volume(self.grid_4d, 'latitude', 'longitude')
         expected = np.array([1., 1.])
         self.assertArrayEqual(result.data, expected)
 
@@ -95,9 +95,7 @@ class Test(tests.Test):
         This extra time is needed, as the volume average calculation uses
         different methods for small and large cubes.
         """
-        result = average_volume(self.grid_4d_2,
-                                'latitude',
-                                'longitude')
+        result = average_volume(self.grid_4d_2, 'latitude', 'longitude')
         expected = np.array([1., 1., 1., 1.])
         self.assertArrayEqual(result.data, expected)
 
