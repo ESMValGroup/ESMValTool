@@ -33,6 +33,7 @@ datasets:
      - {dataset: GISS-E2-1-G,      project: CMIP6,    exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 2000,  end_year: 2014}
      - {dataset: UKESM1-0-LL,      project: CMIP6,    exp: historical, ensemble: r1i1p1f2, grid: gn, start_year: 2000,  end_year: 2014}
      - {dataset: MIROC6,           project: CMIP6,    exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 2000,  end_year: 2014}
+     - {dataset: IPSL-CM6A-LR,     project: CMIP6,    exp: historical, ensemble: r1i1p1f1, grid: gn, start_year: 2000,  end_year: 2014}
 
 preprocessors:
   # --------------------------------------------------
