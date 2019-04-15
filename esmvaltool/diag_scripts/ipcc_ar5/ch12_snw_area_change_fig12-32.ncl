@@ -104,13 +104,21 @@ begin
 
   ; we need to calculate the snow area using sftgif and sftlf
   list_sftgif = read_fx_data(info_items[imod], "sftgif")
+  if (ismissing(list_sftgif)) then
+    error_msg("f", DIAG_SCRIPT, "", "fx file for sftgif is missing")
+  end if
   var_idx = ListIndexFromName(list_sftgif, "sftgif")
   land_ice_sftgif = list_sftgif[var_idx]
+  delete(list_sftgif)
 
   ; read sftlf (land sea mask)
   list_sftlf = read_fx_data(info_items[imod], "sftlf")
+  if (ismissing(list_sftlf)) then
+    error_msg("f", DIAG_SCRIPT, "", "fx file for sftlf is missing")
+  end if
   var_idx2 = ListIndexFromName(list_sftlf, "sftlf")
   land_sea_sftlf = list_sftlf[var_idx2]
+  delete(list_sftlf)
   sftifl = land_sea_sftlf - land_ice_sftgif
   delete([/var_idx, var_idx2/])
 
@@ -221,13 +229,21 @@ begin
       A0 = read_data(info_items[imod])
       ; we need to calculate the snow area using sftgif (glacier) and sftlf
       list_sftgif = read_fx_data(info_items[imod], "sftgif")
+      if (ismissing(list_sftgif)) then
+        error_msg("f", DIAG_SCRIPT, "", "fx file for sftgif is missing")
+      end if
       var_idx = ListIndexFromName(list_sftgif, "sftgif")
       land_ice_sftgif = list_sftgif[var_idx]
+      delete(list_sftgif)
 
       ; read sftlf (land sea mask)
       list_sftlf = read_fx_data(info_items[imod], "sftlf")
+      if (ismissing(list_sftlf)) then
+        error_msg("f", DIAG_SCRIPT, "", "fx file for sftlf is missing")
+      end if
       var_idx2 = ListIndexFromName(list_sftlf, "sftlf")
       land_sea_sftlf = list_sftlf[var_idx2]
+      delete(list_sftlf)
       sftifl = land_sea_sftlf - land_ice_sftgif
       delete([/var_idx, var_idx2/])
 
@@ -282,13 +298,21 @@ begin
         A1 = read_data(item_rcp[0])
         ; we need to calculate the snow area using sftgif (glacier) and sftlf
         list_sftgif = read_fx_data(item_rcp[0], "sftgif")
+        if (ismissing(list_sftgif)) then
+          error_msg("f", DIAG_SCRIPT, "", "fx file for sftgif is missing")
+        end if
         var_idx = ListIndexFromName(list_sftgif, "sftgif")
         land_ice_sftgif = list_sftgif[var_idx]
+        delete(list_sftgif)
 
         ; read sftlf (land sea mask)
         list_sftlf = read_fx_data(item_rcp[0], "sftlf")
+        if (ismissing(list_sftlf)) then
+          error_msg("f", DIAG_SCRIPT, "", "fx file for sftlf is missing")
+        end if
         var_idx2 = ListIndexFromName(list_sftlf, "sftlf")
         land_sea_sftlf = list_sftlf[var_idx2]
+        delete(list_sftlf)
         sftifl = land_sea_sftlf - land_ice_sftgif  ; land areas sans glaciers
         delete([/var_idx, var_idx2/])
         sftifl_conf = conform(A1, sftifl, (/1, 2/))
