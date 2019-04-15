@@ -273,7 +273,6 @@ begin
 
 end
 
-
 ; #############################################################################
 undef("log_provenance")
 procedure log_provenance(nc_file:string,
@@ -362,11 +361,8 @@ begin
   str := array_append_record(str1, str, 0)
   str := array_append_record(str0, str, 0)
 
-  str_list = [/str/]
-
   yaml_file = config_user_info@run_dir + "diagnostic_provenance.yml"
-  write_table(yaml_file, "a", str_list, "%s %s %s %s %s %s %s %s %s")
-  delete(str)
+  asciiwrite(yaml_file, str)
 
   log_info(" write meta data to " + yaml_file)
 
