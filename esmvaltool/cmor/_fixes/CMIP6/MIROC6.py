@@ -5,6 +5,7 @@
 
 from ..fix import Fix
 
+
 class allvars(Fix):
     """Fixes for all vars."""
 
