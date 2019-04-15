@@ -273,7 +273,7 @@ for (i in 1 : length(projection_filenames)) {
         units = "Years",
         vals = start_projection : end_projection,
         unlim = TRUE,
-        longname = "Time in years") 
+        longname = "Time in years")
       defdata <- ncvar_def(
         name = "data",
         units = units,
