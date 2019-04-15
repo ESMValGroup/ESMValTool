@@ -220,8 +220,8 @@ if (moninf <= monsup) {
 margins <- list(c(1 : length(dim(reference_seasonal_mean)))[-c(time_dim + 1)])
 years_dim <- which(names(dim(reference_seasonal_mean)) == "year")
 climatology <- Mean1Dim(reference_seasonal_mean, years_dim) #nolint
-anomaly_filenames <- fullpath_filenames[anomaly_files]
-rcp_nc <- nc_open(anomaly_filenames[1])
+projection_filenames <- fullpath_filenames[projection_files]
+rcp_nc <- nc_open(projection_filenames[1])
 lat <- ncvar_get(rcp_nc, "lat")
 lon <- ncvar_get(rcp_nc, "lon")
 units <- ncatt_get(rcp_nc, var0, "units")$value
@@ -234,8 +234,8 @@ start_date <- as.POSIXct(substr(ncatt_get(rcp_nc, "time",
 time <- as.Date(time, origin = start_date, calendar = calendar)
 
 nc_close(rcp_nc)
-for (i in 2 : length(anomaly_filenames)) {
-  rcp_nc <- nc_open(anomaly_filenames[i])
+for (i in 2 : length(projection_filenames)) {
+  rcp_nc <- nc_open(projection_filenames[i])
   rcp_data <- abind(rcp_data, InsertDim(ncvar_get(rcp_nc, var0), 1, 1), #nolint
                                         along = 1)
   nc_close(rcp_nc)
