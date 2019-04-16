@@ -16,6 +16,7 @@ begin
 
   annots = project_style(info_items, diag_script_info, "annots")
 
+  ; Loop over datasets
   do ii = 0, dimsizes(modidx) - 1
 
     imod = modidx(ii)
@@ -177,7 +178,7 @@ begin
       if (diag_script_info@stippling) then
         plot_var@res_cnFillColors = (/"transparent", "black"/)
         plot_var@res_cnFillPattern = 17
-        caption = caption + " (significant points are stippled)"
+        caption = caption + " (non-significant points are stippled)"
       else
         plot_var@res_cnFillColors = (/"transparent", "gray70"/)
         caption = caption + " (non-significant points are masked out in gray)"
@@ -203,7 +204,7 @@ begin
     log_provenance(ncdf_diff, \
                    plotpath_diff + "." + file_type, \
                    caption, \
-                   (/"mean", "stddev"/), \
+                   (/"mean", "stddev", "diff"/), \
                    region@name, \
                    "zonal", \
                    (/"fran_fr", "righ_ma", "eyri_ve"/), \
