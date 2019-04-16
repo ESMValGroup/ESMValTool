@@ -16,6 +16,7 @@ import cf_units
 #import time
 import iris
 import collections
+from memory_profiler import profile
 
 # sys.path.insert(0,
 #                os.path.abspath(os.path.join(os.path.join(
@@ -424,6 +425,7 @@ def dict_merge(dct, merge_dct):
                     else:
                         dct[k] = [dct[k], merge_dct[k]]
 
+#@profile
 def dask_weighted_mean_wrapper(cube, spatial_weights, dims=None):
     
     if not isinstance(dims,list):
@@ -433,24 +435,62 @@ def dask_weighted_mean_wrapper(cube, spatial_weights, dims=None):
     if "latitude" in dims:
         latlon_list = []
         
+        SPW = spatial_weights.compute()
+        size_counter = 0.
+
+        
         for latlon in cube.slices(["latitude","longitude"]):
+            
+            logger.info("Number of latlon refs:")
+            logger.info(sys.getrefcount(latlon))
             
             for rcoord in ["day_of_month", "day_of_year", "month_number", "year"]:
                 if rcoord in [coord.name() for coord in latlon.coords()]:
-                    try:
-                        latlon.remove_coord(rcoord)
-                    except:
-                        latlon.remove_aux_factory(rcoord)
+                    latlon.remove_coord(rcoord)
+                    
+            logger.info("Number of latlon refs:")
+            logger.info(sys.getrefcount(latlon))
     
-            latlon = latlon.collapsed("latitude", iris.analysis.MEAN,
-                                      weights = spatial_weights.compute())
-            latlon_list.append(latlon)
-    
+            import resource
+            before = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+            
+            latlon2 = latlon.collapsed("latitude", iris.analysis.MEAN,
+                                      weights = SPW)
+            
+            latlon_list.append(latlon2)
+            latlon = None
+            latlon2 = None
+            logger.info("Average number of latlon refs:")
+            logger.info(np.mean([sys.getrefcount(lll) for lll in latlon_list]))
+            after1 = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+            
+            size_counter += round((after1-before)/1024.,2)
+        
         dims.remove("latitude")
+        
+        logger.info("Sum of Producing latlon elements" + ":")
+        logger.info(str(size_counter) + "MB")
+        
+#        after = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+#        logger.info("Producing latlon_list" + ":")
+#        logger.info(str(round((after-after1)/1024.,2)) + "MB")
     
         cube_list = iris.cube.CubeList(latlon_list)
         
+#        after_after = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+#        logger.info("Producing cube_list" + ":")
+#        logger.info(str(round((after_after-after)/1024.,2)) + "MB")
+        
         new_cube = cube_list.merge_cube()
+        
+        del latlon_list[:]
+        del latlon_list
+        del cube_list
+        del SPW
+        
+#        after_after_after = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+#        logger.info("Producing merged cube_list" + ":")
+#        logger.info(str(round((after_after_after-after_after)/1024.,2)) + "MB")
         
         if len(dims):
             new_cube = new_cube.collapsed(dims, iris.analysis.MEAN)
@@ -459,7 +499,7 @@ def dask_weighted_mean_wrapper(cube, spatial_weights, dims=None):
             
     else:
         new_cube = cube.collapsed(dims, iris.analysis.MEAN)
-    
+        
     return new_cube
 
 def dask_weighted_stddev_wrapper(cube, spatial_weights, dims=None):    

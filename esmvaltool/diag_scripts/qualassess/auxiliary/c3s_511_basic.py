@@ -25,6 +25,7 @@ import dask
 #from scipy import stats
 import datetime
 from json import load,dump
+from memory_profiler import profile
 
 from .libs import c3s_511_util as utils
 from .libs.customErrors import \
@@ -669,7 +670,6 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
         self.map_area_frac = dask.array.from_array(self.map_area_frac,chunks="auto")
         
         # save timestep for other diagnostics
-        
         tim_range = self.sp_data.coord("time").points
         tim_freq = np.diff(tim_range)
         tim_freq_spec = utils.__minmeanmax__(tim_freq)
@@ -1073,6 +1073,7 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
         
         return
 
+#    @profile
     def __mean_var_procedures_2D__(self, cube=None, level=None):
 
         try:
@@ -1101,8 +1102,13 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
             for d in reg_dimensions:
                 
                 long_left_over = [rd for rd in reg_dimensions if rd != d]
-            
+                
+                import resource
+                before = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
                 plotcube = utils.dask_weighted_mean_wrapper(cube,self.map_area_frac,dims=d)
+                after = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+                self.__logger__.info("Producing mean for " + "/".join(long_left_over) + " :")
+                self.__logger__.info(str(round((after-before)/1024.,2)) + "MB")
                 
                 try: 
                     vminmax = np.nanpercentile(plotcube.data.compressed(),
@@ -1371,9 +1377,6 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                     "." + self.__output_type__
             list_of_plots.append(filename)
 
-            self.__logger__.info(di)
-            self.__logger__.info(di["data"])
-
             try:
                 x = Plot2D(di["data"])
 
@@ -1471,6 +1474,7 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
     def __add_mean_var_procedures_2D__(self, cube=None, level=None):
         return []
     
+#    @profile
     def __mean_var_procedures_3D__(self, cube=None):
         
         try:
@@ -1496,7 +1500,12 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                 long_agg = [rd for rd in reg_dimensions if rd != d]
                 long_left_over = [d,self.level_dim]
             
+                import resource
+                before = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
                 plotcube = utils.dask_weighted_mean_wrapper(cube,self.map_area_frac,dims=long_agg)
+                after = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+                self.__logger__.info("Producing mean for " + "/".join(long_left_over) + " :")
+                self.__logger__.info(str(round((after-before)/1024.,2)) + "MB")
                 
                 try: 
                     vminmax = np.nanpercentile(plotcube.data.compressed(),
