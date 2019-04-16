@@ -167,8 +167,8 @@ begin
   ; Set dataset names
   datasetnames = metadata_att_as_array(info_items, "dataset")
 
-  ; Get climofile information
-  climofiles = metadata_att_as_array(info_items, "filename")
+  ; Save list of preproc files for provenance in collect.ncl
+  preproc_files = metadata_att_as_array(info_items, "filename")
 
   ; Check for reference dataset definition
   if (variable_info[0]@reference_dataset.eq."None") then
@@ -317,15 +317,16 @@ begin
         smpi@title = "metrics"
         smpi@long_name = "1 variable's Performance Index for " + \
           "the Single Model Performance Index"
+        smpi@metric = diag_script_info@metric(met)
         smpi@diag_script = (/DIAG_SCRIPT/)
         smpi@var = "performance_index"
         smpi@invar = var0
         smpi@region = region@name
         smpi@ensemble_name = diag_script_info@normalization(met)
-        smpi@num_climofiles = dimsizes(climofiles)
-        do imod = 0, smpi@num_climofiles - 1
-          num_climo = "climofile_" + imod
-          smpi@$num_climo$ = climofiles(imod)
+        smpi@num_preproc_files = dimsizes(preproc_files)
+        do imod = 0, smpi@num_preproc_files - 1
+          num_preproc = "preproc_file_" + imod
+          smpi@$num_preproc$ = preproc_files(imod)
         end do
         smpi@ncdf_dir = ncdf_dir(met)
 
@@ -340,10 +341,10 @@ begin
         metric@diag_script = (/DIAG_SCRIPT/)
         metric@var = "grade"
         metric@region = region@name
-        metric@num_climofiles = nDatasets
-        do imod = 0, nDatasets - 1
-          num_climo = "climofile_" + imod
-          metric@$num_climo$ = info_items[imod]@filename
+        metric@num_preproc_files = dimsizes(preproc_files)
+        do imod = 0, metric@num_preproc_files - 1
+          num_preproc = "preproc_file_" + imod
+          metric@$num_preproc$ = preproc_files(imod)
         end do
         metric@ncdf_dir = ncdf_dir(met)
 
