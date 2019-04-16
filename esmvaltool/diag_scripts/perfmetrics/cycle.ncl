@@ -100,13 +100,13 @@ begin
   end do
 
   ; Write output
-  if (config_user_info@write_netcdf.eq."True") then
+  if (config_user_info@write_netcdf) then
     var_all@ncdf = workpath
     ncdf_outfile = ncdf_write(var_all, workpath)
   end if
 
   ; Plotting
-  if (.not.diag_script_info@draw_plots) then
+  if (.not.config_user_info@write_plots) then
     return
   end if
 

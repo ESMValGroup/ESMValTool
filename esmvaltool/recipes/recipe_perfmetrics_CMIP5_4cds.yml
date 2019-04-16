@@ -257,7 +257,7 @@ diagnostics:
     scripts:
       cycle: &cycle_settings
         script: perfmetrics/main.ncl
-        # Plot type ('cycle', 'zonal', 'latlon', 'cycle_latlon')
+        # Plot type ('cycle', 'zonal', 'latlon', 'cycle_latlon', 'cycle_zonal')
         plot_type: cycle
         # Time average ('opt' argument of time_operations.ncl)
         time_avg: monthlyclim
@@ -271,10 +271,8 @@ diagnostics:
         styleset: CMIP5
       grading: &grading_settings
         <<: *cycle_settings
-        # Plot type ('cycle', 'zonal', 'latlon', 'cycle_latlon')
+        # Plot type ('cycle', 'zonal', 'latlon', 'cycle_latlon', 'cycle_zonal')
         plot_type: cycle_latlon
-        # Draw plots
-        draw_plots: false
         # Calculate grading
         calc_grading: true
         # Metric ('RMSD', 'BIAS', taylor')
@@ -591,7 +589,7 @@ diagnostics:
     scripts:
       zonal: &zonal_settings
         script: perfmetrics/main.ncl
-        # Plot type ('cycle', 'zonal', 'latlon', 'cycle_latlon')
+        # Plot type ('cycle', 'zonal', 'latlon', 'cycle_latlon', 'cycle_zonal')
         plot_type: zonal
         # Time average ('opt' argument of time_operations.ncl)
         time_avg: annualclim
@@ -1151,7 +1149,7 @@ diagnostics:
     scripts:
       latlon: &latlon_settings
         script: perfmetrics/main.ncl
-        # Plot type ('cycle', 'zonal', 'latlon', 'cycle_latlon')
+        # Plot type ('cycle', 'zonal', 'latlon', 'cycle_latlon', 'cycle_zonal')
         plot_type: latlon
         # Time average ('opt' argument of time_operations.ncl)
         time_avg: annualclim

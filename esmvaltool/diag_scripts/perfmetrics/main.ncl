@@ -29,7 +29,6 @@
 ;                                       (default: False)
 ;    projection: map projection for lat-lon plots (default:
 ;                CylindricalEquidistant)
-;    draw_plots: draw plots (default: True)
 ;    plot_diff: draw difference plots (default: False)
 ;    calc_grading: calculate grading (default: False)
 ;    stippling: use stippling to mark stat. significant differences (default:
@@ -135,7 +134,6 @@ begin
 
   ; Set default values for non-required diag_script_info attributes
   set_default_att(diag_script_info, "projection", "CylindricalEquidistant")
-  set_default_att(diag_script_info, "draw_plots", True)
   set_default_att(diag_script_info, "plot_diff", False)
   set_default_att(diag_script_info, "calc_grading", False)
   set_default_att(diag_script_info, "stippling", False)
@@ -188,7 +186,7 @@ begin
   end if
 
   ; Create output plot directory
-  if (diag_script_info@draw_plots) then
+  if (config_user_info@write_plots) then
     plot_dir = config_user_info@plot_dir
     system("mkdir -p " + plot_dir)
   end if

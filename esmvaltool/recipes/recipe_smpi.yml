@@ -98,7 +98,6 @@ diagnostics:
         plot_type: cycle_zonal
         time_avg: yearly
         region: Global
-        draw_plots: false
         calc_grading: true
         metric: [SMPI]
         normalization: CMIP5
@@ -124,7 +123,6 @@ diagnostics:
         plot_type: cycle_zonal
         time_avg: yearly
         region: Global
-        draw_plots: false
         calc_grading: true
         metric: [SMPI]
         normalization: CMIP5
@@ -150,7 +148,6 @@ diagnostics:
         plot_type: cycle_zonal
         time_avg: yearly
         region: Global
-        draw_plots: false
         calc_grading: true
         metric: [SMPI]
         normalization: CMIP5
@@ -176,7 +173,6 @@ diagnostics:
         plot_type: cycle_zonal
         time_avg: yearly
         region: Global
-        draw_plots: false
         calc_grading: true
         metric: [SMPI]
         normalization: CMIP5
@@ -202,7 +198,6 @@ diagnostics:
         plot_type: cycle_latlon
         time_avg: yearly
         region: Global
-        draw_plots: false
         calc_grading: true
         metric: [SMPI]
         normalization: CMIP5
@@ -228,7 +223,6 @@ diagnostics:
         plot_type: cycle_latlon
         time_avg: yearly
         region: Global
-        draw_plots: false
         calc_grading: true
         metric: [SMPI]
         normalization: CMIP5
@@ -254,7 +248,6 @@ diagnostics:
         plot_type: cycle_latlon
         time_avg: yearly
         region: Global
-        draw_plots: false
         calc_grading: true
         metric: [SMPI]
         normalization: CMIP5
@@ -280,7 +273,6 @@ diagnostics:
         plot_type: cycle_latlon
         time_avg: yearly
         region: Global
-        draw_plots: false
         calc_grading: true
         metric: [SMPI]
         normalization: CMIP5
@@ -306,7 +298,6 @@ diagnostics:
         plot_type: cycle_latlon
         time_avg: yearly
         region: Global
-        draw_plots: false
         calc_grading: true
         metric: [SMPI]
         normalization: CMIP5
@@ -332,7 +323,6 @@ diagnostics:
         plot_type: cycle_latlon
         time_avg: yearly
         region: Global
-        draw_plots: false
         calc_grading: true
         metric: [SMPI]
         normalization: CMIP5
@@ -358,7 +348,6 @@ diagnostics:
         plot_type: cycle_latlon
         time_avg: yearly
         region: Global
-        draw_plots: false
         calc_grading: true
         metric: [SMPI]
         normalization: CMIP5
@@ -384,7 +373,6 @@ diagnostics:
         plot_type: cycle_latlon
         time_avg: yearly
         region: Global
-        draw_plots: false
         calc_grading: true
         metric: [SMPI]
         normalization: CMIP5

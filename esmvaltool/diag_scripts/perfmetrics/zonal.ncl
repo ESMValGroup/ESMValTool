@@ -86,7 +86,7 @@ begin
     end if
 
     ; Write output
-    if (config_user_info@write_netcdf.eq."True") then
+    if (config_user_info@write_netcdf) then
       var_all@ncdf = workpath_abs
       ncdf_abs = ncdf_write(var_all, workpath_abs)
       if (l_diff) then
@@ -96,7 +96,7 @@ begin
     end if
 
     ; Plotting
-    if (.not.diag_script_info@draw_plots) then
+    if (.not.config_user_info@write_plots) then
       continue
     end if
 
