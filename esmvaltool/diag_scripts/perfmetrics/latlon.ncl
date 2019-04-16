@@ -136,7 +136,7 @@ begin
                    "geo", \
                    (/"fran_fr", "righ_ma", "eyri_ve"/), \
                    (/"righi15gmd", "gleckler08jgr"/), \
-                   metadata_att_as_array(info_items, "filename"))
+                   info_items[imod]@filename)
 
     ; Difference plot to the reference
     if (.not.l_diff) then
@@ -218,7 +218,7 @@ begin
                    "zonal", \
                    (/"fran_fr", "righ_ma", "eyri_ve"/), \
                    (/"righi15gmd", "gleckler08jgr"/), \
-                   metadata_att_as_array(info_items, "filename"))
+                   info_items[imod]@filename)
 
   end do
 
