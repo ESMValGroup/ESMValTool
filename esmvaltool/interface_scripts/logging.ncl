@@ -279,7 +279,7 @@ procedure log_provenance(nc_file:string,
                          outfile:string,
                          caption:string,
                          statistics[*]:string,
-                         domain:string,
+                         domain[*]:string,
                          plottype:string,
                          diag_authors[*]:string,
                          diag_refs[*]:string,
@@ -298,78 +298,52 @@ procedure log_provenance(nc_file:string,
 ;
 ; Description
 ;    Create a yaml file with meta data from the diagnostic script and save it
-;    in the plot directory
+;    in the run directory
 ;
 ; Caveats
 ;
 ; References
 ;
 ; Modification history
+;    20190415-A_righ_ma: turn domain into a list.
+;    20190415-A_righ_ma: extended to avoid overwriting previous call.
 ;    20190225-A_bock_li: written.
 ;
-local funcname, scriptname, str0, n, str1, str2, str3, str4, str5, str6, \
-  str7, str8, str, yaml_file
+local funcname, scriptname, yaml_file, outstring, existing
 begin
 
   funcname = "log_provenance"
   scriptname = "interface_scripts/logging.ncl"
   enter_msg(scriptname, funcname)
 
-  str0 = "? " + nc_file
-  n = dimsizes(infiles)
-  str1 = ": ancestors: ["
-  str1 = str1 + infiles(0)
-  if(n.ge.1) then
-    do i = 1, n-1
-      str1 = str1 + ", " + infiles(i)
-    end do
-  end if
-  str1 = str1 + "]"
-  n = dimsizes(diag_authors)
-  str2 = "  authors: ["
-  str2 = str2 + diag_authors(0)
-  if(n.ge.1) then
-    do i = 1, n-1
-      str2 = str2 + ", " + diag_authors(i)
-    end do
-  end if
-  str2 = str2 + "]"
-  str3 = "  caption: '" + caption + "'"
-  str4 = "  domain: " + domain
-  str5 = "  plot_file: " + outfile
-  str6 = "  plot_type: " + plottype
-  n = dimsizes(diag_refs)
-  str7 = "  references: ["
-  str7 = str7 + diag_refs(0)
-  if(n.ge.1) then
-    do i = 1, n-1
-      str7 = str7 + ", " + diag_refs(i)
-    end do
-  end if
-  str7 = str7 + "]"
-  n = dimsizes(statistics)
-  str8 = "  statistics: ["
-  str8 = str8 + statistics(0)
-  if(n.ge.1) then
-    do i = 1, n-1
-      str8 = str8 + ", " + statistics(i)
-    end do
-  end if
-  str8 = str8 + "]"
+  ; Define output
+  outstring = new(9, string)
 
-  str := array_append_record(str7, str8, 0)
-  str := array_append_record(str6, str, 0)
-  str := array_append_record(str5, str, 0)
-  str := array_append_record(str4, str, 0)
-  str := array_append_record(str3, str, 0)
-  str := array_append_record(str2, str, 0)
-  str := array_append_record(str1, str, 0)
-  str := array_append_record(str0, str, 0)
-
+  ; Set yaml file path
   yaml_file = config_user_info@run_dir + "diagnostic_provenance.yml"
-  asciiwrite(yaml_file, str)
 
-  log_info(" write meta data to " + yaml_file)
+  ; Save entries
+  outstring(0) = "? " + nc_file
+  outstring(1) = ": ancestors: [" + str_join(infiles, ", ") + "]"
+  outstring(2) = "  authors: [" + str_join(diag_authors, ", ") + "]"
+  outstring(3) = "  caption: '" + caption + "'"
+  outstring(4) = "  domain: [" + str_join(domain, ", ") + "]"
+  outstring(5) = "  plot_file: " + outfile
+  outstring(6) = "  plot_type: " + plottype
+  outstring(7) = "  references: [" + str_join(diag_refs, ", ") + "]"
+  outstring(8) = "  statistics: [" + str_join(statistics, ", ") + "]"
+
+  ; Save existing information to avoid overwriting
+  if (fileexists(yaml_file)) then
+    existing = asciiread(yaml_file, -1, "string")
+    outstring := array_append_record(existing, outstring, 0)
+    delete(existing)
+  end if
+
+  ; Save provenance information
+  asciiwrite(yaml_file, outstring)
+
+  log_info("Provenance information saved in " + yaml_file)
 
   leave_msg(scriptname, funcname)
 
