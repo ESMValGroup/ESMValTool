@@ -87,10 +87,10 @@ begin
     ; Write output
     if (config_user_info@write_netcdf.eq."True") then
       var_all@ncdf = workpath_abs
-      ncdf_outfile = ncdf_write(var_all, workpath_abs)
+      ncdf_abs = ncdf_write(var_all, workpath_abs)
       if (l_diff) then
         var_diff@ncdf = workpath_diff
-        ncdf_outfile = ncdf_write(var_diff, workpath_diff)
+        ncdf_diff = ncdf_write(var_diff, workpath_diff)
       end if
     end if
 
@@ -125,7 +125,7 @@ begin
     delete(plot)
 
     ; Call provenance logger
-    log_provenance(ncdf_outfile, \
+    log_provenance(ncdf_abs, \
                    plotpath_abs + "." + file_type, \
                    "Zonal mean of variable " + var0, \
                    (/"mean", "stddev"/), \
@@ -200,7 +200,7 @@ begin
     end if
 
     ; Call provenance logger
-    log_provenance(ncdf_outfile, \
+    log_provenance(ncdf_diff, \
                    plotpath_diff + "." + file_type, \
                    caption, \
                    (/"mean", "stddev"/), \
