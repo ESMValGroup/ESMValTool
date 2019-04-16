@@ -6,6 +6,7 @@
 ;
 ;    function portrait_plot
 ;    function circle_plot
+;
 ; #############################################################################
 
 load "$diag_scripts/../interface_scripts/auxiliary.ncl"
