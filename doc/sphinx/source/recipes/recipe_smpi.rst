@@ -35,11 +35,7 @@ User settings
    * calc_grading: calculates grading metrics (has to be set to "true" in the recipe)
    * metric: chosen grading metric(s) (if calc_grading is True; has to be set to "SMPI")
    * smpi_n_bootstrap: number of bootstrapping members used to determine uncertainties on model-reference differences (typical number of bootstrapping members: 100)
-   
-   *Optional settings for script*
   
-   * draw_plots: draws plots (set to "false" for SMPI)
-   
    *Required settings for variables*
    
    * reference_dataset: reference dataset to compare with (usually the observations).

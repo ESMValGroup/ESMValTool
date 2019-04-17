@@ -45,7 +45,6 @@ User settings in recipe
    * t_test: for plot_type zonal or latlon, calculates t-test in difference plots (default: False)
    * conf_level: for plot_type zonal or latlon, adds the confidence level for the t-test to the plot (default: False)
    * projection: map projection for plot_type latlon (default: CylindricalEquidistant)
-   * draw_plots: draws plots (default: True)
    * plot_diff: draws difference plots (default: False)
    * calc_grading: calculates grading metrics (default: False)
    * stippling: uses stippling to mark statistically significant differences (default: False = mask out non-significant differences in gray)
