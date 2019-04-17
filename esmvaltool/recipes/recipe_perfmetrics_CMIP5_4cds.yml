@@ -1,5 +1,5 @@
 # ESMValTool
-# recipe_perfmetrics_CMIP5.yml
+# recipe_perfmetrics_CMIP5_4cds.yml
 ---
 documentation:
   description: |
@@ -195,7 +195,6 @@ diagnostics:
         reference_dataset: ERA-Interim
         alternative_dataset: NCEP
         mip: Amon
-        field: T3M
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
@@ -293,7 +292,6 @@ diagnostics:
         reference_dataset: ERA-Interim
         alternative_dataset: NCEP
         mip: Amon
-        field: T3M
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
@@ -375,7 +373,6 @@ diagnostics:
         reference_dataset: ERA-Interim
         alternative_dataset: NCEP
         mip: Amon
-        field: T3M
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
@@ -451,7 +448,6 @@ diagnostics:
         reference_dataset: ERA-Interim
         alternative_dataset: NCEP
         mip: Amon
-        field: T3M
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
@@ -527,7 +523,6 @@ diagnostics:
         reference_dataset: ERA-Interim
         alternative_dataset: NCEP
         mip: Amon
-        field: T3M
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
@@ -622,7 +617,6 @@ diagnostics:
         reference_dataset: ERA-Interim
         alternative_dataset: NCEP
         mip: Amon
-        field: T3M
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
@@ -701,7 +695,6 @@ diagnostics:
         reference_dataset: ERA-Interim
         alternative_dataset: NCEP
         mip: Amon
-        field: T3M
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
@@ -781,7 +774,6 @@ diagnostics:
         reference_dataset: ERA-Interim
         alternative_dataset: NCEP
         mip: Amon
-        field: T3M
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
@@ -859,7 +851,6 @@ diagnostics:
         reference_dataset: ERA-Interim
         alternative_dataset: NCEP
         mip: Amon
-        field: T3M
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
@@ -938,7 +929,6 @@ diagnostics:
         reference_dataset: ERA-Interim
         alternative_dataset: NCEP
         mip: Amon
-        field: T3M
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
@@ -1016,7 +1006,6 @@ diagnostics:
         reference_dataset: AIRS
         alternative_dataset: ERA-Interim
         mip: Amon
-        field: T3M
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
@@ -1087,7 +1076,6 @@ diagnostics:
         reference_dataset: ERA-Interim
         alternative_dataset: NCEP
         mip: Amon
-        field: T2Ms
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
@@ -1189,7 +1177,6 @@ diagnostics:
         reference_dataset: ESACCI-SST
         alternative_dataset: HadISST
         mip: Amon
-        field: T2Ms
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
@@ -1261,7 +1248,6 @@ diagnostics:
         preprocessor: ppNOLEV1
         reference_dataset: GPCP-SG
         mip: Amon
-        field: T2Ms
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
@@ -1340,7 +1326,6 @@ diagnostics:
         reference_dataset: ESACCI-CLOUD
         alternative_dataset: PATMOS-x
         mip: Amon
-        field: T2Ms
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
@@ -1419,7 +1404,6 @@ diagnostics:
         preprocessor: ppNOLEV1
         reference_dataset: CERES-EBAF
         mip: Amon
-        field: T2Ms
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
@@ -1490,7 +1474,6 @@ diagnostics:
         preprocessor: ppNOLEV1
         reference_dataset: CERES-EBAF
         mip: Amon
-        field: T2Ms
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
@@ -1558,7 +1541,6 @@ diagnostics:
   #      preprocessor: ppNOLEV1
   #      reference_dataset: CERES-EBAF
   #      mip: Amon
-  #      field: T2Ms
   #      derive: true
   #      force_derivation: false
   #      project: CMIP5
@@ -1630,7 +1612,6 @@ diagnostics:
   #      preprocessor: ppNOLEV1
   #      reference_dataset: CERES-EBAF
   #      mip: Amon
-  #      field: T2Ms
   #      derive: true
   #      force_derivation: false
   #      project: CMIP5
@@ -1695,13 +1676,16 @@ diagnostics:
   #### od550aer: AEROSOL OPTICAL DEPTH AT 550 nm ###############################
   #od550aer:
   #  description: Aerosol optical depth at 550 nm
+  #  themes:
+  #    - aerosols
+  #  realms:
+  #    - atmos
   #  variables:
   #    od550aer:
   #      preprocessor: ppNOLEV2thr10
   #      reference_dataset: ESACCI-AEROSOL
   #      alternative_dataset: MODIS
   #      mip: aero
-  #      field: T2Ms
   #      project: CMIP5
   #      exp: historical
   #      ensemble: r1i1p1
@@ -1742,12 +1726,15 @@ diagnostics:
   #### od870aer: AEROSOL OPTICAL DEPTH AT 870 nm ###############################
   #od870aer:
   #  description: Aerosol optical depth at 870 nm
+  #  themes:
+  #    - aerosols
+  #  realms:
+  #    - atmos
   #  variables:
   #    od870aer:
   #      preprocessor: ppNOLEV1thr10
   #      reference_dataset: ESACCI-AEROSOL
   #      mip: aero
-  #      field: T2Ms
   #      project: CMIP5
   #      exp: historical
   #      ensemble: r1i1p1
@@ -1779,12 +1766,15 @@ diagnostics:
   #### abs550aer: ABSORPTION OPTICAL DEPTH AT 550 nm ###########################
   #abs550aer:
   #  description: Absorption optical depth at 550 nm
+  #  themes:
+  #    - aerosols
+  #  realms:
+  #    - atmos
   #  variables:
   #    abs550aer:
   #      preprocessor: ppNOLEV1thr10
   #      reference_dataset: ESACCI-AEROSOL
   #      mip: aero
-  #      field: T2Ms
   #      project: CMIP5
   #      exp: historical
   #      ensemble: r1i1p1
@@ -1815,13 +1805,16 @@ diagnostics:
 
   #### od550lt1aer: FINE MODE AEROSOL OPTICAL DEPTH AT 550 nm ##################
   #od550lt1aer:
+  #  themes:
+  #    - aerosols
+  #  realms:
+  #    - atmos    
   #  description: Fine mode optical depth at 550 nm
   #  variables:
   #    od550lt1aer:
   #      preprocessor: ppNOLEV1thr10
   #      reference_dataset: ESACCI-AEROSOL
   #      mip: aero
-  #      field: T2Ms
   #      project: CMIP5
   #      exp: historical
   #      ensemble: r1i1p1
@@ -1852,13 +1845,17 @@ diagnostics:
   #### toz: TOTAL COLUMN OZONE #################################################
   #toz:
   #  description: Total column ozone
+  #  themes:
+  #    - chem
+  #    - ghg
+  #  realms:
+  #    - atmosChem    
   #  variables:
   #    toz:
   #      preprocessor: ppNOLEV2thr10
   #      reference_dataset: ESACCI-OZONE
   #      alternative_dataset: NIWA-BS
   #      mip: Amon
-  #      field: T2Ms
   #      derive: true
   #      force_derivation: false
   #      project: CMIP5
@@ -1895,7 +1892,64 @@ diagnostics:
 
   ### sic: SEA-ICE CONCENTRATION (SH) #########################################
 
-  ### dos: SOIL MOISTURE ######################################################
+  ### sm: SOIL MOISTURE #######################################################
+  #sm:
+  #  description: Soil moisture
+  #  themes:
+  #    - phys
+  #  realms:
+  #    - land
+  #  variables:
+  #    sm:
+  #      preprocessor: ppNOLEV1thr10
+  #      reference_dataset: ESACCI-SOILMOISTURE
+  #      mip: Lmon
+  #      derive: true
+  #      force_derivation: false
+  #      project: CMIP5
+  #      exp: historical
+  #      ensemble: r1i1p1
+  #      start_year: 2002
+  #      end_year: 2004
+  #  additional_datasets:
+  #    - {dataset: ACCESS1-0}
+  #    - {dataset: ACCESS1-3}
+  #    - {dataset: bcc-csm1-1}
+  #    - {dataset: CanCM4}
+  #    - {dataset: CanESM2}
+  #    - {dataset: CCSM4}
+  #    - {dataset: CESM1-BGC}
+  #    - {dataset: CESM1-CAM5}
+  #    - {dataset: CESM1-FASTCHEM}
+  #    - {dataset: CESM1-WACCM}
+  #    - {dataset: CNRM-CM5 }
+  #    - {dataset: CSIRO-Mk3-6-0}
+  #    - {dataset: FGOALS-g2}
+  #    - {dataset: FGOALS-s2}
+  #    - {dataset: GFDL-ESM2G}
+  #    - {dataset: GFDL-ESM2M}
+  #    - {dataset: HadCM3}
+  #    - {dataset: HadGEM2-CC}
+  #    - {dataset: HadGEM2-ES}
+  #    - {dataset: inmcm4}
+  #    - {dataset: IPSL-CM5A-LR}
+  #    - {dataset: IPSL-CM5A-MR}
+  #    - {dataset: IPSL-CM5B-LR}
+  #    - {dataset: MIROC4h}
+  #    - {dataset: MIROC5}
+  #    - {dataset: MIROC-ESM}
+  #    - {dataset: MIROC-ESM-CHEM}
+  #    - {dataset: MRI-CGCM3}
+  #    - {dataset: NorESM1-M}
+  #    - {dataset: NorESM1-ME}
+  #    - {dataset: ESACCI-SOILMOISTURE, project: OBS, type: sat, version: L3S-SSMV-COMBINED-v4.2, tier: 2}
+  #  scripts:
+  #    grading:
+  #      <<: *grading_settings
+  #      # Metric ('RMSD', 'BIAS', taylor')
+  #      metric: [RMSD]
+  #      # Normalization ('mean', 'median', 'centered_median', 'none')
+  #      normalization: [centered_median]
 
 
   ### COLLECT METRICS #########################################################
