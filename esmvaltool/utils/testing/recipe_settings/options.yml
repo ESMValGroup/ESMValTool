@@ -230,7 +230,7 @@ recipe_rainfarm.yml:
     - true
   weights_climo:   # orographic weights: set to false or full path to a fine-scale precipitation climatology file
     - false
-    # TODO: test with file
+    - wc2.0_30s_prec.nc
 
 recipe_zmnam.yml:
 
