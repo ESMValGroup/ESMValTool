@@ -63,35 +63,35 @@ def meta_direntr(cfg, model, inlist, flist):
 
     @author: Valerio Lembo, University of Hamburg, 2019.
     """
-    provlog = ProvenanceLogger(cfg)
-    attr = ['sensible heat entropy production', model]
-    ancestor = [
-        inlist[1], inlist[2], inlist[5], inlist[15], inlist[17], inlist[19]
-    ]
-    record = get_prov_map(attr, ancestor)
-    provlog.log(flist[0], record)
-    attr = ['evaporation entropy production', model]
-    ancestor = [inlist[0], inlist[2], inlist[5], inlist[15]]
-    record = get_prov_map(attr, ancestor)
-    provlog.log(flist[1], record)
-    attr = ['rainfall precipitation entropy production', model]
-    ancestor = [inlist[2], inlist[3], inlist[5], inlist[15]]
-    record = get_prov_map(attr, ancestor)
-    provlog.log(flist[2], record)
-    attr = ['snowfall precipitation entropy production', model]
-    ancestor = [inlist[2], inlist[4], inlist[5], inlist[15]]
-    record = get_prov_map(attr, ancestor)
-    provlog.log(flist[3], record)
-    attr = ['snow melt entropy production', model]
-    ancestor = [inlist[4], inlist[15]]
-    record = get_prov_map(attr, ancestor)
-    provlog.log(flist[4], record)
-    attr = ['potential energy entropy production', model]
-    ancestor = [
-        inlist[2], inlist[3], inlist[4], inlist[5], inlist[8], inlist[15]
-    ]
-    record = get_prov_map(attr, ancestor)
-    provlog.log(flist[5], record)
+    with ProvenanceLogger(cfg) as provlog:
+        attr = ['sensible heat entropy production', model]
+        ancestor = [
+            inlist[1], inlist[2], inlist[5], inlist[15], inlist[17], inlist[19]
+            ]
+        record = get_prov_map(attr, ancestor)
+        provlog.log(flist[0], record)
+        attr = ['evaporation entropy production', model]
+        ancestor = [inlist[0], inlist[2], inlist[5], inlist[15]]
+        record = get_prov_map(attr, ancestor)
+        provlog.log(flist[1], record)
+        attr = ['rainfall precipitation entropy production', model]
+        ancestor = [inlist[2], inlist[3], inlist[5], inlist[15]]
+        record = get_prov_map(attr, ancestor)
+        provlog.log(flist[2], record)
+        attr = ['snowfall precipitation entropy production', model]
+        ancestor = [inlist[2], inlist[4], inlist[5], inlist[15]]
+        record = get_prov_map(attr, ancestor)
+        provlog.log(flist[3], record)
+        attr = ['snow melt entropy production', model]
+        ancestor = [inlist[4], inlist[15]]
+        record = get_prov_map(attr, ancestor)
+        provlog.log(flist[4], record)
+        attr = ['potential energy entropy production', model]
+        ancestor = [
+            inlist[2], inlist[3], inlist[4], inlist[5], inlist[8], inlist[15]
+            ]
+        record = get_prov_map(attr, ancestor)
+        provlog.log(flist[5], record)
 
 
 def meta_indentr(cfg, model, inlist, flist):
@@ -104,14 +104,14 @@ def meta_indentr(cfg, model, inlist, flist):
 
     @author: Valerio Lembo, University of Hamburg, 2019.
     """
-    provlog = ProvenanceLogger(cfg)
-    attr = ['horizontal entropy production', model]
-    ancestor = [inlist[8], inlist[10], inlist[12]]
-    record = get_prov_map(attr, ancestor)
-    provlog.log(flist[0], record)
-    attr = ['vertical entropy production', model]
-    ancestor = [
-        inlist[6], inlist[7], inlist[8], inlist[9], inlist[11], inlist[15]
-    ]
-    record = get_prov_map(attr, ancestor)
-    provlog.log(flist[1], record)
+    with ProvenanceLogger(cfg) as provlog:
+        attr = ['horizontal entropy production', model]
+        ancestor = [inlist[8], inlist[10], inlist[12]]
+        record = get_prov_map(attr, ancestor)
+        provlog.log(flist[0], record)
+        attr = ['vertical entropy production', model]
+        ancestor = [
+            inlist[6], inlist[7], inlist[8], inlist[9], inlist[11], inlist[15]
+            ]
+        record = get_prov_map(attr, ancestor)
+        provlog.log(flist[1], record)
