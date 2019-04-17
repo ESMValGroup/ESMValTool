@@ -66,7 +66,7 @@ Besides the datasets, to be set according to usual ESMValTool convention, the us
    * lsm: if set to true, the computations of the energy budgets, meridional energy transports, water mass and latent energy budgets and transports are performed separately over land and oceans
    * lec:: if set to 'true', computation of the LEC are performed
    * entr: if set to 'true', computations of the material entropy production are performed
-   * met (1, 2 or 3): the computation of the material entropy production must be performed with the indirect method (1), the direct method (2), or both methods. If 2 or 3 options are chosen, the intensity of the LEC is needed for the entropy production related to the kinetic energy dissipation. If lec is set to 'n', a default value is provided.
+   * met (1, 2 or 3): the computation of the material entropy production must be performed with the indirect method (1), the direct method (2), or both methods. If 2 or 3 options are chosen, the intensity of the LEC is needed for the entropy production related to the kinetic energy dissipation. If lec is set to 'false', a default value is provided.
 
    These options apply to all models provided for the multi-model ensemble computations
 
