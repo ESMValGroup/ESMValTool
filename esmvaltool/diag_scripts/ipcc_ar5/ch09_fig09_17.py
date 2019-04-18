@@ -257,11 +257,7 @@ def multi_model_time_series(
             ],
         )
     
-    # Writing files: 
-    if cfg['write_netcdf']:
-        path = cfg['work_dir']
-        iris.save(cube,path+'/file.nc')
-            
+          
     # Resize and add legend outside the axes.
     plt.gcf().set_size_inches(9., 6.)
     diagtools.add_legend_outside_right(
@@ -272,6 +268,28 @@ def multi_model_time_series(
     plt.savefig(path)
     plt.close()
 
+    # Save each netcdf file in the group
+    if cfg['write_netcdf']:
+        metadata_id_list = [
+            'project',
+            'dataset',
+            'mip',
+            'exp',
+            'ensemble',
+            'field',
+            'short_name',
+            'diagnostic',
+            'start_year',
+            'end_year',
+        ]
+        workdir = diagtools.folder(cfg['work_dir'])
+        for index, filename in enumerate(sorted(cubedic)):
+            cube = cubedic[filename]
+            path_nc = workdir
+            path_nc += '_'.join([str(metadata[filename][b]) for b in metadata_id_list])
+            path_nc = path_nc+'.nc'   
+            logger.info('path_nc = %s',path_nc) 
+            iris.save(cube,path_nc)
 
 def global_sum(
         cfg,

@@ -27,12 +27,12 @@ datasets:
   # - {dataset: HadGEM2-AO, project: CMIP5, ensemble: r1i1p1}
   # - {dataset: HadCM3, project: CMIP5, ensemble: r1i1p1}
   # - {dataset: CanCM4, project: CMIP5, ensemble: r1i1p1}
-  # - {dataset: CSIRO-Mk3-6-0, project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: CSIRO-Mk3-6-0, project: CMIP5, exp: historical, ensemble: r1i1p1}
   # - {dataset: HadGEM2-CC, project: CMIP5, ensemble: r1i1p1}
   - {dataset: HadGEM2-ES, project: CMIP5, exp: historical, ensemble: r1i1p1}
 #  - {dataset: HadGEM2-ES, project: CMIP5, exp: piControl, ensemble: r1i1p1}
   - {dataset: IPSL-CM5A-LR, project: CMIP5, exp: historical, ensemble: r1i1p1}
-  - {dataset: IPSL-CM5A-LR, project: CMIP5, exp: piControl, ensemble: r1i1p1}
+#  - {dataset: IPSL-CM5A-LR, project: CMIP5, exp: piControl, ensemble: r1i1p1}
   
   # CMIP6 datasets (Feb 2019: not present on JASMIN)
   # - {dataset: CNRM-CM6-1, project: CMIP6, exp: historical, ensemble: r1i1p1}
