@@ -22,25 +22,29 @@ documentation:
 
 datasets:
   # working datasets
-#  - {dataset: CanESM2, project: CMIP5, ensemble: r1i1p1}
-  # - {dataset: GISS-E2-H, project: CMIP5, ensemble: r1i1p1}
-  # - {dataset: HadGEM2-AO, project: CMIP5, ensemble: r1i1p1}
-  # - {dataset: HadCM3, project: CMIP5, ensemble: r1i1p1}
-  # - {dataset: CanCM4, project: CMIP5, ensemble: r1i1p1}
-  - {dataset: CSIRO-Mk3-6-0, project: CMIP5, exp: historical, ensemble: r1i1p1}
-  # - {dataset: HadGEM2-CC, project: CMIP5, ensemble: r1i1p1}
-  - {dataset: HadGEM2-ES, project: CMIP5, exp: historical, ensemble: r1i1p1}
-#  - {dataset: HadGEM2-ES, project: CMIP5, exp: piControl, ensemble: r1i1p1}
-  - {dataset: IPSL-CM5A-LR, project: CMIP5, exp: historical, ensemble: r1i1p1}
-#  - {dataset: IPSL-CM5A-LR, project: CMIP5, exp: piControl, ensemble: r1i1p1}
+  - {dataset: CanESM2, project: CMIP5, ensemble: r1i1p1}
+  - {dataset: GISS-E2-H, project: CMIP5, ensemble: r1i1p1}
+#  - {dataset: HadGEM2-AO, project: CMIP5, ensemble: r1i1p1}
+  - {dataset: HadCM3, project: CMIP5, ensemble: r1i1p1}
+  - {dataset: CanCM4, project: CMIP5, ensemble: r1i1p1}
+  - {dataset: CSIRO-Mk3-6-0, project: CMIP5, ensemble: r1i1p1}
+  - {dataset: HadGEM2-CC, project: CMIP5, ensemble: r1i1p1}
+  - {dataset: HadGEM2-ES, project: CMIP5, ensemble: r1i1p1}
+  - {dataset: IPSL-CM5A-LR, project: CMIP5, ensemble: r1i1p1}
   
-  # CMIP6 datasets (Feb 2019: not present on JASMIN)
-  # - {dataset: CNRM-CM6-1, project: CMIP6, exp: historical, ensemble: r1i1p1}
-  # - {dataset: CNRM-ESM2-1, project: CMIP6, exp: historical, ensemble: r1i1p1}
-  # - {dataset: IPSL-CM6A-LR, project: CMIP6, exp: historical, ensemble: r1i1p1}
-  # - {dataset: GISS-E2-1-G, project: CMIP6, exp: historical, ensemble: r1i1p1}
-  # - {dataset: BCC-ESM1, project: CMIP6, exp: historical, ensemble: r1i1p1}
-  # - {dataset: BCC-CSM2-MR, project: CMIP6, exp: historical, ensemble: r1i1p1}
+  # CMIP6 datasets, present on ESGF@CEDA April 2019
+#  - {dataset: UKESM1-0-LL, project: CMIP6, ensemble: r1i1p1f2}
+#  - {dataset: CNRM-CM6-1, project: CMIP6, ensemble: r1i1p1f1}
+#  - {dataset: CNRM-ESM2-1, project: CMIP6, ensemble: r1i1p1f1}
+#  - {dataset: IPSL-CM6A-LR, project: CMIP6, ensemble: r1i1p1f1}
+#  - {dataset: GISS-E2-1-G, project: CMIP6, ensemble: r1i1p1f1}
+#  - {dataset: BCC-CSM2-MR, project: CMIP6, ensemble: r1i1p1f1}
+#  - {dataset: BCC-ESM1, project: CMIP6, ensemble: r1i1p1f1}
+#  - {dataset: CanESM5, project: CMIP6, ensemble: r1i1p1f1}
+#  - {dataset: CESM2, project: CMIP6, ensemble: r1i1p1f1}
+#  - {dataset: CESM2-WACCM, project: CMIP6, ensemble: r1i1p1f1}
+#  - {dataset: EC-Earth3, project: CMIP6, ensemble: r1i1p1f1}
+#  - {dataset: MIROC6, project: CMIP6, ensemble: r1i1p1f1}
 
   #####
   # Data with Errors right now -June 2018
@@ -93,9 +97,10 @@ diagnostics:
         derive: true
         force_derivation: false
         field: TO3M
+        exp: historical 
         mip: Omon
         start_year: 1970
-        end_year: 1980
+        end_year: 2005
 
     scripts:
       Global_Ocean_DepthLayers_integral_timeseries: &Global_Ocean_DepthLayers_integral_timeseries
