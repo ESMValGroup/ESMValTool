@@ -15,7 +15,7 @@ class CMORCheckError(Exception):
     """Exception raised when a cube does not pass the CMORCheck."""
 
 
-class CMORCheck(object):
+class CMORCheck():
     """Class used to check the CMOR-compliance of the data.
 
     It can also fix some minor errors and does some minor data
@@ -153,7 +153,7 @@ class CMORCheck(object):
             logger = logging.getLogger(__name__)
 
         if self._cmor_var.units:
-            units = self._get_efective_units()
+            units = self._get_effective_units()
             if str(self._cube.units) != units:
                 self._cube.convert_units(units)
 
@@ -170,7 +170,6 @@ class CMORCheck(object):
         #  be encoded in the numpy.ma object created.
         #
         #  => Very difficult to check!
-        pass
 
     def _check_var_metadata(self):
         """Check metadata of variable."""
@@ -182,18 +181,18 @@ class CMORCheck(object):
                     self._cmor_var.standard_name, self._cube.standard_name)
 
         # Check units
-        if self._cube.attributes.get('invalid_units', '').lower() == 'psu':
+        if (self.automatic_fixes and self._cube.attributes.get(
+                'invalid_units', '').lower() == 'psu'):
             self._cube.units = '1.0'
             del self._cube.attributes['invalid_units']
 
         if self._cmor_var.units:
-            units = self._get_efective_units()
+            units = self._get_effective_units()
 
             if not self._cube.units.is_convertible(units):
-                self.report_error(
-                    'Variable {0} units () can not be '
-                    'converted to {2}', self._cube.var_name,
-                    self._cmor_var.units, self._cube.units)
+                self.report_error(f'Variable {self._cube.var_name} units '
+                                  f'{self._cube.units} can not be '
+                                  f'converted to {self._cmor_var.units}')
 
         # Check other variable attributes that match entries in cube.attributes
         attrs = ('positive', )
@@ -208,7 +207,7 @@ class CMORCheck(object):
                                       attr, attr_value,
                                       self._cube.attributes[attr])
 
-    def _get_efective_units(self):
+    def _get_effective_units(self):
         """Get effective units."""
         if self._cmor_var.units.lower() == 'psu':
             units = '1.0'
@@ -405,7 +404,7 @@ class CMORCheck(object):
                 cf_units.Unit(
                     'days since 1950-1-1 00:00:00',
                     calendar=coord.units.calendar))
-            simplified_cal = self._simplify_calendars(coord.units.calendar)
+            simplified_cal = self._simplify_calendar(coord.units.calendar)
             coord.units = cf_units.Unit(coord.units.origin, simplified_cal)
 
         tol = 0.001
@@ -457,21 +456,14 @@ class CMORCheck(object):
                     self.report_error(msg, var_name, self.frequency)
                     break
 
-    CALENDARS = [
-        ['gregorian', 'standard'],
-        ['proleptic_gregorian'],
-        ['365_day', 'noleap'],
-        ['366_day', 'all_leap'],
-        ['360_day'],
-        ['julian'],
-        ['none'],
-    ]
-
     @staticmethod
-    def _simplify_calendars(calendar):
-        for calendar_type in CMORCheck.CALENDARS:
-            if calendar in calendar_type:
-                return calendar_type[0]
+    def _simplify_calendar(calendar):
+        calendar_aliases = {
+            'all_leap': '366_day',
+            'noleap': '365_day',
+            'standard': 'gregorian',
+        }
+        return calendar_aliases.get(calendar, calendar)
 
     def has_errors(self):
         """Check if there are reported errors.
@@ -512,8 +504,7 @@ class CMORCheck(object):
         msg = message.format(*args)
         if self._failerr:
             raise CMORCheckError(msg + '\nin cube:\n{}'.format(self._cube))
-        else:
-            self._errors.append(msg)
+        self._errors.append(msg)
 
     def report_warning(self, message, *args):
         """Report a warning.
