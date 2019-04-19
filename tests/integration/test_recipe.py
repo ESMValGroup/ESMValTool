@@ -557,7 +557,7 @@ def test_derive_not_needed(tmp_path, patched_datafinder, config_user):
     # Check that fixes are applied just once
     fixes = ('fix_file', 'fix_metadata', 'fix_data')
     for fix in fixes:
-        assert fix in ancestor_product.settings   
+        assert fix in ancestor_product.settings
         assert fix not in product.settings
 
 
