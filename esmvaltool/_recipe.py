@@ -303,9 +303,8 @@ def _get_default_settings(variable, config_user, derive=False):
     }
     # File fixes
     fix_dir = os.path.splitext(variable['filename'])[0] + '_fixed'
-    if not derive:
-        settings['fix_file'] = dict(fix)
-        settings['fix_file']['output_dir'] = fix_dir
+    settings['fix_file'] = dict(fix)
+    settings['fix_file']['output_dir'] = fix_dir
     # Cube fixes
     # Only supply mip if the CMOR check fixes are implemented.
     if variable.get('cmor_table'):
@@ -698,7 +697,10 @@ def _split_derive_profile(profile):
     """Split the derive preprocessor profile."""
     order = _extract_preprocessor_order(profile)
     before, after = _split_settings(profile, 'derive', order)
-    after['derive'] = {}
+    after['derive'] = True
+    after['fix_file'] = False
+    after['fix_metadata'] = False
+    after['fix_data'] = False
     if order != DEFAULT_ORDER:
         before['custom_order'] = True
         after['custom_order'] = True
@@ -718,7 +720,6 @@ def _get_derive_input_variables(variables, config_user):
         derive_input[group].append(var)
 
     for variable in variables:
-
         group_prefix = variable['variable_group'] + '_derive_input_'
         if not variable.get('force_derivation') and get_input_filelist(
                 variable=variable,
