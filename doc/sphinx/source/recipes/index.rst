@@ -26,6 +26,7 @@ Recipes
    recipe_quantilebias
    recipe_runoff_et
    recipe_shapeselect
+   recipe_smpi
    recipe_spei
    recipe_toymodel
    recipe_zmnam
