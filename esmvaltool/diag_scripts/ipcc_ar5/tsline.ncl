@@ -7,6 +7,7 @@
 ; Description
 ;    This script is based on the original CCMVal script tsline.ncl and has
 ;    been further developed as part of the ESMValTool.
+;    Note: It is required that all data sets are on the same grid.
 ;
 ; Required diag_script_info attributes (diagnostic specific)
 ;    styleset: as in diag_scripts/shared/plot/style.ncl functions
@@ -16,20 +17,28 @@
 ;              available).
 ;    ts_anomaly: calculates anomalies with respect to the first 10-year
 ;                average
+;    ts_minlat: minimum latitude for area-averaging
+;    ts_maxlat: maximum latitude for area-averaging
+;    ts_minlon: minimum longitude for area-averaging
+;    ts_maxlon: maximum longitude for area-averaging
 ;    ref_start: start year of reference period for anomalies
 ;    ref_end: end year of reference period for anomalies
 ;    plot_units: variable unit for plotting
 ;
 ; Caveats
+;    Code currently limited to field type "T2Ms"
+;    Note: It is required that all data sets are on the same grid.
 ;
 ; Modification history
+;    20180409-A_laue_ax: added provenance output, re-added optional definition
+;                        of region for area-averaging
 ;    20181112-A_bock_ls: code rewritten for ESMValTool v2.0
 ;    20170623-A_laue_ax: added tags for reporting
 ;    20160905-A-Bock_li: implemented multi-model mean and variable refence
 ;                        period for anomaly with refence mean value.
 ;    20151027-A_laue_ax: moved call to 'write_references' to the beginning
 ;                        of the code
-;    20150622-A_wenz_sa: added optional anomaly calculation, choise of
+;    20150622-A_wenz_sa: added optional anomaly calculation, choice of
 ;                        area opperations (sum, average) and detrending of
 ;                        time series.
 ;    20150420-A_righ_ma: adapted to new structure. Some of the original
@@ -60,6 +69,8 @@ begin
   datasetnames = metadata_att_as_array(info_items, "dataset")
   dim_MOD = ListCount(info_items)
   dim_VAR = ListCount(variable_info)
+
+  climofiles = metadata_att_as_array(info_items, "filename")
 
   ; Create output plot directory
   plot_dir = config_user_info@plot_dir
@@ -95,9 +106,15 @@ begin
   ; Check for required settings
   exit_if_missing_atts(diag_script_info, "styleset")
 
+  ; check for definition of region used for area averaging
+
   ; Set default values for non-required diag_script_info attributes
   set_default_att(diag_script_info, "time_avg", "monthly")
   set_default_att(diag_script_info, "ts_anomaly", "noanom")
+  set_default_att(diag_script_info, "ts_minlat", -90.0)
+  set_default_att(diag_script_info, "ts_maxlat", 90.0)
+  set_default_att(diag_script_info, "ts_minlon", 0.0)
+  set_default_att(diag_script_info, "ts_maxlon", 360.0)
 
   ; Determine time range
   start_year = min(metadata_att_as_array(info_items, "start_year"))
@@ -224,17 +241,29 @@ begin
             end do
           end if
 
-          anom_ref(imod) = area_operations(A0_timavg_ref, -90., 90., \
-                                           0., 360., "average", True)
+          anom_ref(imod) = area_operations(A0_timavg_ref,              \
+                                           diag_script_info@ts_minlat, \
+                                           diag_script_info@ts_maxlat, \
+                                           diag_script_info@ts_minlon, \
+                                           diag_script_info@ts_maxlon, \
+                                           "average", True)
           delete(A0_timavg_ref)
 
         end if
 
         if(imod .ne. ref_ind) then
-          procmod = area_operations(A0_mask, -90., 90., 0., \
-                                    360., "average", True)
+          procmod = area_operations(A0_mask,                    \
+                                    diag_script_info@ts_minlat, \
+                                    diag_script_info@ts_maxlat, \
+                                    diag_script_info@ts_minlon, \
+                                    diag_script_info@ts_maxlon, \
+                                    "average", True)
         else
-          procmod = area_operations(A0, -90., 90., 0., 360., \
+          procmod = area_operations(A0,                         \
+                                    diag_script_info@ts_minlat, \
+                                    diag_script_info@ts_maxlat, \
+                                    diag_script_info@ts_minlon, \
+                                    diag_script_info@ts_maxlon, \
                                     "average", True)
         end if
 
@@ -320,7 +349,11 @@ begin
 
     A0_timavg_clim = time_operations(A0, 1990, 1990, "average", \
                                      "annualclim", True)
-    clim_ref = area_operations(A0_timavg_clim, -90., 90., 0., 360., \
+    clim_ref = area_operations(A0_timavg_clim,             \
+                               diag_script_info@ts_minlat, \
+                               diag_script_info@ts_maxlat, \
+                               diag_script_info@ts_minlon, \
+                               diag_script_info@ts_maxlon, \
                                "average", True)
     anom_ref(ref_ind) = clim_ref
 
@@ -356,17 +389,15 @@ begin
   end if
   end if
 
-  ; Optional output to NetCDF
-  if (config_user_info@write_netcdf.eq."True") then
-    out_path = config_user_info@work_dir
-    system("mkdir -p " + out_path)
-    out_path = out_path + "tsline_" + var0 + "_" + anom + "_" + detr + "_" \
-      + start_year + "-" + end_year + ".nc"
-    model_arr@ncdf = out_path
-    model_arr@diag_script = DIAG_SCRIPT
-    model_arr@var = var0
-    ncdf_outfile = ncdf_write(model_arr, out_path)
-  end if
+  ; Mandatory output to NetCDF
+  out_path = config_user_info@work_dir
+  system("mkdir -p " + out_path)
+  out_path = out_path + "tsline_" + var0 + "_" + anom + "_" + detr + "_" \
+    + start_year + "-" + end_year + ".nc"
+  model_arr@ncdf = out_path
+  model_arr@diag_script = DIAG_SCRIPT
+  model_arr@var = var0
+  ncdf_outfile = ncdf_write(model_arr, out_path)
 
   ; Define workstation
   outfile = config_user_info@plot_dir + var0 + "_" + anom + "_" + \
@@ -401,54 +432,50 @@ begin
     res@tiYAxisString = var0 + " [" + model_arr@units + "]"
   end if
 
-  res0 = True
-  ref_start = diag_script_info@ref_start
-  ref_end = diag_script_info@ref_end
-  res0@tiYAxisString = tostring(ref_start) + "-" + tostring(ref_end) \
-    + " " + var0 + " Mean" + " [" + model_arr@units + "]"
-
   if(anom .eq. "anom") then
+    res0 = True
+    ref_start = diag_script_info@ref_start
+    ref_end = diag_script_info@ref_end
+    res0@tiYAxisString = tostring(ref_start) + "-" + tostring(ref_end) \
+      + " " + var0 + " Mean" + " [" + model_arr@units + "]"
     xy_line_anom(wks, anom_ref, model_arr, model_arr&time, \
                  model_arr_stddev, ref_start, ref_end, res, res0, info_items)
   else
     xy_line(wks, model_arr, model_arr&time, model_arr_stddev, res, info_items)
   end if
 
-  log_info(" wrote " + outfile + "." + file_type)
+  outfile = outfile + "." + file_type
+  log_info(" wrote " + outfile)
 
-;  ; add meta data to plot (for reporting)
-;
-;  climofiles = new(dim_MOD, string)
-;  climofiles = input_file_info@filename
-;
-;  domain = "DM_global"
-;
-;  if (anom .eq. "anom") then
-;    stat = "ST_anomaly"
-;    captionadd = "anomalies"
-;  else
-;    stat = "ST_mean"
-;    captionadd = "means"
-;  end if
-;
-;  alltags = array_append_record(tags, (/"PT_time", stat, domain/), 0)
-;
-;  if (diag_script_info@multi_model_mean.eq."y") then
-;    allmodelnames = array_append_record(dataset_info@dataset, \
-;                                        (/"multi-model-mean"/), 0)
-;  else
-;    allmodelnames = dataset_info@dataset
-;  end if
-;
-;  caption = "Time series of the " + captionadd + " for variable " \
-;    + variables(0) + ", similar to IPCC AR5, fig. 9.8."
-;
-;  id = DIAG_SCRIPT + "_" + variables(0)
-;
-;  contrib_authors = (/"A_cion_ir", "A_righ_ma", "A_wenz_sa", "A_bock_ls"/)
-;
-;  ; ESMValMD(wks@fullname, alltags, caption, id, variables(0), \
-;  ;          allmodelnames, climofiles, DIAG_SCRIPT, contrib_authors)
+  ; --------------------------------------------------------------------
+  ; write provenance to netcdf output and plot file(s) (bias)
+  ; --------------------------------------------------------------------
+
+  if (anom .eq. "anom") then
+    statistics = "anomaly"
+    captionadd = "anomalies"
+  else
+    statistics = "mean"
+    captionadd = "means"
+  end if
+
+  domain = "reg"
+  if ((diag_script_info@ts_minlat.eq.-90.).and. \
+      (diag_script_info@ts_maxlat.eq.90.).and.  \
+      (diag_script_info@ts_minlon.eq.0.).and. \
+      (diag_script_info@ts_maxlon.eq.360.)) then
+    domain = "global"
+  end if
+
+  plottype = "times"
+
+  caption = "Time series of the " + captionadd + " for variable " \
+    + var0 + ", similar to IPCC AR5, fig. 9.8."
+
+  contrib_authors = (/"cion_ir", "righ_ma", "wenz_sa", "bock_ls"/)
+
+  log_provenance(ncdf_outfile, outfile, caption, statistics, \
+                 domain, plottype, contrib_authors, "", climofiles)
 
   leave_msg(DIAG_SCRIPT, "")
 

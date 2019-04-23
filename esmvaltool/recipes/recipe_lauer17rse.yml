@@ -50,6 +50,10 @@ preprocessors:
       scheme: linear
     mask_fillvalues:
       threshold_fraction: 0.5
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean]
+      exclude: [reference_dataset]
 
 
 diagnostics:
@@ -61,6 +65,10 @@ diagnostics:
 
 #  fig07_a:
 #    description: seasonal mean cloud cover maps
+#    themes:
+#      - clouds
+#    realms:
+#      - atmos
 #    variables:
 #      clt:
 #        mip: Amon
@@ -78,6 +86,10 @@ diagnostics:
 #
 #  fig07_b:
 #    description: seasonal mean cloud cover uncertainty maps
+#    themes:
+#      - clouds
+#    realms:
+#      - atmos
 #    variables:
 #      cltStderr:
 #        mip: Amon
@@ -96,6 +108,10 @@ diagnostics:
 #
 #  fig07_c:
 #    description: zonal means
+#    themes:
+#      - clouds
+#    realms:
+#      - atmos
 #    variables:
 #      clt:
 #        preprocessor: clim_1x1_05
@@ -176,6 +192,10 @@ diagnostics:
 
 #  fig08:
 #    description: interannual variability
+#    themes:
+#      - clouds
+#    realms:
+#      - atmos
 #    variables:
 #      clt:
 #        preprocessor: clim_1x1_05
@@ -248,6 +268,10 @@ diagnostics:
 
 #  fig14_a:
 #    description: maps of total AOD
+#    themes:
+#      - aerosols
+#    realms:
+#      - aerosol
 #    variables:
 #      od550aer:
 #        preprocessor: clim_1x1_01
@@ -287,6 +311,10 @@ diagnostics:
 #
 #  fig14_b:
 #    description: maps of fine mode AOD
+#    themes:
+#      - aerosols
+#    realms:
+#      - aerosol
 #    variables:
 #      od550lt1aer:
 #        preprocessor: clim_1x1_01
@@ -326,6 +354,10 @@ diagnostics:
 #
 #  fig14_c:
 #    description: maps of absorption AOD
+#    themes:
+#      - aerosols
+#    realms:
+#      - aerosol
 #    variables:
 #      abs550aer:
 #        preprocessor: clim_1x1_01
@@ -368,17 +400,88 @@ diagnostics:
   # XCO2 time series
   # ==========================================================================
 
-  fig19_a:
-    description: time series of XCO2 (global)
+#  fig19:
+#    description: time series of XCO2
+#    themes:
+#      - carbon
+#      - ghg
+#    realms:
+#      - atmos
+#    variables:
+#      xco2:
+#        preprocessor: clim_5x5
+#        derive: true
+#        mip: Amon
+#        field: T2Ms
+#        start_year: 2003
+#        end_year: 2014
+#        exp: [esmHistorical, esmrcp85]
+#        frequency: mon
+#        reference_dataset: ghgcci
+#        additional_datasets:
+#          - {dataset: BNU-ESM, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: CanESM2, project: CMIP5, ensemble: r1i1p1}
+##          - {dataset: CESM1-BGC, project: CMIP5, ensemble: r1i1p2}
+##          - {dataset: FIO-ESM, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: GFDL-ESM2G, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: GFDL-ESM2M, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: MIROC-ESM, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: MPI-ESM-LR, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: MRI-ESM1, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: NorESM1-ME, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: ghgcci, project: obs4mips, level: l3, version: v100, tier: 1}
+#    scripts:
+#      glob:
+#        script: ipcc_ar5/tsline.ncl
+#        styleset: CMIP5
+#        ts_minlat: -90
+#        ts_maxlat: 90    
+#        ts_minlon: 0
+#        ts_maxlon: 360
+#      midlat_n:
+#        script: ipcc_ar5/tsline.ncl
+#        styleset: CMIP5
+#        ts_minlat: 30
+#        ts_maxlat: 60    
+#        ts_minlon: 0
+#        ts_maxlon: 360
+#      tropics:
+#        script: ipcc_ar5/tsline.ncl
+#        styleset: CMIP5
+#        ts_minlat: -30
+#        ts_maxlat: 30    
+#        ts_minlon: 0
+#        ts_maxlon: 360
+#      midlat_s:
+#        script: ipcc_ar5/tsline.ncl
+#        styleset: CMIP5
+#        ts_minlat: -60
+#        ts_maxlat: -30    
+#        ts_minlon: 0
+#        ts_maxlon: 360
+
+
+  # ==========================================================================
+  # Lauer et al. (2017) - Figure 20
+  # XCO2 maps
+  # ==========================================================================
+
+  fig20a:
+    description: maps of XCO2 (2003-2008)
+    themes:
+      - carbon
+      - ghg
+    realms:
+      - atmos
     variables:
       xco2:
-#        preprocessor: clim_5x5
+        preprocessor: clim_5x5
         derive: true
         mip: Amon
         field: T2Ms
         start_year: 2003
+#        end_year: 2008
         end_year: 2003
-#        end_year: 2014
         exp: [esmHistorical, esmrcp85]
         frequency: mon
         reference_dataset: ghgcci
@@ -395,17 +498,16 @@ diagnostics:
 #          - {dataset: NorESM1-ME, project: CMIP5, ensemble: r1i1p1}
           - {dataset: ghgcci, project: obs4mips, level: l3, version: v100, tier: 1}
     scripts:
-      tsline:
-        script: ipcc_ar5/tsline.ncl
+      map:
+        script: eyring13jgr/eyring13jgr_fig04.ncl
+        mpProjection: Robinson
         styleset: CMIP5
-        ts_minlat: -90
-        ts_maxlat: 90    
-        ts_minlon: 0
-        ts_maxlon: 360
-        multi_model_mean: true
-        dont_add_per_year: true
-        ts_diff_ref: ghgcci
-        ts_lsmask: refmodel
+        font: 21
+        lbLabelBarOn: True
+        e13fig04_list_chem_mod_string: CMIP5
+        subtract_global_mean: True
+        anomalylevels: [-10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0,
+                        1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
 
 
