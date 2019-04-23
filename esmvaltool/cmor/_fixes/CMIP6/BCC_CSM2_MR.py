@@ -1,7 +1,6 @@
 """Fixes for BCC-CSM2-MR."""
-import numpy as np
-import iris
-
+# import numpy as np
+# import iris
 from ..fix import Fix
 
 
@@ -28,7 +27,8 @@ class allvars(Fix):
         for cube in cubes:
             coords_to_remove = []
             for coord in cube.coords():
-                if coord.var_name in ['time', ]: continue
+                if coord.var_name in ['time', ]:
+                    continue
                 if coord.var_name in ['lat', 'lon']:
                     coords_to_remove.append(coord)
 

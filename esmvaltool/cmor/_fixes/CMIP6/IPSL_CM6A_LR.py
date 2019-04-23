@@ -8,7 +8,7 @@ class allvars(Fix):
 
     def fix_metadata(self, cubelist):
         """
-        Removes addition cube in cube list (Cell area).
+        Remove addition cube in cube list (Cell area).
         It has been created as a cell_area_cube which can be re-added here,
         if needed.
 
