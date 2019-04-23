@@ -1,0 +1,25 @@
+SOURCE: CMIP5
+!============
+variable_entry:    iwpStderr
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     
+units:             kg m-2
+cell_methods:      time: mean
+cell_measures:     area: areacella
+long_name:         Condensed Ice Path Error
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          iwpStderr
+type:              real
+valid_min:         0.0
+valid_max:         5.0
+ok_min_mean_abs:   0.0
+ok_max_mean_abs:   1.0
+!----------------------------------
+!

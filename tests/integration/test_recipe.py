@@ -24,7 +24,6 @@ MANDATORY_DATASET_KEYS = (
     'dataset',
     'diagnostic',
     'end_year',
-    'field',
     'filename',
     'frequency',
     'institute',
@@ -163,7 +162,6 @@ def test_simple_recipe(tmp_path, patched_datafinder, config_user):
             variables:
               ta:
                 preprocessor: preprocessor_name
-                field: T3M
                 project: CMIP5
                 mip: Amon
                 exp: historical
@@ -240,7 +238,6 @@ def test_default_preprocessor(tmp_path, patched_datafinder, config_user):
                 exp: historical
                 start_year: 2000
                 end_year: 2005
-                field: TO3Y
                 ensemble: r1i1p1
                 additional_datasets:
                   - {dataset: CanESM2}
@@ -257,14 +254,10 @@ def test_default_preprocessor(tmp_path, patched_datafinder, config_user):
     assert preproc_dir.startswith(str(tmp_path))
 
     fix_dir = os.path.join(
-        preproc_dir,
-        'CMIP5_CanESM2_Oyr_historical_r1i1p1_TO3Y_chl_2000-2005_fixed')
+        preproc_dir, 'CMIP5_CanESM2_Oyr_historical_r1i1p1_chl_2000-2005_fixed')
     defaults = {
         'load': {
-            'callback':
-            concatenate_callback,
-            'constraints': ('mass_concentration_of_phytoplankton_expressed_'
-                            'as_chlorophyll_in_sea_water'),
+            'callback': concatenate_callback,
         },
         'concatenate': {},
         'fix_file': {
@@ -279,6 +272,7 @@ def test_default_preprocessor(tmp_path, patched_datafinder, config_user):
             'short_name': 'chl',
             'cmor_table': 'CMIP5',
             'mip': 'Oyr',
+            'frequency': 'yr',
         },
         'fix_metadata': {
             'project': 'CMIP5',
@@ -286,6 +280,7 @@ def test_default_preprocessor(tmp_path, patched_datafinder, config_user):
             'short_name': 'chl',
             'cmor_table': 'CMIP5',
             'mip': 'Oyr',
+            'frequency': 'yr',
         },
         'extract_time': {
             'start_year': 2000,
@@ -299,11 +294,13 @@ def test_default_preprocessor(tmp_path, patched_datafinder, config_user):
             'cmor_table': 'CMIP5',
             'mip': 'Oyr',
             'short_name': 'chl',
+            'frequency': 'yr',
         },
         'cmor_check_data': {
             'cmor_table': 'CMIP5',
             'mip': 'Oyr',
             'short_name': 'chl',
+            'frequency': 'yr',
         },
         'cleanup': {
             'remove': [fix_dir]
@@ -351,7 +348,6 @@ def test_reference_dataset(tmp_path, patched_datafinder, config_user,
                 exp: historical
                 start_year: 2000
                 end_year: 2005
-                field: T3M
                 ensemble: r1i1p1
                 additional_datasets:
                   - {dataset: GFDL-CM3}
@@ -388,8 +384,7 @@ def test_reference_dataset(tmp_path, patched_datafinder, config_user,
         'CMIP5',
         'MPI-ESM-LR',
         'ta',
-        fix_dir,
-        'air_pressure',
+        fix_dir
     )
 
     assert 'regrid' not in reference.settings
@@ -446,7 +441,6 @@ def test_custom_preproc_order(tmp_path, patched_datafinder, config_user):
                 exp: historical
                 start_year: 2000
                 end_year: 2005
-                field: TO3Y
                 ensemble: r1i1p1
                 additional_datasets:
                   - {dataset: CanESM2}
@@ -481,7 +475,6 @@ def test_derive(tmp_path, patched_datafinder, config_user):
                 exp: historical
                 start_year: 2000
                 end_year: 2005
-                field: T2Ms
                 derive: true
                 force_derivation: true
                 additional_datasets:
@@ -531,7 +524,6 @@ def test_derive_not_needed(tmp_path, patched_datafinder, config_user):
                 exp: historical
                 start_year: 2000
                 end_year: 2005
-                field: T2Ms
                 derive: true
                 force_derivation: false
                 additional_datasets:
@@ -562,6 +554,51 @@ def test_derive_not_needed(tmp_path, patched_datafinder, config_user):
     assert ancestor_product.attributes['short_name'] == 'toz'
 
 
+def test_derive_with_fx(tmp_path, patched_datafinder, config_user):
+
+    content = dedent("""
+        diagnostics:
+          diagnostic_name:
+            variables:
+              nbp_grid:
+                project: CMIP5
+                mip: Lmon
+                exp: historical
+                start_year: 2000
+                end_year: 2005
+                derive: true
+                force_derivation: true
+                additional_datasets:
+                  - {dataset: GFDL-CM3,  ensemble: r1i1p1}
+            scripts: null
+        """)
+
+    recipe = get_recipe(tmp_path, content, config_user)
+
+    # Check generated tasks
+    assert len(recipe.tasks) == 1
+    task = recipe.tasks.pop()
+
+    assert task.name == 'diagnostic_name' + TASKSEP + 'nbp_grid'
+    assert len(task.ancestors) == 1
+    ancestor = [t for t in task.ancestors][0]
+    assert ancestor.name == 'diagnostic_name/nbp_grid_derive_input_nbp'
+
+    # Check product content of tasks
+    assert len(task.products) == 1
+    product = task.products.pop()
+    assert 'derive' in product.settings
+    assert product.attributes['short_name'] == 'nbp_grid'
+    assert 'fx_files' in product.settings['derive']
+    assert 'sftlf' in product.settings['derive']['fx_files']
+    assert product.settings['derive']['fx_files']['sftlf'] is not None
+
+    assert len(ancestor.products) == 1
+    ancestor_product = ancestor.products.pop()
+    assert ancestor_product.filename in product.files
+    assert ancestor_product.attributes['short_name'] == 'nbp'
+
+
 def test_diagnostic_task_provenance(tmp_path, patched_datafinder, config_user):
 
     script = tmp_path / 'diagnostic.py'
@@ -582,7 +619,6 @@ def test_diagnostic_task_provenance(tmp_path, patched_datafinder, config_user):
                 exp: historical
                 start_year: 2000
                 end_year: 2005
-                field: TO3Y
                 ensemble: r1i1p1
                 additional_datasets:
                   - dataset: CanESM2

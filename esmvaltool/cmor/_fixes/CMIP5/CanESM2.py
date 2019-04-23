@@ -1,14 +1,15 @@
-"""Fixes for CanESM2 model"""
+# pylint: disable=invalid-name, no-self-use, too-few-public-methods
+"""Fixes for CanESM2 model."""
 from ..fix import Fix
 
 
 # noinspection PyPep8Naming
 class fgco2(Fix):
-    """Fixes for fgco2"""
+    """Fixes for fgco2."""
 
     def fix_data(self, cube):
         """
-        Fix data
+        Fix data.
 
         Fixes discrepancy between declared units and real units
 
