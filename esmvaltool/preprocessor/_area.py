@@ -91,7 +91,7 @@ def get_iris_analysis_operation(operator):
     -------
         function: A function from iris.analysis
     """
-    operators = ['mean', 'median', 'std_dev', 'variance', 'min', 'max']
+    operators = ['mean', 'sum', 'median', 'std_dev', 'variance', 'min', 'max']
     operator = operator.lower()
     if operator not in operators:
         raise ValueError("operator {} not recognised. "
@@ -205,6 +205,8 @@ def average_region(cube, coord1, coord2, operator='mean', fx_files=None):
     +------------+--------------------------------------------------+
     | `max`      | Maximum value                                    |
     +------------+--------------------------------------------------+
+    | `sum`      | Summation (i.e. horizontal integral)             |
+    +------------+--------------------------------------------------+
 
 
     Arguments
@@ -246,7 +248,7 @@ def average_region(cube, coord1, coord2, operator='mean', fx_files=None):
     # TODO: implement weighted stdev, median, and var when available in iris.
     # See iris issue: https://github.com/SciTools/iris/issues/3208
 
-    if operator in ['mean', ]:
+    if operator in ['mean', 'sum', ]:
         return cube.collapsed([coord1, coord2],
                               operation,
                               weights=grid_areas)
