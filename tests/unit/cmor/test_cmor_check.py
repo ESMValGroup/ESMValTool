@@ -356,11 +356,6 @@ class TestCMORCheck(unittest.TestCase):
         self.cube.coord('time').standard_name = 'region'
         self._check_fails_in_metadata()
 
-    def test_bad_out_name(self):
-        """Fail if coordinates have bad short names at metadata step"""
-        self.cube.coord('latitude').var_name = 'region'
-        self._check_fails_in_metadata()
-
     def test_bad_data_units(self):
         """Fail if data has bad units at metadata step"""
         self.cube.units = 'hPa'
