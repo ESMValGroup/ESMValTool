@@ -545,13 +545,20 @@ def test_derive_not_needed(tmp_path, patched_datafinder, config_user):
     # Check product content of tasks
     assert len(task.products) == 1
     product = task.products.pop()
-    assert 'derive' in product.settings
     assert product.attributes['short_name'] == 'toz'
+    assert 'derive' in product.settings
 
     assert len(ancestor.products) == 1
     ancestor_product = ancestor.products.pop()
     assert ancestor_product.filename in product.files
     assert ancestor_product.attributes['short_name'] == 'toz'
+    assert 'derive' not in ancestor_product.settings
+
+    # Check that fixes are applied just once
+    fixes = ('fix_file', 'fix_metadata', 'fix_data')
+    for fix in fixes:
+        assert fix in ancestor_product.settings
+        assert fix not in product.settings
 
 
 def test_derive_with_fx(tmp_path, patched_datafinder, config_user):
