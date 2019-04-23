@@ -576,6 +576,7 @@ class CustomInfo(CMIP5Info):
         cwd = os.path.dirname(os.path.realpath(__file__))
         self._cmor_folder = os.path.join(cwd, 'tables', 'custom')
         self.tables = {}
+        self.generic_levels = {}
         table = TableInfo()
         table.name = 'custom'
         self.tables[table.name] = table
@@ -626,7 +627,12 @@ class CustomInfo(CMIP5Info):
             found, returns None if not
 
         """
-        return self.tables['custom'].get(short_name, None)
+        var_info = self.tables['custom'].get(short_name, None)
+        if var_info is not None:
+            if self.generic_levels:
+                for dim, val in self.generic_levels.items():
+                    var_info.coordinates[dim] = val
+        return var_info
 
     def _read_table_file(self, table_file, table=None):
         with open(table_file) as self._current_table:
@@ -638,7 +644,7 @@ class CustomInfo(CMIP5Info):
                         coord = CoordinateInfo(dim)
                         coord.generic_level = True
                         coord.axis = 'Z'
-                        self.coords[dim] = coord
+                        self.generic_levels[dim] = coord
                 elif key == 'axis_entry':
                     self.coords[value] = self._read_coordinate(value)
                     continue
