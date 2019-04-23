@@ -183,12 +183,10 @@ def _update_target_levels(variable, variables, settings, config_user):
             variable_data = _get_dataset_info(dataset, variables)
             filename = \
                 _dataset_to_file(variable_data, config_user)
-            coordinate = levels.get('coordinate', 'air_pressure')
             settings['extract_levels']['levels'] = get_reference_levels(
                 filename, variable_data['project'], dataset,
                 variable_data['short_name'],
-                os.path.splitext(variable_data['filename'])[0] + '_fixed',
-                coordinate)
+                os.path.splitext(variable_data['filename'])[0] + '_fixed')
 
 
 def _update_target_grid(variable, variables, settings, config_user):
@@ -207,6 +205,16 @@ def _update_target_grid(variable, variables, settings, config_user):
     else:
         # Check that MxN grid spec is correct
         parse_cell_spec(settings['regrid']['target_grid'])
+
+
+def _update_regrid_time(variable, settings):
+    """Input data frequency automatically for regrid_time preprocessor."""
+    regrid_time = settings.get('regrid_time')
+    if regrid_time is None:
+        return
+    frequency = settings.get('regrid_time', {}).get('frequency')
+    if not frequency:
+        settings['regrid_time']['frequency'] = variable['frequency']
 
 
 def _get_dataset_info(dataset, variables):
@@ -606,6 +614,7 @@ def _get_preprocessor_products(variables, profile, order, ancestor_products,
             variables=variables,
             settings=settings,
             config_user=config_user)
+        _update_regrid_time(variable, settings)
         ancestors = grouped_ancestors.get(variable['filename'])
         if not ancestors:
             ancestors = _get_input_files(variable, config_user)
