@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name, no-self-use, too-few-public-methods
 """Fixes for MIROC6."""
 # import numpy as np
 # import iris

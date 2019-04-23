@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name, no-self-use, too-few-public-methods
 """Fixes for IPSL-CM6A-LR."""
 
 from ..fix import Fix
@@ -27,7 +26,9 @@ class allvars(Fix):
         """
         for cube in cubelist:
             if cube.standard_name == 'cell_area':
-                cell_area_cube = cube.copy()
+                # If you need to add the cell area back in, uncomment this line
+                # cell_area_cube = cube.copy()
+                #
                 cubelist.remove(cube)
 
         for cube in cubelist:
