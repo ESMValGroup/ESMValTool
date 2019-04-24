@@ -22,18 +22,15 @@ documentation:
 
 datasets:
   # CMIP5
-  - {dataset: MPI-ESM-LR, project: CMIP5, ensemble: r1i1p1}
   - {dataset: IPSL-CM5A-LR, project: CMIP5, ensemble: r1i1p1}
-  - {dataset: GFDL-ESM2M, project: CMIP5, ensemble: r1i1p1}
-  - {dataset: GFDL-CM3, project: CMIP5, ensemble: r1i1p1}
   - {dataset: HadGEM2-ES, project: CMIP5, ensemble: r1i1p1}
-
+  - {dataset: CSIRO-Mk3-6-0, project: CMIP5, ensemble: r1i1p1}
 #  - {dataset: CanESM2, project: CMIP5, ensemble: r1i1p1}
-#  - {dataset: GISS-E2-H, project: CMIP5, ensemble: r1i1p1}
 #  - {dataset: HadGEM2-AO, project: CMIP5, ensemble: r1i1p1}
+  
+#  - {dataset: GISS-E2-H, project: CMIP5, ensemble: r1i1p1}
 #  - {dataset: HadCM3, project: CMIP5, ensemble: r1i1p1}
 #  - {dataset: CanCM4, project: CMIP5, ensemble: r1i1p1}
-#  - {dataset: CSIRO-Mk3-6-0, project: CMIP5, ensemble: r1i1p1}
 #  - {dataset: HadGEM2-CC, project: CMIP5, ensemble: r1i1p1}
   
   # CMIP6 datasets, present on ESGF@CEDA April 2019
@@ -63,6 +60,11 @@ datasets:
  # - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical, ensemble: r1i1p1}
 #  - {dataset: ACCESS1-0, project: CMIP5, exp: historical, ensemble: r1i1p1}
 #  - {dataset: ACCESS1-3, project: CMIP5, exp: historical, ensemble: r1i1p1}
+
+  # no volcello present
+#  - {dataset: GFDL-ESM2M, project: CMIP5, ensemble: r1i1p1}
+#  - {dataset: GFDL-CM3, project: CMIP5, ensemble: r1i1p1}
+  
 
 # TODO: All multi-model statistics are turned off until the preprocessor order is fixed.
 
