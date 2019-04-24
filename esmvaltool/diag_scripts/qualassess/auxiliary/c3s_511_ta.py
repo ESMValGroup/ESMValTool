@@ -36,6 +36,12 @@ class ta_Diagnostic_SP(Basic_Diagnostic_SP):
                 #          datetime.datetime(2000, 12, 31)
                 #          )
                 }})
+    
+    def read_data(self, **kwargs):
+        super(ta_Diagnostic_SP, self).read_data(**kwargs)
+        
+        self.sp_data.data = self.sp_data.data * 231.
+        
 
     def __add_mean_var_procedures_2D__(self, cube=None, level=None):
         

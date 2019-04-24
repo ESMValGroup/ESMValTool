@@ -425,7 +425,7 @@ def dict_merge(dct, merge_dct):
                     else:
                         dct[k] = [dct[k], merge_dct[k]]
 
-#@profile
+
 def dask_weighted_mean_wrapper(cube, spatial_weights, dims=None):
     
     if not isinstance(dims,list):
@@ -436,50 +436,41 @@ def dask_weighted_mean_wrapper(cube, spatial_weights, dims=None):
         latlon_list = []
         
         SPW = spatial_weights.compute()
-        size_counter = 0.
-
+        
+        latc = cube.coord("latitude").points
+        cpos = (len(latc) - 1.) / 2.
+        latc = (latc[int(np.ceil(cpos))] + latc[int(np.floor(cpos))])/2
+        latb = cube.coord("latitude").bounds
+        latb = [latb[0][0],latb[-1][-1]]
         
         for latlon in cube.slices(["latitude","longitude"]):
-            
-            logger.info("Number of latlon refs:")
-            logger.info(sys.getrefcount(latlon))
             
             for rcoord in ["day_of_month", "day_of_year", "month_number", "year"]:
                 if rcoord in [coord.name() for coord in latlon.coords()]:
                     latlon.remove_coord(rcoord)
-                    
-            logger.info("Number of latlon refs:")
-            logger.info(sys.getrefcount(latlon))
-    
-            import resource
-            before = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+                
+            latlon_master = next(latlon.slices_over("latitude"))
+                
+            latlon_master.coord("latitude").points = latc
+            latlon_master.coord("latitude").bounds = latb
             
-            latlon2 = latlon.collapsed("latitude", iris.analysis.MEAN,
-                                      weights = SPW)
+            data = latlon_master.core_data() 
             
-            latlon_list.append(latlon2)
+            
+            data = dask.array.sum(latlon.core_data() * SPW /
+                                  dask.array.sum((latlon.core_data() *
+                                                  0. + 1.) * SPW, axis=0),
+                                                  axis=0)
+            
+            latlon_master.data = data
+            
+            latlon_list.append(latlon_master)
+                
             latlon = None
-            latlon2 = None
-            logger.info("Average number of latlon refs:")
-            logger.info(np.mean([sys.getrefcount(lll) for lll in latlon_list]))
-            after1 = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
-            
-            size_counter += round((after1-before)/1024.,2)
         
         dims.remove("latitude")
         
-        logger.info("Sum of Producing latlon elements" + ":")
-        logger.info(str(size_counter) + "MB")
-        
-#        after = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
-#        logger.info("Producing latlon_list" + ":")
-#        logger.info(str(round((after-after1)/1024.,2)) + "MB")
-    
         cube_list = iris.cube.CubeList(latlon_list)
-        
-#        after_after = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
-#        logger.info("Producing cube_list" + ":")
-#        logger.info(str(round((after_after-after)/1024.,2)) + "MB")
         
         new_cube = cube_list.merge_cube()
         
@@ -487,10 +478,6 @@ def dask_weighted_mean_wrapper(cube, spatial_weights, dims=None):
         del latlon_list
         del cube_list
         del SPW
-        
-#        after_after_after = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
-#        logger.info("Producing merged cube_list" + ":")
-#        logger.info(str(round((after_after_after-after_after)/1024.,2)) + "MB")
         
         if len(dims):
             new_cube = new_cube.collapsed(dims, iris.analysis.MEAN)
@@ -502,6 +489,7 @@ def dask_weighted_mean_wrapper(cube, spatial_weights, dims=None):
         
     return new_cube
 
+
 def dask_weighted_stddev_wrapper(cube, spatial_weights, dims=None):    
     weighted_mean = dask_weighted_mean_wrapper(cube,
                                                spatial_weights,
@@ -510,7 +498,6 @@ def dask_weighted_stddev_wrapper(cube, spatial_weights, dims=None):
     for rcoord in ["day_of_month", "day_of_year", "month_number", "year"]:
         if (rcoord in [coord.name() for coord in weighted_mean.coords()] or
             rcoord in [coord.name() for coord in cube.coords()]):
-            logger.info("removing " + rcoord)
             try:
                 cube.remove_coord(rcoord)
             except:
