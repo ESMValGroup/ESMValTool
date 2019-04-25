@@ -395,7 +395,7 @@ def count_spells(data, threshold, axis, spell_length):
     return spell_point_counts
 
 
-def window_threshold_mask(cube, threshold_fraction, min_value, time_window):
+def mask_window_threshold(cube, threshold_fraction, min_value, time_window):
     """
     Find data counts in a time window.
 
@@ -427,7 +427,9 @@ def window_threshold_mask(cube, threshold_fraction, min_value, time_window):
     """
     mask = _get_fillvalues_mask(cube, threshold_fraction, min_value,
                                 time_window)
-    cube.data = np.ma.array(cube.data, mask=mask, fill_value=1e+20)
+    if not np.ma.isMaskedArray(cube.data):
+        cube.data = np.ma.array(cube.data, fill_value=1e+20)
+    cube.data.mask[:, ...] |= mask
     return cube
 
 
