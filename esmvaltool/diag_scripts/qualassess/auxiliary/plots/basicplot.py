@@ -20,6 +20,7 @@ import sys
 import string
 from matplotlib.ticker import FuncFormatter
 import logging
+from memory_profiler import profile
 
 
 def label_in_perc_multiple(x, pos=0):
@@ -301,16 +302,15 @@ class PlotHist(object):
         vmin = np.floor(vmin * 10**rounder) / 10**rounder
         vmax = np.ceil(vmax * 10**rounder) / 10**rounder
         levels = np.round(np.linspace(vmin, vmax, num=nbins), rounder)
-
-        # Create historgramm
-        counts_all = np.array(levels[1:]) * 0.
         
-        for subset in self.data.slices(["latitude","longitude"]):
-            counts = np.array(utils.count_cube_vals_for_levels(subset,levels))
-            counts[np.isnan(counts)] = 0
-            counts_all = counts_all + counts
-            
-        freqs = counts_all/np.sum(counts_all)
+        import resource
+        before = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+        freqs = utils.produce_freqs(self.data,levels)
+        after1 = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+        self.logger.info("freq fun" + ":")
+        self.logger.info(str(round((after1 - before)/1024.,2)) + "MB")
+        
+        self.logger.info(freqs)
             
         mid_levels = []
         for i in np.arange(1,len(levels)):

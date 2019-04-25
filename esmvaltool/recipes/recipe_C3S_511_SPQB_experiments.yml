@@ -30,8 +30,8 @@ documentation:
 
 
 datasets:
-  - {dataset: MRI-CGCM3,  project: CMIP5,  mip: Amon,  exp: decadal1980,  ensemble: r1i1p1,  start_year: 1997,  end_year: 2000}
-#  - {dataset: CDS-XCH4, type: sat, project: OBS,  version: L3, tier: 3, start_year: 2003,  end_year: 2016}
+  - {dataset: MRI-CGCM3,  project: CMIP5,  mip: Amon,  exp: decadal1980,  ensemble: r1i1p1,  start_year: 1991,  end_year: 2000} #1991
+#  - {dataset: CDS-XCH4, type: sat, project: OBS,  version: L3, tier: 3, start_year: 2003,  end_year: 2016} 
 # looks for: [project]_[obssystem]_[dataset]_[level]_[field]_[short_name]*
 preprocessors:
   noop: {}
@@ -55,18 +55,18 @@ diagnostics:
 #        script: qualassess/DUMMY_C3S_511_SPQB.py
 #        requests: [availability]
 #        levels: [3.00e+04,8.50e+04,1.00e+02]
-#      diag_O_hist:
-#        script: qualassess/DUMMY_C3S_511_SPQB.py
-#        requests: [histogram]
-#        levels: [3.00e+04,8.50e+04,1.00e+02]
+      diag_O_hist:
+        script: qualassess/DUMMY_C3S_511_SPQB.py
+        requests: [histogram]
+        levels: [8.50e+04]
 #      diag_MV_ts:
 #        script: qualassess/DUMMY_C3S_511_SPQB.py
 #        requests: [time_series]
 #        levels: [3.00e+04,8.50e+04,1.00e+02]
-      diag_MV_mean:
-        script: qualassess/DUMMY_C3S_511_SPQB.py
-        requests: [mean]
-        levels: [3.00e+04,8.50e+04,1.00e+02]
+#      diag_MV_mean:
+#        script: qualassess/DUMMY_C3S_511_SPQB.py
+#        requests: [mean]
+#        levels: [3.00e+04,8.50e+04,1.00e+02]
 #      diag_MV_std_dev:
 #        script: qualassess/DUMMY_C3S_511_SPQB.py
 #        requests: [std_dev]

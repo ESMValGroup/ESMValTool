@@ -993,8 +993,13 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                 filename = self.__plot_dir__ + os.sep + basic_filename + \
                     "_hist_all_vals" + "." + self.__output_type__
                 list_of_plots.append(filename)
+                import resource
+                before = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
                 x = PlotHist(cube)
                 fig = x.plot()
+                after1 = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+                logger.info("Producing histogram" + ":")
+                logger.info(str(round((after1-before)/1024.,2)) + "MB")
                 fig.savefig(filename)
                 plt.close(fig)
     

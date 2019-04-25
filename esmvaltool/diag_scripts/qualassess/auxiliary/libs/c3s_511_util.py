@@ -504,7 +504,9 @@ def dask_weighted_stddev_wrapper(cube, spatial_weights, dims=None):
                 cube.remove_aux_factory(rcoord)
     
     if "air_pressure" in [coord.name() for coord in cube.coords()]:
-        if np.all((dask.array.flip(weighted_mean.coord("air_pressure").core_points(),0) == cube.coord("air_pressure").core_points()).compute()):
+        if np.all((dask.array.flip(
+                weighted_mean.coord("air_pressure").core_points(),0) == 
+            cube.coord("air_pressure").core_points()).compute()):
             latlontim_list = []
             for latlontim in cube.slices(["time","latitude","longitude"]):
                 latlontim_list.append(latlontim)
@@ -522,17 +524,55 @@ def dask_weighted_stddev_wrapper(cube, spatial_weights, dims=None):
 
     return std_dev
 
+
+def produce_freqs(cube,levels):
+
+        # Create historgramm
+        counts_all = np.array(levels[1:]) * 0.
+        
+        for subset in cube.slices(["latitude","longitude"]):
+            counts = np.array(count_cube_vals_for_levels(subset,levels))
+            counts[np.isnan(counts)] = 0
+            counts_all = counts_all + counts
+        
+        freqs = counts_all/np.sum(counts_all)
+        
+        return freqs
+
+
 def count_cube_vals_for_levels(cube,levels):
     
     counts = np.array(levels[1:]) * 0.
     
+    sum_mem = 0.
+    
     for i in np.arange(1,len(levels)):
+        import resource
+        before = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
         counts[i-1] = count_cube_vals_in_breaks(cube,levels[i-1],levels[i])
+        after1 = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+        
+        sum_mem = sum_mem + after1 - before
+
+    logger.info("for loop add up" + ":")
+    logger.info(str(round(sum_mem/1024.,2)) + "MB")
+    
+    
+    logger.info("references to cube" + ":")
+    logger.info(sys.getrefcount(cube))
         
     return counts
 
+
 def count_cube_vals_in_breaks(cube,start,stop):
-    dims = [c.name() for c in cube.coords()]
-    thiscount = cube.collapsed(dims, iris.analysis.COUNT,function=lambda values: np.logical_and(values >= start,values < stop))
+#    dims = [c.name() for c in cube.coords()]
+
+#    thiscount = cube.collapsed(dims, iris.analysis.COUNT,function=lambda values: np.logical_and(values >= start,values < stop))
     
-    return thiscount.data
+    data = cube.core_data()
+    
+    data = dask.array.logical_and(data >= start, data < stop)
+    
+    thiscount = dask.array.count_nonzero(data)
+    
+    return thiscount#.data
