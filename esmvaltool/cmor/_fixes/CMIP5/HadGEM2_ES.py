@@ -1,4 +1,5 @@
-"""Fixes for HadGEM2_ES"""
+# pylint: disable=invalid-name, no-self-use, too-few-public-methods
+"""Fixes for HadGEM2_ES."""
 import numpy as np
 import iris
 
@@ -6,30 +7,33 @@ from ..fix import Fix
 
 
 class allvars(Fix):
-    """Fixes common to all vars"""
+    """Fixes common to all vars."""
 
-    def fix_metadata(self, cube):
+    def fix_metadata(self, cubes):
         """
-        Fixes latitude
+        Fixes latitude.
 
         Parameters
         ----------
-        cube: iris.cube.Cube
+        cube: iris.cube.CubeList
 
         Returns
         -------
         iris.cube.Cube
 
         """
-        lat = cube.coord('latitude')
-        lat.points = np.clip(lat.points, -90., 90.)
-        lat.bounds = np.clip(lat.bounds, -90., 90.)
+        for cube in cubes:
+            lats = cube.coords('latitude')
+            if lats:
+                lat = cube.coord('latitude')
+                lat.points = np.clip(lat.points, -90., 90.)
+                lat.bounds = np.clip(lat.bounds, -90., 90.)
 
-        return cube
+        return cubes
 
 
 class o2(Fix):
-    """Fixes for o2"""
+    """Fixes for o2."""
 
     def fix_file(self, filepath, output_dir):
         """

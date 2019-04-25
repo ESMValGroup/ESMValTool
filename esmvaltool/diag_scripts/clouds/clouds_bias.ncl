@@ -25,10 +25,11 @@
 ;   long_name: description of variable
 ;
 ; Caveats
-;   TO DO (ESMValTool v2.0.0)
-;   1) get tags from namelist and write meta data to plots
+;   none
 ;
 ; Modification history
+;   20190222-A_laue_ax: added output of provenance (v2.0)
+;   20181119-A_laue_ax: adapted code to multi-variable capable framework
 ;   20180923-A_laue_ax: added writing of results to netcdf
 ;   20180914-A_laue_ax: code rewritten for ESMValTool v2.0
 ;   20170620-A_laue_ax: added tags for reporting
@@ -39,37 +40,29 @@
 ;
 ; ############################################################################
 
-load "interface_scripts/interface.ncl"
+load "$diag_scripts/../interface_scripts/interface.ncl"
 
-load "./diag_scripts/shared/scaling.ncl"
-load "./diag_scripts/shared/statistics.ncl"
-load "./diag_scripts/shared/plot/style.ncl"
-load "./diag_scripts/shared/plot/contour_maps.ncl"
-
-; load "./diag_scripts/shared/meta_data.ncl"
+load "$diag_scripts/shared/scaling.ncl"
+load "$diag_scripts/shared/statistics.ncl"
+load "$diag_scripts/shared/plot/style.ncl"
+load "$diag_scripts/shared/plot/contour_maps.ncl"
 
 begin
 
-  enter_msg(diag_script, "")
+  enter_msg(DIAG_SCRIPT, "")
+
+  var0 = variable_info[0]@short_name
+  info0 = select_metadata_by_name(input_file_info, var0)
+  dim_MOD = ListCount(info0)
+  if (isatt(variable_info[0], "reference_dataset")) then
+    refname = variable_info[0]@reference_dataset
+  end if
+  names = metadata_att_as_array(info0, "dataset")
+  infiles = metadata_att_as_array(info0, "filename")
+
   log_info("++++++++++++++++++++++++++++++++++++++++++")
-  log_info(diag_script + " (var: " + variables(0) + ")")
+  log_info(DIAG_SCRIPT + " (var: " + var0 + ")")
   log_info("++++++++++++++++++++++++++++++++++++++++++")
-
-  ; ========================================================================
-  ; ========================= write references =============================
-  ; ========================================================================
-
-  write_references(diag_script,  \   ; script name
-                   "A_laue_ax",  \   ; authors
-                   "",  \            ; contributors
-                   "",  \            ; diag_references
-                   "",  \            ; obs_references
-                   (/"P_embrace"/))  ; proj_references
-
-  dim_MOD = dimsizes(input_file_info@dataset)
-  dim_VAR = 1
-  var0 = variables(0)
-  field_type0 = field_types(0)
 
   ; time averaging: at the moment, only "annualclim" and "seasonalclim"
   ; are supported
@@ -90,16 +83,18 @@ begin
     season = (/"annual"/)
   end if
 
-  ; make sure path for (optional) netcdf output exists
+  ; create string for caption (netcdf provenance)
 
-  if (config_user_info@write_netcdf.eq."True") then
-    write_nc = True
-    work_dir = config_user_info@work_dir + "/"
-    ; Create work dir
-    system("mkdir -p " + work_dir)
-  else
-    write_nc = False
-  end if
+  allseas = season(0)
+  do is = 1, numseas - 1
+    allseas = allseas + "/" + season(i)
+  end do
+
+  ; make sure path for (mandatory) netcdf output exists
+
+  work_dir = config_user_info@work_dir + "/"
+  ; Create work dir
+  system("mkdir -p " + work_dir)
 
   if (config_user_info@write_plots.eq."True") then
     write_plots = True
@@ -116,8 +111,8 @@ begin
 
   ; check for reference dataset definition
 
-  if (.not.(isatt(variable_info, "reference_dataset"))) then
-    error_msg("f", diag_script, "", "no reference dataset is selected")
+  if (.not.(isvar("refname"))) then
+    error_msg("f", DIAG_SCRIPT, "", "no reference dataset defined in recipe")
   end if
 
   plot_abs_diff = diag_script_info@plot_abs_diff
@@ -125,24 +120,23 @@ begin
 
   ; get reference dataset
 
-  ref_ind = ind(input_file_info@dataset .eq. variable_info@reference_dataset)
-  ref_model = variable_info@reference_dataset
+  ref_ind = ind(names .eq. refname)
   if (ismissing(ref_ind)) then
-    error_msg("f", diag_script, "", "reference model (" \
-              + variable_info@reference_dataset + ") is missing")
+    error_msg("f", DIAG_SCRIPT, "", "reference dataset (" \
+              + refname + ") is missing")
   end if
 
   ; get multi-model mean index
 
-  mm_ind = ind(input_file_info@dataset .eq. "MultiModelMean")
+  mm_ind = ind(names .eq. "MultiModelMean")
 
   if (ismissing(mm_ind)) then
-    error_msg("f", diag_script, "", "multi-model mean is missing (required)")
+    error_msg("f", DIAG_SCRIPT, "", "multi-model mean is missing (required)")
   end if
 
   ; basename of diag_script
 
-  diag_script_base = basename(diag_script)
+  diag_script_base = basename(DIAG_SCRIPT)
 
   ; ========================================================================
   ; =========================== calculations ===============================
@@ -153,18 +147,18 @@ begin
 
   ; read data
 
-  A0 = read_data(mm_ind, variables(0), field_types(0))
+  A0 = read_data(info0[mm_ind])
   mmdata = time_operations(A0, -1, -1, "average", timemean, True)
   delete(A0)
 
-  A0 = read_data(ref_ind, variables(0), field_types(0))
+  A0 = read_data(info0[ref_ind])
   refdata = time_operations(A0, -1, -1, "average", timemean, True)
   delete(A0)
 
   ; differences between multi-model mean and reference data set
 
   diff = mmdata - refdata
-  mmdata@diag_script = diag_script
+  mmdata@diag_script = DIAG_SCRIPT
   copy_VarMeta(mmdata, diff)
 
   delete(refdata)
@@ -190,11 +184,8 @@ begin
   ; ========================================================================
 
   climofiles = new(2, string)
-  climofiles(0) = input_file_info@filename(mm_ind)
-  climofiles(1) = input_file_info@filename(ref_ind)
-
-;  alltags = array_append_record(tags, (/"PT_geo", "ST_clim", "ST_diff", \
-;                                        "DM_global"/), 0)
+  climofiles(0) = infiles(mm_ind)
+  climofiles(1) = infiles(ref_ind)
 
   diff@res_gsnMaximize  = True  ; use full page for the plot
   diff@res_cnFillOn  = True  ; color plot desired
@@ -220,14 +211,12 @@ begin
   diff@res_tmXBOn  = False
   diff@res_tmXTLabelsOn  = False
   diff@res_tmXTOn  = False
-;  diff@res_gsnRightString  = variable_info@long_name + " in " \
-;                             + diff@units
   diff@res_cnInfoLabelOn  = False  ; turn off cn info label
   diff@res_mpProjection  = diag_script_info@projection
 
   diff@var = var0  ; Overwrite existing entry
-  if (isatt(variable_info, "long_name")) then
-  diff@var_long_name = variable_info@long_name
+  if (isatt(variable_info[0], "long_name")) then
+    diff@var_long_name = variable_info[0]@long_name
   end if
   diff@var_units  = diff@units
 
@@ -240,16 +229,12 @@ begin
   diff@res_gsnFrame  = False  ; Don't advance frame.
   diff@res_mpPerimOn  = False
 
-;  diff@res_lbTitleString  = "~F8~D~F21~" + variable_info@long_name + \
-;                            " (" + diff@units + ")"
   diff@res_lbTitleString  = "(" + diff@units + ")"
   diff@res_lbTitlePosition  = "Bottom"
 
   diff@res_lbLabelFontHeightF  = 0.014
-;  diff@res_lbAutoManage  = False
   diff@res_lbTopMarginF  = 0.1
   diff@res_lbTitleFontHeightF  = 0.014
-;  diff@res_pmLabelBarWidthF  = 0.8
 
   diff@res_tiMainFontHeightF  = 0.016
 
@@ -261,30 +246,30 @@ begin
   if (var0.eq."tas") then
     mmdata@res_cnLevels = ispan(-30, 30, 3)
 
-    pal = read_colormap_file("diag_scripts/shared/plot/rgb/" \
+    pal = read_colormap_file("$diag_scripts/shared/plot/rgb/" \
                              + "ipcc-tas.rgb")
     mmdata@res_cnFillColors = pal
-    pal2 = read_colormap_file("diag_scripts/shared/plot/rgb/" \
+    pal2 = read_colormap_file("$diag_scripts/shared/plot/rgb/" \
                               + "ipcc-tas-delta.rgb")
     diff@res_cnFillColors = pal2
     if (plot_abs_diff) then
-      pal3 = read_colormap_file("diag_scripts/shared/plot/rgb/" \
+      pal3 = read_colormap_file("$diag_scripts/shared/plot/rgb/" \
                                 + "ipcc-tas-absdelta.rgb")
     end if
     else if (var0.eq."pr") then
       mmdata@res_cnLevels = ispan(10, 100, 15) * 0.1
 
-      pal = read_colormap_file("diag_scripts/shared/plot/rgb/ipcc-precip.rgb")
+      pal = read_colormap_file("$diag_scripts/shared/plot/rgb/ipcc-precip.rgb")
       mmdata@res_cnFillColors = pal
-      pal2 = read_colormap_file("diag_scripts/shared/plot/rgb/" \
+      pal2 = read_colormap_file("$diag_scripts/shared/plot/rgb/" \
                                 + "ipcc-precip-delta.rgb")
       diff@res_cnFillColors = pal2
       if (plot_abs_diff) then
-        pal3 = read_colormap_file("diag_scripts/shared/plot/rgb/" \
+        pal3 = read_colormap_file("$diag_scripts/shared/plot/rgb/" \
                                   + "ipcc-precip-absdelta.rgb")
       end if
       if (plot_rel_diff) then
-        pal4 = read_colormap_file("diag_scripts/shared/plot/rgb/" \
+        pal4 = read_colormap_file("$diag_scripts/shared/plot/rgb/" \
                                   + "ipcc-precip-reldelta.rgb")
       end if
     else
@@ -363,6 +348,9 @@ begin
   pres@gsnPanelYWhiteSpacePercent = 5
   pres@gsnPanelXWhiteSpacePercent = 5
 
+  plotfile = new(numseas, string)
+  plotfile(:) = ""
+
   if (write_plots) then
     do is = 0, numseas - 1
       ; --------------------------------------------------------------------
@@ -372,8 +360,10 @@ begin
         delete(wks)
       end if
 
-      wks = get_wks("dummy_for_wks", diag_script, "clouds_bias_" + var0 \
+      wks = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_bias_" + var0 \
                     + "_" + season(is))
+
+      plotfile(is) = wks@fullname
 
       if (numseas.gt.1) then
         pres@txString = season(is)
@@ -408,39 +398,53 @@ begin
       if (plot_rel_diff) then
         caption = caption + ", relative error"
       end if
-      caption = caption + " for variable " + variables(0) \
-        + " (" + season(is) + "), reference = " + \
-        input_file_info@dataset(ref_ind) + "."
-      id = diag_script + "_" + variables(0) + "_" + season(is)
-
-      contrib_authors = "A_laue_ax"
-
-;      ESMValMD(wks@fullname, alltags, caption, id, variables(0), \
-;               input_file_info@dataset, climofiles, diag_script, \
-;               contrib_authors)
 
     end do  ; is-loop (seasons)
   end if  ; if write_plots
 
   ; ###########################################
-  ; # Optional output to netCDF  #
+  ; # output to netCDF                        #
   ; ###########################################
 
-  if (write_nc) then
-    nc_filename = work_dir + "clouds_bias_mmm_" + var0 + ".nc"
-    nc_outfile = ncdf_write(mmdata, nc_filename)
-    nc_filename = work_dir + "clouds_bias_diff_" + var0 + ".nc"
-    nc_outfile = ncdf_write(diff, nc_filename)
-    if (isvar("absdiff")) then
-      nc_filename = work_dir + "clouds_bias_abs_diff_" + var0 + ".nc"
-      nc_outfile = ncdf_write(absdiff, nc_filename)
-    end if
-    if (isvar("reldiff")) then
-      nc_filename = work_dir + "clouds_bias_rel_diff_" + var0 + ".nc"
-      nc_outfile = ncdf_write(reldiff, nc_filename)
-    end if
+  nc_filename = work_dir + "clouds_bias_" + var0 + ".nc"
+  nc_filename@existing = "append"
+
+  mmdata@var = var0 + "_mean"
+  mmdata@long_name = var0 + " (multi-model mean)"
+  nc_outfile = ncdf_write(mmdata, nc_filename)
+
+  diff@var = var0 + "_bias"
+  diff@long_name = var0 + " (multi-model bias)"
+  nc_outfile = ncdf_write(diff, nc_filename)
+
+  if (isvar("absdiff")) then
+    absdiff@var = var0 + "_abs_bias"
+    absdiff@long_name = var0 + " (multi-model absolute bias)"
+    nc_outfile = ncdf_write(absdiff, nc_filename)
   end if
 
-  leave_msg(diag_script, "")
+  if (isvar("reldiff")) then
+    reldiff@var = var0 + "_rel_bias"
+    reldiff@long_name = var0 + " (multi-model relative bias)"
+    reldiff@units = reldiff@units
+    nc_outfile = ncdf_write(reldiff, nc_filename)
+  end if
+
+  ; ------------------------------------------------------------------------
+  ; write provenance to netcdf output and plot file(s) (mean)
+  ; ------------------------------------------------------------------------
+
+  statistics = (/"clim", "diff"/)
+  domain = ("glob")
+  plottype = ("geo")
+  prov_caption = caption + " for variable " + var0 \
+    + " (" + allseas + "), reference = " + names(ref_ind) + "."
+
+  do is = 0, numseas - 1
+    log_provenance(nc_outfile, plotfile(is), prov_caption, statistics, \
+                   domain, plottype, "", "", climofiles)
+  end do
+
+  leave_msg(DIAG_SCRIPT, "")
 
 end

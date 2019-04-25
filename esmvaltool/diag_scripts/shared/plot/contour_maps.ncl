@@ -13,12 +13,12 @@
 ;
 ; #############################################################################
 
-load "./interface_scripts/auxiliary.ncl"
-load "./interface_scripts/logging.ncl"
+load "$diag_scripts/../interface_scripts/auxiliary.ncl"
+load "$diag_scripts/../interface_scripts/logging.ncl"
 
-load "./diag_scripts/shared/set_operators.ncl"
+load "$diag_scripts/shared/set_operators.ncl"
 
-load "./diag_scripts/shared/plot/aux_plotting.ncl"
+load "$diag_scripts/shared/plot/aux_plotting.ncl"
 
 ; #############################################################################
 undef("contour_map")
@@ -327,7 +327,7 @@ begin
   end if
 
   ; Check if a valid wks has been provided, otherwise invoke default
-  wks = get_wks(wks_in, diag_script, var)
+  wks = get_wks(wks_in, DIAG_SCRIPT, var)
 
   ; Default resources
   res = True

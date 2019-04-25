@@ -26,10 +26,11 @@
 ;   reference_dataset: name of reference datatset
 ;
 ; Caveats
-;   TO DO (ESMValTool v2.0.0)
-;     1) get tags from namelist and write meta data to plots
+;   none
 ;
 ; Modification history
+;   20190220-A_laue_ax: added provenance to output (v2.0)
+;   20181120-A_laue_ax: adapted code to multi-variable capable framework
 ;   20180923-A_laue_ax: added writing of results to netcdf
 ;   20180611-A_laue_ax: code rewritten for ESMValTool v2.0
 ;   20170620-A_laue_ax: added tags for reporting
@@ -47,42 +48,28 @@
 ; A temporary file written by the invoking Python script
 ; Passes on a number of variables from Python to NCL
 
-load "interface_scripts/interface.ncl"
+load "$diag_scripts/../interface_scripts/interface.ncl"
 
-load "./diag_scripts/shared/plot/aux_plotting.ncl"
-load "./diag_scripts/shared/statistics.ncl"
-load "./diag_scripts/shared/plot/style.ncl"
-load "./diag_scripts/shared/plot/contour_maps.ncl"
-
-; load "./diag_scripts/lib/ncl/meta_data.ncl"
+load "$diag_scripts/shared/plot/aux_plotting.ncl"
+load "$diag_scripts/shared/statistics.ncl"
+load "$diag_scripts/shared/plot/style.ncl"
+load "$diag_scripts/shared/plot/contour_maps.ncl"
 
 begin
-  enter_msg(diag_script, "")
+  enter_msg(DIAG_SCRIPT, "")
+
+  var0 = variable_info[0]@short_name
+  info0 = select_metadata_by_name(input_file_info, var0)
+  dim_MOD = ListCount(info0)
+  if (isatt(variable_info[0], "reference_dataset")) then
+    refname = variable_info[0]@reference_dataset
+  end if
+  names = metadata_att_as_array(info0, "dataset")
+  infiles = metadata_att_as_array(info0, "filename")
+
   log_info("++++++++++++++++++++++++++++++++++++++++++")
-  log_info(diag_script + " (var: " + variables(0) + ")")
+  log_info(DIAG_SCRIPT + " (var: " + var0 + ")")
   log_info("++++++++++++++++++++++++++++++++++++++++++")
-
-  ; ###############################
-  ; define diagnostic specific tags
-  ; ###############################
-
-  diag_tags = (/"PT_geo", "DM_global", "ST_clim", "ST_var"/)
-
-  ; ###########################################
-  ; # references                              #
-  ; ###########################################
-
-  write_references(diag_script,      \  ; script name
-                   "A_laue_ax",      \  ; authors
-                   "",               \  ; contributors
-                   "D_lauer13jclim", \  ; diag_references
-                   "",               \  ; obs_references
-                   (/"P_embrace"/))     ; proj_references
-
-  dim_MOD = dimsizes(input_file_info@dataset)
-  dim_VAR = dimsizes(variables)
-  var0 = variables(0)
-  field_type0 = field_types(0)
 
   set_default_att(diag_script_info, "colormap", "WhiteBlueGreenYellowRed")
   set_default_att(diag_script_info, "extrafiles", False)
@@ -90,16 +77,11 @@ begin
 
   extrafiles = diag_script_info@extrafiles
 
-  ; make sure path for (optional) netcdf output exists
+  ; make sure path for (mandatory) netcdf output exists
 
-  if (config_user_info@write_netcdf.eq."True") then
-    write_nc = True
-    work_dir = config_user_info@work_dir + "/"
-    ; Create work dir
-    system("mkdir -p " + work_dir)
-  else
-    write_nc = False
-  end if
+  work_dir = config_user_info@work_dir + "/"
+  ; Create work dir
+  system("mkdir -p " + work_dir)
 
   if (config_user_info@write_plots.eq."True") then
     write_plots = True
@@ -109,7 +91,7 @@ begin
 
   ; get multi-model mean index (if present)
 
-  mm_ind = ind(input_file_info@dataset .eq. "MultiModelMean")
+  mm_ind = ind(names .eq. "MultiModelMean")
 
   if (ismissing(mm_ind)) then
     mm_ind = -1
@@ -117,10 +99,9 @@ begin
 
   ref_ind = -1  ; set to invalid value
 
-  ; if attribute is present, use it so plots can be sorted
-  if (isatt(variable_info, "reference_dataset")) then
-    ref_ind = ind(input_file_info@dataset .eq. \
-                  variable_info@reference_dataset)
+  ; if reference dataset has been defined, use it so plots can be sorted
+  if (isvar("refname")) then
+    ref_ind = ind(names .eq. refname)
   end if
 
 end
@@ -129,17 +110,16 @@ begin
   ind_all_sorted = ispan(0, dim_MOD - 1, 1)  ; create array
 
   if (ref_ind .ge. 0) then
-    ind_wo_ref = ind(input_file_info@dataset .ne. \
-                     variable_info@reference_dataset)
+    ind_wo_ref = ind(names .ne. refname)
     ind_all_sorted(0) = ref_ind
     ind_all_sorted(1:dim_MOD - 1) = ind_wo_ref
   end if
 
+  maps = new(dim_MOD, graphic)  ; collect individual maps in a graphic array
+
   ; ###########################################
   ; # get data and average time               #
   ; ###########################################
-
-  maps = new(dim_MOD, graphic)  ; collect individual maps in a graphic array
 
   do ii = 0, dim_MOD - 1
 
@@ -149,28 +129,34 @@ begin
       delete(data1)
     end if
 
-    log_info("processing " + input_file_info@dataset(imod))
+    log_info("processing " + names(imod))
 
     if (isvar("A0")) then
       delete(A0)
     end if
 
-    A0 = read_data(imod, var0, field_type0)
+    A0 = read_data(info0[imod])
 
     ; check dimensions
 
     dims = getvardims(A0)
     if (dimsizes(dims) .lt. 2) then
-      error_msg("f", diag_script, "", dimsizes(dims) + \
+      error_msg("f", DIAG_SCRIPT, "", dimsizes(dims) + \
                 " dimensions, need 2 or 3")
     end if
     idx = ind(dims .eq. "lat")
     if (ismissing(idx)) then
-      error_msg("f", diag_script, "", "no lat dimension")
+      error_msg("f", DIAG_SCRIPT, "", "no lat dimension")
     end if
     idx = ind(dims .eq. "lon")
       if (ismissing(idx)) then
-      error_msg("f", diag_script, "", "no lon dimension")
+      error_msg("f", DIAG_SCRIPT, "", "no lon dimension")
+    end if
+
+    if (var0.eq."pr") then
+      ; convert from kg m-2 s-1 to mm day-1
+      A0 = A0 * 86400.0
+      A0@units = "mm day-1"
     end if
 
     ; subtract climatological seasonal cycle from time series
@@ -202,7 +188,7 @@ begin
     ; retrieve unique strings describing the data
     ; function in ./diag_scripts/lib/ncl/style.ncl
 
-    annots = project_style(diag_script_info, "annots")
+    annots = project_style(info0, diag_script_info, "annots")
 
     ; ###########################################
     ; # plot ressources                         #
@@ -223,11 +209,8 @@ begin
 
     ; annotation
 
-;    data1@res_tiMainString         = MyParam  ; Main title
     data1@res_tiMainOn             = False
-;    data1@res_gsnLeftString        = annots(imod)
     data1@res_gsnLeftStringFontHeightF = 0.015
-;    data1@res_gsnLeftString        = input_file_info@dataset(imod)
     data1@res_cnLevelSelectionMode = "ExplicitLevels"
 
     if (diag_script_info@projection.eq."Robinson") then
@@ -252,7 +235,7 @@ begin
       data1@res_mpFillOn           = True
       data1@res_mpLandFillColor    = "Black"
 ;      delete(pal)
-;      pal = read_colormap_file("diag_scripts/shared/plot/rgb/qcm3.rgb")
+;      pal = read_colormap_file("$diag_scripts/shared/plot/rgb/qcm3.rgb")
     end if
 
     nboxes = dimsizes(data1@res_cnLevels)
@@ -279,7 +262,6 @@ begin
     data1@res_tmXBOn               = False
     data1@res_tmXTLabelsOn         = False
     data1@res_tmXTOn               = False
-;    data1@res_gsnRightString       = var0 + " in " + variable_info@units
     data1@res_cnInfoLabelOn        = False    ; turn off cn info label
 
     data1@res_mpProjection         = diag_script_info@projection
@@ -299,16 +281,23 @@ begin
     if (isatt(data1, "diag_script")) then  ; add to existing entries
       temp = data1@diag_script
       delete(data1@diag_script)
-      data1@diag_script = array_append_record(temp, (/diag_script/), 0)
+      data1@diag_script = array_append_record(temp, (/DIAG_SCRIPT/), 0)
       delete(temp)
     else  ; add as new attribute
-      data1@diag_script = (/diag_script/)
+      data1@diag_script = (/DIAG_SCRIPT/)
     end if
     data1@var = var0  ; Overwrite existing entry
-    if (isatt(variable_info, "long_name")) then
-      data1@var_long_name = variable_info@long_name
+    if (isatt(variable_info[0], "long_name")) then
+      data1@var_long_name = variable_info[0]@long_name
+    else
+      data1@var_long_name = var0
     end if
     data1@var_units    = "%"
+
+    ; copy attributes for netCDF output
+
+    data1@long_name = "interannual variability " + data1@var_long_name
+    data1@units = data1@var_units
 
     ; ###########################################
     ; # create the plot                         #
@@ -321,7 +310,7 @@ begin
 
     if (ii.eq.0) then
       if (.not.extrafiles) then
-        wks = get_wks("dummy_for_wks", diag_script, "clouds_interannual_" \
+        wks = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_interannual_" \
                       + var0)
       end if
 ;      drawNDCGrid(wks)  ; debugging option
@@ -331,48 +320,61 @@ begin
       if (isvar("wks")) then
         delete(wks)
       end if
-      wks = get_wks("dummy_for_wks", diag_script, "clouds_interannual_" \
+      wks = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_interannual_" \
                     + var0 + "_" + annots(imod))
     end if
 
     maps(ii) = contour_map(wks, data1, var0)
 
-    ; ###########################################
-    ; # optional output to netCDF               #
-    ; ###########################################
+    if (extrafiles) then
+      if (write_plots) then  ; add labels
+        txres = True
+        txres@txFontHeightF = 0.03
+        txres@txJust = "BottomRight"
+        txres@txPerimOn = True
+        txres@txBackgroundFillColor = "white"
+        text = gsn_add_text(wks, maps(ii), annots(imod), 170, -80, txres)
+        draw(maps(ii))
+        frame(wks)
+        plotfile = maps@outfile
+      else
+        plotfile = ""
+      end if
 
-    if (write_nc) then
+      ; ##########################################
+      ; # output each dataset to separate netCDF #
+      ; ##########################################
+
       nc_filename = work_dir + "clouds_interannual_" + var0 + "_" \
-                    + input_file_info@dataset(imod) + ".nc"
+        + annots(imod) + ".nc"
       nc_outfile = ncdf_write(data1, nc_filename)
-    end if
 
-    if (write_plots .and. extrafiles) then  ; add labels
-      txres = True
-      txres@txFontHeightF = 0.03
-      txres@txJust = "BottomRight"
-      txres@txPerimOn = True
-      txres@txBackgroundFillColor = "white"
-      text = gsn_add_text(wks, maps(ii), annots(imod), 170, -80, txres)
-      draw(maps(ii))
-      frame(wks)
+      ; -------------------------------------------------------------------
+      ; write provenance info
+      ; -------------------------------------------------------------------
 
-      ; *** add meta data for reporting to plots ***
+      statistics = (/"clim", "var"/)
+      domain = ("glob")
+      plottype = ("geo")
+      climofile = infiles(imod)
+      caption = "Interannual variability of variable " + var0 + \
+                " from dataset " + annots(imod) + "."
 
-;      alltags = array_append_record(tags, diag_tags, 0)
-      caption = "Interannual variability of variable " + variables(0) + \
-        " from dataset " + input_file_info@dataset(imod) + "."
-      id = diag_script + "_" + input_file_info@dataset(imod)
-      climofile = input_file_info@filename(imod)
-      contrib_authors = "A_laue_ax"
+      log_provenance(nc_outfile, plotfile, caption, statistics, domain, \
+                     plottype, "", "", climofile)
 
-;      ESMValMD(maps@outfile, alltags, caption, id, variables(0), \
-;               input_file_info@dataset(imod), climofile, diag_script, \
-;               contrib_authors)
+    else  ; extrafiles .eq. false
 
-;      delete([/alltags, caption, id, climofile/])
+      ; #########################################
+      ; # output all datasets to common netCDF  #
+      ; #########################################
 
-    end if
+      nc_filename = work_dir + "clouds_interannual_" + var0 + ".nc"
+      nc_filename@existing = "append"
+      data1@var = var0 + "_var_" + annots(imod)
+      nc_outfile = ncdf_write(data1, nc_filename)
+
+    end if  ; if extrafiles
   end do  ; ii-loop (datasets)
 
   if (write_plots) then
@@ -391,9 +393,6 @@ begin
     pres@lbTitleString              = "~F8~s~F21~" + var0 + " (%)"
     pres@lbPerimOn                  = False     ; draw line around label
                                                 ; bar area
-;    pres@gsnPanelTop                = 0.96
-;    pres@gsnPanelBottom             = 0.012    ; add space for common
-;                                               ; colorbar (default = 0.0)
     pres@gsnPanelCenter             = False
     pres@pmLabelBarOrthogonalPosF   = -0.01     ; shift label bar a bit to
                                                 ; the bottom
@@ -404,7 +403,7 @@ begin
         delete(wks)
       end if
       ; plot legend
-      wks = get_wks("dummy_for_wks", diag_script, "clouds_interannual_" \
+      wks = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_interannual_" \
                     + var0 + "_legend")
       pres@lbMonoFillPattern = True
       pres@lbOrientation = "Horizontal"
@@ -419,24 +418,25 @@ begin
     else
       outfile = panelling(wks, maps, (dim_MOD + 3) / 4, 4, pres)
       log_info(" Wrote " + outfile)
-
-;      alltags = array_append_record(tags, diag_tags, 0)
-        caption = "Interannual variability of variable " + variables(0) + "."
-        id = diag_script + "_" + variables(0) + "_all_models"
-
-        climofiles = new(dim_MOD, string)
-        climofiles = input_file_info@filename
-        contrib_authors = "A_laue_ax"
-
-;        ESMValMD(outfile, alltags, caption, id, variables(0), \
-;                 input_file_info@dataset, climofiles, diag_script, \
-;                 contrib_authors)
-;
-;        delete([/alltags, caption, id, climofiles/])
-
     end if
+  else
+    outfile = ""
   end if  ; if write_plots
 
-  leave_msg(diag_script, "")
+  ; ------------------------------------------------------------------------
+  ; write provenance to common netcdf and plot file
+  ; ------------------------------------------------------------------------
+
+  if (.not. extrafiles) then
+    statistics = (/"clim", "var"/)
+    domain = ("glob")
+    plottype = ("geo")
+    caption = "Interannual variability of variable " + var0 + "."
+
+    log_provenance(nc_outfile, outfile, caption, statistics, domain, \
+                   plottype, "", "", infiles)
+  end if
+
+  leave_msg(DIAG_SCRIPT, "")
 
 end

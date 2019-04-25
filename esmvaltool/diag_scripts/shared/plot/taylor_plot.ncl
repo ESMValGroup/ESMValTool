@@ -10,12 +10,12 @@
 ;
 ; #############################################################################
 
-load "./interface_scripts/auxiliary.ncl"
-load "./interface_scripts/logging.ncl"
+load "$diag_scripts/../interface_scripts/auxiliary.ncl"
+load "$diag_scripts/../interface_scripts/logging.ncl"
 
-load "./diag_scripts/shared/set_operators.ncl"
+load "$diag_scripts/shared/set_operators.ncl"
 
-load "./diag_scripts/shared/plot/aux_plotting.ncl"
+load "$diag_scripts/shared/plot/aux_plotting.ncl"
 
 
 ; #############################################################################
@@ -75,13 +75,13 @@ begin
   defaults = (/"default", "dummy", "dummy_for_var", "Default", "Dummy"/)
   if (any(varname .eq.  defaults)) then
     grade = att2var(data, "var")
-    diag_script = att2var(data, "diag_script")
+    DIAG_SCRIPT = att2var(data, "diag_script")
   else
     grade = varname
   end if
 
   ; Check if a valid wks has been provided, otherwise invoke default
-  wks = get_wks(wks_in, diag_script, varname)
+  wks = get_wks(wks_in, DIAG_SCRIPT, varname)
 
   ; Set main quantities
   RATIO      = data(:, :, 0)
