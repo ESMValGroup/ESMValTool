@@ -256,6 +256,18 @@ class CMORCheck(object):
                 except iris.exceptions.CoordinateNotFoundError:
                     try:
                         coord = self._cube.coord(coordinate.standard_name)
+                        if self._cmor_var.table_type == 'CMIP6' and \
+                           coord.var_name in ['latitude', 'longitude']:
+                            # Add comment about dealing with a native grid?
+                            continue
+                        else:
+                            self.report_error(
+                                'Coordinate {0} has var name {1}' \
+                                'instead of {2}',
+                                coordinate.name,
+                                coord.var_name,
+                                coordinate.out_name,
+                                )
                     except iris.exceptions.CoordinateNotFoundError:
                         self.report_error(self._does_msg, coordinate.name,
                                           'exist')
