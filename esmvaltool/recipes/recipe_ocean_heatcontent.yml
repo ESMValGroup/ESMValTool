@@ -74,14 +74,10 @@ preprocessors:
   # --------------------------------------------------
   prep_timeseries_1: # For 2D fields
     custom_order: true
-#    extract_levels:
-#      levels: [700]
-#      scheme: nearest
-#    time_average:
-#
     extract_volume:
       z_min: 700.
       z_max: 0.
+    annual_mean:
 #    average_volume:
 #      coordz: depth
 #      coord1: longitude

@@ -312,8 +312,6 @@ def global_sum(
         cube = diagtools.bgc_units(cube, metadata[filename]['short_name'])
         cube = cube.collapsed(['longitude', 'latitude', 'depth'], 
         iris.analysis.SUM)
-#   the following line can go very soon when we've got the preprocessor for annual means                
-        cube = cube.aggregated_by('year', iris.analysis.MEAN)
         cube.remove_coord('day_of_month')
         cube.remove_coord('day_of_year')
         cube.remove_coord('month_number')
