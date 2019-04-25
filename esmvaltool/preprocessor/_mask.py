@@ -395,19 +395,15 @@ def count_spells(data, threshold, axis, spell_length):
     return spell_point_counts
 
 
-def window_counts(cube, value_threshold, window_size, pctile):
+def window_threshold_mask(cube, threshold_fraction, min_value, time_window):
     """
     Find data counts in a time window.
 
-    Function that returns a flat array containing
-    the number of data points within a time window `window_size'
+    Function that returns a masked data cube. The masking is done on
+    the number of valid data points within a time window `window_size'
     per grid point that satify a simple value thresholding condition
-    value > value_threshold.
-    It also returns statistical measures for the flat array
-    window_counts[0] = array
-    window_counts[1] = mean(array)
-    window_counts[2] = std(array)
-    window_counts[3] = percentile(array, pctile).
+    value > value_threshold. This is the equivalent of mask_fillvalues
+    but for single data products (single iris cubes).
 
     Parameters
     ----------
@@ -415,39 +411,24 @@ def window_counts(cube, value_threshold, window_size, pctile):
     * cube (iris.Cube.cube instance):
         data cube to be masked.
 
-    * value_threshold (float):
-        simple value threshold to be applied on all data points.
+    * threshold_fraction (float, between 0 and 1):
+        fractional threshold of missing data points.
 
-    * window_size (float):
-        time window size in which the number of unmasked points is counted.
+    * min_value (float):
+        minumum value threshold.
 
-    * pctile (float):
-        reference percentile to be used for percentile in data counts.
+    * time_window (float):
+        time window to compute missing data counts.
 
     Returns
     -------
-    Main return: flat numpy array Array.
-    Array, mean(Array), std(Array), percentile(Array).
+    Masked iris cube.
 
     """
-    # Make an aggregator from the user function.
-    spell_count = Aggregator(
-        'spell_count', count_spells, units_func=lambda units: 1)
-
-    # Calculate the statistic.
-    counts_windowed_cube = cube.collapsed(
-        'time',
-        spell_count,
-        threshold=value_threshold,
-        spell_length=window_size)
-
-    # if one wants to print the whole array
-    # np.set_printoptions(threshold=np.nan)
-    r_p = counts_windowed_cube.data.flatten()
-    meanr = np.mean(r_p)
-    stdr = np.std(r_p)
-    prcr = np.percentile(r_p, pctile)
-    return r_p, meanr, stdr, prcr
+    mask = _get_fillvalues_mask(cube, threshold_fraction, min_value,
+                                time_window)
+    cube.data = np.ma.array(cube.data, mask=mask, fill_value=1e+20)
+    return cube
 
 
 def mask_above_threshold(cube, threshold):
@@ -586,17 +567,17 @@ def _get_fillvalues_mask(cube, threshold_fraction, min_value, time_window):
         data cube to be masked.
 
     * threshold_fraction (float, between 0 and 1):
-        fractional threshold to be used as argument for Aggregator.
+        fractional threshold of missing (masked) data points.
 
     * min_value (float):
         minumum value threshold to be used as argument for Aggregator.
 
     * time_window (float):
-        time window to be used as argument for Aggregator.
+        time window in which missing (masked) data points are counted.
 
     Returns
     -------
-    Masked iris cube.
+    numpy masked array.
 
     """
     # basic checks
