@@ -4,7 +4,8 @@ import unittest
 
 import numpy as np
 from esmvaltool.preprocessor._mask import (_apply_fx_mask, _check_dims,
-                                           count_spells, mask_above_threshold,
+                                           _get_fx_mask, count_spells,
+                                           mask_above_threshold,
                                            mask_below_threshold,
                                            mask_inside_range,
                                            mask_outside_range)
@@ -42,6 +43,7 @@ class Test(tests.Test):
                 standard_name='time',
                 units=Unit('days since 1950-01-01 00:00:00',
                            calendar='gregorian')), 0)
+        self.fx_data = np.array([20., 60., 50.])
 
     def test_apply_fx_mask(self):
         """Test _apply_fx_mask func."""
@@ -63,6 +65,32 @@ class Test(tests.Test):
         """Test count_spells func."""
         ref_spells = count_spells(self.time_cube.data, -1000., 0, 1)
         assert_equal(24, ref_spells)
+        ref_spells = count_spells(self.time_cube.data, -1000., 0, 2)
+        assert_equal(12, ref_spells)
+
+    def test_get_fx_mask(self):
+        """Test _get_fx_mask func."""
+        # sftlf: land. sea
+        computed = _get_fx_mask(self.fx_data, 'land', 'sftlf')
+        expected = np.array([False, True, False])
+        assert_array_equal(expected, computed)
+        computed = _get_fx_mask(self.fx_data, 'sea', 'sftlf')
+        expected = np.array([True, False, True])
+        assert_array_equal(expected, computed)
+        # sftof: land, sea
+        computed = _get_fx_mask(self.fx_data, 'land', 'sftof')
+        expected = np.array([True, False, False])
+        assert_array_equal(expected, computed)
+        computed = _get_fx_mask(self.fx_data, 'sea', 'sftof')
+        expected = np.array([False, True, True])
+        assert_array_equal(expected, computed)
+        # sftgif: ice, landsea
+        computed = _get_fx_mask(self.fx_data, 'ice', 'sftgif')
+        expected = np.array([False, True, False])
+        assert_array_equal(expected, computed)
+        computed = _get_fx_mask(self.fx_data, 'landsea', 'sftgif')
+        expected = np.array([True, False, True])
+        assert_array_equal(expected, computed)
 
     def test_mask_above_threshold(self):
         """Test to mask above a threshold."""
