@@ -35,7 +35,18 @@ class albedo_Diagnostic_SP(Basic_Diagnostic_SP):
                 },
             'NHem': {
                 'latitude': (90, 00),
-                }}
+                },
+            'Brasilia': {
+                'latitude': (-3, -18),
+                'longitude': (-49, -69),
+                },
+            }
+            
+#    def read_data(self):
+#        super(albedo_Diagnostic_SP, self).read_data()
+#        
+#        self.sp_data = self.__spatiotemp_subsets__(self.sp_data)['Brasilia']
+            
 
     def __add_mean_var_procedures_2D__(self, cube=None, level=None):
         
