@@ -25,6 +25,10 @@ CMIP6:
     DKRZ: '[institute]/[dataset]/[exp]/[ensemble]/[mip]/[short_name]/[grid]/[latestversion]'
     ETHZ: '[exp]/[mip]/[short_name]/[dataset]/[ensemble]/[grid]/'
   input_file: '[short_name]_[mip]_[dataset]_[exp]_[ensemble]_[grid]_*.nc'
+  input_fx_dir:
+    default: '/'
+    BADC: '[institute]/[dataset]/[exp]/[ensemble]/[fxdir]/[short_name]/[grid]/[latestversion]'
+  input_fx_file: '[fx_var]_[fxdir]_[dataset]_[exp]_[ensemble]_[grid].nc'
   output_file: '[project]_[dataset]_[mip]_[exp]_[ensemble]_[short_name]_[start_year]-[end_year]'
   cmor_type: 'CMIP6'
   institutes:
