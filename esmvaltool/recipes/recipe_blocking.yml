@@ -45,7 +45,7 @@ diagnostics:
     description: Blocking
     variables:
       zg:
-        reference_dataset: GFDL-ESM2M
+        reference_dataset: HadGEM2-CC
         mip: day
         field: T2M
         preprocessor: extract
@@ -63,13 +63,13 @@ diagnostics:
         smoothing_window: 5
         max_color_scale: 10
 
-      # blocking2D:
-      #   script: blocking/blocking.py
-      #   title: "Blocking diagnostic 2D"
-      #   compute_2d: True
-      #   compute_1d: False
-      #   span: 15.0
-      #   north_threshold: -10.0
-      #   south_threshold: 0.0
-      #   persistence: 5
-      #   max_color_scale: 10
+      blocking2D:
+        script: blocking/blocking.py
+        title: "Blocking diagnostic 2D"
+        compute_2d: True
+        compute_1d: False
+        span: 15.0
+        north_threshold: -10.0
+        south_threshold: 0.0
+        persistence: 5
+        max_color_scale: 10

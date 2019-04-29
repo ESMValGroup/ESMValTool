@@ -27,6 +27,8 @@ import iris.coords
 import iris.quickplot
 import cartopy.crs as ccrs
 
+import skill_metrics
+
 import esmvaltool.diag_scripts.shared
 import esmvaltool.diag_scripts.shared.names as n
 from esmvaltool.preprocessor import regrid
@@ -105,8 +107,9 @@ class Blocking(object):
         reference_1d, reference_2d = \
             self._get_blocking_indices(self.reference_dataset)
 
-        error = {}
-        correlation = {}
+        skills = {'total': {}}
+        for month in range(1, 13):
+            skills[month] = {}
 
         datasets = [dataset for dataset in self.datasets
                     if dataset != self.reference_dataset]
@@ -127,50 +130,41 @@ class Blocking(object):
                 diff = dataset_2d - reference_2d
                 diff.long_name = 'Differences between model and ' \
                                  'reference in blocking index'
-
-                for diff_slice in diff.slices_over('month_number'):
-                    self.plot_differences(
-                        filename, diff_slice, cmap, projection,
-                        min_lat, max_lat
+                taylor_data = skill_metrics.taylor_statistics(
+                    np.ravel(dataset_2d.data),
+                    np.ravel(reference_2d.data),
+                )
+                corr = iris.analysis.stats.pearsonr(reference_2d, dataset_2d).data
+                taylor_data['ccoef'][1] = corr
+                skills['total'][filename] = taylor_data
+                logger.debug(dataset_2d)
+                for month_slice in dataset_2d.slices_over('month_number'):
+                    month = month_slice.coord('month_number').points[0]
+                    ref_slice = reference_2d.extract(
+                        iris.Constraint(month_number=month)
                     )
-
-                rms = diff.collapsed(
-                    ('longitude', 'latitude'),
-                    iris.analysis.RMS
-                )
-
-                if self.cfg[n.WRITE_NETCDF]:
-                    new_filename = os.path.basename(filename).replace(
-                        'zg', 'blocking2Drms')
-                    netcdf_path = os.path.join(
-                        self.cfg[n.WORK_DIR], new_filename)
-                    iris.save(rms, target=netcdf_path, zlib=True)
-
-                corr = iris.analysis.stats.pearsonr(
-                    reference_2d, dataset_2d,
-                    corr_coords=('longitude', 'latitude'),
-                    weights=iris.analysis.cartography.area_weights(
-                        reference_2d),
-                )
-                if self.cfg[n.WRITE_NETCDF]:
-                    new_filename = os.path.basename(filename).replace(
-                        'zg', 'blocking2Dcorr')
-                    netcdf_path = os.path.join(
-                        self.cfg[n.WORK_DIR], new_filename)
-                    iris.save(corr, target=netcdf_path, zlib=True)
-
-                error[filename] = rms
-                correlation[filename] = corr
-                logger.info('Correlation:')
-                logger.info(corr.data)
-                logger.info('Root Mean Square Error:')
-                logger.info(rms.data)
+                    corr = iris.analysis.stats.pearsonr(ref_slice, month_slice).data
+                    taylor_data = skill_metrics.taylor_statistics(
+                        np.ravel(month_slice.data),
+                        np.ravel(ref_slice.data),
+                    )
+                    taylor_data['ccoef'][1] = corr
+                    skills[month][filename] = taylor_data
 
         if self.cfg[n.WRITE_PLOTS] and self.compute_2d:
-            self.create_comparison_plot(datasets, correlation, error)
+            self.create_comparison_plot(datasets, skills['total'])
             for month in range(1, 13):
+                crmsd = [list(metrics.values())[0]['crmsd'][0]]
+                sdev = [list(metrics.values())[0]['sdev'][0]]
+                ccoef = [1]
+
+                for key in metrics:
+                    value = metrics[key]
+                    crmsd.append(value['crmsd'][1])
+                    sdev.append(value['sdev'][1])
+                    ccoef.append(value['ccoef'][1])
                 self.create_comparison_plot(
-                    datasets, correlation, error, month
+                    datasets, sdev], 'blocking_2D_{}'.format(month)
                 )
 
     def _get_blocking_indices(self, filename):
@@ -430,7 +424,7 @@ class Blocking(object):
                                        new_filename)
             iris.save(blocking_index, netcdf_path, zlib=True)
 
-        if self.cfg[n.WRITE_PLOTS]:
+        if not self.cfg[n.WRITE_PLOTS]:
             projection = ccrs.NorthPolarStereo()
             min_lat = np.min(blocking_index.coord('latitude').bounds)
             max_lat = np.max(blocking_index.coord('latitude').bounds)
@@ -507,89 +501,21 @@ class Blocking(object):
             diff_cube.coord('month_number').points[0]))
         plt.close()
 
-    def create_comparison_plot(self, datasets, correlation, error,
-                               month=None):
-        plt.figure()
-        ax = plt.gca()
-        if month:
-            color = 'black'
-        else:
-            color = [
-                '#0000ff', '#7080ff',
-                '#00FF00', '#00CC00', '#00AA00',
-                '#FFD700', '#CCCC00', '#AAAA00',
-                '#A0522D', '#8B0000', '#8B4513',
-                '#000090',
-                ]
-
-        for num, filename in enumerate(datasets):
-            corr = correlation[filename]
-            err = error[filename]
-
-            if month is not None:
-                corr = corr.extract(iris.Constraint(month_number=month))
-                err = err.extract(iris.Constraint(month_number=month))
-
-            plt.scatter(
-                corr.data,
-                err.data,
-                c=color,
-                marker=self._get_marker(num),
-                zorder=2,
-            )
-
-        box = ax.get_position()
-        if month is None:
-            ax.set_position(
-                [box.x0, box.y0 + box.height * 0.20,
-                 box.width * 0.80, box.height * 0.80]
-            )
-        else:
-            ax.set_position(
-                [box.x0, box.y0,
-                 box.width * 0.80, box.height]
-            )
-        if month is None:
-            ax.set_title('Blocking 2D')
-        else:
-            ax.set_title('Blocking 2D ({})'.format(calendar.month_name[month]))
-        ax.set_xlabel('Pearson correlation')
-        ax.set_ylabel('Root Mean Square Error (days per month)')
-        ax.set_xticks([0], minor=False)
-        ax.set_xticks(np.arange(-1, 1.1, 0.25), minor=True)
-        ax.tick_params(axis='x', which='major', labelsize=0)
-        ax.xaxis.set_minor_formatter(FormatStrFormatter("%.2f"))
-        top = math.ceil(ax.get_ylim()[1]) + 1
-        ax.set_yticks(np.arange(0, top, 1), minor=False)
-        ax.set_yticks(np.arange(0, top - 0.5, 0.5), minor=True)
-        ax.grid(True, 'major', linestyle='-', color='black', zorder=0)
-        ax.grid(True, 'minor', linestyle=':', color='black', zorder=0)
-        plt.ylim(ymin=0)
-        plt.xlim(-1, 1)
-        if month is None:
-            legend = plt.legend(
-                handles=[
-                    Patch(facecolor=col, label=calendar.month_name[num + 1])
-                    for num, col in enumerate(color)
-                ],
-                loc='upper center',
-                bbox_to_anchor=(0.5, -0.15),
-                ncol=4,
-                frameon=False,
-            )
-        self._create_dataset_legend(datasets)
-        if month is None:
-            ax.add_artist(legend)
+    def create_comparison_plot(self, datasets, metrics, name=None):
+        skill_metrics.taylor_diagram(
+            np.array(sdev),
+            np.array(crmsd),
+            np.array(ccoef),
+            styleOBS='-',
+            colOBS='r',
+            markerobs='o',
+            titleOBS='reference'
+        )
         out_type = self.cfg[n.OUTPUT_FILE_TYPE]
-        if month is None:
-            name = 'blocking2D.{}'.format(out_type)
-        else:
-            name = 'blocking2D_{:02}.{}'.format(month, out_type)
-        plt.savefig(os.path.join(
-            self.cfg[n.PLOT_DIR],
-            name,
-        ))
+        name = '{}.{}'.format(name, out_type)
+        plt.savefig(os.path.join(self.cfg[n.PLOT_DIR], name))
         plt.close()
+
 
     def _create_dataset_legend(self, datasets):
         handles = []

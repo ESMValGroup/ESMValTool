@@ -42,6 +42,7 @@ REQUIREMENTS = {
         'pyyaml',
         'shapely',
         'six',
+        'SkillMetrics',
         'stratify',
         'vmprof',
         'yamale',
