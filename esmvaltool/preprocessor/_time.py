@@ -11,8 +11,6 @@ import iris
 import iris.coord_categorisation
 import numpy as np
 
-from .._config import use_legacy_iris
-
 logger = logging.getLogger(__name__)
 
 
@@ -55,11 +53,8 @@ def extract_time(cube, start_year, start_month, start_day, end_year, end_month,
 
     t_1 = time_units.date2num(start_date)
     t_2 = time_units.date2num(end_date)
-    if use_legacy_iris():
-        constraint = iris.Constraint(time=lambda t: (t_1 < t.point < t_2))
-    else:
-        constraint = iris.Constraint(
-            time=lambda t: (t_1 < time_units.date2num(t.point) < t_2))
+    constraint = iris.Constraint(
+        time=lambda t: t_1 < time_units.date2num(t.point) < t_2)
 
     cube_slice = cube.extract(constraint)
     if cube_slice is None:
@@ -221,20 +216,18 @@ def regrid_time(cube, frequency):
     # fix calendars
     cube.coord('time').units = cf_units.Unit(
         cube.coord('time').units.origin,
-        calendar='gregorian'
+        calendar='gregorian',
     )
 
     # standardize time points
     time_c = [cell.point for cell in cube.coord('time').cells()]
     if frequency == 'mon':
         cube.coord('time').cells = [
-            datetime.datetime(t.year, t.month,
-                              15, 0, 0, 0) for t in time_c
+            datetime.datetime(t.year, t.month, 15, 0, 0, 0) for t in time_c
         ]
     elif frequency == 'day':
         cube.coord('time').cells = [
-            datetime.datetime(t.year, t.month,
-                              t.day, 0, 0, 0) for t in time_c
+            datetime.datetime(t.year, t.month, t.day, 0, 0, 0) for t in time_c
         ]
     # TODO add correct handling of hourly data
     # this is a bit more complicated since it can be 3h, 6h etc
@@ -254,10 +247,10 @@ def regrid_time(cube, frequency):
             cube.remove_coord(auxcoord)
 
     # re-add the converted aux coords
-    iris.coord_categorisation.add_day_of_month(cube, cube.coord('time'),
-                                               name='day_of_month')
-    iris.coord_categorisation.add_day_of_year(cube, cube.coord('time'),
-                                              name='day_of_year')
+    iris.coord_categorisation.add_day_of_month(
+        cube, cube.coord('time'), name='day_of_month')
+    iris.coord_categorisation.add_day_of_year(
+        cube, cube.coord('time'), name='day_of_year')
 
     return cube
 
@@ -281,19 +274,24 @@ def annual_mean(cube, decadal=False):
     iris.cube.Cube
         Annual mean cube
     """
-    def get_decade(coord, value):
-        """Callback function to get decades from cube."""
-        date = coord.units.num2date(value)
-        return date.year - date.year % 10
-
     # time_weights = get_time_weights(cube)
 
     # TODO: Add weighting in time dimension. See iris issue 3290
     # https://github.com/SciTools/iris/issues/3290
 
     if decadal:
-        iris.coord_categorisation.add_categorised_coord(cube, 'decade',
-                                                        'time', get_decade)
+        if not cube.coords('decade'):
+
+            def get_decade(coord, value):
+                """Callback function to get decades from cube."""
+                date = coord.units.num2date(value)
+                return date.year - date.year % 10
+
+            iris.coord_categorisation.add_categorised_coord(
+                cube, 'decade', 'time', get_decade)
+
         return cube.aggregated_by('decade', iris.analysis.MEAN)
 
+    if not cube.coords('year'):
+        iris.coord_categorisation.add_year(cube, 'time')
     return cube.aggregated_by('year', iris.analysis.MEAN)
