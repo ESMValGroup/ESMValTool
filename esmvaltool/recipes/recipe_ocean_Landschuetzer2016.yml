@@ -1,10 +1,10 @@
 # ESMValTool
-# Landschutzer2014.yml
+# Landschuetzer2016.yml
 ---
 documentation:
   description: |
     Recipe to evaluate CO2 Fluxes of marine biogeochemistry models of CMIP5
-    using Landschutzer et al (2.014) dataset.
+    using Landschuetzer et al (2016) dataset.
     Written by Tomas Lovato, CMCC, tomas.lovato@cmcc.it
 
   authors:
