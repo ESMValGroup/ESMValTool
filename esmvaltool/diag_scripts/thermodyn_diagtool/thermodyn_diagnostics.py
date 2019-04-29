@@ -439,7 +439,7 @@ def main(cfg):
                             latent_la_gmean)
                 logger.info('Done\n')
         if lec == 'True':
-            logger.info('Computation of the Lorenz Energy'
+            logger.info('Computation of the Lorenz Energy '
                         'Cycle (year by year)\n')
             lect = lorenz.preproc_lec(model, wdir, pdir, filenames)
             lec_all[i_m, 0] = np.nanmean(lect)

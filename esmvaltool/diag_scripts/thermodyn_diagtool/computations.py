@@ -274,9 +274,6 @@ def direntr(logger, model, wdir, filelist, aux_file, lect, lec, flags):
         sensentr_file, evapentr_file, rainentr_file, snowentr_file,
         meltentr_file, potentr_file
     ]
-    os.remove(htop_file)
-    os.remove(tabl_file)
-    os.remove(tlcl_file)
     return matentr, irrevers, entr_list
 
 
