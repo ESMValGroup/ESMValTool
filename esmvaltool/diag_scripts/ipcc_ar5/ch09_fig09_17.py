@@ -1,10 +1,6 @@
-"""
-Time series diagnostics
-=======================
+"""Time series diagnostics for ocean heat content.
 
-Diagnostic to produce figures of the time development of a field from
-cubes. These plost show time on the x-axis and cube value (ie temperature) on
-the y-axis.
+Time series diagnostics produce figures of the time development of a field from cubes. These plost show time on the x-axis and cube value (ie temperature) on the y-axis.
 
 Two types of plots are produced: individual model timeseries plots and
 multi model time series plots. The inidivual plots show the results from a
@@ -58,7 +54,6 @@ import numpy as np
 
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic
-from esmvaltool.diag_scripts.shared import group_metadata
 
 # This part sends debug statements to stdout
 logger = logging.getLogger(os.path.basename(__file__))
@@ -89,6 +84,7 @@ def timeplot(cube, **kwargs):
 
     times = diagtools.cube_time_to_float(cube)
     plt.plot(times, cubedata, **kwargs)
+
 
 def make_time_series_plots(
         cfg,
@@ -243,7 +239,6 @@ def multi_model_time_series(
                 'label': metadata[filename]['dataset'],
             }
 
-
     # Saving files:
     if cfg['write_plots']:
         path = diagtools.get_image_path(
@@ -256,8 +251,7 @@ def multi_model_time_series(
                 'start_year', 'end_year'
             ],
         )
-    
-          
+        
     # Resize and add legend outside the axes.
     plt.gcf().set_size_inches(9., 6.)
     diagtools.add_legend_outside_right(
@@ -286,10 +280,12 @@ def multi_model_time_series(
         for index, filename in enumerate(sorted(cubedic)):
             cube = cubedic[filename]
             path_nc = workdir
-            path_nc += '_'.join([str(metadata[filename][b]) for b in metadata_id_list])
-            path_nc = path_nc+'.nc'   
-            logger.info('path_nc = %s',path_nc) 
-            iris.save(cube,path_nc)
+            path_nc +=\
+                    '_'.join([str(metadata[filename][b]) for b in metadata_id_list])
+            path_nc = path_nc + '.nc'
+            logger.info('path_nc = %s', path_nc)
+            iris.save(cube, path_nc)
+
 
 def global_sum(
         cfg,
@@ -310,8 +306,8 @@ def global_sum(
     for filename in sorted(metadata):
         cube = iris.load_cube(filename)
         cube = diagtools.bgc_units(cube, metadata[filename]['short_name'])
-        cube = cube.collapsed(['longitude', 'latitude', 'depth'], 
-        iris.analysis.SUM)
+        cube = cube.collapsed(['longitude', 'latitude', 'depth'],
+                              iris.analysis.SUM)
         cube.remove_coord('day_of_month')
         cube.remove_coord('day_of_year')
         cube.remove_coord('month_number')
@@ -324,8 +320,7 @@ def global_sum(
 
 
 def main(cfg):
-    """
-    Load the config file and some metadata, then pass them the plot making
+    """Load the config file and some metadata, then pass them the plot making
     tools.
 
     Parameters

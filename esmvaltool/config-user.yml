@@ -14,36 +14,35 @@ log_level: info
 # Exit on warning? true/[false]
 exit_on_warning: false
 # Plot file format? [ps]/pdf/png/eps/epsi
-output_file_type: pdf
+output_file_type: png
 # Destination directory
-output_dir: ./esmvaltool_output
-# Auxiliary data directory (used for some additional datasets)
-auxiliary_data_dir: ./auxiliary_data
+output_dir: /group_workspaces/jasmin2/ukesm/till/esmvaltool
 # Use netCDF compression true/[false]
 compress_netcdf: false
 # Save intermediary cubes in the preprocessor true/[false]
 save_intermediary_cubes: false
 # Remove the preproc dir if all fine
-remove_preproc_dir: true
+remove_preproc_dir: false
 # Run at most this many tasks in parallel null/[1]/2/3/4/..
 # Set to null to use the number of available CPUs.
 # Make sure your system has enough memory for the specified number of tasks.
-max_parallel_tasks: 1
-# Path to custom config-developer file, to customise project configurations.
-# See config-developer.yml for an example. Set to None to use the default
-config_developer_file: null
-# Get profiling information for diagnostics
-# Only available for Python diagnostics
-profile_diagnostic: false
+# originally 8, but that led to memory fail
+max_parallel_tasks: 8
 
-# Rootpaths to the data from different projects (lists are also possible)
 rootpath:
-  CMIP5: [~/cmip5_inputpath1, ~/cmip5_inputpath2]
-  OBS: ~/obs_inputpath
-  RAWOBS: ~/rawobs_inputpath
-  default: ~/default_inputpath
+  # Rootpath to CMIP5 data
+  CMIP5: /badc/cmip5/data/cmip5/output1
+  CMIP6: /badc/cmip6/data/CMIP6/CMIP
+  # Rootpath to OBS data
+  OBS: /group_workspaces/jasmin4/esmeval/obsdata-v2/
+  #     /home/users/valeriu/esmvaltool_workshop_21Jan2019/OBS_DATA
+  # Default
+  default: / 
+  # /home/users/valeriu/esmvaltool_workshop_21Jan2019/OBS_DATA
+  RAWOBS: TEST_INPUT
 
 # Directory structure for input data: [default]/BADC/DKRZ/ETHZ/etc
 # See config-developer.yml for definitions.
 drs:
-  CMIP5: default
+  CMIP5: BADC
+  CMIP6: BADC 
