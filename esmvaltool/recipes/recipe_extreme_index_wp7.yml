@@ -36,15 +36,40 @@ preprocessors:
       end_latitude: 70
 
 diagnostics:
+ # extreme_index_tasmax:
   extreme_index:
-    description: Calculate insurance extreme indices.
+    description: Calculate insurance extreme indices t90p for maximum near surface temperature.
     variables:
+      tasmax:
+        preprocessor: preproc
+        mip: day
+      tasmin:
+        preprocessor: preproc
+        mip: day
       sfcWind:
+        preprocessor: preproc
+        mip: day
+      pr:
         preprocessor: preproc
         mip: day
 
     scripts:
-      main:
+      metric:
         script: magic_bsc/extreme_index.r
 
-        metric: Wx # t10p, t90p, cdd, rx5day or Wx
+        weight_t90p: 0.2
+        weight_t10p: 0.2
+        weight_Wx: 0.2
+        weight_rx5day: 0.2
+        weight_cdd: 0.2
+
+        # Compute running mean?
+        running_mean: 5 #3
+
+        # Or compute seasons? (NOTE: cant compute both running means and seasons):
+        #moninf: 1  # First month
+        #monsup: 3  # Last month
+        season: 'JJA'
+        # Multi-year average?
+        multi_year_average: FALSE
+
