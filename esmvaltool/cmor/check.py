@@ -257,12 +257,21 @@ class CMORCheck(object):
                     try:
                         coord = self._cube.coord(coordinate.standard_name)
                         if self._cmor_var.table_type == 'CMIP6' and \
-                           coord.var_name in ['latitude', 'longitude']:
-                            # Add comment about dealing with a native grid?
-                            continue
+                           coord.ndim > 1 and \
+                           coord.standard_name in ['latitude', 'longitude']:
+                            self.report_warning(
+                                'Multidimensional {0} coordinate is ambiguous '
+                                'in CMOR standard. '
+                                'ESMValTool will change the original value of '
+                                '{1} to {2} to match the one-dimensional case',
+                                coordinate.standard_name,
+                                coord.var_name,
+                                coordinate.out_name,
+                                )
+                            coord.var_name = coordinate.out_name
                         else:
                             self.report_error(
-                                'Coordinate {0} has var name {1}' \
+                                'Coordinate {0} has var name {1} '
                                 'instead of {2}',
                                 coordinate.name,
                                 coord.var_name,
