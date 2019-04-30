@@ -1,4 +1,5 @@
 SOURCE: CMIP6
+generic_levels:    olevel
 !============
 variable_entry:    ohc
 !============
@@ -15,8 +16,7 @@ comment:           Heat content
 !----------------------------------
 ! Additional variable information:
 !----------------------------------
-dimensions:        longitude latitude time
+dimensions:        longitude latitude time olevel
 type:              real
-generic_levels:    olevel
 !----------------------------------
 !
