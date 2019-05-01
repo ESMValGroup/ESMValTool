@@ -1,0 +1,215 @@
+# ESMValTool
+# recipe_OceanPhysics.yml
+---
+documentation:
+  description: |
+    Recipe to demonstrate several simple plots based on the monthly ocean
+    temperature. Please use this file as a template for adding additional
+    fields into the ocean. This work based on the BGC-val toolkit GMD-2018-103.
+
+  authors:
+    - demo_le
+
+  maintainer:
+    - schl_ma
+
+  references:
+    - demora2018gmd
+
+  projects:
+    - ukesm
+
+
+datasets:
+  # working datasets
+  - {dataset: CanESM2, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 1960, end_year: 2005}
+#  - {dataset: CanESM2, project: CMIP5, mip: Omon, exp: rcp26, ensemble: r1i1p1, start_year: 2006, end_year: 2100}
+#  - {dataset: CanESM2, project: CMIP5, mip: Omon, exp: rcp45, ensemble: r1i1p1, start_year: 2006, end_year: 2100}
+#  - {dataset: CanESM2, project: CMIP5, mip: Omon, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2100}
+  - {dataset: CSIRO-Mk3-6-0, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 1960, end_year: 2005}
+  - {dataset: CSIRO-Mk3-6-0, project: CMIP5, mip: Omon, exp: rcp26, ensemble: r1i1p1, start_year: 2006, end_year: 2070}
+  - {dataset: CSIRO-Mk3-6-0, project: CMIP5, mip: Omon, exp: rcp45, ensemble: r1i1p1, start_year: 2006, end_year: 2070}
+  - {dataset: CSIRO-Mk3-6-0, project: CMIP5, mip: Omon, exp: rcp60, ensemble: r1i1p1, start_year: 2006, end_year: 2070}
+  - {dataset: CSIRO-Mk3-6-0, project: CMIP5, mip: Omon, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2070}
+
+  - {dataset: GISS-E2-H, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 1960, end_year: 2005}
+  - {dataset: GISS-E2-H, project: CMIP5, mip: Omon, exp: rcp26, ensemble: r1i1p1, start_year: 2006, end_year: 2070}
+  - {dataset: GISS-E2-H, project: CMIP5, mip: Omon, exp: rcp45, ensemble: r1i1p1, start_year: 2006, end_year: 2070}
+  - {dataset: GISS-E2-H, project: CMIP5, mip: Omon, exp: rcp60, ensemble: r1i1p1, start_year: 2006, end_year: 2070}
+  - {dataset: GISS-E2-H, project: CMIP5, mip: Omon, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2070}
+
+#  - {dataset: HadISST, project: OBS, tier: 2, type: reanaly, version: 1, field: Omon,  start_year: 1900, end_year: 2017}
+
+#  - {dataset: HadGEM2-ES, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 1900, end_year: 2005}
+#  - {dataset: HadGEM2-ES, project: CMIP5, mip: Omon, exp: rcp26, ensemble: r1i1p1, start_year: 2006, end_year: 2100}
+#  - {dataset: HadGEM2-ES, project: CMIP5, mip: Omon, exp: rcp45, ensemble: r1i1p1, start_year: 2006, end_year: 2100}
+#  - {dataset: HadGEM2-ES, project: CMIP5, mip: Omon, exp: rcp60, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+#  - {dataset: HadGEM2-ES, project: CMIP5, mip: Omon, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2100}
+
+
+
+## Latitude multidimensional error
+#  - {dataset: IPSL-CM5A-LR, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 1900, end_year: 2005}
+#  - {dataset: IPSL-CM5A-LR, project: CMIP5, mip: Omon, exp: rcp26, ensemble: r1i1p1, start_year: 2006, end_year: 2100}
+#  - {dataset: IPSL-CM5A-LR, project: CMIP5, mip: Omon, exp: rcp45, ensemble: r1i1p1, start_year: 2006, end_year: 2100}
+#  - {dataset: IPSL-CM5A-LR, project: CMIP5, mip: Omon, exp: rcp60, ensemble: r1i1p1, start_year: 2006, end_year: 2100}
+#  - {dataset: IPSL-CM5A-LR, project: CMIP5, mip: Omon, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2100}
+
+## Cannot concatenate in preprocessors
+#  - {dataset: HadGEM2-ES, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 1900, end_year: 2005}
+#  - {dataset: HadGEM2-ES, project: CMIP5, mip: Omon, exp: rcp26, ensemble: r1i1p1, start_year: 2006, end_year: 2100}
+#  - {dataset: HadGEM2-ES, project: CMIP5, mip: Omon, exp: rcp45, ensemble: r1i1p1, start_year: 2006, end_year: 2100}
+#  - {dataset: HadGEM2-ES, project: CMIP5, mip: Omon, exp: rcp60, ensemble: r1i1p1, start_year: 2006, end_year: 2100}
+#  - {dataset: HadGEM2-ES, project: CMIP5, mip: Omon, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2100}
+
+## Latitude error (multidimensional)
+#  - {dataset: CESM1-CAM5, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 1900, end_year: 2005}
+#  - {dataset: CESM1-CAM5, project: CMIP5, mip: Omon, exp: rcp26, ensemble: r1i1p1, start_year: 2006, end_year: 2100}
+#  - {dataset: CESM1-CAM5, project: CMIP5, mip: Omon, exp: rcp45, ensemble: r1i1p1, start_year: 2006, end_year: 2100}
+#  - {dataset: CESM1-CAM5, project: CMIP5, mip: Omon, exp: rcp60, ensemble: r1i1p1, start_year: 2006, end_year: 2100}
+#  - {dataset: CESM1-CAM5, project: CMIP5, mip: Omon, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2100}
+ 
+
+## Latitude issues
+#- {dataset: NorESM1-M, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 1900, end_year: 2005}
+#  - {dataset: NorESM1-M, project: CMIP5, mip: Omon, exp: rcp26, ensemble: r1i1p1, start_year: 2006, end_year: 2100}
+#  - {dataset: NorESM1-M, project: CMIP5, mip: Omon, exp: rcp45, ensemble: r1i1p1, start_year: 2006, end_year: 2100}
+#  - {dataset: NorESM1-M, project: CMIP5, mip: Omon, exp: rcp60, ensemble: r1i1p1, start_year: 2006, end_year: 2100}
+#  - {dataset: NorESM1-M, project: CMIP5, mip: Omon, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2100}
+
+## Too many input files (yearly)
+#  - {dataset: GFDL-CM3, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 1900, end_year: 2005}
+#  - {dataset: GFDL-CM3, project: CMIP5, mip: Omon, exp: rcp26, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+#  - {dataset: GFDL-CM3, project: CMIP5, mip: Omon, exp: rcp45, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+#  - {dataset: GFDL-CM3, project: CMIP5, mip: Omon, exp: rcp60, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+#  - {dataset: GFDL-CM3, project: CMIP5, mip: Omon, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+
+## Lat-Lon issues
+#  - {dataset: bcc-csm1-1, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 1900, end_year: 2005}
+#  - {dataset: bcc-csm1-1, project: CMIP5, mip: Omon, exp: rcp26, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+#  - {dataset: bcc-csm1-1, project: CMIP5, mip: Omon, exp: rcp45, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+#  - {dataset: bcc-csm1-1, project: CMIP5, mip: Omon, exp: rcp60, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+#  - {dataset: bcc-csm1-1, project: CMIP5, mip: Omon, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+
+## No tos
+#  - {dataset: BNU-ESM, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 1900, end_year: 2005}
+#  - {dataset: BNU-ESM, project: CMIP5, mip: Omon, exp: rcp26, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+#  - {dataset: BNU-ESM, project: CMIP5, mip: Omon, exp: rcp45, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+#  - {dataset: BNU-ESM, project: CMIP5, mip: Omon, exp: rcp60, ensemble: r1i1p1, start_year: 2006, end_year: 2100}
+#  - {dataset: BNU-ESM, project: CMIP5, mip: Omon, exp: rcp85, ensemble: r1i1p1, start_year: 2006, end_year: 2099}
+#  - {dataset: GISS-E2-H, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2005}
+#  - {dataset: HadCM3, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2005}
+#  - {dataset: CanCM4, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2005}
+#  - {dataset: CSIRO-Mk3-6-0, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2005}
+
+  # Problem with latitude > 90.
+#  - {dataset: HadGEM2-CC, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2005}
+#  - {dataset: HadGEM2-ES, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2005}
+
+  #####
+  # Data with Errors right now -June 2018
+  ###
+  # Problem with times
+#  - {dataset: MIROC-ESM, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+#  - {dataset: MIROC-ESM-CHEM, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+
+  # Unstructured grids
+#  - {dataset: MPI-ESM-LR, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+#  - {dataset: MPI-ESM-MR, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+#  - {dataset: ACCESS1-0, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+#  - {dataset: ACCESS1-3, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
+
+# TODO: All multi-model statistics are turned off until the preprocessor order is fixed.
+
+preprocessors:
+  # --------------------------------------------------
+  # Time series preprocessors
+  # --------------------------------------------------
+  prep_timeseries_1: # SST preparation
+    custom_order: true
+    extract_volume:
+      z_min: 0.
+      z_max: 700.
+    average_volume:
+      coord1: longitude
+      coord2: latitude
+      coordz: depth
+  #  multi_model_statistics:
+  #    span: full
+  #    statistics: [ mean ]
+
+  prep_timeseries_2: # SST preparation
+    custom_order: true
+    extract_volume:
+      z_min: 700.
+      z_max: 2000.
+    average_volume:
+      coord1: longitude
+      coord2: latitude
+      coordz: depth
+  prep_timeseries_3: # SST preparation
+    custom_order: true
+    extract_volume:
+      z_min: 2000.
+      z_max: 4000.
+    average_volume:
+      coord1: longitude
+      coord2: latitude
+      coordz: depth
+
+  prep_timeseries_4: # SST preparation
+    custom_order: true
+    extract_volume:
+      z_min: 0.
+      z_max: 700.
+    depth_integration:
+    average_region:
+      coord1: longitude
+      coord2: latitude
+      operator: 'sum'
+
+
+diagnostics:
+#  diag_timeseries_1:
+#    description: Global OHC 0-700m 3d
+#    variables:
+#      thetao: # Temperature ocean surface
+#        preprocessor: prep_timeseries_1
+#        field: TO3M
+#    scripts:
+#      Global_OHC_anomaly_shallow_timeseries: &Global_OHC_anomaly_shallow_timeseries
+#        script: ocean/diagnostic_FOD_9_2_7_OHC_Timeseries.py
+#        moving_average: 1 years
+
+  diag_timeseries_2:
+    description: Global OHC 0-700m Alt
+    variables:
+      thetao: # Temperature ocean surface
+        preprocessor: prep_timeseries_4
+        field: TO3M
+    scripts:
+      Global_OHC_anomaly_Alt: &Global_OHC_anomaly_Alt
+        script: ocean/diagnostic_Global_OHC.py
+        moving_average: 1 years
+
+#  diag_timeseries_2:
+#    description: Global OHC 700-2000m timeseries
+#    variables:
+#      thetao: # Temperature ocean 3d
+#        preprocessor: prep_timeseries_2
+#        field: TO3M
+#    scripts:
+#      Global_OHC_anomaly_med_timeseries: &Global_OHC_anomaly_med_timeseries
+#        script: ocean/diagnostic_FOD_9_2_7_OHC_Timeseries.py
+#        moving_average: 1 years
+
+#  diag_timeseries_3:
+#    description: Global OHC 2000m+ timeseries
+#    variables:
+#      thetao: # Temperature ocean 3d
+#        preprocessor: prep_timeseries_3
+#        field: TO3M
+#    scripts:
+#      Global_OHC_anomaly_deep_timeseries: &Global_OHC_anomaly_deep_timeseries
+#        script: ocean/diagnostic_FOD_9_2_7_OHC_Timeseries.py
+#        moving_average: 1 years
