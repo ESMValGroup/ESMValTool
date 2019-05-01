@@ -73,6 +73,7 @@ miles_eof_figures <- function(dataset, expid, ens, year1, year2,
   lev_field <- seq(-150, 150, 20)
   lev_diff <- seq(-95, 95, 10)
 
+  filenames <- c()
   # loop on number of EOFs
   for (neof in 1:neofs) {
     linear_exp <- regressions_exp[, , neof]
@@ -104,6 +105,7 @@ miles_eof_figures <- function(dataset, expid, ens, year1, year2,
       dataset, expid, ens, year1, year2, season, output_file_type
     )
     print(figname)
+    filenames <- c(filenames, figname)
 
     # Chose output format for figure - by JvH
     open_plot_device(figname, output_file_type)
@@ -174,4 +176,5 @@ miles_eof_figures <- function(dataset, expid, ens, year1, year2,
 
     dev.off()
   }
+  return(list(figs = filenames, mod = nomefile_exp, ref = nomefile_ref))
 }
