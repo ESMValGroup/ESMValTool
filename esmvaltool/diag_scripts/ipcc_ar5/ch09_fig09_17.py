@@ -280,8 +280,8 @@ def multi_model_time_series(
         for index, filename in enumerate(sorted(cubedic)):
             cube = cubedic[filename]
             path_nc = workdir
-            path_nc += '_'.join([str(metadata[filename][b])\
-                for b in metadata_id_list])
+            path_nc += '_'.join([str(metadata[filename][b])
+                                for b in metadata_id_list])
             path_nc = path_nc + '.nc'
             logger.info('path_nc = %s', path_nc)
             iris.save(cube, path_nc)
