@@ -1,6 +1,8 @@
 """Time series diagnostics for ocean heat content.
 
-Time series diagnostics produce figures of the time development of a field from cubes. These plost show time on the x-axis and cube value (ie temperature) on the y-axis.
+Time series diagnostics produce figures of the time development of a 
+field from cubes. These plost show time on the x-axis and cube value 
+(ie temperature) on the y-axis.
 
 Two types of plots are produced: individual model timeseries plots and
 multi model time series plots. The inidivual plots show the results from a
@@ -124,8 +126,6 @@ def make_time_series_plots(
     # Making plots for each layer
     for layer_index, (layer, cube_layer) in enumerate(cubes.items()):
         layer = str(layer)
-        if 'moving_average' in cfg:
-            cube_layer = moving_average(cube_layer, cfg['moving_average'])
 
         if multi_model:
             timeplot(cube_layer, label=metadata['dataset'], ls=':')
@@ -251,7 +251,7 @@ def multi_model_time_series(
                 'start_year', 'end_year'
             ],
         )
-        
+
     # Resize and add legend outside the axes.
     plt.gcf().set_size_inches(9., 6.)
     diagtools.add_legend_outside_right(
@@ -280,8 +280,8 @@ def multi_model_time_series(
         for index, filename in enumerate(sorted(cubedic)):
             cube = cubedic[filename]
             path_nc = workdir
-            path_nc +=\
-                    '_'.join([str(metadata[filename][b]) for b in metadata_id_list])
+            path_nc += '_'.join([str(metadata[filename][b])\
+                for b in metadata_id_list])
             path_nc = path_nc + '.nc'
             logger.info('path_nc = %s', path_nc)
             iris.save(cube, path_nc)
