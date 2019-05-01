@@ -1,0 +1,51 @@
+# recipe_rainfarm.yml
+---
+
+documentation:
+  description: |
+    Recipe for performing stochastic downscaling of precipitation fields
+    calling the RainFARM package by J. von Hardenberg (ISAC-CNR)
+  authors:
+    - arno_en
+    - hard_jo
+
+  references:
+    - donofrio14jh
+    - rebora06jhm
+    - terzago18nhess
+
+  projects:
+    - c3s-magic
+
+datasets:
+  - {dataset: EC-EARTH,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1997, end_year: 1997}
+
+preprocessors:
+  preproc:
+    extract_region:    
+      # The selected region needs to have equal and even number of longitude (in any case it is cut)
+      # and latitude grid points (e.g., 2x2, 4x4, ...). 
+      # Warning: downcaling can reach very high resolution, so select a limited area.
+      start_longitude: 5
+      end_longitude: 15
+      start_latitude: 40
+      end_latitude: 50
+    regrid:
+      target_grid: 1x1  # in degrees, can also be the name of one of the datasets to use the grid from that dataset
+      scheme: area_weighted  # can be linear, nearest, area_weighted, unstructured_nearest
+diagnostics:
+  rainfarm:
+    description: RainFARM stochastic downscaling of precipitation fields
+    variables:
+      pr:
+        preprocessor: preproc
+        mip: day
+    scripts:
+      rainfarm:
+        script: rainfarm/rainfarm.R
+        slope: 1.7             # spatial spectral slope (set to 0 to compute from large scales)
+        nens: 2                # number of ensemble members to be calculated
+        nf: 8                  # subdivisions for downscaling
+        conserv_glob: false    # conserve precipitation over full domain (choose either glob or smooth, glob has priority)
+        conserv_smooth: true   # conserve precipitation using convolution (if neither is chosen box conservation is used)
+        weights_climo: false   # orographic weights: set to false or full path to a fine-scale precipitation climatology file
