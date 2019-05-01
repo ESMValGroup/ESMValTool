@@ -890,6 +890,7 @@ class Recipe:
 
     def _get_fx_files(self, variable, raw_variables, fxvariables):
         """Get all the fx files in variable."""
+        dict_variable_fx = {}
         for fx_var in variable['fx_files']:
             real_fx_var = []
             if fxvariables:
@@ -904,16 +905,18 @@ class Recipe:
                 fx_var_copy['fxvar'] = True
                 fx_var_copy['grid'] = real_fx_var['grid']
                 fx_var_copy['variable_group'] = fx_var
-                variable['fx_files'] = get_input_fx_filelist(
-                    variable=fx_var_copy,
-                    rootpath=self._cfg['rootpath'],
-                    drs=self._cfg['drs'])
+                # use the output of the fx variable as input fx_file
+                dict_variable_fx[fx_var] = get_output_file(
+                    fx_var_copy,
+                    self._cfg['preproc_dir'])
             # compatible with CMIP5 old way
             else:
                 variable['fx_files'] = get_input_fx_filelist(
                     variable=variable,
                     rootpath=self._cfg['rootpath'],
                     drs=self._cfg['drs'])
+        if dict_variable_fx:
+            variable['fx_files'] = dict_variable_fx
         logger.info("Using fx files for var %s of dataset %s:\n%s",
                     variable['short_name'], variable['dataset'],
                     variable['fx_files'])
