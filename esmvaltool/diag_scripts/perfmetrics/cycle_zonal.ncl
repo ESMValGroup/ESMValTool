@@ -1,6 +1,6 @@
 ; #############################################################################
-; PROCEDURE FOR THE CYCLE-LATLON PLOT OF THE PERFORMANCE METRICS
-; Authors: Mattia Righi (DLR, Germany) and Franziska Frank (DLR, Germany)
+; PROCEDURE FOR THE CYCLE-ZONAL PLOT OF THE PERFORMANCE METRICS
+; Author: Bettina Gier (University of Bremen, Germany)
 ; ESMVal project
 ; #############################################################################
 
@@ -44,9 +44,8 @@ begin
     var = read_data(info_items[imod])
     dnames = getVarDimNames(var)
 
-    ; Extract region
-    var_reg = area_operations(var, region(0), region(1), \
-                              region(2), region(3), "extract", True)
+    ; Calculate zonal mean
+    var_reg = dim_avg_Wrap(var)
     delete(var)
 
     ; Calculate time average
@@ -134,5 +133,4 @@ begin
     end do
 
   end do
-
 end
