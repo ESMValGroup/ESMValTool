@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 def find_files(dirnames, filenames):
     """Find files matching filenames in dirnames."""
-    logger.info("Looking for files matching %s in %s", filenames, dirnames)
+    logger.debug("Looking for files matching %s in %s", filenames, dirnames)
 
     result = []
     for dirname in dirnames:

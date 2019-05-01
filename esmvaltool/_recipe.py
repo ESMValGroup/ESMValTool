@@ -784,6 +784,16 @@ def _get_preprocessor_task(variables, profiles, config_user, task_name):
                 name=derive_name)
             derive_tasks.append(task)
 
+    # set profile if fxvar
+    if 'fxvar' in variable.keys():
+        profile = {'fix_file': True,
+                   'load': True,
+                   'fix_metadata': True,
+                   'extract_time': False,
+                   'cmor_check_metadata': True,
+                   'save': True,
+                   'cleanup': True}
+
     # Create (final) preprocessor task
     task = _get_single_preprocessor_task(
         variables,
@@ -878,6 +888,37 @@ class Recipe:
         check.duplicate_datasets(datasets)
         return datasets
 
+    def _get_fx_files(self, variable, raw_variables, fxvariables):
+        """Get all the fx files in variable."""
+        for fx_var in variable['fx_files']:
+            real_fx_var = []
+            if fxvariables:
+                real_fx_var = [
+                    raw_variables[k] for k in
+                    fxvariables if k == fx_var
+                ][0]
+            if real_fx_var:
+                fx_var_copy = deepcopy(variable)
+                fx_var_copy['short_name'] = fx_var
+                fx_var_copy['mip'] = real_fx_var['mip']
+                fx_var_copy['fxvar'] = True
+                fx_var_copy['grid'] = real_fx_var['grid']
+                fx_var_copy['variable_group'] = fx_var
+                variable['fx_files'] = get_input_fx_filelist(
+                    variable=fx_var_copy,
+                    rootpath=self._cfg['rootpath'],
+                    drs=self._cfg['drs'])
+            # compatible with CMIP5 old way
+            else:
+                variable['fx_files'] = get_input_fx_filelist(
+                    variable=variable,
+                    rootpath=self._cfg['rootpath'],
+                    drs=self._cfg['drs'])
+        logger.info("Using fx files for var %s of dataset %s:\n%s",
+                    variable['short_name'], variable['dataset'],
+                    variable['fx_files'])
+        return variable
+
     def _initialize_variables(self, raw_variable,
                               raw_datasets, raw_variables):
         """Define variables for all datasets."""
@@ -925,33 +966,8 @@ class Recipe:
             if 'fx_files' in variable:
                 for fx_file in variable['fx_files']:
                     DATASET_KEYS.add(fx_file)
-                # Get the fx files
-                for fx_var in variable['fx_files']:
-                    if fxvariables:
-                        real_fx_var = [
-                            raw_variables[k] for k in
-                            fxvariables if k == fx_var
-                        ][0]
-                    if real_fx_var:
-                        fx_var_copy = deepcopy(variable)
-                        fx_var_copy['short_name'] = fx_var
-                        fx_var_copy['mip'] = real_fx_var['mip']
-                        fx_var_copy['fxvar'] = True
-                        fx_var_copy['grid'] = real_fx_var['grid']
-                        fx_var_copy['variable_group'] = fx_var
-                        variable['fx_files'] = get_input_fx_filelist(
-                            variable=fx_var_copy,
-                            rootpath=self._cfg['rootpath'],
-                            drs=self._cfg['drs'])
-                    else:
-                        variable['fx_files'] = get_input_fx_filelist(
-                            variable=variable,
-                            rootpath=self._cfg['rootpath'],
-                            drs=self._cfg['drs'])
-                logger.info("Using fx files for var %s of dataset %s:\n%s",
-                            variable['short_name'], variable['dataset'],
-                            variable['fx_files'])
-
+                variable = self._get_fx_files(variable,
+                                              raw_variables, fxvariables)
         return variables
 
     def _initialize_preprocessor_output(self, diagnostic_name, raw_variables,
