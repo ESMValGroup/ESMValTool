@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 def find_files(dirnames, filenames):
     """Find files matching filenames in dirnames."""
-    logger.debug("Looking for files matching %s in %s", filenames, dirnames)
+    logger.info("Looking for files matching %s in %s", filenames, dirnames)
 
     result = []
     for dirname in dirnames:
@@ -229,9 +229,9 @@ def _get_filenames_glob(variable, drs, fx_var=None):
 
 
 def _find_input_files(variable, rootpath, drs, fx_var=None):
-    logger.debug("Looking for input %sfiles for variable %s of dataset %s",
-                 fx_var + ' fx ' if fx_var else '', variable['short_name'],
-                 variable['dataset'])
+    logger.info("Looking for input %sfiles for variable %s of dataset %s",
+                fx_var + ' fx ' if fx_var else '', variable['short_name'],
+                variable['dataset'])
 
     input_dirs = _find_input_dirs(variable, rootpath, drs, fx_var)
     filenames_glob = _get_filenames_glob(variable, drs, fx_var)
@@ -243,16 +243,21 @@ def _find_input_files(variable, rootpath, drs, fx_var=None):
 def get_input_filelist(variable, rootpath, drs):
     """Return the full path to input files."""
     files = _find_input_files(variable, rootpath, drs)
-    files = select_files(files, variable['start_year'], variable['end_year'])
+    if 'fxvar' not in variable.keys():
+        files = select_files(files, variable['start_year'],
+                             variable['end_year'])
     return files
 
 
 def get_input_fx_filelist(variable, rootpath, drs):
     """Return a dict with the full path to fx input files."""
     fx_files = {}
+    if 'fxvar' in variable.keys():
+        variable['fx_files'] = [variable['short_name']]
     for fx_var in variable['fx_files']:
         var = dict(variable)
-        var['mip'] = replace_mip_fx(fx_var)
+        if var['project'] == 'CMIP5':
+            var['mip'] = replace_mip_fx(fx_var)
         table = CMOR_TABLES[var['cmor_table']].get_table(var['mip'])
         var['frequency'] = table.frequency
         realm = getattr(table.get(var['short_name']), 'modeling_realm', None)

@@ -97,15 +97,17 @@ def data_availability(input_files, var):
 
     required_years = set(range(var['start_year'], var['end_year'] + 1))
     available_years = set()
-    for filename in input_files:
-        start, end = get_start_end_year(filename)
-        available_years.update(range(start, end + 1))
+    if 'fxvar' not in var.keys():
+        for filename in input_files:
+            start, end = get_start_end_year(filename)
+            available_years.update(range(start, end + 1))
 
-    missing_years = required_years - available_years
-    if missing_years:
-        raise RecipeError(
-            "No input data available for years {} in files {}".format(
-                ", ".join(str(year) for year in missing_years), input_files))
+        missing_years = required_years - available_years
+        if missing_years:
+            raise RecipeError(
+                "No input data available for years {} in files {}".format(
+                    ", ".join(str(year) for year in missing_years),
+                    input_files))
 
 
 def tasks_valid(tasks):

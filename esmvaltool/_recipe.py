@@ -106,6 +106,7 @@ def _add_cmor_info(variable, override=False):
         logger.warning("Unknown CMOR table %s", variable['cmor_table'])
 
     derive = variable.get('derive', False)
+    fx_att = variable.get('fxvar', False)
     # Copy the following keys from CMOR table
     cmor_keys = [
         'standard_name', 'long_name', 'units', 'modeling_realm', 'frequency'
@@ -116,6 +117,9 @@ def _add_cmor_info(variable, override=False):
     table_entry = CMOR_TABLES[cmor_table].get_variable(mip, short_name)
 
     if derive and table_entry is None:
+        custom_table = CMOR_TABLES['custom']
+        table_entry = custom_table.get_variable(mip, short_name)
+    if fx_att and table_entry is None:
         custom_table = CMOR_TABLES['custom']
         table_entry = custom_table.get_variable(mip, short_name)
 
@@ -438,10 +442,17 @@ def _read_attributes(filename):
 def _get_input_files(variable, config_user):
     """Get the input files for a single dataset."""
     # Find input files locally.
-    input_files = get_input_filelist(
-        variable=variable,
-        rootpath=config_user['rootpath'],
-        drs=config_user['drs'])
+    if 'fxvar' not in variable.keys():
+        input_files = get_input_filelist(
+            variable=variable,
+            rootpath=config_user['rootpath'],
+            drs=config_user['drs'])
+    else:
+        input_files = get_input_fx_filelist(
+            variable=variable,
+            rootpath=config_user['rootpath'],
+            drs=config_user['drs'])[variable['short_name']]
+        input_files = [input_files]
 
     # Set up downloading using synda if requested.
     # Do not download if files are already available locally.
@@ -607,7 +618,8 @@ def _get_preprocessor_products(variables, profile, order, ancestor_products,
             settings=settings,
             config_user=config_user)
         _update_fx_settings(
-            settings=settings, variable=variable, config_user=config_user)
+            settings=settings, variable=variable,
+            config_user=config_user)
         _update_target_grid(
             variable=variable,
             variables=variables,
@@ -866,9 +878,15 @@ class Recipe:
         check.duplicate_datasets(datasets)
         return datasets
 
-    def _initialize_variables(self, raw_variable, raw_datasets):
+    def _initialize_variables(self, raw_variable,
+                              raw_datasets, raw_variables):
         """Define variables for all datasets."""
         variables = []
+        # identify which ones are fx variables
+        fxvariables = [
+            d for d in raw_variables if
+            'fxvar' in list(raw_variables[d].keys())
+        ]
 
         raw_variable = deepcopy(raw_variable)
         datasets = self._initialize_datasets(
@@ -908,10 +926,28 @@ class Recipe:
                 for fx_file in variable['fx_files']:
                     DATASET_KEYS.add(fx_file)
                 # Get the fx files
-                variable['fx_files'] = get_input_fx_filelist(
-                    variable=variable,
-                    rootpath=self._cfg['rootpath'],
-                    drs=self._cfg['drs'])
+                for fx_var in variable['fx_files']:
+                    if fxvariables:
+                        real_fx_var = [
+                            raw_variables[k] for k in
+                            fxvariables if k == fx_var
+                        ][0]
+                    if real_fx_var:
+                        fx_var_copy = deepcopy(variable)
+                        fx_var_copy['short_name'] = fx_var
+                        fx_var_copy['mip'] = real_fx_var['mip']
+                        fx_var_copy['fxvar'] = True
+                        fx_var_copy['grid'] = real_fx_var['grid']
+                        fx_var_copy['variable_group'] = fx_var
+                        variable['fx_files'] = get_input_fx_filelist(
+                            variable=fx_var_copy,
+                            rootpath=self._cfg['rootpath'],
+                            drs=self._cfg['drs'])
+                    else:
+                        variable['fx_files'] = get_input_fx_filelist(
+                            variable=variable,
+                            rootpath=self._cfg['rootpath'],
+                            drs=self._cfg['drs'])
                 logger.info("Using fx files for var %s of dataset %s:\n%s",
                             variable['short_name'], variable['dataset'],
                             variable['fx_files'])
@@ -925,7 +961,6 @@ class Recipe:
                      diagnostic_name)
 
         preprocessor_output = {}
-
         for variable_group, raw_variable in raw_variables.items():
             raw_variable = deepcopy(raw_variable)
             raw_variable['variable_group'] = variable_group
@@ -935,7 +970,8 @@ class Recipe:
             raw_variable['preprocessor'] = str(
                 raw_variable.get('preprocessor', 'default'))
             preprocessor_output[variable_group] = \
-                self._initialize_variables(raw_variable, raw_datasets)
+                self._initialize_variables(raw_variable,
+                                           raw_datasets, raw_variables)
 
         return preprocessor_output
 
