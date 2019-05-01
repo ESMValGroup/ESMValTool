@@ -39,7 +39,11 @@ recipe_ensclus.yml:
     - 80
     - 90
   numpcs:  # number of PCs
-    - 'no'
+    - 0
+    - 3
+  max_plot_panels:
+    - 72
+    - 2
 
 recipe_shapeselect.yml:
   shapefile:
