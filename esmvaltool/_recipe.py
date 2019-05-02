@@ -365,6 +365,38 @@ def _get_default_settings(variable, config_user, derive=False):
     return settings
 
 
+def _convert_fxvar_to_cmor(fx_var, variable, real_fx_var):
+    """Convert fx var to full cmor var with variable as parent."""
+    fx_var_copy = deepcopy(variable)
+    fx_var_copy['short_name'] = fx_var
+    if fx_var_copy['project'] == 'CMIP5':
+        fx_var_copy['mip'] = 'fx'
+    else:
+        fx_var_copy['mip'] = real_fx_var['mip']
+    fx_var_copy['fxvar'] = True
+    if fx_var_copy['project'] == 'CMIP6':
+        # force grid if different from parent variable
+        if 'grid' in real_fx_var.keys():
+            fx_var_copy['grid'] = real_fx_var['grid']
+    fx_var_copy['variable_group'] = fx_var
+
+    return fx_var_copy
+
+
+def _update_fx_files(variable, config_user):
+    """Update the list of variables if needing special fx variables."""
+    fx_files_dict = {}
+    for fx_var in variable['fx_files']:
+        real_fx_var = {'mip': 'fx'}
+        fx_var_copy = _convert_fxvar_to_cmor(fx_var,
+                                             variable,
+                                             real_fx_var)
+        fx_files_dict[fx_var] = get_output_file(
+            fx_var_copy,
+            config_user['preproc_dir'])
+    return fx_files_dict
+
+
 def _update_fx_settings(settings, variable, config_user):
     """Find and set the FX derive/mask settings."""
     # update for derive
@@ -374,10 +406,7 @@ def _update_fx_settings(settings, variable, config_user):
             if 'fx_files' in var:
                 _augment(var, variable)
                 fx_files.update(
-                    get_input_fx_filelist(
-                        variable=var,
-                        rootpath=config_user['rootpath'],
-                        drs=config_user['drs']))
+                    _update_fx_files(var, config_user))
         settings['derive']['fx_files'] = fx_files
 
     # update for landsea
@@ -389,10 +418,7 @@ def _update_fx_settings(settings, variable, config_user):
 
         var = dict(variable)
         var['fx_files'] = ['sftlf', 'sftof']
-        fx_files_dict = get_input_fx_filelist(
-            variable=var,
-            rootpath=config_user['rootpath'],
-            drs=config_user['drs'])
+        fx_files_dict = _update_fx_files(var, config_user)
 
         # allow both sftlf and sftof
         if fx_files_dict['sftlf']:
@@ -407,10 +433,7 @@ def _update_fx_settings(settings, variable, config_user):
 
         var = dict(variable)
         var['fx_files'] = ['sftgif']
-        fx_files_dict = get_input_fx_filelist(
-            variable=var,
-            rootpath=config_user['rootpath'],
-            drs=config_user['drs'])
+        fx_files_dict = _update_fx_files(var, config_user)
 
         # allow sftgif (only, for now)
         if fx_files_dict['sftgif']:
@@ -419,11 +442,8 @@ def _update_fx_settings(settings, variable, config_user):
 
     for step in ('average_region', 'average_volume'):
         if settings.get(step, {}).get('fx_files'):
-            settings[step]['fx_files'] = get_input_fx_filelist(
-                variable=variable,
-                rootpath=config_user['rootpath'],
-                drs=config_user['drs'],
-            )
+            settings[step]['fx_files'] = _update_fx_files(var,
+                                                          config_user)
 
 
 def _read_attributes(filename):
@@ -784,7 +804,7 @@ def _get_preprocessor_task(variables, profiles, config_user, task_name):
                 name=derive_name)
             derive_tasks.append(task)
 
-    # set profile if fxvar
+    # set profile and tasks if fxvar
     if 'fxvar' in variable.keys():
         profile = {'fix_file': True,
                    'load': True,
@@ -793,6 +813,8 @@ def _get_preprocessor_task(variables, profiles, config_user, task_name):
                    'cmor_check_metadata': True,
                    'save': True,
                    'cleanup': True}
+        task_name = task_name.split(
+            TASKSEP)[0] + TASKSEP + 'fx_' + variables[0]['variable_group']
 
     # Create (final) preprocessor task
     task = _get_single_preprocessor_task(
@@ -899,19 +921,9 @@ class Recipe:
                     fxvariables if k == fx_var
                 ][0]
             if real_fx_var:
-                fx_var_copy = deepcopy(variable)
-                fx_var_copy['short_name'] = fx_var
-                if fx_var_copy['project'] == 'CMIP5':
-                    fx_var_copy['mip'] = 'fx'
-                else:
-                    fx_var_copy['mip'] = real_fx_var['mip']
-                fx_var_copy['fxvar'] = True
-                if fx_var_copy['project'] == 'CMIP6':
-                    # force grid if different from parent variable
-                    if 'grid' in real_fx_var.keys():
-                        fx_var_copy['grid'] = real_fx_var['grid']
-                fx_var_copy['variable_group'] = fx_var
-                # use the output of the fx variable as input fx_file
+                fx_var_copy = _convert_fxvar_to_cmor(fx_var,
+                                                     variable,
+                                                     real_fx_var)
                 dict_variable_fx[fx_var] = get_output_file(
                     fx_var_copy,
                     self._cfg['preproc_dir'])

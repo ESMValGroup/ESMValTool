@@ -234,7 +234,6 @@ class BaseTask(object):
 
     def str(self):
         """Return a nicely formatted description."""
-
         def _indent(txt):
             return '\n'.join('\t' + line for line in txt.split('\n'))
 
@@ -578,20 +577,36 @@ def get_independent_tasks(tasks):
     return independent_tasks
 
 
+def _priority_tasks(tasks):
+    """Assign priority to certain first tasks if needed."""
+    first_tasks = []
+    for task in get_independent_tasks(tasks):
+        if task.name.split('/')[-1].startswith('fx_'):
+            first_tasks.append(task)
+            get_independent_tasks(tasks).remove(task)
+    return first_tasks, get_independent_tasks(tasks)
+
+
 def run_tasks(tasks, max_parallel_tasks=None):
     """Run tasks."""
     if max_parallel_tasks == 1:
         _run_tasks_sequential(tasks)
     else:
-        _run_tasks_parallel(tasks, max_parallel_tasks)
+        first_tasks, remainder_tasks = _priority_tasks(tasks)
+        if first_tasks:
+            _run_tasks_parallel(first_tasks, max_parallel_tasks)
+        _run_tasks_parallel(remainder_tasks, max_parallel_tasks)
 
 
 def _run_tasks_sequential(tasks):
     """Run tasks sequentially."""
     n_tasks = len(get_flattened_tasks(tasks))
     logger.info("Running %s tasks sequentially", n_tasks)
-
-    for task in get_independent_tasks(tasks):
+    first_tasks, remainder_tasks = _priority_tasks(tasks)
+    if first_tasks:
+        for task in first_tasks:
+            task.run()
+    for task in remainder_tasks:
         task.run()
 
 
