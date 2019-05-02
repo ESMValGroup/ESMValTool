@@ -196,7 +196,7 @@ if(chk.glc_plt){
   ## Check if Gleckler Array already exists
   nidx <- length(gleckler_idx) # number of indices
   nmodel <- length(models_name) # number of models
-  nobs <- length(obs_name) #number of observations
+  nobs <- length(reference_model) #number of observations
   ArrayName <- paste0("Gleclker-Array_", nidx, "-idx_", nmodel,"-models_", nobs, "-obs",  ".RDS")
   ArrayDirName <- paste0(plot_dir, "/", diag_base, "/", ArrayName)
   if(chk.glc_arr){
@@ -210,10 +210,8 @@ if(chk.glc_plt){
   
   #### Running gleckler_main ####
   gleckler_main(path = work_dir, idx_list = gleckler_idx,
-                model_list = models_name, obs_list = obs_name, plot_dir = paste(plot_dir, "/", diag_base, sep = ""), promptInput=promptInput)
+                model_list = models_name, obs_list = reference_model, plot_dir = plot_dir, promptInput=promptInput)
   
-  print(cfgpar)
-  print(paste0(">>>>>>>> Leaving ", diag_script))
 }
 
 }
