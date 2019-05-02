@@ -179,11 +179,11 @@ jobs:
             dpkg -l > /logs/versions.txt
             conda env export -n base > /logs/build_environment.yml
             # Build conda package
-            conda build . -c conda-forge/label/cf201901 -c birdhouse > /logs/build_log.txt
+            conda build . -c conda-forge -c birdhouse > /logs/build_log.txt
             # Install Python 3 conda package
             conda create -y --name esmvaltool3 > /logs/conda_esmvaltool3.txt 2>&1
             set +x; conda activate esmvaltool3; set -x
-            conda install -y esmvaltool --use-local -c conda-forge/label/cf201901 -c birdhouse
+            conda install -y esmvaltool --use-local -c conda-forge -c birdhouse
             conda env export > /logs/test_environment3.yml
             esmvaltool -h
       - store_artifacts:
