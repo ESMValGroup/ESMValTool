@@ -1,20 +1,3 @@
-# nolint start
-####REQUIRED SYSTEM LIBS
-####ŀibssl-dev
-####libnecdf-dev
-####cdo
-
-# conda install -c conda-forge r-ncdf4
-
-#R package dependencies installation script
-#install.packages("yaml")
-#install.packages("devtools")
-#library(devtools)
-#Sys.setenv(TAR = "/bin/tar")
-#install_git("https://earth.bsc.es/gitlab/es/startR", branch = "develop-hotfixes-0.0.2")
-#install_git("https://earth.bsc.es/gitlab/es/easyNCDF", branch = "master")
-# nolint end
-
 
 Sys.setenv(TAR = "/bin/tar") # nolint
 library(s2dverification)
