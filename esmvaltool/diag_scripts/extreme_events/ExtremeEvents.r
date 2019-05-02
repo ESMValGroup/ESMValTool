@@ -22,6 +22,7 @@ library(climdex.pcic.ncdf)
 library(tools)
 library(yaml)
 library(ncdf4)
+library(ncdf4.helpers)
 
 nco <- function(cmd, argstr) {
   ret <- system2(cmd, args = argstr)
@@ -32,6 +33,7 @@ nco <- function(cmd, argstr) {
 
 diag_scripts_dir <- Sys.getenv("diag_scripts")
 source(paste0(diag_scripts_dir, "/extreme_events/cfg_climdex.r"))
+source(paste0(diag_scripts_dir, "/extreme_events/cfg_extreme.r"))
 source(paste0(diag_scripts_dir, "/extreme_events/common_climdex_preprocessing_for_plots.r"))
 source(paste0(diag_scripts_dir, "/extreme_events/make_timeseries_plot.r"))
 source(paste0(diag_scripts_dir, "/extreme_events/make_Glecker_plot2.r"))
@@ -56,6 +58,11 @@ reference_model <- unname(sapply(list0, "[[", "reference_dataset"))[1]
 diag_base <- unname(sapply(list0, "[[", "diagnostic"))[1]
 #### Correction r.interface output correction ####
 models_experiment[models_experiment == "No_value"] <- "No-values"
+
+ref_idx <- which(models_name == reference_model)
+if (length(ref_idx) == 0) {
+    ref_idx <- length(models_name)
+}
 
 variables <- c()
 climofiles <- c()
@@ -88,7 +95,6 @@ dir.create(plot_dir, recursive = T, showWarnings = F)
 provenance_file <- paste0(regridding_dir, "/", "diagnostic_provenance.yml")
 provenance <- list()
 
-
 ## Find earlier climdex indices in work folder
 climdex_files <- list.files(path = work_dir, pattern = "ETCCDI")
 
@@ -120,7 +126,7 @@ for (model_idx in c(1:length(models_name))) {
     print(paste0(">>>>>>>> Template name: ", template))
     print("")
 
-#    idx_select <- unique(c(timeseries_idx, gleckler_idx))
+    idx_select <- unique(c(timeseries_idx, gleckler_idx))
 #    climdex.idx.subset  <- unique(idx_df$idxETCCDI[which(idx_df$idxETCCDI_time %in% idx_select)])
 #    print("")
 #    print(paste0(">>>>>>>> Indices required: ", paste(climdex.idx.subset, collapse = ", ")))
@@ -129,20 +135,20 @@ for (model_idx in c(1:length(models_name))) {
      base.period <- c(max(strtoi(models_start_year)), min(strtoi(models_end_year)))
     
     ## Check point for existing files
-#    climdex_file_check <- paste(idx_select, "_",models_name[model_idx], "_", models_experiment[model_idx], "_",
-#                                models_ensemble[model_idx], "_", models_start_year[model_idx],"-", models_end_year[model_idx], sep="")
-    #print(climdex_file_check)
-#    check_control <- vector("logical", length(climdex_file_check))
-#    n = 0
-#    for(chck in climdex_file_check){
-#      n  <- n + 1
+    climdex_file_check <- paste(idx_select, "_",models_name[model_idx], "_", models_experiment[model_idx], "_",
+                                models_ensemble[model_idx], "_", models_start_year[model_idx],"-", models_end_year[model_idx], sep="")
+    print(climdex_file_check)
+    check_control <- vector("logical", length(climdex_file_check))
+    n = 0
+    for(chck in climdex_file_check){
+      n  <- n + 1
 	    #print(grep(chck, climdex_files))
-#	    tmp <- length(grep(chck, climdex_files))
-#      check_control[n] <- (tmp > 0)
-#    }
-    #print(check_control)
+	    tmp <- length(grep(chck, climdex_files))
+      check_control[n] <- (tmp > 0)
+    }
+    print(check_control)
     
-#    if(!all(check_control)){
+    if(!all(check_control)){
       #print(fullpath_filenames)
       print("")
       print(paste0(">>>>>>>> Producing Indices for ", models_name[model_idx]))
@@ -152,9 +158,10 @@ for (model_idx in c(1:length(models_name))) {
                                 work_dir, template, author.data,
                                 base.range=base.period, parallel = 25,
                                 verbose = TRUE, max.vals.millions = 20)
-#    }
+    }
 }
 
+if (write_plots) {
 ############################## 
 ## A climdex prcessing section is needed here for observation data.
 ## CMORized observation data found in the obs directory, has it's climdex indices calculated,
@@ -163,25 +170,19 @@ for (model_idx in c(1:length(models_name))) {
 
 ## Splitting models from observations
 
-obs_name <- models_name[models_project == "OBS"]
-models_name <- models_name[models_project != "OBS"]
+#obs_name <- models_name[models_project == "OBS"]
+#models_name <- models_name[models_project != "OBS"]
 
 ################################### 
 #### Produce time series plots ####
 ################################### 
 
 # These are forced here for testing
-chk.ts_plt=FALSE
-chk.ts_data=FALSE
-normalize=FALSE
-timeseries_idx = c("tn10pETCCDI_yr", "tn90pETCCDI_yr", "tx10pETCCDI_yr", "tx90pETCCDI_yr")
-chk.glc_plt=FALSE
 
 if(chk.ts_plt){
   print("")
-  print("")
   print(paste0(">>>>>>>> TIME SERIE PROCESSING INITIATION"))
-  timeseries_main(path = work_dir, idx_list =  timeseries_idx, model_list = models_name , obs_list = obs_name, plot_dir = paste(plot_dir, "/", diag_base, sep = ""), normalize=normalize)
+  timeseries_main(path = work_dir, idx_list =  timeseries_idx, model_list = models_name[models_name!=reference_model] , obs_list = reference_model, plot_dir = plot_dir, normalize=normalize)
 }
 
 ############################### 
@@ -213,4 +214,6 @@ if(chk.glc_plt){
   
   print(cfgpar)
   print(paste0(">>>>>>>> Leaving ", diag_script))
+}
+
 }

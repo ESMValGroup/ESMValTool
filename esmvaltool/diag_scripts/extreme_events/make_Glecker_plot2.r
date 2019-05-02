@@ -574,7 +574,7 @@ gleckler_plotting <- function(arr = RMSErelarr, idx_list, model_list, obs_list, 
   xtcks2 <- ((xn-1)/xn)+gl_RMSEspacer+(0.5/xn)
   axis(side = 1, at = xtcks2, labels = expression("RMSE"["std"]), las=2, cex.axis=axlabsize, tick = FALSE, line = lineadj)
   
-  source("nml/cfg_ExtremeEvents/cfg_climdex.r")
+#  source("nml/cfg_ExtremeEvents/cfg_climdex.r")
   ## Add index labels
   row_names <- vector(mode = "character", length = length(idx_list))
   for(i in seq_along(idx_list)){

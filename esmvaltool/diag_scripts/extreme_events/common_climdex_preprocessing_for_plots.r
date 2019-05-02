@@ -28,7 +28,7 @@
 createGrid <- function(path = idx_dir, loc = "./gridDef") {
     ## Picking the grid found in the first file to regrid over
     first_file <- list.files(path, pattern = '*.nc', full.names = TRUE)[1]
-    cmd <- paste('cdo -O griddes ', first_file, ' > ', loc, sep = '')
+    cmd <- paste('cdo -O griddes -selgrid,2 ', first_file, ' > ', loc, sep = '')
     print(cmd)
     system(cmd)
 }

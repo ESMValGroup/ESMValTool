@@ -20,7 +20,6 @@
 
 #source('diag_scripts/aux/ExtremeEvents/common_climdex_preprocessing_for_plots.r')
 
-
 ##
 ##
 ## Method to call all preprocessing and loop through
@@ -387,9 +386,6 @@ time_series_preprocessing <- function(land = "./Land", idx = 'tnnETCCDI_yr',
   }
 }
 
-
-
-
 ##
 ##
 ## Method to plot the time series plot
@@ -411,9 +407,7 @@ timeseries_plot <- function(plot_dir = "./plot", idx = "tn10pETCCDI_yr", obs_lis
     library(scales)
     
     ## Loading in climdex dataframe
-    source('nml/cfg_ExtremeEvents/cfg_climdex.r')
-    
-    
+#    source('nml/cfg_ExtremeEvents/cfg_climdex.r')
     # Drawing parameters
     #col_list <- c("dodgerblue2", "darkgreen", "firebrick2")
     #lty_list <- c(1, 4, 2)
@@ -557,16 +551,17 @@ timeseries_plot <- function(plot_dir = "./plot", idx = "tn10pETCCDI_yr", obs_lis
     dev.off()
 
     # TO DO: add corresponding metadata to plot:
+# The new provenance system has to be used
     #        - list of variables
     #        - list of input files
-    tags = union(tags, c("PT_times", "ST_extreme", "DM_global"))
-    caption = paste("Extreme events (", idx, ")", sep = "")
-    id = paste("id", diag_base, idx, sep = "_")
-    contrib_authors <- c("A_sand_ma", "A_broe_bj", "A_laue_ax")
-    var <- ncatt_get(ensm, 0, "variable")
+    #tags = union(tags, c("PT_times", "ST_extreme", "DM_global"))
+    #caption = paste("Extreme events (", idx, ")", sep = "")
+    #id = paste("id", diag_base, idx, sep = "_")
+    #contrib_authors <- c("A_sand_ma", "A_broe_bj", "A_laue_ax")
+    #var <- ncatt_get(ensm, 0, "variable")
 #    all_global_atts <- ncatt_get(ensm, 0)
-    ESMValMD(figure_filename, tags, caption, id, var, models_name, fullpath_filenames,
-             diag_script, contrib_authors)
+    #ESMValMD(figure_filename, tags, caption, id, var, models_name, fullpath_filenames,
+    #         diag_script, contrib_authors)
 
 ## Close Ensemble files
     nc_close(ensm)
