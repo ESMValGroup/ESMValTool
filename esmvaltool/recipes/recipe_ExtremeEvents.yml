@@ -21,9 +21,12 @@ documentation:
   projects:
     - crescendo   
 
-preprocessor:
-  prep0:
-    
+#preprocessor:
+#  prep0:
+
+datasets:
+  - {dataset: EC-Earth, project: CMIP5, exp: historical,  ensemble: r8i1p1, start_year: 1980, end_year: 2000}
+
 
 diagnostics:
   ExtremeEvents:
@@ -31,30 +34,30 @@ diagnostics:
     variables:
       pr:
         #preprocessor: prep0
-        project: CMIP5
+#        project: CMIP5
         mip: day
         field: T2Ds
-      tas:
+#      tas:
         #preprocessor: prep0
-        project: CMIP5
-        mip: day
-        field: T2Ds
+#        project: CMIP5
+#        mip: day
+#        field: T2Ds
       tasmax:
         #preprocessor: prep0
-        project: CMIP5
+#        project: CMIP5
         mip: day
         field: T2Ds
       tasmin:
         #preprocessor: prep0
-        project: CMIP5
+#        project: CMIP5
         mip: day
         field: T2Ds
-    additional_datasets:
+#    additional_datasets:
       #- {dataset: MERRA2, project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 3}
-      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, start_year: 1979, end_year: 2018, tier: 3}
+#      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, start_year: 1979, end_year: 2018, tier: 3}
     
     scripts:
       main:
-        script: ExtremeEvents.r
+        script: extreme_events/ExtremeEvents.r
 
 
