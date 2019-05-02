@@ -1,4 +1,10 @@
 ---
+documentation:
+  description: 'Sea ice drift evaluation'
+  authors: ['docq_da']
+  projects: [primavera]
+  references: ['acknow_project']
+  mantainer: [vega_ja]
 
 datasets:
  - {dataset: GFDL-ESM2G,  project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 1979,  end_year: 2000}
