@@ -11,45 +11,37 @@ documentation:
     - broe_bj
     - maritsandstad
     - cwmohr
-
-  maintainer:
-    - maritsandstad
+    - arno_en
+    - hard_jo
 
   references:
     - zhang-2011
 
   projects:
     - crescendo   
+    - c3s-magic  
 
 #preprocessor:
 #  prep0:
 
 datasets:
-  - {dataset: EC-Earth, project: CMIP5, exp: historical,  ensemble: r8i1p1, start_year: 1980, end_year: 2000}
-
+#  - {dataset: EC-Earth, project: CMIP5, exp: historical,  ensemble: r8i1p1, start_year: 1980, end_year: 2000}
+  - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1980, end_year: 2000}
 
 diagnostics:
   ExtremeEvents:
     description: calculate extreme events
     variables:
       pr:
-        #preprocessor: prep0
-#        project: CMIP5
         mip: day
         field: T2Ds
 #      tas:
-        #preprocessor: prep0
-#        project: CMIP5
 #        mip: day
 #        field: T2Ds
       tasmax:
-        #preprocessor: prep0
-#        project: CMIP5
         mip: day
         field: T2Ds
       tasmin:
-        #preprocessor: prep0
-#        project: CMIP5
         mip: day
         field: T2Ds
 #    additional_datasets:
@@ -59,5 +51,3 @@ diagnostics:
     scripts:
       main:
         script: extreme_events/ExtremeEvents.r
-
-
