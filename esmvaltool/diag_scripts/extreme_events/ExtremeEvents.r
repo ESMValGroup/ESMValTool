@@ -43,26 +43,37 @@ for (myname in names(settings)) {
   temp <- get(myname, settings)
   assign(myname, temp)
 }
+
+list0 <- yaml::read_yaml(settings$input_files[1])
+# extract metadata
+models_name <- unname(sapply(list0, "[[", "dataset"))
+models_ensemble <- unname(sapply(list0, "[[", "ensemble"))
+models_start_year <- unname(sapply(list0, "[[", "start_year"))
+models_end_year <- unname(sapply(list0, "[[", "end_year"))
+models_experiment <- unname(sapply(list0, "[[", "exp"))
+models_project <- unname(sapply(list0, "[[", "project"))
+reference_model <- unname(sapply(list0, "[[", "reference_dataset"))[1]
+diag_base <- unname(sapply(list0, "[[", "diagnostic"))[1]
+#### Correction r.interface output correction ####
+models_experiment[models_experiment == "No_value"] <- "No-values"
+
 variables <- c()
 climofiles <- c()
+models <- c()
 metadata <- c()
 
+# loop over variables
 for (i in 1:length(settings$input_files)) {
-    metadata <- c(metadata, yaml::read_yaml(settings$input_files[i]))
-    for (f in metadata[i]){
-        variables <- c(variables,  f$short_name)
-    }
+    metadata <- yaml::read_yaml(settings$input_files[i])
+    models_name <- unname(sapply(metadata, "[[", "dataset"))
+    short_name  <- unname(sapply(metadata, "[[", "short_name"))
+    variables <- c(variables, short_name)
+    models <- c(models, models_name)
+    climofiles <- c(climofiles, names(metadata))
 }
-climofiles <- names(metadata)
 
 field_type0 <- "T2Ds"
-
-# get first variable and list associated to pr variable
-list0 <- metadata[1]
-# get name of climofile for first variable and list
 # associated to first climofile
-climolist0 <- get(climofiles[1], list0)
-diag_base <- climolist0$diagnostic
 print(paste(diag_base, ": starting routine"))
 
 # create working dirs if they do not exist
@@ -77,23 +88,12 @@ dir.create(plot_dir, recursive = T, showWarnings = F)
 provenance_file <- paste0(regridding_dir, "/", "diagnostic_provenance.yml")
 provenance <- list()
 
-# extract metadata
-models_name <- unname(sapply(list0, "[[", "dataset"))
-models_ensemble <- unname(sapply(list0, "[[", "ensemble"))
-reference_model <- unname(sapply(list0, "[[", "reference_dataset"))[1]
-models_start_year <- unname(sapply(list0, "[[", "start_year"))
-models_end_year <- unname(sapply(list0, "[[", "end_year"))
-models_experiment <- unname(sapply(list0, "[[", "exp"))
-models_project <- unname(sapply(list0, "[[", "project"))
-
-#### Correction r.interface output correction ####
-models_experiment[models_experiment == "No_value"] <- "No-values"
 
 ## Find earlier climdex indices in work folder
 climdex_files <- list.files(path = work_dir, pattern = "ETCCDI")
 
 # Fix input files removing bounds
-print("Removing bounds from prerprocessed files")
+print("Removing bounds from preprocessed files")
 for (i in 1:length(climofiles)) {
    tmp <- tempfile()
    nco("ncks", paste("-C -O -x -v lat_bnds,lon_bnds,time_bnds",
@@ -146,9 +146,12 @@ for (model_idx in c(1:length(models_name))) {
       #print(fullpath_filenames)
       print("")
       print(paste0(">>>>>>>> Producing Indices for ", models_name[model_idx]))
+      print(climofiles[models==models_name[model_idx]])
       print("")
-      create.indices.from.files(climofiles, work_dir, template, author.data, 
-                                   base.range=base.period, parallel = 25, verbose = TRUE, max.vals.millions = 20) # Procuce selected indicesd
+      create.indices.from.files(climofiles[models==models_name[model_idx]],
+                                work_dir, template, author.data,
+                                base.range=base.period, parallel = 25,
+                                verbose = TRUE, max.vals.millions = 20)
 #    }
 }
 

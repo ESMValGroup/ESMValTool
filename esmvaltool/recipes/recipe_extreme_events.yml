@@ -26,7 +26,8 @@ documentation:
 
 datasets:
 #  - {dataset: EC-Earth, project: CMIP5, exp: historical,  ensemble: r8i1p1, start_year: 1980, end_year: 2000}
-  - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1980, end_year: 2000}
+  - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1980, end_year: 1981}
+  - {dataset: ACCESS1-0, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1980, end_year: 1981}
 
 diagnostics:
   ExtremeEvents:
@@ -35,17 +36,21 @@ diagnostics:
       pr:
         mip: day
         field: T2Ds
+        reference_dataset: "ACCESS1-0"
 #      tas:
 #        mip: day
 #        field: T2Ds
       tasmax:
         mip: day
         field: T2Ds
+        reference_dataset: "ACCESS1-0"
       tasmin:
         mip: day
         field: T2Ds
+        reference_dataset: "ACCESS1-0"
 #    additional_datasets:
       #- {dataset: MERRA2, project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 3}
+#      - {dataset: EOBS, project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 3}
 #      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, start_year: 1979, end_year: 2018, tier: 3}
     
     scripts:
