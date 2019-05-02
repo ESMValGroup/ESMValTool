@@ -31,12 +31,17 @@ User setting files are stored in recipes/
 
 #.	recipe_toymodel.yml
 
-   *diag_script_info attributes*
+   *Required settings for preprocessor*
+
+	extract_region:
 
    * start_longitude: minimum longitude
    * end_longitude: maximum longitude
    * start_latitude: minimum longitude
    * end_latitude: maximum latitude
+
+   *Required settings for script*
+
    * Number_of_members: integer specifying the number of members to be generated
    * Beta: the user defined underdispersion (Beta >= 0)
 
