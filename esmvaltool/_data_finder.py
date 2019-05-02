@@ -258,6 +258,9 @@ def get_input_fx_filelist(variable, rootpath, drs):
         var = dict(variable)
         if var['project'] == 'CMIP5':
             var['mip'] = replace_mip_fx(fx_var)
+            var['frequency'] = 'fx'
+            var['modeling_realm'] = 'fx'
+            var['ensemble'] = 'r0i0p0'
         table = CMOR_TABLES[var['cmor_table']].get_table(var['mip'])
         var['frequency'] = table.frequency
         realm = getattr(table.get(var['short_name']), 'modeling_realm', None)

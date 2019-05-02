@@ -901,9 +901,15 @@ class Recipe:
             if real_fx_var:
                 fx_var_copy = deepcopy(variable)
                 fx_var_copy['short_name'] = fx_var
-                fx_var_copy['mip'] = real_fx_var['mip']
+                if fx_var_copy['project'] == 'CMIP5':
+                    fx_var_copy['mip'] = 'fx'
+                else:
+                    fx_var_copy['mip'] = real_fx_var['mip']
                 fx_var_copy['fxvar'] = True
-                fx_var_copy['grid'] = real_fx_var['grid']
+                if fx_var_copy['project'] == 'CMIP6':
+                    # force grid if different from parent variable
+                    if 'grid' in real_fx_var.keys():
+                        fx_var_copy['grid'] = real_fx_var['grid']
                 fx_var_copy['variable_group'] = fx_var
                 # use the output of the fx variable as input fx_file
                 dict_variable_fx[fx_var] = get_output_file(
@@ -961,7 +967,11 @@ class Recipe:
         }
 
         for variable in variables:
-            _update_from_others(variable, ['cmor_table', 'mip'], datasets)
+            # special case fo cmip5 fx variables
+            if 'fxvar' in variable.keys() and variable['project'] == 'CMIP5':
+                variable['mip'] = 'fx'
+            else:
+                _update_from_others(variable, ['cmor_table', 'mip'], datasets)
             institute = get_institutes(variable)
             if institute:
                 variable['institute'] = institute
