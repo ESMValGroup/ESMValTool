@@ -278,7 +278,7 @@ for (i in 1 : length(projection_filenames)) {
         name = "data",
         units = units,
         dim = list(lat = dimlat, lon = dimlon),
-        longname = paste("Anual", metric[m], long_names)
+        longname = paste("Annual", metric[m], long_names)
       )
       filencdf <- paste0(
           work_dir, "/", var0, "_", metric[m], "_risk_insurance_index_",
