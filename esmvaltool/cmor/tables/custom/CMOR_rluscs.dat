@@ -1,0 +1,26 @@
+SOURCE: CMIP5
+!============
+variable_entry:    rluscs
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     
+units:             W m-2
+cell_methods:      time: mean
+cell_measures:     area: areacella
+long_name:         Surface Upwelling Clear-Sky Longwave Radiation
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          rluscs
+type:              real
+positive:          up
+valid_min:         43.75
+valid_max:         658
+ok_min_mean_abs:   325.6
+ok_max_mean_abs:   376.3
+!----------------------------------
+!

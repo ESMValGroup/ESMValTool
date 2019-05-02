@@ -10,16 +10,16 @@
 ;
 ; #############################################################################
 
-load "./interface_scripts/auxiliary.ncl"
-load "./interface_scripts/data_handling.ncl"
-load "./interface_scripts/logging.ncl"
+load "$diag_scripts/../interface_scripts/auxiliary.ncl"
+load "$diag_scripts/../interface_scripts/data_handling.ncl"
+load "$diag_scripts/../interface_scripts/logging.ncl"
 
-load "./diag_scripts/aux/SAMonsoon/SAMonsoon.ncl"
+load "$diag_scripts/aux/SAMonsoon/SAMonsoon.ncl"
 exact_panel_position_file = \
   "./diag_scripts/aux/SAMonsoon/exact_panel_positions_precip_world.ncl"
-load "./diag_scripts/aux/SAMonsoon/SAMonsoon_panel_positions.ncl"
-load "./diag_scripts/aux/SAMonsoon/exact_panel_positions_generic.ncl"
-load "./diag_scripts/shared/plot/style.ncl"
+load "$diag_scripts/aux/SAMonsoon/SAMonsoon_panel_positions.ncl"
+load "$diag_scripts/aux/SAMonsoon/exact_panel_positions_generic.ncl"
+load "$diag_scripts/shared/plot/style.ncl"
 
 begin
     loadscript(exact_panel_position_file)

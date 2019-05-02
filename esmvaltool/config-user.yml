@@ -17,6 +17,8 @@ exit_on_warning: false
 output_file_type: pdf
 # Destination directory
 output_dir: ./esmvaltool_output
+# Auxiliary data directory (used for some additional datasets)
+auxiliary_data_dir: ./auxiliary_data
 # Use netCDF compression true/[false]
 compress_netcdf: false
 # Save intermediary cubes in the preprocessor true/[false]
@@ -38,6 +40,7 @@ profile_diagnostic: false
 rootpath:
   CMIP5: [~/cmip5_inputpath1, ~/cmip5_inputpath2]
   OBS: ~/obs_inputpath
+  RAWOBS: ~/rawobs_inputpath
   default: ~/default_inputpath
 
 # Directory structure for input data: [default]/BADC/DKRZ/ETHZ/etc

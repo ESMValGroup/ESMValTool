@@ -142,9 +142,9 @@ long_name:        ocean basin
 !----------------------------------
 ! Additional axis information:
 !----------------------------------
-out_name:         basin
+out_name:         region
 type:             character
-requested:        atlantic_arctic_ocean indian_pacific_ocean global_ocean        ! space-separated list of requested coordinates 
+requested:        atlantic_arctic_ocean indian_pacific_ocean global_ocean        ! space-separated list of requested coordinates
 must_have_bounds: no
 coords_attrib:    region
 !----------------------------------
@@ -180,11 +180,11 @@ axis_entry: oline
 ! Axis attributes:
 !----------------------------------
 standard_name:    region
-long_name:        ocean passage 
+long_name:        ocean passage
 !----------------------------------
 ! Additional axis information:
 !----------------------------------
-out_name:         line
+out_name:         passage
 type:             character
 requested:        barents_opening bering_strait canadian_archipelago denmark_strait drake_passage english_channel pacific_equatorial_undercurrent faroe_scotland_channel florida_bahamas_strait fram_strait iceland_faroe_channel indonesian_throughflow mozambique_channel taiwan_luzon_straits windward_passage        ! space-separated list of requested coordinates 
 must_have_bounds: no
@@ -3795,7 +3795,7 @@ long_name:         Sea Water Transport
 !----------------------------------
 ! Additional variable information:
 !----------------------------------
-dimensions:        oline time
+dimensions:        time oline
 out_name:          mfo
 type:              real
 !----------------------------------

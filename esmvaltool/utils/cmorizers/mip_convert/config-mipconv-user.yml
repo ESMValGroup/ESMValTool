@@ -1,0 +1,22 @@
+###############################################################################
+# User's configuration file for the ESMValTool with mip_convert
+# For further details see the README document; current sections are
+# mandatory and should be populated with valid entries.
+# Author: V. Predoi / UREAD / November 2018
+###############################################################################
+---
+# root to directory where mip_convert rose suites will be run
+# make this different than your usual /roses/ dir
+ROSES_ROOT: "/home/users/$USER/roses_mipconv"
+# root to directory where mip_convert rose suites will write output
+ROSES_OUTPUT: "/home/users/$USER/roses_mipconv_output"
+# map dataset name to relevant UM suite
+DATASET_TO_SUITE: {"UKESM1-0-LL": "u-ar766a"}
+# map variable standard name to stream definition
+STREAM_MAP: {"ps": "ap4", "ta": "ap4", "va": "ap4", "ua": "ap5", "mrsos": "ap5", "toz":"apm"}
+# root directory where PP data lives
+# this directory is in Jasmin/Archer structure; this one here
+# is an actual directory with data
+INPUT_DIR: "/group_workspaces/jasmin4/ncas_cms/valeriu/MASS_DATA"
+# map streams to realm components
+STREAM_COMPONENTS: {"ap4": ["atmos-physics", "land"], "apm": ["atmos-physics"], "ap5": ["land"]}

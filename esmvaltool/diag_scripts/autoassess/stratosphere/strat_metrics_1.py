@@ -1,25 +1,22 @@
 """Stratospheric assessment code; ESMValTool-autoassess version."""
-import os
 import logging
+import os
 
-import matplotlib
-matplotlib.use('Agg')  # noqa
-
-import matplotlib.cm as mpl_cm
-import matplotlib.colors as mcol
-import matplotlib.dates as mdates
-import matplotlib.pyplot as plt
-from matplotlib.patches import Rectangle
-import numpy as np
-
-from cartopy.mpl.gridliner import LATITUDE_FORMATTER
 import iris
 import iris.analysis.cartography as iac
 import iris.coord_categorisation as icc
 import iris.plot as iplt
-from esmvaltool.diag_scripts.autoassess.loaddata import load_run_ss
-from .plotting import segment2list
+import matplotlib.cm as mpl_cm
+import matplotlib.colors as mcol
+import matplotlib.dates as mdates
+import matplotlib.pyplot as plt
+import numpy as np
+from cartopy.mpl.gridliner import LATITUDE_FORMATTER
+from matplotlib.patches import Rectangle
 
+from esmvaltool.diag_scripts.autoassess.loaddata import load_run_ss
+
+from .plotting import segment2list
 
 logger = logging.getLogger(__name__)
 

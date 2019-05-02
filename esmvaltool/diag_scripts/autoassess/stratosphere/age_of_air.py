@@ -1,17 +1,17 @@
 """Stratospheric age-of-air assessment code."""
-import os
-import logging
-import warnings
 import datetime
-import numpy as np
-import matplotlib as mpl
-mpl.use('Agg')  # noqa
-import matplotlib.pyplot as plt
+import logging
+import os
+import warnings
+
 import iris
 import iris.analysis as iai
-from esmvaltool.diag_scripts.autoassess.loaddata import load_run_ss
-from .strat_metrics_1 import weight_lat_ave
+import matplotlib.pyplot as plt
+import numpy as np
 
+from esmvaltool.diag_scripts.autoassess.loaddata import load_run_ss
+
+from .strat_metrics_1 import weight_lat_ave
 
 logger = logging.getLogger(__name__)
 

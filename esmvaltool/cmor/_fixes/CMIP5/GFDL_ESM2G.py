@@ -1,16 +1,16 @@
+# pylint: disable=invalid-name, no-self-use, too-few-public-methods
 """Fixes for GFDL ESM2G"""
 import iris
 from iris.coords import AuxCoord
 from ..fix import Fix
 
 
-
 class allvars(Fix):
-    """Common fixes"""
+    """Common fixes."""
 
     def fix_metadata(self, cubes):
         """
-        Fix metadata
+        Fix metadata.
 
         Fixes bad standard names
 
@@ -23,47 +23,25 @@ class allvars(Fix):
         iris.cube.Cube
 
         """
-
-
-        start_time = self._get_and_remove(
-            cubes, 'Start time for average period'
-        )
-        end_time = self._get_and_remove(cubes, 'End time for average period')
-        length = self._get_and_remove(cubes, 'Length of average period')
-
-        self._add_aux_coord(cubes[0], start_time)
-        self._add_aux_coord(cubes[0], end_time)
-        self._add_aux_coord(cubes[0], length)
-
+        self._get_and_remove(cubes, 'Start time for average period')
+        self._get_and_remove(cubes, 'End time for average period')
+        self._get_and_remove(cubes, 'Length of average period')
         return cubes
 
     def _get_and_remove(self, cubes, long_name):
         try:
             cube = cubes.extract_strict(long_name)
             cubes.remove(cube)
-            return cube
         except iris.exceptions.ConstraintMismatchError:
-            return None
+            pass
 
-
-    def _add_aux_coord(self, target, cube):
-        if cube is None:
-            return
-        coordinate = AuxCoord(
-            cube.data,
-            standard_name=cube.standard_name,
-            long_name=cube.long_name,
-            var_name=cube.var_name,
-            units=cube.units,
-        )
-        target.add_aux_coord(coordinate, target.coord_dims('time'))
 
 class co2(Fix):
-    """Fixes for co2"""
+    """Fixes for co2."""
 
     def fix_data(self, cube):
         """
-        Fix data
+        Fix data.
 
         Fixes discrepancy between declared units and real units
 

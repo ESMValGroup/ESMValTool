@@ -8,7 +8,7 @@ from esmvaltool.cmor._fixes.CMIP5.MIROC5 import sftof
 
 class TestGpp(unittest.TestCase):
     def setUp(self):
-        self.cube = Cube([1], var_name='sftof', units='J')
+        self.cube = Cube([1.0], var_name='sftof', units='J')
         self.fix = sftof()
 
     def test_fix_data(self):

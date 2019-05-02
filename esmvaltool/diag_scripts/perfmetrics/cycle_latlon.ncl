@@ -8,7 +8,7 @@ procedure perfmetrics_ptype_script()
 begin
 
   ; Set dataset indexes, with reference and alternative datasets first
-  modidx = ispan(0, dim_MOD - 1, 1)
+  modidx = ispan(0, nDatasets - 1, 1)
   if (l_altern) then
     modidx := array_append_record( \
       (/ref_ind, alt_ind/), \
@@ -27,8 +27,8 @@ begin
     ; Set path for saving processed data ; FIX-ME add preproc_id
     fullpath = config_user_info@work_dir + "/"
     system("mkdir -p " + fullpath)
-    fname = basename(systemfunc("basename " + input_file_info@filename(imod)))
-    fname = fname + "_" + basename(diag_script) + "_cycle_latlon"
+    fname = basename(systemfunc("basename " + info_items[imod]@filename))
+    fname = fname + "_" + basename(DIAG_SCRIPT) + "_cycle_latlon"
     fname = fname + "_" + diag_script_info@time_avg
     if (isatt(diag_script_info, "level")) then
       fname = fname + "_" + diag_script_info@level  ; FIX-ME
@@ -37,11 +37,11 @@ begin
     procpath = fullpath + fname + ".nc"
 
     ; Determine start/end year
-    start_year = get_start_year(imod)
-    end_year = get_end_year(imod)
+    start_year = info_items[imod]@start_year
+    end_year = info_items[imod]@end_year
 
     ; Read data
-    var = read_data(imod, var0, field_type0)
+    var = read_data(info_items[imod])
     dnames = getVarDimNames(var)
 
     ; Extract region
@@ -63,9 +63,9 @@ begin
     var_all&statistic = (/"mean", "stddev"/)
     var_all(:, :, :, 0) = var_avg
     var_all@var = var0
-    var_all@diag_script = (/diag_script/)
+    var_all@diag_script = (/DIAG_SCRIPT/)
     copy_VarAtts(diag_script_info, var_all)
-    var_all@ref_model = variable_info@reference_dataset
+    var_all@ref_model = variable_info[0]@reference_dataset
     if (config_user_info@write_netcdf.eq."True") then
       var_all@ncdf = procpath
       ncdf_outfile = ncdf_write(var_all, procpath)
@@ -92,6 +92,7 @@ begin
     do met = 0, nmetrics - 1
 
       if (diag_script_info@metric(met).eq."taylor") then
+
         locidx = ind(datasetnames(imod).eq.taylor&models)
         if (ismissing(locidx)) then
           continue
@@ -102,7 +103,19 @@ begin
         taylor(0, locidx, 1) = \
           calculate_metric(var_all(:, :, :, 0), var_ref(:, :, :, 0), \
                            "correlation")
+
+      elseif (diag_script_info@metric(met).eq."SMPI") then
+
+        locidx = ind(datasetnames(imod).eq.smpi&models)
+        if (ismissing(locidx)) then
+          continue
+        end if
+        smpi(:, locidx) = \
+          (/calculate_metric(var_all(:, :, :, 0), var_ref(:, :, :, 0), \
+                             "SMPI")/)
+
       else
+
         locidx = ind(datasetnames(imod).eq.grading&models)
         if (ismissing(locidx)) then
           continue
@@ -115,6 +128,7 @@ begin
             calculate_metric(var_all(:, :, :, 0), var_alt(:, :, :, 0), \
                              diag_script_info@metric(met))
         end if
+
       end if
 
     end do

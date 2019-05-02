@@ -1,7 +1,8 @@
 """
-Diagnostic profile:
+Time series diagnostics
+=======================
 
-Diagnostic to produce images of the time development of a metric from
+Diagnostic to produce figures of the time development of a field from
 cubes. These plost show time on the x-axis and cube value (ie temperature) on
 the y-axis.
 
@@ -16,25 +17,33 @@ hard work, and that the cube received by this diagnostic (via the settings.yml
 and metadata.yml files) has a time component, no depth component, and no
 latitude or longitude coordinates.
 
-Some approproate preprocessors for a 3D+time field would be:
+An approproate preprocessor for a 3D+time field would be::
 
-preprocessors:
-  prep_timeseries_1:# For Global Volume Averaged
-    average_volume:
-      coord1: longitude
-      coord2: latitude
-      coordz: depth
-  prep_timeseries_2: # For Global surface Averaged
-    extract_levels:
-      levels:  [0., ]
-      scheme: linear_extrap
-    average_area:
-      coord1: longitude
-      coord2: latitude
+  preprocessors:
+    prep_timeseries_1:# For Global Volume Averaged
+      average_volume:
+        coord1: longitude
+        coord2: latitude
+        coordz: depth
 
+An approproate preprocessor for a 3D+time field at the surface would be::
+
+    prep_timeseries_2: # For Global surface Averaged
+      extract_levels:
+        levels:  [0., ]
+        scheme: linear_extrap
+      average_area:
+        coord1: longitude
+        coord2: latitude
+
+An approproate preprocessor for a 2D+time field would be::
+
+    prep_timeseries_2: # For Global surface Averaged
+      average_area:
+        coord1: longitude
+        coord2: latitude
 
 This tool is part of the ocean diagnostic tools package in the ESMValTool.
-
 
 Author: Lee de Mora (PML)
         ledm@pml.ac.uk
@@ -42,14 +51,12 @@ Author: Lee de Mora (PML)
 
 import logging
 import os
-import matplotlib
-matplotlib.use('Agg')  # noqa
-import matplotlib.pyplot as plt
 
 import iris
-import iris.quickplot as qplt
+import matplotlib.pyplot as plt
+import numpy as np
 
-import diagnostic_tools as diagtools
+from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic
 
 # This part sends debug statements to stdout
@@ -58,15 +65,113 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 def timeplot(cube, **kwargs):
     """
-    Make a time series plot
+    Create a time series plot from the cube.
 
-    Needed because iris version 1.13 fails due to the time axis.
+    Note that this function simple does the plotting, it does not save the
+    image or do any of the complex work. This function also takes and of the
+    key word arguments accepted by the matplotlib.pyplot.plot function.
+    These arguments are typically, color, linewidth, linestyle, etc...
+
+    If there's only one datapoint in the cube, it is plotted as a
+    horizontal line.
+
+    Parameters
+    ----------
+    cube: iris.cube.Cube
+        Input cube
+
     """
-    if iris.__version__ > '2.0':
-        qplt.plot(cube, kwargs)
-    else:
-        times = diagtools.timecoord_to_float(cube.coord('time'))
-        plt.plot(times, cube.data, **kwargs)
+    cubedata = np.ma.array(cube.data)
+    if len(cubedata.compressed()) == 1:
+        plt.axhline(cubedata.compressed(), **kwargs)
+        return
+
+    times = diagtools.cube_time_to_float(cube)
+    plt.plot(times, cubedata, **kwargs)
+
+
+def moving_average(cube, window):
+    """
+    Calculate a moving average.
+
+    The window is a string which is a number and a measuremet of time.
+    For instance, the following are acceptable window strings:
+
+    * ``5 days``
+    * ``12 years``
+    * ``1 month``
+    * ``5 yr``
+
+    Also note the the value used is the total width of the window.
+    For instance, if the window provided was '10 years', the the moving
+    average returned would be the average of all values within 5 years
+    of the central value.
+
+    In the case of edge conditions, at the start an end of the data, they
+    only include the average of the data available. Ie the first value
+    in the moving average of a ``10 year`` window will only include the average
+    of the five subsequent years.
+
+    Parameters
+    ----------
+    cube: iris.cube.Cube
+        Input cube
+    window: str
+        A description of the window to use for the
+
+    Returns
+    ----------
+    iris.cube.Cube:
+        A cube with the movinage average set as the data points.
+
+    """
+    window = window.split()
+    window_len = int(window[0]) / 2.
+    win_units = str(window[1])
+
+    if win_units not in [
+            'days', 'day', 'dy', 'months', 'month', 'mn', 'years', 'yrs',
+            'year', 'yr'
+    ]:
+        raise ValueError("Moving average window units not recognised: " +
+                         "{}".format(win_units))
+
+    times = cube.coord('time').units.num2date(cube.coord('time').points)
+
+    datetime = diagtools.guess_calendar_datetime(cube)
+
+    output = []
+
+    times = np.array([
+        datetime(time_itr.year, time_itr.month, time_itr.day, time_itr.hour,
+                 time_itr.minute) for time_itr in times
+    ])
+
+    for time_itr in times:
+        if win_units in ['years', 'yrs', 'year', 'yr']:
+            tmin = datetime(time_itr.year - window_len, time_itr.month,
+                            time_itr.day, time_itr.hour, time_itr.minute)
+            tmax = datetime(time_itr.year + window_len, time_itr.month,
+                            time_itr.day, time_itr.hour, time_itr.minute)
+
+        if win_units in ['months', 'month', 'mn']:
+            tmin = datetime(time_itr.year, time_itr.month - window_len,
+                            time_itr.day, time_itr.hour, time_itr.minute)
+            tmax = datetime(time_itr.year, time_itr.month + window_len,
+                            time_itr.day, time_itr.hour, time_itr.minute)
+
+        if win_units in ['days', 'day', 'dy']:
+            tmin = datetime(time_itr.year, time_itr.month,
+                            time_itr.day - window_len, time_itr.hour,
+                            time_itr.minute)
+            tmax = datetime(time_itr.year, time_itr.month,
+                            time_itr.day + window_len, time_itr.hour,
+                            time_itr.minute)
+
+        arr = np.ma.masked_where((times < tmin) + (times > tmax), cube.data)
+        output.append(arr.mean())
+    cube.data = np.array(output)
+    return cube
 
 
 def make_time_series_plots(
@@ -75,11 +180,21 @@ def make_time_series_plots(
         filename,
 ):
     """
-    Make a simple plot for an indivudual model.
+    Make a simple time series plot for an indivudual model 1D cube.
 
-    The cfg is the opened global config,
-    metadata is the metadata dictionairy
-    filename is the preprocessing model file.
+    This tool loads the cube from the file, checks that the units are
+    sensible BGC units, checks for layers, adjusts the titles accordingly,
+    determines the ultimate file name and format, then saves the image.
+
+    Parameters
+    ----------
+    cfg: dict
+        the opened global config dictionairy, passed by ESMValTool.
+    metadata: dict
+        The metadata dictionairy for a specific model.
+    filename: str
+        The preprocessed model file.
+
     """
     # Load cube and set up units
     cube = iris.load_cube(filename)
@@ -97,6 +212,8 @@ def make_time_series_plots(
     # Making plots for each layer
     for layer_index, (layer, cube_layer) in enumerate(cubes.items()):
         layer = str(layer)
+        if 'moving_average' in cfg:
+            cube_layer = moving_average(cube_layer, cfg['moving_average'])
 
         if multi_model:
             timeplot(cube_layer, label=metadata['dataset'], ls=':')
@@ -105,21 +222,24 @@ def make_time_series_plots(
 
         # Add title, legend to plots
         title = ' '.join([metadata['dataset'], metadata['long_name']])
-        if layer:
-            title = ' '.join(
-                [title, '(', layer,
-                 str(cube_layer.coords('depth')[0].units), ')'])
+        if layer != '':
+            if cube_layer.coords('depth'):
+                z_units = cube_layer.coord('depth').units
+            else:
+                z_units = ''
+            title = ' '.join([title, '(', layer, str(z_units), ')'])
         plt.title(title)
         plt.legend(loc='best')
+        plt.ylabel(str(cube_layer.units))
 
         # Determine image filename:
         if multi_model:
-
             path = diagtools.get_image_path(
                 cfg,
                 metadata,
                 prefix='MultiModel',
-                suffix='_'.join(['timeseries', str(layer) + image_extention]),
+                suffix='_'.join(['timeseries',
+                                 str(layer) + image_extention]),
                 metadata_id_list=[
                     'field', 'short_name', 'preprocessor', 'diagnostic',
                     'start_year', 'end_year'
@@ -147,12 +267,21 @@ def multi_model_time_series(
         metadata,
 ):
     """
-    Make a time series plot showing several models.
+    Make a time series plot showing several preprocesssed datasets.
 
-    This function makes a simple plot for an indivudual model.
-    The cfg is the opened global config,
-    metadata is the metadata dictionairy.
+    This tool loads several cubes from the files, checks that the units are
+    sensible BGC units, checks for layers, adjusts the titles accordingly,
+    determines the ultimate file name and format, then saves the image.
+
+    Parameters
+    ----------
+    cfg: dict
+        the opened global config dictionairy, passed by ESMValTool.
+    metadata: dict
+        The metadata dictionairy for a specific model.
+
     """
+
     ####
     # Load the data for each layer as a separate cube
     model_cubes = {}
@@ -184,9 +313,16 @@ def multi_model_time_series(
             else:
                 color = 'blue'
 
+            # Take a moving average, if needed.
+            if 'moving_average' in cfg:
+                cube = moving_average(model_cubes[filename][layer],
+                                      cfg['moving_average'])
+            else:
+                cube = model_cubes[filename][layer]
+
             if 'MultiModel' in metadata[filename]['dataset']:
                 timeplot(
-                    model_cubes[filename][layer],
+                    cube,
                     c=color,
                     # label=metadata[filename]['dataset'],
                     ls=':',
@@ -200,7 +336,7 @@ def multi_model_time_series(
                 }
             else:
                 timeplot(
-                    model_cubes[filename][layer],
+                    cube,
                     c=color,
                     # label=metadata[filename]['dataset'])
                     ls='-',
@@ -215,13 +351,16 @@ def multi_model_time_series(
 
             title = metadata[filename]['long_name']
             if layer != '':
-                z_units = model_cubes[filename][layer].coords('depth')[0].units
-
+                if model_cubes[filename][layer].coords('depth'):
+                    z_units = model_cubes[filename][layer].coord('depth').units
+                else:
+                    z_units = ''
         # Add title, legend to plots
         if layer:
             title = ' '.join([title, '(', str(layer), str(z_units), ')'])
         plt.title(title)
         plt.legend(loc='best')
+        plt.ylabel(str(model_cubes[filename][layer].units))
 
         # Saving files:
         if cfg['write_plots']:
@@ -229,7 +368,8 @@ def multi_model_time_series(
                 cfg,
                 metadata[filename],
                 prefix='MultipleModels_',
-                suffix='_'.join(['timeseries', str(layer) + image_extention]),
+                suffix='_'.join(['timeseries',
+                                 str(layer) + image_extention]),
                 metadata_id_list=[
                     'field', 'short_name', 'preprocessor', 'diagnostic',
                     'start_year', 'end_year'
@@ -248,15 +388,17 @@ def multi_model_time_series(
 
 def main(cfg):
     """
-    Load the config file, and send it to the plot maker.
+    Load the config file and some metadata, then pass them the plot making
+    tools.
 
-    The cfg is the opened global config.
+    Parameters
+    ----------
+    cfg: dict
+        the opened global config dictionairy, passed by ESMValTool.
+
     """
     for index, metadata_filename in enumerate(cfg['input_files']):
-        logger.info(
-            'metadata filename:\t%s',
-            metadata_filename
-        )
+        logger.info('metadata filename:\t%s', metadata_filename)
 
         metadatas = diagtools.get_input_files(cfg, index=index)
 
@@ -267,7 +409,7 @@ def main(cfg):
             metadatas,
         )
 
-        for filename in sorted(metadatas.keys()):
+        for filename in sorted(metadatas):
 
             logger.info('-----------------')
             logger.info(

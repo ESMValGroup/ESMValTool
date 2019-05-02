@@ -1,0 +1,23 @@
+{
+    "required_global_attributes":[
+        "Conventions",
+        "activity_id",
+        "contact",
+        "creation_date",
+        "data_specs_version",
+        "frequency",
+        "grid",
+        "grid_label",
+        "institution",
+        "institution_id",
+        "license",
+        "nominal_resolution",
+        "product",
+        "realm",
+        "source_id",
+        "table_id",
+        "tracking_id",
+        "variable_id",
+        "variant_label"
+    ]
+}

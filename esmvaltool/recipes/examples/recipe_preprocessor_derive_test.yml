@@ -1,7 +1,20 @@
-# Note: the different diagnostics are necessary because some of the derived
-# variables use the same basic variables, which leads to PermissionDenied
-# errors.
+# ESMValTool
+# recipe_preprocessor_derive_test.yml
 ---
+documentation:
+  description: |
+    Recipe that demonstrates various uses of the preprocessor derive functionality.
+
+  authors:
+    - ande_bo
+    - schl_ma
+
+  maintainer:
+    - righ_ma
+
+  projects:
+    - c3s-magic
+
 preprocessors:
 
   regrid:
@@ -21,7 +34,6 @@ diagnostics:
         exp: historical
         start_year: 2000
         end_year: 2005
-        field: T2Ms
         derive: true
         force_derivation: false
         additional_datasets:
@@ -39,7 +51,6 @@ diagnostics:
         start_year: 1985
         end_year: 1988
         ensemble: r1i1p1
-        field: T4M
         derive: true
         force_derivation: false
         additional_datasets:
@@ -51,7 +62,6 @@ diagnostics:
         exp: historical
         start_year: 2000
         end_year: 2005
-        field: T2Ms
         derive: true
         additional_datasets:
           - {dataset: CanESM2,      ensemble: r1i1p1}

@@ -1,4 +1,5 @@
-"""Fixes for CESM1-BGC model"""
+# pylint: disable=invalid-name, no-self-use, too-few-public-methods
+"""Fixes for CESM1-BGC model."""
 
 from cf_units import Unit
 
@@ -6,11 +7,11 @@ from ..fix import Fix
 
 
 class co2(Fix):
-    """Fixes for co2 variable"""
+    """Fixes for co2 variable."""
 
     def fix_data(self, cube):
         """
-        Fix data
+        Fix data.
 
         Fixes discrepancy between declared units and real units
 

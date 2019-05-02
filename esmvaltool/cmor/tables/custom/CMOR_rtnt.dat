@@ -6,7 +6,7 @@ modeling_realm:    atmos
 !----------------------------------
 ! Variable attributes:
 !----------------------------------
-standard_name:     toa_net_downward_total_radiation
+standard_name:     
 units:             W m-2
 cell_methods:      time: mean
 cell_measures:     area: areacella

@@ -1,13 +1,14 @@
-"""Fixes for MPI ESM LR model"""
+# pylint: disable=invalid-name, no-self-use, too-few-public-methods
+"""Fixes for MPI ESM LR model."""
 from ..fix import Fix
 
 
 class pctisccp(Fix):
-    """Fixes for pctisccp"""
+    """Fixes for pctisccp."""
 
     def fix_data(self, cube):
         """
-        Fix data
+        Fix data.
 
         Fixes discrepancy between declared units and real units
 

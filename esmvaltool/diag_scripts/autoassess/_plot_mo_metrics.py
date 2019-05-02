@@ -6,15 +6,12 @@ Author: Valeriu Predoi (UREAD, valeriu.predoi@ncas.ac.uk)
 Create normalised assessment criteria plot (NAC plot).
 """
 
-from __future__ import division, print_function
-
-import os
 import csv
 import errno
-import numpy as np
-import matplotlib
-matplotlib.use('Agg')  # noqa
+import os
+
 import matplotlib.pyplot as plt
+import numpy as np
 
 # Define some colours
 BLACK = '#000000'
@@ -173,8 +170,7 @@ def read_order_metrics(csvfile, required=False):
                     pass  # Raise Warning
         else:
             with inf:
-                reader = csv.reader(
-                    inf, delimiter=',', quotechar='"')
+                reader = csv.reader(inf, delimiter=',', quotechar='"')
                 for row in reader:
                     if len(row) == 1:
                         metrics.append(row[0])
@@ -257,8 +253,7 @@ def read_obs_metrics(csvfile, required=False):
                     pass  # Raise Warning
         else:
             with inf:
-                reader = csv.reader(
-                    inf, delimiter=',', quotechar='"')
+                reader = csv.reader(inf, delimiter=',', quotechar='"')
                 for row in reader:
                     metric = row.pop(0)
                     # Contrary to documentation, allowing a single entry when

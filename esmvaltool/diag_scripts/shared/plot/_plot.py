@@ -1,10 +1,10 @@
 """Common plot functions."""
 import logging
 import os
-import yaml
 
 import iris.quickplot
 import matplotlib.pyplot as plt
+import yaml
 
 logger = logging.getLogger(__name__)
 
@@ -61,10 +61,9 @@ def get_path_to_mpl_style(style_file=None):
     """Get path to matplotlib style file."""
     if style_file is None:
         style_file = 'default.mplstyle'
-    if not isinstance(style_file, str):
-        raise TypeError("Invalid input: {} is not a "
-                        "string".format(style_file))
-    base_dir = os.path.dirname(__file__)
+    if not style_file.endswith('.mplstyle'):
+        style_file += '.mplstyle'
+    base_dir = os.path.dirname(os.path.realpath(__file__))
     filepath = os.path.join(base_dir, 'styles_python', 'matplotlib',
                             style_file)
     logger.debug("Using matplotlib style: %s", filepath)
@@ -73,10 +72,11 @@ def get_path_to_mpl_style(style_file=None):
 
 def get_dataset_style(dataset, style_file=None):
     """Retrieve the style information for the given dataset."""
-    # Default path
     if style_file is None:
         style_file = 'cmip5.yml'
-    base_dir = os.path.dirname(__file__)
+    if not style_file.endswith('.yml'):
+        style_file += '.yml'
+    base_dir = os.path.dirname(os.path.realpath(__file__))
     default_dir = os.path.join(base_dir, 'styles_python')
 
     # Check if style_file is valid
@@ -103,16 +103,18 @@ def get_dataset_style(dataset, style_file=None):
 
     # Check if dataset is available
     if not style.get(dataset):
-        logger.warning("Dataset '%s' not found in style file, using default " +
-                       "entry", dataset)
+        logger.warning(
+            "Dataset '%s' not found in style file, using default "
+            "entry", dataset)
         return style[default_dataset]
 
     # Get compulsory information
     for option in options:
         if option not in style[dataset]:
-            logger.warning("No style information '%s' found for dataset " +
-                           "'%s', using default value for unknown datasets",
-                           option, dataset)
+            logger.warning(
+                "No style information '%s' found for dataset "
+                "'%s', using default value for unknown datasets", option,
+                dataset)
             style[dataset].update({option: style[default_dataset][option]})
 
     return style[dataset]
@@ -194,31 +196,33 @@ def multi_dataset_scatterplot(x_data, y_data, datasets, filepath, **kwargs):
 
     # Plot data
     for (idx, dataset) in enumerate(datasets):
-        style = get_dataset_style(dataset, kwargs.get('dataset_styles_file'))
+        style = get_dataset_style(dataset, kwargs.get('dataset_style_file'))
 
         # Fix problem when plotting ps file
         facecolor = style['color'] if filepath.endswith('ps') else \
             style['facecolor']
 
         # Plot
-        axes.plot(x_data[idx], y_data[idx],
-                  markeredgecolor=style['color'],
-                  markerfacecolor=facecolor,
-                  marker=style['mark'],
-                  **(kwargs.get('plot_kwargs', empty_dict)[idx]))
+        axes.plot(
+            x_data[idx],
+            y_data[idx],
+            markeredgecolor=style['color'],
+            markerfacecolor=facecolor,
+            marker=style['mark'],
+            **(kwargs.get('plot_kwargs', empty_dict)[idx]))
 
     # Costumize plot
     legend = _process_axes_functions(axes, kwargs.get('axes_functions'))
 
     # Save plot
-    fig.savefig(filepath, additional_artists=[legend],
-                **kwargs.get('save_kwargs', {}))
-    logger.info("Writing %s", filepath)
+    fig.savefig(
+        filepath, additional_artists=[legend], **kwargs.get('save_kwargs', {}))
+    logger.info("Wrote %s", filepath)
     plt.close()
 
 
 def scatterplot(x_data, y_data, filepath, **kwargs):
-    """Plot a multi dataset scatterplot.
+    """Plot a scatterplot.
 
     Notes
     -----
@@ -266,8 +270,8 @@ def scatterplot(x_data, y_data, filepath, **kwargs):
             raise TypeError("{} is not a valid keyword argument".format(kwarg))
 
     # Check parameters
-    _check_size_of_parameters(x_data, y_data,
-                              kwargs.get('plot_kwargs', x_data))
+    _check_size_of_parameters(x_data, y_data, kwargs.get(
+        'plot_kwargs', x_data))
     empty_dict = [{} for _ in x_data]
 
     # Create matplotlib instances
@@ -290,7 +294,7 @@ def scatterplot(x_data, y_data, filepath, **kwargs):
     legend = _process_axes_functions(axes, kwargs.get('axes_functions'))
 
     # Save plot
-    fig.savefig(filepath, additional_artists=[legend],
-                **kwargs.get('save_kwargs', {}))
-    logger.info("Writing %s", filepath)
+    fig.savefig(
+        filepath, additional_artists=[legend], **kwargs.get('save_kwargs', {}))
+    logger.info("Wrote %s", filepath)
     plt.close()

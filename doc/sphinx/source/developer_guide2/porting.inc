@@ -51,89 +51,91 @@ The new ESMValTool version includes a completely revised interface, handling the
 
 .. tabularcolumns:: |p{6cm}|p{6cm}|p{3cm}|
 
-+-------------------------------------------------+-----------------------------------------------------+------------------+
-| Name in v1.0                                    | Name in v2.0                                        | Affected code    |
-+=================================================+=====================================================+==================+
-| ``getenv("ESMValTool_wrk_dir")``                | ``config_user_info@work_dir``                       | all .ncl scripts |
-+-------------------------------------------------+-----------------------------------------------------+------------------+
-| ``getenv(ESMValTool_att)``                      | ``diag_script_info@att`` or                         | all .ncl scripts |
-|                                                 | ``config_user_info@att``                            |                  |
-+-------------------------------------------------+-----------------------------------------------------+------------------+
-| ``xml``                                         | ``yml``                                             | all scripts      |
-+-------------------------------------------------+-----------------------------------------------------+------------------+
-| ``var_attr_ref(0)``                             | ``variable_info@reference_dataset``                 | all .ncl scripts |
-+-------------------------------------------------+-----------------------------------------------------+------------------+
-| ``var_attr_ref(1)``                             | ``variable_info@alternative_dataset``               | all .ncl scripts |
-+-------------------------------------------------+-----------------------------------------------------+------------------+
-| ``models``                                      | ``input_file_info``                                 | all .ncl scripts |
-+-------------------------------------------------+-----------------------------------------------------+------------------+
-| ``models@name``                                 | ``input_file_info@dataset``                         | all .ncl scripts |
-+-------------------------------------------------+-----------------------------------------------------+------------------+
-| ``verbosity``                                   | ``config_user_info@log_level``                      | all .ncl scripts |
-+-------------------------------------------------+-----------------------------------------------------+------------------+
-| ``isfilepresent_esmval``                        | ``fileexists``                                      | all .ncl scripts |
-+-------------------------------------------------+-----------------------------------------------------+------------------+
-| ``messaging.ncl``                               | ``logging.ncl``                                     | all .ncl scripts |
-+-------------------------------------------------+-----------------------------------------------------+------------------+
-| ``info_output(arg1, arg2, arg3)``               | ``log_info(arg1)`` if ``arg3=1``                    | all .ncl scripts |
-+-------------------------------------------------+-----------------------------------------------------+------------------+
-| ``info_output(arg1, arg2, arg3)``               | ``log_debug(arg1)`` if ``arg3>1``                   | all .ncl scripts |
-+-------------------------------------------------+-----------------------------------------------------+------------------+
-| ``verbosity = config_user_info@verbosity``      | remove this statement                               | all .ncl scripts |
-+-------------------------------------------------+-----------------------------------------------------+------------------+
-| ``enter_msg(arg1, arg2, arg3)``                 | ``enter_msg(arg1, arg2)``                           | all .ncl scripts |
-+-------------------------------------------------+-----------------------------------------------------+------------------+
-| ``leave_msg(arg1, arg2, arg3)``                 | ``leave_msg(arg1, arg2)``                           | all .ncl scripts |
-+-------------------------------------------------+-----------------------------------------------------+------------------+
-| ``noop()``                                      | appropriate ``if-else`` statement                   | all .ncl scripts |
-+-------------------------------------------------+-----------------------------------------------------+------------------+
-| ``nooperation()``                               | appropriate ``if-else`` stsatement                  | all .ncl scripts |
-+-------------------------------------------------+-----------------------------------------------------+------------------+
-| ``fullpaths``                                   | ``input_file_info@filename``                        | all .ncl scripts |
-+-------------------------------------------------+-----------------------------------------------------+------------------+
-| ``get_output_dir(arg1, arg2)``                  | ``config_user_info@plot_dir``                       | all .ncl scripts |
-+-------------------------------------------------+-----------------------------------------------------+------------------+
-| ``get_work_dir``                                | ``config_user_info@work_dir``                       | all .ncl scripts |
-+-------------------------------------------------+-----------------------------------------------------+------------------+
-| ``inlist(arg1, arg2)``                          | ``any(arg1.eq.arg2)``                               | all .ncl scripts |
-+-------------------------------------------------+-----------------------------------------------------+------------------+
-| ``load interface_scripts/*.ncl``                | ``load interface_scripts/interface.ncl``            | all .ncl scripts |
-+-------------------------------------------------+-----------------------------------------------------+------------------+
-| ``<varname>_info.tmp``                          | ``<varname>_info.ncl`` in ``preproc`` dir           | all .ncl scripts |
-+-------------------------------------------------+-----------------------------------------------------+------------------+
-| ``ncl.interface``                               | ``settings.ncl`` in ``run_dir`` and                 | all .ncl scripts |
-|                                                 | ``interface_scripts/interface.ncl``                 |                  |
-+-------------------------------------------------+-----------------------------------------------------+------------------+
-| ``load diag_scripts/lib/ncl/``                  | ``load diag_scripts/shared/``                       | all .ncl scripts |
-+-------------------------------------------------+-----------------------------------------------------+------------------+
-| ``load plot_scripts/ncl/``                      | ``load diag_scripts/shared/plot/``                  | all .ncl scripts |
-+-------------------------------------------------+-----------------------------------------------------+------------------+
-| ``load diag_scripts/lib/ncl/rgb/``              | ``load diag_scripts/shared/plot/rgb/``              | all .ncl scripts |
-+-------------------------------------------------+-----------------------------------------------------+------------------+
-| ``load diag_scripts/lib/ncl/styles/``           | ``load diag_scripts/shared/plot/styles``            | all .ncl scripts |
-+-------------------------------------------------+-----------------------------------------------------+------------------+
-| ``load diag_scripts/lib/ncl/misc_function.ncl`` | ``load diag_scripts/shared/plot/misc_function.ncl`` | all .ncl scripts |
-+-------------------------------------------------+-----------------------------------------------------+------------------+
-| ``LW_CRE``, ``SW_CRE``                          | ``lwcre``, ``swcre``                                | some yml recipes |
-+-------------------------------------------------+-----------------------------------------------------+------------------+
-| ``check_min_max_models``                        | ``check_min_max_datasets``                          | all .ncl scripts |
-+-------------------------------------------------+-----------------------------------------------------+------------------+
-| ``get_ref_model_idx``                           | ``get_ref_dataset_idx``                             | all .ncl scripts |
-+-------------------------------------------------+-----------------------------------------------------+------------------+
-| ``get_model_minus_ref``                         | ``get_dataset_minus_ref``                           | all .ncl scripts |
-+-------------------------------------------------+-----------------------------------------------------+------------------+
++-------------------------------------------------+-----------------------------------------------------------+------------------+
+| Name in v1.0                                    | Name in v2.0                                              | Affected code    |
++=================================================+===========================================================+==================+
+| ``getenv("ESMValTool_wrk_dir")``                | ``config_user_info@work_dir``                             | all .ncl scripts |
++-------------------------------------------------+-----------------------------------------------------------+------------------+
+| ``getenv(ESMValTool_att)``                      | ``diag_script_info@att`` or                               | all .ncl scripts |
+|                                                 | ``config_user_info@att``                                  |                  |
++-------------------------------------------------+-----------------------------------------------------------+------------------+
+| ``xml``                                         | ``yml``                                                   | all scripts      |
++-------------------------------------------------+-----------------------------------------------------------+------------------+
+| ``var_attr_ref(0)``                             | ``variable_info@reference_dataset``                       | all .ncl scripts |
++-------------------------------------------------+-----------------------------------------------------------+------------------+
+| ``var_attr_ref(1)``                             | ``variable_info@alternative_dataset``                     | all .ncl scripts |
++-------------------------------------------------+-----------------------------------------------------------+------------------+
+| ``models``                                      | ``input_file_info``                                       | all .ncl scripts |
++-------------------------------------------------+-----------------------------------------------------------+------------------+
+| ``models@name``                                 | ``input_file_info@dataset``                               | all .ncl scripts |
++-------------------------------------------------+-----------------------------------------------------------+------------------+
+| ``verbosity``                                   | ``config_user_info@log_level``                            | all .ncl scripts |
++-------------------------------------------------+-----------------------------------------------------------+------------------+
+| ``isfilepresent_esmval``                        | ``fileexists``                                            | all .ncl scripts |
++-------------------------------------------------+-----------------------------------------------------------+------------------+
+| ``messaging.ncl``                               | ``logging.ncl``                                           | all .ncl scripts |
++-------------------------------------------------+-----------------------------------------------------------+------------------+
+| ``info_output(arg1, arg2, arg3)``               | ``log_info(arg1)`` if ``arg3=1``                          | all .ncl scripts |
++-------------------------------------------------+-----------------------------------------------------------+------------------+
+| ``info_output(arg1, arg2, arg3)``               | ``log_debug(arg1)`` if ``arg3>1``                         | all .ncl scripts |
++-------------------------------------------------+-----------------------------------------------------------+------------------+
+| ``verbosity = config_user_info@verbosity``      | remove this statement                                     | all .ncl scripts |
++-------------------------------------------------+-----------------------------------------------------------+------------------+
+| ``enter_msg(arg1, arg2, arg3)``                 | ``enter_msg(arg1, arg2)``                                 | all .ncl scripts |
++-------------------------------------------------+-----------------------------------------------------------+------------------+
+| ``leave_msg(arg1, arg2, arg3)``                 | ``leave_msg(arg1, arg2)``                                 | all .ncl scripts |
++-------------------------------------------------+-----------------------------------------------------------+------------------+
+| ``noop()``                                      | appropriate ``if-else`` statement                         | all .ncl scripts |
++-------------------------------------------------+-----------------------------------------------------------+------------------+
+| ``nooperation()``                               | appropriate ``if-else`` stsatement                        | all .ncl scripts |
++-------------------------------------------------+-----------------------------------------------------------+------------------+
+| ``fullpaths``                                   | ``input_file_info@filename``                              | all .ncl scripts |
++-------------------------------------------------+-----------------------------------------------------------+------------------+
+| ``get_output_dir(arg1, arg2)``                  | ``config_user_info@plot_dir``                             | all .ncl scripts |
++-------------------------------------------------+-----------------------------------------------------------+------------------+
+| ``get_work_dir``                                | ``config_user_info@work_dir``                             | all .ncl scripts |
++-------------------------------------------------+-----------------------------------------------------------+------------------+
+| ``inlist(arg1, arg2)``                          | ``any(arg1.eq.arg2)``                                     | all .ncl scripts |
++-------------------------------------------------+-----------------------------------------------------------+------------------+
+| ``load interface_scripts/*.ncl``                | ``load $diag_scripts/../interface_scripts/interface.ncl`` | all .ncl scripts |
++-------------------------------------------------+-----------------------------------------------------------+------------------+
+| ``<varname>_info.tmp``                          | ``<varname>_info.ncl`` in ``preproc`` dir                 | all .ncl scripts |
++-------------------------------------------------+-----------------------------------------------------------+------------------+
+| ``ncl.interface``                               | ``settings.ncl`` in ``run_dir`` and                       | all .ncl scripts |
+|                                                 | ``interface_scripts/interface.ncl``                       |                  |
++-------------------------------------------------+-----------------------------------------------------------+------------------+
+| ``load diag_scripts/lib/ncl/``                  | ``load $diag_scripts/shared/``                            | all .ncl scripts |
++-------------------------------------------------+-----------------------------------------------------------+------------------+
+| ``load plot_scripts/ncl/``                      | ``load $diag_scripts/shared/plot/``                       | all .ncl scripts |
++-------------------------------------------------+-----------------------------------------------------------+------------------+
+| ``load diag_scripts/lib/ncl/rgb/``              | ``load $diag_scripts/shared/plot/rgb/``                   | all .ncl scripts |
++-------------------------------------------------+-----------------------------------------------------------+------------------+
+| ``load diag_scripts/lib/ncl/styles/``           | ``load $diag_scripts/shared/plot/styles``                 | all .ncl scripts |
++-------------------------------------------------+-----------------------------------------------------------+------------------+
+| ``load diag_scripts/lib/ncl/misc_function.ncl`` | ``load $diag_scripts/shared/plot/misc_function.ncl``      | all .ncl scripts |
++-------------------------------------------------+-----------------------------------------------------------+------------------+
+| ``LW_CRE``, ``SW_CRE``                          | ``lwcre``, ``swcre``                                      | some yml recipes |
++-------------------------------------------------+-----------------------------------------------------------+------------------+
+| ``check_min_max_models``                        | ``check_min_max_datasets``                                | all .ncl scripts |
++-------------------------------------------------+-----------------------------------------------------------+------------------+
+| ``get_ref_model_idx``                           | ``get_ref_dataset_idx``                                   | all .ncl scripts |
++-------------------------------------------------+-----------------------------------------------------------+------------------+
+| ``get_model_minus_ref``                         | ``get_dataset_minus_ref``                                 | all .ncl scripts |
++-------------------------------------------------+-----------------------------------------------------------+------------------+
 
 The following changes may also have to be considered:
 
 - namelists are now called recipes and collected in ``esmvaltool/recipes``;
 - models are now called datasets and all files have been updated accordingly, including NCL functions (see table above);
 - ``run_dir`` (previous ``interface_data``), ``plot_dir``, ``work_dir`` are now unique to each diagnostic script, so it is no longer necessary to define specific paths in the diagnostic scripts to prevent file collision;
-- the interface functions ``interface_get_*`` and ``get_figure_filename`` are no longer available: their functionalities can be easily reproduced using the ``input_file_info`` logical and its attributes;
+- `input_file_info`` is now a list of a list of logicals, where each element describes one dataset and one variable. Convenience functions to extract the required elements (e.g., all datasets of a given variable) are provided in ``esmvaltool/interface_scripts/interface.ncl``;
+- the interface functions ``interface_get_*`` and ``get_figure_filename`` are no longer available: their functionalities can be easily reproduced using the ``input_file_info`` and the convenience functions in ``esmvaltool/interface_scripts/interface.ncl`` to access the required attributes;
 - there are now only 4 log levels (``debug``, ``info``, ``warning``, and ``error``) instead of (infinite) numerical values in ``verbosity``
 - diagnostic scripts are now organized in subdirectories in ``esmvaltool/diag_scripts/``: all scripts belonging to the same diagnostics are to be collected in a single subdirectory (see ``esmvaltool/diag_scripts/perfmetrics/`` for example). This applies also to the ``aux_`` scripts, unless they are shared among multiple diagnostics (in this case they go in ``shared/``);
+- the relevant input_file_info items required by a plot routine should be passed as argument to the routine itself;
 - upper case characters have to be avoided in script names, if possible.
 
-As for the recipe, the diagnostic script ``./esmvaltool/diag_scripts/perfmetrics_main.ncl`` can be followed as working example.
+As for the recipe, the diagnostic script ``./esmvaltool/diag_scripts/perfmetrics/main.ncl`` can be followed as working example.
 
 Move preprocessing from the diagnostic script to the backend
 ============================================================
