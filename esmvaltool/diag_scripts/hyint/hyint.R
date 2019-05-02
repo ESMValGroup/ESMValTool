@@ -136,6 +136,14 @@ if (length(ref_idx) == 0) {
   ref_idx <- length(models_name)
 }
 
+if (!anyNA(match(models_start_year[ref_idx]:models_end_year[ref_idx],
+                 norm_years[1]:norm_years[2]))) {
+  stop(paste0("normalization period covering entire dataset: ",
+              "reduce it to calculate meaningful results"))
+}
+
+
+
 # Select regions and indices to be adopted and test selection
 selregions <- match(select_regions, region_codes)
 if (anyNA(selregions)) {
