@@ -19,100 +19,137 @@
 #    20160414-A_broe_bj: written
 # ############################################################################
 library(climdex.pcic.ncdf)
-library(ncdf4.helpers)
-
-
-#source('interface_data/r.interface')
-
-#source('../backup_scripts/r.interface_test')
-
-source(diag_script_cfg)
-source('diag_scripts/lib/R/info_output.r')
-source('diag_scripts/lib/R/meta_data.r')
-
-## Load in climdex index dataframe
-source('nml/cfg_ExtremeEvents/cfg_climdex.r')
-
-## Script for pre-processing climdex data
-source('diag_scripts/aux/ExtremeEvents/common_climdex_preprocessing_for_plots.r')
-
-## Scripts for plotting
-source('diag_scripts/aux/ExtremeEvents/make_timeseries_plot.r')
-source('diag_scripts/aux/ExtremeEvents/make_Glecker_plot2.r')
-
-
-
-
-info_output(paste0("<<<<<<<< Entering ", diag_script), verbosity, 4)
-info_output("+++++++++++++++++++++++++++++++++++++++++++++++++", verbosity, 1)
-info_output(diag_script, verbosity, 1)
-info_output(paste0("var: ", variables), verbosity, 1)
-info_output("+++++++++++++++++++++++++++++++++++++++++++++++++", verbosity, 1)
-
 library(tools)
-diag_base = file_path_sans_ext(diag_script)
+library(yaml)
+library(ncdf4)
 
-## Create working dirs if they do not exist
-out_dir <- paste(work_dir, "/", diag_base, sep = "")
-dir.create(out_dir, showWarnings = FALSE)
-dir.create(plot_dir, showWarnings = FALSE)
-dir.create(file.path(plot_dir, diag_base), showWarnings = FALSE)
-dir.create(climo_dir, showWarnings = FALSE)
+nco <- function(cmd, argstr) {
+  ret <- system2(cmd, args = argstr)
+  if (ret != 0) {
+    stop(paste("Failed (", ret, "): ", cmd, " ", argstr))
+  }
+}
 
+diag_scripts_dir <- Sys.getenv("diag_scripts")
+source(paste0(diag_scripts_dir, "/extreme_events/cfg_climdex.r"))
+source(paste0(diag_scripts_dir, "/extreme_events/common_climdex_preprocessing_for_plots.r"))
+source(paste0(diag_scripts_dir, "/extreme_events/make_timeseries_plot.r"))
+source(paste0(diag_scripts_dir, "/extreme_events/make_Glecker_plot2.r"))
+
+# read settings and metadata files
+args <- commandArgs(trailingOnly = TRUE)
+settings <- yaml::read_yaml(args[1])
+for (myname in names(settings)) {
+  temp <- get(myname, settings)
+  assign(myname, temp)
+}
+variables <- c()
+climofiles <- c()
+metadata <- c()
+
+for (i in 1:length(settings$input_files)) {
+    metadata <- c(metadata, yaml::read_yaml(settings$input_files[i]))
+    for (f in metadata[i]){
+        variables <- c(variables,  f$short_name)
+    }
+}
+climofiles <- names(metadata)
+
+field_type0 <- "T2Ds"
+
+# get first variable and list associated to pr variable
+list0 <- metadata[1]
+# get name of climofile for first variable and list
+# associated to first climofile
+climolist0 <- get(climofiles[1], list0)
+diag_base <- climolist0$diagnostic
+print(paste(diag_base, ": starting routine"))
+
+# create working dirs if they do not exist
+work_dir <- settings$work_dir
+regridding_dir <- settings$run_dir
+plot_dir <- settings$plot_dir
+dir.create(work_dir, recursive = T, showWarnings = F)
+dir.create(regridding_dir, recursive = T, showWarnings = F)
+dir.create(plot_dir, recursive = T, showWarnings = F)
+
+# setup provenance file and list
+provenance_file <- paste0(regridding_dir, "/", "diagnostic_provenance.yml")
+provenance <- list()
+
+# extract metadata
+models_name <- unname(sapply(list0, "[[", "dataset"))
+models_ensemble <- unname(sapply(list0, "[[", "ensemble"))
+reference_model <- unname(sapply(list0, "[[", "reference_dataset"))[1]
+models_start_year <- unname(sapply(list0, "[[", "start_year"))
+models_end_year <- unname(sapply(list0, "[[", "end_year"))
+models_experiment <- unname(sapply(list0, "[[", "exp"))
+models_project <- unname(sapply(list0, "[[", "project"))
 
 #### Correction r.interface output correction ####
 models_experiment[models_experiment == "No_value"] <- "No-values"
 
 ## Find earlier climdex indices in work folder
-climdex_files <- list.files(path = out_dir, pattern = "ETCCDI")
+climdex_files <- list.files(path = work_dir, pattern = "ETCCDI")
+
+# Fix input files removing bounds
+print("Removing bounds from prerprocessed files")
+for (i in 1:length(climofiles)) {
+   tmp <- tempfile()
+   nco("ncks", paste("-C -O -x -v lat_bnds,lon_bnds,time_bnds",
+       climofiles[i], tmp)) 
+   nco("ncatted", paste("-O -a bounds,time,d,,", tmp))
+   nco("ncatted", paste("-O -a bounds,lat,d,,", tmp))
+   nco("ncatted", paste("-O -a bounds,lon,d,,", tmp))
+   nco("ncatted", paste0("-O -a coordinates,", variables[i], ",d,, ", tmp))
+   file.copy(tmp, climofiles[i], overwrite = TRUE)
+   unlink(tmp)
+}
 
 ##
 ## At this stage climdex indices are calculated. This process is extremely tedious and check points are in place to check whether the indicese are already produced. 
 ## If the climdex files are there, then this process is skipped. Delete the climdex files from the work folder if you wish to have the climdex indices recalculated.
 ##
 for (model_idx in c(1:length(models_name))) {
-    fullpath_filenames <- character(0)
-    for (var_idx in c(1:length(variables))) {
-        fullpath_filenames[var_idx] <- interface_get_fullpath(variables[var_idx], field_types[var_idx], model_idx)
-        print(fullpath_filenames[var_idx])
-    }
+
     author.data <- list(institution = "None", institution_id = "None")
     template <- paste("var_timeres_", models_name[model_idx], "_", models_experiment[model_idx], "_",
                 models_ensemble[model_idx], "_", models_start_year[model_idx],
                 "01-", models_end_year[model_idx], "12.nc", sep = "", collapse = "")
     print("")
-    info_output(paste0(">>>>>>>> Template name: ", template), verbosity, 4)
+    print(paste0(">>>>>>>> Template name: ", template))
     print("")
-    idx_select <- unique(c(timeseries_idx, gleckler_idx))
-    climdex.idx.subset  <- unique(idx_df$idxETCCDI[which(idx_df$idxETCCDI_time %in% idx_select)])
-    print("")
-    info_output(paste0(">>>>>>>> Indices required: ", paste(climdex.idx.subset, collapse = ", ")), verbosity, 4)
-    print("")
+
+#    idx_select <- unique(c(timeseries_idx, gleckler_idx))
+#    climdex.idx.subset  <- unique(idx_df$idxETCCDI[which(idx_df$idxETCCDI_time %in% idx_select)])
+#    print("")
+#    print(paste0(">>>>>>>> Indices required: ", paste(climdex.idx.subset, collapse = ", ")))
+#    print("")
     
-    base.period <- c(max(strtoi(models_start_year)), min(strtoi(models_end_year)))
+     base.period <- c(max(strtoi(models_start_year)), min(strtoi(models_end_year)))
     
     ## Check point for existing files
-    climdex_file_check <- paste(idx_select, "_",models_name[model_idx], "_", models_experiment[model_idx], "_",
-                                models_ensemble[model_idx], "_", models_start_year[model_idx],"-", models_end_year[model_idx], sep="")
+#    climdex_file_check <- paste(idx_select, "_",models_name[model_idx], "_", models_experiment[model_idx], "_",
+#                                models_ensemble[model_idx], "_", models_start_year[model_idx],"-", models_end_year[model_idx], sep="")
     #print(climdex_file_check)
-    check_control <- vector("logical", length(climdex_file_check))
-    n = 0
-    for(chck in climdex_file_check){
-      n  <- n + 1
+#    check_control <- vector("logical", length(climdex_file_check))
+#    n = 0
+#    for(chck in climdex_file_check){
+#      n  <- n + 1
 	    #print(grep(chck, climdex_files))
-	    tmp <- length(grep(chck, climdex_files))
-      check_control[n] <- (tmp > 0)
-    }
+#	    tmp <- length(grep(chck, climdex_files))
+#      check_control[n] <- (tmp > 0)
+#    }
     #print(check_control)
     
-    if(!all(check_control)){
+#    if(!all(check_control)){
       #print(fullpath_filenames)
       print("")
-      info_output(paste0(">>>>>>>> Producing Indices for ", models_name[model_idx]), verbosity, 4)
+      print(paste0(">>>>>>>> Producing Indices for ", models_name[model_idx]))
       print("")
-      create.indices.from.files(fullpath_filenames, out_dir, template, author.data, 
+      create.indices.from.files(climofiles, work_dir, template, author.data, 
                                    base.range=base.period, parallel = 25, verbose = TRUE, max.vals.millions = 20) # Procuce selected indicesd
-    }
+#    }
 }
 
 ############################## 
@@ -124,23 +161,25 @@ for (model_idx in c(1:length(models_name))) {
 ## Splitting models from observations
 
 obs_name <- models_name[models_project == "OBS"]
-#obs_name <- c(obs_name, obs_name)
-#obs_name <- c(obs_name, obs_name[1])
-#obs_name <- obs_name[1]
 models_name <- models_name[models_project != "OBS"]
-
-
 
 ################################### 
 #### Produce time series plots ####
 ################################### 
+
+# These are forced here for testing
+chk.ts_plt=FALSE
+chk.ts_data=FALSE
+normalize=FALSE
+timeseries_idx = c("tn10pETCCDI_yr", "tn90pETCCDI_yr", "tx10pETCCDI_yr", "tx90pETCCDI_yr")
+chk.glc_plt=FALSE
+
 if(chk.ts_plt){
   print("")
   print("")
-  info_output(paste0(">>>>>>>> TIME SERIE PROCESSING INITIATION"), verbosity, 4)
-  timeseries_main(path = out_dir, idx_list =  timeseries_idx, model_list = models_name , obs_list = obs_name, plot_dir = paste(plot_dir, "/", diag_base, sep = ""), normalize=normalize)
+  print(paste0(">>>>>>>> TIME SERIE PROCESSING INITIATION"))
+  timeseries_main(path = work_dir, idx_list =  timeseries_idx, model_list = models_name , obs_list = obs_name, plot_dir = paste(plot_dir, "/", diag_base, sep = ""), normalize=normalize)
 }
-
 
 ############################### 
 #### Produce Gleckler plot ####
@@ -148,7 +187,7 @@ if(chk.ts_plt){
 if(chk.glc_plt){
   print("")
   print("")
-  info_output(paste0(">>>>>>>> GLECKLER PROCESSING INITIATION"), verbosity, 4)
+  print(paste0(">>>>>>>> GLECKLER PROCESSING INITIATION"))
     
   ## Check if Gleckler Array already exists
   nidx <- length(gleckler_idx) # number of indices
@@ -166,9 +205,9 @@ if(chk.glc_plt){
   }else{promptInput <- "y"}
   
   #### Running gleckler_main ####
-  gleckler_main(path = out_dir, idx_list = gleckler_idx,
+  gleckler_main(path = work_dir, idx_list = gleckler_idx,
                 model_list = models_name, obs_list = obs_name, plot_dir = paste(plot_dir, "/", diag_base, sep = ""), promptInput=promptInput)
   
   print(cfgpar)
-  info_output(paste0(">>>>>>>> Leaving ", diag_script), verbosity, 4)
+  print(paste0(">>>>>>>> Leaving ", diag_script))
 }
