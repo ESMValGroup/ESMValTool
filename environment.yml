@@ -33,5 +33,6 @@ dependencies:
   - ncl>=6.5.0
   - jasper!=1.900.31  # pinned NCL dependency
   - r-base
+  - r-curl  # Dependency of lintr, but fails to compile
   - libunwind  # Needed for Python3.7+
   # - julia>=1.0.0  # The Julia package on conda is apparently broken
