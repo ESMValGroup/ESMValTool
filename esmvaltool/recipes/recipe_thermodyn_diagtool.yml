@@ -28,8 +28,6 @@ datasets:
   - {dataset: MIROC-ESM-CHEM, project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 2001, end_year: 2005}
   - {dataset: MPI-ESM-LR, project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 2031, end_year: 2035}
   - {dataset: MPI-ESM-MR, project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 2001, end_year: 2005}
-preprocessors:
-  prep0: {}
 
 diagnostics:
   Thermodyn_Diag:
