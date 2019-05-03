@@ -183,12 +183,10 @@ def _update_target_levels(variable, variables, settings, config_user):
             variable_data = _get_dataset_info(dataset, variables)
             filename = \
                 _dataset_to_file(variable_data, config_user)
-            coordinate = levels.get('coordinate', 'air_pressure')
             settings['extract_levels']['levels'] = get_reference_levels(
                 filename, variable_data['project'], dataset,
                 variable_data['short_name'],
-                os.path.splitext(variable_data['filename'])[0] + '_fixed',
-                coordinate)
+                os.path.splitext(variable_data['filename'])[0] + '_fixed')
 
 
 def _update_target_grid(variable, variables, settings, config_user):
@@ -207,6 +205,16 @@ def _update_target_grid(variable, variables, settings, config_user):
     else:
         # Check that MxN grid spec is correct
         parse_cell_spec(settings['regrid']['target_grid'])
+
+
+def _update_regrid_time(variable, settings):
+    """Input data frequency automatically for regrid_time preprocessor."""
+    regrid_time = settings.get('regrid_time')
+    if regrid_time is None:
+        return
+    frequency = settings.get('regrid_time', {}).get('frequency')
+    if not frequency:
+        settings['regrid_time']['frequency'] = variable['frequency']
 
 
 def _get_dataset_info(dataset, variables):
@@ -295,9 +303,8 @@ def _get_default_settings(variable, config_user, derive=False):
     }
     # File fixes
     fix_dir = os.path.splitext(variable['filename'])[0] + '_fixed'
-    if not derive:
-        settings['fix_file'] = dict(fix)
-        settings['fix_file']['output_dir'] = fix_dir
+    settings['fix_file'] = dict(fix)
+    settings['fix_file']['output_dir'] = fix_dir
     # Cube fixes
     # Only supply mip if the CMOR check fixes are implemented.
     if variable.get('cmor_table'):
@@ -606,6 +613,7 @@ def _get_preprocessor_products(variables, profile, order, ancestor_products,
             variables=variables,
             settings=settings,
             config_user=config_user)
+        _update_regrid_time(variable, settings)
         ancestors = grouped_ancestors.get(variable['filename'])
         if not ancestors:
             ancestors = _get_input_files(variable, config_user)
@@ -689,7 +697,10 @@ def _split_derive_profile(profile):
     """Split the derive preprocessor profile."""
     order = _extract_preprocessor_order(profile)
     before, after = _split_settings(profile, 'derive', order)
-    after['derive'] = {}
+    after['derive'] = True
+    after['fix_file'] = False
+    after['fix_metadata'] = False
+    after['fix_data'] = False
     if order != DEFAULT_ORDER:
         before['custom_order'] = True
         after['custom_order'] = True
@@ -709,7 +720,6 @@ def _get_derive_input_variables(variables, config_user):
         derive_input[group].append(var)
 
     for variable in variables:
-
         group_prefix = variable['variable_group'] + '_derive_input_'
         if not variable.get('force_derivation') and get_input_filelist(
                 variable=variable,
@@ -917,7 +927,10 @@ class Recipe:
         preprocessor_output = {}
 
         for variable_group, raw_variable in raw_variables.items():
-            raw_variable = deepcopy(raw_variable)
+            if raw_variable is None:
+                raw_variable = {}
+            else:
+                raw_variable = deepcopy(raw_variable)
             raw_variable['variable_group'] = variable_group
             if 'short_name' not in raw_variable:
                 raw_variable['short_name'] = variable_group
