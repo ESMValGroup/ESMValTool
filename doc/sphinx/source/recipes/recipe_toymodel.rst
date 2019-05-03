@@ -42,8 +42,8 @@ User setting files are stored in recipes/
 
    *Required settings for script*
 
-   * Number_of_members: integer specifying the number of members to be generated
-   * Beta: the user defined underdispersion (Beta >= 0)
+   * number_of_members: integer specifying the number of members to be generated
+   * beta: the user defined underdispersion (beta >= 0)
 
 
 Variables
