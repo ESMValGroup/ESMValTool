@@ -280,13 +280,6 @@ begin
   if (isatt(data, "metric")) then
     res@tiMainString = data@metric
   end if
-  if (isatt(data, "region")) then
-    if (isatt(res, "tiMainString")) then
-      res@tiMainString = res@tiMainString + data@region
-    else
-      res@tiMainString = data@region
-    end if
-  end if
 
   ; Override defaults with "res_" attributes of "data"
   res_new = att2var(data, "res_")

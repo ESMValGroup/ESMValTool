@@ -97,7 +97,7 @@ diagnostics:
         script: perfmetrics/main.ncl
         plot_type: cycle_zonal
         time_avg: yearly
-        region: Global
+        region: global
         calc_grading: true
         metric: [SMPI]
         normalization: CMIP5
@@ -122,7 +122,7 @@ diagnostics:
         script: perfmetrics/main.ncl
         plot_type: cycle_zonal
         time_avg: yearly
-        region: Global
+        region: global
         calc_grading: true
         metric: [SMPI]
         normalization: CMIP5
@@ -147,7 +147,7 @@ diagnostics:
         script: perfmetrics/main.ncl
         plot_type: cycle_zonal
         time_avg: yearly
-        region: Global
+        region: global
         calc_grading: true
         metric: [SMPI]
         normalization: CMIP5
@@ -172,7 +172,7 @@ diagnostics:
         script: perfmetrics/main.ncl
         plot_type: cycle_zonal
         time_avg: yearly
-        region: Global
+        region: global
         calc_grading: true
         metric: [SMPI]
         normalization: CMIP5
@@ -197,7 +197,7 @@ diagnostics:
         script: perfmetrics/main.ncl
         plot_type: cycle_latlon
         time_avg: yearly
-        region: Global
+        region: global
         calc_grading: true
         metric: [SMPI]
         normalization: CMIP5
@@ -222,7 +222,7 @@ diagnostics:
         script: perfmetrics/main.ncl
         plot_type: cycle_latlon
         time_avg: yearly
-        region: Global
+        region: global
         calc_grading: true
         metric: [SMPI]
         normalization: CMIP5
@@ -247,7 +247,7 @@ diagnostics:
         script: perfmetrics/main.ncl
         plot_type: cycle_latlon
         time_avg: yearly
-        region: Global
+        region: global
         calc_grading: true
         metric: [SMPI]
         normalization: CMIP5
@@ -272,7 +272,7 @@ diagnostics:
         script: perfmetrics/main.ncl
         plot_type: cycle_latlon
         time_avg: yearly
-        region: Global
+        region: global
         calc_grading: true
         metric: [SMPI]
         normalization: CMIP5
@@ -297,7 +297,7 @@ diagnostics:
         script: perfmetrics/main.ncl
         plot_type: cycle_latlon
         time_avg: yearly
-        region: Global
+        region: global
         calc_grading: true
         metric: [SMPI]
         normalization: CMIP5
@@ -322,7 +322,7 @@ diagnostics:
         script: perfmetrics/main.ncl
         plot_type: cycle_latlon
         time_avg: yearly
-        region: Global
+        region: global
         calc_grading: true
         metric: [SMPI]
         normalization: CMIP5
@@ -347,7 +347,7 @@ diagnostics:
         script: perfmetrics/main.ncl
         plot_type: cycle_latlon
         time_avg: yearly
-        region: Global
+        region: global
         calc_grading: true
         metric: [SMPI]
         normalization: CMIP5
@@ -372,7 +372,7 @@ diagnostics:
         script: perfmetrics/main.ncl
         plot_type: cycle_latlon
         time_avg: yearly
-        region: Global
+        region: global
         calc_grading: true
         metric: [SMPI]
         normalization: CMIP5
