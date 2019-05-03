@@ -142,14 +142,15 @@ if (!anyNA(match(models_start_year[ref_idx]:models_end_year[ref_idx],
   stop(paste0("normalization period covering entire dataset: ",
               "reduce it to calculate meaningful results"))
 }
-if (anyNA(match(trend_years[1]:trend_years[2], 
-                models_start_year[ref_idx]:models_end_year[ref_idx]))) {
-  stop("trend period outside available data")
+if (trend_years != F) {
+  if (anyNA(match(trend_years[1]:trend_years[2],
+                  models_start_year[ref_idx]:models_end_year[ref_idx]))) {
+    stop("trend period outside available data")
+  }
+  if (trend_years[2] - trend_years[1] < 2) {
+    stop("set at least a 3 year interval for trend calculation")
+  }
 }
-if (trend_years[2] - trend_years[1] < 2) {
-  stop("set at least a 3 year interval for trend calculation")
-}
-
 
 # Select regions and indices to be adopted and test selection
 selregions <- match(select_regions, region_codes)
