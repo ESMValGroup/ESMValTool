@@ -6,7 +6,7 @@
 # DECLARING THE FUNCTION: EXECUTION IS AT THE BOTTOM OF THE SCRIPT
 
 hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
- 
+
   # setting up path and parameters
   dataset_ref <- models_name[ref_idx]
   year1_ref <- models_start_year[ref_idx]
