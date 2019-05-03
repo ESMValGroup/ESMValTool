@@ -8,7 +8,6 @@
 #
 #####################################################################
 
-
 run_regridding <- T
 force_regridding <- F
 run_diagnostic <- T
@@ -24,7 +23,9 @@ if (!exists("write_plots")) {
 if (!exists("etccdi_preproc")) {
   etccdi_preproc <- F
 }
-etccdi_dir <- ""
+if (!exists("etccdi_dir")) {
+  etccdi_dir <- ""
+}
 
 # basic settings
 seasons <- c("ALL")   # seasons to be analysed: "ALL", "DJF", ...

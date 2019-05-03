@@ -136,12 +136,19 @@ if (length(ref_idx) == 0) {
   ref_idx <- length(models_name)
 }
 
+# check requested time intervals
 if (!anyNA(match(models_start_year[ref_idx]:models_end_year[ref_idx],
                  norm_years[1]:norm_years[2]))) {
   stop(paste0("normalization period covering entire dataset: ",
               "reduce it to calculate meaningful results"))
 }
-
+if (anyNA(match(trend_years[1]:trend_years[2], 
+                models_start_year[ref_idx]:models_end_year[ref_idx]))) {
+  stop("trend period outside available data")
+}
+if (trend_years[2] - trend_years[1] < 2) {
+  stop("set at least a 3 year interval for trend calculation")
+}
 
 
 # Select regions and indices to be adopted and test selection
@@ -171,7 +178,8 @@ if (write_netcdf) {
     # If needed, pre-process file and add absolute time axis
     if (run_regridding) {
       if (!file.exists(regfile) | force_regridding) {
-        dummy <- hyint_preproc(work_dir, model_idx, climofile, regfile)
+        dummy <- hyint_preproc(work_dir, model_idx, ref_idx, climofile,
+                               regfile, rgrid)
       } else {
         gridfile <- getfilename_indices(work_dir, diag_base, model_idx,
                                         grid = T)

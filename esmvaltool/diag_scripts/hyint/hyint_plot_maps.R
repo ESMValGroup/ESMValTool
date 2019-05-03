@@ -6,7 +6,7 @@
 # DECLARING THE FUNCTION: EXECUTION IS AT THE BOTTOM OF THE SCRIPT
 
 hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
-
+ 
   # setting up path and parameters
   dataset_ref <- models_name[ref_idx]
   year1_ref <- models_start_year[ref_idx]
@@ -69,11 +69,14 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
     ref_retdes3D <- replicate(dim(pry)[length(dim(pry))], ref_retdes2D)
   }
 
-  # open reference field
+ # open reference field
   ref_filename <- getfilename_indices(ref_dir, diag_base, ref_idx, season)
   print(paste("Reading reference ", ref_filename))
   for (field in field_names) {
     field_ref <- ncdf_opener(ref_filename, field, "lon", "lat", rotate = "no")
+    ics_ref <- ics
+    ipsilon_ref <- ipsilon
+
     if (removedesert) {
       field_ref <- field_ref * ref_retdes3D
     }
@@ -147,12 +150,11 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
     }
 
     #-----------------Loading data-----------------------#
-
     # open experiment field
     for (field in field_names) {
       filename <- getfilename_indices(work_dir_exp, diag_base, model_idx,
                                       season)
-      print(paste("Reading experiment ", filename))
+      print(paste("Reading ", field, " from experiment ", filename))
       if ( (rgrid == F) & ( (plot_type == 2) | (plot_type == 3) ) ) {
         # regrid when comparing
         field_exp <- ncdf_opener(filename, field, "lon", "lat", rotate = "no",
@@ -311,6 +313,8 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
           for (iquantity in c(1:nquantity[plot_type])) {
             if (iquantity == 2) {
               tmp_field <- field_ref
+              ipsilon <- ipsilon_ref
+              ics <- ics_ref
             }
             if (iquantity == 3) {
               tmp.palette <- palette2

@@ -3,15 +3,25 @@
 #-------------E. Arnone (Oct 2017)-------------------#
 ######################################################
 
-hyint_preproc <- function(work_dir, model_idx, climofile, regfile) {
+hyint_preproc <- function(work_dir, model_idx, ref_idx,
+                          climofile, regfile, rgrid) {
   print(paste0(diag_base, ": pre-processing file: ", climofile))
 
   #  add absolute axis, remove leap year days
   # cdo delete and copy do not like files with whitespace
-  tempf <- cdo("addc", args = "0", input = climofile)
-  #cdo("delete", options = "-L -f nc -a", args = "month=2,day=29",
+
+  if (rgrid != F) {
+    if (rgrid == "REF") {
+      rgrid <- climofiles[ref_idx]
+    }
+    tempf <- cdo("remapcon2", args = rgrid, input = climofile)
+  } else {
+    tempf <- cdo("addc", args = "0", input = climofile)
+  }
+
   cdo("-copy", options = "-L -f nc -a",
       input = tempf, output = regfile)
+
   unlink(tempf)
 
   # generate grid file

@@ -59,6 +59,12 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_idx, season) {
     levels_m[] <- NA
   }
 
+  # If on, switch shade option off and lines on for plot_type 13
+  if (plot_type == 13 & add_trend_sd_shade) {
+    add_trend_sd_shade <- F
+    add_trend_sd_lines <- T
+  }
+
   # Define array to store plotting limits for each panel of multi-panel figures
   plot_limits <- array(NaN, c(4, length(field_names)))
 
@@ -312,9 +318,6 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_idx, season) {
             # Recursively store min and max values to be plotted
             # NOTE: this works as long as only one region at the time is used
             minmax_levels <- get(paste0(field, "_levels"))
-            print("================")
-            print(minmax_levels)
-            print(tmp.levels)
             minmax_levels[1] <- min(c(minmax_levels[1], tmp.levels[1])
                                                       , na.rm = T)
             minmax_levels[2] <- max(c(minmax_levels[2], tmp.levels[2])
@@ -564,7 +567,6 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_idx, season) {
                   col = "dodgerblue3", bg = "dodgerblue3", cex = 2)
               }
             }
-#          }
           box()
           if (!( (plot_type == 15) & (model_idx > 1))) {
             if (add_zeroline & (ylim[1] != 0)) {
