@@ -51,9 +51,10 @@ timeseries_main <- function(path = "../work/ExtremeEvents", idx_list = c("tn10pE
     land <- paste(path, "/Land", sep = "")
 
     # Initial nc-file time crop, regrid, land and plot purge
-    cmd <- paste("rm -f ", time_cropped, "/*.nc", " ", regridded, "/*.nc", " ", land, "/*.nc", sep = "")
-    print(cmd)
-    system(cmd)
+    #cmd <- paste("rm -f ", time_cropped, "/*.nc", " ", regridded, "/*.nc", " ", land, "/*.nc", sep = "")
+    #print(cmd)
+    #system(cmd)
+    unlink(c(paste0(time_cropped, "/*.nc"), paste0(regridded, "/*.nc"), paste0(land, "/*.nc")))
     
     # Initial grid and landmask creation reset
     gridAndLandmask = TRUE
@@ -202,10 +203,12 @@ time_series_preprocessing <- function(land = "./Land", idx = 'tnnETCCDI_yr',
       if(idx %in% pidx){
         
         # Fieldmean results
-        cmd <- paste('cdo -O fldmean', ' ', land, '/', m,  ' ',
-                     land, '/', 'fldm_', m , sep = "")
-        print(cmd)
-        system(cmd)
+        #cmd <- paste('cdo -O fldmean', ' ', land, '/', m,  ' ',
+        #             land, '/', 'fldm_', m , sep = "")
+        #print(cmd)
+        #system(cmd)
+        cdo("fldmean", input = paste0(land, "/", m),
+            output = paste0(land, "/", "fldm_", m), options = "-O")
         
         ## add the preprocessed file to the filestring        
         file_string_models <- paste(file_string_models, land,
@@ -213,34 +216,46 @@ time_series_preprocessing <- function(land = "./Land", idx = 'tnnETCCDI_yr',
         
       }else{
         # Subtracting timemeans from land files:
-        cmd <- paste('cdo -O sub', ' ', land, '/', m, ' ',  land, '/tm_', m, ' ',
-                     land, '/', 'norm_', m,  sep = "")
-        print(cmd)
-        system(cmd)
+        #cmd <- paste('cdo -O sub', ' ', land, '/', m, ' ',  land, '/tm_', m, ' ',
+        #             land, '/', 'norm_', m,  sep = "")
+        #print(cmd)
+        #system(cmd)
+        cdo("sub", input = c(paste0(land, "/", m), paste0(land, "/tm_", m)),
+            output = paste0(land, "/", "norm_", m), options = "-O")
         
         # Detrended results:
-        cmd <- paste('cdo -O detrend', ' ', land, '/norm_', m,  ' ', land, '/',
-                     'detrend_', m,  sep = "")
-        print(cmd)
-        system(cmd)
+        #cmd <- paste('cdo -O detrend', ' ', land, '/norm_', m,  ' ', land, '/',
+        #             'detrend_', m,  sep = "")
+        #print(cmd)
+        #system(cmd)
+        cdo("detrend", input = paste0(land, "/norm_", m),
+            output = paste0(land, "/", "detrend_", m), options = "-O")
         
         # Timstd of detrend
-        cmd <- paste('cdo -O timstd', ' ', land, '/detrend_', m,  ' ', land, '/',
-                     'detrend_std_', m,  sep = "")
-        print(cmd)
-        system(cmd)
+        #cmd <- paste('cdo -O timstd', ' ', land, '/detrend_', m,  ' ', land, '/',
+        #             'detrend_std_', m,  sep = "")
+        #print(cmd)
+        #system(cmd)
+        cdo("timstd", input = paste0(land, "/detrend_", m),
+            output = paste0(land, "/", "detrend_std_", m), options = "-O")
         
         # Divide normalized by timstded detrend
-        cmd <- paste('cdo -O div', ' ', land, '/norm_', m,  ' ', land, '/', 'detrend_std_',
-                     m , ' ', land, '/', 'detrend_standard_', m, sep = "")
-        print(cmd)
-        system(cmd)
+        #cmd <- paste('cdo -O div', ' ', land, '/norm_', m,  ' ', land, '/', 'detrend_std_',
+        #             m , ' ', land, '/', 'detrend_standard_', m, sep = "")
+        #print(cmd)
+        #system(cmd)
+        cdo("div",
+            input = c(paste0(land, "/norm", m),
+                      paste0(land, "/detrend_std_", m)),
+            output = paste0(land, "/", "detrend_standard_", m), options = "-O")
         
         # Fieldmean results
-        cmd <- paste('cdo -O fldmean', ' ', land, '/detrend_standard_', m,  ' ',
-                     land, '/', 'detrend_std_fldm_', m , sep = "")
-        print(cmd)
-        system(cmd)
+        #cmd <- paste('cdo -O fldmean', ' ', land, '/detrend_standard_', m,  ' ',
+        #             land, '/', 'detrend_std_fldm_', m , sep = "")
+        #print(cmd)
+        #system(cmd)
+        cdo("fldmean", input = paste0(land, "/detrend_standard_", m),
+            output = paste0(land, "/", "detrend_std_fldm_", m), options = "-O")
         
         ## add the preprocessed file to the filestring        
         file_string_models <- paste(file_string_models, land,
@@ -249,22 +264,31 @@ time_series_preprocessing <- function(land = "./Land", idx = 'tnnETCCDI_yr',
       
     }
     #Find model ensemble mean
-    cmd <- paste("cdo -O ensmean ", file_string_models, plot_dir, "/", idx,
-                 "_ensmean_for_timeseries.nc", sep = "")
-    print(cmd)
-    system(cmd)
-    
+    #cmd <- paste("cdo -O ensmean ", file_string_models, plot_dir, "/", idx,
+    #             "_ensmean_for_timeseries.nc", sep = "")
+    #print(cmd)
+    #system(cmd)
+    cdo("ensmean", input = file_string_models,
+        output = paste0(plot_dir, "/", idx,  "_ensmean_for_timeseries.nc"),
+        options = "-O")
+ 
     #Find ensemble 25th percentile
-    cmd <- paste("cdo -O enspctl,25 ", file_string_models, plot_dir, "/", idx,
-                 "_25enspctl_for_timeseries.nc", sep = "")
-    print(cmd)
-    system(cmd)
+    #cmd <- paste("cdo -O enspctl,25 ", file_string_models, plot_dir, "/", idx,
+    #             "_25enspctl_for_timeseries.nc", sep = "")
+    #print(cmd)
+    #system(cmd)
+    cdo("enspctl", args = "25", input = file_string_models,
+        output = paste0(plot_dir, "/", idx,  "_25enspctl_for_timeseries.nc"),
+        options = "-O")
     
     #Find ensemble 75th percentile
-    cmd <- paste("cdo -O enspctl,75 ", file_string_models, plot_dir, "/", idx,
-                 "_75enspctl_for_timeseries.nc", sep = "")
-    print(cmd)
-    system(cmd)
+    #cmd <- paste("cdo -O enspctl,75 ", file_string_models, plot_dir, "/", idx,
+    #             "_75enspctl_for_timeseries.nc", sep = "")
+    #print(cmd)
+    #system(cmd)
+    cdo("enspctl", args = "75", input = file_string_models,
+        output = paste0(plot_dir, "/", idx,  "_75enspctl_for_timeseries.nc"),
+        options = "-O")
     
 
     n <- 0
@@ -273,60 +297,80 @@ time_series_preprocessing <- function(land = "./Land", idx = 'tnnETCCDI_yr',
       
       if(idx %in% pidx){
         # Fieldmean results
-        cmd <- paste('cdo -O fldmean', ' ', land, '/', o,  ' ',
-                     land, '/', 'fldm_', o , sep = "")
-        print(cmd)
-        system(cmd)
+        #cmd <- paste('cdo -O fldmean', ' ', land, '/', o,  ' ',
+        #             land, '/', 'fldm_', o , sep = "")
+        #print(cmd)
+        #system(cmd)
+        cdo("fldmean", input = paste0(land, "/", o),
+            output = paste0(land, "/", "fldm_", o), options = "-O")
         
         # Copy obs file to plot
         n  <- n+1
-        cmd <- paste("cp ", land, "/fldm_", o, " ", plot_dir, "/", idx, "_",
-                     modelsAndObsSplit[obs_order[n]], "_for_timeseries.nc", sep = "")
-        print(cmd)
-        system(cmd)
+        file.copy(paste0(land, "/fldm_", o),
+                  paste0(plot_dir, "/", idx, "_",
+                         modelsAndObsSplit[obs_order[n]], "_for_timeseries.nc"))
+        #cmd <- paste("cp ", land, "/fldm_", o, " ", plot_dir, "/", idx, "_",
+        #             modelsAndObsSplit[obs_order[n]], "_for_timeseries.nc", sep = "")
+        #print(cmd)
+        #system(cmd)
         
       }else{
         # Subtracting timemeans from land files:
-        cmd <- paste('cdo -O sub', ' ', land, '/', o, ' ',  land, '/tm_', o, ' ',
-                     land, '/', 'norm_', o,  sep = "")
-        print(cmd)
-        system(cmd)
+        #cmd <- paste('cdo -O sub', ' ', land, '/', o, ' ',  land, '/tm_', o, ' ',
+        #             land, '/', 'norm_', o,  sep = "")
+        #print(cmd)
+        #system(cmd)
+        cdo("sub", input = c(paste0(land, "/", o), paste0(land, "/tm_", o)),
+            output = paste0(land, "/", "norm_", o), options = "-O")
         
         # Detrended results:
-        cmd <- paste('cdo -O detrend', ' ', land, '/norm_', o,  ' ', land, '/',
-                     'detrend_', o,  sep = "")
-        print(cmd)
-        system(cmd)
+        #cmd <- paste('cdo -O detrend', ' ', land, '/norm_', o,  ' ', land, '/',
+        #             'detrend_', o,  sep = "")
+        #print(cmd)
+        #system(cmd)
+        cdo("detrend", input = paste0(land, "/norm_", o),
+            output = paste0(land, "/", "detrend_", o), options = "-O")
         
         # Timstd of detrend
-        cmd <- paste('cdo -O timstd', ' ', land, '/detrend_', o,  ' ', land, '/',
-                     'detrend_std_', o,  sep = "")
-        print(cmd)
-        system(cmd)
+        #cmd <- paste('cdo -O timstd', ' ', land, '/detrend_', o,  ' ', land, '/',
+        #             'detrend_std_', o,  sep = "")
+        #print(cmd)
+        #system(cmd)
+        cdo("timstd", input = paste0(land, "/detrend_", o),
+            output = paste0(land, "/", "detrend_std_", o), options = "-O")
         
         # Divide normalized by timstded detrend
-        cmd <- paste('cdo -O div', ' ', land, '/norm_', o,  ' ', land, '/', 'detrend_std_',
-                     o , ' ', land, '/', 'detrend_standard_', o, sep = "")
-        print(cmd)
-        system(cmd)
+        #cmd <- paste('cdo -O div', ' ', land, '/norm_', o,  ' ', land, '/', 'detrend_std_',
+        #             o , ' ', land, '/', 'detrend_standard_', o, sep = "")
+        #print(cmd)
+        #system(cmd)
+        cdo("div",
+            input = c(paste0(land, "/norm", o),
+                      paste0(land, "/detrend_std_", o)),
+            output = paste0(land, "/", "detrend_standard_", o), options = "-O")
         
         # Fieldmean results
-        cmd <- paste('cdo -O fldmean', ' ', land, '/detrend_standard_', o,  ' ',
-                     land, '/', 'detrend_std_fldm_', o , sep = "")
-        print(cmd)
-        system(cmd)
+        #cmd <- paste('cdo -O fldmean', ' ', land, '/detrend_standard_', o,  ' ',
+        #             land, '/', 'detrend_std_fldm_', o , sep = "")
+        #print(cmd)
+        #system(cmd)
+        cdo("fldmean", input = paste0(land, "/detrend_standard_", o),
+            output = paste0(land, "/", "detrend_std_fldm_", o), options = "-O")
         
         # Copy obs file to plot
         n  <- n+1
-        cmd <- paste("cp ", land, "/detrend_std_fldm_", o, " ", plot_dir, "/", idx, "_",
-                     modelsAndObsSplit[obs_order[n]], "_for_timeseries.nc", sep = "")
-        print(cmd)
-        system(cmd)
+        #cmd <- paste("cp ", land, "/detrend_std_fldm_", o, " ", plot_dir, "/", idx, "_",
+        #             modelsAndObsSplit[obs_order[n]], "_for_timeseries.nc", sep = "")
+        #print(cmd)
+        #system(cmd)
+        file.copy(paste0(land, "/detrend_std_fldm_", o),
+                  paste0(plot_dir, "/", idx, "_",
+                         modelsAndObsSplit[obs_order[n]], "_for_timeseries.nc"))
       }
     }
   }
   
-  #### ABOSOLUTE VALUES ####
+  #### ABSOLUTE VALUES ####
   ## Non-normalized values fieldmeans
   if(!normalize){
     file_string_models = ""
@@ -334,32 +378,43 @@ time_series_preprocessing <- function(land = "./Land", idx = 'tnnETCCDI_yr',
     for (m in models){
       print(m)
       # Fieldmean results
-      cmd <- paste('cdo -O fldmean', ' ', land, '/', m,  ' ',
-                   land, '/', 'fldm_', m , sep = "")
-      print(cmd)
-      system(cmd)
+      #cmd <- paste('cdo -O fldmean', ' ', land, '/', m,  ' ',
+      #             land, '/', 'fldm_', m , sep = "")
+      #print(cmd)
+      #system(cmd)
+      cdo("fldmean", input = paste0(land, "/", m),
+          output = paste0(land, "/", "fldm_", m), options = "-O")
       
       ## add the preprocessed file to the filestring        
       file_string_models <- paste(file_string_models, land,
                                   '/fldm_', m, " ", sep = "")
     }
     #Find model ensemble mean
-    cmd <- paste("cdo -O ensmean ", file_string_models, plot_dir, "/", idx,
-                 "_ensmean_for_timeseries.nc", sep = "")
-    print(cmd)
-    system(cmd)
+    #cmd <- paste("cdo -O ensmean ", file_string_models, plot_dir, "/", idx,
+    #             "_ensmean_for_timeseries.nc", sep = "")
+    #print(cmd)
+    #system(cmd)
+    cdo("ensmean", input = file_string_models,
+        output = paste0(plot_dir, "/", idx,  "_ensmean_for_timeseries.nc"),
+        options = "-O")
     
     #Find ensemble 25th percentile
-    cmd <- paste("cdo -O enspctl,25 ", file_string_models, plot_dir, "/", idx,
-                 "_25enspctl_for_timeseries.nc", sep = "")
-    print(cmd)
-    system(cmd)
+    #cmd <- paste("cdo -O enspctl,25 ", file_string_models, plot_dir, "/", idx,
+    #             "_25enspctl_for_timeseries.nc", sep = "")
+    #print(cmd)
+    #system(cmd)
+    cdo("enspctl", args = "25", input = file_string_models,
+        output = paste0(plot_dir, "/", idx,  "_25enspctl_for_timeseries.nc"),
+        options = "-O")
     
     #Find ensemble 75th percentile
-    cmd <- paste("cdo -O enspctl,75 ", file_string_models, plot_dir, "/", idx,
-                 "_75enspctl_for_timeseries.nc", sep = "")
-    print(cmd)
-    system(cmd)
+    #cmd <- paste("cdo -O enspctl,75 ", file_string_models, plot_dir, "/", idx,
+    #             "_75enspctl_for_timeseries.nc", sep = "")
+    #print(cmd)
+    #system(cmd)
+    cdo("enspctl", args = "75", input = file_string_models,
+        output = paste0(plot_dir, "/", idx,  "_75enspctl_for_timeseries.nc"),
+        options = "-O")
     
     ## Extracting only the observation files
     obs_order <- which(modelsAndObsSplit %in% obs_list)
@@ -371,17 +426,21 @@ time_series_preprocessing <- function(land = "./Land", idx = 'tnnETCCDI_yr',
     for (o in obs){
       print(o)
       # Fieldmean results
-      cmd <- paste('cdo -O fldmean', ' ', land, '/', o,  ' ',
-                   land, '/', 'fldm_', o , sep = "")
-      print(cmd)
-      system(cmd)
-        
+      #cmd <- paste('cdo -O fldmean', ' ', land, '/', o,  ' ',
+      #             land, '/', 'fldm_', o , sep = "")
+      #print(cmd)
+      #system(cmd)
+      cdo("fldmean", input = paste0(land, "/", o),
+          output = paste0(land, "/", "fldm_", o), options = "-O")  
       # Copy obs file to plot
       n  <- n+1
-      cmd <- paste("cp ", land, "/fldm_", o, " ", plot_dir, "/", idx, "_",
-                   modelsAndObsSplit[obs_order[n]], "_for_timeseries.nc", sep = "")
-      print(cmd)
-      system(cmd)
+      #cmd <- paste("cp ", land, "/fldm_", o, " ", plot_dir, "/", idx, "_",
+      #             modelsAndObsSplit[obs_order[n]], "_for_timeseries.nc", sep = "")
+      #print(cmd)
+      #system(cmd)
+      file.copy(paste0(land, "/fldm_", o),
+                paste0(plot_dir, "/", idx, "_",
+                       modelsAndObsSplit[obs_order[n]], "_for_timeseries.nc"))
     }
   }
 }

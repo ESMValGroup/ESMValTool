@@ -28,9 +28,10 @@
 createGrid <- function(path = idx_dir, loc = "./gridDef") {
     ## Picking the grid found in the first file to regrid over
     first_file <- list.files(path, pattern = '*.nc', full.names = TRUE)[1]
-    cmd <- paste('cdo -O griddes -selgrid,2 ', first_file, ' > ', loc, sep = '')
-    print(cmd)
-    system(cmd)
+    #cmd <- paste('cdo -O griddes -selgrid,2 ', first_file, ' > ', loc, sep = '')
+    #print(cmd)
+    #system(cmd)
+    cdo("griddes -selgrid,2", input = first_file, stdout = loc, options = "-O")
 }
 
 ##
@@ -46,35 +47,46 @@ createLandSeaMask <- function(regrid = './gridDef', loc = "./", landmask ="./lan
     }
 
     ## Making topographic map
-    cmd <- paste('cdo -O -f nc topo ', loc, '/topo.nc', sep = '')
-    print(cmd)
-    system(cmd)
+    #cmd <- paste('cdo -O -f nc topo ', loc, '/topo.nc', sep = '')
+    #print(cmd)
+    #system(cmd)
+    cdo("topo", output = paste0(loc, "/topo.nc"), options = "-O -f nc")
 
     ## Regridding the topographic map to chosen grid
-    cmd <- paste('cdo -O remapcon,', regrid, ' ',  loc,  '/topo.nc ', loc,
-                '/regridded_topo.nc', sep = "")
-    print(cmd)
-    system(cmd)
+    #cmd <- paste('cdo -O remapcon,', regrid, ' ',  loc,  '/topo.nc ', loc,
+    #            '/regridded_topo.nc', sep = "")
+    #print(cmd)
+    #system(cmd)
+    cdo("remapcon", args = regrid, input = paste0(loc, "/topo.nc"),
+              output = paste0(loc, "/regridded_topo.nc"), options = "-O")
 
     ## Set above sea-level gridpoints to missing
-    cmd <- paste('cdo -O setrtomiss,0,9000 ', loc, '/regridded_topo.nc ', loc,
-                 '/regridded_topo_miss1.nc', sep = "")
-    print(cmd)
-    system(cmd)
+    #cmd <- paste('cdo -O setrtomiss,0,9000 ', loc, '/regridded_topo.nc ', loc,
+    #             '/regridded_topo_miss1.nc', sep = "")
+    #print(cmd)
+    #system(cmd)
+    cdo("setrtomiss", args = "0,9000",
+        input = paste0(loc, "/regridded_topo.nc"),
+        output = paste0(loc, "/regridded_topo_miss1.nc"), options = "-O")
 
     ## Set above sea-level gridpoints to 1
-    cmd <- paste('cdo -O setmisstoc,1 ', loc, '/regridded_topo_miss1.nc ', loc,
-                 '/regridded_topo_1pos.nc', sep = "")
-    print(cmd)
-    system(cmd)
+    #cmd <- paste('cdo -O setmisstoc,1 ', loc, '/regridded_topo_miss1.nc ', loc,
+    #             '/regridded_topo_1pos.nc', sep = "")
+    #print(cmd)
+    #system(cmd)
+    cdo("setmisstoc", args = "1",
+        input = paste0(loc, "/regridded_topo_miss1.nc"),
+        output = paste0(loc, "/regridded_topo_1pos.nc"), options = "-O")
 
     ## Set below sea-level gridpoints to missing
-    cmd <- paste('cdo -O setrtomiss,-9000,0 ', loc, '/regridded_topo_1pos.nc ',
-                 landmask, sep = "")
-    print(cmd)
-    system(cmd)
+    #cmd <- paste('cdo -O setrtomiss,-9000,0 ', loc, '/regridded_topo_1pos.nc ',
+    #             landmask, sep = "")
+    #print(cmd)
+    #system(cmd)
+    cdo("setrtomiss", args = "-9000,0",
+        input = paste0(loc, "/regridded_topo_1pos.nc"),
+        output = landmask, options = "-O")
 }
-
 
 ##
 ## Method crop all index files for a single index
@@ -132,9 +144,10 @@ setTimeForFilesEqual <- function(path = '../../climdex/ensMeanMed/rcp26', idx = 
         print("No time overlap for files")
         print(c(max_start, min_end))
         for(m in models){
-            cmd <- paste("cp ", path, "/", m, " ", time_cropped, "/", m, sep = "")
-            print(cmd)
-            system(cmd)
+            #cmd <- paste("cp ", path, "/", m, " ", time_cropped, "/", m, sep = "")
+            #print(cmd)
+            #system(cmd)
+            file.copy(paste0(path, "/", m), paste0(time_cropped, "/", m))
         }
         return(c(max_start, min_end))
     }    
@@ -145,18 +158,21 @@ setTimeForFilesEqual <- function(path = '../../climdex/ensMeanMed/rcp26', idx = 
         ## If file is already of appropriate length
         ## Then just copy it over
         if(start[i]== max_start && end[i] == min_end){
-            cmd <- paste("cp ", path, "/", m, " ", time_cropped, "/", m, sep = "")
-            print(cmd)
-            system(cmd)
+            #cmd <- paste("cp ", path, "/", m, " ", time_cropped, "/", m, sep = "")
+            #print(cmd)
+            #system(cmd)
+            file.copy(paste0(path, "/", m), paste0(time_cropped, "/", m))
         ## Otherwise do the time cropping
         }else{
             beg <- max_start - start[i]
             sto <- min_end - max_start + beg
             newname <- paste(substr(m, 1, nchar(m)-12), max_start, "-", min_end, ".nc", sep = "")
-            cmd <- paste("ncks -d time,", beg, ",", sto, " ", path, "/", m, " ",
-                         time_cropped, "/", newname, sep="")
-            print(cmd)
-            system(cmd)
+            #cmd <- paste("ncks -d time,", beg, ",", sto, " ", path, "/", m, " ",
+            #             time_cropped, "/", newname, sep="")
+            #print(cmd)
+            #system(cmd)
+            nco("ncks", paste0("-d time,", beg, ",", sto, " ", path, "/", m, " ",
+                              time_cropped, "/", newname))
         }    
         i = i + 1    
     }
@@ -193,22 +209,31 @@ regridAndLandSeaMask <- function(idx_raw, regrid = './gridDef',
 
     ## Regridding file:
     varname <- strsplit(idx_name, "_")[[1]][1]
-    cmd <- paste('cdo -O remapcon,', regrid, ' -selvar,', varname, ' ', idx_raw, ' ',
-                 regridded, '/', idx_name, sep = "")
-    print(cmd)
-    system(cmd)
+    #cmd <- paste('cdo -O remapcon,', regrid, ' -selvar,', varname, ' ', idx_raw, ' ',
+    #             regridded, '/', idx_name, sep = "")
+    #print(cmd)
+    #system(cmd)
+    tmpsel <- cdo("selvar", args = varname, input = idx_raw, options = "-O")
+    cdo("remapcon", args = regrid, input = tmpsel,
+         output = paste0(regridded, "/", idx_name), options = "-O")
+    unlink(tmpsel)
 
     ##Applying landseamask:
-    cmd <- paste('cdo -O div', ' ', regridded, '/', idx_name, ' ', landmask,
-                 ' ', land, '/', idx_name, sep = "")
-    print(cmd)
-    system(cmd)
+    #cmd <- paste('cdo -O div', ' ', regridded, '/', idx_name, ' ', landmask,
+    #             ' ', land, '/', idx_name, sep = "")
+    #print(cmd)
+    #system(cmd)
+    cdo("div",
+        input = c(paste0(regridded, "/", idx_name), landmask),
+        output = paste0(land, "/", idx_name), options = "-O")
 
     ## Also produce timemean:
     ##!! check is this should be subject to some reference period or
     ## time change
-    cmd <- paste('cdo -O timmean', ' ', land, '/', idx_name, ' ',  land,
-                 '/tm_', idx_name, sep = "")
-    print(cmd)
-    system(cmd)
+    #cmd <- paste('cdo -O timmean', ' ', land, '/', idx_name, ' ',  land,
+    #             '/tm_', idx_name, sep = "")
+    #print(cmd)
+    #system(cmd)
+    cdo("timmean", input = paste0(land, "/", idx_name),
+        output = paste0(land, "/tm_", idx_name), options = "-O")
 }
