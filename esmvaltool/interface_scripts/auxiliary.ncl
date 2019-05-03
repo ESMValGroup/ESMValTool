@@ -12,9 +12,9 @@
 ;    function get_ncdf_name
 ;    function get_ncdf_dir
 ;    function ncdf_read
+;    function ncdf_define
 ;    function ncdf_write
 ;    function ncdf_att
-;    function ncdf_define
 ;    function copy_CoordNames_n
 ;    function extend_var_at
 ;    function remove_index
@@ -445,6 +445,121 @@ begin
 end
 
 ; #############################################################################
+undef("ncdf_define")
+function ncdf_define(ncdf, data)
+;
+; Arguments
+;    ncdf: file specified.
+;    data: data with metadata (attributes).
+;
+; Return value
+;    Modifies the file specifier "ncdf".
+;
+; Description
+;
+; Caveats
+;    No unlimited dimensions supported (yet).
+;
+; References
+;    http://www.ncl.ucar.edu/Applications/method_2.shtml
+;
+; Modification history
+;    20131112-A_gott_kl: written.
+;
+local funcname, scriptname, data, diag_script, var, fAtt, dimNames, dimSzs, \
+  dimUnlim, atts
+begin
+
+  funcname = "ncdf_define"
+  scriptname = "interface_scripts/auxiliary.ncl"
+  enter_msg(scriptname, funcname)
+
+  diag_script = att2var(data, "diag_script")
+  var = att2var(data, "var")
+
+  ; Explicitly declare file definition mode. Improve efficiency.
+  setfileoption(ncdf, "DefineMode", True)
+
+  ; Create global attributes of the file
+  fAtt               = True  ; assign file attributes
+  fAtt@creation_date = systemfunc("date")
+  fAtt@created_by    = "ESMValTool, " + diag_script
+
+  fileattdef(ncdf, fAtt)   ; copy file attributes
+
+  ; Predefine the coordinate variables and their dimensionality
+  ; Note: to get an UNLIMITED record dimension, we set the dimensionality
+  ; to -1 (or the actual size) and set the dimension name to True.
+  dimNames = getvardims(data)
+  dim_dim = dimsizes(dimNames)
+  dimSzs = new(dimsizes(dimNames), long)
+  dimUnlim = new(dimsizes(dimNames), logical)
+  dimUnlim(:) = False
+
+  do i = 0, dim_dim - 1
+    dimSzs(i) = dimsizes(data&$dimNames(i)$)
+  end do
+
+  do ii = 0, dim_dim - 1
+    if (typeof(data&$dimNames(ii)$).eq."string") then
+      ; Add necessary infomation to the dim* arrays
+      dim_coord = dimsizes(stringtochar(data&$dimNames(ii)$))
+      ; If coordinate has length 1
+      if (dimsizes(dim_coord).eq.1) then
+        dimc = dim_coord(0)
+      else
+        dimc = dim_coord(1)
+      end if
+      new_dimSzs = array_append_record(dimSzs, tolong(dimc), 0)
+      new_dimUnlim = array_append_record(dimUnlim, False, 0)
+      new_dimNames = array_append_record(dimNames, dimNames(ii) + "_char", 0)
+
+      ; Delete and reattach to previous variable
+      delete([/dimSzs, dimUnlim, dimNames/])
+      dimSzs = new_dimSzs
+      dimUnlim = new_dimUnlim
+      dimNames = new_dimNames
+      delete([/new_dimSzs, new_dimUnlim, new_dimNames/])
+      delete(dim_coord)
+      jj = 1  ; counter initialization for later use
+    end if
+  end do
+
+  filedimdef(ncdf, dimNames, dimSzs, dimUnlim)
+  ; Predefine the the dimensionality of the variables to be written out
+  do i = 0, dim_dim - 1
+    if (typeof(data&$dimNames(i)$).eq."string") then
+      ; Attach second dimension (character array) to variable
+      filevardef(ncdf, dimNames(i), "character", \
+                 (/getvardims(data&$dimNames(i)$), \
+                 dimNames(dim_dim + jj - 1)/))
+      data&$dimNames(i)$@named_coordinate = True  ; set flag attribute
+      jj = jj + 1
+    else
+      filevardef(ncdf, dimNames(i), typeof(data&$dimNames(i)$), \
+                 getvardims(data&$dimNames(i)$))
+    end if
+  end do
+  filevardef(ncdf, var, typeof(data), getvardims(data))
+
+  ; Copy attributes associated with each variable to the file
+  do i = 0, dim_dim - 1
+    ; No attribute assignment to variable if no attributes are available
+    if (.not.(all(ismissing(getvaratts(data&$dimNames(i)$))))) then
+        filevarattdef(ncdf, dimNames(i), data&$dimNames(i)$)
+    end if
+  end do
+  filevarattdef(ncdf, var, data)
+
+  ; Explicitly exit file definition mode. **NOT REQUIRED**
+  setfileoption(ncdf, "DefineMode", False)
+
+  leave_msg(scriptname, funcname)
+  return(ncdf)
+
+end
+
+; #############################################################################
 undef("ncdf_write")
 function ncdf_write(data,
                     outfile_in)
@@ -625,121 +740,6 @@ begin
 
   leave_msg(scriptname, funcname)
   return(result)
-
-end
-
-; #############################################################################
-undef("ncdf_define")
-function ncdf_define(ncdf, data)
-;
-; Arguments
-;    ncdf: file specified.
-;    data: data with metadata (attributes).
-;
-; Return value
-;    Modifies the file specifier "ncdf".
-;
-; Description
-;
-; Caveats
-;    No unlimited dimensions supported (yet).
-;
-; References
-;    http://www.ncl.ucar.edu/Applications/method_2.shtml
-;
-; Modification history
-;    20131112-A_gott_kl: written.
-;
-local funcname, scriptname, data, diag_script, var, fAtt, dimNames, dimSzs, \
-  dimUnlim, atts
-begin
-
-  funcname = "ncdf_define"
-  scriptname = "interface_scripts/auxiliary.ncl"
-  enter_msg(scriptname, funcname)
-
-  diag_script = att2var(data, "diag_script")
-  var = att2var(data, "var")
-
-  ; Explicitly declare file definition mode. Improve efficiency.
-  setfileoption(ncdf, "DefineMode", True)
-
-  ; Create global attributes of the file
-  fAtt               = True  ; assign file attributes
-  fAtt@creation_date = systemfunc("date")
-  fAtt@created_by    = "ESMValTool, " + diag_script
-
-  fileattdef(ncdf, fAtt)   ; copy file attributes
-
-  ; Predefine the coordinate variables and their dimensionality
-  ; Note: to get an UNLIMITED record dimension, we set the dimensionality
-  ; to -1 (or the actual size) and set the dimension name to True.
-  dimNames = getvardims(data)
-  dim_dim = dimsizes(dimNames)
-  dimSzs = new(dimsizes(dimNames), long)
-  dimUnlim = new(dimsizes(dimNames), logical)
-  dimUnlim(:) = False
-
-  do i = 0, dim_dim - 1
-    dimSzs(i) = dimsizes(data&$dimNames(i)$)
-  end do
-
-  do ii = 0, dim_dim - 1
-    if (typeof(data&$dimNames(ii)$).eq."string") then
-      ; Add necessary infomation to the dim* arrays
-      dim_coord = dimsizes(stringtochar(data&$dimNames(ii)$))
-      ; If coordinate has length 1
-      if (dimsizes(dim_coord).eq.1) then
-        dimc = dim_coord(0)
-      else
-        dimc = dim_coord(1)
-      end if
-      new_dimSzs = array_append_record(dimSzs, tolong(dimc), 0)
-      new_dimUnlim = array_append_record(dimUnlim, False, 0)
-      new_dimNames = array_append_record(dimNames, dimNames(ii) + "_char", 0)
-
-      ; Delete and reattach to previous variable
-      delete([/dimSzs, dimUnlim, dimNames/])
-      dimSzs = new_dimSzs
-      dimUnlim = new_dimUnlim
-      dimNames = new_dimNames
-      delete([/new_dimSzs, new_dimUnlim, new_dimNames/])
-      delete(dim_coord)
-      jj = 1  ; counter initialization for later use
-    end if
-  end do
-
-  filedimdef(ncdf, dimNames, dimSzs, dimUnlim)
-  ; Predefine the the dimensionality of the variables to be written out
-  do i = 0, dim_dim - 1
-    if (typeof(data&$dimNames(i)$).eq."string") then
-      ; Attach second dimension (character array) to variable
-      filevardef(ncdf, dimNames(i), "character", \
-                 (/getvardims(data&$dimNames(i)$), \
-                 dimNames(dim_dim + jj - 1)/))
-      data&$dimNames(i)$@named_coordinate = True  ; set flag attribute
-      jj = jj + 1
-    else
-      filevardef(ncdf, dimNames(i), typeof(data&$dimNames(i)$), \
-                 getvardims(data&$dimNames(i)$))
-    end if
-  end do
-  filevardef(ncdf, var, typeof(data), getvardims(data))
-
-  ; Copy attributes associated with each variable to the file
-  do i = 0, dim_dim - 1
-    ; No attribute assignment to variable if no attributes are available
-    if (.not.(all(ismissing(getvaratts(data&$dimNames(i)$))))) then
-        filevarattdef(ncdf, dimNames(i), data&$dimNames(i)$)
-    end if
-  end do
-  filevarattdef(ncdf, var, data)
-
-  ; Explicitly exit file definition mode. **NOT REQUIRED**
-  setfileoption(ncdf, "DefineMode", False)
-
-  leave_msg(scriptname, funcname)
-  return(ncdf)
 
 end
 
