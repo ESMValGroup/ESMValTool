@@ -76,7 +76,7 @@ class DerivedVariable(DerivedVariableBase):
         # international gravity formula depending only on the latitude
         g0 = np.array(lat)
         g0 = 9.780327 * (1. + 0.0053024 * (np.sin(lat / 180. * PI))**2
-             - 0.0000058 * (np.sin(2. * lat / 180. * PI))**2)
+                         - 0.0000058 * (np.sin(2. * lat / 180. * PI))**2)
 
         # approximation of the gravitational acceleration including the
         # free air correction
@@ -93,7 +93,8 @@ class DerivedVariable(DerivedVariableBase):
 
         # number of dry air particles (air molecules excluding water vapor)
         # within each layer
-        n_dry = (hus_cube * -1. + 1.) * N_AVO * p_layer_widths.data / (MW_AIR * g_4d_array)
+        n_dry = (hus_cube * -1. + 1.) * N_AVO * p_layer_widths.data /
+        (MW_AIR * g_4d_array)
 
         # iris.save(n_dry, '/pf/b/b380103/workesm/esmvaltool_output/n_dry.nc')
 
@@ -105,11 +106,6 @@ class DerivedVariable(DerivedVariableBase):
             co2_cube.collapsed('air_pressure', iris.analysis.SUM) /
             n_dry.collapsed('air_pressure', iris.analysis.SUM))
         xco2_cube.units = co2_cube.units
-
-        #iris.save(
-        #    xco2_cube,
-        #    '/pf/b/b380103/workesm/esmvaltool_output/xco2_new.nc'
-        #)
 
         return xco2_cube
 

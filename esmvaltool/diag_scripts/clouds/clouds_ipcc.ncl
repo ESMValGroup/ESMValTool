@@ -21,7 +21,7 @@
 ;                         variable "ts")
 ;                       - False = no additional grid cells masked for
 ;                         variable "ts"
-;   obs_datasets:       names of observations datasets to be displayed 
+;   obs_datasets:       names of observations datasets to be displayed
 ;                       with selected colors and line styles in the zonal
 ;                       mean plot (models will be displayed as thin gray lines)
 ;   projection:         map projection, e.g., Mollweide, Mercator
