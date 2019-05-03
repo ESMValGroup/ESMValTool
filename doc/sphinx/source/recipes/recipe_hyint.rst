@@ -114,7 +114,7 @@ Example plots
  
 .. figure:: figures/hyint/hyint_maps.png
    :width: 10cm
-Annual mean precipitation intensity with boundaries of pre-defined regions (figure type 1)
+Mean hydroclimatic intensity (figure type 1) for the EC-EARTH model historical + rcp8.5 projection over 1976-2099.
  
 .. figure:: figures/hyint/hyint_timeseries.png
    :width: 10cm
