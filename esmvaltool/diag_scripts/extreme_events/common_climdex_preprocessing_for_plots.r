@@ -27,7 +27,7 @@
 ##
 createGrid <- function(path = idx_dir, loc = "./gridDef") {
     ## Picking the grid found in the first file to regrid over
-    first_file <- list.files(path, pattern = '*.nc', full.names = TRUE)[1]
+    first_file <- list.files(path, pattern = "*.nc", full.names = TRUE)[1]
     #cmd <- paste('cdo -O griddes -selgrid,2 ', first_file, ' > ', loc, sep = '')
     #print(cmd)
     #system(cmd)
@@ -39,10 +39,10 @@ createGrid <- function(path = idx_dir, loc = "./gridDef") {
 ## @param regrid name w/path of gridfile to use
 ## to put the landdseamask on
 ##
-createLandSeaMask <- function(regrid = './gridDef', loc = "./", landmask ="./landSeaMask.nc"){
+createLandSeaMask <- function(regrid = "./gridDef", loc = "./", landmask ="./landSeaMask.nc"){
     # Test if gridfile exists
     # otherwise call function to generate one
-    if(!file.exists(regrid)){
+    if (!file.exists(regrid)) {
         createGrid(path = loc, loc = regrid)
     }
 
@@ -99,82 +99,88 @@ createLandSeaMask <- function(regrid = './gridDef', loc = "./", landmask ="./lan
 ## @param max_start is an optional crop start
 ## @param min_end is an optional crop end
 ##
-setTimeForFilesEqual <- function(path = '../../climdex/ensMeanMed/rcp26', idx = 'tnnETCCDI_yr', model_list,
-                                 time_cropped = './timeCropped', max_start = 0, min_end = 2500){
+setTimeForFilesEqual <- function(path = "../../climdex/ensMeanMed/rcp26",
+                                 idx = "tnnETCCDI_yr", model_list,
+                                 time_cropped = "./timeCropped",
+                                 max_start = 0, min_end = 2500) {
 
     ## Getting a list of all the files for the index
-    models_avail <- basename(Sys.glob(file.path(path, paste(idx, "*.nc", sep = ""))))
-    
+    models_avail <- basename(Sys.glob(file.path(path,
+                                                paste(idx, "*.nc", sep = ""))))
+
     ## Selecting only the files from the model list
-    models <- vector(mode = "character",length = length(model_list))
-    for(i in seq_along(model_list)){
-      models[i] <- models_avail[grep(pattern = model_list[i], x = models_avail)]
+    models <- vector(mode = "character", length = length(model_list))
+    for (i in seq_along(model_list)) {
+        models[i] <- models_avail[grep(pattern = model_list[i],
+                                       x = models_avail)]
     }
-    
+
     print(models)
 
     ## Checking if the folder exists and making it if not
     print(time_cropped)
-    if(!file.exists(time_cropped)){
+    if (!file.exists(time_cropped)) {
         dir.create(time_cropped)
     }
 
     ## Arrays to record orginal start and end years
-    start = integer(length(models))
-    end = integer(length(models))
+    start <- integer(length(models))
+    end <- integer(length(models))
 
-    i = 1
+    i <- 1
     # For-loop to find the minimum time interval
     # so we can crop all files to this time interval
-    m = models[1]
+    m <- models[1]
     for (m in models){
         start[i] <- strtoi(substr(m, nchar(m) - 11, nchar(m) - 8))
         end[i] <- strtoi(substr(m, nchar(m) - 6, nchar(m) - 3))
 
-        if(start[i] > max_start){
-            max_start = start[i]
+        if (start[i] > max_start) {
+            max_start <- start[i]
         }
 
-        if(end[i] < min_end){
-            min_end = end[i]
+        if (end[i] < min_end){
+            min_end <- end[i]
         }
-        i = i + 1
+        i <- i + 1
     }
-    if(max_start >= min_end){
+    if (max_start >= min_end) {
         print("No time overlap for files")
         print(c(max_start, min_end))
-        for(m in models){
+        for (m in models) {
             #cmd <- paste("cp ", path, "/", m, " ", time_cropped, "/", m, sep = "")
             #print(cmd)
             #system(cmd)
             file.copy(paste0(path, "/", m), paste0(time_cropped, "/", m))
         }
         return(c(max_start, min_end))
-    }    
+    }
 
-    i = 1
+    i <- 1
     ## For-loop to crop the files
     for (m in models){
         ## If file is already of appropriate length
         ## Then just copy it over
-        if(start[i]== max_start && end[i] == min_end){
+        if (start[i] == max_start && end[i] == min_end) {
             #cmd <- paste("cp ", path, "/", m, " ", time_cropped, "/", m, sep = "")
             #print(cmd)
             #system(cmd)
             file.copy(paste0(path, "/", m), paste0(time_cropped, "/", m))
         ## Otherwise do the time cropping
-        }else{
+        } else {
             beg <- max_start - start[i]
             sto <- min_end - max_start + beg
-            newname <- paste(substr(m, 1, nchar(m)-12), max_start, "-", min_end, ".nc", sep = "")
+            newname <- paste(substr(m, 1, nchar(m) - 12),
+                             max_start, "-", min_end, ".nc", sep = "")
             #cmd <- paste("ncks -d time,", beg, ",", sto, " ", path, "/", m, " ",
             #             time_cropped, "/", newname, sep="")
             #print(cmd)
             #system(cmd)
-            nco("ncks", paste0("-d time,", beg, ",", sto, " ", path, "/", m, " ",
-                              time_cropped, "/", newname))
-        }    
-        i = i + 1    
+            nco("ncks", paste0("-d time,", beg, ",", sto, " ",
+                               path, "/", m, " ",
+                               time_cropped, "/", newname))
+        }
+        i <- i + 1
     }
     return(c(max_start, min_end))
 }
@@ -188,24 +194,25 @@ setTimeForFilesEqual <- function(path = '../../climdex/ensMeanMed/rcp26', idx = 
 ## @param landmask gives the file that defines the landseamask to be used
 ##
 ##
-regridAndLandSeaMask <- function(idx_raw, regrid = './gridDef',
-   landmask = './landSeaMask.nc', regridded = "./Regridded", land = "./Land", loc = "./"){
+regridAndLandSeaMask <- function(idx_raw, regrid = "./gridDef",
+   landmask = "./landSeaMask.nc", regridded = "./Regridded",
+   land = "./Land", loc = "./") {
 
     ##Getting just the raw name of the file
     idx_name <- basename(idx_raw)
 
     ##If the landmask does not exist, we create one.
-    if (!file.exists(landmask)){
+    if (!file.exists(landmask)) {
         createLandSeaMask(regrid = regrid, loc = loc, landmask = landmask)
     }
 
     ##Checking if directories are present and creating them if not:
-    if (!dir.exists(regridded)){
+    if (!dir.exists(regridded)) {
         dir.create(regridded)
     }
     if (!dir.exists(land)){
         dir.create(land)
-    }    
+    }
 
     ## Regridding file:
     varname <- strsplit(idx_name, "_")[[1]][1]

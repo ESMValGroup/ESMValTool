@@ -133,7 +133,7 @@ print("Removing bounds from preprocessed files")
 for (i in 1:length(climofiles)) {
    tmp <- tempfile()
    nco("ncks", paste("-C -O -x -v lat_bnds,lon_bnds,time_bnds",
-       climofiles[i], tmp)) 
+       climofiles[i], tmp))
    nco("ncatted", paste("-O -a bounds,time,d,,", tmp))
    nco("ncatted", paste("-O -a bounds,lat,d,,", tmp))
    nco("ncatted", paste("-O -a bounds,lon,d,,", tmp))
@@ -149,9 +149,12 @@ for (i in 1:length(climofiles)) {
 for (model_idx in c(1:length(models_name))) {
 
     author.data <- list(institution = "None", institution_id = "None")
-    template <- paste("var_timeres_", models_name[model_idx], "_", models_experiment[model_idx], "_",
-                models_ensemble[model_idx], "_", models_start_year[model_idx],
-                "01-", models_end_year[model_idx], "12.nc", sep = "", collapse = "")
+    template <- paste("var_timeres_", models_name[model_idx], "_",
+                      models_experiment[model_idx], "_",
+                      models_ensemble[model_idx], "_",
+                      models_start_year[model_idx],
+                      "01-", models_end_year[model_idx],
+                      "12.nc", sep = "", collapse = "")
     print("")
     print(paste0(">>>>>>>> Template name: ", template))
     print("")
@@ -161,32 +164,36 @@ for (model_idx in c(1:length(models_name))) {
 #    print("")
 #    print(paste0(">>>>>>>> Indices required: ", paste(climdex.idx.subset, collapse = ", ")))
 #    print("")
-    
-     base.period <- c(max(strtoi(models_start_year)), min(strtoi(models_end_year)))
-    
+
+     base.period <- c(max(strtoi(models_start_year)),
+                      min(strtoi(models_end_year)))
+
     ## Check point for existing files
-    climdex_file_check <- paste(idx_select, "_",models_name[model_idx], "_", models_experiment[model_idx], "_",
-                                models_ensemble[model_idx], "_", models_start_year[model_idx],"-", models_end_year[model_idx], sep="")
-    print(climdex_file_check)
+    climdex_file_check <- paste0(idx_select, "_",
+                                 models_name[model_idx], "_",
+                                 models_experiment[model_idx], "_",
+                                 models_ensemble[model_idx], "_",
+                                 models_start_year[model_idx], "-",
+                                 models_end_year[model_idx])
     check_control <- vector("logical", length(climdex_file_check))
-    n = 0
-    for(chck in climdex_file_check){
+    n <- 0
+    for (chck in climdex_file_check) {
       n  <- n + 1
-	    #print(grep(chck, climdex_files))
-	    tmp <- length(grep(chck, climdex_files))
+      #print(grep(chck, climdex_files))
+      tmp <- length(grep(chck, climdex_files))
       check_control[n] <- (tmp > 0)
     }
     print(check_control)
-    
-    if(!all(check_control)){
+
+    if (!all(check_control)) {
       #print(fullpath_filenames)
       print("")
       print(paste0(">>>>>>>> Producing Indices for ", models_name[model_idx]))
-      print(climofiles[models==models_name[model_idx]])
+      print(climofiles[models == models_name[model_idx]])
       print("")
-      create.indices.from.files(climofiles[models==models_name[model_idx]],
+      create.indices.from.files(climofiles[models == models_name[model_idx]],
                                 work_dir, template, author.data,
-                                base.range=base.period, parallel = 25,
+                                base.range = base.period, parallel = 25,
                                 verbose = TRUE, max.vals.millions = 20)
     }
 }
@@ -209,39 +216,51 @@ if (write_plots) {
 
 # These are forced here for testing
 
-if(chk.ts_plt){
-  print("")
-  print(paste0(">>>>>>>> TIME SERIE PROCESSING INITIATION"))
-  timeseries_main(path = work_dir, idx_list =  timeseries_idx, model_list = models_name[models_name!=reference_model] , obs_list = reference_model, plot_dir = plot_dir, normalize=normalize)
-}
+  print("-------------")
+  print(models_name[models_name != reference_model])
+  print("-------------")
+  print(reference_model)
+  print("-------------")
+  if (chk.ts_plt){
+    print("")
+    print(paste0(">>>>>>>> TIME SERIE PROCESSING INITIATION"))
+    timeseries_main(path = work_dir, idx_list =  timeseries_idx,
+                    model_list = models_name[models_name != reference_model],
+                    obs_list = reference_model, plot_dir = plot_dir,
+                    normalize = normalize)
+  }
 
 ############################### 
 #### Produce Gleckler plot ####
 ############################### 
-if(chk.glc_plt){
-  print("")
-  print("")
-  print(paste0(">>>>>>>> GLECKLER PROCESSING INITIATION"))
-    
-  ## Check if Gleckler Array already exists
-  nidx <- length(gleckler_idx) # number of indices
-  nmodel <- length(models_name) # number of models
-  nobs <- length(reference_model) #number of observations
-  ArrayName <- paste0("Gleclker-Array_", nidx, "-idx_", nmodel,"-models_", nobs, "-obs",  ".RDS")
-  ArrayDirName <- paste0(plot_dir, "/", diag_base, "/", ArrayName)
-  if(chk.glc_arr){
-    if(file.exists(ArrayDirName)){file.remove(ArrayDirName)}
-    promptInput <- "y"
-  }
-  
-  if(file.exists(ArrayDirName)){
-      promptInput <- "n"
-  }else{promptInput <- "y"}
-  
-  #### Running gleckler_main ####
-  gleckler_main(path = work_dir, idx_list = gleckler_idx,
-                model_list = models_name, obs_list = reference_model, plot_dir = plot_dir, promptInput=promptInput)
-  
-}
+  if (chk.glc_plt) {
+    print("")
+    print("")
+    print(paste0(">>>>>>>> GLECKLER PROCESSING INITIATION"))
 
+    ## Check if Gleckler Array already exists
+    nidx <- length(gleckler_idx) # number of indices
+    nmodel <- length(models_name) # number of models
+    nobs <- length(reference_model) #number of observations
+    ArrayName <- paste0("Gleclker-Array_", nidx, "-idx_",
+                        nmodel, "-models_", nobs, "-obs", ".RDS")
+    ArrayDirName <- paste0(plot_dir, "/", diag_base, "/", ArrayName)
+    if (chk.glc_arr) {
+      if (file.exists(ArrayDirName)) {
+        file.remove(ArrayDirName)
+      }
+      promptInput <- "y"
+    }
+
+    if (file.exists(ArrayDirName)) {
+      promptInput <- "n"
+    } else {
+      promptInput <- "y"
+    }
+
+    #### Running gleckler_main ####
+    gleckler_main(path = work_dir, idx_list = gleckler_idx,
+                  model_list = models_name, obs_list = reference_model,
+                  plot_dir = plot_dir, promptInput = promptInput)
+  }
 }
