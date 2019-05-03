@@ -54,7 +54,8 @@ import sys
 import numpy as np
 from cdo import Cdo
 from netCDF4 import Dataset
-import fluxogram, fourier_coefficients
+from esmvaltool.diag_scripts.thermodyn_diagtool import fluxogram, \
+    fourier_coefficients
 
 G = 9.81
 R = 287.00

@@ -25,7 +25,8 @@ from matplotlib import rcParams
 from netCDF4 import Dataset
 from scipy import interpolate, stats
 from esmvaltool.diag_scripts.shared import ProvenanceLogger
-import fourier_coefficients, provenance_meta
+from esmvaltool.diag_scripts.thermodyn_diagtool import fourier_coefficients, \
+    provenance_meta
 
 
 def balances(cfg, wdir, plotpath, filena, name, model):
