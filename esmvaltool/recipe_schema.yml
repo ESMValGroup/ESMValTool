@@ -50,7 +50,7 @@ diagnostic:
   description: str(required=False)
   themes: list(str(), required=False)
   realms: list(str(), required=False)
-  variables: map(include('variable'), required=False)
+  variables: map(include('variable'), null(), required=False)
 
 script:
   script: str()
