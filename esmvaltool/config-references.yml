@@ -104,7 +104,7 @@ authors:
     name: Crezee, Bas
     institute: ETH Zurich, Switzerland
     email: bas.crezee 'at' env.ethz.ch
-  cwmohr:
+  mohr_cw:
     name: Mohr, Christian Wilhelm
     institute: Cicero, Norway
     email: c.w.mohr 'at' cicero.oslo.no
@@ -224,7 +224,7 @@ authors:
     name: Mason, Erik
     institute: NOAA, USA
     email: erik.mason 'at' noaa.gov
-  maritsandstad:
+  sand_ma:
     name: Sandstad, Marit
     institute: Cicero, Norway
     email: marit.sandstad 'at' cicero.oslo.no

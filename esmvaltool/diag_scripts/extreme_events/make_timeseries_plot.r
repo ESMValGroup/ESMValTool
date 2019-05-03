@@ -412,7 +412,7 @@ timeseries_plot <- function(plot_dir = "./plot", idx = "tn10pETCCDI_yr", obs_lis
     #col_list <- c("dodgerblue2", "darkgreen", "firebrick2")
     #lty_list <- c(1, 4, 2)
     #lwd_list <- c(2, 2, 2)
-    leg_names <- c(CMIP_name, obs_list)
+    leg_names <- c(MIP_name, obs_list)
     
     ## Reading the netcdf data files into R
     ## First ensemble mean file

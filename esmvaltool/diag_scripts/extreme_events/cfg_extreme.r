@@ -1,4 +1,5 @@
-CMIP_name="cmip" 
+# These are default values, loaded before the recipe is read
+MIP_name="cmip" 
 ts_col_list <- c("dodgerblue2", "darkgreen", "firebrick2")
 ts_png_width <- 640
 ts_png_height <- 480

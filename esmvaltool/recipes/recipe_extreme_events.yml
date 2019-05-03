@@ -9,8 +9,8 @@ documentation:
 
   authors:
     - broe_bj
-    - maritsandstad
-    - cwmohr
+    - sand_ma
+    - mohr_cw
     - arno_en
     - hard_jo
 
@@ -26,8 +26,9 @@ documentation:
 
 datasets:
 #  - {dataset: EC-Earth, project: CMIP5, exp: historical,  ensemble: r8i1p1, start_year: 1980, end_year: 2000}
-  - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1980, end_year: 1981}
-  - {dataset: ACCESS1-0, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1980, end_year: 1981}
+  - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1980, end_year: 1989}
+  - {dataset: ACCESS1-0, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1980, end_year: 1989}
+  - {dataset: IPSL-CM5A-MR, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1980, end_year: 1989}
 
 diagnostics:
   ExtremeEvents:
@@ -56,3 +57,8 @@ diagnostics:
     scripts:
       main:
         script: extreme_events/ExtremeEvents.r
+        MIP_name: CMIP
+        timeseries_idx: ["tn10pETCCDI_yr", "tn90pETCCDI_yr", "tx10pETCCDI_yr", "tx90pETCCDI_yr"]
+        gleckler_idx: ["tn10pETCCDI_yr", "tn90pETCCDI_yr", "tx10pETCCDI_yr", "tx90pETCCDI_yr"]
+        chk.ts_plt: TRUE
+        chk.glc_plt: TRUE

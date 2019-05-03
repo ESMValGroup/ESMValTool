@@ -420,7 +420,7 @@ gleckler_plotting <- function(arr = RMSErelarr, idx_list, model_list, obs_list, 
   width.fct <- ((nmodel+3)/(nidx+1))+sum(img.adj[c(2,4)])
   height.fct <- 1+sum(img.adj[c(1,3)])
     
-  figure_filename <- paste(plot_dir,"/Gleckler_", CMIP_name, "_", nmodel,"-models_", nidx, "-idx_", nobs, "-obs_", syear, "-", eyear, ".",output_file_type, sep="")
+  figure_filename <- paste(plot_dir,"/Gleckler_", MIP_name, "_", nmodel,"-models_", nidx, "-idx_", nobs, "-obs_", syear, "-", eyear, ".",output_file_type, sep="")
   
   ## Chose output format for figure
   if (tolower(output_file_type) == "png") {
@@ -584,7 +584,7 @@ gleckler_plotting <- function(arr = RMSErelarr, idx_list, model_list, obs_list, 
   ytcks1 <- seq((1/yn)*0.5, 1, by = (1/yn))
   axis(side = 2, at = ytcks1, labels = row_names, las=2, cex.axis=axlabsize, tick = FALSE, line = lineadj)
     
-  mtext(text = paste(CMIP_name," global land ", syear, "-", eyear, sep=""), side = 3, line = 1, font = 2, cex=1.1)
+  mtext(text = paste(MIP_name," global land ", syear, "-", eyear, sep=""), side = 3, line = 1, font = 2, cex=1.1)
   
   dev.off() 
 }
