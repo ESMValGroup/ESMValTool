@@ -1,54 +1,52 @@
-;##############################################################################
-;# eyring13jgr_fig04.ncl                                                      #
-;##############################################################################
-;# Author: Irene Cionni (ENEA, Italy)                                         #
-;# ESMVal project PI: Veronika Eyring (DLR, Germany)                          #
-;##############################################################################
-;#                                                                            #
-;# Description:                                                               #
-;#    * Calculates climatological annual mean tropospheric ozone columns      #
-;#      and plots the geographical distribution.                              #
-;#                                                                            #
-;# Required diag_script_info attributes:                                      #
-;#     none                                                                   #
-;#                                                                            #
-;# Optional diag_script_info attributes:                                      #
-;#     acp_cnlvl: contour levels for plotting all datasets except ref dataset #
-;#     anomalylevels: user-defined levels for plotting anomalies              #
-;#     e13fig04_list_chem_mod: list of datasets in the group “chem” (array of #
-;#         strings, default = all datasets except OBS, obs4mips, ref)         #
-;#     e13fig04_list_chem_mod_string: plotting label for group “chem”,        #
-;#         e.g., "Chem", default = "MMM_chem"                                 #
-;#     e13fig04_list_nochem_mod: list of models in the group “nochem”         #
-;#         (array of strings, default = (/""/))                               #
-;#     e13fig04_list_nochem_mod_string: plotting label for group “nochem”,    #
-;#         e.g., "NoChem", default = ""MMM_nochem"                            #
-;#     font: overrides default font (e.g., 21, see                            #
-;#         www.ncl.ucar.edu/Document/Graphics/Resources/tx.shtml#txFont)      #
-;#     lbLabelBarOn: plot a label bar (True, False)                           #
-;#     map_diff_Levels: contour levels for plotting differences               #
-;#     map_ref_Levels: contour levels for plotting reference dataset          #
-;#     mpProjection: map projection                                           #
-;#     plot_units: units of variable used for plotting                        #
-;#     range_option: 0 = as in recipe, 1 = overlapping time period            #
-;#     subtract_global_mean: subtract global mean before plotting             #
-;#                                                                            #
-;# Required variable_info attributes:                                         #
-;#     reference_dataset: name of reference dataset (observations)            #
-;#                                                                            #
-;# Caveats:                                                                   #
-;#                                                                            #
-;# Modification history:                                                      #
-;#    20180409-A_laue_ax: code rewritten for v2, regridding now done by       #
-;#                        backend                                             #
-;#    20170811-A_bock_ls: added tags for reporting                            #
-;#    20160916-A-laue_ax: added option to subtract global mean before         #
-;#                        plotting (--> anomalies)                            #
-;#    20151208-A-laue_ax: code clean-up, moved call to write_references to    #
-;#                        beginning of code                                   #
-;#    20140528-A_GoKl: written based on ancyc_lat.ncl                         #
-;#                                                                            #
-;##############################################################################
+; #############################################################################
+; eyring13jgr_fig04.ncl
+; #############################################################################
+; Author: Irene Cionni (ENEA, Italy)
+; ESMVal project PI: Veronika Eyring (DLR, Germany)
+; #############################################################################
+; Description:
+;   Calculates climatological annual mean tropospheric ozone columns and plots
+;   the geographical distribution.
+;
+; Required diag_script_info attributes:
+;   none
+;
+; Optional diag_script_info attributes:
+;   acp_cnlvl: contour levels for plotting all datasets except ref dataset
+;   anomalylevels: user-defined levels for plotting anomalies
+;   e13fig04_list_chem_mod: list of datasets in the group “chem” (array of
+;     strings, default = all datasets except OBS, obs4mips, ref)
+;   e13fig04_list_chem_mod_string: plotting label for group “chem”,
+;     e.g., "Chem", default = "MMM_chem"
+;   e13fig04_list_nochem_mod: list of models in the group “nochem”
+;     (array of strings, default = (/""/))
+;   e13fig04_list_nochem_mod_string: plotting label for group “nochem”,
+;     e.g., "NoChem", default = ""MMM_nochem"
+;   font: overrides default font (e.g., 21, see
+;     www.ncl.ucar.edu/Document/Graphics/Resources/tx.shtml#txFont)
+;   lbLabelBarOn: plot a label bar (True, False)
+;   map_diff_Levels: contour levels for plotting differences
+;   map_ref_Levels: contour levels for plotting reference dataset
+;   mpProjection: map projection
+;   plot_units: units of variable used for plotting
+;   range_option: 0 = as in recipe, 1 = overlapping time period
+;   subtract_global_mean: subtract global mean before plotting
+;
+; Required variable_info attributes:
+;   reference_dataset: name of reference dataset (observations)
+;
+; Caveats:
+;
+; Modification history:
+;   20180409-A_laue_ax: code rewritten for v2, regridding now done by backend
+;   20170811-A_bock_ls: added tags for reporting
+;   20160916-A-laue_ax: added option to subtract global mean before
+;                       plotting (--> anomalies)
+;   20151208-A-laue_ax: code clean-up, moved call to write_references to
+;                       beginning of code
+;   20140528-A_GoKl: written based on ancyc_lat.ncl
+;
+; #############################################################################
 
 load "$diag_scripts/../interface_scripts/interface.ncl"
 
@@ -57,7 +55,7 @@ load "$diag_scripts/shared/plot/style.ncl"
 load "$diag_scripts/shared/plot/contour_maps.ncl"
 
 
-;; fetch general parameters
+; fetch general parameters
 begin
 
   enter_msg(DIAG_SCRIPT, "")
@@ -100,7 +98,7 @@ begin
 
 end
 
-;; main code
+; main code
 begin
 
   subtract_global_mean = diag_script_info@subtract_global_mean
@@ -122,7 +120,7 @@ begin
     anomalylevels = fspan(-10., 10., 21)
   end if
 
-  if ((isatt(diag_script_info,"e13fig04_list_chem_mod"))) then
+  if ((isatt(diag_script_info, "e13fig04_list_chem_mod"))) then
     list_chem_mod = diag_script_info@e13fig04_list_chem_mod
     ind_chem_mod = ind(models@name.eq.list_chem_mod)
   else
@@ -143,9 +141,9 @@ begin
              + "attribute 'reference_dataset' (ESMValTool v2 standard). ")
   end if
 
-  ;*************************************************
+  ; *************************************************
 
-  ;; default time range & annots
+  ; default time range & annots
   y1 = metadata_att_as_array(info0, "start_year")
   y2 = metadata_att_as_array(info0, "end_year")
   annots = project_style(info0, diag_script_info, "annots")
@@ -156,15 +154,15 @@ begin
               "invalid range_option; valid settings: 0 or 1")
   end if
 
-  ;; Use overlapping time period or as given in nml?
+  ; Use overlapping time period or as given in nml?
   if (range_option .eq. 1) then
     y1 = max(toint(y1))
     y2 = min(toint(y2))
   end if
 
-  ;; Loop over models and create mask for missing values
+  ; Loop over models and create mask for missing values
   do idx_mod = 0, dim_MOD - 1
-    ;; Extract data
+    ; Extract data
     A0 = read_data(info0[idx_mod])
     temp = time_operations(A0, y1(idx_mod), y2(idx_mod), "extract", "", 0)
 
@@ -180,11 +178,11 @@ begin
 
     delete(A0)
 
-    ;; annual mean
+    ; annual mean
     A1 = time_operations(temp, -1, -1, "average", "annualclim", True)
     delete(temp)
 
-    ;; initialize mask...
+    ; initialize mask...
     if (idx_mod.eq.0) then
       if (.not.isatt(A1, "_FillValue")) then
         Fill = default_fillvalue(typeof(A1))
@@ -210,19 +208,19 @@ begin
 
     var_grd(idx_mod, :, :) = where(ismissing(A1), Fill, A1)
 
-    ;; Build the mask: missing in at least one model = missing in the mask
+    ; Build the mask: missing in at least one model = missing in the mask
     mask0 = where(ismissing(A1), mask0@_FillValue, mask0)
 
-    ;; clean up
+    ; clean up
     delete(A1)
   end do  ; idx_MOD
 
-  ;; Convert units if requested
+  ; Convert units if requested
   if (isatt(diag_script_info, "plot_units")) then
     var_grd = convert_units(var_grd, diag_script_info@plot_units)
   end if
 
-  ;; General settings for this plot
+  ; General settings for this plot
   res = True
   res@cnFillOn = True
   res@cnLinesOn = False
@@ -252,9 +250,9 @@ begin
   res@lbTitleJust = "BottomCenter"  ; default: CenterCenter
   res@lbLabelFontHeightF = 0.025
 
-  ;; Loop over datasets for plotting
+  ; Loop over datasets for plotting
   do idx_mod = 0, dim_MOD - 1
-    ;; calculate mean
+    ; calculate mean
     A2 = where(ismissing(mask0), mask0, var_grd(idx_mod, :, :))
     copy_VarMeta(mask0, A2)
     time_mean = area_operations(A2, -90, 90, 0, 360, "average", True)
@@ -273,16 +271,16 @@ begin
     end if
     end if
 
-    ;; Define output workstation
+    ; Define output workstation
 
     wks = get_wks("dummy_for_wks", DIAG_SCRIPT, "eyring13f04_" \
                   + names(idx_mod) + "_" + var0)
     output_filename = wks@fullname
 
-    ;; Data to plot
+    ; Data to plot
     A3 = var_grd(idx_mod, :, :)
 
-    ;; model specific ressources
+    ; model specific ressources
     res@tiMainFontHeightF = 0.03
     res@tiMainString = annots(idx_mod)
     res@gsnLeftString = var0 + " [" + variable_info[0]@units + "]"
@@ -290,13 +288,13 @@ begin
     res@gsnRightStringFontHeightF = 0.023
     res@gsnLeftStringFontHeightF = 0.023
 
-    ;; Plotting
+    ; Plotting
     if (subtract_global_mean) then
       plotfield = A3 - area_operations(A3, -90, 90, 0, 360, "average", True)
       delete(res@cnLevels)
       res@cnLevels = anomalylevels
     else
-       plotfield = A3
+      plotfield = A3
     end if
     copy_VarMeta(A3, plotfield)
 
@@ -311,7 +309,7 @@ begin
     plotfield@diag_script = (/DIAG_SCRIPT/)
 
     nc_filename = work_dir + "eyring13f04_" + names(idx_mod) + "_" \
-                  + var0 + ".nc"
+      + var0 + ".nc"
     nc_outfile = ncdf_write(plotfield, nc_filename)
     delete(plotfield)
 
@@ -324,7 +322,8 @@ begin
     plottype = "geo"
     if (subtract_global_mean) then
       caption = "Deviation of " + var0 + " from global annual mean" \
-                + " (averaged between " + y1(idx_mod) + " and " + y2(idx_mod) + ")"
+                + " (averaged between " + y1(idx_mod) + " and " \
+                + y2(idx_mod) + ")"
     else
       caption = "Climatological annual mean of " + var0 \
                 + " averaged between " + y1(idx_mod) + " and " + y2(idx_mod) \
@@ -338,18 +337,12 @@ begin
 
     contrib_authors = (/"cion_ir", "laue_ax"/)
 
-print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-print(nc_outfile)
-print(output_filename)
-print(infiles)
-print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-
     log_provenance(nc_outfile, output_filename, caption, statistics, \
                    domain, plottype, contrib_authors, "", infiles)
 
     delete(infiles)
 
-    ;; clean up
+    ; clean up
     delete([/wks, A2, A3, time_mean/])
   end do  ; idx_MOD, for plotting
 
@@ -392,7 +385,7 @@ print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 
   ; ---------------------------------------------------------------------------
 
-  ;*********plot MMM plot lista_chem plot lista_nochem***********
+  ; *********plot MMM plot lista_chem plot lista_nochem***********
 
   var_grd_mod = var_grd(ind_chem_mod, :, :)
   if (dimsizes(ind_chem_mod) .gt. 1) then
@@ -419,9 +412,9 @@ print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 
   diff_var_grd = MMM_chem - var_grd_ref
 
-  ;**************plot add**********
+  ; **************plot add**********
 
-  ;; calculate mean MMM
+  ; calculate mean MMM
   MMM_chem = where(ismissing(mask0), mask0, MMM_chem)
   copy_VarMeta(mask0, MMM_chem)
   time_mean = area_operations(MMM_chem, -90, 90, 0, 360, "average", True)
@@ -441,7 +434,7 @@ print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
   end if
   end if
 
-  ;; Define output workstation
+  ; Define output workstation
 
   aux_title_info1 = "MMM_panel" + "_" + exps(0) + "_" + \
                     sprinti("%0.4i", y1(0)) + "-" + sprinti("%0.4i", y2(0))
@@ -459,7 +452,7 @@ print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
     res@tiMainString = "MMM_chem"
   end if
 
-  ;just one panel plot at the end
+  ; just one panel plot at the end
   res@gsnDraw  = False                          ; don't draw
   res@gsnFrame = False                          ; don't advance frame
 
@@ -475,10 +468,10 @@ print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
     res@cnLevels = fspan(min(MMM_chem), max(MMM_chem), 20)
   end if
 
-  ;; Plotting
+  ; Plotting
   if (subtract_global_mean) then
     plotfield = MMM_chem - area_operations(MMM_chem, -90, 90, 0, 360, \
-                "average", True)
+                                           "average", True)
     delete(res@cnLevels)
     res@cnLevels = anomalylevels
   else
@@ -493,11 +486,11 @@ print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
   plotfield@diag_script = (/DIAG_SCRIPT/)
   nc_outfile = ncdf_write(plotfield, nc_filename)
 
-  ;; clean up
+  ; clean up
   delete(time_mean)
   delete(plotfield)
 
-  ;*****************NO CHEM ***************************
+  ; *****************NO CHEM ***************************
 
   if ((isatt(diag_script_info, "e13fig04_list_nochem_mod"))) then
     if (dimsizes(ind_nochem_mod) .ge. 1) then
@@ -537,7 +530,7 @@ print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
         res@cnLevels = fspan(min(MMM_nochem), max(MMM_nochem), 20)
       end if
 
-      ;; Plotting
+      ; Plotting
       if (subtract_global_mean) then
         plotfield = MMM_nochem - area_operations(MMM_nochem, -90, 90, \
                                                  0, 360, "average", True)
@@ -555,14 +548,14 @@ print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
       plotfield@diag_script = (/DIAG_SCRIPT/)
       nc_outfile = ncdf_write(plotfield, nc_filename)
 
-      ;; clean up
+      ; clean up
       delete(time_mean)
       delete(plotfield)
     end if
   end if
 
-  ;****************************************************
-  ;******************REF*******************************
+  ; ****************************************************
+  ; ******************REF*******************************
 
   var_grd_ref = where(ismissing(mask0), mask0, var_grd_ref)
   copy_VarMeta(mask0, var_grd_ref)
@@ -596,7 +589,7 @@ print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
     res@cnLevels = fspan(min(var_grd_ref), max(var_grd_ref), 20)
   end if
 
-  ;; Plotting
+  ; Plotting
   if (subtract_global_mean) then
     plotfield = var_grd_ref - area_operations(var_grd_ref, -90, 90, \
                                               0, 360, "average", True)
@@ -614,11 +607,11 @@ print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
   plotfield@diag_script = (/DIAG_SCRIPT/)
   nc_outfile = ncdf_write(plotfield, nc_filename)
 
-  ;; clean up
+  ; clean up
   delete(time_mean)
   delete(plotfield)
 
-  ;*****************diff**************************************
+  ; *****************diff**************************************
 
   diff_var_grd = where(ismissing(mask0), mask0, diff_var_grd)
   copy_VarMeta(mask0, diff_var_grd)
@@ -652,7 +645,7 @@ print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
   res@gsnRightStringFontHeightF = 0.023
   res@gsnLeftStringFontHeightF = 0.023
 
-  ;; Plotting
+  ; Plotting
   delete(res@cnLevels)
   if (isatt(diag_script_info, "map_diff_Levels")) then
     res@cnLevels = diag_script_info@map_diff_Levels
@@ -667,7 +660,7 @@ print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
   diff_var_grd@diag_script = (/DIAG_SCRIPT/)
   nc_outfile = ncdf_write(diff_var_grd, nc_filename)
 
-  ;; clean up
+  ; clean up
   delete(time_mean)
   delete(diff_var_grd)
 
@@ -704,7 +697,7 @@ print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
       res@gsnRightStringFontHeightF = 0.023
       res@gsnLeftStringFontHeightF = 0.023
 
-      ;; Plotting
+      ; Plotting
       delete(res@cnLevels)
       if (isatt(diag_script_info, "map_diff_Levels")) then
         res@cnLevels = diag_script_info@map_diff_Levels
@@ -720,7 +713,7 @@ print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
       diff_var_grd_nochem@diag_script = (/DIAG_SCRIPT/)
       nc_outfile = ncdf_write(diff_var_grd_nochem, nc_filename)
 
-      ;; clean up
+      ; clean up
       delete(time_mean)
       delete(diff_var_grd_nochem)
     end if
@@ -755,8 +748,8 @@ print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 
   delete(infiles)
 
-  ;***********************************************************************
-  ;********plot diff *****************************************************
+  ; ***********************************************************************
+  ; ********plot diff *****************************************************
 
   leave_msg(DIAG_SCRIPT, "")
 end
