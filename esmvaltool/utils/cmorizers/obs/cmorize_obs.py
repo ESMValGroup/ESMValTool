@@ -218,7 +218,7 @@ def _cmor_reformat(config, obs_list):
     raw_obs = config["rootpath"]["RAWOBS"][0]
 
     # set the reformat scripts dir
-    reformat_scripts = os.path.dirname(__file__)
+    reformat_scripts = os.path.dirname(os.path.abspath(__file__))
     run_dir = os.path.join(config['output_dir'], 'run')
     # datsets dictionary of Tier keys
     datasets = _assemble_datasets(raw_obs, obs_list)
