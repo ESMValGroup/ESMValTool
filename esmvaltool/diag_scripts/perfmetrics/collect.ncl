@@ -19,6 +19,7 @@
 ;    cm_interval: min and max color of the color table
 ;    cm_reverse: reverse color table
 ;    sort: sort datasets in alphabetic order (excluding MMM)
+;    diag_order: sort diagnostics in the specified order
 ;    title: plot title
 ;    scale_font: scaling factor applied to the default font size
 ;    disp_values: switch on/off the grading values on the plot
@@ -349,6 +350,39 @@ begin
       end if
     end if
 
+    ; Sort diagnostics in the specified order specified
+    print(data_all&diagnostics)
+
+    if (isatt(diag_script_info, "diag_order")) then
+      l_ok = True
+      if (dimsizes(data_all&diagnostics).ne. \
+          dimsizes(diag_script_info@diag_order)) then
+        error_msg("w", DIAG_SCRIPT, "", "specified order of diagnostics " + \
+                  "cannot be applied, number of diagnostics does not match")
+        l_ok = False
+      end if
+      pid = new(dimsizes(diag_script_info@diag_order), integer)
+      do ii = 0, dimsizes(diag_script_info@diag_order) - 1
+        tmp = ind(data_all&diagnostics.eq.diag_script_info@diag_order(ii))
+        if (any(ismissing(tmp)) .or. dimsizes(tmp).gt.1) then
+          error_msg("w", DIAG_SCRIPT, "", "specified order of diagnostics " + \
+                    "cannot be applied, invalid entry in diag_order")
+          break
+        end if
+        pid(ii) = tmp
+        delete(tmp)
+      end do
+      if (l_ok) then
+        if (dimsizes(dimsizes(data_all)).eq.3) then
+          data_all := data_all(pid, :, :)
+        else
+          data_all := data_all(pid, :)
+        end if
+      end if
+    end if
+
+    print(data_all&diagnostics)
+
     ; Define output filenames
     if (dimsizes(data_all&diagnostics).gt.1) then
       diags = data_all&diagnostics(0) + "_to_" + \
@@ -383,7 +417,7 @@ begin
   end if
 
   ; Create workspace
-  system("mkdir -p " + plotpath)
+  system("mkdir -p " + config_user_info@plot_dir)
   wks = gsn_open_wks(file_type, plotpath)
   if (diag_script_info@metric.eq."taylor") then
     wks@legendfile = plotpath + "_legend"

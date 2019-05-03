@@ -260,8 +260,8 @@ diagnostics:
         plot_type: cycle
         # Time average ('opt' argument of time_operations.ncl)
         time_avg: monthlyclim
-        # Region ('Global', 'Tropics', 'NH extratropics', 'SH extratropics')
-        region: Global
+        # Region ('global', 'trop', 'nhext', 'shext')
+        region: global
         # Plot standard deviation ('all', 'none', 'ref_model' or dataset name)
         plot_stddev: ref_model
         # Plot legend in a separate file
@@ -588,8 +588,8 @@ diagnostics:
         plot_type: zonal
         # Time average ('opt' argument of time_operations.ncl)
         time_avg: annualclim
-        # Region ('Global', 'Tropics', 'NH extratropics', 'SH extratropics')
-        region: Global
+        # Region ('global', 'trop', 'nhext', 'shext')
+        region: global
         # Draw difference plots
         plot_diff: true
         # Calculate t-test in difference plots
@@ -1141,8 +1141,8 @@ diagnostics:
         plot_type: latlon
         # Time average ('opt' argument of time_operations.ncl)
         time_avg: annualclim
-        # Region ('Global', 'Tropics', 'NH extratropics', 'SH extratropics')
-        region: Global
+        # Region ('global', 'trop', 'nhext', 'shext')
+        region: global
         # Draw difference plots
         plot_diff: true
         # Calculate t-test in difference plots
@@ -1966,6 +1966,12 @@ diagnostics:
         cm_interval: [2, 241]
         # Sort dataset in alphabetic order (excluding MMM)
         sort: true
+        # Sort diagnostics in a specific order (name = 'diagnositic'-'region')
+        diag_order: ['ta850-global', 'ta200-global', 'ua850-global',
+                     'ua200-global', 'va850-global', 'va200-global',
+                     'zg500-global', 'hus400-global', 'tas-global',
+                     'ts-global', 'pr-global', 'clt-global', 'rlut-global',
+                     'rsut-global']
       taylor:
         script: perfmetrics/collect.ncl
         ancestors: ['*/grading']

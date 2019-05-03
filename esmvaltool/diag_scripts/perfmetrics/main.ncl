@@ -127,9 +127,9 @@ begin
   end if
 
   if ((ptype.eq."zonal" .or. ptype.eq."latlon") .and. \
-      diag_script_info@region.ne."Global") then
+      diag_script_info@region.ne."global") then
     error_msg("f", DIAG_SCRIPT, "", "plot_type " + ptype + \
-              " implemented only for region='Global'")
+              " implemented only for region 'global'")
   end if
 
   ; Set default values for non-required diag_script_info attributes
@@ -210,7 +210,8 @@ begin
     grading!1 = "diagnostics"  ; dummy coord. to facilitate appending
     grading!2 = "models"
     grading!3 = "reference"
-    grading&diagnostics = variable_info[0]@diagnostic
+    grading&diagnostics = \
+      variable_info[0]@diagnostic + "-" + diag_script_info@region
     grading&models = remove_index(datasetnames, ref_inds)
     if (isdim(grading, "reference")) then
       grading&reference = datasetnames(ref_inds)
@@ -223,7 +224,8 @@ begin
       taylor!0 = "diagnostics"  ; dummy coord. to facilitate appending
       taylor!1 = "models"
       taylor!2 = "statistic"
-      taylor&diagnostics = variable_info[0]@diagnostic
+      taylor&diagnostics = \
+        variable_info[0]@diagnostic + "-" + diag_script_info@region
       taylor&statistic = (/"stddev_ratio", "correlation"/)
       taylor&models = remove_index(datasetnames, ref_ind)
     end if
@@ -242,7 +244,7 @@ begin
     do met = 0, nmetrics - 1
       ncdf_dir(met) = config_user_info@work_dir + \
         diag_script_info@metric(met) + "_" + \
-        variable_info[0]@diagnostic + ".nc"
+        variable_info[0]@diagnostic + "-" + diag_script_info@region + ".nc"
     end do
 
   end if
