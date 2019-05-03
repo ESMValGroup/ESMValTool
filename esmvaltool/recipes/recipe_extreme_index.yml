@@ -76,9 +76,9 @@ diagnostics:
         preprocessor: preproc
         mip: day
     scripts:
-       rx5day:
+      rx5day:
         script: magic_bsc/extreme_index.r
         metric: rx5day
-       cdd:
+      cdd:
         script: magic_bsc/extreme_index.r
         metric: cdd
