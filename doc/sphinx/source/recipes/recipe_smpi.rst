@@ -28,9 +28,9 @@ User settings
 
    *Required settings for script*
 
-   * plot_type: cycle (time), zonal (plev, lat), latlon (lat, lon), cycle_latlon (time, lat, lon)
-   * time_avg: type of time average (opt argument of time_operations in diag_scripts/shared/statistics.ncl)
-   * region: selected region (see select_region in diag_scripts/shared/latlon.ncl)
+   * plot_type: cycle (time), zonal (plev, lat), latlon (lat, lon), cycle_latlon (time, lat, lon), cycle_zonal (time, plev, lat)
+   * time_avg: type of time average (monthlyclim, seasonalclim, annualclim)
+   * region: selected region (global, trop, nhext, shext)
    * normalization: metric normalization ("CMIP5" for analysis of CMIP5 simulations; to be adjusted accordingly for a different CMIP phase)
    * calc_grading: calculates grading metrics (has to be set to "true" in the recipe)
    * metric: chosen grading metric(s) (if calc_grading is True; has to be set to "SMPI")
@@ -71,9 +71,9 @@ Observations and reformat scripts
 
 *Note: (1) obs4mips data can be used directly without any preprocessing; (2) see headers of reformat scripts for non-obs4mips data for download instructions.*
 
-* ERA-Interim (hfds, hus, psl, ta, tas, tauu, tauv, ua, va -- obs4mips)
-* HadISST (sic, tos -- reformat_scripts/obs/reformat_obs_ERA-Interim.ncl)
-* GPCP monthly (pr -- reformat_scripts/obs/reformat_obs_HadISST.ncl)
+* ERA-Interim (hfds, hus, psl, ta, tas, tauu, tauv, ua, va - esmvaltool/utils/cmorizers/obs/cmorize_obs_ERA-Interim.ncl)
+* HadISST (sic, tos - reformat_scripts/obs/reformat_obs_HadISST.ncl)
+* GPCP-SG (pr - obs4mips)
 
 References
 ----------
