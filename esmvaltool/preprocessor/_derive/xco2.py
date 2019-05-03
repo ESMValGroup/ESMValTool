@@ -93,8 +93,8 @@ class DerivedVariable(DerivedVariableBase):
 
         # number of dry air particles (air molecules excluding water vapor)
         # within each layer
-        n_dry = (hus_cube * -1. + 1.) * N_AVO * p_layer_widths.data /
-        (MW_AIR * g_4d_array)
+        n_dry = (hus_cube * -1. + 1.) * N_AVO * p_layer_widths.data / (
+                MW_AIR * g_4d_array)
 
         # iris.save(n_dry, '/pf/b/b380103/workesm/esmvaltool_output/n_dry.nc')
 
