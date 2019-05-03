@@ -400,44 +400,44 @@ diagnostics:
   # XCO2 time series
   # ==========================================================================
 
-#  fig19:
-#    description: time series of XCO2
-#    themes:
-#      - carbon
-#      - ghg
-#    realms:
-#      - atmos
-#    variables:
-#      xco2:
-#        preprocessor: clim_5x5
-#        derive: true
-#        mip: Amon
-#        field: T2Ms
-#        start_year: 2003
-#        end_year: 2014
-#        exp: [esmHistorical, esmrcp85]
-#        frequency: mon
-#        reference_dataset: ghgcci
-#        additional_datasets:
-#          - {dataset: BNU-ESM, project: CMIP5, ensemble: r1i1p1}
-#          - {dataset: CanESM2, project: CMIP5, ensemble: r1i1p1}
+  fig19:
+    description: time series of XCO2
+    themes:
+      - carbon
+      - ghg
+    realms:
+      - atmos
+    variables:
+      xco2:
+        preprocessor: clim_5x5
+        derive: true
+        mip: Amon
+        field: T2Ms
+        start_year: 2003
+        end_year: 2014
+        exp: [esmHistorical, esmrcp85]
+        frequency: mon
+        reference_dataset: ghgcci
+        additional_datasets:
+          - {dataset: BNU-ESM, project: CMIP5, ensemble: r1i1p1}
+          - {dataset: CanESM2, project: CMIP5, ensemble: r1i1p1}
 ##          - {dataset: CESM1-BGC, project: CMIP5, ensemble: r1i1p2}
 ##          - {dataset: FIO-ESM, project: CMIP5, ensemble: r1i1p1}
-#          - {dataset: GFDL-ESM2G, project: CMIP5, ensemble: r1i1p1}
-#          - {dataset: GFDL-ESM2M, project: CMIP5, ensemble: r1i1p1}
-#          - {dataset: MIROC-ESM, project: CMIP5, ensemble: r1i1p1}
-#          - {dataset: MPI-ESM-LR, project: CMIP5, ensemble: r1i1p1}
-#          - {dataset: MRI-ESM1, project: CMIP5, ensemble: r1i1p1}
-#          - {dataset: NorESM1-ME, project: CMIP5, ensemble: r1i1p1}
-#          - {dataset: ghgcci, project: obs4mips, level: l3, version: v100, tier: 1}
-#    scripts:
-#      glob:
-#        script: ipcc_ar5/tsline.ncl
-#        styleset: CMIP5
-#        ts_minlat: -90
-#        ts_maxlat: 90    
-#        ts_minlon: 0
-#        ts_maxlon: 360
+          - {dataset: GFDL-ESM2G, project: CMIP5, ensemble: r1i1p1}
+          - {dataset: GFDL-ESM2M, project: CMIP5, ensemble: r1i1p1}
+          - {dataset: MIROC-ESM, project: CMIP5, ensemble: r1i1p1}
+          - {dataset: MPI-ESM-LR, project: CMIP5, ensemble: r1i1p1}
+          - {dataset: MRI-ESM1, project: CMIP5, ensemble: r1i1p1}
+          - {dataset: NorESM1-ME, project: CMIP5, ensemble: r1i1p1}
+          - {dataset: ghgcci, project: obs4mips, level: l3, version: v100, tier: 1}
+    scripts:
+      glob:
+        script: ipcc_ar5/tsline.ncl
+        styleset: CMIP5
+        ts_minlat: -90
+        ts_maxlat: 90    
+        ts_minlon: 0
+        ts_maxlon: 360
 #      midlat_n:
 #        script: ipcc_ar5/tsline.ncl
 #        styleset: CMIP5
@@ -480,22 +480,21 @@ diagnostics:
         mip: Amon
         field: T2Ms
         start_year: 2003
-#        end_year: 2008
-        end_year: 2003
+        end_year: 2008
         exp: [esmHistorical, esmrcp85]
         frequency: mon
         reference_dataset: ghgcci
         additional_datasets:
-#          - {dataset: BNU-ESM, project: CMIP5, ensemble: r1i1p1}
-#          - {dataset: CanESM2, project: CMIP5, ensemble: r1i1p1}
-##          - {dataset: CESM1-BGC, project: CMIP5, ensemble: r1i1p2}
-##          - {dataset: FIO-ESM, project: CMIP5, ensemble: r1i1p1}
-#          - {dataset: GFDL-ESM2G, project: CMIP5, ensemble: r1i1p1}
-#          - {dataset: GFDL-ESM2M, project: CMIP5, ensemble: r1i1p1}
-#          - {dataset: MIROC-ESM, project: CMIP5, ensemble: r1i1p1}
+          - {dataset: BNU-ESM, project: CMIP5, ensemble: r1i1p1}
+          - {dataset: CanESM2, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: CESM1-BGC, project: CMIP5, ensemble: r1i1p2}
+#          - {dataset: FIO-ESM, project: CMIP5, ensemble: r1i1p1}
+          - {dataset: GFDL-ESM2G, project: CMIP5, ensemble: r1i1p1}
+          - {dataset: GFDL-ESM2M, project: CMIP5, ensemble: r1i1p1}
+          - {dataset: MIROC-ESM, project: CMIP5, ensemble: r1i1p1}
           - {dataset: MPI-ESM-LR, project: CMIP5, ensemble: r1i1p1}
-#          - {dataset: MRI-ESM1, project: CMIP5, ensemble: r1i1p1}
-#          - {dataset: NorESM1-ME, project: CMIP5, ensemble: r1i1p1}
+          - {dataset: MRI-ESM1, project: CMIP5, ensemble: r1i1p1}
+          - {dataset: NorESM1-ME, project: CMIP5, ensemble: r1i1p1}
           - {dataset: ghgcci, project: obs4mips, level: l3, version: v100, tier: 1}
     scripts:
       map:
@@ -509,6 +508,47 @@ diagnostics:
         anomalylevels: [-10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0,
                         1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
+  fig20b:
+    description: maps of XCO2 (2009-2014)
+    themes:
+      - carbon
+      - ghg
+    realms:
+      - atmos
+    variables:
+      xco2:
+        preprocessor: clim_5x5
+        derive: true
+        mip: Amon
+        field: T2Ms
+        start_year: 2009
+        end_year: 2014
+        exp: [esmHistorical, esmrcp85]
+        frequency: mon
+        reference_dataset: ghgcci
+        additional_datasets:
+          - {dataset: BNU-ESM, project: CMIP5, ensemble: r1i1p1}
+          - {dataset: CanESM2, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: CESM1-BGC, project: CMIP5, ensemble: r1i1p2}
+#          - {dataset: FIO-ESM, project: CMIP5, ensemble: r1i1p1}
+          - {dataset: GFDL-ESM2G, project: CMIP5, ensemble: r1i1p1}
+          - {dataset: GFDL-ESM2M, project: CMIP5, ensemble: r1i1p1}
+          - {dataset: MIROC-ESM, project: CMIP5, ensemble: r1i1p1}
+          - {dataset: MPI-ESM-LR, project: CMIP5, ensemble: r1i1p1}
+          - {dataset: MRI-ESM1, project: CMIP5, ensemble: r1i1p1}
+          - {dataset: NorESM1-ME, project: CMIP5, ensemble: r1i1p1}
+          - {dataset: ghgcci, project: obs4mips, level: l3, version: v100, tier: 1}
+    scripts:
+      map:
+        script: eyring13jgr/eyring13jgr_fig04.ncl
+        mpProjection: Robinson
+        styleset: CMIP5
+        font: 21
+        lbLabelBarOn: True
+        e13fig04_list_chem_mod_string: CMIP5
+        subtract_global_mean: True
+        anomalylevels: [-10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0,
+                        1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
 
   # ==========================================================================
