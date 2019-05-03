@@ -1,1 +1,1 @@
-"""Initialize the ESMValTool thermodyn_diagtool package."""
+"""ESMValTool diagnostic scripts."""
