@@ -4,7 +4,7 @@ attributes:
   dataset_id: OSI-450-sh
   version: 'v2'
   tier: 2
-  modeling_realm: seaIce
+  modeling_realm: reanaly
   project_id: CMIP5
   source: 'http://osisaf.met.no/p/ice/'
   reference: 'osi-450'

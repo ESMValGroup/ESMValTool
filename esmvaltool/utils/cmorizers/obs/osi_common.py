@@ -10,6 +10,7 @@ from .utilities import (_set_global_atts, _convert_timeunits, _fix_coords,
 
 logger = logging.getLogger(__name__)
 
+
 def cmorize_osi(in_dir, out_dir, cfg,  hemisphere):
     cmor_table = cfg['cmor_table']
     glob_attrs = cfg['attributes']
@@ -34,6 +35,7 @@ def cmorize_osi(in_dir, out_dir, cfg,  hemisphere):
             glob_attrs['mip'] = vals['mip']
             extract_variable(var_info, raw_info, out_dir, glob_attrs, year)
 
+
 def extract_variable(var_info, raw_info, out_dir, attrs, year):
     """Extract to all vars."""
     var = var_info.short_name
@@ -45,13 +47,18 @@ def extract_variable(var_info, raw_info, out_dir, attrs, year):
     tracking_ids = []
     for cube in cubes:
         tracking_ids.append(cube.attributes['tracking_id'])
-        for attr in ['time_coverage_start', 'time_coverage_end', 'history', 'tracking_id']:
+        to_remove = [
+            'time_coverage_start', 'time_coverage_end',
+            'history', 'tracking_id'
+        ]
+        for attr in to_remove:
             del cube.attributes[attr]
     cube = cubes.concatenate_cube()
     add_month(cube, 'time')
     add_year(cube, 'time')
-    cube.aggregated_by(('month', 'year'), MEAN)
+    cube = cube.aggregated_by(('month', 'year'), MEAN)
     logger.debug(cube)
+    cube.attributes['tracking_ids'] = tracking_ids
     cube.coord('projection_x_coordinate').var_name = 'x'
     cube.coord('projection_y_coordinate').var_name = 'y'
     cube.remove_coord('month')

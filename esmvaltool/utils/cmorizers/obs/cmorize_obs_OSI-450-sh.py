@@ -16,8 +16,9 @@ Download and processing instructions
     Please, keep folder structure.
 
 """
-from .utilities import  _read_cmor_config
+from .utilities import _read_cmor_config
 from .osi_common import extract_variable, cmorize_osi
+
 
 def cmorization(in_dir, out_dir):
     """Cmorization func call."""
