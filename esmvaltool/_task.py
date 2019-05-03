@@ -9,6 +9,7 @@ import pprint
 import subprocess
 import threading
 import time
+from copy import deepcopy
 from multiprocessing import Pool, cpu_count
 
 import psutil
@@ -238,9 +239,9 @@ class BaseTask(object):
         def _indent(txt):
             return '\n'.join('\t' + line for line in txt.split('\n'))
 
-        txt = 'ancestors:\n{}'.format(
-            '\n\n'.join(_indent(str(task)) for task in self.ancestors)
-            if self.ancestors else 'None')
+        txt = 'ancestors:\n{}'.format('\n\n'.join(
+            _indent(str(task))
+            for task in self.ancestors) if self.ancestors else 'None')
         return txt
 
 
@@ -536,13 +537,15 @@ class DiagnosticTask(BaseTask):
         ancestor_products = {p for a in self.ancestors for p in a.products}
 
         for filename, attributes in table.items():
+            # copy to avoid updating other entries if file contains anchors
+            attributes = deepcopy(attributes)
             ancestor_files = attributes.pop('ancestors', [])
             ancestors = {
                 p
                 for p in ancestor_products if p.filename in ancestor_files
             }
 
-            attributes.update(attrs)
+            attributes.update(deepcopy(attrs))
             for key in attributes:
                 if key in TAGS:
                     attributes[key] = replace_tags(key, attributes[key])
