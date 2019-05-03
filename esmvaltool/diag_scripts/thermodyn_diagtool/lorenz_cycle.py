@@ -54,7 +54,7 @@ import sys
 import numpy as np
 from cdo import Cdo
 from netCDF4 import Dataset
-from . import fluxogram, fourier_coefficients
+import fluxogram, fourier_coefficients
 
 G = 9.81
 R = 287.00
@@ -846,8 +846,8 @@ def pr_output(varo, varname, filep, nc_f):
             w_nc_dim = w_nc_fid.createVariable(
                 'wave', nc_fid.variables['wave'].dtype, ('wave', ))
             for ncattr in nc_fid.variables['wave'].ncattrs():
-                w_nc_dim.setncattr(
-                    ncattr, nc_fid.variables['wave'].getncattr(ncattr))
+                w_nc_dim.setncattr(ncattr,
+                                   nc_fid.variables['wave'].getncattr(ncattr))
         w_nc_fid.variables['wave'][:] = wave[0:ntp]
         w_nc_var = w_nc_fid.createVariable(varname, 'f8', ('lat', 'wave'))
         varatts(w_nc_var, varname, 1, 0)

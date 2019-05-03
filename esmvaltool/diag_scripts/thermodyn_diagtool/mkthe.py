@@ -29,7 +29,7 @@ import numpy as np
 from cdo import Cdo
 from netCDF4 import Dataset
 
-from . import fourier_coefficients
+import fourier_coefficients
 
 ALV = 2.5008e6  # Latent heat of vaporization
 G_0 = 9.81  # Gravity acceleration
@@ -326,8 +326,8 @@ def write_output(wdir, model, file_list, varlist):
             fourc.extr_time(dataset, w_nc_fid)
             fourc.extr_lat(dataset, w_nc_fid, 'lat')
             fourc.extr_lon(dataset, w_nc_fid)
-        w_nc_var = w_nc_fid.createVariable(
-            'tlcl', 'f8', ('time', 'lat', 'lon'))
+        w_nc_var = w_nc_fid.createVariable('tlcl', 'f8',
+                                           ('time', 'lat', 'lon'))
         w_nc_var.setncatts({
             'long_name':
             "LCL Temperature",
@@ -349,14 +349,13 @@ def write_output(wdir, model, file_list, varlist):
             "Monthly mean BL top temperature for {} model. ".format(model),
             "Calculated by Thermodynamics model diagnostics ",
             "in ESMValTool. Author Valerio ",
-            "Lembo, Meteorologisches Institut, ",
-            "Universitaet Hamburg.")
+            "Lembo, Meteorologisches Institut, ", "Universitaet Hamburg.")
         with Dataset(file_list[0]) as dataset_tabl:
             fourc.extr_time(dataset_tabl, w_nc_fid)
             fourc.extr_lat(dataset_tabl, w_nc_fid, 'lat')
             fourc.extr_lon(dataset_tabl, w_nc_fid)
-        w_nc_var = w_nc_fid.createVariable(
-            'tabl', 'f8', ('time', 'lat', 'lon'))
+        w_nc_var = w_nc_fid.createVariable('tabl', 'f8',
+                                           ('time', 'lat', 'lon'))
         w_nc_var.setncatts({
             'long_name':
             "Temperature at BL top",
@@ -378,14 +377,13 @@ def write_output(wdir, model, file_list, varlist):
             "Monthly mean height of the BL top for {} model. ".format(model),
             "Calculated by Thermodynamics model diagnostics ",
             "in ESMValTool. Author Valerio ",
-            "Lembo, Meteorologisches Institut, ",
-            "Universitaet Hamburg.")
+            "Lembo, Meteorologisches Institut, ", "Universitaet Hamburg.")
         with Dataset(file_list[0]) as dataset_htop:
             fourc.extr_time(dataset_htop, w_nc_fid)
             fourc.extr_lat(dataset_htop, w_nc_fid, 'lat')
             fourc.extr_lon(dataset_htop, w_nc_fid)
-        w_nc_var = w_nc_fid.createVariable(
-            'htop', 'f8', ('time', 'lat', 'lon'))
+        w_nc_var = w_nc_fid.createVariable('htop', 'f8',
+                                           ('time', 'lat', 'lon'))
         w_nc_var.setncatts({
             'long_name':
             "Height at BL top",

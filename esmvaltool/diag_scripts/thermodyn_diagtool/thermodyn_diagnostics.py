@@ -248,7 +248,7 @@ import esmvaltool.diag_scripts.shared as e
 from esmvaltool.diag_scripts.shared import ProvenanceLogger
 
 # Locally used modules
-from . import computations, lorenz_cycle, mkthe, plot_script, provenance_meta
+import computations, lorenz_cycle, mkthe, plot_script, provenance_meta
 
 warnings.filterwarnings("ignore", message="numpy.dtype size changed")
 logger = logging.getLogger(os.path.basename(__file__))

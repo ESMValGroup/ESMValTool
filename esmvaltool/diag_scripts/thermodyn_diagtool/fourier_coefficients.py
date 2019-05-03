@@ -196,8 +196,8 @@ def extr_lat(nc_fid, var_nc_fid, latn):
     # Extract coordinates from NetCDF file
     lats = nc_fid.variables['lat'][:]
     var_nc_fid.createDimension(latn, len(lats))
-    var_nc_dim = var_nc_fid.createVariable(
-        latn, nc_fid.variables['lat'].dtype, (latn, ))
+    var_nc_dim = var_nc_fid.createVariable(latn, nc_fid.variables['lat'].dtype,
+                                           (latn, ))
     for ncattr in nc_fid.variables['lat'].ncattrs():
         var_nc_dim.setncattr(ncattr, nc_fid.variables['lat'].getncattr(ncattr))
     var_nc_fid.variables[latn][:] = lats
@@ -290,7 +290,7 @@ def varatts(w_nc_var, varname):
     elif varname == 'wap':
         w_nc_var.setncatts({
             'long_name': 'Lagrangian tendency of '
-                         'air pressure',
+            'air pressure',
             'units': "Pa s-1",
             'level_desc': 'pressure levels'
         })
