@@ -29,7 +29,8 @@ class xco2(Fix):
         # the obs4MIPs file contains different variables
         # (xco2, xco2_nobs, xco2_stddev, xco2_stderr), so
         # we have to manually pick the "xco2" cube.
-        cube = cubes.extract('dry_atmosphere_mole_fraction_of_carbon_dioxide')[0]
+        cube = cubes.extract(
+            'dry_atmosphere_mole_fraction_of_carbon_dioxide')[0]
         cube.units = cf_units.Unit('1.0e-6')
         cube = cube.intersection(longitude=(0, 360))
         return CubeList([cube])
