@@ -36,12 +36,12 @@ diagnostics:
         mip: SIday
         field: T2MO
         preprocessor: extract
-        reference_dataset: MPI-ESM-LR
+        reference_dataset: OSI-450-nh
         fx_files: [areacello]
-        # additional_datasets:
-        #   - {dataset: osisaf, institute: eumetsat, project: OBS, type: obs, version: 1,
-        #      freq_folder: daily_mean, mip: OImon, short_name: sic, tier: 2,
-        #      start_year: 1950,  end_year: 1950}
+        additional_datasets:
+          - {dataset: OSI-450-nh, project: OBS, type: seaIce, version: v2,
+             mip: OImon, short_name: sic, tier: 2,
+             start_year: 1979,  end_year: 2000}
 
       sit:
         mip: SIday
