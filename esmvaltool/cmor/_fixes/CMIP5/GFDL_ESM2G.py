@@ -58,3 +58,46 @@ class co2(Fix):
         cube *= 1e6
         cube.metadata = metadata
         return cube
+
+class usi(Fix):
+    """Fixes for usi."""
+
+    def fix_metadata(self, cubes):
+        """
+        Fix metadata.
+
+        Fixes bad standard_name
+
+        Parameters
+        ----------
+        cubes: iris.cube.CubeList
+
+        Returns
+        -------
+        iris.cube.CubeList
+
+        """
+        cubes[0].standard_name = 'sea_ice_x_velocity'
+        return cubes
+
+
+class vsi(Fix):
+    """Fixes for vsi."""
+
+    def fix_metadata(self, cubes):
+        """
+        Fix metadata.
+
+        Fixes bad standard_name
+
+        Parameters
+        ----------
+        cubes: iris.cube.CubeList
+
+        Returns
+        -------
+        iris.cube.CubeList
+
+        """
+        cubes[0].standard_name = 'sea_ice_y_velocity'
+        return cubes

@@ -12,15 +12,13 @@ class DerivedVariable(DerivedVariableBase):
     """Derivation of variable `sispeed`."""
 
     # Required variables
-    _required_variables = {
-        'vars': [{
-            'short_name': 'usi',
-        }, {
-            'short_name': 'vsi',
-        }]
-    }
+    required = [
+        {'short_name': 'usi',},
+        {'short_name': 'vsi',}
+    ]
 
-    def calculate(self, cubes):
+    @staticmethod
+    def calculate( cubes):
         """
         Compute sispeed module from velocity components siu and siv.
 
