@@ -940,20 +940,9 @@ class Recipe:
                     variable['fx_files'])
         return variable
 
-    def _initialize_variables(self, raw_variable,
-                              raw_datasets, raw_variables):
-        """Define variables for all datasets."""
+    def _assemble_varlist(self, raw_variable, datasets, fxvariables):
+        """Assemble complete list of variables."""
         variables = []
-        # identify which ones are fx variables
-        fxvariables = [
-            d for d in raw_variables if
-            'fxvar' in list(raw_variables[d].keys())
-        ]
-
-        raw_variable = deepcopy(raw_variable)
-        datasets = self._initialize_datasets(
-            raw_datasets + raw_variable.pop('additional_datasets', []))
-
         for index, dataset in enumerate(datasets):
             variable = deepcopy(raw_variable)
             variable.update(dataset)
@@ -966,6 +955,43 @@ class Recipe:
                     variable['end_year'],
                     variable['start_year'] + self._cfg['max_years'] - 1)
             variables.append(variable)
+
+        # extend variables if fx variables are needed but not in recipe
+        if not fxvariables and 'fx_files' in raw_variable.keys():
+            for fx_var_name in raw_variable['fx_files']:
+                for index, dataset in enumerate(datasets):
+                    fx_variable = deepcopy(raw_variable)
+                    fx_variable['short_name'] = fx_var_name
+                    fx_variable.update(dataset)
+                    fx_variable['recipe_dataset_index'] = index
+                    if ('cmor_table' not in fx_variable
+                            and fx_variable.get('project') in CMOR_TABLES):
+                        fx_variable['cmor_table'] = fx_variable['project']
+                    real_fx_var = {'mip': 'fx'}
+                    fx_variable = _convert_fxvar_to_cmor(fx_var_name,
+                                                         fx_variable,
+                                                         real_fx_var)
+                    del fx_variable['fx_files']
+                    variables.append(fx_variable)
+
+        return variables
+
+    def _initialize_variables(self, raw_variable,
+                              raw_datasets, raw_variables):
+        """Define variables for all datasets."""
+        # identify which other vars are fx vars for processing
+        fxvariables = [
+            d for d in raw_variables if
+            'fxvar' in list(raw_variables[d].keys())
+        ]
+
+        raw_variable = deepcopy(raw_variable)
+        datasets = self._initialize_datasets(
+            raw_datasets + raw_variable.pop('additional_datasets', []))
+
+        # get full list of variables
+        variables = self._assemble_varlist(raw_variable,
+                                           datasets, fxvariables)
 
         required_keys = {
             'short_name',
