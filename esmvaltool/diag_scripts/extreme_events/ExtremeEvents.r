@@ -89,11 +89,6 @@ diag_base <- unname(sapply(list0, "[[", "diagnostic"))[1]
 #### Correction r.interface output correction ####
 models_experiment[models_experiment == "No_value"] <- "No-values"
 
-ref_idx <- which(models_name == reference_model)
-if (length(ref_idx) == 0) {
-    ref_idx <- length(models_name)
-}
-
 variables <- c()
 climofiles <- c()
 models <- c()
@@ -217,7 +212,7 @@ if (write_plots) {
 # These are forced here for testing
 
   print("-------------")
-  print(models_name[models_name != reference_model])
+  print(setdiff(models_name, reference_model))
   print("-------------")
   print(reference_model)
   print("-------------")
@@ -225,7 +220,7 @@ if (write_plots) {
     print("")
     print(paste0(">>>>>>>> TIME SERIE PROCESSING INITIATION"))
     timeseries_main(path = work_dir, idx_list =  timeseries_idx,
-                    model_list = models_name[models_name != reference_model],
+                    model_list = setdiff(models_name, reference_model),
                     obs_list = reference_model, plot_dir = plot_dir,
                     normalize = normalize)
   }
@@ -234,7 +229,6 @@ if (write_plots) {
 #### Produce Gleckler plot ####
 ############################### 
   if (chk.glc_plt) {
-    print("")
     print("")
     print(paste0(">>>>>>>> GLECKLER PROCESSING INITIATION"))
 
@@ -260,7 +254,8 @@ if (write_plots) {
 
     #### Running gleckler_main ####
     gleckler_main(path = work_dir, idx_list = gleckler_idx,
-                  model_list = models_name, obs_list = reference_model,
+                  model_list = setdiff(models_name, reference_model),
+                  obs_list = reference_model,
                   plot_dir = plot_dir, promptInput = promptInput)
   }
 }
