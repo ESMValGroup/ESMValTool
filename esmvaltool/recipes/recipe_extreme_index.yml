@@ -1,0 +1,84 @@
+# ESMValTool
+# recipe_extreme_index.yml
+---
+documentation:
+  description: |
+    Tool to compute time series of a number of extreme events: heatwave,
+    coldwave, heavy precipitation, drought and high wind.
+
+  authors:
+    - hunt_al
+    - pere_nu
+    - manu_ni
+    - caro_lo
+
+  projects:
+    - c3s-magic
+
+  references:
+    - alexander
+
+datasets:
+  - {dataset: IPSL-CM5A-MR, type: exp, project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 1971,  end_year: 2000}
+  - {dataset: IPSL-CM5A-MR, type: exp, project: CMIP5,  mip: day,  exp: rcp85,  ensemble: r1i1p1,  start_year: 2020,  end_year: 2040}
+
+preprocessors:
+  preproc:
+    regrid:
+      target_grid: IPSL-CM5A-MR
+      scheme: linear
+    mask_fillvalues:
+      threshold_fraction: 0.95
+    extract_region:
+      start_longitude: -60
+      end_longitude: 40
+      start_latitude: 30
+      end_latitude: 70
+
+diagnostics:
+  extreme_index_tasmax:
+    description: Calculate insurance extreme indices t90p for maximum near surface temperature.
+    variables:
+      tasmax:
+        preprocessor: preproc
+        mip: day
+    scripts:
+      t90p:
+        script: magic_bsc/extreme_index.r
+        metric: t90p
+
+  extreme_index_tasmin:
+    description: Calculate insurance extreme index t10p from minimum near-surface temperature.
+    variables:
+      tasmin:
+        preprocessor: preproc
+        mip: day
+    scripts:
+      t10p:
+        script: magic_bsc/extreme_index.r
+        metric: t10p
+
+  extreme_index_sfcWind:
+    description: Calculate insurance extreme index Wx from near-surface wind speed.
+    variables:
+      sfcWind:
+        preprocessor: preproc
+        mip: day
+    scripts:
+      wx:
+        script: magic_bsc/extreme_index.r
+        metric: Wx
+
+  extreme_index_pr:
+    description: Calculate insurance extreme indices rx5day and cdd from precipitation flux.
+    variables:
+      pr:
+        preprocessor: preproc
+        mip: day
+    scripts:
+      rx5day:
+        script: magic_bsc/extreme_index.r
+        metric: rx5day
+      cdd:
+        script: magic_bsc/extreme_index.r
+        metric: cdd
