@@ -4,26 +4,31 @@
 #                J. von Hardenberg (ISAC-CNR, Italy) (ESMValTool adaptation)
 # #############################################################################
 # Description
-# MiLES is a tool for estimating properties of mid-latitude climate originally
-# thought for EC-Earth output and then extended to any model data.
+# MiLES is a tool for estimating properties of mid-latitude climate.
 # It works on daily 500hPa geopotential height data and it produces
 # climatological figures for the chosen time period. Data are interpolated
 # on a common 2.5x2.5 grid.
-# Model data are compared against ECMWF ERA-INTERIM reanalysis
-# for a standard period (1989-2010).
-# It supports analysis for the 4 standard seasons.#
-# Required
-#
-# Optional
-#
-# Caveats
-#
-# Modification history
+# Model data are compared against a reference field such as the
+# ECMWF ERA-Interim reanalysis. 
+# It supports analysis for the 4 standard seasons.
 #
 # ############################################################################
 
 library(tools)
 library(yaml)
+
+provenance_record <- function(infile) {
+  xprov <- list(ancestors = infile,
+                authors = list("hard_jo", "davi_pa", "arno_en"),
+                references = list("davini18", "corti99nat"),
+                projects = list("c3s-magic"),
+                caption = "MiLES regimes statistics",
+                statistics = list("other"),
+                realms = list("atmos"),
+                themes = list("phys"),
+                domains = list("nh"))
+  return(xprov)
+}
 
 diag_scripts_dir <- Sys.getenv("diag_scripts")
 
@@ -95,25 +100,13 @@ for (model_idx in c(1:(length(models_dataset)))) {
       z500filename = infile, FILESDIR = work_dir, nclusters = nclusters,
       doforce = T
     )
-# Set provenance for output files
-    caption <- paste0("MiLES regimes statistics")
-    xprov <- list(ancestors = list(infile),
-                  authors = list("hard_jo", "davi_pa", "arno_en"),
-                  references = list("davini18", "corti99nat"),
-                  projects = list("c3s-magic"),
-                  caption = caption,
-                  statistics = list("other"),
-                  realms = list("atmos"),
-                  themes = list("phys"),
-                  domains = list("nh"))
+    # Set provenance for output files
+    xprov <- provenance_record(list(infile))
     for (fname in filenames) {
       provenance[[fname]] <- xprov
     }
   }
 }
-
-# Write provenance to file
-write_yaml(provenance, provenance_file)
 
 ##
 ## Make the plots
@@ -137,7 +130,7 @@ if (write_plots) {
       year1 <- models_start_year[model_idx]
       year2 <- models_end_year[model_idx]
       for (seas in seasons) {
-        miles_regimes_figures(
+        filenames <- miles_regimes_figures(
           expid = exp, year1 = year1, year2 = year2, dataset = dataset,
           ens = ensemble, dataset_ref = dataset_ref, expid_ref = exp_ref,
           year1_ref = year1_ref, ens_ref = ensemble_ref,
@@ -145,7 +138,16 @@ if (write_plots) {
           FIGDIR = plot_dir, FILESDIR = work_dir, REFDIR = work_dir,
           nclusters
         )
+        # Set provenance for output files (same as diagnostic files)
+        xprov <- provenance_record(list(climofiles[model_idx],
+                                        climofiles[ref_idx]))
+        for (fname in filenames$figs) {
+          provenance[[fname]] <- xprov
+        }
       }
     }
   }
 }
+
+# Write provenance to file
+write_yaml(provenance, provenance_file)
