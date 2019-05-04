@@ -87,16 +87,19 @@ def main(cfg):
         ifile_props = fileprops_cat[indfile]
 
         # Call diagnostics functions
+        print("prepro")
         (file_da_an_zm, file_mo_an) = zmnam_preproc(ifile)
+        print("calc")
         outfiles = zmnam_calc(file_da_an_zm, out_dir + '/', ifile_props)
-        plot_files = zmnam_plot(file_mo_an, out_dir + '/', plot_dir +
-                                '/', ifile_props, fig_fmt, write_plots)
         provenance_record = get_provenance_record(
             list(input_files.values())[0], ancestor_files=ifile)
         if write_plots:
-            # plot_file cannot be an array, so only the first plot is provided
-            provenance_record['plot_file'] = plot_files[0]
-        for file in outfiles:
+            print("plot_files")
+            plot_files = zmnam_plot(file_mo_an, out_dir + '/', plot_dir +
+                                    '/', ifile_props, fig_fmt, write_plots)
+        else:
+            plot_files = []
+        for file in outfiles + plot_files:
             with ProvenanceLogger(cfg) as provenance_logger:
                 provenance_logger.log(file, provenance_record)
 
