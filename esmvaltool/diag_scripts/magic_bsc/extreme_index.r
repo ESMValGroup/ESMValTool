@@ -22,8 +22,6 @@ provenance <- list()
 
 input_files_per_var <- yaml::read_yaml(params$input_files)
 
-model_names <- lapply(input_files_per_var, function(x) x$model)
-model_names <- unname(model_names)
 var0 <- lapply(input_files_per_var, function(x) x$short_name)
 fullpath_filenames <- names(var0)
 var0 <- unname(var0)[1]
@@ -270,18 +268,24 @@ for (i in 1 : length(projection_filenames)) {
         vals = as.vector(lat),
         longname = "latitude"
       )
+      dimtime <- ncdim_def(
+        name = "time",
+        units = "Years",
+        vals = start_projection : end_projection,
+        unlim = TRUE,
+        longname = "Time in years")
       defdata <- ncvar_def(
         name = "data",
         units = units,
         dim = list(lat = dimlat, lon = dimlon),
-        longname = paste("Mean", metric[m], long_names)
+        longname = paste("Annual", metric[m], long_names)
       )
       filencdf <- paste0(
           work_dir, "/", var0, "_", metric[m], "_risk_insurance_index_",
           model_names, "_", start_projection, "_", end_projection, "_",
           start_reference, "_", end_reference, ".nc")
       file <- nc_create(filencdf, list(defdata))
-      ncvar_put(file, defdata, data)
+      ncvar_put(file, defdata, projection_index_standardized)
       nc_close(file)
 
 
