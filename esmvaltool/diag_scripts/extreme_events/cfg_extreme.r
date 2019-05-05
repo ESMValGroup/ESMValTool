@@ -17,17 +17,17 @@ chk.ts_plt <- TRUE
 chk.glc_plt <- TRUE
 
 chk.glc_arr <- FALSE
-gl_mar.par <- c(7, 4, 3, 10)
+gl_mar.par <- c(10, 4, 3, 14)
 gl_png_res <- 480
 gl_png_units <- "px"
 gl_png_pointsize <- 12
 gl_png_bg <- "white"
 gl_RMSEspacer <- 0.01
-gl_scaling_factor <- 1.0
+gl_scaling_factor <- 0.9
 gl_text.scaling_factor <- 1.0
-gl_xscale_spacer_RMSE <- 0.0
-gl_xscale_spacer_RMSEstd <- 0.0
+gl_xscale_spacer_RMSE <- 0.05
+gl_xscale_spacer_RMSEstd <- 0.2
 gl_symb.scaling_factor <- 1.0
-gl_symb.xshift <- 0.0
-gl_symb.yshift <- 0.0
+gl_symb.xshift <- 0.175
+gl_symb.yshift <- 0.275
 gl_text.symb.scaling_factor <- 1.0
