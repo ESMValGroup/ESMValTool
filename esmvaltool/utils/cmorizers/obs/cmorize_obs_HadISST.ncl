@@ -1,5 +1,5 @@
 ; #############################################################################
-; REFORMAT SCRIPT FOR HadISST REANALYSIS DATA
+; ESMValTool CMORizer for HadISST data
 ; #############################################################################
 ;
 ; Tier
@@ -9,16 +9,16 @@
 ;    http://www.metoffice.gov.uk/hadobs/hadisst/data/download.html
 ;
 ; Last access
-;    02/2019
+;    20190208
 ;
 ; Download and processing instructions
 ;    Download and unzip "HadISST_ice.nc.gz" and "HadISST_sst.nc.gz".
 ;
 ; Modification history
 ;    20190208-A_hass_bg: adapted to v2.
-;    20180530-A_Righ_ma: fixed coordinates and metadata
-;    20170217-A_senf_da: modified so that SST fields are also written as 'tos'
-;    20150422-A_laue_ax: written
+;    20180530-A_righ_ma: fixed coordinates and metadata.
+;    20170217-A_senf_da: modified so that SST fields are also written as 'tos'.
+;    20150422-A_laue_ax: written.
 ;
 ; ############################################################################
 loadscript(getenv("esmvaltool_root") + "/utils/cmorizers/obs/interface.ncl")
@@ -38,103 +38,97 @@ begin
   YEAR1 = 1870
   YEAR2 = 2017
 
-  ; MIPS
-  MIPS = (/"Amon", "Omon", "OImon"/)
-
   ; Selected variable (standard name)
-  VARS = (/"ts", "tos", "sic"/)
+  VAR = (/"ts", "tos", "sic"/)
 
   ; Name in the raw data
   NAME = (/"sst", "sst", "ice"/)
 
+  ; MIP
+  MIP = (/"Amon", "Omon", "OImon"/)
+
+  ; Frequency
+  FREQ = (/"mon", "mon", "mon"/)
+
   ; CMOR table
   CMOR_TABLE = getenv("esmvaltool_root") + \
-    "/cmor/tables/cmip5/Tables/CMIP5_" + MIPS
+    "/cmor/tables/cmip5/Tables/CMIP5_" + MIP
+
+  ; Type
+  TYPE = "reanaly"
+
+  ; Version
+  VERSION = "1"
+
+  ; Global attributes
+  SOURCE = "http://www.metoffice.gov.uk/hadobs/hadisst/data/download.html"
+  REF = "Rayner et al., J. Geophys. Res., doi:10.1029/2002JD002670, 2013"
+  COMMENT = ""
 
 end
 
 begin
 
   ; Loop over variables
-  do vID = 0, dimsizes(VARS) - 1
+  do vv = 0, dimsizes(VAR) - 1
 
-    log_info("Processing " + VARS(vID))
+    log_info("Processing " + VAR(vv) + " (" + MIP(vv) + ")")
 
-    fname = input_dir_path + "HadISST_" + NAME(vID) + ".nc"
+    ; Read variables
+    fname = input_dir_path + "HadISST_" + NAME(vv) + ".nc"
     f = addfile(fname, "r")
-    if (NAME(vID).eq."sst") then
+    if (NAME(vv).eq."sst") then
       output = f->sst
       output@_FillValue = -1000.
     end if
-    if (NAME(vID).eq."ice") then
+    if (NAME(vv).eq."ice") then
       output = f->sic
     end if
 
-    if (isStrSubset(NAME(vID), "sst")) then
-      output = output + 273.15  ; convert from degrees C to K
+    ; Convert units
+    if (isStrSubset(NAME(vv), "sst")) then
+      output = output + 273.15  ; [degC] --> [K]
       output@units = "K"
     end if
-    if (isStrSubset(NAME(vID), "ice")) then
-      output = output * 100.  ; convert from 1 to %
+    if (isStrSubset(NAME(vv), "ice")) then
+      output = output * 100.  ; [1] --> [%]
       output@units = "%"
     end if
 
+    ; Extract time period
     date = cd_calendar(output&time, 0)
     idx = ind(date(:, 0).ge.YEAR1 .and. date(:, 0).le.YEAR2)
     output := output(idx, :, :)
 
-    ; Format time coordinate
-    ctime = time_attrib(output&time, YEAR1, YEAR2, "M")
-    delete(output&time)
-    output&time = ctime
-    delete(ctime)
-
-    ; Format latitude coordinate
+    ; Format coordinates
+    output!0 = "time"
     output!1 = "lat"
-    if (isMonotonic(output&lat) .eq. 0) then
-      error_msg("f", diag_script, "", "non-monotonic latitude coordinate")
-    end if
-    if (isMonotonic(output&lat) .eq. -1) then
-      output = output(:, ::-1, :)
-    end if
-    clat = lat_attrib(output&lat)
-    delete(output&lat)
-    output&lat = clat
-    delete(clat)
-
-    ; Format longitude coordinate
     output!2 = "lon"
-    if (isMonotonic(output&lon) .eq. 0) then
-      error_msg("f", diag_script, "", "non-monotonic longitude coordinate")
-    end if
-    if (any(output&lon.lt.0.)) then
-      output = lonFlip(output)
-    end if
-    clon = lon_attrib(output&lon)
-    delete(output&lon)
-    output&lon = clon
-    delete(clon)
+    format_coords(output, YEAR1 + "0101", YEAR2 + "1231", FREQ(vv))
 
     ; Set variable attributes
-    tmp = var_attrib(output, VARS(vID), CMOR_TABLE(vID))
+    tmp = format_variable(output, VAR(vv), CMOR_TABLE(vv))
     delete(output)
     output = tmp
     delete(tmp)
 
-    ; Set global attributes
-    gAtt = set_global_atts( \
-      OBSNAME, TIER, \
-      "http://www.metoffice.gov.uk/hadobs/hadisst/data/download.html", \
-      "Rayner et al., J. Geophys. Res., doi:10.1029/2002JD002670, 2013", "")
+    ; Calculate coordinate bounds
+    bounds = guess_coord_bounds(output, FREQ(vv))
 
-    ; Outfile
-    fout = output_dir_path + "OBS_" + OBSNAME + "_reanaly_1_" + MIPS(vID) + \
-      "_" + VARS(vID) + "_" + YEAR1 + "01-" + YEAR2 + "12.nc"
+    ; Set global attributes
+    gAtt = set_global_atts(OBSNAME, TIER, SOURCE, REF, COMMENT)
+
+    ; Output file
+    DATESTR = YEAR1 + "01-" + YEAR2 + "12"
+    fout = output_dir_path + \
+      str_join((/"OBS", OBSNAME, TYPE, VERSION, \
+                 MIP(vv), VAR(vv), DATESTR/), "_") + ".nc"
 
     ; Write variable
-    write_nc(fout, VARS(vID), output, gAtt)
+    write_nc(fout, VAR(vv), output, bounds, gAtt)
     delete(gAtt)
     delete(output)
+    delete(bounds)
 
   end do
 

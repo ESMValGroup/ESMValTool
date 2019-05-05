@@ -6,7 +6,7 @@ modeling_realm:    land
 !----------------------------------
 ! Variable attributes:
 !----------------------------------
-standard_name:     volumetric_moisture_content_of_soil_layer
+standard_name:     
 units:             m3 m-3
 cell_methods:      time: mean area: mean where land
 cell_measures:     area: areacella
@@ -24,4 +24,3 @@ ok_min_mean_abs:   0
 ok_max_mean_abs:   1
 !----------------------------------
 !
-

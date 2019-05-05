@@ -1,0 +1,26 @@
+SOURCE: CMIP5
+!============
+variable_entry:    rsutcs
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     toa_outgoing_shortwave_flux_assuming_clear_sky
+units:             W m-2
+cell_methods:      time: mean
+cell_measures:     area: areacella
+long_name:         TOA Outgoing Clear-Sky Shortwave Radiation
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          rsutcs
+type:              real
+positive:          up
+valid_min:         0
+valid_max:         444
+ok_min_mean_abs:   54.7
+ok_max_mean_abs:   73.36
+!----------------------------------
+!

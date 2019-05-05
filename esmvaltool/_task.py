@@ -9,6 +9,7 @@ import pprint
 import subprocess
 import threading
 import time
+from copy import deepcopy
 from multiprocessing import Pool, cpu_count
 
 import psutil
@@ -221,7 +222,10 @@ class BaseTask(object):
                 input_files = []
             for task in self.ancestors:
                 input_files.extend(task.run())
+            logger.info("Starting task %s in process [%s]", self.name,
+                        os.getpid())
             self.output_files = self._run(input_files)
+            logger.info("Successfully completed task %s", self.name)
 
         return self.output_files
 
@@ -235,9 +239,9 @@ class BaseTask(object):
         def _indent(txt):
             return '\n'.join('\t' + line for line in txt.split('\n'))
 
-        txt = 'ancestors:\n{}'.format(
-            '\n\n'.join(_indent(str(task)) for task in self.ancestors)
-            if self.ancestors else 'None')
+        txt = 'ancestors:\n{}'.format('\n\n'.join(
+            _indent(str(task))
+            for task in self.ancestors) if self.ancestors else 'None')
         return txt
 
 
@@ -279,6 +283,7 @@ class DiagnosticTask(BaseTask):
                     'py': [which('python')],
                     'ncl': [which('ncl'), '-n', '-p'],
                     'r': [which('Rscript')],
+                    'jl': [which('julia')],
                 }
             else:
                 profile_file = os.path.join(self.settings['run_dir'],
@@ -290,6 +295,7 @@ class DiagnosticTask(BaseTask):
                     ],
                     'ncl': [which('ncl'), '-n', '-p'],
                     'r': [which('Rscript')],
+                    'jl': [which('julia')],
                 }
 
             if extension not in executables:
@@ -505,6 +511,7 @@ class DiagnosticTask(BaseTask):
             table = yaml.safe_load(file)
 
         ignore = (
+            'auxiliary_data_dir',
             'exit_on_ncl_warning',
             'input_files',
             'log_level',
@@ -530,13 +537,15 @@ class DiagnosticTask(BaseTask):
         ancestor_products = {p for a in self.ancestors for p in a.products}
 
         for filename, attributes in table.items():
+            # copy to avoid updating other entries if file contains anchors
+            attributes = deepcopy(attributes)
             ancestor_files = attributes.pop('ancestors', [])
             ancestors = {
                 p
                 for p in ancestor_products if p.filename in ancestor_files
             }
 
-            attributes.update(attrs)
+            attributes.update(deepcopy(attrs))
             for key in attributes:
                 if key in TAGS:
                     attributes[key] = replace_tags(key, attributes[key])

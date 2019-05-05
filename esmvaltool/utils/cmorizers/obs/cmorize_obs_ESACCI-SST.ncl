@@ -43,8 +43,22 @@ begin
   ; MIP
   MIP = "Amon"
 
+  ; Frequency
+  FREQ = "mon"
+
   ; CMOR table
   CMOR_TABLE = getenv("esmvaltool_root") + "/cmor/tables/"
+
+  ; Type
+  TYPE = "sat"
+
+  ; Version
+  VERSION = "L4-GHRSST-SSTdepth-OSTIA-GLOB"
+
+  ; Global attributes
+  SOURCE = "ftp://anon-ftp.ceda.ac.uk/neodc/esacci/sst/data/"
+  REF = "Merchant et al., Geosci. Data J., doi:10.1002/gdj3.20, 2014"
+  COMMENT = ""
 
 end
 
@@ -59,16 +73,17 @@ begin
 
       mo = sprinti("%0.2i", mm)
 
+      dm = days_in_month(yy, mm)
+
       ; Select files for this year/month
       files = \
         systemfunc("ls " + input_dir_path + yy + mo + "??120000-" + \
                    "ESACCI-L4_GHRSST-SSTdepth-OSTIA-GLOB_LT-v02.0-fv01.1.nc")
       nfiles = dimsizes(files)
 
-      if (nfiles.ne.days_in_month(yy, mm)) then
-        error_msg("f", DIAG_SCRIPT, "", "Incomplete data in " + yy + mo + \
-                  " (" + nfiles + " != " + days_in_month(yy, mm) + \
-                  " files found)")
+      if (nfiles.ne.dm) then
+        error_msg("f", DIAG_SCRIPT, "", "incomplete data in " + yy + mo + \
+                  " (" + dm + " != " + nfiles + " files found)")
       end if
 
       ; Create time-series
@@ -107,79 +122,49 @@ begin
 
       ; Format time coordinate
       sstavg!0 = "time"
-      erravg!0 = "time"
-      delete(sstavg&time)
-      delete(erravg&time)
-      time = cd_inv_calendar(yy, mm, 15, 0, 0, 0, TUNITS, 0)
-      time@calendar = "standard"
-      time@long_name = "time"
-      time@axis = "T"
-      time@units = TUNITS
-      time@standard_name = "time"
-      sstavg&time = time
-      erravg&time = time
-
-      ; Format latitude coordinate
       sstavg!1 = "lat"
-      erravg!1 = "lat"
-      if (isMonotonic(sstavg&lat).eq.0) then
-        error_msg("f", DIAG_SCRIPT, "", "non-monotonic latitude coordinate")
-      end if
-      if (isMonotonic(sstavg&lat) .eq. -1) then
-        sstavg = sstavg(:, ::-1, :)
-        erravg = erravg(:, ::-1, :)
-      end if
-      clat = lat_attrib(sstavg&lat)
-      delete(sstavg&lat)
-      delete(erravg&lat)
-      sstavg&lat = clat
-      erravg&lat = clat
-
-      ; Format longitude coordinate
       sstavg!2 = "lon"
+      format_coords(sstavg, yy + mo + "01", yy + mo + dm, FREQ)
+      erravg!0 = "time"
+      erravg!1 = "lat"
       erravg!2 = "lon"
-      if (isMonotonic(sstavg&lon).eq.0) then
-        error_msg("f", DIAG_SCRIPT, "", "non-monotonic lonitude coordinate")
-      end if
-      if (any(sstavg&lon.lt.0.)) then
-        sstavg = lonFlip(sstavg)
-        erravg = lonFlip(erravg)
-      end if
-      clon = lon_attrib(sstavg&lon)
-      delete(sstavg&lon)
-      delete(erravg&lon)
-      sstavg&lon = clon
-      erravg&lon = clon
+      format_coords(erravg, yy + mo + "01", yy + mo + dm, FREQ)
 
       ; Format variable metadata
       table = CMOR_TABLE + "cmip5/Tables/CMIP5_Amon"
-      tmp = var_attrib(sstavg, "ts", table)
-      sstavg := tmp
+      tmp = format_variable(sstavg, "ts", table)
+      delete(sstavg)
+      sstavg = tmp
       delete(tmp)
 
       table = CMOR_TABLE + "custom/CMOR_tsStderr.dat"
-      tmp = var_attrib(erravg, "tsStderr", table)
-      erravg := tmp
+      tmp = format_variable(erravg, "tsStderr", table)
+      delete(erravg)
+      erravg = tmp
       delete(tmp)
 
+      ; Calculate coordinate bounds
+      bounds_sst = guess_coord_bounds(sstavg, FREQ)
+      bounds_err = guess_coord_bounds(erravg, FREQ)
+
       ; Set global attributes
-      gAtt = set_global_atts( \
-        OBSNAME, TIER, \
-        "ftp://anon-ftp.ceda.ac.uk/neodc/esacci/sst/data/", \
-        "Merchant et al., Geosci. Data J., doi:10.1002/gdj3.20, 2014", "")
+      gAtt = set_global_atts(OBSNAME, TIER, SOURCE, REF, COMMENT)
 
       ; Write output
-      fout = output_dir_path + "OBS_" + OBSNAME + \
-        "_sat_L4-GHRSST-SSTdepth-OSTIA-GLOB_" + \
-        MIP + "_ts_" + yy + mo + "-" + yy + mo + ".nc"
-      write_nc(fout, "ts", sstavg, gAtt)
+      DATESTR = yy + mo + "-" + yy + mo
+      fout = output_dir_path + \
+        str_join((/"OBS", OBSNAME, TYPE, VERSION, \
+                   MIP, "ts", DATESTR/), "_") + ".nc"
+      write_nc(fout, "ts", sstavg, bounds_sst, gAtt)
       delete(sstavg)
+      delete(bounds_sst)
 
-      fout = output_dir_path + "OBS_" + OBSNAME + \
-        "_sat_L4-GHRSST-SSTdepth-OSTIA-GLOB_" + \
-        MIP + "_tsStderr_" + yy + mo + "-" + yy + mo + ".nc"
-      write_nc(fout, "tsStderr", erravg, gAtt)
+      fout = output_dir_path + \
+        str_join((/"OBS", OBSNAME, TYPE, VERSION, \
+                   MIP, "tsStderr", DATESTR/), "_") + ".nc"
+      write_nc(fout, "tsStderr", erravg, bounds_err, gAtt)
       delete(erravg)
+      delete(bounds_err)
 
       delete(gAtt)
       delete(files)

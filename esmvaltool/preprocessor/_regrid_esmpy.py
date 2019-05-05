@@ -178,7 +178,7 @@ def build_regridder_2d(src_rep, dst_rep, regrid_method, mask_threshold):
 
     def regridder(src):
         """Regrid 2d for irregular grids."""
-        res = get_empty_data(dst_rep.shape)
+        res = get_empty_data(dst_rep.shape, src.dtype)
         data = src.data
         if np.ma.is_masked(data):
             data = data.data
@@ -205,7 +205,7 @@ def build_regridder_3d(src_rep, dst_rep, regrid_method, mask_threshold):
 
     def regridder(src):
         """Regrid 2.5d for irregular grids."""
-        res = get_empty_data(dst_rep.shape)
+        res = get_empty_data(dst_rep.shape, src.dtype)
         for i, esmf_regridder in enumerate(esmf_regridders):
             res[i, ...] = esmf_regridder(src[i])
         return res
@@ -278,7 +278,7 @@ def get_grid_representants(src, dst):
     dim_coords += dst_horiz_rep.coords(dim_coords=True)
     dim_coords_and_dims = [(c, i) for i, c in enumerate(dim_coords)]
     dst_rep = iris.cube.Cube(
-        data=get_empty_data(dst_shape),
+        data=get_empty_data(dst_shape, src.dtype),
         standard_name=src.standard_name,
         long_name=src.long_name,
         var_name=src.var_name,

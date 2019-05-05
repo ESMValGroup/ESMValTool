@@ -5,8 +5,6 @@ module that performs missing values masking
 and geographical area eslection
 """
 
-from __future__ import print_function
-
 import logging
 import os
 
@@ -193,8 +191,7 @@ def mask_landseaice(cube, fx_files, mask_out):
             fx_cube = iris.load_cube(fx_file)
 
             if _check_dims(cube, fx_cube):
-                landice_mask = _get_fx_mask(fx_cube.data, mask_out,
-                                            'sftgif')
+                landice_mask = _get_fx_mask(fx_cube.data, mask_out, 'sftgif')
                 cube.data = _apply_fx_mask(landice_mask, cube.data)
                 logger.debug("Applying landsea-ice mask: sftgif")
     else:
@@ -223,7 +220,8 @@ def _mask_with_shp(cube, shapefilename):
     # 1D regular grids
     if cube.coord('longitude').points.ndim < 2:
         x_p, y_p = np.meshgrid(
-            cube.coord(axis='X').points, cube.coord(axis='Y').points)
+            cube.coord(axis='X').points,
+            cube.coord(axis='Y').points)
     # 2D irregular grids; spit an error for now
     else:
         logger.error('No fx-files found (sftlf or sftof)!\n \
@@ -455,8 +453,8 @@ def _get_fillvalues_mask(cube, threshold_fraction, min_value, time_window):
     # basic checks
     if threshold_fraction < 0 or threshold_fraction > 1.0:
         raise ValueError(
-            "Fraction of missing values {} should be between 0 and 1.0"
-            .format(threshold_fraction))
+            "Fraction of missing values {} should be between 0 and 1.0".format(
+                threshold_fraction))
     nr_time_points = len(cube.coord('time').points)
     if time_window > nr_time_points:
         logger.warning("Time window (in time units) larger "

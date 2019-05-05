@@ -185,6 +185,11 @@ def execute_cmorize():
 
     logger.info(70 * "-")
     logger.info("input_dir  = %s", config_user["rootpath"]["RAWOBS"][0])
+    # check if the inputdir actually exists
+    if not os.path.isdir(config_user["rootpath"]["RAWOBS"][0]):
+        logger.error("Directory %s does not exist",
+                     config_user["rootpath"]["RAWOBS"][0])
+        raise ValueError
     logger.info("output_dir = %s", config_user["output_dir"])
     logger.info(70 * "-")
 
@@ -213,7 +218,7 @@ def _cmor_reformat(config, obs_list):
     raw_obs = config["rootpath"]["RAWOBS"][0]
 
     # set the reformat scripts dir
-    reformat_scripts = os.path.dirname(__file__)
+    reformat_scripts = os.path.dirname(os.path.abspath(__file__))
     run_dir = os.path.join(config['output_dir'], 'run')
     # datsets dictionary of Tier keys
     datasets = _assemble_datasets(raw_obs, obs_list)
