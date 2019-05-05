@@ -5,7 +5,8 @@
 
 # DECLARING THE FUNCTION: EXECUTION IS AT THE BOTTOM OF THE SCRIPT
 
-hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
+hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season,
+                            prov_info) {
  
   # setting up path and parameters
   dataset_ref <- models_name[ref_idx]
@@ -152,15 +153,15 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
     #-----------------Loading data-----------------------#
     # open experiment field
     for (field in field_names) {
-      filename <- getfilename_indices(work_dir_exp, diag_base, model_idx,
+      infile <- getfilename_indices(work_dir_exp, diag_base, model_idx,
                                       season)
-      print(paste("Reading ", field, " from experiment ", filename))
+      print(paste("Reading ", field, " from experiment ", infile))
       if ( (rgrid == F) & ( (plot_type == 2) | (plot_type == 3) ) ) {
         # regrid when comparing
-        field_exp <- ncdf_opener(filename, field, "lon", "lat", rotate = "no",
+        field_exp <- ncdf_opener(infile, field, "lon", "lat", rotate = "no",
                                  interp2grid = T, grid = ref_filename)
       } else {
-        field_exp <- ncdf_opener(filename, field, "lon", "lat", rotate = "no")
+        field_exp <- ncdf_opener(infile, field, "lon", "lat", rotate = "no")
       }
       if (removedesert) {
         field_exp <- field_exp * exp_retdes3D
@@ -502,17 +503,55 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season) {
               )
             }
           } # close loop over quantity
-          if (plot_type <= 2) {
+          if (plot_type == 1) {
             graphics_close(figname)
+            # Store data for provenance
+            caption <- paste0("Map for index ", field, " over region ",
+                              region_codes[iregion], " according to ",
+                              models_name[model_idx])
+            prov_fig_now <- list(figname = figname,
+                                 caption = caption,
+                                  models = list(model_idx),
+                                  ancestors = list(infile))
+            prov_info[[figname]] <- prov_fig_now
+          }
+          if (plot_type == 2) {
+            graphics_close(figname)
+            # Store data for provenance
+            caption <- paste0("Map for index ", field, " over region ",
+                              region_codes[iregion], " according to ",
+                              models_name[model_idx], 
+                              " in comparison to reference dataset")
+            prov_fig_now <- list(figname = figname,
+                                 caption = caption,
+                                 models = list(model_idx),
+                                 ancestors = list(infile, ref_filename))
+            prov_info[[figname]] <- prov_fig_now
           }
         } # close loop over field
         if (plot_type == 3) {
           graphics_close(figname)
+          # Store data for provenance
+          caption <- paste0("Comparison maps for multiple indices",
+                            " over region ", region_codes[iregion])
+          prov_fig_now <- list(figname = figname,
+                               caption = caption,
+                               models = list(model_idx),
+                               ancestors = list(infile, ref_filename))
+          prov_info[[figname]] <- prov_fig_now
         }
       } # close loop over years
       if (plot_type == 4) {
         graphics_close(figname)
+        # Store data for provenance
+        caption <- paste0("Maps for multiple indices over selected years")
+        prov_fig_now <- list(figname = figname,
+                             caption = caption,
+                             models = list(model_idx),
+                             ancestors = list(infile))
+        prov_info[[figname]] <- prov_fig_now
       }
     } # close loop over regions
   } # close loop over models
+  return(prov_info)
 } # close function

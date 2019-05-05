@@ -5,7 +5,7 @@
 
 
 # MAIN TRENDS FUNCTION
-hyint_trends <- function(work_dir, model_idx, season, provenance) {
+hyint_trends <- function(work_dir, model_idx, season, prov_info) {
 
   # setup useful strings
   var_type <- c("tseries", "tseries-sd", "trend", "trend-stat")
@@ -272,17 +272,12 @@ hyint_trends <- function(work_dir, model_idx, season, provenance) {
     caption <- paste0("Hyint timeseries and trends for years ",
                       year1, " to ", year2,
                       " according to ", models_name[model_idx])
-    xbase <- list(list(infile), list("arno_en", "hard_jo"), list("c3s-magic"),
-                  list("giorgi11jc", "giorgi14jgr"), caption,
-                  list("var", "trend", "other"),
-                  list("atmos"), list("phys"), list("global"))
-    names(xbase) <- c("ancestors", "authors", "projects", "references",
-                      "caption", "statistics", "realms",
-                      "themes", "domains")
+    xprov <- list(ancestors = list(infile),
+                  caption = caption)
 
     # Store provenance in main provenance list
-    provenance[[outfile]] <- xbase
+    prov_info[[outfile]] <- xprov
 
   print(paste(diag_base, ": timeseries netCDF file saved"))
-  return(provenance)
+  return(prov_info)
 }

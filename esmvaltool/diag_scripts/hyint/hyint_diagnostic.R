@@ -3,7 +3,7 @@
 #-------------E. Arnone (June 2017)------------------#
 ######################################################
 hyint_diagnostic <- function(work_dir, infile, model_idx, season,
-                             provenance, rewrite = FALSE) {
+                             prov_info, rewrite = FALSE) {
 
   # setting up path and parameters
   year1 <- models_start_year[model_idx]
@@ -379,17 +379,12 @@ hyint_diagnostic <- function(work_dir, infile, model_idx, season,
   # Set provenance for this output file
   caption <- paste0("Hyint indices  for years ", year1, " to ", year2,
                      " according to ", models_name[model_idx])
-  xbase <- list(list(infile), list("arno_en", "hard_jo"), list("c3s-magic"),
-                list("giorgi11jc", "giorgi14jgr"), caption,
-                list("var", "other"),
-                list("atmos"), list("phys"), list("global"))
-  names(xbase) <- c("ancestors", "authors", "projects", "references",
-                    "caption", "statistics", "realms",
-                    "themes", "domains")
+  xprov <- list(ancestors = list(infile),
+              caption = caption)
 
   # Store provenance in main provenance list
-  provenance[[outfile]] <- xbase
+  prov_info[[outfile]] <- xprov
 
   print(paste(diag_base, ": diagnostic netCDF files saved"))
-  return(provenance)
+  return(prov_info)
 }
