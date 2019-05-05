@@ -84,7 +84,7 @@ models_start_year <- unname(sapply(list0, "[[", "start_year"))
 models_end_year <- unname(sapply(list0, "[[", "end_year"))
 models_experiment <- unname(sapply(list0, "[[", "exp"))
 models_project <- unname(sapply(list0, "[[", "project"))
-reference_model <- unname(sapply(list0, "[[", "reference_dataset"))[1]
+reference_model <- unname(sapply(list0, "[[", "reference_dataset"))[,1]
 diag_base <- unname(sapply(list0, "[[", "diagnostic"))[1]
 #### Correction r.interface output correction ####
 models_experiment[models_experiment == "No_value"] <- "No-values"
@@ -211,11 +211,11 @@ if (write_plots) {
 
 # These are forced here for testing
 
-  print("-------------")
+  print("------ Model datasets ------")
   print(setdiff(models_name, reference_model))
-  print("-------------")
+  print("---- Reference datasets ----")
   print(reference_model)
-  print("-------------")
+  print("----------------------------")
   if (chk.ts_plt){
     print("")
     print(paste0(">>>>>>>> TIME SERIE PROCESSING INITIATION"))

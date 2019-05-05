@@ -38,7 +38,7 @@ variable:
   exp: any(str(), list(str()), required=False)
   mip: str(required=False)
   preprocessor: str(required=False)
-  reference_dataset: str(required=False)
+  reference_dataset: list(str(), required=False)
   alternative_dataset: str(required=False)
   fx_files: list(required=False)
   additional_datasets: list(include('dataset'), required=False)

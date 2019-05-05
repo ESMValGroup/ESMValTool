@@ -28,7 +28,13 @@ datasets:
 #  - {dataset: EC-Earth, project: CMIP5, exp: historical,  ensemble: r8i1p1, start_year: 1980, end_year: 2000}
   - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1980, end_year: 1989}
   - {dataset: ACCESS1-0, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1980, end_year: 1989}
+  - {dataset: ACCESS1-3, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1980, end_year: 1989}
   - {dataset: IPSL-CM5A-MR, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1980, end_year: 1989}
+  - {dataset: NorESM1-M, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1980, end_year: 1989}
+  - {dataset: BNU-ESM, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1980, end_year: 1989}
+  - {dataset: CanESM2, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1980, end_year: 1989}
+  - {dataset: CCSM4, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1980, end_year: 1989}
+  - {dataset: CMCC-CM, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1980, end_year: 1989}
 
 diagnostics:
   ExtremeEvents:
@@ -37,18 +43,18 @@ diagnostics:
       pr:
         mip: day
         field: T2Ds
-        reference_dataset: "ACCESS1-0"
+        reference_dataset: ["ACCESS1-0", "ACCESS1-3", "IPSL-CM5A-MR"]
 #      tas:
 #        mip: day
 #        field: T2Ds
       tasmax:
         mip: day
         field: T2Ds
-        reference_dataset: "ACCESS1-0"
+        reference_dataset: ["ACCESS1-0", "ACCESS1-3", "IPSL-CM5A-MR"]
       tasmin:
         mip: day
         field: T2Ds
-        reference_dataset: "ACCESS1-0"
+        reference_dataset: ["ACCESS1-0", "ACCESS1-3", "IPSL-CM5A-MR"]
 #    additional_datasets:
       #- {dataset: MERRA2, project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 3}
 #      - {dataset: EOBS, project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 3}

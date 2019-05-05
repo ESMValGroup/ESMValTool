@@ -597,6 +597,7 @@ timeseries_plot <- function(plot_dir = "./plot", idx = "tn10pETCCDI_yr",
     n <- 0
     for (o in obs_list) {
       n = n + 1
+      print("----- Line to plot ---JJJ---")
       print(obsdata_list[[n]])
       lines(obsdata_list[[n]][[2]], obsdata_list[[n]][[3]],
             col = ts_col_list[n+1], lty= ts_lty_list[n+1],
