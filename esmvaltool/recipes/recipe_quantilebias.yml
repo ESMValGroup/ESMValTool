@@ -35,7 +35,6 @@ diagnostics:
         preprocessor: masking_preprocessor 
         reference_dataset: "GPCP-SG"
         mip: Amon
-        field: T2Ds
         project: CMIP5
         exp: historical
         ensemble: r1i1p1

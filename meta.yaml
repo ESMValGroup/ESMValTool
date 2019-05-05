@@ -39,7 +39,7 @@ requirements:
     - python
     - libunwind  #  specifically for Python3.7+
     - graphviz
-    - iris
+    - iris>=2.2
     - python-stratify
     # Normally installed via pip:
     - cartopy
@@ -72,7 +72,6 @@ requirements:
     - jasper!=1.900.31  # pinned NCL dependency
     - r-base
     - cdo
-    # TODO: add julia
 
 test:
   # TODO: add unit tests? This seems to require installing the tests

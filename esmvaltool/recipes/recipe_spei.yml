@@ -41,7 +41,6 @@ diagnostics:
         start_year: 2000
         end_year: 2005
         mip: Amon
-        field: T2Ms
       tas: *var
     scripts:
       spi:

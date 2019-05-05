@@ -1,5 +1,5 @@
 # ESMValTool
-# recipe_capacity_factor_wp7.yml
+# recipe_capacity_factor.yml
 ---
 documentation:
   description: |
@@ -44,7 +44,6 @@ diagnostics:
       sfcWind:
         preprocessor: preproc
         mip: day
-        field: T2M
     scripts:
       main:
         script: magic_bsc/capacity_factor.r

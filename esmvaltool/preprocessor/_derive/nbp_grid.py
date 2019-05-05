@@ -3,22 +3,20 @@
 import iris
 from iris import Constraint
 
-from ._derived_variable_base import DerivedVariableBase
+from ._baseclass import DerivedVariableBase
 
 
 class DerivedVariable(DerivedVariableBase):
     """Derivation of variable `nbp_grid`."""
 
     # Required variables
-    _required_variables = {
-        'vars': [{
-            'short_name': 'nbp',
-            'field': 'T2{frequency}s'
-        }],
-        'fx_files': ['sftlf']
-    }
+    required = [{
+        'short_name': 'nbp',
+        'fx_files': ['sftlf'],
+    }]
 
-    def calculate(self, cubes):
+    @staticmethod
+    def calculate(cubes):
         """Compute net biome production relative to grid cell area.
 
         Note

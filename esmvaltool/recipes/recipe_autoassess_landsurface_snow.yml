@@ -31,7 +31,6 @@ diagnostics:
     variables:
       snw: # surface_snow_amount (CMOR name=snw)
         mip: LImon
-        field: T2Ms
         fx_files: [sftlf]
     scripts:
       autoassess_landsurf_snow: &autoassess_landsurf_snow_settings

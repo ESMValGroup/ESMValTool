@@ -28,13 +28,10 @@ diagnostics:
     description: Run the NCAR CVDPackage.
     variables:
       tas:
-        field: T2Ms
         #reference_dataset: bcc-csm1-1
       pr:
-        field: T2Ms
         #reference_dataset: MPI-ESM-LR
       psl:
-        field: T2Ms
     scripts:
       cvdp:
         script: cvdp/cvdp_wrapper.py

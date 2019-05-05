@@ -1,23 +1,19 @@
 """Derivation of variable `amoc`."""
 import iris
-from iris import Constraint
-
 import numpy as np
 
-from ._derived_variable_base import DerivedVariableBase
+from ._baseclass import DerivedVariableBase
 
 
 class DerivedVariable(DerivedVariableBase):
     """Derivation of variable `amoc`."""
 
     # Required variables
-    _required_variables = {
-        'vars': [{'short_name': 'msftmyz', 'field': 'TO2M'}],
-    }
+    required = [{'short_name': 'msftmyz', 'mip': 'Omon'}]
 
-    def calculate(self, cubes,):
-        """
-        Compute Atlantic meriodinal overturning circulation.
+    @staticmethod
+    def calculate(cubes):
+        """Compute Atlantic meriodinal overturning circulation.
 
         Arguments
         ---------
@@ -31,8 +27,8 @@ class DerivedVariable(DerivedVariableBase):
         """
         # 0. Load the msftmyz cube.
         cube = cubes.extract_strict(
-            Constraint(name='ocean_meridional_overturning_mass_'
-                       'streamfunction'))
+            iris.Constraint(
+                name='ocean_meridional_overturning_mass_streamfunction'))
 
         # 1: find the relevant region
         atlantic_region = 'atlantic_arctic_ocean'
@@ -51,6 +47,8 @@ class DerivedVariable(DerivedVariableBase):
         cube = cube.extract(constraint=rapid_constraint)
 
         # 4: find the maximum in the water column along the time axis.
-        cube = cube.collapsed(['depth', 'region'],
-                              iris.analysis.MAX,)
+        cube = cube.collapsed(
+            ['depth', 'region'],
+            iris.analysis.MAX,
+        )
         return cube

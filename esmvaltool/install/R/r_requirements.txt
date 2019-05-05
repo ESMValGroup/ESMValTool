@@ -5,6 +5,7 @@ ClimProjDiags
 dotCall64
 ggplot2
 gridExtra
+JuliaCall
 lintr
 logging
 mapproj

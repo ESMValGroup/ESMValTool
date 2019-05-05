@@ -1,24 +1,59 @@
 """Utils module for Python cmorizers."""
+import datetime
 import logging
 import os
+from contextlib import contextmanager
 
 import iris
-import numpy as np
-from cf_units import Unit
-
 import yaml
+from cf_units import Unit
+from dask import array as da
+
+from esmvaltool import __version__ as version
+from esmvaltool.cmor.table import CMOR_TABLES
+from esmvaltool._config import get_tag_value
 
 logger = logging.getLogger(__name__)
 
 
-# read the associated dataset-specific config file
+@contextmanager
+def constant_metadata(cube):
+    """Do cube math without modifying units etc."""
+    metadata = cube.metadata
+    yield metadata
+    cube.metadata = metadata
+
+
 def _read_cmor_config(cmor_config):
-    """Read cmor configuration in a dict."""
+    """Read the associated dataset-specific config file."""
     reg_path = os.path.join(
         os.path.dirname(__file__), 'cmor_config', cmor_config)
     with open(reg_path, 'r') as file:
         cfg = yaml.safe_load(file)
+    cfg['cmor_table'] = \
+        CMOR_TABLES[cfg['attributes']['project_id']]
+    if 'comment' not in cfg.keys():
+        cfg['attributes']['comment'] = ''
     return cfg
+
+
+def _fix_var_metadata(cube, var_info):
+    """Fix var metadata from CMOR table."""
+    cube.var_name = var_info.short_name
+    cube.standard_name = var_info.standard_name
+    cube.long_name = var_info.long_name
+    _set_units(cube, var_info.units)
+    return cube
+
+
+def _set_units(cube, units):
+    """Set units in compliance with cf_unit."""
+    special = {'psu': 1.e-3, 'Sv': '1e6 m3 s-1'}
+    if units in list(special.keys()):
+        cube.units = special[units]
+    else:
+        cube.units = Unit(units)
+    return cube
 
 
 def _convert_timeunits(cube, start_year):
@@ -26,9 +61,9 @@ def _convert_timeunits(cube, start_year):
     # TODO any more weird cases?
     if cube.coord('time').units == 'months since 0000-01-01 00:00:00':
         real_unit = 'months since {}-01-01 00:00:00'.format(str(start_year))
-    if cube.coord('time').units == 'days since 0000-01-01 00:00:00':
+    elif cube.coord('time').units == 'days since 0000-01-01 00:00:00':
         real_unit = 'days since {}-01-01 00:00:00'.format(str(start_year))
-    if cube.coord('time').units == 'days since 1950-1-1':
+    elif cube.coord('time').units == 'days since 1950-1-1':
         real_unit = 'days since 1950-1-1 00:00:00'
     else:
         real_unit = cube.coord('time').units
@@ -80,15 +115,13 @@ def _fix_dim_coordnames(cube):
 def _fix_bounds(cube, dim_coord):
     """Reset and fix all bounds."""
     if len(cube.coord(dim_coord).points) > 1:
-        if not cube.coord(dim_coord).has_bounds():
-            cube.coord(dim_coord).guess_bounds()
-        else:
+        if cube.coord(dim_coord).has_bounds():
             cube.coord(dim_coord).bounds = None
-            cube.coord(dim_coord).guess_bounds()
+        cube.coord(dim_coord).guess_bounds()
 
     if cube.coord(dim_coord).has_bounds():
-        cube.coord(dim_coord).bounds = np.array(
-            cube.coord(dim_coord).bounds, dtype='float64')
+        cube.coord(dim_coord).bounds = da.array(
+            cube.coord(dim_coord).core_bounds(), dtype='float64')
     return cube
 
 
@@ -115,6 +148,8 @@ def _fix_coords(cube):
                 _fix_bounds(cube, cube.coord('longitude'))
                 cube.attributes['geospatial_lon_min'] = 0.
                 cube.attributes['geospatial_lon_max'] = 360.
+                nlon = len(cube.coord('longitude').points)
+                _roll_cube_data(cube, int(nlon / 2), -1)
 
         # fix latitude
         if cube_coord.var_name == 'lat':
@@ -138,33 +173,64 @@ def _fix_coords(cube):
     return cube
 
 
-def _add_metadata(cube, proj):
-    """Complete the cmorized file with useful metadata."""
-    logger.info("Add Global metadata...")
-    for att in proj['metadata_attributes']:
-        if att not in cube.metadata.attributes:
-            cube.metadata.attributes[att] = proj['metadata_attributes'][att]
+def _set_global_atts(cube, attrs):
+    """Complete the cmorized file with global metadata."""
+    logger.info("Set global metadata...")
+
+    if bool(cube.metadata.attributes):
+        cube.metadata.attributes.clear()
+
+    timestamp = datetime.datetime.utcnow()
+    timestamp_format = "%Y-%m-%d %H:%M:%S"
+    now_time = timestamp.strftime(timestamp_format)
+    glob_dict = {
+        'title':
+        attrs['dataset_id'] + ' data reformatted for ESMValTool v' + version,
+        'version': attrs['version'],
+        'tier': str(attrs['tier']),
+        'source': attrs['source'],
+        'reference': get_tag_value('references', attrs['reference']),
+        'comment': attrs['comment'],
+        'user': os.environ["USER"],
+        'host': os.environ["HOSTNAME"],
+        'history': 'Created on ' + now_time
+    }
+
+    for att, value in glob_dict.items():
+        cube.metadata.attributes[att] = value
 
 
 def _roll_cube_data(cube, shift, axis):
     """Roll a cube data on specified axis."""
-    cube.data = np.roll(cube.data, shift, axis=axis)
+    cube.data = da.roll(cube.core_data(), shift, axis=axis)
     return cube
 
 
-def _save_variable(cube, var, outdir, year, proj, **kwargs):
+def _save_variable(cube, var, outdir, attrs, **kwargs):
     """Saver function."""
     # CMOR standard
-    if not isinstance(year, list):
-        time_suffix = '-'.join([str(year) + '01', str(year) + '12'])
+    cube_time = cube.coord('time')
+    reftime = Unit(cube_time.units.origin, cube_time.units.calendar)
+    dates = reftime.num2date(cube_time.points[[0, -1]])
+    if len(cube_time.points) == 1:
+        year = str(dates[0].year)
+        time_suffix = '-'.join([year + '01', year + '12'])
     else:
-        yr1, yr2 = year
-        time_suffix = '-'.join([str(yr1) + '01', str(yr2) + '12'])
-    cmor_prefix = '_'.join([
-        'OBS', proj['dataset'], proj['realm'], proj['version'],
-        proj['frequency'][var], var
-    ])
-    file_name = cmor_prefix + '_' + time_suffix + '.nc'
+        date1 = str(dates[0].year) + '%02d' % dates[0].month
+        date2 = str(dates[1].year) + '%02d' % dates[1].month
+        time_suffix = '-'.join([date1, date2])
+
+    file_name = '_'.join([
+        'OBS',
+        attrs['dataset_id'],
+        attrs['modeling_realm'],
+        attrs['version'],
+        attrs['mip'],
+        var,
+        time_suffix,
+    ]) + '.nc'
     file_path = os.path.join(outdir, file_name)
     logger.info('Saving: %s', file_path)
-    iris.save(cube, file_path, **kwargs)
+    status = 'lazy' if cube.has_lazy_data() else 'realized'
+    logger.info('Cube has %s data [lazy is preferred]', status)
+    iris.save(cube, file_path, fill_value=1e20, **kwargs)

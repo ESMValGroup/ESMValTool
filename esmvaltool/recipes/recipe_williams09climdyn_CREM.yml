@@ -52,7 +52,6 @@ diagnostics:
     variables:
       albisccp: &var_settings
         preprocessor: preproc25x25
-        field: T2Ds
         start_year: 1985
         end_year: 1987
         grid: gr

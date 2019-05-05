@@ -45,27 +45,22 @@ diagnostics:
         preprocessor: prep0
         reference_dataset: ESACCI-LANDCOVER
         mip: Lmon
-        field: T2Ms
       grassFrac:
         preprocessor: prep0
         reference_dataset: ESACCI-LANDCOVER
         mip: Lmon
-        field: T2Ms
       treeFrac:
         preprocessor: prep0
         reference_dataset: ESACCI-LANDCOVER
         mip: Lmon
-        field: T2Ms
       shrubFrac:
         preprocessor: prep0
         reference_dataset: ESACCI-LANDCOVER
         mip: Lmon
-        field: T2Ms
       cropFrac:
         preprocessor: prep0
         reference_dataset: ESACCI-LANDCOVER
         mip: Lmon
-        field: T2Ms
     scripts:
       landcover:
         script: landcover/landcover.py
