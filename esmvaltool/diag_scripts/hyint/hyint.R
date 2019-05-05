@@ -194,8 +194,8 @@ if (write_netcdf) {
     if (run_diagnostic) {
       # Loop through seasons and call diagnostic
       for (seas in seasons) {
-        provenance <- hyint_diagnostic(work_dir, regfile, model_idx, seas,
-                         provenance, rewrite = force_diagnostic)
+        prov_info <- hyint_diagnostic(work_dir, regfile, model_idx, seas,
+                         prov_info, rewrite = force_diagnostic)
       }
     }
   }

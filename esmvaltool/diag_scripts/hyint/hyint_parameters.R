@@ -11,7 +11,7 @@
 run_regridding <- T
 force_regridding <- F
 run_diagnostic <- T
-force_diagnostic <- F
+force_diagnostic <- T
 run_timeseries <- T
 
 if (!exists("write_ncdf")) {
