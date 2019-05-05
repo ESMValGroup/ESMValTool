@@ -159,15 +159,15 @@ class TestCMORCheck(unittest.TestCase):
         self._check_cube()
 
     def test_check_with_unit_conversion(self):
-        """Test check succeds for a good cube requiring unit converision"""
+        """Test check succeeds for a good cube requiring unit conversion"""
         self.cube.units = 'days'
         self._check_cube()
 
     def test_check_with_psu_units(self):
-        """Test check succeds for a good cube with psu units"""
+        """Test check succeeds for a good cube with psu units"""
         self.var_info.units = 'psu'
         self.cube = self.get_cube(self.var_info)
-        self._check_cube()
+        self._check_cube(automatic_fixes=True)
 
     def test_check_with_positive(self):
         """Check variable with positive attribute"""
