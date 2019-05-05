@@ -1,23 +1,20 @@
 {
     "Header": {
-        "data_specs_version": "01.00.30", 
-        "cmor_version": "3.4", 
+        "data_specs_version": "01.00.10", 
         "table_id": "Table CFsubhr", 
         "realm": "atmos", 
-        "table_date": "11 March 2019", 
+        "frequency": "subhr", 
+        "cmor_version": "3.2", 
+        "table_date": "10 May 2017", 
         "missing_value": "1e20", 
-        "int_missing_value": "-999", 
         "product": "model-output", 
         "approx_interval": "0.017361", 
-        "approx_interval_error": "0.90", 
-        "approx_interval_warning": "0.5", 
         "generic_levels": "alevel alevhalf", 
         "mip_era": "CMIP6", 
-        "Conventions": "CF-1.7 CMIP-6.2"
+        "Conventions": "CF-1.7 CMIP-6.0"
     }, 
     "variable_entry": {
         "ccb": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "air_pressure_at_convective_cloud_base", 
             "units": "Pa", 
@@ -35,7 +32,6 @@
             "ok_max_mean_abs": ""
         }, 
         "cct": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "air_pressure_at_convective_cloud_top", 
             "units": "Pa", 
@@ -53,13 +49,12 @@
             "ok_max_mean_abs": ""
         }, 
         "ci": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "convection_time_fraction", 
-            "units": "1", 
+            "units": "1.0", 
             "cell_methods": "area: point time: point", 
             "cell_measures": "", 
-            "long_name": "Fraction of Time Convection Occurs in Cell", 
+            "long_name": "Fraction of Time Convection Occurs", 
             "comment": "Fraction of time that convection occurs in the grid cell.", 
             "dimensions": "site time1", 
             "out_name": "ci", 
@@ -71,13 +66,12 @@
             "ok_max_mean_abs": ""
         }, 
         "cl": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "cloud_area_fraction_in_atmosphere_layer", 
             "units": "%", 
             "cell_methods": "area: point time: point", 
             "cell_measures": "", 
-            "long_name": "Percentage Cloud Cover", 
+            "long_name": "Cloud Area Fraction", 
             "comment": "Percentage cloud cover, including both large-scale and convective cloud.", 
             "dimensions": "alevel site time1", 
             "out_name": "cl", 
@@ -89,7 +83,6 @@
             "ok_max_mean_abs": ""
         }, 
         "cli": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "mass_fraction_of_cloud_ice_in_air", 
             "units": "kg kg-1", 
@@ -107,9 +100,8 @@
             "ok_max_mean_abs": ""
         }, 
         "clivi": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
-            "standard_name": "atmosphere_mass_content_of_cloud_ice", 
+            "standard_name": "atmosphere_cloud_ice_content", 
             "units": "kg m-2", 
             "cell_methods": "area: point time: point", 
             "cell_measures": "", 
@@ -125,14 +117,13 @@
             "ok_max_mean_abs": ""
         }, 
         "clt": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "cloud_area_fraction", 
             "units": "%", 
             "cell_methods": "area: point time: point", 
             "cell_measures": "", 
-            "long_name": "Total Cloud Cover Percentage", 
-            "comment": "Total cloud area fraction (reported as a percentage) for the whole atmospheric column, as seen from the surface or the top of the atmosphere. Includes both large-scale and convective cloud.", 
+            "long_name": "Total Cloud Fraction", 
+            "comment": "Total cloud area fraction for the whole atmospheric column, as seen from the surface or the top of the atmosphere. Includes both large-scale and convective cloud.", 
             "dimensions": "site time1", 
             "out_name": "clt", 
             "type": "real", 
@@ -143,7 +134,6 @@
             "ok_max_mean_abs": ""
         }, 
         "clw": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "mass_fraction_of_cloud_liquid_water_in_air", 
             "units": "kg kg-1", 
@@ -161,9 +151,8 @@
             "ok_max_mean_abs": ""
         }, 
         "clwvi": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
-            "standard_name": "atmosphere_mass_content_of_cloud_condensed_water", 
+            "standard_name": "atmosphere_cloud_condensed_water_content", 
             "units": "kg m-2", 
             "cell_methods": "area: point time: point", 
             "cell_measures": "", 
@@ -179,13 +168,12 @@
             "ok_max_mean_abs": ""
         }, 
         "edt": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "atmosphere_heat_diffusivity", 
             "units": "m2 s-1", 
             "cell_methods": "area: point time: point", 
             "cell_measures": "", 
-            "long_name": "Eddy Diffusivity Coefficient for Temperature", 
+            "long_name": "Eddy Diffusivity Coefficient for Temperature Variable", 
             "comment": "Vertical diffusion coefficient for temperature due to parametrised eddies", 
             "dimensions": "alevel site time1", 
             "out_name": "edt", 
@@ -197,14 +185,13 @@
             "ok_max_mean_abs": ""
         }, 
         "evspsbl": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
-            "standard_name": "water_evapotranspiration_flux", 
+            "standard_name": "water_evaporation_flux", 
             "units": "kg m-2 s-1", 
             "cell_methods": "area: point time: point", 
             "cell_measures": "", 
-            "long_name": "Evaporation Including Sublimation and Transpiration", 
-            "comment": "Evaporation at surface (also known as evapotranspiration): flux of water into the atmosphere due to conversion of both liquid and solid phases to vapor (from underlying surface and vegetation)", 
+            "long_name": "Evaporation", 
+            "comment": "Evaporation at surface: flux of water into the atmosphere due to conversion of both liquid and solid phases to vapor (from underlying surface and vegetation)", 
             "dimensions": "site time1", 
             "out_name": "evspsbl", 
             "type": "real", 
@@ -215,13 +202,12 @@
             "ok_max_mean_abs": ""
         }, 
         "evu": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "atmosphere_momentum_diffusivity", 
             "units": "m2 s-1", 
             "cell_methods": "area: point time: point", 
             "cell_measures": "", 
-            "long_name": "Eddy Viscosity Coefficient for Momentum", 
+            "long_name": "Eddy Viscosity Coefficient for Momentum Variables", 
             "comment": "Vertical diffusion coefficient for momentum due to parametrised eddies", 
             "dimensions": "alevel site time1", 
             "out_name": "evu", 
@@ -233,7 +219,6 @@
             "ok_max_mean_abs": ""
         }, 
         "fco2antt": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "tendency_of_atmosphere_mass_content_of_carbon_dioxide_expressed_as_carbon_due_to_anthropogenic_emission", 
             "units": "kg m-2 s-1", 
@@ -244,14 +229,13 @@
             "dimensions": "site time1", 
             "out_name": "fco2antt", 
             "type": "real", 
-            "positive": "", 
+            "positive": "up", 
             "valid_min": "", 
             "valid_max": "", 
             "ok_min_mean_abs": "", 
             "ok_max_mean_abs": ""
         }, 
         "fco2fos": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "tendency_of_atmosphere_mass_content_of_carbon_dioxide_expressed_as_carbon_due_to_emission_from_fossil_fuel_combustion", 
             "units": "kg m-2 s-1", 
@@ -262,14 +246,13 @@
             "dimensions": "site time1", 
             "out_name": "fco2fos", 
             "type": "real", 
-            "positive": "", 
+            "positive": "up", 
             "valid_min": "", 
             "valid_max": "", 
             "ok_min_mean_abs": "", 
             "ok_max_mean_abs": ""
         }, 
         "fco2nat": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "surface_upward_mass_flux_of_carbon_dioxide_expressed_as_carbon_due_to_emission_from_natural_sources", 
             "units": "kg m-2 s-1", 
@@ -280,21 +263,20 @@
             "dimensions": "site time1", 
             "out_name": "fco2nat", 
             "type": "real", 
-            "positive": "", 
+            "positive": "up", 
             "valid_min": "", 
             "valid_max": "", 
             "ok_min_mean_abs": "", 
             "ok_max_mean_abs": ""
         }, 
         "hfls": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "surface_upward_latent_heat_flux", 
             "units": "W m-2", 
             "cell_methods": "area: point time: point", 
             "cell_measures": "", 
             "long_name": "Surface Upward Latent Heat Flux", 
-            "comment": "The surface called 'surface' means the lower boundary of the atmosphere. 'Upward' indicates a vector component which is positive when directed upward (negative downward). The surface latent heat flux is the exchange of heat between the surface and the air on account of evaporation (including sublimation). In accordance with common usage in geophysical disciplines, 'flux' implies per unit area, called 'flux density' in physics.", 
+            "comment": "", 
             "dimensions": "site time1", 
             "out_name": "hfls", 
             "type": "real", 
@@ -305,14 +287,13 @@
             "ok_max_mean_abs": ""
         }, 
         "hfss": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "surface_upward_sensible_heat_flux", 
             "units": "W m-2", 
             "cell_methods": "area: point time: point", 
             "cell_measures": "", 
             "long_name": "Surface Upward Sensible Heat Flux", 
-            "comment": "The surface sensible heat flux, also called turbulent heat flux, is the exchange of heat between the surface and the air by motion of air.", 
+            "comment": "", 
             "dimensions": "site time1", 
             "out_name": "hfss", 
             "type": "real", 
@@ -323,7 +304,6 @@
             "ok_max_mean_abs": ""
         }, 
         "hur": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "relative_humidity", 
             "units": "%", 
@@ -341,7 +321,6 @@
             "ok_max_mean_abs": ""
         }, 
         "hurs": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "relative_humidity", 
             "units": "%", 
@@ -359,14 +338,13 @@
             "ok_max_mean_abs": ""
         }, 
         "hus": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "specific_humidity", 
-            "units": "1", 
+            "units": "1.0", 
             "cell_methods": "area: point time: point", 
             "cell_measures": "", 
             "long_name": "Specific Humidity", 
-            "comment": "Specific humidity is the mass fraction of water vapor in (moist) air.", 
+            "comment": "", 
             "dimensions": "alevel site time1", 
             "out_name": "hus", 
             "type": "real", 
@@ -377,10 +355,9 @@
             "ok_max_mean_abs": ""
         }, 
         "huss": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "specific_humidity", 
-            "units": "1", 
+            "units": "1.0", 
             "cell_methods": "area: point time: point", 
             "cell_measures": "", 
             "long_name": "Near-Surface Specific Humidity", 
@@ -395,14 +372,13 @@
             "ok_max_mean_abs": ""
         }, 
         "latitude": {
-            "frequency": "fx", 
             "modeling_realm": "atmos", 
             "standard_name": "latitude", 
             "units": "degrees_north", 
             "cell_methods": "area: point", 
             "cell_measures": "", 
             "long_name": "Latitude", 
-            "comment": "Latitude is positive northward; its units of degree_north (or equivalent) indicate this explicitly. In a latitude-longitude system defined with respect to a rotated North Pole, the standard name of grid_latitude should be used instead of latitude. Grid latitude is positive in the grid-northward direction, but its units should be plain degree.", 
+            "comment": "", 
             "dimensions": "site", 
             "out_name": "lat", 
             "type": "real", 
@@ -413,14 +389,13 @@
             "ok_max_mean_abs": ""
         }, 
         "longitude": {
-            "frequency": "fx", 
             "modeling_realm": "atmos", 
             "standard_name": "longitude", 
             "units": "degrees_east", 
             "cell_methods": "area: point", 
             "cell_measures": "", 
             "long_name": "Longitude", 
-            "comment": "Longitude is positive eastward; its units of degree_east (or equivalent) indicate this explicitly. In a latitude-longitude system defined with respect to a rotated North Pole, the standard name of grid_longitude should be used instead of longitude. Grid longitude is positive in the grid-eastward direction, but its units should be plain degree.", 
+            "comment": "", 
             "dimensions": "site", 
             "out_name": "lon", 
             "type": "real", 
@@ -431,7 +406,6 @@
             "ok_max_mean_abs": ""
         }, 
         "mc": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "atmosphere_net_upward_convective_mass_flux", 
             "units": "kg m-2 s-1", 
@@ -449,13 +423,12 @@
             "ok_max_mean_abs": ""
         }, 
         "pfull": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "air_pressure", 
             "units": "Pa", 
             "cell_methods": "area: point time: point", 
             "cell_measures": "", 
-            "long_name": "Pressure at Model Full-Levels", 
+            "long_name": "Pressure on Model Levels", 
             "comment": "Air pressure on model levels", 
             "dimensions": "alevel site time1", 
             "out_name": "pfull", 
@@ -467,7 +440,6 @@
             "ok_max_mean_abs": ""
         }, 
         "phalf": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "air_pressure", 
             "units": "Pa", 
@@ -485,7 +457,6 @@
             "ok_max_mean_abs": ""
         }, 
         "pr": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "precipitation_flux", 
             "units": "kg m-2 s-1", 
@@ -503,7 +474,6 @@
             "ok_max_mean_abs": ""
         }, 
         "prc": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "convective_precipitation_flux", 
             "units": "kg m-2 s-1", 
@@ -521,14 +491,13 @@
             "ok_max_mean_abs": ""
         }, 
         "prsn": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "snowfall_flux", 
             "units": "kg m-2 s-1", 
             "cell_methods": "area: point time: point", 
             "cell_measures": "", 
             "long_name": "Snowfall Flux", 
-            "comment": "At surface; includes precipitation of all forms of water in the solid phase", 
+            "comment": "at surface; includes precipitation of all forms of water in the solid phase", 
             "dimensions": "site time1", 
             "out_name": "prsn", 
             "type": "real", 
@@ -539,9 +508,8 @@
             "ok_max_mean_abs": ""
         }, 
         "prw": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
-            "standard_name": "atmosphere_mass_content_of_water_vapor", 
+            "standard_name": "atmosphere_water_vapor_content", 
             "units": "kg m-2", 
             "cell_methods": "area: point time: point", 
             "cell_measures": "", 
@@ -557,7 +525,6 @@
             "ok_max_mean_abs": ""
         }, 
         "ps": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "surface_air_pressure", 
             "units": "Pa", 
@@ -575,9 +542,8 @@
             "ok_max_mean_abs": ""
         }, 
         "psl": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
-            "standard_name": "air_pressure_at_mean_sea_level", 
+            "standard_name": "air_pressure_at_sea_level", 
             "units": "Pa", 
             "cell_methods": "area: point time: point", 
             "cell_measures": "", 
@@ -593,7 +559,6 @@
             "ok_max_mean_abs": ""
         }, 
         "rld": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "downwelling_longwave_flux_in_air", 
             "units": "W m-2", 
@@ -611,7 +576,6 @@
             "ok_max_mean_abs": ""
         }, 
         "rldcs": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "downwelling_longwave_flux_in_air_assuming_clear_sky", 
             "units": "W m-2", 
@@ -629,14 +593,13 @@
             "ok_max_mean_abs": ""
         }, 
         "rlds": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "surface_downwelling_longwave_flux_in_air", 
             "units": "W m-2", 
             "cell_methods": "area: point time: point", 
             "cell_measures": "", 
             "long_name": "Surface Downwelling Longwave Radiation", 
-            "comment": "The surface called 'surface' means the lower boundary of the atmosphere. 'longwave' means longwave radiation. Downwelling radiation is radiation from above. It does not mean 'net downward'. When thought of as being incident on a surface, a radiative flux is sometimes called 'irradiance'. In addition, it is identical with the quantity measured by a cosine-collector light-meter and sometimes called 'vector irradiance'. In accordance with common usage in geophysical disciplines, 'flux' implies per unit area, called 'flux density' in physics.", 
+            "comment": "", 
             "dimensions": "site time1", 
             "out_name": "rlds", 
             "type": "real", 
@@ -647,7 +610,6 @@
             "ok_max_mean_abs": ""
         }, 
         "rldscs": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "surface_downwelling_longwave_flux_in_air_assuming_clear_sky", 
             "units": "W m-2", 
@@ -665,7 +627,6 @@
             "ok_max_mean_abs": ""
         }, 
         "rlu": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "upwelling_longwave_flux_in_air", 
             "units": "W m-2", 
@@ -683,7 +644,6 @@
             "ok_max_mean_abs": ""
         }, 
         "rlucs": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "upwelling_longwave_flux_in_air_assuming_clear_sky", 
             "units": "W m-2", 
@@ -701,14 +661,13 @@
             "ok_max_mean_abs": ""
         }, 
         "rlus": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "surface_upwelling_longwave_flux_in_air", 
             "units": "W m-2", 
             "cell_methods": "area: point time: point", 
             "cell_measures": "", 
             "long_name": "Surface Upwelling Longwave Radiation", 
-            "comment": "The surface called 'surface' means the lower boundary of the atmosphere. 'longwave' means longwave radiation. Upwelling radiation is radiation from below. It does not mean 'net upward'. When thought of as being incident on a surface, a radiative flux is sometimes called 'irradiance'. In addition, it is identical with the quantity measured by a cosine-collector light-meter and sometimes called 'vector irradiance'. In accordance with common usage in geophysical disciplines, 'flux' implies per unit area, called 'flux density' in physics.", 
+            "comment": "", 
             "dimensions": "site time1", 
             "out_name": "rlus", 
             "type": "real", 
@@ -719,7 +678,6 @@
             "ok_max_mean_abs": ""
         }, 
         "rlut": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "toa_outgoing_longwave_flux", 
             "units": "W m-2", 
@@ -737,14 +695,13 @@
             "ok_max_mean_abs": ""
         }, 
         "rlutcs": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "toa_outgoing_longwave_flux_assuming_clear_sky", 
             "units": "W m-2", 
             "cell_methods": "area: point time: point", 
             "cell_measures": "", 
             "long_name": "TOA Outgoing Clear-Sky Longwave Radiation", 
-            "comment": "Upwelling clear-sky longwave radiation at top of atmosphere", 
+            "comment": "", 
             "dimensions": "site time1", 
             "out_name": "rlutcs", 
             "type": "real", 
@@ -755,7 +712,6 @@
             "ok_max_mean_abs": ""
         }, 
         "rsd": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "downwelling_shortwave_flux_in_air", 
             "units": "W m-2", 
@@ -773,7 +729,6 @@
             "ok_max_mean_abs": ""
         }, 
         "rsdcs": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "downwelling_shortwave_flux_in_air_assuming_clear_sky", 
             "units": "W m-2", 
@@ -791,14 +746,13 @@
             "ok_max_mean_abs": ""
         }, 
         "rsds": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "surface_downwelling_shortwave_flux_in_air", 
             "units": "W m-2", 
             "cell_methods": "area: point time: point", 
             "cell_measures": "", 
             "long_name": "Surface Downwelling Shortwave Radiation", 
-            "comment": "Surface solar irradiance for UV calculations.", 
+            "comment": "surface solar irradiance for UV calculations", 
             "dimensions": "site time1", 
             "out_name": "rsds", 
             "type": "real", 
@@ -809,14 +763,13 @@
             "ok_max_mean_abs": ""
         }, 
         "rsdscs": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "surface_downwelling_shortwave_flux_in_air_assuming_clear_sky", 
             "units": "W m-2", 
             "cell_methods": "area: point time: point", 
             "cell_measures": "", 
             "long_name": "Surface Downwelling Clear-Sky Shortwave Radiation", 
-            "comment": "Surface solar irradiance clear sky for UV calculations", 
+            "comment": "surface solar irradiance clear sky for UV calculations", 
             "dimensions": "site time1", 
             "out_name": "rsdscs", 
             "type": "real", 
@@ -827,7 +780,6 @@
             "ok_max_mean_abs": ""
         }, 
         "rsdt": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "toa_incoming_shortwave_flux", 
             "units": "W m-2", 
@@ -845,7 +797,6 @@
             "ok_max_mean_abs": ""
         }, 
         "rsu": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "upwelling_shortwave_flux_in_air", 
             "units": "W m-2", 
@@ -863,7 +814,6 @@
             "ok_max_mean_abs": ""
         }, 
         "rsucs": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "upwelling_shortwave_flux_in_air_assuming_clear_sky", 
             "units": "W m-2", 
@@ -881,14 +831,13 @@
             "ok_max_mean_abs": ""
         }, 
         "rsus": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "surface_upwelling_shortwave_flux_in_air", 
             "units": "W m-2", 
             "cell_methods": "area: point time: point", 
             "cell_measures": "", 
             "long_name": "Surface Upwelling Shortwave Radiation", 
-            "comment": "The surface called 'surface' means the lower boundary of the atmosphere. 'shortwave' means shortwave radiation. Upwelling radiation is radiation from below. It does not mean 'net upward'. When thought of as being incident on a surface, a radiative flux is sometimes called 'irradiance'. In addition, it is identical with the quantity measured by a cosine-collector light-meter and sometimes called 'vector irradiance'. In accordance with common usage in geophysical disciplines, 'flux' implies per unit area, called 'flux density' in physics.", 
+            "comment": "", 
             "dimensions": "site time1", 
             "out_name": "rsus", 
             "type": "real", 
@@ -899,7 +848,6 @@
             "ok_max_mean_abs": ""
         }, 
         "rsuscs": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "surface_upwelling_shortwave_flux_in_air_assuming_clear_sky", 
             "units": "W m-2", 
@@ -917,7 +865,6 @@
             "ok_max_mean_abs": ""
         }, 
         "rsut": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "toa_outgoing_shortwave_flux", 
             "units": "W m-2", 
@@ -935,7 +882,6 @@
             "ok_max_mean_abs": ""
         }, 
         "rsutcs": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "toa_outgoing_shortwave_flux_assuming_clear_sky", 
             "units": "W m-2", 
@@ -953,13 +899,12 @@
             "ok_max_mean_abs": ""
         }, 
         "rtmt": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "net_downward_radiative_flux_at_top_of_atmosphere_model", 
             "units": "W m-2", 
             "cell_methods": "area: point time: point", 
             "cell_measures": "", 
-            "long_name": "Net Downward Radiative Flux at Top of Model", 
+            "long_name": "Net Downward Flux at Top of Model", 
             "comment": "Net Downward Radiative Flux at Top of Model : I.e., at the top of that portion of the atmosphere where dynamics are explicitly treated by the model. This is reported only if it differs from the net downward radiative flux at the top of the atmosphere.", 
             "dimensions": "site time1", 
             "out_name": "rtmt", 
@@ -971,9 +916,8 @@
             "ok_max_mean_abs": ""
         }, 
         "sbl": {
-            "frequency": "subhrPt", 
             "modeling_realm": "landIce", 
-            "standard_name": "tendency_of_atmosphere_mass_content_of_water_vapor_due_to_sublimation_of_surface_snow_and_ice", 
+            "standard_name": "surface_snow_and_ice_sublimation_flux", 
             "units": "kg m-2 s-1", 
             "cell_methods": "area: point time: point", 
             "cell_measures": "", 
@@ -989,10 +933,9 @@
             "ok_max_mean_abs": ""
         }, 
         "sci": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "shallow_convection_time_fraction", 
-            "units": "1", 
+            "units": "1.0", 
             "cell_methods": "area: point time: point", 
             "cell_measures": "", 
             "long_name": "Fraction of Time Shallow Convection Occurs", 
@@ -1007,7 +950,6 @@
             "ok_max_mean_abs": ""
         }, 
         "sfcWind": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "wind_speed", 
             "units": "m s-1", 
@@ -1025,7 +967,6 @@
             "ok_max_mean_abs": ""
         }, 
         "ta": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "air_temperature", 
             "units": "K", 
@@ -1043,7 +984,6 @@
             "ok_max_mean_abs": ""
         }, 
         "tas": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "air_temperature", 
             "units": "K", 
@@ -1061,7 +1001,6 @@
             "ok_max_mean_abs": ""
         }, 
         "tauu": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "surface_downward_eastward_stress", 
             "units": "Pa", 
@@ -1079,7 +1018,6 @@
             "ok_max_mean_abs": ""
         }, 
         "tauv": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "surface_downward_northward_stress", 
             "units": "Pa", 
@@ -1097,7 +1035,6 @@
             "ok_max_mean_abs": ""
         }, 
         "tnhus": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "tendency_of_specific_humidity", 
             "units": "s-1", 
@@ -1115,13 +1052,12 @@
             "ok_max_mean_abs": ""
         }, 
         "tnhusa": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "tendency_of_specific_humidity_due_to_advection", 
             "units": "s-1", 
             "cell_methods": "area: point time: point", 
             "cell_measures": "", 
-            "long_name": "Tendency of Specific Humidity Due to Advection", 
+            "long_name": "Tendency of Specific Humidity due to Advection", 
             "comment": "Tendency of Specific Humidity due to Advection", 
             "dimensions": "alevel site time1", 
             "out_name": "tnhusa", 
@@ -1133,13 +1069,12 @@
             "ok_max_mean_abs": ""
         }, 
         "tnhusc": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "tendency_of_specific_humidity_due_to_convection", 
             "units": "s-1", 
             "cell_methods": "area: point time: point", 
             "cell_measures": "", 
-            "long_name": "Tendency of Specific Humidity Due to Convection", 
+            "long_name": "Tendency of Specific Humidity due to Convection", 
             "comment": "Tendencies from cumulus convection scheme.", 
             "dimensions": "alevel site time1", 
             "out_name": "tnhusc", 
@@ -1151,13 +1086,12 @@
             "ok_max_mean_abs": ""
         }, 
         "tnhusd": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "tendency_of_specific_humidity_due_to_diffusion", 
             "units": "s-1", 
             "cell_methods": "area: point time: point", 
             "cell_measures": "", 
-            "long_name": "Tendency of Specific Humidity Due to Numerical Diffusion", 
+            "long_name": "Tendency of Specific Humidity due to Numerical Diffusion", 
             "comment": "Tendency of specific humidity due to numerical diffusion.This includes any horizontal or vertical numerical moisture diffusion not associated with the parametrized moist physics or the resolved dynamics.  For example, any vertical diffusion which is part of the boundary layer mixing scheme should be excluded, as should any diffusion which is included in the terms from the resolved dynamics.   This term is required to check the closure of the moisture budget.", 
             "dimensions": "alevel site time1", 
             "out_name": "tnhusd", 
@@ -1169,14 +1103,13 @@
             "ok_max_mean_abs": ""
         }, 
         "tnhusmp": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "tendency_of_specific_humidity_due_to_model_physics", 
             "units": "s-1", 
             "cell_methods": "area: point time: point", 
             "cell_measures": "", 
-            "long_name": "Tendency of Specific Humidity Due to Model Physics", 
-            "comment": "Tendency of specific humidity due to model physics. This includes sources and sinks from parametrized moist physics (e.g. convection, boundary layer, stratiform condensation/evaporation, etc.) and excludes sources and sinks from resolved dynamics or from horizontal or vertical numerical diffusion not associated with model physics.  For example any diffusive mixing by the boundary layer scheme would be included.", 
+            "long_name": "Tendency of Specific Humidity due to Model Physics", 
+            "comment": "Tendency of specific humidity due to model physics. This includes sources and sinks from parametrized moist physics (e.g. convection, boundary layer, stratiform condensation/evaporation, etc.) and excludes sources and sinks from resolved dynamics or from horizontal or vertical numerical diffusion not associated with model physicsl.  For example any diffusive mixing by the boundary layer scheme would be included.", 
             "dimensions": "alevel site time1", 
             "out_name": "tnhusmp", 
             "type": "real", 
@@ -1187,14 +1120,13 @@
             "ok_max_mean_abs": ""
         }, 
         "tnhusscpbl": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "tendency_of_specific_humidity_due_to_stratiform_cloud_and_precipitation_and_boundary_layer_mixing", 
             "units": "s-1", 
             "cell_methods": "area: point time: point", 
             "cell_measures": "", 
             "long_name": "Tendency of Specific Humidity Due to Stratiform Cloud and Precipitation and Boundary Layer Mixing", 
-            "comment": "Tendency of Specific Humidity Due to Stratiform Cloud and Precipitation and Boundary Layer Mixing  (to be specified only in  models which do not separate budget terms for stratiform cloud, precipitation and boundary layer schemes.  Includes all boundary layer terms including and diffusive terms.)", 
+            "comment": "Tendency of Specific Humidity Due to Stratiform Cloud and Precipitation and Boundary Layer Mixing  (to be specified only in  models which do not separate budget terms for stratiform cloud, precipitation and boundary layer schemes.  Includes all bounday layer terms including and diffusive terms.)", 
             "dimensions": "alevel site time1", 
             "out_name": "tnhusscpbl", 
             "type": "real", 
@@ -1205,7 +1137,6 @@
             "ok_max_mean_abs": ""
         }, 
         "tnt": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "tendency_of_air_temperature", 
             "units": "K s-1", 
@@ -1223,13 +1154,12 @@
             "ok_max_mean_abs": ""
         }, 
         "tnta": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "tendency_of_air_temperature_due_to_advection", 
             "units": "K s-1", 
             "cell_methods": "area: point time: point", 
             "cell_measures": "", 
-            "long_name": "Tendency of Air Temperature Due to Advection", 
+            "long_name": "Tendency of Air Temperature due to Advection", 
             "comment": "Tendency of Air Temperature due to Advection", 
             "dimensions": "alevel site time1", 
             "out_name": "tnta", 
@@ -1241,13 +1171,12 @@
             "ok_max_mean_abs": ""
         }, 
         "tntc": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "tendency_of_air_temperature_due_to_convection", 
             "units": "K s-1", 
             "cell_methods": "area: point time: point", 
             "cell_measures": "", 
-            "long_name": "Tendency of Air Temperature Due to Convection", 
+            "long_name": "Tendency of Air Temperature due to Convection", 
             "comment": "Tendencies from cumulus convection scheme.", 
             "dimensions": "alevel site time1", 
             "out_name": "tntc", 
@@ -1259,13 +1188,12 @@
             "ok_max_mean_abs": ""
         }, 
         "tntmp": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "tendency_of_air_temperature_due_to_model_physics", 
             "units": "K s-1", 
             "cell_methods": "area: point time: point", 
             "cell_measures": "", 
-            "long_name": "Tendency of Air Temperature Due to Model Physics", 
+            "long_name": "Tendency of Air Temperature due to Model Physics", 
             "comment": "Tendency of air temperature due to model physics. This includes sources and sinks from parametrized physics (e.g. radiation, convection, boundary layer, stratiform condensation/evaporation, etc.). It excludes sources and sinks from resolved dynamics and numerical diffusion not associated with parametrized physics.  For example, any vertical diffusion which is part of the boundary layer mixing scheme should be included, while numerical diffusion applied in addition to physics or resolved dynamics should be excluded.  This term is required to check the closure of the heat budget.", 
             "dimensions": "alevel site time1", 
             "out_name": "tntmp", 
@@ -1277,13 +1205,12 @@
             "ok_max_mean_abs": ""
         }, 
         "tntr": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "tendency_of_air_temperature_due_to_radiative_heating", 
             "units": "K s-1", 
             "cell_methods": "area: point time: point", 
             "cell_measures": "", 
-            "long_name": "Tendency of Air Temperature Due to Radiative Heating", 
+            "long_name": "Tendency of Air Temperature due to Radiative Heating", 
             "comment": "Tendency of Air Temperature due to Radiative Heating", 
             "dimensions": "alevel site time1", 
             "out_name": "tntr", 
@@ -1295,7 +1222,6 @@
             "ok_max_mean_abs": ""
         }, 
         "tntscpbl": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "tendency_of_air_temperature_due_to_stratiform_cloud_and_precipitation_and_boundary_layer_mixing", 
             "units": "K s-1", 
@@ -1313,7 +1239,6 @@
             "ok_max_mean_abs": ""
         }, 
         "ts": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "surface_temperature", 
             "units": "K", 
@@ -1331,14 +1256,13 @@
             "ok_max_mean_abs": ""
         }, 
         "ua": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "eastward_wind", 
             "units": "m s-1", 
             "cell_methods": "area: point time: point", 
             "cell_measures": "", 
             "long_name": "Eastward Wind", 
-            "comment": "Zonal wind (positive in a eastward direction).", 
+            "comment": "", 
             "dimensions": "alevel site time1", 
             "out_name": "ua", 
             "type": "real", 
@@ -1349,7 +1273,6 @@
             "ok_max_mean_abs": ""
         }, 
         "uas": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "eastward_wind", 
             "units": "m s-1", 
@@ -1367,14 +1290,13 @@
             "ok_max_mean_abs": ""
         }, 
         "va": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "northward_wind", 
             "units": "m s-1", 
             "cell_methods": "area: point time: point", 
             "cell_measures": "", 
             "long_name": "Northward Wind", 
-            "comment": "Meridional wind (positive in a northward direction).", 
+            "comment": "", 
             "dimensions": "alevel site time1", 
             "out_name": "va", 
             "type": "real", 
@@ -1385,7 +1307,6 @@
             "ok_max_mean_abs": ""
         }, 
         "vas": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "northward_wind", 
             "units": "m s-1", 
@@ -1403,13 +1324,12 @@
             "ok_max_mean_abs": ""
         }, 
         "wap": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "lagrangian_tendency_of_air_pressure", 
             "units": "Pa s-1", 
             "cell_methods": "area: point time: point", 
             "cell_measures": "", 
-            "long_name": "Omega (=dp/dt)", 
+            "long_name": "omega (=dp/dt)", 
             "comment": "Omega (vertical velocity in pressure coordinates, positive downwards)", 
             "dimensions": "alevel site time1", 
             "out_name": "wap", 
@@ -1421,14 +1341,13 @@
             "ok_max_mean_abs": ""
         }, 
         "zg": {
-            "frequency": "subhrPt", 
             "modeling_realm": "atmos", 
             "standard_name": "geopotential_height", 
             "units": "m", 
             "cell_methods": "area: point time: point", 
             "cell_measures": "", 
             "long_name": "Geopotential Height", 
-            "comment": "Geopotential is the sum of the specific gravitational potential energy relative to the geoid and the specific centripetal potential energy. Geopotential height is the geopotential divided by the standard acceleration due to gravity. It is numerically similar to the altitude (or geometric height) and not to the quantity with standard name height, which is relative to the surface.", 
+            "comment": "", 
             "dimensions": "alevel site time1", 
             "out_name": "zg", 
             "type": "real", 

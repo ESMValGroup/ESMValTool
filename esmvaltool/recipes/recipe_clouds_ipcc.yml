@@ -140,7 +140,6 @@ diagnostics:
         preprocessor: clim
         reference_dataset: CERES-EBAF
         mip: Amon
-        field: T2Ms
         derive: true
     additional_datasets:
       - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
@@ -163,7 +162,6 @@ diagnostics:
         preprocessor: clim
         reference_dataset: CERES-EBAF
         mip: Amon
-        field: T2Ms
         derive: true
     additional_datasets:
       - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
@@ -183,7 +181,6 @@ diagnostics:
         preprocessor: clim
         reference_dataset: CERES-EBAF
         mip: Amon
-        field: T2Ms
         derive: true
     additional_datasets:
       - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,

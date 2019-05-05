@@ -44,15 +44,12 @@ diagnostics:
       ta:
         preprocessor: pp_aa_area
         mip: Amon
-        field: T3M
       ua:
         preprocessor: pp_aa_area
         mip: Amon
-        field: T3M
       hus:
         preprocessor: pp_aa_area
         mip: Amon
-        field: T3M
     additional_datasets:
       - {dataset: ERA-Interim,  project: OBS,  type: reanaly,  version: 1,  start_year: 2000,  end_year: 2002,  tier: 3}
     scripts:

@@ -2,24 +2,24 @@
 
 from iris import Constraint
 
-from ._derived_variable_base import DerivedVariableBase
+from ._baseclass import DerivedVariableBase
 
 
 class DerivedVariable(DerivedVariableBase):
     """Derivation of variable `rlns`."""
 
     # Required variables
-    _required_variables = {
-        'vars': [{
-            'short_name': 'rlds',
-            'field': 'T2{frequency}s'
-        }, {
-            'short_name': 'rlus',
-            'field': 'T2{frequency}s'
-        }]
-    }
+    required = [
+        {
+            'short_name': 'rlds'
+        },
+        {
+            'short_name': 'rlus'
+        },
+    ]
 
-    def calculate(self, cubes):
+    @staticmethod
+    def calculate(cubes):
         """Compute surface net downward longwave radiation."""
         rlds_cube = cubes.extract_strict(
             Constraint(name='surface_downwelling_longwave_flux_in_air'))

@@ -35,13 +35,10 @@ diagnostics:
     variables:
       evspsbl:
         mip: Amon
-        field: T2Ms
       mrro:
         mip: Lmon
-        field: T2Ms
       pr:
         mip: Amon
-        field: T2Ms
     scripts:
       catchment_analysis:
         script: runoff_et/catchment_analysis.py

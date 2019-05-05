@@ -139,7 +139,6 @@ diagnostics:
         preprocessor: clim
         reference_dataset: ERA-Interim
         mip: Amon
-        field: T2Ms
     additional_datasets:
       - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1,
          start_year: 1986, end_year: 2005, tier: 3}
@@ -170,7 +169,6 @@ diagnostics:
         preprocessor: clim
         reference_dataset: GPCP-SG
         mip: Amon
-        field: T2Ms
     additional_datasets:
       - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.2,
          start_year: 1986, end_year: 2005, tier: 1}
@@ -197,7 +195,6 @@ diagnostics:
         preprocessor: clim
         reference_dataset: MODIS
         mip: Amon
-        field: T2Ms
     additional_datasets:
       - {dataset: MODIS, project: obs4mips, level: L3, version: C5,
          start_year: 2001, end_year: 2010, tier: 1}

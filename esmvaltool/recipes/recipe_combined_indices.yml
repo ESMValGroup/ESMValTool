@@ -1,5 +1,5 @@
 # ESMValTool
-# recipe_combined_indices_wp6.yml
+# recipe_combined_indices.yml
 ---
 documentation:
   description: |
@@ -38,10 +38,9 @@ diagnostics:
       pr:
         preprocessor: preproc
         mip: Amon
-        field: T2Ms
     scripts:
       main:
-        script: magic_bsc/combined_indices_wp6.r
+        script: magic_bsc/combined_indices.r
         ## Weights for combining indices - if not "equal" or "NULL", must be the same length as the number of indices
         weights: "equal"
 

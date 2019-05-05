@@ -1,5 +1,5 @@
 # ESMValTool
-# recipe_modes_of_variability_wp4.yml
+# recipe_modes_of_variability.yml
 ---
 documentation:
   description: |
@@ -49,7 +49,6 @@ diagnostics:
       psl:
         preprocessor: preproc
         mip: Amon
-        field: T2M
     scripts:
       main:
         script: magic_bsc/weather_regime.r

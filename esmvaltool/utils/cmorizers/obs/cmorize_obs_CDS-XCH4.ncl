@@ -3,7 +3,7 @@
 ; #############################################################################
 ;
 ; Tier
-;    Tier 3 other freely-available dataset.
+;    Tier 3: restricted dataset.
 ;
 ; Source
 ;    https://cds.climate.copernicus.eu/cdsapp#!/dataset/
