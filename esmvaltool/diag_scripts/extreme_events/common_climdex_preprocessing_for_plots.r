@@ -49,34 +49,30 @@ createLandSeaMask <- function(regrid = "./gridDef", loc = "./",
   }
 
   ## Making topographic map
-  cdo("topo", output = paste0(loc, "/topo.nc"), options = "-O -f nc")
+  cdo("topo", output = paste0(loc, "/topo.nc"), options = "-O -f nc")  # nolint
 
   ## Regridding the topographic map to chosen grid
   cdo("remapcon",
-    args = regrid, input = paste0(loc, "/topo.nc"),
-    output = paste0(loc, "/regridded_topo.nc"), options = "-O"
-  )
+    args = regrid, input = paste0(loc, "/topo.nc"),  # nolint
+    output = paste0(loc, "/regridded_topo.nc"), options = "-O")  # nolint
 
   ## Set above sea-level gridpoints to missing
   cdo("setrtomiss",
     args = "0,9000",
-    input = paste0(loc, "/regridded_topo.nc"),
-    output = paste0(loc, "/regridded_topo_miss1.nc"), options = "-O"
-  )
+    input = paste0(loc, "/regridded_topo.nc"),  # nolint
+    output = paste0(loc, "/regridded_topo_miss1.nc"), options = "-O")  # nolint
 
   ## Set above sea-level gridpoints to 1
   cdo("setmisstoc",
     args = "1",
-    input = paste0(loc, "/regridded_topo_miss1.nc"),
-    output = paste0(loc, "/regridded_topo_1pos.nc"), options = "-O"
-  )
+    input = paste0(loc, "/regridded_topo_miss1.nc"),  # nolint
+    output = paste0(loc, "/regridded_topo_1pos.nc"), options = "-O")  # nolint
 
   ## Set below sea-level gridpoints to missing
   cdo("setrtomiss",
     args = "-9000,0",
-    input = paste0(loc, "/regridded_topo_1pos.nc"),
-    output = landmask, options = "-O"
-  )
+    input = paste0(loc, "/regridded_topo_1pos.nc"),  # nolint
+    output = landmask, options = "-O")
 }
 
 ##
@@ -224,6 +220,6 @@ regridAndLandSeaMask <- function(idx_raw, regrid = "./gridDef",
   ## time change
   cdo("timmean",
     input = paste0(land, "/", idx_name),
-    output = paste0(land, "/tm_", idx_name), options = "-O"
+    output = paste0(land, "/tm_", idx_name), options = "-O"  # nolint
   )
 }

@@ -36,11 +36,11 @@ gleckler_main <- function(path = "./",
   #### CLIMDEX PREPROCESSING ####
 
   ## For file structure and files
-  tsGrid <- paste(path, "/tsGridDef", sep = "")
-  time_cropped <- paste(path, "/timeCropped", sep = "")
-  landmask <- paste(path, "/landSeaMask.nc", sep = "")
-  regridded <- paste(path, "/regridded", sep = "")
-  land <- paste(path, "/Land", sep = "")
+  tsGrid <- paste(path, "/tsGridDef", sep = "")  # nolint
+  time_cropped <- paste(path, "/timeCropped", sep = "")  # nolint
+  landmask <- paste(path, "/landSeaMask.nc", sep = "")  # nolint
+  regridded <- paste(path, "/regridded", sep = "")  # nolint
+  land <- paste(path, "/Land", sep = "")  # nolint
 
   nmodel <- length(model_list) # number of models
   nidx <- length(idx_list) # number of indices
@@ -49,8 +49,8 @@ gleckler_main <- function(path = "./",
   if (promptInput == "y") {
     ## Initial nc-file time crop, regrid, land and plot purge
     unlink(c(
-      paste0(time_cropped, "/*.nc"), paste0(regridded, "/*.nc"),
-      paste0(land, "/*.nc")
+      paste0(time_cropped, "/*.nc"), paste0(regridded, "/*.nc"),  # nolint
+      paste0(land, "/*.nc")  # nolint
     ))
 
     ## Initial grid and landmask creation reset
@@ -128,24 +128,24 @@ gleckler_main <- function(path = "./",
 
     ## Save Array
     saveRDS(object = RMSErelarr, file = paste0(
-      plot_dir, "/Gleckler-Array_",
+      plot_dir, "/Gleckler-Array_",  # nolint
       nidx, "-idx_",
       nmodel, "-models_",
       nobs, "-obs", ".RDS"
     ))
     saveRDS(object = returnvalue, file = paste0(
       plot_dir,
-      "/Gleckler-years.RDS"
+      "/Gleckler-years.RDS"  # nolint
     ))
   }
 
   #### Gleckler Plotting ####
   RMSErelarr <- readRDS(file = paste0(
-    plot_dir, "/Gleckler-Array_",
+    plot_dir, "/Gleckler-Array_",  # nolint
     nidx, "-idx_", nmodel, "-models_",
     nobs, "-obs", ".RDS"
   ))
-  year_range <- readRDS(file = paste0(plot_dir, "/Gleckler-years.RDS"))
+  year_range <- readRDS(file = paste0(plot_dir, "/Gleckler-years.RDS"))  # nolint
   plotfile <- gleckler_plotting(
     arr = RMSErelarr, idx_list = idx_list,
     model_list = model_list, obs_list = obs_list,
@@ -453,7 +453,7 @@ gleckler_plotting <- function(arr = RMSErelarr, idx_list, model_list,
   width.fct <- ( (nmodel + 3) / (nidx + 1)) + sum(img.adj[c(2, 4)])
   height.fct <- 1 + sum(img.adj[c(1, 3)])
 
-  figure_filename <- paste(plot_dir, "/Gleckler_", MIP_name, "_",
+  figure_filename <- paste(plot_dir, "/Gleckler_", MIP_name, "_",  # nolint
     nmodel, "-models_", nidx, "-idx_", nobs, "-obs_",
     syear, "-", eyear, ".", output_file_type,
     sep = ""
