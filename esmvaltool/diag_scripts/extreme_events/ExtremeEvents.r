@@ -202,11 +202,14 @@ for (model_idx in c(1:length(models_name))) {
         print(climofiles[models == models_name[model_idx]])
         print("")
         infiles <- climofiles[models == models_name[model_idx]]
+        indices <- sub("ETCCDI.*", "", idx_select)
         create.indices.from.files(infiles,
                                   work_dir, template, author.data,
-                                  base.range = base.period, parallel = 25,
-                                  verbose = TRUE, max.vals.millions = 20)
-       # climdex.vars.subset = idx_select
+                                  base.range = base.period,
+                                  parallel = climdex_parallel,
+                                  verbose = TRUE, max.vals.millions = 20,
+                                  climdex.vars.subset = indices)
+
         # Set provenance for output files
         # Get new list of files after computation
         infiles <- climofiles[models == models_name[model_idx]]
