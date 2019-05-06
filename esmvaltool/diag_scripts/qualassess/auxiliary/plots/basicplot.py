@@ -298,7 +298,7 @@ class PlotHist(object):
             
         vmin = np.min(self.data.core_data())
         vmax = np.max(self.data.core_data())
-        rounder = int(np.ceil(-np.log10((vmax + vmin) / 2) + 5))
+        rounder = int(np.ceil(-np.log10((vmax - vmin) / 2) + 5))
         vmin = np.floor(vmin * 10**rounder) / 10**rounder
         vmax = np.ceil(vmax * 10**rounder) / 10**rounder
         levels = np.round(np.linspace(vmin, vmax, num=nbins), rounder)
