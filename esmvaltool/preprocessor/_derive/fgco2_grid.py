@@ -28,4 +28,4 @@ class DerivedVariable(DerivedVariableBase):
         return grid_area_correction(
             cubes,
             'surface_downward_mass_flux_of_carbon_dioxide_expressed_as_carbon',
-            sea_var=True)
+            ocean_var=True)

@@ -3,51 +3,43 @@
 import logging
 
 import dask.array as da
+import numpy as np
 import iris
 from iris import Constraint
 
 logger = logging.getLogger(__name__)
 
 
-def _get_fx_cube(cubes, standard_name, fx_land_name, fx_sea_name=None):
-    """Extract desired fx cubes from list of cubes."""
+def _get_land_fraction(cubes, standard_name, derive_from_ocean_fraction=False):
+    """Extract land fraction as :mod:`dask.array`."""
     cube = cubes.extract_strict(Constraint(name=standard_name))
-    fx_cube = None
-    invert = False
-    if fx_sea_name is not None:
+    if derive_from_ocean_fraction:
+        fx_vars = ['sftof', 'sftlf']
+    else:
+        fx_vars = ['sftlf']
+    land_fraction = None
+    for fx_var in fx_vars:
+        if land_fraction is not None:
+            break
         try:
-            fx_cube = cubes.extract_strict(_var_name_constraint(fx_sea_name))
+            fx_cube = cubes.extract_strict(_var_name_constraint(fx_var))
         except iris.exceptions.ConstraintMismatchError:
             logger.debug(
                 "Cannot correct cube '%s' with '%s', fx file not found",
-                standard_name, fx_sea_name)
+                standard_name, fx_var)
         else:
             if not _shape_is_broadcastable(fx_cube.shape, cube.shape):
-                fx_cube = None
-                invert = True
-                logger.debug(
-                    "Cannot broadcast fx cube '%s' to cube '%s', trying '%s'",
-                    fx_sea_name, standard_name, fx_land_name)
-            else:
-                logger.debug("Using fx cube '%s' to fix '%s'", fx_sea_name,
-                             standard_name)
-    if fx_cube is None:
-        try:
-            fx_cube = cubes.extract_strict(_var_name_constraint(fx_land_name))
-        except iris.exceptions.ConstraintMismatchError:
-            logger.debug(
-                "Cannot correct cube '%s' with '%s', fx file not found",
-                standard_name, fx_land_name)
-        else:
-            if not _shape_is_broadcastable(fx_cube.shape, cube.shape):
-                fx_cube = None
-                invert = False
                 logger.debug("Cannot broadcast fx cube '%s' to cube '%s'",
-                             fx_land_name, standard_name)
+                             fx_var, standard_name)
             else:
-                logger.debug("Using fx cube '%s' to fix '%s'", fx_land_name,
+                if fx_var == 'sftof':
+                    land_fraction = (da.ones_like(fx_cube.core_data()) -
+                                     fx_cube.core_data() / 100.0)
+                else:
+                    land_fraction = fx_cube.core_data() / 100.0
+                logger.debug("Using fx cube '%s' to fix '%s'", fx_var,
                              standard_name)
-    return (fx_cube, invert)
+    return land_fraction
 
 
 def _shape_is_broadcastable(shape_1, shape_2):
@@ -80,20 +72,16 @@ def cloud_area_fraction(cubes, tau_constraint, plev_constraint):
     return new_cube
 
 
-def grid_area_correction(cubes, standard_name, sea_var=False):
+def grid_area_correction(cubes, standard_name, ocean_var=False):
     """Correct (flux) variable defined relative to land/sea area."""
     cube = cubes.extract_strict(Constraint(name=standard_name))
     core_data = cube.core_data()
-    (fraction_cube, invert) = _get_fx_cube(
-        cubes,
-        standard_name,
-        fx_land_name='sftlf',
-        fx_sea_name='sftof' if sea_var else None)
-    if fraction_cube is not None:
-        if not invert:
-            core_data *= fraction_cube.core_data() / 100.0
-        else:
-            fraction = (da.ones_like(fraction_cube.core_data()) -
-                        fraction_cube.core_data() / 100.0)
-            core_data *= fraction
+    land_fraction = _get_land_fraction(
+        cubes, standard_name, derive_from_ocean_fraction=ocean_var)
+    if land_fraction is not None:
+        if ocean_var:
+            land_fraction = da.ones_like(land_fraction) - land_fraction
+        if isinstance(core_data, np.ndarray):
+            land_fraction = np.array(land_fraction)
+        core_data *= land_fraction
     return cube.copy(core_data)
