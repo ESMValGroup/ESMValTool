@@ -135,6 +135,19 @@ dir.create(plot_dir, recursive = T, showWarnings = F)
 provenance_file <- paste0(regridding_dir, "/", "diagnostic_provenance.yml")
 provenance <- list()
 
+if (anyNA(base_range)) {
+    stop("Please choose a base_range!")
+}
+model_range <- c(max(strtoi(models_start_year)),
+                 min(strtoi(models_end_year)))
+if ( (base_range[1] < max(strtoi(models_start_year))) |
+     (base_range[2] > min(strtoi(models_end_year))) ) {
+    stop(paste("Base range", base_range[1], "-", base_range[2],
+                "outside available model data period",
+                model_range[1], "-", model_range[2]))
+}
+print(paste("Base range:", base_range[1], "-", base_range[2]))
+
 ## Find earlier climdex indices in work folder
 climdex_files <- list.files(path = work_dir, pattern = "ETCCDI")
 
@@ -175,9 +188,6 @@ for (model_idx in c(1:length(models_name))) {
 #    print(paste0(">>>>>>>> Indices required: ", paste(climdex.idx.subset, collapse = ", ")))
 #    print("")
 
-    base.period <- c(max(strtoi(models_start_year)),
-                     min(strtoi(models_end_year)))
-
     ## Check point for existing files
     climdex_file_check <- paste0(idx_select, "_",
                                  models_name[model_idx], "_",
@@ -205,7 +215,7 @@ for (model_idx in c(1:length(models_name))) {
         indices <- sub("ETCCDI.*", "", idx_select)
         create.indices.from.files(infiles,
                                   work_dir, template, author.data,
-                                  base.range = base.period,
+                                  base.range = base_range,
                                   parallel = climdex_parallel,
                                   verbose = TRUE, max.vals.millions = 20,
                                   climdex.vars.subset = indices)
@@ -239,6 +249,20 @@ if (write_plots) {
 #### Produce time series plots ####
 ################################### 
 
+  if (anyNA(analysis_range)) {
+      analysis_range[1] <- max(strtoi(models_start_year))
+      analysis_range[2] <- min(strtoi(models_end_year))
+      print(paste("Analysis range not defined, assigning model range:",
+      analysis_range[1], "-", analysis_range[2]))
+  }
+  if ( (analysis_range[1] < max(strtoi(models_start_year))) |
+      (analysis_range[2] > min(strtoi(models_end_year))) ) {
+      stop(paste("Analysis range", analysis_range[1], "-", analysis_range[2],
+                 "outside available model data period",
+                 model_range[1], "-", model_range[2]))
+  }
+  print(paste("Analysis range:", analysis_range[1], "-", analysis_range[2]))
+
 # These are forced here for testing
 
   print("------ Model datasets ------")
@@ -252,7 +276,8 @@ if (write_plots) {
       plotfiles <- timeseries_main(path = work_dir, idx_list =  timeseries_idx,
                     model_list = setdiff(models_name, reference_model),
                     obs_list = reference_model, plot_dir = plot_dir,
-                    normalize = normalize)
+                    normalize = normalize,
+                    start_yr = analysis_range[1], end_yr = analysis_range[2])
       xprov <- provenance_record(climofiles)
       for (fname in plotfiles) {
           provenance[[fname]] <- xprov
@@ -270,7 +295,7 @@ if (write_plots) {
     nidx <- length(gleckler_idx) # number of indices
     nmodel <- length(models_name) # number of models
     nobs <- length(reference_model) #number of observations
-    ArrayName <- paste0("Gleclker-Array_", nidx, "-idx_",
+    ArrayName <- paste0("Gleckler-Array_", nidx, "-idx_",
                         nmodel, "-models_", nobs, "-obs", ".RDS")
     ArrayDirName <- paste0(plot_dir, "/", diag_base, "/", ArrayName)
     if (chk.glc_arr) {
@@ -290,7 +315,8 @@ if (write_plots) {
     plotfiles= gleckler_main(path = work_dir, idx_list = gleckler_idx,
                   model_list = setdiff(models_name, reference_model),
                   obs_list = reference_model,
-                  plot_dir = plot_dir, promptInput = promptInput)
+                  plot_dir = plot_dir, promptInput = promptInput,
+                  start_yr = analysis_range[1], end_yr = analysis_range[2])
 
     xprov <- provenance_record(list(climofiles))
     for (fname in plotfiles) {

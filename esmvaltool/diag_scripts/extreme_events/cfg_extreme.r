@@ -1,4 +1,6 @@
 # These are default values, loaded before the recipe is read
+base_range <- NA
+analysis_range <- NA
 climdex_parallel <- 25
 MIP_name <- "cmip"
 ts_col_list <- c("dodgerblue2", "darkgreen", "firebrick2", "darkorchid")

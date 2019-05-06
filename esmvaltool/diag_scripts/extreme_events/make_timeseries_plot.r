@@ -45,7 +45,7 @@ timeseries_main <- function(path = "../work/ExtremeEvents",
                                          "tx10pETCCDI_yr", "tx90pETCCDI_yr"),
                             model_list = c("IPSL-CM5A-LR", "MIROC-ESM"),
                             obs_list = c("MERRA2"), plot_dir = "./plot",
-                            normalize=FALSE) {
+                            normalize=FALSE, start_yr = 2000, end_yr = 2006) {
 
     ## For file structure and files
     tsGrid <-  paste(path, "/tsGridDef", sep = "")
@@ -158,17 +158,18 @@ timeseries_main <- function(path = "../work/ExtremeEvents",
         time_series_preprocessing(land = land, idx = idx,
                                   model_list = model_list,
                                   obs_list = obs_list,
-                                  plot_dir = plot_dir, normalize=normalize)
+                                  plot_dir = plot_dir, normalize = normalize)
       }
 
       ## Find the start year (to be used in plotting)
-      start_yr <- strtoi(substr(modelAndObs[1],
-                                nchar(modelAndObs[1]) - 11,
-                                nchar(modelAndObs[1]) - 8))
+      #start_yr <- strtoi(substr(modelAndObs[1],
+      #                          nchar(modelAndObs[1]) - 11,
+      #                          nchar(modelAndObs[1]) - 8))
 
       ## Produce plot for this index
       fname <- timeseries_plot(plot_dir = plot_dir, idx = idx,
-                               obs_list = obs_list, start_yr = start_yr,
+                               obs_list = obs_list,
+                               start_yr = start_yr, end_yr = end_yr,
                                normalize=normalize)
       plotfiles <- c(plotfiles, fname)
     }
@@ -477,7 +478,8 @@ time_series_preprocessing <- function(land = "./Land", idx = "tnnETCCDI_yr",
 ##
 
 timeseries_plot <- function(plot_dir = "./plot", idx = "tn10pETCCDI_yr",
-                            obs_list, start_yr = 2006, normalize = FALSE) {
+                            obs_list, start_yr = 2006, end_yr = 2010,
+                            normalize = FALSE) {
     ## Loading ncdf4 library
     library(ncdf4)
 
@@ -523,10 +525,13 @@ timeseries_plot <- function(plot_dir = "./plot", idx = "tn10pETCCDI_yr",
     idx_ens75 <- ncvar_get(enspctl75, idx_name)
 
     ## Maximum and minimum x and y values
-    max.x <- max(time_conv)
-    min.x <- min(time_conv)
-    max.y <- max(idx_ensm, idx_ens25, idx_ens75)
-    min.y <- min(idx_ensm, idx_ens25, idx_ens75)
+    # max.x <- max(time_conv)
+    # min.x <- min(time_conv)
+    max.x <- end_yr
+    min.x <- start_yr
+    irange <- ( ( time_conv >= min.x ) & ( time_conv <= max.x ))
+    max.y <- max(idx_ensm[irange], idx_ens25[irange], idx_ens75[irange])
+    min.y <- min(idx_ensm[irange], idx_ens25[irange], idx_ens75[irange])
 
     ## Reading in the observations and plotting via a loop
     obsdata_list <- list()
@@ -540,10 +545,11 @@ timeseries_plot <- function(plot_dir = "./plot", idx = "tn10pETCCDI_yr",
       idx_obs <- ncvar_get(nc_obs, idx_name)
       nc_close(nc_obs)
       obsdata_list[[n]] <- list(o, as.numeric(time_conv_obs), idx_obs)
-      max.x <- max(max.x, time_conv_obs)
-      min.x <- min(min.x, time_conv_obs)
-      max.y <- max(max.y, idx_obs)
-      min.y <- min(min.y, idx_obs)
+      # max.x <- max(max.x, time_conv_obs)
+      # min.x <- min(min.x, time_conv_obs)
+      irange <- ( ( time_conv_obs >= min.x ) & ( time_conv_obs <= max.x ))
+      max.y <- max(max.y, idx_obs[irange])
+      min.y <- min(min.y, idx_obs[irange])
 
       if (n > length(ts_col_list)) {
         print(paste("Error: There are more observations,",

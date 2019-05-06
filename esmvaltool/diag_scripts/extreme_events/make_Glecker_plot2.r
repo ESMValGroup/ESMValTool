@@ -47,7 +47,8 @@ gleckler_main <- function(path = "./",
                                          "MIROC-ESM"),
                           obs_list = c("CanESM2"),
                           plot_dir = "../plot/ExtremeEvents/",
-                          promptInput=promptInput) {
+                          promptInput=promptInput,
+                          start_yr = 2000, end_yr = 2009) {
 
   #### CLIMDEX PREPROCESSING ####
 
@@ -83,7 +84,8 @@ gleckler_main <- function(path = "./",
       ## Time crop
       returnvalue <- setTimeForFilesEqual(path = path, idx = idx,
                                           model_list = modelAndObs_list,
-                                          time_cropped = time_cropped)
+                                          time_cropped = time_cropped,
+                                          max_start = start_yr, min_end = end_yr)
 
       max_start <- returnvalue[1]
       min_end <- returnvalue[2]
@@ -108,8 +110,8 @@ gleckler_main <- function(path = "./",
       obs <- modelsAndObs[which(modelsAndObs_index %in% obs_list)]
 
       ## Find the start year (to be used in plotting)
-      start_yr <- strtoi(substr(models[1], nchar(models[1]) - 11,
-                                nchar(models[1]) - 8))
+      #start_yr <- strtoi(substr(models[1], nchar(models[1]) - 11,
+      #                          nchar(models[1]) - 8))
       ## !New Grid and landseamask for each idx 
       ## !(or just the first idx set) should be
       ## !produced here
@@ -134,19 +136,19 @@ gleckler_main <- function(path = "./",
                                  model_list=model_list, obs_list=obs_list)
 
     ## Save Array 
-    saveRDS(object = RMSErelarr, file = paste0(plot_dir, "/Gleclker-Array_",
+    saveRDS(object = RMSErelarr, file = paste0(plot_dir, "/Gleckler-Array_",
                                                nidx, "-idx_",
                                                nmodel,"-models_",
                                                nobs, "-obs",  ".RDS"))
     saveRDS(object = returnvalue, file = paste0(plot_dir,
-                                                "/Gleclker-years.RDS"))
+                                                "/Gleckler-years.RDS"))
   }
 
   #### Gleckler Plotting ####
-  RMSErelarr <- readRDS(file = paste0(plot_dir, "/Gleclker-Array_",
+  RMSErelarr <- readRDS(file = paste0(plot_dir, "/Gleckler-Array_",
                                       nidx, "-idx_", nmodel,"-models_",
                                       nobs, "-obs",  ".RDS"))
-  year_range <- readRDS(file = paste0(plot_dir, "/Gleclker-years.RDS"))
+  year_range <- readRDS(file = paste0(plot_dir, "/Gleckler-years.RDS"))
   plotfile <- gleckler_plotting(arr = RMSErelarr, idx_list = idx_list,
                     model_list = model_list, obs_list = obs_list,
                     plot_dir = plot_dir, syear = year_range[1],
@@ -221,6 +223,9 @@ gleckler_array <- function(path = land, idx_list=gleckler_idx,
   for (i in seq_along(idx_list)) {
     for (m in seq_along(model_list)) {
       ## Read in model annual climatology
+       fn=file.path(path, paste0("tm_", idx_list[i], "_", model_list[m], "*.nc"))
+      print(paste("FILENAME:",fn)) #stope
+
       tm_model <- nc_open(Sys.glob(file.path(path, paste0("tm_", idx_list[i],
                                                          "_", model_list[m],
                                                          "*.nc"))))
