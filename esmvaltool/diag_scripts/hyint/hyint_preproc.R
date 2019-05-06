@@ -14,7 +14,12 @@ hyint_preproc <- function(work_dir, model_idx, ref_idx,
     if (rgrid == "REF") {
       rgrid <- climofiles[ref_idx]
     }
-    tempf <- cdo("remapcon2", args = rgrid, input = climofile)
+    gridf <- tempfile()
+    tempf <- cdo("griddes", input = rgrid, stdout = gridf)
+    namefile <- cdo(remapcon2, args = gridf, input = climofile)
+    unlink(gridf)
+
+#    tempf <- cdo("remapcon2", args = rgrid, input = climofile)
   } else {
     tempf <- cdo("addc", args = "0", input = climofile)
   }
