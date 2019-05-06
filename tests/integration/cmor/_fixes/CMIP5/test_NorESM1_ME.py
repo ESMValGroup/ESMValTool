@@ -5,7 +5,6 @@ from iris.cube import CubeList
 
 from esmvaltool.cmor._fixes.CMIP5.NorESM1_ME import tas
 
-
 DIM_COORD_SHORT = iris.coords.DimCoord(
     [1.0, 2.0, 3.0],
     bounds=[[0.5, 1.5], [1.5, 2.5], [2.5, 3.5]],

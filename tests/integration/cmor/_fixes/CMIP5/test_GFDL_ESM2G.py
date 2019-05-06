@@ -6,11 +6,8 @@ import mock
 import pytest
 from cf_units import Unit
 
-from esmvaltool.cmor._fixes.CMIP5.GFDL_ESM2G import _get_and_remove
-from esmvaltool.cmor._fixes.CMIP5.GFDL_ESM2G import allvars
-from esmvaltool.cmor._fixes.CMIP5.GFDL_ESM2G import co2
-from esmvaltool.cmor._fixes.CMIP5.GFDL_ESM2G import fgco2
-
+from esmvaltool.cmor._fixes.CMIP5.GFDL_ESM2G import (_get_and_remove, allvars,
+                                                     co2, fgco2)
 
 CUBE_1 = iris.cube.Cube([1.0], long_name='to_be_rm')
 CUBE_2 = iris.cube.Cube([1.0], long_name='not_to_be_rm')
@@ -31,8 +28,8 @@ def test_get_and_remove(cubes_in, cubes_out):
 CUBES = iris.cube.CubeList([CUBE_1, CUBE_2])
 
 
-@mock.patch('esmvaltool.cmor._fixes.CMIP5.GFDL_ESM2G._get_and_remove',
-            autospec=True)
+@mock.patch(
+    'esmvaltool.cmor._fixes.CMIP5.GFDL_ESM2G._get_and_remove', autospec=True)
 def test_allvars(mock_get_and_remove):
     fix = allvars()
     fix.fix_metadata(CUBES)
@@ -44,8 +41,8 @@ def test_allvars(mock_get_and_remove):
     ]
 
 
-@mock.patch('esmvaltool.cmor._fixes.CMIP5.GFDL_ESM2G._get_and_remove',
-            autospec=True)
+@mock.patch(
+    'esmvaltool.cmor._fixes.CMIP5.GFDL_ESM2G._get_and_remove', autospec=True)
 def test_fgco2(mock_get_and_remove):
     fix = fgco2()
     fix.fix_metadata(CUBES)
