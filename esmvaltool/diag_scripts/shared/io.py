@@ -158,8 +158,8 @@ def metadata_to_netcdf(cube, metadata):
 
     """
     metadata = dict(metadata)
-    if not _has_necessary_attributes([metadata], log_level='error'):
-        logger.error("Cannot save cube\n%s", cube)
+    if not _has_necessary_attributes([metadata], log_level='warning'):
+        logger.warning("Cannot save cube\n%s", cube)
         return
     for var_key in VAR_KEYS:
         setattr(cube, var_key, metadata.pop(var_key))
@@ -206,11 +206,11 @@ def save_1d_data(cubes, path, coord_name, var_attrs, attributes=None):
     """
     var_attrs = dict(var_attrs)
     if not cubes:
-        logger.error("No cubes given")
+        logger.warning("Cannot save 1D data, no cubes given")
         return
     if not _has_necessary_attributes(
-            [var_attrs], only_var_attrs=True, log_level='error'):
-        logger.error("Cannot write file '%s'", path)
+            [var_attrs], only_var_attrs=True, log_level='warning'):
+        logger.warning("Cannot write file '%s'", path)
         return
     datasets = []
     data = []
@@ -244,9 +244,7 @@ def iris_save(source, path):
         Path to the new file.
 
     """
-    try:
-        iter(source)
-    except TypeError:
+    if isinstance(source, iris.cube.Cube):
         source.attributes['filename'] = path
     else:
         for cube in source:
@@ -281,11 +279,11 @@ def save_scalar_data(data, path, var_attrs, aux_coord=None, attributes=None):
     """
     var_attrs = dict(var_attrs)
     if not data:
-        logger.error("No data given")
+        logger.warning("Cannot save scalar data, no data given")
         return
     if not _has_necessary_attributes(
-            [var_attrs], only_var_attrs=True, log_level='error'):
-        logger.error("Cannot write file '%s'", path)
+            [var_attrs], only_var_attrs=True, log_level='warning'):
+        logger.warning("Cannot write file '%s'", path)
         return
     dataset_coord = iris.coords.AuxCoord(list(data), long_name='dataset')
     if attributes is None:

@@ -277,10 +277,10 @@ def test_metadata_to_netcdf(mock_logger, mock_save, attrs, var_attrs, cube,
     else:
         mock_logger.debug.assert_not_called()
     if output is None:
-        mock_logger.error.assert_called()
+        mock_logger.warning.assert_called()
         assert not mock_save.called
     else:
-        mock_logger.error.assert_not_called()
+        mock_logger.warning.assert_not_called()
         assert mock_save.call_args_list == [mock.call(*output)]
 
 
@@ -363,7 +363,7 @@ def test_save_1d_data(mock_logger, mock_save, var_attrs, attrs):
 
     # Without cubes
     io.save_1d_data({}, PATH, coord_name, var_attrs, attrs)
-    mock_logger.error.assert_called()
+    mock_logger.warning.assert_called()
     assert not mock_save.called
     mock_logger.reset_mock()
     mock_save.reset_mock()
@@ -378,10 +378,10 @@ def test_save_1d_data(mock_logger, mock_save, var_attrs, attrs):
         attributes=attrs,
         **iris_var_attrs)
     if 'units' not in var_attrs:
-        mock_logger.error.assert_called()
+        mock_logger.warning.assert_called()
         assert not mock_save.called
     else:
-        mock_logger.error.assert_not_called()
+        mock_logger.warning.assert_not_called()
         assert mock_save.call_args_list == [mock.call(new_cube, PATH)]
 
 
@@ -407,12 +407,12 @@ CUBES_TO_SAVE = [
 
 
 @pytest.mark.parametrize('source,output', CUBES_TO_SAVE)
-@mock.patch.object(io, 'iris', autospec=True)
+@mock.patch('esmvaltool.diag_scripts.shared.io.iris.save', autospec=True)
 @mock.patch.object(io, 'logger', autospec=True)
-def test_iris_save(mock_logger, mock_iris, source, output):
+def test_iris_save(mock_logger, mock_save, source, output):
     """Test iris save function."""
     io.iris_save(source, PATH)
-    mock_iris.save.assert_called_once_with(output, PATH)
+    assert mock_save.call_args_list == [mock.call(output, PATH)]
     mock_logger.info.assert_called_once()
 
 
@@ -440,7 +440,7 @@ def test_save_scalar_data(mock_logger, mock_save, var_attrs, attrs, aux_coord):
 
     # Without data
     io.save_scalar_data({}, PATH, var_attrs)
-    mock_logger.error.assert_called()
+    mock_logger.warning.assert_called()
     assert not mock_save.called
     mock_logger.reset_mock()
     mock_save.reset_mock()
@@ -457,8 +457,8 @@ def test_save_scalar_data(mock_logger, mock_save, var_attrs, attrs, aux_coord):
     if aux_coord is not None:
         new_cube.add_aux_coord(aux_coord, 0)
     if 'units' not in var_attrs:
-        mock_logger.error.assert_called()
+        mock_logger.warning.assert_called()
         assert not mock_save.called
     else:
-        mock_logger.error.assert_not_called()
+        mock_logger.warning.assert_not_called()
         assert mock_save.call_args_list == [mock.call(new_cube, PATH)]
