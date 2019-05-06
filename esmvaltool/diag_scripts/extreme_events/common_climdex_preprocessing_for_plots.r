@@ -31,7 +31,7 @@ createGrid <- function(path = idx_dir, loc = "./gridDef") {
     #cmd <- paste('cdo -O griddes -selgrid,2 ', first_file, ' > ', loc, sep = '')
     #print(cmd)
     #system(cmd)
-    cdo("griddes -selgrid,2", input = first_file, stdout = loc, options = "-O")
+    cdo("griddes -delvar,time_bnds", input = first_file, stdout = loc, options = "-O")
 }
 
 ##
