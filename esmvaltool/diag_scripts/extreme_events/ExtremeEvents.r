@@ -148,6 +148,12 @@ if ( (base_range[1] < max(strtoi(models_start_year))) |
 }
 print(paste("Base range:", base_range[1], "-", base_range[2]))
 
+if (anyNA(regrid_dataset)) {
+    regrid_dataset <- reference_datasets[1]
+    print(paste("Regrid dataset not set, choosing first reference dataset:",
+                regrid_dataset))
+}
+
 ## Find earlier climdex indices in work folder
 climdex_files <- list.files(path = work_dir, pattern = "ETCCDI")
 

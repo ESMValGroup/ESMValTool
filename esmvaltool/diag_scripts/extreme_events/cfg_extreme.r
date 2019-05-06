@@ -1,4 +1,5 @@
 # These are default values, loaded before the recipe is read
+regrid_dataset <- NA
 base_range <- NA
 analysis_range <- NA
 climdex_parallel <- 25
