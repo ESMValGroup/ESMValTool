@@ -769,6 +769,39 @@ def _get_derive_input_variables(variables, config_user):
     return derive_input
 
 
+def _get_fx_tasks(fx_variables, config_user, task_name, derive_tasks):
+    """Create a list of fx variables tasks."""
+    fx_tasks = []
+    fx_profile = {'fix_file': True,
+                  'load': True,
+                  'fix_metadata': True,
+                  'extract_time': False,
+                  'cmor_check_metadata': True,
+                  'save': True,
+                  'cleanup': True}
+    fx_short_names = list(set([var['short_name'] for var in fx_variables]))
+
+    for fx_short_name in fx_short_names:
+        fx_variables_group = [
+            var for var in fx_variables if var['short_name'] == fx_short_name
+        ]
+        fx_task_name = task_name.split(
+            TASKSEP)[0] + TASKSEP + 'fx_' + fx_short_name
+        logger.info("Creating preprocessor '%s' task for variable '%s'",
+                    fx_variables_group[0]['preprocessor'],
+                    fx_variables_group[0]['short_name'])
+        # Create (final) preprocessor task
+        fx_task = _get_single_preprocessor_task(
+            fx_variables_group,
+            fx_profile,
+            config_user,
+            ancestor_tasks=derive_tasks,
+            name=fx_task_name)
+        fx_tasks.append(fx_task)
+
+    return fx_tasks
+
+
 def _get_preprocessor_task(variables, profiles, config_user, task_name):
     """Create preprocessor task(s) for a set of datasets."""
     # First set up the preprocessor profile
@@ -779,8 +812,6 @@ def _get_preprocessor_task(variables, profiles, config_user, task_name):
             "Unknown preprocessor {} in variable {} of diagnostic {}".format(
                 preproc_name, variable['short_name'], variable['diagnostic']))
     profile = deepcopy(profiles[variable['preprocessor']])
-    logger.info("Creating preprocessor '%s' task for variable '%s'",
-                variable['preprocessor'], variable['short_name'])
     variables = _limit_datasets(variables, profile,
                                 config_user.get('max_datasets'))
     for variable in variables:
@@ -804,27 +835,29 @@ def _get_preprocessor_task(variables, profiles, config_user, task_name):
                 name=derive_name)
             derive_tasks.append(task)
 
-    # set profile and tasks if fxvar
-    if 'fxvar' in variable.keys():
-        profile = {'fix_file': True,
-                   'load': True,
-                   'fix_metadata': True,
-                   'extract_time': False,
-                   'cmor_check_metadata': True,
-                   'save': True,
-                   'cleanup': True}
-        task_name = task_name.split(
-            TASKSEP)[0] + TASKSEP + 'fx_' + variables[0]['variable_group']
+    # set profile and tasks formultiple variables
+    tasks = []
+    regular_variables = [var for var in variables if 'fxvar' not in var.keys()]
+    fx_variables = [var for var in variables if 'fxvar' in var.keys()]
 
-    # Create (final) preprocessor task
-    task = _get_single_preprocessor_task(
-        variables,
-        profile,
-        config_user,
-        ancestor_tasks=derive_tasks,
-        name=task_name)
+    if fx_variables:
+        fx_task_list = _get_fx_tasks(fx_variables, config_user,
+                                     task_name, derive_tasks)
+        tasks.extend(fx_task_list)
+    if regular_variables:
+        logger.info("Creating preprocessor '%s' task for variable '%s'",
+                    regular_variables[0]['preprocessor'],
+                    regular_variables[0]['short_name'])
+        # add all regular variable task
+        task = _get_single_preprocessor_task(
+            regular_variables,
+            profile,
+            config_user,
+            ancestor_tasks=derive_tasks,
+            name=task_name)
+        tasks.append(task)
 
-    return task
+    return tasks
 
 
 class Recipe:
@@ -910,29 +943,17 @@ class Recipe:
         check.duplicate_datasets(datasets)
         return datasets
 
-    def _get_fx_files(self, variable, raw_variables, fxvariables):
-        """Get all the fx files in variable."""
+    def _get_fx_files(self, variable, variables):
+        """Get all the fx files."""
         dict_variable_fx = {}
         for fx_var in variable['fx_files']:
-            real_fx_var = []
-            if fxvariables:
-                real_fx_var = [
-                    raw_variables[k] for k in
-                    fxvariables if k == fx_var
-                ][0]
-            if real_fx_var:
-                fx_var_copy = _convert_fxvar_to_cmor(fx_var,
-                                                     variable,
-                                                     real_fx_var)
-                dict_variable_fx[fx_var] = get_output_file(
-                    fx_var_copy,
-                    self._cfg['preproc_dir'])
-            # compatible with CMIP5 old way
-            else:
-                variable['fx_files'] = get_input_fx_filelist(
-                    variable=variable,
-                    rootpath=self._cfg['rootpath'],
-                    drs=self._cfg['drs'])
+            fx_var_dict = [
+                var for var in variables if var['short_name'] == fx_var
+                and var['dataset'] == variable['dataset']
+            ][0]
+            dict_variable_fx[fx_var] = get_output_file(
+                fx_var_dict,
+                self._cfg['preproc_dir'])
         if dict_variable_fx:
             variable['fx_files'] = dict_variable_fx
         logger.info("Using fx files for var %s of dataset %s:\n%s",
@@ -940,9 +961,10 @@ class Recipe:
                     variable['fx_files'])
         return variable
 
-    def _assemble_varlist(self, raw_variable, datasets, fxvariables):
+    def _assemble_varlist(self, raw_variable, datasets):
         """Assemble complete list of variables."""
         variables = []
+
         for index, dataset in enumerate(datasets):
             variable = deepcopy(raw_variable)
             variable.update(dataset)
@@ -954,10 +976,13 @@ class Recipe:
                 variable['end_year'] = min(
                     variable['end_year'],
                     variable['start_year'] + self._cfg['max_years'] - 1)
+
             variables.append(variable)
 
-        # extend variables if fx variables are needed but not in recipe
-        if not fxvariables and 'fx_files' in raw_variable.keys():
+        # look for fx files if needed
+        if not 'fx_files' in raw_variable.keys():
+            return variables
+        else:
             for fx_var_name in raw_variable['fx_files']:
                 for index, dataset in enumerate(datasets):
                     fx_variable = deepcopy(raw_variable)
@@ -971,27 +996,19 @@ class Recipe:
                     fx_variable = _convert_fxvar_to_cmor(fx_var_name,
                                                          fx_variable,
                                                          real_fx_var)
-                    del fx_variable['fx_files']
+                    if 'fx_files' in fx_variable.keys():
+                        del fx_variable['fx_files']
                     variables.append(fx_variable)
+            return variables
 
-        return variables
-
-    def _initialize_variables(self, raw_variable,
-                              raw_datasets, raw_variables):
+    def _initialize_variables(self, raw_variable, raw_datasets):
         """Define variables for all datasets."""
-        # identify which other vars are fx vars for processing
-        fxvariables = [
-            d for d in raw_variables if
-            'fxvar' in list(raw_variables[d].keys())
-        ]
-
         raw_variable = deepcopy(raw_variable)
         datasets = self._initialize_datasets(
             raw_datasets + raw_variable.pop('additional_datasets', []))
 
         # get full list of variables
-        variables = self._assemble_varlist(raw_variable,
-                                           datasets, fxvariables)
+        variables = self._assemble_varlist(raw_variable, datasets)
 
         required_keys = {
             'short_name',
@@ -1017,8 +1034,7 @@ class Recipe:
             if 'fx_files' in variable:
                 for fx_file in variable['fx_files']:
                     DATASET_KEYS.add(fx_file)
-                variable = self._get_fx_files(variable,
-                                              raw_variables, fxvariables)
+                variable = self._get_fx_files(variable, variables)
         return variables
 
     def _initialize_preprocessor_output(self, diagnostic_name, raw_variables,
@@ -1037,8 +1053,7 @@ class Recipe:
             raw_variable['preprocessor'] = str(
                 raw_variable.get('preprocessor', 'default'))
             preprocessor_output[variable_group] = \
-                self._initialize_variables(raw_variable,
-                                           raw_datasets, raw_variables)
+                self._initialize_variables(raw_variable, raw_datasets)
 
         return preprocessor_output
 
@@ -1123,13 +1138,16 @@ class Recipe:
             for variable_group in diagnostic['preprocessor_output']:
                 task_name = diagnostic_name + TASKSEP + variable_group
                 logger.info("Creating preprocessor task %s", task_name)
-                task = _get_preprocessor_task(
+                
+                run_tasks = _get_preprocessor_task(
                     variables=diagnostic['preprocessor_output']
                     [variable_group],
                     profiles=self._preprocessors,
                     config_user=self._cfg,
                     task_name=task_name)
-                tasks.add(task)
+                
+                for task in run_tasks:
+                    tasks.add(task)
 
             # Create diagnostic tasks
             for script_name, script_cfg in diagnostic['scripts'].items():
