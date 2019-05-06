@@ -46,18 +46,15 @@ diagnostics:
       pr:
         mip: day
         field: T2Ds
-        reference_dataset: ["ACCESS1-0", "ACCESS1-3", "IPSL-CM5A-MR"]
 #      tas:
 #        mip: day
 #        field: T2Ds
       tasmax:
         mip: day
         field: T2Ds
-        reference_dataset: ["ACCESS1-0", "ACCESS1-3", "IPSL-CM5A-MR"]
       tasmin:
         mip: day
         field: T2Ds
-        reference_dataset: ["ACCESS1-0", "ACCESS1-3", "IPSL-CM5A-MR"]
 #    additional_datasets:
       #- {dataset: MERRA2, project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 3}
 #      - {dataset: EOBS, project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 3}
@@ -66,6 +63,7 @@ diagnostics:
     scripts:
       main:
         script: extreme_events/ExtremeEvents.r
+        reference_datasets: ["ACCESS1-0", "ACCESS1-3", "IPSL-CM5A-MR"]
         MIP_name: CMIP
         timeseries_idx: ["tn10pETCCDI_yr", "tn90pETCCDI_yr", "tx10pETCCDI_yr", "tx90pETCCDI_yr"]
         gleckler_idx: ["tn10pETCCDI_yr", "tn90pETCCDI_yr", "tx10pETCCDI_yr", "tx90pETCCDI_yr"]

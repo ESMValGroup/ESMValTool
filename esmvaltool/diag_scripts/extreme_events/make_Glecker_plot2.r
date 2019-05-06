@@ -223,8 +223,6 @@ gleckler_array <- function(path = land, idx_list=gleckler_idx,
   for (i in seq_along(idx_list)) {
     for (m in seq_along(model_list)) {
       ## Read in model annual climatology
-       fn=file.path(path, paste0("tm_", idx_list[i], "_", model_list[m], "*.nc"))
-      print(paste("FILENAME:",fn)) #stope
 
       tm_model <- nc_open(Sys.glob(file.path(path, paste0("tm_", idx_list[i],
                                                          "_", model_list[m],

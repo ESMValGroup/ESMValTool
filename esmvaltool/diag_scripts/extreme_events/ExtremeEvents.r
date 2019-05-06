@@ -99,7 +99,7 @@ models_start_year <- unname(sapply(list0, "[[", "start_year"))
 models_end_year <- unname(sapply(list0, "[[", "end_year"))
 models_experiment <- unname(sapply(list0, "[[", "exp"))
 models_project <- unname(sapply(list0, "[[", "project"))
-reference_model <- unname(sapply(list0, "[[", "reference_dataset"))[,1]
+#reference_model <- unname(sapply(list0, "[[", "reference_dataset"))[,1]
 diag_base <- unname(sapply(list0, "[[", "diagnostic"))[1]
 #### Correction r.interface output correction ####
 models_experiment[models_experiment == "No_value"] <- "No-values"
@@ -266,16 +266,16 @@ if (write_plots) {
 # These are forced here for testing
 
   print("------ Model datasets ------")
-  print(setdiff(models_name, reference_model))
+  print(setdiff(models_name, reference_datasets))
   print("---- Reference datasets ----")
-  print(reference_model)
+  print(reference_datasets)
   print("----------------------------")
   if (chk.ts_plt){
       print("")
       print(paste0(">>>>>>>> TIME SERIE PROCESSING INITIATION"))
       plotfiles <- timeseries_main(path = work_dir, idx_list =  timeseries_idx,
-                    model_list = setdiff(models_name, reference_model),
-                    obs_list = reference_model, plot_dir = plot_dir,
+                    model_list = setdiff(models_name, reference_datasets),
+                    obs_list = reference_datasets, plot_dir = plot_dir,
                     normalize = normalize,
                     start_yr = analysis_range[1], end_yr = analysis_range[2])
       xprov <- provenance_record(climofiles)
@@ -294,7 +294,7 @@ if (write_plots) {
     ## Check if Gleckler Array already exists
     nidx <- length(gleckler_idx) # number of indices
     nmodel <- length(models_name) # number of models
-    nobs <- length(reference_model) #number of observations
+    nobs <- length(reference_datasets) #number of observations
     ArrayName <- paste0("Gleckler-Array_", nidx, "-idx_",
                         nmodel, "-models_", nobs, "-obs", ".RDS")
     ArrayDirName <- paste0(plot_dir, "/", diag_base, "/", ArrayName)
@@ -313,8 +313,8 @@ if (write_plots) {
 
     #### Running gleckler_main ####
     plotfiles= gleckler_main(path = work_dir, idx_list = gleckler_idx,
-                  model_list = setdiff(models_name, reference_model),
-                  obs_list = reference_model,
+                  model_list = setdiff(models_name, reference_datasets),
+                  obs_list = reference_datasets,
                   plot_dir = plot_dir, promptInput = promptInput,
                   start_yr = analysis_range[1], end_yr = analysis_range[2])
 
