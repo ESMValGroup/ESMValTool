@@ -37,7 +37,6 @@ diagnostics:
         end_year: 2020
         reference_dataset: "ACCESS1-0"
         mip: day
-        field: T2Ds
     additional_datasets:
       - {dataset: ACCESS1-0}
       - {dataset: MPI-ESM-MR}
