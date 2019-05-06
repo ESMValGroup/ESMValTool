@@ -42,11 +42,16 @@ class albedo_Diagnostic_SP(Basic_Diagnostic_SP):
                 },
             }
             
-#    def read_data(self):
-#        super(albedo_Diagnostic_SP, self).read_data()
-#        
-#        self.sp_data = self.__spatiotemp_subsets__(self.sp_data)['Brasilia']
+    def run_diagnostic(self):
+        super(albedo_Diagnostic_SP, self).run_diagnostic()
+        
+        if "custom" in self.__requested_diags__:
             
+            self.sp_data = self.__spatiotemp_subsets__(self.sp_data)['Brasilia']
+            self.__basic_filename__ = "brasilia_" + self.__basic_filename__
+            self.__do_trends__() # to do, include in report
+        
+        
 
     def __add_mean_var_procedures_2D__(self, cube=None, level=None):
         

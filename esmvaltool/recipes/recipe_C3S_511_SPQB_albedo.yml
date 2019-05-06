@@ -68,7 +68,6 @@ diagnostics:
         script: qualassess/albedo_C3S_511_SPQB.py
         ancestors: ["bdalb", '*/diag_*']
         requests: [report]
-#        order: [diag_custom]
         order: [diag_O_info, diag_tables, diag_O_hist, diag_O_avail,
                 diag_MV_ts, diag_MV_mean, diag_MV_std_dev, diag_MV_perc, 
                 diag_MV_clim, diag_MV_anom, diag_T_trend, diag_custom]

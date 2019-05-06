@@ -886,9 +886,9 @@ class Plot2D(object):
                                     linestyle=':')
                 plt.gca().text(0,
                        - 0.1 * ((self.n_cubes // n_columns) * 0.7 if self.n_cubes>n_columns else 1),
-                       r'mean: {0} $\pm$ {1} '.format(
-                           str(np.round(mean, 2)),
-                           str(np.round(std, 2))),
+                       r'mean: {:.2g} $\pm$ {:.2g} '.format(
+                           mean,#str(np.round(mean, 2)),
+                           std),#str(np.round(std, 2))),
                        transform=plt.gca().transAxes)
 
             # Label plots (supports at most 26 figures at the moment)
