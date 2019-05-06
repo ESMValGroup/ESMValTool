@@ -58,7 +58,7 @@ User settings
 Variables
 ---------
 
-* chosen by user (e.g., precipitation as in the example)
+* pr(monthly)
 
 
 Observations and reformat scripts
