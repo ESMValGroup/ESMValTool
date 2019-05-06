@@ -49,7 +49,7 @@ User setting files are stored in recipes/
 Variables
 ---------
 
-* (atmos, daily-monthly, longitude, latitude, time)
+* psl(atmos, daily-monthly, longitude, latitude, time)
 
 
 Observations and reformat scripts
