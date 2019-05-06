@@ -26,8 +26,8 @@ def get_prov_map(attr, ancestor_files):
         'caption': caption,
         'statistics': ['mean'],
         'domains': ['global'],
-        'plot_type': '2D maps',
-        'authors': 'lemb_va',
+        'plot_type': ['2D maps'],
+        'authors': ['lemb_va'],
         'references': ['lembo16climdyn', 'lucarini14revgeop'],
         'ancestors': ancestor_files,
     }
@@ -44,9 +44,9 @@ def get_prov_transp(attr, ancestor_file, plotname):
         'caption': caption,
         'statistics': ['mean'],
         'domains': ['global'],
-        'plot_type': 'meridional sections',
+        'plot_type': ['meridional sections'],
         'plot_file': plotname,
-        'authors': 'lemb_va',
+        'authors': ['lemb_va'],
         'references': ['lembo16climdyn', 'lucarini14revgeop'],
         'ancestors': ancestor_file,
     }
