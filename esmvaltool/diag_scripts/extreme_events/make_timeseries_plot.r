@@ -65,6 +65,7 @@ timeseries_main <- function(path = "../work/ExtremeEvents",
     gridAndLandmask <- TRUE
 
     ## Loop over the indices to produce a plot for each index
+    plotfiles <- list() 
     idx <- idx_list[1]
     for (idx in idx_list){
 
@@ -165,10 +166,13 @@ timeseries_main <- function(path = "../work/ExtremeEvents",
                                 nchar(modelAndObs[1]) - 11,
                                 nchar(modelAndObs[1]) - 8))
 
-        ## Produce plot for this index
-        timeseries_plot(plot_dir = plot_dir, idx = idx, obs_list = obs_list,
-                        start_yr = start_yr, normalize=normalize)
+      ## Produce plot for this index
+      fname <- timeseries_plot(plot_dir = plot_dir, idx = idx,
+                               obs_list = obs_list, start_yr = start_yr,
+                               normalize=normalize)
+      plotfiles <- c(plotfiles, fname)
     }
+    return(plotfiles)
 }
 
 ##
@@ -648,4 +652,6 @@ timeseries_plot <- function(plot_dir = "./plot", idx = "tn10pETCCDI_yr",
     nc_close(ensm)
     nc_close(enspctl25)
     nc_close(enspctl75)
+
+    return(figure_filename)
 }

@@ -9,6 +9,7 @@
 #    Calculate extreme events with plotting functionality
 #
 # Modification history
+#    20190501-hard_jo  : adapted for v2
 #    20181006-A_cwmohr : observation read and sorting fixes
 #    20181003-A_cwmohr : correcting r.interface output for observation data. 
 #    20180725-A_cwmohr : modification of timeseries_main() and climdex selection
@@ -18,6 +19,7 @@
 #    20170920-A_sand_ma: modification to include plotting
 #    20160414-A_broe_bj: written
 # ############################################################################
+
 library(climdex.pcic.ncdf)
 library(tools)
 library(yaml)
@@ -59,6 +61,19 @@ nco <- function(cmd, argstr) {
   if (ret != 0) {
     stop(paste("Failed (", ret, "): ", cmd, " ", argstr))
   }
+}
+
+provenance_record <- function(infile) {
+  xprov <- list(ancestors = infile,
+                authors = list("broe_bj", "sand_ma", "mohr_cw", "hard_jo"),
+                references = list("zhang-2011"),
+                projects = list("crescendo", "c3s-magic"),
+                caption = "Extreme events indices",
+                statistics = list("other"),
+                realms = list("atmos"),
+                themes = list("phys"),
+                domains = list("global"))
+  return(xprov)
 }
 
 diag_scripts_dir <- Sys.getenv("diag_scripts")
@@ -160,8 +175,8 @@ for (model_idx in c(1:length(models_name))) {
 #    print(paste0(">>>>>>>> Indices required: ", paste(climdex.idx.subset, collapse = ", ")))
 #    print("")
 
-     base.period <- c(max(strtoi(models_start_year)),
-                      min(strtoi(models_end_year)))
+    base.period <- c(max(strtoi(models_start_year)),
+                     min(strtoi(models_end_year)))
 
     ## Check point for existing files
     climdex_file_check <- paste0(idx_select, "_",
@@ -173,23 +188,35 @@ for (model_idx in c(1:length(models_name))) {
     check_control <- vector("logical", length(climdex_file_check))
     n <- 0
     for (chck in climdex_file_check) {
-      n  <- n + 1
-      #print(grep(chck, climdex_files))
-      tmp <- length(grep(chck, climdex_files))
-      check_control[n] <- (tmp > 0)
+        n  <- n + 1
+        #print(grep(chck, climdex_files))
+        tmp <- length(grep(chck, climdex_files))
+        check_control[n] <- (tmp > 0)
     }
     print(check_control)
 
     if (!all(check_control)) {
-      #print(fullpath_filenames)
-      print("")
-      print(paste0(">>>>>>>> Producing Indices for ", models_name[model_idx]))
-      print(climofiles[models == models_name[model_idx]])
-      print("")
-      create.indices.from.files(climofiles[models == models_name[model_idx]],
-                                work_dir, template, author.data,
-                                base.range = base.period, parallel = 25,
-                                verbose = TRUE, max.vals.millions = 20)
+        #print(fullpath_filenames)
+        print("")
+        print(paste0(">>>>>>> Producing Indices for ", models_name[model_idx]))
+        print(climofiles[models == models_name[model_idx]])
+        print("")
+        infiles <- climofiles[models == models_name[model_idx]]
+        create.indices.from.files(infiles,
+                                  work_dir, template, author.data,
+                                  base.range = base.period, parallel = 25,
+                                  verbose = TRUE, max.vals.millions = 20)
+       # climdex.vars.subset = idx_select
+        # Set provenance for output files
+        # Get new list of files after computation
+        infiles <- climofiles[models == models_name[model_idx]]
+        xprov <- provenance_record(list(infiles))
+        climdex_files <- list.files(path = work_dir, pattern = "ETCCDI",
+                                    full.names = TRUE)
+        for (chck in climdex_file_check) {
+            fname <- grep(chck, climdex_files, value=TRUE)
+            provenance[[fname]] <- xprov
+        }
     }
 }
 
@@ -217,12 +244,16 @@ if (write_plots) {
   print(reference_model)
   print("----------------------------")
   if (chk.ts_plt){
-    print("")
-    print(paste0(">>>>>>>> TIME SERIE PROCESSING INITIATION"))
-    timeseries_main(path = work_dir, idx_list =  timeseries_idx,
+      print("")
+      print(paste0(">>>>>>>> TIME SERIE PROCESSING INITIATION"))
+      plotfiles <- timeseries_main(path = work_dir, idx_list =  timeseries_idx,
                     model_list = setdiff(models_name, reference_model),
                     obs_list = reference_model, plot_dir = plot_dir,
                     normalize = normalize)
+      xprov <- provenance_record(climofiles)
+      for (fname in plotfiles) {
+          provenance[[fname]] <- xprov
+      }
   }
 
 ############################### 
@@ -253,9 +284,17 @@ if (write_plots) {
     }
 
     #### Running gleckler_main ####
-    gleckler_main(path = work_dir, idx_list = gleckler_idx,
+    plotfiles= gleckler_main(path = work_dir, idx_list = gleckler_idx,
                   model_list = setdiff(models_name, reference_model),
                   obs_list = reference_model,
                   plot_dir = plot_dir, promptInput = promptInput)
+
+    xprov <- provenance_record(list(climofiles))
+    for (fname in plotfiles) {
+        provenance[[fname]] <- xprov
+    }
   }
 }
+
+# Write provenance to file
+write_yaml(provenance, provenance_file)

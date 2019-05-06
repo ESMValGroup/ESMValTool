@@ -147,10 +147,11 @@ gleckler_main <- function(path = "./",
                                       nidx, "-idx_", nmodel,"-models_",
                                       nobs, "-obs",  ".RDS"))
   year_range <- readRDS(file = paste0(plot_dir, "/Gleclker-years.RDS"))
-  gleckler_plotting(arr = RMSErelarr, idx_list = idx_list,
+  plotfile <- gleckler_plotting(arr = RMSErelarr, idx_list = idx_list,
                     model_list = model_list, obs_list = obs_list,
                     plot_dir = plot_dir, syear = year_range[1],
                     eyear = year_range[2])
+  return(plotfile)
 }
 
 #### Computing the RMSEs ####
@@ -603,4 +604,5 @@ gleckler_plotting <- function(arr = RMSErelarr, idx_list, model_list,
         side = 3, line = 1, font = 2, cex = 1.1)
 
   dev.off()
+  return(figure_filename)
 }
