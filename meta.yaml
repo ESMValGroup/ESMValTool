@@ -72,6 +72,8 @@ requirements:
     - jasper!=1.900.31  # pinned NCL dependency
     - r-base
     - cdo
+    - r-devtools
+    - r-lintr
 
 test:
   # TODO: add unit tests? This seems to require installing the tests
