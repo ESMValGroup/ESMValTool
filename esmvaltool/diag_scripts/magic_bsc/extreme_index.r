@@ -16,9 +16,6 @@ dir.create(plot_dir, recursive = TRUE)
 dir.create(run_dir, recursive = TRUE)
 dir.create(work_dir, recursive = TRUE)
 
-season <- params$season
-monsup <- params$monsup
-multi_year_average <- params$multi_year_average
 weights <- c(t90p = params$weight_t90p, t10p = params$weight_t10p,
              Wx = params$weight_Wx, rx5day = params$weight_rx5day,
              cdd = params$weight_cdd)
@@ -30,7 +27,7 @@ provenance <- list()
 
 wdata <- NULL
 for (j in 1 : 4) { # variable
-  input_files_per_var <- yaml::read_yaml(params$input_files)
+  input_files_per_var <- yaml::read_yaml(params$input_files[j])
   var0 <- lapply(input_files_per_var, function(x) x$short_name)
   fullpath_filenames <- names(var0)
   var0 <- unname(var0)[1]
@@ -67,9 +64,11 @@ for (j in 1 : 4) { # variable
   calendar <- ncatt_get(hist_nc, "time", "calendar")$value
   long_names <-  ncatt_get(hist_nc, var0, "long_name")$value
   time <-  ncvar_get(hist_nc, "time")
-  # Time correction
-  start_date <- as.POSIXct(substr(ncatt_get(hist_nc, "time", "units")$value,
-                                          11, 29))
+  # Time correction:
+  start_date <- as.POSIXct(paste0(start_reference, "-01-01"), tz = "UTC",
+                           format = "%Y-%m-%d")
+  end_date <- as.POSIXct(paste0(end_reference, "-12-31"), tz = "UTC",
+                         format = "%Y-%m-%d")
   nc_close(hist_nc)
   time <- seq(start_date, end_date, "day")
   if (calendar == "noleap" | calendar == "365_day" | calendar == "365") {
@@ -222,12 +221,14 @@ for (j in 1 : 4) { # variable
                             dim(projection_index$result)[1])
     projection_index_standardized <-
                     (projection_index$result - projection_mean) / base_sd_proj
+    
     for (mod in 1 : num_model) {
        model_dim <- which(names(dim(projection_index_standardized)) == "model")
        if (length(model_dim) == 0) {
            data <- drop(projection_index_standardized)
-       } else {
-           data <- drop(projection_index_standardized[, mod,,])
+       } else { 
+   print(dim(projection_index_standardized))
+           data <- drop(projection_index_standardized[, mod,,,])
        }
  
      #data <- drop(Mean1Dim(projection_index_standardized, 1))
@@ -272,32 +273,71 @@ for (j in 1 : 4) { # variable
         toptitle = title, brks = breaks, fileout = filepng)
 
    # Set provenance for output files
-      xprov <- list(ancestors = list(projection_filenames, reference_filenames),
+     xprov <- list(ancestors = list(projection_filenames, reference_filenames),
                   authors = list("hunt_al", "manu_ni", "caro_lo"),
                   projects = list("c3s-magic"),
                   caption = title,
                   statistics = list("other"),
-                 # metric = params$metric,
+                  weight = weights[j + (m - 1)],
                   realms = list("atmos"),
                   themes = list("phys"),
                   plot_file = filepng)
       provenance[[filencdf]] <- xprov
-      } # model index
-    # compute weights in the data
-    weightdata <- projection_index_standardized * weights[j + (m -1)]
-    wdata <- abind(wdata, weightdata, along = 6)
+      # compute weights in the data
+      lon <- as.vector(lon)
+      lat <- as.vector(lat)
+      temporal <- WeightedMean(projection_index_standardized, 
+                               lon = lon, lat = lat)
+      time_dim <- which(names(dim(temporal)) == "year")
+      if (!is.null(running_mean)) {
+         temporal <- Smoothing(temporal, runmeanlen = running_mean, 
+                               numdimt = time_dim)
+                     timestamp <- paste0(running_mean, "-month-running-mean-")
+      }    
+      wdata[[j + (m - 1)]] <- temporal
+      } #model index
     } # metric index 
   }  # number of projections
 }  # variable index
-dimnames <- c(names(dim(weightdata)), "metric")
-names(wdata) <- dimnames
-time_dim <- which(dimnames == 'time')
-str(data)
-if (!is.null(running_mean)) {
-    data <- Smoothing(data, runmeanlen = running_mean, numdimt = time_dim)
-                      timestamp <- paste0(running_mean, "-month-running-mean-")
+
+if (!is.numeric(weights)) {
+    data <- CombineIndices(wdata, weights = NULL) # nolint
+} else {
+    data <- CombineIndices(wdata, weights = weights) # nolint
 }
-print(str(data))
+
+# Plotting time series:
+data <- drop(data)
+if (length(data) >= 5) {
+    png(paste0(plot_dir, "/CombinedIndices.png"))
+    plot(start_projection : end_projection, data, type = "l",
+         lwd = 2, col = "darkblue")
+    dev.off()
+}
+dimtime <- ncdim_def(name = "time", units = "years",
+    vals = start_projection : end_projection, longname = "time")
+defdata <- ncvar_def(name = "data", units = "adimensional",
+    dim = list(time = dimtime), longname = paste("Combination", long_names))
+filencdf <- paste0(plot_dir, "/", "_", paste0(model_names, collapse = "_"),
+                   ".nc")
+file <- nc_create(filencdf, list(defdata))
+ncvar_put(file, defdata, data)
+nc_close(file)
+
+xprov <- list(ancestors = list(fullpath_filenames),
+                  authors = list("hunt_al", "manu_ni", "pere_nu"),
+                  projects = list("c3s-magic"),
+                  caption = "Combined selection",
+                  statistics = list("other"),
+                  running_mean = params$running_mean,
+	          weight_t90p = params$weight_t90p, 
+                  weight_t10p = params$weight_t10p,
+                  weight_Wx = params$weight_Wx, 
+                  weight_rx5day = params$weight_rx5day,
+                  weight_cdd = params$weight_cdd,
+                  realms = list("atmos"),
+                  themes = list("phys"))
+provenance[[filencdf]] <- xprov
 
 # Write provenance to file
 write_yaml(provenance, provenance_file)
