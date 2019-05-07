@@ -35,3 +35,8 @@ User settings in recipe
 
    * write_netcdf: true or false to write output as NetCDF or not.
 
+Variables
+---------
+
+* pr,tas      (daily)
+
