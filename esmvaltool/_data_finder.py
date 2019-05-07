@@ -252,9 +252,12 @@ def get_input_filelist(variable, rootpath, drs):
 def get_input_fx_filelist(variable, rootpath, drs):
     """Return a dict with the full path to fx input files."""
     fx_files = {}
+    # keep legacy implementation as well
     if 'fxvar' in variable.keys():
-        variable['fx_files'] = [variable['short_name']]
-    for fx_var in variable['fx_files']:
+        fx_vars = [variable['short_name']]
+    else:
+        fx_vars = variable['fx_files']
+    for fx_var in fx_vars:
         var = dict(variable)
         if var['project'] == 'CMIP5':
             var['mip'] = replace_mip_fx(fx_var)
