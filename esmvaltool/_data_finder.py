@@ -11,7 +11,7 @@ import re
 
 import six
 
-from ._config import get_project_config, replace_mip_fx
+from ._config import _get_cmip6_fx_mip, get_project_config, replace_mip_fx
 from .cmor.table import CMOR_TABLES
 
 logger = logging.getLogger(__name__)
@@ -261,6 +261,8 @@ def get_input_fx_filelist(variable, rootpath, drs):
             var['frequency'] = 'fx'
             var['modeling_realm'] = 'fx'
             var['ensemble'] = 'r0i0p0'
+        elif var['project'] == 'CMIP6':
+            var['mip'] = _get_cmip6_fx_mip(var['short_name'])
         table = CMOR_TABLES[var['cmor_table']].get_table(var['mip'])
         var['frequency'] = table.frequency
         realm = getattr(table.get(var['short_name']), 'modeling_realm', None)
