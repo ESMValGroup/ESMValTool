@@ -82,6 +82,17 @@ begin
       ncdf = ncdf_write(var_all, workpath)
     end if
 
+    ; Call provenance logger
+    log_provenance(ncdf, \
+                   "n/a", \
+                   "n/a", \
+                   (/"mean", "rmsd"/), \
+                   region@name, \
+                   "other", \
+                   (/"fran_fr", "righ_ma", "eyri_ve"/), \
+                   (/"righi15gmd", "gleckler08jgr"/), \
+                   info_items[imod]@filename)
+
     ; Calculate grading
     if (.not.diag_script_info@calc_grading) then
       continue
