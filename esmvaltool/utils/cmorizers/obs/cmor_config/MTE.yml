@@ -17,5 +17,5 @@ variables:
     mip: Lmon
   gppStderr:
     mip: Lmon
-    raw: gpp
+    raw: std
     custom_cmor_table: true

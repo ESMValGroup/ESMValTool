@@ -235,7 +235,6 @@ diagnostics:
         mip: Lmon
       gppStderr:
         mip: Lmon
-        derive: true
     additional_datasets:
       - {dataset: MTE, project: OBS, tier: 2, type: clim, version: May12, start_year: 1982, end_year: 2011}
     scripts: null
