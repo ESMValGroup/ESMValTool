@@ -88,22 +88,6 @@ def extract_variable(var_info, raw_info, out_dir, attrs):
             _fix_attr_cmip5(out_dir, var)
 
 
-def da_coarsen(da, bin):
-    """ Rebin DataArray with user specified value"""
-    data = np.ma.masked_invalid(da.values)
-    lat = da.coords['lat'].values
-    lon = da.coords['lon'].values
-    # rebin
-    dd = data.shape
-    newda = da[:, :dd[1] // bin, :dd[2] // bin]
-    newda.values = data.reshape([dd[0], dd[1] // bin, bin, dd[2] // bin,
-                                 bin]).mean(-1).mean(-2)
-    newda.coords['lat'].values = lat.reshape([dd[1] // bin, bin]).mean(-1)
-    newda.coords['lon'].values = lon.reshape([dd[2] // bin, bin]).mean(-1)
-
-    return newda
-
-
 def merge_data(in_dir, out_dir, raw_info, bin):
     """Merge all data into a single (regridded) file"""
 
@@ -117,14 +101,16 @@ def merge_data(in_dir, out_dir, raw_info, bin):
     for ff in in_files:
         DS = xr.open_dataset(ff)
         da = DS[var].sel(lat=slice(None, None, -1))
-        # remove inconsitent attributes
+        # remove inconsistent attributes
         for delkey in [
                 'grid_mapping', 'ancillary_variables', 'parameter_vocab_uri'
         ]:
             del da.attrs[delkey]
-        #TODO test with xarray coarsen at v0.12+
+
         if (do_bin):
-            da = da_coarsen(da, bin)
+            da = da.coarsen(lat=bin, boundary='exact').mean()
+            da = da.coarsen(lon=bin, boundary='exact').mean()
+
         if ff == in_files[0]:
             newda = da
             selkey = ['creator_name','creator_url',\
@@ -132,19 +118,17 @@ def merge_data(in_dir, out_dir, raw_info, bin):
             DSmeta = dict((k, DS.attrs[k]) for k in selkey)
             if (do_bin):
                 comment = ' '.join([
-                    'Data binned using ',
-                    str(bin), 'by',
-                    str(bin), 'cells average'
+                    'Data binned using ', "{}".format(bin), 'by',
+                    "{}".format(bin), 'cells average'
                 ])
                 DSmeta['BINNING'] = comment
             continue
         newda = xr.concat((newda, da), dim='time')
 
     # save to file
-    DS = newda.to_dataset()
+    DS = newda.to_dataset(name=var)
     for x, y in DSmeta.items():
         DS.attrs[x] = y
-    #TODO test encoding with xarray at v0.12+
     encoding = {
         'lat': {
             '_FillValue': False
