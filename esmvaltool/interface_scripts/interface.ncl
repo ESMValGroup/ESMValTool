@@ -87,6 +87,8 @@ function select_metadata_by_atts(info:list,
 ; References
 ;
 ; Modification history
+;   20190508-A_laue_ax: missing attributes are now allowed; warning (debug)
+;                       message is issued if some/all attributes are missing
 ;   20181106_A-righ_ma: written.
 ;
 local funcname, scriptname, ninfo, natts, l_flag, ii, jj, ca
@@ -104,11 +106,13 @@ begin
     l_flag = True
     do jj = 0, natts - 1  ; loop over requested attributes
       if (.not.isatt(info[ii], atts(jj))) then
-        error_msg("f", scriptname, funcname, \
+        log_debug("w", scriptname, funcname, \
                   "missing " + atts(jj) + " attribute")
-      end if
-      if (info[ii]@$atts(jj)$.ne.att@$atts(jj)$) then
         l_flag = False
+      else
+        if (info[ii]@$atts(jj)$.ne.att@$atts(jj)$) then
+          l_flag = False
+        end if
       end if
     end do
     if (l_flag) then
