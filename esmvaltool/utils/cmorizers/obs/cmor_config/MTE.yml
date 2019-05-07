@@ -1,0 +1,21 @@
+---
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: MTE
+  version: 'May12'
+  tier: 2
+  modeling_realm: clim
+  project_id: CMIP5
+  source: 'http://www.bgc-jena.mpg.de/geodb/BGI/Home'
+  reference: 'mte'
+  comment: ''
+  original_filename: 'EnsembleGPP_GL.nc'
+
+# Variables to cmorize
+variables:
+  gpp:
+    mip: Lmon
+  gppStderr:
+    mip: Lmon
+    raw: gpp
+    custom_cmor_table: true

@@ -89,8 +89,11 @@ def fix_coords(cube):
 
 def fix_var_metadata(cube, var_info):
     """Fix var metadata from CMOR table."""
+    if var_info.standard_name == '':
+        cube.standard_name = None
+    else:
+        cube.standard_name = var_info.standard_name
     cube.var_name = var_info.short_name
-    cube.standard_name = var_info.standard_name
     cube.long_name = var_info.long_name
     _set_units(cube, var_info.units)
     return cube
@@ -104,6 +107,8 @@ def read_cmor_config(cmor_config):
         cfg = yaml.safe_load(file)
     cfg['cmor_table'] = \
         CMOR_TABLES[cfg['attributes']['project_id']]
+    cfg['custom_cmor_table'] = \
+        CMOR_TABLES['custom']
     if 'comment' not in cfg.keys():
         cfg['attributes']['comment'] = ''
     return cfg
@@ -164,6 +169,11 @@ def set_global_atts(cube, attrs):
 
     for att, value in glob_dict.items():
         cube.metadata.attributes[att] = value
+
+
+def var_name_constraint(var_name):
+    """:mod:`iris.Constraint` using `var_name` of an :mod:`iris.cube.Cube`."""
+    return iris.Constraint(cube_func=lambda c: c.var_name == var_name)
 
 
 def _fix_bounds(cube, dim_coord):
