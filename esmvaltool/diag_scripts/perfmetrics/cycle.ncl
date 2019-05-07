@@ -52,7 +52,7 @@ begin
     vv = var0 + level
   end if
   fname = str_join((/"perfmetrics", "cycle", vv, \
-                     diag_script_info@time_avg, region@name/), "_")
+                     diag_script_info@time_avg, diag_script_info@region/), "_")
   workpath = config_user_info@work_dir + fname + ".nc"
   plotpath = config_user_info@plot_dir + fname
 
@@ -138,7 +138,7 @@ begin
                  plotpath + "." + file_type, \
                  "Cycle plot of variable " + caption, \
                  (/"mean", "stddev"/), \
-                 region@name, \
+                 diag_script_info@region, \
                  "seas", \
                  (/"fran_fr", "righ_ma", "eyri_ve"/), \
                  (/"righi15gmd", "gleckler08jgr"/), \

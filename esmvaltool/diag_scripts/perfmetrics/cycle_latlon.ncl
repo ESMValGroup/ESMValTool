@@ -30,8 +30,9 @@ begin
 
     ; Set path for saving processed data
     system("mkdir -p " + config_user_info@work_dir)
-    fname = str_join((/"perfmetrics", "cycle_latlon", annots(imod), var0, \
-                       diag_script_info@time_avg, region@name/), "_")
+    fname = \
+      str_join((/"perfmetrics", "cycle_latlon", annots(imod), var0, \
+                 diag_script_info@time_avg, diag_script_info@region/), "_")
     workpath = config_user_info@work_dir + fname + ".nc"
 
     ; Determine start/end year
@@ -88,7 +89,7 @@ begin
                    "n/a", \
                    "n/a", \
                    (/"mean", "stddev"/), \
-                   region@name, \
+                   diag_script_info@region, \
                    "other", \
                    (/"fran_fr", "righ_ma", "eyri_ve"/), \
                    (/"righi15gmd", "gleckler08jgr"/), \

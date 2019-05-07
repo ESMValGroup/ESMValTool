@@ -32,13 +32,15 @@ begin
 
     ; Set path for saving processed data
     system("mkdir -p " + config_user_info@work_dir)
-    fname_abs = str_join((/"perfmetrics", "zonal", annots(imod), var0, \
-                           diag_script_info@time_avg, region@name/), "_")
+    fname_abs = \
+      str_join((/"perfmetrics", "zonal", annots(imod), var0, \
+                 diag_script_info@time_avg, diag_script_info@region/), "_")
     workpath_abs = config_user_info@work_dir + fname_abs + ".nc"
     plotpath_abs = config_user_info@plot_dir + fname_abs
-    fname_diff = str_join((/"perfmetrics", "zonal", \
-                            annots(imod) + "-" + annots(ref_ind), var0, \
-                            diag_script_info@time_avg, region@name/), "_")
+    fname_diff = \
+      str_join((/"perfmetrics", "zonal", \
+                 annots(imod) + "-" + annots(ref_ind), var0, \
+                 diag_script_info@time_avg, diag_script_info@region/), "_")
     workpath_diff = config_user_info@work_dir + fname_diff + ".nc"
     plotpath_diff = config_user_info@plot_dir + fname_diff
 
@@ -130,7 +132,7 @@ begin
                    plotpath_abs + "." + file_type, \
                    "Zonal mean of variable " + var0, \
                    (/"mean", "stddev"/), \
-                   region@name, \
+                   diag_script_info@region, \
                    "zonal", \
                    (/"fran_fr", "righ_ma", "eyri_ve"/), \
                    (/"righi15gmd", "gleckler08jgr"/), \
@@ -205,7 +207,7 @@ begin
                    plotpath_diff + "." + file_type, \
                    caption, \
                    (/"mean", "stddev", "diff"/), \
-                   region@name, \
+                   diag_script_info@region, \
                    "zonal", \
                    (/"fran_fr", "righ_ma", "eyri_ve"/), \
                    (/"righi15gmd", "gleckler08jgr"/), \
