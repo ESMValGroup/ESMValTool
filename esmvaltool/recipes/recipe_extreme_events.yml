@@ -1,5 +1,5 @@
 # ESMValTool
-#recipe_ExtremeEvents.yml 
+# recipe_ExtremeEvents.yml 
 ---
 documentation:
   description: |
@@ -65,7 +65,7 @@ diagnostics:
         script: extreme_events/ExtremeEvents.r
         reference_datasets: ["ACCESS1-0", "ACCESS1-3", "IPSL-CM5A-MR"]
         regrid_dataset: ACCESS1-0
-        MIP_name: CMIP
+        mip_name: CMIP
         timeseries_idx: ["tn10pETCCDI_yr", "tn90pETCCDI_yr", "tx10pETCCDI_yr", "tx90pETCCDI_yr"]
         gleckler_idx: ["tn10pETCCDI_yr", "tn90pETCCDI_yr", "tx10pETCCDI_yr", "tx90pETCCDI_yr"]
         ts_plt: TRUE

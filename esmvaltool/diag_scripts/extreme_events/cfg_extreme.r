@@ -3,7 +3,7 @@ regrid_dataset <- NA
 base_range <- NA
 analysis_range <- NA
 climdex_parallel <- 25
-MIP_name <- "cmip"
+mip_name <- "cmip"
 ts_col_list <- c("dodgerblue2", "darkgreen", "firebrick2", "darkorchid")
 ts_png_width <- 640
 ts_png_height <- 480
@@ -31,11 +31,11 @@ gl_png_res <- 480
 gl_png_units <- "px"
 gl_png_pointsize <- 12
 gl_png_bg <- "white"
-gl_RMSEspacer <- 0.01
+gl_rmsespacer <- 0.01
 gl_scaling_factor <- 0.9
 gl_text_scaling_factor <- 1.0
-gl_xscale_spacer_RMSE <- 0.05
-gl_xscale_spacer_RMSEstd <- 0.2
+gl_xscale_spacer_rmse <- 0.05
+gl_xscale_spacer_rmsestd <- 0.2
 gl_symb_scaling_factor <- 1.0
 gl_symb_xshift <- 0.175
 gl_symb_yshift <- 0.275

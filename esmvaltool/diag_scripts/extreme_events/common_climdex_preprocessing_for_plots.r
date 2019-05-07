@@ -13,8 +13,9 @@
 #    and producing timemeans.
 #
 # Modification history
-#    20180725-A_cwmohr       : Modification of setTimeForFilesEqual() function
-#    20170920-A_maritsandstad: Creation
+#    2019 0506-hard_jo        : Conversion to ESMValTool2
+#    2018 0725-A_cwmohr       : Modification of setTimeForFilesEqual() function
+#    2017 0920-A_maritsandstad: Creation
 #
 # #############################################################################
 
@@ -25,7 +26,7 @@
 ## @param idx_dir path of directory containing
 ## files from which to create the grid
 ##
-createGrid <- function(path = idx_dir, loc = "./gridDef") {
+create_grid <- function(path = idx_dir, loc = "./gridDef") {
   ## Picking the grid found in the first file to regrid over
   first_file <- list.files(path,
     pattern = paste0(".*", regrid_dataset, ".*\\.nc"),
@@ -35,17 +36,17 @@ createGrid <- function(path = idx_dir, loc = "./gridDef") {
       stdout = loc, options = "-O")
 }
 
-##
-## Method to create a landSeaMask on a suitable grid
-## @param regrid name w/path of gridfile to use
-## to put the landdseamask on
-##
-createLandSeaMask <- function(regrid = "./gridDef", loc = "./",
+#
+# Method to create a landSeaMask on a suitable grid
+# @param regrid name w/path of gridfile to use
+# to put the landdseamask on
+#
+create_land_sea_mask <- function(regrid = "./gridDef", loc = "./",
                               landmask = "./landSeaMask.nc") {
   # Test if gridfile exists
   # otherwise call function to generate one
   if (!file.exists(regrid)) {
-    createGrid(path = loc, loc = regrid)
+    create_grid(path = loc, loc = regrid)
   }
 
   ## Making topographic map
@@ -56,19 +57,19 @@ createLandSeaMask <- function(regrid = "./gridDef", loc = "./",
     args = regrid, input = paste0(loc, "/topo.nc"),  # nolint
     output = paste0(loc, "/regridded_topo.nc"), options = "-O")  # nolint
 
-  ## Set above sea-level gridpoints to missing
+  # Set above sea-level gridpoints to missing
   cdo("setrtomiss",
     args = "0,9000",
     input = paste0(loc, "/regridded_topo.nc"),  # nolint
     output = paste0(loc, "/regridded_topo_miss1.nc"), options = "-O")  # nolint
 
-  ## Set above sea-level gridpoints to 1
+  # Set above sea-level gridpoints to 1
   cdo("setmisstoc",
     args = "1",
     input = paste0(loc, "/regridded_topo_miss1.nc"),  # nolint
     output = paste0(loc, "/regridded_topo_1pos.nc"), options = "-O")  # nolint
 
-  ## Set below sea-level gridpoints to missing
+  # Set below sea-level gridpoints to missing
   cdo("setrtomiss",
     args = "-9000,0",
     input = paste0(loc, "/regridded_topo_1pos.nc"),  # nolint
@@ -86,7 +87,7 @@ createLandSeaMask <- function(regrid = "./gridDef", loc = "./",
 ## @param max_start is an optional crop start
 ## @param min_end is an optional crop end
 ##
-setTimeForFilesEqual <- function(path = "../../climdex/ensMeanMed/rcp26",
+set_time_for_files_equal <- function(path = "../../climdex/ensMeanMed/rcp26",
                                  idx = "tnnETCCDI_yr", model_list,
                                  time_cropped = "./timeCropped",
                                  max_start = 0, min_end = 2500) {
@@ -145,7 +146,7 @@ setTimeForFilesEqual <- function(path = "../../climdex/ensMeanMed/rcp26",
   }
 
   i <- 1
-  ## For-loop to crop the files
+  # For-loop to crop the files
   for (m in models) {
     ## If file is already of appropriate length
     ## Then just copy it over
@@ -179,7 +180,7 @@ setTimeForFilesEqual <- function(path = "../../climdex/ensMeanMed/rcp26",
 ## @param landmask gives the file that defines the landseamask to be used
 ##
 ##
-regridAndLandSeaMask <- function(idx_raw, regrid = "./gridDef",
+regrid_and_land_sea_mask <- function(idx_raw, regrid = "./gridDef",
                                  landmask = "./landSeaMask.nc",
                                  regridded = "./Regridded",
                                  land = "./Land", loc = "./") {
@@ -189,7 +190,7 @@ regridAndLandSeaMask <- function(idx_raw, regrid = "./gridDef",
 
   ## If the landmask does not exist, we create one.
   if (!file.exists(landmask)) {
-    createLandSeaMask(regrid = regrid, loc = loc, landmask = landmask)
+    create_land_sea_mask(regrid = regrid, loc = loc, landmask = landmask)
   }
 
   ## Checking if directories are present and creating them if not:

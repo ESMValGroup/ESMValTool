@@ -12,6 +12,7 @@
 #
 # Modification history
 #
+#    2019 0506-hard_jo: conversion to ESMValTool2
 #    20180601-A_cwmohr: re-creation (complete new script incorparating segments from "make_timeseries_plot.r & make_Glecker_plot.r")
 #
 # #########################################################################################################
@@ -30,13 +31,13 @@ gleckler_main <- function(path = "./",
                           ),
                           obs_list = c("CanESM2"),
                           plot_dir = "../plot/ExtremeEvents/",
-                          promptInput = promptInput,
+                          promptinput = promptinput,
                           start_yr = 2000, end_yr = 2009) {
 
   #### CLIMDEX PREPROCESSING ####
 
   ## For file structure and files
-  tsGrid <- paste(path, "/tsGridDef", sep = "")  # nolint
+  tsgrid <- paste(path, "/tsGridDef", sep = "")  # nolint
   time_cropped <- paste(path, "/timeCropped", sep = "")  # nolint
   landmask <- paste(path, "/landSeaMask.nc", sep = "")  # nolint
   regridded <- paste(path, "/regridded", sep = "")  # nolint
@@ -46,26 +47,26 @@ gleckler_main <- function(path = "./",
   nidx <- length(idx_list) # number of indices
   nobs <- length(obs_list) # number of observations
 
-  if (promptInput == "y") {
-    ## Initial nc-file time crop, regrid, land and plot purge
+  if (promptinput == "y") {
+    # Initial nc-file time crop, regrid, land and plot purge
     unlink(c(
       paste0(time_cropped, "/*.nc"), paste0(regridded, "/*.nc"),  # nolint
       paste0(land, "/*.nc")  # nolint
     ))
 
     ## Initial grid and landmask creation reset
-    gridAndLandmask <- TRUE
+    grid_and_landmask <- TRUE
 
     ## Combine model and observation list
-    modelAndObs_list <- unique(c(model_list, obs_list))
+    modelandobs_list <- unique(c(model_list, obs_list))
 
     ## Loop over the indices to produce a plot for each index
     for (idx in idx_list) {
 
       ## Time crop
-      returnvalue <- setTimeForFilesEqual(
+      returnvalue <- set_time_for_files_equal(
         path = path, idx = idx,
-        model_list = modelAndObs_list,
+        model_list = modelandobs_list,
         time_cropped = time_cropped,
         max_start = start_yr, min_end = end_yr
       )
@@ -81,53 +82,53 @@ gleckler_main <- function(path = "./",
       }
 
       ## Find the new model and observation names (after time cropping)
-      modelsAndObs <- basename(Sys.glob(file.path(
+      modelsandobs <- basename(Sys.glob(file.path(
         time_cropped,
         paste0(idx, "*.nc")
       )))
-      split_modelsAndObs <- strsplit(modelsAndObs, split = "_")
-      modelsAndObs_index <- unlist(lapply(split_modelsAndObs, function(x) {
+      split_modelsandobs <- strsplit(modelsandobs, split = "_")
+      modelsandobs_index <- unlist(lapply(split_modelsandobs, function(x) {
         x[3]
       }))
 
       ## new models
-      models <- modelsAndObs[which(modelsAndObs_index %in% model_list)]
+      models <- modelsandobs[which(modelsandobs_index %in% model_list)]
 
       ## new observations
-      obs <- modelsAndObs[which(modelsAndObs_index %in% obs_list)]
+      obs <- modelsandobs[which(modelsandobs_index %in% obs_list)]
 
       ## Find the start year (to be used in plotting)
       # start_yr <- strtoi(substr(models[1], nchar(models[1]) - 11,
       #                          nchar(models[1]) - 8))
-      ## !New Grid and landseamask for each idx
-      ## !(or just the first idx set) should be
-      ## !produced here
-      if (gridAndLandmask) {
-        createGrid(path = path, loc = tsGrid)
-        createLandSeaMask(regrid = tsGrid, loc = path, landmask = landmask)
-        gridAndLandmask <- FALSE
+      # !New Grid and landseamask for each idx
+      # !(or just the first idx set) should be
+      # !produced here
+      if (grid_and_landmask) {
+        create_grid(path = path, loc = tsgrid)
+        create_land_sea_mask(regrid = tsgrid, loc = path, landmask = landmask)
+        grid_and_landmask <- FALSE
       }
 
       ## Loop over each file so it can be regridded
       ## and landseaMasked
-      for (mo in modelsAndObs) {
+      for (mo in modelsandobs) {
         print(paste(time_cropped, "/", mo, sep = ""))
-        regridAndLandSeaMask(
+        regrid_and_land_sea_mask(
           idx_raw = paste(time_cropped, "/", mo, sep = ""),
-          regrid = tsGrid, landmask = landmask,
+          regrid = tsgrid, landmask = landmask,
           regridded = regridded, land = land, loc = path
         )
       }
     }
 
     #### Gleckler Array Processing ####
-    RMSErelarr <- gleckler_array(
+    rmserelarr <- gleckler_array(
       path = land, idx_list = idx_list,
       model_list = model_list, obs_list = obs_list
     )
 
     ## Save Array
-    saveRDS(object = RMSErelarr, file = paste0(
+    saveRDS(object = rmserelarr, file = paste0(
       plot_dir, "/Gleckler-Array_",  # nolint
       nidx, "-idx_",
       nmodel, "-models_",
@@ -140,14 +141,14 @@ gleckler_main <- function(path = "./",
   }
 
   #### Gleckler Plotting ####
-  RMSErelarr <- readRDS(file = paste0(
+  rmserelarr <- readRDS(file = paste0(
     plot_dir, "/Gleckler-Array_",  # nolint
     nidx, "-idx_", nmodel, "-models_",
     nobs, "-obs", ".RDS"
   ))
   year_range <- readRDS(file = paste0(plot_dir, "/Gleckler-years.RDS"))  # nolint
   plotfile <- gleckler_plotting(
-    arr = RMSErelarr, idx_list = idx_list,
+    arr = rmserelarr, idx_list = idx_list,
     model_list = model_list, obs_list = obs_list,
     plot_dir = plot_dir, syear = year_range[1],
     eyear = year_range[2]
@@ -209,8 +210,8 @@ gleckler_array <- function(path = land, idx_list = gleckler_idx,
 
   # Array for the RMSE spaces in the array are created so that the
   # RSMEall, ENSmean, ENSmedian and CMIP RMSE can be created
-  RMSEarr <- array(NA, dim = c(nidx + 1, nmodel + 3, nobs))
-  RMSErelarr <- RMSEarr
+  rmsearr <- array(NA, dim = c(nidx + 1, nmodel + 3, nobs))
+  rmserelarr <- rmsearr
   ensmodel_list <- list()
 
   i <- 2
@@ -245,26 +246,26 @@ gleckler_array <- function(path = land, idx_list = gleckler_idx,
       length(ensmodel_list) + 2
     ))
 
-    ## Copy each matrix from the multimodel list to the array "ensarr".
-    ## Notice the "+2" on the 3rd dimension. This is so later the model
-    ## ensemble mean and median matrices can be added to the array.
+    # Copy each matrix from the multimodel list to the array "ensarr".
+    # Notice the "+2" on the 3rd dimension. This is so later the model
+    # ensemble mean and median matrices can be added to the array.
     for (n in seq_along(ensmodel_list)) {
       ensarr[, , n + 2] <- ensmodel_list[[n]]
     }
 
     ## Calculate the ensemble mean and median of
     ## all the model time mean matrices
-    ensMean <- apply(ensarr, c(1, 2), function(x) {
+    ensmean <- apply(ensarr, c(1, 2), function(x) {
       mean(na.omit(x))
     })
-    ensMedian <- apply(ensarr, c(1, 2), function(x) {
+    ensmedian <- apply(ensarr, c(1, 2), function(x) {
       median(na.omit(x))
     })
 
-    ## Place the ensemble model mean and medians into the
-    ## first two matrices (3-dimention) of the array "ensarr"
-    ensarr[, , 1] <- ensMean
-    ensarr[, , 2] <- ensMedian
+    # Place the ensemble model mean and medians into the
+    # first two matrices (3-dimention) of the array "ensarr"
+    ensarr[, , 1] <- ensmean
+    ensarr[, , 2] <- ensmedian
 
     j <- 1
     ## Calculate the RMSE for all the models and the ensemble mean and median
@@ -278,15 +279,15 @@ gleckler_array <- function(path = land, idx_list = gleckler_idx,
         ))))
         tm_obs_idx <- ncvar_get(tm_obs, idxs)
         nc_close(tm_obs)
-        RMSEarr[i + 1, j, o] <- RMSE(
+        rmsearr[i + 1, j, o] <- RMSE(
           model = ensarr[, , j], obs = tm_obs_idx,
           lat = model_lat
         ) # Calculate each RMSE and place value in RMSE-array
 
         ## Calculate the model standard deviation.
-        ## Later used for calculating the RMSEmedian,std.
+        ## Later used for calculating the rmsemedian,std.
         ## Denominator in equation 3, from Sillmann et. al 2013
-        RMSEarr[i + 1, ncol(RMSEarr), o] <-
+        rmsearr[i + 1, ncol(rmsearr), o] <-
           sqrt(area.mean( (tm_obs_idx - area.mean(tm_obs_idx,
                                                  lat = model_lat)) ^ 2,
                           lat = model_lat))
@@ -295,13 +296,13 @@ gleckler_array <- function(path = land, idx_list = gleckler_idx,
   }
 
   ## Calculate the RMSE median for the models
-  tmpRMSEarr <- RMSEarr[, -c(1, 2, ncol(RMSEarr)), ]
-  if (length(dim(tmpRMSEarr)) == 3) {
-    RMSEmed <- apply(tmpRMSEarr, c(1, 3), function(x) {
+  tmprmsearr <- rmsearr[, -c(1, 2, ncol(rmsearr)), ]
+  if (length(dim(tmprmsearr)) == 3) {
+    rmsemed <- apply(tmprmsearr, c(1, 3), function(x) {
       median(x, na.rm = TRUE)
     })
   } else {
-    RMSEmed <- apply(tmpRMSEarr, 1, function(x) {
+    rmsemed <- apply(tmprmsearr, 1, function(x) {
       median(x, na.rm = TRUE)
     })
   }
@@ -309,43 +310,43 @@ gleckler_array <- function(path = land, idx_list = gleckler_idx,
   ## Function to calculate the relative RMSE (RMSE'xy)
   ## between the model and observed climatology
   ## Equation 2, from Sillmann et. al 2013
-  RMSErel <- function(RMSE, RMSEmed) {
-    RMSErel <- (RMSE - RMSEmed) / RMSEmed
-    return(RMSErel)
+  rmserel <- function(rmse, rmsemed) {
+    rmserel <- (rmse - rmsemed) / rmsemed
+    return(rmserel)
   }
 
   ## Calculating the relative RMSE (RMSE'xy)
   m <- 1
-  for (m in 1:(ncol(RMSEarr) - 1)) {
-    RMSErelarr[, m, ] <- RMSErel(RMSE = RMSEarr[, m, ], RMSEmed = RMSEmed)
+  for (m in 1:(ncol(rmsearr) - 1)) {
+    rmserelarr[, m, ] <- rmserel(rmse = rmsearr[, m, ], rmsemed = rmsemed)
   }
 
   ## Calculating the RMSE median,std. Equation 3, from Sillmann et. al 2013
-  RMSErelarr[, ncol(RMSErelarr), ] <- RMSEmed / RMSEarr[, ncol(RMSEarr), ]
+  rmserelarr[, ncol(rmserelarr), ] <- rmsemed / rmsearr[, ncol(rmsearr), ]
 
   ## Calculating the RSME mean
-  tmpRMSEarr <- RMSErelarr[, -ncol(RMSErelarr), ]
-  if (length(dim(tmpRMSEarr)) == 3) {
-    RMSErelarr[1, -ncol(RMSErelarr), ] <- apply(
-      tmpRMSEarr, c(2, 3),
+  tmprmsearr <- rmserelarr[, -ncol(rmserelarr), ]
+  if (length(dim(tmprmsearr)) == 3) {
+    rmserelarr[1, -ncol(rmserelarr), ] <- apply(
+      tmprmsearr, c(2, 3),
       function(x) {
         mean(x, na.rm = TRUE)
       }
     )
   } else {
-    RMSErelarr[1, -ncol(RMSErelarr), ] <- apply(
-      tmpRMSEarr, c(2),
+    rmserelarr[1, -ncol(rmserelarr), ] <- apply(
+      tmprmsearr, c(2),
       function(x) {
         mean(x, na.rm = TRUE)
       }
     )
   }
-  print(RMSErelarr)
-  return(RMSErelarr)
+  print(rmserelarr)
+  return(rmserelarr)
 }
 
 #### Plotting Routine ####
-gleckler_plotting <- function(arr = RMSErelarr, idx_list, model_list,
+gleckler_plotting <- function(arr = rmserelarr, idx_list, model_list,
                               obs_list, plot_dir = "../plots/ExtremeEvents/",
                               syear = max_start, eyear = min_end) {
   nidx <- length(idx_list) # number of indices
@@ -356,12 +357,12 @@ gleckler_plotting <- function(arr = RMSErelarr, idx_list, model_list,
   sclseq <- seq(-0.55, 0.55, 0.1)
 
   ## Colour scale
-  library(RColorBrewer)
-  glc <- brewer.pal(length(sclseq) - 2, "RdYlBu")
+  library(RColorBrewer)  # nolint
+  glc <- brewer.pal(length(sclseq) - 2, "RdYlBu")  # nolint
   glc <- c("#662506", glc, "#3f007d")
   glc <- rev(glc)
 
-  ## Numbers for black & white scale
+  # Numbers for black & white scale
   sclseq_bw <- seq(0.05, 1.15, 0.1)
   sclseq_bw
   glbw <- gray(seq(0, 1, length.out = length(sclseq_bw)))
@@ -453,7 +454,7 @@ gleckler_plotting <- function(arr = RMSErelarr, idx_list, model_list,
   width.fct <- ( (nmodel + 3) / (nidx + 1)) + sum(img.adj[c(2, 4)])
   height.fct <- 1 + sum(img.adj[c(1, 3)])
 
-  figure_filename <- paste(plot_dir, "/Gleckler_", MIP_name, "_",  # nolint
+  figure_filename <- paste(plot_dir, "/Gleckler_", mip_name, "_",  # nolint
     nmodel, "-models_", nidx, "-idx_", nobs, "-obs_",
     syear, "-", eyear, ".", output_file_type,
     sep = ""
@@ -478,7 +479,7 @@ gleckler_plotting <- function(arr = RMSErelarr, idx_list, model_list,
 
   par(mfrow = c(1, 1), mar = gl_mar_par, xpd = FALSE, oma = rep(0, 4))
   plot(
-    x = c(0, 1 + gl_RMSEspacer), y = c(0, 1), type = "n", ann = FALSE,
+    x = c(0, 1 + gl_rmsespacer), y = c(0, 1), type = "n", ann = FALSE,
     xaxs = "i", yaxs = "i", bty = "n", xaxt = "n", yaxt = "n"
   )
 
@@ -508,7 +509,7 @@ gleckler_plotting <- function(arr = RMSErelarr, idx_list, model_list,
   for (yj in 2:yn) {
     for (zk in 1:nobs) {
       polygon(
-        x = (xs[[zk]] / xn) + ( (xn - 1) / xn) + gl_RMSEspacer,
+        x = (xs[[zk]] / xn) + ( (xn - 1) / xn) + gl_rmsespacer,
         y = (ys[[zk]] / yn) + ( (yn - yj) / yn),
         col = glbw[which.min(abs(sclseq_bw - arr[yj, xn, zk]))]
       )
@@ -536,19 +537,19 @@ gleckler_plotting <- function(arr = RMSErelarr, idx_list, model_list,
     sqrxs <- c(0, 1, 1, 0)
     sqrys <- c(0, 0, 1, 1)
 
-    ## up-triangle legend
+    # up-triangle legend
     utrixs <- c(0, 1, 0.5)
     utriys <- c(0, 0, 1)
 
-    ## down-triangle legend
+    # down-triangle legend
     dtrixs <- c(0.5, 1, 0)
     dtriys <- c(0, 1, 1)
 
-    ## Legend number shifter
+    # Legend number shifter
     seq_shift <- mean(diff(sclseq) / 2) # Shifts the legend numbers so that
                                         # they represent the border values
 
-    ## y-scale spacer
+    # y-scale spacer
     yscale_spacer <- (1 - scaling_factor) / 2
 
     exlen <- length(glc)
@@ -585,20 +586,20 @@ gleckler_plotting <- function(arr = RMSErelarr, idx_list, model_list,
   gleckler_scale(sclseq, glc,
     scaling_factor = gl_scaling_factor,
     text.scaling_factor = gl_text_scaling_factor,
-    xscale_spacer = gl_xscale_spacer_RMSE
+    xscale_spacer = gl_xscale_spacer_rmse
   )
 
   gleckler_scale(sclseq_bw, glbw,
     scaling_factor = gl_scaling_factor,
     text.scaling_factor = gl_text_scaling_factor,
-    xscale_spacer = gl_xscale_spacer_RMSEstd
+    xscale_spacer = gl_xscale_spacer_rmsestd
   )
 
   ## Plotting symbol legend
   exlen <- length(glc)
-  xsym1 <- gl_scaling_factor * (0.5 / exlen) + 1 + gl_xscale_spacer_RMSE
+  xsym1 <- gl_scaling_factor * (0.5 / exlen) + 1 + gl_xscale_spacer_rmse
   exlen <- length(glbw)
-  xsym2 <- gl_scaling_factor * (0.5 / exlen) + 1 + gl_xscale_spacer_RMSEstd
+  xsym2 <- gl_scaling_factor * (0.5 / exlen) + 1 + gl_xscale_spacer_rmsestd
   x.max_adj <- max(gl_symb_scaling_factor * (xs[[zk]] / xn))
   x.min_adj <- min(gl_symb_scaling_factor * (xs[[zk]] / xn))
   xmidadj <- (x.max_adj - x.min_adj) / 2
@@ -633,7 +634,7 @@ gleckler_plotting <- function(arr = RMSErelarr, idx_list, model_list,
     cex.axis = axlabsize, tick = FALSE, line = lineadj
   )
 
-  xtcks2 <- ( (xn - 1) / xn) + gl_RMSEspacer + (0.5 / xn)
+  xtcks2 <- ( (xn - 1) / xn) + gl_rmsespacer + (0.5 / xn)
   axis(
     side = 1, at = xtcks2, labels = expression("RMSE"["std"]),
     las = 2, cex.axis = axlabsize, tick = FALSE, line = lineadj
@@ -642,7 +643,7 @@ gleckler_plotting <- function(arr = RMSErelarr, idx_list, model_list,
   ## Add index labels
   row_names <- vector(mode = "character", length = length(idx_list))
   for (i in seq_along(idx_list)) {
-    row_names[i] <- idx_df$idxETCCDI[which(idx_df$idxETCCDI_time
+    row_names[i] <- idx_df$idx_etccdi[which(idx_df$idx_etccdi_time
                                            %in% idx_list[i])]
   }
   row_names <- rev(c(expression("RSME"["all"]), row_names))
@@ -653,7 +654,7 @@ gleckler_plotting <- function(arr = RMSErelarr, idx_list, model_list,
   )
 
   mtext(
-    text = paste(MIP_name, " global land ", syear, "-", eyear, sep = ""),
+    text = paste(mip_name, " global land ", syear, "-", eyear, sep = ""),
     side = 3, line = 1, font = 2, cex = 1.1
   )
 

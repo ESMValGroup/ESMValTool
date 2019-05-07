@@ -9,12 +9,13 @@
 #    Code to plot a timeseries plot for a set of climdex indices
 #
 # Modification history
-#    20180816-A_cwmohr: adding input procedure and plotting for/of observation data
-#    20180725-A_cwmohr: modification of time cropping
-#    20180618-A_cwmohr: alpha levels for polygon plotting, second y-axis,
-#    20180131-A_laue_ax: clean-up of code, adaptation to ESMValTool standards,
-#                        added tagging, bugfixes: time axis, cdo, filenames
-#    20170920-A_maritsandstad: Creation
+#    2019 0506-hard_jo : conversion to ESMValTool2
+#    2018 0816-A_cwmohr: adding input procedure and plotting for/of observation data
+#    2018 0725-A_cwmohr: modification of time croppin
+#    2018 0618-A_cwmohr: alpha levels for polygon plotting, second y-axis,
+#    2018 0131-A_laue_ax: clean-up of code, adaptation to ESMValTool standards,
+#                         added tagging, bugfixes: time axis, cdo, filenames
+#    2017 0920-A_maritsandstad: Creation
 #
 # #############################################################################
 
@@ -44,7 +45,7 @@ timeseries_main <- function(path = "../work/ExtremeEvents",
                             start_yr = 2000, end_yr = 2006) {
 
   ## For file structure and files
-  tsGrid <- paste(path, "/tsGridDef", sep = "")  # nolint
+  tsgrid <- paste(path, "/tsgridDef", sep = "")  # nolint
   time_cropped <- paste(path, "/timeCropped", sep = "")  # nolint
   landmask <- paste(path, "/landSeaMask.nc", sep = "")  # nolint
   regridded <- paste(path, "/regridded", sep = "")  # nolint
@@ -57,7 +58,7 @@ timeseries_main <- function(path = "../work/ExtremeEvents",
   ))
 
   # Initial grid and landmask creation reset
-  gridAndLandmask <- TRUE
+  gridandlandmask <- TRUE
 
   ## Loop over the indices to produce a plot for each index
   plotfiles <- list()
@@ -65,19 +66,19 @@ timeseries_main <- function(path = "../work/ExtremeEvents",
   for (idx in idx_list) {
 
     ## Combine the list of models and observations
-    modelObs_list <- unique(c(model_list, obs_list))
+    modelobs_list <- unique(c(model_list, obs_list))
 
     ## Find the model files
-    modelAndObs <- basename(Sys.glob(file.path(
+    modelandobs <- basename(Sys.glob(file.path(
       path,
       paste(idx, "*.nc", sep = "")
     )))
 
     if (ts_data) {
       ## Time crop
-      returnvalue <- setTimeForFilesEqual(
+      returnvalue <- set_time_for_files_equal(
         path = path, idx = idx,
-        model_list = modelObs_list,
+        model_list = modelobs_list,
         time_cropped = time_cropped
       ) # This is a temporary solution
 
@@ -92,27 +93,27 @@ timeseries_main <- function(path = "../work/ExtremeEvents",
       }
 
       ## Find the new model files after time cropping
-      modelAndObs <- basename(Sys.glob(file.path(
+      modelandobs <- basename(Sys.glob(file.path(
         time_cropped,
         paste0(idx, "*.nc")
       )))
 
-      ## !New Grid and landseamask for each idx
-      ## !(or just the first idx set) should be
-      ## !produced here
-      if (gridAndLandmask) {
-        createGrid(path = path, loc = tsGrid)
-        createLandSeaMask(regrid = tsGrid, loc = path, landmask = landmask)
-        gridAndLandmask <- FALSE
+      # !New Grid and landseamask for each idx
+      # !(or just the first idx set) should be
+      # !produced here
+      if (gridandlandmask) {
+        create_grid(path = path, loc = tsgrid)
+        create_land_sea_mask(regrid = tsgrid, loc = path, landmask = landmask)
+        gridandlandmask <- FALSE
       }
 
       ## Loop over each file so it can be regridded
       ## and landseaMasked
-      for (m in modelAndObs) {
+      for (m in modelandobs) {
         print(paste(time_cropped, "/", m, sep = ""))
-        regridAndLandSeaMask(
+        regrid_and_land_sea_mask(
           idx_raw = paste0(time_cropped, "/", m),
-          regrid = tsGrid,
+          regrid = tsgrid,
           landmask = landmask, regridded = regridded,
           land = land, loc = path
         )
@@ -140,13 +141,13 @@ timeseries_main <- function(path = "../work/ExtremeEvents",
   return(plotfiles)
 }
 
-##
-## Method that preprocesses idx-files for a single index
-## in order to get data to plot time series plot
-## for this index
-## @param path is the path to index file location
-## @param idx is the index to be processed.
-##
+#
+# Method that preprocesses idx-files for a single index
+# in order to get data to plot time series plot
+# for this index
+# @param path is the path to index file location
+# @param idx is the index to be processed.
+#
 time_series_preprocessing <- function(land = "./Land", idx = "tnnETCCDI_yr",
                                       model_list = model_list,
                                       obs_list = obs_list, normalize = FALSE,
@@ -161,20 +162,20 @@ time_series_preprocessing <- function(land = "./Land", idx = "tnnETCCDI_yr",
   )
 
   # Getting a list of all the files for the index
-  modelsAndObs <- basename(Sys.glob(file.path(land, paste0(idx, "*.nc"))))
-  modelsAndObsSplitList <- strsplit(modelsAndObs, split = "_")
-  modelsAndObsSplit <- unlist(lapply(modelsAndObsSplitList, function(x) {
+  modelsandobs <- basename(Sys.glob(file.path(land, paste0(idx, "*.nc"))))
+  modelsandobssplitlist <- strsplit(modelsandobs, split = "_")
+  modelsandobssplit <- unlist(lapply(modelsandobssplitlist, function(x) {
     x[3]
   }))
 
   # Extracting only the model files
-  models <- modelsAndObs[which(modelsAndObsSplit %in% model_list)]
+  models <- modelsandobs[which(modelsandobssplit %in% model_list)]
   print("These are the models:")
   print(models)
 
   ## Extracting only the observation files
-  obs_order <- which(modelsAndObsSplit %in% obs_list)
-  obs <- modelsAndObs[obs_order]
+  obs_order <- which(modelsandobssplit %in% obs_list)
+  obs <- modelsandobs[obs_order]
   print("These are the observations:")
   print(obs)
 
@@ -275,7 +276,7 @@ time_series_preprocessing <- function(land = "./Land", idx = "tnnETCCDI_yr",
           paste0(land, "/fldm_", o),  # nolint
           paste0(
             plot_dir, "/", idx, "_",
-            modelsAndObsSplit[obs_order[n]],
+            modelsandobssplit[obs_order[n]],
             "_for_timeseries.nc"
           )
         )
@@ -319,7 +320,7 @@ time_series_preprocessing <- function(land = "./Land", idx = "tnnETCCDI_yr",
           paste0(land, "/detrend_std_fldm_", o),  # nolint
           paste0(
             plot_dir, "/", idx, "_",
-            modelsAndObsSplit[obs_order[n]],
+            modelsandobssplit[obs_order[n]],
             "_for_timeseries.nc"
           )
         )
@@ -327,8 +328,8 @@ time_series_preprocessing <- function(land = "./Land", idx = "tnnETCCDI_yr",
     }
   }
 
-  #### ABSOLUTE VALUES ####
-  ## Non-normalized values fieldmeans
+  # ABSOLUTE VALUES ####
+  # Non-normalized values fieldmeans
   if (!normalize) {
     file_string_models <- ""
     m <- models[1]
@@ -366,8 +367,8 @@ time_series_preprocessing <- function(land = "./Land", idx = "tnnETCCDI_yr",
     )
 
     ## Extracting only the observation files
-    obs_order <- which(modelsAndObsSplit %in% obs_list)
-    obs <- modelsAndObs[obs_order]
+    obs_order <- which(modelsandobssplit %in% obs_list)
+    obs <- modelsandobs[obs_order]
 
     print("These are the observations:")
     print(obs)
@@ -385,25 +386,25 @@ time_series_preprocessing <- function(land = "./Land", idx = "tnnETCCDI_yr",
         paste0(land, "/fldm_", o),  # nolint
         paste0(
           plot_dir, "/", idx, "_",
-          modelsAndObsSplit[obs_order[n]], "_for_timeseries.nc"
+          modelsandobssplit[obs_order[n]], "_for_timeseries.nc"
         )
       )
     }
   }
 }
 
-##
-##
-## Method to plot the time series plot
-## of single idx for already preprocessed data
-## yearly data is assumed
-## @param path - path to directory containing ensemble mean
-## and percentile data.
-## @param idx name of index to be processed
-## @param start_yr start year for data to be used to convert
-## values from days after start year format to
-## year.
-##
+#
+#
+# Method to plot the time series plot
+# of single idx for already preprocessed data
+# yearly data is assumed
+# @param path - path to directory containing ensemble mean
+# and percentile data.
+# @param idx name of index to be processed
+# @param start_yr start year for data to be used to convert
+# values from days after start year format to
+# year.
+#
 
 timeseries_plot <- function(plot_dir = "./plot", idx = "tn10pETCCDI_yr",
                             obs_list, start_yr = 2006, end_yr = 2010,
@@ -415,7 +416,7 @@ timeseries_plot <- function(plot_dir = "./plot", idx = "tn10pETCCDI_yr",
   library(scales)
 
   # Drawing parameters
-  leg_names <- c(MIP_name, obs_list)
+  leg_names <- c(mip_name, obs_list)
 
   ## Reading the netcdf data files into R
   ## First ensemble mean file
@@ -436,30 +437,29 @@ timeseries_plot <- function(plot_dir = "./plot", idx = "tn10pETCCDI_yr",
   ))
 
   ## Reading in time variable and converting to years:
-  ts <- nc.get.time.series(ensm) # from ncdf4.helpers
+  ts <- nc.get.time.series(ensm)  # nolint
   time_conv <- format(ts, "%Y") # extract years
 
   ## Stripping off the _yr tail to the index name
-  # idx_name <- strsplit(idx, "_")[[1]][1]
-  idx_no <- which(idx_df$idxETCCDI_time == idx)
-  idx_name <- paste(idx_df$idxETCCDI[idx_no], "ETCCDI", sep = "")
+  idx_no <- which(idx_df$idx_etccdi_time == idx)
+  idx_name <- paste(idx_df$idx_etccdi[idx_no], "ETCCDI", sep = "")
 
-  ## Reading in the y-variables to be plotted
-  ## First the ensemble mean
+  # Reading in the y-variables to be plotted
+  # First the ensemble mean
   idx_ensm <- ncvar_get(ensm, idx_name)
-  ## Then the 25th percentile
+  # Then the 25th percentile
   idx_ens25 <- ncvar_get(enspctl25, idx_name)
-  ## Finally the 75th percentile
+  # Finally the 75th percentile
   idx_ens75 <- ncvar_get(enspctl75, idx_name)
 
-  ## Maximum and minimum x and y values
+  # Maximum and minimum x and y values
   max.x <- end_yr
   min.x <- start_yr
   irange <- ( (time_conv >= min.x) & (time_conv <= max.x))
   max.y <- max(idx_ensm[irange], idx_ens25[irange], idx_ens75[irange])
   min.y <- min(idx_ensm[irange], idx_ens25[irange], idx_ens75[irange])
 
-  ## Reading in the observations and plotting via a loop
+  # Reading in the observations and plotting via a loop
   obsdata_list <- list()
   n <- 0
   for (o in obs_list) {
@@ -468,7 +468,7 @@ timeseries_plot <- function(plot_dir = "./plot", idx = "tn10pETCCDI_yr",
       "_", o, "_for_timeseries.nc",
       sep = ""
     ))
-    ts_obs <- nc.get.time.series(nc_obs) # from ncdf4.helpers
+    ts_obs <- nc.get.time.series(nc_obs)  # nolint
     time_conv_obs <- format(ts_obs, "%Y") # extract years
     idx_obs <- ncvar_get(nc_obs, idx_name)
     nc_close(nc_obs)
@@ -488,7 +488,7 @@ timeseries_plot <- function(plot_dir = "./plot", idx = "tn10pETCCDI_yr",
     }
   }
 
-  ## Setting the x- and y-range limits for plotting
+  # Setting the x- and y-range limits for plotting
   xrng <- as.numeric(c(min.x, max.x))
   yrng <- c(min.y, max.y)
   print(xrng)
@@ -521,20 +521,20 @@ timeseries_plot <- function(plot_dir = "./plot", idx = "tn10pETCCDI_yr",
   }
 
   n <- 1
-  ## Parameters for plot
+  # Parameters for plot
   par(mfrow = c(1, 1), mar = c(4.5, 4.5, 2, 3))
-  ## Plotting first the ensemblemean
+  # Plotting first the ensemblemean
   plot(time_conv, idx_ensm,
     type = "l", col = ts_col_list[n],
     lty = ts_lty_list[n], xlim = xrng, ylim = yrng, lwd = ts_lwd_list[n],
     ann = FALSE, xaxs = "i", yaxt = "n"
   )
-  ## Then making a transparent polygon between the 25th and 75 percentile
+  # Then making a transparent polygon between the 25th and 75 percentile
   polygon(c(time_conv, rev(time_conv)), c(idx_ens75, rev(idx_ens25)),
     col = alpha(ts_col_list[n], 0.1), border = NA
   )
 
-  ## Plotting observations and plotting via a loop
+  # Plotting observations and plotting via a loop
   n <- 0
   for (o in obs_list) {
     n <- n + 1
@@ -544,34 +544,34 @@ timeseries_plot <- function(plot_dir = "./plot", idx = "tn10pETCCDI_yr",
     ) # plot observation
   }
 
-  ## Produce a legend
+  # Produce a legend
   legend("top",
     legend = leg_names, col = ts_col_list, lty = ts_lty_list,
     lwd = ts_lwd_list, bty = "n", ncol = 3
   )
 
-  ## Produce a first y-axis
+  # Produce a first y-axis
   axis(side = 2, at = pretty(yrng, 5))
   axis(side = 2, at = pretty(yrng, 5))
   pretty(yrng, 10)
 
   axis(side = 2, at = pretty(yrng, 5))
 
-  ## Produce a second y-axis
+  # Produce a second y-axis
   axis(side = 4, at = pretty(yrng, 5))
 
-  ## Producing a title from info in netcdf file
+  # Producing a title from info in netcdf file
   title(main = idx_df$name[idx_no], font.main = 2)
 
-  ## Choosing x-label
+  # Choosing x-label
   title(xlab = "Year")
 
-  ## Chosing y-label from idx_ylab list
+  # Chosing y-label from idx_ylab list
   title(ylab = idx_ylab[idx_no])
-  ## Resetting plotting device to default
+  # Resetting plotting device to default
   dev.off()
 
-  ## Close Ensemble files
+  # Close Ensemble files
   nc_close(ensm)
   nc_close(enspctl25)
   nc_close(enspctl75)

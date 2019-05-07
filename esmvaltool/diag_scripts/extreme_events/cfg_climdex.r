@@ -10,11 +10,11 @@
 #    to find which indices have been processed, and what title and labels the plots should have.
 #
 # Modification history
-#    20180725-A_cwmohr: Created
+#    2018 0725-A_cwmohr: Created
 #########################################################################################################
 
 idx_df <- data.frame(
-  idxETCCDI = c(
+  idx_etccdi = c(
     "altcdd", "altcsdi", "altcwd", "altwsdi", "cdd", "csdi", "cwd",
     "dtr", "dtr", "fd", "gsl", "id", "prcptot", "r10mm", "r1mm",
     "r20mm", "r95p", "r99p", "rx1day", "rx1day", "rx5day", "rx5day",
@@ -73,7 +73,7 @@ idx_df <- data.frame(
   stringsAsFactors = FALSE
 )
 
-idx_df$idxETCCDI_time <- paste(idx_df$idxETCCDI, "ETCCDI_",
+idx_df$idx_etccdi_time <- paste(idx_df$idx_etccdi, "ETCCDI_",
                                idx_df$time, sep = "")
 
 # Unfortunatley expressions cannot be added to dataframes.

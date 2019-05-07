@@ -9,18 +9,18 @@
 #    Calculate extreme events with plotting functionality
 #
 # Modification history
-#    20190501-hard_jo  : adapted for v2
-#    20181006-A_cwmohr : observation read and sorting fixes
-#    20181003-A_cwmohr : correcting r.interface output for observation data.
-#    20180725-A_cwmohr : modification of timeseries_main() and climdex selection
-#    20180615-A_cwmohr : more clean up of code
-#    20180131-A_laue_ax: clean-up of code, adaptation to ESMValTool standards
+#    2019 0506-hard_jo  : conversion to ESMValTool2
+#    2018 1006-A_cwmohr : observation read and sorting fixes
+#    2018 1003-A_cwmohr : correcting r.interface output for observation data.
+#    2018 0725-A_cwmohr : modification of timeseries_main() and climdex selection
+#    2018 0615-A_cwmohr : more clean up of code
+#    2018 0131-A_laue_ax: clean-up of code, adaptation to ESMValTool standards
 #                        added tagging support
-#    20170920-A_sand_ma: modification to include plotting
-#    20160414-A_broe_bj: written
+#    2017 0920-A_sand_ma: modification to include plotting
+#    2016 0414-A_broe_bj: written
 # ############################################################################
 
-library(climdex.pcic.ncdf)
+library(climdex.pcic.ncdf)  # nolint
 library(tools)
 library(yaml)
 library(ncdf4)
@@ -230,7 +230,7 @@ for (model_idx in c(1:length(models_name))) {
     print("")
     infiles <- climofiles[models == models_name[model_idx]]
     indices <- sub("ETCCDI.*", "", idx_select)
-    create.indices.from.files(infiles,
+    create.indices.from.files(infiles,  # nolint
       work_dir, template, author.data,
       base.range = base_range,
       parallel = climdex_parallel,
@@ -254,12 +254,12 @@ for (model_idx in c(1:length(models_name))) {
 }
 
 if (write_plots) {
-  ##############################
-  ## A climdex prcessing section is needed here for observation data.
-  ## CMORized observation data found in the obs directory,
-  ## has it's climdex indices calculated,
-  ## which are then placed in the work/ExtremeEvents directory
-  ##############################
+  #############################
+  # A climdex processing section is needed here for observation data.
+  # CMORized observation data found in the obs directory,
+  # has it's climdex indices calculated,
+  # which are then placed in the work/ExtremeEvents directory
+  #############################
 
   ## Splitting models from observations
 
@@ -319,22 +319,22 @@ if (write_plots) {
     nidx <- length(gleckler_idx) # number of indices
     nmodel <- length(models_name) # number of models
     nobs <- length(reference_datasets) # number of observations
-    ArrayName <- paste0(
+    arrayname <- paste0(
       "Gleckler-Array_", nidx, "-idx_",
       nmodel, "-models_", nobs, "-obs", ".RDS"
     )
-    ArrayDirName <- paste0(plot_dir, "/", diag_base, "/", ArrayName)
+    arraydirname <- paste0(plot_dir, "/", diag_base, "/", arrayname)
     if (glc_arr) {
-      if (file.exists(ArrayDirName)) {
-        file.remove(ArrayDirName)
+      if (file.exists(arraydirname)) {
+        file.remove(arraydirname)
       }
-      promptInput <- "y"
+      promptinput <- "y"
     }
 
-    if (file.exists(ArrayDirName)) {
-      promptInput <- "n"
+    if (file.exists(arraydirname)) {
+      promptinput <- "n"
     } else {
-      promptInput <- "y"
+      promptinput <- "y"
     }
 
     #### Running gleckler_main ####
@@ -342,7 +342,7 @@ if (write_plots) {
       path = work_dir, idx_list = gleckler_idx,
       model_list = setdiff(models_name, reference_datasets),
       obs_list = reference_datasets,
-      plot_dir = plot_dir, promptInput = promptInput,
+      plot_dir = plot_dir, promptinput = promptinput,
       start_yr = analysis_range[1], end_yr = analysis_range[2]
     )
 
