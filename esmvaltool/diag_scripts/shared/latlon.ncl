@@ -682,7 +682,7 @@ begin
     return(region_array)
   end if
 
-  if (region.eq."sq") then
+  if (region.eq."eq") then
     region_array = (/-10., 10., 0., 360./)
     region_array@name = "Equatorial"
     leave_msg(scriptname, funcname)
