@@ -38,5 +38,5 @@ User settings in recipe
 Variables
 ---------
 
-* pr,tas      (monthly)
+* pr,tas      (daily)
 
