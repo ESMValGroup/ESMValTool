@@ -6,11 +6,12 @@ from collections import OrderedDict
 from copy import deepcopy
 
 import yaml
+
 from netCDF4 import Dataset
 
-from . import __version__
 from . import _recipe_checks as check
-from ._config import TAGS, get_institutes, replace_tags
+from . import __version__
+from ._config import TAGS, _get_cmip6_fx_mip, get_institutes, replace_tags
 from ._data_finder import (get_input_filelist, get_input_fx_filelist,
                            get_output_file, get_statistic_output_file)
 from ._provenance import TrackedFile, get_recipe_provenance
@@ -365,32 +366,36 @@ def _get_default_settings(variable, config_user, derive=False):
     return settings
 
 
-def _convert_fxvar_to_cmor(fx_var, variable, real_fx_var):
-    """Convert fx var to full cmor var with variable as parent."""
-    fx_var_copy = deepcopy(variable)
-    fx_var_copy['short_name'] = fx_var
-    if fx_var_copy['project'] == 'CMIP5':
-        fx_var_copy['mip'] = 'fx'
-    else:
-        fx_var_copy['mip'] = real_fx_var['mip']
-    fx_var_copy['fxvar'] = True
-    if fx_var_copy['project'] == 'CMIP6':
-        # force grid if different from parent variable
-        if 'grid' in real_fx_var.keys():
-            fx_var_copy['grid'] = real_fx_var['grid']
-    fx_var_copy['variable_group'] = fx_var
+def _convert_fxvar_to_cmor(fx_var, variable):
+    """
+    Conversion from a string name to full variable dict
 
-    return fx_var_copy
+    Convert from string fx_var to full cmor fx variable
+    with variable as parent.
+    """
+    fx_variable = deepcopy(variable)
+
+    # add internal recognition flag
+    fx_variable['fxvar'] = True
+
+    fx_variable['variable_group'] = fx_var
+    fx_variable['short_name'] = fx_var
+
+    # specificities of project
+    if fx_variable['project'] == 'CMIP5':
+        fx_variable['mip'] = 'fx'
+    elif fx_variable['project'] == 'CMIP6':
+        fx_variable['grid'] = variable['grid']
+        fx_variable['mip'] = _get_cmip6_fx_mip(fx_var)
+
+    return fx_variable
 
 
 def _update_fx_files(variable, config_user):
     """Update the list of variables if needing special fx variables."""
     fx_files_dict = {}
     for fx_var in variable['fx_files']:
-        real_fx_var = {'mip': 'fx'}
-        fx_var_copy = _convert_fxvar_to_cmor(fx_var,
-                                             variable,
-                                             real_fx_var)
+        fx_var_copy = _convert_fxvar_to_cmor(fx_var, variable)
         fx_files_dict[fx_var] = get_output_file(
             fx_var_copy,
             config_user['preproc_dir'])
@@ -412,6 +417,10 @@ def _update_fx_settings(settings, variable, config_user):
     # update for landsea
     if 'mask_landsea' in settings:
         # Configure ingestion of land/sea masks
+        if 'fx_files' not in variable.keys():
+            fx_sett = "fx_files: ['sftlf', 'sftof']"
+            logger.error("You need to specify %s for variable %s",
+                         fx_sett, variable['short_name'])
         logger.debug('Getting fx mask settings now...')
 
         settings['mask_landsea']['fx_files'] = []
@@ -427,6 +436,10 @@ def _update_fx_settings(settings, variable, config_user):
             settings['mask_landsea']['fx_files'].append(fx_files_dict['sftof'])
 
     if 'mask_landseaice' in settings:
+        if 'fx_files' not in variable.keys():
+            fx_sett = "fx_files: ['sftgif']"
+            logger.error("You need to specify %s for variable %s",
+                         fx_sett, variable['short_name'])
         logger.debug('Getting fx mask settings now...')
 
         settings['mask_landseaice']['fx_files'] = []
@@ -956,9 +969,30 @@ class Recipe:
                 self._cfg['preproc_dir'])
         if dict_variable_fx:
             variable['fx_files'] = dict_variable_fx
-        logger.info("Using fx files for var %s of dataset %s:\n%s",
-                    variable['short_name'], variable['dataset'],
-                    variable['fx_files'])
+            logger.info("Using fx files for var %s of dataset %s:\n%s",
+                        variable['short_name'], variable['dataset'],
+                        variable['fx_files'])
+        return variable
+
+    def _get_required_var_keys(self, variable, dataset, index,
+                               is_fxvar=False, fx_var_name=None):
+        """Assemble correct variable attributes."""
+        if is_fxvar and fx_var_name:
+            variable['short_name'] = fx_var_name
+        variable.update(dataset)
+        variable['recipe_dataset_index'] = index
+        if ('cmor_table' not in variable
+                and variable.get('project') in CMOR_TABLES):
+            variable['cmor_table'] = variable['project']
+        if not is_fxvar:
+            if 'end_year' in variable and 'max_years' in self._cfg:
+                variable['end_year'] = min(
+                    variable['end_year'],
+                    variable['start_year'] + self._cfg['max_years'] - 1)
+        else:
+            variable = _convert_fxvar_to_cmor(fx_var_name, variable)
+            if 'fx_files' in variable.keys():
+                del variable['fx_files']
         return variable
 
     def _assemble_varlist(self, raw_variable, datasets):
@@ -967,37 +1001,20 @@ class Recipe:
 
         for index, dataset in enumerate(datasets):
             variable = deepcopy(raw_variable)
-            variable.update(dataset)
-            variable['recipe_dataset_index'] = index
-            if ('cmor_table' not in variable
-                    and variable.get('project') in CMOR_TABLES):
-                variable['cmor_table'] = variable['project']
-            if 'end_year' in variable and 'max_years' in self._cfg:
-                variable['end_year'] = min(
-                    variable['end_year'],
-                    variable['start_year'] + self._cfg['max_years'] - 1)
-
+            variable = self._get_required_var_keys(variable, dataset,
+                                                   index)
             variables.append(variable)
 
-        # look for fx files if needed
-        if not 'fx_files' in raw_variable.keys():
+        if 'fx_files' not in raw_variable.keys():
             return variables
         else:
             for fx_var_name in raw_variable['fx_files']:
                 for index, dataset in enumerate(datasets):
                     fx_variable = deepcopy(raw_variable)
-                    fx_variable['short_name'] = fx_var_name
-                    fx_variable.update(dataset)
-                    fx_variable['recipe_dataset_index'] = index
-                    if ('cmor_table' not in fx_variable
-                            and fx_variable.get('project') in CMOR_TABLES):
-                        fx_variable['cmor_table'] = fx_variable['project']
-                    real_fx_var = {'mip': 'fx'}
-                    fx_variable = _convert_fxvar_to_cmor(fx_var_name,
-                                                         fx_variable,
-                                                         real_fx_var)
-                    if 'fx_files' in fx_variable.keys():
-                        del fx_variable['fx_files']
+                    fx_variable = self._get_required_var_keys(
+                        fx_variable, dataset, index,
+                        is_fxvar=True, fx_var_name=fx_var_name
+                    )
                     variables.append(fx_variable)
             return variables
 
@@ -1022,15 +1039,13 @@ class Recipe:
         }
 
         for variable in variables:
-            # special case fo cmip5 fx variables
-            if 'fxvar' in variable.keys() and variable['project'] == 'CMIP5':
-                variable['mip'] = 'fx'
-            else:
-                _update_from_others(variable, ['cmor_table', 'mip'], datasets)
+            _update_from_others(variable, ['cmor_table', 'mip'], datasets)
             institute = get_institutes(variable)
             if institute:
                 variable['institute'] = institute
             check.variable(variable, required_keys)
+
+            # add fx files information
             if 'fx_files' in variable:
                 for fx_file in variable['fx_files']:
                     DATASET_KEYS.add(fx_file)
@@ -1138,14 +1153,12 @@ class Recipe:
             for variable_group in diagnostic['preprocessor_output']:
                 task_name = diagnostic_name + TASKSEP + variable_group
                 logger.info("Creating preprocessor task %s", task_name)
-                
                 run_tasks = _get_preprocessor_task(
                     variables=diagnostic['preprocessor_output']
                     [variable_group],
                     profiles=self._preprocessors,
                     config_user=self._cfg,
                     task_name=task_name)
-                
                 for task in run_tasks:
                     tasks.add(task)
 
