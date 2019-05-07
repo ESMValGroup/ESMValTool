@@ -187,6 +187,14 @@ def replace_mip_fx(fx_file):
     return new_mip
 
 
+def _get_cmip6_fx_mip(fx_var_name):
+    """Set the correct mip for CMIP6 fx variables."""
+    new_mip = CFG['CMIP6']['fx_mip_change'][fx_var_name]
+    logger.debug("Switching mip for fx variable %s to %s",
+                 fx_var_name, new_mip)
+    return new_mip
+
+
 TAGS_CONFIG_FILE = os.path.join(
     os.path.dirname(__file__), 'config-references.yml')
 
