@@ -24,7 +24,6 @@ import glob
 import xarray as xr
 
 import iris
-import numpy as np
 
 from .utilities import (_set_global_atts, _fix_coords, _fix_var_metadata,
                         _read_cmor_config, _save_variable, constant_metadata)
@@ -45,11 +44,11 @@ def _fix_data(cube, var):
 
 
 def _fix_attr_cmip5(out_dir, var):
-    """Adjust for CMIP5 standard"""
+    """Adjust for CMIP5 standard."""
     logger.info("Fix to CMIP5 standard...")
     in_file = glob.glob(out_dir + '/OBS*' + var + '*.nc')[0]
-    DS = xr.open_dataset(in_file)
-    DS[var].attrs['coordinates'] = 'depth'
+    ds = xr.open_dataset(in_file)
+    ds[var].attrs['coordinates'] = 'depth'
     datt = {
         'standard_name': 'depth',
         'long_name': 'depth',
@@ -59,9 +58,9 @@ def _fix_attr_cmip5(out_dir, var):
         '_FillValue': False
     }
 
-    DS['depth'] = xr.DataArray(1., name='depth', attrs=datt)
-    DS.close()
-    DS.to_netcdf(in_file, mode='a')
+    ds['depth'] = xr.DataArray(1., name='depth', attrs=datt)
+    ds.close()
+    ds.to_netcdf(in_file, mode='a')
     return
 
 
@@ -90,7 +89,6 @@ def extract_variable(var_info, raw_info, out_dir, attrs):
 
 def merge_data(in_dir, out_dir, raw_info, bin):
     """Merge all data into a single (regridded) file"""
-
     var = raw_info['name']
     file = raw_info['file']
     do_bin = True if (bin % 2 == 0) & (bin != 0) else False
@@ -99,36 +97,36 @@ def merge_data(in_dir, out_dir, raw_info, bin):
     #TODO remove 1997* here below before final publication
     in_files = glob.glob(in_dir + '/' + file + '*1997*.nc')
     for ff in in_files:
-        DS = xr.open_dataset(ff)
-        da = DS[var].sel(lat=slice(None, None, -1))
+        ds = xr.open_dataset(ff)
+        da = ds[var].sel(lat=slice(None, None, -1))
         # remove inconsistent attributes
         for delkey in [
                 'grid_mapping', 'ancillary_variables', 'parameter_vocab_uri'
         ]:
             del da.attrs[delkey]
 
-        if (do_bin):
+        if do_bin:
             da = da.coarsen(lat=bin, boundary='exact').mean()
             da = da.coarsen(lon=bin, boundary='exact').mean()
 
         if ff == in_files[0]:
             newda = da
-            selkey = ['creator_name','creator_url',\
-                    'license','sensor','processing_level']
-            DSmeta = dict((k, DS.attrs[k]) for k in selkey)
-            if (do_bin):
+            selkey = ['creator_name', 'creator_url',\
+                    'license', 'sensor', 'processing_level']
+            dsmeta = dict((k, ds.attrs[k]) for k in selkey)
+            if do_bin:
                 comment = ' '.join([
                     'Data binned using ', "{}".format(bin), 'by',
                     "{}".format(bin), 'cells average'
                 ])
-                DSmeta['BINNING'] = comment
+                dsmeta['BINNING'] = comment
             continue
         newda = xr.concat((newda, da), dim='time')
 
     # save to file
-    DS = newda.to_dataset(name=var)
-    for x, y in DSmeta.items():
-        DS.attrs[x] = y
+    ds = newda.to_dataset(name=var)
+    for x, y in dsmeta.items():
+        ds.attrs[x] = y
     encoding = {
         'lat': {
             '_FillValue': False
@@ -143,7 +141,7 @@ def merge_data(in_dir, out_dir, raw_info, bin):
             '_FillValue': 1.e20
         }
     }
-    DS.to_netcdf(merged_file, encoding=encoding, unlimited_dims='time')
+    ds.to_netcdf(merged_file, encoding=encoding, unlimited_dims='time')
 
     logger.info("Merged data written to: %s", merged_file)
 
