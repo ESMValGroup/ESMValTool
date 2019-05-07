@@ -44,6 +44,13 @@ preprocessors:
     mask_fillvalues:
       threshold_fraction: 0.1
 
+  clim_1x1_09:
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    mask_fillvalues:
+      threshold_fraction: 0.9
+
   clim_5x5:
     regrid:
       target_grid: 5x5
@@ -400,43 +407,89 @@ diagnostics:
   # O3 seasonal cycle climatologies
   # ==========================================================================
 
-#   <diag>
-#   <description> a) total column ozone annual cycle (comparison with ESA CCI) </description>
-#   <variable_def_dir>          ./variable_defs/ </variable_def_dir>
-#   <variable>                    toz            </variable>
-#   <field_type>                  T2Ms           </field_type>
-#   <tags> R_atmos, R_atmosChem, T_chem </tags>
-#   <diag_script_cfg_dir> ./nml/cfg_lauer17rse/  </diag_script_cfg_dir>
-#   <diag_script cfg="cfg_eyring13jgr_fig01.ncl"> eyring13jgr_fig01.ncl </diag_script>
-#   <model> CMIP5_ETHZ CESM1-WACCM    Amon historical r2i1p1 1997 2010 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CNRM-CM5       Amon historical r1i1p1 1997 2010 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ GFDL-CM3       Amon historical r1i1p1 1997 2010 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ GISS-E2-H      Amon historical r1i1p2 1997 2010 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ GISS-E2-H      Amon historical r3i1p3 1997 2010 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ GISS-E2-R      Amon historical r1i1p2 1997 2010 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ GISS-E2-R      Amon historical r1i1p3 1997 2010 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ MIROC-ESM-CHEM Amon historical r1i1p1 1997 2010 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> OBS ESACCI-OZONE               sat        L3     1997 2010 @{OBSPATH}/Tier2/ESACCI-OZONE/ </model>
-#   </diag>
-#
-#   <diag>
-#   <description> b) total column ozone annual cycle (comparison with NIWA) </description>
-#   <variable_def_dir>          ./variable_defs/ </variable_def_dir>
-#   <variable>                    toz            </variable>
-#   <field_type>                  T2Ms           </field_type>
-#   <tags> R_atmos, R_atmosChem, T_chem </tags>
-#   <diag_script_cfg_dir> ./nml/cfg_lauer17rse/  </diag_script_cfg_dir>
-#   <diag_script cfg="cfg_eyring13jgr_fig01_NIWA.ncl"> eyring13jgr_fig01.ncl </diag_script>
-#   <model> CMIP5_ETHZ CESM1-WACCM    Amon historical r2i1p1 1997 2010 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ CNRM-CM5       Amon historical r1i1p1 1997 2010 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ GFDL-CM3       Amon historical r1i1p1 1997 2010 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ GISS-E2-H      Amon historical r1i1p2 1997 2010 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ GISS-E2-H      Amon historical r3i1p3 1997 2010 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ GISS-E2-R      Amon historical r1i1p2 1997 2010 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ GISS-E2-R      Amon historical r1i1p3 1997 2010 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> CMIP5_ETHZ MIROC-ESM-CHEM Amon historical r1i1p1 1997 2010 @{MODELPATH}/ETHZ_CMIP5/ </model>
-#   <model> OBS NIWA                       reanaly    1      1997 2010 @{OBSPATH}/Tier3/NIWA/ </model>
-#</diag>
+  fig18_a:
+    description: seasonal cycle of total column ozone (comparison with ESACCI)
+    themes:
+      - chem
+    realms:
+      - atmos
+      - atmosChem
+    variables:
+      toz:
+        preprocessor: clim_1x1_09
+        derive: true
+        mip: Amon
+        start_year: 1997
+        end_year: 1998 #2010
+        exp: [historical, rcp45]
+        reference_dataset: ESACCI-OZONE
+        additional_datasets:
+          - {dataset: CESM1-WACCM, project: CMIP5, ensemble: r2i1p1}
+          - {dataset: CNRM-CM5, project: CMIP5, ensemble: r1i1p1}
+          - {dataset: GFDL-CM3, project: CMIP5, ensemble: r1i1p1}
+          - {dataset: GISS-E2-H, project: CMIP5, ensemble: r1i1p2}
+          - {dataset: GISS-E2-H, project: CMIP5, ensemble: r3i1p3}
+          - {dataset: GISS-E2-R, project: CMIP5, ensemble: r1i1p2}
+          - {dataset: GISS-E2-R, project: CMIP5, ensemble: r1i1p3}
+          - {dataset: MIROC-ESM-CHEM, project: CMIP5, ensemble: r1i1p1}
+          - {dataset: ESACCI-OZONE, project: OBS, type: sat, version: L3, tier: 2}
+    scripts:
+      esacci:
+        script: eyring13jgr/eyring13jgr_fig01.ncl
+        rgb_file: $diag_scripts/shared/plot/rgb/eyring_toz.rgb
+        font: 21
+        range_option: 0
+        lbLabelBarOn: true
+        show_mask: true
+        e13fig01_diff_ref: true
+        e13fig01_list_chem_mod_string: CMIP5
+        eyring13_cnlvl: [150., 175., 200., 225., 250., 275., 300., 325.,
+                         350., 375., 400., 425., 450., 475.]
+        eyring13_difflvl: [-30, -20, -10, 0, 10, 20, 30, 40, 50, 60]
+        eyring13_reflvl: [150., 175., 200., 225., 250., 275., 300., 325.,
+                          350., 375., 400., 425., 450., 475.]
+
+#  fig18_b:
+#    description: seasonal cycle of total column ozone (comparison with NIWA)
+#    themes:
+#      - chem
+#    realms:
+#      - atmos
+#      - atmosChem
+#    variables:
+#      toz:
+#        preprocessor: clim_1x1_09
+#        derive: true
+#        mip: Amon
+#        start_year: 1997
+#        end_year: 2010
+#        exp: [historical, rcp45]
+#        reference_dataset: NIWA-BS
+#        additional_datasets:
+#          - {dataset: CESM1-WACCM, project: CMIP5, ensemble: r2i1p1}
+#          - {dataset: CNRM-CM5, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: GFDL-CM3, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: GISS-E2-H, project: CMIP5, ensemble: r1i1p2}
+#          - {dataset: GISS-E2-H, project: CMIP5, ensemble: r3i1p3}
+#          - {dataset: GISS-E2-R, project: CMIP5, ensemble: r1i1p2}
+#          - {dataset: GISS-E2-R, project: CMIP5, ensemble: r1i1p3}
+#          - {dataset: MIROC-ESM-CHEM, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: NIWA-BS, project: OBS, type: sat, version: v3.3, tier: 3}
+#    scripts:
+#      niwa:
+#        script: eyring13jgr/eyring13jgr_fig01.ncl
+#        rgb_file: $diag_scripts/shared/plot/rgb/eyring_toz.rgb
+#        font: 21
+#        range_option: 0
+#        lbLabelBarOn: true
+#        show_mask: true
+#        e13fig01_diff_ref: true
+#        e13fig01_list_chem_mod_string: CMIP5
+#        eyring13_cnlvl: [150., 175., 200., 225., 250., 275., 300., 325.,
+#                         350., 375., 400., 425., 450., 475.]
+#        eyring13_difflvl: [-30, -20, -10, 0, 10, 20, 30, 40, 50, 60]
+#        eyring13_reflvl: [150., 175., 200., 225., 250., 275., 300., 325.,
+#                          350., 375., 400., 425., 450., 475.]
 
   # ==========================================================================
   # Lauer et al. (2017) - Figure 19
