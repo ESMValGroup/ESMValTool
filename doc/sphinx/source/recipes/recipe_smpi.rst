@@ -30,7 +30,7 @@ User settings
 
    * plot_type: cycle (time), zonal (plev, lat), latlon (lat, lon), cycle_latlon (time, lat, lon), cycle_zonal (time, plev, lat)
    * time_avg: type of time average (monthlyclim, seasonalclim, annualclim)
-   * region: selected region (global, trop, nhext, shext)
+   * region: selected region (global, trop, nhext, shext, nhtrop, shtrop, nh, sh, nhmidlat, shmidlat, nhpolar, shpolar, eq)
    * normalization: metric normalization ("CMIP5" for analysis of CMIP5 simulations; to be adjusted accordingly for a different CMIP phase)
    * calc_grading: calculates grading metrics (has to be set to "true" in the recipe)
    * metric: chosen grading metric(s) (if calc_grading is True; has to be set to "SMPI")
