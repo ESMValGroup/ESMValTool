@@ -106,7 +106,7 @@ begin
     l_flag = True
     do jj = 0, natts - 1  ; loop over requested attributes
       if (.not.isatt(info[ii], atts(jj))) then
-        log_debug("w", scriptname, funcname, \
+        log_debug(scriptname + ", " + funcname + " - warning: " + \
                   "missing " + atts(jj) + " attribute")
         l_flag = False
       else
