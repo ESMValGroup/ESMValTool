@@ -88,7 +88,7 @@ def extract_variable(var_info, raw_info, out_dir, attrs):
 
 
 def merge_data(in_dir, out_dir, raw_info, bin):
-    """Merge all data into a single (regridded) file"""
+    """Merge all data into a single (regridded) file."""
     var = raw_info['name']
     file = raw_info['file']
     do_bin = True if (bin % 2 == 0) & (bin != 0) else False
@@ -111,7 +111,7 @@ def merge_data(in_dir, out_dir, raw_info, bin):
 
         if ff == in_files[0]:
             newda = da
-            selkey = ['creator_name', 'creator_url',\
+            selkey = ['creator_name', 'creator_url',
                     'license', 'sensor', 'processing_level']
             dsmeta = dict((k, ds.attrs[k]) for k in selkey)
             if do_bin:
