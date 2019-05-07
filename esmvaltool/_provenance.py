@@ -249,5 +249,10 @@ class TrackedFile(object):
         self._include_provenance()
         filename = os.path.splitext(self.filename)[0] + '_provenance'
         self.provenance.serialize(filename + '.xml', format='xml')
-        figure = prov_to_dot(self.provenance)
-        figure.write_svg(filename + '.svg')
+        # Only plot provenance if there are not too many records.
+        if len(self.provenance.records) > 100:
+            logger.debug("Not plotting large provenance tree of %s",
+                         self.filename)
+        else:
+            figure = prov_to_dot(self.provenance)
+            figure.write_svg(filename + '.svg')
