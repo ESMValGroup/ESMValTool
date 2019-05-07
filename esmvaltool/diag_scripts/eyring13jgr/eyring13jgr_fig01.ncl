@@ -216,7 +216,7 @@ begin
       var_grd!2 = "lat"
       var_grd!3 = "lon"
       var_grd&models = annots
-      var_grd&month = ispan(1, 12, 1)
+      var_grd&month = A1&month
       var_grd&lat = A1&lat
       var_grd&lon = A1&lon
 
@@ -346,23 +346,27 @@ begin
     ; write provenance to netcdf output and plot file
     ; ------------------------------------------------------------------------
 
-    statistics = (/"clim", "mean"/)
-    domain = "glob"
-    plottype = "seas"
-    caption = "Mean seasonal cycle of " + var0 \
-              + " averaged between " + y1(idx_mod) + " and " + y2(idx_mod) \
-              + ", similar to Eyring et al., JGR, 2013, fig. 1."
-
     atts = True
     atts@dataset = names(idx_mod)
     info_dataset = select_metadata_by_atts(info0, atts)
     infiles = metadata_att_as_array(info_dataset, "filename")
 
+    statistics = (/"clim", "mean"/)
+    domain = "glob"
+    plottype = (/"seas", "zonal"/)
     contrib_authors = (/"cion_ir", "laue_ax"/)
+    diag_ref = "eyring13jgr"
+
+    caption = "Mean seasonal cycle of " + var0 \
+              + " averaged between " + y1(idx_mod) + " and " + y2(idx_mod) \
+              + ", similar to Eyring et al., JGR, 2013, fig. 1."
 
     log_provenance(nc_outfile, output_filename, caption, statistics, \
-                   domain, plottype, contrib_authors, "", infiles)
+                   domain, plottype, contrib_authors, diag_ref, infiles)
 
+    delete(caption)
+    delete(info_dataset)
+    delete(atts)
     delete(infiles)
 
     ; clean up
@@ -382,6 +386,7 @@ begin
   if (diag_script_info@e13fig01_diff_ref) then
     var_grd_ref = var_grd(ind_OBS_ref, :, :, :)
     diff_var_grd = MMM_chem - var_grd_ref
+    copy_VarCoords(MMM_chem, diff_var_grd)
   end if
 
   if (num_nochem_mod .ge. 1) then
@@ -394,6 +399,7 @@ begin
     delete(var_grd_nochem_mod)
     if (diag_script_info@e13fig01_diff_ref) then
       diff_var_grd_nochem = MMM_nochem - var_grd_ref
+      copy_VarCoords(MMM_nochem, diff_var_grd_nochem)
     end if
   end if
 
@@ -437,7 +443,6 @@ begin
         delete(atts@ensemble)
       end if
     end if
-printVarSummary(atts)
     info_dataset = select_metadata_by_atts(info0, atts)
     infiles(ii) = metadata_att_as_array(info_dataset, "filename")
   end do
@@ -745,17 +750,12 @@ printVarSummary(atts)
   ; write provenance to netcdf output and plot file
   ; ------------------------------------------------------------------------
 
-  statistics = (/"clim", "mean"/)
-  domain = "glob"
-  plottype = (/"seas", "zonal"/)
   caption = "Climatological mean seasonal cycle of " + var0 \
             + " averaged between " + y1(0) + " and " + y2(0) \
             + ", similar to Eyring et al., JGR, 2013, fig. 1."
 
-  contrib_authors = (/"cion_ir", "laue_ax"/)
-
   log_provenance(nc_outfile, output_filename, caption, statistics, \
-                 domain, plottype, contrib_authors, "", infiles)
+                 domain, plottype, contrib_authors, diag_ref, infiles)
 
   delete(infiles)
 
