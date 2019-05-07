@@ -87,8 +87,8 @@ function select_metadata_by_atts(info:list,
 ; References
 ;
 ; Modification history
-;   20190508-A_laue_ax: missing attributes are now allowed; warning (debug)
-;                       message is issued if some/all attributes are missing
+;   20190507-A_laue_ax: missing attributes are now allowed; a warning message
+;                       is issued for each missing attribute
 ;   20181106_A-righ_ma: written.
 ;
 local funcname, scriptname, ninfo, natts, l_flag, ii, jj, ca
