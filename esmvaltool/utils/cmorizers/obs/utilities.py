@@ -5,6 +5,7 @@ import os
 from contextlib import contextmanager
 
 import iris
+import numpy as np
 import yaml
 from cf_units import Unit
 from dask import array as da
@@ -99,6 +100,17 @@ def fix_var_metadata(cube, var_info):
     return cube
 
 
+def flip_dim_coord(cube, coord_name):
+    """Flip (reverse) dimensional coordinate of cube."""
+    logger.info("Flipping dimensional coordinate %s...", coord_name)
+    coord = cube.coord(coord_name, dim_coords=True)
+    coord_idx = cube.coord_dims(coord)[0]
+    coord.points = np.flip(coord.points)
+    coord.bounds = np.flip(coord.bounds, axis=0)
+    new_data = da.flip(cube.core_data(), axis=coord_idx)
+    return cube.copy(new_data)
+
+
 def read_cmor_config(cmor_config):
     """Read the associated dataset-specific config file."""
     reg_path = os.path.join(
@@ -146,7 +158,7 @@ def save_variable(cube, var, outdir, attrs, **kwargs):
 
 def set_global_atts(cube, attrs):
     """Complete the cmorized file with global metadata."""
-    logger.info("Set global metadata...")
+    logger.info("Setting global metadata...")
 
     if bool(cube.metadata.attributes):
         cube.metadata.attributes.clear()
