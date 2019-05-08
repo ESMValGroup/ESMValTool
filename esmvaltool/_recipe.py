@@ -851,12 +851,19 @@ def _get_preprocessor_task(variables, profiles, config_user, task_name):
                                 config_user.get('max_datasets'))
     for variable in variables:
         _add_cmor_info(variable)
+
+    # manage variable lists for regular and fx variables
+    tasks = []
+    regular_variables = [var for var in variables if 'fxvar' not in var.keys()]
+    fx_variables = [var for var in variables if 'fxvar' in var.keys()]
+
     # Create preprocessor task(s)
     derive_tasks = []
     if variable.get('derive'):
         # Create tasks to prepare the input data for the derive step
         derive_profile, profile = _split_derive_profile(profile)
-        derive_input = _get_derive_input_variables(variables, config_user)
+        derive_input = _get_derive_input_variables(regular_variables,
+                                                   config_user)
 
         for derive_variables in derive_input.values():
             for derive_variable in derive_variables:
@@ -870,11 +877,7 @@ def _get_preprocessor_task(variables, profiles, config_user, task_name):
                 name=derive_name)
             derive_tasks.append(task)
 
-    # set profile and tasks formultiple variables
-    tasks = []
-    regular_variables = [var for var in variables if 'fxvar' not in var.keys()]
-    fx_variables = [var for var in variables if 'fxvar' in var.keys()]
-
+    # create tasks for regular and fx variables
     if fx_variables:
         fx_task_list = _get_fx_tasks(fx_variables, config_user,
                                      task_name, derive_tasks)
