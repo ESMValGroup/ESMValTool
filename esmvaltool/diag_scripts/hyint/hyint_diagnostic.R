@@ -380,7 +380,8 @@ hyint_diagnostic <- function(work_dir, infile, model_idx, season,
   caption <- paste0("Hyint indices  for years ", year1, " to ", year2,
                      " according to ", models_name[model_idx])
   xprov <- list(ancestors = list(infile),
-              caption = caption)
+                model_idx = list(model_idx),
+                caption = caption)
 
   # Store provenance in main provenance list
   prov_info[[outfile]] <- xprov

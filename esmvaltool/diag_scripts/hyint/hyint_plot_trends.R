@@ -186,13 +186,13 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_idx, season,
         if (length(prov_info[[figname]]) == 0) {
           prov_fig_now <- list(figname = figname,
                                caption = caption,
-                               models = list(model_idx),
+                               model_idx = list(model_idx),
                                ancestors = list(infile))
           prov_info[[figname]] <- prov_fig_now
         } else {
-          if (is.na(match(model_idx, prov_info[[figname]]$models))) {
-            prov_info[[figname]]$models <-
-                             c(prov_info[[figname]]$models, model_idx)
+          if (is.na(match(model_idx, prov_info[[figname]]$model_idx))) {
+            prov_info[[figname]]$model_idx <-
+                             c(prov_info[[figname]]$model_idx, model_idx)
             prov_info[[figname]]$ancestors <-
                              c(prov_info[[figname]]$ancestors, infile)
           }
@@ -452,7 +452,7 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_idx, season,
                               models_name[model_idx])
             prov_fig_now <- list(figname = figname,
                                  caption = caption,
-                                 models = list(model_idx),
+                                 model_idx = list(model_idx),
                                  ancestors = list(infile))
             prov_info[[figname]] <- prov_fig_now
           }
@@ -632,7 +632,7 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_idx, season,
       }
       prov_fig_now <- list(figname = figname,
                            caption = caption,
-                           models = list(model_idx),
+                           model_idx = list(model_idx),
                            ancestors = list(infile))
       prov_info[[figname]] <- prov_fig_now
     }

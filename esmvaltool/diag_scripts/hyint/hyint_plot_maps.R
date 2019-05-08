@@ -7,7 +7,7 @@
 
 hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season,
                             prov_info) {
- 
+
   # setting up path and parameters
   dataset_ref <- models_name[ref_idx]
   year1_ref <- models_start_year[ref_idx]
@@ -98,7 +98,7 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season,
                          norm_years[1]:norm_years[2])))
       retyears[skipyears] <- NA
       retyears <- retyears[which(is.finite(retyears))]
-      field_ref[, , 1] <- apply(field_ref[, ,retyears],
+      field_ref[, , 1] <- apply(field_ref[, , retyears],
                                 c(1, 2), mean, na.rm = T)
     }
     assign(paste(field, "_ref", sep = ""), field_ref)
@@ -511,8 +511,8 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season,
                               models_name[model_idx])
             prov_fig_now <- list(figname = figname,
                                  caption = caption,
-                                  models = list(model_idx),
-                                  ancestors = list(infile))
+                                 model_idx = list(model_idx),
+                                 ancestors = list(infile))
             prov_info[[figname]] <- prov_fig_now
           }
           if (plot_type == 2) {
@@ -520,11 +520,11 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season,
             # Store data for provenance
             caption <- paste0("Map for index ", field, " over region ",
                               region_codes[iregion], " according to ",
-                              models_name[model_idx], 
+                              models_name[model_idx],
                               " in comparison to reference dataset")
             prov_fig_now <- list(figname = figname,
                                  caption = caption,
-                                 models = list(model_idx),
+                                 model_idx = list(model_idx, ref_idx),
                                  ancestors = list(infile, ref_filename))
             prov_info[[figname]] <- prov_fig_now
           }
@@ -536,7 +536,7 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season,
                             " over region ", region_codes[iregion])
           prov_fig_now <- list(figname = figname,
                                caption = caption,
-                               models = list(model_idx),
+                               model_idx = list(model_idx, ref_idx),
                                ancestors = list(infile, ref_filename))
           prov_info[[figname]] <- prov_fig_now
         }
@@ -547,7 +547,7 @@ hyint_plot_maps <- function(work_dir, plot_dir, ref_dir, ref_idx, season,
         caption <- paste0("Maps for multiple indices over selected years")
         prov_fig_now <- list(figname = figname,
                              caption = caption,
-                             models = list(model_idx),
+                             model_idx = list(model_idx),
                              ancestors = list(infile))
         prov_info[[figname]] <- prov_fig_now
       }

@@ -214,7 +214,6 @@ if (write_netcdf & etccdi_preproc) {
 if (write_netcdf & run_timeseries) {
   for (model_idx in c(1:(length(models_name)))) {
     for (seas in seasons) {
-      #provenance <- hyint_trends(work_dir, model_idx, seas, provenance)
       prov_info <- hyint_trends(work_dir, model_idx, seas, prov_info)
     }
   }
@@ -241,7 +240,7 @@ if (write_plots) {
 
 # Assign provenance information for timeseries&trends figures
 for (fname in names(prov_info)) {
-  xprov <- list(ancestors = prov_info[[fname]]$ancestors,
+  xprov <- list(ancestors = climofiles[unlist(prov_info[[fname]]$model_idx)],
               authors = list("arno_en", "hard_jo"),
               references = list("giorgi11jc", "giorgi14jgr"),
               projects = list("c3s-magic"),
@@ -250,10 +249,8 @@ for (fname in names(prov_info)) {
               realms = list("atmos"),
               themes = list("phys"),
               domains = list("global"))
-
   provenance[[fname]] <- xprov
 }
-
 
 # Write provenance to file
 write_yaml(provenance, provenance_file)

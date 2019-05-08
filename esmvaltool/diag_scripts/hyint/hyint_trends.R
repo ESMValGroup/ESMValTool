@@ -273,6 +273,7 @@ hyint_trends <- function(work_dir, model_idx, season, prov_info) {
                       year1, " to ", year2,
                       " according to ", models_name[model_idx])
     xprov <- list(ancestors = list(infile),
+                  model_idx = list(model_idx),
                   caption = caption)
 
     # Store provenance in main provenance list
