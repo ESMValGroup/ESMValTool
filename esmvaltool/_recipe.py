@@ -391,13 +391,14 @@ def _convert_fxvar_to_cmor(fx_var, variable):
     return fx_variable
 
 
-def _update_fx_files(fx_varlist, config_user):
+def _update_fx_files(fx_varlist, config_user, parent_variable):
     """Get the fx files dict for a list of fx variables."""
     fx_files_dict = {}
     for fx_variable in fx_varlist:
         fx_files_dict[fx_variable['short_name']] = get_output_file(
             fx_variable,
-            config_user['preproc_dir'])
+            config_user['preproc_dir'],
+            parent_variable)
     return fx_files_dict
 
 
@@ -416,7 +417,7 @@ def _update_fx_settings(settings, variable, config_user):
                 ]
                 # now get the fx files output
                 fx_files.update(
-                    _update_fx_files(fx_varlist, config_user))
+                    _update_fx_files(fx_varlist, config_user, var))
         settings['derive']['fx_files'] = fx_files
 
     # update for landsea
@@ -438,7 +439,7 @@ def _update_fx_settings(settings, variable, config_user):
             for fx_var in var['fx_files']
         ]
         # now get the files
-        fx_files_dict = _update_fx_files(fx_varlist, config_user)
+        fx_files_dict = _update_fx_files(fx_varlist, config_user, var)
 
         # allow both sftlf and sftof
         if fx_files_dict['sftlf']:
@@ -463,7 +464,7 @@ def _update_fx_settings(settings, variable, config_user):
             for fx_var in var['fx_files']
         ]
         # now get the files
-        fx_files_dict = _update_fx_files(fx_varlist, config_user)
+        fx_files_dict = _update_fx_files(fx_varlist, config_user, var)
 
         # allow sftgif (only, for now)
         if fx_files_dict['sftgif']:
@@ -479,7 +480,8 @@ def _update_fx_settings(settings, variable, config_user):
             ]
             # now get the files
             settings[step]['fx_files'] = _update_fx_files(fx_varlist,
-                                                          config_user)
+                                                          config_user,
+                                                          var)
 
 
 def _read_attributes(filename):
@@ -650,13 +652,18 @@ def _match_products(products, variables):
 
 
 def _get_preprocessor_products(variables, profile, order, ancestor_products,
-                               config_user):
+                               config_user, parent_variable=None):
     """Get preprocessor product definitions for a set of datasets."""
     products = set()
 
     for variable in variables:
-        variable['filename'] = get_output_file(variable,
-                                               config_user['preproc_dir'])
+        if not parent_variable:
+            variable['filename'] = get_output_file(variable,
+                                                   config_user['preproc_dir'])
+        else:
+            variable['filename'] = get_output_file(variable,
+                                                   config_user['preproc_dir'],
+                                                   parent_variable)
 
     if ancestor_products:
         grouped_ancestors = _match_products(ancestor_products, variables)
@@ -704,7 +711,8 @@ def _get_single_preprocessor_task(variables,
                                   profile,
                                   config_user,
                                   name,
-                                  ancestor_tasks=None):
+                                  ancestor_tasks=None,
+                                  parent_variable=None):
     """Create preprocessor tasks for a set of datasets."""
     if ancestor_tasks is None:
         ancestor_tasks = []
@@ -713,13 +721,23 @@ def _get_single_preprocessor_task(variables,
         p for task in ancestor_tasks for p in task.products
         if not task.name.split('/')[1].startswith('fx_')
     ]
-    products = _get_preprocessor_products(
-        variables=variables,
-        profile=profile,
-        order=order,
-        ancestor_products=ancestor_products,
-        config_user=config_user,
-    )
+    if not parent_variable:
+        products = _get_preprocessor_products(
+            variables=variables,
+            profile=profile,
+            order=order,
+            ancestor_products=ancestor_products,
+            config_user=config_user,
+        )
+    else:
+        products = _get_preprocessor_products(
+            variables=variables,
+            profile=profile,
+            order=order,
+            ancestor_products=ancestor_products,
+            config_user=config_user,
+            parent_variable=parent_variable
+        )
 
     if not products:
         raise RecipeError(
@@ -808,7 +826,7 @@ def _get_derive_input_variables(variables, config_user):
     return derive_input
 
 
-def _get_fx_tasks(fx_variable, config_user, task_name):
+def _get_fx_tasks(fx_variable, config_user, task_name, parent_variable):
     """Create a list of fx variables tasks."""
     fx_profile = {'fix_file': True,
                   'load': True,
@@ -828,7 +846,8 @@ def _get_fx_tasks(fx_variable, config_user, task_name):
         [fx_variable],
         fx_profile,
         config_user,
-        name=fx_task_name)
+        name=fx_task_name,
+        parent_variable=parent_variable)
 
     return fx_task
 
@@ -856,7 +875,8 @@ def _get_preprocessor_task(variables, profiles, config_user, task_name):
     fx_tasks = []
     if fx_variables:
         fx_tasks = [
-            _get_fx_tasks(fx_var, config_user, task_name)
+            _get_fx_tasks(fx_var, config_user,
+                          task_name, regular_variables[0])
             for fx_var in fx_variables]
 
     # create derive tasks
@@ -1059,7 +1079,8 @@ class Recipe:
                     var for var in variables if 'fxvar' in var.keys()
                 ]
                 variable['fx_files'] = _update_fx_files(fx_varlist,
-                                                        self._cfg)
+                                                        self._cfg,
+                                                        variable)
                 logger.info("Using fx files for var %s of dataset %s:\n%s",
                             variable['short_name'], variable['dataset'],
                             variable['fx_files'])
@@ -1189,10 +1210,7 @@ class Recipe:
                 tasks.add(task)
 
         # check tasks
-        # TODO fix this:
-        # currently fails the check for variables with common
-        # fx files settings. if in the same diagnostic
-        # check.tasks_valid(tasks)
+        check.tasks_valid(tasks)
 
         # Resolve diagnostic ancestors
         self._resolve_diagnostic_ancestors(tasks)
