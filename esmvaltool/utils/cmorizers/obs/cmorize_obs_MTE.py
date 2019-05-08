@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 CFG = utils.read_cmor_config('MTE.yml')
 
 
-def _get_filename(in_dir, basename):
+def _get_filepath(in_dir, basename):
     """Find correct name of file (extend basename with timestamp)."""
     all_files = [
         f for f in os.listdir(in_dir)
@@ -36,7 +36,7 @@ def _get_filename(in_dir, basename):
     ]
     for filename in all_files:
         if filename.endswith(basename):
-            return filename
+            return os.path.join(in_dir, filename)
     raise OSError(
         f"Cannot find input file ending with '{basename}' in '{in_dir}'")
 
@@ -61,8 +61,7 @@ def cmorization(in_dir, out_dir):
                 glob_attrs['tier'], glob_attrs['dataset_id'])
     logger.info("Input data from: %s", in_dir)
     logger.info("Output will be written to: %s", out_dir)
-    filename = _get_filename(in_dir, CFG['filename'])
-    filepath = os.path.join(in_dir, filename)
+    filepath = _get_filepath(in_dir, CFG['filename'])
     logger.info("Found input file '%s'", filepath)
 
     # Run the cmorization
