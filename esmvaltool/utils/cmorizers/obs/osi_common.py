@@ -48,7 +48,7 @@ def extract_variable(var_info, raw_info, out_dir, attrs, year):
 
     tracking_ids = []
     for cube in cubes:
-        #OSI-409 and OSI-450 do not have the same attributes
+        # OSI-409 and OSI-450 do not have the same attributes
         try:
             tracking_ids.append(cube.attributes['tracking_id'])
         except KeyError:
