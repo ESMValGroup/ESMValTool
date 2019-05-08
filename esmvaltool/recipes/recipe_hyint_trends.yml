@@ -58,7 +58,7 @@ diagnostics:
         # GL=Globe, GL60=Globe 60S/60N, TR=Tropics (30S/30N), SA=South America,
         # AF =Africa,6NA=North America, IN=India, EU=Europe, EA=East-Asia,
         # AU=Australia
-        select_regions: ["GL", "SA", "AF", "EU", "EA"]
+        select_regions: ["GL", "GL60", "TR", "SA", "AF", "NA", "IN", "EU", "EA", "AU"]
 
         # Select type of plot:
         # 1) single panel lon/lat map per individual index, multi-year mean
@@ -69,7 +69,7 @@ diagnostics:
         # 13) multipanel of indices with timeseries for multiple models
         # 14) multipanel of indices with summary of trend coefficients over multiple regions
         # 15) multipanel of indices with summary of trend coefficients for multiple models
-        plot_type: [1, 2, 3]
+        plot_type: [12, 13, 14, 15]
 
         ## ------- Optional settings ----------
         # Select number of columns and rows in multi-panel figure
@@ -80,7 +80,7 @@ diagnostics:
         # a) false to keep original resolution
         # b) set desired regridding resolution in cdo format e.g., "r320x160"
         # c) "REF" to use resolution of reference model
-        rgrid: "REF"
+        rgrid: false
 
         # Select automated or pre-set range of values in plots
         autolevels: true
