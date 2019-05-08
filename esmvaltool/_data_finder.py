@@ -277,7 +277,7 @@ def get_input_fx_filelist(variable, rootpath, drs):
     return fx_files
 
 
-def get_output_file(variable, preproc_dir):
+def get_output_file(variable, preproc_dir, parent_var=None):
     """Return the full path to the output (preprocessed) file."""
     cfg = get_project_config(variable['project'])
 
@@ -286,12 +286,20 @@ def get_output_file(variable, preproc_dir):
         variable = dict(variable)
         variable['exp'] = '-'.join(variable['exp'])
 
-    outfile = os.path.join(
-        preproc_dir,
-        variable['diagnostic'],
-        variable['variable_group'],
-        _replace_tags(cfg['output_file'], variable)[0] + '.nc',
-    )
+    if not parent_var:
+        outfile = os.path.join(
+            preproc_dir,
+            variable['diagnostic'],
+            variable['variable_group'],
+            _replace_tags(cfg['output_file'], variable)[0] + '.nc',
+        )
+    else:
+        outfile = os.path.join(
+            preproc_dir,
+            variable['diagnostic'],
+            parent_var['variable_group'],
+            _replace_tags(cfg['output_file'], variable)[0] + '.nc',
+        )
 
     return outfile
 
