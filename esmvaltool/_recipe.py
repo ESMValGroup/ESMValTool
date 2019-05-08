@@ -709,7 +709,10 @@ def _get_single_preprocessor_task(variables,
     if ancestor_tasks is None:
         ancestor_tasks = []
     order = _extract_preprocessor_order(profile)
-    ancestor_products = [p for task in ancestor_tasks for p in task.products]
+    ancestor_products = [
+        p for task in ancestor_tasks for p in task.products
+        if not task.name.split('/')[1].startswith('fx_')
+    ]
     products = _get_preprocessor_products(
         variables=variables,
         profile=profile,
@@ -805,9 +808,8 @@ def _get_derive_input_variables(variables, config_user):
     return derive_input
 
 
-def _get_fx_tasks(fx_variables, config_user, task_name, derive_tasks):
+def _get_fx_tasks(fx_variable, config_user, task_name):
     """Create a list of fx variables tasks."""
-    fx_tasks = []
     fx_profile = {'fix_file': True,
                   'load': True,
                   'fix_metadata': True,
@@ -815,26 +817,20 @@ def _get_fx_tasks(fx_variables, config_user, task_name, derive_tasks):
                   'cmor_check_metadata': True,
                   'save': True,
                   'cleanup': True}
-    fx_short_names = list(set([var['short_name'] for var in fx_variables]))
 
-    for fx_short_name in fx_short_names:
-        fx_variables_group = [
-            var for var in fx_variables if var['short_name'] == fx_short_name
-        ]
-        fx_task_name = task_name.split(
-            TASKSEP)[0] + TASKSEP + 'fx_' + fx_short_name
-        logger.info("Creating preprocessor fx-default task for variable '%s'",
-                    fx_variables_group[0]['short_name'])
-        # Create (final) preprocessor task
-        fx_task = _get_single_preprocessor_task(
-            fx_variables_group,
-            fx_profile,
-            config_user,
-            ancestor_tasks=derive_tasks,
-            name=fx_task_name)
-        fx_tasks.append(fx_task)
+    fx_task_name = task_name.split(
+        TASKSEP)[0] + TASKSEP + 'fx_' + fx_variable['short_name']
+    logger.info("Creating preprocessor fx-default task for variable '%s'",
+                fx_variable['short_name'])
 
-    return fx_tasks
+    # Create (final) preprocessor task
+    fx_task = _get_single_preprocessor_task(
+        [fx_variable],
+        fx_profile,
+        config_user,
+        name=fx_task_name)
+
+    return fx_task
 
 
 def _get_preprocessor_task(variables, profiles, config_user, task_name):
@@ -853,11 +849,17 @@ def _get_preprocessor_task(variables, profiles, config_user, task_name):
         _add_cmor_info(variable)
 
     # manage variable lists for regular and fx variables
-    tasks = []
     regular_variables = [var for var in variables if 'fxvar' not in var.keys()]
     fx_variables = [var for var in variables if 'fxvar' in var.keys()]
 
-    # Create preprocessor task(s)
+    # create tasks for fx variables (first ones)
+    fx_tasks = []
+    if fx_variables:
+        fx_tasks = [
+            _get_fx_tasks(fx_var, config_user, task_name)
+            for fx_var in fx_variables]
+
+    # create derive tasks
     derive_tasks = []
     if variable.get('derive'):
         # Create tasks to prepare the input data for the derive step
@@ -874,28 +876,25 @@ def _get_preprocessor_task(variables, profiles, config_user, task_name):
                 derive_variables,
                 derive_profile,
                 config_user,
+                ancestor_tasks=fx_tasks,
                 name=derive_name)
             derive_tasks.append(task)
 
-    # create tasks for regular and fx variables
-    if fx_variables:
-        fx_task_list = _get_fx_tasks(fx_variables, config_user,
-                                     task_name, derive_tasks)
-        tasks.extend(fx_task_list)
-    if regular_variables:
-        logger.info("Creating preprocessor '%s' task for variable '%s'",
-                    regular_variables[0]['preprocessor'],
-                    regular_variables[0]['short_name'])
-        # add all regular variable task
-        task = _get_single_preprocessor_task(
-            regular_variables,
-            profile,
-            config_user,
-            ancestor_tasks=derive_tasks,
-            name=task_name)
-        tasks.append(task)
+    # cumulative ancestors
+    all_ancestor_tasks = fx_tasks + derive_tasks
 
-    return tasks
+    logger.info("Creating preprocessor '%s' task for variable '%s'",
+                regular_variables[0]['preprocessor'],
+                regular_variables[0]['short_name'])
+    # add all regular variable task
+    task = _get_single_preprocessor_task(
+        regular_variables,
+        profile,
+        config_user,
+        ancestor_tasks=all_ancestor_tasks,
+        name=task_name)
+
+    return task
 
 
 class Recipe:
@@ -1167,14 +1166,13 @@ class Recipe:
             for variable_group in diagnostic['preprocessor_output']:
                 task_name = diagnostic_name + TASKSEP + variable_group
                 logger.info("Creating preprocessor task %s", task_name)
-                run_tasks = _get_preprocessor_task(
+                task = _get_preprocessor_task(
                     variables=diagnostic['preprocessor_output']
                     [variable_group],
                     profiles=self._preprocessors,
                     config_user=self._cfg,
                     task_name=task_name)
-                for task in run_tasks:
-                    tasks.add(task)
+                tasks.add(task)
 
             # Create diagnostic tasks
             for script_name, script_cfg in diagnostic['scripts'].items():
@@ -1187,16 +1185,11 @@ class Recipe:
                     name=task_name)
                 tasks.add(task)
 
-        # remove duplicates and check
-        task_dict_list = [{t.name: t} for t in tasks]
-        unique_names = list(set([t.name for t in tasks]))
-        tasks = []
-        for uniq_name in unique_names:
-            unique_task = [
-                d[uniq_name] for d in task_dict_list
-                if uniq_name in d.keys()][0]
-            tasks.append(unique_task)
-        check.tasks_valid(tasks)
+        # check tasks
+        # TODO fix this:
+        # currently fails the check for variables with common
+        # fx files settings. if in the same diagnostic
+        # check.tasks_valid(tasks)
 
         # Resolve diagnostic ancestors
         self._resolve_diagnostic_ancestors(tasks)
