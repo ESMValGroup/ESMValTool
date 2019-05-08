@@ -26,7 +26,7 @@ provenance_file <- paste0(run_dir, "/", "diagnostic_provenance.yml")
 provenance <- list()
 
 wdata <- NULL
-for (j in 1 : 4) { # variable
+for (j in 1 : 4) {
   input_files_per_var <- yaml::read_yaml(params$input_files[j])
   var0 <- lapply(input_files_per_var, function(x) x$short_name)
   fullpath_filenames <- names(var0)
@@ -101,7 +101,6 @@ for (j in 1 : 4) { # variable
 # nolint end
   names(dim(historical_data)) <- c("model", "var", "time", "lon", "lat")
   time_dimension <- which(names(dim(historical_data)) == "time")
-  
   attributes(lon) <- NULL
   attributes(lat) <- NULL
 
@@ -109,19 +108,19 @@ for (j in 1 : 4) { # variable
   dim(lat) <- c(lat = length(lat))
   model_dim <- which(names(dim(historical_data)) == "model")
 ###Compute the quantiles and standard deviation for the historical period.
-  if (var0 == "tasmin") {
+   if (var0 == "tasmin") {
     quantile <- 0.1
-    metric = "t10p"
+    metric <- "t10p"
   } else if (var0 == "tasmax") {
     quantile <- 0.9
-    metric = "t90p"
+    metric <- "t90p"
   } else if (var0 == "sfcWind") {
     historical_data <- 0.5 * 1.23 * (historical_data ** 3)
     quantile <- 0.9
-    metric = "Wx"
+    metric <- "Wx"
   } else if (var0 == "pr") {
     historical_data <- historical_data * 60 * 60 * 24
-    metric = c("rx5day", "cdd")
+    metric <- c("rx5day", "cdd")
   }
   attr(historical_data, "Variables")$dat1$time <- time
 
@@ -160,7 +159,7 @@ for (j in 1 : 4) { # variable
   }
 # Compute the time series of the relevant index, using the quantiles
 # and standard deviation from the index
-  projection_filenames <-  fullpath_filenames[projection_files]
+   projection_filenames <-  fullpath_filenames[projection_files]
 
   for (i in 1 : length(projection_filenames)) {
     proj_nc <- nc_open(projection_filenames[i])
@@ -189,7 +188,7 @@ for (j in 1 : 4) { # variable
     projection_data <- aperm(projection_data, c(1, 2, 5, 3, 4))
     attr(projection_data, "Variables")$dat1$time <- time
     names(dim(projection_data)) <- c("model", "var", "time", "lon", "lat")
-    num_model <- dim(projection_data)['model']
+    num_model <- dim(projection_data)["model"]
     print(num_model)
   # nolint start
   # ------------------------------
@@ -197,8 +196,7 @@ for (j in 1 : 4) { # variable
   #PlotEquiMap(projection_data[1,1,1,,], lon = lon, lat = lat, filled = F)
   #dev.off()
   # nolint end
-
-  if (var0 == "pr") {
+   if (var0 == "pr") {
     projection_data <- projection_data * 60 * 60 * 24
   } else if (var0 == "sfcWind") {
     projection_data <- 0.5 * 1.23 * (projection_data ** 3)
@@ -210,7 +208,7 @@ for (j in 1 : 4) { # variable
                                 calendar = calendar, threshold = thresholds,
                                 ncores = detectCores() - 1)
       projection_mean <- 10
-    } else {
+    } else { #nolint
       projection_index <- Climdex(data = projection_data, metric = metric[m],
                                 calendar = calendar,
                                 ncores = detectCores() - 1)
@@ -221,30 +219,26 @@ for (j in 1 : 4) { # variable
                             dim(projection_index$result)[1])
     projection_index_standardized <-
                     (projection_index$result - projection_mean) / base_sd_proj
-    
     for (mod in 1 : num_model) {
        model_dim <- which(names(dim(projection_index_standardized)) == "model")
        if (length(model_dim) == 0) {
            data <- drop(projection_index_standardized)
-       } else { 
+       } else {
    print(dim(projection_index_standardized))
            data <- drop(projection_index_standardized[, mod,,,])
        }
- 
-     #data <- drop(Mean1Dim(projection_index_standardized, 1))
-      print(paste(
+       print(paste(
         "Attribute projection from climatological data is saved and,",
         "if it's correct, it can be added to the final output:",
         projection))
-      dimlon <- ncdim_def(name = "lon", units = "degrees_east",
+       dimlon <- ncdim_def(name = "lon", units = "degrees_east",
         vals = as.vector(lon), longname = "longitude")
-      dimlat <- ncdim_def(name = "lat", units = "degrees_north",
+       dimlat <- ncdim_def(name = "lat", units = "degrees_north",
         vals = as.vector(lat), longname = "latitude")
-      dimtime <- ncdim_def(name = "time", units = "Years",
+       dimtime <- ncdim_def(name = "time", units = "Years",
                            vals = start_projection : end_projection,
-                      #     unlim = TRUE, 
                            longname = "Time in years")
-      defdata <- ncvar_def(name = "data", units = units,
+       defdata <- ncvar_def(name = "data", units = units,
         dim = list(year = dimtime, lon = dimlon, lat = dimlat),
         longname = paste("Annual", metric[m], long_names))
       filencdf <- paste0(
@@ -271,7 +265,6 @@ for (j in 1 : 4) { # variable
       PlotEquiMap( #nolint
         data, lon = lon, lat = lat, filled.continents = FALSE,
         toptitle = title, brks = breaks, fileout = filepng)
-
    # Set provenance for output files
      xprov <- list(ancestors = list(projection_filenames, reference_filenames),
                   authors = list("hunt_al", "manu_ni", "caro_lo"),
@@ -286,20 +279,19 @@ for (j in 1 : 4) { # variable
       # compute weights in the data
       lon <- as.vector(lon)
       lat <- as.vector(lat)
-      temporal <- WeightedMean(projection_index_standardized, 
+      temporal <- WeightedMean(projection_index_standardized, #nolint
                                lon = lon, lat = lat)
       time_dim <- which(names(dim(temporal)) == "year")
       if (!is.null(running_mean)) {
-         temporal <- Smoothing(temporal, runmeanlen = running_mean, 
+         temporal <- Smoothing(temporal, runmeanlen = running_mean, #nolint
                                numdimt = time_dim)
                      timestamp <- paste0(running_mean, "-month-running-mean-")
-      }    
+      }
       wdata[[j + (m - 1)]] <- temporal
       } #model index
-    } # metric index 
+    } # metric index
   }  # number of projections
 }  # variable index
-
 if (!is.numeric(weights)) {
     data <- CombineIndices(wdata, weights = NULL) # nolint
 } else {
@@ -309,7 +301,7 @@ if (!is.numeric(weights)) {
 # Plotting time series:
 data <- drop(data)
 if (length(data) >= 5) {
-    png(paste0(plot_dir, "/CombinedIndices.png"))
+    png(paste0(plot_dir, "/", "CombinedIndices.png"))
     plot(start_projection : end_projection, data, type = "l",
          lwd = 2, col = "darkblue")
     dev.off()
@@ -330,9 +322,9 @@ xprov <- list(ancestors = list(fullpath_filenames),
                   caption = "Combined selection",
                   statistics = list("other"),
                   running_mean = params$running_mean,
-	          weight_t90p = params$weight_t90p, 
+                  weight_t90p = params$weight_t90p,
                   weight_t10p = params$weight_t10p,
-                  weight_Wx = params$weight_Wx, 
+                  weight_Wx = params$weight_Wx,
                   weight_rx5day = params$weight_rx5day,
                   weight_cdd = params$weight_cdd,
                   realms = list("atmos"),
