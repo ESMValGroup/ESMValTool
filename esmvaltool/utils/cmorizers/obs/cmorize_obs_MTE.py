@@ -1,7 +1,7 @@
 """ESMValTool CMORizer for MTE data.
 
 Tier
-    Tier 2: other freely-available dataset.
+    Tier 3: restricted dataset.
 
 Source
     http://www.bgc-jena.mpg.de/geodb/BGI/Home
@@ -12,6 +12,7 @@ Last access
 Download and processing instructions
     Download the following files:
         EnsembleGPP_GL.nc
+    A registration is required for downloading the data.
 
 """
 
@@ -25,6 +26,19 @@ import esmvaltool.utils.cmorizers.obs.utilities as utils
 logger = logging.getLogger(__name__)
 
 CFG = utils.read_cmor_config('MTE.yml')
+
+
+def _get_filename(in_dir, basename):
+    """Find correct name of file (extend basename with timestamp)."""
+    all_files = [
+        f for f in os.listdir(in_dir)
+        if os.path.isfile(os.path.join(in_dir, f))
+    ]
+    for filename in all_files:
+        if filename.endswith(basename):
+            return filename
+    raise OSError(
+        f"Cannot find input file ending with '{basename}' in '{in_dir}'")
 
 
 def _extract_variable(raw_var, cmor_info, attrs, filepath, out_dir):
@@ -43,15 +57,17 @@ def _extract_variable(raw_var, cmor_info, attrs, filepath, out_dir):
 def cmorization(in_dir, out_dir):
     """Cmorization func call."""
     glob_attrs = CFG['attributes']
-    filepath = os.path.join(in_dir, glob_attrs['original_filename'])
     logger.info("Starting cmorization for Tier%s OBS files: %s",
                 glob_attrs['tier'], glob_attrs['dataset_id'])
     logger.info("Input data from: %s", in_dir)
     logger.info("Output will be written to: %s", out_dir)
+    filename = _get_filename(in_dir, CFG['filename'])
+    filepath = os.path.join(in_dir, filename)
+    logger.info("Found input file '%s'", filepath)
 
     # Run the cmorization
     for (var, var_info) in CFG['variables'].items():
-        logger.info("CMORizing var %s from file %s", var, filepath)
+        logger.info("CMORizing variable '%s'", var)
         glob_attrs['mip'] = var_info['mip']
         cmor_table = (CFG['custom_cmor_table'] if
                       var_info.get('custom_cmor_table') else CFG['cmor_table'])
