@@ -11,11 +11,10 @@ To install in development mode, follow these instructions.
   - [Download and install conda](https://conda.io/projects/conda/en/latest/user-guide/install/linux.html) (this should be done even if the system in use already has a preinstalled version of conda, as problems have been reported with NCL when using such a version)
   - To make the `conda` command availble, add `source <prefix>/etc/profile.d/conda.sh` to your `.bashrc` file and restart your shell. If using (t)csh shell, add `source <prefix>/etc/profile.d/conda.csh` to your `.cshrc`/`.tcshrc` file instead.
   - Update conda: `conda update -y conda`
-  - Create a conda environment: `conda create -y -n esmvaltool python=3`
-  - Activate the esmvaltool environment: `conda activate esmvaltool`
   - Clone the ESMValTool public github repository: `git clone git@github.com:ESMValGroup/ESMValTool.git`, or one of the private github repositories (e.g. `git clone git@github.com:ESMValGroup/ESMValTool-private.git`)
   - Go to the esmvaltool directory: `cd ESMValTool`
-  - Update the esmvaltool conda environment `conda env update`
+  - Create the esmvaltool conda environment `conda env create --name esmvaltool --file environment.yml`
+  - Activate the esmvaltool environment: `conda activate esmvaltool`
   - Install in development mode: `pip install -e '.[develop]'`. If you are installing behind a proxy that does not trust the usual pip-urls you can declare them with the option `--trusted-host`, e.g. `pip install --trusted-host=pypi.python.org --trusted-host=pypi.org --trusted-host=files.pythonhosted.org -e .[develop]`
   - If you want to use R diagnostics, run `Rscript esmvaltool/install/R/setup.R` to install the R dependences.
   - If you want to use Julia diagnostics, run `julia esmvaltool/install/Julia/setup.jl` to install the Julia dependences.
