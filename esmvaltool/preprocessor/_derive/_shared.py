@@ -2,8 +2,6 @@
 
 import logging
 
-import dask.array as da
-import numpy as np
 import iris
 from iris import Constraint
 
@@ -33,8 +31,7 @@ def _get_land_fraction(cubes, standard_name, derive_from_ocean_fraction=False):
                              fx_var, standard_name)
             else:
                 if fx_var == 'sftof':
-                    land_fraction = (da.ones_like(fx_cube.core_data()) -
-                                     fx_cube.core_data() / 100.0)
+                    land_fraction = 1.0 - fx_cube.core_data() / 100.0
                 else:
                     land_fraction = fx_cube.core_data() / 100.0
                 logger.debug("Using fx cube '%s' to fix '%s'", fx_var,
@@ -80,8 +77,6 @@ def grid_area_correction(cubes, standard_name, ocean_var=False):
         cubes, standard_name, derive_from_ocean_fraction=ocean_var)
     if land_fraction is not None:
         if ocean_var:
-            land_fraction = da.ones_like(land_fraction) - land_fraction
-        if isinstance(core_data, np.ndarray):
-            land_fraction = np.array(land_fraction)
-        core_data *= land_fraction
-    return cube.copy(core_data)
+            land_fraction = 1.0 - land_fraction
+        cube.data = core_data * land_fraction
+    return cube
