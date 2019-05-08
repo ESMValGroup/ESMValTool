@@ -313,6 +313,33 @@ def test_default_preprocessor(tmp_path, patched_datafinder, config_user):
     assert product.settings == defaults
 
 
+def test_empty_variable(tmp_path, patched_datafinder, config_user):
+    """Test that it is possible to specify all information in the dataset."""
+    content = dedent("""
+        diagnostics:
+          diagnostic_name:
+            additional_datasets:
+              - dataset: CanESM2
+                project: CMIP5
+                mip: Amon
+                exp: historical
+                start_year: 2000
+                end_year: 2005
+                ensemble: r1i1p1
+            variables:
+              pr:
+            scripts: null
+        """)
+
+    recipe = get_recipe(tmp_path, content, config_user)
+    assert len(recipe.tasks) == 1
+    task = recipe.tasks.pop()
+    assert len(task.products) == 1
+    product = task.products.pop()
+    assert product.attributes['short_name'] == 'pr'
+    assert product.attributes['dataset'] == 'CanESM2'
+
+
 def test_reference_dataset(tmp_path, patched_datafinder, config_user,
                            monkeypatch):
 
@@ -545,13 +572,20 @@ def test_derive_not_needed(tmp_path, patched_datafinder, config_user):
     # Check product content of tasks
     assert len(task.products) == 1
     product = task.products.pop()
-    assert 'derive' in product.settings
     assert product.attributes['short_name'] == 'toz'
+    assert 'derive' in product.settings
 
     assert len(ancestor.products) == 1
     ancestor_product = ancestor.products.pop()
     assert ancestor_product.filename in product.files
     assert ancestor_product.attributes['short_name'] == 'toz'
+    assert 'derive' not in ancestor_product.settings
+
+    # Check that fixes are applied just once
+    fixes = ('fix_file', 'fix_metadata', 'fix_data')
+    for fix in fixes:
+        assert fix in ancestor_product.settings
+        assert fix not in product.settings
 
 
 def test_derive_with_fx(tmp_path, patched_datafinder, config_user):
