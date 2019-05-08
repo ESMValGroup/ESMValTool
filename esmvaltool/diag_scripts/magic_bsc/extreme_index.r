@@ -303,8 +303,9 @@ data <- drop(data)
 if (length(data) >= 5) {
     png(paste0(plot_dir, "/", "CombinedIndices.png"))
     plot(start_projection : end_projection, data, type = "l",
-         lwd = 2, col = "darkblue")
-    dev.off()
+         lwd = 2, col = "darkblue", xlab = "Time (years)", 
+         ylab = "Combined indices")
+   dev.off()
 }
 dimtime <- ncdim_def(name = "time", units = "years",
     vals = start_projection : end_projection, longname = "time")
@@ -319,6 +320,7 @@ nc_close(file)
 xprov <- list(ancestors = list(fullpath_filenames),
                   authors = list("hunt_al", "manu_ni", "pere_nu"),
                   projects = list("c3s-magic"),
+                  plot_file = paste0(plot_dir, "/", "CombinedIndices.png"),
                   caption = "Combined selection",
                   statistics = list("other"),
                   realms = list("atmos"),
