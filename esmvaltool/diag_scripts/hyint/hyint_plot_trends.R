@@ -3,7 +3,8 @@
 #-------------E. Arnone (September 2017)-------------#
 ######################################################
 
-hyint_plot_trends <- function(work_dir, plot_dir, ref_idx, season) {
+hyint_plot_trends <- function(work_dir, plot_dir, ref_idx, season,
+                              prov_info) {
 
   # Define subscripts for variable names
   var_type <- c("tseries", "tseries-sd", "trend", "trend-stat")
@@ -174,6 +175,30 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_idx, season) {
       field_long_names <- array(NaN, length(field_names))
       field_units <- array(NaN, length(field_names))
 
+      if ( (plot_type == 13) | (plot_type == 15)) {
+        # Store data for provenance
+        caption <- paste0("Hyint timeseries for selected indices and regions ",
+                          "according to selected datasets")
+        if (plot_type == 15) {
+          caption <- paste0("Hyint trends for multiple indices and regions ",
+                            "according to selected datasets")
+        }
+        if (length(prov_info[[figname]]) == 0) {
+          prov_fig_now <- list(figname = figname,
+                               caption = caption,
+                               model_idx = list(model_idx),
+                               ancestors = list(infile))
+          prov_info[[figname]] <- prov_fig_now
+        } else {
+          if (is.na(match(model_idx, prov_info[[figname]]$model_idx))) {
+            prov_info[[figname]]$model_idx <-
+                             c(prov_info[[figname]]$model_idx, model_idx)
+            prov_info[[figname]]$ancestors <-
+                             c(prov_info[[figname]]$ancestors, infile)
+          }
+        }
+      }
+
       for (var in field_names) {
         ivar <- which(field_names == var)
         for (stype in var_type[1:2]) {
@@ -287,7 +312,7 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_idx, season) {
         if (plot_type == 11) {
           figname <- getfilename_figure(
             plot_dir, field, year1, year2, model_idx, season,
-            "", region_codes[selregions[1]], label_figname,
+            "", "multiregion", label_figname,
             "timeseries_single", output_file_type
           )
           graphics_startup(figname, output_file_type, plot_size)
@@ -421,6 +446,15 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_idx, season) {
           box(lwd = 2)
           if (plot_type == 11) {
             graphics_close(figname)
+            # Store data for provenance
+            caption <- paste0("Hyint timeseries for index ", field,
+                              " over selected regions according to ",
+                              models_name[model_idx])
+            prov_fig_now <- list(figname = figname,
+                                 caption = caption,
+                                 model_idx = list(model_idx),
+                                 ancestors = list(infile))
+            prov_info[[figname]] <- prov_fig_now
           }
         }
         if ( (plot_type == 14) | (plot_type == 15)) {
@@ -589,6 +623,18 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_idx, season) {
     } # close loop over label
     if ( (plot_type == 12) | (plot_type == 14)) {
       graphics_close(figname)
+      # Store data for provenance
+      caption <- paste0("Hyint timeseries for selected indices and regions ",
+                        "according to ", models_name[model_idx])
+      if (plot_type == 14) {
+        caption <- paste0("Hyint trends for multiple indices and regions ",
+                          "according to ", models_name[model_idx])
+      }
+      prov_fig_now <- list(figname = figname,
+                           caption = caption,
+                           model_idx = list(model_idx),
+                           ancestors = list(infile))
+      prov_info[[figname]] <- prov_fig_now
     }
   } # close loop over model
   } # close miniloop over noplot
@@ -636,8 +682,10 @@ hyint_plot_trends <- function(work_dir, plot_dir, ref_idx, season) {
     )
     print(legend_label)
     print("legend_label")
-  }
+
+ }
   if ( (plot_type == 13) | (plot_type == 15)) {
     graphics_close(figname)
   }
+return(prov_info)
 } # close function

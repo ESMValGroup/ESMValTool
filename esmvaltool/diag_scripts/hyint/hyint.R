@@ -97,6 +97,7 @@ if (!all(plot_type %in% c(1, 2, 3, 11, 12, 13, 14, 15) ) ) {
 # setup provenance file and list
 provenance_file <- paste0(run_dir, "/", "diagnostic_provenance.yml")
 provenance <- list()
+prov_info <- list()
 
 # get name of climofile for selected variable and 
 # list associated to first climofile
@@ -193,8 +194,8 @@ if (write_netcdf) {
     if (run_diagnostic) {
       # Loop through seasons and call diagnostic
       for (seas in seasons) {
-        provenance <- hyint_diagnostic(work_dir, regfile, model_idx, seas,
-                         provenance, rewrite = force_diagnostic)
+        prov_info <- hyint_diagnostic(work_dir, regfile, model_idx, seas,
+                         prov_info, rewrite = force_diagnostic)
       }
     }
   }
@@ -213,7 +214,7 @@ if (write_netcdf & etccdi_preproc) {
 if (write_netcdf & run_timeseries) {
   for (model_idx in c(1:(length(models_name)))) {
     for (seas in seasons) {
-      provenance <- hyint_trends(work_dir, model_idx, seas, provenance)
+      prov_info <- hyint_trends(work_dir, model_idx, seas, prov_info)
     }
   }
 }
@@ -226,13 +227,29 @@ if (write_plots) {
     for (seas in seasons) {
       if (plot_type <= 10) {
         # Plot maps
-        hyint_plot_maps(work_dir, plot_dir, work_dir, ref_idx, seas)
+        prov_info <- hyint_plot_maps(
+                         work_dir, plot_dir, work_dir, ref_idx, seas, prov_info)
       } else {
         # Plot timeseries and trends
-        hyint_plot_trends(work_dir, plot_dir, ref_idx, seas)
+        prov_info <- hyint_plot_trends(
+                           work_dir, plot_dir, ref_idx, seas, prov_info)
       }
     }
   }
+}
+
+# Assign provenance information for timeseries&trends figures
+for (fname in names(prov_info)) {
+  xprov <- list(ancestors = climofiles[unlist(prov_info[[fname]]$model_idx)],
+              authors = list("arno_en", "hard_jo"),
+              references = list("giorgi11jc", "giorgi14jgr"),
+              projects = list("c3s-magic"),
+              caption = prov_info[[fname]]$caption,
+              statistics = list("other"),
+              realms = list("atmos"),
+              themes = list("phys"),
+              domains = list("global"))
+  provenance[[fname]] <- xprov
 }
 
 # Write provenance to file
