@@ -90,30 +90,30 @@ def extract_variable(var_info, raw_info, out_dir, attrs):
 def merge_data(in_dir, out_dir, raw_info, bin):
     """Merge all data into a single (regridded) file."""
     var = raw_info['name']
-    file = raw_info['file']
     do_bin = True if (bin % 2 == 0) & (bin != 0) else False
     comment = ''
-    merged_file = os.path.join(out_dir, file + '_merged.nc')
     #TODO remove 1997* here below before final publication
-    in_files = glob.glob(in_dir + '/' + file + '*1997*.nc')
-    for ff in in_files:
-        ds = xr.open_dataset(ff)
+    thefiles = glob.glob(in_dir + '/' + raw_info['file'] + '*1997*.nc')
+    for x in thefiles:
+        ds = xr.open_dataset(x)
         da = ds[var].sel(lat=slice(None, None, -1))
         # remove inconsistent attributes
-        for delkey in [
+        for thekeys in [
                 'grid_mapping', 'ancillary_variables', 'parameter_vocab_uri'
         ]:
-            del da.attrs[delkey]
+            del da.attrs[thekeys]
 
         if do_bin:
             da = da.coarsen(lat=bin, boundary='exact').mean()
             da = da.coarsen(lon=bin, boundary='exact').mean()
 
-        if ff == in_files[0]:
+        if x == thefiles[0]:
             newda = da
-            selkey = ['creator_name', 'creator_url',
-                    'license', 'sensor', 'processing_level']
-            dsmeta = dict((k, ds.attrs[k]) for k in selkey)
+            thekeys = [
+                'creator_name', 'creator_url', 'license', 'sensor',
+                'processing_level'
+            ]
+            dsmeta = dict((y, ds.attrs[y]) for y in thekeys)
             if do_bin:
                 comment = ' '.join([
                     'Data binned using ', "{}".format(bin), 'by',
@@ -141,6 +141,7 @@ def merge_data(in_dir, out_dir, raw_info, bin):
             '_FillValue': 1.e20
         }
     }
+    merged_file = os.path.join(out_dir, raw_info['file'] + '_merged.nc')
     ds.to_netcdf(merged_file, encoding=encoding, unlimited_dims='time')
 
     logger.info("Merged data written to: %s", merged_file)
