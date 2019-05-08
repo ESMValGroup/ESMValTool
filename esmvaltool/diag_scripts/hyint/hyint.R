@@ -228,7 +228,7 @@ if (write_plots) {
       if (plot_type <= 10) {
         # Plot maps
         prov_info <- hyint_plot_maps(
-                         work_dir, plot_dir, work_dir, ref_idx, seas, prov_info)
+                        work_dir, plot_dir, work_dir, ref_idx, seas, prov_info)
       } else {
         # Plot timeseries and trends
         prov_info <- hyint_plot_trends(
