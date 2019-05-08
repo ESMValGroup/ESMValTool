@@ -68,7 +68,7 @@ diagnostics:
         mip_name: CMIP
         timeseries_idx: ["tn10pETCCDI_yr", "tn90pETCCDI_yr", "tx10pETCCDI_yr", "tx90pETCCDI_yr"]
         gleckler_idx: ["tn10pETCCDI_yr", "tn90pETCCDI_yr", "tx10pETCCDI_yr", "tx90pETCCDI_yr"]
-        ts_plt: TRUE
-        glc_plt: TRUE
+        ts_plt: true
+        glc_plt: true
         base_range: [1980, 1983]
         analysis_range: [1984, 1989]
