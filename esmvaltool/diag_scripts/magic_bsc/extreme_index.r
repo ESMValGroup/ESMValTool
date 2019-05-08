@@ -264,7 +264,7 @@ for (j in 1 : 4) {
             "_", start_projection, "_", end_projection, ".png")
       PlotEquiMap( #nolint
         data, lon = lon, lat = lat, filled.continents = FALSE,
-        toptitle = title, brks = breaks, fileout = filepng)
+        toptitle = title, sizetit = 0.5, brks = breaks, fileout = filepng)
    # Set provenance for output files
      xprov <- list(ancestors = list(projection_filenames, reference_filenames),
                   authors = list("hunt_al", "manu_ni", "caro_lo"),
