@@ -99,9 +99,9 @@ highreselevation <- F # a) F: neglect; b) value: threshold of minimum elevation
 highreselevation_only <- F # T to plot only high resolution elevation contours
 
 # timeseries and trend plotting options
-add_legend <- 5       # a) F=no legend; b) n>0 list disposed in n column;
+add_legend <- 4       # a) F=no legend; b) n>0 list disposed in n column;
                       # c) <0 horizontal legend 
-xy_legend <- c(0.03, 0.8) # position of legend in fraction of plotting panel
+xy_legend <- c(0.01, 0.98) # position of legend in fraction of plotting panel
 tag_legend <- c(T, F, F) # 1=model name, 2=model experiment, 3=model ensemble
                        # (select one or more)
 
