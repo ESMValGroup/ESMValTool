@@ -1,5 +1,4 @@
 """Tests for the module :mod:`esmvaltool.diag_scripts.shared.iris_helpers`."""
-from collections import OrderedDict
 
 import iris
 import mock
@@ -110,28 +109,17 @@ CUBES_TO_TRANSFORM = [
 @pytest.mark.parametrize('ref_coord,cubes,output', CUBES_TO_TRANSFORM)
 def test_transform_coord_to_ref(ref_coord, cubes, output):
     """Test transforming coordinate to reference."""
-    cubes_list = iris.cube.CubeList(cubes)
-    cubes_dict = OrderedDict(list(zip(['a', 'b'], cubes)))
-
     # ValueErrors
     if isinstance(output, type):
         with pytest.raises(output):
             new_cubes = ih._transform_coord_to_ref(cubes, ref_coord)
-        with pytest.raises(output):
-            new_cubes = ih._transform_coord_to_ref(cubes_list, ref_coord)
-        with pytest.raises(output):
-            new_cubes = ih._transform_coord_to_ref(cubes_dict, ref_coord)
         return
 
     # Working examples
-    output_list = iris.cube.CubeList(output)
-    output_dict = OrderedDict(list(zip(['a', 'b'], output)))
+    cubes = iris.cube.CubeList(cubes)
+    output = iris.cube.CubeList(output)
     new_cubes = ih._transform_coord_to_ref(cubes, ref_coord)
     assert new_cubes == output
-    new_cubes_list = ih._transform_coord_to_ref(cubes_list, ref_coord)
-    assert new_cubes_list == output_list
-    new_cubes_dict = ih._transform_coord_to_ref(cubes_dict, ref_coord)
-    assert new_cubes_dict == output_dict
 
 
 DIM_COORD_2 = iris.coords.DimCoord(np.arange(3.0) - 1.0, long_name='aaa')
@@ -333,31 +321,20 @@ CUBES_TO_INTERSECT = [
 ]
 
 
-@pytest.mark.parametrize('cubes_in,output', CUBES_TO_INTERSECT)
-def test_intersect_dataset_coords(cubes_in, output):
+@pytest.mark.parametrize('cubes,output', CUBES_TO_INTERSECT)
+def test_intersect_dataset_coords(cubes, output):
     """Test unifying 1D cubes."""
-    cubes_in_list = iris.cube.CubeList(cubes_in)
-    cubes_in_dict = OrderedDict(list(zip(['a', 'b'], cubes_in)))
-
     # ValueErrors
     if isinstance(output, type):
         with pytest.raises(output):
-            new_cubes = ih.intersect_dataset_coordinates(cubes_in)
-        with pytest.raises(output):
-            new_cubes = ih.intersect_dataset_coordinates(cubes_in_list)
-        with pytest.raises(output):
-            new_cubes = ih.intersect_dataset_coordinates(cubes_in_dict)
+            new_cubes = ih.intersect_dataset_coordinates(cubes)
         return
 
     # Working examples
-    output_list = iris.cube.CubeList(output)
-    output_dict = OrderedDict(list(zip(['a', 'b'], output)))
-    new_cubes = ih.intersect_dataset_coordinates(cubes_in)
+    cubes = iris.cube.CubeList(cubes)
+    output = iris.cube.CubeList(output)
+    new_cubes = ih.intersect_dataset_coordinates(cubes)
     assert new_cubes == output
-    new_cubes_list = ih.intersect_dataset_coordinates(cubes_in_list)
-    assert new_cubes_list == output_list
-    new_cubes_dict = ih.intersect_dataset_coordinates(cubes_in_dict)
-    assert new_cubes_dict == output_dict
 
 
 DIM_COORD_4 = DIM_COORD_1.copy([100.0, 150.0, 160.0])
@@ -395,17 +372,18 @@ CUBES_TO_UNIFY = [
 def test_unify_1d_cubes(mock_unify_time, mock_transform, cubes, coord_name,
                         output):
     """Test unifying 1D cubes."""
-    cubes_list = iris.cube.CubeList(cubes)
-    cubes_dict = OrderedDict(list(zip(['a', 'b', 'c'], cubes)))
-    for cubes_in in (cubes, cubes_list, cubes_dict):
-        if isinstance(output, type):
-            with pytest.raises(output):
-                ih.unify_1d_cubes(cubes_in, coord_name)
-            continue
-        ih.unify_1d_cubes(cubes_in, coord_name)
-        assert mock_transform.call_args_list == [mock.call(cubes_in, output)]
-        mock_transform.reset_mock()
+    # ValueErrors
+    if isinstance(output, type):
+        with pytest.raises(output):
+            ih.unify_1d_cubes(cubes, coord_name)
+        return
+
+    # Working examples
+    cubes = iris.cube.CubeList(cubes)
+    ih.unify_1d_cubes(cubes, coord_name)
+    assert mock_transform.call_args_list == [mock.call(cubes, output)]
+    mock_transform.reset_mock()
     if coord_name == 'time':
-        assert mock_unify_time.call_count == 3
+        assert mock_unify_time.call_count == 1
     else:
         assert not mock_unify_time.called

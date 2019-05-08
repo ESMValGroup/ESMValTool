@@ -148,7 +148,7 @@ def _save_fig(cfg, basename, legend=None):
 
 def get_external_cubes(cfg):
     """Get external cubes for psi, ECS and lambda."""
-    cubes = []
+    cubes = iris.cube.CubeList()
     for filename in ('psi.nc', 'ecs.nc', 'lambda.nc'):
         filepath = io.get_ancestor_file(cfg, filename)
         cube = iris.load_cube(filepath)

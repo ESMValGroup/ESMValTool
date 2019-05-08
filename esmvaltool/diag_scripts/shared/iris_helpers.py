@@ -13,6 +13,7 @@ logger = logging.getLogger(__name__)
 def _transform_coord_to_ref(cubes, ref_coord):
     """Transform coordinates of cubes to reference."""
     try:
+        # Convert AuxCoord to DimCoord if necessary and possible
         ref_coord = iris.coords.DimCoord.from_coord(ref_coord)
     except ValueError:
         pass
@@ -22,9 +23,8 @@ def _transform_coord_to_ref(cubes, ref_coord):
             f"Expected unique coordinate '{ref_coord.name()}', got "
             f"{ref_coord}")
     coord_name = ref_coord.name()
-    (cubes_iterable, new_cubes) = (cubes.items(), {}) if isinstance(
-        cubes, dict) else (enumerate(cubes), list(range(len(cubes))))
-    for (key, cube) in cubes_iterable:
+    new_cubes = iris.cube.CubeList()
+    for cube in cubes:
         coord = cube.coord(coord_name)
         if not np.all(np.isin(coord.points, ref_coord.points)):
             raise ValueError(
@@ -42,14 +42,12 @@ def _transform_coord_to_ref(cubes, ref_coord):
             if aux_coord.shape in ((), (1, )):
                 new_cube.add_aux_coord(aux_coord, [])
         new_cube.metadata = cube.metadata
-        new_cubes[key] = new_cube
+        new_cubes.append(new_cube)
     check_coordinate(new_cubes, coord_name)
     logger.debug("Successfully unified coordinate '%s' to %s", coord_name,
                  ref_coord)
     logger.debug("of cubes")
     logger.debug(pformat(cubes))
-    new_cubes = iris.cube.CubeList(new_cubes) if isinstance(
-        cubes, iris.cube.CubeList) else new_cubes
     return new_cubes
 
 
@@ -58,7 +56,7 @@ def check_coordinate(cubes, coord_name):
 
     Parameters
     ----------
-    cubes : iterable or dict of iris.cube.Cube
+    cubes : iris.cube.CubeList
         Cubes to be compared.
     coord_name : str
         Name of the coordinate.
@@ -77,8 +75,6 @@ def check_coordinate(cubes, coord_name):
 
     """
     coord = None
-    if isinstance(cubes, dict):
-        cubes = list(cubes.values())
     for cube in cubes:
         try:
             new_coord = cube.coord(coord_name)
@@ -162,17 +158,17 @@ def iris_project_constraint(projects, cfg, negate=False):
 def intersect_dataset_coordinates(cubes):
     """Compare dataset coordinates of cubes and match them if necessary.
 
-    Use intersection of coordinate 'dataset' of all given cubes and removes
-    elements where at least one cube does not have specific coordinate.
+    Use intersection of coordinate 'dataset' of all given cubes and remove
+    elements which are not given in all cubes.
 
     Parameters
     ----------
-    cubes : iterable or dict of iris.cube.Cube
+    cubes : iris.cube.CubeList
         Cubes to be compared.
 
     Returns
     -------
-    iterable or dict of iris.cube.Cube
+    iris.cube.CubeList
         Transformed cubes.
 
     Raises
@@ -180,15 +176,14 @@ def intersect_dataset_coordinates(cubes):
     iris.exceptions.CoordinateNotFoundError
         Coordinate `dataset` is not a coordinate of one of the cubes.
     ValueError
-        At least on of the cubes contains a `dataset` coordinate with duplicate
-        elements or the cubes do not share common elements.
+        At least one of the cubes contains a `dataset` coordinate with
+        duplicate elements or the cubes do not share common elements.
 
     """
     common_elements = None
-    cubes_iterable = cubes.values() if isinstance(cubes, dict) else cubes
 
     # Get common elements
-    for cube in cubes_iterable:
+    for cube in cubes:
         try:
             coord_points = cube.coord('dataset').points
         except iris.exceptions.CoordinateNotFoundError:
@@ -205,21 +200,18 @@ def intersect_dataset_coordinates(cubes):
     common_elements = list(common_elements)
 
     # Save new cubes
-    (cubes_iterable, new_cubes) = (cubes.items(), {}) if isinstance(
-        cubes, dict) else (enumerate(cubes), list(range(len(cubes))))
-    for (key, cube) in cubes_iterable:
+    new_cubes = iris.cube.CubeList()
+    for cube in cubes:
         cube = cube.extract(iris.Constraint(dataset=common_elements))
         if cube is None:
             raise ValueError(f"Cubes {cubes} do not share common elements")
         sorted_idx = np.argsort(cube.coord('dataset').points)
-        new_cubes[key] = cube[sorted_idx]
+        new_cubes.append(cube[sorted_idx])
     check_coordinate(new_cubes, 'dataset')
     logger.debug("Successfully matched 'dataset' coordinate to %s",
                  sorted(common_elements))
     logger.debug("of cubes")
     logger.debug(pformat(cubes))
-    if isinstance(cubes, iris.cube.CubeList):
-        return iris.cube.CubeList(new_cubes)
     return new_cubes
 
 
@@ -231,14 +223,14 @@ def unify_1d_cubes(cubes, coord_name):
 
     Parameters
     ----------
-    cubes : iterable or dict of iris.cube.Cube
+    cubes : iris.cube.CubeList
         Cubes to be processed.
     coord_name : str
         Name of the coordinate.
 
     Returns
     -------
-    iterable or dict of iris.cube.Cube
+    iris.cube.CubeList
         Transformed cubes.
 
     Raises
@@ -249,10 +241,9 @@ def unify_1d_cubes(cubes, coord_name):
 
     """
     ref_coord = None
-    cubes_iterable = cubes.values() if isinstance(cubes, dict) else cubes
 
     # Get reference coordinate
-    for cube in cubes_iterable:
+    for cube in cubes:
         if cube.ndim != 1:
             raise ValueError(f"Dimension of cube\n{cube}\nis not 1")
         try:
@@ -271,7 +262,24 @@ def unify_1d_cubes(cubes, coord_name):
             new_points = np.union1d(ref_coord.points, new_coord.points)
             ref_coord = ref_coord.copy(new_points)
     if coord_name == 'time':
-        iris.util.unify_time_units(cubes_iterable)
+        iris.util.unify_time_units(cubes)
 
     # Transform all cubes
     return _transform_coord_to_ref(cubes, ref_coord)
+
+
+def var_name_constraint(var_name):
+    """:mod:`iris.Constraint` using `var_name` of an :mod:`iris.cube.Cube`.
+
+    Parameters
+    ----------
+    var_name : str
+        Short name (`var_name` in :mod:`iris`) for the constraint.
+
+    Returns
+    -------
+    iris.Constraint
+        Constraint to select only cubes with correct `var_name`.
+
+    """
+    return iris.Constraint(cube_func=lambda c: c.var_name == var_name)

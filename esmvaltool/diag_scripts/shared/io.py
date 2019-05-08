@@ -212,14 +212,12 @@ def save_1d_data(cubes, path, coord_name, var_attrs, attributes=None):
             [var_attrs], only_var_attrs=True, log_level='warning'):
         logger.warning("Cannot write file '%s'", path)
         return
-    datasets = []
-    data = []
-    cubes = unify_1d_cubes(cubes, coord_name)
-    for (dataset, cube) in cubes.items():
-        datasets.append(dataset)
-        data.append(cube.data)
+    datasets = list(cubes.keys())
+    cube_list = iris.cube.CubeList(list(cubes.values()))
+    cube_list = unify_1d_cubes(cube_list, coord_name)
+    data = [c.data for c in cube_list]
     dataset_coord = iris.coords.AuxCoord(datasets, long_name='dataset')
-    coord = cubes[list(cubes.keys())[0]].coord(coord_name)
+    coord = cube_list[0].coord(coord_name)
     if attributes is None:
         attributes = {}
     var_attrs['var_name'] = var_attrs.pop('short_name')
