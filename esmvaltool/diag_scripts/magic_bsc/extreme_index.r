@@ -303,7 +303,7 @@ data <- drop(data)
 if (length(data) >= 5) {
     png(paste0(plot_dir, "/", "CombinedIndices.png"))
     plot(start_projection : end_projection, data, type = "l",
-         lwd = 2, col = "darkblue", xlab = "Time (years)", 
+         lwd = 2, col = "darkblue", xlab = "Time (years)",
          ylab = "Combined indices")
    dev.off()
 }
