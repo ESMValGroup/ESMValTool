@@ -36,8 +36,8 @@ gl_rmsespacer <- 0.01
 gl_scaling_factor <- 0.9
 gl_text_scaling_factor <- 1.0
 gl_xscale_spacer_rmse <- 0.05
-gl_xscale_spacer_rmsestd <- 0.2
+gl_xscale_spacer_rmsestd <- 0.25
 gl_symb_scaling_factor <- 1.0
-gl_symb_xshift <- 0.175
+gl_symb_xshift <- 0.2
 gl_symb_yshift <- 0.275
 gl_text_symb_scaling_factor <- 1.0
