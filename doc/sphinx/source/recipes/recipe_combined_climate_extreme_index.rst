@@ -41,7 +41,7 @@ User setting files are stored in recipes/
    *   weight_Wx: 0.2 (from 0 to 1, the total sum of the weight should be 1)
    *   weight_rx5day: 0.2 (from 0 to 1, the total sum of the weight should be 1)
    *   weight_cdd: 0.2 (from 0 to 1, the total sum of the weight should be 1)
-   *   running_mean: 5 (depends on the length of the future projection period selected, but recommended not greather than 11)
+   *   running_mean: 5 (depends on the length of the future projection period selected, but recommended not greater than 11)
 
 Variables
 ---------
