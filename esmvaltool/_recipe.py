@@ -412,7 +412,7 @@ def _update_fx_settings(settings, variable, config_user):
                 # first convert the fx_file strings to real variables
                 fx_varlist = [
                     _convert_fxvar_to_cmor(fx_var, variable)
-                    for fx_var in variable['fx_files']
+                    for fx_var in var['fx_files']
                 ]
                 # now get the fx files output
                 fx_files.update(
