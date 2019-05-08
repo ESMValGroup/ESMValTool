@@ -24,9 +24,6 @@ datasets:
 
 preprocessors:
   preproc:
-    regrid:
-      target_grid: MPI-ESM-MR
-      scheme: linear
     extract_region:
       start_longitude: -20
       end_longitude: 40
