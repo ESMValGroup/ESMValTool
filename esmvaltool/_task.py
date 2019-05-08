@@ -9,6 +9,7 @@ import pprint
 import subprocess
 import threading
 import time
+from copy import deepcopy
 from multiprocessing import Pool, cpu_count
 
 import psutil
@@ -234,12 +235,13 @@ class BaseTask(object):
 
     def str(self):
         """Return a nicely formatted description."""
+
         def _indent(txt):
             return '\n'.join('\t' + line for line in txt.split('\n'))
 
-        txt = 'ancestors:\n{}'.format(
-            '\n\n'.join(_indent(str(task)) for task in self.ancestors)
-            if self.ancestors else 'None')
+        txt = 'ancestors:\n{}'.format('\n\n'.join(
+            _indent(str(task))
+            for task in self.ancestors) if self.ancestors else 'None')
         return txt
 
 
@@ -535,13 +537,15 @@ class DiagnosticTask(BaseTask):
         ancestor_products = {p for a in self.ancestors for p in a.products}
 
         for filename, attributes in table.items():
+            # copy to avoid updating other entries if file contains anchors
+            attributes = deepcopy(attributes)
             ancestor_files = attributes.pop('ancestors', [])
             ancestors = {
                 p
                 for p in ancestor_products if p.filename in ancestor_files
             }
 
-            attributes.update(attrs)
+            attributes.update(deepcopy(attrs))
             for key in attributes:
                 if key in TAGS:
                     attributes[key] = replace_tags(key, attributes[key])
@@ -577,36 +581,20 @@ def get_independent_tasks(tasks):
     return independent_tasks
 
 
-def _priority_tasks(tasks):
-    """Assign priority to certain first tasks if needed."""
-    first_tasks = []
-    for task in get_independent_tasks(tasks):
-        if task.name.split('/')[-1].startswith('fx_'):
-            first_tasks.append(task)
-            get_independent_tasks(tasks).remove(task)
-    return first_tasks, get_independent_tasks(tasks)
-
-
 def run_tasks(tasks, max_parallel_tasks=None):
     """Run tasks."""
     if max_parallel_tasks == 1:
         _run_tasks_sequential(tasks)
     else:
-        first_tasks, remainder_tasks = _priority_tasks(tasks)
-        if first_tasks:
-            _run_tasks_parallel(first_tasks, max_parallel_tasks)
-        _run_tasks_parallel(remainder_tasks, max_parallel_tasks)
+        _run_tasks_parallel(tasks, max_parallel_tasks)
 
 
 def _run_tasks_sequential(tasks):
     """Run tasks sequentially."""
     n_tasks = len(get_flattened_tasks(tasks))
     logger.info("Running %s tasks sequentially", n_tasks)
-    first_tasks, remainder_tasks = _priority_tasks(tasks)
-    if first_tasks:
-        for task in first_tasks:
-            task.run()
-    for task in remainder_tasks:
+
+    for task in get_independent_tasks(tasks):
         task.run()
 
 
