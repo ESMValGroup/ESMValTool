@@ -75,7 +75,7 @@ authors:
   berg_pe:
     name: Berg, Peter
     institute: SMHI, Sweden
-    email: peter.berg 'at' smhi.se  
+    email: peter.berg 'at' smhi.se
   bock_ls:
     name: Bock, Lisa
     institute: DLR, Germany
@@ -511,7 +511,7 @@ authors:
     name: Lovato, Tomas
     institute: CMCC, IT
     email: tomas.lovato 'at' cmcc.it
-    
+
 
 
 
@@ -561,7 +561,7 @@ references:
   lin08jclim: "Lin, J-L. et al., J. Climate, 21, 4541-4567, doi: 10.1175/2008JCLI1816.1, 2008."
   lloyd-hughes02jclim: "Lloyd-Hughes, B. and Saunders, M. A., Int. J. Climatol., 22, 1571-1592, doi:10.1002/joc.846, 2002."
   locarini10usgov: "Locarnini, R. A. et al., World Ocean Atlas 2009, Volume 1: Temperature. S. Levitus, Ed. NOAA Atlas NESDIS 68, U.S. Government Printing Office, Washington, D.C., 184 pp.,2010."
-  mehran14jgr: "Mehran, A. et al., J. Geophys. Res., 119, 4, 1695-1707, doi: 10.1002/2013JD021152, 2014." 
+  mehran14jgr: "Mehran, A. et al., J. Geophys. Res., 119, 4, 1695-1707, doi: 10.1002/2013JD021152, 2014."
   manubens:  "Manubens, N., et al., ENVIRON MODELL SOFTW 103, 29-42. doi:10.1016/j.envsoft.2018.01.018"
   mckee93: "McKee, T. B. and Doesken, N. J. and Kleist, J.  In Proceedings of the 8th Conference on Applied Climatology, 17(22), 179-183, Boston, MA: American Meteorological Society, 1993."
   mueller14grl: "Mueller, B. and Seneviratne, S. I. Geophys. Res. Lett., 41, 128-134, doi:10.1002/2013GL058055, 2014."
@@ -599,7 +599,8 @@ references:
   esacci-ozone: "Loyola et al., Int. J. Remote Sens. doi:10.1080/01431160902825016, 2009."
   esacci-soilmoisture: "Not available."
   esacci-sst: "Merchant et al., Geosci. Data J., doi:10.1002/gdj3.20, 2014."
-  osi-450: "EUMETSAT Ocean and Sea Ice Satellite Application Facility. doi: 10.15770/EUM_SAF_OSI_0008"
+  osi-409: "EUMETSAT Global sea ice concentration climate data records 1978-2015 (v1.2, 2015) doi: 10.15770/EUM_SAF_OSI_0001 and 10.15770/EUM_SAF_OSI_0005"
+  osi-450: "EUMETSAT Global sea ice concentration climate data record 1979-2015 (v2.0, 2017). doi: 10.15770/EUM_SAF_OSI_0008"
   hadisst: "Rayner et al., J. Geophys. Res., doi:10.1029/2002JD002670, 2013."
   modis: "Not available."
   ncep: "Kalnay et al., B. Am. Meteorol. Soc., doi:10.1175/1520-0477(1996)077<0437:TNYRP>2.0.CO;2, 1996."

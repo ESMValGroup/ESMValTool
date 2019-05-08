@@ -15,3 +15,8 @@ variables:
   sic:
     mip: OImon
     raw: ice_conc
+    grid: ease2-250
+  # sic:
+  #   mip: day
+  #   raw: ice_conc
+  #   grid: ease2-250
