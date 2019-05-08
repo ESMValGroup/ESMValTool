@@ -246,7 +246,7 @@ for (j in 1 : 4) {
           model_names, "_", start_projection, "_", end_projection, "_",
           start_reference, "_", end_reference, ".nc")
       file <- nc_create(filencdf, list(defdata))
-      ncvar_put(file, defdata, data)
+      ncvar_put(file, defdata, projection_index_standardized)
       nc_close(file)
 
       # Plottings

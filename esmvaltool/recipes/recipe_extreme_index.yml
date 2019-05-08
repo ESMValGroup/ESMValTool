@@ -1,5 +1,5 @@
 # ESMValTool
-# recipe_extreme_index_wp7.yml
+# recipe_extreme_index.yml
 ---
 documentation:
   description: |
@@ -24,7 +24,6 @@ datasets:
   - {dataset: MPI-ESM-MR, type: exp, project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 1971,  end_year: 2000}
   - {dataset: MPI-ESM-MR, type: exp, project: CMIP5,  mip: day,  exp: rcp85,  ensemble: r1i1p1,  start_year: 2020,  end_year: 2040}
  # - {dataset: bcc-csm1-1 No Sfwind
-
 
 preprocessors:
   preproc:
