@@ -7,15 +7,17 @@ hyint_preproc <- function(work_dir, model_idx, ref_idx,
                           climofile, regfile, rgrid) {
   print(paste0(diag_base, ": pre-processing file: ", climofile))
 
-  #  add absolute axis, remove leap year days
+  # add absolute axis, remove leap year days, regrid if needed
   # cdo delete and copy do not like files with whitespace
 
   if (rgrid != F) {
     if (rgrid == "REF") {
       rgrid <- climofiles[ref_idx]
+      gridf <- tempfile()
+      cdo("griddes", input = rgrid, stdout = gridf)
+    } else {
+      gridf <- rgrid 
     }
-    gridf <- tempfile()
-    cdo("griddes", input = rgrid, stdout = gridf)
     tempf <- cdo("remapcon2", args = gridf, input = climofile)
     unlink(gridf)
   } else {
