@@ -16,6 +16,7 @@ dependencies:
 
   # Multi language support:
   - python>=3.6
+  - libunwind  # Needed for Python3.7+
   - ncl>=6.5.0
   - r-base
   - r-curl  # Dependency of lintr, but fails to compile because it cannot find libcurl installed from conda.
