@@ -21,6 +21,7 @@ import string
 from matplotlib.ticker import FuncFormatter
 import logging
 from memory_profiler import profile
+from dask import array as da
 
 
 def label_in_perc_multiple(x, pos=0):
@@ -303,22 +304,15 @@ class PlotHist(object):
         vmax = np.ceil(vmax * 10**rounder) / 10**rounder
         levels = np.round(np.linspace(vmin, vmax, num=nbins), rounder)
         
-        import resource
-        before = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
-        freqs = utils.produce_freqs(self.data,levels)
-        after1 = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
-        self.logger.info("freq fun" + ":")
-        self.logger.info(str(round((after1 - before)/1024.,2)) + "MB")
+        hist, bins = da.histogram(self.data.core_data(), bins=levels, range=[vmin, vmax])
+        hist = hist/da.sum(hist)
         
-        self.logger.info(freqs)
-            
-        mid_levels = []
-        for i in np.arange(1,len(levels)):
-            mid_levels.append(np.mean(levels[(i-1):(i+1)]))
+        x = 0.5 * (bins[1:] + bins[:-1])
+        width = np.diff(bins)
         
-        self.ax.bar(mid_levels,
-                    freqs,
-                    np.diff(levels),
+        self.ax.bar(x,
+                    hist,
+                    width,
                     color = color)
         
         self.ax.yaxis.set_major_formatter(FuncFormatter(label_in_perc_single))
@@ -326,7 +320,7 @@ class PlotHist(object):
             self.ax.set_title(title)
         self.ax.set_xlabel(x_label)
         self.ax.set_ylabel(y_label)
-        self.ax.set_ylim(0,np.max(freqs) * 1.1)
+        self.ax.set_ylim(0,np.max(hist) * 1.1)
 
         self.fig.tight_layout()
         return self.fig
