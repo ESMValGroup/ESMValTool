@@ -4,14 +4,15 @@ base_range <- NA
 analysis_range <- NA
 climdex_parallel <- 25
 mip_name <- "cmip"
-ts_col_list <- c("dodgerblue2", "darkgreen", "firebrick2", "darkorchid")
+ts_col_list <- c("dodgerblue2", "darkgreen",
+                 "firebrick2", "darkorchid", "aquamarine3")
 ts_png_width <- 640
 ts_png_height <- 480
 ts_png_units <- "px"
 ts_png_pointsize <- 12
 ts_png_bg <- "white"
-ts_lty_list <- c(1, 4, 2, 3)
-ts_lwd_list <- c(2, 2, 2, 2)
+ts_lty_list <- c(1, 4, 2, 3, 5)
+ts_lwd_list <- c(2, 2, 2, 2, 2)
 ts_data <- TRUE
 normalize <- FALSE
 timeseries_idx <- c(
