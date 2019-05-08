@@ -49,7 +49,7 @@ def _extract_variable(raw_var, cmor_info, attrs, filepath, out_dir):
     utils.convert_timeunits(cube, 1950)
     utils.fix_coords(cube)
     utils.set_global_atts(cube, attrs)
-    cube = utils.flip_dim_coord(cube, 'latitude')
+    utils.flip_dim_coord(cube, 'latitude')
     utils.save_variable(
         cube, var, out_dir, attrs, unlimited_dimensions=['time'])
 
@@ -57,6 +57,7 @@ def _extract_variable(raw_var, cmor_info, attrs, filepath, out_dir):
 def cmorization(in_dir, out_dir):
     """Cmorization func call."""
     glob_attrs = CFG['attributes']
+    cmor_table = CFG['cmor_table']
     logger.info("Starting cmorization for Tier%s OBS files: %s",
                 glob_attrs['tier'], glob_attrs['dataset_id'])
     logger.info("Input data from: %s", in_dir)
@@ -68,8 +69,6 @@ def cmorization(in_dir, out_dir):
     for (var, var_info) in CFG['variables'].items():
         logger.info("CMORizing variable '%s'", var)
         glob_attrs['mip'] = var_info['mip']
-        cmor_table = (CFG['custom_cmor_table'] if
-                      var_info.get('custom_cmor_table') else CFG['cmor_table'])
         cmor_info = cmor_table.get_variable(var_info['mip'], var)
         raw_var = var_info.get('raw', var)
         _extract_variable(raw_var, cmor_info, glob_attrs, filepath, out_dir)

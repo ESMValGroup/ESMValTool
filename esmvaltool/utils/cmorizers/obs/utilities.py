@@ -107,8 +107,7 @@ def flip_dim_coord(cube, coord_name):
     coord_idx = cube.coord_dims(coord)[0]
     coord.points = np.flip(coord.points)
     coord.bounds = np.flip(coord.bounds, axis=0)
-    new_data = da.flip(cube.core_data(), axis=coord_idx)
-    return cube.copy(new_data)
+    cube.data = da.flip(cube.core_data(), axis=coord_idx)
 
 
 def read_cmor_config(cmor_config):
@@ -119,8 +118,6 @@ def read_cmor_config(cmor_config):
         cfg = yaml.safe_load(file)
     cfg['cmor_table'] = \
         CMOR_TABLES[cfg['attributes']['project_id']]
-    cfg['custom_cmor_table'] = \
-        CMOR_TABLES['custom']
     if 'comment' not in cfg.keys():
         cfg['attributes']['comment'] = ''
     return cfg
@@ -159,28 +156,45 @@ def save_variable(cube, var, outdir, attrs, **kwargs):
 def set_global_atts(cube, attrs):
     """Complete the cmorized file with global metadata."""
     logger.info("Setting global metadata...")
-
-    if bool(cube.metadata.attributes):
-        cube.metadata.attributes.clear()
-
+    attrs = dict(attrs)
+    cube.attributes.clear()
     timestamp = datetime.datetime.utcnow()
     timestamp_format = "%Y-%m-%d %H:%M:%S"
     now_time = timestamp.strftime(timestamp_format)
-    glob_dict = {
-        'title':
-        attrs['dataset_id'] + ' data reformatted for ESMValTool v' + version,
-        'version': attrs['version'],
-        'tier': str(attrs['tier']),
-        'source': attrs['source'],
-        'reference': get_tag_value('references', attrs['reference']),
-        'comment': attrs['comment'],
-        'user': os.environ["USER"],
-        'host': os.environ["HOSTNAME"],
-        'history': 'Created on ' + now_time
-    }
 
-    for att, value in glob_dict.items():
-        cube.metadata.attributes[att] = value
+    # Necessary attributes
+    try:
+        glob_dict = {
+            'title': (f"{attrs.pop('dataset_id')} data reformatted for "
+                      f"ESMValTool v{version}"),
+            'version':
+            attrs.pop('version'),
+            'tier':
+            str(attrs.pop('tier')),
+            'source':
+            attrs.pop('source'),
+            'reference':
+            get_tag_value('references', attrs.pop('reference')),
+            'comment':
+            attrs.pop('comment'),
+            'user':
+            os.environ["USER"],
+            'host':
+            os.environ["HOSTNAME"],
+            'history':
+            f'Created on {now_time}',
+            'project_id':
+            attrs.pop('project_id'),
+        }
+    except KeyError:
+        raise KeyError(
+            "All CMORized datasets need the global attributes 'dataset_id', "
+            "'version', 'tier', 'source', 'reference', 'comment' and "
+            "'project_id' specified in the configuration file")
+
+    # Additional attributes
+    glob_dict.update(attrs)
+    cube.attributes = glob_dict
 
 
 def var_name_constraint(var_name):
