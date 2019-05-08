@@ -368,7 +368,7 @@ def _get_default_settings(variable, config_user, derive=False):
 
 def _convert_fxvar_to_cmor(fx_var, variable):
     """
-    Conversion from a string name to full variable dict
+    Conversion from a string name to full variable dict.
 
     Convert from string fx_var to full cmor fx variable
     with variable as parent.
@@ -391,13 +391,12 @@ def _convert_fxvar_to_cmor(fx_var, variable):
     return fx_variable
 
 
-def _update_fx_files(variable, config_user):
-    """Update the list of variables if needing special fx variables."""
+def _update_fx_files(fx_varlist, config_user):
+    """Get the fx files dict for a list of fx variables."""
     fx_files_dict = {}
-    for fx_var in variable['fx_files']:
-        fx_var_copy = _convert_fxvar_to_cmor(fx_var, variable)
-        fx_files_dict[fx_var] = get_output_file(
-            fx_var_copy,
+    for fx_variable in fx_varlist:
+        fx_files_dict[fx_variable['short_name']] = get_output_file(
+            fx_variable,
             config_user['preproc_dir'])
     return fx_files_dict
 
@@ -410,8 +409,14 @@ def _update_fx_settings(settings, variable, config_user):
         for var in get_required(variable['short_name']):
             if 'fx_files' in var:
                 _augment(var, variable)
+                # first convert the fx_file strings to real variables
+                fx_varlist = [
+                    _convert_fxvar_to_cmor(fx_var, variable)
+                    for fx_var in variable['fx_files']
+                ]
+                # now get the fx files output
                 fx_files.update(
-                    _update_fx_files(var, config_user))
+                    _update_fx_files(fx_varlist, config_user))
         settings['derive']['fx_files'] = fx_files
 
     # update for landsea
@@ -427,7 +432,13 @@ def _update_fx_settings(settings, variable, config_user):
 
         var = dict(variable)
         var['fx_files'] = ['sftlf', 'sftof']
-        fx_files_dict = _update_fx_files(var, config_user)
+        # first convert the fx_file strings to real variables
+        fx_varlist = [
+            _convert_fxvar_to_cmor(fx_var, variable)
+            for fx_var in var['fx_files']
+        ]
+        # now get the files
+        fx_files_dict = _update_fx_files(fx_varlist, config_user)
 
         # allow both sftlf and sftof
         if fx_files_dict['sftlf']:
@@ -446,7 +457,13 @@ def _update_fx_settings(settings, variable, config_user):
 
         var = dict(variable)
         var['fx_files'] = ['sftgif']
-        fx_files_dict = _update_fx_files(var, config_user)
+        # first convert the fx_file strings to real variables
+        fx_varlist = [
+            _convert_fxvar_to_cmor(fx_var, variable)
+            for fx_var in var['fx_files']
+        ]
+        # now get the files
+        fx_files_dict = _update_fx_files(fx_varlist, config_user)
 
         # allow sftgif (only, for now)
         if fx_files_dict['sftgif']:
@@ -455,7 +472,13 @@ def _update_fx_settings(settings, variable, config_user):
 
     for step in ('average_region', 'average_volume'):
         if settings.get(step, {}).get('fx_files'):
-            settings[step]['fx_files'] = _update_fx_files(var,
+            # first convert the fx_file strings to real variables
+            fx_varlist = [
+                _convert_fxvar_to_cmor(fx_var, variable)
+                for fx_var in var['fx_files']
+            ]
+            # now get the files
+            settings[step]['fx_files'] = _update_fx_files(fx_varlist,
                                                           config_user)
 
 
@@ -800,8 +823,7 @@ def _get_fx_tasks(fx_variables, config_user, task_name, derive_tasks):
         ]
         fx_task_name = task_name.split(
             TASKSEP)[0] + TASKSEP + 'fx_' + fx_short_name
-        logger.info("Creating preprocessor '%s' task for variable '%s'",
-                    fx_variables_group[0]['preprocessor'],
+        logger.info("Creating preprocessor fx-default task for variable '%s'",
                     fx_variables_group[0]['short_name'])
         # Create (final) preprocessor task
         fx_task = _get_single_preprocessor_task(
@@ -956,24 +978,6 @@ class Recipe:
         check.duplicate_datasets(datasets)
         return datasets
 
-    def _get_fx_files(self, variable, variables):
-        """Get all the fx files."""
-        dict_variable_fx = {}
-        for fx_var in variable['fx_files']:
-            fx_var_dict = [
-                var for var in variables if var['short_name'] == fx_var
-                and var['dataset'] == variable['dataset']
-            ][0]
-            dict_variable_fx[fx_var] = get_output_file(
-                fx_var_dict,
-                self._cfg['preproc_dir'])
-        if dict_variable_fx:
-            variable['fx_files'] = dict_variable_fx
-            logger.info("Using fx files for var %s of dataset %s:\n%s",
-                        variable['short_name'], variable['dataset'],
-                        variable['fx_files'])
-        return variable
-
     def _get_required_var_keys(self, variable, dataset, index,
                                is_fxvar=False, fx_var_name=None):
         """Assemble correct variable attributes."""
@@ -1049,7 +1053,14 @@ class Recipe:
             if 'fx_files' in variable:
                 for fx_file in variable['fx_files']:
                     DATASET_KEYS.add(fx_file)
-                variable = self._get_fx_files(variable, variables)
+                fx_varlist = [
+                    var for var in variables if 'fxvar' in var.keys()
+                ]
+                variable['fx_files'] = _update_fx_files(fx_varlist,
+                                                        self._cfg)
+                logger.info("Using fx files for var %s of dataset %s:\n%s",
+                            variable['short_name'], variable['dataset'],
+                            variable['fx_files'])
         return variables
 
     def _initialize_preprocessor_output(self, diagnostic_name, raw_variables,
@@ -1173,6 +1184,15 @@ class Recipe:
                     name=task_name)
                 tasks.add(task)
 
+        # remove duplicates and check
+        task_dict_list = [{t.name: t} for t in tasks]
+        unique_names = list(set([t.name for t in tasks]))
+        tasks = []
+        for uniq_name in unique_names:
+            unique_task = [
+                d[uniq_name] for d in task_dict_list
+                if uniq_name in d.keys()][0]
+            tasks.append(unique_task)
         check.tasks_valid(tasks)
 
         # Resolve diagnostic ancestors
