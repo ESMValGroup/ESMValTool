@@ -310,7 +310,7 @@ dimtime <- ncdim_def(name = "time", units = "years",
     vals = start_projection : end_projection, longname = "time")
 defdata <- ncvar_def(name = "data", units = "adimensional",
     dim = list(time = dimtime), longname = paste("Combination", long_names))
-filencdf <- paste0(plot_dir, "/", "_", paste0(model_names, collapse = "_"),
+filencdf <- paste0(work_dir, "/", "_", paste0(model_names, collapse = "_"),
                    ".nc")
 file <- nc_create(filencdf, list(defdata))
 ncvar_put(file, defdata, data)
