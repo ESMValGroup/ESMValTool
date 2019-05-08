@@ -43,11 +43,10 @@ def _fix_data(cube, var):
     return cube
 
 
-def _fix_attr_cmip5(out_dir, var):
+def _fix_attr_cmip5(out_dir, in_file, var):
     """Adjust for CMIP5 standard."""
-    logger.info("Fix to CMIP5 standard...")
-    in_file = glob.glob(out_dir + '/OBS*' + var + '*.nc')[0]
-    ds = xr.open_dataset(in_file)
+    logger.info("Fix for CMIP5 standard...")
+    ds = xr.open_dataset(os.path.join(out_dir, in_file))
     ds[var].attrs['coordinates'] = 'depth'
     datt = {
         'standard_name': 'depth',
@@ -76,7 +75,7 @@ def extract_variable(var_info, raw_info, out_dir, attrs):
             _fix_coords(cube)
             _fix_data(cube, var)
             _set_global_atts(cube, attrs)
-            _save_variable(
+            thefile = _save_variable(
                 cube,
                 var,
                 out_dir,
@@ -84,7 +83,7 @@ def extract_variable(var_info, raw_info, out_dir, attrs):
                 local_keys=['coordinates'],
                 unlimited_dimensions=['time'],
             )
-            _fix_attr_cmip5(out_dir, var)
+            _fix_attr_cmip5(out_dir, thefile, var)
 
 
 def merge_data(in_dir, out_dir, raw_info, bin):
