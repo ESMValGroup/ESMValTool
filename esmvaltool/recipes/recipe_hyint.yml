@@ -69,7 +69,7 @@ diagnostics:
         # 13) multipanel of indices with timeseries for multiple models
         # 14) multipanel of indices with summary of trend coefficients over multiple regions
         # 15) multipanel of indices with summary of trend coefficients for multiple models
-        plot_type: [1, 2, 3]
+        plot_type: [1, 2, 3, 12, 13, 14, 15]
 
         ## ------- Optional settings ----------
         # Select number of columns and rows in multi-panel figure
