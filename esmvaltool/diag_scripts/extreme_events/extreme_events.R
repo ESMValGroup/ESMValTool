@@ -87,7 +87,6 @@ for (i in 1:length(settings$input_files)) {
   climofiles <- c(climofiles, names(metadata))
 }
 
-field_type0 <- "T2Ds"
 # associated to first climofile
 print(paste(diag_base, ": starting routine"))
 
