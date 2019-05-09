@@ -6,7 +6,7 @@ attributes:
   version: 'v1.2'
   tier: 2
   modeling_realm: reanaly
-  project_id: CMIP5
+  project_id: OBS
   source: 'http://osisaf.met.no/p/ice/'
   reference: 'osi-409'
   comment: ''
