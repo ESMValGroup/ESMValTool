@@ -414,14 +414,14 @@ def mask_window_threshold(cube, threshold_fraction, min_value, time_window):
     Find data counts in a time window.
 
     Function that returns a masked data cube. The masking is done on
-    the number of valid data points within a time window `window_size'
+    the number of valid data points within a time window "window_size"
     per grid point that satify a simple value thresholding condition
     value > value_threshold. This is the equivalent of mask_fillvalues
     but for single data products (single iris cubes).
 
     Parameters
     ----------
-    cube: iris.Cube.cube instance
+    cube: iris.Cube.cube
         data cube to be masked.
 
     threshold_fraction: float
