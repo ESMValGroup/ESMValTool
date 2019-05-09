@@ -7,7 +7,6 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/79bf6932c2e844eea15d0fb1ed7e415c)](https://www.codacy.com/app/ESMValGroup/ESMValTool?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ESMValGroup/ESMValTool&amp;utm_campaign=Badge_Grade)
 [![Docker Build Status](https://img.shields.io/docker/build/esmvalgroup/esmvaltool.svg)](https://hub.docker.com/r/esmvalgroup/esmvaltool/)
 [![Anaconda-Server Badge](https://anaconda.org/esmvalgroup/esmvaltool/badges/installer/conda.svg)](https://conda.anaconda.org/esmvalgroup)
-[![Documentation Status](https://readthedocs.org/projects/esmvaltool/badge/?version=latest)](http://esmvaltool.readthedocs.io/en/latest/?badge=latest)
 
 
 ESMValTool: A community diagnostic and performance metrics tool for routine evaluation of Earth system models in CMIP
