@@ -115,7 +115,7 @@ None.
 References
 ----------
 
-* X. Zhang, L. Alexander, G. C. Hegerl, P. Jones,  A. Klein Tank, T. C. Peterson, B. Trewin,  F. W. Zwiers, Indices for monitoring changes in extremes based on daily temperature and precipitation data, WIREs Clim. Change, doi:10.1002/wcc.147, 2011  
+* Zhang, X., Alexander, L., Hegerl, G. C., Jones, P., Klein Tank, A., Peterson, T. C., Trewin, B., Zwiers, F. W., Indices for monitoring changes in extremes based on daily temperature and precipitation data, WIREs Clim. Change, doi:10.1002/wcc.147, 2011  
 
 * Sillmann, J., V. V. Kharin, X. Zhang, and F. W. Zwiers, Climate extreme indices in the CMIP5 multi-model ensemble. Part 1: Model evaluation in the present climate. J. Geophys. Res., doi:10.1029/2012JD018390, 2013 
 
