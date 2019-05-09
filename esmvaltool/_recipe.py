@@ -501,10 +501,17 @@ def _get_input_files(variable, config_user):
     """Get the input files for a single dataset."""
     # Find input files locally.
     if 'fxvar' not in variable.keys():
-        input_files = get_input_filelist(
-            variable=variable,
-            rootpath=config_user['rootpath'],
-            drs=config_user['drs'])
+        if 'is_fx_variable' not in variable.keys():
+            input_files = get_input_filelist(
+                variable=variable,
+                rootpath=config_user['rootpath'],
+                drs=config_user['drs'])
+        else:
+            input_files = get_input_fx_filelist(
+                variable=variable,
+                rootpath=config_user['rootpath'],
+                drs=config_user['drs'])[variable['short_name']]
+            input_files = [input_files]
     else:
         input_files = get_input_fx_filelist(
             variable=variable,
@@ -906,6 +913,11 @@ def _get_preprocessor_task(variables, profiles, config_user, task_name):
     logger.info("Creating preprocessor '%s' task for variable '%s'",
                 regular_variables[0]['preprocessor'],
                 regular_variables[0]['short_name'])
+
+    # don't do time gating for fx variables
+    if 'is_fx_variable' in regular_variables[0].keys():
+        profile['extract_time'] = False
+
     # add all regular variable task
     task = _get_single_preprocessor_task(
         regular_variables,

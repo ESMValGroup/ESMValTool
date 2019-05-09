@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 def find_files(dirnames, filenames):
     """Find files matching filenames in dirnames."""
-    logger.debug("Looking for files matching %s in %s", filenames, dirnames)
+    logger.info("Looking for files matching %s in %s", filenames, dirnames)
 
     result = []
     for dirname in dirnames:
@@ -252,27 +252,22 @@ def get_input_filelist(variable, rootpath, drs):
 def get_input_fx_filelist(variable, rootpath, drs):
     """Return a dict with the full path to fx input files."""
     fx_files = {}
-    # keep legacy implementation as well
-    if 'fxvar' in variable.keys():
-        fx_vars = [variable['short_name']]
-    else:
-        fx_vars = variable['fx_files']
-    for fx_var in fx_vars:
-        var = dict(variable)
-        if var['project'] == 'CMIP5':
-            var['mip'] = replace_mip_fx(fx_var)
-            var['frequency'] = 'fx'
-            var['modeling_realm'] = 'fx'
-            var['ensemble'] = 'r0i0p0'
-        elif var['project'] == 'CMIP6':
-            var['mip'] = _get_cmip6_fx_mip(var['short_name'])
-        table = CMOR_TABLES[var['cmor_table']].get_table(var['mip'])
-        var['frequency'] = table.frequency
-        realm = getattr(table.get(var['short_name']), 'modeling_realm', None)
-        var['modeling_realm'] = realm if realm else table.realm
+    fx_var = variable['short_name']
+    var = dict(variable)
+    if var['project'] == 'CMIP5':
+        var['mip'] = replace_mip_fx(fx_var)
+        var['frequency'] = 'fx'
+        var['modeling_realm'] = 'fx'
+        var['ensemble'] = 'r0i0p0'
+    elif var['project'] == 'CMIP6':
+        var['mip'] = _get_cmip6_fx_mip(var['short_name'])
+    table = CMOR_TABLES[var['cmor_table']].get_table(var['mip'])
+    var['frequency'] = table.frequency
+    realm = getattr(table.get(var['short_name']), 'modeling_realm', None)
+    var['modeling_realm'] = realm if realm else table.realm
 
-        files = _find_input_files(var, rootpath, drs, fx_var)
-        fx_files[fx_var] = files[0] if files else None
+    files = _find_input_files(var, rootpath, drs, fx_var)
+    fx_files[fx_var] = files[0] if files else None
 
     return fx_files
 
