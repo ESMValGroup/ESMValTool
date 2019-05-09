@@ -103,7 +103,12 @@ def test_get_input_fx_filelist(root, cfg):
     # Find files
     rootpath = {cfg['variable']['project']: [root]}
     drs = {cfg['variable']['project']: cfg['drs']}
-    fx_files = get_input_fx_filelist(cfg['variable'], rootpath, drs)
+    fx_variable = dict(cfg['variable'])
+    fx_files = {}
+    for fxvar in cfg['variable']['fx_files']:
+        fx_variable['short_name'] = fxvar
+        fx_files[fxvar] = get_input_fx_filelist(fx_variable,
+                                                rootpath, drs)[fxvar]
 
     # Test result
     reference = {
