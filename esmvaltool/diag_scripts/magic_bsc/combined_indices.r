@@ -98,43 +98,41 @@ long_names <-  ncatt_get(data_nc, var0, "long_name")$value
 data <- InsertDim(ncvar_get(data_nc, var0), 1, 1) # nolint
 names(dim(data)) <- c("model", "lon", "lat", "time")
 time <- seq(start_year, end_year, "month")
-projection <- "NULL"
 nc_close(data_nc)
 
-jpeg(paste0(plot_dir, "/plot0.jpg"))
-PlotEquiMap(data[1, , , 1], lon = lon, lat = lat, filled = F)
+jpeg(paste0(plot_dir, "/", "plot0.jpg"))
+PlotEquiMap(data[1, , , 1], lon = lon, lat = lat, filled = F ) #nolint
 dev.off()
 
 
-jpeg(paste0(plot_dir, "/time.jpg"))
-plot(1 : length(time), data[1,1,1,], type = "l")
+jpeg(paste0(plot_dir, "/", "time.jpg"))
+plot(1 : length(time), data[1, 1, 1,], type = "l")
 
 if (!is.null(running_mean)) {
-    data <- Smoothing(data, runmeanlen = running_mean, numdimt = 4)
+    data <- Smoothing(data, runmeanlen = running_mean, numdimt = 4) #nolint
     timestamp <- paste0(running_mean, "-month-running-mean-")
 }
-lines(1 : length(time), data[1,1,1,], col ="blue")
+lines(1 : length(time), data[1, 1, 1,], col = "blue")
 
 if (!is.null(moninf)) {
-  data <- Season(data, posdim = 4, monini = monini,
+  data <- Season(data, posdim = 4, monini = monini, #nolint
                  moninf = moninf, monsup = monsup)
   months <- paste0(month.abb[moninf], "-", month.abb[monsup])
 }
-lines(seq(1, length(time), 12), data[1,1,1,], col = "red")
+lines(seq(1, length(time), 12), data[1, 1, 1,], col = "red")
 dev.off()
 
-print(months)
-jpeg(paste0(plot_dir, "/plot1.jpg"))
-PlotEquiMap(data[1, , , 2], lon = lon, lat = lat, filled = F)
+jpeg(paste0(plot_dir, "/", "plot1.jpg"))
+PlotEquiMap(data[1, , , 2], lon = lon, lat = lat, filled = F) #nolint
 dev.off()
-print(length(lon_min))
 
 if (length(lon_min) == 1) {
-
+#nolint start
 # print(str(data))
-# jpeg(paste0(plot_dir, "/plot2.jpg"))
+# jpeg(paste0(plot_dir, "/", "plot2.jpg"))
 # PlotEquiMap(data$data[1, , , 2], lon = data$lon, lat = data$lat, filled = F)
 # dev.off()
+#nolint end
   data <- WeightedMean(data, lon = lon, lat = lat, #nolint
                        region = c(lon_min, lon_max, lat_min, lat_max),
                        londim = 2, latdim = 3, mask = NULL)
@@ -144,6 +142,7 @@ print(str(data))
 print(dim(data))
 } else {
 print("NOHERE")
+#nolint start
 #    data1_aux <- SelBox(data, lon = lon, lat = lat,
 #                   region = c(lon_min[1], lon_max[1], lat_min[1], lat_max[1]),
 #                   londim = 2, latdim = 3)
@@ -158,6 +157,7 @@ print("NOHERE")
 # jpeg(paste0(plot_dir, "/plot4.jpg"))
 # PlotEquiMap(data2$data[1, , , 1], lon = data2$lon, lat = data2$lat, filled = F)
 # dev.off()
+#nolint end
     data1 <- WeightedMean(data, lon = lon, lat = lat, #nolint
                     region = c(lon_min[1], lon_max[1], lat_min[1], lat_max[1]),
                     londim = 2, latdim = 3, mask = NULL)
@@ -169,24 +169,14 @@ print("NOHERE")
 print(str(data1))
 print(str(data2))
     data <- CombineIndices(list(data1, data2), weights = c(1, -1), #nolint
-                           operation = "add") 
+                           operation = "add")
 }
-
- # attributes(data) <- NULL
- # dim(data) <-  c(time = length(data))
- # metadata <- list(
- #   index = list(
- #     dim = list(list(name = "time", unlim = FALSE, prec = "double"))))
- # names(metadata)[1] <- var0
- # attr(data, "variables") <- metadata
- # variable_list <- list(variable = data, time = time)
- # names(variable_list)[1] <- var0
 
 dimtime <- ncdim_def(name = "Time", units = "years",
                      vals = starting : ending,
                      longname = "Time")
 defdata <- ncvar_def(name = "data", units = units, dim = list(time = dimtime),
-                     longname = paste("Index for region", region, "Variable", var0))
+               longname = paste("Index for region", region, "Variable", var0))
 filencdf <- paste0(work_dir, "/", var0, "_", timestamp, "_", months, "_",
                    starting, ending, "_", ".nc")
 file <- nc_create(filencdf, list(defdata))
@@ -195,7 +185,7 @@ nc_close(file)
 
 print(summary(data))
 png(paste0(plot_dir, "/", "Index_", region, ".png"), width = 300, height = 300)
-plot(starting : ending, data, type ="l", col ="purple", lwd = 2, bty = 'n',
+plot(starting : ending, data, type = "l", col = "purple", lwd = 2, bty = "n",
      xlab = "Time (years)", ylab = "Index", main = paste("Region", region))
 dev.off()
 # Set provenance for output files
