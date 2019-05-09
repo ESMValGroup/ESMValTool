@@ -81,14 +81,14 @@ provenance_record <- function(infile) {
 }
 
 diag_scripts_dir <- Sys.getenv("diag_scripts")
-source(paste0(diag_scripts_dir, "/extreme_events/cfg_climdex.r"))  # nolint
-source(paste0(diag_scripts_dir, "/extreme_events/cfg_extreme.r"))  # nolint
+source(paste0(diag_scripts_dir, "/extreme_events/cfg_climdex.R"))  # nolint
+source(paste0(diag_scripts_dir, "/extreme_events/cfg_extreme.R"))  # nolint
 source(paste0(diag_scripts_dir,
-         "/extreme_events/common_climdex_preprocessing_for_plots.r"))  # nolint
+         "/extreme_events/common_climdex_preprocessing_for_plots.R"))  # nolint
 source(paste0(diag_scripts_dir,
-         "/extreme_events/make_timeseries_plot.r"))  # nolint
+         "/extreme_events/make_timeseries_plot.R"))  # nolint
 source(paste0(diag_scripts_dir,
-         "/extreme_events/make_Glecker_plot2.r"))  # nolint
+         "/extreme_events/make_Glecker_plot2.R"))  # nolint
 
 # read settings and metadata files
 args <- commandArgs(trailingOnly = TRUE)

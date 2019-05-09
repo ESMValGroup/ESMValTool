@@ -59,7 +59,7 @@ diagnostics:
     
     scripts:
       main:
-        script: extreme_events/ExtremeEvents.r
+        script: extreme_events/extreme_events.R
         reference_datasets: ["ACCESS1-0", "ACCESS1-3", "IPSL-CM5A-MR"]
         regrid_dataset: ACCESS1-0
         mip_name: CMIP
