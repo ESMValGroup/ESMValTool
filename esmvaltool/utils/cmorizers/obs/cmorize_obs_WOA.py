@@ -31,9 +31,9 @@ import os
 
 import iris
 
-from esmvaltool.utils.cmorizers.obs.utilities import (
-    constant_metadata, convert_timeunits, fix_coords, fix_var_metadata,
-    read_cmor_config, save_variable, set_global_atts)
+from .utilities import (constant_metadata, convert_timeunits, fix_coords,
+                        fix_var_metadata, read_cmor_config, save_variable,
+                        set_global_atts)
 
 logger = logging.getLogger(__name__)
 
