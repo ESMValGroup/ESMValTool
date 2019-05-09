@@ -105,7 +105,9 @@ begin
       do ipf = 0, toint(data_all_smpi@num_preproc_files) - 1
         num_preproc = "preproc_file_" + ipf
         preproc_idx = ipf + ii * data_all_smpi@num_preproc_files
-        preproc_files(preproc_idx) = data_temp_smpi@$num_preproc$
+        if (isatt(data_temp_smpi, num_preproc)) then
+          preproc_files(preproc_idx) = data_temp_smpi@$num_preproc$
+        end if
       end do
 
       ; Make sure dataset coordinate is consistent
@@ -188,7 +190,9 @@ begin
       do ipf = 0, toint(data_all@num_preproc_files) - 1
         num_preproc = "preproc_file_" + ipf
         preproc_idx = ipf + ii * data_all@num_preproc_files
-        preproc_files(preproc_idx) = data_temp@$num_preproc$
+        if (isatt(data_temp, num_preproc)) then
+          preproc_files(preproc_idx) = data_temp@$num_preproc$
+        end if
       end do
 
       ; Make sure model coordinate is consistent
@@ -350,9 +354,7 @@ begin
       end if
     end if
 
-    ; Sort diagnostics in the specified order specified
-    print(data_all&diagnostics)
-
+    ; Sort diagnostics in the order specified in the settings
     if (isatt(diag_script_info, "diag_order")) then
       l_ok = True
       if (dimsizes(data_all&diagnostics).ne. \
@@ -380,8 +382,6 @@ begin
         end if
       end if
     end if
-
-    print(data_all&diagnostics)
 
     ; Define output filenames
     if (dimsizes(data_all&diagnostics).gt.1) then
@@ -464,10 +464,11 @@ begin
               "for metric " + diag_script_info@metric)
   end if
   domains = (/"global"/)
-  infiles = preproc_files
 
+  ; Call provenance logger
+  preproc_files := preproc_files(ind(.not.ismissing(preproc_files)))
   log_provenance(ncdf_outfile, plotpath, caption, statistics, domains, \
-                 plottype, authors, references, infiles)
+                 plottype, authors, references, preproc_files)
 
   leave_msg(DIAG_SCRIPT, "")
 
