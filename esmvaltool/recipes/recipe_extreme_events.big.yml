@@ -52,16 +52,12 @@ diagnostics:
     variables:
       pr:
         mip: day
-        field: T2Ds
       tas:
         mip: day
-        field: T2Ds
       tasmax:
         mip: day
-        field: T2Ds
       tasmin:
         mip: day
-        field: T2Ds
     
     scripts:
       main:
