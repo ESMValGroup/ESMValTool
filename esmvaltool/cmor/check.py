@@ -70,15 +70,16 @@ class CMORCheck(object):
         self.automatic_fixes = automatic_fixes
 
     def check_metadata(self, logger=None):
-        """Check the cube metadata.
+        """
+        Check the cube metadata.
 
         Perform all the tests that do not require to have the data in memory.
 
         It will also report some warnings in case of minor errors and
         homogenize some data:
-            - Equivalent calendars will all default to the same name.
-            - Auxiliary coordinates year, month_number, day_of_month and
-              day_of_year will be added for the time axis.
+        - Equivalent calendars will all default to the same name.
+        - Auxiliary coordinates year, month_number, day_of_month and
+        day_of_year will be added for the time axis.
 
         Raises
         ------
