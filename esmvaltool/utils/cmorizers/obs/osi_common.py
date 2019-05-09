@@ -1,3 +1,5 @@
+"""Common functionalities for OSI-450 and OSI-407 dataset cmorization"""
+
 import logging
 import os
 
@@ -12,6 +14,9 @@ logger = logging.getLogger(__name__)
 
 
 def cmorize_osi(in_dir, out_dir, cfg, hemisphere):
+    """
+    Cmorize OSI-450 or OSI-407 dataset
+    """
     cmor_table = cfg['cmor_table']
     glob_attrs = cfg['attributes']
 
@@ -46,31 +51,11 @@ def extract_variable(var_info, raw_info, out_dir, attrs, year):
         iris.Constraint(cube_func=lambda c: c.var_name == raw_info['name'])
     )
 
-    tracking_ids = []
-    for cube in cubes:
-        # OSI-409 and OSI-450 do not have the same attributes
-        try:
-            tracking_ids.append(cube.attributes['tracking_id'])
-        except KeyError:
-            pass
-
-        to_remove = [
-            'time_coverage_start', 'time_coverage_end',
-            'history', 'tracking_id', 'start_date', 'stop_date',
-        ]
-        for attr in to_remove:
-            try:
-                del cube.attributes[attr]
-            except KeyError:
-                pass
+    tracking_ids = _unify_attributes(cubes)
     cube = cubes.concatenate_cube()
     del cubes
     if var_info.frequency == 'mon':
-        add_month(cube, 'time')
-        add_year(cube, 'time')
-        cube = cube.aggregated_by(('month', 'year'), MEAN)
-        cube.remove_coord('month')
-        cube.remove_coord('year')
+        cube = _monthly_mean(cube)
     if var_info.frequency == 'day':
         if cube.coord('time').shape[0] < 300:
             logger.warning(
@@ -90,3 +75,32 @@ def extract_variable(var_info, raw_info, out_dir, attrs, year):
     _set_global_atts(cube, attrs)
     _save_variable(cube, var, out_dir, attrs)
     del cube
+
+
+def _unify_attributes(cubes):
+    tracking_ids = []
+    for cube in cubes:
+        # OSI-409 and OSI-450 do not have the same attributes
+        try:
+            tracking_ids.append(cube.attributes['tracking_id'])
+        except KeyError:
+            pass
+
+        to_remove = [
+            'time_coverage_start', 'time_coverage_end',
+            'history', 'tracking_id', 'start_date', 'stop_date',
+        ]
+        for attr in to_remove:
+            try:
+                del cube.attributes[attr]
+            except KeyError:
+                pass
+    return tracking_ids
+
+def _monthly_mean(cube):
+    add_month(cube, 'time')
+    add_year(cube, 'time')
+    cube = cube.aggregated_by(('month', 'year'), MEAN)
+    cube.remove_coord('month')
+    cube.remove_coord('year')
+    return cube

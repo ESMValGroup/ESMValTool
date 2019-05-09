@@ -17,10 +17,10 @@ Download and processing instructions
 
 """
 from .utilities import _read_cmor_config
-from .osi_common import extract_variable, cmorize_osi
+from .osi_common import cmorize_osi
 
 
 def cmorization(in_dir, out_dir):
     """Cmorization func call."""
-    CFG = _read_cmor_config('OSI-450-sh.yml')
-    cmorize_osi(in_dir, out_dir, CFG, 'nh')
+    cfg = _read_cmor_config('OSI-450-sh.yml')
+    cmorize_osi(in_dir, out_dir, cfg, 'nh')
