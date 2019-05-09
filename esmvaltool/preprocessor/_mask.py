@@ -22,10 +22,6 @@ from iris.util import rolling_window
 logger = logging.getLogger(__name__)
 
 
-class MaskModuleError(Exception):
-    """Exception raised when a mask error happens."""
-
-
 def _check_dims(cube, mask_cube):
     """
     Check for same ndim and x-y dimensions for data and mask cubes.
@@ -168,19 +164,24 @@ def mask_landsea(cube, fx_files, mask_out):
 
     Parameters
     ----------
-
-    * cube (iris.Cube.cube instance):
+    cube: iris.Cube.cube
         data cube to be masked.
 
-    * fx_files (list):
+    fx_files: list
         list holding the full paths to fx files.
 
-    * mask_out (string):
+    mask_out: string
         either "land" to mask out land mass or "sea" to mask out seas.
 
     Returns
     -------
-    masked iris cube
+    iris.Cube.cube
+        Returns the fillvalues-masked iris cube.
+
+    Raises
+    -------
+    ValueError
+        Error raised if masking on irregular grids is attempted.
 
     """
     # Dict to store the Natural Earth masks
@@ -219,7 +220,7 @@ def mask_landsea(cube, fx_files, mask_out):
             else:
                 msg = (f"Use of shapefiles with irregular grids not "
                        f"yet implemented, land-sea mask not applied.")
-                raise MaskModuleError(msg)
+                raise ValueError(msg)
     else:
         if cube.coord('longitude').points.ndim < 2:
             cube = _mask_with_shp(cube, shapefiles[mask_out])
@@ -229,7 +230,7 @@ def mask_landsea(cube, fx_files, mask_out):
         else:
             msg = (f"Use of shapefiles with irregular grids not "
                    f"yet implemented, land-sea mask not applied.")
-            raise MaskModuleError(msg)
+            raise ValueError(msg)
 
     return cube
 
@@ -243,19 +244,24 @@ def mask_landseaice(cube, fx_files, mask_out):
 
     Parameters
     ----------
-
-    * cube (iris.Cube.cube instance):
+    cube: iris.Cube.cube
         data cube to be masked.
 
-    * fx_files (list):
+    fx_files: list
         list holding the full paths to fx files.
 
-    * mask_out (string):
+    mask_out: string
         either "landsea" to mask out landsea or "ice" to mask out ice.
 
     Returns
     -------
-    masked iris cube
+    iris.Cube.cube
+        Returns the masked iris cube with either land or ice masked out.
+
+    Raises
+    -------
+    ValueError
+        Error raised if fx_files list is empty.
 
     """
     # sftgif is the only one so far
@@ -269,7 +275,7 @@ def mask_landseaice(cube, fx_files, mask_out):
                 logger.debug("Applying landsea-ice mask: sftgif")
     else:
         msg = "Landsea-ice mask could not be found. Stopping. "
-        raise MaskModuleError(msg)
+        raise ValueError(msg)
 
     return cube
 
@@ -323,7 +329,7 @@ def _mask_with_shp(cube, shapefilename):
         msg = (f"No fx-files found (sftlf or sftof)!"
                f"2D grids are suboptimally masked with "
                f"Natural Earth masks. Exiting.")
-        raise MaskModuleError(msg)
+        raise ValueError(msg)
 
     # Wrap around longitude coordinate to match data
     x_p_180 = np.where(x_p >= 180., x_p - 360., x_p)
@@ -364,23 +370,23 @@ def count_spells(data, threshold, axis, spell_length):
 
     Parameters
     ----------
-
-    * data (array):
+    data: ndarray
         raw data to be compared with value threshold.
 
-    * threshold (float):
+    threshold: float
         threshold point for 'significant' datapoints.
 
-    * axis (int):
+    axis: int
         number of the array dimension mapping the time sequences.
         (Can also be negative, e.g. '-1' means last dimension)
 
-    * spell_length (int):
+    spell_length: int
         number of consecutive times at which value > threshold to "count".
 
     Returns
     -------
-    Number of counts (int).
+    int
+        Number of counts.
 
     """
     if axis < 0:
@@ -415,28 +421,27 @@ def mask_window_threshold(cube, threshold_fraction, min_value, time_window):
 
     Parameters
     ----------
-
-    * cube (iris.Cube.cube instance):
+    cube: iris.Cube.cube instance
         data cube to be masked.
 
-    * threshold_fraction (float, between 0 and 1):
+    threshold_fraction: float
         fractional threshold of missing data points.
+        Must be between 0 and 1.
 
-    * min_value (float):
+    min_value: float
         minumum value threshold.
 
-    * time_window (float):
+    time_window: float
         time window to compute missing data counts.
 
     Returns
     -------
-    Masked iris cube.
+    iris.Cube.cube
+        Masked iris cube.
 
     """
     mask = _get_fillvalues_mask(cube, threshold_fraction, min_value,
                                 time_window)
-    if not np.ma.isMaskedArray(cube.data):
-        cube.data = np.ma.array(cube.data, fill_value=1e+20)
     data = cube.core_data()
     mask = da.ma.getmaskarray(data) | mask
     cube.data = da.ma.masked_array(data, mask=mask)
@@ -449,6 +454,20 @@ def mask_above_threshold(cube, threshold):
 
     Takes a value 'threshold' and masks off anything that is above
     it in the cube data. Values equal to the threshold are not masked.
+
+    Parameters
+    ----------
+    cube: iris.Cube.cube
+        iris cube to be thresholded.
+
+    threshold: float
+        threshold to be applied on input cube data.
+
+    Returns
+    --------
+    iris.Cube.cube
+        thresholded cube.
+
     """
     cube.data = np.ma.masked_where(cube.data > threshold, cube.data)
     return cube
@@ -460,6 +479,19 @@ def mask_below_threshold(cube, threshold):
 
     Takes a value 'threshold' and masks off anything that is below
     it in the cube data. Values equal to the threshold are not masked.
+
+    Parameters
+    ----------
+    cube: iris.Cube.cube
+        iris cube to be thresholded
+    threshold: float
+        threshold to be applied on input cube data.
+
+    Returns
+    --------
+    iris.Cube.cube
+        thresholded cube.
+
     """
     cube.data = np.ma.masked_where(cube.data < threshold, cube.data)
     return cube
@@ -471,6 +503,21 @@ def mask_inside_range(cube, minimum, maximum):
 
     Takes a MINIMUM and a MAXIMUM value for the range, and masks off anything
     that's between the two in the cube data.
+
+    Parameters
+    ----------
+    cube: iris.Cube.cube
+        iris cube to be thresholded
+    minimum: float
+        lower threshold to be applied on input cube data.
+    maximum: float
+        upper threshold to be applied on input cube data.
+
+    Returns
+    --------
+    iris.Cube.cube
+        thresholded cube.
+
     """
     cube.data = np.ma.masked_inside(cube.data, minimum, maximum)
     return cube
@@ -482,6 +529,21 @@ def mask_outside_range(cube, minimum, maximum):
 
     Takes a MINIMUM and a MAXIMUM value for the range, and masks off anything
     that's outside the two in the cube data.
+
+    Parameters
+    ----------
+    cube: iris.Cube.cube
+        iris cube to be thresholded
+    minimum: float
+        lower threshold to be applied on input cube data.
+    maximum: float
+        upper threshold to be applied on input cube data.
+
+    Returns
+    --------
+    iris.Cube.cube
+        thresholded cube.
+
     """
     cube.data = np.ma.masked_outside(cube.data, minimum, maximum)
     return cube
@@ -503,22 +565,28 @@ def mask_fillvalues(products,
 
     Parameters
     ----------
-
-    * products (iris.Cube.cube instances):
+    products: iris.Cube.cube
         data products to be masked.
 
-    * threshold_fraction (float, between 0 and 1):
+    threshold_fraction: float
         fractional threshold to be used as argument for Aggregator.
+        Must be between 0 and 1.
 
-    * min_value (float):
-        minumum value threshold; set to -1e10.
+    min_value: float
+        minumum value threshold; default set to -1e10.
 
-    * time_window (float):
-        time window to compute missing data counts; set to 1.
+    time_window: float
+        time window to compute missing data counts; default set to 1.
 
     Returns
     -------
-    Masked iris cubes.
+    iris.Cube.cube
+        Masked iris cubes.
+
+    Raises
+    -------
+    NotImplementedError
+        Implementation missing for data with higher dimensionality than 4.
 
     """
     combined_mask = None
@@ -600,7 +668,7 @@ def _get_fillvalues_mask(cube, threshold_fraction, min_value, time_window):
     nr_time_points = len(cube.coord('time').points)
     if time_window > nr_time_points:
         msg = "Time window (in time units) larger than total time span. Stop."
-        raise MaskModuleError(msg)
+        raise ValueError(msg)
 
     max_counts_per_time_window = nr_time_points / time_window
     # round to lower integer
