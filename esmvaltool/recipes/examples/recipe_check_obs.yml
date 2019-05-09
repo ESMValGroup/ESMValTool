@@ -228,18 +228,6 @@ diagnostics:
     scripts: null
 
 
-  MTE:
-    description: MTE
-    variables:
-      gpp:
-        mip: Lmon
-      gppStderr:
-        mip: Lmon
-    additional_datasets:
-      - {dataset: MTE, project: OBS, tier: 3, type: clim, version: May12, start_year: 1982, end_year: 2011}
-    scripts: null
-
-
   NCEP:
     description: NCEP monthly data
     variables:
@@ -555,6 +543,18 @@ diagnostics:
         mip: Omon
     additional_datasets:
       - {dataset: ERA-Interim, project: OBS, tier: 3, type: reanaly, version: 1, start_year: 1979, end_year: 2018}
+    scripts: null
+
+
+  MTE:
+    description: MTE
+    variables:
+      gpp:
+        mip: Lmon
+      gppStderr:
+        mip: Lmon
+    additional_datasets:
+      - {dataset: MTE, project: OBS, tier: 3, type: clim, version: May12, start_year: 1982, end_year: 2011}
     scripts: null
 
 
