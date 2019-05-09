@@ -1,5 +1,5 @@
 # #############################################################################
-# make_timeseries_plot.r
+# make_timeseries_plot.R
 #
 # Author: Marit Sandstad (CICERO, Norway)
 #       : Christian W. Mohr (CICERO, Norway)

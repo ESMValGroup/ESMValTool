@@ -1,5 +1,5 @@
 # #############################################################################
-# common_climdex_preprocessing.r
+# common_climdex_preprocessing.R
 #
 # Author: Marit Sandstad (CICERO, Norway)
 #       : Christian Wilhelm Mohr (CICERO, Norway)

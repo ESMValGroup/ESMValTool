@@ -1,5 +1,5 @@
 # #########################################################################################################
-# make_Glecker_plot2.r
+# make_glecker_plot.R
 #
 # Author: Christian W. Mohr (CICERO, Norway)
 #         Marit Sandstad (CICERO, Norway)

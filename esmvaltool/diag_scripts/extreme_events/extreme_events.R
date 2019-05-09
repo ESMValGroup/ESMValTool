@@ -1,5 +1,5 @@
 # #############################################################################
-# ExtremeEvents.r
+# extreme_events.R
 #
 # Authors: Björn Brötz (DLR, Germany)
 #          Marit Sandstad (CICERO, Norway)
@@ -52,7 +52,7 @@ source(paste0(diag_scripts_dir,
 source(paste0(diag_scripts_dir,
          "/extreme_events/make_timeseries_plot.R"))  # nolint
 source(paste0(diag_scripts_dir,
-         "/extreme_events/make_Glecker_plot2.R"))  # nolint
+         "/extreme_events/make_glecker_plot.R"))  # nolint
 
 # read settings and metadata files
 args <- commandArgs(trailingOnly = TRUE)
