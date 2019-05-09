@@ -2,7 +2,7 @@
 regrid_dataset <- NA
 base_range <- NA
 analysis_range <- NA
-climdex_parallel <- 25
+climdex_parallel <- 4
 mip_name <- "cmip"
 ts_col_list <- c("dodgerblue2", "darkgreen",
                  "firebrick2", "darkorchid", "aquamarine3")
@@ -40,4 +40,4 @@ gl_xscale_spacer_rmsestd <- 0.25
 gl_symb_scaling_factor <- 1.0
 gl_symb_xshift <- 0.2
 gl_symb_yshift <- 0.275
-gl_text_symb_scaling_factor <- 1.0
+gl_text_symb_scaling_factor <- 0.5
