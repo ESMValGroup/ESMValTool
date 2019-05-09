@@ -400,10 +400,6 @@ class CMORCheck():
             self.report_error(self._does_msg, var_name,
                               'have time reference units')
         else:
-            coord.convert_units(
-                cf_units.Unit(
-                    'days since 1950-1-1 00:00:00',
-                    calendar=coord.units.calendar))
             simplified_cal = self._simplify_calendar(coord.units.calendar)
             coord.units = cf_units.Unit(coord.units.origin, simplified_cal)
 
