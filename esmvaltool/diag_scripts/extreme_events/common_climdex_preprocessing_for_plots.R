@@ -87,8 +87,7 @@ create_land_sea_mask <- function(regrid = "./gridDef", loc = "./",
 ## @param max_start is an optional crop start
 ## @param min_end is an optional crop end
 ##
-set_time_for_files_equal <- function(path = "../../climdex/ensMeanMed/rcp26",
-                                 idx = "tnnETCCDI_yr", model_list,
+set_time_for_files_equal <- function(path, idx, model_list,
                                  time_cropped = "./timeCropped",
                                  max_start = 0, min_end = 2500) {
 

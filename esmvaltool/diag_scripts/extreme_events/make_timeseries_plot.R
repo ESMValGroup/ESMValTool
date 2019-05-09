@@ -35,12 +35,8 @@
 
 
 timeseries_main <- function(path = "../work/extreme_events",
-                            idx_list = c(
-                              "tn10pETCCDI_yr", "tn90pETCCDI_yr",
-                              "tx10pETCCDI_yr", "tx90pETCCDI_yr"
-                            ),
-                            model_list = c("IPSL-CM5A-LR", "MIROC-ESM"),
-                            obs_list = c("MERRA2"), plot_dir = "./plot",
+                            idx_list, model_list, obs_list,
+                            plot_dir = "./plot",
                             normalize = FALSE,
                             start_yr = 2000, end_yr = 2006) {
 

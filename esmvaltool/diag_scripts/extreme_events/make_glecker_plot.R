@@ -17,19 +17,7 @@
 #
 # #########################################################################################################
 
-gleckler_main <- function(path = "./",
-                          idx_list = c(
-                            "tn10pETCCDI_yr", "tn90pETCCDI_yr",
-                            "tx10pETCCDI_yr", "tx90pETCCDI_yr",
-                            "tnnETCCDI_yr", "tnxETCCDI_yr",
-                            "txnETCCDI_yr", "txxETCCDI_yr"
-                          ),
-                          model_list = c(
-                            "EC-EARTH", "HadGEM2-ES",
-                            "MPI-ESM-LR", "IPSL-CM5A-LR",
-                            "MIROC-ESM"
-                          ),
-                          obs_list = c("CanESM2"),
+gleckler_main <- function(path = "./", idx_list, model_list, obs_list,
                           plot_dir = "../plot/extreme_events/",
                           promptinput = promptinput,
                           start_yr = 2000, end_yr = 2009) {
