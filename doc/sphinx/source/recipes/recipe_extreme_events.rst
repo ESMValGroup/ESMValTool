@@ -12,7 +12,7 @@ The needed input fields are daily average precipitation flux and minimum, maximu
 The recipe reproduces panels of figure 9.37 of the IPCC AR5 report, producing both a Gleckler plot,
 with relative error metrics for the CMIP5 temperature and precipitation extreme indices, 
 and timeseries plots comparing the enesemble spread with observations. 
-Up to 4 observational reference datasets are supported.
+For plotting 1 to 4 observational reference datasets are supported. If no observational reference datasets are given, the plotting routines do not work, however, index generation without plotting is still possible.
 All datasets are regridded to a common grid and considered only over land.
 
 Available recipes and diagnostics
@@ -22,7 +22,7 @@ Recipes are stored in recipes/
 
 * recipe_extreme_events.yml
 
-Diagnostics are stored in diag_scripts/ensclus/
+Diagnostics are stored in diag_scripts/extreme_events/
 
 * ExtremeEvents.r
 
@@ -64,7 +64,7 @@ User settings
 * ts_plt: (logical) if to produce the timeseries or not (default: true)
 * glc_plt: (logical) if to produce the Gleckler or not (default: true)
 * climdex_parallel: number of parallel threads to be used for climdex calculation (default: 4)
-* normalize: (logical) if to normalize detrend the datasets prior to analysis (default: false)
+* normalize: (logical) if to detrend and normalize with the standard deviation for the datasets for use in the timeseries plot. When this option is used the data for the following indices  are detrended and normalized in the timeseries plots: "altcdd", "altcsdi", "altcwd", "altwsdi", "cdd",  "cwd","dtr", "fd", "gsl", "id", "prcptot", "r10mm", "r1mm", "r20mm", "r95p", "r99p", "rx1day", "rx5day", "sdii", "su", "tnn", "tnx", "tr", "txn","txn","txx" (default: false)
 
 Additional optional setting controlling the plots:
 
