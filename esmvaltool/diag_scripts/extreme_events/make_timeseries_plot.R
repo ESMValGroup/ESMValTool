@@ -34,7 +34,7 @@
 ###########################
 
 
-timeseries_main <- function(path = "../work/ExtremeEvents",
+timeseries_main <- function(path = "../work/extreme_events",
                             idx_list = c(
                               "tn10pETCCDI_yr", "tn90pETCCDI_yr",
                               "tx10pETCCDI_yr", "tx90pETCCDI_yr"

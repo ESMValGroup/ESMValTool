@@ -221,7 +221,7 @@ if (write_plots) {
   # A climdex processing section is needed here for observation data.
   # CMORized observation data found in the obs directory,
   # has it's climdex indices calculated,
-  # which are then placed in the work/ExtremeEvents directory
+  # which are then placed in the work/extreme_events directory
   #############################
 
   ## Splitting models from observations

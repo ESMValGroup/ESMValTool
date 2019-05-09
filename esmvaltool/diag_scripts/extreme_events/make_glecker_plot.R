@@ -30,7 +30,7 @@ gleckler_main <- function(path = "./",
                             "MIROC-ESM"
                           ),
                           obs_list = c("CanESM2"),
-                          plot_dir = "../plot/ExtremeEvents/",
+                          plot_dir = "../plot/extreme_events/",
                           promptinput = promptinput,
                           start_yr = 2000, end_yr = 2009) {
 
@@ -345,7 +345,7 @@ gleckler_array <- function(path = land, idx_list = gleckler_idx,
 
 #### Plotting Routine ####
 gleckler_plotting <- function(arr = rmserelarr, idx_list, model_list,
-                              obs_list, plot_dir = "../plots/ExtremeEvents/",
+                              obs_list, plot_dir = "../plots/extreme_events/",
                               syear = max_start, eyear = min_end) {
   nidx <- length(idx_list) # number of indices
   nmodel <- length(model_list) # number of models
