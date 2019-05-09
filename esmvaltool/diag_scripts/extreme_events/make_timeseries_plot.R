@@ -409,12 +409,6 @@ time_series_preprocessing <- function(land = "./Land", idx = "tnnETCCDI_yr",
 timeseries_plot <- function(plot_dir = "./plot", idx = "tn10pETCCDI_yr",
                             obs_list, start_yr = 2006, end_yr = 2010,
                             normalize = FALSE) {
-  ## Loading ncdf4 library
-  library(ncdf4)
-
-  ## Loading scales library (required for transpareny in plots)
-  library(scales)
-
   # Drawing parameters
   leg_names <- c(mip_name, obs_list)
 

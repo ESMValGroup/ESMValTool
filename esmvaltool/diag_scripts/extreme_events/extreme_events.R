@@ -25,6 +25,8 @@ library(tools)
 library(yaml)
 library(ncdf4)
 library(ncdf4.helpers)
+library(scales)
+library(RColorBrewer)  # nolint
 
 provenance_record <- function(infile) {
   xprov <- list(

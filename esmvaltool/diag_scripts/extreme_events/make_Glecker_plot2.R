@@ -160,8 +160,6 @@ gleckler_main <- function(path = "./",
 
 gleckler_array <- function(path = land, idx_list = gleckler_idx,
                            model_list = model_list, obs_list = obs_list) {
-  library(ncdf4)
-
   ## Produce an array to hold all the model and reanalysis means
 
   ## Input data for testing the plotting routine
@@ -357,7 +355,6 @@ gleckler_plotting <- function(arr = rmserelarr, idx_list, model_list,
   sclseq <- seq(-0.55, 0.55, 0.1)
 
   ## Colour scale
-  library(RColorBrewer)  # nolint
   glc <- brewer.pal(length(sclseq) - 2, "RdYlBu")  # nolint
   glc <- c("#662506", glc, "#3f007d")
   glc <- rev(glc)
@@ -368,7 +365,7 @@ gleckler_plotting <- function(arr = rmserelarr, idx_list, model_list,
   glbw <- gray(seq(0, 1, length.out = length(sclseq_bw)))
   glbw <- rev(glbw)
 
-  ## Determinng what shapes should be plotted, based on number of observations
+  ## Determining what shapes should be plotted, based on number of observations
   if (nobs == 1) {
     # One reanalysis references
     x1 <- c(0, 1, 1, 0)
