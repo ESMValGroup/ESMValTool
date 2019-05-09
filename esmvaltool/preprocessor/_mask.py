@@ -10,14 +10,20 @@ missing values masking.
 import logging
 import os
 
+import dask.array as da
+import numpy as np
+
 import cartopy.io.shapereader as shpreader
 import iris
-import numpy as np
 import shapely.vectorized as shp_vect
 from iris.analysis import Aggregator
 from iris.util import rolling_window
 
 logger = logging.getLogger(__name__)
+
+
+class MaskModuleError(Exception):
+    """Exception raised when a mask error happens."""
 
 
 def _check_dims(cube, mask_cube):
@@ -153,9 +159,7 @@ def _apply_fx_mask(fx_mask, var_data):
 
 def mask_landsea(cube, fx_files, mask_out):
     """
-    Mask out either land or sea.
-
-    Function that masks out either land mass or seas (oceans, seas and lakes)
+    Mask out either land mass or sea (oceans, seas and lakes).
 
     It uses dedicated fx files (sftlf or sftof) or, in their absence, it
     applies a Natural Earth mask (land or ocean contours). Not that the
@@ -213,8 +217,9 @@ def mask_landsea(cube, fx_files, mask_out):
                     "Applying land-sea mask from Natural Earth"
                     " shapefile: \n%s", shapefiles[mask_out])
             else:
-                logger.error("Use of shapefiles with irregular grids not "
-                             "yet implemented, land-sea mask not applied")
+                msg = (f"Use of shapefiles with irregular grids not "
+                       f"yet implemented, land-sea mask not applied.")
+                raise MaskModuleError(msg)
     else:
         if cube.coord('longitude').points.ndim < 2:
             cube = _mask_with_shp(cube, shapefiles[mask_out])
@@ -222,8 +227,9 @@ def mask_landsea(cube, fx_files, mask_out):
                 "Applying land-sea mask from Natural Earth"
                 " shapefile: \n%s", shapefiles[mask_out])
         else:
-            logger.error("Use of shapefiles with irregular grids not "
-                         "yet implemented, land-sea mask not applied")
+            msg = (f"Use of shapefiles with irregular grids not "
+                   f"yet implemented, land-sea mask not applied.")
+            raise MaskModuleError(msg)
 
     return cube
 
@@ -262,7 +268,8 @@ def mask_landseaice(cube, fx_files, mask_out):
                 cube.data = _apply_fx_mask(landice_mask, cube.data)
                 logger.debug("Applying landsea-ice mask: sftgif")
     else:
-        logger.warning("Landsea-ice mask could not be found ")
+        msg = "Landsea-ice mask could not be found. Stopping. "
+        raise MaskModuleError(msg)
 
     return cube
 
@@ -313,9 +320,10 @@ def _mask_with_shp(cube, shapefilename):
             cube.coord(axis='Y').points)
     # 2D irregular grids; spit an error for now
     else:
-        logger.error('No fx-files found (sftlf or sftof)!\n \
-                     2D grids are suboptimally masked with\n \
-                     Natural Earth masks. Exiting.')
+        msg = (f"No fx-files found (sftlf or sftof)!"
+               f"2D grids are suboptimally masked with "
+               f"Natural Earth masks. Exiting.")
+        raise MaskModuleError(msg)
 
     # Wrap around longitude coordinate to match data
     x_p_180 = np.where(x_p >= 180., x_p - 360., x_p)
@@ -429,7 +437,9 @@ def mask_window_threshold(cube, threshold_fraction, min_value, time_window):
                                 time_window)
     if not np.ma.isMaskedArray(cube.data):
         cube.data = np.ma.array(cube.data, fill_value=1e+20)
-    cube.data.mask[:, ...] |= mask
+    data = cube.core_data()
+    mask = da.ma.getmaskarray(data) | mask
+    cube.data = da.ma.masked_array(data, mask=mask)
     return cube
 
 
@@ -589,8 +599,8 @@ def _get_fillvalues_mask(cube, threshold_fraction, min_value, time_window):
                 threshold_fraction))
     nr_time_points = len(cube.coord('time').points)
     if time_window > nr_time_points:
-        logger.warning("Time window (in time units) larger "
-                       "than total time span")
+        msg = "Time window (in time units) larger than total time span. Stop."
+        raise MaskModuleError(msg)
 
     max_counts_per_time_window = nr_time_points / time_window
     # round to lower integer
