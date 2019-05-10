@@ -19,23 +19,13 @@ datasets:
   #- {dataset: bcc-csm1-1,  type: exp, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
   #- {dataset: IPSL-CM5A-MR, type: exp, project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 1981,  end_year: 2000}
 
-preprocessors:
-  preproc1:
-    regrid:
-      target_grid: MPI-ESM-MR
-      scheme: linear
-    extract_region:
-      end_latitude: 90
-      start_latitude: -90
-      end_longitude: 360
-      start_longitude: 0
    
 diagnostics:
   combine_indices:
     description: Combine indices and/or compute area weighted averages.
     variables:
       psl:
-        preprocessor: preproc1
+        preprocessor: preproc
         mip: Amon
     scripts:
       main:
