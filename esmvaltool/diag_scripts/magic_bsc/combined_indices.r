@@ -52,15 +52,6 @@ region <- params$region
 running_mean <- params$running_mean
 timestamp <- ""
 standardized <- params$standardized
-### Settings:
-print("Settings")
-print(running_mean)
-print(standardized)
-print(moninf)
-print(monsup)
-print(start_year)
-print(end_year)
-print(region)
 
 if (region == "Nino3") {
   lon_min <- 360 - 150
@@ -100,73 +91,31 @@ names(dim(data)) <- c("model", "lon", "lat", "time")
 time <- seq(start_year, end_year, "month")
 nc_close(data_nc)
 
-jpeg(paste0(plot_dir, "/", "plot0.jpg"))
-PlotEquiMap(data[1, , , 1], lon = lon, lat = lat, filled = F ) #nolint
-dev.off()
-
 if (standardized) {
     data <- Apply(list(data), target_dims = c("time"),
                  fun = function(x) {(x - mean(x)) / sqrt(var(x))}) #nolint
     data <- aperm(data$output1, c(2, 3, 4, 1))
     names(dim(data)) <- c("model", "lon", "lat", "time")
 }
-jpeg(paste0(plot_dir, "/", "plot01.jpg"))
-PlotEquiMap(data[1, , , 1], lon = lon, lat = lat, filled = F ) #nolint
-dev.off()
-
-jpeg(paste0(plot_dir, "/", "time.jpg"))
-plot(1 : length(time), data[1, 1, 1,], type = "l")
 
 if (!is.null(running_mean)) {
     data <- Smoothing(data, runmeanlen = running_mean, numdimt = 4) #nolint
     timestamp <- paste0(running_mean, "-month-running-mean-")
 }
-lines(1 : length(time), data[1, 1, 1,], col = "blue")
 
 if (!is.null(moninf)) {
   data <- Season(data, posdim = 4, monini = monini, #nolint
                  moninf = moninf, monsup = monsup)
   months <- paste0(month.abb[moninf], "-", month.abb[monsup])
 }
-lines(seq(1, length(time), 12), data[1, 1, 1,], col = "red")
-dev.off()
-
-jpeg(paste0(plot_dir, "/", "plot1.jpg"))
-PlotEquiMap(data[1, , , 2], lon = lon, lat = lat, filled = F) #nolint
-dev.off()
 
 if (length(lon_min) == 1) {
-#nolint start
-# print(str(data))
-# jpeg(paste0(plot_dir, "/", "plot2.jpg"))
-# PlotEquiMap(data$data[1, , , 2], lon = data$lon, lat = data$lat, filled = F)
-# dev.off()
-#nolint end
   data <- WeightedMean(data, lon = lon, lat = lat, #nolint
                        region = c(lon_min, lon_max, lat_min, lat_max),
                        londim = 2, latdim = 3, mask = NULL)
-print("HERE3")
+
   data <- drop(data)
-print(str(data))
-print(dim(data))
 } else {
-print("NOHERE")
-#nolint start
-#    data1_aux <- SelBox(data, lon = lon, lat = lat,
-#                   region = c(lon_min[1], lon_max[1], lat_min[1], lat_max[1]),
-#                   londim = 2, latdim = 3)
-#    data2_aux <- SelBox(data, lon = lon, lat = lat,
-#                   region = c(lon_min[2], lon_max[2], lat_min[2], lat_max[2]),
-#                   londim = 2, latdim = 3)
-# print(str(data1))
-# jpeg(paste0(plot_dir, "/plot3.jpg"))
-# PlotEquiMap(data1$data[1, , , 1], lon = data1$lon, lat = data1$lat, filled = F)
-# dev.off()
-# print(str(data2))
-# jpeg(paste0(plot_dir, "/plot4.jpg"))
-# PlotEquiMap(data2$data[1, , , 1], lon = data2$lon, lat = data2$lat, filled = F)
-# dev.off()
-#nolint end
     data1 <- WeightedMean(data, lon = lon, lat = lat, #nolint
                     region = c(lon_min[1], lon_max[1], lat_min[1], lat_max[1]),
                     londim = 2, latdim = 3, mask = NULL)
@@ -175,8 +124,6 @@ print("NOHERE")
                     londim = 2, latdim = 3, mask = NULL)
     data1 <- drop(data1)
     data2 <- drop(data2)
-print(str(data1))
-print(str(data2))
     data <- CombineIndices(list(data1, data2), weights = c(1, -1), #nolint
                            operation = "add")
 }
@@ -192,7 +139,7 @@ file <- nc_create(filencdf, list(defdata))
 ncvar_put(file, defdata, data)
 nc_close(file)
 
-print(summary(data))
+
 png(paste0(plot_dir, "/", "Index_", region, ".png"), width = 7, height = 4,
     units = "in", res = 150)
 plot(starting : ending, data, type = "l", col = "purple", lwd = 2, bty = "n",
