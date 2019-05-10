@@ -75,7 +75,7 @@ authors:
   berg_pe:
     name: Berg, Peter
     institute: SMHI, Sweden
-    email: peter.berg 'at' smhi.se  
+    email: peter.berg 'at' smhi.se
   bock_ls:
     name: Bock, Lisa
     institute: DLR, Germany
@@ -198,6 +198,10 @@ authors:
     name: Kunert, Dominik
     institute: DLR, Germany
     email: dominik.kunert 'at' dlr.de
+  lemb_va:
+    name: Lembo, Valerio
+    institute: CEN, University of Hamburg
+    email: valerio.lembo 'at' uni-hamburg.de
   levi_ri:
     name: Levine, Richard
     institute: MetOffice, UK
@@ -511,7 +515,7 @@ authors:
     name: Lovato, Tomas
     institute: CMCC, IT
     email: tomas.lovato 'at' cmcc.it
-    
+
 
 
 
@@ -545,6 +549,8 @@ references:
   fuckar: "Fuckar et al., Clima Dynam, 47, 5-6, 1527-1543, doi:10.1007/s00382-015-2917-2, 2016."
   gen14jclim: "Gen, L. et al., J. Climate, 27, 1765-1780, doi:10.1175/JCLI-D-13-00337.1, 2014."
   georgievski18tac: "Georgievski, G. & Hagemann, S. Theor Appl Climatol (2018). https://doi.org/10.1007/s00704-018-2675-2"
+  giorgi11jc: "Giorgi et al., J. Climate 24, 5309-5324, doi:10.1175/2011JCLI3979.1, 2011."
+  giorgi14jgr: "Giorgi et al., J. Geophys. Res. Atmos., 119, 11,695–11,708, doi:10.1002/ 2014JD022238, 2014."
   gleckler08jgr: "Gleckler et al., J. Geophys. Res., 113, D06104, doi:10.1029/2007JD008972, 2008."
   goswami99qjrms: "Goswami, B., V. Krishnamurthy, and H. Annamalai, Q. J. R. Meteorol. Soc., 125, 611-633, doi:10.1002/qj.49712555412, 1999."
   hagemann13james: "Hagemann et al., J. Adv. Model. Earth Syst., 5, doi:10.1029/2012MS000173, 2013."
@@ -557,10 +563,13 @@ references:
   lauer05acp: "Lauer et al., Atmos. Chem. Phys., 5, 3251-3276, doi:10.5194/acp-5-3251-2005, 2005."
   lauer13jclim: "Lauer and Hamilton, J. Climate, 26, 3823-3845, doi:10.1175/JCLI-D-12-00451.1, 2013."
   lauer17rse: "Lauer et al., Remote Sens. Environ., 203, 9-39, doi:10.1016/j.rse.2017.01.007, 2017."
+  lembo16climdyn: "Lembo et al., Clim. Dyn., 48, 1793-1812, doi:10.1007/s00382-016-3173-9"
+  lembo19gmdd: "Lembo et al., Geosci. Model Dev. Discuss., doi:10.5194/gmd-2019-37, 2019"
   li14jclim: "Li and Xie, J. Climate, 27, 1765-1780, doi:10.1175/JCLI-D-13-00337.1, 2014."
   lin08jclim: "Lin, J-L. et al., J. Climate, 21, 4541-4567, doi: 10.1175/2008JCLI1816.1, 2008."
   lloyd-hughes02jclim: "Lloyd-Hughes, B. and Saunders, M. A., Int. J. Climatol., 22, 1571-1592, doi:10.1002/joc.846, 2002."
   locarini10usgov: "Locarnini, R. A. et al., World Ocean Atlas 2009, Volume 1: Temperature. S. Levitus, Ed. NOAA Atlas NESDIS 68, U.S. Government Printing Office, Washington, D.C., 184 pp.,2010."
+  lucarini14revgeop: "Lucarini et al., Rev. Geophys., 52, 809-859, doi:https://doi.org/10.1002/2013RG000446"
   mehran14jgr: "Mehran, A. et al., J. Geophys. Res., 119, 4, 1695-1707, doi: 10.1002/2013JD021152, 2014." 
   manubens:  "Manubens, N., et al., ENVIRON MODELL SOFTW 103, 29-42. doi:10.1016/j.envsoft.2018.01.018"
   mckee93: "McKee, T. B. and Doesken, N. J. and Kleist, J.  In Proceedings of the 8th Conference on Applied Climatology, 17(22), 179-183, Boston, MA: American Meteorological Society, 1993."
@@ -601,12 +610,14 @@ references:
   esacci-sst: "Merchant et al., Geosci. Data J., doi:10.1002/gdj3.20, 2014."
   hadisst: "Rayner et al., J. Geophys. Res., doi:10.1029/2002JD002670, 2013."
   modis: "Not available."
+  mte: "Jung et al., J. Geophys. Res., 116, doi:10.1029/2010JG001566, 2011."
   ncep: "Kalnay et al., B. Am. Meteorol. Soc., doi:10.1175/1520-0477(1996)077<0437:TNYRP>2.0.CO;2, 1996."
   niwa-bs: "Bodeker et al., Atmos. Chem. Phys., doi:10.5194/acp-5-2603-2005, 2005."
   patmos-x: "Heidinger et al., NOAA National Centers for Environmental Information, doi:10.7289/V5348HCK, last access: 10 February 2019."
   woa: "Locarnini et al., World Ocean Atlas 2013, Vol. 1: Temperature, 2013."
 
 projects:
+  c3s-magic: Copernicus Climate Change Service 34a Lot 2 (MAGIC) project
   climval: BMBF MiKlip Project ClimVal
   cmip6dicad: BMBF CMIP6 Project Germany
   cmug: ESA CMUG
@@ -616,7 +627,7 @@ projects:
   embrace: EU FP7 project EMBRACE
   esmval: DLR project ESMVal
   qa4ecv: QA4ECV
-  c3s-magic: Copernicus Climate Change Service 34a Lot 2 (MAGIC) project
+  trr181: DFG Project TRR-181
   ukesm: UKESM, UK Earth System Model project (NERC)
 
 realms:
@@ -645,13 +656,22 @@ themes:
   varmodes: modes of variability
 
 domains:
+  eq: equatorial
   et: extra tropics
   global: global
-  midlat: mid-latittudes
+  midlat: mid-latitudes
   nh: northern hemisphere
+  nhext: northern extra tropics
+  nhmidlat: northern mid-latitudes
+  nhpolar: northern polar
+  nhtrop: northern tropics
   polar: polar
   reg: regional
   sh: southern hemisphere
+  shext: southern extra tropics
+  shmidlat: southern mid-latitudes
+  shpolar: southern polar
+  shtrop: southern tropics
   trop: tropics
 
 plot_types:
@@ -664,6 +684,7 @@ plot_types:
   polar: polar-stereographic plot
   scatter: scatter plot
   seas: seasonal cycle
+  sect: meridional section
   size: size-distribution
   vert: vertical profile
   taylor: taylor diagram
