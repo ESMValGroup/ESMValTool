@@ -151,6 +151,7 @@ def save_variable(cube, var, outdir, attrs, **kwargs):
     status = 'lazy' if cube.has_lazy_data() else 'realized'
     logger.info('Cube has %s data [lazy is preferred]', status)
     iris.save(cube, file_path, fill_value=1e20, **kwargs)
+    return file_name
 
 
 def set_global_atts(cube, attrs):
