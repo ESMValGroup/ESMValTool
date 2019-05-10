@@ -1,6 +1,6 @@
 Hydroclimatic intensity and extremes (HyInt)
 ==============================================
- 
+
 
 Overview
 --------
@@ -15,20 +15,20 @@ The hydroclimatic indices calculated by the diagnostic and included in the outpu
 * PA  = precipitation area (area over which of any given day precipitation occurs)
 * R95 = heavy precipitation index (percent of total precipitation above the 95% percentile of the reference distribution)
 * HY-INT = hydroclimatic intensity. HY-INT = normalized(INT) x normalized(DSL).
- 
- 
- 
+
+
+
 Available recipes and diagnostics
 ---------------------------------
- 
+
 Recipes are stored in recipes/
- 
-* recipe_hyint.yml (evaluating the 6 hydroclimatic indices) 
- 
+
+* recipe_hyint.yml (evaluating the 6 hydroclimatic indices)
+
 Diagnostics are stored in diag_scripts/hyint/
- 
+
 * hyint.R
- 
+
 and subroutines
 
 * hyint_diagnostic.R
@@ -41,10 +41,10 @@ and subroutines
 * hyint_preproc.R
 * hyint_trends.R
 
- 
+
 User settings
 -------------
- 
+
 *Required settings for script*
 
 
@@ -73,7 +73,7 @@ User settings
 #. Maps
 
    * oplot_grid (false): plot grid points over maps
-   * boxregion (false): !=0 plot region boxes over global maps with thickness = abs(boxregion); white (>0) or grey (<0). 
+   * boxregion (false): !=0 plot region boxes over global maps with thickness = abs(boxregion); white (>0) or grey (<0).
    * removedesert (false) remove (flag as NA) grid points with mean annual pr < 0.5 mm/day (deserts, Giorgi2014). This affects timeseries and trends calculations too.
 
 #. Timeseries and trends
@@ -87,40 +87,42 @@ User settings
    * add_zeroline (true): plot a dashed line at y=0
    * trend_years_only (false): limit timeseries plotting to the time interval adopted for trend calculation (excluding the normalization period)
    * scale100years (true): plot trends scaled as 1/100 years
-   * scalepercent (false): plot trends as percent change 
+   * scalepercent (false): plot trends as percent change
 
 
 Variables
 ---------
- 
+
 * pr (atmos, daily mean, longitude latitude time)
 
- 
+
 Observations and reformat scripts
 ---------------------------------
- 
+
 None.
- 
- 
+
+
 References
 ----------
- 
+
 * Giorgi et al., 2014, J. Geophys. Res. Atmos., 119, 11,695–11,708, doi:10.1002/ 2014JD022238
 * Giorgi et al., 2011, J. Climate 24, 5309-5324, doi:10.1175/2011JCLI3979.1
 
 
 Example plots
 -------------
- 
+
 .. figure:: figures/hyint/hyint_maps.png
    :width: 10cm
+
 Mean hydroclimatic intensity (figure type 1) for the EC-EARTH model historical + rcp8.5 projection over 1976-2099.
- 
+
 .. figure:: figures/hyint/hyint_timeseries.png
    :width: 10cm
-Timeseries for multiple indices and regions (figure type 12) for the ACCESS1-0 model historical + RCP8.5 projection over 1976-2099.  
+
+Timeseries for multiple indices and regions (figure type 12) for the ACCESS1-0 model historical + RCP8.5 projection over 1976-2099.
 
 .. figure:: figures/hyint/hyint_trends.png
    :width: 10cm
-Multi-model trend coefficients over selected indices (figure type 14) for rcp85 2006-2099 future projection normalized to the 1976-2005 historical period.
 
+Multi-model trend coefficients over selected indices (figure type 14) for rcp85 2006-2099 future projection normalized to the 1976-2005 historical period.
