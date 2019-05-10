@@ -14,6 +14,7 @@ from . import __version__
 from ._config import TAGS, get_institutes, replace_tags
 from ._data_finder import (get_input_filelist, get_output_file,
                            get_statistic_output_file)
+from ._fxvar import _add_fxvar_keys, _update_fx_files
 from ._provenance import TrackedFile, get_recipe_provenance
 from ._recipe_checks import RecipeError
 from ._task import (DiagnosticTask, get_flattened_tasks, get_independent_tasks,
@@ -107,7 +108,6 @@ def _add_cmor_info(variable, override=False):
         logger.warning("Unknown CMOR table %s", variable['cmor_table'])
 
     derive = variable.get('derive', False)
-    fx_att = variable.get('fxvar', False)
     # Copy the following keys from CMOR table
     cmor_keys = [
         'standard_name', 'long_name', 'units', 'modeling_realm', 'frequency'
@@ -118,9 +118,6 @@ def _add_cmor_info(variable, override=False):
     table_entry = CMOR_TABLES[cmor_table].get_variable(mip, short_name)
 
     if derive and table_entry is None:
-        custom_table = CMOR_TABLES['custom']
-        table_entry = custom_table.get_variable(mip, short_name)
-    if fx_att and table_entry is None:
         custom_table = CMOR_TABLES['custom']
         table_entry = custom_table.get_variable(mip, short_name)
 
@@ -366,118 +363,51 @@ def _get_default_settings(variable, config_user, derive=False):
     return settings
 
 
-def _add_fxvar_keys(fx_var_dict, variable):
-    """Add a couple keys specific to fx variable."""
-    fx_variable = deepcopy(variable)
-
-    # add internal recognition flag
-    fx_variable['fxvar'] = True
-
-    fx_variable['variable_group'] = fx_var_dict['short_name']
-    fx_variable['short_name'] = fx_var_dict['short_name']
-
-    # specificities of project
-    if fx_variable['project'] == 'CMIP5':
-        fx_variable['mip'] = 'fx'
-    elif fx_variable['project'] == 'CMIP6':
-        fx_variable['grid'] = variable['grid']
-        if 'mip' in fx_var_dict:
-            fx_variable['mip'] = fx_var_dict['mip']
-
-    return fx_variable
-
-
-def _update_fx_files(fx_varlist, config_user, parent_variable):
-    """Get the fx files dict for a list of fx variables."""
-    fx_files_dict = {}
-    for fx_variable in fx_varlist:
-        fx_files_dict[fx_variable['short_name']] = get_output_file(
-            fx_variable,
-            config_user['preproc_dir'],
-            parent_variable)
-    return fx_files_dict
-
-
-def _update_fx_settings(settings, variable, config_user):
+def _update_fx_settings(settings, variable):
     """Find and set the FX derive/mask settings."""
     # update for derive
     if 'derive' in settings:
-        fx_files = {}
-        for var in get_required(variable['short_name']):
-            if 'fx_files' in var:
-                _augment(var, variable)
-                # first convert the fx_file strings to real variables
-                fx_varlist = [
-                    _add_fxvar_keys(fx_var, variable)
-                    for fx_var in var['fx_files']
-                ]
-                # now get the fx files output
-                fx_files.update(
-                    _update_fx_files(fx_varlist, config_user, var))
-        settings['derive']['fx_files'] = fx_files
+        if 'fx_files' in variable:
+            settings['derive']['fx_files'] = variable['fx_files']
 
     # update for landsea
     if 'mask_landsea' in settings:
         # Configure ingestion of land/sea masks
-        if 'fx_files' not in variable.keys():
+        if 'fx_files' not in variable:
             fx_sett = "fx_files: ['sftlf', 'sftof']"
             logger.error("You need to specify %s for variable %s",
                          fx_sett, variable['short_name'])
         logger.debug('Getting fx mask settings now...')
 
         settings['mask_landsea']['fx_files'] = []
-
-        var = dict(variable)
-        var['fx_files'] = ['sftlf', 'sftof']
-        # first convert the fx_file strings to real variables
-        fx_varlist = [
-            _add_fxvar_keys(fx_var, variable)
-            for fx_var in var['fx_files']
-        ]
-        # now get the files
-        fx_files_dict = _update_fx_files(fx_varlist, config_user, var)
-
-        # allow both sftlf and sftof
-        if fx_files_dict['sftlf']:
-            settings['mask_landsea']['fx_files'].append(fx_files_dict['sftlf'])
-        if fx_files_dict['sftof']:
-            settings['mask_landsea']['fx_files'].append(fx_files_dict['sftof'])
+        if 'fx_files' in variable:
+            fx_files = variable['fx_files']
+            # allow both sftlf and sftof
+            if fx_files['sftlf']:
+                settings['mask_landsea']['fx_files'].append(fx_files['sftlf'])
+            if fx_files['sftof']:
+                settings['mask_landsea']['fx_files'].append(fx_files['sftof'])
 
     if 'mask_landseaice' in settings:
-        if 'fx_files' not in variable.keys():
+        if 'fx_files' not in variable:
             fx_sett = "fx_files: ['sftgif']"
             logger.error("You need to specify %s for variable %s",
                          fx_sett, variable['short_name'])
         logger.debug('Getting fx mask settings now...')
 
         settings['mask_landseaice']['fx_files'] = []
-
-        var = dict(variable)
-        var['fx_files'] = ['sftgif']
-        # first convert the fx_file strings to real variables
-        fx_varlist = [
-            _add_fxvar_keys(fx_var, variable)
-            for fx_var in var['fx_files']
-        ]
-        # now get the files
-        fx_files_dict = _update_fx_files(fx_varlist, config_user, var)
-
-        # allow sftgif (only, for now)
-        if fx_files_dict['sftgif']:
-            settings['mask_landseaice']['fx_files'].append(
-                fx_files_dict['sftgif'])
+        if 'fx_files' in variable:
+            fx_files = variable['fx_files']
+            # allow sftgif (only, for now)
+            if fx_files['sftlf']:
+                settings['mask_landseaice']['fx_files'].append(
+                    fx_files['sftgif'])
 
     for step in ('average_region', 'average_volume'):
         if settings.get(step, {}).get('fx_files'):
-            # first convert the fx_file strings to real variables
-            fx_varlist = [
-                _add_fxvar_keys(fx_var, variable)
-                for fx_var in var['fx_files']
-            ]
-            # now get the files
-            settings[step]['fx_files'] = _update_fx_files(fx_varlist,
-                                                          config_user,
-                                                          var)
+            if 'fx_files' in variable:
+                fx_files = variable['fx_files']
+                settings[step]['fx_files'] = fx_files
 
 
 def _read_attributes(filename):
@@ -674,8 +604,7 @@ def _get_preprocessor_products(variables, profile, order, ancestor_products,
             settings=settings,
             config_user=config_user)
         _update_fx_settings(
-            settings=settings, variable=variable,
-            config_user=config_user)
+            settings=settings, variable=variable)
         _update_target_grid(
             variable=variable,
             variables=variables,
