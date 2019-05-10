@@ -43,30 +43,26 @@ def _fix_data(cube, var):
     return cube
 
 
-def _fix_attr_cmip5(out_dir, in_file, var):
-    """Adjust for CMIP5 standard."""
-    logger.info("Fix for CMIP5 standard...")
-    ds = xr.open_dataset(os.path.join(out_dir, in_file))
-    ds[var].attrs['coordinates'] = 'depth'
-    datt = {
-        'standard_name': 'depth',
-        'long_name': 'depth',
-        'units': 'm',
-        'axis': 'Z',
-        'positive': 'down',
-        '_FillValue': False
-    }
-
-    ds['depth'] = xr.DataArray(1., name='depth', attrs=datt)
-    ds.close()
-    ds.to_netcdf(in_file, mode='a')
-    return
+# pylint: disable=unused-argument
+def _fix_auxcoord(cube, field, filename):
+    """Add depth auxiliary coordinate for CMIP5 standard."""
+    if not cube.coords('depth'):
+        depth = 1.
+        depth_coord = iris.coords.AuxCoord(
+            depth,
+            standard_name='depth',
+            long_name='depth',
+            var_name='depth',
+            units='m',
+            attributes={'positive': 'down'})
+        cube.add_aux_coord(depth_coord)
+        cube.coordinates = 'depth'
 
 
 def extract_variable(var_info, raw_info, out_dir, attrs):
     """Extract to all vars."""
     var = var_info.short_name
-    cubes = iris.load(raw_info['file'])
+    cubes = iris.load(raw_info['file'], callback=_fix_auxcoord)
     rawvar = raw_info['name']
 
     for cube in cubes:
@@ -83,7 +79,6 @@ def extract_variable(var_info, raw_info, out_dir, attrs):
                 local_keys=['coordinates'],
                 unlimited_dimensions=['time'],
             )
-            _fix_attr_cmip5(out_dir, thefile, var)
 
 
 def merge_data(in_dir, out_dir, raw_info, bin):
