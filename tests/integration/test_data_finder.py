@@ -7,8 +7,7 @@ import pytest
 import yaml
 
 import esmvaltool._config
-from esmvaltool._data_finder import (get_input_filelist, get_input_fx_filelist,
-                                     get_output_file)
+from esmvaltool._data_finder import get_input_filelist, get_output_file
 from esmvaltool.cmor.table import read_cmor_tables
 
 # Initialize with standard config developer file
@@ -92,27 +91,3 @@ def test_get_input_filelist(root, cfg):
     # Test result
     reference = [os.path.join(root, file) for file in cfg['found_files']]
     assert sorted(input_filelist) == sorted(reference)
-
-
-@pytest.mark.parametrize('cfg', CONFIG['get_input_fx_filelist'])
-def test_get_input_fx_filelist(root, cfg):
-    """Test retrieving fx filelist."""
-    create_tree(root, cfg.get('available_files'),
-                cfg.get('available_symlinks'))
-
-    # Find files
-    rootpath = {cfg['variable']['project']: [root]}
-    drs = {cfg['variable']['project']: cfg['drs']}
-    fx_variable = dict(cfg['variable'])
-    fx_files = {}
-    for fxvar in cfg['variable']['fx_files']:
-        fx_variable['short_name'] = fxvar
-        fx_files[fxvar] = get_input_fx_filelist(fx_variable,
-                                                rootpath, drs)[fxvar]
-
-    # Test result
-    reference = {
-        fx_var: os.path.join(root, filename) if filename else None
-        for fx_var, filename in cfg['found_files'].items()
-    }
-    assert fx_files == reference
