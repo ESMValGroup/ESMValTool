@@ -5,7 +5,7 @@ attributes:
   version: 'fv3.1'
   tier: 2
   modeling_realm: sat
-  project_id: CMIP5
+  project_id: OBS
   source: 'ftp://oceancolour.org/occci-v3.1/geographic/netcdf/monthly/chlor_a/'
   reference: "esacci-oc"
   comment: ""
