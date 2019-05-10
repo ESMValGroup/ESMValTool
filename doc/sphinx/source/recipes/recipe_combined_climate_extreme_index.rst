@@ -1,4 +1,4 @@
-.. _recipes_insurance_risk_index:
+.. _recipes_extreme_index:
 
 Combined Climate Extreme Index
 ====================================================
@@ -8,28 +8,23 @@ Overview
 
 The goal of this diagnostic is to compute time series of a number of extreme events: heatwave, coldwave, heavy precipitation, drought and high wind. Then, the user can combine these different components (with or without weights). The result is an index similar to the Climate Extremes Index (CEI; Karl et al., 1996), the modified CEI (mCEI; Gleason et al., 2008) or the Actuaries Climate Index (ACI; American Academy of Actuaries, 2018). The output consists of a netcdf file containing the area-weighted and multi-model multi-metric index. This recipe can be applied to data with any temporal resolution, and the running average is computed based on the user-defined window length (e.g. a window length of 5 would compute the 5-day running mean when applied to monthly data, or 5-month running mean when applied to monthly data).
 
-In recipe_extreme_index.yml, after defining the area and reference and projection period, the metric indicating the extreme index is selected. The options are
-* t90p to compute the number of days when the maximum temperature exceeds the 90th percentile,
-* t10p to compute the number of days when the minimum temperature falls below the 10th percentile,
-* Wx to compute the number of days when wind power (third power of wind speed) exceeds the 90th percentile,
-* cdd to compute the maximum length of a dry spell, defined as the maximum number of consecutive days when the daily precipitation is lower than 1 mm, and
-* rx5day to compute the maximum precipitation accumulated during 5 consecutive days.
+In recipe_extreme_index.yml, after defining the area and reference and projection period, the weigths for each metric is selected. The options are
+* weight_t90p the weight of the number of days when the maximum temperature exceeds the 90th percentile,
+* weight_t10p the weight of the number of days when the minimum temperature falls below the 10th percentile,
+* weight_Wx the weight of the number of days when wind power (third power of wind speed) exceeds the 90th percentile,
+* weight_cdd the weight of the maximum length of a dry spell, defined as the maximum number of consecutive days when the daily precipitation is lower than 1 mm, and
+* weight_rx5day the weight of the maximum precipitation accumulated during 5 consecutive days.
 
 Available recipes and diagnostics
 -----------------------------------
 
 Recipes are stored in recipes/
 
-* recipe_combined_indices.yml
-
 * recipe_extreme_index.yml
 
 Diagnostics are stored in diag_scripts/magic_bsc/
 
-* combined_indices.r : calculates the area-weighted means and multi-model means, with or without weights
-
-* risk_index.r
-
+* extreme_index.r
 
 
 User settings
@@ -37,27 +32,24 @@ User settings
 
 User setting files are stored in recipes/
 
-#. recipe_combined_indices.yml
-
-   *Required settings for script*
-
-   * weights: either ‘equal’, for equal weights, ‘null’ for no weights, or a vector of integers the same length as the number of input datasets.
-   * running_mean: an integer specifying the length of the window to be used for computing the running mean (does not work yet).
-   * moninf: instead of running_mean an integer can be given to determine the first month of the seasonal mean to be computed (does not work yet).
-   * monsup: an integer specifying the last month to be computed (does not work yet).
-   * Multi_year_average: ‘true’ or ‘false’ to specify whether to compute the mean across all input years (does not work yet).
-
 #. recipe_extreme_index.yml
 
    *Required settings for script*
 
-   * metric: the metric to be computed, t90p (to be applied on maximum temperature), t10p (to be applied on minimum temperature), Wx (to be applied on wind), cdd and rx5day (to be applied on precipiation).
-
+   *   weight_t90p: 0.2 (from 0 to 1, the total sum of the weight should be 1)
+   *   weight_t10p: 0.2 (from 0 to 1, the total sum of the weight should be 1)
+   *   weight_Wx: 0.2 (from 0 to 1, the total sum of the weight should be 1)
+   *   weight_rx5day: 0.2 (from 0 to 1, the total sum of the weight should be 1)
+   *   weight_cdd: 0.2 (from 0 to 1, the total sum of the weight should be 1)
+   *   running_mean: 5 (depends on the length of the future projection period selected, but recommended not greater than 11)
 
 Variables
 ---------
 
-* tasmax, tasmin, pr or sfcWind (atmos, daily, longitude, latitude, time)
+* tasmax (atmos, daily, longitude, latitude, time)
+* tasmin (atmos, daily, longitude, latitude, time)
+* sfcWind (atmos, daily, longitude, latitude, time)
+* pr (atmos, daily, longitude, latitude, time)
 
 
 Observations and reformat scripts
