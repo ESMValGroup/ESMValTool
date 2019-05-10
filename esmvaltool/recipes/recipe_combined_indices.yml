@@ -25,7 +25,6 @@ diagnostics:
     description: Combine indices and/or compute area weighted averages.
     variables:
       psl:
-        preprocessor: preproc
         mip: Amon
     scripts:
       main:
