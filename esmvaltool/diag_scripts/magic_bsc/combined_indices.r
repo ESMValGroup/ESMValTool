@@ -51,11 +51,11 @@ months <- ""
 region <- params$region
 running_mean <- params$running_mean
 timestamp <- ""
-multi_year_average <- params$multi_year_average
+standardized <- params$standardized
 ### Settings:
 print("Settings")
 print(running_mean)
-print(multi_year_average)
+print(standardized)
 print(moninf)
 print(monsup)
 print(start_year)
@@ -72,7 +72,7 @@ if (region == "Nino3") {
   lon_max <- 360 - 120
   lat_min <- -5
   lat_max <- 5
-} else if (region == "Nino3.4") {
+} else if (region == "Nino4") {
   lon_min <- 360 - 160
   lon_max <- 360 - 150
   lat_min <- -5
@@ -104,6 +104,15 @@ jpeg(paste0(plot_dir, "/", "plot0.jpg"))
 PlotEquiMap(data[1, , , 1], lon = lon, lat = lat, filled = F ) #nolint
 dev.off()
 
+if (standardized) {
+    data <- Apply(list(data), target_dims = c("time"),
+                 fun = function(x) {(x - mean(x)) / sqrt(var(x))}) #nolint
+    data <- aperm(data$output1, c(2, 3, 4, 1))
+    names(dim(data)) <- c("model", "lon", "lat", "time")
+}
+jpeg(paste0(plot_dir, "/", "plot01.jpg"))
+PlotEquiMap(data[1, , , 1], lon = lon, lat = lat, filled = F ) #nolint
+dev.off()
 
 jpeg(paste0(plot_dir, "/", "time.jpg"))
 plot(1 : length(time), data[1, 1, 1,], type = "l")
@@ -184,10 +193,15 @@ ncvar_put(file, defdata, data)
 nc_close(file)
 
 print(summary(data))
-png(paste0(plot_dir, "/", "Index_", region, ".png"), width = 300, height = 300)
+png(paste0(plot_dir, "/", "Index_", region, ".png"), width = 7, height = 4,
+    units = "in", res = 150)
 plot(starting : ending, data, type = "l", col = "purple", lwd = 2, bty = "n",
-     xlab = "Time (years)", ylab = "Index", main = paste("Region", region))
+     xlab = "Time (years)", ylab = "Index",
+     main = paste("Region", region, "and Variable", var0))
+abline(h = 0, col = "grey", lty = 4)
 dev.off()
+
+
 # Set provenance for output files
 xprov <- list(ancestors = list(fullpath_filenames),
               authors = list("hunt_al", "manu_ni"),

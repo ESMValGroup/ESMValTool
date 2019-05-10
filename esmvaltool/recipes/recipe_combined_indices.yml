@@ -8,6 +8,7 @@ documentation:
 
   authors:
     - hunt_al
+    - pere_nu
     - manu_ni
 
   projects:
@@ -33,21 +34,21 @@ diagnostics:
   combine_indices:
     description: Combine indices and/or compute area weighted averages.
     variables:
-      pr:
+      psl:
         preprocessor: preproc1
         mip: Amon
     scripts:
       main:
         script: magic_bsc/combined_indices.r
         ## Weights for combining indices - if not "equal" or "NULL", must be the same length as the number of indices
-        region: Nino3 #Nino3, Nino3.4, Nino4, NAO or SOI  
+        region: NAO #Nino3, Nino3.4, Nino4, NAO or SOI  
 
         # Compute running mean?
-        running_mean: 5 #3
+        running_mean: 11 #3
 
-        #Or compute seasons? (NOTE: cant compute both running means and seasons):
+        # Compute seasons? 
         moninf: 1  # First month
         monsup: 3  # Last month
 
-        # Multi-year average?
-        multi_year_average: false
+        # Compute standarization?
+        standardized: true
