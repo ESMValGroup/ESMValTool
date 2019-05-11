@@ -114,15 +114,19 @@ gleckler_main <- function(path = "./", idx_list, model_list, obs_list,
     )
 
     ## Save Array
+    glecdir <- paste0(path, "/gleckler")  # nolint
+    if (!file.exists(glecdir)) {
+      dir.create(glecdir)
+    }
     saveRDS(object = rmserelarr, file = paste0(
-      plot_dir, "/Gleckler-Array_",  # nolint
+      path, "/gleckler/Gleckler-Array_",  # nolint
       nidx, "-idx_",
       nmodel, "-models_",
       nobs, "-obs", ".RDS"
     ))
     saveRDS(object = returnvalue, file = paste0(
-      plot_dir,
-      "/Gleckler-years.RDS"  # nolint
+      path,
+      "/gleckler/Gleckler-years.RDS"  # nolint
     ))
 
     # Final cleanup
@@ -132,11 +136,17 @@ gleckler_main <- function(path = "./", idx_list, model_list, obs_list,
 
   #### Gleckler Plotting ####
   rmserelarr <- readRDS(file = paste0(
-    plot_dir, "/Gleckler-Array_",  # nolint
+    path, "/gleckler/Gleckler-Array_",  # nolint
     nidx, "-idx_", nmodel, "-models_",
     nobs, "-obs", ".RDS"
   ))
-  year_range <- readRDS(file = paste0(plot_dir, "/Gleckler-years.RDS"))  # nolint
+  year_range <- readRDS(
+                  file = paste0(
+                           path,
+                           "/gleckler/Gleckler-years.RDS"  # nolint
+                         )
+                )
+
   plotfile <- gleckler_plotting(
     arr = rmserelarr, idx_list = idx_list,
     model_list = model_list, obs_list = obs_list,
