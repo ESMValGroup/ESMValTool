@@ -219,10 +219,10 @@ diagnostics:
         mip: Omon
       fgco2:
         preproc: nopp
-        mip: Omon        
+        mip: Omon
       spco2:
         preproc: nopp
-        mip: Omon        
+        mip: Omon
     additional_datasets:
       - {dataset: Landschuetzer2016, project: OBS, tier: 2, type: clim, version: v2016, start_year: 1982, end_year: 2015}
     scripts: null
@@ -362,7 +362,6 @@ diagnostics:
       xco2:
         preproc: nopp
         mip: Amon
-        field: T2Ms
     additional_datasets:
       - {dataset: CDS-XCO2, project: OBS, tier: 3, type: sat, version: L3, start_year: 2003, end_year: 2016}
     scripts: null
@@ -544,6 +543,18 @@ diagnostics:
         mip: Omon
     additional_datasets:
       - {dataset: ERA-Interim, project: OBS, tier: 3, type: reanaly, version: 1, start_year: 1979, end_year: 2018}
+    scripts: null
+
+
+  MTE:
+    description: MTE
+    variables:
+      gpp:
+        mip: Lmon
+      gppStderr:
+        mip: Lmon
+    additional_datasets:
+      - {dataset: MTE, project: OBS, tier: 3, type: clim, version: May12, start_year: 1982, end_year: 2011}
     scripts: null
 
 
