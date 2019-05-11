@@ -41,17 +41,14 @@ timeseries_main <- function(path = "../work/extreme_events",
                             start_yr = 2000, end_yr = 2006) {
 
   ## For file structure and files
-  tsgrid <- paste(path, "/tsgridDef", sep = "")  # nolint
+  tsgrid <- paste(path, "/tsGridDef", sep = "")  # nolint
   time_cropped <- paste(path, "/timeCropped", sep = "")  # nolint
   landmask <- paste(path, "/landSeaMask.nc", sep = "")  # nolint
   regridded <- paste(path, "/regridded", sep = "")  # nolint
   land <- paste(path, "/Land", sep = "")  # nolint
 
   # Initial nc-file time crop, regrid, land and plot purge
-  unlink(c(
-    paste0(time_cropped, "/*.nc"), paste0(regridded, "/*.nc"),  # nolint
-    paste0(land, "/*.nc")  # nolint
-  ))
+  unlink(c(time_cropped, regridded, land, landmask, tsgrid), recursive = TRUE)
 
   # Initial grid and landmask creation reset
   gridandlandmask <- TRUE
@@ -134,6 +131,10 @@ timeseries_main <- function(path = "../work/extreme_events",
     )
     plotfiles <- c(plotfiles, fname)
   }
+
+  # Final cleanup
+  unlink(c(time_cropped, regridded, land, landmask, tsgrid), recursive = TRUE)
+
   return(plotfiles)
 }
 

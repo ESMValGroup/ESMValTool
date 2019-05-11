@@ -37,10 +37,8 @@ gleckler_main <- function(path = "./", idx_list, model_list, obs_list,
 
   if (promptinput == "y") {
     # Initial nc-file time crop, regrid, land and plot purge
-    unlink(c(
-      paste0(time_cropped, "/*.nc"), paste0(regridded, "/*.nc"),  # nolint
-      paste0(land, "/*.nc")  # nolint
-    ))
+    unlink(c(time_cropped, regridded, land,
+             landmask, tsgrid), recursive = TRUE)
 
     ## Initial grid and landmask creation reset
     grid_and_landmask <- TRUE
@@ -126,6 +124,10 @@ gleckler_main <- function(path = "./", idx_list, model_list, obs_list,
       plot_dir,
       "/Gleckler-years.RDS"  # nolint
     ))
+
+    # Final cleanup
+    unlink(c(time_cropped, regridded, land,
+             landmask, tsgrid), recursive = TRUE)
   }
 
   #### Gleckler Plotting ####
