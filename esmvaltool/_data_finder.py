@@ -11,8 +11,7 @@ import re
 
 import six
 
-from ._config import get_project_config, replace_mip_fx
-from .cmor.table import CMOR_TABLES
+from ._config import get_project_config
 
 logger = logging.getLogger(__name__)
 
@@ -95,7 +94,7 @@ def select_files(filenames, start_year, end_year):
     return selection
 
 
-def _replace_tags(path, variable, fx_var=None):
+def _replace_tags(path, variable):
     """Replace tags in the config-developer's file with actual values."""
     path = path.strip('/')
 
@@ -106,9 +105,7 @@ def _replace_tags(path, variable, fx_var=None):
         original_tag = tag
         tag, _, _ = _get_caps_options(tag)
 
-        if tag == 'fx_var':
-            replacewith = fx_var
-        elif tag == 'latestversion':  # handled separately later
+        if tag == 'latestversion':  # handled separately later
             continue
         elif tag in variable:
             replacewith = variable[tag]
@@ -198,16 +195,16 @@ def get_rootpath(rootpath, project):
     raise KeyError('default rootpath must be specified in config-user file')
 
 
-def _find_input_dirs(variable, rootpath, drs, fx_var=None):
+def _find_input_dirs(variable, rootpath, drs):
     """Return a the full paths to input directories."""
     project = variable['project']
 
     root = get_rootpath(rootpath, project)
-    input_type = 'input_{}dir'.format('fx_' if fx_var else '')
+    input_type = 'input_dir'
     path_template = _select_drs(input_type, drs, project)
 
     dirnames = []
-    for dirname_template in _replace_tags(path_template, variable, fx_var):
+    for dirname_template in _replace_tags(path_template, variable):
         for base_path in root:
             dirname = os.path.join(base_path, dirname_template)
             dirname = _resolve_latestversion(dirname)
@@ -220,21 +217,17 @@ def _find_input_dirs(variable, rootpath, drs, fx_var=None):
     return dirnames
 
 
-def _get_filenames_glob(variable, drs, fx_var=None):
+def _get_filenames_glob(variable, drs):
     """Return patterns that can be used to look for input files."""
-    input_type = 'input_{}file'.format('fx_' if fx_var else '')
+    input_type = 'input_file'
     path_template = _select_drs(input_type, drs, variable['project'])
-    filenames_glob = _replace_tags(path_template, variable, fx_var)
+    filenames_glob = _replace_tags(path_template, variable)
     return filenames_glob
 
 
-def _find_input_files(variable, rootpath, drs, fx_var=None):
-    logger.debug("Looking for input %sfiles for variable %s of dataset %s",
-                 fx_var + ' fx ' if fx_var else '', variable['short_name'],
-                 variable['dataset'])
-
-    input_dirs = _find_input_dirs(variable, rootpath, drs, fx_var)
-    filenames_glob = _get_filenames_glob(variable, drs, fx_var)
+def _find_input_files(variable, rootpath, drs):
+    input_dirs = _find_input_dirs(variable, rootpath, drs)
+    filenames_glob = _get_filenames_glob(variable, drs)
     files = find_files(input_dirs, filenames_glob)
 
     return files
@@ -243,25 +236,11 @@ def _find_input_files(variable, rootpath, drs, fx_var=None):
 def get_input_filelist(variable, rootpath, drs):
     """Return the full path to input files."""
     files = _find_input_files(variable, rootpath, drs)
-    files = select_files(files, variable['start_year'], variable['end_year'])
+    # do time gating only for non-fx variables
+    if variable['frequency'] != 'fx':
+        files = select_files(files, variable['start_year'],
+                             variable['end_year'])
     return files
-
-
-def get_input_fx_filelist(variable, rootpath, drs):
-    """Return a dict with the full path to fx input files."""
-    fx_files = {}
-    for fx_var in variable['fx_files']:
-        var = dict(variable)
-        var['mip'] = replace_mip_fx(fx_var)
-        table = CMOR_TABLES[var['cmor_table']].get_table(var['mip'])
-        var['frequency'] = table.frequency
-        realm = getattr(table.get(var['short_name']), 'modeling_realm', None)
-        var['modeling_realm'] = realm if realm else table.realm
-
-        files = _find_input_files(var, rootpath, drs, fx_var)
-        fx_files[fx_var] = files[0] if files else None
-
-    return fx_files
 
 
 def get_output_file(variable, preproc_dir):
