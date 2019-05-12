@@ -257,7 +257,7 @@ if (write_plots) {
   print("----------------------------")
   if (ts_plt) {
     print("")
-    print(paste0(">>>>>>>> TIME SERIE PROCESSING INITIATION"))
+    print(paste0(">>>>>>>> TIME SERIES PROCESSING INITIATION"))
     plotfiles <- timeseries_main(
       path = work_dir, idx_list = timeseries_idx,
       model_list = setdiff(models_name, reference_datasets),
@@ -269,6 +269,25 @@ if (write_plots) {
     for (fname in plotfiles) {
       provenance[[fname]] <- xprov
     }
+# Each timeseries file gets provenance from its reference dataset
+    for (model in reference_datasets) {
+        ncfiles <- list.files(file.path(work_dir, "timeseries"),
+                              pattern = model, full.names = TRUE)
+        xprov <- provenance_record(climofiles[models == model])
+        for (fname in ncfiles) {
+          provenance[[fname]] <- xprov
+        }
+     }
+# The ensemble timeseries get provenance from all model datasets
+     ncfiles <- list.files(file.path(work_dir, "timeseries"),
+                              pattern = "ETCCDI.*ens", full.names = TRUE)
+
+     ancestors <- sapply(setdiff(models_name, reference_datasets),
+                         grep, climofiles, value = TRUE)
+     xprov <- provenance_record(ancestors)
+     for (fname in ncfiles) {
+       provenance[[fname]] <- xprov
+     }
   }
 
   ###############################
@@ -311,6 +330,11 @@ if (write_plots) {
 
     xprov <- provenance_record(list(climofiles))
     for (fname in plotfiles) {
+      provenance[[fname]] <- xprov
+    }
+    ncfiles <- list.files(file.path(work_dir, "gleckler/Gleck*"))
+    xprov <- provenance_record(climofiles)
+    for (fname in ncfiles) {
       provenance[[fname]] <- xprov
     }
   }
