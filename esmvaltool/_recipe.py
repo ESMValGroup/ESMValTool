@@ -11,8 +11,8 @@ from netCDF4 import Dataset
 from . import __version__
 from . import _recipe_checks as check
 from ._config import TAGS, get_institutes, replace_tags
-from ._data_finder import (get_input_filelist, get_input_fx_filelist,
-                           get_output_file, get_statistic_output_file)
+from ._data_finder import (get_input_filelist, get_output_file,
+                           get_statistic_output_file)
 from ._provenance import TrackedFile, get_recipe_provenance
 from ._recipe_checks import RecipeError
 from ._task import (DiagnosticTask, get_flattened_tasks, get_independent_tasks,
@@ -361,6 +361,26 @@ def _get_default_settings(variable, config_user, derive=False):
     return settings
 
 
+def _add_fxvar_keys(fx_var_dict, variable):
+    """Add a couple keys specific to fx variable."""
+    fx_variable = deepcopy(variable)
+
+    # add internal recognition flag
+    fx_variable['variable_group'] = fx_var_dict['short_name']
+    fx_variable['short_name'] = fx_var_dict['short_name']
+
+    # specificities of project
+    if fx_variable['project'] == 'CMIP5':
+        fx_variable['mip'] = 'fx'
+        fx_variable['ensemble'] = 'r0i0p0'
+    elif fx_variable['project'] == 'CMIP6':
+        fx_variable['grid'] = variable['grid']
+        if 'mip' in fx_var_dict:
+            fx_variable['mip'] = fx_var_dict['mip']
+
+    return fx_variable
+
+
 def _update_fx_settings(settings, variable, config_user):
     """Find and set the FX derive/mask settings."""
     # update for derive
@@ -369,11 +389,13 @@ def _update_fx_settings(settings, variable, config_user):
         for var in get_required(variable['short_name']):
             if 'fx_files' in var:
                 _augment(var, variable)
-                fx_files.update(
-                    get_input_fx_filelist(
-                        variable=var,
-                        rootpath=config_user['rootpath'],
-                        drs=config_user['drs']))
+                for fx_var_dict in var['fx_files']:
+                    fx_var = _add_fxvar_keys(fx_var_dict, variable)
+                    fx_files.update(
+                        get_input_filelist(
+                            variable=fx_var,
+                            rootpath=config_user['rootpath'],
+                            drs=config_user['drs']))
         settings['derive']['fx_files'] = fx_files
 
     # update for landsea
@@ -384,11 +406,14 @@ def _update_fx_settings(settings, variable, config_user):
         settings['mask_landsea']['fx_files'] = []
 
         var = dict(variable)
-        var['fx_files'] = ['sftlf', 'sftof']
-        fx_files_dict = get_input_fx_filelist(
-            variable=var,
-            rootpath=config_user['rootpath'],
-            drs=config_user['drs'])
+        var['fx_files'] = [{'short_name': 'sftlf'}, {'short_name': 'sftof'}]
+        fx_files_dict = {}
+        for fx_var_dict in var['fx_files']:
+            fx_var = _add_fxvar_keys(fx_var_dict, var)
+            fx_files_dict[fx_var['short_name']] = get_input_filelist(
+                variable=fx_var,
+                rootpath=config_user['rootpath'],
+                drs=config_user['drs'])
 
         # allow both sftlf and sftof
         if fx_files_dict['sftlf']:
@@ -402,11 +427,14 @@ def _update_fx_settings(settings, variable, config_user):
         settings['mask_landseaice']['fx_files'] = []
 
         var = dict(variable)
-        var['fx_files'] = ['sftgif']
-        fx_files_dict = get_input_fx_filelist(
-            variable=var,
-            rootpath=config_user['rootpath'],
-            drs=config_user['drs'])
+        var['fx_files'] = [{'short_name': 'sftgif'}]
+        fx_files_dict = {}
+        for fx_var_dict in var['fx_files']:
+            fx_var = _add_fxvar_keys(fx_var_dict, var)
+            fx_files_dict[fx_var['short_name']] = get_input_filelist(
+                variable=fx_var,
+                rootpath=config_user['rootpath'],
+                drs=config_user['drs'])
 
         # allow sftgif (only, for now)
         if fx_files_dict['sftgif']:
@@ -415,11 +443,16 @@ def _update_fx_settings(settings, variable, config_user):
 
     for step in ('average_region', 'average_volume'):
         if settings.get(step, {}).get('fx_files'):
-            settings[step]['fx_files'] = get_input_fx_filelist(
-                variable=variable,
-                rootpath=config_user['rootpath'],
-                drs=config_user['drs'],
-            )
+            var = dict(variable)
+            var['fx_files'] = settings.get(step, {}).get('fx_files')
+            fx_files_dict = {}
+            for fx_var_dict in var['fx_files']:
+                fx_var = _add_fxvar_keys(fx_var_dict, var)
+                fx_files_dict[fx_var['short_name']] = get_input_filelist(
+                    variable=fx_var,
+                    rootpath=config_user['rootpath'],
+                    drs=config_user['drs'])
+            settings[step]['fx_files'] = fx_files_dict
 
 
 def _read_attributes(filename):
@@ -438,22 +471,27 @@ def _read_attributes(filename):
 def _get_input_files(variable, config_user):
     """Get the input files for a single dataset."""
     # Find input files locally.
+    var = dict(variable)
+    # change ensemble to fixed r0i0p0
+    if var['project'] == 'CMIP5':
+        if var['frequency'] == 'fx':
+            var['ensemble'] = 'r0i0p0'
     input_files = get_input_filelist(
-        variable=variable,
+        variable=var,
         rootpath=config_user['rootpath'],
         drs=config_user['drs'])
 
     # Set up downloading using synda if requested.
     # Do not download if files are already available locally.
     if config_user['synda_download'] and not input_files:
-        input_files = synda_search(variable)
+        input_files = synda_search(var)
 
     logger.info("Using input files for variable %s of dataset %s:\n%s",
-                variable['short_name'], variable['dataset'],
+                var['short_name'], var['dataset'],
                 '\n'.join(input_files))
     if (not config_user.get('skip-nonexistent')
-            or variable['dataset'] == variable.get('reference_dataset')):
-        check.data_availability(input_files, variable)
+            or var['dataset'] == var.get('reference_dataset')):
+        check.data_availability(input_files, var)
 
     # Set up provenance tracking
     for i, filename in enumerate(input_files):
@@ -772,6 +810,10 @@ def _get_preprocessor_task(variables, profiles, config_user, task_name):
                 name=derive_name)
             derive_tasks.append(task)
 
+    # don't do time gating for fx variables
+    if variables[0]['frequency'] == 'fx':
+        profile['extract_time'] = False
+
     # Create (final) preprocessor task
     task = _get_single_preprocessor_task(
         variables,
@@ -905,13 +947,18 @@ class Recipe:
                 variable['institute'] = institute
             check.variable(variable, required_keys)
             if 'fx_files' in variable:
-                for fx_file in variable['fx_files']:
-                    DATASET_KEYS.add(fx_file)
+                for fx_file_dict in variable['fx_files']:
+                    DATASET_KEYS.add(fx_file_dict['short_name'])
                 # Get the fx files
-                variable['fx_files'] = get_input_fx_filelist(
-                    variable=variable,
-                    rootpath=self._cfg['rootpath'],
-                    drs=self._cfg['drs'])
+                fx_files_dict = {}
+                for fx_var_dict in variable['fx_files']:
+                    fx_var = _add_fxvar_keys(fx_var_dict, variable)
+                    _add_cmor_info(fx_var)
+                    fx_files_dict[fx_var['short_name']] = get_input_filelist(
+                        variable=fx_var,
+                        rootpath=self._cfg['rootpath'],
+                        drs=self._cfg['drs'])
+                variable['fx_files'] = fx_files_dict
                 logger.info("Using fx files for var %s of dataset %s:\n%s",
                             variable['short_name'], variable['dataset'],
                             variable['fx_files'])
