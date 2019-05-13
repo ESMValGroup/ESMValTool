@@ -14,7 +14,6 @@ logger = logging.getLogger(__name__)
 
 def cmorize(cfg, region, in_dir, out_dir):
     """Cmorize NSIDC-0116 dataset."""
-    cmor_table = cfg['cmor_table']
     glob_attrs = cfg['attributes']
 
     logger.info("Starting cmorization for Tier%s OBS files: %s",
@@ -35,7 +34,7 @@ def cmorize(cfg, region, in_dir, out_dir):
             cube.add_aux_coord(lat_coord, (1, 2))
             cube.add_aux_coord(lon_coord, (1, 2))
             logger.debug(cube)
-            var_info = cmor_table.get_variable(vals['mip'], var)
+            var_info = cfg['cmor_table'].get_variable(vals['mip'], var)
             glob_attrs['mip'] = vals['mip']
             fix_var_metadata(cube, var_info)
             set_global_atts(cube, glob_attrs)
@@ -45,6 +44,8 @@ def cmorize(cfg, region, in_dir, out_dir):
                 # pylint: disable=pointless-statement
                 cube.data
             save_variable(cube, var, out_dir, glob_attrs, zlib=zlib)
+            cubes.remove(cube)
+            del cube
 
 
 def _create_coord(cubes, var_name, standard_name):
