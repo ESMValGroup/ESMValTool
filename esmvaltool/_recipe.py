@@ -362,23 +362,14 @@ def _get_default_settings(variable, config_user, derive=False):
     return settings
 
 
-<<<<<<< HEAD
-def _update_fx_settings(settings, variable):
-=======
-def get_input_fx_filelist(variable, rootpath, drs):
-    """Return a dict with fx vars keys and full file paths values."""
+def _update_fx_files(fx_varlist, config_user, parent_variable):
+    """Get the fx files dict for a list of fx variables."""
     fx_files_dict = {}
-    for fx_var_dict in variable['fx_files']:
-        fx_var = _add_fxvar_keys(fx_var_dict, variable)
-        fx_files = get_input_filelist(
-            variable=fx_var,
-            rootpath=rootpath,
-            drs=drs)
-        if fx_files:
-            fx_files_dict[fx_var['short_name']] = fx_files[0]
-        else:
-            fx_files_dict[fx_var['short_name']] = None
-
+    for fx_variable in fx_varlist:
+        fx_files_dict[fx_variable['short_name']] = get_output_file(
+            fx_variable,
+            config_user['preproc_dir'],
+            parent_variable)
     return fx_files_dict
 
 
@@ -404,7 +395,7 @@ def _add_fxvar_keys(fx_var_dict, variable):
     return fx_variable
 
 
-def _update_fx_settings(settings, variable, config_user):
+def _update_fx_settings(settings, variable):
     """Find and set the FX derive/mask settings."""
     # update for derive
     if 'derive' in settings:
