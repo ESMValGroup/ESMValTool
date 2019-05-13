@@ -71,7 +71,7 @@ def extract_variable(var_info, raw_info, out_dir, attrs):
             fix_coords(cube)
             _fix_data(cube, var)
             set_global_atts(cube, attrs)
-            thefile = save_variable(
+            save_variable(
                 cube,
                 var,
                 out_dir,
