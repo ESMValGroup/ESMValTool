@@ -1,4 +1,4 @@
-. _recipes_combined_indices:
+.. _recipes_combined_indices:
 
 Indices based on area averages
 ====================================================
@@ -6,9 +6,11 @@ Indices based on area averages
 Overview
 --------
 
-The goal of this diagnostic is to compute indices based on area averages. 
+The goal of this diagnostic is to compute indices based on area averages.
 
-In recipe_combined_indices.yml, after defining the period (historical or future projection), the variable is selected. The predefined indices are
+In recipe_combined_indices.yml, after defining the period (historical or
+future projection), the variable is selected. The predefined indices are:
+
 * Nino 3
 * Nino 3.4
 * Nino 4
