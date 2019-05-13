@@ -100,7 +100,7 @@ def patched_datafinder(tmp_path, monkeypatch):
         filename = str(tmp_path / 'input' / filename)
         filenames = []
         if filename.endswith('*.nc'):
-            filename = filename[:-len('*.nc')]
+            filename = filename[:-len('*.nc')] + '_'
             intervals = [
                 '1990_1999',
                 '2000_2009',

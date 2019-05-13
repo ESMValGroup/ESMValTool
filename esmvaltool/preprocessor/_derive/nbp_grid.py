@@ -12,7 +12,7 @@ class DerivedVariable(DerivedVariableBase):
     # Required variables
     required = [{
         'short_name': 'nbp',
-        'fx_files': ['sftlf'],
+        'fx_files': [{'short_name': 'sftlf'}],
     }]
 
     @staticmethod

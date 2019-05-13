@@ -14,7 +14,6 @@ from . import __version__
 from ._config import TAGS, get_institutes, replace_tags
 from ._data_finder import (get_input_filelist, get_output_file,
                            get_statistic_output_file)
-from ._fxvar import _add_fxvar_keys, _update_fx_files
 from ._provenance import TrackedFile, get_recipe_provenance
 from ._recipe_checks import RecipeError
 from ._task import (DiagnosticTask, get_flattened_tasks, get_independent_tasks,
@@ -363,7 +362,49 @@ def _get_default_settings(variable, config_user, derive=False):
     return settings
 
 
+<<<<<<< HEAD
 def _update_fx_settings(settings, variable):
+=======
+def get_input_fx_filelist(variable, rootpath, drs):
+    """Return a dict with fx vars keys and full file paths values."""
+    fx_files_dict = {}
+    for fx_var_dict in variable['fx_files']:
+        fx_var = _add_fxvar_keys(fx_var_dict, variable)
+        fx_files = get_input_filelist(
+            variable=fx_var,
+            rootpath=rootpath,
+            drs=drs)
+        if fx_files:
+            fx_files_dict[fx_var['short_name']] = fx_files[0]
+        else:
+            fx_files_dict[fx_var['short_name']] = None
+
+    return fx_files_dict
+
+
+def _add_fxvar_keys(fx_var_dict, variable):
+    """Add keys specific to fx variable to use get_input_filelist."""
+    fx_variable = dict(variable)
+
+    # set variable names
+    fx_variable['variable_group'] = fx_var_dict['short_name']
+    fx_variable['short_name'] = fx_var_dict['short_name']
+
+    # specificities of project
+    if fx_variable['project'] == 'CMIP5':
+        fx_variable['mip'] = 'fx'
+        fx_variable['ensemble'] = 'r0i0p0'
+    elif fx_variable['project'] == 'CMIP6':
+        fx_variable['grid'] = variable['grid']
+        if 'mip' in fx_var_dict:
+            fx_variable['mip'] = fx_var_dict['mip']
+    # add missing cmor info
+    _add_cmor_info(fx_variable, override=True)
+
+    return fx_variable
+
+
+def _update_fx_settings(settings, variable, config_user):
     """Find and set the FX derive/mask settings."""
     # update for derive
     if 'derive' in settings:
@@ -378,7 +419,6 @@ def _update_fx_settings(settings, variable):
             logger.error("You need to specify %s for variable %s",
                          fx_sett, variable['short_name'])
         logger.debug('Getting fx mask settings now...')
-
         settings['mask_landsea']['fx_files'] = []
         if 'fx_files' in variable:
             fx_files = variable['fx_files']
