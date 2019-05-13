@@ -1,0 +1,20 @@
+---
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: NSIDC-0116-sh
+  version: '4'
+  tier: 2
+  modeling_realm: reanaly
+  project_id: OBS
+  source: 'https://nsidc.org/data/NSIDC-0116'
+  reference: 'nsidc-0116'
+  comment: ''
+
+# Variables to cmorize (here use only filename prefix)
+variables:
+  usi:
+    mip: day
+    raw: sea_ice_x_velocity
+  vsi:
+    mip: day
+    raw: sea_ice_y_velocity
