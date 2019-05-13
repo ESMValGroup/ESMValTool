@@ -12,6 +12,7 @@ from matplotlib import pyplot as plt
 import iris
 import iris.cube
 import iris.analysis
+import iris.analysis.cartography
 import iris.coords
 from iris.aux_factory import AuxCoordFactory
 import pyproj
@@ -133,7 +134,12 @@ class SeaIceDrift(object):
             data.remove_coord('Inside polygon')
 
         dataset_info = self.datasets.get_dataset_info(filename)
-        area_cello = iris.load_cube(dataset_info[n.FX_FILES]['areacello'])
+        area_file = dataset_info.get(n.FX_FILES, {}).get('areacello', '')
+        if area_file:
+            area_cello = iris.load_cube(dataset_info[n.FX_FILES]['areacello'])
+        else:
+            area_cello = iris.analysis.cartography.area_weights(data)
+
         return area_cello.data * mask
 
     def _load_cube(self, filepath, standard_name):
@@ -192,12 +198,17 @@ class SeaIceDrift(object):
 
     def _get_alias_name(self, filename):
         info = self.datasets.get_dataset_info(filename)
-        template = '{project}_{dataset}_{experiment}_{ensemble}_{start}_{end}'
+
+        if info[n.PROJECT] == 'OBS':
+            template = '{project}_{dataset}_{start}_{end}'
+        else:
+            template = '{project}_{dataset}_{experiment}_{ensemble}_{start}_{end}'
+
         return template.format(
             project=info[n.PROJECT],
             dataset=info[n.DATASET],
-            experiment=info[n.EXP],
-            ensemble=info[n.ENSEMBLE],
+            experiment=info.get(n.EXP, ''),
+            ensemble=info.get(n.ENSEMBLE, ''),
             start=info[n.START_YEAR],
             end=info[n.END_YEAR],
         )

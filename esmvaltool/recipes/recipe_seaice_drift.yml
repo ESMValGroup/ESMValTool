@@ -47,12 +47,13 @@ diagnostics:
         mip: SIday
         field: T2MO
         preprocessor: extract
-        reference_dataset: MPI-ESM-LR
+        reference_dataset: PIOMAS
         fx_files: [areacello]
-        # additional_datasets:
-        #   - {dataset: piomas, institute: psc, project: OBS, type: recon, version: 1,
-        #      freq_folder: monthly_mean, mip: OImon, short_name: siv, tier: 2,
-        #      start_year: 1979,  end_year: 1979}
+        additional_datasets:
+          - {dataset: PIOMAS, project: OBS, type: reanaly, version: 2.1,
+             mip: day, tier: 2,
+             start_year: 1979,  end_year: 2000}
+
       sispeed:
         mip: SIday
         field: T2MO
@@ -61,6 +62,11 @@ diagnostics:
         derive: true
         force_derivation: false
         fx_files: [areacello]
+        additional_datasets:
+          - {dataset: NSIDC-0116-nh, project: OBS, type: reanaly, version: 4,
+             mip: day, tier: 2,
+             start_year: 1979,  end_year: 2000}
+
     scripts:
       # sea_ice_drift:
       #   script: seaice_drift/seaice_drift.py
