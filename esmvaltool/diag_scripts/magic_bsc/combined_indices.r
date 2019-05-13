@@ -155,10 +155,6 @@ xprov <- list(ancestors = list(fullpath_filenames),
               projects = list("c3s-magic"),
               caption = "Combined selection",
               statistics = list("other"),
-              moninf = params$moninf,
-              monsup = params$monsup,
-              region = list(params$region),
-              running_mean = params$running_mean,
               realms = list("atmos"),
               themes = list("phys"))
 provenance[[filencdf]] <- xprov
