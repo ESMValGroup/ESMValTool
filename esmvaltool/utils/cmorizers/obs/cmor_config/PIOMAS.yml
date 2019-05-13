@@ -15,4 +15,12 @@ variables:
   sit:
     mip: day
     raw: hiday
-    grid_file: grid.dat
+    type: scalar
+
+  areacello:
+    mip: fx
+    type: scalar
+
+custom:
+  scalar_file: grid.dat
+  vector_file: grid.dat.pop
