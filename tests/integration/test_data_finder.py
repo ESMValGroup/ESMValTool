@@ -3,12 +3,11 @@ import os
 import shutil
 import tempfile
 
+import esmvaltool._config
 import pytest
 import yaml
-
-import esmvaltool._config
-from esmvaltool._data_finder import (get_input_filelist, get_input_fx_filelist,
-                                     get_output_file)
+from esmvaltool._data_finder import get_input_filelist, get_output_file
+from esmvaltool._recipe import get_input_fx_filelist
 from esmvaltool.cmor.table import read_cmor_tables
 
 # Initialize with standard config developer file
@@ -103,11 +102,18 @@ def test_get_input_fx_filelist(root, cfg):
     # Find files
     rootpath = {cfg['variable']['project']: [root]}
     drs = {cfg['variable']['project']: cfg['drs']}
-    fx_files = get_input_fx_filelist(cfg['variable'], rootpath, drs)
+    cfg['variable']['fx_files'] = [
+        {'short_name': short_name} for short_name
+        in cfg['variable']['fx_files']
+    ]
+    fx_files_dict = get_input_fx_filelist(
+        variable=cfg['variable'],
+        rootpath=rootpath,
+        drs=drs)
 
     # Test result
     reference = {
         fx_var: os.path.join(root, filename) if filename else None
         for fx_var, filename in cfg['found_files'].items()
     }
-    assert fx_files == reference
+    assert fx_files_dict == reference
