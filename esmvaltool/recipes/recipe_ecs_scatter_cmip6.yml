@@ -75,7 +75,8 @@ diagnostics:
         mip: Amon
         project: CMIP6
         additional_datasets:
-          - {dataset: TRMM-L3, project: obs4mips, level: v7, version: 7A, tier: 1}
+          - {dataset: TRMM-L3, project: obs4mips, level: v7,
+             version: 7A, tier: 1}
           - {dataset: BCC-CSM2-MR, grid: gn, ensemble: r1i1p1f1}
           - {dataset: CNRM-CM6-1, grid: gr, ensemble: r1i1p1f2}
           - {dataset: GISS-E2-1-G, grid: gn, ensemble: r1i1p1f1}
@@ -89,14 +90,15 @@ diagnostics:
         start_year: 1998
         end_year: 2013
         additional_datasets:
-          - {dataset: TRMM-L3, project: obs4mips, level: v7, version: 7A, tier: 1}
+          - {dataset: TRMM-L3, project: obs4mips, level: v7,
+             version: 7A, tier: 1}
     scripts:
       ecs_scatter:
         diag: itczidx
-        calcmm: True
+        calcmm: true
         ecs_file: $diag_scripts/emergent_constraints/ecs_cmip.nc
-        legend_outside: False
-        predef_minmax: True
+        legend_outside: false
+        predef_minmax: true
         script: emergent_constraints/ecs_scatter.ncl
 
   humidx:
@@ -115,7 +117,8 @@ diagnostics:
         mip: Amon
         project: CMIP6
         additional_datasets:
-          - {dataset: AIRS, project: obs4mips, level: L3, version: RetStd-v5, tier: 1}
+          - {dataset: AIRS, project: obs4mips, level: L3,
+             version: RetStd-v5, tier: 1}
           - {dataset: BCC-CSM2-MR, grid: gn, ensemble: r1i1p1f1}
           - {dataset: CNRM-CM6-1, grid: gr, ensemble: r1i1p1f2}
           - {dataset: GISS-E2-1-G, grid: gn, ensemble: r1i1p1f1}
@@ -130,14 +133,15 @@ diagnostics:
         start_year: 2003
         end_year: 2010
         additional_datasets:
-          - {dataset: AIRS, project: obs4mips, level: L3, version: RetStd-v5, tier: 1}
+          - {dataset: AIRS, project: obs4mips, level: L3,
+             version: RetStd-v5, tier: 1}
     scripts:
       ecs_scatter:
         diag: humidx
-        calcmm: True
+        calcmm: true
         ecs_file: $diag_scripts/emergent_constraints/ecs_cmip.nc
-        legend_outside: False
-        predef_minmax: True
+        legend_outside: false
+        predef_minmax: true
         script: emergent_constraints/ecs_scatter.ncl
 
   ltmi:
@@ -177,14 +181,14 @@ diagnostics:
       - {dataset: GISS-E2-1-G, grid: gn, ensemble: r1i1p1f1}
       - {dataset: MIROC6, grid: gn, ensemble: r1i1p1f1}
       - {dataset: MRI-ESM2-0, grid: gn, ensemble: r1i1p1f1}
-      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1,tier: 3}
+      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
     scripts:
       ecs_scatter:
         diag: ltmi
-        calcmm: True
+        calcmm: true
         ecs_file: $diag_scripts/emergent_constraints/ecs_cmip.nc
-        legend_outside: False
-        predef_minmax: True
+        legend_outside: false
+        predef_minmax: true
         script: emergent_constraints/ecs_scatter.ncl
 
   shhc:
@@ -212,10 +216,10 @@ diagnostics:
     scripts:
       ecs_scatter:
         diag: shhc
-        calcmm: True
+        calcmm: true
         ecs_file: $diag_scripts/emergent_constraints/ecs_cmip.nc
-        legend_outside: False
-        predef_minmax: True
+        legend_outside: false
+        predef_minmax: true
         script: emergent_constraints/ecs_scatter.ncl
 
   covrefl:
@@ -248,7 +252,8 @@ diagnostics:
         mip: Amon
         project: CMIP6
         additional_datasets:
-          - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
+          - {dataset: ERA-Interim, project: OBS, type: reanaly,
+             version: 1, tier: 3}
           - {dataset: BCC-CSM2-MR, grid: gn, ensemble: r1i1p1f1}
           - {dataset: CNRM-CM6-1, grid: gr, ensemble: r1i1p1f2}
           - {dataset: GISS-E2-1-G, grid: gn, ensemble: r1i1p1f1}
@@ -262,7 +267,8 @@ diagnostics:
         mip: Amon
         project: CMIP6
         additional_datasets:
-          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7, tier: 1}
+          - {dataset: CERES-EBAF, project: obs4mips, level: L3B,
+             version: Ed2-7, tier: 1}
           - {dataset: BCC-CSM2-MR, grid: gn, ensemble: r1i1p1f1}
           - {dataset: CNRM-CM6-1, grid: gr, ensemble: r1i1p1f2}
           - {dataset: GISS-E2-1-G, grid: gn, ensemble: r1i1p1f1}
@@ -276,7 +282,8 @@ diagnostics:
         mip: Amon
         project: CMIP6
         additional_datasets:
-          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7, tier: 1}
+          - {dataset: CERES-EBAF, project: obs4mips, level: L3B,
+             version: Ed2-7, tier: 1}
           - {dataset: BCC-CSM2-MR, grid: gn, ensemble: r1i1p1f1}
           - {dataset: CNRM-CM6-1, grid: gr, ensemble: r1i1p1f2}
           - {dataset: GISS-E2-1-G, grid: gn, ensemble: r1i1p1f1}
@@ -290,7 +297,8 @@ diagnostics:
         mip: Amon
         project: CMIP6
         additional_datasets:
-          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7, tier: 1}
+          - {dataset: CERES-EBAF, project: obs4mips, level: L3B,
+             version: Ed2-7, tier: 1}
           - {dataset: BCC-CSM2-MR, grid: gn, ensemble: r1i1p1f1}
           - {dataset: CNRM-CM6-1, grid: gr, ensemble: r1i1p1f2}
           - {dataset: GISS-E2-1-G, grid: gn, ensemble: r1i1p1f1}
@@ -299,8 +307,8 @@ diagnostics:
     scripts:
       ecs_scatter:
         diag: covrefl
-        calcmm: True
+        calcmm: true
         ecs_file: $diag_scripts/emergent_constraints/ecs_cmip.nc
-        legend_outside: False
-        predef_minmax: True
+        legend_outside: false
+        predef_minmax: true
         script: emergent_constraints/ecs_scatter.ncl

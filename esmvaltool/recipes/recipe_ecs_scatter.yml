@@ -70,43 +70,46 @@ diagnostics:
       va:
         reference_dataset: ERA-Interim
         mip: Amon
+        exp: historical
         start_year: 1986
         end_year: 2005
+        project: CMIP5
         additional_datasets:
-          - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
-          - {dataset: ACCESS1-0, project: CMIP5, exp: historical, ensemble: r1i1p1}
-#          - {dataset: ACCESS1-3, project: CMIP5, exp: historical, ensemble: r1i1p1}
-          - {dataset: bcc-csm1-1, project: CMIP5, exp: historical, ensemble: r1i1p1}
-          - {dataset: bcc-csm1-1-m, project: CMIP5, exp: historical, ensemble: r1i1p1}
-          - {dataset: BNU-ESM, project: CMIP5, exp: historical, ensemble: r1i1p1}
-          - {dataset: CanESM2, project: CMIP5, exp: historical, ensemble: r1i1p1}
-          - {dataset: CCSM4, project: CMIP5, exp: historical, ensemble: r1i1p1}
-          - {dataset: CNRM-CM5, project: CMIP5, exp: historical, ensemble: r1i1p1}
-          - {dataset: CSIRO-Mk3-6-0, project: CMIP5, exp: historical, ensemble: r1i1p1}
-#          - {dataset: FGOALS-g2, project: CMIP5, exp: historical, ensemble: r1i1p1}
-          - {dataset: GFDL-CM3, project: CMIP5, exp: historical, ensemble: r1i1p1}
-          - {dataset: GFDL-ESM2G, project: CMIP5, exp: historical, ensemble: r1i1p1}
-          - {dataset: GFDL-ESM2M, project: CMIP5, exp: historical, ensemble: r1i1p1}
-          - {dataset: GISS-E2-H, project: CMIP5, exp: historical, ensemble: r1i1p1}
-          - {dataset: GISS-E2-R, project: CMIP5, exp: historical, ensemble: r1i1p1}
-          - {dataset: HadGEM2-ES, project: CMIP5, exp: historical, ensemble: r1i1p1}
-          - {dataset: inmcm4, project: CMIP5, exp: historical, ensemble: r1i1p1}
-          - {dataset: IPSL-CM5A-LR, project: CMIP5, exp: historical, ensemble: r1i1p1}
-          - {dataset: IPSL-CM5B-LR, project: CMIP5, exp: historical, ensemble: r1i1p1}
-          - {dataset: MIROC5, project: CMIP5, exp: historical, ensemble: r1i1p1}
-          - {dataset: MIROC-ESM, project: CMIP5, exp: historical, ensemble: r1i1p1}
-          - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: r1i1p1}
-#          - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical, ensemble: r1i1p1}
-#          - {dataset: MPI-ESM-P, project: CMIP5, exp: historical, ensemble: r1i1p1}
-          - {dataset: MRI-CGCM3, project: CMIP5, exp: historical, ensemble: r1i1p1}
-          - {dataset: NorESM1-M, project: CMIP5, exp: historical, ensemble: r1i1p1}
+          - {dataset: ERA-Interim, project: OBS, type: reanaly,
+             version: 1, tier: 3}
+          - {dataset: ACCESS1-0, ensemble: r1i1p1}
+          # - {dataset: ACCESS1-3, ensemble: r1i1p1}
+          - {dataset: bcc-csm1-1, ensemble: r1i1p1}
+          - {dataset: bcc-csm1-1-m, ensemble: r1i1p1}
+          - {dataset: BNU-ESM, ensemble: r1i1p1}
+          - {dataset: CanESM2, ensemble: r1i1p1}
+          - {dataset: CCSM4, ensemble: r1i1p1}
+          - {dataset: CNRM-CM5, ensemble: r1i1p1}
+          - {dataset: CSIRO-Mk3-6-0, ensemble: r1i1p1}
+          # - {dataset: FGOALS-g2, ensemble: r1i1p1}
+          - {dataset: GFDL-CM3, ensemble: r1i1p1}
+          - {dataset: GFDL-ESM2G, ensemble: r1i1p1}
+          - {dataset: GFDL-ESM2M, ensemble: r1i1p1}
+          - {dataset: GISS-E2-H, ensemble: r1i1p1}
+          - {dataset: GISS-E2-R, ensemble: r1i1p1}
+          - {dataset: HadGEM2-ES, ensemble: r1i1p1}
+          - {dataset: inmcm4, ensemble: r1i1p1}
+          - {dataset: IPSL-CM5A-LR, ensemble: r1i1p1}
+          - {dataset: IPSL-CM5B-LR, ensemble: r1i1p1}
+          - {dataset: MIROC5, ensemble: r1i1p1}
+          - {dataset: MIROC-ESM, ensemble: r1i1p1}
+          - {dataset: MPI-ESM-LR, ensemble: r1i1p1}
+          # - {dataset: MPI-ESM-MR, ensemble: r1i1p1}
+          # - {dataset: MPI-ESM-P, ensemble: r1i1p1}
+          - {dataset: MRI-CGCM3, ensemble: r1i1p1}
+          - {dataset: NorESM1-M, ensemble: r1i1p1}
     scripts:
       ecs_scatter:
         diag: shhc
-        calcmm: True
+        calcmm: true
         ecs_file: $diag_scripts/emergent_constraints/ecs_cmip.nc
-        legend_outside: False
-        predef_minmax: True
+        legend_outside: false
+        predef_minmax: true
         script: emergent_constraints/ecs_scatter.ncl
 
   itczidx:
@@ -119,37 +122,39 @@ diagnostics:
       pr:
         reference_dataset: TRMM-L3
         mip: Amon
+        exp: historical
         start_year: 1986
         end_year: 2005
+        project: CMIP5
         additional_datasets:
-          - {dataset: TRMM-L3, project: obs4mips, level: v7, version: 7A, 
+          - {dataset: TRMM-L3, project: obs4mips, level: v7, version: 7A,
              start_year: 1998, end_year: 2013, tier: 1}
-          - {dataset: ACCESS1-0, project: CMIP5, exp: historical, ensemble: r1i1p1}
-#          - {dataset: ACCESS1-3, project: CMIP5, exp: historical, ensemble: r1i1p1}
-          - {dataset: bcc-csm1-1, project: CMIP5, exp: historical, ensemble: r1i1p1}
-          - {dataset: bcc-csm1-1-m, project: CMIP5, exp: historical, ensemble: r1i1p1}
-          - {dataset: BNU-ESM, project: CMIP5, exp: historical, ensemble: r1i1p1}
-          - {dataset: CanESM2, project: CMIP5, exp: historical, ensemble: r1i1p1}
-          - {dataset: CCSM4, project: CMIP5, exp: historical, ensemble: r1i1p1}
-          - {dataset: CNRM-CM5, project: CMIP5, exp: historical, ensemble: r1i1p1}
-          - {dataset: CSIRO-Mk3-6-0, project: CMIP5, exp: historical, ensemble: r1i1p1}
-#          - {dataset: FGOALS-g2, project: CMIP5, exp: historical, ensemble: r1i1p1}
-          - {dataset: GFDL-CM3, project: CMIP5, exp: historical, ensemble: r1i1p1}
-          - {dataset: GFDL-ESM2G, project: CMIP5, exp: historical, ensemble: r1i1p1}
-          - {dataset: GFDL-ESM2M, project: CMIP5, exp: historical, ensemble: r1i1p1}
-          - {dataset: GISS-E2-H, project: CMIP5, exp: historical, ensemble: r1i1p1}
-          - {dataset: GISS-E2-R, project: CMIP5, exp: historical, ensemble: r1i1p1}
-          - {dataset: HadGEM2-ES, project: CMIP5, exp: historical, ensemble: r1i1p1}
-          - {dataset: inmcm4, project: CMIP5, exp: historical, ensemble: r1i1p1}
-          - {dataset: IPSL-CM5A-LR, project: CMIP5, exp: historical, ensemble: r1i1p1}
-          - {dataset: IPSL-CM5B-LR, project: CMIP5, exp: historical, ensemble: r1i1p1}
-          - {dataset: MIROC5, project: CMIP5, exp: historical, ensemble: r1i1p1}
-          - {dataset: MIROC-ESM, project: CMIP5, exp: historical, ensemble: r1i1p1}
-          - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: r1i1p1}
-#          - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical, ensemble: r1i1p1}
-#          - {dataset: MPI-ESM-P, project: CMIP5, exp: historical, ensemble: r1i1p1}
-          - {dataset: MRI-CGCM3, project: CMIP5, exp: historical, ensemble: r1i1p1}
-          - {dataset: NorESM1-M, project: CMIP5, exp: historical, ensemble: r1i1p1}
+          - {dataset: ACCESS1-0, ensemble: r1i1p1}
+          # - {dataset: ACCESS1-3, ensemble: r1i1p1}
+          - {dataset: bcc-csm1-1, ensemble: r1i1p1}
+          - {dataset: bcc-csm1-1-m, ensemble: r1i1p1}
+          - {dataset: BNU-ESM, ensemble: r1i1p1}
+          - {dataset: CanESM2, ensemble: r1i1p1}
+          - {dataset: CCSM4, ensemble: r1i1p1}
+          - {dataset: CNRM-CM5, ensemble: r1i1p1}
+          - {dataset: CSIRO-Mk3-6-0, ensemble: r1i1p1}
+          # - {dataset: FGOALS-g2, ensemble: r1i1p1}
+          - {dataset: GFDL-CM3, ensemble: r1i1p1}
+          - {dataset: GFDL-ESM2G, ensemble: r1i1p1}
+          - {dataset: GFDL-ESM2M, ensemble: r1i1p1}
+          - {dataset: GISS-E2-H, ensemble: r1i1p1}
+          - {dataset: GISS-E2-R, ensemble: r1i1p1}
+          - {dataset: HadGEM2-ES, ensemble: r1i1p1}
+          - {dataset: inmcm4, ensemble: r1i1p1}
+          - {dataset: IPSL-CM5A-LR, ensemble: r1i1p1}
+          - {dataset: IPSL-CM5B-LR, ensemble: r1i1p1}
+          - {dataset: MIROC5, ensemble: r1i1p1}
+          - {dataset: MIROC-ESM, ensemble: r1i1p1}
+          - {dataset: MPI-ESM-LR, ensemble: r1i1p1}
+          # - {dataset: MPI-ESM-MR, ensemble: r1i1p1}
+          # - {dataset: MPI-ESM-P, ensemble: r1i1p1}
+          - {dataset: MRI-CGCM3, ensemble: r1i1p1}
+          - {dataset: NorESM1-M, ensemble: r1i1p1}
       prStderr:
         reference_dataset: TRMM-L3
         mip: Amon
@@ -160,10 +165,10 @@ diagnostics:
     scripts:
       ecs_scatter:
         diag: itczidx
-        calcmm: True
+        calcmm: true
         ecs_file: $diag_scripts/emergent_constraints/ecs_cmip.nc
-        legend_outside: False
-        predef_minmax: True
+        legend_outside: false
+        predef_minmax: true
         script: emergent_constraints/ecs_scatter.ncl
 
   humidx:
@@ -177,37 +182,39 @@ diagnostics:
         preprocessor: pp500
         reference_dataset: AIRS
         mip: Amon
+        exp: historical
         start_year: 1986
         end_year: 2005
+        project: CMIP5
         additional_datasets:
           - {dataset: AIRS, project: obs4mips, level: L3, version: RetStd-v5,
              start_year: 2003, end_year: 2010, tier: 1}
-          - {dataset: ACCESS1-0, project: CMIP5, exp: historical, ensemble: r1i1p1}
-#          - {dataset: ACCESS1-3, project: CMIP5, exp: historical, ensemble: r1i1p1}
-          - {dataset: bcc-csm1-1, project: CMIP5, exp: historical, ensemble: r1i1p1}
-          - {dataset: bcc-csm1-1-m, project: CMIP5, exp: historical, ensemble: r1i1p1}
-          - {dataset: BNU-ESM, project: CMIP5, exp: historical, ensemble: r1i1p1}
-          - {dataset: CanESM2, project: CMIP5, exp: historical, ensemble: r1i1p1}
-          - {dataset: CCSM4, project: CMIP5, exp: historical, ensemble: r1i1p1}
-          - {dataset: CNRM-CM5, project: CMIP5, exp: historical, ensemble: r1i1p1}
-          - {dataset: CSIRO-Mk3-6-0, project: CMIP5, exp: historical, ensemble: r1i1p1}
-#          - {dataset: FGOALS-g2, project: CMIP5, exp: historical, ensemble: r1i1p1}
-          - {dataset: GFDL-CM3, project: CMIP5, exp: historical, ensemble: r1i1p1}
-          - {dataset: GFDL-ESM2G, project: CMIP5, exp: historical, ensemble: r1i1p1}
-          - {dataset: GFDL-ESM2M, project: CMIP5, exp: historical, ensemble: r1i1p1}
-          - {dataset: GISS-E2-H, project: CMIP5, exp: historical, ensemble: r1i1p1}
-          - {dataset: GISS-E2-R, project: CMIP5, exp: historical, ensemble: r1i1p1}
-          - {dataset: HadGEM2-ES, project: CMIP5, exp: historical, ensemble: r1i1p1}
-          - {dataset: inmcm4, project: CMIP5, exp: historical, ensemble: r1i1p1}
-          - {dataset: IPSL-CM5A-LR, project: CMIP5, exp: historical, ensemble: r1i1p1}
-          - {dataset: IPSL-CM5B-LR, project: CMIP5, exp: historical, ensemble: r1i1p1}
-          - {dataset: MIROC5, project: CMIP5, exp: historical, ensemble: r1i1p1}
-          - {dataset: MIROC-ESM, project: CMIP5, exp: historical, ensemble: r1i1p1}
-          - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: r1i1p1}
-#          - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical, ensemble: r1i1p1}
-#          - {dataset: MPI-ESM-P, project: CMIP5, exp: historical, ensemble: r1i1p1}
-          - {dataset: MRI-CGCM3, project: CMIP5, exp: historical, ensemble: r1i1p1}
-          - {dataset: NorESM1-M, project: CMIP5, exp: historical, ensemble: r1i1p1}
+          - {dataset: ACCESS1-0, ensemble: r1i1p1}
+          # - {dataset: ACCESS1-3, ensemble: r1i1p1}
+          - {dataset: bcc-csm1-1, ensemble: r1i1p1}
+          - {dataset: bcc-csm1-1-m, ensemble: r1i1p1}
+          - {dataset: BNU-ESM, ensemble: r1i1p1}
+          - {dataset: CanESM2, ensemble: r1i1p1}
+          - {dataset: CCSM4, ensemble: r1i1p1}
+          - {dataset: CNRM-CM5, ensemble: r1i1p1}
+          - {dataset: CSIRO-Mk3-6-0, ensemble: r1i1p1}
+          # - {dataset: FGOALS-g2, ensemble: r1i1p1}
+          - {dataset: GFDL-CM3, ensemble: r1i1p1}
+          - {dataset: GFDL-ESM2G, ensemble: r1i1p1}
+          - {dataset: GFDL-ESM2M, ensemble: r1i1p1}
+          - {dataset: GISS-E2-H, ensemble: r1i1p1}
+          - {dataset: GISS-E2-R, ensemble: r1i1p1}
+          - {dataset: HadGEM2-ES, ensemble: r1i1p1}
+          - {dataset: inmcm4, ensemble: r1i1p1}
+          - {dataset: IPSL-CM5A-LR, ensemble: r1i1p1}
+          - {dataset: IPSL-CM5B-LR, ensemble: r1i1p1}
+          - {dataset: MIROC5, ensemble: r1i1p1}
+          - {dataset: MIROC-ESM, ensemble: r1i1p1}
+          - {dataset: MPI-ESM-LR, ensemble: r1i1p1}
+          # - {dataset: MPI-ESM-MR, ensemble: r1i1p1}
+          # - {dataset: MPI-ESM-P, ensemble: r1i1p1}
+          - {dataset: MRI-CGCM3, ensemble: r1i1p1}
+          - {dataset: NorESM1-M, ensemble: r1i1p1}
       husStderr:
         preprocessor: pp500
         reference_dataset: AIRS
@@ -219,10 +226,10 @@ diagnostics:
     scripts:
       ecs_scatter:
         diag: humidx
-        calcmm: True
+        calcmm: true
         ecs_file: $diag_scripts/emergent_constraints/ecs_cmip.nc
-        legend_outside: False
-        predef_minmax: True
+        legend_outside: false
+        predef_minmax: true
         script: emergent_constraints/ecs_scatter.ncl
 
   ltmi:
@@ -236,55 +243,61 @@ diagnostics:
         preprocessor: pp_ltmi_1
         reference_dataset: ERA-Interim
         mip: Amon
+        exp: historical
         start_year: 1986
         end_year: 2005
+        project: CMIP5
       ta:
         preprocessor: pp_ltmi_1
         reference_dataset: ERA-Interim
         mip: Amon
+        exp: historical
         start_year: 1986
         end_year: 2005
+        project: CMIP5
       wap:
         preprocessor: pp_ltmi_0
         reference_dataset: ERA-Interim
         mip: Amon
+        exp: historical
         start_year: 1986
         end_year: 2005
+        project: CMIP5
     additional_datasets:
       - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
-      - {dataset: ACCESS1-0, project: CMIP5, exp: historical, ensemble: r1i1p1}
-#      - {dataset: ACCESS1-3, project: CMIP5, exp: historical, ensemble: r1i1p1}
-      - {dataset: bcc-csm1-1, project: CMIP5, exp: historical, ensemble: r1i1p1}
-      - {dataset: bcc-csm1-1-m, project: CMIP5, exp: historical, ensemble: r1i1p1}
-      - {dataset: BNU-ESM, project: CMIP5, exp: historical, ensemble: r1i1p1}
-      - {dataset: CanESM2, project: CMIP5, exp: historical, ensemble: r1i1p1}
-      - {dataset: CCSM4, project: CMIP5, exp: historical, ensemble: r1i1p1}
-      - {dataset: CNRM-CM5, project: CMIP5, exp: historical, ensemble: r1i1p1}
-      - {dataset: CSIRO-Mk3-6-0, project: CMIP5, exp: historical, ensemble: r1i1p1}
-#      - {dataset: FGOALS-g2, project: CMIP5, exp: historical, ensemble: r1i1p1}
-      - {dataset: GFDL-CM3, project: CMIP5, exp: historical, ensemble: r1i1p1}
-      - {dataset: GFDL-ESM2G, project: CMIP5, exp: historical, ensemble: r1i1p1}
-      - {dataset: GFDL-ESM2M, project: CMIP5, exp: historical, ensemble: r1i1p1}
-      - {dataset: GISS-E2-H, project: CMIP5, exp: historical, ensemble: r1i1p1}
-      - {dataset: GISS-E2-R, project: CMIP5, exp: historical, ensemble: r1i1p1}
-      - {dataset: HadGEM2-ES, project: CMIP5, exp: historical, ensemble: r1i1p1}
-      - {dataset: inmcm4, project: CMIP5, exp: historical, ensemble: r1i1p1}
-      - {dataset: IPSL-CM5A-LR, project: CMIP5, exp: historical, ensemble: r1i1p1}
-      - {dataset: IPSL-CM5B-LR, project: CMIP5, exp: historical, ensemble: r1i1p1}
-      - {dataset: MIROC5, project: CMIP5, exp: historical, ensemble: r1i1p1}
-      - {dataset: MIROC-ESM, project: CMIP5, exp: historical, ensemble: r1i1p1}
-      - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: r1i1p1}
-#      - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical, ensemble: r1i1p1}
-#      - {dataset: MPI-ESM-P, project: CMIP5, exp: historical, ensemble: r1i1p1}
-      - {dataset: MRI-CGCM3, project: CMIP5, exp: historical, ensemble: r1i1p1}
-      - {dataset: NorESM1-M, project: CMIP5, exp: historical, ensemble: r1i1p1}
+      - {dataset: ACCESS1-0, ensemble: r1i1p1}
+      # - {dataset: ACCESS1-3, ensemble: r1i1p1}
+      - {dataset: bcc-csm1-1, ensemble: r1i1p1}
+      - {dataset: bcc-csm1-1-m, ensemble: r1i1p1}
+      - {dataset: BNU-ESM, ensemble: r1i1p1}
+      - {dataset: CanESM2, ensemble: r1i1p1}
+      - {dataset: CCSM4, ensemble: r1i1p1}
+      - {dataset: CNRM-CM5, ensemble: r1i1p1}
+      - {dataset: CSIRO-Mk3-6-0, ensemble: r1i1p1}
+      # - {dataset: FGOALS-g2, ensemble: r1i1p1}
+      - {dataset: GFDL-CM3, ensemble: r1i1p1}
+      - {dataset: GFDL-ESM2G, ensemble: r1i1p1}
+      - {dataset: GFDL-ESM2M, ensemble: r1i1p1}
+      - {dataset: GISS-E2-H, ensemble: r1i1p1}
+      - {dataset: GISS-E2-R, ensemble: r1i1p1}
+      - {dataset: HadGEM2-ES, ensemble: r1i1p1}
+      - {dataset: inmcm4, ensemble: r1i1p1}
+      - {dataset: IPSL-CM5A-LR, ensemble: r1i1p1}
+      - {dataset: IPSL-CM5B-LR, ensemble: r1i1p1}
+      - {dataset: MIROC5, ensemble: r1i1p1}
+      - {dataset: MIROC-ESM, ensemble: r1i1p1}
+      - {dataset: MPI-ESM-LR, ensemble: r1i1p1}
+      # - {dataset: MPI-ESM-MR, ensemble: r1i1p1}
+      # - {dataset: MPI-ESM-P, ensemble: r1i1p1}
+      - {dataset: MRI-CGCM3, ensemble: r1i1p1}
+      - {dataset: NorESM1-M, ensemble: r1i1p1}
     scripts:
       ecs_scatter:
         diag: ltmi
-        calcmm: True
+        calcmm: true
         ecs_file: $diag_scripts/emergent_constraints/ecs_cmip.nc
-        legend_outside: False
-        predef_minmax: True
+        legend_outside: false
+        predef_minmax: true
         script: emergent_constraints/ecs_scatter.ncl
 
   covrefl:
@@ -294,62 +307,64 @@ diagnostics:
     realms:
       - atmos
     additional_datasets:
-      - {dataset: ACCESS1-0, project: CMIP5, exp: historical, ensemble: r1i1p1,
+      - {dataset: ACCESS1-0, ensemble: r1i1p1,
          start_year: 1986, end_year: 2005}
-#      - {dataset: ACCESS1-3, project: CMIP5, exp: historical, ensemble: r1i1p1,
-#         start_year: 1986, end_year: 2005}
-      - {dataset: bcc-csm1-1, project: CMIP5, exp: historical, ensemble: r1i1p1,
+      # - {dataset: ACCESS1-3, ensemble: r1i1p1,
+      #    start_year: 1986, end_year: 2005}
+      - {dataset: bcc-csm1-1, ensemble: r1i1p1,
          start_year: 1986, end_year: 2005}
-      - {dataset: bcc-csm1-1-m, project: CMIP5, exp: historical, ensemble: r1i1p1,
+      - {dataset: bcc-csm1-1-m, ensemble: r1i1p1,
          start_year: 1986, end_year: 2005}
-      - {dataset: BNU-ESM, project: CMIP5, exp: historical, ensemble: r1i1p1,
+      - {dataset: BNU-ESM, ensemble: r1i1p1,
          start_year: 1986, end_year: 2005}
-      - {dataset: CanESM2, project: CMIP5, exp: historical, ensemble: r1i1p1,
+      - {dataset: CanESM2, ensemble: r1i1p1,
          start_year: 1986, end_year: 2005}
-      - {dataset: CCSM4, project: CMIP5, exp: historical, ensemble: r1i1p1,
+      - {dataset: CCSM4, ensemble: r1i1p1,
          start_year: 1986, end_year: 2005}
-      - {dataset: CNRM-CM5, project: CMIP5, exp: historical, ensemble: r1i1p1,
+      - {dataset: CNRM-CM5, ensemble: r1i1p1,
          start_year: 1986, end_year: 2005}
-      - {dataset: CSIRO-Mk3-6-0, project: CMIP5, exp: historical, ensemble: r1i1p1,
+      - {dataset: CSIRO-Mk3-6-0, ensemble: r1i1p1,
          start_year: 1986, end_year: 2005}
-#      - {dataset: FGOALS-g2, project: CMIP5, exp: historical, ensemble: r1i1p1,
-#         start_year: 1986, end_year: 2005}
-      - {dataset: GFDL-CM3, project: CMIP5, exp: historical, ensemble: r1i1p1,
+      # - {dataset: FGOALS-g2, ensemble: r1i1p1,
+      #    start_year: 1986, end_year: 2005}
+      - {dataset: GFDL-CM3, ensemble: r1i1p1,
          start_year: 1986, end_year: 2005}
-      - {dataset: GFDL-ESM2G, project: CMIP5, exp: historical, ensemble: r1i1p1,
+      - {dataset: GFDL-ESM2G, ensemble: r1i1p1,
          start_year: 1986, end_year: 2005}
-      - {dataset: GFDL-ESM2M, project: CMIP5, exp: historical, ensemble: r1i1p1,
+      - {dataset: GFDL-ESM2M, ensemble: r1i1p1,
          start_year: 1986, end_year: 2005}
-      - {dataset: GISS-E2-H, project: CMIP5, exp: historical, ensemble: r1i1p1,
+      - {dataset: GISS-E2-H, ensemble: r1i1p1,
          start_year: 1986, end_year: 2005}
-      - {dataset: GISS-E2-R, project: CMIP5, exp: historical, ensemble: r1i1p1,
+      - {dataset: GISS-E2-R, ensemble: r1i1p1,
          start_year: 1986, end_year: 2005}
-      - {dataset: HadGEM2-ES, project: CMIP5, exp: historical, ensemble: r1i1p1,
+      - {dataset: HadGEM2-ES, ensemble: r1i1p1,
          start_year: 1986, end_year: 2005}
-      - {dataset: inmcm4, project: CMIP5, exp: historical, ensemble: r1i1p1,
+      - {dataset: inmcm4, ensemble: r1i1p1,
          start_year: 1986, end_year: 2005}
-      - {dataset: IPSL-CM5A-LR, project: CMIP5, exp: historical, ensemble: r1i1p1,
+      - {dataset: IPSL-CM5A-LR, ensemble: r1i1p1,
          start_year: 1986, end_year: 2005}
-      - {dataset: IPSL-CM5B-LR, project: CMIP5, exp: historical, ensemble: r1i1p1,
+      - {dataset: IPSL-CM5B-LR, ensemble: r1i1p1,
          start_year: 1986, end_year: 2005}
-      - {dataset: MIROC5, project: CMIP5, exp: historical, ensemble: r1i1p1,
+      - {dataset: MIROC5, ensemble: r1i1p1,
          start_year: 1986, end_year: 2005}
-      - {dataset: MIROC-ESM, project: CMIP5, exp: historical, ensemble: r1i1p1,
+      - {dataset: MIROC-ESM, ensemble: r1i1p1,
          start_year: 1986, end_year: 2005}
-      - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: r1i1p1,
+      - {dataset: MPI-ESM-LR, ensemble: r1i1p1,
          start_year: 1986, end_year: 2005}
-#      - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical, ensemble: r1i1p1,
-#         start_year: 1986, end_year: 2005}
-#      - {dataset: MPI-ESM-P, project: CMIP5, exp: historical, ensemble: r1i1p1,
-#         start_year: 1986, end_year: 2005}
-      - {dataset: MRI-CGCM3, project: CMIP5, exp: historical, ensemble: r1i1p1,
+      # - {dataset: MPI-ESM-MR, ensemble: r1i1p1,
+      #    start_year: 1986, end_year: 2005}
+      # - {dataset: MPI-ESM-P, ensemble: r1i1p1,
+      #    start_year: 1986, end_year: 2005}
+      - {dataset: MRI-CGCM3, ensemble: r1i1p1,
          start_year: 1986, end_year: 2005}
-      - {dataset: NorESM1-M, project: CMIP5, exp: historical, ensemble: r1i1p1,
+      - {dataset: NorESM1-M, ensemble: r1i1p1,
          start_year: 1986, end_year: 2005}
     variables:
       ts:
         reference_dataset: HadISST
         mip: Amon
+        exp: historical
+        project: CMIP5
         additional_datasets:
           - {dataset: HadISST, project: OBS, type: reanaly, version: 1,
              start_year: 2001, end_year: 2005, tier: 2}
@@ -357,32 +372,40 @@ diagnostics:
         preprocessor: pp500
         reference_dataset: ERA-Interim
         mip: Amon
+        exp: historical
+        project: CMIP5
         additional_datasets:
           - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1,
              start_year: 2001, end_year: 2005, tier: 3}
       rsut:
         reference_dataset: CERES-EBAF
         mip: Amon
+        exp: historical
+        project: CMIP5
         additional_datasets:
           - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
              start_year: 2001, end_year: 2005, tier: 1}
       rsutcs:
         reference_dataset: CERES-EBAF
         mip: Amon
+        exp: historical
+        project: CMIP5
         additional_datasets:
           - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
              start_year: 2001, end_year: 2005, tier: 1}
       rsdt:
         reference_dataset: CERES-EBAF
         mip: Amon
+        exp: historical
+        project: CMIP5
         additional_datasets:
           - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
              start_year: 2001, end_year: 2005, tier: 1}
     scripts:
       ecs_scatter:
         diag: covrefl
-        calcmm: True
+        calcmm: true
         ecs_file: $diag_scripts/emergent_constraints/ecs_cmip.nc
-        legend_outside: False
-        predef_minmax: True
+        legend_outside: false
+        predef_minmax: true
         script: emergent_constraints/ecs_scatter.ncl
