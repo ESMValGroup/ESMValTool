@@ -20,6 +20,7 @@ diagnostics:
 
   ### TIER 2 ##################################################################
 
+
   ESACCI-AEROSOL:
     description: ESACCI-AEROSOL
     variables:
@@ -97,6 +98,17 @@ diagnostics:
         mip: Lmon
     additional_datasets:
       - {dataset: ESACCI-LANDCOVER, project: OBS, tier: 2, type: sat, version: L4-LCCS-Map-300m-P5Y-aggregated-0.500000Deg, start_year: 1998, end_year: 2012}
+    scripts: null
+
+
+  ESACCI-OC:
+    description: ESACCI-OC
+    variables:
+      chl:
+        preproc: nopp
+        mip: Omon
+    additional_datasets:
+      - {dataset: ESACCI-OC, project: OBS, tier: 2, type: sat, version: fv3.1, start_year: 1997, end_year: 2016}
     scripts: null
 
 
