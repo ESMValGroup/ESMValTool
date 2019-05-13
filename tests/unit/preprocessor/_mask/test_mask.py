@@ -4,7 +4,7 @@ import unittest
 
 import numpy as np
 from esmvaltool.preprocessor._mask import (_apply_fx_mask, _check_dims,
-                                           _get_fx_mask, count_spells,
+                                           count_spells, _get_fx_mask,
                                            mask_above_threshold,
                                            mask_below_threshold,
                                            mask_inside_range,
