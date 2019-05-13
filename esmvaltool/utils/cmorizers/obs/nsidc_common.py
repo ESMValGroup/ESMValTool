@@ -39,7 +39,12 @@ def cmorize(cfg, region, in_dir, out_dir):
             glob_attrs['mip'] = vals['mip']
             fix_var_metadata(cube, var_info)
             set_global_atts(cube, glob_attrs)
-            save_variable(cube, var, out_dir, glob_attrs, zlib=True)
+            zlib = vals.get('compress', False)
+            if zlib:
+                # Realize data to speed-up writing
+                # pylint: disable=pointless-statement
+                cube.data
+            save_variable(cube, var, out_dir, glob_attrs, zlib=zlib)
 
 
 def _create_coord(cubes, var_name, standard_name):
