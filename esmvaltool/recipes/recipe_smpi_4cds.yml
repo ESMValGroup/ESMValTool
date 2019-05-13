@@ -25,8 +25,6 @@ documentation:
 
 datasets:
   - {dataset: ACCESS1-0, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
-  - {dataset: bcc-csm1-1, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
-  - {dataset: bcc-csm1-1-m, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
   - {dataset: CanESM2, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
   - {dataset: CMCC-CESM, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
   - {dataset: CNRM-CM5, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
@@ -36,11 +34,9 @@ datasets:
   - {dataset: GFDL-ESM2M, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
   - {dataset: HadGEM2-CC, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
   - {dataset: HadGEM2-ES, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
-  - {dataset: inmcm4, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
   - {dataset: IPSL-CM5A-LR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
   - {dataset: IPSL-CM5A-MR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
   - {dataset: IPSL-CM5B-LR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
-  - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
   - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
   - {dataset: MPI-ESM-P, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
   - {dataset: NorESM1-M, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
