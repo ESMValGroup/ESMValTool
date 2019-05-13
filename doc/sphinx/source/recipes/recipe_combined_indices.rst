@@ -39,9 +39,9 @@ User setting files are stored in recipes/
 
    *Required settings for script*
 
-   * region: one of the followint strings Nino3, Nino3.4, Nino4, NAO, SOI
-   * running_mean: an integer specifying the length of the window to be used for computing the running mean.
-   * moninf: instead of running_mean an integer can be given to determine the first month of the seasonal mean to be computed.
+   * region: one of the following strings Nino3, Nino3.4, Nino4, NAO, SOI
+   * running_mean: an integer specifying the length of the window (in months) to be used for computing the running mean.
+   * moninf: an integer can be given to determine the first month of the seasonal mean to be computed.
    * monsup: an integer specifying the last month to be computed.
    * standardized: ‘true’ or ‘false’ to specify whether to compute the standarization of the variable.
 
