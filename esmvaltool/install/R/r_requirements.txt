@@ -18,4 +18,5 @@ RColorBrewer
 Rcpp
 s2dverification
 SPEI
+tools
 yaml
