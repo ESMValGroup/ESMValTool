@@ -281,7 +281,7 @@ diagnostics:
     scripts: null
 
   NSIDC-0116:
-    description: NIWA-BS
+    description: NSIDC-0116
     variables:
       usi:
         mip: day
