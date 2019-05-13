@@ -7,13 +7,13 @@ import iris
 from iris.coords import AuxCoord
 
 
-from .utilities import fix_var_metadata, save_variable,set_global_atts
+from .utilities import fix_var_metadata, save_variable, set_global_atts
 
 logger = logging.getLogger(__name__)
 
 
 def cmorize(cfg, region, in_dir, out_dir):
-    """Cmorize NSIDC-0116 dataset"""
+    """Cmorize NSIDC-0116 dataset."""
     cmor_table = cfg['cmor_table']
     glob_attrs = cfg['attributes']
 
