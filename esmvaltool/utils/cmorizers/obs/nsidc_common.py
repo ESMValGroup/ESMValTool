@@ -1,4 +1,4 @@
-"""Common tools to CMORize NSIDC-0116 northern and sothern data"""
+"""Common tools to CMORize NSIDC-0116 northern and sothern data."""
 
 import logging
 import os
@@ -7,14 +7,13 @@ import iris
 from iris.coords import AuxCoord
 
 
-from .utilities import (constant_metadata, convert_timeunits, fix_coords,
-                        fix_var_metadata, read_cmor_config, save_variable,
-                        set_global_atts)
+from .utilities import fix_var_metadata, save_variable,set_global_atts
 
 logger = logging.getLogger(__name__)
 
 
 def cmorize(cfg, region, in_dir, out_dir):
+    """Cmorize NSIDC-0116 dataset"""
     cmor_table = cfg['cmor_table']
     glob_attrs = cfg['attributes']
 
@@ -37,11 +36,10 @@ def cmorize(cfg, region, in_dir, out_dir):
             cube.add_aux_coord(lon_coord, (1, 2))
             logger.debug(cube)
             var_info = cmor_table.get_variable(vals['mip'], var)
-            raw_info = {'name': vals['raw'], 'file': filepath}
             glob_attrs['mip'] = vals['mip']
             fix_var_metadata(cube, var_info)
             set_global_atts(cube, glob_attrs)
-            save_variable(cube, var, out_dir, glob_attrs)
+            save_variable(cube, var, out_dir, glob_attrs, zlib=True)
 
 
 def _create_coord(cubes, var_name, standard_name):
