@@ -772,9 +772,10 @@ def _get_derive_input_variables(variables, config_user):
             append(group_prefix, var)
         else:
             # Process input data needed to derive variable
-            for var in get_required(variable['short_name']):
-                _augment(var, variable)
-                append(group_prefix, var)
+            if variable['frequency'] != 'fx':
+                for var in get_required(variable['short_name']):
+                    _augment(var, variable)
+                    append(group_prefix, var)
 
     return derive_input
 

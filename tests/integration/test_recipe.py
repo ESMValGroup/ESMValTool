@@ -602,6 +602,7 @@ def test_derive_with_fx(tmp_path, patched_datafinder, config_user):
                 end_year: 2005
                 derive: true
                 force_derivation: true
+                fx_files: [{'short_name': 'sftlf'}]
                 additional_datasets:
                   - {dataset: GFDL-CM3,  ensemble: r1i1p1}
             scripts: null
@@ -619,13 +620,14 @@ def test_derive_with_fx(tmp_path, patched_datafinder, config_user):
     assert ancestor.name == 'diagnostic_name/nbp_grid_derive_input_nbp'
 
     # Check product content of tasks
-    assert len(task.products) == 1
-    product = task.products.pop()
-    assert 'derive' in product.settings
-    assert product.attributes['short_name'] == 'nbp_grid'
-    assert 'fx_files' in product.settings['derive']
-    assert 'sftlf' in product.settings['derive']['fx_files']
-    assert product.settings['derive']['fx_files']['sftlf'] is not None
+    # this will be 2 since it works out the fx var as product
+    assert len(task.products) == 2
+    for product in task.products:
+        if product.attributes['short_name'] == 'nbp_grid':
+            assert 'derive' in product.settings
+            assert 'fx_files' in product.settings['derive']
+            assert 'sftlf' in product.settings['derive']['fx_files']
+            assert product.settings['derive']['fx_files']['sftlf'] is not None
 
     assert len(ancestor.products) == 1
     ancestor_product = ancestor.products.pop()
