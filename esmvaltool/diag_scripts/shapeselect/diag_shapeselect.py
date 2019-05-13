@@ -41,7 +41,7 @@ def main(cfg):
                     attributes['standard_name'], attributes['dataset'])
         logger.debug("Loading %s", filename)
         cube = iris.load_cube(filename)
-        
+
         ncts, nclon, nclat = shapeselect(cfg, cube)
         name = os.path.splitext(os.path.basename(filename))[0] + '_polygon'
         if cfg['write_xlsx']:
