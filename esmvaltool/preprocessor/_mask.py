@@ -170,7 +170,7 @@ def mask_landsea(cube, fx_files, mask_out):
     fx_files: list
         list holding the full paths to fx files.
 
-    mask_out: string
+    mask_out: str
         either "land" to mask out land mass or "sea" to mask out seas.
 
     Returns
@@ -182,6 +182,8 @@ def mask_landsea(cube, fx_files, mask_out):
     -------
     ValueError
         Error raised if masking on irregular grids is attempted.
+        Irregular grids are not currently supported for masking
+        with Natural Earth shapefile masks.
 
     """
     # Dict to store the Natural Earth masks
@@ -250,7 +252,7 @@ def mask_landseaice(cube, fx_files, mask_out):
     fx_files: list
         list holding the full paths to fx files.
 
-    mask_out: string
+    mask_out: str
         either "landsea" to mask out landsea or "ice" to mask out ice.
 
     Returns
@@ -260,6 +262,8 @@ def mask_landseaice(cube, fx_files, mask_out):
 
     Raises
     -------
+    ValueError
+        Error raised if fx mask and data have different dimensions.
     ValueError
         Error raised if fx_files list is empty.
 
@@ -273,6 +277,9 @@ def mask_landseaice(cube, fx_files, mask_out):
                 landice_mask = _get_fx_mask(fx_cube.data, mask_out, 'sftgif')
                 cube.data = _apply_fx_mask(landice_mask, cube.data)
                 logger.debug("Applying landsea-ice mask: sftgif")
+            else:
+                msg = "Landsea-ice mask and data have different dimensions."
+                raise ValueError(msg)
     else:
         msg = "Landsea-ice mask could not be found. Stopping. "
         raise ValueError(msg)
