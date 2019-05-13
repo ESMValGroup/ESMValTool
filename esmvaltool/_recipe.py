@@ -494,7 +494,7 @@ def _get_input_files(variable, config_user):
                 variable['short_name'], variable['dataset'],
                 '\n'.join(input_files))
     if (not config_user.get('skip-nonexistent')
-            or var['dataset'] == variable.get('reference_dataset')):
+            or variable['dataset'] == variable.get('reference_dataset')):
         check.data_availability(input_files, variable)
 
     # Set up provenance tracking
