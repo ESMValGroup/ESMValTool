@@ -59,23 +59,23 @@ recipe_shapeselect.yml:
 recipe_capacity_factor.yml:
 
 recipe_combined_indices.yml:
-  weights:
-    - equal
-    - null
-    - [2]
+  region:
+    - Nino3
+    - Nino3.4
+    - Nino4
+    - NAO
+    - SOI
   running_mean:
     - 5
     - 3
-  # Or compute seasons? (NOTE: cant compute both running means and seasons):
-  # -> does this mean that running_mean should be null?
   moninf:
-    - 1  # First month
+    - 1
     - 12
     - null
   monsup:
-    - 3  # Last month
+    - 3
     - 5
-  multi_year_average:
+  standardized:
     - false
     - true
 
