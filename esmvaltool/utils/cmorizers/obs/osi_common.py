@@ -2,13 +2,16 @@
 
 import logging
 import os
+import glob
 
+import numpy as np
 import iris
+from iris.cube import Cube
 from iris.coord_categorisation import add_month, add_year
 from iris.analysis import MEAN
 
-from .utilities import (_set_global_atts, _convert_timeunits, _fix_coords,
-                        _fix_var_metadata, _save_variable)
+from .utilities import (set_global_atts, convert_timeunits, fix_coords,
+                        fix_var_metadata, save_variable)
 
 logger = logging.getLogger(__name__)
 
@@ -26,6 +29,7 @@ def cmorize_osi(in_dir, out_dir, cfg, hemisphere):
     logger.info("Output will be written to: %s", out_dir)
 
     # run the cmorization
+    first_run = True
     for var, vals in cfg['variables'].items():
         for year in os.listdir(in_dir):
             logger.info(
@@ -40,7 +44,21 @@ def cmorize_osi(in_dir, out_dir, cfg, hemisphere):
                 'file': os.path.join(in_dir, year, '??', file_pattern)
             }
             glob_attrs['mip'] = vals['mip']
-            extract_variable(var_info, raw_info, out_dir, glob_attrs, year)
+            extract_variable(
+                var_info, raw_info, out_dir, glob_attrs, year
+            )
+            if first_run:
+                sample_file = glob.glob(os.path.join(in_dir, year, '01', file_pattern))[0]
+                cube = iris.load_cube(
+                    sample_file,
+                    iris.Constraint(cube_func=lambda c: c.var_name == raw_info['name'])
+                )
+                _create_areacello(
+                    cfg,
+                    cube,
+                    glob_attrs,
+                    out_dir)
+                first_run = False
 
 
 def extract_variable(var_info, raw_info, out_dir, attrs, year):
@@ -69,12 +87,11 @@ def extract_variable(var_info, raw_info, out_dir, attrs, year):
     cube.coord('projection_x_coordinate').var_name = 'x'
     cube.coord('projection_y_coordinate').var_name = 'y'
 
-    _fix_var_metadata(cube, var_info)
-    _convert_timeunits(cube, year)
-    _fix_coords(cube)
-    _set_global_atts(cube, attrs)
-    _save_variable(cube, var, out_dir, attrs)
-    del cube
+    fix_var_metadata(cube, var_info)
+    convert_timeunits(cube, year)
+    set_global_atts(cube, attrs)
+    save_variable(cube, var, out_dir, attrs)
+    return cube
 
 
 def _unify_attributes(cubes):
@@ -104,3 +121,28 @@ def _monthly_mean(cube):
     cube.remove_coord('month')
     cube.remove_coord('year')
     return cube
+
+def _create_areacello(cfg, sample_cube, glob_attrs, out_dir):
+    if not cfg['custom'].get('create_areacello', False):
+        return
+    var_info = cfg['cmor_table'].get_variable('fx', 'areacello')
+    lat_coord = sample_cube.coord('latitude')
+    glob_attrs['mip'] = 'fx'
+    cube = Cube(
+        np.full(lat_coord.shape, cfg['custom']['grid_cell_size'], np.float32),
+        standard_name=var_info.standard_name,
+        long_name=var_info.long_name,
+        var_name=var_info.short_name,
+        units='m2',
+    )
+    cube.add_aux_coord(lat_coord, (0, 1))
+    cube.add_aux_coord(sample_cube.coord('longitude'), (0, 1))
+    cube.add_dim_coord(sample_cube.coord('projection_y_coordinate'), 0)
+    cube.add_dim_coord(sample_cube.coord('projection_x_coordinate'), 1)
+    cube.coord('projection_x_coordinate').var_name = 'x'
+    cube.coord('projection_y_coordinate').var_name = 'y'
+    fix_var_metadata(cube, var_info)
+    set_global_atts(cube, glob_attrs)
+    save_variable(
+        cube, var_info.short_name, out_dir, cfg['attributes'], zlib=True
+    )

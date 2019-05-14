@@ -20,3 +20,6 @@ variables:
   #   mip: day
   #   raw: ice_conc
   #   grid: ease2-250
+custom:
+  create_areacello: true
+  grid_cell_size: 25000.

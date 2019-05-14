@@ -16,12 +16,12 @@ Download and processing instructions
     Please, keep folder structure and uncompress gz files before launching.
 
 """
-from .utilities import _read_cmor_config
+from .utilities import read_cmor_config
 from .osi_common import cmorize_osi
 
 
 def cmorization(in_dir, out_dir):
     """Cmorization func call."""
     # read in CMOR configuration
-    cfg = _read_cmor_config('OSI-409-sh.yml')
+    cfg = read_cmor_config('OSI-409-sh.yml')
     cmorize_osi(in_dir, out_dir, cfg, 'nh')

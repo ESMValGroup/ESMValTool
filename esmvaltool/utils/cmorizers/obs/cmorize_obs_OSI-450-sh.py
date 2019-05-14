@@ -16,11 +16,11 @@ Download and processing instructions
     Please, keep folder structure.
 
 """
-from .utilities import _read_cmor_config
+from .utilities import read_cmor_config
 from .osi_common import cmorize_osi
 
 
 def cmorization(in_dir, out_dir):
     """Cmorization func call."""
-    cfg = _read_cmor_config('OSI-450-sh.yml')
+    cfg = read_cmor_config('OSI-450-sh.yml')
     cmorize_osi(in_dir, out_dir, cfg, 'nh')
