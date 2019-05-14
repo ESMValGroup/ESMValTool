@@ -927,7 +927,10 @@ class Recipe:
         preprocessor_output = {}
 
         for variable_group, raw_variable in raw_variables.items():
-            raw_variable = deepcopy(raw_variable)
+            if raw_variable is None:
+                raw_variable = {}
+            else:
+                raw_variable = deepcopy(raw_variable)
             raw_variable['variable_group'] = variable_group
             if 'short_name' not in raw_variable:
                 raw_variable['short_name'] = variable_group

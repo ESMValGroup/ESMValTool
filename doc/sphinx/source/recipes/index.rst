@@ -16,6 +16,7 @@ Recipes
    recipe_ensclus
    recipe_flato13ipcc
    recipe_heatwaves_coldwaves
+   recipe_hyint
    recipe_landcover
    recipe_miles
    recipe_modes_of_variability
@@ -24,8 +25,10 @@ Recipes
    recipe_perfmetrics
    recipe_quantilebias
    recipe_runoff_et
+   recipe_rainfarm
    recipe_shapeselect
    recipe_smpi
    recipe_spei
    recipe_toymodel
+   recipe_thermodyn_diagtool
    recipe_zmnam
