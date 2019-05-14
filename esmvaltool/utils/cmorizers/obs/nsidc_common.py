@@ -3,8 +3,10 @@
 import logging
 import os
 import glob
+import numpy as np
 import iris
 from iris.coords import AuxCoord
+from iris.cube import Cube
 
 
 from .utilities import fix_var_metadata, save_variable, set_global_atts
@@ -28,6 +30,7 @@ def cmorize(cfg, region, in_dir, out_dir):
         logger.debug(cubes)
         lat_coord = _create_coord(cubes, 'lat', 'latitude')
         lon_coord = _create_coord(cubes, 'lon', 'longitude')
+
         for var, vals in cfg['variables'].items():
             logger.info('Cmorizing var %s', var)
             cube = cubes.extract_strict(iris.Constraint(vals['raw']))
@@ -46,6 +49,26 @@ def cmorize(cfg, region, in_dir, out_dir):
             save_variable(cube, var, out_dir, glob_attrs, zlib=zlib)
             cubes.remove(cube)
             del cube
+
+    _create_areacello(cfg, lat_coord, glob_attrs, out_dir)
+
+
+def _create_areacello(cfg, lat_coord, glob_attrs, out_dir):
+    if not cfg['custom'].get('create_areacello', False):
+        return
+    var_info = cfg['cmor_table'].get_variable('fx', 'areacello')
+    cube = Cube(
+        np.full(lat_coord.shape, cfg['custom']['grid_cell_size']),
+        standard_name=var_info.standard_name,
+        long_name=var_info.long_name,
+        var_name=var_info.short_name,
+        units='m2',
+    )
+    fix_var_metadata(cube, var_info)
+    set_global_atts(cube, glob_attrs)
+    save_variable(
+        cube, var_info.short_name, out_dir, cfg['attributes'], zlib=True
+    )
 
 
 def _create_coord(cubes, var_name, standard_name):

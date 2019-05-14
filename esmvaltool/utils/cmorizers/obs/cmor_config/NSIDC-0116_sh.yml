@@ -2,7 +2,7 @@
 # Common global attributes for Cmorizer output
 attributes:
   dataset_id: NSIDC-0116-sh
-  version: '4'
+  version: '4.1'
   tier: 2
   modeling_realm: reanaly
   project_id: OBS
@@ -10,7 +10,7 @@ attributes:
   reference: 'nsidc-0116'
   comment: ''
 
-# Variables to cmorize 
+# Variables to cmorize
 variables:
   usi:
     mip: day
@@ -20,3 +20,7 @@ variables:
     mip: day
     raw: sea_ice_y_velocity
     compress: true
+
+custom:
+  create_areacello: true
+  grid_cell_size: 25067.53

@@ -285,11 +285,13 @@ diagnostics:
     variables:
       usi:
         mip: day
+        fx_files: [areacello]
       vsi:
         mip: day
+        fx_files: [areacello]
     additional_datasets:
-      - {dataset: NSIDC-0116-nh,  project: OBS,  tier: 2,  type: reanaly,  version: 4,  start_year: 1978,  end_year: 2018}
-      - {dataset: NSIDC-0116-sh,  project: OBS,  tier: 2,  type: reanaly,  version: 4,  start_year: 1978,  end_year: 2018}
+      - {dataset: NSIDC-0116-nh,  project: OBS,  tier: 2,  type: reanaly,  version: "4.1",  start_year: 1978,  end_year: 2018}
+      - {dataset: NSIDC-0116-sh,  project: OBS,  tier: 2,  type: reanaly,  version: "4.1",  start_year: 1978,  end_year: 2018}
     scripts: null
 
   PATMOS-x:
