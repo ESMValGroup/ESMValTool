@@ -36,8 +36,8 @@ diagnostics:
         running_mean: 11 #3
 
         # Compute seasons? 
-        moninf: 1  # First month
-        monsup: 3  # Last month
+        moninf: 12  # First month
+        monsup: 2  # Last month
 
         # Compute standarization?
         standardized: true

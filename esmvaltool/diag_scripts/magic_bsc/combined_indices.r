@@ -128,9 +128,14 @@ if (length(lon_min) == 1) {
                            operation = "add")
 }
 
+if (moninf > monsup) {
+    period <- (starting : ending)[-1]
+} else {
+    period <- starting : ending
+}
+
 dimtime <- ncdim_def(name = "Time", units = "years",
-                     vals = starting : ending,
-                     longname = "Time")
+                     vals = period, longname = "Time")
 defdata <- ncvar_def(name = "data", units = units, dim = list(time = dimtime),
                longname = paste("Index for region", region, "Variable", var0))
 filencdf <- paste0(work_dir, "/", var0, "_", timestamp, "_", months, "_",
@@ -142,7 +147,7 @@ nc_close(file)
 
 png(paste0(plot_dir, "/", "Index_", region, ".png"), width = 7, height = 4,
     units = "in", res = 150)
-plot(starting : ending, data, type = "l", col = "purple", lwd = 2, bty = "n",
+plot(period, data, type = "l", col = "purple", lwd = 2, bty = "n",
      xlab = "Time (years)", ylab = "Index",
      main = paste("Region", region, "and Variable", var0))
 abline(h = 0, col = "grey", lty = 4)
