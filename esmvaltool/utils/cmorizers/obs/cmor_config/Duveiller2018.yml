@@ -2,12 +2,12 @@
 # Common global attributes for Cmorizer output
 attributes:
   dataset_id: Duveiller2018 #TODO where should I document the full reference to this dataset?
-#  version: 'v2016' # There is no version.
+  version: '' # There is no version.
   tier: 2
   modeling_realm: clim
   project_id: custom #TODO What to put here?
   source: 'https://www.nature.com/articles/sdata201814'
-  reference: 'Duveiller2018'
+  reference: 'duveiller2018'
   comment: ''
 
 # Variables to cmorize
