@@ -48,22 +48,26 @@ def cmorize(cfg, region, in_dir, out_dir):
                 cube.data
             save_variable(cube, var, out_dir, glob_attrs, zlib=zlib)
             cubes.remove(cube)
-            del cube
 
-    _create_areacello(cfg, lat_coord, glob_attrs, out_dir)
+    _create_areacello(cfg, cube, glob_attrs, out_dir)
 
 
-def _create_areacello(cfg, lat_coord, glob_attrs, out_dir):
+def _create_areacello(cfg, sample_cube, glob_attrs, out_dir):
     if not cfg['custom'].get('create_areacello', False):
         return
     var_info = cfg['cmor_table'].get_variable('fx', 'areacello')
+    lat_coord = sample_cube.coord('latitude')
     cube = Cube(
-        np.full(lat_coord.shape, cfg['custom']['grid_cell_size']),
+        np.full(lat_coord.shape, cfg['custom']['grid_cell_size'], np.float32),
         standard_name=var_info.standard_name,
         long_name=var_info.long_name,
         var_name=var_info.short_name,
         units='m2',
     )
+    cube.add_aux_coord(lat_coord, (0, 1))
+    cube.add_aux_coord(sample_cube.coord('longitude'), (0, 1))
+    cube.add_dim_coord(sample_cube.coord('projection_y_coordinate'), 0)
+    cube.add_dim_coord(sample_cube.coord('projection_x_coordinate'), 1)
     fix_var_metadata(cube, var_info)
     set_global_atts(cube, glob_attrs)
     save_variable(
