@@ -24,23 +24,23 @@ documentation:
     - c3s-magic
 
 datasets:
-  - {dataset: ACCESS1-0, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
-  - {dataset: CanESM2, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
-  - {dataset: CMCC-CESM, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
-  - {dataset: CNRM-CM5, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
-  - {dataset: CNRM-CM5-2, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
-  - {dataset: GFDL-CM3, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
-  - {dataset: GFDL-ESM2G, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
-  - {dataset: GFDL-ESM2M, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
-  - {dataset: HadGEM2-CC, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
-  - {dataset: HadGEM2-ES, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
-  - {dataset: IPSL-CM5A-LR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
-  - {dataset: IPSL-CM5A-MR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
-  - {dataset: IPSL-CM5B-LR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
-  - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
-  - {dataset: MPI-ESM-P, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
-  - {dataset: NorESM1-M, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
-  - {dataset: NorESM1-ME, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
+  - {dataset: ACCESS1-0, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 1990}
+  - {dataset: CanESM2, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 1990}
+  - {dataset: CMCC-CESM, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 1990}
+  - {dataset: CNRM-CM5, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 1990}
+  - {dataset: CNRM-CM5-2, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 1990}
+  - {dataset: GFDL-CM3, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 1990}
+  - {dataset: GFDL-ESM2G, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 1990}
+  - {dataset: GFDL-ESM2M, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 1990}
+  - {dataset: HadGEM2-CC, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 1990}
+  - {dataset: HadGEM2-ES, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 1990}
+  - {dataset: IPSL-CM5A-LR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 1990}
+  - {dataset: IPSL-CM5A-MR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 1990}
+  - {dataset: IPSL-CM5B-LR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 1990}
+  - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 1990}
+  - {dataset: MPI-ESM-P, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 1990}
+  - {dataset: NorESM1-M, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 1990}
+  - {dataset: NorESM1-ME, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 1990}
 
 
 preprocessors:
@@ -98,7 +98,7 @@ diagnostics:
         mip: Amon
         field: T3M
     additional_datasets:
-      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 3}
+      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 1990, tier: 3}
     scripts:
       grading: &grading_settings
         script: perfmetrics/main.ncl
@@ -123,7 +123,7 @@ diagnostics:
         mip: Amon
         field: T3M
     additional_datasets:
-      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 3}
+      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 1990, tier: 3}
     scripts:
       grading:
         script: perfmetrics/main.ncl
@@ -148,7 +148,7 @@ diagnostics:
         mip: Amon
         field: T3M
     additional_datasets:
-      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 3}
+      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 1990, tier: 3}
     scripts:
       grading:
         script: perfmetrics/main.ncl
@@ -173,7 +173,7 @@ diagnostics:
         mip: Amon
         field: T3M
     additional_datasets:
-      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 3}
+      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 1990, tier: 3}
     scripts:
       grading:
         script: perfmetrics/main.ncl
@@ -198,7 +198,7 @@ diagnostics:
         mip: Amon
         field: T2Ms
     additional_datasets:
-      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 3}
+      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 1990, tier: 3}
     scripts:
       grading:
         script: perfmetrics/main.ncl
@@ -223,7 +223,7 @@ diagnostics:
         mip: Amon
         field: T2Ms
     additional_datasets:
-      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 3}
+      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 1990, tier: 3}
     scripts:
       grading:
         script: perfmetrics/main.ncl
@@ -248,7 +248,7 @@ diagnostics:
         mip: Amon
         field: T2Ms
     additional_datasets:
-      - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.2, start_year: 1980, end_year: 2005, tier: 1}
+      - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.2, start_year: 1980, end_year: 1990, tier: 1}
     scripts:
       grading:
         script: perfmetrics/main.ncl
@@ -273,7 +273,7 @@ diagnostics:
         mip: Omon
         field: T2Ms
     additional_datasets:
-      - {dataset: HadISST, project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 2}
+      - {dataset: HadISST, project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 1990, tier: 2}
     scripts:
       grading:
         script: perfmetrics/main.ncl
@@ -298,7 +298,7 @@ diagnostics:
         mip: OImon
         field: T2Ms
     additional_datasets:
-      - {dataset: HadISST, project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 2}
+      - {dataset: HadISST, project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 1990, tier: 2}
     scripts:
       grading:
         script: perfmetrics/main.ncl
@@ -323,7 +323,7 @@ diagnostics:
 #        mip: Omon
 #        field: T2Ms
 #    additional_datasets:
-#      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 3}
+#      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 1990, tier: 3}
 #    scripts:
 #      grading:
 #        script: perfmetrics/main.ncl
@@ -348,7 +348,7 @@ diagnostics:
         mip: Amon
         field: TO2Ms
     additional_datasets:
-      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 3}
+      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 1990, tier: 3}
     scripts:
       grading:
         script: perfmetrics/main.ncl
@@ -373,7 +373,7 @@ diagnostics:
         mip: Amon
         field: TO2Ms
     additional_datasets:
-      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 3}
+      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 1990, tier: 3}
     scripts:
       grading:
         script: perfmetrics/main.ncl
