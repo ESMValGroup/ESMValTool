@@ -6,7 +6,7 @@ attributes:
   tier: 2
   modeling_realm: clim
   project_id: custom #TODO What to put here?
-  source: 'https://www.nature.com/articles/sdata201814'
+  source: 'https://ndownloader.figshare.com/files/9969496'
   reference: 'duveiller2018'
   comment: ''
 
