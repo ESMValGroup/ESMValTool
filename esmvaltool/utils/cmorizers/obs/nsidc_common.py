@@ -56,6 +56,7 @@ def _create_areacello(cfg, sample_cube, glob_attrs, out_dir):
     if not cfg['custom'].get('create_areacello', False):
         return
     var_info = cfg['cmor_table'].get_variable('fx', 'areacello')
+    glob_attrs['mip'] = 'fx'
     lat_coord = sample_cube.coord('latitude')
     cube = Cube(
         np.full(lat_coord.shape, cfg['custom']['grid_cell_size'], np.float32),
@@ -71,7 +72,7 @@ def _create_areacello(cfg, sample_cube, glob_attrs, out_dir):
     fix_var_metadata(cube, var_info)
     set_global_atts(cube, glob_attrs)
     save_variable(
-        cube, var_info.short_name, out_dir, cfg['attributes'], zlib=True
+        cube, var_info.short_name, out_dir, glob_attrs, zlib=True
     )
 
 
