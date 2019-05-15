@@ -89,7 +89,6 @@ diagnostics:
         preprocessor: ppALL
         reference_dataset: ERA-Interim
         mip: Amon
-        field: T3M
     additional_datasets:
       - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 3}
     scripts:
@@ -114,7 +113,6 @@ diagnostics:
         preprocessor: ppALL
         reference_dataset: ERA-Interim
         mip: Amon
-        field: T3M
     additional_datasets:
       - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 3}
     scripts:
@@ -139,7 +137,6 @@ diagnostics:
         preprocessor: ppALL
         reference_dataset: ERA-Interim
         mip: Amon
-        field: T3M
     additional_datasets:
       - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 3}
     scripts:
@@ -164,7 +161,6 @@ diagnostics:
         preprocessor: ppALL
         reference_dataset: ERA-Interim
         mip: Amon
-        field: T3M
     additional_datasets:
       - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 3}
     scripts:
@@ -189,7 +185,6 @@ diagnostics:
         preprocessor: ppNOLEV
         reference_dataset: ERA-Interim
         mip: Amon
-        field: T2Ms
     additional_datasets:
       - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 3}
     scripts:
@@ -214,7 +209,6 @@ diagnostics:
         preprocessor: ppNOLEV
         reference_dataset: ERA-Interim
         mip: Amon
-        field: T2Ms
     additional_datasets:
       - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 3}
     scripts:
@@ -239,7 +233,6 @@ diagnostics:
         preprocessor: ppNOLEV
         reference_dataset: GPCP-SG
         mip: Amon
-        field: T2Ms
     additional_datasets:
       - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.2, start_year: 1980, end_year: 2005, tier: 1}
     scripts:
@@ -264,7 +257,6 @@ diagnostics:
         preprocessor: ppNOLEVirreg
         reference_dataset: HadISST
         mip: Omon
-        field: T2Ms
     additional_datasets:
       - {dataset: HadISST, project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 2}
     scripts:
@@ -289,7 +281,6 @@ diagnostics:
         preprocessor: ppNOLEVirreg
         reference_dataset: HadISST
         mip: OImon
-        field: T2Ms
     additional_datasets:
       - {dataset: HadISST, project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 2}
     scripts:
@@ -314,7 +305,6 @@ diagnostics:
         preprocessor: ppNOLEVirreg
         reference_dataset: ERA-Interim
         mip: Omon
-        field: T2Ms
     additional_datasets:
       - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 3}
     scripts:
@@ -339,7 +329,6 @@ diagnostics:
         preprocessor: ppNOLEV
         reference_dataset: ERA-Interim
         mip: Amon
-        field: TO2Ms
     additional_datasets:
       - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 3}
     scripts:
@@ -364,7 +353,6 @@ diagnostics:
         preprocessor: ppNOLEV
         reference_dataset: ERA-Interim
         mip: Amon
-        field: TO2Ms
     additional_datasets:
       - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 3}
     scripts:
