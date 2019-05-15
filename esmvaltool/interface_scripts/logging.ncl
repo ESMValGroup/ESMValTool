@@ -327,9 +327,9 @@ begin
   outstring(1) = ": ancestors: [" + str_join(infiles, ", ") + "]"
   outstring(2) = "  authors: [" + str_join(diag_authors, ", ") + "]"
   outstring(3) = "  caption: '" + caption + "'"
-  outstring(4) = "  domain: [" + str_join(domain, ", ") + "]"
+  outstring(4) = "  domains: [" + str_join(domain, ", ") + "]"
   outstring(5) = "  plot_file: " + outfile
-  outstring(6) = "  plot_type: " + plottype
+  outstring(6) = "  plot_types: " + plottype
   outstring(7) = "  references: [" + str_join(diag_refs, ", ") + "]"
   outstring(8) = "  statistics: [" + str_join(statistics, ", ") + "]"
 
