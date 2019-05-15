@@ -1,8 +1,8 @@
 ---
 # Common global attributes for Cmorizer output
 attributes:
-  dataset_id: Duveiller2018 #TODO where should I document the full reference to this dataset?
-  version: 'L0' # There is no version
+  dataset_id: Duveiller2018 
+  version: 'v2018' 
   tier: 2
   modeling_realm: clim
   project_id: custom
