@@ -86,7 +86,7 @@ def merge_data(in_dir, out_dir, raw_info, bin):
     var = raw_info['name']
     do_bin = True if (bin % 2 == 0) & (bin != 0) else False
     comment = ''
-    thefiles = glob.glob(in_dir + '/' + raw_info['file'] + '*.nc')
+    thefiles = sorted(glob.glob(in_dir + '/' + raw_info['file'] + '*.nc'))
     for x in thefiles:
         ds = xr.open_dataset(x)
         da = ds[var].sel(lat=slice(None, None, -1))
