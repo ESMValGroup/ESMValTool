@@ -8,6 +8,7 @@ documentation:
 
   authors:
     - hunt_al
+    - pere_nu
     - manu_ni
 
   projects:
@@ -18,38 +19,25 @@ datasets:
   #- {dataset: bcc-csm1-1,  type: exp, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
   #- {dataset: IPSL-CM5A-MR, type: exp, project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 1981,  end_year: 2000}
 
-preprocessors:
-  preproc:
-    regrid:
-      target_grid: MPI-ESM-MR
-      scheme: linear
-    mask_fillvalues:
-      threshold_fraction: 0.95
-    extract_region:
-      end_latitude: 70
-      start_latitude: 20
-      end_longitude: 300
-      start_longitude: 200
-
+   
 diagnostics:
   combine_indices:
     description: Combine indices and/or compute area weighted averages.
     variables:
-      pr:
-        preprocessor: preproc
+      psl:
         mip: Amon
     scripts:
       main:
         script: magic_bsc/combined_indices.r
         ## Weights for combining indices - if not "equal" or "NULL", must be the same length as the number of indices
-        weights: "equal"
+        region: NAO #Nino3, Nino3.4, Nino4, NAO or SOI  
 
         # Compute running mean?
-        running_mean: 5 #3
+        running_mean: 11 #3
 
-        #Or compute seasons? (NOTE: cant compute both running means and seasons):
-        moninf: 1  # First month
-        monsup: 3  # Last month
+        # Compute seasons? 
+        moninf: 12  # First month
+        monsup: 2  # Last month
 
-        # Multi-year average?
-        multi_year_average: false
+        # Compute standarization?
+        standardized: true
