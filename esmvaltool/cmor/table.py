@@ -626,7 +626,7 @@ class CustomInfo(CMIP5Info):
             found, returns None if not
 
         """
-        return = self.tables['custom'].get(short_name, None)
+        return self.tables['custom'].get(short_name, None)
 
     def _read_table_file(self, table_file, table=None):
         with open(table_file) as self._current_table:

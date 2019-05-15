@@ -336,7 +336,7 @@ def main(cfg):
         #######
         # Sum up the cube over global domain
         cubedic = global_sum(
-            metadatas,
+            metadatas
         )
     #######
     # Multi model time series
