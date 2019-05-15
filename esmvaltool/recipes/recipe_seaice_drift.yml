@@ -50,8 +50,8 @@ diagnostics:
         reference_dataset: PIOMAS
         fx_files: [areacello]
         additional_datasets:
-          - {dataset: PIOMAS, project: OBS, type: reanaly, version: 2.1,
-             mip: day, short_name: sit, tier: 2,
+          - {dataset: PIOMAS, project: OBS, type: reanaly, version: "2.1",
+             mip: day, tier: 2,
              start_year: 1979,  end_year: 2000}
       sispeed:
         mip: SIday
@@ -62,7 +62,7 @@ diagnostics:
         force_derivation: false
         fx_files: [areacello]
         additional_datasets:
-          - {dataset: NSIDC-0116-nh, project: OBS, type: reanaly, version: 4.1,
+          - {dataset: NSIDC-0116-nh, project: OBS, type: reanaly, version: "4.1",
              mip: day, tier: 2,
              start_year: 1979,  end_year: 2000}
     scripts:
