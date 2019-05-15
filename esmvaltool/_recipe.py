@@ -366,10 +366,12 @@ def _update_fx_files(fx_varlist, config_user, parent_variable):
     """Get the fx files dict for a list of fx variables."""
     fx_files_dict = {}
     for fx_variable in fx_varlist:
-        fx_files_dict[fx_variable['short_name']] = get_output_file(
-            fx_variable,
-            config_user['preproc_dir'],
-            parent_variable)
+        if fx_variable['dataset'] == parent_variable['dataset']:
+            fx_files_dict[fx_variable['short_name']] = get_output_file(
+                fx_variable,
+                config_user['preproc_dir'],
+                parent_variable)
+
     return fx_files_dict
 
 
@@ -377,7 +379,14 @@ def _add_fxvar_keys(fx_var_dict, variable):
     """Add keys specific to fx variable to use get_input_filelist."""
     fx_variable = dict(variable)
 
-    # set variable names
+    # remove keys that dont belong to fx var analysis
+    if 'fx_files' in fx_variable:
+        del fx_variable['fx_files']
+    if 'force_derivation' in fx_variable:
+        del fx_variable['force_derivation']
+
+    # set fx recognition flag and variable names
+    fx_variable['fxvar'] = True
     fx_variable['variable_group'] = fx_var_dict['short_name']
     fx_variable['short_name'] = fx_var_dict['short_name']
 
@@ -406,9 +415,11 @@ def _update_fx_settings(settings, variable):
     if 'mask_landsea' in settings:
         # Configure ingestion of land/sea masks
         if 'fx_files' not in variable:
-            fx_sett = "fx_files: ['sftlf', 'sftof']"
-            logger.error("You need to specify %s for variable %s",
-                         fx_sett, variable['short_name'])
+            fx_set = "fx_files: ['sftlf', 'sftof']"
+            raise RecipeError(
+                "Masking: {} missing from {}".format(fx_set,
+                                                     variable['short_name']))
+
         logger.debug('Getting fx mask settings now...')
         settings['mask_landsea']['fx_files'] = []
         if 'fx_files' in variable:
@@ -421,9 +432,10 @@ def _update_fx_settings(settings, variable):
 
     if 'mask_landseaice' in settings:
         if 'fx_files' not in variable:
-            fx_sett = "fx_files: ['sftgif']"
-            logger.error("You need to specify %s for variable %s",
-                         fx_sett, variable['short_name'])
+            fx_set = "fx_files: ['sftgif']"
+            raise RecipeError(
+                "Masking: {} missing from {}".format(fx_set,
+                                                     variable['short_name']))
         logger.debug('Getting fx mask settings now...')
 
         settings['mask_landseaice']['fx_files'] = []
@@ -988,7 +1000,7 @@ class Recipe:
                                                    index)
             variables.append(variable)
 
-        if 'fx_files' not in raw_variable.keys():
+        if 'fx_files' not in raw_variable:
             return variables
         else:
             for fx_var_dict in raw_variable['fx_files']:
@@ -1007,7 +1019,6 @@ class Recipe:
 
         # get full list of variables
         variables = self._assemble_varlist(raw_variable, datasets)
-
         required_keys = {
             'short_name',
             'mip',
@@ -1031,7 +1042,7 @@ class Recipe:
                 for fx_file in variable['fx_files']:
                     DATASET_KEYS.add(fx_file['short_name'])
                 fx_varlist = [
-                    var for var in variables if 'fxvar' in var.keys()
+                    var for var in variables if 'fxvar' in var
                 ]
                 variable['fx_files'] = _update_fx_files(fx_varlist,
                                                         self._cfg,
