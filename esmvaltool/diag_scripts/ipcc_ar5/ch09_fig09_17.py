@@ -280,7 +280,7 @@ def multi_model_time_series(
             cube = cubedic[filename]
             path_nc = workdir
             path_nc += '_'.join([str(metadata[filename][b])
-                                for b in metadata_id_list])
+                                 for b in metadata_id_list])
             path_nc = path_nc + '.nc'
             logger.info('path_nc = %s', path_nc)
             iris.save(cube, path_nc)
@@ -317,6 +317,8 @@ def global_sum(
 
 def main(cfg):
     """
+    Main routine of this diagnostic.
+    
     Load the config file and some metadata, then pass them the plot making
     tools.
 
@@ -334,7 +336,6 @@ def main(cfg):
         #######
         # Sum up the cube over global domain
         cubedic = global_sum(
-            cfg,
             metadatas,
         )
     #######
