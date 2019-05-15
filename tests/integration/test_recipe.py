@@ -615,19 +615,20 @@ def test_derive_with_fx(tmp_path, patched_datafinder, config_user):
     task = recipe.tasks.pop()
 
     assert task.name == 'diagnostic_name' + TASKSEP + 'nbp_grid'
-    assert len(task.ancestors) == 1
-    ancestor = [t for t in task.ancestors][0]
+    # fx_sftlf and nbp_grid so 2
+    assert len(task.ancestors) == 2
+    fx_ancestor = [t for t in task.ancestors][0]
+    assert fx_ancestor.name == 'diagnostic_name/fx_sftlf'
+    ancestor = [t for t in task.ancestors][1]
     assert ancestor.name == 'diagnostic_name/nbp_grid_derive_input_nbp'
 
     # Check product content of tasks
-    # this will be 2 since it works out the fx var as product
-    assert len(task.products) == 2
-    for product in task.products:
-        if product.attributes['short_name'] == 'nbp_grid':
-            assert 'derive' in product.settings
-            assert 'fx_files' in product.settings['derive']
-            assert 'sftlf' in product.settings['derive']['fx_files']
-            assert product.settings['derive']['fx_files']['sftlf'] is not None
+    assert len(task.products) == 1
+    product = task.products.pop()
+    assert 'derive' in product.settings
+    assert 'fx_files' in product.settings['derive']
+    assert 'sftlf' in product.settings['derive']['fx_files']
+    assert product.settings['derive']['fx_files']['sftlf'] is not None
 
     assert len(ancestor.products) == 1
     ancestor_product = ancestor.products.pop()
