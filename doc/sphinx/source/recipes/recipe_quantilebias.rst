@@ -31,7 +31,7 @@ User settings
 Variables
 ---------
  
-* pr (atmos, daily mean, longitude latitude time)
+* pr (atmos, monthly, longitude latitude time)
  
  
 Observations and reformat scripts
