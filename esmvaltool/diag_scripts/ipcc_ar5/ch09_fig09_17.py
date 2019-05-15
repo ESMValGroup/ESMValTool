@@ -1,7 +1,7 @@
 """Time series diagnostics for ocean heat content.
 
-Time series diagnostics produce figures of the time development of a 
-field from cubes. These plost show time on the x-axis and cube value 
+Time series diagnostics produce figures of the time development of a
+field from cubes. These plost show time on the x-axis and cube value
 (ie temperature) on the y-axis.
 
 Two types of plots are produced: individual model timeseries plots and
@@ -153,7 +153,7 @@ def make_time_series_plots(
                 suffix='_'.join(['timeseries',
                                  str(layer) + image_extention]),
                 metadata_id_list=[
-                    'field', 'short_name', 'preprocessor', 'diagnostic',
+                    'short_name', 'preprocessor', 'diagnostic',
                     'start_year', 'end_year'
                 ],
             )
@@ -247,7 +247,7 @@ def multi_model_time_series(
             prefix='MultipleModels_',
             suffix='_'.join(['timeseries_0', image_extention]),
             metadata_id_list=[
-                'field', 'short_name', 'preprocessor', 'diagnostic',
+                'short_name', 'preprocessor', 'diagnostic',
                 'start_year', 'end_year'
             ],
         )
@@ -270,7 +270,6 @@ def multi_model_time_series(
             'mip',
             'exp',
             'ensemble',
-            'field',
             'short_name',
             'diagnostic',
             'start_year',
@@ -288,16 +287,13 @@ def multi_model_time_series(
 
 
 def global_sum(
-        cfg,
         metadata,
 ):
     """
-    sum up the global heat content file to a 1-D time series
+    Sum up the global heat content file to a 1-D time series.
 
     Parameters
     ----------
-    cfg: dict
-        the opened global config dictioniary, passed by ESMValTool.
     metadata: dict
         The metadata dictioniary for a specific model.
 
@@ -320,7 +316,8 @@ def global_sum(
 
 
 def main(cfg):
-    """Load the config file and some metadata, then pass them the plot making
+    """
+    Load the config file and some metadata, then pass them the plot making
     tools.
 
     Parameters

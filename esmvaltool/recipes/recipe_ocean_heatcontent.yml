@@ -98,7 +98,6 @@ diagnostics:
         preprocessor: prep_timeseries_1
         derive: true
         force_derivation: false
-        field: TO3M
         exp: historical 
         mip: Omon
         start_year: 1970

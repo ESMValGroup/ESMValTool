@@ -14,7 +14,7 @@ log_level: info
 # Exit on warning? true/[false]
 exit_on_warning: false
 # Plot file format? [ps]/pdf/png/eps/epsi
-output_file_type: png
+output_file_type: pdf
 # Destination directory
 output_dir: /group_workspaces/jasmin2/ukesm/till/esmvaltool
 # Use netCDF compression true/[false]
