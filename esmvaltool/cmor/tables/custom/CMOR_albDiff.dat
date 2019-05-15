@@ -1,0 +1,20 @@
+SOURCE: CMIP5
+!============
+variable_entry:    albDiff
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     
+units:             1
+cell_methods:      time: mean
+cell_measures:     area: areacella
+long_name:         Difference in surface albedo for a given vegetation cover transition
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+type:              real
+!----------------------------------
+!
