@@ -25,14 +25,14 @@ from warnings import catch_warnings, filterwarnings
 import iris
 from dask import array as da
 
-from .utilities import (_set_global_atts, _fix_coords, _fix_var_metadata,
-                        _read_cmor_config, _save_variable, constant_metadata)
+from .utilities import (set_global_atts, fix_coords, fix_var_metadata,
+                        read_cmor_config, save_variable, constant_metadata, convert_timeunits)
 
 logger = logging.getLogger(__name__)
 
 # read in CMOR configuration
 
-CFG = _read_cmor_config('Duveiller2018.yml')
+CFG = read_cmor_config('Duveiller2018.yml')
 
 
 
@@ -45,6 +45,12 @@ def _fix_fillvalue(cube, field, filename):
         cube.data = da.ma.masked_equal(cube.core_data(),
                                        field.cf_data.missing_value)
 
+
+def duveiller2018_callback_function(cube,field,filename):
+    cube.coord('Month').rename('time')
+    cube.coord('time').units = 'months since 2010-01-01 00:00:00'
+
+
 def extract_variable(var_info, raw_info, out_dir, attrs):
     """Extract to all vars."""
     var = var_info.short_name
@@ -55,22 +61,23 @@ def extract_variable(var_info, raw_info, out_dir, attrs):
             category=UserWarning,
             module='iris',
         )
-        cubes = iris.load(raw_info['file'], callback=_fix_fillvalue)
+        cubes = iris.load(raw_info['file'], callback=duveiller2018_callback_function)
     rawvar = raw_info['name']
     print(cubes)
     for cube in cubes:
         if cube.var_name == rawvar:
-            _fix_var_metadata(cube, var_info)
-            _fix_coords(cube)
+            fix_var_metadata(cube, var_info)
+            fix_coords(cube)
 #            _fix_data(cube, var)
-            _set_global_atts(cube, attrs)
-            _save_variable(
+            # Rename Month to time coordinate
+            set_global_atts(cube, attrs)
+            save_variable(
                 cube,
                 var,
                 out_dir,
                 attrs,
                 local_keys=['positive'],
-                unlimited_dimensions=['time'],
+#                unlimited_dimensions=['time'],
             )
 
 def cmorization(in_dir, out_dir):

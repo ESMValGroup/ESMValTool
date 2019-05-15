@@ -2,18 +2,19 @@
 # Common global attributes for Cmorizer output
 attributes:
   dataset_id: Duveiller2018 #TODO where should I document the full reference to this dataset?
-  version: '' # There is no version.
+  version: 'L0' # There is no version
   tier: 2
   modeling_realm: clim
-  project_id: custom #TODO What to put here?
+  project_id: custom
   source: 'https://ndownloader.figshare.com/files/9969496'
   reference: 'duveiller2018'
   comment: ''
+  climatology_start: '2008-01-01T00:00:00Z'
+  climatology_end: '2012-12-31T23:59:59Z'
 
 # Variables to cmorize
 variables:
-  alb:
-    standard_name: 'Difference in surface albedo for a given vegetation cover transition'
+  albDiff:
     mip: Amon
     # Match CMOR variables with input file one
     raw: Delta_albedo
