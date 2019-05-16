@@ -36,6 +36,8 @@ def _extract_variable(raw_var, cmor_info, attrs, filepath, out_dir):
     utils.convert_timeunits(cube, 1950)
     utils.fix_coords(cube)
     utils.set_global_atts(cube, attrs)
+    if var in ('tas',):
+        utils.add_height2m(cube)
     utils.save_variable(
         cube, var, out_dir, attrs, unlimited_dimensions=['time'])
 
