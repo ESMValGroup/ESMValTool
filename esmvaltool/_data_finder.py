@@ -113,7 +113,7 @@ def _replace_tags(path, variable, fx_var=None):
         elif tag in variable:
             replacewith = variable[tag]
         else:
-            raise KeyError("Dataset key {} must be specified for {}, check "
+            raise KeyError("Dataset key '{}' must be specified for {}, check "
                            "your recipe entry".format(tag, variable))
 
         paths = _replace_tag(paths, original_tag, replacewith)
