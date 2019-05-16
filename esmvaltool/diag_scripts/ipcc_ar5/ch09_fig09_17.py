@@ -153,8 +153,8 @@ def make_time_series_plots(
                 suffix='_'.join(['timeseries',
                                  str(layer) + image_extention]),
                 metadata_id_list=[
-                    'short_name', 'preprocessor', 'diagnostic',
-                    'start_year', 'end_year'
+                    'short_name', 'preprocessor', 'diagnostic', 'start_year',
+                    'end_year'
                 ],
             )
 
@@ -208,6 +208,9 @@ def multi_model_time_series(
         else:
             color = 'blue'
 
+        if index == 0:
+            filename0 = filename
+
         cube = cubedic[filename]
 
         if 'MultiModel' in metadata[filename]['dataset']:
@@ -243,12 +246,12 @@ def multi_model_time_series(
     if cfg['write_plots']:
         path = diagtools.get_image_path(
             cfg,
-            metadata[filename],
+            metadata[filename0],
             prefix='MultipleModels_',
             suffix='_'.join(['timeseries_0', image_extention]),
             metadata_id_list=[
-                'short_name', 'preprocessor', 'diagnostic',
-                'start_year', 'end_year'
+                'short_name', 'preprocessor', 'diagnostic', 'start_year',
+                'end_year'
             ],
         )
 
@@ -256,8 +259,8 @@ def multi_model_time_series(
     plt.gcf().set_size_inches(9., 6.)
     diagtools.add_legend_outside_right(
         plot_details, plt.gca(), column_width=0.15)
-    plt.ylabel(metadata[filename]['short_name'])
-    plt.title(metadata[filename]['standard_name'])
+    plt.ylabel(metadata[filename0]['short_name'])
+    plt.title(metadata[filename0]['standard_name'])
     logger.info('Saving plots to %s', path)
     plt.savefig(path)
     plt.close()
@@ -279,16 +282,14 @@ def multi_model_time_series(
         for index, filename in enumerate(sorted(cubedic)):
             cube = cubedic[filename]
             path_nc = workdir
-            path_nc += '_'.join([str(metadata[filename][b])
-                                 for b in metadata_id_list])
+            path_nc += '_'.join(
+                [str(metadata[filename][b]) for b in metadata_id_list])
             path_nc = path_nc + '.nc'
             logger.info('path_nc = %s', path_nc)
             iris.save(cube, path_nc)
 
 
-def global_sum(
-        metadata,
-):
+def global_sum(metadata, ):
     """
     Sum up the global heat content file to a 1-D time series.
 
@@ -318,7 +319,7 @@ def global_sum(
 def main(cfg):
     """
     Main routine of this diagnostic.
-    
+
     Load the config file and some metadata, then pass them the plot making
     tools.
 
@@ -335,9 +336,7 @@ def main(cfg):
         metadatas = diagtools.get_input_files(cfg, index=index)
         #######
         # Sum up the cube over global domain
-        cubedic = global_sum(
-            metadatas
-        )
+        cubedic = global_sum(metadatas)
     #######
     # Multi model time series
     multi_model_time_series(
