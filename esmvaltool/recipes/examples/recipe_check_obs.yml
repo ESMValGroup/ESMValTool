@@ -553,7 +553,7 @@ diagnostics:
       etStderr:
         mip: Lmon
     additional_datasets:
-      - {dataset: LandFlux-EVAL, project: OBS, tier: 3, type: clim, version: Oct13, start_year: 1989, end_year: 2005}
+      - {dataset: LandFlux-EVAL, project: OBS, tier: 3, type: reanaly, version: Oct13, start_year: 1989, end_year: 2005}
     scripts: null
 
   MTE:
@@ -564,7 +564,7 @@ diagnostics:
       gppStderr:
         mip: Lmon
     additional_datasets:
-      - {dataset: MTE, project: OBS, tier: 3, type: clim, version: May12, start_year: 1982, end_year: 2011}
+      - {dataset: MTE, project: OBS, tier: 3, type: reanaly, version: May12, start_year: 1982, end_year: 2011}
     scripts: null
 
 
