@@ -52,7 +52,7 @@ def _fix_time_coord(cube):
     new_units = Unit('days since 1950-1-1 00:00:00', calendar='standard')
 
     # Function to convert given date to correct number
-    def _data2num(date_str):
+    def _date2num(date_str):
         """Convert data given as %Y%m.%f to number."""
         date_str = str(date_str)
         year = int(date_str[:4])
@@ -62,7 +62,7 @@ def _fix_time_coord(cube):
         return new_units.date2num(date)
 
     # Convert time coordinate array and set correct units
-    time_coord.points = np.vectorize(_data2num)(time_coord.points)
+    time_coord.points = np.vectorize(_date2num)(time_coord.points)
     time_coord.units = new_units
     time_coord.attributes = {}
 

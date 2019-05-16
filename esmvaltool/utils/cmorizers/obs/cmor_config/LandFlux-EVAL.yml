@@ -1,5 +1,5 @@
 ---
-# Filename (will be extended by timestamp to match downloaded file)
+# Filename
 filename: 'LandFluxEVAL.merged.89-05.monthly.all.nc'
 
 # Common global attributes for Cmorizer output
