@@ -21,8 +21,12 @@ def add_height2m(cube):
     """Add scalar coordinate 'height' with value of 2m."""
     logger.info("Adding height coordinate (2m)")
     height_coord = iris.coords.AuxCoord(
-        2.0, var_name='height', standard_name='height', long_name='height',
-        units=Unit('m'), attributes={'positive': 'up'})
+        2.0,
+        var_name='height',
+        standard_name='height',
+        long_name='height',
+        units=Unit('m'),
+        attributes={'positive': 'up'})
     cube.add_aux_coord(height_coord, ())
 
 
