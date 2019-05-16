@@ -545,6 +545,16 @@ diagnostics:
       - {dataset: ERA-Interim, project: OBS, tier: 3, type: reanaly, version: 1, start_year: 1979, end_year: 2018}
     scripts: null
 
+  LandFlux-EVAL:
+    description: LandFlux-EVAL
+    variables:
+      et:
+        mip: Lmon
+      etStderr:
+        mip: Lmon
+    additional_datasets:
+      - {dataset: LandFlux-EVAL, project: OBS, tier: 3, type: clim, version: Oct13, start_year: 1989, end_year: 2005}
+    scripts: null
 
   MTE:
     description: MTE
