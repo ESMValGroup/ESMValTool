@@ -136,7 +136,6 @@ CMIP6:
     'UofT-CCSM4': ['UofT']
     'VRESM-1-0': ['CSIR-CSIRO']
 
-
 CMIP5:
   cmor_strict: true
   input_dir:
@@ -230,6 +229,13 @@ CMIP5:
     'NICAM-09': ['NICAM']
     'NorESM1-M': ['NCC']
     'NorESM1-ME': ['NCC']
+
+CMIP3:
+  input_dir:
+    default: '/'
+    DKRZ: '[exp]/[mip]/[frequency]/[short_name]/[dataset]/[ensemble]'
+  input_file: '[short_name]_[mip]*.nc'
+  output_file: '[project]_[dataset]_[mip]_[exp]_[ensemble]_[short_name]_[start_year]-[end_year]'
 
 OBS:
   cmor_strict: false
