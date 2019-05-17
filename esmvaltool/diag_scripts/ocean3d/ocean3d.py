@@ -5,7 +5,8 @@ APPLICATE/TRR Ocean Diagnostics
 """
 import logging
 import os
-import joblib
+# import joblib
+import pickle
 from collections import OrderedDict
 import iris
 
@@ -51,7 +52,9 @@ def main(cfg):
     """Compute the time average for each input model."""
     
     # print(cfg['testing'])
-    joblib.dump(cfg, 'cfg_NK.joblib')
+    # joblib.dump(cfg, 'cfg_NK.joblib')
+    with open('cfg_NK.joblib', 'wb') as handle:
+        pickle.dump(cfg, handle, protocol=pickle.HIGHEST_PROTOCOL)
     plotdir = cfg['plot_dir']
     log_level = cfg['log_level']
     plot_type = cfg['output_file_type']
@@ -70,23 +73,29 @@ def main(cfg):
     # print(model_filenames_so)
 
     observations = find_observations_name(cfg, 'thetao')
+    logger.info("Name of the Observations:{}".format(observations))
     
     gg = genfilename(diagworkdir, basis='arctic_ocean', variable=None,
                 mmodel=None, region=None, data_type=None, extension=None)
+
     print(gg)
+
     gg = genfilename(diagworkdir, basis='arctic_ocean', variable='thetao',
                 mmodel=None, region=None, data_type='hofm', extension='.npy')
     print(gg)
 
     ### to be replaces with the function that get fx file information
     areacello_fx = get_fx_filenames(cfg, 'thetao', 'areacello')
+    print('!!!!!!!!!!')
     print(areacello_fx)
-
+    print('!!!!!!!!!!')
     # Extract data for Hovmoeller diagrams
     if cfg['hofm_data']:
         for hofm_var in cfg['hofm_vars']:
+            # print('!!!!!!!!!!!')
             print(cfg['hofm_vars'])
             print(hofm_var)
+            # print('!!!!!!!!!!!!!')
             model_filenames = get_clim_model_filenames(cfg, hofm_var)
             model_filenames = OrderedDict(sorted(model_filenames.items(),
                                           key=lambda t: t[0]))

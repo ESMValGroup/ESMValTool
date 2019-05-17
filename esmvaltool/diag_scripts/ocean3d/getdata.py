@@ -5,7 +5,7 @@ APPLICATE/TRR Ocean Diagnostics
 """
 import logging
 import os
-import joblib
+# import joblib
 from collections import OrderedDict
 import iris
 
@@ -100,7 +100,11 @@ def hofm_data(model_filenames, mmodel, cmor_var, areacello_fx,
                                  mmodel, region, 'time')
     print(ofilename)
     np.save(ofilename, oce_hofm)
-    np.save(ofilename_levels, lev[0:lev_limit])
+    if isinstance(lev, np.ma.core.MaskedArray):
+        np.save(ofilename_levels, lev[0:lev_limit].filled())
+    else:
+        np.save(ofilename_levels, lev[0:lev_limit])
+
     np.save(ofilename_time, time)
     datafile.close()
 
@@ -195,7 +199,10 @@ def transect_data(mmodel,  cmor_var,
                             mmodel, region, 'transect')
 
     np.save(ofilename, secfield)
-    np.save(ofilename_depth, lev)
+    if isinstance(lev, np.ma.core.MaskedArray):
+        np.save(ofilename_depth, lev.filled())
+    else:
+        np.save(ofilename_depth, lev)
     np.save(ofilename_dist, dist)
 
     datafile.close()
@@ -384,8 +391,8 @@ def aw_core(model_filenames, diagworkdir, region, cmor_var):
         ifilename_levels = genfilename(diagworkdir, cmor_var,
                                     mmodel, region, 'levels', '.npy')
 
-        hofdata = np.load(ifilename)
-        lev = np.load(ifilename_levels)
+        hofdata = np.load(ifilename, allow_pickle=True)
+        lev = np.load(ifilename_levels, allow_pickle=True)
         
         profile = (hofdata)[:, :].mean(axis=1)
         maxvalue = np.max(profile[(lev >= 200) & (lev <= 1000)])

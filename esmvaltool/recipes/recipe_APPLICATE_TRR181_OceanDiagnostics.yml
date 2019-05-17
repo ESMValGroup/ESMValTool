@@ -1,4 +1,23 @@
+# ESMValTool
+# recipe_python.yml
 ---
+documentation:
+  description: |
+    Example recipe that plots the mean precipitation and temperature.
+
+  authors:
+    - ande_bo
+    - righ_ma
+
+  maintainer:
+    - schl_ma
+
+  references:
+    - acknow_project
+
+  projects:
+    - esmval
+    - c3s-magic
 
 datasets:
   # - {dataset: bcc-csm1-1,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
@@ -28,10 +47,12 @@ diagnostics:
     variables:
       thetao:
         preprocessor: preprocessor1
+        mip: Omon
         field: T3OM
         fx_files: [areacello]
       so:
         preprocessor: preprocessor1
+        mip: Omon
         field: T3OM
         fx_files: [areacello]
       # uo:
@@ -95,6 +116,7 @@ diagnostics:
         tsdiag_regions: ["AB" ,  'EB']
         tsdiag_depth: 1500
         tsdiag_ncol: 3
+        observational_dataset: {dataset: PHC, project: OBS,}
 
 
 

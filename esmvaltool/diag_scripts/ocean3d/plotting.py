@@ -5,7 +5,7 @@ APPLICATE/TRR Ocean Diagnostics
 """
 import logging
 import os
-import joblib
+# import joblib
 from collections import OrderedDict
 import iris
 
@@ -77,9 +77,9 @@ def hofm_plot(model_filenames, cmor_var,
                                      mmodel, region,'time', '.npy')
         print(ifilename)
 
-        hofdata = np.load(ifilename)
-        lev = np.load(ifilename_levels)
-        time = np.load(ifilename_time)
+        hofdata = np.load(ifilename, allow_pickle=True)
+        lev = np.load(ifilename_levels, allow_pickle=True)
+        time = np.load(ifilename_time, allow_pickle=True)
         if cmor_var == 'thetao':
             hofdata = hofdata-273.15
             cb_label = '$^{\circ}$C'
@@ -146,10 +146,10 @@ def hofm_plot2(model_filenames, cmor_var,
         logger.info("Plot  {} data for {}, region {}".format(cmor_var,
                                                       mmodel,
                                                       region))
-        hofdata = np.load(ifilename)
+        hofdata = np.load(ifilename, allow_pickle=True)
         
-        lev = np.load(ifilename_levels)
-        time = np.load(ifilename_time)
+        lev = np.load(ifilename_levels, allow_pickle=True)
+        time = np.load(ifilename_time, allow_pickle=True)
         if cmor_var == 'thetao':
             hofdata = hofdata-273.15
             cb_label = '$^{\circ}$C'
@@ -222,9 +222,9 @@ def tsplot_plot(model_filenames, max_level, region, diagworkdir, diagplotdir,
         ifilename_depth = genfilename(diagworkdir, 'depth',
                                 mmodel, region, 'tsplot',  '.npy')
 
-        temp = np.load(ifilename_t)
-        salt = np.load(ifilename_s)
-        depth = np.load(ifilename_depth)
+        temp = np.load(ifilename_t, allow_pickle=True)
+        salt = np.load(ifilename_s, allow_pickle=True)
+        depth = np.load(ifilename_depth, allow_pickle=True)
 
         #lev_limit = lev[lev <= max_level].shape[0]+1
 
@@ -294,8 +294,8 @@ def plot_profile(model_filenames, cmor_var,
         ifilename_levels = genfilename(diagworkdir, cmor_var,
                                        mmodel, region, 'levels', '.npy')
 
-        hofdata = np.load(ifilename)
-        lev = np.load(ifilename_levels)
+        hofdata = np.load(ifilename, allow_pickle=True)
+        lev = np.load(ifilename_levels, allow_pickle=True)
         
 
         if cmor_var == 'thetao':
@@ -845,10 +845,10 @@ def transect_plot(model_filenames, cmor_var,
                                 mmodel, region, 'transect', '.npy')
         print(ifilename)
 
-        data = np.load(ifilename)
+        data = np.load(ifilename, allow_pickle=True)
         data = np.ma.masked_equal(data.T, 0)
-        lev = np.load(ifilename_depth)
-        dist = np.load(ifilename_dist)
+        lev = np.load(ifilename_depth, allow_pickle=True)
+        dist = np.load(ifilename_dist, allow_pickle=True)
 
         if cmor_var == 'thetao':
             data = data-273.15
@@ -965,9 +965,9 @@ def meanminmax_plot(model_filenames, cmor_var,
                                  mmodel, region, 'meanminmax_time', '.npy')
         print(ifilename)
 
-        data = np.load(ifilename)
+        data = np.load(ifilename, allow_pickle=True)
         # lev = np.load(ifilename_levels)
-        time = np.load(ifilename_time)
+        time = np.load(ifilename_time, allow_pickle=True)
         if cmor_var == 'thetao':
             data = data-273.15
             cb_label = '$^{\circ}$C'
