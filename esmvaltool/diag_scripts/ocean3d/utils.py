@@ -5,81 +5,105 @@ APPLICATE/TRR Ocean Diagnostics
 """
 import logging
 import os
-# import joblib
 from collections import OrderedDict
-import iris
 import shutil
 from esmvaltool.diag_scripts.shared import run_diagnostic
 from esmvaltool.diag_scripts.shared.plot import quickplot
-
-logger = logging.getLogger(os.path.basename(__file__))
-
-import inspect
-from netCDF4 import Dataset
 import numpy as np
 import os
 import matplotlib as mpl
-mpl.use('agg') #noqa
 import matplotlib.pylab as plt
 import math
 from matplotlib import cm
 from netCDF4 import num2date
-#import seawater as sw
 from collections import OrderedDict
 from cdo import Cdo
 import cmocean.cm as cmo
 import matplotlib.cm as cm
-from mpl_toolkits.basemap import Basemap
-from mpl_toolkits.basemap import addcyclic
-import pandas as pd
-import pyresample
-from scipy.interpolate import interp1d
-import ESMF
-import pyproj
-#import seaborn as sns
 import palettable
-#plt.style.context('seaborn-talk')
-#sns.set_context("paper")
 import seawater as sw
+
+mpl.use('agg') #noqa
+logger = logging.getLogger(os.path.basename(__file__))
 
 class DiagnosticError(Exception):
     """Error in diagnostic"""
-    
+
+def genfilename(basedir, variable=None,
+                mmodel=None, region=None, 
+                data_type=None, extension=None, basis='arctic_ocean'):
+    '''Generates file name for the output data.
+
+    Parameters
+    ----------
+    basedir: str
+        base directory
+    variable: str
+      name of the variable 
+    mmodel: str
+        name of the model
+    region: str
+        name of the region
+    data_type: str
+        type of the data, for example `timmean`
+    extention: str
+        fiel extention, for example `nc`
+    basis: str
+        basis name that can be used for series of 
+        diagnostics
+
+    Returns
+    -------
+    ifilename: str
+        path to the file
+    '''
+    nname = [basis,  region, mmodel, variable, data_type]
+    nname_nonans = []
+    for i in nname:
+        if i:
+            nname_nonans.append(i)
+    basename = "_".join(nname_nonans)
+    if extension:
+        basename = basename+extension
+    ifilename = os.path.join(basedir, basename)
+    return ifilename
+
+
+
 def timmean(model_filenames, mmodel,
-            cmor_var, diagworkdir, observations = 'PHC'):
-    logger.info("Calculate timmean {} for {}".format(cmor_var, mmodel))
+            cmor_var, diagworkdir, observations='PHC'):
+    '''Create time mean of input data.
+    
+    Parameters
+    ----------
+    model_filenames: OrderedDict
+        OrderedDict with model names as keys and input files as values.
+    mmodel: str
+        model name that will be processed
+    cmor_var: str
+        name of the CMOR variable
+    diagworkdir: str
+        path to the working directory
+    observations: str
+        name of observational/climatology data set.
+
+    Returns
+    ---------
+    None
+    '''
+    logger.info("Calculate timmean %s for %s", cmor_var, mmodel)
     cdo = Cdo()
     ofilename = genfilename(diagworkdir, cmor_var,
                              mmodel,  data_type='timmean', extension='.nc')
-    # ofilename = os.path.join(diagworkdir,
-    #                         'arctic_ocean_{}_{}_timmean.nc'.format(cmor_var,
-    #                                                               mmodel))
     if mmodel != observations:
         cdo.timmean(input=model_filenames[mmodel],
                 output=ofilename)
     else:
         shutil.copy2(model_filenames[mmodel], ofilename)
 
-
-def genfilename(basedir, variable=None,
-                mmodel=None, region=None, 
-                data_type=None, extension=None, basis='arctic_ocean'):
-    nname = [basis,  region, mmodel, variable, data_type]
-    nname_nonans = []
-    for i in nname:
-        if i:
-            nname_nonans.append(i)
-    #print(nname_nonans)
-    basename = "_".join(nname_nonans)
-    #print(basename)
-    if extension:
-        basename = basename+extension
-    #print(basename)
-    ifilename = os.path.join(basedir, basename)
-    #print(ifilename)
-    return ifilename
-
 def get_clim_model_filenames(config, variable):
+    '''Extract model filenames from the configuration.
+    '''
     model_filenames = {}
     for key, value in (config['input_data'].items()):
         if value['short_name'] == variable:
@@ -87,6 +111,8 @@ def get_clim_model_filenames(config, variable):
     return(model_filenames)
 
 def get_fx_filenames(config, variable, fx_var):
+    '''Extract fx file names
+    '''
     areacello_fxdataset = {}
     for key, value in (config['input_data'].items()):
         if value['short_name'] == variable:
@@ -162,6 +188,8 @@ def shiftedColorMap(cmap, start=0, midpoint=0.5, stop=1.0, name='shiftedcmap'):
 
 
 def dens_back(smin, smax, tmin, tmax):
+    '''Calculate density for TS diagram.
+    '''
 
     xdim = round((smax-smin)/0.1+1,0)
     ydim = round((tmax-tmin)+1,0)
