@@ -3,7 +3,7 @@
 import os
 import unittest
 
-from esmvaltool.cmor.table import CMIP5Info, CMIP6Info, CustomInfo
+from esmvaltool.cmor.table import CMIP5Info, CMIP6Info, CustomInfo, CMIP3Info
 
 
 class TestCMIP6Info(unittest.TestCase):
@@ -133,3 +133,32 @@ class TestCustomInfo(unittest.TestCase):
     def test_get_bad_variable(self):
         """Get none if a variable is not in the given table."""
         self.assertIsNone(self.variables_info.get_variable('Omon', 'badvar'))
+
+class TestCMIP3Info(unittest.TestCase):
+    """Test for the CMIP5 info class."""
+
+    @classmethod
+    def setUpClass(cls):
+        """
+        Set up tests.
+
+        We read CMIP3Info once to keep testing times manageable
+        """
+        cls.variables_info = CMIP3Info('cmip3', default=CustomInfo())
+
+    def test_custom_tables_location(self):
+        """Test constructor with custom tables location."""
+        cwd = os.path.dirname(os.path.realpath(__file__))
+        cmor_tables_path = os.path.join(cwd, '..', '..', '..', 'esmvaltool',
+                                        'cmor', 'tables', 'cmip3')
+        cmor_tables_path = os.path.abspath(cmor_tables_path)
+        CMIP3Info(cmor_tables_path)
+
+    def test_get_variable_tas(self):
+        """Get tas variable."""
+        var = self.variables_info.get_variable('A1', 'tas')
+        self.assertEqual(var.short_name, 'tas')
+
+    def test_get_bad_variable(self):
+        """Get none if a variable is not in the given table."""
+        self.assertIsNone(self.variables_info.get_variable('Omon', 'tas'))

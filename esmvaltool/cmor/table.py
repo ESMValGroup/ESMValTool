@@ -761,7 +761,7 @@ class CMIP3Info(object):
         return coord
 
     def _read_variable(self, short_name, frequency):
-        var = VariableInfo('CMIP5', short_name)
+        var = VariableInfo('CMIP3', short_name)
         var.frequency = frequency
         while self._read_line():
             key, value = self._last_line_read

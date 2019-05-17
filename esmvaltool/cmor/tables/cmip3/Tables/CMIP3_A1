@@ -7,9 +7,10 @@ project_id:   CMIP3  ! project id
 
 baseURL: https://pcmdi.llnl.gov/mips/cmip3/
 
+generic_levels: alevel
 
 !============
-!axis_entry: longitude
+axis_entry: longitude
 !============
 !----------------------------------
 ! Axis attributes:
@@ -22,8 +23,8 @@ long_name:        longitude
 ! Additional axis information:
 !----------------------------------
 out_name:         lon
-valid_min:        0.0         
-valid_max:        360.0 
+valid_min:        0.0
+valid_max:        360.0
 stored_direction: increasing
 type:             double
 must_have_bounds: yes
@@ -45,8 +46,8 @@ long_name:        latitude
 ! Additional axis information:
 !----------------------------------
 out_name:         lat
-valid_min:        -90.0         
-valid_max:        90.0 
+valid_min:        -90.0
+valid_max:        90.0
 stored_direction: increasing
 type:             double
 must_have_bounds: yes
@@ -72,7 +73,7 @@ out_name:         plev
 stored_direction: decreasing
 tolerance:        0.001
 type:             double
-requested:        100000. 92500. 85000. 70000. 60000. 50000. 40000. 30000. 25000. 20000. 15000. 10000. 7000. 5000. 3000. 2000. 1000.        ! space-separated list of requested coordinates 
+requested:        100000. 92500. 85000. 70000. 60000. 50000. 40000. 30000. 25000. 20000. 15000. 10000. 7000. 5000. 3000. 2000. 1000.        ! space-separated list of requested coordinates
 must_have_bounds: no
 !----------------------------------
 !
@@ -136,11 +137,11 @@ long_name:        height
 ! Additional axis information:
 !----------------------------------
 out_name:         height
-valid_min:        1.0         
-valid_max:        10.0 
+valid_min:        1.0
+valid_max:        10.0
 stored_direction: increasing
 type:             double
-value:            2.            ! of scalar (singleton) dimension 
+value:            2.            ! of scalar (singleton) dimension
 must_have_bounds: no
 !----------------------------------
 !
@@ -161,11 +162,11 @@ long_name:        height
 ! Additional axis information:
 !----------------------------------
 out_name:         height
-valid_min:        1.0         
-valid_max:        30.0 
+valid_min:        1.0
+valid_max:        30.0
 stored_direction: increasing
 type:             double
-value:            10.            ! of scalar (singleton) dimension 
+value:            10.            ! of scalar (singleton) dimension
 must_have_bounds: no
 !----------------------------------
 !
@@ -176,21 +177,21 @@ axis_entry: standard_sigma
 !============
 !
 ! This coordinate is dimensionless and varies from 0 at the model top to 1.0 at the surface.
-!  The values of sigma(k), which appears in the formula below, should be stored as standard_sigma.  
+!  The values of sigma(k), which appears in the formula below, should be stored as standard_sigma.
 !  Note that in the netCDF file the variable will be named "lev", not standard_sigma.
 !
 !------------
 !
 ! Axis attributes:
-!----------------------------------	
+!----------------------------------
 standard_name:    atmosphere_sigma_coordinate
 axis:             Z
 positive:         down
 long_name:        sigma coordinate
-!----------------------------------	
+!----------------------------------
 !
 ! Additional axis information:
-!----------------------------------	
+!----------------------------------
 out_name:         lev
 must_have_bounds: yes
 stored_direction: decreasing
@@ -199,7 +200,7 @@ valid_max:        1.0
 formula:          p = ptop + sigma*(ps - ptop)
 z_factors:        ptop: ptop sigma: lev ps: ps
 z_bounds_factors: ptop: ptop sigma: lev_bnds ps: ps
-!----------------------------------	
+!----------------------------------
 !
 !
 !============
@@ -207,20 +208,20 @@ axis_entry:  standard_hybrid_sigma
 !============
 !
 ! This coordinate is dimensionless and varies from a small value at the model top to 1.0 at the surface.
-!  The values of a+ b, which appear in the formula below, should be stored as standard_hybrid_sigma.  
+!  The values of a+ b, which appear in the formula below, should be stored as standard_hybrid_sigma.
 !  Note that in the netCDF file the variable will be named "lev", not standard_hybrid_sigma.
 !
 !---------------------------------
 ! Axis attributes:
-!----------------------------------	
+!----------------------------------
 standard_name:    atmosphere_hybrid_sigma_pressure_coordinate
 units:            1
-axis:             Z 
+axis:             Z
 positive:         down
 long_name:        hybrid sigma pressure coordinate
 !----------------------------------
 ! Additional axis information:
-!----------------------------------	
+!----------------------------------
 out_name:         lev
 must_have_bounds: yes
 stored_direction: decreasing
@@ -229,7 +230,7 @@ valid_max:        1.0
 formula:          p = a*p0 + b*ps
 z_factors:        p0: p0 a: a b: b ps: ps
 z_bounds_factors: p0: p0 a: a_bnds b: b_bnds ps: ps
-!----------------------------------		
+!----------------------------------
 !
 !
 !============
@@ -237,22 +238,22 @@ axis_entry:  alternate_hybrid_sigma
 !============
 !
 ! This coordinate is dimensionless and varies from a small value at the model top to 1.0 at the surface.
-!  The values of ap/p0 + b, which appear in the formula below, should be stored as alternate_hybrid_sigma.  
+!  The values of ap/p0 + b, which appear in the formula below, should be stored as alternate_hybrid_sigma.
 !  Note that in the netCDF file the variable will be named "lev", not alternate_hybrid_sigma.
 !
 !------------
 !
 ! Axis attributes:
-!----------------------------------	
+!----------------------------------
 standard_name:    atmosphere_hybrid_sigma_pressure_coordinate
 units:            1
 axis:             Z
 positive:         down
 long_name:        hybrid sigma pressure coordinate
-!----------------------------------	
+!----------------------------------
 !
 ! Additional axis information:
-!----------------------------------	
+!----------------------------------
 out_name:         lev
 must_have_bounds: yes
 stored_direction: decreasing
@@ -261,7 +262,7 @@ valid_max:        1.0
 formula:          p = ap + b*ps
 z_factors:        ap: ap b: b ps: ps
 z_bounds_factors: ap: ap_bnds b: b_bnds ps: ps
-!----------------------------------		
+!----------------------------------
 !
 !
 !============
@@ -269,22 +270,22 @@ axis_entry:  hybrid_height
 !============
 !
 ! This coordinate has dimension of meters (m) and increases upward.
-!  The values of a which appear in the formula below, should be stored as hybrid_height.  
+!  The values of a which appear in the formula below, should be stored as hybrid_height.
 !  Note that in the netCDF file the variable will be named "lev", not hybrid_height.
 !
 !------------
 !
 ! Axis attributes:
-!----------------------------------	
+!----------------------------------
 standard_name:    atmosphere_hybrid_height_coordinate
 units:            m
-axis:             Z 
+axis:             Z
 positive:         up
 long_name:        hybrid height coordinate
-!----------------------------------	
+!----------------------------------
 !
 ! Additional axis information:
-!----------------------------------	
+!----------------------------------
 out_name:         lev
 must_have_bounds: yes
 stored_direction: increasing
@@ -292,7 +293,7 @@ valid_min:        0.0
 formula:          z = a + b*orog
 z_factors:        a: lev b: b orog: orog
 z_bounds_factors: a: lev_bnds b: b_bnds orog: orog
-!----------------------------------		
+!----------------------------------
 !
 ! ***************************************************************
 !
@@ -329,10 +330,10 @@ variable_entry: p0
 !------------
 !
 ! Variable attributes:
-!----------------------------------	
-long_name:       vertical coordinate formula term: reference pressure 
+!----------------------------------
+long_name:       vertical coordinate formula term: reference pressure
 units:           Pa
-!----------------------------------	
+!----------------------------------
 !
 !
 !============
@@ -342,10 +343,10 @@ variable_entry: ptop
 !------------
 !
 ! Variable attributes:
-!----------------------------------	
-long_name:       pressure at top of model 
+!----------------------------------
+long_name:       pressure at top of model
 units:           Pa
-!----------------------------------	
+!----------------------------------
 !
 !
 !
@@ -355,15 +356,15 @@ variable_entry: a
 !------------
 !
 ! Variable attributes:
-!----------------------------------	
+!----------------------------------
 long_name:   vertical coordinate formula term: a(k)
-!----------------------------------	
+!----------------------------------
 !
 ! Additional variable information:
-!----------------------------------	
+!----------------------------------
 dimensions:         alevel
 type:               double
-!----------------------------------	
+!----------------------------------
 !
 !
 !============
@@ -372,15 +373,15 @@ variable_entry: b
 !------------
 !
 ! Variable attributes:
-!----------------------------------	
+!----------------------------------
 long_name:   vertical coordinate formula term: b(k)
-!----------------------------------	
+!----------------------------------
 !
 ! Additional variable information:
-!----------------------------------	
+!----------------------------------
 dimensions:         alevel
 type:               double
-!----------------------------------	
+!----------------------------------
 !
 !
 !============
@@ -390,15 +391,15 @@ variable_entry: a_bnds
 !------------
 !
 ! Variable attributes:
-!----------------------------------	
+!----------------------------------
 long_name:   vertical coordinate formula term: a(k+1/2)
-!----------------------------------	
+!----------------------------------
 !
 ! Additional variable information:
-!----------------------------------	
+!----------------------------------
 dimensions:         alevel
 type:               double
-!----------------------------------	
+!----------------------------------
 !
 !
 !============
@@ -408,12 +409,12 @@ variable_entry: b_bnds
 !------------
 !
 ! Variable attributes:
-!----------------------------------	
+!----------------------------------
 long_name:   vertical coordinate formula term: b(k+1/2)
-!----------------------------------	
+!----------------------------------
 !
 ! Additional variable information:
-!----------------------------------	
+!----------------------------------
 dimensions:         alevel
 type:               double
 !----------------------------------
@@ -424,16 +425,16 @@ variable_entry: ap
 !============
 !
 ! Variable attributes:
-!----------------------------------	
+!----------------------------------
 long_name:   vertical coordinate formula term: ap(k)
 units:           Pa
-!----------------------------------	
+!----------------------------------
 !
 ! Additional variable information:
-!----------------------------------	
+!----------------------------------
 dimensions:         alevel
 type:               double
-!----------------------------------	
+!----------------------------------
 !
 !
 !============
@@ -441,16 +442,16 @@ variable_entry: ap_bnds
 !============
 !
 ! Variable attributes:
-!----------------------------------	
+!----------------------------------
 long_name:   vertical coordinate formula term: ap(k+1/2)
 units:           Pa
-!----------------------------------	
+!----------------------------------
 !
 ! Additional variable information:
-!----------------------------------	
+!----------------------------------
 dimensions:         alevel
 type:               double
-!----------------------------------	
+!----------------------------------
 !
 !
 !============
@@ -460,10 +461,10 @@ variable_entry: ztop
 !------------
 !
 ! Variable attributes:
-!----------------------------------	
-long_name:       height of top of model 
+!----------------------------------
+long_name:       height of top of model
 units:           m
-!----------------------------------	
+!----------------------------------
 !
 !
 !
