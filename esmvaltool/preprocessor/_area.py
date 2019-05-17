@@ -7,6 +7,7 @@ selecting geographical regions; constructing area averages; etc.
 import logging
 
 import iris
+from iris.util import broadcast_to_shape
 import numpy as np
 
 
@@ -75,6 +76,11 @@ def extract_region(cube, start_longitude, end_longitude, start_latitude,
     mask += np.ma.masked_where(lats > end_latitude, lats).mask
     mask += np.ma.masked_where(lons > start_longitude, lons).mask
     mask += np.ma.masked_where(lons > end_longitude, lons).mask
+    mask_shape = mask.shape
+    data_shape = cube.shape
+    if mask_shape != data_shape:
+        mapping = [data_shape.index(length) for length in mask_shape]
+        mask = broadcast_to_shape(mask, cube.shape, mapping)
     cube.data = np.ma.masked_where(mask, cube.data)
     return cube
 

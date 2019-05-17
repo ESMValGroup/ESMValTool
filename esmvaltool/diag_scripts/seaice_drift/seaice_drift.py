@@ -11,6 +11,7 @@ from matplotlib import pyplot as plt
 
 import iris
 import iris.cube
+from iris.cube import Cube
 import iris.analysis
 import iris.analysis.cartography
 import iris.coords
@@ -77,11 +78,18 @@ class SeaIceDrift(object):
             )
             alias = self._get_alias(filename, reference_dataset)
             sithick = self._load_cube(filename, 'sea_ice_thickness')
-            self.sivol[alias] = self._compute_mean(
-                sithick * siconc_original[alias],
-                self._get_mask(sithick, filename)
-            )
-            del sithick
+            if alias != 'reference':
+                self.sivol[alias] = self._compute_mean(
+                    sithick * siconc_original[alias],
+                    self._get_mask(sithick, filename)
+                )
+                del sithick
+            else:
+                self.sivol[alias] = self._compute_mean(
+                    sithick,
+                    self._get_mask(sithick, filename)
+                )
+
 
         logger.info('Load sea ice velocities')
         sispeed_files = self.datasets.get_path_list(
@@ -215,11 +223,23 @@ class SeaIceDrift(object):
 
     def _compute_mean(self, data, weights):
         domain_mean = iris.cube.CubeList()
-
+        model_cube = None
         for map_slice in data.slices_over('time'):
-            domain_mean.append(map_slice.collapsed(['latitude', 'longitude'],
-                                                   iris.analysis.MEAN,
-                                                   weights=weights))
+            mean = np.average(map_slice.data, weights=weights)
+            if not model_cube:
+                cube = Cube(
+                    mean,
+                    standard_name=map_slice.standard_name,
+                    var_name=map_slice.var_name,
+                    long_name=map_slice.long_name,
+                    units=map_slice.units,
+                    attributes=map_slice.attributes.copy(),
+                )
+                model_cube = cube
+            cube = model_cube.copy(mean)
+            cube.add_aux_coord(map_slice.coord('time'))
+            cube.add_aux_coord(map_slice.coord('month_number'))
+            domain_mean.append(cube)
         domain_mean = domain_mean.merge_cube()
         return domain_mean.aggregated_by('month_number', iris.analysis.MEAN)
 
