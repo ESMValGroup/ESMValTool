@@ -408,12 +408,12 @@ diagnostics:
 #                    0.0225, 0.025]
 
   # ==========================================================================
-  # Lauer et al. (2017) - Figure 18
-  # O3 seasonal cycle climatologies
+  # Lauer et al. (2017) - Figure 16
+  # ozone time series
   # ==========================================================================
 
-  fig18_a:
-    description: seasonal cycle of total column ozone (comparison with ESACCI)
+  fig16:
+    description: time series of total column ozone
     themes:
       - chem
     realms:
@@ -421,11 +421,11 @@ diagnostics:
       - atmosChem
     variables:
       toz:
-        preprocessor: clim_1x1
+        preprocessor: clim_1x1_09
         derive: true
         mip: Amon
-        start_year: 1997
-        end_year: 2004 #2010
+        start_year: 1960
+        end_year: 2010
         exp: [historical, rcp45]
         reference_dataset: ESACCI-OZONE
         additional_datasets:
@@ -433,68 +433,121 @@ diagnostics:
           - {dataset: CNRM-CM5, project: CMIP5, ensemble: r1i1p1}
           - {dataset: GFDL-CM3, project: CMIP5, ensemble: r1i1p1}
           - {dataset: GISS-E2-H, project: CMIP5, ensemble: r1i1p2}
-          - {dataset: GISS-E2-H, project: CMIP5, ensemble: r3i1p3}
+#          - {dataset: GISS-E2-H, project: CMIP5, ensemble: r3i1p3}
           - {dataset: GISS-E2-R, project: CMIP5, ensemble: r1i1p2}
-          - {dataset: GISS-E2-R, project: CMIP5, ensemble: r1i1p3}
+#          - {dataset: GISS-E2-R, project: CMIP5, ensemble: r1i1p3}
           - {dataset: MIROC-ESM-CHEM, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: ESACCI-OZONE, project: OBS, type: sat, version: L3, tier: 2}
+          - {dataset: ESACCI-OZONE, project: OBS, type: sat, version: L3, tier: 2,
+             start_year: 1997, end_year: 2010}
+          - {dataset: NIWA-BS, project: OBS, type: sat, version: v3.3, tier: 3,
+             start_year: 1980, end_year: 2010}
     scripts:
-      esacci:
-        script: eyring13jgr/eyring13jgr_fig01.ncl
-        rgb_file: $diag_scripts/shared/plot/rgb/eyring_toz.rgb
-        font: 21
-        range_option: 0
-        lbLabelBarOn: false
-        show_mask: true
-        e13fig01_diff_ref: true
-        e13fig01_list_chem_mod_string: CMIP5
-        eyring13_cnlvl: [150., 175., 200., 225., 250., 275., 300., 325.,
-                         350., 375., 400., 425., 450., 475.]
-        eyring13_difflvl: [-30, -20, -10, 0, 10, 20, 30, 40, 50, 60]
-        eyring13_reflvl: [150., 175., 200., 225., 250., 275., 300., 325.,
-                          350., 375., 400., 425., 450., 475.]
+      ts_ozone:
+        script: eyring13jgr/eyring13jgr_fig02.ncl
+        e13fig02_latrange: [(/-90, 90/), (/-90, -60/)]
+        styleset: CMIP5_ESA
+        e13fig02_season: ["ANN", "OCT"]
+        e13fig02_XMin: [1960., 1960.]
+        e13fig02_XMax: [2010., 2010.]
+        e13fig02_YMin: [270., 150.]
+        e13fig02_YMax: [340., 500.]
+        e13fig02_legend_MMM: false
+        e13fig02_legend: true
+        list_chem_mod: All
+        list_nochem_mod: None
 
-  fig18_b:
-    description: seasonal cycle of total column ozone (comparison with NIWA)
-    themes:
-      - chem
-    realms:
-      - atmos
-      - atmosChem
-    variables:
-      toz:
-        preprocessor: clim_1x1
-        derive: true
-        mip: Amon
-        start_year: 1997
-        end_year: 2004 #2010
-        exp: [historical, rcp45]
-        reference_dataset: NIWA-BS
-        additional_datasets:
-          - {dataset: CESM1-WACCM, project: CMIP5, ensemble: r2i1p1}
-          - {dataset: CNRM-CM5, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: GFDL-CM3, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: GISS-E2-H, project: CMIP5, ensemble: r1i1p2}
-          - {dataset: GISS-E2-H, project: CMIP5, ensemble: r3i1p3}
-          - {dataset: GISS-E2-R, project: CMIP5, ensemble: r1i1p2}
-          - {dataset: GISS-E2-R, project: CMIP5, ensemble: r1i1p3}
-          - {dataset: MIROC-ESM-CHEM, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: NIWA-BS, project: OBS, type: sat, version: v3.3, tier: 3}
-    scripts:
-      niwa:
-        script: eyring13jgr/eyring13jgr_fig01.ncl
-        rgb_file: $diag_scripts/shared/plot/rgb/eyring_toz.rgb
-        font: 21
-        range_option: 0
-        lbLabelBarOn: true
-        show_mask: true
-        e13fig01_diff_ref: true
-        e13fig01_list_chem_mod_string: CMIP5
-        eyring13_cnlvl: [150., 175., 200., 225., 250., 275., 300., 325.,
-                         350., 375., 400., 425., 450., 475.]
-        eyring13_difflvl: [-30, -20, -10, 0, 10, 20, 30, 40, 50, 60]
-        eyring13_reflvl: [150., 175., 200., 225., 250., 275., 300., 325.,
-                          350., 375., 400., 425., 450., 475.]
+#   <diag_script_cfg_dir> ./nml/cfg_lauer17rse/  </diag_script_cfg_dir>
+#   <diag_script cfg="cfg_eyring13jgr_fig02.ncl"> eyring13jgr_fig02.ncl </diag_script>
+#   <model> O3_Cionni IGAG/SPARC      1    historical        1960 2009 @{OBSPATH2}/forcings/ozonedatabase2011/ </model>
+
+  # ==========================================================================
+  # Lauer et al. (2017) - Figure 18
+  # ozone seasonal cycle climatologies
+  # ==========================================================================
+
+#  fig18_a:
+#    description: seasonal cycle of total column ozone (comparison with ESACCI)
+#    themes:
+#      - chem
+#    realms:
+#      - atmos
+#      - atmosChem
+#    variables:
+#      toz:
+#        preprocessor: clim_1x1
+#        derive: true
+#        mip: Amon
+#        start_year: 1997
+#        end_year: 2004 #2010
+#        exp: [historical, rcp45]
+#        reference_dataset: ESACCI-OZONE
+#        additional_datasets:
+#          - {dataset: CESM1-WACCM, project: CMIP5, ensemble: r2i1p1}
+#          - {dataset: CNRM-CM5, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: GFDL-CM3, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: GISS-E2-H, project: CMIP5, ensemble: r1i1p2}
+#          - {dataset: GISS-E2-H, project: CMIP5, ensemble: r3i1p3}
+##          - {dataset: GISS-E2-R, project: CMIP5, ensemble: r1i1p2}
+#          - {dataset: GISS-E2-R, project: CMIP5, ensemble: r1i1p3}
+#          - {dataset: MIROC-ESM-CHEM, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: ESACCI-OZONE, project: OBS, type: sat, version: L3, tier: 2}
+#    scripts:
+#      esacci:
+#        script: eyring13jgr/eyring13jgr_fig01.ncl
+#        rgb_file: $diag_scripts/shared/plot/rgb/eyring_toz.rgb
+#        font: 21
+#        range_option: 0
+#        lbLabelBarOn: false
+#        show_mask: true
+#        e13fig01_diff_ref: true
+#        e13fig01_list_chem_mod_string: CMIP5
+#        eyring13_cnlvl: [150., 175., 200., 225., 250., 275., 300., 325.,
+#                         350., 375., 400., 425., 450., 475.]
+#        eyring13_difflvl: [-30, -20, -10, 0, 10, 20, 30, 40, 50, 60]
+#        eyring13_reflvl: [150., 175., 200., 225., 250., 275., 300., 325.,
+#                          350., 375., 400., 425., 450., 475.]
+#
+#  fig18_b:
+#    description: seasonal cycle of total column ozone (comparison with NIWA)
+#    themes:
+#      - chem
+#    realms:
+#      - atmos
+#      - atmosChem
+#    variables:
+#      toz:
+#        preprocessor: clim_1x1
+#        derive: true
+#        mip: Amon
+#        start_year: 1997
+#        end_year: 2004 #2010
+#        exp: [historical, rcp45]
+#        reference_dataset: NIWA-BS
+#        additional_datasets:
+#          - {dataset: CESM1-WACCM, project: CMIP5, ensemble: r2i1p1}
+#          - {dataset: CNRM-CM5, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: GFDL-CM3, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: GISS-E2-H, project: CMIP5, ensemble: r1i1p2}
+#          - {dataset: GISS-E2-H, project: CMIP5, ensemble: r3i1p3}
+#          - {dataset: GISS-E2-R, project: CMIP5, ensemble: r1i1p2}
+#          - {dataset: GISS-E2-R, project: CMIP5, ensemble: r1i1p3}
+#          - {dataset: MIROC-ESM-CHEM, project: CMIP5, ensemble: r1i1p1}
+#          - {dataset: NIWA-BS, project: OBS, type: sat, version: v3.3, tier: 3}
+#    scripts:
+#      niwa:
+#        script: eyring13jgr/eyring13jgr_fig01.ncl
+#        rgb_file: $diag_scripts/shared/plot/rgb/eyring_toz.rgb
+#        font: 21
+#        range_option: 0
+#        lbLabelBarOn: true
+#        show_mask: true
+#        e13fig01_diff_ref: true
+#        e13fig01_list_chem_mod_string: CMIP5
+#        eyring13_cnlvl: [150., 175., 200., 225., 250., 275., 300., 325.,
+#                         350., 375., 400., 425., 450., 475.]
+#        eyring13_difflvl: [-30, -20, -10, 0, 10, 20, 30, 40, 50, 60]
+#        eyring13_reflvl: [150., 175., 200., 225., 250., 275., 300., 325.,
+#                          350., 375., 400., 425., 450., 475.]
 
   # ==========================================================================
   # Lauer et al. (2017) - Figure 19
