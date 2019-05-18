@@ -1,3 +1,4 @@
+#nolint start
 test.get.climdex.variable.list <- function() {
   checkEquals(climdex.var.list$tavg.all, get.climdex.variable.list(c("tavg")))
   checkEquals(climdex.var.list$tmax.all, get.climdex.variable.list(c("tmax")))
@@ -47,4 +48,4 @@ test.flatten.dims <- function() {
   valid.flat <- structure(1:8, .Dim = c(2L, 4L))
   checkEquals(flatten.dims(dat, 2:3), valid.flat)
 }
-
+#nolint end

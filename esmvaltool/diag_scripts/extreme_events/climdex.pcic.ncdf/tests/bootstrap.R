@@ -1,3 +1,4 @@
+#nolint start
 load("exemplar_data.rda")
 
 if(require("RUnit", quietly=TRUE)) {
@@ -10,3 +11,4 @@ if(require("RUnit", quietly=TRUE)) {
   printTextProtocol(climdex.pcic.ncdf.test.result)
   stopifnot(climdex.pcic.ncdf.test.result$climdex.pcic.ncdf$nFail == 0 && climdex.pcic.ncdf.test.result$climdex.pcic.ncdf$nErr == 0)    
 }
+#nolint end

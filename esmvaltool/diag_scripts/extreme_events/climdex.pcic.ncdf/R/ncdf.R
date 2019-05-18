@@ -1,3 +1,4 @@
+# nolint start
 #' climdex.pcic.ncdf, a package to calculate Climdex indices from NetCDF files.
 #' 
 #' This package implements code to facilitate computation of Climdex indices
@@ -1464,3 +1465,4 @@ create.indices.from.files <- function(input.files, out.dir, output.filename.temp
   cat("Finished computing indices\n")
   invisible(0)
 }
+# nolint end

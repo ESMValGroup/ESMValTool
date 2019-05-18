@@ -1,3 +1,4 @@
+#nolint start
 author.data <- list(institution="Pacific Climate Impacts Consortium",
                     institution_id="PCIC",
                     indices_archive="Please check http://www.cccma.ec.gc.ca/data/climdex/climdex.shtml for errata or updates.",
@@ -221,3 +222,4 @@ parallel.thresholds.create.and.indices <- function() {
     create.indices.from.files(input.file.list, indices.dir.nothresh, input.file.list[1], author.data, parallel=4, base.range=c(2010, 2029))
   })
 }
+#nolint end
