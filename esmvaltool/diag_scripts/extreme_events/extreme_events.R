@@ -20,7 +20,6 @@
 #    2016 0414-A_broe_bj: written
 # ############################################################################
 
-library(climdex.pcic.ncdf)  # nolint
 library(tools)
 library(yaml)
 library(ncdf4)
@@ -44,6 +43,7 @@ provenance_record <- function(infile) {
 }
 
 diag_scripts_dir <- Sys.getenv("diag_scripts")
+source(paste0(diag_scripts_dir, "/extreme_events/climdex.pcic.ncdf/R/ncdf.R"))  # nolint
 source(paste0(diag_scripts_dir, "/shared/external.R"))  # nolint
 source(paste0(diag_scripts_dir, "/extreme_events/cfg_climdex.R"))  # nolint
 source(paste0(diag_scripts_dir, "/extreme_events/cfg_extreme.R"))  # nolint

@@ -17,5 +17,6 @@ plyr
 RColorBrewer
 Rcpp
 s2dverification
+snow
 SPEI
 yaml
