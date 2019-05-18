@@ -41,7 +41,7 @@ datasets:
   - {dataset: CMCC-CM, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1980, end_year: 1989}
 
 diagnostics:
-  ExtremeEvents:
+  extreme_events:
     description: calculate extreme events
     variables:
       pr:

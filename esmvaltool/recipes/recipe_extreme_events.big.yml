@@ -60,7 +60,7 @@ datasets:
   - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, start_year: 1981, end_year: 2000, tier: 3}
 
 diagnostics:
-  ExtremeEvents:
+  extreme_events:
     description: calculate extreme events
     variables:
       pr:
