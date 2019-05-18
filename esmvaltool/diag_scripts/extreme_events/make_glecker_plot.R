@@ -35,6 +35,14 @@ gleckler_main <- function(path = "./", idx_list, model_list, obs_list,
   nidx <- length(idx_list) # number of indices
   nobs <- length(obs_list) # number of observations
 
+  if (file.exists(paste0(
+    path, "/gleckler/Gleckler-Array_",  # nolint
+    nidx, "-idx_", nmodel, "-models_",
+    nobs, "-obs", ".RDS"
+  ))) {
+    promptinput <- "n"
+  }
+
   if (promptinput == "y") {
     # Initial nc-file time crop, regrid, land and plot purge
     unlink(c(time_cropped, regridded, land,
@@ -527,7 +535,7 @@ gleckler_plotting <- function(arr = rmserelarr, idx_list, model_list,
   )
 
   ## Scale for Gleckler plot
-  gleckler_scale <- function(sclseq, glc, scaling_factor,
+  gleckler_scale <- function(sclseq, glc, xn, scaling_factor,
                                text.scaling_factor, xscale_spacer) {
     par(xpd = TRUE)
     ## Square legend
@@ -552,7 +560,7 @@ gleckler_plotting <- function(arr = rmserelarr, idx_list, model_list,
     exlen <- length(glc)
     for (a in 1:exlen) {
       if (a == 1) {
-        xtmp <- scaling_factor * (dtrixs / exlen) + 1 + xscale_spacer
+        xtmp <- scaling_factor * (dtrixs / xn) + 1 + xscale_spacer / xn
         ytmp <- (scaling_factor * (dtriys / exlen + (a - 1) / exlen) +
           yscale_spacer)
         polygon(x = xtmp, y = ytmp, col = glc[a])
@@ -562,12 +570,12 @@ gleckler_plotting <- function(arr = rmserelarr, idx_list, model_list,
           cex = text.scaling_factor, pos = 4
         )
       } else if (a == exlen) {
-        xtmp <- scaling_factor * (utrixs / exlen) + 1 + xscale_spacer
+        xtmp <- scaling_factor * (utrixs / xn) + 1 + xscale_spacer / xn
         ytmp <- (scaling_factor * (utriys / exlen + (a - 1) / exlen) +
           yscale_spacer)
         polygon(x = xtmp, y = ytmp, col = glc[a])
       } else {
-        xtmp <- scaling_factor * (sqrxs / exlen) + 1 + xscale_spacer
+        xtmp <- scaling_factor * (sqrxs / xn) + 1 + xscale_spacer / xn
         ytmp <- (scaling_factor * (sqrys / exlen + (a - 1) / exlen) +
           yscale_spacer)
         polygon(x = xtmp, y = ytmp, col = glc[a])
@@ -580,13 +588,13 @@ gleckler_plotting <- function(arr = rmserelarr, idx_list, model_list,
   }
 
   ## Plot scales
-  gleckler_scale(sclseq, glc,
+  gleckler_scale(sclseq, glc, xn,
     scaling_factor = gl_scaling_factor,
     text.scaling_factor = gl_text_scaling_factor,
     xscale_spacer = gl_xscale_spacer_rmse
   )
 
-  gleckler_scale(sclseq_bw, glbw,
+  gleckler_scale(sclseq_bw, glbw, xn,
     scaling_factor = gl_scaling_factor,
     text.scaling_factor = gl_text_scaling_factor,
     xscale_spacer = gl_xscale_spacer_rmsestd
@@ -594,9 +602,9 @@ gleckler_plotting <- function(arr = rmserelarr, idx_list, model_list,
 
   ## Plotting symbol legend
   exlen <- length(glc)
-  xsym1 <- gl_scaling_factor * (0.5 / exlen) + 1 + gl_xscale_spacer_rmse
+  xsym1 <- gl_scaling_factor * (0.5 / xn) + 1 + gl_xscale_spacer_rmse / xn
   exlen <- length(glbw)
-  xsym2 <- gl_scaling_factor * (0.5 / exlen) + 1 + gl_xscale_spacer_rmsestd
+  xsym2 <- gl_scaling_factor * (0.5 / xn) + 1 + gl_xscale_spacer_rmsestd / xn
   x.max_adj <- max(gl_symb_scaling_factor * (xs[[zk]] / xn))
   x.min_adj <- min(gl_symb_scaling_factor * (xs[[zk]] / xn))
   xmidadj <- (x.max_adj - x.min_adj) / 2
@@ -605,13 +613,15 @@ gleckler_plotting <- function(arr = rmserelarr, idx_list, model_list,
 
   for (zk in 1:nobs) {
     xsym <- gl_symb_scaling_factor * (xs[[zk]] / xn) + gl_symb_xshift
-    ysym <- gl_symb_scaling_factor * (ys[[zk]] / yn) - gl_symb_yshift
+    ysym <- (gl_symb_scaling_factor * (ys[[zk]] / xn)
+             - gl_symb_yshift / xn) * width.fct / height.fct
     print(paste("xs:", xsym))
     print(paste("ys:", ysym))
     polygon(x = xsym, y = ysym, col = "white", border = 1)
 
     xtxsym <- gl_symb_scaling_factor * (xtx[[zk]] / xn) + gl_symb_xshift
-    ytxsym <- gl_symb_scaling_factor * (ytx[[zk]] / yn) - gl_symb_yshift
+    ytxsym <- (gl_symb_scaling_factor * (ytx[[zk]] / xn)
+               - gl_symb_yshift / xn) * width.fct / height.fct
 
     text(
       x = xtxsym, y = ytxsym, labels = obs_list[zk], adj = 0.5,

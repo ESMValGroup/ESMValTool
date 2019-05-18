@@ -27,17 +27,16 @@ gleckler_idx <- c(
 ts_plt <- TRUE
 glc_plt <- TRUE
 glc_arr <- FALSE
-gl_mar_par <- c(10, 4, 3, 14)
+gl_mar_par <- c(7, 4, 3, 11)
 gl_png_res <- 480
 gl_png_units <- "px"
-gl_png_pointsize <- 12
+gl_png_pointsize <- 14
 gl_png_bg <- "white"
 gl_rmsespacer <- 0.01
-gl_scaling_factor <- 0.9
+gl_scaling_factor <- 1.0
 gl_text_scaling_factor <- 1.0
-gl_xscale_spacer_rmse <- 0.05
-gl_xscale_spacer_rmsestd <- 0.25
-gl_symb_scaling_factor <- 1.0
-gl_symb_xshift <- 0.2
-gl_symb_yshift <- 0.275
-gl_text_symb_scaling_factor <- 0.5
+gl_xscale_spacer_rmse <- 1.5
+gl_xscale_spacer_rmsestd <- 4.5
+gl_symb_scaling_factor <- 1.5
+gl_symb_yshift <- 2.5
+gl_text_symb_scaling_factor <- 0.6
