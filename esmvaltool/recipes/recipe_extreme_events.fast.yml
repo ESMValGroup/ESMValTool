@@ -1,0 +1,71 @@
+# ESMValTool
+# recipe_ExtremeEvents.yml 
+---
+documentation:
+  description: |
+     Calculate indices for monitoring changes in extremes based on daily temperature
+     and precipitation data. Producing Glecker and timeline plots of this as
+     shown in the IPCC_AR4 report
+
+  authors:
+    - broe_bj
+    - sand_ma
+    - mohr_cw
+    - arno_en
+    - hard_jo
+
+  maintainer:
+    - sand_ma
+
+  references:
+    - zhang-2011
+    - sillman-2013
+
+  projects:
+    - crescendo   
+    - c3s-magic  
+
+#preprocessor:
+#  prep0:
+
+datasets:
+#  - {dataset: EC-Earth, project: CMIP5, exp: historical,  ensemble: r8i1p1, start_year: 1980, end_year: 2000}
+  - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1980, end_year: 1989}
+  - {dataset: ACCESS1-0, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1980, end_year: 1989}
+  - {dataset: ACCESS1-3, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1980, end_year: 1989}
+  - {dataset: IPSL-CM5A-MR, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1980, end_year: 1989}
+  - {dataset: NorESM1-M, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1980, end_year: 1989}
+  - {dataset: BNU-ESM, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1980, end_year: 1989}
+  - {dataset: GFDL-CM3, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1980, end_year: 1989}
+  - {dataset: CCSM4, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1980, end_year: 1989}
+  - {dataset: CMCC-CM, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1980, end_year: 1989}
+
+diagnostics:
+  extreme_events:
+    description: calculate extreme events
+    variables:
+      pr:
+        mip: day
+#      tas:
+#        mip: day
+      tasmax:
+        mip: day
+      tasmin:
+        mip: day
+#    additional_datasets:
+      #- {dataset: MERRA2, project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 3}
+#      - {dataset: EOBS, project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 3}
+#      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, start_year: 1979, end_year: 2018, tier: 3}
+    
+    scripts:
+      main:
+        script: extreme_events/extreme_events.R
+        reference_datasets: ["ACCESS1-0", "ACCESS1-3", "IPSL-CM5A-MR"]
+        regrid_dataset: ACCESS1-0
+        mip_name: CMIP
+        timeseries_idx: ["tn10pETCCDI_yr", "tn90pETCCDI_yr", "tx10pETCCDI_yr", "tx90pETCCDI_yr"]
+        gleckler_idx: ["tn10pETCCDI_yr", "tn90pETCCDI_yr", "tx10pETCCDI_yr", "tx90pETCCDI_yr"]
+        ts_plt: true
+        glc_plt: true
+        base_range: [1980, 1989]
+        analysis_range: [1980, 1989]
