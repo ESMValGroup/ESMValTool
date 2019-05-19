@@ -20,6 +20,7 @@ def setup_driver(cfg):
 
     settings = {
         'outdir': "{0}/".format(cfg['work_dir']),
+        'plotdir': "{0}/".format(cfg['plot_dir']),
         'obs': 'False',
         'zp': os.path.join(cvdp_root, "ncl_scripts/"),
         'run_style': 'serial',

@@ -7,6 +7,7 @@
   outdir            = "/project/CVDP/"   ; location of output files   (must end in a "/")
                                                            ; It is recommended that a new or empty directory be pointed to here 
                                                            ; as existing files in outdir can get removed.
+  plotdir            = "/project/CVDP/"   ; location of plot files
 
   namelists_only       = "False"             ; Set to True to only create the variable namelists. Useful
                                              ; upon running the package for the first time to verify that the correct
@@ -200,6 +201,9 @@
      system("cd "+outdir+"; rm *.png *.ps *.txt *.html *.nc namelist*")
   end if
 ;-------------------------------
+; Move figures and html to plots directory
+;-------------------------------
+system("cd "+outdir+"; mv *.png *.ps *.html "+plotdir)
 ; Cleanup
   do gg = 0,dimsizes(outfiles)-1
      if (isfilepresent2("obs_"+outfiles(gg))) then
