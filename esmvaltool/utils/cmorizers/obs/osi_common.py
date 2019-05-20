@@ -5,6 +5,7 @@ import os
 import glob
 
 import numpy as np
+from numba import vectorize
 import iris
 from iris.cube import Cube
 from iris.coord_categorisation import add_month, add_year
@@ -48,10 +49,12 @@ def cmorize_osi(in_dir, out_dir, cfg, hemisphere):
                 var_info, raw_info, out_dir, glob_attrs, year
             )
             if first_run:
-                sample_file = glob.glob(os.path.join(in_dir, year, '01', file_pattern))[0]
+                sample_file = glob.glob(os.path.join(
+                    in_dir, year, '01', file_pattern))[0]
                 cube = iris.load_cube(
                     sample_file,
-                    iris.Constraint(cube_func=lambda c: c.var_name == raw_info['name'])
+                    iris.Constraint(
+                        cube_func=lambda c: c.var_name == raw_info['name'])
                 )
                 _create_areacello(
                     cfg,
@@ -86,12 +89,21 @@ def extract_variable(var_info, raw_info, out_dir, attrs, year):
         cube.attributes['tracking_ids'] = tracking_ids
     cube.coord('projection_x_coordinate').var_name = 'x'
     cube.coord('projection_y_coordinate').var_name = 'y'
+    lon_coord = cube.coord('longitude')
+    lon_coord.points = _correct_lons(lon_coord.points)
 
     fix_var_metadata(cube, var_info)
     convert_timeunits(cube, year)
     set_global_atts(cube, attrs)
     save_variable(cube, var, out_dir, attrs)
     return cube
+
+
+@vectorize(['float32(float32)'])
+def _correct_lons(lon):
+    if lon < 0:
+        return lon + 360
+    return lon
 
 
 def _unify_attributes(cubes):
@@ -114,6 +126,7 @@ def _unify_attributes(cubes):
                 pass
     return tracking_ids
 
+
 def _monthly_mean(cube):
     add_month(cube, 'time')
     add_year(cube, 'time')
@@ -121,6 +134,7 @@ def _monthly_mean(cube):
     cube.remove_coord('month')
     cube.remove_coord('year')
     return cube
+
 
 def _create_areacello(cfg, sample_cube, glob_attrs, out_dir):
     if not cfg['custom'].get('create_areacello', False):
