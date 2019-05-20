@@ -233,7 +233,7 @@ CMIP5:
 CMIP3:
   input_dir:
     default: '/'
-    DKRZ: '[exp]/[mip]/[frequency]/[short_name]/[dataset]/[ensemble]'
+    DKRZ: '[exp]/[modeling_realm]/[frequency]/[short_name]/[dataset]/[ensemble]'
   input_file: '[short_name]_[mip]*.nc'
   output_file: '[project]_[dataset]_[mip]_[exp]_[ensemble]_[short_name]_[start_year]-[end_year]'
   cmor_type: CMIP3

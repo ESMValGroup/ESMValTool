@@ -76,8 +76,9 @@ def get_start_end_year(filename):
     elif len(dates) == 2:
         start_year, end_year = int(dates[0][:4]), int(dates[1][:4])
     else:
-        raise ValueError('Name {0} dates do not match a recognized '
-                         'pattern'.format(name))
+        #raise ValueError('Name {0} dates do not match a recognized '
+        #                 'pattern'.format(name))
+        return -10000,10000
 
     return start_year, end_year
 

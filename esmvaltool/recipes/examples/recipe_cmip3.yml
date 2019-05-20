@@ -1,0 +1,62 @@
+# ESMValTool
+# recipe_python.yml
+---
+documentation:
+  description: |
+    Example recipe that plots the mean precipitation and temperature.
+
+  authors:
+    - ande_bo
+    - righ_ma
+
+  maintainer:
+    - schl_ma
+
+  references:
+    - acknow_project
+
+  projects:
+    - esmval
+    - c3s-magic
+
+datasets:
+  #- {dataset: CanESM2,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+  #- {dataset: GFDL-ESM2G,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+  #- {dataset: MPI-ESM-LR,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+  - {dataset: ncar_ccsm3_0,  project: CMIP3,  mip: A1,  modeling_realm: atm,  exp: 20c3m,  ensemble: run1,  start_year: 1997,  end_year: 1999}
+  - {dataset: ncar_pcm1,  project: CMIP3,  mip: A1,  modeling_realm: atm,  exp: 20c3m,  ensemble: run1,  start_year: 1997,  end_year: 1999}
+  - {dataset: ukmo_hadcm3,  project: CMIP3,  mip: A1,  modeling_realm: atm,  exp: 20c3m,  ensemble: run1,  start_year: 1997,  end_year: 1999}
+  - {dataset: ukmo_hadgem1,  project: CMIP3,  mip: A1,  modeling_realm: atm,  exp: 20c3m,  ensemble: run1,  start_year: 1997,  end_year: 1999}
+
+preprocessors:
+
+  preprocessor1:
+    extract_levels:
+      levels: 85000
+      scheme: nearest
+    regrid:
+      target_grid: reference_dataset
+      scheme: linear
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean, median]
+
+diagnostics:
+
+  diagnostic1:
+    description: Air temperature and precipitation Python tutorial diagnostic.
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      tas:
+        preprocessor: preprocessor1
+        reference_dataset: ukmo_hadcm3
+      #pr:
+      #  reference_dataset: ukmo_hadcm3
+    scripts:
+      script1:
+        script: examples/diagnostic.py
+        quickplot:
+          plot_type: pcolormesh

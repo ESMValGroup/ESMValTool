@@ -409,7 +409,7 @@ class CMORCheck():
 
         tol = 0.001
         intervals = {'dec': (3600, 3660), 'day': (1, 1)}
-        if self.frequency == 'mon':
+        if self.frequency == 'mon' or self.frequency == 'mo':
             for i in range(len(coord.points) - 1):
                 first = coord.cell(i).point
                 second = coord.cell(i + 1).point

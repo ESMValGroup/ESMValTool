@@ -123,7 +123,7 @@ climatology:      yes
 
 
 !============
-axis_entry: height1
+axis_entry: height
 !============
 !----------------------------------
 ! Axis attributes:
@@ -480,11 +480,11 @@ standard_name:     air_temperature
 units:             K
 cell_methods:      time: mean
 cell_measures:     area: areacella
-long_name:         Near-Surface Air Temperature
+long_name:         Surface Air Temperature
 !----------------------------------
 ! Additional variable information:
 !----------------------------------
-dimensions:        longitude latitude time height1
+dimensions:        longitude latitude time height
 out_name:          tas
 type:              real
 valid_min:         180.6
