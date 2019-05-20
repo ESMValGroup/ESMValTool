@@ -6,12 +6,12 @@ Modes of variability
 Overview
 --------
 
-The goal of this recipe is to compute modes of variability from a reference/observational dataset and a set of climate projections and calculate the root-mean-square error between the mean anomalies obtained for the clusters from the reference and projection data sets.
-This is done through K-means clustering applied either directly to the spatial data or after computing the EOFs.
+The goal of this recipe is to compute modes of variability from a reference or observational dataset and from a set of climate projections and calculate the root-mean-square error between the mean anomalies obtained for the clusters from the reference and projection data sets.
+This is done through K-means or hierarchical clustering applied either directly to the spatial data or after computing the EOFs.
 
 The user can specify the number of clusters to be computed.
 
-The recipe's output consist of netcdf files of the time series of the cluster occurrences, the mean anomaly corresponding to each cluster at each location and the corresponding p-value, for both the observed and projected weather regimes and the RMSE between them.
+The recipe's output consist of three netcdf files for both the observed and projected weather regimes and the RMSE between them.
 
 
 Available recipes and diagnostics
@@ -24,7 +24,7 @@ Recipes are stored in recipes/
 
 Diagnostics are stored in diag_scripts/magic_bsc/
 
-* WeatherRegime.r - function for computing the EOFs and k-means clusters.
+* WeatherRegime.r - function for computing the EOFs and k-means and hierarchicalclusters.
 
 * weather_regime.r - applies the above weather regimes function to the datasets
 
@@ -43,8 +43,9 @@ User setting files are stored in recipes/
    * end_historical: end date (YYYY-MM-DD) of the reference dataset to be used (please make sure this matches the available data)
    * start_projection: start date (YYYY-MM-DD) of the projection dataset to be used (please make sure this matches the available data)
    * end_projection: end date (YYYY-MM-DD) of the projection dataset to be used (please make sure this matches the available data)
-   * region: North-Atlantic or Polar
-   * ncenters: number of centers to be computed by the k-means clustering algorithm (does not work yet)
+   * plot type: rectangular or polar
+   * ncenters: number of centers to be computed by the clustering algorithm (maximum 4)
+   * method: k-means or hierarchical clustering 
    * detrend_order: the order of the polynomial detrending to be applied
    * EOFs: logical indicating wether the k-means clustering algorithm is applied directly to the spatial data ('false') or to the EOFs ('true')
    * frequency: select the month (format: JAN, FEB, ...) or season (format: JJA, SON, MAM, DJF) for the diagnostic to be computed for (does not work yet for MAM).
@@ -53,7 +54,7 @@ User setting files are stored in recipes/
 Variables
 ---------
 
-* psl or sic (atmos, daily, longitude, latitude, time)
+* psl or sic (atmos, monthly, longitude, latitude, time)
 
 
 Observations and reformat scripts
