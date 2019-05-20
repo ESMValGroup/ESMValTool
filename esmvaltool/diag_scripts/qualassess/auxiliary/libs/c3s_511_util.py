@@ -491,6 +491,7 @@ def dask_weighted_mean_wrapper(cube, spatial_weights, dims=None):
 
 
 def dask_weighted_stddev_wrapper(cube, spatial_weights, dims=None):    
+    
     weighted_mean = dask_weighted_mean_wrapper(cube,
                                                spatial_weights,
                                                dims=dims)
@@ -523,3 +524,43 @@ def dask_weighted_stddev_wrapper(cube, spatial_weights, dims=None):
     std_dev = variance ** 0.5
 
     return std_dev
+
+
+def lazy_climatology(cube, t_coord):
+    
+    t_coord_dict = collections.OrderedDict()
+    
+    for act_t in np.unique(cube.coord(t_coord).points):
+        
+        mon_cube = cube.extract(iris.Constraint(month_number = lambda point: point == act_t))
+
+        mon_mean = mon_cube.collapsed("time",iris.analysis.MEAN)
+            
+        t_coord_dict.update({act_t:mon_mean})
+    
+    return t_coord_dict
+
+
+def minmax_cubelist(cubelist,perc):
+
+    try: 
+        vminmax = dask.array.concatenate([dask_perc_masked(plotcube, perc)
+                   for plotcube in cubelist])
+    except:
+        vminmax = dask.array.concatenate([dask.array.percentile(
+                plotcube.core_data().ravel(),perc)
+                   for plotcube in cubelist])
+        
+    vmin = dask.array.atleast_1d(vminmax.min())
+    vmax = dask.array.atleast_1d(vminmax.max())
+    vminmax = dask.array.concatenate([vmin,vmax])
+
+    return vminmax
+
+
+def dask_perc_masked(cube,perc):
+    ravelcube = cube.core_data().ravel()
+    percentile = dask.array.percentile(
+            ravelcube[~dask.array.ma.getmaskarray(ravelcube)],
+            perc)
+    return percentile

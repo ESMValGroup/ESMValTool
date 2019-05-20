@@ -993,13 +993,9 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                 filename = self.__plot_dir__ + os.sep + basic_filename + \
                     "_hist_all_vals" + "." + self.__output_type__
                 list_of_plots.append(filename)
-                import resource
-                before = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+
                 x = PlotHist(cube)
                 fig = x.plot()
-                after1 = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
-                logger.info("Producing histogram" + ":")
-                logger.info(str(round((after1-before)/1024.,2)) + "MB")
                 fig.savefig(filename)
                 plt.close(fig)
     
@@ -1080,6 +1076,11 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
 
 #    @profile
     def __mean_var_procedures_2D__(self, cube=None, level=None):
+        
+                
+        import resource
+        
+        before0 = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
 
         try:
             if cube is None:
@@ -1110,13 +1111,7 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                 
                 plotcube = utils.dask_weighted_mean_wrapper(cube,self.map_area_frac,dims=d)
 
-                try: 
-                    vminmax = np.nanpercentile(plotcube.data.compressed(),
-                                               [5, 95])
-                except:
-                    vminmax = np.nanpercentile(plotcube.data,
-                                               [5, 95])
-                
+                vminmax = utils.minmax_cubelist(plotcube, [5, 95]) 
                 
                 data_info.append(dict({"name":"mean",
                                        "data": plotcube,
@@ -1137,13 +1132,7 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
 
                 plotcube =  utils.dask_weighted_stddev_wrapper(cube,self.map_area_frac,dims=d)
                 
-                try: 
-                    vminmax = np.nanpercentile(plotcube.data.compressed(),
-                                               [5, 95])
-                except:
-                    vminmax = np.nanpercentile(plotcube.data,
-                                               [5, 95])
-                
+                vminmax = utils.minmax_cubelist(plotcube, [5, 95]) 
                 
                 data_info.append(dict({"name":"std_dev",
                                        "data": plotcube,
@@ -1183,19 +1172,7 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                     
                 plotcubes = percentile_list
                 
-                try: 
-                    vminmax = [np.nanpercentile(
-                            plotcube.data.compressed(),[5, 95]) 
-                               for plotcube in plotcubes]
-                except:
-                    vminmax = [np.nanpercentile(
-                            plotcube.data,[5, 95]) 
-                               for plotcube in plotcubes]
-                    
-                vmin = np.min([v[0] for v in vminmax])
-                vmax = np.max([v[1] for v in vminmax])
-                vminmax = [vmin,vmax]
-                
+                vminmax = utils.minmax_cubelist(plotcubes, [5, 95]) 
                 
                 data_info.append(dict({"name":"percentiles",
                                        "data": plotcubes,
@@ -1214,33 +1191,11 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                 
                 long_left_over = [rd for rd in reg_dimensions if rd != d]
             
-                plotcubes = cube.aggregated_by('month_number', iris.analysis.MEAN)
+                clim_comp_list = utils.lazy_climatology(cube,'month_number')
                 
-                clim_comp_list = list()
+                plotcubes = list(clim_comp_list.values())
                 
-                for mon in np.sort(
-                        plotcubes.coord('month_number').points):
-
-                    loc_data = plotcubes.extract(
-                        iris.Constraint(month_number=mon))
-
-                    clim_comp_list.append(loc_data)
-                    
-                plotcubes = clim_comp_list
-                
-                try: 
-                    vminmax = [np.nanpercentile(
-                            plotcube.data.compressed(),[5, 95]) 
-                               for plotcube in plotcubes]
-                except:
-                    vminmax = [np.nanpercentile(
-                            plotcube.data,[5, 95]) 
-                               for plotcube in plotcubes]
-                    
-                vmin = np.min([v[0] for v in vminmax])
-                vmax = np.max([v[1] for v in vminmax])
-                vminmax = [vmin,vmax]
-                
+                vminmax = utils.minmax_cubelist(plotcubes, [5, 95])    
                 
                 data_info.append(dict({"name":"climatology",
                                        "data": plotcubes,
@@ -1274,19 +1229,7 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                     
                 plotcubes = clim_comp_list
                 
-                try: 
-                    vminmax = [np.nanpercentile(
-                            plotcube.data.compressed(),[5, 95]) 
-                               for plotcube in plotcubes]
-                except:
-                    vminmax = [np.nanpercentile(
-                            plotcube.data,[5, 95]) 
-                               for plotcube in plotcubes]
-                    
-                vmin = np.min([v[0] for v in vminmax])
-                vmax = np.max([v[1] for v in vminmax])
-                vminmax = [vmin,vmax]
-                
+                vminmax = utils.minmax_cubelist(plotcubes, [5, 95]) 
                 
                 data_info.append(dict({"name":"anomalies",
                                        "data": plotcubes,
@@ -1299,15 +1242,16 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
     
             del plotcubes
             
-            
         if "time_series" in self.__requested_diags__:
             
             for d in ["time"]:
                 
                 long_left_over = [rd for rd in reg_dimensions if rd != d]
             
-                plotcubes_m = utils.dask_weighted_mean_wrapper(cube,self.map_area_frac, dims=long_left_over)
-                plotcubes_std = utils.dask_weighted_stddev_wrapper(cube,self.map_area_frac, dims=long_left_over)
+                plotcubes_m = utils.dask_weighted_mean_wrapper(
+                        cube,self.map_area_frac, dims=long_left_over)
+                plotcubes_std = utils.dask_weighted_stddev_wrapper(
+                        cube,self.map_area_frac, dims=long_left_over)
 
                 plotcubes_std_p = plotcubes_m + plotcubes_std
                 plotcubes_std_m = plotcubes_m - plotcubes_std
@@ -1354,19 +1298,25 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
             
         # Check mins and maxs
             
-        abs_mins = [np.min(di["vminmax"]) for di in data_info 
-                    if di["mmtype"]=="abs"]
-        abs_maxs = [np.max(di["vminmax"]) for di in data_info 
-                    if di["mmtype"]=="abs"]
-        [di.update({"vminmax":[np.min(abs_mins),np.max(abs_maxs)]}) 
+        abs_mins = [dask.array.atleast_1d(di["vminmax"].min()) for di in
+                    data_info if di["mmtype"]=="abs"]
+        abs_maxs = [dask.array.atleast_1d(di["vminmax"].max()) for di in
+                    data_info if di["mmtype"]=="abs"]
+        [di.update({"vminmax":[dask.array.concatenate(abs_mins).min().compute(),
+                               dask.array.concatenate(abs_maxs).max().compute()]}) 
          for di in data_info if di["mmtype"]=="abs"]
         
-        diff_mins = [np.min(di["vminmax"]) for di in data_info 
-                    if di["mmtype"]=="diff"]
-        diff_maxs = [np.max(di["vminmax"]) for di in data_info 
-                    if di["mmtype"]=="diff"]
-        [di.update({"vminmax":[np.min(diff_mins),np.max(diff_maxs)]}) 
+        diff_mins = [dask.array.atleast_1d(di["vminmax"].min()) for di in
+                     data_info if di["mmtype"]=="diff"]
+        diff_maxs = [dask.array.atleast_1d(di["vminmax"].max()) for di in
+                     data_info if di["mmtype"]=="diff"]
+        [di.update({"vminmax":[dask.array.concatenate(diff_mins).min().compute(),
+                               dask.array.concatenate(diff_maxs).max().compute()]}) 
          for di in data_info if di["mmtype"]=="diff"]
+        
+        after1 = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+        logger.info("full climatology without plotting" + ":")
+        logger.info(str(round((after1-before0)/1024.,2)) + "MB")
         
         # plotting (2D maps only)
         for di in data_info:
@@ -1468,6 +1418,11 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                          self.__infile__, 
                          self.diagname, 
                          self.authors)
+
+        after2 = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+        logger.info("full climatology only plotting" + ":")
+        logger.info(str(round((after2-after1)/1024.,2)) + "MB")
+
 
         return list_of_plots
     
