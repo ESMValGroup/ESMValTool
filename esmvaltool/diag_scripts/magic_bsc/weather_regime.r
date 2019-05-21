@@ -30,8 +30,8 @@ dir.create(work_dir, recursive = TRUE)
 provenance_file <- paste0(run_dir, "/", "diagnostic_provenance.yml")
 provenance <- list()
 
-input_files_per_var <- yaml::read_yaml(params$input_files)
 
+input_files_per_var <- yaml::read_yaml(params$input_files)
 
 model_names <- lapply(input_files_per_var, function(x) x$dataset)
 model_names <- unique(unlist(unname(model_names)))
@@ -49,14 +49,30 @@ projection_files <- which(unname(experiment) != "historical")
 
 
 #Region considered to select the plot
-region <- params$region
+region <- params$plot_type
 
 
 #Start and end periods for the historical and projection periods
-start_historical <- as.POSIXct(params$start_historical)
-end_historical <- as.POSIXct(params$end_historical)
-start_projection <- as.POSIXct(params$start_projection)
-end_projection <- as.POSIXct(params$end_projection)
+start_historical <- lapply(input_files_per_var, function(x) x$start_year)[reference_files]
+starting1 <- c(unlist(unname(start_historical)))[1]
+end_historical <- lapply(input_files_per_var, function(x) x$end_year)[reference_files]
+ending1 <- c(unlist(unname(end_historical)))[1]
+start_historical <- as.POSIXct(as.Date(paste0(starting1, "-01-01"), "%Y-%m-%d"))
+end_historical <- as.POSIXct(as.Date(paste0(ending1, "-12-31"), "%Y-%m-%d"))
+
+start_projection <- lapply(input_files_per_var, function(x) x$start_year)[projection_files]
+starting2 <- c(unlist(unname(start_projection)))[1]
+print("STARTING:")
+print(starting2)
+end_projection <- lapply(input_files_per_var, function(x) x$end_year)[projection_files]
+ending2 <- c(unlist(unname(end_projection)))[1]
+print(ending2)
+start_projection <- as.POSIXct(as.Date(paste0(starting2, "-01-01"), "%Y-%m-%d"))
+end_projection <- as.POSIXct(as.Date(paste0(ending2, "-12-31"), "%Y-%m-%d"))
+
+print(c(starting1, ending1, starting2, ending2))
+
+
 
 #Regime parameters
 ncenters <- params$ncenters

@@ -31,11 +31,6 @@ datasets:
 
 preprocessors:
   preproc:
-    regrid:
-      target_grid: bcc-csm1-1
-      scheme: linear
-    mask_fillvalues:
-      threshold_fraction: 0.95
     extract_region:
       start_longitude: 0
       end_longitude: 360
@@ -52,12 +47,7 @@ diagnostics:
     scripts:
       main:
         script: magic_bsc/weather_regime.r
-        region: North-Atlantic # North-Atlantic or Polar
-
-        start_historical: "1971-01-01"
-        end_historical: "2000-12-31"
-        start_projection: "2020-01-01"
-        end_projection: "2050-12-31"
+        plot_type: rectangular #rectangular or polar
 
         ncenters: 3
         detrend_order: 2
