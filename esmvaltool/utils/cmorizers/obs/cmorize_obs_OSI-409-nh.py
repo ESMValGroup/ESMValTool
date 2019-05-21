@@ -13,7 +13,7 @@ Last access
 Download and processing instructions
     Download the desired years from the following ftp:
         ftp://osisaf.met.no/reprocessed/ice/conc/v2p0
-    Please, keep folder structure.
+    Please, keep folder structure and uncompress gz files before launching.
 
 """
 from .utilities import read_cmor_config
@@ -22,5 +22,6 @@ from .osi_common import cmorize_osi
 
 def cmorization(in_dir, out_dir):
     """Cmorization func call."""
-    cfg = read_cmor_config('OSI-450-sh.yml')
+    # read in CMOR configuration
+    cfg = read_cmor_config('OSI-409-nh.yml')
     cmorize_osi(in_dir, out_dir, cfg, 'nh')
