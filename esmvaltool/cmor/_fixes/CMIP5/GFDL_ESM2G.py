@@ -59,6 +59,7 @@ class co2(Fix):
         cube.metadata = metadata
         return cube
 
+
 class usi(Fix):
     """Fixes for usi."""
 

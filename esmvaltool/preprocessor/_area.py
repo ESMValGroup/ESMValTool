@@ -93,7 +93,7 @@ def _get_mask(lat, lon, min_lat, max_lat, min_lon, max_lon):
     if min_lat <= lat <= max_lat:
         if lon < 0:
             lon += 360
-        if  min_lon <= lon <= max_lon:
+        if min_lon <= lon <= max_lon:
             return 0
     return 1
 
