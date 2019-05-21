@@ -263,6 +263,7 @@ class __Diagnostic_skeleton__(object):
         """
         gather all other diagnostic information for reporting
         """
+        self.__logger__.info("Reporting structure and order:")
         self.__logger__.info(self.reporting_structure)
         self.__logger__.info(self.__report_order__)
         for theme in self.__report_order__:
@@ -284,8 +285,6 @@ class __Diagnostic_skeleton__(object):
                                          "Requested theme " + theme +
                                          " could not be found!")
         
-        self.__logger__.info(self.reporting_structure)
-
     def __file_anouncement__(
             self,
             subdir="input",
@@ -677,6 +676,7 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
 
         return
 
+
     def run_diagnostic(self, cfg = None):
 #        self.sp_data = self.__spatiotemp_subsets__(self.sp_data)['Europe_2000']
         self.__do_overview__()
@@ -702,12 +702,6 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
 #                      open(self.__report_dir__ + 'custom_reporting.yml', 'w'),
 #                      Dumper=yamlordereddictloader.SafeDumper,
 #                      default_flow_style=False)
-            
-        
-            
-        self.__logger__.info("Is the main cube still lazy?")
-            
-        self.__logger__.info(self.sp_data.has_lazy_data())
 
         #######################################################################
 #        # TODO delete after debugging
@@ -1111,7 +1105,7 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                 
                 plotcube = utils.dask_weighted_mean_wrapper(cube,self.map_area_frac,dims=d)
 
-                vminmax = utils.minmax_cubelist(plotcube, [5, 95]) 
+                vminmax = utils.minmax_cubelist([plotcube], [5, 95]) 
                 
                 data_info.append(dict({"name":"mean",
                                        "data": plotcube,
@@ -1130,9 +1124,9 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                 
                 long_left_over = [rd for rd in reg_dimensions if rd != d]
 
-                plotcube =  utils.dask_weighted_stddev_wrapper(cube,self.map_area_frac,dims=d)
+                plotcube = utils.dask_weighted_stddev_wrapper(cube,self.map_area_frac,dims=d)
                 
-                vminmax = utils.minmax_cubelist(plotcube, [5, 95]) 
+                vminmax = utils.minmax_cubelist([plotcube], [5, 95]) 
                 
                 data_info.append(dict({"name":"std_dev",
                                        "data": plotcube,
@@ -1171,6 +1165,11 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                     percentile_list.append(loc_data)
                     
                 plotcubes = percentile_list
+                
+                for pc in plotcubes:
+                    pc.data =  dask.array.from_array(pc.data, chunks = 100)
+                
+                self.__logger__.info(plotcubes)
                 
                 vminmax = utils.minmax_cubelist(plotcubes, [5, 95]) 
                 
@@ -1214,22 +1213,13 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                 
                 long_left_over = [rd for rd in reg_dimensions if rd != d]
             
-                plotcubes = cube.aggregated_by('year', iris.analysis.MEAN)
-                plotcubes = plotcubes - cube.collapsed(d,iris.analysis.MEAN)
+                plotcubes = utils.lazy_climatology(cube,'year')
                 
-                clim_comp_list = list()
+                mean = cube.collapsed(d,iris.analysis.MEAN)
                 
-                for y in np.sort(
-                        plotcubes.coord('year').points):
-
-                    loc_data = plotcubes.extract(
-                        iris.Constraint(year=y))
-
-                    clim_comp_list.append(loc_data)
-                    
-                plotcubes = clim_comp_list
+                plotcubes =  [pc - mean  for pc in list(plotcubes.values())]
                 
-                vminmax = utils.minmax_cubelist(plotcubes, [5, 95]) 
+                vminmax = utils.minmax_cubelist(plotcubes, [1/3 *100, 2/3 *100], symmetric=True) 
                 
                 data_info.append(dict({"name":"anomalies",
                                        "data": plotcubes,
@@ -1457,13 +1447,7 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
             
                 plotcube = utils.dask_weighted_mean_wrapper(cube,self.map_area_frac,dims=long_agg)
                 
-                try: 
-                    vminmax = np.nanpercentile(plotcube.data.compressed(),
-                                               [5, 95])
-                except:
-                    vminmax = np.nanpercentile(plotcube.data,
-                                               [5, 95])
-                
+                vminmax = utils.minmax_cubelist([plotcube], [5, 95])
                 
                 data_info.append(dict({"name":"mean",
                                        "data": plotcube,
@@ -1485,13 +1469,7 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
             
                 plotcube = utils.dask_weighted_stddev_wrapper(cube,self.map_area_frac,dims=long_agg)
                 
-                try: 
-                    vminmax = np.nanpercentile(plotcube.data.compressed(),
-                                               [5, 95])
-                except:
-                    vminmax = np.nanpercentile(plotcube.data,
-                                               [5, 95])
-                
+                vminmax = utils.minmax_cubelist([plotcube], [5, 95])
                 
                 data_info.append(dict({"name":"std_dev",
                                        "data": plotcube,

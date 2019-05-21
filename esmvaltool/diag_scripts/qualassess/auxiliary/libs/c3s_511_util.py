@@ -530,18 +530,21 @@ def lazy_climatology(cube, t_coord):
     
     t_coord_dict = collections.OrderedDict()
     
-    for act_t in np.unique(cube.coord(t_coord).points):
+    for act_t in np.sort(np.unique(cube.coord(t_coord).points)):
         
-        mon_cube = cube.extract(iris.Constraint(month_number = lambda point: point == act_t))
+        sub_cube = cube.extract(
+                iris.Constraint(
+                        coord_values={t_coord:lambda point: point == act_t}))
+#        sub_cube = cube.extract(iris.Constraint(month_number = lambda point: point == act_t))
 
-        mon_mean = mon_cube.collapsed("time",iris.analysis.MEAN)
+        sub_mean = sub_cube.collapsed("time",iris.analysis.MEAN)
             
-        t_coord_dict.update({act_t:mon_mean})
+        t_coord_dict.update({act_t:sub_mean})
     
     return t_coord_dict
 
 
-def minmax_cubelist(cubelist,perc):
+def minmax_cubelist(cubelist,perc,symmetric=False):
 
     try: 
         vminmax = dask.array.concatenate([dask_perc_masked(plotcube, perc)
@@ -550,12 +553,15 @@ def minmax_cubelist(cubelist,perc):
         vminmax = dask.array.concatenate([dask.array.percentile(
                 plotcube.core_data().ravel(),perc)
                    for plotcube in cubelist])
+    
+    if symmetric:
+        vminmax = dask.array.concatenate([vminmax, -vminmax])
         
     vmin = dask.array.atleast_1d(vminmax.min())
     vmax = dask.array.atleast_1d(vminmax.max())
     vminmax = dask.array.concatenate([vmin,vmax])
 
-    return vminmax
+    return vminmax.compute()
 
 
 def dask_perc_masked(cube,perc):
@@ -564,3 +570,20 @@ def dask_perc_masked(cube,perc):
             ravelcube[~dask.array.ma.getmaskarray(ravelcube)],
             perc)
     return percentile
+
+def lazy_percentiles(cube, percentiles):
+    
+    t_coord_dict = collections.OrderedDict()
+    
+    for act_p in np.sort(percentiles):
+        
+        sub_cube = cube.extract(
+                iris.Constraint(
+                        coord_values={t_coord:lambda point: point == act_t}))
+#        sub_cube = cube.extract(iris.Constraint(month_number = lambda point: point == act_t))
+
+        sub_mean = sub_cube.collapsed("time",iris.analysis.MEAN)
+            
+        t_coord_dict.update({act_t:sub_mean})
+    
+    return t_coord_dict
