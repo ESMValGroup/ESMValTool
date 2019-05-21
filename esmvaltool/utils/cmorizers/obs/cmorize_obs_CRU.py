@@ -30,6 +30,13 @@ logger = logging.getLogger(__name__)
 CFG = utils.read_cmor_config('CRU.yml')
 
 
+def _clean(filepath):
+    """Remove unzipped input file."""
+    if os.path.isfile(filepath):
+        os.remove(filepath)
+        logger.info("Removed cached file %s", filepath)
+
+
 def _extract_variable(raw_var, cmor_info, attrs, filepath, out_dir):
     """Extract variable."""
     var = cmor_info.short_name
@@ -81,3 +88,4 @@ def cmorization(in_dir, out_dir):
         logger.info("Found input file '%s'", zip_file)
         filepath = _unzip(zip_file, out_dir)
         _extract_variable(raw_var, cmor_info, glob_attrs, filepath, out_dir)
+        _clean(filepath)
