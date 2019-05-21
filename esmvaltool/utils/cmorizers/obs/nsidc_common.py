@@ -34,12 +34,13 @@ def cmorize(cfg, region, in_dir, out_dir):
         lon_coord.points = _correct_lons(lon_coord.points)
 
         for var, vals in cfg['variables'].items():
+            var_info = cfg['cmor_table'].get_variable(vals['mip'], var)
             logger.info('Cmorizing var %s', var)
             cube = cubes.extract_strict(iris.Constraint(vals['raw']))
             cube.add_aux_coord(lat_coord, (1, 2))
             cube.add_aux_coord(lon_coord, (1, 2))
+            cube.convert_units(var_info.units)
             logger.debug(cube)
-            var_info = cfg['cmor_table'].get_variable(vals['mip'], var)
             glob_attrs['mip'] = vals['mip']
             fix_var_metadata(cube, var_info)
             set_global_atts(cube, glob_attrs)
