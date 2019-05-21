@@ -226,22 +226,18 @@ class SeaIceDrift(object):
         model_cube = None
         for map_slice in data.slices_over('time'):
             mean = np.average(map_slice.data, weights=weights)
-            if not model_cube:
-                cube = Cube(
-                    mean,
-                    standard_name=map_slice.standard_name,
-                    var_name=map_slice.var_name,
-                    long_name=map_slice.long_name,
-                    units=map_slice.units,
-                    attributes=map_slice.attributes.copy(),
-                )
-                model_cube = cube
-            cube = model_cube.copy(mean)
-            cube.add_aux_coord(map_slice.coord('time'))
-            cube.add_aux_coord(map_slice.coord('month_number'))
-            domain_mean.append(cube)
-        domain_mean = domain_mean.merge_cube()
-        return domain_mean.aggregated_by('month_number', iris.analysis.MEAN)
+            domain_mean.append(mean)
+        cube = Cube(
+            np.array(domain_mean),
+            standard_name=data.standard_name,
+            var_name=data.var_name,
+            long_name=data.long_name,
+            units=data.units,
+            attributes=data.attributes.copy(),
+        )
+        cube.add_dim_coord(data.coord('time'), 0)
+        cube.add_aux_coord(data.coord('month_number'), 0)
+        return cube.aggregated_by('month_number', iris.analysis.MEAN)
 
 #     def _load_IABP_bouys(self):
 #         logger.info('Sea ice drift (IABP buoys)')
