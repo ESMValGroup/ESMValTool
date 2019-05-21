@@ -565,7 +565,7 @@ diagnostics:
       gppStderr:
         mip: Lmon
     additional_datasets:
-      - {dataset: MTE, project: OBS, tier: 3, type: clim, version: May12, start_year: 1982, end_year: 2011}
+      - {dataset: MTE, project: OBS, tier: 3, type: reanaly, version: May12, start_year: 1982, end_year: 2011}
     scripts: null
 
 
