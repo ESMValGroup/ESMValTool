@@ -28,6 +28,7 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 MONTHS_PER_YEAR = 12
 
+
 class SeaIceDrift(object):
 
     def __init__(self, config):
@@ -40,7 +41,7 @@ class SeaIceDrift(object):
         self.sispeed = {}
         self.region_mask = {}
 
-        self.slope_drift_siconc = {}
+        self.slope_drift_sic = {}
         self.intercept_drift_siconc = {}
         self.slope_ratio_drift_siconc = {}
         self.error_drift_siconc = {}
@@ -52,7 +53,7 @@ class SeaIceDrift(object):
 
     def compute(self):
         logger.info('Loading sea ice concentration')
-        siconc_original= {}
+        siconc_original = {}
         siconc_files = self.datasets.get_path_list(
             standard_name='sea_ice_area_fraction')
         for filename in siconc_files:
@@ -67,7 +68,6 @@ class SeaIceDrift(object):
             self.siconc[alias] = self._compute_mean(
                 siconc, self._get_mask(siconc, filename)
             )
-
 
         logger.info('Loading sea ice thickness')
         sithick_files = self.datasets.get_path_list(
@@ -89,7 +89,6 @@ class SeaIceDrift(object):
                     sithick,
                     self._get_mask(sithick, filename)
                 )
-
 
         logger.info('Load sea ice velocities')
         sispeed_files = self.datasets.get_path_list(
@@ -164,7 +163,7 @@ class SeaIceDrift(object):
             logger.info('Slope ratio (no unit)')
             slope, intercept, sd, sig = self._get_slope_ratio(
                 self.siconc[dataset], self.sispeed[dataset])
-            self.slope_drift_siconc[dataset] = slope
+            self.slope_drift_sic[dataset] = slope
             self.intercept_drift_siconc[dataset] = intercept
 
             logger.info('Metrics drift-thickness')
@@ -191,10 +190,11 @@ class SeaIceDrift(object):
 
             logger.info('Compute relative slope ratios ')
             self.slope_ratio_drift_siconc[dataset] = \
-                self.slope_drift_siconc[dataset] / self.slope_drift_siconc['reference']
+                self.slope_drift_sic[dataset] / \
+                self.slope_drift_sic['reference']
             self.slope_ratio_drift_sivol[dataset] = \
-                self.slope_drift_sivol[dataset] / self.slope_drift_sivol['reference']
-
+                self.slope_drift_sivol[dataset] / \
+                self.slope_drift_sivol['reference']
 
     def _get_alias(self, filename, reference_dataset):
         filename = self._get_alias_name(filename)
@@ -208,11 +208,11 @@ class SeaIceDrift(object):
         info = self.datasets.get_dataset_info(filename)
 
         if info[n.PROJECT] == 'OBS':
-            template = '{project}_{dataset}_{start}_{end}'
+            temp = '{project}_{dataset}_{start}_{end}'
         else:
-            template = '{project}_{dataset}_{experiment}_{ensemble}_{start}_{end}'
+            temp = '{project}_{dataset}_{experiment}_{ensemble}_{start}_{end}'
 
-        return template.format(
+        return temp.format(
             project=info[n.PROJECT],
             dataset=info[n.DATASET],
             experiment=info.get(n.EXP, ''),
@@ -242,8 +242,6 @@ class SeaIceDrift(object):
             domain_mean.append(cube)
         domain_mean = domain_mean.merge_cube()
         return domain_mean.aggregated_by('month_number', iris.analysis.MEAN)
-
-
 
 #     def _load_IABP_bouys(self):
 #         logger.info('Sea ice drift (IABP buoys)')
@@ -704,6 +702,7 @@ class SeaIceDrift(object):
 #                                         model.drift[domain],
 #                                         self.drift_IABP[domain])
 #
+
     def _compute_error(self, var, var_obs, drift, drift_obs):
         var = var.data
         var_obs = var_obs.data
@@ -739,11 +738,10 @@ class SeaIceDrift(object):
 
         # Return value of mask
         return sd_slope, sig_slope
-#
+
     def results(self):
         logger.info('Results')
         for model in self.siconc.keys():
-
             self._print_results(model)
 
     def _print_results(self, model):
@@ -806,6 +804,7 @@ class SeaIceDrift(object):
             ),
             zlib=True
         )
+
     def save_slope(self, dataset):
         base_path = os.path.join(self.cfg[n.WORK_DIR], dataset)
         if not os.path.isdir(base_path):
@@ -817,7 +816,7 @@ class SeaIceDrift(object):
             csv_writer.writerow(('slope', 'intercept',
                                  'slope_ratio', 'error'))
             csv_writer.writerow((
-                self.slope_drift_siconc[dataset],
+                self.slope_drift_sic[dataset],
                 self.intercept_drift_siconc[dataset],
                 self.slope_ratio_drift_siconc.get(dataset, None),
                 self.error_drift_siconc.get(dataset, None)
@@ -881,6 +880,7 @@ class SeaIceDrift(object):
 
         ax.plot([sivol_obs[-1], sivol_obs[0]], [drift_obs[-1], drift_obs[0]],
                 'b-', linewidth=2)
+        # pylint disable=W605
         ax.plot(sivol_obs, drift_obs, 'bo-',
                 label='reference volume / speed ($s_h$=' +
                       str(np.round(slope_ratio_sivol, 1)) +
@@ -905,12 +905,12 @@ class SeaIceDrift(object):
         drift = self.sispeed[dataset].data
         siconc = self.siconc[dataset].data
 
-        slope_siconc = self.slope_drift_siconc[dataset]
+        slope_siconc = self.slope_drift_sic[dataset]
         slope_ratio_siconc = self.slope_ratio_drift_sivol[dataset]
         intercept_siconc = self.intercept_drift_siconc[dataset]
         error_siconc = self.error_drift_siconc[dataset]
 
-        slope_siconc_obs = self.slope_drift_siconc[dataset]
+        slope_siconc_obs = self.slope_drift_sic[dataset]
         intercept_siconc_obs = self.intercept_drift_siconc[dataset]
 
         drift_obs = self.sispeed['reference'].data
@@ -1053,6 +1053,7 @@ class InsidePolygonFactory(AuxCoordFactory):
             self.lat = new_coord
         elif self.lon is old_coord:
             self.lon = new_coord
+
 
 if __name__ == '__main__':
     with esmvaltool.diag_scripts.shared.run_diagnostic() as config:
