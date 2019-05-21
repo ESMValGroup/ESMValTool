@@ -6,6 +6,7 @@ selecting geographical regions; constructing area averages; etc.
 """
 import logging
 
+from numba import vectorize
 import iris
 from iris.util import broadcast_to_shape
 import numpy as np
@@ -71,18 +72,30 @@ def extract_region(cube, start_longitude, end_longitude, start_latitude,
     # irregular grids
     lats = cube.coord('latitude').points
     lons = cube.coord('longitude').points
-    mask = np.ma.array(cube.data).mask
-    mask += np.ma.masked_where(lats < start_latitude, lats).mask
-    mask += np.ma.masked_where(lats > end_latitude, lats).mask
-    mask += np.ma.masked_where(lons > start_longitude, lons).mask
-    mask += np.ma.masked_where(lons > end_longitude, lons).mask
+    mask = _get_mask(
+        lats, lons,
+        start_latitude, end_latitude, start_longitude, end_longitude
+    )
     mask_shape = mask.shape
     data_shape = cube.shape
     if mask_shape != data_shape:
-        mapping = [data_shape.index(length) for length in mask_shape]
+        mapping = cube.coord_dims('latitude')
         mask = broadcast_to_shape(mask, cube.shape, mapping)
     cube.data = np.ma.masked_where(mask, cube.data)
     return cube
+
+
+@vectorize([
+    'int8(float32, float32, float32, float32, float32, float32)',
+    'int8(float64, float64, float64, float64, float64, float64)'
+])
+def _get_mask(lat, lon, min_lat, max_lat, min_lon, max_lon):
+    if min_lat <= lat <= max_lat:
+        if lon < 0:
+            lon += 360
+        if  min_lon <= lon <= max_lon:
+            return 0
+    return 1
 
 
 def get_iris_analysis_operation(operator):
