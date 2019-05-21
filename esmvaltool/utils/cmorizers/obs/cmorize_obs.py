@@ -105,8 +105,10 @@ def _run_ncl_script(in_dir, out_dir, run_dir, dataset, reformat_script,
     # call NCL
     ncl_call = ['ncl', reformat_script]
     logger.info("Executing cmd: %s", ' '.join(ncl_call))
-    process = subprocess.Popen(
-        ncl_call, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, env=env)
+    process = subprocess.Popen(ncl_call,
+                               stdout=subprocess.PIPE,
+                               stderr=subprocess.STDOUT,
+                               env=env)
     output, err = process.communicate()
     for oline in str(output.decode('utf-8')).split('\n'):
         logger.info('[NCL] %s', oline)
@@ -123,20 +125,19 @@ def _run_pyt_script(in_dir, out_dir, reformat_module):
 def execute_cmorize():
     """Run it as executable."""
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
-        '-o',
-        '--obs-list-cmorize',
-        type=str,
-        help='List of obs datasets to cmorize. \
+    parser.add_argument('-o',
+                        '--obs-list-cmorize',
+                        type=str,
+                        help='List of obs datasets to cmorize. \
               If no list provided: CMORization of \
               all datasets in RAWOBS; \
               -o DATASET1,DATASET2... : \
               for CMORization of select datasets.')
-    parser.add_argument(
-        '-c',
-        '--config-file',
-        default=os.path.join(os.path.dirname(__file__), 'config-user.yml'),
-        help='Config file')
+    parser.add_argument('-c',
+                        '--config-file',
+                        default=os.path.join(os.path.dirname(__file__),
+                                             'config-user.yml'),
+                        help='Config file')
     args = parser.parse_args()
 
     # get and read config file
@@ -158,12 +159,11 @@ def execute_cmorize():
     # set logging for screen and file output
     root_logger = logging.getLogger()
     out_fmt = "%(asctime)s %(levelname)-8s %(name)s,%(lineno)s\t%(message)s"
-    logging.basicConfig(
-        filename=os.path.join(run_dir, 'main_log.txt'),
-        filemode='a',
-        format=out_fmt,
-        datefmt='%H:%M:%S',
-        level=config_user['log_level'].upper())
+    logging.basicConfig(filename=os.path.join(run_dir, 'main_log.txt'),
+                        filemode='a',
+                        format=out_fmt,
+                        datefmt='%H:%M:%S',
+                        level=config_user['log_level'].upper())
     root_logger.setLevel(config_user['log_level'].upper())
     logfmt = logging.Formatter(out_fmt)
     console_handler = logging.StreamHandler()
@@ -240,12 +240,18 @@ def _cmor_reformat(config, obs_list):
                             dataset, reformat_script)
 
                 # call the ncl script
-                _run_ncl_script(in_data_dir, out_data_dir, run_dir, dataset,
-                                reformat_script, config['log_level'],)
+                _run_ncl_script(
+                    in_data_dir,
+                    out_data_dir,
+                    run_dir,
+                    dataset,
+                    reformat_script,
+                    config['log_level'],
+                )
             elif os.path.isfile(
                     reformat_script_root.replace('-', '_') + '.py'):
-                py_reformat_script = (
-                    reformat_script_root.replace('-', '_') + '.py')
+                py_reformat_script = (reformat_script_root.replace('-', '_') +
+                                      '.py')
                 logger.info("CMORizing dataset %s using Python script %s",
                             dataset, py_reformat_script)
                 module_root = 'esmvaltool.utils.cmorizers.obs.cmorize_obs_'
