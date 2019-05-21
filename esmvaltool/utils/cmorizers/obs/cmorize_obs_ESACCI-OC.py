@@ -81,12 +81,11 @@ def extract_variable(var_info, raw_info, out_dir, attrs):
             )
 
 
-def merge_data(in_dir, out_dir, raw_info, bin):
+def merge_data(in_dir, out_dir, raw_info, bins):
     """Merge all data into a single (regridded) file."""
     var = raw_info['name']
-    do_bin = True if (bin % 2 == 0) & (bin != 0) else False
-    comment = ''
-    thefiles = sorted(glob.glob(in_dir + '/' + raw_info['file'] + '*.nc'))
+    do_bin = True if (bins % 2 == 0) & (bins != 0) else False
+    thefiles = sorted(glob.glob(in_dir + '/' + raw_info['file'] + '*1997*.nc'))
     for x in thefiles:
         ds = xr.open_dataset(x)
         da = ds[var].sel(lat=slice(None, None, -1))
@@ -97,8 +96,8 @@ def merge_data(in_dir, out_dir, raw_info, bin):
             del da.attrs[thekeys]
 
         if do_bin:
-            da = da.coarsen(lat=bin, boundary='exact').mean()
-            da = da.coarsen(lon=bin, boundary='exact').mean()
+            da = da.coarsen(lat=bins, boundary='exact').mean()
+            da = da.coarsen(lon=bins, boundary='exact').mean()
 
         if x == thefiles[0]:
             newda = da
@@ -108,12 +107,14 @@ def merge_data(in_dir, out_dir, raw_info, bin):
             ]
             dsmeta = dict((y, ds.attrs[y]) for y in thekeys)
             if do_bin:
-                comment = ' '.join([
-                    'Data binned using ', "{}".format(bin), 'by',
-                    "{}".format(bin), 'cells average'
+                dsmeta['BINNING'] = ' '.join([
+                    'Data binned using ', "{}".format(bins), 'by',
+                    "{}".format(bins), 'cells average'
                 ])
-                dsmeta['BINNING'] = comment
+            else:
+                dsmeta['BINNING'] = ""
             continue
+
         newda = xr.concat((newda, da), dim='time')
 
     # save to file
@@ -139,7 +140,7 @@ def merge_data(in_dir, out_dir, raw_info, bin):
 
     logger.info("Merged data written to: %s", merged_file)
 
-    return (merged_file, comment)
+    return (merged_file, dsmeta['BINNING'])
 
 
 def cmorization(in_dir, out_dir):
