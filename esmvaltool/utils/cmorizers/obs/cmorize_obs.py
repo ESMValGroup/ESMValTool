@@ -241,7 +241,7 @@ def _cmor_reformat(config, obs_list):
 
                 # call the ncl script
                 _run_ncl_script(in_data_dir, out_data_dir, run_dir, dataset,
-                                reformat_script, config['log_level'])
+                                reformat_script, config['log_level'],)
             elif os.path.isfile(
                     reformat_script_root.replace('-', '_') + '.py'):
                 py_reformat_script = (
