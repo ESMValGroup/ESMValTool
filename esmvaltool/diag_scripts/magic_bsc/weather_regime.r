@@ -53,25 +53,26 @@ region <- params$plot_type
 
 
 #Start and end periods for the historical and projection periods
-start_historical <- lapply(input_files_per_var, function(x) x$start_year)[reference_files]
+start_historical <- lapply(input_files_per_var, 
+                           function(x) x$start_year)[reference_files]
 starting1 <- c(unlist(unname(start_historical)))[1]
-end_historical <- lapply(input_files_per_var, function(x) x$end_year)[reference_files]
+end_historical <- lapply(input_files_per_var, 
+                         function(x) x$end_year)[reference_files]
 ending1 <- c(unlist(unname(end_historical)))[1]
-start_historical <- as.POSIXct(as.Date(paste0(starting1, "-01-01"), "%Y-%m-%d"))
+start_historical <- as.POSIXct(as.Date(paste0(starting1, "-01-01"), 
+                                       "%Y-%m-%d"))
 end_historical <- as.POSIXct(as.Date(paste0(ending1, "-12-31"), "%Y-%m-%d"))
 
-start_projection <- lapply(input_files_per_var, function(x) x$start_year)[projection_files]
+start_projection <- lapply(input_files_per_var, 
+                           function(x) x$start_year)[projection_files]
 starting2 <- c(unlist(unname(start_projection)))[1]
-print("STARTING:")
-print(starting2)
-end_projection <- lapply(input_files_per_var, function(x) x$end_year)[projection_files]
+end_projection <- lapply(input_files_per_var, 
+                         function(x) x$end_year)[projection_files]
 ending2 <- c(unlist(unname(end_projection)))[1]
-print(ending2)
-start_projection <- as.POSIXct(as.Date(paste0(starting2, "-01-01"), "%Y-%m-%d"))
-end_projection <- as.POSIXct(as.Date(paste0(ending2, "-12-31"), "%Y-%m-%d"))
-
-print(c(starting1, ending1, starting2, ending2))
-
+start_projection <- as.POSIXct(as.Date(paste0(starting2, "-01-01"), 
+                                       "%Y-%m-%d"))
+end_projection <- as.POSIXct(as.Date(paste0(ending2, "-12-31"), 
+                                     "%Y-%m-%d"))
 
 
 #Regime parameters
