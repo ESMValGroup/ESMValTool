@@ -762,8 +762,9 @@ class SeaIceDrift(object):
                     ''.format(self.slope_ratio_drift_siconc[model]))
         logger.info('Mean error Drift-Concentration (%) = {0:.4}'
                     ''.format(self.error_drift_siconc[model]))
-        logger.info('Slope ratio Drift-Thickness = {0:.3}'
-                    ''.format(self.slope_ratio_drift_sivol.get(model, math.nan)))
+        logger.info('Slope ratio Drift-Thickness = {0:.3}'.format(
+            self.slope_ratio_drift_sivol.get(model, math.nan)
+        ))
         logger.info('Mean error Drift-Thickness (%) = {0:.4}'
                     ''.format(self.error_drift_sivol.get(model, math.nan)))
 
@@ -880,12 +881,17 @@ class SeaIceDrift(object):
 
         ax.plot([sivol_obs[-1], sivol_obs[0]], [drift_obs[-1], drift_obs[0]],
                 'b-', linewidth=2)
-        # pylint disable=W605
-        ax.plot(sivol_obs, drift_obs, 'bo-',
-                label='reference volume / speed ($s_h$=' +
-                      str(np.round(slope_ratio_sivol, 1)) +
-                      '; $\epsilon_h$=' + str(np.round(error_sivol, 1)) +
-                      '$\%$)', linewidth=2)
+        ax.plot(
+            sivol_obs,
+            drift_obs,
+            'bo-',
+            label=r'reference volume / speed ($s_h$=' +
+                  str(np.round(slope_ratio_sivol, 1)) +
+                  r'; $\epsilon_h$=' +
+                  str(np.round(error_sivol, 1)) +
+                  r'$\%$)',
+            linewidth=2
+        )
         ax.plot(sivol_obs, slope_sivol_obs * sivol_obs + intercept_sivol_obs,
                 'b:', linewidth=2)
         ax.legend(loc='lower right', shadow=True, frameon=False, fontsize=12)
@@ -919,11 +925,15 @@ class SeaIceDrift(object):
         ax.plot(siconc, drift, 'ro-', label=dataset)
         ax.plot(siconc, slope_siconc * siconc + intercept_siconc, 'r:',
                 linewidth=2)
-        ax.plot(siconc_obs, drift_obs, 'bo-',
-                label='reference ($s_A$=' +
-                      str(np.round(slope_ratio_siconc, 1)) +
-                      '; $\epsilon_A$=' + str(np.round(error_siconc, 1)) +
-                      '$\%$)')
+        ax.plot(
+            siconc_obs,
+            drift_obs,
+            'bo-',
+            label=r'reference ($s_A$=' +
+                  str(np.round(slope_ratio_siconc, 1)) +
+                  r'; $\epsilon_A$=' + str(np.round(error_siconc, 1)) +
+                  r'$\%$)'
+        )
         ax.plot(siconc_obs, slope_siconc_obs * siconc_obs +
                 intercept_siconc_obs,
                 'b:', linewidth=2)
