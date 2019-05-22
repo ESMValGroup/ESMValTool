@@ -72,6 +72,8 @@ def get_start_end_year(filename):
         if pos_ydates_r[ind] or pos_ydates_l[ind]
     ]
 
+    start_year = None
+    end_year = None
     if len(dates) == 1:
         start_year = int(dates[0][:4])
         end_year = start_year
@@ -79,15 +81,24 @@ def get_start_end_year(filename):
         start_year, end_year = int(dates[0][:4]), int(dates[1][:4])
     else:
         # Slower than just parsing the name
-        cubes = iris.load(filename)
-        for cube in cubes:
-            try:
-                time = cube.coord('time')
-            except iris.exceptions.CoordinateNotFoundError:
-                continue
-            start_year = time.cell(0).point.year
-            end_year = time.cell(-1).point.year
-            break
+        try:
+            cubes = iris.load(filename)
+        except OSError:
+           pass
+        else:
+            for cube in cubes:
+                try:
+                    time = cube.coord('time')
+                except iris.exceptions.CoordinateNotFoundError:
+                    continue
+                start_year = time.cell(0).point.year
+                end_year = time.cell(-1).point.year
+                break
+    if not start_year or not end_year:
+        raise ValueError(
+            'Name {0} dates do not match a recognized pattern and time can '
+            'not be readed from the file'.format(name)
+        )
     return start_year, end_year
 
 
