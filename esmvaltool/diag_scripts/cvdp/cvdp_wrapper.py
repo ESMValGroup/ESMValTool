@@ -173,7 +173,8 @@ def _get_plot_type(filename):
         'runstddev': "other",
         'za': "zonal",
     }
-    return _get_info(filename, plot_type)
+    ans = _get_info(filename, plot_type)
+    return ans if ans is not None else 'other'
 
 
 def _get_stat(filename):
@@ -194,7 +195,8 @@ def _get_stat(filename):
         'runstddev': "stddev",
         'za': "mean",
     }
-    return _get_info(filename, stat)
+    ans = _get_info(filename, stat)
+    return ans if ans is not None else 'other'
 
 
 def _get_season(filename):
@@ -269,7 +271,7 @@ def set_provenance(cfg):
     def _get_provenace_record(filename, ancesters):
         return {
             'caption': _get_caption(filename),
-            'statistics': _get_stat(filename),
+            'statistics': [_get_stat(filename)],
             'domain': 'global',
             'plot_type': _get_plot_type(filename),
             'plot_file': filename,
