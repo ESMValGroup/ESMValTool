@@ -10,9 +10,9 @@ missing values masking.
 import logging
 import os
 
-import dask.array as da
 import numpy as np
 
+import dask.array as da
 import cartopy.io.shapereader as shpreader
 import iris
 import shapely.vectorized as shp_vect
@@ -23,27 +23,7 @@ logger = logging.getLogger(__name__)
 
 
 def _check_dims(cube, mask_cube):
-    """
-    Check for same ndim and x-y dimensions for data and mask cubes.
-
-    The check is performed using the number of longitude and
-    latitude points from cube and mask_cube as well as the number of
-    dimensions (ndim) of said cubes.
-
-    Parameters
-    ----------
-
-    * cube (iris.Cube.cube instance):
-        data cube to be masked.
-
-    * mask_cube (iris.Cube.cube instance):
-        mask cube to be applied as mask on cube.
-
-    Returns
-    -------
-    Logical.
-
-    """
+    """Check for same ndim and x-y dimensions for data and mask cubes."""
     x_dim = cube.coord('longitude').points.ndim
     y_dim = cube.coord('latitude').points.ndim
     mx_dim = mask_cube.coord('longitude').points.ndim
@@ -65,33 +45,7 @@ def _check_dims(cube, mask_cube):
 
 
 def _get_fx_mask(fx_data, fx_option, mask_type):
-    """
-    Build a percentage-thresholded mask from an fx file.
-
-    Construct a boolean numpy array that stores the mask for
-    various fx file imported data (land, sea, ice etc). As an
-    example, if the fx variable is sftlf, then the land will be
-    extracted as grid points set to True for any point from the
-    fx file data that has a probability of more than 50%, or False
-    if otherwise.
-
-    Parameters
-    ----------
-
-    * fx_data (numpy array):
-        data extracted from the fx file; probablities, type float.
-
-    * fx_option (string):
-        type of mask that needs to be extracted (land, sea, ice).
-
-    * mask_type (string):
-        fx variable corresponding to the type of needed mask (eg sftlf).
-
-    Returns
-    -------
-    Boolean numpy array.
-
-    """
+    """Build a percentage-thresholded mask from an fx file."""
     inmask = np.zeros_like(fx_data, bool)
     if mask_type == 'sftlf':
         if fx_option == 'land':
@@ -119,26 +73,7 @@ def _get_fx_mask(fx_data, fx_option, mask_type):
 
 
 def _apply_fx_mask(fx_mask, var_data):
-    """
-    Apply the fx data extracted mask on the actual processed data.
-
-    Perform an in-place application of the fx extracted mask
-    onto the actual processed data array.
-
-    Parameters
-    ----------
-
-    * fx_mask (boolean numpy array):
-        fx data extracted mask mask.
-
-    * var_data (numpy array):
-        array holding the processed data.
-
-    Returns
-    -------
-    Masked numpy array of the processed data.
-
-    """
+    """Apply the fx data extracted mask on the actual processed data."""
     # Broadcast mask
     var_mask = np.zeros_like(var_data, bool)
     var_mask = np.broadcast_to(fx_mask, var_mask.shape).copy()
@@ -304,20 +239,6 @@ def _mask_with_shp(cube, shapefilename):
     process is performed by checking if any given (x, y) point from
     the data cube lies within the desired geometry (eg land, sea) stored
     in the shapefile (this is done via shapefle vectorization and is fast).
-
-    Parameters
-    ----------
-
-    * cube (iris.Cube.cube instance):
-        data cube to be masked.
-
-    * shapefilename (string):
-        file name for Natural Earth shape file.
-
-    Returns
-    -------
-    Masked iris cube.
-
     """
     # Create the region
     region = _get_geometry_from_shp(shapefilename)
@@ -646,26 +567,6 @@ def _get_fillvalues_mask(cube, threshold_fraction, min_value, time_window):
     aggregates the cube data by a given time window and counts the number of
     valid (unmasked) data points within that window;
     a simple value thresholding is also applied if needed.
-
-    Parameters
-    ----------
-
-    * cube (iris.Cube.cube instance):
-        data cube to be masked.
-
-    * threshold_fraction (float, between 0 and 1):
-        fractional threshold of missing (masked) data points.
-
-    * min_value (float):
-        minumum value threshold to be used as argument for Aggregator.
-
-    * time_window (float):
-        time window in which missing (masked) data points are counted.
-
-    Returns
-    -------
-    numpy masked array.
-
     """
     # basic checks
     if threshold_fraction < 0 or threshold_fraction > 1.0:
