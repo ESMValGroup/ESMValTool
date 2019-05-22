@@ -24,10 +24,8 @@ documentation:
     - fuckar
 
 datasets:
-  #- {dataset: IPSL-CM5A-MR, project: CMIP5,  start_year: 1961,  end_year: 1990, ensemble: r1i1p1, exp: historical, type: exp}
-  #- {dataset: IPSL-CM5A-MR, project: CMIP5,  start_year: 2006,  end_year: 2026, ensemble: r1i1p1, exp: rcp85, type: exp}
-  - {dataset: bcc-csm1-1, project: CMIP5, start_year: 1971, end_year: 2000, ensemble: r1i1p1, exp: historical, type: exp}
-  - {dataset: bcc-csm1-1, project: CMIP5, start_year: 2020, end_year: 2050, ensemble: r1i1p1, exp: rcp85, type: exp}
+  - {dataset: bcc-csm1-1, project: CMIP5, start_year: 1971, end_year: 2000, ensemble: r1i1p1, exp: historical}
+  - {dataset: bcc-csm1-1, project: CMIP5, start_year: 2020, end_year: 2050, ensemble: r1i1p1, exp: rcp85}
 
 preprocessors:
   preproc:
@@ -53,4 +51,4 @@ diagnostics:
         detrend_order: 2
         cluster_method: "kmeans" # select hclust or kmeans
         EOFS: true
-        frequency: 'JAN' # Select a month (format: JAN, FEB, ...) or should work with season also but not jet format: JJA, SON, MAM, DJF
+        frequency: 'JAN' # Select a month (format: JAN, FEB, ...) or season (JJA, SON, MAM(only monthly), DJF)
