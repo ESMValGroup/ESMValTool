@@ -11,7 +11,7 @@ class TestGetStartEndYear(unittest.TestCase):
     """Tests for get_start_end_year function"""
 
     def setUp(self):
-        descriptor, self.temp_file = tempfile.mkstemp('.nc')
+        descriptor, self.temp_file = tempfile.mkstemp(suffix='.nc')
         os.close(descriptor)
 
     def tearDown(self):
@@ -86,7 +86,7 @@ class TestGetStartEndYear(unittest.TestCase):
         from iris.cube import Cube
         from iris.coords import DimCoord
         cube = Cube([0,0], var_name='var')
-        time = DimCoord([0, 366], 'time', units='days since 1-1-1990')
+        time = DimCoord([0, 366], 'time', units='days since 1990-01-01')
         cube.add_dim_coord(time, 0)
         iris.save(cube, self.temp_file)
         start, end = get_start_end_year(self.temp_file)
