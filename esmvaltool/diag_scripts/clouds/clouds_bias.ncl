@@ -435,8 +435,8 @@ begin
   ; ------------------------------------------------------------------------
 
   statistics = (/"clim", "diff"/)
-  domain = ("glob")
-  plottype = ("geo")
+  domain = "global"
+  plottype = "geo"
   prov_caption = caption + " for variable " + var0 \
     + " (" + allseas + "), reference = " + names(ref_ind) + "."
 

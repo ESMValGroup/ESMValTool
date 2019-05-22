@@ -550,7 +550,7 @@ references:
   gen14jclim: "Gen, L. et al., J. Climate, 27, 1765-1780, doi:10.1175/JCLI-D-13-00337.1, 2014."
   georgievski18tac: "Georgievski, G. & Hagemann, S. Theor Appl Climatol (2018). https://doi.org/10.1007/s00704-018-2675-2"
   giorgi11jc: "Giorgi et al., J. Climate 24, 5309-5324, doi:10.1175/2011JCLI3979.1, 2011."
-  giorgi14jgr: "Giorgi et al., J. Geophys. Res. Atmos., 119, 11,695–11,708, doi:10.1002/ 2014JD022238, 2014."
+  giorgi14jgr: "Giorgi et al., J. Geophys. Res. Atmos., 119, 11695-11708, doi:10.1002/ 2014JD022238, 2014."
   gleckler08jgr: "Gleckler et al., J. Geophys. Res., 113, D06104, doi:10.1029/2007JD008972, 2008."
   goswami99qjrms: "Goswami, B., V. Krishnamurthy, and H. Annamalai, Q. J. R. Meteorol. Soc., 125, 611-633, doi:10.1002/qj.49712555412, 1999."
   hagemann13james: "Hagemann et al., J. Adv. Model. Earth Syst., 5, doi:10.1029/2012MS000173, 2013."
@@ -600,6 +600,7 @@ references:
   # Observations
   aura-tes: "Beer, R., IEEE Trans. Geosci. Rem. Sens., doi:10.1109/TGRS.2005.863716, 2006."
   ceres-syn1deg: "Wielicki et al., Bull. Amer. Meteor. Soc., doi: 10.1175/1520-0477(1996)077<0853:CATERE>2.0.CO;2, 1996."
+  cru: "Harris, I. et al., Int. J. Climatol., 34, doi: 10.1002/joc.3711, 2014."
   era-interim: "Dee, D. P. et al., Q. J. Roy. Meteor. Soc., doi:10.1002/qj.828, 2011."
   esacci-aerosol: "Popp et al., ESA Aerosol Climate Change Initiative (ESA Aerosol_cci) data: AOD v4.21 via Centre for Environmental Data Analysis, 2016."
   esacci-cloud: "Stengel et al., Earth Syst. Sci. Data, doi:10.5194/essd-9-881-2017, 2017."
