@@ -108,27 +108,21 @@ recipe_insurance_risk_index.yml:
     - Wx
 
 recipe_modes_of_variability.yml:
-  region:
+  plot_type:
+    - Rectangular
     - Polar
-    - North-Atlantic
-  start_historical:
-    - "1961-01-01"
-  end_historical:
-    - "1990-12-31"
-  start_projection:
-    - "2006-01-01"
-  end_projection:
-    - "2026-12-31"
   ncenters:
+    - 1
+    - 2
     - 3
-    - 5
+    - 4
   detrend_order:
+    - 3
     - 2
     - 1
   cluster_method:
-    # If null it computes hcluster else specify kmeans
     - kmeans
-    - complete
+    - hierarchical
   EOFS:
     - true
     - false
@@ -345,27 +339,20 @@ recipe_smpi.yml:
     - annualclim
     - seasonalclim
     - monthlyclim
-    - mymm
-    - yearly
-    - MAM
-    - SONDJ
-    - 1
-    - 5
-    - 12
   region:
-    - Global
-    - Tropics
-    - NH extratropics
-    - SH extratropics
-    - NH equatorial
-    - SH equatorial
-    - Northern Hemisphere
-    - Southern Hemisphere
-    - NH midlatitudes
-    - SH midlatitudes
-    - Arctic
-    - Antarctic
-    - Equatorial
-  draw_plots:
-    - false
-    - true
+    - global
+    - trop
+    - nhext
+    - shext
+    - nhtrop
+    - shtrop
+    - nh
+    - sh
+    - nhmidlat
+    - shmidlat
+    - nhpolar
+    - shpolar
+    - eq
+  smpi_n_bootstrap:
+    - 80
+    - 120
