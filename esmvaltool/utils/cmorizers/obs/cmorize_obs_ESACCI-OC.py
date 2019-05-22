@@ -89,8 +89,8 @@ def merge_data(in_dir, out_dir, raw_info, bins):
     """Merge all data into a single (regridded) file."""
     var = raw_info['name']
     do_bin = True if (bins % 2 == 0) & (bins != 0) else False
-    thefiles = sorted(glob.glob(in_dir + '/' + raw_info['file'] + '*.nc'))
-    for x in thefiles:
+    datafile = sorted(glob.glob(in_dir + '/' + raw_info['file'] + '*.nc'))
+    for x in datafile:
         ds = xr.open_dataset(x)
         da = ds[var].sel(lat=slice(None, None, -1))
         # remove inconsistent attributes
@@ -103,7 +103,7 @@ def merge_data(in_dir, out_dir, raw_info, bins):
             da = da.coarsen(lat=bins, boundary='exact').mean()
             da = da.coarsen(lon=bins, boundary='exact').mean()
 
-        if x == thefiles[0]:
+        if x == datafile[0]:
             newda = da
             thekeys = [
                 'creator_name', 'creator_url', 'license', 'sensor',
@@ -125,7 +125,7 @@ def merge_data(in_dir, out_dir, raw_info, bins):
     ds = newda.to_dataset(name=var)
     for x, y in dsmeta.items():
         ds.attrs[x] = y
-    encoding = {
+    thekeys = {
         'lat': {
             '_FillValue': False
         },
@@ -139,12 +139,12 @@ def merge_data(in_dir, out_dir, raw_info, bins):
             '_FillValue': 1.e20
         }
     }
-    merged_file = os.path.join(out_dir, raw_info['file'] + '_merged.nc')
-    ds.to_netcdf(merged_file, encoding=encoding, unlimited_dims='time')
+    datafile = os.path.join(out_dir, raw_info['file'] + '_merged.nc')
+    ds.to_netcdf(datafile, encoding=thekeys, unlimited_dims='time')
 
-    logger.info("Merged data written to: %s", merged_file)
+    logger.info("Merged data written to: %s", datafile)
 
-    return (merged_file, dsmeta['BINNING'])
+    return (datafile, dsmeta['BINNING'])
 
 
 def cmorization(in_dir, out_dir):
@@ -171,3 +171,6 @@ def cmorization(in_dir, out_dir):
         raw_info['file'] = inpfile
         glob_attrs['comment'] = addinfo + glob_attrs['comment']
         extract_variable(var_info, raw_info, out_dir, glob_attrs)
+
+    # Remove temporary input file
+    os.remove(inpfile)
