@@ -6,7 +6,7 @@ attributes:
   tier: 2
   modeling_realm: sat
   project_id: OBS
-  source: 'ftp://oceancolour.org/occci-v3.1/geographic/netcdf/monthly/chlor_a/'
+  source: 'ftp://oc-cci-data:ELaiWai8ae@oceancolour.org/occci-v3.1/geographic/netcdf/monthly/chlor_a/'
   reference: "esacci-oc"
   comment: ""
 
