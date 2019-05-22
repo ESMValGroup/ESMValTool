@@ -43,6 +43,7 @@ provenance_record <- function(infile) {
 }
 
 diag_scripts_dir <- Sys.getenv("diag_scripts")
+climdex_src <- paste0(diag_scripts_dir, "/extreme_events/climdex.pcic.ncdf/R/ncdf.R")  # nolint
 source(paste0(diag_scripts_dir, "/extreme_events/climdex.pcic.ncdf/R/ncdf.R"))  # nolint
 source(paste0(diag_scripts_dir, "/shared/external.R"))  # nolint
 source(paste0(diag_scripts_dir, "/extreme_events/cfg_climdex.R"))  # nolint
@@ -198,7 +199,8 @@ for (model_idx in c(1:length(models_name))) {
       base.range = base_range,
       parallel = climdex_parallel,
       verbose = TRUE, max.vals.millions = 20,
-      climdex.vars.subset = indices
+      climdex.vars.subset = indices,
+      src = climdex_src
     )
 
     # Set provenance for output files

@@ -965,15 +965,15 @@ get.quantiles.for.stripe <- function(subset, ts, base.range, dim.axes, v.f.idx, 
   }
 }
 
-set.up.cluster <- function(parallel, type="SOCK") {
+set.up.cluster <- function(parallel, type="SOCK", src) {
   ## Fire up the cluster...
   cluster <- NULL
 
   if(!is.logical(parallel)) {
     cat(paste("Creating cluster of", parallel, "nodes of type", type, "\n"))
     cluster <- snow::makeCluster(parallel, type)
-
-    snow::clusterEvalQ(cluster, library(climdex.pcic.ncdf))
+    snow::clusterCall(cluster, function() { source(src) })
+    ##snow::clusterEvalQ(cluster, library(climdex.pcic.ncdf))
     ##snow::clusterEvalQ(cluster, try(getFromNamespace('nc_set_chunk_cache', 'ncdf4')(1024 * 2048, 1009), silent=TRUE))
   }
   cluster
@@ -1225,7 +1225,7 @@ unsquash.dims <- function(dat.dim, subset, f, n) {
 #' }
 #'
 #' @export
-create.thresholds.from.file <- function(input.files, output.file, author.data, variable.name.map=c(tmax="tasmax", tmin="tasmin", prec="pr", tavg="tas"), axis.to.split.on="Y", fclimdex.compatible=TRUE, base.range=c(1961, 1990), parallel=4, verbose=FALSE, max.vals.millions=10, cluster.type="SOCK") {
+create.thresholds.from.file <- function(input.files, output.file, author.data, variable.name.map=c(tmax="tasmax", tmin="tasmin", prec="pr", tavg="tas"), axis.to.split.on="Y", fclimdex.compatible=TRUE, base.range=c(1961, 1990), parallel=4, verbose=FALSE, max.vals.millions=10, cluster.type="SOCK", src="ncdf.R") {
   if(!(is.logical(parallel) || is.numeric(parallel)))
     stop("'parallel' option must be logical or numeric.")
 
@@ -1241,7 +1241,7 @@ create.thresholds.from.file <- function(input.files, output.file, author.data, v
   ## Create the output file
   thresholds.netcdf <- create.thresholds.file(output.file, f, f.meta$ts, f.meta$v.f.idx, variable.name.map, base.range, f.meta$dim.size, f.meta$dim.axes, threshold.dat, author.data)
 
-  cluster <- set.up.cluster(parallel, cluster.type)
+  cluster <- set.up.cluster(parallel, cluster.type, src)
   subsets <- ncdf4.helpers::get.cluster.worker.subsets(max.vals.millions * 1000000, f.meta$dim.size, f.meta$dim.axes, axis.to.split.on)
 
   write.thresholds.data <- function(out.list, out.sub) {
@@ -1406,7 +1406,7 @@ get.thresholds.f.idx <- function(thresholds.files, thresholds.name.map) {
 #' }
 #'
 #' @export
-create.indices.from.files <- function(input.files, out.dir, output.filename.template, author.data, climdex.vars.subset=NULL, climdex.time.resolution=c("all", "annual", "monthly"), variable.name.map=c(tmax="tasmax", tmin="tasmin", prec="pr", tavg="tas"), axis.to.split.on="Y", fclimdex.compatible=TRUE, base.range=c(1961, 1990), parallel=4, verbose=FALSE, thresholds.files=NULL, thresholds.name.map=c(tx10thresh="tx10thresh", tn10thresh="tn10thresh", tx90thresh="tx90thresh", tn90thresh="tn90thresh", r95thresh="r95thresh", r99thresh="r99thresh"), max.vals.millions=10, cluster.type="SOCK") {
+create.indices.from.files <- function(input.files, out.dir, output.filename.template, author.data, climdex.vars.subset=NULL, climdex.time.resolution=c("all", "annual", "monthly"), variable.name.map=c(tmax="tasmax", tmin="tasmin", prec="pr", tavg="tas"), axis.to.split.on="Y", fclimdex.compatible=TRUE, base.range=c(1961, 1990), parallel=4, verbose=FALSE, thresholds.files=NULL, thresholds.name.map=c(tx10thresh="tx10thresh", tn10thresh="tn10thresh", tx90thresh="tx90thresh", tn90thresh="tn90thresh", r95thresh="r95thresh", r99thresh="r99thresh"), max.vals.millions=10, cluster.type="SOCK", src="ncdf.R") {
   if(!(is.logical(parallel) || is.numeric(parallel)))
     stop("'parallel' option must be logical or numeric.")
 
@@ -1434,7 +1434,7 @@ create.indices.from.files <- function(input.files, out.dir, output.filename.temp
     ## Setup...
     lapply(f, ncdf4::nc_close)
     rm(f)
-    cluster <- set.up.cluster(parallel, cluster.type)
+    cluster <- set.up.cluster(parallel, cluster.type, src)
     snow::clusterExport(cluster, list("input.files", "thresholds.files"), environment())
     snow::clusterEvalQ(cluster, f <<- lapply(input.files, ncdf4::nc_open, readunlim=FALSE))
     snow::clusterEvalQ(cluster, thresholds.netcdf <<- thresholds.open(thresholds.files))
