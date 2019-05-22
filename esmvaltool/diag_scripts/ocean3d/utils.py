@@ -5,7 +5,6 @@ APPLICATE/TRR Ocean Diagnostics
 """
 import logging
 import os
-from collections import OrderedDict
 import shutil
 from esmvaltool.diag_scripts.shared import run_diagnostic
 from esmvaltool.diag_scripts.shared.plot import quickplot
@@ -16,7 +15,6 @@ import matplotlib.pylab as plt
 import math
 from matplotlib import cm
 from netCDF4 import num2date
-from collections import OrderedDict
 from cdo import Cdo
 import cmocean.cm as cmo
 import matplotlib.cm as cm
@@ -29,8 +27,7 @@ logger = logging.getLogger(os.path.basename(__file__))
 class DiagnosticError(Exception):
     """Error in diagnostic"""
 
-def genfilename(basedir, variable=None,
-                mmodel=None, region=None, 
+def genfilename(basedir, variable=None, mmodel=None, region=None,
                 data_type=None, extension=None, basis='arctic_ocean'):
     '''Generates file name for the output data.
 
@@ -39,7 +36,7 @@ def genfilename(basedir, variable=None,
     basedir: str
         base directory
     variable: str
-      name of the variable 
+        name of the variable
     mmodel: str
         name of the model
     region: str
@@ -49,7 +46,7 @@ def genfilename(basedir, variable=None,
     extention: str
         fiel extention, for example `nc`
     basis: str
-        basis name that can be used for series of 
+        basis name that can be used for series of
         diagnostics
 
     Returns
@@ -57,7 +54,7 @@ def genfilename(basedir, variable=None,
     ifilename: str
         path to the file
     '''
-    nname = [basis,  region, mmodel, variable, data_type]
+    nname = [basis, region, mmodel, variable, data_type]
     nname_nonans = []
     for i in nname:
         if i:
@@ -73,7 +70,7 @@ def genfilename(basedir, variable=None,
 def timmean(model_filenames, mmodel,
             cmor_var, diagworkdir, observations='PHC'):
     '''Create time mean of input data.
-    
+
     Parameters
     ----------
     model_filenames: OrderedDict
@@ -94,10 +91,10 @@ def timmean(model_filenames, mmodel,
     logger.info("Calculate timmean %s for %s", cmor_var, mmodel)
     cdo = Cdo()
     ofilename = genfilename(diagworkdir, cmor_var,
-                             mmodel,  data_type='timmean', extension='.nc')
+                            mmodel, data_type='timmean', extension='.nc')
     if mmodel != observations:
         cdo.timmean(input=model_filenames[mmodel],
-                output=ofilename)
+                    output=ofilename)
     else:
         shutil.copy2(model_filenames[mmodel], ofilename)
 
@@ -105,22 +102,22 @@ def get_clim_model_filenames(config, variable):
     '''Extract model filenames from the configuration.
     '''
     model_filenames = {}
-    for key, value in (config['input_data'].items()):
+    for key, value in config['input_data'].items():
         if value['short_name'] == variable:
             model_filenames[value['dataset']] = key
-    return(model_filenames)
+    return model_filenames
 
 def get_fx_filenames(config, variable, fx_var):
     '''Extract fx file names
     '''
     areacello_fxdataset = {}
-    for key, value in (config['input_data'].items()):
+    for key, value in config['input_data'].items():
         if value['short_name'] == variable:
-             areacello_fxdataset[value['dataset']] = value['fx_files'][fx_var]
-    return(areacello_fxdataset)
+            areacello_fxdataset[value['dataset']] = value['fx_files'][fx_var]
+    return areacello_fxdataset
 
 def find_observations_name(config, variable):
-    ''' Find "model name" of the observations data set (climatology in our case)
+    ''' Find "model name" of the observations data set.
     Assumes that there is only one observational data set.
     '''
     obsname = []
@@ -128,13 +125,12 @@ def find_observations_name(config, variable):
         if value['project'] == "OBS":
             obsname = value['dataset']
             print(obsname)
-    
     if not obsname:
         logger.info('Can\'t find observational (climatology) data')
-    
+
     return obsname
 
-def shiftedColorMap(cmap, start=0, midpoint=0.5, stop=1.0, name='shiftedcmap'):
+def shiftedcolormap(cmap, start=0, midpoint=0.5, stop=1.0, name='shiftedcmap'):
     '''
     Function to offset the "center" of a colormap. Useful for
     data with a negative min and positive max and you want the
@@ -147,7 +143,7 @@ def shiftedColorMap(cmap, start=0, midpoint=0.5, stop=1.0, name='shiftedcmap'):
       start : Offset from lowest point in the colormap's range.
           Defaults to 0.0 (no lower ofset). Should be between
           0.0 and `midpoint`.
-      midpoint : The new center of the colormap. Defaults to 
+      midpoint : The new center of the colormap. Defaults to
           0.5 (no shift). Should be between 0.0 and 1.0. In
           general, this should be  1 - vmax/(vmax + abs(vmin))
           For example if your data range from -15.0 to +5.0 and
@@ -169,17 +165,17 @@ def shiftedColorMap(cmap, start=0, midpoint=0.5, stop=1.0, name='shiftedcmap'):
 
     # shifted index to match the data
     shift_index = np.hstack([
-        np.linspace(0.0, midpoint, 128, endpoint=False), 
+        np.linspace(0.0, midpoint, 128, endpoint=False),
         np.linspace(midpoint, 1.0, 129, endpoint=True)
     ])
 
-    for ri, si in zip(reg_index, shift_index):
-        r, g, b, a = cmap(ri)
+    for regi, shii in zip(reg_index, shift_index):
+        red, gren, blue, alpha = cmap(ri)
 
-        cdict['red'].append((si, r, r))
-        cdict['green'].append((si, g, g))
-        cdict['blue'].append((si, b, b))
-        cdict['alpha'].append((si, a, a))
+        cdict['red'].append((shii, red, red))
+        cdict['green'].append((shii, gren, gren))
+        cdict['blue'].append((shii, blue, blue))
+        cdict['alpha'].append((shii, alpha, alpha))
 
     newcmap = mpl.colors.LinearSegmentedColormap(name, cdict)
     cm.register_cmap(cmap=newcmap)
@@ -191,24 +187,24 @@ def dens_back(smin, smax, tmin, tmax):
     '''Calculate density for TS diagram.
     '''
 
-    xdim = round((smax-smin)/0.1+1,0)
-    ydim = round((tmax-tmin)+1,0)
+    xdim = round((smax-smin)/0.1+1, 0)
+    ydim = round((tmax-tmin)+1, 0)
 
     dens = np.zeros((int(ydim),int(xdim)))
 
-    ti = np.linspace(tmin,tmax,ydim*10)
-    si = np.linspace(smin,smax,xdim*10)
+    ti = np.linspace(tmin, tmax, ydim*10)
+    si = np.linspace(smin, smax, xdim*10)
 
     si2, ti2 = np.meshgrid(si, ti)
     dens = sw.dens0(si2, ti2)-1000
     return si2, ti2, dens
 
 def get_cmap(cmap_name):
-    '''Return matplotlib colormap object 
+    '''Return matplotlib colormap object
     from matplotlib.cm or cmocean.
     Additional custom colormap for salinity is provided:
     - "custom_salinity1"
-    ''' 
+    '''
     #hack to support different versions of cmocean
     try:
         cmo_names = cmo.cm.cmapnames
@@ -219,15 +215,14 @@ def get_cmap(cmap_name):
         colormap = cmo.cmap_d[cmap_name]
     elif cmap_name in cm.datad:
         colormap = cm.get_cmap(cmap_name)
-    elif cmap_name=="custom_salinity1":
-        colormap = shiftedColorMap(palettable.cubehelix.cubehelix3_16.mpl_colormap, 
+    elif cmap_name == "custom_salinity1":
+        colormap = shiftedcolormap(palettable.cubehelix.cubehelix3_16.mpl_colormap,
                                    start=0,
-                                   midpoint=0.89, 
+                                   midpoint=0.89,
                                    stop=0.9,
                                    name='shiftedcmap')
     else:
         raise ValueError('Get unrecognised name for the colormap `{}`.\
                             Colormaps should be from standard matplotlib \
                             set or from cmocean package.'.format(cmap_name))
-    return(colormap)
-    
+    return colormap
