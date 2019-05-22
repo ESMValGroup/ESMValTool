@@ -47,8 +47,7 @@ def _fix_data(cube, var):
     return cube
 
 
-# pylint: disable=unused-argument
-def _fix_auxcoord(cube, field, filename):
+def _add_depth_coord(cube):
     """Add depth auxiliary coordinate for CMIP5 standard."""
     if not cube.coords('depth'):
         depth = 1.
@@ -66,13 +65,14 @@ def _fix_auxcoord(cube, field, filename):
 def extract_variable(var_info, raw_info, out_dir, attrs):
     """Extract to all vars."""
     var = var_info.short_name
-    cubes = iris.load(raw_info['file'], callback=_fix_auxcoord)
+    cubes = iris.load(raw_info['file'])
     rawvar = raw_info['name']
 
     for cube in cubes:
         if cube.var_name == rawvar:
             fix_var_metadata(cube, var_info)
             fix_coords(cube)
+            _add_depth_coord(cube)
             _fix_data(cube, var)
             set_global_atts(cube, attrs)
             save_variable(
