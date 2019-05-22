@@ -9,7 +9,7 @@ dependencies:
   - iris>=2.2
   - matplotlib<3  # Can be installed from PyPI, but is a dependency of iris and should be pinned.
   - python-stratify
-  - xarray  # Can be installed from PyPI, but here to get a consistent set of depencies with iris.
+  - xarray>=0.12.0  # Can be installed from PyPI, but here to get a consistent set of depencies with iris.
   # Non-Python dependencies
   - graphviz
   - cdo
