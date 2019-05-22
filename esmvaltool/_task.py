@@ -190,7 +190,7 @@ def write_ncl_settings(settings, filename, mode='wt'):
         file.write('\n')
 
 
-class BaseTask(object):
+class BaseTask():
     """Base class for defining task classes."""
 
     def __init__(self, ancestors=None, name=''):
@@ -266,8 +266,8 @@ class DiagnosticTask(BaseTask):
 
     def _initialize_cmd(self, script):
         """Create a an executable command from script."""
-        diagnostics_root = os.path.join(
-            os.path.dirname(__file__), 'diag_scripts')
+        diagnostics_root = os.path.join(os.path.dirname(__file__),
+                                        'diag_scripts')
         script_file = os.path.abspath(os.path.join(diagnostics_root, script))
 
         if not os.path.isfile(script_file):
@@ -354,7 +354,7 @@ class DiagnosticTask(BaseTask):
 
         return filename
 
-    def _control_ncl_execution(self, process, lines):
+    def _control_ncl_execution(self, process, line):
         """Check if an error has occurred in an NCL script.
 
         Apparently NCL does not automatically exit with a non-zero exit code
@@ -372,29 +372,21 @@ class DiagnosticTask(BaseTask):
         msg = ("An error occurred during execution of NCL script {}, "
                "see the log in {}".format(self.script, self.log))
 
-        warned = False
-        for line in lines:
-            if line.strip() in ignore_warnings:
-                continue
-            if 'warning:' in line:
-                logger.warning("NCL: %s", line)
-                warned = True
-            for error in errors:
-                if error in line:
-                    logger.error(msg)
-                    logger.error("NCL: %s", line)
-                    try:
-                        process.kill()
-                    except OSError:  # ignore error if process already exited
-                        pass
-                    else:
-                        logger.error("Killed process.")
-                    raise DiagnosticError(msg)
-
-        if warned:
-            logger.warning(
-                "There were warnings during the execution of NCL script %s, "
-                "for details, see the log %s", self.script, self.log)
+        if line.strip() in ignore_warnings:
+            return
+        if 'warning:' in line:
+            logger.warning("NCL: %s", line)
+        for error in errors:
+            if error in line:
+                logger.error(msg)
+                logger.error("NCL: %s", line)
+                try:
+                    process.kill()
+                except OSError:  # ignore error if process already exited
+                    pass
+                else:
+                    logger.error("Killed process.")
+                raise DiagnosticError(msg)
 
     def _start_diagnostic_script(self, cmd, env):
         """Start the diagnostic script."""
@@ -416,10 +408,13 @@ class DiagnosticTask(BaseTask):
         try:
             process = subprocess.Popen(
                 cmd,
+                universal_newlines=True,
+                bufsize=1,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
                 cwd=cwd,
-                env=env)
+                env=env,
+            )
         except OSError as exc:
             if exc.errno == errno.ENOEXEC:
                 logger.error(
@@ -455,8 +450,8 @@ class DiagnosticTask(BaseTask):
             env['MPLBACKEND'] = 'Agg'
         else:
             # Make diag_scripts path available to diagostics scripts
-            env['diag_scripts'] = os.path.join(
-                os.path.dirname(__file__), 'diag_scripts')
+            env['diag_scripts'] = os.path.join(os.path.dirname(__file__),
+                                               'diag_scripts')
 
         cmd = list(self.cmd)
         settings_file = self.write_settings()
@@ -467,29 +462,15 @@ class DiagnosticTask(BaseTask):
 
         process = self._start_diagnostic_script(cmd, env)
 
-        returncode = None
-        last_line = ['']
-
         with resource_usage_logger(process.pid, self.resource_log),\
                 open(self.log, 'at') as log:
-            while returncode is None:
-                returncode = process.poll()
-                txt = process.stdout.read()
-                txt = txt.decode(encoding='utf-8', errors='ignore')
-                log.write(txt)
-
-                # Check if an error occurred in an NCL script
-                # Last line is treated separately to avoid missing
-                # error messages spread out over multiple lines.
-                lines = txt.split('\n')
+            for line in process.stdout:
+                log.write(line)
                 if is_ncl_script:
-                    self._control_ncl_execution(process, last_line + lines)
-                last_line = lines[-1:]
+                    # Check if an error occurred in an NCL script
+                    self._control_ncl_execution(process, line)
 
-                # wait, but not long because the stdout buffer may fill up:
-                # https://docs.python.org/3.6/library/subprocess.html#subprocess.Popen.stdout
-                time.sleep(0.001)
-
+        returncode = process.wait()
         if returncode == 0:
             self._collect_provenance()
             return [self.output_dir]
