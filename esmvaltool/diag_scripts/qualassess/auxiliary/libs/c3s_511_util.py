@@ -56,7 +56,7 @@ def __minmeanmax__(array):
     return (np.nanmin(array), np.nanmean(array), np.nanmax(array))
 
 
-def __temporal_trend__(cube, pthres=1.01):
+def temporal_trend(cube, pthres=1.01):
     """
     calculate temporal trend of the data over time
     the slope of the temporal trend has unit [dataunit/day]
@@ -72,7 +72,7 @@ def __temporal_trend__(cube, pthres=1.01):
     The following variables are returned:
     correlation, slope, intercept, p-value
     """
-    # time difference in days
+    # time difference in days and decades
     dt = np.asarray(cube.coord('time').points - cube.coord('time').points[0]
                     ).astype('float') / 365.2425 / 10
     # ensure that a masked array is used
@@ -547,7 +547,7 @@ def lazy_climatology(cube, t_coord):
 def minmax_cubelist(cubelist,perc,symmetric=False):
 
     try: 
-        vminmax = dask.array.concatenate([dask_perc_masked(plotcube, perc)
+        vminmax = dask.array.concatenate([__dask_perc_masked__(plotcube, perc)
                    for plotcube in cubelist])
     except:
         vminmax = dask.array.concatenate([dask.array.percentile(
@@ -564,26 +564,38 @@ def minmax_cubelist(cubelist,perc,symmetric=False):
     return vminmax.compute()
 
 
-def dask_perc_masked(cube,perc):
+def __dask_perc_masked__(cube,perc):
     ravelcube = cube.core_data().ravel()
     percentile = dask.array.percentile(
             ravelcube[~dask.array.ma.getmaskarray(ravelcube)],
             perc)
     return percentile
 
+
 def lazy_percentiles(cube, percentiles):
     
-    t_coord_dict = collections.OrderedDict()
+    perc_dict = collections.OrderedDict()
+    
+    pre_slice = cube.collapsed("time",iris.analysis.MEAN)
+    
+    dask_data = cube.core_data()
+    dask_data[dask.array.ma.getmaskarray(dask_data)] = np.nan
+    
+    dask_perc = dask.array.apply_along_axis(np.nanpercentile,
+                                            0,dask_data,percentiles)
+    
+    dask_perc = dask.array.ma.masked_array(dask_perc,
+                                              dask.array.isnan(dask_perc))
     
     for act_p in np.sort(percentiles):
         
-        sub_cube = cube.extract(
-                iris.Constraint(
-                        coord_values={t_coord:lambda point: point == act_t}))
-#        sub_cube = cube.extract(iris.Constraint(month_number = lambda point: point == act_t))
-
-        sub_mean = sub_cube.collapsed("time",iris.analysis.MEAN)
-            
-        t_coord_dict.update({act_t:sub_mean})
+        sub_cube = pre_slice.copy()
+        
+        sub_data = (dask_perc[
+                [act_p == p for p in percentiles],:,:]).squeeze()
     
-    return t_coord_dict
+        sub_cube.data = sub_data
+        
+        perc_dict.update({act_p:sub_cube})
+        
+    return perc_dict

@@ -1070,11 +1070,6 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
 
 #    @profile
     def __mean_var_procedures_2D__(self, cube=None, level=None):
-        
-                
-        import resource
-        
-        before0 = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
 
         try:
             if cube is None:
@@ -1147,29 +1142,9 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                 
                 long_left_over = [rd for rd in reg_dimensions if rd != d]
             
-#                plotcubes = self.__apply_fun2cube__(cube,
-#                                                    dims=d,
-#                                                    function=iris.analysis.PERCENTILE,
-#                                                    incl_weights = False,
-#                                                    percent=percentiles
-#                                                    )
-                plotcubes = cube.collapsed(d,iris.analysis.PERCENTILE, percent=percentiles)
+                perc_comp_dict = utils.lazy_percentiles(cube,percentiles)
                 
-                percentile_list = list()
-
-                for p in percentiles:
-
-                    loc_data = plotcubes.extract(
-                            iris.Constraint(percentile_over_time=p))
-
-                    percentile_list.append(loc_data)
-                    
-                plotcubes = percentile_list
-                
-                for pc in plotcubes:
-                    pc.data =  dask.array.from_array(pc.data, chunks = 100)
-                
-                self.__logger__.info(plotcubes)
+                plotcubes = list(perc_comp_dict.values())
                 
                 vminmax = utils.minmax_cubelist(plotcubes, [5, 95]) 
                 
@@ -1190,9 +1165,9 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                 
                 long_left_over = [rd for rd in reg_dimensions if rd != d]
             
-                clim_comp_list = utils.lazy_climatology(cube,'month_number')
+                clim_comp_dict = utils.lazy_climatology(cube,'month_number')
                 
-                plotcubes = list(clim_comp_list.values())
+                plotcubes = list(clim_comp_dict.values())
                 
                 vminmax = utils.minmax_cubelist(plotcubes, [5, 95])    
                 
@@ -1213,11 +1188,11 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                 
                 long_left_over = [rd for rd in reg_dimensions if rd != d]
             
-                plotcubes = utils.lazy_climatology(cube,'year')
+                anom_comp_dict = utils.lazy_climatology(cube,'year')
                 
                 mean = cube.collapsed(d,iris.analysis.MEAN)
                 
-                plotcubes =  [pc - mean  for pc in list(plotcubes.values())]
+                plotcubes =  [pc - mean  for pc in list(anom_comp_dict.values())]
                 
                 vminmax = utils.minmax_cubelist(plotcubes, [1/3 *100, 2/3 *100], symmetric=True) 
                 
@@ -1303,10 +1278,6 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
         [di.update({"vminmax":[dask.array.concatenate(diff_mins).min().compute(),
                                dask.array.concatenate(diff_maxs).max().compute()]}) 
          for di in data_info if di["mmtype"]=="diff"]
-        
-        after1 = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
-        logger.info("full climatology without plotting" + ":")
-        logger.info(str(round((after1-before0)/1024.,2)) + "MB")
         
         # plotting (2D maps only)
         for di in data_info:
@@ -1408,11 +1379,6 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                          self.__infile__, 
                          self.diagname, 
                          self.authors)
-
-        after2 = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
-        logger.info("full climatology only plotting" + ":")
-        logger.info(str(round((after2-after1)/1024.,2)) + "MB")
-
 
         return list_of_plots
     
@@ -1646,6 +1612,10 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
 
     def __trends_procedures_2D__(self, cube=None, level=None):
 
+        import resource
+        
+        before0 = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+        
         if cube is None:
             cube = self.sp_data
 
@@ -1660,12 +1630,16 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
         list_of_plots = []
 
         # simple linear trend (slope) and p-values
-        _, S, _, P = utils.__temporal_trend__(cube, pthres=1.01)
+        _, S, _, P = utils.temporal_trend(cube, pthres=1.01)
 
         signtrends = (P.data <= 0.05) * np.sign(S.data)
         ST = S.copy()
         ST.data = signtrends
-
+        
+        after1 = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+        logger.info("full trend without plotting" + ":")
+        logger.info(str(round((after1-before0)/1024.,2)) + "MB")
+        
         try:
             # plotting routines
             x = Plot2D(S)
@@ -1800,6 +1774,10 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
         del P
         del ST
         del S
+        
+        after2 = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+        logger.info("full trend only plotting" + ":")
+        logger.info(str(round((after2-after1)/1024.,2)) + "MB")
 
         return list_of_plots
     
