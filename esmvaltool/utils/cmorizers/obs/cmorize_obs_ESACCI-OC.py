@@ -10,7 +10,8 @@ Last access
    20190227
 
 Download and processing instructions
-   In case of issues with data download, check also the OceanColour webpage https://esa-oceancolour-cci.org/
+   In case of issues with data download, check also the information provided at
+       OceanColour webpage https://esa-oceancolour-cci.org/
    Put all files under a single directory (no subdirectories with years)
    in ${RAWOBS}/Tier2/ESACCI-OC
 
