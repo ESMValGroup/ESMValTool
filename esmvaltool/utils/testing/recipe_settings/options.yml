@@ -112,7 +112,6 @@ recipe_modes_of_variability.yml:
     - Rectangular
     - Polar
   ncenters:
-    - 1
     - 2
     - 3
     - 4
