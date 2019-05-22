@@ -10,7 +10,7 @@ Last access
    20190515
 
 Download and processing instructions
-   Download and unpack all files under a single directory 
+   Download and unpack all files under a single directory
    (no subdirectories with years) in ${RAWOBS}/Tier2/Eppley-VGPM-MODIS
 
 Modification history
