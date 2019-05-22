@@ -7,8 +7,8 @@ documentation:
   mantainer: [vega_ja]
 
 datasets:
- - {dataset: GFDL-ESM2G,  project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2000}
-#  - {dataset: MPI-ESM-LR,  project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 1979,  end_year: 2000}
+ - {dataset: GFDL-ESM2G,  project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 1979,  end_year: 2000}
+ - {dataset: MPI-ESM-LR,  project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 1979,  end_year: 2000}
 #  - {dataset: EC-EARTH,  project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
 
 preprocessors:
@@ -67,13 +67,13 @@ diagnostics:
              mip: day, tier: 2,
              start_year: 1979,  end_year: 2000}
     scripts:
-      # sea_ice_drift:
-      #   script: seaice_drift/seaice_drift.py
-      #   title: "Python example diagnostic"
-      #   latitude_treshold: 50
+      sea_ice_drift:
+        script: seaice_drift/seaice_drift.py
+        title: "Seaice drift north of 50º"
+        latitude_treshold: 50
       sea_ice_drift_SCICEX:
         script: seaice_drift/seaice_drift.py
-        title: "Python example diagnostic"
+        title: "Seaice drift SCICEX domain"
         # lon, lat tuples
         polygon:
           - [-15., 87.]
