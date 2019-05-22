@@ -4,14 +4,14 @@
 Tier
 
 Source
-   http://orca.science.oregonstate.edu/data/1x2/monthly/eppley.r2018.m.chl.m.sst/hdf/
+   http://orca.science.oregonstate.edu/data/1x2/monthly/eppley.r2018.m.chl.m.sst/hdf
 
 Last access
    20190515
 
 Download and processing instructions
-   Download and unpack all files under a single directory (no subdirectories with years)
-   in ${RAWOBS}/Tier2/Eppley-VGPM-MODIS
+   Download and unpack all files under a single directory 
+   (no subdirectories with years) in ${RAWOBS}/Tier2/Eppley-VGPM-MODIS
 
 Modification history
    20190515-A_lova_to: written.
@@ -21,9 +21,9 @@ Modification history
 import logging
 import os
 import glob
+from datetime import datetime as dt
 import xarray as xr
 import numpy as np
-from datetime import datetime as dt
 
 import iris
 
@@ -116,7 +116,7 @@ def merge_data(in_dir, out_dir, raw_info):
 
     logger.info("Merged data written to: %s", datafile)
 
-    return (datafile)
+    return datafile
 
 
 def cmorization(in_dir, out_dir):
