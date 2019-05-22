@@ -614,6 +614,7 @@ references:
   modis: "Not available."
   mte: "Jung et al., J. Geophys. Res., 116, doi:10.1029/2010JG001566, 2011."
   ncep: "Kalnay et al., B. Am. Meteorol. Soc., doi:10.1175/1520-0477(1996)077<0437:TNYRP>2.0.CO;2, 1996."
+  osu-vgpm-modis: "Behrenfeld, M. J., & Falkowski, P. G. (1997). Photosynthetic rates derived from satellite‐based chlorophyll concentration. Limnology and oceanography, 42(1), 1-20."
   niwa-bs: "Bodeker et al., Atmos. Chem. Phys., doi:10.5194/acp-5-2603-2005, 2005."
   patmos-x: "Heidinger et al., NOAA National Centers for Environmental Information, doi:10.7289/V5348HCK, last access: 10 February 2019."
   woa: "Locarnini et al., World Ocean Atlas 2013, Vol. 1: Temperature, 2013."
