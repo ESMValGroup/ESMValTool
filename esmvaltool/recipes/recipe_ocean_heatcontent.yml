@@ -21,7 +21,7 @@ documentation:
 
 datasets:
   # CMIP5
-#  - {dataset: IPSL-CM5A-LR, project: CMIP5, ensemble: r1i1p1}
+  - {dataset: IPSL-CM5A-LR, project: CMIP5, ensemble: r1i1p1}
   - {dataset: HadGEM2-ES, project: CMIP5, ensemble: r1i1p1}
   - {dataset: CSIRO-Mk3-6-0, project: CMIP5, ensemble: r1i1p1}
   - {dataset: CanESM2, project: CMIP5, ensemble: r1i1p1}
