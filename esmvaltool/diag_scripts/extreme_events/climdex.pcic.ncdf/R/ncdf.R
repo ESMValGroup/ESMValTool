@@ -971,6 +971,7 @@ set.up.cluster <- function(parallel, type="SOCK", src) {
 
   if(!is.logical(parallel)) {
     cat(paste("Creating cluster of", parallel, "nodes of type", type, "\n"))
+    cat(paste("SRC:", src))
     cluster <- snow::makeCluster(parallel, type)
     snow::clusterCall(cluster, function() { source(src) })
     ##snow::clusterEvalQ(cluster, library(climdex.pcic.ncdf))
