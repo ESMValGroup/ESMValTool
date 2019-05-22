@@ -85,7 +85,7 @@ def merge_data(in_dir, out_dir, raw_info, bins):
     """Merge all data into a single (regridded) file."""
     var = raw_info['name']
     do_bin = True if (bins % 2 == 0) & (bins != 0) else False
-    thefiles = sorted(glob.glob(in_dir + '/' + raw_info['file'] + '*1997*.nc'))
+    thefiles = sorted(glob.glob(in_dir + '/' + raw_info['file'] + '*.nc'))
     for x in thefiles:
         ds = xr.open_dataset(x)
         da = ds[var].sel(lat=slice(None, None, -1))
