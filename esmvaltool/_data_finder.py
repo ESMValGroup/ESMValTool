@@ -10,6 +10,8 @@ import os
 import re
 
 import six
+import iris
+import iris.exceptions
 
 from ._config import get_project_config, replace_mip_fx
 from .cmor.table import CMOR_TABLES
@@ -76,10 +78,16 @@ def get_start_end_year(filename):
     elif len(dates) == 2:
         start_year, end_year = int(dates[0][:4]), int(dates[1][:4])
     else:
-        #raise ValueError('Name {0} dates do not match a recognized '
-        #                 'pattern'.format(name))
-        return -10000,10000
-
+        # Slower than just parsing the name
+        cubes = iris.load(filename)
+        for cube in cubes:
+            try:
+                time = cube.coord('time')
+            except iris.exceptions.CoordinateNotFoundError:
+                continue
+            start_year = time.cell(0).point.year
+            end_year = time.cell(-1).point.year
+            break
     return start_year, end_year
 
 
