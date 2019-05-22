@@ -101,17 +101,6 @@ diagnostics:
     scripts: null
 
 
-  ESACCI-OC:
-    description: ESACCI-OC
-    variables:
-      chl:
-        preproc: nopp
-        mip: Omon
-    additional_datasets:
-      - {dataset: ESACCI-OC, project: OBS, tier: 2, type: sat, version: fv3.1, start_year: 1997, end_year: 2016}
-    scripts: null
-
-
   ESACCI-OZONE:
     description: ESACCI-OZONE
     variables:
