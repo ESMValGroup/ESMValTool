@@ -102,19 +102,15 @@ class CMIP6Info(object):
             table.name = header['table_id'].split(' ')[-1]
             generic_levels = header['generic_levels'].split()
             table.realm = header['realm'].split()
+            frequency = header['frequency']
             self.var_to_freq[table.name] = {}
 
             for var_name, var_data in raw_data['variable_entry'].items():
                 var = VariableInfo('CMIP6', var_name)
-                if 'frequency' in var_data:
-                    frequency = var_data['frequency']
-                else:
-                    frequency = header['frequency']
-                var.read_json(var_data)
-                var.frequency = frequency
+                var.read_json(var_data, frequency)
                 self._assign_dimensions(var, generic_levels)
                 table[var_name] = var
-                self.var_to_freq[table.name][var_name] = frequency
+                self.var_to_freq[table.name][var_name] = var.frequency
             self.tables[table.name] = table
 
     def _assign_dimensions(self, var, generic_levels):
@@ -221,7 +217,7 @@ class JsonInfo(object):
     def __init__(self):
         self._json_data = {}
 
-    def _read_json_variable(self, parameter):
+    def _read_json_variable(self, parameter, default=''):
         """
         Read a json parameter in json_data.
 
@@ -237,7 +233,7 @@ class JsonInfo(object):
 
         """
         if parameter not in self._json_data:
-            return ''
+            return default
         return str(self._json_data[parameter])
 
     def _read_json_list_variable(self, parameter):
@@ -301,7 +297,7 @@ class VariableInfo(JsonInfo):
 
         self._json_data = None
 
-    def read_json(self, json_data):
+    def read_json(self, json_data, default_freq):
         """
         Read variable information from json.
 
@@ -312,6 +308,9 @@ class VariableInfo(JsonInfo):
         json_data: dict
             dictionary created by the json reader containing
             variable information
+
+        default_freq: str
+            Default frequency to use if it is not defined at variable level
 
         """
         self._json_data = json_data
@@ -324,7 +323,7 @@ class VariableInfo(JsonInfo):
         self.positive = self._read_json_variable('positive')
         self.modeling_realm = \
             self._read_json_variable('modeling_realm').split()
-        self.frequency = self._read_json_variable('frequency')
+        self.frequency = self._read_json_variable('frequency', default_freq)
 
         self.dimensions = self._read_json_variable('dimensions').split()
 
