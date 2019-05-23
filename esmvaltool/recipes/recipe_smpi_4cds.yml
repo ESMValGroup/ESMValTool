@@ -1,5 +1,5 @@
-###############################################################################
-# recipe_smpi.xml
+# ESMValTool
+# recipe_smpi_4cds.yml
 ---
 documentation:
   description: |
