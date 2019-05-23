@@ -25,7 +25,7 @@ documentation:
 
 datasets:
   - {dataset: bcc-csm1-1, project: CMIP5, start_year: 1971, end_year: 2000, ensemble: r1i1p1, exp: historical}
-  - {dataset: bcc-csm1-1, project: CMIP5, start_year: 2020, end_year: 2050, ensemble: r1i1p1, exp: rcp85}
+  - {dataset: bcc-csm1-1, project: CMIP5, start_year: 2020, end_year: 2075, ensemble: r1i1p1, exp: rcp85}
 
 preprocessors:
   preproc:
@@ -35,7 +35,7 @@ preprocessors:
     extract_region:
       start_longitude: 0
       end_longitude: 360
-      start_latitude: 30
+      start_latitude: 50
       end_latitude: 90
 
 diagnostics:
@@ -48,10 +48,10 @@ diagnostics:
     scripts:
       main:
         script: magic_bsc/weather_regime.r
-        plot_type: rectangular #rectangular or polar
+        plot_type: polar #rectangular or polar
 
-        ncenters: 3
-        detrend_order: 2
+        ncenters: 3 
+        detrend_order: 2 # 0, 1 or 2 for daily data
         cluster_method: "kmeans" # select hclust or kmeans
-        EOFS: true
-        frequency: 'JAN' # Select a month (format: JAN, FEB, ...) or season (JJA, SON, MAM(only monthly), DJF)
+        EOFS: false 
+        frequency: 'SON' # Select a month (format: JAN, FEB, ...) or season (JJA, SON, MAM(only monthly), DJF)
