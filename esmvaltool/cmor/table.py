@@ -111,6 +111,12 @@ class CMIP6Info(object):
                 self._assign_dimensions(var, generic_levels)
                 table[var_name] = var
                 self.var_to_freq[table.name][var_name] = var.frequency
+
+            if not table.frequency:
+                from collections import Counter
+                var_freqs = (var.frequency for var in table.values())
+                table_freq, _ = Counter(var_freqs).most_common(1)[0]
+                table.frequency = table_freq
             self.tables[table.name] = table
 
     def _assign_dimensions(self, var, generic_levels):
@@ -633,7 +639,7 @@ class CustomInfo(CMIP5Info):
         """
         var_info = self.tables['custom'].get(short_name, None)
         if var_info is not None:
-            var_info.frequency = self.var_to_freq[short_name]
+            var_info.frequency = self.var_to_freq[table]
         return var_info
 
     def _read_table_file(self, table_file, table=None):

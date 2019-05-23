@@ -26,6 +26,14 @@ class TestCMIP6Info(unittest.TestCase):
         cmor_tables_path = os.path.abspath(cmor_tables_path)
         CMIP6Info(cmor_tables_path)
 
+    def test_get_table_frequency(self):
+        """Test get table frequency"""
+        self.assertEqual(
+            self.variables_info.get_table('Amon').frequency,
+            'mon'
+        )
+        self.assertEqual(self.variables_info.get_table('day').frequency, 'day')
+
     def test_get_variable_tas(self):
         """Get tas variable."""
         var = self.variables_info.get_variable('Amon', 'tas')
@@ -56,6 +64,13 @@ class Testobs4mipsInfo(unittest.TestCase):
             default=CustomInfo()
         )
 
+    def test_get_table_frequency(self):
+        """Test get table frequency"""
+        self.assertEqual(
+            self.variables_info.get_table('obs4MIPs_monStderr').frequency,
+            'mon'
+        )
+
     def test_custom_tables_location(self):
         """Test constructor with custom tables location."""
         cwd = os.path.dirname(os.path.realpath(__file__))
@@ -69,6 +84,7 @@ class Testobs4mipsInfo(unittest.TestCase):
         var = self.variables_info.get_variable('obs4MIPs_monStderr',
                                                'ndviStderr')
         self.assertEqual(var.short_name, 'ndviStderr')
+        self.assertEqual(var.frequency, 'mon')
 
     def test_get_bad_variable(self):
         """Get none if a variable is not in the given table."""
