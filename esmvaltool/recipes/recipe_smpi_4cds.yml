@@ -92,12 +92,14 @@ diagnostics:
     realms:
       - atmos
     variables:
-      ta:
+      ta: &variable_settings
         preprocessor: ppALL
         reference_dataset: ERA-Interim
         mip: Amon
+        start_year: 1980
+        end_year: 2005
     additional_datasets:
-      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 3}
+      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
     scripts:
       grading: &grading_settings
         script: perfmetrics/main.ncl
@@ -117,11 +119,12 @@ diagnostics:
       - atmos
     variables:
       va:
+        <<: *variable_settings
         preprocessor: ppALL
         reference_dataset: ERA-Interim
         mip: Amon
     additional_datasets:
-      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 3}
+      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
     scripts:
       grading:
         script: perfmetrics/main.ncl
@@ -141,11 +144,12 @@ diagnostics:
       - atmos
     variables:
       ua:
+        <<: *variable_settings
         preprocessor: ppALL
         reference_dataset: ERA-Interim
         mip: Amon
     additional_datasets:
-      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 3}
+      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
     scripts:
       grading:
         script: perfmetrics/main.ncl
@@ -165,11 +169,12 @@ diagnostics:
       - atmos
     variables:
       hus:
+        <<: *variable_settings
         preprocessor: ppALL
         reference_dataset: ERA-Interim
         mip: Amon
     additional_datasets:
-      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 3}
+      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
     scripts:
       grading:
         script: perfmetrics/main.ncl
@@ -189,11 +194,12 @@ diagnostics:
       - atmos
     variables:
       tas:
+        <<: *variable_settings
         preprocessor: ppNOLEV
         reference_dataset: ERA-Interim
         mip: Amon
     additional_datasets:
-      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 3}
+      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
     scripts:
       grading:
         script: perfmetrics/main.ncl
@@ -213,11 +219,12 @@ diagnostics:
       - atmos
     variables:
       psl:
+        <<: *variable_settings
         preprocessor: ppNOLEV
         reference_dataset: ERA-Interim
         mip: Amon
     additional_datasets:
-      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 3}
+      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
     scripts:
       grading:
         script: perfmetrics/main.ncl
@@ -237,11 +244,12 @@ diagnostics:
       - atmos
     variables:
       pr:
+        <<: *variable_settings
         preprocessor: ppNOLEV
         reference_dataset: GPCP-SG
         mip: Amon
     additional_datasets:
-      - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.2, start_year: 1980, end_year: 2005, tier: 1}
+      - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.2, tier: 1}
     scripts:
       grading:
         script: perfmetrics/main.ncl
@@ -261,11 +269,12 @@ diagnostics:
       - ocean
     variables:
       tos:
+        <<: *variable_settings
         preprocessor: ppNOLEVirreg
         reference_dataset: HadISST
         mip: Omon
     additional_datasets:
-      - {dataset: HadISST, project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 2}
+      - {dataset: HadISST, project: OBS, type: reanaly, version: 1, tier: 2}
     scripts:
       grading:
         script: perfmetrics/main.ncl
@@ -285,11 +294,12 @@ diagnostics:
       - seaIce
     variables:
       sic:
+        <<: *variable_settings
         preprocessor: ppNOLEVirreg
         reference_dataset: HadISST
         mip: OImon
     additional_datasets:
-      - {dataset: HadISST, project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 2}
+      - {dataset: HadISST, project: OBS, type: reanaly, version: 1, tier: 2}
     scripts:
       grading:
         script: perfmetrics/main.ncl
@@ -309,11 +319,12 @@ diagnostics:
 #      - ocean
 #    variables:
 #      hfds:
+#        <<: *variable_settings
 #        preprocessor: ppNOLEVirreg
 #        reference_dataset: ERA-Interim
 #        mip: Omon
 #    additional_datasets:
-#      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 3}
+#      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
 #    scripts:
 #      grading:
 #        script: perfmetrics/main.ncl
@@ -333,11 +344,12 @@ diagnostics:
       - atmos
     variables:
       tauu:
+        <<: *variable_settings
         preprocessor: ppNOLEV
         reference_dataset: ERA-Interim
         mip: Amon
     additional_datasets:
-      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 3}
+      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
     scripts:
       grading:
         script: perfmetrics/main.ncl
@@ -357,11 +369,12 @@ diagnostics:
       - atmos
     variables:
       tauv:
+        <<: *variable_settings
         preprocessor: ppNOLEV
         reference_dataset: ERA-Interim
         mip: Amon
     additional_datasets:
-      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 3}
+      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
     scripts:
       grading:
         script: perfmetrics/main.ncl
