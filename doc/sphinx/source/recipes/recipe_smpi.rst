@@ -29,7 +29,7 @@ User settings
    *Required settings for script*
 
    * plot_type: cycle (time), zonal (plev, lat), latlon (lat, lon), cycle_latlon (time, lat, lon), cycle_zonal (time, plev, lat)
-   * time_avg: type of time average (monthlyclim, seasonalclim, annualclim)
+   * time_avg: type of time average (only "annualclim" allowed for SMPI, any other settings are not supported for this diagnostic)
    * region: selected region (global, trop, nhext, shext, nhtrop, shtrop, nh, sh, nhmidlat, shmidlat, nhpolar, shpolar, eq)
    * normalization: metric normalization ("CMIP5" for analysis of CMIP5 simulations; to be adjusted accordingly for a different CMIP phase)
    * calc_grading: calculates grading metrics (has to be set to "true" in the recipe)
@@ -52,11 +52,11 @@ These settings are passed to the other scripts by main.ncl, depending on the sel
 Variables
 ---------
 
-* hfds (ocean, monthly mean, longitude latitude time)
+* hfds (ocean, monthly mean, longitude latitude time) - not available on Jasmin
 * hus (atmos, monthly mean, longitude latitude lev time)
 * pr (atmos, monthly mean, longitude latitude time)
 * psl (atmos, monthly mean, longitude latitude time)
-* sic (ocean-ice, monthly mean, longitude latitude time) - not implemented yet
+* sic (ocean-ice, monthly mean, longitude latitude time) 
 * ta (atmos, monthly mean, longitude latitude lev time)
 * tas (atmos, monthly mean, longitude latitude time)
 * tauu (atmos, monthly mean, longitude latitude time)
