@@ -225,6 +225,7 @@ def _cmor_reformat(config, obs_list):
     logger.info("Processing datasets %s", datasets)
 
     # loop through tier/datasets to be cmorized
+    failed_datasets = []
     for tier in datasets:
         for dataset in datasets[tier]:
             reformat_script_root = os.path.join(reformat_scripts,
@@ -259,7 +260,12 @@ def _cmor_reformat(config, obs_list):
                 _run_pyt_script(in_data_dir, out_data_dir,
                                 module_root + dataset)
             else:
-                logger.warning('Could not find cmorizer for %s', dataset)
+                logger.error('Could not find cmorizer for %s', dataset)
+                failed_datasets.append(dataset)
+    raise Exception(
+        'Could not find cmorizers for %s datasets',
+        ' '.join(failed_datasets)
+    )
 
 
 if __name__ == '__main__':
