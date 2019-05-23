@@ -263,7 +263,7 @@ def _cmor_reformat(config, obs_list):
                 logger.error('Could not find cmorizer for %s', dataset)
                 failed_datasets.append(dataset)
     raise Exception(
-        'Could not find cmorizers for %s datasets '
+        'Could not find cmorizers for %s datasets ' +
         ' '.join(failed_datasets)
     )
 
