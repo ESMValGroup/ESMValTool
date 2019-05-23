@@ -265,7 +265,7 @@ latex_elements = {
 latex_documents = [
     ('index', 'ESMValTool_Users_Guide.tex',
      u'ESMValTool User\'s and Developer\'s Guide',
-     u'Veronika Eyring, Axel Lauer, Mattia Righi, Martin Evaldsson et al.',
+     u'ESMValTool Development Team',
      'manual'),
 ]
 
@@ -329,9 +329,9 @@ latex_toplevel_sectioning = "part"
 
 # Bibliographic Dublin Core info.
 epub_title = u'ESMValTool'
-epub_author = u'Veronika Eyring, Axel Lauer, Mattia Righi, Martin Evaldsson et al.'
-epub_publisher = u'Veronika Eyring, Axel Lauer, Mattia Righi, Martin Evaldsson et al.'
-epub_copyright = u'2015, Veronika Eyring, Axel Lauer, Mattia Righi, Martin Evaldsson et al.'
+epub_author = u'ESMValTool Development Team'
+epub_publisher = u'ESMValTool Development Team'
+epub_copyright = u'ESMValTool Development Team'
 
 # The basename for the epub file. It defaults to the project name.
 #epub_basename = u'ESMValTool'
