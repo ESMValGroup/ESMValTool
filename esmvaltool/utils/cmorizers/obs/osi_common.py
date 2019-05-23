@@ -32,13 +32,13 @@ def cmorize_osi(in_dir, out_dir, cfg, hemisphere):
     # run the cmorization
     first_run = True
     for var, vals in cfg['variables'].items():
+        var_info = cmor_table.get_variable(vals['mip'], var)
+        file_pattern = '{0}_{1}_{2}_*.nc'.format(
+            vals['raw'], hemisphere, vals['grid']
+        )
         for year in os.listdir(in_dir):
             logger.info(
                 "CMORizing var %s:%s for year %s", vals['mip'], var, year
-            )
-            var_info = cmor_table.get_variable(vals['mip'], var)
-            file_pattern = '{0}_{1}_{2}_*.nc'.format(
-                vals['raw'], hemisphere, vals['grid']
             )
             raw_info = {
                 'name': vals['raw'],
