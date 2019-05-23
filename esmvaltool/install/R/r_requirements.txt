@@ -21,5 +21,6 @@ Rcpp
 s2dverification
 snow
 SPEI
+tools
 udunits2
 yaml
