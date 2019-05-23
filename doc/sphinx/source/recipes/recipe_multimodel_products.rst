@@ -48,7 +48,7 @@ User setting files are stored in recipes/
 Variables
 ---------
 
-* all(atmos, monthly, longitude, latitude, time)
+* any Amon variable (atmos, monthly mean, longitude latitude time)
 
 
 Observations and reformat scripts
