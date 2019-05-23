@@ -48,7 +48,7 @@ User setting files are stored in recipes/
 Variables
 ---------
 
-* tas(atmos, monthly, longitude, latitude, time)
+* all(atmos, monthly, longitude, latitude, time)
 
 
 Observations and reformat scripts
