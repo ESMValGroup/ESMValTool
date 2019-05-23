@@ -20,54 +20,70 @@
             "yrPt":"sampled yearly, at specified time point within the time period"
         },
         "grid_label":{
-            "gm":"global mean data",
-            "gn":"data reported on a model's native grid",
-            "gna":"data reported on a native grid in the region of Antarctica",
-            "gng":"data reported on a native grid in the region of Greenland",
-            "gnz":"zonal mean data reported on a model's native latitude grid",
-            "gr":"regridded data reported on the data provider's preferred target grid",
-            "gr1":"regridded data reported on a grid other than the native grid and other than the preferred target grid",
-            "gr1a":"regridded data reported in the region of Antarctica on a grid other than the native grid and other than the preferred target grid",
-            "gr1g":"regridded data reported in the region of Greenland on a grid other than the native grid and other than the preferred target grid",
-            "gr1z":"regridded zonal mean data reported on a grid other than the native latitude grid and other than the preferred latitude target grid",
-            "gr2":"regridded data reported on a grid other than the native grid and other than the preferred target grid",
-            "gr2a":"regridded data reported in the region of Antarctica on a grid other than the native grid and other than the preferred target grid",
-            "gr2g":"regridded data reported in the region of Greenland on a grid other than the native grid and other than the preferred target grid",
-            "gr2z":"regridded zonal mean data reported on a grid other than the native latitude grid and other than the preferred latitude target grid",
-            "gr3":"regridded data reported on a grid other than the native grid and other than the preferred target grid",
-            "gr3a":"regridded data reported in the region of Antarctica on a grid other than the native grid and other than the preferred target grid",
-            "gr3g":"regridded data reported in the region of Greenland on a grid other than the native grid and other than the preferred target grid",
-            "gr3z":"regridded zonal mean data reported on a grid other than the native latitude grid and other than the preferred latitude target grid",
-            "gr4":"regridded data reported on a grid other than the native grid and other than the preferred target grid",
-            "gr4a":"regridded data reported in the region of Antarctica on a grid other than the native grid and other than the preferred target grid",
-            "gr4g":"regridded data reported in the region of Greenland on a grid other than the native grid and other than the preferred target grid",
-            "gr4z":"regridded zonal mean data reported on a grid other than the native latitude grid and other than the preferred latitude target grid",
-            "gr5":"regridded data reported on a grid other than the native grid and other than the preferred target grid",
-            "gr5a":"regridded data reported in the region of Antarctica on a grid other than the native grid and other than the preferred target grid",
-            "gr5g":"regridded data reported in the region of Greenland on a grid other than the native grid and other than the preferred target grid",
-            "gr5z":"regridded zonal mean data reported on a grid other than the native latitude grid and other than the preferred latitude target grid",
-            "gr6":"regridded data reported on a grid other than the native grid and other than the preferred target grid",
-            "gr6a":"regridded data reported in the region of Antarctica on a grid other than the native grid and other than the preferred target grid",
-            "gr6g":"regridded data reported in the region of Greenland on a grid other than the native grid and other than the preferred target grid",
-            "gr6z":"regridded zonal mean data reported on a grid other than the native latitude grid and other than the preferred latitude target grid",
-            "gr7":"regridded data reported on a grid other than the native grid and other than the preferred target grid",
-            "gr7a":"regridded data reported in the region of Antarctica on a grid other than the native grid and other than the preferred target grid",
-            "gr7g":"regridded data reported in the region of Greenland on a grid other than the native grid and other than the preferred target grid",
-            "gr7z":"regridded zonal mean data reported on a grid other than the native latitude grid and other than the preferred latitude target grid",
-            "gr8":"regridded data reported on a grid other than the native grid and other than the preferred target grid",
-            "gr8a":"regridded data reported in the region of Antarctica on a grid other than the native grid and other than the preferred target grid",
-            "gr8g":"regridded data reported in the region of Greenland on a grid other than the native grid and other than the preferred target grid",
-            "gr8z":"regridded zonal mean data reported on a grid other than the native latitude grid and other than the preferred latitude target grid",
-            "gr9":"regridded data reported on a grid other than the native grid and other than the preferred target grid",
-            "gr9a":"regridded data reported in the region of Antarctica on a grid other than the native grid and other than the preferred target grid",
-            "gr9g":"regridded data reported in the region of Greenland on a grid other than the native grid and other than the preferred target grid",
-            "gr9z":"regridded zonal mean data reported on a grid other than the native latitude grid and other than the preferred latitude target grid",
-            "gra":"regridded data in the region of Antarctica reported on the data provider's preferred target grid",
-            "grg":"regridded data in the region of Greenland reported on the data provider's preferred target grid",
-            "grz":"regridded zonal mean data reported on the data provider's preferred latitude target grid"
+            "grid_label":{
+                "gm":"global mean data",
+                "gn":"data reported on a model's native grid",
+                "gnNH":"data reported on a native grid in the Northern Hemisphere",
+                "gnSH":"data reported on a native grid in the Southern Hemisphere",
+                "gna":"data reported on a native grid in the region of Antarctica",
+                "gng":"data reported on a native grid in the region of Greenland",
+                "gnz":"zonal mean data reported on a model's native latitude grid",
+                "gr":"regridded data reported on the data provider's preferred target grid",
+                "gr1":"regridded data reported on a grid other than the native grid and other than the preferred target grid",
+                "gr1a":"regridded data reported in the region of Antarctica on a grid other than the native grid and other than the preferred target grid",
+                "gr1g":"regridded data reported in the region of Greenland on a grid other than the native grid and other than the preferred target grid",
+                "gr1z":"regridded zonal mean data reported on a grid other than the native latitude grid and other than the preferred latitude target grid",
+                "gr2":"regridded data reported on a grid other than the native grid and other than the preferred target grid",
+                "gr2a":"regridded data reported in the region of Antarctica on a grid other than the native grid and other than the preferred target grid",
+                "gr2g":"regridded data reported in the region of Greenland on a grid other than the native grid and other than the preferred target grid",
+                "gr2z":"regridded zonal mean data reported on a grid other than the native latitude grid and other than the preferred latitude target grid",
+                "gr3":"regridded data reported on a grid other than the native grid and other than the preferred target grid",
+                "gr3a":"regridded data reported in the region of Antarctica on a grid other than the native grid and other than the preferred target grid",
+                "gr3g":"regridded data reported in the region of Greenland on a grid other than the native grid and other than the preferred target grid",
+                "gr3z":"regridded zonal mean data reported on a grid other than the native latitude grid and other than the preferred latitude target grid",
+                "gr4":"regridded data reported on a grid other than the native grid and other than the preferred target grid",
+                "gr4a":"regridded data reported in the region of Antarctica on a grid other than the native grid and other than the preferred target grid",
+                "gr4g":"regridded data reported in the region of Greenland on a grid other than the native grid and other than the preferred target grid",
+                "gr4z":"regridded zonal mean data reported on a grid other than the native latitude grid and other than the preferred latitude target grid",
+                "gr5":"regridded data reported on a grid other than the native grid and other than the preferred target grid",
+                "gr5a":"regridded data reported in the region of Antarctica on a grid other than the native grid and other than the preferred target grid",
+                "gr5g":"regridded data reported in the region of Greenland on a grid other than the native grid and other than the preferred target grid",
+                "gr5z":"regridded zonal mean data reported on a grid other than the native latitude grid and other than the preferred latitude target grid",
+                "gr6":"regridded data reported on a grid other than the native grid and other than the preferred target grid",
+                "gr6a":"regridded data reported in the region of Antarctica on a grid other than the native grid and other than the preferred target grid",
+                "gr6g":"regridded data reported in the region of Greenland on a grid other than the native grid and other than the preferred target grid",
+                "gr6z":"regridded zonal mean data reported on a grid other than the native latitude grid and other than the preferred latitude target grid",
+                "gr7":"regridded data reported on a grid other than the native grid and other than the preferred target grid",
+                "gr7a":"regridded data reported in the region of Antarctica on a grid other than the native grid and other than the preferred target grid",
+                "gr7g":"regridded data reported in the region of Greenland on a grid other than the native grid and other than the preferred target grid",
+                "gr7z":"regridded zonal mean data reported on a grid other than the native latitude grid and other than the preferred latitude target grid",
+                "gr8":"regridded data reported on a grid other than the native grid and other than the preferred target grid",
+                "gr8a":"regridded data reported in the region of Antarctica on a grid other than the native grid and other than the preferred target grid",
+                "gr8g":"regridded data reported in the region of Greenland on a grid other than the native grid and other than the preferred target grid",
+                "gr8z":"regridded zonal mean data reported on a grid other than the native latitude grid and other than the preferred latitude target grid",
+                "gr9":"regridded data reported on a grid other than the native grid and other than the preferred target grid",
+                "gr9a":"regridded data reported in the region of Antarctica on a grid other than the native grid and other than the preferred target grid",
+                "gr9g":"regridded data reported in the region of Greenland on a grid other than the native grid and other than the preferred target grid",
+                "gr9z":"regridded zonal mean data reported on a grid other than the native latitude grid and other than the preferred latitude target grid",
+                "gra":"regridded data in the region of Antarctica reported on the data provider's preferred target grid",
+                "grg":"regridded data in the region of Greenland reported on the data provider's preferred target grid",
+                "grz":"regridded zonal mean data reported on the data provider's preferred latitude target grid"
+            },
+            "version_metadata":{
+                "CV_collection_modified":"Mon Mar 25 14:32:35 2019 -0700",
+                "CV_collection_version":"6.2.20.1",
+                "author":"Paul J. Durack <durack1@llnl.gov>",
+                "grid_label_CV_modified":"Fri Sep 8 18:12:00 2017 -0700",
+                "grid_label_CV_note":"Issue395 durack1 augment grid_label with description (#401)",
+                "institution_id":"PCMDI",
+                "previous_commit":"690451863bfd7a92a6fa13d879a9df6af32e0379",
+                "specs_doc":"v6.2.7 (10th September 2018; https://goo.gl/v1drZl)"
+            }
         },
         "institution_id":{
+            "CNES":"Centre national d'etudes spatiales",
             "DWD":"Deutscher Wetterdienst, Offenbach 63067, Germany",
+            "NASA-GSFC":"National Aeronautics and Space Administration, Goddard Space Flight Center",
             "NASA-JPL":"NASA's Jet Propulsion Laboratory, Pasadena, CA 91109, USA",
             "NOAA-NCEI":"NOAA's National Centers for Environmental Information, Asheville, NC 28801, USA",
             "PCMDI":"Program for Climate Model Diagnosis and Intercomparison, Lawrence Livermore National Laboratory, Livermore, CA 94550, USA",
@@ -204,6 +220,27 @@
                 "source_type":"satellite_retrieval",
                 "source_version_number":"1.0"
             },
+            "AIRS-2-0":{
+                "region":"global",
+                "source":"AIRS 2.0 (2011): Atmospheric Infrared Sounder",
+                "source_label":"AIRS",
+                "source_type":"satellite_retrieval",
+                "source_version_number":"2.0"
+            },
+            "AMSRE-v7":{
+                "region":"global_ocean",
+                "source":"AMRSE v7 v7 (2011): Sea Surface Temperature from AMSR-E onboard AQUA",
+                "source_label":"AMRSE v7",
+                "source_type":"satellite_retrieval",
+                "source_version_number":"v7"
+            },
+            "AVISO-1-0":{
+                "region":"global",
+                "source":"AVISO 1 0 1.0 (2011): Sea Surface Height Above Geoid",
+                "source_label":"AVISO 1 0",
+                "source_type":"satellite_retrieval",
+                "source_version_number":"1.0"
+            },
             "Aura-MLS-v04-2":{
                 "region":"global",
                 "source":"Aura-MLS v04.2 (2018): EOS Aura Microwave Limb Sounder",
@@ -267,6 +304,27 @@
                 "source_type":"satellite_retrieval",
                 "source_version_number":"1.3"
             },
+            "GPCP-1DD":{
+                "region":"global",
+                "source":"GPCP 1DD 1.3 (2013): Global Precipitation Climatology Project One Degree Daily",
+                "source_label":"GPCP 1DD",
+                "source_type":"satellite_blended",
+                "source_version_number":"1.3"
+            },
+            "GPCP-SG":{
+                "region":"global",
+                "source":"GPCP SG 2.3 (2016): Global Precipitation Climatology Project Satellite-Gauge",
+                "source_label":"GPCP SG",
+                "source_type":"satellite_blended",
+                "source_version_number":"2.3"
+            },
+            "MODIS-1-0":{
+                "region":"global",
+                "source":"MODIS 1.0 (2011): Atmospheric Infrared Sounder",
+                "source_label":"MODIS",
+                "source_type":"satellite_retrieval",
+                "source_version_number":"1.0"
+            },
             "NOAA-NCEI-AVHRR-NDVI-4-0":{
                 "region":"global_land",
                 "source":"NOAA-NCEI-AVHRR-NDVI 4.0 (2013): Normalized Difference Vegetation Index",
@@ -295,6 +353,13 @@
                 "source_type":"satellite_retrieval",
                 "source_version_number":"4.0"
             },
+            "NOAA-NCEI-HIRS-OLR-1-2":{
+                "region":"global",
+                "source":"NOAA NCEI HIRS OLR 1.2 (2014): HIRS Outgoing Longwave Radiation",
+                "source_label":"NOAA NCEI HIRS OLR",
+                "source_type":"satellite_retrieval",
+                "source_version_number":"1.2"
+            },
             "NOAA-NCEI-LAI-4-0":{
                 "region":"global_land",
                 "source":"NOAA-NCEI-LAI 4.0 (2014): AVHRR Leaf Area Index",
@@ -302,12 +367,26 @@
                 "source_type":"satellite_retrieval",
                 "source_version_number":"4.0"
             },
+            "NOAA-NCEI-OISST-2-0":{
+                "region":"global_ocean",
+                "source":"NOAA NCEI OISST 2.0 (2008): Optimal Interpolation Sea Surface Temperature",
+                "source_label":"NOAA NCEI OISST",
+                "source_type":"satellite_blended",
+                "source_version_number":"2.0"
+            },
             "NOAA-NCEI-PERSIANN-1-1":{
                 "region":"global",
                 "source":"NOAA-NCEI-PERSIANN 1.1 (2014): Precipitation Estimation from Remotely Sensed Information using Artificial Neural Network",
                 "source_label":"NOAA-NCEI-PERSIANN",
                 "source_type":"satellite_retrieval",
                 "source_version_number":"1.1"
+            },
+            "NOAA-NCEI-SSMI-SeaIce-2-0":{
+                "region":"arctic_ocean, southern_ocean",
+                "source":"NOAA-NCEI-SSMI-SeaIce 2.0 (2013): SSMI Passive Microwave Sea Ice Area Fraction",
+                "source_label":"NOAA-NCEI-SSMI-SeaIce",
+                "source_type":"satellite_retrieval",
+                "source_version_number":"2.0"
             },
             "NOAA-NCEI-SeaWinds-1-2":{
                 "region":"global_ocean",
@@ -329,6 +408,20 @@
                 "source_label":"REMSS-PRW",
                 "source_type":"satellite_blended",
                 "source_version_number":"6.6.0"
+            },
+            "RSS-v7":{
+                "region":"global_ocean",
+                "source":"RSS-v7 v7 (2011): Satellite derived fields produced by RSS",
+                "source_label":"RSS-v7",
+                "source_type":"satellite_retrieval",
+                "source_version_number":"v7"
+            },
+            "TES-1-0":{
+                "region":"global",
+                "source":"TES 1 0 1.0 (2011): Mole Fraction of O3",
+                "source_label":"TES 1 0",
+                "source_type":"satellite_retrieval",
+                "source_version_number":"1.0"
             }
         },
         "source_type":{

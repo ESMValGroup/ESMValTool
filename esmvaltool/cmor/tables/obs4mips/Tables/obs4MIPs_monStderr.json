@@ -3,14 +3,14 @@
         "#mip_era":"CMIP6",
         "Conventions":"CF-1.7 ODS-2.1",
         "approx_interval":"30.00000",
-        "cmor_version":"3.2",
+        "cmor_version":"3.4",
         "data_specs_version":"2.1.0",
         "generic_levels":"alevel alevhalf",
         "int_missing_value":"-2147483648",
         "missing_value":"1e20",
         "product":"observations",
         "realm":"aerosol atmos atmosChem land landIce ocean ocnBgchem seaIce",
-        "table_date":"07 March 2018",
+        "table_date":"11 April 2019",
         "table_id":"Table obs4MIPs_monStderr"
     },
     "variable_entry":{

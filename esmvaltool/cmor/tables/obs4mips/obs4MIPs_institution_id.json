@@ -1,6 +1,8 @@
 {
     "institution_id":{
+        "CNES":"Centre national d'etudes spatiales",
         "DWD":"Deutscher Wetterdienst, Offenbach 63067, Germany",
+        "NASA-GSFC":"National Aeronautics and Space Administration, Goddard Space Flight Center",
         "NASA-JPL":"NASA's Jet Propulsion Laboratory, Pasadena, CA 91109, USA",
         "NOAA-NCEI":"NOAA's National Centers for Environmental Information, Asheville, NC 28801, USA",
         "PCMDI":"Program for Climate Model Diagnosis and Intercomparison, Lawrence Livermore National Laboratory, Livermore, CA 94550, USA",

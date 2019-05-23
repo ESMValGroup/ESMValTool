@@ -16,6 +16,54 @@
             ],
             "source_version_number":"1.0"
         },
+        "AIRS-2-0":{
+            "institution_id":"NASA-JPL",
+            "region":[
+                "global"
+            ],
+            "release_year":"2011",
+            "source_description":"Atmospheric Infrared Sounder",
+            "source_label":"AIRS",
+            "source_name":"AIRS",
+            "source_type":"satellite_retrieval",
+            "source_variables":[
+                "hus",
+                "ta"
+            ],
+            "source_version_number":"2.0"
+        },
+        "AMSRE-v7":{
+            "institution_id":"RSS",
+            "region":[
+                "global_ocean"
+            ],
+            "release_year":"2011",
+            "source_description":"Sea Surface Temperature from AMSR-E onboard AQUA",
+            "source_id":"AMSRE-v7",
+            "source_label":"AMRSE v7",
+            "source_name":"Sea Surface Temperature",
+            "source_type":"satellite_retrieval",
+            "source_variables":[
+                "tos"
+            ],
+            "source_version_number":"v7"
+        },
+        "AVISO-1-0":{
+            "institution_id":"CNES",
+            "region":[
+                "global"
+            ],
+            "release_year":"2011",
+            "source_description":"Sea Surface Height Above Geoid",
+            "source_id":"AVISO-1-0",
+            "source_label":"AVISO 1 0",
+            "source_name":"SSALTO/DUACS",
+            "source_type":"satellite_retrieval",
+            "source_variables":[
+                "zos"
+            ],
+            "source_version_number":"1.0"
+        },
         "Aura-MLS-v04-2":{
             "institution_id":"NASA-JPL",
             "region":[
@@ -202,6 +250,51 @@
             ],
             "source_version_number":"1.3"
         },
+        "GPCP-1DD":{
+            "institution_id":"NASA-GSFC",
+            "region":[
+                "global"
+            ],
+            "release_year":"2013",
+            "source_description":"Global Precipitation Climatology Project One Degree Daily",
+            "source_label":"GPCP 1DD",
+            "source_name":"GPCP 1DD",
+            "source_type":"satellite_blended",
+            "source_variables":[
+                "pr"
+            ],
+            "source_version_number":"1.3"
+        },
+        "GPCP-SG":{
+            "institution_id":"NASA-GSFC",
+            "region":[
+                "global"
+            ],
+            "release_year":"2016",
+            "source_description":"Global Precipitation Climatology Project Satellite-Gauge",
+            "source_label":"GPCP SG",
+            "source_name":"GPCP SG",
+            "source_type":"satellite_blended",
+            "source_variables":[
+                "pr"
+            ],
+            "source_version_number":"2.3"
+        },
+        "MODIS-1-0":{
+            "institution_id":"NASA-GSFC",
+            "region":[
+                "global"
+            ],
+            "release_year":"2011",
+            "source_description":"Atmospheric Infrared Sounder",
+            "source_label":"MODIS",
+            "source_name":"MODIS",
+            "source_type":"satellite_retrieval",
+            "source_variables":[
+                "clt"
+            ],
+            "source_version_number":"1.0"
+        },
         "NOAA-NCEI-AVHRR-NDVI-4-0":{
             "institution_id":"NOAA-NCEI",
             "region":[
@@ -266,6 +359,21 @@
             ],
             "source_version_number":"4.0"
         },
+        "NOAA-NCEI-HIRS-OLR-1-2":{
+            "institution_id":"NOAA-NCEI",
+            "region":[
+                "global"
+            ],
+            "release_year":"2014",
+            "source_description":"HIRS Outgoing Longwave Radiation",
+            "source_label":"NOAA NCEI HIRS OLR",
+            "source_name":"NOAA NCEI HIRS OLR",
+            "source_type":"satellite_retrieval",
+            "source_variables":[
+                "rlut"
+            ],
+            "source_version_number":"1.2"
+        },
         "NOAA-NCEI-LAI-4-0":{
             "institution_id":"NOAA-NCEI",
             "region":[
@@ -282,6 +390,21 @@
             ],
             "source_version_number":"4.0"
         },
+        "NOAA-NCEI-OISST-2-0":{
+            "institution_id":"NOAA-NCEI",
+            "region":[
+                "global_ocean"
+            ],
+            "release_year":"2008",
+            "source_description":"Optimal Interpolation Sea Surface Temperature",
+            "source_label":"NOAA NCEI OISST",
+            "source_name":"NOAA NCEI OISST",
+            "source_type":"satellite_blended",
+            "source_variables":[
+                "tos"
+            ],
+            "source_version_number":"2.0"
+        },
         "NOAA-NCEI-PERSIANN-1-1":{
             "institution_id":"NOAA-NCEI",
             "region":[
@@ -297,6 +420,22 @@
                 "pr"
             ],
             "source_version_number":"1.1"
+        },
+        "NOAA-NCEI-SSMI-SeaIce-2-0":{
+            "institution_id":"NOAA-NCEI",
+            "region":[
+                "arctic_ocean",
+                "southern_ocean"
+            ],
+            "release_year":"2013",
+            "source_description":"SSMI Passive Microwave Sea Ice Area Fraction",
+            "source_label":"NOAA-NCEI-SSMI-SeaIce",
+            "source_name":"NOAA NCEI SSMI SeaIce",
+            "source_type":"satellite_retrieval",
+            "source_variables":[
+                "siconc"
+            ],
+            "source_version_number":"2.0"
         },
         "NOAA-NCEI-SeaWinds-1-2":{
             "institution_id":"NOAA-NCEI",
@@ -348,6 +487,40 @@
                 "prw"
             ],
             "source_version_number":"6.6.0"
+        },
+        "RSS-v7":{
+            "institution_id":"RSS",
+            "region":[
+                "global_ocean"
+            ],
+            "release_year":"2011",
+            "source_description":"Satellite derived fields produced by RSS",
+            "source_id":"RSS-v7",
+            "source_label":"RSS-v7",
+            "source_name":"Satellite derived fields",
+            "source_type":"satellite_retrieval",
+            "source_variables":[
+                "prw",
+                "sfcWind",
+                "tos"
+            ],
+            "source_version_number":"v7"
+        },
+        "TES-1-0":{
+            "institution_id":"NASA-JPL",
+            "region":[
+                "global"
+            ],
+            "release_year":"2011",
+            "source_description":"Mole Fraction of O3",
+            "source_id":"TES-1-0",
+            "source_label":"TES 1 0",
+            "source_name":"JPL AURA satellite retrieval",
+            "source_type":"satellite_retrieval",
+            "source_variables":[
+                "tro3"
+            ],
+            "source_version_number":"1.0"
         }
     }
 }
