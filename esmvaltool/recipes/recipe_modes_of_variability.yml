@@ -29,6 +29,9 @@ datasets:
 
 preprocessors:
   preproc:
+  regrid:
+      target_grid: bcc-csm1-1
+      scheme: linear
     extract_region:
       start_longitude: 0
       end_longitude: 360
