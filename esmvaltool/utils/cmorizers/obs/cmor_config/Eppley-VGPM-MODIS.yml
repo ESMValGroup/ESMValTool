@@ -7,7 +7,7 @@ attributes:
   modeling_realm: sat
   project_id: OBS
   source: 'http://orca.science.oregonstate.edu/data/1x2/monthly/eppley.r2018.m.chl.m.sst/hdf/'
-  reference: "osu-vgpm-modis"
+  reference: "eppley-vgpm-modis"
   comment: ""
 
 # Variables to cmorize (here use only filename prefix)
