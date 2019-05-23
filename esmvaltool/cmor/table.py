@@ -102,7 +102,7 @@ class CMIP6Info(object):
             table.name = header['table_id'].split(' ')[-1]
             generic_levels = header['generic_levels'].split()
             table.realm = header['realm'].split()
-            frequency = header['frequency']
+            frequency = header.get('frequency', '')
             self.var_to_freq[table.name] = {}
 
             for var_name, var_data in raw_data['variable_entry'].items():
