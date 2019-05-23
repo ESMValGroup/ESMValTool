@@ -29,7 +29,7 @@ datasets:
 
 preprocessors:
   preproc:
-  regrid:
+    regrid:
       target_grid: bcc-csm1-1
       scheme: linear
     extract_region:
