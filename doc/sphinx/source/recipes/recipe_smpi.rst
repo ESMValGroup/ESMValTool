@@ -13,7 +13,8 @@ Available recipes and diagnostics
 
 Recipes are stored in recipe/
 
-* recipe_reichlerkim08bams.yml
+* recipe_smpi.yml
+* recipe_smpi_4cds.yml
 
 Diagnostics are stored in diag_scripts/perfmetrics/
 
@@ -28,9 +29,9 @@ User settings
 
    *Required settings for script*
 
-   * plot_type: cycle (time), zonal (plev, lat), latlon (lat, lon), cycle_latlon (time, lat, lon), cycle_zonal (time, plev, lat)
+   * plot_type: only "cycle_latlon (time, lat, lon)" and "cycle_zonal (time, plev, lat)" available for SMPI; usage is defined in the recipe and is dependent on the used variable (2D variable: cycle_latlon, 3D variable: cycle_zonal)
    * time_avg: type of time average (only "annualclim" allowed for SMPI, any other settings are not supported for this diagnostic)
-   * region: selected region (global, trop, nhext, shext, nhtrop, shtrop, nh, sh, nhmidlat, shmidlat, nhpolar, shpolar, eq)
+   * region: selected region (only "global" allowed for SMPI, any other settings are not supported for this diagnostic)
    * normalization: metric normalization ("CMIP5" for analysis of CMIP5 simulations; to be adjusted accordingly for a different CMIP phase)
    * calc_grading: calculates grading metrics (has to be set to "true" in the recipe)
    * metric: chosen grading metric(s) (if calc_grading is True; has to be set to "SMPI")
