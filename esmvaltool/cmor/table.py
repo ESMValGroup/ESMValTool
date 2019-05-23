@@ -297,7 +297,7 @@ class VariableInfo(JsonInfo):
 
         self._json_data = None
 
-    def read_json(self, json_data, default_freq):
+    def read_json(self, json_data, default_freq=''):
         """
         Read variable information from json.
 
