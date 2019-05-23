@@ -222,12 +222,15 @@ begin
     data1@res_mpOutlineOn      = True
     data1@res_mpFillOn         = False
 
-    ; variable specific plotting settings
-
-    if (any((/"clt"/).eq.var0)) then
-      data1@res_cnLevels            = ispan(5, 50, 5)
+    if (isatt(diag_script_info, "explicit_cn_levels")) then
+      data1@res_cnLevels = diag_script_info@explicit_cn_levels
     else
-      data1@res_cnLevels            = ispan(5, 100, 5)
+      ; variable specific plotting settings
+      if (any((/"clt"/).eq.var0)) then
+        data1@res_cnLevels = ispan(5, 50, 5)
+      else
+        data1@res_cnLevels = ispan(5, 100, 5)
+      end if
     end if
 
     if (var0.eq."lwp") then
@@ -265,13 +268,6 @@ begin
     data1@res_cnInfoLabelOn        = False    ; turn off cn info label
 
     data1@res_mpProjection         = diag_script_info@projection
-
-    ; set explicit contour levels
-
-    if (isatt(diag_script_info, "explicit_cn_levels")) then
-      data1@res_cnLevelSelectionMode = "ExplicitLevels"
-      data1@res_cnLevels = diag_script_info@explicit_cn_levels
-    end if
 
     ; ###########################################
     ; # other Metadata: diag_script, var        #
