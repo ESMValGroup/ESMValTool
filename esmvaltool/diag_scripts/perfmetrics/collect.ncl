@@ -66,15 +66,16 @@ begin
 
   ; Filter out non-existing files
   input_files := input_files(ind(isfilepresent(input_files)))
+  data_files = new(dimsizes(input_files), string)
 
   ; Loop over files in the list, read and append data
   do ii = 0, dimsizes(input_files) - 1
 
     f = addfile(input_files(ii), "r")
-    curr_file = tostring(f->temp_list)
+    data_files(ii) = tostring(f->temp_list)
 
     if (diag_script_info@metric.eq."SMPI") then
-      data_temp_smpi = ncdf_read(curr_file, "performance_index")
+      data_temp_smpi = ncdf_read(data_files(ii), "performance_index")
 
       if (.not.isdefined("data_all_smpi")) then
 
@@ -159,7 +160,7 @@ begin
 
     else  ; metric not SMPI
 
-      data_temp = ncdf_read(curr_file, "grade")
+      data_temp = ncdf_read(data_files(ii), "grade")
 
       ; Change to 3 dimensional
       if (dimsizes(dimsizes(data_temp)).eq.2) then
@@ -468,7 +469,7 @@ begin
   ; Call provenance logger
   preproc_files := preproc_files(ind(.not.ismissing(preproc_files)))
   log_provenance(ncdf_outfile, plotpath, caption, statistics, domains, \
-                 plottype, authors, references, preproc_files)
+                 plottype, authors, references, data_files)
 
   leave_msg(DIAG_SCRIPT, "")
 
