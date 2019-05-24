@@ -1,0 +1,112 @@
+# recipe_hyint.yml
+---
+
+documentation:
+  description: |
+    Recipe for the HyInt package by E. Arnone and J. von Hardenberg (ISAC-CNR)
+
+  authors:
+    - arno_en
+    - hard_jo
+
+  maintainer:
+    - arno_en
+
+  references:
+    - giorgi11jc
+    - giorgi14jgr
+
+  projects:
+    - c3s-magic
+
+preprocessors:
+  preproc:
+    mask_landsea:
+      mask_out: sea
+
+diagnostics:
+  hyint:
+    description: HyInt hydroclimatic indices calculation and plotting
+    variables:
+      pr:
+        preprocessor: preproc
+        project: CMIP5
+        exp: [historical, rcp85]
+        ensemble: r1i1p1
+        start_year: 1980
+        end_year: 2020
+        reference_dataset: "ACCESS1-0"
+        mip: day
+    additional_datasets:
+      - {dataset: ACCESS1-0}
+      - {dataset: MPI-ESM-MR}
+      - {dataset: IPSL-CM5A-MR}
+      - {dataset: CCSM4}
+    scripts:
+      main:
+        script: hyint/hyint.R
+
+        # Reference normalization period to be used for normalized indices
+        norm_years: [1980, 1999]
+
+        # Select one or more indices for timeseries and maps from the following
+        # list (order-sensitive):
+        # "pa_norm", "hyint",  "int_norm", "r95_norm", "wsl_norm", "dsl_norm", "int", "dsl", "wsl"
+        select_indices: ["pa_norm", "hyint", "int_norm", "r95_norm", "wsl_norm", "dsl_norm"]
+
+        # Select regions for timeseries and maps from the following list
+        # GL=Globe, GL60=Globe 60S/60N, TR=Tropics (30S/30N), SA=South America,
+        # AF =Africa,6NA=North America, IN=India, EU=Europe, EA=East-Asia,
+        # AU=Australia
+        select_regions: ["GL", "SA", "AF", "EU", "EA"]
+
+        # Select type of plot:
+        # 1) single panel lon/lat map per individual index, multi-year mean
+        # 2) 3-panel lon/lat maps per individual index with comparison to reference dataset, multi-year mean
+        # 3) multipanel of indices of lon/lat maps with comparison to reference dataset, multi-year mean
+        # 11) single panel with timeseries over required individual region
+        # 12) multipanel of indices with timeseries over multiple regions
+        # 13) multipanel of indices with timeseries for multiple models
+        # 14) multipanel of indices with summary of trend coefficients over multiple regions
+        # 15) multipanel of indices with summary of trend coefficients for multiple models
+        plot_type: [1, 2, 3, 12, 13, 14, 15]
+
+        ## ------- Optional settings ----------
+        # Select number of columns and rows in multi-panel figure
+        npancol: 2  # number of columns for trend/tseries multi-panel figures
+        npanrow: 3  # number of rows for trend/tseries multi-panel figures
+
+        # Define whether model data should be regridded
+        # a) false to keep original resolution
+        # b) set desired regridding resolution in cdo format e.g., "r320x160"
+        # c) "REF" to use resolution of reference model
+        rgrid: "REF"
+
+        # Select automated or pre-set range of values in plots
+        autolevels: true
+
+        # Scale autolevels (factor multiplying automated range)
+        autolevels_scale: 1  # for maps and timeseries
+        autolevels_scale_t: 1  # for trend coefficients
+
+        # data and maps
+        removedesert: false  # T to remove (flag as NA) grid points with mean
+                             # annual pr < 0.5 mm/day (deserts, Giorgi2014)
+        oplot_grid: false  # plot grid points over maps
+        boxregion: false  # !=0 plot region boxes over global maps with
+                          # thickness = abs(boxregion); white (>0) or grey (<0).
+
+        # timeseries and trends
+        weight_tseries: true  # adopt area weights in timeseries
+        trend_years: false    # (a) F=all; (b) c(year1,year2) to apply trend
+                              # calculation and plotting only to a limited
+                              # time interval
+        add_trend: true             # add linear trend to plot
+        add_trend_sd: true          # add stdev range to timeseries
+        add_trend_sd_shade: true    # add shade of stdev range to timeseries
+        add_tseries_lines: true     # lot lines of timeseries over points
+        add_zeroline: true          # plot a dashed line at y=0
+        trend_years_only: false     # limit timeseries plotting to trend_years
+                                    # time interval
+        scale100years: true         # plot trends as 1/100 years
+        scalepercent: false         # plot trends as % change (excluding hyint)
