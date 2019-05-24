@@ -94,7 +94,8 @@ def setup_namelist(cfg):
 
     content = []
     for key, attributes in grouped_selection.items():
-        [create_link(cfg, item["filename"]) for item in attributes]
+        for item in attributes:
+            create_link(cfg, item["filename"])
         ppath = "{0}/".format(cfg['lnk_dir'])
         content.append("{0} | {1} | {2} | {3}\n".format(
             key, ppath, attributes[0]["start_year"],
