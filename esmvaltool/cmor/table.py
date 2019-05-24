@@ -182,15 +182,18 @@ class CMIP6Info(object):
 
         """
         try:
-            self.tables[table][short_name].frequency = \
-                self.var_to_freq[table][short_name]
             return self.tables[table][short_name]
         except KeyError:
             if short_name in CMIP6Info._CMIP_5to6_varname:
                 new_short_name = CMIP6Info._CMIP_5to6_varname[short_name]
                 return self.get_variable(table, new_short_name)
             if self.default:
-                return self.default.get_variable(table, short_name)
+                var_info = self.default.get_variable(table, short_name)
+                if var_info is None:
+                    return None
+                var_info = var_info.copy()
+                var_info.frequency = self.tables[table].frequency
+                return var_info
             return None
 
     @staticmethod
@@ -302,6 +305,19 @@ class VariableInfo(JsonInfo):
         """Coordinates"""
 
         self._json_data = None
+
+    def copy(self):
+        """
+        Returns a shalow copy of VariableInfo
+
+        Returns
+        -------
+        VariableInfo
+           Shallow copy of this object
+
+        """
+        from copy import copy
+        return copy(self)
 
     def read_json(self, json_data, default_freq=''):
         """
@@ -566,7 +582,12 @@ class CMIP5Info(object):
         """
         var_info = self.tables.get(table, {}).get(short_name, None)
         if not var_info and self.default:
-            return self.default.get_variable(table, short_name)
+            var_info = self.default.get_variable(table, short_name)
+            if var_info is None:
+                return None
+            var_info = var_info.copy()
+            var_info.frequency = self.tables[table].frequency
+            return var_info
         return var_info
 
 
@@ -638,8 +659,6 @@ class CustomInfo(CMIP5Info):
 
         """
         var_info = self.tables['custom'].get(short_name, None)
-        if var_info is not None:
-            var_info.frequency = self.var_to_freq[table]
         return var_info
 
     def _read_table_file(self, table_file, table=None):

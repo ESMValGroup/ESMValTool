@@ -44,6 +44,16 @@ class TestCMIP6Info(unittest.TestCase):
         var = self.variables_info.get_variable('SImon', 'sic')
         self.assertEqual(var.short_name, 'siconc')
 
+    def test_get_variable_from_custom(self):
+        """Get a variable from default."""
+        var = self.variables_info.get_variable('Amon', 'swcre')
+        self.assertEqual(var.short_name, 'swcre')
+        self.assertEqual(var.frequency, 'mon')
+
+        var = self.variables_info.get_variable('day', 'swcre')
+        self.assertEqual(var.short_name, 'swcre')
+        self.assertEqual(var.frequency, 'day')
+
     def test_get_bad_variable(self):
         """Get none if a variable is not in the given table."""
         self.assertIsNone(self.variables_info.get_variable('Omon', 'tas'))
@@ -86,6 +96,16 @@ class Testobs4mipsInfo(unittest.TestCase):
         self.assertEqual(var.short_name, 'ndviStderr')
         self.assertEqual(var.frequency, 'mon')
 
+    def test_get_variable_from_custom(self):
+        """Get a variable from default."""
+        var = self.variables_info.get_variable('obs4MIPs_Amon', 'swcre')
+        self.assertEqual(var.short_name, 'swcre')
+        self.assertEqual(var.frequency, 'mon')
+
+        var = self.variables_info.get_variable('obs4MIPs_Aday', 'swcre')
+        self.assertEqual(var.short_name, 'swcre')
+        self.assertEqual(var.frequency, 'day')
+
     def test_get_bad_variable(self):
         """Get none if a variable is not in the given table."""
         self.assertIsNone(self.variables_info.get_variable('Omon', 'tas'))
@@ -115,6 +135,16 @@ class TestCMIP5Info(unittest.TestCase):
         """Get tas variable."""
         var = self.variables_info.get_variable('Amon', 'tas')
         self.assertEqual(var.short_name, 'tas')
+
+    def test_get_variable_from_custom(self):
+        """Get a variable from default."""
+        var = self.variables_info.get_variable('Amon', 'swcre')
+        self.assertEqual(var.short_name, 'swcre')
+        self.assertEqual(var.frequency, 'mon')
+
+        var = self.variables_info.get_variable('day', 'swcre')
+        self.assertEqual(var.short_name, 'swcre')
+        self.assertEqual(var.frequency, 'day')
 
     def test_get_bad_variable(self):
         """Get none if a variable is not in the given table."""
