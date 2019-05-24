@@ -8,7 +8,6 @@
 #BSUB -n 16
 
 set -eo pipefail
-module load contrib/gnu/gcc/7.3.0
 
 . conda/etc/profile.d/conda.sh
 conda activate esmvaltool
