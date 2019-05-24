@@ -60,7 +60,6 @@ preprocessors:
       exclude: [reference_dataset]
 
   ppNOLEV:
-   # extract_levels: false
     regrid:
       target_grid: reference_dataset
       scheme: linear
@@ -72,7 +71,6 @@ preprocessors:
       exclude: [reference_dataset]
 
   ppNOLEVirreg:
-    #extract_levels: false
     regrid:
       target_grid: 1x1
       scheme: linear
@@ -367,7 +365,7 @@ diagnostics:
         normalization: CMIP5
         smpi_n_bootstrap: 100
 
-### COLLECT METRICS ###################
+  ### COLLECT METRICS ###################
   collect:
     description: Wrapper to collect and plot previously calculated metrics
     scripts:
