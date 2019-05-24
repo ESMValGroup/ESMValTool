@@ -74,7 +74,7 @@ def create_link(cfg, inpath):
     if not os.path.isfile(inpath):
         raise DiagnosticError("Path {0} does not exist".format(inpath))
 
-    lnk_dir = os.path.join(cfg['run_dir'], "links")
+    lnk_dir = cfg['lnk_dir']
 
     if not os.path.isdir(lnk_dir):
         os.mkdir(lnk_dir)
@@ -94,11 +94,8 @@ def setup_namelist(cfg):
 
     content = []
     for key, attributes in grouped_selection.items():
-        links = [create_link(cfg, item["filename"]) for item in attributes]
-        head, tail = os.path.split(links[0])
-        head, tail = os.path.split(head)
-        tail = "_".join(tail.split('_')[:-1])
-        ppath = "{}*/".format(os.path.join(head, tail))
+        [create_link(cfg, item["filename"]) for item in attributes]
+        ppath = "{0}/".format(cfg['lnk_dir'])
         content.append("{0} | {1} | {2} | {3}\n".format(
             key, ppath, attributes[0]["start_year"],
             attributes[0]["end_year"]))
@@ -135,7 +132,9 @@ def _nco_available():
 
 
 def _is_png(path):
-    return os.path.basename(path).split('.')[-1] == 'png'
+    exclude = ['cas-cvdp.png']
+    filename = os.path.basename(path)
+    return filename.split('.')[-1] == 'png' and filename not in exclude
 
 
 def _get_caption(filename):
@@ -286,15 +285,15 @@ def set_provenance(cfg):
 
     ancesters = _get_global_ancesters(cfg)
     logger.info("Path to work_dir: %s", cfg['work_dir'])
-    for root, _, files in os.walk(cfg['work_dir']):
-        for datei in files:
-            path = os.path.join(root, datei)
-            if _is_png(path):
-                logger.info("Name of file: %s", path)
-                provenance_record = _get_provenace_record(path, ancesters)
-                logger.info("Recording provenance of %s:\n%s", path,
-                            provenance_record)
-                with ProvenanceLogger(cfg) as provenance_logger:
+    with ProvenanceLogger(cfg) as provenance_logger:
+        for root, _, files in os.walk(cfg['work_dir']):
+            for datei in files:
+                path = os.path.join(root, datei)
+                if _is_png(path):
+                    logger.info("Name of file: %s", path)
+                    provenance_record = _get_provenace_record(path, ancesters)
+                    logger.info("Recording provenance of %s:\n%s", path,
+                                provenance_record)
                     provenance_logger.log(path, provenance_record)
 
 
@@ -304,6 +303,7 @@ def _execute_cvdp(cfg):
 
 def main(cfg):
     """Set and execute the cvdp package."""
+    cfg['lnk_dir'] = os.path.join(cfg['run_dir'], "links")
     setup_driver(cfg)
     setup_namelist(cfg)
     _execute_cvdp(cfg)
