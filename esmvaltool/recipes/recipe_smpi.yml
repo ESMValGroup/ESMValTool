@@ -53,7 +53,6 @@ preprocessors:
       exclude: [reference_dataset]
 
   ppNOLEV:
-   # extract_levels: false
     regrid:
       target_grid: reference_dataset
       scheme: linear
@@ -65,7 +64,6 @@ preprocessors:
       exclude: [reference_dataset]
 
   ppNOLEVirreg:
-    #extract_levels: false
     regrid:
       target_grid: 1x1
       scheme: linear
@@ -112,7 +110,7 @@ diagnostics:
       - atmos
     variables:
       va:
-        <<: *variable_settings 
+        <<: *variable_settings
     additional_datasets:
       - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
     scripts:
@@ -134,7 +132,7 @@ diagnostics:
       - atmos
     variables:
       ua:
-        <<: *variable_settings 
+        <<: *variable_settings
     additional_datasets:
       - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
     scripts:
@@ -156,7 +154,7 @@ diagnostics:
       - atmos
     variables:
       hus:
-        <<: *variable_settings 
+        <<: *variable_settings
     additional_datasets:
       - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
     scripts:
@@ -178,7 +176,7 @@ diagnostics:
       - atmos
     variables:
       tas:
-        <<: *variable_settings 
+        <<: *variable_settings
         preprocessor: ppNOLEV
     additional_datasets:
       - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
@@ -201,7 +199,7 @@ diagnostics:
       - atmos
     variables:
       psl:
-        <<: *variable_settings 
+        <<: *variable_settings
         preprocessor: ppNOLEV
     additional_datasets:
       - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
@@ -224,7 +222,7 @@ diagnostics:
       - atmos
     variables:
       pr:
-        <<: *variable_settings 
+        <<: *variable_settings
         preprocessor: ppNOLEV
         reference_dataset: GPCP-SG
     additional_datasets:
@@ -248,7 +246,7 @@ diagnostics:
       - ocean
     variables:
       tos:
-        <<: *variable_settings 
+        <<: *variable_settings
         preprocessor: ppNOLEVirreg
         reference_dataset: HadISST
         mip: Omon
@@ -273,7 +271,7 @@ diagnostics:
       - seaIce
     variables:
       sic:
-        <<: *variable_settings 
+        <<: *variable_settings
         preprocessor: ppNOLEVirreg
         reference_dataset: HadISST
         mip: OImon
@@ -298,7 +296,7 @@ diagnostics:
       - ocean
     variables:
       hfds:
-        <<: *variable_settings 
+        <<: *variable_settings
         preprocessor: ppNOLEVirreg
         mip: Omon
     additional_datasets:
@@ -322,7 +320,7 @@ diagnostics:
       - atmos
     variables:
       tauu:
-        <<: *variable_settings 
+        <<: *variable_settings
         preprocessor: ppNOLEV
     additional_datasets:
       - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
@@ -345,7 +343,7 @@ diagnostics:
       - atmos
     variables:
       tauv:
-        <<: *variable_settings 
+        <<: *variable_settings
         preprocessor: ppNOLEV
     additional_datasets:
       - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
@@ -360,7 +358,7 @@ diagnostics:
         normalization: CMIP5
         smpi_n_bootstrap: 100
 
-### COLLECT METRICS ###################
+  ### COLLECT METRICS ###################
   collect:
     description: Wrapper to collect and plot previously calculated metrics
     scripts:
