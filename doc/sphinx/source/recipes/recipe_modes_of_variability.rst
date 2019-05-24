@@ -50,7 +50,7 @@ User setting files are stored in recipes/
 Variables
 ---------
 
-* psl or sic (atmos, monthly/daily, longitude, latitude, time)
+* psl (atmos, monthly/daily, longitude, latitude, time)
 
 
 Observations and reformat scripts
