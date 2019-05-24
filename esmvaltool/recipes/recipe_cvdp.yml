@@ -48,6 +48,8 @@ diagnostics:
   diagnostic1:
     description: Run the NCAR CVDPackage.
     variables:
+      ts:
+        mip: Amon
       tas:
         mip: Amon
       pr:
