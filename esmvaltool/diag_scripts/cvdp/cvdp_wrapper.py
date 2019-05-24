@@ -35,10 +35,8 @@ def setup_driver(cfg):
             search_results = re.findall(pattern, line)
             if search_results == []:
                 continue
-            return re.sub(r'".+?"',
-                          '"{0}"'.format(value),
-                          search_results[0],
-                          count=1)
+            return re.sub(
+                r'".+?"', '"{0}"'.format(value), search_results[0], count=1)
 
         return line
 
@@ -255,20 +253,20 @@ def _get_info(filename, dictionary):
     return dictionary[intersection[0]]
 
 
-def _get_global_ancesters(cfg):
+def _get_global_ancestors(cfg):
     input_data = cfg['input_data'].values()
     selection = select_metadata(input_data, project='CMIP5')
     grouped_selection = group_metadata(selection, 'dataset')
-    ancester = []
+    ancestor = []
     for _, attributes in grouped_selection.items():
-        ancester += [item['filename'] for item in attributes]
-    return ancester
+        ancestor += [item['filename'] for item in attributes]
+    return ancestor
 
 
 def set_provenance(cfg):
     """Add provenance to all image files that the cvdp package creates."""
 
-    def _get_provenace_record(filename, ancesters):
+    def _get_provenance_record(filename, ancestors):
         return {
             'caption': _get_caption(filename),
             'statistics': [_get_stat(filename)],
@@ -282,10 +280,10 @@ def set_provenance(cfg):
                 'acknow_project',
                 'phillips14eos',
             ],
-            'ancesters': ancesters,
+            'ancestors': ancestors,
         }
 
-    ancesters = _get_global_ancesters(cfg)
+    ancestors = _get_global_ancestors(cfg)
     logger.info("Path to work_dir: %s", cfg['work_dir'])
     with ProvenanceLogger(cfg) as provenance_logger:
         for root, _, files in os.walk(cfg['work_dir']):
@@ -293,7 +291,7 @@ def set_provenance(cfg):
                 path = os.path.join(root, datei)
                 if _is_png(path):
                     logger.info("Name of file: %s", path)
-                    provenance_record = _get_provenace_record(path, ancesters)
+                    provenance_record = _get_provenance_record(path, ancestors)
                     logger.info("Recording provenance of %s:\n%s", path,
                                 provenance_record)
                     provenance_logger.log(path, provenance_record)
