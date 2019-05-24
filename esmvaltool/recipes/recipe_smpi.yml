@@ -24,17 +24,17 @@ documentation:
     - c3s-magic
 
 datasets:
-  - {dataset: CNRM-CM5,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
-  - {dataset: CSIRO-Mk3-6-0,  project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
-  - {dataset: GFDL-ESM2G,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
-  - {dataset: MIROC5,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
-  - {dataset: MIROC-ESM,      project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
-  - {dataset: MIROC-ESM-CHEM, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
-  - {dataset: MPI-ESM-LR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
-  - {dataset: MPI-ESM-MR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
-  - {dataset: MRI-CGCM3,      project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
-  - {dataset: NorESM1-M,      project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
-  - {dataset: NorESM1-ME,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
+  - {dataset: CNRM-CM5,       project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: CSIRO-Mk3-6-0,  project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: GFDL-ESM2G,     project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: MIROC5,         project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: MIROC-ESM,      project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: MIROC-ESM-CHEM, project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: MPI-ESM-LR,     project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: MPI-ESM-MR,     project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: MRI-CGCM3,      project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: NorESM1-M,      project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: NorESM1-ME,     project: CMIP5, exp: historical, ensemble: r1i1p1}
 
 preprocessors:
 
@@ -113,9 +113,6 @@ diagnostics:
     variables:
       va:
         <<: *variable_settings 
-        preprocessor: ppALL
-        reference_dataset: ERA-Interim
-        mip: Amon
     additional_datasets:
       - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
     scripts:
@@ -138,9 +135,6 @@ diagnostics:
     variables:
       ua:
         <<: *variable_settings 
-        preprocessor: ppALL
-        reference_dataset: ERA-Interim
-        mip: Amon
     additional_datasets:
       - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
     scripts:
@@ -163,9 +157,6 @@ diagnostics:
     variables:
       hus:
         <<: *variable_settings 
-        preprocessor: ppALL
-        reference_dataset: ERA-Interim
-        mip: Amon
     additional_datasets:
       - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
     scripts:
@@ -189,8 +180,6 @@ diagnostics:
       tas:
         <<: *variable_settings 
         preprocessor: ppNOLEV
-        reference_dataset: ERA-Interim
-        mip: Amon
     additional_datasets:
       - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
     scripts:
@@ -214,8 +203,6 @@ diagnostics:
       psl:
         <<: *variable_settings 
         preprocessor: ppNOLEV
-        reference_dataset: ERA-Interim
-        mip: Amon
     additional_datasets:
       - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
     scripts:
@@ -240,7 +227,6 @@ diagnostics:
         <<: *variable_settings 
         preprocessor: ppNOLEV
         reference_dataset: GPCP-SG
-        mip: Amon
     additional_datasets:
       - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.2, tier: 1}
     scripts:
@@ -314,7 +300,6 @@ diagnostics:
       hfds:
         <<: *variable_settings 
         preprocessor: ppNOLEVirreg
-        reference_dataset: ERA-Interim
         mip: Omon
     additional_datasets:
       - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
@@ -339,8 +324,6 @@ diagnostics:
       tauu:
         <<: *variable_settings 
         preprocessor: ppNOLEV
-        reference_dataset: ERA-Interim
-        mip: Amon
     additional_datasets:
       - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
     scripts:
@@ -364,8 +347,6 @@ diagnostics:
       tauv:
         <<: *variable_settings 
         preprocessor: ppNOLEV
-        reference_dataset: ERA-Interim
-        mip: Amon
     additional_datasets:
       - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
     scripts:
