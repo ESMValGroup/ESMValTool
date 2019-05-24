@@ -8,7 +8,7 @@ import subprocess
 from esmvaltool._task import DiagnosticError
 from esmvaltool.diag_scripts.shared import (group_metadata, run_diagnostic,
                                             select_metadata)
-from esmvaltool.diag_scripts.shared._base import ProvenanceLogger
+from esmvaltool.diag_scripts.shared import ProvenanceLogger
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -134,7 +134,7 @@ def _nco_available():
 def _is_png(path):
     exclude = ['cas-cvdp.png']
     filename = os.path.basename(path)
-    return filename.split('.')[-1] == 'png' and filename not in exclude
+    return filename.endswith('.png') and filename not in exclude
 
 
 def _get_caption(filename):
@@ -299,7 +299,7 @@ def set_provenance(cfg):
 
 
 def _execute_cvdp(cfg):
-    subprocess.run(["ncl", "driver.ncl"], cwd=os.path.join(cfg['run_dir']))
+    subprocess.check_call(["ncl", "driver.ncl"], cwd=os.path.join(cfg['run_dir']))
 
 
 def main(cfg):
