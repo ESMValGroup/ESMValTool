@@ -109,8 +109,8 @@ recipe_insurance_risk_index.yml:
 
 recipe_modes_of_variability.yml:
   plot_type:
-    - Rectangular
-    - Polar
+    - rectangular
+    - polar
   ncenters:
     - 2
     - 3
