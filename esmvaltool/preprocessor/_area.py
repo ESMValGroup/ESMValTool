@@ -32,24 +32,18 @@ def extract_region(cube, start_longitude, end_longitude, start_latitude,
     Function that subsets a cube on a box (start_longitude, end_longitude,
     start_latitude, end_latitude)
     This function is a restriction of masked_cube_lonlat().
-
-    Arguments
-    ---------
-        cube: iris.cube.Cube
-            input cube.
-
-        start_longitude: float
-            Western boundary longitude.
-
-        end_longitude: float
-              Eastern boundary longitude.
-
-        start_latitude: float
-             Southern Boundary latitude.
-
-        end_latitude: float
-             Northern Boundary Latitude.
-
+    Parameters
+    ----------
+    cube: iris.cube.Cube
+        input data cube.
+    start_longitude: float
+        Western boundary longitude.
+    end_longitude: float
+        Eastern boundary longitude.
+    start_latitude: float
+        Southern Boundary latitude.
+    end_latitude: float
+        Northern Boundary Latitude.
     Returns
     -------
     iris.cube.Cube
@@ -82,14 +76,18 @@ def extract_region(cube, start_longitude, end_longitude, start_latitude,
 def get_iris_analysis_operation(operator):
     """
     Determine the iris analysis operator from a string.
-
-    Arguments
-    ---------
-        operator: string
-            A named operator.
+    Parameters
+    ----------
+    operator: str
+        A named operator.
     Returns
     -------
         function: A function from iris.analysis
+    Raises
+    ------
+    ValueError
+        operator not in allowed operators list.
+        allowed operators: mean, median, std_dev, variance, min, max
     """
     operators = ['mean', 'median', 'std_dev', 'variance', 'min', 'max']
     operator = operator.lower()
@@ -106,30 +104,24 @@ def zonal_means(cube, coordinate, mean_type):
     Get zonal means.
 
     Function that returns zonal means along a coordinate `coordinate`;
-    the type of mean is controlled by mean_type variable (string)::
-
-        'mean' -> MEAN
-        'median' -> MEDIAN
-        'std_dev' -> STD_DEV
-        'variance' -> VARIANCE
-        'min' -> MIN
-        'max' -> MAX
-
-    Arguments
+    the type of mean is controlled by mean_type variable (string):
+    - 'mean' -> MEAN
+    - 'median' -> MEDIAN
+    - 'std_dev' -> STD_DEV
+    - 'variance' -> VARIANCE
+    - 'min' -> MIN
+    - 'max' -> MAX
+    Parameters
     ---------
-        cube: iris.cube.Cube
-            input cube.
-
-         coordinate: str
-             name of coordinate to make mean
-
-         mean_type: str
-             Type of analysis to use, from iris.analysis.
-
+    cube: iris.cube.Cube
+        input cube.
+    coordinate: str
+        name of coordinate to make mean.
+    mean_type: str
+        Type of analysis to use, from iris.analysis.
     Returns
     -------
     iris.cube.Cube
-        Returns a cube
     """
     operation = get_iris_analysis_operation(mean_type)
     return cube.collapsed(coordinate, operation)
@@ -139,13 +131,12 @@ def tile_grid_areas(cube, fx_files):
     """
     Tile the grid area data to match the dataset cube.
 
-    Arguments
-    ---------
-        cube: iris.cube.Cube
-            input cube.
-        fx_files: dictionary
-            dictionary of field:filename for the fx_files
-
+    Parameters
+    ----------
+    cube: iris.cube.Cube
+        input cube.
+    fx_files: dict
+        dictionary of field:filename for the fx_files
     Returns
     -------
     iris.cube.Cube
@@ -206,24 +197,28 @@ def average_region(cube, coord1, coord2, operator='mean', fx_files=None):
     | `max`      | Maximum value                                    |
     +------------+--------------------------------------------------+
 
-
-    Arguments
-    ---------
-        cube: iris.cube.Cube
-            input cube.
-        coord1: str
-            Name of the firct coordinate dimension
-        coord2: str
-            Name of the second coordinate dimension
-        operator: str
-            Name of the operation to apply (default: mean)
-        fx_files: dictionary
-            dictionary of field:filename for the fx_files
-
+    Parameters
+    ----------
+    cube: iris.cube.Cube
+        input cube.
+    coord1: str
+        Name of the firct coordinate dimension
+    coord2: str
+        Name of the second coordinate dimension
+    operator: str
+        Name of the operation to apply (default: mean)
+    fx_files: dict
+        dictionary of field:filename for the fx_files
     Returns
     -------
     iris.cube.Cube
         collapsed cube.
+    Raises
+    ------
+    iris.exceptions.CoordinateMultiDimError
+        Exception for latitude axis with dim > 2.
+    ValueError
+        if input data cube has different shape than grid area weights
     """
     grid_areas = tile_grid_areas(cube, fx_files)
 
@@ -262,18 +257,22 @@ def extract_named_regions(cube, regions):
     The region coordinate exist in certain CMIP datasets.
     This preprocessor allows a specific named regions to be extracted.
 
-    Arguments
-    ---------
+    Parameters
+    ----------
     cube: iris.cube.Cube
        input cube.
-
     regions: str, list
         A region or list of regions to extract.
-
     Returns
     -------
     iris.cube.Cube
         collapsed cube.
+    Raises
+    ------
+    ValueError
+        regions is not list or tuple or set.
+    ValueError
+        region not included in cube.
     """
     # Make sure regions is a list of strings
     if isinstance(regions, str):
