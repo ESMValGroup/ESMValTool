@@ -194,12 +194,19 @@ for (model_idx in c(1:length(models_name))) {
     print("")
     infiles <- climofiles[models == models_name[model_idx]]
     indices <- sub("ETCCDI.*", "", idx_select)
+    timeres <- "all"
+    if (!any(grepl("yr",idx_select))) {
+      timeres <- "mon"
+    } else if (!any(grepl("mon",idx_select))) {
+      timeres <- "annual"
+    }
     create.indices.from.files(infiles,  # nolint
       work_dir, template, author.data,
       base.range = base_range,
       parallel = climdex_parallel,
       verbose = TRUE, max.vals.millions = 20,
       climdex.vars.subset = indices,
+      climdex.time.resolution = timeres,
       src = climdex_src
     )
 
