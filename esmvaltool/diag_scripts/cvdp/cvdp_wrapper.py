@@ -299,7 +299,8 @@ def set_provenance(cfg):
 
 
 def _execute_cvdp(cfg):
-    subprocess.check_call(["ncl", "driver.ncl"], cwd=os.path.join(cfg['run_dir']))
+    subprocess.check_call(["ncl", "driver.ncl"],
+                          cwd=os.path.join(cfg['run_dir']))
 
 
 def main(cfg):
