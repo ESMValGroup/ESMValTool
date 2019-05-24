@@ -279,6 +279,7 @@ def set_provenance(cfg):
             ],
             'references': [
                 'acknow_project',
+                'phillips14eos',
             ],
             'ancesters': ancesters,
         }
