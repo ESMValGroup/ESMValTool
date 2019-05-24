@@ -24,21 +24,18 @@ def extract_volume(cube, z_min, z_max):
     same sign as the iris cube. ie, if the cube has z-coordinate as
     negative, then z_min and z_max need to be negative numbers.
 
-    Arguments
-    ---------
-        cube: iris.cube.Cube
-            input cube.
-
-        z_min: float
-            minimum depth to extract.
-
-        z_max: float
-            maximum depth to extract.
-
+    Parameters
+    ----------
+    cube: iris.cube.Cube
+        input cube.
+    z_min: float
+        minimum depth to extract.
+    z_max: float
+        maximum depth to extract.
     Returns
     -------
     iris.cube.Cube
-        extracted cube.
+        z-coord extracted cube.
     """
     if z_min > z_max:
         # minimum is below maximum, so switch them around
@@ -138,6 +135,15 @@ def calculate_volume(cube):
     Calculate volume from a cube.
 
     This function is used when the volume netcdf fx_files can't be found.
+
+    Parameters
+    ----------
+    cube: iris.cube.Cube
+        input cube.
+    Returns
+    -------
+    float
+        grid volume.
     """
     # ####
     # Load depth field and figure out which dim is which.
@@ -171,24 +177,24 @@ def average_volume(
     is calculated from iris's cartography tool multiplied by the cell
     thickness.
 
-    Arguments
-    ---------
-        cube: iris.cube.Cube
-            input cube.
-
-        coord1: str
-            name of first coordinate
-
-        coord2: str
-            name of second coordinate
-
-        fx_files: dictionary
-            dictionary of field:filename for the fx_files
-
+    Parameters
+    ----------
+    cube: iris.cube.Cube
+        input cube.
+    coord1: str
+        name of first coordinate
+    coord2: str
+        name of second coordinate
+    fx_files: dict
+        dictionary of field:filename for the fx_files
     Returns
     -------
     iris.cube.Cube
         collapsed cube.
+    Raises
+    ------
+    ValueError
+        if input cube shape differs from grid volume cube shape.
     """
     # TODO: Test sigma coordinates.
 
@@ -282,9 +288,8 @@ def depth_integration(cube):
 
     Arguments
     ---------
-        cube: iris.cube.Cube
-            input cube.
-
+    cube: iris.cube.Cube
+        input cube.
     Returns
     -------
     iris.cube.Cube
@@ -337,21 +342,25 @@ def extract_transect(cube, latitude=None, longitude=None):
     very slow. Alternatively, use the regrid preprocessor to regrid along
     a regular grid and then extract the transect.
 
-    Arguments
-    ---------
-        cube: iris.cube.Cube
-            input cube.
-
-        latitude: None, float or [float, float], optional
-            transect latiude or range.
-
-        longitude:  None, float or [float, float], optional
-            transect longitude or range.
-
+    Parameters
+    ----------
+    cube: iris.cube.Cube
+        input cube.
+    latitude: None, float or [float, float], optional
+        transect latiude or range.
+    longitude:  None, float or [float, float], optional
+        transect longitude or range.
     Returns
     -------
     iris.cube.Cube
         collapsed cube.
+    Raises
+    ------
+    ValueError
+        slice extraction not implemented for irregular grids.
+    ValueError
+        latitude and longitute are both floats or lists; not allowed
+        to slice on both axes at the same time.
     """
     # ###
     coord_dim2 = False
@@ -418,24 +427,24 @@ def extract_trajectory(cube, latitudes, longitudes, number_points=2):
     extract_trajectory will produce a cube which has extrapolated the data
     of the cube to those points, and `number_points` is not needed.
 
-    Arguments
-    ---------
-        cube: iris.cube.Cube
-            input cube.
-
-        latitudes: list of floats
-            list of latitude coordinates.
-
-        longitudes: list of floats
-            list of longitude coordinates.
-
-        number_points: int
-            number of points to extrapolate (optional).
-
+    Parameters
+    ----------
+    cube: iris.cube.Cube
+        input cube.
+    latitudes: list
+        list of latitude coordinates (floats).
+    longitudes: list
+        list of longitude coordinates (floats).
+    number_points: int
+        number of points to extrapolate (optional).
     Returns
     -------
     iris.cube.Cube
         collapsed cube.
+    Raises
+    ------
+    ValueError
+        if latitude and longitude have different dimensions.
     """
     from iris.analysis.trajectory import interpolate
 
