@@ -530,6 +530,12 @@ if (cluster_method != "kmeans") {
 } else {
     cosa <- aperm(WR_exp$composite, c(2, 1, 3))
 }
+if (length(lon) != dim(cosa)["lon"]) {
+    pos_lon <- which(names(dim(cosa)) == "lon")
+    pos_lat <- which(names(dim(cosa)) == "lat")
+    names(dim(cosa))[pos_lon] <- "lat"
+    names(dim(cosa))[pos_lat] <- "lon"
+}
 if ((which(names(dim(reference)) == "lon") < #nolint
     which(names(dim(reference)) == "lat") &
     which(names(dim(cosa)) == "lon") >
