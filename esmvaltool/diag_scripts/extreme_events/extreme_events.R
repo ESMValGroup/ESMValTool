@@ -29,7 +29,7 @@ library(RColorBrewer)  # nolint
 
 provenance_record <- function(infile) {
   xprov <- list(
-    ancestors = infile,
+    ancestors = as.list(infile),
     authors = list("broe_bj", "sand_ma", "mohr_cw", "hard_jo"),
     references = list("zhang-2011"),
     projects = list("crescendo", "c3s-magic"),
@@ -206,7 +206,7 @@ for (model_idx in c(1:length(models_name))) {
     # Set provenance for output files
     # Get new list of files after computation
     infiles <- climofiles[models == models_name[model_idx]]
-    xprov <- provenance_record(list(infiles))
+    xprov <- provenance_record(infiles)
     climdex_files <- list.files(
       path = work_dir, pattern = "ETCCDI",
       full.names = TRUE
