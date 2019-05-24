@@ -116,9 +116,9 @@ recipe_modes_of_variability.yml:
     - 3
     - 4
   detrend_order:
-    - 3
-    - 2
+    - 0
     - 1
+    - 2
   cluster_method:
     - kmeans
     - hierarchical
