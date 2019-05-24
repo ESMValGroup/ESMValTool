@@ -14,13 +14,9 @@ attributes:
 # Variables to cmorize (here use only filename prefix)
 variables:
   sic:
-    mip: OImon
+    mip: [day, OImon]
     raw: ice_conc
     grid: ease-125
-  # sic:
-  #   mip: day
-  #   raw: ice_conc
-  #   grid: ease-125
 custom:
   create_areacello: true
   grid_cell_size: 12533.7625

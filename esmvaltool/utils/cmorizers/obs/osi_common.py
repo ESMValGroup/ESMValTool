@@ -32,21 +32,22 @@ def cmorize_osi(in_dir, out_dir, cfg, hemisphere):
     # run the cmorization
     first_run = True
     for var, vals in cfg['variables'].items():
-        var_info = cmor_table.get_variable(vals['mip'], var)
+        var_info = {}
+        for mip in vals['mip']:
+            var_info[mip] = cmor_table.get_variable(mip, var)
         file_pattern = '{0}_{1}_{2}_*.nc'.format(
             vals['raw'], hemisphere, vals['grid']
         )
         for year in os.listdir(in_dir):
             logger.info(
-                "CMORizing var %s:%s for year %s", vals['mip'], var, year
+                "CMORizing var %s:%s for year %s", mip, var, year
             )
             raw_info = {
                 'name': vals['raw'],
                 'file': os.path.join(in_dir, year, '??', file_pattern)
             }
-            glob_attrs['mip'] = vals['mip']
             extract_variable(
-                var_info, raw_info, out_dir, glob_attrs, year
+                var_info, raw_info, out_dir, glob_attrs, year, vals['mip']
             )
             if first_run:
                 sample_file = glob.glob(os.path.join(
@@ -64,27 +65,15 @@ def cmorize_osi(in_dir, out_dir, cfg, hemisphere):
                 first_run = False
 
 
-def extract_variable(var_info, raw_info, out_dir, attrs, year):
+def extract_variable(var_infos, raw_info, out_dir, attrs, year, mips):
     """Extract to all vars."""
-    var = var_info.short_name
     cubes = iris.load(
         raw_info['file'],
         iris.Constraint(cube_func=lambda c: c.var_name == raw_info['name'])
     )
-
     tracking_ids = _unify_attributes(cubes)
     cube = cubes.concatenate_cube()
     del cubes
-    if var_info.frequency == 'mon':
-        cube = _monthly_mean(cube)
-    if var_info.frequency == 'day':
-        if cube.coord('time').shape[0] < 300:
-            logger.warning(
-                'Only %s days available. Can not generate daily files',
-                cube.coord('time').shape[0]
-            )
-            return
-    logger.debug(cube)
     if tracking_ids:
         cube.attributes['tracking_ids'] = tracking_ids
     cube.coord('projection_x_coordinate').var_name = 'x'
@@ -92,10 +81,23 @@ def extract_variable(var_info, raw_info, out_dir, attrs, year):
     lon_coord = cube.coord('longitude')
     lon_coord.points = _correct_lons(lon_coord.points)
 
-    fix_var_metadata(cube, var_info)
-    convert_timeunits(cube, year)
-    set_global_atts(cube, attrs)
-    save_variable(cube, var, out_dir, attrs)
+    for mip in mips:
+        var_info = var_infos[mip]
+        attrs['mip'] = mip
+        if var_info.frequency == 'mon':
+            cube = _monthly_mean(cube)
+        if var_info.frequency == 'day':
+            if cube.coord('time').shape[0] < 300:
+                logger.warning(
+                    'Only %s days available. Can not generate daily files',
+                    cube.coord('time').shape[0]
+                )
+                continue
+        logger.debug(cube)
+        fix_var_metadata(cube, var_info)
+        convert_timeunits(cube, year)
+        set_global_atts(cube, attrs)
+        save_variable(cube, var_info.short_name, out_dir, attrs)
     return cube
 
 
