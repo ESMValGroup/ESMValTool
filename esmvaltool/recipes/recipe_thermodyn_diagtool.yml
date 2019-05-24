@@ -1,0 +1,86 @@
+# recipe_thermodyn_diagtool.yml
+
+---
+documentation:
+  description: |
+        Recipe for the computation of various aspects associated with
+        the thermodynamics of the climate system, such as energy and
+        water mass budgets, meridional enthalpy transports, the Lorenz
+        Energy Cycle and the material entropy production.
+
+  authors:
+    - lemb_va
+    - kold_ni
+
+  references:
+    - lembo16climdyn
+    - lucarini14revgeop
+
+  projects:
+    - esmval
+    - trr181
+
+datasets:
+  - {dataset: CanESM2, project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 2456, end_year: 2460}
+  - {dataset: BNU-ESM, project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 2002, end_year: 2007}
+  - {dataset: IPSL-CM5A-MR, project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 2044, end_year: 2049}
+  - {dataset: MIROC5, project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 2310, end_year: 2314}
+  - {dataset: MIROC-ESM-CHEM, project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 2001, end_year: 2005}
+  - {dataset: MPI-ESM-LR, project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 2031, end_year: 2035}
+  - {dataset: MPI-ESM-MR, project: CMIP5, exp: piControl, ensemble: r1i1p1, start_year: 2001, end_year: 2005}
+
+diagnostics:
+  Thermodyn_Diag:
+    description: Thermodynamics diagnostics
+    variables:
+      hfls:
+        mip: Amon
+      hfss:
+        mip: Amon
+      pr:
+        mip: Amon
+      ps:
+        mip: Amon
+      prsn:
+        mip: Amon
+      rlds:
+        mip: Amon
+      rlus:
+        mip: Amon
+      rlut:
+        mip: Amon
+      rsds:
+        mip: Amon
+      rsus:
+        mip: Amon
+      rsdt:
+        mip: Amon
+      rsut:
+        mip: Amon
+      ts:
+        mip: Amon
+      hus:
+        mip: Amon
+      tas:
+        mip: day
+      uas:
+        mip: day
+      vas:
+        mip: day
+      ta:
+        fx_files: [sftlf]
+        mip: day
+      ua:
+        mip: day
+      va:
+        mip: day
+      wap:
+        mip: day
+    scripts:
+      Thermodyn_Diag:
+        script: thermodyn_diagtool/thermodyn_diagnostics.py
+        wat: true
+        lec: false
+        entr: true
+        met: 3
+        lsm: true
