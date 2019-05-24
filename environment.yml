@@ -13,6 +13,8 @@ dependencies:
   # Non-Python dependencies
   - graphviz
   - cdo
+  - imagemagick
+  - nco
 
   # Multi language support:
   - python>=3.6
