@@ -11,7 +11,7 @@ the joint CCl/CLIVAR/JCOMM Expert Team (ET) on Climate Change Detection and Indi
 The needed input fields are daily average precipitation flux and minimum, maximum and average daily surface temperatures.
 The recipe reproduces panels of figure 9.37 of the IPCC AR5 report, producing both a Gleckler plot,
 with relative error metrics for the CMIP5 temperature and precipitation extreme indices, 
-and timeseries plots comparing the enesemble spread with observations. 
+and timeseries plots comparing the ensemble spread with observations. 
 For plotting 1 to 4 observational reference datasets are supported. If no observational reference datasets are given, the plotting routines do not work, however, index generation without plotting is still possible.
 All datasets are regridded to a common grid and considered only over land.
 
