@@ -53,7 +53,7 @@ These settings are passed to the other scripts by main.ncl, depending on the sel
 Variables
 ---------
 
-* hfds (ocean, monthly mean, longitude latitude time) - not available on Jasmin
+* hfds (ocean, monthly mean, longitude latitude time)
 * hus (atmos, monthly mean, longitude latitude lev time)
 * pr (atmos, monthly mean, longitude latitude time)
 * psl (atmos, monthly mean, longitude latitude time)
