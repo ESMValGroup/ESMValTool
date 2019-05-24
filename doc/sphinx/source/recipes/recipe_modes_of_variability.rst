@@ -41,7 +41,7 @@ User setting files are stored in recipes/
 
    * plot type: rectangular or polar
    * ncenters: number of centers to be computed by the clustering algorithm (maximum 4)
-   * method: kmeans (only psl variable) or hierarchical clustering (for psl or sic variables) 
+   * cluster_method: kmeans (only psl variable) or hierarchical clustering (for psl or sic variables) 
    * detrend_order: the order of the polynomial detrending to be applied (0, 1 or 2)
    * EOFs: logical indicating wether the k-means clustering algorithm is applied directly to the spatial data ('false') or to the EOFs ('true')
    * frequency: select the month (format: JAN, FEB, ...) or season (format: JJA, SON, MAM, DJF) for the diagnostic to be computed for (does not work yet for MAM with daily data).
