@@ -44,13 +44,14 @@ User settings
   The syntax is "XXXETCCDI_TT", where "TT" can be either "yr" or "mon"
   (yearly or monthly indices are computed) and "XXX" can be one of the following:
   "altcdd", "altcsdi", "altcwd", "altwsdi", "cdd", "csdi", "cwd",
-  "dtr", "dtr", "fd", "gsl", "id", "prcptot", "r10mm", "r1mm",
-  "r20mm", "r95p", "r99p", "rx1day", "rx1day", "rx5day", "rx5day",
-  "sdii", "su", "tn10p", "tn10p", "tn90p", "tn90p", "tnn", "tnn",
-  "tnx", "tnx", "tr", "tx10p", "tx10p", "tx90p", "tx90p", "txn",
-  "txn", "txx", "txx", "wsdi"
+  "dtr", "fd", "gsl", "id", "prcptot", "r10mm", "r1mm", "r20mm",
+  "r95p", "r99p", "rx1day", "rx5day", "sdii", "su", "tn10p",
+  "tn90p", "tnn", "tnx", "tr", "tx10p", "tx90p", "txn", "txx", "wsdi".
+  The option "mon" for "TT" can be only used in combination with one of:
+  "txx", "tnx", "txn", "tnn", tn10p", "tx10p", "tn90p", "tx90p", "dtr", "rx1day", "rx5day".
 * gleckler_idx: list of indices to compute for Gleckler plot. Same syntax as above.
   The diagnostic computes all unique indices specified in either ``gleckler_idx`` or ``timeseries_idx``.
+  If at least one "mon" index is selected, the indices are computed but no plots are produced.
 * base_range: a list of two years to specify the range to be used as "base range" for climdex
   (the period in which for example reference percentiles are computed)
 
