@@ -170,14 +170,32 @@ for (model_idx in c(1:length(models_name))) {
   idx_select <- unique(c(timeseries_idx, gleckler_idx))
 
   ## Check point for existing files
-  climdex_file_check <- paste0(
-    idx_select, "_",
-    models_name[model_idx], "_",
-    models_experiment[model_idx], "_",
-    models_ensemble[model_idx], "_",
-    models_start_year[model_idx], "-",
-    models_end_year[model_idx]
-  )
+  climdex_file_check <- c()
+  for (idx in idx_select) {
+    if (grepl("mon", idx)) {
+      climdex_file_check <- c(climdex_file_check,
+        paste0(
+          idx, "_",
+           models_name[model_idx], "_",
+           models_experiment[model_idx], "_",
+           models_ensemble[model_idx], "_",
+           models_start_year[model_idx], "01-",
+           models_end_year[model_idx], "12.nc"
+        )
+      )
+    } else {
+      climdex_file_check <- c(climdex_file_check,
+        paste0(
+          idx, "_",
+          models_name[model_idx], "_",
+          models_experiment[model_idx], "_",
+          models_ensemble[model_idx], "_",
+          models_start_year[model_idx], "-",
+          models_end_year[model_idx], ".nc"
+        )
+      )
+    }
+  }
   check_control <- vector("logical", length(climdex_file_check))
   n <- 0
   for (chck in climdex_file_check) {
@@ -185,7 +203,16 @@ for (model_idx in c(1:length(models_name))) {
     tmp <- length(grep(chck, climdex_files))
     check_control[n] <- (tmp > 0)
   }
-  print(check_control)
+
+  if (!any(grepl("yr",idx_select))) {
+    timeres <- "mon"
+    write_plots <- FALSE
+  } else if (!any(grepl("mon",idx_select))) {
+    timeres <- "annual"
+  } else {
+    timeres <- "all"
+    write_plots <- FALSE
+  }
 
   if (!all(check_control)) {
     print("")
@@ -194,12 +221,6 @@ for (model_idx in c(1:length(models_name))) {
     print("")
     infiles <- climofiles[models == models_name[model_idx]]
     indices <- sub("ETCCDI.*", "", idx_select)
-    timeres <- "all"
-    if (!any(grepl("yr",idx_select))) {
-      timeres <- "mon"
-    } else if (!any(grepl("mon",idx_select))) {
-      timeres <- "annual"
-    }
     create.indices.from.files(infiles,  # nolint
       work_dir, template, author.data,
       base.range = base_range,
@@ -213,13 +234,15 @@ for (model_idx in c(1:length(models_name))) {
     # Set provenance for output files
     # Get new list of files after computation
     infiles <- climofiles[models == models_name[model_idx]]
+    print("Computing xprov")
     xprov <- provenance_record(infiles)
     climdex_files <- list.files(
-      path = work_dir, pattern = "ETCCDI",
+      path = work_dir,
+      pattern = paste0("ETCCDI.*", models_name[model_idx], ".*\\.nc"),
       full.names = TRUE
     )
-    for (chck in climdex_file_check) {
-      fname <- grep(chck, climdex_files, value = TRUE)
+    for (fname in climdex_files) {
+      print(paste("Provenance for ",fname))
       provenance[[fname]] <- xprov
     }
   }
