@@ -11,9 +11,10 @@ Note: The SMPI diagnostic needs all indicated variables from all added models fo
 Available recipes and diagnostics
 -----------------------------------
 
-Recipes are stored in recipe/
+Recipes are stored in recipes/
 
-* recipe_reichlerkim08bams.yml
+* recipe_smpi.yml
+* recipe_smpi_4cds.yml
 
 Diagnostics are stored in diag_scripts/perfmetrics/
 
@@ -28,18 +29,14 @@ User settings
 
    *Required settings for script*
 
-   * plot_type: cycle (time), zonal (plev, lat), latlon (lat, lon), cycle_latlon (time, lat, lon)
-   * time_avg: type of time average (opt argument of time_operations in diag_scripts/shared/statistics.ncl)
-   * region: selected region (see select_region in diag_scripts/shared/latlon.ncl)
+   * plot_type: only "cycle_latlon (time, lat, lon)" and "cycle_zonal (time, plev, lat)" available for SMPI; usage is defined in the recipe and is dependent on the used variable (2D variable: cycle_latlon, 3D variable: cycle_zonal)
+   * time_avg: type of time average (only "yearly" allowed for SMPI, any other settings are not supported for this diagnostic)
+   * region: selected region (only "global" allowed for SMPI, any other settings are not supported for this diagnostic)
    * normalization: metric normalization ("CMIP5" for analysis of CMIP5 simulations; to be adjusted accordingly for a different CMIP phase)
    * calc_grading: calculates grading metrics (has to be set to "true" in the recipe)
    * metric: chosen grading metric(s) (if calc_grading is True; has to be set to "SMPI")
    * smpi_n_bootstrap: number of bootstrapping members used to determine uncertainties on model-reference differences (typical number of bootstrapping members: 100)
-   
-   *Optional settings for script*
   
-   * draw_plots: draws plots (set to "false" for SMPI)
-   
    *Required settings for variables*
    
    * reference_dataset: reference dataset to compare with (usually the observations).
@@ -60,7 +57,7 @@ Variables
 * hus (atmos, monthly mean, longitude latitude lev time)
 * pr (atmos, monthly mean, longitude latitude time)
 * psl (atmos, monthly mean, longitude latitude time)
-* sic (ocean-ice, monthly mean, longitude latitude time) - not implemented yet
+* sic (ocean-ice, monthly mean, longitude latitude time) 
 * ta (atmos, monthly mean, longitude latitude lev time)
 * tas (atmos, monthly mean, longitude latitude time)
 * tauu (atmos, monthly mean, longitude latitude time)
@@ -75,9 +72,9 @@ Observations and reformat scripts
 
 *Note: (1) obs4mips data can be used directly without any preprocessing; (2) see headers of reformat scripts for non-obs4mips data for download instructions.*
 
-* ERA-Interim (hfds, hus, psl, ta, tas, tauu, tauv, ua, va -- obs4mips)
-* HadISST (sic, tos -- reformat_scripts/obs/reformat_obs_ERA-Interim.ncl)
-* GPCP monthly (pr -- reformat_scripts/obs/reformat_obs_HadISST.ncl)
+* ERA-Interim (hfds, hus, psl, ta, tas, tauu, tauv, ua, va - esmvaltool/utils/cmorizers/obs/cmorize_obs_ERA-Interim.ncl)
+* HadISST (sic, tos - reformat_scripts/obs/reformat_obs_HadISST.ncl)
+* GPCP-SG (pr - obs4mips)
 
 References
 ----------
