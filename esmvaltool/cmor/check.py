@@ -76,13 +76,14 @@ class CMORCheck():
 
         It will also report some warnings in case of minor errors and
         homogenize some data:
+
             - Equivalent calendars will all default to the same name.
             - Auxiliary coordinates year, month_number, day_of_month and
               day_of_year will be added for the time axis.
 
         Raises
         ------
-        CMORCheckException:
+        CMORCheckError
             If errors are found. If fail_on_error attribute is set to True,
             raises as soon as an error is detected. If set to False, it perform
             all checks and then raises.
@@ -109,7 +110,7 @@ class CMORCheck():
 
         Raises
         ------
-        CMORCheckError:
+        CMORCheckError
             If any errors were reported before calling this method.
 
         """
@@ -143,7 +144,7 @@ class CMORCheck():
 
         Raises
         ------
-        CMORCheckException:
+        CMORCheckError
             If errors are found. If fail_on_error attribute is set to True,
             raises as soon as an error is detected. If set to False, it perform
             all checks and then raises.
