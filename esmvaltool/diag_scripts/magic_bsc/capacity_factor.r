@@ -1,13 +1,15 @@
 
 Sys.setenv(TAR = "/bin/tar") # nolint
 
-library(multiApply) # nolint
-library(ggplot2)
-library(yaml)
-library(s2dverification)
+library(abind)
 library(climdex.pcic)
+library(ggplot2)
+library(multiApply) # nolint
 library(ncdf4)
-library("XML")
+library(RColorBrewer) # nolint
+library(s2dverification)
+library(yaml)
+
 #Parsing input file paths and creating output dirs
 args <- commandArgs(trailingOnly = TRUE)
 params <- read_yaml(args[1])
@@ -146,8 +148,6 @@ seas_data_cf5 <- Mean1Dim(data_cf5, 2)
 #---------------------------
 # Prepare data, labels and colorscales
 #---------------------------
-library(RColorBrewer) # nolint
-library(abind)
 p <- colorRampPalette(brewer.pal(9, "YlOrRd"))
 q <- colorRampPalette(rev(brewer.pal(11, "RdBu")))
 years <- seq(start_year, end_year)
