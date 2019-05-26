@@ -1,5 +1,4 @@
 library(ggplot2)
-library(XML) # nolint
 library(plyr)
 
 read_pc <- function(file) {
