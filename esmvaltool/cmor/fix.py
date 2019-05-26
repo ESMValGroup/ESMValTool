@@ -66,7 +66,7 @@ def fix_metadata(cubes,
     ----------
     cubes: iris.cube.CubeList
         Cubes to fix
-    short_name; str
+    short_name: str
         Variable's short name
     project: str
 
@@ -88,7 +88,7 @@ def fix_metadata(cubes,
 
     Raises
     ------
-    CMORCheckError:
+    CMORCheckError
         If the checker detects errors in the metadata that it can not fix.
 
     """
@@ -144,7 +144,7 @@ def fix_data(cube,
     ----------
     cube: iris.cube.Cube
         Cube to fix
-    short_name; str
+    short_name: str
         Variable's short name
     project: str
 
@@ -166,7 +166,7 @@ def fix_data(cube,
 
     Raises
     ------
-    CMORCheckError:
+    CMORCheckError
         If the checker detects errors in the data that it can not fix.
 
     """
