@@ -168,7 +168,7 @@ def regrid(cube, target_grid, scheme, lat_offset=True, lon_offset=True):
     ----------
     cube : cube
         The source cube to be regridded.
-    tgt_cube : cube or str
+    target_grid : cube or str
         The cube that specifies the target or reference grid for the regridding
         operation. Alternatively, a string cell specification may be provided,
         of the form 'MxN', which specifies the extent of the cell, longitude by
