@@ -42,6 +42,29 @@ class rsut(rlut):
 class rsutcs(rlut):
     """Fixes for rsutcs."""
 
+class rlus(rlut):
+    """Fixes for rlus"""
+
+class rsus(rlut):
+    """Fixes for rsus"""
+
+class rsuscs(rlut):
+    """Fixes for rsuscs"""
+
+class rlds(rlut):
+    """Fixes for rlds"""
+
+class rldscs(rlut):
+    """Fixes for rldscs"""
+
+class rsds(rlut):
+    """Fixes for rsds"""
+
+class rsdscs(rlut):
+    """Fixes for rsdscs"""
+
+class rsdt(rlut):
+    """Fixes for rsdt"""
 
 class so(Fix):
     """Fixes for so."""
