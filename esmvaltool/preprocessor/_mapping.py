@@ -126,14 +126,14 @@ def get_associated_coords(cube, dimensions):
     return dim_coords, aux_coords
 
 
-def get_empty_data(shape):
+def get_empty_data(shape, dtype=np.float32):
     """
     Create an empty data object of the given shape.
 
     Creates an emtpy data object of the given shape, potentially of the lazy
     kind from biggus or dask, depending on the used iris version.
     """
-    data = np.empty(shape)
+    data = np.empty(shape, dtype=dtype)
     mask = np.empty(shape, dtype=bool)
     return np.ma.masked_array(data, mask)
 
@@ -223,7 +223,7 @@ def map_slices(src, func, src_rep, dst_rep):
     dim_coords = src_keep_spec[1] + dst_rep.coords(dim_coords=True)
     dim_coords_and_dims = [(c, i) for i, c in enumerate(dim_coords)]
     dst = iris.cube.Cube(
-        data=get_empty_data(res_shape),
+        data=get_empty_data(res_shape, dtype=src.dtype),
         standard_name=src.standard_name,
         long_name=src.long_name,
         var_name=src.var_name,

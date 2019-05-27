@@ -8,7 +8,9 @@ fixed.
 
 """
 from collections import defaultdict
-from iris.cube import Cube, CubeList
+
+from iris.cube import CubeList
+
 from ._fixes.fix import Fix
 from .check import _get_cmor_checker
 
@@ -45,8 +47,13 @@ def fix_file(file, short_name, project, dataset, output_dir):
     return file
 
 
-def fix_metadata(cubes, short_name, project, dataset, cmor_table=None,
-                 mip=None, frequency=None):
+def fix_metadata(cubes,
+                 short_name,
+                 project,
+                 dataset,
+                 cmor_table=None,
+                 mip=None,
+                 frequency=None):
     """
     Fix cube metadata if fixes are required and check it anyway.
 
@@ -59,7 +66,7 @@ def fix_metadata(cubes, short_name, project, dataset, cmor_table=None,
     ----------
     cubes: iris.cube.CubeList
         Cubes to fix
-    short_name; str
+    short_name: str
         Variable's short name
     project: str
 
@@ -81,13 +88,12 @@ def fix_metadata(cubes, short_name, project, dataset, cmor_table=None,
 
     Raises
     ------
-    CMORCheckError:
+    CMORCheckError
         If the checker detects errors in the metadata that it can not fix.
 
     """
     fixes = Fix.get_fixes(
-        project=project, dataset=dataset, variable=short_name
-    )
+        project=project, dataset=dataset, variable=short_name)
     fixed_cubes = []
     by_file = defaultdict(list)
     for cube in cubes:
@@ -99,10 +105,8 @@ def fix_metadata(cubes, short_name, project, dataset, cmor_table=None,
             cube_list = fix.fix_metadata(cube_list)
 
         if len(cube_list) != 1:
-            raise ValueError(
-                'Cubes were not reduced to one after'
-                'fixing: %s' % cube_list
-            )
+            raise ValueError('Cubes were not reduced to one after'
+                             'fixing: %s' % cube_list)
         cube = cube_list[0]
 
         if cmor_table and mip:
@@ -113,14 +117,19 @@ def fix_metadata(cubes, short_name, project, dataset, cmor_table=None,
                 short_name=short_name,
                 fail_on_error=False,
                 automatic_fixes=True)
-            checker(cube).check_metadata()
+            cube = checker(cube).check_metadata()
         cube.attributes.pop('source_file', None)
         fixed_cubes.append(cube)
     return fixed_cubes
 
 
-def fix_data(cube, short_name, project, dataset, cmor_table=None,
-             mip=None, frequency=None):
+def fix_data(cube,
+             short_name,
+             project,
+             dataset,
+             cmor_table=None,
+             mip=None,
+             frequency=None):
     """
     Fix cube data if fixes add present and check it anyway.
 
@@ -135,7 +144,7 @@ def fix_data(cube, short_name, project, dataset, cmor_table=None,
     ----------
     cube: iris.cube.Cube
         Cube to fix
-    short_name; str
+    short_name: str
         Variable's short name
     project: str
 
@@ -157,7 +166,7 @@ def fix_data(cube, short_name, project, dataset, cmor_table=None,
 
     Raises
     ------
-    CMORCheckError:
+    CMORCheckError
         If the checker detects errors in the data that it can not fix.
 
     """
@@ -172,5 +181,5 @@ def fix_data(cube, short_name, project, dataset, cmor_table=None,
             short_name=short_name,
             fail_on_error=False,
             automatic_fixes=True)
-        checker(cube).check_data()
+        cube = checker(cube).check_data()
     return cube

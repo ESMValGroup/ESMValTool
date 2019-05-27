@@ -9,6 +9,9 @@ documentation:
   authors:
     - schl_ma
 
+  maintainer:
+    - schl_ma
+
   references:
     - cox18nature
 
@@ -36,40 +39,39 @@ diagnostics:
   diag_psi:
     description: Calculate temperature variability metric psi.
     variables:
-      tas:
+      tas: &tas_settings
         preprocessor: spatial_mean
         project: CMIP5
         ensemble: r1i1p1
         mip: Amon
-        field: T2Ms
         exp: [historical, rcp85]
         start_year: 1880
         end_year: 2015
-    additional_datasets:
-      - {dataset: HadCRUT, project: OBS, type: ground, version: 3v, tier: 2, end_year: 2013}
-      - {dataset: HadCRUT4, project: OBS, type: ground, version: 1,  tier: 2}
-      # Day is out of range for month (wait for iris > 2.0)
-      # - {dataset: ACCESS1-0}
-      # Historical data end year is 2012, not 2005 (overlaps with RCP8.5)
-      # - {dataset: bcc-csm1-1}
-      - {dataset: BNU-ESM}
-      - {dataset: CanESM2}
-      - {dataset: CCSM4}
-      - {dataset: CNRM-CM5}
-      - {dataset: CSIRO-Mk3-6-0}
-      - {dataset: GFDL-ESM2M}
-      - {dataset: HadGEM2-ES}
-      - {dataset: GISS-E2-R}
-      - {dataset: inmcm4}
-      - {dataset: IPSL-CM5B-LR}
-      - {dataset: MIROC-ESM}
-      - {dataset: MPI-ESM-LR}
-      - {dataset: MRI-CGCM3}
-      - {dataset: NorESM1-M}
+        additional_datasets:
+          - {dataset: ACCESS1-0}
+          # Historical data end year is 2012, not 2005 (overlaps with RCP8.5)
+          # - {dataset: bcc-csm1-1}
+          - {dataset: BNU-ESM}
+          - {dataset: CanESM2}
+          - {dataset: CCSM4}
+          - {dataset: CNRM-CM5}
+          - {dataset: CSIRO-Mk3-6-0}
+          - {dataset: GFDL-ESM2M}
+          - {dataset: HadGEM2-ES}
+          - {dataset: GISS-E2-R}
+          - {dataset: inmcm4}
+          - {dataset: IPSL-CM5B-LR}
+          - {dataset: MIROC-ESM}
+          - {dataset: MPI-ESM-LR}
+          - {dataset: MRI-CGCM3}
+          - {dataset: NorESM1-M}
+      tasa:
+        <<: *tas_settings
+        additional_datasets:
+          - {dataset: HadCRUT4, project: OBS, type: ground, version: 1, tier: 2}
     scripts:
       psi:
         script: climate_metrics/psi.py
-        plot_ecs_regression: true
 
   diag_cox18nature:
     description: Plot emergent relationship between ECS ans psi.
@@ -80,4 +82,5 @@ diagnostics:
           'diag_ecs/ecs',
           'diag_psi/psi',
           'diag_psi/tas',
+          'diag_psi/tasa',
         ]

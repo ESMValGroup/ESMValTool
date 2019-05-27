@@ -33,7 +33,6 @@ diagnostics:
         project: CMIP5
         ensemble: r1i1p1
         mip: Amon
-        field: T2Ms
       rtmt:
         <<: *variable_settings
     additional_datasets:
@@ -73,7 +72,6 @@ diagnostics:
     scripts:
       ecs: &ecs_script
         script: climate_metrics/ecs.py
-        plot_ecs_regression: true
 
   cmip6:
     description: Calculate ECS for all available CMIP6 models.
@@ -85,7 +83,9 @@ diagnostics:
         <<: *variable_settings
         project: CMIP6
     additional_datasets:
-      - {dataset: GISS-E2-1-G,  exp: piControl,    ensemble: r1i1p1f1, grid: gn, start_year: 4550, end_year: 4699}
+      - {dataset: BCC-CSM2-MR,  exp: piControl,    ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 1999}
+      - {dataset: BCC-CSM2-MR,  exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 1999}
+      - {dataset: GISS-E2-1-G,  exp: piControl,    ensemble: r1i1p1f1, grid: gn, start_year: 4150, end_year: 4299}
       - {dataset: GISS-E2-1-G,  exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 1999}
       - {dataset: IPSL-CM6A-LR, exp: piControl,    ensemble: r1i1p1f1, grid: gr, start_year: 1850, end_year: 1999}
       - {dataset: IPSL-CM6A-LR, exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gr, start_year: 1850, end_year: 1999}

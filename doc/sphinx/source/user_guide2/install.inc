@@ -4,9 +4,7 @@
 Installing ESMValTool
 *********************
 
-ESMValTool 2.0 requires a Unix(-like) operating system and Python 2.7+ or 3.6+.
-Python 2.7+ will be discontinued in the near future, so we encourage you to use
-Python 3.6+ if possible.
+ESMValTool 2.0 requires a Unix(-like) operating system and Python 3.6+.
 
 The ESMValTool supports three different installation methods:
 
@@ -51,7 +49,7 @@ The easiest way to obtain it is to clone the repository using git
 
     git clone https://github.com/ESMValGroup/ESMValTool.git
 
-It is also possible to work in one of the ESMValTool private repository, e.g.:
+It is also possible to work in one of the ESMValTool private repositories, e.g.:
 
 .. code-block:: bash
 
@@ -59,11 +57,6 @@ It is also possible to work in one of the ESMValTool private repository, e.g.:
 
 By default, this command will create a folder called ESMValTool containing the
 source code of the tool.
-
-.. attention::
-    The newly created clone of the git repository will point to the default
-    branch. To change to another branch or release execute:
-    git checkout origin/$BRANCH_OR_RELEASE_NAME, i.e git checkout origin/2.0.0.
 
 GitHub also allows to download the source code in as a tar.gz or zip file. If
 you choose to use this option, download the compressed file and extract its
@@ -73,17 +66,17 @@ contents at the desired location.
 Prerequisites
 -------------
 
-It is strongly recommended to use conda to manage ESMValTool dependencies.
+It is recommended to use conda to manage ESMValTool dependencies.
 For a minimal conda installation go to https://conda.io/miniconda.html. To
-simplify the process, an environment definition file is provided within the
-repository (``environment.yml`` in the root folder).
+simplify the installation process, an environment definition file is provided
+in the repository (``environment.yml`` in the root folder).
 
 .. attention::
     Some systems provides a preinstalled version of conda (e.g., via the module environment).
     Several users however reported problems when installing NCL with such versions. It is
     therefore preferable to use a local, fully user-controlled conda installation.
-	Using an older version of conda can also be a source of problems, so if you have conda
-	installed already, make sure it is up to date by running ``conda update -n base conda``.
+    Using an older version of conda can also be a source of problems, so if you have conda
+    installed already, make sure it is up to date by running ``conda update -n base conda``.
 
 To enable the ``conda`` command, please source the appropriate configuration file
 from your ``~/.bashrc``  file:
@@ -106,29 +99,22 @@ conda.
 Ideally, you should create a conda environment for ESMValTool, so it is
 independent from any other Python tools present in the system.
 
-Note that it is advisable to update conda to the latest version before 
-installing ESMValTool. Using the following command:
-
-.. code-block::bash
-
-    conda update -n base conda
-
-To create a environment using Python 3.x
+Note that it is advisable to update conda to the latest version before
+installing ESMValTool, using the command
 
 .. code-block:: bash
 
-    conda create --name esmvaltool python=3
-    conda env update --name esmvaltool --file ESMValTool/environment.yml
+    conda update --name base conda
 
-To create a environment using Python 2.x
+To create an environment, go to the directory containing the ESMValTool source
+code (called ESMValTool if you did not choose a different name) and run
 
 .. code-block:: bash
 
-    conda create --name esmvaltool python=2
-    conda env update --name esmvaltool --file ESMValTool/environment.yml
+    conda env create --name esmvaltool --file environment.yml
 
 The environment is called ``esmvaltool`` by default, but it is possible to use
-the option -n $(ENVIRONMENT_NAME) to define a custom name. You can activate
+the option ``--name ENVIRONMENT_NAME`` to define a custom name. You can activate
 the environment using the command:
 
 .. code-block:: bash
@@ -136,11 +122,13 @@ the environment using the command:
     conda activate esmvaltool
 
 It is also possible to update an existing environment from the environment
-file. This can be very useful when updating an older installation of ESMValTool:
+file. This may be useful when updating an older installation of ESMValTool:
 
 .. code-block:: bash
 
-    conda env update --file environment.yml --name $(ENVIRONMENT_TO_UPDATE)
+    conda env update --name esmvaltool --file environment.yml
+
+but if you run into trouble, please try creating a new environment.
 
 .. attention::
     From now on, we assume that the conda environment for ESMValTool is
@@ -149,35 +137,42 @@ file. This can be very useful when updating an older installation of ESMValTool:
 Software installation
 ---------------------
 
-Once all prerequisites are fulfilled, ESMValTool 2.0 can be installed using
-the following command:
+Once all prerequisites are fulfilled, ESMValTool can be installed by running
+the following commands in the directory containing the ESMValTool source code
+(called ESMValTool if you did not choose a different name):
 
 .. code-block:: bash
 
-    cd ESMValTool
-    python setup.py install
+    pip install .
+
+If you would like to run Julia diagnostic scripts, you will also need to
+`install Julia <https://julialang.org/downloads/>`_ and the Julia dependencies:
+
+.. code-block:: bash
+
+    julia esmvaltool/install/Julia/setup.jl
 
 If you would like to run R diagnostic scripts, you will also need to install the R
-dependencies:
+dependencies. Install the R dependency packages:
 
 .. code-block:: bash
 
-    Rscript ESMValTool/esmvaltool/install/R/setup.R
+    Rscript esmvaltool/install/R/setup.R
 
 The next step is to check that the installation works properly.
-To do this, run the tool with --version:
+To do this, run the tool with:
 
 .. code-block:: bash
 
-    esmvaltool --version
+    esmvaltool --help
 
-If everything was installed properly, ESMValTool should have printed the
-version number at the console and exited.
+If everything was installed properly, ESMValTool should have printed a
+help message to the console.
 
 For a more complete installation verification, run the automated tests and
 confirm that no errors are reported:
 
 .. code-block:: bash
 
-    python setup.py test
+    python setup.py test --installation
 

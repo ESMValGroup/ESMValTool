@@ -44,11 +44,9 @@ diagnostics:
     variables:
       ta:
         preprocessor: preprocessor1
-        field: T3M
         reference_dataset: ERA-Interim
       pr:
         preprocessor: preprocessor2
-        field: T2Ms
         reference_dataset: ERA-Interim
     scripts:
       script1a:
@@ -66,7 +64,6 @@ diagnostics:
     variables:
       tas:
         preprocessor: preprocessor2
-        field: T2Ms
         additional_datasets:
           - {dataset: bcc-csm1-1,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
         reference_dataset: MPI-ESM-LR

@@ -6,7 +6,7 @@ modeling_realm:    atmos
 !----------------------------------
 ! Variable attributes:
 !----------------------------------
-standard_name:     cloud_area_fraction_error
+standard_name:     
 units:             %
 cell_methods:      time: mean
 cell_measures:     area: areacella

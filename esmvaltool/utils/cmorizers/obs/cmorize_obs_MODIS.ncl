@@ -1,5 +1,5 @@
 ; #############################################################################
-; REFORMAT SCRIPT FOR MODIS Level 3 OBSERVATIONAL DATA
+; ESMValTool CMORizer for MODIS data
 ; #############################################################################
 ;
 ; Tier
@@ -55,12 +55,12 @@ begin
   TIER = 3
 
   ; Selected variable (standard name)
-  VARS = (/"clwvi",     \
-           "clivi",     \
-           "clt",       \
-           "lwpStderr", \
-           "iwpStderr", \
-           "od550aer"/)
+  VAR = (/"clwvi",     \
+          "clivi",     \
+          "clt",       \
+          "lwpStderr", \
+          "iwpStderr", \
+          "od550aer"/)
 
   ; Name in the raw data
   NAME = (/"Cloud_Water_Path_Liquid_Mean_Mean",        \
@@ -70,8 +70,11 @@ begin
            "Cloud_Water_Path_Ice_Mean_Uncertainty",    \
            "AOD_550_Dark_Target_Deep_Blue_Combined_Mean_Mean"/)
 
-  ; MIPS
-  MIPS = (/"Amon", "Amon", "Amon", "Amon", "Amon", "aero"/)
+  ; MIP
+  MIP = (/"Amon", "Amon", "Amon", "Amon", "Amon", "aero"/)
+
+  ; Frequency
+  FREQ = (/"mon", "mon", "mon", "mon", "mon", "mon"/)
 
   ; Version
   VERSION = "MYD08_M3"
@@ -84,6 +87,14 @@ begin
       "custom/CMOR_lwpStderr.dat", \
       "custom/CMOR_iwpStderr.dat", \
       "cmip5/Tables/CMIP5_aero"/)
+
+  ; Type
+  TYPE = "sat"
+
+  ; Global attributes
+  SOURCE = "https://ladsweb.modaps.eosdis.nasa.gov/search/order"
+  REF = ""
+  COMMENT = ""
 
 end
 
@@ -101,19 +112,10 @@ begin
     date   = yyyyddd_to_yyyymmdd(toint(str_get_cols(infile, 10, 16)))
     year   = toint(str_get_cols(tostring(date), 0, 3))
     month  = toint(str_get_cols(tostring(date), 4, 5))
-    day    = toint(str_get_cols(tostring(date), 6, 7)) + 14  ; center in month
-
-    time = cd_inv_calendar(year, month, day, 0, 0, 0, TUNITS, 0)
-    time@calendar = "standard"
-    time@long_name = "time"
-    time@axis = "T"
-    time@standard_name = "time"
-    if (isatt(time, "_FillValue")) then
-      delete(time@_FillValue)
-    end if
+    dm = days_in_month(year, month)
 
     ; Loop over variables to fetch from input file
-    do vv = 0, dimsizes(VARS) - 1
+    do vv = 0, dimsizes(VAR) - 1
 
       invar = fin->$NAME(vv)$
       invar_fv = invar@_FillValue
@@ -123,9 +125,9 @@ begin
                      default_fillvalue("float"), invar)
 
       ; Special case clwvi as the sum lwp + iwp
-      if (VARS(vv).eq."clwvi") then
+      if (VAR(vv).eq."clwvi") then
         if (NAME(vv).ne."Cloud_Water_Path_Liquid_Mean_Mean") then
-          error_msg("f", DIAG_SCRIPT, "", "Cannot calculate clwvi")
+          error_msg("f", DIAG_SCRIPT, "", "cannot calculate clwvi")
         end if
 
         ; Read cirrus fraction
@@ -160,14 +162,14 @@ begin
       ; lwp and iwp are in-cloud values
       ; convert lwp/iwp to grid-box averages by multiplying with
       ; average cloud fraction (not optimum but best we can do at the moment)
-      if (any((/"clivi", "iwpStderr", "lwpStderr"/) .eq. VARS(vv))) then
+      if (any((/"clivi", "iwpStderr", "lwpStderr"/) .eq. VAR(vv))) then
 
         ; Read cirrus fraction (0-1)
         ; cfin = fin->Cirrus_Fraction_SWIR_FMean
         cfin = fin->Cirrus_Fraction_Infrared_FMean
         cf = tofloat(cfin * cfin@scale_factor + cfin@add_offset)
         delete(cfin)
-        if (VARS(vv).eq."lwpStderr") then
+        if (VAR(vv).eq."lwpStderr") then
           cfin = fin->Cloud_Fraction_Mean_Mean
           ctot = tofloat(cfin * cfin@scale_factor + cfin@add_offset)
           delete(cfin)
@@ -191,7 +193,7 @@ begin
         invar = invar + tofloat(invar_coords@add_offset)
       end if
 
-      if (VARS(vv).eq."clt") then
+      if (VAR(vv).eq."clt") then
         invar = 100.0 * invar  ; [1] --> [%]
       end if
 
@@ -199,58 +201,44 @@ begin
       lat = fin->YDim
       lon = fin->XDim
       output = new((/1, dimsizes(lat), dimsizes(lon)/), float)
-
-      ; Set variable attributes
-      output(0, :, :) = var_attrib(invar, VARS(vv), CMOR_TABLE(vv))
-
-      ; Set reformatted time dimension
       output!0 = "time"
-      output&time = time
-
-      ; Set reformatted latitude dimension
       output!1 = "lat"
-      output&lat = lat
-      if (isMonotonic(output&lat) .eq. 0) then
-        error_msg("f", DIAG_SCRIPT, "", "non-monotonic latitude coordinate")
-      end if
-      if (isMonotonic(output&lat) .eq. -1) then
-        output = output(:, ::-1, :)
-      end if
-      clat := lat_attrib(output&lat)
-      output&lat := clat
-      delete(lat)
-
-      ; Set reformatted longitude dimension
       output!2 = "lon"
+      output&time = cd_inv_calendar(year, month, 15, 0, 0, 0, TUNITS, 0)
+      output&lat = lat
       output&lon = lon
-
-      if (isMonotonic(output&lon) .eq. 0) then
-        error_msg("f", DIAG_SCRIPT, "", "non-monotonic longitude coordinate")
-      end if
-      if (any(output&lon .lt. 0.)) then
-        output = lonFlip(output)
-      end if
-      clon := lon_attrib(output&lon)
-      output&lon := clon
-      delete(lon)
-
-      ; Set global attributes
-      gAtt = set_global_atts( \
-        OBSNAME, TIER, \
-        "https://ladsweb.modaps.eosdis.nasa.gov/search/order", "", "")
-
-      ; Define output file
-      datestr = sprinti("%0.4i", year) + sprinti("%0.2i", month)
-      fout = output_dir_path + "OBS_" + OBSNAME + "_sat_" + \
-        str_sub_str(VERSION, "_", "-") + "_" + MIPS(vv) + "_" + VARS(vv) + \
-        "_" + datestr + "-" + datestr + ".nc"
-
-      ; Write attribute
-      write_nc(fout, VARS(vv), output, gAtt)
-
+      output(0, :, :) = (/invar/)
       delete(invar)
       delete(invar_coords)
+
+      ; Format coordinates
+      format_coords(output, year + sprinti("%0.2i", month) + "01", \
+                    year + sprinti("%0.2i", month) + dm, FREQ(vv))
+
+      ; Set variable attributes
+      tmp = format_variable(output, VAR(vv), CMOR_TABLE(vv))
       delete(output)
+      output = tmp
+      delete(tmp)
+
+      ; Calculate coordinate bounds
+      bounds = guess_coord_bounds(output, FREQ(vv))
+
+      ; Set global attributes
+      gAtt = set_global_atts(OBSNAME, TIER, SOURCE, REF, COMMENT)
+
+      ; Output file
+      DATESTR = \
+        year + sprinti("%0.2i", month) + "-" + year + sprinti("%0.2i", month)
+      fout = output_dir_path + \
+        str_join((/"OBS", OBSNAME, TYPE, str_sub_str(VERSION, "_", "-"), \
+                   MIP(vv), VAR(vv), DATESTR/), "_") + ".nc"
+
+      ; Write variable
+      write_nc(fout, VAR(vv), output, bounds, gAtt)
+      delete(gAtt)
+      delete(output)
+      delete(bounds)
 
     end do
 

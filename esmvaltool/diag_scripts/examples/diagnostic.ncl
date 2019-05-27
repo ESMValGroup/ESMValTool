@@ -62,7 +62,6 @@ begin
   ; For multiple variables, use different indices of variable_info
   var0 = variable_info[0]@short_name
   info0 = select_metadata_by_name(input_file_info, var0)
-  field_type0 = variable_info[0]@field
 
   ; The number of variables is the size of the variable_info list
   n_variables = ListCount(variable_info)
@@ -79,7 +78,6 @@ begin
   ; Retrieve metadata items by attribute (short_name and field)
   atts = True
   atts@short_name = var0
-  atts@field = field_type0
   info = select_metadata_by_atts(input_file_info, atts)
   delete(atts)
 
@@ -104,7 +102,6 @@ begin
   ; Retrieve metadata item for the reference dataset
   atts = True
   atts@short_name = var0
-  atts@field = field_type0
   atts@dataset = variable_info[0]@reference_dataset
   info_ref = select_metadata_by_atts(input_file_info, atts)
   delete(atts)
@@ -187,17 +184,15 @@ begin
   ; -> useful for non-NCL routines & metrics
   ; map = contour_map("dummy_for_wks", ncdf_outfile,"dummy_for_var")
 
-  ; collect meta-data and call ESMValMD function
-  nc_file = ncdf_outfile
-  plot_file = map@outfile
-  caption = "Mean of variable: " + var0
-  statistics = ("mean")
-  domain = ("glob")
-  plottype = ("geo")
-  authors = (/"righ_ma", "gott_kl"/)
-  references = (/"acknow_author"/)
-  infiles = metadata_att_as_array(info0, "filename")
-  log_provenance(nc_file, plot_file, caption, statistics, domain, plottype, \
-                 authors, references, infiles)
+  ; Call provenance logger
+  log_provenance(ncdf_outfile, \
+                 map@outfile, \
+                 "Mean of variable: " + var0, \
+                 "mean", \
+                 "global", \
+                 "geo", \
+                 (/"righ_ma", "gott_kl"/), \
+                 (/"acknow_author"/), \
+                 metadata_att_as_array(info0, "filename"))
 
 end

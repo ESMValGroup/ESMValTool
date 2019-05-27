@@ -3,8 +3,6 @@ Unit tests for the :func:`esmvaltool.preprocessor.regrid.regrid` function.
 
 """
 
-from __future__ import absolute_import, division, print_function
-
 import unittest
 
 import iris

@@ -194,8 +194,9 @@ An example :code:`diagnostic_provenance.yml` file could look like this
 
 You can check whether your diagnostic script successfully provided the provenance information to the backend by
 verifying that
-  - for each output file in the :code:`work_dir`, a file with the same name, but ending with _provenance.xml is created
-  - any NetCDF files created by your diagnostic script contain a 'provenance' global attribute
-  - any PNG plots created by your diagnostic script contain the provenance information in the 'Image History' attribute
+
+- for each output file in the :code:`work_dir`, a file with the same name, but ending with _provenance.xml is created
+- any NetCDF files created by your diagnostic script contain a 'provenance' global attribute
+- any PNG plots created by your diagnostic script contain the provenance information in the 'Image History' attribute
 
 Note that this is done automatically by the ESMValTool backend.
