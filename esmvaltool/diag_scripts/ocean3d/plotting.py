@@ -49,7 +49,37 @@ from esmvaltool.diag_scripts.ocean3d.getdata import  transect_points
 def hofm_plot(model_filenames, cmor_var,
               max_level, region, diagworkdir, diagplotdir,
               levels, ncols=3, cmap=cm.Spectral_r, observations='PHC'):
-    # I am not sure why it happens, but 
+    '''Plot Hovmoeller diagram from data at diagworkdir
+
+    Parameters
+    ----------
+    model_filenames: OrderedDict
+        OrderedDict with model names as keys and input files as values.
+    cmor_var: str
+        name of the CMOR variable
+    max_level: float
+        maximum depth level the Hovmoeller diagrams should go to.
+    region: str
+        name of the region predefined in `hofm_regions` function.
+    diagworkdir: str
+        path to work directory.
+    diagplotdir: str
+        path to plotting directory.
+    levels: list
+        levels for the contour plot.
+    ncols: str
+        number of columns in the resulting plot
+        (raws will be calculated from total number of plots)
+    cmap: matplotlib.cmap object
+        color map
+    observations: str
+        name of the dataset with observations
+
+    Returns
+    -------
+    None
+    '''
+    # I am not sure why it happens, but
     # the del below delete instance from the original dict
     # copy works.
     model_filenames = model_filenames.copy()

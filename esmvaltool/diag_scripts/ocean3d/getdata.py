@@ -5,25 +5,14 @@ APPLICATE/TRR Ocean Diagnostics
 """
 import logging
 import os
-# import joblib
 from collections import OrderedDict
-import iris
-
-from esmvaltool.diag_scripts.shared import run_diagnostic
-from esmvaltool.diag_scripts.shared.plot import quickplot
-
-logger = logging.getLogger(os.path.basename(__file__))
-
-import inspect
-from netCDF4 import Dataset
+from netCDF4 import Dataset, num2date
 import numpy as np
 import os
 import matplotlib as mpl
-mpl.use('agg')  #noqa
 import matplotlib.pylab as plt
 import math
 from matplotlib import cm
-from netCDF4 import num2date
 #import seawater as sw
 from collections import OrderedDict
 from cdo import Cdo
@@ -35,18 +24,44 @@ import pyresample
 from scipy.interpolate import interp1d
 import ESMF
 import pyproj
-
 from esmvaltool.diag_scripts.ocean3d.utils import genfilename
 from esmvaltool.diag_scripts.ocean3d.regions import hofm_regions, transect_points
 
+logger = logging.getLogger(os.path.basename(__file__))
+mpl.use('agg')  #noqa
 
 def hofm_data(model_filenames, mmodel, cmor_var, areacello_fx,
               max_level, region, diagworkdir):
+    ''' Extract data for Hovmoeller diagrams from monthly values.
+    Saves the data to files in `diagworkdir`.
 
-    logger.info("Extract  {} data for {}, region {}".format(cmor_var, mmodel, region))
-    
+    Parameters
+    ----------
+    model_filenames: OrderedDict
+        OrderedDict with model names as keys and input files as values.
+    mmodel: str
+        model name that will be processed.
+    cmor_var: str
+        name of the CMOR variable
+    areacello_fx: OrderedDict.
+        dictionary with model names as keys and paths to fx files as values.
+    max_level: float
+        maximum depth level the Hovmoeller diagrams should go to.
+    region: str
+        name of the region predefined in `hofm_regions` function.
+    diagworkdir: str
+        path to work directory.
+
+    Returns
+    -------
+    None
+    '''
+    logger.info("Extract  %s data for %s, region %s".format(cmor_var,
+                                                            mmodel,
+                                                            region))
+
     datafile = Dataset(model_filenames[mmodel])
-    print(model_filenames[mmodel])
+
     datafile_area = Dataset(areacello_fx[mmodel])
     lon = datafile.variables['lon'][:]
     lat = datafile.variables['lat'][:]
@@ -71,25 +86,26 @@ def hofm_data(model_filenames, mmodel, cmor_var, areacello_fx,
         series_lenght = 1
     else:
         series_lenght = datafile.variables[cmor_var].shape[0]
-    
+
     oce_hofm = np.zeros((lev[0:lev_limit].shape[0], series_lenght))
     for mon in range(series_lenght):
         # print(mon)
         for ind, depth in enumerate(lev[0:lev_limit]):
             # fix for climatology
             if datafile.variables[cmor_var].ndim < 4:
-                level_pp = datafile.variables[cmor_var][ind, :, :] 
+                level_pp = datafile.variables[cmor_var][ind, :, :]
             else:
-                level_pp = datafile.variables[cmor_var][mon, ind, :, :] 
+                level_pp = datafile.variables[cmor_var][mon, ind, :, :]
 
             ## This is fix fo make models with 0 as missing values work,
-            ## should be fixed in fixes that do not work for now in the new backend
+            ## should be fixed in fixes.
             if not isinstance(level_pp, np.ma.MaskedArray):
                 # print(mmodel)
                 level_pp = np.ma.masked_equal(level_pp, 0)
-            data_mask = level_pp[indexesi,indexesj].mask
-            area_masked = np.ma.masked_where(data_mask, areacello[indexesi,indexesj])
-            result = (area_masked*level_pp[indexesi,indexesj]).sum()/area_masked.sum()
+            data_mask = level_pp[indexesi, indexesj].mask
+            area_masked = np.ma.masked_where(data_mask, areacello[indexesi, indexesj])
+            result = (area_masked *
+                      level_pp[indexesi, indexesj]).sum()/area_masked.sum()
             oce_hofm[ind, mon] = result
 
     ofilename = genfilename(diagworkdir, cmor_var,
@@ -98,7 +114,7 @@ def hofm_data(model_filenames, mmodel, cmor_var, areacello_fx,
                                    mmodel, region, 'levels')
     ofilename_time = genfilename(diagworkdir, cmor_var,
                                  mmodel, region, 'time')
-    print(ofilename)
+    # print(ofilename)
     np.save(ofilename, oce_hofm)
     if isinstance(lev, np.ma.core.MaskedArray):
         np.save(ofilename_levels, lev[0:lev_limit].filled())
@@ -108,7 +124,7 @@ def hofm_data(model_filenames, mmodel, cmor_var, areacello_fx,
     np.save(ofilename_time, time)
     datafile.close()
 
-def transect_data(mmodel,  cmor_var, 
+def transect_data(mmodel,  cmor_var,
               max_level, region, diagworkdir, mult = 2, observations='PHC'):
     logger.info("Extract  {} data for {}, region {}".format(cmor_var, mmodel, region))
     ifilename = genfilename(diagworkdir, cmor_var,

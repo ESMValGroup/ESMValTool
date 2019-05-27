@@ -85,7 +85,7 @@ def timmean(model_filenames, mmodel,
         name of observational/climatology data set.
 
     Returns
-    ---------
+    -------
     None
     '''
     logger.info("Calculate timmean %s for %s", cmor_var, mmodel)
@@ -170,7 +170,7 @@ def shiftedcolormap(cmap, start=0, midpoint=0.5, stop=1.0, name='shiftedcmap'):
     ])
 
     for regi, shii in zip(reg_index, shift_index):
-        red, gren, blue, alpha = cmap(ri)
+        red, gren, blue, alpha = cmap(regi)
 
         cdict['red'].append((shii, red, red))
         cdict['green'].append((shii, gren, gren))
@@ -206,10 +206,10 @@ def get_cmap(cmap_name):
     - "custom_salinity1"
     '''
     #hack to support different versions of cmocean
-    try:
-        cmo_names = cmo.cm.cmapnames
-    except:
-        cmo_names = cmo.cmapnames
+    # try:
+    #     cmo_names = cmo.cm.cmapnames
+    # except:
+    #     cmo_names = cmo.cmapnames
 
     if cmap_name in cmo.cmapnames:
         colormap = cmo.cmap_d[cmap_name]
