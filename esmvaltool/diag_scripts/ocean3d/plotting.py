@@ -44,11 +44,39 @@ import cartopy.feature as cfeature
 
 from esmvaltool.diag_scripts.ocean3d.utils import genfilename, dens_back
 from esmvaltool.diag_scripts.ocean3d.interpolation import interpolate_pyresample, interpolate_esmf, closest_depth
-from esmvaltool.diag_scripts.ocean3d.getdata import  transect_points
+from esmvaltool.diag_scripts.ocean3d.getdata import transect_points
 
-def hofm_plot(model_filenames, cmor_var,
-              max_level, region, diagworkdir, diagplotdir,
-              levels, ncols=3, cmap=cm.Spectral_r, observations='PHC'):
+
+def create_plot(model_filenames, ncols=3):
+    nplots = len(model_filenames)
+    nrows = math.ceil(nplots / float(ncols))
+    ncols, nrows = int(ncols), int(nrows)
+    figsize = (8 * ncols, 2 * nrows * ncols)
+    fig, ax = plt.subplots(nrows, ncols, figsize=figsize)
+    if isinstance(ax, np.ndarray):
+        ax = ax.flatten()
+    else:
+        ax = [ax]
+    return fig, ax
+
+def label_and_conversion(cmor_var, data):
+    if cmor_var == 'thetao':
+        data = data - 273.15
+        cb_label = '$^{\circ}$C'
+    elif cmor_var == 'so':
+        cb_label = 'psu'
+    return cb_label, data
+
+def hofm_plot(model_filenames,
+              cmor_var,
+              max_level,
+              region,
+              diagworkdir,
+              diagplotdir,
+              levels,
+              ncols=3,
+              cmap=cm.Spectral_r,
+              observations='PHC'):
     '''Plot Hovmoeller diagram from data at diagworkdir
 
     Parameters
@@ -79,75 +107,66 @@ def hofm_plot(model_filenames, cmor_var,
     -------
     None
     '''
-    # I am not sure why it happens, but
-    # the del below delete instance from the original dict
-    # copy works.
     model_filenames = model_filenames.copy()
     if observations:
         del model_filenames[observations]
-    ncols = 3
-    nplots = len(model_filenames)
-    ncols = float(ncols)
-    nrows = math.ceil(nplots/ncols)
-    ncols = int(ncols)
-    nrows = int(nrows)
-    nplot = 1
-    plt.figure(figsize=(8*ncols,2*nrows*ncols))
 
-    for mmodel in model_filenames:
-        logger.info("Plot  {} data for {}, region {}".format(cmor_var,
-                                                      mmodel,
-                                                      region))
+    fig, ax = create_plot(model_filenames)
 
-        ifilename = genfilename(diagworkdir, cmor_var, 
-                                mmodel, region, 'hofm', '.npy')
-        ifilename_levels = genfilename(diagworkdir, cmor_var,
-                                       mmodel, region, 'levels', '.npy')
-        ifilename_time = genfilename(diagworkdir, cmor_var,
-                                     mmodel, region,'time', '.npy')
-        print(ifilename)
+    for ind, mmodel in enumerate(model_filenames):
+        logger.info("Plot  %s data for %s, region %s", cmor_var, mmodel,
+                    region)
+
+        ifilename = genfilename(diagworkdir, cmor_var, mmodel, region, 'hofm',
+                                '.npy')
+        ifilename_levels = genfilename(diagworkdir, cmor_var, mmodel, region,
+                                       'levels', '.npy')
+        ifilename_time = genfilename(diagworkdir, cmor_var, mmodel, region,
+                                     'time', '.npy')
 
         hofdata = np.load(ifilename, allow_pickle=True)
         lev = np.load(ifilename_levels, allow_pickle=True)
         time = np.load(ifilename_time, allow_pickle=True)
-        if cmor_var == 'thetao':
-            hofdata = hofdata-273.15
-            cb_label = '$^{\circ}$C'
-        elif cmor_var == 'so':
-            cb_label = 'psu'
 
-        lev_limit = lev[lev <= max_level].shape[0]+1
+        cb_label, hofdata = label_and_conversion(cmor_var, hofdata)
 
+        lev_limit = lev[lev <= max_level].shape[0] + 1
         series_lenght = time.shape[0]
-
         months, depth = np.meshgrid(range(series_lenght), lev[0:lev_limit])
 
-        plt.subplot(nrows, ncols, nplot)
+        image = ax[ind].contourf(months,
+                                 depth,
+                                 hofdata,
+                                 cmap=cmap,
+                                 levels=levels,
+                                 extend='both')
 
-        plt.contourf(months, depth, hofdata, cmap=cmap,
-                     levels=levels,
-                     extend='both')
-        plt.yticks(size=15)
-        plt.ylabel('m', size=15, rotation='horizontal')
-        plt.ylim(max_level, 0)
-
-        cb = plt.colorbar(pad=0.01)
-        cb.set_label(cb_label, rotation='vertical', size=15)
-        # cb.set_ticks(size=15)
-        cb.ax.tick_params(labelsize=15)
-        ygap = int((np.round(series_lenght/12.)/5)*12)
-        year_indexes = range(series_lenght)[::ygap]
+        ygap = int((np.round(series_lenght / 12.) / 5) * 12)
+        year_indexes = list(range(series_lenght)[::ygap])
         year_value = []
         for index in year_indexes:
             year_value.append(time[index].year)
-        plt.xticks(year_indexes, year_value, size=15)
 
-        plt.title(mmodel, size=20)
-        nplot=nplot+1
+        ax[ind].set_xticks(year_indexes)
+        ax[ind].set_xticklabels(year_value, size=15)
+        ax[ind].set_title(mmodel, size=20)
+        ax[ind].set_ylabel('m', size=15, rotation='horizontal')
+        ax[ind].invert_yaxis()
+        ax[ind].tick_params(axis='y', labelsize=15)
+
+        cb = fig.colorbar(image, ax=ax[ind], pad=0.01)
+        cb.set_label(cb_label, rotation='vertical', size=15)
+        cb.ax.tick_params(labelsize=15)
+
+    # delete unused axis
+    for delind in range(ind + 1, len(ax)):
+        fig.delaxes(ax[delind])
 
     plt.tight_layout()
-    pltoutname = genfilename(diagplotdir, cmor_var,
-                             region= region, data_type='hofm')
+    pltoutname = genfilename(diagplotdir,
+                             cmor_var,
+                             region=region,
+                             data_type='hofm')
     plt.savefig(pltoutname, dpi=100)
 
 
@@ -167,7 +186,7 @@ def hofm_plot2(model_filenames, cmor_var,
     plt.figure(figsize=(8*ncols,2*nrows*ncols))
 
     for mmodel in model_filenames:
-        ifilename = genfilename(diagworkdir, cmor_var, 
+        ifilename = genfilename(diagworkdir, cmor_var,
                                 mmodel, region, 'hofm', '.npy')
         ifilename_levels = genfilename(diagworkdir, cmor_var,
                                        mmodel, region, 'levels', '.npy')
@@ -177,7 +196,7 @@ def hofm_plot2(model_filenames, cmor_var,
                                                       mmodel,
                                                       region))
         hofdata = np.load(ifilename, allow_pickle=True)
-        
+
         lev = np.load(ifilename_levels, allow_pickle=True)
         time = np.load(ifilename_time, allow_pickle=True)
         if cmor_var == 'thetao':
@@ -283,7 +302,7 @@ def tsplot_plot(model_filenames, max_level, region, diagworkdir, diagplotdir,
         cb.ax.get_yaxis().labelpad = 15
         cb.set_label('depth, m', rotation=270, size=20)
         cb.ax.tick_params(labelsize=15)
-#        plt.tight_layout()
+        #        plt.tight_layout()
 
         plt.title(mmodel, size=20)
         nplot=nplot+1
@@ -294,7 +313,7 @@ def tsplot_plot(model_filenames, max_level, region, diagworkdir, diagplotdir,
     #                         'PHC3.0', region, 'tsplot',  '.npy')
     # ifilename_depth = genfilename(diagworkdir, 'depth',
     #                         'PHC3.0', region, 'tsplot',  '.npy')
-    
+
 
     plt.tight_layout()
     pltoutname = genfilename(diagplotdir, 'tsplot',
@@ -319,14 +338,14 @@ def plot_profile(model_filenames, cmor_var,
         logger.info("Plot profile {} data for {}, region {}".format(cmor_var,
                                                              mmodel,
                                                              region))
-        ifilename = genfilename(diagworkdir, cmor_var, 
+        ifilename = genfilename(diagworkdir, cmor_var,
                                 mmodel, region, 'hofm', '.npy')
         ifilename_levels = genfilename(diagworkdir, cmor_var,
                                        mmodel, region, 'levels', '.npy')
 
         hofdata = np.load(ifilename, allow_pickle=True)
         lev = np.load(ifilename_levels, allow_pickle=True)
-        
+
 
         if cmor_var == 'thetao':
             hofdata = hofdata-273.15
@@ -339,7 +358,7 @@ def plot_profile(model_filenames, cmor_var,
         #lev = datafile.variables['lev'][:]
         lev_limit = lev[lev <= max_level].shape[0]+1
         profile = (hofdata)[:, :].mean(axis=1)
-        
+
         if mmodel != observations:
             c = next(color)
         else:
@@ -366,9 +385,9 @@ def plot_profile(model_filenames, cmor_var,
     #          linestyle='--',
     #          color='r',
     #          lw=3)
-    # ofilename = genfilename(diagworkdir, cmor_var, 
+    # ofilename = genfilename(diagworkdir, cmor_var,
     #                             'PHC-CLIMATOLOGY', region, 'profile', '.npy')
-    # ofilename_levels = genfilename(diagworkdir, cmor_var, 
+    # ofilename_levels = genfilename(diagworkdir, cmor_var,
     #                             'PHC-CLIMATOLOGY', region, 'profile-levels', '.npy')
     # ofilename = os.path.join(diagworkdir,
     #                          'arctic_ocean_{}_{}_{}_profile.npy'.format(cmor_var,
@@ -387,9 +406,9 @@ def plot_profile(model_filenames, cmor_var,
              linestyle='--',
              color='k',
              lw=3)
-    # ofilename = genfilename(diagworkdir, cmor_var, 
+    # ofilename = genfilename(diagworkdir, cmor_var,
     #                             'MODEL-MEAN', region, 'profile', '.npy')
-    # ofilename_levels = genfilename(diagworkdir, cmor_var, 
+    # ofilename_levels = genfilename(diagworkdir, cmor_var,
     #                             'MODEL-MEAN', region, 'profile-levels', '.npy')
     # ofilename = os.path.join(diagworkdir,
     #                          'arctic_ocean_{}_{}_{}_profile.npy'.format(cmor_var,
@@ -415,7 +434,7 @@ def plot_profile(model_filenames, cmor_var,
     box = ax.get_position()
     ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
     ax.legend(loc='center left', bbox_to_anchor=(1, 0.5), fontsize=10)
-    
+
     plt.gca().invert_yaxis()
     # plt.tight_layout()
     pltoutname = genfilename(diagplotdir, cmor_var,
@@ -425,7 +444,7 @@ def plot_profile(model_filenames, cmor_var,
     #                                                               region))
     plt.savefig(pltoutname, dpi=dpi, bbox_inches='tight')
 
-def plot2d_original_grid(model_filenames, cmor_var, 
+def plot2d_original_grid(model_filenames, cmor_var,
                          depth, levels, region, diagworkdir, diagplotdir, dpi=100):
 
     ncols = 4
@@ -436,12 +455,12 @@ def plot2d_original_grid(model_filenames, cmor_var,
     nrows = int(nrows)
     # nplot = 1
     figsize=(5*ncols,1.5*nrows*ncols)
-    fig, ax = plt.subplots(nrows,ncols, 
+    fig, ax = plt.subplots(nrows,ncols,
                            figsize=figsize,
-#                           subplot_kw=dict(projection=proj),
+    #                           subplot_kw=dict(projection=proj),
                            constrained_layout=True)
     ax = ax.flatten()
-    
+
     for indx, mmodel in enumerate(model_filenames):
         logger.info("Plot plot2d_original_grid {} for {}".format(cmor_var, mmodel))
         # ifilename = os.path.join(diagworkdir,
@@ -472,10 +491,10 @@ def plot2d_original_grid(model_filenames, cmor_var,
             cb_label = '$^{\circ}$C'
         elif cmor_var == 'so':
             cb_label = 'psu'
-        
+
         # plt.subplot(nrows, ncols, nplot)
-        
-        
+
+
 
         xx, yy = mm(lon2d, lat2d)
         mm.drawmapboundary(fill_color='0.9')
@@ -483,18 +502,18 @@ def plot2d_original_grid(model_filenames, cmor_var,
         mm.drawcoastlines(linewidth=0.1)
         image = ax[indx].contourf(xx,yy, data,
                     levels=levels,
-                    cmap = cmo.balance, 
+                    cmap = cmo.balance,
                     extend='both',
                   )
         ax[indx].set_title("{}, {} m".format(mmodel, np.round(lev[level_target],1)), size=18)
         ax[indx].set_rasterization_zorder(-1)
-        
+
 
         # plt.title("{}, {} m".format(mmodel, np.round(lev[level],1)), size=18)
         # nplot=nplot+1
     for delind in range(indx+1, len(ax)):
         fig.delaxes(ax[delind])
-    
+
     cb = fig.colorbar(image, orientation='horizontal', ax=ax, pad=0.01, shrink = 0.9)
     cb.set_label(cb_label, rotation='horizontal', size=12)
     cb.ax.tick_params(labelsize=12)
@@ -514,7 +533,7 @@ def plot_aw_core_stat(aw_core_parameters, diagplotdir):
     #                           'arctic_ocean_aw-core-temp_EB_awiCoreTemp.png')
     plt.tight_layout()
     plt.savefig(pltoutname, dpi=100)
-    
+
     plt.figure()
     df.maxvalue_depth.plot(kind='barh')
     plt.xlabel('m')
@@ -526,7 +545,7 @@ def plot_aw_core_stat(aw_core_parameters, diagplotdir):
 
 
 
-def plot2d_original_grid_AWdepth(model_filenames, cmor_var, 
+def plot2d_original_grid_AWdepth(model_filenames, cmor_var,
                          aw_core_parameters, region, diagworkdir, diagplotdir, dpi=100, observations='PHC'):
     ncols = 4
     nplots = len(model_filenames)
@@ -536,17 +555,17 @@ def plot2d_original_grid_AWdepth(model_filenames, cmor_var,
     nrows = int(nrows)
     # nplot = 1
     figsize=(5*ncols,1.5*nrows*ncols)
-    fig, ax = plt.subplots(nrows,ncols, 
+    fig, ax = plt.subplots(nrows,ncols,
                            figsize=figsize,
-#                           subplot_kw=dict(projection=proj),
+    #                           subplot_kw=dict(projection=proj),
                            constrained_layout=True)
     ax = ax.flatten()
 
     # plt.figure(figsize=(5*ncols,1.5*nrows*ncols))
     # mm = Basemap(projection='npstere',boundinglat=60,lon_0=0,resolution='l')
     for indx, mmodel in enumerate(model_filenames):
-    # for mmodel in model_filenames:
-        
+        # for mmodel in model_filenames:
+
         logger.info("Plot plot2d_original_grid_AWdepth {} for {}".format(cmor_var, mmodel))
         ifilename = genfilename(diagworkdir, cmor_var,
                              mmodel,  data_type='timmean', extension='.nc')
@@ -566,13 +585,13 @@ def plot2d_original_grid_AWdepth(model_filenames, cmor_var,
             data = datafile.variables[cmor_var][maxvalue_index,:,:]
         else:
             data = datafile.variables[cmor_var][0,maxvalue_index,:,:]
-            
+
         if cmor_var == 'thetao':
             data = data-273.15
             cb_label = '$^{\circ}$C'
         elif cmor_var == 'so':
             cb_label = 'psu'
-        
+
         # plt.subplot(nrows, ncols, nplot)
 
         xx, yy = mm(lon2d, lat2d)
@@ -581,12 +600,12 @@ def plot2d_original_grid_AWdepth(model_filenames, cmor_var,
         mm.drawcoastlines(linewidth=0.1)
         image = ax[indx].contourf(xx,yy, data,
                     levels=np.round(np.linspace(-2, 2.3, 41), 1),
-                    cmap = cmo.balance, 
+                    cmap = cmo.balance,
                     extend='both',
                   )
         ax[indx].set_title("{}, {} m".format(mmodel, np.round(lev[maxvalue_index],1)), size=18)
         ax[indx].set_rasterization_zorder(-1)
-    
+
     for delind in range(indx+1, len(ax)):
         fig.delaxes(ax[delind])
     cb = fig.colorbar(image, orientation='horizontal', ax=ax, pad=0.01, shrink = 0.9)
@@ -602,7 +621,7 @@ def plot2d_original_grid_AWdepth(model_filenames, cmor_var,
 #####################################
 ######################################
 
-def plot2d_speed(model_filenames, 
+def plot2d_speed(model_filenames,
                  depth, vmax, diagworkdir, diagplotdir, dpi=100):
     ncols = 4
     nplots = len(model_filenames)+1
@@ -640,10 +659,10 @@ def plot2d_speed(model_filenames,
         cb_label = 'm/s'
         # elif cmor_var == 'so':
         #     cb_label = 'psu'
-        
+
         plt.subplot(nrows, ncols, nplot)
-        
-        
+
+
 
         xx, yy = mm(lon2d, lat2d)
         mm.drawmapboundary(fill_color='0.9')
@@ -653,12 +672,12 @@ def plot2d_speed(model_filenames,
               vmin =0,
               vmax = vmax,
             #levels=np.round(np.linspace(0,0.05,20),4),
-            cmap = cmo.speed, 
+            cmap = cmo.speed,
             #extend='both',
           )
         # mm.contourf(xx,yy, speed,
         #             levels=np.round(np.linspace(-2, 2.3, 41), 1),
-        #             cmap = cmo.balance, 
+        #             cmap = cmo.balance,
         #             extend='both',
         #           )
         cb = plt.colorbar(orientation='horizontal', pad=0.03, shrink=0.95, format='%1.3g')
@@ -680,8 +699,8 @@ def plot2d_speed(model_filenames,
 #######################################
 #######################################
 
-def plot2d_bias(model_filenames, cmor_var, 
-                         depth, region, diagworkdir, 
+def plot2d_bias(model_filenames, cmor_var,
+                         depth, region, diagworkdir,
                          diagplotdir, contours,
                          dpi=100, observations = 'PHC'):
 
@@ -700,7 +719,7 @@ def plot2d_bias(model_filenames, cmor_var,
     mm = Basemap(projection='npstere',boundinglat=60,lon_0=0,resolution='l')
     model_filenames = model_filenames.copy()
     del model_filenames[observations]
-    
+
     for mmodel in model_filenames:
         logger.info("Plot plot2d_bias {} for {}".format(cmor_var, mmodel))
 
@@ -718,7 +737,7 @@ def plot2d_bias(model_filenames, cmor_var,
             cb_label = 'psu'
 
         plt.subplot(nrows, ncols, nplot)
-        
+
         xx, yy = mm(lonc, latc)
         mm.drawmapboundary(fill_color='0.9')
         mm.fillcontinents(color='#f0f0f0',lake_color='#f0f0f0')
@@ -727,7 +746,7 @@ def plot2d_bias(model_filenames, cmor_var,
         # print(np.linspace(contours[0], contours[1], contours[2]))
         mm.contourf(xx,yy, interpolated - data_onlev_obs_cyc,
                     levels=contours,
-                    cmap = cmo.balance, 
+                    cmap = cmo.balance,
                     extend='both',
                   )
         cb = plt.colorbar(orientation='horizontal', pad=0.03, shrink=0.95)
@@ -743,7 +762,7 @@ def plot2d_bias(model_filenames, cmor_var,
 
     plt.savefig(pltoutname, dpi=dpi)
 
-def plot2d_bias2(model_filenames, cmor_var, 
+def plot2d_bias2(model_filenames, cmor_var,
                          depth, region, diagworkdir, diagplotdir, contours=[-3, 3, 21], dpi=100, observations = 'PHC'):
 
     ncols = 4
@@ -754,7 +773,7 @@ def plot2d_bias2(model_filenames, cmor_var,
     nrows = int(nrows)
     nplot = 1
     proj = ccrs.Robinson()
-    fig, ax = plt.subplots(nrows,ncols, 
+    fig, ax = plt.subplots(nrows,ncols,
                        figsize=(5*ncols,1.5*nrows*ncols),
                        subplot_kw=dict(projection=proj), constrained_layout=True)
     ax = ax.flatten()
@@ -766,7 +785,7 @@ def plot2d_bias2(model_filenames, cmor_var,
     # mm = Basemap(projection='npstere',boundinglat=60,lon_0=0,resolution='l')
     model_filenames = model_filenames.copy()
     del model_filenames[observations]
-    
+
     for ind, mmodel in enumerate(model_filenames):
         logger.info("Plot plot2d_bias {} for {}".format(cmor_var, mmodel))
 
@@ -790,7 +809,7 @@ def plot2d_bias2(model_filenames, cmor_var,
         ax[ind].set_extent([-180,180,-80,90], crs=ccrs.PlateCarree())
         ax[ind].coastlines(resolution = '50m',lw=0.5)
         # plt.subplot(nrows, ncols, nplot)
-        
+
         # xx, yy = mm(lonc, latc)
         # mm.drawmapboundary(fill_color='0.9')
         # mm.fillcontinents(color='#f0f0f0',lake_color='#f0f0f0')
@@ -802,8 +821,8 @@ def plot2d_bias2(model_filenames, cmor_var,
                  vmin = contours[0],
                  vmax = contours[1],
                 #  levels=np.round(np.linspace(contours[0], contours[1], contours[2]),2),
-                 transform=ccrs.PlateCarree(), 
-                 cmap=cmo.balance , 
+                 transform=ccrs.PlateCarree(),
+                 cmap=cmo.balance ,
                 #  extend='both'
                  )
         ax[ind].set_title("{}, {} m".format(mmodel, np.round(target_depth,1)), size=18)
@@ -811,7 +830,7 @@ def plot2d_bias2(model_filenames, cmor_var,
 
         # mm.contourf(xx,yy, interpolated - data_onlev_obs_cyc,
         #             levels=np.round(np.linspace(contours[0], contours[1], contours[2]),2),
-        #             cmap = cmo.balance, 
+        #             cmap = cmo.balance,
         #             extend='both',
         #           )
         # cb = fig.colorbar(image, orientation='horizontal', ax=ax, pad=0.02, shrink = 0.9)
@@ -844,7 +863,7 @@ def transect_plot(model_filenames, cmor_var,
     ncols = int(ncols)
     nrows = int(nrows)
     nplot = 1
-    
+
     plt.figure(figsize=(8*ncols,2*nrows*ncols))
     plt.subplot(nrows, ncols, nplot)
     lon_s4new, lat_s4new = transect_points(region, mult = 2)
@@ -857,7 +876,7 @@ def transect_plot(model_filenames, cmor_var,
             resolution='l',projection='stere',
             lat_ts=40,lat_0=90,lon_0=0.)
     m.drawcoastlines()
-    
+
     xpt,ypt = m(lon_s4new,lat_s4new)
     m.scatter(xpt,ypt,c=dist, s=10, cmap=cm.Spectral, edgecolors='none' )
     cb = plt.colorbar()
@@ -909,7 +928,7 @@ def transect_plot(model_filenames, cmor_var,
                              region= region, data_type='transect')
     plt.savefig(pltoutname, dpi=100)
 
-def plot_hist(model_filenames, cmor_var,min_level, max_level, region, 
+def plot_hist(model_filenames, cmor_var,min_level, max_level, region,
                  bins, diagworkdir, diagplotdir, ncols = 4, dpi=100):
     nplots = len(model_filenames)+1
     ncols = float(ncols)
@@ -924,7 +943,7 @@ def plot_hist(model_filenames, cmor_var,min_level, max_level, region,
         logger.info("Plot hist {} for {}".format(cmor_var, mmodel))
         ifilename = genfilename(diagworkdir, cmor_var,
                              mmodel,  data_type='timmean', extension='.nc')
-                                                     
+
         datafile = Dataset(ifilename)
         lon = datafile.variables['lon'][:]
         lat = datafile.variables['lat'][:]
@@ -934,28 +953,28 @@ def plot_hist(model_filenames, cmor_var,min_level, max_level, region,
         elif lon.ndim == 1:
             lon2d, lat2d = np.meshgrid(lon, lat)
         #areacello = datafile.variables['areacello'][:]
-        
+
         indexesi, indexesj = hofm_regions(region, lon2d, lat2d)
         iz_min=abs(abs(lev)-abs(min_level)).argmin()
         iz_max=abs(abs(lev)-abs(max_level)).argmin()
 
         data = datafile.variables[cmor_var][0, iz_min:iz_max, indexesi, indexesj]
         if not isinstance(data, np.ma.MaskedArray):
-                data = np.ma.masked_equal(data, 0)
+            data = np.ma.masked_equal(data, 0)
 
         if cmor_var == 'thetao':
             data = data-273.15
             cb_label = '$^{\circ}$C'
         elif cmor_var == 'so':
             cb_label = 'psu'
-        
+
         plt.subplot(nrows, ncols, nplot)
 
-        
+
         ax = sns.distplot(data.compressed(), bins = bins)
         plt.ylim(0,0.5)
         plt.xlim(bins[0]-1, bins[-1]+1)
-        
+
         plt.title("{}".format(mmodel), size=18)
         plt.xticks(size=15)
         plt.yticks(size=15)

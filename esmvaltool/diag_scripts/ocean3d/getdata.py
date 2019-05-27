@@ -30,8 +30,27 @@ from esmvaltool.diag_scripts.ocean3d.regions import hofm_regions, transect_point
 logger = logging.getLogger(os.path.basename(__file__))
 mpl.use('agg')  #noqa
 
-def hofm_data(model_filenames, mmodel, cmor_var, areacello_fx,
-              max_level, region, diagworkdir):
+def load_meta(datapath, fxpath=None):
+    datafile = Dataset(datapath)
+
+    datafile_area = Dataset(fxpath)
+    lon = datafile.variables['lon'][:]
+    lat = datafile.variables['lat'][:]
+    lev = datafile.variables['lev'][:]
+    time = num2date(datafile.variables['time'][:],
+                    datafile.variables['time'].units)
+    if lon.ndim == 2:
+        lon2d, lat2d = lon, lat
+    elif lon.ndim == 1:
+        lon2d, lat2d = np.meshgrid(lon, lat)
+
+    areacello = datafile_area.variables['areacello'][:]
+    return [datafile, lon2d, lat2d, lev, time, areacello]
+
+
+
+def hofm_data(model_filenames, mmodel, cmor_var, areacello_fx, max_level,
+              region, diagworkdir):
     ''' Extract data for Hovmoeller diagrams from monthly values.
     Saves the data to files in `diagworkdir`.
 
@@ -56,24 +75,10 @@ def hofm_data(model_filenames, mmodel, cmor_var, areacello_fx,
     -------
     None
     '''
-    logger.info("Extract  %s data for %s, region %s".format(cmor_var,
-                                                            mmodel,
-                                                            region))
-
-    datafile = Dataset(model_filenames[mmodel])
-
-    datafile_area = Dataset(areacello_fx[mmodel])
-    lon = datafile.variables['lon'][:]
-    lat = datafile.variables['lat'][:]
-    lev = datafile.variables['lev'][:]
-    time = num2date(datafile.variables['time'][:],
-                    datafile.variables['time'].units)
-    if lon.ndim == 2:
-        lon2d, lat2d = lon, lat
-    elif lon.ndim == 1:
-        lon2d, lat2d = np.meshgrid(lon, lat)
-
-    areacello = datafile_area.variables['areacello'][:]
+    logger.info("Extract  %s data for %s, region %s", cmor_var, mmodel, region)
+    metadata = load_meta(datapath=model_filenames[mmodel],
+                         fxpath=areacello_fx[mmodel])
+    datafile, lon2d, lat2d, lev, time, areacello = metadata
 
     lev_limit = lev[lev <= max_level].shape[0] + 1
 
@@ -89,7 +94,6 @@ def hofm_data(model_filenames, mmodel, cmor_var, areacello_fx,
 
     oce_hofm = np.zeros((lev[0:lev_limit].shape[0], series_lenght))
     for mon in range(series_lenght):
-        # print(mon)
         for ind, depth in enumerate(lev[0:lev_limit]):
             # fix for climatology
             if datafile.variables[cmor_var].ndim < 4:
@@ -100,20 +104,18 @@ def hofm_data(model_filenames, mmodel, cmor_var, areacello_fx,
             ## This is fix fo make models with 0 as missing values work,
             ## should be fixed in fixes.
             if not isinstance(level_pp, np.ma.MaskedArray):
-                # print(mmodel)
                 level_pp = np.ma.masked_equal(level_pp, 0)
             data_mask = level_pp[indexesi, indexesj].mask
-            area_masked = np.ma.masked_where(data_mask, areacello[indexesi, indexesj])
+            area_masked = np.ma.masked_where(data_mask,
+                                             areacello[indexesi, indexesj])
             result = (area_masked *
-                      level_pp[indexesi, indexesj]).sum()/area_masked.sum()
+                      level_pp[indexesi, indexesj]).sum() / area_masked.sum()
             oce_hofm[ind, mon] = result
 
-    ofilename = genfilename(diagworkdir, cmor_var,
-                            mmodel, region, 'hofm')
-    ofilename_levels = genfilename(diagworkdir, cmor_var,
-                                   mmodel, region, 'levels')
-    ofilename_time = genfilename(diagworkdir, cmor_var,
-                                 mmodel, region, 'time')
+    ofilename = genfilename(diagworkdir, cmor_var, mmodel, region, 'hofm')
+    ofilename_levels = genfilename(diagworkdir, cmor_var, mmodel, region,
+                                   'levels')
+    ofilename_time = genfilename(diagworkdir, cmor_var, mmodel, region, 'time')
     # print(ofilename)
     np.save(ofilename, oce_hofm)
     if isinstance(lev, np.ma.core.MaskedArray):
@@ -123,6 +125,7 @@ def hofm_data(model_filenames, mmodel, cmor_var, areacello_fx,
 
     np.save(ofilename_time, time)
     datafile.close()
+
 
 def transect_data(mmodel,  cmor_var,
               max_level, region, diagworkdir, mult = 2, observations='PHC'):
@@ -137,7 +140,7 @@ def transect_data(mmodel,  cmor_var,
     # lon = datafile_t.variables['lon'][:]
     # lat = datafile_t.variables['lat'][:]
     lev = datafile.variables['lev'][:]
-    
+
     # if lon.ndim == 2:
     #     lon2d, lat2d = lon, lat
     # elif lon.ndim == 1:
@@ -156,7 +159,7 @@ def transect_data(mmodel,  cmor_var,
     locstream["ESMF:Lat"] = lat_s4new
     if domask:
         locstream["ESMF:Mask"] = np.array(np.ones(lon_s4new.shape[0]), dtype=np.int32)
-    
+
 
     secfield = np.zeros((lon_s4new.shape[0],datafile.variables[cmor_var].shape[1]))
     if mmodel != observations:
@@ -167,8 +170,8 @@ def transect_data(mmodel,  cmor_var,
     for kind in range(0, ndepths):
         print('indice = ', kind)
         # Create a uniform global latlon grid from a GRIDSPEC formatted file source grid
-    #     srcgrid = ESMF.Grid(filename=gridfile,
-    #                      filetype=ESMF.FileFormat.GRIDSPEC)
+        #     srcgrid = ESMF.Grid(filename=gridfile,
+        #                      filetype=ESMF.FileFormat.GRIDSPEC)
         sourcefield = ESMF.Field(grid, staggerloc=ESMF.StaggerLoc.CENTER, name = 'MPI',)
 
         if mmodel != observations:
@@ -181,7 +184,7 @@ def transect_data(mmodel,  cmor_var,
             sourcefield.data[...] = thetao.filled(0).T
         else:
             sourcefield.data[...] = thetao.T
-        
+
         # create a field on the locstream
         dstfield = ESMF.Field(locstream, name='dstfield')
         dstfield.data[:] = 0.0
@@ -189,7 +192,7 @@ def transect_data(mmodel,  cmor_var,
         # create an object to regrid data from the source to the destination field
         dst_mask_values=None
         if domask:
-                dst_mask_values=np.array([0])
+            dst_mask_values=np.array([0])
 
         regrid = ESMF.Regrid(sourcefield, dstfield,
                             regrid_method=ESMF.RegridMethod.NEAREST_STOD,
@@ -223,7 +226,7 @@ def transect_data(mmodel,  cmor_var,
 
     datafile.close()
 
-def tsplot_data(mmodel, 
+def tsplot_data(mmodel,
               max_level, region, diagworkdir, observations = 'PHC'):
     logger.info("Extract  TS data for {}, region {}".format(mmodel, region))
     ifilename_t = genfilename(diagworkdir, 'thetao',
@@ -237,7 +240,7 @@ def tsplot_data(mmodel,
     lon = datafile_t.variables['lon'][:]
     lat = datafile_t.variables['lat'][:]
     lev = datafile_t.variables['lev'][:]
-    
+
     if lon.ndim == 2:
         lon2d, lat2d = lon, lat
     elif lon.ndim == 1:
@@ -309,38 +312,38 @@ def meanminmax_data(model_filenames, mmodel, cmor_var, areacello_fx,
     max_property_mon = []
     min_property_mon = []
     for mon in range(series_lenght):
-            # print(mon)
-            mean_property = []
-            max_property = []
-            min_property = []
-            for ind, depth in enumerate(levels_range):
-                level_pp = datafile.variables[cmor_var][mon, ind, :, :]
-                ## This is fix fo make models with 0 as missing values work,
-                ## should be fixed in fixes that do not work for now in the new backend
-                if not isinstance(level_pp, np.ma.MaskedArray):
-                    level_pp = np.ma.masked_equal(level_pp, 0)
-                data_mask = level_pp[indexesi,indexesj].mask
-                area_masked = np.ma.masked_where(data_mask, areacello[indexesi,indexesj])
-                result_mean = (area_masked*level_pp[indexesi,indexesj]).sum()/area_masked.sum()
-                mean_property.append(result_mean)
-                result_max = np.nanmax(level_pp[indexesi,indexesj])
-                max_property.append(result_max)
-                result_min = np.nanmin(level_pp[indexesi,indexesj])
-                min_property.append(result_min)
-            mean_property_mon.append(np.nanmean(np.array(mean_property)))
-            max_property_mon.append(np.nanmax(np.array(max_property)))
-            min_property_mon.append(np.nanmin(np.array(min_property)))
+        # print(mon)
+        mean_property = []
+        max_property = []
+        min_property = []
+        for ind, depth in enumerate(levels_range):
+            level_pp = datafile.variables[cmor_var][mon, ind, :, :]
+            ## This is fix fo make models with 0 as missing values work,
+            ## should be fixed in fixes that do not work for now in the new backend
+            if not isinstance(level_pp, np.ma.MaskedArray):
+                level_pp = np.ma.masked_equal(level_pp, 0)
+            data_mask = level_pp[indexesi,indexesj].mask
+            area_masked = np.ma.masked_where(data_mask, areacello[indexesi,indexesj])
+            result_mean = (area_masked*level_pp[indexesi,indexesj]).sum()/area_masked.sum()
+            mean_property.append(result_mean)
+            result_max = np.nanmax(level_pp[indexesi,indexesj])
+            max_property.append(result_max)
+            result_min = np.nanmin(level_pp[indexesi,indexesj])
+            min_property.append(result_min)
+        mean_property_mon.append(np.nanmean(np.array(mean_property)))
+        max_property_mon.append(np.nanmax(np.array(max_property)))
+        min_property_mon.append(np.nanmin(np.array(min_property)))
 
     meanminmax = np.vstack((mean_property_mon, min_property_mon, max_property_mon ))
-    
+
     ofilename = genfilename(diagworkdir, cmor_var,
                             mmodel, region, 'meanminmax')
-    
+
     # ofilename_levels = genfilename(diagworkdir, cmor_var,
     #                                mmodel, region, 'meanminmax_levels')
     ofilename_time = genfilename(diagworkdir, cmor_var,
                                  mmodel, region, 'meanminmax_time')
-     
+
     np.save(ofilename, meanminmax)
     # np.save(ofilename_levels, lev[0:lev_limit])
     np.save(ofilename_time, time)
@@ -363,9 +366,9 @@ def tsplot_data_clim(max_level, region, diagworkdir):
 
     ptemp_phc = sw.ptmp(salt_phc, temp_phc, depth3d_phc)
     temp_phc = ptemp_phc
-    
+
     indexesi, indexesj = hofm_clim_regions(region, lonc, latc)
-    
+
     lev_limit = depth_phc[depth_phc <= max_level].shape[0] + 1
 
     temp_clim = np.array([])
@@ -392,7 +395,7 @@ def tsplot_data_clim(max_level, region, diagworkdir):
 
     phc.close()
 
-    
+
 def aw_core(model_filenames, diagworkdir, region, cmor_var):
     logger.info("Calculate AW core statistics")
     aw_core_parameters = {}
@@ -402,14 +405,14 @@ def aw_core(model_filenames, diagworkdir, region, cmor_var):
         logger.info("Plot profile {} data for {}, region {}".format(cmor_var,
                                                             mmodel,
                                                             region))
-        ifilename = genfilename(diagworkdir, cmor_var, 
+        ifilename = genfilename(diagworkdir, cmor_var,
                                 mmodel, region, 'hofm', '.npy')
         ifilename_levels = genfilename(diagworkdir, cmor_var,
                                     mmodel, region, 'levels', '.npy')
 
         hofdata = np.load(ifilename, allow_pickle=True)
         lev = np.load(ifilename_levels, allow_pickle=True)
-        
+
         profile = (hofdata)[:, :].mean(axis=1)
         maxvalue = np.max(profile[(lev >= 200) & (lev <= 1000)])
         maxvalue_index = np.where(profile==maxvalue)[0][0]
@@ -418,7 +421,7 @@ def aw_core(model_filenames, diagworkdir, region, cmor_var):
         aw_core_parameters[mmodel]['maxvalue'] = maxvalue
         aw_core_parameters[mmodel]['maxvalue_index'] = maxvalue_index
         aw_core_parameters[mmodel]['maxvalue_depth'] = maxvalue_depth
-    
+
     # Hardcoded values for PHC
     # aw_core_parameters['PHC'] = {}
     # aw_core_parameters['PHC']['maxvalue'] = 0.991 + 273.15
