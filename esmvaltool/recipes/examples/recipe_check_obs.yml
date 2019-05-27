@@ -313,8 +313,8 @@ diagnostics:
         mip: OImon
         fx_files: [areacello]
     additional_datasets:
-      - {dataset: OSI-450-nh, project: OBS, tier: 2, type: reanaly, version: 2, start_year: 1979, end_year: 2018}
-      - {dataset: OSI-450-sh, project: OBS, tier: 2, type: reanaly, version: 2, start_year: 1979, end_year: 2018}
+      - {dataset: OSI-450-nh, project: OBS, tier: 2, type: reanaly, version: v2, start_year: 1979, end_year: 2018}
+      - {dataset: OSI-450-sh, project: OBS, tier: 2, type: reanaly, version: v2, start_year: 1979, end_year: 2018}
     scripts: null
 
   OSI-450-daily:
@@ -325,8 +325,8 @@ diagnostics:
         mip: day
         fx_files: [areacello]
     additional_datasets:
-      - {dataset: OSI-450-nh, project: OBS, tier: 2, type: reanaly, version: 2, start_year: 1988, end_year: 2018}
-      - {dataset: OSI-450-sh, project: OBS, tier: 2, type: reanaly, version: 2, start_year: 1988, end_year: 2018}
+      - {dataset: OSI-450-nh, project: OBS, tier: 2, type: reanaly, version: v2, start_year: 1988, end_year: 2018}
+      - {dataset: OSI-450-sh, project: OBS, tier: 2, type: reanaly, version: v2, start_year: 1988, end_year: 2018}
     scripts: null
 
   OSI-407:
