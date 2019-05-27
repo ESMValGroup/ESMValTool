@@ -30,7 +30,7 @@ The data directory structure of the CMIP5 project is set up differently
 at each site. The following code snipper is an example of several paths
 descriptions for the CMIP5 at various sites:
 
-.. code-block:: yml
+.. code-block:: yaml
 
   CMIP5:
     input_dir:
@@ -44,14 +44,14 @@ descriptions for the CMIP5 at various sites:
 
 As an example, the CMIP5 file path on BADC would be:
 
-.. code-block:: yml
+.. code-block:: yaml
 
         [institute]/[dataset ]/[exp]/[frequency]/[modeling_realm]/[mip]/[ensemble]/latest/[short_name]
 
 When loading these files, ESMValTool replaces the placeholders with the true
 values. The resulting real path would look something like this:
 
-.. code-block:: yml
+.. code-block:: yaml
 
     MOHC/HadGEM2-CC/rcp85/mon/ocean/Omon/r1i1p1/latest/tos
 
@@ -66,7 +66,7 @@ section of a recipe needs to be in this file in the relevant section.
 For instance, the recipe ``recipe_ocean_example.yml`` file contains the following
 documentation section:
 
-.. code-block:: yml
+.. code-block:: yaml
 
   documentation
     authors:
