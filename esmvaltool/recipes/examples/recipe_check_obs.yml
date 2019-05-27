@@ -310,7 +310,7 @@ diagnostics:
     variables:
       sic:
         preproc: nopp
-        mip: Omon
+        mip: OImon
         fx_files: [areacello]
     additional_datasets:
       - {dataset: OSI-450-nh, project: OBS, tier: 2, type: reanaly, version: 2, start_year: 1979, end_year: 2018}
