@@ -2,6 +2,7 @@
 import fnmatch
 import logging
 import os
+import re
 from collections import OrderedDict
 from copy import deepcopy
 
@@ -835,6 +836,8 @@ class Recipe:
         diagnostics = {}
 
         for name, raw_diagnostic in raw_diagnostics.items():
+            if not self._is_diagnostic_selected(name):
+                continue
             diagnostic = {}
             diagnostic['name'] = name
             diagnostic['preprocessor_output'] = \
@@ -853,6 +856,15 @@ class Recipe:
             diagnostics[name] = diagnostic
 
         return diagnostics
+
+    def _is_diagnostic_selected(self, name):
+        if not self._cfg['diagnostics']:
+            return True
+
+        for pattern in self._cfg['diagnostics']:
+            if re.match(pattern, name):
+                return True
+        return False
 
     @staticmethod
     def _initialize_datasets(raw_datasets):

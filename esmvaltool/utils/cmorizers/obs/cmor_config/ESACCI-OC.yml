@@ -1,0 +1,23 @@
+---
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: ESACCI-OC
+  version: 'fv3.1'
+  tier: 2
+  modeling_realm: sat
+  project_id: OBS
+  source: 'ftp://oc-cci-data:ELaiWai8ae@oceancolour.org/occci-v3.1/geographic/netcdf/monthly/chlor_a/'
+  reference: "esacci-oc"
+  comment: ""
+
+# Variables to cmorize (here use only filename prefix)
+variables:
+  chl:
+    mip: Omon
+    raw: chlor_a
+    file: ESACCI-OC-L3S-CHLOR_A-MERGED-1M_MONTHLY_4km_GEO_PML_OCx
+
+# Custom dictionary for this cmorizer
+custom:
+  # Rebin original data (4km) averaging at lower resolution (multiple of 2 accepted)
+  bin_size: 6

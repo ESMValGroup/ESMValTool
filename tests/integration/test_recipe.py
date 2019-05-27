@@ -65,6 +65,7 @@ def config_user(tmp_path):
     filename = write_config_user_file(tmp_path)
     cfg = esmvaltool._config.read_config_user_file(filename, 'recipe_test')
     cfg['synda_download'] = False
+    cfg['diagnostics'] = ()
     return cfg
 
 
@@ -224,6 +225,60 @@ def test_simple_recipe(tmp_path, patched_datafinder, config_user):
         for key in MANDATORY_SCRIPT_SETTINGS_KEYS:
             assert key in task.settings and task.settings[key]
         assert task.settings['custom_setting'] == 1
+
+
+def test_select_diagnostic(tmp_path, patched_datafinder, config_user):
+
+    content = dedent("""
+        datasets:
+          - dataset: bcc-csm1-1
+
+        preprocessors:
+          preprocessor_name:
+            extract_levels:
+              levels: 85000
+              scheme: nearest
+
+        diagnostics:
+          execute:
+            additional_datasets:
+              - dataset: GFDL-ESM2G
+            variables:
+              ta:
+                preprocessor: preprocessor_name
+                project: CMIP5
+                mip: Amon
+                exp: historical
+                ensemble: r1i1p1
+                start_year: 1999
+                end_year: 2002
+                additional_datasets:
+                  - dataset: MPI-ESM-LR
+            scripts:
+              script_name:
+                script: examples/diagnostic.py
+                custom_setting: 1
+          ignore:
+            variables:
+              ta:
+                preprocessor: preprocessor_name
+                project: CMIP5
+                mip: Amon
+                exp: historical
+                ensemble: r1i1p1
+                start_year: 1999
+                end_year: 2002
+                additional_datasets:
+                  - dataset: MPI-ESM-LR
+            scripts:
+              script_name:
+                script: examples/diagnostic.py
+        """)
+    config_user['diagnostics'] = ('execute', )
+    recipe = get_recipe(tmp_path, content, config_user)
+    raw = yaml.safe_load(content)
+    assert len(recipe.diagnostics) == 1
+    assert 'execute' in recipe.diagnostics
 
 
 def test_default_preprocessor(tmp_path, patched_datafinder, config_user):
