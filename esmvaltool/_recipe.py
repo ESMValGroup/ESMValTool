@@ -2,6 +2,7 @@
 import fnmatch
 import logging
 import os
+import re
 from collections import OrderedDict
 from copy import deepcopy
 
@@ -835,6 +836,14 @@ class Recipe:
         diagnostics = {}
 
         for name, raw_diagnostic in raw_diagnostics.items():
+            if self._cfg['diagnostics']:
+                execute = False
+                for pattern in self._cfg['diagnostics']:
+                    if re.match(pattern, name):
+                        execute = True
+                        break
+                if not execute:
+                    continue
             diagnostic = {}
             diagnostic['name'] = name
             diagnostic['preprocessor_output'] = \
