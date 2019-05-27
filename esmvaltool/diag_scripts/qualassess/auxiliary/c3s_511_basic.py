@@ -1213,37 +1213,40 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                 
                 long_left_over = [rd for rd in reg_dimensions if rd != d]
             
-                plotcubes_m = utils.dask_weighted_mean_wrapper(
-                        cube,self.map_area_frac, dims=long_left_over)
-                plotcubes_std = utils.dask_weighted_stddev_wrapper(
-                        cube,self.map_area_frac, dims=long_left_over)
+#                plotcubes_m = utils.dask_weighted_mean_wrapper(
+#                        cube,self.map_area_frac, dims=long_left_over)
+#                plotcubes_std = utils.dask_weighted_stddev_wrapper(
+#                        cube,self.map_area_frac, dims=long_left_over)
 
-                plotcubes_std_p = plotcubes_m + plotcubes_std
-                plotcubes_std_m = plotcubes_m - plotcubes_std
+#                plotcubes_std_p = plotcubes_m + plotcubes_std
+#                plotcubes_std_m = plotcubes_m - plotcubes_std
+                percentiles = [1,5,25,50,75,95,99]
+                
+                pltcb = utils.lazy_percentiles(cube,percentiles,dims = long_left_over)
+                
+                pltcb = list(pltcb.values())
     
                 filename = self.__plot_dir__ + os.sep + basic_filename + \
                     "_" + "temp_series_1d" + "." + self.__output_type__
                 list_of_plots.append(filename)
     
-                x = Plot1D(iris.cube.CubeList([plotcubes_std_p,
-                                               plotcubes_m,
-                                               plotcubes_std_m
-                                               ]))
+                x = Plot1D(iris.cube.CubeList(pltcb))
     
                 fig = plt.figure()
     
                 ax = [plt.subplot(1, 1, 1)]
                 fig.set_figheight(1.2 * fig.get_figheight())
                 x.plot(ax=ax,
-                       title=["+ std",
-                              "mean",
-                              "- std"
-                              ],
-                       colors=["blue",
+                       title=["{}%".format(p) for p in percentiles],
+                       colors=["skyblue",
+                               "blue",
+                               "darkorchid",
                                "red",
-                               "blue"
+                               "darkorchid",
+                               "blue",
+                               "skyblue",
                                ])
-                fig.savefig(filename)
+                fig.savefig(filename, bbox_inches='tight')
                 plt.close(fig.number)
     
                 ESMValMD("meta",

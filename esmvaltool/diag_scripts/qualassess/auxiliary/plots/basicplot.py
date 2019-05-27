@@ -1085,15 +1085,19 @@ class Plot1D(object):
         plt.sca(ax[0])
 
         ymin = ymax = np.nan
+        
+        plotlist = []
 
         # plot line
         try:
             for ind, c in enumerate(self.cube):
-                plt.plot(
-                    c.coords("time")[0].points,
-                    c.data,
-                    color=cols[ind],
-                    label=title[ind])
+                linplot = plt.plot(
+                                c.coords("time")[0].points,
+                                c.data,
+                                color=cols[ind],
+                                label=title[ind],
+                                )
+                plotlist.append(linplot.copy())
                 ymin=np.nanmin([ymin,np.nanmin(c.data)])
                 ymax=np.nanmax([ymax,np.nanmax(c.data)])
             plt.gca().set_ylabel(self.name + " " + str(self.units),
@@ -1145,12 +1149,16 @@ class Plot1D(object):
             box = plt.gca().get_position()
             plt.gca().set_position([box.x0, box.y0 + 0.05 * box.height,
                                     box.width, box.y1 - box.height * 0.15])
-
+            handles, labels = plt.gca().get_legend_handles_labels()
+            order = [labels.index(t) for t in title]
+            handles = [handles[o] for o in order]
+            
             # Put a legend above current axis
-            plt.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
-                       ncol=3, mode="expand", borderaxespad=0.)
+            plt.gca().legend(handles, title, 
+                   bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
+                   ncol=7, mode="expand", borderaxespad=0.)
 
-#        removes ylabel instead of whitespace?!
+#        # removes ylabel instead of whitespace?!
 #        try:
 #            plt.tight_layout()
 #        except BaseException:

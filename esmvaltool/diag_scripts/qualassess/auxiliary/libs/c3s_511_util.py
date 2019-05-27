@@ -572,17 +572,25 @@ def __dask_perc_masked__(cube,perc):
     return percentile
 
 
-def lazy_percentiles(cube, percentiles):
+def lazy_percentiles(cube, percentiles, dims="time"):
     
     perc_dict = collections.OrderedDict()
     
-    pre_slice = cube.collapsed("time",iris.analysis.MEAN)
+    pre_slice = cube.collapsed(dims,iris.analysis.MEAN)
     
     dask_data = cube.core_data()
     dask_data[dask.array.ma.getmaskarray(dask_data)] = np.nan
     
-    dask_perc = dask.array.apply_along_axis(np.nanpercentile,
-                                            0,dask_data,percentiles)
+    if dims == "time":
+        dask_perc = dask.array.apply_along_axis(np.nanpercentile,
+                                                0,dask_data,percentiles)
+    elif np.all(np.sort(dims) == np.sort(["latitude","longitude"])):
+        dask_perc = dask.array.apply_along_axis(np.nanpercentile,
+                                                1,dask_data.reshape(
+                                                        dask_data.shape[0],-1),
+                                                        percentiles)  
+    else:
+        logger.error("other dimensions not implemented yet")
     
     dask_perc = dask.array.ma.masked_array(dask_perc,
                                               dask.array.isnan(dask_perc))
@@ -591,8 +599,12 @@ def lazy_percentiles(cube, percentiles):
         
         sub_cube = pre_slice.copy()
         
-        sub_data = (dask_perc[
-                [act_p == p for p in percentiles],:,:]).squeeze()
+        if dims == "time":
+            sub_data = (dask_perc[
+                    [act_p == p for p in percentiles],:,:]).squeeze()
+        elif np.all(np.sort(dims) == np.sort(["latitude","longitude"])):
+            sub_data = (dask_perc[
+                    :,[act_p == p for p in percentiles]]).squeeze()
     
         sub_cube.data = sub_data
         
