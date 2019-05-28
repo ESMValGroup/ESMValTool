@@ -50,7 +50,7 @@ diagnostics:
         styleset: "CMIP5"      # "CMIP5", "DEFAULT"
         range_option: 0        # 0 = use each dataset's whole time range as specified in namelist
                                # 1 = use only intersection of all time ranges 
-        multi_model_mean: True # Plot multi-model mean & std dev
+        multi_model_mean: true # Plot multi-model mean & std dev
         EMs_in_lg: False       # True: create legend label for each individual ensemble member
         fill_pole_hole: True   # True: Fill polar hole in data with sic = 1.
 
