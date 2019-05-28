@@ -204,10 +204,10 @@ for (model_idx in c(1:length(models_name))) {
     check_control[n] <- (tmp > 0)
   }
 
-  if (!any(grepl("yr",idx_select))) {
+  if (!any(grepl("yr", idx_select))) {
     timeres <- "mon"
     write_plots <- FALSE
-  } else if (!any(grepl("mon",idx_select))) {
+  } else if (!any(grepl("mon", idx_select))) {
     timeres <- "annual"
   } else {
     timeres <- "all"
@@ -221,13 +221,22 @@ for (model_idx in c(1:length(models_name))) {
     print("")
     infiles <- climofiles[models == models_name[model_idx]]
     indices <- sub("ETCCDI.*", "", idx_select)
+    # Find best chunk size
+    nc <- nc_open(infiles[1])
+    chunk <- floor( (nc$dim$time$len * nc$dim$lon$len * nc$dim$lat$len +
+                     1000.0) / (climdex_parallel * 1000000))
+    chunk <- max(min(100, chunk), 1)
+    nc_close(nc)
+    print(paste("Chunk size:", chunk))
+
     create.indices.from.files(infiles,  # nolint
       work_dir, template, author.data,
       base.range = base_range,
       parallel = climdex_parallel,
-      verbose = TRUE, max.vals.millions = 20,
+      verbose = TRUE,
       climdex.vars.subset = indices,
       climdex.time.resolution = timeres,
+      max.vals.millions = chunk,
       src = climdex_src
     )
 
@@ -242,7 +251,7 @@ for (model_idx in c(1:length(models_name))) {
       full.names = TRUE
     )
     for (fname in climdex_files) {
-      print(paste("Provenance for ",fname))
+      print(paste("Provenance for ", fname))
       provenance[[fname]] <- xprov
     }
   }
