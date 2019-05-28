@@ -900,9 +900,9 @@ begin
   ; write provenance to netcdf output and plot file(s)
   ; ------------------------------------------------------------------------
 
-  statistics = ("clim")
-  domain = ("glob")
-  plottype = ("taylor")
+  statistics = "clim"
+  domain = "global"
+  plottype = "taylor"
 
   do is = 0, numseas - 1
     ; note: because function log_provenance does not yet support to attach
