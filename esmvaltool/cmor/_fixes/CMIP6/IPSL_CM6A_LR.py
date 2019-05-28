@@ -24,8 +24,8 @@ class thetao(Fix):
         iris.cube.CubeList
 
         """
-        thetao = cubelist.extract_cube('sea_water_potential_temperature')
-        cell_area = cubelist.extract_cube('cell_area')
+        thetao = cubelist.extract_strict('sea_water_potential_temperature')
+        cell_area = cubelist.extract_strict('cell_area')
         cell_area = AuxCoord(
             cell_area.data,
             standard_name=cell_area.standard_name,
