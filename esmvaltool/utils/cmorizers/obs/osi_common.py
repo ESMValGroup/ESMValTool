@@ -44,8 +44,6 @@ def cmorize_osi(in_dir, out_dir, cfg, hemisphere):
         )
         for year in os.listdir(in_dir):
             year = int(year)
-            if year != 1986:
-                continue
             logger.info(
                 "CMORizing var %s for year %s", var, year
             )
