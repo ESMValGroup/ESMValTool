@@ -1,5 +1,7 @@
+# pylint: disable=invalid-name
 """Fixes for ACCESS1-0 model"""
 from cf_units import Unit
+import iris
 from ..fix import Fix
 
 
@@ -22,8 +24,10 @@ class allvars(Fix):
 
         """
         for cube in cubes:
-            coord_names = [coord.name() for coord in cube.coords()]
-            if 'time' in coord_names:
-                time = cube.coord('time', dim_coords=True)
+            try:
+                time = cube.coord('time')
+            except iris.exceptions.CoordinateNotFoundError:
+                continue
+            else:
                 time.units = Unit(time.units.name, 'gregorian')
         return cubes
