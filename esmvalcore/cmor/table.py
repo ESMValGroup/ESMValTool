@@ -70,15 +70,18 @@ class CMIP6Info(object):
     }
 
     def __init__(self, cmor_tables_path, default=None):
-        cmor_tables_path = self._get_cmor_path(cmor_tables_path)
-
-        self._cmor_folder = os.path.join(cmor_tables_path, 'Tables')
+        if 'obs4mips' in cmor_tables_path:
+            cmor_tables_path = self._get_cmor_path(cmor_tables_path)
+            self._cmor_folder = os.path.join(cmor_tables_path, 'Tables')
+        else:
+            cmor_tables_path = self._get_cmor_path(cmor_tables_path)
+            self._cmor_folder = os.path.join(cmor_tables_path, 'Tables')
+            self._load_control_vocabulary()
         self.default = default
 
         self.tables = {}
 
         self._load_coordinates()
-        self._load_control_vocabulary()
         for json_file in glob.glob(os.path.join(self._cmor_folder, '*.json')):
             if 'CV_test' in json_file or 'grids' in json_file:
                 continue
@@ -145,20 +148,19 @@ class CMIP6Info(object):
     def _load_control_vocabulary(self):
         self.experiments = {}
         self.institutes = {}
-        for json_file in glob.glob(
-                os.path.join(self._cmor_folder, '*CV*.json')):
-            with open(json_file) as inf:
-                table_data = json.loads(inf.read())
+        json_file = os.path.join(self._cmor_folder, 'CMIP6_CV.json')
+        with open(json_file) as inf:
+            table_data = json.loads(inf.read())
 
-                exps = table_data['CV']['experiment_id']
-                for exp_id in exps.keys():
-                    activity = exps[exp_id]['activity_id']
-                    self.experiments[exp_id] = activity
+            exps = table_data['CV']['experiment_id']
+            for exp_id in exps.keys():
+                activity = exps[exp_id]['activity_id']
+                self.experiments[exp_id] = activity
 
-                sources = table_data['CV']['source_id']
-                for source_id in sources.keys():
-                    institution = sources[source_id]['institution_id']
-                    self.institutes[source_id] = institution
+            sources = table_data['CV']['source_id']
+            for source_id in sources.keys():
+                institution = sources[source_id]['institution_id']
+                self.institutes[source_id] = institution
 
     def get_table(self, table):
         """
