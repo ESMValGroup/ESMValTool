@@ -1,16 +1,16 @@
+"""Fixes for ACCESS1-0 model."""
 # pylint: disable=invalid-name
-"""Fixes for ACCESS1-0 model"""
 from cf_units import Unit
 import iris
 from ..fix import Fix
 
 
 class allvars(Fix):
-    """Common fixes to all vars"""
+    """Common fixes to all vars."""
 
     def fix_metadata(self, cubes):
         """
-        Fix metadata
+        Fix metadata.
 
         Fixes wrong calendar 'gregorian' instead of 'proleptic_gregorian'
 

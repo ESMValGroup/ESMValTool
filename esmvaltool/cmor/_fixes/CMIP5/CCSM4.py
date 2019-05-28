@@ -1,5 +1,5 @@
-# pylint: disable=invalid-name, no-self-use, too-few-public-methods
 """Fixes for CCSM4 model."""
+# pylint: disable=invalid-name, no-self-use, too-few-public-methods
 import numpy as np
 
 from ..fix import Fix
@@ -44,35 +44,35 @@ class rsutcs(rlut):
 
 
 class rlus(rlut):
-    """Fixes for rlus"""
+    """Fixes for rlus."""
 
 
 class rsus(rlut):
-    """Fixes for rsus"""
+    """Fixes for rsus."""
 
 
 class rsuscs(rlut):
-    """Fixes for rsuscs"""
+    """Fixes for rsuscs."""
 
 
 class rlds(rlut):
-    """Fixes for rlds"""
+    """Fixes for rlds."""
 
 
 class rldscs(rlut):
-    """Fixes for rldscs"""
+    """Fixes for rldscs."""
 
 
 class rsds(rlut):
-    """Fixes for rsds"""
+    """Fixes for rsds."""
 
 
 class rsdscs(rlut):
-    """Fixes for rsdscs"""
+    """Fixes for rsdscs."""
 
 
 class rsdt(rlut):
-    """Fixes for rsdt"""
+    """Fixes for rsdt."""
 
 
 class so(Fix):

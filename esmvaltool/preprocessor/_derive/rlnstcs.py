@@ -21,8 +21,12 @@ class DerivedVariable(DerivedVariableBase):
 
     @staticmethod
     def calculate(cubes):
-        """Compute Net Atmospheric Longwave Cooling
-        to surface and outer space assuming clear sky."""
+        """
+        Compute variable `rlnstcs`.
+
+        Compute Net Atmospheric Longwave Cooling
+        to surface and outer space assuming clear sky.
+        """
         rldscs_cube = cubes.extract_strict(
             Constraint(name='surface_downwelling_longwave_flux_in_air_' +
                        'assuming_clear_sky'))
