@@ -17,135 +17,107 @@ documentation:
   projects:
     - esmval
 
+
+datasets:
+  - {dataset: ACCESS1-0}
+  - {dataset: ACCESS1-3}
+  - {dataset: bcc-csm1-1}
+  - {dataset: bcc-csm1-1-m}
+  - {dataset: CanESM2}
+  - {dataset: CCSM4}
+  - {dataset: CESM1-CAM5}
+  - {dataset: CMCC-CM}
+  - {dataset: CMCC-CMS}
+  - {dataset: CNRM-CM5}
+  - {dataset: CSIRO-Mk3-6-0}
+  - {dataset: FGOALS-g2}
+  - {dataset: GFDL-CM3}
+  - {dataset: GFDL-ESM2G}
+  - {dataset: GFDL-ESM2M}
+  - {dataset: GISS-E2-H}
+  - {dataset: GISS-E2-H-CC}
+  - {dataset: GISS-E2-R}
+  - {dataset: GISS-E2-R-CC}
+  - {dataset: HadCM3}
+  - {dataset: HadGEM2-ES}
+  - {dataset: inmcm4}
+  - {dataset: IPSL-CM5A-LR}
+  - {dataset: IPSL-CM5A-MR}
+  - {dataset: IPSL-CM5B-LR}
+  - {dataset: MIROC5}
+  - {dataset: MIROC-ESM}
+  - {dataset: MIROC-ESM-CHEM}
+  - {dataset: MPI-ESM-LR}
+  - {dataset: MPI-ESM-MR}
+  - {dataset: MRI-CGCM3}
+  - {dataset: MRI-ESM1}
+  - {dataset: NorESM1-M}
+  - {dataset: NorESM1-ME}
+
+
 preprocessors:
-  pp_noop:
-    {}
   pp_mmm:
-    multi_model_statistics: # do not use for SIE timeseries: unnecessarily expensive
+    multi_model_statistics:  # do not use for SIE timeseries (too expensive)
       span: overlap
       statistics: mean
       exclude: additional_datasets
-  pp_regrid:
-    regrid:
-      target_grid: 1x1
-      scheme: linear  # area_weighted
-
 
 diagnostics:
   seaice_tsline_NH:
     description: Timeseries of September Arctic sea ice area and extent
-    variables: 
+    variables:
       sic:
-        preprocessor: pp_noop
         mip: OImon
-        field: T2Ms 
         fx_files: [areacello]
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        start_yeaer: 1960
+        end_year: 2005
         additional_datasets:
-          - {dataset: HadISST,   project: OBS,  type: reanaly,  version: 20130524,  start_year: 1960,  end_year: 2005,  tier: 2}
+          - {dataset: HadISST, project: OBS, type: reanaly, version: 1, tier: 2}
     scripts:
       tsline:
         script: seaice/seaice_tsline.ncl
-        region: "Arctic"       # "Arctic" or "Antarctic"; entire hemisphere will be evaluated
-        month: "9"             # A = annual mean, 3 = March, 9 = September
-        styleset: "CMIP5"      # "CMIP5", "DEFAULT"
-        range_option: 0        # 0 = use each dataset's whole time range as specified in namelist
-                               # 1 = use only intersection of all time ranges 
-        multi_model_mean: true # Plot multi-model mean & std dev
-        EMs_in_lg: False       # True: create legend label for each individual ensemble member
-        fill_pole_hole: True   # True: Fill polar hole in data with sic = 1.
+        # "Arctic" or "Antarctic"; entire hemisphere will be evaluated
+        region: "Arctic"
+        # A = annual mean, 3 = March, 9 = September
+        month: "9"
+        # "CMIP5", "DEFAULT"
+        styleset: "CMIP5"
+        # Plot multi-model mean & std dev
+        multi_model_mean: true
+        # Create legend label for each individual ensemble member
+        EMs_in_lg: false
+        # Fill polar hole in data with sic = 1.
+        fill_pole_hole: true
 
   seaice_tsline_SH:
     description: Timeseries of September Antarctic sea ice area and extent
-    variables: 
+    variables:
       sic:
-        preprocessor: pp_noop
         mip: OImon
-        field: T2Ms 
         fx_files: [areacello]
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        start_yeaer: 1960
+        end_year: 2005
+
         additional_datasets:
-          - {dataset: HadISST,   project: OBS,  type: reanaly,  version: 20130524,  start_year: 1960,  end_year: 2005,  tier: 2}
+          - {dataset: HadISST, project: OBS, type: reanaly, version: 1, tier: 2}
     scripts:
       tsline:
         script: seaice/seaice_tsline.ncl
-        region: "Antarctic"    # "Arctic" or "Antarctic"; entire hemisphere will be evaluated
-        month: "9"             # A = annual mean, 3 = March, 9 = September
-        styleset: "CMIP5"      # "CMIP5", "DEFAULT"
-        range_option: 0        # 0 = use each dataset's whole time range as specified in namelist
-                               # 1 = use only intersection of all time ranges 
-        multi_model_mean: True # Plot multi-model mean & std dev
-        EMs_in_lg: False       # True: create legend label for each individual ensemble member
-        fill_pole_hole: False  # True: Fill polar hole in data with sic = 1.
-
-
-datasets:
-
- - {dataset: ACCESS1-0,      project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960, end_year: 2005}
-
- - {dataset: ACCESS1-3,      project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005} 
-
- - {dataset: bcc-csm1-1,     project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}  
-
- - {dataset: bcc-csm1-1-m,   project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}  
-
- - {dataset: CanESM2,        project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
-
- - {dataset: CCSM4,          project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
-
- - {dataset: CESM1-CAM5,     project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
-
- - {dataset: CMCC-CM,        project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
-
- - {dataset: CMCC-CMS,       project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
-
- - {dataset: CNRM-CM5,       project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
-
- - {dataset: CSIRO-Mk3-6-0,  project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
-
- - {dataset: FGOALS-g2,      project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
-
- - {dataset: GFDL-CM3,       project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
-
- - {dataset: GFDL-ESM2G,     project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
-
- - {dataset: GFDL-ESM2M,     project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
-
- - {dataset: GISS-E2-H,      project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
-  
- - {dataset: GISS-E2-H-CC,   project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
-
- - {dataset: GISS-E2-R,      project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
-
- - {dataset: GISS-E2-R-CC,   project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
-
- - {dataset: HadCM3,         project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
-  
- - {dataset: HadGEM2-ES,     project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
-
- - {dataset: inmcm4,         project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
-
- - {dataset: IPSL-CM5A-LR,   project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
-    
- - {dataset: IPSL-CM5A-MR,   project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
-
- - {dataset: IPSL-CM5B-LR,   project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
-
- - {dataset: MIROC5,         project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
-
- - {dataset: MIROC-ESM,      project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
-
- - {dataset: MIROC-ESM-CHEM, project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
-
- - {dataset: MPI-ESM-LR,     project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
-
- - {dataset: MPI-ESM-MR,     project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
-
- - {dataset: MRI-CGCM3,      project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
-
- - {dataset: MRI-ESM1,       project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
-
- - {dataset: NorESM1-M,      project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}
-  
- - {dataset: NorESM1-ME,     project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1960,  end_year: 2005}  
-
-  
-
+        # "Arctic" or "Antarctic"; entire hemisphere will be evaluated
+        region: "Antarctic"
+        # A = annual mean, 3 = March, 9 = September
+        month: "9"
+        # "CMIP5", "DEFAULT"
+        styleset: "CMIP5"
+        # Plot multi-model mean & std dev
+        multi_model_mean: true
+        # Create legend label for each individual ensemble member
+        EMs_in_lg: false
+        # Fill polar hole in data with sic = 1.
+        fill_pole_hole: false
