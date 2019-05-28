@@ -14,18 +14,10 @@ class DerivedVariable(DerivedVariableBase):
 
     # Required variables
     required = [
-        {
-            'short_name': 'rsdscs'
-        },
-        {
-            'short_name': 'rsdt'
-        },
-        {
-            'short_name': 'rsuscs'
-        },
-        {
-            'short_name': 'rsutcs'
-        },
+        {'short_name': 'rsdscs'},
+        {'short_name': 'rsdt'},
+        {'short_name': 'rsuscs'},
+        {'short_name': 'rsutcs'},
     ]
 
     @staticmethod
