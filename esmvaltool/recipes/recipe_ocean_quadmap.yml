@@ -10,7 +10,7 @@ documentation:
     - demo_le
 
   maintainer:
-    - schl_ma
+    - demo_le
 
   references:
     - demora2018gmd
@@ -49,7 +49,6 @@ diagnostics:
      variables:
        tos: # Temperature ocean surface
          preprocessor: prep_quad_map
-         field: TO2Ms
          mip: Omon
      additional_datasets:
 #        filename: tos_ATSR_L3_ARC-v1.1.1_199701-201112.nc

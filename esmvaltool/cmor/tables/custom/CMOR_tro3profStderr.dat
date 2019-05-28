@@ -6,11 +6,11 @@ modeling_realm:    atmos
 !----------------------------------
 ! Variable attributes:
 !----------------------------------
-standard_name:     Standard error of mole_fraction_of_ozone_in_air
+standard_name:     
 units:             1e-9
 cell_methods:      time: mean
 cell_measures:     area: areacella
-long_name:         Ozone Volume Mixing Ratio
+long_name:         Ozone Volume Mixing Ratio Error
 comment:
 !----------------------------------
 ! Additional variable information:

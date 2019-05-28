@@ -6,7 +6,7 @@ modeling_realm:    atmos
 !----------------------------------
 ! Variable attributes:
 !----------------------------------
-standard_name:     surface_temperature_error
+standard_name:     
 units:             K
 cell_methods:      time: mean
 cell_measures:     area: areacella

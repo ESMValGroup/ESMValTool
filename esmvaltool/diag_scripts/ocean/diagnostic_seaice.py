@@ -42,6 +42,20 @@ An approproate preprocessor would be::
         start_latitude: 0.
         end_latitude: 90.
 
+
+Note that this recipe may not function on machines with no access to the
+internet, as cartopy may try to download the shapefiles. The solution to
+this issue is the put the relevant cartopy shapefiles on a disk visible to your
+machine, then link that path to ESMValTool via the `auxiliary_data_dir`
+variable. The cartopy masking files can be downloaded from::
+
+    https://www.naturalearthdata.com/downloads/
+
+Here, cartopy uses the 1:10, physical coastlines and land files::
+
+        110m_coastline.dbf  110m_coastline.shp  110m_coastline.shx
+        110m_land.dbf  110m_land.shp  110m_land.shx
+
 This tool is part of the ocean diagnostic tools package in the ESMValTool.
 
 Author: Lee de Mora (PML)
@@ -69,7 +83,6 @@ logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
 # Note that this recipe may not function on machines with no access to
 # the internet, as cartopy may try to download geographic files.
-# TODO: This recipe needs to be fixed to manage cartopy's download. issue #795
 
 
 def create_ice_cmap(threshold=0.15):
@@ -652,6 +665,8 @@ def main(cfg):
         the opened global config dictionairy, passed by ESMValTool.
 
     """
+    cartopy.config['data_dir'] = cfg['auxiliary_data_dir']
+
     for index, metadata_filename in enumerate(cfg['input_files']):
         logger.info(
             'metadata filename:\t%s',

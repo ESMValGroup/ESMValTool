@@ -15,22 +15,13 @@
 import sys
 import os
 
-
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 os.chdir(os.path.abspath(os.path.dirname(__file__)))
-sys.path.insert(0,  os.path.abspath('./../../..'))
+sys.path.insert(0, os.path.abspath('./../../..'))
 
 from esmvaltool._version import __version__
-
-#add process_nl_docs in sphinx documentation source folder
-sys.path.insert(0, os.path.abspath('.'))
-import process_ncl_docs2 as process_ncl_docs
-
-
-# add custom extensions directory to python path
-#sys.path.append(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'extensions'))
 
 # -- General configuration ------------------------------------------------
 
@@ -51,13 +42,25 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.napoleon',
 ]
-process_ncl_docs.create_doc_files_from_ncl()
 
 autodoc_default_flags = [
     'members',
     'undoc-members',
     'inherited-members',
     'show-inheritance',
+]
+
+#autodoc_mock_imports = ['cf_units', 'iris', 'matplotlib', 'numpy', 'cartopy', 'cftime', 'netCDF4', 'yaml', 'PIL', 'prov', 'scipy', 'psutil', 'shapely', 'stratify', 'ESMF']
+autodoc_mock_imports = [
+    'iris',
+    'cftime',
+    'PIL',
+    'prov',
+    'scipy',
+    'stratify',
+    'ESMF',
+    'cartopy',
+    'cf_units',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -122,7 +125,6 @@ pygments_style = 'sphinx'
 
 # If true, keep warnings as "system message" paragraphs in the built documents.
 #keep_warnings = False
-
 
 # -- Options for HTML output ----------------------------------------------
 
@@ -211,14 +213,15 @@ htmlhelp_basename = 'ESMValTooldoc'
 # -- Options for LaTeX output ---------------------------------------------
 
 latex_elements = {
-# The paper size ('letterpaper' or 'a4paper').
-#'papersize': 'letterpaper',
+    # The paper size ('letterpaper' or 'a4paper').
+    #'papersize': 'letterpaper',
 
-# The font size ('10pt', '11pt' or '12pt').
-#'pointsize': '10pt',
+    # The font size ('10pt', '11pt' or '12pt').
+    #'pointsize': '10pt',
 
-# Additional stuff for the LaTeX preamble.
-'preamble': r'''
+    # Additional stuff for the LaTeX preamble.
+    'preamble':
+    r'''
    \makeatletter
    \renewcommand{\maketitle}{
      \newcommand{\MONTH}{%
@@ -260,8 +263,10 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  ('index', 'ESMValTool_Users_Guide.tex', u'ESMValTool User\'s and Developer\'s Guide',
-   u'Veronika Eyring, Axel Lauer, Mattia Righi, Martin Evaldsson et al.', 'manual'),
+    ('index', 'ESMValTool_Users_Guide.tex',
+     u'ESMValTool User\'s and Developer\'s Guide',
+     u'ESMValTool Development Team',
+     'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -285,7 +290,6 @@ latex_toplevel_sectioning = "part"
 # If false, no module index is generated.
 #latex_domain_indices = True
 
-
 # -- Options for manual page output ---------------------------------------
 
 # One entry per manual page. List of tuples
@@ -297,7 +301,6 @@ latex_toplevel_sectioning = "part"
 
 # If true, show URL addresses after external links.
 #man_show_urls = False
-
 
 # -- Options for Texinfo output -------------------------------------------
 
@@ -322,14 +325,13 @@ latex_toplevel_sectioning = "part"
 # If true, do not generate a @detailmenu in the "Top" node's menu.
 #texinfo_no_detailmenu = False
 
-
 # -- Options for Epub output ----------------------------------------------
 
 # Bibliographic Dublin Core info.
 epub_title = u'ESMValTool'
-epub_author = u'Veronika Eyring, Axel Lauer, Mattia Righi, Martin Evaldsson et al.'
-epub_publisher = u'Veronika Eyring, Axel Lauer, Mattia Righi, Martin Evaldsson et al.'
-epub_copyright = u'2015, Veronika Eyring, Axel Lauer, Mattia Righi, Martin Evaldsson et al.'
+epub_author = u'ESMValTool Development Team'
+epub_publisher = u'ESMValTool Development Team'
+epub_copyright = u'ESMValTool Development Team'
 
 # The basename for the epub file. It defaults to the project name.
 #epub_basename = u'ESMValTool'
@@ -394,5 +396,10 @@ epub_exclude_files = ['search.html']
 
 numfig = True
 
-# Example configuration for intersphinx: refer to the Python standard library.
-intersphinx_mapping = {'http://docs.python.org/': None}
+# Configuration for intersphinx
+intersphinx_mapping = {
+    'python': ('https://docs.python.org/3/', None),
+    'iris': ('https://scitools.org.uk/iris/docs/latest/', None),
+    'numpy': ('https://docs.scipy.org/doc/numpy/', None),
+    'scipy': ('https://docs.scipy.org/doc/scipy/reference/', None),
+}

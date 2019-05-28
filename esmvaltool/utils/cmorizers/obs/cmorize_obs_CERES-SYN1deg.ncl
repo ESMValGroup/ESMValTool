@@ -54,17 +54,17 @@ begin
   YEAR2 = 2016
 
   ; CMOR name
-  VARS = (/"rsus", "rsds", \
-           "rlus", "rlds", \
-           "rldscs", "rsut", \
-           "rlut", "rsutcs", \
-           "rlutcs", "rsdt", \
-           "rsutcs", "rsut", \
-           "rlutcs", "rlut", \
-           "rsuscs", "rsus", \
-           "rsdscs", "rsds", \
-           "rluscs", "rlus", \
-           "rldscs", "rlds"/)
+  VAR = (/"rsus", "rsds", \
+          "rlus", "rlds", \
+          "rldscs", "rsut", \
+          "rlut", "rsutcs", \
+          "rlutcs", "rsdt", \
+          "rsutcs", "rsut", \
+          "rlutcs", "rlut", \
+          "rsuscs", "rsus", \
+          "rsdscs", "rsds", \
+          "rluscs", "rlus", \
+          "rldscs", "rlds"/)
 
   ; Name in the raw data
   NAME = (/"sfc_comp_sw_up_all_mon", "sfc_comp_sw_down_all_mon", \
@@ -80,11 +80,24 @@ begin
            "sfc_comp_lw_down_clr_3h", "sfc_comp_lw_down_all_3h"/)
 
   ; MIP
-  MIPS = (/"Amon", "Amon", \
-           "Amon", "Amon", \
-           "Amon", "Amon", \
-           "Amon", "Amon", \
-           "Amon", "Amon", \
+  MIP = (/"Amon", "Amon", \
+          "Amon", "Amon", \
+          "Amon", "Amon", \
+          "Amon", "Amon", \
+          "Amon", "Amon", \
+          "3hr", "3hr", \
+          "3hr", "3hr", \
+          "3hr", "3hr", \
+          "3hr", "3hr", \
+          "3hr", "3hr", \
+          "3hr", "3hr"/)
+
+  ; Frequency
+  FREQ = (/"mon", "mon", \
+           "mon", "mon", \
+           "mon", "mon", \
+           "mon", "mon", \
+           "mon", "mon", \
            "3hr", "3hr", \
            "3hr", "3hr", \
            "3hr", "3hr", \
@@ -92,36 +105,44 @@ begin
            "3hr", "3hr", \
            "3hr", "3hr"/)
 
+  ; CMOR table: Amon version is used also for 3hr, since not all variables are
+  ; available in 3hr (the tables are identical anyway)
+  CMOR_TABLE = new(dimsizes(MIP), string)
+  CMOR_TABLE = getenv("esmvaltool_root") + \
+    "/cmor/tables/cmip5/Tables/CMIP5_Amon"
+  CMOR_TABLE(ind(VAR.eq."rluscs")) =  getenv("esmvaltool_root") + \
+    "/cmor/tables/custom/CMOR_rluscs.dat"
+
+  ; Type
+  TYPE = "sat"
+
   ; Version
   VERSION = "Ed3A"
 
-  ; CMOR table: Amon version is used also for 3hr, since not all variables are
-  ; available in 3hr (the tables are identical anyway)
-  CMOR_TABLE = new(dimsizes(MIPS), string)
-  CMOR_TABLE = getenv("esmvaltool_root") + \
-    "/cmor/tables/cmip5/Tables/CMIP5_Amon"
-  CMOR_TABLE(ind(VARS.eq."rluscs")) =  getenv("esmvaltool_root") + \
-    "/cmor/tables/custom/CMOR_rluscs.dat"
+  ; Global attributes
+  SOURCE = "https://ceres-tool.larc.nasa.gov/ord-tool/jsp/SYN1degSelection.jsp"
+  REF = "Wielicki et al., Bull. Amer. Meteor. Soc., " + \
+    "doi: 10.1175/1520-0477(1996)077<0853:CATERE>2.0.CO;2, 1996"
+  COMMENT = ""
 
 end
 
 begin
 
-  do vv = 0, dimsizes(VARS) - 1
+  do vv = 0, dimsizes(VAR) - 1
 
-    log_info("Processing " + VARS(vv) + " (" + MIPS(vv) + ")")
+    log_info("Processing " + VAR(vv) + " (" + MIP(vv) + ")")
 
     do yy = YEAR1, YEAR2
 
       ; Read file
-      if (MIPS(vv).eq."Amon") then
+      if (MIP(vv).eq."Amon") then
         f = addfile(input_dir_path + "CERES_SYN1deg-Month_Terra-Aqua-" + \
                     "MODIS_" + VERSION + "_Subset_200003-201702.nc", "r")
         xx = f->$NAME(vv)$
         delete(f)
-        freq = "M"
       end if
-      if (MIPS(vv).eq."3hr") then
+      if (MIP(vv).eq."3hr") then
         files = systemfunc("ls " + input_dir_path + "CERES_SYN1deg-3H_" + \
                            "Terra-Aqua-MODIS_" + VERSION + "_Subset_*" + \
                            yy + "*.nc")
@@ -129,7 +150,6 @@ begin
         xx = f[:]->$NAME(vv)$
         delete(f)
         delete(files)
-        freq = "3H"
       end if
 
       ; Time selection
@@ -138,59 +158,35 @@ begin
       delete(date)
       delete(xx)
 
-      ; Format time coordinate
-      ctime = time_attrib(output&time, yy, yy, freq)
-      delete(output&time)
-      output&time = ctime
-      delete(ctime)
-
-      ; Format latitude coordinate
+      ; Format coordinates
+      output!0 = "time"
       output!1 = "lat"
-      if (isMonotonic(output&lat) .eq. 0) then
-        error_msg("f", DIAG_SCRIPT, "", "non-monotonic latitude coordinate")
-      end if
-      if (isMonotonic(output&lat) .eq. -1) then
-        output = output(:, ::-1, :)
-      end if
-      clat = lat_attrib(output&lat)
-      delete(output&lat)
-      output&lat = clat
-      delete(clat)
-
-      ; Format longitude coordinate
       output!2 = "lon"
-      if (isMonotonic(output&lon) .eq. 0) then
-        error_msg("f", DIAG_SCRIPT, "", "non-monotonic longitude coordinate")
-      end if
-      if (any(output&lon.lt.0.)) then
-        output = lonFlip(output)
-      end if
-      clon = lon_attrib(output&lon)
-      delete(output&lon)
-      output&lon = clon
-      delete(clon)
+      format_coords(output, yy + "0101", yy + "1231", FREQ(vv))
 
       ; Set variable attributes
-      tmp = var_attrib(output, VARS(vv), CMOR_TABLE(vv))
+      tmp = format_variable(output, VAR(vv), CMOR_TABLE(vv))
       delete(output)
       output = tmp
       delete(tmp)
 
-      ; Set global attributes
-      gAtt = set_global_atts( \
-        OBSNAME, TIER, \
-        "ftp://anon-ftp.ceda.ac.uk/neodc/esacci/aerosol/data/", \
-        "Wielicki et al., Bull. Amer. Meteor. Soc., " + \
-        "doi: 10.1175/1520-0477(1996)077<0853:CATERE>2.0.CO;2, 1996", "")
+      ; Calculate coordinate bounds
+      bounds = guess_coord_bounds(output, FREQ(vv))
 
-      ; Outfile
-      fout = output_dir_path + "OBS_" + OBSNAME + "_sat_" + VERSION + "_" + \
-        MIPS(vv) + "_" + VARS(vv) + "_" + yy + "01-" + yy + "12.nc"
+      ; Set global attributes
+      gAtt = set_global_atts(OBSNAME, TIER, SOURCE, REF, COMMENT)
+
+      ; Output file
+      DATESTR = yy + "01-" + yy + "12"
+      fout = output_dir_path + \
+        str_join((/"OBS", OBSNAME, TYPE, VERSION, \
+                   MIP(vv), VAR(vv), DATESTR/), "_") + ".nc"
 
       ; Write variable
-      write_nc(fout, VARS(vv), output, gAtt)
+      write_nc(fout, VAR(vv), output, bounds, gAtt)
       delete(gAtt)
       delete(output)
+      delete(bounds)
 
     end do
 

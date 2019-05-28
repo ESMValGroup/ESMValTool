@@ -25,7 +25,6 @@ diagnostics:
       tas: &variable_settings
         project: CMIP5
         mip: Amon
-        field: T2Ms
         ensemble: r1i1p1
         exp: historical
         start_year: 1950

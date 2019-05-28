@@ -44,16 +44,21 @@ begin
   YEAR1 = 1997
   YEAR2 = 2011
 
-  ; MIP
-  MIP = "aero"
-
   ; Selected variable (standard name)
-  VARS = (/"od550aer", "od870aer", "od550lt1aer", "abs550aer", \
-           "od550aerStderr", "od870aerStderr"/)
+  VAR = (/"od550aer", "od870aer", "od550lt1aer", "abs550aer", \
+          "od550aerStderr", "od870aerStderr"/)
 
   ; Name in the raw data
   NAME = (/"AOD550_mean", "AOD870_mean", "FM_AOD550_mean", "AAOD550_mean", \
            "AOD550_uncertainty", "AOD870_uncertainty"/)
+
+  ; MIP
+  MIP = (/"aero", "aero", "aero", "aero", \
+          "aero", "aero"/)
+
+  ; Frequency
+  FREQ = (/"mon", "mon", "mon", "mon", \
+           "mon", "mon"/)
 
   ; CMOR table
   CMOR_TABLE = getenv("esmvaltool_root") + "/cmor/tables/" + \
@@ -64,13 +69,28 @@ begin
       "custom/CMOR_od550aerStderr.dat", \
       "custom/CMOR_od870aerStderr.dat"/)
 
+  ; Type
+  TYPE = "sat"
+
+  ; Version
+  VERSION = "SU-v4.21"
+
+  ; Global attributes
+  SOURCE = "ftp://anon-ftp.ceda.ac.uk/neodc/esacci/aerosol/data/"
+  REF = "Popp et al., ESA Aerosol Climate Change Initiative " + \
+    "(ESA Aerosol_cci) data: AOD v4.21 via Centre for Environmental " + \
+    "Data Analysis, 2016"
+  COMMENT = "Combined dataset ERS2-ATSR2 (1997-2002) and ENVISAT-AATSR " + \
+    "(2003-2011), based on the University of Swansea algorithm " + \
+    "(monthly mean L3 data)"
+
 end
 
 begin
 
-  do vID = 0, dimsizes(VARS) - 1
+  do vv = 0, dimsizes(VAR) - 1
 
-    log_info("Processing " + VARS(vID))
+    log_info("Processing " + VAR(vv) + " (" + MIP(vv) + ")")
 
     time = create_timec(YEAR1, YEAR2)
     date = cd_calendar(time, 1)
@@ -91,7 +111,7 @@ begin
 
         ; Extract data
         f = addfile(fname, "r")
-        xx = f->$NAME(vID)$
+        xx = f->$NAME(vv)$
 
         ; Assign to global array
         if (.not.isdefined("output")) then
@@ -113,63 +133,35 @@ begin
     ; Set fill value
     output = where(output.eq.-999, output@_FillValue, output)
 
-    ; Format time coordinate
-    ctime = time_attrib(output&time, YEAR1, YEAR2, "M")
-    delete(output&time)
-    output&time = ctime
-    delete(ctime)
-
-    ; Format latitude coordinate
+    ; Format coordinates
+    output!0 = "time"
     output!1 = "lat"
-    if (isMonotonic(output&lat) .eq. 0) then
-      error_msg("f", DIAG_SCRIPT, "", "non-monotonic latitude coordinate")
-    end if
-    if (isMonotonic(output&lat) .eq. -1) then
-      output = output(:, ::-1, :)
-    end if
-    clat = lat_attrib(output&lat)
-    delete(output&lat)
-    output&lat = clat
-    delete(clat)
-
-    ; Format longitude coordinate
     output!2 = "lon"
-    if (isMonotonic(output&lon) .eq. 0) then
-      error_msg("f", DIAG_SCRIPT, "", "non-monotonic longitude coordinate")
-    end if
-    if (any(output&lon.lt.0.)) then
-      output = lonFlip(output)
-    end if
-    clon = lon_attrib(output&lon)
-    delete(output&lon)
-    output&lon = clon
-    delete(clon)
+    format_coords(output, YEAR1 + "0101", YEAR2 + "1231", FREQ(vv))
 
     ; Set variable attributes
-    tmp = var_attrib(output, VARS(vID), CMOR_TABLE(vID))
+    tmp = format_variable(output, VAR(vv), CMOR_TABLE(vv))
     delete(output)
     output = tmp
     delete(tmp)
 
-    ; Set global attributes
-    gAtt = set_global_atts( \
-      OBSNAME, TIER, \
-      "ftp://anon-ftp.ceda.ac.uk/neodc/esacci/aerosol/data/", \
-      "Popp et al., ESA Aerosol Climate Change Initiative " + \
-      "(ESA Aerosol_cci) data: AOD v4.21 via Centre for Environmental " + \
-      "Data Analysis, 2016", \
-      "Combined dataset ERS2-ATSR2 (1997-2002) and ENVISAT-AATSR " + \
-      "(2003-2011), based on the University of Swansea algorithm " + \
-      "(monthly mean L3 data)")
+    ; Calculate coordinate bounds
+    bounds = guess_coord_bounds(output, FREQ(vv))
 
-    ; Outfile
-    fout = output_dir_path + "OBS_" + OBSNAME + "_sat_SU-v4.21_" + MIP + \
-      "_" + VARS(vID) + "_" + YEAR1 + "01-" + YEAR2 + "12.nc"
+    ; Set global attributes
+    gAtt = set_global_atts(OBSNAME, TIER, SOURCE, REF, COMMENT)
+
+    ; Output file
+    DATESTR = YEAR1 + "01-" + YEAR2 + "12"
+    fout = output_dir_path + \
+      str_join((/"OBS", OBSNAME, TYPE, VERSION, \
+                 MIP(vv), VAR(vv), DATESTR/), "_") + ".nc"
 
     ; Write variable
-    write_nc(fout, VARS(vID), output, gAtt)
+    write_nc(fout, VAR(vv), output, bounds, gAtt)
     delete(gAtt)
     delete(output)
+    delete(bounds)
 
   end do
 

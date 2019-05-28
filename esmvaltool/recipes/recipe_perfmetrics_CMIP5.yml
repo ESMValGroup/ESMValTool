@@ -195,7 +195,6 @@ diagnostics:
         reference_dataset: ERA-Interim
         alternative_dataset: NCEP
         mip: Amon
-        field: T3M
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
@@ -257,12 +256,12 @@ diagnostics:
     scripts:
       cycle: &cycle_settings
         script: perfmetrics/main.ncl
-        # Plot type ('cycle', 'zonal', 'latlon', 'cycle_latlon')
+        # Plot type ('cycle', 'zonal', 'latlon', 'cycle_latlon', 'cycle_zonal')
         plot_type: cycle
         # Time average ('opt' argument of time_operations.ncl)
         time_avg: monthlyclim
-        # Region ('Global', 'Tropics', 'NH extratropics', 'SH extratropics')
-        region: Global
+        # Region ('global', 'trop', 'nhext', 'shext')
+        region: global
         # Plot standard deviation ('all', 'none', 'ref_model' or dataset name)
         plot_stddev: ref_model
         # Plot legend in a separate file
@@ -271,10 +270,8 @@ diagnostics:
         styleset: CMIP5
       grading: &grading_settings
         <<: *cycle_settings
-        # Plot type ('cycle', 'zonal', 'latlon', 'cycle_latlon')
+        # Plot type ('cycle', 'zonal', 'latlon', 'cycle_latlon', 'cycle_zonal')
         plot_type: cycle_latlon
-        # Draw plots
-        draw_plots: false
         # Calculate grading
         calc_grading: true
         # Metric ('RMSD', 'BIAS', taylor')
@@ -295,7 +292,6 @@ diagnostics:
         reference_dataset: ERA-Interim
         alternative_dataset: NCEP
         mip: Amon
-        field: T3M
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
@@ -377,7 +373,6 @@ diagnostics:
         reference_dataset: ERA-Interim
         alternative_dataset: NCEP
         mip: Amon
-        field: T3M
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
@@ -453,7 +448,6 @@ diagnostics:
         reference_dataset: ERA-Interim
         alternative_dataset: NCEP
         mip: Amon
-        field: T3M
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
@@ -529,7 +523,6 @@ diagnostics:
         reference_dataset: ERA-Interim
         alternative_dataset: NCEP
         mip: Amon
-        field: T3M
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
@@ -591,12 +584,12 @@ diagnostics:
     scripts:
       zonal: &zonal_settings
         script: perfmetrics/main.ncl
-        # Plot type ('cycle', 'zonal', 'latlon', 'cycle_latlon')
+        # Plot type ('cycle', 'zonal', 'latlon', 'cycle_latlon', 'cycle_zonal')
         plot_type: zonal
         # Time average ('opt' argument of time_operations.ncl)
         time_avg: annualclim
-        # Region ('Global', 'Tropics', 'NH extratropics', 'SH extratropics')
-        region: Global
+        # Region ('global', 'trop', 'nhext', 'shext')
+        region: global
         # Draw difference plots
         plot_diff: true
         # Calculate t-test in difference plots
@@ -624,7 +617,6 @@ diagnostics:
         reference_dataset: ERA-Interim
         alternative_dataset: NCEP
         mip: Amon
-        field: T3M
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
@@ -703,7 +695,6 @@ diagnostics:
         reference_dataset: ERA-Interim
         alternative_dataset: NCEP
         mip: Amon
-        field: T3M
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
@@ -783,7 +774,6 @@ diagnostics:
         reference_dataset: ERA-Interim
         alternative_dataset: NCEP
         mip: Amon
-        field: T3M
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
@@ -861,7 +851,6 @@ diagnostics:
         reference_dataset: ERA-Interim
         alternative_dataset: NCEP
         mip: Amon
-        field: T3M
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
@@ -940,7 +929,6 @@ diagnostics:
         reference_dataset: ERA-Interim
         alternative_dataset: NCEP
         mip: Amon
-        field: T3M
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
@@ -1018,7 +1006,6 @@ diagnostics:
         reference_dataset: AIRS
         alternative_dataset: ERA-Interim
         mip: Amon
-        field: T3M
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
@@ -1089,7 +1076,6 @@ diagnostics:
         reference_dataset: ERA-Interim
         alternative_dataset: NCEP
         mip: Amon
-        field: T2Ms
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
@@ -1151,12 +1137,12 @@ diagnostics:
     scripts:
       latlon: &latlon_settings
         script: perfmetrics/main.ncl
-        # Plot type ('cycle', 'zonal', 'latlon', 'cycle_latlon')
+        # Plot type ('cycle', 'zonal', 'latlon', 'cycle_latlon', 'cycle_zonal')
         plot_type: latlon
         # Time average ('opt' argument of time_operations.ncl)
         time_avg: annualclim
-        # Region ('Global', 'Tropics', 'NH extratropics', 'SH extratropics')
-        region: Global
+        # Region ('global', 'trop', 'nhext', 'shext')
+        region: global
         # Draw difference plots
         plot_diff: true
         # Calculate t-test in difference plots
@@ -1191,7 +1177,6 @@ diagnostics:
         reference_dataset: ESACCI-SST
         alternative_dataset: HadISST
         mip: Amon
-        field: T2Ms
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
@@ -1263,7 +1248,6 @@ diagnostics:
         preprocessor: ppNOLEV1
         reference_dataset: GPCP-SG
         mip: Amon
-        field: T2Ms
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
@@ -1340,9 +1324,8 @@ diagnostics:
       clt:
         preprocessor: ppNOLEV2
         reference_dataset: ESACCI-CLOUD
-        alternative_dataset: PATMOS
+        alternative_dataset: PATMOS-x
         mip: Amon
-        field: T2Ms
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
@@ -1390,8 +1373,8 @@ diagnostics:
       - {dataset: MRI-CGCM3}
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
-      - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-fv2.0, tier: 2}
-      - {dataset: PATMOS, project: OBS, type: sat, version: 1, tier: 2}
+      - {dataset: ESACCI-CLOUD, project: OBS, type: sat, version: AVHRR-fv3.0, tier: 2}
+      - {dataset: PATMOS-x, project: OBS, type: sat, version: NOAA, tier: 2}
     scripts:
       latlon:
         <<: *latlon_settings
@@ -1421,7 +1404,6 @@ diagnostics:
         preprocessor: ppNOLEV1
         reference_dataset: CERES-EBAF
         mip: Amon
-        field: T2Ms
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
@@ -1492,7 +1474,6 @@ diagnostics:
         preprocessor: ppNOLEV1
         reference_dataset: CERES-EBAF
         mip: Amon
-        field: T2Ms
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
@@ -1560,7 +1541,6 @@ diagnostics:
         preprocessor: ppNOLEV1
         reference_dataset: CERES-EBAF
         mip: Amon
-        field: T2Ms
         derive: true
         force_derivation: false
         project: CMIP5
@@ -1618,6 +1598,11 @@ diagnostics:
         diff_levs: [-30, -25, -20, -15, -10, -5, 0, 5, 10, 15, 20, 25, 30]
       grading:
         <<: *grading_settings
+        # Metric ('RMSD', 'BIAS', taylor')
+        metric: [RMSD]
+        # Normalization ('mean', 'median', 'centered_median', 'none')
+        normalization: [centered_median]
+
 
 
   ### swcre: SHORTWAVE CLOUD FORCING ##########################################
@@ -1632,7 +1617,6 @@ diagnostics:
         preprocessor: ppNOLEV1
         reference_dataset: CERES-EBAF
         mip: Amon
-        field: T2Ms
         derive: true
         force_derivation: false
         project: CMIP5
@@ -1697,13 +1681,16 @@ diagnostics:
   ### od550aer: AEROSOL OPTICAL DEPTH AT 550 nm ###############################
   od550aer:
     description: Aerosol optical depth at 550 nm
+    themes:
+      - aerosols
+    realms:
+      - atmos
     variables:
       od550aer:
         preprocessor: ppNOLEV2thr10
         reference_dataset: ESACCI-AEROSOL
         alternative_dataset: MODIS
         mip: aero
-        field: T2Ms
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
@@ -1731,7 +1718,7 @@ diagnostics:
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
       - {dataset: ESACCI-AEROSOL, project: OBS, type: sat, version: SU-v4.21, tier: 2}
-      - {dataset: MODIS, project: OBS, type: sat, version: L3-C6, tier: 2}
+      - {dataset: MODIS, project: OBS, type: sat, version: MYD08-M3, tier: 3}
     scripts:
       grading:
         <<: *grading_settings
@@ -1744,12 +1731,15 @@ diagnostics:
   ### od870aer: AEROSOL OPTICAL DEPTH AT 870 nm ###############################
   od870aer:
     description: Aerosol optical depth at 870 nm
+    themes:
+      - aerosols
+    realms:
+      - atmos
     variables:
       od870aer:
         preprocessor: ppNOLEV1thr10
         reference_dataset: ESACCI-AEROSOL
         mip: aero
-        field: T2Ms
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
@@ -1781,12 +1771,15 @@ diagnostics:
   ### abs550aer: ABSORPTION OPTICAL DEPTH AT 550 nm ###########################
   abs550aer:
     description: Absorption optical depth at 550 nm
+    themes:
+      - aerosols
+    realms:
+      - atmos
     variables:
       abs550aer:
         preprocessor: ppNOLEV1thr10
         reference_dataset: ESACCI-AEROSOL
         mip: aero
-        field: T2Ms
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
@@ -1818,12 +1811,15 @@ diagnostics:
   ### od550lt1aer: FINE MODE AEROSOL OPTICAL DEPTH AT 550 nm ##################
   od550lt1aer:
     description: Fine mode optical depth at 550 nm
+    themes:
+      - aerosols
+    realms:
+      - atmos
     variables:
       od550lt1aer:
         preprocessor: ppNOLEV1thr10
         reference_dataset: ESACCI-AEROSOL
         mip: aero
-        field: T2Ms
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
@@ -1854,13 +1850,17 @@ diagnostics:
   ### toz: TOTAL COLUMN OZONE #################################################
   toz:
     description: Total column ozone
+    themes:
+      - chem
+      - ghg
+    realms:
+      - atmosChem
     variables:
       toz:
         preprocessor: ppNOLEV2thr10
         reference_dataset: ESACCI-OZONE
-        alternative_dataset: NIWA
+        alternative_dataset: NIWA-BS
         mip: Amon
-        field: T2Ms
         derive: true
         force_derivation: false
         project: CMIP5
@@ -1876,7 +1876,7 @@ diagnostics:
       - {dataset: GISS-E2-R, ensemble: r1i1p2}
       - {dataset: MIROC-ESM-CHEM}
       - {dataset: ESACCI-OZONE, project: OBS, type: sat, version: L3, tier: 2}
-      - {dataset: NIWA, project: OBS, type: reanaly, version: 1, tier: 3}
+      - {dataset: NIWA-BS, project: OBS, type: sat, version: v3.3, tier: 3}
     scripts:
       grading_global:
         <<: *grading_settings
@@ -1884,10 +1884,10 @@ diagnostics:
         metric: [RMSD]
         # Normalization ('mean', 'median', 'centered_median', 'none')
         normalization: [centered_median]
-      grading_antarctic:
+      grading_shpolar:
         <<: *grading_settings
         # Region
-        region: Antarctic
+        region: shpolar
         # Metric ('RMSD', 'BIAS', taylor')
         metric: [RMSD]
         # Normalization ('mean', 'median', 'centered_median', 'none')
@@ -1897,7 +1897,64 @@ diagnostics:
 
   ### sic: SEA-ICE CONCENTRATION (SH) #########################################
 
-  ### dos: SOIL MOISTURE ######################################################
+  ### sm: SOIL MOISTURE #######################################################
+  sm:
+    description: Soil moisture
+    themes:
+      - phys
+    realms:
+      - land
+    variables:
+      sm:
+        preprocessor: ppNOLEV1thr10
+        reference_dataset: ESACCI-SOILMOISTURE
+        mip: Lmon
+        derive: true
+        force_derivation: false
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 2002
+        end_year: 2004
+    additional_datasets:
+      - {dataset: ACCESS1-0}
+      - {dataset: ACCESS1-3}
+      - {dataset: bcc-csm1-1}
+      - {dataset: CanCM4}
+      - {dataset: CanESM2}
+      - {dataset: CCSM4}
+      - {dataset: CESM1-BGC}
+      - {dataset: CESM1-CAM5}
+      - {dataset: CESM1-FASTCHEM}
+      - {dataset: CESM1-WACCM}
+      - {dataset: CNRM-CM5 }
+      - {dataset: CSIRO-Mk3-6-0}
+      - {dataset: FGOALS-g2}
+      - {dataset: FGOALS-s2}
+      - {dataset: GFDL-ESM2G}
+      - {dataset: GFDL-ESM2M}
+      - {dataset: HadCM3}
+      - {dataset: HadGEM2-CC}
+      - {dataset: HadGEM2-ES}
+      - {dataset: inmcm4}
+      - {dataset: IPSL-CM5A-LR}
+      - {dataset: IPSL-CM5A-MR}
+      - {dataset: IPSL-CM5B-LR}
+      - {dataset: MIROC4h}
+      - {dataset: MIROC5}
+      - {dataset: MIROC-ESM}
+      - {dataset: MIROC-ESM-CHEM}
+      - {dataset: MRI-CGCM3}
+      - {dataset: NorESM1-M}
+      - {dataset: NorESM1-ME}
+      - {dataset: ESACCI-SOILMOISTURE, project: OBS, type: sat, version: L3S-SSMV-COMBINED-v4.2, tier: 2}
+    scripts:
+      grading:
+        <<: *grading_settings
+        # Metric ('RMSD', 'BIAS', taylor')
+        metric: [RMSD]
+        # Normalization ('mean', 'median', 'centered_median', 'none')
+        normalization: [centered_median]
 
 
   ### COLLECT METRICS #########################################################
@@ -1914,6 +1971,15 @@ diagnostics:
         cm_interval: [2, 241]
         # Sort dataset in alphabetic order (excluding MMM)
         sort: true
+        # Sort diagnostics in a specific order (name = 'diagnositic'-'region')
+        diag_order: ['ta850-global', 'ta200-global', 'ua850-global',
+                     'ua200-global', 'va850-global', 'va200-global',
+                     'zg500-global', 'hus400-global', 'tas-global',
+                     'ts-global', 'pr-global', 'clt-global', 'rlut-global',
+                     'rsut-global', 'lwcre-global', 'swcre-global',
+                     'od550aer-global', 'od870aer-global', 'abs550aer-global',
+                     'od550lt1aer-global', 'toz-global', 'toz-shpolar',
+                     'sm-global']
       taylor:
         script: perfmetrics/collect.ncl
         ancestors: ['*/grading']

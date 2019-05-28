@@ -178,7 +178,7 @@ def build_regridder_2d(src_rep, dst_rep, regrid_method, mask_threshold):
 
     def regridder(src):
         """Regrid 2d for irregular grids."""
-        res = get_empty_data(dst_rep.shape)
+        res = get_empty_data(dst_rep.shape, src.dtype)
         data = src.data
         if np.ma.is_masked(data):
             data = data.data
@@ -195,53 +195,19 @@ def build_regridder_3d(src_rep, dst_rep, regrid_method, mask_threshold):
     # pylint: disable=too-many-locals
     # The necessary refactoring will be done for the full 3d regridding.
     """Build regridder for 2.5d regridding."""
-    dst_field = cube_to_empty_field(dst_rep[0])
-    src_fields = []
     esmf_regridders = []
-    dst_masks = []
     no_levels = src_rep.shape[0]
-    regridding_arguments = {
-        'dstfield': dst_field,
-        'regrid_method': regrid_method,
-        'unmapped_action': ESMF.UnmappedAction.IGNORE,
-        'ignore_degenerate': True,
-    }
     for level in range(no_levels):
-        src_field = cube_to_empty_field(src_rep[level])
-        src_fields.append(src_field)
-        center_mask = dst_field.grid.get_item(ESMF.GridItem.MASK,
-                                              ESMF.StaggerLoc.CENTER)
-        if np.ma.is_masked(src_rep.data):
-            mask_regridder = ESMF.Regrid(srcfield=src_field,
-                                         src_mask_values=np.array([]),
-                                         **regridding_arguments)
-            src_field.data[...] = src_rep[level].data.mask.T
-            regr_field = mask_regridder(src_field, dst_field)
-            dst_mask = regr_field.data[...].T > mask_threshold
-            dst_masks.append(dst_mask)
-            center_mask[...] = dst_mask.T
-        else:
-            dst_masks.append(False)
-            center_mask[...] = 0
         esmf_regridders.append(
-            ESMF.Regrid(srcfield=src_field,
-                        src_mask_values=np.array([1]),
-                        dst_mask_values=np.array([1]),
-                        **regridding_arguments)
+            build_regridder_2d(src_rep[level], dst_rep[level],
+                               regrid_method, mask_threshold)
         )
 
     def regridder(src):
         """Regrid 2.5d for irregular grids."""
-        res = get_empty_data(dst_rep.shape)
-        for i, (src_field, esmf_regridder, dst_mask) \
-                in enumerate(zip(src_fields, esmf_regridders, dst_masks)):
-            data = src[i].data
-            if np.ma.is_masked(data):
-                data = data.data
-            src_field.data[...] = data.T
-            regr_field = esmf_regridder(src_field, dst_field)
-            res.data[i, ...] = regr_field.data[...].T
-            res.mask[i, ...] = dst_mask
+        res = get_empty_data(dst_rep.shape, src.dtype)
+        for i, esmf_regridder in enumerate(esmf_regridders):
+            res[i, ...] = esmf_regridder(src[i])
         return res
 
     return regridder
@@ -262,14 +228,21 @@ def build_regridder(src_rep, dst_rep, method, mask_threshold=.99):
 def get_grid_representant(cube, horizontal_only=False):
     """Extract the spatial grid from a cube."""
     horizontal_slice = ['latitude', 'longitude']
-    if horizontal_only:
-        ref_to_slice = horizontal_slice
-    else:
+    ref_to_slice = horizontal_slice
+    if not horizontal_only:
         try:
             cube_z_coord = cube.coord(axis='Z')
-            ref_to_slice = [cube_z_coord] + horizontal_slice
+            n_zdims = len(cube.coord_dims(cube_z_coord))
+            if n_zdims == 0:
+                # scalar z coordinate, go on with 2d regridding
+                pass
+            elif n_zdims == 1:
+                ref_to_slice = [cube_z_coord] + horizontal_slice
+            else:
+                raise ValueError("Cube has multidimensional Z coordinate.")
         except iris.exceptions.CoordinateNotFoundError:
-            ref_to_slice = horizontal_slice
+            # no z coordinate, go on with 2d regridding
+            pass
     return get_representant(cube, ref_to_slice)
 
 
@@ -305,7 +278,7 @@ def get_grid_representants(src, dst):
     dim_coords += dst_horiz_rep.coords(dim_coords=True)
     dim_coords_and_dims = [(c, i) for i, c in enumerate(dim_coords)]
     dst_rep = iris.cube.Cube(
-        data=get_empty_data(dst_shape),
+        data=get_empty_data(dst_shape, src.dtype),
         standard_name=src.standard_name,
         long_name=src.long_name,
         var_name=src.var_name,

@@ -1,0 +1,22 @@
+SOURCE: CMIP5
+!============
+variable_entry:    xch4
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     
+units:             1
+cell_methods:      time: mean
+cell_measures:     area: areacella
+long_name:         Column-average Dry-air Mole Fraction of Atmospheric Methane
+comment:           Satellite retrieved column-average dry-air mole fraction of atmospheric methane (XCH4)
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          xch4
+type:              real
+!----------------------------------
+!

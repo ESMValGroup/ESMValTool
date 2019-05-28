@@ -12,7 +12,7 @@ documentation:
     - demo_le
 
   maintainer:
-    - schl_ma
+    - demo_le
 
   references:
     - demora2018gmd
@@ -67,7 +67,6 @@ diagnostics:
     description: atlantic_meridional_overturning_circulation
     variables:
       amoc:
-        field: TOM
         mip: Omon
         derive: true
         force_derivation: false
@@ -100,7 +99,6 @@ diagnostics:
     variables:
       mfo:
         preprocessor: prep_timeseries_drake
-        field: TOM
         mip: Omon
     additional_datasets:
         - {dataset: ACCESS1-0,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1860, end_year: 2004}
@@ -130,7 +128,6 @@ diagnostics:
     variables:
       msftmyz:
         preprocessor: prep_transect
-        field: TO2M
         mip: Omon
     additional_datasets:
      - {dataset: CanESM2,          project: CMIP5,    exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2004}

@@ -1,7 +1,5 @@
 """Unit tests for :func:`esmvaltool.preprocessor.regrid.extract_levels`."""
 
-from __future__ import absolute_import, division, print_function
-
 import unittest
 
 import iris

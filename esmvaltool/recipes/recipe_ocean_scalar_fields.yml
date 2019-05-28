@@ -12,7 +12,7 @@ documentation:
     - demo_le
 
   maintainer:
-    - schl_ma
+    - demo_le
 
   references:
     - demora2018gmd
@@ -46,7 +46,6 @@ diagnostics:
     description: sea_water_transport_across_line
     variables:
       mfo: # sea_water_transport_across_line
-        field: TO0M
         mip: Omon
     scripts:
       Regional_Ocean_Surface_mean_timeseries:

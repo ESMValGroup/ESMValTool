@@ -44,12 +44,30 @@ begin
   YEAR1 = 2005
   YEAR2 = 2011
 
+  ; Selected variable
+  VAR = "tro3"
+
   ; MIP
   MIP = "Amon"
 
+  ; Frequency
+  FREQ = "mon"
+
   ; CMOR table
-  CMOR_TABLE = \
-    getenv("esmvaltool_root") + "/cmor/tables/cmip5/Tables/CMIP5_Amon"
+  CMOR_TABLE = getenv("esmvaltool_root") + \
+    "/cmor/tables/cmip5/Tables/CMIP5_" + MIP
+
+  ; Type
+  TYPE = "sat"
+
+  ; Version
+  VERSION = "1"
+
+  ; Global attributes
+  SOURCE = "https://search.earthdata.nasa.gov/search?q=TL3O3M"
+  REF =  "Beer, R., IEEE Trans. Geosci. Rem. Sens., " + \
+    "doi:10.1109/TGRS.2005.863716, 2006"
+  COMMENT = ""
 
 end
 
@@ -77,7 +95,7 @@ begin
     end if
 
     if (.not.isfilepresent(fname)) then
-      error_msg("w", DIAG_SCRIPT, "", "file missing, skipping this date")
+      log_info("File missing, skipping this date")
       continue
     end if
 
@@ -113,71 +131,47 @@ begin
 
   end do
 
-  ; Rename coordinates
+  ; Reorder
   outvar!0 = "time"
   outvar!1 = "lon"
   outvar!2 = "lat"
-
-  ; Convert units [mol/mol] --> [1e9]
-  outvar = outvar * 1.e9
-  outvar@units = "1e9"
-
-  ; Reorder
+  outvar!3 = "plev"
   output = outvar(time|:, plev|:, lat|:, lon|:)
-  output = output(:, ::-1, :, :)
   output@_FillValue = FILL
-  output&time = timec
   delete(outvar)
 
+  ; Assign coordinates
+  output&time = timec
+  output&plev = output&plev * 100.  ; [hPa] --> [Pa]
+  output&plev@units = "Pa"
+
+  ; Convert units [mol/mol] --> [1e9]
+  output = output * 1.e9
+  output@units = "1e-9"
+
+  ; Format coordinates
+  format_coords(output, YEAR1 + "0101", YEAR2 + "1231", FREQ)
+
   ; Set variable attributes
-  tmp = var_attrib(output, "tro3", CMOR_TABLE)
+  tmp = format_variable(output, VAR, CMOR_TABLE)
   delete(output)
   output = tmp
   delete(tmp)
 
-  ; Format time coordinate
-  ctime = time_attrib(output&time, YEAR1, YEAR2, "M")
-  delete(output&time)
-  output&time = ctime
-  delete(ctime)
-
-  ; Format vertical coordinate
-  output!1 = "plev"
-  output&plev = output&plev * 100.  ; [hPa] --> [Pa]
-  output&plev@units = "Pa"
-  output = output(:, ::-1, :, :)  ; bottom to top
-  cplev = plev_attrib(output&plev)
-  delete(output&plev)
-  output&plev = cplev
-  delete(cplev)
-
-  ; Format latitude coordinate
-  clat = lat_attrib(output&lat)
-  delete(output&lat)
-  output&lat = clat
-  delete(clat)
-
-  ; Format longitude coordinate
-  output = lonFlip(output)
-  clon = lon_attrib(output&lon)
-  delete(output&lon)
-  output&lon = clon
-  delete(clon)
+  ; Calculate coordinate bounds
+  bounds = guess_coord_bounds(output, FREQ)
 
   ; Set global attributes
-  gAtt = set_global_atts( \
-    OBSNAME, TIER, \
-    "https://search.earthdata.nasa.gov/search?q=TL3O3M", \
-    "Beer, R., IEEE Trans. Geosci. Rem. Sens., " + \
-    "doi:10.1109/TGRS.2005.863716, 2006", "")
+  gAtt = set_global_atts(OBSNAME, TIER, SOURCE, REF, COMMENT)
 
-  ; Outfile
+  ; Output file
+  DATESTR = YEAR1 + "01-" + YEAR2 + "12"
   fout = output_dir_path + \
-    "OBS_" + OBSNAME + "_sat_1_" + MIP + "_tro3_" + \
-    YEAR1 + "01-" + YEAR2 + "12.nc"
+    str_join((/"OBS", OBSNAME, TYPE, VERSION, \
+               MIP, VAR, DATESTR/), "_") + ".nc"
 
   ; Write variable
-  write_nc(fout, "tro3", output, gAtt)
+  write_nc(fout, VAR, output, bounds, gAtt)
   delete(gAtt)
   delete(output)
 

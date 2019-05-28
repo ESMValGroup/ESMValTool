@@ -37,34 +37,42 @@ requirements:
   run:
     # esmvaltool
     - python
-    - graphviz    
-    - iris=1.13
+    - libunwind  #  specifically for Python3.7+
+    - graphviz
+    - iris>=2.2
     - python-stratify
     # Normally installed via pip:
     - cartopy
     - cf_units
     - cython
+    - eofs
     - esmpy
     - matplotlib<3
+    - nc-time-axis
     - netCDF4
     - numba
     - numpy
+    - pandas
     - pillow
     - prov
     - psutil
     - pydot
     - python-cdo
     - pyyaml
+    - scikit-learn
     - shapely
     - six
     - vmprof
+    - xarray
     - yamale  # in birdhouse channel
+    - fiona
+    - xlsxwriter
     # Multi language support:
-    - ncl
-    - ncurses=6.1=hfc679d8_1
+    - ncl>=6.5.0
+    - jasper!=1.900.31  # pinned NCL dependency
     - r-base
-    - r-rcpp
-    # TODO: add julia
+    - cdo
+
 test:
   # TODO: add unit tests? This seems to require installing the tests
   imports:
