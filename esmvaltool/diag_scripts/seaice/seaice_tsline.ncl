@@ -116,23 +116,21 @@ begin
               "September", "October", "November", "December"/)
   i2months = sprinti("%0.2i", ispan(1, 12, 1))
 
-  ; Output file name specifications
-  ; (passed to get_wks for final output file name)
+  ; Output file name specifications (passed to get_wks for output file name)
   if (diag_script_info@month .eq. "A") then
     i2month = "annual"
   else
     i2month = smonths(toint(diag_script_info@month) - 1)
   end if
-  outfile_ext = "extent_" + var0 + "_"\
-    + diag_script_info@region + "_" + i2month + "_"\
-    + sprinti("%0.4i", start_year) + "-"\
+  outfile_ext = "extent_" + var0 + "_" \
+    + diag_script_info@region + "_" + i2month + "_" \
+    + sprinti("%0.4i", start_year) + "-" \
     + sprinti("%0.4i", end_year)
-  outfile_area = "area_" + var0 + "_"\
-    + diag_script_info@region + "_" + i2month + "_"\
-    + sprinti("%0.4i", start_year) + "-"\
+  outfile_area = "area_" + var0 + "_" \
+    + diag_script_info@region + "_" + i2month + "_" \
+    + sprinti("%0.4i", start_year) + "-" \
     + sprinti("%0.4i", end_year)
 
-  ; Start processing ##########################################
   ; Array for collecting sea-ice extent for all datasets
   val_ext = new((/n_datasets, end_year - start_year + 1/), float)
   val_ext!1 = "time"
@@ -212,7 +210,7 @@ begin
   val_ext&model = metadata_att_as_array(info, "dataset")
   val_ext!1 = "time"
   val_ext&time = int2dble(all_years)
-  if diag_script_info@month .eq. "A" then   ; weighted annual mean
+  if (diag_script_info@month .eq. "A") then   ; weighted annual mean
     val_ext&time@units = "Annual"
   else  ; select a month
     val_ext&time@units = smonths(stringtoint(diag_script_info@month) - 1)
@@ -225,7 +223,7 @@ begin
   val_area&model = metadata_att_as_array(info, "dataset")
   val_area!1 = "time"
   val_area&time = int2dble(all_years)
-  if diag_script_info@month .eq. "A" then   ; weighted annual mean
+  if (diag_script_info@month .eq. "A") then   ; weighted annual mean
     val_area&time@units = "Annual"
   else  ; select a month
     val_area&time@units = smonths(stringtoint(diag_script_info@month) - 1)
@@ -233,7 +231,7 @@ begin
   val_area@units = "10~S~6~N~ km~S~2~N~"
   val_area@long_name = "Sea Ice Area"
 
-  ; *********** PLOTTING ************
+  ; Plotting
   if (dimsizes(val_ext&time) .eq. 1) then
     log_info(" Skipping tsline: " + \
              "plot needs at least two time values, has 1")
@@ -289,12 +287,13 @@ begin
     xy_line(wks_area, val_area, val_area&time, val_area_stddev, res_area, info)
 
     ; Provenance
-    statistics = (/"mean", "stddev", "clim"/)
-    domain = diag_script_info@region
-    plottype = "tsline"
-    authors = (/"senf_da", "gott_kl"/)
-    references = "stroeve07grl"
+    if (diag_script_info@region.eq."Arctic") then
+      domain = "nh"
+    elseif (diag_script_info@region.eq."Antarctic") then
+      domain = "sh"
+    end if
     infiles = metadata_att_as_array(info, "filename")
+
     val_ext@var = var0
     val_ext@diag_script = DIAG_SCRIPT
     if (isatt(wks_ext, "fullname")) then
@@ -306,8 +305,11 @@ begin
       smonths(toint(diag_script_info@month) - 1) + " " + \
       diag_script_info@region + " sea ice extent in " + val_ext@units
     nc_file_ext = ncdf_write(val_ext, outfile_ext + ".nc")
-    log_provenance(nc_file_ext, outfile_ext, caption_ext, statistics, \
-                   domain, plottype, authors, references, infiles)
+
+    log_provenance(nc_file_ext, outfile_ext, caption_ext, \
+                   (/"mean", "stddev", "clim"/), domain, "tsline", \
+                   (/"senf_da", "gott_kl"/), "stroeve07grl", infiles)
+
     val_area@var = var0
     val_area@diag_script = DIAG_SCRIPT
     if (isatt(wks_area, "fullname")) then
@@ -319,8 +321,10 @@ begin
       smonths(toint(diag_script_info@month) - 1) + " " + \
       diag_script_info@region + " sea ice area in " + val_area@units
     nc_file_area = ncdf_write(val_area, outfile_area + ".nc")
-    log_provenance(nc_file_area, outfile_area, caption_area, statistics, \
-                   domain, plottype, authors, references, infiles)
+
+    log_provenance(nc_file_area, outfile_area, caption_area, \
+                   (/"mean", "stddev", "clim"/), domain, "tsline", \
+                   (/"senf_da", "gott_kl"/), "stroeve07grl", infiles)
 
   end if  ; More than 1 time step
 

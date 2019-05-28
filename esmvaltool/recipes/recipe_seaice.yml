@@ -62,6 +62,7 @@ preprocessors:
       statistics: mean
       exclude: additional_datasets
 
+
 diagnostics:
   seaice_tsline_NH:
     description: Timeseries of September Arctic sea ice area and extent
