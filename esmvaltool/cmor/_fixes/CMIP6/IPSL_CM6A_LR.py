@@ -32,7 +32,6 @@ class thetao(Fix):
             long_name=cell_area.long_name,
             var_name=cell_area.var_name,
             units=cell_area.units,
-            bounds=cell_area.bounds,
         )
         thetao.add_aux_coord(cell_area, (1,2))
         return CubeList([thetao])
