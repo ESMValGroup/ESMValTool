@@ -611,6 +611,7 @@ references:
   esacci-soilmoisture: "Not available."
   esacci-sst: "Merchant et al., Geosci. Data J., doi:10.1002/gdj3.20, 2014."
   hadisst: "Rayner et al., J. Geophys. Res., doi:10.1029/2002JD002670, 2013."
+  landflux-eval: "Mueller, B. et al., Hydrol. Earth Syst. Sci., 17, 3707-3720, doi:10.5194/hess-17-3707-2013, 2013."
   modis: "Not available."
   mte: "Jung et al., J. Geophys. Res., 116, doi:10.1029/2010JG001566, 2011."
   ncep: "Kalnay et al., B. Am. Meteorol. Soc., doi:10.1175/1520-0477(1996)077<0437:TNYRP>2.0.CO;2, 1996."
