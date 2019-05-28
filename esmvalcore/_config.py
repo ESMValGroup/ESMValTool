@@ -10,7 +10,7 @@ import iris
 import six
 import yaml
 
-from .cmor.table import read_cmor_tables
+from .cmor.table import read_cmor_tables, CMOR_TABLES
 
 logger = logging.getLogger(__name__)
 
@@ -180,11 +180,21 @@ def get_project_config(project):
 
 
 def get_institutes(variable):
-    """Return the institutes given the dataset name in CMIP5."""
+    """Return the institutes given the dataset name in CMIP5 and CMIP6."""
     dataset = variable['dataset']
     project = variable['project']
     logger.debug("Retrieving institutes for dataset %s", dataset)
-    return CFG.get(project, {}).get('institutes', {}).get(dataset, [])
+    if variable['project'] in 'CMIP6':
+        return CMOR_TABLES['CMIP6'].institutes[dataset]
+    else:
+        return CFG.get(project, {}).get('institutes', {}).get(dataset, [])
+
+
+def get_activity(variable):
+    """Return the activity given the experiment name in CMIP6. """
+    exp = variable['exp']
+    logger.debug("Retrieving activity_id for experiment %s", exp)
+    return CMOR_TABLES['CMIP6'].experiments[exp]
 
 
 def replace_mip_fx(fx_file):
