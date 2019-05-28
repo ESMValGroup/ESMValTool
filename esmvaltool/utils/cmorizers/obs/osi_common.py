@@ -107,12 +107,12 @@ def extract_variable(var_infos, raw_info, out_dir, attrs, year, mips):
                 del cubes
                 del model_cube
         elif var_info.frequency == 'day':
-            # if cube.coord('time').shape[0] < 300:
-            #     logger.warning(
-            #         'Only %s days available. Can not generate daily files',
-            #         cube.coord('time').shape[0]
-            #     )
-            #     continue
+            if cube.coord('time').shape[0] < 300:
+                logger.warning(
+                    'Only %s days available. Can not generate daily files',
+                    cube.coord('time').shape[0]
+                )
+                continue
             total_days = 366 if isleap(year) else 365
             if cube.coord('time').shape[0] < total_days:
                 add_day_of_year(cube, 'time')
