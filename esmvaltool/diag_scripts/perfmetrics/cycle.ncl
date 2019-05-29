@@ -47,7 +47,7 @@ begin
   ; Set path for saving processed data
   system("mkdir -p " + config_user_info@work_dir)
   if (isdefined("level")) then
-    vv = var0 +  level
+    vv = var0 + level
   else
     vv = var0
   end if
