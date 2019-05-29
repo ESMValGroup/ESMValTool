@@ -73,7 +73,7 @@ diagnostics:
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
-        start_yeaer: 1960
+        start_year: 1960
         end_year: 2005
         additional_datasets:
           - {dataset: HadISST, project: OBS, type: reanaly, version: 1, tier: 2}
@@ -102,7 +102,7 @@ diagnostics:
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
-        start_yeaer: 1960
+        start_year: 1960
         end_year: 2005
 
         additional_datasets:
