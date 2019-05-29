@@ -128,7 +128,7 @@ def extract_variable(var_infos, raw_info, out_dir, attrs, year, mips):
                     add_day_of_year(nan_cube, 'time')
                     cubes.append(nan_cube)
                 cube = cubes.merge_cube()
-                model_cube.remove_coord('day_of_year')
+                cube.remove_coord('day_of_year')
                 del cubes
                 del model_cube
 
