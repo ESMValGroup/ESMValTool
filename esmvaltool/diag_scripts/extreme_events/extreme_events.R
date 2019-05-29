@@ -222,13 +222,15 @@ for (model_idx in c(1:length(models_name))) {
     infiles <- climofiles[models == models_name[model_idx]]
     indices <- sub("ETCCDI.*", "", idx_select)
     # Find best chunk size
-    nc <- nc_open(infiles[1])
-    chunk <- floor( (nc$dim$time$len * nc$dim$lon$len * nc$dim$lat$len +
-                     1000.0) / (climdex_parallel * 1000000))
-    chunk <- max(min(100, chunk), 1)
-    nc_close(nc)
-    print(paste("Chunk size:", chunk))
-
+    chunk <- 10
+    if ( !(is.logical(climdex_parallel))) {
+      nc <- nc_open(infiles[1])
+      chunk <- floor( (nc$dim$time$len * nc$dim$lon$len * nc$dim$lat$len +
+                       1000.0) / (climdex_parallel * 1000000))
+      chunk <- max(min(100, chunk), 1)
+      nc_close(nc)
+      print(paste("Chunk size:", chunk))
+    }
     create.indices.from.files(infiles,  # nolint
       work_dir, template, author.data,
       base.range = base_range,
