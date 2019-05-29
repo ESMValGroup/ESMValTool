@@ -10,7 +10,7 @@ from ._baseclass import DerivedVariableBase
 
 
 class DerivedVariable(DerivedVariableBase):
-    """Derivation of variable `rsnstcs`."""
+    """Derivation of variable `rsnstcsnorm`."""
 
     # Required variables
     required = [
