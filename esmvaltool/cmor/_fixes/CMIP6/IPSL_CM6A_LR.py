@@ -34,4 +34,6 @@ class thetao(Fix):
             units=cell_area.units,
         )
         thetao.add_aux_coord(cell_area, (2, 3))
+        thetao.coord('latitude').var_name = 'lat'
+        thetao.coord('longitude').var_name = 'lon'
         return CubeList([thetao])
