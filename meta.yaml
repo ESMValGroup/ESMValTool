@@ -36,7 +36,7 @@ requirements:
     - setuptools_scm
   run:
     # esmvaltool
-    - python
+    - python>=3.6
     - libunwind  #  specifically for Python3.7+
     - graphviz
     - iris>=2.2
@@ -63,15 +63,19 @@ requirements:
     - shapely
     - six
     - vmprof
-    - xarray
+    - xarray>=0.12.0
     - yamale  # in birdhouse channel
     - fiona
     - xlsxwriter
+    # Command line tools used by diagnostic scripts
+    - cdo
+    - imagemagick
+    - nco
     # Multi language support:
     - ncl>=6.5.0
-    - jasper!=1.900.31  # pinned NCL dependency
     - r-base
-    - cdo
+    - r-curl  # Dependency of lintr, but fails to compile because it cannot find libcurl installed from conda.
+    - r-udunits2  # Fails to compile because it cannot find udunits2 installed from conda.
 
 test:
   # TODO: add unit tests? This seems to require installing the tests
