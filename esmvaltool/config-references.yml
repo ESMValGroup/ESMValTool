@@ -108,6 +108,10 @@ authors:
     name: Crezee, Bas
     institute: ETH Zurich, Switzerland
     email: bas.crezee 'at' env.ethz.ch
+  mohr_cw:
+    name: Mohr, Christian Wilhelm
+    institute: Cicero, Norway
+    email: c.w.mohr 'at' cicero.oslo.no
   davi_ed:
     name: Davin, Edouard Leopold
     institute: ETH Zurich, Switzerland
@@ -236,6 +240,10 @@ authors:
     name: Mason, Erik
     institute: NOAA, USA
     email: erik.mason 'at' noaa.gov
+  sand_ma:
+    name: Sandstad, Marit
+    institute: Cicero, Norway
+    email: marit.sandstad 'at' cicero.oslo.no
   mass_fr:
     name: Massonnet, Francois
     institute: Spain
@@ -611,12 +619,15 @@ references:
   esacci-soilmoisture: "Not available."
   esacci-sst: "Merchant et al., Geosci. Data J., doi:10.1002/gdj3.20, 2014."
   hadisst: "Rayner et al., J. Geophys. Res., doi:10.1029/2002JD002670, 2013."
+  landflux-eval: "Mueller, B. et al., Hydrol. Earth Syst. Sci., 17, 3707-3720, doi:10.5194/hess-17-3707-2013, 2013."
   modis: "Not available."
   mte: "Jung et al., J. Geophys. Res., 116, doi:10.1029/2010JG001566, 2011."
   ncep: "Kalnay et al., B. Am. Meteorol. Soc., doi:10.1175/1520-0477(1996)077<0437:TNYRP>2.0.CO;2, 1996."
   niwa-bs: "Bodeker et al., Atmos. Chem. Phys., doi:10.5194/acp-5-2603-2005, 2005."
   patmos-x: "Heidinger et al., NOAA National Centers for Environmental Information, doi:10.7289/V5348HCK, last access: 10 February 2019."
   woa: "Locarnini et al., World Ocean Atlas 2013, Vol. 1: Temperature, 2013."
+  zhang-2011: "Zhang et al., WIREs Clim. Change, doi:10.1002/wcc.147, 2011"
+  sillman-2013: "Sillmann et al., J. Geophys. Res., doi:10.1029/2012JD018390, 2013" 
 
 projects:
   c3s-magic: Copernicus Climate Change Service 34a Lot 2 (MAGIC) project
