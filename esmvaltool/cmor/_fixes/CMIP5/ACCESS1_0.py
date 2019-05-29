@@ -1,4 +1,4 @@
-"""Fixes for ACCESS1-0 model bla."""
+"""Fixes for the ACCESS1-0 model."""
 # pylint: disable=invalid-name
 from cf_units import Unit
 import iris
