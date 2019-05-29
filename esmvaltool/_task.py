@@ -491,6 +491,7 @@ class DiagnosticTask(BaseTask):
                 time.sleep(0.001)
 
         if returncode == 0:
+            logger.debug("Script %s completed successfully", self.script)
             self._collect_provenance()
             return [self.output_dir]
 
@@ -507,6 +508,8 @@ class DiagnosticTask(BaseTask):
                            provenance_file)
             return
 
+        logger.debug("Collecting provenance from %s", provenance_file)
+        start = time.time()
         with open(provenance_file, 'r') as file:
             table = yaml.safe_load(file)
 
@@ -554,6 +557,9 @@ class DiagnosticTask(BaseTask):
             product.initialize_provenance(self.activity)
             product.save_provenance()
             self.products.add(product)
+        logger.debug("Collecting provenance of task %s took %.1f seconds",
+                     self.name,
+                     time.time() - start)
 
     def __str__(self):
         """Get human readable description."""
