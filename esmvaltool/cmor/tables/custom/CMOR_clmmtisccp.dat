@@ -6,7 +6,7 @@ modeling_realm:    atmos
 !----------------------------------
 ! Variable attributes:
 !----------------------------------
-standard_name:     ISCCP_Middle_Level_Medium_Thickness_Cloud_Area_Fraction
+standard_name:     
 units:             %
 cell_methods:      time: mean
 cell_measures:     area: areacella

@@ -1,13 +1,14 @@
-"""Fixes for FIO ESM model"""
+# pylint: disable=invalid-name, no-self-use, too-few-public-methods
+"""Fixes for FIO ESM model."""
 from ..fix import Fix
 
 
 class co2(Fix):
-    """Fixes for co2"""
+    """Fixes for co2."""
 
     def fix_data(self, cube):
         """
-        Fix data
+        Fix data.
 
         Fixes discrepancy between declared units and real units
 
@@ -27,11 +28,11 @@ class co2(Fix):
 
 
 class ch4(Fix):
-    """Fixes for co2"""
+    """Fixes for ch4."""
 
     def fix_data(self, cube):
         """
-        Fix data
+        Fix data.
 
         Fixes discrepancy between declared units and real units
 

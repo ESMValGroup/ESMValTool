@@ -1,0 +1,102 @@
+# recipe_EnsClus.yml
+---
+documentation:
+  description: |
+    Recipe for sub-ensemble selection.
+    The diagnostics groups ensemble members according to similar 
+    characteristics and selects the most representative member 
+    for each cluster based on a k-means algorithm
+
+  authors:
+    - mavi_ir
+    - hard_jo
+    - arno_en
+    - cort_su
+
+  maintainer:
+    - hard_jo
+
+  references:
+    - straus07jcli
+
+  projects:
+    - c3s-magic
+
+datasets:
+  - {dataset: ACCESS1-0,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1900,  end_year: 2005}
+  - {dataset: ACCESS1-3,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1900,  end_year: 2005}
+  - {dataset: bcc-csm1-1,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1900,  end_year: 2005}
+  - {dataset: bcc-csm1-1-m,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1900,  end_year: 2005}
+  - {dataset: CanESM2,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1900,  end_year: 2005}
+  - {dataset: CCSM4,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1900,  end_year: 2005}
+  - {dataset: CESM1-BGC,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1900,  end_year: 2005}
+  - {dataset: CESM1-CAM5,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1900,  end_year: 2005}
+  - {dataset: CESM1-FASTCHEM,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1900,  end_year: 2005}
+  - {dataset: CESM1-WACCM,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1900,  end_year: 2005}
+  - {dataset: CMCC-CESM,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1900,  end_year: 2005}
+ #- {dataset: CMCC-CM,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1900,  end_year: 2005}
+  - {dataset: CMCC-CMS,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1900,  end_year: 2005}
+  - {dataset: CNRM-CM5,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1900,  end_year: 2005}
+  - {dataset: CSIRO-Mk3-6-0,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1900,  end_year: 2005}
+ #- {dataset: EC-EARTH,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1900,  end_year: 2005}
+  - {dataset: FGOALS-g2,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1900,  end_year: 2005}
+ #- {dataset: FGOALS-s2,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1900,  end_year: 2005}
+  - {dataset: FIO-ESM,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1900,  end_year: 2005}
+  - {dataset: GFDL-CM2p1,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1900,  end_year: 2005}
+  - {dataset: GFDL-CM3,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1900,  end_year: 2005}
+  - {dataset: GFDL-ESM2G,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1900,  end_year: 2005}
+  - {dataset: GFDL-ESM2M,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1900,  end_year: 2005}
+  - {dataset: HadCM3,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1900,  end_year: 2005}
+ #- {dataset: HadGEM2-AO,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1900,  end_year: 2005}
+  - {dataset: HadGEM2-CC,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1900,  end_year: 2005}
+  - {dataset: HadGEM2-ES,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1900,  end_year: 2005}
+  - {dataset: inmcm4,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1900,  end_year: 2005}
+  - {dataset: IPSL-CM5A-LR,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1900,  end_year: 2005}
+  - {dataset: IPSL-CM5A-MR,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1900,  end_year: 2005}
+  - {dataset: IPSL-CM5B-LR,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1900,  end_year: 2005}
+ #- {dataset: MIROC5,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1900,  end_year: 2005}
+ #- {dataset: MIROC-ESM-CHEM,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1900,  end_year: 2005}
+ #- {dataset: MIROC-ESM,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1900,  end_year: 2005}
+  - {dataset: MPI-ESM-LR,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1900,  end_year: 2005}
+  - {dataset: MPI-ESM-MR,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1900,  end_year: 2005}
+  - {dataset: MPI-ESM-P,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1900,  end_year: 2005}
+ #- {dataset: MRI-CGCM3,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1900,  end_year: 2005}
+  - {dataset: NorESM1-ME,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1900,  end_year: 2005}
+  - {dataset: NorESM1-M,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1900,  end_year: 2005}
+
+
+preprocessors:
+  preproc:
+    extract_levels: false
+    regrid:
+      target_grid: 2.5x2.5
+      scheme: linear_extrapolate
+
+
+diagnostics:
+  EnsClus:
+    description: Ensemble clustering
+    variables:
+      pr:
+        preprocessor: preproc
+    scripts:
+      main:
+        script: ensclus/ensclus.py
+        title: "Ensemble clustering diagnostic"
+
+        ## Information required:
+        ##-------------------------------about data-------------------------------------------
+        ## Write only letters or numbers, no punctuation marks!
+        season: 'JJA'               #seasonal average
+        area: 'EU'                  #regional average (examples:'EAT':Euro-Atlantic
+                                    #                           'PNA': Pacific North American
+                                    #                           'NH': Northern Hemisphere)
+                                    #                           'EU': Europe)
+        extreme: '75th_percentile'  #XXth_percentile (XX arbitrary), mean, maximum, std, trend
+        #---------------------about cluster analysis------------------------------------------
+        numclus: 3             #number of clusters
+        #Either set perc or numpcs:
+        perc: 80               #cluster analysis is applied on a number of PCs such as they explain
+                               #'perc' of total variance
+        numpcs: 0              #number of PCs to retain. Has priority over perc unless set to 0
+        max_plot_panels: 72    #threshold in number of panels in a plot to create multiple figures

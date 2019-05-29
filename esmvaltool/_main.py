@@ -1,4 +1,4 @@
-"""ESMValTool - Earth System Model Evaluation Tool
+"""ESMValTool - Earth System Model Evaluation Tool.
 
 http://www.esmvaltool.org
 
@@ -6,12 +6,14 @@ CORE DEVELOPMENT TEAM AND CONTACTS:
   Veronika Eyring (PI; DLR, Germany - veronika.eyring@dlr.de)
   Bouwe Andela (NLESC, Netherlands - b.andela@esciencecenter.nl)
   Bjoern Broetz (DLR, Germany - bjoern.broetz@dlr.de)
+  Lee de Mora (PML, UK - ledm@pml.ac.uk)
   Niels Drost (NLESC, Netherlands - n.drost@esciencecenter.nl)
   Nikolay Koldunov (AWI, Germany - nikolay.koldunov@awi.de)
   Axel Lauer (DLR, Germany - axel.lauer@dlr.de)
   Benjamin Mueller (LMU, Germany - b.mueller@iggf.geo.uni-muenchen.de)
   Valeriu Predoi (URead, UK - valeriu.predoi@ncas.ac.uk)
   Mattia Righi (DLR, Germany - mattia.righi@dlr.de)
+  Manuel Schlund (DLR, Germany - manuel.schlund@dlr.de)
   Javier Vegas-Regidor (BSC, Spain - javier.vegas@bsc.es)
 
 For further help, please read the documentation at
@@ -25,8 +27,6 @@ http://esmvaltool.readthedocs.io. Have fun!
 # Valeriu Predoi (URead, UK - valeriu.predoi@ncas.ac.uk)
 # Mattia Righi (DLR, Germany - mattia.righi@dlr.de)
 
-from __future__ import print_function
-
 import argparse
 import datetime
 import errno
@@ -39,7 +39,7 @@ from multiprocessing import cpu_count
 
 from . import __version__
 from ._config import configure_logging, read_config_user_file
-from ._recipe import read_recipe_file
+from ._recipe import TASKSEP, read_recipe_file
 from ._task import resource_usage_logger
 
 # set up logging
@@ -58,7 +58,7 @@ ______________________________________________________________________
 
 
 def get_args():
-    """Define the `esmvaltool` command line"""
+    """Define the `esmvaltool` command line."""
     # parse command line args
     parser = argparse.ArgumentParser(
         description=HEADER,
@@ -85,12 +85,24 @@ def get_args():
         '--max-datasets',
         type=int,
         help='Try to limit the number of datasets used to MAX_DATASETS.')
+    parser.add_argument(
+        '--max-years',
+        type=int,
+        help='Limit the number of years to MAX_YEARS.')
+    parser.add_argument(
+        '--skip-nonexistent',
+        action='store_true',
+        help="Skip datasets that cannot be found.")
+    parser.add_argument(
+        '--diagnostics',
+        nargs='*',
+        help="Only run the named diagnostics from the recipe.")
     args = parser.parse_args()
     return args
 
 
 def main(args):
-    """Define the `esmvaltool` program"""
+    """Define the `esmvaltool` program."""
     recipe = args.recipe
     if not os.path.exists(recipe):
         installed_recipe = os.path.join(
@@ -125,8 +137,19 @@ def main(args):
     logger.info("Using config file %s", config_file)
     logger.info("Writing program log files to:\n%s", "\n".join(log_files))
 
+    cfg['skip-nonexistent'] = args.skip_nonexistent
+    cfg['diagnostics'] = {
+        pattern if TASKSEP in pattern else pattern + TASKSEP + '*'
+        for pattern in args.diagnostics or ()
+    }
     cfg['synda_download'] = args.synda_download
-    cfg['max_datasets'] = args.max_datasets
+    for limit in ('max_datasets', 'max_years'):
+        value = getattr(args, limit)
+        if value is not None:
+            if value < 1:
+                raise ValueError("--{} should be larger than 0.".format(
+                    limit.replace('_', '-')))
+            cfg[limit] = value
 
     resource_log = os.path.join(cfg['run_dir'], 'resource_usage.txt')
     with resource_usage_logger(pid=os.getpid(), filename=resource_log):
@@ -135,7 +158,7 @@ def main(args):
 
 
 def process_recipe(recipe_file, config_user):
-    """Process recipe"""
+    """Process recipe."""
     if not os.path.isfile(recipe_file):
         raise OSError(errno.ENOENT, "Specified recipe file does not exist",
                       recipe_file)
@@ -193,8 +216,9 @@ def process_recipe(recipe_file, config_user):
     out_refs = glob.glob(
         os.path.join(config_user['output_dir'], '*', '*',
                      'references-acknowledgements.txt'))
-    logger.info("For the required references/acknowledgements of these "
-                "diagnostics see:\n%s", '\n'.join(out_refs))
+    logger.info(
+        "For the required references/acknowledgements of these "
+        "diagnostics see:\n%s", '\n'.join(out_refs))
 
 
 def run():
@@ -203,10 +227,18 @@ def run():
     try:
         conf = main(args)
     except:  # noqa
+        if not logger.handlers:
+            # Add a logging handler if main failed to do so.
+            logging.basicConfig()
         logger.exception(
             "Program terminated abnormally, see stack trace "
             "below for more information",
             exc_info=True)
+        logger.info(
+            "If you suspect this is a bug or need help, please open an issue "
+            "on https://github.com/ESMValGroup/ESMValTool/issues and attach "
+            "the run/recipe_*.yml and run/main_log_debug.txt files from the "
+            "output directory.")
         sys.exit(1)
     else:
         if conf["remove_preproc_dir"]:
@@ -214,4 +246,4 @@ def run():
             logger.info("If this data is further needed, then")
             logger.info("set remove_preproc_dir to false in config")
             shutil.rmtree(conf["preproc_dir"])
-        logger.info("Run was succesful")
+        logger.info("Run was successful")

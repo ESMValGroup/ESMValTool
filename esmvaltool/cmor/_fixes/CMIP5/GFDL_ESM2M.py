@@ -1,33 +1,13 @@
+# pylint: disable=invalid-name, no-self-use, too-few-public-methods
 """Fixes for GFDL ESM2M"""
 from cf_units import Unit
 
 from ..fix import Fix
+from ..CMIP5.GFDL_ESM2G import allvars as base_allvars
 
 
-class allvars(Fix):
-    """Fixes common to all vars"""
-
-    def fix_metadata(self, cube):
-        """
-        Fix metadata
-
-        Fixes errors in time units
-
-        Parameters
-        ----------
-        cube: iris.cube.Cube
-
-        Returns
-        -------
-        iris.cube.Cube
-
-        """
-        time = cube.coord('time')
-        if time.units.origin in ("days since 0001-01-01 00:00:00",
-                                 "days since 1-01-01 00:00:00"):
-            time.units = Unit('days since 1850-01-01 00:00:00',
-                              time.units.calendar)
-        return cube
+class allvars(base_allvars):
+    """Fixes for all variables"""
 
 
 class sftof(Fix):
@@ -35,7 +15,7 @@ class sftof(Fix):
 
     def fix_data(self, cube):
         """
-        Fix data
+        Fix data.
 
         Fixes discrepancy between declared units and real units
 
@@ -59,7 +39,7 @@ class co2(Fix):
 
     def fix_data(self, cube):
         """
-        Fix data
+        Fix data.
 
         Fixes discrepancy between declared units and real units
 

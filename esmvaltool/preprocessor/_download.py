@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 def synda_search(variable):
     """Search files using synda."""
     query = {
-        'dataset': variable.get('dataset'),
+        'model': variable.get('dataset'),
         'project': variable.get('project'),
         'cmor_table': variable.get('mip'),
         'ensemble': variable.get('ensemble'),
@@ -69,8 +69,7 @@ def synda_download(synda_name, dest_folder):
 
 def download(files, dest_folder):
     """Download files that are not available locally"""
-    if not os.path.exists(dest_folder):
-        os.makedirs(dest_folder)
+    os.makedirs(dest_folder, exist_ok=True)
 
     local_files = []
     for name in files:

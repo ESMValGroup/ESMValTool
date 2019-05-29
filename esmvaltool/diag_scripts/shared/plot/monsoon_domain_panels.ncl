@@ -10,16 +10,16 @@
 ;
 ; #############################################################################
 
-load "./interface_scripts/auxiliary.ncl"
-load "./interface_scripts/data_handling.ncl"
-load "./interface_scripts/logging.ncl"
+load "$diag_scripts/../interface_scripts/auxiliary.ncl"
+load "$diag_scripts/../interface_scripts/data_handling.ncl"
+load "$diag_scripts/../interface_scripts/logging.ncl"
 
-load "./diag_scripts/aux/SAMonsoon/SAMonsoon.ncl"
+load "$diag_scripts/aux/SAMonsoon/SAMonsoon.ncl"
 exact_panel_position_file = \
   "./diag_scripts/aux/SAMonsoon/exact_panel_positions_precip_world.ncl"
-load "./diag_scripts/aux/SAMonsoon/SAMonsoon_panel_positions.ncl"
-load "./diag_scripts/aux/SAMonsoon/exact_panel_positions_generic.ncl"
-load "./diag_scripts/shared/plot/style.ncl"
+load "$diag_scripts/aux/SAMonsoon/SAMonsoon_panel_positions.ncl"
+load "$diag_scripts/aux/SAMonsoon/exact_panel_positions_generic.ncl"
+load "$diag_scripts/shared/plot/style.ncl"
 
 begin
     loadscript(exact_panel_position_file)
@@ -299,7 +299,7 @@ begin
   scriptname = "plot_script/ncl/monsoon_domain_panels.ncl"
   enter_msg(scriptname, funcname)
 
-  dim_MOD = dimsizes(dataset_info@dataset)
+  dim_MOD = dimsizes(input_file_info@dataset)
   dim_VAR = dimsizes(variables)
   var0 = variables(0)
   field_type0 = field_types(0)
@@ -341,7 +341,7 @@ begin
 
   ; Which model goes where on each page?
   figure_panel_placement = new((/sum(figures_per_page)/), integer)
-  place_models_on_pages(dataset_info, \
+  place_models_on_pages(input_file_info, \
                         plot_settings@idx_ref, \
                         figures_per_page, \
                         model_panel_placement, \

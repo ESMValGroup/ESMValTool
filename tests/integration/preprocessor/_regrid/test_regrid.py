@@ -4,8 +4,6 @@ function.
 
 """
 
-from __future__ import absolute_import, division, print_function
-
 import unittest
 
 import iris
@@ -24,47 +22,57 @@ class Test(tests.Test):
         self.cube = _make_cube(data)
         self.cs = iris.coord_systems.GeogCS(iris.fileformats.pp.EARTH_RADIUS)
 
-    def test_nop(self):
-        result = regrid(self.cube, None, None)
-        self.assertEqual(result, self.cube)
-        self.assertEqual(id(result), id(self.cube))
-
     def test_regrid__linear(self):
         data = np.empty((1, 1))
-        grid = iris.cube.Cube(data)
-        lons = iris.coords.DimCoord(
-            [1.5],
-            standard_name='longitude',
-            bounds=[[1, 2]],
-            units='degrees_east',
-            coord_system=self.cs)
-        lats = iris.coords.DimCoord(
-            [1.5],
-            standard_name='latitude',
-            bounds=[[1, 2]],
-            units='degrees_north',
-            coord_system=self.cs)
+        lons = iris.coords.DimCoord([1.5],
+                                    standard_name='longitude',
+                                    bounds=[[1, 2]],
+                                    units='degrees_east',
+                                    coord_system=self.cs)
+        lats = iris.coords.DimCoord([1.5],
+                                    standard_name='latitude',
+                                    bounds=[[1, 2]],
+                                    units='degrees_north',
+                                    coord_system=self.cs)
         coords_spec = [(lats, 0), (lons, 1)]
         grid = iris.cube.Cube(data, dim_coords_and_dims=coords_spec)
         result = regrid(self.cube, grid, 'linear')
         expected = np.array([[[1.5]], [[5.5]], [[9.5]]])
         self.assertArrayEqual(result.data, expected)
 
+    def test_regrid__linear_extrapolate(self):
+        data = np.empty((3, 3))
+        lons = iris.coords.DimCoord([0, 1.5, 3],
+                                    standard_name='longitude',
+                                    bounds=[[0, 1], [1, 2], [2, 3]],
+                                    units='degrees_east',
+                                    coord_system=self.cs)
+        lats = iris.coords.DimCoord([0, 1.5, 3],
+                                    standard_name='latitude',
+                                    bounds=[[0, 1], [1, 2], [2, 3]],
+                                    units='degrees_north',
+                                    coord_system=self.cs)
+        coords_spec = [(lats, 0), (lons, 1)]
+        grid = iris.cube.Cube(data, dim_coords_and_dims=coords_spec)
+        result = regrid(self.cube, grid, 'linear_extrapolate')
+        expected = [[[-3., -1.5, 0.], [0., 1.5, 3.], [3., 4.5, 6.]],
+                    [[1., 2.5, 4.], [4., 5.5, 7.], [7., 8.5, 10.]],
+                    [[5., 6.5, 8.], [8., 9.5, 11.], [11., 12.5, 14.]]]
+        self.assertArrayEqual(result.data, expected)
+
     def test_regrid__linear_extrapolate_with_mask(self):
         data = np.empty((3, 3))
         grid = iris.cube.Cube(data)
-        lons = iris.coords.DimCoord(
-            [0, 1.5, 3],
-            standard_name='longitude',
-            bounds=[[0, 1], [1, 2], [2, 3]],
-            units='degrees_east',
-            coord_system=self.cs)
-        lats = iris.coords.DimCoord(
-            [0, 1.5, 3],
-            standard_name='latitude',
-            bounds=[[0, 1], [1, 2], [2, 3]],
-            units='degrees_north',
-            coord_system=self.cs)
+        lons = iris.coords.DimCoord([0, 1.5, 3],
+                                    standard_name='longitude',
+                                    bounds=[[0, 1], [1, 2], [2, 3]],
+                                    units='degrees_east',
+                                    coord_system=self.cs)
+        lats = iris.coords.DimCoord([0, 1.5, 3],
+                                    standard_name='latitude',
+                                    bounds=[[0, 1], [1, 2], [2, 3]],
+                                    units='degrees_north',
+                                    coord_system=self.cs)
         coords_spec = [(lats, 0), (lons, 1)]
         grid = iris.cube.Cube(data, dim_coords_and_dims=coords_spec)
         result = regrid(self.cube, grid, 'linear')
@@ -75,19 +83,16 @@ class Test(tests.Test):
 
     def test_regrid__nearest(self):
         data = np.empty((1, 1))
-        grid = iris.cube.Cube(data)
-        lons = iris.coords.DimCoord(
-            [1.6],
-            standard_name='longitude',
-            bounds=[[1, 2]],
-            units='degrees_east',
-            coord_system=self.cs)
-        lats = iris.coords.DimCoord(
-            [1.6],
-            standard_name='latitude',
-            bounds=[[1, 2]],
-            units='degrees_north',
-            coord_system=self.cs)
+        lons = iris.coords.DimCoord([1.6],
+                                    standard_name='longitude',
+                                    bounds=[[1, 2]],
+                                    units='degrees_east',
+                                    coord_system=self.cs)
+        lats = iris.coords.DimCoord([1.6],
+                                    standard_name='latitude',
+                                    bounds=[[1, 2]],
+                                    units='degrees_north',
+                                    coord_system=self.cs)
         coords_spec = [(lats, 0), (lons, 1)]
         grid = iris.cube.Cube(data, dim_coords_and_dims=coords_spec)
         result = regrid(self.cube, grid, 'nearest')
@@ -96,19 +101,16 @@ class Test(tests.Test):
 
     def test_regrid__nearest_extrapolate_with_mask(self):
         data = np.empty((3, 3))
-        grid = iris.cube.Cube(data)
-        lons = iris.coords.DimCoord(
-            [0, 1.6, 3],
-            standard_name='longitude',
-            bounds=[[0, 1], [1, 2], [2, 3]],
-            units='degrees_east',
-            coord_system=self.cs)
-        lats = iris.coords.DimCoord(
-            [0, 1.6, 3],
-            standard_name='latitude',
-            bounds=[[0, 1], [1, 2], [2, 3]],
-            units='degrees_north',
-            coord_system=self.cs)
+        lons = iris.coords.DimCoord([0, 1.6, 3],
+                                    standard_name='longitude',
+                                    bounds=[[0, 1], [1, 2], [2, 3]],
+                                    units='degrees_east',
+                                    coord_system=self.cs)
+        lats = iris.coords.DimCoord([0, 1.6, 3],
+                                    standard_name='latitude',
+                                    bounds=[[0, 1], [1, 2], [2, 3]],
+                                    units='degrees_north',
+                                    coord_system=self.cs)
         coords_spec = [(lats, 0), (lons, 1)]
         grid = iris.cube.Cube(data, dim_coords_and_dims=coords_spec)
         result = regrid(self.cube, grid, 'nearest')
@@ -119,19 +121,16 @@ class Test(tests.Test):
 
     def test_regrid__area_weighted(self):
         data = np.empty((1, 1))
-        grid = iris.cube.Cube(data)
-        lons = iris.coords.DimCoord(
-            [1.6],
-            standard_name='longitude',
-            bounds=[[1, 2]],
-            units='degrees_east',
-            coord_system=self.cs)
-        lats = iris.coords.DimCoord(
-            [1.6],
-            standard_name='latitude',
-            bounds=[[1, 2]],
-            units='degrees_north',
-            coord_system=self.cs)
+        lons = iris.coords.DimCoord([1.6],
+                                    standard_name='longitude',
+                                    bounds=[[1, 2]],
+                                    units='degrees_east',
+                                    coord_system=self.cs)
+        lats = iris.coords.DimCoord([1.6],
+                                    standard_name='latitude',
+                                    bounds=[[1, 2]],
+                                    units='degrees_north',
+                                    coord_system=self.cs)
         coords_spec = [(lats, 0), (lons, 1)]
         grid = iris.cube.Cube(data, dim_coords_and_dims=coords_spec)
         result = regrid(self.cube, grid, 'area_weighted')
@@ -140,19 +139,16 @@ class Test(tests.Test):
 
     def test_regrid__unstructured_nearest(self):
         data = np.empty((1, 1))
-        grid = iris.cube.Cube(data)
-        lons = iris.coords.DimCoord(
-            [1.6],
-            standard_name='longitude',
-            bounds=[[1, 2]],
-            units='degrees_east',
-            coord_system=self.cs)
-        lats = iris.coords.DimCoord(
-            [1.6],
-            standard_name='latitude',
-            bounds=[[1, 2]],
-            units='degrees_north',
-            coord_system=self.cs)
+        lons = iris.coords.DimCoord([1.6],
+                                    standard_name='longitude',
+                                    bounds=[[1, 2]],
+                                    units='degrees_east',
+                                    coord_system=self.cs)
+        lats = iris.coords.DimCoord([1.6],
+                                    standard_name='latitude',
+                                    bounds=[[1, 2]],
+                                    units='degrees_north',
+                                    coord_system=self.cs)
         coords_spec = [(lats, 0), (lons, 1)]
         grid = iris.cube.Cube(data, dim_coords_and_dims=coords_spec)
         # Replace 1d spatial coords with 2d spatial coords.

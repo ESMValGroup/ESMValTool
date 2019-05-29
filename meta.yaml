@@ -2,10 +2,10 @@
 ---
 
 # Build commmand:
-# conda build esmvaltool -c conda-forge -c birdhouse
+# conda build . -c conda-forge -c birdhouse
 
 # Package version number
-{% set version = "2.0a1" %}
+{% set version = "2.0a2" %}
 
 package:
   name: esmvaltool
@@ -13,16 +13,20 @@ package:
 
 source:
   # Use these two lines to build a release:
-  git_rev: v{{ version }}
-  git_url: https://github.com/ESMValGroup/ESMValTool.git
+  # git_rev: v{{ version }}
+  # git_url: https://github.com/ESMValGroup/ESMValTool.git
   # Use this line instead of the above to test building without a release:
-  # path: .
+  path: .
 
 build:
   # Increment the build number when building a new conda package of the same
   # esmvaltool version, reset to 0 when building a new version.
-  number: 0
-  script: python setup.py install --single-version-externally-managed --record=/tmp/record.txt
+  number: 1
+  script: |
+      python setup.py install --single-version-externally-managed --record=/tmp/record.txt
+      POST_LINK="${PREFIX}/bin/.esmvaltool-post-link.sh"
+      cp -v ${RECIPE_DIR}/language_support.sh ${POST_LINK};
+      chmod +x ${POST_LINK};
 
 requirements:
   build:
@@ -32,29 +36,47 @@ requirements:
     - setuptools_scm
   run:
     # esmvaltool
-    - python
-    - basemap
-    - iris=1.13
+    - python>=3.6
+    - libunwind  #  specifically for Python3.7+
+    - graphviz
+    - iris>=2.2
     - python-stratify
     # Normally installed via pip:
     - cartopy
     - cf_units
     - cython
-    - matplotlib
+    - eofs
+    - esmpy
+    - matplotlib<3
+    - nc-time-axis
     - netCDF4
     - numba
     - numpy
+    - pandas
     - pillow
+    - prov
     - psutil
+    - pydot
     - python-cdo
     - pyyaml
+    - scikit-learn
     - shapely
     - six
+    - vmprof
+    - xarray>=0.12.0
     - yamale  # in birdhouse channel
+    - fiona
+    - xlsxwriter
+    # Command line tools used by diagnostic scripts
+    - cdo
+    - imagemagick
+    - nco
     # Multi language support:
-    - ncl
-    - ncurses=6.1=hfc679d8_1
-    # TODO: add R, julia
+    - ncl>=6.5.0
+    - r-base
+    - r-curl  # Dependency of lintr, but fails to compile because it cannot find libcurl installed from conda.
+    - r-udunits2  # Fails to compile because it cannot find udunits2 installed from conda.
+
 test:
   # TODO: add unit tests? This seems to require installing the tests
   imports:
