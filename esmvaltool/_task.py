@@ -190,7 +190,7 @@ def write_ncl_settings(settings, filename, mode='wt'):
         file.write('\n')
 
 
-class BaseTask(object):
+class BaseTask:
     """Base class for defining task classes."""
 
     def __init__(self, ancestors=None, name=''):
@@ -416,6 +416,7 @@ class DiagnosticTask(BaseTask):
         try:
             process = subprocess.Popen(
                 cmd,
+                bufsize=2**20,  # Use a large buffer to prevent NCL crash
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
                 cwd=cwd,
