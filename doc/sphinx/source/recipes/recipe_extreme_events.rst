@@ -64,7 +64,7 @@ User settings
   input datasets will be used.
 * ts_plt: (logical) if to produce the timeseries or not (default: true)
 * glc_plt: (logical) if to produce the Gleckler or not (default: true)
-* climdex_parallel: number of parallel threads to be used for climdex calculation (default: 4)
+* climdex_parallel: number of parallel threads to be used for climdex calculation (default: 4). Also the logical ``false`` can be passed to switch off parallel computation.
 * normalize: (logical) if to detrend and normalize with the standard deviation for the datasets for use in the timeseries plot. When this option is used the data for the following indices  are detrended and normalized in the timeseries plots: "altcdd", "altcsdi", "altcwd", "altwsdi", "cdd",  "cwd","dtr", "fd", "gsl", "id", "prcptot", "r10mm", "r1mm", "r20mm", "r95p", "r99p", "rx1day", "rx5day", "sdii", "su", "tnn", "tnx", "tr", "txn","txn","txx" (default: false)
 
 Additional optional setting controlling the plots:
