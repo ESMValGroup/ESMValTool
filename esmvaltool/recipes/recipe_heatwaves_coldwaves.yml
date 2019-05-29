@@ -1,0 +1,50 @@
+# ESMValTool
+# recipe_heatwaves_coldwaves.yml
+---
+documentation:
+  description: |
+    Tool to compute the number of days excedding a quantile
+    for a minimum number of consecutive days.
+
+  authors:
+    - hunt_al
+    - pere_nu
+    - manu_ni
+    - caro_lo
+
+  projects:
+    - c3s-magic
+
+datasets:
+#  - {dataset: IPSL-CM5A-MR,  type: exp, project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 1961,  end_year: 1990}
+#  - {dataset: IPSL-CM5A-MR,  type: exp, project: CMIP5,  mip: day,  exp: rcp85,  ensemble: r1i1p1,  start_year: 2020,  end_year: 2040}
+  - {dataset: bcc-csm1-1, type: exp, project: CMIP5, mip: day, exp: historical, ensemble: r1i1p1, start_year: 1971, end_year: 2000}
+  - {dataset: bcc-csm1-1, type: exp, project: CMIP5, mip: day, exp: rcp85, ensemble: r1i1p1, start_year: 2060, end_year: 2080}
+
+preprocessors:
+  preproc:
+    regrid:
+      target_grid: bcc-csm1-1
+      scheme: linear
+    mask_fillvalues:
+      threshold_fraction: 0.95
+    extract_region:
+      start_longitude: 220
+      end_longitude: 320
+      start_latitude: 30
+      end_latitude: 80
+
+diagnostics:
+  heatwaves_coldwaves:
+    description: Calculate heatwaves and coldwaves.
+    variables:
+      tasmin:
+        preprocessor: preproc
+        mip: day
+    scripts:
+      main:
+        script: magic_bsc/extreme_spells.r
+        quantile: 0.80   # quantile defining the exceedance/non-exceedance threshold
+        min_duration: 5  # Min duration of a heatwave/coldwave event in days
+        operator: '<'    # or '>'
+        season: winter   # or summer

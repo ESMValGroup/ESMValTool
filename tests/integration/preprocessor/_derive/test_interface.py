@@ -20,6 +20,18 @@ def test_get_required():
     assert variables == reference
 
 
+def test_get_required_with_fx():
+
+    variables = get_required('nbp_grid')
+
+    reference = [{
+        'short_name': 'nbp',
+        'fx_files': ['sftlf'],
+    }]
+
+    assert variables == reference
+
+
 def test_derive_nonstandard_nofx():
 
     short_name = 'alb'

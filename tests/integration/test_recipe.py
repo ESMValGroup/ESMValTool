@@ -313,6 +313,33 @@ def test_default_preprocessor(tmp_path, patched_datafinder, config_user):
     assert product.settings == defaults
 
 
+def test_empty_variable(tmp_path, patched_datafinder, config_user):
+    """Test that it is possible to specify all information in the dataset."""
+    content = dedent("""
+        diagnostics:
+          diagnostic_name:
+            additional_datasets:
+              - dataset: CanESM2
+                project: CMIP5
+                mip: Amon
+                exp: historical
+                start_year: 2000
+                end_year: 2005
+                ensemble: r1i1p1
+            variables:
+              pr:
+            scripts: null
+        """)
+
+    recipe = get_recipe(tmp_path, content, config_user)
+    assert len(recipe.tasks) == 1
+    task = recipe.tasks.pop()
+    assert len(task.products) == 1
+    product = task.products.pop()
+    assert product.attributes['short_name'] == 'pr'
+    assert product.attributes['dataset'] == 'CanESM2'
+
+
 def test_reference_dataset(tmp_path, patched_datafinder, config_user,
                            monkeypatch):
 
@@ -384,8 +411,7 @@ def test_reference_dataset(tmp_path, patched_datafinder, config_user,
         'CMIP5',
         'MPI-ESM-LR',
         'ta',
-        fix_dir,
-        'air_pressure',
+        fix_dir
     )
 
     assert 'regrid' not in reference.settings
@@ -546,13 +572,65 @@ def test_derive_not_needed(tmp_path, patched_datafinder, config_user):
     # Check product content of tasks
     assert len(task.products) == 1
     product = task.products.pop()
-    assert 'derive' in product.settings
     assert product.attributes['short_name'] == 'toz'
+    assert 'derive' in product.settings
 
     assert len(ancestor.products) == 1
     ancestor_product = ancestor.products.pop()
     assert ancestor_product.filename in product.files
     assert ancestor_product.attributes['short_name'] == 'toz'
+    assert 'derive' not in ancestor_product.settings
+
+    # Check that fixes are applied just once
+    fixes = ('fix_file', 'fix_metadata', 'fix_data')
+    for fix in fixes:
+        assert fix in ancestor_product.settings
+        assert fix not in product.settings
+
+
+def test_derive_with_fx(tmp_path, patched_datafinder, config_user):
+
+    content = dedent("""
+        diagnostics:
+          diagnostic_name:
+            variables:
+              nbp_grid:
+                project: CMIP5
+                mip: Lmon
+                exp: historical
+                start_year: 2000
+                end_year: 2005
+                derive: true
+                force_derivation: true
+                additional_datasets:
+                  - {dataset: GFDL-CM3,  ensemble: r1i1p1}
+            scripts: null
+        """)
+
+    recipe = get_recipe(tmp_path, content, config_user)
+
+    # Check generated tasks
+    assert len(recipe.tasks) == 1
+    task = recipe.tasks.pop()
+
+    assert task.name == 'diagnostic_name' + TASKSEP + 'nbp_grid'
+    assert len(task.ancestors) == 1
+    ancestor = [t for t in task.ancestors][0]
+    assert ancestor.name == 'diagnostic_name/nbp_grid_derive_input_nbp'
+
+    # Check product content of tasks
+    assert len(task.products) == 1
+    product = task.products.pop()
+    assert 'derive' in product.settings
+    assert product.attributes['short_name'] == 'nbp_grid'
+    assert 'fx_files' in product.settings['derive']
+    assert 'sftlf' in product.settings['derive']['fx_files']
+    assert product.settings['derive']['fx_files']['sftlf'] is not None
+
+    assert len(ancestor.products) == 1
+    ancestor_product = ancestor.products.pop()
+    assert ancestor_product.filename in product.files
+    assert ancestor_product.attributes['short_name'] == 'nbp'
 
 
 def test_diagnostic_task_provenance(tmp_path, patched_datafinder, config_user):

@@ -43,7 +43,7 @@ REQUIREMENTS = {
         'prov[dot]',
         'psutil',
         'pyyaml',
-        'scitools-iris',
+        'scitools-iris>=2.2',
         'scikit-learn',
         'shapely',
         'six',

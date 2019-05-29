@@ -168,7 +168,7 @@ def regrid(cube, target_grid, scheme, lat_offset=True, lon_offset=True):
     ----------
     cube : cube
         The source cube to be regridded.
-    tgt_cube : cube or str
+    target_grid : cube or str
         The cube that specifies the target or reference grid for the regridding
         operation. Alternatively, a string cell specification may be provided,
         of the form 'MxN', which specifies the extent of the cell, longitude by
@@ -480,16 +480,13 @@ def get_reference_levels(filename,
                          project,
                          dataset,
                          short_name,
-                         fix_dir,
-                         coordinate='air_pressure'):
+                         fix_dir):
     """Get level definition from a CMOR coordinate.
 
     Parameters
     ----------
     filename: str
         Path to the reference file
-    coordinate: str
-        Coordinate name
 
     Returns
     -------
@@ -507,8 +504,7 @@ def get_reference_levels(filename,
     cubes = fix_metadata(cubes, short_name, project, dataset)
     cube = cubes[0]
     try:
-        coord = cube.coord(coordinate)
+        coord = cube.coord(axis='Z')
     except iris.exceptions.CoordinateNotFoundError:
-        raise ValueError('Coordinate {} not available in {}'.format(
-            coordinate, filename))
+        raise ValueError('z-coord not available in {}'.format(filename))
     return coord.points.tolist()

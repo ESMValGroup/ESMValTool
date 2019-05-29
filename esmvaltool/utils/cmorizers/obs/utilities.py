@@ -1,27 +1,44 @@
 """Utils module for Python cmorizers."""
+import datetime
 import logging
 import os
+from contextlib import contextmanager
 
 import iris
 import numpy as np
-from cf_units import Unit
-
 import yaml
+from cf_units import Unit
+from dask import array as da
+
+from esmvaltool import __version__ as version
+from esmvaltool._config import get_tag_value
+from esmvaltool.cmor.table import CMOR_TABLES
 
 logger = logging.getLogger(__name__)
 
 
-# read the associated dataset-specific config file
-def _read_cmor_config(cmor_config):
-    """Read cmor configuration in a dict."""
-    reg_path = os.path.join(
-        os.path.dirname(__file__), 'cmor_config', cmor_config)
-    with open(reg_path, 'r') as file:
-        cfg = yaml.safe_load(file)
-    return cfg
+def add_height2m(cube):
+    """Add scalar coordinate 'height' with value of 2m."""
+    logger.info("Adding height coordinate (2m)")
+    height_coord = iris.coords.AuxCoord(
+        2.0,
+        var_name='height',
+        standard_name='height',
+        long_name='height',
+        units=Unit('m'),
+        attributes={'positive': 'up'})
+    cube.add_aux_coord(height_coord, ())
 
 
-def _convert_timeunits(cube, start_year):
+@contextmanager
+def constant_metadata(cube):
+    """Do cube math without modifying units etc."""
+    metadata = cube.metadata
+    yield metadata
+    cube.metadata = metadata
+
+
+def convert_timeunits(cube, start_year):
     """Convert time axis from malformed Year 0."""
     # TODO any more weird cases?
     if cube.coord('time').units == 'months since 0000-01-01 00:00:00':
@@ -33,6 +50,181 @@ def _convert_timeunits(cube, start_year):
     else:
         real_unit = cube.coord('time').units
     cube.coord('time').units = real_unit
+    return cube
+
+
+def fix_coords(cube):
+    """Fix the time units and values to CMOR standards."""
+    # first fix any completely missing coord var names
+    _fix_dim_coordnames(cube)
+    # fix individual coords
+    for cube_coord in cube.coords():
+        # fix time
+        if cube_coord.var_name == 'time':
+            logger.info("Fixing time...")
+            cube.coord('time').convert_units(
+                Unit('days since 1950-1-1 00:00:00', calendar='gregorian'))
+            _fix_bounds(cube, cube.coord('time'))
+
+        # fix longitude
+        if cube_coord.var_name == 'lon':
+            logger.info("Fixing longitude...")
+            if cube.coord('longitude').points[0] < 0. and \
+                    cube.coord('longitude').points[-1] < 181.:
+                cube.coord('longitude').points = \
+                    cube.coord('longitude').points + 180.
+                _fix_bounds(cube, cube.coord('longitude'))
+                cube.attributes['geospatial_lon_min'] = 0.
+                cube.attributes['geospatial_lon_max'] = 360.
+                nlon = len(cube.coord('longitude').points)
+                _roll_cube_data(cube, int(nlon / 2), -1)
+
+        # fix latitude
+        if cube_coord.var_name == 'lat':
+            logger.info("Fixing latitude...")
+            _fix_bounds(cube, cube.coord('latitude'))
+
+        # fix depth
+        if cube_coord.var_name == 'lev':
+            logger.info("Fixing depth...")
+            _fix_bounds(cube, cube.coord('depth'))
+
+        # fix air_pressure
+        if cube_coord.var_name == 'air_pressure':
+            logger.info("Fixing air pressure...")
+            _fix_bounds(cube, cube.coord('air_pressure'))
+
+    # remove CS
+    cube.coord('latitude').coord_system = None
+    cube.coord('longitude').coord_system = None
+
+    return cube
+
+
+def fix_var_metadata(cube, var_info):
+    """Fix var metadata from CMOR table."""
+    if var_info.standard_name == '':
+        cube.standard_name = None
+    else:
+        cube.standard_name = var_info.standard_name
+    cube.var_name = var_info.short_name
+    cube.long_name = var_info.long_name
+    _set_units(cube, var_info.units)
+    return cube
+
+
+def flip_dim_coord(cube, coord_name):
+    """Flip (reverse) dimensional coordinate of cube."""
+    logger.info("Flipping dimensional coordinate %s...", coord_name)
+    coord = cube.coord(coord_name, dim_coords=True)
+    coord_idx = cube.coord_dims(coord)[0]
+    coord.points = np.flip(coord.points)
+    coord.bounds = np.flip(coord.bounds, axis=0)
+    cube.data = da.flip(cube.core_data(), axis=coord_idx)
+
+
+def read_cmor_config(cmor_config):
+    """Read the associated dataset-specific config file."""
+    reg_path = os.path.join(
+        os.path.dirname(__file__), 'cmor_config', cmor_config)
+    with open(reg_path, 'r') as file:
+        cfg = yaml.safe_load(file)
+    cfg['cmor_table'] = \
+        CMOR_TABLES[cfg['attributes']['project_id']]
+    if 'comment' not in cfg.keys():
+        cfg['attributes']['comment'] = ''
+    return cfg
+
+
+def save_variable(cube, var, outdir, attrs, **kwargs):
+    """Saver function."""
+    # CMOR standard
+    cube_time = cube.coord('time')
+    reftime = Unit(cube_time.units.origin, cube_time.units.calendar)
+    dates = reftime.num2date(cube_time.points[[0, -1]])
+    if len(cube_time.points) == 1:
+        year = str(dates[0].year)
+        time_suffix = '-'.join([year + '01', year + '12'])
+    else:
+        date1 = str(dates[0].year) + '%02d' % dates[0].month
+        date2 = str(dates[1].year) + '%02d' % dates[1].month
+        time_suffix = '-'.join([date1, date2])
+
+    file_name = '_'.join([
+        'OBS',
+        attrs['dataset_id'],
+        attrs['modeling_realm'],
+        attrs['version'],
+        attrs['mip'],
+        var,
+        time_suffix,
+    ]) + '.nc'
+    file_path = os.path.join(outdir, file_name)
+    logger.info('Saving: %s', file_path)
+    status = 'lazy' if cube.has_lazy_data() else 'realized'
+    logger.info('Cube has %s data [lazy is preferred]', status)
+    iris.save(cube, file_path, fill_value=1e20, **kwargs)
+
+
+def set_global_atts(cube, attrs):
+    """Complete the cmorized file with global metadata."""
+    logger.info("Setting global metadata...")
+    attrs = dict(attrs)
+    cube.attributes.clear()
+    timestamp = datetime.datetime.utcnow()
+    timestamp_format = "%Y-%m-%d %H:%M:%S"
+    now_time = timestamp.strftime(timestamp_format)
+
+    # Necessary attributes
+    try:
+        glob_dict = {
+            'title': (f"{attrs.pop('dataset_id')} data reformatted for "
+                      f"ESMValTool v{version}"),
+            'version':
+            attrs.pop('version'),
+            'tier':
+            str(attrs.pop('tier')),
+            'source':
+            attrs.pop('source'),
+            'reference':
+            get_tag_value('references', attrs.pop('reference')),
+            'comment':
+            attrs.pop('comment'),
+            'user':
+            os.environ["USER"],
+            'host':
+            os.environ["HOSTNAME"],
+            'history':
+            f'Created on {now_time}',
+            'project_id':
+            attrs.pop('project_id'),
+        }
+    except KeyError:
+        raise KeyError(
+            "All CMORized datasets need the global attributes 'dataset_id', "
+            "'version', 'tier', 'source', 'reference', 'comment' and "
+            "'project_id' specified in the configuration file")
+
+    # Additional attributes
+    glob_dict.update(attrs)
+    cube.attributes = glob_dict
+
+
+def var_name_constraint(var_name):
+    """:mod:`iris.Constraint` using `var_name` of an :mod:`iris.cube.Cube`."""
+    return iris.Constraint(cube_func=lambda c: c.var_name == var_name)
+
+
+def _fix_bounds(cube, dim_coord):
+    """Reset and fix all bounds."""
+    if len(cube.coord(dim_coord).points) > 1:
+        if cube.coord(dim_coord).has_bounds():
+            cube.coord(dim_coord).bounds = None
+        cube.coord(dim_coord).guess_bounds()
+
+    if cube.coord(dim_coord).has_bounds():
+        cube.coord(dim_coord).bounds = da.array(
+            cube.coord(dim_coord).core_bounds(), dtype='float64')
     return cube
 
 
@@ -77,94 +269,17 @@ def _fix_dim_coordnames(cube):
     return cube
 
 
-def _fix_bounds(cube, dim_coord):
-    """Reset and fix all bounds."""
-    if len(cube.coord(dim_coord).points) > 1:
-        if not cube.coord(dim_coord).has_bounds():
-            cube.coord(dim_coord).guess_bounds()
-        else:
-            cube.coord(dim_coord).bounds = None
-            cube.coord(dim_coord).guess_bounds()
-
-    if cube.coord(dim_coord).has_bounds():
-        cube.coord(dim_coord).bounds = np.array(
-            cube.coord(dim_coord).bounds, dtype='float64')
-    return cube
-
-
-def _fix_coords(cube):
-    """Fix the time units and values to CMOR standards."""
-    # first fix any completely missing coord var names
-    _fix_dim_coordnames(cube)
-    # fix individual coords
-    for cube_coord in cube.coords():
-        # fix time
-        if cube_coord.var_name == 'time':
-            logger.info("Fixing time...")
-            cube.coord('time').convert_units(
-                Unit('days since 1950-1-1 00:00:00', calendar='gregorian'))
-            _fix_bounds(cube, cube.coord('time'))
-
-        # fix longitude
-        if cube_coord.var_name == 'lon':
-            logger.info("Fixing longitude...")
-            if cube.coord('longitude').points[0] < 0. and \
-                    cube.coord('longitude').points[-1] < 181.:
-                cube.coord('longitude').points = \
-                    cube.coord('longitude').points + 180.
-                _fix_bounds(cube, cube.coord('longitude'))
-                cube.attributes['geospatial_lon_min'] = 0.
-                cube.attributes['geospatial_lon_max'] = 360.
-
-        # fix latitude
-        if cube_coord.var_name == 'lat':
-            logger.info("Fixing latitude...")
-            _fix_bounds(cube, cube.coord('latitude'))
-
-        # fix depth
-        if cube_coord.var_name == 'lev':
-            logger.info("Fixing depth...")
-            _fix_bounds(cube, cube.coord('depth'))
-
-        # fix air_pressure
-        if cube_coord.var_name == 'air_pressure':
-            logger.info("Fixing air pressure...")
-            _fix_bounds(cube, cube.coord('air_pressure'))
-
-    # remove CS
-    cube.coord('latitude').coord_system = None
-    cube.coord('longitude').coord_system = None
-
-    return cube
-
-
-def _add_metadata(cube, proj):
-    """Complete the cmorized file with useful metadata."""
-    logger.info("Add Global metadata...")
-    for att in proj['metadata_attributes']:
-        if att not in cube.metadata.attributes:
-            cube.metadata.attributes[att] = proj['metadata_attributes'][att]
-
-
 def _roll_cube_data(cube, shift, axis):
     """Roll a cube data on specified axis."""
-    cube.data = np.roll(cube.data, shift, axis=axis)
+    cube.data = da.roll(cube.core_data(), shift, axis=axis)
     return cube
 
 
-def _save_variable(cube, var, outdir, year, proj, **kwargs):
-    """Saver function."""
-    # CMOR standard
-    if not isinstance(year, list):
-        time_suffix = '-'.join([str(year) + '01', str(year) + '12'])
+def _set_units(cube, units):
+    """Set units in compliance with cf_unit."""
+    special = {'psu': 1.e-3, 'Sv': '1e6 m3 s-1'}
+    if units in list(special.keys()):
+        cube.units = special[units]
     else:
-        yr1, yr2 = year
-        time_suffix = '-'.join([str(yr1) + '01', str(yr2) + '12'])
-    cmor_prefix = '_'.join([
-        'OBS', proj['dataset'], proj['realm'], proj['version'],
-        proj['frequency'][var], var
-    ])
-    file_name = cmor_prefix + '_' + time_suffix + '.nc'
-    file_path = os.path.join(outdir, file_name)
-    logger.info('Saving: %s', file_path)
-    iris.save(cube, file_path, **kwargs)
+        cube.units = Unit(units)
+    return cube
