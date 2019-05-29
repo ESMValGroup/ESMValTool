@@ -16,7 +16,6 @@ ncdf4
 ncdf4.helpers
 PCICt
 plyr
-proj4
 RColorBrewer
 Rcpp
 s2dverification
