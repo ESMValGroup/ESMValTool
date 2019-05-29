@@ -29,9 +29,9 @@
 ;
 ; #############################################################################
 
-load "interface_scripts/interface.ncl"
-load "./diag_scripts/shared/latlon.ncl"
-load "./diag_scripts/shared/statistics.ncl"
+load "$diag_scripts/../interface_scripts/interface.ncl"
+load "$diag_scripts/shared/latlon.ncl"
+load "$diag_scripts/shared/statistics.ncl"
 
 begin
   enter_msg(DIAG_SCRIPT, "")
@@ -39,6 +39,7 @@ begin
   var0 = variable_info[0]@short_name
   field_type0 = variable_info[0]@field
   info_items = select_metadata_by_name(input_file_info, var0)
+  infiles = metadata_att_as_array(info_items, "filename")
   datasetnames = metadata_att_as_array(info_items, "dataset")
   projectnames = metadata_att_as_array(info_items, "project")
   dim_MOD = ListCount(info_items)
@@ -57,9 +58,6 @@ begin
   else
     alt_ref = False
   end if
-
-  ; alltags = array_append_record(tags, \
-  ; (/"PT_other", "ST_clim", "ST_corr", "DM_global"/), 0)
 
 end
 
@@ -137,6 +135,7 @@ begin
   all_cor@var = "cor"
   all_cor@diag_script = DIAG_SCRIPT
   all_cor@ncdf = ncdf_dir
+  all_cor@input = str_join(infiles, ",")
   ncdf_outfile = ncdf_write(all_cor, ncdf_dir)
 
   ; Write list of models with project (arrays get squished as attributes)

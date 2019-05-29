@@ -31,8 +31,8 @@
 ;    20181101-A_gier_be: moved collect from main script
 ;
 ; #############################################################################
-load "interface_scripts/interface.ncl"
-load "./diag_scripts/shared/plot/style.ncl"
+load "$diag_scripts/../interface_scripts/interface.ncl"
+load "$diag_scripts/shared/plot/style.ncl"
 
 begin
   enter_msg(DIAG_SCRIPT, "")
@@ -71,6 +71,9 @@ begin
       data_all(:, 0) = data_temp
       data_all!0 = "models"
       data_all&models = data_temp&models
+
+      ; Input file list for provenance
+      prov_files = str_split(data_temp@input, ",")
     else
       ; If model coordinates are identical
       if (dimsizes(data_temp&models).eq.dimsizes(data_all&models)) \
@@ -102,12 +105,25 @@ begin
           end if
         end do
       end if
+      ; Append input file list for provenance
+      prov_files := array_append_record(prov_files, \
+                                        str_split(data_temp@input, ","), 0)
     end if
     delete(data_temp)
   end do
   data_all!1 = "vars"
   data_all&vars = var_collect
   delete(var_collect)
+
+  ; Sort variables alphabetically
+  pid = sort_alphabetically(data_all&vars, -1, "end")
+  tmp = data_all(:, pid)
+  tmp&vars = data_all&vars(pid)
+  delete(data_all)
+  data_all = tmp
+  delete(tmp)
+  alt_obs := alt_obs(pid)
+  delete(pid)
 
   ; Get project for models
   projects = new(dimsizes(data_all&models), string)
@@ -125,7 +141,6 @@ begin
 
   data_all&models@project = projects
   delete(projects)
-
 ; -------------------------------------------------------------------------
 ; ----------------- Interim Functions -------------------------------------
 ; -------------------------------------------------------------------------
@@ -166,7 +181,6 @@ begin
   end do
   return(unique)
   end
-
 ; -----------------------------------------------------------------------------
 ; ---------------------------- Plotting ---------------------------------------
 ; -----------------------------------------------------------------------------
@@ -352,7 +366,7 @@ begin
     end if
   end do
 
-  y_min_label = res@trYMinF + 0.2*yspan
+  y_min_label = res@trYMinF + 0.1*yspan
   lb_stride = yspan/res@vpHeightF * font_height * 1.2   ; font_height*3
   plabel = projects
   ; Draw Legend
@@ -372,6 +386,25 @@ begin
 
   draw(plot)
   frame(wks)
+  ; Write output
+  if config_user_info@write_netcdf then
+    system("mkdir -p " + config_user_info@work_dir)
+    workpath = config_user_info@work_dir + "pattern_cor.nc"
+    ncdf_outfile = ncdf_write(data_all, workpath)
+  end if
 
+  ; collect meta-data and call ESMValMD function
+  nc_file = workpath
+  plot_file = outfile
+  caption = "Centered pattern correlations between models and observations" \
+       + " for the annual mean climatologies (similar to IPCC ch. 9 fig. 9.6)."
+  statistics = (/"corr", "clim"/)
+  domains = (/"global"/)
+  plottype = "other"
+  authors = (/"gier_be"/)
+  references = (/"flato13ipcc"/)
+  infiles = prov_files
+  log_provenance(nc_file, plot_file, caption, statistics, domains, plottype, \
+                 authors, references, infiles)
   leave_msg(DIAG_SCRIPT, "")
 end
