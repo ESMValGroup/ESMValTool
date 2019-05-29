@@ -5,7 +5,7 @@ import iris
 from ..fix import Fix
 
 
-# noinspection PyPep8Naming
+# noinspection PyPep8
 class allvars(Fix):
     """Common fixes to all vars."""
 
