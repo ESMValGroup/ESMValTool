@@ -50,6 +50,7 @@ Variables
 ---------
 
 * psl(atmos, daily-monthly, longitude, latitude, time)
+* tas(atmos, daily-monthly, longitude, latitude, time)
 
 
 Observations and reformat scripts
