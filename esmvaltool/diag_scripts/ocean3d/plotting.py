@@ -320,57 +320,61 @@ def tsplot_plot(model_filenames, max_level, region, diagworkdir, diagplotdir,
                              region= region, data_type='tsplot')
     plt.savefig(pltoutname, dpi=100)
 
-def plot_profile(model_filenames, cmor_var,
-                 max_level, region, diagworkdir, diagplotdir,
-                 cmap=cm.Set2, dpi=100, observations='PHC'):
-    print(model_filenames)
+
+def plot_profile(model_filenames,
+                 cmor_var,
+                 max_level,
+                 region,
+                 diagworkdir,
+                 diagplotdir,
+                 cmap=cm.Set2,
+                 dpi=100,
+                 observations='PHC'):
+    '''Plot profiles from previously calculated data for
+    Hovmoeller diagrams.
+    '''
     level_clim = Dataset(model_filenames[observations]).variables['lev'][:]
-    # plt.style.use('seaborn-paper')
     plt.figure(figsize=(5, 6))
     ax = plt.subplot(111)
 
     color = iter(cmap(np.linspace(0, 1, len(model_filenames))))
-    lev_limit_clim = level_clim[level_clim <= max_level].shape[0]+1
-    mean_profile = np.zeros((level_clim[:lev_limit_clim].shape[0],
-                             len(model_filenames)-1))
-    mean_profile_counter = 0
-    for i, mmodel in enumerate(model_filenames):
-        logger.info("Plot profile {} data for {}, region {}".format(cmor_var,
-                                                             mmodel,
-                                                             region))
-        ifilename = genfilename(diagworkdir, cmor_var,
-                                mmodel, region, 'hofm', '.npy')
-        ifilename_levels = genfilename(diagworkdir, cmor_var,
-                                       mmodel, region, 'levels', '.npy')
+    lev_limit_clim = level_clim[level_clim <= max_level].shape[0] + 1
 
+    mean_profile = np.zeros(
+        (level_clim[:lev_limit_clim].shape[0], len(model_filenames) - 1))
+    mean_profile_counter = 0
+
+    for i, mmodel in enumerate(model_filenames):
+        logger.info("Plot profile %s data for %s, region %s",
+                    cmor_var, mmodel, region)
+        # construct input filenames
+        ifilename = genfilename(diagworkdir, cmor_var, mmodel, region, 'hofm',
+                                '.npy')
+        ifilename_levels = genfilename(diagworkdir, cmor_var, mmodel, region,
+                                       'levels', '.npy')
+        # load data
         hofdata = np.load(ifilename, allow_pickle=True)
         lev = np.load(ifilename_levels, allow_pickle=True)
 
+        # convert data if needed and set labeles
+        cb_label, hofdata = label_and_conversion(cmor_var, hofdata)
 
-        if cmor_var == 'thetao':
-            hofdata = hofdata-273.15
-            cb_label = '$^{\circ}$C'
-        elif cmor_var == 'so':
-            cb_label = 'psu'
+        # set index for maximum level (max_level+1)
+        lev_limit = lev[lev <= max_level].shape[0] + 1
 
-        #datafile = Dataset(model_filenames[mmodel])
-
-        #lev = datafile.variables['lev'][:]
-        lev_limit = lev[lev <= max_level].shape[0]+1
+        # calculate mean profile
         profile = (hofdata)[:, :].mean(axis=1)
 
         if mmodel != observations:
             c = next(color)
         else:
             c = 'k'
-        plt.plot(profile,
-                 lev[0:lev_limit],
-                 label=mmodel,
-                 c=c)
 
+        plt.plot(profile, lev[0:lev_limit], label=mmodel, c=c)
+
+        # interpolate to standard levels and add to mean profile
         profile_interpolated = np.interp(level_clim[:lev_limit_clim],
-                                         lev[0:lev_limit],
-                                         profile)
+                                         lev[0:lev_limit], profile)
         if mmodel != observations:
 
             print('include {} in to the mean'.format(mmodel))
@@ -379,48 +383,12 @@ def plot_profile(model_filenames, cmor_var,
 
     mean_profile_mean = np.nanmean(mean_profile, axis=1)
 
-    # plt.plot(clim_prof[:lev_limit_clim],
-    #          level_clim[:lev_limit_clim],
-    #          label='PHC',
-    #          linestyle='--',
-    #          color='r',
-    #          lw=3)
-    # ofilename = genfilename(diagworkdir, cmor_var,
-    #                             'PHC-CLIMATOLOGY', region, 'profile', '.npy')
-    # ofilename_levels = genfilename(diagworkdir, cmor_var,
-    #                             'PHC-CLIMATOLOGY', region, 'profile-levels', '.npy')
-    # ofilename = os.path.join(diagworkdir,
-    #                          'arctic_ocean_{}_{}_{}_profile.npy'.format(cmor_var,
-    #                                                                  'PHC-CLIMATOLOGY',
-    #                                                                  region))
-    # ofilename_levels = os.path.join(diagworkdir,
-    #                              'arctic_ocean_{}_{}_{}_profile-levels.npy'.format(cmor_var,
-    #                                                               'PHC-CLIMATOLOGY',
-    #                                                               region))
-    # np.save(ofilename, clim_prof[:lev_limit_clim])
-    # np.save(ofilename_levels, level_clim[:lev_limit_clim])
-
     plt.plot(mean_profile_mean,
              level_clim[:lev_limit_clim],
              label='MODEL-MEAN',
              linestyle='--',
              color='k',
              lw=3)
-    # ofilename = genfilename(diagworkdir, cmor_var,
-    #                             'MODEL-MEAN', region, 'profile', '.npy')
-    # ofilename_levels = genfilename(diagworkdir, cmor_var,
-    #                             'MODEL-MEAN', region, 'profile-levels', '.npy')
-    # ofilename = os.path.join(diagworkdir,
-    #                          'arctic_ocean_{}_{}_{}_profile.npy'.format(cmor_var,
-    #                                                                  'MODEL-MEAN',
-    #                                                                  region))
-    # ofilename_levels = os.path.join(diagworkdir,
-    #                              'arctic_ocean_{}_{}_{}_profile_levels.npy'.format(cmor_var,
-    #                                                                         'MODEL-MEAN',
-    #                                                                          region))
-    # np.save(ofilename, mean_profile_mean)
-    # np.save(ofilename_levels, level_clim[:lev_limit_clim])
-
 
     plt.xticks(size=12)
     plt.yticks(size=12)
@@ -436,13 +404,10 @@ def plot_profile(model_filenames, cmor_var,
     ax.legend(loc='center left', bbox_to_anchor=(1, 0.5), fontsize=10)
 
     plt.gca().invert_yaxis()
-    # plt.tight_layout()
-    pltoutname = genfilename(diagplotdir, cmor_var,
-                             'MULTIMODEL', region, 'profile')
-    # pltoutname = os.path.join(diagplotdir,
-    #                           'arctic_ocean_{}_{}_profile'.format(cmor_var,
-    #                                                               region))
+    pltoutname = genfilename(diagplotdir, cmor_var, 'MULTIMODEL', region,
+                             'profile')
     plt.savefig(pltoutname, dpi=dpi, bbox_inches='tight')
+
 
 def plot2d_original_grid(model_filenames, cmor_var,
                          depth, levels, region, diagworkdir, diagplotdir, dpi=100):

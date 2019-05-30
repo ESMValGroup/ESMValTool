@@ -67,9 +67,9 @@ def genfilename(basedir, variable=None, mmodel=None, region=None,
 
 
 
-def timmean(model_filenames, mmodel,
-            cmor_var, diagworkdir, observations='PHC'):
-    '''Create time mean of input data.
+def timmean(model_filenames, mmodel, cmor_var, diagworkdir,
+            observations='PHC'):
+    '''Create time mean of input data with cdo.
 
     Parameters
     ----------
@@ -90,13 +90,16 @@ def timmean(model_filenames, mmodel,
     '''
     logger.info("Calculate timmean %s for %s", cmor_var, mmodel)
     cdo = Cdo()
-    ofilename = genfilename(diagworkdir, cmor_var,
-                            mmodel, data_type='timmean', extension='.nc')
+    ofilename = genfilename(diagworkdir,
+                            cmor_var,
+                            mmodel,
+                            data_type='timmean',
+                            extension='.nc')
     if mmodel != observations:
-        cdo.timmean(input=model_filenames[mmodel],
-                    output=ofilename)
+        cdo.timmean(input=model_filenames[mmodel], output=ofilename)
     else:
         shutil.copy2(model_filenames[mmodel], ofilename)
+
 
 def get_clim_model_filenames(config, variable):
     '''Extract model filenames from the configuration.
@@ -224,5 +227,5 @@ def get_cmap(cmap_name):
     else:
         raise ValueError('Get unrecognised name for the colormap `{}`.\
                             Colormaps should be from standard matplotlib \
-                            set or from cmocean package.'.format(cmap_name))
+                            set or from cmocean package.'                                                                                                                  .format(cmap_name))
     return colormap
