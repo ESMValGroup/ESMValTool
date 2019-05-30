@@ -26,7 +26,7 @@ Julia diagnostics, you will also need to [install Julia](https://julialang.org/d
 
 If you already installed Anaconda, you can install ESMValTool by running:
 ```
-conda install -c esmvalgroup esmvaltool -c conda-forge -c birdhouse
+conda install -c esmvalgroup -c conda-forge esmvaltool
 ```
 
 ## Using Docker
