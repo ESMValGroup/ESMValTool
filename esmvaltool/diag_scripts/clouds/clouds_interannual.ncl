@@ -429,10 +429,9 @@ begin
 
   if (.not. extrafiles) then
     statistics = (/"clim", "var"/)
-    domain = ("glob")
-    plottype = ("geo")
+    domain = "global"
+    plottype = "geo"
     caption = "Interannual variability of variable " + var0 + "."
-
     log_provenance(nc_outfile, outfile, caption, statistics, domain, \
                    plottype, "", "", infiles)
   end if
