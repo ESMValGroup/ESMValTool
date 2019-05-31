@@ -431,7 +431,7 @@ def _read_attributes(filename):
 
     with Dataset(filename, 'r') as dataset:
         for attr in dataset.ncattrs():
-            attributes[attr] = getattr(dataset, attr)
+            attributes[attr] = dataset.getncattr(attr)
     return attributes
 
 
