@@ -44,20 +44,32 @@ import cartopy.feature as cfeature
 
 from esmvaltool.diag_scripts.ocean3d.utils import genfilename, dens_back
 from esmvaltool.diag_scripts.ocean3d.interpolation import interpolate_pyresample, interpolate_esmf, closest_depth
-from esmvaltool.diag_scripts.ocean3d.getdata import transect_points
+from esmvaltool.diag_scripts.ocean3d.getdata import transect_points, load_meta
 
 
-def create_plot(model_filenames, ncols=3):
+def create_plot(model_filenames, ncols=3, projection=None):
     nplots = len(model_filenames)
+    ncols = float(ncols)
     nrows = math.ceil(nplots / float(ncols))
     ncols, nrows = int(ncols), int(nrows)
-    figsize = (8 * ncols, 2 * nrows * ncols)
-    fig, ax = plt.subplots(nrows, ncols, figsize=figsize)
+
+    if projection:
+        figsize = (5 * ncols, 1.5 * nrows * ncols)
+        fig, ax = plt.subplots(nrows,
+                               ncols,
+                               figsize=figsize,
+                               subplot_kw=dict(projection=projection),
+                               constrained_layout=True)
+    else:
+        figsize = (8 * ncols, 2 * nrows * ncols)
+        fig, ax = plt.subplots(nrows, ncols, figsize=figsize)
     if isinstance(ax, np.ndarray):
         ax = ax.flatten()
     else:
         ax = [ax]
     return fig, ax
+
+
 
 def label_and_conversion(cmor_var, data):
     if cmor_var == 'thetao':
@@ -409,82 +421,85 @@ def plot_profile(model_filenames,
     plt.savefig(pltoutname, dpi=dpi, bbox_inches='tight')
 
 
-def plot2d_original_grid(model_filenames, cmor_var,
-                         depth, levels, region, diagworkdir, diagplotdir, dpi=100):
+def plot2d_original_grid(model_filenames,
+                         cmor_var,
+                         depth,
+                         levels,
+                         region,
+                         diagworkdir,
+                         diagplotdir,
+                         dpi=100):
 
-    ncols = 4
-    nplots = len(model_filenames)
-    ncols = float(ncols)
-    nrows = math.ceil(nplots/ncols)
-    ncols = int(ncols)
-    nrows = int(nrows)
-    # nplot = 1
-    figsize=(5*ncols,1.5*nrows*ncols)
-    fig, ax = plt.subplots(nrows,ncols,
-                           figsize=figsize,
-    #                           subplot_kw=dict(projection=proj),
-                           constrained_layout=True)
-    ax = ax.flatten()
+    fig, ax = create_plot(model_filenames,
+                          ncols=4,
+                          projection=ccrs.NorthPolarStereo())
 
-    for indx, mmodel in enumerate(model_filenames):
-        logger.info("Plot plot2d_original_grid {} for {}".format(cmor_var, mmodel))
-        # ifilename = os.path.join(diagworkdir,
-        #                     'arctic_ocean_{}_{}_timmean.nc'.format(cmor_var,
-        #                                                           mmodel))
-        ifilename = genfilename(diagworkdir, cmor_var,
-                             mmodel,  data_type='timmean', extension='.nc')
-        print(ifilename)
-        mm = Basemap(projection='npstere',boundinglat=60,lon_0=0,resolution='l', ax=ax[indx])
-        datafile = Dataset(ifilename)
-        lon = datafile.variables['lon'][:]
-        lat = datafile.variables['lat'][:]
-        lev = datafile.variables['lev'][:]
+    for ind, mmodel in enumerate(model_filenames):
+        logger.info("Plot plot2d_original_grid {} for {}".format(
+            cmor_var, mmodel))
+
+        ifilename = genfilename(diagworkdir,
+                                cmor_var,
+                                mmodel,
+                                data_type='timmean',
+                                extension='.nc')
+
+        metadata = load_meta(datapath=model_filenames[mmodel], fxpath=None)
+        datafile, lon2d, lat2d, lev, time, areacello = metadata
+
         depth_target, level_target = closest_depth(lev, depth)
-        if lon.ndim == 2:
-            lon2d, lat2d = lon, lat
-        elif lon.ndim == 1:
-            lon2d, lat2d = np.meshgrid(lon, lat)
-        #areacello = datafile.variables['areacello'][:]
-
         if datafile.variables[cmor_var].ndim < 4:
-            data = datafile.variables[cmor_var][level_target,:,:]
+            data = datafile.variables[cmor_var][level_target, :, :]
         else:
-            data = datafile.variables[cmor_var][0,level_target,:,:]
+            data = datafile.variables[cmor_var][0, level_target, :, :]
 
-        if cmor_var == 'thetao':
-            data = data-273.15
-            cb_label = '$^{\circ}$C'
-        elif cmor_var == 'so':
-            cb_label = 'psu'
+        cb_label, data = label_and_conversion(cmor_var, data)
 
-        # plt.subplot(nrows, ncols, nplot)
+        left, right, down, up = [-180, 180, 60, 90]
 
+        ax[ind].set_extent([left, right, down, up], crs=ccrs.PlateCarree())
+        # Only pcolormesh is working for now with cartopy,
+        # contourf is failing to plot curvilinear meshes,
+        # let along the unstructures ones.
+        image = ax[ind].pcolormesh(
+            lon2d,
+            lat2d,
+            data,
+            vmin=levels[0],
+            vmax=levels[-1],
+            transform=ccrs.PlateCarree(),
+            cmap=cmo.balance,
+        )
 
+        ax[ind].add_feature(
+            cfeature.GSHHSFeature(levels=[1],
+                                  scale="low",
+                                  facecolor="lightgray"))
+        ax[ind].set_title("{}, {} m".format(mmodel,
+                                            np.round(lev[level_target], 1)),
+                          size=18)
+        ax[ind].set_rasterization_zorder(-1)
 
-        xx, yy = mm(lon2d, lat2d)
-        mm.drawmapboundary(fill_color='0.9')
-        mm.fillcontinents(color='#f0f0f0',lake_color='#f0f0f0')
-        mm.drawcoastlines(linewidth=0.1)
-        image = ax[indx].contourf(xx,yy, data,
-                    levels=levels,
-                    cmap = cmo.balance,
-                    extend='both',
-                  )
-        ax[indx].set_title("{}, {} m".format(mmodel, np.round(lev[level_target],1)), size=18)
-        ax[indx].set_rasterization_zorder(-1)
-
-
-        # plt.title("{}, {} m".format(mmodel, np.round(lev[level],1)), size=18)
-        # nplot=nplot+1
-    for delind in range(indx+1, len(ax)):
+    # delete unused axis
+    for delind in range(ind+1, len(ax)):
         fig.delaxes(ax[delind])
 
-    cb = fig.colorbar(image, orientation='horizontal', ax=ax, pad=0.01, shrink = 0.9)
-    cb.set_label(cb_label, rotation='horizontal', size=12)
-    cb.ax.tick_params(labelsize=12)
+    # set common colorbar
+    cb = fig.colorbar(image,
+                      orientation='horizontal',
+                      ax=ax,
+                      pad=0.01,
+                      shrink=0.9)
+    cb.set_label(cb_label, rotation='horizontal', size=18)
+    cb.ax.tick_params(labelsize=18)
 
-    pltoutname = genfilename(diagplotdir, cmor_var, "MULTIMODEL", data_type='plot2d_{}_depth'.format(str(depth)))
+    # save the figure
+    pltoutname = genfilename(diagplotdir,
+                             cmor_var,
+                             "MULTIMODEL",
+                             data_type='plot2d_{}_depth'.format(str(depth)))
     plt.savefig(pltoutname, dpi=dpi)
+
 
 def plot_aw_core_stat(aw_core_parameters, diagplotdir):
     logger.info("Plot AW core statistics")

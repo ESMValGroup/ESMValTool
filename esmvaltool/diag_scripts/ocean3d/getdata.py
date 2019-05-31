@@ -33,7 +33,12 @@ mpl.use('agg')  #noqa
 def load_meta(datapath, fxpath=None):
     datafile = Dataset(datapath)
 
-    datafile_area = Dataset(fxpath)
+    if fxpath:
+        datafile_area = Dataset(fxpath)
+        areacello = datafile_area.variables['areacello'][:]
+    else:
+        areacello = None
+
     lon = datafile.variables['lon'][:]
     lat = datafile.variables['lat'][:]
     lev = datafile.variables['lev'][:]
@@ -44,7 +49,6 @@ def load_meta(datapath, fxpath=None):
     elif lon.ndim == 1:
         lon2d, lat2d = np.meshgrid(lon, lat)
 
-    areacello = datafile_area.variables['areacello'][:]
     return [datafile, lon2d, lat2d, lev, time, areacello]
 
 
