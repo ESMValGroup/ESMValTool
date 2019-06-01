@@ -1,0 +1,24 @@
+SOURCE: CMIP5
+!============
+variable_entry:    etStderr
+!============
+modeling_realm:    land
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:
+units:             mm day-1
+cell_methods:      time: mean
+cell_measures:     area: areacella
+long_name:         Evapotranspiration Error
+comment:           Standard deviation
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          etStderr
+type:              real
+valid_min:         0
+!----------------------------------
+!
+
