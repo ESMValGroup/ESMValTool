@@ -10,11 +10,11 @@ Brief description of the diagnostic.
 Available recipes and diagnostics
 ---------------------------------
 
-Recipes are stored in recipes/
+Recipes are stored in esmvaltool/recipes/
 
     * recipe_<mynewrecipe>.yml
 
-Diagnostics are stored in diag_scripts/<mynewdiag>/
+Diagnostics are stored in esmvaltool/diag_scripts/<mynewdiag>/
 
     * <mynewdiag.py/.ncl/.r>: one line scription
 
@@ -24,15 +24,19 @@ User settings in recipe
 
 #. Script <mynewdiag.py/.ncl/.r>
 
-   *Required settings (scripts)*
+   *Required settings for script*
 
    * xxx: zzz
 
-   *Optional settings (scripts)*
+   *Optional settings for script*
 
-   *Required settings (variables)*
+   *Required settings for variables*
 
-   *Optional settings (variables)*
+   *Optional settings for variables*
+
+   *Required settings for preprocessor*
+
+   *Optional settings for preprocessor*
 
    *Color tables*
 
