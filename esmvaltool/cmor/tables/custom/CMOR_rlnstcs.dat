@@ -1,0 +1,22 @@
+SOURCE: CMIP5
+!============
+variable_entry:    rlnstcs
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     
+units:             W m-2
+cell_methods:      time: mean
+cell_measures:     area: areacella
+long_name:         Net Atmospheric Longwave Cooling assuming clear sky
+comment:           to surface and outer space (For definition see: DeAngelis et al. 2015)
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+type:              real
+positive:          up
+!----------------------------------
+!
