@@ -235,7 +235,7 @@ def volume_stats(
             # Calculate weighted mean for this time and layer
             if operator == 'mean':
                 total = cube[time_itr, z_itr].collapsed(
-                    [cube.coord(axis='z'), 
+                    [cube.coord(axis='z'),
                      'longitude', 'latitude'],
                     iris.analysis.MEAN,
                     weights=grid_volume[time_itr, z_itr]).data
