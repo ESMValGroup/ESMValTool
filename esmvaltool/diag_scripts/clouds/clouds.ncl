@@ -1037,11 +1037,11 @@ begin
 
     statistics = (/"clim", "mean"/)
     if (isatt(diag_script_info, "region")) then
-      domain = ("reg")
+      domain = "reg"
     else
-      domain = ("glob")
+      domain = "global"
     end if
-    plottype = ("geo")
+    plottype = "geo"
 
     do is = 0, numseas - 1
       caption = "Mean values for variable " + var0 \
@@ -1199,11 +1199,11 @@ begin
 
         statistics = (/"clim", "diff"/)
         if (isatt(diag_script_info, "region")) then
-          domain = ("reg")
+          domain = "reg"
         else
-          domain = ("glob")
+          domain = "global"
         end if
-        plottype = ("geo")
+        plottype = "geo"
 
         ; note: because function log_provenance does not yet support to attach
         ;       different captions to netcdf (contains all seasons) and plots
