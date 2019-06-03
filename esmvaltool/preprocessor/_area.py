@@ -178,13 +178,12 @@ def tile_grid_areas(cube, fx_files):
 
 
 # get the area average
-def average_region(cube, coord1, coord2, operator='mean', fx_files=None):
+def region_stats(cube, operator='mean', fx_files=None):
     """
-    Determine the area average.
+    Applies a statistical operator in the horizontal direction.
 
-    The average in the horizontal direction requires the coord1 and coord2
-    arguments. These strings are usually 'longitude' and 'latitude' but
-    may depends on the cube.
+    The average in the horizontal direction. We assume that the
+    horizontal directions are ['longitude', 'latutude'].
 
     While this function is named `average_region`, it can be used to apply
     several different operations in the horizonal plane: mean, standard
@@ -211,10 +210,6 @@ def average_region(cube, coord1, coord2, operator='mean', fx_files=None):
     ---------
         cube: iris.cube.Cube
             input cube.
-        coord1: str
-            Name of the firct coordinate dimension
-        coord2: str
-            Name of the second coordinate dimension
         operator: str
             Name of the operation to apply (default: mean)
         fx_files: dictionary
@@ -232,8 +227,9 @@ def average_region(cube, coord1, coord2, operator='mean', fx_files=None):
                      'cell area for irregular grids.')
         raise iris.exceptions.CoordinateMultiDimError(cube.coord('latitude'))
 
+    coord_names = ['longitude', 'latitude']
     if not grid_areas.any():
-        cube = _guess_bounds(cube, [coord1, coord2])
+        cube = _guess_bounds(cube, coord_names)
         grid_areas = iris.analysis.cartography.area_weights(cube)
         logger.info('Calculated grid area:{}'.format(grid_areas.shape))
 
@@ -243,16 +239,16 @@ def average_region(cube, coord1, coord2, operator='mean', fx_files=None):
 
     operation = get_iris_analysis_operation(operator)
 
-    # TODO: implement weighted stdev, median, and var when available in iris.
+    # TODO: implement weighted stdev, median, s var when available in iris.
     # See iris issue: https://github.com/SciTools/iris/issues/3208
 
     if operator in ['mean', ]:
-        return cube.collapsed([coord1, coord2],
+        return cube.collapsed(coord_names,
                               operation,
                               weights=grid_areas)
 
     # Many IRIS analysis functions do not accept weights arguments.
-    return cube.collapsed([coord1, coord2], operation)
+    return cube.collapsed(coord_names, operation)
 
 
 def extract_named_regions(cube, regions):
