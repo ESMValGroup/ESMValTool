@@ -51,8 +51,6 @@ def load_meta(datapath, fxpath=None):
 
     return [datafile, lon2d, lat2d, lev, time, areacello]
 
-
-
 def hofm_data(model_filenames, mmodel, cmor_var, areacello_fx, max_level,
               region, diagworkdir):
     ''' Extract data for Hovmoeller diagrams from monthly values.
@@ -401,35 +399,55 @@ def tsplot_data_clim(max_level, region, diagworkdir):
 
 
 def aw_core(model_filenames, diagworkdir, region, cmor_var):
+    ''' Calculates Atlantic Water (AW) core depth the region.
+
+    The AW core is defined as water temperature maximum
+    between 200 and 1000 meters. Can be in future generalised
+    to find the depth of specific water masses.
+
+    The function relies on the data for the profiles, so
+    this information should be available.
+
+    Parameters
+    ----------
+    model_filenames: OrderedDict
+        OrderedDict with model names as keys and input files as values.
+    diagworkdir: str
+        path to work directory.
+    region: str
+        one of the regions from `hofm_regions`,
+        the data from the mean vertical profiles should be available.
+    cmor_var: str
+        name of the variable.
+
+    Returns
+    -------
+    aw_core_parameters: dict
+        For each model there is maximum temperature, depth level in the model,
+        index of the depth level in the model.
+    '''
     logger.info("Calculate AW core statistics")
     aw_core_parameters = {}
 
     for i, mmodel in enumerate(model_filenames):
         aw_core_parameters[mmodel] = {}
-        logger.info("Plot profile {} data for {}, region {}".format(cmor_var,
-                                                            mmodel,
-                                                            region))
-        ifilename = genfilename(diagworkdir, cmor_var,
-                                mmodel, region, 'hofm', '.npy')
-        ifilename_levels = genfilename(diagworkdir, cmor_var,
-                                    mmodel, region, 'levels', '.npy')
+        logger.info("Plot profile {} data for {}, region {}".format(
+            cmor_var, mmodel, region))
+        ifilename = genfilename(diagworkdir, cmor_var, mmodel, region, 'hofm',
+                                '.npy')
+        ifilename_levels = genfilename(diagworkdir, cmor_var, mmodel, region,
+                                       'levels', '.npy')
 
         hofdata = np.load(ifilename, allow_pickle=True)
         lev = np.load(ifilename_levels, allow_pickle=True)
 
         profile = (hofdata)[:, :].mean(axis=1)
         maxvalue = np.max(profile[(lev >= 200) & (lev <= 1000)])
-        maxvalue_index = np.where(profile==maxvalue)[0][0]
+        maxvalue_index = np.where(profile == maxvalue)[0][0]
         maxvalue_depth = lev[maxvalue_index]
 
         aw_core_parameters[mmodel]['maxvalue'] = maxvalue
         aw_core_parameters[mmodel]['maxvalue_index'] = maxvalue_index
         aw_core_parameters[mmodel]['maxvalue_depth'] = maxvalue_depth
-
-    # Hardcoded values for PHC
-    # aw_core_parameters['PHC'] = {}
-    # aw_core_parameters['PHC']['maxvalue'] = 0.991 + 273.15
-    # aw_core_parameters['PHC']['maxvalue_index'] = 11
-    # aw_core_parameters['PHC']['maxvalue_depth'] = 300.0
 
     return aw_core_parameters
