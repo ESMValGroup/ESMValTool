@@ -488,9 +488,7 @@ An appropriate preprocessor for a 3D+time field would be:
 	      lat2:  30.
 	      z_min: 0.
 	      z_max: 3000.
-	    average_region:
-	      coord1: longitude
-	      coord2: latitude
+	    area_stats:
 
 
 
@@ -524,18 +522,13 @@ For a global area-weighted average 2D field:
 
   .. code-block:: yaml
 
-	average_area:
-	  coord1: longitude
-	  coord2: latitude
+	area_stats:
 
 For a global volume-weighted average 3D field:
 
   .. code-block:: yaml
 
-	average_volume:
-	  coord1: longitude
-	  coord2: latitude
-	  coordz: depth
+	volume_stats:
 
 For a global area-weighted surface of a 3D field:
 
@@ -544,9 +537,7 @@ For a global area-weighted surface of a 3D field:
 	extract_levels:
 	  levels: [0., ]
 	  scheme: linear_horizontal_extrapolate_vertical
-	average_area:
-	  coord1: longitude
-	  coord2: latitude
+	area_stats:
 
 
 An example of the multi-model time series plots can seen here:
