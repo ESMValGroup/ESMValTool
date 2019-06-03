@@ -159,13 +159,12 @@ def calculate_volume(cube):
     return grid_volume
 
 
-def average_volume(
+def volume_stats(
         cube,
-        coord1,
-        coord2,
+        operator='mean',
         fx_files=None):
     """
-    Calculate the average volume.
+    Apply a statistical operation over a volume.
 
     The volume average is weighted acoording to the cell volume. Cell volume
     is calculated from iris's cartography tool multiplied by the cell
@@ -176,12 +175,8 @@ def average_volume(
         cube: iris.cube.Cube
             input cube.
 
-        coord1: str
-            name of first coordinate
-
-        coord2: str
-            name of second coordinate
-
+        operator: string
+            The operation to apply to the cube.
         fx_files: dictionary
             dictionary of field:filename for the fx_files
 
@@ -191,6 +186,7 @@ def average_volume(
         collapsed cube.
     """
     # TODO: Test sigma coordinates.
+    # TODO: Add other operations.
 
     # ####
     # Load z coordinate field and figure out which dim is which.
@@ -237,10 +233,12 @@ def average_volume(
         for z_itr in range(cube.shape[1]):
             # ####
             # Calculate weighted mean for this time and layer
-            total = cube[time_itr, z_itr].collapsed(
-                [cube.coord(axis='z'), coord1, coord2],
-                iris.analysis.MEAN,
-                weights=grid_volume[time_itr, z_itr]).data
+            if operator == 'mean':
+                total = cube[time_itr, z_itr].collapsed(
+                    [cube.coord(axis='z'), 
+                     'longitude', 'latitude'],
+                    iris.analysis.MEAN,
+                    weights=grid_volume[time_itr, z_itr]).data
             column.append(total)
 
             try:
@@ -264,10 +262,11 @@ def average_volume(
 
     # #####
     # Create a small dummy output array for the output cube
-    src_cube = cube[:2, :2].collapsed([cube.coord(axis='z'),
-                                       coord1, coord2],
-                                      iris.analysis.MEAN,
-                                      weights=grid_volume[:2, :2], )
+    if operator == 'mean':
+        src_cube = cube[:2, :2].collapsed([cube.coord(axis='z'),
+                                           'longitude', 'latitude'],
+                                          iris.analysis.MEAN,
+                                          weights=grid_volume[:2, :2], )
 
     return _create_cube_time(src_cube, result, times)
 
