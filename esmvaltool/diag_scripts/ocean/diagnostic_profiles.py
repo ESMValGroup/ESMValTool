@@ -22,9 +22,7 @@ An approproate preprocessor for a 3D+time field would be::
         lat2:  30.
         z_min: 0.
         z_max: 3000.
-      average_region:
-        coord1: longitude
-        coord2: latitude
+      area_stats:
 
 In order to add an observational dataset to the profile plot, the following
 arguments are needed in the diagnostic script::

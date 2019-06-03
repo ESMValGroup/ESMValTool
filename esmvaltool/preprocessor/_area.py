@@ -185,7 +185,7 @@ def area_stats(cube, operator='mean', fx_files=None):
     The average in the horizontal direction. We assume that the
     horizontal directions are ['longitude', 'latutude'].
 
-    While this function is named `average_region`, it can be used to apply
+    While this function is named `area_stats`, it can be used to apply
     several different operations in the horizonal plane: mean, standard
     deviation, median variance, minimum and maximum. These options are
     specified using the `operator` argument and the following key word
@@ -223,7 +223,7 @@ def area_stats(cube, operator='mean', fx_files=None):
     grid_areas = tile_grid_areas(cube, fx_files)
 
     if not fx_files and cube.coord('latitude').points.ndim == 2:
-        logger.error('average_region ERROR: fx_file needed to calculate grid '
+        logger.error('area_stats ERROR: fx_file needed to calculate grid '
                      'cell area for irregular grids.')
         raise iris.exceptions.CoordinateMultiDimError(cube.coord('latitude'))
 
