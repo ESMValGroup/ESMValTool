@@ -742,8 +742,8 @@ begin
   ; write provenance to netcdf output and plot file(s)
   ; ------------------------------------------------------------------------
 
-  statistics = ("clim")
-  domain = ("glob")
+  statistics = "clim"
+  domain = "global"
   plottype = (/"geo", "zonal"/)
   caption = "Multi model mean bias (left) and zonal averages (right) " \
             + "for variable " + var0 + " (" + allseas \
