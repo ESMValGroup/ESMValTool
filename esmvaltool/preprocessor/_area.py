@@ -178,7 +178,7 @@ def tile_grid_areas(cube, fx_files):
 
 
 # get the area average
-def region_stats(cube, operator='mean', fx_files=None):
+def area_stats(cube, operator='mean', fx_files=None):
     """
     Applies a statistical operator in the horizontal direction.
 
