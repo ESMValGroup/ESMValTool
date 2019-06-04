@@ -12,12 +12,12 @@ Welcome to ESMValTool's documentation!
    preface
    known_issues
 
-   recipes/index
-
    user_guide2/index
    developer_guide2/index
 
    codedoc2/esmvaltool
+
+   recipes/index
 
 Indices and tables
 ==================
