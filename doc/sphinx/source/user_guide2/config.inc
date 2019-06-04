@@ -22,7 +22,7 @@ The ``config-user.yml`` configuration file contains all the global level
 information needed by ESMValTool. The following shows the default settings from
 the ``config-user.yml`` file.
 
-.. code-block:: yml
+.. code-block:: yaml
 
     # Diagnostics create plots? [true]/false
     write_plots: true
@@ -70,7 +70,7 @@ the ``config-user.yml`` file.
 
 Most of these settings are fairly self-explanatory, ie:
 
-.. code-block:: yml
+.. code-block:: yaml
 
     # Diagnostics create plots? [true]/false
     write_plots: true
@@ -81,7 +81,7 @@ The ``write_plots`` setting is used to inform ESMValTool about your preference
 for saving figures. Similarly, the ``write_netcdf`` setting is a boolean which
 turns on or off the writing of netCDF files.
 
-.. code-block:: yml
+.. code-block:: yaml
 
     # Auxiliary data directory (used for some additional datasets)
     auxiliary_data_dir: ./auxiliary_data
