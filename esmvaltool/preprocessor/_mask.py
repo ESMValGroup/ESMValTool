@@ -93,7 +93,7 @@ def mask_landsea(cube, fx_files, mask_out):
     Mask out either land mass or sea (oceans, seas and lakes).
 
     It uses dedicated fx files (sftlf or sftof) or, in their absence, it
-    applies a Natural Earth mask (land or ocean contours). Not that the
+    applies a Natural Earth mask (land or ocean contours). Note that the
     Natural Earth masks have different resolutions: 10m for land, and 50m
     for seas; these are more than enough for ESMValTool puprpose.
 
@@ -111,7 +111,7 @@ def mask_landsea(cube, fx_files, mask_out):
     Returns
     -------
     iris.cube.Cube
-        Returns the fillvalues-masked iris cube.
+        Returns the masked iris cube.
 
     Raises
     -------
