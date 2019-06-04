@@ -3,11 +3,12 @@
 import iris
 from iris.cube import CubeList
 from iris.coords import AuxCoord
+from iris.exceptions import ConstraintMismatchError
 
 from ..fix import Fix
 
 
-class thetao(Fix):
+class allvars(Fix):
     """Fixes for thetao."""
 
     def fix_metadata(self, cubelist):
@@ -24,8 +25,11 @@ class thetao(Fix):
         iris.cube.CubeList
 
         """
-        thetao = cubelist.extract_strict('sea_water_potential_temperature')
-        cell_area = cubelist.extract_strict('cell_area')
+        try:
+            cell_area = cubelist.extract_strict('cell_area')
+        except ConstraintMismatchError:
+            return cubelist
+
         cell_area = AuxCoord(
             cell_area.data,
             standard_name=cell_area.standard_name,
@@ -33,7 +37,12 @@ class thetao(Fix):
             var_name=cell_area.var_name,
             units=cell_area.units,
         )
-        thetao.add_aux_coord(cell_area, (2, 3))
-        thetao.coord('latitude').var_name = 'lat'
-        thetao.coord('longitude').var_name = 'lon'
-        return CubeList([thetao])
+        new_list = CubeList()
+        for cube in cubelist
+            if cube.name == 'cell_area':
+                continue
+            cube.add_aux_coord(cell_area, (2, 3))
+            cube.coord('latitude').var_name = 'lat'
+            cube.coord('longitude').var_name = 'lon'
+            new_list.append()
+        return CubeList(new_list)
