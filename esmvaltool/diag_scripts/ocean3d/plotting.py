@@ -463,10 +463,11 @@ def plot2d_original_grid(model_filenames,
                          cmor_var,
                          depth,
                          levels,
-                         region,
                          diagworkdir,
                          diagplotdir,
-                         dpi=100):
+                         dpi=100,
+                         explicit_depths=None,
+                         ):
 
     fig, ax = create_plot(model_filenames,
                           ncols=4,
@@ -485,7 +486,12 @@ def plot2d_original_grid(model_filenames,
         metadata = load_meta(datapath=model_filenames[mmodel], fxpath=None)
         datafile, lon2d, lat2d, lev, time, areacello = metadata
 
-        depth_target, level_target = closest_depth(lev, depth)
+        if not explicit_depths:
+            depth_target, level_target = closest_depth(lev, depth)
+        else:
+            level_target = explicit_depths[mmodel]['maxvalue_index']
+            depth_target = lev[level_target]
+
         if datafile.variables[cmor_var].ndim < 4:
             data = datafile.variables[cmor_var][level_target, :, :]
         else:
@@ -531,11 +537,16 @@ def plot2d_original_grid(model_filenames,
     cb.set_label(cb_label, rotation='horizontal', size=18)
     cb.ax.tick_params(labelsize=18)
 
+    if not explicit_depths:
+        plot_type = 'plot2d_{}_depth'.format(str(depth))
+    else:
+        plot_type = "plot2d_different_levels"
+
     # save the figure
     pltoutname = genfilename(diagplotdir,
                              cmor_var,
                              "MULTIMODEL",
-                             data_type='plot2d_{}_depth'.format(str(depth)))
+                            data_type=plot_type)
     plt.savefig(pltoutname, dpi=dpi)
 
 
@@ -582,80 +593,6 @@ def plot_aw_core_stat(aw_core_parameters, diagplotdir):
 
     plt.tight_layout()
     plt.savefig(pltoutname, dpi=100)
-
-
-
-def plot2d_original_grid_AWdepth(model_filenames, cmor_var,
-                         aw_core_parameters, region, diagworkdir, diagplotdir, dpi=100, observations='PHC'):
-    ncols = 4
-    nplots = len(model_filenames)
-    ncols = float(ncols)
-    nrows = math.ceil(nplots/ncols)
-    ncols = int(ncols)
-    nrows = int(nrows)
-    # nplot = 1
-    figsize=(5*ncols,1.5*nrows*ncols)
-    fig, ax = plt.subplots(nrows,ncols,
-                           figsize=figsize,
-    #                           subplot_kw=dict(projection=proj),
-                           constrained_layout=True)
-    ax = ax.flatten()
-
-    # plt.figure(figsize=(5*ncols,1.5*nrows*ncols))
-    # mm = Basemap(projection='npstere',boundinglat=60,lon_0=0,resolution='l')
-    for indx, mmodel in enumerate(model_filenames):
-        # for mmodel in model_filenames:
-
-        logger.info("Plot plot2d_original_grid_AWdepth {} for {}".format(cmor_var, mmodel))
-        ifilename = genfilename(diagworkdir, cmor_var,
-                             mmodel,  data_type='timmean', extension='.nc')
-        mm = Basemap(projection='npstere',boundinglat=60,lon_0=0,resolution='l', ax=ax[indx])
-        datafile = Dataset(ifilename)
-        lon = datafile.variables['lon'][:]
-        lat = datafile.variables['lat'][:]
-        lev = datafile.variables['lev'][:]
-        if lon.ndim == 2:
-            lon2d, lat2d = lon, lat
-        elif lon.ndim == 1:
-            lon2d, lat2d = np.meshgrid(lon, lat)
-        #areacello = datafile.variables['areacello'][:]
-        maxvalue_index = aw_core_parameters[mmodel]['maxvalue_index']
-
-        if datafile.variables[cmor_var].ndim < 4:
-            data = datafile.variables[cmor_var][maxvalue_index,:,:]
-        else:
-            data = datafile.variables[cmor_var][0,maxvalue_index,:,:]
-
-        if cmor_var == 'thetao':
-            data = data-273.15
-            cb_label = '$^{\circ}$C'
-        elif cmor_var == 'so':
-            cb_label = 'psu'
-
-        # plt.subplot(nrows, ncols, nplot)
-
-        xx, yy = mm(lon2d, lat2d)
-        mm.drawmapboundary(fill_color='0.9')
-        mm.fillcontinents(color='#f0f0f0',lake_color='#f0f0f0')
-        mm.drawcoastlines(linewidth=0.1)
-        image = ax[indx].contourf(xx,yy, data,
-                    levels=np.round(np.linspace(-2, 2.3, 41), 1),
-                    cmap = cmo.balance,
-                    extend='both',
-                  )
-        ax[indx].set_title("{}, {} m".format(mmodel, np.round(lev[maxvalue_index],1)), size=18)
-        ax[indx].set_rasterization_zorder(-1)
-
-    for delind in range(indx+1, len(ax)):
-        fig.delaxes(ax[delind])
-    cb = fig.colorbar(image, orientation='horizontal', ax=ax, pad=0.01, shrink = 0.9)
-    cb.set_label(cb_label, rotation='horizontal', size=12)
-    cb.ax.tick_params(labelsize=12)
-
-    pltoutname = os.path.join(diagplotdir,
-                              'arctic_ocean_{}_{}_plot2dAWdepth'.format(cmor_var,
-                                                                  region))
-    plt.savefig(pltoutname, dpi=dpi)
 
 
 #####################################
