@@ -469,8 +469,8 @@ def plot2d_original_grid(model_filenames,
                          explicit_depths=None,
                          projection=ccrs.NorthPolarStereo(),
                          bbox=[-180, 180, 60, 90]
-                         ):
-    ''' Plot 2d maps in NorthPolarStereo using cartopy
+                        ):
+    ''' Plot 2d maps on original grid using cartopy.
 
     Parameters
     ----------
@@ -584,6 +584,128 @@ def plot2d_original_grid(model_filenames,
     plt.savefig(pltoutname, dpi=dpi)
 
 
+def plot2d_bias(model_filenames,
+                cmor_var,
+                depth,
+                diagworkdir,
+                diagplotdir,
+                levels,
+                dpi=100,
+                observations='PHC',
+                projection=ccrs.NorthPolarStereo(),
+                bbox=[-180, 180, 60, 90]
+                ):
+    '''Plot 2d maps of the bias relative to climatology.
+
+    Parameters
+    ----------
+    model_filenames:OrderedDict
+        OrderedDict with model names as keys and input files as values.
+    cmor_var: str
+        name of the variable
+    depth: int
+    diagworkdir: str
+        path to the working directory
+    diagplotdir: str
+        path to the plot directory
+        we will plot the data on the model level that is closest to the `depth`.
+    levels: tuple
+        values to be used for vmin and vmax in the form of (vmin, vmax)
+    dpi: int
+        the dpi values to save the figure
+    observations: str
+        name of the observations
+    projection: instance of cartopy projection (ccrs)
+    bbox: list
+        bounding box. It will be the input for cartopy `set_extent`.
+
+    Retuns
+    ------
+    None
+    '''
+
+    fig, ax = create_plot(model_filenames,
+                          ncols=4,
+                          projection=projection)
+
+    ifilename_obs = genfilename(diagworkdir,
+                                cmor_var,
+                                observations,
+                                data_type='timmean',
+                                extension='.nc')
+
+    # mm = Basemap(projection='npstere',boundinglat=60,lon_0=0,resolution='l')
+    model_filenames = model_filenames.copy()
+    del model_filenames[observations]
+
+    for ind, mmodel in enumerate(model_filenames):
+        logger.info("Plot plot2d_bias {} for {}".format(cmor_var, mmodel))
+
+        ifilename = genfilename(diagworkdir,
+                                cmor_var,
+                                mmodel,
+                                data_type='timmean',
+                                extension='.nc')
+
+        # lonc, latc, target_depth, data_onlev_obs_cyc, interpolated = interpolate_pyresample(ifilename_obs, ifilename, depth, cmor_var)
+        lonc, latc, target_depth, data_onlev_obs_cyc, interpolated = interpolate_esmf(
+            ifilename_obs, ifilename, depth, cmor_var)
+
+        metadata = load_meta(datapath=model_filenames[mmodel], fxpath=None)
+        datafile, lon2d, lat2d, lev, time, areacello = metadata
+
+        cb_label, data_onlev_obs_cyc = label_and_conversion(
+            cmor_var, data_onlev_obs_cyc)
+        cb_label, interpolated = label_and_conversion(cmor_var, interpolated)
+
+        left, right, down, up = bbox
+
+        ax[ind].set_extent([left, right, down, up], crs=ccrs.PlateCarree())
+        # Only pcolormesh is working for now with cartopy,
+        # contourf is failing to plot curvilinear meshes,
+        # let along the unstructures ones.
+        image = ax[ind].contourf(
+            lonc,
+            latc,
+            interpolated - data_onlev_obs_cyc,
+            levels=levels,
+            extend='both',
+            # vmin=contours[0],
+            # vmax=contours[-1],
+            transform=ccrs.PlateCarree(),
+            cmap=cmo.balance,
+        )
+
+        ax[ind].add_feature(
+            cfeature.GSHHSFeature(levels=[1],
+                                  scale="low",
+                                  facecolor="lightgray"))
+
+        ax[ind].set_title("{}, {} m".format(mmodel, int(target_depth)),
+                          size=18)
+        ax[ind].set_rasterization_zorder(-1)
+
+    for delind in range(ind + 1, len(ax)):
+        fig.delaxes(ax[delind])
+
+    # set common colorbar
+    cb = fig.colorbar(image,
+                      orientation='horizontal',
+                      ax=ax,
+                      pad=0.01,
+                      shrink=0.9)
+    cb.set_label(cb_label, rotation='horizontal', size=18)
+    cb.ax.tick_params(labelsize=18)
+
+    pltoutname = genfilename(diagplotdir,
+                             cmor_var,
+                             "MULTIMODEL",
+                             data_type='plot2d_bias_{}_level'.format(
+                                 str(int(target_depth))))
+    print(pltoutname)
+
+    plt.savefig(pltoutname, dpi=dpi)
+
 def plot_aw_core_stat(aw_core_parameters, diagplotdir):
     ''' Generate 2 plots: depth of the AW core and
     temperature of the AW core. Use pandas plot functionality.
@@ -627,174 +749,6 @@ def plot_aw_core_stat(aw_core_parameters, diagplotdir):
 
     plt.tight_layout()
     plt.savefig(pltoutname, dpi=100)
-
-
-#####################################
-######################################
-
-def plot2d_speed(model_filenames,
-                 depth, vmax, diagworkdir, diagplotdir, dpi=100):
-    ncols = 4
-    nplots = len(model_filenames)+1
-    ncols = float(ncols)
-    nrows = math.ceil(nplots/ncols)
-    ncols = int(ncols)
-    nrows = int(nrows)
-    nplot = 1
-    plt.figure(figsize=(5*ncols,1.5*nrows*ncols))
-    mm = Basemap(projection='npstere',boundinglat=60,lon_0=0,resolution='l')
-    for mmodel in model_filenames:
-        logger.info("Plot plot2d_speed for {}".format(mmodel))
-        ifilename_u = genfilename(diagworkdir, 'uo',
-                             mmodel,  data_type='timmean', extension='.nc')
-        ifilename_v = genfilename(diagworkdir, 'vo',
-                             mmodel,  data_type='timmean', extension='.nc')
-        datafile_u = Dataset(ifilename_u)
-        datafile_v = Dataset(ifilename_v)
-        lon = datafile_u.variables['lon'][:]
-        lat = datafile_u.variables['lat'][:]
-        lev = datafile_u.variables['lev'][:]
-        if lon.ndim == 2:
-            lon2d, lat2d = lon, lat
-        elif lon.ndim == 1:
-            lon2d, lat2d = np.meshgrid(lon, lat)
-        #areacello = datafile.variables['areacello'][:]
-        iz=abs(abs(lev)-abs(depth)).argmin()
-        target_depth = lev[iz]
-        #maxvalue_index = aw_core_parameters[mmodel]['maxvalue_index']
-        data_u = datafile_u.variables['uo'][0, iz, :, :]
-        data_v = datafile_v.variables['vo'][0, iz, :, :]
-        speed = np.hypot(data_u, data_v)
-        # if cmor_var == 'thetao':
-        #     data = data-273.15
-        cb_label = 'm/s'
-        # elif cmor_var == 'so':
-        #     cb_label = 'psu'
-
-        plt.subplot(nrows, ncols, nplot)
-
-
-
-        xx, yy = mm(lon2d, lat2d)
-        mm.drawmapboundary(fill_color='0.9')
-        mm.fillcontinents(color='#f0f0f0',lake_color='#f0f0f0')
-        mm.drawcoastlines(linewidth=0.1)
-        mm.pcolormesh(xx,yy, speed,
-              vmin =0,
-              vmax = vmax,
-            #levels=np.round(np.linspace(0,0.05,20),4),
-            cmap = cmo.speed,
-            #extend='both',
-          )
-        # mm.contourf(xx,yy, speed,
-        #             levels=np.round(np.linspace(-2, 2.3, 41), 1),
-        #             cmap = cmo.balance,
-        #             extend='both',
-        #           )
-        cb = plt.colorbar(orientation='horizontal', pad=0.03, shrink=0.95, format='%1.3g')
-        cb.set_label(cb_label, rotation='horizontal', size=12)
-        cb.ax.tick_params(labelsize=10)
-        # for l in cb.ax.yaxis.get_ticklabels():
-        #     #l.set_weight("bold")
-        #     l.set_fontsize(10)
-        plt.title("{}, {} m".format(mmodel, np.round(target_depth, 1)), size=18)
-        nplot = nplot+1
-
-        plt.tight_layout()
-    # pltoutname = os.path.join(diagplotdir,
-    #                           'arctic_ocean_{}_{}_plot2dAWdepth'.format(cmor_var,
-    #                                                               region))
-    pltoutname = genfilename(diagplotdir, 'speed', "MULTIMODEL", data_type='plot2d_speed_{}_level'.format(str(int(depth))))
-    plt.savefig(pltoutname, dpi=dpi)
-
-#######################################
-#######################################
-
-
-def plot2d_bias(model_filenames,
-                cmor_var,
-                depth,
-                region,
-                diagworkdir,
-                diagplotdir,
-                contours,
-                dpi=100,
-                observations='PHC'):
-
-    fig, ax = create_plot(model_filenames,
-                          ncols=4,
-                          projection=ccrs.NorthPolarStereo())
-
-    ifilename_obs = genfilename(diagworkdir,
-                                cmor_var,
-                                observations,
-                                data_type='timmean',
-                                extension='.nc')
-
-    # mm = Basemap(projection='npstere',boundinglat=60,lon_0=0,resolution='l')
-    model_filenames = model_filenames.copy()
-    del model_filenames[observations]
-
-    for ind, mmodel in enumerate(model_filenames):
-        logger.info("Plot plot2d_bias {} for {}".format(cmor_var, mmodel))
-
-        ifilename = genfilename(diagworkdir, cmor_var,
-                                mmodel,  data_type='timmean', extension='.nc')
-
-        # lonc, latc, target_depth, data_onlev_obs_cyc, interpolated = interpolate_pyresample(ifilename_obs, ifilename, depth, cmor_var)
-        lonc, latc, target_depth, data_onlev_obs_cyc, interpolated = interpolate_esmf(
-            ifilename_obs, ifilename, depth, cmor_var)
-
-        metadata = load_meta(datapath=model_filenames[mmodel], fxpath=None)
-        datafile, lon2d, lat2d, lev, time, areacello = metadata
-
-        cb_label, data_onlev_obs_cyc = label_and_conversion(cmor_var, data_onlev_obs_cyc)
-        cb_label, interpolated = label_and_conversion(cmor_var, interpolated)
-
-        left, right, down, up = [-180, 180, 60, 90]
-
-        ax[ind].set_extent([left, right, down, up], crs=ccrs.PlateCarree())
-        # Only pcolormesh is working for now with cartopy,
-        # contourf is failing to plot curvilinear meshes,
-        # let along the unstructures ones.
-        image = ax[ind].contourf(
-            lonc,
-            latc,
-            interpolated - data_onlev_obs_cyc,
-            levels=contours,
-            extend='both',
-            # vmin=contours[0],
-            # vmax=contours[-1],
-            transform=ccrs.PlateCarree(),
-            cmap=cmo.balance,
-        )
-
-        ax[ind].add_feature(
-            cfeature.GSHHSFeature(levels=[1],
-                                  scale="low",
-                                  facecolor="lightgray"))
-
-        ax[ind].set_title("{}, {} m".format(mmodel,
-                                            int(target_depth)),
-                          size=18)
-        ax[ind].set_rasterization_zorder(-1)
-
-    for delind in range(ind+1, len(ax)):
-        fig.delaxes(ax[delind])
-
-    # set common colorbar
-    cb = fig.colorbar(image,
-                      orientation='horizontal',
-                      ax=ax,
-                      pad=0.01,
-                      shrink=0.9)
-    cb.set_label(cb_label, rotation='horizontal', size=18)
-    cb.ax.tick_params(labelsize=18)
-
-    pltoutname = genfilename(diagplotdir, cmor_var, "MULTIMODEL", data_type='plot2d_bias_{}_level'.format(str(int(target_depth))))
-    print(pltoutname)
-
-    plt.savefig(pltoutname, dpi=dpi)
 
 
 def transect_plot(model_filenames, cmor_var,
@@ -932,89 +886,3 @@ def plot_hist(model_filenames, cmor_var,min_level, max_level, region,
     pltoutname = genfilename(diagplotdir, cmor_var,
                              region= region, data_type='hist')
     plt.savefig(pltoutname, dpi=dpi)
-
-
-def meanminmax_plot(model_filenames, cmor_var,
-              min_tollerance, max_tollerance, min_optimum, max_optimum, region, diagworkdir, diagplotdir,
-              ylimits, ncols=3):
-    ncols = 3
-    nplots = len(model_filenames)
-    ncols = float(ncols)
-    nrows = math.ceil(nplots/ncols)
-    ncols = int(ncols)
-    nrows = int(nrows)
-    nplot = 1
-    plt.figure(figsize=(8*ncols,2*nrows*ncols))
-
-    for mmodel in model_filenames:
-        logger.info("Plot  {} data for {}, region {}".format(cmor_var,
-                                                      mmodel,
-                                                      region))
-
-        ifilename = genfilename(diagworkdir, cmor_var,
-                            mmodel, region, 'meanminmax', '.npy')
-        # ifilename_levels = genfilename(diagworkdir, cmor_var,
-        #                                mmodel, region, 'levels', '.npy')
-        ifilename_time = genfilename(diagworkdir, cmor_var,
-                                 mmodel, region, 'meanminmax_time', '.npy')
-        print(ifilename)
-
-        data = np.load(ifilename, allow_pickle=True)
-        # lev = np.load(ifilename_levels)
-        time = np.load(ifilename_time, allow_pickle=True)
-        if cmor_var == 'thetao':
-            data = data-273.15
-            cb_label = '$^{\circ}$C'
-        elif cmor_var == 'so':
-            cb_label = 'psu'
-
-        # lev_limit = lev[lev <= max_level].shape[0]+1
-
-        # series_lenght = time.shape[0]
-
-        # months, depth = np.meshgrid(range(series_lenght), lev[0:lev_limit])
-
-        plt.subplot(nrows, ncols, nplot)
-        plt.plot(time, data[0,:])
-        plt.plot(time, data[1,:])
-        plt.plot(time, data[2,:])
-
-        y1 = np.zeros(time.shape[0])
-        y2 = np.zeros(time.shape[0])
-        y3 = np.zeros(time.shape[0])
-        y4 = np.zeros(time.shape[0])
-        y1[:] = min_optimum
-        y2[:] = max_optimum
-        y3[:] = min_tollerance
-        y4[:] = max_tollerance
-
-        plt.fill_between(time, y1, y2, alpha = 0.2, color = 'b')
-        plt.fill_between(time, y3, y1, alpha = 0.2, color='r')
-        plt.fill_between(time, y2, y4, alpha = 0.2, color='r')
-
-
-        # plt.contourf(months, depth, hofdata, cmap=cmap,
-        #              levels=levels,
-        #              extend='both')
-        # plt.yticks(size=15)
-        # plt.ylabel('m', size=15, rotation='horizontal')
-        plt.ylim(ylimits)
-
-        # cb = plt.colorbar(pad=0.01)
-        # cb.set_label(cb_label, rotation='horizontal', size=15)
-        # # cb.set_ticks(size=15)
-        # cb.ax.tick_params(labelsize=15)
-        # ygap = int((np.round(series_lenght/12.)/5)*12)
-        # year_indexes = range(series_lenght)[::ygap]
-        # year_value = []
-        # for index in year_indexes:
-        #     year_value.append(time[index].year)
-        # plt.xticks(year_indexes, year_value, size=15)
-
-        plt.title(mmodel, size=20)
-        nplot=nplot+1
-
-    plt.tight_layout()
-    pltoutname = genfilename(diagplotdir, cmor_var,
-                             region= region, data_type='meanminmax')
-    plt.savefig(pltoutname, dpi=100)
