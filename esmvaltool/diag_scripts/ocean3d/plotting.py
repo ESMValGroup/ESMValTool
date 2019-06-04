@@ -65,7 +65,7 @@ def create_plot(model_filenames, ncols=3, projection=None):
     fig: matplotlib figure
     ax: list with matplotlib axis, flattened
     '''
-    # Calcualte number of plots
+    # Calcualte number of plots on the figure
     nplots = len(model_filenames)
     ncols = float(ncols)
     nrows = math.ceil(nplots / float(ncols))
@@ -86,8 +86,11 @@ def create_plot(model_filenames, ncols=3, projection=None):
     else:
         figsize = (8 * ncols, 2 * nrows * ncols)
         fig, ax = plt.subplots(nrows, ncols, figsize=figsize)
+    # if you have more than one axis, flatten the array
+    # this way it is easier to handle it.
     if isinstance(ax, np.ndarray):
         ax = ax.flatten()
+    # if only one axis is created wrap it in a list.
     else:
         ax = [ax]
     return fig, ax
@@ -157,46 +160,58 @@ def hofm_plot(model_filenames,
     -------
     None
     '''
+    # remove "model" that contain observations,
+    # since there will be no monthly data
     model_filenames = model_filenames.copy()
     if observations:
         del model_filenames[observations]
-
+    # creata basis for the muli panel figure
     fig, ax = create_plot(model_filenames)
 
+    # plot data on the figure, axis by axis
     for ind, mmodel in enumerate(model_filenames):
         logger.info("Plot  %s data for %s, region %s", cmor_var, mmodel,
                     region)
-
+        # generate input filenames that the data prepared by `hofm_data` function
         ifilename = genfilename(diagworkdir, cmor_var, mmodel, region, 'hofm',
                                 '.npy')
         ifilename_levels = genfilename(diagworkdir, cmor_var, mmodel, region,
                                        'levels', '.npy')
         ifilename_time = genfilename(diagworkdir, cmor_var, mmodel, region,
                                      'time', '.npy')
-
+        # load the data
         hofdata = np.load(ifilename, allow_pickle=True)
         lev = np.load(ifilename_levels, allow_pickle=True)
         time = np.load(ifilename_time, allow_pickle=True)
 
+        # convert data if needed and get labeles for colorbars
         cb_label, hofdata = label_and_conversion(cmor_var, hofdata)
 
+        # find index of the model level closes to the `max_level`
+        # and add 1, to make a plot look better
         lev_limit = lev[lev <= max_level].shape[0] + 1
+
+        # get the length of the time series
         series_lenght = time.shape[0]
+
+        # create 2d arrays with coordinates of time and depths
         months, depth = np.meshgrid(range(series_lenght), lev[0:lev_limit])
 
+        # plot an image for the model on the axis (ax[ind])
         image = ax[ind].contourf(months,
                                  depth,
                                  hofdata,
                                  cmap=cmap,
                                  levels=levels,
                                  extend='both')
-
+        # Generate tick marks with years that looks ok
         ygap = int((np.round(series_lenght / 12.) / 5) * 12)
         year_indexes = list(range(series_lenght)[::ygap])
         year_value = []
         for index in year_indexes:
             year_value.append(time[index].year)
 
+        # set properties of the axis
         ax[ind].set_xticks(year_indexes)
         ax[ind].set_xticklabels(year_value, size=15)
         ax[ind].set_title(mmodel, size=20)
@@ -204,6 +219,7 @@ def hofm_plot(model_filenames,
         ax[ind].invert_yaxis()
         ax[ind].tick_params(axis='y', labelsize=15)
 
+        # Add a colorbar
         cb = fig.colorbar(image, ax=ax[ind], pad=0.01)
         cb.set_label(cb_label, rotation='vertical', size=15)
         cb.ax.tick_params(labelsize=15)
@@ -211,12 +227,14 @@ def hofm_plot(model_filenames,
     # delete unused axis
     for delind in range(ind + 1, len(ax)):
         fig.delaxes(ax[delind])
-
+    # tighten the layout
     plt.tight_layout()
+    # generate the path to the output file
     pltoutname = genfilename(diagplotdir,
                              cmor_var,
                              region=region,
                              data_type='hofm')
+    # save figure
     plt.savefig(pltoutname, dpi=100)
 
 
