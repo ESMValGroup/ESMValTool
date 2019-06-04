@@ -38,7 +38,7 @@ class allvars(Fix):
         )
         new_list = CubeList()
         for cube in cubes:
-            if cube.name == 'cell_area':
+            if cube.name() == 'cell_area':
                 continue
             cube.add_aux_coord(cell_area, cube.coord_dims('latitude'))
             cube.coord('latitude').var_name = 'lat'
