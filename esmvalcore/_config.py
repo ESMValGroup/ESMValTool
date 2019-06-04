@@ -186,8 +186,7 @@ def get_institutes(variable):
     logger.debug("Retrieving institutes for dataset %s", dataset)
     if project in 'CMIP6':
         return CMOR_TABLES['CMIP6'].institutes[dataset]
-    else:
-        return CFG.get(project, {}).get('institutes', {}).get(dataset, [])
+    return CFG.get(project, {}).get('institutes', {}).get(dataset, [])
 
 
 def get_activity(variable):
