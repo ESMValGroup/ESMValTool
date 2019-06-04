@@ -113,7 +113,7 @@ class Fix(object):
         Get the fixes that must be applied for a given dataset.
 
         It will look for them at the module
-        esmvaltool.cmor._fixes.PROJECT in the file DATASET, and get
+        esmvalcore.cmor._fixes.PROJECT in the file DATASET, and get
         the classes named allvars (which should be use for fixes that are
         present in all the variables of a dataset, i.e. bad name for the time
         coordinate) and VARIABLE (which should be use for fixes for the
