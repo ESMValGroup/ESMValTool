@@ -134,24 +134,25 @@ for (i in 1 : length(model_names)) {
 data_frame_plot <- as.data.frame.table(data_frame[,])
 data_frame_plot$Year <- rep(period, length(model_names))
 names(data_frame_plot)[2] <- "Model"
-data_frame_plot$Model <- as.factor(sort(rep((1 : length(model_names)),                                             length(period))))
+data_frame_plot$Model <- as.factor(sort(rep(1 : length(model_names),
+                                             length(period))))
 for (i in 1 : length(levels(data_frame_plot$Model))) {
     levels(data_frame_plot$Model)[i] <- model_names[i]
 }
 font_size <- 12
-g <- ggplot(data_frame_plot, aes(x = Year, y = Freq, color = Model)) + 
+g <- ggplot(data_frame_plot, aes(x = Year, y = Freq, color = Model)) +
      theme_bw() +
      geom_line() + ylab(paste0("Anomaly (", units, ")")) + xlab("Year") +
      theme(text = element_text(size = font_size),
            legend.text = element_text(size = font_size),
-           axis.title = element_text(size = font_size)) +  
+           axis.title = element_text(size = font_size)) +
      stat_summary(data =  data_frame_plot, fun.y = "mean",
            mapping = aes(x = data_frame_plot$Year, y = data_frame_plot$Freq,
                   group = interaction(data_frame_plot[2, 3]),
                   color = data_frame_plot$Model), geom = "line", size = 1) +
       ggtitle(paste0(region, months, " ", var0, " (", starting, "-",
               ending, ")"))
-filepng <-  paste0(plot_dir, "/", region, "_", var0, "_", months, 
+filepng <-  paste0(plot_dir, "/", region, "_", var0, "_", months,
                    "_running-mean_", running_mean, "_",
                    starting, "-", ending, ".png")
 ggsave(filename = filepng, g, device = NULL)
