@@ -20,7 +20,7 @@ import cmocean.cm as cmo
 import matplotlib.cm as cm
 import palettable
 import seawater as sw
-
+from collections import OrderedDict
 mpl.use('agg') #noqa
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -101,14 +101,18 @@ def timmean(model_filenames, mmodel, cmor_var, diagworkdir,
         shutil.copy2(model_filenames[mmodel], ofilename)
 
 
-def get_clim_model_filenames(config, variable):
+def get_clim_model_filenames(config, variable, sorted=True):
     '''Extract model filenames from the configuration.
     '''
     model_filenames = {}
     for key, value in config['input_data'].items():
         if value['short_name'] == variable:
             model_filenames[value['dataset']] = key
+    # Sort them alphabetically
+    if sorted:
+        model_filenames = OrderedDict(sorted(model_filenames_temp.items(), key=lambda t: t[0]))
     return model_filenames
+
 
 def get_fx_filenames(config, variable, fx_var):
     '''Extract fx file names
@@ -227,5 +231,5 @@ def get_cmap(cmap_name):
     else:
         raise ValueError('Get unrecognised name for the colormap `{}`.\
                             Colormaps should be from standard matplotlib \
-                            set or from cmocean package.'                                                                                                                  .format(cmap_name))
+                            set or from cmocean package.'                                                                                                                                                                           .format(cmap_name))
     return colormap

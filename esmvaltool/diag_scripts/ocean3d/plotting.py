@@ -115,7 +115,7 @@ def label_and_conversion(cmor_var, data):
     '''
     if cmor_var == 'thetao':
         data = data - 273.15
-        cb_label = 'r$^{\circ}$C'
+        cb_label = r'$^{\circ}$C'
     elif cmor_var == 'so':
         cb_label = 'psu'
     return cb_label, data
@@ -537,7 +537,7 @@ def plot2d_bias(model_filenames,
                 observations='PHC',
                 projection=ccrs.NorthPolarStereo(),
                 bbox=[-180, 180, 60, 90]
-                ):
+               ):
     '''Plot 2d maps of the bias relative to climatology.
 
     Parameters
@@ -577,6 +577,12 @@ def plot2d_bias(model_filenames,
                                 data_type='timmean',
                                 extension='.nc')
 
+    metadata = load_meta(datapath=model_filenames[observations], fxpath=None)
+    datafile, lon2d, lat2d, lev, time, areacello = metadata
+
+    model_mean = np.zeros((lon2d.shape[0], lon2d.shape[1]+1))
+    print("MODEL MEAN SHAPE {}".format(model_mean.shape))
+
     # mm = Basemap(projection='npstere',boundinglat=60,lon_0=0,resolution='l')
     model_filenames = model_filenames.copy()
     del model_filenames[observations]
@@ -600,6 +606,8 @@ def plot2d_bias(model_filenames,
         cb_label, data_onlev_obs_cyc = label_and_conversion(
             cmor_var, data_onlev_obs_cyc)
         cb_label, interpolated = label_and_conversion(cmor_var, interpolated)
+
+        model_mean = model_mean+interpolated
 
         left, right, down, up = bbox
 
@@ -628,7 +636,30 @@ def plot2d_bias(model_filenames,
                           size=18)
         ax[ind].set_rasterization_zorder(-1)
 
-    for delind in range(ind + 1, len(ax)):
+    model_mean = model_mean/len(model_filenames)
+    ax[ind+1].set_extent([left, right, down, up], crs=ccrs.PlateCarree())
+    image = ax[ind+1].contourf(
+        lonc,
+        latc,
+        model_mean - data_onlev_obs_cyc,
+        levels=levels,
+        extend='both',
+        # vmin=contours[0],
+        # vmax=contours[-1],
+        transform=ccrs.PlateCarree(),
+        cmap=cmo.balance,
+    )
+
+    ax[ind+1].add_feature(
+        cfeature.GSHHSFeature(levels=[1],
+                                scale="low",
+                                facecolor="lightgray"))
+
+    ax[ind+1].set_title("Model mean bias, {} m".format(int(target_depth)),
+                        size=18)
+    ax[ind+1].set_rasterization_zorder(-1)
+
+    for delind in range(ind + 2, len(ax)):
         fig.delaxes(ax[delind])
 
     # set common colorbar
