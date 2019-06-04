@@ -633,6 +633,32 @@ def test_derive_with_fx(tmp_path, patched_datafinder, config_user):
     assert ancestor_product.attributes['short_name'] == 'nbp'
 
 
+def simulate_diagnostic_run(diagnostic_task):
+    """Simulate Python diagnostic run."""
+    cfg = diagnostic_task.settings
+    input_files = [
+        p.filename for a in diagnostic_task.ancestors for p in a.products
+    ]
+    record = {
+        'caption': 'Test plot',
+        'plot_file': get_plot_filename('test', cfg),
+        'statistics': ['mean', 'var'],
+        'domains': ['trop', 'et'],
+        'plot_type': 'zonal',
+        'authors': ['ande_bo'],
+        'references': ['acknow_project'],
+        'ancestors': input_files,
+    }
+
+    diagnostic_file = get_diagnostic_filename('test', cfg)
+    create_test_file(diagnostic_file)
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(diagnostic_file, record)
+
+    diagnostic_task._collect_provenance()
+    return record
+
+
 def test_diagnostic_task_provenance(tmp_path, patched_datafinder, config_user):
 
     script = tmp_path / 'diagnostic.py'
@@ -659,34 +685,16 @@ def test_diagnostic_task_provenance(tmp_path, patched_datafinder, config_user):
             scripts:
               script_name:
                 script: {script}
+              script_name2:
+                script: {script}
+                ancestors: [script_name]
         """.format(script=script))
 
     recipe = get_recipe(tmp_path, content, config_user)
     diagnostic_task = recipe.tasks.pop()
 
-    # Simulate Python diagnostic run
-    cfg = diagnostic_task.settings
-    input_files = [
-        p.filename for a in diagnostic_task.ancestors for p in a.products
-    ]
-    record = {
-        'caption': 'Test plot',
-        'plot_file': get_plot_filename('test', cfg),
-        'statistics': ['mean', 'var'],
-        'domains': ['trop', 'et'],
-        'plot_type': 'zonal',
-        'authors': ['ande_bo'],
-        'references': ['acknow_project'],
-        'ancestors': input_files,
-    }
-
-    diagnostic_file = get_diagnostic_filename('test', cfg)
-    create_test_file(diagnostic_file)
-    with ProvenanceLogger(cfg) as provenance_logger:
-        provenance_logger.log(diagnostic_file, record)
-
-    diagnostic_task._collect_provenance()
-    # Done simulating diagnostic run
+    simulate_diagnostic_run(next(iter(diagnostic_task.ancestors)))
+    record = simulate_diagnostic_run(diagnostic_task)
 
     # Check resulting product
     product = diagnostic_task.products.pop()
