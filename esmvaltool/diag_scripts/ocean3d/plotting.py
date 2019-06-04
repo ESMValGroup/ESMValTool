@@ -467,11 +467,45 @@ def plot2d_original_grid(model_filenames,
                          diagplotdir,
                          dpi=100,
                          explicit_depths=None,
+                         projection=ccrs.NorthPolarStereo(),
+                         bbox=[-180, 180, 60, 90]
                          ):
+    ''' Plot 2d maps in NorthPolarStereo using cartopy
+
+    Parameters
+    ----------
+    model_filenames:OrderedDict
+        OrderedDict with model names as keys and input files as values.
+    cmor_var: str
+        name of the variable
+    depth: int
+        we will plot the data on the model level that is closest to the `depth`.
+        Ignored if explicit_depths is provided.
+    levels: tuple
+        values to be used for vmin and vmax in the form of (vmin, vmax)
+    diagworkdir: str
+        path to the working directory
+    diagplotdir: str
+        path to the plot directory
+    dpi: int
+        the dpi values to save the figure
+    explicit_depths: dict
+        Output of the `aw_core` function.
+        It's a dictionary where for each model there is a maximum temperature,
+        depth level in the model, index of the depth level in the model.
+        If provided the `depth` parameter is excluded.
+    projection: instance of cartopy projection (ccrs)
+    bbox: list
+        bounding box. It will be the input for cartopy `set_extent`.
+
+    Retuns
+    ------
+    None
+    '''
 
     fig, ax = create_plot(model_filenames,
                           ncols=4,
-                          projection=ccrs.NorthPolarStereo())
+                          projection=projection)
 
     for ind, mmodel in enumerate(model_filenames):
         logger.info("Plot plot2d_original_grid {} for {}".format(
@@ -499,7 +533,7 @@ def plot2d_original_grid(model_filenames,
 
         cb_label, data = label_and_conversion(cmor_var, data)
 
-        left, right, down, up = [-180, 180, 60, 90]
+        left, right, down, up = bbox
 
         ax[ind].set_extent([left, right, down, up], crs=ccrs.PlateCarree())
         # Only pcolormesh is working for now with cartopy,
@@ -546,7 +580,7 @@ def plot2d_original_grid(model_filenames,
     pltoutname = genfilename(diagplotdir,
                              cmor_var,
                              "MULTIMODEL",
-                            data_type=plot_type)
+                             data_type=plot_type)
     plt.savefig(pltoutname, dpi=dpi)
 
 
