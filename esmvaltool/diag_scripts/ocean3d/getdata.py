@@ -4,28 +4,28 @@ APPLICATE/TRR Ocean Diagnostics
 *********************************************************************
 """
 import logging
-import os
-from collections import OrderedDict
-from netCDF4 import Dataset, num2date
-import numpy as np
-import os
-import matplotlib as mpl
-import matplotlib.pylab as plt
 import math
-from matplotlib import cm
+import os
 #import seawater as sw
 from collections import OrderedDict
-from cdo import Cdo
+
 import cmocean.cm as cmo
-from mpl_toolkits.basemap import Basemap
-from mpl_toolkits.basemap import addcyclic
-import pandas as pd
-import pyresample
-from scipy.interpolate import interp1d
 import ESMF
+import matplotlib as mpl
+import matplotlib.pylab as plt
+import numpy as np
+import pandas as pd
 import pyproj
+import pyresample
+from cdo import Cdo
+from matplotlib import cm
+from mpl_toolkits.basemap import Basemap, addcyclic
+from netCDF4 import Dataset, num2date
+from scipy.interpolate import interp1d
+
+from esmvaltool.diag_scripts.ocean3d.regions import (hofm_regions,
+                                                     transect_points)
 from esmvaltool.diag_scripts.ocean3d.utils import genfilename, point_distance
-from esmvaltool.diag_scripts.ocean3d.regions import hofm_regions, transect_points
 
 logger = logging.getLogger(os.path.basename(__file__))
 mpl.use('agg')  #noqa

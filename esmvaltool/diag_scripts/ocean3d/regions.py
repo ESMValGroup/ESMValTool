@@ -1,37 +1,34 @@
+import inspect
 import logging
+import math
 import os
+#import seawater as sw
 # import joblib
 from collections import OrderedDict
+
+import cmocean.cm as cmo
+import ESMF
 import iris
+import matplotlib as mpl
+import matplotlib.pylab as plt
+import numpy as np
+#import seaborn as sns
+import palettable
+import pandas as pd
+import pyproj
+import pyresample
+from cdo import Cdo
+from matplotlib import cm
+from mpl_toolkits.basemap import Basemap, addcyclic
+from netCDF4 import Dataset, num2date
+from scipy.interpolate import interp1d
 
 from esmvaltool.diag_scripts.shared import run_diagnostic
 from esmvaltool.diag_scripts.shared.plot import quickplot
 
 logger = logging.getLogger(os.path.basename(__file__))
 
-import inspect
-from netCDF4 import Dataset
-import numpy as np
-import os
-import matplotlib as mpl
 mpl.use('agg')
-import matplotlib.pylab as plt
-import math
-from matplotlib import cm
-from netCDF4 import num2date
-#import seawater as sw
-from collections import OrderedDict
-from cdo import Cdo
-import cmocean.cm as cmo
-from mpl_toolkits.basemap import Basemap
-from mpl_toolkits.basemap import addcyclic
-import pandas as pd
-import pyresample
-from scipy.interpolate import interp1d
-import ESMF
-import pyproj
-#import seaborn as sns
-import palettable
 #plt.style.context('seaborn-talk')
 #sns.set_context("paper")
 

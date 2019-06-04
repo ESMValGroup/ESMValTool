@@ -4,32 +4,41 @@ APPLICATE/TRR Ocean Diagnostics
 *********************************************************************
 """
 import logging
+import math
 import os
 import shutil
+from collections import OrderedDict
+
+import cmocean.cm as cmo
+import matplotlib as mpl
+import matplotlib.cm as cm
+import matplotlib.pylab as plt
+import numpy as np
+import palettable
+import pyproj
+import seawater as sw
+from cdo import Cdo
+from matplotlib import cm as cm
+from netCDF4 import num2date
+
 from esmvaltool.diag_scripts.shared import run_diagnostic
 from esmvaltool.diag_scripts.shared.plot import quickplot
-import numpy as np
-import os
-import matplotlib as mpl
-import matplotlib.pylab as plt
-import math
-from matplotlib import cm
-from netCDF4 import num2date
-from cdo import Cdo
-import cmocean.cm as cmo
-import matplotlib.cm as cm
-import palettable
-import seawater as sw
-from collections import OrderedDict
-import pyproj
-mpl.use('agg') #noqa
+
+mpl.use('agg')  #noqa
 logger = logging.getLogger(os.path.basename(__file__))
+
 
 class DiagnosticError(Exception):
     """Error in diagnostic"""
 
-def genfilename(basedir, variable=None, mmodel=None, region=None,
-                data_type=None, extension=None, basis='arctic_ocean'):
+
+def genfilename(basedir,
+                variable=None,
+                mmodel=None,
+                region=None,
+                data_type=None,
+                extension=None,
+                basis='arctic_ocean'):
     '''Generates file name for the output data.
 
     Parameters
@@ -62,10 +71,9 @@ def genfilename(basedir, variable=None, mmodel=None, region=None,
             nname_nonans.append(i)
     basename = "_".join(nname_nonans)
     if extension:
-        basename = basename+extension
+        basename = basename + extension
     ifilename = os.path.join(basedir, basename)
     return ifilename
-
 
 
 def timmean(model_filenames, mmodel, cmor_var, diagworkdir,
@@ -121,6 +129,7 @@ def get_fx_filenames(config, variable, fx_var):
             areacello_fxdataset[value['dataset']] = value['fx_files'][fx_var]
     return areacello_fxdataset
 
+
 def find_observations_name(config, variable):
     ''' Find "model name" of the observations data set.
     Assumes that there is only one observational data set.
@@ -134,6 +143,7 @@ def find_observations_name(config, variable):
         logger.info('Can\'t find observational (climatology) data')
 
     return obsname
+
 
 def shiftedcolormap(cmap, start=0, midpoint=0.5, stop=1.0, name='shiftedcmap'):
     '''
@@ -158,12 +168,7 @@ def shiftedcolormap(cmap, start=0, midpoint=0.5, stop=1.0, name='shiftedcmap'):
           Defaults to 1.0 (no upper ofset). Should be between
           `midpoint` and 1.0.
     '''
-    cdict = {
-        'red': [],
-        'green': [],
-        'blue': [],
-        'alpha': []
-    }
+    cdict = {'red': [], 'green': [], 'blue': [], 'alpha': []}
 
     # regular index to compute the colors
     reg_index = np.linspace(start, stop, 257)
@@ -192,16 +197,16 @@ def dens_back(smin, smax, tmin, tmax):
     '''Calculate density for TS diagram.
     '''
 
-    xdim = round((smax-smin)/0.1+1, 0)
-    ydim = round((tmax-tmin)+1, 0)
+    xdim = round((smax - smin) / 0.1 + 1, 0)
+    ydim = round((tmax - tmin) + 1, 0)
 
-    dens = np.zeros((int(ydim),int(xdim)))
+    dens = np.zeros((int(ydim), int(xdim)))
 
-    ti = np.linspace(tmin, tmax, ydim*10)
-    si = np.linspace(smin, smax, xdim*10)
+    ti = np.linspace(tmin, tmax, ydim * 10)
+    si = np.linspace(smin, smax, xdim * 10)
 
     si2, ti2 = np.meshgrid(si, ti)
-    dens = sw.dens0(si2, ti2)-1000
+    dens = sw.dens0(si2, ti2) - 1000
     return si2, ti2, dens
 
 
@@ -211,11 +216,6 @@ def get_cmap(cmap_name):
     Additional custom colormap for salinity is provided:
     - "custom_salinity1"
     '''
-    #hack to support different versions of cmocean
-    # try:
-    #     cmo_names = cmo.cm.cmapnames
-    # except:
-    #     cmo_names = cmo.cmapnames
 
     if cmap_name in cmo.cmapnames:
         colormap = cmo.cmap_d[cmap_name]
@@ -233,6 +233,7 @@ def get_cmap(cmap_name):
                             Colormaps should be from standard matplotlib \
                             set or from cmocean package.'.format(cmap_name))
     return colormap
+
 
 def point_distance(lon_s4new, lat_s4new):
     '''Calculate distance between points of the section.
