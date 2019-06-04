@@ -70,7 +70,7 @@ Example plots
 -------------
 
 .. _fig_combinedindices1:
-.. figure::  /recipes/figures/Index_NAO.png
+.. figure::  /recipes/figures/Nino3.4_tos_Dec-Feb_running-mean__1950-2005.png
    :align:   center
    :width:   14cm
 
