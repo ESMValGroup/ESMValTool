@@ -190,10 +190,10 @@ def get_institutes(variable):
 
 
 def get_activity(variable):
-    """Return the activity given the experiment name in CMIP6. """
+    """Return the activity given the experiment name in CMIP6."""
     exp = variable['exp']
     logger.debug("Retrieving activity_id for experiment %s", exp)
-    return CMOR_TABLES['CMIP6'].experiments[exp]
+    return CMOR_TABLES['CMIP6'].activities[exp]
 
 
 def replace_mip_fx(fx_file):

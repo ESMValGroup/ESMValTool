@@ -70,13 +70,10 @@ class CMIP6Info(object):
     }
 
     def __init__(self, cmor_tables_path, default=None):
-        if 'obs4mips' in cmor_tables_path:
-            cmor_tables_path = self._get_cmor_path(cmor_tables_path)
-            self._cmor_folder = os.path.join(cmor_tables_path, 'Tables')
-        else:
-            cmor_tables_path = self._get_cmor_path(cmor_tables_path)
-            self._cmor_folder = os.path.join(cmor_tables_path, 'Tables')
-            self._load_control_vocabulary()
+        cmor_tables_path = self._get_cmor_path(cmor_tables_path)
+        self._cmor_folder = os.path.join(cmor_tables_path, 'Tables')
+        if 'obs4mips' not in cmor_tables_path:
+            self._load_controlled_vocabulary()
         self.default = default
 
         self.tables = {}
@@ -145,8 +142,8 @@ class CMIP6Info(object):
                     coord.read_json(table_data['axis_entry'][coord_name])
                     self.coords[coord_name] = coord
 
-    def _load_control_vocabulary(self):
-        self.experiments = {}
+    def _load_controlled_vocabulary(self):
+        self.activities = {}
         self.institutes = {}
         json_file = os.path.join(self._cmor_folder, 'CMIP6_CV.json')
         with open(json_file) as inf:
@@ -155,7 +152,7 @@ class CMIP6Info(object):
             exps = table_data['CV']['experiment_id']
             for exp_id in exps.keys():
                 activity = exps[exp_id]['activity_id']
-                self.experiments[exp_id] = activity
+                self.activities[exp_id] = activity
 
             sources = table_data['CV']['source_id']
             for source_id in sources.keys():
