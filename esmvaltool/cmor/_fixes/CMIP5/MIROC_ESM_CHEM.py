@@ -1,3 +1,4 @@
+# pylint: disable=invalid-name, no-self-use, too-few-public-methods
 """Fixes for MIROC ESM CHEM"""
 from ..fix import Fix
 
@@ -7,7 +8,7 @@ class tro3(Fix):
 
     def fix_data(self, cube):
         """
-        Fix data
+        Fix data.
 
         Fixes discrepancy between declared units and real units
 
@@ -20,7 +21,10 @@ class tro3(Fix):
         iris.cube.Cube
 
         """
-        return cube * 1000
+        metadata = cube.metadata
+        cube *= 1000
+        cube.metadata = metadata
+        return cube
 
 
 # if (name .eq. "tro3") then

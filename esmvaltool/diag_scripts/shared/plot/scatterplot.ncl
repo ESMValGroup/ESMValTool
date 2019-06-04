@@ -10,11 +10,11 @@
 ;
 ; #############################################################################
 
-load "./interface_scripts/auxiliary.ncl"
-load "./interface_scripts/logging.ncl"
+load "$diag_scripts/../interface_scripts/auxiliary.ncl"
+load "$diag_scripts/../interface_scripts/logging.ncl"
 
-load "./diag_scripts/shared/plot/style.ncl"
-load "./diag_scripts/shared/plot/aux_plotting.ncl"
+load "$diag_scripts/shared/plot/style.ncl"
+load "$diag_scripts/shared/plot/aux_plotting.ncl"
 
 ; #############################################################################
 undef("scatterplot")
@@ -22,22 +22,23 @@ function scatterplot(wks_in[1],
                      source,
                      varname[1]: string,
                      reflines: logical,
-                     stats: logical)
+                     stats: logical,
+                     inlist:list)
 ;
 ; Arguments
 ;    wks_in: workstation ("graphic" object or default will be used).
 ;    source: data to be plotted (see source prototype above) or a NetCDF
 ;            filename with data.
 ;    varname: variable name in the file.
-;    logmode: if true, log scale will be used on both axes.
 ;    reflines: show/hide reference lines (1:1 and +/- factor 2).
 ;    stats: show/hide summary of statistical values on the plot.
+;    inlist: list of input_file_info items
 ;
 ; Source prototype
 ;    source = (2, npoints)
 ;    source(0, :) = x-axis values
 ;    source(1, :) = y-axis values
-;    source!0 = models
+;    source!0 = datasets
 ;
 ; Return value
 ;    A graphic object.
@@ -48,13 +49,14 @@ function scatterplot(wks_in[1],
 ;
 ; Caveats
 ;    Linear axes are used as default, log axis can be optionally provided by
-;    the calling diag_script.
+;    the calling diag_script (option: diag_script_info@scatter_log).
 ;
 ; Modification history
 ;    20140228-A_righ_ma: written.
 ;
 local funcname, scriptname, scattermode, loc_res, resL, linec, lineh, linel, \
-  resT, nstats, st, text, step, xpos, ypos, ii, tmp, ratio, fac2p, str
+  resT, nstats, st, text, step, xpos, ypos, ii, tmp, ratio, fac2p, str,
+  scatter_log
 begin
 
   funcname = "scatterplot"
@@ -68,8 +70,16 @@ begin
     data = source
   end if
 
+  ; Get scatter_log option
+  scatter_log = False
+  if (isatt(diag_script_info, "scatter_log")) then
+    if (diag_script_info@scatter_log .eq. "True") then
+      scatter_log = True
+    end if
+  end if
+
   ; Style options
-  colors  = project_style(diag_script_info, "colors")
+  colors  = project_style(inlist, diag_script_info, "colors")
 
   ; Define x and y points
   xpts = data(0, :)
@@ -84,7 +94,7 @@ begin
   end if
 
   ; Check if a valid wks has been provided, otherwise invoke default
-  wks = get_wks(wks_in, diag_script, var)
+  wks = get_wks(wks_in, DIAG_SCRIPT, var)
   gsn_define_colormap(wks, array_append_record((/"white", "black"/), \
                       colors, 0))
 
@@ -105,9 +115,9 @@ begin
     res@gsnCenterString  = res@gsnCenterString + " [" + \
       format_units(data@units) + "]"
   end if
-  res@tiXAxisString = data&models(0)
-  res@tiYAxisString = data&models(1)
-  if (diag_script_info@scatter_log) then
+  res@tiXAxisString = data&datasets(0)
+  res@tiYAxisString = data&datasets(1)
+  if (scatter_log) then
     res@trXAxisType = "LogAxis"
     res@trYAxisType = "LogAxis"
     xpts = where(xpts.le.0, xpts@_FillValue, xpts)
@@ -144,7 +154,7 @@ begin
                              (/res@trYMinF, res@trYMaxF/), resL)
     plot@linec = linec
     resL@gsLineDashPattern = 1
-    if (diag_script_info@scatter_log) then
+    if (scatter_log) then
       lineh = gsn_add_polyline(wks_in, plot, \
                                (/res@trXMinF, res@trXMaxF / 2./), \
                                (/2 * res@trYMinF, res@trYMaxF/), resL)
@@ -176,7 +186,7 @@ begin
     text = new(nstats, graphic)
 
     ; Define labels horizontal position
-    if (diag_script_info@scatter_log) then
+    if (scatter_log) then
       step = (log10(res@trYMaxF) - log10(res@trYMinF)) / 20.
       xpos = 10 ^ (log10(res@trYMinF) + step)
     else
@@ -187,7 +197,7 @@ begin
     ; Define labels vertical position
     ypos = new(nstats, float)
     do ii = 0, nstats - 1
-      if (diag_script_info@scatter_log) then
+      if (scatter_log) then
         tmp = log10(res@trYMaxF) - step * (ii + 1)
         ypos(ii) = 10 ^ tmp
         delete(tmp)
@@ -267,7 +277,7 @@ function scatterplot3D(wks_in[1],
 ;    source(1, :) = y-axis values
 ;    source(2, :) = z-axis values
 ;    source!0 = statistic
-;    source!1 = models
+;    source!1 = datasets
 ;
 ; Return value
 ;    A graphic object.
@@ -311,7 +321,7 @@ begin
   end if
 
   ; Check if a valid wks has been provided, otherwise invoke default
-  wks = get_wks(wks_in, diag_script, var)
+  wks = get_wks(wks_in, DIAG_SCRIPT, var)
 
   ; Create a 2D scatter plot
   res = True
@@ -392,7 +402,7 @@ begin
       xb = xb - 0.01
     end if
     ndctodata(plot, xb, yb, xp, yp)
-    labels(imod) = gsn_add_text(wks, plot, data&models(imod), xp, yp, resT)
+    labels(imod) = gsn_add_text(wks, plot, data&datasets(imod), xp, yp, resT)
     str = "text" + imod
     plot@$str$ = labels(imod)
 
@@ -430,13 +440,15 @@ end
 undef("scatterplot_markers")
 function scatterplot_markers(wks_in[1],
                              source,
-                             varname[1])
+                             varname[1],
+                             inlist:list)
 ;
 ; Arguments
 ;    wks_in: workstation ("graphic" object or default will be used).
 ;    source: data to be plotted (see source prototype above) or a NetCDF
 ;            filename with data.
 ;    varname: variable name in the file.
+;    inlist: list of input_file_info items
 ;
 ; Source prototype
 ;    source = (2, npoints)
@@ -485,12 +497,26 @@ begin
   end if
 
   ; Check if a valid wks has been provided, otherwise invoke default
-  wks = get_wks(wks_in, diag_script, var)
+  wks = get_wks(wks_in, DIAG_SCRIPT, var)
 
   ; Define style
-  annots = project_style(diag_script_info, "annots")
-  colors  = project_style(diag_script_info, "colors")
-  markers = project_style(diag_script_info, "markers")
+  ; new: if data array has attributes annots, colors, markers, use those
+  ;      instead of function project_style
+  if (isatt(data, "annots")) then
+    annots = data@annots
+  else
+    annots = project_style(inlist, diag_script_info, "annots")
+  end if
+  if (isatt(data, "colors")) then
+    colors = data@colors
+  else
+    colors  = project_style(inlist, diag_script_info, "colors")
+  end if
+  if (isatt(data, "markers")) then
+    markers = data@markers
+  else
+    markers = project_style(inlist, diag_script_info, "markers")
+  end if
 
   ; Create a 2D scatter plot
   res = True
@@ -512,6 +538,25 @@ begin
       " [" + format_units(data@units(0)) + "]"
     res@tiYAxisString = res@tiYAxisString + \
       " [" + format_units(data@units(1)) + "]"
+  end if
+
+  if (isatt(data, "trYMinF")) then
+    res@trYMinF = data@trYMinF        ; min value on y-axis
+  end if
+  if (isatt(data, "trYMaxF")) then
+    res@trYMaxF = data@trYMaxF        ; max value on y-axis
+  end if
+  if (isatt(data, "trXMinF")) then
+    res@trXMinF = data@trXMinF        ; min value on x-axis
+  end if
+  if (isatt(data, "trXMaxF")) then
+    res@trXMaxF = data@trXMaxF        ; max value on x-axis
+  end if
+  if (isatt(data, "trXReverse")) then
+    res@trXReverse = data@trXReverse  ; flip the x axis
+  end if
+  if (isatt(data, "trYReverse")) then
+    res@trYReverse = data@trYReverse  ; flip the y axis
   end if
 
   ; Override defaults with "res_" attributes of "data"

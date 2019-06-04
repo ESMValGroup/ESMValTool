@@ -2,9 +2,13 @@
 User's guide
 #######################
 
-.. include:: intro.rst
-.. include:: install.rst
-.. .. include:: namelists.rst
-.. .. include:: directory.rst
-.. .. include:: config_files.rst
-.. .. include:: running.rst
+.. include:: intro.inc
+.. include:: install.inc
+.. include:: config.inc
+.. include:: inputdata.inc
+.. include:: outputdata.inc
+.. include:: observations.inc
+.. include:: recipe.inc
+.. include:: preprocessor.inc
+.. include:: dirstruct.inc
+.. include:: running.inc

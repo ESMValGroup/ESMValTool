@@ -10,18 +10,18 @@ from esmvaltool.cmor._fixes.CMIP5.MIROC_ESM import allvars, co2, gpp, tro3
 
 class TestCo2(unittest.TestCase):
     def setUp(self):
-        self.cube = Cube([1], var_name='co2', units='J')
+        self.cube = Cube([1.0], var_name='co2', units='J')
         self.fix = co2()
 
     def test_fix_metadata(self):
-        cube = self.fix.fix_metadata(self.cube)
+        cube = self.fix.fix_metadata([self.cube])[0]
         self.assertEqual(cube.data[0], 1)
         self.assertEqual(cube.units, Unit('1e-6'))
 
 
 class TestTro3(unittest.TestCase):
     def setUp(self):
-        self.cube = Cube([1], var_name='tro3', units='J')
+        self.cube = Cube([1.0], var_name='tro3', units='J')
         self.fix = tro3()
 
     def test_fix_data(self):
@@ -32,18 +32,18 @@ class TestTro3(unittest.TestCase):
 
 class TestGpp(unittest.TestCase):
     def setUp(self):
-        self.cube = Cube([1], var_name='gpp', units='J')
+        self.cube = Cube([1.0], var_name='gpp', units='J')
         self.fix = gpp()
 
     def test_fix_metadata(self):
-        cube = self.fix.fix_metadata(self.cube)
+        cube = self.fix.fix_metadata([self.cube])[0]
         self.assertEqual(cube.data[0], 1)
         self.assertEqual(cube.units, Unit('g m-2 day-1'))
 
 
 class TestAll(unittest.TestCase):
     def setUp(self):
-        self.cube = Cube([[1, 2], [3, 4]], var_name='co2', units='J')
+        self.cube = Cube([[1.0, 2.0], [3.0, 4.0]], var_name='co2', units='J')
         self.cube.add_dim_coord(
             DimCoord(
                 [0, 1],
@@ -55,30 +55,15 @@ class TestAll(unittest.TestCase):
 
         self.fix = allvars()
 
-    def test_fix_metadata(self):
-        cube = self.fix.fix_metadata(self.cube)
-        time = cube.coord('time')
-        self.assertEqual(time.units.origin, 'days since 1849-01-01 00:00:00')
-        self.assertEqual(time.units.calendar, 'gregorian')
-
-    def test_fix_metadata_1_1(self):
-        time = self.cube.coord('time')
-        time.units = Unit("days since 1-1-1", time.units.calendar)
-        cube = self.fix.fix_metadata(self.cube)
-
-        time = cube.coord('time')
-        self.assertEqual(time.units.origin, 'days since 1850-01-01 00:00:00')
-        self.assertEqual(time.units.calendar, 'gregorian')
-
     def test_fix_metadata_plev(self):
         time = self.cube.coord('time')
         time.units = Unit("days since 1-1-1", time.units.calendar)
-        cube = self.fix.fix_metadata(self.cube)
+        cube = self.fix.fix_metadata([self.cube])[0]
         cube.coord('air_pressure')
 
     def test_fix_metadata_no_plev(self):
         self.cube.remove_coord('AR5PL35')
-        cube = self.fix.fix_metadata(self.cube)
+        cube = self.fix.fix_metadata([self.cube])[0]
         with self.assertRaises(CoordinateNotFoundError):
             cube.coord('air_pressure')
 

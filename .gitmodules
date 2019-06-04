@@ -1,6 +1,0 @@
-[submodule "esmvaltool/cmor/tables/cmip5"]
-	path = esmvaltool/cmor/tables/cmip5
-	url = https://github.com/PCMDI/cmip5-cmor-tables.git
-[submodule "esmvaltool/cmor/tables/cmip6"]
-	path = esmvaltool/cmor/tables/cmip6
-	url = https://github.com/PCMDI/cmip6-cmor-tables.git

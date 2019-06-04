@@ -6,13 +6,12 @@ Import and use these basic classes by e.g.::
 
     import esmvaltool.diag_scripts.shared as e
     datasets = e.Datasets(cfg)
+    variables = e.Variables(cfg)
 
 Notes
 -----
 An example diagnostic using these classes is given in
-`diag_scripts/examples/diagnostic.py`
-
-            if self._is_valid_path(dataset_path):
+`diag_scripts/examples/diagnostic_object_oriented.py`.
 
 """
 
@@ -27,7 +26,6 @@ logger = logging.getLogger(__name__)
 
 # Global variables
 DEFAULT_INFO = 'not_specified'
-INPUT_DATA = 'input_data'
 
 
 # Variable class containing all relevant information
@@ -38,26 +36,28 @@ Variable = collections.namedtuple('Variable', [n.SHORT_NAME,
 
 
 class Variables(object):
-    """Class to easily access a recipe's variables.
-
-    This class is designed to easily access variables in the diagnostic script.
+    """Class to easily access a recipe's variables in a diagnostic.
 
     Examples
     --------
     Get all variables of a recipe configuration `cfg`::
 
-        vars = Variables(cfg)
+        variables = Variables(cfg)
 
-    Access `short_name` (as str) of a variable `tas`::
+    Access information of a variable `tas`::
 
-        vars.tas
+        variables.short_name('tas')
+        variables.standard_name('tas')
+        variables.long_name('tas')
+        variables.units('tas')
 
-    Access all other information of a variable `tas`::
+    Access :mod:`iris`-suitable dictionary of a variable `tas`::
 
-        vars.TAS.short_name
-        vars.TAS.standard_name
-        vars.TAS.long_name
-        vars.TAS.units
+        variables.iris_dict('tas')
+
+    Check if variables `tas` and `pr` are available::
+
+        variables.vars_available('tas', 'pr')
 
     """
 
@@ -68,9 +68,9 @@ class Variables(object):
         ----------
         cfg : dict, optional
             Configuation dictionary of the recipe.
-        **names : tuple or Variable, optional
+        **names : dict or Variable, optional
             Keyword arguments of the form `short_name=Variable_object` where
-            `Variable_object` can be given as tuple or Variable.
+            `Variable_object` can be given as :obj:`dict` or :class:`Variable`.
 
         """
         self._dict = {}
@@ -79,7 +79,7 @@ class Variables(object):
         if cfg is not None:
             success = True
             if isinstance(cfg, dict):
-                data = cfg.get(INPUT_DATA)
+                data = cfg.get(n.INPUT_DATA)
                 if isinstance(data, dict):
                     for info in data.values():
                         name = info.get(n.SHORT_NAME, DEFAULT_INFO)
@@ -101,18 +101,19 @@ class Variables(object):
                            "scripts (using 'ancestors' key)")
 
         # Add costum variables
-        for name in names:
-            attr = Variable(*names[name])
-            self._add_to_dict(name, attr)
+        self.add_vars(**names)
         if not self._dict:
             logger.warning("No variables found!")
 
     def __repr__(self):
         """Representation of the class."""
-        return repr(self.short_names())
+        output = ''
+        for (name, attr) in self._dict.items():
+            output += '{}: {}\n'.format(name, attr)
+        return output
 
     def _add_to_dict(self, name, attr):
-        """Add variable to class (internal method).
+        """Add variable to class dictionary.
 
         Parameters
         ----------
@@ -124,23 +125,112 @@ class Variables(object):
         """
         if name not in self._dict:
             logger.debug("Added variable '%s' to collection", name)
-        setattr(self, name, name)
-        setattr(self, name.upper(), attr)
         self._dict[name] = attr
 
-    def add_var(self, **names):
-        """Add a costum variable to the class member.
+    def add_vars(self, **names):
+        """Add costum variables to the class.
 
         Parameters
         ----------
-        **names : tuple or Variable, optional
+        **names : dict or Variable, optional
             Keyword arguments of the form `short_name=Variable_object` where
-            `Variable_object` can be given as tuple or Variable.
+            `Variable_object` can be given as :obj:`dict` or :class:`Variable`.
 
         """
-        for name in names:
-            attr = Variable(*names[name])
-            self._add_to_dict(name, attr)
+        for (name, attr) in names.items():
+            if isinstance(attr, Variable):
+                attr_var = attr
+            else:
+                attr_var = Variable(
+                    name,
+                    attr.get(n.STANDARD_NAME, DEFAULT_INFO),
+                    attr.get(n.LONG_NAME, DEFAULT_INFO),
+                    attr.get(n.UNITS, DEFAULT_INFO))
+            self._add_to_dict(name, attr_var)
+
+    def iris_dict(self, var):
+        """Access :mod:`iris` dictionary of the variable.
+
+        Parameters
+        ----------
+        var : str
+            (Short) name of the variable.
+
+        Returns
+        -------
+        dict
+            Dictionary containing all attributes of the variable which can be
+            used directly in :mod:`iris` (`short_name` replaced by `var_name`).
+
+        """
+        iris_dict = self._dict[var]._asdict()
+        iris_dict[n.VAR_NAME] = iris_dict.pop(n.SHORT_NAME)
+        return iris_dict
+
+    def long_name(self, var):
+        """Access long name.
+
+        Parameters
+        ----------
+        var : str
+            (Short) name of the variable.
+
+        Returns
+        -------
+        str
+            Long name of the variable.
+
+        """
+        return getattr(self._dict[var], n.LONG_NAME)
+
+    def modify_var(self, var, **names):
+        """Modify an already existing  variable of the class.
+
+        Parameters
+        ----------
+        var : str
+            (Short) name of the existing variable.
+        **names
+            Keyword arguments of the form `short_name=tas`.
+
+        Raises
+        ------
+        ValueError
+            If `var` is not an existing variable.
+        TypeError
+            If a non-valid keyword argument is given.
+
+        """
+        if var not in self._dict:
+            raise ValueError("Variable '{}' does not exist yet and cannot be "
+                             "modified".format(var))
+        old_var = self._dict.pop(var)
+        new_var = {}
+        for name in Variable._fields:
+            new_var[name] = names.pop(name, getattr(old_var, name))
+
+        # Check if names is not empty (=non-valid keyword argument given)
+        if names:
+            raise TypeError("Non-valid keyword arguments "
+                            "given: {}".format(names))
+        new_var = Variable(**new_var)
+        self._add_to_dict(var, new_var)
+
+    def short_name(self, var):
+        """Access short name.
+
+        Parameters
+        ----------
+        var : str
+            (Short) name of the variable.
+
+        Returns
+        -------
+        str
+            Short name of the variable.
+
+        """
+        return getattr(self._dict[var], n.SHORT_NAME)
 
     def short_names(self):
         """Get list of all `short_names`.
@@ -153,6 +243,22 @@ class Variables(object):
         """
         return list(self._dict)
 
+    def standard_name(self, var):
+        """Access standard name.
+
+        Parameters
+        ----------
+        var : str
+            (Short) name of the variable.
+
+        Returns
+        -------
+        str
+            Standard name of the variable.
+
+        """
+        return getattr(self._dict[var], n.STANDARD_NAME)
+
     def standard_names(self):
         """Get list of all `standard_names`.
 
@@ -162,14 +268,62 @@ class Variables(object):
             List of all `standard_names`.
 
         """
-        return [getattr(self._dict[name], n.STANDARD_NAME) for
-                name in self._dict]
+        return [self.standard_name(name) for name in self._dict]
+
+    def units(self, var):
+        """Access units.
+
+        Parameters
+        ----------
+        var : str
+            (Short) name of the variable.
+
+        Returns
+        -------
+        str
+            Units of the variable.
+
+        """
+        return getattr(self._dict[var], n.UNITS)
+
+    def var_name(self, var):
+        """Access var name.
+
+        Parameters
+        ----------
+        var : str
+            (Short) name of the variable.
+
+        Returns
+        -------
+        str
+            Var name (=short name) of the variable.
+
+        """
+        return getattr(self._dict[var], n.SHORT_NAME)
+
+    def vars_available(self, *args):
+        """Check if given variables are available.
+
+        Parameters
+        ----------
+        *args
+            Short names of the variables to be tested.
+
+        Returns
+        -------
+        bool
+            `True` if variables are available, `False` if not.
+
+        """
+        for var in args:
+            if var not in self._dict:
+                return False
+        return True
 
 
 class Datasets(object):
-    """Class to easily access a recipe's datasets
-
-    This class is designed to easily access datasets in the diagnostic script.
+    """Class to easily access a recipe's datasets in a diagnostic script.
 
     Examples
     --------
@@ -177,15 +331,15 @@ class Datasets(object):
 
         datasets = Datasets(cfg)
 
-    Access data of a dataset with path `path`::
+    Access data of a dataset with path `dataset_path`::
 
-        datasets.get_data(dataset_path=path)
+        datasets.get_data(path=dataset_path)
 
     Access dataset information of the dataset::
 
-        datasets.get_dataset_info(dataset_path=path)
+        datasets.get_dataset_info(path=dataset_path)
 
-    Access the data of all datasets with `exp=piControl'::
+    Access the data of all datasets with `exp=piControl`::
 
         datasets.get_data_list(exp=piControl)
 
@@ -195,12 +349,18 @@ class Datasets(object):
         """Load datasets.
 
         Load all datasets of the recipe and store them in three internal
-        dictionaries/lists (`self._paths`, `self._data` and `self._datasets`).
+        :obj:`dict`/:obj:`list` containers: `self._paths`, `self._data` and
+        `self._datasets`.
 
         Parameters
         ----------
         cfg : dict, optional
             Configuation dictionary of the recipe.
+
+        Raises
+        ------
+        TypeError
+            If recipe configuration dictionary is not valid.
 
         """
         self._iter_counter = 0
@@ -208,7 +368,7 @@ class Datasets(object):
         self._data = {}
         success = True
         if isinstance(cfg, dict):
-            input_data = cfg.get(INPUT_DATA)
+            input_data = cfg.get(n.INPUT_DATA)
             if isinstance(input_data, dict):
                 for path in input_data:
                     dataset_info = input_data[path]
@@ -223,8 +383,8 @@ class Datasets(object):
         else:
             success = False
         if not success:
-            raise TypeError("{} is not a valid ".format(repr(cfg)) +
-                            "configuration file")
+            raise TypeError("{} is not a valid configuration "
+                            "file".format(repr(cfg)))
         self._n_datasets = len(self._paths)
         if not self._paths:
             logger.warning("No datasets found!")
@@ -262,7 +422,7 @@ class Datasets(object):
         Returns
         -------
         bool
-            True if valid path, False if not.
+            `True` if valid path, `False` if not.
 
         """
         if path in self._paths:
@@ -270,18 +430,26 @@ class Datasets(object):
         logger.warning("%s is not a valid dataset path", path)
         return False
 
-    def _extract_paths(self, dataset_info):
+    def _extract_paths(self, dataset_info, fail_when_ambiguous=False):
         """Get all paths matching a given `dataset_info`.
 
         Parameters
         ----------
         dataset_info : dict
             Description of the desired datasets.
+        fail_when_ambiguous : bool, optional
+            Raise an exception when retrieved paths are ambiguous.
 
         Returns
         -------
         list
             All matching paths.
+
+        Raises
+        ------
+        RuntimeError
+            If data given by `dataset_info` is ambiguous and
+            `fail_when_ambiguous` is set to `True`.
 
         """
         paths = list(self._datasets)
@@ -290,6 +458,13 @@ class Datasets(object):
                      self._datasets[path].get(info) == dataset_info[info]]
         if not paths:
             logger.warning("%s does not match any dataset", dataset_info)
+            return paths
+        if not fail_when_ambiguous:
+            return sorted(paths)
+        if len(paths) > 1:
+            msg = 'Given dataset information is ambiguous'
+            logger.error(msg)
+            raise RuntimeError(msg)
         return sorted(paths)
 
     def add_dataset(self, path, data=None, **dataset_info):
@@ -299,9 +474,9 @@ class Datasets(object):
         ----------
         path : str
             (Unique) path to the dataset.
-        data, optional
+        data: optional
             Arbitrary object to be saved as data for the dataset.
-        **dataset_info, optional
+        **dataset_info: optional
             Keyword arguments describing the dataset, e.g. `dataset=CanESM2`,
             `exp=piControl` or `short_name=tas`.
 
@@ -313,61 +488,23 @@ class Datasets(object):
         self._data[path] = data
         self._datasets[path] = dataset_info
 
-    def add_to_data(self, data, dataset_path=None, **dataset_info):
+    def add_to_data(self, data, path=None, **dataset_info):
         """Add element to a dataset's data.
 
         Notes
         -----
-        Either `dataset_path` or a unique `dataset_info` description have to be
-        given. Prints warning and does nothing if given information is
-        ambiguous.
+        Either `path` or a unique `dataset_info` description have to be given.
+        Fails when given information is ambiguous.
 
         Parameters
         ----------
         data
             Element to be added to the dataset's data.
-        dataset_path : str, optional
+        path : str, optional
             Path to the dataset
-        **dataset_info, optional
+        **dataset_info: optional
             Keyword arguments describing the dataset, e.g. `dataset=CanESM2`,
             `exp=piControl` or `short_name=tas`.
-
-        """
-        if dataset_path is not None:
-            if self._is_valid_path(dataset_path):
-                self._data[dataset_path] += data
-                return None
-            return None
-        paths = self._extract_paths(dataset_info)
-        if not paths:
-            return None
-        if len(paths) > 1:
-            logger.warning("Data could no be saved: %s is ambiguous",
-                           dataset_info)
-            return None
-        self._data[paths[0]] += data
-        return None
-
-    def get_data(self, dataset_path=None, **dataset_info):
-        """Access a dataset's data.
-
-        Notes
-        -----
-        Either `dataset_path` or a unique `dataset_info` description have to be
-        given. Fails when given information is ambiguous.
-
-        Parameters
-        ----------
-        dataset_path : str, optional
-            Path to the dataset
-        **dataset_info, optional
-            Keyword arguments describing the dataset, e.g. `dataset=CanESM2`,
-            `exp=piControl` or `short_name=tas`.
-
-        Returns
-        -------
-        data_object
-            Data of the selected dataset
 
         Raises
         ------
@@ -375,17 +512,50 @@ class Datasets(object):
             If data given by `dataset_info` is ambiguous.
 
         """
-        if dataset_path is not None:
-            if self._is_valid_path(dataset_path):
-                return self._data.get(dataset_path)
+        if path is not None:
+            if self._is_valid_path(path):
+                self._data[path] += data
+                return None
             return None
-        paths = self._extract_paths(dataset_info)
+        paths = self._extract_paths(dataset_info, fail_when_ambiguous=True)
+        if paths:
+            self._data[paths[0]] += data
+        return None
+
+    def get_data(self, path=None, **dataset_info):
+        """Access a dataset's data.
+
+        Notes
+        -----
+        Either `path` or a unique `dataset_info` description have to be
+        given. Fails when given information is ambiguous.
+
+        Parameters
+        ----------
+        path : str, optional
+            Path to the dataset
+        **dataset_info: optional
+            Keyword arguments describing the dataset, e.g. `dataset=CanESM2`,
+            `exp=piControl` or `short_name=tas`.
+
+        Returns
+        -------
+        `data_object`
+            Data of the selected dataset.
+
+        Raises
+        ------
+        RuntimeError
+            If data given by `dataset_info` is ambiguous.
+
+        """
+        if path is not None:
+            if self._is_valid_path(path):
+                return self._data.get(path)
+            return None
+        paths = self._extract_paths(dataset_info, fail_when_ambiguous=True)
         if not paths:
             return None
-        if len(paths) > 1:
-            msg = 'Given dataset information is ambiguous'
-            logger.error(msg)
-            raise RuntimeError(msg)
         return self._data[paths[0]]
 
     def get_data_list(self, **dataset_info):
@@ -397,7 +567,7 @@ class Datasets(object):
 
         Parameters
         ----------
-        **dataset_info, optional
+        **dataset_info: optional
             Keyword arguments describing the dataset, e.g. `dataset=CanESM2`,
             `exp=piControl` or `short_name=tas`.
 
@@ -410,71 +580,19 @@ class Datasets(object):
         paths = self._extract_paths(dataset_info)
         return [self._data[path] for path in paths]
 
-    def get_exp(self, dataset_path):
-        """Access a dataset's `exp`.
-
-        Notes
-        -----
-        If the `dataset_info` does not contain an `exp` value, returns None.
-
-        Parameters
-        ----------
-        dataset_path : str
-            Path to the dataset
-
-        Returns
-        -------
-        str
-            `exp` information of the given dataset.
-
-        """
-        if self._is_valid_path(dataset_path):
-            output = self._datasets[dataset_path].get(n.EXP)
-            if output is None:
-                logger.warning("Dataset %s does not contain '%s' information",
-                               dataset_path, n.EXP)
-            return output
-        return None
-
-    def get_dataset(self, dataset_path):
-        """Access a dataset's `dataset`.
-
-        Notes
-        -----
-        If the `dataset_info` does not contain a `dataset` value, returns None.
-
-        Parameters
-        ----------
-        dataset_path : str
-            Path to the dataset
-
-        Returns
-        -------
-        str
-            `dataset` information of the given dataset.
-
-        """
-        if self._is_valid_path(dataset_path):
-            output = self._datasets[dataset_path].get(n.DATASET)
-            if output is None:
-                logger.warning("Dataset %s does not contain '%s' information",
-                               dataset_path, n.DATASET)
-            return output
-        return None
-
-    def get_dataset_info(self, dataset_path=None, **dataset_info):
+    def get_dataset_info(self, path=None, **dataset_info):
         """Access a dataset's information.
 
         Notes
         -----
-        Either `dataset_path` or a unique `dataset_info` description have to be
+        Either `path` or a unique `dataset_info` description have to be
         given. Fails when given information is ambiguous.
 
         Parameters
         ----------
-        dataset_path : str, optional
-            Path to the dataset
-        **dataset_info, optional
+        path : str, optional
+            Path to the dataset.
+        **dataset_info: optional
             Keyword arguments describing the dataset, e.g. `dataset=CanESM2`,
             `exp=piControl` or `short_name=tas`.
 
@@ -489,21 +607,17 @@ class Datasets(object):
             If data given by `dataset_info` is ambiguous.
 
         """
-        if dataset_path is not None:
-            if self._is_valid_path(dataset_path):
-                return self._datasets.get(dataset_path)
+        if path is not None:
+            if self._is_valid_path(path):
+                return self._datasets.get(path)
             return None
-        paths = self._extract_paths(dataset_info)
+        paths = self._extract_paths(dataset_info, fail_when_ambiguous=True)
         if not paths:
             return None
-        if len(paths) > 1:
-            msg = 'Given dataset information is ambiguous'
-            logger.error(msg)
-            raise RuntimeError(msg)
         return self._datasets[paths[0]]
 
     def get_dataset_info_list(self, **dataset_info):
-        """Access datasets information in a list.
+        """Access dataset's information in a list.
 
         Notes
         -----
@@ -511,7 +625,7 @@ class Datasets(object):
 
         Parameters
         ----------
-        **dataset_info, optional
+        **dataset_info: optional
             Keyword arguments describing the dataset, e.g. `dataset=CanESM2`,
             `exp=piControl` or `short_name=tas`.
 
@@ -524,8 +638,81 @@ class Datasets(object):
         paths = self._extract_paths(dataset_info)
         return [self._datasets[path] for path in paths]
 
+    def get_info(self, key, path=None, **dataset_info):
+        """Access a 'dataset_info`'s `key`.
+
+        Notes
+        -----
+        Either `path` or a unique `dataset_info` description have to be
+        given. Fails when given information is ambiguous. If the `dataset_info`
+        does not contain the `key`, returns None.
+
+        Parameters
+        ----------
+        key : str
+            Desired dictionary key.
+        path : str
+            Path to the dataset.
+        **dataset_info: optional
+            Keyword arguments describing the dataset, e.g. `dataset=CanESM2`,
+            `exp=piControl` or `short_name=tas`.
+
+        Returns
+        -------
+        str
+            `key` information of the given dataset.
+
+        Raises
+        ------
+        RuntimeError
+            If data given by `dataset_info` is ambiguous.
+
+        """
+        if path is not None:
+            if self._is_valid_path(path):
+                output = self._datasets[path].get(key)
+                if output is None:
+                    logger.warning("Dataset %s does not contain '%s' "
+                                   "information", path, key)
+                return output
+            return None
+        paths = self._extract_paths(dataset_info, fail_when_ambiguous=True)
+        if not paths:
+            return None
+        output = self._datasets[paths[0]].get(key)
+        if output is None:
+            logger.warning("Dataset %s does not contain '%s' information",
+                           path, key)
+        return output
+
+    def get_info_list(self, key, **dataset_info):
+        """Access `dataset_info`'s `key` values.
+
+        Notes
+        -----
+        The returned data is sorted alphabetically respective to the `paths`.
+
+        Parameters
+        ----------
+        **dataset_info: optional
+            Keyword arguments describing the dataset, e.g. `dataset=CanESM2`,
+            `exp=piControl` or `short_name=tas`.
+
+        Returns
+        -------
+        list
+            `key` information of the selected datasets.
+
+        """
+        paths = self._extract_paths(dataset_info)
+        output = [self._datasets[path].get(key) for path in paths]
+        if None in output:
+            logger.warning("One or more datasets do not contain '%s' "
+                           "information", key)
+        return output
+
     def get_path(self, **dataset_info):
-        """Access a dataset's path
+        """Access a dataset's path.
 
         Notes
         -----
@@ -534,7 +721,7 @@ class Datasets(object):
 
         Parameters
         ----------
-        **dataset_info, optional
+        **dataset_info: optional
             Keyword arguments describing the dataset, e.g. `dataset=CanESM2`,
             `exp=piControl` or `short_name=tas`.
 
@@ -549,17 +736,13 @@ class Datasets(object):
             If data given by `dataset_info` is ambiguous.
 
         """
-        paths = self._extract_paths(dataset_info)
+        paths = self._extract_paths(dataset_info, fail_when_ambiguous=True)
         if not paths:
             return None
-        if len(paths) > 1:
-            msg = 'Given dataset information is ambiguous'
-            logger.error(msg)
-            raise RuntimeError(msg)
         return paths[0]
 
     def get_path_list(self, **dataset_info):
-        """Access datasets paths in a list.
+        """Access dataset's paths in a list.
 
         Notes
         -----
@@ -567,7 +750,7 @@ class Datasets(object):
 
         Parameters
         ----------
-        **dataset_info, optional
+        **dataset_info: optional
             Keyword arguments describing the dataset, e.g. `dataset=CanESM2`,
             `exp=piControl` or `short_name=tas`.
 
@@ -577,120 +760,38 @@ class Datasets(object):
             Paths of the selected datasets.
 
         """
-        paths = self._extract_paths(dataset_info)
-        return paths
+        return self._extract_paths(dataset_info)
 
-    def get_project(self, dataset_path):
-        """Access a dataset's `project`.
-
-        Notes
-        -----
-        If the `dataset_info` does not contain a `project` value, returns None.
-
-        Parameters
-        ----------
-        dataset_path : str
-            Path to the dataset
-
-        Returns
-        -------
-        str
-            `project` information of the given dataset.
-
-        """
-        if self._is_valid_path(dataset_path):
-            output = self._datasets[dataset_path].get(n.PROJECT)
-            if output is None:
-                logger.warning("Dataset %s does not contain '%s' information",
-                               dataset_path, n.PROJECT)
-            return output
-        return None
-
-    def get_short_name(self, dataset_path):
-        """Access a dataset's `short_name`.
-
-        Notes
-        -----
-        If the `dataset_info` does not contain a `short_name` value, returns
-        None.
-
-        Parameters
-        ----------
-        dataset_path : str
-            Path to the dataset
-
-        Returns
-        -------
-        str
-            `short_name` information of the given dataset.
-
-        """
-        if self._is_valid_path(dataset_path):
-            output = self._datasets[dataset_path].get(n.SHORT_NAME)
-            if output is None:
-                logger.warning("Dataset %s does not contain '%s' information",
-                               dataset_path, n.SHORT_NAME)
-            return output
-        return None
-
-    def get_standard_name(self, dataset_path):
-        """Access a dataset's `standard_name`.
-
-        Notes
-        -----
-        If the `dataset_info` does not contain a `standard_name` value, returns
-        None.
-
-        Parameters
-        ----------
-        dataset_path : str
-            Path to the dataset
-
-        Returns
-        -------
-        str
-            `standard_name` information of the given dataset.
-
-        """
-        if self._is_valid_path(dataset_path):
-            output = self._datasets[dataset_path].get(n.STANDARD_NAME)
-            if output is None:
-                logger.warning("Dataset %s does not contain '%s' information",
-                               dataset_path, n.STANDARD_NAME)
-            return output
-        return None
-
-    def set_data(self, data, dataset_path=None, **dataset_info):
+    def set_data(self, data, path=None, **dataset_info):
         """Set element as a dataset's data.
 
         Notes
         -----
-        Either `dataset_path` or a unique `dataset_info` description have to be
-        given. Prints warning and does nothing if given information is
-        ambiguous.
+        Either `path` or a unique `dataset_info` description have to be
+        given. Fails when if given information is ambiguous.
 
         Parameters
         ----------
         data
             Element to be set as the dataset's data.
-        dataset_path : str, optional
-            Path to the dataset
-        **dataset_info, optional
+        path : str, optional
+            Path to the dataset.
+        **dataset_info: optional
             Keyword arguments describing the dataset, e.g. `dataset=CanESM2`,
             `exp=piControl` or `short_name=tas`.
 
+        Raises
+        ------
+        RuntimeError
+            If data given by `dataset_info` is ambiguous.
+
         """
-        if dataset_path is not None:
-            if self._is_valid_path(dataset_path):
-                self._data[dataset_path] = data
+        if path is not None:
+            if self._is_valid_path(path):
+                self._data[path] = data
                 return None
             return None
-        paths = self._extract_paths(dataset_info)
-        if not paths:
-            return None
-        if len(paths) != 1:
-            logger.warning("Data could no be saved: %s is ambiguous",
-                           dataset_info)
-            return None
-        self._data[paths[0]] = data
+        paths = self._extract_paths(dataset_info, fail_when_ambiguous=True)
+        if paths:
+            self._data[paths[0]] = data
         return None

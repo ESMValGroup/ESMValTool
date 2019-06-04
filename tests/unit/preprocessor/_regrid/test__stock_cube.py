@@ -4,8 +4,6 @@ function.
 
 """
 
-from __future__ import absolute_import, division, print_function
-
 import unittest
 
 import iris
@@ -13,20 +11,26 @@ import mock
 import numpy as np
 
 import tests
+from esmvaltool.preprocessor._regrid import (_LAT_MAX, _LAT_MIN, _LAT_RANGE,
+                                             _LON_MAX, _LON_MIN, _LON_RANGE)
 from esmvaltool.preprocessor._regrid import _stock_cube as stock_cube
-from esmvaltool.preprocessor._regrid import (
-    _LAT_MAX, _LAT_MIN, _LAT_RANGE, _LON_MAX, _LON_MIN, _LON_RANGE)
 
 
 class Test(tests.Test):
-    def _check(self, dx, dy):
+    def _check(self, dx, dy, lat_off=True, lon_off=True):
         # Generate the expected stock cube coordinate points.
         dx, dy = float(dx), float(dy)
         mid_dx, mid_dy = dx / 2, dy / 2
-        expected_lat_points = np.linspace(_LAT_MIN + mid_dy, _LAT_MAX - mid_dy,
-                                          _LAT_RANGE / dy)
-        expected_lon_points = np.linspace(_LON_MIN + mid_dx, _LON_MAX - mid_dx,
-                                          _LON_RANGE / dx)
+        if lat_off and lon_off:
+            expected_lat_points = np.linspace(
+                _LAT_MIN + mid_dy, _LAT_MAX - mid_dy, _LAT_RANGE / dy)
+            expected_lon_points = np.linspace(
+                _LON_MIN + mid_dx, _LON_MAX - mid_dx, _LON_RANGE / dx)
+        else:
+            expected_lat_points = np.linspace(_LAT_MIN, _LAT_MAX,
+                                              _LAT_RANGE / dy + 1)
+            expected_lon_points = np.linspace(_LON_MIN, _LON_MAX - dx,
+                                              _LON_RANGE / dx)
 
         # Check the stock cube coordinates.
         self.assertEqual(self.mock_DimCoord.call_count, 2)
@@ -95,6 +99,16 @@ class Test(tests.Test):
             result = stock_cube(spec)
             self.assertEqual(result, self.Cube)
             self._check(*list(map(float, spec.split('x'))))
+
+    def test_specs_no_offset(self):
+        specs = ['0.5x0.5', '1x1', '2.5x2.5', '5x5', '10x10']
+        for spec in specs:
+            result = stock_cube(spec, lat_offset=False, lon_offset=False)
+            self.assertEqual(result, self.Cube)
+            self._check(
+                *list(map(float, spec.split('x'))),
+                lat_off=False,
+                lon_off=False)
 
 
 if __name__ == '__main__':

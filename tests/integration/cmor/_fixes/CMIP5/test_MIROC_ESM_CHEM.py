@@ -8,7 +8,7 @@ from esmvaltool.cmor._fixes.CMIP5.MIROC_ESM_CHEM import tro3
 
 class TestTro3(unittest.TestCase):
     def setUp(self):
-        self.cube = Cube([1], var_name='tro3', units='J')
+        self.cube = Cube([1.0], var_name='tro3', units='J')
         self.fix = tro3()
 
     def test_fix_data(self):

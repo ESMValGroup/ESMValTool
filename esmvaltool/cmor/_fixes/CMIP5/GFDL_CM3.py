@@ -1,5 +1,12 @@
+# pylint: disable=invalid-name, no-self-use, too-few-public-methods
 """Fixes for GFDL CM3 model"""
 from ..fix import Fix
+
+from ..CMIP5.GFDL_ESM2G import allvars as base_allvars
+
+
+class allvars(base_allvars):
+    """Fixes for all variables."""
 
 
 class sftof(Fix):
@@ -7,7 +14,7 @@ class sftof(Fix):
 
     def fix_data(self, cube):
         """
-        Fix data
+        Fix data.
 
         Fixes discrepancy between declared units and real units
 
@@ -20,4 +27,7 @@ class sftof(Fix):
         iris.cube.Cube
 
         """
-        return cube * 100
+        metadata = cube.metadata
+        cube *= 100
+        cube.metadata = metadata
+        return cube

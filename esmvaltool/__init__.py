@@ -8,5 +8,5 @@ logger.addHandler(logging.NullHandler())
 
 
 def get_script_root():
-    """ Return the location of the ESMValTool installation."""
+    """Return the location of the ESMValTool installation."""
     return os.path.abspath(os.path.dirname(__file__))

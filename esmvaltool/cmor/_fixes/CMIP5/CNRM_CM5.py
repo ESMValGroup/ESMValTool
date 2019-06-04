@@ -1,13 +1,14 @@
-"""Fixes for CNRM-CM5 model"""
+# pylint: disable=invalid-name, no-self-use, too-few-public-methods
+"""Fixes for CNRM-CM5 model."""
 from ..fix import Fix
 
 
 class msftmyz(Fix):
-    """Fixes for msftmyz"""
+    """Fixes for msftmyz."""
 
     def fix_data(self, cube):
         """
-        Fix data
+        Fix data.
 
         Fixes discrepancy between declared units and real units
 
@@ -20,10 +21,11 @@ class msftmyz(Fix):
         iris.cube.Cube
 
         """
-        return cube * 1e6
+        metadata = cube.metadata
+        cube *= 1e6
+        cube.metadata = metadata
+        return cube
 
 
 class msftmyzba(msftmyz):
-    """Fixes for msftmyzba"""
-
-    pass
+    """Fixes for msftmyzba."""

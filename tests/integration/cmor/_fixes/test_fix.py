@@ -1,7 +1,7 @@
-import unittest
-import tempfile
 import os
 import shutil
+import tempfile
+import unittest
 
 from iris.cube import Cube
 
@@ -27,11 +27,9 @@ class TestFix(unittest.TestCase):
         self.assertListEqual(Fix.get_fixes('CMIP5', 'BNU-ESM', 'ch4'), [ch4()])
 
     def test_get_fixes_with_generic(self):
-        from esmvaltool.cmor._fixes.CMIP5.CESM1_BGC import (
-            allvars, co2)
+        from esmvaltool.cmor._fixes.CMIP5.CESM1_BGC import co2
         self.assertListEqual(
-            Fix.get_fixes('CMIP5', 'CESM1-BGC', 'co2'), [allvars(),
-                                                         co2()])
+            Fix.get_fixes('CMIP5', 'CESM1-BGC', 'co2'), [co2()])
 
     def test_get_fix_no_project(self):
         self.assertListEqual(
@@ -64,5 +62,4 @@ class TestFix(unittest.TestCase):
         output_dir = os.path.join(self.temp_folder, 'fixed')
         os.makedirs(output_dir)
         fixed_filepath = Fix().get_fixed_filepath(output_dir, filepath)
-        self.assertTrue(fixed_filepath,
-                        os.path.join(output_dir, 'file.nc'))
+        self.assertTrue(fixed_filepath, os.path.join(output_dir, 'file.nc'))

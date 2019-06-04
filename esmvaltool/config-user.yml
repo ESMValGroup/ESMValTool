@@ -17,6 +17,8 @@ exit_on_warning: false
 output_file_type: pdf
 # Destination directory
 output_dir: ./esmvaltool_output
+# Auxiliary data directory (used for some additional datasets)
+auxiliary_data_dir: ./auxiliary_data
 # Use netCDF compression true/[false]
 compress_netcdf: false
 # Save intermediary cubes in the preprocessor true/[false]
@@ -27,14 +29,19 @@ remove_preproc_dir: true
 # Set to null to use the number of available CPUs.
 # Make sure your system has enough memory for the specified number of tasks.
 max_parallel_tasks: 1
+# Path to custom config-developer file, to customise project configurations.
+# See config-developer.yml for an example. Set to None to use the default
+config_developer_file: null
+# Get profiling information for diagnostics
+# Only available for Python diagnostics
+profile_diagnostic: false
 
+# Rootpaths to the data from different projects (lists are also possible)
 rootpath:
-  # Rootpath to CMIP5 data
-  CMIP5: ~/esmvaltool_input
-  # Rootpath to OBS data
-  OBS: ~/esmvaltool_input
-  # Default
-  default: ~/esmvaltool_input
+  CMIP5: [~/cmip5_inputpath1, ~/cmip5_inputpath2]
+  OBS: ~/obs_inputpath
+  RAWOBS: ~/rawobs_inputpath
+  default: ~/default_inputpath
 
 # Directory structure for input data: [default]/BADC/DKRZ/ETHZ/etc
 # See config-developer.yml for definitions.

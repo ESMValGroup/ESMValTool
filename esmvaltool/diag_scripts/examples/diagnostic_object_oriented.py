@@ -19,8 +19,8 @@ def main(cfg):
 
     for path in datasets:
         logger.info("Processing variable %s from dataset %s",
-                    datasets.get_standard_name(path),
-                    datasets.get_dataset(path))
+                    datasets.get_info(n.STANDARD_NAME, path),
+                    datasets.get_info(n.DATASET, path))
 
         logger.debug("Loading %s", path)
         cube = iris.load_cube(path)
