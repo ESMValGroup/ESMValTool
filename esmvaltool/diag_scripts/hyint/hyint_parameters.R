@@ -23,9 +23,6 @@ if (!exists("write_plots")) {
 if (!exists("etccdi_preproc")) {
   etccdi_preproc <- F
 }
-if (!exists("etccdi_dir")) {
-  etccdi_dir <- ""
-}
 
 # basic settings
 seasons <- c("ALL")   # seasons to be analysed: "ALL", "DJF", ...
@@ -120,9 +117,11 @@ etccdi_yr_list <- c(
   "tnnETCCDI", "tnxETCCDI", "trETCCDI", "tx10pETCCDI",
   "tx90pETCCDI", "txnETCCDI", "txxETCCDI", "wsdiETCCDI"
 )
-# Select one or more fields to be plotted (with the required order) 
-# through the selfields key above
-etccdi_list_import <- etccdi_yr_list
+
+if (!exists("etccdi_list_import")) {
+  etccdi_list_import <- etccdi_yr_list
+}
+
 field_names <- c(hyint_list, etccdi_yr_list)
 
 # region box matrix (predefined following Giorgi et al. 2011,2014): 

@@ -87,7 +87,8 @@ for (myname in names(settings)) {
   temp <- get(myname, settings)
   assign(myname, temp)
 }
-metadata <- yaml::read_yaml(settings$input_files)
+
+metadata <- yaml::read_yaml(settings$input_files[1])
 
 ## check required settings
 if (!all(plot_type %in% c(1, 2, 3, 11, 12, 13, 14, 15) ) ) {
@@ -108,15 +109,14 @@ climolist0 <- list0
 
 # get variable name
 varname <- paste0("'", climolist$short_name, "'")
-var0 <- varname
 var0 <- "pr"
 
 diag_base <- climolist0$diagnostic
-print(paste0(diag_base, ": starting routine"))
 
-if (length(etccdi_dir) != 1) {
-  etcddi_dir <- work_dir
+if (etccdi_preproc & !exists("etccdi_dir")) {
+  etccdi_dir <- settings$input_files[2]
 }
+
 dir.create(plot_dir, recursive = T, showWarnings = F)
 dir.create(work_dir, recursive = T, showWarnings = F)
 
@@ -204,9 +204,8 @@ if (write_netcdf) {
 ## Preprocess ETCCDI input files and merge them with HyInt indices
 if (write_netcdf & etccdi_preproc) {
   for (model_idx in c(1:(length(models_name)))) {
-    gridfile <- getfilename_indices(work_dir, diag_base, model_idx, grid = T)
     dummy <- hyint_etccdi_preproc(work_dir, etccdi_dir, etccdi_list_import,
-                                  gridfile, model_idx, "ALL", yrmon = "yr")
+                                  model_idx, "ALL", yrmon = "yr")
   }
 }
 

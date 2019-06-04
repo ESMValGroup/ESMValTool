@@ -98,8 +98,8 @@ getfilename_etccdi <- function(spath, var, model_idx, yrmon = "yr") {
       year2 <- paste0(year2, "12")
     }
     filenametmp <- paste0(
-      spath, "/", svar, "_", yrmon, "_", model_exp, "_",
-      exp, "_", model_ens, "_", year1, "-", year2, ".nc"
+      spath, "/", svar, "_", yrmon, "_", exp, "_",
+      model_exp, "_", model_ens, "_", year1, "-", year2, ".nc"
     )
     filename <- c(filename, filenametmp)
   }
