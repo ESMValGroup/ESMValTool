@@ -903,7 +903,7 @@ class Recipe:
             institute = get_institutes(variable)
             if institute:
                 variable['institute'] = institute
-            if 'CMIP6' in variable:
+            if 'CMIP6' in variable['cmor_table']:
                 variable['activity'] = get_activity(variable)
             check.variable(variable, required_keys)
             if 'fx_files' in variable:
