@@ -174,8 +174,7 @@ def volume_stats(
     ---------
         cube: iris.cube.Cube
             input cube.
-
-        operator: string
+        operator: str
             The operation to apply to the cube.
         fx_files: dictionary
             dictionary of field:filename for the fx_files
