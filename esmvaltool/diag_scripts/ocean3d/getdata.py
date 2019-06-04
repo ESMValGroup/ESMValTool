@@ -24,7 +24,7 @@ import pyresample
 from scipy.interpolate import interp1d
 import ESMF
 import pyproj
-from esmvaltool.diag_scripts.ocean3d.utils import genfilename
+from esmvaltool.diag_scripts.ocean3d.utils import genfilename, point_distance
 from esmvaltool.diag_scripts.ocean3d.regions import hofm_regions, transect_points
 
 logger = logging.getLogger(os.path.basename(__file__))
@@ -237,11 +237,7 @@ def transect_data(mmodel,
         secfield[:, kind] = dstfield.data
 
     # Calculate distance between points in km
-    g = pyproj.Geod(ellps='WGS84')
-    (az12, az21, dist) = g.inv(lon_s4new[0:-1], lat_s4new[0:-1], lon_s4new[1:],
-                               lat_s4new[1:])
-    dist = dist.cumsum() / 1000
-    dist = np.insert(dist, 0, 0)
+    dist = point_distance(lon_s4new, lat_s4new)
 
     # save the data
     ofilename = genfilename(diagworkdir, cmor_var, mmodel, region, 'transect')

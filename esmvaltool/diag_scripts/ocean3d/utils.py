@@ -21,6 +21,7 @@ import matplotlib.cm as cm
 import palettable
 import seawater as sw
 from collections import OrderedDict
+import pyproj
 mpl.use('agg') #noqa
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -203,6 +204,7 @@ def dens_back(smin, smax, tmin, tmax):
     dens = sw.dens0(si2, ti2)-1000
     return si2, ti2, dens
 
+
 def get_cmap(cmap_name):
     '''Return matplotlib colormap object
     from matplotlib.cm or cmocean.
@@ -220,13 +222,36 @@ def get_cmap(cmap_name):
     elif cmap_name in cm.datad:
         colormap = cm.get_cmap(cmap_name)
     elif cmap_name == "custom_salinity1":
-        colormap = shiftedcolormap(palettable.cubehelix.cubehelix3_16.mpl_colormap,
-                                   start=0,
-                                   midpoint=0.89,
-                                   stop=0.9,
-                                   name='shiftedcmap')
+        colormap = shiftedcolormap(
+            palettable.cubehelix.cubehelix3_16.mpl_colormap,
+            start=0,
+            midpoint=0.89,
+            stop=0.9,
+            name='shiftedcmap')
     else:
         raise ValueError('Get unrecognised name for the colormap `{}`.\
                             Colormaps should be from standard matplotlib \
-                            set or from cmocean package.'                                                                                                                                                                           .format(cmap_name))
+                            set or from cmocean package.'.format(cmap_name))
     return colormap
+
+def point_distance(lon_s4new, lat_s4new):
+    '''Calculate distance between points of the section.
+
+    Parameters
+    ----------
+    lon_s4new: numpy array
+        1d array of longitudes
+    lat_s4new: numpy array
+        1d array of latitudes
+
+    Returns
+    -------
+    dist: numpy array
+        1d array of distances between points in km.
+    '''
+    g = pyproj.Geod(ellps='WGS84')
+    (az12, az21, dist) = g.inv(lon_s4new[0:-1], lat_s4new[0:-1], lon_s4new[1:],
+                               lat_s4new[1:])
+    dist = dist.cumsum() / 1000
+    dist = np.insert(dist, 0, 0)
+    return dist

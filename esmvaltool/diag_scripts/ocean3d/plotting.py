@@ -42,12 +42,12 @@ import palettable
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 
-from esmvaltool.diag_scripts.ocean3d.utils import genfilename, dens_back
+from esmvaltool.diag_scripts.ocean3d.utils import genfilename, dens_back, point_distance
 from esmvaltool.diag_scripts.ocean3d.interpolation import interpolate_pyresample, interpolate_esmf, closest_depth
 from esmvaltool.diag_scripts.ocean3d.getdata import transect_points, load_meta
 
 
-def create_plot(model_filenames, ncols=3, projection=None):
+def create_plot(model_filenames, ncols=3, projection=None, nplots_increment=0):
     '''Creates matplotlib figure and set of axis that corespond to
     the number of models that should be plotted.
 
@@ -59,6 +59,8 @@ def create_plot(model_filenames, ncols=3, projection=None):
         Number of columns in the plot. The number of rows
         will be calculated authomatically.
     projection: cartopy projection istance
+    nplots_increment: int
+        allows to increase or decrease number of plots.
 
     Returns
     -------
@@ -66,7 +68,7 @@ def create_plot(model_filenames, ncols=3, projection=None):
     ax: list with matplotlib axis, flattened
     '''
     # Calcualte number of plots on the figure
-    nplots = len(model_filenames)
+    nplots = len(model_filenames)+nplots_increment
     ncols = float(ncols)
     nrows = math.ceil(nplots / float(ncols))
     ncols, nrows = int(ncols), int(nrows)
@@ -777,46 +779,57 @@ def plot_aw_core_stat(aw_core_parameters, diagplotdir):
     plt.savefig(pltoutname, dpi=100)
 
 
-def transect_plot(model_filenames, cmor_var,
-              max_level, region, diagworkdir, diagplotdir,
-              levels, ncols=3, cmap=cm.Spectral_r):
+def transect_plot(model_filenames,
+                  cmor_var,
+                  max_level,
+                  region,
+                  diagworkdir,
+                  diagplotdir,
+                  levels,
+                  ncols=3,
+                  cmap=cm.Spectral_r):
 
     ncols = 3
-    nplots = len(model_filenames)+1
+    nplots = len(model_filenames) + 1
     ncols = float(ncols)
-    nrows = math.ceil(nplots/ncols)
+    nrows = math.ceil(nplots / ncols)
     ncols = int(ncols)
     nrows = int(nrows)
     nplot = 1
 
-    plt.figure(figsize=(8*ncols,2*nrows*ncols))
+    plt.figure(figsize=(8 * ncols, 2 * nrows * ncols))
+
+    lon_s4new, lat_s4new = transect_points(region, mult=2)
+    dist = point_distance(lon_s4new, lat_s4new)
+
     plt.subplot(nrows, ncols, nplot)
-    lon_s4new, lat_s4new = transect_points(region, mult = 2)
-    g = pyproj.Geod(ellps='WGS84')
-    (az12, az21, dist) = g.inv(lon_s4new[0:-1], lat_s4new[0:-1], lon_s4new[1:], lat_s4new[1:])
-    dist = dist.cumsum()/1000
-    dist = np.insert(dist, 0, 0)
+    ax = plt.subplot(nrows, ncols, nplot, projection=ccrs.NorthPolarStereo())
+    ax.set_extent([180, -180, 60, 90], crs=ccrs.PlateCarree())
+    image = ax.scatter(lon_s4new, lat_s4new, s=10, c=dist, transform=ccrs.PlateCarree(), cmap=cm.Spectral, edgecolors='none')
+    ax.coastlines(resolution="50m")
+    # m = Basemap(width=8000000,
+    #             height=8000000,
+    #             resolution='l',
+    #             projection='stere',
+    #             lat_ts=40,
+    #             lat_0=90,
+    #             lon_0=0.)
+    # m.drawcoastlines()
 
-    m = Basemap(width=8000000,height=8000000,
-            resolution='l',projection='stere',
-            lat_ts=40,lat_0=90,lon_0=0.)
-    m.drawcoastlines()
-
-    xpt,ypt = m(lon_s4new,lat_s4new)
-    m.scatter(xpt,ypt,c=dist, s=10, cmap=cm.Spectral, edgecolors='none' )
-    cb = plt.colorbar()
+    # xpt, ypt = m(lon_s4new, lat_s4new)
+    # m.scatter(xpt, ypt, c=dist, s=10, cmap=cm.Spectral, edgecolors='none')
+    cb = plt.colorbar(image, ax=ax)
     cb.set_label('Along-track distance, km', rotation='vertical', size=15)
-    nplot=nplot+1
+    nplot = nplot + 1
     for mmodel in model_filenames:
-        logger.info("Plot  {} data for {}, region {}".format(cmor_var,
-                                                      mmodel,
-                                                      region))
-        ifilename = genfilename(diagworkdir, cmor_var,
-                            mmodel, region, 'transect', '.npy')
-        ifilename_depth = genfilename(diagworkdir, 'depth',
-                                mmodel, region, 'transect', '.npy')
-        ifilename_dist = genfilename(diagworkdir, 'distance',
-                                mmodel, region, 'transect', '.npy')
+        logger.info("Plot  {} data for {}, region {}".format(
+            cmor_var, mmodel, region))
+        ifilename = genfilename(diagworkdir, cmor_var, mmodel, region,
+                                'transect', '.npy')
+        ifilename_depth = genfilename(diagworkdir, 'depth', mmodel, region,
+                                      'transect', '.npy')
+        ifilename_dist = genfilename(diagworkdir, 'distance', mmodel, region,
+                                     'transect', '.npy')
         print(ifilename)
 
         data = np.load(ifilename, allow_pickle=True)
@@ -825,16 +838,21 @@ def transect_plot(model_filenames, cmor_var,
         dist = np.load(ifilename_dist, allow_pickle=True)
 
         if cmor_var == 'thetao':
-            data = data-273.15
+            data = data - 273.15
             cb_label = '$^{\circ}$C'
         elif cmor_var == 'so':
             cb_label = 'psu'
 
-        lev_limit = lev[lev <= max_level].shape[0]+1
+        lev_limit = lev[lev <= max_level].shape[0] + 1
 
         plt.subplot(nrows, ncols, nplot)
 
-        plt.contourf(dist, lev[:lev_limit], data[:lev_limit,:], levels=levels, extend='both', cmap=cmo.thermal)
+        plt.contourf(dist,
+                     lev[:lev_limit],
+                     data[:lev_limit, :],
+                     levels=levels,
+                     extend='both',
+                     cmap=cmo.thermal)
         plt.gca().invert_yaxis()
         cb = plt.colorbar(pad=0.01)
         cb.set_label(cb_label, rotation='horizontal', size=15)
@@ -846,11 +864,11 @@ def transect_plot(model_filenames, cmor_var,
         cb.ax.tick_params(labelsize=15)
 
         plt.title(mmodel, size=20)
-        nplot=nplot+1
+        nplot = nplot + 1
 
     plt.tight_layout()
-    pltoutname = genfilename(diagplotdir, cmor_var,
-                             region= region, data_type='transect')
+    pltoutname = genfilename(diagplotdir,
+                             cmor_var,
+                             region=region,
+                             data_type='transect')
     plt.savefig(pltoutname, dpi=100)
-
-
