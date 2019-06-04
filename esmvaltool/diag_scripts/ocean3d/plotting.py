@@ -68,7 +68,7 @@ def create_plot(model_filenames, ncols=3, projection=None, nplots_increment=0):
     ax: list with matplotlib axis, flattened
     '''
     # Calcualte number of plots on the figure
-    nplots = len(model_filenames)+nplots_increment
+    nplots = len(model_filenames) + nplots_increment
     ncols = float(ncols)
     nrows = math.ceil(nplots / float(ncols))
     ncols, nrows = int(ncols), int(nrows)
@@ -97,6 +97,7 @@ def create_plot(model_filenames, ncols=3, projection=None, nplots_increment=0):
         ax = [ax]
     return fig, ax
 
+
 def label_and_conversion(cmor_var, data):
     ''' Converts data if needed and returns
     formatted version of the colorbar label.
@@ -121,6 +122,7 @@ def label_and_conversion(cmor_var, data):
     elif cmor_var == 'so':
         cb_label = 'psu'
     return cb_label, data
+
 
 def hofm_plot(model_filenames,
               cmor_var,
@@ -394,8 +396,8 @@ def plot_profile(model_filenames,
     mean_profile_counter = 0
 
     for i, mmodel in enumerate(model_filenames):
-        logger.info("Plot profile %s data for %s, region %s",
-                    cmor_var, mmodel, region)
+        logger.info("Plot profile %s data for %s, region %s", cmor_var, mmodel,
+                    region)
         # construct input filenames
         ifilename = genfilename(diagworkdir, cmor_var, mmodel, region, 'hofm',
                                 '.npy')
@@ -468,8 +470,7 @@ def plot2d_original_grid(model_filenames,
                          dpi=100,
                          explicit_depths=None,
                          projection=ccrs.NorthPolarStereo(),
-                         bbox=[-180, 180, 60, 90]
-                        ):
+                         bbox=[-180, 180, 60, 90]):
     ''' Plot 2d maps on original grid using cartopy.
 
     Parameters
@@ -503,9 +504,7 @@ def plot2d_original_grid(model_filenames,
     None
     '''
 
-    fig, ax = create_plot(model_filenames,
-                          ncols=4,
-                          projection=projection)
+    fig, ax = create_plot(model_filenames, ncols=4, projection=projection)
 
     for ind, mmodel in enumerate(model_filenames):
         logger.info("Plot plot2d_original_grid {} for {}".format(
@@ -559,7 +558,7 @@ def plot2d_original_grid(model_filenames,
         ax[ind].set_rasterization_zorder(-1)
 
     # delete unused axis
-    for delind in range(ind+1, len(ax)):
+    for delind in range(ind + 1, len(ax)):
         fig.delaxes(ax[delind])
 
     # set common colorbar
@@ -593,8 +592,7 @@ def plot2d_bias(model_filenames,
                 dpi=100,
                 observations='PHC',
                 projection=ccrs.NorthPolarStereo(),
-                bbox=[-180, 180, 60, 90]
-               ):
+                bbox=[-180, 180, 60, 90]):
     '''Plot 2d maps of the bias relative to climatology.
 
     Parameters
@@ -604,12 +602,12 @@ def plot2d_bias(model_filenames,
     cmor_var: str
         name of the variable
     depth: int
+        we will plot the data on the model level
+        that is closest to the `depth`.
     diagworkdir: str
         path to the working directory
     diagplotdir: str
         path to the plot directory
-        we will plot the data on the model level
-        that is closest to the `depth`.
     levels: tuple
         values to be used for vmin and vmax in the form of (vmin, vmax)
     dpi: int
@@ -625,9 +623,7 @@ def plot2d_bias(model_filenames,
     None
     '''
     # setupa a base figure
-    fig, ax = create_plot(model_filenames,
-                          ncols=4,
-                          projection=projection)
+    fig, ax = create_plot(model_filenames, ncols=4, projection=projection)
     # get the filename of observations
     ifilename_obs = genfilename(diagworkdir,
                                 cmor_var,
@@ -639,7 +635,7 @@ def plot2d_bias(model_filenames,
     datafile, lon2d, lat2d, lev, time, areacello = metadata
     # Create an empty array to store the mean.
     # One point larger along long to acount for cyclic point
-    model_mean = np.zeros((lon2d.shape[0], lon2d.shape[1]+1))
+    model_mean = np.zeros((lon2d.shape[0], lon2d.shape[1] + 1))
     print("MODEL MEAN SHAPE {}".format(model_mean.shape))
 
     # delete observations from the model list
@@ -663,7 +659,7 @@ def plot2d_bias(model_filenames,
             cmor_var, data_onlev_obs_cyc)
         cb_label, interpolated = label_and_conversion(cmor_var, interpolated)
         # add to the mean model
-        model_mean = model_mean+interpolated
+        model_mean = model_mean + interpolated
         # set the map extent
         left, right, down, up = bbox
         ax[ind].set_extent([left, right, down, up], crs=ccrs.PlateCarree())
@@ -691,9 +687,9 @@ def plot2d_bias(model_filenames,
                           size=18)
         ax[ind].set_rasterization_zorder(-1)
     # calculate the model mean and plot it
-    model_mean = model_mean/len(model_filenames)
-    ax[ind+1].set_extent([left, right, down, up], crs=ccrs.PlateCarree())
-    image = ax[ind+1].contourf(
+    model_mean = model_mean / len(model_filenames)
+    ax[ind + 1].set_extent([left, right, down, up], crs=ccrs.PlateCarree())
+    image = ax[ind + 1].contourf(
         lonc,
         latc,
         model_mean - data_onlev_obs_cyc,
@@ -705,14 +701,12 @@ def plot2d_bias(model_filenames,
         cmap=cmo.balance,
     )
 
-    ax[ind+1].add_feature(
-        cfeature.GSHHSFeature(levels=[1],
-                                scale="low",
-                                facecolor="lightgray"))
+    ax[ind + 1].add_feature(
+        cfeature.GSHHSFeature(levels=[1], scale="low", facecolor="lightgray"))
 
-    ax[ind+1].set_title("Model mean bias, {} m".format(int(target_depth)),
-                        size=18)
-    ax[ind+1].set_rasterization_zorder(-1)
+    ax[ind + 1].set_title("Model mean bias, {} m".format(int(target_depth)),
+                          size=18)
+    ax[ind + 1].set_rasterization_zorder(-1)
     # delete the axis that are not needed
     for delind in range(ind + 2, len(ax)):
         fig.delaxes(ax[delind])
@@ -733,6 +727,7 @@ def plot2d_bias(model_filenames,
     print(pltoutname)
 
     plt.savefig(pltoutname, dpi=dpi)
+
 
 def plot_aw_core_stat(aw_core_parameters, diagplotdir):
     ''' Generate 2 plots: depth of the AW core and
@@ -779,6 +774,38 @@ def plot_aw_core_stat(aw_core_parameters, diagplotdir):
     plt.savefig(pltoutname, dpi=100)
 
 
+def transect_map(region,
+                 diagplotdir,
+                 projection=ccrs.NorthPolarStereo(),
+                 bbox=[-180, 180, 60, 90],
+                 mult=2):
+    logger.info("Create transect map for region {}".format(region))
+    lon_s4new, lat_s4new = transect_points(region, mult=mult)
+    dist = point_distance(lon_s4new, lat_s4new)
+    fig, ax = plt.subplots(1,
+                           1,
+                           subplot_kw=dict(projection=projection),
+                           constrained_layout=True)
+
+    ax.set_extent(bbox, crs=ccrs.PlateCarree())
+    image = ax.scatter(lon_s4new,
+                       lat_s4new,
+                       s=10,
+                       c=dist,
+                       transform=ccrs.PlateCarree(),
+                       cmap=cm.Spectral,
+                       edgecolors='none')
+    ax.coastlines(resolution="50m")
+
+    cb = fig.colorbar(image, ax=ax)
+    cb.set_label('Along-track distance, km', rotation='vertical', size=15)
+    pltoutname = genfilename(diagplotdir,
+                             'allvars',
+                             region=region,
+                             data_type='transect_map')
+    plt.savefig(pltoutname, dpi=100)
+
+
 def transect_plot(model_filenames,
                   cmor_var,
                   max_level,
@@ -788,85 +815,77 @@ def transect_plot(model_filenames,
                   levels,
                   ncols=3,
                   cmap=cm.Spectral_r):
+    '''Plot transects
+    Parameters
+    ----------
+    model_filenames:OrderedDict
+        OrderedDict with model names as keys and input files as values.
+    cmor_var: str
+        name of the variable
+    region: str
+        name of the region predefined in `transect_points` function.
+    diagworkdir: str
+        path to the working directory
+    diagplotdir: str
+        path to the plot directory
+    levels: tuple
+       contours - (minimum, maximum, number of levels)
+    ncols: int
+        number of columns in the plot
+    cmap: matplotlib colormap instance
 
-    ncols = 3
-    nplots = len(model_filenames) + 1
-    ncols = float(ncols)
-    nrows = math.ceil(nplots / ncols)
-    ncols = int(ncols)
-    nrows = int(nrows)
-    nplot = 1
+    Returns
+    -------
+    None
 
-    plt.figure(figsize=(8 * ncols, 2 * nrows * ncols))
+    '''
+    fig, ax = create_plot(model_filenames, ncols=ncols)
 
+    # get transect positions and calculate distances between points
     lon_s4new, lat_s4new = transect_points(region, mult=2)
     dist = point_distance(lon_s4new, lat_s4new)
 
-    plt.subplot(nrows, ncols, nplot)
-    ax = plt.subplot(nrows, ncols, nplot, projection=ccrs.NorthPolarStereo())
-    ax.set_extent([180, -180, 60, 90], crs=ccrs.PlateCarree())
-    image = ax.scatter(lon_s4new, lat_s4new, s=10, c=dist, transform=ccrs.PlateCarree(), cmap=cm.Spectral, edgecolors='none')
-    ax.coastlines(resolution="50m")
-    # m = Basemap(width=8000000,
-    #             height=8000000,
-    #             resolution='l',
-    #             projection='stere',
-    #             lat_ts=40,
-    #             lat_0=90,
-    #             lon_0=0.)
-    # m.drawcoastlines()
-
-    # xpt, ypt = m(lon_s4new, lat_s4new)
-    # m.scatter(xpt, ypt, c=dist, s=10, cmap=cm.Spectral, edgecolors='none')
-    cb = plt.colorbar(image, ax=ax)
-    cb.set_label('Along-track distance, km', rotation='vertical', size=15)
-    nplot = nplot + 1
-    for mmodel in model_filenames:
+    # loop over models
+    for ind, mmodel in enumerate(model_filenames):
         logger.info("Plot  {} data for {}, region {}".format(
             cmor_var, mmodel, region))
+        # construct file names and get the data
         ifilename = genfilename(diagworkdir, cmor_var, mmodel, region,
                                 'transect', '.npy')
         ifilename_depth = genfilename(diagworkdir, 'depth', mmodel, region,
                                       'transect', '.npy')
         ifilename_dist = genfilename(diagworkdir, 'distance', mmodel, region,
                                      'transect', '.npy')
-        print(ifilename)
 
         data = np.load(ifilename, allow_pickle=True)
         data = np.ma.masked_equal(data.T, 0)
         lev = np.load(ifilename_depth, allow_pickle=True)
         dist = np.load(ifilename_dist, allow_pickle=True)
-
-        if cmor_var == 'thetao':
-            data = data - 273.15
-            cb_label = '$^{\circ}$C'
-        elif cmor_var == 'so':
-            cb_label = 'psu'
-
+        # get labeles and convert the data
+        cb_label, data = label_and_conversion(cmor_var, data)
+        # index of the maximum depth
         lev_limit = lev[lev <= max_level].shape[0] + 1
 
-        plt.subplot(nrows, ncols, nplot)
-
-        plt.contourf(dist,
-                     lev[:lev_limit],
-                     data[:lev_limit, :],
-                     levels=levels,
-                     extend='both',
-                     cmap=cmo.thermal)
-        plt.gca().invert_yaxis()
-        cb = plt.colorbar(pad=0.01)
+        image = ax[ind].contourf(dist,
+                                 lev[:lev_limit],
+                                 data[:lev_limit, :],
+                                 levels=levels,
+                                 extend='both',
+                                 cmap=cmo.thermal)
+        # plot settings
+        ax[ind].invert_yaxis()
+        ax[ind].set_ylabel('Depth, m', size=15, rotation='vertical')
+        ax[ind].set_ylim(max_level, 0)
+        ax[ind].tick_params(axis='both', labelsize=15)
+        ax[ind].set_xlabel('Along-track distance, km',
+                           size=15,
+                           rotation='horizontal')
+        ax[ind].set_title(mmodel, size=20)
+        # color bar settings
+        cb = fig.colorbar(image, ax=ax[ind], pad=0.01)
         cb.set_label(cb_label, rotation='horizontal', size=15)
-        plt.yticks(size=15)
-        plt.ylabel('Depth, m', size=15, rotation='vertical')
-        plt.ylim(max_level, 0)
-        plt.xticks(size=15)
-        plt.xlabel('Along-track distance, km', size=15, rotation='horizontal')
         cb.ax.tick_params(labelsize=15)
 
-        plt.title(mmodel, size=20)
-        nplot = nplot + 1
-
-    plt.tight_layout()
     pltoutname = genfilename(diagplotdir,
                              cmor_var,
                              region=region,
