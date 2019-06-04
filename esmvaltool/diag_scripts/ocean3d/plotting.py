@@ -115,7 +115,7 @@ def label_and_conversion(cmor_var, data):
     '''
     if cmor_var == 'thetao':
         data = data - 273.15
-        cb_label = '$^{\circ}$C'
+        cb_label = 'r$^{\circ}$C'
     elif cmor_var == 'so':
         cb_label = 'psu'
     return cb_label, data
@@ -237,81 +237,6 @@ def hofm_plot(model_filenames,
     # save figure
     plt.savefig(pltoutname, dpi=100)
 
-
-def hofm_plot2(model_filenames, cmor_var,
-              max_level, region, diagworkdir, diagplotdir,
-              levels, ncols=3, cmap=cm.Spectral_r, observations='PHC'):
-    model_filenames = model_filenames.copy()
-    if observations:
-        del model_filenames[observations]
-    ncols = 3
-    nplots = len(model_filenames)
-    ncols = float(ncols)
-    nrows = math.ceil(nplots/ncols)
-    ncols = int(ncols)
-    nrows = int(nrows)
-    nplot = 1
-    plt.figure(figsize=(8*ncols,2*nrows*ncols))
-
-    for mmodel in model_filenames:
-        ifilename = genfilename(diagworkdir, cmor_var,
-                                mmodel, region, 'hofm', '.npy')
-        ifilename_levels = genfilename(diagworkdir, cmor_var,
-                                       mmodel, region, 'levels', '.npy')
-        ifilename_time = genfilename(diagworkdir, cmor_var,
-                                     mmodel, region,'time', '.npy')
-        logger.info("Plot  {} data for {}, region {}".format(cmor_var,
-                                                      mmodel,
-                                                      region))
-        hofdata = np.load(ifilename, allow_pickle=True)
-
-        lev = np.load(ifilename_levels, allow_pickle=True)
-        time = np.load(ifilename_time, allow_pickle=True)
-        if cmor_var == 'thetao':
-            hofdata = hofdata-273.15
-            cb_label = '$^{\circ}$C'
-        elif cmor_var =='so':
-            cb_label = 'psu'
-
-        hofdata_mean = hofdata[:, :].mean(axis=1)
-        hofdata_anom = (hofdata[:, :].transpose()-hofdata_mean).transpose()
-
-        lev_limit = lev[lev <= max_level].shape[0]+1
-
-        series_lenght = time.shape[0]
-
-        months, depth = np.meshgrid(range(series_lenght), lev[0:lev_limit])
-
-        plt.subplot(nrows, ncols, nplot)
-
-        plt.contourf(months, depth, hofdata_anom, cmap=cmap,
-                     levels=levels,
-                     extend='both')
-        plt.yticks(size=15)
-        plt.ylabel('m', size=15, rotation='horizontal')
-        plt.ylim(max_level, 0)
-
-        cb = plt.colorbar(pad =0.01)
-        cb.set_label(cb_label, rotation='horizontal', size=15)
-        # cb.set_ticks(size=15)
-        cb.ax.tick_params(labelsize=15)
-        ygap = int((np.round(series_lenght/12.)/5)*12)
-        year_indexes = range(series_lenght)[::ygap]
-        year_value = []
-        for index in year_indexes:
-            year_value.append(time[index].year)
-        plt.xticks(year_indexes, year_value, size=15)
-
-        plt.title(mmodel, size=20)
-        nplot=nplot+1
-
-    plt.tight_layout()
-    pltoutname = genfilename(diagplotdir, cmor_var,
-                             region= region, data_type='hofm2')
-    # pltoutname = os.path.join(diagplotdir,
-    #                              'arctic_ocean_{}_{}_hofm2'.format(cmor_var,
-    #                                                               region))
-    plt.savefig(pltoutname, dpi=100)
 
 def tsplot_plot(model_filenames, max_level, region, diagworkdir, diagplotdir,
                 ncols=3, cmap=cm.Set1, observations = 'PHC'):
