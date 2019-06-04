@@ -137,7 +137,6 @@ class SeaIceDrift(object):
             dim_coords = data.coord_dims(coord)
             data.remove_aux_factory(factory)
             data.add_aux_coord(coord, dim_coords)
-            iris.save(data, "/home/Earth/jvegas/mask.nc")
             data.remove_coord('Inside polygon')
 
         dataset_info = self.datasets.get_dataset_info(filename)
