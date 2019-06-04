@@ -40,6 +40,14 @@ class TestCMIP6Info(unittest.TestCase):
         """Get none if a variable is not in the given table."""
         self.assertIsNone(self.variables_info.get_variable('Omon', 'tas'))
 
+    def test_get_institute_from_source(self):
+        """Get institution for source ACCESS-1-0"""
+        institute = self.variables_info.institutes['ACCESS-1-0']
+        self.assertListEqual(institute, ['CSIRO-BOM'])
+    def test_get_activity_from_exp(self):
+        """Get activity for experiment 1pctCO2"""
+        activity = self.variables_info.activities['1pctCO2']
+        self.assertListEqual(activity, ['CMIP'])
 
 class Testobs4mipsInfo(unittest.TestCase):
     """Test for the obs$mips info class."""
