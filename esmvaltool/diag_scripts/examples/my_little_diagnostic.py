@@ -118,7 +118,7 @@ def run_my_diagnostic(cfg):
         # compute an area average over the squared cube
         # to apply the area average use a preprocessor function
         # rather than writing your own function
-        area_avg_cube = area_stats(squared_cube)
+        area_avg_cube = area_stats(squared_cube, 'mean')
 
         # finalize your analysis by plotting a time series of the
         # diffed, squared and area averaged cube; call the plot function:

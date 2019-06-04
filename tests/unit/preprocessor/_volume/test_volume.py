@@ -84,7 +84,7 @@ class Test(tests.Test):
 
     def test_volume_stats(self):
         """Test to take the volume weighted average of a (2,3,2,2) cube."""
-        result = volume_stats(self.grid_4d)
+        result = volume_stats(self.grid_4d, 'mean')
         expected = np.array([1., 1.])
         self.assertArrayEqual(result.data, expected)
 
@@ -95,7 +95,7 @@ class Test(tests.Test):
         This extra time is needed, as the volume average calculation uses
         different methods for small and large cubes.
         """
-        result = volume_stats(self.grid_4d_2)
+        result = volume_stats(self.grid_4d_2, 'mean')
         expected = np.array([1., 1., 1., 1.])
         self.assertArrayEqual(result.data, expected)
 

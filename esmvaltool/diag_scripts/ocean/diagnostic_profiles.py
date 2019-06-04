@@ -23,6 +23,8 @@ An approproate preprocessor for a 3D+time field would be::
         z_min: 0.
         z_max: 3000.
       area_stats:
+        operator: mean
+
 
 In order to add an observational dataset to the profile plot, the following
 arguments are needed in the diagnostic script::

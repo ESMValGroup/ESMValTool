@@ -22,6 +22,8 @@ An approproate preprocessor for a 3D+time field would be::
   preprocessors:
     prep_timeseries_1:# For Global Volume Averaged
       volume_stats:
+        operator: mean
+
 
 An approproate preprocessor for a 3D+time field at the surface would be::
 
@@ -30,11 +32,15 @@ An approproate preprocessor for a 3D+time field at the surface would be::
         levels:  [0., ]
         scheme: linear_extrap
       area_stats:
+        operator: mean
+
 
 An approproate preprocessor for a 2D+time field would be::
 
     prep_timeseries_2: # For Global surface Averaged
       area_stats:
+        operator: mean
+
 
 This tool is part of the ocean diagnostic tools package in the ESMValTool.
 

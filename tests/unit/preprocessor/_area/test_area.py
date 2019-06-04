@@ -52,48 +52,43 @@ class Test(tests.Test):
 
     def test_area_stats_mean(self):
         """Test for area average of a 2D field."""
-        result = area_stats(self.grid)
+        result = area_stats(self.grid, 'mean')
         expected = np.array([1.])
         self.assertArrayEqual(result.data, expected)
 
     def test_area_stats_min(self):
         """Test for area average of a 2D field."""
-        result = area_stats(self.grid,
-                            operator='min')
+        result = area_stats(self.grid, 'min')
         expected = np.array([1.])
         self.assertArrayEqual(result.data, expected)
 
     def test_area_stats_max(self):
         """Test for area average of a 2D field."""
-        result = area_stats(self.grid,
-                            operator='max')
+        result = area_stats(self.grid, 'max')
         expected = np.array([1.])
         self.assertArrayEqual(result.data, expected)
 
     def test_area_stats_median(self):
         """Test for area average of a 2D field."""
-        result = area_stats(self.grid,
-                            operator='median')
+        result = area_stats(self.grid, 'median')
         expected = np.array([1.])
         self.assertArrayEqual(result.data, expected)
 
     def test_area_stats_std_dev(self):
         """Test for area average of a 2D field."""
-        result = area_stats(self.grid,
-                            operator='std_dev')
+        result = area_stats(self.grid,'std_dev')
         expected = np.array([0.])
         self.assertArrayEqual(result.data, expected)
 
     def test_area_stats_variance(self):
         """Test for area average of a 2D field."""
-        result = area_stats(self.grid,
-                            operator='variance')
+        result = area_stats(self.grid, 'variance')
         expected = np.array([0.])
         self.assertArrayEqual(result.data, expected)
 
     def test_area_stats_neg_lon(self):
         """Test for area average of a 2D field."""
-        result = area_stats(self.negative_grid)
+        result = area_stats(self.negative_grid, 'mean')
         expected = np.array([1.])
         self.assertArrayEqual(result.data, expected)
 
