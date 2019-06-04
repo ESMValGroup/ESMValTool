@@ -2,6 +2,7 @@
 ESMValTool Core
 ###############
 
-.. include:: inputdata.inc
+.. include:: config.inc
+.. include:: datafinder.inc
 .. include:: recipe.inc
 .. include:: preprocessor.inc

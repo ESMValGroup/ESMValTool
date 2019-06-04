@@ -1,8 +1,8 @@
 ********************************************
 How to prepare and run your first diagnostic
-*********************************************
+********************************************
 
-Instructiona for personal diagnostic
+Instructions for personal diagnostic
 ====================================
 
 Anyone can run a personal diagnostic, no matter where the location of it;
