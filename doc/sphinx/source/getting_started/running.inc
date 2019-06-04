@@ -1,8 +1,8 @@
 :: _running:
 
-**********************
-Running the ESMValTool
-**********************
+******************
+Running ESMValTool
+******************
 
 To run ESMValTool, use the command
 

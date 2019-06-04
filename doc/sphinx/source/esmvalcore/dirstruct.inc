@@ -1,5 +1,0 @@
-:: _dirstruct:
-
-*******************
-Directory structure
-*******************
