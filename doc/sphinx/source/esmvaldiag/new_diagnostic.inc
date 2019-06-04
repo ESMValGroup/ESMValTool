@@ -1,8 +1,8 @@
 .. _new_diagnostic:
 
-**************************************
-Contrbuting a new diagnostic or recipe
-**************************************
+***************************************
+Contributing a new diagnostic or recipe
+***************************************
 
 Getting started
 ===============
