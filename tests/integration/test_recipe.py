@@ -448,6 +448,7 @@ def test_custom_preproc_order(tmp_path, patched_datafinder, config_user):
         preprocessors:
           default: &default
             area_stats:
+              operator: mean
             multi_model_statistics:
               span: overlap
               statistics: [mean ]

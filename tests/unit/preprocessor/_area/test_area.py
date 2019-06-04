@@ -76,7 +76,7 @@ class Test(tests.Test):
 
     def test_area_stats_std_dev(self):
         """Test for area average of a 2D field."""
-        result = area_stats(self.grid,'std_dev')
+        result = area_stats(self.grid, 'std_dev')
         expected = np.array([0.])
         self.assertArrayEqual(result.data, expected)
 

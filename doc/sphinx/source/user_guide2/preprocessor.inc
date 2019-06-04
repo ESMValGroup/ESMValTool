@@ -173,7 +173,7 @@ This function calculates the average value over a region - weighted by the
 cell areas of the region.
 
 This function takes the argument,
-operator: the name of the operation to apply (default: mean).
+operator: the name of the operation to apply.
 
 This function can be used to apply several
 different operations in the horizonal plane: mean, standard deviation, median

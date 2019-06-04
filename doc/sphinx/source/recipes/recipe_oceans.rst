@@ -489,7 +489,7 @@ An appropriate preprocessor for a 3D+time field would be:
 	      z_min: 0.
 	      z_max: 3000.
 	    area_stats:
-
+              operator: mean
 
 
 diagnostic_timeseries.py
@@ -523,12 +523,14 @@ For a global area-weighted average 2D field:
   .. code-block:: yaml
 
 	area_stats:
+          operator: mean
 
 For a global volume-weighted average 3D field:
 
   .. code-block:: yaml
 
 	volume_stats:
+          operator: mean
 
 For a global area-weighted surface of a 3D field:
 
@@ -538,6 +540,7 @@ For a global area-weighted surface of a 3D field:
 	  levels: [0., ]
 	  scheme: linear_horizontal_extrapolate_vertical
 	area_stats:
+          operator: mean
 
 
 An example of the multi-model time series plots can seen here:
