@@ -6,3 +6,4 @@ Guidelines for diagnostic developers
 .. include:: porting.inc
 .. include:: config_developer.inc
 .. include:: observations.inc
+.. include:: git_repository.inc

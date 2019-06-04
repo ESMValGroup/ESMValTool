@@ -1,4 +1,4 @@
-.. _config:
+.. _config_user:
 
 ***********************
 User configuration file
