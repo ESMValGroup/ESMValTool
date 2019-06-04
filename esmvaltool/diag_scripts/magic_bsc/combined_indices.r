@@ -150,8 +150,8 @@ g <- ggplot(data_frame_plot, aes(x = Year, y = Freq, color = Model)) +
            mapping = aes(x = data_frame_plot$Year, y = data_frame_plot$Freq,
                   group = interaction(data_frame_plot[2, 3]),
                   color = data_frame_plot$Model), geom = "line", size = 1) +
-      ggtitle(paste0(region, months, " ", var0, " (", starting, "-",
-              ending, ")"))
+      ggtitle(paste0(region, " index for ", var0, "on", months, 
+                     " (", starting, "-", ending, ")"))
 filepng <-  paste0(plot_dir, "/", region, "_", var0, "_", months,
                    "_running-mean_", running_mean, "_",
                    starting, "-", ending, ".png")

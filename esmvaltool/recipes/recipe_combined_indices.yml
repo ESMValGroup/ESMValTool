@@ -17,15 +17,10 @@ documentation:
 datasets:
   - {dataset: MPI-ESM-MR,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 1950,  end_year: 2005}
   - {dataset: bcc-csm1-1,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 1950,  end_year: 2005}
-  #- {dataset: bcc-csm1-1,  type: exp, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
-  #- {dataset: IPSL-CM5A-MR, type: exp, project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 1981,  end_year: 2000}
 
 
 preprocessors:
   preprocessor1:
-    #extract_levels:
-    #  levels: [50000]
-    #  scheme: nearest
     regrid:
       target_grid: 1x1
       scheme: linear
