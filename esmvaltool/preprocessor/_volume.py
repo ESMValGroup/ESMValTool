@@ -161,7 +161,7 @@ def calculate_volume(cube):
 
 def volume_stats(
         cube,
-        operator='mean',
+        operator,
         fx_files=None):
     """
     Apply a statistical operation over a volume.
@@ -239,6 +239,9 @@ def volume_stats(
                      'longitude', 'latitude'],
                     iris.analysis.MEAN,
                     weights=grid_volume[time_itr, z_itr]).data
+            else:
+                raise ValueError('Volume operator ({}) not '
+                                 'recognised.'.format(operator))
             column.append(total)
 
             try:

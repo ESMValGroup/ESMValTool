@@ -178,14 +178,14 @@ def tile_grid_areas(cube, fx_files):
 
 
 # get the area average
-def area_stats(cube, operator='mean', fx_files=None):
+def area_stats(cube, operator, fx_files=None):
     """
     Applies a statistical operator in the horizontal direction.
 
     The average in the horizontal direction. We assume that the
     horizontal directions are ['longitude', 'latutude'].
 
-    While this function is named `area_stats`, it can be used to apply
+    This function can be used to apply
     several different operations in the horizonal plane: mean, standard
     deviation, median variance, minimum and maximum. These options are
     specified using the `operator` argument and the following key word
@@ -211,7 +211,7 @@ def area_stats(cube, operator='mean', fx_files=None):
         cube: iris.cube.Cube
             input cube.
         operator: str
-            Name of the operation to apply (default: mean)
+            Name of the operation to apply
         fx_files: dictionary
             dictionary of field:filename for the fx_files
 
