@@ -36,6 +36,8 @@ preprocessors:
       end_latitude: 70
     extract_season:
       season: djf
+    mask_landsea:
+      mask_out: sea
 
 diagnostics:
   capacity_factor:
