@@ -99,7 +99,7 @@ def mask_landsea(cube, fx_files, mask_out):
 
     Parameters
     ----------
-    cube: iris.Cube.cube
+    cube: iris.cube.Cube
         data cube to be masked.
 
     fx_files: list
@@ -110,7 +110,7 @@ def mask_landsea(cube, fx_files, mask_out):
 
     Returns
     -------
-    iris.Cube.cube
+    iris.cube.Cube
         Returns the fillvalues-masked iris cube.
 
     Raises
@@ -181,7 +181,7 @@ def mask_landseaice(cube, fx_files, mask_out):
 
     Parameters
     ----------
-    cube: iris.Cube.cube
+    cube: iris.cube.Cube
         data cube to be masked.
 
     fx_files: list
@@ -192,7 +192,7 @@ def mask_landseaice(cube, fx_files, mask_out):
 
     Returns
     -------
-    iris.Cube.cube
+    iris.cube.Cube
         Returns the masked iris cube with either land or ice masked out.
 
     Raises
@@ -349,7 +349,7 @@ def mask_window_threshold(cube, threshold_fraction, min_value, time_window):
 
     Parameters
     ----------
-    cube: iris.Cube.cube
+    cube: iris.cube.Cube
         data cube to be masked.
 
     threshold_fraction: float
@@ -364,7 +364,7 @@ def mask_window_threshold(cube, threshold_fraction, min_value, time_window):
 
     Returns
     -------
-    iris.Cube.cube
+    iris.cube.Cube
         Masked iris cube.
 
     """
@@ -385,7 +385,7 @@ def mask_above_threshold(cube, threshold):
 
     Parameters
     ----------
-    cube: iris.Cube.cube
+    cube: iris.cube.Cube
         iris cube to be thresholded.
 
     threshold: float
@@ -393,7 +393,7 @@ def mask_above_threshold(cube, threshold):
 
     Returns
     --------
-    iris.Cube.cube
+    iris.cube.Cube
         thresholded cube.
 
     """
@@ -410,14 +410,14 @@ def mask_below_threshold(cube, threshold):
 
     Parameters
     ----------
-    cube: iris.Cube.cube
+    cube: iris.cube.Cube
         iris cube to be thresholded
     threshold: float
         threshold to be applied on input cube data.
 
     Returns
     --------
-    iris.Cube.cube
+    iris.cube.Cube
         thresholded cube.
 
     """
@@ -434,7 +434,7 @@ def mask_inside_range(cube, minimum, maximum):
 
     Parameters
     ----------
-    cube: iris.Cube.cube
+    cube: iris.cube.Cube
         iris cube to be thresholded
     minimum: float
         lower threshold to be applied on input cube data.
@@ -443,7 +443,7 @@ def mask_inside_range(cube, minimum, maximum):
 
     Returns
     --------
-    iris.Cube.cube
+    iris.cube.Cube
         thresholded cube.
 
     """
@@ -460,7 +460,7 @@ def mask_outside_range(cube, minimum, maximum):
 
     Parameters
     ----------
-    cube: iris.Cube.cube
+    cube: iris.cube.Cube
         iris cube to be thresholded
     minimum: float
         lower threshold to be applied on input cube data.
@@ -469,7 +469,7 @@ def mask_outside_range(cube, minimum, maximum):
 
     Returns
     --------
-    iris.Cube.cube
+    iris.cube.Cube
         thresholded cube.
 
     """
@@ -493,7 +493,7 @@ def mask_fillvalues(products,
 
     Parameters
     ----------
-    products: iris.Cube.cube
+    products: iris.cube.Cube
         data products to be masked.
 
     threshold_fraction: float
@@ -508,7 +508,7 @@ def mask_fillvalues(products,
 
     Returns
     -------
-    iris.Cube.cube
+    iris.cube.Cube
         Masked iris cubes.
 
     Raises
