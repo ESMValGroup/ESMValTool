@@ -101,16 +101,13 @@ def timmean(model_filenames, mmodel, cmor_var, diagworkdir,
         shutil.copy2(model_filenames[mmodel], ofilename)
 
 
-def get_clim_model_filenames(config, variable, sorted=True):
+def get_clim_model_filenames(config, variable):
     '''Extract model filenames from the configuration.
     '''
     model_filenames = {}
     for key, value in config['input_data'].items():
         if value['short_name'] == variable:
             model_filenames[value['dataset']] = key
-    # Sort them alphabetically
-    if sorted:
-        model_filenames = OrderedDict(sorted(model_filenames_temp.items(), key=lambda t: t[0]))
     return model_filenames
 
 

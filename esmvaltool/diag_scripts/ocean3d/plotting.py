@@ -238,52 +238,88 @@ def hofm_plot(model_filenames,
     plt.savefig(pltoutname, dpi=100)
 
 
-def tsplot_plot(model_filenames, max_level, region, diagworkdir, diagplotdir,
-                ncols=3, cmap=cm.Set1, observations = 'PHC'):
-    #ncols = 3
-    # phc_dict = OrderedDict([('PHC3.0','./')])
-    # phc_dict.update(model_filenames)
-    # model_filenames = phc_dict
+def tsplot_plot(model_filenames,
+                max_level,
+                region,
+                diagworkdir,
+                diagplotdir,
+                ncols=3,
+                cmap=cm.Set1,
+                observations='PHC'):
+    '''Plots a TS diagram
 
+    Parameters
+    ----------
+    model_filenames: OrderedDict
+        OrderedDict with model names as keys and input files as values.
+    max_level: float
+        maximum depth level the TS plot shoud go.
+    region: str
+        name of the region predefined in `hofm_regions` function.
+    diagworkdir: str
+        path to work directory.
+    diagplotdir: str
+        path to plotting directory.
+    ncols: str
+        number of columns in the resulting plot
+        (raws will be calculated from total number of plots)
+    cmap: matplotlib.cmap object
+        color map
+    observations: str
+        name of the dataset with observations
+
+    Returns
+    -------
+    None
+    '''
+    # Setup a figure
     nplots = len(model_filenames)
     ncols = float(ncols)
-    nrows = math.ceil(nplots/ncols)
+    nrows = math.ceil(nplots / ncols)
     ncols = int(ncols)
     nrows = int(nrows)
     nplot = 1
-    plt.figure(figsize=(8*ncols,2*nrows*ncols))
+    plt.figure(figsize=(8 * ncols, 2 * nrows * ncols))
 
+    # loop over models
     for mmodel in model_filenames:
-        logger.info("Plot  tsplot data for {}, region {}".format(mmodel,
-                                                      region))
-
-        ifilename_t = genfilename(diagworkdir, 'thetao',
-                                mmodel, region, 'tsplot',  '.npy')
-        ifilename_s = genfilename(diagworkdir, 'so',
-                                mmodel, region, 'tsplot',  '.npy')
-        ifilename_depth = genfilename(diagworkdir, 'depth',
-                                mmodel, region, 'tsplot',  '.npy')
+        logger.info("Plot  tsplot data for {}, region {}".format(
+            mmodel, region))
+        # load mean data created by `tsplot_data`
+        ifilename_t = genfilename(diagworkdir, 'thetao', mmodel, region,
+                                  'tsplot', '.npy')
+        ifilename_s = genfilename(diagworkdir, 'so', mmodel, region, 'tsplot',
+                                  '.npy')
+        ifilename_depth = genfilename(diagworkdir, 'depth', mmodel, region,
+                                      'tsplot', '.npy')
 
         temp = np.load(ifilename_t, allow_pickle=True)
         salt = np.load(ifilename_s, allow_pickle=True)
         depth = np.load(ifilename_depth, allow_pickle=True)
-
-        #lev_limit = lev[lev <= max_level].shape[0]+1
-
-        #series_lenght = time.shape[0]
-
-        #months, depth = np.meshgrid(range(series_lenght), lev[0:lev_limit])
-
+        # Still old fashioned way to setup a plot, works best for now.
         plt.subplot(nrows, ncols, nplot)
+        # calculate background with density isolines
+        si2, ti2, dens = dens_back(33, 36., -2, 6)
 
-        si2, ti2, dens = dens_back(33, 36.,-2, 6)
-        if mmodel == 'PHC3.0':
-            temp = temp
-        else:
-            temp = temp-273.15
+        # convert form Kelvin
+        temp = temp - 273.15
 
-        cs = plt.contour(si2, ti2, dens, colors='k', levels = np.linspace(dens.min(),dens.max(),15), alpha=0.3)
-        plt.scatter(salt[::], temp[::], c=depth, s=3.0,  cmap=cmap, edgecolors='none', vmax=max_level)
+        # plot the background
+        cs = plt.contour(si2,
+                         ti2,
+                         dens,
+                         colors='k',
+                         levels=np.linspace(dens.min(), dens.max(), 15),
+                         alpha=0.3)
+        # plot the scatter plot
+        plt.scatter(salt[::],
+                    temp[::],
+                    c=depth,
+                    s=3.0,
+                    cmap=cmap,
+                    edgecolors='none',
+                    vmax=max_level)
+        # adjust the plot
         plt.clabel(cs, fontsize=12, inline=1, fmt='%1.1f')
         plt.xlim(33, 36.)
         plt.ylim(-2.1, 6)
@@ -291,26 +327,21 @@ def tsplot_plot(model_filenames, max_level, region, diagworkdir, diagplotdir,
         plt.ylabel('Temperature, $^{\circ}$C', size=20)
         plt.xticks(size=15)
         plt.yticks(size=15)
+        # setup the colorbar
         cb = plt.colorbar(pad=0.03)
         cb.ax.get_yaxis().labelpad = 15
         cb.set_label('depth, m', rotation=270, size=20)
         cb.ax.tick_params(labelsize=15)
-        #        plt.tight_layout()
 
         plt.title(mmodel, size=20)
-        nplot=nplot+1
-
-    # ifilename_t = genfilename(diagworkdir, 'thetao',
-    #                         'PHC3.0', region, 'tsplot',  '.npy')
-    # ifilename_s = genfilename(diagworkdir, 'so',
-    #                         'PHC3.0', region, 'tsplot',  '.npy')
-    # ifilename_depth = genfilename(diagworkdir, 'depth',
-    #                         'PHC3.0', region, 'tsplot',  '.npy')
-
+        nplot = nplot + 1
 
     plt.tight_layout()
-    pltoutname = genfilename(diagplotdir, 'tsplot',
-                             region= region, data_type='tsplot')
+    # save the plot
+    pltoutname = genfilename(diagplotdir,
+                             'tsplot',
+                             region=region,
+                             data_type='tsplot')
     plt.savefig(pltoutname, dpi=100)
 
 
@@ -325,6 +356,29 @@ def plot_profile(model_filenames,
                  observations='PHC'):
     '''Plot profiles from previously calculated data for
     Hovmoeller diagrams.
+
+    Parameters
+    ----------
+    model_filenames: OrderedDict
+        OrderedDict with model names as keys and input files as values.
+    cmor_var: str
+        name of the CMOR variable
+    region: str
+        name of the region predefined in `hofm_regions` function.
+    diagworkdir: str
+        path to work directory.
+    diagplotdir: str
+        path to plotting directory.
+    cmap: matplotlib.cmap object
+        color map
+    dpi: int
+        dpi fro the output figure
+    observations: str
+        name of the dataset with observations
+
+    Returns
+    -------
+    None
     '''
     level_clim = Dataset(model_filenames[observations]).variables['lev'][:]
     plt.figure(figsize=(5, 6))
@@ -374,6 +428,7 @@ def plot_profile(model_filenames,
             mean_profile[:, mean_profile_counter] = profile_interpolated
             mean_profile_counter += 1
 
+    # Here we are ploting the mean profile separately
     mean_profile_mean = np.nanmean(mean_profile, axis=1)
 
     plt.plot(mean_profile_mean,
@@ -391,7 +446,7 @@ def plot_profile(model_filenames,
 
     plt.ylim(0, max_level)
 
-    # plt.legend(loc=0)
+    # we shift the legend and plot it
     box = ax.get_position()
     ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
     ax.legend(loc='center left', bbox_to_anchor=(1, 0.5), fontsize=10)
@@ -551,7 +606,8 @@ def plot2d_bias(model_filenames,
         path to the working directory
     diagplotdir: str
         path to the plot directory
-        we will plot the data on the model level that is closest to the `depth`.
+        we will plot the data on the model level
+        that is closest to the `depth`.
     levels: tuple
         values to be used for vmin and vmax in the form of (vmin, vmax)
     dpi: int
@@ -566,51 +622,48 @@ def plot2d_bias(model_filenames,
     ------
     None
     '''
-
+    # setupa a base figure
     fig, ax = create_plot(model_filenames,
                           ncols=4,
                           projection=projection)
-
+    # get the filename of observations
     ifilename_obs = genfilename(diagworkdir,
                                 cmor_var,
                                 observations,
                                 data_type='timmean',
                                 extension='.nc')
-
+    # get the metadata for observations (we just need a size)
     metadata = load_meta(datapath=model_filenames[observations], fxpath=None)
     datafile, lon2d, lat2d, lev, time, areacello = metadata
-
+    # Create an empty array to store the mean.
+    # One point larger along long to acount for cyclic point
     model_mean = np.zeros((lon2d.shape[0], lon2d.shape[1]+1))
     print("MODEL MEAN SHAPE {}".format(model_mean.shape))
 
-    # mm = Basemap(projection='npstere',boundinglat=60,lon_0=0,resolution='l')
+    # delete observations from the model list
     model_filenames = model_filenames.copy()
     del model_filenames[observations]
-
+    # loop over models
     for ind, mmodel in enumerate(model_filenames):
         logger.info("Plot plot2d_bias {} for {}".format(cmor_var, mmodel))
-
+        # get the filename with the mean generated by the `timemean`
         ifilename = genfilename(diagworkdir,
                                 cmor_var,
                                 mmodel,
                                 data_type='timmean',
                                 extension='.nc')
-
-        # lonc, latc, target_depth, data_onlev_obs_cyc, interpolated = interpolate_pyresample(ifilename_obs, ifilename, depth, cmor_var)
+        # do the interpolation to the observation grid
+        # the output is
         lonc, latc, target_depth, data_onlev_obs_cyc, interpolated = interpolate_esmf(
             ifilename_obs, ifilename, depth, cmor_var)
-
-        metadata = load_meta(datapath=model_filenames[mmodel], fxpath=None)
-        datafile, lon2d, lat2d, lev, time, areacello = metadata
-
+        # get the label and convert data if needed
         cb_label, data_onlev_obs_cyc = label_and_conversion(
             cmor_var, data_onlev_obs_cyc)
         cb_label, interpolated = label_and_conversion(cmor_var, interpolated)
-
+        # add to the mean model
         model_mean = model_mean+interpolated
-
+        # set the map extent
         left, right, down, up = bbox
-
         ax[ind].set_extent([left, right, down, up], crs=ccrs.PlateCarree())
         # Only pcolormesh is working for now with cartopy,
         # contourf is failing to plot curvilinear meshes,
@@ -626,7 +679,7 @@ def plot2d_bias(model_filenames,
             transform=ccrs.PlateCarree(),
             cmap=cmo.balance,
         )
-
+        # fill continents
         ax[ind].add_feature(
             cfeature.GSHHSFeature(levels=[1],
                                   scale="low",
@@ -635,7 +688,7 @@ def plot2d_bias(model_filenames,
         ax[ind].set_title("{}, {} m".format(mmodel, int(target_depth)),
                           size=18)
         ax[ind].set_rasterization_zorder(-1)
-
+    # calculate the model mean and plot it
     model_mean = model_mean/len(model_filenames)
     ax[ind+1].set_extent([left, right, down, up], crs=ccrs.PlateCarree())
     image = ax[ind+1].contourf(
@@ -658,10 +711,9 @@ def plot2d_bias(model_filenames,
     ax[ind+1].set_title("Model mean bias, {} m".format(int(target_depth)),
                         size=18)
     ax[ind+1].set_rasterization_zorder(-1)
-
+    # delete the axis that are not needed
     for delind in range(ind + 2, len(ax)):
         fig.delaxes(ax[delind])
-
     # set common colorbar
     cb = fig.colorbar(image,
                       orientation='horizontal',
@@ -670,7 +722,7 @@ def plot2d_bias(model_filenames,
                       shrink=0.9)
     cb.set_label(cb_label, rotation='horizontal', size=18)
     cb.ax.tick_params(labelsize=18)
-
+    # save the picture
     pltoutname = genfilename(diagplotdir,
                              cmor_var,
                              "MULTIMODEL",
@@ -704,7 +756,7 @@ def plot_aw_core_stat(aw_core_parameters, diagplotdir):
     df['maxvalue'] = df.maxvalue - 273.15
     plt.figure()
     df.maxvalue.plot(kind='barh')
-    plt.xlabel('$^{\circ}$C')
+    plt.xlabel(r'$^{\circ}$C')
     pltoutname = genfilename(diagplotdir,
                              variable='aw-core-temp',
                              region='EB',
@@ -801,62 +853,4 @@ def transect_plot(model_filenames, cmor_var,
                              region= region, data_type='transect')
     plt.savefig(pltoutname, dpi=100)
 
-def plot_hist(model_filenames, cmor_var,min_level, max_level, region,
-                 bins, diagworkdir, diagplotdir, ncols = 4, dpi=100):
-    nplots = len(model_filenames)+1
-    ncols = float(ncols)
-    nrows = math.ceil(nplots/ncols)
-    ncols = int(ncols)
-    nrows = int(nrows)
-    nplot = 1
-    plt.figure(figsize=(5*ncols,1.5*nrows*ncols))
-    # mm = Basemap(projection='npstere',boundinglat=60,lon_0=0,resolution='l')
-    for mmodel in model_filenames:
 
-        logger.info("Plot hist {} for {}".format(cmor_var, mmodel))
-        ifilename = genfilename(diagworkdir, cmor_var,
-                             mmodel,  data_type='timmean', extension='.nc')
-
-        datafile = Dataset(ifilename)
-        lon = datafile.variables['lon'][:]
-        lat = datafile.variables['lat'][:]
-        lev = datafile.variables['lev'][:]
-        if lon.ndim == 2:
-            lon2d, lat2d = lon, lat
-        elif lon.ndim == 1:
-            lon2d, lat2d = np.meshgrid(lon, lat)
-        #areacello = datafile.variables['areacello'][:]
-
-        indexesi, indexesj = hofm_regions(region, lon2d, lat2d)
-        iz_min=abs(abs(lev)-abs(min_level)).argmin()
-        iz_max=abs(abs(lev)-abs(max_level)).argmin()
-
-        data = datafile.variables[cmor_var][0, iz_min:iz_max, indexesi, indexesj]
-        if not isinstance(data, np.ma.MaskedArray):
-            data = np.ma.masked_equal(data, 0)
-
-        if cmor_var == 'thetao':
-            data = data-273.15
-            cb_label = '$^{\circ}$C'
-        elif cmor_var == 'so':
-            cb_label = 'psu'
-
-        plt.subplot(nrows, ncols, nplot)
-
-
-        ax = sns.distplot(data.compressed(), bins = bins)
-        plt.ylim(0,0.5)
-        plt.xlim(bins[0]-1, bins[-1]+1)
-
-        plt.title("{}".format(mmodel), size=18)
-        plt.xticks(size=15)
-        plt.yticks(size=15)
-        plt.xlabel(cb_label, size = 15)
-        plt.ylabel('pdf', size = 15)
-        nplot = nplot+1
-
-        plt.tight_layout()
-
-    pltoutname = genfilename(diagplotdir, cmor_var,
-                             region= region, data_type='hist')
-    plt.savefig(pltoutname, dpi=dpi)

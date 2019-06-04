@@ -26,9 +26,9 @@ def closest_depth(depths, depth):
 
 def interpolate_vert(depth_model, target_depth, data_model):
     '''
-    Very simple linear interpolation of the model data to the 
+    Very simple linear interpolation of the model data to the
     desired depth. Can't extrapolate, so the limitation is that model
-    data should have at leas one level => and one level <= than the
+    data should have at least one level => and one level <= than the
     target depth.
     '''
         # Simple vertical interpolation
@@ -72,7 +72,7 @@ def interpolate_pyresample(obs_file, mod_file, depth, cmor_var):
     -------
     lonc, latc, target_depth, data_onlev_obs_cyc, interpolated
     lonc : 2d np array
-        numpy array with longitudes of target grid 
+        numpy array with longitudes of target grid
     latc : 2d np array
         numpy array with longitudes of target grid
     target_depth : float
