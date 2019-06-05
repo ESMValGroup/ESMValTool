@@ -53,6 +53,9 @@ REQUIREMENTS = {
         'xarray',
         'xlsxwriter',
         'yamale',
+        'cmocean',
+        'pyresample',
+        'seawater'
     ],
     # Test dependencies
     # Execute 'python setup.py test' to run tests

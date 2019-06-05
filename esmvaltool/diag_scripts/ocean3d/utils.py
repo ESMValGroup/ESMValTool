@@ -4,7 +4,6 @@ APPLICATE/TRR Ocean Diagnostics
 *********************************************************************
 """
 import logging
-import math
 import os
 import shutil
 from collections import OrderedDict
@@ -18,7 +17,6 @@ import palettable
 import pyproj
 import seawater as sw
 from cdo import Cdo
-from matplotlib import cm as cm
 from netCDF4 import num2date
 
 from esmvaltool.diag_scripts.shared import run_diagnostic
