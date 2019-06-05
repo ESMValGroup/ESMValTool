@@ -1,4 +1,4 @@
-"""Unit tests for the :func:`esmvaltool.preprocessor._area` module."""
+"""Unit tests for the :func:`esmvalcore.preprocessor._area` module."""
 
 import unittest
 
@@ -7,12 +7,12 @@ import numpy as np
 from cf_units import Unit
 
 import tests
-from esmvaltool.preprocessor._area import (
+from esmvalcore.preprocessor._area import (
     average_region, extract_named_regions, extract_region)
 
 
 class Test(tests.Test):
-    """Test class for the :func:`esmvaltool.preprocessor._area_pp` module."""
+    """Test class for the :func:`esmvalcore.preprocessor._area_pp` module."""
 
     def setUp(self):
         """Prepare tests."""
