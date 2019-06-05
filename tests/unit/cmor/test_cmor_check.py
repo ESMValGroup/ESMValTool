@@ -11,7 +11,7 @@ import iris.util
 import numpy
 from cf_units import Unit
 
-from esmvaltool.cmor.check import CMORCheck, CMORCheckError
+from esmvalcore.cmor.check import CMORCheck, CMORCheckError
 
 
 class VariableInfoMock:

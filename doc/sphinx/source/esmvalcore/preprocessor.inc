@@ -50,7 +50,7 @@ These start and end points are set using the datasets native calendar.
 All six arguments should be given as integers - the named month string
 will not be accepted.
 
-See also :func:`esmvaltool.preprocessor.extract_time`.
+See also :func:`esmvalcore.preprocessor.extract_time`.
 
 
 2. extract_season
@@ -68,7 +68,7 @@ monthly datapoints per year.
 If you want the seasonal average, then this function needs to be combined with
 the seasonal_mean function, below.
 
-See also :func:`esmvaltool.preprocessor.extract_season`.
+See also :func:`esmvalcore.preprocessor.extract_season`.
 
 
 3. extract_month
@@ -78,7 +78,7 @@ The function extracts the times that occur within a specific month.
 This function only has one argument: `month`. This value should be an integer
 between 1 and 12 as the named month string will not be accepted.
 
-See also :func:`esmvaltool.preprocessor.extract_month`.
+See also :func:`esmvalcore.preprocessor.extract_month`.
 
 
 4. time_average
@@ -87,7 +87,7 @@ See also :func:`esmvaltool.preprocessor.extract_month`.
 This functions takes the weighted average over the time dimension. This
 function requires no arguments and removes the time dimension of the cube.
 
-See also :func:`esmvaltool.preprocessor.time_average`.
+See also :func:`esmvalcore.preprocessor.time_average`.
 
 
 5. seasonal_mean
@@ -101,7 +101,7 @@ the first DJF field will only contain data from January and February.
 We recommend using the extract_time to start the dataset from the following
 December and remove such biased initial datapoints.
 
-See also :func:`esmvaltool.preprocessor.seasonal_mean`.
+See also :func:`esmvalcore.preprocessor.seasonal_mean`.
 
 
 6. annual_mean
@@ -111,7 +111,7 @@ This function produces an annual or a decadal mean. The only argument is the
 decadal boolean switch. When this switch is set to true, this function
 will output the decadal averages.
 
-See also :func:`esmvaltool.preprocessor.annual_mean`.
+See also :func:`esmvalcore.preprocessor.annual_mean`.
 
 
 7. regrid_time
@@ -149,7 +149,7 @@ arguments:
 
 Note that this function can only be used to extract a rectangular region.
 
-See also :func:`esmvaltool.preprocessor.extract_region`.
+See also :func:`esmvalcore.preprocessor.extract_region`.
 
 
 2. zonal_means
@@ -163,7 +163,7 @@ This function takes two arguments:
 * coordinate: Which direction to apply the operation: latitude or longitude
 * mean_type: Which operation to apply: mean, std_dev, variance, median, min or max
 
-See also :func:`esmvaltool.preprocessor.zonal_means`.
+See also :func:`esmvalcore.preprocessor.zonal_means`.
 
 
 3. average_region
@@ -185,7 +185,7 @@ Note that this function is applied over the entire dataset. If only a specific
 region, depth layer or time period is required, then those regions need to be
 removed using other preprocessor operations in advance.
 
-See also :func:`esmvaltool.preprocessor.average_region`.
+See also :func:`esmvalcore.preprocessor.average_region`.
 
 
 4. extract_named_regions
@@ -197,7 +197,7 @@ of strings of named regions. Note that the dataset must have a `region`
 cooordinate which includes a list of strings as values. This function then
 matches the named regions against the requested string.
 
-See also :func:`esmvaltool.preprocessor.extract_named_regions`.
+See also :func:`esmvalcore.preprocessor.extract_named_regions`.
 
 
 Volume manipulation
@@ -222,7 +222,7 @@ Note that this requires the requested z-coordinate range to be the
 same sign as the iris cube. ie, if the cube has z-coordinate as
 negative, then z_min and z_max need to be negative numbers.
 
-See also :func:`esmvaltool.preprocessor.extract_volume`.
+See also :func:`esmvalcore.preprocessor.extract_volume`.
 
 
 2. average_volume
@@ -237,7 +237,7 @@ coord2: the name of the coordinate in the second dimension.
 No depth coordinate is required as this is determined by iris. This
 function works best when the fx_files provide the cell volume.
 
-See also :func:`esmvaltool.preprocessor.average_volume`.
+See also :func:`esmvalcore.preprocessor.average_volume`.
 
 
 3. depth_integration
@@ -247,7 +247,7 @@ This function integrate over the depth dimension. This function does a
 weighted sum along the z-coordinate, and removes the z direction of the output
 cube. This preprocessor takes no arguments.
 
-See also :func:`esmvaltool.preprocessor.depth_integration`.
+See also :func:`esmvalcore.preprocessor.depth_integration`.
 
 
 4. extract_transect
@@ -263,7 +263,7 @@ cube along the equator. On the other hand, if we set latitude to 0 and then
 set longitude to `[40., 100.]` this will produce a transect of the equator
 in the indian ocean.
 
-See also :func:`esmvaltool.preprocessor.extract_transect`.
+See also :func:`esmvalcore.preprocessor.extract_transect`.
 
 
 5. extract_trajectory
@@ -283,7 +283,7 @@ of the cube to those points, and `number_points` is not needed.
 Note that this function uses the expensive interpolate method, but it may be
 necceasiry for irregular grids.
 
-See also :func:`esmvaltool.preprocessor.extract_trajectory`.
+See also :func:`esmvalcore.preprocessor.extract_trajectory`.
 
 
 CMORization and dataset-specific fixes

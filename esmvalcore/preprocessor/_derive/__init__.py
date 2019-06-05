@@ -24,7 +24,7 @@ def _get_all_derived_variables():
     for path in Path(__file__).parent.glob('[a-z]*.py'):
         short_name = path.stem
         module = importlib.import_module(
-            f'esmvaltool.preprocessor._derive.{short_name}')
+            f'esmvalcore.preprocessor._derive.{short_name}')
         derivers[short_name] = getattr(module, 'DerivedVariable')
     return derivers
 
