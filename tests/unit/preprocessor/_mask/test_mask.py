@@ -1,19 +1,18 @@
-"""Unit test for the :func:`esmvaltool.preprocessor._mask` function."""
+"""Unit test for the :func:`esmvalcore.preprocessor._mask` function."""
 
 import unittest
 
 import numpy as np
-from esmvaltool.preprocessor._mask import (_apply_fx_mask, _check_dims,
-                                           count_spells, _get_fx_mask,
-                                           mask_above_threshold,
-                                           mask_below_threshold,
-                                           mask_inside_range,
-                                           mask_outside_range)
 from numpy.testing import assert_array_equal, assert_equal
 
 import iris
 import tests
 from cf_units import Unit
+from esmvalcore.preprocessor._mask import (
+    _apply_fx_mask, _check_dims,
+    count_spells, _get_fx_mask,
+    mask_above_threshold, mask_below_threshold, mask_inside_range,
+    mask_outside_range)
 
 
 class Test(tests.Test):

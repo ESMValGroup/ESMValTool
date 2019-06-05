@@ -1,7 +1,7 @@
 """
 Test mask.
 
-Integration tests for the :func:`esmvaltool.preprocessor._mask`
+Integration tests for the :func:`esmvalcore.preprocessor._mask`
 module.
 
 """
@@ -11,13 +11,13 @@ import tempfile
 import unittest
 
 import numpy as np
-from esmvaltool.preprocessor import (PreprocessorFile, mask_fillvalues,
-                                     mask_landsea, mask_landseaice,
-                                     mask_window_threshold)
 from numpy.testing import assert_array_equal
 
 import iris
 import tests
+from esmvalcore.preprocessor import (PreprocessorFile, mask_fillvalues,
+                                     mask_landsea, mask_landseaice,
+                                     mask_window_threshold)
 
 
 class Test(tests.Test):
