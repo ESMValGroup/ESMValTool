@@ -16,7 +16,7 @@ $output_dir/recipe_name_YYYYMMDD_HHMMSS/
 
 
 
-This directory will contain 4 further directorys:
+This directory will contain 4 further subdirectories:
 
 1. preproc: This directory contains all the preprocessed netcdfs data & metadata.
 
