@@ -32,6 +32,7 @@ def extract_volume(cube, z_min, z_max):
         minimum depth to extract.
     z_max: float
         maximum depth to extract.
+
     Returns
     -------
     iris.cube.Cube
@@ -140,6 +141,7 @@ def calculate_volume(cube):
     ----------
     cube: iris.cube.Cube
         input cube.
+
     Returns
     -------
     float
@@ -187,10 +189,12 @@ def average_volume(
         name of second coordinate
     fx_files: dict
         dictionary of field:filename for the fx_files
+
     Returns
     -------
     iris.cube.Cube
         collapsed cube.
+
     Raises
     ------
     ValueError
@@ -290,6 +294,7 @@ def depth_integration(cube):
     ---------
     cube: iris.cube.Cube
         input cube.
+
     Returns
     -------
     iris.cube.Cube
@@ -350,10 +355,12 @@ def extract_transect(cube, latitude=None, longitude=None):
         transect latiude or range.
     longitude:  None, float or [float, float], optional
         transect longitude or range.
+
     Returns
     -------
     iris.cube.Cube
         collapsed cube.
+
     Raises
     ------
     ValueError
@@ -437,10 +444,12 @@ def extract_trajectory(cube, latitudes, longitudes, number_points=2):
         list of longitude coordinates (floats).
     number_points: int
         number of points to extrapolate (optional).
+
     Returns
     -------
     iris.cube.Cube
         collapsed cube.
+
     Raises
     ------
     ValueError
