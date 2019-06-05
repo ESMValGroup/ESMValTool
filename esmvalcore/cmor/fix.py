@@ -112,14 +112,15 @@ def fix_metadata(cubes,
         if len(cube_list) != 1:
             logger.warning('Cubes were not reduced to one after'
                            'fixing: %s', cube_list)
-            try:
-                cube = cube_list.extract_strict(Constraint(
-                    cube_func=lambda c: c.var_name == short_name
-                ))
-            except ConstraintMismatchError:
+            cube = None
+            for raw_cube in cube_list:
+                if raw_cube.var_name == short_name:
+                    cube = raw_cube
+                    break
+            if not cube:
                 raise ValueError(
-                    'Variable %s not found for %s:%s' %
-                    short_name, project, dataset
+                    'Variable %s not found for %s : %s' % \
+                    (short_name, project, dataset)
                 )
             logger.warning(
                 'Found variable %s for %s:%s, but there were other present in '

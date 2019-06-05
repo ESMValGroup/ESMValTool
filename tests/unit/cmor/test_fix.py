@@ -73,12 +73,17 @@ class TestFixMetadata(unittest.TestCase):
 
     def setUp(self):
         """Prepare for testing."""
-        self.cube = mock.Mock()
-        self.cube.attributes = {'source_file': 'source_file'}
-        self.fixed_cube = mock.Mock()
-        self.fixed_cube.attributes = {'source_file': 'source_file'}
+        self.cube = self._create_mock_cube()
+        self.fixed_cube = self._create_mock_cube()
         self.mock_fix = mock.Mock()
         self.mock_fix.fix_metadata.return_value = [self.fixed_cube]
+
+    @staticmethod
+    def _create_mock_cube(var_name='short_name'):
+        cube = mock.Mock()
+        cube.var_name = var_name
+        cube.attributes = {'source_file': 'source_file'}
+        return cube
 
     def test_fix(self):
         """Check that the returned fix is applied."""
@@ -98,6 +103,33 @@ class TestFixMetadata(unittest.TestCase):
                                          'model')[0]
             self.assertTrue(cube_returned is self.cube)
             self.assertTrue(cube_returned is not self.fixed_cube)
+
+    def test_select_var(self):
+        """Check that the same cube is returned if no fix is available."""
+        with mock.patch(
+                'esmvalcore.cmor._fixes.fix.Fix.get_fixes', return_value=[]):
+            cube_returned = fix_metadata(
+                [self.cube, self._create_mock_cube('extra')],
+                'short_name',
+                'project',
+                'model'
+            )[0]
+            self.assertTrue(cube_returned is self.cube)
+
+    def test_select_var_failed_if_bad_var_name(self):
+        """Check that the same cube is returned if no fix is available."""
+        with mock.patch(
+                'esmvalcore.cmor._fixes.fix.Fix.get_fixes', return_value=[]):
+            with self.assertRaises(ValueError):
+                cube_returned = fix_metadata(
+                    [
+                        self._create_mock_cube('not_me'),
+                        self._create_mock_cube('me_neither')
+                    ],
+                    'short_name',
+                    'project',
+                    'model'
+                )
 
     def test_cmor_checker_called(self):
         """Check that the cmor check is done."""
