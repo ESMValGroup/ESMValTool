@@ -337,45 +337,6 @@ def count_spells(data, threshold, axis, spell_length):
     return spell_point_counts
 
 
-def mask_window_threshold(cube, threshold_fraction, min_value, time_window):
-    """
-    Find data counts in a time window.
-
-    Function that returns a masked data cube. The masking is done on
-    the number of valid data points within a time window "window_size"
-    per grid point that satify a simple value thresholding condition
-    value > value_threshold. This is the equivalent of mask_fillvalues
-    but for single data products (single iris cubes).
-
-    Parameters
-    ----------
-    cube: iris.cube.Cube
-        data cube to be masked.
-
-    threshold_fraction: float
-        fractional threshold of missing data points.
-        Must be between 0 and 1.
-
-    min_value: float
-        minumum value threshold.
-
-    time_window: float
-        time window to compute missing data counts.
-
-    Returns
-    -------
-    iris.cube.Cube
-        Masked iris cube.
-
-    """
-    mask = _get_fillvalues_mask(cube, threshold_fraction, min_value,
-                                time_window)
-    data = cube.core_data()
-    mask = da.ma.getmaskarray(data) | mask
-    cube.data = da.ma.masked_array(data, mask=mask)
-    return cube
-
-
 def mask_above_threshold(cube, threshold):
     """
     Mask above a specific threshold value.
