@@ -7,7 +7,7 @@ import iris
 from iris.cube import CubeList
 from cf_units import Unit
 
-import esmvaltool.preprocessor._derive._shared as shared
+import esmvalcore.preprocessor._derive._shared as shared
 
 O_NAME = 'sea_surface_temperature'
 L_NAME = 'air_temperature'

@@ -11,8 +11,8 @@ from cf_units import Unit
 from dask import array as da
 
 from esmvaltool import __version__ as version
-from esmvaltool._config import get_tag_value
-from esmvaltool.cmor.table import CMOR_TABLES
+from esmvalcore._config import get_tag_value
+from esmvalcore.cmor.table import CMOR_TABLES
 
 logger = logging.getLogger(__name__)
 
