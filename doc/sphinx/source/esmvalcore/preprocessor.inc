@@ -207,7 +207,7 @@ statistical operators along the temporal coordinate of the input data:
 5. seasonal_mean: produce a mean for each season (DJF, MAM, JJA, SON)
 6. annual_mean: produce an annual or decadal mean.
 7. regrid_time: align the time axis of each dataset to have common time points
-and calendars.
+   and calendars.
 
 
 1. extract_time
@@ -400,7 +400,7 @@ The _volume.py module contains the following preprocessor functions:
 2. average_volume: calculate the volume-weighted average.
 3. depth_integration: integrate over the depth dimension.
 4. extract_transect: extract data along a line of constant latitude or
-longitude
+   longitude
 5. extract_trajectory: extract data along a specified trajectory.
 
 
@@ -457,7 +457,7 @@ One of these arguments needs to be set to a float, and the other can then be
 either ignored or set to a minimum or maximum value. For example, if latitude
 is set to 0 and longitude is left blank, the function would produce a cube
 along the equator. If latitude is set to to 0 and longitude to `[40., 100.]` it
- will produce a transect of the equator in the Indian Ocean.
+will produce a transect of the equator in the Indian Ocean.
 
 See also :func:`esmvalcore.preprocessor.extract_transect`.
 
