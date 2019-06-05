@@ -1,4 +1,4 @@
 """
-Integration tests for the :mod:`esmvaltool.preprocessor._regrid` module.
+Integration tests for the :mod:`esmvalcore.preprocessor._regrid` module.
 
 """
