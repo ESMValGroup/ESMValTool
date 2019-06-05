@@ -72,17 +72,18 @@ directly available in the input data.
 
 CMOR check and dataset-specific fixes
 ======================================
-Documentation of _reformat.py, check.py and fix.py
+.. warning::
+   Documentation of _reformat.py, check.py and fix.py to be added
 
 
 Vertical interpolation
 ======================
-Documentation of _regrid.py (part 1)
+.. warning::
+   Documentation of  _regrid.py (part 1) to be added
 
 
 Land/Sea/Ice Masking
 ====================
-Documentation of _mask.py (part 1)
 
 Certain metrics and diagnostics need to be computed and performed on specific
 domains on the globe. The ESMValTool preprocessor supports filtering
@@ -146,29 +147,31 @@ it within a diagnostic script. This can be done in the variable dictionary by
 specifiying the desired fx variables (masks):
 
 .. warning::
-  Code snippet and text to be added (after #1037 and #1075 are closed)
+  Code snippet, text and link to function to be added (after #1037 and #1075
+  are closed).
+
 
 
 Horizontal regridding
 =====================
-Documentation of _regrid.py (part 2)
+.. warning::
+   Documentation of  _regrid.py (part 2) to be added
+
 
 
 Masking of missing values
 =========================
-Documentation of _mask.py (part 2)
+.. warning::
+   Documentation of  _mask.py (part 2) to be added
 
 
 Multi-model statistics
 ======================
 
-Documentation of_multimodel.py
-
-
-
+.. warning::
+   Documentation of _multimodel.py to be added.
 
 Information on maximum memory required: In the most general case, we can set upper limits on the maximum memory the anlysis will require:
-
 
 Ms = (R + N) x F_eff - F_eff - when no multimodel analysis is performed;
 Mm = (2R + N) x F_eff - 2F_eff - when multimodel analysis is performed;
@@ -297,12 +300,15 @@ See also :func:`esmvalcore.preprocessor.annual_mean`.
 --------------
 
 This function aligns the time points of each component dataset so that the
-dataset iris cubes can be subtracted. The operation makes the datasets time
+dataset Iris cubes can be subtracted. The operation makes the datasets time
 points common and sets common calendars; it also resets the time bounds and
 auxiliary coordinates to reflect the artifically shifted time points. Current
 implementation for monthly and daily data; the frequency is set automatically
 from the variable CMOR table unless a custom frequency is set manually by the
 user in recipe. 
+
+.. warning::
+   Link to function missing.
 
 
 Area operations
@@ -385,25 +391,31 @@ matches the named regions against the requested string.
 See also :func:`esmvalcore.preprocessor.extract_named_regions`.
 
 
+Volume operations
+=================
+
 The _volume.py module contains the following preprocessor functions:
 
-* extract_volume: Extract a specific depth range from a cube.
-* average_volume: Calculate the volume-weighted average.
-* depth_integration: Integrate over the depth dimension.
-* extract_transect: Extract data along a line of constant latitude or longitude.
-* extract_trajectory: Extract data along a specified trajectory.
+1. extract_volume: extract a specific depth range from a cube.
+2. average_volume: calculate the volume-weighted average.
+3. depth_integration: integrate over the depth dimension.
+4. extract_transect: extract data along a line of constant latitude or
+longitude
+5. extract_trajectory: extract data along a specified trajectory.
 
 
 1. extract_volume
 -----------------
 
-Extract a specific range in the z-direction from a cube.  This function
-takes two arguments, a minimum and a maximum (`z_min` and `z_max`,
-respectively) in the z direction.
+This function extracts a specific range in the z-direction from a cube.
+This function takes two arguments:
 
-Note that this requires the requested z-coordinate range to be the
-same sign as the iris cube. ie, if the cube has z-coordinate as
-negative, then z_min and z_max need to be negative numbers.
+* z_min: minimum in the z direction
+* z_max: maximum in the z direction
+
+Note that this requires the requested z-coordinate range to be the same sign as
+the Iris cube, i.e. if the cube has z-coordinate as negative, then z_min and
+z_max need to be negative numbers.
 
 See also :func:`esmvalcore.preprocessor.extract_volume`.
 
@@ -414,11 +426,11 @@ See also :func:`esmvalcore.preprocessor.extract_volume`.
 This function calculates the volume-weighted average across three dimensions,
 but maintains the time dimension. The following arguments are required:
 
-coord1: the name of the coordinate in the first direction.
-coord2: the name of the coordinate in the second dimension.
+* coord1: the name of the coordinate in the first direction.
+* coord2: the name of the coordinate in the second dimension.
 
-No depth coordinate is required as this is determined by iris. This
-function works best when the fx_files provide the cell volume.
+No depth coordinate is required as this is determined by Iris. This
+function works best when the fx files provide the cell volume.
 
 See also :func:`esmvalcore.preprocessor.average_volume`.
 
@@ -426,9 +438,8 @@ See also :func:`esmvalcore.preprocessor.average_volume`.
 3. depth_integration
 --------------------
 
-This function integrate over the depth dimension. This function does a
-weighted sum along the z-coordinate, and removes the z direction of the output
-cube. This preprocessor takes no arguments.
+This function integrates over the depth dimension. It performs a weighted sum
+along the z-coordinate, and removes the z direction of the output cube. It takes no arguments. 
 
 See also :func:`esmvalcore.preprocessor.depth_integration`.
 
@@ -436,15 +447,17 @@ See also :func:`esmvalcore.preprocessor.depth_integration`.
 4. extract_transect
 -------------------
 
-This function extract data along a line of constant latitude or longitude.
-This function takes two arguments, although only one is strictly required.
-The two arguments are `latitude` and `longitude`. One of these arguments
-needs to be set to a float, and the other can then be either ignored or set to
-a minimum or maximum value.
-Ie: If we set latitude to 0 N and leave longitude blank, it would produce a
-cube along the equator. On the other hand, if we set latitude to 0 and then
-set longitude to `[40., 100.]` this will produce a transect of the equator
-in the indian ocean.
+This function extracts data along a line of constant latitude or longitude.
+This function takes two arguments, although only one is strictly required:
+
+* latitude
+* longitude
+
+One of these arguments needs to be set to a float, and the other can then be
+either ignored or set to a minimum or maximum value. For example, if latitude
+is set to 0 and longitude is left blank, the function would produce a cube
+along the equator. If latitude is set to to 0 and longitude to `[40., 100.]` it
+ will produce a transect of the equator in the Indian Ocean.
 
 See also :func:`esmvalcore.preprocessor.extract_transect`.
 
@@ -452,19 +465,17 @@ See also :func:`esmvalcore.preprocessor.extract_transect`.
 5. extract_trajectory
 ---------------------
 
-This function extract data along a specified trajectory.
-The three areguments are: latitudes and longitudes are the coordinates of the
-trajectory.
+This function extracts data along a specified trajectory. It requires three
+arguments:
+* latitude_points: list of latitude coordinates
+* longitude_points: list of longiute coordinates
+* number_points: if two points are provided, the `number_points` argument is
+used to set the number of places to extract between the two end points.
 
-If two points are provided, the `number_points` argument is used to set a
-the number of places to extract between the two end points.
-
-If more than two points are provided, then
-extract_trajectory will produce a cube which has extrapolated the data
-of the cube to those points, and `number_points` is not needed.
-
-Note that this function uses the expensive interpolate method, but it may be
-necceasiry for irregular grids.
+If more than two points are provided, then extract_trajectory will produce a
+cube which has extrapolated the data of the cube to those points, and
+`number_points` is not needed. Note that this function uses the expensive
+interpolate method, but it may be necessary for irregular grids.
 
 See also :func:`esmvalcore.preprocessor.extract_trajectory`.
 
