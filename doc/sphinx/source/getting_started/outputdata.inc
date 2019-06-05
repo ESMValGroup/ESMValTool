@@ -70,6 +70,8 @@ item, 'plot_dir' ie: cfg['plot_dir']
 
 In NCL-based diagnostics, this is given by config_user_info@plot_dir.
 
+In NCL-based diagnostics, this is given by config_user_info@plot_dir.
+
 
 Run
 ===
