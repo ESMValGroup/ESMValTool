@@ -1,8 +1,14 @@
-:: _observations:
+:: _inputdata:
 
-**********************************************
-Obtaining and cmorizing observational datasets
-**********************************************
+**********
+Input data
+**********
+
+Models
+======
+
+Observations
+============
 
 Observational and reanalysis products in the standard CF/CMOR format used in CMIP and required by the ESMValTool are available via the obs4mips (https://esgf-node.llnl.gov/projects/obs4mips/) and ana4mips (https://esgf.nccs.nasa.gov/projects/ana4mips/) proejcts, respectively. Their use is strongly recommended, when possible.
 

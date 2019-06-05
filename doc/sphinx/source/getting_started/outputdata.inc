@@ -1,8 +1,8 @@
 :: _outputdata:
 
-*****************
-ESMValTool output
-*****************
+******
+Output
+******
 
 ESMValTool produces a new folder every run. The location is determined by your config.yml 
 output_dir variable, recipe name, YYYYMMDD & HHMMSS
