@@ -6,6 +6,7 @@
 ;
 ;    function portrait_plot
 ;    function circle_plot
+;
 ; #############################################################################
 
 load "$diag_scripts/../interface_scripts/auxiliary.ncl"
@@ -278,13 +279,6 @@ begin
   res@tiMainFontHeightF = 0.020
   if (isatt(data, "metric")) then
     res@tiMainString = data@metric
-  end if
-  if (isatt(data, "region")) then
-    if (isatt(res, "tiMainString")) then
-      res@tiMainString = res@tiMainString + data@region
-    else
-      res@tiMainString = data@region
-    end if
   end if
 
   ; Override defaults with "res_" attributes of "data"
