@@ -8,6 +8,7 @@ from scipy.interpolate import interp1d
 
 logger = logging.getLogger(os.path.basename(__file__))
 
+
 def hofm_regions(region, lon2d, lat2d):
     """Define regions for data selection.
 

@@ -11,7 +11,6 @@ from netCDF4 import Dataset
 
 from esmvaltool.diag_scripts.ocean3d.getdata import load_meta
 
-
 logger = logging.getLogger(os.path.basename(__file__))
 
 
@@ -54,10 +53,11 @@ def interpolate_vert(depth_model, target_depth, data_model):
     data = data + i_lo * data_lo
     return data
 
+
 def weighting(distance):
-    """Weighting function for pyresample.
-    """
+    """Weighting function for pyresample."""
     weight = 1 / distance**2
+
 
 def interpolate_pyresample(obs_file, mod_file, depth, cmor_var):
     """The 2d interpolation with pyresample.

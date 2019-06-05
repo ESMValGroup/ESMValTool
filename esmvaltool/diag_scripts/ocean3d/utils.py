@@ -16,8 +16,10 @@ from cdo import Cdo
 mpl.use('agg')
 logger = logging.getLogger(os.path.basename(__file__))
 
+
 class DiagnosticError(Exception):
     """Error in diagnostic."""
+
 
 def genfilename(basedir,
                 variable=None,
