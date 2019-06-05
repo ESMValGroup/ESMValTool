@@ -339,6 +339,7 @@ def _get_default_settings(variable, config_user, derive=False):
             'mip': variable['mip'],
             'short_name': variable['short_name'],
             'frequency': variable['frequency'],
+            'automatic_fixes': config_user['automatic_fixes'],
         }
     # Configure final CMOR data check
     if variable.get('cmor_table'):
@@ -347,6 +348,7 @@ def _get_default_settings(variable, config_user, derive=False):
             'mip': variable['mip'],
             'short_name': variable['short_name'],
             'frequency': variable['frequency'],
+            'automatic_fixes': config_user['automatic_fixes']
         }
 
     # Clean up fixed files

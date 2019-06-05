@@ -36,6 +36,8 @@ config_developer_file: null
 # Only available for Python diagnostics
 profile_diagnostic: false
 
+# Try to automatically fix common errors from datasets
+automatic_fixes: True
 # Rootpaths to the data from different projects (lists are also possible)
 rootpath:
   CMIP5: [~/cmip5_inputpath1, ~/cmip5_inputpath2]

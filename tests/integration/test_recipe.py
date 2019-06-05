@@ -66,6 +66,7 @@ def config_user(tmp_path):
     filename = write_config_user_file(tmp_path)
     cfg = esmvalcore._config.read_config_user_file(filename, 'recipe_test')
     cfg['synda_download'] = False
+    cfg['automatic_fixes'] = True
     return cfg
 
 
@@ -296,12 +297,14 @@ def test_default_preprocessor(tmp_path, patched_datafinder, config_user):
             'mip': 'Oyr',
             'short_name': 'chl',
             'frequency': 'yr',
+            'automatic_fixes': True,
         },
         'cmor_check_data': {
             'cmor_table': 'CMIP5',
             'mip': 'Oyr',
             'short_name': 'chl',
             'frequency': 'yr',
+            'automatic_fixes': True,
         },
         'cleanup': {
             'remove': [fix_dir]
