@@ -109,7 +109,7 @@ ESMValTool about this in the config-user.yml file (described above).
 
 If you are using a machine which is not listed, you can either
 use a flat data directory (ie put all the files in one directory - this is risky and can
-slow down your system). Alternatively, you can add your make your data
+slow down your system). Alternatively, you could make your data
 structure resemble one of the listed sites, or you can create your own 
 data structure in this file. 
 
