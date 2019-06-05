@@ -1,3 +1,8 @@
+"""
+*********************************************************************
+APPLICATE/TRR Ocean Diagnostics
+*********************************************************************
+"""
 import logging
 import os
 import ESMF
@@ -10,6 +15,8 @@ from scipy.interpolate import interp1d
 
 from esmvaltool.diag_scripts.shared import run_diagnostic
 from esmvaltool.diag_scripts.shared.plot import quickplot
+from esmvaltool.diag_scripts.ocean3d.getdata import load_meta
+
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -142,24 +149,30 @@ def interpolate_pyresample(obs_file, mod_file, depth, cmor_var):
 
 
 def interpolate_esmf(obs_file, mod_file, depth, cmor_var):
+    '''The 2d interpolation with ESMF
 
-    # load observations data
-    obs = Dataset(obs_file)
+    Parameters
+    ----------
+    obs_file: str
+        path to file with observations/climatology,
+        will be used to extract the grid to interpolate on to.
+    mod_file: str
+        path to the file with model data.
+    depth: int
+        depth to interpolate to. First the closest depth from the
+        observations will be selected and then.
+    '''
+
+
+    metadata = load_meta(obs_file, fxpath=None)
+    obs, lon_obs, lat_obs, depth_obs, time, areacello = metadata
     data_obs = obs.variables[cmor_var][:]
-    # salt_phc  = phc.variables['salt'][:]
-    lon_obs = obs.variables['lon'][:]
-    lat_obs = obs.variables['lat'][:]
-    depth_obs = obs.variables['lev'][:]
 
     # Select depth in climatology that is closest to the desired depth
     target_depth, iz = closest_depth(depth_obs, depth)
 
     # climatology data on the level
     data_onlev_obs = data_obs[0, iz, :, :]
-
-    # add cyclic point to data and coordinates
-    #     data_onlev_obs_cyc, lon_obs_cyc = addcyclic(data_onlev_obs, lon_obs[0,:])
-    #     lonc, latc = np.meshgrid(lon_obs_cyc, lat_obs[:,0])
 
     # Setting ESMF
     grid_obs = ESMF.Grid(filename=obs_file, filetype=ESMF.FileFormat.GRIDSPEC)
@@ -173,13 +186,9 @@ def interpolate_esmf(obs_file, mod_file, depth, cmor_var):
     distfield.data[:] = 0.0
 
     # Now working with the model
-    model = Dataset(mod_file)
+    metadata = load_meta(mod_file, fxpath=None)
+    model, lon_model, lat_model, depth_model, time, areacello = metadata
     data_model = model.variables[cmor_var][:]
-    lon_model = model.variables['lon'][:]
-    lat_model = model.variables['lat'][:]
-    #hack for HadGEM2-ES
-    lat_model[lat_model > 90] = 90
-    depth_model = model.variables['lev'][:]
 
     # some ocean models still have 1d coordinates
     if lon_model.ndim == 2:
@@ -190,19 +199,20 @@ def interpolate_esmf(obs_file, mod_file, depth, cmor_var):
     # Simple vertical interpolation
     data = interpolate_vert(depth_model, target_depth, data_model[0, :, :, :])
 
-    #interpolation
-
+    # set the model grid
     grid_model = ESMF.Grid(filename=mod_file,
                            filetype=ESMF.FileFormat.GRIDSPEC)
 
     model_mask = grid_model.add_item(ESMF.GridItem.MASK)
     model_mask[:] = data.mask.astype('int').T
 
+    # define asource field
     sourcefield = ESMF.Field(
         grid_model,
         staggerloc=ESMF.StaggerLoc.CENTER,
         name='Model',
     )
+    # define a destination field
     distfield = ESMF.Field(
         grid_obs,
         staggerloc=ESMF.StaggerLoc.CENTER,
@@ -210,7 +220,7 @@ def interpolate_esmf(obs_file, mod_file, depth, cmor_var):
     )
     sourcefield.data[...] = data.T
 
-    print('REGRID')
+    # define the regrider
     regrid = ESMF.Regrid(
         sourcefield,
         distfield,
@@ -219,16 +229,17 @@ def interpolate_esmf(obs_file, mod_file, depth, cmor_var):
         unmapped_action=ESMF.UnmappedAction.IGNORE,
         dst_mask_values=np.array([1]),
         src_mask_values=np.array([1]))
+    # actual regriding
     distfield = regrid(sourcefield, distfield)
+    # reshape the data and convert to masked array
     data_interpolated = distfield.data[:].T
     interpolated = np.ma.masked_equal(data_interpolated, 0)
-
+    # add cyclic points
     data_onlev_obs_cyc, lon_obs_cyc = add_cyclic_point(data_onlev_obs,
                                                        coord=lon_obs[0, :])
     lonc, latc = np.meshgrid(lon_obs_cyc, lat_obs[:, 0])
 
     interpolated_cyc, lon_obs_cyc = add_cyclic_point(interpolated,
                                                      coord=lon_obs[0, :])
-    # lonc, latc = np.meshgrid(lon_obs_cyc, lat_obs[:, 0])
 
     return lonc, latc, target_depth, data_onlev_obs_cyc, interpolated_cyc

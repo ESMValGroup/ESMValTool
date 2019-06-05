@@ -6,22 +6,13 @@ APPLICATE/TRR Ocean Diagnostics
 import logging
 import math
 import os
-#import seawater as sw
 from collections import OrderedDict
-
-import cmocean.cm as cmo
 import ESMF
 import matplotlib as mpl
 import matplotlib.pylab as plt
 import numpy as np
-import pandas as pd
-import pyproj
-import pyresample
-from cdo import Cdo
 from matplotlib import cm
-from mpl_toolkits.basemap import Basemap, addcyclic
 from netCDF4 import Dataset, num2date
-from scipy.interpolate import interp1d
 
 from esmvaltool.diag_scripts.ocean3d.regions import (hofm_regions,
                                                      transect_points)
@@ -30,7 +21,32 @@ from esmvaltool.diag_scripts.ocean3d.utils import genfilename, point_distance
 logger = logging.getLogger(os.path.basename(__file__))
 mpl.use('agg')  #noqa
 
+
 def load_meta(datapath, fxpath=None):
+    '''Load metadata of the netCDF file
+
+    Parameters
+    ----------
+    datapath: str
+        path to the netCDF file with data
+    fxpath: str
+        path to the netCDF file with fx files
+
+    Returns
+    -------
+    datafile: instance of netCDF4 Dataset
+        points to the file
+    lon2d: numpy array
+        Two dimentional longitude information
+    lat2d: numpy array
+        Two dimentional latitude information
+    lev: numpy array
+        depths of the model levels
+    time: numpy array
+        dates are converted to datetime objects
+    areacello: numpy array
+        values of areacello
+    '''
     datafile = Dataset(datapath)
 
     if fxpath:
@@ -44,12 +60,16 @@ def load_meta(datapath, fxpath=None):
     lev = datafile.variables['lev'][:]
     time = num2date(datafile.variables['time'][:],
                     datafile.variables['time'].units)
+    #hack for HadGEM2-ES
+    lat[lat > 90] = 90
+
     if lon.ndim == 2:
         lon2d, lat2d = lon, lat
     elif lon.ndim == 1:
         lon2d, lat2d = np.meshgrid(lon, lat)
 
     return [datafile, lon2d, lat2d, lev, time, areacello]
+
 
 def hofm_data(model_filenames, mmodel, cmor_var, areacello_fx, max_level,
               region, diagworkdir):
@@ -154,7 +174,7 @@ def transect_data(mmodel,
     observations: str
         name of the observation dataset.
     '''
-    logger.info("Extract  {} data for {}, region {}".format(
+    logger.info("Extract  {} transect data for {}, region {}".format(
         cmor_var, mmodel, region))
     # get the path to preprocessed file
     ifilename = genfilename(diagworkdir,
@@ -195,7 +215,6 @@ def transect_data(mmodel,
         (lon_s4new.shape[0], datafile.variables[cmor_var].shape[1]))
     # get number of depth levels for the model
     ndepths = datafile.variables[cmor_var].shape[1]
-    print("MODEL {}, ndepths {}".format(mmodel, ndepths))
 
     # loop over depth levels
     for kind in range(0, ndepths):

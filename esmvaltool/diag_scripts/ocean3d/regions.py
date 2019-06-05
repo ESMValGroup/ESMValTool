@@ -1,26 +1,12 @@
-import inspect
+"""
+*********************************************************************
+APPLICATE/TRR Ocean Diagnostics
+*********************************************************************
+"""
 import logging
-import math
 import os
-#import seawater as sw
-# import joblib
-from collections import OrderedDict
-
-import cmocean.cm as cmo
-import ESMF
-import iris
 import matplotlib as mpl
-import matplotlib.pylab as plt
 import numpy as np
-#import seaborn as sns
-import palettable
-import pandas as pd
-import pyproj
-import pyresample
-from cdo import Cdo
-from matplotlib import cm
-from mpl_toolkits.basemap import Basemap, addcyclic
-from netCDF4 import Dataset, num2date
 from scipy.interpolate import interp1d
 
 from esmvaltool.diag_scripts.shared import run_diagnostic
@@ -34,6 +20,23 @@ mpl.use('agg')
 
 
 def hofm_regions(region, lon2d, lat2d):
+    ''' Regions for data selection
+
+    Parameters
+    ----------
+    region: str
+        the name of the region
+    lon2d: 2d numpy array
+    lat2d: 2d numpy array
+
+    Returns
+    -------
+    indexesi: 1d numpy array
+        i indexes of the selected points
+    indexesj: 1d numpy array
+        j indexes of the selected points
+
+    '''
     if region == 'EB':
         # Eurasian Basin of the Arctic Ocean
         indi, indj = np.where((lon2d > 300) & (lat2d > 80))
@@ -71,6 +74,24 @@ def hofm_regions(region, lon2d, lat2d):
 
 
 def transect_points(transect, mult=2):
+    ''' Return a collection of points that forms
+        a predefined transect
+
+        Parameters
+        ----------
+        transect: str
+            Name of the predefined transect
+        mult: int
+            multiplicator that allow to increase
+            the number of points by `mult` times
+
+        Returns
+        -------
+        lon_s4new: 1d numpy array
+            longitude points of the transect
+        lat_s4new: 1d numpy array
+            latitude points of the transect
+    '''
     if transect == 'AWpath':
         lon_s4 = np.array([
             17.6, 16.5, 16.05, 15.6, 15.1, 14.1, 13.0, 12.0, 10.0, 8.0, 4.0,

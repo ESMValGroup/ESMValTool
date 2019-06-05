@@ -3,7 +3,6 @@
 APPLICATE/TRR Ocean Diagnostics
 *********************************************************************
 """
-import inspect
 import logging
 import math
 import os
@@ -11,19 +10,12 @@ from collections import OrderedDict
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 import cmocean.cm as cmo
-import ESMF
-import iris
 import matplotlib as mpl
 import matplotlib.pylab as plt
 import numpy as np
-import palettable
 import pandas as pd
-import pyproj
-import pyresample
-from cdo import Cdo
 from matplotlib import cm
 from netCDF4 import Dataset, num2date
-from scipy.interpolate import interp1d
 
 from esmvaltool.diag_scripts.ocean3d.getdata import load_meta, transect_points
 from esmvaltool.diag_scripts.ocean3d.interpolation import (
@@ -36,6 +28,7 @@ from esmvaltool.diag_scripts.shared.plot import quickplot
 logger = logging.getLogger(os.path.basename(__file__))
 
 mpl.use('agg')
+
 
 def create_plot(model_filenames, ncols=3, projection=None, nplots_increment=0):
     '''Creates matplotlib figure and set of axis that corespond to
@@ -76,7 +69,7 @@ def create_plot(model_filenames, ncols=3, projection=None, nplots_increment=0):
                                constrained_layout=True)
     # this workd well for usual plots
     else:
-        figsize = (8 * ncols, 2 * nrows * ncols)
+        figsize = (10 * ncols, 2.5 * nrows * ncols)
         fig, ax = plt.subplots(nrows, ncols, figsize=figsize)
     # if you have more than one axis, flatten the array
     # this way it is easier to handle it.
@@ -769,6 +762,27 @@ def transect_map(region,
                  projection=ccrs.NorthPolarStereo(),
                  bbox=[-180, 180, 60, 90],
                  mult=2):
+    '''Plots the map with points of the transect overlayed.
+
+    Parameters
+    ----------
+    region: str
+        name of the region predefined in `transect_points` function.
+    diagplotdir: str
+        path to the plot directory
+    projection: instance of cartopy ccrs
+        cartopy progection
+    bbox: list
+        four values - [left, right, bottom, top]
+    mult: int
+        miltiplicator for the number of points.
+        E.g. mult=2 increase the number of points 2 times.
+
+    Returns
+    -------
+    None
+
+    '''
     logger.info("Create transect map for region {}".format(region))
     lon_s4new, lat_s4new = transect_points(region, mult=mult)
     dist = point_distance(lon_s4new, lat_s4new)
@@ -863,18 +877,22 @@ def transect_plot(model_filenames,
                                  extend='both',
                                  cmap=cmo.thermal)
         # plot settings
-        ax[ind].invert_yaxis()
         ax[ind].set_ylabel('Depth, m', size=15, rotation='vertical')
-        ax[ind].set_ylim(max_level, 0)
-        ax[ind].tick_params(axis='both', labelsize=15)
         ax[ind].set_xlabel('Along-track distance, km',
                            size=15,
                            rotation='horizontal')
         ax[ind].set_title(mmodel, size=20)
+        ax[ind].set_ylim(max_level, 0)
+        # ax[ind].invert_yaxis()
+        ax[ind].tick_params(axis='both', labelsize=15)
         # color bar settings
         cb = fig.colorbar(image, ax=ax[ind], pad=0.01)
-        cb.set_label(cb_label, rotation='horizontal', size=15)
+        cb.set_label(cb_label, rotation='vertical', size=15)
         cb.ax.tick_params(labelsize=15)
+    # fig.set_constrained_layout_pads(w_pad=2./30., h_pad=2./30.,
+    #     hspace=10, wspace=10)
+    for delind in range(ind + 1, len(ax)):
+        fig.delaxes(ax[delind])
 
     pltoutname = genfilename(diagplotdir,
                              cmor_var,
