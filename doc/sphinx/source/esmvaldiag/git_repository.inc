@@ -1,8 +1,8 @@
 .. _git_repository:
 
-**************
-Git repository
-**************
+***************
+GitHub Workflow
+***************
 
 Basics
 ======

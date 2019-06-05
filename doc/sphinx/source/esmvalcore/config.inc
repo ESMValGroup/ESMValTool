@@ -1,4 +1,4 @@
-.. _config_developer:
+.. _config:
 
 *******************
 Configuration files
@@ -9,18 +9,16 @@ There are several configuration files in ESMValTool:
   - config-user.yml
   - config-developer.yml
   - config-references.yml
-  - environment.yml
+  - config-logging.yml
+
+User configuration file
+=======================
+
+See Section
 
 
-User config file
-================
-
-The ``config-user.yml`` file is the only user-facing configuration file and is
-described in the user guide section of this document.
-
-
-Developer config file
-=====================
+Developer configuration file
+============================
 
 This configuration file describes the file system structure for several
 key projects (CMIP5, CMIP6) on several key machines (BADC, CP4CDS, DKRZ, ETHZ,
@@ -56,8 +54,8 @@ values. The resulting real path would look something like this:
     MOHC/HadGEM2-CC/rcp85/mon/ocean/Omon/r1i1p1/latest/tos
 
 
-References config file
-================================
+References configuration file
+=============================
 
 The ``config-references.yml`` file is the full list of ESMValTool authors,
 references and projects. Each author, project and reference in the documentation
@@ -85,16 +83,8 @@ documentation section:
 All four items here are named people, references and projects listed in the
 ``config-references.yml`` file.
 
+Logging configuration file
+==========================
 
-
-Environment config file
-================================
-
-This is the conda envronment which informs conda as to which packages
-and which versions are needed in order to install ESMValTool.
-It is called in the update and install commands:
-
-.. code-block:: bash
-
-    conda env install --name esmvaltool --file ESMValTool/environment.yml
-    conda env update --name esmvaltool --file ESMValTool/environment.yml
+.. warning::
+    Section to be added
