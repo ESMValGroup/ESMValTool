@@ -61,10 +61,12 @@ def parse_cell_spec(spec):
     Parameters
     ----------
     spec: str
+
     Returns
     -------
     tuple
         tuple of (float, float) of parsed (lon, lat)
+
     Raises
     ------
     ValueError
