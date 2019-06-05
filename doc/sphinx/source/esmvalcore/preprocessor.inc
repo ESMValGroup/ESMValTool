@@ -23,13 +23,12 @@ following the default order in which they are applied:
 
 * Variable derivation
 * CMOR check and dataset-specific fixes
-* Temporal and spatial subsetting
 * Vertical interpolation
 * Land/Sea/Ice masking
 * Horizontal regridding
 * Missing value masking
 * Multi-model statistics
-* Temporal and spatial statistics
+* Temporal and spatial operations
 * Unit conversion
 
 
@@ -61,7 +60,7 @@ the derivation can be forced by setting the appropriate flag.
       derive: true
       force_derivation: false
 
-The required arguments for this module are two logicals:
+The required arguments for this module are two boolean switches:
 * derive: activate variable derivation
 * force_derivation: force variable derivation even if the variable is
 directly available in the input data.
@@ -69,10 +68,6 @@ directly available in the input data.
 .. warning::
    Link to function missing.
 
-
-Temporal and spatial subsetting
-===============================
-Documentation of _time.py, _area.py, _volume.py (Part 1: extract functions)
 
 
 CMOR check and dataset-specific fixes
@@ -166,7 +161,11 @@ Documentation of _mask.py (part 2)
 
 Multi-model statistics
 ======================
+
 Documentation of_multimodel.py
+
+
+
 
 Information on maximum memory required: In the most general case, we can set upper limits on the maximum memory the anlysis will require:
 
@@ -178,7 +177,7 @@ where
 
 Ms: maximum memory for non-multimodel module
 Mm: maximum memory for multimodel module
-R: computational efficiency of module; R is typically 2-3
+R: computational efficiency of module (typically 2-3)
 N: number of datasets
 F_eff: average size of data per dataset where F_eff = e x f x F
 where e is the factor that describes how lazy the data is (e = 1 for fully realized data)
@@ -192,20 +191,21 @@ Ms = 1.5 x (N - 1) GB
 Mm = 1.5 x (N - 2) GB
 
 
-Temporal and spatial statistics
-===============================
-Documentation of _time.py, _area.py and _volume.py (Part 2: stats function)
+Time operations
+===============
 
+The _time.py module contains a broad set of functions to subset data and apply
+statistical operators along the temporal coordinate of the input data:
 
-The _time.py module contains the following preprocessor functions:
+1. extract_time: extract a time range from a cube.
+2. extract_season: extract only the times that occur within a specific season.
+3. extract_month: extract only the times that occur within a specific month.
+4. time_average: take the weighted average over the time dimension.
+5. seasonal_mean: produce a mean for each season (DJF, MAM, JJA, SON)
+6. annual_mean: produce an annual or decadal mean.
+7. regrid_time: align the time axis of each dataset to have common time points
+and calendars.
 
-* extract_time: Extract a time range from a cube.
-* extract_season: Extract only the times that occur within a specific season.
-* extract_month: Extract only the times that occur within a specific month.
-* time_average: Take the weighted average over the time dimension.
-* seasonal_mean: Produces a mean for each season (DJF, MAM, JJA, SON)
-* annual_mean: Produces an annual or decadal mean.
-* regrid_time: Aligns the time axis of each dataset to have common time points and calendars.
 
 1. extract_time
 ---------------
@@ -221,9 +221,9 @@ The required arguments are relatively self explanatory:
 * end_month
 * end_day
 
-These start and end points are set using the datasets native calendar.
-All six arguments should be given as integers - the named month string
-will not be accepted.
+These start and end points are set using the datasets native calendar. All six
+arguments should be given as integers, named month strings (e.g., March) will
+not be accepted.
 
 See also :func:`esmvaltool.preprocessor.extract_time`.
 
@@ -233,15 +233,16 @@ See also :func:`esmvaltool.preprocessor.extract_time`.
 
 Extract only the times that occur within a specific season.
 
-This function only has one argument: `season`. This is the named season to
-extract. ie: DJF, MAM, JJA, SON.
+This function only has one argument:
+
+* season: DJF, MAM, JJA, or SON
 
 Note that this function does not change the time resolution. If your original
 data is in monthly time resolution, then this function will return three
 monthly datapoints per year.
 
-If you want the seasonal average, then this function needs to be combined with
-the seasonal_mean function, below.
+To calculate a seasonal average, this function needs to be combined with the
+seasonal_mean function, below.
 
 See also :func:`esmvaltool.preprocessor.extract_season`.
 
@@ -250,8 +251,11 @@ See also :func:`esmvaltool.preprocessor.extract_season`.
 ----------------
 
 The function extracts the times that occur within a specific month.
-This function only has one argument: `month`. This value should be an integer
-between 1 and 12 as the named month string will not be accepted.
+This function only has one argument:
+
+* month: [1-12]
+
+Note that named month strings will not be accepted.
 
 See also :func:`esmvaltool.preprocessor.extract_month`.
 
@@ -259,7 +263,7 @@ See also :func:`esmvaltool.preprocessor.extract_month`.
 4. time_average
 ---------------
 
-This functions takes the weighted average over the time dimension. This
+This function takes the weighted average over the time dimension. This
 function requires no arguments and removes the time dimension of the cube.
 
 See also :func:`esmvaltool.preprocessor.time_average`.
@@ -270,7 +274,7 @@ See also :func:`esmvaltool.preprocessor.time_average`.
 
 This function produces a seasonal mean for each season (DJF, MAM, JJA, SON).
 Note that this function will not check for missing time points. For instance,
-if you are looking at the DJF field, but your datasets starts on January 1st,
+if the DJF field is selected, but the input datasets starts on January 1st,
 the first DJF field will only contain data from January and February.
 
 We recommend using the extract_time to start the dataset from the following
@@ -282,9 +286,9 @@ See also :func:`esmvaltool.preprocessor.seasonal_mean`.
 6. annual_mean
 --------------
 
-This function produces an annual or a decadal mean. The only argument is the
-decadal boolean switch. When this switch is set to true, this function
-will output the decadal averages.
+This function produces an annual or a decadal mean. It takes a single boolean
+switch as argument:
+* decadal: calculate decadal averages.
 
 See also :func:`esmvaltool.preprocessor.annual_mean`.
 
@@ -292,20 +296,28 @@ See also :func:`esmvaltool.preprocessor.annual_mean`.
 7. regrid_time
 --------------
 
-This function aligns the time points of each component dataset so that the dataset
-iris cubes can be subtracted. The operation makes the datasets time points common and
-sets common calendars; it also resets the time bounds and auxiliary coordinates to
-reflect the artifically shifted time points. Current implementation for monthly
-and daily data; the frequency is set automatically from the variable CMOR table
-unless a custom frequency is set manually by the user in recipe.
+This function aligns the time points of each component dataset so that the
+dataset iris cubes can be subtracted. The operation makes the datasets time
+points common and sets common calendars; it also resets the time bounds and
+auxiliary coordinates to reflect the artifically shifted time points. Current
+implementation for monthly and daily data; the frequency is set automatically
+from the variable CMOR table unless a custom frequency is set manually by the
+user in recipe. 
 
+
+Area operations
+===============
+
+.. warning::
+   Need to be adapted after renaming action in #1123
 
 The _area.py module contains the following preprocessor functions:
 
-* extract_region: Extract a region from a cube based on lat/lon corners.
-* zonal_means: Calculates the zonal or meridional means.
-* average_region: Calculates the average value over a region.
-* extract_named_regions: Extract a specific region from in the region cooordinate.
+1. extract_region: extract a region from a cube based on lat/lon corners.
+2. zonal_means: calculate the zonal or meridional means.
+3. average_region: calculate the average value over a region.
+4. extract_named_regions: extract a specific region from in the region
+5. cooordinate. 
 
 
 1. extract_region
