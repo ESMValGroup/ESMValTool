@@ -38,7 +38,7 @@ import sys
 from multiprocessing import cpu_count
 
 from . import __version__
-from ._config import configure_logging, read_config_user_file
+from ._config import configure_logging, read_config_user_file, DIAGNOSTICS_PATH
 from ._recipe import TASKSEP, read_recipe_file
 from ._task import resource_usage_logger
 
@@ -106,7 +106,7 @@ def main(args):
     recipe = args.recipe
     if not os.path.exists(recipe):
         installed_recipe = os.path.join(
-            os.path.dirname(__file__), 'recipes', recipe)
+            DIAGNOSTICS_PATH, 'recipes', recipe)
         if os.path.exists(installed_recipe):
             recipe = installed_recipe
     recipe = os.path.abspath(os.path.expandvars(os.path.expanduser(recipe)))

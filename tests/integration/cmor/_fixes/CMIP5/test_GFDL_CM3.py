@@ -3,7 +3,7 @@ import unittest
 from cf_units import Unit
 from iris.cube import Cube
 
-from esmvaltool.cmor._fixes.CMIP5.GFDL_CM3 import sftof
+from esmvalcore.cmor._fixes.CMIP5.GFDL_CM3 import sftof
 
 
 class TestSftof(unittest.TestCase):
