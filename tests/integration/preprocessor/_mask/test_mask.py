@@ -16,8 +16,7 @@ from numpy.testing import assert_array_equal
 import iris
 import tests
 from esmvalcore.preprocessor import (PreprocessorFile, mask_fillvalues,
-                                     mask_landsea, mask_landseaice,
-                                     mask_window_threshold)
+                                     mask_landsea, mask_landseaice)
 
 
 class Test(tests.Test):
@@ -128,17 +127,6 @@ class Test(tests.Test):
                 result_2 = product.cubes[0]
         assert_array_equal(result_2.data.mask, data_2.mask)
         assert_array_equal(result_1.data, data_1)
-
-    def test_mask_window_threshold(self):
-        """Test mask_window_threshold func."""
-        self.mock_data.mask = np.zeros((4, 3, 3), bool)
-        self.mock_data.mask[0, 0, 0] = True
-        expected_mask = np.zeros((4, 3, 3), bool)
-        expected_mask[0, 0, 0] = True
-        coords_spec = [(self.times, 0), (self.lats, 1), (self.lons, 2)]
-        cube = iris.cube.Cube(self.mock_data, dim_coords_and_dims=coords_spec)
-        masked_cube = mask_window_threshold(cube, 0.9, 5., 1)
-        assert_array_equal(expected_mask, masked_cube.data.mask)
 
 
 if __name__ == '__main__':
