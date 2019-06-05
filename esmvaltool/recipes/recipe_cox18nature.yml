@@ -22,7 +22,7 @@ documentation:
 preprocessors:
 
   spatial_mean:
-    area_stats:
+    area_statistics:
       operator: mean
 
 

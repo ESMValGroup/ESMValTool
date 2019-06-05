@@ -31,14 +31,14 @@ An approproate preprocessor for a 3D+time field at the surface would be::
       extract_levels:
         levels:  [0., ]
         scheme: linear_extrap
-      area_stats:
+      area_statistics:
         operator: mean
 
 
 An approproate preprocessor for a 2D+time field would be::
 
     prep_timeseries_2: # For Global surface Averaged
-      area_stats:
+      area_statistics:
         operator: mean
 
 

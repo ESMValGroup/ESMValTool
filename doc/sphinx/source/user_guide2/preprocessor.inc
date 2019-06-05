@@ -131,7 +131,7 @@ The _area.py module contains the following preprocessor functions:
 
 * extract_region: Extract a region from a cube based on lat/lon corners.
 * zonal_means: Calculates the zonal or meridional means.
-* area_stats: Calculates the average value over a region.
+* area_statistics: Calculates the average value over a region.
 * extract_named_regions: Extract a specific region from in the region cooordinate.
 
 
@@ -166,7 +166,7 @@ This function takes two arguments:
 See also :func:`esmvaltool.preprocessor.zonal_means`.
 
 
-3. area_stats
+3. area_statistics
 -----------------
 
 This function calculates the average value over a region - weighted by the
@@ -183,7 +183,7 @@ Note that this function is applied over the entire dataset. If only a specific
 region, depth layer or time period is required, then those regions need to be
 removed using other preprocessor operations in advance.
 
-See also :func:`esmvaltool.preprocessor.area_stats`.
+See also :func:`esmvaltool.preprocessor.area_statistics`.
 
 
 4. extract_named_regions

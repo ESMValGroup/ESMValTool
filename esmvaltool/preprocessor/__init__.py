@@ -8,7 +8,7 @@ from iris.cube import Cube, CubeList
 
 from .._provenance import TrackedFile
 from .._task import BaseTask
-from ._area import (area_stats, extract_named_regions, extract_region,
+from ._area import (area_statistics, extract_named_regions, extract_region,
                     zonal_means)
 from ._derive import derive
 from ._download import download
@@ -72,7 +72,7 @@ __all__ = [
     # Grid-point operations
     'extract_named_regions',
     'depth_integration',
-    'area_stats',
+    'area_statistics',
     'volume_stats',
     # Time operations
     # 'annual_cycle': annual_cycle,

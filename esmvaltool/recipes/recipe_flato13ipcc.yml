@@ -38,7 +38,7 @@ preprocessors:
       exclude: [reference_dataset]
 
   spatial_mean:
-    area_stats:
+    area_statistics:
       operator: mean
 
   clim_ref:

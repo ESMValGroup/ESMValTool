@@ -65,7 +65,7 @@ preprocessors:
   # Global area-weighted Average from 2D field
   prep_global_Surface_average_timeseries_2D:
     custom_order: true
-    area_stats:
+    area_statistics:
       operator: mean
     multi_model_statistics:
       span: overlap
@@ -77,7 +77,7 @@ preprocessors:
     extract_levels:
       levels:  [0., ]
       scheme: linear_horizontal_extrapolate_vertical
-    area_stats:
+    area_statistics:
       operator: mean
     multi_model_statistics:
       span: overlap
@@ -111,13 +111,13 @@ preprocessors:
 
   prep_global_profile:
     annual_mean:
-    area_stats:
+    area_statistics:
       operator: mean
 
   prep_global_profile_decadal:
     annual_mean:
        decadal: true
-    area_stats:
+    area_statistics:
       operator: mean
 
   prep_transect_AMT: # Atlantic Meridional Transect (28W)
@@ -144,7 +144,7 @@ preprocessors:
 #   prep_depth_integration_timeseries:
 #     custom_order: true
 #     depth_integration:
-#     area_stats:
+#     area_statistics:
 #       operator: mean
 
 

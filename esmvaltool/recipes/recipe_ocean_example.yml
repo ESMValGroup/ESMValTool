@@ -53,7 +53,7 @@ preprocessors:
   # --------------------------------------------------
   prep_timeseries_1: # For 2D fields
     custom_order: true
-    area_stats:
+    area_statistics:
       operator: mean
     multi_model_statistics:
       span: overlap
@@ -64,7 +64,7 @@ preprocessors:
     extract_levels:
       levels: [0., 10., 100., 1000.]
       scheme: linear_horizontal_extrapolate_vertical
-    area_stats:
+    area_statistics:
       operator: mean
     multi_model_statistics:
       span: overlap
@@ -77,7 +77,7 @@ preprocessors:
       end_longitude: 30.
       start_latitude: -80.
       end_latitude: 80.
-    area_stats:
+    area_statistics:
       operator: mean
     multi_model_statistics:
       span: overlap
@@ -93,7 +93,7 @@ preprocessors:
       end_longitude: 30.
       start_latitude: -80.
       end_latitude: 80.
-    area_stats:
+    area_statistics:
       operator: mean
     multi_model_statistics:
       span: overlap
@@ -226,7 +226,7 @@ preprocessors:
   # Depth-profile preprocessors
   # --------------------------------------------------
   prep_profile_1: # For a global profile
-    area_stats:
+    area_statistics:
       operator: mean
 
   prep_profile_2: # For a regional profile
@@ -238,7 +238,7 @@ preprocessors:
     extract_volume:
       z_min: 0.
       z_max: 100.
-    area_stats:
+    area_statistics:
       operator: mean
 
 

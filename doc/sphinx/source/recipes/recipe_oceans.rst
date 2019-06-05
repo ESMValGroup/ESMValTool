@@ -488,7 +488,7 @@ An appropriate preprocessor for a 3D+time field would be:
 	      lat2:  30.
 	      z_min: 0.
 	      z_max: 3000.
-	    area_stats:
+	    area_statistics:
               operator: mean
 
 
@@ -523,7 +523,7 @@ For a global area-weighted average 2D field:
 
   .. code-block:: yaml
 
-	area_stats:
+	area_statistics:
           operator: mean
 
 For a global volume-weighted average 3D field:
@@ -540,7 +540,7 @@ For a global area-weighted surface of a 3D field:
 	extract_levels:
 	  levels: [0., ]
 	  scheme: linear_horizontal_extrapolate_vertical
-	area_stats:
+	area_statistics:
           operator: mean
 
 

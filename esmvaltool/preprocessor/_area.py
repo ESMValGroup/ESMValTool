@@ -173,7 +173,7 @@ def tile_grid_areas(cube, fx_files):
 
 
 # get the area average
-def area_stats(cube, operator, fx_files=None):
+def area_statistics(cube, operator, fx_files=None):
     """
     Applies a statistical operator in the horizontal direction.
 
@@ -218,22 +218,13 @@ def area_stats(cube, operator, fx_files=None):
     grid_areas = tile_grid_areas(cube, fx_files)
 
     if not fx_files and cube.coord('latitude').points.ndim == 2:
-<<<<<<< HEAD
-        logger.error('area_stats ERROR: fx_file needed to calculate grid '
-                     'cell area for irregular grids.')
+        logger.error(
+            'fx_file needed to calculate grid cell area for irregular grids.')
         raise iris.exceptions.CoordinateMultiDimError(cube.coord('latitude'))
 
     coord_names = ['longitude', 'latitude']
-    if not grid_areas.any():
-        cube = _guess_bounds(cube, coord_names)
-=======
-        logger.error('fx_file needed to calculate grid '
-                     'cell area for irregular grids.')
-        raise iris.exceptions.CoordinateMultiDimError(cube.coord('latitude'))
-
     if grid_areas is None or not grid_areas.any():
-        cube = _guess_bounds(cube, [coord1, coord2])
->>>>>>> remotes/origin/version2_development
+        cube = _guess_bounds(cube, coord_names)
         grid_areas = iris.analysis.cartography.area_weights(cube)
         logger.info('Calculated grid area shape: %s', grid_areas.shape)
 
@@ -246,7 +237,7 @@ def area_stats(cube, operator, fx_files=None):
     # TODO: implement weighted stdev, median, s var when available in iris.
     # See iris issue: https://github.com/SciTools/iris/issues/3208
 
-    if operator == ['mean':
+    if operator == 'mean':
         return cube.collapsed(coord_names,
                               operation,
                               weights=grid_areas)
