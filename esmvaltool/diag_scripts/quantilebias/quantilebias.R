@@ -53,6 +53,12 @@ cdo <- function(command, args = "", input = "", options = "", output = "",
   return(output0)
 }
 
+# get path to script and source subroutines (if needed)
+args <- commandArgs(trailingOnly = FALSE)
+spath <- paste0(dirname(unlist(strsplit(grep("--file", args,
+                                             value = TRUE), "="))[2]), "/")
+
+source(paste0(spath, "quantilebias_functions.R"))
 
 # read settings and metadata files
 args <- commandArgs(trailingOnly = TRUE)
@@ -76,6 +82,7 @@ varname <- climolist$short_name
 
 # create working dirs if they do not exist
 dir.create(work_dir, recursive = T, showWarnings = F)
+dir.create(plot_dir, recursive = T, showWarnings = F)
 setwd(work_dir)
 
 # setup provenance file and list
@@ -152,6 +159,32 @@ for (model_idx in c(1:(length(models_name)))) {
   unlink(c(modf, reff, ref_perc_pf, mask_reff, mask_modf,
            ref_sumf, mod_sumf, qb1f, refminf, refmaxf, selectf,
            mask_mod2f, mask_ref2f, temp1f, temp2f))
+
+
+  # Produce figure
+
+  field <- ncdf_opener(outfile, "qb", "lon", "lat", rotate = "no")
+  ics_ref <- ics
+  ipsilon_ref <- ipsilon
+
+  figname <- paste0(outfile, ".", output_file_type)
+  graphics_startup(figname, output_file_type, c(400,600))
+
+  # contours
+  filled_contour3(ics, ipsilon, tmp_field,
+       xlab = "Longitude", ylab = "Latitude",
+       main = tmp.titles[iquantity], levels = c(0:20)/10.,
+              color.palette = rainbow(21),
+      # xlim = c(regions[iregion, 1], regions[iregion, 2]),
+      # ylim = c(regions[iregion, 3], regions[iregion, 4]), axes = F,
+       asp = 1
+  )
+  # continents
+  map("world", regions = ".", exact = F, boundary = T, add = T, 
+      col = "black", lwd = 2)
+  graphics_close(figname)
+
+
 
   # Set provenance for this output file
   caption <- paste0("Precipitation quantile bias ", perc_lev, "% for years ",
