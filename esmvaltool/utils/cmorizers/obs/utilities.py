@@ -11,10 +11,23 @@ from cf_units import Unit
 from dask import array as da
 
 from esmvaltool import __version__ as version
-from esmvaltool._config import get_tag_value
-from esmvaltool.cmor.table import CMOR_TABLES
+from esmvalcore._config import get_tag_value
+from esmvalcore.cmor.table import CMOR_TABLES
 
 logger = logging.getLogger(__name__)
+
+
+def add_height2m(cube):
+    """Add scalar coordinate 'height' with value of 2m."""
+    logger.info("Adding height coordinate (2m)")
+    height_coord = iris.coords.AuxCoord(
+        2.0,
+        var_name='height',
+        standard_name='height',
+        long_name='height',
+        units=Unit('m'),
+        attributes={'positive': 'up'})
+    cube.add_aux_coord(height_coord, ())
 
 
 @contextmanager

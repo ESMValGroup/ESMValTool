@@ -279,8 +279,8 @@ procedure log_provenance(nc_file:string,
                          outfile:string,
                          caption:string,
                          statistics[*]:string,
-                         domain[*]:string,
-                         plottype:string,
+                         domains[*]:string,
+                         plot_types[*]:string,
                          diag_authors[*]:string,
                          diag_refs[*]:string,
                          infiles[*]:string)
@@ -290,8 +290,8 @@ procedure log_provenance(nc_file:string,
 ;    outfile: file name of the figure (including path)
 ;    caption: figure caption
 ;    statistics: list of metrics/statistics calculated
-;    domain: of the data displayed
-;    plottype: plot type of the figure
+;    domains: of the data displayed
+;    plot_types: plot type of the figure
 ;    diag_authors: authors related to the diagnostic
 ;    diag_refs: references related to the diagnotic
 ;    infiles: input files (from preproc) used to generate the plot
@@ -305,7 +305,7 @@ procedure log_provenance(nc_file:string,
 ; References
 ;
 ; Modification history
-;    20190415-A_righ_ma: turn domain into a list.
+;    20190415-A_righ_ma: turn domains into a list.
 ;    20190415-A_righ_ma: extended to avoid overwriting previous call.
 ;    20190225-A_bock_li: written.
 ;
@@ -327,9 +327,9 @@ begin
   outstring(1) = ": ancestors: [" + str_join(infiles, ", ") + "]"
   outstring(2) = "  authors: [" + str_join(diag_authors, ", ") + "]"
   outstring(3) = "  caption: '" + caption + "'"
-  outstring(4) = "  domain: [" + str_join(domain, ", ") + "]"
+  outstring(4) = "  domains: [" + str_join(domains, ", ") + "]"
   outstring(5) = "  plot_file: " + outfile
-  outstring(6) = "  plot_type: " + plottype
+  outstring(6) = "  plot_types: [" + str_join(plot_types, ", ") + "]"
   outstring(7) = "  references: [" + str_join(diag_refs, ", ") + "]"
   outstring(8) = "  statistics: [" + str_join(statistics, ", ") + "]"
 

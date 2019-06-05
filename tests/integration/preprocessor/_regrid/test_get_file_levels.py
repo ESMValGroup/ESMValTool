@@ -1,6 +1,6 @@
 """
 Integration tests for the :func:
-`esmvaltool.preprocessor.regrid.get_cmor_levels`
+`esmvalcore.preprocessor.regrid.get_cmor_levels`
 function.
 
 """
@@ -14,7 +14,7 @@ import iris.coords
 import iris.cube
 import numpy as np
 
-from esmvaltool.preprocessor import _regrid
+from esmvalcore.preprocessor import _regrid
 
 
 class TestGetFileLevels(unittest.TestCase):
