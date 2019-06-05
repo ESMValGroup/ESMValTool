@@ -1,4 +1,4 @@
-"""Integration tests for :func:`esmvaltool.preprocessor._io.concatenate`."""
+"""Integration tests for :func:`esmvalcore.preprocessor._io.concatenate`."""
 
 import unittest
 
@@ -7,11 +7,11 @@ from iris.coords import DimCoord
 from iris.cube import Cube
 from iris.exceptions import ConcatenateError
 
-from esmvaltool.preprocessor import _io
+from esmvalcore.preprocessor import _io
 
 
 class TestConcatenate(unittest.TestCase):
-    """Tests for :func:`esmvaltool.preprocessor._io.concatenate`."""
+    """Tests for :func:`esmvalcore.preprocessor._io.concatenate`."""
 
     def setUp(self):
         """Start tests."""

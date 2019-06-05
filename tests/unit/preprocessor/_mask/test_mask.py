@@ -1,4 +1,4 @@
-"""Unit test for the :func:`esmvaltool.preprocessor._mask` function"""
+"""Unit test for the :func:`esmvalcore.preprocessor._mask` function"""
 
 import unittest
 
@@ -6,7 +6,7 @@ import iris
 import numpy as np
 
 import tests
-from esmvaltool.preprocessor._mask import (
+from esmvalcore.preprocessor._mask import (
     mask_above_threshold, mask_below_threshold, mask_inside_range,
     mask_outside_range)
 

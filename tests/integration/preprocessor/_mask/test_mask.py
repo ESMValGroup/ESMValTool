@@ -1,7 +1,7 @@
 """
 Test mask
 
-Integration tests for the :func:`esmvaltool.preprocessor._mask`
+Integration tests for the :func:`esmvalcore.preprocessor._mask`
 module.
 
 """
@@ -14,7 +14,7 @@ import iris
 import numpy as np
 
 import tests
-from esmvaltool.preprocessor import (PreprocessorFile, mask_fillvalues,
+from esmvalcore.preprocessor import (PreprocessorFile, mask_fillvalues,
                                      mask_landsea, mask_landseaice)
 
 
