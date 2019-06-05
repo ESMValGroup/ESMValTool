@@ -23,7 +23,7 @@ from ._reformat import (cmor_check_data, cmor_check_metadata, fix_data,
 from ._regrid import extract_levels, regrid
 from ._time import (annual_mean, extract_month, extract_season, extract_time,
                     regrid_time, seasonal_mean, time_average)
-from ._volume import (volume_stats, depth_integration, extract_trajectory,
+from ._volume import (volume_statistics, depth_integration, extract_trajectory,
                       extract_transect, extract_volume)
 
 logger = logging.getLogger(__name__)
@@ -73,7 +73,7 @@ __all__ = [
     'extract_named_regions',
     'depth_integration',
     'area_statistics',
-    'volume_stats',
+    'volume_statistics',
     # Time operations
     # 'annual_cycle': annual_cycle,
     # 'diurnal_cycle': diurnal_cycle,

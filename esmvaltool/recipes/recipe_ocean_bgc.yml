@@ -56,7 +56,7 @@ preprocessors:
   # Global 3D Volume-weighted Average
   prep_timeseries_global_volume_average:
     custom_order: true
-    volume_stats:
+    volume_statistics:
       operator: mean
     multi_model_statistics:
       span: overlap

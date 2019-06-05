@@ -7,7 +7,8 @@ import numpy as np
 from cf_units import Unit
 
 import tests
-from esmvaltool.preprocessor._volume import (volume_stats, depth_integration,
+from esmvaltool.preprocessor._volume import (volume_statistics,
+                                             depth_integration,
                                              extract_trajectory,
                                              extract_transect, extract_volume)
 
@@ -82,20 +83,20 @@ class Test(tests.Test):
         print(result.data, expected.data)
         self.assertArrayEqual(result.data, expected)
 
-    def test_volume_stats(self):
+    def test_volume_statistics(self):
         """Test to take the volume weighted average of a (2,3,2,2) cube."""
-        result = volume_stats(self.grid_4d, 'mean')
+        result = volume_statistics(self.grid_4d, 'mean')
         expected = np.array([1., 1.])
         self.assertArrayEqual(result.data, expected)
 
-    def test_volume_stats_long(self):
+    def test_volume_statistics_long(self):
         """
         Test to take the volume weighted average of a (4,3,2,2) cube.
 
         This extra time is needed, as the volume average calculation uses
         different methods for small and large cubes.
         """
-        result = volume_stats(self.grid_4d_2, 'mean')
+        result = volume_statistics(self.grid_4d_2, 'mean')
         expected = np.array([1., 1., 1., 1.])
         self.assertArrayEqual(result.data, expected)
 

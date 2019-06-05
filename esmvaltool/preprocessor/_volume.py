@@ -159,7 +159,7 @@ def calculate_volume(cube):
     return grid_volume
 
 
-def volume_stats(
+def volume_statistics(
         cube,
         operator,
         fx_files=None):

@@ -530,7 +530,7 @@ For a global volume-weighted average 3D field:
 
   .. code-block:: yaml
 
-	volume_stats:
+	volume_statistics:
           operator: mean
 
 For a global area-weighted surface of a 3D field:

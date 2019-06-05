@@ -101,7 +101,7 @@ preprocessors:
 
   prep_timeseries_5: # For Global Volume Averaged
     custom_order: true
-    volume_stats:
+    volume_statistics:
       operator: mean
     multi_model_statistics:
       span: overlap
@@ -114,7 +114,7 @@ preprocessors:
       end_longitude: 30.
       start_latitude: -80.
       end_latitude: 80.
-    volume_stats:
+    volume_statistics:
       operator: mean
     multi_model_statistics:
       span: overlap
@@ -130,7 +130,7 @@ preprocessors:
     extract_volume:
       z_min: 0.
       z_max: 100.
-    volume_stats:
+    volume_statistics:
       operator: mean
     multi_model_statistics:
       span: overlap

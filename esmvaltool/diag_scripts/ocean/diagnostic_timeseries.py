@@ -21,7 +21,7 @@ An approproate preprocessor for a 3D+time field would be::
 
   preprocessors:
     prep_timeseries_1:# For Global Volume Averaged
-      volume_stats:
+      volume_statistics:
         operator: mean
 
 

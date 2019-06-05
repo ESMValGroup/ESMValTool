@@ -203,7 +203,7 @@ Volume manipulation
 The _volume.py module contains the following preprocessor functions:
 
 * extract_volume: Extract a specific depth range from a cube.
-* volume_stats: Calculate the volume-weighted average.
+* volume_statistics: Calculate the volume-weighted average.
 * depth_integration: Integrate over the depth dimension.
 * extract_transect: Extract data along a line of constant latitude or longitude.
 * extract_trajectory: Extract data along a specified trajectory.
@@ -223,7 +223,7 @@ negative, then z_min and z_max need to be negative numbers.
 See also :func:`esmvaltool.preprocessor.extract_volume`.
 
 
-2. volume_stats
+2. volume_statistics
 -----------------
 
 This function calculates the volume-weighted average across three dimensions,
@@ -235,7 +235,7 @@ operation to apply over the volume.
 No depth coordinate is required as this is determined by iris. This
 function works best when the fx_files provide the cell volume.
 
-See also :func:`esmvaltool.preprocessor.volume_stats`.
+See also :func:`esmvaltool.preprocessor.volume_statistics`.
 
 
 3. depth_integration
