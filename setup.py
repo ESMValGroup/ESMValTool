@@ -55,7 +55,8 @@ REQUIREMENTS = {
         'yamale',
         'cmocean',
         'pyresample',
-        'seawater'
+        'seawater',
+        'palettable'
     ],
     # Test dependencies
     # Execute 'python setup.py test' to run tests
