@@ -1,4 +1,4 @@
-from esmvaltool.preprocessor import (DEFAULT_ORDER, MULTI_MODEL_FUNCTIONS,
+from esmvalcore.preprocessor import (DEFAULT_ORDER, MULTI_MODEL_FUNCTIONS,
                                      _get_itype)
 
 
