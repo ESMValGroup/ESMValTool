@@ -36,7 +36,7 @@ Datasets
 
 The datasets section includes:
 
-- Which Models to run
+- dataset name
 - Project (CMIP5 or 6, observations...)
 - Scenario (historicalk/ RCP8.5 etc...)
 - Ensemble member
