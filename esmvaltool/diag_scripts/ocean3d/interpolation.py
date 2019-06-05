@@ -22,11 +22,12 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 
 def closest_depth(depths, depth):
-    '''
+    """Finds closest depth.
+
     From vector of depths finds target depth,
     that is closest to desired depth, Also returns
     an index for the desired depth.
-    '''
+    """
     iz = abs(abs(depths) - abs(depth)).argmin()
     target_depth = depths[iz]
     logger.debug('target_depth: {}'.format(target_depth))
@@ -34,12 +35,13 @@ def closest_depth(depths, depth):
 
 
 def interpolate_vert(depth_model, target_depth, data_model):
-    '''
+    """ Vertical linear interpolation.
+
     Very simple linear interpolation of the model data to the
     desired depth. Can't extrapolate, so the limitation is that model
     data should have at least one level => and one level <= than the
     target depth.
-    '''
+    """
     # Simple vertical interpolation
     dep_up = [z for z in abs(depth_model) if z <= target_depth][-1]
     dep_lo = [z for z in abs(depth_model) if z > target_depth][0]
@@ -60,7 +62,8 @@ def interpolate_vert(depth_model, target_depth, data_model):
 
 
 def interpolate_pyresample(obs_file, mod_file, depth, cmor_var):
-    '''
+    """The 2d interpolation with pyresample.
+
     Simple realisation of horizontal 2d interpolation with
     pyresample. Before spatial interpolation data are linearly
     interpolated to the `obs_file` depth closest
@@ -90,7 +93,7 @@ def interpolate_pyresample(obs_file, mod_file, depth, cmor_var):
         that was actually used for interpolation.
     interpolated : 2d np array
         Field with result of interpolation
-    '''
+    """
 
     # load observations data
     obs = Dataset(obs_file)
@@ -149,7 +152,7 @@ def interpolate_pyresample(obs_file, mod_file, depth, cmor_var):
 
 
 def interpolate_esmf(obs_file, mod_file, depth, cmor_var):
-    '''The 2d interpolation with ESMF
+    """The 2d interpolation with ESMF.
 
     Parameters
     ----------
@@ -161,7 +164,7 @@ def interpolate_esmf(obs_file, mod_file, depth, cmor_var):
     depth: int
         depth to interpolate to. First the closest depth from the
         observations will be selected and then.
-    '''
+    """
 
 
     metadata = load_meta(obs_file, fxpath=None)

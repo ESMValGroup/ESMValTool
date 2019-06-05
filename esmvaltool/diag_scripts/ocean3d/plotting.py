@@ -31,7 +31,9 @@ mpl.use('agg')
 
 
 def create_plot(model_filenames, ncols=3, projection=None, nplots_increment=0):
-    '''Creates matplotlib figure and set of axis that corespond to
+    """Create base figure for multipanel plot.
+
+    Creates matplotlib figure and set of axis that corespond to
     the number of models that should be plotted.
 
     Parameters
@@ -49,7 +51,7 @@ def create_plot(model_filenames, ncols=3, projection=None, nplots_increment=0):
     -------
     fig: matplotlib figure
     ax: list with matplotlib axis, flattened
-    '''
+    """
     # Calcualte number of plots on the figure
     nplots = len(model_filenames) + nplots_increment
     ncols = float(ncols)
@@ -82,8 +84,9 @@ def create_plot(model_filenames, ncols=3, projection=None, nplots_increment=0):
 
 
 def label_and_conversion(cmor_var, data):
-    ''' Converts data if needed and returns
-    formatted version of the colorbar label.
+    """ Converts data if needed.
+
+    And returns formatted version of the colorbar label.
 
     Parameters
     ----------
@@ -98,7 +101,7 @@ def label_and_conversion(cmor_var, data):
         formatted units for the cmor_var
     data: numpy array
         data, converted if needed.
-    '''
+    """
     if cmor_var == 'thetao':
         data = data - 273.15
         cb_label = r'$^{\circ}$C'
@@ -117,7 +120,7 @@ def hofm_plot(model_filenames,
               ncols=3,
               cmap=cm.Spectral_r,
               observations='PHC'):
-    '''Plot Hovmoeller diagram from data at diagworkdir
+    """Plot Hovmoeller diagram from data at diagworkdir.
 
     Parameters
     ----------
@@ -146,7 +149,7 @@ def hofm_plot(model_filenames,
     Returns
     -------
     None
-    '''
+    """
     # remove "model" that contain observations,
     # since there will be no monthly data
     model_filenames = model_filenames.copy()
@@ -233,7 +236,7 @@ def tsplot_plot(model_filenames,
                 ncols=3,
                 cmap=cm.Set1,
                 observations='PHC'):
-    '''Plots a TS diagram
+    """Plots a TS diagram.
 
     Parameters
     ----------
@@ -258,7 +261,7 @@ def tsplot_plot(model_filenames,
     Returns
     -------
     None
-    '''
+    """
     # Setup a figure
     nplots = len(model_filenames)
     ncols = float(ncols)
@@ -341,8 +344,9 @@ def plot_profile(model_filenames,
                  cmap=cm.Set2,
                  dpi=100,
                  observations='PHC'):
-    '''Plot profiles from previously calculated data for
-    Hovmoeller diagrams.
+    """Plot profiles.
+
+    From previously calculated data for Hovmoeller diagrams.
 
     Parameters
     ----------
@@ -366,7 +370,7 @@ def plot_profile(model_filenames,
     Returns
     -------
     None
-    '''
+    """
     level_clim = Dataset(model_filenames[observations]).variables['lev'][:]
     plt.figure(figsize=(5, 6))
     ax = plt.subplot(111)
@@ -454,7 +458,7 @@ def plot2d_original_grid(model_filenames,
                          explicit_depths=None,
                          projection=ccrs.NorthPolarStereo(),
                          bbox=[-180, 180, 60, 90]):
-    ''' Plot 2d maps on original grid using cartopy.
+    """ Plot 2d maps on original grid using cartopy.
 
     Parameters
     ----------
@@ -485,7 +489,7 @@ def plot2d_original_grid(model_filenames,
     Retuns
     ------
     None
-    '''
+    """
 
     fig, ax = create_plot(model_filenames, ncols=4, projection=projection)
 
@@ -576,7 +580,7 @@ def plot2d_bias(model_filenames,
                 observations='PHC',
                 projection=ccrs.NorthPolarStereo(),
                 bbox=[-180, 180, 60, 90]):
-    '''Plot 2d maps of the bias relative to climatology.
+    """Plot 2d maps of the bias relative to climatology.
 
     Parameters
     ----------
@@ -604,7 +608,7 @@ def plot2d_bias(model_filenames,
     Retuns
     ------
     None
-    '''
+    """
     # setupa a base figure
     fig, ax = create_plot(model_filenames, ncols=4, projection=projection)
     # get the filename of observations
@@ -713,8 +717,10 @@ def plot2d_bias(model_filenames,
 
 
 def plot_aw_core_stat(aw_core_parameters, diagplotdir):
-    ''' Generate 2 plots: depth of the AW core and
-    temperature of the AW core. Use pandas plot functionality.
+    """ Generate plotsa t AW core depth.
+
+    Depth of the AW core and temperature of the AW core.
+    Use pandas plot functionality.
 
     Parameters
     ----------
@@ -728,7 +734,7 @@ def plot_aw_core_stat(aw_core_parameters, diagplotdir):
     Returns
     -------
     None
-    '''
+    """
 
     logger.info("Plot AW core statistics")
     # Convert dictionary to pandas Dataframe
@@ -762,7 +768,7 @@ def transect_map(region,
                  projection=ccrs.NorthPolarStereo(),
                  bbox=[-180, 180, 60, 90],
                  mult=2):
-    '''Plots the map with points of the transect overlayed.
+    """Plots the map with points of the transect overlayed.
 
     Parameters
     ----------
@@ -782,7 +788,7 @@ def transect_map(region,
     -------
     None
 
-    '''
+    """
     logger.info("Create transect map for region {}".format(region))
     lon_s4new, lat_s4new = transect_points(region, mult=mult)
     dist = point_distance(lon_s4new, lat_s4new)
@@ -819,7 +825,8 @@ def transect_plot(model_filenames,
                   levels,
                   ncols=3,
                   cmap=cm.Spectral_r):
-    '''Plot transects
+    """Plot transects.
+
     Parameters
     ----------
     model_filenames:OrderedDict
@@ -842,7 +849,7 @@ def transect_plot(model_filenames,
     -------
     None
 
-    '''
+    """
     fig, ax = create_plot(model_filenames, ncols=ncols)
 
     # get transect positions and calculate distances between points

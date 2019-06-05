@@ -20,7 +20,7 @@ mpl.use('agg')
 
 
 def hofm_regions(region, lon2d, lat2d):
-    ''' Regions for data selection
+    """Regions for data selection.
 
     Parameters
     ----------
@@ -36,7 +36,7 @@ def hofm_regions(region, lon2d, lat2d):
     indexesj: 1d numpy array
         j indexes of the selected points
 
-    '''
+    """
     if region == 'EB':
         # Eurasian Basin of the Arctic Ocean
         indi, indj = np.where((lon2d > 300) & (lat2d > 80))
@@ -74,8 +74,7 @@ def hofm_regions(region, lon2d, lat2d):
 
 
 def transect_points(transect, mult=2):
-    ''' Return a collection of points that forms
-        a predefined transect
+    """Return a collection of points for transect.
 
         Parameters
         ----------
@@ -91,7 +90,7 @@ def transect_points(transect, mult=2):
             longitude points of the transect
         lat_s4new: 1d numpy array
             latitude points of the transect
-    '''
+    """
     if transect == 'AWpath':
         lon_s4 = np.array([
             17.6, 16.5, 16.05, 15.6, 15.1, 14.1, 13.0, 12.0, 10.0, 8.0, 4.0,
