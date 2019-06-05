@@ -17,7 +17,6 @@ hyint_etccdi_preproc <- function(work_dir, etccdi_dir, etccdi_list_import,
   etccdi_files_tmp <- c()
   for (sfile in etccdi_files) {
     print(paste0("HyInt: pre-processing ", sfile))
-    system(paste0("cdo sinfov ",sfile))
     sfile_tmp0 <- cdo("delvar", args = "time_bnds", input = sfile)
     gridf <- tempfile()
     cdo("griddes", input = hyint_file, stdout = gridf)

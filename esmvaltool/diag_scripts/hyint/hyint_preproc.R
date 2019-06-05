@@ -14,7 +14,8 @@ hyint_preproc <- function(work_dir, model_idx, ref_idx,
     if (rgrid == "REF") {
       rgrid <- climofiles[ref_idx]
       gridf <- tempfile()
-      cdo("griddes", input = rgrid, stdout = gridf)
+      rgrid_tmp <- cdo("selvar", args = "pr", input = rgrid)
+      cdo("griddes", input = rgrid_tmp, stdout = gridf)
     } else {
       gridf <- rgrid
     }
