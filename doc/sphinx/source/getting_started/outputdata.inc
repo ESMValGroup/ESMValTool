@@ -54,6 +54,8 @@ diagnostic could be sped up.
 In python-based diagnostics, the work directory can be accessed with via the cfg dictionairy
 item, 'work_dir' ie: cfg['work_dir']
 
+In NCL-based diagnostics, this is given by config_user_info@work_dir.
+
 
 
 
