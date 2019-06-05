@@ -7,7 +7,7 @@ import numpy as np
 from cf_units import Unit
 
 import tests
-from esmvaltool.preprocessor._area import (
+from esmvalcore.preprocessor._area import (
     area_statistics, extract_named_regions, extract_region)
 
 

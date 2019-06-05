@@ -7,7 +7,7 @@ import numpy as np
 from cf_units import Unit
 
 import tests
-from esmvaltool.preprocessor._volume import (volume_statistics,
+from esmvalcore.preprocessor._volume import (volume_statistics,
                                              depth_integration,
                                              extract_trajectory,
                                              extract_transect, extract_volume)

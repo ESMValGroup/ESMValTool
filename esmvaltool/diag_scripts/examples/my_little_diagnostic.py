@@ -24,7 +24,7 @@ import iris
 
 # import internal esmvaltool modules here
 from esmvaltool.diag_scripts.shared import group_metadata, run_diagnostic
-from esmvaltool.preprocessor import area_statistics
+from esmvalcore.preprocessor import area_statistics
 
 
 def _plot_time_series(cfg, cube, dataset):
