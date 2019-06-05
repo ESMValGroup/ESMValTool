@@ -1,4 +1,4 @@
-"""Unit test for :func:`esmvaltool.preprocessor._volume`."""
+"""Unit test for :func:`esmvalcore.preprocessor._volume`."""
 
 import unittest
 
@@ -7,7 +7,7 @@ import numpy as np
 from cf_units import Unit
 
 import tests
-from esmvaltool.preprocessor._volume import (average_volume, depth_integration,
+from esmvalcore.preprocessor._volume import (average_volume, depth_integration,
                                              extract_trajectory,
                                              extract_transect, extract_volume)
 

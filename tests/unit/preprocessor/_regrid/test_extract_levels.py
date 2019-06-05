@@ -1,4 +1,4 @@
-"""Unit tests for :func:`esmvaltool.preprocessor.regrid.extract_levels`."""
+"""Unit tests for :func:`esmvalcore.preprocessor.regrid.extract_levels`."""
 
 import unittest
 
@@ -8,7 +8,7 @@ import numpy as np
 from numpy import ma
 
 import tests
-from esmvaltool.preprocessor._regrid import (_MDI, VERTICAL_SCHEMES,
+from esmvalcore.preprocessor._regrid import (_MDI, VERTICAL_SCHEMES,
                                              extract_levels)
 from tests.unit.preprocessor._regrid import _make_cube, _make_vcoord
 
@@ -23,7 +23,7 @@ class Test(tests.Test):
         self.cube = _make_cube(data, dtype=self.dtype)
         self.created_cube = mock.sentinel.created_cube
         self.mock_create_cube = self.patch(
-            'esmvaltool.preprocessor._regrid._create_cube',
+            'esmvalcore.preprocessor._regrid._create_cube',
             return_value=self.created_cube)
         self.schemes = [
             'linear', 'nearest', 'linear_horizontal_extrapolate_vertical',
