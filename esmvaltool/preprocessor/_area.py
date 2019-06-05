@@ -32,6 +32,7 @@ def extract_region(cube, start_longitude, end_longitude, start_latitude,
     Function that subsets a cube on a box (start_longitude, end_longitude,
     start_latitude, end_latitude)
     This function is a restriction of masked_cube_lonlat().
+
     Parameters
     ----------
     cube: iris.cube.Cube
@@ -44,6 +45,7 @@ def extract_region(cube, start_longitude, end_longitude, start_latitude,
         Southern Boundary latitude.
     end_latitude: float
         Northern Boundary Latitude.
+
     Returns
     -------
     iris.cube.Cube
@@ -83,9 +85,11 @@ def get_iris_analysis_operation(operator):
     ----------
     operator: str
         A named operator.
+
     Returns
     -------
         function: A function from iris.analysis
+
     Raises
     ------
     ValueError
@@ -114,6 +118,7 @@ def zonal_means(cube, coordinate, mean_type):
     - 'variance' -> VARIANCE
     - 'min' -> MIN
     - 'max' -> MAX
+
     Parameters
     ---------
     cube: iris.cube.Cube
@@ -122,6 +127,7 @@ def zonal_means(cube, coordinate, mean_type):
         name of coordinate to make mean.
     mean_type: str
         Type of analysis to use, from iris.analysis.
+
     Returns
     -------
     iris.cube.Cube
@@ -140,6 +146,7 @@ def tile_grid_areas(cube, fx_files):
         input cube.
     fx_files: dict
         dictionary of field:filename for the fx_files
+
     Returns
     -------
     iris.cube.Cube
@@ -212,10 +219,12 @@ def average_region(cube, coord1, coord2, operator='mean', fx_files=None):
         Name of the operation to apply (default: mean)
     fx_files: dict
         dictionary of field:filename for the fx_files
+
     Returns
     -------
     iris.cube.Cube
         collapsed cube.
+
     Raises
     ------
     iris.exceptions.CoordinateMultiDimError
@@ -266,10 +275,12 @@ def extract_named_regions(cube, regions):
        input cube.
     regions: str, list
         A region or list of regions to extract.
+
     Returns
     -------
     iris.cube.Cube
         collapsed cube.
+
     Raises
     ------
     ValueError
