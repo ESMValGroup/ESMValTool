@@ -44,10 +44,12 @@ def extract_time(cube,
         end month
     end_day: int
         end day
+
     Returns
     -------
     iris.cube.Cube
         Sliced cube.
+
     Raises
     ------
     ValueError
@@ -98,6 +100,7 @@ def extract_season(cube, season):
         Original data
     season: str
         Season to extract. Available: DJF, MAM, JJA, SON
+
     Returns
     -------
     iris.cube.Cube
@@ -121,6 +124,7 @@ def extract_month(cube, month):
         Original data
     month: int
         Month to extract as a number from 1 to 12
+
     Returns
     -------
     iris.cube.Cube
@@ -139,6 +143,7 @@ def get_time_weights(cube):
     ----------
     cube: iris.cube.Cube
         input cube.
+
     Returns
     -------
     numpy.array
@@ -190,6 +195,7 @@ def seasonal_mean(cube):
     ----------
     cube: iris.cube.Cube
         input cube.
+
     Returns
     -------
     iris.cube.Cube
@@ -213,6 +219,7 @@ def seasonal_mean(cube):
         ----------
         time: iris.DimCoord
             cube time coordinate
+
         Returns
         -------
         bool
@@ -239,6 +246,7 @@ def regrid_time(cube, frequency):
         input cube.
     frequency: str
         data frequency: mon or day
+
     Returns
     -------
     iris.cube.Cube
@@ -300,6 +308,7 @@ def annual_mean(cube, decadal=False):
         input cube.
     decadal: bool
         Annual average (:obj:`True`) or decadal average (:obj:`False`)
+
     Returns
     -------
     iris.cube.Cube
