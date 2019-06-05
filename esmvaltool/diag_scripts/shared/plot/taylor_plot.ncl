@@ -884,7 +884,6 @@ begin
   dotobj = new(1, graphic)
   dotobj = gsn_add_polymarker(wks, taylor, 1.0, 0.0, gsRes)
 
-
   ; ---------------------------------------------------------------
   ; Part 4:
   ; generic resources that will be applied to all users data points

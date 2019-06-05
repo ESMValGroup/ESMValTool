@@ -971,10 +971,10 @@ function month_sel(month_names:string)
 ;
 ;
 ; Return value
-;    
+;
 ;
 ; Description
-;    
+;
 ;
 ; Caveats
 ;
@@ -1041,10 +1041,10 @@ function lat_names(lat_val:numeric)
 ;
 ;
 ; Return value
-;    
+;
 ;
 ; Description
-;    
+;
 ;
 ; Caveats
 ;
@@ -1073,18 +1073,18 @@ end
 
 ; #############################################################################
 undef("add_line")
-procedure add_line(wks, 
-                   plot, 
-                   x, 
-                   yval, 
-                   line_color, 
+procedure add_line(wks,
+                   plot,
+                   x,
+                   yval,
+                   line_color,
                    line_dash)
 ;
 ; Arguments
 ;
 ;
 ; Description
-;    
+;
 ;
 ; Caveats
 ;
@@ -1110,18 +1110,18 @@ end
 
 ; #############################################################################
 undef("add_scatt")
-procedure add_scatt(wks, 
-                    plot, 
-                    x, 
-                    yval, 
-                    mark_color, 
+procedure add_scatt(wks,
+                    plot,
+                    x,
+                    yval,
+                    mark_color,
                     mark_ind)
 ;
 ; Arguments
 ;
 ;
 ; Description
-;    
+;
 ;
 ; Caveats
 ;
@@ -1153,10 +1153,10 @@ procedure add_legenda(wks,
 ;
 ;
 ; Return value
-;    
+;
 ;
 ; Description
-;    
+;
 ;
 ; Caveats
 ;
@@ -1285,10 +1285,10 @@ function calcRegCoeffs(y:numeric)
 ;
 ;
 ; Return value
-;    
+;
 ;
 ; Description
-;    
+;
 ;
 ; Caveats
 ;
@@ -1345,10 +1345,10 @@ function genZonalMeans(x:numeric,
 ;
 ;
 ; Return value
-;    
+;
 ;
 ; Description
-;    
+;
 ;
 ; Caveats
 ;
@@ -1428,10 +1428,10 @@ function calcMeanAnnCycleMonthly(RegCoeffAs:numeric)
 ;
 ;
 ; Return value
-;    
+;
 ;
 ; Description
-;    
+;
 ;
 ; Caveats
 ;
@@ -1469,10 +1469,10 @@ function calcMeanAnnCycleAnnual(RegCoeffAs:numeric)
 ;
 ;
 ; Return value
-;    
+;
 ;
 ; Description
-;    
+;
 ;
 ; Caveats
 ;
@@ -1516,10 +1516,10 @@ procedure rmMeanAnnCycle(x:numeric,
 ;
 ;
 ; Return value
-;    
+;
 ;
 ; Description
-;    
+;
 ;
 ; Caveats
 ;
@@ -1567,10 +1567,10 @@ function apfiltersmooth(xMonAnom:numeric,
 ;
 ;
 ; Return value
-;    
+;
 ;
 ; Description
-;    
+;
 ;
 ; Caveats
 ;
@@ -1679,10 +1679,10 @@ procedure smoothAnomalies(xAnnAnom:numeric,
 ;
 ;
 ; Return value
-;    
+;
 ;
 ; Description
-;    
+;
 ;
 ; Caveats
 ;
@@ -1798,19 +1798,19 @@ end
 
 ; #############################################################################
 undef("clmMon2clmDayn")
-function clmMon2clmDayn(x:numeric, 
-                        retOrder:integer, 
+function clmMon2clmDayn(x:numeric,
+                        retOrder:integer,
                         opt:integer)
 ;
 ; Arguments
 ;
 ;
 ; Return value
-;    
+;
 ;
 ; Description
 ;    Take a monthly climatology and make a daily climatology
-;    
+;
 ;
 ; Caveats
 ;
