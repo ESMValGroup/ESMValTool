@@ -122,6 +122,7 @@ data structure in this file.
 An example of the data structure would be:
 
 .. code-block:: yaml
+
     CMIP6:
       input_dir:
         default: '/'
