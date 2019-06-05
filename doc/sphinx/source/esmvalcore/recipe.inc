@@ -59,7 +59,7 @@ Each preprocessor section includes.
 - A preprocessor name.
 - Which preprocesor functions to apply
 - Any Arguments given to the preprocessors
-- The order that the preprocesor functions ar applied can also be precified here.
+- The order that the preprocesor functions are applied can also be specified here.
 
 If no preprocessors are needed, then this section can be omitted.
 
