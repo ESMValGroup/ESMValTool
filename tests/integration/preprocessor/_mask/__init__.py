@@ -1,5 +1,5 @@
 """
 Test _mask.py
 
-Integration tests for the esmvaltool.preprocessor._mask module
+Integration tests for the esmvalcore.preprocessor._mask module
 """
