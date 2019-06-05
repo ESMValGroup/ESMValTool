@@ -4,6 +4,14 @@
 User configuration file
 ***********************
 
+ESMValTool includes several yaml files which are used to 
+store information and settings. The most important
+yaml files are `config-user.yml`_ and 
+`config-developer.yml`_.
+
+config-user.yml
+===============
+
 The ``config-user.yml`` configuration file contains all the global level
 information needed by ESMValTool. The following shows the default settings from
 the ``config-user.yml`` file.
@@ -87,8 +95,8 @@ Tip: You choose your config.yml file at run time, so you could have several
 available with different purposes. One for formalised run, one for debugging,
 etc...
 
-Developper config file
-======================
+config-developer.yml
+====================
 
 The config-developer.yml holds the project and machine specific varying part of the path
 to datasets. 
@@ -115,6 +123,20 @@ An example of the data structure would be:
         BADC: '[institute]/[dataset]/[exp]/[ensemble]/[mip]/[short_name]/[grid]/[latestversion]'
 
 
-#TODO: Add a table showing some exmaples of what these keys mean.
+The following table shows some examples of these values in the data structure.
+
+============= ===========
+Value         Example
+============= ===========
+institute     MOHC
+dataset       UKESM
+exp           Historical
+ensemble      r1i1p1
+mip           Omon
+short_name    thetao
+grid          gn
+latestversion latest
+============= ===========
+
 
 
