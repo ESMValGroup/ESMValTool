@@ -13,6 +13,8 @@ dependencies:
   # Non-Python dependencies
   - graphviz
   - cdo
+  - imagemagick
+  - nco
 
   # Multi language support:
   - python>=3.6
@@ -20,4 +22,5 @@ dependencies:
   - ncl>=6.5.0
   - r-base
   - r-curl  # Dependency of lintr, but fails to compile because it cannot find libcurl installed from conda.
+  - r-udunits2  # Fails to compile because it cannot find udunits2 installed from conda.
   # - julia>=1.0.0  # The Julia package on conda is apparently broken

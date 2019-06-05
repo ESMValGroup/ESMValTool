@@ -15,6 +15,7 @@ Recipes
    recipe_cvdp
    recipe_diurnal_temperature_index
    recipe_ensclus
+   recipe_extreme_events
    recipe_flato13ipcc
    recipe_heatwaves_coldwaves
    recipe_hyint
