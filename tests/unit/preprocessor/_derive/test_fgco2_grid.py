@@ -1,7 +1,7 @@
 """Test derivation of `fgco2_grid`."""
 import mock
 
-import esmvaltool.preprocessor._derive.fgco2_grid as fgco2_grid
+import esmvalcore.preprocessor._derive.fgco2_grid as fgco2_grid
 
 CUBES = 'mocked cubes'
 STD_NAME = 'surface_downward_mass_flux_of_carbon_dioxide_expressed_as_carbon'
