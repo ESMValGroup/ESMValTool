@@ -1,22 +1,8 @@
-.. _config:
+.. _config_user:
 
-*******************
-Configuration files
-*******************
-
-There are several configuration files in ESMValTool:
-
-  - config-user.yml
-  - config-developer.yml
-  - config-references.yml
-  - environment.yml
-
-The ``config-user.yml`` file is described here, however, the
-other three files are beyond the scope of the user guide. They are described
-in the developer guide.
-
-User config file
-================
+***********************
+User configuration file
+***********************
 
 The ``config-user.yml`` configuration file contains all the global level
 information needed by ESMValTool. The following shows the default settings from
