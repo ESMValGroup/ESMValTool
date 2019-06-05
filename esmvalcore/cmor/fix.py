@@ -10,9 +10,7 @@ fixed.
 import logging
 from collections import defaultdict
 
-from iris import Constraint
 from iris.cube import CubeList
-from iris.exceptions import ConstraintMismatchError
 
 from ._fixes.fix import Fix
 from .check import _get_cmor_checker
@@ -119,7 +117,7 @@ def fix_metadata(cubes,
                     break
             if not cube:
                 raise ValueError(
-                    'Variable %s not found for %s : %s' % \
+                    'Variable %s not found for %s : %s' % 
                     (short_name, project, dataset)
                 )
             logger.warning(
