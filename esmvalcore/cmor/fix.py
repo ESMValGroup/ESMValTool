@@ -7,12 +7,17 @@ variables to be sure that all known errors are
 fixed.
 
 """
+import logging
 from collections import defaultdict
 
+from iris import Constraint
 from iris.cube import CubeList
+from iris.exceptions import ConstraintMismatchError
 
 from ._fixes.fix import Fix
 from .check import _get_cmor_checker
+
+logger = logging.getLogger(__name__)
 
 
 def fix_file(file, short_name, project, dataset, output_dir):
@@ -105,9 +110,26 @@ def fix_metadata(cubes,
             cube_list = fix.fix_metadata(cube_list)
 
         if len(cube_list) != 1:
-            raise ValueError('Cubes were not reduced to one after'
-                             'fixing: %s' % cube_list)
-        cube = cube_list[0]
+            logger.warning('Cubes were not reduced to one after'
+                           'fixing: %s', cube_list)
+            try:
+                cube = cube_list.extract_strict(Constraint(
+                    cube_func=lambda c: c.var_name == short_name
+                ))
+            except ConstraintMismatchError:
+                raise ValueError(
+                    'Variable %s not found for %s:%s' %
+                    short_name, project, dataset
+                )
+            logger.warning(
+                'Found variable %s for %s:%s, but there were other present in '
+                'the file. Those extra variables are usually metadata '
+                '(cell area, latitude descriptions) that was not saved '
+                'properly. It is possible that errors appear further on '
+                'because of this'
+            )
+        else:
+            cube = cube_list[0]
 
         if cmor_table and mip:
             checker = _get_cmor_checker(
