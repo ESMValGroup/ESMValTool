@@ -6,5 +6,5 @@ Getting started
 .. include:: config_user.inc
 .. include:: inputdata.inc
 .. include:: running.inc
-.. include:: outputdata.rst
+.. include:: outputdata.inc
 
