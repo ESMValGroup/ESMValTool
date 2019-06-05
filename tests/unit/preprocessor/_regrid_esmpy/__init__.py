@@ -1,1 +1,1 @@
-"""Unit tests for the :mod:`esmvaltool.preprocessor._regrid_esmpy` module."""
+"""Unit tests for the :mod:`esmvalcore.preprocessor._regrid_esmpy` module."""
