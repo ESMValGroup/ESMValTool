@@ -1,34 +1,23 @@
-"""
-*********************************************************************
-APPLICATE/TRR Ocean Diagnostics
-*********************************************************************
+"""APPLICATE/TRR Ocean Diagnostics.
 """
 import logging
 import os
 import shutil
-from collections import OrderedDict
 
 import cmocean.cm as cmo
 import matplotlib as mpl
 import matplotlib.cm as cm
-import matplotlib.pylab as plt
 import numpy as np
 import palettable
 import pyproj
 import seawater as sw
 from cdo import Cdo
-from netCDF4 import num2date
 
-from esmvaltool.diag_scripts.shared import run_diagnostic
-from esmvaltool.diag_scripts.shared.plot import quickplot
-
-mpl.use('agg')  #noqa
+mpl.use('agg')
 logger = logging.getLogger(os.path.basename(__file__))
 
-
 class DiagnosticError(Exception):
-    """Error in diagnostic"""
-
+    """Error in diagnostic."""
 
 def genfilename(basedir,
                 variable=None,
@@ -37,7 +26,7 @@ def genfilename(basedir,
                 data_type=None,
                 extension=None,
                 basis='arctic_ocean'):
-    '''Generates file name for the output data.
+    """Generate file name for the output data.
 
     Parameters
     ----------
@@ -61,7 +50,7 @@ def genfilename(basedir,
     -------
     ifilename: str
         path to the file
-    '''
+    """
     nname = [basis, region, mmodel, variable, data_type]
     nname_nonans = []
     for i in nname:
@@ -76,7 +65,7 @@ def genfilename(basedir,
 
 def timmean(model_filenames, mmodel, cmor_var, diagworkdir,
             observations='PHC'):
-    '''Create time mean of input data with cdo.
+    """Create time mean of input data with cdo.
 
     Parameters
     ----------
@@ -94,7 +83,7 @@ def timmean(model_filenames, mmodel, cmor_var, diagworkdir,
     Returns
     -------
     None
-    '''
+    """
     logger.info("Calculate timmean %s for %s", cmor_var, mmodel)
     cdo = Cdo()
     ofilename = genfilename(diagworkdir,
@@ -109,8 +98,8 @@ def timmean(model_filenames, mmodel, cmor_var, diagworkdir,
 
 
 def get_clim_model_filenames(config, variable):
-    '''Extract model filenames from the configuration.
-    '''
+    """Extract model filenames from the configuration.
+    """
     model_filenames = {}
     for key, value in config['input_data'].items():
         if value['short_name'] == variable:
@@ -119,8 +108,8 @@ def get_clim_model_filenames(config, variable):
 
 
 def get_fx_filenames(config, variable, fx_var):
-    '''Extract fx file names
-    '''
+    """Extract fx file names.
+    """
     areacello_fxdataset = {}
     for key, value in config['input_data'].items():
         if value['short_name'] == variable:
@@ -129,11 +118,12 @@ def get_fx_filenames(config, variable, fx_var):
 
 
 def find_observations_name(config, variable):
-    ''' Find "model name" of the observations data set.
+    """Find "model name" of the observations data set.
+
     Assumes that there is only one observational data set.
-    '''
+    """
     obsname = []
-    for key, value in (config['input_data'].items()):
+    for key, value in config['input_data'].items():
         if value['project'] == "OBS":
             obsname = value['dataset']
             print(obsname)
@@ -144,11 +134,13 @@ def find_observations_name(config, variable):
 
 
 def shiftedcolormap(cmap, start=0, midpoint=0.5, stop=1.0, name='shiftedcmap'):
-    '''
+    """Offset the "center" of a colormap.
+
     Function to offset the "center" of a colormap. Useful for
     data with a negative min and positive max and you want the
     middle of the colormap's dynamic range to be at zero.
-    Source: https://stackoverflow.com/questions/7404116/defining-the-midpoint-of-a-colormap-in-matplotlib
+    Source: https://stackoverflow.com/questions/7404116/
+    defining-the-midpoint-of-a-colormap-in-matplotlib
 
     Input
     -----
@@ -165,7 +157,7 @@ def shiftedcolormap(cmap, start=0, midpoint=0.5, stop=1.0, name='shiftedcmap'):
       stop : Offset from highets point in the colormap's range.
           Defaults to 1.0 (no upper ofset). Should be between
           `midpoint` and 1.0.
-    '''
+    """
     cdict = {'red': [], 'green': [], 'blue': [], 'alpha': []}
 
     # regular index to compute the colors
@@ -192,8 +184,7 @@ def shiftedcolormap(cmap, start=0, midpoint=0.5, stop=1.0, name='shiftedcmap'):
 
 
 def dens_back(smin, smax, tmin, tmax):
-    '''Calculate density for TS diagram.
-    '''
+    """Calculate density for TS diagram."""
 
     xdim = round((smax - smin) / 0.1 + 1, 0)
     ydim = round((tmax - tmin) + 1, 0)
@@ -209,11 +200,12 @@ def dens_back(smin, smax, tmin, tmax):
 
 
 def get_cmap(cmap_name):
-    '''Return matplotlib colormap object
-    from matplotlib.cm or cmocean.
+    """Return matplotlib colormap object.
+
+    From matplotlib.cm or cmocean.
     Additional custom colormap for salinity is provided:
     - "custom_salinity1"
-    '''
+    """
 
     if cmap_name in cmo.cmapnames:
         colormap = cmo.cmap_d[cmap_name]
@@ -234,7 +226,7 @@ def get_cmap(cmap_name):
 
 
 def point_distance(lon_s4new, lat_s4new):
-    '''Calculate distance between points of the section.
+    """Calculate distance between points of the section.
 
     Parameters
     ----------
@@ -247,7 +239,7 @@ def point_distance(lon_s4new, lat_s4new):
     -------
     dist: numpy array
         1d array of distances between points in km.
-    '''
+    """
     g = pyproj.Geod(ellps='WGS84')
     (az12, az21, dist) = g.inv(lon_s4new[0:-1], lat_s4new[0:-1], lon_s4new[1:],
                                lat_s4new[1:])

@@ -1,20 +1,14 @@
+"""APPLICATE/TRR Ocean Diagnostics.
 """
-*********************************************************************
-APPLICATE/TRR Ocean Diagnostics
-*********************************************************************
-"""
+
 import logging
 import os
 import ESMF
 import numpy as np
-import pyproj
 import pyresample
 from cartopy.util import add_cyclic_point
-from netCDF4 import Dataset, num2date
-from scipy.interpolate import interp1d
+from netCDF4 import Dataset
 
-from esmvaltool.diag_scripts.shared import run_diagnostic
-from esmvaltool.diag_scripts.shared.plot import quickplot
 from esmvaltool.diag_scripts.ocean3d.getdata import load_meta
 
 
@@ -22,20 +16,20 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 
 def closest_depth(depths, depth):
-    """Finds closest depth.
+    """Find closest depth.
 
     From vector of depths finds target depth,
     that is closest to desired depth, Also returns
     an index for the desired depth.
     """
-    iz = abs(abs(depths) - abs(depth)).argmin()
-    target_depth = depths[iz]
-    logger.debug('target_depth: {}'.format(target_depth))
-    return target_depth, iz
+    target_level = abs(abs(depths) - abs(depth)).argmin()
+    target_depth = depths[target_level]
+    logger.debug('target_depth: %s', target_depth)
+    return target_depth, target_level
 
 
 def interpolate_vert(depth_model, target_depth, data_model):
-    """ Vertical linear interpolation.
+    """Vertical linear interpolation.
 
     Very simple linear interpolation of the model data to the
     desired depth. Can't extrapolate, so the limitation is that model
@@ -60,6 +54,10 @@ def interpolate_vert(depth_model, target_depth, data_model):
     data = data + i_lo * data_lo
     return data
 
+def weighting(distance):
+    """Weighting function for pyresample.
+    """
+    weight = 1 / distance**2
 
 def interpolate_pyresample(obs_file, mod_file, depth, cmor_var):
     """The 2d interpolation with pyresample.
@@ -104,13 +102,14 @@ def interpolate_pyresample(obs_file, mod_file, depth, cmor_var):
     depth_obs = obs.variables['lev'][:]
 
     # Select depth in climatology that is closest to the desired depth
-    target_depth, iz = closest_depth(depth_obs, depth)
+    target_depth, level_depth = closest_depth(depth_obs, depth)
 
     # climatology data on the level
-    data_onlev_obs = data_obs[iz, :, :]
+    data_onlev_obs = data_obs[level_depth, :, :]
 
     # add cyclic point to data and coordinates
-    data_onlev_obs_cyc, lon_obs_cyc = addcyclic(data_onlev_obs, lon_obs[0, :])
+    data_onlev_obs_cyc, lon_obs_cyc = add_cyclic_point(data_onlev_obs,
+                                                       lon_obs[0, :])
     lonc, latc = np.meshgrid(lon_obs_cyc, lat_obs[:, 0])
 
     # define target grid
@@ -121,7 +120,7 @@ def interpolate_pyresample(obs_file, mod_file, depth, cmor_var):
     data_model = model.variables['thetao'][:]
     lon_model = model.variables['lon'][:]
     lat_model = model.variables['lat'][:]
-    #hack for HadGEM2-ES
+
     lat_model[lat_model > 90] = 90
     depth_model = model.variables['lev'][:]
 
@@ -143,10 +142,14 @@ def interpolate_pyresample(obs_file, mod_file, depth, cmor_var):
     orig_def = pyresample.geometry.SwathDefinition(lons=lon2d - 180,
                                                    lats=lat2d)
 
-    wf = lambda r: 1 / r**2
-    interpolated = pyresample.kd_tree.resample_custom(orig_def, data, \
-                   targ_def, radius_of_influence=150000, neighbours=10,\
-                   weight_funcs=wf, fill_value=None)
+    interpolated = pyresample.kd_tree.resample_custom(
+        orig_def,
+        data,
+        targ_def,
+        radius_of_influence=150000,
+        neighbours=10,
+        weight_funcs=weighting,
+        fill_value=None)
 
     return lonc, latc, target_depth, data_onlev_obs_cyc, interpolated
 
@@ -165,17 +168,15 @@ def interpolate_esmf(obs_file, mod_file, depth, cmor_var):
         depth to interpolate to. First the closest depth from the
         observations will be selected and then.
     """
-
-
     metadata = load_meta(obs_file, fxpath=None)
     obs, lon_obs, lat_obs, depth_obs, time, areacello = metadata
     data_obs = obs.variables[cmor_var][:]
 
     # Select depth in climatology that is closest to the desired depth
-    target_depth, iz = closest_depth(depth_obs, depth)
+    target_depth, level_depth = closest_depth(depth_obs, depth)
 
     # climatology data on the level
-    data_onlev_obs = data_obs[0, iz, :, :]
+    data_onlev_obs = data_obs[0, level_depth, :, :]
 
     # Setting ESMF
     grid_obs = ESMF.Grid(filename=obs_file, filetype=ESMF.FileFormat.GRIDSPEC)
@@ -192,12 +193,6 @@ def interpolate_esmf(obs_file, mod_file, depth, cmor_var):
     metadata = load_meta(mod_file, fxpath=None)
     model, lon_model, lat_model, depth_model, time, areacello = metadata
     data_model = model.variables[cmor_var][:]
-
-    # some ocean models still have 1d coordinates
-    if lon_model.ndim == 2:
-        lon2d, lat2d = lon_model, lat_model
-    elif lon_model.ndim == 1:
-        lon2d, lat2d = np.meshgrid(lon_model, lat_model)
 
     # Simple vertical interpolation
     data = interpolate_vert(depth_model, target_depth, data_model[0, :, :, :])
@@ -228,7 +223,7 @@ def interpolate_esmf(obs_file, mod_file, depth, cmor_var):
         sourcefield,
         distfield,
         regrid_method=ESMF.RegridMethod.NEAREST_STOD,
-        #regrid_method=ESMF.RegridMethod.BILINEAR,
+        # regrid_method=ESMF.RegridMethod.BILINEAR,
         unmapped_action=ESMF.UnmappedAction.IGNORE,
         dst_mask_values=np.array([1]),
         src_mask_values=np.array([1]))

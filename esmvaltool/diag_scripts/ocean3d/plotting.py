@@ -1,29 +1,23 @@
-"""
-*********************************************************************
-APPLICATE/TRR Ocean Diagnostics
-*********************************************************************
+"""APPLICATE/TRR Ocean Diagnostics.
 """
 import logging
 import math
 import os
-from collections import OrderedDict
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 import cmocean.cm as cmo
 import matplotlib as mpl
+from matplotlib import cm
 import matplotlib.pylab as plt
 import numpy as np
 import pandas as pd
-from matplotlib import cm
-from netCDF4 import Dataset, num2date
+from netCDF4 import Dataset
 
 from esmvaltool.diag_scripts.ocean3d.getdata import load_meta, transect_points
-from esmvaltool.diag_scripts.ocean3d.interpolation import (
-    closest_depth, interpolate_esmf, interpolate_pyresample)
+from esmvaltool.diag_scripts.ocean3d.interpolation import (closest_depth,
+                                                           interpolate_esmf)
 from esmvaltool.diag_scripts.ocean3d.utils import (dens_back, genfilename,
                                                    point_distance)
-from esmvaltool.diag_scripts.shared import run_diagnostic
-from esmvaltool.diag_scripts.shared.plot import quickplot
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -84,7 +78,7 @@ def create_plot(model_filenames, ncols=3, projection=None, nplots_increment=0):
 
 
 def label_and_conversion(cmor_var, data):
-    """ Converts data if needed.
+    """Convert data if needed.
 
     And returns formatted version of the colorbar label.
 
@@ -156,13 +150,14 @@ def hofm_plot(model_filenames,
     if observations:
         del model_filenames[observations]
     # creata basis for the muli panel figure
-    fig, ax = create_plot(model_filenames)
+    fig, ax = create_plot(model_filenames, ncols=ncols)
 
     # plot data on the figure, axis by axis
     for ind, mmodel in enumerate(model_filenames):
         logger.info("Plot  %s data for %s, region %s", cmor_var, mmodel,
                     region)
-        # generate input filenames that the data prepared by `hofm_data` function
+        # generate input filenames that
+        # the data prepared by `hofm_data` function
         ifilename = genfilename(diagworkdir, cmor_var, mmodel, region, 'hofm',
                                 '.npy')
         ifilename_levels = genfilename(diagworkdir, cmor_var, mmodel, region,
@@ -236,7 +231,7 @@ def tsplot_plot(model_filenames,
                 ncols=3,
                 cmap=cm.Set1,
                 observations='PHC'):
-    """Plots a TS diagram.
+    """Plot a TS diagram.
 
     Parameters
     ----------
@@ -273,8 +268,7 @@ def tsplot_plot(model_filenames,
 
     # loop over models
     for mmodel in model_filenames:
-        logger.info("Plot  tsplot data for {}, region {}".format(
-            mmodel, region))
+        logger.info("Plot  tsplot data for %s, region %s", mmodel, region)
         # load mean data created by `tsplot_data`
         ifilename_t = genfilename(diagworkdir, 'thetao', mmodel, region,
                                   'tsplot', '.npy')
@@ -314,7 +308,7 @@ def tsplot_plot(model_filenames,
         plt.xlim(33, 36.)
         plt.ylim(-2.1, 6)
         plt.xlabel('Salinity', size=20)
-        plt.ylabel('Temperature, $^{\circ}$C', size=20)
+        plt.ylabel(r'Temperature, $^{\circ}$C', size=20)
         plt.xticks(size=15)
         plt.yticks(size=15)
         # setup the colorbar
@@ -382,7 +376,7 @@ def plot_profile(model_filenames,
         (level_clim[:lev_limit_clim].shape[0], len(model_filenames) - 1))
     mean_profile_counter = 0
 
-    for i, mmodel in enumerate(model_filenames):
+    for mmodel in model_filenames:
         logger.info("Plot profile %s data for %s, region %s", cmor_var, mmodel,
                     region)
         # construct input filenames
@@ -458,7 +452,7 @@ def plot2d_original_grid(model_filenames,
                          explicit_depths=None,
                          projection=ccrs.NorthPolarStereo(),
                          bbox=[-180, 180, 60, 90]):
-    """ Plot 2d maps on original grid using cartopy.
+    """Plot 2d maps on original grid using cartopy.
 
     Parameters
     ----------
@@ -467,7 +461,8 @@ def plot2d_original_grid(model_filenames,
     cmor_var: str
         name of the variable
     depth: int
-        we will plot the data on the model level that is closest to the `depth`.
+        we will plot the data on the model
+        level that is closest to the `depth`.
         Ignored if explicit_depths is provided.
     levels: tuple
         values to be used for vmin and vmax in the form of (vmin, vmax)
@@ -490,7 +485,6 @@ def plot2d_original_grid(model_filenames,
     ------
     None
     """
-
     fig, ax = create_plot(model_filenames, ncols=4, projection=projection)
 
     for ind, mmodel in enumerate(model_filenames):
@@ -503,7 +497,7 @@ def plot2d_original_grid(model_filenames,
                                 data_type='timmean',
                                 extension='.nc')
 
-        metadata = load_meta(datapath=model_filenames[mmodel], fxpath=None)
+        metadata = load_meta(ifilename, fxpath=None)
         datafile, lon2d, lat2d, lev, time, areacello = metadata
 
         if not explicit_depths:
@@ -539,8 +533,7 @@ def plot2d_original_grid(model_filenames,
             cfeature.GSHHSFeature(levels=[1],
                                   scale="low",
                                   facecolor="lightgray"))
-        ax[ind].set_title("{}, {} m".format(mmodel,
-                                            np.round(lev[level_target], 1)),
+        ax[ind].set_title("{}, {} m".format(mmodel, np.round(depth_target, 1)),
                           size=18)
         ax[ind].set_rasterization_zorder(-1)
 
@@ -630,7 +623,7 @@ def plot2d_bias(model_filenames,
     del model_filenames[observations]
     # loop over models
     for ind, mmodel in enumerate(model_filenames):
-        logger.info("Plot plot2d_bias {} for {}".format(cmor_var, mmodel))
+        logger.info("Plot plot2d_bias %s for %s", cmor_var, mmodel)
         # get the filename with the mean generated by the `timemean`
         ifilename = genfilename(diagworkdir,
                                 cmor_var,
@@ -639,11 +632,11 @@ def plot2d_bias(model_filenames,
                                 extension='.nc')
         # do the interpolation to the observation grid
         # the output is
-        lonc, latc, target_depth, data_onlev_obs_cyc, interpolated = interpolate_esmf(
+        lonc, latc, target_depth, data_obs, interpolated = interpolate_esmf(
             ifilename_obs, ifilename, depth, cmor_var)
         # get the label and convert data if needed
-        cb_label, data_onlev_obs_cyc = label_and_conversion(
-            cmor_var, data_onlev_obs_cyc)
+        cb_label, data_obs = label_and_conversion(
+            cmor_var, data_obs)
         cb_label, interpolated = label_and_conversion(cmor_var, interpolated)
         # add to the mean model
         model_mean = model_mean + interpolated
@@ -656,7 +649,7 @@ def plot2d_bias(model_filenames,
         image = ax[ind].contourf(
             lonc,
             latc,
-            interpolated - data_onlev_obs_cyc,
+            interpolated - data_obs,
             levels=levels,
             extend='both',
             # vmin=contours[0],
@@ -679,7 +672,7 @@ def plot2d_bias(model_filenames,
     image = ax[ind + 1].contourf(
         lonc,
         latc,
-        model_mean - data_onlev_obs_cyc,
+        model_mean - data_obs,
         levels=levels,
         extend='both',
         # vmin=contours[0],
@@ -717,7 +710,7 @@ def plot2d_bias(model_filenames,
 
 
 def plot_aw_core_stat(aw_core_parameters, diagplotdir):
-    """ Generate plotsa t AW core depth.
+    """Generate plotsa t AW core depth.
 
     Depth of the AW core and temperature of the AW core.
     Use pandas plot functionality.
@@ -735,7 +728,6 @@ def plot_aw_core_stat(aw_core_parameters, diagplotdir):
     -------
     None
     """
-
     logger.info("Plot AW core statistics")
     # Convert dictionary to pandas Dataframe
     df = pd.DataFrame(aw_core_parameters).transpose()

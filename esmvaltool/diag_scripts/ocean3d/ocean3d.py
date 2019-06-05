@@ -1,9 +1,5 @@
+"""APPLICATE/TRR Ocean Diagnostics.
 """
-*********************************************************************
-APPLICATE/TRR Ocean Diagnostics
-*********************************************************************
-"""
-import inspect
 import itertools
 import logging
 import os
@@ -11,10 +7,10 @@ import pickle
 from collections import OrderedDict
 
 import cartopy.crs as ccrs
-import cmocean.cm as cmo
 import matplotlib as mpl
-import numpy as np
 from matplotlib import cm
+import numpy as np
+
 
 from esmvaltool.diag_scripts.ocean3d.getdata import (aw_core, hofm_data,
                                                      transect_data,
@@ -26,18 +22,14 @@ from esmvaltool.diag_scripts.ocean3d.plotting import (hofm_plot, plot2d_bias,
                                                       transect_map,
                                                       transect_plot,
                                                       tsplot_plot)
-from esmvaltool.diag_scripts.ocean3d.regions import (hofm_regions,
-                                                     transect_points)
+from esmvaltool.diag_scripts.ocean3d.regions import (hofm_regions)
 from esmvaltool.diag_scripts.ocean3d.utils import (find_observations_name,
-                                                   genfilename,
                                                    get_clim_model_filenames,
                                                    get_cmap, get_fx_filenames,
                                                    timmean)
 from esmvaltool.diag_scripts.shared import run_diagnostic
-from esmvaltool.diag_scripts.shared._base import _get_input_data_files
-from esmvaltool.diag_scripts.shared.plot import quickplot
 
-mpl.use('agg')  #noqa
+mpl.use('agg')  # noqa
 
 
 logger = logging.getLogger(os.path.basename(__file__))
@@ -45,15 +37,11 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 def main(cfg):
     """Compute the time average for each input model."""
-
     # for debuging save the configuration in a pickle file
     with open('cfg_NK.joblib', 'wb') as handle:
         pickle.dump(cfg, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
     # sets the directories
-    plotdir = cfg['plot_dir']
-    log_level = cfg['log_level']
-    plot_type = cfg['output_file_type']
     diagworkdir = cfg['work_dir']
     diagplotdir = cfg['plot_dir']
 

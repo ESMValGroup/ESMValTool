@@ -1,7 +1,4 @@
-"""
-*********************************************************************
-APPLICATE/TRR Ocean Diagnostics
-*********************************************************************
+"""APPLICATE/TRR Ocean Diagnostics.
 """
 import logging
 import os
@@ -9,18 +6,10 @@ import matplotlib as mpl
 import numpy as np
 from scipy.interpolate import interp1d
 
-from esmvaltool.diag_scripts.shared import run_diagnostic
-from esmvaltool.diag_scripts.shared.plot import quickplot
-
 logger = logging.getLogger(os.path.basename(__file__))
 
-mpl.use('agg')
-#plt.style.context('seaborn-talk')
-#sns.set_context("paper")
-
-
 def hofm_regions(region, lon2d, lat2d):
-    """Regions for data selection.
+    """Define regions for data selection.
 
     Parameters
     ----------
@@ -35,7 +24,6 @@ def hofm_regions(region, lon2d, lat2d):
         i indexes of the selected points
     indexesj: 1d numpy array
         j indexes of the selected points
-
     """
     if region == 'EB':
         # Eurasian Basin of the Arctic Ocean
