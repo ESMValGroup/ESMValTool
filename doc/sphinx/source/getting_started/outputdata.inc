@@ -56,6 +56,7 @@ item, 'work_dir' ie: cfg['work_dir']
 
 In NCL-based diagnostics, this is given by config_user_info@work_dir.
 
+In NCL-based diagnostics, this is given by config_user_info@work_dir.
 
 
 
