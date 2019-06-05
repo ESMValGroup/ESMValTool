@@ -329,7 +329,7 @@ def multi_model_statistics(products, span, output_products, statistics):
         statistical measure to be computed (mean or median).
     Returns
     -------
-    products
+    list
         list of data products containing the multimodel stats computed.
     Raises
     ------
