@@ -1,8 +1,8 @@
 :: _outputdata:
 
-*****************
-ESMValTool output
-*****************
+******
+Output
+******
 
 Preprocessed datasets
 =====================
