@@ -1,3 +1,4 @@
+"""ESMValTool core package."""
 import logging
 import os
 
