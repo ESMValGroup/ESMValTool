@@ -20,7 +20,7 @@ This directory will contain 4 further subdirectories:
 
 1. preproc: This directory contains all the preprocessed netcdfs data & metadata.
 
-2. run: This directory includes all log files, a copy of the recipe, settings.yml, metadata.yml (more on these below). 
+2. run: This directory includes all log files, a copy of the recipe, a summary of the resource usage, and the `settings.yml`_ and `metadata.yml`_ interface files. 
 
 3. work: A place for post processed files like NetCDF (depends on the diagnostics).
 
