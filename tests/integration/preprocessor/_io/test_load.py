@@ -1,4 +1,4 @@
-"""Integration tests for :func:`esmvaltool.preprocessor._io.load`."""
+"""Integration tests for :func:`esmvalcore.preprocessor._io.load`."""
 
 import os
 import tempfile
@@ -9,7 +9,7 @@ import numpy as np
 from iris.coords import DimCoord
 from iris.cube import Cube
 
-from esmvaltool.preprocessor._io import concatenate_callback, load
+from esmvalcore.preprocessor._io import concatenate_callback, load
 
 
 def _create_sample_cube():
@@ -19,7 +19,7 @@ def _create_sample_cube():
 
 
 class TestLoad(unittest.TestCase):
-    """Tests for :func:`esmvaltool.preprocessor.load`."""
+    """Tests for :func:`esmvalcore.preprocessor.load`."""
 
     def setUp(self):
         """Start tests."""

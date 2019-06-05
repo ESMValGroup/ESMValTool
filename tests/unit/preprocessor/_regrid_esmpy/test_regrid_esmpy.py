@@ -1,4 +1,4 @@
-"""Unit tests for the esmvaltool.preprocessor._regrid_esmpy module."""
+"""Unit tests for the esmvalcore.preprocessor._regrid_esmpy module."""
 import cf_units
 import iris
 import mock
@@ -6,7 +6,7 @@ import numpy as np
 from iris.exceptions import CoordinateNotFoundError
 
 import tests
-from esmvaltool.preprocessor._regrid_esmpy import (
+from esmvalcore.preprocessor._regrid_esmpy import (
     build_regridder, build_regridder_2d, coords_iris_to_esmpy,
     cube_to_empty_field, get_grid, get_grid_representant,
     get_grid_representants, get_representant, is_lon_circular, regrid)
@@ -75,9 +75,9 @@ MASK_REGRIDDING_MASK_VALUE = {
 }
 
 
-@mock.patch('esmvaltool.preprocessor._regrid_esmpy.MASK_REGRIDDING_MASK_VALUE',
+@mock.patch('esmvalcore.preprocessor._regrid_esmpy.MASK_REGRIDDING_MASK_VALUE',
             MASK_REGRIDDING_MASK_VALUE)
-@mock.patch('esmvaltool.preprocessor._regrid_esmpy.ESMF_REGRID_METHODS',
+@mock.patch('esmvalcore.preprocessor._regrid_esmpy.ESMF_REGRID_METHODS',
             ESMF_REGRID_METHODS)
 @mock.patch('ESMF.Manager', mock.Mock)
 @mock.patch('ESMF.GridItem', MockGridItem)
@@ -448,7 +448,7 @@ class TestHelpers(tests.Test):
                                                        slice(None, None,
                                                              None)))
 
-    @mock.patch('esmvaltool.preprocessor._regrid_esmpy.cube_to_empty_field',
+    @mock.patch('esmvalcore.preprocessor._regrid_esmpy.cube_to_empty_field',
                 mock_cube_to_empty_field)
     @mock.patch('ESMF.Regrid')
     def test_build_regridder_2d_unmasked_data(self, mock_regrid):
@@ -469,7 +469,7 @@ class TestHelpers(tests.Test):
         }
         mock_regrid.assert_called_once_with(**expected_kwargs)
 
-    @mock.patch('esmvaltool.preprocessor._regrid_esmpy.cube_to_empty_field',
+    @mock.patch('esmvalcore.preprocessor._regrid_esmpy.cube_to_empty_field',
                 mock_cube_to_empty_field)
     @mock.patch('ESMF.Regrid')
     def test_build_regridder_2d_masked_data(self, mock_regrid):
@@ -511,7 +511,7 @@ class TestHelpers(tests.Test):
                 self.assertEqual(expected_kwargs[key], kwargs[key])
         self.assertTrue(mock_regrid.call_args_list[1] == expected_calls[1])
 
-    @mock.patch('esmvaltool.preprocessor._regrid_esmpy.cube_to_empty_field',
+    @mock.patch('esmvalcore.preprocessor._regrid_esmpy.cube_to_empty_field',
                 mock_cube_to_empty_field)
     @mock.patch('ESMF.Regrid')
     def test_regridder_2d_unmasked_data(self, mock_regrid):
@@ -526,7 +526,7 @@ class TestHelpers(tests.Test):
         regridder(src_rep)
         field_regridder.assert_called_once_with(src_rep.field, dst_rep.field)
 
-    @mock.patch('esmvaltool.preprocessor._regrid_esmpy.cube_to_empty_field',
+    @mock.patch('esmvalcore.preprocessor._regrid_esmpy.cube_to_empty_field',
                 mock_cube_to_empty_field)
     @mock.patch('ESMF.Regrid')
     def test_regridder_2d_masked_data(self, mock_regrid):
@@ -541,8 +541,8 @@ class TestHelpers(tests.Test):
         regridder(self.cube)
         field_regridder.assert_called_once_with(src_rep.field, dst_rep.field)
 
-    @mock.patch('esmvaltool.preprocessor._regrid_esmpy.build_regridder_3d')
-    @mock.patch('esmvaltool.preprocessor._regrid_esmpy.build_regridder_2d')
+    @mock.patch('esmvalcore.preprocessor._regrid_esmpy.build_regridder_3d')
+    @mock.patch('esmvalcore.preprocessor._regrid_esmpy.build_regridder_2d')
     def test_build_regridder_2(self, mock_regridder_2d, mock_regridder_3d):
         """Test build regridder for 2d data."""
         # pylint: disable=no-self-use
@@ -553,8 +553,8 @@ class TestHelpers(tests.Test):
             src_rep, dst_rep, mock.sentinel.rm_nearest_stod, .99)
         mock_regridder_3d.assert_not_called()
 
-    @mock.patch('esmvaltool.preprocessor._regrid_esmpy.build_regridder_3d')
-    @mock.patch('esmvaltool.preprocessor._regrid_esmpy.build_regridder_2d')
+    @mock.patch('esmvalcore.preprocessor._regrid_esmpy.build_regridder_3d')
+    @mock.patch('esmvalcore.preprocessor._regrid_esmpy.build_regridder_2d')
     def test_build_regridder_3(self, mock_regridder_2d, mock_regridder_3d):
         """Test build regridder for 3d data."""
         # pylint: disable=no-self-use
@@ -565,7 +565,7 @@ class TestHelpers(tests.Test):
             src_rep, dst_rep, mock.sentinel.rm_nearest_stod, .99)
         mock_regridder_2d.assert_not_called()
 
-    @mock.patch('esmvaltool.preprocessor._regrid_esmpy.get_representant')
+    @mock.patch('esmvalcore.preprocessor._regrid_esmpy.get_representant')
     def test_get_grid_representant_2d(self, mock_get_representant):
         """Test extraction of 2d grid representant from 2 spatial d cube."""
         mock_get_representant.return_value = mock.sentinel.ret
@@ -574,7 +574,7 @@ class TestHelpers(tests.Test):
         mock_get_representant.assert_called_once_with(
             self.cube, ['latitude', 'longitude'])
 
-    @mock.patch('esmvaltool.preprocessor._regrid_esmpy.get_representant')
+    @mock.patch('esmvalcore.preprocessor._regrid_esmpy.get_representant')
     def test_get_grid_representant_2d_horiz_only(self, mock_get_representant):
         """Test extraction of forced 2d grid representant from 2d cube."""
         mock_get_representant.return_value = mock.sentinel.ret
@@ -583,7 +583,7 @@ class TestHelpers(tests.Test):
         mock_get_representant.assert_called_once_with(
             self.cube, ['latitude', 'longitude'])
 
-    @mock.patch('esmvaltool.preprocessor._regrid_esmpy.get_representant')
+    @mock.patch('esmvalcore.preprocessor._regrid_esmpy.get_representant')
     def test_get_grid_representant_3d(self, mock_get_representant):
         """Test extraction of 3d grid representant from 3 spatial d cube."""
         mock_get_representant.return_value = mock.sentinel.ret
@@ -592,7 +592,7 @@ class TestHelpers(tests.Test):
         mock_get_representant.assert_called_once_with(
             self.cube_3d, [self.depth, 'latitude', 'longitude'])
 
-    @mock.patch('esmvaltool.preprocessor._regrid_esmpy.get_representant')
+    @mock.patch('esmvalcore.preprocessor._regrid_esmpy.get_representant')
     def test_get_grid_representant_3d_horiz_only(self, mock_get_representant):
         """Test extraction of 2d grid representant from 3 spatial d cube."""
         mock_get_representant.return_value = mock.sentinel.ret
@@ -601,9 +601,9 @@ class TestHelpers(tests.Test):
         mock_get_representant.assert_called_once_with(
             self.cube_3d, ['latitude', 'longitude'])
 
-    @mock.patch('esmvaltool.preprocessor._regrid_esmpy.get_grid_representant',
+    @mock.patch('esmvalcore.preprocessor._regrid_esmpy.get_grid_representant',
                 mock.Mock(side_effect=identity))
-    @mock.patch('esmvaltool.preprocessor._regrid_esmpy.get_empty_data')
+    @mock.patch('esmvalcore.preprocessor._regrid_esmpy.get_empty_data')
     @mock.patch('iris.cube.Cube')
     def test_get_grid_representants_3d_src(self, mock_cube,
                                            mock_get_empty_data):
@@ -623,9 +623,9 @@ class TestHelpers(tests.Test):
             dim_coords_and_dims=[(self.depth, 0)],
         )
 
-    @mock.patch('esmvaltool.preprocessor._regrid_esmpy.get_grid_representant',
+    @mock.patch('esmvalcore.preprocessor._regrid_esmpy.get_grid_representant',
                 mock.Mock(side_effect=identity))
-    @mock.patch('esmvaltool.preprocessor._regrid_esmpy.get_empty_data')
+    @mock.patch('esmvalcore.preprocessor._regrid_esmpy.get_empty_data')
     @mock.patch('iris.cube.Cube')
     def test_get_grid_representants_2d_src(self, mock_cube,
                                            mock_get_empty_data):
@@ -645,9 +645,9 @@ class TestHelpers(tests.Test):
             dim_coords_and_dims=[],
         )
 
-    @mock.patch('esmvaltool.preprocessor._regrid_esmpy.map_slices')
-    @mock.patch('esmvaltool.preprocessor._regrid_esmpy.build_regridder')
-    @mock.patch('esmvaltool.preprocessor._regrid_esmpy.get_grid_representants',
+    @mock.patch('esmvalcore.preprocessor._regrid_esmpy.map_slices')
+    @mock.patch('esmvalcore.preprocessor._regrid_esmpy.build_regridder')
+    @mock.patch('esmvalcore.preprocessor._regrid_esmpy.get_grid_representants',
                 mock.Mock(side_effect=identity))
     def test_regrid(self, mock_build_regridder, mock_map_slices):
         """Test full regrid method."""
