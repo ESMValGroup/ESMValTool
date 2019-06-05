@@ -50,6 +50,7 @@ class TestCMIP6Info(unittest.TestCase):
         activity = self.variables_info.activities['1pctCO2']
         self.assertListEqual(activity, ['CMIP'])
 
+
 class Testobs4mipsInfo(unittest.TestCase):
     """Test for the obs$mips info class."""
 
