@@ -55,7 +55,25 @@ VERTICAL_SCHEMES = ('linear', 'nearest',
 
 
 def parse_cell_spec(spec):
-    """Parse an MxN cell specification string."""
+    """
+    Parse an MxN cell specification string.
+
+    Parameters
+    ----------
+    spec: str
+
+    Returns
+    -------
+    tuple
+        tuple of (float, float) of parsed (lon, lat)
+
+    Raises
+    ------
+    ValueError
+        if the MxN cell specification is malformed.
+    ValueError
+        invalid longitude and latitude delta in cell specification.
+    """
     cell_match = _CELL_SPEC.match(spec)
     if cell_match is None:
         emsg = 'Invalid MxN cell specification for grid, got {!r}.'
