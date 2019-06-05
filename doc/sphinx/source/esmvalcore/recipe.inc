@@ -74,7 +74,7 @@ diagnostics. Each diagnostics will have:
 - A description of the variables (optional)
 - Which preprocessor to apply to each variable
 - The script to run
-- The diagnostics can also include an addition_datasets section, if specific datasets are linked to specific diagnostics.
+- The diagnostics can also include an additional_datasets section, if specific datasets are linked to specific diagnostics.
 
 
 
