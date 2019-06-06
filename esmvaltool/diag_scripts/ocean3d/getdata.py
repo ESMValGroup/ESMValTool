@@ -315,14 +315,12 @@ def tsplot_data(mmodel, max_level, region, diagworkdir, observations='PHC'):
     lon2d = metadata_t['lon2d']
     lat2d = metadata_t['lat2d']
     lev = metadata_t['lev']
-    time = metadata_t['time']
 
     metadata_s = load_meta(datapath=ifilename_s, fxpath=None)
     datafile_s = metadata_s['datafile']
     lon2d = metadata_s['lon2d']
     lat2d = metadata_s['lat2d']
     lev = metadata_s['lev']
-    time = metadata_s['time']
 
     # find index of the max_level
     lev_limit = lev[lev <= max_level].shape[0] + 1

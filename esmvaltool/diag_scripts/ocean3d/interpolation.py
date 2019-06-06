@@ -172,7 +172,7 @@ def interpolate_esmf(obs_file, mod_file, depth, cmor_var):
     lon_obs = metadata['lon2d']
     lat_obs = metadata['lat2d']
     depth_obs = metadata['lev']
-    time = metadata['time']
+
 
     data_obs = obs.variables[cmor_var][:]
 
@@ -196,10 +196,7 @@ def interpolate_esmf(obs_file, mod_file, depth, cmor_var):
     # Now working with the model
     metadata = load_meta(mod_file, fxpath=None)
     model = metadata['datafile']
-    lon_model = metadata['lon2d']
-    lat_model = metadata['lat2d']
     depth_model = metadata['lev']
-    time = metadata['time']
 
     data_model = model.variables[cmor_var][:]
 

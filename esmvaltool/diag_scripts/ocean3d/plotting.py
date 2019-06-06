@@ -506,7 +506,6 @@ def plot2d_original_grid(model_filenames,
         lon2d = metadata['lon2d']
         lat2d = metadata['lat2d']
         lev = metadata['lev']
-        time = metadata['time']
 
         if not explicit_depths:
             depth_target, level_target = closest_depth(lev, depth)
