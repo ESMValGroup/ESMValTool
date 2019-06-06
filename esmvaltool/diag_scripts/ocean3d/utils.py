@@ -122,7 +122,7 @@ def find_observations_name(config, variable):
     Assumes that there is only one observational data set.
     """
     obsname = []
-    for key, value in config['input_data'].items():
+    for _, value in config['input_data'].items():
         if value['project'] == "OBS":
             obsname = value['dataset']
             print(obsname)
@@ -238,7 +238,7 @@ def point_distance(lon_s4new, lat_s4new):
         1d array of distances between points in km.
     """
     g = pyproj.Geod(ellps='WGS84')
-    (az12, az21, dist) = g.inv(lon_s4new[0:-1], lat_s4new[0:-1], lon_s4new[1:],
+    (az12, _, dist) = g.inv(lon_s4new[0:-1], lat_s4new[0:-1], lon_s4new[1:],
                                lat_s4new[1:])
     dist = dist.cumsum() / 1000
     dist = np.insert(dist, 0, 0)

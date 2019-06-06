@@ -58,7 +58,14 @@ def load_meta(datapath, fxpath=None):
     elif lon.ndim == 1:
         lon2d, lat2d = np.meshgrid(lon, lat)
 
-    return [datafile, lon2d, lat2d, lev, time, areacello]
+    metadata = {}
+    metadata['datafile'] = datafile
+    metadata['lon2d'] = lon2d
+    metadata['lat2d'] = lat2d
+    metadata['lev'] = lev
+    metadata['time'] = time
+    metadata['areacello'] = areacello
+    return metadata
 
 
 def hofm_data(model_filenames, mmodel, cmor_var, areacello_fx, max_level,
@@ -91,7 +98,12 @@ def hofm_data(model_filenames, mmodel, cmor_var, areacello_fx, max_level,
     logger.info("Extract  %s data for %s, region %s", cmor_var, mmodel, region)
     metadata = load_meta(datapath=model_filenames[mmodel],
                          fxpath=areacello_fx[mmodel])
-    datafile, lon2d, lat2d, lev, time, areacello = metadata
+    datafile = metadata['datafile']
+    lon2d = metadata['lon2d']
+    lat2d = metadata['lat2d']
+    lev = metadata['lev']
+    time = metadata['time']
+    areacello = metadata['areacello']
 
     lev_limit = lev[lev <= max_level].shape[0] + 1
 
@@ -107,7 +119,7 @@ def hofm_data(model_filenames, mmodel, cmor_var, areacello_fx, max_level,
 
     oce_hofm = np.zeros((lev[0:lev_limit].shape[0], series_lenght))
     for mon in range(series_lenght):
-        for ind, depth in enumerate(lev[0:lev_limit]):
+        for ind, _ in enumerate(lev[0:lev_limit]):
             # fix for climatology
             if datafile.variables[cmor_var].ndim < 4:
                 level_pp = datafile.variables[cmor_var][ind, :, :]
@@ -140,12 +152,7 @@ def hofm_data(model_filenames, mmodel, cmor_var, areacello_fx, max_level,
     datafile.close()
 
 
-def transect_data(mmodel,
-                  cmor_var,
-                  region,
-                  diagworkdir,
-                  mult=2,
-                  observations='PHC'):
+def transect_data(mmodel, cmor_var, region, diagworkdir, mult=2):
     """Extract data for transects (defined in regions.transect_points).
 
     Parameters
@@ -302,14 +309,20 @@ def tsplot_data(mmodel, max_level, region, diagworkdir, observations='PHC'):
                               data_type='timmean',
                               extension='.nc')
     # get the metadata for T and S
+
     metadata_t = load_meta(datapath=ifilename_t, fxpath=None)
-    datafile_t, lon2d, lat2d, lev, time, areacello = metadata_t
+    datafile_t = metadata_t['datafile']
+    lon2d = metadata_t['lon2d']
+    lat2d = metadata_t['lat2d']
+    lev = metadata_t['lev']
+    time = metadata_t['time']
 
     metadata_s = load_meta(datapath=ifilename_s, fxpath=None)
-    datafile_s, lon2d, lat2d, lev, time, areacello = metadata_s
-
-    datafile_t = Dataset(ifilename_t)
-    datafile_s = Dataset(ifilename_s)
+    datafile_s = metadata_s['datafile']
+    lon2d = metadata_s['lon2d']
+    lat2d = metadata_s['lat2d']
+    lev = metadata_s['lev']
+    time = metadata_s['time']
 
     # find index of the max_level
     lev_limit = lev[lev <= max_level].shape[0] + 1

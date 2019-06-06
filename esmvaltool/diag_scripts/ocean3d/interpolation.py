@@ -167,7 +167,13 @@ def interpolate_esmf(obs_file, mod_file, depth, cmor_var):
         observations will be selected and then.
     """
     metadata = load_meta(obs_file, fxpath=None)
-    obs, lon_obs, lat_obs, depth_obs, time, areacello = metadata
+    # obs, lon_obs, lat_obs, depth_obs, time, areacello = metadata
+    obs = metadata['datafile']
+    lon_obs = metadata['lon2d']
+    lat_obs = metadata['lat2d']
+    depth_obs = metadata['lev']
+    time = metadata['time']
+
     data_obs = obs.variables[cmor_var][:]
 
     # Select depth in climatology that is closest to the desired depth
@@ -189,7 +195,12 @@ def interpolate_esmf(obs_file, mod_file, depth, cmor_var):
 
     # Now working with the model
     metadata = load_meta(mod_file, fxpath=None)
-    model, lon_model, lat_model, depth_model, time, areacello = metadata
+    model = metadata['datafile']
+    lon_model = metadata['lon2d']
+    lat_model = metadata['lat2d']
+    depth_model = metadata['lev']
+    time = metadata['time']
+
     data_model = model.variables[cmor_var][:]
 
     # Simple vertical interpolation

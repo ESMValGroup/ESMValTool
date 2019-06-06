@@ -502,7 +502,11 @@ def plot2d_original_grid(model_filenames,
                                 extension='.nc')
 
         metadata = load_meta(ifilename, fxpath=None)
-        datafile, lon2d, lat2d, lev, time, areacello = metadata
+        datafile = metadata['datafile']
+        lon2d = metadata['lon2d']
+        lat2d = metadata['lat2d']
+        lev = metadata['lev']
+        time = metadata['time']
 
         if not explicit_depths:
             depth_target, level_target = closest_depth(lev, depth)
@@ -616,7 +620,8 @@ def plot2d_bias(model_filenames,
                                 extension='.nc')
     # get the metadata for observations (we just need a size)
     metadata = load_meta(datapath=model_filenames[observations], fxpath=None)
-    datafile, lon2d, lat2d, lev, time, areacello = metadata
+    lon2d = metadata['lon2d']
+
     # Create an empty array to store the mean.
     # One point larger along long to acount for cyclic point
     model_mean = np.zeros((lon2d.shape[0], lon2d.shape[1] + 1))

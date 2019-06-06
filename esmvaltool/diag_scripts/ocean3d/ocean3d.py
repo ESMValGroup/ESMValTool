@@ -241,11 +241,7 @@ def main(cfg):
             for mmodel, region in itertools.product(model_filenames,
                                                     cfg['transects_regions']):
                 # ploting a transect
-                transect_data(mmodel,
-                              trans_var,
-                              region,
-                              diagworkdir,
-                              observations=observations)
+                transect_data(mmodel, trans_var, region, diagworkdir)
             # setup a color map
             if cfg['transects_cmap']:
                 cmap = get_cmap(cfg['transects_cmap'][var_number])
