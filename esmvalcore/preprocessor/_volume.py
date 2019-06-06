@@ -183,7 +183,7 @@ def volume_statistics(
         cube: iris.cube.Cube
             Input cube.
         operator: str
-            The operation to apply to the cube.
+            The operation to apply to the cube, options are: 'mean'.
         fx_files: dict
             dictionary of field:filename for the fx_files
 
