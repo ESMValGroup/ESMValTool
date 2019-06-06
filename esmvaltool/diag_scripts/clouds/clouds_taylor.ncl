@@ -90,7 +90,7 @@ load "$diag_scripts/../interface_scripts/interface.ncl"
 load "$diag_scripts/shared/plot/aux_plotting.ncl"
 load "$diag_scripts/shared/statistics.ncl"
 load "$diag_scripts/shared/plot/style.ncl"
-load "$diag_scripts/shared/plot/taylor_diagram_less_hardcoded.ncl"
+load "$diag_scripts/shared/plot/taylor_plot.ncl"
 
 begin
 
@@ -900,9 +900,9 @@ begin
   ; write provenance to netcdf output and plot file(s)
   ; ------------------------------------------------------------------------
 
-  statistics = ("clim")
-  domain = ("glob")
-  plottype = ("taylor")
+  statistics = "clim"
+  domain = "global"
+  plottype = "taylor"
 
   do is = 0, numseas - 1
     ; note: because function log_provenance does not yet support to attach
