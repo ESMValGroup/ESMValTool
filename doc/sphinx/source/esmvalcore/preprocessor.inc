@@ -44,7 +44,7 @@ comparison. For example, several observational datasets deliver total column
 ozone as observed variable (toz), but CMIP models only provide the ozone 3D
 field (tro3). In this case, a derivation function is provided to vertically
 integrate the ozone and obtain total column ozone for direct comparison with
-the observations. 
+the observations.
 
 The user contributing a new derived variable also needs to define
 a name for it and to provide the corresponding CMOR table. This is to guarantee
@@ -53,7 +53,7 @@ CMOR tables are collected as part of the package. By default, the variable
 derivation will be applied only if not already available in the input data, but
 the derivation can be forced by setting the appropriate flag.
 
-.. code-block:: bash
+.. code-block:: yaml
 
   variables:
     toz:
@@ -105,7 +105,7 @@ themselves. We present both these implementations below.
 To mask out a certain domain (e.g., sea) in the preprocessor step,
 `mask_landsea` can be used:
 
-.. code-block:: bash
+.. code-block:: yaml
 
     preprocessors:
       preproc_mask:
@@ -122,14 +122,14 @@ masked out, respectively. If the corresponding fx file is not found (which is
 the case for some models and almost all observational datasets), the
 preprocessor attempts to mask the data using Natural Earth mask files (that are
 vectorized rasters). As mentioned above, the spatial resolution of the the
-Natural Earth masks are much higher than any typical global model (10m for 
+Natural Earth masks are much higher than any typical global model (10m for
 land and 50m for ocean masks).
 
 Note that for masking out ice sheets, the preprocessor uses a different
 function, to ensure that both land and sea or ice can be masked out without
 losing generality. To mask ice out, `mask_landseaice` can be used:
 
-.. code-block:: bash
+.. code-block:: yaml
 
   preprocessors:
     preproc_mask:
@@ -305,7 +305,7 @@ points common and sets common calendars; it also resets the time bounds and
 auxiliary coordinates to reflect the artifically shifted time points. Current
 implementation for monthly and daily data; the frequency is set automatically
 from the variable CMOR table unless a custom frequency is set manually by the
-user in recipe. 
+user in recipe.
 
 .. warning::
    Link to function missing.
@@ -437,7 +437,7 @@ See also :func:`esmvalcore.preprocessor.volume_statistics`.
 --------------------
 
 This function integrates over the depth dimension. It performs a weighted sum
-along the z-coordinate, and removes the z direction of the output cube. It takes no arguments. 
+along the z-coordinate, and removes the z direction of the output cube. It takes no arguments.
 
 See also :func:`esmvalcore.preprocessor.depth_integration`.
 
@@ -509,7 +509,7 @@ running the diagnostic, or in the disgnostic phase. We present both these implem
 
 To mask out seas in the preprocessor step, simply add `mask_landsea:` as a preprocessor step in the `preprocessor` of your choice section of the recipe, example:
 
-.. code-block:: bash
+.. code-block:: yaml
 
     preprocessors:
       my_masking_preprocessor:
@@ -528,7 +528,7 @@ Note that the resolutions for the Natural Earth masks are much higher than any u
 Note that for masking out ice the preprocessor is using a different function, this so that both land and sea or ice can be masked out without
 losing generality. To mask ice out one needs to add the preprocessing step much as above:
 
-.. code-block:: bash
+.. code-block:: yaml
 
     preprocessors:
       my_masking_preprocessor:
@@ -545,19 +545,19 @@ At the core of the land/sea/ice masking in the preprocessor are the mask files (
 can be retrived and used in the diagnostic phase as well or solely. By specifying the `fx_files:` key in the variable in diagnostic in the recipe, and populating it
 with a list of desired files e.g.:
 
-.. code-block:: bash
+.. code-block:: yaml
 
     variables:
       ta:
         preprocessor: my_masking_preprocessor
-          fx_files: [sftlf, sftof, sftgif, areacello, areacella]
+        fx_files: [sftlf, sftof, sftgif, areacello, areacella]
 
 Such a recipe will automatically retrieve all the `[sftlf, sftof, sftgif, areacello, areacella]`-type fx files for each of the variables that are needed for
 and then, in the diagnostic phase, these mask files will be available for the developer to use them as they need to. They `fx_files` attribute of the big `variable`
 nested dictionary that gets passed to the diagnostic is, in turn, a dictionary on its own, and members of it can be accessed in the diagnostic through a simple loop over
 the 'config' diagnostic variable items e.g.:
 
-.. code-block:: bash
+.. code-block:: python
 
     for filename, attributes in config['input_data'].items():
         sftlf_file = attributes['fx_files']['sftlf']
@@ -578,7 +578,7 @@ the user chooses a time window in which missing data points are counted, and if 
 to the number of total data points in a window is less than a chosen fractional theshold, the window is discarded i.e.
 all the points in the window are masked (set to missing).
 
-.. code-block:: bash
+.. code-block:: yaml
 
     preprocessors:
       missing_values_preprocessor:
