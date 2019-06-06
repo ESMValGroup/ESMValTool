@@ -1,4 +1,4 @@
-"""Unit tests for the :func:`esmvaltool.preprocessor._time` module."""
+"""Unit tests for the :func:`esmvalcore.preprocessor._time` module."""
 
 import unittest
 
@@ -12,7 +12,7 @@ from iris.cube import Cube
 from numpy.testing import assert_array_equal
 
 import tests
-from esmvaltool.preprocessor._time import (annual_mean, extract_month,
+from esmvalcore.preprocessor._time import (annual_mean, extract_month,
                                            extract_season, extract_time,
                                            regrid_time, time_average)
 
@@ -140,7 +140,7 @@ class TestExtractSeason(tests.Test):
 
 
 class TestTimeAverage(tests.Test):
-    """Test class for the :func:`esmvaltool.preprocessor._time_pp` module"""
+    """Test class for the :func:`esmvalcore.preprocessor._time_pp` module"""
 
     def test_time_average(self):
         """Test for time average of a 1D field."""
