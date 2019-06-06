@@ -8,7 +8,8 @@ from cf_units import Unit
 
 import tests
 from esmvalcore.preprocessor._area import (
-    area_statistics, extract_named_regions, extract_region)
+    area_statistics, extract_named_regions, extract_region,
+    zonal_statistics, meridional_statistics)
 
 
 class Test(tests.Test):

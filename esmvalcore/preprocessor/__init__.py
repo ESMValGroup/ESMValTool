@@ -9,7 +9,7 @@ from iris.cube import Cube, CubeList
 from .._provenance import TrackedFile
 from .._task import BaseTask
 from ._area import (area_statistics, extract_named_regions, extract_region,
-                    zonal_means)
+                    zonal_statistics, meridional_statistics)
 from ._derive import derive
 from ._download import download
 from ._io import (_get_debug_filename, cleanup, concatenate, load, save,
@@ -77,7 +77,8 @@ __all__ = [
     # Time operations
     # 'annual_cycle': annual_cycle,
     # 'diurnal_cycle': diurnal_cycle,
-    'zonal_means',
+    'zonal_statistics',
+    'meridional_statistics',
     'annual_mean',
     'seasonal_mean',
     'time_average',

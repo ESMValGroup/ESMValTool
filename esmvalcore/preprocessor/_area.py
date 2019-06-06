@@ -8,6 +8,7 @@ import logging
 
 import iris
 from dask import array as da
+from _shared import get_iris_analysis_operation
 
 logger = logging.getLogger(__name__)
 
@@ -72,43 +73,12 @@ def extract_region(cube, start_longitude, end_longitude, start_latitude,
     return cube.copy(data)
 
 
-def get_iris_analysis_operation(operator):
+def zonal_statistics(cube, operator):
     """
-    Determine the iris analysis operator from a string.
-
-    Map string to functional operator.
-
-    Parameters
-    ----------
-    operator: str
-        A named operator.
-
-    Returns
-    -------
-        function: A function from iris.analysis
-
-    Raises
-    ------
-    ValueError
-        operator not in allowed operators list.
-        allowed operators: mean, median, std_dev, variance, min, max
-    """
-    operators = ['mean', 'median', 'std_dev', 'variance', 'min', 'max']
-    operator = operator.lower()
-    if operator not in operators:
-        raise ValueError("operator {} not recognised. "
-                         "Accepted values are: {}."
-                         "".format(operator, ', '.join(operators)))
-    operation = getattr(iris.analysis, operator.upper())
-    return operation
-
-
-def zonal_means(cube, coordinate, mean_type):
-    """
-    Get zonal means.
+    Get zonal statistics.
 
     Function that returns zonal means along a coordinate `coordinate`;
-    the type of mean is controlled by mean_type variable (string):
+    the type of mean is controlled by operator variable (string):
     - 'mean' -> MEAN
     - 'median' -> MEDIAN
     - 'std_dev' -> STD_DEV
@@ -120,17 +90,43 @@ def zonal_means(cube, coordinate, mean_type):
     ----------
     cube: iris.cube.Cube
         input cube.
-    coordinate: str
-        name of coordinate to make mean.
-    mean_type: str
+    operator: str
         Type of analysis to use, from iris.analysis.
 
     Returns
     -------
     iris.cube.Cube
     """
-    operation = get_iris_analysis_operation(mean_type)
-    return cube.collapsed(coordinate, operation)
+    operation = get_iris_analysis_operation(operator)
+    return cube.collapsed('longitude', operation)
+
+
+def meridional_statistics(cube, operator):
+    """
+    Get meridional statistics.
+
+    Function that applies and operator inb the meridional direction.
+    The operation is provided by the operator variable (string).
+    - 'mean' -> MEAN
+    - 'median' -> MEDIAN
+    - 'std_dev' -> STD_DEV
+    - 'variance' -> VARIANCE
+    - 'min' -> MIN
+    - 'max' -> MAX
+
+    Parameters
+    ----------
+    cube: iris.cube.Cube
+        input cube.
+    operator: str
+        Type of analysis to use, from iris.analysis.
+
+    Returns
+    -------
+    iris.cube.Cube
+    """
+    operation = get_iris_analysis_operation(operator)
+    return cube.collapsed('latitude', operation)
 
 
 def tile_grid_areas(cube, fx_files):
