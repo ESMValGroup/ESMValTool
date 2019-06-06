@@ -43,7 +43,7 @@ observational dataset but not in the models. In this case a derivation function
 can be defined by the user in order to calculate the variable and perform the
 comparison. For example, several observational datasets deliver total column
 ozone as observed variable (toz), but CMIP models only provide the ozone 3D
-field (tro3). In this case, a derivation function is provided to vertically
+field. In this case, a derivation function is provided to vertically
 integrate the ozone and obtain total column ozone for direct comparison with
 the observations.
 
