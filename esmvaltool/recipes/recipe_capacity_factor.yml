@@ -24,16 +24,11 @@ datasets:
 
 preprocessors:
   preproc:
-    regrid:
-      target_grid: IPSL-CM5A-MR
-      scheme: linear
-    mask_fillvalues:
-      threshold_fraction: 0.95
     extract_region:
-      start_longitude: 200
-      end_longitude: 300
-      start_latitude: 27
-      end_latitude: 70
+      start_longitude: -20
+      end_longitude: 60
+      start_latitude: 30
+      end_latitude: 80
     extract_season:
       season: djf
     mask_landsea:
