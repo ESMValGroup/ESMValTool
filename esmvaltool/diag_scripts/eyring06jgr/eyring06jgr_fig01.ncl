@@ -32,11 +32,9 @@
 ;;#############################################################################
 load "$diag_scripts/../interface_scripts/interface.ncl"
 
-load "$diag_scripts/shared/plot/aux_plotting.ncl"
 load "$diag_scripts/shared/statistics.ncl"
+load "$diag_scripts/shared/plot/aux_plotting.ncl"
 load "$diag_scripts/shared/plot/style.ncl"
-
-
 
 begin
    enter_msg(DIAG_SCRIPT, "")
