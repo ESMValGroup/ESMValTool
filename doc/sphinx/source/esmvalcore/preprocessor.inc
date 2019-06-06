@@ -19,7 +19,7 @@ that some operations must be necessarily performed in a specific order. This is
 the case, for instance, for multi-model statistics, which required the model to
 be on a common grid and therefore has to be called after the regridding module.
 
-In the following, each of the preprocessor modules is described in detailed
+In this section, each of the preprocessor modules is described in detail
 following the default order in which they are applied:
 
 * Variable derivation
