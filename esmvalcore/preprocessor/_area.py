@@ -205,7 +205,7 @@ def area_statistics(cube, operator, fx_files=None):
         cube: iris.cube.Cube
             Input cube.
         operator: str
-            Name of the operation to apply
+            The operation, options: mean, median, min, max, std_dev, variance
         fx_files: dict
             dictionary of field:filename for the fx_files
 
