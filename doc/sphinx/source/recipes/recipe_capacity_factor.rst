@@ -13,7 +13,6 @@ The capacity factor is a normalized indicator of the suitability of wind speed c
 The user can select the region, temporal range and season of interest. 
 
 The output of the recipe is a netcdf file containing the capacity factor for each of the three turbine classes.
-.
 
 Available recipes and diagnostics
 ---------------------------------
@@ -61,7 +60,7 @@ Example plots
 -------------
 
 .. _fig_capfactor1:
-.. figure::  /recipes/figures/capacity_factor/capacity_factor_IPSL-CM5A-LR_1980-2005.png
+.. figure::  /recipes/figures/capacity_factor_IPSL-CM5A-MR_2021-2050.png
    :align:   center
    :width:   14cm
 
