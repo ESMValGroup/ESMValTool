@@ -103,7 +103,7 @@ preprocessor, to apply a mask on the data before any subsequent preprocessing
 step and before running the diagnostic, or in the diagnostic scripts
 themselves. We present both these implementations below.
 
-To mask out a certain domain (e.g., sea) in the preprocessor step,
+To mask out a certain domain (e.g., sea) in the preprocessor,
 `mask_landsea` can be used:
 
 .. code-block:: yaml
@@ -117,8 +117,8 @@ and requires only one argument:
 * mask_out: either land or sea.
 
 The preprocessor automatically retrieves the corresponding mask (`fx: stfof` in
-this case) and apply it so that sea-covered grid cells are set to
-missing. Conversely, it retrieves the `fx: sftlf` mask when land  need to be
+this case) and applies it so that sea-covered grid cells are set to
+missing. Conversely, it retrieves the `fx: sftlf` mask when land need to be
 masked out, respectively. If the corresponding fx file is not found (which is
 the case for some models and almost all observational datasets), the
 preprocessor attempts to mask the data using Natural Earth mask files (that are
@@ -172,7 +172,8 @@ Multi-model statistics
 .. warning::
    Documentation of _multimodel.py to be added.
 
-Information on maximum memory required: In the most general case, we can set upper limits on the maximum memory the anlysis will require:
+Information on maximum memory required: In the most general case, we can set upper 
+limits on the maximum memory the analysis will require:
 
 Ms = (R + N) x F_eff - F_eff - when no multimodel analysis is performed;
 Mm = (2R + N) x F_eff - 2F_eff - when multimodel analysis is performed;
@@ -186,9 +187,11 @@ N: number of datasets
 F_eff: average size of data per dataset where F_eff = e x f x F
 where e is the factor that describes how lazy the data is (e = 1 for fully realized data)
 and f describes how much the data was shrunk by the immediately previous module eg
-time extraction, area selection or level extraction; note that for fix_data f relates only to the time extraction, if data is exact in time (no time selection) f = 1 for fix_data
+time extraction, area selection or level extraction; note that for fix_data f relates 
+only to the time extraction, if data is exact in time (no time selection) f = 1 for fix_data
 
-so for cases when we deal with a lot of datasets (R + N = N), data is fully realized, assuming an average size of 1.5GB for 10 years of 3D netCDF data, N datasets will require
+so for cases when we deal with a lot of datasets (R + N = N), data is fully realized, 
+assuming an average size of 1.5GB for 10 years of 3D netCDF data, N datasets will require
 
 
 Ms = 1.5 x (N - 1) GB
@@ -204,7 +207,7 @@ statistical operators along the temporal coordinate of the input data:
 1. extract_time: extract a time range from a cube.
 2. extract_season: extract only the times that occur within a specific season.
 3. extract_month: extract only the times that occur within a specific month.
-4. time_average: take the weighted average over the time dimension.
+4. time_average: take the weighted average over the entire time dimension.
 5. seasonal_mean: produce a mean for each season (DJF, MAM, JJA, SON)
 6. annual_mean: produce an annual or decadal mean.
 7. regrid_time: align the time axis of each dataset to have common time points
@@ -300,12 +303,12 @@ See also :func:`esmvalcore.preprocessor.annual_mean`.
 7. regrid_time
 --------------
 
-This function aligns the time points of each component dataset so that the
-dataset Iris cubes can be subtracted. The operation makes the datasets time
+This function aligns the time points of each component dataset to allow the
+subtraction of two Iris cubes from different datasets. The operation makes the datasets time
 points common and sets common calendars; it also resets the time bounds and
-auxiliary coordinates to reflect the artifically shifted time points. Current
-implementation for monthly and daily data; the frequency is set automatically
-from the variable CMOR table unless a custom frequency is set manually by the
+auxiliary coordinates to reflect the artifically shifted time points. The current
+implementation works only for monthly and daily data; the frequency is set automatically
+from the CMOR table of the variable of intereset, unless a custom frequency is set manually by the
 user in recipe.
 
 .. warning::
@@ -323,8 +326,7 @@ The _area.py module contains the following preprocessor functions:
 1. extract_region: extract a region from a cube based on lat/lon corners.
 2. zonal_means: calculate the zonal or meridional means.
 3. area_statistics: calculate the average value over a region.
-4. extract_named_regions: Extract a specific region from in the region
-   cooordinate.
+4. extract_named_regions: extract a region from a cube given its name.
 
 
 1. extract_region
