@@ -35,24 +35,27 @@ import logging
 import os
 
 from esmvaltool.diag_scripts.shared import run_diagnostic
-#from auxiliary.c3s_511_basic import Basic_Diagnostic_SP
+from pprint import pprint
+from auxiliary.collection_basic import ecv_handler
 
 logger = logging.getLogger(os.path.basename(__file__))
 
 
 def main(cfg):
     logger.info('>>>>>>>> diagnostic selector is running! <<<<<<<<<<<<')
+    
+#    logger.info([(ci["dataset"],ci["reference_dataset"]) for _,ci in cfg['input_data'].items()])
 
-    for filename, attributes in cfg['input_data'].items():
-        logger.info("Processing variable %s from data set %s",
-                    attributes['short_name'], attributes['dataset'])
-        #logger.info("Preparing diagnostic")
-        #Diag = Basic_Diagnostic_SP()
-        #Diag.set_info(cfg=cfg)
-        #logger.info("Loading %s", filename)
-        #Diag.read_data()
-        #logger.info("Running computation")
-        #Diag.run_diagnostic()
+    logger.info("Preparing diagnostic")
+    Diag = ecv_handler()
+    Diag.set_info(cfg = cfg)
+    
+    logger.info("Reading data")
+    Diag.read()
+    logger.info("Running diagnostic")
+    Diag.run()
+    
+    logger.info("Thank you for the patiance!")
 
     logger.info('>>>>>>>> ENDED SUCCESSFULLY!! <<<<<<<<<<<<')
 

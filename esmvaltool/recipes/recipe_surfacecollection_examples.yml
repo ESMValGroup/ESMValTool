@@ -9,10 +9,13 @@ documentation:
   maintainer:
     - muel_bn
 
-datasets:
-
 preprocessors:
   noop: {}
+
+  t63: # TODO: not implemented yet. proxy
+      regrid:
+        target_grid: 1.875x1.875
+        scheme: area_weighted
 
   regrid1:
       regrid:
@@ -23,7 +26,7 @@ preprocessors:
       regrid:
         target_grid: 2x2
         scheme: nearest
-
+        
 diagnostics:
   TEST:
     themes:
@@ -33,16 +36,18 @@ diagnostics:
     description: TEST diagnostics.
     variables:
       sm:
-        reference_dataset: ESACCI-SOILMOISTURE
+        reference_dataset: CNRM-CM5
         derive: true
         force_derivation: false
-        preprocessor: noop
-        start_year: 1978
+        preprocessor: t63
+        start_year: 1950
         end_year: 2005
     additional_datasets:
       - {dataset: CNRM-CM5,  project: CMIP5,  mip: Lmon,  exp: historical,  ensemble: r1i1p1}
-      - {dataset: ESACCI-SOILMOISTURE, project: OBS, type: sat, version: L3S-SSMV-COMBINED-v4.2, tier: 2}
+      - {dataset: IPSL-CM5A-MR,  project: CMIP5,  mip: Lmon,  exp: historical,  ensemble: r1i1p1}
+      - {dataset: MRI-ESM1,  project: CMIP5,  mip: Lmon,  exp: historical,  ensemble: r1i1p1}
+      #- {dataset: ESACCI-SOILMOISTURE, project: OBS, type: sat, version: L3S-SSMV-COMBINED, tier: 3}
     scripts:
       Info:
-        script: surfacecollection/DUMMY_C3S_511_SPQB.py
+        script: surfacecollection/main_diag_selector.py
         request: None
