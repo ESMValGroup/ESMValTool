@@ -4,7 +4,7 @@ import unittest
 from cf_units import Unit
 from iris.cube import Cube
 
-from esmvaltool.cmor._fixes.CMIP5.CESM1_BGC import co2
+from esmvalcore.cmor._fixes.CMIP5.CESM1_BGC import co2
 
 
 class TestCo2(unittest.TestCase):
