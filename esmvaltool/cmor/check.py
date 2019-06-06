@@ -390,6 +390,7 @@ class CMORCheck():
 
     def _check_time_coord(self):
         """Check time coordinate."""
+        cube = self._cube
         try:
             coord = self._cube.coord('time', dim_coords=True)  # , axis='T')
             var_name = coord.var_name
@@ -400,8 +401,29 @@ class CMORCheck():
             self.report_error(self._does_msg, var_name,
                               'have time reference units')
         else:
+            old_units = coord.units
+            coord.convert_units(
+                cf_units.Unit(
+                    'days since 1850-1-1 00:00:00',
+                    calendar=coord.units.calendar))
             simplified_cal = self._simplify_calendar(coord.units.calendar)
             coord.units = cf_units.Unit(coord.units.origin, simplified_cal)
+
+            attrs = cube.attributes
+            if 'branch_time_in_child' in attrs:
+                attr = 'branch_time_in_child'
+                value = attrs[attr]
+                cube.attributes[attr] = old_units.convert(value, coord.units)
+
+            if 'parent_time_units' in attrs:
+                attr = 'parent_time_units'
+                parent_units = cf_units.Unit(attrs[attr],
+                                             simplified_cal)
+                if 'branch_time_in_parent' in attrs:
+                    attr = 'branch_time_in_parent'
+                    value = attrs[attr]
+                    cube.attributes[attr] = parent_units.convert(value,
+                                                                 coord.units)
 
         tol = 0.001
         intervals = {'dec': (3600, 3660), 'day': (1, 1)}

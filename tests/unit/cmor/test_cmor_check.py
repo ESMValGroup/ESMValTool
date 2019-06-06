@@ -340,11 +340,17 @@ class TestCMORCheck(unittest.TestCase):
         self._check_fails_in_metadata()
 
     def test_time_units(self):
-        """Test if time units are kept the same"""
+        """Test automatic fix for time units"""
         self.cube.coord('time').units = 'days since 1860-1-1 00:00:00'
+        self.cube.attributes['parent_time_units'] = 'days since ' \
+                                                    '1850-1-1 00:00:00'
+        self.cube.attributes['branch_time_in_parent'] = 0.
+        self.cube.attributes['branch_time_in_child'] = 0.
         self._check_cube()
         assert (self.cube.coord('time').units.origin ==
-                'days since 1860-1-1 00:00:00')
+                'days since 1850-1-1 00:00:00')
+        assert self.cube.attributes['branch_time_in_parent'] == 0.
+        assert self.cube.attributes['branch_time_in_child'] == 3652.
 
     def test_time_automatic_fix_failed(self):
         """Test automatic fix fail for incompatible time units"""
