@@ -14,31 +14,46 @@ import numpy as np
 logger = logging.getLogger(__name__)
 
 
-def extract_time(cube, start_year, start_month, start_day, end_year, end_month,
+def extract_time(cube,
+                 start_year,
+                 start_month,
+                 start_day,
+                 end_year,
+                 end_month,
                  end_day):
-    """Extract a time range from a cube.
+    """
+    Extract a time range from a cube.
+
+    Given a time range passed in as a series of years, mnoths and days, it
+    returns a time-extracted cube with data only within the specified
+    time range.
 
     Parameters
     ----------
-        cube: iris.cube.Cube
-            input cube.
-        start_year: int
-            start year
-        start_month: int
-            start month
-        start_day: int
-            start day
-        end_year: int
-            end year
-        end_month: int
-            end month
-        end_day: int
-            end day
+    cube: iris.cube.Cube
+        input cube.
+    start_year: int
+        start year
+    start_month: int
+        start month
+    start_day: int
+        start day
+    end_year: int
+        end year
+    end_month: int
+        end month
+    end_day: int
+        end day
 
     Returns
     -------
     iris.cube.Cube
         Sliced cube.
+
+    Raises
+    ------
+    ValueError
+        if time ranges are outside the cube time limits
 
     """
     time_units = cube.coord('time').units
@@ -85,6 +100,11 @@ def extract_season(cube, season):
         Original data
     season: str
         Season to extract. Available: DJF, MAM, JJA, SON
+
+    Returns
+    -------
+    iris.cube.Cube
+        data cube for specified season.
     """
     if not cube.coords('clim_season'):
         iris.coord_categorisation.add_season(cube, 'time', name='clim_season')
@@ -104,6 +124,11 @@ def extract_month(cube, month):
         Original data
     month: int
         Month to extract as a number from 1 to 12
+
+    Returns
+    -------
+    iris.cube.Cube
+        data cube for specified month.
     """
     if month not in range(1, 13):
         raise ValueError('Please provide a month number between 1 and 12.')
@@ -116,8 +141,8 @@ def get_time_weights(cube):
 
     Parameters
     ----------
-        cube: iris.cube.Cube
-            input cube.
+    cube: iris.cube.Cube
+        input cube.
 
     Returns
     -------
@@ -146,8 +171,8 @@ def time_average(cube):
 
     Parameters
     ----------
-        cube: iris.cube.Cube
-            input cube.
+    cube: iris.cube.Cube
+        input cube.
 
     Returns
     -------
@@ -166,10 +191,10 @@ def seasonal_mean(cube):
 
     Chunks time in 3-month periods and computes means over them;
 
-    Arguments
-    ---------
-        cube: iris.cube.Cube
-            input cube.
+    Parameters
+    ----------
+    cube: iris.cube.Cube
+        input cube.
 
     Returns
     -------
@@ -187,7 +212,19 @@ def seasonal_mean(cube):
     # CMOR Units are days so we are safe to operate on days
     # Ranging on [90, 92] days makes this calendar-independent
     def spans_three_months(time):
-        """Check for three months"""
+        """
+        Check for three months.
+
+        Parameters
+        ----------
+        time: iris.DimCoord
+            cube time coordinate
+
+        Returns
+        -------
+        bool
+            truth statement if time bounds are 90+2 days.
+        """
         return 90 <= (time.bound[1] - time.bound[0]).days <= 92
 
     three_months_bound = iris.Constraint(time=spans_three_months)
@@ -203,15 +240,17 @@ def regrid_time(cube, frequency):
     other cube from cubes. Currently this function supports only monthly
     (frequency=mon) and daily (frequency=day) data time frequencies.
 
-    Arguments
-    ---------
-        cube: iris.cube.Cube
-        frequency: str
-            data frequency: mon or day
+    Parameters
+    ----------
+    cube: iris.cube.Cube
+        input cube.
+    frequency: str
+        data frequency: mon or day
 
     Returns
     -------
-    iris.cube.Cube instance
+    iris.cube.Cube
+        cube with converted time axis and units.
     """
     # fix calendars
     cube.coord('time').units = cf_units.Unit(
@@ -265,10 +304,11 @@ def annual_mean(cube, decadal=False):
 
     Parameters
     ----------
-        cube: iris.cube.Cube
-            input cube.
-        decadal: bool
-            Annual average (:obj:`True`) or decadal average (:obj:`False`)
+    cube: iris.cube.Cube
+        input cube.
+    decadal: bool
+        Annual average (:obj:`True`) or decadal average (:obj:`False`)
+
     Returns
     -------
     iris.cube.Cube
