@@ -50,9 +50,9 @@ the observations.
 The user contributing a new derived variable also needs to define
 a name for it and to provide the corresponding CMOR table. This is to guarantee
 the proper metadata definition is attached to the derived data. Such custom
-CMOR tables are collected as part of the package. By default, the variable
-derivation will be applied only if not already available in the input data, but
-the derivation can be forced by setting the appropriate flag.
+CMOR tables are collected as part of the ESMValTool core package. By default, 
+the variable derivation will be applied only if not already available in the
+input data, but the derivation can be forced by setting the appropriate flag.
 
 .. code-block:: yaml
 
