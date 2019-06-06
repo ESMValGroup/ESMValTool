@@ -25,7 +25,9 @@ the ending “.dat”.
 
 2) Configuration file
 
-It is important to have your configuration file defined correctly, to be sure that your data files are found by the ESMValTool, and that the reformatted data files are written in the correct folders. Here is an example of a configuration file, that has to be filled out with the paths information of your specific machine or the VM if you will run the ESMValTool there.
+It is important to have your configuration file defined correctly, to be sure that your data files are found by the ESMValTool, and that the reformatted data files are written in the correct folders. The link below provides an example of a configuration file, that has to be filled out with the paths information of your specific machine. This configuration file needs to be stored in the folder “esmvaltool”.
+
+--> **link to the description of the config file**
 
 3) Store your dataset in the right place
 
