@@ -131,7 +131,7 @@ The _area.py module contains the following preprocessor functions:
 
 * extract_region: Extract a region from a cube based on lat/lon corners.
 * zonal_means: Calculates the zonal or meridional means.
-* average_region: Calculates the average value over a region.
+* area_statistics: Calculates the average value over a region.
 * extract_named_regions: Extract a specific region from in the region cooordinate.
 
 
@@ -166,18 +166,16 @@ This function takes two arguments:
 See also :func:`esmvalcore.preprocessor.zonal_means`.
 
 
-3. average_region
+3. area_statistics
 -----------------
 
 This function calculates the average value over a region - weighted by the
 cell areas of the region.
 
-This function takes three arguments:
-coord1: the name of the coordinate in the first direction.
-coord2: the name of the coordinate in the second dimension.
-operator: the name of the operation to apply (default: mean).
+This function takes the argument,
+operator: the name of the operation to apply.
 
-While this function is named `average_region`, it can be used to apply several
+This function can be used to apply several
 different operations in the horizonal plane: mean, standard deviation, median
 variance, minimum and maximum.
 
@@ -185,7 +183,7 @@ Note that this function is applied over the entire dataset. If only a specific
 region, depth layer or time period is required, then those regions need to be
 removed using other preprocessor operations in advance.
 
-See also :func:`esmvalcore.preprocessor.average_region`.
+See also :func:`esmvalcore.preprocessor.area_statistics`.
 
 
 4. extract_named_regions
@@ -205,7 +203,7 @@ Volume manipulation
 The _volume.py module contains the following preprocessor functions:
 
 * extract_volume: Extract a specific depth range from a cube.
-* average_volume: Calculate the volume-weighted average.
+* volume_statistics: Calculate the volume-weighted average.
 * depth_integration: Integrate over the depth dimension.
 * extract_transect: Extract data along a line of constant latitude or longitude.
 * extract_trajectory: Extract data along a specified trajectory.
@@ -225,19 +223,19 @@ negative, then z_min and z_max need to be negative numbers.
 See also :func:`esmvalcore.preprocessor.extract_volume`.
 
 
-2. average_volume
+2. volume_statistics
 -----------------
 
 This function calculates the volume-weighted average across three dimensions,
 but maintains the time dimension. The following arguments are required:
 
-coord1: the name of the coordinate in the first direction.
-coord2: the name of the coordinate in the second dimension.
+This function takes the argument: operator, which defines the 
+operation to apply over the volume.
 
 No depth coordinate is required as this is determined by iris. This
 function works best when the fx_files provide the cell volume.
 
-See also :func:`esmvalcore.preprocessor.average_volume`.
+See also :func:`esmvalcore.preprocessor.volume_statistics`.
 
 
 3. depth_integration

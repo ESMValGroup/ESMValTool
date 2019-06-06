@@ -448,9 +448,8 @@ def test_custom_preproc_order(tmp_path, patched_datafinder, config_user):
     content = dedent("""
         preprocessors:
           default: &default
-            average_region:
-              coord1: longitude
-              coord2: latitude
+            area_statistics:
+              operator: mean
             multi_model_statistics:
               span: overlap
               statistics: [mean ]
@@ -485,9 +484,9 @@ def test_custom_preproc_order(tmp_path, patched_datafinder, config_user):
     default = next(t for t in recipe.tasks if tuple(t.order) == DEFAULT_ORDER)
     custom = next(t for t in recipe.tasks if tuple(t.order) != DEFAULT_ORDER)
 
-    assert custom.order.index('average_region') < custom.order.index(
+    assert custom.order.index('area_statistics') < custom.order.index(
         'multi_model_statistics')
-    assert default.order.index('average_region') > default.order.index(
+    assert default.order.index('area_statistics') > default.order.index(
         'multi_model_statistics')
 
 
