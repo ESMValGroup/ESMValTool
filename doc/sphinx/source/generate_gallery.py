@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""Create gallery with available all available recipes."""
+"""Create gallery with all available recipes."""
 
 import os
 
@@ -18,7 +18,7 @@ EMPTY_TABLE = ('|                                                   '
 CELL_WIDTH = 50
 
 
-def _get_next_row(filenames, file_contents, footnote_idx):
+def _get_next_row(filenames, file_contents):
     """Get next row."""
     figure_idx = [
         content.index(FIGURE_STR) + len(FIGURE_STR)
@@ -46,13 +46,11 @@ def _get_next_row(filenames, file_contents, footnote_idx):
                                 subst[1].ljust(CELL_WIDTH))
     row += EMPTY_TABLE
     left_col = '[#]_'.ljust(CELL_WIDTH)
-    footnote_idx += 1
     if figure_paths[1] == '':
         right_col = ''.ljust(CELL_WIDTH)
     else:
         right_col = '[#]_'.ljust(CELL_WIDTH)
     row += '| {}| {}|\n'.format(left_col, right_col)
-    footnote_idx -= 1
 
     # Build refs
     for (idx, path) in enumerate(figure_paths):
@@ -63,7 +61,6 @@ def _get_next_row(filenames, file_contents, footnote_idx):
         refs += '\n'
         refs += f'.. [#] :ref:`{link[idx]}`\n'
         refs += '\n'
-        footnote_idx += 1
 
     return (row, refs)
 
@@ -75,7 +72,6 @@ def main():
     refs = ''
     filenames = []
     file_contents = []
-    footnote_idx = 1
     for filename in os.listdir(RECIPE_DIR):
         if not filename.startswith('recipe_'):
             continue
@@ -103,8 +99,7 @@ def main():
             left_col = True
             filenames.append(filename)
             file_contents.append(recipe_file)
-            new_row = _get_next_row(filenames, file_contents, footnote_idx)
-            footnote_idx += 2
+            new_row = _get_next_row(filenames, file_contents)
             table += new_row[0]
             refs += new_row[1]
 
@@ -112,7 +107,7 @@ def main():
     if len(filenames) == 1:
         filenames.append('')
         file_contents.append(f'{FIGURE_STR}\n')
-        new_row = _get_next_row(filenames, file_contents, footnote_idx)
+        new_row = _get_next_row(filenames, file_contents)
         table += new_row[0]
         refs += new_row[1]
     table += TABLE_SEP
