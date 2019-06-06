@@ -30,11 +30,6 @@ def find_diagnostics():
 DIAGNOSTICS_PATH = find_diagnostics()
 
 
-def use_legacy_iris():
-    """Return True if legacy iris is used."""
-    return LooseVersion(iris.__version__) < LooseVersion("2.0.0")
-
-
 def read_config_user_file(config_file, recipe_name):
     """Read config user file and store settings in a dictionary."""
     with open(config_file, 'r') as file:

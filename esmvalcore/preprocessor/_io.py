@@ -11,7 +11,6 @@ import iris
 import iris.exceptions
 import yaml
 
-from .._config import use_legacy_iris
 from .._task import write_ncl_settings
 
 logger = logging.getLogger(__name__)
@@ -155,8 +154,7 @@ def save(cubes, filename, optimize_access='', compress=False, **kwargs):
             length if index in dims else 1
             for index, length in enumerate(cube.shape))
 
-    if not use_legacy_iris():
-        kwargs['fill_value'] = GLOBAL_FILL_VALUE
+    kwargs['fill_value'] = GLOBAL_FILL_VALUE
 
     iris.save(cubes, **kwargs)
 
