@@ -13,9 +13,10 @@ import sys
 
 from setuptools import Command, setup
 
-from esmvaltool._version import __version__
+from esmvalcore._version import __version__
 
 PACKAGES = [
+    'esmvalcore',
     'esmvaltool',
 ]
 
@@ -136,10 +137,11 @@ class RunTests(CustomCommand):
         report_dir = 'test-reports/python{}'.format(version)
         args = [
             'tests',
+            'esmvalcore',  # for doctests
             'esmvaltool',  # for doctests
-            '--ignore=esmvaltool/cmor/tables/',
+            '--ignore=esmvalcore/cmor/tables/',
             '--doctest-modules',
-            '--cov=esmvaltool',
+            '--cov=esmvalcore',
             '--cov-report=term',
             '--cov-report=html:{}/coverage_html'.format(report_dir),
             '--cov-report=xml:{}/coverage.xml'.format(report_dir),
@@ -229,7 +231,7 @@ with open('README.md') as readme:
         },
         entry_points={
             'console_scripts': [
-                'esmvaltool = esmvaltool._main:run',
+                'esmvaltool = esmvalcore._main:run',
                 'cmorize_obs = esmvaltool.'
                 'utils.cmorizers.obs.cmorize_obs:execute_cmorize',
                 'nclcodestyle = esmvaltool.'
