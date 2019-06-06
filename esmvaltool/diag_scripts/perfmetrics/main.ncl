@@ -361,12 +361,6 @@ begin
           metric(iboot, :) = metric(iboot, :) / avg(metric(iboot, ens_idx))
         end do
 
-        ; Reduce dimensionality if no alternative dataset
-        if (.not.l_altern) then
-          metric := metric(:, :, 0)
-          delete(metric@reference)
-        end if
-
         ; Provenance information
         statistics = "smpi"
         authors = (/"gier_be", "hass_bg"/)
