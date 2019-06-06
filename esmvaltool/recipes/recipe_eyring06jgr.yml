@@ -148,7 +148,7 @@ diagnostics:
          start_year: 1980, end_year: 1999, tier: 3}
     scripts:
       clim: &clim_settings
-        script: chem/eyring06jgr_fig01.ncl
+        script: eyring06jgr/eyring06jgr_fig01.ncl
         # projection
         # ----------
         # map projection, e.g., Mollweide, Mercator, CylindricalEquidistant
