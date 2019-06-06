@@ -173,7 +173,6 @@ def interpolate_esmf(obs_file, mod_file, depth, cmor_var):
     lat_obs = metadata['lat2d']
     depth_obs = metadata['lev']
 
-
     data_obs = obs.variables[cmor_var][:]
 
     # Select depth in climatology that is closest to the desired depth
