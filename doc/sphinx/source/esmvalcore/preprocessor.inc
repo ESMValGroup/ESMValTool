@@ -9,7 +9,8 @@ preprocessor performs these operations in a centralized, documented and
 efficient way, thus reducing the data processing load on the diagnostics side.
 
 Each of the preprocessor operations is written in a dedicated python module and
-all of them recibe and return an Iris cube, working sequentially on the data with no interactions between them.  The order
+all of them receive and return an Iris cube, working sequentially on the data
+with no interactions between them.  The order
 in which the preprocessor operations is applied is set by default in order to
 minimize the loss of information due to, for example, temporal and spatial
 subsetting or multi-model averaging. Nevertheless, the user is free to change
