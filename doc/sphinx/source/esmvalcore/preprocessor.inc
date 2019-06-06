@@ -204,7 +204,7 @@ Time operations
 The _time.py module contains a broad set of functions to subset data and apply
 statistical operators along the temporal coordinate of the input data:
 
-1. extract_time: extract a time range from a cube.
+1. extract_time: extract a specified time range from a cube.
 2. extract_season: extract only the times that occur within a specific season.
 3. extract_month: extract only the times that occur within a specific month.
 4. time_average: take the weighted average over the entire time dimension.
