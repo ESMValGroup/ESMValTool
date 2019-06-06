@@ -7,3 +7,4 @@ Preface
 .. include:: license.inc
 .. include:: architecture.inc
 .. include:: core_team.inc
+.. include:: gallery.inc
