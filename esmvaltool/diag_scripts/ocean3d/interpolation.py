@@ -1,6 +1,4 @@
-"""APPLICATE/TRR Ocean Diagnostics.
-"""
-
+"""APPLICATE/TRR Ocean Diagnostics."""
 import logging
 import os
 import ESMF
@@ -57,6 +55,7 @@ def interpolate_vert(depth_model, target_depth, data_model):
 def weighting(distance):
     """Weighting function for pyresample."""
     weight = 1 / distance**2
+    return weight
 
 
 def interpolate_pyresample(obs_file, mod_file, depth, cmor_var):
@@ -92,7 +91,6 @@ def interpolate_pyresample(obs_file, mod_file, depth, cmor_var):
     interpolated : 2d np array
         Field with result of interpolation
     """
-
     # load observations data
     obs = Dataset(obs_file)
     data_obs = obs.variables[cmor_var][:]

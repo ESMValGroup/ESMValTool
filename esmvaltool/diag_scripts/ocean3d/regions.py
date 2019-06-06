@@ -1,8 +1,6 @@
-"""APPLICATE/TRR Ocean Diagnostics.
-"""
+"""APPLICATE/TRR Ocean Diagnostics."""
 import logging
 import os
-import matplotlib as mpl
 import numpy as np
 from scipy.interpolate import interp1d
 
@@ -65,20 +63,20 @@ def hofm_regions(region, lon2d, lat2d):
 def transect_points(transect, mult=2):
     """Return a collection of points for transect.
 
-        Parameters
-        ----------
-        transect: str
-            Name of the predefined transect
-        mult: int
-            multiplicator that allow to increase
-            the number of points by `mult` times
+    Parameters
+    ----------
+    transect: str
+        Name of the predefined transect
+    mult: int
+        multiplicator that allow to increase
+        the number of points by `mult` times
 
-        Returns
-        -------
-        lon_s4new: 1d numpy array
-            longitude points of the transect
-        lat_s4new: 1d numpy array
-            latitude points of the transect
+    Returns
+    -------
+    lon_s4new: 1d numpy array
+        longitude points of the transect
+    lat_s4new: 1d numpy array
+        latitude points of the transect
     """
     if transect == 'AWpath':
         lon_s4 = np.array([

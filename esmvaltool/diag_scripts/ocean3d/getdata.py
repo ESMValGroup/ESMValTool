@@ -1,6 +1,4 @@
-"""APPLICATE/TRR Ocean Diagnostics.
-"""
-
+"""APPLICATE/TRR Ocean Diagnostics."""
 import logging
 import os
 import ESMF
@@ -387,8 +385,8 @@ def aw_core(model_filenames, diagworkdir, region, cmor_var):
 
     for mmodel in model_filenames:
         aw_core_parameters[mmodel] = {}
-        logger.info("Plot profile %s data for %s, region %s", cmor_var,
-                    mmodel, region)
+        logger.info("Plot profile %s data for %s, region %s", cmor_var, mmodel,
+                    region)
         ifilename = genfilename(diagworkdir, cmor_var, mmodel, region, 'hofm',
                                 '.npy')
         ifilename_levels = genfilename(diagworkdir, cmor_var, mmodel, region,
@@ -401,6 +399,9 @@ def aw_core(model_filenames, diagworkdir, region, cmor_var):
         maxvalue = np.max(profile[(lev >= 200) & (lev <= 1000)])
         maxvalue_index = np.where(profile == maxvalue)[0][0]
         maxvalue_depth = lev[maxvalue_index]
+
+        if maxvalue > 100:
+            maxvalue = maxvalue - 273.15
 
         aw_core_parameters[mmodel]['maxvalue'] = maxvalue
         aw_core_parameters[mmodel]['maxvalue_index'] = maxvalue_index

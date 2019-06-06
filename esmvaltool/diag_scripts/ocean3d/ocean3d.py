@@ -1,5 +1,4 @@
-"""APPLICATE/TRR Ocean Diagnostics.
-"""
+"""APPLICATE/TRR Ocean Diagnostics."""
 import itertools
 import logging
 import os
@@ -11,18 +10,12 @@ import matplotlib as mpl
 from matplotlib import cm
 import numpy as np
 
-
 from esmvaltool.diag_scripts.ocean3d.getdata import (aw_core, hofm_data,
                                                      transect_data,
                                                      tsplot_data)
-from esmvaltool.diag_scripts.ocean3d.plotting import (hofm_plot, plot2d_bias,
-                                                      plot2d_original_grid,
-                                                      plot_aw_core_stat,
-                                                      plot_profile,
-                                                      transect_map,
-                                                      transect_plot,
-                                                      tsplot_plot)
-from esmvaltool.diag_scripts.ocean3d.regions import (hofm_regions)
+from esmvaltool.diag_scripts.ocean3d.plotting import (
+    hofm_plot, plot2d_bias, plot2d_original_grid, plot_aw_core_stat,
+    plot_profile, transect_map, transect_plot, tsplot_plot)
 from esmvaltool.diag_scripts.ocean3d.utils import (find_observations_name,
                                                    get_clim_model_filenames,
                                                    get_cmap, get_fx_filenames,
@@ -30,7 +23,6 @@ from esmvaltool.diag_scripts.ocean3d.utils import (find_observations_name,
 from esmvaltool.diag_scripts.shared import run_diagnostic
 
 mpl.use('agg')  # noqa
-
 
 logger = logging.getLogger(os.path.basename(__file__))
 

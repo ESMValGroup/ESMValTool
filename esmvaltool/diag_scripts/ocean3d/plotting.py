@@ -1,5 +1,4 @@
-"""APPLICATE/TRR Ocean Diagnostics.
-"""
+"""APPLICATE/TRR Ocean Diagnostics."""
 import logging
 import math
 import os
@@ -97,7 +96,12 @@ def label_and_conversion(cmor_var, data):
         data, converted if needed.
     """
     if cmor_var == 'thetao':
-        data = data - 273.15
+        # Check if we use K (CMIP5)
+        # or degC (CMIP6)
+        if data.min() < 100:
+            data = data
+        else:
+            data = data - 273.15
         cb_label = r'$^{\circ}$C'
     elif cmor_var == 'so':
         cb_label = 'psu'
@@ -285,8 +289,9 @@ def tsplot_plot(model_filenames,
         # calculate background with density isolines
         si2, ti2, dens = dens_back(33, 36., -2, 6)
 
-        # convert form Kelvin
-        temp = temp - 273.15
+        # convert form Kelvin if needed
+        if temp.min() > 100:
+            temp = temp - 273.15
 
         # plot the background
         cs = plt.contour(si2,
@@ -488,8 +493,7 @@ def plot2d_original_grid(model_filenames,
     fig, ax = create_plot(model_filenames, ncols=4, projection=projection)
 
     for ind, mmodel in enumerate(model_filenames):
-        logger.info("Plot plot2d_original_grid {} for {}".format(
-            cmor_var, mmodel))
+        logger.info("Plot plot2d_original_grid %s for %s", cmor_var, mmodel)
 
         ifilename = genfilename(diagworkdir,
                                 cmor_var,
@@ -635,8 +639,7 @@ def plot2d_bias(model_filenames,
         lonc, latc, target_depth, data_obs, interpolated = interpolate_esmf(
             ifilename_obs, ifilename, depth, cmor_var)
         # get the label and convert data if needed
-        cb_label, data_obs = label_and_conversion(
-            cmor_var, data_obs)
+        cb_label, data_obs = label_and_conversion(cmor_var, data_obs)
         cb_label, interpolated = label_and_conversion(cmor_var, interpolated)
         # add to the mean model
         model_mean = model_mean + interpolated
@@ -731,7 +734,7 @@ def plot_aw_core_stat(aw_core_parameters, diagplotdir):
     logger.info("Plot AW core statistics")
     # Convert dictionary to pandas Dataframe
     df = pd.DataFrame(aw_core_parameters).transpose()
-    df['maxvalue'] = df.maxvalue - 273.15
+
     plt.figure()
     df.maxvalue.plot(kind='barh')
     plt.xlabel(r'$^{\circ}$C')
@@ -760,7 +763,7 @@ def transect_map(region,
                  projection=ccrs.NorthPolarStereo(),
                  bbox=[-180, 180, 60, 90],
                  mult=2):
-    """Plots the map with points of the transect overlayed.
+    """Plot the map with points of the transect overlayed.
 
     Parameters
     ----------
@@ -781,7 +784,7 @@ def transect_map(region,
     None
 
     """
-    logger.info("Create transect map for region {}".format(region))
+    logger.info("Create transect map for region %s", region)
     lon_s4new, lat_s4new = transect_points(region, mult=mult)
     dist = point_distance(lon_s4new, lat_s4new)
     fig, ax = plt.subplots(1,
@@ -816,7 +819,7 @@ def transect_plot(model_filenames,
                   diagplotdir,
                   levels,
                   ncols=3,
-                  cmap=cm.Spectral_r):
+                  cmap=cmo.thermal):
     """Plot transects.
 
     Parameters
@@ -850,8 +853,8 @@ def transect_plot(model_filenames,
 
     # loop over models
     for ind, mmodel in enumerate(model_filenames):
-        logger.info("Plot  {} data for {}, region {}".format(
-            cmor_var, mmodel, region))
+        logger.info("Plot  %s data for %s, region %s", cmor_var, mmodel,
+                    region)
         # construct file names and get the data
         ifilename = genfilename(diagworkdir, cmor_var, mmodel, region,
                                 'transect', '.npy')
@@ -874,7 +877,7 @@ def transect_plot(model_filenames,
                                  data[:lev_limit, :],
                                  levels=levels,
                                  extend='both',
-                                 cmap=cmo.thermal)
+                                 cmap=cmap)
         # plot settings
         ax[ind].set_ylabel('Depth, m', size=15, rotation='vertical')
         ax[ind].set_xlabel('Along-track distance, km',

@@ -1,5 +1,4 @@
-"""APPLICATE/TRR Ocean Diagnostics.
-"""
+"""APPLICATE/TRR Ocean Diagnostics."""
 import logging
 import os
 import shutil
@@ -100,8 +99,7 @@ def timmean(model_filenames, mmodel, cmor_var, diagworkdir,
 
 
 def get_clim_model_filenames(config, variable):
-    """Extract model filenames from the configuration.
-    """
+    """Extract model filenames from the configuration."""
     model_filenames = {}
     for key, value in config['input_data'].items():
         if value['short_name'] == variable:
@@ -110,8 +108,7 @@ def get_clim_model_filenames(config, variable):
 
 
 def get_fx_filenames(config, variable, fx_var):
-    """Extract fx file names.
-    """
+    """Extract fx file names."""
     areacello_fxdataset = {}
     for key, value in config['input_data'].items():
         if value['short_name'] == variable:
@@ -187,7 +184,6 @@ def shiftedcolormap(cmap, start=0, midpoint=0.5, stop=1.0, name='shiftedcmap'):
 
 def dens_back(smin, smax, tmin, tmax):
     """Calculate density for TS diagram."""
-
     xdim = round((smax - smin) / 0.1 + 1, 0)
     ydim = round((tmax - tmin) + 1, 0)
 
@@ -208,7 +204,6 @@ def get_cmap(cmap_name):
     Additional custom colormap for salinity is provided:
     - "custom_salinity1"
     """
-
     if cmap_name in cmo.cmapnames:
         colormap = cmo.cmap_d[cmap_name]
     elif cmap_name in cm.datad:
