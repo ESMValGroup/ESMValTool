@@ -504,6 +504,7 @@ class CMIP5Info(object):
         return coord
 
     def _read_variable(self, short_name, frequency):
+        print(short_name)
         var = VariableInfo('CMIP5', short_name)
         var.frequency = frequency
         while self._read_line():
@@ -514,6 +515,7 @@ class CMIP5Info(object):
                 setattr(var, key, value.split())
             elif hasattr(var, key):
                 setattr(var, key, value)
+        print(var.dimensions)
         for dim in var.dimensions:
             var.coordinates[dim] = self.coords[dim]
         return var

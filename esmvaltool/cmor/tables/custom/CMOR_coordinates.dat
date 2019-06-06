@@ -104,3 +104,22 @@ type:             double
 must_have_bounds: yes
 !----------------------------------
 !
+
+!============
+axis_entry: iTr
+!============
+!----------------------------------
+! Axis attributes:
+!----------------------------------
+standard_name:    vegetation_transition_code
+units:            1
+long_name:        Vegetation transition code
+!----------------------------------
+! Additional axis information:
+!----------------------------------
+out_name:         iTr
+stored_direction: increasing
+type:             short
+must_have_bounds: no
+!----------------------------------
+!

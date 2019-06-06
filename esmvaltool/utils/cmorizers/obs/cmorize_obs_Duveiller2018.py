@@ -49,7 +49,7 @@ def _fix_fillvalue(cube, field, filename):
 def duveiller2018_callback_function(cube,field,filename):
     cube.coord('Month').rename('time')
     cube.coord('time').units = 'months since 2010-01-01 00:00:00'
-
+    #cube.coord('Vegetation transition code').rename('vegetation_transition_code')
 
 def extract_variable(var_info, raw_info, out_dir, attrs):
     """Extract to all vars."""
