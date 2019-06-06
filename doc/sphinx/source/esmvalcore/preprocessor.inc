@@ -323,7 +323,7 @@ The _area.py module contains the following preprocessor functions:
 2. zonal_means: calculate the zonal or meridional means.
 3. area_statistics: calculate the average value over a region.
 4. extract_named_regions: Extract a specific region from in the region
-cooordinate.
+   cooordinate.
 
 
 1. extract_region
@@ -419,7 +419,7 @@ See also :func:`esmvalcore.preprocessor.extract_volume`.
 
 
 2. volume_statistics
------------------
+--------------------
 
 This function calculates the volume-weighted average across three dimensions,
 but maintains the time dimension. The following arguments are required:
