@@ -201,21 +201,20 @@ list of cubes as readed by Iris. If that list contains your missing coordinate
 you can create a fix for it following this model:
 
 .. code-block:: bash
-    ...
-        def fix_metadata(self, cubes):
-            coord_cube = cubes.extract_strict('COORDINATE_NAME')
-            # Usually this will correspond to an auxiliary coordinate
-            # because the most common error is to forget adding it to the
-            # coordinates attribute
-            coord = iris.coords.AuxCoord(
-                coord_cube.data,
-                var_name = coord_cube.var_name,
-                standard_name = coord_cube.standard_name,
-                long_name = coord_cube.long_name,
-                units = coord_cube.units,
-                attributes =
-            }
+ 
+      def fix_metadata(self, cubes):
+          coord_cube = cubes.extract_strict('COORDINATE_NAME')
+          # Usually this will correspond to an auxiliary coordinate
+          # because the most common error is to forget adding it to the
+          # coordinates attribute
+          coord = iris.coords.AuxCoord(
+              coord_cube.data,
+              var_name = coord_cube.var_name,
+              standard_name = coord_cube.standard_name,
+              long_name = coord_cube.long_name,
+              units = coord_cube.units,
+              attributes =
+          }
 
-            # It may also have bounds as another cube
-            coord.bounds = cubes.extract_strict('BOUNDS_NAME').data
-            ...
+          # It may also have bounds as another cube
+          coord.bounds = cubes.extract_strict('BOUNDS_NAME').data
