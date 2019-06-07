@@ -5,8 +5,8 @@
 import os
 
 RECIPE_DIR = 'recipes'
-OUT_PATH = os.path.join('getting_started', 'gallery.inc')
-HEADER = ('*******\nGallery\n*******\n\n'
+OUT_PATH = 'gallery.rst'
+HEADER = ('#######\nGallery\n#######\n\n'
           'This section shows example plots produced by ESMValTool. For more '
           'information, click on the footnote below the image.\n\n')
 WIDTH = ':width: 90%'

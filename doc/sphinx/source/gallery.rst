@@ -1,6 +1,6 @@
-*******
+#######
 Gallery
-*******
+#######
 
 This section shows example plots produced by ESMValTool. For more information, click on the footnote below the image.
 
