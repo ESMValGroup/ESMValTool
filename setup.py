@@ -127,8 +127,7 @@ class RunTests(CustomCommand):
 
         import pytest
 
-        version = sys.version_info[0]
-        report_dir = 'test-reports/python{}'.format(version)
+        report_dir = 'test-reports'
         args = [
             'tests',
             'esmvaltool',  # for doctests

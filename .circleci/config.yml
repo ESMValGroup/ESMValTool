@@ -1,9 +1,9 @@
 ---
 version: 2
 jobs:
-  python3_test:
+  test:
     # Run Python 3 tests
-    working_directory: /python3_test
+    working_directory: /test
     docker:
       - image: continuumio/miniconda3
     steps:
@@ -14,7 +14,7 @@ jobs:
             date --rfc-3339 date > cache_key.txt
             cat environment.yml >> cache_key.txt
       - restore_cache:
-          key: deps3-{{ .Branch }}-{{ checksum "cache_key.txt" }}
+          key: test-{{ .Branch }}-{{ checksum "cache_key.txt" }}
       - run:
           # Update/Create Conda environment and run tests
           command: |
@@ -25,7 +25,7 @@ jobs:
             conda install -yS r-lintr
             python setup.py test
       - save_cache:
-          key: deps3-{{ .Branch }}-{{ checksum "cache_key.txt" }}
+          key: test-{{ .Branch }}-{{ checksum "cache_key.txt" }}
           paths:
             - "/opt/conda/envs/esmvaltool"
             - ".eggs"
@@ -34,15 +34,15 @@ jobs:
       - store_artifacts:
           path: test-reports/
 
-  python3_install:
+  test_installation:
     # Test Python 3 installation
-    working_directory: /python3_install
+    working_directory: /test_installation
     docker:
       - image: continuumio/miniconda3
     steps:
       - checkout
       - restore_cache:
-          key: python3-install-{{ .Branch }}
+          key: test-install-{{ .Branch }}
       - run:
           command: |
             . /opt/conda/etc/profile.d/conda.sh
@@ -72,7 +72,7 @@ jobs:
             ncdump tmp.nc | ncgen -k hdf5 -o tmp.nc
             cdo -f nc copy tmp.nc tmp2.nc
       - save_cache:
-          key: python3-install-{{ .Branch }}
+          key: test-install-{{ .Branch }}
           paths:
             - "/opt/conda/pkgs"
             - ".eggs"
@@ -86,7 +86,7 @@ jobs:
           when: always
           command: |
             pip install codacy-coverage
-            python-codacy-coverage -r test-reports/python3/coverage.xml
+            python-codacy-coverage -r test-reports/coverage.xml
 
   develop:
     # Test development installation
@@ -238,8 +238,8 @@ workflows:
   version: 2
   commit:
     jobs:
-      - python3_test
-      - python3_install
+      - test
+      - test_installation
   nightly:
     triggers:
       - schedule:
@@ -250,8 +250,8 @@ workflows:
                 - version2_development
                 - version2_master
     jobs:
-      - python3_test
-      - python3_install
+      - test
+      - test_installation
       - develop
       - doc
       - conda_build
