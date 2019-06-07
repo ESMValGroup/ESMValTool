@@ -12,7 +12,9 @@ variability. The latter is defined by a metric which can be calculated from the
 global temperature variance (in time) :math:`\sigma_T` and the one-year-lag
 autocorrelation of the global temperature :math:`\alpha_{1T}` by
 
-:math:`\psi = \frac{\sigma_T}{\sqrt{-\ln(\alpha_{1T})}}`
+.. math::
+
+   \psi = \frac{\sigma_T}{\sqrt{-\ln(\alpha_{1T})}}
 
 Using the simple `Hasselmann model`_ they show that this quantity is linearly
 correlated with the ECS. Since it only depends on the temporal evolution of the
