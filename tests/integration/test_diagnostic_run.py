@@ -5,7 +5,6 @@ from textwrap import dedent
 
 import pytest
 import yaml
-from six import text_type
 
 from esmvalcore._main import run
 

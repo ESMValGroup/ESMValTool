@@ -40,30 +40,23 @@ requirements:
     - libunwind  #  specifically for Python3.7+
     - graphviz
     - iris>=2.2
-    - python-stratify
     # Normally installed via pip:
     - cartopy
     - cf-units
     - cython
     - eofs
     - esmpy
-    # - esmvalcore
+    - esmvalcore
     - matplotlib<3
     - nc-time-axis
     - netCDF4
-    - numba
     - numpy
     - pandas
-    - pillow
-    - prov
-    - psutil
-    - pydot
     - python-cdo
+    - python-stratify
     - pyyaml
     - scikit-learn
     - shapely
-    - six
-    - vmprof
     - xarray>=0.12.0
     - yamale  # in birdhouse channel
     - fiona
