@@ -40,7 +40,6 @@ The datasets section includes:
 - Project (CMIP5 or 6, observations...)
 - experiment (historical/ RCP8.5 etc...)
 - Ensemble member
-- The Time resolution
 - The time range
 
 Note that this section is not required, as datasets 
