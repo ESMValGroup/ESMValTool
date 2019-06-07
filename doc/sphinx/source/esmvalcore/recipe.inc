@@ -60,7 +60,7 @@ Each preprocessor section includes.
 - Any Arguments given to the preprocessors
 - The order that the preprocesor functions are applied can also be specified here.
 
-If no preprocessors are needed, then this section can be omitted.
+If only the default preprocessor is needed, then this section can be omitted.
 
 
 Diagnostics
