@@ -131,7 +131,7 @@ The _area.py module contains the following preprocessor functions:
 
 * extract_region: Extract a region from a cube based on lat/lon corners.
 * zonal_means: Calculates the zonal or meridional means.
-* average_region: Calculates the average value over a region.
+* area_statistics: Calculates the average value over a region.
 * extract_named_regions: Extract a specific region from in the region cooordinate.
 
 
@@ -166,18 +166,16 @@ This function takes two arguments:
 See also :func:`esmvalcore.preprocessor.zonal_means`.
 
 
-3. average_region
+3. area_statistics
 -----------------
 
 This function calculates the average value over a region - weighted by the
 cell areas of the region.
 
-This function takes three arguments:
-coord1: the name of the coordinate in the first direction.
-coord2: the name of the coordinate in the second dimension.
-operator: the name of the operation to apply (default: mean).
+This function takes the argument,
+operator: the name of the operation to apply.
 
-While this function is named `average_region`, it can be used to apply several
+This function can be used to apply several
 different operations in the horizonal plane: mean, standard deviation, median
 variance, minimum and maximum.
 
@@ -185,7 +183,7 @@ Note that this function is applied over the entire dataset. If only a specific
 region, depth layer or time period is required, then those regions need to be
 removed using other preprocessor operations in advance.
 
-See also :func:`esmvalcore.preprocessor.average_region`.
+See also :func:`esmvalcore.preprocessor.area_statistics`.
 
 
 4. extract_named_regions
@@ -205,7 +203,7 @@ Volume manipulation
 The _volume.py module contains the following preprocessor functions:
 
 * extract_volume: Extract a specific depth range from a cube.
-* average_volume: Calculate the volume-weighted average.
+* volume_statistics: Calculate the volume-weighted average.
 * depth_integration: Integrate over the depth dimension.
 * extract_transect: Extract data along a line of constant latitude or longitude.
 * extract_trajectory: Extract data along a specified trajectory.
@@ -225,19 +223,19 @@ negative, then z_min and z_max need to be negative numbers.
 See also :func:`esmvalcore.preprocessor.extract_volume`.
 
 
-2. average_volume
+2. volume_statistics
 -----------------
 
 This function calculates the volume-weighted average across three dimensions,
 but maintains the time dimension. The following arguments are required:
 
-coord1: the name of the coordinate in the first direction.
-coord2: the name of the coordinate in the second dimension.
+This function takes the argument: operator, which defines the 
+operation to apply over the volume.
 
 No depth coordinate is required as this is determined by iris. This
 function works best when the fx_files provide the cell volume.
 
-See also :func:`esmvalcore.preprocessor.average_volume`.
+See also :func:`esmvalcore.preprocessor.volume_statistics`.
 
 
 3. depth_integration
@@ -294,14 +292,20 @@ Vertical interpolation
 ======================
 Documentation of _regrid.py (part 1)
 
-Land/Sea/Ice Masking
-====================
+Masking
+=======
 Documentation of _mask.py (part 1)
+
+1. Introduction to masking
+---------------------------
 
 Certain metrics and diagnostics need to be computed and performed on restricted regions of the Globe; ESMValTool supports subsetting the input data on land mass, oceans and seas, ice. This is achived by masking the model data and keeping only the values associated with grid points that correspond to e.g. land mass
 or oceans and seas; masking is done either by using standard mask files that have the same grid resolution as the model data (these files are usually produced
 at the same time with the model data and are called fx files) or, in the absence of these files, by using Natural Earth masks. Natural Earth masks, even if they are not model-specific, represent a good approximation since their grid resolution is almost always much higher than the model data, and they are constantly updated with changing
 geographical features.
+
+2. Land-sea masking
+-------------------
 
 In ESMValTool v2 land-seas-ice masking can be done in two places: in the preprocessor, to apply a mask on the data before any subsequent preprocessing step, and before
 running the diagnostic, or in the disgnostic phase. We present both these implementations below.
@@ -321,6 +325,9 @@ kept in the data after applying the mask; conversely, it will retrieve the `fx: 
 type of files; observational data is missing them altogether), then the tool attempts to mask using Natural Earth mask files (that are vectorized rasters).
 Note that the resolutions for the Natural Earth masks are much higher than any usual CMIP model: 10m for land and 50m for ocean masks.
 
+3. Ice masking
+---------------
+
 Note that for masking out ice the preprocessor is using a different function, this so that both land and sea or ice can be masked out without
 losing generality. To mask ice out one needs to add the preprocessing step much as above:
 
@@ -333,6 +340,9 @@ losing generality. To mask ice out one needs to add the preprocessing step much 
 
 To keep only the ice, one needs to mask out landsea, so use that as value for mask_out. As in the case of mask_landsea, the tool will automatically
 retrieve the `fx: sftgif` file corresponding the the used variable and extract the ice mask from it.
+
+4. mask files
+--------------
 
 At the core of the land/sea/ice masking in the preprocessor are the mask files (whether it be fx type or Natural Earth type of files); these files (bar Natural Earth)
 can be retrived and used in the diagnostic phase as well or solely. By specifying the `fx_files:` key in the variable in diagnostic in the recipe, and populating it
@@ -356,6 +366,42 @@ the 'config' diagnostic variable items e.g.:
         sftlf_file = attributes['fx_files']['sftlf']
         areacello_file = attributes['fx_files']['areacello']
 
+5. Missing values masks
+-----------------------
+
+Missing (masked) values can be a nuisance especially when dealing with multimodel ensembles and having to compute
+multimodel statistics; different numbers of missing data from dataset to datest may introduce biases and artifically
+assign more weight to the datasets that have less missing data. This is handled in ESMValTool via the missing values
+masks: two types of such masks are available: one for the multimodel case and another for the single model case.
+
+The multimodel missing values mask (mask_fillvalues) is a preprocessor step that usually comes after all the single-model
+steps (regridding, area selection etc) have been performed; in a nutshell, it combines missing values masks from individual
+models into a multimodel missing values mask; the individual model masks are built according to common criteria:
+the user chooses a time window in which missing data points are counted, and if the number of missing data points relative
+to the number of total data points in a window is less than a chosen fractional theshold, the window is discarded i.e.
+all the points in the window are masked (set to missing).
+
+.. code-block:: bash
+
+    preprocessors:
+      missing_values_preprocessor:
+        mask_fillvalues:
+          threshold_fraction: 0.95
+          min_value: 19.0
+          time_window: 10.0
+
+In the example above, the fractional threshold for missing data vs. total data is set to 95% and the time window is set to
+10.0 (units of the time coordinate units). Optionally, a minimum value threshold can be applied, in this case it is set
+to 19.0 (in units of the variable units).
+
+A similar preprocessor step exists for the single-dataset: mask_window_threshold (with the same arguments as mask_fillvalues).
+
+6. Min, max and interval masking
+--------------------------------
+
+Thresholding on minimum and maximum accepted data values can also be performed: masks are constructed based on the
+results of thresholding; inside and outside interval thresholding and masking can also be performed. These functions
+are mask_above_threshold, mask_below_threshold, mask_inside_range, and mask_outside_range.
 
 Horizontal regridding
 =====================
