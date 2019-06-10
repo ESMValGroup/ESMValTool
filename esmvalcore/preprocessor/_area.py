@@ -77,14 +77,29 @@ def zonal_statistics(cube, operator):
     """
     Get zonal statistics.
 
-    Function that returns zonal means along a coordinate `coordinate`;
-    the type of mean is controlled by operator variable (string):
-    - 'mean' -> MEAN
-    - 'median' -> MEDIAN
-    - 'std_dev' -> STD_DEV
-    - 'variance' -> VARIANCE
-    - 'min' -> MIN
-    - 'max' -> MAX
+    Function that applies a statistical operation along the zonal 
+    dimension.
+    The resulting cube will typicallly be dimensionssss:
+    (time, z, latitude') 
+    This function can be used to apply
+    several different operations in the horizonal plane: mean, standard
+    deviation, median variance, minimum and maximum. These options are
+    specified using the `operator` argument and the following key word
+    arguments:
+  
+    +------------+--------------------------------------------------+
+    | `mean`     | Area weighted mean.                              |
+    +------------+--------------------------------------------------+
+    | `median`   | Median (not area weighted)                       |
+    +------------+--------------------------------------------------+
+    | `std_dev`  | Standard Deviation (not area weighted)           |
+    +------------+--------------------------------------------------+
+    | `variance` | Variance (not area weighted)                     |
+    +------------+--------------------------------------------------+
+    | `min`:     | Minimum value                                    |
+    +------------+--------------------------------------------------+
+    | `max`      | Maximum value                                    |
+    +------------+--------------------------------------------------+
 
     Parameters
     ----------
@@ -97,6 +112,9 @@ def zonal_statistics(cube, operator):
     -------
     iris.cube.Cube
     """
+    #TODO: Add the same table from above to these comments.
+    #TODO: Add the fx_files in order to weight
+
     operation = get_iris_analysis_operation(operator)
     return cube.collapsed('longitude', operation)
 
@@ -113,6 +131,26 @@ def meridional_statistics(cube, operator):
     - 'variance' -> VARIANCE
     - 'min' -> MIN
     - 'max' -> MAX
+
+      This function can be used to apply
+      several different operations in the horizonal plane: mean, standard
+      deviation, median variance, minimum and maximum. These options are
+      specified using the `operator` argument and the following key word
+      arguments:
+  
+      +------------+--------------------------------------------------+
+      | `mean`     | Area weighted mean.                              |
+      +------------+--------------------------------------------------+
+      | `median`   | Median (not area weighted)                       |
+      +------------+--------------------------------------------------+
+      | `std_dev`  | Standard Deviation (not area weighted)           |
+      +------------+--------------------------------------------------+
+      | `variance` | Variance (not area weighted)                     |
+      +------------+--------------------------------------------------+
+      | `min`:     | Minimum value                                    |
+      +------------+--------------------------------------------------+
+      | `max`      | Maximum value                                    |
+      +------------+--------------------------------------------------+
 
     Parameters
     ----------
@@ -243,7 +281,6 @@ def area_statistics(cube, operator, fx_files=None):
         return cube.collapsed(coord_names,
                               operation,
                               weights=grid_areas)
-
     # Many IRIS analysis functions do not accept weights arguments.
     return cube.collapsed(coord_names, operation)
 
