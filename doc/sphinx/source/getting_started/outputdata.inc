@@ -65,7 +65,7 @@ In NCL-based diagnostics, this is given by config_user_info@work_dir.
 Plots
 =====
 
-The plots directory is where your diagnostics should save the output figures. 
+The plots directory is where diagnostics save their output figures. 
 
 In python-based diagnostics, the plot directory can be accessed with via the cfg dictionairy
 item, 'plot_dir' ie: cfg['plot_dir']
