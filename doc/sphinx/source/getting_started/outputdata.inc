@@ -44,7 +44,7 @@ Diagnostic output
 The work/ directory will contain all cubes that are output at the diagnostic stage.
 Ie, the model data is preprocessed by ESMValTool and stoed in the preproc/ directory.
 These files are opened by the diagnostic script, then some processing is applied.
-Once the diagnostic level processing has been applied, the resulting cubes should then 
+Once the diagnostic level processing has been applied, the results should 
 be saved to the work directory.
 
 It is possible to write your diagnostic such that it checks for the existance of 
