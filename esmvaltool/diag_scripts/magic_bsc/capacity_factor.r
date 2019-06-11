@@ -93,7 +93,7 @@ dims <- append(dims[-time_dim], c(no_of_years, dims[time_dim] /
 
 dim(data) <- dims
 # Convert to 100 m wind:
-data <- data * 1.39                   
+data <- data * 1.39
 data <- aperm(data, c(3, 4, 2, 1))
 names(dim(data)) <- c("year", "day", "lat", "lon")
 #####################################
