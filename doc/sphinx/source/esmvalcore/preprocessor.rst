@@ -1,5 +1,3 @@
-:: _preprocessor:
-
 ************
 Preprocessor
 ************
@@ -167,7 +165,7 @@ See also :func:`esmvalcore.preprocessor.zonal_means`.
 
 
 3. area_statistics
------------------
+------------------
 
 This function calculates the average value over a region - weighted by the
 cell areas of the region.
@@ -224,7 +222,7 @@ See also :func:`esmvalcore.preprocessor.extract_volume`.
 
 
 2. volume_statistics
------------------
+--------------------
 
 This function calculates the volume-weighted average across three dimensions,
 but maintains the time dimension. The following arguments are required:
@@ -358,7 +356,7 @@ with a list of desired files e.g.:
 Such a recipe will automatically retrieve all the `[sftlf, sftof, sftgif, areacello, areacella]`-type fx files for each of the variables that are needed for
 and then, in the diagnostic phase, these mask files will be available for the developer to use them as they need to. They `fx_files` attribute of the big `variable`
 nested dictionary that gets passed to the diagnostic is, in turn, a dictionary on its own, and members of it can be accessed in the diagnostic through a simple loop over
-the 'config' diagnostic variable items e.g.:
+the `config` diagnostic variable items e.g.:
 
 .. code-block:: bash
 

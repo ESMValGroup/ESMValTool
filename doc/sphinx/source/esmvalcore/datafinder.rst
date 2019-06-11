@@ -1,5 +1,3 @@
-:: _inputdata:
-
 ***********
 Data finder
 ***********
