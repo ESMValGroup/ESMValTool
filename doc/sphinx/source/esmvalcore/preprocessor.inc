@@ -69,9 +69,7 @@ The required arguments for this module are two boolean switches:
 * force_derivation: force variable derivation even if the variable is
 directly available in the input data.
 
-.. warning::
-   Link to function missing.
-
+See also :func:`esmvalcore.preprocessor.derive`.
 
 
 CMOR check and dataset-specific fixes
@@ -234,7 +232,9 @@ The required arguments are relatively self explanatory:
 
 These start and end points are set using the datasets native calendar. All six
 arguments should be given as integers, named month strings (e.g., March) will
-not be accepted.
+not be accepted. Note that start_year and end_year can be omitted, as they are
+filled in automatically from the dataset definition if not specified
+here (end_year will be the value in the dataset definition + 1).
 
 See also :func:`esmvalcore.preprocessor.extract_time`.
 
@@ -309,8 +309,7 @@ implementation works only for monthly and daily data; the frequency is set autom
 from the CMOR table of the variable of intereset, unless a custom frequency is set manually by the
 user in recipe.
 
-.. warning::
-   Link to function missing.
+See also :func:`esmvalcore.preprocessor.regrid_time`.
 
 
 Area operations
