@@ -40,7 +40,7 @@ profile_diagnostic: true
 rootpath:
   CMIP5: /media/bmueller/Work/ESMVAL_res/work/CMIP5
   OBS: /media/bmueller/Work/ESMVAL_res/work/Obs
-  RAWOBS: /media/bmueller/Daten/DWD
+  RAWOBS: /media/bmueller/Daten/RAWOBS
   default: /media/bmueller/Work/ESMVAL_res/work/default
 
 # Directory structure for input data: [default]/BADC/DKRZ/ETHZ/etc

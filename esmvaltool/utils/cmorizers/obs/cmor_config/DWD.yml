@@ -6,17 +6,18 @@ attributes:
   tier: 2
   modeling_realm: clim
   project_id: OBS
-  source: '/media/bmueller/Work/ESMVAL_res/work/Obs'
+  source: '/media/bmueller/Daten/DWD'
   reference: 'dwd'
+  network: "DWD"
   comment: ''
+  field: 'TOIs'
 
 # Variables to cmorize (here use only filename prefix)
 variables:
   tas:
-    mip: Lmon
+    mip: Amon
     raw: TT_TU_MN009
 
 ## Custom dictionary for this cmorizer
 #custom:
-#  # years to be analyzed
-#  years: [2000, ]
+
