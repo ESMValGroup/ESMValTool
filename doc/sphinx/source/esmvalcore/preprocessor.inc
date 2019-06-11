@@ -36,7 +36,7 @@ following the default order in which they are applied:
 Variable derivation
 ===================
 
-The _derive.py module allows to derive variables which are not in the CMIP
+The variable derivation module allows to derive variables which are not in the CMIP
 standard data request using standard variables as input. The typical use case
 of this operation is the evaluation of a variable which is only available in an
 observational dataset but not in the models. In this case a derivation function
