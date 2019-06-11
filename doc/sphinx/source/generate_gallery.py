@@ -25,7 +25,7 @@ def _get_figure_index(file_content):
         return file_content.index(FIGURE_STR) + len(FIGURE_STR)
     if IMAGE_STR in file_content:
         return file_content.index(IMAGE_STR) + len(IMAGE_STR)
-    raise ValueError("File does not containt image")
+    raise ValueError("File does not contain image")
 
 
 def _get_next_row(filenames, file_contents):
