@@ -47,7 +47,7 @@ field. In this case, a derivation function is provided to vertically
 integrate the ozone and obtain total column ozone for direct comparison with
 the observations.
 
-The user contributing a new derived variable also needs to define
+To contribute a new derived variable, it is also necessary to define
 a name for it and to provide the corresponding CMOR table. This is to guarantee
 the proper metadata definition is attached to the derived data. Such custom
 CMOR tables are collected as part of the ESMValTool core package. By default, 
