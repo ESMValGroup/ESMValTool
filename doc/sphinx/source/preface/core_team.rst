@@ -1,10 +1,6 @@
-.. _core_team:
-
 ************************************
 The ESMValTool core development team
 ************************************
-
-.. _core_dev_team:
 
 Main contacts
 =============

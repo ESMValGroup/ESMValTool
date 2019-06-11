@@ -1,5 +1,3 @@
-.. _installation_guide:
-
 *********************
 Installing ESMValTool
 *********************
