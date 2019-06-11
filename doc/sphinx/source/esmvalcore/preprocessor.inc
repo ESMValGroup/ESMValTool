@@ -27,7 +27,7 @@ following the default order in which they are applied:
 * `Vertical interpolation`_.
 * `Land/Sea/Ice masking`_.
 * `Horizontal regridding`_.
-* `Missing value masking`_.
+* `Masking of missing values`_.
 * `Multi-model statistics`_.
 * `Time operations`_.
 * `Area operations`_.
@@ -52,9 +52,10 @@ the observations.
 To contribute a new derived variable, it is also necessary to define
 a name for it and to provide the corresponding CMOR table. This is to guarantee
 the proper metadata definition is attached to the derived data. Such custom
-CMOR tables are collected as part of the ESMValTool core package. By default, 
-the variable derivation will be applied only if not already available in the
-input data, but the derivation can be forced by setting the appropriate flag.
+CMOR tables are collected as part of the `ESMValTool core package
+<https://github.com/ESMValGroup/ESMValCore>`_. By default, the variable
+derivation will be applied only if not already available in the input data, but
+the derivation can be forced by setting the appropriate flag.
 
 .. code-block:: yaml
 
@@ -206,15 +207,16 @@ Time operations
 The time operations module contains a broad set of functions to subset data and apply
 statistical operators along the temporal coordinate of the input data:
 
-1. extract_time: extract a specified time range from a cube.
-2. extract_season: extract only the times that occur within a specific season.
-3. extract_month: extract only the times that occur within a specific month.
-4. time_average: take the weighted average over the entire time dimension.
-5. seasonal_mean: produce a mean for each season (DJF, MAM, JJA, SON)
-6. annual_mean: produce an annual or decadal mean.
-7. regrid_time: align the time axis of each dataset to have common time points
-   and calendars.
-
+| `1. extract_time`_: extract a specified time range from a cube.
+| `2. extract_season`_: extract only the times that occur within a specific
+      season.
+| `3. extract_month`_: extract only the times that occur within a specific
+      month. 
+| `4. time_average`_: take the weighted average over the entire time dimension.
+| `5. seasonal_mean`_: produce a mean for each season (DJF, MAM, JJA, SON)
+| `6. annual_mean`_: produce an annual or decadal mean.
+| `7. regrid_time`_: align the time axis of each dataset to have common time
+      points and calendars.
 
 1. extract_time
 ---------------
@@ -236,7 +238,6 @@ not be accepted.
 
 See also :func:`esmvalcore.preprocessor.extract_time`.
 
-
 2. extract_season
 -----------------
 
@@ -255,7 +256,6 @@ seasonal_mean function, below.
 
 See also :func:`esmvalcore.preprocessor.extract_season`.
 
-
 3. extract_month
 ----------------
 
@@ -268,7 +268,6 @@ Note that named month strings will not be accepted.
 
 See also :func:`esmvalcore.preprocessor.extract_month`.
 
-
 4. time_average
 ---------------
 
@@ -276,7 +275,6 @@ This function takes the weighted average over the time dimension. This
 function requires no arguments and removes the time dimension of the cube.
 
 See also :func:`esmvalcore.preprocessor.time_average`.
-
 
 5. seasonal_mean
 ----------------
@@ -291,7 +289,6 @@ December and remove such biased initial datapoints.
 
 See also :func:`esmvalcore.preprocessor.seasonal_mean`.
 
-
 6. annual_mean
 --------------
 
@@ -300,7 +297,6 @@ switch as argument:
 * decadal: set this to true to calculate decadal averages instead of annual averages.
 
 See also :func:`esmvalcore.preprocessor.annual_mean`.
-
 
 7. regrid_time
 --------------
@@ -325,11 +321,10 @@ Area operations
 
 The area manipulation module contains the following preprocessor functions:
 
-1. extract_region: extract a region from a cube based on lat/lon corners.
-2. zonal_means: calculate the zonal or meridional means.
-3. area_statistics: calculate the average value over a region.
-4. extract_named_regions: extract a region from a cube given its name.
-
+| `1. extract_region`_: extract a region from a cube based on lat/lon corners.
+| `2. zonal_means`_: calculate the zonal or meridional means.
+| `3. area_statistics`_: calculate the average value over a region.
+| `4. extract_named_regions`_: extract a region from a cube given its name.
 
 1. extract_region
 -----------------
@@ -347,7 +342,6 @@ Note that this function can only be used to extract a rectangular region.
 
 See also :func:`esmvalcore.preprocessor.extract_region`.
 
-
 2. zonal_means
 --------------
 
@@ -360,7 +354,6 @@ This function takes two arguments:
 * mean_type: Which operation to apply: mean, std_dev, variance, median, min or max
 
 See also :func:`esmvalcore.preprocessor.zonal_means`.
-
 
 3. area_statistics
 ------------------
@@ -381,7 +374,6 @@ removed using other preprocessor operations in advance.
 
 See also :func:`esmvalcore.preprocessor.area_statistics`.
 
-
 4. extract_named_regions
 ------------------------
 
@@ -399,13 +391,12 @@ Volume operations
 
 The _volume.py module contains the following preprocessor functions:
 
-1. extract_volume: extract a specific depth range from a cube.
-2. volume_statistics: calculate the volume-weighted average.
-3. depth_integration: integrate over the depth dimension.
-4. extract_transect: extract data along a line of constant latitude or
-   longitude.
-5. extract_trajectory: extract data along a specified trajectory.
-
+| `1. extract_volume`_: extract a specific depth range from a cube.
+| `2. volume_statistics`_: calculate the volume-weighted average.
+| `3. depth_integration`_: integrate over the depth dimension.
+| `4. extract_transect`_: extract data along a line of constant latitude or
+      longitude. 
+| `5. extract_trajectory`_: extract data along a specified trajectory.
 
 1. extract_volume
 -----------------
@@ -421,7 +412,6 @@ the Iris cube, i.e. if the cube has z-coordinate as negative, then z_min and
 z_max need to be negative numbers.
 
 See also :func:`esmvalcore.preprocessor.extract_volume`.
-
 
 2. volume_statistics
 --------------------
@@ -446,7 +436,6 @@ along the z-coordinate, and removes the z direction of the output cube. It takes
 
 See also :func:`esmvalcore.preprocessor.depth_integration`.
 
-
 4. extract_transect
 -------------------
 
@@ -463,7 +452,6 @@ along the equator. If latitude is set to to 0 and longitude to `[40., 100.]` it
 will produce a transect of the equator in the Indian Ocean.
 
 See also :func:`esmvalcore.preprocessor.extract_transect`.
-
 
 5. extract_trajectory
 ---------------------
