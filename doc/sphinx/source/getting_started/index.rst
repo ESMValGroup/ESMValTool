@@ -2,9 +2,9 @@
 Getting started
 #######################
 
-.. include:: install.inc
-.. include:: config_user.inc
-.. include:: inputdata.inc
-.. include:: running.inc
-.. include:: outputdata.inc
+.. include:: install.rst
+.. include:: config_user.rst
+.. include:: inputdata.rst
+.. include:: running.rst
+.. include:: outputdata.rst
 

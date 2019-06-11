@@ -2,7 +2,7 @@
 ESMValTool Core
 ###############
 
-.. include:: config.inc
-.. include:: datafinder.inc
-.. include:: recipe.inc
-.. include:: preprocessor.inc
+.. include:: config.rst
+.. include:: datafinder.rst
+.. include:: recipe.rst
+.. include:: preprocessor.rst
