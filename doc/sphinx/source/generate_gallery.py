@@ -11,6 +11,7 @@ HEADER = ('#######\nGallery\n#######\n\n'
           'information, click on the footnote below the image.\n\n')
 WIDTH = ':width: 90%'
 FIGURE_STR = '.. figure::'
+IMAGE_STR = ' image:: '
 TABLE_SEP = ('+---------------------------------------------------'
              '+---------------------------------------------------+\n')
 EMPTY_TABLE = ('|                                                   '
@@ -18,12 +19,18 @@ EMPTY_TABLE = ('|                                                   '
 CELL_WIDTH = 50
 
 
+def _get_figure_index(file_content):
+    """Get index of figure in text."""
+    if FIGURE_STR in file_content:
+        return file_content.index(FIGURE_STR) + len(FIGURE_STR)
+    if IMAGE_STR in file_content:
+        return file_content.index(IMAGE_STR) + len(IMAGE_STR)
+    raise ValueError("File does not containt image")
+
+
 def _get_next_row(filenames, file_contents):
     """Get next row."""
-    figure_idx = [
-        content.index(FIGURE_STR) + len(FIGURE_STR)
-        for content in file_contents
-    ]
+    figure_idx = [_get_figure_index(content) for content in file_contents]
     figure_paths = [
         file_contents[idx][fig_idx:].split('\n')[0].strip()
         for (idx, fig_idx) in enumerate(figure_idx)
@@ -79,7 +86,7 @@ def main():
             continue
         with open(os.path.join(RECIPE_DIR, filename), 'r') as in_file:
             recipe_file = in_file.read()
-        if FIGURE_STR not in recipe_file:
+        if (FIGURE_STR not in recipe_file and IMAGE_STR not in recipe_file):
             print(f"WARNING: {filename} does not contain an image, skipping")
             print("")
             continue
