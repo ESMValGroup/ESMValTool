@@ -201,7 +201,7 @@ Mm = 1.5 x (N - 2) GB
 Time operations
 ===============
 
-The _time.py module contains a broad set of functions to subset data and apply
+The time operations module contains a broad set of functions to subset data and apply
 statistical operators along the temporal coordinate of the input data:
 
 1. extract_time: extract a specified time range from a cube.
