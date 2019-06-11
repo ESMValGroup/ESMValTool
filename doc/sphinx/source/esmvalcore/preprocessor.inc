@@ -40,7 +40,7 @@ The variable derivation module allows to derive variables which are not in the C
 standard data request using standard variables as input. The typical use case
 of this operation is the evaluation of a variable which is only available in an
 observational dataset but not in the models. In this case a derivation function
-can be defined by the user in order to calculate the variable and perform the
+is provided by the ESMValTool in order to calculate the variable and perform the
 comparison. For example, several observational datasets deliver total column
 ozone as observed variable (toz), but CMIP models only provide the ozone 3D
 field. In this case, a derivation function is provided to vertically
