@@ -321,7 +321,7 @@ Area operations
 .. warning::
    Need to be adapted after renaming action in #1123
 
-The _area.py module contains the following preprocessor functions:
+The area manipulation module contains the following preprocessor functions:
 
 1. extract_region: extract a region from a cube based on lat/lon corners.
 2. zonal_means: calculate the zonal or meridional means.
