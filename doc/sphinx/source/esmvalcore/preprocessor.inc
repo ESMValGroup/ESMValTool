@@ -295,7 +295,7 @@ See also :func:`esmvalcore.preprocessor.seasonal_mean`.
 
 This function produces an annual or a decadal mean. It takes a single boolean
 switch as argument:
-* decadal: calculate decadal averages.
+* decadal: set this to true to calculate decadal averages instead of annual averages.
 
 See also :func:`esmvalcore.preprocessor.annual_mean`.
 
