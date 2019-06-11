@@ -428,7 +428,7 @@ This function calculates the volume-weighted average across three dimensions,
 but maintains the time dimension. The following arguments are required:
 
 This function takes one argument:
-* operator: operation to apply over the volume (at the moment only mean)
+* operator: operation to apply over the volume (at the moment only mean is implemented)
 
 No depth coordinate is required as this is determined by Iris. This
 function works best when the fx files provide the cell volume.
