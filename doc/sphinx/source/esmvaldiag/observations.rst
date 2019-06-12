@@ -23,7 +23,7 @@ data set for the use in ESMValTool.
 1. Check if your variable is CMOR standard
 ==========================================
 
-Some variables are defined as CMOR standard. You can find several files with
+Most variables are defined in the CMIP data request and can be found in the
 CMOR tables in the folder ``/esmvalcore/cmor/tables/cmip5/Tables/``,
 differentiated according to the ``MIP`` they belong to. If you find the
 variable in one of these files, you do not have to do anything further. 
