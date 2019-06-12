@@ -44,7 +44,7 @@ guidelines:
 - Provide the ``variable_entry``;
 - Provide the ``modeling_realm``;
 - Provide the variable attributes, but leave `standard_name` blank.
-  provided! Necessary variable attributes are: ``units``, ``cell_methods``,
+Necessary variable attributes are: ``units``, ``cell_methods``,
   ``cell_measures``, ``long_name``, ``comment``.  
 - Provide some additional variable attributes. Necessary additional variable
   attributes are: ``dimensions``, ``out_name``, ``type``. There are also
