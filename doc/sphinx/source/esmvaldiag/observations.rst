@@ -54,7 +54,7 @@ Necessary variable attributes are: ``units``, ``cell_methods``,
 It is recommended to use an existing custom table as a template, to edit the content and save it as
 ``<short_name>.dat``.
 
-2. Configuration file
+2. Edit your configuration file
 =====================
 
 It is important to have your configuration file defined correctly, to be sure
