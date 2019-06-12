@@ -32,7 +32,7 @@ REQUIREMENTS = {
         'cf-units',
         'cython',
         'eofs',
-        'esmvalcore',
+        'esmvalcore>=2.0.0a1,<2.1',
         'fiona',
         'matplotlib<3',
         'nc-time-axis',  # needed by iris.plot
