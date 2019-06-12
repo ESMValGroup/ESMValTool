@@ -11,7 +11,7 @@ To install in development mode, follow these instructions.
   - [Download and install conda](https://conda.io/projects/conda/en/latest/user-guide/install/linux.html) (this should be done even if the system in use already has a preinstalled version of conda, as problems have been reported with NCL when using such a version)
   - To make the `conda` command availble, add `source <prefix>/etc/profile.d/conda.sh` to your `.bashrc` file and restart your shell. If using (t)csh shell, add `source <prefix>/etc/profile.d/conda.csh` to your `.cshrc`/`.tcshrc` file instead.
   - Update conda: `conda update -y conda`
-  - Clone the ESMValTool public github repository: `git clone git@github.com:ESMValGroup/ESMValTool.git`, or one of the private github repositories (e.g. `git clone git@github.com:ESMValGroup/ESMValTool-private.git`)
+  - Clone the ESMValTool public github repository: `git clone git@github.com:ESMValGroup/ESMValTool`, or one of the private github repositories (e.g. `git clone git@github.com:ESMValGroup/ESMValTool-private`)
   - Go to the esmvaltool directory: `cd ESMValTool`
   - Create the esmvaltool conda environment `conda env create --name esmvaltool --file environment.yml`
   - Activate the esmvaltool environment: `conda activate esmvaltool`
@@ -20,6 +20,15 @@ To install in development mode, follow these instructions.
   - If you want to use Julia diagnostics, run `julia esmvaltool/install/Julia/setup.jl` to install the Julia dependences.
   - Test that your installation was succesful by running `esmvaltool -h`.
   - If you log into a cluster or other device via `ssh` and your origin machine sends the `locale` environment via the `ssh` connection, make sure the environment is set correctly, specifically `LANG` and `LC_ALL` are set correctly (for GB English UTF-8 encoding these variables must be set to `en_GB.UTF-8`; you can set them by adding `export LANG=en_GB.UTF-8` and `export LC_ALL=en_GB.UTF-8` in your origin or login machines' `.profile`)
+
+## Using the development version of the ESMValTool Core package
+If you need the latest developments of the ESMValTool Core package,
+you can install that into the same conda environment:
+  - Clone the ESMValTool Core github repository: `git clone git@github.com:ESMValGroup/ESMValCore`)
+  - Go to the esmvalcore directory: `cd ESMValCore`
+  - Update the esmvaltool conda environment `conda env update --name esmvaltool --file environment.yml`
+  - Activate the esmvaltool environment: `conda activate esmvaltool`
+  - Install `esmvalcore` in development mode: `pip install -e '.[develop]'`.
 
 ## Running tests
 Go to the directory where the repository is cloned and run `python setup.py test --installation`. Tests will also be run automatically by [CircleCI](https://circleci.com/gh/ESMValGroup/ESMValTool).
