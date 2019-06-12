@@ -12,7 +12,7 @@ work with it. The following steps are necessary to prepare an observational
 data set for the use in ESMValTool.
 
 | `1. Check if your variable is CMOR standard`_
-| `2. Configuration file`_
+| `2. Edit your configuration file`_
 | `3. Store your dataset in the right place`_
 | `4. Reformat your data set to meet CMOR standard - script`_
 | `5. Run the cmorizing script`_
