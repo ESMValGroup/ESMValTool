@@ -26,7 +26,7 @@ data set for the use in ESMValTool.
 Most variables are defined in the CMIP data request and can be found in the
 CMOR tables in the folder ``/esmvalcore/cmor/tables/cmip5/Tables/``,
 differentiated according to the ``MIP`` they belong to. If you find the
-variable in one of these files, you do not have to do anything further. 
+variable in one of these tables, you can proceed to the next point.
 
 If your variable is somehow more specific than the entries in the tables
 (e.g. your variable is called ``bihemispherical directional albedo`` and in
