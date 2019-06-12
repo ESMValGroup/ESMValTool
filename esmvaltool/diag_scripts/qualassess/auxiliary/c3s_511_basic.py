@@ -91,6 +91,7 @@ class __Diagnostic_skeleton__(object):
         self.__latex_output__ = False
         self.levels = [None]
         self.log_level = False
+        self.log_data = False
 
         self.sp_data = None
         self.map_area_frac = None
@@ -531,6 +532,11 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
             pass
         
         try:
+            self.log_data = self.__cfg__['log_data']
+        except BaseException:
+            pass
+        
+        try:
             self.__requested_diags__ = self.__cfg__['requests']
         except BaseException:
             pass
@@ -935,7 +941,10 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                                  ecv_lookup(self.__varname__) +
                                  ' for the data set ' + " ".join(dataset_id) +
                                  ' (' + self.__time_period__ +
-                                 '). NA-values are shown in grey.'),
+                                 '). ' + 
+                                 ('NA-values and values of 0 and below are shown ' + 
+                                  'in grey.' if self.log_data else
+                                  'NA-values are shown in grey.')),
                              '#C3S' + 'frav' + "".join(short_left_over) +
                              self.__varname__,
                              self.__infile__,
@@ -989,7 +998,7 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                 list_of_plots.append(filename)
 
                 x = PlotHist(cube)
-                fig = x.plot()
+                fig = x.plot(dat_log=self.log_data)
                 fig.savefig(filename)
                 plt.close(fig)
     
@@ -1292,6 +1301,7 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
             list_of_plots.append(filename)
 
             try:
+#            for i in [0]:
                 x = Plot2D(di["data"])
 
                 caption = str("/".join(di["llo"]).title() +
@@ -1322,7 +1332,8 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                                        indx in [0, 2, 1, 3]]) + \
                              " (" + self.__time_period__ + ")",
                        vminmax=di["vminmax"],
-                       ext_cmap="both")
+                       ext_cmap="both",
+                       dat_log = self.log_data)
                 fig.savefig(filename)
                 plt.close(fig.number)
 
@@ -1330,7 +1341,10 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                          filename,
                          self.__basetags__ + 
                          ['DM_global', 'C3S_mean_var'],
-                         caption + " NA-values are shown in grey.",
+                         caption +  
+                         ('NA-values and values of 0 and below are shown ' + 
+                          'in grey.' if self.log_data else
+                          'NA-values are shown in grey.'),
                          '#C3S' + "mymean" + "".join(
                              np.array([sl[0:3] for sl in di["llo"]])) + \
                          self.__varname__,
@@ -1492,6 +1506,7 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                              " (" + self.__time_period__ + ")",
                        vminmax=di["vminmax"],
                        y_log=self.log_level,
+                       dat_log = self.log_data,
                        ext_cmap="both")
                 fig.savefig(filename)
                 plt.close(fig.number)
@@ -1500,7 +1515,10 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                          filename,
                          self.__basetags__ + 
                          ['DM_global', 'C3S_mean_var'],
-                         caption + " NA-values are shown in grey.",
+                         caption + 
+                         ('NA-values and values of 0 and below are shown ' + 
+                          'in grey.' if self.log_data else
+                          'NA-values are shown in grey.'),
                          '#C3S' + "mymean" + "".join(
                              np.array([sl[0:3] for sl in di["llo"]])) + \
                          self.__varname__,
