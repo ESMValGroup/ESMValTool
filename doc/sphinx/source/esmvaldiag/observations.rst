@@ -253,7 +253,7 @@ The different parts of the name are explained in more detail here:
 ======================================
 
 To verify that the cmorized data file is indeed correctly formatted
-(following the strict CMOR standard Iris needs), it is good to run a
+, you can run a dedicated test recipe,
 preprocessing test recipe, that does not include any diagnostic, but only reads
 in the data file and has it processed in the preprocessor. Such a recipe is
 called ``recipes/examples/recipe_check_obs.yml``. It can be adjusted to only
