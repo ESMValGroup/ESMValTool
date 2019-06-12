@@ -32,7 +32,7 @@ If your variable is not available in the standard CMOR tables,
 you need to write a custom CMOR table for the variable
 as outlined below and add it to ``/esmvalcore/cmor/tables/custom/``.
 
-The file that you have to create for a custom variable needs to follow these
+To create a new custom CMOR table you need to follow these
 guidelines:
 
 - Provide information about the SOURCE (for all observations and reanalysis it
