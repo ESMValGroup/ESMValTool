@@ -44,7 +44,6 @@ guidelines:
 - Provide the ``variable_entry``;
 - Provide the ``modeling_realm``;
 - Provide the variable attributes, but leave `standard_name` blank.
-  custom variables will only be read by Iris if this information is not
   provided! Necessary variable attributes are: ``units``, ``cell_methods``,
   ``cell_measures``, ``long_name``, ``comment``.  
 - Provide some additional variable attributes. Necessary additional variable
