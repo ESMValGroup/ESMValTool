@@ -29,7 +29,7 @@ differentiated according to the ``MIP`` they belong to. If you find the
 variable in one of these tables, you can proceed to the next point.
 
 If your variable is not available in the standard CMOR tables,
-the table only ``albedo`` is available), please write your own custom
+you need to write a custom CMOR table for the variable
 variable information as outlined below. If you do not find your variable
 here, you have to provide the variable information in an additional file
 that will have to be placed in he folder ``/esmvalcore/cmor/tables/custom/``.
