@@ -75,7 +75,7 @@ the dataset, and in that folder you put the data files with the raw
 observations (as you can download them from the observations data source
 webpage).
 
-4. Reformat your data set to meet CMOR standard - script
+4. Create a cmorizer for the dataset
 ========================================================
 
 To make sure that your dataset is in the correct format for Iris to work with
