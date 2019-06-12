@@ -267,7 +267,7 @@ If the recipe is adjusted as outlined above, run it with the following call:
 
 .. code-block:: console
 
-  esmvaltool -c *name_of_your_configuration_file* recipes/examples/recipe_preprocessor_test.yml
+  esmvaltool -c <config-user.yml> examples/recipe_preprocessor_test.yml --diagnostics <dataset>
 
 This call only works, of course, if you are already in the folder in which also
 the configuration file ``name_of_your_configuration_file`` is stored. If your
