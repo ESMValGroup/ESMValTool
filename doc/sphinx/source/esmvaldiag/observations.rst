@@ -249,7 +249,7 @@ The different parts of the name are explained in more detail here:
    specifications for the obs4mips data file naming convention in the
    ``config-developer.yml`` file).
 
-7. Running a preprocessing test recipe
+7. Test the cmorized dataset
 ======================================
 
 To verify that the cmorized data file is indeed correctly formatted
