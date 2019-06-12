@@ -196,7 +196,7 @@ The cmorizing script for the given dataset can be run with:
    already available, and then a folder named after the data set. In this
    folder the cmorized data set will be stored as a netCDF file. 
 
-Your run was successful if a netCDF file was produced in your output directory,
+If your run was successful, one or more NetCDF files are produced in your output directory.
 and if at some point the output on your screen shows an info line similar to
 this and no additional error message is shown (note: this is the example for
 the example data set ``xch4``): 
