@@ -51,7 +51,7 @@ Necessary variable attributes are: ``units``, ``cell_methods``,
   additional variable attributes that can be defined here (see the already
   available cmorizers). 
 
-Use the file structure as given in the files that already exist, and save the
+It is recommended to use an existing custom table as a template, to edit the content and save it as
 file with the extension ``<short_name>.dat``.
 
 2. Configuration file
