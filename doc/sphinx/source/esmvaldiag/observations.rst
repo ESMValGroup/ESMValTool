@@ -187,7 +187,6 @@ The cmorizing script for the given dataset can be run with:
 
  cmorize_obs -c <config-user.yml> -o <dataset-name>
 
-the ``config-user.yml`` is stored.
 
 .. note::
 
