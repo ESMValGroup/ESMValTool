@@ -16,6 +16,7 @@ import cf_units
 #import time
 import iris
 import collections
+from memory_profiler import profile
 
 # sys.path.insert(0,
 #                os.path.abspath(os.path.join(os.path.join(
@@ -55,7 +56,7 @@ def __minmeanmax__(array):
     return (np.nanmin(array), np.nanmean(array), np.nanmax(array))
 
 
-def __temporal_trend__(cube, pthres=1.01):
+def temporal_trend(cube, pthres=1.01):
     """
     calculate temporal trend of the data over time
     the slope of the temporal trend has unit [dataunit/day]
@@ -71,7 +72,7 @@ def __temporal_trend__(cube, pthres=1.01):
     The following variables are returned:
     correlation, slope, intercept, p-value
     """
-    # time difference in days
+    # time difference in days and decades
     dt = np.asarray(cube.coord('time').points - cube.coord('time').points[0]
                     ).astype('float') / 365.2425 / 10
     # ensure that a masked array is used
@@ -424,6 +425,7 @@ def dict_merge(dct, merge_dct):
                     else:
                         dct[k] = [dct[k], merge_dct[k]]
 
+
 def dask_weighted_mean_wrapper(cube, spatial_weights, dims=None):
     
     if not isinstance(dims,list):
@@ -433,24 +435,49 @@ def dask_weighted_mean_wrapper(cube, spatial_weights, dims=None):
     if "latitude" in dims:
         latlon_list = []
         
+        SPW = spatial_weights.compute()
+        
+        latc = cube.coord("latitude").points
+        cpos = (len(latc) - 1.) / 2.
+        latc = (latc[int(np.ceil(cpos))] + latc[int(np.floor(cpos))])/2
+        latb = cube.coord("latitude").bounds
+        latb = [latb[0][0],latb[-1][-1]]
+        
         for latlon in cube.slices(["latitude","longitude"]):
             
             for rcoord in ["day_of_month", "day_of_year", "month_number", "year"]:
                 if rcoord in [coord.name() for coord in latlon.coords()]:
-                    try:
-                        latlon.remove_coord(rcoord)
-                    except:
-                        latlon.remove_aux_factory(rcoord)
-    
-            latlon = latlon.collapsed("latitude", iris.analysis.MEAN,
-                                      weights = spatial_weights.compute())
-            latlon_list.append(latlon)
-    
+                    latlon.remove_coord(rcoord)
+                
+            latlon_master = next(latlon.slices_over("latitude"))
+                
+            latlon_master.coord("latitude").points = latc
+            latlon_master.coord("latitude").bounds = latb
+            
+            data = latlon_master.core_data() 
+            
+            
+            data = dask.array.sum(latlon.core_data() * SPW /
+                                  dask.array.sum((latlon.core_data() *
+                                                  0. + 1.) * SPW, axis=0),
+                                                  axis=0)
+            
+            latlon_master.data = data
+            
+            latlon_list.append(latlon_master)
+                
+            latlon = None
+        
         dims.remove("latitude")
-    
+        
         cube_list = iris.cube.CubeList(latlon_list)
         
         new_cube = cube_list.merge_cube()
+        
+        del latlon_list[:]
+        del latlon_list
+        del cube_list
+        del SPW
         
         if len(dims):
             new_cube = new_cube.collapsed(dims, iris.analysis.MEAN)
@@ -459,10 +486,12 @@ def dask_weighted_mean_wrapper(cube, spatial_weights, dims=None):
             
     else:
         new_cube = cube.collapsed(dims, iris.analysis.MEAN)
-    
+        
     return new_cube
 
+
 def dask_weighted_stddev_wrapper(cube, spatial_weights, dims=None):    
+    
     weighted_mean = dask_weighted_mean_wrapper(cube,
                                                spatial_weights,
                                                dims=dims)
@@ -470,14 +499,15 @@ def dask_weighted_stddev_wrapper(cube, spatial_weights, dims=None):
     for rcoord in ["day_of_month", "day_of_year", "month_number", "year"]:
         if (rcoord in [coord.name() for coord in weighted_mean.coords()] or
             rcoord in [coord.name() for coord in cube.coords()]):
-            logger.info("removing " + rcoord)
             try:
                 cube.remove_coord(rcoord)
             except:
                 cube.remove_aux_factory(rcoord)
     
     if "air_pressure" in [coord.name() for coord in cube.coords()]:
-        if np.all((dask.array.flip(weighted_mean.coord("air_pressure").core_points(),0) == cube.coord("air_pressure").core_points()).compute()):
+        if np.all((dask.array.flip(
+                weighted_mean.coord("air_pressure").core_points(),0) == 
+            cube.coord("air_pressure").core_points()).compute()):
             latlontim_list = []
             for latlontim in cube.slices(["time","latitude","longitude"]):
                 latlontim_list.append(latlontim)
@@ -495,17 +525,89 @@ def dask_weighted_stddev_wrapper(cube, spatial_weights, dims=None):
 
     return std_dev
 
-def count_cube_vals_for_levels(cube,levels):
-    
-    counts = np.array(levels[1:]) * 0.
-    
-    for i in np.arange(1,len(levels)):
-        counts[i-1] = count_cube_vals_in_breaks(cube,levels[i-1],levels[i])
-        
-    return counts
 
-def count_cube_vals_in_breaks(cube,start,stop):
-    dims = [c.name() for c in cube.coords()]
-    thiscount = cube.collapsed(dims, iris.analysis.COUNT,function=lambda values: np.logical_and(values >= start,values < stop))
+def lazy_climatology(cube, t_coord):
     
-    return thiscount.data
+    t_coord_dict = collections.OrderedDict()
+    
+    for act_t in np.sort(np.unique(cube.coord(t_coord).points)):
+        
+        sub_cube = cube.extract(
+                iris.Constraint(
+                        coord_values={t_coord:lambda point: point == act_t}))
+#        sub_cube = cube.extract(iris.Constraint(month_number = lambda point: point == act_t))
+
+        sub_mean = sub_cube.collapsed("time",iris.analysis.MEAN)
+            
+        t_coord_dict.update({act_t:sub_mean})
+    
+    return t_coord_dict
+
+
+def minmax_cubelist(cubelist,perc,symmetric=False):
+
+    try: 
+        vminmax = dask.array.concatenate([__dask_perc_masked__(plotcube, perc)
+                   for plotcube in cubelist])
+    except:
+        vminmax = dask.array.concatenate([dask.array.percentile(
+                plotcube.core_data().ravel(),perc)
+                   for plotcube in cubelist])
+    
+    if symmetric:
+        vminmax = dask.array.concatenate([vminmax, -vminmax])
+        
+    vmin = dask.array.atleast_1d(vminmax.min())
+    vmax = dask.array.atleast_1d(vminmax.max())
+    vminmax = dask.array.concatenate([vmin,vmax])
+
+    return vminmax.compute()
+
+
+def __dask_perc_masked__(cube,perc):
+    ravelcube = cube.core_data().ravel()
+    percentile = dask.array.percentile(
+            ravelcube[~dask.array.ma.getmaskarray(ravelcube)],
+            perc)
+    return percentile
+
+
+def lazy_percentiles(cube, percentiles, dims="time"):
+    
+    perc_dict = collections.OrderedDict()
+    
+    pre_slice = cube.collapsed(dims,iris.analysis.MEAN)
+    
+    dask_data = cube.core_data()
+    dask_data[dask.array.ma.getmaskarray(dask_data)] = np.nan
+    
+    if dims == "time":
+        dask_perc = dask.array.apply_along_axis(np.nanpercentile,
+                                                0,dask_data,percentiles)
+    elif np.all(np.sort(dims) == np.sort(["latitude","longitude"])):
+        dask_perc = dask.array.apply_along_axis(np.nanpercentile,
+                                                1,dask_data.reshape(
+                                                        dask_data.shape[0],-1),
+                                                        percentiles)  
+    else:
+        logger.error("other dimensions not implemented yet")
+    
+    dask_perc = dask.array.ma.masked_array(dask_perc,
+                                              dask.array.isnan(dask_perc))
+    
+    for act_p in np.sort(percentiles):
+        
+        sub_cube = pre_slice.copy()
+        
+        if dims == "time":
+            sub_data = (dask_perc[
+                    [act_p == p for p in percentiles],:,:]).squeeze()
+        elif np.all(np.sort(dims) == np.sort(["latitude","longitude"])):
+            sub_data = (dask_perc[
+                    :,[act_p == p for p in percentiles]]).squeeze()
+    
+        sub_cube.data = sub_data
+        
+        perc_dict.update({act_p:sub_cube})
+        
+    return perc_dict

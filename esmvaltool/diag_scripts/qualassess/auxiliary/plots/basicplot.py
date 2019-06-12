@@ -13,6 +13,7 @@ import iris.plot as iplt
 import iris.quickplot as qplt
 import cf_units as unit
 import matplotlib.cm as mpl_cm
+import matplotlib.colors as colors
 import cartopy.crs as ccrs
 from ..libs import c3s_511_util as utils
 #import random
@@ -21,6 +22,8 @@ import string
 from matplotlib.ticker import FuncFormatter
 import matplotlib.colors as colors
 import logging
+from memory_profiler import profile
+from dask import array as da
 
 
 def label_in_perc_multiple(x, pos=0):
@@ -298,28 +301,20 @@ class PlotHist(object):
             
         vmin = np.min(self.data.core_data())
         vmax = np.max(self.data.core_data())
-        rounder = int(np.ceil(-np.log10((vmax + vmin) / 2) + 5))
+        rounder = int(np.ceil(-np.log10((vmax - vmin) / 2) + 5))
         vmin = np.floor(vmin * 10**rounder) / 10**rounder
         vmax = np.ceil(vmax * 10**rounder) / 10**rounder
         levels = np.round(np.linspace(vmin, vmax, num=nbins), rounder)
-
-        # Create historgramm
-        counts_all = np.array(levels[1:]) * 0.
         
-        for subset in self.data.slices(["latitude","longitude"]):
-            counts = np.array(utils.count_cube_vals_for_levels(subset,levels))
-            counts[np.isnan(counts)] = 0
-            counts_all = counts_all + counts
-            
-        freqs = counts_all/np.sum(counts_all)
-            
-        mid_levels = []
-        for i in np.arange(1,len(levels)):
-            mid_levels.append(np.mean(levels[(i-1):(i+1)]))
+        hist, bins = da.histogram(self.data.core_data(), bins=levels, range=[vmin, vmax])
+        hist = hist/da.sum(hist)
         
-        self.ax.bar(mid_levels,
-                    freqs,
-                    np.diff(levels),
+        x = 0.5 * (bins[1:] + bins[:-1])
+        width = np.diff(bins)
+        
+        self.ax.bar(x,
+                    hist,
+                    width,
                     color = color)
         
         if dat_log:
@@ -332,7 +327,7 @@ class PlotHist(object):
             self.ax.set_title(title)
         self.ax.set_xlabel(x_label)
         self.ax.set_ylabel(y_label)
-        
+        self.ax.set_ylim(0,np.max(hist) * 1.1)
 
         self.fig.tight_layout()
         return self.fig
@@ -454,6 +449,7 @@ class Plot2D(object):
     MAX_COLUMNS = 3
     TIME_LABEL = ''
     TIME_FORMAT = '%Y-%m-%d'
+    VALSCALE = None
 
     def __init__(self, cubes):
         """
@@ -785,10 +781,10 @@ class Plot2D(object):
 
 
         # Setup axes for plotting multiple cubes
-        n_columns = min([self.n_cubes, self.__class__.MAX_COLUMNS])
+        n_columns = min([self.n_cubes, self.MAX_COLUMNS])
         rel_plots_cbar = 4
         n_rows = rel_plots_cbar * \
-            ((self.n_cubes - 1) // self.__class__.MAX_COLUMNS + 1) + 1
+            ((self.n_cubes - 1) // self.MAX_COLUMNS + 1) + 1
         gs = gridspec.GridSpec(n_rows, n_columns)
 
         if dat_log:
@@ -809,8 +805,8 @@ class Plot2D(object):
 
         # Iterate over cubes
         for (idx, cube) in enumerate(self.cubes):
-            column = idx % self.__class__.MAX_COLUMNS
-            row = idx // self.__class__.MAX_COLUMNS
+            column = idx % self.MAX_COLUMNS
+            row = idx // self.MAX_COLUMNS
             if self.n_cubes > 1:
                 curplot = gs[
                     (rel_plots_cbar * row):(rel_plots_cbar * (row + 1)),
@@ -846,6 +842,7 @@ class Plot2D(object):
                                          contour_levels,
                                          **options)
                     plt.clabel(cs, cs.levels)
+
                 if dat_log:
                     loc_cube = cube.copy()
                     loc_data = loc_cube.core_data()
@@ -867,9 +864,9 @@ class Plot2D(object):
                                     norm=colors.LogNorm())
                 else:
                     pcm = iplt.pcolormesh(cube,
-                                    cmap=brewer_cmap,
-                                    vmin=vmin,
-                                    vmax=vmax)
+                                          cmap=brewer_cmap,
+                                          vmin=vmin,
+                                          vmax=vmax)
                 if y_logarithmic:
 #                    (locs, _) = plt.yticks()
 #                    (bottom, top) = plt.ylim()
@@ -926,10 +923,12 @@ class Plot2D(object):
                 plt.gca().coastlines()
                 plt.gca().gridlines(crs=ccrs.Geodetic(), color="k",
                                     linestyle=':')
-                plt.gca().text(-180, -112,
-                               r'mean: {0} $\pm$ {1} '.format(
-                                   str(np.round(mean, 2)),
-                                   str(np.round(std, 2))))
+                plt.gca().text(0,
+                       - 0.1 * ((self.n_cubes // n_columns) * 0.7 if self.n_cubes>n_columns else 1),
+                       r'mean: {:.2g} $\pm$ {:.2g} '.format(
+                           mean,#str(np.round(mean, 2)),
+                           std),#str(np.round(std, 2))),
+                       transform=plt.gca().transAxes)
 
             # Label plots (supports at most 26 figures at the moment)
             if self.n_cubes > 1:
@@ -1151,15 +1150,19 @@ class Plot1D(object):
         plt.sca(ax[0])
 
         ymin = ymax = np.nan
+        
+        plotlist = []
 
         # plot line
         try:
             for ind, c in enumerate(self.cube):
-                plt.plot(
-                    c.coords("time")[0].points,
-                    c.data,
-                    color=cols[ind],
-                    label=title[ind])
+                linplot = plt.plot(
+                                c.coords("time")[0].points,
+                                c.data,
+                                color=cols[ind],
+                                label=title[ind],
+                                )
+                plotlist.append(linplot.copy())
                 ymin=np.nanmin([ymin,np.nanmin(c.data)])
                 ymax=np.nanmax([ymax,np.nanmax(c.data)])
             plt.gca().set_ylabel(self.name + " " + str(self.units),
@@ -1211,12 +1214,16 @@ class Plot1D(object):
             box = plt.gca().get_position()
             plt.gca().set_position([box.x0, box.y0 + 0.05 * box.height,
                                     box.width, box.y1 - box.height * 0.15])
-
+            handles, labels = plt.gca().get_legend_handles_labels()
+            order = [labels.index(t) for t in title]
+            handles = [handles[o] for o in order]
+            
             # Put a legend above current axis
-            plt.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
-                       ncol=3, mode="expand", borderaxespad=0.)
+            plt.gca().legend(handles, title, 
+                   bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
+                   ncol=7, mode="expand", borderaxespad=0.)
 
-#        removes ylabel instead of whitespace?!
+#        # removes ylabel instead of whitespace?!
 #        try:
 #            plt.tight_layout()
 #        except BaseException:
