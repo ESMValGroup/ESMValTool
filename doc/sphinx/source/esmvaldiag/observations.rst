@@ -29,7 +29,6 @@ differentiated according to the ``MIP`` they belong to. If you find the
 variable in one of these tables, you can proceed to the next point.
 
 If your variable is not available in the standard CMOR tables,
-(e.g. your variable is called ``bihemispherical directional albedo`` and in
 the table only ``albedo`` is available), please write your own custom
 variable information as outlined below. If you do not find your variable
 here, you have to provide the variable information in an additional file
