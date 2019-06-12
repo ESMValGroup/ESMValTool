@@ -191,9 +191,9 @@ def set_global_atts(cube, attrs):
             'comment':
             attrs.pop('comment'),
             'user':
-            os.environ["USER"],
+            os.environ.get("USER"),
             'host':
-            os.environ["HOSTNAME"],
+            os.environ.get("HOSTNAME"),
             'history':
             f'Created on {now_time}',
             'project_id':
