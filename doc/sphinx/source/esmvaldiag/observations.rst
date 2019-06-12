@@ -181,7 +181,7 @@ the strict CMOR standard.
 5. Run the cmorizing script
 ===========================
 
-In order to actually run the cmrorizing script, you have to use the following statement:
+The cmorizing script for the given dataset can be run with:
 
 .. code-block:: console
 
