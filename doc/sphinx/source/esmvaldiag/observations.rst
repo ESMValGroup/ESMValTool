@@ -31,7 +31,6 @@ variable in one of these tables, you can proceed to the next point.
 If your variable is not available in the standard CMOR tables,
 you need to write a custom CMOR table for the variable
 as outlined below and add it to ``/esmvalcore/cmor/tables/custom/``.
-that will have to be placed in he folder ``/esmvalcore/cmor/tables/custom/``.
 
 The file that you have to create for a custom variable needs to follow these
 guidelines:
