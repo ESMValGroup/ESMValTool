@@ -17,7 +17,7 @@ data set for the use in ESMValTool.
 | `4. Create a cmorizer for the dataset`_
 | `5. Run the cmorizing script`_
 | `6. Naming convention of the observational data files`_
-| `7. Running a preprocessing test recipe`_
+| `7. Test the cmorized dataset`_
 
 
 1. Check if your variable is CMOR standard
