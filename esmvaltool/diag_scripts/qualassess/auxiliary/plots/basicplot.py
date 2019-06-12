@@ -20,6 +20,8 @@ import sys
 import string
 from matplotlib.ticker import FuncFormatter
 import logging
+from memory_profiler import profile
+from dask import array as da
 
 
 def label_in_perc_multiple(x, pos=0):
@@ -297,28 +299,20 @@ class PlotHist(object):
             
         vmin = np.min(self.data.core_data())
         vmax = np.max(self.data.core_data())
-        rounder = int(np.ceil(-np.log10((vmax + vmin) / 2) + 5))
+        rounder = int(np.ceil(-np.log10((vmax - vmin) / 2) + 5))
         vmin = np.floor(vmin * 10**rounder) / 10**rounder
         vmax = np.ceil(vmax * 10**rounder) / 10**rounder
         levels = np.round(np.linspace(vmin, vmax, num=nbins), rounder)
-
-        # Create historgramm
-        counts_all = np.array(levels[1:]) * 0.
         
-        for subset in self.data.slices(["latitude","longitude"]):
-            counts = np.array(utils.count_cube_vals_for_levels(subset,levels))
-            counts[np.isnan(counts)] = 0
-            counts_all = counts_all + counts
-            
-        freqs = counts_all/np.sum(counts_all)
-            
-        mid_levels = []
-        for i in np.arange(1,len(levels)):
-            mid_levels.append(np.mean(levels[(i-1):(i+1)]))
+        hist, bins = da.histogram(self.data.core_data(), bins=levels, range=[vmin, vmax])
+        hist = hist/da.sum(hist)
         
-        self.ax.bar(mid_levels,
-                    freqs,
-                    np.diff(levels),
+        x = 0.5 * (bins[1:] + bins[:-1])
+        width = np.diff(bins)
+        
+        self.ax.bar(x,
+                    hist,
+                    width,
                     color = color)
         
         self.ax.yaxis.set_major_formatter(FuncFormatter(label_in_perc_single))
@@ -326,7 +320,7 @@ class PlotHist(object):
             self.ax.set_title(title)
         self.ax.set_xlabel(x_label)
         self.ax.set_ylabel(y_label)
-        self.ax.set_ylim(0,np.max(freqs) * 1.1)
+        self.ax.set_ylim(0,np.max(hist) * 1.1)
 
         self.fig.tight_layout()
         return self.fig
@@ -1091,15 +1085,19 @@ class Plot1D(object):
         plt.sca(ax[0])
 
         ymin = ymax = np.nan
+        
+        plotlist = []
 
         # plot line
         try:
             for ind, c in enumerate(self.cube):
-                plt.plot(
-                    c.coords("time")[0].points,
-                    c.data,
-                    color=cols[ind],
-                    label=title[ind])
+                linplot = plt.plot(
+                                c.coords("time")[0].points,
+                                c.data,
+                                color=cols[ind],
+                                label=title[ind],
+                                )
+                plotlist.append(linplot.copy())
                 ymin=np.nanmin([ymin,np.nanmin(c.data)])
                 ymax=np.nanmax([ymax,np.nanmax(c.data)])
             plt.gca().set_ylabel(self.name + " " + str(self.units),
@@ -1151,12 +1149,16 @@ class Plot1D(object):
             box = plt.gca().get_position()
             plt.gca().set_position([box.x0, box.y0 + 0.05 * box.height,
                                     box.width, box.y1 - box.height * 0.15])
-
+            handles, labels = plt.gca().get_legend_handles_labels()
+            order = [labels.index(t) for t in title]
+            handles = [handles[o] for o in order]
+            
             # Put a legend above current axis
-            plt.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
-                       ncol=3, mode="expand", borderaxespad=0.)
+            plt.gca().legend(handles, title, 
+                   bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
+                   ncol=7, mode="expand", borderaxespad=0.)
 
-#        removes ylabel instead of whitespace?!
+#        # removes ylabel instead of whitespace?!
 #        try:
 #            plt.tight_layout()
 #        except BaseException:
