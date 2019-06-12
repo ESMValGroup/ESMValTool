@@ -23,9 +23,7 @@ import logging
 import os
 
 import iris
-import dask.array as da
 import dask.dataframe as dd
-import pandas as pd
 import numpy as np
 import cf_units
 from datetime import datetime
@@ -43,14 +41,6 @@ CFG = read_cmor_config('DWD.yml')
 def _fix_data(cube, var):
     """Specific data fixes for different variables."""
     logger.info("Fixing data ...")
-    with constant_metadata(cube):
-        mll_to_mol = ['po4', 'si', 'no3']
-        if var in mll_to_mol:
-            cube /= 1000.  # Convert from ml/l to mol/m^3
-        elif var == 'thetao':
-            cube += 273.15  # Convert to Kelvin
-        elif var == 'o2':
-            cube *= 44.661 / 1000.  # Convert from ml/l to mol/m^3
     return cube
 
 def _fix_units(units):
@@ -60,45 +50,51 @@ def _fix_units(units):
         return "deg_C"
 
 def modify_cube(cube, var_info, raw_info, out_dir, attrs):
-    """Extract to all vars."""
-    logger.info(var_info)
+    """process to cube."""
     var = var_info.short_name
     rawvar = raw_info['name']
 
     if cube.var_name == rawvar:
         fix_var_metadata(cube, var_info)
-#            convert_timeunits(cube, year)
         fix_coords(cube)
-#            _fix_data(cube, var)
+        _fix_data(cube, var)
         set_global_atts(cube, attrs)
+        logger.info(out_dir)
         save_variable(
             cube, var, out_dir, attrs, unlimited_dimensions=['time'])
 
 def make_cube(vals, time, longitude, latitude,
               units = None, name = None, station_ID = None):
     """Produce cube from dataframe selections"""
-    logger.info(time.flatten())
-    logger.info(time.flatten().compute()[0])
-#    t_unit = cf_units.Unit('{} since 1850-01-01 00:00:00'.format(timestep), calendar=cf_units.CALENDAR_STANDARD)
-#    time = iris.coords.DimCoord(t_unit.date2num(time.flatten()),
-#                                standard_name = "time")
+#    apply(lambda x: datetime.strptime(x,'%Y%m%d%H%M'))
+    time = np.array([datetime.strptime(str(ti),'%Y%m%d%H%M') 
+        for ti in time.flatten().compute()])
+    t_unit = cf_units.Unit('days since 1750-01-01 00:00:00',
+                           calendar=cf_units.CALENDAR_STANDARD)
+    time = iris.coords.DimCoord(t_unit.date2num(time),
+                                standard_name = "time",
+                                units = t_unit)
+    
     station_ID = iris.coords.DimCoord(np.array([station_ID]),
-                                      standard_name = "station_ID")
+                                      long_name = "SDO_ID")
+    
+    longitude = iris.coords.DimCoord(np.array([longitude]),
+                                      standard_name = "longitude")
+    
+    latitude = iris.coords.DimCoord(np.array([latitude]),
+                                      standard_name = "latitude")
     
     cube = iris.cube.Cube(
             vals,
             units=units,
             var_name = name['varname'],
             long_name = name['longname'],
-            attributes=None,
-            cell_methods=None,
             dim_coords_and_dims=[(time, 0),(station_ID, 1)],
-            aux_coords_and_dims=None,
-            aux_factories=None
+            aux_coords_and_dims=[(latitude, 1),(longitude, 1)],
             )
-    logging.info(cube)
     
-    logging.info("cube prepared")
+    logger.info("cube prepared")
+    
     return cube
 
 def cmorization(in_dir, out_dir):
@@ -107,6 +103,8 @@ def cmorization(in_dir, out_dir):
     cmor_table = CFG['cmor_table']
     glob_attrs = CFG['attributes']
     glob_vars = CFG['variables']
+    
+    save_version = glob_attrs['version']
     
     logger.info("Starting cmorization for Tier%s OBS files: %s",
                 glob_attrs['tier'], glob_attrs['dataset_id'])
@@ -119,7 +117,6 @@ def cmorization(in_dir, out_dir):
     
     for var,vals in glob_vars.items():
         
-        logger.info(prd.head())
         sub_prd = prd[prd['Produkt_Code'] == vals['raw']]
         units = (sub_prd['Einheit']).values.compute()
         description = sub_prd[
@@ -136,13 +133,6 @@ def cmorization(in_dir, out_dir):
                     (data['Produkt_Code'] == vals['raw'])
                     ] # on might consider further selection based on Qualitaet_Niveau
             
-            # convert time column              
-            logger.info(extracted_data['Zeitstempel'].head())
-            
-            extracted_data['Zeitstempel'] = \
-                extracted_data['Zeitstempel'].apply(
-                        lambda x: datetime.strptime(x,'%Y%m%d%H%M'))
-            
             # convert to dask arrays for cube
             values = extracted_data[['Wert']].to_dask_array(lengths=True)
             time = extracted_data[['Zeitstempel']].to_dask_array(lengths=True)
@@ -150,28 +140,20 @@ def cmorization(in_dir, out_dir):
             # additional info
             var_info = cmor_table.get_variable(vals['mip'], var)
             raw_info = {'name': vals['raw'], 'file': link}
+            
+            # produce cube
+            cube_name = {'varname': vals['raw'], 'longname': name}
+            cube = make_cube(values, time, longitude, latitude,
+                             units = units, name = cube_name,
+                             station_ID = SDO_ID)
+            
+            # global attributes
             glob_attrs['mip'] = vals['mip']
             glob_attrs['station'] = name 
             glob_attrs['elevation'] = height
-            glob_attrs['description'] = description
+            glob_attrs['description'] = " | ".join(description)
+            glob_attrs['version'] = "-".join([save_version,
+                      name.replace(os.sep,"-")])
             
-            # produce cube
-            cube = make_cube(values, time, longitude, latitude,
-                             units = units, name = vals['raw'],
-                             station_ID = SDO_ID)
+            # modifying and saving cube
             modify_cube(cube, var_info, raw_info, out_dir, glob_attrs)
-
-#    logger.info("Input data from: %s", in_dir)
-#    logger.info("Output will be written to: %s", out_dir)
-#
-#    # run the cmorization
-#    for var, vals in CFG['variables'].items():
-#        yr = None
-#        for yr in CFG['custom']['years']:
-#            file_suffix = str(yr)[-2:] + '_' + str(yr + 1)[-2:] + '.nc'
-#            inpfile = os.path.join(in_dir, vals['file'] + file_suffix)
-#            logger.info("CMORizing var %s from file %s", var, inpfile)
-#            var_info = cmor_table.get_variable(vals['mip'], var)
-#            raw_info = {'name': vals['raw'], 'file': inpfile}
-#            glob_attrs['mip'] = vals['mip']
-#            extract_variable(var_info, raw_info, out_dir, glob_attrs, yr)

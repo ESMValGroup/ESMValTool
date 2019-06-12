@@ -165,6 +165,13 @@ def save_variable(cube, var, outdir, attrs, **kwargs):
     logger.info('Cube has %s data [lazy is preferred]', status)
     iris.save(cube, file_path, fill_value=1e20, **kwargs)
 
+def _dict_clean(items):
+    result = {}
+    for key, value in items:
+        if value is None:
+            value = 'None'
+        result[key] = value
+    return result
 
 def set_global_atts(cube, attrs):
     """Complete the cmorized file with global metadata."""
@@ -191,14 +198,17 @@ def set_global_atts(cube, attrs):
             'comment':
             attrs.pop('comment'),
             'user':
-            os.environ["USER"],
+            os.environ.get("USER"),
             'host':
-            os.environ["HOSTNAME"],
+            os.environ.get("HOSTNAME"),
             'history':
             f'Created on {now_time}',
             'project_id':
             attrs.pop('project_id'),
         }
+        
+        glob_dict = _dict_clean(glob_dict.items())
+            
     except KeyError:
         raise KeyError(
             "All CMORized datasets need the global attributes 'dataset_id', "
