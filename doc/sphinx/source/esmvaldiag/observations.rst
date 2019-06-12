@@ -52,7 +52,7 @@ Necessary variable attributes are: ``units``, ``cell_methods``,
   available cmorizers). 
 
 It is recommended to use an existing custom table as a template, to edit the content and save it as
-file with the extension ``<short_name>.dat``.
+``<short_name>.dat``.
 
 2. Configuration file
 =====================
