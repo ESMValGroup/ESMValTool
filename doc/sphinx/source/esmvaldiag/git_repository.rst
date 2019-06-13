@@ -144,7 +144,7 @@ Pull requests
 
 Once your development is completely finished, go to the GitHub website of the ESMValTool repository and switch to your *FEATURE BRANCH*. You can then initiate a pull request by clicking on the button "New pull request". Select the *DEVELOPMENT BRANCH* as "base branch" and click on "Create pull request". Your pull request will then be tested, discussed and implemented into the *DEVELPOMENT BRANCH* by the ESMValTool Core Development Team.
 
-.. attention:: Before creating a pull request, please make sure all requirements listed in ... are fully met (see also checklist in ...).
+.. attention:: When creating a pull request, please carefully review the requirements and recommendations in CONTRIBUTING.md and try to implement those (see also checklist in the pull request template). It is recommended that you create a draft pull request early in the development process, when it is still possible to implement feedback. Do not wait until shortly before the deadline of the project you are working on. If you are unsure how to implement any of the requirements, please do not hesitate to ask for help in the pull request.
 
 GitHub issues
 -------------
