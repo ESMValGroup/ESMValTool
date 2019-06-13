@@ -57,23 +57,16 @@ It is recommended to use an existing custom table as a template, to edit the con
 2. Edit your configuration file
 =====================
 
-It is important to have your configuration file defined correctly, to be sure
-that your data files are found by the ESMValTool, and that the cmorized data
-files are written in the correct folders. See Section **link to be added** for
-an example of a configuration file, that has to be filled out with the paths
-information of your specific machine.
+Make sure that beside the paths to the model simulations and observations, also the path to 
+raw observational data to be cmorized (``RAWOBS``) is present in your configuration file.
 
 3. Store your dataset in the right place
 ========================================
 
-For the ESMValTool to find the data set that it needs, a specific folder
-structure is defined. You have your path that points towards the
-observations. That path is defined in your configuration file (see Section 2)
-under ``RAWOBS``. From there you need the subdirectories ``Tier1``, ``Tier2``
-and ``Tier3``. In the folder of your choice, you need a folder with the name of
-the dataset, and in that folder you put the data files with the raw
-observations (as you can download them from the observations data source
-webpage).
+The folder ``RAWOBS`` needs the subdirectories ``Tier1``, ``Tier2`` and ``Tier3``. 
+The different tiers describe the different levels of restrictions for downloading 
+and using the observations. The unformatted (raw) observations should then be 
+stored then in the appropriate of these three folders. 
 
 4. Create a cmorizer for the dataset
 ========================================================
