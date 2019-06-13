@@ -1,4 +1,4 @@
-.. _yml_capacity_factor:
+.. _recipes_capacity_factor:
 
 Capacity factor of wind power: Ratio of average estimated power to theoretical maximum power
 ============================================================================================
