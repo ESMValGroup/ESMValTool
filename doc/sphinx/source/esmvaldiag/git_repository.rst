@@ -170,7 +170,7 @@ Do-s
 Don't-s
 -------
 
-* Do not use other programming languages than the ones currently supported (NCL, Python, R). Contact the :doc:`ESMValTool Core Development Team <../preface/core_team>` if you wish to use another language, but remember that only open-source languages are supported by the ESMValTool.
+* Do not use other programming languages than the ones currently supported (Python, R, NCL, Julia). If you are unsure what language to use, Python is probably the best choice, because it has very good libraries available and is supported by a large community. Contact the :doc:`ESMValTool Core Development Team <../preface/core_team>` if you wish to use another language, but remember that only open-source languages are supported by the ESMValTool.
 * Do not develop without proper version control (see do-s above).
 * Avoid large (memory, disk space) intermediate results. Delete intermediate files/variables or see modular/functional programming style.
 * Do not use hard-coded pathnames or filenames.
