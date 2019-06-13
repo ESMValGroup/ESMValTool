@@ -136,7 +136,7 @@ verifying that
 - any NetCDF files created by your diagnostic script contain a 'provenance' global attribute
 - any PNG plots created by your diagnostic script contain the provenance information in the 'Image History' attribute
 
-Note that this is done automatically by the ESMValTool backend.
+Note that this is done automatically by the ESMValTool Core.
 
 ********************************************
 How to prepare and run your first diagnostic
