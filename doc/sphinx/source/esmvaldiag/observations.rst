@@ -71,12 +71,6 @@ stored then in the appropriate of these three folders.
 4. Create a cmorizer for the dataset
 ========================================================
 
-To make sure that your dataset is in the correct format for Iris to work with
-it, you most likely will have to process it with a cmorizing script. In the
-rare, but possible, case that your dataset is in the correct format already, it
-is advisable to run it through a cmorizing script anyway, to be sure the file
-name is correctly defined for the ESMValTool to find the file. 
-
 Find here an example of a cmorizing script, written for the ``ESACCI XCH4``
 dataset that is available on the Copernicus Climate Data Store: `cmorize_obs_CDS-XCH4.ncl
 <https://github.com/ESMValGroup/ESMValTool/blob/version2_development/esmvaltool/utils/cmorizers/obs/cmorize_obs_CDS-XCH4.ncl>`_.
