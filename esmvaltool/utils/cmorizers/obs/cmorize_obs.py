@@ -55,6 +55,9 @@ def _assemble_datasets(raw_obs, obs_list):
             for dataset_name in obs_list.split(','):
                 if os.path.isdir(os.path.join(raw_obs, tier, dataset_name)):
                     datasets[tier].append(dataset_name)
+                else:
+                    logger.warning("Could not find raw data %s in %s/%s",
+                                   dataset_name, raw_obs, tier)
 
     # otherwise go through the whole raw_obs dir
     else:
@@ -217,6 +220,9 @@ def _cmor_reformat(config, obs_list):
     run_dir = os.path.join(config['output_dir'], 'run')
     # datsets dictionary of Tier keys
     datasets = _assemble_datasets(raw_obs, obs_list)
+    if not datasets:
+        logger.warning("Check input: could not find required %s in %s",
+                       obs_list, raw_obs)
     logger.info("Processing datasets %s", datasets)
 
     # loop through tier/datasets to be cmorized
