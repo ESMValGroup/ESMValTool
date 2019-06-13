@@ -4,7 +4,7 @@ import unittest
 from iris.coords import DimCoord
 from iris.cube import Cube
 
-from esmvaltool.cmor._fixes.PRIMAVERA.EC_Earth3_HR import allvars
+from esmvalcore.cmor._fixes.PRIMAVERA.EC_Earth3_HR import allvars
 
 
 class TestAllVars(unittest.TestCase):

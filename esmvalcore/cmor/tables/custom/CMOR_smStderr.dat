@@ -1,0 +1,25 @@
+SOURCE: CMIP5 (adapted from mrsos)
+!============
+variable_entry:    smStderr
+!============
+modeling_realm:    land
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     
+units:             m3 m-3
+cell_methods:      time: mean area: mean where land
+cell_measures:     area: areacella
+long_name:         Volumetric Moisture in Upper Portion of Soil Column Error
+comment:           Error of the volume of water in all phases in a thin surface soil layer.
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          smStderr
+type:              real
+valid_min:         0.0
+valid_max:         1.0
+!----------------------------------
+!
+

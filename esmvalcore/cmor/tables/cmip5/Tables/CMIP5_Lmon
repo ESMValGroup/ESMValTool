@@ -1,0 +1,1656 @@
+table_id: Table Lmon
+modeling_realm: land
+
+frequency: mon
+
+cmor_version: 2.6 ! minimum version of CMOR that can read this table
+cf_version:   1.4         ! version of CF that output conforms to
+project_id:   CMIP5  ! project id
+table_date:   17 July 2013 ! date this table was constructed
+
+missing_value: 1.e20      ! value used to indicate a missing value
+                          !   in arrays output by netCDF as 32-bit IEEE 
+                          !   floating-point numbers (float or real)
+
+baseURL: http://cmip-pcmdi.llnl.gov/CMIP5/dataLocation 
+product: output
+
+required_global_attributes: creation_date tracking_id forcing model_id parent_experiment_id parent_experiment_rip branch_time contact institute_id ! space separated required global attribute 
+
+forcings:   N/A Nat Ant GHG SD SI SA TO SO Oz LU Sl Vl SS Ds BC MD OC AA
+
+expt_id_ok: '10- or 30-year run initialized in year XXXX' 'decadalXXXX'
+expt_id_ok: 'volcano-free hindcast initialized in year XXXX' 'noVolcXXXX'
+expt_id_ok: 'prediction with 2010 volcano' 'volcIn2010'
+expt_id_ok: 'pre-industrial control' 'piControl'
+expt_id_ok: 'historical' 'historical'
+expt_id_ok: 'historical extension' 'historicalExt'
+expt_id_ok: 'other historical forcing' 'historicalMisc'
+expt_id_ok: 'mid-Holocene' 'midHolocene'
+expt_id_ok: 'last glacial maximum' 'lgm'
+expt_id_ok: 'last millennium' 'past1000'
+expt_id_ok: 'RCP4.5' 'rcp45'
+expt_id_ok: 'RCP8.5' 'rcp85'
+expt_id_ok: 'RCP2.6' 'rcp26'
+expt_id_ok: 'RCP6' 'rcp60'
+expt_id_ok: 'ESM pre-industrial control' 'esmControl'
+expt_id_ok: 'ESM historical' 'esmHistorical'
+expt_id_ok: 'ESM RCP8.5' 'esmrcp85'
+expt_id_ok: 'ESM fixed climate 1' 'esmFixClim1'
+expt_id_ok: 'ESM fixed climate 2' 'esmFixClim2'
+expt_id_ok: 'ESM feedback 1' 'esmFdbk1'
+expt_id_ok: 'ESM feedback 2' 'esmFdbk2'
+expt_id_ok: '1 percent per year CO2' '1pctCO2'
+expt_id_ok: 'abrupt 4XCO2' 'abrupt4xCO2'
+expt_id_ok: 'natural-only' 'historicalNat'
+expt_id_ok: 'GHG-only' 'historicalGHG'
+expt_id_ok: 'AMIP' 'amip'
+expt_id_ok: '2030 time-slice' 'sst2030'
+expt_id_ok: 'control SST climatology' 'sstClim'
+expt_id_ok: 'CO2 forcing' 'sstClim4xCO2'
+expt_id_ok: 'all aerosol forcing' 'sstClimAerosol'
+expt_id_ok: 'sulfate aerosol forcing' 'sstClimSulfate'
+expt_id_ok: '4xCO2 AMIP' 'amip4xCO2'
+expt_id_ok: 'AMIP plus patterned anomaly' 'amipFuture'
+expt_id_ok: 'aqua planet control' 'aquaControl'
+expt_id_ok: '4xCO2 aqua planet' 'aqua4xCO2'
+expt_id_ok: 'aqua planet plus 4K anomaly' 'aqua4K'
+expt_id_ok: 'AMIP plus 4K anomaly' 'amip4K'
+
+
+approx_interval:  30.000000     ! approximate spacing between successive time
+                          !   samples (in units of the output time 
+                          !   coordinate.
+
+!============
+axis_entry: longitude
+!============
+!----------------------------------
+! Axis attributes:
+!----------------------------------
+standard_name:    longitude
+units:            degrees_east
+axis:             X             ! X, Y, Z, T (default: undeclared)
+long_name:        longitude
+!----------------------------------
+! Additional axis information:
+!----------------------------------
+out_name:         lon
+valid_min:        0.0         
+valid_max:        360.0 
+stored_direction: increasing
+type:             double
+must_have_bounds: yes
+!----------------------------------
+!
+
+
+!============
+axis_entry: latitude
+!============
+!----------------------------------
+! Axis attributes:
+!----------------------------------
+standard_name:    latitude
+units:            degrees_north
+axis:             Y             ! X, Y, Z, T (default: undeclared)
+long_name:        latitude
+!----------------------------------
+! Additional axis information:
+!----------------------------------
+out_name:         lat
+valid_min:        -90.0         
+valid_max:        90.0 
+stored_direction: increasing
+type:             double
+must_have_bounds: yes
+!----------------------------------
+!
+
+
+!============
+axis_entry: time
+!============
+!----------------------------------
+! Axis attributes:
+!----------------------------------
+standard_name:    time
+units:            days since ?
+axis:             T             ! X, Y, Z, T (default: undeclared)
+long_name:        time
+!----------------------------------
+! Additional axis information:
+!----------------------------------
+out_name:         time
+stored_direction: increasing
+type:             double
+must_have_bounds: yes
+!----------------------------------
+!
+
+
+!============
+axis_entry: sdepth
+!============
+!----------------------------------
+! Axis attributes:
+!----------------------------------
+standard_name:    depth
+units:            m
+axis:             Z             ! X, Y, Z, T (default: undeclared)
+positive:         down         ! up or down (default: undeclared)
+long_name:        depth
+!----------------------------------
+! Additional axis information:
+!----------------------------------
+out_name:         depth
+valid_min:        0.0         
+valid_max:        200.0 
+stored_direction: increasing
+type:             double
+must_have_bounds: yes
+!----------------------------------
+!
+
+
+!============
+axis_entry: sdepth1 
+!============
+!----------------------------------
+! Axis attributes:
+!----------------------------------
+standard_name:    depth
+units:            m
+axis:             Z             ! X, Y, Z, T (default: undeclared)
+positive:         down         ! up or down (default: undeclared)
+long_name:        depth
+!----------------------------------
+! Additional axis information:
+!----------------------------------
+out_name:         depth
+valid_min:        0.0         
+valid_max:        0.2 
+stored_direction: increasing
+type:             double
+value:            0.05            ! of scalar (singleton) dimension 
+bounds_values:    0.0 0.1    ! of scalar (singleton) dimension bounds
+must_have_bounds: yes
+!----------------------------------
+!
+
+
+!============
+axis_entry: vegtype
+!============
+!----------------------------------
+! Axis attributes:
+!----------------------------------
+standard_name:    area_type
+long_name:        plant functional type
+!----------------------------------
+! Additional axis information:
+!----------------------------------
+out_name:         type
+type:             character
+must_have_bounds: no
+coords_attrib:    type_description
+!----------------------------------
+!
+
+
+!============
+axis_entry: typebare
+!============
+!----------------------------------
+! Axis attributes:
+!----------------------------------
+standard_name:    area_type
+long_name:        surface type
+!----------------------------------
+! Additional axis information:
+!----------------------------------
+out_name:         type
+type:             character
+value:            bare_ground            ! of scalar (singleton) dimension 
+must_have_bounds: no
+coords_attrib:    type_description
+!----------------------------------
+!
+
+
+!============
+axis_entry: typepdec
+!============
+!----------------------------------
+! Axis attributes:
+!----------------------------------
+standard_name:    area_type
+long_name:        surface type
+!----------------------------------
+! Additional axis information:
+!----------------------------------
+out_name:         type
+type:             character
+value:            primary_deciduous_trees            ! of scalar (singleton) dimension 
+must_have_bounds: no
+coords_attrib:    type_description
+!----------------------------------
+!
+
+
+!============
+axis_entry: typepever
+!============
+!----------------------------------
+! Axis attributes:
+!----------------------------------
+standard_name:    area_type
+long_name:        surface type
+!----------------------------------
+! Additional axis information:
+!----------------------------------
+out_name:         type
+type:             character
+value:            primary_evergreen_trees            ! of scalar (singleton) dimension 
+must_have_bounds: no
+coords_attrib:    type_description
+!----------------------------------
+!
+
+
+!============
+axis_entry: typesdec
+!============
+!----------------------------------
+! Axis attributes:
+!----------------------------------
+standard_name:    area_type
+long_name:        surface type
+!----------------------------------
+! Additional axis information:
+!----------------------------------
+out_name:         type
+type:             character
+value:            secondary_decidous_trees            ! of scalar (singleton) dimension 
+must_have_bounds: no
+coords_attrib:    type_description
+!----------------------------------
+!
+
+
+!============
+axis_entry: typesever 
+!============
+!----------------------------------
+! Axis attributes:
+!----------------------------------
+standard_name:    area_type
+long_name:        surface type
+!----------------------------------
+! Additional axis information:
+!----------------------------------
+out_name:         type
+type:             character
+value:            secondary_evergreen_trees            ! of scalar (singleton) dimension 
+must_have_bounds: no
+coords_attrib:    type_description
+!----------------------------------
+!
+
+
+!============
+axis_entry: typec3pft
+!============
+!----------------------------------
+! Axis attributes:
+!----------------------------------
+standard_name:    area_type
+long_name:        surface type
+!----------------------------------
+! Additional axis information:
+!----------------------------------
+out_name:         type
+type:             character
+value:            c3_plant_functional_types            ! of scalar (singleton) dimension 
+must_have_bounds: no
+coords_attrib:    type_description
+!----------------------------------
+!
+
+
+!============
+axis_entry: typec4pft
+!============
+!----------------------------------
+! Axis attributes:
+!----------------------------------
+standard_name:    area_type
+long_name:        surface type
+!----------------------------------
+! Additional axis information:
+!----------------------------------
+out_name:         type
+type:             character
+value:            c4_plant_functional_types            ! of scalar (singleton) dimension 
+must_have_bounds: no
+coords_attrib:    type_description
+!----------------------------------
+!
+
+!============
+variable_entry:    mrsos
+!============
+modeling_realm:    land
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     moisture_content_of_soil_layer
+units:             kg m-2
+cell_methods:      time: mean area: mean where land
+cell_measures:     area: areacella
+long_name:         Moisture in Upper Portion of Soil Column
+comment:           the mass of water in all phases in a thin surface soil layer.
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time sdepth1
+out_name:          mrsos
+type:              real
+valid_min:         -2.008
+valid_max:         146.5
+ok_min_mean_abs:   -35.89
+ok_max_mean_abs:   123.3
+!----------------------------------
+!
+
+!============
+variable_entry:    mrso
+!============
+modeling_realm:    land
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     soil_moisture_content
+units:             kg m-2
+cell_methods:      time: mean area: mean where land
+cell_measures:     area: areacella
+long_name:         Total Soil Moisture Content
+comment:           the mass per unit area  (summed over all soil layers) of water in all phases.
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          mrso
+type:              real
+valid_min:         -64.17
+valid_max:         5717
+ok_min_mean_abs:   -1424
+ok_max_mean_abs:   3038
+!----------------------------------
+!
+
+!============
+variable_entry:    mrfso
+!============
+modeling_realm:    land landIce
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     soil_frozen_water_content
+units:             kg m-2
+cell_methods:      time: mean area: mean where land
+cell_measures:     area: areacella
+long_name:         Soil Frozen Water Content 
+comment:           the mass (summed over all all layers) of frozen water.
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          mrfso
+type:              real
+valid_min:         0
+valid_max:         5763
+ok_min_mean_abs:   -419
+ok_max_mean_abs:   940.3
+!----------------------------------
+!
+
+!============
+variable_entry:    mrros
+!============
+modeling_realm:    land
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     surface_runoff_flux
+units:             kg m-2 s-1
+cell_methods:      time: mean area: mean where land
+cell_measures:     area: areacella
+long_name:         Surface Runoff
+comment:           the total surface runoff leaving the land portion of the grid cell.
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          mrros
+type:              real
+valid_min:         -6.802e-06
+valid_max:         0.0009825
+ok_min_mean_abs:   -5.867e-06
+ok_max_mean_abs:   1.302e-05
+!----------------------------------
+!
+
+!============
+variable_entry:    mrro
+!============
+modeling_realm:    land
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     runoff_flux
+units:             kg m-2 s-1
+cell_methods:      time: mean area: mean where land
+cell_measures:     area: areacella
+long_name:         Total Runoff
+comment:           "the total runoff (including ""drainage"" through the base of the soil model) leaving the land portion of the grid cell."
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          mrro
+type:              real
+valid_min:         -0.0002019
+valid_max:         0.001065
+ok_min_mean_abs:   -6.668e-06
+ok_max_mean_abs:   1.874e-05
+!----------------------------------
+!
+
+!============
+variable_entry:    prveg
+!============
+modeling_realm:    land
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     precipitation_flux_onto_canopy
+units:             kg m-2 s-1
+cell_methods:      time: mean area: mean where land
+cell_measures:     area: areacella
+long_name:         Precipitation onto Canopy
+comment:           the precipitation flux that is intercepted by the vegetation canopy (if present in model) before reaching the ground.
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          prveg
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    evspsblveg
+!============
+modeling_realm:    land
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     water_evaporation_flux_from_canopy
+units:             kg m-2 s-1
+cell_methods:      time: mean area: mean where land
+cell_measures:     area: areacella
+long_name:         Evaporation from Canopy
+comment:           the canopy evaporation+sublimation (if present in model).
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          evspsblveg
+type:              real
+positive:          up
+!----------------------------------
+!
+
+!============
+variable_entry:    evspsblsoi
+!============
+modeling_realm:    land
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     water_evaporation_flux_from_soil
+units:             kg m-2 s-1
+cell_methods:      time: mean area: mean where land
+cell_measures:     area: areacella
+long_name:         Water Evaporation from Soil
+comment:           includes sublimation.  
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          evspsblsoi
+type:              real
+positive:          up
+!----------------------------------
+!
+
+!============
+variable_entry:    tran
+!============
+modeling_realm:    land
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     transpiration_flux
+units:             kg m-2 s-1
+cell_methods:      time: mean area: mean where land
+cell_measures:     area: areacella
+long_name:         Transpiration
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          tran
+type:              real
+positive:          up
+!----------------------------------
+!
+
+!============
+variable_entry:    mrlsl
+!============
+modeling_realm:    land
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     moisture_content_of_soil_layer
+units:             kg m-2
+cell_methods:      time: mean area: mean where land
+cell_measures:     area: areacella
+long_name:          Water Content of Soil Layer
+comment:           in each soil layer, the mass of water in all phases, including ice.  Reported as ""missing"" for grid cells occupied entirely by ""sea""
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude sdepth time
+out_name:          mrlsl
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    tsl
+!============
+modeling_realm:    land
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     soil_temperature
+units:             K
+cell_methods:      time: mean
+cell_measures:     area: areacella
+long_name:         Temperature of Soil
+comment:           "Temperature of each soil layer.  Reported as ""missing"" for grid cells occupied entirely by ""sea""."
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude sdepth time
+out_name:          tsl
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    treeFrac
+!============
+modeling_realm:    land
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     area_fraction
+units:             %
+cell_methods:      time: mean
+cell_measures:     area: areacella
+long_name:         Tree Cover Fraction
+comment:           fraction of entire grid cell  that is covered by trees.  
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          treeFrac
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    grassFrac
+!============
+modeling_realm:    land
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     area_fraction
+units:             %
+cell_methods:      time: mean
+cell_measures:     area: areacella
+long_name:         Natural Grass Fraction
+comment:           fraction of entire grid cell that is covered by natural grass.  
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          grassFrac
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    shrubFrac
+!============
+modeling_realm:    land
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     area_fraction
+units:             %
+cell_methods:      time: mean
+cell_measures:     area: areacella
+long_name:         Shrub Fraction
+comment:           fraction of entire grid cell  that is covered by shrub.
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          shrubFrac
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    cropFrac
+!============
+modeling_realm:    land
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     area_fraction
+units:             %
+cell_methods:      time: mean
+cell_measures:     area: areacella
+long_name:         Crop Fraction
+comment:           fraction of entire grid cell  that is covered by crop. 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          cropFrac
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    pastureFrac
+!============
+modeling_realm:    land
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     area_fraction
+units:             %
+cell_methods:      time: mean
+cell_measures:     area: areacella
+long_name:         Anthropogenic Pasture Fraction
+comment:           fraction of entire grid cell  that is covered by anthropogenic pasture. 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          pastureFrac
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    baresoilFrac
+!============
+modeling_realm:    land
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     area_fraction
+units:             %
+cell_methods:      time: mean
+cell_measures:     area: areacella
+long_name:         Bare Soil Fraction
+comment:           fraction of entire grid cell  that is covered by bare soil.
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time typebare
+out_name:          baresoilFrac
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    residualFrac
+!============
+modeling_realm:    land
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     area_fraction
+units:             %
+cell_methods:      time: mean
+cell_measures:     area: areacella
+long_name:         Fraction of Grid Cell that is Land but Neither Vegetation-Covered nor Bare Soil
+comment:           fraction of entire grid cell  that is land and is covered by ""non-vegetation"" and ""non-bare-soil"" (e.g., urban, ice, lakes, etc.) 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          residualFrac
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    burntArea
+!============
+modeling_realm:    land
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     area_fraction
+units:             %
+cell_methods:      time: mean
+cell_measures:     area: areacella
+long_name:         Burnt Area Fraction
+comment:           fraction of entire grid cell  that is covered by burnt vegetation.
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          burntArea
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    cVeg
+!============
+modeling_realm:    land
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     vegetation_carbon_content
+units:             kg m-2
+cell_methods:      time: mean area: mean where land
+cell_measures:     area: areacella
+long_name:         Carbon Mass in Vegetation
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          cVeg
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    cLitter
+!============
+modeling_realm:    land
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     litter_carbon_content
+units:             kg m-2
+cell_methods:      time: mean area: mean where land
+cell_measures:     area: areacella
+long_name:         Carbon Mass in Litter Pool
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          cLitter
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    cSoil
+!============
+modeling_realm:    land
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     soil_carbon_content
+units:             kg m-2
+cell_methods:      time: mean area: mean where land
+cell_measures:     area: areacella
+long_name:         Carbon Mass in Soil Pool
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          cSoil
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    cProduct
+!============
+modeling_realm:    land
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     carbon_content_of_products_of_anthropogenic_land_use_change
+units:             kg m-2
+cell_methods:      time: mean area: mean where land
+cell_measures:     area: areacella
+long_name:         Carbon Mass in Products of Land Use Change
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          cProduct
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    lai
+!============
+modeling_realm:    land
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     leaf_area_index
+units:             1
+cell_methods:      time: mean area: mean where land
+cell_measures:     area: areacella
+long_name:         Leaf Area Index
+comment:           a ratio obtained by dividing the total upper leaf surface area of vegetation by the (horizontal) surface area of the land on which it grows.
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          lai
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    gpp
+!============
+modeling_realm:    land
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     gross_primary_productivity_of_carbon
+units:             kg m-2 s-1
+cell_methods:      time: mean area: mean where land
+cell_measures:     area: areacella
+long_name:         Carbon Mass Flux out of Atmosphere due to Gross Primary Production on Land
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          gpp
+type:              real
+positive:          down
+!----------------------------------
+!
+
+!============
+variable_entry:    ra
+!============
+modeling_realm:    land
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     plant_respiration_carbon_flux
+units:             kg m-2 s-1
+cell_methods:      time: mean area: mean where land
+cell_measures:     area: areacella
+long_name:         Carbon Mass Flux into Atmosphere due to Autotrophic (Plant) Respiration on Land
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          ra
+type:              real
+positive:          up
+!----------------------------------
+!
+
+!============
+variable_entry:    npp
+!============
+modeling_realm:    land
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     net_primary_productivity_of_carbon
+units:             kg m-2 s-1
+cell_methods:      time: mean area: mean where land
+cell_measures:     area: areacella
+long_name:         Carbon Mass Flux out of Atmosphere due to Net Primary Production on Land
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          npp
+type:              real
+positive:          down
+!----------------------------------
+!
+
+!============
+variable_entry:    rh
+!============
+modeling_realm:    land
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     heterotrophic_respiration_carbon_flux
+units:             kg m-2 s-1
+cell_methods:      time: mean area: mean where land
+cell_measures:     area: areacella
+long_name:         Carbon Mass Flux into Atmosphere due to Heterotrophic Respiration on Land
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          rh
+type:              real
+positive:          up
+!----------------------------------
+!
+
+!============
+variable_entry:    fFire
+!============
+modeling_realm:    land
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     surface_upward_mass_flux_of_carbon_dioxide_expressed_as_carbon_due_to_emission_from_fires_excluding_anthropogenic_land_use_change
+units:             kg m-2 s-1
+cell_methods:      time: mean area: mean where land
+cell_measures:     area: areacella
+long_name:         Carbon Mass Flux into Atmosphere due to CO2 Emission from Fire
+comment:           CO2 emissions (expressed as a carbon mass flux) from natural fires + human ignition fires as calculated by the fire module of the DGVM, but excluding any CO2 flux from fire included in fLuc, defined below (CO2 Flux to Atmosphere from Land Use Change).
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          fFire
+type:              real
+positive:          up
+!----------------------------------
+!
+
+!============
+variable_entry:    fGrazing
+!============
+modeling_realm:    land
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     surface_upward_mass_flux_of_carbon_dioxide_expressed_as_carbon_due_to_emission_from_grazing
+units:             kg m-2 s-1
+cell_methods:      time: mean area: mean where land
+cell_measures:     area: areacella
+long_name:         Carbon Mass Flux into Atmosphere due to Grazing on Land
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          fGrazing
+type:              real
+positive:          up
+!----------------------------------
+!
+
+!============
+variable_entry:    fHarvest
+!============
+modeling_realm:    land
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     surface_upward_mass_flux_of_carbon_dioxide_expressed_as_carbon_due_to_emission_from_crop_harvesting
+units:             kg m-2 s-1
+cell_methods:      time: mean area: mean where land
+cell_measures:     area: areacella
+long_name:         Carbon Mass Flux into Atmosphere due to Crop Harvesting
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          fHarvest
+type:              real
+positive:          up
+!----------------------------------
+!
+
+!============
+variable_entry:    fLuc
+!============
+modeling_realm:    land
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     surface_net_upward_mass_flux_of_carbon_dioxide_expressed_as_carbon_due_to_emission_from_anthropogenic_land_use_change
+units:             kg m-2 s-1
+cell_methods:      time: mean area: mean where land
+cell_measures:     area: areacella
+long_name:         Net Carbon Mass Flux into Atmosphere due to Land Use Change
+comment:           human changes to land (excluding forest regrowth) accounting possibly for different time-scales related to fate of the wood, for example.
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          fLuc
+type:              real
+positive:          up
+!----------------------------------
+!
+
+!============
+variable_entry:    nbp
+!============
+modeling_realm:    land
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     surface_net_downward_mass_flux_of_carbon_dioxide_expressed_as_carbon_due_to_all_land_processes
+units:             kg m-2 s-1
+cell_methods:      time: mean area: mean where land
+cell_measures:     area: areacella
+long_name:         Carbon Mass Flux out of Atmosphere due to Net Biospheric Production on Land
+comment:           This is the net mass flux of carbon between land and atmosphere calculated as photosynthesis MINUS the sum of  plant and soil respiration, carbonfluxes  from fire, harvest, grazing  and land use change. Positive flux  is into the land.
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          nbp
+type:              real
+positive:          down
+!----------------------------------
+!
+
+!============
+variable_entry:    fVegLitter
+!============
+modeling_realm:    land
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     litter_carbon_flux
+units:             kg m-2 s-1
+cell_methods:      time: mean area: mean where land
+cell_measures:     area: areacella
+long_name:         Total Carbon Mass Flux from Vegetation to Litter
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          fVegLitter
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    fLitterSoil
+!============
+modeling_realm:    land
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     carbon_mass_flux_into_soil_from_litter
+units:             kg m-2 s-1
+cell_methods:      time: mean area: mean where land
+cell_measures:     area: areacella
+long_name:         Total Carbon Mass Flux from Litter to Soil
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          fLitterSoil
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    fVegSoil
+!============
+modeling_realm:    land
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     carbon_mass_flux_into_soil_from_vegetation_excluding_litter
+units:             kg m-2 s-1
+cell_methods:      time: mean area: mean where land
+cell_measures:     area: areacella
+long_name:         Total Carbon Mass Flux from Vegetation Directly to Soil
+comment:           In some models part of carbon (e.g., root exudate) can go directly into the soil pool without entering litter.
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          fVegSoil
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    cLeaf
+!============
+modeling_realm:    land
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     leaf_carbon_content
+units:             kg m-2
+cell_methods:      time: mean area: mean where land
+cell_measures:     area: areacella
+long_name:         Carbon Mass in Leaves
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          cLeaf
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    cWood
+!============
+modeling_realm:    land
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     wood_carbon_content
+units:             kg m-2
+cell_methods:      time: mean area: mean where land
+cell_measures:     area: areacella
+long_name:         Carbon Mass in Wood
+comment:           including sapwood and hardwood.
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          cWood
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    cRoot
+!============
+modeling_realm:    land
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     root_carbon_content
+units:             kg m-2
+cell_methods:      time: mean area: mean where land
+cell_measures:     area: areacella
+long_name:         Carbon Mass in Roots
+comment:           including fine and coarse roots.
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          cRoot
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    cMisc
+!============
+modeling_realm:    land
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     miscellaneous_living_matter_carbon_content
+units:             kg m-2
+cell_methods:      time: mean area: mean where land
+cell_measures:     area: areacella
+long_name:         Carbon Mass in Other Living Compartments on Land
+comment:           e.g., labile, fruits, reserves, etc.
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          cMisc
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    cCwd
+!============
+modeling_realm:    land
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     wood_debris_carbon_content
+units:             kg m-2
+cell_methods:      time: mean area: mean where land
+cell_measures:     area: areacella
+long_name:         Carbon Mass in Coarse Woody Debris
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          cCwd
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    cLitterAbove
+!============
+modeling_realm:    land
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     surface_litter_carbon_content
+units:             kg m-2
+cell_methods:      time: mean area: mean where land
+cell_measures:     area: areacella
+long_name:         Carbon Mass in Above-Ground Litter
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          cLitterAbove
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    cLitterBelow
+!============
+modeling_realm:    land
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     subsurface_litter_carbon_content
+units:             kg m-2
+cell_methods:      time: mean area: mean where land
+cell_measures:     area: areacella
+long_name:         Carbon Mass in Below-Ground Litter
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          cLitterBelow
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    cSoilFast
+!============
+modeling_realm:    land
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     fast_soil_pool_carbon_content
+units:             kg m-2
+cell_methods:      time: mean area: mean where land
+cell_measures:     area: areacella
+long_name:         Carbon Mass in Fast Soil Pool
+comment:           fast is meant as lifetime of less than 10 years for  reference climate conditions (20 C, no water limitations).
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          cSoilFast
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    cSoilMedium
+!============
+modeling_realm:    land
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     medium_soil_pool_carbon_content
+units:             kg m-2
+cell_methods:      time: mean area: mean where land
+cell_measures:     area: areacella
+long_name:         Carbon Mass in Medium Soil Pool
+comment:           medium is meant as lifetime of more than than 10 years and less than 100 years for  reference climate conditions (20 C, no water limitations)
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          cSoilMedium
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    cSoilSlow
+!============
+modeling_realm:    land
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     slow_soil_pool_carbon_content
+units:             kg m-2
+cell_methods:      time: mean area: mean where land
+cell_measures:     area: areacella
+long_name:         Carbon Mass in Slow Soil Pool
+comment:           fast is meant as lifetime of more than 100 years for  reference climate conditions (20 C, no water limitations)
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          cSoilSlow
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    landCoverFrac
+!============
+modeling_realm:    land
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     area_fraction
+units:             %
+cell_methods:      time: mean
+cell_measures:     area: areacella
+long_name:         Plant Functional Type Grid Fraction
+comment:           The categories may differ from model to model, depending on their  PFT definitions.   This may include natural PFTs, anthropogenic PFTs, bare soil, lakes, urban areas, etc.   Sum of all should equal the fraction of the grid-cell that is land.     
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude vegtype time
+out_name:          landCoverFrac
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    treeFracPrimDec
+!============
+modeling_realm:    land
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     area_fraction
+units:             %
+cell_methods:      time: mean
+cell_measures:     area: areacella
+long_name:         Total Primary Deciduous Tree Fraction
+comment:           "This is the fraction of the entire grid cell  that is covered by ""total primary deciduous trees."""
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time typepdec
+out_name:          treeFracPrimDec
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    treeFracPrimEver
+!============
+modeling_realm:    land
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     area_fraction
+units:             %
+cell_methods:      time: mean
+cell_measures:     area: areacella
+long_name:         Total Primary Evergreen Tree Cover Fraction
+comment:           fraction of entire grid cell  that is covered by primary evergreen trees. 
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time typepever
+out_name:          treeFracPrimEver
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    treeFracSecDec
+!============
+modeling_realm:    land
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     area_fraction
+units:             %
+cell_methods:      time: mean
+cell_measures:     area: areacella
+long_name:         Total Secondary Deciduous Tree Cover Fraction
+comment:           fraction of entire grid cell  that is covered by secondary deciduous trees.
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time typesdec
+out_name:          treeFracSecDec
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    treeFracSecEver
+!============
+modeling_realm:    land
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     area_fraction
+units:             %
+cell_methods:      time: mean
+cell_measures:     area: areacella
+long_name:         Total Secondary Evergreen Tree Cover Fraction
+comment:           fraction of entire grid cell  that is covered by secondary evergreen trees.
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time typesever 
+out_name:          treeFracSecEver
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    c3PftFrac
+!============
+modeling_realm:    land
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     area_fraction
+units:             %
+cell_methods:      time: mean
+cell_measures:     area: areacella
+long_name:         Total C3 PFT Cover Fraction
+comment:           fraction of entire grid cell  that is covered by C3 PFTs (including grass, crops, and trees).
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time typec3pft
+out_name:          c3PftFrac
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    c4PftFrac
+!============
+modeling_realm:    land
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     area_fraction
+units:             %
+cell_methods:      time: mean
+cell_measures:     area: areacella
+long_name:         Total C4 PFT Cover Fraction
+comment:           fraction of entire grid cell  that is covered by C4 PFTs (including grass and crops).
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time typec4pft
+out_name:          c4PftFrac
+type:              real
+!----------------------------------
+!
+
+!============
+variable_entry:    rGrowth
+!============
+modeling_realm:    land
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     surface_upward_carbon_mass_flux_due_to_plant_respiration_for_biomass_growth
+units:             kg m-2 s-1
+cell_methods:      time: mean area: mean where land
+cell_measures:     area: areacella
+long_name:         Carbon Mass Flux into Atmosphere due to Growth Autotrophic Respiration on Land
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          rGrowth
+type:              real
+positive:          up
+!----------------------------------
+!
+
+!============
+variable_entry:    rMaint
+!============
+modeling_realm:    land
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     surface_upward_carbon_mass_flux_due_to_plant_respiration_for_biomass_maintenance
+units:             kg m-2 s-1
+cell_methods:      time: mean area: mean where land
+cell_measures:     area: areacella
+long_name:         Carbon Mass Flux into Atmosphere due to Maintenance Autotrophic Respiration on Land
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          rMaint
+type:              real
+positive:          up
+!----------------------------------
+!
+
+!============
+variable_entry:    nppLeaf
+!============
+modeling_realm:    land
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     net_primary_productivity_of_carbon_accumulated_in_leaves
+units:             kg m-2 s-1
+cell_methods:      time: mean area: mean where land
+cell_measures:     area: areacella
+long_name:         Carbon Mass Flux due to NPP Allocation to Leaf
+comment:           This is the rate of carbon uptake by leaves due to NPP
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          nppLeaf
+type:              real
+positive:          down
+!----------------------------------
+!
+
+!============
+variable_entry:    nppWood
+!============
+modeling_realm:    land
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     net_primary_productivity_of_carbon_accumulated_in_wood
+units:             kg m-2 s-1
+cell_methods:      time: mean area: mean where land
+cell_measures:     area: areacella
+long_name:         Carbon Mass Flux due to NPP Allocation to Wood
+comment:           This is the rate of carbon uptake by wood due to NPP
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          nppWood
+type:              real
+positive:          down
+!----------------------------------
+!
+
+!============
+variable_entry:    nppRoot
+!============
+modeling_realm:    land
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     net_primary_productivity_of_carbon_accumulated_in_roots
+units:             kg m-2 s-1
+cell_methods:      time: mean area: mean where land
+cell_measures:     area: areacella
+long_name:         Carbon Mass Flux due to NPP Allocation to Roots
+comment:           This is the rate of carbon uptake by roots due to NPP
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          nppRoot
+type:              real
+positive:          down
+!----------------------------------
+!
+
+!============
+variable_entry:    nep
+!============
+modeling_realm:    land
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     surface_net_downward_mass_flux_of_carbon_dioxide_expressed_as_carbon_due_to_all_land_processes_excluding_anthropogenic_land_use_change
+units:             kg m-2 s-1
+cell_methods:      time: mean area: mean where land
+cell_measures:     area: areacella
+long_name:         Net Carbon Mass Flux out of Atmophere due to Net Ecosystem Productivity on Land.
+comment:           Natural flux of CO2 (expressed as a mass flux of carbon) from the atmosphere to the land calculated as the difference between uptake associated will photosynthesis and the release of CO2 from the sum of plant and soil respiration and fire.  Positive flux is into the land.  emissions from natural fires + human ignition fires as calculated by the fire module of the DGVM, but excluding any CO2 flux from fire included in fLuc, defined below (CO2 Flux to Atmosphere from Land Use Change).
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          nep
+type:              real
+positive:          down
+!----------------------------------
+!
+

@@ -1,0 +1,22 @@
+SOURCE: CMIP5
+!============
+variable_entry:    rtnt
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     
+units:             W m-2
+cell_methods:      time: mean
+cell_measures:     area: areacella
+long_name:         TOA Net downward Total Radiation
+comment:           at the top of the atmosphere (to be compared with satellite measurements)
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+type:              real
+positive:          up
+!----------------------------------
+!

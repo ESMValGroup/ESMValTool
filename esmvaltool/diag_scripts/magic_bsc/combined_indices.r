@@ -31,6 +31,8 @@ var_names <- names(input_files_per_var)
 model_names <- lapply(input_files_per_var, function(x) x$dataset)
 model_names <- unique(unlist(unname(model_names)))
 var0 <- lapply(input_files_per_var, function(x) x$short_name)
+scenario <- unlist(lapply(input_files_per_var, function(x) x$exp))
+ensemble <- unlist(lapply(input_files_per_var, function(x) x$ensemble))
 fullpath_filenames <- names(var0)
 var0 <- unname(var0)[1]
 var0 <- unlist(var0)
@@ -137,7 +139,7 @@ names(data_frame_plot)[2] <- "Model"
 data_frame_plot$Model <- as.factor(sort(rep(1 : length(model_names),
                                              length(period))))
 for (i in 1 : length(levels(data_frame_plot$Model))) {
-    levels(data_frame_plot$Model)[i] <- model_names[i]
+    levels(data_frame_plot$Model)[i] <- paste(model_names[i], scenario[i], ensemble[i])
 }
 font_size <- 12
 g <- ggplot(data_frame_plot, aes(x = Year, y = Freq, color = Model)) +
@@ -151,7 +153,8 @@ g <- ggplot(data_frame_plot, aes(x = Year, y = Freq, color = Model)) +
                   group = interaction(data_frame_plot[2, 3]),
                   color = data_frame_plot$Model), geom = "line", size = 1) +
       ggtitle(paste0(region, " index for ", var0, " on ", months,
-                     " (", starting, "-", ending, ")"))
+                     " (", starting, "-", ending, ")")) 
+
 filepng <-  paste0(plot_dir, "/", region, "_", var0, "_", months,
                    "_running-mean_", running_mean, "_",
                    starting, "-", ending, ".png")
@@ -161,7 +164,7 @@ dimtime <- ncdim_def(name = "Time", units = "years",
                      vals = period, longname = "Time")
 dimmodel <- ncdim_def(name = "Models", units = "names",
                       vals = 1 : length(model_names),
-                      longname = paste(model_names))
+                      longname = paste(model_names, scenario))
 defdata <- ncvar_def(name = "data", units = units,
                      dim = list(time = dimtime, model = dimmodel),
                      longname = paste("Index for region", region,
