@@ -18,9 +18,7 @@ documentation:
     - c3s-magic
 
 datasets:
-  - {dataset: IPSL-CM5A-MR,  type: exp, project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 1980,  end_year: 2005}
-  #- {dataset: MPI-ESM-MR, type: exp, project: CMIP5, mip: day, exp: rcp26, ensemble: r1i1p1, start_year: 2021, end_year: 2025}
-  #- {dataset: MPI-ESM-MR, type: exp, project: CMIP5, mip: day, exp: rcp45, ensemble: r1i1p1, start_year: 2031, end_year: 2035}
+  - {dataset: IPSL-CM5A-MR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
 
 preprocessors:
   preproc:
