@@ -16,6 +16,7 @@ Download and processing instructions
 
 """
 
+import fnmatch
 import logging
 import os
 import shutil
@@ -23,6 +24,7 @@ import zipfile
 from datetime import datetime
 
 import iris
+import iris.coord_categorisation
 import numpy as np
 from cf_units import Unit
 
@@ -73,23 +75,35 @@ def _clean(file_dir):
 def _extract_variable(cmor_info, attrs, in_dir, out_dir):
     """Extract variable."""
     nc_files = []
-    for bin_file in os.listdir(in_dir):
-        filepath = os.path.join(in_dir, bin_file)
-        logger.info("Reading %s", filepath)
+    for year in _get_years(in_dir):
+        logger.info("Processing year %i", year)
+        bin_files = fnmatch.filter(os.listdir(in_dir),
+                                   f"{CFG['binary_prefix']}{year}*.bin")
 
-        # Data
-        raw_data = np.fromfile(filepath, DTYPE,
-                               N_LAT * N_LON).reshape(1, N_LAT, N_LON)
-        raw_data = np.ma.masked_equal(raw_data, MISSING_VALUE)
-        raw_data = raw_data.astype(np.float32)
-        raw_data /= SCALE_FACTOR
+        # Read files of one year
+        cubes = iris.cube.CubeList()
+        for bin_file in bin_files:
+            raw_data = np.fromfile(os.path.join(in_dir, bin_file), DTYPE,
+                                   N_LAT * N_LON).reshape(1, N_LAT, N_LON)
+            raw_data = np.ma.masked_equal(raw_data, MISSING_VALUE)
+            raw_data = raw_data.astype(np.float32)
+            raw_data /= SCALE_FACTOR
 
-        # Coordinates
-        coords = _get_coords(bin_file)
+            # Coordinates
+            coords = _get_coords(year, bin_file)
 
-        # Build cube for single time step and cache it on disk to save memory
-        cube = iris.cube.Cube(raw_data, dim_coords_and_dims=coords)
-        cached_path = filepath.replace('.bin', '.nc')
+            # Build cube and append it
+            cube = iris.cube.Cube(raw_data, dim_coords_and_dims=coords)
+            cubes.append(cube)
+
+        # Build cube for single year with monthly data
+        # (Raw data has two values per month)
+        cube = cubes.concatenate_cube()
+        iris.coord_categorisation.add_month_number(cube, 'time')
+        cube = cube.aggregated_by('month_number', iris.analysis.MEAN)
+
+        # Cache cube on disk to save memory
+        cached_path = os.path.join(in_dir, f'{year}.nc')
         iris.save(cube, cached_path)
         logger.info("Cached %s", cached_path)
         nc_files.append(cached_path)
@@ -113,13 +127,12 @@ def _extract_variable(cmor_info, attrs, in_dir, out_dir):
                         unlimited_dimensions=['time'])
 
 
-def _get_coords(filename):
+def _get_coords(year, filename):
     """Get correct coordinates for cube."""
     time_units = Unit('days since 1950-1-1 00:00:00', calendar='standard')
 
     # Extract date from filename
     time_str = filename.replace(CFG['binary_prefix'], '')
-    year = int(time_str[:4])
     month = MONTHS[time_str[4:7]]
     day = DAYS[time_str[7:8]]
     date = datetime(year, month, day)
@@ -147,6 +160,14 @@ def _get_coords(filename):
                                      units='degrees')
 
     return [(time_coord, 0), (lat_coord, 1), (lon_coord, 2)]
+
+
+def _get_years(in_dir):
+    """Get all available years from input directory."""
+    bin_files = os.listdir(in_dir)
+    bin_files = [f.replace(CFG['binary_prefix'], '') for f in bin_files]
+    years = [int(f[:4]) for f in bin_files]
+    return list(set(years))
 
 
 def _unzip(filepath, out_dir):
