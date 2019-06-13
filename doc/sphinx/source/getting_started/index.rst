@@ -7,4 +7,3 @@ Getting started
 .. include:: inputdata.rst
 .. include:: running.rst
 .. include:: outputdata.rst
-

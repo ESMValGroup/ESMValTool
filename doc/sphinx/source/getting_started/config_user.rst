@@ -68,7 +68,7 @@ turns on or off the writing of netCDF files.
 .. code-block:: yaml
 
   # Auxiliary data directory (used for some additional datasets)
-  auxiliary_data_dir: ./auxiliary_data
+  auxiliary_data_dir: ~/auxiliary_data
 
 The ``auxiliary_data_dir`` setting is the path to place any required
 additional auxiliary data files. This method was necessary because certain
