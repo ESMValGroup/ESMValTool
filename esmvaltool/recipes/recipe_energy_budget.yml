@@ -1,0 +1,71 @@
+#ESMValTool
+---
+documentation:
+  description: |
+    This is an example recipe for a personal diagnostic.
+    You can run any Python diagnostic of your choice
+    without installing ESMValTool as developer or git pushing.
+    Simply include the full path to your script of choice in script,
+    see example /path/to/your/my_little_diagnostic.py
+    An example personal diagnostic can be found in
+    esmvaltool/diag_scripts/examples/my_little_diagnostic.py
+
+  authors:
+    - pred_va
+
+  maintainer:
+    - pred_va
+
+datasets:
+  - {dataset: HadGEM3-GC31-LM,  project: CMIP6, mip: Amon, exp: highresSST-present,  ensemble: r1i1p1f1, grid: gn,  start_year: 2000,  end_year: 2002}
+#  - {dataset: HadGEM3-GC31-HM,  project: CMIP6, mip: Amon, exp: highresSST-present,  ensemble: r1i1p1f1, grid: gn,  start_year: 2000,  end_year: 2002}
+#  - {dataset: HadGEM3-GC31-MM,  project: CMIP6, mip: Amon, exp: highresSST-present,  ensemble: r1i1p1f1, grid: gn,  start_year: 2000,  end_year: 2002}
+preprocessors:
+  global_mean:
+    area_statistics:
+      operator: mean
+    time_average:
+
+  land_mean:
+    mask_landsea:
+      mask_out: sea
+    area_statistics:
+      operator: mean
+    time_average:
+
+  ocean_mean:
+    mask_landsea:
+      mask_out: land
+    area_statistics:
+      operator: mean
+    time_average:
+
+
+diagnostics:
+  global_energy_budget:
+    description: "Energy budget"
+    preprocessor: global_mean
+    variables:
+      rsdt:
+        preprocessor: global_mean
+      rsut:
+        preprocessor: global_mean
+      rsds:
+        preprocessor: global_mean
+      rsns:
+        derive: True
+        preprocessor: global_mean
+      rlut:
+        preprocessor: global_mean
+      rlds:
+        preprocessor: global_mean
+      rlns:
+        derive: True
+        preprocessor: global_mean
+      hfss:
+        preprocessor: global_mean
+      hfls:
+        preprocessor: global_mean
+    scripts:
+      energy_budget:
+        script: primavera/energy_budget.py
