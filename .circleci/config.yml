@@ -146,7 +146,7 @@ jobs:
             conda env export > /logs/environment.yml
             pip freeze > /logs/requirements.txt
             # Test building documentation
-            python setup.py build_sphinx --warning-is-error
+            MPLBACKEND=Agg python setup.py build_sphinx --warning-is-error
       - save_cache:
           key: documentation-{{ .Branch }}
           paths:
