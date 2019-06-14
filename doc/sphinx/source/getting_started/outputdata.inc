@@ -5,7 +5,7 @@ Output
 ******
 
 ESMValTool automatically generates a new output directory with every run. The location is determined by 
-your config.yml's entry: output_dir variable, the recipe name, and 
+your config-user.yml's entry: output_dir variable, the recipe name, and 
 the date and time, using the the format: YYYYMMDD_HHMMSS.
 
 For instance, a typical output location would be: 
