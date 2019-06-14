@@ -6,15 +6,15 @@ import tempfile
 import pytest
 import yaml
 
-import esmvaltool._config
-from esmvaltool._data_finder import (get_input_filelist, get_input_fx_filelist,
+import esmvalcore._config
+from esmvalcore._data_finder import (get_input_filelist, get_input_fx_filelist,
                                      get_output_file)
-from esmvaltool.cmor.table import read_cmor_tables
+from esmvalcore.cmor.table import read_cmor_tables
 
 # Initialize with standard config developer file
-esmvaltool._config.CFG = esmvaltool._config.read_config_developer_file()
+esmvalcore._config.CFG = esmvalcore._config.read_config_developer_file()
 # Initialize CMOR tables
-read_cmor_tables(esmvaltool._config.CFG)
+read_cmor_tables(esmvalcore._config.CFG)
 
 # Load test configuration
 with open(os.path.join(os.path.dirname(__file__), 'data_finder.yml')) as file:
