@@ -306,7 +306,6 @@ subtraction of two Iris cubes from different datasets. The operation makes the d
 points common and sets common calendars; it also resets the time bounds and
 auxiliary coordinates to reflect the artifically shifted time points. The current
 implementation works only for monthly and daily data.
-from the CMOR table of the variable of intereset, unless a custom frequency is set manually by the
 user in recipe.
 
 See also :func:`esmvalcore.preprocessor.regrid_time`.
