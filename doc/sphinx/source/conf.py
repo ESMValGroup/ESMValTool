@@ -23,6 +23,11 @@ sys.path.insert(0, os.path.abspath('./../../..'))
 
 from esmvaltool import __version__
 
+# Generate gallery
+sys.path.append(os.path.dirname(__file__))
+import generate_gallery
+generate_gallery.main()
+
 # -- General configuration ------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
