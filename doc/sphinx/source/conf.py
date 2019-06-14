@@ -15,6 +15,7 @@
 import sys
 import os
 from pathlib import Path
+from datetime import datetime
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -89,7 +90,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'ESMValTool'
-copyright = u'2015, Veronika Eyring, Axel Lauer, Mattia Righi, Martin Evaldsson et al.'
+copyright = u'{0}, Veronika Eyring, Axel Lauer, Mattia Righi, Martin Evaldsson et al.'.format(datetime.now().year)
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
