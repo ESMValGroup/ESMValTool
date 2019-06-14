@@ -8,7 +8,7 @@ import logging
 
 import iris
 from dask import array as da
-from _shared import get_iris_analysis_operation
+from ._shared import get_iris_analysis_operation
 
 logger = logging.getLogger(__name__)
 
@@ -73,20 +73,17 @@ def extract_region(cube, start_longitude, end_longitude, start_latitude,
     return cube.copy(data)
 
 
-def zonal_statistics(cube, operator):
+def zonal_statistics(cube, operator, fx_files=None):
     """
     Get zonal statistics.
 
-    Function that applies a statistical operation along the zonal 
-    dimension.
-    The resulting cube will typicallly be dimensionssss:
-    (time, z, latitude') 
-    This function can be used to apply
-    several different operations in the horizonal plane: mean, standard
-    deviation, median variance, minimum and maximum. These options are
-    specified using the `operator` argument and the following key word
-    arguments:
-  
+    Function that applies a statistical operation along the zonal
+    dimension. The resulting cube will typicallly have dimensions:
+    (time, z, latitude'). This function can be used to apply several different
+    operations in the horizonal plane: mean, standard deviation, median,
+    variance, minimum and maximum. These options are specified using the
+    `operator` argument and the following key word arguments are accepted:
+
     +------------+--------------------------------------------------+
     | `mean`     | Area weighted mean.                              |
     +------------+--------------------------------------------------+
@@ -107,7 +104,8 @@ def zonal_statistics(cube, operator):
         input cube.
     operator: str
         Type of analysis to use, from iris.analysis.
-
+    fx_files: dict
+        dictionary of field:filename for the fx_files
     Returns
     -------
     iris.cube.Cube
@@ -137,7 +135,7 @@ def meridional_statistics(cube, operator):
       deviation, median variance, minimum and maximum. These options are
       specified using the `operator` argument and the following key word
       arguments:
-  
+
       +------------+--------------------------------------------------+
       | `mean`     | Area weighted mean.                              |
       +------------+--------------------------------------------------+

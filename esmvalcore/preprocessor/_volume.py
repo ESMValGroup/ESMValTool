@@ -10,6 +10,7 @@ import logging
 
 import iris
 import numpy as np
+from ._shared import get_iris_analysis_operation
 
 logger = logging.getLogger(__name__)
 
@@ -229,6 +230,9 @@ def volume_statistics(
         raise ValueError('Cube shape ({}) doesn`t match grid volume shape '
                          '({})'.format(cube.data.shape, grid_volume.shape))
 
+    # Load the iris operator:
+    operation = get_iris_analysis_operation(operator)
+
     # #####
     # Calculate global volume weighted average
     result = []
@@ -247,13 +251,13 @@ def volume_statistics(
             # Calculate weighted mean for this time and layer
             if operator == 'mean':
                 total = cube[time_itr, z_itr].collapsed(
-                    [cube.coord(axis='z'),
-                     'longitude', 'latitude'],
-                    iris.analysis.MEAN,
+                    [cube.coord(axis='z'), 'longitude', 'latitude'],
+                    operation,
                     weights=grid_volume[time_itr, z_itr]).data
             else:
-                raise ValueError('Volume operator ({}) not '
-                                 'recognised.'.format(operator))
+                total = cube[time_itr, z_itr].collapsed(
+                    [cube.coord(axis='z'), 'longitude', 'latitude'],
+                    operation)
             column.append(total)
 
             try:
@@ -280,8 +284,12 @@ def volume_statistics(
     if operator == 'mean':
         src_cube = cube[:2, :2].collapsed([cube.coord(axis='z'),
                                            'longitude', 'latitude'],
-                                          iris.analysis.MEAN,
+                                          operation,
                                           weights=grid_volume[:2, :2], )
+    else:
+        src_cube = cube[:2, :2].collapsed([cube.coord(axis='z'),
+                                           'longitude', 'latitude'],
+                                          operation, )
 
     return _create_cube_time(src_cube, result, times)
 
