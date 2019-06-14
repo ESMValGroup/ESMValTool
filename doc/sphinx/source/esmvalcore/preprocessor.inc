@@ -305,7 +305,7 @@ This function aligns the time points of each component dataset to allow the
 subtraction of two Iris cubes from different datasets. The operation makes the datasets time
 points common and sets common calendars; it also resets the time bounds and
 auxiliary coordinates to reflect the artifically shifted time points. The current
-implementation works only for monthly and daily data; the frequency is set automatically
+implementation works only for monthly and daily data.
 from the CMOR table of the variable of intereset, unless a custom frequency is set manually by the
 user in recipe.
 
