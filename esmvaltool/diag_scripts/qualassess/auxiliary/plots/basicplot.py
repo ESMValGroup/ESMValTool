@@ -7,7 +7,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
-from matplotlib.ticker import LogFormatterMathtext
+#from matplotlib.ticker import LogFormatterMathtext
 import iris
 import iris.plot as iplt
 import iris.quickplot as qplt
@@ -20,9 +20,9 @@ from ..libs import c3s_511_util as utils
 import sys
 import string
 from matplotlib.ticker import FuncFormatter
-import matplotlib.colors as colors
+#import matplotlib.colors as colors
 import logging
-from memory_profiler import profile
+#from memory_profiler import profile
 from dask import array as da
 
 
@@ -317,10 +317,11 @@ class PlotHist(object):
                     width,
                     color = color)
         
+        
         if dat_log:
             self.ax.set_yscale('log', nonposy='clip')
 #            self.ax.set_ylim(np.min(freqs)*0.1, np.max(freqs) * 1.1)
-        self.ax.set_ylim(top=np.max(freqs) * 1.1)
+        self.ax.set_ylim(top=np.max(hist) * 1.1)
         
         self.ax.yaxis.set_major_formatter(FuncFormatter(label_in_perc_single))
         if (title is not None):
