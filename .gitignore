@@ -86,6 +86,7 @@ test-reports/
 doc/sphinx/source/diag_scripts/**
 doc/sphinx/source/plot_scripts/**
 doc/sphinx/build
+doc/sphinx/source/_sidebar.rst.inc
 
 # Data files
 *.nc
