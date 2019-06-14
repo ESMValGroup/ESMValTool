@@ -1,5 +1,6 @@
 cdo
 cython
+dask
 matplotlib<3
 nc-time-axis
 netCDF4
