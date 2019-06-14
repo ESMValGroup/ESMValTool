@@ -133,24 +133,18 @@ jobs:
           key: documentation-{{ .Branch }}
       - run:
           command: |
-            . /opt/conda/etc/profile.d/conda.sh
-            set -x
             mkdir /logs
             # Install
-            conda update -y conda > /logs/conda.txt 2>&1
-            conda env update >> /logs/conda.txt 2>&1
-            set +x; conda activate esmvaltool; set -x
-            pip install -e .[develop] > /logs/install.txt 2>&1
+            pip install -r doc/sphinx/source/requirements.txt > /logs/install.txt 2>&1
+            pip install sphinx sphinx_rtd_theme >> /logs/install.txt 2>&1
             # Log versions
             dpkg -l > /logs/versions.txt
-            conda env export > /logs/environment.yml
             pip freeze > /logs/requirements.txt
             # Test building documentation
             MPLBACKEND=Agg python setup.py build_sphinx --warning-is-error
       - save_cache:
           key: documentation-{{ .Branch }}
           paths:
-            - "/opt/conda/pkgs"
             - ".eggs"
       - store_artifacts:
           path: /logs
