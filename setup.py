@@ -235,7 +235,9 @@ with open('README.md') as readme:
                 'nclcodestyle = esmvaltool.'
                 'utils.nclcodestyle.nclcodestyle:_main',
                 'mip_convert_setup = esmvaltool.'
-                'utils.cmorizers.mip_convert.esmvt_mipconv_setup:main'
+                'utils.cmorizers.mip_convert.esmvt_mipconv_setup:main',
+                'test_recipe = esmvaltool.'
+                'utils.testing.recipe_settings.install_expand_run:main'
             ],
         },
         cmdclass={
