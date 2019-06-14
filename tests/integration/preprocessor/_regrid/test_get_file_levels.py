@@ -1,6 +1,6 @@
 """
 Integration tests for the :func:
-`esmvaltool.preprocessor.regrid.get_cmor_levels`
+`esmvalcore.preprocessor.regrid.get_cmor_levels`
 function.
 
 """
@@ -14,7 +14,7 @@ import iris.coords
 import iris.cube
 import numpy as np
 
-from esmvaltool.preprocessor import _regrid
+from esmvalcore.preprocessor import _regrid
 
 
 class TestGetFileLevels(unittest.TestCase):
@@ -24,6 +24,8 @@ class TestGetFileLevels(unittest.TestCase):
         self.cube.add_dim_coord(
             iris.coords.DimCoord(np.arange(0, 2), var_name='coord'), 0)
 
+        self.cube.coord('coord').attributes['positive'] = 'up'
+        iris.util.guess_coord_axis(self.cube.coord('coord'))
         descriptor, self.path = tempfile.mkstemp('.nc')
         os.close(descriptor)
         print(self.cube)
@@ -35,12 +37,7 @@ class TestGetFileLevels(unittest.TestCase):
 
     def test_get_coord(self):
         self.assertListEqual(
-            _regrid.get_reference_levels(self.path, 'project', 'dataset',
-                                         'short_name', 'output_dir', 'coord'),
-            [0., 1])
-
-    def test_bad_coord(self):
-        with self.assertRaises(ValueError):
-            _regrid.get_reference_levels(self.path, 'project', 'dataset',
-                                         'short_name', 'output_dir',
-                                         'bad_coord')
+            _regrid.get_reference_levels(
+                self.path, 'project', 'dataset', 'short_name', 'output_dir'),
+            [0., 1]
+        )

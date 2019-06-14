@@ -14,7 +14,7 @@ Available recipes and diagnostics
 
 Recipes are stored in recipes/
 
-* recipe_toymodel_wp4.yml
+* recipe_toymodel.yml
 
 
 Diagnostics are stored in diag_scripts/magic_bsc/
@@ -29,18 +29,28 @@ User settings
 
 User setting files are stored in recipes/
 
-#.	recipe_toymodel_wp4.yml
+#.	recipe_toymodel.yml
+
+   *Required settings for preprocessor*
+
+	extract_region:
+
+   * start_longitude: minimum longitude
+   * end_longitude: maximum longitude
+   * start_latitude: minimum longitude
+   * end_latitude: maximum latitude
 
    *Required settings for script*
 
    * number_of_members: integer specifying the number of members to be generated
-   * beta: the user defined underdispersion
+   * beta: the user defined underdispersion (beta >= 0)
 
 
 Variables
 ---------
 
-* (atmos, daily, longitude, latitude, time)
+* psl(atmos, daily-monthly, longitude, latitude, time)
+* tas(atmos, daily-monthly, longitude, latitude, time)
 
 
 Observations and reformat scripts

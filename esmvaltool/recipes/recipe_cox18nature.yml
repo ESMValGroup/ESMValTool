@@ -22,9 +22,8 @@ documentation:
 preprocessors:
 
   spatial_mean:
-    average_region:
-      coord1: latitude
-      coord2: longitude
+    area_statistics:
+      operator: mean
 
 
 diagnostics:
@@ -72,7 +71,6 @@ diagnostics:
     scripts:
       psi:
         script: climate_metrics/psi.py
-        plot_ecs_regression: true
 
   diag_cox18nature:
     description: Plot emergent relationship between ECS ans psi.
