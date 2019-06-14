@@ -63,7 +63,7 @@ This section shows example plots produced by ESMValTool. For more information, c
 
 .. [#] :ref:`nml_perfmetrics`
 
-.. |recipe_capacity_factor| image:: /recipes/figures/capacity_factor/capacity_factor_IPSL-CM5A-LR_1980-2005.png
+.. |recipe_capacity_factor| image:: /recipes/figures/capacity_factor/capacity_factor_IPSL-CM5A-MR_2021-2050.png
    :width: 90%
 
 .. [#] :ref:`recipes_capacity_factor`
