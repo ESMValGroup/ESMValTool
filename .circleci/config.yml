@@ -122,13 +122,15 @@ jobs:
       - store_artifacts:
           path: /logs
 
-  doc:
+  documentation:
     # Test building documentation
     working_directory: /doc
     docker:
       - image: continuumio/miniconda3
     steps:
       - checkout
+      - restore_cache:
+          key: documentation-{{ .Branch }}
       - run:
           command: |
             . /opt/conda/etc/profile.d/conda.sh
@@ -144,7 +146,12 @@ jobs:
             conda env export > /logs/environment.yml
             pip freeze > /logs/requirements.txt
             # Test building documentation
-            python setup.py build_sphinx
+            python setup.py build_sphinx --warning-is-error
+      - save_cache:
+          key: documentation-{{ .Branch }}
+          paths:
+            - "/opt/conda/pkgs"
+            - ".eggs"
       - store_artifacts:
           path: /logs
 
@@ -240,6 +247,7 @@ workflows:
     jobs:
       - python3_test
       - python3_install
+      - documentation
   nightly:
     triggers:
       - schedule:
@@ -253,7 +261,7 @@ workflows:
       - python3_test
       - python3_install
       - develop
-      - doc
+      - documentation
       - conda_build
       - conda_install
       - ncl_cdo_test
