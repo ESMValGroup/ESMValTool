@@ -17,9 +17,9 @@ output_dir/recipe_name_YYYYMMDD_HHMMSS/
 
 This directory will contain 4 further subdirectories:
 
-1. `Preprocessed datasets`_ (preproc): This directory contains all the preprocessed netcdfs data & metadata.
+1. `Preprocessed datasets`_ (preproc): This directory contains all the preprocessed netcdfs data and the `metadata.yml`_ interface files.
 
-2. `Run`_: This directory includes all log files, a copy of the recipe, a summary of the resource usage, and the `settings.yml`_ and `metadata.yml`_ interface files.
+2. `Run`_: This directory includes all log files, a copy of the recipe, a summary of the resource usage, and the `settings.yml`_ interface files.
 
 3. `Diagnostic output`_ (work): A place for post processed files like NetCDF (depends on the diagnostics).
 
@@ -30,6 +30,8 @@ Preprocessed datasets
 =====================
 
 The preprocessed datasets will be sent to the preproc/ directory.
+Each variable in each diagnostic will have its own the `metadata.yml`_
+interface files saved in the preproc directory.
 
 If the option save_intermediary_cubes is set to True in the config-user.yml
 file, then the intermediary cubes will also be saved here.
@@ -47,9 +49,9 @@ directory. They can be helpful for debugging or monitoring the job, but also
 allow a record of the job output to screen after the job has been completed.
 
 The run directory will also contain a copy of the recipe and the
-settings.yml and metadata.yml files.
-These files are described below.
-
+`settings.yml`_ file, described below.
+The run directory is also where the diagnostics are executed, and may also
+contain several temporary files while diagnostics are running.
 
 Diagnostic output
 =================
