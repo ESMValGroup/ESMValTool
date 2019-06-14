@@ -101,7 +101,7 @@ config-developer.yml
 The config-developer.yml holds the project and machine specific varying part of the path
 to datasets. 
 
-This is necceasiry, because the CMIP data is widely distributed and not all
+This is necessary, because the CMIP data is widely distributed and not all
 machines use the same paths or directory structure. 
 
 If you are using one of the machines listed in the file, then you inform
