@@ -173,15 +173,14 @@ def tile_grid_areas(cube, fx_files):
 
 
 # get the area average
-def average_region(cube, coord1, coord2, operator='mean', fx_files=None):
+def area_statistics(cube, operator, fx_files=None):
     """
-    Determine the area average.
+    Apply a statistical operator in the horizontal direction.
 
-    The average in the horizontal direction requires the coord1 and coord2
-    arguments. These strings are usually 'longitude' and 'latitude' but
-    may depends on the cube.
+    The average in the horizontal direction. We assume that the
+    horizontal directions are ['longitude', 'latutude'].
 
-    While this function is named `average_region`, it can be used to apply
+    This function can be used to apply
     several different operations in the horizonal plane: mean, standard
     deviation, median variance, minimum and maximum. These options are
     specified using the `operator` argument and the following key word
@@ -203,16 +202,12 @@ def average_region(cube, coord1, coord2, operator='mean', fx_files=None):
 
     Parameters
     ----------
-    cube: iris.cube.Cube
-        input cube.
-    coord1: str
-        Name of the firct coordinate dimension
-    coord2: str
-        Name of the second coordinate dimension
-    operator: str
-        Name of the operation to apply (default: mean)
-    fx_files: dict
-        dictionary of field:filename for the fx_files
+        cube: iris.cube.Cube
+            Input cube.
+        operator: str
+            The operation, options: mean, median, min, max, std_dev, variance
+        fx_files: dict
+            dictionary of field:filename for the fx_files
 
     Returns
     -------
@@ -229,12 +224,13 @@ def average_region(cube, coord1, coord2, operator='mean', fx_files=None):
     grid_areas = tile_grid_areas(cube, fx_files)
 
     if not fx_files and cube.coord('latitude').points.ndim == 2:
-        logger.error('fx_file needed to calculate grid '
-                     'cell area for irregular grids.')
+        logger.error(
+            'fx_file needed to calculate grid cell area for irregular grids.')
         raise iris.exceptions.CoordinateMultiDimError(cube.coord('latitude'))
 
+    coord_names = ['longitude', 'latitude']
     if grid_areas is None or not grid_areas.any():
-        cube = _guess_bounds(cube, [coord1, coord2])
+        cube = _guess_bounds(cube, coord_names)
         grid_areas = iris.analysis.cartography.area_weights(cube)
         logger.info('Calculated grid area shape: %s', grid_areas.shape)
 
@@ -244,14 +240,16 @@ def average_region(cube, coord1, coord2, operator='mean', fx_files=None):
 
     operation = get_iris_analysis_operation(operator)
 
-    # TODO: implement weighted stdev, median, and var when available in iris.
+    # TODO: implement weighted stdev, median, s var when available in iris.
     # See iris issue: https://github.com/SciTools/iris/issues/3208
 
     if operator == 'mean':
-        return cube.collapsed([coord1, coord2], operation, weights=grid_areas)
+        return cube.collapsed(coord_names,
+                              operation,
+                              weights=grid_areas)
 
     # Many IRIS analysis functions do not accept weights arguments.
-    return cube.collapsed([coord1, coord2], operation)
+    return cube.collapsed(coord_names, operation)
 
 
 def extract_named_regions(cube, regions):
