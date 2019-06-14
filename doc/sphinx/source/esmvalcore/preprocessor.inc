@@ -167,7 +167,7 @@ See also :func:`esmvalcore.preprocessor.zonal_means`.
 
 
 3. area_statistics
------------------
+------------------
 
 This function calculates the average value over a region - weighted by the
 cell areas of the region.
@@ -224,12 +224,12 @@ See also :func:`esmvalcore.preprocessor.extract_volume`.
 
 
 2. volume_statistics
------------------
+--------------------
 
 This function calculates the volume-weighted average across three dimensions,
 but maintains the time dimension. The following arguments are required:
 
-This function takes the argument: operator, which defines the 
+This function takes the argument: operator, which defines the
 operation to apply over the volume.
 
 No depth coordinate is required as this is determined by iris. This
@@ -297,7 +297,7 @@ Masking
 Documentation of _mask.py (part 1)
 
 1. Introduction to masking
----------------------------
+--------------------------
 
 Certain metrics and diagnostics need to be computed and performed on restricted regions of the Globe; ESMValTool supports subsetting the input data on land mass, oceans and seas, ice. This is achived by masking the model data and keeping only the values associated with grid points that correspond to e.g. land mass
 or oceans and seas; masking is done either by using standard mask files that have the same grid resolution as the model data (these files are usually produced
@@ -326,7 +326,7 @@ type of files; observational data is missing them altogether), then the tool att
 Note that the resolutions for the Natural Earth masks are much higher than any usual CMIP model: 10m for land and 50m for ocean masks.
 
 3. Ice masking
----------------
+--------------
 
 Note that for masking out ice the preprocessor is using a different function, this so that both land and sea or ice can be masked out without
 losing generality. To mask ice out one needs to add the preprocessing step much as above:
@@ -342,7 +342,7 @@ To keep only the ice, one needs to mask out landsea, so use that as value for ma
 retrieve the `fx: sftgif` file corresponding the the used variable and extract the ice mask from it.
 
 4. mask files
---------------
+-------------
 
 At the core of the land/sea/ice masking in the preprocessor are the mask files (whether it be fx type or Natural Earth type of files); these files (bar Natural Earth)
 can be retrived and used in the diagnostic phase as well or solely. By specifying the `fx_files:` key in the variable in diagnostic in the recipe, and populating it
