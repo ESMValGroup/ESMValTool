@@ -122,29 +122,30 @@ jobs:
       - store_artifacts:
           path: /logs
 
-  doc:
+  documentation:
     # Test building documentation
     working_directory: /doc
     docker:
       - image: continuumio/miniconda3
     steps:
       - checkout
+      - restore_cache:
+          key: documentation-{{ .Branch }}
       - run:
           command: |
-            . /opt/conda/etc/profile.d/conda.sh
-            set -x
             mkdir /logs
             # Install
-            conda update -y conda > /logs/conda.txt 2>&1
-            conda env update >> /logs/conda.txt 2>&1
-            set +x; conda activate esmvaltool; set -x
-            pip install -e .[develop] > /logs/install.txt 2>&1
+            pip install -r doc/sphinx/source/requirements.txt > /logs/install.txt 2>&1
+            pip install sphinx sphinx_rtd_theme >> /logs/install.txt 2>&1
             # Log versions
             dpkg -l > /logs/versions.txt
-            conda env export > /logs/environment.yml
             pip freeze > /logs/requirements.txt
             # Test building documentation
-            python setup.py build_sphinx
+            MPLBACKEND=Agg python setup.py build_sphinx --warning-is-error
+      - save_cache:
+          key: documentation-{{ .Branch }}
+          paths:
+            - ".eggs"
       - store_artifacts:
           path: /logs
 
@@ -240,6 +241,7 @@ workflows:
     jobs:
       - python3_test
       - python3_install
+      - documentation
   nightly:
     triggers:
       - schedule:
@@ -253,7 +255,7 @@ workflows:
       - python3_test
       - python3_install
       - develop
-      - doc
+      - documentation
       - conda_build
       - conda_install
       - ncl_cdo_test
