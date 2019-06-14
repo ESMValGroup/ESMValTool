@@ -1,4 +1,4 @@
-:: _preprocessor:
+.. _preprocessor:
 
 ************
 Preprocessor
@@ -358,7 +358,7 @@ with a list of desired files e.g.:
 Such a recipe will automatically retrieve all the `[sftlf, sftof, sftgif, areacello, areacella]`-type fx files for each of the variables that are needed for
 and then, in the diagnostic phase, these mask files will be available for the developer to use them as they need to. They `fx_files` attribute of the big `variable`
 nested dictionary that gets passed to the diagnostic is, in turn, a dictionary on its own, and members of it can be accessed in the diagnostic through a simple loop over
-the 'config' diagnostic variable items e.g.:
+the `config` diagnostic variable items e.g.:
 
 .. code-block:: bash
 
