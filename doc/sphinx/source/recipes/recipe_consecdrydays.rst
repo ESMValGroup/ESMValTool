@@ -1,3 +1,5 @@
+.. _recipes_consecdrydays:
+
 Consecutive dry days
 ====================
 
