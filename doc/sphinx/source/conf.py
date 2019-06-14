@@ -61,6 +61,7 @@ autodoc_mock_imports = [
     'cftime',
     'PIL',
     'prov',
+    'psutil',
     'scipy',
     'stratify',
     'ESMF',
