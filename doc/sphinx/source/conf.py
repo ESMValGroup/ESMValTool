@@ -21,7 +21,12 @@ import os
 os.chdir(os.path.abspath(os.path.dirname(__file__)))
 sys.path.insert(0, os.path.abspath('./../../..'))
 
-from esmvaltool._version import __version__
+from esmvaltool import __version__
+
+# Generate gallery
+sys.path.append(os.path.dirname(__file__))
+import generate_gallery
+generate_gallery.main()
 
 # -- General configuration ------------------------------------------------
 
@@ -56,6 +61,7 @@ autodoc_mock_imports = [
     'cftime',
     'PIL',
     'prov',
+    'psutil',
     'scipy',
     'stratify',
     'ESMF',

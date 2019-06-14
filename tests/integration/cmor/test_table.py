@@ -3,7 +3,7 @@
 import os
 import unittest
 
-from esmvaltool.cmor.table import CMIP5Info, CMIP6Info, CustomInfo
+from esmvalcore.cmor.table import CMIP5Info, CMIP6Info, CustomInfo
 
 
 class TestCMIP6Info(unittest.TestCase):
@@ -21,7 +21,7 @@ class TestCMIP6Info(unittest.TestCase):
     def test_custom_tables_location(self):
         """Test constructor with custom tables location."""
         cwd = os.path.dirname(os.path.realpath(__file__))
-        cmor_tables_path = os.path.join(cwd, '..', '..', '..', 'esmvaltool',
+        cmor_tables_path = os.path.join(cwd, '..', '..', '..', 'esmvalcore',
                                         'cmor', 'tables', 'cmip6')
         cmor_tables_path = os.path.abspath(cmor_tables_path)
         CMIP6Info(cmor_tables_path)
@@ -59,7 +59,7 @@ class Testobs4mipsInfo(unittest.TestCase):
     def test_custom_tables_location(self):
         """Test constructor with custom tables location."""
         cwd = os.path.dirname(os.path.realpath(__file__))
-        cmor_tables_path = os.path.join(cwd, '..', '..', '..', 'esmvaltool',
+        cmor_tables_path = os.path.join(cwd, '..', '..', '..', 'esmvalcore',
                                         'cmor', 'tables', 'cmip6')
         cmor_tables_path = os.path.abspath(cmor_tables_path)
         CMIP6Info(cmor_tables_path)
@@ -89,7 +89,7 @@ class TestCMIP5Info(unittest.TestCase):
     def test_custom_tables_location(self):
         """Test constructor with custom tables location."""
         cwd = os.path.dirname(os.path.realpath(__file__))
-        cmor_tables_path = os.path.join(cwd, '..', '..', '..', 'esmvaltool',
+        cmor_tables_path = os.path.join(cwd, '..', '..', '..', 'esmvalcore',
                                         'cmor', 'tables', 'cmip5')
         cmor_tables_path = os.path.abspath(cmor_tables_path)
         CMIP5Info(cmor_tables_path)
@@ -119,7 +119,7 @@ class TestCustomInfo(unittest.TestCase):
     def test_custom_tables_location(self):
         """Test constructor with custom tables location."""
         cwd = os.path.dirname(os.path.realpath(__file__))
-        cmor_tables_path = os.path.join(cwd, '..', '..', '..', 'esmvaltool',
+        cmor_tables_path = os.path.join(cwd, '..', '..', '..', 'esmvalcore',
                                         'cmor', 'tables', 'cmip5')
         cmor_tables_path = os.path.abspath(cmor_tables_path)
         CustomInfo(cmor_tables_path)
