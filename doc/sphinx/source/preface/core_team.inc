@@ -1,3 +1,5 @@
+.. _core-team:
+
 ************************************
 The ESMValTool core development team
 ************************************

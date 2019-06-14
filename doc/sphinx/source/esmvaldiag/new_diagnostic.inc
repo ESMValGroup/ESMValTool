@@ -1,3 +1,5 @@
+.. _new-diagnostic:
+
 ***************************************
 Contributing a new diagnostic or recipe
 ***************************************
@@ -170,25 +172,25 @@ An example :code:`diagnostic_provenance.yml` file could look like this
 
 .. code-block:: yaml
 
-? /path/to/recipe_output/work/diagnostic_name/script_name/CMIP5_GFDL-ESM2G_Amon_historical_r1i1p1_T2Ms_pr_2000-2002_mean.nc
-: ancestors:[/path/to/recipe_output/preproc/diagnostic_name/pr/CMIP5_GFDL-ESM2G_Amon_historical_r1i1p1_T2Ms_pr_2000-2002.nc]
-  authors: [ande_bo, righ_ma]
-  caption: Average Precipitation between 2000 and 2002 according to GFDL-ESM2G.
-  domains: [global]
-  plot_file: /path/to/recipe_output/plots/diagnostic_name/script_name/CMIP5_GFDL ESM2G_Amon_historical_r1i1p1_T2Ms_pr_2000-2002_mean.png
-  plot_type: zonal
-  references: [acknow_project]
-  statistics: [mean]
+  ? /path/to/recipe_output/work/diagnostic_name/script_name/CMIP5_GFDL-ESM2G_Amon_historical_r1i1p1_T2Ms_pr_2000-2002_mean.nc
+  : ancestors:[/path/to/recipe_output/preproc/diagnostic_name/pr/CMIP5_GFDL-ESM2G_Amon_historical_r1i1p1_T2Ms_pr_2000-2002.nc]
+    authors: [ande_bo, righ_ma]
+    caption: Average Precipitation between 2000 and 2002 according to GFDL-ESM2G.
+    domains: [global]
+    plot_file: /path/to/recipe_output/plots/diagnostic_name/script_name/CMIP5_GFDL ESM2G_Amon_historical_r1i1p1_T2Ms_pr_2000-2002_mean.png
+    plot_type: zonal
+    references: [acknow_project]
+    statistics: [mean]
     
-? /path/to/recipe_output/work/diagnostic_name/script_name/CMIP5_MPI-ESM-LR_Amon_historical_r1i1p1_T2Ms_pr_2000-2002_mean.nc
-: ancestors: [/path/to/recipe_output/preproc/diagnostic_name/pr/CMIP5_MPI-ESM-LR_Amon_historical_r1i1p1_T2Ms_pr_2000-2002.nc]
-  authors: [ande_bo, righ_ma]
-  caption: Average Precipitation between 2000 and 2002 according to MPI-ESM-LR.
-  domains: [global]
-  plot_file: /path/to/recipe_output/plots/diagnostic_name/script_name/CMIP5_MPI-ESM-LR_Amon_historical_r1i1p1_T2Ms_pr_2000-2002_mean.png
-  plot_type: zonal
-  references: [acknow_project]
-  statistics: [mean] 
+  ? /path/to/recipe_output/work/diagnostic_name/script_name/CMIP5_MPI-ESM-LR_Amon_historical_r1i1p1_T2Ms_pr_2000-2002_mean.nc
+  : ancestors: [/path/to/recipe_output/preproc/diagnostic_name/pr/CMIP5_MPI-ESM-LR_Amon_historical_r1i1p1_T2Ms_pr_2000-2002.nc]
+    authors: [ande_bo, righ_ma]
+    caption: Average Precipitation between 2000 and 2002 according to MPI-ESM-LR.
+    domains: [global]
+    plot_file: /path/to/recipe_output/plots/diagnostic_name/script_name/CMIP5_MPI-ESM-LR_Amon_historical_r1i1p1_T2Ms_pr_2000-2002_mean.png
+    plot_type: zonal
+    references: [acknow_project]
+    statistics: [mean] 
 
 You can check whether your diagnostic script successfully provided the provenance information to the backend by
 verifying that

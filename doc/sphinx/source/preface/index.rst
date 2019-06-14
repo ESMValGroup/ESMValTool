@@ -2,8 +2,8 @@
 Preface
 #######################
 
-.. include:: intro.rst
-.. include:: objectives.rst
-.. include:: license.rst
-.. include:: architecture.rst
-.. include:: core_team.rst
+.. include:: intro.inc
+.. include:: objectives.inc
+.. include:: license.inc
+.. include:: architecture.inc
+.. include:: core_team.inc

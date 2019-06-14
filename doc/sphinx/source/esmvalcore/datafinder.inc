@@ -1,3 +1,5 @@
+.. _datafinder:
+
 ***********
 Data finder
 ***********

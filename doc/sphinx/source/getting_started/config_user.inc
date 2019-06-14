@@ -1,3 +1,5 @@
+.. _config-user:
+
 ***********************
 User configuration file
 ***********************
