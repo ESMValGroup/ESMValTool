@@ -12,7 +12,7 @@ For instance, a typical output location would be:
 output_directory/recipe_ocean_amoc_20190118_1027/
 
 This is effectively produced by the combination:
-$output_dir/recipe_name_YYYYMMDD_HHMMSS/
+output_dir/recipe_name_YYYYMMDD_HHMMSS/
 
 
 
