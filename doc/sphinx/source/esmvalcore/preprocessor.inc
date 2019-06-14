@@ -38,23 +38,23 @@ following the default order in which they are applied:
 Variable derivation
 ===================
 
-The variable derivation module allows to derive variables which are not in the CMIP
-standard data request using standard variables as input. The typical use case
-of this operation is the evaluation of a variable which is only available in an
-observational dataset but not in the models. In this case a derivation function
-is provided by the ESMValTool in order to calculate the variable and perform the
-comparison. For example, several observational datasets deliver total column
-ozone as observed variable (toz), but CMIP models only provide the ozone 3D
-field. In this case, a derivation function is provided to vertically
-integrate the ozone and obtain total column ozone for direct comparison with
-the observations.
+The variable derivation module allows to derive variables which are not in the
+CMIP standard data request using standard variables as input. The typical use
+case of this operation is the evaluation of a variable which is only available
+in an observational dataset but not in the models. In this case a derivation
+function is provided by the ESMValTool in order to calculate the variable and
+perform the comparison. For example, several observational datasets deliver
+total column ozone as observed variable (`toz`), but CMIP models only provide
+the ozone 3D field. In this case, a derivation function is provided to
+vertically integrate the ozone and obtain total column ozone for direct
+comparison with the observations.
 
-To contribute a new derived variable, it is also necessary to define
-a name for it and to provide the corresponding CMOR table. This is to guarantee
-the proper metadata definition is attached to the derived data. Such custom
-CMOR tables are collected as part of the `ESMValTool core package
+To contribute a new derived variable, it is also necessary to define a name for
+it and to provide the corresponding CMOR table. This is to guarantee the proper
+metadata definition is attached to the derived data. Such custom CMOR tables
+are collected as part of the `ESMValTool core package
 <https://github.com/ESMValGroup/ESMValCore>`_. By default, the variable
-derivation will be applied only if not already available in the input data, but
+derivation will be applied only if not already available in the input data, but 
 the derivation can be forced by setting the appropriate flag.
 
 .. code-block:: yaml
@@ -153,12 +153,10 @@ specifiying the desired fx variables (masks):
   are closed).
 
 
-
 Horizontal regridding
 =====================
 .. warning::
    Documentation of  _regrid.py (part 2) to be added
-
 
 
 Masking of missing values
@@ -173,8 +171,8 @@ Multi-model statistics
 .. warning::
    Documentation of _multimodel.py to be added.
 
-Information on maximum memory required: In the most general case, we can set upper 
-limits on the maximum memory the analysis will require:
+Information on maximum memory required: In the most general case, we can set
+upper limits on the maximum memory the analysis will require: 
 
 Ms = (R + N) x F_eff - F_eff - when no multimodel analysis is performed;
 Mm = (2R + N) x F_eff - 2F_eff - when multimodel analysis is performed;
@@ -186,14 +184,15 @@ Mm: maximum memory for multimodel module
 R: computational efficiency of module (typically 2-3)
 N: number of datasets
 F_eff: average size of data per dataset where F_eff = e x f x F
-where e is the factor that describes how lazy the data is (e = 1 for fully realized data)
-and f describes how much the data was shrunk by the immediately previous module eg
-time extraction, area selection or level extraction; note that for fix_data f relates 
-only to the time extraction, if data is exact in time (no time selection) f = 1 for fix_data
+where e is the factor that describes how lazy the data is (e = 1 for fully
+realized data) and f describes how much the data was shrunk by the immediately
+previous module e.g. time extraction, area selection or level extraction; note
+that for fix_data f relates  only to the time extraction, if data is exact in
+time (no time selection) f = 1 for fix_data.
 
-so for cases when we deal with a lot of datasets (R + N = N), data is fully realized, 
-assuming an average size of 1.5GB for 10 years of 3D netCDF data, N datasets will require
-
+So for cases when we deal with a lot of datasets (R + N = N), data is fully
+realized, assuming an average size of 1.5GB for 10 years of 3D netCDF data, N
+datasets will require: 
 
 Ms = 1.5 x (N - 1) GB
 Mm = 1.5 x (N - 2) GB
@@ -294,7 +293,8 @@ See also :func:`esmvalcore.preprocessor.seasonal_mean`.
 
 This function produces an annual or a decadal mean. It takes a single boolean
 switch as argument:
-* decadal: set this to true to calculate decadal averages instead of annual averages.
+* decadal: set this to true to calculate decadal averages instead of annual
+averages.
 
 See also :func:`esmvalcore.preprocessor.annual_mean`.
 
@@ -302,12 +302,11 @@ See also :func:`esmvalcore.preprocessor.annual_mean`.
 --------------
 
 This function aligns the time points of each component dataset to allow the
-subtraction of two Iris cubes from different datasets. The operation makes the datasets time
-points common and sets common calendars; it also resets the time bounds and
-auxiliary coordinates to reflect the artifically shifted time points. The current
-implementation works only for monthly and daily data.
-         
-
+subtraction of two Iris cubes from different datasets. The operation makes the
+datasets time points common and sets common calendars; it also resets the time
+bounds and auxiliary coordinates to reflect the artifically shifted time
+points. The current implementation works only for monthly and daily data.
+        
 See also :func:`esmvalcore.preprocessor.regrid_time`.
 
 
@@ -348,8 +347,9 @@ named `zonal_mean`, it can be used to apply several different operations in
 an zonal or meridional direction.
 This function takes two arguments:
 
-* coordinate: Which direction to apply the operation: latitude or longitude
-* mean_type: Which operation to apply: mean, std_dev, variance, median, min or max
+* coordinate: Which direction to apply the operation: latitude or longitude.
+* mean_type: Which operation to apply: mean, std_dev, variance, median, min or
+* max. 
 
 See also :func:`esmvalcore.preprocessor.zonal_means`.
 
@@ -359,12 +359,12 @@ See also :func:`esmvalcore.preprocessor.zonal_means`.
 This function calculates the average value over a region - weighted by the
 cell areas of the region.
 
-This function takes the argument,
-operator: the name of the operation to apply.
+This function takes one argument:
+* operator: the name of the operation to apply.
 
-This function can be used to apply several
-different operations in the horizonal plane: mean, standard deviation, median
-variance, minimum and maximum.
+This function can be used to apply several different operations in the
+horizonal plane: mean, standard deviation, median variance, minimum and
+maximum.
 
 Note that this function is applied over the entire dataset. If only a specific
 region, depth layer or time period is required, then those regions need to be
@@ -375,11 +375,14 @@ See also :func:`esmvalcore.preprocessor.area_statistics`.
 4. extract_named_regions
 ------------------------
 
-This function extract a specific named region from the data. This function
-takes the following argument: `regions` which is either a string or a list
-of strings of named regions. Note that the dataset must have a `region`
-cooordinate which includes a list of strings as values. This function then
-matches the named regions against the requested string.
+This function extract a specific named region from the data. 
+This function takes onw argument: 
+
+* regions: either a string or a list of strings of named regions. 
+
+Note that the dataset must have a `region` cooordinate which includes a list of
+strings as values. This function then matches the named regions against the
+requested string.
 
 See also :func:`esmvalcore.preprocessor.extract_named_regions`.
 
@@ -415,7 +418,7 @@ See also :func:`esmvalcore.preprocessor.extract_volume`.
 --------------------
 
 This function calculates the volume-weighted average across three dimensions,
-but maintains the time dimension. The following arguments are required:
+but maintains the time dimension.
 
 This function takes one argument:
 * operator: operation to apply over the volume (at the moment only mean is implemented)
@@ -439,7 +442,6 @@ See also :func:`esmvalcore.preprocessor.depth_integration`.
 
 This function extracts data along a line of constant latitude or longitude.
 This function takes two arguments, although only one is strictly required:
-
 * latitude
 * longitude
 
