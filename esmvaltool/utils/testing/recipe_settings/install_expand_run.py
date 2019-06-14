@@ -3,15 +3,10 @@ import argparse
 import copy
 import os
 import subprocess
-import sys
 from itertools import product
+from pathlib import Path
 
 import yaml
-
-if sys.version_info.major == 2:
-    from pathlib2 import Path
-else:
-    from pathlib import Path
 
 
 def absolute(path):
@@ -141,25 +136,27 @@ def schedule(args):
 def main():
     """Run the program."""
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
-        '-d', '--directory', default='.', help='Use as a working directory.')
-    parser.add_argument(
-        '-r',
-        '--run-method',
-        default='immediate',
-        choices=['immediate', 'bsub', 'dry-run'],
-        help='Choose an execution method.')
+    parser.add_argument('-d',
+                        '--directory',
+                        default='.',
+                        help='Use as a working directory.')
+    parser.add_argument('-r',
+                        '--run-method',
+                        default='immediate',
+                        choices=['immediate', 'bsub', 'dry-run'],
+                        help='Choose an execution method.')
     subparsers = parser.add_subparsers()
     parser.set_defaults(function=lambda _: parser.print_help())
 
     install_parser = subparsers.add_parser('install')
-    install_parser.add_argument(
-        'branch', help='Name of the GitHub branch to install.')
+    install_parser.add_argument('branch',
+                                help='Name of the GitHub branch to install.')
     install_parser.set_defaults(function=install)
 
     schedule_parser = subparsers.add_parser('schedule')
-    schedule_parser.add_argument(
-        'recipes', nargs='+', help='Path to the recipe files to run.')
+    schedule_parser.add_argument('recipes',
+                                 nargs='+',
+                                 help='Path to the recipe files to run.')
     schedule_parser.add_argument(
         '-c',
         '--esmvaltool-config-file',
