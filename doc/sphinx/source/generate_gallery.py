@@ -5,7 +5,7 @@
 import os
 
 RECIPE_DIR = 'recipes'
-OUT_PATH = 'gallery.rst'
+OUT_PATH = os.path.abspath('gallery.rst')
 HEADER = ('#######\nGallery\n#######\n\n'
           'This section shows example plots produced by ESMValTool. For more '
           'information, click on the footnote below the image.\n\n')
@@ -74,12 +74,13 @@ def _get_next_row(filenames, file_contents):
 
 def main():
     """Generate gallery for recipe plots."""
+    print(f"Generating gallery at {OUT_PATH}")
     left_col = True
     table = ''
     refs = ''
     filenames = []
     file_contents = []
-    for filename in os.listdir(RECIPE_DIR):
+    for filename in sorted(os.listdir(RECIPE_DIR)):
         if not filename.startswith('recipe_'):
             continue
         if not filename.endswith('.rst'):
@@ -87,13 +88,11 @@ def main():
         with open(os.path.join(RECIPE_DIR, filename), 'r') as in_file:
             recipe_file = in_file.read()
         if (FIGURE_STR not in recipe_file and IMAGE_STR not in recipe_file):
-            print(f"WARNING: {filename} does not contain an image, skipping")
-            print("")
+            print(f"INFO: {filename} does not contain an image, skipping")
             continue
         if not recipe_file.startswith('..'):
-            print(f"WARNING: {filename} does not contain reference at top, "
+            print(f"INFO: {filename} does not contain reference at top, "
                   "skipping")
-            print("")
             continue
 
         # Get next row
