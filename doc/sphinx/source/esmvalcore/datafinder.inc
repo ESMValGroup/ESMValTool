@@ -1,4 +1,4 @@
-:: _inputdata:
+.. _datafinder:
 
 ***********
 Data finder

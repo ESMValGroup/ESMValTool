@@ -1,9 +1,11 @@
+.. _recipes_spei:
+
 SPEI
 ====
 
 Overview
 --------
-Droughts can be separated into three main types: meteorological, hydrological, and agricultural drought. 
+Droughts can be separated into three main types: meteorological, hydrological, and agricultural drought.
 
 Common for all types is that a drought needs to be put in context of local and seasonal characteristics, i.e. a drought should not be defined with an absolute threshold, but as an anomalous condition.
 
