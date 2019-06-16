@@ -1,3 +1,5 @@
+.. _recipes_landcover:
+
 Landcover
 =========
 

@@ -1,10 +1,11 @@
+.. _architecture:
+
 ************
 Architecture
 ************
 
-:ref:`fig_schematic` shows a schematic of the ESMValTool architecture: to be written.
+To be written.
 
-.. _fig_schematic:
 .. figure::  ../figures/schematic.png
    :align:   center
 
