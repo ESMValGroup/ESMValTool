@@ -1,3 +1,5 @@
+.. _recipes_crem:
+
 Cloud Regime Error Metric (CREM)
 ================================
 
