@@ -69,3 +69,54 @@ diagnostics:
     scripts:
       energy_budget:
         script: primavera/energy_budget.py
+  land_energy_budget:
+    description: "Energy budget excluding ocean domain"
+    rsdt:
+        preprocessor: land_mean
+      rsut:
+        preprocessor: land_mean
+      rsds:
+        preprocessor: land_mean
+      rsns:
+        derive: True
+        preprocessor: land_mean
+      rlut:
+        preprocessor: land_mean
+      rlds:
+        preprocessor: land_mean
+      rlns:
+        derive: True
+        preprocessor: land_mean
+      hfss:
+        preprocessor: land_mean
+      hfls:
+        preprocessor: land_mean
+    scripts:
+      energy_budget:
+        script: primavera/energy_budget.py
+  ocean_energy_budget:
+    description: "Energy budget excluding land domain"
+    rsdt:
+        preprocessor: ocean_mean
+      rsut:
+        preprocessor: ocean_mean
+      rsds:
+        preprocessor: ocean_mean
+      rsns:
+        derive: True
+        preprocessor: ocean_mean
+      rlut:
+        preprocessor: ocean_mean
+      rlds:
+        preprocessor: ocean_mean
+      rlns:
+        derive: True
+        preprocessor: ocean_mean
+      hfss:
+        preprocessor: ocean_mean
+      hfls:
+        preprocessor: ocean_mean
+    scripts:
+      energy_budget:
+        script: primavera/energy_budget.py
+
