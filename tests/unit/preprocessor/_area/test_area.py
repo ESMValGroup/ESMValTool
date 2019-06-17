@@ -51,6 +51,7 @@ class Test(tests.Test):
         self.negative_grid = iris.cube.Cube(
             ndata, dim_coords_and_dims=coords_spec)
 
+    # Area statistics tests
     def test_area_statistics_mean(self):
         """Test for area average of a 2D field."""
         result = area_statistics(self.grid, 'mean')
@@ -93,6 +94,20 @@ class Test(tests.Test):
         expected = np.array([1.])
         self.assertArrayEqual(result.data, expected)
 
+    # Zonal and meriodinal statistics tests
+    def test_zonal_statistics_mean(self):
+        """Test for area average of a 2D field."""
+        result = zonal_statistics(self.grid, 'mean')
+        expected = np.array([1., 1., 1., 1., 1.])
+        self.assertArrayEqual(result.data, expected)
+
+    def test_meridonal_statistics_mean(self):
+        """Test for area average of a 2D field."""
+        result = meridional_statistics(self.grid, 'mean')
+        expected = np.array([1., 1., 1., 1., 1.])
+        self.assertArrayEqual(result.data, expected)
+
+    # Extract region tests
     def test_extract_region(self):
         """Test for extracting a region from a 2D field."""
         result = extract_region(self.grid, 1.5, 2.5, 1.5, 2.5)
