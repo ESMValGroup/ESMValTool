@@ -36,7 +36,7 @@ interface files saved in the preproc directory.
 If the option save_intermediary_cubes is set to True in the config-user.yml
 file, then the intermediary cubes will also be saved here.
 
-If the option remove_preproc_dir is set to True in the config-user.yml
+If the option remove_preproc_dir is set to ``true`` in the config-user.yml
 file, then the preproc directory will be deleted after the run completes.
 
 
