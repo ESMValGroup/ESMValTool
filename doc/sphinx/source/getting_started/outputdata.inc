@@ -21,7 +21,7 @@ This directory will contain 4 further subdirectories:
 
 2. `Run`_: This directory includes all log files, a copy of the recipe, a summary of the resource usage, and the `settings.yml`_ interface files.
 
-3. `Diagnostic output`_ (work): A place for post processed files like NetCDF (depends on the diagnostics).
+3. `Diagnostic output`_ (work): A place for any diagnostic script results that are not plots, e.g. files in NetCDF format (depends on the diagnostics).
 
 4. `Plots`_: The location for all the plots, split by individual diagnostics and fields.
 
