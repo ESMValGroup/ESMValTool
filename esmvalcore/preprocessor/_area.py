@@ -63,6 +63,19 @@ def extract_region(cube, start_longitude, end_longitude, start_latitude,
             latitude=(start_latitude, end_latitude))
         region_subset = region_subset.intersection(longitude=(0., 360.))
         return region_subset
+
+    # irregular grids
+    import numpy as np
+    lats = cube.coord('latitude').points
+    lons = cube.coord('longitude').points
+    mask = np.ma.array(cube.data).mask
+    mask += np.ma.masked_where(lats < start_latitude, lats).mask
+    mask += np.ma.masked_where(lats > end_latitude, lats).mask
+    mask += np.ma.masked_where(lons > start_longitude, lons).mask
+    mask += np.ma.masked_where(lons > end_longitude, lons).mask
+    cube.data = np.ma.masked_where(mask, cube.data)
+    return cube
+
     # irregular grids
     lats = cube.coord('latitude').points
     lons = cube.coord('longitude').points
@@ -110,14 +123,10 @@ def zonal_statistics(cube, operator, fx_files=None):
     -------
     iris.cube.Cube
     """
-    #TODO: Add the same table from above to these comments.
-    #TODO: Add the fx_files in order to weight
-
-    operation = get_iris_analysis_operation(operator)
-    return cube.collapsed('longitude', operation)
+    return zonal_meridional_statistics(cube, operator, 'longitude', fx_files=fx_files)
 
 
-def meridional_statistics(cube, operator):
+def meridional_statistics(cube, operator, fx_files=None):
     """
     Get meridional statistics.
 
@@ -161,8 +170,51 @@ def meridional_statistics(cube, operator):
     -------
     iris.cube.Cube
     """
+    return zonal_meridional_statistics(cube, operator, 'latitude', fx_files=fx_files)
+
+
+def zonal_meridional_statistics(cube, operator, coord, fx_files=None):
+    """
+    Function to calculate either the zonal or meriodinal statistics.
+
+    The zonal and meriodinal statistics calculations are very similar, so they are writen
+    as wrappers to this function which does the work. The only difference between them
+    is which dimension to apply to iris operator: Longitude (Zonal) or Latitude
+    (Meridional). This choice is provided by the coord variable.
+
+    Parameters
+    ----------
+    cube: iris.cube.Cube
+        input cube.
+    operator: str
+        Type of analysis to use, from iris.analysis.
+    coord: str
+        Longitude (Zonal) or Latitude (Meridional)
+    Returns
+    -------
+    iris.cube.Cube
+    """
+
+    # Load iris opertion.
     operation = get_iris_analysis_operation(operator)
-    return cube.collapsed('latitude', operation)
+
+    # Load fx files
+    grid_volume_found = False
+    grid_volume = None
+    if fx_files:
+        for key, fx_file in fx_files.items():
+            if fx_file is None:
+                continue
+            logger.info('Attempting to load %s from file: %s', key, fx_file)
+            fx_cube = iris.load_cube(fx_file)
+
+            grid_volume = fx_cube.data
+            grid_volume_found = True
+
+    if grid_volume_found and operator.lower() == 'mean':
+        return cube.collapsed(coord, operation, weights=grid_volume)
+
+    return cube.collapsed(coord, operation)
 
 
 def tile_grid_areas(cube, fx_files):
