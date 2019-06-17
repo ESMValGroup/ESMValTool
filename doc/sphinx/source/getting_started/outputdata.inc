@@ -29,7 +29,7 @@ This directory will contain 4 further subdirectories:
 Preprocessed datasets
 =====================
 
-The preprocessed datasets will be sent to the preproc/ directory.
+The preprocessed datasets will be stored to the preproc/ directory.
 Each variable in each diagnostic will have its own the `metadata.yml`_
 interface files saved in the preproc directory.
 
