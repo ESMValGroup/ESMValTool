@@ -29,12 +29,16 @@ from esmvaltool import __version__
 
 # on_rtd is whether we are on readthedocs.org, this line of code grabbed from docs.readthedocs.org
 on_rtd = os.environ.get("READTHEDOCS", None) == "True"
-on_rtd = True  # TODO: Remove this line after testing
 
 # This is used for linking and such so we link to the thing we're building
 rtd_version = os.environ.get("READTHEDOCS_VERSION", "latest")
 if rtd_version not in ["stable", "latest"]:
     rtd_version = "stable"
+
+# Generate gallery
+sys.path.append(os.path.dirname(__file__))
+import generate_gallery
+generate_gallery.main()
 
 # -- General configuration ------------------------------------------------
 
@@ -65,15 +69,17 @@ autodoc_default_flags = [
 
 #autodoc_mock_imports = ['cf_units', 'iris', 'matplotlib', 'numpy', 'cartopy', 'cftime', 'netCDF4', 'yaml', 'PIL', 'prov', 'scipy', 'psutil', 'shapely', 'stratify', 'ESMF']
 autodoc_mock_imports = [
-    'iris',
+    'cartopy',
     'cftime',
+    'cf_units',
+    'ESMF',
+    'esmvalcore',
+    'iris',
     'PIL',
     'prov',
+    'psutil',
     'scipy',
     'stratify',
-    'ESMF',
-    'cartopy',
-    'cf_units',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
