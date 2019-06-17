@@ -1,3 +1,5 @@
+.. _objectives:
+
 ***********************
 Objectives and approach
 ***********************
