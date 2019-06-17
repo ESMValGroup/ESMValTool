@@ -57,16 +57,17 @@ autodoc_default_flags = [
 
 #autodoc_mock_imports = ['cf_units', 'iris', 'matplotlib', 'numpy', 'cartopy', 'cftime', 'netCDF4', 'yaml', 'PIL', 'prov', 'scipy', 'psutil', 'shapely', 'stratify', 'ESMF']
 autodoc_mock_imports = [
-    'iris',
+    'cartopy',
     'cftime',
+    'cf_units',
+    'ESMF',
+    'esmvalcore',
+    'iris',
     'PIL',
     'prov',
     'psutil',
     'scipy',
     'stratify',
-    'ESMF',
-    'cartopy',
-    'cf_units',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
