@@ -155,7 +155,7 @@ To define a variable/dataset combination, the keys in the diagnostic section
 are combined with the keys from datasets section. If two versions of the same
 key are provided, then the key in the datasets section will take precedence
 over the keys in variables section. For many recipes it makes more sense to
-define the start_year and end_year items in the variable section, because the
+define the ``start_year`` and ``end_year`` items in the variable section, because the
 diagnostic script assumes that all the data has the same time range.
 
 Note that the path to the script provided in the `script` option should be
