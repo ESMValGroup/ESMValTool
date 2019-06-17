@@ -44,7 +44,6 @@ preprocessors:
 diagnostics:
   global_energy_budget:
     description: "Energy budget"
-    preprocessor: global_mean
     variables:
       rsdt:
         preprocessor: global_mean
@@ -71,7 +70,8 @@ diagnostics:
         script: primavera/energy_budget.py
   land_energy_budget:
     description: "Energy budget excluding ocean domain"
-    rsdt:
+    variables:
+      rsdt:
         preprocessor: land_mean
       rsut:
         preprocessor: land_mean
@@ -96,7 +96,8 @@ diagnostics:
         script: primavera/energy_budget.py
   ocean_energy_budget:
     description: "Energy budget excluding land domain"
-    rsdt:
+    variables:
+      rsdt:
         preprocessor: ocean_mean
       rsut:
         preprocessor: ocean_mean
