@@ -16,7 +16,6 @@ from setuptools import Command, setup
 from esmvalcore._version import __version__
 
 PACKAGES = [
-    'esmvalcore',
     'esmvaltool',
 ]
 
