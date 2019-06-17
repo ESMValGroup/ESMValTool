@@ -143,7 +143,7 @@ The result of this process is then passed to the ocean diagnostic map scipt,
     diag_map:
       description: Global Ocean Surface regridded temperature map
       variables:
-        tos: # Temperature at the bocean surface
+        tos: # Temperature at the ocean surface
           preprocessor: prep_map
           start_year: 2001
           end_year: 2003
