@@ -11,9 +11,11 @@ Recipes
    recipe_combined_climate_extreme_index
    recipe_combined_indices
    recipe_consecdrydays
+   recipe_cox18nature
    recipe_crem
    recipe_cvdp
    recipe_diurnal_temperature_index
+   recipe_ecs
    recipe_ensclus
    recipe_extreme_events
    recipe_flato13ipcc
