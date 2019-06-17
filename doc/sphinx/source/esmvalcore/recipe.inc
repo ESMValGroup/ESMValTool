@@ -155,7 +155,7 @@ sends it to the ocean time series scipt.
             moving_average: 6 years
 
 
-As mentionned above, the datasets are provided in the `Diagnostics`_ section
+As mentioned above, the datasets are provided in the `Diagnostics`_ section
 in this section. However, they could also be included in the `Datasets`_
 section.
 
