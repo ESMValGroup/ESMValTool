@@ -60,6 +60,7 @@ requirements:
     - python-cdo
     - pyyaml
     - scikit-learn
+    - seaborn
     - shapely
     - six
     - vmprof

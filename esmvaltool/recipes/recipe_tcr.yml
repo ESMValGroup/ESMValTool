@@ -1,0 +1,99 @@
+# recipe_tcr.yml
+---
+documentation:
+
+  description: |
+    Calculate Transient Climate Response (TCR).
+
+  authors:
+    - schl_ma
+
+  references:
+    - gregory08jgr
+
+  projects:
+    - crescendo
+
+
+preprocessors:
+
+  spatial_mean:
+    area_statistics:
+      operator: mean
+
+
+diagnostics:
+
+  cmip5:
+    description: Calculate TCR for all available CMIP5 models.
+    variables:
+      1pctCO2: &variable_settings
+        short_name: tas
+        preprocessor: spatial_mean
+        project: CMIP5
+        ensemble: r1i1p1
+        exp: 1pctCO2
+        mip: Amon
+        additional_datasets:
+          - {dataset: ACCESS1-0,     start_year:  300, end_year:  439}
+          - {dataset: bcc-csm1-1,    start_year:  160, end_year:  299}
+          - {dataset: bcc-csm1-1-m,  start_year:  240, end_year:  379}
+          - {dataset: CanESM2,       start_year: 1850, end_year: 1989}
+          - {dataset: CCSM4,         start_year: 1850, end_year: 1989}
+          - {dataset: CNRM-CM5,      start_year: 1850, end_year: 1989}
+          - {dataset: CSIRO-Mk3-6-0, start_year:    1, end_year:  140}
+          - {dataset: GFDL-CM3,      start_year:    1, end_year:  140}
+          - {dataset: GISS-E2-H,     start_year: 1850, end_year: 1989}
+          - {dataset: GISS-E2-R,     start_year: 1850, end_year: 1989}
+          - {dataset: inmcm4,        start_year: 2090, end_year: 2229}
+          - {dataset: IPSL-CM5A-LR,  start_year: 1850, end_year: 1989}
+          - {dataset: IPSL-CM5B-LR,  start_year: 1850, end_year: 1989}
+          - {dataset: MIROC5,        start_year: 2200, end_year: 2339}
+          - {dataset: MIROC-ESM,     start_year:    1, end_year:  140}
+          - {dataset: MPI-ESM-LR,    start_year: 1850, end_year: 1989}
+      piControl:
+        <<: *variable_settings
+        exp: piControl
+        additional_datasets:
+          - {dataset: ACCESS1-0,     start_year:  300, end_year:  439}
+          - {dataset: bcc-csm1-1,    start_year:  160, end_year:  299}
+          - {dataset: bcc-csm1-1-m,  start_year:  240, end_year:  379}
+          - {dataset: CanESM2,       start_year: 2321, end_year: 2460}
+          - {dataset: CCSM4,         start_year:  251, end_year:  390}
+          - {dataset: CNRM-CM5,      start_year: 1850, end_year: 1989}
+          - {dataset: CSIRO-Mk3-6-0, start_year:  104, end_year:  243}
+          - {dataset: GFDL-CM3,      start_year:    1, end_year:  140}
+          - {dataset: GISS-E2-H,     start_year: 2410, end_year: 2549}
+          - {dataset: GISS-E2-R,     start_year: 3981, end_year: 4120}
+          - {dataset: inmcm4,        start_year: 2090, end_year: 2229}
+          - {dataset: IPSL-CM5A-LR,  start_year: 1850, end_year: 1989}
+          - {dataset: IPSL-CM5B-LR,  start_year: 1850, end_year: 1989}
+          - {dataset: MIROC5,        start_year: 2400, end_year: 2539}
+          - {dataset: MIROC-ESM,     start_year: 1880, end_year: 2019}
+          - {dataset: MPI-ESM-LR,    start_year: 1880, end_year: 2019}
+    scripts:
+      tcr: &tcr_script
+        script: climate_metrics/tcr.py
+
+  # cmip6:
+  #   description: Calculate ECS for all available CMIP6 models.
+  #   variables:
+  #     tas:
+  #       <<: *variable_settings
+  #       project: CMIP6
+  #     rtnt:
+  #       <<: *variable_settings
+  #       project: CMIP6
+  #       derive: true
+  #   additional_datasets:
+  #     - {dataset: BCC-CSM2-MR,  exp: piControl,    ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 1999}
+  #     - {dataset: BCC-CSM2-MR,  exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 1999}
+  #     - {dataset: GISS-E2-1-G,  exp: piControl,    ensemble: r1i1p1f1, grid: gn, start_year: 4150, end_year: 4299}
+  #     - {dataset: GISS-E2-1-G,  exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 1999}
+  #     - {dataset: IPSL-CM6A-LR, exp: piControl,    ensemble: r1i1p1f1, grid: gr, start_year: 1850, end_year: 1999}
+  #     - {dataset: IPSL-CM6A-LR, exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gr, start_year: 1850, end_year: 1999}
+  #     - {dataset: MIROC6,       exp: piControl,    ensemble: r1i1p1f1, grid: gn, start_year: 3200, end_year: 3349}
+  #     - {dataset: MIROC6,       exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn, start_year: 3200, end_year: 3349}
+  #   scripts:
+  #     tcr:
+  #       <<: *tcr_script

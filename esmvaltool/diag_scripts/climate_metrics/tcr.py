@@ -1,11 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""Diagnostic script to calculate ECS following Andrews et al. (2012).
+"""Diagnostic script to calculate Transient Climate Response (TCR).
 
 Description
 -----------
-Calculate the effective climate sensitivity (ECS) using the regression method
-proposed by Andrews et al. (2012).
+Calculate the transient climate response (see e.g. Gregory and Forster, 2008).
 
 Author
 ------
@@ -17,8 +16,8 @@ CRESCENDO
 
 Configuration options in recipe
 -------------------------------
-read_external_file : str, optional
-    Read ECS from external file.
+plot : bool, optional (default: True)
+    Plot temperature vs. time.
 
 """
 
@@ -29,6 +28,7 @@ from pprint import pformat
 import cf_units
 import iris
 import numpy as np
+import seaborn as sns
 import yaml
 from scipy import stats
 
@@ -39,17 +39,79 @@ from esmvaltool.diag_scripts.shared import (
 
 logger = logging.getLogger(os.path.basename(__file__))
 
-EXP_4XCO2 = {
-    'CMIP5': 'abrupt4xCO2',
-    'CMIP6': 'abrupt-4xCO2',
-}
+sns.set()
+
+
+def _get_anomaly_cube(onepct_cube, pi_cube):
+    """Get anomaly cube."""
+    onepct_cube = onepct_cube.aggregated_by('year', iris.analysis.MEAN)
+    pi_cube = pi_cube.aggregated_by('year', iris.analysis.MEAN)
+    if onepct_cube.ndim != 1:
+        logger.warning(
+            "This diagnostics needs 1D cubes, got %iD cube for '1pctCO2' "
+            "experiment", onepct_cube.ndim)
+        return None
+    if pi_cube.ndim != 1:
+        logger.warning(
+            "This diagnostics needs 1D cubes, got %iD cube for 'piControl' "
+            "experiment", onepct_cube.ndim)
+        return None
+    if onepct_cube.shape != pi_cube.shape:
+        logger.warning(
+            "Cube shapes of '1pctCO2' and 'piControl' are not identical, got "
+            "%s and %s", onepct_cube.shape, pi_cube.shape)
+        return None
+    if onepct_cube.shape[0] < 80:
+        logger.warning(
+            "Cubes need at least 80 points for TCR calculation, got only %d",
+            onepct_cube.shape[0])
+        return None
+    reg = stats.linregress(pi_cube.coord('year').points, pi_cube.data)
+    onepct_cube.data -= (reg.slope * pi_cube.coord('year').points +
+                         reg.intercept)
+    return onepct_cube
+
+
+def calculate_tcr(cfg):
+    """Calculate transient climate response (TCR)."""
+    tcr = {}
+
+    # Get data
+    input_data = cfg['input_data'].values()
+    onepct_data = select_metadata(input_data, short_name='tas', exp='1pctCO2')
+
+    # Iterate over all datasets
+    for dataset in onepct_data:
+        pi_data = select_metadata(input_data, short_name='tas',
+                                  exp='piControl', dataset=dataset['dataset'])
+        if not pi_data:
+            logger.warning(
+                "Skipping dataset '%s', no 'piControl' data available",
+                dataset['dataset'])
+            continue
+
+        onepct_cube = iris.load_cube(dataset['filename'])
+        pi_cube = iris.load_cube(pi_data[0]['filename'])
+
+        # Get anomaly cube
+        anomaly_cube = _get_anomaly_cube(onepct_cube, pi_cube)
+        if anomaly_cube is None:
+            logger.warning("Skipping dataset '%s'", dataset['dataset'])
+            continue
+
+        # Calculate TCR
+        tas_2x = anomaly_cube[60:80].collapsed('time', iris.analysis.MEAN).data
+        new_tcr = tas_2x
+        tcr[dataset['dataset']] = new_tcr
+        logger.info("TCR (%s) = %.2f %s", dataset['dataset'], new_tcr,
+                    anomaly_cube.units)
+    return tcr
 
 
 def check_input_data(cfg):
     """Check input data."""
-    if not variables_available(cfg, ['tas', 'rtnt']):
-        raise ValueError("This diagnostic needs 'tas' and 'rtnt' "
-                         "variables if 'read_external_file' is not given")
+    if not variables_available(cfg, ['tas']):
+        raise ValueError("This diagnostic needs 'tas' variable")
     input_data = cfg['input_data'].values()
     project_group = group_metadata(input_data, 'project')
     projects = list(project_group.keys())
@@ -57,15 +119,12 @@ def check_input_data(cfg):
         raise ValueError(
             f"This diagnostic supports only unique 'project' attributes, got "
             f"{projects}")
-    project = projects[0]
-    if project not in EXP_4XCO2:
-        raise ValueError(f"Project '{project}' not supported yet")
     exp_group = group_metadata(input_data, 'exp')
     exps = set(exp_group.keys())
-    if exps != {'piControl', EXP_4XCO2[project]}:
+    if exps != {'piControl', '1pctCO2'}:
         raise ValueError(
-            f"This diagnostic needs 'piControl' and '{EXP_4XCO2[project]}' "
-            f"experiments, got {exps}")
+            f"This diagnostic needs '1pctCO2' and 'piControl' experiment, got "
+            f"{exps}")
 
 
 def get_anomaly_data(tas_data, rtnt_data, dataset):
@@ -76,8 +135,8 @@ def get_anomaly_data(tas_data, rtnt_data, dataset):
         'tas_4x': select_metadata(tas_data, dataset=dataset, exp=exp_4xco2),
         'tas_pi': select_metadata(tas_data, dataset=dataset, exp='piControl'),
         'rtnt_4x': select_metadata(rtnt_data, dataset=dataset, exp=exp_4xco2),
-        'rtnt_pi': select_metadata(rtnt_data, dataset=dataset,
-                                   exp='piControl'),
+        'rtnt_pi': select_metadata(
+            rtnt_data, dataset=dataset, exp='piControl'),
     }
     ancestor_files = []
     cubes = {}
@@ -95,8 +154,8 @@ def get_anomaly_data(tas_data, rtnt_data, dataset):
         else:
             if cube.shape != shape:
                 raise ValueError(
-                    f"Expected all cubes of dataset '{dataset}' to have "
-                    f"identical shapes, got {shape} and {cube.shape}")
+                    "Expected all cubes of dataset '{}' to have identical "
+                    "shapes, got {} and {}".format(dataset, shape, cube.shape))
     tas_pi_reg = stats.linregress(cubes['tas_pi'].coord('year').points,
                                   cubes['tas_pi'].data)
     rtnt_pi_reg = stats.linregress(cubes['rtnt_pi'].coord('year').points,
@@ -206,19 +265,20 @@ def plot_ecs_regression(cfg, dataset_name, tas_cube, rtnt_cube, reg_stats):
         'Climate Feedback Parameter': -reg_stats.slope,
         'ECS': ecs,
     }
-    cube = iris.cube.Cube(rtnt_cube.data,
-                          attributes=attrs,
-                          aux_coords_and_dims=[(tas_coord, 0)],
-                          **extract_variables(cfg, as_iris=True)['rtnt'])
+    cube = iris.cube.Cube(
+        rtnt_cube.data,
+        attributes=attrs,
+        aux_coords_and_dims=[(tas_coord, 0)],
+        **extract_variables(cfg, as_iris=True)['rtnt'])
     netcdf_path = get_diagnostic_filename('ecs_regression_' + dataset_name,
                                           cfg)
     io.iris_save(cube, netcdf_path)
 
     # Provenance
     provenance_record = get_provenance_record(
-        f"Scatterplot between TOA radiance and global mean surface "
-        f"temperature anomaly for 150 years of the abrupt 4x CO2 experiment "
-        "including linear regression to calculate ECS for {dataset_name}.")
+        "Scatterplot between TOA radiance and global mean surface temperature "
+        "anomaly for 150 years of the abrupt 4x CO2 experiment including "
+        "linear regression to calculate ECS for {}.".format(dataset_name))
     provenance_record.update({
         'plot_file': plot_path,
         'plot_types': ['scatter'],
@@ -254,54 +314,45 @@ def write_data(ecs_data, feedback_parameter_data, ancestor_files, cfg):
 
 def main(cfg):
     """Run the diagnostic."""
-    input_data = cfg['input_data'].values()
+    check_input_data(cfg)
 
-    # Read external file if desired
-    if cfg.get('read_external_file'):
-        (ecs, feedback_parameter, external_file) = read_external_file(cfg)
-    else:
-        check_input_data(cfg)
-        ecs = {}
-        feedback_parameter = {}
-        external_file = None
-
-    # Read data
-    tas_data = select_metadata(input_data, short_name='tas')
-    rtnt_data = select_metadata(input_data, short_name='rtnt')
+    # Calculate TCR
+    tcr = calculate_tcr(cfg)
+    for (key, val) in tcr.items():
+        print(key, "{:.1f}K".format(val))
 
     # Iterate over all datasets and save ECS and feedback parameter
-    for dataset in group_metadata(tas_data, 'dataset'):
-        logger.info("Processing %s", dataset)
-        (tas_cube, rtnt_cube,
-         ancestor_files) = get_anomaly_data(tas_data, rtnt_data, dataset)
+    # for dataset in group_metadata(tas_data, 'dataset'):
+    #     logger.info("Processing %s", dataset)
+    #     (tas_cube, rtnt_cube, ancestor_files) = get_anomaly_data(
+    #         tas_data, rtnt_data, dataset)
 
-        # Perform linear regression
-        reg = stats.linregress(tas_cube.data, rtnt_cube.data)
+    #     # Perform linear regression
+    #     reg = stats.linregress(tas_cube.data, rtnt_cube.data)
 
-        # Plot ECS regression if desired
-        (path,
-         provenance_record) = plot_ecs_regression(cfg, dataset, tas_cube,
-                                                  rtnt_cube, reg)
+    #     # Plot ECS regression if desired
+    #     (path, provenance_record) = plot_ecs_regression(
+    #         cfg, dataset, tas_cube, rtnt_cube, reg)
 
-        # Provenance
-        if path is not None:
-            provenance_record['ancestors'] = ancestor_files
-            with ProvenanceLogger(cfg) as provenance_logger:
-                provenance_logger.log(path, provenance_record)
+    #     # Provenance
+    #     if path is not None:
+    #         provenance_record['ancestors'] = ancestor_files
+    #         with ProvenanceLogger(cfg) as provenance_logger:
+    #             provenance_logger.log(path, provenance_record)
 
-        # Save data
-        if cfg.get('read_external_file') and dataset in ecs:
-            logger.info(
-                "Overwriting external given ECS and climate feedback "
-                "parameter for %s", dataset)
-        ecs[dataset] = -reg.intercept / (2 * reg.slope)
-        feedback_parameter[dataset] = -reg.slope
+    #     # Save data
+    #     if cfg.get('read_external_file') and dataset in ecs:
+    #         logger.info(
+    #             "Overwriting external given ECS and climate feedback "
+    #             "parameter for %s", dataset)
+    #     ecs[dataset] = -reg.intercept / (2 * reg.slope)
+    #     feedback_parameter[dataset] = -reg.slope
 
-    # Write data
-    ancestor_files = [d['filename'] for d in tas_data + rtnt_data]
-    if external_file is not None:
-        ancestor_files.append(external_file)
-    write_data(ecs, feedback_parameter, ancestor_files, cfg)
+    # # Write data
+    # ancestor_files = [d['filename'] for d in tas_data + rtnt_data]
+    # if external_file is not None:
+    #     ancestor_files.append(external_file)
+    # write_data(ecs, feedback_parameter, ancestor_files, cfg)
 
 
 if __name__ == '__main__':
