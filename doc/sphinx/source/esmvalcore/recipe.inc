@@ -4,13 +4,12 @@
 ESMValTool recipe
 *****************
 
-Recipes are the instructions telling ESMValTool
-about the user who wrote the recipe,
-the datasets which need to be run,
-the preprocessors that need to be applied,
-and the diagnostics which need to be run over the preprocessed data.
+Recipes are the instructions telling ESMValTool about the user who wrote the
+recipe, the datasets which need to be run, the preprocessors that need to be
+applied, and the diagnostics which need to be run over the preprocessed data.
 This information is provided to ESMValTool in the recipe sections:
-`Documentation`_, `Datasets`_, `Preprocessors`_ and `Diagnostics`_, respectively.
+`Documentation`_, `Datasets`_, `Preprocessors`_ and `Diagnostics`_,
+respectively.
 
 
 Documentation
@@ -93,7 +92,7 @@ Each preprocessor section includes:
 - A preprocessor name.
 - A list of preprocesor functions to apply
 - Any Arguments given to the preprocessor functions.
-- The order that the preprocesor functions are applied can also be specified.
+- The order that the preprocesor functions are applied can also be specified using the ``custom_order`` preprocesor function.
 
 The following preprocessor is an example of a preprocessor that contains
 multiple preprocessor functions:
@@ -101,21 +100,14 @@ multiple preprocessor functions:
 .. code-block:: yaml
 
     preprocessors:
-      prep_timeseries: # For regional volume averaged (at the surface)
-        custom_order: true
-        extract_region:
-          start_longitude: -80.
-          end_longitude: 30.
-          start_latitude: -80.
-          end_latitude: 80.
-        extract_volume:
-          z_min: 0.
-          z_max: 100.
-        volume_statistics:
-          operator: mean
-        multi_model_statistics:
-          span: overlap
-          statistics: [mean ]
+      prep_map:
+      regrid:
+        target_grid: 1x1
+        scheme: linear
+      time_average:
+      multi_model_statistics:
+        span: overlap
+        statistics: [mean ]
 
 If only the default preprocessor is needed, then this section can be omitted.
 
@@ -123,42 +115,59 @@ If only the default preprocessor is needed, then this section can be omitted.
 Diagnostics
 ===========
 
-The diagnostics section includes one or more
-diagnostics. Each diagnostics will have:
+The diagnostics section includes one or more diagnostics. Each diagnostics will
+have:
 
 - A list of which variables to load
 - A description of the variables (optional)
 - Which preprocessor to apply to each variable
 - The script to run
-- The diagnostics can also include an additional_datasets section, if specific
-  datasets are linked to specific diagnostics.
+- The diagnostics can also include an optional ``additional_datasets`` section.
 
-The following example, taken from recipe_ocean_amoc.yml, shows a diagnostic
-named `diag_timeseries_amoc`, which calculates a derived variable and
-sends it to the ocean time series scipt.
+The ``additional_datasets`` can add datasets beyond those listed in the the
+`Datasets`_ section. This is useful if specific datasets need to be linked with
+a specific diagnostics. The addition datasets can be used to add variable
+specific datasets. This is also a good way to add observational datasets can be
+added to the diagnostic.
+
+The following example, taken from recipe_ocean_example.yml, shows a diagnostic
+named `diag_map`, which loads the temperature at the ocean surface between
+the years 2001 and 2003 and then passes it to the prep_map preprocessor.
+The result of this process is then passed to the ocean diagnostic map scipt,
+``ocean/diagnostic_maps.py``.
 
 .. code-block:: yaml
 
     diagnostics:
-      diag_timeseries_amoc:
-        description: atlantic_meridional_overturning_circulation
-        variables:
-          amoc:
-            mip: Omon
-            derive: true
-            force_derivation: false
-        additional_datasets:
-         - {dataset: CanESM2, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1860, end_year: 2004}
-        scripts:
-          AMOC_timeseries:
-            script: ocean/diagnostic_timeseries.py
-            moving_average: 6 years
+
+    diag_map:
+      description: Global Ocean Surface regridded temperature map
+      variables:
+        tos: # Temperature at the bocean surface
+          preprocessor: prep_map
+          start_year: 2001
+          end_year: 2003
+      scripts:
+        Global_Ocean_Surface_regrid_map:
+          script: ocean/diagnostic_maps.py
+
+To define a variable/dataset combination, the keys in the diagnostic section
+are combined with the keys from datasets section. If two versions of the same
+key are provided, then the key in the datasets section will take precedence
+over the keys in variablessection. For many recipes it makes more sense to
+define the start_year and end_year items in the variable section, because the
+diagnostic script assumes that all the data has the same time range.
+
+Note that the path to the script provided in the `script` option should be
+either:
+
+1. the absolute path to the script.
+2. the path relative to the ``esmvaltool/diag_scripts`` directory.
 
 
 As mentioned above, the datasets are provided in the `Diagnostics`_ section
 in this section. However, they could also be included in the `Datasets`_
 section.
-
 
 
 Brief introduction to YAML
