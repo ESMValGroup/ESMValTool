@@ -101,13 +101,13 @@ multiple preprocessor functions:
 
     preprocessors:
       prep_map:
-      regrid:
-        target_grid: 1x1
-        scheme: linear
-      time_average:
-      multi_model_statistics:
-        span: overlap
-        statistics: [mean ]
+        regrid:
+          target_grid: 1x1
+          scheme: linear
+        time_average:
+        multi_model_statistics:
+          span: overlap
+          statistics: [mean ]
 
 If only the default preprocessor is needed, then this section can be omitted.
 
