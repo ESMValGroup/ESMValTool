@@ -79,7 +79,7 @@ if (region == "Nino3") {
   lat_min <- c(-5, -5)
   lat_max <- c(5, 5)
 }
-### Load data 
+### Load data
 data_nc <- nc_open(fullpath_filenames)
 lat <- as.vector(ncvar_get(data_nc, "lat"))
 lon <- as.vector(ncvar_get(data_nc, "lon"))

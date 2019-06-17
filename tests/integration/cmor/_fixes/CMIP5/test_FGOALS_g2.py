@@ -4,7 +4,7 @@ from cf_units import Unit
 from iris.coords import DimCoord
 from iris.cube import Cube
 
-from esmvaltool.cmor._fixes.CMIP5.FGOALS_g2 import allvars
+from esmvalcore.cmor._fixes.CMIP5.FGOALS_g2 import allvars
 
 
 class TestAll(unittest.TestCase):
