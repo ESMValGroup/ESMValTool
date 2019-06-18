@@ -18,15 +18,9 @@ preprocessors:
       end_longitude: 360
       start_latitude: 40
       end_latitude: 90
-
-  extract_sispeed:
-    custom_order: true
-    extract_region:
-      start_longitude: 0
-      end_longitude: 360
-      start_latitude: 40
-      end_latitude: 90
-    derive: true
+    climate_statistics:
+      period: mon
+      operator: mean
 
 diagnostics:
   seaice_drift:
@@ -57,7 +51,7 @@ diagnostics:
       sispeed:
         mip: SIday
         field: T2MO
-        preprocessor: extract_sispeed
+        preprocessor: extract
         reference_dataset: NSIDC-0116-nh
         derive: true
         force_derivation: false
