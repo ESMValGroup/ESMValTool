@@ -21,7 +21,12 @@ import os
 os.chdir(os.path.abspath(os.path.dirname(__file__)))
 sys.path.insert(0, os.path.abspath('./../../..'))
 
-from esmvaltool._version import __version__
+from esmvaltool import __version__
+
+# Generate gallery
+sys.path.append(os.path.dirname(__file__))
+import generate_gallery
+generate_gallery.main()
 
 # -- General configuration ------------------------------------------------
 
@@ -52,15 +57,17 @@ autodoc_default_flags = [
 
 #autodoc_mock_imports = ['cf_units', 'iris', 'matplotlib', 'numpy', 'cartopy', 'cftime', 'netCDF4', 'yaml', 'PIL', 'prov', 'scipy', 'psutil', 'shapely', 'stratify', 'ESMF']
 autodoc_mock_imports = [
-    'iris',
+    'cartopy',
     'cftime',
+    'cf_units',
+    'ESMF',
+    'esmvalcore',
+    'iris',
     'PIL',
     'prov',
+    'psutil',
     'scipy',
     'stratify',
-    'ESMF',
-    'cartopy',
-    'cf_units',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
