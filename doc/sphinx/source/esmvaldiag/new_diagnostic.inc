@@ -84,7 +84,7 @@ The most interesting settings provided in this file are
 
   run_dir:  /path/to/recipe_output/run/diagnostic_name/script_name
   work_dir: /path/to/recipe_output/work/diagnostic_name/script_name
-  plot_dir: /path/to/recipe_output/work/diagnostic_name/script_name
+  plot_dir: /path/to/recipe_output/plots/diagnostic_name/script_name
   input_files:
     - /path/to/recipe_output/preproc/diagnostic_name/ta/metadata.yml
     - /path/to/recipe_output/preproc/diagnostic_name/pr/metadata.yml
@@ -181,7 +181,7 @@ An example :code:`diagnostic_provenance.yml` file could look like this
     plot_type: zonal
     references: [acknow_project]
     statistics: [mean]
-    
+
   ? /path/to/recipe_output/work/diagnostic_name/script_name/CMIP5_MPI-ESM-LR_Amon_historical_r1i1p1_T2Ms_pr_2000-2002_mean.nc
   : ancestors: [/path/to/recipe_output/preproc/diagnostic_name/pr/CMIP5_MPI-ESM-LR_Amon_historical_r1i1p1_T2Ms_pr_2000-2002.nc]
     authors: [ande_bo, righ_ma]
@@ -190,7 +190,7 @@ An example :code:`diagnostic_provenance.yml` file could look like this
     plot_file: /path/to/recipe_output/plots/diagnostic_name/script_name/CMIP5_MPI-ESM-LR_Amon_historical_r1i1p1_T2Ms_pr_2000-2002_mean.png
     plot_type: zonal
     references: [acknow_project]
-    statistics: [mean] 
+    statistics: [mean]
 
 You can check whether your diagnostic script successfully provided the provenance information to the backend by
 verifying that
@@ -225,7 +225,7 @@ shows the use of running a personal diagnostic; the example
 and any of its alterations may be used as training wheels for the future ESMValTool
 diagnostic developer. The purpose of this example is to familiarize the user with
 the framework of ESMValTool without the constraints of installing and running the
-tool as developer. 
+tool as developer.
 
 Functionality
 =============
@@ -256,7 +256,7 @@ the specific parameters needed by a recipe that runs a personal diagnostic are:
 
   scripts:
     my_diagnostic:
-    script: /path/to/your/my_little_diagnostic.py        
+    script: /path/to/your/my_little_diagnostic.py
 
 i.e. the full path to the personal diagnostic that the user needs to run.
 
