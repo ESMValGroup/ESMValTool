@@ -13,7 +13,7 @@ import sys
 
 from setuptools import Command, setup
 
-from esmvaltool._version import __version__
+from esmvaltool import __version__
 
 PACKAGES = [
     'esmvaltool',
@@ -29,29 +29,23 @@ REQUIREMENTS = {
     'install': [
         'cartopy',
         'cdo',
-        'cf_units',
+        'cf-units',
         'cython',
         'eofs',
+        'esmvalcore>=2.0.0a1,<2.1',
         'fiona',
         'matplotlib<3',
         'nc-time-axis',  # needed by iris.plot
         'netCDF4',
-        'numba',
         'numpy',
         'pandas',
-        'pillow',
-        'prov[dot]',
-        'psutil',
         'pyyaml',
         'scitools-iris>=2.2',
         'scikit-learn',
         'shapely',
-        'six',
         'stratify',
-        'vmprof',
-        'xarray',
+        'xarray>=0.12',
         'xlsxwriter',
-        'yamale',
     ],
     # Test dependencies
     # Execute 'python setup.py test' to run tests
@@ -77,6 +71,7 @@ REQUIREMENTS = {
         'pylint',
         'sphinx',
         'sphinx_rtd_theme',
+        'vmprof',
         'yamllint',
         'yapf',
     ],
@@ -132,12 +127,10 @@ class RunTests(CustomCommand):
 
         import pytest
 
-        version = sys.version_info[0]
-        report_dir = 'test-reports/python{}'.format(version)
+        report_dir = 'test-reports'
         args = [
             'tests',
             'esmvaltool',  # for doctests
-            '--ignore=esmvaltool/cmor/tables/',
             '--doctest-modules',
             '--cov=esmvaltool',
             '--cov-report=term',
@@ -203,44 +196,45 @@ class RunLinter(CustomCommand):
 
 
 with open('README.md') as readme:
-    setup(
-        name='ESMValTool',
-        version=__version__,
-        description='Earth System Models eValuation Tool',
-        long_description=readme.read(),
-        url='https://www.esmvaltool.org',
-        download_url='https://github.com/ESMValGroup/ESMValTool',
-        license='Apache License, Version 2.0',
-        classifiers=[
-            'Environment :: Console',
-            'License :: OSI Approved :: Apache Software License',
-            'Programming Language :: Python',
-            'Programming Language :: Python :: 3.6',
-            'Programming Language :: Python :: 3.7',
+    README = readme.read()
+
+setup(
+    name='ESMValTool',
+    version=__version__,
+    description='Earth System Models eValuation Tool',
+    long_description=README,
+    url='https://www.esmvaltool.org',
+    download_url='https://github.com/ESMValGroup/ESMValTool',
+    license='Apache License, Version 2.0',
+    classifiers=[
+        'Environment :: Console',
+        'License :: OSI Approved :: Apache Software License',
+        'Programming Language :: Python',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+    ],
+    packages=PACKAGES,
+    # Include all version controlled files
+    include_package_data=True,
+    setup_requires=REQUIREMENTS['setup'],
+    install_requires=REQUIREMENTS['install'],
+    tests_require=REQUIREMENTS['test'],
+    extras_require={
+        'develop': REQUIREMENTS['develop'] + REQUIREMENTS['test']
+    },
+    entry_points={
+        'console_scripts': [
+            'cmorize_obs = esmvaltool.'
+            'utils.cmorizers.obs.cmorize_obs:execute_cmorize',
+            'nclcodestyle = esmvaltool.'
+            'utils.nclcodestyle.nclcodestyle:_main',
+            'mip_convert_setup = esmvaltool.'
+            'utils.cmorizers.mip_convert.esmvt_mipconv_setup:main'
         ],
-        packages=PACKAGES,
-        # Include all version controlled files
-        include_package_data=True,
-        setup_requires=REQUIREMENTS['setup'],
-        install_requires=REQUIREMENTS['install'],
-        tests_require=REQUIREMENTS['test'],
-        extras_require={
-            'develop': REQUIREMENTS['develop'] + REQUIREMENTS['test']
-        },
-        entry_points={
-            'console_scripts': [
-                'esmvaltool = esmvaltool._main:run',
-                'cmorize_obs = esmvaltool.'
-                'utils.cmorizers.obs.cmorize_obs:execute_cmorize',
-                'nclcodestyle = esmvaltool.'
-                'utils.nclcodestyle.nclcodestyle:_main',
-                'mip_convert_setup = esmvaltool.'
-                'utils.cmorizers.mip_convert.esmvt_mipconv_setup:main'
-            ],
-        },
-        cmdclass={
-            'test': RunTests,
-            'lint': RunLinter,
-        },
-        zip_safe=False,
-    )
+    },
+    cmdclass={
+        'test': RunTests,
+        'lint': RunLinter,
+    },
+    zip_safe=False,
+)

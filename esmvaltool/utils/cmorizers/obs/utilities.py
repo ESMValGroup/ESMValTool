@@ -11,8 +11,8 @@ from cf_units import Unit
 from dask import array as da
 
 from esmvaltool import __version__ as version
-from esmvaltool._config import get_tag_value
-from esmvaltool.cmor.table import CMOR_TABLES
+from esmvalcore._config import get_tag_value
+from esmvalcore.cmor.table import CMOR_TABLES
 
 logger = logging.getLogger(__name__)
 
@@ -131,7 +131,7 @@ def read_cmor_config(cmor_config):
         cfg = yaml.safe_load(file)
     cfg['cmor_table'] = \
         CMOR_TABLES[cfg['attributes']['project_id']]
-    if 'comment' not in cfg.keys():
+    if 'comment' not in cfg:
         cfg['attributes']['comment'] = ''
     return cfg
 
@@ -196,9 +196,9 @@ def set_global_atts(cube, attrs):
             'comment':
             attrs.pop('comment'),
             'user':
-            os.environ["USER"],
+            os.environ.get("USER", "unknown user"),
             'host':
-            os.environ["HOSTNAME"],
+            os.environ.get("HOSTNAME", "unknown host"),
             'history':
             f'Created on {now_time}',
             'project_id':
