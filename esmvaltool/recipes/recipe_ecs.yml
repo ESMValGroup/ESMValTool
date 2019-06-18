@@ -18,9 +18,8 @@ documentation:
 preprocessors:
 
   spatial_mean:
-    average_region:
-      coord1: latitude
-      coord2: longitude
+    area_statistics:
+      operator: mean
 
 
 diagnostics:
@@ -33,8 +32,9 @@ diagnostics:
         project: CMIP5
         ensemble: r1i1p1
         mip: Amon
-      rtmt:
+      rtnt:
         <<: *variable_settings
+        derive: true
     additional_datasets:
       - {dataset: bcc-csm1-1,    exp: piControl,   start_year: 160,  end_year: 309}
       - {dataset: bcc-csm1-1,    exp: abrupt4xCO2, start_year: 160,  end_year: 309}
@@ -72,7 +72,6 @@ diagnostics:
     scripts:
       ecs: &ecs_script
         script: climate_metrics/ecs.py
-        plot_ecs_regression: true
 
   cmip6:
     description: Calculate ECS for all available CMIP6 models.
@@ -80,11 +79,14 @@ diagnostics:
       tas:
         <<: *variable_settings
         project: CMIP6
-      rtmt:
+      rtnt:
         <<: *variable_settings
         project: CMIP6
+        derive: true
     additional_datasets:
-      - {dataset: GISS-E2-1-G,  exp: piControl,    ensemble: r1i1p1f1, grid: gn, start_year: 4550, end_year: 4699}
+      - {dataset: BCC-CSM2-MR,  exp: piControl,    ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 1999}
+      - {dataset: BCC-CSM2-MR,  exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 1999}
+      - {dataset: GISS-E2-1-G,  exp: piControl,    ensemble: r1i1p1f1, grid: gn, start_year: 4150, end_year: 4299}
       - {dataset: GISS-E2-1-G,  exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 1999}
       - {dataset: IPSL-CM6A-LR, exp: piControl,    ensemble: r1i1p1f1, grid: gr, start_year: 1850, end_year: 1999}
       - {dataset: IPSL-CM6A-LR, exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gr, start_year: 1850, end_year: 1999}

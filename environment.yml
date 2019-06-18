@@ -1,11 +1,4 @@
 ---
-# Notes on ncl-cdo-R packages relation for future releases:
-# cdo=1.9.6 works only with ncl=6.6.2 but that
-# implies the use of R packages from the r channel
-# and those packages are R=3.2.2 << 3.5.1 and are
-# obsolete (installing ncl=6.6.2 automatically removes
-# the conda-forge-installed R (3.5.1) packages
-
 name: esmvaltool
 channels:
   - conda-forge
@@ -16,15 +9,19 @@ dependencies:
   - iris>=2.2
   - matplotlib<3  # Can be installed from PyPI, but is a dependency of iris and should be pinned.
   - python-stratify
-  - xarray  # Can be installed from PyPI, but here to get a consistent set of depencies with iris.
+  - xarray>=0.12.0  # Can be installed from PyPI, but here to get a consistent set of depencies with iris.
   # Non-Python dependencies
   - graphviz
   - cdo
+  - imagemagick
+  - nco
 
 
   # Multi language support:
-  - ncl>=6.5.0
-  - jasper!=1.900.31  # pinned NCL dependency
-  # - r-base
+  - python>=3.6
   - libunwind  # Needed for Python3.7+
+  - ncl>=6.5.0
+  - r-base
+  - r-curl  # Dependency of lintr, but fails to compile because it cannot find libcurl installed from conda.
+  - r-udunits2  # Fails to compile because it cannot find udunits2 installed from conda.
   # - julia>=1.0.0  # The Julia package on conda is apparently broken

@@ -8,13 +8,14 @@ import yaml
 from mock import create_autospec
 from six import text_type
 
+import esmvalcore
 import esmvaltool
-from esmvaltool._recipe import TASKSEP, read_recipe_file
-from esmvaltool._task import DiagnosticTask
+from esmvalcore._recipe import TASKSEP, read_recipe_file
+from esmvalcore._task import DiagnosticTask
+from esmvalcore.preprocessor import DEFAULT_ORDER, PreprocessingTask
+from esmvalcore.preprocessor._io import concatenate_callback
 from esmvaltool.diag_scripts.shared import (
     ProvenanceLogger, get_diagnostic_filename, get_plot_filename)
-from esmvaltool.preprocessor import DEFAULT_ORDER, PreprocessingTask
-from esmvaltool.preprocessor._io import concatenate_callback
 
 from .test_diagnostic_run import write_config_user_file
 from .test_provenance import check_provenance
@@ -63,7 +64,7 @@ DEFAULT_PREPROCESSOR_STEPS = (
 @pytest.fixture
 def config_user(tmp_path):
     filename = write_config_user_file(tmp_path)
-    cfg = esmvaltool._config.read_config_user_file(filename, 'recipe_test')
+    cfg = esmvalcore._config.read_config_user_file(filename, 'recipe_test')
     cfg['synda_download'] = False
     return cfg
 
@@ -115,7 +116,7 @@ def patched_datafinder(tmp_path, monkeypatch):
             create_test_file(file, next(tracking_id))
         return filenames
 
-    monkeypatch.setattr(esmvaltool._data_finder, 'find_files', find_files)
+    monkeypatch.setattr(esmvalcore._data_finder, 'find_files', find_files)
 
 
 DEFAULT_DOCUMENTATION = dedent("""
@@ -313,13 +314,40 @@ def test_default_preprocessor(tmp_path, patched_datafinder, config_user):
     assert product.settings == defaults
 
 
+def test_empty_variable(tmp_path, patched_datafinder, config_user):
+    """Test that it is possible to specify all information in the dataset."""
+    content = dedent("""
+        diagnostics:
+          diagnostic_name:
+            additional_datasets:
+              - dataset: CanESM2
+                project: CMIP5
+                mip: Amon
+                exp: historical
+                start_year: 2000
+                end_year: 2005
+                ensemble: r1i1p1
+            variables:
+              pr:
+            scripts: null
+        """)
+
+    recipe = get_recipe(tmp_path, content, config_user)
+    assert len(recipe.tasks) == 1
+    task = recipe.tasks.pop()
+    assert len(task.products) == 1
+    product = task.products.pop()
+    assert product.attributes['short_name'] == 'pr'
+    assert product.attributes['dataset'] == 'CanESM2'
+
+
 def test_reference_dataset(tmp_path, patched_datafinder, config_user,
                            monkeypatch):
 
     levels = [100]
     get_reference_levels = create_autospec(
-        esmvaltool._recipe.get_reference_levels, return_value=levels)
-    monkeypatch.setattr(esmvaltool._recipe, 'get_reference_levels',
+        esmvalcore._recipe.get_reference_levels, return_value=levels)
+    monkeypatch.setattr(esmvalcore._recipe, 'get_reference_levels',
                         get_reference_levels)
 
     content = dedent("""
@@ -420,9 +448,8 @@ def test_custom_preproc_order(tmp_path, patched_datafinder, config_user):
     content = dedent("""
         preprocessors:
           default: &default
-            average_region:
-              coord1: longitude
-              coord2: latitude
+            area_statistics:
+              operator: mean
             multi_model_statistics:
               span: overlap
               statistics: [mean ]
@@ -457,9 +484,9 @@ def test_custom_preproc_order(tmp_path, patched_datafinder, config_user):
     default = next(t for t in recipe.tasks if tuple(t.order) == DEFAULT_ORDER)
     custom = next(t for t in recipe.tasks if tuple(t.order) != DEFAULT_ORDER)
 
-    assert custom.order.index('average_region') < custom.order.index(
+    assert custom.order.index('area_statistics') < custom.order.index(
         'multi_model_statistics')
-    assert default.order.index('average_region') > default.order.index(
+    assert default.order.index('area_statistics') > default.order.index(
         'multi_model_statistics')
 
 
@@ -545,13 +572,20 @@ def test_derive_not_needed(tmp_path, patched_datafinder, config_user):
     # Check product content of tasks
     assert len(task.products) == 1
     product = task.products.pop()
-    assert 'derive' in product.settings
     assert product.attributes['short_name'] == 'toz'
+    assert 'derive' in product.settings
 
     assert len(ancestor.products) == 1
     ancestor_product = ancestor.products.pop()
     assert ancestor_product.filename in product.files
     assert ancestor_product.attributes['short_name'] == 'toz'
+    assert 'derive' not in ancestor_product.settings
+
+    # Check that fixes are applied just once
+    fixes = ('fix_file', 'fix_metadata', 'fix_data')
+    for fix in fixes:
+        assert fix in ancestor_product.settings
+        assert fix not in product.settings
 
 
 def test_derive_with_fx(tmp_path, patched_datafinder, config_user):
@@ -599,6 +633,32 @@ def test_derive_with_fx(tmp_path, patched_datafinder, config_user):
     assert ancestor_product.attributes['short_name'] == 'nbp'
 
 
+def simulate_diagnostic_run(diagnostic_task):
+    """Simulate Python diagnostic run."""
+    cfg = diagnostic_task.settings
+    input_files = [
+        p.filename for a in diagnostic_task.ancestors for p in a.products
+    ]
+    record = {
+        'caption': 'Test plot',
+        'plot_file': get_plot_filename('test', cfg),
+        'statistics': ['mean', 'var'],
+        'domains': ['trop', 'et'],
+        'plot_type': 'zonal',
+        'authors': ['ande_bo'],
+        'references': ['acknow_project'],
+        'ancestors': input_files,
+    }
+
+    diagnostic_file = get_diagnostic_filename('test', cfg)
+    create_test_file(diagnostic_file)
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(diagnostic_file, record)
+
+    diagnostic_task._collect_provenance()
+    return record
+
+
 def test_diagnostic_task_provenance(tmp_path, patched_datafinder, config_user):
 
     script = tmp_path / 'diagnostic.py'
@@ -625,34 +685,16 @@ def test_diagnostic_task_provenance(tmp_path, patched_datafinder, config_user):
             scripts:
               script_name:
                 script: {script}
+              script_name2:
+                script: {script}
+                ancestors: [script_name]
         """.format(script=script))
 
     recipe = get_recipe(tmp_path, content, config_user)
     diagnostic_task = recipe.tasks.pop()
 
-    # Simulate Python diagnostic run
-    cfg = diagnostic_task.settings
-    input_files = [
-        p.filename for a in diagnostic_task.ancestors for p in a.products
-    ]
-    record = {
-        'caption': 'Test plot',
-        'plot_file': get_plot_filename('test', cfg),
-        'statistics': ['mean', 'var'],
-        'domains': ['trop', 'et'],
-        'plot_type': 'zonal',
-        'authors': ['ande_bo'],
-        'references': ['acknow_project'],
-        'ancestors': input_files,
-    }
-
-    diagnostic_file = get_diagnostic_filename('test', cfg)
-    create_test_file(diagnostic_file)
-    with ProvenanceLogger(cfg) as provenance_logger:
-        provenance_logger.log(diagnostic_file, record)
-
-    diagnostic_task._collect_provenance()
-    # Done simulating diagnostic run
+    simulate_diagnostic_run(next(iter(diagnostic_task.ancestors)))
+    record = simulate_diagnostic_run(diagnostic_task)
 
     # Check resulting product
     product = diagnostic_task.products.pop()

@@ -1,0 +1,54 @@
+# ESMValTool
+# recipe_toymodel.yml
+---
+documentation:
+  description: |
+    Tool for generating synthetic observations based on the model presented
+    in Weigel et al. (2008) QJRS with an extension to consider non-stationary
+    (2008) QJRS with an extension to consider non-stationary distributions
+    distributions prescribing a linear trend. The toymodel allows to
+    generate an aritifical forecast based on obsevations provided as input.
+
+
+  authors:
+    - bell_om
+
+  projects:
+    - c3s-magic
+
+  references:
+    - weigel
+
+
+datasets:
+#  - {dataset: IPSL-CM5A-LR, type: exp, project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1999,  end_year: 2000}
+#  - {dataset: MPI-ESM-LR, type: exp, project: CMIP5, exp: rcp85, ensemble: r1i1p1, start_year: 2020, end_year: 2050}
+  - {dataset: bcc-csm1-1, type: exp, project: CMIP5, exp: rcp45, ensemble: r1i1p1, start_year: 2051, end_year: 2060}
+
+preprocessors:
+  preproc:
+    regrid:
+      target_grid: bcc-csm1-1
+      scheme: linear
+    mask_fillvalues:
+      threshold_fraction: 0.95
+    extract_region:
+      start_longitude: -40
+      end_longitude: 40
+      start_latitude: 30
+      end_latitude: 50
+
+
+diagnostics:
+  toymodel:
+    description: Generate synthetic observations.
+    variables:
+      psl:
+        preprocessor: preproc
+        mip: Amon
+
+    scripts:
+      main:
+        script: magic_bsc/toymodel.r
+        beta: 0.7
+        number_of_members: 2
