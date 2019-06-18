@@ -1,4 +1,4 @@
-.. _git_repository:
+.. _git-repository:
 
 ***************
 GitHub Workflow
@@ -15,7 +15,7 @@ There are *two* ESMValTool GitHub repositories available:
 
 #. The **PRIVATE** GitHub repository is restricted to the ESMValTool Development Team. This repository is only accessible to ESMValTool developers that have accepted the terms of use for the ESMValTool development environment. The use of the ESMValTool software and access to the private ESMValTool GitHub repository constitutes acceptance of these terms. *When you fork or copy this repository, you must ensure that you do not copy the PRIVATE repository into an open domain!* The PRIVATE ESMValTool repository for the ESMValTool development team is located at https://github.com/ESMValGroup/ESMValTool-private
 
-All developments can be made in either of the two repositories. The creation of *FEATURE BRANCHES* (see below), however, is restricted to registered ESMValTool developers in both repositories. We encourage all developers to join the ESMValTool development team. Please contact the ESMValTool Core Development Team (Section :ref:`core_dev_team`) if you want to join the ESMValTool development team.
+All developments can be made in either of the two repositories. The creation of *FEATURE BRANCHES* (see below), however, is restricted to registered ESMValTool developers in both repositories. We encourage all developers to join the ESMValTool development team. Please contact the :ref:`ESMValTool Core Development Team <core-team>` if you want to join the ESMValTool development team.
 The PRIVATE GitHub repository offers a central protected environment for ESMValTool developers who would like to keep their contributions undisclosed (e.g., unpublished scientific work, work in progress by PhD students) while at the same time benefiting from the possibilities of collaborating with other ESMValTool developers and having a backup of their work. *FEATURE BRANCHES* created in the PRIVATE repository are only visible to the ESMValTool development team but not to the public. The concept of a PRIVATE repository has proven to be very useful to efficiently share code during the development across institutions and projects in a common repository without having the contributions immediately accessible to the public.
 
 Both, the PUBLIC and the PRIVATE repository, contain the following kinds of branches:
@@ -27,15 +27,16 @@ Both, the PUBLIC and the PRIVATE repository, contain the following kinds of bran
 Access rights
 =============
 
-* Write access to the *MASTER* and *DEVELOPMENT BRANCH* in both, the PUBLIC and the PRIVATE GitHub repositories, is restricted to the ESMValTool core development team.
+* Write access to the *MASTER* and *DEVELOPMENT BRANCH* in both, the PUBLIC and the PRIVATE GitHub repositories, is restricted to the :ref:`ESMValTool Core Development Team <core-team>`.
 * *FEATURE BRANCHES* in both the PUBLIC and the PRIVATE repository can be created by all members of the ESMValTool development team (i.e. members in the GitHub organization "ESMValGroup"). If needed, branches can be individually write-protected within each repository so that other developers cannot accidently push changes to these branches.
 
-The *MASTER BRANCH* of the PRIVATE repository will be regularly synchronized with the *MASTER BRANCH* of the PUBLIC repository (currently by hand). This ensures that they are identical at all times (see schematic in :ref:`fig_git`). The recommended workflow for members of the ESMValTool development team is to create additional *FEATURE BRANCHES* in either the PUBLIC or the PRIVATE repository, see further instructions below.
+The *MASTER BRANCH* of the PRIVATE repository will be regularly synchronized with the *MASTER BRANCH* of the PUBLIC repository (currently by hand). This ensures that they are identical at all times (see schematic in Figure :numref:`fig-git`). The recommended workflow for members of the ESMValTool development team is to create additional *FEATURE BRANCHES* in either the PUBLIC or the PRIVATE repository, see further instructions below.
 
-.. _fig_git:
-.. figure::  /figures/git_diagram.png
-   :align:   center
-   :width:   10cm
+.. _fig-git:
+
+.. figure:: /figures/git_diagram.png
+   :width: 10cm
+   :align: center
 
    Schematic diagram of the ESMValTool GitHub repositories.
 
@@ -143,9 +144,9 @@ To share your work and to have an online backup, push your local development to 
 Pull requests
 -------------
 
-Once your development is completely finished, go to the GitHub website of the ESMValTool repository and switch to your *FEATURE BRANCH*. You can then initiate a pull request by clicking on the button "New pull request". Select the *DEVELOPMENT BRANCH* as "base branch" and click on "Create pull request". Your pull request will then be tested, discussed and implemented into the *DEVELPOMENT BRANCH* by the ESMValTool Core Development Team.
+Once your development is completely finished, go to the GitHub website of the ESMValTool repository and switch to your *FEATURE BRANCH*. You can then initiate a pull request by clicking on the button "New pull request". Select the *DEVELOPMENT BRANCH* as "base branch" and click on "Create pull request". Your pull request will then be tested, discussed and implemented into the *DEVELPOMENT BRANCH* by the :ref:`ESMValTool Core Development Team <core-team>`.
 
-.. attention:: Before creating a pull request, please make sure all requirements listed in Sections :ref:`writing` and :ref:`documentation` are fully met (see also checklist in :ref:`tab_checklist`).
+.. attention:: When creating a pull request, please carefully review the requirements and recommendations in CONTRIBUTING.md and try to implement those (see also checklist in the pull request template). It is recommended that you create a draft pull request early in the development process, when it is still possible to implement feedback. Do not wait until shortly before the deadline of the project you are working on. If you are unsure how to implement any of the requirements, please do not hesitate to ask for help in the pull request.
 
 GitHub issues
 -------------
@@ -163,15 +164,15 @@ Do-s
 * Use short but self-explanatory variable names (e.g., model_input and reference_input instead of xm and xr).
 * Consider a modular/functional programming style. This often makes code easier to read and deletes intermediate variables immediately. If possible, separate diagnostic calculations from plotting routines.
 * Consider reusing or extending existing code. General-purpose code can be found in esmvaltool/diag_scripts/shared/.
-* Comment all switches and parameters including a list of all possible settings/options in the header section of your code (see also Section :ref:`std_diag`).
-* Use templates for recipes (Section :ref:`std_recipe`) and diagnostics (Section :ref:`std_diag`) to help with proper documentation.
+* Comment all switches and parameters including a list of all possible settings/options in the header section of your code (see also ...).
+* Use templates for recipes (see ...) and diagnostics (see ...) to help with proper documentation.
 * Keep your *FEATURE BRANCH* regularly synchronized with the *DEVELOPMENT BRANCH* (git merge).
 * Keep developments / modifications of the ESMValTool framework / backend / basic structure separate from developments of diagnostics by creating different *FEATURE BRANCHES* for these two kinds of developments. Create *FEATURE BRANCHES* for changes / modifications of the ESMValTool framework only in the *PUBLIC* repository.
 
 Don't-s
 -------
 
-* Do not use other programming languages than the ones currently supported (NCL, Python, R). Contact the Core Development Team (Section :ref:`core_dev_team`) if you wish to use another language, but remember that only open-source languages are supported by the ESMValTool.
+* Do not use other programming languages than the ones currently supported (Python, R, NCL, Julia). If you are unsure what language to use, Python is probably the best choice, because it has very good libraries available and is supported by a large community. Contact the :ref:`ESMValTool Core Development Team <core-team>` if you wish to use another language, but remember that only open-source languages are supported by the ESMValTool.
 * Do not develop without proper version control (see do-s above).
 * Avoid large (memory, disk space) intermediate results. Delete intermediate files/variables or see modular/functional programming style.
 * Do not use hard-coded pathnames or filenames.
