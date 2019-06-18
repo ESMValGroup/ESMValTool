@@ -34,9 +34,6 @@ from .utilities import (constant_metadata, fix_coords, fix_var_metadata,
 
 logger = logging.getLogger(__name__)
 
-# read in CMOR configuration
-CFG = read_cmor_config('ESACCI-OC.yml')
-
 
 def _fix_data(cube, var):
     """Specific data fixes for different variables."""
@@ -149,8 +146,9 @@ def merge_data(in_dir, out_dir, raw_info, bins):
 
 def cmorization(in_dir, out_dir):
     """Cmorization func call."""
-    cmor_table = CFG['cmor_table']
-    glob_attrs = CFG['attributes']
+    cfg = read_cmor_config('ESACCI-OC.yml')
+    cmor_table = cfg['cmor_table']
+    glob_attrs = cfg['attributes']
 
     logger.info("Starting cmorization for Tier%s OBS files: %s",
                 glob_attrs['tier'], glob_attrs['dataset_id'])
@@ -158,14 +156,14 @@ def cmorization(in_dir, out_dir):
     logger.info("Output will be written to: %s", out_dir)
 
     # run the cmorization
-    for var, vals in CFG['variables'].items():
+    for var, vals in cfg['variables'].items():
         var_info = cmor_table.get_variable(vals['mip'], var)
         glob_attrs['mip'] = vals['mip']
         raw_info = {'name': vals['raw'], 'file': vals['file']}
 
         # merge yearly data and apply binning
         inpfile, addinfo = merge_data(in_dir, out_dir, raw_info,
-                                      CFG['custom']['bin_size'])
+                                      cfg['custom']['bin_size'])
 
         logger.info("CMORizing var %s from file %s", var, inpfile)
         raw_info['file'] = inpfile
