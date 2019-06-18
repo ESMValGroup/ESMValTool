@@ -48,10 +48,9 @@ recipe_ocean_amoc.yml.
         - ukesm
 
 Note that the author, project, and references will need to be included in the
-config-references.yml file. The author name uses the format:
-last name (clipped after 4 letters) underscore first name (clipped to two
-letters) and all letters are lowercase. For instance, Mickey Mouse would be:
-mous_mi. Also note that this username is unlikely to be the same as the github
+``config-references.yml`` file. The author name uses the format:
+`surname_name`. For instance, Mickey Mouse would be: `mouse_mickey`.
+Also note that this username is unlikely to be the same as the github
 user name.
 
 
