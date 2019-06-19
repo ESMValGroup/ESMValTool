@@ -10,9 +10,9 @@ import yaml
 from cf_units import Unit
 from dask import array as da
 
-from esmvaltool import __version__ as version
 from esmvalcore._config import get_tag_value
 from esmvalcore.cmor.table import CMOR_TABLES
+from esmvaltool import __version__ as version
 
 logger = logging.getLogger(__name__)
 
@@ -123,10 +123,10 @@ def flip_dim_coord(cube, coord_name):
     cube.data = da.flip(cube.core_data(), axis=coord_idx)
 
 
-def read_cmor_config(cmor_config):
+def read_cmor_config(dataset):
     """Read the associated dataset-specific config file."""
     reg_path = os.path.join(
-        os.path.dirname(__file__), 'cmor_config', cmor_config)
+        os.path.dirname(__file__), 'cmor_config', dataset + '.yml')
     with open(reg_path, 'r') as file:
         cfg = yaml.safe_load(file)
     cfg['cmor_table'] = \

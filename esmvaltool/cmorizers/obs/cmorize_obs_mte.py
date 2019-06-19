@@ -21,7 +21,7 @@ import os
 
 import iris
 
-import esmvaltool.utils.cmorizers.obs.utilities as utils
+from . import utilities as utils
 
 logger = logging.getLogger(__name__)
 
@@ -52,15 +52,10 @@ def _extract_variable(raw_var, cmor_info, attrs, filepath, out_dir):
         cube, var, out_dir, attrs, unlimited_dimensions=['time'])
 
 
-def cmorization(in_dir, out_dir):
+def cmorization(in_dir, out_dir, cfg):
     """Cmorization func call."""
-    cfg = utils.read_cmor_config('MTE.yml')
     glob_attrs = cfg['attributes']
     cmor_table = cfg['cmor_table']
-    logger.info("Starting cmorization for Tier%s OBS files: %s",
-                glob_attrs['tier'], glob_attrs['dataset_id'])
-    logger.info("Input data from: %s", in_dir)
-    logger.info("Output will be written to: %s", out_dir)
     filepath = _get_filepath(in_dir, cfg['filename'])
     logger.info("Found input file '%s'", filepath)
 

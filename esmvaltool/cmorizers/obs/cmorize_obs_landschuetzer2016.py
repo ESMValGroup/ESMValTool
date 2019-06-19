@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name
 """ESMValTool CMORizer for Landschuetzer2016 data.
 
 Tier
@@ -26,7 +25,7 @@ import iris
 from dask import array as da
 
 from .utilities import (constant_metadata, fix_coords, fix_var_metadata,
-                        read_cmor_config, save_variable, set_global_atts)
+                        save_variable, set_global_atts)
 
 logger = logging.getLogger(__name__)
 
@@ -84,16 +83,10 @@ def extract_variable(var_info, raw_info, out_dir, attrs):
             )
 
 
-def cmorization(in_dir, out_dir):
+def cmorization(in_dir, out_dir, cfg):
     """Cmorization func call."""
-    cfg = read_cmor_config('Landschuetzer2016.yml')
     cmor_table = cfg['cmor_table']
     glob_attrs = cfg['attributes']
-
-    logger.info("Starting cmorization for Tier%s OBS files: %s",
-                glob_attrs['tier'], glob_attrs['dataset_id'])
-    logger.info("Input data from: %s", in_dir)
-    logger.info("Output will be written to: %s", out_dir)
 
     # run the cmorization
     for var, vals in cfg['variables'].items():

@@ -21,6 +21,8 @@ import subprocess
 from esmvalcore._config import read_config_user_file
 from esmvalcore._task import write_ncl_settings
 
+from .utilities import read_cmor_config
+
 logger = logging.getLogger(__name__)
 
 HEADER = r"""
@@ -91,6 +93,8 @@ def _write_ncl_settings(project_info, dataset, run_dir, reformat_script,
 def _run_ncl_script(in_dir, out_dir, run_dir, dataset, reformat_script,
                     log_level):
     """Run the NCL cmorization mechanism."""
+    logger.info("CMORizing dataset %s using NCL script %s",
+                dataset, reformat_script)
     project = {}
     project[dataset] = {}
     project[dataset]['indir'] = in_dir
@@ -119,13 +123,18 @@ def _run_ncl_script(in_dir, out_dir, run_dir, dataset, reformat_script,
         logger.info('[NCL][subprocess.Popen ERROR] %s', err)
 
 
-def _run_pyt_script(in_dir, out_dir, reformat_module):
+def _run_pyt_script(in_dir, out_dir, dataset):
     """Run the Python cmorization mechanism."""
-    py_cmor = importlib.import_module(reformat_module)
-    py_cmor.cmorization(in_dir, out_dir)
+    module_name = 'esmvaltool.cmorizers.obs.cmorize_obs_{}'.format(
+        dataset.lower().replace("-", "_"))
+    module = importlib.import_module(module_name)
+    logger.info("CMORizing dataset %s using Python script %s",
+                dataset, module.__file__)
+    cfg = read_cmor_config(dataset)
+    module.cmorization(in_dir, out_dir, cfg)
 
 
-def execute_cmorize():
+def main():
     """Run it as executable."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('-o',
@@ -232,7 +241,9 @@ def _cmor_reformat(config, obs_list):
                                                 'cmorize_obs_' + dataset)
             # in-data dir; build out-dir tree
             in_data_dir = os.path.join(raw_obs, tier, dataset)
+            logger.info("Input data from: %s", in_data_dir)
             out_data_dir = os.path.join(config['output_dir'], tier, dataset)
+            logger.info("Output will be written to: %s", out_data_dir)
             if not os.path.isdir(out_data_dir):
                 os.makedirs(out_data_dir)
 
@@ -242,10 +253,6 @@ def _cmor_reformat(config, obs_list):
             # figure out what language the script is in
             if os.path.isfile(reformat_script_root + '.ncl'):
                 reformat_script = reformat_script_root + '.ncl'
-                logger.info("CMORizing dataset %s using NCL script %s",
-                            dataset, reformat_script)
-
-                # call the ncl script
                 _run_ncl_script(
                     in_data_dir,
                     out_data_dir,
@@ -255,17 +262,11 @@ def _cmor_reformat(config, obs_list):
                     config['log_level'],
                 )
             elif os.path.isfile(
-                    reformat_script_root.replace('-', '_') + '.py'):
-                py_reformat_script = (reformat_script_root.replace('-', '_') +
-                                      '.py')
-                logger.info("CMORizing dataset %s using Python script %s",
-                            dataset, py_reformat_script)
-                module_root = 'esmvaltool.utils.cmorizers.obs.cmorize_obs_'
-                _run_pyt_script(in_data_dir, out_data_dir,
-                                module_root + dataset.replace('-', '_'))
+                    reformat_script_root.lower().replace('-', '_') + '.py'):
+                _run_pyt_script(in_data_dir, out_data_dir, dataset)
             else:
                 logger.info('Could not find cmorizer for %s', datasets)
 
 
 if __name__ == '__main__':
-    execute_cmorize()
+    main()

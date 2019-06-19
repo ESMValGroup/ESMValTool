@@ -23,7 +23,7 @@ import shutil
 
 import iris
 
-import esmvaltool.utils.cmorizers.obs.utilities as utils
+from . import utilities as utils
 
 logger = logging.getLogger(__name__)
 
@@ -63,15 +63,10 @@ def _unzip(filepath, out_dir):
     return new_path
 
 
-def cmorization(in_dir, out_dir):
+def cmorization(in_dir, out_dir, cfg):
     """Cmorization func call."""
-    cfg = utils.read_cmor_config('CRU.yml')
     glob_attrs = cfg['attributes']
     cmor_table = cfg['cmor_table']
-    logger.info("Starting cmorization for Tier%s OBS files: %s",
-                glob_attrs['tier'], glob_attrs['dataset_id'])
-    logger.info("Input data from: %s", in_dir)
-    logger.info("Output will be written to: %s", out_dir)
     raw_filepath = os.path.join(in_dir, cfg['filename'])
 
     # Run the cmorization

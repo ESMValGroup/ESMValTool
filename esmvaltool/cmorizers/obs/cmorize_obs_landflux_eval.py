@@ -26,7 +26,7 @@ import iris
 import numpy as np
 from cf_units import Unit
 
-import esmvaltool.utils.cmorizers.obs.utilities as utils
+from . import utilities as utils
 
 logger = logging.getLogger(__name__)
 
@@ -65,15 +65,10 @@ def _fix_time_coord(cube):
     time_coord.attributes = {}
 
 
-def cmorization(in_dir, out_dir):
+def cmorization(in_dir, out_dir, cfg):
     """Cmorization func call."""
-    cfg = utils.read_cmor_config('LandFlux-EVAL.yml')
     glob_attrs = cfg['attributes']
     cmor_table = cfg['cmor_table']
-    logger.info("Starting cmorization for Tier%s OBS files: %s",
-                glob_attrs['tier'], glob_attrs['dataset_id'])
-    logger.info("Input data from: %s", in_dir)
-    logger.info("Output will be written to: %s", out_dir)
     filepath = os.path.join(in_dir, cfg['filename'])
     logger.info("Found input file '%s'", filepath)
 

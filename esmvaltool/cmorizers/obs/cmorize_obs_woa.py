@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name
 """ESMValTool CMORizer for WOA data.
 
 Tier
@@ -32,8 +31,7 @@ import os
 import iris
 
 from .utilities import (constant_metadata, convert_timeunits, fix_coords,
-                        fix_var_metadata, read_cmor_config, save_variable,
-                        set_global_atts)
+                        fix_var_metadata, save_variable, set_global_atts)
 
 logger = logging.getLogger(__name__)
 
@@ -69,16 +67,10 @@ def extract_variable(var_info, raw_info, out_dir, attrs, year):
                 cube, var, out_dir, attrs, unlimited_dimensions=['time'])
 
 
-def cmorization(in_dir, out_dir):
+def cmorization(in_dir, out_dir, cfg):
     """Cmorization func call."""
-    cfg = read_cmor_config('WOA.yml')
     cmor_table = cfg['cmor_table']
     glob_attrs = cfg['attributes']
-
-    logger.info("Starting cmorization for Tier%s OBS files: %s",
-                glob_attrs['tier'], glob_attrs['dataset_id'])
-    logger.info("Input data from: %s", in_dir)
-    logger.info("Output will be written to: %s", out_dir)
 
     # run the cmorization
     for var, vals in cfg['variables'].items():

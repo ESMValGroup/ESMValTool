@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name
 """ESMValTool CMORizer for ESACCI-OC data.
 
 Tier
@@ -22,15 +21,15 @@ Modification history
 
 """
 
+import glob
 import logging
 import os
-import glob
-import xarray as xr
 
 import iris
+import xarray as xr
 
 from .utilities import (constant_metadata, fix_coords, fix_var_metadata,
-                        read_cmor_config, save_variable, set_global_atts)
+                        save_variable, set_global_atts)
 
 logger = logging.getLogger(__name__)
 
@@ -85,7 +84,7 @@ def extract_variable(var_info, raw_info, out_dir, attrs):
 def merge_data(in_dir, out_dir, raw_info, bins):
     """Merge all data into a single (regridded) file."""
     var = raw_info['name']
-    do_bin = True if (bins % 2 == 0) & (bins != 0) else False
+    do_bin = (bins != 0) and (bins % 2 == 0)
     datafile = sorted(glob.glob(in_dir + '/' + raw_info['file'] + '*.nc'))
     for x in datafile:
         ds = xr.open_dataset(x)
@@ -144,16 +143,10 @@ def merge_data(in_dir, out_dir, raw_info, bins):
     return (datafile, dsmeta['BINNING'])
 
 
-def cmorization(in_dir, out_dir):
+def cmorization(in_dir, out_dir, cfg):
     """Cmorization func call."""
-    cfg = read_cmor_config('ESACCI-OC.yml')
     cmor_table = cfg['cmor_table']
     glob_attrs = cfg['attributes']
-
-    logger.info("Starting cmorization for Tier%s OBS files: %s",
-                glob_attrs['tier'], glob_attrs['dataset_id'])
-    logger.info("Input data from: %s", in_dir)
-    logger.info("Output will be written to: %s", out_dir)
 
     # run the cmorization
     for var, vals in cfg['variables'].items():
