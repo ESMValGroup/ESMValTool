@@ -17,9 +17,9 @@
 # Caveats
 #
 # Modification history
-#    20181210 hard_jo: cleanup and using juliacall
-#    20180508-A_arnone_e: Conversion to v2.0
-#    20170908-A_arnone_e: 1st github version
+#    20181210-vonhardenberg_jost: cleanup and using juliacall
+#    20180508-arnone_enrico: Conversion to v2.0
+#    20170908-arnone_enrico: 1st github version
 #
 # ############################################################################
 
@@ -162,7 +162,7 @@ for (model_idx in c(1:(length(models_name)))) {
     # Set provenance for this output file
     caption <- paste0("RainFARM precipitation downscaling")
     xprov <- list(ancestors = list(infile),
-                  authors = list("arno_en", "hard_jo"),
+                  authors = list("arnone_enrico", "vonhardenberg_jost"),
                   references = list("donofrio14jh", "rebora06jhm",
                                     "terzago18nhess"),
                   projects = list("c3s-magic"),

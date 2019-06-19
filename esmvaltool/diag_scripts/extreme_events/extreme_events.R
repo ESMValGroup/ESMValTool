@@ -32,7 +32,8 @@ library(RColorBrewer)  # nolint
 provenance_record <- function(infile) {
   xprov <- list(
     ancestors = as.list(infile),
-    authors = list("broe_bj", "sand_ma", "mohr_cw", "vonhardenberg_jost"),
+    authors = list("broetz_bjoern", "sandstad_marit",
+                   "mohr_christianwilhelm", "vonhardenberg_jost"),
     references = list("zhang-2011"),
     projects = list("crescendo", "c3s-magic"),
     caption = "Extreme events indices",
