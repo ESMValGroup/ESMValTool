@@ -49,7 +49,7 @@ function roi(latlon_dat[4]:float,
 ; References
 ;
 ; Modification history
-;    20140129-A_gott_kl: written.
+;    20140129-gottschaldt_klaus-dirk: written.
 ;
 local funcname, scriptname, latlon_cases, coord_checks, datmin, \
   datmax, roimin, roimax, latlon_dat, latlon_roi, latmin, latmax, lonmin, \
@@ -190,8 +190,8 @@ function extract_area(index[1]:integer,
 ;
 ; References
 ;
-; Modification history:
-;    2013????-A_gott_kl: written.
+; Modification history
+;    2013????-gottschaldt_klaus-dirk: written.
 ;
 local funcname, scriptname, cn, cnt, datasetfile, fm, val
 begin
@@ -232,8 +232,8 @@ function gridcell_area(deltax[1]: numeric,
 ; Description
 ;    Calculates the area of a grid cell on the sphere.
 ;
-; Modification history:
-;    20121211-A_righ_ma: written.
+; Modification history
+;    20121211-righi_mattia: written.
 ;
 local funcname, scriptname, deg2rad
 begin
@@ -273,8 +273,8 @@ function map_area(lat[*]:numeric,
 ;    Assumes a constant resolution in longitude.
 ;
 ; Modification history
-;    20140819-A_righ_ma: modified to support non-global input.
-;    20121211-A_righ_ma: written.
+;    20140819-righi_mattia: modified to support non-global input.
+;    20121211-righi_mattia: written.
 ;
 local funcname, scriptname, loclat, loclon, nlat, lati, xresol
 begin
@@ -374,7 +374,7 @@ function area_operations(field:numeric,
 ;    average/sum is possible in this case.
 ;
 ; Modification history
-;    20140116-A_righ_ma: written.
+;    20140116-righi_mattia: written.
 ;
 local funcname, scriptname, rank, dimnames, wgt, conwgt, f_latmin, f_latmax, \
   f_lonmin, f_lonmax, delta, idx_latmin, idx_latmax, latidx, idx_lonmin, \
@@ -586,10 +586,10 @@ function select_region(region:string)
 ;    name as an attribute.
 ;
 ; Modification history
-;    20190405-A_righ_ma: change region names to match provenance definitions.
-;    20141205-A_gott_kl: adjusted names to Righi et al. (2015).
-;    20140410-A_fran_fr: extended to midlat, equatorial and polar regions.
-;    20140129-A_fran_fr: written.
+;    20190405-righi_mattia: change region names to match provenance.
+;    20141205-gottschaldt_klaus-dirk: adjusted names to Righi et al. (2015).
+;    20140410-frank_franziska: extended to midlat, equatorial and polar.
+;    20140129-frank_franziska: written.
 ;
 local funcname, scriptname, region
 begin
@@ -714,8 +714,8 @@ function make_latlon2D(var[1]:string,
 ;    Get 2d lat & lon coordinates for variables (see e.g.
 ;    http://www.ncl.ucar.edu/Applications/Scripts/ice_3.ncl)
 ;
-; Modification history:
-;    20141023-A_vanu_be: written based on code in SeaIce_polcon_diff
+; Modification history
+;    20141023-vanulft_bert: written based on code in SeaIce_polcon_diff
 ;
 local funcname, scriptname, area_lat, area_lon, area_temp, out_field, rank
 begin
@@ -814,8 +814,8 @@ function cdo_remapdis(var[1]:string,
 ; Caveats
 ;    Climate Data Operators (CDO) package must be installed on the system
 ;
-; Modification history:
-;    20170120-A_senf_da: written.
+; Modification history
+;    20170120-senftleben_daniel: written.
 ;
 local regfile_in_tmp, regfile_out_tmp, lat, lon, gAtt, field_out, quote
 begin

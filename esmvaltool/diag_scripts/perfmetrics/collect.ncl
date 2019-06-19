@@ -29,16 +29,18 @@
 ; Caveats
 ;
 ; Modification history
-;    20190315-A_hass_bg: added SMPI case
-;    20180508-A_righ_ma: renamed and generalized
-;    20151027-A_laue_ax: moved call to 'write_references' to the beginning
-;                        of the code
-;    20150325-A_laue_ax: modified reference tags used for acknowledgements
-;                        (projects, observations, etc)
-;    20150109-A_gott_kl: distinguish RMSD & BIAS in output file naming.
-;    20140620-A_gott_kl: modified output file naming (variable plotpath)
-;                     and added option for explicit plot title.
-;    20140204-A_fran_fr: written.
+;    20190315-hassler_birgit: added SMPI case
+;    20180508-righi_mattia: renamed and generalized
+;    20151027-lauer_axel: moved call to 'write_references' to the beginning
+;                         of the code
+;    20150325-lauer_axel: modified reference tags used for acknowledgements
+;                         (projects, observations, etc)
+;    20150109-gottschaldt_klaus-dirk: distinguish RMSD & BIAS in output file
+;                                     naming.
+;    20140620-gottschaldt_klaus-dirk: modified output file naming (variable
+;                                     plotpath) and added option for explicit
+;                                     plot title.
+;    20140204-frank_franziska: written.
 ;
 ; #############################################################################
 

@@ -52,7 +52,7 @@ function contour_map(wks_in[1],
 ;    Input via netCDF not yet implemented
 ;
 ; Modification history
-;    20131104-A_gott_kl: written.
+;    20131104-gottschaldt_klaus-dirk: written.
 ;
 local funcname, data, defaults, diag_script, var, wks, res, res_new
 begin
@@ -163,8 +163,8 @@ function contour_map_polar(wks_in[1],
 ;    Input via netCDF not yet implemented
 ;
 ; Modification history
-;    20140623-A_senf_da: now takes res as attributes of source.
-;    20131218-A_senf_da: written.
+;    20140623-senftleben_daniel: now takes res as attributes of source.
+;    20131218-senftleben_daniel: written.
 ;
 local funcname, data, defaults, var, diag_script, wks, res, res_in, res1
 begin
@@ -300,9 +300,9 @@ function contour_map_ce(wks_in[1],
 ;    Input via netCDF not yet implemented
 ;
 ; Modification history
-;    20161220-A_laue_ax: added option to specificy plotting projection
-;                        (via attribute data@projection)
-;    20140228-A_righ_ma: written.
+;    20161220-lauer_axel: added option to specificy plotting projection
+;                         (via attribute data@projection)
+;    20140228-righi_mattia: written.
 ;
 local data, var, wks, res
 begin
@@ -398,7 +398,7 @@ procedure add_markers_to_map(wks_in[1], plot[1]: graphic, lat[*]: numeric, \
 ; Caveats
 ;
 ; Modification history:
-;    20140214-A_righ_ma: written.
+;    20140214-righi_mattia: written.
 ;
 local funcname, class_name, views, cn_levels, lb_colors, cmap, colors, \
   loc_res, ndata, mfill, mbord, ii, idx, str
