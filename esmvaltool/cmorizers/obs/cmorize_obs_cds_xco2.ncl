@@ -1,91 +1,89 @@
 ; #############################################################################
-; ESMValTool CMORizer for NIWA-BS data
+; ESMValTool CMORizer for CDS-XCO2 data
 ; #############################################################################
 ;
 ; Tier
 ;    Tier 3: restricted dataset.
 ;
 ; Source
-;    http://www.bodekerscientific.com/data/total-column-ozone
+;    https://cds.climate.copernicus.eu/cdsapp#!/dataset/
+;    satellite-carbon-dioxide?tab=form
 ;
 ; Last access
-;    20190207
+;    20190319
 ;
 ; Download and processing instructions
-;    To get the access data send an email to datasets@bodekerscientific.com
-;    Download all files from
-;      ftp://ftp.bodekerscientific.com/CombinedTCOV3.3/Monthly/Patched/NetCDF/
-;    Newer versions may become available over time, but make sure to download
-;    the patched one. Only complete years should be downloaded.
+;    Select Processing level "Level 3", variable "Column-average dry-air mole
+;    fraction of atmospheric carbon dioxide (XCO2) and related variables",
+;    Sensor and algorithm "MERGED and OBS4MIPS".
+;    A registration is required to download the data.
 ;
 ; Modification history
-;    20190207-A_righ_ma: renamed to NIWA-BS and adapted to v2.
-;    20140528-A_gott_kl: written.
+;    20190319-A_hass_bg: written.
 ;
-; #############################################################################
+; ############################################################################
 loadscript(getenv("esmvaltool_root") + "/utils/cmorizers/obs/interface.ncl")
 
 begin
 
   ; Script name (for logger)
-  DIAG_SCRIPT = "cmorize_obs_NIWA-BS.ncl"
+  DIAG_SCRIPT = "cmorize_obs_cds_xco2.ncl"
 
   ; Source name
-  OBSNAME = "NIWA-BS"
+  OBSNAME = "CDS-XCO2"
 
   ; Tier
   TIER = 3
 
   ; Period
-  YEAR1 = 1979
+  YEAR1 = 2003
   YEAR2 = 2016
 
   ; Selected variable (standard name)
-  VAR = (/"toz", "tozStderr"/)
+  VAR = (/"xco2"/)
 
   ; Name in the raw data
-  NAME = (/"tco", "tco_uncert"/)
+  NAME = (/"xco2"/)
 
   ; MIP
-  MIP = (/"Amon", "Amon"/)
+  MIP = (/"Amon"/)
 
   ; Frequency
-  FREQ = (/"mon", "mon"/)
+  FREQ = (/"mon"/)
 
   ; CMOR table
-  CMOR_TABLE = getenv("esmvaltool_root") + "/cmor/tables/custom/CMOR_" + \
-    VAR + ".dat"
+  CMOR_TABLE = getenv("esmvaltool_root") + \
+    "/cmor/tables/custom/CMOR_xco2.dat"
 
   ; Type
   TYPE = "sat"
 
   ; Version
-  VERSION = "V3.3"
+  VERSION = "L3"
 
   ; Global attributes
-  SOURCE = "http://www.bodekerscientific.com/data/total-column-ozone"
-  REF = "Bodeker et al., Atmos. Chem. Phys., doi:10.5194/acp-5-2603-2005, 2005"
+  SOURCE = "https://cds.climate.copernicus.eu/cdsapp#!/dataset/" + \
+    "satellite-carbon-dioxide?tab=form"
+  REF = ""
   COMMENT = ""
 
 end
 
 begin
 
-  files = systemfunc("ls " + input_dir_path + \
-                     "NIWA-BS_CombinedTCO_" + VERSION + \
-                     "_????_Monthly_Patched.nc")
-
+  ; Loop over variables
   do vv = 0, dimsizes(VAR) - 1
 
     log_info("Processing " + VAR(vv) + " (" + MIP(vv) + ")")
 
-    f = addfiles(files, "r")
-    output = f[:]->$NAME(vv)$
+    ; Read variables
+    fname = input_dir_path + "OBS_" + OBSNAME + "_sat_L3_" + NAME(vv) + \
+      "_200301-201612.nc"
+    setfileoption("nc", "MissingToFillValue", False)
+    f = addfile(fname, "r")
+    output = f->xco2
 
     ; Format coordinates
-    output!0 = "time"
-    output!1 = "lat"
-    output!2 = "lon"
     format_coords(output, YEAR1 + "0101", YEAR2 + "1231", FREQ(vv))
 
     ; Set variable attributes
@@ -103,7 +101,7 @@ begin
     ; Output file
     DATESTR = YEAR1 + "01-" + YEAR2 + "12"
     fout = output_dir_path + \
-      str_join((/"OBS", OBSNAME, TYPE, str_sub_str(VERSION, "V", "v"), \
+      str_join((/"OBS", OBSNAME, TYPE, VERSION, \
                  MIP(vv), VAR(vv), DATESTR/), "_") + ".nc"
 
     ; Write variable

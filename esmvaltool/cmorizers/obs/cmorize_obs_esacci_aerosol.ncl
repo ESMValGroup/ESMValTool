@@ -32,7 +32,7 @@ loadscript(getenv("esmvaltool_root") + "/utils/cmorizers/obs/interface.ncl")
 begin
 
   ; Script name (for logger)
-  DIAG_SCRIPT = "cmorize_obs_ESACCI-AEROSOL.ncl"
+  DIAG_SCRIPT = "cmorize_obs_esacci_aerosol.ncl"
 
   ; Source name
   OBSNAME = "ESACCI-AEROSOL"

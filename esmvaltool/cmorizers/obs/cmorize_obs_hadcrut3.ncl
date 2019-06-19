@@ -29,7 +29,7 @@ loadscript(getenv("esmvaltool_root") + "/utils/cmorizers/obs/interface.ncl")
 begin
 
   ; Script name (for logger)
-  DIAG_SCRIPT = "cmorize_obs_HadCRUT3.ncl"
+  DIAG_SCRIPT = "cmorize_obs_hadcrut3.ncl"
 
   ; Source name
   OBSNAME = "HadCRUT3"

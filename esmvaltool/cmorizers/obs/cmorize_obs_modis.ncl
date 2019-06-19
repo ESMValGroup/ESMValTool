@@ -46,7 +46,7 @@ loadscript(getenv("esmvaltool_root") + "/utils/cmorizers/obs/interface.ncl")
 begin
 
   ; Script name (for logger)
-  DIAG_SCRIPT = "cmorize_obs_MODIS.ncl"
+  DIAG_SCRIPT = "cmorize_obs_modis.ncl"
 
   ; Source name
   OBSNAME = "MODIS"

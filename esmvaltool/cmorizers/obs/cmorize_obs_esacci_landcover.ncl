@@ -38,7 +38,7 @@ loadscript(getenv("esmvaltool_root") + "/utils/cmorizers/obs/interface.ncl")
 begin
 
   ; Script name (for logger)
-  DIAG_SCRIPT = "cmorize_obs_ESACCI-LANDCOVER.ncl"
+  DIAG_SCRIPT = "cmorize_obs_esacci_landcover.ncl"
 
   ; Source name
   OBSNAME = "ESACCI-LANDCOVER"

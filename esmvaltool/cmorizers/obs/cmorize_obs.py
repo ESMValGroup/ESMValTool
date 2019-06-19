@@ -237,8 +237,10 @@ def _cmor_reformat(config, obs_list):
     # loop through tier/datasets to be cmorized
     for tier in datasets:
         for dataset in datasets[tier]:
-            reformat_script_root = os.path.join(reformat_scripts,
-                                                'cmorize_obs_' + dataset)
+            reformat_script_root = os.path.join(
+                reformat_scripts,
+                'cmorize_obs_' + dataset.lower().replace('-', '_'),
+            )
             # in-data dir; build out-dir tree
             in_data_dir = os.path.join(raw_obs, tier, dataset)
             logger.info("Input data from: %s", in_data_dir)
@@ -261,8 +263,7 @@ def _cmor_reformat(config, obs_list):
                     reformat_script,
                     config['log_level'],
                 )
-            elif os.path.isfile(
-                    reformat_script_root.lower().replace('-', '_') + '.py'):
+            elif os.path.isfile(reformat_script_root + '.py'):
                 _run_pyt_script(in_data_dir, out_data_dir, dataset)
             else:
                 logger.info('Could not find cmorizer for %s', datasets)

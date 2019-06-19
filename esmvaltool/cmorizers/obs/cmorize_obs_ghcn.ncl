@@ -25,7 +25,7 @@ loadscript(getenv("esmvaltool_root") + "/utils/cmorizers/obs/interface.ncl")
 begin
 
   ; Script name (for logger)
-  DIAG_SCRIPT = "cmorize_obs_GHCN.ncl"
+  DIAG_SCRIPT = "cmorize_obs_ghcn.ncl"
 
   ; Source name
   OBSNAME = "GHCN"

@@ -1,24 +1,25 @@
 ; #############################################################################
-; ESMValTool CMORizer for HadISST data
+; ESMValTool CMORizer for CDS-XCH4 data
 ; #############################################################################
 ;
 ; Tier
-;    Tier 2: other freely-available dataset.
+;    Tier 3: restricted dataset.
 ;
 ; Source
-;    http://www.metoffice.gov.uk/hadobs/hadisst/data/download.html
+;    https://cds.climate.copernicus.eu/cdsapp#!/dataset/
+;    satellite-methane?tab=form
 ;
 ; Last access
-;    20190208
+;    20190311
 ;
 ; Download and processing instructions
-;    Download and unzip "HadISST_ice.nc.gz" and "HadISST_sst.nc.gz".
+;    Select Processing level "Level 3", variable "Column-average dry-air mole
+;    fraction of atmospheric methane (XCH4) and related variables", Sensor and
+;    algorithm "MERGED and OBS4MIPS".
+;    A registration is required to download the data.
 ;
 ; Modification history
-;    20190208-A_hass_bg: adapted to v2.
-;    20180530-A_righ_ma: fixed coordinates and metadata.
-;    20170217-A_senf_da: modified so that SST fields are also written as 'tos'.
-;    20150422-A_laue_ax: written.
+;    20190311-A_hass_bg: written.
 ;
 ; ############################################################################
 loadscript(getenv("esmvaltool_root") + "/utils/cmorizers/obs/interface.ncl")
@@ -26,43 +27,44 @@ loadscript(getenv("esmvaltool_root") + "/utils/cmorizers/obs/interface.ncl")
 begin
 
   ; Script name (for logger)
-  DIAG_SCRIPT = "cmorize_obs_HadISST.ncl"
+  DIAG_SCRIPT = "cmorize_obs_cds_xch4.ncl"
 
   ; Source name
-  OBSNAME = "HadISST"
+  OBSNAME = "CDS-XCH4"
 
   ; Tier
-  TIER = 2
+  TIER = 3
 
   ; Period
-  YEAR1 = 1870
-  YEAR2 = 2017
+  YEAR1 = 2003
+  YEAR2 = 2016
 
   ; Selected variable (standard name)
-  VAR = (/"ts", "tos", "sic"/)
+  VAR = (/"xch4"/)
 
   ; Name in the raw data
-  NAME = (/"sst", "sst", "ice"/)
+  NAME = (/"xch4"/)
 
   ; MIP
-  MIP = (/"Amon", "Omon", "OImon"/)
+  MIP = (/"Amon"/)
 
   ; Frequency
-  FREQ = (/"mon", "mon", "mon"/)
+  FREQ = (/"mon"/)
 
   ; CMOR table
   CMOR_TABLE = getenv("esmvaltool_root") + \
-    "/cmor/tables/cmip5/Tables/CMIP5_" + MIP
+    "/cmor/tables/custom/CMOR_xch4.dat"
 
   ; Type
-  TYPE = "reanaly"
+  TYPE = "sat"
 
   ; Version
-  VERSION = "1"
+  VERSION = "L3"
 
   ; Global attributes
-  SOURCE = "http://www.metoffice.gov.uk/hadobs/hadisst/data/download.html"
-  REF = "Rayner et al., J. Geophys. Res., doi:10.1029/2002JD002670, 2013"
+  SOURCE = "https://cds.climate.copernicus.eu/cdsapp#!/dataset/" + \
+    "satellite-methane?tab=form"
+  REF = ""
   COMMENT = ""
 
 end
@@ -75,35 +77,13 @@ begin
     log_info("Processing " + VAR(vv) + " (" + MIP(vv) + ")")
 
     ; Read variables
-    fname = input_dir_path + "HadISST_" + NAME(vv) + ".nc"
+    fname = input_dir_path + "OBS_" + OBSNAME + "_sat_L3_" + NAME(vv) + \
+      "_200301-201612.nc"
+    setfileoption("nc", "MissingToFillValue", False)
     f = addfile(fname, "r")
-    if (NAME(vv).eq."sst") then
-      output = f->sst
-      output@_FillValue = -1000.
-    end if
-    if (NAME(vv).eq."ice") then
-      output = f->sic
-    end if
-
-    ; Convert units
-    if (isStrSubset(NAME(vv), "sst")) then
-      output = output + 273.15  ; [degC] --> [K]
-      output@units = "K"
-    end if
-    if (isStrSubset(NAME(vv), "ice")) then
-      output = output * 100.  ; [1] --> [%]
-      output@units = "%"
-    end if
-
-    ; Extract time period
-    date = cd_calendar(output&time, 0)
-    idx = ind(date(:, 0).ge.YEAR1 .and. date(:, 0).le.YEAR2)
-    output := output(idx, :, :)
+    output = f->xch4
 
     ; Format coordinates
-    output!0 = "time"
-    output!1 = "lat"
-    output!2 = "lon"
     format_coords(output, YEAR1 + "0101", YEAR2 + "1231", FREQ(vv))
 
     ; Set variable attributes

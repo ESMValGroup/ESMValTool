@@ -54,7 +54,7 @@
 begin
 
   ; Script name (for logger)
-  DIAG_SCRIPT = "cmorize_obs_ERA-Interim.ncl"
+  DIAG_SCRIPT = "cmorize_obs_era_interim.ncl"
 
   ; Source name
   OBSNAME = "ERA-Interim"

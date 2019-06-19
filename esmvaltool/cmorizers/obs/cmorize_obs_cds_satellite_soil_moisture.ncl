@@ -25,7 +25,7 @@
 ;    with years)
 ;
 ; Modification history
-;    20190314-A_crez_ba: adapted from file cmorize_obs_ESACCI-SOILMOISTURE.ncl
+;    20190314-A_crez_ba: adapted from file cmorize_obs_esacci_soilmoisture.ncl
 ;
 ; #############################################################################
 loadscript(getenv("esmvaltool_root") + "/utils/cmorizers/obs/interface.ncl")
@@ -33,7 +33,7 @@ loadscript(getenv("esmvaltool_root") + "/utils/cmorizers/obs/interface.ncl")
 begin
 
   ; Script name (for logger)
-  DIAG_SCRIPT = "cmorize_obs_CDS-SATELLITE-SOIL-MOISTURE.ncl"
+  DIAG_SCRIPT = "cmorize_obs_cds_satellite_soil_moisture.ncl"
 
   ; Source name
   OBSNAME = "CDS-SATELLITE-SOIL-MOISTURE"

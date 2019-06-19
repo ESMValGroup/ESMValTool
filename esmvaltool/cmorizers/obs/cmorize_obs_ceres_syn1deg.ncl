@@ -41,7 +41,7 @@ loadscript(getenv("esmvaltool_root") + "/utils/cmorizers/obs/interface.ncl")
 begin
 
   ; Script name (for logger)
-  DIAG_SCRIPT = "cmorize_obs_CERES-SYN1deg.ncl"
+  DIAG_SCRIPT = "cmorize_obs_ceres_syn1deg.ncl"
 
   ; Source name
   OBSNAME = "CERES-SYN1deg"

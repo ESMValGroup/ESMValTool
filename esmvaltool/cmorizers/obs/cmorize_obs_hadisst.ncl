@@ -1,25 +1,24 @@
 ; #############################################################################
-; ESMValTool CMORizer for CDS-XCO2 data
+; ESMValTool CMORizer for HadISST data
 ; #############################################################################
 ;
 ; Tier
-;    Tier 3: restricted dataset.
+;    Tier 2: other freely-available dataset.
 ;
 ; Source
-;    https://cds.climate.copernicus.eu/cdsapp#!/dataset/
-;    satellite-carbon-dioxide?tab=form
+;    http://www.metoffice.gov.uk/hadobs/hadisst/data/download.html
 ;
 ; Last access
-;    20190319
+;    20190208
 ;
 ; Download and processing instructions
-;    Select Processing level "Level 3", variable "Column-average dry-air mole
-;    fraction of atmospheric carbon dioxide (XCO2) and related variables",
-;    Sensor and algorithm "MERGED and OBS4MIPS".
-;    A registration is required to download the data.
+;    Download and unzip "HadISST_ice.nc.gz" and "HadISST_sst.nc.gz".
 ;
 ; Modification history
-;    20190319-A_hass_bg: written.
+;    20190208-A_hass_bg: adapted to v2.
+;    20180530-A_righ_ma: fixed coordinates and metadata.
+;    20170217-A_senf_da: modified so that SST fields are also written as 'tos'.
+;    20150422-A_laue_ax: written.
 ;
 ; ############################################################################
 loadscript(getenv("esmvaltool_root") + "/utils/cmorizers/obs/interface.ncl")
@@ -27,44 +26,43 @@ loadscript(getenv("esmvaltool_root") + "/utils/cmorizers/obs/interface.ncl")
 begin
 
   ; Script name (for logger)
-  DIAG_SCRIPT = "cmorize_obs_CDS-XCO2.ncl"
+  DIAG_SCRIPT = "cmorize_obs_hadisst.ncl"
 
   ; Source name
-  OBSNAME = "CDS-XCO2"
+  OBSNAME = "HadISST"
 
   ; Tier
-  TIER = 3
+  TIER = 2
 
   ; Period
-  YEAR1 = 2003
-  YEAR2 = 2016
+  YEAR1 = 1870
+  YEAR2 = 2017
 
   ; Selected variable (standard name)
-  VAR = (/"xco2"/)
+  VAR = (/"ts", "tos", "sic"/)
 
   ; Name in the raw data
-  NAME = (/"xco2"/)
+  NAME = (/"sst", "sst", "ice"/)
 
   ; MIP
-  MIP = (/"Amon"/)
+  MIP = (/"Amon", "Omon", "OImon"/)
 
   ; Frequency
-  FREQ = (/"mon"/)
+  FREQ = (/"mon", "mon", "mon"/)
 
   ; CMOR table
   CMOR_TABLE = getenv("esmvaltool_root") + \
-    "/cmor/tables/custom/CMOR_xco2.dat"
+    "/cmor/tables/cmip5/Tables/CMIP5_" + MIP
 
   ; Type
-  TYPE = "sat"
+  TYPE = "reanaly"
 
   ; Version
-  VERSION = "L3"
+  VERSION = "1"
 
   ; Global attributes
-  SOURCE = "https://cds.climate.copernicus.eu/cdsapp#!/dataset/" + \
-    "satellite-carbon-dioxide?tab=form"
-  REF = ""
+  SOURCE = "http://www.metoffice.gov.uk/hadobs/hadisst/data/download.html"
+  REF = "Rayner et al., J. Geophys. Res., doi:10.1029/2002JD002670, 2013"
   COMMENT = ""
 
 end
@@ -77,13 +75,35 @@ begin
     log_info("Processing " + VAR(vv) + " (" + MIP(vv) + ")")
 
     ; Read variables
-    fname = input_dir_path + "OBS_" + OBSNAME + "_sat_L3_" + NAME(vv) + \
-      "_200301-201612.nc"
-    setfileoption("nc", "MissingToFillValue", False)
+    fname = input_dir_path + "HadISST_" + NAME(vv) + ".nc"
     f = addfile(fname, "r")
-    output = f->xco2
+    if (NAME(vv).eq."sst") then
+      output = f->sst
+      output@_FillValue = -1000.
+    end if
+    if (NAME(vv).eq."ice") then
+      output = f->sic
+    end if
+
+    ; Convert units
+    if (isStrSubset(NAME(vv), "sst")) then
+      output = output + 273.15  ; [degC] --> [K]
+      output@units = "K"
+    end if
+    if (isStrSubset(NAME(vv), "ice")) then
+      output = output * 100.  ; [1] --> [%]
+      output@units = "%"
+    end if
+
+    ; Extract time period
+    date = cd_calendar(output&time, 0)
+    idx = ind(date(:, 0).ge.YEAR1 .and. date(:, 0).le.YEAR2)
+    output := output(idx, :, :)
 
     ; Format coordinates
+    output!0 = "time"
+    output!1 = "lat"
+    output!2 = "lon"
     format_coords(output, YEAR1 + "0101", YEAR2 + "1231", FREQ(vv))
 
     ; Set variable attributes

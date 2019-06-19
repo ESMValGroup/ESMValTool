@@ -32,7 +32,7 @@ loadscript(getenv("esmvaltool_root") + "/utils/cmorizers/obs/interface.ncl")
 begin
 
   ; Script name (for logger)
-  DIAG_SCRIPT = "cmorize_obs_PATMOS-x.ncl"
+  DIAG_SCRIPT = "cmorize_obs_patmos_x.ncl"
 
   ; Source name
   OBSNAME = "PATMOS-x"
