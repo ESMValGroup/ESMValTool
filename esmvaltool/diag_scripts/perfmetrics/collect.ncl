@@ -437,26 +437,26 @@ begin
   if (diag_script_info@metric.eq."RMSD") then
     caption = "RMSD performance metric"
     statistics = (/"rmsd"/)
-    authors = (/"fran_fr", "righ_ma", "eyri_ve"/)
+    authors = (/"frank_franziska", "righi_mattia", "eyring_veronika"/)
     plottype = "portrait"
     references = (/"righi15gmd", "gleckler08jgr"/)
   elseif (diag_script_info@metric.eq."BIAS") then
     caption = "Bias performance metric"
     statistics = (/"diff"/)
-    authors = (/"fran_fr", "righ_ma", "eyri_ve"/)
+    authors = (/"frank_franziska", "righi_mattia", "eyring_veronika"/)
     plottype = "portrait"
     references = (/"righi15gmd", "gleckler08jgr"/)
   elseif (diag_script_info@metric.eq."taylor") then
     caption = "Taylor diagram"
     statistics = (/"rmsd", "corr"/)
-    authors = (/"fran_fr", "righ_ma", "eyri_ve"/)
+    authors = (/"frank_franziska", "righi_mattia", "eyring_veronika"/)
     plottype = "taylor"
     references = (/"righi15gmd", "gleckler08jgr"/)
   elseif (diag_script_info@metric.eq."SMPI") then
     caption = \
       "Performance index I2. Similar to Figure 1 of Reichler and Kim (2008)."
     statistics = "smpi"
-    authors = (/"gier_be", "hass_bg"/)
+    authors = (/"gier_bettina", "hassler_birgit"/)
     plottype = "circle"
     references = (/"rk2008bams"/)
   else

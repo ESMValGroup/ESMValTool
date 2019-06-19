@@ -191,7 +191,7 @@ begin
                  "mean", \
                  "global", \
                  "geo", \
-                 (/"righ_ma", "gott_kl"/), \
+                 (/"righi_mattia", "gottschaldt_klaus-dirk"/), \
                  (/"acknow_author"/), \
                  metadata_att_as_array(info0, "filename"))
 

@@ -136,7 +136,7 @@ begin
                    (/"mean", "rmsd"/), \
                    diag_script_info@region, \
                    "geo", \
-                   (/"fran_fr", "righ_ma", "eyri_ve"/), \
+                   (/"frank_franziska", "righi_mattia", "eyring_veronika"/), \
                    (/"righi15gmd", "gleckler08jgr"/), \
                    info_items[imod]@filename)
 
@@ -218,7 +218,7 @@ begin
                    (/"mean", "rmsd", "diff"/), \
                    diag_script_info@region, \
                    "zonal", \
-                   (/"fran_fr", "righ_ma", "eyri_ve"/), \
+                   (/"frank_franziska", "righi_mattia", "eyring_veronika"/), \
                    (/"righi15gmd", "gleckler08jgr"/), \
                    info_items[imod]@filename)
 
