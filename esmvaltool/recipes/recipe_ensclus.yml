@@ -8,13 +8,13 @@ documentation:
     for each cluster based on a k-means algorithm
 
   authors:
-    - mavi_ir
-    - hard_jo
-    - arno_en
-    - cort_su
+    - mavilia_irene
+    - vonhardenberg_jost
+    - arnone_enrico
+    - corti_susanna
 
   maintainer:
-    - hard_jo
+    - vonhardenberg_jost
 
   references:
     - straus07jcli

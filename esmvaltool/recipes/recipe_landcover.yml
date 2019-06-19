@@ -8,13 +8,13 @@ documentation:
     for the full globe and large scale regions.
 
   authors:
-    - hage_st
-    - loew_al
-    - muel_bn
-    - stac_to
+    - hagemann_stefan
+    - loew_alexander
+    - mueller_benjamin
+    - stacke_tobias
 
   maintainer:
-    righ_ma
+    righi_mattia
 
   references:
     - georgievski18tac

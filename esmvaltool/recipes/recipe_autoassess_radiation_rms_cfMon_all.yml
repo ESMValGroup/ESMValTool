@@ -6,12 +6,12 @@ documentation:
     Diagnostics of spatial RMS errors of radiation and clouds.
 
   authors:
-    - tsus_yo
-    - read_si
-    - pred_va
+    - tsushima_yoko
+    - read_simon
+    - predoi_valeriu
 
   maintainer:
-    - pred_va
+    - predoi_valeriu
 
   projects:
     - cmug

@@ -6,11 +6,11 @@ documentation:
     Example recipe that plots the mean precipitation and temperature.
 
   authors:
-    - ande_bo
-    - righ_ma
+    - andela_bouwe
+    - righi_mattia
 
   maintainer:
-    - schl_ma
+    - schlund_manuel
 
   references:
     - acknow_project

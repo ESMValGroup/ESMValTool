@@ -6,13 +6,13 @@ documentation:
      Diurnal Temperature Variation (DTR) Indicator and Wind Capacity Factor
 
   authors:
-    - hunt_al
-    - manu_ni
-    - lled_ll
-    - caro_lo
-    - bojo_dr
-    - gonz_nu
-    - pere_nu
+    - hunter_alasdair
+    - manubens_nicolau
+    - lledo_llorenc
+    - caron_louis-philippe
+    - bojovic_dragana
+    - gonzalez-reviriego_nube
+    - perez-zanon_nuria
 
   projects:
     - c3s-magic

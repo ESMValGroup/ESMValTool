@@ -6,11 +6,11 @@ documentation:
     Recipe for the HyInt package by E. Arnone and J. von Hardenberg (ISAC-CNR)
 
   authors:
-    - arno_en
-    - hard_jo
+    - arnone_enrico
+    - vonhardenberg_jost
 
   maintainer:
-    - arno_en
+    - arnone_enrico
 
   references:
     - giorgi11jc

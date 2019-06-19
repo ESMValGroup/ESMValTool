@@ -1,7 +1,7 @@
 ---
 documentation:
   description: 'Selects grid points belonging to a provided shapefile.'
-  authors: ['berg_pe']
+  authors: ['berg_peter']
   projects: ['c3s-magic']
   references: ['acknow_project']
 

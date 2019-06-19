@@ -9,12 +9,12 @@ documentation:
     at https://doi.org/10.5281/zenodo.2025776
 
   authors:
-    - hage_st
-    - loew_al
-    - stac_to
+    - hagemann_stefan
+    - loew_alexander
+    - stacke_tobias
 
   maintainer:
-    - righ_ma
+    - righi_mattia
 
   references:
     - duemenil00mpimr
