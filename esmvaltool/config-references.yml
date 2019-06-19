@@ -36,12 +36,12 @@ authors:
     name: Koldunov, Nikolay
     institute: AWI, Germany
     email: nikolay.koldunov@awi.de    
-    orcid: 
+    orcid: https://orcid.org/0000-0002-3365-8146
   lauer_axel:
     name: Lauer, Axel
     institute: DLR, Germany
     email: axel.lauer@dlr.de    
-    orcid: 
+    orcid: https://orcid.org/0000-0002-9270-1044
   mueller_benjamin:
     name: Mueller, Benjamin
     institute: LMU, Germany
@@ -51,12 +51,12 @@ authors:
     name: Predoi, Valeriu
     institute: URead, UK
     email: valeriu.predoi@ncas.ac.uk    
-    orcid: 
+    orcid: https://orcid.org/0000-0002-9729-6578
   righi_mattia:
     name: Righi, Mattia
     institute: DLR, Germany
     email: mattia.righi@dlr.de    
-    orcid: 
+    orcid: https://orcid.org/0000-0003-3827-5950
   schlund_manuel:
     name: Schlund, Manuel
     institute: DLR, Germany
@@ -66,7 +66,7 @@ authors:
     name: Vegas-Regidor, Javier
     institute: BSC, Spain
     email: javier.vegas@bsc.es    
-    orcid:
+    orcid: https://orcid.org/0000-0003-0096-4291
   # Development team      
   anav_alessandro:
     name: Anav, Alessandro
@@ -473,6 +473,10 @@ authors:
   enright_clare:
     name: Enright, Clare
     institute: UEA, UK
+    orcid:
+  evaldsson_martin:
+    name: Evaldsson, Martin
+    institute: SMHI, Sweden
     orcid: 
   haluszczynski_alexander:
     name: Haluszczynski, Alexander
