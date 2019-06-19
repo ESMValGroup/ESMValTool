@@ -274,7 +274,7 @@ def set_provenance(cfg):
             'plot_type': _get_plot_type(filename),
             'plot_file': filename,
             'authors': [
-                'phil_ad',
+                'phillips_adam',
             ],
             'references': [
                 'acknow_project',

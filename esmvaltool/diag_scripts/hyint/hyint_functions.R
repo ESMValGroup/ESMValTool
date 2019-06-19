@@ -8,8 +8,8 @@
 #     Functions used in HyInt routines
 #
 # Modification history
-#    20170901-A_arno_en: adapted to HyInt and extended
-#    20170522-A_davi_pa: Creation for MiLES
+#    20170901-arnone_enrico: adapted to HyInt and extended
+#    20170522-davini_paolo: creation for MiLES
 # #############################################################################
 
 # basis functions
@@ -428,7 +428,7 @@ calc_region_timeseries <- function(x, y, indata, region, calc_sd = F,
 # to use to regrid on
 # @param idx_dir path of directory containing
 # files from which to create the grid
-# Adapted from 20170920-A_maritsandstad
+# Adapted from 20170920-sandstad_marit
 #
 create_grid <- function(ref_file = "./reffile", path = idx_dir,
                         out_file = "./gridDef") {
@@ -445,7 +445,7 @@ create_grid <- function(ref_file = "./reffile", path = idx_dir,
 # Method to create a landSeaMask on a suitable grid
 # @param regrid name w/path of gridfile to use
 # to put the landdseamask on
-# Adapted from 20170920-A_maritsandstad
+# Adapted from 20170920-sandstad_marit
 #
 create_landseamask <- function(regrid = "./gridDef", ref_file = ref_file,
                 loc = "./", regridded_topo = paste0("./", "regridded_topo.nc"),

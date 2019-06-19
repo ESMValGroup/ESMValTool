@@ -49,11 +49,11 @@
 # Caveats
 #
 # Modification history
-#    20181001-A_arno_en: converted to latest v2.0
-#    20180302-A_arno_en: converted to ESMValTool2
-#    20171206-A_arno_en: modularized version accepting climdex indices
-#    20171010-A_arno_en: modularized version
-#    20170901-A_arno_en: 1st github version
+#    20181001-arnone_enrico: converted to latest v2.0
+#    20180302-arnone_enrico: converted to ESMValTool2
+#    20171206-arnone_enrico: modularized version accepting climdex indices
+#    20171010-arnone_enrico: modularized version
+#    20170901-arnone_enrico: 1st github version
 #
 # ############################################################################
 
@@ -241,7 +241,7 @@ if (write_plots) {
 # Assign provenance information for timeseries&trends figures
 for (fname in names(prov_info)) {
   xprov <- list(ancestors = climofiles[unlist(prov_info[[fname]]$model_idx)],
-              authors = list("arno_en", "hard_jo"),
+              authors = list("arnone_enrico", "vonhardenberg_jost"),
               references = list("giorgi11jc", "giorgi14jgr"),
               projects = list("c3s-magic"),
               caption = prov_info[[fname]]$caption,

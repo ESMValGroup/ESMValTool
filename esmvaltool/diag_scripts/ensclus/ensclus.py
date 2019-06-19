@@ -8,9 +8,9 @@ Description
     Cluster analysis tool based on the k-means algorithm
     for ensembles of climate model simulations
 Modification history
-    20181202-hard_jo: cleanup, style, provenance and finalising
-    20181002-arno_en: updating to version2_develpment (recipe/dataset)
-    20170710-mavi_ir: Routines written.
+    20181202-vonhardenberg_jost: cleanup, style, provenance and finalising
+    20181002-arnone_enrico: updating to version2_develpment (recipe/dataset)
+    20170710-mavilia_irene: routines written.
 """
 
 import os
@@ -35,7 +35,7 @@ def get_provenance_record(gatt, vatt, ancestor_files):
     print(gatt)
     record = {
         'caption': caption,
-        'authors': ['hard_jo', 'arno_en', 'mavi_ir'],
+        'authors': ['vonhardenberg_jost', 'arnone_enrico', 'mavilia_irene'],
         'projects': ['c3s-magic'],
         'references': ['straus07jcli'],
         'plot_types': ['other'],

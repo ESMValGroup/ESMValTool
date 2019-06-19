@@ -21,7 +21,7 @@ def save_results(cfg, cube, basename, ancestor_files):
         'caption': cube.long_name.replace('\n', ' '),
         'statistics': ['other'],
         'domains': ['global'],
-        'authors': ['berg_pe'],
+        'authors': ['berg_peter'],
         'references': ['acknow_project'],
         'ancestors': ancestor_files,
     }

@@ -12,8 +12,11 @@
 #
 # Modification history
 #
-#    2019 0506-hard_jo: conversion to ESMValTool2
-#    20180601-A_cwmohr: re-creation (complete new script incorparating segments from "make_timeseries_plot.r & make_Glecker_plot.r")
+#    20190506-vonhardenberg_jost: conversion to ESMValTool2
+#    20180601-mohr_christianwilhelm: re-creation (complete new script
+#                                    incorparating segments from
+#                                    "make_timeseries_plot.r" and
+#                                    "make_Glecker_plot.r")
 #
 # #########################################################################################################
 

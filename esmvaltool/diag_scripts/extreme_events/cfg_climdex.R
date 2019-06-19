@@ -10,7 +10,7 @@
 #    to find which indices have been processed, and what title and labels the plots should have.
 #
 # Modification history
-#    2018 0725-A_cwmohr: Created
+#    20180725-mohr_christianwilhelm: created
 #########################################################################################################
 
 idx_df <- data.frame(
