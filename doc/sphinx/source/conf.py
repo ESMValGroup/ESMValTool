@@ -20,7 +20,7 @@ from datetime import datetime
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-root = Path(__file__).absolute().parent.parent.parent
+root = Path(__file__).absolute().parent.parent.parent.parent
 sys.path.insert(0, str(root))
 
 from esmvaltool import __version__
@@ -429,7 +429,11 @@ intersphinx_mapping = {
 
 # -- Custom Document processing ----------------------------------------------
 
-import esmvalcore.utils.doc.gensidebar as gensidebar
+try:
+    from esmvalcore.utils.doc import gensidebar
+except ModuleNotFoundError:
+    # TODO: remove after testing
+    import gensidebar
 
 gensidebar.generate_sidebar(globals(), "esmvaltool")
 
