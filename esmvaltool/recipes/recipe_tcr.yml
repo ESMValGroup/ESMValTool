@@ -58,7 +58,7 @@ diagnostics:
           - {dataset: ACCESS1-0,     start_year:  300, end_year:  439}
           - {dataset: bcc-csm1-1,    start_year:  160, end_year:  299}
           - {dataset: bcc-csm1-1-m,  start_year:  240, end_year:  379}
-          - {dataset: CanESM2,       start_year: 2321, end_year: 2460}
+          - {dataset: CanESM3,       start_year: 2321, end_year: 2460}
           - {dataset: CCSM4,         start_year:  251, end_year:  390}
           - {dataset: CNRM-CM5,      start_year: 1850, end_year: 1989}
           - {dataset: CSIRO-Mk3-6-0, start_year:  104, end_year:  243}
@@ -75,25 +75,38 @@ diagnostics:
       tcr: &tcr_script
         script: climate_metrics/tcr.py
 
-  # cmip6:
-  #   description: Calculate ECS for all available CMIP6 models.
-  #   variables:
-  #     tas:
-  #       <<: *variable_settings
-  #       project: CMIP6
-  #     rtnt:
-  #       <<: *variable_settings
-  #       project: CMIP6
-  #       derive: true
-  #   additional_datasets:
-  #     - {dataset: BCC-CSM2-MR,  exp: piControl,    ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 1999}
-  #     - {dataset: BCC-CSM2-MR,  exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 1999}
-  #     - {dataset: GISS-E2-1-G,  exp: piControl,    ensemble: r1i1p1f1, grid: gn, start_year: 4150, end_year: 4299}
-  #     - {dataset: GISS-E2-1-G,  exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 1999}
-  #     - {dataset: IPSL-CM6A-LR, exp: piControl,    ensemble: r1i1p1f1, grid: gr, start_year: 1850, end_year: 1999}
-  #     - {dataset: IPSL-CM6A-LR, exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gr, start_year: 1850, end_year: 1999}
-  #     - {dataset: MIROC6,       exp: piControl,    ensemble: r1i1p1f1, grid: gn, start_year: 3200, end_year: 3349}
-  #     - {dataset: MIROC6,       exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn, start_year: 3200, end_year: 3349}
-  #   scripts:
-  #     tcr:
-  #       <<: *tcr_script
+  cmip6:
+    description: Calculate TCR for all available CMIP6 models.
+    variables:
+      1pctCO2:
+        <<: *variable_settings
+        project: CMIP6
+        additional_datasets:
+          - {dataset: BCC-CSM2-MR,  ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1989}
+          - {dataset: CNRM-CM6-1,   ensemble: r1i1p1f2, grid: gr,  start_year: 1850, end_year: 1989}
+          - {dataset: CESM2,        ensemble: r1i1p1f1, grid: gn,  start_year:    1, end_year:  140}
+          - {dataset: CESM2-WACCM,  ensemble: r1i1p1f1, grid: gn,  start_year:    1, end_year:  140}
+          - {dataset: GISS-E2-1-G,  ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1989}
+          - {dataset: GISS-E2-1-H,  ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1989}
+          - {dataset: IPSL-CM6A-LR, ensemble: r1i1p1f1, grid: gr,  start_year: 1850, end_year: 1989}
+          - {dataset: MIROC6,       ensemble: r1i1p1f1, grid: gn,  start_year: 3200, end_year: 3339}
+          - {dataset: MRI-ESM2-0,   ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1989}
+          - {dataset: UKESM1-0-LL,  ensemble: r1i1p1f2, grid: gn,  start_year: 1850, end_year: 1989}
+      piControl:
+        <<: *variable_settings
+        project: CMIP6
+        exp: piControl
+        additional_datasets:
+          - {dataset: BCC-CSM2-MR,  ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1989}
+          - {dataset: CNRM-CM6-1,   ensemble: r1i1p1f2, grid: gr,  start_year: 1850, end_year: 1989}
+          - {dataset: CESM2,        ensemble: r1i1p1f1, grid: gn,  start_year:  501, end_year:  640}
+          - {dataset: CESM2-WACCM,  ensemble: r1i1p1f1, grid: gn,  start_year:   70, end_year:  209}
+          - {dataset: GISS-E2-1-G,  ensemble: r1i1p1f1, grid: gn,  start_year: 4150, end_year: 4289}
+          - {dataset: GISS-E2-1-H,  ensemble: r1i1p1f1, grid: gn,  start_year: 3180, end_year: 3319}
+          - {dataset: IPSL-CM6A-LR, ensemble: r1i1p1f1, grid: gr,  start_year: 1870, end_year: 2009}
+          - {dataset: MIROC6,       ensemble: r1i1p1f1, grid: gn,  start_year: 3200, end_year: 3339}
+          - {dataset: MRI-ESM2-0,   ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1989}
+          - {dataset: UKESM1-0-LL,  ensemble: r1i1p1f2, grid: gn,  start_year: 1960, end_year: 2099}
+    scripts:
+      tcr:
+        <<: *tcr_script

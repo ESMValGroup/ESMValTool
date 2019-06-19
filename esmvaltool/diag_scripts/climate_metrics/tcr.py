@@ -18,34 +18,38 @@ Configuration options in recipe
 -------------------------------
 plot : bool, optional (default: True)
     Plot temperature vs. time.
+seaborn_settings : dict, optional
+    Options for seaborn's `set()` method (affects all plots), see
+    <https://seaborn.pydata.org/generated/seaborn.set.html>.
 
 """
 
 import logging
 import os
-from pprint import pformat
 
 import cf_units
 import iris
+import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
-import yaml
 from scipy import stats
 
 from esmvaltool.diag_scripts.shared import (
-    ProvenanceLogger, extract_variables, get_diagnostic_filename,
-    get_plot_filename, group_metadata, io, plot, run_diagnostic,
-    select_metadata, variables_available)
+    ProvenanceLogger, get_diagnostic_filename, get_plot_filename,
+    group_metadata, io, run_diagnostic, select_metadata, variables_available)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
-sns.set()
+START_YEAR_IDX = 60
+END_YEAR_IDX = 80
 
 
 def _get_anomaly_cube(onepct_cube, pi_cube):
     """Get anomaly cube."""
     onepct_cube = onepct_cube.aggregated_by('year', iris.analysis.MEAN)
     pi_cube = pi_cube.aggregated_by('year', iris.analysis.MEAN)
+
+    # Check cube
     if onepct_cube.ndim != 1:
         logger.warning(
             "This diagnostics needs 1D cubes, got %iD cube for '1pctCO2' "
@@ -61,15 +65,80 @@ def _get_anomaly_cube(onepct_cube, pi_cube):
             "Cube shapes of '1pctCO2' and 'piControl' are not identical, got "
             "%s and %s", onepct_cube.shape, pi_cube.shape)
         return None
-    if onepct_cube.shape[0] < 80:
+    if onepct_cube.shape[0] < END_YEAR_IDX:
         logger.warning(
-            "Cubes need at least 80 points for TCR calculation, got only %d",
-            onepct_cube.shape[0])
+            "Cubes need at least %d points for TCR calculation, got only %d",
+            END_YEAR_IDX, onepct_cube.shape[0])
         return None
+
+    # Calculate anomaly
     reg = stats.linregress(pi_cube.coord('year').points, pi_cube.data)
     onepct_cube.data -= (reg.slope * pi_cube.coord('year').points +
                          reg.intercept)
+
+    # Adapt metadata
+    onepct_cube.standard_name = None
+    onepct_cube.var_name += '_anomaly'
+    onepct_cube.long_name += ' (Anomaly)'
+    onepct_cube.attributes['anomaly'] = ('relative to linear fit of piControl '
+                                         'run')
+    onepct_cube.convert_units('K')
     return onepct_cube
+
+
+def _plot(cfg, cube, dataset_name, tcr):
+    """Create scatterplot of temperature anomaly vs. time."""
+    if not cfg['write_plots'] or not cfg.get('plot', True):
+        return (None, None)
+    logger.debug("Plotting temperature anomaly vs. time for '%s'",
+                 dataset_name)
+    (_, axes) = plt.subplots()
+
+    # Plot data
+    x_data = np.arange(cube.shape[0])
+    y_data = cube.data
+    axes.scatter(x_data, y_data, color='b', marker='o')
+
+    # Plot lines
+    line_kwargs = {'color': 'k', 'linewidth': 1.0, 'linestyle': '--'}
+    axes.axhline(tcr, **line_kwargs)
+    axes.axvline(START_YEAR_IDX, **line_kwargs)
+    axes.axvline(END_YEAR_IDX, **line_kwargs)
+
+    # Appearance
+    units_str = (cube.units.symbol
+                 if cube.units.origin is None else cube.units.origin)
+    axes.set_title(dataset_name)
+    axes.set_xlabel('Years after experiment start')
+    axes.set_ylabel(f'Temperature anomaly / {units_str}')
+    axes.set_ylim([x_data[0] - 1, x_data[-1] + 1])
+    axes.set_ylim([-1.0, 7.0])
+    axes.text(0.0, tcr + 0.1, 'TCR = {:.1f} {}'.format(tcr, units_str))
+
+    # Save cube
+    netcdf_path = get_diagnostic_filename(dataset_name, cfg)
+    io.iris_save(cube, netcdf_path)
+
+    # Save plot
+    plot_path = get_plot_filename(dataset_name, cfg)
+    plt.savefig(plot_path, orientation='landscape', bbox_inches='tight')
+    logger.info("Wrote %s", plot_path)
+    plt.close()
+
+    # Provenance
+    provenance_record = get_provenance_record(
+        f"Time series of the global mean surface air temperature anomaly "
+        f"(relative to the linear fit of the pre-industrial control run) of "
+        f"{dataset_name} for the 1% CO2 increase per year experiment. The "
+        f"horizontal dashed line indicates the transient climate response "
+        f"(TCR) defined as the 20 year average temperature anomaly at the "
+        f"time of CO2 doubling (vertical dashed lines).")
+    provenance_record.update({
+        'plot_file': plot_path,
+        'plot_types': ['times'],
+    })
+
+    return (netcdf_path, provenance_record)
 
 
 def calculate_tcr(cfg):
@@ -82,8 +151,10 @@ def calculate_tcr(cfg):
 
     # Iterate over all datasets
     for dataset in onepct_data:
-        pi_data = select_metadata(input_data, short_name='tas',
-                                  exp='piControl', dataset=dataset['dataset'])
+        pi_data = select_metadata(input_data,
+                                  short_name='tas',
+                                  exp='piControl',
+                                  dataset=dataset['dataset'])
         if not pi_data:
             logger.warning(
                 "Skipping dataset '%s', no 'piControl' data available",
@@ -100,11 +171,24 @@ def calculate_tcr(cfg):
             continue
 
         # Calculate TCR
-        tas_2x = anomaly_cube[60:80].collapsed('time', iris.analysis.MEAN).data
+        tas_2x = anomaly_cube[START_YEAR_IDX:END_YEAR_IDX].collapsed(
+            'time', iris.analysis.MEAN).data
         new_tcr = tas_2x
         tcr[dataset['dataset']] = new_tcr
         logger.info("TCR (%s) = %.2f %s", dataset['dataset'], new_tcr,
                     anomaly_cube.units)
+
+        # Plot
+        (path, provenance_record) = _plot(cfg, anomaly_cube,
+                                          dataset['dataset'], new_tcr)
+        if path is not None:
+            provenance_record['ancestors'] = [
+                dataset['filename'],
+                pi_data[0]['filename'],
+            ]
+            with ProvenanceLogger(cfg) as provenance_logger:
+                provenance_logger.log(path, provenance_record)
+
     return tcr
 
 
@@ -127,48 +211,6 @@ def check_input_data(cfg):
             f"{exps}")
 
 
-def get_anomaly_data(tas_data, rtnt_data, dataset):
-    """Calculate anomaly data for both variables."""
-    project = tas_data[0]['project']
-    exp_4xco2 = EXP_4XCO2[project]
-    paths = {
-        'tas_4x': select_metadata(tas_data, dataset=dataset, exp=exp_4xco2),
-        'tas_pi': select_metadata(tas_data, dataset=dataset, exp='piControl'),
-        'rtnt_4x': select_metadata(rtnt_data, dataset=dataset, exp=exp_4xco2),
-        'rtnt_pi': select_metadata(
-            rtnt_data, dataset=dataset, exp='piControl'),
-    }
-    ancestor_files = []
-    cubes = {}
-    for (key, [path]) in paths.items():
-        ancestor_files.append(path['filename'])
-        cube = iris.load_cube(path['filename'])
-        cube = cube.aggregated_by('year', iris.analysis.MEAN)
-        cubes[key] = cube
-
-    # Substract linear fit of piControl run from abrupt4xCO2 experiment
-    shape = None
-    for cube in cubes.values():
-        if shape is None:
-            shape = cube.shape
-        else:
-            if cube.shape != shape:
-                raise ValueError(
-                    "Expected all cubes of dataset '{}' to have identical "
-                    "shapes, got {} and {}".format(dataset, shape, cube.shape))
-    tas_pi_reg = stats.linregress(cubes['tas_pi'].coord('year').points,
-                                  cubes['tas_pi'].data)
-    rtnt_pi_reg = stats.linregress(cubes['rtnt_pi'].coord('year').points,
-                                   cubes['rtnt_pi'].data)
-    cubes['tas_4x'].data -= (
-        tas_pi_reg.slope * cubes['tas_pi'].coord('year').points +
-        tas_pi_reg.intercept)
-    cubes['rtnt_4x'].data -= (
-        rtnt_pi_reg.slope * cubes['rtnt_pi'].coord('year').points +
-        rtnt_pi_reg.intercept)
-    return (cubes['tas_4x'], cubes['rtnt_4x'], ancestor_files)
-
-
 def get_provenance_record(caption):
     """Create a provenance record describing the diagnostic data and plot."""
     record = {
@@ -176,183 +218,44 @@ def get_provenance_record(caption):
         'statistics': ['mean', 'diff'],
         'domains': ['global'],
         'authors': ['schl_ma'],
-        'references': ['andrews12grl'],
+        'references': ['gregory08jgr'],
         'realms': ['atmos'],
         'themes': ['phys'],
     }
     return record
 
 
-def read_external_file(cfg):
-    """Read external file to get ECS."""
-    ecs = {}
-    feedback_parameter = {}
-    if not cfg.get('read_external_file'):
-        return (ecs, feedback_parameter)
-    base_dir = os.path.dirname(__file__)
-    filepath = os.path.join(base_dir, cfg['read_external_file'])
-    if os.path.isfile(filepath):
-        with open(filepath, 'r') as infile:
-            external_data = yaml.safe_load(infile)
-    else:
-        logger.error("Desired external file %s does not exist", filepath)
-        return (ecs, feedback_parameter)
-    ecs = external_data.get('ecs', {})
-    feedback_parameter = external_data.get('feedback_parameter', {})
-    logger.info("External file %s", filepath)
-    logger.info("Found ECS (K):")
-    logger.info("%s", pformat(ecs))
-    logger.info("Found climate feedback parameters (W m-2 K-1):")
-    logger.info("%s", pformat(feedback_parameter))
-    return (ecs, feedback_parameter, filepath)
-
-
-def plot_ecs_regression(cfg, dataset_name, tas_cube, rtnt_cube, reg_stats):
-    """Plot linear regression used to calculate ECS."""
-    if not cfg['write_plots']:
-        return (None, None)
-    ecs = -reg_stats.intercept / (2 * reg_stats.slope)
-
-    # Regression line
-    x_reg = np.linspace(-1.0, 9.0, 2)
-    y_reg = reg_stats.slope * x_reg + reg_stats.intercept
-
-    # Plot data
-    text = r'r = {:.2f}, $\lambda$ = {:.2f}, F = {:.2f}, ECS = {:.2f}'.format(
-        reg_stats.rvalue, -reg_stats.slope, reg_stats.intercept, ecs)
-    plot_path = get_plot_filename(dataset_name, cfg)
-    plot.scatterplot(
-        [tas_cube.data, x_reg],
-        [rtnt_cube.data, y_reg],
-        plot_path,
-        plot_kwargs=[{
-            'linestyle': 'none',
-            'markeredgecolor': 'b',
-            'markerfacecolor': 'none',
-            'marker': 's',
-        }, {
-            'color': 'k',
-            'linestyle': '-',
-        }],
-        save_kwargs={
-            'bbox_inches': 'tight',
-            'orientation': 'landscape',
-        },
-        axes_functions={
-            'set_title': dataset_name,
-            'set_xlabel': 'tas / ' + tas_cube.units.origin,
-            'set_ylabel': 'rtnt / ' + rtnt_cube.units.origin,
-            'set_xlim': [0.0, 8.0],
-            'set_ylim': [-2.0, 10.0],
-            'text': {
-                'args': [0.05, 0.9, text],
-                'kwargs': {
-                    'transform': 'transAxes'
-                },
-            },
-        },
-    )
-
-    # Write netcdf file for every plot
-    tas_coord = iris.coords.AuxCoord(
-        tas_cube.data,
-        **extract_variables(cfg, as_iris=True)['tas'])
-    attrs = {
-        'model': dataset_name,
-        'regression_r_value': reg_stats.rvalue,
-        'regression_slope': reg_stats.slope,
-        'regression_interception': reg_stats.intercept,
-        'Climate Feedback Parameter': -reg_stats.slope,
-        'ECS': ecs,
-    }
-    cube = iris.cube.Cube(
-        rtnt_cube.data,
-        attributes=attrs,
-        aux_coords_and_dims=[(tas_coord, 0)],
-        **extract_variables(cfg, as_iris=True)['rtnt'])
-    netcdf_path = get_diagnostic_filename('ecs_regression_' + dataset_name,
-                                          cfg)
-    io.iris_save(cube, netcdf_path)
-
-    # Provenance
-    provenance_record = get_provenance_record(
-        "Scatterplot between TOA radiance and global mean surface temperature "
-        "anomaly for 150 years of the abrupt 4x CO2 experiment including "
-        "linear regression to calculate ECS for {}.".format(dataset_name))
-    provenance_record.update({
-        'plot_file': plot_path,
-        'plot_types': ['scatter'],
-    })
-
-    return (netcdf_path, provenance_record)
-
-
-def write_data(ecs_data, feedback_parameter_data, ancestor_files, cfg):
+def write_data(cfg, tcr):
     """Write netcdf files."""
-    data = [ecs_data, feedback_parameter_data]
-    var_attrs = [
-        {
-            'short_name': 'ecs',
-            'long_name': 'Effective Climate Sensitivity (ECS)',
-            'units': cf_units.Unit('K'),
-        },
-        {
-            'short_name': 'lambda',
-            'long_name': 'Climate Feedback Parameter',
-            'units': cf_units.Unit('W m-2 K-1'),
-        },
-    ]
-    for (idx, var_attr) in enumerate(var_attrs):
-        path = get_diagnostic_filename(var_attr['short_name'], cfg)
-        io.save_scalar_data(data[idx], path, var_attr)
-        caption = "{long_name} for multiple climate models.".format(**var_attr)
-        provenance_record = get_provenance_record(caption)
-        provenance_record['ancestors'] = ancestor_files
-        with ProvenanceLogger(cfg) as provenance_logger:
-            provenance_logger.log(path, provenance_record)
+    var_attr = {
+        'short_name': 'tcr',
+        'long_name': 'Transient Climate Response (TCR)',
+        'units': cf_units.Unit('K'),
+    }
+    path = get_diagnostic_filename(var_attr['short_name'], cfg)
+    io.save_scalar_data(tcr, path, var_attr)
+    caption = "{long_name} for multiple climate models.".format(**var_attr)
+    provenance_record = get_provenance_record(caption)
+    ancestor_files = []
+    for dataset_name in tcr.keys():
+        datasets = select_metadata(cfg['input_data'].values(),
+                                   dataset=dataset_name)
+        ancestor_files.extend([d['filename'] for d in datasets])
+    provenance_record['ancestors'] = ancestor_files
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(path, provenance_record)
 
 
 def main(cfg):
     """Run the diagnostic."""
     check_input_data(cfg)
+    sns.set(cfg.get('seaborn_settings', {}))
 
     # Calculate TCR
     tcr = calculate_tcr(cfg)
-    for (key, val) in tcr.items():
-        print(key, "{:.1f}K".format(val))
 
-    # Iterate over all datasets and save ECS and feedback parameter
-    # for dataset in group_metadata(tas_data, 'dataset'):
-    #     logger.info("Processing %s", dataset)
-    #     (tas_cube, rtnt_cube, ancestor_files) = get_anomaly_data(
-    #         tas_data, rtnt_data, dataset)
-
-    #     # Perform linear regression
-    #     reg = stats.linregress(tas_cube.data, rtnt_cube.data)
-
-    #     # Plot ECS regression if desired
-    #     (path, provenance_record) = plot_ecs_regression(
-    #         cfg, dataset, tas_cube, rtnt_cube, reg)
-
-    #     # Provenance
-    #     if path is not None:
-    #         provenance_record['ancestors'] = ancestor_files
-    #         with ProvenanceLogger(cfg) as provenance_logger:
-    #             provenance_logger.log(path, provenance_record)
-
-    #     # Save data
-    #     if cfg.get('read_external_file') and dataset in ecs:
-    #         logger.info(
-    #             "Overwriting external given ECS and climate feedback "
-    #             "parameter for %s", dataset)
-    #     ecs[dataset] = -reg.intercept / (2 * reg.slope)
-    #     feedback_parameter[dataset] = -reg.slope
-
-    # # Write data
-    # ancestor_files = [d['filename'] for d in tas_data + rtnt_data]
-    # if external_file is not None:
-    #     ancestor_files.append(external_file)
-    # write_data(ecs, feedback_parameter, ancestor_files, cfg)
+    # Write TCR
+    write_data(cfg, tcr)
 
 
 if __name__ == '__main__':
