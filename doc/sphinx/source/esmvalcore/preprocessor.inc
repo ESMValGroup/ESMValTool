@@ -390,7 +390,7 @@ See also :func:`esmvalcore.preprocessor.extract_named_regions`.
 Volume operations
 =================
 
-The _volume.py module contains the following preprocessor functions:
+The volume operations module contains the following preprocessor functions:
 
 | `1. extract_volume`_: extract a specific depth range from a cube.
 | `2. volume_statistics`_: calculate the volume-weighted average.
