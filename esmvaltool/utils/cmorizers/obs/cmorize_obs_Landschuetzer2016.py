@@ -30,9 +30,6 @@ from .utilities import (constant_metadata, fix_coords, fix_var_metadata,
 
 logger = logging.getLogger(__name__)
 
-# read in CMOR configuration
-CFG = read_cmor_config('Landschuetzer2016.yml')
-
 
 def _fix_data(cube, var):
     """Specific data fixes for different variables."""
@@ -89,8 +86,9 @@ def extract_variable(var_info, raw_info, out_dir, attrs):
 
 def cmorization(in_dir, out_dir):
     """Cmorization func call."""
-    cmor_table = CFG['cmor_table']
-    glob_attrs = CFG['attributes']
+    cfg = read_cmor_config('Landschuetzer2016.yml')
+    cmor_table = cfg['cmor_table']
+    glob_attrs = cfg['attributes']
 
     logger.info("Starting cmorization for Tier%s OBS files: %s",
                 glob_attrs['tier'], glob_attrs['dataset_id'])
@@ -98,7 +96,7 @@ def cmorization(in_dir, out_dir):
     logger.info("Output will be written to: %s", out_dir)
 
     # run the cmorization
-    for var, vals in CFG['variables'].items():
+    for var, vals in cfg['variables'].items():
         inpfile = os.path.join(in_dir, vals['file'])
         logger.info("CMORizing var %s from file %s", var, inpfile)
         var_info = cmor_table.get_variable(vals['mip'], var)
