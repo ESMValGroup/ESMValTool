@@ -131,7 +131,7 @@ def read_cmor_config(cmor_config):
         cfg = yaml.safe_load(file)
     cfg['cmor_table'] = \
         CMOR_TABLES[cfg['attributes']['project_id']]
-    if 'comment' not in cfg:
+    if 'comment' not in cfg['attributes']:
         cfg['attributes']['comment'] = ''
     return cfg
 
@@ -151,7 +151,7 @@ def save_variable(cube, var, outdir, attrs, **kwargs):
         time_suffix = '-'.join([date1, date2])
 
     file_name = '_'.join([
-        'OBS',
+        attrs['project_id'],
         attrs['dataset_id'],
         attrs['modeling_realm'],
         attrs['version'],
