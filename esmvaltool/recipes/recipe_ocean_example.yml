@@ -31,7 +31,7 @@ datasets:
 
   - {dataset: HadGEM2-CC, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
   - {dataset: HadGEM2-ES, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
-  - {dataset: MPI-ESM-LR, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2003}
+  - {dataset: MPI-ESM-LR, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2004}
 
   #####
   # Data with Errors right now -June 2018
@@ -205,20 +205,32 @@ preprocessors:
   # Transects preprocessors
   # --------------------------------------------------
   prep_transect_1: # For extracting along a trajectory
+    custom_order: true
     time_average:
+    regrid:
+      target_grid: 1x1
+      scheme: linear
     extract_trajectory:
       latitudes: [-5., 5.,]
       longitudes: [332.,332.]
       number_points: 4              # VERY SLOW with high numbers!
 
   prep_transect_2: # For extracting a transect
+    custom_order: true
     time_average:
+    regrid:
+      target_grid: 1x1
+      scheme: linear
     extract_transect: # Pacific Equator
       latitude: 0.
       longitude: [120., 300.]
 
   prep_transect_3: # For extracting a transect
+    custom_order: true
     time_average:
+    regrid:
+      target_grid: 1x1
+      scheme: linear
     extract_transect: # Atlantic Meridional Transect
       latitude: [-50.,50.]
       longitude: 332.
@@ -283,8 +295,10 @@ preprocessors:
   prep_profile_1: # For a global profile
     area_statistics:
       operator: mean
+      fx_files: [areacello, ]
 
   prep_profile_2: # For a regional profile
+    custom_order: true
     extract_region:
       start_longitude: 0.
       end_longitude: 20.
@@ -295,7 +309,7 @@ preprocessors:
       z_max: 100.
     area_statistics:
       operator: mean
-
+      fx_files: [areacello, ]
 
   # --------------------------------------------------
   # Depth-Integration preprocessors
@@ -354,7 +368,7 @@ diagnostics:
     variables:
       thetao: # Temperature ocean 3D
         preprocessor: prep_timeseries_5
-        fx_files: [areacello, ]
+        fx_files: [volcello, ]
     scripts:
       Global_VolumeAverage_Ocean_Physics_timeseries:
         script: ocean/diagnostic_timeseries.py
@@ -388,6 +402,7 @@ diagnostics:
     variables:
       tos: # Temperature ocean surface
         preprocessor: prep_map_1
+        fx_files: [areacello, volcello]
     scripts:
       Global_Ocean_Surface_mean_map:
         script: ocean/diagnostic_maps.py
@@ -397,6 +412,7 @@ diagnostics:
     variables:
       tos: # Temperature ocean surface
         preprocessor: prep_map_2
+        fx_files: [areacello, volcello]
     scripts:
       Global_Ocean_Surface_regrid_map:
         script: ocean/diagnostic_maps.py
@@ -406,6 +422,7 @@ diagnostics:
     variables:
       thetao: # Temperature ocean 3D
         preprocessor: prep_map_3
+        fx_files: [areacello, volcello]
     scripts:
       Global_Ocean_DepthLayers_regrid_map:
         script: ocean/diagnostic_maps.py
@@ -415,6 +432,7 @@ diagnostics:
     variables:
       tos: # Temperature ocean surface
         preprocessor: prep_map_4
+        fx_files: [areacello, volcello]
     scripts:
       Regional_Ocean_Surface_regrid_map:
         script: ocean/diagnostic_maps.py
@@ -424,6 +442,7 @@ diagnostics:
     variables:
       thetao: # Temperature ocean 3D
         preprocessor: prep_map_5
+        fx_files: [areacello, volcello]
     scripts:
       Regional_Ocean_DepthLayers_mean_map:
         script: ocean/diagnostic_maps.py
@@ -437,6 +456,7 @@ diagnostics:
     variables:
       thetao: # Temperature ocean 3D
         preprocessor: prep_transect_1
+        fx_files: [areacello, volcello]
     scripts:
       Regional_Ocean_DepthLayers_regrid_transect:
         script: ocean/diagnostic_transects.py
@@ -446,6 +466,7 @@ diagnostics:
     variables:
       thetao: # Temperature ocean 3D
         preprocessor: prep_transect_2
+        fx_files: [areacello, volcello]
     scripts:
       Regional_Ocean_DepthLayers_slice_regrid_mmmean_transect:
         script: ocean/diagnostic_transects.py
@@ -455,6 +476,7 @@ diagnostics:
     variables:
       thetao: # Temperature ocean 3D
         preprocessor: prep_transect_3
+        fx_files: [areacello, volcello]
     scripts:
       Regional_Ocean_DepthLayers_AMTslice_regrid_mmmean_transect:
         script: ocean/diagnostic_transects.py
@@ -468,6 +490,7 @@ diagnostics:
     variables:
       thetao: # Temperature ocean 3D
         preprocessor: prep_zonal_1
+        fx_files: [areacello, volcello]
     scripts:
       Global_Zonal_mean:
         script: ocean/diagnostic_transects.py
@@ -477,6 +500,7 @@ diagnostics:
     variables:
       thetao: # Temperature ocean 3D
         preprocessor: prep_meridional_1
+        fx_files: [areacello, volcello]
     scripts:
       Global_Meridional_mean:
         script: ocean/diagnostic_transects.py
@@ -486,6 +510,7 @@ diagnostics:
     variables:
       thetao: # Temperature ocean 3D
         preprocessor: prep_zonal_2
+        fx_files: [areacello, volcello]
     scripts:
       Global_Zonal_mean:
         script: ocean/diagnostic_transects.py
@@ -495,14 +520,15 @@ diagnostics:
     variables:
       thetao: # Temperature ocean 3D
         preprocessor: prep_meridional_2
+        fx_files: [areacello, volcello]
     scripts:
       Global_Meridional_mean:
         script: ocean/diagnostic_transects.py
-
-
-  # --------------------------------------------------
-  # Depth-profile diagnostics
-  # --------------------------------------------------
+  #
+  #
+  # # --------------------------------------------------
+  # # Depth-profile diagnostics
+  # # --------------------------------------------------
   diag_profile_1:
     description: Global Ocean mean profile
     variables:
@@ -518,6 +544,7 @@ diagnostics:
     variables:
       thetao: # Temperature ocean surface
         preprocessor: prep_profile_2
+        fx_files: [areacello, ]
     scripts:
       Regional_Ocean_mean_profile:
         script: ocean/diagnostic_profiles.py
