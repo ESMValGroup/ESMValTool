@@ -15,6 +15,12 @@ diagnostics:
     variables:
       tas:
         mip: 1hr
+      uas:
+        mip: 1hr
+      vas:
+        mip: 1hr
+      tdps:
+        mip: 1hr
     scripts:
       plot:
         script: examples/diagnostic.py

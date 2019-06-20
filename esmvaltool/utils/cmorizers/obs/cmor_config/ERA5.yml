@@ -1,5 +1,5 @@
 ---
-# Common global attributes for Cmorizer output
+# Global attributes of NetCDF file
 attributes:
   dataset_id: ERA5
   project_id: ERA5
@@ -11,9 +11,21 @@ attributes:
   comment: |
     'Contains modified Copernicus Climate Change Service Information {year}'
 
-# Variables to cmorize
+# Variables to CMORize
 variables:
+  uas:
+    mip: 1hr
+    raw: u10
+    file: 'era5_10m_u_component_of_wind_*.nc'
+  vas:
+    mip: 1hr
+    raw: v10
+    file: 'era5_10m_v_component_of_wind_*.nc'
   tas:
     mip: 1hr
     raw: t2m
     file: 'era5_2m_temperature_*.nc'
+  tdps:
+    mip: 1hr
+    raw: d2m
+    file: 'era5_2m_dewpoint_temperature_*.nc'

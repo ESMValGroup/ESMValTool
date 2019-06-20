@@ -19,9 +19,14 @@ logger = logging.getLogger(__name__)
 
 def add_height2m(cube):
     """Add scalar coordinate 'height' with value of 2m."""
-    logger.info("Adding height coordinate (2m)")
+    add_scalar_height_coord(cube, height=2.)
+
+
+def add_scalar_height_coord(cube, height=2.):
+    """Add scalar coordinate 'height' with value of `height`m."""
+    logger.info("Adding height coordinate (%sm)", height)
     height_coord = iris.coords.AuxCoord(
-        2.0,
+        height,
         var_name='height',
         standard_name='height',
         long_name='height',

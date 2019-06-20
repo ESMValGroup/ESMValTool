@@ -37,7 +37,9 @@ def _extract_variable(in_file, raw_name, definition, attributes, out_dir):
         coord.guess_bounds()
 
     if 'height2m' in definition.dimensions:
-        utils.add_height2m(cube)
+        utils.add_scalar_height_coord(cube, 2.)
+    if 'height10m' in definition.dimensions:
+        utils.add_scalar_height_coord(cube, 10.)
 
     # Fix units if required
     cube.convert_units(definition.units)
