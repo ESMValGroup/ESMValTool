@@ -177,6 +177,26 @@ def metadata_to_netcdf(cube, metadata):
     iris_save(cube, metadata['filename'])
 
 
+def iris_save(source, path):
+    """Save :mod:`iris` objects with correct attributes.
+
+    Parameters
+    ----------
+    source : iris.cube.Cube or iterable of iris.cube.Cube
+        Cube(s) to be saved.
+    path : str
+        Path to the new file.
+
+    """
+    if isinstance(source, iris.cube.Cube):
+        source.attributes['filename'] = path
+    else:
+        for cube in source:
+            cube.attributes['filename'] = path
+    iris.save(source, path)
+    logger.info("Wrote %s", path)
+
+
 def save_1d_data(cubes, path, coord_name, var_attrs, attributes=None):
     """Save 1D data for multiple datasets.
 
@@ -229,26 +249,6 @@ def save_1d_data(cubes, path, coord_name, var_attrs, attributes=None):
         attributes=attributes,
         **var_attrs)
     iris_save(cube, path)
-
-
-def iris_save(source, path):
-    """Save :mod:`iris` objects with correct attributes.
-
-    Parameters
-    ----------
-    source : iris.cube.Cube or iterable of iris.cube.Cube
-        Cube(s) to be saved.
-    path : str
-        Path to the new file.
-
-    """
-    if isinstance(source, iris.cube.Cube):
-        source.attributes['filename'] = path
-    else:
-        for cube in source:
-            cube.attributes['filename'] = path
-    iris.save(source, path)
-    logger.info("Wrote %s", path)
 
 
 def save_scalar_data(data, path, var_attrs, aux_coord=None, attributes=None):
