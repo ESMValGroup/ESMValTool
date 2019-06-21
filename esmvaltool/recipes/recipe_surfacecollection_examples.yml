@@ -45,9 +45,9 @@ diagnostics:
     additional_datasets:
       - {dataset: CNRM-CM5,  project: CMIP5,  mip: Lmon,  exp: historical,  ensemble: r1i1p1}
       - {dataset: IPSL-CM5A-MR,  project: CMIP5,  mip: Lmon,  exp: historical,  ensemble: r1i1p1}
-      - {dataset: MRI-ESM1,  project: CMIP5,  mip: Lmon,  exp: historical,  ensemble: r1i1p1}
+      #- {dataset: MRI-ESM1,  project: CMIP5,  mip: Lmon,  exp: historical,  ensemble: r1i1p1}
       #- {dataset: ESACCI-SOILMOISTURE, project: OBS, type: sat, version: L3S-SSMV-COMBINED, tier: 3}
     scripts:
       Info:
         script: surfacecollection/main_diag_selector.py
-        request: None
+#        requests: None

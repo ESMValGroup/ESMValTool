@@ -35,7 +35,7 @@ import logging
 import os
 
 from esmvaltool.diag_scripts.shared import run_diagnostic
-from pprint import pprint
+#from pprint import pprint
 from auxiliary.collection_basic import ecv_handler
 
 logger = logging.getLogger(os.path.basename(__file__))
@@ -55,7 +55,7 @@ def main(cfg):
     logger.info("Running diagnostic")
     Diag.run()
     
-    logger.info("Thank you for the patiance!")
+    logger.info("Thank you for the patience!")
 
     logger.info('>>>>>>>> ENDED SUCCESSFULLY!! <<<<<<<<<<<<')
 
