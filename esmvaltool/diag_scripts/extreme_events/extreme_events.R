@@ -20,7 +20,7 @@
 #                         added tagging support
 #    20170920-sandstad_marit: modification to include plotting
 #    20160414-A_broetz_bjoern: written
-# ############################################################################
+# #############################################################################
 
 library(tools)
 library(yaml)
