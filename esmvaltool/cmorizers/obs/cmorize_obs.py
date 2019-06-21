@@ -44,29 +44,28 @@ def _assemble_datasets(raw_obs, obs_list):
     # check for desired datasets only (if any)
     # if not, walk all over rawobs dir
     # assume a RAWOBS/TierX/DATASET input structure
-    datasets = {}
 
     # get all available tiers in source dir
     tiers = ['Tier{}'.format(i) for i in range(2, 4)]
     tiers = [
         tier for tier in tiers if os.path.exists(os.path.join(raw_obs, tier))
     ]
+    datasets = {tier: [] for tier in tiers}
 
     # if user specified obs list
     if obs_list:
-        for tier in tiers:
-            datasets[tier] = []
-            for dataset_name in obs_list.split(','):
+        for dataset_name in obs_list.split(','):
+            for tier in tiers:
                 if os.path.isdir(os.path.join(raw_obs, tier, dataset_name)):
                     datasets[tier].append(dataset_name)
-                else:
-                    logger.warning("Could not find raw data %s in %s/%s",
-                                   dataset_name, raw_obs, tier)
+                    break
+            else:
+                logger.warning("Could not find raw data %s in %s/%s",
+                               dataset_name, raw_obs, tier)
 
     # otherwise go through the whole raw_obs dir
     else:
         for tier in tiers:
-            datasets[tier] = []
             for dats in os.listdir(os.path.join(raw_obs, tier)):
                 datasets[tier].append(dats)
 
