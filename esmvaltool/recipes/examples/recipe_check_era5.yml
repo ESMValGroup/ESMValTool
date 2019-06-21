@@ -7,20 +7,20 @@ documentation:
     - ande_bo
 
 datasets:
-  - {project: ERA5, dataset: ERA5, tier: 3, type: reanaly, version: 1, start_year: 1990, end_year: 1990}
+  - {project: OBS6, dataset: ERA5, tier: 3, type: reanaly, version: 1, start_year: 1990, end_year: 1990}
 
 diagnostics:
   ERA5:
     description: ERA5 check
     variables:
       tas:
-        mip: 1hr
+        mip: E1hr
       uas:
-        mip: 1hr
+        mip: E1hr
       vas:
-        mip: 1hr
+        mip: E1hr
       tdps:
-        mip: 1hr
+        mip: E1hr
     scripts:
       plot:
         script: examples/diagnostic.py
