@@ -17,7 +17,9 @@ import importlib
 import logging
 import os
 import subprocess
+from pathlib import Path
 
+import esmvalcore
 from esmvalcore._config import read_config_user_file
 from esmvalcore._task import write_ncl_settings
 
@@ -108,7 +110,8 @@ def _run_ncl_script(in_dir, out_dir, run_dir, dataset, reformat_script,
     env = dict(os.environ)
     env['settings'] = settings_file
     env['esmvaltool_root'] = esmvaltool_root
-
+    env['cmor_tables'] = str(Path(esmvalcore.cmor.__file__).parent / 'tables')
+    logger.info("Using CMOR tables at %s", env['cmor_tables'])
     # call NCL
     ncl_call = ['ncl', reformat_script]
     logger.info("Executing cmd: %s", ' '.join(ncl_call))
