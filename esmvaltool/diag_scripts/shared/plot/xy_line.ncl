@@ -2593,20 +2593,21 @@ begin
   if isatt(data, "contour_color") then
     contour_color = data@contour_color
   else
+    var_lower = str_lower(var)
     contour_color = 0         ; default: red
-    if (str_lower(var) .eq. "fgco2") then
+    if (.not. ismissing(str_index_of_substr(var_lower, "fgco2", -1))) then
       contour_color = 200
     end if
-    if (str_lower(var) .eq. "nbp") then
+    if (.not. ismissing(str_index_of_substr(var_lower, "nbp", -1))) then
       contour_color = 100
     end if
-    if (str_lower(var) .eq. "tas") then
+    if (.not. ismissing(str_index_of_substr(var_lower, "tas", -1))) then
       contour_color = 0
     end if
-    if (str_lower(var) .eq. "pr") then
+    if (.not. ismissing(str_index_of_substr(var_lower, "pr", -1))) then
       contour_color = 230
     end if
-    if (str_lower(var) .eq. "tos") then
+    if (.not. ismissing(str_index_of_substr(var_lower, "tos", -1))) then
       contour_color = 40
     end if
   end if

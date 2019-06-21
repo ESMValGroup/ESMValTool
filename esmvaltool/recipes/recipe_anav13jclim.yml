@@ -302,21 +302,25 @@ diagnostics:
         <<: *main_global
         evolution_plot_ref_dataset: GCP
         evolution_plot_anomaly: false
+        evolution_plot_volcanoes: false
         anav_month: true
       main_nh:
         <<: *main_nh
         evolution_plot_ref_dataset: GCP
         evolution_plot_anomaly: false
+        evolution_plot_volcanoes: false
         anav_month: true
       main_sh:
         <<: *main_sh
         evolution_plot_ref_dataset: GCP
         evolution_plot_anomaly: false
+        evolution_plot_volcanoes: false
         anav_month: true
       main_trop:
         <<: *main_trop
         evolution_plot_ref_dataset: GCP
         evolution_plot_anomaly: false
+        evolution_plot_volcanoes: false
         anav_month: true
 
   diag_mvi_lai:
@@ -384,18 +388,22 @@ diagnostics:
         <<: *main_global
         evolution_plot_ref_dataset: LAI3g
         evolution_plot_anomaly: false
+        evolution_plot_volcanoes: false
       main_nh:
         <<: *main_nh
         evolution_plot_ref_dataset: LAI3g
         evolution_plot_anomaly: false
+        evolution_plot_volcanoes: false
       main_sh:
         <<: *main_sh
         evolution_plot_ref_dataset: LAI3g
         evolution_plot_anomaly: false
+        evolution_plot_volcanoes: false
       main_trop:
         <<: *main_trop
         evolution_plot_ref_dataset: LAI3g
         evolution_plot_anomaly: false
+        evolution_plot_volcanoes: false
 
   diag_mvi_gpp:
     description: MVI scatter plot for gpp (Figure 8).
@@ -457,18 +465,22 @@ diagnostics:
         <<: *main_global
         evolution_plot_ref_dataset: MTE
         evolution_plot_anomaly: false
+        evolution_plot_volcanoes: false
       main_nh:
         <<: *main_nh
         evolution_plot_ref_dataset: MTE
         evolution_plot_anomaly: false
+        evolution_plot_volcanoes: false
       main_sh:
         <<: *main_sh
         evolution_plot_ref_dataset: MTE
         evolution_plot_anomaly: false
+        evolution_plot_volcanoes: false
       main_trop:
         <<: *main_trop
         evolution_plot_ref_dataset: MTE
         evolution_plot_anomaly: false
+        evolution_plot_volcanoes: false
 
   diag_two_vars_scatter:
     description: Two-variable scatter plot for cSoil and cVeg (Figure 12).
@@ -572,18 +584,22 @@ diagnostics:
         <<: *main_global
         evolution_plot_ref_dataset: GCP
         evolution_plot_anomaly: false
+        evolution_plot_volcanoes: false
       main_nh:
         <<: *main_nh
         evolution_plot_ref_dataset: GCP
         evolution_plot_anomaly: false
+        evolution_plot_volcanoes: false
       main_sh:
         <<: *main_sh
         evolution_plot_ref_dataset: GCP
         evolution_plot_anomaly: false
+        evolution_plot_volcanoes: false
       main_trop:
         <<: *main_trop
         evolution_plot_ref_dataset: GCP
         evolution_plot_anomaly: false
+        evolution_plot_volcanoes: false
 
   diag_grading_tas: &diag_grading
     description: Grading precalculations for tas.
