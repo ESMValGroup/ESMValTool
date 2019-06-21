@@ -19,7 +19,8 @@
 ;    20190208-A_righ_ma: adapted to v2.
 ;
 ; #############################################################################
-loadscript(getenv("esmvaltool_root") + "/esmvaltool/cmorizers/obs/interface.ncl")
+loadscript(getenv("esmvaltool_root") + \
+           "/esmvaltool/cmorizers/obs/interface.ncl")
 begin
 
   ; Script name (for logger)

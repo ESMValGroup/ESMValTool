@@ -21,7 +21,8 @@
 ;    20160224-A_wenz_sa: written based on reformat_obs_ESACCI-AEROSOL.ncl.
 ;
 ; #############################################################################
-loadscript(getenv("esmvaltool_root") + "/esmvaltool/cmorizers/obs/interface.ncl")
+loadscript(getenv("esmvaltool_root") + \
+           "/esmvaltool/cmorizers/obs/interface.ncl")
 
 begin
 

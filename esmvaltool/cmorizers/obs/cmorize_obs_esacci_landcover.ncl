@@ -33,7 +33,8 @@
 ;    20160714-A_muel_bn: written.
 ;
 ; #############################################################################
-loadscript(getenv("esmvaltool_root") + "/esmvaltool/cmorizers/obs/interface.ncl")
+loadscript(getenv("esmvaltool_root") + \
+           "/esmvaltool/cmorizers/obs/interface.ncl")
 
 begin
 

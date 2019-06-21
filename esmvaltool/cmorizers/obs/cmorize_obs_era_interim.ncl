@@ -119,7 +119,8 @@ begin
 
 end
 ; #############################################################################
-loadscript(getenv("esmvaltool_root") + "/esmvaltool/cmorizers/obs/interface.ncl")
+loadscript(getenv("esmvaltool_root") + \
+           "/esmvaltool/cmorizers/obs/interface.ncl")
 
 begin
 

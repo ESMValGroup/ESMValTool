@@ -21,7 +21,8 @@
 ;    20150422-A_laue_ax: written.
 ;
 ; ############################################################################
-loadscript(getenv("esmvaltool_root") + "/esmvaltool/cmorizers/obs/interface.ncl")
+loadscript(getenv("esmvaltool_root") + \
+           "/esmvaltool/cmorizers/obs/interface.ncl")
 
 begin
 

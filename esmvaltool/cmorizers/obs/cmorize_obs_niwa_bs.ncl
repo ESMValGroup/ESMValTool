@@ -23,7 +23,8 @@
 ;    20140528-A_gott_kl: written.
 ;
 ; #############################################################################
-loadscript(getenv("esmvaltool_root") + "/esmvaltool/cmorizers/obs/interface.ncl")
+loadscript(getenv("esmvaltool_root") + \
+           "/esmvaltool/cmorizers/obs/interface.ncl")
 
 begin
 
