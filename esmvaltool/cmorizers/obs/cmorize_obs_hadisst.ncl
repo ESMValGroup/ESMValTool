@@ -52,8 +52,7 @@ begin
   FREQ = (/"mon", "mon", "mon"/)
 
   ; CMOR table
-  CMOR_TABLE = getenv("esmvaltool_root") + \
-    "/cmor/tables/cmip5/Tables/CMIP5_" + MIP
+  CMOR_TABLE = getenv("cmor_tables") + "/cmip5/Tables/CMIP5_" + MIP
 
   ; Type
   TYPE = "reanaly"

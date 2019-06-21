@@ -55,8 +55,7 @@ begin
   FREQ = (/"mon", "mon", "mon", "mon"/)
 
   ; CMOR table
-  CMOR_TABLE = getenv("esmvaltool_root") + \
-    "/cmor/tables/custom/CMOR_" + VAR + ".dat"
+  CMOR_TABLE = getenv("cmor_tables") + "/custom/CMOR_" + VAR + ".dat"
 
   ; File name
   FNAME = (/"ESACCI-OZONE-L3S-TC-MERGED-DLR_1M-_DATE_??-fv0100.nc", \

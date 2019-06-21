@@ -81,13 +81,13 @@ begin
   VERSION = "MYD08_M3"
 
   ; CMOR table
-  CMOR_TABLE = getenv("esmvaltool_root") + "/cmor/tables/" + \
-    (/"cmip5/Tables/CMIP5_Amon", \
-      "cmip5/Tables/CMIP5_Amon", \
-      "cmip5/Tables/CMIP5_Amon", \
-      "custom/CMOR_lwpStderr.dat", \
-      "custom/CMOR_iwpStderr.dat", \
-      "cmip5/Tables/CMIP5_aero"/)
+  CMOR_TABLE = getenv("cmor_tables") + \
+    (/"/cmip5/Tables/CMIP5_Amon", \
+      "/cmip5/Tables/CMIP5_Amon", \
+      "/cmip5/Tables/CMIP5_Amon", \
+      "/custom/CMOR_lwpStderr.dat", \
+      "/custom/CMOR_iwpStderr.dat", \
+      "/cmip5/Tables/CMIP5_aero"/)
 
   ; Type
   TYPE = "sat"

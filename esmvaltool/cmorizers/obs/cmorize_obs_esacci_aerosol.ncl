@@ -62,13 +62,13 @@ begin
            "mon", "mon"/)
 
   ; CMOR table
-  CMOR_TABLE = getenv("esmvaltool_root") + "/cmor/tables/" + \
-    (/"cmip5/Tables/CMIP5_aero", \
-      "cmip5/Tables/CMIP5_aero", \
-      "cmip5/Tables/CMIP5_aero", \
-      "cmip5/Tables/CMIP5_aero", \
-      "custom/CMOR_od550aerStderr.dat", \
-      "custom/CMOR_od870aerStderr.dat"/)
+  CMOR_TABLE = getenv("cmor_tables") + \
+    (/"/cmip5/Tables/CMIP5_aero", \
+      "/cmip5/Tables/CMIP5_aero", \
+      "/cmip5/Tables/CMIP5_aero", \
+      "/cmip5/Tables/CMIP5_aero", \
+      "/custom/CMOR_od550aerStderr.dat", \
+      "/custom/CMOR_od870aerStderr.dat"/)
 
   ; Type
   TYPE = "sat"

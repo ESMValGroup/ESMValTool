@@ -48,7 +48,7 @@ begin
   FREQ = "mon"
 
   ; CMOR table
-  CMOR_TABLE = getenv("esmvaltool_root") + "/cmor/tables/"
+  CMOR_TABLE = getenv("cmor_tables")
 
   ; Type
   TYPE = "sat"
@@ -132,13 +132,13 @@ begin
       format_coords(erravg, yy + mo + "01", yy + mo + dm, FREQ)
 
       ; Format variable metadata
-      table = CMOR_TABLE + "cmip5/Tables/CMIP5_Amon"
+      table = CMOR_TABLE + "/cmip5/Tables/CMIP5_Amon"
       tmp = format_variable(sstavg, "ts", table)
       delete(sstavg)
       sstavg = tmp
       delete(tmp)
 
-      table = CMOR_TABLE + "custom/CMOR_tsStderr.dat"
+      table = CMOR_TABLE + "/custom/CMOR_tsStderr.dat"
       tmp = format_variable(erravg, "tsStderr", table)
       delete(erravg)
       erravg = tmp

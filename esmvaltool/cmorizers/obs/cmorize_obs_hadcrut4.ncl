@@ -59,12 +59,12 @@ begin
   FREQ = "mon"
 
   ; CMOR table
-  CMOR_TABLE1 = getenv("esmvaltool_root") + \
-    "/cmor/tables/cmip5/Tables/CMIP5_Amon"
-  CMOR_TABLE2 = getenv("esmvaltool_root") + \
-    "/cmor/tables/custom/CMOR_tasa.dat"
-  CMOR_TABLE3 = getenv("esmvaltool_root") + \
-    "/cmor/tables/cmip5/Tables/CMIP5_Amon"
+  CMOR_TABLE1 = getenv("cmor_tables") + \
+    "/cmip5/Tables/CMIP5_Amon"
+  CMOR_TABLE2 = getenv("cmor_tables") + \
+    "/custom/CMOR_tasa.dat"
+  CMOR_TABLE3 = getenv("cmor_tables") + \
+    "/cmip5/Tables/CMIP5_Amon"
 
   ; Version
   VERSION = "1"

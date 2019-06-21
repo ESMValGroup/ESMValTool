@@ -55,7 +55,7 @@ begin
   FREQ = "mon"
 
   ; CMOR table
-  CMOR_TABLE = getenv("esmvaltool_root") + "/cmor/tables/custom/CMOR_tasa.dat"
+  CMOR_TABLE = getenv("cmor_tables") + "/custom/CMOR_tasa.dat"
 
   ; Type
   TYPE = "ground"

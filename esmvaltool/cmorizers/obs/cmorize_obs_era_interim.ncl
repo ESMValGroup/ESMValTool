@@ -134,8 +134,7 @@ begin
     CONVERSION = clist[2]
     MIP = clist[3]
     FREQ = clist[4]
-    CMOR_TABLE = \
-      getenv("esmvaltool_root") + "/cmor/tables/cmip5/Tables/CMIP5_" + MIP
+    CMOR_TABLE = getenv("cmor_tables") + "/cmip5/Tables/CMIP5_" + MIP
     delete(clist)
 
     log_info("Processing " + VAR + " (" + MIP + ")")

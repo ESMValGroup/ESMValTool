@@ -69,11 +69,11 @@ begin
   FREQ = (/"mon", "mon", "mon", "mon"/)
 
   ; CMOR table
-  CMOR_TABLE = getenv("esmvaltool_root") + "/cmor/tables/" + \
-    (/"cmip5/Tables/CMIP5_Amon", \
-      "custom/CMOR_cltStderr.dat", \
-      "cmip5/Tables/CMIP5_Amon", \
-      "cmip5/Tables/CMIP5_Amon"/)
+  CMOR_TABLE = getenv("cmor_tables") + \
+    (/"/cmip5/Tables/CMIP5_Amon", \
+      "/custom/CMOR_cltStderr.dat", \
+      "/cmip5/Tables/CMIP5_Amon", \
+      "/cmip5/Tables/CMIP5_Amon"/)
 
   ; Type
   TYPE = "sat"
