@@ -71,39 +71,39 @@ authors:
   anav_alessandro:
     name: Anav, Alessandro
     institute: Univ. of Exeter, UK
-    orcid: 
+    orcid: https://orcid.org/0000-0002-4217-7563
   andrews_oliver:
     name: Andrews, Oliver
     institute: Tyndall Centre, UK
-    orcid: 
+    orcid: https://orcid.org/0000-0002-1921-475X
   arnone_enrico:
     name: Arnone, Enrico
     institute: ISAC-CNR, Torino, Italy
-    orcid: 
+    orcid: https://orcid.org/0000-0001-6740-5051
   bellprat_omar:
     name: Bellprat, Omar
     institute: BSC, Spain
-    orcid: 
+    orcid: https://orcid.org/0000-0001-6434-1793
   berg_peter:
     name: Berg, Peter
     institute: SMHI, Sweden
-    orcid: 
+    orcid: https://orcid.org/0000-0002-1469-2568
   bock_lisa:
     name: Bock, Lisa
     institute: DLR, Germany
-    orcid: 
+    orcid: https://orcid.org/0000-0001-7058-5938
   bojovic_dragana:
     name: Bojovic, Dragana
     institute: BSC, Spain
-    orcid: 
+    orcid: https://orcid.org/0000-0001-7354-1885
   cagnazzo_chiara:
     name: Cagnazzo, Chiara
     institute: CNR, Italy
-    orcid: 
+    orcid: https://orcid.org/0000-0002-2054-0448
   caron_louis-philippe:
     name: Caron, Louis-Philippe
     institute: BSC, Spain
-    orcid: 
+    orcid: https://orcid.org/0000-0001-5221-0147
   chen_jack:
     name: Chen, Jack
     institute: NCAR, USA
@@ -111,27 +111,27 @@ authors:
   cionni_irene:
     name: Cionni, Irene
     institute: ENEA, Italy
-    orcid: 
+    orcid: https://orcid.org/0000-0002-0591-9193
   cortesi_nicola:
     name: Cortesi, Nicola
     institute: BSC, Spain
-    orcid: 
+    orcid: https://orcid.org/0000-0002-1442-9225
   crezee_bas:
     name: Crezee, Bas
     institute: ETH Zurich, Switzerland
-    orcid: 
+    orcid: https://orcid.org/0000-0002-1774-1126
   mohr_christianwilhelm:
     name: Mohr, Christian Wilhelm
     institute: Cicero, Norway
-    orcid: 
+    orcid: https://orcid.org/0000-0003-2656-1802
   davin_edouardleopold:
     name: Davin, Edouard Leopold
     institute: ETH Zurich, Switzerland
-    orcid: 
+    orcid: https://orcid.org/0000-0003-3322-9330
   davini_paolo:
     name: Davini, Paolo
     institute: CNR-ISAC, Italy
-    orcid: 
+    orcid: https://orcid.org/0000-0003-3389-7849
   ehbrecht_carsten:
     name: Ehbrecht, Carsten
     institute: DKRZ, Germany
@@ -147,15 +147,15 @@ authors:
   gainusa-bogdan_alina:
     name: Gainusa-Bogdan, Alina
     institute: France
-    orcid: 
+    orcid: https://orcid.org/0000-0001-6147-1883
   gallego-elvira_belen:
     name: Gallego-Elvira, Belen
     institute: NERC, UK
-    orcid: 
+    orcid: https://orcid.org/0000-0002-2328-0354
   gettelman_andrew:
     name: Gettelman, Andrew
     institute: NCAR, USA
-    orcid: 
+    orcid: https://orcid.org/0000-0002-8284-2599
   gier_bettina:
     name: Gier, Bettina
     institute: University of Bremen, Germany
@@ -163,15 +163,15 @@ authors:
   gottschaldt_klaus-dirk:
     name: Gottschaldt, Klaus-Dirk
     institute: DLR, Germany
-    orcid: 
+    orcid: https://orcid.org/0000-0002-2046-6137
   guemas_virginie:
     name: Guemas, Virginie
     institute: BSC, Spain
-    orcid: 
+    orcid: https://orcid.org/0000-0002-6340-3558
   hagemann_stefan:
     name: Hagemann, Stefan
     institute: MPI-M, Germany
-    orcid: 
+    orcid: https://orcid.org/0000-0001-5444-2945
   hansson_ulf:
     name: Hansson, Ulf
     institute: SMHI, Sweden
@@ -179,7 +179,7 @@ authors:
   vonhardenberg_jost:
     name: von Hardenberg, Jost
     institute: ISAC-CNR, Torino, Italy
-    orcid: 
+    orcid: https://orcid.org/0000-0002-5312-8070
   hassler_birgit:
     name: Hassler, Birgit
     institute: DLR, Germany
