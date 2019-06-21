@@ -11,10 +11,10 @@
 loadscript("$settings")
 
 ; Load logging functions
-loadscript(getenv("esmvaltool_root") + "/interface_scripts/logging.ncl")
+loadscript(getenv("esmvaltool_root") + "/esmvaltool/interface_scripts/logging.ncl")
 
 ; Load utility functions
-loadscript(getenv("esmvaltool_root") + "/utils/cmorizers/obs/utilities.ncl")
+loadscript(getenv("esmvaltool_root") + "/esmvaltool/cmorizers/obs/utilities.ncl")
 
 ; Check trailing slash
 if (str_get_cols(input_dir_path, -1, -1).ne."/") then

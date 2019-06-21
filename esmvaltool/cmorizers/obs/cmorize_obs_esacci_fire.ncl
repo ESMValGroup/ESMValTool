@@ -20,7 +20,7 @@
 ;    20190124-A_righ_ma: written based on a python script by muel_bn.
 ;
 ; #############################################################################
-loadscript(getenv("esmvaltool_root") + "/utils/cmorizers/obs/interface.ncl")
+loadscript(getenv("esmvaltool_root") + "/esmvaltool/cmorizers/obs/interface.ncl")
 
 begin
 

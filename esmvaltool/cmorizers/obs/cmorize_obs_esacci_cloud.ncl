@@ -35,7 +35,7 @@
 ;    20160519-A_laue_ax: written (reformat_obs_ESACCI-AEROSOL.ncl).
 ;
 ; #############################################################################
-loadscript(getenv("esmvaltool_root") + "/utils/cmorizers/obs/interface.ncl")
+loadscript(getenv("esmvaltool_root") + "/esmvaltool/cmorizers/obs/interface.ncl")
 
 begin
 

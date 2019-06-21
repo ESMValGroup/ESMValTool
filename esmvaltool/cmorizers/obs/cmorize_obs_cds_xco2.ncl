@@ -22,7 +22,7 @@
 ;    20190319-A_hass_bg: written.
 ;
 ; ############################################################################
-loadscript(getenv("esmvaltool_root") + "/utils/cmorizers/obs/interface.ncl")
+loadscript(getenv("esmvaltool_root") + "/esmvaltool/cmorizers/obs/interface.ncl")
 
 begin
 

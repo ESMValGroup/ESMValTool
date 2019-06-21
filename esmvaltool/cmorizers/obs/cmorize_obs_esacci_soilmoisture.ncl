@@ -25,7 +25,7 @@
 ;    20150523-A_righ_ma: written.
 ;
 ; #############################################################################
-loadscript(getenv("esmvaltool_root") + "/utils/cmorizers/obs/interface.ncl")
+loadscript(getenv("esmvaltool_root") + "/esmvaltool/cmorizers/obs/interface.ncl")
 
 begin
 

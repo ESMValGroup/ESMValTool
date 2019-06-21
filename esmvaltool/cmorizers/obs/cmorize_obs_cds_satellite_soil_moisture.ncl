@@ -28,7 +28,7 @@
 ;    20190314-A_crez_ba: adapted from file cmorize_obs_esacci_soilmoisture.ncl
 ;
 ; #############################################################################
-loadscript(getenv("esmvaltool_root") + "/utils/cmorizers/obs/interface.ncl")
+loadscript(getenv("esmvaltool_root") + "/esmvaltool/cmorizers/obs/interface.ncl")
 
 begin
 
