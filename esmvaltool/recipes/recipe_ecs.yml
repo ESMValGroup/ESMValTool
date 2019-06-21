@@ -36,6 +36,8 @@ diagnostics:
         <<: *variable_settings
         derive: true
     additional_datasets:
+      - {dataset: ACCESS1-0,     exp: piControl,   start_year: 300,  end_year: 449}
+      - {dataset: ACCESS1-0,     exp: abrupt4xCO2, start_year: 300,  end_year: 449}
       - {dataset: bcc-csm1-1,    exp: piControl,   start_year: 160,  end_year: 309}
       - {dataset: bcc-csm1-1,    exp: abrupt4xCO2, start_year: 160,  end_year: 309}
       - {dataset: bcc-csm1-1-m,  exp: piControl,   start_year: 240,  end_year: 389}
@@ -56,7 +58,7 @@ diagnostics:
       - {dataset: GISS-E2-R,     exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
       - {dataset: inmcm4,        exp: piControl,   start_year: 2090, end_year: 2239}
       - {dataset: inmcm4,        exp: abrupt4xCO2, start_year: 2090, end_year: 2239}
-      # Data missing for rsut
+      # rsut missing
       # - {dataset: IPSL-CM5A-LR,  exp: piControl,   start_year: 1850, end_year: 1999}
       # - {dataset: IPSL-CM5A-LR,  exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
       - {dataset: IPSL-CM5B-LR,  exp: piControl,   start_year: 1850, end_year: 1999}
@@ -67,9 +69,6 @@ diagnostics:
       - {dataset: MIROC-ESM,     exp: abrupt4xCO2, start_year: 1,    end_year: 150}
       - {dataset: MPI-ESM-LR,    exp: piControl,   start_year: 2015, end_year: 2164}
       - {dataset: MPI-ESM-LR,    exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
-      # Day is out of range for month (wait for iris > 2.0)
-      # - {dataset: ACCESS1-0,     exp: piControl,   start_year: 300,  end_year: 449}
-      # - {dataset: ACCESS1-0,     exp: abrupt4xCO2, start_year: 300,  end_year: 449}
     scripts:
       ecs: &ecs_script
         script: climate_metrics/ecs.py
@@ -87,12 +86,31 @@ diagnostics:
     additional_datasets:
       - {dataset: BCC-CSM2-MR,  exp: piControl,    ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 1999}
       - {dataset: BCC-CSM2-MR,  exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 1999}
+      - {dataset: CNRM-CM6-1,   exp: piControl,    ensemble: r1i1p1f2, grid: gr, start_year: 1850, end_year: 1999}
+      - {dataset: CNRM-CM6-1,   exp: abrupt-4xCO2, ensemble: r1i1p1f2, grid: gr, start_year: 1850, end_year: 1999}
+      # piControl missing
+      # - {dataset: CNRM-ESM2-1,  exp: piControl,    ensemble: r1i1p1f2, grid: gr, start_year: 1850, end_year: 1999}
+      # - {dataset: CNRM-ESM2-1,  exp: abrupt-4xCO2, ensemble: r1i1p1f2, grid: gr, start_year: 1850, end_year: 1999}
+      - {dataset: CESM2,        exp: piControl,    ensemble: r1i1p1f1, grid: gn, start_year:    1, end_year:  150}
+      - {dataset: CESM2,        exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn, start_year:    1, end_year:  150}
+      - {dataset: CESM2-WACCM,  exp: piControl,    ensemble: r1i1p1f1, grid: gn, start_year:    1, end_year:  150}
+      - {dataset: CESM2-WACCM,  exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn, start_year:    1, end_year:  150}
+      # Only 100 years of abrupt-4xCO2 available for rsut
+      # - {dataset: GFDL-CM4,     exp: piControl,    ensemble: r1i1p1f1, grid: gr1, start_year:  151, end_year:  300}
+      # - {dataset: GFDL-CM4,     exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gr1, start_year:    1, end_year:  150}
       - {dataset: GISS-E2-1-G,  exp: piControl,    ensemble: r1i1p1f1, grid: gn, start_year: 4150, end_year: 4299}
       - {dataset: GISS-E2-1-G,  exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 1999}
+      - {dataset: GISS-E2-1-H,  exp: piControl,    ensemble: r1i1p1f1, grid: gn, start_year: 3180, end_year: 3329}
+      - {dataset: GISS-E2-1-H,  exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 1999}
       - {dataset: IPSL-CM6A-LR, exp: piControl,    ensemble: r1i1p1f1, grid: gr, start_year: 1850, end_year: 1999}
       - {dataset: IPSL-CM6A-LR, exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gr, start_year: 1850, end_year: 1999}
       - {dataset: MIROC6,       exp: piControl,    ensemble: r1i1p1f1, grid: gn, start_year: 3200, end_year: 3349}
       - {dataset: MIROC6,       exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn, start_year: 3200, end_year: 3349}
+      - {dataset: MRI-ESM2-0,   exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
+      - {dataset: MRI-ESM2-0,   exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
+      # rsut missing
+      # - {dataset: UKESM1-0-LL,  exp: piControl,    ensemble: r1i1p1f2, grid: gn,  start_year: 1960, end_year: 2109}
+      # - {dataset: UKESM1-0-LL,  exp: abrupt-4xCO2, ensemble: r1i1p1f2, grid: gn,  start_year: 1850, end_year: 1999}
     scripts:
       ecs:
         <<: *ecs_script

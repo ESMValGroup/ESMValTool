@@ -36,10 +36,12 @@ import os
 import iris
 from iris import Constraint
 
-from esmvaltool.diag_scripts.shared import (
-    ProvenanceLogger, extract_variables, get_diagnostic_filename,
-    get_plot_filename, group_metadata, io, plot, run_diagnostic,
-    variables_available)
+from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
+                                            extract_variables,
+                                            get_diagnostic_filename,
+                                            get_plot_filename, group_metadata,
+                                            io, plot, run_diagnostic,
+                                            variables_available)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -134,20 +136,20 @@ def write_data(cfg, hist_cubes, pi_cubes, ecs_cube):
 
     # Create cube
     dataset_coord = iris.coords.AuxCoord(datasets, long_name='dataset')
-    tas_hist_coord = iris.coords.AuxCoord(
-        data_hist,
-        attributes={'exp': 'historical'},
-        **extract_variables(cfg, as_iris=True)['tas'])
-    tas_picontrol_coord = iris.coords.AuxCoord(
-        data_pi,
-        attributes={'exp': 'piControl'},
-        **extract_variables(cfg, as_iris=True)['tas'])
-    cube = iris.cube.Cube(
-        data_ecs,
-        var_name='ecs',
-        long_name='Effective Climate Sensitivity (ECS)',
-        aux_coords_and_dims=[(dataset_coord, 0), (tas_hist_coord, 0),
-                             (tas_picontrol_coord, 0)])
+    tas_hist_coord = iris.coords.AuxCoord(data_hist,
+                                          attributes={'exp': 'historical'},
+                                          **extract_variables(
+                                              cfg, as_iris=True)['tas'])
+    tas_picontrol_coord = iris.coords.AuxCoord(data_pi,
+                                               attributes={'exp': 'piControl'},
+                                               **extract_variables(
+                                                   cfg, as_iris=True)['tas'])
+    cube = iris.cube.Cube(data_ecs,
+                          var_name='ecs',
+                          long_name='Effective Climate Sensitivity (ECS)',
+                          aux_coords_and_dims=[(dataset_coord, 0),
+                                               (tas_hist_coord, 0),
+                                               (tas_picontrol_coord, 0)])
 
     # Save file
     path = get_diagnostic_filename('ch09_fig09_42a', cfg)

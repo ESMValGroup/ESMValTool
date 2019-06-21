@@ -58,7 +58,7 @@ diagnostics:
           - {dataset: ACCESS1-0,     start_year:  300, end_year:  439}
           - {dataset: bcc-csm1-1,    start_year:  160, end_year:  299}
           - {dataset: bcc-csm1-1-m,  start_year:  240, end_year:  379}
-          - {dataset: CanESM3,       start_year: 2321, end_year: 2460}
+          - {dataset: CanESM2,       start_year: 2321, end_year: 2460}
           - {dataset: CCSM4,         start_year:  251, end_year:  390}
           - {dataset: CNRM-CM5,      start_year: 1850, end_year: 1989}
           - {dataset: CSIRO-Mk3-6-0, start_year:  104, end_year:  243}
