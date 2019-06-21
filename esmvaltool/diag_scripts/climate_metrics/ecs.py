@@ -81,9 +81,12 @@ def get_anomaly_data(tas_data, rtnt_data, dataset):
     }
     ancestor_files = []
     cubes = {}
-    for (key, [path]) in paths.items():
-        ancestor_files.append(path['filename'])
-        cube = iris.load_cube(path['filename'])
+    for (key, path) in paths.items():
+        if not path:
+            logger.warning("'%s' data is missing", key)
+            return (None, None, None)
+        ancestor_files.append(path[0]['filename'])
+        cube = iris.load_cube(path[0]['filename'])
         cube = cube.aggregated_by('year', iris.analysis.MEAN)
         cubes[key] = cube
 
@@ -242,9 +245,13 @@ def write_data(ecs_data, feedback_parameter_data, ancestor_files, cfg):
             'units': cf_units.Unit('W m-2 K-1'),
         },
     ]
+    project = list(cfg['input_data'].values())[0]['project']
     for (idx, var_attr) in enumerate(var_attrs):
         path = get_diagnostic_filename(var_attr['short_name'], cfg)
-        io.save_scalar_data(data[idx], path, var_attr)
+        io.save_scalar_data(data[idx],
+                            path,
+                            var_attr,
+                            attributes={'project': project})
         caption = "{long_name} for multiple climate models.".format(**var_attr)
         provenance_record = get_provenance_record(caption)
         provenance_record['ancestors'] = ancestor_files
@@ -266,14 +273,18 @@ def main(cfg):
         external_file = None
 
     # Read data
+    all_ancestors = []
     tas_data = select_metadata(input_data, short_name='tas')
     rtnt_data = select_metadata(input_data, short_name='rtnt')
 
     # Iterate over all datasets and save ECS and feedback parameter
     for dataset in group_metadata(tas_data, 'dataset'):
-        logger.info("Processing %s", dataset)
+        logger.info("Processing '%s'", dataset)
         (tas_cube, rtnt_cube,
          ancestor_files) = get_anomaly_data(tas_data, rtnt_data, dataset)
+        if tas_cube is None:
+            logger.warning("Skipping '%s'", dataset)
+            continue
 
         # Perform linear regression
         reg = stats.linregress(tas_cube.data, rtnt_cube.data)
@@ -296,12 +307,12 @@ def main(cfg):
                 "parameter for %s", dataset)
         ecs[dataset] = -reg.intercept / (2 * reg.slope)
         feedback_parameter[dataset] = -reg.slope
+        all_ancestors.extend(ancestor_files)
 
     # Write data
-    ancestor_files = [d['filename'] for d in tas_data + rtnt_data]
     if external_file is not None:
-        ancestor_files.append(external_file)
-    write_data(ecs, feedback_parameter, ancestor_files, cfg)
+        all_ancestors.append(external_file)
+    write_data(ecs, feedback_parameter, all_ancestors, cfg)
 
 
 if __name__ == '__main__':

@@ -131,8 +131,8 @@ def _plot(cfg, cube, dataset_name, tcr):
         f"(relative to the linear fit of the pre-industrial control run) of "
         f"{dataset_name} for the 1% CO2 increase per year experiment. The "
         f"horizontal dashed line indicates the transient climate response "
-        f"(TCR) defined as the 20 year average temperature anomaly at the "
-        f"time of CO2 doubling (vertical dashed lines).")
+        f"(TCR) defined as the 20 year average temperature anomaly centered "
+        f"at the time of CO2 doubling (vertical dashed lines).")
     provenance_record.update({
         'plot_file': plot_path,
         'plot_types': ['times'],
@@ -233,7 +233,8 @@ def write_data(cfg, tcr):
         'units': cf_units.Unit('K'),
     }
     path = get_diagnostic_filename(var_attr['short_name'], cfg)
-    io.save_scalar_data(tcr, path, var_attr)
+    project = list(cfg['input_data'].values())[0]['project']
+    io.save_scalar_data(tcr, path, var_attr, attributes={'project': project})
     caption = "{long_name} for multiple climate models.".format(**var_attr)
     provenance_record = get_provenance_record(caption)
     ancestor_files = []

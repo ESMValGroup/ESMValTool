@@ -54,7 +54,6 @@ def get_provenance_record(project, ancestor_files):
          'pre-industrial control runs (smaller symbols).'.format(project)),
         'statistics': ['mean'],
         'domains': ['global'],
-        'plot_types': ['scatter'],
         'authors': ['schl_ma'],
         'references': ['flato13ipcc'],
         'realms': ['atmos'],
@@ -76,9 +75,13 @@ def plot_data(cfg, hist_cubes, pi_cubes, ecs_cube):
 
     # Collect data
     for dataset in hist_cubes:
+        ecs = ecs_cube.extract(Constraint(dataset=dataset))
+        if ecs is None:
+            logger.warning("No ECS data for '%s' available, skipping", dataset)
+            continue
 
         # Historical data
-        x_data.append(ecs_cube.extract(Constraint(dataset=dataset)).data)
+        x_data.append(ecs.data)
         y_data.append(hist_cubes[dataset].data)
         dataset_names.append(dataset)
         plot_kwargs.append({
@@ -88,7 +91,7 @@ def plot_data(cfg, hist_cubes, pi_cubes, ecs_cube):
         })
 
         # PiControl data
-        x_data.append(ecs_cube.extract(Constraint(dataset=dataset)).data)
+        x_data.append(ecs.data)
         y_data.append(pi_cubes[dataset].data)
         dataset_names.append(dataset)
         plot_kwargs.append({
@@ -115,14 +118,17 @@ def plot_data(cfg, hist_cubes, pi_cubes, ecs_cube):
 
 def write_data(cfg, hist_cubes, pi_cubes, ecs_cube):
     """Write netcdf file."""
-    datasets = list(hist_cubes)
-
-    # Collect data
+    datasets = []
     data_ecs = []
     data_hist = []
     data_pi = []
-    for dataset in datasets:
-        data_ecs.append(ecs_cube.extract(Constraint(dataset=dataset)).data)
+    for dataset in list(hist_cubes):
+        ecs = ecs_cube.extract(Constraint(dataset=dataset))
+        if ecs is None:
+            logger.warning("No ECS data for '%s' available, skipping", dataset)
+            continue
+        datasets.append(dataset)
+        data_ecs.append(ecs.data)
         data_hist.append(hist_cubes[dataset].data)
         data_pi.append(pi_cubes[dataset].data)
 
@@ -193,9 +199,13 @@ def main(cfg):
 
     # Provenance
     ancestor_files = [d['filename'] for d in input_data]
+    ancestor_files.append(ecs_filepath)
     provenance_record = get_provenance_record(project, ancestor_files)
     if plot_path is not None:
-        provenance_record['plot_file'] = plot_path
+        provenance_record.update({
+            'plot_file': plot_path,
+            'plot_types': ['scatter'],
+        })
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(netcdf_path, provenance_record)
 
