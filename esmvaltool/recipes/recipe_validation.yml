@@ -3,6 +3,14 @@
 documentation:
   description: |
     Validation of CONTROL and EXPERIMENT datasets.
+    This recipe produces standard comparison plots for two models
+    and may include observational data. The standard comparison
+    metrics are 2D lat-lon differences (between control and experiment),
+    plain 2D lat-lon for each model, 1D (coordinate vs time)
+    zonal and meridional means for both control and experiment models.
+    Plots are produced for each season (winter DJF, spring MAM, summer JJA,
+    autumn SON) and for the entire year.
+    There are no restrictions in terms of data.
 
   authors:
     - pred_va
