@@ -42,6 +42,8 @@ def _extract_variable(in_file, raw_name, definition, attributes, out_dir):
         utils.add_scalar_height_coord(cube, 10.)
 
     # Fix units if required
+    if cube.var_name == 'clt':
+        cube.units = definition.units
     cube.convert_units(definition.units)
 
     # Make latitude increasing
@@ -68,7 +70,7 @@ def cmorization(in_dir, out_dir):
         attributes['mip'] = var['mip']
         definition = cfg['cmor_table'].get_variable(var['mip'], short_name)
 
-        for in_file in Path(in_dir).glob(var['file']):
+        for in_file in sorted(Path(in_dir).glob(var['file'])):
             logger.info("CMORizing input file '%s'", in_file)
             _extract_variable(in_file, var['raw'], definition, attributes,
                               out_dir)

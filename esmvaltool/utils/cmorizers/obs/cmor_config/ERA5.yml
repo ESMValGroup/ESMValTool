@@ -13,6 +13,22 @@ attributes:
 
 # Variables to CMORize
 variables:
+  clt:
+    mip: E1hr
+    raw: tcc
+    file: 'era5_total_cloud_cover_*.nc'
+  psl:
+    mip: E1hr
+    raw: msl
+    file: 'era5_mean_sea_level_pressure_*.nc'
+  # rsds:  # TODO: check unit mismatch: ERA5 data is in J m**-2, CMIP5 in W m**-2  
+  #   mip: E1hr
+  #   raw: ssrd
+  #   file: 'era5_surface_solar_radiation_downwards_*.nc'
+  # rsdt:  # TODO: check unit mismatch: ERA5 data is in J m**-2, CMIP5 in W m**-2
+  #  mip: E1hr
+  #  raw: tisr
+  #  file: 'era5_toa_incident_solar_radiation_*.nc'
   uas:
     mip: E1hr
     raw: u10
@@ -29,3 +45,11 @@ variables:
     mip: E1hr
     raw: d2m
     file: 'era5_2m_dewpoint_temperature_*.nc'
+  ts:
+    mip: E1hr
+    raw: skt
+    file: 'era5_skin_temperature_*.nc'
+  tsn:
+    mip: E1hr
+    raw: tsn
+    file: 'era5_temperature_of_snow_layer_*.nc'
