@@ -35,4 +35,5 @@ Recipes
    recipe_spei
    recipe_toymodel
    recipe_thermodyn_diagtool
+   recipe_validation
    recipe_zmnam
