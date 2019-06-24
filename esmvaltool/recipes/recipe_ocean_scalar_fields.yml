@@ -28,19 +28,18 @@ diagnostics:
   diag_timeseries:
     description: sea_water_transport_across_line
     variables:
-      mfo: # sea_water_transport_across_line
-        mip: Omon
-        # ensemble: [r1i1p1, r1i1p1f1]
       thetaoga: # Global Average Sea Water Potential Temperature
         mip: Omon
+        exp: historical
+        ensemble: r1i1p1
       soga: # Global Mean Sea Water Salinity
         mip: Omon
+        exp: historical
+        ensemble: r1i1p1
       zostoga: # Global Average Thermosteric Sea Level Change
         mip: Omon
-    #   zossga: # Global Average Steric Sea Level Change
-    #     mip: Omon
-    #   zosga: # Global Average Sea Level Change
-    #     mip: Omon
+        exp: historical
+        ensemble: r1i1p1
 
     scripts:
       Regional_Ocean_Surface_mean_timeseries:
