@@ -23,6 +23,7 @@ base_dict  = {
     '[frequency]':    '*',
     '[ensemble]':     '*',
     '[mip]':     '*',
+    '[modeling_realm]':     '*',
     '[short_name]': '*',
     '[grid]':     '*',
     '[latestversion]': '*',
