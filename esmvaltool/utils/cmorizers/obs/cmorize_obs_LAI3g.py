@@ -121,7 +121,7 @@ def _extract_variable(cmor_info, attrs, in_dir, out_dir):
     utils.fix_var_metadata(final_cube, cmor_info)
     utils.convert_timeunits(final_cube, 1950)
     utils.fix_coords(final_cube)
-    if CFG['target_grid'] is None:
+    if CFG.get('target_grid') is None:
         utils.flip_dim_coord(final_cube, 'latitude')
     utils.set_global_atts(final_cube, attrs)
     utils.save_variable(final_cube,

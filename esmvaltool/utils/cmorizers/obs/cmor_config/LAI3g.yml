@@ -3,7 +3,7 @@
 filename: 'AVHRR-LAI3gV1-1981-2018.zip'
 binary_prefix: 'AVHRR_BULAI3g_v1_'
 
-# Regrid to coarser resolution (original dataset has really fine grid)
+# Regrid to coarser resolution (original dataset has very fine grid)
 target_grid: 0.5x0.5
 
 # Common global attributes for Cmorizer output
