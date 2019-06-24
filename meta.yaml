@@ -2,7 +2,7 @@
 ---
 
 # Build commmand:
-# conda build . -c conda-forge -c birdhouse
+# conda build . -c conda-forge -c esmvalgroup
 
 # Package version number
 {% set version = "2.0a2" %}
@@ -40,29 +40,24 @@ requirements:
     - libunwind  #  specifically for Python3.7+
     - graphviz
     - iris>=2.2
-    - python-stratify
     # Normally installed via pip:
     - cartopy
     - cf-units
     - cython
     - eofs
     - esmpy
+    - esmvalcore>=2.0.0a1,<2.1
+    - jinja2
     - matplotlib<3
     - nc-time-axis
     - netCDF4
-    - numba
     - numpy
     - pandas
-    - pillow
-    - prov
-    - psutil
-    - pydot
     - python-cdo
+    - python-stratify
     - pyyaml
     - scikit-learn
     - shapely
-    - six
-    - vmprof
     - xarray>=0.12.0
     - yamale  # in birdhouse channel
     - fiona
@@ -88,5 +83,5 @@ about:
   home: https://www.esmvaltool.org
   license: Apache License, Version 2.0
   license_file: LICENSE
-  summary: A community diagnostic and performance metrics tool for routine evaluation of Earth system models in CMIP.
-  description: A community diagnostic and performance metrics tool for routine evaluation of Earth system models in CMIP.
+  summary: "A community diagnostic and performance metrics tool for routine evaluation of Earth system models in CMIP."
+  description: "A community diagnostic and performance metrics tool for routine evaluation of Earth system models in CMIP."
