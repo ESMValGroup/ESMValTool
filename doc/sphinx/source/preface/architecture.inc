@@ -40,47 +40,47 @@ Data finding:
 * read the data requirements from the recipe from the datasets (and additional_datasets)
 section; assemble the data request that will find the data;
 * find the data using the specified root paths and DRS types in the configuration file
-(note the flexibility allowed by the data finder, see Preprocessor/Data finding);
+  (note the flexibility allowed by the data finder, see Preprocessor/Data finding);
 
 Data selection:
 ---------------
 * data selection is performed using the parameters specified in the datasets (and additional
-datasets) section (including e.g. type of experiment, type of ensemble, time boundaries etc);
-data will be retrieved and selected for each variable that is specified in the
-daignostics/variables subsection;
+  datasets) section (including e.g. type of experiment, type of ensemble, time boundaries etc);
+  data will be retrieved and selected for each variable that is specified in the
+  daignostics/variables subsection;
 
 Data fixing:
 ------------
 * ESMValTool requires data to be in CMOR format; a strict CMOR data formatting standard is not
-enforced so that data will undergo checks against the CMOR library and fixing if small
-irregularities are found (note that the degree of leniency is not very high).
+  enforced so that data will undergo checks against the CMOR library and fixing if small
+  irregularities are found (note that the degree of leniency is not very high).
 
 Variable derivation
 -------------------
 * variable derivation (in the case on non CMOR-standard variables, most likely associated with
-observational datasets) is performed automatically before running the preprocessor;
+  observational datasets) is performed automatically before running the preprocessor;
 * if the variable definitions are already in the database then the user will just have to specify
-the variableto be derived in the diagnostics/variable section (as any other standard variable, just
-with the derive: true key and value).
+  the variableto be derived in the diagnostics/variable section (as any other standard variable, just
+  with the derive: true key and value).
 
 Run the preprocessor:
 ---------------------
 * if any preprocessor section is specified in the recipe file, then data will be loaded in memory
-as iris cubes and passed through the preprocessing steps required by the user and specified in
-the preprocessor section, using the specific preprocessing step parameters provided by the user
-as keys (for the parameter name) and values (for the paramater value); the preprocessing order
-is very imprtant since a number of steps depend on prior excution of other steps (e.g. multimodel
-statistics can not be computed unless all models are on a common grid, hence a prior regridding
-on a common grid is necessary); the preprocessor steps order can be set by the user as custom or
-the default order can be used;
+  as iris cubes and passed through the preprocessing steps required by the user and specified in
+  the preprocessor section, using the specific preprocessing step parameters provided by the user
+  as keys (for the parameter name) and values (for the paramater value); the preprocessing order
+  is very imprtant since a number of steps depend on prior excution of other steps (e.g. multimodel
+  statistics can not be computed unless all models are on a common grid, hence a prior regridding
+  on a common grid is necessary); the preprocessor steps order can be set by the user as custom or
+  the default order can be used;
 * once preprocessing has finished, the tool writes the data output to disk as netCDF files so that
-the diagnostics can pick it up and use it; the user will also be provided with a metadata file
-containing a summary of the preprocessing and pointers to its output.
+  the diagnostics can pick it up and use it; the user will also be provided with a metadata file
+  containing a summary of the preprocessing and pointers to its output.
 
 Run the diagnostics:
 --------------------
 * the last and most important phase can now be run: using output files from the preprocessor, the
-diagnostic will be run using the provided diagnostics parameters.
+  diagnostic will be run using the provided diagnostics parameters.
 
 .. figure::  ../figures/schematic.png
    :align:   center
