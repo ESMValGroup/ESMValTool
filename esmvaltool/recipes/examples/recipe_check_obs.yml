@@ -577,7 +577,7 @@ diagnostics:
       lai:
         mip: Lmon
     additional_datasets:
-      - {dataset: LAI3g, project: OBS, tier: 3, type: reanaly, version: 1, start_year: 1981, end_year: 2018}
+      - {dataset: LAI3g, project: OBS, tier: 3, type: reanaly, version: 1_regridded, start_year: 1981, end_year: 2018}
     scripts: null
 
 

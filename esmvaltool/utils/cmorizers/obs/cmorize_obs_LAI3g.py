@@ -29,6 +29,7 @@ import numpy as np
 from cf_units import Unit
 
 import esmvaltool.utils.cmorizers.obs.utilities as utils
+from esmvalcore.preprocessor import regrid
 
 logger = logging.getLogger(__name__)
 
@@ -92,8 +93,10 @@ def _extract_variable(cmor_info, attrs, in_dir, out_dir):
             # Coordinates
             coords = _get_coords(year, bin_file)
 
-            # Build cube and append it
+            # Build cube, regrid and append it
             cube = iris.cube.Cube(raw_data, dim_coords_and_dims=coords)
+            if CFG.get('target_grid'):
+                cube = regrid(cube, CFG['target_grid'], 'linear_extrapolate')
             cubes.append(cube)
 
         # Build cube for single year with monthly data
@@ -118,7 +121,8 @@ def _extract_variable(cmor_info, attrs, in_dir, out_dir):
     utils.fix_var_metadata(final_cube, cmor_info)
     utils.convert_timeunits(final_cube, 1950)
     utils.fix_coords(final_cube)
-    utils.flip_dim_coord(final_cube, 'latitude')
+    if CFG['target_grid'] is None:
+        utils.flip_dim_coord(final_cube, 'latitude')
     utils.set_global_atts(final_cube, attrs)
     utils.save_variable(final_cube,
                         cmor_info.short_name,
@@ -193,6 +197,9 @@ def cmorization(in_dir, out_dir):
     # Run the cmorization
     for (var, var_info) in CFG['variables'].items():
         logger.info("CMORizing variable '%s'", var)
+        if CFG.get('target_grid'):
+            logger.info("Final dataset will be regridded to %s grid",
+                        CFG['target_grid'])
         glob_attrs['mip'] = var_info['mip']
         cmor_info = cmor_table.get_variable(var_info['mip'], var)
         zip_file = os.path.join(in_dir, filepath)

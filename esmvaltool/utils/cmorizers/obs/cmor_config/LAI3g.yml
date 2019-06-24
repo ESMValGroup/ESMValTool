@@ -3,10 +3,13 @@
 filename: 'AVHRR-LAI3gV1-1981-2018.zip'
 binary_prefix: 'AVHRR_BULAI3g_v1_'
 
+# Regrid to coarser resolution (original dataset has really fine grid)
+target_grid: 0.5x0.5
+
 # Common global attributes for Cmorizer output
 attributes:
   dataset_id: LAI3g
-  version: '1'
+  version: '1_regridded'
   tier: 3
   modeling_realm: reanaly
   project_id: OBS

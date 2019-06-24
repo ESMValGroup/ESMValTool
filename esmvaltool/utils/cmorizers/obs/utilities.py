@@ -10,9 +10,9 @@ import yaml
 from cf_units import Unit
 from dask import array as da
 
-from esmvaltool import __version__ as version
 from esmvalcore._config import get_tag_value
 from esmvalcore.cmor.table import CMOR_TABLES
+from esmvaltool import __version__ as version
 
 logger = logging.getLogger(__name__)
 
@@ -20,13 +20,12 @@ logger = logging.getLogger(__name__)
 def add_height2m(cube):
     """Add scalar coordinate 'height' with value of 2m."""
     logger.info("Adding height coordinate (2m)")
-    height_coord = iris.coords.AuxCoord(
-        2.0,
-        var_name='height',
-        standard_name='height',
-        long_name='height',
-        units=Unit('m'),
-        attributes={'positive': 'up'})
+    height_coord = iris.coords.AuxCoord(2.0,
+                                        var_name='height',
+                                        standard_name='height',
+                                        long_name='height',
+                                        units=Unit('m'),
+                                        attributes={'positive': 'up'})
     cube.add_aux_coord(height_coord, ())
 
 
@@ -119,14 +118,15 @@ def flip_dim_coord(cube, coord_name):
     coord = cube.coord(coord_name, dim_coords=True)
     coord_idx = cube.coord_dims(coord)[0]
     coord.points = np.flip(coord.points)
-    coord.bounds = np.flip(coord.bounds, axis=0)
+    if coord.bounds is not None:
+        coord.bounds = np.flip(coord.bounds, axis=0)
     cube.data = da.flip(cube.core_data(), axis=coord_idx)
 
 
 def read_cmor_config(cmor_config):
     """Read the associated dataset-specific config file."""
-    reg_path = os.path.join(
-        os.path.dirname(__file__), 'cmor_config', cmor_config)
+    reg_path = os.path.join(os.path.dirname(__file__), 'cmor_config',
+                            cmor_config)
     with open(reg_path, 'r') as file:
         cfg = yaml.safe_load(file)
     cfg['cmor_table'] = \
