@@ -161,7 +161,7 @@ def execute_cmorize():
 
     # set logging for screen and file output
     root_logger = logging.getLogger()
-    out_fmt = "%(asctime)s %(levelname)-8s %(name)s,%(lineno)s\t%(message)s"
+    out_fmt = "%(asctime)s [%(process)d] %(levelname)-8s %(name)s,%(lineno)s\t%(message)s"
     logging.basicConfig(filename=os.path.join(run_dir, 'main_log.txt'),
                         filemode='a',
                         format=out_fmt,
