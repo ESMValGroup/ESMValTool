@@ -31,6 +31,7 @@ REQUIREMENTS = {
         'cdo',
         'cf-units',
         'cython',
+        'jinja2',
         'eofs',
         'esmvalcore>=2.0.0a1,<2.1',
         'fiona',
@@ -229,7 +230,9 @@ setup(
             'nclcodestyle = esmvaltool.'
             'utils.nclcodestyle.nclcodestyle:_main',
             'mip_convert_setup = esmvaltool.'
-            'utils.cmorizers.mip_convert.esmvt_mipconv_setup:main'
+            'utils.cmorizers.mip_convert.esmvt_mipconv_setup:main',
+            'showcolortables=esmvaltool.utils.color_tables' +
+            '.show_color_tables:run'
         ],
     },
     cmdclass={
