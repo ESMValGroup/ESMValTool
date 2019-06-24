@@ -33,7 +33,7 @@ on_rtd = os.environ.get("READTHEDOCS", None) == "True"
 # This is used for linking and such so we link to the thing we're building
 rtd_version = os.environ.get("READTHEDOCS_VERSION", "latest")
 if rtd_version not in ["stable", "latest"]:
-    rtd_version = "stable"
+    rtd_version = "docu_join"
 
 # Generate gallery
 sys.path.append(os.path.dirname(__file__))
