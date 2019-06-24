@@ -21,23 +21,6 @@ documentation:
     - ukesm
 
 
-datasets:
-  # working datasets
-    - {dataset: ACCESS1-0,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1900, end_year: 2004}
-    - {dataset: ACCESS1-3,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1900, end_year: 2004}
-    - {dataset: CanESM2,          project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1900, end_year: 2004}
-    - {dataset: GFDL-ESM2M,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1900, end_year: 2004}
-    - {dataset: HadGEM2-CC,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1900, end_year: 2004}
-    - {dataset: HadGEM2-ES,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1900, end_year: 2004}
-    - {dataset: MPI-ESM-LR,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1900, end_year: 2004}
-    - {dataset: MPI-ESM-MR,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1900, end_year: 2004}
-    - {dataset: MPI-ESM-P,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1900, end_year: 2004}
-    - {dataset: MRI-CGCM3,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1900, end_year: 2004}
-    - {dataset: MRI-ESM1,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1900, end_year: 2004}
-    - {dataset: NorESM1-M,        project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1900, end_year: 2004}
-    - {dataset: NorESM1-ME,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1900, end_year: 2004}
-
-
 diagnostics:
   # --------------------------------------------------
   # Time series diagnostics
@@ -47,6 +30,18 @@ diagnostics:
     variables:
       mfo: # sea_water_transport_across_line
         mip: Omon
+        # ensemble: [r1i1p1, r1i1p1f1]
+      thetaoga: # Global Average Sea Water Potential Temperature
+        mip: Omon
+      soga: # Global Mean Sea Water Salinity
+        mip: Omon
+      zostoga: # Global Average Thermosteric Sea Level Change
+        mip: Omon
+    #   zossga: # Global Average Steric Sea Level Change
+    #     mip: Omon
+    #   zosga: # Global Average Sea Level Change
+    #     mip: Omon
+
     scripts:
       Regional_Ocean_Surface_mean_timeseries:
         script: ocean/diagnostic_timeseries.py
