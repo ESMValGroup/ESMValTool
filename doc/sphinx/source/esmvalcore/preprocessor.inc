@@ -4,32 +4,6 @@
 Preprocessor
 ************
 
-Overview
-========
-
-ESMValTool is a modular Python 3.6+ software package possesing capabilities
-of executing a large number of diagnostic routines
-that can be written in a number of programming languages (Python, NCL, R, Julia).
-The modular nature benefits the users and developers in different key areas:
-a new feature developed specifically for version 2.0 is the preprocessing core or
-the preprocessor (esmvalcore) that executes the bulk of standardized data operations
-and is highly optimized for maximum performance in data-intensive tasks. The main
-objective of the preprocessor is to integrate as many standardizable data analysis
-functions as possible so that the diagnostics can focus on the specific scientific
-tasks they carry. The preprocessor is linked to the diagnostics library and the
-diagnostic execution is seamlessly performed after the preprocessor has completed the
-its steps. The benefit of having a preprocessing unit separate from the diagnostics
-library include:
-
-* ease of integration of new preprocessing routines;
-* ease of maintenance (including unit and integration testing) of existing routines;
-* a straightforward manner of importing and using the preprocessing routines as part
-  of the overall usage of the software and, as a special case, the use during diagnostic execution;
-* shifting the effort for the scientific diagnostic developer from implementing both standard
-  and diagnostic-specific functionalities to allowing them to dedicate most of the effort to
-  developing scientifically-relevant diagnostics and metrics;
-* a more strict code review process, given the smaller code base than for diagnostics.
-
 The ESMValTool preprocessor can be used to perform a broad range of operations
 on the input data before diagnostics or metrics are applied. The
 preprocessor performs these operations in a centralized, documented and
