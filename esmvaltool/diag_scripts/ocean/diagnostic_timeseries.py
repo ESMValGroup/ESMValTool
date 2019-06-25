@@ -50,12 +50,12 @@ Author: Lee de Mora (PML)
 
 import logging
 import os
-
+import datetime
 import iris
 import matplotlib.pyplot as plt
 import numpy as np
 
-from esmvalcore.preprocessor._time_area import time_slice as extract_time
+from esmvalcore.preprocessor._time import extract_time
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic
 
@@ -175,7 +175,7 @@ def moving_average(cube, window):
     return cube
 
 
-def calculate_anomaly(cube_layer, anomaly):
+def calculate_anomaly(cube, anomaly):
     """
     Calculate the anomaly using a specified time range.
 
@@ -195,14 +195,32 @@ def calculate_anomaly(cube_layer, anomaly):
     iris.cube.Cube:
         A cube with the anomaly calculated.
     """
+    start_year = int(np.array(anomaly).min())
+    end_year = int(np.array(anomaly).max())
+    start_month = 1
+    end_month = 12
+    start_day = 1
+    end_day = 31
 
-    year_initial = anomaly[0]
-    year_final = anomaly[1]
+    time_units = cube.coord('time').units
+    if time_units.calendar == '360_day':
+            start_day = 30
+            end_day = 30
 
-    new_cube = extract_time(cube, year_initial, 1, 1, year_final, 12, 31)
+    start_date = datetime.datetime(
+        int(start_year), int(start_month), int(start_day))
+    end_date = datetime.datetime(int(end_year), int(end_month), int(end_day))
+
+    t_1 = time_units.date2num(start_date)
+    t_2 = time_units.date2num(end_date)
+    constraint = iris.Constraint(
+        time=lambda t: t_1 < time_units.date2num(t.point) < t_2)
+
+    new_cube = cube.extract(constraint)
+    if new_cube == None: 
+         return None
     mean = new_cube.data.mean()
     cube.data = cube.data - mean
-
     return cube
 
 
@@ -248,7 +266,10 @@ def make_time_series_plots(
             cube_layer = moving_average(cube_layer, cfg['moving_average'])
 
         if 'anomaly' in cfg:
+            
             cube_layer = calculate_anomaly(cube_layer, cfg['anomaly'])
+            if cube_layer is None:
+                return
 
         if multi_model:
             timeplot(cube_layer, label=metadata['dataset'], ls=':')
@@ -257,6 +278,8 @@ def make_time_series_plots(
 
         # Add title, legend to plots
         title = ' '.join([metadata['dataset'], metadata['long_name']])
+        if 'anomaly' in cfg:
+            title = ' '.join([title, 'anomaly']) 
         if layer != '':
             if cube_layer.coords('depth'):
                 z_units = cube_layer.coord('depth').units
@@ -358,6 +381,8 @@ def multi_model_time_series(
             if 'anomaly' in cfg:
                 cube_layer = calculate_anomaly(model_cubes[filename][layer],
                                                cfg['anomaly'])
+                if cube_layer is None:
+                   continue 
 
 
             if 'MultiModel' in metadata[filename]['dataset']:
@@ -396,6 +421,9 @@ def multi_model_time_series(
                 else:
                     z_units = ''
         # Add title, legend to plots
+        if 'anomaly' in cfg:  
+            title = ' '.join([title, 'anomaly'])
+
         if layer:
             title = ' '.join([title, '(', str(layer), str(z_units), ')'])
         plt.title(title)
@@ -417,10 +445,15 @@ def multi_model_time_series(
             )
 
         # Resize and add legend outside thew axes.
-        plt.gcf().set_size_inches(9., 6.)
-        diagtools.add_legend_outside_right(
-            plot_details, plt.gca(), column_width=0.15)
-
+        if len(plot_details) <25:
+            plt.gcf().set_size_inches(9., 6.)
+            diagtools.add_legend_outside_right(
+                plot_details, plt.gca(), column_width=0.15)
+        if len(plot_details) > 25:
+            plt.gcf().set_size_inches(11., 6.)
+            diagtools.add_legend_outside_right(
+                plot_details, plt.gca(), column_width=0.18)
+     
         logger.info('Saving plots to %s', path)
         plt.savefig(path)
         plt.close()

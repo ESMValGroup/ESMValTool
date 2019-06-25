@@ -21,6 +21,16 @@ documentation:
     - ukesm
 
 
+
+preprocessors:
+  # --------------------------------------------------
+  # Time series preprocessors
+  # --------------------------------------------------
+  prep_timeseries_1: # For 2D fields
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean ]
+
 diagnostics:
   # --------------------------------------------------
   # Time series diagnostics
@@ -29,6 +39,7 @@ diagnostics:
     description: sea_water_transport_across_line
     variables:
       thetaoga: # Global Average Sea Water Potential Temperature
+        preprocessor: prep_timeseries_1
         additional_datasets:
           - {dataset: ACCESS1-0, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
           - {dataset: ACCESS1-3, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
@@ -70,6 +81,7 @@ diagnostics:
           - {dataset: bcc-csm1-1-m, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2012, }
           # - {dataset: inmcm4, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
       soga: # Global Mean Sea Water Salinity
+        preprocessor: prep_timeseries_1
         additional_datasets:
           - {dataset: ACCESS1-0, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
           - {dataset: ACCESS1-3, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
@@ -111,6 +123,7 @@ diagnostics:
           - {dataset: bcc-csm1-1-m, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2012, }
 #          - {dataset: inmcm4, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
       zostoga: # Global Average Thermosteric Sea Level Change
+        preprocessor: prep_timeseries_1
         additional_datasets:
           - {dataset: ACCESS1-0, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
           - {dataset: ACCESS1-3, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
@@ -148,3 +161,4 @@ diagnostics:
       Regional_Ocean_Surface_mean_timeseries:
         script: ocean/diagnostic_timeseries.py
         moving_average: 6 years
+        anomaly: [1850, 1900]
