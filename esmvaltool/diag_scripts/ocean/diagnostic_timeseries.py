@@ -55,8 +55,10 @@ import iris
 import matplotlib.pyplot as plt
 import numpy as np
 
+from esmvalcore.preprocessor._time_area import time_slice as extract_time
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic
+
 
 # This part sends debug statements to stdout
 logger = logging.getLogger(os.path.basename(__file__))
@@ -173,6 +175,37 @@ def moving_average(cube, window):
     return cube
 
 
+def calculate_anomaly(cube_layer, anomaly):
+    """
+    Calculate the anomaly using a specified time range.
+
+    The anomaly window is a list which includes a starting year and and end
+    year to indicate the start and end of the time period in which to calculate
+    the anomaly.
+
+    Parameters
+    ----------
+    cube: iris.cube.Cube
+        Input cube
+    anomaly: list
+        A start year and end year to calculate an anomaly.
+
+    Returns
+    ----------
+    iris.cube.Cube:
+        A cube with the anomaly calculated.
+    """
+
+    year_initial = anomaly[0]
+    year_final = anomaly[1]
+
+    new_cube = extract_time(cube, year_initial, 1, 1, year_final, 12, 31)
+    mean = new_cube.data.mean()
+    cube.data = cube.data - mean
+
+    return cube
+
+
 def make_time_series_plots(
         cfg,
         metadata,
@@ -213,6 +246,9 @@ def make_time_series_plots(
         layer = str(layer)
         if 'moving_average' in cfg:
             cube_layer = moving_average(cube_layer, cfg['moving_average'])
+
+        if 'anomaly' in cfg:
+            cube_layer = calculate_anomaly(cube_layer, cfg['anomaly'])
 
         if multi_model:
             timeplot(cube_layer, label=metadata['dataset'], ls=':')
@@ -318,6 +354,11 @@ def multi_model_time_series(
                                       cfg['moving_average'])
             else:
                 cube = model_cubes[filename][layer]
+
+            if 'anomaly' in cfg:
+                cube_layer = calculate_anomaly(model_cubes[filename][layer],
+                                               cfg['anomaly'])
+
 
             if 'MultiModel' in metadata[filename]['dataset']:
                 timeplot(
