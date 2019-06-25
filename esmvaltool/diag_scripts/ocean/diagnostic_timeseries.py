@@ -379,11 +379,9 @@ def multi_model_time_series(
                 cube = model_cubes[filename][layer]
 
             if 'anomaly' in cfg:
-                cube_layer = calculate_anomaly(model_cubes[filename][layer],
-                                               cfg['anomaly'])
-                if cube_layer is None:
+                cube = calculate_anomaly(cube, cfg['anomaly'])
+                if cube is None:
                    continue 
-
 
             if 'MultiModel' in metadata[filename]['dataset']:
                 timeplot(
@@ -435,7 +433,7 @@ def multi_model_time_series(
             path = diagtools.get_image_path(
                 cfg,
                 metadata[filename],
-                prefix='MultipleModels_',
+                prefix='MultipleModels',
                 suffix='_'.join(['timeseries',
                                  str(layer) + image_extention]),
                 metadata_id_list=[
