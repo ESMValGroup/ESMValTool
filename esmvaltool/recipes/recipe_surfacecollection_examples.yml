@@ -17,9 +17,9 @@ preprocessors:
         target_grid: 1.875x1.875
         scheme: area_weighted
 
-  regrid1:
+  regrid10:
       regrid:
-        target_grid: 1x1
+        target_grid: 10x10
         scheme: nearest
 
   regrid2:
@@ -39,6 +39,7 @@ diagnostics:
         reference_dataset: CNRM-CM5
         derive: true
         force_derivation: false
+#        preprocessor: regrid10
         preprocessor: t63
         start_year: 1950
         end_year: 2005
@@ -50,4 +51,6 @@ diagnostics:
     scripts:
       Info:
         script: surfacecollection/main_diag_selector.py
-#        requests: None
+        colormap: 'Blues'
+        vminmax: [0.0, 0.5]
+        requests: [None]

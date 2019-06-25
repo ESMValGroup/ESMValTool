@@ -11,21 +11,21 @@ import logging
 import iris
 import warnings
 from pprint import pprint
+from .libs import diagnostics as diags
+from .libs import plots as plots
+from .libs.utilities import cfg_checker, input_handler
 
 warnings.simplefilter("ignore")
 
 logger = logging.getLogger(os.path.basename(__file__))
 
-logger.info(dir())
 
-import satan.diagnostics as diags
-from satan.utilities import cfg_checker, input_handler
 
 
 class ecv_handler(object):
     """
     Basic class to implement any kind of diagnostic for the surface ecvs
-    """
+    """    
     def __init__(self, **kwargs):
         """
         initializes the ecv_handler
@@ -37,8 +37,6 @@ class ecv_handler(object):
         
         self.cfg = {}
         self.input = input_handler()
-        self.input_dat = []
-        self.input_ref = []
         self.files_read = False
         
         logger.info("init completed")
@@ -51,13 +49,11 @@ class ecv_handler(object):
         distributing the cfg entries to the object
         """
         
-        self.cfg = __cfg_checker__(cfg)
+        self.cfg = cfg_checker(cfg)
+        logger.setLevel(cfg['log_level'].upper())
         
-        # split inputs into ref and non ref
-        self.input_ref = [ds for ds,ci in cfg['input_data'].items() if ci["dataset"]==ci["reference_dataset"]]
-        self.input_dat = [ds for ds,ci in cfg['input_data'].items() if ci["dataset"]!=ci["reference_dataset"]]
-        
-        self.input.set_files(cfg['input_data'])
+        # handle input
+        self.input.set_files(cfg['input_data'], read = False)
         
         logger.info("set_info completed")
         return
@@ -70,12 +66,7 @@ class ecv_handler(object):
         """
         
         # read filenames into content
-        self.input_ref = iris.cube.CubeList([iris.load_cube(iref) for iref in self.input_ref])
-        self.input_dat = iris.cube.CubeList([iris.load_cube(idat) for idat in self.input_dat])
-        
         self.input.read()
-        
-        logger.info(self.input)
         
         self.files_read = True
         
@@ -88,6 +79,14 @@ class ecv_handler(object):
         ----------------------------------
         the diagnostics defined by the cfg['requests'] are run
         """
+        for diag in self.cfg["requests"]:
+            results = getattr(diags, diag)(self.input)
+            for r in results:
+                getattr(plots, diag)(r,
+                       cmap=self.cfg["colormap"],
+                       vminmax=self.cfg["vminmax"],
+                       plotdir=self.cfg["plot_dir"],
+                       fformat=self.cfg["output_file_type"])
         
         logger.info('\n'.join("%s: %s" % item for item in vars(self).items()))
         

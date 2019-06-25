@@ -12,4 +12,14 @@ import os
 logger = logging.getLogger(os.path.basename(__file__))
 
 def glob_temp_mean(data):
-    return
+    """
+    produces global_temporal_mean
+    -----------------------------
+    returns a list of mean cubes
+    """
+    cubes = []
+    
+    for c in data.get_all():
+        cubes.append(c.collapsed("time",iris.analysis.MEAN))
+    
+    return cubes
