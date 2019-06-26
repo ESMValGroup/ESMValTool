@@ -278,7 +278,7 @@ def get_args():
         '--config-file',
         default=os.path.join(os.path.dirname(__file__), 'config-user.yml'),
         help='Config file')
-    .
+    
     parser.add_argument(
         '-o',
         '--output',
@@ -427,8 +427,11 @@ def add_datasets_into_recipe(additional_datasets, debug=False):
 
     try:
         output_file = get_args().output
-    except:
-        output_file = recipe_fn.replace('.yml', 'filled.yml')
+    except: pass
+
+    if output_file is None:
+        output_file = recipe_fn.replace('.yml', '_filled.yml')
+
 
     print("Saving new recipe to:", output_file)
     f = open(output_file, "w")
