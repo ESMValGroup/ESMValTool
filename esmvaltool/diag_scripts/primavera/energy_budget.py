@@ -133,3 +133,12 @@ class EnergyBudget(object):
             plt.axis('off')
         print('Saving')
         fig.savefig('/home/users/sloosvel/output.png', format='png', dpi=1000)
+
+
+def main():
+    with esmvaltool.diag_scripts.shared.run_diagnostic() as config:
+        EnergyBudget(config).compute()
+
+
+if __name__ == "__main__":
+    main()
