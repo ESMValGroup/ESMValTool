@@ -25,18 +25,17 @@ from cf_units import Unit
 import iris
 from iris.coords import AuxCoord, DimCoord
 
-from .utilities import read_cmor_config, save_variable, set_global_atts
+from .utilities import save_variable, set_global_atts
 
 logger = logging.getLogger(__name__)
 
 # read in CMOR configuration
-CFG = read_cmor_config('PIOMAS.yml')
 
 NX = 360
 NY = 120
 
 
-def cmorization(in_dir, out_dir):
+def cmorization(in_dir, out_dir, CFG):
     """Cmorization func call."""
     glob_attrs = CFG['attributes']
 
@@ -69,7 +68,7 @@ def cmorization(in_dir, out_dir):
             cube = _create_areacello(lon, lat, area_cello, var_info)
             set_global_atts(cube, CFG['attributes'])
             save_variable(
-                cube, var_info.short_name, out_dir, CFG['attributes']
+                cube, var_info.short_name, out_dir, CFG['attributes'],
             )
             continue
 
@@ -79,7 +78,8 @@ def cmorization(in_dir, out_dir):
                 _read_binary_file(file_path),
                 lon, lat,
                 int(file_path[-4:]),
-                var_info
+                var_info,
+                vals['units']
             )
             set_global_atts(cube, CFG['attributes'])
             save_variable(
@@ -104,7 +104,7 @@ def _create_lat_lon_coords(lat, lon):
     return lat_coord, lon_coord
 
 
-def _create_cube(data, lon, lat, year, var_info):
+def _create_cube(data, lon, lat, year, var_info, raw_units):
     time_coord = DimCoord(
         np.arange(0, data.shape[0]),
         standard_name='time',
@@ -116,7 +116,7 @@ def _create_cube(data, lon, lat, year, var_info):
         data,
         standard_name=var_info.standard_name,
         var_name=var_info.short_name,
-        units='m',
+        units=raw_units,
     )
     cube.add_dim_coord(time_coord, 0)
     cube.add_aux_coord(lon, (1, 2))
@@ -136,9 +136,11 @@ def _create_areacello(lon, lat, data, var_info):
     return cube
 
 
-def _read_binary_file(data_path):
+def _read_binary_file(data_path, vector=False):
     fd_data = open(data_path, 'rb')
     data = np.fromfile(fd_data, dtype=np.dtype('f'), count=-1)
     days = data.shape[0] // NX // NY
     data = data.reshape(days, NY, NX)
+    if vector:
+        return data[0:days:2, ...], data[1:days:2, ...]
     return data
