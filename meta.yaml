@@ -47,6 +47,7 @@ requirements:
     - eofs
     - esmpy
     - esmvalcore>=2.0.0a1,<2.1
+    - jinja2
     - matplotlib<3
     - nc-time-axis
     - netCDF4
