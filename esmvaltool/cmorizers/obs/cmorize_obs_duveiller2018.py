@@ -32,7 +32,7 @@ logger = logging.getLogger(__name__)
 
 # read in CMOR configuration
 
-CFG = read_cmor_config('Duveiller2018')
+#CFG = read_cmor_config('Duveiller2018')
 
 
 
@@ -45,6 +45,9 @@ def _fix_fillvalue(cube, field, filename):
         cube.data = da.ma.masked_equal(cube.core_data(),
                                        field.cf_data.missing_value)
 
+
+
+#def fix_custom_coord_iTr()
 
 def duveiller2018_callback_function(cube,field,filename):
     cube.coord('Month').rename('time')
@@ -66,6 +69,7 @@ def extract_variable(var_info, raw_info, out_dir, attrs):
     print(cubes)
     for cube in cubes:
         if cube.var_name == rawvar:
+            import IPython;IPython.embed()
             fix_var_metadata(cube, var_info)
             fix_coords(cube)
 #            _fix_data(cube, var)
@@ -80,10 +84,10 @@ def extract_variable(var_info, raw_info, out_dir, attrs):
 #                unlimited_dimensions=['time'],
             )
 
-def cmorization(in_dir, out_dir):
+def cmorization(in_dir, out_dir, cfg):
     """Cmorization func call."""
-    cmor_table = CFG['cmor_table']
-    glob_attrs = CFG['attributes']
+    cmor_table = cfg['cmor_table']
+    glob_attrs = cfg['attributes']
 
     logger.info("Starting cmorization for Tier%s OBS files: %s",
                 glob_attrs['tier'], glob_attrs['dataset_id'])
@@ -91,12 +95,11 @@ def cmorization(in_dir, out_dir):
     logger.info("Output will be written to: %s", out_dir)
 
     # run the cmorization
-    for var, vals in CFG['variables'].items():
+    for var, vals in cfg['variables'].items():
         inpfile = os.path.join(in_dir, vals['file'])
         logger.info("CMORizing var %s from file %s", var, inpfile)
-        #print(vals['mip'],var) # BAS
-        # Where is the function get_variable? BAS
         var_info = cmor_table.get_variable(vals['mip'], var)
+        print("var = ",var)
         raw_info = {'name': vals['raw'], 'file': inpfile}
         glob_attrs['mip'] = vals['mip']
         with catch_warnings():
@@ -108,3 +111,4 @@ def cmorization(in_dir, out_dir):
                 module='iris',
             )
             extract_variable(var_info, raw_info, out_dir, glob_attrs)
+
