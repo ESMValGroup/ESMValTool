@@ -265,7 +265,6 @@ def condense_times(files_recipe_dicts):
     return condense_times_dict
 
 
-
 def get_args():
     """
     Parse command line arguments.
@@ -279,6 +278,12 @@ def get_args():
         '--config-file',
         default=os.path.join(os.path.dirname(__file__), 'config-user.yml'),
         help='Config file')
+    .
+    parser.add_argument(
+        '-o',
+        '--output',
+        help='Output recipe')
+
     args = parser.parse_args()
     return args
 
@@ -316,6 +321,26 @@ def calc_leading_spaces(line):
         assert("This tool doesn't work with tabs! please use spaces.")
     return sum(1 for _ in itertools.takewhile(lambda c: c == ' ', line))
 
+#
+# def find_diag_in_recipe(recipe, diag, debug=True):
+#     """
+#     Find the line and line number of the diagnostic pair.
+#
+#     recipe is the loaded list of lines.
+#     """
+#     diag_indent = 0
+#     diag_line = 0
+#     for line_number, line in enumerate(recipe):
+#         if debug: print(line_number, '\t', diag, variable)
+#         if diag in line:
+#             diag_indent = line.find(diag)
+#             diag_line = line_number
+#             if debug: print("Found diag:", line_number, diag, line)
+#             continue
+#         if not diag_indent:
+#             # haven't found the diagnostic yet.
+#             continue
+#
 
 def add_datasets_into_recipe(additional_datasets, debug=False):
     """
@@ -328,6 +353,22 @@ def add_datasets_into_recipe(additional_datasets, debug=False):
                 condensed_times_dict is a dict:
                     key: string to add into recipe
                     value: dictionary of things to put into the recipe.
+
+    This won't work if the variable isn't named as header in the recipe.
+    ie:
+
+      mfo:
+        exp: historical
+
+    should work, but
+
+      mfo_diagnostic:
+        short_name: mfo
+        exp: historical
+
+    probably won't work.
+
+    short_name
     """
     recipe_fn = get_args().recipe
     recipe = open(recipe_fn, 'r')
@@ -384,13 +425,16 @@ def add_datasets_into_recipe(additional_datasets, debug=False):
             if leading_spaces <= diag_indent:
                 break
 
-    output_file = "new_recipe.yml"
+    try:
+        output_file = get_args().output
+    except:
+        output_file = recipe_fn.replace('.yml', 'filled.yml')
+
     print("Saving new recipe to:", output_file)
     f = open(output_file, "w")
     recipe_text = "".join(recipe_text)
     f.write(recipe_text)
     f.close()
-
 
 
 def run():
@@ -407,11 +451,14 @@ def run():
 
     This won't check whether any datasets are provided already.
     """
+    # Get arguments
     args = get_args()
     recipe = args.recipe
-    config = args.config_file
 
+    # Convert the recipe into a yaml dict.
     recipe_dicts = parse_recipe_to_dicts(recipe)
+
+    # Create a list of additional_datasets for each diagnostic/variable.
     additional_datasets = {}
     for (diag, variable), recipe_dict in recipe_dicts.items():
         files_recipe_dicts = {}
@@ -426,15 +473,10 @@ def run():
 
         #print(diag, variable, convert_dict_to_recipe(condensed_times_dict))
 
-    #print('# Add this to the recipe to the diagnostic', diag, 'for the variable',variable)
-    for (diag, variable), condensed_times_dict in additional_datasets.items():
-        print('# Add this to the recipe to the diagnostic', diag, 'for the variable',variable)
-        for recipe_strings in sorted(condensed_times_dict):
-            print(recipe_strings)
-
-    add_datasets_into_recipe(additional_datasets)
     # We've now got all the files that fit the requirements of the recipe.
-    # Sending it back into a recipe.
+    # Sending it back into a new recipe.
+    add_datasets_into_recipe(additional_datasets)
 
 
-run()
+if __name__ == "__main__":
+    run()

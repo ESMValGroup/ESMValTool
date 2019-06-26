@@ -45,3 +45,4 @@ diagnostics:
       Regional_Ocean_Surface_mean_timeseries:
         script: ocean/diagnostic_timeseries.py
         moving_average: 6 years
+        anomaly: [1850, 1900]
