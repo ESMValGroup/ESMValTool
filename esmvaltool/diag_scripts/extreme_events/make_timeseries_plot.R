@@ -18,7 +18,7 @@
 #    20180131-lauer_axel:            clean-up of code, adaptation to ESMValTool
 #                                    standards, added tagging, bugfixes: time
 #                                    axis, cdo, filenames
-#    20170920-sandstad_marit:        creation
+#    2017 0920-sandstad_marit:       creation
 #
 # #############################################################################
 

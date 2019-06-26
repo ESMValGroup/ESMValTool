@@ -11,7 +11,7 @@
 #    processed, and what title and labels the plots should have.
 #
 # Modification history
-#    20180725-mohr_christianwilhelm: created
+#    2018 0725-mohr_christianwilhelm: created
 ###############################################################################
 
 idx_df <- data.frame(

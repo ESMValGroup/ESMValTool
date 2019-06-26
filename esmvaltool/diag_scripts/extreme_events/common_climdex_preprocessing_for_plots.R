@@ -16,7 +16,7 @@
 #    20190506-vonhardenberg_jost:    conversion to ESMValTool2
 #    20180725-mohr_christianwilhelm: modification of setTimeForFilesEqual()
 #                                    function
-#    20170920-sandstad_marit:        creation
+#    2017 0920-sandstad_marit:       creation
 #
 # #############################################################################
 

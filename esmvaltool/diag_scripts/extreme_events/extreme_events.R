@@ -19,7 +19,7 @@
 #    20180131-lauer_axel: clean-up of code, adaptation to ESMValTool standards
 #                         added tagging support
 #    20170920-sandstad_marit: modification to include plotting
-#    20160414-A_broetz_bjoern: written
+#    2016 0414-A_broetz_bjoern: written
 # #############################################################################
 
 library(tools)
