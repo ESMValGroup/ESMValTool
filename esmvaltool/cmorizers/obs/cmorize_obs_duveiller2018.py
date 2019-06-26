@@ -32,7 +32,7 @@ logger = logging.getLogger(__name__)
 
 # read in CMOR configuration
 
-CFG = read_cmor_config('Duveiller2018.yml')
+CFG = read_cmor_config('Duveiller2018')
 
 
 
