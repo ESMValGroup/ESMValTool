@@ -11,9 +11,11 @@ documentation:
     - pred_va
 
 datasets:
-  - {dataset: HadGEM3-GC31-LM,  project: CMIP6, mip: Amon, exp: highresSST-present,  ensemble: r1i1p1f1, grid: gn,  start_year: 2000,  end_year: 2002}
+  - {dataset: CMCC-CM,  project: CMIP5, mip: Amon, exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+  - {dataset: CMCC-CMS,  project: CMIP5, mip: Amon, exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+#  - {dataset: HadGEM3-GC31-LM,  project: CMIP6, mip: Amon, exp: highresSST-present,  ensemble: r1i1p1f1, grid: gn,  start_year: 2000,  end_year: 2002}
 #  - {dataset: HadGEM3-GC31-HM,  project: CMIP6, mip: Amon, exp: highresSST-present,  ensemble: r1i1p1f1, grid: gn,  start_year: 2000,  end_year: 2002}
-  - {dataset: HadGEM3-GC31-MM,  project: CMIP6, mip: Amon, exp: highresSST-present,  ensemble: r1i1p1f1, grid: gn,  start_year: 2000,  end_year: 2002}
+#  - {dataset: HadGEM3-GC31-MM,  project: CMIP6, mip: Amon, exp: highresSST-present,  ensemble: r1i1p1f1, grid: gn,  start_year: 2000,  end_year: 2002}
 preprocessors:
   global_mean:
     area_statistics:
@@ -62,56 +64,58 @@ diagnostics:
     scripts:
       energy_budget:
         script: primavera/energy_budget.py
-        plot_template: '/home/users/sloosvel/energy_budget_template.png'
-  #land_energy_budget:
-  #  description: "Energy budget excluding ocean domain"
-  #  variables:
-  #    rsdt:
-  #      preprocessor: land_mean
-  #    rsut:
-  #      preprocessor: land_mean
-  #    rsds:
-  #      preprocessor: land_mean
-  #    rsns:
-  #      derive: True
-  #      preprocessor: land_mean
-  #    rlut:
-  #      preprocessor: land_mean
-  #    rlds:
-  #      preprocessor: land_mean
-  #    rlns:
-  #      derive: True
-  #      preprocessor: land_mean
-  #    hfss:
-  #      preprocessor: land_mean
-  #    hfls:
-  #      preprocessor: land_mean
-  #  scripts:
-  #    energy_budget:
-  #      script: primavera/energy_budget.py
-  #ocean_energy_budget:
-  #  description: "Energy budget excluding land domain"
-  #  variables:
-  #    rsdt:
-  #      preprocessor: ocean_mean
-  #    rsut:
-  #      preprocessor: ocean_mean
-  #    rsds:
-  #      preprocessor: ocean_mean
-  #    rsns:
-  #      derive: True
-  #      preprocessor: ocean_mean
-  #    rlut:
-  #      preprocessor: ocean_mean
-  #    rlds:
-  #      preprocessor: ocean_mean
-  #    rlns:
-  #      derive: True
-  #      preprocessor: ocean_mean
-  #    hfss:
-  #      preprocessor: ocean_mean
-  #    hfls:
-  #      preprocessor: ocean_mean
-  #  scripts:
-  #    energy_budget:
-  #      script: primavera/energy_budget.py
+        plot_template: '/home/Earth/sloosvel/energy_budget_template.png'
+  land_energy_budget:
+    description: "Energy budget excluding ocean domain"
+    variables:
+      rsdt:
+        preprocessor: land_mean
+      rsut:
+        preprocessor: land_mean
+      rsds:
+        preprocessor: land_mean
+      rsns:
+        derive: True
+        preprocessor: land_mean
+      rlut:
+        preprocessor: land_mean
+      rlds:
+        preprocessor: land_mean
+      rlns:
+        derive: True
+        preprocessor: land_mean
+      hfss:
+        preprocessor: land_mean
+      hfls:
+        preprocessor: land_mean
+    scripts:
+      energy_budget_land:
+        script: primavera/energy_budget.py
+        plot_template: '/home/Earth/sloosvel/energy_budget_template.png'
+  ocean_energy_budget:
+    description: "Energy budget excluding land domain"
+    variables:
+      rsdt:
+        preprocessor: ocean_mean
+      rsut:
+        preprocessor: ocean_mean
+      rsds:
+        preprocessor: ocean_mean
+      rsns:
+        derive: True
+        preprocessor: ocean_mean
+      rlut:
+        preprocessor: ocean_mean
+      rlds:
+        preprocessor: ocean_mean
+      rlns:
+        derive: True
+        preprocessor: ocean_mean
+      hfss:
+        preprocessor: ocean_mean
+      hfls:
+        preprocessor: ocean_mean
+    scripts:
+      energy_budget_ocean:
+        script: primavera/energy_budget.py
+        plot_template: '/home/Earth/sloosvel/energy_budget_template.png'
