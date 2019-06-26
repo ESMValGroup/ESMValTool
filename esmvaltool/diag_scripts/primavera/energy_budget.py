@@ -29,7 +29,7 @@ class EnergyBudget(object):
         self.template = self.cfg.get('plot_template')
 
         self.pos = {}
-        self.pos['rsdt'] = (511,170)
+        self.pos['rsdt'] = (511, 170)
         self.pos['rsut'] = (15, 176)
         self.pos['rsds'] = (None, None)
         self.pos['rsns'] = (349, 632)
@@ -56,14 +56,15 @@ class EnergyBudget(object):
                               color='white',
                               alpha=0.9)
         self.dpi = 1000
+
     def compute(self):
         data = self.load()
         for dataset in data['rsdt'].keys():
             #shortwave
-            data['up_sw_reflected_surf'][dataset] = (data['rsds'][dataset] -
-                                                     data['rsns'][dataset])
+            data['up_sw_rfl_surf'][dataset] = (data['rsds'][dataset] -
+                                               data['rsns'][dataset])
             long_name = 'Upward Shortwave Reflected Surface'
-            data['up_sw_reflected_surf'][dataset].long_name = long_name
+            data['up_sw_rfl_surf'][dataset].long_name = long_name
 
             data['sw_rfl_clouds'][dataset] = (data['rsut'][dataset] -
                                               data['up_sw_rfl_surf'][dataset])
@@ -135,7 +136,6 @@ class EnergyBudget(object):
 
     def plot(self, data):
         fig, ax = plt.subplots()
-        print(self.template)
         img = Image.open(self.template).convert("RGBA")
         draw = ImageDraw.Draw(img)
         plt.imshow(img)
@@ -177,4 +177,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    
