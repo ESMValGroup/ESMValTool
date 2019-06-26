@@ -1,0 +1,73 @@
+# ESMValTool
+# recipe_ocean_scarlar_bgc.yml
+---
+documentation:
+  description: |
+    Recipe to calculat the scalar marine biogeochemistry.
+    This work based on the BGC-val toolkit GMD-2018-103.
+
+  authors:
+    - demo_le
+
+  maintainer:
+    - demo_le
+
+  references:
+    - demora2018gmd
+
+  projects:
+    - ukesm
+
+
+preprocessors:
+  # --------------------------------------------------
+  # Time series preprocessors
+  # --------------------------------------------------
+  prep_timeseries_1: # For 2D fields
+    custom_order: true
+    area_statistics:
+      operator: sum
+      fx_files: [areacello, ]
+    multi_model_statistics:
+      span: full
+      statistics: [mean ]
+
+  prep_timeseries_2: # For 2D fields
+    custom_order: true
+    extract_levels:
+      levels:  [0., ]
+      scheme: linear_horizontal_extrapolate_vertical
+    area_statistics:
+      operator: mean
+      fx_files: [areacello, ]
+    multi_model_statistics:
+      span: full
+      statistics: [mean ]
+
+diagnostics:
+  # --------------------------------------------------
+  # Time series diagnostics
+  # --------------------------------------------------
+  diag_timeseries:
+    variables:
+      intpp:
+        preprocessor: prep_timeseries_1
+        exp: historical
+        mip: Omon
+        ensemble: r1i1p1
+      fgco2:
+        preprocessor: prep_timeseries_1
+        exp: historical
+        mip: Omon
+        ensemble: r1i1p1
+      chl:
+        preprocessor: prep_timeseries_2
+        exp: historical
+        mip: Omyr
+        ensemble: r1i1p1
+
+    scripts:
+      Regional_Ocean_Surface_mean_timeseries:
+        script: ocean/diagnostic_timeseries.py
+        moving_average: 6 years
+        anomaly: [1850, 1900]
