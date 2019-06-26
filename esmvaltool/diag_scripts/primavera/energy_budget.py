@@ -106,6 +106,28 @@ class EnergyBudget(object):
             data['bowen_ratio'][dataset] = (data['hfss'][dataset] /
                                             data['hfls'][dataset])
             data['bowen_ratio'][dataset].long_name = 'Bowen Ratio'
+
+            cubes = iris.cube.CubeList([
+                data['rsdt'][dataset],
+                data['rsut'][dataset],
+                data['rsds'][dataset],
+                data['rsns'][dataset],
+                data['rlut'][dataset],
+                data['rlds'][dataset],
+                data['rlns'][dataset],
+                data['hfss'][dataset],
+                data['hfls'][dataset],
+                data['up_sw_rfl_surf'][dataset],
+                data['sw_rfl_clouds'][dataset],
+                data['sw_abs_atm'][dataset],
+                data['up_lw_emit_surf'][dataset],
+                data['net_surf_rad'][dataset],
+                data['rad_ads_surface'][dataset],
+                data['rad_net_toa'][dataset],
+                data['bowen_ratio'][dataset]
+            ]
+            )
+            self.save(dataset, cubes)
         self.plot(data)
 
     def load(self):
@@ -134,6 +156,13 @@ class EnergyBudget(object):
             data[short_name][dataset] = cube
 
         return data
+
+    def save(self, dataset, cubes):
+        file_name = '{dataset}_{script}_variables.nc'.format(
+            dataset=dataset,
+            script=self.cfg[n.SCRIPT]
+            )
+        iris.save(cubes, os.path.join(self.cfg[n.WORK_DIR], file_name))
 
     def plot(self, data):
         fig, ax = plt.subplots()
