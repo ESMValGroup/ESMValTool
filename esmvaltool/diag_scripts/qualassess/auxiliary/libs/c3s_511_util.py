@@ -16,7 +16,7 @@ import cf_units
 #import time
 import iris
 import collections
-from memory_profiler import profile
+#from memory_profiler import profile
 
 # sys.path.insert(0,
 #                os.path.abspath(os.path.join(os.path.join(

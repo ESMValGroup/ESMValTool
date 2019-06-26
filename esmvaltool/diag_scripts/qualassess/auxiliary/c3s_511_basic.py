@@ -25,7 +25,7 @@ import dask
 #from scipy import stats
 import datetime
 from json import load,dump
-from memory_profiler import profile
+#from memory_profiler import profile
 
 from .libs import c3s_511_util as utils
 from .libs.customErrors import \
