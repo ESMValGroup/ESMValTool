@@ -12,24 +12,11 @@ attributes:
 
 # Variables to cmorize (here use only filename prefix)
 variables:
-  # sit:
-  #   mip: day
-  #   raw: hiday
-  #   type: scalar
-  #   units: m
-
-  # sic:
-  #   mip: day
-  #   raw: area
-  #   type: scalar
-  #   units: 1.0
-
-  sispeed:
+  sithick:
     mip: day
-    raw: icevel
-    type: vector
-    vars: [siu, siv]
-    units: m s-1
+    raw: hiday
+    type: scalar
+    units: m
 
   areacello:
     mip: fx

@@ -319,7 +319,7 @@ diagnostics:
   PIOMAS:
     description: PIOMAS
     variables:
-      sit:
+      sithick:
         preproc: nopp
         mip: day
         fx_files: [areacello]
