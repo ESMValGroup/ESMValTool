@@ -19,9 +19,9 @@ import iris.analysis.cartography
 import iris.coords
 from iris.util import broadcast_to_shape
 from iris.aux_factory import AuxCoordFactory
-import pyproj
+from pyproj.crs import CRS
+from pyproj import Transformer
 from shapely.geometry import Polygon, Point
-from shapely.ops import transform
 
 
 import esmvaltool.diag_scripts.shared
@@ -32,6 +32,7 @@ logger = logging.getLogger(os.path.basename(__file__))
 MONTHS_PER_YEAR = 12
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
+
 
 class SeaIceDrift(object):
 
@@ -82,17 +83,10 @@ class SeaIceDrift(object):
             )
             alias = self._get_alias(filename, reference_dataset)
             sithick = self._load_cube(filename, 'sea_ice_thickness')
-            if alias != 'reference':
-                self.sivol[alias] = self._compute_mean(
-                    sithick * siconc_original[alias],
-                    self._get_mask(sithick, filename)
-                )
-                del sithick
-            else:
-                self.sivol[alias] = self._compute_mean(
-                    sithick,
-                    self._get_mask(sithick, filename)
-                )
+            self.sivol[alias] = self._compute_mean(
+                sithick,
+                self._get_mask(sithick, filename)
+            )
 
         logger.info('Load sea ice velocities')
         sispeed_files = self.datasets.get_path_list(
@@ -234,7 +228,7 @@ class SeaIceDrift(object):
         )
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
-            return  data.collapsed(
+            return data.collapsed(
                 ('latitude', 'longitude'),
                 iris.analysis.MEAN,
                 weights=broadcast_to_shape(weights, data.shape, mapping)
@@ -360,7 +354,7 @@ class SeaIceDrift(object):
         fig.savefig(os.path.join(
             base_path,
             'drift-strength.{0}'.format(self.cfg[n.OUTPUT_FILE_TYPE])
-            )
+        )
         )
 
     def _plot_drift_sivol(self, ax, dataset):
@@ -412,7 +406,6 @@ class SeaIceDrift(object):
         self._annotate_points(ax, sivol_obs, drift_obs)
         ax.grid()
 
-
     def _plot_drift_siconc(self, ax, dataset):
         drift = self.sispeed[dataset].data
         siconc = self.siconc[dataset].data
@@ -455,7 +448,6 @@ class SeaIceDrift(object):
         self._annotate_points(ax, siconc_obs, drift_obs)
         ax.grid(linewidth=0.01)
 
-
     def _annotate_points(self, ax, xvalues, yvalues):
         for x, y, z in zip(xvalues, yvalues, range(1, 12 + 1)):
             ax.annotate(calendar.month_abbr[z][0], xy=(x, y), xytext=(10, 5),
@@ -472,6 +464,7 @@ class SeaIceDrift(object):
 
 class InsidePolygonFactory(AuxCoordFactory):
     """Defines a coordinate """
+
     def __init__(self, polygon=None, lat=None, lon=None):
         """
         Args:
@@ -483,26 +476,24 @@ class InsidePolygonFactory(AuxCoordFactory):
             The coordinate providing the longitudes.
         """
         super(InsidePolygonFactory, self).__init__()
-
-        self._project = partial(
-            pyproj.transform,
-            pyproj.Proj(
-                '+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0'
-                '+lon_0=0.0 +x_0=0.0'
-                ' +y_0=0 +k=1.0 +units=m +nadgrids=@null +no_defs'
-            ),
-            pyproj.Proj(init='epsg:4326'),
-        )
-
-        self.polygon = transform(self._project, Polygon(polygon))
         self.lat = lat
         self.lon = lon
-
         self.standard_name = None
         self.long_name = 'Inside polygon'
         self.var_name = 'inpoly'
         self.units = '1.0'
         self.attributes = {}
+
+        polygon.append(polygon[0])
+        self.transformer = Transformer.from_crs(
+            "WGS84",
+            "North_Pole_Stereographic"
+        )
+
+        transformed = []
+        for lon, lat in polygon:
+            transformed.append(self.transformer.transform(lon, lat))
+        self.polygon = Polygon(transformed)
 
     @property
     def dependencies(self):
@@ -516,10 +507,8 @@ class InsidePolygonFactory(AuxCoordFactory):
         def in_polygon(lat, lon):
             if lon > 180:
                 lon -= 360
-            elif lon < -180:
-                lon += 360
-            point = transform(self._project, Point(lon, lat))
-            return 1. if self.polygon.contains(point) else np.nan
+            point = self.transformer.transform(lon, lat)
+            return 1. if self.polygon.contains(Point(point[0], point[1])) else np.nan
         vectorized = np.vectorize(in_polygon)
         return vectorized(lat, lon)
 

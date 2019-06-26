@@ -37,11 +37,12 @@ diagnostics:
              mip: OImon, tier: 2,
              start_year: 1979,  end_year: 2000}
 
-      sit:
+      sithick:
         mip: SIday
         field: T2MO
         preprocessor: extract
         reference_dataset: PIOMAS
+        derive: true
         fx_files: [areacello]
         additional_datasets:
           - {dataset: PIOMAS, project: OBS, type: reanaly, version: 2.1,
@@ -61,10 +62,10 @@ diagnostics:
              mip: day, tier: 2,
              start_year: 1979,  end_year: 2000}
     scripts:
-      sea_ice_drift:
-        script: seaice_drift/seaice_drift.py
-        title: "Seaice drift north of 50º"
-        latitude_treshold: 50
+      # sea_ice_drift:
+      #   script: seaice_drift/seaice_drift.py
+      #   title: "Seaice drift north of 50º"
+      #   latitude_treshold: 50
       sea_ice_drift_SCICEX:
         script: seaice_drift/seaice_drift.py
         title: "Seaice drift SCICEX domain"
