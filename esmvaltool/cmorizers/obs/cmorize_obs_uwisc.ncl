@@ -52,7 +52,7 @@ begin
   FREQ = (/"mon", "mon"/)
 
   ; CMOR table
-  CMOR_TABLE = getenv("cmor_table") + "/custom/CMOR_" + VAR + ".dat"
+  CMOR_TABLE = getenv("cmor_tables") + "/custom/CMOR_" + VAR + ".dat"
 
   ; Type
   TYPE = "sat"
