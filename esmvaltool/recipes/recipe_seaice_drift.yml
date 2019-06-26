@@ -43,6 +43,7 @@ diagnostics:
         preprocessor: extract
         reference_dataset: PIOMAS
         derive: true
+        force_derivation: false
         fx_files: [areacello]
         additional_datasets:
           - {dataset: PIOMAS, project: OBS, type: reanaly, version: 2.1,

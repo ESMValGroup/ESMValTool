@@ -5,7 +5,6 @@ import math
 import csv
 import calendar
 import warnings
-from functools import partial
 
 import numpy as np
 from scipy import stats
@@ -13,7 +12,6 @@ from matplotlib import pyplot as plt
 
 import iris
 import iris.cube
-from iris.cube import Cube
 import iris.analysis
 import iris.analysis.cartography
 import iris.coords
@@ -398,7 +396,7 @@ class SeaIceDrift(object):
         ax.set_xlabel('Sea ice thickness (m)', fontsize=18)
         ax.set_ylabel('Sea ice drift speed (km d$^{-1}$)', fontsize=18)
         ax.tick_params(axis='both', labelsize=14)
-        high_sivol, low_sivol = self._get_plot_limits(sivol, sivol_obs)
+        high_sivol, low_sivol = self._get_plot_limits(sivol, sivol_obs, 0.2)
         high_drift, low_drift = self._get_plot_limits(drift, drift_obs)
         ax.axis([low_sivol, high_sivol, low_drift, high_drift])
         ax.legend(loc='lower left', shadow=True, frameon=False, fontsize=12)
@@ -442,23 +440,24 @@ class SeaIceDrift(object):
         ax.set_ylabel('Sea ice drift speed (km d$^{-1}$)', fontsize=18)
         ax.tick_params(axis='both', labelsize=14)
         high_drift, low_drift = self._get_plot_limits(drift, drift_obs)
-        ax.axis([0., 1, low_drift, high_drift])
+        _ , low_siconc = self._get_plot_limits(siconc, siconc_obs, 0.1)
+        ax.axis([low_siconc, 1.01, low_drift, high_drift])
         ax.legend(loc='lower left', shadow=True, frameon=False, fontsize=12)
         self._annotate_points(ax, siconc, drift)
         self._annotate_points(ax, siconc_obs, drift_obs)
-        ax.grid(linewidth=0.01)
+        ax.grid()
 
     def _annotate_points(self, ax, xvalues, yvalues):
         for x, y, z in zip(xvalues, yvalues, range(1, 12 + 1)):
             ax.annotate(calendar.month_abbr[z][0], xy=(x, y), xytext=(10, 5),
                         ha='right', textcoords='offset points')
 
-    def _get_plot_limits(self, sivol, sivol_obs):
-        low = min(min(sivol), min(sivol_obs)) - 0.4
-        low = 0.5 * math.floor(2.0 * low)
+    def _get_plot_limits(self, sivol, sivol_obs, step=0.55):
+        low = min(min(sivol), min(sivol_obs)) - 0.5 * step
+        low = step * math.floor(low / step)
         low = max(low, 0)
-        high = max(max(sivol), max(sivol_obs)) + 0.4
-        high = 0.5 * math.ceil(2.0 * high)
+        high = max(max(sivol), max(sivol_obs)) + 0.5 * step
+        high = step * math.ceil(high / step)
         return high, low
 
 
