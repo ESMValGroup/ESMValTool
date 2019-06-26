@@ -217,7 +217,7 @@ def calculate_anomaly(cube, anomaly):
         time=lambda t: t_1 < time_units.date2num(t.point) < t_2)
 
     new_cube = cube.extract(constraint)
-    if new_cube == None: 
+    if new_cube == None:
          return None
     mean = new_cube.data.mean()
     cube.data = cube.data - mean
@@ -266,7 +266,7 @@ def make_time_series_plots(
             cube_layer = moving_average(cube_layer, cfg['moving_average'])
 
         if 'anomaly' in cfg:
-            
+
             cube_layer = calculate_anomaly(cube_layer, cfg['anomaly'])
             if cube_layer is None:
                 return
@@ -279,7 +279,7 @@ def make_time_series_plots(
         # Add title, legend to plots
         title = ' '.join([metadata['dataset'], metadata['long_name']])
         if 'anomaly' in cfg:
-            title = ' '.join([title, 'anomaly']) 
+            title = ' '.join([title, 'anomaly'])
         if layer != '':
             if cube_layer.coords('depth'):
                 z_units = cube_layer.coord('depth').units
@@ -386,21 +386,21 @@ def multi_model_time_series(
                 cube = calculate_anomaly(cube, cfg['anomaly'])
                 if cube is None:
                    print('Not enough time for anomaly calculation', metadata[filename]['dataset'])
-                   continue 
+                   continue
 
-	    
-            if metadata[filename]['dataset'].lower().find('multimodel') < -1:
+
+            if metadata[filename]['dataset'].lower().find('multimodel') > -1:
                 print('plotting - Multi:',metadata[filename]['dataset'])
                 timeplot(
                     cube,
-                    c=color,
+                    c='black',
                     # label=metadata[filename]['dataset'],
-                    ls=':',
+                    ls='--',
                     lw=2.,
                 )
                 plot_details[filename] = {
-                    'c': color,
-                    'ls': ':',
+                    'c': 'black',
+                    'ls': '--',
                     'lw': 2.,
                     'label': metadata[filename]['dataset']
                 }
@@ -427,7 +427,7 @@ def multi_model_time_series(
                 else:
                     z_units = ''
         # Add title, legend to plots
-        if 'anomaly' in cfg:  
+        if 'anomaly' in cfg:
             title = ' '.join([title, 'anomaly'])
 
         if layer:
@@ -459,7 +459,7 @@ def multi_model_time_series(
             plt.gcf().set_size_inches(11., 6.)
             diagtools.add_legend_outside_right(
                 plot_details, plt.gca(), column_width=0.18)
-     
+
         logger.info('Saving plots to %s', path)
         plt.savefig(path)
         plt.close()
