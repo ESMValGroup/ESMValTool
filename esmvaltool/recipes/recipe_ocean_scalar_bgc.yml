@@ -63,7 +63,7 @@ diagnostics:
       chl:
         preprocessor: prep_timeseries_2
         exp: historical
-        mip: Omyr
+        mip: Oyr
         ensemble: r1i1p1
 
     scripts:
