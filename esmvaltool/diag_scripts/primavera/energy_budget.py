@@ -1,5 +1,6 @@
 import os
 import logging
+import string
 
 import matplotlib
 matplotlib.use('Agg')  # noqa
@@ -40,14 +41,14 @@ class EnergyBudget(object):
         self.pos['hfls'] = (656, 632)
         self.pos['up_sw_rfl_surf'] = (105, 632)
         self.pos['sw_rfl_clouds'] = (300, 361)
-        self.pos['sw_abs_atm'] = (538, 635)
+        self.pos['sw_abs_atm'] = (583, 325)
         self.pos['up_lw_emit_surf'] = (825, 833)
         self.pos['net_surf_rad'] = (None, None)
         self.pos['rad_ads_surface'] = (None, None)
         self.pos['rad_net_toa'] = (350, 62)
         self.pos['bowen_ratio'] = (None, None)
 
-        self.textprops = dict(size=4)
+        self.textprops = dict(size=6)
         self.pad = 0
         self.sep = 1
         self.box_alignment = (0, .5)
@@ -137,17 +138,20 @@ class EnergyBudget(object):
     def plot(self, data):
         fig, ax = plt.subplots()
         img = Image.open(self.template).convert("RGBA")
-        draw = ImageDraw.Draw(img)
         plt.imshow(img)
         for var in data.keys():
             if None in self.pos[var]:
                 continue
             text = []
+            char = 'A'
+            tags = []
             for dataset in data['rsdt'].keys():
                 text.append(TextArea((
-                    '{:}: {:.2f}'.format(dataset,
+                    '{:}. {:.2f}'.format(char,
                                          data[var][dataset].data)),
                                          textprops=self.textprops))
+                tags.append('{:}. {:}'.format(char, dataset))
+                char = chr(ord(char) + 1)
             texts_vbox = VPacker(children=text, pad=self.pad, sep=self.sep)
             ann = AnnotationBbox(texts_vbox,
                                  self.pos[var],
@@ -156,7 +160,7 @@ class EnergyBudget(object):
                                  bboxprops=self.bboxprops)
             ax.add_artist(ann)
             plt.axis('off')
-
+        ax.text(1, 0, '\n'.join(tags), fontsize=10)
         script = self.cfg[n.SCRIPT]
         out_type = self.cfg[n.OUTPUT_FILE_TYPE]
         models = '_'.join(data['rsdt'].keys())
