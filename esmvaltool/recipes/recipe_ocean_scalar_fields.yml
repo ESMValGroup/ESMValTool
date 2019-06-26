@@ -56,7 +56,7 @@ diagnostics:
           - {dataset: CNRM-CM5, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
           - {dataset: CNRM-CM5-2, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
           - {dataset: CSIRO-Mk3-6-0, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
-          - {dataset: CanCM4, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1961, end_year: 2005, }
+#          - {dataset: CanCM4, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1961, end_year: 2005, }
           - {dataset: CanESM2, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
           - {dataset: FGOALS-g2, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
 #          - {dataset: GFDL-ESM2G, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1861, end_year: 2005, }
@@ -68,7 +68,7 @@ diagnostics:
           - {dataset: IPSL-CM5B-LR, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
           - {dataset: MIROC-ESM, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
           - {dataset: MIROC-ESM-CHEM, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
-          - {dataset: MIROC4h, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1950, end_year: 2005, }
+#          - {dataset: MIROC4h, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1950, end_year: 2005, }
           - {dataset: MIROC5, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2012, }
           - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
           - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
@@ -98,7 +98,7 @@ diagnostics:
           - {dataset: CNRM-CM5, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
           - {dataset: CNRM-CM5-2, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
           - {dataset: CSIRO-Mk3-6-0, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
-          - {dataset: CanCM4, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1961, end_year: 2005, }
+#          - {dataset: CanCM4, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1961, end_year: 2005, }
           - {dataset: CanESM2, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
           - {dataset: FGOALS-g2, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
           - {dataset: GFDL-ESM2G, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1861, end_year: 2005, }
@@ -110,7 +110,7 @@ diagnostics:
           - {dataset: IPSL-CM5B-LR, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
           - {dataset: MIROC-ESM, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
           - {dataset: MIROC-ESM-CHEM, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
-          - {dataset: MIROC4h, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1950, end_year: 2005, }
+#          - {dataset: MIROC4h, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1950, end_year: 2005, }
           - {dataset: MIROC5, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2012, }
           - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
           - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
@@ -134,7 +134,7 @@ diagnostics:
           - {dataset: CNRM-CM5, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
           - {dataset: CNRM-CM5-2, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
           - {dataset: CSIRO-Mk3-6-0, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
-          - {dataset: CanCM4, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1961, end_year: 2005, }
+#          - {dataset: CanCM4, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1961, end_year: 2005, }
           - {dataset: CanESM2, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
           - {dataset: GISS-E2-R, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
           - {dataset: GISS-E2-R-CC, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2010, }
@@ -144,7 +144,7 @@ diagnostics:
           - {dataset: IPSL-CM5A-MR, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
           - {dataset: MIROC-ESM, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
           - {dataset: MIROC-ESM-CHEM, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
-          - {dataset: MIROC4h, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1950, end_year: 2005, }
+#          - {dataset: MIROC4h, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1950, end_year: 2005, }
           - {dataset: MIROC5, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2012, }
           - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
           - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
