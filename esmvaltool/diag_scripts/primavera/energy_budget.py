@@ -1,8 +1,6 @@
 import os
 import logging
-import calendar
 
-import numpy as np
 import matplotlib
 matplotlib.use('Agg')  # noqa
 import matplotlib.pyplot as plt
@@ -14,17 +12,10 @@ from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
 
-from itertools import cycle
-
 import iris
 import iris.cube
 import iris.analysis
 import iris.util
-from iris.analysis import SUM
-from iris.coords import AuxCoord
-import iris.coord_categorisation
-from iris.cube import CubeList
-import iris.quickplot as qplt
 
 import esmvaltool.diag_scripts.shared
 import esmvaltool.diag_scripts.shared.names as n
@@ -37,36 +28,81 @@ class EnergyBudget(object):
         self.filenames = esmvaltool.diag_scripts.shared.Datasets(self.cfg)
         self.template = self.cfg.get('plot_template')
 
+        self.pos = {}
+        self.pos['rsdt'] = (511,170)
+        self.pos['rsut'] = (15, 176)
+        self.pos['rsds'] = (None, None)
+        self.pos['rsns'] = (349, 632)
+        self.pos['rlut'] = (916, 130)
+        self.pos['rlds'] = (1052, 833)
+        self.pos['rlns'] = (None, None)
+        self.pos['hfss'] = (524, 632)
+        self.pos['hfls'] = (656, 632)
+        self.pos['up_sw_rfl_surf'] = (105, 632)
+        self.pos['sw_rfl_clouds'] = (300, 361)
+        self.pos['sw_abs_atm'] = (538, 635)
+        self.pos['up_lw_emit_surf'] = (825, 833)
+        self.pos['net_surf_rad'] = (None, None)
+        self.pos['rad_ads_surface'] = (None, None)
+        self.pos['rad_net_toa'] = (350, 62)
+        self.pos['bowen_ratio'] = (None, None)
+
+        self.textprops = dict(size=4)
+        self.pad = 0
+        self.sep = 1
+        self.box_alignment = (0, .5)
+        self.bboxprops = dict(facecolor='white',
+                              boxstyle='round',
+                              color='white',
+                              alpha=0.9)
+        self.dpi = 1000
     def compute(self):
-        print(self.cfg)
         data = self.load()
         for dataset in data['rsdt'].keys():
             #shortwave
-            data['up_sw_reflected_surf'][dataset] = data['rsds'][dataset] - data['rsns'][dataset]
-            data['up_sw_reflected_surf'][dataset].long_name = 'Upward Shortwave Reflected Surface'
+            data['up_sw_reflected_surf'][dataset] = (data['rsds'][dataset] -
+                                                     data['rsns'][dataset])
+            long_name = 'Upward Shortwave Reflected Surface'
+            data['up_sw_reflected_surf'][dataset].long_name = long_name
 
-            data['sw_refl_clouds'][dataset] =data['rsut'][dataset] - data['up_sw_reflected_surf'][dataset]
-            data['sw_refl_clouds'][dataset].long_name = 'Shortwave Reflected Clouds'
+            data['sw_rfl_clouds'][dataset] = (data['rsut'][dataset] -
+                                              data['up_sw_rfl_surf'][dataset])
+            long_name = 'Shortwave Reflected Clouds'
+            data['sw_rfl_clouds'][dataset].long_name = long_name
 
-            data['sw_abs_atm'][dataset] = data['rsdt'][dataset] - data['sw_refl_clouds'][dataset] - data['rsds'][dataset]
-            data['sw_abs_atm'][dataset].long_name = 'Shortwave Absorbed Atmosphere'
+            data['sw_abs_atm'][dataset] = (data['rsdt'][dataset] -
+                                           data['sw_rfl_clouds'][dataset] -
+                                           data['rsds'][dataset])
+            long_name = 'Shortwave Absorbed Atmosphere'
+            data['sw_abs_atm'][dataset].long_name = long_name
 
             #longwave
-            data['up_lw_emitted_surf'][dataset] = data['rlds'][dataset] - data['rlns'][dataset]
-            data['up_lw_emitted_surf'][dataset].long_name = 'Upward Longwave Emitted Surface'
+            data['up_lw_emit_surf'][dataset] = (data['rlds'][dataset] -
+                                                data['rlns'][dataset])
+            long_name = 'Upward Longwave Emitted Surface'
+            data['up_lw_emit_surf'][dataset].long_name = long_name
 
             #net
-            data['net_surf_rad'][dataset] = data['rsns'][dataset] + data['rlns'][dataset]
-            data['net_surf_rad'][dataset].long_name = 'Net Surface Radiation'
+            data['net_surf_rad'][dataset] = (data['rsns'][dataset] +
+                                             data['rlns'][dataset])
+            long_name = 'Net Surface Radiation'
+            data['net_surf_rad'][dataset].long_name = long_name
 
             #surface fluxes
-            data['rad_adsorbed_surface'][dataset] = data['net_surf_rad'][dataset] - data['hfss'][dataset] - data['hfls'][dataset]
-            data['rad_adsorbed_surface'][dataset].long_name = 'Radiation Adsorbed Surface'
+            data['rad_ads_surface'][dataset] = (data['net_surf_rad'][dataset] -
+                                                data['hfss'][dataset] -
+                                                data['hfls'][dataset])
+            long_name = 'Radiation Adsorbed Surface'
+            data['rad_ads_surface'][dataset].long_name = long_name
 
-            data['rad_net_toa'][dataset] = data['rsdt'][dataset] - data['rsut'][dataset] - data['rlut'][dataset]
-            data['rad_net_toa'][dataset].long_name = 'Radiation Net TOA'
+            data['rad_net_toa'][dataset] = (data['rsdt'][dataset] -
+                                            data['rsut'][dataset] -
+                                            data['rlut'][dataset])
+            long_name = 'Radiation Net TOA'
+            data['rad_net_toa'][dataset].long_name = long_name
 
-            data['bowen_ratio'][dataset]= data['hfss'][dataset] / data['hfls'][dataset]
+            data['bowen_ratio'][dataset] = (data['hfss'][dataset] /
+                                            data['hfls'][dataset])
             data['bowen_ratio'][dataset].long_name = 'Bowen Ratio'
         self.plot(data)
 
@@ -81,12 +117,12 @@ class EnergyBudget(object):
         data['rlns'] = {}
         data['hfss'] = {}
         data['hfls'] = {}
-        data['up_sw_reflected_surf'] = {}
-        data['sw_refl_clouds'] = {}
+        data['up_sw_rfl_surf'] = {}
+        data['sw_rfl_clouds'] = {}
         data['sw_abs_atm'] = {}
-        data['up_lw_emitted_surf'] = {}
+        data['up_lw_emit_surf'] = {}
         data['net_surf_rad'] = {}
-        data['rad_adsorbed_surface'] = {}
+        data['rad_ads_surface'] = {}
         data['rad_net_toa'] = {}
         data['bowen_ratio'] = {}
         for filename in self.filenames:
@@ -103,36 +139,35 @@ class EnergyBudget(object):
         img = Image.open(self.template).convert("RGBA")
         draw = ImageDraw.Draw(img)
         plt.imshow(img)
-        pos = {}
-        pos['rsdt'] = (511,170)
-        pos['rsut'] = (15, 176)
-        pos['rsds'] = (None, None)
-        pos['rsns'] = (349, 632)
-        pos['rlut'] = (916, 130)
-        pos['rlds'] = (1052, 833)
-        pos['rlns'] = (None, None)
-        pos['hfss'] = (524, 632)
-        pos['hfls'] = (656, 632)
-        pos['up_sw_reflected_surf'] = (105, 632)
-        pos['sw_refl_clouds'] = (300, 361)
-        pos['sw_abs_atm'] = (538, 635)
-        pos['up_lw_emitted_surf'] = (825, 833)
-        pos['net_surf_rad'] = (None, None)
-        pos['rad_adsorbed_surface'] = (None, None)
-        pos['rad_net_toa'] = (350, 62)
-        pos['bowen_ratio'] = (None, None)
-        for i, var in enumerate(data):
-            if None in pos[var]:
+        for var in data.keys():
+            if None in self.pos[var]:
                 continue
             text = []
             for dataset in data['rsdt'].keys():
-                text.append(TextArea(('{:}: {:.2f}'.format(dataset, data[var][dataset].data)), textprops=dict(size=4)))
-            texts_vbox = VPacker(children=text,pad=0,sep=1)
-            ann = AnnotationBbox(texts_vbox, pos[var], xycoords=ax.transData, box_alignment=(0,.5),bboxprops = dict(facecolor='white',boxstyle='round',color='white',alpha=0.9))
+                text.append(TextArea((
+                    '{:}: {:.2f}'.format(dataset,
+                                         data[var][dataset].data)),
+                                         textprops=self.textprops))
+            texts_vbox = VPacker(children=text, pad=self.pad, sep=self.sep)
+            ann = AnnotationBbox(texts_vbox,
+                                 self.pos[var],
+                                 xycoords=ax.transData,
+                                 box_alignment=self.box_alignment,
+                                 bboxprops=self.bboxprops)
             ax.add_artist(ann)
             plt.axis('off')
-        print('Saving')
-        fig.savefig('/home/users/sloosvel/output.png', format='png', dpi=1000)
+
+        script = self.cfg[n.SCRIPT]
+        out_type = self.cfg[n.OUTPUT_FILE_TYPE]
+        models = '_'.join(data['rsdt'].keys())
+        plt_name = '{script}_{models}_Trenberth_Diagram.{out_type}'.format(
+            script=script,
+            models=models,
+            out_type=out_type
+        )
+        fig.savefig(os.path.join(self.cfg[n.PLOT_DIR], plt_name),
+                    format='{0}'.format(out_type),
+                    dpi=self.dpi)
 
 
 def main():
@@ -142,3 +177,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+    
