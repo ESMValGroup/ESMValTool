@@ -78,9 +78,8 @@ def _extract_variable(in_file, var, cfg, out_dir):
     return in_file
 
 
-def cmorization(in_dir, out_dir):
+def cmorization(in_dir, out_dir, cfg):
     """Cmorization func call."""
-    cfg = utils.read_cmor_config('ERA5.yml')
     cfg['attributes']['comment'] = cfg['attributes']['comment'].format(
         year=datetime.now().year)
     cfg.pop('cmor_table')
