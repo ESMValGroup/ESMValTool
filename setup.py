@@ -52,7 +52,6 @@ REQUIREMENTS = {
     # Execute 'python setup.py test' to run tests
     'test': [
         'easytest',
-        # TODO: add dummydata package, see environment.yml
         'mock',
         'nose',
         'pycodestyle',
@@ -66,10 +65,7 @@ REQUIREMENTS = {
     # Use pip install -e .[develop] to install in development mode
     'develop': [
         'isort',
-        'prospector[with_pyroma]',
-        'pycodestyle',
-        'pydocstyle',
-        'pylint',
+        'prospector[with_pyroma]!=1.1.6.3,!=1.1.6.4',
         'sphinx',
         'sphinx_rtd_theme',
         'vmprof',
@@ -221,7 +217,8 @@ setup(
     install_requires=REQUIREMENTS['install'],
     tests_require=REQUIREMENTS['test'],
     extras_require={
-        'develop': REQUIREMENTS['develop'] + REQUIREMENTS['test'],
+        'develop': (set(REQUIREMENTS['develop'] + REQUIREMENTS['test']) -
+                    {'pycodestyle'}),
     },
     entry_points={
         'console_scripts': [
