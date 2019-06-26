@@ -28,7 +28,7 @@ preprocessors:
   # --------------------------------------------------
   prep_timeseries_1: # For 2D fields
     multi_model_statistics:
-      span: overlap
+      span: full
       statistics: [mean ]
 
 diagnostics:

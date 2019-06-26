@@ -348,10 +348,13 @@ def multi_model_time_series(
         cube = iris.load_cube(filename)
         cube = diagtools.bgc_units(cube, metadata[filename]['short_name'])
 
+        print(metadata[filename]['dataset'])
         cubes = diagtools.make_cube_layer_dict(cube)
+        print(metadata[filename]['dataset'], cubes)
         model_cubes[filename] = cubes
         for layer in cubes:
             layers[layer] = True
+        print(metadata[filename]['dataset'], layers)
 
     # Load image format extention
     image_extention = diagtools.get_image_format(cfg)
@@ -366,6 +369,7 @@ def multi_model_time_series(
 
         # Plot each file in the group
         for index, filename in enumerate(sorted(metadata)):
+            print(index,filename)
             if len(metadata) > 1:
                 color = cmap(index / (len(metadata) - 1.))
             else:
@@ -381,9 +385,12 @@ def multi_model_time_series(
             if 'anomaly' in cfg:
                 cube = calculate_anomaly(cube, cfg['anomaly'])
                 if cube is None:
+                   print('Not enough time for anomaly calculation', metadata[filename]['dataset'])
                    continue 
 
-            if 'MultiModel' in metadata[filename]['dataset']:
+	    
+            if metadata[filename]['dataset'].lower().find('multimodel') < -1:
+                print('plotting - Multi:',metadata[filename]['dataset'])
                 timeplot(
                     cube,
                     c=color,
@@ -398,6 +405,7 @@ def multi_model_time_series(
                     'label': metadata[filename]['dataset']
                 }
             else:
+                print('plotting',metadata[filename]['dataset'])
                 timeplot(
                     cube,
                     c=color,
