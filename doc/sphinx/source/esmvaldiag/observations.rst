@@ -236,10 +236,6 @@ that does not include any diagnostic, but only reads
 in the data file and has it processed in the preprocessor. Such a recipe is
 called ``recipes/examples/recipe_check_obs.yml``. You just need to add a diagnostic
 for your dataset following the existing entries. 
-define one preprocessor that is then called in the diagnostics part. **Note:**
-For the recipe to only run the preprocessor and no diagnostic analyses
-whatsoever, make sure to set the "script" key in the diagnostics part to
-"null".
 
 If the recipe is adjusted as outlined above, run it with the following call:
 
