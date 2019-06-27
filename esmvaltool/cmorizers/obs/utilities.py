@@ -125,8 +125,8 @@ def flip_dim_coord(cube, coord_name):
 
 def read_cmor_config(dataset):
     """Read the associated dataset-specific config file."""
-    reg_path = os.path.join(
-        os.path.dirname(__file__), 'cmor_config', dataset + '.yml')
+    reg_path = os.path.join(os.path.dirname(__file__), 'cmor_config',
+                            dataset + '.yml')
     with open(reg_path, 'r') as file:
         cfg = yaml.safe_load(file)
     cfg['cmor_table'] = \
