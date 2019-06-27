@@ -178,13 +178,6 @@ The cmorizing script for the given dataset can be run with:
    folder the cmorized data set will be stored as a netCDF file. 
 
 If your run was successful, one or more NetCDF files are produced in your output directory.
-and if at some point the output on your screen shows an info line similar to
-this and no additional error message is shown (note: this is the example for
-the example data set ``xch4``): 
-
-.. code-block:: console
-
-  INFO    Processing xch4 (Amon)
 
 6. Naming convention of the observational data files
 ====================================================
