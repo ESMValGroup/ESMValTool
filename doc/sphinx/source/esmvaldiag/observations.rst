@@ -65,9 +65,44 @@ stored then in the appropriate of these three folders.
 4. Create a cmorizer for the dataset
 ========================================================
 
+There are many cmorizing scripts available in `/esmvaltool/utils/cmorizers/obs/
+<https://github.com/ESMValGroup/ESMValTool/blob/version2_development/esmvaltool/cmorizers/obs/>`_
+where solutions to many kinds of format issues with observational data are
+addressed. Most of these scripts are written in NCL at the moment, but more 
+and more examples for Python-based cmorizing scripts become available.
+
+How much cmorizing an observational data set needs is strongly dependent on
+the original NetCDF file and how close the original formatting already is to
+the strict CMOR standard. 
+
+In the following two subsections two cmorizing scripts, one written in python and
+one written in NCL, are explained in more detail.
+
+4.1 Cmorizer script in python
+*****************************
+
+Find here an example of a cmorizing script, written for the ``MTE`` dataset
+that is available at the MPI for Biogeochemistry in Jena: `cmorize_obs_mte.py
+<https://github.com/ESMValGroup/ESMValTool/blob/version2_development/esmvaltool/cmorizers/obs/cmorize_obs_mte.py>`_.
+
+All the necessary information about the dataset to write the filename correctly, 
+and which variable is of interest, is stored in a seperate configuration file: `MTE.yml
+<https://github.com/ESMValGroup/ESMValTool/blob/version2_development/esmvaltool/cmorizers/obs/cmor_config/MTE.yml>`_.
+
+The first part of this configuration file defines the filename of the raw
+observations file, the second part defines the common global attributes for 
+the cmorizer output, e.g. information that is needed to piece together the 
+final observations file name in the correct structure (see Section 6). The 
+third part defines the variables that are supposed to be cmorized.
+
+The actual cmorizing script ``cmorize_obs_mte.py`` 
+
+4.2 Cmorizer script in NCL
+**************************
+
 Find here an example of a cmorizing script, written for the ``ESACCI XCH4``
 dataset that is available on the Copernicus Climate Data Store: `cmorize_obs_CDS-XCH4.ncl
-<https://github.com/ESMValGroup/ESMValTool/blob/version2_development/esmvaltool/utils/cmorizers/obs/cmorize_obs_CDS-XCH4.ncl>`_.
+<https://github.com/ESMValGroup/ESMValTool/blob/version2_development/esmvaltool/cmorizers/obs/cmorize_obs_CDS-XCH4.ncl>`_.
 
 The first part of the script collects all the information about the dataset
 that are necessary to write the filename correctly and to understand which
@@ -104,7 +139,7 @@ following:
   will have to provide to run the cmorizing script. If your variable is not a
   custom variable, you would provide here the path to the folder to the table
   where the variable is available (see for example `cmorize_obs_ERA-Intermim.ncl
-  <https://github.com/ESMValGroup/ESMValTool/blob/version2_development/esmvaltool/utils/cmorizers/obs/cmorize_obs_ERA-Interim.ncl>`_;
+  <https://github.com/ESMValGroup/ESMValTool/blob/version2_development/esmvaltool/cmorizers/obs/cmorize_obs_ERA-Interim.ncl>`_;
 - **Note:** the fields ``VAR``, ``NAME``, ``MIP`` and ``FREQ`` all ask for one
   or more entries. If more than one entry is provided, make sure that the order
   of the entries is the same for all four fields! (for example, that the first
@@ -148,16 +183,7 @@ For the second part of the program, the following points are important to keep i
 The script as it is detailed here would only be able to correct some minor
 problems with the coordinates (e.g. latitudes in the wrong order, longitudes in
 the wrong order, etc.). Everything else will have to be added to the script for
-it to deal with it. There are many cmorizing scripts available in
-`/esmvaltool/utils/cmorizers/obs/
-<https://github.com/ESMValGroup/ESMValTool/blob/version2_development/esmvaltool/utils/cmorizers/obs/>`_
-where solutions to many kinds of format issues with observational data are
-addressed. Most of these scripts are written in NCL, but there more and more
-examples for Python-based cmorizing scripts become available.
-
-How much cmorizing an observational data set needs is strongly dependent on
-the original NetCDF file and how close the original formatting already is to
-the strict CMOR standard. 
+it to deal with it. 
 
 5. Run the cmorizing script
 ===========================
