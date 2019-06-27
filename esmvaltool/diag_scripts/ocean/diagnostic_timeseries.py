@@ -288,7 +288,11 @@ def make_time_series_plots(
             title = ' '.join([title, '(', layer, str(z_units), ')'])
         plt.title(title)
         plt.legend(loc='best')
-        plt.ylabel(str(cube_layer.units))
+
+        ylabel = str(cube_layer.units)
+        if 'ylabel' in cfg:
+            ylabel = cfg['ylabel']
+        plt.ylabel(ylabel)
 
         # Determine image filename:
         if multi_model:
@@ -421,20 +425,31 @@ def multi_model_time_series(
                 }
 
             title = metadata[filename]['long_name']
+            ylabel = str(model_cubes[filename][layer].units)
             if layer != '':
                 if model_cubes[filename][layer].coords('depth'):
                     z_units = model_cubes[filename][layer].coord('depth').units
                 else:
                     z_units = ''
+
         # Add title, legend to plots
         if 'anomaly' in cfg:
             title = ' '.join([title, 'anomaly'])
 
         if layer:
             title = ' '.join([title, '(', str(layer), str(z_units), ')'])
+
+        # check to see if the title is mentionned in the recipe.
+        # If so, it overwrites the dafult title.
+        if 'title' in cfg:
+            title = cfg['title']
+
+        if 'ylabel' in cfg:
+            ylabel = cfg['ylabel']
+
         plt.title(title)
         plt.legend(loc='best')
-        plt.ylabel(str(model_cubes[filename][layer].units))
+        plt.ylabel(ylabel)
 
         # Saving files:
         if cfg['write_plots']:
