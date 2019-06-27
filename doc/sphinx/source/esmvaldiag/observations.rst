@@ -27,7 +27,8 @@ variable in one of these tables, you can proceed to the next point.
 
 If your variable is not available in the standard CMOR tables,
 you need to write a custom CMOR table for the variable
-as outlined below and add it to ``/esmvalcore/cmor/tables/custom/``.
+as outlined below and add it to `/esmvalcore/cmor/tables/custom/
+<https://github.com/ESMValGroup/ESMValCore/tree/development/esmvalcore/cmor/tables/custom>`_.
 
 To create a new custom CMOR table you need to follow these
 guidelines:
