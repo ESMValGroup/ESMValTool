@@ -2,13 +2,19 @@
 ---
 documentation:
   description: |
-    Recipe energy budget PRIMAVERA
+    Recipe to compute energy budgets in global, land and ocean domains.
+    The path to the Trenberth Diagram template needs to be provided to
+    generate the plot. If left empty, the output will be a netCDF file per
+    model containing the budget variables.
 
   authors:
-    - pred_va
+    - vann_be
 
   maintainer:
-    - pred_va
+    - loos_sa
+
+  projects:
+    - primavera
 
 datasets:
   - {dataset: CMCC-CM,  project: CMIP5, mip: Amon, exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
@@ -118,4 +124,4 @@ diagnostics:
     scripts:
       energy_budget_ocean:
         script: primavera/energy_budget.py
-        plot_template: '/home/Earth/sloosvel/energy_budget_template.png'
+        plot_template:
