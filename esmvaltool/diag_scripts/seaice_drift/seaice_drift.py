@@ -238,9 +238,9 @@ class SeaIceDrift(object):
         drift = drift.data
         drift_obs = drift_obs.data
 
-        return 100. * np.nanmean(
+        return 100. * np.nanmean(np.sqrt(
             self._var_error(var, var_obs) + self._var_error(drift, drift_obs)
-        )
+        ))
 
     @staticmethod
     def _var_error(var, obs):
