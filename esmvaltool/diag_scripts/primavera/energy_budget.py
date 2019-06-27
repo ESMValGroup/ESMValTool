@@ -125,10 +125,10 @@ class EnergyBudget(object):
                 data['rad_ads_surface'][dataset],
                 data['rad_net_toa'][dataset],
                 data['bowen_ratio'][dataset]
-            ]
-            )
+            ])
             self.save(dataset, cubes)
-        self.plot(data)
+        if self.template:
+            self.plot(data)
 
     def load(self):
         data = {}
