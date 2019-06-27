@@ -2,13 +2,10 @@
 Contributing a CMORizing script for an observational dataset
 ************************************************************
 
-ESMValTool is able to process observational data sets, however, since many
-features of this version are based on the `Iris library 
-<https://scitools.org.uk/iris/docs/latest/>`_ that uses the `CF conventions
-<http://cfconventions.org/>`_, the format of the data sets has to follow very
-strict CMOR rules. If the original observational data set is not in the right
-CMOR format, it has to be CMORized before the ESMValTool preprocessor can
-work with it. The following steps are necessary to prepare an observational
+ESMValTool is designed to work with CF compliant data and 
+follows the CMOR tables from the CMIP data request, therefore 
+the observational datasets need to be CMORized for usage in ESMValTool.
+The following steps are necessary to prepare an observational
 data set for the use in ESMValTool.
 
 | `1. Check if your variable is CMOR standard`_
