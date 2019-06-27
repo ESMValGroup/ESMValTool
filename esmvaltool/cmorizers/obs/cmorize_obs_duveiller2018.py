@@ -69,9 +69,19 @@ def extract_variable(var_info, raw_info, out_dir, attrs):
     print(cubes)
     for cube in cubes:
         if cube.var_name == rawvar:
-            import IPython;IPython.embed()
+#            import IPython;IPython.embed()
+            for cubecoord in cube.coords():
+                if cubecoord.var_name=='iTr':
+#                    cubecoord.standard_name = None # CMOR checker raises: iTr: standard_name should be , not None
+                    cubecoord.standard_name = ''  # this script raises: ValueError: '' is not a valid standard_name
+
             fix_var_metadata(cube, var_info)
             fix_coords(cube)
+# BAS: this is how it is treated for variables: 
+#            if var_info.standard_name == '':
+#                cube.standard_name = None
+#            else:
+#                cube.standard_name = var_info.standard_name
 #            _fix_data(cube, var)
             # Rename Month to time coordinate
             set_global_atts(cube, attrs)
