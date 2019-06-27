@@ -33,7 +33,7 @@ REQUIREMENTS = {
         'cython',
         'jinja2',
         'eofs',
-        'esmvalcore>=2.0.0a1,<2.1',
+        'esmvalcore>=2.0.0b0,<2.1',
         'fiona',
         'matplotlib<3',
         'nc-time-axis',  # needed by iris.plot
