@@ -22,8 +22,13 @@ import logging
 import os
 from warnings import catch_warnings, filterwarnings
 
+import cf_units
+import numpy as np
 import iris
 from dask import array as da
+import calendar
+import datetime
+
 
 from .utilities import (set_global_atts, fix_coords, fix_var_metadata,
                         read_cmor_config, save_variable, constant_metadata, convert_timeunits)
@@ -47,11 +52,38 @@ def _fix_fillvalue(cube, field, filename):
 
 
 
-#def fix_custom_coord_iTr()
 
 def duveiller2018_callback_function(cube,field,filename):
+    # Rename 'Month' accordingly to 'time'
     cube.coord('Month').rename('time')
-    cube.coord('time').units = 'months since 2010-01-01 00:00:00'
+    # Create arrays for storing datetime objects
+    custom_time = np.zeros((12),dtype=object)
+    custom_time_bounds = np.empty((12,2),dtype=object)
+    custom_time_units = 'days since 1950-01-01'
+    
+    for i in range(custom_time_bounds.shape[0]):
+        n_month = i+1 # we start with month number 1, at position 0
+        weekday,ndays_in_month = calendar.monthrange(2010,n_month)  # Start with bounds
+        time_bnd_a = datetime.datetime(2010,n_month,1)
+        time_bnd_b = datetime.datetime(2010,n_month,ndays_in_month)
+        time_midpoint = time_bnd_a + 0.5*(time_bnd_b - time_bnd_a)
+        custom_time_bounds[n_month-1,0] = time_bnd_a
+        custom_time_bounds[n_month-1,1] = time_bnd_b
+        custom_time[n_month-1] = time_midpoint
+    
+    #TODO check if calendar is consistent
+    time_bnds = cf_units.date2num(custom_time_bounds,custom_time_units,cf_units.CALENDAR_GREGORIAN)
+    time_midpoints = cf_units.date2num(custom_time,custom_time_units,cf_units.CALENDAR_GREGORIAN)
+    
+    cube.coord('time').bounds = time_bnds
+    cube.coord('time').points = time_midpoints
+    cube.coord('time').units = cf_units.Unit(custom_time_units)
+
+
+
+
+#    cube.coord('Month').rename('time')
+#    cube.coord('time').units = 'months since 2009-12-01 00:00:00' # Like this month=1 indeed corresponds to 1 Jan 2010
     #cube.coord('Vegetation transition code').rename('vegetation_transition_code')
 
 def extract_variable(var_info, raw_info, out_dir, attrs):
@@ -69,19 +101,18 @@ def extract_variable(var_info, raw_info, out_dir, attrs):
     print(cubes)
     for cube in cubes:
         if cube.var_name == rawvar:
-#            import IPython;IPython.embed()
-            for cubecoord in cube.coords():
-                if cubecoord.var_name=='iTr':
-#                    cubecoord.standard_name = None # CMOR checker raises: iTr: standard_name should be , not None
-                    cubecoord.standard_name = ''  # this script raises: ValueError: '' is not a valid standard_name
-
+            # Extracting a certain vegetation transition code
+            iTr = 13 # TODO read this from config file and add it above
+            iTr_index = np.where(cube.coords('Vegetation transition code')[0].points == iTr)[0][0]
+            cube = cube[iTr_index,:,:,:]
+            # Add the vegetation transition code as an attribute to keep it on the file
+            cube.attributes['Vegetation transition code'] = iTr
+            # Remove it as a coordinate, since it is not allowed as a CMOR coordinate
+            cube.remove_coord('Vegetation transition code')
+            
+            # 
             fix_var_metadata(cube, var_info)
             fix_coords(cube)
-# BAS: this is how it is treated for variables: 
-#            if var_info.standard_name == '':
-#                cube.standard_name = None
-#            else:
-#                cube.standard_name = var_info.standard_name
 #            _fix_data(cube, var)
             # Rename Month to time coordinate
             set_global_atts(cube, attrs)
