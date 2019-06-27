@@ -12,6 +12,8 @@ data set for the use in ESMValTool.
 | `2. Edit your configuration file`_
 | `3. Store your dataset in the right place`_
 | `4. Create a cmorizer for the dataset`_
+| `4.1 Cmorizer script written in python`_
+| `4.2 Cmorizer script written in NCL`_
 | `5. Run the cmorizing script`_
 | `6. Naming convention of the observational data files`_
 | `7. Test the cmorized dataset`_
@@ -65,7 +67,7 @@ stored then in the appropriate of these three folders.
 4. Create a cmorizer for the dataset
 ========================================================
 
-There are many cmorizing scripts available in `/esmvaltool/utils/cmorizers/obs/
+There are many cmorizing scripts available in `/esmvaltool/cmorizers/obs/
 <https://github.com/ESMValGroup/ESMValTool/blob/version2_development/esmvaltool/cmorizers/obs/>`_
 where solutions to many kinds of format issues with observational data are
 addressed. Most of these scripts are written in NCL at the moment, but more 
@@ -78,8 +80,8 @@ the strict CMOR standard.
 In the following two subsections two cmorizing scripts, one written in python and
 one written in NCL, are explained in more detail.
 
-4.1 Cmorizer script in python
-*****************************
+4.1 Cmorizer script written in python
+*************************************
 
 Find here an example of a cmorizing script, written for the ``MTE`` dataset
 that is available at the MPI for Biogeochemistry in Jena: `cmorize_obs_mte.py
@@ -97,8 +99,8 @@ third part defines the variables that are supposed to be cmorized.
 
 The actual cmorizing script ``cmorize_obs_mte.py`` 
 
-4.2 Cmorizer script in NCL
-**************************
+4.2 Cmorizer script written in NCL
+**********************************
 
 Find here an example of a cmorizing script, written for the ``ESACCI XCH4``
 dataset that is available on the Copernicus Climate Data Store: `cmorize_obs_CDS-XCH4.ncl
