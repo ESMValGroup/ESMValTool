@@ -169,15 +169,7 @@ following:
 
 In the second part of the script each variable defined in ``VAR`` is separately
 extracted from the original data file and processed. Most parts of the code are
-commented, and therefore it should be easy to follow what is happening. This
-example coded in NCL, since many cmorizing scripts that are available so far
-are written in NCL, and adapting existing code and using existing libraries is
-easier than writing something totally new. However, in theory this script could
-also be written in Python but without the help of the Iris package and rather
-based on NetCDF4 or similar packages (this is why we need the cmorizing
-scripts). There is are several python-based cmorizing scripts available
-already, that can be used as guideline in case you would like to write your
-cmorizing script in python. 
+commented, and therefore it should be easy to follow what is happening. 
 
 For the second part of the program, the following points are important to keep in mind:
 
