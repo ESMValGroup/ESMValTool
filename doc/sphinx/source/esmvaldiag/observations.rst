@@ -186,10 +186,7 @@ For the ESMValTool to be able to read the observations from the NetCDF file,
 the file name needs a very specific structure and order of information parts
 (very similar to the naming convention for observations in ESMValTool
 v1.0). The file name will be automatically correctly created if a cmorizing
-script has been used to create the netCDF file. If the file with the
-observations is already in the correct CMOR format, it is possible to use the
-data set without using a cmorizing script. In this case it is important to
-follow the guidelines below on how the filename should be structured.
+script has been used to create the netCDF file.
 
 The file for the ``CDS-XCH4`` observations example in the correct format is
 named as follows:
