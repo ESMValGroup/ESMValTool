@@ -2,10 +2,10 @@
 ---
 
 # Build commmand:
-# conda build . -c conda-forge -c birdhouse
+# conda build . -c conda-forge -c esmvalgroup
 
 # Package version number
-{% set version = "2.0a2" %}
+{% set version = "2.0.0b0" %}
 
 package:
   name: esmvaltool
@@ -21,7 +21,7 @@ source:
 build:
   # Increment the build number when building a new conda package of the same
   # esmvaltool version, reset to 0 when building a new version.
-  number: 1
+  number: 0
   script: |
       python setup.py install --single-version-externally-managed --record=/tmp/record.txt
       POST_LINK="${PREFIX}/bin/.esmvaltool-post-link.sh"
@@ -36,33 +36,28 @@ requirements:
     - setuptools_scm
   run:
     # esmvaltool
-    - python>=3.6
+    - python
     - libunwind  #  specifically for Python3.7+
     - graphviz
     - iris>=2.2
-    - python-stratify
     # Normally installed via pip:
     - cartopy
-    - cf_units
+    - cf-units
     - cython
     - eofs
     - esmpy
+    - esmvalcore>=2.0.0a1,<2.1
+    - jinja2
     - matplotlib<3
     - nc-time-axis
     - netCDF4
-    - numba
     - numpy
     - pandas
-    - pillow
-    - prov
-    - psutil
-    - pydot
     - python-cdo
+    - python-stratify
     - pyyaml
     - scikit-learn
     - shapely
-    - six
-    - vmprof
     - xarray>=0.12.0
     - yamale  # in birdhouse channel
     - fiona
@@ -88,3 +83,5 @@ about:
   home: https://www.esmvaltool.org
   license: Apache License, Version 2.0
   license_file: LICENSE
+  summary: "A community diagnostic and performance metrics tool for routine evaluation of Earth system models in CMIP."
+  description: "A community diagnostic and performance metrics tool for routine evaluation of Earth system models in CMIP."
