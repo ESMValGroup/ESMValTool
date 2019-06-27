@@ -14,6 +14,7 @@ Download and processing instructions
    Download the dataset albedo_IGBPgen.nc
 
 Modification history
+   20190627-A_crez_ba: added an extensive callback function to properly handle time bnds
    20190430-A_crez_ba: started with cmorize_obs_Landschuetzer2016.py as an example to follow
 
 """
@@ -31,7 +32,7 @@ import datetime
 
 
 from .utilities import (set_global_atts, fix_coords, fix_var_metadata,
-                        read_cmor_config, save_variable, constant_metadata, convert_timeunits)
+                        read_cmor_config, save_variable, constant_metadata, convert_timeunits, flip_dim_coord)
 
 logger = logging.getLogger(__name__)
 
@@ -51,11 +52,10 @@ def _fix_fillvalue(cube, field, filename):
                                        field.cf_data.missing_value)
 
 
-
-
 def duveiller2018_callback_function(cube,field,filename):
-    # Rename 'Month' accordingly to 'time'
+    # Rename 'Month' to 'time'
     cube.coord('Month').rename('time')
+
     # Create arrays for storing datetime objects
     custom_time = np.zeros((12),dtype=object)
     custom_time_bounds = np.empty((12,2),dtype=object)
@@ -78,13 +78,6 @@ def duveiller2018_callback_function(cube,field,filename):
     cube.coord('time').bounds = time_bnds
     cube.coord('time').points = time_midpoints
     cube.coord('time').units = cf_units.Unit(custom_time_units)
-
-
-
-
-#    cube.coord('Month').rename('time')
-#    cube.coord('time').units = 'months since 2009-12-01 00:00:00' # Like this month=1 indeed corresponds to 1 Jan 2010
-    #cube.coord('Vegetation transition code').rename('vegetation_transition_code')
 
 def extract_variable(var_info, raw_info, out_dir, attrs):
     """Extract to all vars."""
@@ -109,20 +102,20 @@ def extract_variable(var_info, raw_info, out_dir, attrs):
             cube.attributes['Vegetation transition code'] = iTr
             # Remove it as a coordinate, since it is not allowed as a CMOR coordinate
             cube.remove_coord('Vegetation transition code')
-            
-            # 
+            # Fix metadata
             fix_var_metadata(cube, var_info)
+            # Fix coords
             fix_coords(cube)
-#            _fix_data(cube, var)
-            # Rename Month to time coordinate
+            # Latitude has to be increasing (not fixed in fix_coords), so flip it
+            flip_dim_coord(cube, 'latitude')
+            # Global attributes
             set_global_atts(cube, attrs)
             save_variable(
                 cube,
                 var,
                 out_dir,
                 attrs,
-                local_keys=['positive'],
-#                unlimited_dimensions=['time'],
+                local_keys=['positive']
             )
 
 def cmorization(in_dir, out_dir, cfg):
