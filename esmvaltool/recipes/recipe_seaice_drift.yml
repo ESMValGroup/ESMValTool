@@ -54,7 +54,7 @@ diagnostics:
         mip: SIday
         field: T2MO
         preprocessor: extract
-        reference_dataset: NSIDC-0116-nh
+        reference_dataset: IABP
         derive: true
         force_derivation: false
         fx_files: [areacello]
