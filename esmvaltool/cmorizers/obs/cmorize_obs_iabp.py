@@ -68,7 +68,7 @@ def cmorization(in_dir, out_dir, cfg):
             for line in file_handle.readlines():
                 line = line.split(' ')
                 line = [string for string in line if string]
-                hour = int(line[3])
+                hour = round(float(line[3]))
                 date = _get_date(line, hour)
 
                 if current_date != date:
@@ -153,11 +153,11 @@ def cmorization(in_dir, out_dir, cfg):
 
 
 def _get_date(line, hour):
-    year = int(line[0])
+    year = round(float(line[0]))
     if year < 1900:
         year += 1900
-    month = int(line[1])
-    day = int(line[2])
+    month = round(float(line[1]))
+    day = round(float(line[2]))
     date = datetime.datetime(year, month, day, hour)
     return date
 
