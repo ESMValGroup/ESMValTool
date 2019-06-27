@@ -10,7 +10,7 @@ Last access
     20190503
 
 Download and processing instructions
-    To obtain the data sets it is necessary to contance Ranga B. Myneni
+    To obtain the data sets it is necessary to contanct Ranga B. Myneni
     (Department of Earth and Environment, Boston University). See link above
     for more information.
 
@@ -28,12 +28,11 @@ import iris.coord_categorisation
 import numpy as np
 from cf_units import Unit
 
-import esmvaltool.utils.cmorizers.obs.utilities as utils
 from esmvalcore.preprocessor import regrid
 
-logger = logging.getLogger(__name__)
+from . import utilities as utils
 
-CFG = utils.read_cmor_config('LAI3g.yml')
+logger = logging.getLogger(__name__)
 
 # Properties of the binary file (cannot be stored in .yml since computations
 # are necessary)
@@ -73,13 +72,13 @@ def _clean(file_dir):
         logger.info("Removed cached directory %s", file_dir)
 
 
-def _extract_variable(cmor_info, attrs, in_dir, out_dir):
+def _extract_variable(cmor_info, attrs, in_dir, out_dir, cfg):
     """Extract variable."""
     nc_files = []
-    for year in _get_years(in_dir):
+    for year in _get_years(in_dir, cfg):
         logger.info("Processing year %i", year)
         bin_files = fnmatch.filter(os.listdir(in_dir),
-                                   f"{CFG['binary_prefix']}{year}*.bin")
+                                   f"{cfg['binary_prefix']}{year}*.bin")
 
         # Read files of one year
         cubes = iris.cube.CubeList()
@@ -90,13 +89,13 @@ def _extract_variable(cmor_info, attrs, in_dir, out_dir):
             raw_data = raw_data.astype(np.float32)
             raw_data /= SCALE_FACTOR
 
-            # Coordinates
-            coords = _get_coords(year, bin_file)
-
-            # Build cube, regrid and append it
-            cube = iris.cube.Cube(raw_data, dim_coords_and_dims=coords)
-            if CFG.get('target_grid'):
-                cube = regrid(cube, CFG['target_grid'], 'linear_extrapolate')
+            # Build coordinates and cube, regrid, and append it
+            cube = iris.cube.Cube(raw_data,
+                                  dim_coords_and_dims=_get_coords(
+                                      year, bin_file, cfg))
+            if cfg.get('regrid'):
+                cube = regrid(cube, cfg['regrid']['target_grid'],
+                              cfg['regrid']['scheme'])
             cubes.append(cube)
 
         # Build cube for single year with monthly data
@@ -121,7 +120,7 @@ def _extract_variable(cmor_info, attrs, in_dir, out_dir):
     utils.fix_var_metadata(final_cube, cmor_info)
     utils.convert_timeunits(final_cube, 1950)
     utils.fix_coords(final_cube)
-    if CFG.get('target_grid') is None:
+    if not cfg.get('regrid'):
         utils.flip_dim_coord(final_cube, 'latitude')
     utils.set_global_atts(final_cube, attrs)
     utils.save_variable(final_cube,
@@ -131,12 +130,12 @@ def _extract_variable(cmor_info, attrs, in_dir, out_dir):
                         unlimited_dimensions=['time'])
 
 
-def _get_coords(year, filename):
+def _get_coords(year, filename, cfg):
     """Get correct coordinates for cube."""
     time_units = Unit('days since 1950-1-1 00:00:00', calendar='standard')
 
     # Extract date from filename
-    time_str = filename.replace(CFG['binary_prefix'], '')
+    time_str = filename.replace(cfg['binary_prefix'], '')
     month = MONTHS[time_str[4:7]]
     day = DAYS[time_str[7:8]]
     date = datetime(year, month, day)
@@ -166,10 +165,10 @@ def _get_coords(year, filename):
     return [(time_coord, 0), (lat_coord, 1), (lon_coord, 2)]
 
 
-def _get_years(in_dir):
+def _get_years(in_dir, cfg):
     """Get all available years from input directory."""
     bin_files = os.listdir(in_dir)
-    bin_files = [f.replace(CFG['binary_prefix'], '') for f in bin_files]
+    bin_files = [f.replace(cfg['binary_prefix'], '') for f in bin_files]
     years = [int(f[:4]) for f in bin_files]
     return list(set(years))
 
@@ -184,22 +183,21 @@ def _unzip(filepath, out_dir):
     return new_path
 
 
-def cmorization(in_dir, out_dir):
+def cmorization(in_dir, out_dir, cfg):
     """Cmorization func call."""
-    glob_attrs = CFG['attributes']
-    cmor_table = CFG['cmor_table']
-    logger.info("Starting cmorization for Tier%s OBS files: %s",
-                glob_attrs['tier'], glob_attrs['dataset_id'])
-    logger.info("Input data from: %s", in_dir)
-    logger.info("Output will be written to: %s", out_dir)
-    filepath = os.path.join(in_dir, CFG['filename'])
+    glob_attrs = cfg['attributes']
+    cmor_table = cfg['cmor_table']
+    filepath = os.path.join(in_dir, cfg['filename'])
 
     # Run the cmorization
-    for (var, var_info) in CFG['variables'].items():
+    for (var, var_info) in cfg['variables'].items():
         logger.info("CMORizing variable '%s'", var)
-        if CFG.get('target_grid'):
-            logger.info("Final dataset will be regridded to %s grid",
-                        CFG['target_grid'])
+        if cfg.get('regrid'):
+            cfg['regrid'].setdefault('target_grid', '1x1')
+            cfg['regrid'].setdefault('scheme', 'nearest')
+            logger.info(
+                "Final dataset will be regridded to %s grid using scheme '%s'",
+                cfg['regrid']['target_grid'], cfg['regrid']['scheme'])
         glob_attrs['mip'] = var_info['mip']
         cmor_info = cmor_table.get_variable(var_info['mip'], var)
         zip_file = os.path.join(in_dir, filepath)
@@ -208,5 +206,5 @@ def cmorization(in_dir, out_dir):
             continue
         logger.info("Found input file '%s'", zip_file)
         file_dir = _unzip(zip_file, out_dir)
-        _extract_variable(cmor_info, glob_attrs, file_dir, out_dir)
+        _extract_variable(cmor_info, glob_attrs, file_dir, out_dir, cfg)
         _clean(file_dir)
