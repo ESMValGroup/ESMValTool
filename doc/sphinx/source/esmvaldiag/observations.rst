@@ -188,8 +188,15 @@ the file name needs a very specific structure and order of information parts
 v1.0). The file name will be automatically correctly created if a cmorizing
 script has been used to create the netCDF file.
 
-The file for the ``CDS-XCH4`` observations example in the correct format is
-named as follows:
+The correct structure of an observational data set is defined in 
+``config-developer.yml``, and looks like the following:
+
+.. code-block:: console
+ 
+  OBS_[dataset]_[type]_[version]_[mip]_[short_name]_YYYYMM-YYYYMM.nc
+
+For the example of the ``CDS-XCH4`` data set, the correct structure of the 
+file name looks then like this:
 
 .. code-block:: console
 
