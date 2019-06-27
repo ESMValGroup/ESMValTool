@@ -126,7 +126,8 @@ def make_depth_safe(cube):
         return cube
 
     if depth.attributes['positive'] != 'down':
-        raise Exception('The depth field is not set up correctly')
+        logger.warning('The depth field is upside down:'+ depth.attributes['positive'])
+        return None
 
     depth_points = []
     bad_points = depth.points <= 0.
@@ -249,6 +250,8 @@ def make_transects_plots(
     multi_model = metadata['dataset'].find('MultiModel') > -1
 
     cube = make_depth_safe(cube)
+    if cube is None:
+       return 
     cubes = make_cube_region_dict(cube)
 
     # Determine y log scale.
@@ -340,7 +343,8 @@ def make_transect_contours(
     cube = iris.load_cube(filename)
     cube = diagtools.bgc_units(cube, metadata['short_name'])
     cube = make_depth_safe(cube)
-
+    if cube is None:
+        return
     # Load threshold/thresholds.
     plot_details = {}
     colours = []
@@ -439,6 +443,8 @@ def multi_model_contours(
         cube = iris.load_cube(filename)
         cube = diagtools.bgc_units(cube, metadatas[filename]['short_name'])
         cube = make_depth_safe(cube)
+        if cube is None:
+            continue
         cubes = make_cube_region_dict(cube)
         model_cubes[filename] = cubes
         for region in model_cubes[filename]:
@@ -476,6 +482,8 @@ def multi_model_contours(
                 linewidth = 1.7
                 linestyle = '-'
 
+            if filename not in model_cubes: 
+                continue
             qplt.contour(
                 model_cubes[filename][region], [
                     threshold,
@@ -501,12 +509,12 @@ def multi_model_contours(
             units = str(model_cubes[filename][region].units)
 
             add_sea_floor(model_cubes[filename][region])
-
+	    
         # Add title, threshold, legend to plots
         title = ' '.join([
             title,
             str(threshold), units,
-            determine_transect_str(model_cubes[filename][region], region)
+            #determine_transect_str(model_cubes[filename][region], region)
         ])
         titlify(title)
         plt.legend(loc='best')
