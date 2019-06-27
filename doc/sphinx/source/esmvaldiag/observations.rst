@@ -23,8 +23,9 @@ data set for the use in ESMValTool.
 Most variables are defined in the CMIP data request and can be found in the
 CMOR tables in the folder `/esmvalcore/cmor/tables/cmip5/Tables/ 
 <https://github.com/ESMValGroup/ESMValCore/tree/development/esmvalcore/cmor/tables/cmip5/Tables>`_,
-differentiated according to the ``MIP`` they belong to. If you find the
-variable in one of these tables, you can proceed to the next point.
+differentiated according to the ``MIP`` they belong to. The tables essentially
+follow the `PCMDI <https://github.com/PCMDI>`_ guidelines. If you find the
+variable in one of these tables, you can proceed to the next section.
 
 If your variable is not available in the standard CMOR tables,
 you need to write a custom CMOR table for the variable
