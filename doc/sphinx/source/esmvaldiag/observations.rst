@@ -242,11 +242,3 @@ If the recipe is adjusted as outlined above, run it with the following call:
 .. code-block:: console
 
   esmvaltool -c <config-user.yml> examples/recipe_preprocessor_test.yml --diagnostics <dataset>
-
-This call only works, of course, if you are already in the folder in which also
-the configuration file ``name_of_your_configuration_file`` is stored. If your
-cmorized data set has the correct format, the ESMValTool will read the data and
-run it through the preprocessor, basically confirming that Iris can work with
-the data field. The ESMValTool will then print the statement ``Run was
-successful``. If something is still wrong with the format, the ESMValTool will
-crash. 
