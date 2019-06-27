@@ -36,20 +36,6 @@ from .utilities import (set_global_atts, fix_coords, fix_var_metadata,
 
 logger = logging.getLogger(__name__)
 
-# read in CMOR configuration
-
-#CFG = read_cmor_config('Duveiller2018')
-
-
-
-# TODO: maybe not needed?
-# pylint: disable=unused-argument
-def _fix_fillvalue(cube, field, filename):
-    """Create masked array from missing_value."""
-    if hasattr(field.cf_data, 'missing_value'):
-        # fix for bad missing value definition
-        cube.data = da.ma.masked_equal(cube.core_data(),
-                                       field.cf_data.missing_value)
 
 
 def duveiller2018_callback_function(cube,field,filename):
@@ -61,6 +47,7 @@ def duveiller2018_callback_function(cube,field,filename):
     custom_time_bounds = np.empty((12,2),dtype=object)
     custom_time_units = 'days since 1950-01-01'
     
+    # Now fill the object arrays defined above with datetime objects corresponding to correct time and time_bnds
     for i in range(custom_time_bounds.shape[0]):
         n_month = i+1 # we start with month number 1, at position 0
         weekday,ndays_in_month = calendar.monthrange(2010,n_month)  # Start with bounds
@@ -71,15 +58,18 @@ def duveiller2018_callback_function(cube,field,filename):
         custom_time_bounds[n_month-1,1] = time_bnd_b
         custom_time[n_month-1] = time_midpoint
     
-    #TODO check if calendar is consistent
+    # Convert them
     time_bnds = cf_units.date2num(custom_time_bounds,custom_time_units,cf_units.CALENDAR_GREGORIAN)
     time_midpoints = cf_units.date2num(custom_time,custom_time_units,cf_units.CALENDAR_GREGORIAN)
     
+    # Add them to the cube
     cube.coord('time').bounds = time_bnds
     cube.coord('time').points = time_midpoints
+
+    # Set the correct time unit, as defined above
     cube.coord('time').units = cf_units.Unit(custom_time_units)
 
-def extract_variable(var_info, raw_info, out_dir, attrs):
+def extract_variable(var_info, raw_info, out_dir, attrs, cfg):
     """Extract to all vars."""
     var = var_info.short_name
     with catch_warnings():
@@ -95,7 +85,8 @@ def extract_variable(var_info, raw_info, out_dir, attrs):
     for cube in cubes:
         if cube.var_name == rawvar:
             # Extracting a certain vegetation transition code
-            iTr = 13 # TODO read this from config file and add it above
+            # Read iTr parameter from the cfg
+            iTr = cfg['parameters']['iTr']
             iTr_index = np.where(cube.coords('Vegetation transition code')[0].points == iTr)[0][0]
             cube = cube[iTr_index,:,:,:]
             # Add the vegetation transition code as an attribute to keep it on the file
@@ -144,5 +135,5 @@ def cmorization(in_dir, out_dir, cfg):
                 category=UserWarning,
                 module='iris',
             )
-            extract_variable(var_info, raw_info, out_dir, glob_attrs)
+            extract_variable(var_info, raw_info, out_dir, glob_attrs, cfg)
 
