@@ -47,13 +47,22 @@ preprocessors:
 #      span: full
 #      statistics: [mean ]
 
+  prep_timeseries_3: # For 0D fields
+    multi_model_statistics:
+      span: full
+      statistics: [mean ]
+
 diagnostics:
   # --------------------------------------------------
   # Time series diagnostics
   # --------------------------------------------------
-  diag_timeseries:
+  diag_timeseries_intpp:
     variables:
-      intpp:
+      gtintpp:
+        derive: true
+        force_derivation: false
+        fx_files: [areacello, ]
+        preprocessor: prep_timeseries_3
         additional_datasets:
           - {dataset: CESM1-BGC, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
           - {dataset: CMCC-CESM, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
@@ -74,9 +83,22 @@ diagnostics:
           - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
           - {dataset: MRI-ESM1, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1851, end_year: 2005, }
           - {dataset: NorESM1-ME, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
-        preprocessor: prep_timeseries_1
+    scripts:
+      Regional_Ocean_Surface_mean_timeseries:
+        script: ocean/diagnostic_timeseries.py
+        moving_average: 6 years
+        title: Primary Organic Carbon Production by Phytoplankton
+        ylabel: 'intpp_label'
+
+
+  diag_timeseries_fgco2:
+    variables:
+      gtfgco2: # Global Total flux co2
+        preprocessor: prep_timeseries_3
+        derive: true
+        force_derivation: false
         fx_files: [areacello, ]
-      fgco2:
+#        fgco2:
         additional_datasets:
           - {dataset: CESM1-BGC, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
           - {dataset: CMCC-CESM, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
@@ -100,9 +122,17 @@ diagnostics:
           - {dataset: bcc-csm1-1, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2012, }
 #          - {dataset: bcc-csm1-1-m, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2012, } # Can't find FX files
 #          - {dataset: inmcm4, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, } # Can't find FX files
-        preprocessor: prep_timeseries_1
-        fx_files: [areacello, ]
+    scripts:
+      Regional_Ocean_Surface_mean_timeseries:
+        script: ocean/diagnostic_timeseries.py
+        moving_average: 6 years
+        #anomaly: [1850, 1900]
+        #ylabel: 'fgco2_label'
+        # title: 'Global Total Surface downwards CO2 flux'
 
+
+#   diag_timeseries_chl:
+#    variables:
 #       # Chl requires the memory problem described in https://github.com/ESMValGroup/ESMValCore/issues/123 to be fixed.
 #       chl:
 #         additional_datasets:
@@ -126,9 +156,8 @@ diagnostics:
 #           - {dataset: MRI-ESM1, project: CMIP5, exp: historical, mip: Oyr, ensemble: r1i1p1, start_year: 1851, end_year: 2005, }
 #         preprocessor: prep_timeseries_2
 #         fx_files: [areacello, ]
-
-    scripts:
-      Regional_Ocean_Surface_mean_timeseries:
-        script: ocean/diagnostic_timeseries.py
-        moving_average: 6 years
-        anomaly: [1850, 1900]
+#    scripts:
+#      Regional_Ocean_Surface_mean_timeseries:
+#        script: ocean/diagnostic_timeseries.py
+#        moving_average: 6 years
+#        anomaly: [1850, 1900]
