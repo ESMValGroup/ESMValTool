@@ -237,10 +237,17 @@ class SeaIceDrift(object):
         var_obs = var_obs.data
         drift = drift.data
         drift_obs = drift_obs.data
-        return 100. * np.nanmean((np.absolute(var - var_obs) /
-                                  np.nanmean(var_obs)) ** 2. +
-                                 (np.absolute(drift - drift_obs) /
-                                  np.nanmean(drift_obs)) ** 2.)
+
+        return 100. * np.nanmean(
+            self._var_error(var, var_obs) + self._var_error(drift, drift_obs)
+        )
+
+    @staticmethod
+    def _var_error(var, obs):
+        var_error = np.absolute(var - obs)
+        var_mean = np.nanmean(obs)
+        var_error_normal = var_error / var_mean
+        return var_error_normal ** 2
 
     def _get_slope_ratio(self, siconc, drift):
         slope, intercept = np.polyfit(siconc.data, drift.data, 1)
