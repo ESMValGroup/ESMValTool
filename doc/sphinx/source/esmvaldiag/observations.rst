@@ -39,7 +39,7 @@ guidelines:
 
 - Provide the ``variable_entry``;
 - Provide the ``modeling_realm``;
-- Provide the variable attributes, but leave `standard_name` blank.
+- Provide the variable attributes, but leave ``standard_name`` blank.
 Necessary variable attributes are: ``units``, ``cell_methods``,
   ``cell_measures``, ``long_name``, ``comment``.  
 - Provide some additional variable attributes. Necessary additional variable
@@ -97,7 +97,23 @@ the cmorizer output, e.g. information that is needed to piece together the
 final observations file name in the correct structure (see Section 6). The 
 third part defines the variables that are supposed to be cmorized.
 
-The actual cmorizing script ``cmorize_obs_mte.py`` 
+The actual cmorizing script ``cmorize_obs_mte.py`` consists of a header with
+information on where and how to download the data, noting the last access of the
+data webpage, and who has written the cmorizing script. 
+
+After the header there is a section where different procedures and functions
+are loaded. Note here the call for importing the ``utilities`` file that 
+contains all kinds of pre-defined functions that can be helpful for cmorizing
+observational data files. 
+
+The rest of the mte-cmorizer basically consists of three parts with the third 
+part ``cmorization`` being the main program. In this part the information from
+the configuration part is read and the variables are processed. Here the first
+part of the full cmorization script is called, the sub-routine ``_get_filepath``, 
+in which the correct path is set for the raw observations files to be 
+found. After this, the second sub-routine `` _extract_variable`` is called, in
+which all different kinds of small fixes to the data attributes, coordinates, 
+and metadata are applied in order to make the data field CMOR-compliant.
 
 4.2 Cmorizer script written in NCL
 **********************************
