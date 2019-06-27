@@ -35,12 +35,6 @@ as outlined below and add it to `/esmvalcore/cmor/tables/custom/
 To create a new custom CMOR table you need to follow these
 guidelines:
 
-- Provide information about the SOURCE (for all observations and reanalysis it
-  was decided by the ESMValTool development team that this is set to ``CMIP5``;
-  it basically describes the framework in which the individual variables are
-  associated with realms; it might not be necessary to provide this information
-  here, but before we know for sure that we can leave it out, please just
-  provide it);
 - Provide the ``variable_entry``;
 - Provide the ``modeling_realm``;
 - Provide the variable attributes, but leave `standard_name` blank.
