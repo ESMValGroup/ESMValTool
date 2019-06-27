@@ -268,7 +268,7 @@ def _cmor_reformat(config, obs_list):
             elif os.path.isfile(reformat_script_root + '.py'):
                 _run_pyt_script(in_data_dir, out_data_dir, dataset)
             else:
-                logger.info('Could not find cmorizer for %s', datasets)
+                logger.info('Could not find cmorizer for %s', dataset)
 
 
 if __name__ == '__main__':

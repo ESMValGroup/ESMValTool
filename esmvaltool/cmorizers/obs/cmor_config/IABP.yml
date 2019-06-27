@@ -1,0 +1,21 @@
+---
+# Filename (will be extended by timestamp to match downloaded file)
+filename: 'EnsembleGPP_GL.nc'
+
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: IABP
+  version: '1'
+  tier: 2
+  modeling_realm: buoy
+  project_id: OBS
+  source: 'http://iabp.apl.washington.edu/index.html'
+  reference: 'iabp'
+  comment: 'Buoy data converted to grid'
+
+# Variables to cmorize
+variables:
+  usi:
+    mip: day
+  vsi:
+    mip: day

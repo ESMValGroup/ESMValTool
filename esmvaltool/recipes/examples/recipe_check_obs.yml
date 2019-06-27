@@ -235,6 +235,19 @@ diagnostics:
       - {dataset: HadISST, project: OBS, tier: 2, type: reanaly, version: 1, start_year: 1870, end_year: 2017}
     scripts: null
 
+  IABP:
+    description: IABP
+    variables:
+      usi:
+        preproc: nopp
+        mip: day
+      vsi:
+        preproc: nopp
+        mip: day
+    additional_datasets:
+      - {dataset: PIOMAS, project: OBS, tier: 2, type: buoy, version: 1, start_year: 1979, end_year: 2013}
+    scripts: null
+
 
   Landschuetzer2016:
     description: Landschuetzer2016

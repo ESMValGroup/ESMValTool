@@ -220,7 +220,10 @@ def _fix_bounds(cube, dim_coord):
     if len(cube.coord(dim_coord).points) > 1:
         if cube.coord(dim_coord).has_bounds():
             cube.coord(dim_coord).bounds = None
-        cube.coord(dim_coord).guess_bounds()
+        try:
+            cube.coord(dim_coord).guess_bounds()
+        except ValueError:
+            logger.exception('Can not guess bounds')
 
     if cube.coord(dim_coord).has_bounds():
         cube.coord(dim_coord).bounds = da.array(
