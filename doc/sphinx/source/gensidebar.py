@@ -44,8 +44,8 @@ def generate_sidebar(conf, conf_api):
                 args = desc, mapping[project][0], link
                 lines.append("    %s <%s%s.html>" % args)
         else:
-            args = desc, mapping[project][0], link
-            lines.append("    %s <%s%s.html>" % args)
+            args = desc, link
+            lines.append("    %s <%s>" % args)
 
     #
     # Specify the sidebar contents here
