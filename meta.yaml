@@ -67,6 +67,7 @@ requirements:
     - imagemagick
     - nco
     # Multi language support:
+    - julia>=1.0.3
     - ncl>=6.5.0
     - r-base
     - r-curl  # Dependency of lintr, but fails to compile because it cannot find libcurl installed from conda.

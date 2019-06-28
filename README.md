@@ -21,13 +21,10 @@ Please see [CONTRIBUTING.md](https://github.com/ESMValGroup/ESMValTool/blob/vers
 
 ## Installing from Anaconda
 
-The Anaconda package can be found on [ESMValGroup Anaconda Channel.](https://anaconda.org/ESMValGroup)
+The [Anaconda](https://conda.io/projects/conda/en/latest/user-guide/install/index.html)
+package can be found on [ESMValGroup Anaconda Channel.](https://anaconda.org/ESMValGroup)
 
-First install gcc, g++ and gfortran if these are not available on your system. On Debian based systems, this can be done by
-running `apt install build-essential gfortran`. In order to run
-Julia diagnostics, you will also need to [install Julia](https://julialang.org/downloads/) version 1 or greater.
-
-If you already installed Anaconda, you can install ESMValTool by running:
+If you already installed Anaconda or Miniconda, you can install ESMValTool by running:
 
     conda install -c esmvalgroup -c conda-forge esmvaltool
 
