@@ -100,8 +100,8 @@ final observations file name in the correct structure (see Section 6). The
 third part defines the variables that are supposed to be cmorized.
 
 The actual cmorizing script ``cmorize_obs_mte.py`` consists of a header with
-information on where and how to download the data, noting the last access of the
-data webpage, and who has written the cmorizing script. 
+information on where and how to download the data, and noting the last access 
+of the data webpage. 
 
 After the header there is a section where different procedures and functions
 are loaded. Note here the call for importing the ``utilities`` file that 
