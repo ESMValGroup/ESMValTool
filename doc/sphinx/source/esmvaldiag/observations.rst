@@ -160,12 +160,12 @@ for following key words: DIAG_SCRIPT, VAR, NAME, MIP, FREQ, CMOR_TABLE.
   
 .. _interface: https://github.com/ESMValGroup/ESMValTool/blob/version2_development/esmvaltool/cmorizers/obs/interface.ncl  
 
-.. _utilities: https://github.com/ESMValGroup/ESMValTool/blob/version2_development/esmvaltool/cmorizers/obs/utilities.ncl
+.. _utilities.ncl: https://github.com/ESMValGroup/ESMValTool/blob/version2_development/esmvaltool/cmorizers/obs/utilities.ncl
 
 In the second part of the script each variable defined in ``VAR`` is separately
 extracted from the original data file and processed. Most parts of the code are
 commented, and therefore it should be easy to follow. ESMValTool provides a set 
-of predefined utilities_, which can be imported into your CMORizer 
+of predefined utilities.ncl_, which can be imported into your CMORizer 
 by
 
 .. code-block:: NCL
