@@ -160,8 +160,16 @@ for following key words: DIAG_SCRIPT, VAR, NAME, MIP, FREQ, CMOR_TABLE.
 
 In the second part of the script each variable defined in ``VAR`` is separately
 extracted from the original data file and processed. Most parts of the code are
-commented, and therefore it should be easy to follow. 
+commented, and therefore it should be easy to follow. ESMValTool provides a set 
+of predefined utilities_, which can be imported into your CMORizer 
+by
 
+.. code-block:: NCL
+
+   loadscript(getenv("esmvaltool_root") + "/esmvaltool/cmorizers/obs/utilities.ncl")
+
+This module contains different kinds of small fixes to the data attributes, 
+coordinates, and metadata which are necessary for the data field to be CMOR-compliant.
 
 5. Run the cmorizing script
 ===========================
