@@ -18,6 +18,7 @@ import logging
 import os
 import glob
 
+import math
 import numpy as np
 import numpy.ma as ma
 from cf_units import Unit
@@ -26,6 +27,7 @@ from iris.cube import Cube, CubeList
 from iris.coords import AuxCoord, DimCoord
 from iris.coord_categorisation import add_day_of_year
 from iris.analysis import MEAN
+from iris.analysis.cartography import DEFAULT_SPHERICAL_EARTH_RADIUS
 import datetime
 
 from . import utilities as utils
@@ -58,7 +60,7 @@ def cmorization(in_dir, out_dir, cfg):
     file_list = glob.glob(os.path.join(in_dir, 'D????')) + \
         glob.glob(os.path.join(in_dir, 'D????.dat'))
     file_list.sort()
-
+    areacello = None
     for filepath in file_list:
         logger.info('Cmorizing %s', filepath)
         current_date = None
@@ -72,6 +74,7 @@ def cmorization(in_dir, out_dir, cfg):
                 date = _get_date(line, hour)
 
                 if current_date != date:
+
                     if current_date:
                         latitude = AuxCoord(
                             lat, 'latitude', 'latitude', 'lat', 'degrees_north'
@@ -85,21 +88,41 @@ def cmorization(in_dir, out_dir, cfg):
                         )
                         index = DimCoord(range(len(lat)),
                                          None, 'Cell index', 'i')
-                        usi = ma.array(usi, mask=mask)
-                        usi_cube = Cube(usi, var_name='usi', units='m s-1')
-                        usi_cube.add_dim_coord(index, 0)
-                        usi_cube.add_aux_coord(time)
-                        usi_cube.add_aux_coord(latitude, (0, ))
-                        usi_cube.add_aux_coord(longitude, (0, ))
-                        usi_cubes.append(usi_cube)
+                        usi_cubes.append(
+                            create_cube(
+                                'usi', usi, mask, index, time,
+                                latitude, longitude
+                            )
+                        )
 
-                        vsi = ma.array(usi, mask=mask)
-                        vsi_cube = Cube(usi, var_name='vsi', units='m s-1')
-                        vsi_cube.add_dim_coord(index, 0)
-                        vsi_cube.add_aux_coord(time)
-                        vsi_cube.add_aux_coord(latitude, (0, ))
-                        vsi_cube.add_aux_coord(longitude, (0, ))
-                        vsi_cubes.append(vsi_cube)
+                        vsi_cubes.append(
+                            create_cube(
+                                'vsi', vsi, mask, index, time,
+                                latitude, longitude
+                            )
+                        )
+                        if areacello is None:
+                            area = []
+                            for lat_val, lon_val in zip(lat, lon):
+                                min_lat = lat_val - 2
+                                max_lat = min(lat_val + 2, 90)
+                                if lat_val in (74, 78):
+                                    min_lon = lon_val - 10
+                                    max_lon = lon_val + 10
+                                elif lat_val in (82, 86):
+                                    min_lon = lon_val - 20
+                                    max_lon = lon_val + 20
+                                else:
+                                    min_lon = 0
+                                    max_lon = 360
+                                area.append(_get_cell_area(min_lat, max_lat, min_lon, max_lon))
+                            areacello = Cube(area, var_name='areacello', units='m^2')
+                            areacello.add_dim_coord(index, 0)
+                            areacello.add_aux_coord(latitude, (0, ))
+                            areacello.add_aux_coord(longitude, (0, ))
+                            cmor_info['areacello'] = cmor_table.get_variable('fx', 'areacello')
+                            glob_attrs['mip'] = 'fx'
+                            _save_variable(areacello, cmor_info['areacello'], glob_attrs, out_dir)
 
                     lat = []
                     lon = []
@@ -119,7 +142,6 @@ def cmorization(in_dir, out_dir, cfg):
                 sigma2 = float(line[8])
                 mask.append(sigma2 > 0.5)
 
-
         if current_date:
             year = current_date.year
             logger.info('Creating file for year %s', year)
@@ -131,12 +153,16 @@ def cmorization(in_dir, out_dir, cfg):
                         time_unit.date2num(current_date),
                         'time', 'time', 'time', time_unit
                     )
-                    empty_cube = usi_cubes[0].copy(ma.masked_invalid(np.full(len(lat), np.nan)))
+                    empty_cube = usi_cubes[0].copy(
+                        ma.masked_invalid(np.full(len(lat), np.nan))
+                    )
                     empty_cube.remove_coord('time')
                     empty_cube.add_aux_coord(time)
                     usi_cubes.append(empty_cube)
 
-                    empty_cube = vsi_cubes[0].copy(ma.masked_invalid(np.full(len(lat), np.nan)))
+                    empty_cube = vsi_cubes[0].copy(
+                        ma.masked_invalid(np.full(len(lat), np.nan))
+                    )
                     empty_cube.remove_coord('time')
                     empty_cube.add_aux_coord(time)
                     vsi_cubes.append(empty_cube)
@@ -151,6 +177,26 @@ def cmorization(in_dir, out_dir, cfg):
         glob_attrs['mip'] = cfg['variables']['vsi']['mip']
         _save_variable(vsi, cmor_info['vsi'], glob_attrs, out_dir)
 
+def _get_cell_area(min_lat, max_lat, min_lon, max_lon):
+    min_lat = math.radians(min_lat)
+    max_lat = math.radians(max_lat)
+    min_lon = math.radians(min_lon)
+    max_lon = math.radians(max_lon)
+
+    area = np.cos(min_lat) - np.cos(max_lat)
+    area *= (max_lon - min_lon)
+    area *= DEFAULT_SPHERICAL_EARTH_RADIUS ** 2
+    return area
+
+def create_cube(name, data, mask, index, time, latitude, longitude):
+    data = ma.array(data, mask=mask)
+    cube = Cube(data, var_name=name, units='m s-1')
+    cube.add_dim_coord(index, 0)
+    cube.add_aux_coord(time)
+    cube.add_aux_coord(latitude, (0, ))
+    cube.add_aux_coord(longitude, (0, ))
+    return cube
+
 
 def _get_date(line, hour):
     year = round(float(line[0]))
@@ -160,6 +206,7 @@ def _get_date(line, hour):
     day = round(float(line[2]))
     date = datetime.datetime(year, month, day, hour)
     return date
+
 
 def _merge_cube(cube_list):
     cube = cube_list.merge_cube()
