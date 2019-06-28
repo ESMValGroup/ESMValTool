@@ -73,7 +73,7 @@ where solutions to many kinds of format issues with observational data are
 addressed. Most of these scripts are written in NCL at the moment, but more 
 and more examples for Python-based cmorizing scripts become available.
 
-.. note: NCL support will terminate soon, so new cmorizer scripts should preferably be written in Python.
+.. note:: NCL support will terminate soon, so new cmorizer scripts should preferably be written in Python.
 
 How much cmorizing an observational data set needs is strongly dependent on
 the original NetCDF file and how close the original formatting already is to
@@ -135,7 +135,6 @@ the correct one and the function ``_extract_variable`` extracts and saves a sing
 variable from the raw data.
 
 .. _utilities: https://github.com/ESMValGroup/ESMValTool/blob/version2_development/esmvaltool/cmorizers/obs/utilities.py
-
 
 
 4.2 Cmorizer script written in NCL
