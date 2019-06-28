@@ -89,7 +89,9 @@ that is available at the MPI for Biogeochemistry in Jena: `cmorize_obs_mte.py
 
 All the necessary information about the dataset to write the filename correctly, 
 and which variable is of interest, is stored in a seperate configuration file: `MTE.yml
-<https://github.com/ESMValGroup/ESMValTool/blob/version2_development/esmvaltool/cmorizers/obs/cmor_config/MTE.yml>`_.
+<https://github.com/ESMValGroup/ESMValTool/blob/version2_development/esmvaltool/cmorizers/obs/cmor_config/MTE.yml>`_ 
+in the directory ``ESMValTool/esmvaltool/cmorizers/obs/cmor_config/``. Note that 
+the name of this configuration file has to be identical to the name of your data set.
 
 The first part of this configuration file defines the filename of the raw
 observations file, the second part defines the common global attributes for 
