@@ -155,13 +155,17 @@ for following key words: DIAG_SCRIPT, VAR, NAME, MIP, FREQ, CMOR_TABLE.
   entry in all four fields describe the variable ``xch4`` that you would like
   to extract);
 - **Note:** some functions in the script are NCL-specific and are available
-  through the loading of the script ``interface.ncl``. There are similar
+  through the loading of the script interface__NCL_. There are similar
   functions available for python scripts.
+  
+.. _interface_NCL: https://github.com/ESMValGroup/ESMValTool/blob/version2_development/esmvaltool/cmorizers/obs/interface.ncl  
+
+.. _utilities_NCL: https://github.com/ESMValGroup/ESMValTool/blob/version2_development/esmvaltool/cmorizers/obs/utilities.ncl
 
 In the second part of the script each variable defined in ``VAR`` is separately
 extracted from the original data file and processed. Most parts of the code are
 commented, and therefore it should be easy to follow. ESMValTool provides a set 
-of predefined utilities_, which can be imported into your CMORizer 
+of predefined utilities__NCL_, which can be imported into your CMORizer 
 by
 
 .. code-block:: NCL
