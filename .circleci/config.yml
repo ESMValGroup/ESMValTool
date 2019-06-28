@@ -230,6 +230,9 @@ workflows:
       - test
       - test_installation
       - documentation
+      - develop
+      - conda_build
+      - conda_install
   nightly:
     triggers:
       - schedule:
