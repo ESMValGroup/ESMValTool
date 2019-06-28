@@ -117,7 +117,7 @@ reformatted data set and ``cfg`` to the configuration dictionary given by
 the  ``.yml`` configuration file. This function needs to return ``None``. All 
 the work, i.e. loading of the raw files, processing them and saving the final 
 output, has to be performed inside its body. To simplify this process, ESMValTool 
-provides a set of predefined utilities_, which can be imported into your CMORizer 
+provides a set of predefined utilities.py_, which can be imported into your CMORizer 
 by
 
 .. code-block:: python
@@ -134,7 +134,7 @@ style). For example, the function ``_get_filepath`` converts the raw filepath to
 the correct one and the function ``_extract_variable`` extracts and saves a single 
 variable from the raw data.
 
-.. _utilities: https://github.com/ESMValGroup/ESMValTool/blob/version2_development/esmvaltool/cmorizers/obs/utilities.py
+.. _utilities.py: https://github.com/ESMValGroup/ESMValTool/blob/version2_development/esmvaltool/cmorizers/obs/utilities.py
 
 
 4.2 Cmorizer script written in NCL
@@ -155,10 +155,10 @@ for following key words: DIAG_SCRIPT, VAR, NAME, MIP, FREQ, CMOR_TABLE.
   entry in all four fields describe the variable ``xch4`` that you would like
   to extract);
 - **Note:** some functions in the script are NCL-specific and are available
-  through the loading of the script interface_. There are similar
+  through the loading of the script interface.ncl_. There are similar
   functions available for python scripts.
   
-.. _interface: https://github.com/ESMValGroup/ESMValTool/blob/version2_development/esmvaltool/cmorizers/obs/interface.ncl  
+.. _interface.ncl: https://github.com/ESMValGroup/ESMValTool/blob/version2_development/esmvaltool/cmorizers/obs/interface.ncl  
 
 .. _utilities.ncl: https://github.com/ESMValGroup/ESMValTool/blob/version2_development/esmvaltool/cmorizers/obs/utilities.ncl
 
