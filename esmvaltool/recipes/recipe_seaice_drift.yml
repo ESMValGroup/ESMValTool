@@ -3,7 +3,7 @@ documentation:
   description: 'Sea ice drift evaluation'
   authors: ['docq_da']
   projects: [primavera]
-  references: ['acknow_project']
+  references: ['docquier2017']
   mantainer: [vega_ja]
 
 datasets:
@@ -65,11 +65,9 @@ diagnostics:
     scripts:
       sea_ice_drift:
         script: seaice_drift/seaice_drift.py
-        title: "Seaice drift north of 50º"
         latitude_treshold: 50
       sea_ice_drift_SCICEX:
         script: seaice_drift/seaice_drift.py
-        title: "Seaice drift SCICEX domain"
         # lon, lat tuples
         polygon:
           - [-15., 87.]
