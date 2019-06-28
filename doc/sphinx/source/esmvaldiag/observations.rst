@@ -73,7 +73,7 @@ where solutions to many kinds of format issues with observational data are
 addressed. Most of these scripts are written in NCL at the moment, but more 
 and more examples for Python-based cmorizing scripts become available.
 
-.. note::  NCL support will terminate soon, so new cmorizer scripts should preferably be written in Python.
+.. note:: NCL support will terminate soon, so new cmorizer scripts should preferably be written in Python.
 
 How much cmorizing an observational data set needs is strongly dependent on
 the original NetCDF file and how close the original formatting already is to
@@ -146,40 +146,9 @@ dataset that is available on the Copernicus Climate Data Store: `cmorize_obs_CDS
 
 The first part of the script collects all the information about the dataset
 that are necessary to write the filename correctly and to understand which
-variable is of interest here. Please make sure to pay special attention to the
-following: 
+variable is of interest here. Please make sure to provide the correct information
+for following key words: DIAG_SCRIPT, VAR, NAME, MIP, FREQ, CMOR_TABLE. 
 
-- DIAG_SCRIPT: fill in the name of the current cmorizing script;
-- VAR: here you can list all the different variables you want to store in the
-  cmorized output file. In this example only the variable ``xch4`` is
-  listed. If more than one variable is supposed to be cmorized, you define
-  VAR as an array, e.g. ``(/"xch4", "xch4stddev", "xch4_num"/)``. **Note:**
-  each variable needs to be saved in a separate NetCDF file for the ESMValTool
-  to be able to work with the files, e.g. ``xch4`` and ``xch4stddev`` should
-  not be stored in the same file, but in two separate files;
-- NAME: these are the names of the variables you want to extract out of the
-  original data file. The names do not need to be in CMOR standard therefore
-  there is the distinction between ``VAR`` and ``NAME``;
-- MIP: this is the ``mip`` in which the variable is defined (or would be
-  defined if it is not a custom variable or a derived variable) and which
-  describes the realm and the temporal resolution of the dataset; ``Amon`` from
-  the example stands for an atmospheric variable (``A``) in a monthly
-  resolution (``mon``).  **Note:** The description of the MIP is not
-  necessarily structured the same  way as described above. The available
-  choices for MIP are: 3hr, 6hrLev, 6hrPlev, aero, Amon, cf3hr, cfDay, cfMon,
-  cfOff, cfSites, day, fx, grids, LImon, Lmon, Oclim, OImon, Omon, Oyr. See for
-  more details on these different MIPs see the 
-  `CMOR tables <https://github.com/ESMValGroup/ESMValCore/development/esmvalcore/cmor/tables/cmip5/Tables/>`_;
-- FREQ: describes the temporal resolution of the dataset;
-- CMOR_TABLE: provides the link to the CMOR table in which the variable is
-  defined. If the CMOR table is a custom table (like it is here in the example)
-  you need to provide the path and the name of the file in which the definition
-  is stored (here: ``/cmor/tables/custom/CMOR_xch4.dat``). The more basic path
-  information is pulled out of the configuration file (see section 2) that you
-  will have to provide to run the cmorizing script. If your variable is not a
-  custom variable, you would provide here the path to the folder to the table
-  where the variable is available (see for example `cmorize_obs_ERA-Intermim.ncl
-  <https://github.com/ESMValGroup/ESMValTool/blob/version2_development/esmvaltool/cmorizers/obs/cmorize_obs_ERA-Interim.ncl>`_;
 - **Note:** the fields ``VAR``, ``NAME``, ``MIP`` and ``FREQ`` all ask for one
   or more entries. If more than one entry is provided, make sure that the order
   of the entries is the same for all four fields! (for example, that the first
@@ -191,31 +160,8 @@ following:
 
 In the second part of the script each variable defined in ``VAR`` is separately
 extracted from the original data file and processed. Most parts of the code are
-commented, and therefore it should be easy to follow what is happening. 
+commented, and therefore it should be easy to follow. 
 
-For the second part of the program, the following points are important to keep in mind:
-
-- fname: it is the combination of the input path that is defined in the
-  configuration file (see Section 2) that has to be defined to run the
-  cmorizing script, and the name of the file with the ``raw`` data; 
-- ``output = f->xch4``: In this line it is hardcoded that the variable with the
-  name ``xch4`` is processed. If you have defined more than one variable, this
-  statement has to be adjusted, so that the correct variable name is used with
-  each loop of the program. 
-- ``format_coords``: this call is a routine that is available for NCL code
-  already and which takes care of cmorizing the coordinates of the current
-  variable if necessary (e.g., longitudes ranging from -180 to 180 degrees
-  instead of 0 to 360 degrees). 
-- ``fout``: the filepath and filename of the output file are set here. The path
-  is taken from the configuration file (see Section 2) that is necessary to run
-  the cmorizing script, and the filename is put together from the
-  information given in the first part of the script, following the rules for
-  filenames so that the ESMValTool can read in the files. 
-
-The script as it is detailed here would only be able to correct some minor
-problems with the coordinates (e.g. latitudes in the wrong order, longitudes in
-the wrong order, etc.). Everything else will have to be added to the script for
-it to deal with it. 
 
 5. Run the cmorizing script
 ===========================
