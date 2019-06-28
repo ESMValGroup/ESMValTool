@@ -17,6 +17,7 @@ Download and processing instructions
 import logging
 import os
 import glob
+import calendar
 
 import math
 import numpy as np
@@ -39,10 +40,10 @@ def _save_variable(cube, cmor_info, attrs, out_dir):
     """Extract variable."""
     var = cmor_info.short_name
     utils.fix_var_metadata(cube, cmor_info)
-    utils.fix_coords(cube)
     utils.set_global_atts(cube, attrs)
     utils.save_variable(
-        cube, var, out_dir, attrs, unlimited_dimensions=['time'])
+        cube, var, out_dir, attrs, zlib=True
+    )
 
 
 def cmorization(in_dir, out_dir, cfg):
@@ -52,165 +53,83 @@ def cmorization(in_dir, out_dir, cfg):
 
     time_unit = Unit('days since 1850-01-01', 'gregorian')
 
+    reference = iris.load_cube(cfg['reference_file'])
+    shape = reference.coord('latitude').shape
+    logger.debug(reference)
+
+    cmor_info = cmor_table.get_variable('fx', 'areacello')
+    glob_attrs['mip'] = 'fx'
+    _save_variable(reference, cmor_info, glob_attrs, out_dir)
+
     cmor_info = dict()
     for (var, var_info) in cfg['variables'].items():
         glob_attrs['mip'] = var_info['mip']
         cmor_info[var] = cmor_table.get_variable(var_info['mip'], var)
 
-    file_list = glob.glob(os.path.join(in_dir, 'D????')) + \
-        glob.glob(os.path.join(in_dir, 'D????.dat'))
-    file_list.sort()
-    areacello = None
-    for filepath in file_list:
-        logger.info('Cmorizing %s', filepath)
-        current_date = None
-        with open(filepath) as file_handle:
-            usi_cubes = CubeList()
-            vsi_cubes = CubeList()
-            for line in file_handle.readlines():
-                line = line.split(' ')
-                line = [string for string in line if string]
-                hour = round(float(line[3]))
-                date = _get_date(line, hour)
+    file_template = 'im_from_buoy_nh_list_{0}0101_{0}1231_{1}.nc'
+    for year in range(cfg['start_year'], cfg['end_year'] + 1):
+        logger.info('Cmorizing %s', year)
 
-                if current_date != date:
+        cubes = iris.load(os.path.join(
+            in_dir,
+            file_template.format(year, glob_attrs['version']
+        )))
 
-                    if current_date:
-                        latitude = AuxCoord(
-                            lat, 'latitude', 'latitude', 'lat', 'degrees_north'
-                        )
-                        longitude = AuxCoord(
-                            lon, 'longitude', 'longitude', 'lon', 'degrees_east'
-                        )
-                        time = AuxCoord(
-                            time_unit.date2num(current_date),
-                            'time', 'time', 'time', time_unit
-                        )
-                        index = DimCoord(range(len(lat)),
-                                         None, 'Cell index', 'i')
-                        usi_cubes.append(
-                            create_cube(
-                                'usi', usi, mask, index, time,
-                                latitude, longitude
-                            )
-                        )
+        usi = cubes.extract_strict('sea_ice_x_velocity')
+        vsi = cubes.extract_strict('sea_ice_y_velocity')
+        time = cubes.extract_strict('time')
+        x = cubes.extract_strict('x on 25km EASEgrid')
+        y = cubes.extract_strict('y on 25km EASEgrid')
 
-                        vsi_cubes.append(
-                            create_cube(
-                                'vsi', vsi, mask, index, time,
-                                latitude, longitude
-                            )
-                        )
-                        if areacello is None:
-                            area = []
-                            for lat_val, lon_val in zip(lat, lon):
-                                min_lat = lat_val - 2
-                                max_lat = min(lat_val + 2, 90)
-                                if lat_val in (74, 78):
-                                    min_lon = lon_val - 10
-                                    max_lon = lon_val + 10
-                                elif lat_val in (82, 86):
-                                    min_lon = lon_val - 20
-                                    max_lon = lon_val + 20
-                                else:
-                                    min_lon = 0
-                                    max_lon = 360
-                                area.append(_get_cell_area(min_lat, max_lat, min_lon, max_lon))
-                            areacello = Cube(area, var_name='areacello', units='m^2')
-                            areacello.add_dim_coord(index, 0)
-                            areacello.add_aux_coord(latitude, (0, ))
-                            areacello.add_aux_coord(longitude, (0, ))
-                            cmor_info['areacello'] = cmor_table.get_variable('fx', 'areacello')
-                            glob_attrs['mip'] = 'fx'
-                            _save_variable(areacello, cmor_info['areacello'], glob_attrs, out_dir)
+        usi_grid = _get_empy_array(year, shape)
+        vsi_grid = _get_empy_array(year, shape)
 
-                    lat = []
-                    lon = []
-                    usi = []
-                    vsi = []
-                    mask = []
-                    current_date = date
+        first_day = int(time.units.date2num(datetime.datetime(year, 1, 1)))
 
-                lat.append(float(line[4]))
-                lon.append(float(line[5]))
-                usi.append(float(line[6]) / 100)
-                vsi.append(float(line[7]) / 100)
-                # SIGMA2   is the variance of the interpolation error in
-                # velocity, in dimensionless units.
-                # No confidence should be placed in interpolated velocities
-                # for which SIGMA2 > 0.5.
-                sigma2 = float(line[8])
-                mask.append(sigma2 > 0.5)
+        for i in range(time.shape[0]):
+            time_coord = int(round(time[i].data - first_day))
+            x_coord = int(x[i].data)
+            y_coord = int(y[i].data)
+            usi_grid[time_coord, y_coord, x_coord] = usi[i].data / 100.
+            vsi_grid[time_coord, y_coord, x_coord] = usi[i].data / 100.
 
-        if current_date:
-            year = current_date.year
-            logger.info('Creating file for year %s', year)
-            current_date = datetime.datetime(year, 1, 1)
-            delta = datetime.timedelta(days=1)
-            while current_date.year == year:
-                if not any(((cube.coord('time').cell(0) == current_date) for cube in usi_cubes)):
-                    time = AuxCoord(
-                        time_unit.date2num(current_date),
-                        'time', 'time', 'time', time_unit
-                    )
-                    empty_cube = usi_cubes[0].copy(
-                        ma.masked_invalid(np.full(len(lat), np.nan))
-                    )
-                    empty_cube.remove_coord('time')
-                    empty_cube.add_aux_coord(time)
-                    usi_cubes.append(empty_cube)
+        if calendar.isleap(year):
+            time_coord = range(first_day, first_day + 366)
+        else:
+            time_coord = range(first_day, first_day + 365)
 
-                    empty_cube = vsi_cubes[0].copy(
-                        ma.masked_invalid(np.full(len(lat), np.nan))
-                    )
-                    empty_cube.remove_coord('time')
-                    empty_cube.add_aux_coord(time)
-                    vsi_cubes.append(empty_cube)
-                current_date += delta
-
-        usi = _merge_cube(usi_cubes)
-        vsi = _merge_cube(vsi_cubes)
+        time_coord = DimCoord(
+            time_coord, 'time', 'time', 'time', units=time.units
+        )
 
         glob_attrs['mip'] = cfg['variables']['usi']['mip']
-        _save_variable(usi, cmor_info['usi'], glob_attrs, out_dir)
+        _create_var_file('usi', usi_grid, cmor_info['usi'], glob_attrs, out_dir, reference, time_coord)
 
         glob_attrs['mip'] = cfg['variables']['vsi']['mip']
-        _save_variable(vsi, cmor_info['vsi'], glob_attrs, out_dir)
-
-def _get_cell_area(min_lat, max_lat, min_lon, max_lon):
-    min_lat = math.radians(min_lat)
-    max_lat = math.radians(max_lat)
-    min_lon = math.radians(min_lon)
-    max_lon = math.radians(max_lon)
-
-    area = np.cos(min_lat) - np.cos(max_lat)
-    area *= (max_lon - min_lon)
-    area *= DEFAULT_SPHERICAL_EARTH_RADIUS ** 2
-    return area
-
-def create_cube(name, data, mask, index, time, latitude, longitude):
-    data = ma.array(data, mask=mask)
-    cube = Cube(data, var_name=name, units='m s-1')
-    cube.add_dim_coord(index, 0)
-    cube.add_aux_coord(time)
-    cube.add_aux_coord(latitude, (0, ))
-    cube.add_aux_coord(longitude, (0, ))
-    return cube
+        _create_var_file('vsi', usi_grid, cmor_info['vsi'], glob_attrs, out_dir, reference, time_coord)
 
 
-def _get_date(line, hour):
-    year = round(float(line[0]))
-    if year < 1900:
-        year += 1900
-    month = round(float(line[1]))
-    day = round(float(line[2]))
-    date = datetime.datetime(year, month, day, hour)
-    return date
+def _get_empy_array(year, grid_shape):
+    if calendar.isleap(year):
+        data = np.full([366, grid_shape[0], grid_shape[1]], np.nan, dtype=np.float32)
+    else:
+        data = np.full([365, grid_shape[0], grid_shape[1]], np.nan, dtype=np.float32)
+    return data
 
 
-def _merge_cube(cube_list):
-    cube = cube_list.merge_cube()
-    add_day_of_year(cube, 'time')
-    cube = cube.aggregated_by('day_of_year', MEAN)
-    cube.remove_coord('day_of_year')
-    return cube
+def _create_var_file(var_name, data, cmor_info, glob_attrs, out_dir, reference, time_coord):
+    cube = Cube(
+        ma.masked_invalid(data),
+        cmor_info.standard_name,
+        var_name=var_name,
+        units='m s-1'
+    )
+
+    cube.add_dim_coord(time_coord, 0)
+    cube.add_dim_coord(reference.coord('projection_y_coordinate'), 1)
+    cube.add_dim_coord(reference.coord('projection_x_coordinate'), 2)
+
+    cube.add_aux_coord(reference.coord('latitude'), (1, 2))
+    cube.add_aux_coord(reference.coord('longitude'), (1, 2))
+
+    _save_variable(cube, cmor_info, glob_attrs, out_dir)

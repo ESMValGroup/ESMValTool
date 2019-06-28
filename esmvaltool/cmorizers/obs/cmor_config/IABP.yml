@@ -5,7 +5,7 @@ filename: 'EnsembleGPP_GL.nc'
 # Common global attributes for Cmorizer output
 attributes:
   dataset_id: IABP
-  version: '1'
+  version: 'v4.1'
   tier: 2
   modeling_realm: buoy
   project_id: OBS
@@ -19,3 +19,8 @@ variables:
     mip: day
   vsi:
     mip: day
+
+start_year: 1993
+end_year : 2018
+# An areacello file for EASE grid
+reference_file: /home/Earth/jvegas/OBS_NSIDC-0116-nh_reanaly_4.1_fx_areacello.nc
