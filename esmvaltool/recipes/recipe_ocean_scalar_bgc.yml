@@ -62,9 +62,11 @@ diagnostics:
         derive: true
         force_derivation: false
         fx_files: [areacello, ]
-        preprocessor: prep_timeseries_3
+#        preprocessor: prep_timeseries_3
         additional_datasets:
-          - {dataset: CESM1-BGC, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
+          - {dataset: CESM1-BGC, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1995, end_year: 2005, }
+
+#          - {dataset: CESM1-BGC, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
 #           - {dataset: CMCC-CESM, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
 #           - {dataset: CNRM-CM5, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
 #           - {dataset: CanESM2, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
@@ -87,20 +89,22 @@ diagnostics:
       Regional_Ocean_Surface_mean_timeseries:
         script: ocean/diagnostic_timeseries.py
         moving_average: 6 years
-        title: Primary Organic Carbon Production by Phytoplankton
-        ylabel: 'intpp_label'
+#        title: Primary Organic Carbon Production by Phytoplankton
+#        ylabel: 'intpp_label'
 
 
   diag_timeseries_fgco2:
     variables:
       gtfgco2: # Global Total flux co2
-        preprocessor: prep_timeseries_3
+#        preprocessor: prep_timeseries_3
         derive: true
         force_derivation: false
         fx_files: [areacello, ]
 #        fgco2:
         additional_datasets:
-          - {dataset: CESM1-BGC, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
+          - {dataset: CESM1-BGC, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1995, end_year: 2005, }
+
+#           - {dataset: CESM1-BGC, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
 #           - {dataset: CMCC-CESM, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
 #           - {dataset: CNRM-CM5, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
 #           - {dataset: CanESM2, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
