@@ -103,19 +103,38 @@ The actual cmorizing script ``cmorize_obs_mte.py`` consists of a header with
 information on where and how to download the data, and noting the last access 
 of the data webpage. 
 
-After the header there is a section where different procedures and functions
-are loaded. Note here the call for importing the ``utilities`` file that 
-contains all kinds of pre-defined functions that can be helpful for cmorizing
-observational data files. 
+The main body of the CMORizer script must contain a function called
 
-The rest of the mte-cmorizer basically consists of three parts with the third 
-part ``cmorization`` being the main program. In this part the information from
-the configuration part is read and the variables are processed. Here the first
-part of the full cmorization script is called, the sub-routine ``_get_filepath``, 
-in which the correct path is set for the raw observations files to be 
-found. After this, the second sub-routine `` _extract_variable`` is called, in
-which all different kinds of small fixes to the data attributes, coordinates, 
-and metadata are applied in order to make the data field CMOR-compliant.
+.. code-block:: python
+
+   def cmorization(in_dir, out_dir, cfg):
+
+with this exact call signature. Here, ``in_dir`` corresponds to the input 
+directory of the raw files, ``out_dir`` to the output directory of final 
+reformatted data set and ``cfg`` to the configuration dictionary given by 
+the  ``.yml`` configuration file. This function needs to return ``None``. All 
+the work, i.e. loading of the raw files, processing them and saving the final 
+output, has to be performed inside its body. To simplify this process, ESMValTool 
+provides a set of predefined utilities_, which can be imported into your CMORizer 
+by
+
+.. code-block:: python
+
+   from . import utilities as utils
+
+Apart from a function to easily save data, this module contains different kinds
+of small fixes to the data attributes, coordinates, and metadata which are 
+necessary for the data field to be CMOR-compliant.
+
+Note that this specific CMORizer script contains several subroutines in order to 
+make the code clearer and more readable (we strongly recommend to follow that code 
+style). For example, the function ``_get_filepath`` converts the raw filepath to 
+the correct one and the function ``_extract_variable`` extracts and saves a single 
+variable from the raw data.
+
+.. _utilities: https://github.com/ESMValGroup/ESMValTool/blob/version2_development/esmvaltool/cmorizers/obs/utilities.py
+
+
 
 4.2 Cmorizer script written in NCL
 **********************************
