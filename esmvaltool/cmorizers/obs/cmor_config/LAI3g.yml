@@ -4,7 +4,9 @@ filename: 'AVHRR-LAI3gV1-1981-2018.zip'
 binary_prefix: 'AVHRR_BULAI3g_v1_'
 
 # Regrid to coarser resolution
-# This might be necessary since original dataset has very fine grid
+# This might be necessary since the original dataset has a very fine grid and
+# processing it with ESMValTool can take a very long time (> 30 min). To use
+# the original resolution (1/12°), simply remove the following section.
 regrid:
   target_grid: 1x1
   scheme: linear

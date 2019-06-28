@@ -14,6 +14,12 @@ Download and processing instructions
     (Department of Earth and Environment, Boston University). See link above
     for more information.
 
+    By default, this dataset is regridded to a 1°x1° grid (original resoultion
+    is 1/12°). If you want to use the original resolution, remove the `regrid`
+    section in the configuration file (`LAI3g.yml`). Note that in this case,
+    preprocessing the dataset with ESMValTool (i.e. every time you run the
+    tool) can take a very long time (> 30 min).
+
 """
 
 import fnmatch
