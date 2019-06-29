@@ -51,8 +51,12 @@ preprocessors:
 
 
 diagnostics:
-  ipcc_fig_9_14:
-    description: SST Error, zonal mean and equatorial (fig 9.14)
+  fig09-14:
+    description: IPCC AR5 Ch. 9, Fig. 9.14 (sst error, zonal mean and equatorial)
+    themes:
+      - phys
+    realms:
+      - ocean
     variables:
       tos_zm:
         short_name: tos
@@ -102,5 +106,5 @@ diagnostics:
       - {dataset: NorESM1-M, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1979, end_year: 1999}
       - {dataset: NorESM1-ME, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1979, end_year: 1999}
     scripts:
-      ipcc_fig_9_14:
-        script: ipcc_ar5/ch09_fig9-14.py
+      fig09-14:
+        script: ipcc_ar5/ch09_fig09_14.py
