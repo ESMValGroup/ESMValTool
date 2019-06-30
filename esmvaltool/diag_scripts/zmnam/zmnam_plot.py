@@ -200,7 +200,7 @@ def zmnam_plot(file_gh_mo, datafolder, figfolder, src_props,
 
         # Add contour labels over white boxes
         clabs = plt.clabel(inv_map, fontsize=8, fmt='%1.0f', zorder=30)
-        bbox_dict = dict(boxstyle='square,pad=0', \
+        bbox_dict = dict(boxstyle='square,pad=0',
                          edgecolor='none', fc='white', zorder=25)
         [txt.set_bbox(bbox_dict) for txt in clabs]
 
