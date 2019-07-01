@@ -116,7 +116,7 @@ class SeaIceDrift(object):
                     1
                 )
                 sispeed.extract(
-                    iris.Constraint(year= lambda c: 1979 <= c <= 2005)
+                    iris.Constraint(year=lambda c: 1979 <= c <= 2005)
                 )
                 sispeed = sispeed.collapsed('year', iris.analysis.MEAN)
                 logger.debug(sispeed)
@@ -475,7 +475,7 @@ class SeaIceDrift(object):
         ax.set_ylabel('Sea ice drift speed (km d$^{-1}$)', fontsize=18)
         ax.tick_params(axis='both', labelsize=14)
         high_drift, low_drift = self._get_plot_limits(drift, drift_obs)
-        _ , low_siconc = self._get_plot_limits(siconc, siconc_obs, 0.1)
+        _, low_siconc = self._get_plot_limits(siconc, siconc_obs, 0.1)
         ax.axis([low_siconc, 1.01, low_drift, high_drift])
         ax.legend(loc='lower left', shadow=True, frameon=False, fontsize=12)
         self._annotate_points(ax, siconc, drift)
@@ -542,7 +542,10 @@ class InsidePolygonFactory(AuxCoordFactory):
             if lon > 180:
                 lon -= 360
             point = self.transformer.transform(lon, lat)
-            return 1. if self.polygon.contains(Point(point[0], point[1])) else np.nan
+            if self.polygon.contains(Point(point[0], point[1])):
+                return 1.
+            else:
+                return np.nan
         vectorized = np.vectorize(in_polygon)
         return vectorized(lat, lon)
 
