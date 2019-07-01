@@ -46,17 +46,8 @@ from .utilities import (fix_coords, fix_var_metadata,
 logger = logging.getLogger(__name__)
 
 
-def duveiller2018_callback_function(cube, field, filename):
-    """Dataset specific callback function.
-
-    This is a dataset specific callback function that deals with correct
-    handling of the time axis and time_bnds
-    """
-    # First deal with unused filename variable (this is needed by Iris,
-    # but codacy will complain if it is not used, so simply put it here,
-    # but do nothing.)
-    filename
-
+def fix_time_coord_duveiller2018(cube, field, _):
+    """Fix the time coordinate for dataset Duveiller2018."""
     # Rename 'Month' to 'time'
     cube.coord('Month').rename('time')
 
@@ -103,7 +94,7 @@ def extract_variable(var_info, raw_info, out_dir, attrs, cfg):
             module='iris',
         )
         cubes = iris.load(raw_info['file'],
-                          callback=duveiller2018_callback_function)
+                          callback=fix_time_coord_duveiller2018)
     rawvar = raw_info['name']
     for cube in cubes:
         if cube.var_name == rawvar:
