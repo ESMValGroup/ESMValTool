@@ -18,8 +18,7 @@ Download and processing instructions
    - Run cmorize_obs
 
 Modification history
-   20190627-A_crez_ba: added an extensive callback function to properly handle
-   time bnds
+   20190701-A_crez_ba: submitted PR
    20190430-A_crez_ba: started with cmorize_obs_Landschuetzer2016.py as an
    example to follow
 
@@ -37,9 +36,9 @@ from warnings import catch_warnings, filterwarnings
 import cf_units
 import iris
 import numpy as np
+from dask import array as da
 
-from .utilities import (fix_coords, fix_var_metadata,
-                        flip_dim_coord, save_variable,
+from .utilities import (fix_coords, fix_var_metadata, save_variable,
                         set_global_atts)
 
 logger = logging.getLogger(__name__)
@@ -119,7 +118,15 @@ def extract_variable(var_info, raw_info, out_dir, attrs, cfg):
             fix_time_coord_duveiller2018(cube)
             # Latitude has to be increasing so flip it
             # (this is not fixed in fix_coords)
-            flip_dim_coord(cube, 'latitude')
+            coord_name = 'latitude'
+            logger.info("Flipping dimensional coordinate (custom) %s...",
+                        coord_name)
+            coord = cube.coord(coord_name, dim_coords=True)
+            coord_idx = cube.coord_dims(coord)[0]
+            coord.points = np.flip(coord.points)
+            coord.bounds = np.flip(coord.bounds, axis=0)
+            coord.bounds = np.flip(coord.bounds, axis=1)
+            cube.data = da.flip(cube.core_data(), axis=coord_idx)
             # Global attributes
             set_global_atts(cube, attrs)
             save_variable(cube, var, out_dir, attrs, local_keys=['positive'])
