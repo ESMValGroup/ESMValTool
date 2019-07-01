@@ -29,7 +29,6 @@ Caveats
    conventions.
 """
 
-import calendar
 import datetime
 import logging
 import os
@@ -60,12 +59,13 @@ def fix_time_coord_duveiller2018(cube):
     # corresponding to correct time and time_bnds
     for i in range(custom_time_bounds.shape[0]):
         n_month = i + 1  # we start with month number 1, at position 0
-        ndays_in_month = calendar.monthrange(2010, n_month)[1] # Start with bounds
+        # Start with time_bnds
         time_bnd_a = datetime.datetime(2010, n_month, 1)
         if n_month == 12:
             time_bnd_b = datetime.datetime(2011, 1, 1)
         else:
-            time_bnd_b = datetime.datetime(2010, n_month+1, 1)
+            time_bnd_b = datetime.datetime(2010, n_month + 1, 1)
+        # Get time 'point' from midpoint between bnd_a and bnd_b
         time_midpoint = time_bnd_a + 0.5 * (time_bnd_b - time_bnd_a)
         custom_time_bounds[n_month - 1, 0] = time_bnd_a
         custom_time_bounds[n_month - 1, 1] = time_bnd_b
