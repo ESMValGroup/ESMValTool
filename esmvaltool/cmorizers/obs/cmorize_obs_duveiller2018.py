@@ -11,12 +11,18 @@ Last access
    20190430
 
 Download and processing instructions
-   Download the dataset albedo_IGBPgen.nc
+   - Download the dataset albedo_IGBPgen.nc and save in the right directory according to 
+   ESMValTool practices. 
+   - Complete the CMOR-config specifications
+
 
 Modification history
    20190627-A_crez_ba: added an extensive callback function to properly handle time bnds
    20190430-A_crez_ba: started with cmorize_obs_Landschuetzer2016.py as an example to follow
 
+Caveats
+   Please be aware that the selected vegetation transition code is not written to the filename,
+   since this would break naming conventions at the moment.
 """
 
 import calendar
@@ -85,7 +91,6 @@ def extract_variable(var_info, raw_info, out_dir, attrs, cfg):
         cubes = iris.load(raw_info['file'],
                           callback=duveiller2018_callback_function)
     rawvar = raw_info['name']
-    print(cubes)
     for cube in cubes:
         if cube.var_name == rawvar:
             # Extracting a certain vegetation transition code
@@ -103,7 +108,7 @@ def extract_variable(var_info, raw_info, out_dir, attrs, cfg):
             fix_var_metadata(cube, var_info)
             # Fix coords
             fix_coords(cube)
-            # Latitude has to be increasing (not fixed in fix_coords), so flip it
+            # Latitude has to be increasing (this is not fixed in fix_coords), so flip it
             flip_dim_coord(cube, 'latitude')
             # Global attributes
             set_global_atts(cube, attrs)
