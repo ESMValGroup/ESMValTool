@@ -20,7 +20,7 @@ variables:
   vsi:
     mip: day
 
-start_year: 1993
+start_year: 1979
 end_year : 2018
 # An areacello file for EASE grid
 reference_file: /home/Earth/jvegas/OBS_NSIDC-0116-nh_reanaly_4.1_fx_areacello.nc

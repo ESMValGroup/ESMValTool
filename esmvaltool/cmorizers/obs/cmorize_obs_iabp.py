@@ -1,8 +1,7 @@
 """ESMValTool CMORizer for IABP data.
 
 Tier
-    Tier 2: restricted dataset.
-
+    Tier 2: other freely available dataset
 Source
     http://iabp.apl.washington.edu/
 
@@ -10,7 +9,13 @@ Last access
     20190627
 
 Download and processing instructions
-    Download the full http://iabp.apl.washington.edu/Data_Products/D/ folder
+
+    Buoy data in EASE grid is made available trough NSIDC-0116 input data
+
+    Download the full https://daacdata.apps.nsidc.org/pub/DATASETS/nsidc0116_icemotion_vectors_v4/north/input_sources/buoy/ folder
+
+    Free login is required and instruction for bulk data download are located here:
+    https://nsidc.org/support/faq/what-options-are-available-bulk-downloading-data-https-earthdata-login-enabled
 
 """
 
