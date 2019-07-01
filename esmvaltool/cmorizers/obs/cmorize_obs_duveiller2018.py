@@ -11,18 +11,22 @@ Last access
    20190430
 
 Download and processing instructions
-   - Download the dataset albedo_IGBPgen.nc and save in the right directory according to 
-   ESMValTool practices. 
-   - Complete the CMOR-config specifications (see instructions in the file itself)
+   - Download the dataset albedo_IGBPgen.nc and save in the right directory
+     according to ESMValTool practices.
+   - Complete the CMOR-config specifications (see instructions in the file
+     itself)
    - Run cmorize_obs
 
 Modification history
-   20190627-A_crez_ba: added an extensive callback function to properly handle time bnds
-   20190430-A_crez_ba: started with cmorize_obs_Landschuetzer2016.py as an example to follow
+   20190627-A_crez_ba: added an extensive callback function to properly handle
+   time bnds
+   20190430-A_crez_ba: started with cmorize_obs_Landschuetzer2016.py as an
+   example to follow
 
 Caveats
-   Please be aware that the selected vegetation transition code is not written to the filename,
-   since this would break naming conventions at the moment.
+   Please be aware that the selected vegetation transition code is not written
+   to the filename, since this would break the ESMValTool file naming
+   conventions.
 """
 
 import calendar
@@ -34,16 +38,20 @@ from warnings import catch_warnings, filterwarnings
 import cf_units
 import iris
 import numpy as np
-from dask import array as da
 
-from .utilities import (constant_metadata, convert_timeunits, fix_coords,
-                        fix_var_metadata, flip_dim_coord, read_cmor_config,
-                        save_variable, set_global_atts)
+from .utilities import (fix_coords, fix_var_metadata,
+                        flip_dim_coord, save_variable,
+                        set_global_atts)
 
 logger = logging.getLogger(__name__)
 
 
 def duveiller2018_callback_function(cube, field, filename):
+    """Dataset specific callback function.
+
+    This is a dataset specific callback function that deals with correct
+    handling of the time axis and time_bnds
+    """
     # Rename 'Month' to 'time'
     cube.coord('Month').rename('time')
 
@@ -52,7 +60,8 @@ def duveiller2018_callback_function(cube, field, filename):
     custom_time_bounds = np.empty((12, 2), dtype=object)
     custom_time_units = 'days since 1950-01-01'
 
-    # Now fill the object arrays defined above with datetime objects corresponding to correct time and time_bnds
+    # Now fill the object arrays defined above with datetime objects
+    # corresponding to correct time and time_bnds
     for i in range(custom_time_bounds.shape[0]):
         n_month = i + 1  # we start with month number 1, at position 0
         weekday, ndays_in_month = calendar.monthrange(
@@ -95,20 +104,22 @@ def extract_variable(var_info, raw_info, out_dir, attrs, cfg):
         if cube.var_name == rawvar:
             # Extracting a certain vegetation transition code
             # Read iTr parameter from the cfg
-            iTr = cfg['parameters']['iTr']
-            iTr_index = np.where(
+            itr = cfg['parameters']['iTr']
+            itr_index = np.where(
                 cube.coords('Vegetation transition code')[0].points ==
-                iTr)[0][0]
-            cube = cube[iTr_index, :, :, :]
-            # Add the vegetation transition code as an attribute to keep it on the file
-            cube.attributes['Vegetation transition code'] = iTr
-            # Remove it as a coordinate, since it is not allowed as a CMOR coordinate
+                itr)[0][0]
+            cube = cube[itr_index, :, :, :]
+            # Add the vegetation transition code as an attribute
+            cube.attributes['Vegetation transition code'] = itr
+            # Remove it as a coordinate, since otherwise it would
+            # violate CMOR standards
             cube.remove_coord('Vegetation transition code')
             # Fix metadata
             fix_var_metadata(cube, var_info)
             # Fix coords
             fix_coords(cube)
-            # Latitude has to be increasing (this is not fixed in fix_coords), so flip it
+            # Latitude has to be increasing so flip it
+            # (this is not fixed in fix_coords)
             flip_dim_coord(cube, 'latitude')
             # Global attributes
             set_global_atts(cube, attrs)
