@@ -52,6 +52,10 @@ def duveiller2018_callback_function(cube, field, filename):
     This is a dataset specific callback function that deals with correct
     handling of the time axis and time_bnds
     """
+    # First deal with unused filename variable (this is needed by Iris, 
+    # but codacy will complain if it is not used.
+    dummy = filename
+
     # Rename 'Month' to 'time'
     cube.coord('Month').rename('time')
 
@@ -64,7 +68,7 @@ def duveiller2018_callback_function(cube, field, filename):
     # corresponding to correct time and time_bnds
     for i in range(custom_time_bounds.shape[0]):
         n_month = i + 1  # we start with month number 1, at position 0
-        weekday, ndays_in_month = calendar.monthrange(
+        dummy_weekday, ndays_in_month = calendar.monthrange(
             2010, n_month)  # Start with bounds
         time_bnd_a = datetime.datetime(2010, n_month, 1)
         time_bnd_b = datetime.datetime(2010, n_month, ndays_in_month)
