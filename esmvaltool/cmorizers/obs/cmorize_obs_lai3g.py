@@ -22,7 +22,7 @@ Download and processing instructions
 
 """
 
-import fnmatch
+import glob
 import logging
 import os
 import shutil
@@ -82,39 +82,8 @@ def _extract_variable(cmor_info, attrs, in_dir, out_dir, cfg):
     """Extract variable."""
     nc_files = []
     for year in _get_years(in_dir, cfg):
-        logger.info("Processing year %i", year)
-        bin_files = fnmatch.filter(os.listdir(in_dir),
-                                   f"{cfg['binary_prefix']}{year}*.bin")
-
-        # Read files of one year
-        cubes = iris.cube.CubeList()
-        for bin_file in bin_files:
-            raw_data = np.fromfile(os.path.join(in_dir, bin_file), DTYPE,
-                                   N_LAT * N_LON).reshape(1, N_LAT, N_LON)
-            raw_data = np.ma.masked_equal(raw_data, MISSING_VALUE)
-            raw_data = raw_data.astype(np.float32)
-            raw_data /= SCALE_FACTOR
-
-            # Build coordinates and cube, regrid, and append it
-            cube = iris.cube.Cube(raw_data,
-                                  dim_coords_and_dims=_get_coords(
-                                      year, bin_file, cfg))
-            if cfg.get('regrid'):
-                cube = regrid(cube, cfg['regrid']['target_grid'],
-                              cfg['regrid']['scheme'])
-            cubes.append(cube)
-
-        # Build cube for single year with monthly data
-        # (Raw data has two values per month)
-        cube = cubes.concatenate_cube()
-        iris.coord_categorisation.add_month_number(cube, 'time')
-        cube = cube.aggregated_by('month_number', iris.analysis.MEAN)
-
-        # Cache cube on disk to save memory
-        cached_path = os.path.join(in_dir, f'{year}.nc')
-        iris.save(cube, cached_path)
-        logger.info("Cached %s", cached_path)
-        nc_files.append(cached_path)
+        cube_path = _get_cube_for_year(year, in_dir, cfg)
+        nc_files.append(cube_path)
 
     # Build final cube
     logger.info("Building final cube")
@@ -138,6 +107,7 @@ def _extract_variable(cmor_info, attrs, in_dir, out_dir, cfg):
 
 def _get_coords(year, filename, cfg):
     """Get correct coordinates for cube."""
+    filename = os.path.basename(filename)
     time_units = Unit('days since 1950-1-1 00:00:00', calendar='standard')
 
     # Extract date from filename
@@ -171,12 +141,48 @@ def _get_coords(year, filename, cfg):
     return [(time_coord, 0), (lat_coord, 1), (lon_coord, 2)]
 
 
+def _get_cube_for_year(year, in_dir, cfg):
+    """Exract cube containing one year from raw file."""
+    logger.info("Processing year %i", year)
+    bin_files = glob.glob(
+        os.path.join(in_dir, f"{cfg['binary_prefix']}{year}*.bin"))
+
+    # Read files of one year
+    cubes = iris.cube.CubeList()
+    for bin_file in bin_files:
+        raw_data = np.fromfile(bin_file, DTYPE,
+                               N_LAT * N_LON).reshape(1, N_LAT, N_LON)
+        raw_data = np.ma.masked_equal(raw_data, MISSING_VALUE)
+        raw_data = raw_data.astype(np.float32)
+        raw_data /= SCALE_FACTOR
+
+        # Build coordinates and cube, regrid, and append it
+        coords = _get_coords(year, bin_file, cfg)
+        cube = iris.cube.Cube(raw_data, dim_coords_and_dims=coords)
+        if cfg.get('regrid'):
+            cube = regrid(cube, cfg['regrid']['target_grid'],
+                          cfg['regrid']['scheme'])
+        cubes.append(cube)
+
+    # Build cube for single year with monthly data
+    # (Raw data has two values per month)
+    cube = cubes.concatenate_cube()
+    iris.coord_categorisation.add_month_number(cube, 'time')
+    cube = cube.aggregated_by('month_number', iris.analysis.MEAN)
+
+    # Cache cube on disk to save memory
+    cached_path = os.path.join(in_dir, f'{year}.nc')
+    iris.save(cube, cached_path)
+    logger.info("Cached %s", cached_path)
+    return cached_path
+
+
 def _get_years(in_dir, cfg):
     """Get all available years from input directory."""
     bin_files = os.listdir(in_dir)
     bin_files = [f.replace(cfg['binary_prefix'], '') for f in bin_files]
-    years = [int(f[:4]) for f in bin_files]
-    return list(set(years))
+    years = {int(f[:4]) for f in bin_files}
+    return years
 
 
 def _unzip(filepath, out_dir):
