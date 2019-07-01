@@ -94,11 +94,39 @@ class SeaIceDrift(object):
                 self.datasets.get_info('reference_dataset', filename)
             )
             alias = self._get_alias(filename, reference_dataset)
-            sispeed = self._load_cube(filename, 'sea_ice_speed')
-            sispeed.convert_units('km day-1')
-            self.sispeed[alias] = self._compute_mean(
-                sispeed, self._get_mask(sispeed, filename)
-            )
+            obs_file = self.cfg.get('sispeed_obs', '')
+            if obs_file:
+                obs_data = np.load(obs_file)
+                logger.debug(obs_data)
+                sispeed = iris.cube.Cube(
+                    obs_data,
+                    'sea_ice_speed',
+                    units='km day-1'
+                )
+                sispeed.add_dim_coord(
+                    iris.coords.DimCoord(
+                        range(1, 13), var_name='month_number'
+                    ),
+                    0
+                )
+                sispeed.add_dim_coord(
+                    iris.coords.DimCoord(
+                        range(1979, 1979 + 35), var_name='year'
+                    ),
+                    1
+                )
+                sispeed.extract(
+                    iris.Constraint(year= lambda c: 1979 <= c <= 2005)
+                )
+                sispeed = sispeed.collapsed('year', iris.analysis.MEAN)
+                logger.debug(sispeed)
+                self.sispeed[alias] = sispeed
+            else:
+                sispeed = self._load_cube(filename, 'sea_ice_speed')
+                sispeed.convert_units('km day-1')
+                self.sispeed[alias] = self._compute_mean(
+                    sispeed, self._get_mask(sispeed, filename)
+                )
 
         self.compute_metrics()
         self.results()

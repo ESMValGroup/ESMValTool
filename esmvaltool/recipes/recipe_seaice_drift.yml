@@ -86,3 +86,4 @@ diagnostics:
           - [33, 83.8]
           - [8, 84.08]
         polygon_name: SCICEX
+        sispeed_obs: /home/users/jvegas/drift_iabp.npy
