@@ -13,8 +13,8 @@ Last access
 Download and processing instructions
    - Download the dataset albedo_IGBPgen.nc and save in the right directory according to 
    ESMValTool practices. 
-   - Complete the CMOR-config specifications
-
+   - Complete the CMOR-config specifications (see instructions in the file itself)
+   - Run cmorize_obs
 
 Modification history
    20190627-A_crez_ba: added an extensive callback function to properly handle time bnds
