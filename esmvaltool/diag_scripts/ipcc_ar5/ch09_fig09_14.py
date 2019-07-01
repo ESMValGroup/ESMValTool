@@ -76,9 +76,7 @@ DEGREE_SYMBOL = u'\u00B0'
 
 
 def _fix_lons(lons):
-    """
-    Fix the given longitudes into the range ``[-180, 180]``.
-    """
+    """Fix the given longitudes into the range ``[-180, 180]``."""
     lons = np.array(lons, copy=False, ndmin=1)
     fixed_lons = ((lons + 180) % 360) - 180
     # Make the positive 180s positive again.
@@ -89,7 +87,7 @@ def _fix_lons(lons):
 def _lon_heimisphere(longitude):
     """Return the hemisphere (E, W or '' for 0) for the given longitude."""
     longitude = _fix_lons(longitude)
-    if longitude == 0 or longitude == 180:
+    if longitude in (0, 180):
         hemisphere = ''
     elif longitude > 0:
         hemisphere = 'E'
@@ -137,15 +135,13 @@ LATITUDE_FORMATTER = mticker.FuncFormatter(lambda v, pos:
 CM_PER_INCH = 2.54
 
 
-def cm_to_inch(cm):
-    return cm/CM_PER_INCH
-
-
-def inch_to_cm(inch):
-    return inch*CM_PER_INCH
+def cm_to_inch(cms):
+    """Convert cm to inch."""
+    return cms / CM_PER_INCH
 
 
 def calc_error(data, reference=None):
+    """Calculate the error against a reference."""
     if reference is None:
         return None
     error = data - reference
@@ -158,35 +154,46 @@ def calc_error(data, reference=None):
 
 
 def multi_model_merge(cubes):
+    """
+    Merge cubes of different models into one cube.
+
+    This merges cubes from different models/datsets into one big cube
+    by promoting the cmip model_id attribute to a scalar coordinate and then
+    performing a merge along that coordinate. Conflicting attributes and
+    coordinates are simply removed.
+    """
     def promote_model_name(cube):
-        nc = cube.copy()
-        model_name = nc.attributes['model_id']
+        """Promote model_id attribute to scalar variable."""
+        new_cube = cube.copy()
+        model_name = new_cube.attributes['model_id']
         coord = iris.coords.AuxCoord(np.array([model_name]),
                                      standard_name=None,
                                      units='no_unit',
                                      long_name=u'model',
                                      var_name='model')
-        nc.add_aux_coord(coord)
-        return nc
-    cl = iris.cube.CubeList([promote_model_name(m) for m in cubes])
-    equalise_attributes(cl)
-    for c in cl:
-        c.cell_methods = tuple()
-        for co in ['day_of_month', 'month_number', 'year']:
+        new_cube.add_aux_coord(coord)
+        return new_cube
+    cube_list = iris.cube.CubeList([promote_model_name(m) for m in cubes])
+    equalise_attributes(cube_list)
+    for cube in cube_list:
+        cube.cell_methods = tuple()
+        for coord in ['day_of_month', 'month_number', 'year']:
             try:
-                c.remove_coord(co)
+                cube.remove_coord(coord)
             except CoordinateNotFoundError:
                 pass
-    return cl.merge_cube()
+    return cube_list.merge_cube()
 
 
 def load_data(config):
+    """Load cubes into config dict."""
     for key in config['input_data'].keys():
-        fn = config['input_data'][key]['filename']
-        config['input_data'][key]['cube'] = iris.load_cube(fn)
+        filename = config['input_data'][key]['filename']
+        config['input_data'][key]['cube'] = iris.load_cube(filename)
 
 
 def prepare_reference(group):
+    """Prepare reference cube and remove from the group."""
     ref_name = group[0]['reference_dataset']
     reference_candidates = [ds for ds in group if ds['dataset'] == ref_name]
     assert len(reference_candidates) == 1
@@ -196,12 +203,14 @@ def prepare_reference(group):
 
 
 def mask_equatorial(equ):
+    """Mask out Indonesian island area."""
     lon = equ.coord('longitude').points
-    equ.data.mask[np.logical_and(98. <= lon, lon <= 121.)] = True
+    equ.data.mask[np.logical_and(lon >= 98., lon <= 121.)] = True
     return equ
 
 
 def prepare_data(config):
+    """Perform data calculations."""
     groups = group_metadata(config['input_data'].values(), 'variable_group')
     zm_g = groups["tos_zm"]
     zm_ref = prepare_reference(zm_g)['cube']
@@ -210,138 +219,157 @@ def prepare_data(config):
     eq_ref = mask_equatorial(prepare_reference(eq_g)['cube'])
     eqs = [mask_equatorial(ds['cube']) for ds in eq_g]
     eq_errors = [calc_error(eq, eq_ref) for eq in eqs]
-    return (zm_errors, eqs, eq_ref, eq_errors)
+    data = {
+        'zonal_mean_errors': zm_errors,
+        'equatorials': eqs,
+        'equatorial_ref': eq_ref,
+        'equatorial_errors': eq_errors,
+    }
+    return data
 
 
 def setup_figure():
+    """Setup basic figure."""
     fig = plt.figure(figsize=(cm_to_inch(18), cm_to_inch(15)))
-    ax = np.array(
+    axes = np.array(
         [[fig.add_axes([0.10, 0.56, 0.30, 0.35]),
           fig.add_axes([0.50, 0.56, 0.30, 0.35])],
          [fig.add_axes([0.10, 0.10, 0.30, 0.35]),
           fig.add_axes([0.50, 0.10, 0.30, 0.35])]]
     )
-    return fig, ax
+    return fig, axes
 
 
-def plot_zonal_mean_errors_ensemble(ax, zonal_mean_errors, ref_line_style):
-    ax.set_title('(a) Zonal mean SST error CMIP5')
-    ax.yaxis.set_label_text(u'SST error (°C)')
-    ax.yaxis.set_minor_locator(MultipleLocator(.5))
-    ax.xaxis.set_minor_locator(MultipleLocator(10))
-    ax.xaxis.set_major_locator(MultipleLocator(30))
-    ax.yaxis.set_major_locator(MultipleLocator(2))
-    ax.xaxis.set_major_formatter(LATITUDE_FORMATTER)
-    ax.set_ylim(-5., 5.)
-    ax.set_xlim(-90., 90.)
-    ax.tick_params(which='both', direction='in')
-    ax.xaxis.set_label_text(u'Latitude')
-    ls = []
+def plot_zonal_mean_errors_ensemble(axes, zonal_mean_errors, ref_line_style):
+    """Plot zonal mean error plot (subfigure a)."""
+    axes.set_title('(a) Zonal mean SST error CMIP5')
+    axes.yaxis.set_label_text(u'SST error (°C)')
+    axes.yaxis.set_minor_locator(MultipleLocator(.5))
+    axes.xaxis.set_minor_locator(MultipleLocator(10))
+    axes.xaxis.set_major_locator(MultipleLocator(30))
+    axes.yaxis.set_major_locator(MultipleLocator(2))
+    axes.xaxis.set_major_formatter(LATITUDE_FORMATTER)
+    axes.set_ylim(-5., 5.)
+    axes.set_xlim(-90., 90.)
+    axes.tick_params(which='both', direction='in')
+    axes.xaxis.set_label_text(u'Latitude')
+    lines = []
     labels = []
-    cl = multi_model_merge(zonal_mean_errors)
-    for e in zonal_mean_errors:
-        ls.append(iplt.plot(e, axes=ax)[0])
-        labels.append(e.attributes['model_id'])
-    ensemble_mean = cl.collapsed('model', iris.analysis.MEAN)
-    m = iplt.plot(ensemble_mean, axes=ax, **ref_line_style)[0]
-    ls = [m] + ls
+    cube_list = multi_model_merge(zonal_mean_errors)
+    for error in zonal_mean_errors:
+        lines.append(iplt.plot(error, axes=axes)[0])
+        labels.append(error.attributes['model_id'])
+    ensemble_mean = cube_list.collapsed('model', iris.analysis.MEAN)
+    mean_line = iplt.plot(ensemble_mean, axes=axes, **ref_line_style)[0]
+    lines = [mean_line] + lines
     labels = ['CMIP5 mean'] + labels
-    return (ls, labels)
+    return (lines, labels)
 
 
-def plot_equatorial_errors(ax, equatorial_errors, ref_line_style):
-    ax.set_title('(b) Equatorial SST error CMIP5')
-    ax.yaxis.set_label_text(u'SST error (°C)')
-    ax.yaxis.set_minor_locator(MultipleLocator(.5))
-    ax.xaxis.set_minor_locator(MultipleLocator(30))
-    ax.xaxis.set_major_locator(MultipleLocator(60))
-    ax.yaxis.set_major_locator(MultipleLocator(2))
-    ax.xaxis.set_major_formatter(LONGITUDE_FORMATTER)
-    ax.set_ylim(-5., 5.)
-    ax.set_xlim(25., 360.)
-    ax.tick_params(which='both', direction='in')
-    ax.xaxis.set_label_text(u'Longitude')
-    for e in equatorial_errors:
-        iplt.plot(e, label=e.attributes['model_id'], axes=ax)
-    cl = multi_model_merge(equatorial_errors)
-    ensemble_mean = cl.collapsed('model', iris.analysis.MEAN)
-    iplt.plot(ensemble_mean, label='CMIP5 mean', axes=ax, **ref_line_style)
+def plot_equatorial_errors(axes, equatorial_errors, ref_line_style):
+    """Plot equatorial errors (subfigure b)."""
+    axes.set_title('(b) Equatorial SST error CMIP5')
+    axes.yaxis.set_label_text(u'SST error (°C)')
+    axes.yaxis.set_minor_locator(MultipleLocator(.5))
+    axes.xaxis.set_minor_locator(MultipleLocator(30))
+    axes.xaxis.set_major_locator(MultipleLocator(60))
+    axes.yaxis.set_major_locator(MultipleLocator(2))
+    axes.xaxis.set_major_formatter(LONGITUDE_FORMATTER)
+    axes.set_ylim(-5., 5.)
+    axes.set_xlim(25., 360.)
+    axes.tick_params(which='both', direction='in')
+    axes.xaxis.set_label_text(u'Longitude')
+    for error in equatorial_errors:
+        iplt.plot(error, label=error.attributes['model_id'], axes=axes)
+    cube_list = multi_model_merge(equatorial_errors)
+    ensemble_mean = cube_list.collapsed('model', iris.analysis.MEAN)
+    iplt.plot(ensemble_mean, label='CMIP5 mean', axes=axes, **ref_line_style)
 
 
-def plot_zonal_mean_errors_comparison(ax, zonal_mean_errors, ref_line_style):
-    ax.set_title('(c) Zonal mean SST error CMIP5')
-    ax.yaxis.set_label_text(u'SST error (°C)')
-    ax.yaxis.set_minor_locator(MultipleLocator(.5))
-    ax.xaxis.set_minor_locator(MultipleLocator(10))
-    ax.xaxis.set_major_locator(MultipleLocator(30))
-    ax.yaxis.set_major_locator(MultipleLocator(2))
-    ax.xaxis.set_major_formatter(LATITUDE_FORMATTER)
-    ax.set_ylim(-5., 5.)
-    ax.set_xlim(-90., 90.)
-    ax.tick_params(which='both', direction='in')
-    ax.xaxis.set_label_text(u'Latitude')
+def plot_zonal_mean_errors_project(axes, zonal_mean_errors, ref_line_style):
+    """Plot zonal error multi model mean (subfigure c)."""
+    axes.set_title('(c) Zonal mean SST error CMIP5')
+    axes.yaxis.set_label_text(u'SST error (°C)')
+    axes.yaxis.set_minor_locator(MultipleLocator(.5))
+    axes.xaxis.set_minor_locator(MultipleLocator(10))
+    axes.xaxis.set_major_locator(MultipleLocator(30))
+    axes.yaxis.set_major_locator(MultipleLocator(2))
+    axes.xaxis.set_major_formatter(LATITUDE_FORMATTER)
+    axes.set_ylim(-5., 5.)
+    axes.set_xlim(-90., 90.)
+    axes.tick_params(which='both', direction='in')
+    axes.xaxis.set_label_text(u'Latitude')
     lat = zonal_mean_errors[0].coord('latitude').points
     data = np.ma.vstack([m.data for m in zonal_mean_errors])
     std = data.std(axis=0)
     avg = data.mean(axis=0)
-    ax.fill_between(lat, avg-std, avg+std, alpha=.5)
-    ax.plot(lat, avg, **ref_line_style)
+    axes.fill_between(lat, avg - std, avg + std, alpha=.5)
+    axes.plot(lat, avg, **ref_line_style)
 
 
-def plot_equatorials(ax, reference, equatorials, ref_line_style):
-    ax.set_title('(d) Equatorial SST CMIP5')
-    ax.yaxis.set_label_text(u'SST (°C)')
-    ax.yaxis.set_minor_locator(MultipleLocator(.5))
-    ax.xaxis.set_minor_locator(MultipleLocator(30))
-    ax.xaxis.set_major_locator(MultipleLocator(60))
-    ax.yaxis.set_major_locator(MultipleLocator(2))
-    ax.xaxis.set_major_formatter(LONGITUDE_FORMATTER)
-    ax.set_ylim(22., 31.)
-    ax.set_xlim(25., 360.)
-    ax.tick_params(which='both', direction='in')
-    ax.xaxis.set_label_text(u'Longitude')
+def plot_equatorials(axes, reference, equatorials, ref_line_style):
+    """Plot equatorial multi model mean (subfigure d)."""
+    axes.set_title('(d) Equatorial SST CMIP5')
+    axes.yaxis.set_label_text(u'SST (°C)')
+    axes.yaxis.set_minor_locator(MultipleLocator(.5))
+    axes.xaxis.set_minor_locator(MultipleLocator(30))
+    axes.xaxis.set_major_locator(MultipleLocator(60))
+    axes.yaxis.set_major_locator(MultipleLocator(2))
+    axes.xaxis.set_major_formatter(LONGITUDE_FORMATTER)
+    axes.set_ylim(22., 31.)
+    axes.set_xlim(25., 360.)
+    axes.tick_params(which='both', direction='in')
+    axes.xaxis.set_label_text(u'Longitude')
     lon = reference.coord('longitude').points
     data = np.ma.vstack([m.data for m in equatorials[1:]])
     std = data.std(axis=0)
     avg = data.mean(axis=0)
-    ax.fill_between(lon, avg-std, avg+std, alpha=.5)
-    ax.plot(lon, avg, **ref_line_style)
-    ls = ax.plot(lon, reference.data, 'k', **ref_line_style)
-    return (ls, ['HadISST'])
+    axes.fill_between(lon, avg - std, avg + std, alpha=.5)
+    axes.plot(lon, avg, **ref_line_style)
+    lines = axes.plot(lon, reference.data, 'k', **ref_line_style)
+    return (lines, ['HadISST'])
 
 
-def draw_legend(fig, ls, labels):
-    return fig.legend(ls, labels,
+def draw_legend(fig, lines, labels):
+    """Draw the legend."""
+    return fig.legend(lines, labels,
                       loc='upper left',
                       fontsize=7.,
                       bbox_to_anchor=(.81, .92))
 
 
 def produce_plots(config, data):
-    (zonal_mean_errors,
-     equatorials,
-     equatorial_ref,
-     equatorial_errors) = data
+    """Produce all elements of the full plot."""
     ref_line_style = {'linestyle': '-', 'linewidth': 2.}
-    fig, ax = setup_figure()
-    ls, labels = plot_zonal_mean_errors_ensemble(ax[0, 0],
-                                                 zonal_mean_errors,
-                                                 ref_line_style)
-    plot_equatorial_errors(ax[0, 1], equatorial_errors, ref_line_style)
-    plot_zonal_mean_errors_comparison(ax[1, 0],
-                                      zonal_mean_errors, ref_line_style)
-    ref_ls, ref_labels = plot_equatorials(ax[1, 1], equatorial_ref,
-                                          equatorials, ref_line_style)
-    ls = ref_ls + ls
-    labels = ref_labels + labels
-    legend = draw_legend(fig, ls, labels)
+    fig, axes = setup_figure()
+    lines, labels = plot_zonal_mean_errors_ensemble(
+        axes[0, 0],
+        data['zonal_mean_errors'],
+        ref_line_style)
+    plot_equatorial_errors(axes[0, 1],
+                           data['equatorial_errors'],
+                           ref_line_style)
+    plot_zonal_mean_errors_project(axes[1, 0],
+                                   data['zonal_mean_errors'],
+                                   ref_line_style)
+    ref_ls, ref_labels = plot_equatorials(axes[1, 1],
+                                          data['equatorial_ref'],
+                                          data['equatorials'],
+                                          ref_line_style)
+    all_lines = ref_ls + lines
+    all_labels = ref_labels + labels
+    legend = draw_legend(fig, all_lines, all_labels)
     path = get_plot_filename('ch09_fig09_14', config)
     fig.savefig(path, additional_artists=[legend], tight_layout=True)
     return path
 
 
 def write_data(config, data):
-    cubes = iris.cube.CubeList([data[2]]+data[0]+data[1]+data[3])
+    """Write all the calculated data to output file."""
+    cubes = iris.cube.CubeList([data['equatorial_ref']]
+                               + data['zonal_mean_errors']
+                               + data['equatorials']
+                               + data['equatorial_errors'])
     path = get_diagnostic_filename('ch09_fig09_14', config)
     iris.save(cubes, path)
     return path
@@ -349,6 +377,8 @@ def write_data(config, data):
 
 def main(config):
     """
+    Run sst zonal mean and equatorial errors diagnostic.
+
     Arguments
         config: Dictionary containing project information
 
@@ -369,5 +399,5 @@ def main(config):
 
 
 if __name__ == '__main__':
-    with run_diagnostic() as config:
-        main(config)
+    with run_diagnostic() as cfg:
+        main(cfg)
