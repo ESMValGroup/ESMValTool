@@ -59,7 +59,7 @@ diagnostics:
         force_derivation: false
         fx_files: [areacello]
         additional_datasets:
-          - {dataset: IABP, project: OBS, type: buoy, version: 1,
+          - {dataset: IABP, project: OBS, type: buoy, version: v4.1,
              mip: day, tier: 2,
              start_year: 1979,  end_year: 2000}
     scripts:
