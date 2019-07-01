@@ -89,13 +89,13 @@ class SeaIceDrift(object):
         logger.info('Load sea ice velocities')
         sispeed_files = self.datasets.get_path_list(
             standard_name='sea_ice_speed')
+        obs_file = self.cfg.get('sispeed_obs', '')
         for filename in sispeed_files:
             reference_dataset = self._get_reference_dataset(
                 self.datasets.get_info('reference_dataset', filename)
             )
             alias = self._get_alias(filename, reference_dataset)
-            obs_file = self.cfg.get('sispeed_obs', '')
-            if obs_file:
+            if obs_file and alias == 'reference':
                 obs_data = np.load(obs_file)
                 logger.debug(obs_data)
                 sispeed = iris.cube.Cube(
