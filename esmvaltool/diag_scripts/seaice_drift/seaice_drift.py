@@ -96,6 +96,7 @@ class SeaIceDrift(object):
             alias = self._get_alias(filename, reference_dataset)
             if obs_file and alias == 'reference':
                 obs_data = np.load(obs_file)
+                obs_data = obs_data.reshape((12, 35))
                 logger.debug(obs_data)
                 sispeed = iris.cube.Cube(
                     obs_data,
