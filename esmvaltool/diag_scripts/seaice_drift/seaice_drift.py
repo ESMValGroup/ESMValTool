@@ -3,7 +3,6 @@ import os
 import logging
 import math
 import csv
-import calendar
 import warnings
 
 import numpy as np
@@ -484,7 +483,7 @@ class SeaIceDrift(object):
 
     def _annotate_points(self, ax, xvalues, yvalues):
         for x, y, z in zip(xvalues, yvalues, range(1, 12 + 1)):
-            ax.annotate(calendar.month_abbr[z][0], xy=(x, y), xytext=(10, 5),
+            ax.annotate(z[0], xy=(x, y), xytext=(10, 5),
                         ha='right', textcoords='offset points')
 
     def _get_plot_limits(self, sivol, sivol_obs, step=0.55):
