@@ -52,9 +52,10 @@ def duveiller2018_callback_function(cube, field, filename):
     This is a dataset specific callback function that deals with correct
     handling of the time axis and time_bnds
     """
-    # First deal with unused filename variable (this is needed by Iris, 
-    # but codacy will complain if it is not used.
-    dummy = filename
+    # First deal with unused filename variable (this is needed by Iris,
+    # but codacy will complain if it is not used, so simply put it here,
+    # but do nothing.)
+    filename
 
     # Rename 'Month' to 'time'
     cube.coord('Month').rename('time')
