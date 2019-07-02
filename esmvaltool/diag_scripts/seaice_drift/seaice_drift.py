@@ -420,8 +420,8 @@ class SeaIceDrift(object):
             'bo-',
             label=r'reference volume / speed ($s_h$=' +
                   str(np.round(slope_ratio_sivol, 1)) +
-                  r'; $\epsilon_h$=' +
-                  str(np.round(error_sivol, 1)) +
+                #   r'; $\epsilon_h$=' +
+                #   str(np.round(error_sivol, 1)) +
                   r'$\%$)',
             linewidth=2
         )
@@ -464,7 +464,7 @@ class SeaIceDrift(object):
             'bo',
             label=r'reference ($s_A$=' +
                   str(np.round(slope_ratio_siconc, 1)) +
-                  r'; $\epsilon_A$=' + str(np.round(error_siconc, 1)) +
+                #   r'; $\epsilon_A$=' + str(np.round(error_siconc, 1)) +
                   r'$\%$)'
         )
         ax.plot(siconc_obs, slope_siconc_obs * siconc_obs +
