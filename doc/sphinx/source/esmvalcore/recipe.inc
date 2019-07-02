@@ -103,7 +103,8 @@ multiple preprocessor functions:
         regrid:
           target_grid: 1x1
           scheme: linear
-        time_average:
+        climate_statistics:
+          operator: mean
         multi_model_statistics:
           span: overlap
           statistics: [mean ]
