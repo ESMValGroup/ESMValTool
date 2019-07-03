@@ -56,8 +56,6 @@ import iris.util
 import esmvaltool.diag_scripts.shared
 import esmvaltool.diag_scripts.shared.names as n
 import numpy as np
-from utilities import *
-from primavera_model_grids import *
 
 # R interface
 from rpy2.robjects import r as R
@@ -69,9 +67,12 @@ rpy2.robjects.numpy2ri.activate()
 R['options'](warn = -1)
 R('rm(list = ls())')
 
+
 logger = logging.getLogger(os.path.basename(__file__))
 
+
 class ExtremePrecipitation(object):
+
     def __init__(self, config):
         self.cfg = config
         self.filenames = esmvaltool.diag_scripts.shared.Datasets(self.cfg)
@@ -83,10 +84,10 @@ class ExtremePrecipitation(object):
         # --------------
         self.gev_par_sym = ['mu', 'sigma', 'xi']
         self.gev_par_name = dict(mu='location', sigma='scale', xi='shape')
-        self.r_period_name = np.array(r_period).astype(int).astype(str)
-        for r in range(len(r_period_name)):
-            r_period_name[r] = int()+'-year level'
-        self_period = rpy2.robjects.IntVector(r_period)
+        self.r_period_name = np.arrays(self.return_period).astype(int).astype(str)
+        for r in range(len(self.r_period_name)):
+            self.r_period_name[r] = int()+'-year level'
+        self.return_period = rpy2.robjects.IntVector(self.return_period)
 
     def compute(self):
         for filename in self.filenames:
@@ -114,26 +115,28 @@ class ExtremePrecipitation(object):
                         evdf = extRemes.fevd(bmax_ll,units = cube.units.origin)
                         if evdf.rx2('results').rx2('par').rx2('location')[0] > 0. and\
                            evdf.rx2('results').rx2('par').rx2('scale')[0] > 0.: # -ve mu/sigma invalid
-                            for par in gev_par_sym:
-                                val_ll = evdf.rx2('results').rx2('par').rx2(gev_par_name[par])[0]
+                            for par in self.gev_par_sym:
+                                val_ll = evdf.rx2('results').rx2('par').rx2(self.gev_par_name[par])[0]
                                 fevd[par][lat,cube] = val_ll
-                            r_level = extRemes.return_level(evdf, return_period=r_period,
+                            r_level = extRemes.return_level(evdf, return_period=self.return_period,
                                                             qcov=extRemes.make_qcov(evdf))
                             for r in range(len(r_level)):
-                                rl[r_period_name[r]][lat, lon] = r_level[r]
+                                rl[self.r_period_name[r]][lat, lon] = r_level[r]
 
             # Output results
-            results_subdir = os.path.join(results_dir,PROJECT,OUT,inst_n,
+            results_subdir = os.path.join(results_dir, PROJECT,OUT,inst_n,
                                           ENSEMBLE[inst][model],forcing,runID)
             if not os.path.exists(results_subdir):
                 os.makedirs(results_subdir)
-            for par in gev_par_sym:
+            for par in self.gev_par_sym:
                 par_cube = iris.cube.Cube(
                     fevd[par],
                     long_name=par,
                     units = cube.units.origin,
-                    dim_coords_and_dims = [(cube.coord('latitude'),0),
-                                           (cube.coord('longitude'),1)]
+                    dim_coords_and_dims = [
+                        (cube.coord('latitude'), 0),
+                        (cube.coord('longitude'), 1)
+                    ]
                 )
                 par_fn = '_'.join([ENSEMBLE[inst][model],forcing,runID,season,par,domain])
                 par_ffp = os.path.join(results_subdir,par_fn+frmt)
@@ -145,7 +148,7 @@ class ExtremePrecipitation(object):
                     dim_coords_and_dims = [(cube.coord('latitude'),0),
                                            (cube.coord('longitude'),1)]))
             rl_fn = '_'.join([ENSEMBLE[inst][model],forcing,runID,season,'rl',domain])
-            rl_ffp = os.path.join(results_subdir,rl_fn+frmt)
+            rl_ffp = os.path.join(self.cfg[n.WORK_DIR], rl_fn+frmt)
             print(' saving '+rl_fn)
             iris.save(rl_cubelist,rl_ffp)
 
