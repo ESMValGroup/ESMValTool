@@ -83,14 +83,19 @@ diagnostics:
         project: CMIP6
         additional_datasets:
           - {dataset: BCC-CSM2-MR,  ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1989}
+          - {dataset: CanESM5,      ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1989}
           - {dataset: CNRM-CM6-1,   ensemble: r1i1p1f2, grid: gr,  start_year: 1850, end_year: 1989}
+          # piControl missing
+          # - {dataset: CNRM-ESM2-1,  ensemble: r1i1p1f2, grid: gr,  start_year: 1850, end_year: 1989}
           - {dataset: CESM2,        ensemble: r1i1p1f1, grid: gn,  start_year:    1, end_year:  140}
           - {dataset: CESM2-WACCM,  ensemble: r1i1p1f1, grid: gn,  start_year:    1, end_year:  140}
+          - {dataset: GFDL-CM4,     ensemble: r1i1p1f1, grid: gr1, start_year:    1, end_year:  140}
           - {dataset: GISS-E2-1-G,  ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1989}
           - {dataset: GISS-E2-1-H,  ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1989}
           - {dataset: IPSL-CM6A-LR, ensemble: r1i1p1f1, grid: gr,  start_year: 1850, end_year: 1989}
           - {dataset: MIROC6,       ensemble: r1i1p1f1, grid: gn,  start_year: 3200, end_year: 3339}
           - {dataset: MRI-ESM2-0,   ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1989}
+          - {dataset: SAM0-UNICON,  ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1989}
           - {dataset: UKESM1-0-LL,  ensemble: r1i1p1f2, grid: gn,  start_year: 1850, end_year: 1989}
       piControl:
         <<: *variable_settings
@@ -98,14 +103,19 @@ diagnostics:
         exp: piControl
         additional_datasets:
           - {dataset: BCC-CSM2-MR,  ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1989}
+          - {dataset: CanESM5,      ensemble: r1i1p1f1, grid: gn,  start_year: 5201, end_year: 5340}
           - {dataset: CNRM-CM6-1,   ensemble: r1i1p1f2, grid: gr,  start_year: 1850, end_year: 1989}
+          # piControl missing
+          # - {dataset: CNRM-ESM2-1,  ensemble: r1i1p1f2, grid: gr,  start_year: 1850, end_year: 1989}
           - {dataset: CESM2,        ensemble: r1i1p1f1, grid: gn,  start_year:  501, end_year:  640}
           - {dataset: CESM2-WACCM,  ensemble: r1i1p1f1, grid: gn,  start_year:   70, end_year:  209}
+          - {dataset: GFDL-CM4,     ensemble: r1i1p1f1, grid: gr1, start_year:  151, end_year:  290}
           - {dataset: GISS-E2-1-G,  ensemble: r1i1p1f1, grid: gn,  start_year: 4150, end_year: 4289}
           - {dataset: GISS-E2-1-H,  ensemble: r1i1p1f1, grid: gn,  start_year: 3180, end_year: 3319}
           - {dataset: IPSL-CM6A-LR, ensemble: r1i1p1f1, grid: gr,  start_year: 1870, end_year: 2009}
           - {dataset: MIROC6,       ensemble: r1i1p1f1, grid: gn,  start_year: 3200, end_year: 3339}
           - {dataset: MRI-ESM2-0,   ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1989}
+          - {dataset: SAM0-UNICON,  ensemble: r1i1p1f1, grid: gn,  start_year:  274, end_year:  413}
           - {dataset: UKESM1-0-LL,  ensemble: r1i1p1f2, grid: gn,  start_year: 1960, end_year: 2099}
     scripts:
       tcr:

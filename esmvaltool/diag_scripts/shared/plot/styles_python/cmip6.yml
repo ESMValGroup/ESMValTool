@@ -38,21 +38,63 @@ BCC-CSM2-MR:
   facecolor: none
   mark: o
   thick: 1
-CNRM-CM6-1:
+CanESM5:
   avgstd: 0
   color: '#1e4c24'
   dash: --
   facecolor: none
   mark: s
   thick: 1
-GFDL-AM4:
+CNRM-CM6-1:
   avgstd: 0
-  color: '#23366d'
+  color: '#91d67e'
   dash: '-'
   facecolor: none
   mark: o
   thick: 1
+CNRM-ESM2-1:
+  avgstd: 0
+  color: '#1e4c24'
+  dash: --
+  facecolor: none
+  mark: s
+  thick: 1
+CESM2:
+  avgstd: 0
+  color: '#43b2d8'
+  dash: ':'
+  facecolor: none
+  mark: ^
+  thick: 1
+CESM2-WACCM:
+  avgstd: 0
+  color: '#43b2d8'
+  dash: -.
+  facecolor: none
+  mark: +
+  thick: 1
+GFDL-AM4:
+  avgstd: 0
+  color: '#23366d'
+  dash: ':'
+  facecolor: none
+  mark: ^
+  thick: 1
+GFDL-CM4:
+  avgstd: 0
+  color: '#23366d'
+  dash: --
+  facecolor: none
+  mark: s
+  thick: 1
 GISS-E2-1-G:
+  avgstd: 0
+  color: '#771d7b'
+  dash: ':'
+  facecolor: none
+  mark: ^
+  thick: 1
+GISS-E2-1-H:
   avgstd: 0
   color: '#771d7b'
   dash: '-'
@@ -93,6 +135,20 @@ MRI-ESM2-0:
   dash: --
   facecolor: none
   mark: ^
+  thick: 1
+SAM0-UNICON:
+  avgstd: 0
+  color: '#a1252c'
+  dash: '-'
+  facecolor: none
+  mark: +
+  thick: 1
+UKESM1-0-LL:
+  avgstd: 0
+  color: '#7a8b26'
+  dash: '-'
+  facecolor: none
+  mark: o
   thick: 1
 default:
   avgstd: 0
