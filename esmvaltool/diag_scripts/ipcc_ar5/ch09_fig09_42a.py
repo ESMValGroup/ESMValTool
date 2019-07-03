@@ -27,6 +27,9 @@ dataset_style : str, optional
 matplotlib_style : str, optional
     Dataset style file (located in
     :mod:`esmvaltool.diag_scripts.shared.plot.styles_python.matplotlib`).
+seaborn_settings : dict, optional
+    Options for seaborn's `set()` method (affects all plots), see
+    <https://seaborn.pydata.org/generated/seaborn.set.html>.
 
 """
 
@@ -34,7 +37,7 @@ import logging
 import os
 
 import iris
-from iris import Constraint
+import seaborn as sns
 
 from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
                                             extract_variables,
@@ -77,7 +80,7 @@ def plot_data(cfg, hist_cubes, pi_cubes, ecs_cube):
 
     # Collect data
     for dataset in hist_cubes:
-        ecs = ecs_cube.extract(Constraint(dataset=dataset))
+        ecs = ecs_cube.extract(iris.Constraint(dataset=dataset))
         if ecs is None:
             logger.warning("No ECS data for '%s' available, skipping", dataset)
             continue
@@ -125,7 +128,7 @@ def write_data(cfg, hist_cubes, pi_cubes, ecs_cube):
     data_hist = []
     data_pi = []
     for dataset in list(hist_cubes):
-        ecs = ecs_cube.extract(Constraint(dataset=dataset))
+        ecs = ecs_cube.extract(iris.Constraint(dataset=dataset))
         if ecs is None:
             logger.warning("No ECS data for '%s' available, skipping", dataset)
             continue
@@ -159,6 +162,7 @@ def write_data(cfg, hist_cubes, pi_cubes, ecs_cube):
 
 def main(cfg):
     """Run the diagnostic."""
+    sns.set(cfg.get('seaborn_settings', {}))
     input_data = cfg['input_data'].values()
     project = list(group_metadata(input_data, 'project').keys())
     project = [p for p in project if 'obs' not in p.lower()]

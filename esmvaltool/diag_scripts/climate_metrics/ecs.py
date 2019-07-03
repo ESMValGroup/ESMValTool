@@ -19,6 +19,9 @@ Configuration options in recipe
 -------------------------------
 read_external_file : str, optional
     Read ECS from external file.
+seaborn_settings : dict, optional
+    Options for seaborn's `set()` method (affects all plots), see
+    <https://seaborn.pydata.org/generated/seaborn.set.html>.
 
 """
 
@@ -29,6 +32,7 @@ from pprint import pformat
 import cf_units
 import iris
 import numpy as np
+import seaborn as sns
 import yaml
 from scipy import stats
 
@@ -261,6 +265,7 @@ def write_data(ecs_data, feedback_parameter_data, ancestor_files, cfg):
 
 def main(cfg):
     """Run the diagnostic."""
+    sns.set(cfg.get('seaborn_settings', {}))
     input_data = cfg['input_data'].values()
 
     # Read external file if desired
