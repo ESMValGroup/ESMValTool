@@ -314,11 +314,9 @@ def qbo_metrics(run, ucube, metrics):
     """Routine to calculate QBO metrics from zonal mean U."""
     # TODO side effect: changes metrics without returning
     # Extract equatorial zonal mean U
-    # tropics = iris.Constraint(latitude=lambda lat: -5 <= lat <= 5)
+    tropics = iris.Constraint(latitude=lambda lat: -5 <= lat <= 5)
     p30 = iris.Constraint(air_pressure=3000.)
-    # qbo = weight_lat_ave(ucube.extract(tropics))
-    # qbo30 = qbo.extract(p30)
-    qbo = weight_lat_ave(ucube)
+    qbo = weight_lat_ave(ucube.extract(tropics))
     qbo30 = qbo.extract(p30)
 
     # write results to current working directory
