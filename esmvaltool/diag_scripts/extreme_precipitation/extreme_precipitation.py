@@ -130,9 +130,39 @@ class ExtremePrecipitation(object):
                         r_level = extRemes.return_level(evdf, return_period=self.return_period,
                                                         qcov=extRemes.make_qcov(evdf))
                         for r in range(len(r_level)):
-                            rl[self.r_period_name[r]][lat, lon] = r_level[r]
+                            rl[self.r_period_name[r]] = iris.cube.Cube(
+                                r_level[r],
+                                long_name=self.r_period_name[r],
+                                units=slice_cube.units,
+                                aux_coords_and_dims=(
+                                    (cube.coord('latitude'), None),
+                                    (cube.coord('longitude'), None),
+                                    (cube.coord('season'), None)
+                                ),
+                            )
                 else:
-
+                    for par in self.gev_par_sym:
+                        fevd[par] = iris.cube.Cube(
+                            np.nan,
+                            long_name=par,
+                            units=slice_cube.units,
+                            aux_coords_and_dims=(
+                                (cube.coord('latitude'), None),
+                                (cube.coord('longitude'), None),
+                                (cube.coord('season'), None)
+                            ),
+                        )
+                    for r in self.self.r_period_name:
+                        rl[r] = iris.cube.Cube(
+                            np.nan,
+                            long_name=r,
+                            units=slice_cube.units,
+                            aux_coords_and_dims=(
+                                (cube.coord('latitude'), None),
+                                (cube.coord('longitude'), None),
+                                (cube.coord('season'), None)
+                            ),
+                        )
 
             # Output results
             results_subdir = os.path.join(results_dir, PROJECT,OUT,inst_n,
