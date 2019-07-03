@@ -9,7 +9,7 @@ documentation:
 
   authors:
     - lova_to
-  
+
   maintainer:
     - lova_to
 
@@ -34,7 +34,8 @@ preprocessors:
   # --------------------------------------------------
   # For a 2D global surface map
   prep_surface_map_2D:
-    time_average:
+    climate_statistics:
+      operator: mean
     regrid:
       target_grid: 2x2
       scheme: linear
@@ -112,7 +113,3 @@ diagnostics:
       Global_Ocean_model_vs_obs:
         script: ocean/diagnostic_model_vs_obs.py
         observational_dataset: {dataset: Landschutzer2016, project: OBS}
-
-
-
-
