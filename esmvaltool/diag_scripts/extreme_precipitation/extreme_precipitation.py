@@ -138,28 +138,22 @@ class ExtremePrecipitation(object):
                     rl[name] = self._create_cube(np.nan, name, (lat, lon, season), units)
 
             # Output results
-            results_subdir = os.path.join(results_dir, PROJECT,OUT,inst_n,
-                                          ENSEMBLE[inst][model],forcing,runID)
-            if not os.path.exists(results_subdir):
-                os.makedirs(results_subdir)
+            results_subdir = os.path.join(
+                self.filenames.get_info(n.WORK_DIR, filename),
+                self.filenames.get_info(n.PROJECT, filename),
+                self.filenames.get_info(n.DATASET, filename),
+            )
             for par in self.gev_par_sym:
                 par_cube = fevd[par].merge_cube()
-                par_fn = '_'.join([ENSEMBLE[inst][model],forcing,runID,season,par,domain])
-                par_ffp = os.path.join(results_subdir,par_fn+frmt)
-                iris.save(par_cube,par_ffp)
-            rl_cubelist = iris.cube.CubeList()
-            for r in range(len(r_level)):
-                rl_cubelist.append(iris.cube.Cube(rl[r_period_name[r]],
-                    long_name = r_period_name[r],units = cube.units.origin,
-                    dim_coords_and_dims = [(cube.coord('latitude'),0),
-                                           (cube.coord('longitude'),1)]))
-            rl_fn = '_'.join([ENSEMBLE[inst][model],forcing,runID,season,'rl',domain])
-            rl_ffp = os.path.join(self.cfg[n.WORK_DIR], rl_fn+frmt)
-            print(' saving '+rl_fn)
-            iris.save(rl_cubelist,rl_ffp)
+                par_ffp = os.path.join(results_subdir, '{}.nc'.format(par))
+                iris.save(par_cube, par_ffp)
+
+            return_periods = [c.merge_cube() for c in rl]
+            return_periods_path = os.path.join(results_subdir, 'return_periods.nc')
+            iris.save(return_periods, return_periods_path)
 
 
-    def _create_cube(self, data, name, units, coords):
+    def _create_cube(self, data, name, coords, units):
         return iris.cube.Cube(
             data,
             long_name=name,
