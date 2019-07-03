@@ -111,8 +111,9 @@ class ExtremePrecipitation(object):
 
             for x in range(shape[0]):
                 for y in range(shape[1]):
-                    if np.any(slice_cube.data[:]):
-                        bmax_ll = R.matrix(slice_cube.data)
+                    data = cube.data[..., x, y]
+                    if np.any(data):
+                        bmax_ll = R.matrix(data)
                         evdf = extRemes.fevd(bmax_ll, units=units.origin)
                         if evdf.rx2('results').rx2('par').rx2('location')[0] > 0. and\
                             evdf.rx2('results').rx2('par').rx2('scale')[0] > 0.: # -ve mu/sigma invalid
