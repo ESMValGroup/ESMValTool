@@ -2,7 +2,7 @@
 documentation:
   description: 'Extreme precipitation'
   authors: ['vega_ja']
-  projects: [primavera]
+  projects: [esmval]
   references: ['contact_authors']
   mantainer: [vega_ja]
 
@@ -13,7 +13,7 @@ datasets:
 
 preprocessors:
   season_max:
-    season_statistics:
+    seasonal_statistics:
       operator: max
 
 diagnostics:
@@ -23,6 +23,7 @@ diagnostics:
     variables:
       pr:
         preprocessor: season_max
+        grid: gn
 
     scripts:
       extreme_precipitation:
