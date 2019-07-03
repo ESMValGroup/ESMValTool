@@ -31,7 +31,9 @@ import os
 
 import iris
 import matplotlib.pyplot as plt
+import numpy as np
 import seaborn as sns
+from scipy import stats
 
 from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
                                             get_diagnostic_filename,
@@ -39,6 +41,16 @@ from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
                                             iris_helpers, plot, run_diagnostic)
 
 logger = logging.getLogger(os.path.basename(__file__))
+
+
+def _get_reg_line(x_cube, y_cube, xlim=(1.5, 5.0), n_points=100):
+    """Get regression line and means for two cubes."""
+    reg = stats.linregress(x_cube.data, y_cube.data)
+    x_reg = np.linspace(xlim[0], xlim[1], n_points)
+    y_reg = reg.slope * x_reg + reg.intercept
+    x_mean = np.mean(x_cube.data)
+    y_mean = np.mean(y_cube.data)
+    return ((x_reg, y_reg), (x_mean, y_mean))
 
 
 def get_provenance_record(project, ancestor_files):
@@ -65,8 +77,9 @@ def plot_data(cfg, ecs_cube, tcr_cube):
         return None
     logger.debug("Plotting Fig. 9.42b of IPCC AR5")
     (_, axes) = plt.subplots()
+    project = ecs_cube.attributes['project']
 
-    # Plot
+    # Plot scatterplot
     for dataset_name in ecs_cube.coord('dataset').points:
         style = plot.get_dataset_style(dataset_name, cfg.get('dataset_style'))
         ecs = ecs_cube.extract(iris.Constraint(dataset=dataset_name)).data
@@ -79,8 +92,12 @@ def plot_data(cfg, ecs_cube, tcr_cube):
                   markerfacecolor=style['facecolor'],
                   label=dataset_name)
 
+    # Plot regression line and MMM
+    (reg_line, mmm) = _get_reg_line(ecs_cube, tcr_cube)
+    axes.plot(reg_line[0], reg_line[1], 'k-')
+    axes.plot(mmm[0], mmm[1], 'ro', label=f'{project} mean')
+
     # Plot appearance
-    project = ecs_cube.attributes['project']
     axes.set_title(f"TCR vs. ECS for {project} models")
     axes.set_xlabel("ECS / K")
     axes.set_ylabel("TCR / K")
@@ -135,7 +152,7 @@ def main(cfg):
             "differ in it")
     project = ecs_cube.attributes['project']
 
-    # Remove missing data
+    # Remove missing data and use equal coordinate
     [ecs_cube, tcr_cube
      ] = iris_helpers.intersect_dataset_coordinates([ecs_cube, tcr_cube])
 
