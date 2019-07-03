@@ -97,45 +97,42 @@ class ExtremePrecipitation(object):
             cube.data
             logger.info('GEV analysis...')
 
+            model_cube = cube[0, ...]
+            shape = model_cube.shape
+
             fevd = dict()
             for par in self.gev_par_sym:
-                fevd[par] = iris.cube.CubeList()
+                fevd[par] = np.full(shape, np.nan)
 
             rl = dict()
             for r in self.r_period_name:
-                rl[r] = iris.cube.CubeList()
+                rl[r] = np.full(shape, np.nan)
 
-            lats = cube.coord('latitude').points
-            lons = cube.coord('longitude').points
 
-            season = cube.coord('clim_season')
-            season = season.copy(season.points[0])
-            units = cube.units
+            for x in range(shape[0]):
+                for y in range(shape[1]):
+                    if np.any(slice_cube.data[:]):
+                        bmax_ll = R.matrix(slice_cube.data)
+                        evdf = extRemes.fevd(bmax_ll, units=units.origin)
+                        if evdf.rx2('results').rx2('par').rx2('location')[0] > 0. and\
+                            evdf.rx2('results').rx2('par').rx2('scale')[0] > 0.: # -ve mu/sigma invalid
+                            for par in self.gev_par_sym:
+                                val_ll = evdf.rx2('results').rx2('par').rx2(self.gev_par_name[par])[0]
 
-            for slice_cube in cube.slices_over(('latitude', 'longitude')):
-                lat = slice_cube.coord('latitude')
-                lon = slice_cube.coord('longitude')
+                                fevd[par][x, y] = val_ll
+                            r_level = extRemes.return_level(evdf, return_period=self.return_period,
+                                                            qcov=extRemes.make_qcov(evdf))
 
-                if np.any(slice_cube.data[:]):
-                    bmax_ll = R.matrix(slice_cube.data)
-                    evdf = extRemes.fevd(bmax_ll, units=units.origin)
-                    if evdf.rx2('results').rx2('par').rx2('location')[0] > 0. and\
-                        evdf.rx2('results').rx2('par').rx2('scale')[0] > 0.: # -ve mu/sigma invalid
-                        for par in self.gev_par_sym:
-                            val_ll = evdf.rx2('results').rx2('par').rx2(self.gev_par_name[par])[0]
+                            for data, name in zip(r_level, self.r_period_name):
+                                rl[name][x, y] = data
+                            continue
 
-                            fevd[par] = self._create_cube(val_ll, par, (lat, lon, season), units)
-                        r_level = extRemes.return_level(evdf, return_period=self.return_period,
-                                                        qcov=extRemes.make_qcov(evdf))
+            for par, data in fevd.items():
+                fevd[par] = self._create_cube(data, par, model_cube)
 
-                        for data, name in zip(r_level, self.r_period_name):
-                            rl[name] = self._create_cube(data, name, (lat, lon, season), units)
-                        continue
+            for name, data in rl.items():
+                rl[name] = self._create_cube(data, name, model_cube)
 
-                for par in self.gev_par_sym:
-                    fevd[par] = self._create_cube(np.nan, par, (lat, lon, season), units)
-                for name in self.self.r_period_name:
-                    rl[name] = self._create_cube(np.nan, name, (lat, lon, season), units)
 
             # Output results
             results_subdir = os.path.join(
@@ -144,22 +141,17 @@ class ExtremePrecipitation(object):
                 self.filenames.get_info(n.DATASET, filename),
             )
             for par in self.gev_par_sym:
-                par_cube = fevd[par].merge_cube()
                 par_ffp = os.path.join(results_subdir, '{}.nc'.format(par))
-                iris.save(par_cube, par_ffp)
+                iris.save(fevd[par], par_ffp)
 
-            return_periods = [c.merge_cube() for c in rl]
             return_periods_path = os.path.join(results_subdir, 'return_periods.nc')
-            iris.save(return_periods, return_periods_path)
+            iris.save(rl.values(), return_periods_path)
 
-
-    def _create_cube(self, data, name, coords, units):
-        return iris.cube.Cube(
-            data,
-            long_name=name,
-            units=units,
-            aux_coords_and_dims=[(coord, None) for coord in coords]
-        )
+    def _create_cube(self, data, name, model_cube):
+        cube = model_cube.copy(data)
+        cube.standard_name = None
+        cube.long_name = name
+        cube.var_name = None
 
 
 
