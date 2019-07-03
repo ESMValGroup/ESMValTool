@@ -79,14 +79,14 @@ class ExtremePrecipitation(object):
         self.return_period = self.cfg['return_period']
         self.confidence_interval = self.cfg['confidence_interval']
 
-                # --------------
+        # --------------
         # GEV PARAMETERS
         # --------------
         self.gev_par_sym = ['mu', 'sigma', 'xi']
         self.gev_par_name = dict(mu='location', sigma='scale', xi='shape')
         self.r_period_name = np.array(self.return_period).astype(int).astype(str)
         for r in range(len(self.r_period_name)):
-            self.r_period_name[r] = +'{}-year level'.format(self.return_period[r])
+            self.r_period_name[r] = '{}-year level'.format(self.return_period[r])
         self.return_period = rpy2.robjects.IntVector(self.return_period)
 
     def compute(self):
@@ -109,7 +109,7 @@ class ExtremePrecipitation(object):
             lons = cube.coord('longitude').points
             logger.info(cube)
 
-            for slice_cube in cube.slices_over(('latitude', 'longitude', 'season')):
+            for slice_cube in cube.slices_over(('latitude', 'longitude')):
                 if np.any(slice_cube.data[:]):
                     bmax_ll = R.matrix(slice_cube.data)
                     evdf = extRemes.fevd(bmax_ll, units=slice_cube.units.origin)
