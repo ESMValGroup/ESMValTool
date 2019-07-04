@@ -138,7 +138,8 @@ names(data_frame_plot)[2] <- "Model"
 data_frame_plot$Model <- as.factor(sort(rep(1 : length(model_names),
                                              length(period))))
 for (i in 1 : length(levels(data_frame_plot$Model))) {
-    levels(data_frame_plot$Model)[i] <- paste(model_names[i], scenario[i], ensemble[i])
+    levels(data_frame_plot$Model)[i] <- paste(model_names[i], scenario[i], 
+                                              ensemble[i])
 }
 font_size <- 12
 g <- ggplot(data_frame_plot, aes(x = Year, y = Freq, color = Model)) +
@@ -152,7 +153,7 @@ g <- ggplot(data_frame_plot, aes(x = Year, y = Freq, color = Model)) +
                   group = interaction(data_frame_plot[2, 3]),
                   color = data_frame_plot$Model), geom = "line", size = 1) +
       ggtitle(paste0(region, " index for ", var0, " on ", months,
-                     " (", starting, "-", ending, ")")) 
+                     " (", starting, "-", ending, ")"))
 
 filepng <-  paste0(plot_dir, "/", region, "_", var0, "_", months,
                    "_running-mean_", running_mean, "_",
