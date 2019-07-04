@@ -127,6 +127,8 @@ def bgc_units(cube, name):
 
     if name in ['no3', ]:
         new_units = 'mmol m-3'
+        # Set minimum value (remove negative values!)
+        cube.data = np.ma.clip(cube.data, 0.000001, cube.data.max())
 
     if name in ['chl', ]:
         new_units = 'mg m-3'
