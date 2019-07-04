@@ -31,21 +31,25 @@ chemical species throughout the stratosphere.
 Prior and current contributors
 ------------------------------
 Met Office:
+
 * Prior to May 2008: Neal Butchart
 * May 2008 - May 2016: Steven C Hardiman
 * Since May 2016: Alistair Sellar and Paul Earnshaw
 
 ESMValTool:
+
 * Since April 2018: Porting into ESMValTool by Valeriu Predoi
 
 
 Developers
 ----------
 Met Office:
+
 * Prior to May 2008: Neal Butchart
 * May 2008 - May 2016: Steven C Hardiman
 
 ESMValTool:
+
 * Since April 2018: Valeriu Predoi
 
 Metrics and Diagnostics
@@ -83,6 +87,26 @@ Eastward wind (ua)            Atmosphere         monthly mean   original stash: 
 Air temperature (ta)          Atmosphere         monthly mean   original stash: m01s30i204
 Specific humidity (hus)       Atmosphere         monthly mean   original stash: m01s30i205
 ===========================   ================== ============== ==============================================
+
+Inputs and usage
+----------------
+This recipe is part of the larger group of Autoassess metrics ported to ESMValTool
+from the native Autoassess package from the UK's Met Office. The ``diagnostics`` settings
+are almost the same as for the other AUtoassess metrics. An example below:
+
+.. code-block:: yaml
+
+    scripts:
+      autoassess_strato_test_1: &autoassess_strato_test_1_settings
+        script: autoassess/autoassess_area_base.py  # the base wrapper
+        title: "Autoassess Stratosphere Diagnostic Metric"  # title
+        area: stratosphere  # assesment area
+        control_model: UKESM1-0-LL-hist  # control dataset name
+        exp_model: UKESM1-0-LL-piCont  # experiment dataset name
+        obs_models: [ERA-Interim]  # list to hold models that are NOT for metrics but for obs operations
+        additional_metrics: [ERA-Interim]  # list to hold additional datasets for metrics
+        start: 2004/12/01  # start date in native Autoassess format
+        end: 2014/12/01  # end date in native Autoassess format
 
 
 References
@@ -130,7 +154,7 @@ QBO amplitude at 30 hPa (eastward)                  17.316
 
 
 .. figure:: /recipes/figures/autoassess_stratosphere/metrics.png
-   :scale: 200 %
+   :scale: 50 %
    :alt: metrics.png
 
    Standard metrics plot
