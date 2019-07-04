@@ -129,21 +129,21 @@ QBO amplitude at 30 hPa (eastward)                  17.316
 ===============================================     ================
 
 
-.. figure:: /recipes/figures/metrics.png
+.. figure:: /recipes/figures/autoassess_stratosphere/metrics.png
    :scale: 200 %
    :alt: metrics.png
 
    Standard metrics plot
 
 
-.. figure:: /recipes/figures/t100_vs_q70.png
+.. figure:: /recipes/figures/autoassess_stratosphere/t100_vs_q70.png
    :scale: 50 %
    :alt: t100_vs_q70.png
 
    Biases in tropical tropopause temperature (100hPa, 10S-10N) and lower stratospheric humidity (70hPa, 10S-10N)
 
 
-.. figure:: /recipes/figures/qbo_30hpa.png
+.. figure:: /recipes/figures/autoassess_stratosphere/qbo_30hpa.png
    :scale: 50 %
    :alt: qbo_30hpa.png
 
