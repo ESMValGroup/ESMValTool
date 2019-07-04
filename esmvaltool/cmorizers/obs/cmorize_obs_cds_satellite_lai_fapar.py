@@ -21,6 +21,9 @@ Download and processing instructions
 Notes
    This script regrids and cmorizes the above dataset.
 
+Caveats
+   Currently variable FAPAR is not supported yet, this first needs custom var def in esmvalcore
+
 Modification history
    20190703-A_crez_ba: written.
 """
@@ -152,7 +155,7 @@ def cmorization(in_dir, out_dir, cfg):
     glob_attrs = cfg['attributes']
 
 
-    # run the cmorization#TODO maybe parallel, see era5 example
+    # run the cmorization
     for short_name, var in cfg['variables'].items():
         var['short_name'] = short_name
         # First collect all information
