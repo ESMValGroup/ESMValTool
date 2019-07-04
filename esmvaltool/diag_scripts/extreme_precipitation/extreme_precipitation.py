@@ -63,6 +63,7 @@ from rpy2.robjects.packages import importr
 import rpy2.robjects.numpy2ri
 
 extRemes = importr('extRemes')
+r_base = importr('base')
 rpy2.robjects.numpy2ri.activate()
 R['options'](warn = -1)
 R('rm(list = ls())')
@@ -99,6 +100,7 @@ class ExtremePrecipitation(object):
 
             model_cube = cube[0, ...]
             shape = model_cube.shape
+            units = model_cube.units
 
             fevd = dict()
             for par in self.gev_par_sym:
@@ -108,26 +110,28 @@ class ExtremePrecipitation(object):
             for r in self.r_period_name:
                 rl[r] = np.full(shape, np.nan)
 
-
+            logger.info('Apply')
+            evdf = r_base.apply(cube.data, 1, fun=fevd, units=units.origin)
+            logger.debug(evdf)
+            logger.debug('rpy2 only')
             for x in range(shape[0]):
                 for y in range(shape[1]):
                     data = cube.data[..., x, y]
                     if np.any(data):
-                        bmax_ll = R.matrix(data)
-                        evdf = extRemes.fevd(bmax_ll, units=units.origin)
-                        if evdf.rx2('results').rx2('par').rx2('location')[0] > 0. and\
-                            evdf.rx2('results').rx2('par').rx2('scale')[0] > 0.: # -ve mu/sigma invalid
-                            for par in self.gev_par_sym:
-                                val_ll = evdf.rx2('results').rx2('par').rx2(self.gev_par_name[par])[0]
+                        evdf = extRemes.fevd(data, units=units.origin)
+                        # if evdf.rx2('results').rx2('par').rx2('location')[0] > 0. and\
+                        #     evdf.rx2('results').rx2('par').rx2('scale')[0] > 0.: # -ve mu/sigma invalid
+                        #     for par in self.gev_par_sym:
+                        #         val_ll = evdf.rx2('results').rx2('par').rx2(self.gev_par_name[par])[0]
 
-                                fevd[par][x, y] = val_ll
-                            r_level = extRemes.return_level(evdf, return_period=self.return_period,
-                                                            qcov=extRemes.make_qcov(evdf))
+                        #         fevd[par][x, y] = val_ll
+                        #     r_level = extRemes.return_level(evdf, return_period=self.return_period,
+                        #                                     qcov=extRemes.make_qcov(evdf))
 
-                            for data, name in zip(r_level, self.r_period_name):
-                                rl[name][x, y] = data
-                            continue
-
+                        #     for data, name in zip(r_level, self.r_period_name):
+                        #         rl[name][x, y] = data
+                        #     continue
+            logger.debug('finished')
             for par, data in fevd.items():
                 fevd[par] = self._create_cube(data, par, model_cube)
 
