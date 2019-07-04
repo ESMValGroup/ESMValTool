@@ -12,9 +12,12 @@ datasets:
  - {dataset: HadGEM3-GC31-HM, project: CMIP6, activity: HighResMIP, mip: day,  exp: highresSST-present, ensemble: r1i1p1f1, start_year: 1950, end_year: 2014}
 
 preprocessors:
-  mam:
-    extract_season:
-      season: MAM
+  season:
+    extract_time:
+      start_year: 1950
+      start_month: 3
+      end_year: 2014
+      end_month: 11
     seasonal_statistics:
       operator: max
 
@@ -24,7 +27,7 @@ diagnostics:
 
     variables:
       pr:
-        preprocessor: mam
+        preprocessor: season
         grid: gn
 
     scripts:
