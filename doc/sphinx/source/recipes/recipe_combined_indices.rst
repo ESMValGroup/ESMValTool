@@ -35,9 +35,9 @@ User settings
 
 User setting files are stored in recipes/
 
-#. recipe_combined_indices.yml
+#.	recipe_combined_indices.yml
 
-   * Required settings for script*
+   *Required settings for pscript*
 
    * region: one of the following strings Nino3, Nino3.4, Nino4, NAO, SOI
    * running_mean: an integer specifying the length of the window (in months) to be used for computing the running mean.
@@ -45,10 +45,13 @@ User setting files are stored in recipes/
    * monsup: an integer specifying the last month to be computed (from 1 to 12, corresponding to January to December respectively).
    * standardized: ‘true’ or ‘false’ to specify whether to compute the standarization of the variable.
 
-   * Required setting for the preprocessor (only for 3D variables)
-   * extract_levels:
+
+     *Required settings for preprocessor (only for 3D variables)*
+     
+	  extract_levels:
    *   levels: [50000] # e.g. for 500 hPa level
    *   scheme: nearest
+   
 Variables
 ---------
 
