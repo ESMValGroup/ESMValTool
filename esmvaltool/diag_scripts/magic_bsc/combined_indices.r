@@ -138,7 +138,7 @@ names(data_frame_plot)[2] <- "Model"
 data_frame_plot$Model <- as.factor(sort(rep(1 : length(model_names),
                                              length(period))))
 for (i in 1 : length(levels(data_frame_plot$Model))) {
-    levels(data_frame_plot$Model)[i] <- paste(model_names[i], scenario[i], 
+    levels(data_frame_plot$Model)[i] <- paste(model_names[i], scenario[i],
                                               ensemble[i])
 }
 font_size <- 12
