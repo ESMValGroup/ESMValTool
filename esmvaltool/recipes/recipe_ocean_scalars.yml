@@ -131,7 +131,7 @@ diagnostics:
         #ylabel: 'fgco2_label'
         # title: 'Global Total Surface downwards CO2 flux'
 
- diag_timeseries_amoc:
+  diag_timeseries_amoc:
     description: atlantic_meridional_overturning_circulation
     variables:
       amoc:
