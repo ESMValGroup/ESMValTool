@@ -2,11 +2,25 @@
 Tier
    Tier 3
 Source
-   https://cds.climate.copernicus.eu/cdsapp#!/dataset/satellite-lai-fapar
+   https://cds.climate.copernicus.eu/cdsapp#!/dataset/satellite-lai-fapar?tab=form
 Last access
    20190703
+
 Download and processing instructions
-   day 20 of each month
+   - Open in a browser the data source as specified above
+   - Put the right ticks:
+      - Tick variables FAPAR and LAI
+      - Tick SPOT
+      - Tick V1
+      - Tick all available years
+      - Tick all available months
+      - Tick Nominal day 20
+   - Click 'submit form'
+   - According to ESMValTool practice, put them in the right rawobsdir folder
+
+Notes
+   This script regrids and cmorizes the above dataset.
+
 Modification history
    20190703-A_crez_ba: written.
 """
@@ -151,7 +165,7 @@ def cmorization(in_dir, out_dir, cfg):
         # Now start regridding
         # Determine filepattern for all files that need regridding
         regrid_filepattern = os.path.join(in_dir, var['file'])
-        #_regrid_cds_satellite_lai_fapar(regrid_filepattern,var_info)
+        _regrid_cds_satellite_lai_fapar(regrid_filepattern,var_info)
 
         # Specify the filepattern of the regridded files
         concatenate_filepattern = regrid_filepattern.replace('c3s','c3s_regridded')
