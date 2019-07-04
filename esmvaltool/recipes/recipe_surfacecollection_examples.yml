@@ -12,20 +12,33 @@ documentation:
 preprocessors:
   noop: {}
 
+  test:
+      regrid:
+        target_grid: 1.125x1.125
+        scheme: area_weighted
+      mask_fillvalues:
+        threshold_fraction: 0.0
+
   t63: # TODO: not implemented yet. proxy
       regrid:
         target_grid: 1.875x1.875
         scheme: area_weighted
+      mask_fillvalues:
+        threshold_fraction: 0.0
 
   regrid10:
       regrid:
         target_grid: 10x10
         scheme: nearest
+      mask_fillvalues:
+        threshold_fraction: 0.0
 
   regrid2:
       regrid:
         target_grid: 2x2
         scheme: nearest
+      mask_fillvalues:
+        threshold_fraction: 0.0
         
 diagnostics:
   TEST:
@@ -36,21 +49,38 @@ diagnostics:
     description: TEST diagnostics.
     variables:
       sm:
-        reference_dataset: CNRM-CM5
+        reference_dataset: IPSL-CM5A-MR
         derive: true
         force_derivation: false
-#        preprocessor: regrid10
         preprocessor: t63
+#        preprocessor: regrid10
         start_year: 1950
         end_year: 2005
     additional_datasets:
       - {dataset: CNRM-CM5,  project: CMIP5,  mip: Lmon,  exp: historical,  ensemble: r1i1p1}
       - {dataset: IPSL-CM5A-MR,  project: CMIP5,  mip: Lmon,  exp: historical,  ensemble: r1i1p1}
-      #- {dataset: MRI-ESM1,  project: CMIP5,  mip: Lmon,  exp: historical,  ensemble: r1i1p1}
+      - {dataset: MRI-ESM1,  project: CMIP5,  mip: Lmon,  exp: historical,  ensemble: r1i1p1}
       #- {dataset: ESACCI-SOILMOISTURE, project: OBS, type: sat, version: L3S-SSMV-COMBINED, tier: 3}
     scripts:
-      Info:
+#      gtm:
+#        script: surfacecollection/main_diag_selector.py
+#        colormap: ['whitesmoke', 'lightblue', 'dodgerblue', 'mediumblue']
+#        vminmax: [0.0, 0.5]
+#        requests: [glob_temp_mean]
+#      gtmad:
+#        script: surfacecollection/main_diag_selector.py
+#        colormap: None
+#        vminmax: [0.0, 0.5]
+#        requests: [glob_temp_mean_absdiff]
+#      gtmrd:
+#        script: surfacecollection/main_diag_selector.py
+#        colormap: None
+#        vminmax: [0.0, 0.5]
+#        requests: [glob_temp_mean_reldiff]
+      percentiles:
         script: surfacecollection/main_diag_selector.py
-        colormap: 'Blues'
+        colormap: ['whitesmoke', 'lightblue', 'dodgerblue', 'mediumblue']
+        requests: [percentiles]
         vminmax: [0.0, 0.5]
-        requests: [None]
+#        percentiles: [0.01, 0.05, 0.10, 0.20, 0.25, 0.35, 0.5, 0.65, 0.75, 0.80, 0.90, 0.95, 0.99]
+        percentiles: [0.05, 0.5, 0.95]

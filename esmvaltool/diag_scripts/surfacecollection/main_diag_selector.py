@@ -44,8 +44,6 @@ logger = logging.getLogger(os.path.basename(__file__))
 def main(cfg):
     logger.info('>>>>>>>> diagnostic selector is running! <<<<<<<<<<<<')
     
-#    logger.info([(ci["dataset"],ci["reference_dataset"]) for _,ci in cfg['input_data'].items()])
-
     logger.info("Preparing diagnostic")
     Diag = ecv_handler()
     Diag.set_info(cfg = cfg)
@@ -55,7 +53,7 @@ def main(cfg):
     logger.info("Running diagnostic")
     Diag.run()
     
-    logger.info("Thank you for the patience!")
+    logger.info("Thank you for your patience!")
 
     logger.info('>>>>>>>> ENDED SUCCESSFULLY!! <<<<<<<<<<<<')
 

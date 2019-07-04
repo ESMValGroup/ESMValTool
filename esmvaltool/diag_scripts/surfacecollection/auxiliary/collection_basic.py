@@ -13,13 +13,11 @@ import warnings
 from pprint import pprint
 from .libs import diagnostics as diags
 from .libs import plots as plots
-from .libs.utilities import cfg_checker, input_handler
+from .libs.utilities import cfg_checker, input_handler, usable_methods
 
 warnings.simplefilter("ignore")
 
 logger = logging.getLogger(os.path.basename(__file__))
-
-
 
 
 class ecv_handler(object):
@@ -79,16 +77,22 @@ class ecv_handler(object):
         ----------------------------------
         the diagnostics defined by the cfg['requests'] are run
         """
-        for diag in self.cfg["requests"]:
-            results = getattr(diags, diag)(self.input)
-            for r in results:
-                getattr(plots, diag)(r,
-                       cmap=self.cfg["colormap"],
-                       vminmax=self.cfg["vminmax"],
-                       plotdir=self.cfg["plot_dir"],
-                       fformat=self.cfg["output_file_type"])
         
-        logger.info('\n'.join("%s: %s" % item for item in vars(self).items()))
+        # report request options if all None
+        if all([req is None for req in self.cfg["requests"]]):
+            logger.info(usable_methods(diags))
+        else:
+            for diag in self.cfg["requests"]:
+                results = getattr(diags, diag)(self.input,
+                                 percentiles=self.cfg["percentiles"])
+                for r in results:
+                    getattr(plots, diag)(r,
+                           cmap=self.cfg["colormap"],
+                           vminmax=self.cfg["vminmax"],
+                           plotdir=self.cfg["plot_dir"],
+                           fformat=self.cfg["output_file_type"])
+            
+#        logger.info('\n'.join("%s: %s" % item for item in vars(self).items()))
         
         logger.info("run completed")
         return
