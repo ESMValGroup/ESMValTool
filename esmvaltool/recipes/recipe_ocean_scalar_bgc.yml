@@ -28,6 +28,13 @@ preprocessors:
       span: full
       statistics: [mean ]
 
+  prep_timeseries_2: # For 0D fields
+    annual_mean: 
+    multi_model_statistics:
+      span: full
+      statistics: [mean ]
+
+
   # prep_timeseries_2: # For 3D fields
   #   custom_order: true
   #   extract_volume:
@@ -83,7 +90,7 @@ diagnostics:
   diag_timeseries_fgco2:
     variables:
       gtfgco2: # Global Total flux co2
-        preprocessor: prep_timeseries
+        preprocessor: prep_timeseries_2
         derive: true
         force_derivation: false
         fx_files: [areacello, ]
@@ -107,7 +114,7 @@ diagnostics:
           - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
           - {dataset: MRI-ESM1, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1851, end_year: 2005, }
           - {dataset: NorESM1-ME, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
-          - {dataset: bcc-csm1-1, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2012, }
+          - {dataset: bcc-csm1-1, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, }
 #          - {dataset: bcc-csm1-1-m, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2012, } # Can't find FX files
 #          - {dataset: inmcm4, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1850, end_year: 2005, } # Can't find FX files
     scripts:
