@@ -67,7 +67,7 @@ def extract_variable(var_info, raw_info, out_dir, attrs, year):
                 cube, var, out_dir, attrs, unlimited_dimensions=['time'])
 
 
-def cmorization(in_dir, out_dir, cfg):
+def cmorization(in_dir, out_dir, cfg, **kwargs):
     """Cmorization func call."""
     cmor_table = cfg['cmor_table']
     glob_attrs = cfg['attributes']
@@ -81,4 +81,5 @@ def cmorization(in_dir, out_dir, cfg):
             var_info = cmor_table.get_variable(vals['mip'], var)
             raw_info = {'name': vals['raw'], 'file': inpfile}
             glob_attrs['mip'] = vals['mip']
-            extract_variable(var_info, raw_info, out_dir, glob_attrs, yr)
+            extract_variable(var_info, raw_info, out_dir,
+                             glob_attrs, yr, **kwargs)
