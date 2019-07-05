@@ -63,7 +63,7 @@ def _unzip(filepath, out_dir):
     return new_path
 
 
-def cmorization(in_dir, out_dir, cfg, **kwargs):
+def cmorization(in_dir, out_dir, cfg, _):
     """Cmorization func call."""
     glob_attrs = cfg['attributes']
     cmor_table = cfg['cmor_table']
@@ -81,6 +81,5 @@ def cmorization(in_dir, out_dir, cfg, **kwargs):
             continue
         logger.info("Found input file '%s'", zip_file)
         filepath = _unzip(zip_file, out_dir)
-        _extract_variable(raw_var, cmor_info, glob_attrs,
-                          filepath, out_dir, **kwargs)
+        _extract_variable(raw_var, cmor_info, glob_attrs, filepath, out_dir)
         _clean(filepath)

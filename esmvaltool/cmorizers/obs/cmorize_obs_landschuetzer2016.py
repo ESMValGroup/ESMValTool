@@ -83,7 +83,7 @@ def extract_variable(var_info, raw_info, out_dir, attrs):
             )
 
 
-def cmorization(in_dir, out_dir, cfg, **kwargs):
+def cmorization(in_dir, out_dir, cfg, _):
     """Cmorization func call."""
     cmor_table = cfg['cmor_table']
     glob_attrs = cfg['attributes']
@@ -103,5 +103,4 @@ def cmorization(in_dir, out_dir, cfg, **kwargs):
                 category=UserWarning,
                 module='iris',
             )
-            extract_variable(var_info, raw_info, out_dir,
-                             glob_attrs, **kwargs)
+            extract_variable(var_info, raw_info, out_dir, glob_attrs)

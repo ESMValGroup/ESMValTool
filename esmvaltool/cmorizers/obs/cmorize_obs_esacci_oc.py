@@ -143,7 +143,7 @@ def merge_data(in_dir, out_dir, raw_info, bins):
     return (datafile, dsmeta['BINNING'])
 
 
-def cmorization(in_dir, out_dir, cfg, **kwargs):
+def cmorization(in_dir, out_dir, cfg, _):
     """Cmorization func call."""
     cmor_table = cfg['cmor_table']
     glob_attrs = cfg['attributes']
@@ -161,7 +161,7 @@ def cmorization(in_dir, out_dir, cfg, **kwargs):
         logger.info("CMORizing var %s from file %s", var, inpfile)
         raw_info['file'] = inpfile
         glob_attrs['comment'] = addinfo + glob_attrs['comment']
-        extract_variable(var_info, raw_info, out_dir, glob_attrs, **kwargs)
+        extract_variable(var_info, raw_info, out_dir, glob_attrs)
 
     # Remove temporary input file
     os.remove(inpfile)

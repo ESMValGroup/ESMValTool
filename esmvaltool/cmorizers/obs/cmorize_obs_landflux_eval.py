@@ -65,7 +65,7 @@ def _fix_time_coord(cube):
     time_coord.attributes = {}
 
 
-def cmorization(in_dir, out_dir, cfg, **kwargs):
+def cmorization(in_dir, out_dir, cfg, _):
     """Cmorization func call."""
     glob_attrs = cfg['attributes']
     cmor_table = cfg['cmor_table']
@@ -78,5 +78,4 @@ def cmorization(in_dir, out_dir, cfg, **kwargs):
         glob_attrs['mip'] = var_info['mip']
         cmor_info = cmor_table.get_variable(var_info['mip'], var)
         raw_var = var_info.get('raw', var)
-        _extract_variable(raw_var, cmor_info,
-                          glob_attrs, filepath, out_dir, **kwargs)
+        _extract_variable(raw_var, cmor_info, glob_attrs, filepath, out_dir)
