@@ -36,9 +36,9 @@ datasets:
 preprocessors:
   noop: {}
   
-  regrid1:
+  regrid30:
       regrid:
-        target_grid: 1x1
+        target_grid: 30x30
         scheme: nearest
         
   regrid2:
@@ -53,7 +53,7 @@ diagnostics:
 #      bdalb:
       ta:
 #      xch4:
-        preprocessor: noop
+        preprocessor: regrid30
     scripts:
       diag_O_info:
         script: qualassess/DUMMY_C3S_511_SPQB.py
