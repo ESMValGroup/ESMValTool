@@ -4,7 +4,7 @@
 documentation:
   description: |
     Various example preprocessors.
-    
+
   authors:
     - righ_ma
     - ande_bo
@@ -12,7 +12,7 @@ documentation:
 
   maintainer:
     - righ_ma
-    
+
   projects:
     - c3s-magic
 
