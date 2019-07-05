@@ -121,7 +121,7 @@ def _regrid_dataset(in_dir, var, cfg):
 
 
 def _concatenate_dataset_over_time(in_dir, var):
-    """Concatenates single files over time and returns on single cube."""
+    """Concatenate single files over time and returns on single cube."""
     # This is a complicated expression, but necessary to keep local
     # variables below the limit, otherwise prospector complains.
     cubelist = iris.load(glob.glob(os.path.join(
