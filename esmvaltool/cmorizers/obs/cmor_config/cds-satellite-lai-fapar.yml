@@ -13,13 +13,13 @@ attributes:
 
 # Variables to CMORize
 variables:
-#  lai:
-#    mip: Lmon
-#    raw: LAI
-#    file: 'c3s_LAI_*_GLOBE_VGT_V1.0.1.nc'
+  lai:
+    mip: Lmon
+    raw: LAI
+    file: 'c3s_LAI_*_GLOBE_VGT_V1.0.1.nc'
   fapar:
     mip: Lmon
-    raw: FAPAR
+    raw: fAPAR
     file: 'c3s_FAPAR_*_GLOBE_VGT_V1.0.1.nc'
 
 # Parameters
