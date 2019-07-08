@@ -87,7 +87,6 @@ class ExtremePrecipitation(object):
                 self._plot_results(filename, season, fevd, rl)
                 self._save_results(filename, season, fevd, rl)
 
-
     def _compute_metric(self, data, units, fevd, rl, extRemes, x, y):
         evdf = extRemes.fevd(data, units=units.origin)
         results = evdf.rx2('results').rx2('par')
