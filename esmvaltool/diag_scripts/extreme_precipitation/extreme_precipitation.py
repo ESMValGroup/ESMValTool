@@ -52,7 +52,7 @@ class ExtremePrecipitation(object):
         self.return_period = rpy2.robjects.IntVector(self.return_period)
 
     def _get_return_period_name(self, period):
-        return '{}-year level'.format(self.return_period[r])
+        return '{}-year level'.format(period)
 
     def compute(self):
         from rpy2.robjects import r as R, numpy2ri
@@ -70,7 +70,7 @@ class ExtremePrecipitation(object):
             shape = model_cube.shape
             units = model_cube.units
 
-            for season in set(cube.coords('clim_season')):
+            for season in set(cube.coord('clim_season').points):
                 # Clean R objects
                 R('rm(list = ls())')
                 logger.info('Processing season %s', season)
@@ -133,7 +133,7 @@ class ExtremePrecipitation(object):
             return
         logger.info('Plot results')
         results_subdir = os.path.join(
-            self.filenames.get_info(n.PLOT_DIR, filename),
+            self.cfg[n.PLOT_DIR],
             self.filenames.get_info(n.PROJECT, filename),
             self.filenames.get_info(n.DATASET, filename),
             season,
@@ -149,7 +149,10 @@ class ExtremePrecipitation(object):
             quickplot(
                 fevd[par],
                 filename=par_ffp,
-                **(self.cfg.get('gev_quickplot', {}))
+                **(self.cfg.get(
+                    'gev_quickplot',
+                    {'plot_type': 'pcolormesh', 'cmap': 'Blues'}
+                ))
             )
         for return_period in rl:
             return_periods_path = os.path.join(
@@ -162,15 +165,18 @@ class ExtremePrecipitation(object):
             quickplot(
                 rl[return_period],
                 filename=return_periods_path,
-                **(self.cfg.get('return_period_quickplot', {}))
+                **(self.cfg.get(
+                    'return_period_quickplot',
+                    {'plot_type': 'pcolormesh', 'cmap': 'Blues'}
+                ))
             )
 
-    def _save_results(self, filename, season, fevd, rl):
+    def _save_results(self, filename, season, fevd, return_periods):
         if not self.cfg[n.WRITE_NETCDF]:
             return
         logger.info('Saving data...')
         results_subdir = os.path.join(
-            self.filenames.get_info(n.WORK_DIR, filename),
+            self.cfg[n.WORK_DIR],
             self.filenames.get_info(n.PROJECT, filename),
             self.filenames.get_info(n.DATASET, filename),
             season,
@@ -182,7 +188,7 @@ class ExtremePrecipitation(object):
         return_periods_path = os.path.join(
             results_subdir, 'return_periods.nc'
         )
-        iris.save(rl.values(), return_periods_path)
+        iris.save(list(return_periods.values()), return_periods_path)
 
 
 def main():
