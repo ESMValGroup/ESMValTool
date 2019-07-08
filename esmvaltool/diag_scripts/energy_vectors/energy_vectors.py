@@ -147,6 +147,9 @@ class EnergyVectors(object):
     def _plot(self, evector_x, evector_y, dataset):
         if not self.cfg[NAMES.WRITE_NETCDF]:
             return
+
+        evector_x = evector_x.aggregated_by('time', MEAN)
+        evector_y = evector_y.aggregated_by('time', MEAN)
         logger.info("Saving results")
         subdir = os.path.join(
             self.cfg[NAMES.PLOT_DIR],
