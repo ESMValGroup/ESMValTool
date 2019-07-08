@@ -10,8 +10,9 @@ import iris.coord_categorisation as ic
 from esmvaltool.diag_scripts.shared import Variables, Datasets, run_diagnostic
 from esmvaltool.diag_scripts.shared import names as NAMES
 from esmvaltool.diag_scripts.shared.plot import quickplot
-from esmvaltool.diag_scripts.energy_vectors.common import (low_pass_weights,
-    lanczos_filter)
+from esmvaltool.diag_scripts.energy_vectors.common import (
+    low_pass_weights, lanczos_filter
+)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -101,6 +102,7 @@ class EnergyVectors(object):
             va_high ** 2 - ua_high ** 2, filter_weights
         )
         evector_y = lanczos_filter(-1.0 * ua_high * va_high, filter_weights)
+        logger.debug(evector_y.data)
 
         # Add some appropriate meta data
         units = ua_cube.units ** 2
@@ -148,9 +150,9 @@ class EnergyVectors(object):
         if not self.cfg[NAMES.WRITE_NETCDF]:
             return
 
-        evector_x = evector_x.aggregated_by('time', MEAN)
-        evector_y = evector_y.aggregated_by('time', MEAN)
-        logger.info("Saving results")
+        logger.info("Plotting results")
+        evector_x = evector_x.collapsed('time', MEAN)
+        evector_y = evector_y.collapsed('time', MEAN)
         subdir = os.path.join(
             self.cfg[NAMES.PLOT_DIR],
             self.datasets.get_info(NAMES.PROJECT, dataset),
@@ -165,7 +167,7 @@ class EnergyVectors(object):
             ),
             **(self.cfg.get(
                 'quickplot',
-                {'plot_type': 'pcolormesh', 'cmap': 'Reds'}
+                {'plot_type': 'pcolormesh', 'cmap': 'bwr'}
             ))
         )
         quickplot(
@@ -176,7 +178,7 @@ class EnergyVectors(object):
             ),
             **(self.cfg.get(
                 'quickplot',
-                {'plot_type': 'pcolormesh', 'cmap': 'Reds'}
+                {'plot_type': 'pcolormesh', 'cmap': 'bwr'}
             ))
         )
 

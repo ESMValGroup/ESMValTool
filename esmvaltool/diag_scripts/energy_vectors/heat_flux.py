@@ -7,7 +7,7 @@ import iris
 import iris.coord_categorisation as ic
 
 from esmvaltool.diag_scripts.shared import Variables, Datasets, run_diagnostic
-from .shared import low_pass_weights, strip_to_month_plus_window
+from .common import low_pass_weights, lanczos_filter
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -24,7 +24,7 @@ class HeatFlux(object):
 
         self.variables.get
 
-        filter_weights = low_pass_weights(window, 1.0 / window)
+        filter_weights = low_pass_weights(self.window, 1.0 / self.window)
         assert abs(sum(filter_weights)-1) < 1e-8
 
         T_low = strip_to_month_plus_window(T_low, window, month, year)
@@ -60,8 +60,8 @@ class HeatFlux(object):
             weights for lanczos filtering
 
         '''
-        T_cube_filtered = lanczos_filter(T_cube,filter_weights)
-        V_cube_filtered = lanczos_filter(V_cube,filter_weights)
+        T_cube_filtered = lanczos_filter(T_cube, filter_weights)
+        V_cube_filtered = lanczos_filter(V_cube, filter_weights)
 
         Tp = T_cube[window//2-1:-(window//2-1)] - T_cube_filtered
         Vp = V_cube[window//2-1:-(window//2-1)] - V_cube_filtered
@@ -69,7 +69,10 @@ class HeatFlux(object):
         VpTp_filtered = lanczos_filter(Vp * Tp, filter_weights)
 
         VpTp_filtered.long_name = "Eddy Heat Flux (V'T')"
-        VpTp_filtered.attributes['filtering'] = "Lanczos filtering with window width=%s (%s days)"%(window, window/4.0)
+        VpTp_filtered.attributes['filtering'] = \
+            "Lanczos filtering with window width=%s (%s days)" % (
+                window, window / 4.0
+            )
         VpTp_filtered._var_name = 'VpTp'
         return VpTp_filtered
 
