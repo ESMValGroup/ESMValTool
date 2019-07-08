@@ -38,7 +38,7 @@ class EnergyVectors(object):
                 key: ua_info[key]
                 for key in IDENTIFY_DATASET if key in ua_info
             }
-            va_info[NAMES.STANDARD_NAME] = 'eastward_wind'
+            va_info[NAMES.STANDARD_NAME] = 'northward_wind'
             va_path = self.datasets.get_path(**va_info)
 
             logger.info("Processing %s", ua_path)
