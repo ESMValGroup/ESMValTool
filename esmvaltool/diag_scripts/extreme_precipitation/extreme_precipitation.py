@@ -1,26 +1,8 @@
-# =====================================
-# generalised_extreme_value_analysis.py
-# =====================================
-#
-# Apply GEV analysis to daily precipitation output by PRIMAVERA
-# Stream 1 model simulations, grid point-by-grid point (WP1).
-# Additional script available to aggregate GEV results over
-# large river basins within Europe (WP10).
-#
-# Notes:
-#   * Parametric 1-day block maxima method applied seasonally.
-#   * GEV analysis run within R interface ('extRemes').
-#   * EC-Earth model grid coords are transformed herein.
-#   * CNRM-CERFACS model is transformed to regular grid and
-#     transformed data are output herein.
-#   * CMCC model data are preprocessed from 6-hourly output
-#     using 'preprocess_cmcc_day_pr.py'.
-#
-# Alexander J. Baker, UREAD
-# 19/10/2017
-# alexander.baker@reading.ac.uk
-#############################################################
+"""
+Generalised extreme value analysis
 
+Apply GEV analysis  grid point-by-grid point
+"""
 
 import os
 import logging
@@ -138,6 +120,7 @@ class ExtremePrecipitation(object):
             self.filenames.get_info(n.DATASET, filename),
             season,
         )
+        os.makedirs(results_subdir, exist_ok=True)
         for par in self.gev_param_symbols:
             par_ffp = os.path.join(
                 results_subdir,
@@ -181,6 +164,7 @@ class ExtremePrecipitation(object):
             self.filenames.get_info(n.DATASET, filename),
             season,
         )
+        os.makedirs(results_subdir, exist_ok=True)
         for par in self.gev_param_symbols:
             par_ffp = os.path.join(results_subdir, '{}.nc'.format(par))
             iris.save(fevd[par], par_ffp)
