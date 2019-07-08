@@ -23,7 +23,7 @@ import esmvalcore
 from esmvalcore._config import read_config_user_file
 from esmvalcore._task import write_ncl_settings
 
-from .utilities import read_cmor_config
+from utilities import read_cmor_config
 
 logger = logging.getLogger(__name__)
 
