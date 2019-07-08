@@ -718,12 +718,39 @@ def calc_merra(run):
     with iris.FUTURE.context(cell_datetime_objects=True):
         t = t.extract(time)
         q = q.extract(time)
+
+    # zonal mean
+    t = t.collapsed('longitude', iris.analysis.MEAN)
+    q = q.collapsed('longitude', iris.analysis.MEAN)
+
+    # mean over tropics
+    equator = iris.Constraint(latitude=lambda lat: -10 <= lat <= 10)
+    p100 = iris.Constraint(air_pressure=10000.)
+    t = t.extract(equator & p100)
+
+    # Calculate area-weighted global monthly means from multi-annual data
+    iris.coord_categorisation.add_month(t, 'time', name='month')
+    t = t.aggregated_by('month', iris.analysis.MEAN)
+    t = weight_lat_ave(t)
+
+    # Extract 10S-10N humidity at 100hPa
+    tropics = iris.Constraint(latitude=lambda lat: -10 <= lat <= 10)
+    p70 = iris.Constraint(air_pressure=7000.)
+    q = q.extract(tropics & p70)
+
+    # Calculate area-weighted global monthly means from multi-annual data
+    iris.coord_categorisation.add_month(q, 'time', name='month')
+    q = q.aggregated_by('month', iris.analysis.MEAN)
+    q = weight_lat_ave(q)
+
     # Calculate time mean
     t = t.collapsed('time', iris.analysis.MEAN)
     q = q.collapsed('time', iris.analysis.MEAN)
     # Create return values
-    tmerra = t.data  # K
-    qmerra = ((1000000. * 29. / 18.) * q.data)  # ppmv
+    tmerra = t.data                        # K
+    # TODO magic numbers
+    qmerra = ((1000000.*29./18.)*q.data)   # ppmv
+
     return tmerra, qmerra
 
 
@@ -831,7 +858,7 @@ def multi_t100_vs_q70_plot(run):
     patch = Rectangle(
         (0.0, 0.0),
         2.0,
-        0.2 * q_merra[0, 0, 0],
+        0.2 * q_merra,
         fc='lime',
         ec='None',
         zorder=0)
