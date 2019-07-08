@@ -9,10 +9,13 @@ import iris.coord_categorisation as ic
 
 from esmvaltool.diag_scripts.shared import Variables, Datasets, run_diagnostic
 from esmvaltool.diag_scripts.shared import names as NAMES
-from .shared import low_pass_weights, lanczos_filter
+from esmvaltool.diag_scripts.energy_vectors.common import low_pass_weights, lanczos_filter
 
 logger = logging.getLogger(os.path.basename(__file__))
 
+IDENTIFY_DATASET = (
+    NAMES.PROJECT, NAMES.ACTIVITY, NAMES.DATASET, NAMES.EXP, NAMES.ENSEMBLE
+)
 
 class EnergyVectors(object):
 
@@ -23,16 +26,23 @@ class EnergyVectors(object):
         self.window = self.cfg['window']
 
     def compute(self):
+        for ua_path in self.datasets.get_path_list(standard_name='eastward_wind'):
+            ua_info = self.datasets.get_dataset_info(ua_path)
+            logger.info(ua_info)
+            va_info = {
+                key: ua_info[key]
+                for key in IDENTIFY_DATASET if key in ua_info
+            }
+            va_info[NAMES.STANDARD_NAME] = 'eastward_wind'
+            va_path = self.datasets.get_path(**va_info)
 
-        for ua_path in self.datasets.get_data_list(standard_name='eastward_wind'):
-            va_path = self.datasets.get_data(ua_path.replace('_ua', '_va'))
 
             logger.info("Processing %s", ua_path)
 
             ua_cube = iris.load_cube(ua_path)
             va_cube = iris.load_cube(va_path)
 
-            filter_weights = low_pass_weights(self.window, freq='6hr')
+            filter_weights = low_pass_weights(self.window, freq=ua_info['frequency'])
             assert abs(sum(filter_weights)-1) < 1e-8
 
             logger.info("Calculating horizontal E-vectors")
@@ -81,7 +91,9 @@ class EnergyVectors(object):
         va_cube_filtered = lanczos_filter(va_cube, filter_weights)
 
         # get high frequency components by subtracting filtered values
-        half_window = window_size//2-1
+        half_window = window_size//2
+        logger.info(ua_cube[half_window:-(half_window)].coord('time'))
+        logger.info(ua_cube_filtered.coord('time'))
         ua_high = ua_cube[half_window:-(half_window)] - ua_cube_filtered
         va_high = va_cube[half_window:-(half_window)] - va_cube_filtered
 

@@ -19,7 +19,7 @@ def low_pass_weights(window, freq):
         LN's LanczosWeights returns very small numbers for the extra elements so I'm happy to stick with this implementation.
         Fractional differences in the resulting values are of the order of 1e-16
     """
-    if freq.ends_with('hr'):
+    if freq.endswith('hr'):
         hours = int(freq[:-2])
         window = window * 24 // hours
 
@@ -55,7 +55,10 @@ def lanczos_filter(cube, weights):
     """
     cube_filtered = cube.rolling_window('time', SUM, len(weights), weights=weights)
     for coord in ['time','forecast_period']:
-        cube_filtered.coord(coord).bounds = None
+        try:
+            cube_filtered.coord(coord).bounds = None
+        except Exception:
+            pass
     return cube_filtered
 
 

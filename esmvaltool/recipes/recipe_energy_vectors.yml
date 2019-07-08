@@ -8,48 +8,52 @@ documentation:
 
 datasets:
  - {dataset: HadGEM3-GC31-LM, project: CMIP6, activity: HighResMIP, exp: highresSST-present, ensemble: r1i1p1f1, start_year: 1950, end_year: 2014}
- - {dataset: HadGEM3-GC31-MM, project: CMIP6, activity: HighResMIP, exp: highresSST-present, ensemble: r1i1p1f1, start_year: 1950, end_year: 2014}
- - {dataset: HadGEM3-GC31-HM, project: CMIP6, activity: HighResMIP, exp: highresSST-present, ensemble: r1i1p1f1, start_year: 1950, end_year: 2014}
+# - {dataset: HadGEM3-GC31-MM, project: CMIP6, activity: HighResMIP, exp: highresSST-present, ensemble: r1i1p1f1, start_year: 1950, end_year: 2014}
+# - {dataset: HadGEM3-GC31-HM, project: CMIP6, activity: HighResMIP, exp: highresSST-present, ensemble: r1i1p1f1, start_year: 1950, end_year: 2014}
 
-preprocessor:
+preprocessors:
   extract_200:
-    extract_levels: [20000,]
-    scheme: nearest
+    extract_levels:
+      levels: [20000,]
+      scheme: nearest
 
   extract_850:
-    extract_levels: [20000,]
-    scheme: nearest
+    extract_levels:
+      levels: [20000,]
+      scheme: nearest
 
 diagnostics:
   energy_vectors:
     description: Energy vectors
     variables:
-      ua200:
-        mip: 6hrPlev
+      ua:
+        mip: day
         grid: gn
+        preprocessor: extract_200
 
-      va200:
-        mip: 6hrPlev
+      va:
+        mip: day
         grid: gn
+        preprocessor: extract_200
 
     scripts:
       energy_vectors:
         script: energy_vectors/energy_vectors.py
-        low_pass_window: 10 # in days
+        window: 10 # in days
 
-  heat_flux:
-    description: Energy vectors
-    variables:
-      va850:
-        mip: 6hrPlev
-        grid: gn
+#  heat_flux:
+#    description: Energy vectors
+#    variables:
+#      va850:
+#        mip: 6hrPlev
+#        grid: gn
 
-      ta:
-        mip: 6hrPlev
-        grid: gn
-        preprocessor: extract_850
+#      ta:
+#        mip: 6hrPlev
+#        grid: gn
+#        preprocessor: extract_850
 
-    scripts:
-      heat_flux:
-        script: energy_vectors/heat_flux.py
-        low_pass_window: 10 # in days
+#    scripts:
+#      heat_flux:
+#        script: energy_vectors/heat_flux.py
+#        low_pass_window: 10 # in days
