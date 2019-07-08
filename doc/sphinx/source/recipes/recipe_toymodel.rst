@@ -39,6 +39,11 @@ User setting files are stored in recipes/
    * end_longitude: maximum longitude
    * start_latitude: minimum longitude
    * end_latitude: maximum latitude
+  
+  	extract_levels: (for 3D variables)
+
+   * levels: [50000] # e.g. for 500 hPa level
+   
 
    *Required settings for script*
 
@@ -49,8 +54,7 @@ User setting files are stored in recipes/
 Variables
 ---------
 
-* psl(atmos, daily-monthly, longitude, latitude, time)
-* tas(atmos, daily-monthly, longitude, latitude, time)
+* any variable (atmos/ocean, daily-monthly, longitude, latitude, time)
 
 
 Observations and reformat scripts
