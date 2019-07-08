@@ -72,7 +72,7 @@ Example plots
 -------------
 
 .. _fig_toymodel:
-.. figure::  /recipes/figures/toymodel/synthetic_CMIP5_IPSL-CM5A-LR_day_historical_r1i1p1_T2M_tasmax_1999-2000.jpg
+.. figure::  /recipes/figures/toymodel/synthetic_CMIP5_bcc-csm1-1_Amon_rcp45_r1i1p1_psl_2051-2060.jpg
 
 
 
