@@ -88,11 +88,38 @@ Air temperature (ta)          Atmosphere         monthly mean   original stash: 
 Specific humidity (hus)       Atmosphere         monthly mean   original stash: m01s30i205
 ===========================   ================== ============== ==============================================
 
+The recipe takes as input a control model and experimental model, comparisons being made
+with these two CMIP models; additionally it can take observational data s input, in the
+current implementation ERA-Interim.
+
 Inputs and usage
 ----------------
+The ``stratosphere`` area metric is part of the ``esmvaltool/diag_scripts/autoassess`` diagnostics,
+and, as any other ``autoassess`` metric, it uses the ``autoassess_area_base.py`` as general purpose
+wrapper. This wrapper accepts a number of input arguments that are read through from the recipe. 
+
 This recipe is part of the larger group of Autoassess metrics ported to ESMValTool
 from the native Autoassess package from the UK's Met Office. The ``diagnostics`` settings
-are almost the same as for the other AUtoassess metrics. An example below:
+are almost the same as for the other Atoassess metrics.
+
+.. note::
+
+   **Time gating for autoassess metrics.**
+
+   To preserve the native Autoassess functionalities,
+   data loading and selection on time is done somewhat
+   differently for ESMValTool's autoassess metrics: the
+   time selection is done in the preprocessor as per usual but
+   a further time selection is performed as part of the diagnostic.
+   For this purpose the user will specify a ``start:`` and ``end:``
+   pair of arguments of ``scripts: autoassess_script`` (see below
+   for example). These are formatted as ``YYYY/MM/DD``; this is
+   necessary since the Autoassess metrics are computed from 1-Dec
+   through 1-Dec rather than 1-Jan through 1-Jan.
+
+An example of standard inputs as read by ``autoassess_area_base.py`` and passed
+over to the diagnostic/metric is listed below.
+
 
 .. code-block:: yaml
 
@@ -130,27 +157,31 @@ For UKMO analysis data, contact the Met Office.
 Sample Plots and metrics
 ------------------------
 
-===============================================     ================
-Metric name                                         UKESM1-0-LL (historical)
-                                                    value
-===============================================     ================
-Polar night jet: northern hem (January)             40.326
-Polar night jet: southern hem (July)                84.867
-Easterly jet: southern hem (January)                24.854
-Easterly jet: northern hem (July)                   29.870
-QBO period at 30 hPa                                41.500
-QBO amplitude at 30 hPa (westward)                  27.383
-QBO amplitude at 30 hPa (eastward)                  17.316
-50 hPa temperature: 60N-90N (DJF)                   26.753
-50 hPa temperature: 60N-90N (MAM)                   40.946
-50 hPa temperature: 90S-60S (JJA)                   11.103
-50 hPa temperature: 90S-60S (SON)                   23.299
-100 hPa equatorial temp (annual mean)               15.292
-100 hPa equatorial temp (annual cycle strength)      1.668
-100 hPa 10Sto10N temp (annual mean)                 15.435
-100 hPa 10Sto10N temp (annual cycle strength)        1.623
-70 hPa 10Sto10N wv (annual mean)                     5.743
-===============================================     ================
+===============================================     ================     ====================
+Metric name                                         UKESM1-0-LL          UKESM1-0-LL
+                                                    historical, ESGF     historical, u-bc179
+===============================================     ================     ====================
+Polar night jet: northern hem (January)             40.33                x
+Polar night jet: southern hem (July)                84.87                x
+Easterly jet: southern hem (January)                24.85                x
+Easterly jet: northern hem (July)                   29.87                x
+QBO period at 30 hPa                                41.50                41.00
+QBO amplitude at 30 hPa (westward)                  27.38                27.39
+QBO amplitude at 30 hPa (eastward)                  17.32                17.36
+50 hPa temperature: 60N-90N (DJF)                   26.75                26.85
+50 hPa temperature: 60N-90N (MAM)                   40.95                40.92
+50 hPa temperature: 90S-60S (JJA)                   11.10                11.30
+50 hPa temperature: 90S-60S (SON)                   23.30                23.63
+100 hPa equatorial temp (annual mean)               15.29                15.30
+100 hPa equatorial temp (annual cycle strength)      1.67                 1.67
+100 hPa 10Sto10N temp (annual mean)                 15.44                15.46
+100 hPa 10Sto10N temp (annual cycle strength)        1.62                 1.62
+70 hPa 10Sto10N wv (annual mean)                     5.74                 5.75
+===============================================     ================     ====================
+
+Results from ``u-bc179`` have been obtained by running the native Autoassess/stratosphere
+on ``.pp`` data from the UKESM` ``u-bc179`` suite and are listed here to confirm the 
+compliance between the ported Autoassess metric in ESMValTool and the original native metric.
 
 
 .. figure:: /recipes/figures/autoassess_stratosphere/metrics.png
