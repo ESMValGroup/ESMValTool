@@ -30,6 +30,7 @@ import iris
 import iris.cube
 import iris.analysis
 import iris.util
+import rpy2.robjects
 
 import esmvaltool.diag_scripts.shared
 from esmvaltool.diag_scripts.shared.plot import quickplot
@@ -72,7 +73,7 @@ class ExtremePrecipitation(object):
             for season in set(cube.coords('clim_season')):
                 # Clean R objects
                 R('rm(list = ls())')
-                logger.info('Processing season {}', season)
+                logger.info('Processing season %s', season)
                 season_cube = cube.extract(iris.Constraint(clim_season=season))
 
                 logger.info('GEV analysis...')
@@ -89,7 +90,7 @@ class ExtremePrecipitation(object):
                         data = cube.data[..., x, y]
                         if np.any(data):
                             self._compute_metric(
-                                data, units, fevd, rl, extRemes
+                                data, units, fevd, rl, extRemes, x, y
                             )
 
                 for par, data in fevd.items():
@@ -105,7 +106,7 @@ class ExtremePrecipitation(object):
                 self._save_results(filename, season, fevd, rl)
 
 
-    def _compute_metric(self, data, units, fevd, rl, extRemes):
+    def _compute_metric(self, data, units, fevd, rl, extRemes, x, y):
         evdf = extRemes.fevd(data, units=units.origin)
         results = evdf.rx2('results').rx2('par')
         # -ve mu/sigma invalid
@@ -118,7 +119,7 @@ class ExtremePrecipitation(object):
                 qcov=extRemes.make_qcov(evdf)
             )
             for data, period in zip(r_level, self.return_period):
-                rl[name][x, y] = data
+                rl[period][x, y] = data
 
     def _create_cube(self, data, name, model_cube):
         cube = model_cube.copy(data)
