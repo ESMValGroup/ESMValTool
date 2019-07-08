@@ -9,7 +9,9 @@ import iris.coord_categorisation as ic
 
 from esmvaltool.diag_scripts.shared import Variables, Datasets, run_diagnostic
 from esmvaltool.diag_scripts.shared import names as NAMES
-from esmvaltool.diag_scripts.energy_vectors.common import low_pass_weights, lanczos_filter
+from esmvaltool.diag_scripts.shared.plot import quickplot
+from esmvaltool.diag_scripts.energy_vectors.common import (low_pass_weights,
+    lanczos_filter)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -59,51 +61,8 @@ class EnergyVectors(object):
             evector_x = self._get_monthly_mean(evector_x)
             evector_y = self._get_monthly_mean(evector_y)
 
-    def _save(self, evector_x, evector_y, dataset):
-        if not self.cfg[NAMES.WRITE_NETCDF]:
-            return
-        logger.info("Saving results")
-        subdir = os.path.join(
-            self.cfg[NAMES.WORK_DIR],
-            self.datasets.get_info(NAMES.PROJECT, dataset),
-            self.datasets.get_info(NAMES.DATASET, dataset),
-        )
-        os.makedirs(subdir, exist_ok=True)
-        iris.save(evector_x, os.path.join(subdir, 'evector_x.nc'))
-        iris.save(evector_y, os.path.join(subdir, 'evector_y.nc'))
-
-    def _plot(self, evector_x, evector_y, dataset):
-        if not self.cfg[NAMES.WRITE_NETCDF]:
-            return
-        logger.info("Saving results")
-        subdir = os.path.join(
-            self.cfg[NAMES.PLOT_DIR],
-            self.datasets.get_info(NAMES.PROJECT, dataset),
-            self.datasets.get_info(NAMES.DATASET, dataset),
-        )
-        os.makedirs(subdir, exist_ok=True)
-        quickplot(
-            evector_x,
-            filename=os.path.join(
-                subdir,
-                'evector_x.{}'.format(self.cfg[NAMES.OUTPUT_FILE_TYPE])
-            ),
-            **(self.cfg.get(
-                'quickplot',
-                {'plot_type': 'pcolormesh', 'cmap': 'Reds'}
-            ))
-        )
-        quickplot(
-            evector_y,
-            filename=os.path.join(
-                subdir,
-                'evector_y.{}'.format(self.cfg[NAMES.OUTPUT_FILE_TYPE])
-            ),
-            **(self.cfg.get(
-                'quickplot',
-                {'plot_type': 'pcolormesh', 'cmap': 'Reds'}
-            ))
-        )
+            self._save(evector_x, evector_y, ua_path)
+            self._plot(evector_x, evector_y, ua_path)
 
     def _compute_evectors(self, ua_cube, va_cube, filter_weights):
         '''
@@ -171,6 +130,52 @@ class EnergyVectors(object):
         ic.add_year(vector, 'time')
         ic.add_month_number(vector, 'time')
         return vector.aggregated_by(('month_number', 'year'), MEAN)
+
+    def _save(self, evector_x, evector_y, dataset):
+        if not self.cfg[NAMES.WRITE_NETCDF]:
+            return
+        logger.info("Saving results")
+        subdir = os.path.join(
+            self.cfg[NAMES.WORK_DIR],
+            self.datasets.get_info(NAMES.PROJECT, dataset),
+            self.datasets.get_info(NAMES.DATASET, dataset),
+        )
+        os.makedirs(subdir, exist_ok=True)
+        iris.save(evector_x, os.path.join(subdir, 'evector_x.nc'))
+        iris.save(evector_y, os.path.join(subdir, 'evector_y.nc'))
+
+    def _plot(self, evector_x, evector_y, dataset):
+        if not self.cfg[NAMES.WRITE_NETCDF]:
+            return
+        logger.info("Saving results")
+        subdir = os.path.join(
+            self.cfg[NAMES.PLOT_DIR],
+            self.datasets.get_info(NAMES.PROJECT, dataset),
+            self.datasets.get_info(NAMES.DATASET, dataset),
+        )
+        os.makedirs(subdir, exist_ok=True)
+        quickplot(
+            evector_x,
+            filename=os.path.join(
+                subdir,
+                'evector_x.{}'.format(self.cfg[NAMES.OUTPUT_FILE_TYPE])
+            ),
+            **(self.cfg.get(
+                'quickplot',
+                {'plot_type': 'pcolormesh', 'cmap': 'Reds'}
+            ))
+        )
+        quickplot(
+            evector_y,
+            filename=os.path.join(
+                subdir,
+                'evector_y.{}'.format(self.cfg[NAMES.OUTPUT_FILE_TYPE])
+            ),
+            **(self.cfg.get(
+                'quickplot',
+                {'plot_type': 'pcolormesh', 'cmap': 'Reds'}
+            ))
+        )
 
 
 def main():
