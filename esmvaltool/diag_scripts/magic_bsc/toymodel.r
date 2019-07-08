@@ -137,7 +137,7 @@ ymax <- max(forecast$mod, na.rm = TRUE)
 
 filepng <- paste0(plot_dir, "/", "synthetic_", gsub(".nc", "",
                   basename(fullpath_filenames)), ".jpg")
-jpeg(filepng, height = 15, width = 20, res = 300, units = 'cm')
+jpeg(filepng, height = 15, width = 20, res = 300, units = "cm")
 title <- paste(nm, "synthetic members generated")
 plot(time, forecast$obs, type = "l", ylab = paste(var0, "(", units, ")"),
      main = title, bty = "n", ylim = c(ymin, ymax))
