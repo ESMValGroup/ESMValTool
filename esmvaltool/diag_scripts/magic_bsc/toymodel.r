@@ -122,7 +122,7 @@ ToyModel <- function ( #nolint
           conf_term <- fxerr
         }
         else {
-          conf_term <- rnorm(1, mean = 0, sd = beta)
+          conf_term <- rnorm(nmemb, mean = 0, sd = beta)
         }
         trend_term <- gamma[g] * trend * j
         var_corr <- rnorm(
@@ -148,16 +148,17 @@ forecast <- ToyModel(#nolint
   nleadt = dim(data)[time_dim]
 )
 
-
+ymin <- min(forecast$mod, na.rm = TRUE)
+ymax <- max(forecast$mod, na.rm = TRUE)
 print(brewer.pal(n = nm, name = "Reds"))
 filepng <- paste0(plot_dir, "/", "synthetic_", gsub(".nc", "",
     basename(fullpath_filenames)), ".jpg")
-jpeg(filepng, height = 460, width = 600)
+jpeg(filepng, height = 15, width = 20, res = 300, units = 'cm')
 title <- paste(nm, "synthetic members generated")
 plot(time, forecast$obs, type = "l",
   ylab = paste(var0, "(", units, ")"),
   main = title,
-  bty = "n"
+  bty = "n", ylim = c(ymin, ymax),
 )
 matlines(
   time,
