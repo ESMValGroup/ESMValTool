@@ -18,6 +18,11 @@ preprocessors:
       start_month: 3
       end_year: 2014
       end_month: 11
+    extract_region:
+      start_longitude: 220
+      end_longitude: 320
+      start_latitude: 30
+      end_latitude: 80
     seasonal_statistics:
       operator: max
 
