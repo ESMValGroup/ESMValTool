@@ -115,7 +115,12 @@ are almost the same as for the other Atoassess metrics.
    pair of arguments of ``scripts: autoassess_script`` (see below
    for example). These are formatted as ``YYYY/MM/DD``; this is
    necessary since the Autoassess metrics are computed from 1-Dec
-   through 1-Dec rather than 1-Jan through 1-Jan.
+   through 1-Dec rather than 1-Jan through 1-Jan. This is a temporary
+   implementation to fully replicate the native Autoassess functionality
+   and a minor user inconvenience since they need to set an extra set of
+   ``start`` and ``end`` arguments in the diagnostic; this will be phased
+   when all the native Autoassess metrics hanve been ported to ESMValTool
+   review has completed.
 
 An example of standard inputs as read by ``autoassess_area_base.py`` and passed
 over to the diagnostic/metric is listed below.
