@@ -191,11 +191,17 @@ compliance between the ported Autoassess metric in ESMValTool and the original n
    Standard metrics plot
 
 
-.. figure:: /recipes/figures/autoassess_stratosphere/t100_vs_q70.png
+.. figure:: /recipes/figures/autoassess_stratosphere/UKESM1-0-LL_u_jan.png
    :scale: 50 %
-   :alt: t100_vs_q70.png
+   :alt: UKESM1-0-LL_u_jan.png
 
-   Biases in tropical tropopause temperature (100hPa, 10S-10N) and lower stratospheric humidity (70hPa, 10S-10N)
+   Zonal mean zonal wind in January.
+
+.. figure:: /recipes/figures/autoassess_stratosphere/UKESM1-0-LL_u_jul.png
+   :scale: 50 %
+   :alt: UKESM1-0-LL_u_jul.png
+
+   Zonal mean zonal wind in July.
 
 
 .. figure:: /recipes/figures/autoassess_stratosphere/qbo_30hpa.png
