@@ -15,6 +15,7 @@ import scipy.stats
 import iris
 
 import esmvaltool.diag_scripts.shared
+from esmvaltool.diag_scripts.shared.plot import multi_dataset_scatterplot
 import esmvaltool.diag_scripts.shared.names as n
 
 logger = logging.getLogger(os.path.basename(__file__))
@@ -39,6 +40,9 @@ class NegativeSeaIceFeedback(object):
         Compute diagnostic
 
         """
+        negative_feedback = list()
+        p_value = list()
+        datasets = list()
         for dataset in self.datasets:
             # Load cell area
             dataset_info = self.datasets.get_dataset_info(dataset)
@@ -69,6 +73,16 @@ class NegativeSeaIceFeedback(object):
 
             logger.info("Negative feedback: %20.4f", neg_feedback)
             logger.info("P-Value: %20.4f", stats[1])
+            negative_feedback.append(neg_feedback)
+            p_value.append(stats[1])
+            dataset.append('{}_{}'.format(
+                dataset_info[n.PROJECT], dataset_info[n.DATASET]
+            ))
+        path = os.path.join(
+            self.cfg[n.PLOT_DIR],
+            'negative_feedback.{}'.format(self.cfg[n.OUTPUT_FILE_TYPE])
+        ),
+        multi_dataset_scatterplot(negative_feedback, p_value, datasets, path)
 
     def compute_volume(self, avg_thick, cellarea, mask=1):
         """

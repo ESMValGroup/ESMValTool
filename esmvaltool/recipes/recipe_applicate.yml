@@ -21,7 +21,7 @@ diagnostics:
   NegativeSeaIceFeedback:
     description: Computes the negative seaice feedback
     variables:
-      sivol:
+      sit:
         mip: OImon
         fx_files: [areacello]
     scripts:
