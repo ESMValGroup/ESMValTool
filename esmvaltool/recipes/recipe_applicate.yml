@@ -21,8 +21,7 @@ diagnostics:
   NegativeSeaIceFeedback:
     description: Computes the negative seaice feedback
     variables:
-      sit:
-        field: TO2M
+      sivol:
         mip: OImon
         fx_files: [areacello]
     scripts:
@@ -33,7 +32,6 @@ diagnostics:
     description: Plots the sea-ice edge
     variables:
       sic:
-        field: TO2M
         mip: OImon
     scripts:
       sea_ice_edge:

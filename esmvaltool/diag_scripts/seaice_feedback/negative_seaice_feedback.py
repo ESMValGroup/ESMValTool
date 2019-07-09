@@ -39,7 +39,6 @@ class NegativeSeaIceFeedback(object):
         Compute diagnostic
 
         """
-
         for dataset in self.datasets:
             # Load cell area
             dataset_info = self.datasets.get_dataset_info(dataset)
