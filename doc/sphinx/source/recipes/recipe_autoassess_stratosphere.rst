@@ -161,10 +161,10 @@ Sample Plots and metrics
 Metric name                                         UKESM1-0-LL          UKESM1-0-LL
                                                     historical, ESGF     historical, u-bc179
 ===============================================     ================     ====================
-Polar night jet: northern hem (January)             40.33                x
-Polar night jet: southern hem (July)                84.87                x
-Easterly jet: southern hem (January)                24.85                x
-Easterly jet: northern hem (July)                   29.87                x
+Polar night jet: northern hem (January)             44.86*               44.91
+Polar night jet: southern hem (July)                112.09*              112.05
+Easterly jet: southern hem (January)                76.12*               75.85
+Easterly jet: northern hem (July)                   55.68*               55.74
 QBO period at 30 hPa                                41.50                41.00
 QBO amplitude at 30 hPa (westward)                  27.38                27.39
 QBO amplitude at 30 hPa (eastward)                  17.32                17.36
@@ -182,6 +182,10 @@ QBO amplitude at 30 hPa (eastward)                  17.32                17.36
 Results from ``u-bc179`` have been obtained by running the native Autoassess/stratosphere
 on ``.pp`` data from the UKESM` ``u-bc179`` suite and are listed here to confirm the 
 compliance between the ported Autoassess metric in ESMValTool and the original native metric.
+
+(*) Note that for ESMValTool results for Polar and Easterly jets ``AERmonZ`` data was used to
+compare with native Autoassess since for those metrics very low air pressures are needed (order 5 Pa);
+standard CMOR Amon is gridded on ``plev17`` that is lowest at 100 Pa.  
 
 
 .. figure:: /recipes/figures/autoassess_stratosphere/metrics.png
