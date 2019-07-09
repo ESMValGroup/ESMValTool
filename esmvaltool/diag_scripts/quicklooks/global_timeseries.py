@@ -17,6 +17,17 @@ from esmvaltool.diag_scripts.shared import run_diagnostic
 logger = logging.getLogger(os.path.basename(__file__))
 
 
+def compute_diagnostic(filename):
+    """Compute global average."""
+    logger.debug("Loading %s", filename)
+    cube = iris.load_cube(filename)
+
+    grid_areas = iris.analysis.cartography.area_weights(cube)
+
+    # from zonal mean to global mean
+    return cube.collapsed('latitude', iris.analysis.MEAN, weights=grid_areas)
+
+
 def timeplot(cube, **kwargs):
     """
     Create a time series plot from the cube.
@@ -60,12 +71,12 @@ def make_time_series_plots(
         The preprocessed model file
 
     """
-    # Load cube and set up units
-    cube = iris.load_cube(filename)
-    cube = diagtools.bgc_units(cube, metadata['short_name'])
 
-    # from zonal mean to global mean
-    cube = cube.collapsed('latitude', iris.analysis.MEAN)
+    # Load and compute cube
+    cube = compute_diagnostic(filename)
+
+    # Set up units
+    cube = diagtools.bgc_units(cube, metadata['short_name'])
 
     # Load image format extention
     image_extention = diagtools.get_image_format(cfg)
@@ -120,11 +131,11 @@ def multi_model_time_series(
 
     model_cube = {}
     for filename in sorted(metadata):
-        cube = iris.load_cube(filename)
-        cube = diagtools.bgc_units(cube, metadata[filename]['short_name'])
+        # Load and compute cube
+        cube = compute_diagnostic(filename)
 
-        # from zonal mean to global mean
-        cube = cube.collapsed('latitude', iris.analysis.MEAN)
+        # Set up units
+        cube = diagtools.bgc_units(cube, metadata[filename]['short_name'])
 
         model_cube[filename] = cube
 
