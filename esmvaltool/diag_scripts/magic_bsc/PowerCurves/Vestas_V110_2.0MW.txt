@@ -1,0 +1,41 @@
+#--------------------------- 
+# TURBINE CHARACTERISTICS
+#--------------------------- 
+# Name: Vestas_V110_2.0MW [string]
+# Manufacturer: Vestas [string]
+# Diameter: 110 m
+# CutIn: 3 m/s
+# CutOut: 20 m/s
+# ReCutIn: unknown m/s
+# RatedSpeed: 11.5 m/s
+# RatedPower: 2000 kW
+# IECClass: IIIa [Ia/IIa/IIIa/S]
+# Control: pitch [pitch/stall/active_stall/flaps]
+# HubHeights: 80,95,125 m
+#
+#--------------------------- 
+# POWER CURVE
+# Density: 1.225 kg/m^3
+#---------------------------
+WindSpeed	Power
+2.5	0
+3.0	23
+3.5	80
+4.0	140
+4.5	223
+5.0	314
+5.5	422
+6.0	549
+6.5	703
+7.0	900
+7.5	1123
+8.0	1347
+8.5	1555
+9.0	1775
+9.5	1907
+10.0	1972
+10.5	1997
+11.0	1999
+11.5	2000
+20.0	2000
+20.5	0

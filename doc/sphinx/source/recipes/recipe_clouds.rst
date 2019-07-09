@@ -1,3 +1,5 @@
+.. _recipes_clouds:
+
 Clouds
 ======
 
@@ -39,16 +41,16 @@ Diagnostics are stored in diag_scripts/clouds/
     * clouds_taylor.ncl: taylor diagrams
 
 
-User settings
--------------
+User settings in recipe
+-----------------------
 
-#. clouds.ncl
+#. Script clouds.ncl
 
-   *Required diag_script_info attributes*
+   *Required settings (scripts)*
 
    none
 
-   *Optional diag_scipt_info attributes*
+   *Optional settings (scripts)*
 
    * embracesetup: true = 2 plots per line, false = 4 plots per line (default)
    * explicit_cn_levels: explicit contour levels (array)
@@ -71,11 +73,11 @@ User settings
    * treat_var_as_error: treat variable as error when averaging (true, false);
      true:  avg = sqrt(mean(var*var)), false: avg = mean(var)
 
-   *Required variable_info attributes*
+   *Required settings (variables)*
 
    none
 
-   * Optional variable_info attributes (variable specific)
+   * Optional settings (variables)
 
    * long_name: variable description
    * reference_dataset: reference dataset; REQUIRED when calculating
@@ -86,13 +88,13 @@ User settings
 
    * variable "lwp": diag_scripts/shared/plot/rgb/qcm3.rgb
 
-#. clouds_bias.ncl
+#. Script clouds_bias.ncl
 
-   *Required diag_script_info attributes*
+   *Required settings (scripts)*
 
    none
 
-   *Optional diag_scipt_info attributes*
+   *Optional settings (scripts)*
 
    * plot_abs_diff: additionally also plot absolute differences (true, false)
    * plot_rel_diff: additionally also plot relative differences (true, false)
@@ -100,11 +102,11 @@ User settings
    * timemean: time averaging, i.e. "seasonalclim" (DJF, MAM, JJA, SON),
      "annualclim" (annual mean)
 
-   * Required variable_info attributes (variable specific)*
+   * Required settings (variables)*
 
    * reference_dataset: name of reference datatset
 
-   *Optional variable_info attributes (variable specific)*
+   *Optional settings (variables)*
 
    * long_name: description of variable
 
@@ -115,13 +117,13 @@ User settings
    * variable "pr-mmday": diag_scripts/shared/plots/rgb/ipcc-precip.rgb,
      diag_scripts/shared/plot/rgb/ipcc-precip-delta.rgb
 
-#. clouds_interannual.ncl
+#. Script clouds_interannual.ncl
 
-   *Required diag_script_info attributes (diagnostic specific)*
+   *Required settings (scripts)*
 
    none
 
-   *Optional diag_script_info attributes (diagnostic specific)*
+   *Optional settings (scripts)*
 
    * colormap: e.g., WhiteBlueGreenYellowRed, rainbow
    * explicit_cn_levels: use these contour levels for plotting
@@ -129,11 +131,11 @@ User settings
      (true, false)
    * projection: map projection, e.g., Mollweide, Mercator
 
-   *Required variable_info attributes (variable specific)*
+   *Required settings (variables)*
 
    none
 
-   *Optional variable_info attributes (variable specific)*
+   *Optional settings (variables)*
 
    * long_name: description of variable
    * reference_dataset: name of reference datatset
@@ -142,13 +144,13 @@ User settings
 
    * variable "lwp": diag_scripts/shared/plots/rgb/qcm3.rgb
 
-#. clouds_ipcc.ncl
+#. Script clouds_ipcc.ncl
 
-   *Required diag_script_info attributes (diagnostic specific)*
+   *Required settings (scripts)*
 
    none
 
-   *Optional diag_script_info attributes (diagnostic specific)*
+   *Optional settings (scripts)*
 
    * explicit_cn_levels: contour levels
    * mask_ts_sea_ice: true = mask T < 272 K as sea ice (only for variable "ts");
@@ -160,11 +162,11 @@ User settings
    * valid_fraction: used for creating sea ice mask (mask_ts_sea_ice = true):
      fraction of valid time steps required to mask grid cell as valid data
 
-   *Required variable_info attributes (variable specific)*
+   *Required settings (variables)*
 
    * reference_dataset:  name of reference data set
 
-   *Optional variable_info attributes (variable specific)*
+   *Optional settings (variables)*
 
    * long_name: description of variable
    * units: variable units
@@ -173,13 +175,13 @@ User settings
 
    * variables "pr", "pr-mmday": diag_scripts/shared/plot/rgb/ipcc-precip-delta.rgb
 
-#. clouds_taylor.ncl
+#. Script clouds_taylor.ncl
 
-   *Required diag_script_info attributes (diagnostic specific)*
+   *Required settings (scripts)*
 
    none
 
-   *Optional diag_script_info attributes (diagnostic specific)*
+   *Optional settings (scripts)*
 
    * embracelegend: false (default) = include legend in plot, max. 2 columns
      with dataset names in legend; true = write extra file with legend, max. 7
@@ -201,11 +203,11 @@ User settings
    * valid_fraction: used for creating sea ice mask (mask_ts_sea_ice = true):
      fraction of valid time steps required to mask grid cell as valid data
 
-   *Required variable_info attributes (variable specific)*
+   *Required settings (variables)*
 
    * reference_dataset: name of reference data set
 
-   *Optional variable attributes (variable specific)*
+   *Optional settings (variables)*
 
    none
 

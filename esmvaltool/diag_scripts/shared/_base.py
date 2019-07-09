@@ -14,6 +14,146 @@ import yaml
 logger = logging.getLogger(__name__)
 
 
+def get_plot_filename(basename, cfg):
+    """Get a valid path for saving a diagnostic plot.
+
+    Parameters
+    ----------
+    basename: str
+        The basename of the file.
+    cfg: dict
+        Dictionary with diagnostic configuration.
+
+    Returns
+    -------
+    str:
+        A valid path for saving a diagnostic plot.
+
+    """
+    return os.path.join(
+        cfg['plot_dir'],
+        basename + '.' + cfg['output_file_type'],
+    )
+
+
+def get_diagnostic_filename(basename, cfg, extension='nc'):
+    """Get a valid path for saving a diagnostic data file.
+
+    Parameters
+    ----------
+    basename: str
+        The basename of the file.
+    cfg: dict
+        Dictionary with diagnostic configuration.
+    extension: str
+        File name extension.
+
+    Returns
+    -------
+    str:
+        A valid path for saving a diagnostic data file.
+
+    """
+    return os.path.join(
+        cfg['work_dir'],
+        basename + '.' + extension,
+    )
+
+
+class ProvenanceLogger(object):
+    """Open the provenance logger.
+
+    Parameters
+    ----------
+    cfg: dict
+        Dictionary with diagnostic configuration.
+
+    Example
+    -------
+        Use as a context manager::
+
+            record = {
+                'caption': "This is a nice plot.",
+                'statistics': ['mean'],
+                'domain': 'global',
+                'plot_type': 'zonal',
+                'plot_file': '/path/to/result.png',
+                'authors': [
+                    'first_author',
+                    'second_author',
+                ],
+                'references': [
+                    'acknow_project',
+                ],
+                'ancestors': [
+                    '/path/to/input_file_1.nc',
+                    '/path/to/input_file_2.nc',
+                ],
+            }
+            output_file = '/path/to/result.nc'
+
+            with ProvenanceLogger(cfg) as provenance_logger:
+                provenance_logger.log(output_file, record)
+
+    """
+
+    def __init__(self, cfg):
+        """Create a provenance logger."""
+        self._log_file = os.path.join(cfg['run_dir'],
+                                      'diagnostic_provenance.yml')
+
+        if not os.path.exists(self._log_file):
+            self.table = {}
+        else:
+            with open(self._log_file, 'r') as file:
+                self.table = yaml.safe_load(file)
+
+    def log(self, filename, record):
+        """Record provenance.
+
+        Parameters
+        ----------
+        filename: str
+            Name of the file containing the diagnostic data.
+        record: dict
+            Dictionary with the provenance information to be logged.
+
+            Typical keys are:
+                - plot_type
+                - plot_file
+                - caption
+                - ancestors
+                - authors
+                - references
+
+        Note
+        ----
+            See also esmvaltool/config-references.yml
+
+        """
+        if filename in self.table:
+            raise KeyError(
+                "Provenance record for {} already exists.".format(filename))
+
+        self.table[filename] = record
+
+    def _save(self):
+        """Save the provenance log to file."""
+        dirname = os.path.dirname(self._log_file)
+        if not os.path.exists(dirname):
+            os.makedirs(dirname)
+        with open(self._log_file, 'w') as file:
+            yaml.safe_dump(self.table, file)
+
+    def __enter__(self):
+        """Enter context."""
+        return self
+
+    def __exit__(self, *_):
+        """Save the provenance log before exiting context."""
+        self._save()
+
+
 def select_metadata(metadata, **attributes):
     """Select specific metadata describing preprocessed data.
 
@@ -135,6 +275,78 @@ def sorted_group_metadata(metadata_groups, sort):
     return groups
 
 
+def extract_variables(cfg, as_iris=False):
+    """Extract basic variable information from configuration dictionary.
+
+    Returns `short_name`, `standard_name`, `long_name` and `units` keys for
+    each variable.
+
+    Parameters
+    ----------
+    cfg : dict
+        Diagnostic script configuration.
+    as_iris : bool, optional
+        Replace `short_name` by `var_name`, this can be used directly in
+        :mod:`iris` classes.
+
+    Returns
+    -------
+    dict
+        Variable information in :obj:`dict`s (values) for each `short_name`
+        (key).
+
+    """
+    keys_to_extract = [
+        'short_name',
+        'standard_name',
+        'long_name',
+        'units',
+    ]
+
+    # Extract variables
+    input_data = cfg['input_data'].values()
+    variable_data = group_metadata(input_data, 'short_name')
+    variables = {}
+    for (short_name, data) in variable_data.items():
+        data = data[0]
+        variables[short_name] = {}
+        info = variables[short_name]
+        for key in keys_to_extract:
+            info[key] = data[key]
+
+        # Replace short_name by var_name if desired
+        if as_iris:
+            info['var_name'] = info.pop('short_name')
+            if info['standard_name'] == '':
+                info['standard_name'] = None
+
+    return variables
+
+
+def variables_available(cfg, short_names):
+    """Check if data from certain variables is available.
+
+    Parameters
+    ----------
+    cfg : dict
+        Diagnostic script configuration.
+    short_names : list of str
+        Variable `short_names` which should be checked.
+
+    Returns
+    -------
+    bool
+        `True` if all variables available, `False` if not.
+
+    """
+    input_data = cfg['input_data'].values()
+    available_short_names = list(group_metadata(input_data, 'short_name'))
+    for var in short_names:
+        if var not in available_short_names:
+            return False
+    return True
+
+
 def get_cfg(filename=None):
     """Read diagnostic script configuration from settings.yml."""
     if filename is None:
@@ -165,12 +377,27 @@ def _get_input_data_files(cfg):
 
 @contextlib.contextmanager
 def run_diagnostic():
-    """Run a diagnostic.
+    """Run a Python diagnostic.
+
+    This context manager is the main entry point for most Python diagnostics.
 
     Example
     -------
-    See esmvaltool/diag_scripts/examples/diagnostic.py for an example of how to
-    start your diagnostic.
+    See esmvaltool/diag_scripts/examples/diagnostic.py for an extensive
+    example of how to start your diagnostic.
+
+    Basic usage is as follows, add these lines at the bottom of your script::
+
+        def main(cfg):
+            # Your diagnostic code goes here.
+            print(cfg)
+
+        if __name__ == '__main__':
+            with run_diagnostic() as cfg:
+                main(cfg)
+
+    The `cfg` dict passed to `main` contains the script configuration that
+    can be used with the other functions in this module.
 
     """
     # Implemented as context manager so we can support clean up actions later
@@ -207,6 +434,7 @@ def run_diagnostic():
     logging.basicConfig(format="%(asctime)s [%(process)d] %(levelname)-8s "
                         "%(name)s,%(lineno)s\t%(message)s")
     logging.Formatter.converter = time.gmtime
+    logging.captureWarnings(True)
     logging.getLogger().setLevel(cfg['log_level'].upper())
 
     # Read input metadata
@@ -242,6 +470,10 @@ def run_diagnostic():
         if args.ignore_existing and os.path.exists(output_directory):
             continue
         os.makedirs(output_directory)
+
+    provenance_file = os.path.join(cfg['run_dir'], 'diagnostic_provenance.yml')
+    if os.path.exists(provenance_file):
+        os.remove(provenance_file)
 
     yield cfg
 

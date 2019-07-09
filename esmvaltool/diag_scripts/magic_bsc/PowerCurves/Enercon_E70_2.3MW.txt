@@ -1,0 +1,38 @@
+#--------------------------- 
+# TURBINE CHARACTERISTICS
+#--------------------------- 
+# Name: Enercon_E70_2.3MW [string]
+# Manufacturer: Enercon [string]
+# Diameter: 71 m
+# CutIn: 2 m/s
+# CutOut: 25 m/s
+# ReCutIn: unknown m/s
+# RatedSpeed: 16 m/s
+# RatedPower: 2310 kW
+# IECClass: Ia [Ia/IIa/IIIa/S]
+# Control: pitch [pitch/stall/active_stall/flaps]
+# HubHeights: 57,64,74,85,98,113 m
+#
+#--------------------------- 
+# POWER CURVE
+# Density: 1.225 kg/m^3
+#---------------------------
+WindSpeed	Power
+1.0	0
+2.0	2
+3.0	18
+4.0	56
+5.0	127
+6.0	240
+7.0	400
+8.0	626
+9.0	892
+10.0	1223
+11.0	1590
+12.0	1900
+13.0	2080
+14.0	2230
+15.0	2300
+16.0	2310
+25.0	2310
+25.5	0

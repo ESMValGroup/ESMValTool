@@ -1,0 +1,85 @@
+# recipe_cox18nature.yml
+---
+documentation:
+
+  description: |
+    Reproducing the emergent constraint for ECS based on global temperature
+    variability (Cox et al., 2018).
+
+  authors:
+    - schl_ma
+
+  maintainer:
+    - schl_ma
+
+  references:
+    - cox18nature
+
+  projects:
+    - crescendo
+
+
+preprocessors:
+
+  spatial_mean:
+    area_statistics:
+      operator: mean
+
+
+diagnostics:
+
+  diag_ecs:
+    description: Calculate ECS.
+    scripts:
+      ecs:
+        script: climate_metrics/ecs.py
+        read_external_file: external_sources/ipcc_ar5.yml
+
+  diag_psi:
+    description: Calculate temperature variability metric psi.
+    variables:
+      tas: &tas_settings
+        preprocessor: spatial_mean
+        project: CMIP5
+        ensemble: r1i1p1
+        mip: Amon
+        exp: [historical, rcp85]
+        start_year: 1880
+        end_year: 2015
+        additional_datasets:
+          - {dataset: ACCESS1-0}
+          # Historical data end year is 2012, not 2005 (overlaps with RCP8.5)
+          # - {dataset: bcc-csm1-1}
+          - {dataset: BNU-ESM}
+          - {dataset: CanESM2}
+          - {dataset: CCSM4}
+          - {dataset: CNRM-CM5}
+          - {dataset: CSIRO-Mk3-6-0}
+          - {dataset: GFDL-ESM2M}
+          - {dataset: HadGEM2-ES}
+          - {dataset: GISS-E2-R}
+          - {dataset: inmcm4}
+          - {dataset: IPSL-CM5B-LR}
+          - {dataset: MIROC-ESM}
+          - {dataset: MPI-ESM-LR}
+          - {dataset: MRI-CGCM3}
+          - {dataset: NorESM1-M}
+      tasa:
+        <<: *tas_settings
+        additional_datasets:
+          - {dataset: HadCRUT4, project: OBS, type: ground, version: 1, tier: 2}
+    scripts:
+      psi:
+        script: climate_metrics/psi.py
+
+  diag_cox18nature:
+    description: Plot emergent relationship between ECS ans psi.
+    scripts:
+      cox18nature:
+        script: emergent_constraints/cox18nature.py
+        ancestors: [
+          'diag_ecs/ecs',
+          'diag_psi/psi',
+          'diag_psi/tas',
+          'diag_psi/tasa',
+        ]

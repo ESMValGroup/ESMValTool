@@ -1,9 +1,16 @@
+# ESMValTool
+# recipe_correlation.yml
 ---
-documentation:
+documentation: 
   description: |
     Calculate the Pearsons r correlation coefficient over specified dimensions.
+    
   authors:
     - ande_bo
+
+  maintainer:
+    - ande_bo
+    
   projects:
     - c3s-magic
 
@@ -33,7 +40,6 @@ diagnostics:
       ta:
         preprocessor: preprocess_3d_data
         reference_dataset: ERA-Interim
-        field: T3M
         start_year: 2000
         end_year: 2002
         project: CMIP5
@@ -48,6 +54,7 @@ diagnostics:
     scripts:
       correlation_pressure:
         script: examples/correlate.py
+        plot_type: zonal
         pearsonr:
           corr_coords:
             - air_pressure
@@ -57,11 +64,11 @@ diagnostics:
           plot_type: pcolormesh
       correlation_latlon:
         script: examples/correlate.py
+        plot_type: profile
         pearsonr:
           corr_coords:
             - latitude
             - longitude
           mdtol: 1.0
-          common_mask: false
         quickplot:
           plot_type: plot

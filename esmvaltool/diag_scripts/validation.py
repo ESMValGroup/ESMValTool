@@ -11,18 +11,16 @@ This diagnostic uses CMIP5 data; to switch to CMIP6 change _CMIP_TYPE
 import logging
 import os
 
-import matplotlib
-matplotlib.use('Agg')  # noqa
-
 import iris
 import iris.analysis.maths as imath
 import iris.quickplot as qplt
 import matplotlib.pyplot as plt
 import numpy as np
 
-from esmvaltool.diag_scripts.shared import (
-    apply_supermeans, get_control_exper_obs, group_metadata, run_diagnostic)
-from esmvaltool.preprocessor import extract_region, extract_season
+from esmvaltool.diag_scripts.shared import (apply_supermeans,
+                                            get_control_exper_obs,
+                                            group_metadata, run_diagnostic)
+from esmvalcore.preprocessor import extract_region, extract_season
 
 logger = logging.getLogger(os.path.basename(__file__))
 
