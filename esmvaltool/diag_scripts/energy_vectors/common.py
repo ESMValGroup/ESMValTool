@@ -2,6 +2,9 @@ import numpy as np
 
 from iris.analysis import SUM
 
+IDENTIFY_DATASET = (
+    NAMES.PROJECT, NAMES.ACTIVITY, NAMES.DATASET, NAMES.EXP, NAMES.ENSEMBLE
+)
 
 def low_pass_weights(window, freq):
     """

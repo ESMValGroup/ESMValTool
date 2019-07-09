@@ -11,14 +11,10 @@ from esmvaltool.diag_scripts.shared import Variables, Datasets, run_diagnostic
 from esmvaltool.diag_scripts.shared import names as NAMES
 from esmvaltool.diag_scripts.shared.plot import quickplot
 from esmvaltool.diag_scripts.energy_vectors.common import (
-    low_pass_weights, lanczos_filter
+    low_pass_weights, lanczos_filter, IDENTIFY_DATASET
 )
 
 logger = logging.getLogger(os.path.basename(__file__))
-
-IDENTIFY_DATASET = (
-    NAMES.PROJECT, NAMES.ACTIVITY, NAMES.DATASET, NAMES.EXP, NAMES.ENSEMBLE
-)
 
 
 class EnergyVectors(object):
