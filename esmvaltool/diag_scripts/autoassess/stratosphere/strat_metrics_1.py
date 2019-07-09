@@ -261,7 +261,7 @@ def pnj_strength(cube, winter=True):
     for nh/sh in winter and sh/nh in summer repsectively.
     """
     # Extract regions of interest
-    notrop = iris.Constraint(air_pressure=lambda p: p < 8000.0)
+    notrop = iris.Constraint(air_pressure=lambda p: p < 8000.)
     nh_cons = iris.Constraint(latitude=lambda l: l > 0)
     sh_cons = iris.Constraint(latitude=lambda l: l < 0)
     nh_tmp = cube.extract(notrop & nh_cons)
@@ -749,7 +749,7 @@ def calc_merra(run):
     # Create return values
     tmerra = t.data                        # K
     # TODO magic numbers
-    qmerra = ((1000000.*29./18.)*q.data)   # ppmv
+    qmerra = ((1000000. * 29. / 18.) * q.data)   # ppmv
 
     return tmerra, qmerra
 
@@ -843,26 +843,39 @@ def multi_t100_vs_q70_plot(run):
     ax1.set_ylim(merra_ymin, merra_ymax)
     ax1.xaxis.set_tick_params(labelsize='small')
     ax1.yaxis.set_tick_params(labelsize='small')
-    ax1.set_xlabel('T(10S-10N, 100hPa) bias wrt MERRA (K)', fontsize='large')
-    ax1.set_ylabel('q(10S-10N, 70hPa) bias wrt MERRA (ppmv)', fontsize='large')
+    ax1.set_xlabel('T(10S-10N, 100hPa) bias wrt ERA-I (K)', fontsize='large')
+    ax1.set_ylabel('q(10S-10N, 70hPa) bias wrt ERA-I (ppmv)', fontsize='large')
 
     # ERA-I axes
-    ax2 = ax1.twiny()  # twiny gives second horizontal axis
-    ay2 = ax1.twinx()  # twinx gives second vertical axis
-    ax2.xaxis.set_tick_params(labelsize='small')
-    ay2.yaxis.set_tick_params(labelsize='small')
-    ax2.set_xlabel('T(10S-10N, 100hPa) bias wrt ERA-I (K)', fontsize='large')
-    ay2.set_ylabel('q(10S-10N, 70hPa) bias wrt ERA-I (ppmv)', fontsize='large')
+    # ax2 = ax1.twiny()  # twiny gives second horizontal axis
+    # ay2 = ax1.twinx()  # twinx gives second vertical axis
+    # ax2.xaxis.set_tick_params(labelsize='small')
+    # ay2.yaxis.set_tick_params(labelsize='small')
+    # ax2.set_xlabel('T(10S-10N, 100hPa) bias wrt ERA-I (K)',
+    #                   fontsize='large')
+    # ay2.set_ylabel('q(10S-10N, 70hPa) bias wrt ERA-I (ppmv)',
+    #                   fontsize='large')
 
     # Plot ideal area
-    patch = Rectangle(
-        (0.0, 0.0),
-        2.0,
-        0.2 * q_merra,
-        fc='lime',
-        ec='None',
-        zorder=0)
-    ax1.add_patch(patch)
+    # Arbitrary box of acceptability for Met Office model
+    # development, designed to target warm
+    # tropopause temperature biases
+    # (e.g. Hardiman et al (2015) DOI: 10.1175/JCLI-D-15-0075.1.
+    # Defined as T bias < 2K and q bias < 20% relative to MERRA.
+    # MERRA is not used in this plot so ranges shifted by
+    # +0.8 K and +0.1 ppmv to account for
+    # differences between MERRA and ERA-Interim.
+    # TODO: Make box symmetric about zero to be relevant
+    # to models with a cold bias?
+    # TODO: add this to the final plot
+    # patch = Rectangle(
+    #     (0.8, 0.1),
+    #     2.0,
+    #     0.2 * q_merra,
+    #     fc='lime',
+    #     ec='None',
+    #     zorder=0)
+    # ax1.add_patch(patch)
 
     # Plot control
     tmon = iris.load_cube(t_cntl)
