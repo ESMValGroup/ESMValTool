@@ -23,7 +23,7 @@ data set for the use in ESMValTool.
 ==========================================
 
 Most variables are defined in the CMIP data request and can be found in the
-CMOR tables in the folder `/esmvalcore/cmor/tables/cmip5/Tables/ 
+CMOR tables in the folder `/esmvalcore/cmor/tables/cmip5/Tables/
 <https://github.com/ESMValGroup/ESMValCore/tree/development/esmvalcore/cmor/tables/cmip5/Tables>`_,
 differentiated according to the ``MIP`` they belong to. The tables essentially
 follow the `PCMDI <https://github.com/PCMDI>`_ guidelines. If you find the
@@ -39,62 +39,66 @@ guidelines:
 
 - Provide the ``variable_entry``;
 - Provide the ``modeling_realm``;
-- Provide the variable attributes, but leave ``standard_name`` blank.
-Necessary variable attributes are: ``units``, ``cell_methods``,
-  ``cell_measures``, ``long_name``, ``comment``.  
+- Provide the variable attributes, but leave ``standard_name`` blank. Necessary
+  variable attributes are: ``units``, ``cell_methods``, ``cell_measures``,
+  ``long_name``, ``comment``.   
 - Provide some additional variable attributes. Necessary additional variable
   attributes are: ``dimensions``, ``out_name``, ``type``. There are also
   additional variable attributes that can be defined here (see the already
   available cmorizers). 
 
-It is recommended to use an existing custom table as a template, to edit the content and save it as
-``<short_name>.dat``.
+It is recommended to use an existing custom table as a template, to edit the
+content and save it as ``<short_name>.dat``.
 
 2. Edit your configuration file
-=====================
+===============================
 
-Make sure that beside the paths to the model simulations and observations, also the path to 
-raw observational data to be cmorized (``RAWOBS``) is present in your configuration file.
+Make sure that beside the paths to the model simulations and observations, also
+the path to raw observational data to be cmorized (``RAWOBS``) is present in
+your configuration file. 
 
 3. Store your dataset in the right place
 ========================================
 
-The folder ``RAWOBS`` needs the subdirectories ``Tier1``, ``Tier2`` and ``Tier3``. 
-The different tiers describe the different levels of restrictions for downloading 
-and using the observations. The unformatted (raw) observations should then be 
-stored then in the appropriate of these three folders. 
+The folder ``RAWOBS`` needs the subdirectories ``Tier1``, ``Tier2`` and
+``Tier3``. The different tiers describe the different levels of restrictions
+for downloading and using the observations. The unformatted (raw) observations
+should then be stored then in the appropriate of these three folders.
 
 4. Create a cmorizer for the dataset
-========================================================
+====================================
 
 There are many cmorizing scripts available in `/esmvaltool/cmorizers/obs/
-<https://github.com/ESMValGroup/ESMValTool/blob/version2_development/esmvaltool/cmorizers/obs/>`_
+<https://github.com/ESMValGroup/ESMValTool/blob/version2_development/esmvaltool/cmorizers/obs/>`_ 
 where solutions to many kinds of format issues with observational data are
 addressed. Most of these scripts are written in NCL at the moment, but more 
 and more examples for Python-based cmorizing scripts become available.
 
 .. note:: 
-  NCL support will terminate soon, so new cmorizer scripts should preferably be written in Python.
+  NCL support will terminate soon, so new cmorizer scripts should preferably be
+  written in Python. 
 
 How much cmorizing an observational data set needs is strongly dependent on
 the original NetCDF file and how close the original formatting already is to
 the strict CMOR standard. 
 
-In the following two subsections two cmorizing scripts, one written in Python and
-one written in NCL, are explained in more detail.
+In the following two subsections two cmorizing scripts, one written in Python
+and one written in NCL, are explained in more detail.
 
 4.1 Cmorizer script written in python
-*************************************
+-------------------------------------
 
 Find here an example of a cmorizing script, written for the ``MTE`` dataset
 that is available at the MPI for Biogeochemistry in Jena: `cmorize_obs_mte.py
 <https://github.com/ESMValGroup/ESMValTool/blob/version2_development/esmvaltool/cmorizers/obs/cmorize_obs_mte.py>`_.
 
-All the necessary information about the dataset to write the filename correctly, 
-and which variable is of interest, is stored in a seperate configuration file: `MTE.yml
-<https://github.com/ESMValGroup/ESMValTool/blob/version2_development/esmvaltool/cmorizers/obs/cmor_config/MTE.yml>`_ 
-in the directory ``ESMValTool/esmvaltool/cmorizers/obs/cmor_config/``. Note that 
-the name of this configuration file has to be identical to the name of your data set.
+All the necessary information about the dataset to write the filename
+correctly, and which variable is of interest, is stored in a seperate
+configuration file: `MTE.yml
+<https://github.com/ESMValGroup/ESMValTool/blob/version2_development/esmvaltool/cmorizers/obs/cmor_config/MTE.yml>`_
+in the directory ``ESMValTool/esmvaltool/cmorizers/obs/cmor_config/``. Note
+that the name of this configuration file has to be identical to the name of
+your data set.
 
 The first part of this configuration file defines the filename of the raw
 observations file, the second part defines the common global attributes for 
@@ -129,26 +133,28 @@ Apart from a function to easily save data, this module contains different kinds
 of small fixes to the data attributes, coordinates, and metadata which are 
 necessary for the data field to be CMOR-compliant.
 
-Note that this specific CMORizer script contains several subroutines in order to 
-make the code clearer and more readable (we strongly recommend to follow that code 
-style). For example, the function ``_get_filepath`` converts the raw filepath to 
-the correct one and the function ``_extract_variable`` extracts and saves a single 
-variable from the raw data.
+Note that this specific CMORizer script contains several subroutines in order
+to make the code clearer and more readable (we strongly recommend to follow
+that code style). For example, the function ``_get_filepath`` converts the raw
+filepath to the correct one and the function ``_extract_variable`` extracts and
+saves a single variable from the raw data.
 
 .. _utilities.py: https://github.com/ESMValGroup/ESMValTool/blob/version2_development/esmvaltool/cmorizers/obs/utilities.py
 
 
 4.2 Cmorizer script written in NCL
-**********************************
+----------------------------------
 
 Find here an example of a cmorizing script, written for the ``ESACCI XCH4``
-dataset that is available on the Copernicus Climate Data Store: `cmorize_obs_CDS-XCH4.ncl
-<https://github.com/ESMValGroup/ESMValTool/blob/version2_development/esmvaltool/cmorizers/obs/cmorize_obs_CDS-XCH4.ncl>`_.
+dataset that is available on the Copernicus Climate Data Store:
+`cmorize_obs_CDS-XCH4.ncl
+<https://github.com/ESMValGroup/ESMValTool/blob/version2_development/esmvaltool/cmorizers/obs/cmorize_obs_CDS-XCH4.ncl>`_. 
 
 The first part of the script collects all the information about the dataset
 that are necessary to write the filename correctly and to understand which
-variable is of interest here. Please make sure to provide the correct information
-for following key words: DIAG_SCRIPT, VAR, NAME, MIP, FREQ, CMOR_TABLE. 
+variable is of interest here. Please make sure to provide the correct
+information for following key words: DIAG_SCRIPT, VAR, NAME, MIP, FREQ,
+CMOR_TABLE.
 
 - **Note:** the fields ``VAR``, ``NAME``, ``MIP`` and ``FREQ`` all ask for one
   or more entries. If more than one entry is provided, make sure that the order
@@ -173,8 +179,9 @@ by
 
    loadscript(getenv("esmvaltool_root") + "/esmvaltool/cmorizers/obs/utilities.ncl")
 
-This module contains different kinds of small fixes to the data attributes, 
-coordinates, and metadata which are necessary for the data field to be CMOR-compliant.
+This module contains different kinds of small fixes to the data attributes,
+coordinates, and metadata which are necessary for the data field to be
+CMOR-compliant.
 
 5. Run the cmorizing script
 ===========================
@@ -194,7 +201,8 @@ The cmorizing script for the given dataset can be run with:
    already available, and then a folder named after the data set. In this
    folder the cmorized data set will be stored as a netCDF file. 
 
-If your run was successful, one or more NetCDF files are produced in your output directory.
+If your run was successful, one or more NetCDF files are produced in your
+output directory.
 
 6. Naming convention of the observational data files
 ====================================================
@@ -247,15 +255,15 @@ The different parts of the name are explained in more detail here:
 7. Test the cmorized dataset
 ======================================
 
-To verify that the cmorized data file is indeed correctly formatted
-, you can run a dedicated test recipe,
-that does not include any diagnostic, but only reads
-in the data file and has it processed in the preprocessor. Such a recipe is
-called ``recipes/examples/recipe_check_obs.yml``. You just need to add a diagnostic
-for your dataset following the existing entries. 
+To verify that the cmorized data file is indeed correctly formatted, you can
+run a dedicated test recipe, that does not include any diagnostic, but only
+reads in the data file and has it processed in the preprocessor. Such a recipe
+is called ``recipes/examples/recipe_check_obs.yml``. You just need to add a
+diagnostic for your dataset following the existing entries.
 
 If the recipe is adjusted as outlined above, run it with the following call:
 
 .. code-block:: console
 
-  esmvaltool -c <config-user.yml> examples/recipe_preprocessor_test.yml --diagnostics <dataset>
+  esmvaltool -c <config-user.yml> examples/recipe_preprocessor_test.yml
+  --diagnostics <dataset>
