@@ -73,16 +73,23 @@ class NegativeSeaIceFeedback(object):
 
             logger.info("Negative feedback: %20.4f", neg_feedback)
             logger.info("P-Value: %20.4f", stats[1])
-            negative_feedback.append(neg_feedback)
-            p_value.append(stats[1])
-            dataset.append('{}_{}'.format(
+            negative_feedback.append([neg_feedback])
+            p_value.append([stats[1]])
+            datasets.append('{}_{}'.format(
                 dataset_info[n.PROJECT], dataset_info[n.DATASET]
             ))
         path = os.path.join(
             self.cfg[n.PLOT_DIR],
             'negative_feedback.{}'.format(self.cfg[n.OUTPUT_FILE_TYPE])
-        ),
-        multi_dataset_scatterplot(negative_feedback, p_value, datasets, path)
+        )
+        multi_dataset_scatterplot(
+            negative_feedback,
+            p_value,
+            datasets,
+            path,
+            save_kwargs=self.cfg.get('save', {}),
+            axes_functions=self.cfg.get('axes_functions', {}),
+        )
 
     def compute_volume(self, avg_thick, cellarea, mask=1):
         """
