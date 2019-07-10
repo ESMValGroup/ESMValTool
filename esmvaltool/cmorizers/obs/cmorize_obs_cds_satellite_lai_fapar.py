@@ -24,10 +24,7 @@ Notes
    - This script regrids and cmorizes the above dataset.
 
 Caveats
-   - Handling of fAPAR not correct yet (standard_name can not be set)
-   - This dataset has custom time bounds (see dataset documentation
-     available from source)
-   - Currently files are written to rawobsdir and not cleaned-up
+   - Fails setting standard name for variable FAPAR
 
 Modification history
    20190703-A_crez_ba: written.
@@ -62,17 +59,9 @@ def _cmorize_dataset(in_file, var, cfg, out_dir):
         cmor_table = CMOR_TABLES['custom']
         definition = cmor_table.get_variable(var['mip'], var['short_name'])
 
-    with catch_warnings():
-        filterwarnings(
-            action='ignore',
-            message="Ignoring netCDF variable 'tcc' invalid units '(0 - 1)'",
-            category=UserWarning,
-            module='iris',
-        )
-        cube = iris.load_cube(
-            str(in_file),
-            constraint=utils.var_name_constraint(var['raw']),
-        )
+    cube = iris.load_cube(
+        str(in_file),
+        constraint=utils.var_name_constraint(var['raw']))
 
     # Set correct names
     cube.var_name = definition.short_name
@@ -93,7 +82,7 @@ def _cmorize_dataset(in_file, var, cfg, out_dir):
     # Set global attributes
     utils.set_global_atts(cube, attributes)
 
-    logger.info("Saving cube\n%s", cube)
+    logger.info("Saving CMORized cube for variable %s", cube.var_name)
     utils.save_variable(cube, cube.var_name, out_dir, attributes)
 
     return in_file
@@ -108,15 +97,26 @@ def _regrid_dataset(in_dir, var, cfg):
     """
     filelist = glob.glob(os.path.join(in_dir, var['file']))
     for infile in filelist:
-        infile_head, infile_tail = os.path.split(infile)
+        _, infile_tail = os.path.split(infile)
         outfile_tail = infile_tail.replace('c3s', 'c3s_regridded')
-        outfile = os.path.join(infile_head, outfile_tail)
-        lai_cube = iris.load_cube(infile,
-                                  constraint=utils.var_name_constraint(
-                                      var['raw']))
+        outfile = os.path.join(cfg['work_dir'], outfile_tail)
+        with catch_warnings():
+            filterwarnings(
+                action='ignore',
+                # Full message:
+                # UserWarning: Skipping global attribute 'long_name':
+                #              'long_name' is not a permitted attribute
+                message="Skipping global attribute 'long_name'",
+                category=UserWarning,
+                module='iris',
+            )
+            lai_cube = iris.load_cube(infile,
+                                      constraint=utils.var_name_constraint(
+                                          var['raw']))
         lai_cube = regrid(lai_cube, cfg['custom']['regrid_resolution'],
                           'nearest')
         logger.info("Saving: %s", outfile)
+
         iris.save(lai_cube, outfile)
 
 
@@ -167,39 +167,39 @@ def _concatenate_dataset_over_time(in_dir, var):
     return cube
 
 
-def cmorization(in_dir, out_dir, cfg):
+def cmorization(in_dir, out_dir, cfg, cfg_user):
     """Cmorization func call."""
     # run the cmorization
+    # Pass on the workdir to the cfg dictionary
+    cfg['work_dir'] = cfg_user['work_dir']
+    # If it doesn't exist, create it
+    if not os.path.isdir(cfg['work_dir']):
+        logger.info("Creating working directory for regridding: %s",
+                    cfg['work_dir'])
+        os.mkdir(cfg['work_dir'])
+
     for short_name, var in cfg['variables'].items():
         var['short_name'] = short_name
-        # Now call every function with the following pattern (in_dir, var, cfg)
+        logger.info("Processing var %s", short_name)
+
+        # Regridding
         logger.info("Start regridding to: %s",
                     cfg['custom']['regrid_resolution'])
         _regrid_dataset(in_dir, var, cfg)
         logger.info("Finished regridding")
 
-        # First collect all information
-        inpfile = os.path.join(in_dir, var['file'])
-        logger.info("CMORizing var %s from file %s", short_name, inpfile)
-
+        # File concatenation
         logger.info("Start file concatenation over time")
         result_cube = _concatenate_dataset_over_time(
-            in_dir, var)
-        # Write it to disk
-        savename = os.path.join(in_dir, var['short_name'] + '_regridded.nc')
+            cfg['work_dir'], var)
+        savename = os.path.join(cfg['work_dir'],
+                                var['short_name'] + '_regridded.nc')
         logger.info("saving as: %s", savename)
         iris.save(result_cube, savename)
         logger.info("Finished file concatenation over time")
 
-        with catch_warnings():
-            filterwarnings(
-                action='ignore',
-                message=('WARNING: missing_value not used since it\n'
-                         'cannot be safely cast to variable data type'),
-                category=UserWarning,
-                module='iris',
-            )
-            in_file = savename
-            logger.info("Start CMORization of file")
-            _cmorize_dataset(in_file, var, cfg, out_dir)
+        # Finish with actual cmorization
+        in_file = savename
+        logger.info("Start CMORization of file")
+        _cmorize_dataset(in_file, var, cfg, out_dir)
         logger.info("Finished regridding and CMORizing %s", in_file)
