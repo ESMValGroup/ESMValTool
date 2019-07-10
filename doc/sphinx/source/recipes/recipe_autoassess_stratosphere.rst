@@ -122,6 +122,18 @@ are almost the same as for the other Atoassess metrics.
    when all the native Autoassess metrics hanve been ported to ESMValTool
    review has completed.
 
+.. note::
+
+   **Polar Night/Easterly Jets Metrics**
+
+   Polar Night Jets (PNJ) metrics require data available at very low air pressures
+   ie very high altitudes; both Olar Night Jet and Easterly Jets computations should
+   be preformed using ``ta`` and ``ua`` data at ``<< 100 Pa``; the lowest air pressure
+   found in atmospheric CMOR mip tables corresponds to ``plev39`` air pressure table,
+   and is used in the ``AERmonZ`` mip. If the user requires correct calculations of these
+   jets, it is highly advisable to use data from ``AERmonZ``. Note that standard QBO
+   calculation is exact for ``plev17`` or ``plev19`` tables.
+
 An example of standard inputs as read by ``autoassess_area_base.py`` and passed
 over to the diagnostic/metric is listed below.
 
@@ -161,36 +173,40 @@ For UKMO analysis data, contact the Met Office.
 
 Sample Plots and metrics
 ------------------------
+Below is a set of metrics for  UKESM1-0-LL (historical data); the table
+shows a comparison made between running ESMValTool on CMIP6 CMORized
+netCDF data freely available on ESGF nodes and the run made using native
+Autoassess performed at the Met Office using the pp output of the model.
 
 ===============================================     ================     ====================
-Metric name                                         UKESM1-0-LL          UKESM1-0-LL
+Metric name                                         UKESM1-0-LL;         UKESM1-0-LL;
+                                                    CMIP6: AERmonZ;      pp files;
                                                     historical, ESGF     historical, u-bc179
 ===============================================     ================     ====================
-Polar night jet: northern hem (January)             44.86*               44.91
-Polar night jet: southern hem (July)                112.09*              112.05
-Easterly jet: southern hem (January)                76.12*               75.85
-Easterly jet: northern hem (July)                   55.68*               55.74
+Polar night jet: northern hem (January)             44.86                44.91
+Polar night jet: southern hem (July)                112.09               112.05
+Easterly jet: southern hem (January)                76.12                75.85
+Easterly jet: northern hem (July)                   55.68                55.74
 QBO period at 30 hPa                                41.50                41.00
-QBO amplitude at 30 hPa (westward)                  27.38                27.39
-QBO amplitude at 30 hPa (eastward)                  17.32                17.36
-50 hPa temperature: 60N-90N (DJF)                   26.75                26.85
-50 hPa temperature: 60N-90N (MAM)                   40.95                40.92
-50 hPa temperature: 90S-60S (JJA)                   11.10                11.30
-50 hPa temperature: 90S-60S (SON)                   23.30                23.63
+QBO amplitude at 30 hPa (westward)                  27.39                27.39
+QBO amplitude at 30 hPa (eastward)                  17.36                17.36
+50 hPa temperature: 60N-90N (DJF)                   27.11                26.85
+50 hPa temperature: 60N-90N (MAM)                   40.94                40.92
+50 hPa temperature: 90S-60S (JJA)                   11.75                11.30
+50 hPa temperature: 90S-60S (SON)                   23.88                23.63
 100 hPa equatorial temp (annual mean)               15.29                15.30
 100 hPa equatorial temp (annual cycle strength)      1.67                 1.67
-100 hPa 10Sto10N temp (annual mean)                 15.44                15.46
+100 hPa 10Sto10N temp (annual mean)                 15.48                15.46
 100 hPa 10Sto10N temp (annual cycle strength)        1.62                 1.62
-70 hPa 10Sto10N wv (annual mean)                     5.74                 5.75
+70 hPa 10Sto10N wv (annual mean)                     5.75                 5.75
 ===============================================     ================     ====================
 
 Results from ``u-bc179`` have been obtained by running the native Autoassess/stratosphere
-on ``.pp`` data from the UKESM` ``u-bc179`` suite and are listed here to confirm the 
+on ``.pp`` data from UKESM1 ``u-bc179`` suite and are listed here to confirm the 
 compliance between the ported Autoassess metric in ESMValTool and the original native metric.
 
-(*) Note that for ESMValTool results for Polar and Easterly jets ``AERmonZ`` data was used to
-compare with native Autoassess since for those metrics very low air pressures are needed (order 5 Pa);
-standard CMOR Amon is gridded on ``plev17`` that is lowest at 100 Pa.  
+Another reference run comparing UKESM1-0-LL to the physical model HadGEM3-GC31-LL can be found
+`here <https://github.com/NCAS-CMS/NCAS-Useful-Documentation/tree/master/autoassess_review_results/stratosphere_AERmonZ/plots/aa_strato/autoassess_strato_test_1/HadGEM3-GC31-LL_vs_UKESM1-0-LL/stratosphere>`_ .
 
 
 .. figure:: /recipes/figures/autoassess_stratosphere/metrics.png
