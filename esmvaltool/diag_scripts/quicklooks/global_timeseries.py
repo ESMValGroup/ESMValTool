@@ -1,6 +1,25 @@
 """
-Time series diagnostics
+Global time series diagnostics
 =======================
+
+Description
+-----------
+Plot time series of global mean
+
+Author
+------
+Lisa Bock (DLR, Germany)
+
+Project
+-------
+CMIP6-DICAD
+
+Configuration options in recipe
+-------------------------------
+time_int: min and max for time axis
+y_min: min of y axis
+y_max_ max of y axis
+
 """
 
 import logging
@@ -97,6 +116,10 @@ def make_time_series_plots(
         plt.ylim(bottom=cfg['y_min'])
     if 'y_max' in cfg:
         plt.ylim(top=cfg['y_max'])
+
+    #set time axis limits
+    if 'time_int' in cfg:
+        plt.xlim(cfg['time_int'])
 
     # Determine image filename:
     path = diagtools.get_image_path(
