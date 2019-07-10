@@ -63,7 +63,7 @@ def _unzip(filepath, out_dir):
     return new_path
 
 
-def cmorization(in_dir, out_dir, cfg):
+def cmorization(in_dir, out_dir, cfg, _):
     """Cmorization func call."""
     glob_attrs = cfg['attributes']
     cmor_table = cfg['cmor_table']
