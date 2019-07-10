@@ -213,24 +213,41 @@ Another reference run comparing UKESM1-0-LL to the physical model HadGEM3-GC31-L
    :scale: 50 %
    :alt: metrics.png
 
-   Standard metrics plot
+   Standard metrics plot comparing standard metrics from UKESM1-0-LL and HadGEM3-GC31.
 
 
 .. figure:: /recipes/figures/autoassess_stratosphere/UKESM1-0-LL_u_jan.png
    :scale: 50 %
    :alt: UKESM1-0-LL_u_jan.png
 
-   Zonal mean zonal wind in January.
+   Zonal mean zonal wind in January for UKESM1-0-LL.
 
-.. figure:: /recipes/figures/autoassess_stratosphere/UKESM1-0-LL_u_jul.png
+.. figure:: /recipes/figures/autoassess_stratosphere/HadGEM3-GC31-LL_u_jan.png
    :scale: 50 %
-   :alt: UKESM1-0-LL_u_jul.png
+   :alt: HadGEM3-GC31-LL_u_jan.png
 
-   Zonal mean zonal wind in July.
+   Zonal mean zonal wind in January for HadGEM3-GC31-LL.
 
+.. figure:: /recipes/figures/autoassess_stratosphere/UKESM1-0-LL_qbo.png
+   :scale: 50 %
+   :alt: UKESM1-0-LL_qbo.png
+
+   QBO for UKESM1-0-LL.
+
+.. figure:: /recipes/figures/autoassess_stratosphere/HadGEM3-GC31-LL_qbo.png
+   :scale: 50 %
+   :alt: HadGEM3-GC31-LL_qbo.png
+
+   QBO for HadGEM3-GC31-LL.
 
 .. figure:: /recipes/figures/autoassess_stratosphere/qbo_30hpa.png
    :scale: 50 %
    :alt: qbo_30hpa.png
 
-   QBO at 30hPa comparison between UKESM1-0-LL (piControl and historical).
+   QBO at 30hPa comparison between UKESM1-0-LL and HadGEM3-GC31-LL.
+
+.. figure:: /recipes/figures/autoassess_stratosphere/teq_100hpa.png
+   :scale: 50 %
+   :alt: teq_100hpa.png
+
+   Equatorial temperature at 100hPa, multi annual means.
