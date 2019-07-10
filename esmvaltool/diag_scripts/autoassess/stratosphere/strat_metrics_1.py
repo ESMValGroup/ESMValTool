@@ -29,6 +29,12 @@ def weight_lat_ave(cube):
     return cube.collapsed('latitude', iris.analysis.MEAN, weights=grid_areas)
 
 
+def weight_cosine(cube):
+    """Routine to calculate weighted lat avg when there is no longitude."""
+    grid_areas = iac.cosine_latitude_weights(cube)
+    return cube.collapsed('latitude', iris.analysis.MEAN, weights=grid_areas)
+
+
 def cmap_and_norm(cmap, levels, reverse=False):
     """
     Generate interpolated colour map.
@@ -64,7 +70,7 @@ def plot_zmean(cube, levels, title, log=False, ax1=None):
     ax1.set_xticks([-90, -60, -30, 0, 30, 60, 90])
     ax1.xaxis.set_major_formatter(LATITUDE_FORMATTER)
     ax1.set_ylabel('Pressure (Pa)', fontsize='small')
-    ax1.set_ylim(100000., 1000.)
+    ax1.set_ylim(100000., 10.)
     if log:
         ax1.set_yscale("log")
 
@@ -95,7 +101,7 @@ def plot_timehgt(cube, levels, title, log=False, ax1=None):
     ax1.xaxis.set_major_locator(mdates.YearLocator(4))
     ax1.xaxis.set_major_formatter(mdates.DateFormatter('%Y'))
     ax1.set_ylabel('Pressure (Pa)', fontsize='small')
-    ax1.set_ylim(100000., 1000.)
+    ax1.set_ylim(100000., 10.)
     if log:
         ax1.set_yscale("log")
 
@@ -316,7 +322,11 @@ def qbo_metrics(run, ucube, metrics):
     # Extract equatorial zonal mean U
     tropics = iris.Constraint(latitude=lambda lat: -5 <= lat <= 5)
     p30 = iris.Constraint(air_pressure=3000.)
-    qbo = weight_lat_ave(ucube.extract(tropics))
+    ucube_cds = [cdt.standard_name for cdt in ucube.coords()]
+    if 'longitude' in ucube_cds:
+        qbo = weight_lat_ave(ucube.extract(tropics))
+    else:
+        qbo = weight_cosine(ucube.extract(tropics))
     qbo30 = qbo.extract(p30)
 
     # write results to current working directory
@@ -358,10 +368,17 @@ def tpole_metrics(run, tcube, metrics):
     shpole = iris.Constraint(latitude=lambda la: la <= -60,
                              air_pressure=5000.0)
 
-    djf_polave = weight_lat_ave(t_djf.extract(nhpole))
-    mam_polave = weight_lat_ave(t_mam.extract(nhpole))
-    jja_polave = weight_lat_ave(t_jja.extract(shpole))
-    son_polave = weight_lat_ave(t_son.extract(shpole))
+    tcube_cds = [cdt.standard_name for cdt in tcube.coords()]
+    if 'longitude' in tcube_cds:
+        djf_polave = weight_lat_ave(t_djf.extract(nhpole))
+        mam_polave = weight_lat_ave(t_mam.extract(nhpole))
+        jja_polave = weight_lat_ave(t_jja.extract(shpole))
+        son_polave = weight_lat_ave(t_son.extract(shpole))
+    else:
+        djf_polave = weight_cosine(t_djf.extract(nhpole))
+        mam_polave = weight_cosine(t_mam.extract(nhpole))
+        jja_polave = weight_cosine(t_jja.extract(shpole))
+        son_polave = weight_cosine(t_son.extract(shpole))
 
     # Calculate metrics and add to metrics dictionary
     # TODO Why take off 180.0?
@@ -408,7 +425,11 @@ def teq_metrics(run, tcube, metrics):
 
     # Calculate area-weighted global monthly means from multi-annual data
     t_months = teq100.aggregated_by('month', iris.analysis.MEAN)
-    t_months = weight_lat_ave(t_months)
+    tcube_cds = [cdt.standard_name for cdt in tcube.coords()]
+    if 'longitude' in tcube_cds:
+        t_months = weight_lat_ave(t_months)
+    else:
+        t_months = weight_cosine(t_months)
 
     # write results to current working directory
     outfile = '{0}_teq100_{1}.nc'
@@ -433,7 +454,11 @@ def t_metrics(run, tcube, metrics):
 
     # Calculate area-weighted global monthly means from multi-annual data
     t_months = t100.aggregated_by('month', iris.analysis.MEAN)
-    t_months = weight_lat_ave(t_months)
+    tcube_cds = [cdt.standard_name for cdt in tcube.coords()]
+    if 'longitude' in tcube_cds:
+        t_months = weight_lat_ave(t_months)
+    else:
+        t_months = weight_cosine(t_months)
 
     # write results to current working directory
     outfile = '{0}_t100_{1}.nc'
@@ -458,7 +483,11 @@ def q_metrics(run, qcube, metrics):
 
     # Calculate area-weighted global monthly means from multi-annual data
     q_months = q70.aggregated_by('month', iris.analysis.MEAN)
-    q_months = weight_lat_ave(q_months)
+    qcube_cds = [cdt.standard_name for cdt in qcube.coords()]
+    if 'longitude' in qcube_cds:
+        q_months = weight_lat_ave(q_months)
+    else:
+        q_months = weight_cosine(q_months)
 
     # write results to current working directory
     outfile = '{0}_q70_{1}.nc'
@@ -519,7 +548,9 @@ def mainfunc(run):
     # removes longitude as a dimension coordinate and makes it a scalar
     # coordinate in line with how a zonal mean would be described.
     # Is there a better way of doing this?
-    ucube = ucube.collapsed('longitude', iris.analysis.MEAN)
+    ucube_cds = [cdt.standard_name for cdt in ucube.coords()]
+    if 'longitude' in ucube_cds:
+        ucube = ucube.collapsed('longitude', iris.analysis.MEAN)
     if not ucube.coord('latitude').has_bounds():
         ucube.coord('latitude').guess_bounds()
     # check for month_number
@@ -536,7 +567,9 @@ def mainfunc(run):
     # removes longitude as a dimension coordinate and makes it a scalar
     # coordinate in line with how a zonal mean would be described.
     # Is there a better way of doing this?
-    tcube = tcube.collapsed('longitude', iris.analysis.MEAN)
+    tcube_cds = [cdt.standard_name for cdt in tcube.coords()]
+    if 'longitude' in tcube_cds:
+        tcube = tcube.collapsed('longitude', iris.analysis.MEAN)
     if not tcube.coord('latitude').has_bounds():
         tcube.coord('latitude').guess_bounds()
     aux_coord_names = [aux_coord.var_name for aux_coord in tcube.aux_coords]
@@ -554,7 +587,9 @@ def mainfunc(run):
     # removes longitude as a dimension coordinate and makes it a scalar
     # coordinate in line with how a zonal mean would be described.
     # Is there a better way of doing this?
-    qcube = qcube.collapsed('longitude', iris.analysis.MEAN)
+    qcube_cds = [cdt.standard_name for cdt in qcube.coords()]
+    if 'longitude' in qcube_cds:
+        qcube = qcube.collapsed('longitude', iris.analysis.MEAN)
     if not qcube.coord('latitude').has_bounds():
         qcube.coord('latitude').guess_bounds()
     aux_coord_names = [aux_coord.var_name for aux_coord in qcube.aux_coords]
@@ -720,8 +755,12 @@ def calc_merra(run):
         q = q.extract(time)
 
     # zonal mean
-    t = t.collapsed('longitude', iris.analysis.MEAN)
-    q = q.collapsed('longitude', iris.analysis.MEAN)
+    t_cds = [cdt.standard_name for cdt in t.coords()]
+    if 'longitude' in t_cds:
+        t = t.collapsed('longitude', iris.analysis.MEAN)
+    q_cds = [cdt.standard_name for cdt in q.coords()]
+    if 'longitude' in q_cds:
+        q = q.collapsed('longitude', iris.analysis.MEAN)
 
     # mean over tropics
     equator = iris.Constraint(latitude=lambda lat: -10 <= lat <= 10)
@@ -731,7 +770,10 @@ def calc_merra(run):
     # Calculate area-weighted global monthly means from multi-annual data
     iris.coord_categorisation.add_month(t, 'time', name='month')
     t = t.aggregated_by('month', iris.analysis.MEAN)
-    t = weight_lat_ave(t)
+    if 'longitude' in t_cds:
+        t = weight_lat_ave(t)
+    else:
+        t = weight_cosine(t)
 
     # Extract 10S-10N humidity at 100hPa
     tropics = iris.Constraint(latitude=lambda lat: -10 <= lat <= 10)
@@ -741,7 +783,10 @@ def calc_merra(run):
     # Calculate area-weighted global monthly means from multi-annual data
     iris.coord_categorisation.add_month(q, 'time', name='month')
     q = q.aggregated_by('month', iris.analysis.MEAN)
-    q = weight_lat_ave(q)
+    if 'longitude' in q_cds:
+        q = weight_lat_ave(q)
+    else:
+        q = weight_cosine(q)
 
     # Calculate time mean
     t = t.collapsed('time', iris.analysis.MEAN)
