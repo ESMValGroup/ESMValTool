@@ -30,7 +30,7 @@ diagnostics:
     description: Computes the negative seaice feedback
     variables:
       sit:
-        preprocessor: extract_region
+        preprocessor: get_arctic
         mip: OImon
         fx_files: [areacello]
     scripts:
