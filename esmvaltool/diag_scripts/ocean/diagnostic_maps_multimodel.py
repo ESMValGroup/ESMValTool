@@ -108,7 +108,7 @@ def make_multiple_plots(cfg, metadata, obs_filename):
     """
     Produce multiple panel comparison maps of model(s) and data (if provided).
     If observations are not provided, plots of each model data are drawn.
-    
+
     Put on top row observational data (if available) and in following subplots
     model difference (or data) organized in rows/cols using stencil variable.
 
@@ -120,7 +120,6 @@ def make_multiple_plots(cfg, metadata, obs_filename):
         the input files dictionairy
     obs_filename: str
         the preprocessed observations file.
-
     """
     logger.debug('make_multiple_plots')
     # ####
@@ -143,7 +142,7 @@ def make_multiple_plots(cfg, metadata, obs_filename):
     layers = {}
     cubes = {}
     for input_file in filenames:
-        logger.debug('loading: \t%s, \t%s', input_file)
+        logger.debug('loading: \t%s', input_file)
         cube = iris.load_cube(input_file)
         cube = diagtools.bgc_units(cube, metadata[input_file]['short_name'])
         model_name = metadata[input_file]['dataset']
