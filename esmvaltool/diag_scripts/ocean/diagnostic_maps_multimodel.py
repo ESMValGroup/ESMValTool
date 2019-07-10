@@ -1,11 +1,9 @@
-"""
-Model vs Observations maps Diagnostic.
-======================================
+""" Model vs Observations maps Diagnostic.
 
 Diagnostic to produce comparison maps of model(s) and data (if provided).
-If observations are not provided, maps of required fields for each model are shown.
+If observations are not provided, data maps for each model are drawn.
 
-The image shows on top row observational data and in the following subplot(s)
+The image shows on top row observational data and the following subplot(s)
 the comparison for each model by following the order of the recipe.
 
 Note that this diagnostic assumes that the preprocessors do the bulk of the
@@ -22,29 +20,23 @@ An approproate preprocessor for a 2D + time field would be::
         target_grid: 1x1
         scheme: linear
 
-Author: lovat_to
+Author: lova_to
 """
 import logging
 import os
 import sys
-import math
 
-from matplotlib import pyplot
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
 import matplotlib.gridspec as gridspec
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 
 import iris
-import iris.quickplot as qplt
 import cartopy.crs as ccrs
 import numpy as np
-from scipy.stats import linregress
 
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic
-
-from textwrap import wrap
 
 # This part sends debug statements to stdout
 logger = logging.getLogger(os.path.basename(__file__))
@@ -58,7 +50,7 @@ def add_map_plot(ax,
                  title='',
                  cmap='',
                  extend='neither',
-                 hasCbar=False):
+                 hascbar=False):
     """
     Add a map in the current pyplot suplot.
 
@@ -78,10 +70,10 @@ def add_map_plot(ax,
         A string to describe the matplotlib colour map.
     extend: str
         Contourf-coloring of values outside the levels range
-    hasCbar: logical
+    hascbar: logical
         Add colorbar to the subplot
     """
-    qplot = iris.plot.contourf(
+    iris.plot.contourf(
         cube,
         nspace,
         linewidth=0,
@@ -95,7 +87,7 @@ def add_map_plot(ax,
     gl.ylocator = mticker.FixedLocator(np.linspace(-90., 90., 7))
     ax.set_title(title, fontweight="bold", fontsize='large')
 
-    if hasCbar:
+    if hascbar:
         bba = (0., -0.1, 1, 1)
         if cols > 0:
             bba = ((0.5 - cols) * 1.1, -0.15, cols, 1)
@@ -108,7 +100,7 @@ def add_map_plot(ax,
             bbox_transform=ax.transAxes,
             borderpad=0,
         )
-        cbar = pyplot.colorbar(orientation='horizontal', cax=axins)
+        cbar = plt.colorbar(orientation='horizontal', cax=axins)
         cbar.set_ticks(nspace[::2])
 
 
@@ -208,7 +200,7 @@ def make_multiple_plots(cfg, metadata, obs_filename):
         xx = 0
         clevels = 13
         for ii in range(len(maps_cubes)):
-            hasCbar = False
+            hascbar = False
             cube = maps_cubes[ii]
             thename = name_cubes[ii]
             nspace = np.linspace(
@@ -216,7 +208,7 @@ def make_multiple_plots(cfg, metadata, obs_filename):
             cmap = 'viridis'
 
             if thename in [obsname, name_cubes[-1]]:
-                hasCbar = True
+                hascbar = True
 
             if ii == 0:
                 thename = thename + ' (' + varname + ') [' + varunit + ']'
@@ -237,7 +229,7 @@ def make_multiple_plots(cfg, metadata, obs_filename):
                 cmap=cmap,
                 title=thename,
                 extend=extend,
-                hasCbar=hasCbar)
+                hascbar=hascbar)
 
             # next row & column indexes
             xx = xx + 1
