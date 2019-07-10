@@ -243,10 +243,35 @@ def main(cfg):
 
     """
 
+    # read concatinated file
+    quicklook_dir = cfg['quicklook']['output_dir']
+
     for index, metadata_filename in enumerate(cfg['input_files']):
         logger.info('metadata filename:\t%s', metadata_filename)
 
         metadatas = diagtools.get_input_files(cfg, index=index)
+
+        for filename in sorted(metadatas):
+
+            logger.info('-----------------')
+            logger.info(
+                'preprocessed model filenames:\t%s',
+                filename,
+            )
+
+            metadata = metadatas[filename]
+
+            con_file = quicklook_dir + '/' 
+            con_file += '_'.join([metadata['project'],
+                                  metadata['dataset'],
+                                  metadata['mip'],
+                                  metadata['exp'],
+                                  metadata['ensemble'],
+                                  metadata['short_name'] + '.nc'])
+            logger.info('concatinated filename:\t%s', con_file)
+
+            # Time series of individual model
+            make_time_series_plots(cfg, metadata, con_file)
 
         if len(metadatas) > 1:
             # Time series plot with all models
@@ -255,16 +280,6 @@ def main(cfg):
                 metadatas,
             )
 
-        for filename in sorted(metadatas):
-
-            logger.info('-----------------')
-            logger.info(
-                'model filenames:\t%s',
-                filename,
-            )
-
-            # Time series of individual model
-            make_time_series_plots(cfg, metadatas[filename], filename)
     logger.info('Success')
 
 
