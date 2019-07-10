@@ -1,4 +1,4 @@
-""" Model vs Observations maps Diagnostic.
+"""Model vs Observations maps Diagnostic.
 
 Diagnostic to produce comparison maps of model(s) and data (if provided).
 If observations are not provided, data maps for each model are drawn.
@@ -109,8 +109,8 @@ def make_multiple_plots(cfg, metadata, obs_filename):
     Produce multiple panel comparison maps of model(s) and data (if provided).
     If observations are not provided, plots of each model data are drawn.
     
-    Put on top row observational data (if available) and in the following subplots
-    model difference (or data) organized in rows/cols according to the stencil variable.
+    Put on top row observational data (if available) and in following subplots
+    model difference (or data) organized in rows/cols using stencil variable.
 
     Parameters
     ----------
@@ -128,10 +128,10 @@ def make_multiple_plots(cfg, metadata, obs_filename):
     proj = ccrs.Robinson(central_longitude=0)
 
     # check if observations are provided
-    hasObs = False
+    hasobs = False
     obsname = ''
-    if (obs_filename != ''):
-        hasObs = True
+    if obs_filename != '':
+        hasobs = True
         obsname = metadata[obs_filename]['dataset']
         filenames.remove(obs_filename)
         filenames.insert(0, obs_filename)
@@ -151,7 +151,7 @@ def make_multiple_plots(cfg, metadata, obs_filename):
         for layer in cubes[model_name]:
             layers[layer] = True
     stencil = metadata[input_file]['panel_rowcol']
-    if hasObs:
+    if hasobs:
         stencil[0] = stencil[0] + 1
 
     logger.debug('layers: %s', layers)
@@ -174,13 +174,13 @@ def make_multiple_plots(cfg, metadata, obs_filename):
         for thename in cubes:
             maps_cubes.append(cubes[thename][layer])
             name_cubes.append(thename)
-            if (hasObs) & (thename != obsname):
+            if (hasobs) & (thename != obsname):
                 diff_cubes.append(cubes[thename][layer] -
                                   cubes[obsname][layer])
 
         # data ranges
         maps_range = diagtools.get_cube_range(maps_cubes)
-        if (hasObs):
+        if hasobs:
             diff_range = diagtools.get_cube_range(diff_cubes)
             maps_range = diagtools.get_cube_range([cubes[obsname][layer]])
 
@@ -192,7 +192,7 @@ def make_multiple_plots(cfg, metadata, obs_filename):
             extend = 'both'
 
         # create subplots
-        
+
         varunit = str(maps_cubes[0].units)
         varname = maps_cubes[0].var_name
         gs = gridspec.GridSpec(stencil[0], stencil[1])
@@ -213,7 +213,7 @@ def make_multiple_plots(cfg, metadata, obs_filename):
             if ii == 0:
                 thename = thename + ' (' + varname + ') [' + varunit + ']'
 
-            if (hasObs) & (ii > 0):
+            if (hasobs) & (ii > 0):
                 cube = diff_cubes[ii - 1]
                 nspace = np.linspace(
                     diff_range[0], diff_range[1], clevels, endpoint=True)
@@ -234,7 +234,7 @@ def make_multiple_plots(cfg, metadata, obs_filename):
             # next row & column indexes
             xx = xx + 1
             if xx == stencil[0]:
-                xx = 1 if hasObs else 0
+                xx = 1 if hasobs else 0
                 yy = yy + 1
 
         # Adjust subplots size & position
@@ -247,7 +247,7 @@ def make_multiple_plots(cfg, metadata, obs_filename):
             wspace=0.15)
 
         # Vertically detach OBS plot and center
-        if hasObs:
+        if hasobs:
             ax = fig.axes
             box = ax[0].get_position()
             shift = box.y0 * 0.05
