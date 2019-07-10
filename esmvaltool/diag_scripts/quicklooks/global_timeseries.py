@@ -22,10 +22,13 @@ def compute_diagnostic(filename):
     logger.debug("Loading %s", filename)
     cube = iris.load_cube(filename)
 
-    grid_areas = iris.analysis.cartography.area_weights(cube)
+    if cube.ndim > 1:
+        grid_areas = iris.analysis.cartography.area_weights(cube)
 
-    # from zonal mean to global mean
-    return cube.collapsed('latitude', iris.analysis.MEAN, weights=grid_areas)
+        # from zonal mean to global mean
+        cube = cube.collapsed('latitude', iris.analysis.MEAN, weights=grid_areas)
+
+    return cube
 
 
 def timeplot(cube, **kwargs):
@@ -216,6 +219,7 @@ def main(cfg):
         the opened global config dictionairy, passed by ESMValTool.
 
     """
+
     for index, metadata_filename in enumerate(cfg['input_files']):
         logger.info('metadata filename:\t%s', metadata_filename)
 
