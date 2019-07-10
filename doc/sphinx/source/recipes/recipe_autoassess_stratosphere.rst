@@ -52,6 +52,14 @@ ESMValTool:
 
 * Since April 2018: Valeriu Predoi
 
+Review of current port in ESMValTool
+------------------------------------
+The code and results review of the port from native Autoassess to ESMValTool
+was conducted by Alistair Sellar (`<alistair.sellar@matoffice.gov.uk>`_) and
+Valeriu Predoi (`<valeriu.predoi@ncas.ac.uk>`_) in July 2019. Review consisted in
+comparing results from runs using ESMValTool's port and native Autoassess using
+the same models and data stretches.
+
 Metrics and Diagnostics
 -----------------------
 
