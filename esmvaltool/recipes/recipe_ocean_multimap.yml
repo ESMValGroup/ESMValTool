@@ -25,19 +25,19 @@ datasets:
   - {dataset: CanESM2,       project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1995,  end_year: 2004}
   - {dataset: CESM1-BGC,     project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1995,  end_year: 2004}
   - {dataset: IPSL-CM5A-LR,  project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1995,  end_year: 2004}
-  - {dataset: IPSL-CM5A-MR,  project: CMIP5,  exp: historical,  ensemble: r3i1p1,  start_year: 1995,  end_year: 2004}
-  - {dataset: IPSL-CM5B-LR,  project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1995,  end_year: 2004}
-  - {dataset: HadGEM2-ES,    project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1995,  end_year: 2004}
-  - {dataset: CNRM-CM5,      project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1995,  end_year: 2004}
-  - {dataset: HadGEM2-CC,    project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1995,  end_year: 2004}
-  - {dataset: CMCC-CESM,     project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1995,  end_year: 2004}
-  - {dataset: GFDL-ESM2M,    project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1995,  end_year: 2004}
-  - {dataset: MPI-ESM-LR,    project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1995,  end_year: 2004}
-  - {dataset: MPI-ESM-MR,    project: CMIP5,  exp: historical,  ensemble: r3i1p1,  start_year: 1995,  end_year: 2004}
-  - {dataset: MRI-ESM1,      project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1995,  end_year: 2004}
-  - {dataset: NorESM1-ME,    project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1995,  end_year: 2004}
-  - {dataset: GISS-E2-H-CC,  project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1995,  end_year: 2004}
-  - {dataset: MIROC-ESM,     project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1995,  end_year: 2004}
+  #- {dataset: IPSL-CM5A-MR,  project: CMIP5,  exp: historical,  ensemble: r3i1p1,  start_year: 1995,  end_year: 2004}
+  #- {dataset: IPSL-CM5B-LR,  project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1995,  end_year: 2004}
+  #- {dataset: HadGEM2-ES,    project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1995,  end_year: 2004}
+  #- {dataset: CNRM-CM5,      project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1995,  end_year: 2004}
+  #- {dataset: HadGEM2-CC,    project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1995,  end_year: 2004}
+  #- {dataset: CMCC-CESM,     project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1995,  end_year: 2004}
+  #- {dataset: GFDL-ESM2M,    project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1995,  end_year: 2004}
+  #- {dataset: MPI-ESM-LR,    project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1995,  end_year: 2004}
+  #- {dataset: MPI-ESM-MR,    project: CMIP5,  exp: historical,  ensemble: r3i1p1,  start_year: 1995,  end_year: 2004}
+  #- {dataset: MRI-ESM1,      project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1995,  end_year: 2004}
+  #- {dataset: NorESM1-ME,    project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1995,  end_year: 2004}
+  #- {dataset: GISS-E2-H-CC,  project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1995,  end_year: 2004}
+  #- {dataset: MIROC-ESM,     project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1995,  end_year: 2004}
 
 
 # --------------------------------------------------
@@ -72,7 +72,7 @@ diagnostics:
         fx_files: [areacello, ]
         maps_range: [-0.12, 0.12]
         diff_range: [-0.09, 0.09]
-        panel_rowcol: [4, 4]
+        layout_rowcol: [3, 1]
     additional_datasets:
       - {dataset: Landschuetzer2016,  project: OBS,  type: clim,  version: v2016,  start_year: 1995,  end_year: 2014,  tier: 2}
     scripts:

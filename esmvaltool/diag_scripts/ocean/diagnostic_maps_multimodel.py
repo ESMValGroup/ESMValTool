@@ -105,12 +105,13 @@ def add_map_plot(ax,
 
 
 def make_multiple_plots(cfg, metadata, obs_filename):
+
     """
     Produce multiple panel comparison maps of model(s) and data (if provided).
     If observations are not provided, plots of each model data are drawn.
 
     Put on top row observational data (if available) and in following subplots
-    model difference (or data) organized in rows/cols using stencil variable.
+    model difference (or data) organized in rows/cols using row/col layout.
 
     Parameters
     ----------
@@ -125,6 +126,8 @@ def make_multiple_plots(cfg, metadata, obs_filename):
     # ####
     filenames = list(metadata.keys())
     proj = ccrs.Robinson(central_longitude=0)
+    # plot layout
+    layout = metadata[filenames[0]]['layout_rowcol']
 
     # check if observations are provided
     hasobs = False
@@ -134,24 +137,21 @@ def make_multiple_plots(cfg, metadata, obs_filename):
         obsname = metadata[obs_filename]['dataset']
         filenames.remove(obs_filename)
         filenames.insert(0, obs_filename)
+        layout[0] = layout[0] + 1
     else:
         logger.info('Observations not provided. Plot each model data.')
 
     # Load the data for each layer as a separate cube
-    input_file = None
     layers = {}
     cubes = {}
-    for input_file in filenames:
-        logger.debug('loading: \t%s', input_file)
-        cube = iris.load_cube(input_file)
-        cube = diagtools.bgc_units(cube, metadata[input_file]['short_name'])
-        model_name = metadata[input_file]['dataset']
+    for thename in filenames:
+        logger.debug('loading: \t%s', thename)
+        cube = iris.load_cube(thename)
+        cube = diagtools.bgc_units(cube, metadata[thename]['short_name'])
+        model_name = metadata[thename]['dataset']
         cubes[model_name] = diagtools.make_cube_layer_dict(cube)
         for layer in cubes[model_name]:
             layers[layer] = True
-    stencil = metadata[input_file]['panel_rowcol']
-    if hasobs:
-        stencil[0] = stencil[0] + 1
 
     logger.debug('layers: %s', layers)
     logger.debug('cubes: %s', ', '.join(cubes.keys()))
@@ -164,7 +164,7 @@ def make_multiple_plots(cfg, metadata, obs_filename):
     for layer in layers:
 
         fig = plt.figure()
-        fig.set_size_inches(stencil[1] * 4., stencil[0] * 2. + 2.)
+        fig.set_size_inches(layout[1] * 4., layout[0] * 2. + 2.)
 
         # aggregate cubes
         name_cubes = []
@@ -183,18 +183,18 @@ def make_multiple_plots(cfg, metadata, obs_filename):
             diff_range = diagtools.get_cube_range(diff_cubes)
             maps_range = diagtools.get_cube_range([cubes[obsname][layer]])
 
-        if 'maps_range' in metadata[input_file]:
-            maps_range = metadata[input_file]['maps_range']
+        if 'maps_range' in metadata[filenames[0]]:
+            maps_range = metadata[filenames[0]]['maps_range']
             extend = 'both'
-        if 'diff_range' in metadata[input_file]:
-            diff_range = metadata[input_file]['diff_range']
+        if 'diff_range' in metadata[filenames[0]]:
+            diff_range = metadata[filenames[0]]['diff_range']
             extend = 'both'
 
         # create subplots
 
         varunit = str(maps_cubes[0].units)
         varname = maps_cubes[0].var_name
-        gs = gridspec.GridSpec(stencil[0], stencil[1])
+        gsc = gridspec.GridSpec(layout[0], layout[1])
         yy = 0
         xx = 0
         clevels = 13
@@ -219,9 +219,9 @@ def make_multiple_plots(cfg, metadata, obs_filename):
                 cmap = 'RdBu_r'
                 thename = thename
 
-            ax = plt.subplot(gs[xx, yy], projection=proj)
+            axs = plt.subplot(gsc[xx, yy], projection=proj)
             add_map_plot(
-                ax,
+                axs,
                 cube,
                 nspace,
                 yy,
@@ -232,7 +232,7 @@ def make_multiple_plots(cfg, metadata, obs_filename):
 
             # next row & column indexes
             xx = xx + 1
-            if xx == stencil[0]:
+            if xx == layout[0]:
                 xx = 1 if hasobs else 0
                 yy = yy + 1
 
@@ -247,15 +247,15 @@ def make_multiple_plots(cfg, metadata, obs_filename):
 
         # Vertically detach OBS plot and center
         if hasobs:
-            ax = fig.axes
-            box = ax[0].get_position()
+            axs = fig.axes
+            box = axs[0].get_position()
             shift = box.y0 * 0.05
             box.y0 = box.y0 + shift
             box.y1 = box.y1 + shift
             shift = box.x1 - box.x0
             box.x0 = 0.5 - shift * 0.5
             box.x1 = box.x0 + shift
-            ax[0].set_position(box)
+            axs[0].set_position(box)
 
         # Determine image filename:
         fn_list = ['multimodel_vs', obsname, varname, str(layer), 'maps']
