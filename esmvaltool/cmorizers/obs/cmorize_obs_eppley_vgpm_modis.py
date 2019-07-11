@@ -121,11 +121,6 @@ def cmorization(in_dir, out_dir, cfg, _):
     cmor_table = cfg['cmor_table']
     glob_attrs = cfg['attributes']
 
-    logger.info("Starting cmorization for Tier%s OBS files: %s",
-                glob_attrs['tier'], glob_attrs['dataset_id'])
-    logger.info("Input data from: %s", in_dir)
-    logger.info("Output will be written to: %s", out_dir)
-
     # run the cmorization
     for var, vals in cfg['variables'].items():
         var_info = cmor_table.get_variable(vals['mip'], var)
