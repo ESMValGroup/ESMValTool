@@ -28,12 +28,9 @@ import numpy as np
 import iris
 
 from .utilities import (constant_metadata, fix_coords, fix_var_metadata,
-                        read_cmor_config, save_variable, set_global_atts)
+                        save_variable, set_global_atts)
 
 logger = logging.getLogger(__name__)
-
-# read in CMOR configuration
-CFG = read_cmor_config('Eppley-VGPM-MODIS.yml')
 
 
 def _fix_data(cube, var):
@@ -92,7 +89,7 @@ def merge_data(in_dir, out_dir, raw_info):
             continue
         newda = xr.concat((newda, da), dim='time')
 
-    # need data flip to march coordinates
+    # need data flip to match coordinates
     newda.data = np.fliplr(newda.data)
 
     # save to file
@@ -119,10 +116,10 @@ def merge_data(in_dir, out_dir, raw_info):
     return datafile
 
 
-def cmorization(in_dir, out_dir):
+def cmorization(in_dir, out_dir, cfg, _):
     """Cmorization func call."""
-    cmor_table = CFG['cmor_table']
-    glob_attrs = CFG['attributes']
+    cmor_table = cfg['cmor_table']
+    glob_attrs = cfg['attributes']
 
     logger.info("Starting cmorization for Tier%s OBS files: %s",
                 glob_attrs['tier'], glob_attrs['dataset_id'])
@@ -130,7 +127,7 @@ def cmorization(in_dir, out_dir):
     logger.info("Output will be written to: %s", out_dir)
 
     # run the cmorization
-    for var, vals in CFG['variables'].items():
+    for var, vals in cfg['variables'].items():
         var_info = cmor_table.get_variable(vals['mip'], var)
         glob_attrs['mip'] = vals['mip']
         raw_info = {'name': vals['raw'], 'file': vals['file']}
