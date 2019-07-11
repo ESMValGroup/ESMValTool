@@ -56,11 +56,6 @@ end_historical <- input_files_tasmax[[reference_files]]$end_year
 start_projection <- input_files_tasmax[[projection_files[1]]]$start_year
 end_projection <- input_files_tasmax[[projection_files[1]]]$end_year
 
-#Regime parameters
-metric <- params$metric
-rcp8.5 <- params$rcp8.5
-rcp2.6 <- params$rcp2.6
-rcp_scenario <- c(rcp8.5, rcp2.6)
 
 fullpath_hist_tasmax <- filename_tasmax[[reference_files]]
 file <- nc_open(fullpath_hist_tasmax)
@@ -148,22 +143,33 @@ for (j in 1 : 4){
 }
 names(dim(dtr_rcp)) <- c("season", "lon", "lat")
 title <- paste(
-    "Number of days exceeding the DTR in 5 degrees during the period",
+    "Number of days exceeding the DTR by 5 degrees during the period",
     start_projection, "-", end_projection)
+#initial_options <- commandArgs(trailingOnly = FALSE)
+#file_arg_name <- "--file="
+#script_name <- sub(file_arg_name, "", initial_options[grep(file_arg_name,
+#                   initial_options)])
+#script_dirname <- dirname(script_name)
+#source(file.path(script_dirname, "PlotLayout.R"))
 PlotLayout( # nolint
   PlotEquiMap, # nolint
   plot_dims = c("lon", "lat"),
   var = dtr_rcp,
+  colNA = "white",
   lon = lon,
   lat = lat,
   titles = c("DJF", "MAM", "JJA", "SON"),
   toptitle = title,
   filled.continents = FALSE, units = "Days",
   axelab = FALSE, draw_separators = TRUE, subsampleg = 1,
-  brks = seq(0, max(dtr_rcp), 2), color_fun = clim.palette("yellowred"),
+  brks = seq(0, max(dtr_rcp, na.rm =TRUE), 2), 
+  color_fun = clim.palette("yellowred"),
   bar_extra_labels = c(2, 0, 0, 0), title_scale = 0.7,
-  fileout = file.path(plot_dir, "rcp85.png")
-)
+  fileout = file.path(plot_dir, paste0("Seasonal_DTRindicator_", 
+      model_names, "_",
+      start_projection, "_", end_projection, "_",
+      start_historical, "_", end_historical, ".png")),
+ col_inf = "white", col_sup = "darkred") 
 
 dimlon <- ncdim_def(
   name = "lon",
@@ -212,7 +218,10 @@ nc_close(file)
                   statistics = list("other"),
                   realms = list("atmos"),
                   themes = list("phys"),
-                  plot_file = file.path(plot_dir, "rcp85.png"))
+                  plot_file = file.path(plot_dir, 
+		      paste0("Seasonal_DTRindicator_", model_names, "_",
+		      start_projection, "_", end_projection, "_",
+		      start_historical, "_", end_historical, ".png")))
 
       provenance[[filencdf]] <- xprov
 }
