@@ -83,8 +83,8 @@ def add_map_plot(ax,
         zmax=nspace.max())
 
     ax.coastlines()
-    gl = ax.gridlines(draw_labels=False, color='black', alpha=0.4)
-    gl.ylocator = mticker.FixedLocator(np.linspace(-90., 90., 7))
+    gls = ax.gridlines(draw_labels=False, color='black', alpha=0.4)
+    gls.ylocator = mticker.FixedLocator(np.linspace(-90., 90., 7))
     ax.set_title(title, fontweight="bold", fontsize='large')
 
     if hascbar:
