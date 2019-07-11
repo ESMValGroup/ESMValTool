@@ -26,27 +26,12 @@ provenance <- list()
 input_files_tasmax <- yaml::read_yaml(params$input_files[1])
 model_names <- input_files_tasmax[[1]]$dataset
 var_names_tmax <- input_files_tasmax[[1]]$short_name
-experiment <- lapply(
-  input_files_tasmax,
-  function(x){
-    x$exp
-  }
-)
-filename_tasmax <- lapply(
-  input_files_tasmax,
-  function(x){
-    x$filename
-  }
-)
+experiment <- lapply(input_files_tasmax, function(x){x$exp}) #nolint
+filename_tasmax <- lapply(input_files_tasmax, function(x){x$filename}) #nolint
 
 input_files_tasmin <- yaml::read_yaml(params$input_files[2])
 var_names_tmin <- input_files_tasmin[[1]]$short_name
-filename_tasmin <- lapply(
-  input_files_tasmin,
-  function(x){
-    x$filename
-  }
-)
+filename_tasmin <- lapply(input_files_tasmin, function(x){x$filename}) #nolint
 
 reference_files <- which(experiment == "historical")
 projection_files <- which(experiment != "historical")
@@ -89,14 +74,9 @@ dia <- as.Date(strsplit(tunits, " ")[[1]][3], format = "%Y-%m-%d")
 time <- time + dia
 
 
-dtr_base <- DTRRef( # nolint
-  tmax = historical_tasmax,
-  tmin = historical_tasmin,
-  by.seasons = TRUE,
-  ncores = NULL,
-    dates = time,
-    calendar = calendario
-)
+dtr_base <- DTRRef(tmax = historical_tasmax, #nolint
+                   tmin = historical_tasmin, by.seasons = TRUE,
+                   ncores = NULL, dates = time, calendar = calendario)
 
 for (i in 1 : length(projection_files)) {
     fullpath_projection_tasmax <- filename_tasmax[[projection_files[i]]]
@@ -131,77 +111,45 @@ for (i in 1 : length(projection_files)) {
     dia <- as.Date(strsplit(tunits, " ")[[1]][3], format = "%Y-%m-%d")
     time <- time + dia
 
-dtr_indicator <- DTRIndicator(
-    rcp_tasmax, rcp_tasmin, ref = dtr_base, by.seasons = TRUE, ncores = NULL,
-      dates = time, calendar = calendario
-  )
-
+dtr_indicator <- DTRIndicator(rcp_tasmax, rcp_tasmin, ref = dtr_base, 
+                              by.seasons = TRUE, ncores = NULL,
+                              dates = time, calendar = calendario)
 
 dtr_rcp <- array(dim = c(4, length(lon), length(lat)))
 for (j in 1 : 4){
     dtr_rcp[j , , ] <- Mean1Dim(dtr_indicator$indicator[, j, , ], 1)#nolint
 }
 names(dim(dtr_rcp)) <- c("season", "lon", "lat")
-title <- paste(
-    "Number of days exceeding the DTR by 5 degrees during the period",
-    start_projection, "-", end_projection)
-#initial_options <- commandArgs(trailingOnly = FALSE)
-#file_arg_name <- "--file="
-#script_name <- sub(file_arg_name, "", initial_options[grep(file_arg_name,
-#                   initial_options)])
-#script_dirname <- dirname(script_name)
-#source(file.path(script_dirname, "PlotLayout.R"))
-PlotLayout( # nolint
-  PlotEquiMap, # nolint
-  plot_dims = c("lon", "lat"),
-  var = dtr_rcp,
-  colNA = "white",
-  lon = lon,
-  lat = lat,
-  titles = c("DJF", "MAM", "JJA", "SON"),
-  toptitle = title,
-  filled.continents = FALSE, units = "Days",
-  axelab = FALSE, draw_separators = TRUE, subsampleg = 1,
-  brks = seq(0, max(dtr_rcp, na.rm =TRUE), 2), 
-  color_fun = clim.palette("yellowred"),
-  bar_extra_labels = c(2, 0, 0, 0), title_scale = 0.7,
-  fileout = file.path(plot_dir, paste0("Seasonal_DTRindicator_", 
-      model_names, "_",
-      start_projection, "_", end_projection, "_",
-      start_historical, "_", end_historical, ".png")),
- col_inf = "white", col_sup = "darkred") 
+title <- paste("Number of days exceeding the DTR by 5 degrees",
+               "during the period", start_projection, "-", end_projection)
+PlotLayout(PlotEquiMap, plot_dims = c("lon", "lat"), #nolint
+           var = dtr_rcp, colNA = "white", lon = lon, lat = lat,
+           titles = c("DJF", "MAM", "JJA", "SON"), toptitle = title,
+           filled.continents = FALSE, units = "Days", axelab = FALSE, 
+           draw_separators = TRUE, subsampleg = 1, 
+           brks = seq(0, max(dtr_rcp, na.rm =TRUE), 2), 
+           color_fun = clim.palette("yellowred"), 
+           bar_extra_labels = c(2, 0, 0, 0), title_scale = 0.7,
+           fileout = file.path(plot_dir, paste0("Seasonal_DTRindicator_",
+                               model_names, "_", start_projection, "_",
+                               end_projection, "_", start_historical, "_", 
+                               end_historical, ".png")),
+           col_inf = "white", col_sup = "darkred") 
 
-dimlon <- ncdim_def(
-  name = "lon",
-  units = "degrees_east",
-  vals = as.vector(lon),
-  longname = "longitude"
-)
-dimlat <- ncdim_def(
-  name = "lat",
-  units = "degrees_north",
-  vals = as.vector(lat),
-  longname = "latitude"
-)
-dimseason <- ncdim_def(
-  name = "season",
-  units = "season",
-  vals = 1 : 4,
-  longname = "season of the year: DJF, MAM, JJA, SON"
-)
-defdata <- ncvar_def(
-  name = "VulnerabilityIndex",
-  units = "number_of_days",
-  dim = list(season = dimseason, lat = dimlat, lon = dimlon),
-  longname = paste0(
-    "Number of days exceeding in 5 degrees the Diurnal ",
-    "Temeprature Range for the reference period")
-)
-
-filencdf <- paste0(
-    work_dir, "/", "Seasonal_DTRindicator_", model_names, "_",
-    start_projection, "_", end_projection, "_",
-    start_historical, "_", end_historical, ".nc")
+dimlon <- ncdim_def(name = "lon", units = "degrees_east",
+                    vals = as.vector(lon), longname = "longitude")
+dimlat <- ncdim_def(name = "lat", units = "degrees_north",
+                    vals = as.vector(lat), longname = "latitude")
+dimseason <- ncdim_def(name = "season", units = "season", vals = 1 : 4,
+                       longname = "season of the year: DJF, MAM, JJA, SON")
+defdata <- ncvar_def(name = "VulnerabilityIndex", units = "number_of_days",
+                   dim = list(season = dimseason, lat = dimlat, lon = dimlon),
+                   longname = paste0("Number of days exceeding in 5 degrees ",
+                                     "the Diurnal Temeprature Range for ",
+                                     "the reference period"))
+filencdf <- paste0(work_dir, "/", "Seasonal_DTRindicator_", model_names, "_",
+                   start_projection, "_", end_projection, "_",
+                   start_historical, "_", end_historical, ".nc")
 file <- nc_create(filencdf, list(defdata))
 ncvar_put(file, defdata, dtr_rcp)
 nc_close(file)
