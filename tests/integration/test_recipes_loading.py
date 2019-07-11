@@ -21,6 +21,7 @@ def _get_recipes():
     recipes += glob.glob(os.path.join(recipes_path, 'examples', '*.yml'))
     return recipes
 
+
 @pytest.mark.parametrize('recipe_file', _get_recipes())
 def test_diagnostic_run(recipe_file):
     """Check that recipe files are well formed."""
