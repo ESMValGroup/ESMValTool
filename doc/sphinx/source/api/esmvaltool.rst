@@ -6,8 +6,6 @@ library. This section documents the public API of ESMValTool.
 
 .. toctree::
 
-   esmvalcore.preprocessor
-   esmvalcore.cmor
    esmvaltool.diag_scripts.shared
    esmvaltool.diag_scripts
    esmvaltool.diag_scripts.ocean
