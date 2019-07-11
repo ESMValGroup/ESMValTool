@@ -67,9 +67,12 @@ def extract_variable(var_info, raw_info, out_dir, attrs):
 def merge_data(in_dir, out_dir, raw_info):
     """Merge all data into a single file."""
     var = raw_info['name']
-    datafile = sorted(glob.glob(in_dir + '/' + raw_info['file'] + '*.hdf'))
-    for x in datafile:
-        ds = xr.open_dataset(x).rename({'fakeDim0': 'lat', 'fakeDim1': 'lon'})
+    filelist = sorted(glob.glob(in_dir + '/' + raw_info['file'] + '*.hdf'))
+    for filename in filelist:
+        ds = xr.open_dataset(filename).rename({
+            'fakeDim0': 'lat',
+            'fakeDim1': 'lon'
+        })
         # create coordinates
         ds = ds.assign_coords(
             time=dt.strptime(ds.attrs['Start Time String'],
@@ -82,18 +85,18 @@ def merge_data(in_dir, out_dir, raw_info):
         ds = ds.assign_coords(
             lon=np.linspace(-180. + dx, 180. - dx, ds.dims['lon']))
         ds.lon.attrs = {'long_name': 'Longitude', 'units': 'degrees_east'}
-        # get data
+        # get current file data
         da = ds[var]
-        if x == datafile[0]:
-            newda = da
-            continue
-        newda = xr.concat((newda, da), dim='time')
+        if filename == filelist[0]:
+            damerge = da
+        else:
+            damerge = xr.concat((damerge, da), dim='time')
 
     # need data flip to match coordinates
-    newda.data = np.fliplr(newda.data)
+    damerge.data = np.fliplr(damerge.data)
 
     # save to file
-    da = newda.to_dataset(name=var)
+    ds = damerge.to_dataset(name=var)
     thekeys = {
         'lat': {
             '_FillValue': False
@@ -105,15 +108,15 @@ def merge_data(in_dir, out_dir, raw_info):
             'calendar': 'gregorian'
         },
         var: {
-            '_FillValue': da[var].attrs['Hole Value']
+            '_FillValue': ds[var].attrs['Hole Value']
         }
     }
-    datafile = os.path.join(out_dir, raw_info['file'] + '_merged.nc')
-    da.to_netcdf(datafile, encoding=thekeys, unlimited_dims='time')
+    filename = os.path.join(out_dir, raw_info['file'] + '_merged.nc')
+    ds.to_netcdf(filename, encoding=thekeys, unlimited_dims='time')
 
-    logger.info("Merged data written to: %s", datafile)
+    logger.info("Merged data written to: %s", filename)
 
-    return datafile
+    return filename
 
 
 def cmorization(in_dir, out_dir, cfg, _):
