@@ -10,6 +10,7 @@ Welcome to ESMValTool's documentation!
    :maxdepth: 2
 
    preface/index
+   gallery
    getting_started/index
    esmvalcore/index
    esmvaldiag/index
