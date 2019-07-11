@@ -287,8 +287,9 @@ def _setup_input(cfg):
     logger.info("Saved control data cubes: %s", str(all_cubelists))
 
     # separately process the obs's that dont need metrics
-    if cfg['obs_models']:
-        _process_obs(cfg, obs_list, obs_loc)
+    if 'obs_models' in cfg:
+        if cfg['obs_models']:
+            _process_obs(cfg, obs_list, obs_loc)
 
     return tmp_dir, obs_loc, ancil_dir
 
