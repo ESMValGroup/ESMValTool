@@ -127,12 +127,12 @@ PlotLayout(PlotEquiMap, plot_dims = c("lon", "lat"), #nolint
            titles = c("DJF", "MAM", "JJA", "SON"), toptitle = title,
            filled.continents = FALSE, units = "Days", axelab = FALSE,
            draw_separators = TRUE, subsampleg = 1,
-           brks = seq(0, max(dtr_rcp, na.rm =TRUE), 2),
+           brks = seq(0, max(dtr_rcp, na.rm = TRUE), 2),
            color_fun = clim.palette("yellowred"),
            bar_extra_labels = c(2, 0, 0, 0), title_scale = 0.7,
            fileout = file.path(plot_dir, paste0("Seasonal_DTRindicator_",
                                model_names, "_", start_projection, "_",
-                               end_projection, "_", start_historical, "_", 
+                               end_projection, "_", start_historical, "_",
                                end_historical, ".png")),
            col_inf = "white", col_sup = "darkred")
 
@@ -167,9 +167,9 @@ nc_close(file)
                   realms = list("atmos"),
                   themes = list("phys"),
                   plot_file = file.path(plot_dir,
-			  paste0("Seasonal_DTRindicator_", model_names, "_",
-		      start_projection, "_", end_projection, "_",
-		      start_historical, "_", end_historical, ".png")))
+              paste0("Seasonal_DTRindicator_", model_names, "_",
+              start_projection, "_", end_projection, "_",
+              start_historical, "_", end_historical, ".png")))
 
       provenance[[filencdf]] <- xprov
 }
