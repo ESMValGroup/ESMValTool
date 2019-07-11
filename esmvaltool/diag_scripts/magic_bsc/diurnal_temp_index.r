@@ -111,7 +111,7 @@ for (i in 1 : length(projection_files)) {
     dia <- as.Date(strsplit(tunits, " ")[[1]][3], format = "%Y-%m-%d")
     time <- time + dia
 
-dtr_indicator <- DTRIndicator(rcp_tasmax, rcp_tasmin, ref = dtr_base, 
+dtr_indicator <- DTRIndicator(rcp_tasmax, rcp_tasmin, ref = dtr_base,
                               by.seasons = TRUE, ncores = NULL,
                               dates = time, calendar = calendario)
 
@@ -125,16 +125,16 @@ title <- paste("Number of days exceeding the DTR by 5 degrees",
 PlotLayout(PlotEquiMap, plot_dims = c("lon", "lat"), #nolint
            var = dtr_rcp, colNA = "white", lon = lon, lat = lat,
            titles = c("DJF", "MAM", "JJA", "SON"), toptitle = title,
-           filled.continents = FALSE, units = "Days", axelab = FALSE, 
-           draw_separators = TRUE, subsampleg = 1, 
-           brks = seq(0, max(dtr_rcp, na.rm =TRUE), 2), 
-           color_fun = clim.palette("yellowred"), 
+           filled.continents = FALSE, units = "Days", axelab = FALSE,
+           draw_separators = TRUE, subsampleg = 1,
+           brks = seq(0, max(dtr_rcp, na.rm =TRUE), 2),
+           color_fun = clim.palette("yellowred"),
            bar_extra_labels = c(2, 0, 0, 0), title_scale = 0.7,
            fileout = file.path(plot_dir, paste0("Seasonal_DTRindicator_",
                                model_names, "_", start_projection, "_",
                                end_projection, "_", start_historical, "_", 
                                end_historical, ".png")),
-           col_inf = "white", col_sup = "darkred") 
+           col_inf = "white", col_sup = "darkred")
 
 dimlon <- ncdim_def(name = "lon", units = "degrees_east",
                     vals = as.vector(lon), longname = "longitude")
@@ -166,8 +166,8 @@ nc_close(file)
                   statistics = list("other"),
                   realms = list("atmos"),
                   themes = list("phys"),
-                  plot_file = file.path(plot_dir, 
-		      paste0("Seasonal_DTRindicator_", model_names, "_",
+                  plot_file = file.path(plot_dir,
+			  paste0("Seasonal_DTRindicator_", model_names, "_",
 		      start_projection, "_", end_projection, "_",
 		      start_historical, "_", end_historical, ".png")))
 
