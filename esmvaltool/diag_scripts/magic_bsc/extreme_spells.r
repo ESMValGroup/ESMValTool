@@ -5,6 +5,7 @@ library(ncdf4)
 library(climdex.pcic)
 library(parallel)
 library(ClimProjDiags) # nolint
+library(ggplot2)
 
 initial_options <- commandArgs(trailingOnly = FALSE)
 file_arg_name <- "--file="
@@ -86,8 +87,6 @@ dim(historical_data) <- c(model = 1, var = 1, lon = length(lon),
                           lat = length(lat), time = length(time))
 historical_data <- aperm(historical_data, c(1, 2, 5, 4, 3))
 attr(historical_data, "Variables")$dat1$time <- time
-print(dim(historical_data))
-print(sum(which(is.na(historical_data))))
 names(dim(historical_data)) <- c("model", "var", "time", "lon", "lat")
 time_dimension <- which(names(dim(historical_data)) == "time")
 
@@ -118,7 +117,6 @@ for (i in 1 : length(projection_filenames)) {
                            calendar = calendar, op = op,
                            spell.length = spell_length,
                            by.seasons = TRUE, ncores = NULL)
-
   if (season == "summer") {
     heatwave_season <- heatwave$result[seq(2, dim(heatwave$result)[1] - 2,
                                             by = 4), 1, 1, , ]#nolint
@@ -170,17 +168,40 @@ for (i in 1 : length(projection_filenames)) {
   file <- nc_create(filencdf, list(defdata))
   ncvar_put(file, defdata, data)
   nc_close(file)
-print("TimePlot")
-print(dim(data))
 
-print(max(Mean1Dim(data, 1), na.rm))
+# Check dimension order:
+if (length(lat) != dim(data)["lat"] | length(lon) != dim(data)["lon"]) {
+  if (length(lat) == dim(data)["lon"] & length(lon) == dim(data)["lat"]) {
+    poslat <- which(names(dim(data)) == "lat")
+    poslon <- which(names(dim(data)) == "lon")
+    names(dim(data))[poslat] <- "lon"
+    names(dim(data))[poslon] <- "lat"
+  }
+}
+timeseries <- WeightedMean(data, lon = as.vector(lon),
+                           lat = as.vector(lat),mask = NULL)
+data_frame <- data.frame(Experiment = timeseries)
+years <- rep(start_projection : end_projection)
+data_frame$Year <- c(years)
 
-
-  brks <- seq(0, max(Mean1Dim(data, 1), na.rm), 4)
-  title <- paste("Days ", season, var0, paste0(substr(start_projection, 1, 4),
+title <- paste("Days ", season, var0, paste0(substr(start_projection, 1, 4),
                  "-", substr(end_projection, 1, 4)), op, "the", qtile * 100,
                 "th quantile for", paste0(substr(start_reference, 1, 4), "-",
                 substr(end_reference, 1, 4), " (", rcp_scenario[i], ")"))
+filepng1 <- paste0(plot_dir, "/Time_", var0, "_extreme_spell_duration", season,
+                    "_", model_names, "_", rcp_scenario[i], "_",
+                    start_projection, "_", end_projection, ".png")
+
+g <- ggplot(data_frame, aes(x = Year, y = Experiment)) +
+    theme_bw() + geom_line() + ylab(paste0("Number of Days")) +
+    xlab("Year") + theme(text = element_text(size = 12),
+                         legend.text = element_text(size = 12),
+                         axis.title = element_text(size = 12)) +
+    ggtitle(title)
+ggsave(filename = filepng1, g, device = NULL, dpi = "print",
+       width = 10, height = 6)
+
+  brks <- seq(0, max(Mean1Dim(data, 1), na.rm = TRUE), 4)
   filepng <- paste0(plot_dir, "/", var0, "_extreme_spell_duration", season,
                     "_", model_names, "_", rcp_scenario[i], "_",
                     start_projection, "_", end_projection, ".png")
