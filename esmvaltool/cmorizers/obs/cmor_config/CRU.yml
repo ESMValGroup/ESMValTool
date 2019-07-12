@@ -18,6 +18,8 @@ variables:
   tas:
     mip: Amon
     raw: tmp
+    raw_units: celsius
   pr:
     mip: Amon
     raw: pre
+    raw_units: kg m-2 month-1
