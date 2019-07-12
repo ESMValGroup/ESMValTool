@@ -26,8 +26,8 @@ def _has_necessary_attributes(metadata,
                               only_var_attrs=False,
                               log_level='debug'):
     """Check if dataset metadata has necessary attributes."""
-    keys_to_check = (VAR_KEYS + ['short_name']
-                     if only_var_attrs else NECESSARY_KEYS)
+    keys_to_check = (VAR_KEYS +
+                     ['short_name'] if only_var_attrs else NECESSARY_KEYS)
     for dataset in metadata:
         for key in keys_to_check:
             if key not in dataset:
@@ -132,9 +132,8 @@ def netcdf_to_metadata(cfg, pattern=None, root=None):
         dataset_info = dict(cube.attributes)
         for var_key in VAR_KEYS:
             dataset_info[var_key] = getattr(cube, var_key)
-        if cube.standard_name is not None:
-            dataset_info['standard_name'] = cube.standard_name
         dataset_info['short_name'] = cube.var_name
+        dataset_info['standard_name'] = cube.standard_name
         dataset_info['filename'] = path
 
         # Check if necessary keys are available
@@ -164,6 +163,7 @@ def metadata_to_netcdf(cube, metadata):
     for var_key in VAR_KEYS:
         setattr(cube, var_key, metadata.pop(var_key))
     cube.var_name = metadata.pop('short_name')
+    cube.standard_name = None
     if 'standard_name' in metadata:
         standard_name = metadata.pop('standard_name')
         try:
@@ -223,11 +223,10 @@ def save_1d_data(cubes, path, coord_name, var_attrs, attributes=None):
     var_attrs['var_name'] = var_attrs.pop('short_name')
 
     # Create new cube
-    cube = iris.cube.Cube(
-        np.ma.array(data),
-        aux_coords_and_dims=[(dataset_coord, 0), (coord, 1)],
-        attributes=attributes,
-        **var_attrs)
+    cube = iris.cube.Cube(np.ma.array(data),
+                          aux_coords_and_dims=[(dataset_coord, 0), (coord, 1)],
+                          attributes=attributes,
+                          **var_attrs)
     iris_save(cube, path)
 
 
@@ -290,9 +289,8 @@ def save_scalar_data(data, path, var_attrs, aux_coord=None, attributes=None):
     coords = [(dataset_coord, 0)]
     if aux_coord is not None:
         coords.append((aux_coord, 0))
-    cube = iris.cube.Cube(
-        np.ma.masked_invalid(list(data.values())),
-        aux_coords_and_dims=coords,
-        attributes=attributes,
-        **var_attrs)
+    cube = iris.cube.Cube(np.ma.masked_invalid(list(data.values())),
+                          aux_coords_and_dims=coords,
+                          attributes=attributes,
+                          **var_attrs)
     iris_save(cube, path)
