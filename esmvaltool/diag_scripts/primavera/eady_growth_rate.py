@@ -15,7 +15,6 @@ import esmvaltool.diag_scripts.shared
 import esmvaltool.diag_scripts.shared.names as n
 from esmvaltool.diag_scripts.shared import group_metadata
 
-from esmvalcore.preprocessor import _time
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -76,14 +75,14 @@ class EadyGrowthRate(object):
                   (y[:, 1, :, :].lazy_data() - y[:, 0, :, :].lazy_data()))
 
         dxdy_centre = ((x[:, 2:plevs, :, :].lazy_data() -
-                       x[:, 0:plevs-2, :, :].lazy_data()) /
+                        x[:, 0:plevs-2, :, :].lazy_data()) /
                        (y[:, 2:plevs, :, :].lazy_data() -
-                       y[:, 0:plevs-2, :, :].lazy_data()))
+                        y[:, 0:plevs-2, :, :].lazy_data()))
 
         dxdy_end = ((x[:, plevs-1, :, :].lazy_data() -
-                    x[:, plevs-2, :, :].lazy_data()) /
+                     x[:, plevs-2, :, :].lazy_data()) /
                     (y[:, plevs-1, :, :].lazy_data() -
-                    y[:, plevs-2, :, :].lazy_data()))
+                     y[:, plevs-2, :, :].lazy_data()))
 
         bounds = [dxdy_end, dxdy_0]
         stacked_bounds = da.stack(bounds, axis=1)
