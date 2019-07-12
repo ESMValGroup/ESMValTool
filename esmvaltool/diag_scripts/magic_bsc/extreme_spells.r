@@ -6,6 +6,12 @@ library(climdex.pcic)
 library(parallel)
 library(ClimProjDiags) # nolint
 
+initial_options <- commandArgs(trailingOnly = FALSE)
+file_arg_name <- "--file="
+script_name <- sub(file_arg_name, "", initial_options[grep(file_arg_name,
+                   initial_options)])
+script_dirname <- dirname(script_name)
+source(file.path(script_dirname, "Threshold.R"))
 
 args <- commandArgs(trailingOnly = TRUE)
 params <- read_yaml(args[1])
@@ -86,7 +92,7 @@ dim(historical_data) <- c(
 historical_data <- aperm(historical_data, c(1, 2, 5, 4, 3))
 attr(historical_data, "Variables")$dat1$time <- time
 print(dim(historical_data))
-
+print(sum(which(is.na(historical_data))))
 names(dim(historical_data)) <- c("model", "var", "time", "lon", "lat")
 time_dimension <- which(names(dim(historical_data)) == "time")
 
@@ -95,7 +101,8 @@ base_range <- c(
   as.numeric(substr(end_reference, 1, 4))
 )
 threshold <- Threshold(historical_data, base.range = base_range, #nolint
-                     calendar = calendar, qtiles = qtile, ncores = NULL)
+                     calendar = calendar, qtiles = qtile, ncores = NULL,
+                     na.rm = TRUE)
 
 projection_filenames <-  fullpath_filenames[projection_files]
 for (i in 1 : length(projection_filenames)) {
@@ -211,8 +218,8 @@ for (i in 1 : length(projection_filenames)) {
     units = "Days",
     toptitle = title,
     fileout = filepng,
-    title_scale = 0.5
-  )
+    title_scale = 0.5,
+    colNA = 'black')
 
         # Set provenance for output files
 
