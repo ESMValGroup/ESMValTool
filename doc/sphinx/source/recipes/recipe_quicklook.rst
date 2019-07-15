@@ -65,7 +65,7 @@ Example plots
 
    Timeseries of global mean of variable tas for dataset HadGEM2-CC.
 
-.. _fig_global:
+.. _fig_global_multi:
 .. figure::  /recipes/figures/quicklooks/MultiModel_tas_global_timeseries.png
    :align:   center
 
