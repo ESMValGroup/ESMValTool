@@ -7,13 +7,6 @@ library(parallel)
 library(ClimProjDiags) # nolint
 library(ggplot2)
 
-initial_options <- commandArgs(trailingOnly = FALSE)
-file_arg_name <- "--file="
-script_name <- sub(file_arg_name, "", initial_options[grep(file_arg_name,
-                   initial_options)])
-script_dirname <- dirname(script_name)
-source(file.path(script_dirname, "Threshold.R"))
-
 args <- commandArgs(trailingOnly = TRUE)
 params <- read_yaml(args[1])
 plot_dir <- params$plot_dir
