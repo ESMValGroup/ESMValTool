@@ -34,9 +34,25 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
-from esmvaltool.diag_scripts.shared import run_diagnostic
+
+from esmvaltool.diag_scripts.shared._base import (
+    ProvenanceLogger, get_diagnostic_filename, get_plot_filename,
+    run_diagnostic)
 
 logger = logging.getLogger(os.path.basename(__file__))
+
+
+def get_provenance_record(caption):
+    """Create a provenance record describing the diagnostic data and plot."""
+    record = {
+        'caption': caption,
+        'statistics': ['mean'],
+        'domains': ['global'],
+        'plot_type': 'zonal',
+        'authors': ['bock_ls'],
+        'references': ['acknow_project'],
+    }
+    return record
 
 
 def make_zon_time_series_plots(
@@ -113,6 +129,23 @@ def make_zon_time_series_plots(
 
     plt.close()
 
+    # Write netcdf file for every plot
+    diagname = '_'.join([metadata['dataset'], metadata['short_name'],
+        'zonal_timeseries'])
+    diagnostic_file = get_diagnostic_filename(diagname, cfg)
+    logger.info("Saving analysis results to %s", diagnostic_file)
+    iris.save(cube, target=diagnostic_file)
+
+    # Provenance
+    provenance_record = get_provenance_record(
+        "Timeseries of zonal mean of {} for dataset {}."
+        .format(metadata['short_name'], metadata['dataset']))
+    provenance_record.update({
+        'plot_file': path,
+    })
+
+    return (diagnostic_file, provenance_record)
+
 
 def main(cfg):
     """
@@ -145,18 +178,20 @@ def main(cfg):
                 # if quicklook mode - plotting of concatinating file
                 # path to concatinated file
                 quicklook_dir = cfg['quicklook']['output_dir']
-                con_file = quicklook_dir + '/'
-                con_file += '_'.join([metadata['dataset'],
+                filename = quicklook_dir + '/'
+                filename += '_'.join([metadata['dataset'],
                                       metadata['short_name'] + '.nc'])
-                logger.info('concatinated filename:\t%s', con_file)
+                logger.info('concatinated filename:\t%s', filename)
 
-                # Time series of individual model
-                make_zon_time_series_plots(cfg, metadata, con_file)
+            # Time series of individual model
+            (path, provenance_record) = make_zon_time_series_plots(
+                cfg, metadata, filename)
 
-            else:
-                # if not quicklook mode - plotting of preprocessed file
-                # Time series of individual model
-                make_zon_time_series_plots(cfg, metadata, filename)
+            # Provenance
+            if path is not None:
+                provenance_record['ancestors'] = filename
+                with ProvenanceLogger(cfg) as provenance_logger:
+                    provenance_logger.log(path, provenance_record)
 
     logger.info('Success')
 

@@ -20,7 +20,7 @@ Configuration options in recipe
 -------------------------------
 time_int: min and max for time axis
 y_min: min of y axis
-y_max_ max of y axis
+y_max: max of y axis
 multimodel_plot: if True: additional plot with all datasets
                  qicklook mode: all concatinated files
                  no quicklook mode: all dataset given in recipe
@@ -36,9 +36,25 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
-from esmvaltool.diag_scripts.shared import run_diagnostic
+
+from esmvaltool.diag_scripts.shared._base import (
+    ProvenanceLogger, get_diagnostic_filename, get_plot_filename,
+    run_diagnostic)
 
 logger = logging.getLogger(os.path.basename(__file__))
+
+
+def get_provenance_record(caption):
+    """Create a provenance record describing the diagnostic data and plot."""
+    record = {
+        'caption': caption,
+        'statistics': ['mean'],
+        'domains': ['global'],
+        'plot_type': 'times',
+        'authors': ['bock_ls'],
+        'references': ['acknow_project'],
+    }
+    return record
 
 
 def compute_diagnostic(filename):
@@ -144,6 +160,22 @@ def make_time_series_plots(
 
     plt.close()
 
+    # Write netcdf file for every plot
+    diagname = '_'.join([metadata['dataset'], metadata['short_name'],
+        'global_timeseries'])
+    diagnostic_file = get_diagnostic_filename(diagname, cfg)
+    logger.info("Saving analysis results to %s", diagnostic_file)
+    iris.save(cube, target=diagnostic_file)
+
+    # Provenance
+    provenance_record = get_provenance_record(
+        "Timeseries of global mean of {} for dataset {}."
+        .format(metadata['short_name'], metadata['dataset']))
+    provenance_record.update({
+        'plot_file': path,
+    })
+
+    return (diagnostic_file, provenance_record)
 
 def multi_model_time_series(
         cfg,
@@ -233,6 +265,22 @@ def multi_model_time_series(
     plt.savefig(path)
     plt.close()
 
+    # Write netcdf file for every plot
+    diagname = '_'.join(['MultiModel',
+        metadata[filename]['short_name'], 'global_timeseries'])
+    diagnostic_file = get_diagnostic_filename(diagname, cfg)
+    logger.info("Saving analysis results to %s", diagnostic_file)
+    iris.save(cube, target=diagnostic_file)
+
+    # Provenance
+    provenance_record = get_provenance_record(
+        "Timeseries of global mean of {}."
+        .format(metadata[filename]['short_name']))
+    provenance_record.update({
+        'plot_file': path,
+    })
+
+    return (diagnostic_file, provenance_record)
 
 
 def main(cfg):
@@ -247,81 +295,86 @@ def main(cfg):
 
     """
 
-    if cfg['quicklook']['active']:
-        # if quicklook mode - plotting of concatinating file
 
-        # path to concatinated file
-        quicklook_dir = cfg['quicklook']['output_dir']
+    for index, metadata_filename in enumerate(cfg['input_files']):
+        logger.info('index:\t%s', index)
+        logger.info('metadata filename:\t%s', metadata_filename)
 
-        for index, metadata_filename in enumerate(cfg['input_files']):
-            logger.info('metadata filename:\t%s', metadata_filename)
+        metadatas = diagtools.get_input_files(cfg, index=index)
 
-            metadatas = diagtools.get_input_files(cfg, index=index)
+        for filename in sorted(metadatas):
 
-            for filename in sorted(metadatas):
+            logger.info('-----------------')
+            logger.info(
+                'preprocessed model filenames:\t%s',
+                filename,
+            )
 
-                logger.info('-----------------')
-                logger.info(
-                    'preprocessed model filenames:\t%s',
-                    filename,
-                )
+            metadata = metadatas[filename]
 
-                metadata = metadatas[filename]
+            if cfg['quicklook']['active']:
+                # if quicklook mode - plotting of concatinating file
 
-                con_dir = quicklook_dir + '/' 
-                con_file = con_dir + '_'.join([metadata['dataset'],
+                # path to concatinated file
+                con_dir = cfg['quicklook']['output_dir'] + "/"
+                filename = con_dir + '_'.join([metadata['dataset'],
                                       metadata['short_name'] + '.nc'])
-                logger.info('concatinated filename:\t%s', con_file)
+                logger.info('concatinated filename:\t%s', filename)
 
-                # Time series of individual model
-                make_time_series_plots(cfg, metadata, con_file)
+            # Time series of individual model
+            (path, provenance_record) = make_time_series_plots(
+                cfg, metadata, filename)
 
-                if 'multimodel_plot' in cfg:
-                    if cfg['multimodel_plot']:
-                        con_files = [name for name in os.listdir(quicklook_dir) 
-                                     if name.endswith(metadata['short_name'] + '.nc')]
-                        con_files = [con_dir + name for name in con_files]
+            # Provenance
+            if path is not None:
+                provenance_record['ancestors'] = filename
+                with ProvenanceLogger(cfg) as provenance_logger:
+                    provenance_logger.log(path, provenance_record)
 
-                        # if more datasets are given in concatinated files
-                        if len(con_files) > 1:
-                            meta_datas = {}
-                            for filename in con_files:
-                                meta_datas[filename] = dict(short_name=metadata['short_name'],
-                                                            long_name=metadata['long_name'])
-                            logger.info('meta_datas:\t%s', meta_datas)
-                              
-                            # Time series plot with all models
-                            multi_model_time_series(
-                                cfg,
-                                meta_datas,
-                            )
-      
-    else: 
-        for index, metadata_filename in enumerate(cfg['input_files']):
-            logger.info('metadata filename:\t%s', metadata_filename)
+        if 'multimodel_plot' in cfg:
+            if cfg['multimodel_plot']:
 
-            metadatas = diagtools.get_input_files(cfg, index=index)
+                if cfg['quicklook']['active']:
+                    # if quicklook mode - plotting of concatinating file
+                    con_dir = cfg['quicklook']['output_dir'] + "/"
+                    con_files = [name for name in os.listdir(con_dir) 
+                                 if name.endswith(metadata['short_name'] + '.nc')]
+                    con_files = [con_dir + name for name in con_files]
 
-            for filename in sorted(metadatas):
+                    # if more datasets are given in concatinated files
+                    if len(con_files) > 1:
+                        meta_datas = {}
+                        for filename in con_files:
+                            meta_datas[filename] = dict(short_name=metadata['short_name'],
+                                                        long_name=metadata['long_name'])
+                        logger.info('meta_datas:\t%s', meta_datas)
+                          
+                        # Time series plot with all models
+                        (path, provenance_record) = multi_model_time_series(
+                            cfg, meta_datas)
 
-                logger.info('-----------------')
-                logger.info(
-                    'preprocessed model filenames:\t%s',
-                    filename,
-                )
+                        # Provenance
+                        if path is not None:
+                            provenance_record['ancestors'] = con_files
+                            with ProvenanceLogger(cfg) as provenance_logger:
+                                provenance_logger.log(path, provenance_record)
 
-                metadata = metadatas[filename]
+                    else:
+                        logger.info('Only one concatinated file available')
+ 
+                else:
+        
+                    # if more datasets are given in the recipe
+                    if len(metadatas) > 1:
+                        # Time series plot with all models
+                        (path, provenance_record) = multi_model_time_series(
+                            cfg, metadatas)
+                        # Provenance
+                        if path is not None:
+                            provenance_record['ancestors'] = metadatas
+                            with ProvenanceLogger(cfg) as provenance_logger:
+                                provenance_logger.log(path, provenance_record)
 
-                # Time series of individual model
-                make_time_series_plots(cfg, metadata, filename)
-
-            # if more datasets are given in the recipe
-            if len(metadatas) > 1:
-                # Time series plot with all models
-                multi_model_time_series(
-                    cfg,
-                    metadatas,
-                )
 
     logger.info('Success')
 
