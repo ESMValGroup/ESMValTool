@@ -5,6 +5,8 @@ Zonal time series diagnostics
 Description
 -----------
 Plot time series of zonal mean
+In quicklook mode (cfg['quicklook']['active']: True) this diagnostic plots
+the concatinated file.
 
 Author
 ------
@@ -58,9 +60,6 @@ def make_zon_time_series_plots(
     logger.debug("Loading %s", filename)
     cube = iris.load_cube(filename)
 
-    # Set up units
-    cube = diagtools.bgc_units(cube, metadata['short_name'])
-
     # Load image format extention
     image_extention = diagtools.get_image_format(cfg)
 
@@ -102,7 +101,7 @@ def make_zon_time_series_plots(
         prefix='Model',
         suffix='zonal_timeseries' + image_extention,
         metadata_id_list=[
-            'dataset', 'field', 'short_name', 'start_year', 'end_year'
+            'dataset', 'field', 'short_name'
         ],
     )
 
@@ -140,8 +139,25 @@ def main(cfg):
                 filename,
             )
 
-            # Time series of individual model
-            make_zon_time_series_plots(cfg, metadatas[filename], filename)
+            metadata = metadatas[filename]
+
+            if cfg['quicklook']['active']:
+                # if quicklook mode - plotting of concatinating file
+                # path to concatinated file
+                quicklook_dir = cfg['quicklook']['output_dir']
+                con_file = quicklook_dir + '/'
+                con_file += '_'.join([metadata['dataset'],
+                                      metadata['short_name'] + '.nc'])
+                logger.info('concatinated filename:\t%s', con_file)
+
+                # Time series of individual model
+                make_zon_time_series_plots(cfg, metadata, con_file)
+
+            else:
+                # if not quicklook mode - plotting of preprocessed file
+                # Time series of individual model
+                make_zon_time_series_plots(cfg, metadata, filename)
+
     logger.info('Success')
 
 

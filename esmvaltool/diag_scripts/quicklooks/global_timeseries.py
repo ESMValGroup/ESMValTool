@@ -4,7 +4,9 @@ Global time series diagnostics
 
 Description
 -----------
-Plot time series of global mean
+Time series of global mean
+In quicklook mode (cfg['quicklook']['active']: True) this diagnostic plots
+the concatinated file.
 
 Author
 ------
@@ -19,6 +21,9 @@ Configuration options in recipe
 time_int: min and max for time axis
 y_min: min of y axis
 y_max_ max of y axis
+multimodel_plot: if True: additional plot with all datasets
+                 qicklook mode: all concatinated files
+                 no quicklook mode: all dataset given in recipe
 
 """
 
@@ -97,8 +102,7 @@ def make_time_series_plots(
     # Load and compute cube
     cube = compute_diagnostic(filename)
 
-    # Set up units
-    cube = diagtools.bgc_units(cube, metadata['short_name'])
+    logger.info(cube)
 
     # Load image format extention
     image_extention = diagtools.get_image_format(cfg)
@@ -128,7 +132,7 @@ def make_time_series_plots(
         prefix='Model',
         suffix='global_timeseries' + image_extention,
         metadata_id_list=[
-            'dataset', 'field', 'short_name', 'start_year', 'end_year'
+            'dataset', 'field', 'short_name'
         ],
     )
 
@@ -160,10 +164,11 @@ def multi_model_time_series(
         # Load and compute cube
         cube = compute_diagnostic(filename)
 
-        # Set up units
-        cube = diagtools.bgc_units(cube, metadata[filename]['short_name'])
-
+        logger.info(cube)
+ 
         model_cube[filename] = cube
+
+        metadata[filename]['dataset'] = cube.attributes['model_id']
 
     # Load image format extention
     image_extention = diagtools.get_image_format(cfg)
@@ -185,7 +190,6 @@ def multi_model_time_series(
         timeplot(
             cube,
             c=color,
-            # label=metadata[filename]['dataset'])
             ls='-',
             lw=2.,
         )
@@ -216,7 +220,7 @@ def multi_model_time_series(
             prefix='MultiModel',
             suffix='global_timeseries' + image_extention,
             metadata_id_list=[
-                'field', 'short_name', 'start_year', 'end_year'
+                'field', 'short_name'
             ],
         )
 
@@ -243,42 +247,81 @@ def main(cfg):
 
     """
 
-    # read concatinated file
-    quicklook_dir = cfg['quicklook']['output_dir']
+    if cfg['quicklook']['active']:
+        # if quicklook mode - plotting of concatinating file
 
-    for index, metadata_filename in enumerate(cfg['input_files']):
-        logger.info('metadata filename:\t%s', metadata_filename)
+        # path to concatinated file
+        quicklook_dir = cfg['quicklook']['output_dir']
 
-        metadatas = diagtools.get_input_files(cfg, index=index)
+        for index, metadata_filename in enumerate(cfg['input_files']):
+            logger.info('metadata filename:\t%s', metadata_filename)
 
-        for filename in sorted(metadatas):
+            metadatas = diagtools.get_input_files(cfg, index=index)
 
-            logger.info('-----------------')
-            logger.info(
-                'preprocessed model filenames:\t%s',
-                filename,
-            )
+            for filename in sorted(metadatas):
 
-            metadata = metadatas[filename]
+                logger.info('-----------------')
+                logger.info(
+                    'preprocessed model filenames:\t%s',
+                    filename,
+                )
 
-            con_file = quicklook_dir + '/' 
-            con_file += '_'.join([metadata['project'],
-                                  metadata['dataset'],
-                                  metadata['mip'],
-                                  metadata['exp'],
-                                  metadata['ensemble'],
-                                  metadata['short_name'] + '.nc'])
-            logger.info('concatinated filename:\t%s', con_file)
+                metadata = metadatas[filename]
 
-            # Time series of individual model
-            make_time_series_plots(cfg, metadata, con_file)
+                con_dir = quicklook_dir + '/' 
+                con_file = con_dir + '_'.join([metadata['dataset'],
+                                      metadata['short_name'] + '.nc'])
+                logger.info('concatinated filename:\t%s', con_file)
 
-        if len(metadatas) > 1:
-            # Time series plot with all models
-            multi_model_time_series(
-                cfg,
-                metadatas,
-            )
+                # Time series of individual model
+                make_time_series_plots(cfg, metadata, con_file)
+
+                if 'multimodel_plot' in cfg:
+                    if cfg['multimodel_plot']:
+                        con_files = [name for name in os.listdir(quicklook_dir) 
+                                     if name.endswith(metadata['short_name'] + '.nc')]
+                        con_files = [con_dir + name for name in con_files]
+
+                        # if more datasets are given in concatinated files
+                        if len(con_files) > 1:
+                            meta_datas = {}
+                            for filename in con_files:
+                                meta_datas[filename] = dict(short_name=metadata['short_name'],
+                                                            long_name=metadata['long_name'])
+                            logger.info('meta_datas:\t%s', meta_datas)
+                              
+                            # Time series plot with all models
+                            multi_model_time_series(
+                                cfg,
+                                meta_datas,
+                            )
+      
+    else: 
+        for index, metadata_filename in enumerate(cfg['input_files']):
+            logger.info('metadata filename:\t%s', metadata_filename)
+
+            metadatas = diagtools.get_input_files(cfg, index=index)
+
+            for filename in sorted(metadatas):
+
+                logger.info('-----------------')
+                logger.info(
+                    'preprocessed model filenames:\t%s',
+                    filename,
+                )
+
+                metadata = metadatas[filename]
+
+                # Time series of individual model
+                make_time_series_plots(cfg, metadata, filename)
+
+            # if more datasets are given in the recipe
+            if len(metadatas) > 1:
+                # Time series plot with all models
+                multi_model_time_series(
+                    cfg,
+                    metadatas,
+                )
 
     logger.info('Success')
 
