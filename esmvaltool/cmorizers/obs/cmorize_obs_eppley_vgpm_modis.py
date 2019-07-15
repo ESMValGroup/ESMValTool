@@ -10,7 +10,7 @@ Last access
    20190515
 
 Download and processing instructions
-   Download and unpack all files under a single directory
+   Download and unpack all the *.tar files under a single directory
    (no subdirectories with years) in ${RAWOBS}/Tier2/Eppley-VGPM-MODIS
 
 Modification history
@@ -66,6 +66,7 @@ def extract_variable(var_info, raw_info, out_dir, attrs):
 
 def merge_data(in_dir, out_dir, raw_info):
     """Merge all data into a single file."""
+    da = []
     var = raw_info['name']
     filelist = sorted(glob.glob(in_dir + '/' + raw_info['file'] + '*.hdf'))
     for filename in filelist:
@@ -86,11 +87,8 @@ def merge_data(in_dir, out_dir, raw_info):
             lon=np.linspace(-180. + dx, 180. - dx, ds.dims['lon']))
         ds.lon.attrs = {'long_name': 'Longitude', 'units': 'degrees_east'}
         # get current file data
-        da = ds[var]
-        if filename == filelist[0]:
-            damerge = da
-        else:
-            damerge = xr.concat((damerge, da), dim='time')
+        da.append(ds[var])
+    damerge = xr.concat(da, dim='time')
 
     # need data flip to match coordinates
     damerge.data = np.fliplr(damerge.data)
