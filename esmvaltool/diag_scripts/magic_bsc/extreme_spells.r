@@ -188,9 +188,11 @@ title <- paste("Days ", season, var0, paste0(substr(start_projection, 1, 4),
                  "-", substr(end_projection, 1, 4)), op, "the", qtile * 100,
                 "th quantile for", paste0(substr(start_reference, 1, 4), "-",
                 substr(end_reference, 1, 4), " (", rcp_scenario[i], ")"))
-filepng1 <- file.path(plot_dir, paste0("Time_", var0, "_extreme_spell_duration", 
-                   season, "_", model_names, "_", rcp_scenario[i], "_",
-                    start_projection, "_", end_projection, ".png"))
+filepng1 <- file.path(plot_dir, paste0("Time_", var0,
+                                       "_extreme_spell_duration", season,
+                                       "_", model_names, "_", rcp_scenario[i],
+                                       "_", start_projection, "_",
+                                       end_projection, ".png"))
 
 g <- ggplot(data_frame, aes(x = Year, y = Experiment)) +
     theme_bw() + geom_line() + ylab(paste0("Number of Days")) +
