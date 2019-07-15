@@ -45,7 +45,7 @@ A list of the datasets for which a cmorizers is available is provided in the fol
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | CRU                          | tas, pr (Amon)                                                                                       |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
-| Eppley-VPGM-MODIS            | intpp (Omon)                                                                                         |   2  | Python          |
+| Eppley-VGPM-MODIS            | intpp (Omon)                                                                                         |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | ERA-Interim                  | clivi, clt, clwvi, hfds, hur, hus, pr, prw, ps, psl, ta, tas, tauu, tauv, ts, ua, va, wap, zg (Amon) |   3  | NCL             |
 |                              | pr, psl, tas, tasmin, tasmax, zg (day), sftlf (fx), tos (Omon)                                       |      |                 |
