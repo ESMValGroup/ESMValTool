@@ -22,33 +22,39 @@ datasets:
 preprocessors:
   annual_mean:
     annual_mean:
-#  summer_mean:
-#    seasonal_mean: 'JJA'
-#  winter_mean:
-#    seasonal_mean: 'DJF'
+  summer_mean:
+    extract_season:
+      season: 'JJA'
+    seasonal_mean:
+  winter_mean:
+    extract_season:
+      season: 'DJF'
+    seasonal_mean:
 
 diagnostics:
-  annual_EGR:
-    variables:
-      ta:
-        preprocessor: annual_mean
-      zg:
-        preprocessor: annual_mean
-      ua:
-        preprocessor: annual_mean
-    scripts:
-      annual_eady_growth_rate:
-        script: primavera/eady_growth_rate.py
-
- # summer_EGR:
+ # annual_EGR:
  #   variables:
  #     ta:
- #       preprocessor: summer_mean
+ #       preprocessor: annual_mean
  #     zg:
- #       preprocessor: summer_mean
+ #       preprocessor: annual_mean
  #     ua:
- #       preprocessor: summer_mean
- #   script: primavera/eady_growth_rate.py
+ #       preprocessor: annual_mean
+ #   scripts:
+ #     annual_eady_growth_rate:
+ #       script: primavera/eady_growth_rate.py
+
+  summer_EGR:
+    variables:
+      ta:
+        preprocessor: summer_mean
+      zg:
+        preprocessor: summer_mean
+      ua:
+        preprocessor: summer_mean
+    scripts:
+      summer_eady_growth_rate:
+        script: primavera/eady_growth_rate.py
 
  # winter_EGR:
  #   variables:
