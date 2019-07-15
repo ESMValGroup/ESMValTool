@@ -29,6 +29,7 @@ Recipes
    recipe_oceans
    recipe_perfmetrics
    recipe_quantilebias
+   recipe_quicklook
    recipe_runoff_et
    recipe_rainfarm
    recipe_shapeselect
