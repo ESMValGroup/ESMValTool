@@ -27,16 +27,14 @@ time_int: min and max for time axis
 
 import logging
 import os
-from pprint import pformat
 
 import iris
 import matplotlib.pyplot as plt
-import numpy as np
 
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 
 from esmvaltool.diag_scripts.shared._base import (
-    ProvenanceLogger, get_diagnostic_filename, get_plot_filename,
+    ProvenanceLogger, get_diagnostic_filename,
     run_diagnostic)
 
 logger = logging.getLogger(os.path.basename(__file__))
@@ -91,14 +89,14 @@ def make_zon_time_series_plots(
         levels = None
 
     fig = plt.contourf(times,
-                  cube.coord('latitude').points,
-                  data, extend='both', levels=levels)
+                       cube.coord('latitude').points,
+                       data, extend='both', levels=levels)
 
     # Add title, legend to plots
     title = ' '.join([metadata['dataset'], metadata['long_name']])
     plt.title(title)
     plt.ylabel('lat')
- 
+
     # set the limits for time axis
     if 'time_int' in cfg:
         plt.gca().set_xlim(cfg['time_int'])
@@ -131,7 +129,7 @@ def make_zon_time_series_plots(
 
     # Write netcdf file for every plot
     diagname = '_'.join([metadata['dataset'], metadata['short_name'],
-        'zonal_timeseries'])
+                         'zonal_timeseries'])
     diagnostic_file = get_diagnostic_filename(diagname, cfg)
     logger.info("Saving analysis results to %s", diagnostic_file)
     iris.save(cube, target=diagnostic_file)

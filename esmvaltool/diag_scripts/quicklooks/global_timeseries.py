@@ -29,7 +29,6 @@ multimodel_plot: if True: additional plot with all datasets
 
 import logging
 import os
-from pprint import pformat
 
 import iris
 import matplotlib.pyplot as plt
@@ -38,7 +37,7 @@ import numpy as np
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 
 from esmvaltool.diag_scripts.shared._base import (
-    ProvenanceLogger, get_diagnostic_filename, get_plot_filename,
+    ProvenanceLogger, get_diagnostic_filename,
     run_diagnostic)
 
 logger = logging.getLogger(os.path.basename(__file__))
@@ -66,7 +65,8 @@ def compute_diagnostic(filename):
         grid_areas = iris.analysis.cartography.area_weights(cube)
 
         # from zonal mean to global mean
-        cube = cube.collapsed('latitude', iris.analysis.MEAN, weights=grid_areas)
+        cube = cube.collapsed('latitude', iris.analysis.MEAN,
+                              weights=grid_areas)
 
     return cube
 
@@ -130,7 +130,7 @@ def make_time_series_plots(
     plt.title(title)
     #plt.legend(loc='best')
     plt.ylabel(str(cube.units))
- 
+
     # set the y-limits
     if 'y_min' in cfg:
         plt.ylim(bottom=cfg['y_min'])
@@ -162,7 +162,7 @@ def make_time_series_plots(
 
     # Write netcdf file for every plot
     diagname = '_'.join([metadata['dataset'], metadata['short_name'],
-        'global_timeseries'])
+                         'global_timeseries'])
     diagnostic_file = get_diagnostic_filename(diagname, cfg)
     logger.info("Saving analysis results to %s", diagnostic_file)
     iris.save(cube, target=diagnostic_file)
@@ -197,7 +197,7 @@ def multi_model_time_series(
         cube = compute_diagnostic(filename)
 
         logger.info(cube)
- 
+
         model_cube[filename] = cube
 
         metadata[filename]['dataset'] = cube.attributes['model_id']
@@ -267,7 +267,8 @@ def multi_model_time_series(
 
     # Write netcdf file for every plot
     diagname = '_'.join(['MultiModel',
-        metadata[filename]['short_name'], 'global_timeseries'])
+                         metadata[filename]['short_name'],
+                         'global_timeseries'])
     diagnostic_file = get_diagnostic_filename(diagname, cfg)
     logger.info("Saving analysis results to %s", diagnostic_file)
     iris.save(cube, target=diagnostic_file)
@@ -318,7 +319,7 @@ def main(cfg):
                 # path to concatinated file
                 con_dir = cfg['quicklook']['output_dir'] + "/"
                 filename = con_dir + '_'.join([metadata['dataset'],
-                                      metadata['short_name'] + '.nc'])
+                                               metadata['short_name'] + '.nc'])
                 logger.info('concatinated filename:\t%s', filename)
 
             # Time series of individual model
@@ -337,18 +338,20 @@ def main(cfg):
                 if cfg['quicklook']['active']:
                     # if quicklook mode - plotting of concatinating file
                     con_dir = cfg['quicklook']['output_dir'] + "/"
-                    con_files = [name for name in os.listdir(con_dir) 
-                                 if name.endswith(metadata['short_name'] + '.nc')]
+                    con_files = [name for name in os.listdir(con_dir)
+                                 if name.endswith(
+                                     metadata['short_name'] + '.nc')]
                     con_files = [con_dir + name for name in con_files]
 
                     # if more datasets are given in concatinated files
                     if len(con_files) > 1:
                         meta_datas = {}
                         for filename in con_files:
-                            meta_datas[filename] = dict(short_name=metadata['short_name'],
-                                                        long_name=metadata['long_name'])
+                            meta_datas[filename] = dict(
+                                short_name=metadata['short_name'],
+                                long_name=metadata['long_name'])
                         logger.info('meta_datas:\t%s', meta_datas)
-                          
+
                         # Time series plot with all models
                         (path, provenance_record) = multi_model_time_series(
                             cfg, meta_datas)
@@ -361,9 +364,9 @@ def main(cfg):
 
                     else:
                         logger.info('Only one concatinated file available')
- 
+
                 else:
-        
+
                     # if more datasets are given in the recipe
                     if len(metadatas) > 1:
                         # Time series plot with all models
