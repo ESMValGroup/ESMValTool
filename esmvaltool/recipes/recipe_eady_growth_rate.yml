@@ -2,22 +2,22 @@
 ---
 documentation:
   description: |
-    This is an example recipe for a personal diagnostic.
-    You can run any Python diagnostic of your choice
-    without installing ESMValTool as developer or git pushing.
-    Simply include the full path to your script of choice in script,
-    see example /path/to/your/my_little_diagnostic.py
-    An example personal diagnostic can be found in
-    esmvaltool/diag_scripts/examples/my_little_diagnostic.py
+    Recipe to compute the annual, summer and winter Eady Growth Rates. The
+    output produces netcdf files for each model and season.
+
 
   authors:
-    - pred_va
+    - sanc_em
 
   maintainer:
-    - pred_va
+    - loos_sa
+
+  projects:
+    - primavera
 
 datasets:
-  - {dataset: MPI-ESM-LR,  project: CMIP5, exp: decadal1997,  ensemble: r1i1p1,  mip: Amon, start_year: 2000,  end_year: 2002}
+  - {dataset: CNRM-CM5,  project: CMIP5, exp: historical,  ensemble: r1i1p1,
+     mip: Amon, start_year: 1979,  end_year: 2005}
 
 preprocessors:
   annual_mean:
@@ -32,17 +32,17 @@ preprocessors:
     seasonal_mean:
 
 diagnostics:
- # annual_EGR:
- #   variables:
- #     ta:
- #       preprocessor: annual_mean
- #     zg:
- #       preprocessor: annual_mean
- #     ua:
- #       preprocessor: annual_mean
- #   scripts:
- #     annual_eady_growth_rate:
- #       script: primavera/eady_growth_rate.py
+  annual_EGR:
+    variables:
+      ta:
+        preprocessor: annual_mean
+      zg:
+        preprocessor: annual_mean
+      ua:
+        preprocessor: annual_mean
+    scripts:
+      annual_eady_growth_rate:
+        script: primavera/eady_growth_rate.py
 
   summer_EGR:
     variables:
@@ -56,12 +56,12 @@ diagnostics:
       summer_eady_growth_rate:
         script: primavera/eady_growth_rate.py
 
- # winter_EGR:
- #   variables:
- #     ta:
- #       preprocessor: winter_mean
- #     zg:
- #       preprocessor: winter_mean
- #     ua:
- #       preprocessor: winter_mean
- #   script: primavera/eady_growth_rate.py
+  winter_EGR:
+    variables:
+      ta:
+        preprocessor: winter_mean
+      zg:
+        preprocessor: winter_mean
+      ua:
+        preprocessor: winter_mean
+    script: primavera/eady_growth_rate.py

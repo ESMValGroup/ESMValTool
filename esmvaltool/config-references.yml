@@ -218,6 +218,10 @@ authors:
     name: Lledó, Llorenç
     institute: BSC, Spain
     email: llorenç.lledo 'at' bsc.es
+  loos_sa:
+    name: Loosveldt-Tomas, Saskia
+    institute: BSC, Spain
+    email: saskia.loosveldt 'at' bsc.es
   lore_ru:
     name: Lorenz, Ruth
     institute: ETH Zurich, Switzerland
@@ -300,6 +304,10 @@ authors:
     name: Roehrig, Romain
     institute: MeteoFr, France
     email: romain.roehrig 'at' meteo.fr
+  sanc_em:
+    name: Sanchez, Emilia
+    institute: CERFACS, France
+    email: emilia.sanchez 'at' cerfacs.fr
   senf_da:
     name: Senftleben, Daniel
     institute: DLR, Germany
@@ -584,7 +592,7 @@ references:
   lloyd-hughes02jclim: "Lloyd-Hughes, B. and Saunders, M. A., Int. J. Climatol., 22, 1571-1592, doi:10.1002/joc.846, 2002."
   locarini10usgov: "Locarnini, R. A. et al., World Ocean Atlas 2009, Volume 1: Temperature. S. Levitus, Ed. NOAA Atlas NESDIS 68, U.S. Government Printing Office, Washington, D.C., 184 pp.,2010."
   lucarini14revgeop: "Lucarini et al., Rev. Geophys., 52, 809-859, doi:https://doi.org/10.1002/2013RG000446"
-  mehran14jgr: "Mehran, A. et al., J. Geophys. Res., 119, 4, 1695-1707, doi: 10.1002/2013JD021152, 2014." 
+  mehran14jgr: "Mehran, A. et al., J. Geophys. Res., 119, 4, 1695-1707, doi: 10.1002/2013JD021152, 2014."
   manubens:  "Manubens, N., et al., ENVIRON MODELL SOFTW 103, 29-42. doi:10.1016/j.envsoft.2018.01.018"
   mckee93: "McKee, T. B. and Doesken, N. J. and Kleist, J.  In Proceedings of the 8th Conference on Applied Climatology, 17(22), 179-183, Boston, MA: American Meteorological Society, 1993."
   mueller14grl: "Mueller, B. and Seneviratne, S. I. Geophys. Res. Lett., 41, 128-134, doi:10.1002/2013GL058055, 2014."
@@ -633,7 +641,7 @@ references:
   patmos-x: "Heidinger et al., NOAA National Centers for Environmental Information, doi:10.7289/V5348HCK, last access: 10 February 2019."
   woa: "Locarnini et al., World Ocean Atlas 2013, Vol. 1: Temperature, 2013."
   zhang-2011: "Zhang et al., WIREs Clim. Change, doi:10.1002/wcc.147, 2011"
-  sillman-2013: "Sillmann et al., J. Geophys. Res., doi:10.1029/2012JD018390, 2013" 
+  sillman-2013: "Sillmann et al., J. Geophys. Res., doi:10.1029/2012JD018390, 2013"
 
 projects:
   c3s-magic: Copernicus Climate Change Service 34a Lot 2 (MAGIC) project
@@ -647,6 +655,7 @@ projects:
   esmval: DLR project ESMVal
   eval4cmip: DLR and University of Bremen project funded by the Initiative and Networking Fund of the Helmholtz Society
   qa4ecv: QA4ECV
+  primavera: EU H2020 project PRIMAVERA
   trr181: DFG Project TRR-181
   ukesm: UKESM, UK Earth System Model project (NERC)
 
