@@ -19,9 +19,9 @@ Configuration options in recipe
 -------------------------------
 multi_dataset_plot : bool, optional (default: False)
     If given, plot all given datasets for every variable in one plot.
-time_range : list of float, optional:
+time_range : list of float, optional
     Range for the time axis in the plots.
-y_range : list of float, optional:
+y_range : list of float, optional
     Range for the variable axis.
 
 """

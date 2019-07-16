@@ -19,9 +19,9 @@ Configuration options in recipe
 -------------------------------
 latitude_range : list of float, optional
     Range for the latitde axis in the plots.
-levels : list of float, optinal
+levels : list of float, optional
     Values for contour levels.
-time_range : list of float, optional:
+time_range : list of float, optional
     Range for the time axis in the plots.
 
 """

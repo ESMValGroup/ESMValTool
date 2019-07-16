@@ -48,3 +48,4 @@ diagnostics:
         script: quicklooks/zonal_timeseries.py
         latitude_range: [-30, 70]
         levels: [250, 260, 270, 280, 290, 300]
+        time_range: [1999, 2003]
