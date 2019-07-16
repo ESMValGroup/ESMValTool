@@ -65,9 +65,10 @@ def load_cube(dataset):
     # Check if cubes has desired coordinates
     for coord_name in ('time', 'latitude'):
         if coord_name not in coords:
-            raise iris.exceptions.CoordinateNotFoundError(
-                f"File '{filename}' does not contain necessary coordinate "
-                f"'{coord_name}'")
+            logger.warning(
+                "File '%s' does not contain necessary coordinate '%s', "
+                "skipping", filename, coord_name)
+            return None
         coords.remove(coord_name)
 
     # Calculate zonal mean
@@ -89,6 +90,8 @@ def plot_single_dataset(cfg, dataset):
 
     """
     cube = load_cube(dataset)
+    if cube is None:
+        return
 
     # Provenance
     provenance_record = get_provenance_record(

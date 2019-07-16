@@ -65,8 +65,10 @@ def load_cube(dataset):
 
     # Check if cubes has desired coordinates
     if 'time' not in coords:
-        raise iris.exceptions.CoordinateNotFoundError(
-            f"File '{filename}' does not contain necessary coordinate 'time'")
+        logger.warning(
+            "File '%s' does not contain necessary coordinate 'time', skipping",
+            filename)
+        return None
     coords.remove('time')
 
     # Calculate global mean
@@ -117,6 +119,8 @@ def plot_single_dataset(cfg, dataset):
 
     """
     cube = load_cube(dataset)
+    if cube is None:
+        return
 
     # Provenance
     provenance_record = get_provenance_record(
@@ -181,8 +185,12 @@ def plot_multiple_datasets(cfg, datasets, short_name):
     cubes = {}
     for dataset in datasets:
         cube = load_cube(dataset)
+        if cube is None:
+            continue
         global_time_series_plot(cube, ls='-', lw=2.0, label=dataset['dataset'])
         cubes[dataset['dataset']] = cube
+    if not cubes:
+        return
 
     # Provenance
     provenance_record = get_provenance_record(
