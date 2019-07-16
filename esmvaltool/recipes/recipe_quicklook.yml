@@ -42,6 +42,9 @@ diagnostics:
       global_mean:
         script: quicklooks/global_timeseries.py
         multi_dataset_plot: true
+        time_range: [1999, 2003]
+        y_range: [260, 290]
       zonal_mean:
         script: quicklooks/zonal_timeseries.py
+        latitude_range: [-30, 70]
         levels: [250, 260, 270, 280, 290, 300]

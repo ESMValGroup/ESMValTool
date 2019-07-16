@@ -34,9 +34,21 @@ User settings in recipe
    * ``multi_dataset_plot``, *bool*, optional: Additionally plot all datasets.
      in one file.
 
+   * ``time_range``, *list of float*, optional: Range for the ``time``
+     coordinate in the plot.
+
+   * ``y_range``, *list of float*, optional: Range for the ``y`` coordinate
+     in the plot (= variable which is considered).
+
 #. Script zonal_timeseries.py
 
+   * ``latitude_range``, *list of float*, optional: Range for the ``latitude``
+     coordinate in the plot.
+
    * ``levels``, *list of float*, optional: Values for contour levels.
+
+   * ``time_range``, *list of float*, optional: Range for the ``time``
+     coordinate in the plot.
 
 
 Example plots

@@ -17,8 +17,12 @@ CMIP6-DICAD
 
 Configuration options in recipe
 -------------------------------
+latitude_range : list of float, optional
+    Range for the latitde axis in the plots.
 levels : list of float, optinal
     Values for contour levels.
+time_range : list of float, optional:
+    Range for the time axis in the plots.
 
 """
 
@@ -105,6 +109,10 @@ def plot_single_dataset(cfg, dataset):
     plt.title(title)
     plt.xlabel('year')
     plt.ylabel('latitude')
+    if 'time_range' in cfg:
+        plt.xlim(cfg['time_range'][0], cfg['time_range'][1])
+    if 'latitude_range' in cfg:
+        plt.ylim(cfg['latitude_range'][0], cfg['latitude_range'][1])
 
     # Make a colorbar for the ContourSet returned by the contourf call.
     colorbar = plt.colorbar(orientation='horizontal', aspect=30)

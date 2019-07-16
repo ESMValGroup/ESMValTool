@@ -19,6 +19,10 @@ Configuration options in recipe
 -------------------------------
 multi_dataset_plot : bool, optional (default: False)
     If given, plot all given datasets for every variable in one plot.
+time_range : list of float, optional:
+    Range for the time axis in the plots.
+y_range : list of float, optional:
+    Range for the variable axis.
 
 """
 
@@ -125,6 +129,10 @@ def plot_single_dataset(cfg, dataset):
     plt.title(title)
     plt.xlabel('year')
     plt.ylabel(f"{dataset['short_name']} / {cube.units}")
+    if 'time_range' in cfg:
+        plt.xlim(cfg['time_range'][0], cfg['time_range'][1])
+    if 'y_range' in cfg:
+        plt.ylim(cfg['y_range'][0], cfg['y_range'][1])
 
     # Save plot if desired
     if cfg['write_plots']:
@@ -188,6 +196,10 @@ def plot_multiple_datasets(cfg, datasets, short_name):
                         borderaxespad=0.0)
     plt.xlabel('year')
     plt.ylabel(f"{short_name} / {cube.units}")
+    if 'time_range' in cfg:
+        plt.xlim(cfg['time_range'][0], cfg['time_range'][1])
+    if 'y_range' in cfg:
+        plt.ylim(cfg['y_range'][0], cfg['y_range'][1])
 
     # Save plot if desired
     if cfg['write_plots']:
