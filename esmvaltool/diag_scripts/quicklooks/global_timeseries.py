@@ -1,12 +1,11 @@
-"""
-Global time series diagnostics
-=======================
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""Plot global time series.
 
 Description
 -----------
-Time series of global mean
-In quicklook mode (cfg['quicklook']['active']: True) this diagnostic plots
-the concatinated file.
+Plot global time series. In quicklook mode, this diagnostic plots the
+concatenated files.
 
 Author
 ------
@@ -18,12 +17,8 @@ CMIP6-DICAD
 
 Configuration options in recipe
 -------------------------------
-time_int: min and max for time axis
-y_min: min of y axis
-y_max: max of y axis
-multimodel_plot: if True: additional plot with all datasets
-                 qicklook mode: all concatinated files
-                 no quicklook mode: all dataset given in recipe
+multi_dataset_plot : bool, optional (default: False)
+    If given, plot all given datasets for every variable in one plot.
 
 """
 
@@ -35,15 +30,15 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
-
-from esmvaltool.diag_scripts.shared._base import (
-    ProvenanceLogger, get_diagnostic_filename,
-    run_diagnostic)
+from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
+                                            get_diagnostic_filename,
+                                            get_plot_filename, group_metadata,
+                                            io, run_diagnostic)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
 
-def get_provenance_record(caption):
+def get_provenance_record(caption, ancestors):
     """Create a provenance record describing the diagnostic data and plot."""
     record = {
         'caption': caption,
@@ -52,28 +47,37 @@ def get_provenance_record(caption):
         'plot_type': 'times',
         'authors': ['bock_ls'],
         'references': ['acknow_project'],
+        'ancestors': ancestors,
     }
     return record
 
 
-def compute_diagnostic(filename):
-    """Compute global average."""
-    logger.debug("Loading %s", filename)
+def load_cube(dataset):
+    """Load cube and compute global average if necessary."""
+    filename = dataset['filename']
+    logger.debug("Loading '%s'", filename)
     cube = iris.load_cube(filename)
+    coords = [coord.name() for coord in cube.coords(dim_coords=True)]
 
+    # Check if cubes has desired coordinates
+    if 'time' not in coords:
+        raise iris.exceptions.CoordinateNotFoundError(
+            f"File '{filename}' does not contain necessary coordinate 'time'")
+    coords.remove('time')
+
+    # Calculate global mean
     if cube.ndim > 1:
-        grid_areas = iris.analysis.cartography.area_weights(cube)
-
-        # from zonal mean to global mean
-        cube = cube.collapsed('latitude', iris.analysis.MEAN,
-                              weights=grid_areas)
+        if 'latitude' in coords:
+            grid_areas = iris.analysis.cartography.area_weights(cube)
+        else:
+            grid_areas = None
+        cube = cube.collapsed(coords, iris.analysis.MEAN, weights=grid_areas)
 
     return cube
 
 
-def timeplot(cube, **kwargs):
-    """
-    Create a time series plot from the cube.
+def global_time_series_plot(cube, **kwargs):
+    """Create a time series plot from the cube.
 
     Note that this function simple does the plotting, it does not save the
     image or do any of the complex work. This function also takes and of the
@@ -86,303 +90,167 @@ def timeplot(cube, **kwargs):
     Parameters
     ----------
     cube: iris.cube.Cube
-        Input cube
+        Input cube.
 
     """
     cubedata = np.ma.array(cube.data)
     if len(cubedata.compressed()) == 1:
         plt.axhline(cubedata.compressed(), **kwargs)
         return
-
     times = diagtools.cube_time_to_float(cube)
     plt.plot(times, cubedata, **kwargs)
 
 
-def make_time_series_plots(
-        cfg,
-        metadata,
-        filename,
-):
-    """
+def plot_single_dataset(cfg, dataset):
+    """Plot global mean time series for single dataset.
+
     Parameters
     ----------
     cfg: dict
-        the opened global config dictionairy, passed by ESMValTool.
-    metadata: dict
-        The metadata dictionairy for a specific model.
-    filename: str
-        The preprocessed model file
+        Global configuration dictionary.
+    dataset: list
+        Metadata dictionary for desired dataset.
 
     """
-
-    # Load and compute cube
-    cube = compute_diagnostic(filename)
-
-    logger.info(cube)
-
-    # Load image format extention
-    image_extention = diagtools.get_image_format(cfg)
-
-    timeplot(cube, label=metadata['dataset'])
-
-    # Add title, legend to plots
-    title = ' '.join([metadata['dataset'], metadata['long_name']])
-    plt.title(title)
-    #plt.legend(loc='best')
-    plt.ylabel(str(cube.units))
-
-    # set the y-limits
-    if 'y_min' in cfg:
-        plt.ylim(bottom=cfg['y_min'])
-    if 'y_max' in cfg:
-        plt.ylim(top=cfg['y_max'])
-
-    #set time axis limits
-    if 'time_int' in cfg:
-        plt.xlim(cfg['time_int'])
-
-    # Determine image filename:
-    path = diagtools.get_image_path(
-        cfg,
-        metadata,
-        prefix='Model',
-        suffix='global_timeseries' + image_extention,
-        metadata_id_list=[
-            'dataset', 'field', 'short_name'
-        ],
-    )
-
-    # Saving files:
-    if cfg['write_plots']:
-
-        logger.info('Saving plots to %s', path)
-        plt.savefig(path)
-
-    plt.close()
-
-    # Write netcdf file for every plot
-    diagname = '_'.join([metadata['dataset'], metadata['short_name'],
-                         'global_timeseries'])
-    diagnostic_file = get_diagnostic_filename(diagname, cfg)
-    logger.info("Saving analysis results to %s", diagnostic_file)
-    iris.save(cube, target=diagnostic_file)
+    cube = load_cube(dataset)
 
     # Provenance
     provenance_record = get_provenance_record(
-        "Timeseries of global mean of {} for dataset {}."
-        .format(metadata['short_name'], metadata['dataset']))
-    provenance_record.update({
-        'plot_file': path,
-    })
+        f"Time series plot of global mean {dataset['short_name']} for dataset "
+        f"{dataset['dataset']}.", [dataset['filename']])
 
-    return (diagnostic_file, provenance_record)
+    # Plot
+    global_time_series_plot(cube)
+    title = ' '.join([dataset['dataset'], dataset['long_name']])
+    plt.title(title)
+    plt.xlabel('year')
+    plt.ylabel(f"{dataset['short_name']} / {cube.units}")
 
-def multi_model_time_series(
-        cfg,
-        metadata,
-):
-    """
+    # Save plot if desired
+    if cfg['write_plots']:
+        plot_path = get_plot_filename(
+            '_'.join([
+                dataset['short_name'],
+                dataset['dataset'],
+                'global_timeseries',
+            ]), cfg)
+        plt.savefig(plot_path, bbox_inches='tight', orientation='landscape')
+        logger.info("Wrote %s", plot_path)
+        provenance_record['plot_file'] = plot_path
+    plt.close()
+
+    # Write netcdf file
+    netcdf_path = get_diagnostic_filename(
+        '_'.join([
+            dataset['short_name'],
+            dataset['dataset'],
+            'global_timeseries',
+        ]), cfg)
+    io.iris_save(cube, netcdf_path)
+
+    # Write provenance
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(netcdf_path, provenance_record)
+
+
+def plot_multiple_datasets(cfg, datasets, short_name):
+    """Create time series plot for multiple datasets.
+
     Parameters
     ----------
     cfg: dict
-        the opened global config dictionairy, passed by ESMValTool.
-    metadata: dict
-        The metadata dictionairy for a specific model.
+        Global configuration dictionary.
+    datasets: list of dict
+        List of metadata dictionaries for all datasets.
+    short_name: str
+        Short name of the variable to plot.
 
     """
-
-    model_cube = {}
-    for filename in sorted(metadata):
-        # Load and compute cube
-        cube = compute_diagnostic(filename)
-
-        logger.info(cube)
-
-        model_cube[filename] = cube
-
-        metadata[filename]['dataset'] = cube.attributes['model_id']
-
-    # Load image format extention
-    image_extention = diagtools.get_image_format(cfg)
-
-    # Make the plot
-    title = ''
-    plot_details = {}
-    cmap = plt.cm.get_cmap('viridis')
-
-    # Plot each file in the group
-    for index, filename in enumerate(sorted(metadata)):
-        if len(metadata) > 1:
-            color = cmap(index / (len(metadata) - 1.))
-        else:
-            color = 'blue'
-
-        cube = model_cube[filename]
-
-        timeplot(
-            cube,
-            c=color,
-            ls='-',
-            lw=2.,
-        )
-        plot_details[filename] = {
-            'c': color,
-            'ls': '-',
-            'lw': 2.,
-            'label': metadata[filename]['dataset']
-        }
-
-        title = metadata[filename]['long_name']
-    # Add title, legend to plots
-    plt.title(title)
-    plt.legend(loc='best')
-    plt.ylabel(str(model_cube[filename].units))
-
-    # set the y-limits
-    if 'y_min' in cfg:
-        plt.ylim(bottom=cfg['y_min'])
-    if 'y_max' in cfg:
-        plt.ylim(top=cfg['y_max'])
-
-    # Saving files:
-    if cfg['write_plots']:
-        path = diagtools.get_image_path(
-            cfg,
-            metadata[filename],
-            prefix='MultiModel',
-            suffix='global_timeseries' + image_extention,
-            metadata_id_list=[
-                'field', 'short_name'
-            ],
-        )
-
-    # Resize and add legend outside thew axes.
-    plt.gcf().set_size_inches(9., 6.)
-    diagtools.add_legend_outside_right(
-        plot_details, plt.gca(), column_width=0.15)
-
-    logger.info('Saving plots to %s', path)
-    plt.savefig(path)
-    plt.close()
-
-    # Write netcdf file for every plot
-    diagname = '_'.join(['MultiModel',
-                         metadata[filename]['short_name'],
-                         'global_timeseries'])
-    diagnostic_file = get_diagnostic_filename(diagname, cfg)
-    logger.info("Saving analysis results to %s", diagnostic_file)
-    iris.save(cube, target=diagnostic_file)
+    if not datasets:
+        return
+    logger.info("Plotting time series for multiple datasets for variable '%s'",
+                short_name)
+    cubes = {}
+    for dataset in datasets:
+        cube = load_cube(dataset)
+        global_time_series_plot(cube, ls='-', lw=2.0, label=dataset['dataset'])
+        cubes[dataset['dataset']] = cube
 
     # Provenance
     provenance_record = get_provenance_record(
-        "Timeseries of global mean of {}."
-        .format(metadata[filename]['short_name']))
-    provenance_record.update({
-        'plot_file': path,
-    })
+        f"Time series plot of global mean {short_name}.",
+        [d['filename'] for d in datasets])
 
-    return (diagnostic_file, provenance_record)
+    # Plot appearance
+    plt.title(datasets[0]['long_name'])
+    legend = plt.legend(loc='center left',
+                        bbox_to_anchor=[1.05, 0.5],
+                        borderaxespad=0.0)
+    plt.xlabel('year')
+    plt.ylabel(f"{short_name} / {cube.units}")
+
+    # Save plot if desired
+    if cfg['write_plots']:
+        plot_path = get_plot_filename(
+            '_'.join([short_name, 'global_timeseries']), cfg)
+        plt.savefig(plot_path,
+                    bbox_inches='tight',
+                    orientation='landscape',
+                    additional_artists=[legend])
+        logger.info("Wrote %s", plot_path)
+        provenance_record['plot_file'] = plot_path
+    plt.close()
+
+    # Write netcdf file
+    netcdf_path = get_diagnostic_filename(
+        '_'.join([short_name, 'global_timeseries']), cfg)
+    var_attrs = {
+        'short_name': short_name,
+        'long_name': datasets[0]['long_name'],
+        'units': datasets[0]['units'],
+    }
+    if datasets[0].get('standard_name'):
+        var_attrs['standard_name'] = datasets[0]['standard_name']
+    io.save_1d_data(cubes, netcdf_path, 'time', var_attrs)
+
+    # Write provenance
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(netcdf_path, provenance_record)
 
 
 def main(cfg):
-    """
-    Load the config file and some metadata, then pass them the plot making
-    tools.
+    """Load config file and metadata, then pass them the plot making tools.
 
     Parameters
     ----------
     cfg: dict
-        the opened global config dictionairy, passed by ESMValTool.
+        Global configuration dictionary.
 
     """
+    if cfg['quicklook']['active']:
+        quicklook_dir = cfg['quicklook']['output_dir']
+        logger.info("Reading data from quicklook directory %s", quicklook_dir)
+        input_data = io.netcdf_to_metadata(cfg, root=quicklook_dir)
+    else:
+        logger.info("Reading data regular ESMValTool directory")
+        input_data = cfg['input_data'].values()
 
+    # Group data in terms of variables
+    grouped_data = group_metadata(input_data, 'short_name')
 
-    for index, metadata_filename in enumerate(cfg['input_files']):
-        logger.info('index:\t%s', index)
-        logger.info('metadata filename:\t%s', metadata_filename)
+    # Iterate over data and plot
+    for (short_name, datasets) in grouped_data.items():
+        logger.info("Processing variable '%s'", short_name)
+        for dataset in datasets:
+            logger.info("Processing '%s'", dataset['filename'])
 
-        metadatas = diagtools.get_input_files(cfg, index=index)
+            # Create global time series for every dataset
+            plot_single_dataset(cfg, dataset)
 
-        for filename in sorted(metadatas):
-
-            logger.info('-----------------')
-            logger.info(
-                'preprocessed model filenames:\t%s',
-                filename,
-            )
-
-            metadata = metadatas[filename]
-
-            if cfg['quicklook']['active']:
-                # if quicklook mode - plotting of concatinating file
-
-                # path to concatinated file
-                con_dir = cfg['quicklook']['output_dir'] + "/"
-                filename = con_dir + '_'.join([metadata['dataset'],
-                                               metadata['short_name'] + '.nc'])
-                logger.info('concatinated filename:\t%s', filename)
-
-            # Time series of individual model
-            (path, provenance_record) = make_time_series_plots(
-                cfg, metadata, filename)
-
-            # Provenance
-            if path is not None:
-                provenance_record['ancestors'] = filename
-                with ProvenanceLogger(cfg) as provenance_logger:
-                    provenance_logger.log(path, provenance_record)
-
-        if 'multimodel_plot' in cfg:
-            if cfg['multimodel_plot']:
-
-                if cfg['quicklook']['active']:
-                    # if quicklook mode - plotting of concatinating file
-                    con_dir = cfg['quicklook']['output_dir'] + "/"
-                    con_files = [name for name in os.listdir(con_dir)
-                                 if name.endswith(
-                                     metadata['short_name'] + '.nc')]
-                    con_files = [con_dir + name for name in con_files]
-
-                    # if more datasets are given in concatinated files
-                    if len(con_files) > 1:
-                        meta_datas = {}
-                        for filename in con_files:
-                            meta_datas[filename] = dict(
-                                short_name=metadata['short_name'],
-                                long_name=metadata['long_name'])
-                        logger.info('meta_datas:\t%s', meta_datas)
-
-                        # Time series plot with all models
-                        (path, provenance_record) = multi_model_time_series(
-                            cfg, meta_datas)
-
-                        # Provenance
-                        if path is not None:
-                            provenance_record['ancestors'] = con_files
-                            with ProvenanceLogger(cfg) as provenance_logger:
-                                provenance_logger.log(path, provenance_record)
-
-                    else:
-                        logger.info('Only one concatinated file available')
-
-                else:
-
-                    # if more datasets are given in the recipe
-                    if len(metadatas) > 1:
-                        # Time series plot with all models
-                        (path, provenance_record) = multi_model_time_series(
-                            cfg, metadatas)
-                        # Provenance
-                        if path is not None:
-                            provenance_record['ancestors'] = metadatas
-                            with ProvenanceLogger(cfg) as provenance_logger:
-                                provenance_logger.log(path, provenance_record)
-
-
-    logger.info('Success')
+        if cfg.get('multi_dataset_plot'):
+            plot_multiple_datasets(cfg, datasets, short_name)
 
 
 if __name__ == '__main__':
-
     with run_diagnostic() as config:
         main(config)

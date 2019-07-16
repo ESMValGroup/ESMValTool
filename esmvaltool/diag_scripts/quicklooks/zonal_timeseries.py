@@ -1,12 +1,11 @@
-"""
-Zonal time series diagnostics
-=======================
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""Plot zonal time series.
 
 Description
 -----------
-Plot time series of zonal mean
-In quicklook mode (cfg['quicklook']['active']: True) this diagnostic plots
-the concatinated file.
+Plot zonal time series. In quicklook mode, this diagnostic plots the
+concatenated files.
 
 Author
 ------
@@ -18,12 +17,10 @@ CMIP6-DICAD
 
 Configuration options in recipe
 -------------------------------
-val_levs: values for contour levels
-lat_int: min and max latitude values
-time_int: min and max for time axis
+levels : list of float, optinal
+    Values for contour levels.
 
 """
-
 
 import logging
 import os
@@ -32,15 +29,15 @@ import iris
 import matplotlib.pyplot as plt
 
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
-
-from esmvaltool.diag_scripts.shared._base import (
-    ProvenanceLogger, get_diagnostic_filename,
-    run_diagnostic)
+from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
+                                            get_diagnostic_filename,
+                                            get_plot_filename, group_metadata,
+                                            io, run_diagnostic)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
 
-def get_provenance_record(caption):
+def get_provenance_record(caption, ancestors):
     """Create a provenance record describing the diagnostic data and plot."""
     record = {
         'caption': caption,
@@ -49,152 +46,127 @@ def get_provenance_record(caption):
         'plot_type': 'zonal',
         'authors': ['bock_ls'],
         'references': ['acknow_project'],
+        'ancestors': ancestors,
     }
     return record
 
 
-def make_zon_time_series_plots(
-        cfg,
-        metadata,
-        filename,
-):
-    """
+def load_cube(dataset):
+    """Load cube and compute zonal average if necessary."""
+    filename = dataset['filename']
+    logger.debug("Loading '%s'", filename)
+    cube = iris.load_cube(filename)
+    coords = [coord.name() for coord in cube.coords(dim_coords=True)]
+
+    # Check if cubes has desired coordinates
+    for coord_name in ('time', 'latitude'):
+        if coord_name not in coords:
+            raise iris.exceptions.CoordinateNotFoundError(
+                f"File '{filename}' does not contain necessary coordinate "
+                f"'{coord_name}'")
+        coords.remove(coord_name)
+
+    # Calculate zonal mean
+    if cube.ndim > 2:
+        cube = cube.collapsed(coords, iris.analysis.MEAN)
+
+    return cube
+
+
+def plot_single_dataset(cfg, dataset):
+    """Plot zonal mean time series for single dataset.
+
     Parameters
     ----------
     cfg: dict
-        the opened global config dictionairy, passed by ESMValTool.
-    metadata: dict
-        The metadata dictionairy for a specific model.
-    filename: str
-        The preprocessed model file
+        Global configuration dictionary.
+    dataset: list
+        Metadata dictionary for desired dataset.
 
     """
-
-    # Load cube
-    logger.debug("Loading %s", filename)
-    cube = iris.load_cube(filename)
-
-    # Load image format extention
-    image_extention = diagtools.get_image_format(cfg)
-
-    data = cube.data.transpose()
-
-    #y_axis = 'latitude'
-    times = diagtools.cube_time_to_float(cube)
-
-    # set the levels for contour
-    if 'val_levs' in cfg:
-        levels = cfg['val_levs']
-    else:
-        levels = None
-
-    fig = plt.contourf(times,
-                       cube.coord('latitude').points,
-                       data, extend='both', levels=levels)
-
-    # Add title, legend to plots
-    title = ' '.join([metadata['dataset'], metadata['long_name']])
-    plt.title(title)
-    plt.ylabel('lat')
-
-    # set the limits for time axis
-    if 'time_int' in cfg:
-        plt.gca().set_xlim(cfg['time_int'])
-    # set the lat-limits
-    if 'lat_int' in cfg:
-        plt.gca().set_ylim(cfg['lat_int'])
-
-    # Make a colorbar for the ContourSet returned by the contourf call.
-    cbar = plt.colorbar(fig)
-    cbar.ax.set_ylabel(str(cube.units))
-
-    # Determine image filename:
-    path = diagtools.get_image_path(
-        cfg,
-        metadata,
-        prefix='Model',
-        suffix='zonal_timeseries' + image_extention,
-        metadata_id_list=[
-            'dataset', 'field', 'short_name'
-        ],
-    )
-
-    # Saving files:
-    if cfg['write_plots']:
-
-        logger.info('Saving plots to %s', path)
-        plt.savefig(path)
-
-    plt.close()
-
-    # Write netcdf file for every plot
-    diagname = '_'.join([metadata['dataset'], metadata['short_name'],
-                         'zonal_timeseries'])
-    diagnostic_file = get_diagnostic_filename(diagname, cfg)
-    logger.info("Saving analysis results to %s", diagnostic_file)
-    iris.save(cube, target=diagnostic_file)
+    cube = load_cube(dataset)
 
     # Provenance
     provenance_record = get_provenance_record(
-        "Timeseries of zonal mean of {} for dataset {}."
-        .format(metadata['short_name'], metadata['dataset']))
-    provenance_record.update({
-        'plot_file': path,
-    })
+        f"Time series plot of zonal mean {dataset['short_name']} for dataset "
+        f"{dataset['dataset']}.", [dataset['filename']])
 
-    return (diagnostic_file, provenance_record)
+    # Transpose cube
+    data = cube.data.transpose()
+    times = diagtools.cube_time_to_float(cube)
+
+    # Plot
+    plt.contourf(times,
+                 cube.coord('latitude').points,
+                 data,
+                 extend='both',
+                 levels=cfg.get('levels'))
+    title = ' '.join([dataset['dataset'], dataset['long_name']])
+    plt.title(title)
+    plt.xlabel('year')
+    plt.ylabel('latitude')
+
+    # Make a colorbar for the ContourSet returned by the contourf call.
+    colorbar = plt.colorbar(orientation='horizontal', aspect=30)
+    colorbar.set_label(f"{dataset['short_name']} / {cube.units}")
+
+    # Saving files:
+    if cfg['write_plots']:
+        plot_path = get_plot_filename(
+            '_'.join([
+                dataset['short_name'],
+                dataset['dataset'],
+                'zonal_timeseries',
+            ]), cfg)
+        plt.savefig(plot_path, bbox_inches='tight', orientation='landscape')
+        logger.info("Wrote %s", plot_path)
+        provenance_record['plot_file'] = plot_path
+    plt.close()
+
+    # Write netcdf file for every plot
+    netcdf_path = get_diagnostic_filename(
+        '_'.join([
+            dataset['short_name'],
+            dataset['dataset'],
+            'zonal_timeseries',
+        ]), cfg)
+    io.iris_save(cube, netcdf_path)
+
+    # Write provenance
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(netcdf_path, provenance_record)
 
 
 def main(cfg):
-    """
-    Load the config file and some metadata, then pass them the plot making
-    tools.
+    """Load config file and metadata, then pass them the plot making tools.
 
     Parameters
     ----------
     cfg: dict
-        the opened global config dictionairy, passed by ESMValTool.
+        Global configuration dictionary.
 
     """
+    if cfg['quicklook']['active']:
+        quicklook_dir = cfg['quicklook']['output_dir']
+        logger.info("Reading data from quicklook directory %s", quicklook_dir)
+        input_data = io.netcdf_to_metadata(cfg, root=quicklook_dir)
+    else:
+        logger.info("Reading data regular ESMValTool directory")
+        input_data = cfg['input_data'].values()
 
-    for index, metadata_filename in enumerate(cfg['input_files']):
-        logger.info('metadata filename:\t%s', metadata_filename)
+    # Group data in terms of variables
+    grouped_data = group_metadata(input_data, 'short_name')
 
-        metadatas = diagtools.get_input_files(cfg, index=index)
+    # Iterate over data and plot
+    for (short_name, datasets) in grouped_data.items():
+        logger.info("Processing variable '%s'", short_name)
+        for dataset in datasets:
+            logger.info("Processing '%s'", dataset['filename'])
 
-        for filename in sorted(metadatas):
-
-            logger.info('-----------------')
-            logger.info(
-                'model filenames:\t%s',
-                filename,
-            )
-
-            metadata = metadatas[filename]
-
-            if cfg['quicklook']['active']:
-                # if quicklook mode - plotting of concatinating file
-                # path to concatinated file
-                quicklook_dir = cfg['quicklook']['output_dir']
-                filename = quicklook_dir + '/'
-                filename += '_'.join([metadata['dataset'],
-                                      metadata['short_name'] + '.nc'])
-                logger.info('concatinated filename:\t%s', filename)
-
-            # Time series of individual model
-            (path, provenance_record) = make_zon_time_series_plots(
-                cfg, metadata, filename)
-
-            # Provenance
-            if path is not None:
-                provenance_record['ancestors'] = filename
-                with ProvenanceLogger(cfg) as provenance_logger:
-                    provenance_logger.log(path, provenance_record)
-
-    logger.info('Success')
+            # Create zonal time series for every dataset
+            plot_single_dataset(cfg, dataset)
 
 
 if __name__ == '__main__':
-
     with run_diagnostic() as config:
         main(config)

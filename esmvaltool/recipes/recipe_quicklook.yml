@@ -1,13 +1,14 @@
 # ESMValTool
-# recipe_python.yml
+# recipe_quicklook.yml
 ---
 documentation:
   description: |
-    Template for quicklook recipe for atmosphere chemistry.
+    Template for quicklook recipe.
 
   authors:
     - broe_bj
     - bock_ls
+    - schl_ma
 
   maintainer:
     - broe_bj
@@ -18,35 +19,29 @@ documentation:
   projects:
     - esmval
 
+
 datasets:
-  - {dataset: HadGEM2-CC, project: CMIP5, mip: Amon, exp: historical, ensemble: r1i1p1, start_year: 2001, end_year: 2002}
-  #- {dataset: MPI-ESM-LR, project: CMIP5, mip: Amon, exp: historical, ensemble: r1i1p1, start_year: 1998, end_year: 2004}
-
-preprocessors:
-
-  prep_zon:
-    zonal_means:
-      coordinate: longitude
-      mean_type: mean
+  - {dataset: HadGEM2-CC, start_year: 2001, end_year: 2002}
+  - {dataset: MPI-ESM-LR, start_year: 1998, end_year: 2004}
 
 
 diagnostics:
-  glob_timeseries_tas:
-    description: Timeseries of global mean surface temperature.
+  global_timeseries_tas:
+    description: Timeseries of global surface temperature.
     themes:
       - phys
     realms:
       - atmos
     variables:
       tas:
-        preprocessor: prep_zon
+        project: CMIP5
+        mip: Amon
+        exp: historical
+        ensemble: r1i1p1
     scripts:
-      glob_timeseries_tas:
+      global_mean:
         script: quicklooks/global_timeseries.py
-        time_int: [2000, 2005]
-        multimodel_plot: True
-      zon_timeseries_tas:
+        multi_dataset_plot: true
+      zonal_mean:
         script: quicklooks/zonal_timeseries.py
-        time_int: [2000, 2005]
-        val_levs: [250, 260, 270, 280, 290, 300]
-        #lat_int: [-30., 30.]
+        levels: [250, 260, 270, 280, 290, 300]
