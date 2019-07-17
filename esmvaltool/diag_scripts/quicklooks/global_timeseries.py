@@ -29,57 +29,16 @@ y_range : list of float, optional
 import logging
 import os
 
-import iris
 import matplotlib.pyplot as plt
 import numpy as np
 
-from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
-from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
-                                            get_diagnostic_filename,
-                                            get_plot_filename, group_metadata,
-                                            io, run_diagnostic)
+from esmvaltool.diag_scripts.quicklooks import (
+    cube_time_to_float, get_grouped_input_data, get_provenance_record,
+    load_cube, save_plot, set_plot_title, write_provenance)
+from esmvaltool.diag_scripts.shared import (get_diagnostic_filename, io,
+                                            run_diagnostic)
 
 logger = logging.getLogger(os.path.basename(__file__))
-
-
-def get_provenance_record(caption, ancestors):
-    """Create a provenance record describing the diagnostic data and plot."""
-    record = {
-        'caption': caption,
-        'statistics': ['mean'],
-        'domains': ['global'],
-        'plot_type': 'times',
-        'authors': ['bock_ls'],
-        'references': ['acknow_project'],
-        'ancestors': ancestors,
-    }
-    return record
-
-
-def load_cube(dataset):
-    """Load cube and compute global average if necessary."""
-    filename = dataset['filename']
-    logger.debug("Loading '%s'", filename)
-    cube = iris.load_cube(filename)
-    coords = [coord.name() for coord in cube.coords(dim_coords=True)]
-
-    # Check if cubes has desired coordinates
-    if 'time' not in coords:
-        logger.warning(
-            "File '%s' does not contain necessary coordinate 'time', skipping",
-            filename)
-        return None
-    coords.remove('time')
-
-    # Calculate global mean
-    if cube.ndim > 1:
-        if 'latitude' in coords:
-            grid_areas = iris.analysis.cartography.area_weights(cube)
-        else:
-            grid_areas = None
-        cube = cube.collapsed(coords, iris.analysis.MEAN, weights=grid_areas)
-
-    return cube
 
 
 def global_time_series_plot(cube, **kwargs):
@@ -99,12 +58,12 @@ def global_time_series_plot(cube, **kwargs):
         Input cube.
 
     """
-    cubedata = np.ma.array(cube.data)
-    if len(cubedata.compressed()) == 1:
-        plt.axhline(cubedata.compressed(), **kwargs)
+    cube_data = np.ma.array(cube.data)
+    if len(cube_data.compressed()) == 1:
+        plt.axhline(cube_data.compressed(), **kwargs)
         return
-    times = diagtools.cube_time_to_float(cube)
-    plt.plot(times, cubedata, **kwargs)
+    times = cube_time_to_float(cube)
+    plt.plot(times, cube_data, **kwargs)
 
 
 def plot_single_dataset(cfg, dataset):
@@ -118,19 +77,20 @@ def plot_single_dataset(cfg, dataset):
         Metadata dictionary for desired dataset.
 
     """
-    cube = load_cube(dataset)
+    cube = load_cube(dataset, ['time'])
     if cube is None:
         return
 
     # Provenance
-    provenance_record = get_provenance_record(
+    caption = (
         f"Time series plot of global mean {dataset['short_name']} for dataset "
-        f"{dataset['dataset']}.", [dataset['filename']])
+        f"{dataset['dataset']}.")
+    provenance_record = get_provenance_record(caption, [dataset['filename']])
 
     # Plot
     global_time_series_plot(cube)
     title = ' '.join([dataset['dataset'], dataset['long_name']])
-    plt.title(title)
+    set_plot_title(title)
     plt.xlabel('year')
     plt.ylabel(f"{dataset['short_name']} / {cube.units}")
     if 'time_range' in cfg:
@@ -138,31 +98,19 @@ def plot_single_dataset(cfg, dataset):
     if 'y_range' in cfg:
         plt.ylim(cfg['y_range'][0], cfg['y_range'][1])
 
-    # Save plot if desired
-    if cfg['write_plots']:
-        plot_path = get_plot_filename(
-            '_'.join([
-                dataset['short_name'],
-                dataset['dataset'],
-                'global_timeseries',
-            ]), cfg)
-        plt.savefig(plot_path, bbox_inches='tight', orientation='landscape')
-        logger.info("Wrote %s", plot_path)
-        provenance_record['plot_file'] = plot_path
-    plt.close()
+    # Save plot
+    basename = '_'.join([
+        dataset['short_name'],
+        dataset['dataset'],
+        'global_timeseries',
+    ])
+    plot_provenance = save_plot(basename, 'times', cfg)
+    provenance_record.update(plot_provenance)
 
-    # Write netcdf file
-    netcdf_path = get_diagnostic_filename(
-        '_'.join([
-            dataset['short_name'],
-            dataset['dataset'],
-            'global_timeseries',
-        ]), cfg)
+    # Write netcdf file and provenance
+    netcdf_path = get_diagnostic_filename(basename, cfg)
     io.iris_save(cube, netcdf_path)
-
-    # Write provenance
-    with ProvenanceLogger(cfg) as provenance_logger:
-        provenance_logger.log(netcdf_path, provenance_record)
+    write_provenance(netcdf_path, provenance_record, cfg)
 
 
 def plot_multiple_datasets(cfg, datasets, short_name):
@@ -184,7 +132,7 @@ def plot_multiple_datasets(cfg, datasets, short_name):
                 short_name)
     cubes = {}
     for dataset in datasets:
-        cube = load_cube(dataset)
+        cube = load_cube(dataset, ['time'])
         if cube is None:
             continue
         global_time_series_plot(cube, ls='-', lw=2.0, label=dataset['dataset'])
@@ -193,12 +141,12 @@ def plot_multiple_datasets(cfg, datasets, short_name):
         return
 
     # Provenance
+    caption = f"Time series plot of global mean {short_name}."
     provenance_record = get_provenance_record(
-        f"Time series plot of global mean {short_name}.",
-        [d['filename'] for d in datasets])
+        caption, [d['filename'] for d in datasets])
 
     # Plot appearance
-    plt.title(datasets[0]['long_name'])
+    set_plot_title(datasets[0]['long_name'])
     legend = plt.legend(loc='center left',
                         bbox_to_anchor=[1.05, 0.5],
                         borderaxespad=0.0)
@@ -209,21 +157,16 @@ def plot_multiple_datasets(cfg, datasets, short_name):
     if 'y_range' in cfg:
         plt.ylim(cfg['y_range'][0], cfg['y_range'][1])
 
-    # Save plot if desired
-    if cfg['write_plots']:
-        plot_path = get_plot_filename(
-            '_'.join([short_name, 'global_timeseries']), cfg)
-        plt.savefig(plot_path,
-                    bbox_inches='tight',
-                    orientation='landscape',
-                    additional_artists=[legend])
-        logger.info("Wrote %s", plot_path)
-        provenance_record['plot_file'] = plot_path
-    plt.close()
+    # Save plot
+    basename = '_'.join([short_name, 'global_timeseries'])
+    plot_provenance = save_plot(basename,
+                                'times',
+                                cfg,
+                                additional_artists=[legend])
+    provenance_record.update(plot_provenance)
 
-    # Write netcdf file
-    netcdf_path = get_diagnostic_filename(
-        '_'.join([short_name, 'global_timeseries']), cfg)
+    # Write netcdf file and provenance
+    netcdf_path = get_diagnostic_filename(basename, cfg)
     var_attrs = {
         'short_name': short_name,
         'long_name': datasets[0]['long_name'],
@@ -232,10 +175,7 @@ def plot_multiple_datasets(cfg, datasets, short_name):
     if datasets[0].get('standard_name'):
         var_attrs['standard_name'] = datasets[0]['standard_name']
     io.save_1d_data(cubes, netcdf_path, 'time', var_attrs)
-
-    # Write provenance
-    with ProvenanceLogger(cfg) as provenance_logger:
-        provenance_logger.log(netcdf_path, provenance_record)
+    write_provenance(netcdf_path, provenance_record, cfg)
 
 
 def main(cfg):
@@ -247,16 +187,7 @@ def main(cfg):
         Global configuration dictionary.
 
     """
-    if cfg['quicklook']['active']:
-        quicklook_dir = cfg['quicklook']['output_dir']
-        logger.info("Reading data from quicklook directory %s", quicklook_dir)
-        input_data = io.netcdf_to_metadata(cfg, root=quicklook_dir)
-    else:
-        logger.info("Reading data regular ESMValTool directory")
-        input_data = cfg['input_data'].values()
-
-    # Group data in terms of variables
-    grouped_data = group_metadata(input_data, 'short_name')
+    grouped_data = get_grouped_input_data(cfg)
 
     # Iterate over data and plot
     for (short_name, datasets) in grouped_data.items():

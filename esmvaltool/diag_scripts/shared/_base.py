@@ -457,6 +457,11 @@ def run_diagnostic():
             for output_directory in existing:
                 logger.info("Removing %s", output_directory)
                 shutil.rmtree(output_directory)
+        elif cfg['quicklook']['active']:
+            logger.info(
+                "Script will ignore existent output directories\n%s\nin "
+                "quicklook mode", '\n'.join(existing))
+            args.ignore_existing = True
         elif not args.ignore_existing:
             logger.error(
                 "Script will abort to prevent accidentally overwriting your "
