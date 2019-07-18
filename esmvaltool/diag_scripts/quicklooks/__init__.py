@@ -35,6 +35,20 @@ def _convert_units(cube, target_units):
         cube.units = cube_units
 
 
+def _filter_and_group_metadata(input_data, cfg):
+    """Filter undesired variables and group input data."""
+    if cfg.get('read_all_available_datasets', False):
+        logger.info("Reading all available variables")
+        return group_metadata(input_data, 'short_name')
+    desired_short_names = list(
+        group_metadata(cfg['input_data'].values(), 'short_name').keys())
+    grouped_data = group_metadata(input_data, 'short_name')
+    desired_grouped_data = {}
+    for short_name in desired_short_names:
+        desired_grouped_data[short_name] = grouped_data[short_name]
+    return desired_grouped_data
+
+
 def _guess_calendar_datetime(cube):
     """Guess the cftime.datetime form to create datetimes.
 
@@ -125,6 +139,8 @@ def get_grouped_input_data(cfg):
         quicklook_dir = cfg['quicklook']['preproc_dir']
         logger.info("Reading data from quicklook directory %s", quicklook_dir)
         raw_data = io.netcdf_to_metadata(cfg, root=quicklook_dir)
+
+        # Ignore derivation input
         for dataset in raw_data:
             if 'derive_input' in dataset['filename']:
                 logger.debug("Ignoring derivation input variable '%s'",
@@ -135,7 +151,8 @@ def get_grouped_input_data(cfg):
         logger.info("Reading data from regular ESMValTool preproc directory")
         input_data = cfg['input_data'].values()
 
-    return group_metadata(input_data, 'short_name')
+    # Return grouped and filtered data (if required)
+    return _filter_and_group_metadata(input_data, cfg)
 
 
 def get_provenance_record(caption, ancestors):
