@@ -1,4 +1,30 @@
-"""CMORizer for ERA5."""
+"""ESMValTool CMORizer for ERA5 data.
+
+Tier
+    Tier 3: restricted datasets (i.e., dataset which requires a registration
+ to be retrieved or provided upon request to the respective contact or PI).
+
+Source
+    https://cds.climate.copernicus.eu/cdsapp#!/dataset/reanalysis-era5-pressure-levels
+    https://cds.climate.copernicus.eu/cdsapp#!/dataset/reanalysis-era5-single-levels
+
+Last access
+    20190718
+
+Download and processing instructions
+    This cmorization script currently supports hourly data of the following
+variables:
+        2m_temperature
+        potential_evaporation
+        total_precipitation
+
+    Downloading ERA5 data can either be done via the Climate Data Store (cds)
+web form or era5cli:
+        $pip install era5cli
+        $era5cli hourly --variable total_precipitation --startyear 1990
+
+"""
+
 import logging
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from copy import deepcopy
@@ -38,7 +64,10 @@ def _extract_variable(in_file, var, cfg, out_dir):
         )
         if cube.var_name == 'tcc':  # fix cloud cover units
             cube.units = definition.units
-
+            cube.data = cube.core_date() * 100
+        if cube.var_name in ['tp', 'pev']:
+            cube.units = cube.units * 'kg m-3 h-1'
+            cube.data = cube.core_data() * 1000
     # Set correct names
     cube.var_name = definition.short_name
     cube.standard_name = definition.standard_name
@@ -86,15 +115,19 @@ def cmorization(in_dir, out_dir, cfg):
 
     n_workers = int(cpu_count() / 1.5)
     logger.info("Using at most %s workers", n_workers)
-    futures = set()
-    with ProcessPoolExecutor(max_workers=n_workers) as executor:
+    futures = {}
+    with ProcessPoolExecutor(max_workers=1) as executor:
         for short_name, var in cfg['variables'].items():
             var['short_name'] = short_name
             for in_file in sorted(Path(in_dir).glob(var['file'])):
                 future = executor.submit(_extract_variable, in_file, var, cfg,
                                          out_dir)
-                futures.add(future)
+                futures[future] = in_file
 
     for future in as_completed(futures):
-        in_file = future.result()
+        try:
+            future.result()
+        except:
+            logger.error("Failed to CMORize %s", futures[future])
+            raise
         logger.info("Finished CMORizing %s", in_file)

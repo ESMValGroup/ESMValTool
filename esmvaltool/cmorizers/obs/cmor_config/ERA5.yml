@@ -16,40 +16,40 @@ variables:
   clt:
     mip: E1hr
     raw: tcc
-    file: 'era5_total_cloud_cover_*.nc'
+    file: 'era5_total_cloud_cover_*_hourly.nc'
+  evspsblpot:
+    mip: E1hr
+    raw: pev
+    file: 'era5_potential_evaporation_*_hourly.nc'
+  pr:
+    mip: E1hr
+    raw: tp
+    file: 'era5_total_precipitation_*_hourly.nc'
   psl:
     mip: E1hr
     raw: msl
-    file: 'era5_mean_sea_level_pressure_*.nc'
-  # rsds:  # TODO: check unit mismatch: ERA5 data is in J m**-2, CMIP5 in W m**-2  
-  #   mip: E1hr
-  #   raw: ssrd
-  #   file: 'era5_surface_solar_radiation_downwards_*.nc'
-  # rsdt:  # TODO: check unit mismatch: ERA5 data is in J m**-2, CMIP5 in W m**-2
-  #  mip: E1hr
-  #  raw: tisr
-  #  file: 'era5_toa_incident_solar_radiation_*.nc'
+    file: 'era5_mean_sea_level_pressure_*_hourly.nc'
   uas:
     mip: E1hr
     raw: u10
-    file: 'era5_10m_u_component_of_wind_*.nc'
+    file: 'era5_10m_u_component_of_wind_*_hourly.nc'
   vas:
     mip: E1hr
     raw: v10
-    file: 'era5_10m_v_component_of_wind_*.nc'
+    file: 'era5_10m_v_component_of_wind_*_hourly.nc'
   tas:
     mip: E1hr
     raw: t2m
-    file: 'era5_2m_temperature_*.nc'
+    file: 'era5_2m_temperature_*_hourly.nc'
   tdps:
     mip: E1hr
     raw: d2m
-    file: 'era5_2m_dewpoint_temperature_*.nc'
+    file: 'era5_2m_dewpoint_temperature_*_hourly.nc'
   ts:
     mip: E1hr
     raw: skt
-    file: 'era5_skin_temperature_*.nc'
+    file: 'era5_skin_temperature_*_hourly.nc'
   tsn:
     mip: E1hr
     raw: tsn
-    file: 'era5_temperature_of_snow_layer_*.nc'
+    file: 'era5_temperature_of_snow_layer_*_hourly.nc'
