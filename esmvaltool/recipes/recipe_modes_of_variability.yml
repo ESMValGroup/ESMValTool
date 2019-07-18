@@ -41,7 +41,6 @@ diagnostics:
   weather_regime:
     description: Compute modes of variability.
     variables:
-      #psl:
       zg:
         preprocessor: preproc
         mip: Amon
