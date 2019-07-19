@@ -138,7 +138,7 @@ def write_data(cfg, ecs_cube, tcr_cube):
 
 def main(cfg):
     """Run the diagnostic."""
-    sns.set(cfg.get('seaborn_settings', {}))
+    sns.set(**cfg.get('seaborn_settings', {}))
     ecs_file = io.get_ancestor_file(cfg, 'ecs.nc')
     tcr_file = io.get_ancestor_file(cfg, 'tcr.nc')
     ecs_cube = iris.load_cube(ecs_file)

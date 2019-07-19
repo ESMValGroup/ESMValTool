@@ -101,6 +101,20 @@ GISS-E2-1-H:
   facecolor: none
   mark: o
   thick: 1
+HadGEM3-GC31-LL:
+  avgstd: 0
+  color: '#7a8b26'
+  dash: ':'
+  facecolor: none
+  mark: ^
+  thick: 1
+INM-CM5-0:
+  avgstd: 0
+  color: '#a1452c'
+  dash: '-'
+  facecolor: none
+  mark: o
+  thick: 1
 IPSL-CM6A-LR:
   avgstd: 0
   color: '#5b53ae'
@@ -138,10 +152,10 @@ MRI-ESM2-0:
   thick: 1
 SAM0-UNICON:
   avgstd: 0
-  color: '#a1252c'
+  color: '#4dbb37'
   dash: '-'
   facecolor: none
-  mark: +
+  mark: o
   thick: 1
 UKESM1-0-LL:
   avgstd: 0
@@ -150,6 +164,20 @@ UKESM1-0-LL:
   facecolor: none
   mark: o
   thick: 1
+MultiModelMean:
+  avgstd: 1
+  color: '#ff0000'
+  dash: '-'
+  facecolor: '#ff0000'
+  mark: 'o'
+  thick: 3
+MultiModelMedian:
+  avgstd: 1
+  color: '#0000ff'
+  dash: '-'
+  facecolor: '#0000ff'
+  mark: 'o'
+  thick: 3
 default:
   avgstd: 0
   color: '#000000'

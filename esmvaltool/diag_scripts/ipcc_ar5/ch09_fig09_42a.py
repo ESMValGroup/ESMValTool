@@ -162,7 +162,7 @@ def write_data(cfg, hist_cubes, pi_cubes, ecs_cube):
 
 def main(cfg):
     """Run the diagnostic."""
-    sns.set(cfg.get('seaborn_settings', {}))
+    sns.set(**cfg.get('seaborn_settings', {}))
     input_data = cfg['input_data'].values()
     project = list(group_metadata(input_data, 'project').keys())
     project = [p for p in project if 'obs' not in p.lower()]

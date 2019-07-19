@@ -250,7 +250,7 @@ def write_data(cfg, tcr):
 def main(cfg):
     """Run the diagnostic."""
     check_input_data(cfg)
-    sns.set(cfg.get('seaborn_settings', {}))
+    sns.set(**cfg.get('seaborn_settings', {}))
 
     # Calculate TCR
     tcr = calculate_tcr(cfg)

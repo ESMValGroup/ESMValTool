@@ -483,15 +483,15 @@ MultiModelMean:
   avgstd: 1
   color: '#ff0000'
   dash: '-'
-  facecolor: none
-  mark: '*'
+  facecolor: '#ff0000'
+  mark: 'o'
   thick: 3
 MultiModelMedian:
   avgstd: 1
   color: '#0000ff'
   dash: '-'
-  facecolor: none
-  mark: '*'
+  facecolor: '#0000ff'
+  mark: 'o'
   thick: 3
 NCEP:
   avgstd: 1
@@ -586,7 +586,7 @@ default:
   thick: 1
 inmcm4:
   avgstd: 0
-  color: '#a1252c'
+  color: '#a1452c'
   dash: '-'
   facecolor: none
   mark: o
