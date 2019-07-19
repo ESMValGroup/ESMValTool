@@ -2,7 +2,7 @@
 # Global attributes of NetCDF file
 attributes:
   dataset_id: cds-satellite-lai-fapar
-  project_id: CMIP5
+  project_id: OBS
   tier: 3
   version: 'V1' # Version as listed on source 
   modeling_realm: sat
