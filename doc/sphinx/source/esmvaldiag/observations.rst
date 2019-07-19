@@ -2,8 +2,8 @@
 Contributing a CMORizing script for an observational dataset
 ************************************************************
 
-ESMValTool is designed to work with CF compliant data and 
-follows the CMOR tables from the CMIP data request, therefore 
+ESMValTool is designed to work with `CF compliant data <http://cfconventions.org/>`_ 
+and follows the CMOR tables from the CMIP data request, therefore 
 the observational datasets need to be CMORized for usage in ESMValTool.
 The following steps are necessary to prepare an observational
 data set for the use in ESMValTool.
