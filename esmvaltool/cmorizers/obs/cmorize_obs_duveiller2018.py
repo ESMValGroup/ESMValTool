@@ -118,21 +118,14 @@ def extract_variable(var_info, raw_info, out_dir, attrs, cfg):
             fix_time_coord_duveiller2018(cube)
             # Latitude has to be increasing so flip it
             # (this is not fixed in fix_coords)
-            coord_name = 'latitude'
-            logger.info("Flipping dimensional coordinate (custom) %s...",
-                        coord_name)
-            coord = cube.coord(coord_name, dim_coords=True)
-            coord_idx = cube.coord_dims(coord)[0]
-            coord.points = np.flip(coord.points)
-            coord.bounds = np.flip(coord.bounds, axis=0)
-            coord.bounds = np.flip(coord.bounds, axis=1)
-            cube.data = da.flip(cube.core_data(), axis=coord_idx)
+            logger.info("Flipping dimensional coordinate latitude")
+            cube = cube[:, ::-1, :]
             # Global attributes
             set_global_atts(cube, attrs)
             save_variable(cube, var, out_dir, attrs, local_keys=['positive'])
 
 
-def cmorization(in_dir, out_dir, cfg):
+def cmorization(in_dir, out_dir, cfg, _):
     """Cmorization func call."""
     cmor_table = cfg['cmor_table']
     glob_attrs = cfg['attributes']

@@ -5,7 +5,7 @@ attributes:
   version: 'v2018' 
   tier: 2
   modeling_realm: clim
-  project_id: custom
+  project_id: OBS
   source: 'https://ndownloader.figshare.com/files/9969496'
   reference: 'duveiller2018'
   comment: ''
