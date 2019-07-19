@@ -129,7 +129,7 @@ def cmorization(in_dir, out_dir, cfg):
     for future in as_completed(futures):
         try:
             future.result()
-        except:
+        except:  # noqa
             logger.error("Failed to CMORize %s", futures[future])
             raise
         logger.info("Finished CMORizing %s", in_file)
