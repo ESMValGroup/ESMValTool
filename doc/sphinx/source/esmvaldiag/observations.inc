@@ -114,7 +114,7 @@ The main body of the CMORizer script must contain a function called
 
 .. code-block:: python
 
-   def cmorization(in_dir, out_dir, cfg):
+   def cmorization(in_dir, out_dir, cfg, config_user):
 
 with this exact call signature. Here, ``in_dir`` corresponds to the input 
 directory of the raw files, ``out_dir`` to the output directory of final 
