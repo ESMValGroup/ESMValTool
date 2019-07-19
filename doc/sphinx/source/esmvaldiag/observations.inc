@@ -2,8 +2,8 @@
 Contributing a CMORizing script for an observational dataset
 ************************************************************
 
-ESMValTool is designed to work with `CF compliant data <http://cfconventions.org/>`_ 
-and follows the CMOR tables from the CMIP data request, therefore 
+ESMValTool is designed to work with `CF compliant <http://cfconventions.org/>`_ 
+data and follows the CMOR tables from the CMIP data request, therefore 
 the observational datasets need to be CMORized for usage in ESMValTool.
 The following steps are necessary to prepare an observational
 data set for the use in ESMValTool.
@@ -25,12 +25,12 @@ data set for the use in ESMValTool.
 Most variables are defined in the CMIP data request and can be found in the
 CMOR tables in the folder `/esmvalcore/cmor/tables/cmip5/Tables/
 <https://github.com/ESMValGroup/ESMValCore/tree/development/esmvalcore/cmor/tables/cmip5/Tables>`_,
-differentiated according to the ``MIP`` they belong to. The tables essentially
-follow the `PCMDI <https://github.com/PCMDI>`_ guidelines. If you find the
+differentiated according to the ``MIP`` they belong to. The tables are a 
+copy of the `PCMDI <https://github.com/PCMDI>`_ guidelines. If you find the
 variable in one of these tables, you can proceed to the next section.
 
 If your variable is not available in the standard CMOR tables,
-you need to write a custom CMOR table for the variable
+you need to write a custom CMOR table entry for the variable
 as outlined below and add it to `/esmvalcore/cmor/tables/custom/
 <https://github.com/ESMValGroup/ESMValCore/tree/development/esmvalcore/cmor/tables/custom>`_.
 
