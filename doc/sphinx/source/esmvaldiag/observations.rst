@@ -103,7 +103,7 @@ your data set.
 The first part of this configuration file defines the filename of the raw
 observations file, the second part defines the common global attributes for 
 the cmorizer output, e.g. information that is needed to piece together the 
-final observations file name in the correct structure (see :ref:Section6` Section 6). The 
+final observations file name in the correct structure (see :ref:`Section6` Section 6). The 
 third part defines the variables that are supposed to be cmorized.
 
 The actual cmorizing script ``cmorize_obs_mte.py`` consists of a header with
