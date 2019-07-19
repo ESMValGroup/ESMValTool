@@ -119,7 +119,7 @@ The main body of the CMORizer script must contain a function called
 with this exact call signature. Here, ``in_dir`` corresponds to the input 
 directory of the raw files, ``out_dir`` to the output directory of final 
 reformatted data set and ``cfg`` to the configuration dictionary given by 
-the  ``.yml`` configuration file. This function needs to return ``None``. All 
+the  ``.yml`` configuration file. The return value of this function is ignored. All 
 the work, i.e. loading of the raw files, processing them and saving the final 
 output, has to be performed inside its body. To simplify this process, ESMValTool 
 provides a set of predefined utilities.py_, which can be imported into your CMORizer 
