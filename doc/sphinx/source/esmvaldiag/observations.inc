@@ -216,7 +216,9 @@ v1.0). The file name will be automatically correctly created if a cmorizing
 script has been used to create the netCDF file.
 
 The correct structure of an observational data set is defined in 
-``config-developer.yml``, and looks like the following:
+`config-developer.yml
+<https://github.com/ESMValGroup/ESMValCore/blob/development/esmvalcore/config-developer.yml>`_, 
+and looks like the following:
 
 .. code-block:: console
  
