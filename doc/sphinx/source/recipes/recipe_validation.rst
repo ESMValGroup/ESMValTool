@@ -11,8 +11,8 @@ anayses. Optionally a number of observational datasets can be added for processi
 lat_lon, meridional_mean and zonal_mean. Each of these diagnostics can be run on a separate basis (each an entry to diagnostics/scripts).
 The lat_lon analysis produces the following plots: a simple global plot for each variable for each dataset, a global plot for the
 difference between CONTROL and EXPERIMENT, a global plot for the difference between CONTROL and each of the observational datasets.
-The meridional_mean and zonal_mean produce variable vs coordinate (latitude or longitude) with both CONTROL and EXPERIMENT curves
-in each plot, for the entire duration of time specified and also, if the user wishes, for each season (seasonal means): winter DJF, spring MAM, summer JJA, autumn SON.
+The meridional_mean and zonal_mean produce variable vs coordinate (``latitude`` or ``longitude``) with both ``CONTROL`` and ``EXPERIMENT`` curves
+in each plot, for the entire duration of time specified and also, if the user wishes, for each season (seasonal means): winter DJF, spring MAM, summer JJA, autumn SON (by setting ``seasonal_analysis: true`` in the recipe).
 
 At least regridding on a common grid for all model and observational datasets should be performed in preprocessing (if datasets
 are on different grids). Also note that currently it is not allowed to use the same dataset (with varying parameters like experiment
@@ -44,7 +44,7 @@ User settings
    * exper_model: experiment dataset name e.g. IPSL-CM6A-LR;
    * observational_datasets: list of at least one element; if no OBS wanted comment out; e.g. ['ERA-Interim'];
    * analysis_type: use any of: lat_lon, meridional_mean, zonal_mean;
-   * seasonal_analysis: boolean, if seasonal means are needed e.g. True;
+   * seasonal_analysis: boolean, if seasonal means are needed e.g. ``true``;
 
 Variables
 ---------
