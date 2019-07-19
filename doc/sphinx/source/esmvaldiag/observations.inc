@@ -48,7 +48,7 @@ guidelines:
   available cmorizers). 
 
 It is recommended to use an existing custom table as a template, to edit the
-content and save it as ``<short_name>.dat``.
+content and save it as ``CMOR_<short_name>.dat``.
 
 2. Edit your configuration file
 ===============================
