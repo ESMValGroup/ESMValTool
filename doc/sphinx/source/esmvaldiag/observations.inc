@@ -147,8 +147,8 @@ saves a single variable from the raw data.
 
 Find here an example of a cmorizing script, written for the ``ESACCI XCH4``
 dataset that is available on the Copernicus Climate Data Store:
-`cmorize_obs_CDS-XCH4.ncl
-<https://github.com/ESMValGroup/ESMValTool/blob/version2_development/esmvaltool/cmorizers/obs/cmorize_obs_CDS-XCH4.ncl>`_. 
+`cmorize_obs_cds_xch4.ncl
+<https://github.com/ESMValGroup/ESMValTool/blob/version2_development/esmvaltool/cmorizers/obs/cmorize_obs_cds_xch4.ncl>`_. 
 
 The first part of the script collects all the information about the dataset
 that are necessary to write the filename correctly and to understand which
