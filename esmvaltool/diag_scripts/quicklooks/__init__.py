@@ -46,6 +46,7 @@ def _filter_and_group_metadata(input_data, cfg):
     desired_grouped_data = {}
     for short_name in desired_short_names:
         desired_grouped_data[short_name] = grouped_data[short_name]
+    logger.info("Reading only variables %s", desired_short_names)
     return desired_grouped_data
 
 
