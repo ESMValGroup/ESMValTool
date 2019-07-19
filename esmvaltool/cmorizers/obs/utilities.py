@@ -120,7 +120,6 @@ def flip_dim_coord(cube, coord_name):
     coord_idx = cube.coord_dims(coord)[0]
     coord.points = np.flip(coord.points)
     coord.bounds = np.flip(coord.bounds, axis=0)
-    coord.bounds = np.flip(coord.bounds, axis=1)
     cube.data = da.flip(cube.core_data(), axis=coord_idx)
 
 
