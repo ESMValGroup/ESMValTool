@@ -204,8 +204,7 @@ The cmorizing script for the given dataset can be run with:
 If your run was successful, one or more NetCDF files are produced in your
 output directory.
 
-.. Section6:  
-  
+.. Section6:   
 6. Naming convention of the observational data files
 ====================================================
 
