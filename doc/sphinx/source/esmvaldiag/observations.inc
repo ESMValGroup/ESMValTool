@@ -259,11 +259,7 @@ To verify that the cmorized data file is indeed correctly formatted, you can
 run a dedicated test recipe, that does not include any diagnostic, but only
 reads in the data file and has it processed in the preprocessor. Such a recipe
 is called ``recipes/examples/recipe_check_obs.yml``. You just need to add a
-diagnostic for your dataset following the existing entries.
+diagnostic for your dataset following the existing entries. 
+Only the diagnostic of interest needs to be run, the others should be commented 
+out for testing.
 
-If the recipe is adjusted as outlined above, run it with the following call:
-
-.. code-block:: console
-
-  esmvaltool -c <config-user.yml> examples/recipe_check_obs.yml
-  --diagnostics <dataset>
