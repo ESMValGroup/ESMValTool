@@ -65,7 +65,7 @@ def _fix_time_coord(cube):
     time_coord.attributes = {}
 
 
-def cmorization(in_dir, out_dir, cfg):
+def cmorization(in_dir, out_dir, cfg, _):
     """Cmorization func call."""
     glob_attrs = cfg['attributes']
     cmor_table = cfg['cmor_table']
