@@ -103,7 +103,7 @@ your data set.
 The first part of this configuration file defines the filename of the raw
 observations file, the second part defines the common global attributes for 
 the cmorizer output, e.g. information that is needed to piece together the 
-final observations file name in the correct structure (see `6. Naming convention of the observational data files`_). The 
+final observations file name in the correct structure (see Section `6. Naming convention of the observational data files`_). The 
 third part defines the variables that are supposed to be cmorized.
 
 The actual cmorizing script ``cmorize_obs_mte.py`` consists of a header with
@@ -197,7 +197,7 @@ The cmorizing script for the given dataset can be run with:
 
    The output path given in the configuration file is the path where
    your cmorized dataset will be stored. The ESMValTool will create a folder
-   with the correct tier information (see Section 2) if that tier folder is not
+   with the correct tier information (see Section `2. Edit your configuration file`_) if that tier folder is not
    already available, and then a folder named after the data set. In this
    folder the cmorized data set will be stored as a netCDF file. 
 
