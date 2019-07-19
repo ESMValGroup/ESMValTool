@@ -265,5 +265,5 @@ If the recipe is adjusted as outlined above, run it with the following call:
 
 .. code-block:: console
 
-  esmvaltool -c <config-user.yml> examples/recipe_preprocessor_test.yml
+  esmvaltool -c <config-user.yml> examples/recipe_check_obs.yml
   --diagnostics <dataset>
