@@ -107,9 +107,6 @@ class ProvenanceLogger(object):
         else:
             with open(self._log_file, 'r') as file:
                 self.table = yaml.safe_load(file)
-        if 'quicklook' in cfg and cfg['quicklook'].get('active', False):
-            self.quicklook = True
-
 
     def log(self, filename, record):
         """Record provenance.
@@ -134,7 +131,7 @@ class ProvenanceLogger(object):
             See also esmvaltool/config-references.yml
 
         """
-        if filename in self.table and not self.quicklook:
+        if filename in self.table:
             raise KeyError(
                 "Provenance record for {} already exists.".format(filename))
 
