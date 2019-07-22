@@ -1,6 +1,6 @@
 """Shared scripts for quicklook diagnostics."""
-
 import logging
+import os
 
 import cftime
 import iris
@@ -33,21 +33,6 @@ def _convert_units(cube, target_units):
             "Cannot convert cube units '%s' to desired plot units '%s'",
             cube_units, target_units)
         cube.units = cube_units
-
-
-def _filter_and_group_metadata(input_data, cfg):
-    """Filter undesired variables and group input data."""
-    if cfg.get('read_all_available_datasets', False):
-        logger.info("Reading all available variables")
-        return group_metadata(input_data, 'short_name')
-    desired_short_names = list(
-        group_metadata(cfg['input_data'].values(), 'short_name').keys())
-    grouped_data = group_metadata(input_data, 'short_name')
-    desired_grouped_data = {}
-    for short_name in desired_short_names:
-        desired_grouped_data[short_name] = grouped_data[short_name]
-    logger.info("Reading only variables %s", desired_short_names)
-    return desired_grouped_data
 
 
 def _guess_calendar_datetime(cube):
@@ -138,6 +123,10 @@ def get_grouped_input_data(cfg):
     input_data = []
     if cfg['quicklook']['active']:
         quicklook_dir = cfg['quicklook']['preproc_dir']
+
+        # Read only output of this diagnostic if desired
+        if not cfg.get('read_all_available_datasets', False):
+            quicklook_dir = os.path.join(quicklook_dir, cfg['diagnostic'])
         logger.info("Reading data from quicklook directory %s", quicklook_dir)
         raw_data = io.netcdf_to_metadata(cfg, root=quicklook_dir)
 
@@ -153,7 +142,7 @@ def get_grouped_input_data(cfg):
         input_data = cfg['input_data'].values()
 
     # Return grouped and filtered data (if required)
-    return _filter_and_group_metadata(input_data, cfg)
+    return group_metadata(input_data, 'short_name')
 
 
 def get_provenance_record(caption, ancestors):
