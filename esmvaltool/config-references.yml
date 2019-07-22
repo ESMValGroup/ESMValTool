@@ -276,6 +276,10 @@ authors:
   oliv_ar:
     name: Oliveira, Arildo
     institute: INPE, Brazil
+  pand_am:
+    name: Pandde, Amarjiit
+    institute: University of Arizona, USA
+    email: amarjiitpandde 'at' email.arizona.edu
   phil_ad:
     name: Phillips, Adam
     institute: NCAR, USA
@@ -300,6 +304,10 @@ authors:
     name: Roehrig, Romain
     institute: MeteoFr, France
     email: romain.roehrig 'at' meteo.fr
+  russ_jo:
+    name: Russell, Joellen
+    institute: University of Arizona, USA
+    email: jrussell 'at' email.arizona.edu 
   senf_da:
     name: Senftleben, Daniel
     institute: DLR, Germany
@@ -596,6 +604,7 @@ references:
   rk2008bams: "Reichler and Kim, Bull. Amer. Meteor. Soc., 89, 303-312, doi:10.1175/BAMS-89-3-303, 2008."
   roedenbeck13os: "Roedenbeck, C. et al., Ocean Sci., 9, 193-216, doi:10.5194/os-9-193-2013, 2013."
   roehrig13jclim: "Roehrig, R. et al., J. Climate, 26, 6471-6505, doi:10.1175/JCLI-D-12-00505.1, 2013."
+  russell18jgr  : "Russell, J.L.,et al., 2018, J. Geophys. Res., 123, 3120-3143. doi: https://doi.org/10.1002/2017JC013461" 
   sperber12asl: "Sperber and Kim, Atmos. Sci. Lett., 13, 3, 187-193, doi:10.1002/asl.378, 2012."
   straus07jcli: "Straus, D.M., S. Corti, and F. Molteni. J. Climate, 20, 2251-2272, doi:10.1175/JCLI4070.1, 2007"
   stroeve07grl: "Stroeve, J. et al., Geophys. Res. Lett., 34, L09501, doi:10.1029/2007GL029703, 2007."
