@@ -778,22 +778,22 @@ diagnostics:
       - {dataset: CMCC-CMS}
       - {dataset: CNRM-CM5}
       - {dataset: CSIRO-Mk3-6-0}
-      # - {dataset: EC-EARTH}
+      - {dataset: EC-EARTH}
       - {dataset: FGOALS-g2}
-      # - {dataset: GFDL-CM2p1}
-      # - {dataset: GFDL-CM3}
-      # - {dataset: GFDL-ESM2G}
-      # - {dataset: GFDL-ESM2M}
+      - {dataset: GFDL-CM2p1}
+      - {dataset: GFDL-CM3}
+      - {dataset: GFDL-ESM2G}
+      - {dataset: GFDL-ESM2M}
       - {dataset: GISS-E2-H}
       - {dataset: GISS-E2-R}
       - {dataset: HadCM3}
       - {dataset: HadGEM2-AO}
-      # - {dataset: HadGEM2-CC}
-      # - {dataset: HadGEM2-ES}
+      - {dataset: HadGEM2-CC}
+      - {dataset: HadGEM2-ES}
       - {dataset: IPSL-CM5A-LR}
       - {dataset: IPSL-CM5A-MR}
       - {dataset: IPSL-CM5B-LR}
-      # - {dataset: MIROC5}
+      - {dataset: MIROC5}
       - {dataset: MPI-ESM-LR}
       - {dataset: MPI-ESM-MR}
       - {dataset: MPI-ESM-P}
