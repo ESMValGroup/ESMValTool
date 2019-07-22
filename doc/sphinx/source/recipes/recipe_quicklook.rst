@@ -31,8 +31,14 @@ User settings in recipe
 
 #. Script global_timeseries.py
 
-   * ``multi_dataset_plot``, *bool*, optional: Additionally plot all datasets.
-     in one file.
+   * ``multi_dataset_plot``, *bool*, optional (default: ``False``):
+     Additionally plot all available datasets in one file (per variable).
+
+   * ``read_all_available_datasets``, *bool*, optional (default: ``False``):
+     If ``True``, read all available datasets given to the diagnostic script.
+     If ``False``, only process variables given in the respective variable
+     section of the diagnostic block (this setting only affects the quicklook
+     mode).
 
    * ``time_range``, *list of float*, optional: Range for the ``time``
      coordinate in the plot.
@@ -46,6 +52,12 @@ User settings in recipe
      coordinate in the plot.
 
    * ``levels``, *list of float*, optional: Values for contour levels.
+
+   * ``read_all_available_datasets``, *bool*, optional (default: ``False``):
+     If ``True``, read all available datasets given to the diagnostic script.
+     If ``False``, only process variables given in the respective variable
+     section of the diagnostic block (this setting only affects the quicklook
+     mode).
 
    * ``time_range``, *list of float*, optional: Range for the ``time``
      coordinate in the plot.

@@ -22,7 +22,7 @@ multi_dataset_plot : bool, optional (default: False)
 read_all_available_datasets : bool, optional (default: False)
     If `True`, read all available datasets given to the diagnostic script. If
     `False`, only process variables given in the respective variable section of
-    the diagnostic block (this settings only affects the quicklook mode).
+    the diagnostic block (this setting only affects the quicklook mode).
 time_range : list of float, optional
     Range for the time axis in the plots.
 y_range : list of float, optional
