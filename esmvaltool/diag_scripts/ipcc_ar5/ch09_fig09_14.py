@@ -205,7 +205,7 @@ def prepare_reference(group):
 def mask_equatorial(equ):
     """Mask out Indonesian island area."""
     lon = equ.coord('longitude').points
-    equ.data.mask[np.logical_and(lon >= 98., lon <= 121.)] = True
+    equ.data.mask = equ.data.mask | np.logical_and(lon >= 98., lon <= 121.)
     return equ
 
 
