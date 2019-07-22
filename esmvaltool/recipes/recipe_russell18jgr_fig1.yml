@@ -1,0 +1,82 @@
+# ESMValTool
+# recipe_russell18jgr_fig1.yml
+---
+documentation:
+  description: |
+    Recipe for russell et al figure 1. Plots Annual-mean zonal wind stress 
+    as polar contour map. Here, we are using tauuo. Figures in 
+    russell18jgr paper were  made using tauuo, but tauu can also be used if
+    tauuo file is not availble. To use tauu variable in this recipe just 
+    uncomment variable 'tauu' and add dataset names in additional datasets of
+    respective variable. If there are no dataset in a variable, entire variable
+    section needs to be commented out.  
+
+
+  authors:
+    - russ_jo
+    - pand_am 
+
+  maintainer:
+    - A_russ_jo
+    - A_pand_am 
+    
+  references:
+    - russell18jgr
+
+  projects:
+    - esmval
+
+preprocessors:
+  preprocessor_time_land:
+    time_average:
+    mask_landsea:
+      mask_out: "land"
+  preprocessor_time: 
+    time_average:
+
+
+
+diagnostics:
+
+  Figure_1:
+    description: Figure 1.
+    variables:
+      tauu:
+        preprocessor: preprocessor_time_land
+        mip: Amon
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 1986
+        end_year: 2005
+        additional_datasets:
+          - {dataset: CanESM2}
+          - {dataset: GFDL-ESM2M}
+    #  tauuo:
+    #    preprocessor: preprocessor_time
+    #    mip: Omon
+    #    project: CMIP5
+    #    exp: historical
+    #    ensemble: r1i1p1
+    #    start_year: 1986
+    #    end_year: 2005
+    #    additional_datasets:
+    #      - {dataset: CanESM2}
+    #      - {dataset: GFDL-ESM2M}
+    
+    scripts:
+      polar-contour:
+        script: russell18/russell18jgr-polar.ncl
+        # Plot style
+        styleset: CMIP5
+        ncdf: default
+        grid_min: -0.4
+        grid_max: 0.4
+        grid_step: 0.1
+        colors: [[237.6, 237.6, 0.], [ 255, 255, 66.4], [255, 255, 119.6],
+                 [255, 255, 191.8], [223.8, 191.8, 223.8], [192.8, 127.5, 190.8],
+                 [161.6, 65.3, 158.6], [129.5, 1.0, 126.5] ]
+        labelBar_end_type: ExcludeOuterBoxes
+        max_lat:   -30.  
+        max_vert:  2
+        max_hori:  1

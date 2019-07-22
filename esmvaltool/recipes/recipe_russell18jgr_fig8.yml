@@ -1,0 +1,76 @@
+# ESMValTool
+# recipe_russell18jgr_fig8.yml
+---
+documentation:
+  description: |
+    Recipe for russell et al figure 8. Plots Surface pH in polar contour plot.
+
+  authors:
+    - russ_jo
+    - pand_am 
+
+  maintainer:
+    - A_russ_jo
+    - A_pand_am 
+    
+  references:
+    - russell18jgr
+
+  projects:
+    - esmval
+
+datasets:
+ - {dataset: CanESM2, project: CMIP5, mip: Omon, exp: historical, ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
+
+preprocessors:
+  preprocessor_time_land:
+    time_average: 
+    mask_landsea:
+      mask_out: "land"
+
+
+diagnostics:
+
+  Fig8:
+    description: Figure 8.
+    realms:
+      - ocnBgchem
+    variables:
+      ph:
+        preprocessor: preprocessor_time_land
+        mip: Omon
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 1986
+        end_year: 2005
+
+    additional_datasets:
+    #  - {dataset: BNU-ESM}
+      - {dataset: GFDL-ESM2M}
+      - {dataset: IPSL-CM5A-LR}
+      - {dataset: IPSL-CM5A-MR}
+      - {dataset: IPSL-CM5B-LR}
+    #  - {dataset: MIROC-ESM, ensemble: r3i1p1}
+      - {dataset: MRI-ESM1}
+      - {dataset: NorESM1-ME}
+     
+    scripts:
+      Polar-ph:
+        script: russell18/russell18jgr-polar.ncl
+        styleset: CMIP5
+        ncdf: default
+        grid_min: 8.0
+        grid_max: 8.2
+        grid_step: 0.01
+        labelBar_end_type: both_triangle
+        max_lat:   -30.  
+        max_vert:  2
+        max_hori:  1
+        grid_color : blue4
+        colors :    [[132,12,127], [147,5,153], [172,12,173], [195,33,196],
+                    [203,63,209], [215,89,225], [229,117,230],[243,129,238],
+                    [253,155,247], [255,178,254], [255,255,255],[255,255,255],
+                    [126,240,138], [134,234,138], [95,219,89], [57,201,54], 
+                    [39,182,57], [33,161,36],[16,139,22],[0,123,10],
+                    [6,96,6],[12,77,9.0] ]

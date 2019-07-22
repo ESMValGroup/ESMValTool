@@ -1,0 +1,84 @@
+# ESMValTool
+# recipe_russell18jgr_fig5g.yml
+---
+documentation:
+  description: |
+    Recipe for russell et al figure 5g. Plots the annual cycle of sea ice 
+    area in southern ocean.
+    The diag_script manually calculates the areacello for lat-lon models,
+    as some models use different grids for areacello and sic files.
+   
+  authors:
+    - russ_jo
+    - pand_am 
+
+  maintainer:
+    - A_russ_jo
+    - A_pand_am 
+    
+  references:
+    - russell18jgr
+
+  projects:
+    - esmval
+
+datasets:
+  - {dataset: ACCESS1-0 ,  project: CMIP5,  mip: OImon,  exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
+ # - {dataset: CanESM2   ,  project: CMIP5,  mip: OImon,  exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
+
+preprocessors:
+  no_preprocessor:
+    time_average: false
+ 
+
+diagnostics:
+
+  Figure5g:
+    description: sea ice extent.
+    realms:
+      - seaIce
+    variables:
+      sic:
+        preprocessor: no_preprocessor
+        mip: OImon
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        fx_files: [areacello, ]
+        start_year: 1986
+        end_year: 2005
+    additional_datasets:
+   #   - {dataset: ACCESS1-0}
+      - {dataset: ACCESS1-3}
+      - {dataset: bcc-csm1-1}
+      - {dataset: BNU-ESM}
+      - {dataset: CanESM2}
+      - {dataset: CCSM4}
+      - {dataset: CESM1-CAM5}
+      - {dataset: CNRM-CM5}
+      - {dataset: CNRM-CM5-2}
+      - {dataset: CSIRO-Mk3-6-0}
+      - {dataset: FGOALS-g2}
+      - {dataset: FGOALS-s2}
+      - {dataset: GFDL-CM3}
+      - {dataset: GFDL-ESM2G}
+      - {dataset: GFDL-ESM2M}
+      - {dataset: GISS-E2-H-CC}
+      - {dataset: GISS-E2-R-CC}
+      - {dataset: HadCM3}
+      - {dataset: HadGEM2-ES}
+      - {dataset: IPSL-CM5A-LR}
+      - {dataset: IPSL-CM5A-MR}
+      - {dataset: IPSL-CM5B-LR}
+      - {dataset: MIROC-ESM}
+      - {dataset: MRI-CGCM3}
+      - {dataset: MRI-ESM1}
+      - {dataset: NorESM1-M}
+      - {dataset: NorESM1-ME} 
+    
+    
+    scripts:
+      Figure-5g:
+        script: russell18/russell18jgr-fig5g.ncl
+        # Plot style
+        styleset: CMIP5

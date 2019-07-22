@@ -1,0 +1,105 @@
+# ESMValTool
+# recipe_russell18jgr_fig6b.yml
+---
+documentation:
+  description: |
+    Recipe for russell et al Figure 6 (heat transport). Density layer based 
+    heat transport (in PW) across 30S based on the layer definitions in
+    Talley (2008). The dark blue bars are the integrated totals for each layer
+    and can be compared to the magenta lines, which are the observed values 
+    from Talley (2008). The narrower red bars are equal subdivisions of each
+    blue layer
+ 
+  authors:
+    - russ_jo
+    - pand_am 
+
+  maintainer:
+    - A_russ_jo
+    - A_pand_am 
+    
+  references:
+    - russell18jgr
+
+  projects:
+    - esmval
+
+datasets:
+  #- {dataset: GFDL-ESM2M,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
+  - {dataset: CanESM2   ,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
+ # - {dataset: CSIRO-Mk3-6-0   ,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
+
+preprocessors:
+  no_preprocessor:
+    time_average: false 
+ 
+
+diagnostics:
+
+  Figure6:
+    description: fig 6b
+    realms:
+      - ocean
+    variables:
+      thetao:
+        preprocessor: no_preprocessor
+        mip: Omon
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        fx_files: [volcello, ]
+        start_year: 1986
+        end_year: 2005
+      so:
+        preprocessor: no_preprocessor
+        mip: Omon
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        fx_files: [ volcello, ]
+        start_year: 1986
+        end_year: 2005
+      vo:
+        preprocessor: no_preprocessor
+        mip: Omon
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        fx_files: [volcello, ]
+        start_year: 1986
+        end_year: 2005
+    #additional_datasets:
+    #  - {dataset: ACCESS1-0}
+    #  - {dataset: ACCESS1-3}
+    #  - {dataset: bcc-csm1-1}
+    #  - {dataset: bcc-csm1-1-m}
+    #  - {dataset: BNU-ESM}
+    #  - {dataset: CanESM2}
+    #  - {dataset: CCSM4}
+    #  - {dataset: CESM1-CAM5}
+    #  - {dataset: CNRM-CM5}
+    #  - {dataset: CNRM-CM5-2}
+    #  - {dataset: CSIRO-Mk3-6-0}
+    #  - {dataset: FGOALS-g2}
+    #  - {dataset: FGOALS-s2}
+    #  - {dataset: GFDL-CM3}
+    #  - {dataset: GFDL-ESM2G}
+    #  - {dataset: GFDL-ESM2M}
+    #  - {dataset: GISS-E2-H-CC}
+    #  - {dataset: GISS-E2-R-CC}
+    #  - {dataset: HadCM3}
+    #  - {dataset: HadGEM2-ES}
+    #  - {dataset: IPSL-CM5A-LR}
+    #  - {dataset: IPSL-CM5A-MR}
+    #  - {dataset: IPSL-CM5B-LR}
+    #  - {dataset: MIROC-ESM}
+    #  - {dataset: MRI-CGCM3}
+    #  - {dataset: MRI-ESM1}
+    #  - {dataset: NorESM1-M}
+    #  - {dataset: NorESM1-ME} 
+       
+    scripts:
+      Figure6:
+        script: russell18/russell18jgr-fig6b.ncl
+        styleset: CMIP5
+        ncdf: default

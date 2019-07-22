@@ -1,0 +1,71 @@
+# ESMValTool
+# recipe_russell18jgr_fig2.yml
+---
+documentation:
+  description: |
+    Recipe for russell et al 18 figure 2. Plots zonal and annual means of 
+    the zonal wind stress. Here, we are using tauuo, figures in russell18jgr
+    paper were  made using tauuo, but tauu can also be used if tauuo file
+    is not availble. To use tauu variable in this recipe just uncomment
+    variable 'tauu' and add dataset names in additional datasets of 
+    respective variable. If there are no dataset in a variable,
+    entire variable section needs to be commented out.  
+
+  authors:
+    - russ_jo
+    - pand_am 
+
+  maintainer:
+    - A_russ_jo
+    - A_pand_am 
+    
+  references:
+    - russell18jgr
+
+  projects:
+    - esmval
+
+preprocessors:
+  preprocessor_time_land: 
+    time_average:
+    mask_landsea:
+      mask_out: "land"
+
+  preprocessor_time: 
+    time_average:
+
+diagnostics:
+
+  Figure2:
+    description: Figure 2.
+    variables: 
+    #  tauu:
+    #    preprocessor: preprocessor_time_land
+    #    mip: Amon
+    #    project: CMIP5
+    #    exp: historical
+    #    ensemble: r1i1p1
+    #    start_year: 1986
+    #    end_year: 2005
+    #    additional_datasets:
+    #      - {dataset: CanESM2}
+    #      - {dataset: GFDL-ESM2M}
+      tauuo:
+        preprocessor: preprocessor_time
+        mip: Omon
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 1986
+        end_year: 2005
+        additional_datasets:
+          - {dataset: CanESM2}
+          - {dataset: GFDL-ESM2M}
+       
+    scripts:
+      fig2:
+        script: russell18/russell18jgr-fig2.ncl
+        # Plot style
+        styleset: CMIP5
+        ncdf: default
+    

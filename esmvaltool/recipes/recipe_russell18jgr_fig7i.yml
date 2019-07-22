@@ -1,0 +1,73 @@
+# ESMValTool
+# recipe_russell18jgr_fig7i.yml
+---
+documentation:
+  description: |
+    Recipe for russell et al figure 7i. Plots the cumulative integral
+    of the net CO2 flux from 90S to 30S (in PgC/yr). 
+    The diag_script manually calculates the areacello for lat-lon models,
+    as some models use different grids for areacello and fgco2 files.
+   
+
+  authors:
+    - russ_jo
+    - pand_am 
+
+  maintainer:
+    - A_russ_jo
+    - A_pand_am 
+    
+  references:
+    - russell18jgr
+
+  projects:
+    - esmval
+    
+datasets:
+  - {dataset: bcc-csm1-1,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
+  - {dataset: CanESM2,     project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
+
+preprocessors:
+  preprocessor_land_time:
+    time_average:
+    mask_landsea:
+      mask_out: "land"
+
+diagnostics:
+
+
+  Figure7i:
+    description: Figure 7i.
+    realms:
+      - ocean
+    variables:
+      fgco2:
+        preprocessor: preprocessor_land_time
+        mip: Omon
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        fx_files: [areacello, ]
+    
+        start_year: 1986
+        end_year: 2005
+        #fx_files: [areacello]
+    additional_datasets:
+      - {dataset: BNU-ESM}
+      - {dataset: GFDL-ESM2G}
+      - {dataset: GFDL-ESM2M}
+      - {dataset: GISS-E2-H-CC}
+      - {dataset: GISS-E2-R-CC}
+      - {dataset: HadGEM2-ES}
+      - {dataset: IPSL-CM5A-LR}
+      - {dataset: IPSL-CM5A-MR}
+      - {dataset: IPSL-CM5B-LR}
+      - {dataset: MIROC-ESM, ensemble: r3i1p1}
+      - {dataset: MRI-ESM1}
+     
+    scripts:
+      Fig7i_line:
+        script: russell18/russell18jgr-fig7i.ncl
+        # Plot style
+        styleset: CMIP5
+        ncdf: default 

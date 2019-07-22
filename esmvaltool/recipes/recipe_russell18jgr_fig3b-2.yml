@@ -1,0 +1,81 @@
+# ESMValTool
+# recipe_russell18jgr_fig3b-2.yml
+---
+documentation:
+  description: |
+    Recipe for russell et al figure 3b-2 (Polar fronts). Plots the latitudinal
+    position of Polar Front. Using definitions from Orsi et al (1995), the 
+    Polar Front is defined here as the poleward location of the 2C (275.15K) 
+    isotherm of the temperature minimum between 0 and 200 m(closest to and less than 200m). 
+
+  authors:
+    - russ_jo
+    - pand_am 
+
+  maintainer:
+    - A_russ_jo
+    - A_pand_am 
+    
+  references:
+    - russell18jgr
+
+  projects:
+    - esmval
+
+preprocessors:
+  no_preprocessor:
+    time_average: false
+ 
+
+diagnostics:
+
+  Figure3b-2:
+    description: Polar front
+    realms:
+      - ocean
+    variables:
+      thetao:
+        preprocessor: no_preprocessor
+        mip: Omon
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 1986
+        end_year: 2005
+    additional_datasets:
+    #  - {dataset: ACCESS1-0}
+    #  - {dataset: ACCESS1-3}
+    #  - {dataset: bcc-csm1-1}
+    #  - {dataset: bcc-csm1-1-m}
+    #  - {dataset: BNU-ESM}
+      - {dataset: CanESM2}
+    #  - {dataset: CCSM4}
+    #  - {dataset: CESM1-CAM5}
+    #  - {dataset: CNRM-CM5}
+    #  - {dataset: CNRM-CM5-2}
+      - {dataset: CSIRO-Mk3-6-0}
+    #  - {dataset: FGOALS-g2}
+    #  - {dataset: FGOALS-s2}
+    #  - {dataset: GFDL-CM3}
+    #  - {dataset: GFDL-ESM2G}
+      - {dataset: GFDL-ESM2M}
+    #  - {dataset: GISS-E2-H-CC}
+    #  - {dataset: GISS-E2-R-CC}
+    #  - {dataset: HadCM3}
+      - {dataset: HadGEM2-ES}
+    #  - {dataset: IPSL-CM5A-LR}
+    #  - {dataset: IPSL-CM5A-MR}
+    #  - {dataset: IPSL-CM5B-LR}
+    #  - {dataset: MIROC-ESM}
+    #  - {dataset: MRI-CGCM3}
+      - {dataset: MRI-ESM1}
+    #  - {dataset: NorESM1-M}
+    #  - {dataset: NorESM1-ME} 
+        
+    scripts:
+      Figure3b-2:
+        script: russell18/russell18jgr-fig3b-2.ncl
+        # Plot style
+        styleset: CMIP5
+        ncdf: default
+       

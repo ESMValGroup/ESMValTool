@@ -1,0 +1,74 @@
+# ESMValTool
+# recipe_russell18jgr_fig7h.yml
+---
+documentation:
+  description: |
+    Recipe for russell et al figure 7h. Plots the zonal mean flux of fgco2 
+    in gC/(yr * m^2). 
+
+  authors:
+    - russ_jo
+    - pand_am 
+
+  maintainer:
+    - A_russ_jo
+    - A_pand_am 
+    
+  references:
+    - russell18jgr
+
+  projects:
+    - esmval
+
+datasets:
+  - {dataset: bcc-csm1-1,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
+  - {dataset: CanESM2,     project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
+ # - {dataset: BNU-ESM  ,   project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
+ # - {dataset: ERA-Interim, project: OBS,    tier: 3,    type: reanaly,    version: 1,        start_year: 2000,  end_year: 2002}
+
+preprocessors:
+  preprocessor_1:
+    time_average:
+    mask_landsea:
+      mask_out: "land"
+
+
+
+
+diagnostics:
+
+
+  Figure7:
+    description: Figure 7.
+    realms:
+      - ocean
+    variables:
+      fgco2:
+        preprocessor: preprocessor_1
+        mip: Omon
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        fx_files: [areacello, ]
+    
+        start_year: 1986
+        end_year: 2005
+        #fx_files: [areacello]
+    additional_datasets:
+      - {dataset: BNU-ESM}
+      - {dataset: GFDL-ESM2G}
+      - {dataset: GFDL-ESM2M}
+      - {dataset: GISS-E2-H-CC}
+      - {dataset: GISS-E2-R-CC}
+      - {dataset: IPSL-CM5A-LR}
+      - {dataset: IPSL-CM5A-MR}
+      - {dataset: IPSL-CM5B-LR}
+      - {dataset: MIROC-ESM, ensemble: r3i1p1}
+      - {dataset: MRI-ESM1}
+     
+    scripts:
+      Fig7h_line:
+        script: russell18/fig7h.ncl
+        # Plot style
+        styleset: CMIP5
+        ncdf: default

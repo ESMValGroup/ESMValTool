@@ -1,0 +1,83 @@
+# ESMValTool
+# recipe_russell18jgr_fig7.yml
+---
+documentation:
+  description: |
+    Recipe for russell et al figure 7(polar). Plots Annual mean CO2 flux
+    (sea to air, gC/(yr * m^2), positive (red) is out of the ocean).
+
+  authors:
+    - russ_jo
+    - pand_am 
+
+  maintainer:
+    - A_russ_jo
+    - A_pand_am 
+    
+  references:
+    - russell18jgr
+
+  projects:
+    - esmval
+
+datasets:
+  - {dataset: bcc-csm1-1,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
+  - {dataset: CanESM2,     project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
+ 
+preprocessors:
+  preprocessor_1:
+    time_average:
+    mask_landsea:
+      mask_out: "land"
+
+
+
+
+diagnostics:
+
+
+  Polar_theta:
+    description: Figure 7.
+    realms:
+      - ocean
+    variables:
+      fgco2:
+        preprocessor: preprocessor_1
+        mip: Omon
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        fx_files: [areacello, ]
+    
+        start_year: 1986
+        end_year: 2005
+        #fx_files: [areacello]
+    additional_datasets:
+      - {dataset: BNU-ESM}
+      - {dataset: GFDL-ESM2G}
+      - {dataset: GFDL-ESM2M}
+      - {dataset: GISS-E2-H-CC}
+      - {dataset: GISS-E2-R-CC}
+      - {dataset: IPSL-CM5A-LR}
+      - {dataset: IPSL-CM5A-MR}
+      - {dataset: IPSL-CM5B-LR}
+      - {dataset: MIROC-ESM, ensemble: r3i1p1}
+      - {dataset: MRI-ESM1}
+     
+    scripts:
+      polar-contour:
+        script: russell18/russell18jgr-polar.ncl
+        # Plot style
+        styleset: CMIP5
+        ncdf: default
+        grid_min: -30
+        grid_max: 30
+        grid_step: 2.5
+        colormap: BlWhRe
+        labelBar_end_type: both_triangle
+        max_lat:   -30.  
+        max_vert:  2
+        max_hori:  1
+        unitCorrectionalFactor: -3.154e+10 
+        # unit conversion factor from kg /(m^2 * sec) to g / (m^2 * yr) 
+        new_units: "gC/ (m~S~2~N~ * yr)"

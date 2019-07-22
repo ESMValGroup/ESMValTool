@@ -1,0 +1,90 @@
+# ESMValTool
+# recipe_russsell18jgr_fig5.yml
+---
+documentation:
+  description: |
+    Recipe for russell et al figure 5 (polar). Plots the mean extent of 
+    sea ice for September(max) in blue and mean extent of sea ice for 
+    February(min) in red. The edge of full coverage is defined by the 15%
+    areal coverage.
+
+  authors:
+    - russ_jo
+    - pand_am 
+
+  maintainer:
+    - A_russ_jo
+    - A_pand_am 
+    
+  references:
+    - russell18jgr
+
+  projects:
+    - esmval
+
+datasets:
+  - {dataset: ACCESS1-0 ,  project: CMIP5,  mip: OImon,  exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
+#  - {dataset: GFDL-ESM2G   ,  project: CMIP5,  mip: OImon,  exp: historical,  ensemble: r1i1p1,  start_year: 1986,  end_year: 2005}
+
+preprocessors:
+  no_preprocessor:
+    time_average: false
+ 
+
+diagnostics:
+
+  Figure5:
+    description: Sea ice extent in southern ocean in march and september.
+    realms:
+      - seaIce
+    variables:
+      sic:
+        preprocessor: no_preprocessor
+        mip: OImon
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 1986
+        end_year: 2005
+    additional_datasets:
+   #   - {dataset: ACCESS1-0}
+      - {dataset: ACCESS1-3}
+      - {dataset: bcc-csm1-1}
+      - {dataset: bcc-csm1-1-m}
+      - {dataset: BNU-ESM}
+      - {dataset: CanESM2}
+      - {dataset: CCSM4}
+      - {dataset: CESM1-CAM5}
+      - {dataset: CNRM-CM5}
+      - {dataset: CNRM-CM5-2}
+      - {dataset: CSIRO-Mk3-6-0}
+      - {dataset: FGOALS-g2}
+      - {dataset: FGOALS-s2}
+      - {dataset: GFDL-CM3}
+      - {dataset: GFDL-ESM2G}
+      - {dataset: GFDL-ESM2M}
+      - {dataset: GISS-E2-H-CC}
+      - {dataset: GISS-E2-R-CC}
+      - {dataset: HadCM3}
+      - {dataset: HadGEM2-ES}
+      - {dataset: IPSL-CM5A-LR}
+      - {dataset: IPSL-CM5A-MR}
+      - {dataset: IPSL-CM5B-LR}
+      - {dataset: MIROC-ESM}
+      - {dataset: MIROC-ESM-CHEM}
+      - {dataset: MRI-CGCM3}
+      - {dataset: MRI-ESM1}
+      - {dataset: NorESM1-M}
+      - {dataset: NorESM1-ME} 
+    
+    
+    scripts:
+      Figure5:
+        script: russell18/russell18jgr-fig5.ncl
+        # Plot style
+        styleset: CMIP5
+        ncdf: default
+        max_lat: -45.0
+        max_vert:  2
+        max_hori:  2
+     
