@@ -744,59 +744,61 @@ diagnostics:
   # **********************************************************************
 
   fig09-14:
-    description: IPCC AR5 Ch. 9, Fig. 9.14 (sst error, zonal mean and equatorial)
+    description: |
+      IPCC AR5 Ch. 9, Fig. 9.14 (sst error, zonal mean and equatorial)
     themes:
       - phys
     realms:
       - ocean
     variables:
-      tos_zm:
+      tos_zm: &fig09_14_settings
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        mip: Omon
         short_name: tos
         preprocessor: zonal_mean
         reference_dataset: HadISST
-        mip: Omon
-        field: T2Ms
+        start_year: 1979
+        end_year: 1999
       tos_eq:
-        short_name: tos
+        <<: *fig09_14_settings
         preprocessor: equatorial
-        reference_dataset: HadISST
-        mip: Omon
-        field: T2Ms
     additional_datasets:
-      - {dataset: HadISST, project: OBS, type: reanaly, version: 1, start_year: 1979, end_year: 1999, tier: 2}
-      - {dataset: ACCESS1-0, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1979, end_year: 1999}
-      - {dataset: ACCESS1-3, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1979, end_year: 1999}
-      - {dataset: CanCM4, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1979, end_year: 1999}
-      - {dataset: CanESM2, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1979, end_year: 1999}
-      - {dataset: CCSM4, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1979, end_year: 1999}
-      - {dataset: CESM1-FASTCHEM, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1979, end_year: 1999}
-      - {dataset: CESM1-WACCM, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1979, end_year: 1999}
-      - {dataset: CMCC-CESM, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1979, end_year: 1999}
-      - {dataset: CMCC-CM, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1979, end_year: 1999}
-      - {dataset: CMCC-CMS, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1979, end_year: 1999}
-      - {dataset: CNRM-CM5, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1979, end_year: 1999}
-      - {dataset: CSIRO-Mk3-6-0, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1979, end_year: 1999}
-      # - {dataset: EC-EARTH, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1979, end_year: 1999}
-      - {dataset: FGOALS-g2, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1979, end_year: 1999}
-      # - {dataset: GFDL-CM2p1, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1979, end_year: 1999}
-      # - {dataset: GFDL-CM3, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1979, end_year: 1999}
-      # - {dataset: GFDL-ESM2G, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1979, end_year: 1999}
-      # - {dataset: GFDL-ESM2M, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1979, end_year: 1999}
-      - {dataset: GISS-E2-H, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1979, end_year: 1999}
-      - {dataset: GISS-E2-R, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1979, end_year: 1999}
-      - {dataset: HadCM3, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1979, end_year: 1999}
-      - {dataset: HadGEM2-AO, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1979, end_year: 1999}
-      # - {dataset: HadGEM2-CC, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1979, end_year: 1999}
-      # - {dataset: HadGEM2-ES, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1979, end_year: 1999}
-      - {dataset: IPSL-CM5A-LR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1979, end_year: 1999}
-      - {dataset: IPSL-CM5A-MR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1979, end_year: 1999}
-      - {dataset: IPSL-CM5B-LR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1979, end_year: 1999}
-      # - {dataset: MIROC5, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1979, end_year: 1999}
-      - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1979, end_year: 1999}
-      - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1979, end_year: 1999}
-      - {dataset: MPI-ESM-P, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1979, end_year: 1999}
-      - {dataset: NorESM1-M, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1979, end_year: 1999}
-      - {dataset: NorESM1-ME, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1979, end_year: 1999}
+      - {dataset: HadISST, project: OBS, type: reanaly, version: 1, tier: 2}
+      - {dataset: ACCESS1-0}
+      - {dataset: ACCESS1-3}
+      - {dataset: CanCM4}
+      - {dataset: CanESM2}
+      - {dataset: CCSM4}
+      - {dataset: CESM1-FASTCHEM}
+      - {dataset: CESM1-WACCM}
+      - {dataset: CMCC-CESM}
+      - {dataset: CMCC-CM}
+      - {dataset: CMCC-CMS}
+      - {dataset: CNRM-CM5}
+      - {dataset: CSIRO-Mk3-6-0}
+      # - {dataset: EC-EARTH}
+      - {dataset: FGOALS-g2}
+      # - {dataset: GFDL-CM2p1}
+      # - {dataset: GFDL-CM3}
+      # - {dataset: GFDL-ESM2G}
+      # - {dataset: GFDL-ESM2M}
+      - {dataset: GISS-E2-H}
+      - {dataset: GISS-E2-R}
+      - {dataset: HadCM3}
+      - {dataset: HadGEM2-AO}
+      # - {dataset: HadGEM2-CC}
+      # - {dataset: HadGEM2-ES}
+      - {dataset: IPSL-CM5A-LR}
+      - {dataset: IPSL-CM5A-MR}
+      - {dataset: IPSL-CM5B-LR}
+      # - {dataset: MIROC5}
+      - {dataset: MPI-ESM-LR}
+      - {dataset: MPI-ESM-MR}
+      - {dataset: MPI-ESM-P}
+      - {dataset: NorESM1-M}
+      - {dataset: NorESM1-ME}
     scripts:
       fig09-14:
         script: ipcc_ar5/ch09_fig09_14.py
