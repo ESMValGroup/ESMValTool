@@ -307,7 +307,7 @@ authors:
   serv_fe:
     name: Serva, Federico
     institute: CNR, Italy
-    email: federico.serva 'at' artov.isac.cnr.it
+    email: federico.serva 'at' artov.ismar.cnr.it
   somm_ph:
     name: Sommer, Philipp
     institute: Univ. of Hamburg, Germany
@@ -615,8 +615,9 @@ references:
   aura-tes: "Beer, R., IEEE Trans. Geosci. Rem. Sens., doi:10.1109/TGRS.2005.863716, 2006."
   ceres-syn1deg: "Wielicki et al., Bull. Amer. Meteor. Soc., doi: 10.1175/1520-0477(1996)077<0853:CATERE>2.0.CO;2, 1996."
   cru: "Harris, I. et al., Int. J. Climatol., 34, doi: 10.1002/joc.3711, 2014."
-  era5: "Copernicus Climate Change Service (C3S) (2017): ERA5: Fifth generation of ECMWF atmospheric reanalyses of the global climate. Copernicus Climate Change Service Climate Data Store (CDS)"
+  eppley-vgpm-modis: "Behrenfeld, M. J., & Falkowski, P. G. (1997). Photosynthetic rates derived from satellite-based chlorophyll concentration. Limnology and oceanography, 42(1), 1-20."
   era-interim: "Dee, D. P. et al., Q. J. Roy. Meteor. Soc., doi:10.1002/qj.828, 2011."
+  era5: "Copernicus Climate Change Service (C3S) (2017): ERA5: Fifth generation of ECMWF atmospheric reanalyses of the global climate. Copernicus Climate Change Service Climate Data Store (CDS)"
   esacci-aerosol: "Popp et al., ESA Aerosol Climate Change Initiative (ESA Aerosol_cci) data: AOD v4.21 via Centre for Environmental Data Analysis, 2016."
   esacci-cloud: "Stengel et al., Earth Syst. Sci. Data, doi:10.5194/essd-9-881-2017, 2017."
   esacci-fire: "Not available."

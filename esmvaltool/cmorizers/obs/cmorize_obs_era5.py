@@ -62,12 +62,16 @@ def _extract_variable(in_file, var, cfg, out_dir):
             str(in_file),
             constraint=utils.var_name_constraint(var['raw']),
         )
-        if cube.var_name == 'tcc':  # fix cloud cover units
+        if cube.var_name == 'tcc':
+            # Change cloud cover units from fraction to percentage
             cube.units = definition.units
-            cube.data = cube.core_date() * 100
+            cube.data = cube.core_date() * 100.
         if cube.var_name in ['tp', 'pev']:
+            # Change units from meters of water to kg of water
+            # and add missing 'per hour'
             cube.units = cube.units * 'kg m-3 h-1'
-            cube.data = cube.core_data() * 1000
+            cube.data = cube.core_data() * 1000.
+
     # Set correct names
     cube.var_name = definition.short_name
     cube.standard_name = definition.standard_name
@@ -104,8 +108,6 @@ def _extract_variable(in_file, var, cfg, out_dir):
                 np.prod(cube.shape) * 4 / 2**30)
     utils.save_variable(cube, cube.var_name, out_dir, attributes)
 
-    return in_file
-
 
 def cmorization(in_dir, out_dir, cfg):
     """Cmorization func call."""
@@ -127,7 +129,7 @@ def cmorization(in_dir, out_dir, cfg):
     for future in as_completed(futures):
         try:
             future.result()
-        except:
+        except:  # noqa
             logger.error("Failed to CMORize %s", futures[future])
             raise
         logger.info("Finished CMORizing %s", futures[future])
