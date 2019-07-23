@@ -130,4 +130,4 @@ def cmorization(in_dir, out_dir, cfg):
         except:
             logger.error("Failed to CMORize %s", futures[future])
             raise
-        logger.info("Finished CMORizing %s", in_file)
+        logger.info("Finished CMORizing %s", futures[future])
