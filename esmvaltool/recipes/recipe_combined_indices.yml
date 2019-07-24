@@ -30,7 +30,6 @@ diagnostics:
     description: Combine indices and/or compute area weighted averages.
     variables:
       tos:
-      #zg:
         preprocessor: preprocessor1
         mip: Omon
     scripts:
