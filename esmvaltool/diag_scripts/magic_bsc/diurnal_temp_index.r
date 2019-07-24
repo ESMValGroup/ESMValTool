@@ -120,8 +120,9 @@ for (j in 1 : 4){
     dtr_rcp[j , , ] <- Mean1Dim(dtr_indicator$indicator[, j, , ], 1)#nolint
 }
 names(dim(dtr_rcp)) <- c("season", "lon", "lat")
-title <- paste("Number of days exceeding the DTR by 5 degrees",
-               "during the period", start_projection, "-", end_projection)
+title <- c("Number of days exceeding the DTR by 5 degrees",
+          paste0("\n\nduring the period ", start_projection,
+                 "-", end_projection))
 PlotLayout(PlotEquiMap, plot_dims = c("lon", "lat"), #nolint
            var = dtr_rcp, colNA = "white", lon = lon, lat = lat,
            titles = c("DJF", "MAM", "JJA", "SON"), toptitle = title,
@@ -129,6 +130,7 @@ PlotLayout(PlotEquiMap, plot_dims = c("lon", "lat"), #nolint
            draw_separators = TRUE, subsampleg = 1,
            brks = seq(0, max(dtr_rcp, na.rm = TRUE), 2),
            color_fun = clim.palette("yellowred"),
+           extra_margin = c(0, 0, 1, 0),
            bar_extra_labels = c(2, 0, 0, 0), title_scale = 0.7,
            fileout = file.path(plot_dir, paste0("Seasonal_DTRindicator_",
                                model_names, "_", start_projection, "_",
