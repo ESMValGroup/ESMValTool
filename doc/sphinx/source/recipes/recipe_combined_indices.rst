@@ -37,7 +37,7 @@ User setting files are stored in recipes/
 
 #.	recipe_combined_indices.yml
 
-   *Required settings for pscript*
+   *Required settings for script*
 
    * region: one of the following strings Nino3, Nino3.4, Nino4, NAO, SOI
    * running_mean: an integer specifying the length of the window (in months) to be used for computing the running mean.
