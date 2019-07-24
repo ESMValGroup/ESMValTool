@@ -579,6 +579,16 @@ diagnostics:
     scripts: null
 
 
+  LAI3g:
+    description: LAI3g
+    variables:
+      lai:
+        mip: Lmon
+    additional_datasets:
+      - {dataset: LAI3g, project: OBS, tier: 3, type: reanaly, version: 1_regridded, start_year: 1981, end_year: 2018}
+    scripts: null
+
+
   LandFlux-EVAL:
     description: LandFlux-EVAL
     variables:
