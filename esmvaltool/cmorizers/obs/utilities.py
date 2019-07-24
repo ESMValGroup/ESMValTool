@@ -52,6 +52,22 @@ def convert_timeunits(cube, start_year):
     return cube
 
 
+def convert_units(cube, source_units, target_units):
+    """Convert units."""
+    source_units = Unit(source_units)
+    target_units = Unit(target_units)
+    try:
+        source_units.convert(1.0, target_units)
+    except ValueError:
+        logger.warning("Cannot convert units from '%s' to '%s'", source_units,
+                       target_units)
+        return
+    logger.info("Converting cube units from '%s' to '%s'...", source_units,
+                target_units)
+    cube.units = source_units
+    cube.convert_units(target_units)
+
+
 def fix_coords(cube):
     """Fix the time units and values to CMOR standards."""
     # first fix any completely missing coord var names

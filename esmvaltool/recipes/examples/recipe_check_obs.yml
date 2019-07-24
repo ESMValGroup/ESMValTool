@@ -31,6 +31,14 @@ diagnostics:
       - {dataset: CRU, project: OBS, tier: 2, type: reanaly, version: TS4.02, start_year: 1901, end_year: 2017}
     scripts: null
 
+  Eppley-VGPM-MODIS:
+    description: Eppley-VGPM-MODIS
+    variables:
+      intpp:
+        mip: Omon
+    additional_datasets:
+      - {dataset: Eppley-VGPM-MODIS, project: OBS, tier: 2, type: sat, version: R2018, start_year: 2003, end_year: 2018}
+    scripts: null
 
   ESACCI-AEROSOL:
     description: ESACCI-AEROSOL
