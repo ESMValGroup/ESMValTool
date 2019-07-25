@@ -33,6 +33,7 @@ y_range : list of float, optional
 import logging
 import os
 
+import iris
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -139,6 +140,8 @@ def plot_multiple_datasets(cfg, datasets, short_name):
         cube = load_cube(dataset, ['time'])
         if cube is None:
             continue
+        # Make annual means from:
+        cube = cube.aggregated_by('year', iris.analysis.MEAN)
         global_time_series_plot(cube, ls='-', lw=2.0, label=dataset['dataset'])
         cubes[dataset['dataset']] = cube
     if not cubes:
