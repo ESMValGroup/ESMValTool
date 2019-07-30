@@ -1,0 +1,53 @@
+# ESMValTool
+---
+documentation:
+  description: |
+    This is an example recipe for a personal diagnostic.
+    You can run any Python diagnostic of your choice
+    without installing ESMValTool as developer or git pushing.
+    Simply include the full path to your script of choice in script,
+    see example /path/to/your/my_little_diagnostic.py
+    An example personal diagnostic can be found in
+    esmvaltool/diag_scripts/examples/my_little_diagnostic.py
+
+  authors:
+    - pred_va
+
+  maintainer:
+    - pred_va
+
+datasets:
+  - {activity: HighResMIP, dataset: HadGEM3-GC31-LM,  project: CMIP6, mip: Amon, exp: highresSST-present,  ensemble: r1i1p1f1, grid: gn,  start_year: 2000,  end_year: 2002}
+
+preprocessors:
+  summer:
+    mask_landsea:
+      mask_out: sea
+    extract_season:
+      season: 'JJA'
+    seasonal_mean:
+
+diagnostics:
+  interactions:
+    description: "Simple personal diagnostic"
+    variables:
+      clt:
+        preprocessor: summer
+        mip: Amon
+      tas:
+        preprocessor: summer
+        mip: Amon
+      hfls:
+        preprocessor: summer
+        mip: Amon
+      hfss:
+        preprocessor: summer
+        mip: Amon
+      rsds:
+        preprocessor: summer
+        mip: Amon
+      rlds:
+        preprocessor: summer
+        mip: Amon
+    scripts:
+
