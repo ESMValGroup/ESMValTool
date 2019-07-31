@@ -1,0 +1,28 @@
+# ESMValTool
+# recipe_check_obs_FLUXCOM.yml -- adapted from recipe_check_obs.yml
+---
+documentation:
+  description: |
+    Test recipe for OBS, no proprocessor or diagnostics are applied,
+    just to check correct reading of the CMORized data.
+
+  authors:
+    - swam_ra
+
+preprocessors:
+  nopp:
+    extract_levels: false
+    regrid: false
+    mask_fillvalues: false
+    multi_model_statistics: false
+
+diagnostics:
+
+  FLUXCOM-GPP-ANN:
+    description: FLUXCOM-GPP-ANN
+    variables:
+      gpp:
+        mip: Lmon
+    additional_datasets:
+      - {dataset: FLUXCOM-GPP-ANN, project: OBS, tier: 3, type: reanaly, version: v1, start_year: 1980, end_year: 2013}
+    scripts: null
