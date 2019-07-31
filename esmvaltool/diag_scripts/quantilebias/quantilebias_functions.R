@@ -1140,7 +1140,6 @@ scale_figure <- function(plot_type, diag_script_cfg,
 }
 
 graphics_startup <- function(figname, output_file_type, plot_size) {
-  source(diag_script_cfg)
   # choose output format for figure - by JvH
   if (tolower(output_file_type) == "png") {
     png(filename = figname, width = plot_size[1], height = plot_size[2])
@@ -1247,6 +1246,7 @@ filled_contour3 <-
   }
 
 image_scale3 <- function(z, levels, color.palette = heat.colors,
+                         col = col,
                          colorbar.label = "image.scale", extend = T,
                          line.label = 2, line.colorbar = 0, cex.label = 1,
                          cex.colorbar = 1, colorbar.width = 1,
@@ -1271,8 +1271,9 @@ image_scale3 <- function(z, levels, color.palette = heat.colors,
     levels <- seq(min(z), max(z), , 12)
   }
   # fixing color palette
-  col <- color.palette(length(levels) - 1)
-
+  if (missing(col)) {
+    col <- color.palette(length(levels) - 1)
+  }
   # starting plot
   par(mar = c(1, 1, 1, 1), fig = new.fig, new = TRUE)
 

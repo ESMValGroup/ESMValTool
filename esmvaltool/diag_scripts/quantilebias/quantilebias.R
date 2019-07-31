@@ -162,29 +162,41 @@ for (model_idx in c(1:(length(models_name)))) {
 
 
   # Produce figure
-
-  field <- ncdf_opener(outfile, "qb", "lon", "lat", rotate = "no")
+  field <- ncdf_opener(outfile, "qb", "lon", "lat", rotate = "full")
   ics_ref <- ics
   ipsilon_ref <- ipsilon
 
-  figname <- paste0(outfile, ".", output_file_type)
-  graphics_startup(figname, output_file_type, c(400,600))
+  tmp_figname <- sub('.nc', paste0(".", output_file_type), outfile)
+  figname <- sub(work_dir, plot_dir, tmp_figname)
+  graphics_startup(figname, output_file_type, c(600,400))
+
+  tmp_levels <- c(0:20)/10.
+  tmp_colors <- rev(rainbow(30)[1:20])
 
   # contours
-  filled_contour3(ics, ipsilon, tmp_field,
+  par(cex.main = 2, cex.axis = 1.5, cex.lab = 1.5, mar = c(5, 5, 4, 8))
+  filled_contour3(ics, ipsilon, field,
        xlab = "Longitude", ylab = "Latitude",
-       main = tmp.titles[iquantity], levels = c(0:20)/10.,
-              color.palette = rainbow(21),
-      # xlim = c(regions[iregion, 1], regions[iregion, 2]),
-      # ylim = c(regions[iregion, 3], regions[iregion, 4]), axes = F,
-       asp = 1
+       main = paste0(exp), levels = tmp_levels,
+              col = tmp_colors,
+       axes = F, asp = 1
   )
   # continents
-  map("world", regions = ".", exact = F, boundary = T, add = T, 
+  map("world", regions = ".", interior = F, exact = F, boundary = T, add = T,
       col = "black", lwd = 2)
+  axis(1, col = "grey40", at = seq(-180, 180, 45))
+  axis(2, col = "grey40", at = seq(-90, 90, 30))
+
+  colorbar_scale <- c(-0.15, -0.08, 0.1, -0.1)
+  image_scale3(volcano, levels = tmp_levels,
+               new_fig_scale = colorbar_scale,
+               col = tmp_colors,
+               colorbar.label = paste0("QB", perc_lev),
+               cex.colorbar = 1.3, cex.label = 1.4,
+               colorbar.width = 1, line.label = 2.9,
+               line.colorbar = 1.0, extend = F
+              )
   graphics_close(figname)
-
-
 
   # Set provenance for this output file
   caption <- paste0("Precipitation quantile bias ", perc_lev, "% for years ",
@@ -198,6 +210,7 @@ for (model_idx in c(1:(length(models_name)))) {
 
   # Store provenance in main provenance list
   provenance[[outfile]] <- xbase
+  provenance[[figname]] <- xbase
 }
 
 # Write provenance to file
