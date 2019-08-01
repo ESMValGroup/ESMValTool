@@ -19,8 +19,8 @@ documentation:
     - c3s-magic
 
 datasets:
-  - {dataset: ACCESS1-0, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1997, end_year: 1997}
-#  - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.2, tier: 1, start_year: 1997, end_year: 1997}
+  #- {dataset: ACCESS1-0, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1997, end_year: 1997}
+   - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.3, tier: 1, start_year: 1997, end_year: 1997}
 
 preprocessors:
   masking_preprocessor:
@@ -33,7 +33,7 @@ diagnostics:
     variables:
       pr:
         preprocessor: masking_preprocessor 
-        reference_dataset: "ACCESS1-0"
+        reference_dataset: "GPCP-SG"
         mip: Amon
         project: CMIP5
         exp: historical
@@ -41,7 +41,7 @@ diagnostics:
         start_year: 1997
         end_year: 1997
     additional_datasets:
-    #  - {dataset: ACCESS1-0}
+      - {dataset: ACCESS1-0}
       - {dataset: ACCESS1-3}
       #- {dataset: bcc-csm1-1}
       #- {dataset: bcc-csm1-1-m}
