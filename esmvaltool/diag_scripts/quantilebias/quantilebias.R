@@ -166,7 +166,7 @@ for (model_idx in c(1:(length(models_name)))) {
   ics_ref <- ics
   ipsilon_ref <- ipsilon
 
-  tmp_figname <- sub('.nc', paste0(".", output_file_type), outfile)
+  tmp_figname <- sub(".nc", paste0(".", output_file_type), outfile)
   figname <- sub(work_dir, plot_dir, tmp_figname)
 
   figure_size <- c(600, 400)
