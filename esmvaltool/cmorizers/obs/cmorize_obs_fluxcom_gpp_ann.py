@@ -50,7 +50,7 @@ def _extract_variable(cmor_info, attrs, filepath, out_dir):
     cubes = iris.load(filepath)
     for cube in cubes:
         #convert data from gc/m2/day to kg/m2/s
-        cube = cube * 86.4
+        cube = cube /(1000 * 86400)
         #The following two lines are needed for iris.util.guess_coord_axis
         cube.coord('lat').standard_name = 'latitude'
         cube.coord('lon').standard_name = 'longitude'
