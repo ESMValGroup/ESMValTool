@@ -15,14 +15,15 @@ Download and processing instructions
     A registration is required for downloading the data.
     Users in the UK with a CEDA-JASMIN account may request access to the jules
     workspace and access the data.
-    Note : This data may require rechunking of the netcdf files -- this constraint will not exist once iris is updated to version 2.3.0 Aug 2019
+    Note : This data may require rechunking of the netcdf files.
+    This constraint will not exist once iris is updated to 
+    version 2.3.0 Aug 2019
 """
 import logging
 import os
 import re
 
 import iris
-from iris.experimental.equalise_cubes import equalise_attributes
 from . import utilities as utils
 
 logger = logging.getLogger(__name__)
@@ -42,17 +43,15 @@ def _get_filepath(in_dir, basename):
     raise OSError(
         f"Cannot find input file matching pattern  '{basename}' in '{in_dir}'")
 
-def _extract_variable(raw_var, cmor_info, attrs, filepath, out_dir):
+def _extract_variable(cmor_info, attrs, filepath, out_dir):
     """Extract variable."""
     var = cmor_info.short_name
     logger.info("Var is %s", var)
     cubes = iris.load(filepath)
     for cube in cubes:
-        
         #convert data from gc/m2/day to kg/m2/s
         cube = cube * 86.4
-
-     #The following two lines are needed for iris.util.guess_coord_axis
+        #The following two lines are needed for iris.util.guess_coord_axis
         cube.coord('lat').standard_name = 'latitude'
         cube.coord('lon').standard_name = 'longitude'
 
@@ -61,8 +60,9 @@ def _extract_variable(raw_var, cmor_info, attrs, filepath, out_dir):
         cube = utils.fix_coords(cube)
         cube = utils.set_global_atts(cube, attrs)
         cube = utils.flip_dim_coord(cube, 'latitude')
-        logger.info("Saving file")   
-        utils.save_variable(cube, var, out_dir, attrs, unlimited_dimensions=['time'])
+        logger.info("Saving file") 
+        utils.save_variable(cube, var, out_dir, attrs, 
+                            unlimited_dimensions=['time'])
 
 
 def cmorization(in_dir, out_dir, cfg, _):
@@ -78,5 +78,4 @@ def cmorization(in_dir, out_dir, cfg, _):
         glob_attrs['mip'] = var_info['mip']
         logger.info(var_info['mip'])
         cmor_info = cmor_table.get_variable(var_info['mip'], var)
-        raw_var = var_info.get('raw', var)
-        _extract_variable(raw_var, cmor_info, glob_attrs, filepath, out_dir)
+        _extract_variable(cmor_info, glob_attrs, filepath, out_dir)
