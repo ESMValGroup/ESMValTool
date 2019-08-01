@@ -16,7 +16,7 @@ Download and processing instructions
     Users in the UK with a CEDA-JASMIN account may request access to the jules
     workspace and access the data.
     Note : This data may require rechunking of the netcdf files.
-    This constraint will not exist once iris is updated to 
+    This constraint will not exist once iris is updated to
     version 2.3.0 Aug 2019
 """
 import logging
@@ -60,8 +60,8 @@ def _extract_variable(cmor_info, attrs, filepath, out_dir):
         cube = utils.fix_coords(cube)
         cube = utils.set_global_atts(cube, attrs)
         cube = utils.flip_dim_coord(cube, 'latitude')
-        logger.info("Saving file") 
-        utils.save_variable(cube, var, out_dir, attrs, 
+        logger.info("Saving file")
+        utils.save_variable(cube, var, out_dir, attrs,
                             unlimited_dimensions=['time'])
 
 
