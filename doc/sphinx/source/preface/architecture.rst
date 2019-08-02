@@ -38,7 +38,7 @@ ordered procedures:
 Data finding:
 -------------
 * read the data requirements from the recipe from the datasets (and additional_datasets)
-  section; assemble the data request that will find the data;
+  section; assemble the data request to locate the data;
 * find the data using the specified root paths and DRS types in the configuration file
   (note the flexibility allowed by the data finder, see Preprocessor/Data finding);
 
