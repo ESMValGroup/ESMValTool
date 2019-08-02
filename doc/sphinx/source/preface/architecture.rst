@@ -47,7 +47,7 @@ Data selection:
 * data selection is performed using the parameters specified in the datasets (and additional
   datasets) section (including e.g. type of experiment, type of ensemble, time boundaries etc);
   data will be retrieved and selected for each variable that is specified in the
-  daignostics/variables subsection;
+  diagnostics/variables subsection;
 
 Data fixing:
 ------------
