@@ -7,7 +7,7 @@ Architecture
 Overview and input
 ==================
 
-From a functional point of view, at its core, ESMValTool needs to perform
+ESMValTool performs
 a number of standard diagnostics and output a collection of metrics and graphical
 objects (plots). Thus, the tool will need a certain amount of input from the user
 so that it can:
