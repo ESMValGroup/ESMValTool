@@ -83,4 +83,8 @@ not for model or observational datasets, rather it is for data files used in
 plotting such as coastline descriptions and so on.
 
 
-Tip: You choose your ``config-user.yml`` file at run time, so you could have several available with different purposes. One for formalised run, one for debugging, etc...
+.. note::
+
+   The ``config-user.yml`` file is specified as argument at run time, so it is
+   possible to have several available with different purposes: one for
+   formalised runs, one for debugging, etc...
