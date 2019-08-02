@@ -14,7 +14,7 @@ so that it can:
 
 * establish the correct input and output parameters and the structured workflow;
 * acquire the correct data;
-* execute the workflow and...
+* execute the workflow; and
 * output the desired collective data and media.
 
 To facilitate these four steps the user has control over the tool via two input files:
