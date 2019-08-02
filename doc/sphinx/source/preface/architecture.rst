@@ -57,7 +57,7 @@ Data fixing:
 
 Variable derivation
 -------------------
-* variable derivation (in the case on non CMOR-standard variables, most likely associated with
+* variable derivation (in the case of non CMOR-standard variables, most likely associated with
   observational datasets) is performed automatically before running the preprocessor;
 * if the variable definitions are already in the database then the user will just have to specify
   the variableto be derived in the diagnostics/variable section (as any other standard variable, just
