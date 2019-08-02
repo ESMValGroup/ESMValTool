@@ -19,7 +19,7 @@ so that it can:
 
 To facilitate these four steps the user has control over the tool via two input files:
 the configuration file and the recipe file. The configuration file sets user and site-specific
-parameters (like names of output directories, desired output graphical formats, root paths to
+parameters (like input and output paths, desired output graphical formats, logging level, etc.)
 data etc) whereas the recipe file sets data, preprocessing and diagnostic-specific parameters
 (data parameters grouped in the datasets sections, preprocessing steps for various preprocessors
 sections, variables' parameters and diagnostic-specific instructions grouped in the diagnostics
