@@ -18,6 +18,8 @@ import pandas as pd
 import textwrap
 from .utilities import adjust_minmax, cmap_switch, mean_std_txt
 from .utilities import get_filenames, clean_filename
+import random
+import string
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -37,6 +39,28 @@ def __plot_map__(data, gs, **kwargs):
     return
 
 
+def simple_plot(data, **kwargs):
+    """ 
+    simple 2D plotting routine
+    --------------------------
+    for development use only
+    """
+    def randomString(stringLength=10):
+        """Generate a random string of fixed length """
+        letters = string.ascii_lowercase
+        return ''.join(random.choice(letters) for i in range(stringLength))
+    
+    figsize = (10,5)
+    fig = plt.figure(figsize=figsize)
+    gs = gridspec.GridSpec(1, 1)
+    __plot_map__(data, gs[0,0])
+    plt.colorbar()
+    fig.savefig(fname = ("{}" + os.sep +
+                         "simple_plot_{}.{}").format(kwargs["plotdir"],
+                                         randomString(), "png"))
+    return
+
+
 def glob_temp_mean(data, **kwargs):
     """
     produces global_temporal_mean plots
@@ -50,8 +74,7 @@ def glob_temp_mean(data, **kwargs):
     
     # adjust min and max values
     if "vminmax" in kwargs:
-        vminmax = kwargs["vminmax"]
-        kwargs.pop("vminmax")
+        vminmax = kwargs.pop("vminmax")
         vmin = np.nanmin(vminmax)
         vmax = np.nanmax(vminmax)
         ticks = np.linspace(vmin, vmax, num=numcols)
@@ -61,18 +84,10 @@ def glob_temp_mean(data, **kwargs):
         ticks = None
         
     # check for format
-    if "fformat" in kwargs:
-        fformat = kwargs["fformat"]
-        kwargs.pop("fformat")
-    else:
-        fformat = "pdf"
+    fformat = kwargs.pop("fformat","pdf")
         
     # check for plotdir
-    if "plotdir" in kwargs:
-        plotdir = kwargs["plotdir"]
-        kwargs.pop("plotdir")
-    else:
-        plotdir = "."
+    plotdir = kwargs.pop("plotdir",".")
         
         
     file = data.metadata.attributes["source_file"].split(os.sep)[-1]
@@ -130,18 +145,10 @@ def glob_temp_mean_absdiff(data, **kwargs):
     ticks = np.linspace(vmin, vmax, num=numcols+1)
         
     # check for format
-    if "fformat" in kwargs:
-        fformat = kwargs["fformat"]
-        kwargs.pop("fformat")
-    else:
-        fformat = "pdf"
+    fformat = kwargs.pop("fformat", "pdf")
         
     # check for plotdir
-    if "plotdir" in kwargs:
-        plotdir = kwargs["plotdir"]
-        kwargs.pop("plotdir")
-    else:
-        plotdir = "."
+    plotdir = kwargs.pop("plotdir", ".")
         
         
     files = get_filenames(data.metadata.attributes["source_file"])
@@ -204,19 +211,10 @@ def glob_temp_mean_reldiff(data, **kwargs):
     ticks = np.linspace(vmin, vmax, num=numcols+1)
         
     # check for format
-    if "fformat" in kwargs:
-        fformat = kwargs["fformat"]
-        kwargs.pop("fformat")
-    else:
-        fformat = "pdf"
+    fformat = kwargs.pop("fformat", "pdf")
         
     # check for plotdir
-    if "plotdir" in kwargs:
-        plotdir = kwargs["plotdir"]
-        kwargs.pop("plotdir")
-    else:
-        plotdir = "."
-        
+    plotdir = kwargs.pop("plotdir", ".")
         
     files = get_filenames(data.metadata.attributes["source_file"])
     
@@ -283,18 +281,10 @@ def __perc_lin_plot__(pdf, **kwargs):
     figsize = (10,5)
     
     # check for format
-    if "fformat" in kwargs:
-        fformat = kwargs["fformat"]
-        kwargs.pop("fformat")
-    else:
-        fformat = "pdf"
+    fformat = kwargs.pop("fformat", "pdf")
     
     # check for plotdir
-    if "plotdir" in kwargs:
-        plotdir = kwargs["plotdir"]
-        kwargs.pop("plotdir")
-    else:
-        plotdir = "."
+    plotdir = kwargs.pop("plotdir", ".")
     
     pdf = pdf.reset_index()
     
@@ -311,15 +301,17 @@ def __perc_lin_plot__(pdf, **kwargs):
     ax.set_xlim(0., 1.)
     ax.set_xlabel("percentile")
     ax.set_xticks(pdf["index"])
-    ax.xaxis.set_major_formatter(plt.FuncFormatter(perc_format))
+    ax.xaxis.set_major_formatter(plt.FuncFormatter(__perc_format__))
     ax.grid(linestyle=":")
     ax.legend()
     
     plt.tight_layout()
 
+    files = [pcol.split(".") [0] for pcol in pdf.columns[1:]]
+
     fig.savefig(fname = ("{}" + os.sep +
                          "percentile_correlation_{}.{}").format(plotdir,
-                                                 "_".join(pdf.columns), fformat))
+                                                 "_".join(files), fformat))
     return
 
 
@@ -330,10 +322,6 @@ def __perc_map_plot__(ref, nonref, **kwargs):
     produces the figure
     """
     
-    logger.info(ref)
-    logger.info(nonref)
-    logger.info(kwargs)
-    
     data = nonref
     
     # predefined settings
@@ -343,8 +331,7 @@ def __perc_map_plot__(ref, nonref, **kwargs):
     
     # adjust min and max values
     if "vminmax" in kwargs:
-        vminmax = kwargs["vminmax"]
-        kwargs.pop("vminmax")
+        vminmax = kwargs.pop("vminmax")
         vmin = np.nanmin(vminmax)
         vmax = np.nanmax(vminmax)
         ticks = np.linspace(vmin, vmax, num=numcols)
@@ -354,11 +341,7 @@ def __perc_map_plot__(ref, nonref, **kwargs):
         ticks = None
         
     # check for percentile
-    if "percentile" in kwargs:
-        percentile = kwargs["percentile"]
-        kwargs.pop("percentile")
-    else:
-        percentile = None
+    percentile = kwargs.pop("percentile", None)
         
     # check for correlation values
     if "corr" in kwargs:
@@ -369,18 +352,10 @@ def __perc_map_plot__(ref, nonref, **kwargs):
         rval, pval = [None, None]
         
     # check for format
-    if "fformat" in kwargs:
-        fformat = kwargs["fformat"]
-        kwargs.pop("fformat")
-    else:
-        fformat = "pdf"
+    fformat = kwargs.pop("fformat", "pdf")
         
     # check for plotdir
-    if "plotdir" in kwargs:
-        plotdir = kwargs["plotdir"]
-        kwargs.pop("plotdir")
-    else:
-        plotdir = "."
+    plotdir = kwargs.pop("plotdir", ".")
         
         
     ref_file = ref.metadata.attributes["source_file"].split(os.sep)[-1]
@@ -397,9 +372,12 @@ def __perc_map_plot__(ref, nonref, **kwargs):
     
     # plot data
     fig = plt.figure(figsize=figsize)
-    fig.suptitle(r"{0:.0%}-Percentiles of {1} [{2}]".format(float(percentile),
-                 data.long_name,
-                 data.units),
+    fig.suptitle(r"{0:.0%}-Percentiles of {1} [{2}] (R = {3:3.2f})".format(
+            float(percentile),
+            data.long_name,
+            data.units,
+            rval,
+            ),
 #                  pad=10,
                   fontsize=12)
     gs = gridspec.GridSpec(4, 4,
@@ -425,7 +403,7 @@ def __perc_map_plot__(ref, nonref, **kwargs):
     
     return 
 
-def perc_format(x, ticknum):
+def __perc_format__(x, ticknum):
     """
     reformats tick labels to percent
     --------------------------------
@@ -433,3 +411,33 @@ def perc_format(x, ticknum):
     """
     
     return r"{0:.0%}".format(x)
+
+def trend(data, **kwargs):
+    """
+    produces trend map, restricted to threshold or with additional p-values
+    -----------------------------------------------------------------------
+    produces the figures
+    """
+    #TODO: implement
+    simple_plot(data["trend"], **kwargs)
+    simple_plot(data["p-value"], **kwargs)
+    try:
+        simple_plot(data["threshold"], **kwargs)
+    except:
+        pass
+    return 
+
+def anomalytrend(data, **kwargs):
+    """
+    produces trend map, restricted to threshold or with additional p-values
+    -----------------------------------------------------------------------
+    produces the figures
+    """
+    #TODO: implement
+    simple_plot(data["trend"], **kwargs)
+    simple_plot(data["p-value"], **kwargs)
+    try:
+        simple_plot(data["threshold"], **kwargs)
+    except:
+        pass
+    return

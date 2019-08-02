@@ -52,8 +52,8 @@ diagnostics:
         reference_dataset: IPSL-CM5A-MR
         derive: true
         force_derivation: false
-        preprocessor: t63
-#        preprocessor: regrid10
+#        preprocessor: t63
+        preprocessor: regrid10
         start_year: 1950
         end_year: 2005
     additional_datasets:
@@ -77,10 +77,29 @@ diagnostics:
 #        colormap: None
 #        vminmax: [0.0, 0.5]
 #        requests: [glob_temp_mean_reldiff]
-      percentiles:
+#      percentiles:
+#        script: surfacecollection/main_diag_selector.py
+#        colormap: ['whitesmoke', 'lightblue', 'dodgerblue', 'mediumblue']
+#        requests: [percentiles]
+#        vminmax: [0.0, 0.5]
+##        percentiles: [0.01, 0.05, 0.10, 0.20, 0.25, 0.35, 0.5, 0.65, 0.75, 0.80, 0.90, 0.95, 0.99]
+#        percentiles: [0.05, 0.5, 0.95]
+      trends:
         script: surfacecollection/main_diag_selector.py
-        colormap: ['whitesmoke', 'lightblue', 'dodgerblue', 'mediumblue']
-        requests: [percentiles]
-        vminmax: [0.0, 0.5]
-#        percentiles: [0.01, 0.05, 0.10, 0.20, 0.25, 0.35, 0.5, 0.65, 0.75, 0.80, 0.90, 0.95, 0.99]
-        percentiles: [0.05, 0.5, 0.95]
+#        colormap: ['whitesmoke', 'lightblue', 'dodgerblue', 'mediumblue']
+        requests: [trend]
+        pthreshold: 0.05
+#        vminmax: [0.0, 0.5]
+#      anomalytrends_month:
+#        script: surfacecollection/main_diag_selector.py
+##        colormap: ['whitesmoke', 'lightblue', 'dodgerblue', 'mediumblue']
+#        requests: [anomalytrend]
+#        pthreshold: 0.1
+#        temporal_basis: month
+##        vminmax: [0.0, 0.5]
+#      anomalytrends_day:
+#        script: surfacecollection/main_diag_selector.py
+##        colormap: ['whitesmoke', 'lightblue', 'dodgerblue', 'mediumblue']
+#        requests: [anomalytrend]
+#        temporal_basis: day
+##        vminmax: [0.0, 0.5]

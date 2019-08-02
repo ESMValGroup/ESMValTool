@@ -84,7 +84,10 @@ class ecv_handler(object):
         else:
             for diag in self.cfg["requests"]:
                 results = getattr(diags, diag)(self.input,
-                                 percentiles=self.cfg["percentiles"])
+                                 pthreshold=self.cfg["pthreshold"],
+                                 percentiles=self.cfg["percentiles"],
+                                 temporal_basis=self.cfg["temporal_basis"],
+                                 )
                 for r in results:
                     getattr(plots, diag)(r,
                            cmap=self.cfg["colormap"],

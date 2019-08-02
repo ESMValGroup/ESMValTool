@@ -13,6 +13,8 @@ from matplotlib.colors import LinearSegmentedColormap as LS_cmap
 from matplotlib.cm import get_cmap 
 from copy import copy as copy
 from scipy.stats.stats import kendalltau
+from scipy.stats import linregress
+import cf_units
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -185,6 +187,10 @@ def cfg_checker(cfg):
         cfg['vminmax'] = [None, None]
     if "percentiles" not in cfg.keys():
         cfg['percentiles'] = [None]
+    if "pthreshold" not in cfg.keys():
+        cfg['pthreshold'] = None
+    if "temporal_basis" not in cfg.keys():
+        cfg['temporal_basis'] = [None]
 
     __none_caster__(cfg)
 
@@ -245,8 +251,6 @@ def get_filenames(sourcefiles):
     filenames = list(zip(refs,filenames))
     
     filenames = [" ".join(fn) for fn in filenames]
-    
-    logger.info(filenames)
     
     return filenames
 
@@ -309,6 +313,166 @@ def mean_std_txt(cube):
            "\u03C3: {:.3g}").format(mean.data, std.data).expandtabs()
     
     return txt
+
+def calculate_trend(cube,  pthres=1.01):
+    """
+    calculates temporal trend and p-value from cube
+    -----------------------------------------------
+    returns cube dictionary for trend and p-value
+    """
+    
+#    t0 = 
+    
+    slope_list = []
+    pvalue_list = []
+    
+    logger.info(cube)
+    logger.info(cube.has_lazy_data())
+    
+    cube.data # realization of data for speed
+    
+    for time_series in cube.slices("time"):
+        slope = __make_dummy_cube__(time_series, ["latitude", "longitude"])
+        pvalue = slope.copy()
+        if not np.all(time_series.data.mask):
+            ts_linmod = linregress(time_series.coord("time").points,
+                                   time_series.data,
+                                   )
+            slope.data[0,0] = getattr(ts_linmod, "slope")
+            pvalue.data[0,0] = getattr(ts_linmod, "pvalue")
+        slope.long_name = "slope"
+        pvalue.long_name = "pvalue"
+        slope.units = cf_units.Unit(str(slope.units) +  " " +
+                                    str(slope.coord(
+                                            "time").units).split(" ")[0]
+                                    + "-1" )
+        pvalue.units = cf_units.Unit("-")
+        
+        slope_list.append(slope)
+        pvalue_list.append(pvalue)
+        
+    slope_cube = iris.cube.CubeList(slope_list).concatenate_cube()
+    pvalue_cube = iris.cube.CubeList(pvalue_list).concatenate_cube()
+    
+    slope_cube.convert_units(cf_units.Unit(str(cube.units) + 
+                                           " (10 years)-1"))
+    
+#    t1
+    
+    return dict({"trend": slope_cube,
+                 "p-value": pvalue_cube})
+
+def __make_dummy_cube__(cube, dims="time"):
+    """
+    produces a dummy cube from a cube by calculating the means
+    ----------------------------------------------------------
+    returns cube with same dimcoords besides the aggregated ones
+    """
+    all_dims = [co.name() for co in cube.coords()
+        if isinstance(co, iris.coords.DimCoord)]
+    other_dims = all_dims
+    [other_dims.remove(d) for d in dims]
+    
+    dummy = cube.collapsed(other_dims, iris.analysis.MEAN)
+    
+    dims.reverse()
+    for d in dims:
+        dummy = iris.util.new_axis(dummy, d)
+    
+    return dummy
+
+def get_clim_categorisation(temporal_basis):
+    """
+    chooses climatology categorisation based on string
+    --------------------------------------------------
+    returns respective iris.coord_categorisation
+    """
+    
+    if temporal_basis == "month":
+        clim = iris.coord_categorisation.add_month_number
+    elif temporal_basis == "day":
+        clim = iris.coord_categorisation.add_day_of_year
+    elif temporal_basis == "season":
+        clim = iris.coord_categorisation.add_season
+    else: 
+        clim = iris.coord_categorisation.add_month_number
+        logger.warning("No temporal_basis given (None)," +
+                       " or temporal_basis unknown," +
+                       " monthly climatology produced instead: " +
+                       temporal_basis)
+        logger.warning("Please use one of: day, month, season.")
+        
+    return clim
+
+def __remove_all_aux_coords__(cube):
+    """
+    remove all auxiliary coordinates from cube
+    ------------------------------------------
+    returns cleaned cube
+    """
+    for dim in cube.coords():
+        if isinstance(dim, iris.coords.AuxCoord):
+             cube.remove_coord(dim)
+            
+    return
+    
+def get_differences_4_clim(cube, other):
+    """
+    calculate the differences between cube along the dimension clim
+    ---------------------------------------------------------------
+    returns difference cube
+    """
+    
+    new_cube = []
+    
+    for map_slice in cube.slices(["latitude", "longitude"]):
+        act_overlap_pos = map_slice.coord("clim").points[0]
+
+        diff = map_slice - other.extract(
+                iris.Constraint(clim = act_overlap_pos)
+                )
+        
+        diff.add_aux_coord(map_slice.coord("time"))
+        diff.remove_coord("clim")
+        
+        new_cube.append(diff)
+    
+    new_cube = iris.cube.CubeList(new_cube).merge_cube()
+    
+    diff.standard_name = cube.standard_name
+    diff.long_name = cube.long_name
+    diff.units = cube.units
+    
+    return new_cube
+
+def change_long_name(cube, how, text):
+    """
+    wrapper to change the longname of the cube
+    ------------------------------------------
+    returns nothing (cube is adjusted)
+    """
+    
+    new_name = cube.long_name
+    
+    if "overwrite" in how or "overwrite" == how:
+        new_name = text
+        
+    elif "attach" in how:
+        if "front" in how:
+            new_name = text + new_name
+        elif "end" in how:
+            new_name = new_name + text
+        else:
+            ValueError("Command needed. " +
+                       "Text can either be attached to 'front' or 'end'.")
+    else:
+        ValueError("Command needed. " +
+                   "Text can be used to either 'overwrite' or 'attach'.")
+    
+    cube.long_name = new_name
+    
+    return 
+
 
 class input_handler(object):
     """
@@ -451,3 +615,181 @@ class input_handler(object):
         
         return copy(self)
     
+    def apply_iris_fun(self, fun, ctype, **kwargs):
+        """
+        applies functions to ref and nonref cubes
+        -----------------------------------------
+        returning a copy with changed data
+        """
+        
+        copy_input = self.copy()
+        
+        if not self.files_read:
+            copy_input.read()
+        
+        if ctype == "method":
+            copy_input.files_ref = [getattr(fil,fun)(**kwargs) 
+                for fil in copy_input.files_ref]
+            copy_input.files_nonref = [getattr(fil,fun)(**kwargs)  
+                for fil in copy_input.files_nonref]
+        elif ctype == "adjustment":
+            [fun(cube = fil, **kwargs) 
+                for fil in copy_input.files_ref]
+            [fun(cube = fil, **kwargs) 
+                for fil in copy_input.files_nonref]
+        elif ctype == "overwrite":
+            copy_input.files_ref = [fun(cube = fil, **kwargs) 
+                for fil in copy_input.files_ref]
+            copy_input.files_nonref = [fun(cube = fil, **kwargs) 
+                for fil in copy_input.files_nonref]
+        elif ctype == "elementwise":
+            if "other" not in kwargs.keys():
+                NameError("Could not find 'other' variable for method input.")
+            elif not isinstance(kwargs["other"], input_handler):
+                TypeError("'Other' variable not of type input_handler.")
+            else: 
+                other = kwargs.pop("other")
+                
+            ref = []
+            nonref = []
+            
+            for dat in zip(self.files_ref, other.files_ref):
+                ref.append(fun(dat[0], dat[1], **kwargs))
+            copy_input.files_ref = ref
+            
+            for dat in zip(self.files_nonref, other.files_nonref):
+                nonref.append(fun(dat[0], dat[1], **kwargs))
+            copy_input.files_nonref = nonref
+            
+        else:
+            TypeError("Wrong ctype assigned. Options are: " + 
+                      "method, adjustment, overwrite.")
+        
+        return copy_input
+    
+    def __sub__(self, data):
+        """
+        calculating difference
+        ----------------------
+        returning a copy with changed data
+        """
+        
+        sub = self.copy()
+        
+        if not self.files_read:
+            sub.read()
+        
+        sub_ref = []
+        sub_nonref = []
+        
+        for (a, b) in zip(sub.files_ref, data.files_ref):
+            sub_entry = a - b
+            sub_entry.metadata = set_metadata(a, b, ["__sub__"])
+            sub_ref.append(sub_entry)
+        for (a, b) in zip(sub.files_nonref, data.files_nonref):
+            sub_entry = a - b
+            sub_entry.metadata = set_metadata(a, b, ["__sub__"])
+            sub_nonref.append(sub_entry)
+        
+        sub.files_ref = sub_ref
+        sub.files_nonref = sub_nonref
+        
+        return sub
+    
+    def __add__(self, data):
+        """
+        calculating sum
+        ---------------
+        returning a copy with changed data
+        """
+        
+        add = self.copy()
+        
+        if not self.files_read:
+            add.read()
+        
+        add_ref = []
+        add_nonref = []
+        
+        for (a, b) in zip(add.files_ref, data.files_ref):
+            add_entry = a + b
+            add_entry.metadata = set_metadata(a, b, ["__add__"])
+            add_ref.append(add_entry)
+        for (a, b) in zip(add.files_nonref, data.files_nonref):
+            add_entry = a + b
+            add_entry.metadata = set_metadata(a, b, ["__add__"])
+            add_nonref.append(add_entry)
+        
+        add.files_ref = add_ref
+        add.files_nonref = add_nonref
+        
+        return add
+    
+    def __mul__(self, data):
+        """
+        calculating product
+        -------------------
+        returning a copy with changed data
+        """
+        
+        mul = self.copy()
+        
+        if not self.files_read:
+            mul.read()
+        
+        mul_ref = []
+        mul_nonref = []
+        
+        for (a, b) in zip(mul.files_ref, data.files_ref):
+            mul_entry = a * b
+            mul_entry.metadata = set_metadata(a, b, ["__mul__"])
+            mul_ref.append(mul_entry)
+        for (a, b) in zip(mul.files_nonref, data.files_nonref):
+            mul_entry = a * b
+            mul_entry.metadata = set_metadata(a, b, ["__mul__"])
+            mul_nonref.append(mul_entry)
+        
+        mul.files_ref = mul_ref
+        mul.files_nonref = mul_nonref
+        
+        return mul
+    
+    def has_lazy_data(self):
+        """
+        checks all cubes in object on lazyness
+        -------------------------------------
+        returns a copy with boolean representation
+        """
+        
+        hld = self.apply_iris_fun("has_lazy_data", "method")
+        
+        return hld
+        
+#    def realize_data(self):
+#        """
+#        realizes all iris cubes
+#        -----------------------
+#        returns nothing
+#        """
+#        
+#        cd = self.apply_iris_fun("core_data", "method")
+#        
+#        hld = self.has_lazy_data()
+#        
+#        def __check_before_compute__(core_data, has_lazy_data):
+#            """
+#            checks if objects each are lazy 
+#            ------------------------------
+#            returns nothing
+#            """
+#            
+#            if has_lazy_data:
+#                core_data.compute()
+#            
+#            return
+#        
+#        cd.apply_iris_fun(__check_before_compute__,
+#                          "elementwise",
+#                          other = hld)
+#        
+#        return
