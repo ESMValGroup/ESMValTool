@@ -31,7 +31,7 @@ sections as the user deems useful.
 Workflow
 ========
 
-Once these two files are at hand, the user will start the tool. The workflow is presented
+Once these two files are at hand, the user can start the tool. The workflow is presented
 in the schematic below: for a generalized run scenario, the tool will perform the following
 ordered procedures:
 
