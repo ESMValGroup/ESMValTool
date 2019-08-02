@@ -346,10 +346,10 @@ def __perc_map_plot__(ref, nonref, **kwargs):
     # check for correlation values
     if "corr" in kwargs:
         rval = kwargs["corr"]["r"]
-        pval = kwargs["corr"]["p-value"]
+        # pval = kwargs["corr"]["p-value"]
         kwargs.pop("corr")
     else:
-        rval, pval = [None, None]
+        rval = None
         
     # check for format
     fformat = kwargs.pop("fformat", "pdf")

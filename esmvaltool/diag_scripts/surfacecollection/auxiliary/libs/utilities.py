@@ -16,6 +16,25 @@ from scipy.stats.stats import kendalltau
 from scipy.stats import linregress
 import cf_units
 
+import functools
+import time
+
+def timer(func):
+    """
+    Print the runtime of the decorated function
+    -------------------------------------------
+    from https://realpython.com/primer-on-python-decorators/#simple-decorators
+    """
+    @functools.wraps(func)
+    def wrapper_timer(*args, **kwargs):
+        start_time = time.perf_counter()    # 1
+        value = func(*args, **kwargs)
+        end_time = time.perf_counter()      # 2
+        run_time = end_time - start_time    # 3
+        logger.info(f"Finished {func.__name__!r} in {run_time:.4f} secs")
+        return value
+    return wrapper_timer
+
 logger = logging.getLogger(os.path.basename(__file__))
 
 def set_metadata(c1, c2, fun):
@@ -321,15 +340,14 @@ def calculate_trend(cube,  pthres=1.01):
     returns cube dictionary for trend and p-value
     """
     
-#    t0 = 
-    
     slope_list = []
     pvalue_list = []
     
-    logger.info(cube)
-    logger.info(cube.has_lazy_data())
+    # realization of data for speed
+    cube.data 
     
-    cube.data # realization of data for speed
+    # deleting of aux_coords of data for speed
+    delete_aux_coords(cube)
     
     for time_series in cube.slices("time"):
         slope = __make_dummy_cube__(time_series, ["latitude", "longitude"])
@@ -356,8 +374,6 @@ def calculate_trend(cube,  pthres=1.01):
     
     slope_cube.convert_units(cf_units.Unit(str(cube.units) + 
                                            " (10 years)-1"))
-    
-#    t1
     
     return dict({"trend": slope_cube,
                  "p-value": pvalue_cube})
@@ -473,6 +489,18 @@ def change_long_name(cube, how, text):
     
     return 
 
+def delete_aux_coords(cube):
+    """
+    deletes all aux coords from cube
+    --------------------------------
+    returns nothing (in place functions)
+    """
+
+    for ad in cube.coords():
+        if isinstance(ad, iris.coords.AuxCoord):
+            cube.remove_coord(ad)
+            
+    return
 
 class input_handler(object):
     """

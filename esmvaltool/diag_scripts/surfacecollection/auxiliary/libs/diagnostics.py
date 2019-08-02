@@ -10,7 +10,7 @@ import logging
 import os
 from .utilities import set_metadata, checked_ref, correlation, change_long_name
 from .utilities import calculate_trend, get_clim_categorisation, corr_extract
-from .utilities import get_differences_4_clim
+from .utilities import get_differences_4_clim, delete_aux_coords
 import numpy as np
 import pandas as pd
 
@@ -26,6 +26,7 @@ def glob_temp_mean(data, **kwargs):
     cubes = []
     
     for cube in data.get_all():
+        delete_aux_coords(cube)
         cubes.append(cube.collapsed("time", iris.analysis.MEAN))
     
     return cubes
@@ -95,13 +96,14 @@ def percentiles(data, **kwargs):
     ref = checked_ref(data.get_ref(), num=1)
     
     nonref = data.get_nonref()
-    
+    delete_aux_coords(ref)
     refperc = ref.collapsed("time", iris.analysis.PERCENTILE,
                             percent=[p*100 for p in percentiles])
     
     nonrefperc = []
     
     for cube in nonref:
+        delete_aux_coords(cube)
         nonrefperc.append(cube.collapsed("time", iris.analysis.PERCENTILE,
                                          percent=[p*100 for p in percentiles]))
         
