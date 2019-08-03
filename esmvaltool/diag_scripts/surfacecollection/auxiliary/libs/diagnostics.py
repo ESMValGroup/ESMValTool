@@ -10,7 +10,7 @@ import logging
 import os
 from .utilities import set_metadata, checked_ref, correlation, change_long_name
 from .utilities import calculate_trend, get_clim_categorisation, corr_extract
-from .utilities import get_differences_4_clim, delete_aux_coords
+from .utilities import get_differences_4_clim, delete_aux_coords, copy_metadata
 import numpy as np
 import pandas as pd
 
@@ -143,8 +143,6 @@ def trend(data, **kwargs):
     
     pthreshold = kwargs.pop("pthreshold", None)
     
-    logger.info(data.has_lazy_data())
-    
     cubes = []
     
     for cube in data.get_all():
@@ -153,6 +151,7 @@ def trend(data, **kwargs):
     if pthreshold is not None:
         for c in cubes:
             thresholded = c["trend"].copy()
+            thresholded.attributes.update({"pthreshold": pthreshold})
             iris.util.mask_cube(thresholded, c["p-value"].data > pthreshold)
             c.update({"threshold": thresholded})
     
@@ -194,6 +193,9 @@ def anomalytrend(data, **kwargs):
                                  list(set(
                                          [d.long_name for d in data.get_all()]
                                          ))[0])
+    
+    anomalies.apply_iris_fun(copy_metadata, ctype = "elementwise",
+                             other = data)
     
     cubes = trend(anomalies, **kwargs)
     

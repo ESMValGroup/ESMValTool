@@ -203,7 +203,7 @@ def cfg_checker(cfg):
     if "colormap" not in cfg.keys():
         cfg['colormap'] = "binary"
     if "vminmax" not in cfg.keys():
-        cfg['vminmax'] = [None, None]
+        cfg['vminmax'] = [np.nan, np.nan]
     if "percentiles" not in cfg.keys():
         cfg['percentiles'] = [None]
     if "pthreshold" not in cfg.keys():
@@ -358,8 +358,7 @@ def calculate_trend(cube,  pthres=1.01):
                                    )
             slope.data[0,0] = getattr(ts_linmod, "slope")
             pvalue.data[0,0] = getattr(ts_linmod, "pvalue")
-        slope.long_name = "slope"
-        pvalue.long_name = "pvalue"
+
         slope.units = cf_units.Unit(str(slope.units) +  " " +
                                     str(slope.coord(
                                             "time").units).split(" ")[0]
@@ -374,6 +373,10 @@ def calculate_trend(cube,  pthres=1.01):
     
     slope_cube.convert_units(cf_units.Unit(str(cube.units) + 
                                            " (10 years)-1"))
+    slope_cube.long_name = "Decadal Trend of " + cube.long_name
+    pvalue_cube.long_name = "pvalue"
+    
+#    copy_metadata(slope_cube, cube)
     
     return dict({"trend": slope_cube,
                  "p-value": pvalue_cube})
@@ -500,6 +503,16 @@ def delete_aux_coords(cube):
         if isinstance(ad, iris.coords.AuxCoord):
             cube.remove_coord(ad)
             
+    return
+
+def copy_metadata(cube, other):
+    """
+    copies the metadata from other into cube
+    ----------------------------------------
+    returns nothing (in place functions)
+    """
+    cube.attributes = other.attributes.copy()
+    
     return
 
 class input_handler(object):

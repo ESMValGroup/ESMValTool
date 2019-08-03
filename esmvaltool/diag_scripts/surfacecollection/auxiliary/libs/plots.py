@@ -13,6 +13,7 @@ import logging
 import os
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
+from matplotlib import cm
 import numpy as np
 import pandas as pd
 import textwrap
@@ -75,9 +76,14 @@ def glob_temp_mean(data, **kwargs):
     # adjust min and max values
     if "vminmax" in kwargs:
         vminmax = kwargs.pop("vminmax")
-        vmin = np.nanmin(vminmax)
-        vmax = np.nanmax(vminmax)
-        ticks = np.linspace(vmin, vmax, num=numcols)
+        if all(np.isnan(vminmax)):
+            vmin = None
+            vmax = None
+            ticks = None
+        else:
+            vmin = np.nanmin(vminmax)
+            vmax = np.nanmax(vminmax)
+            ticks = np.linspace(vmin, vmax, num=numcols)
     else: 
         vmin = None
         vmax = None
@@ -332,9 +338,14 @@ def __perc_map_plot__(ref, nonref, **kwargs):
     # adjust min and max values
     if "vminmax" in kwargs:
         vminmax = kwargs.pop("vminmax")
-        vmin = np.nanmin(vminmax)
-        vmax = np.nanmax(vminmax)
-        ticks = np.linspace(vmin, vmax, num=numcols)
+        if all(np.isnan(vminmax)):
+            vmin = None
+            vmax = None
+            ticks = None
+        else:
+            vmin = np.nanmin(vminmax)
+            vmax = np.nanmax(vminmax)
+            ticks = np.linspace(vmin, vmax, num=numcols)
     else: 
         vmin = None
         vmax = None
@@ -416,28 +427,155 @@ def trend(data, **kwargs):
     """
     produces trend map, restricted to threshold or with additional p-values
     -----------------------------------------------------------------------
-    produces the figures
+    deligates figures
     """
-    #TODO: implement
-    simple_plot(data["trend"], **kwargs)
-    simple_plot(data["p-value"], **kwargs)
-    try:
-        simple_plot(data["threshold"], **kwargs)
-    except:
-        pass
+    
+    if "threshold" in data.keys():
+        __threshold_trend_plot__(data["threshold"], **kwargs)
+        data.pop("threshold")
+    
+    __standard_trend_plot__(data,**kwargs)
+    
     return 
 
 def anomalytrend(data, **kwargs):
     """
     produces trend map, restricted to threshold or with additional p-values
     -----------------------------------------------------------------------
+    deligates figures
+    """
+
+    trend(data, **kwargs)
+    return
+
+def __standard_trend_plot__(data, **kwargs):
+    """
+    produces trend map with additional p-values
+    -------------------------------------------
     produces the figures
     """
-    #TODO: implement
-    simple_plot(data["trend"], **kwargs)
-    simple_plot(data["p-value"], **kwargs)
-    try:
-        simple_plot(data["threshold"], **kwargs)
-    except:
-        pass
+    # predefined settings
+    numcols = 11
+    figsize = (14,5)
+    xpos_add_txt = [.02,.98]
+    
+    # adjust min and max values
+    if "vminmax" in kwargs:
+        vminmax = kwargs.pop("vminmax")
+        if all(np.isnan(vminmax)):
+            vmin = None
+            vmax = None
+            ticks = None
+        else:
+            vmin = np.nanmin(vminmax)
+            vmax = np.nanmax(vminmax)
+            ticks = np.linspace(vmin, vmax, num=numcols)
+    else: 
+        vmin = None
+        vmax = None
+        ticks = None
+        
+    # check for format
+    fformat = kwargs.pop("fformat", "pdf")
+        
+    # check for plotdir
+    plotdir = kwargs.pop("plotdir", ".")
+        
+        
+    file = data["trend"].metadata.attributes["source_file"].split(os.sep)[-1]
+        
+    # adjust colorbar
+    if "cmap" in kwargs:
+        kwargs["cmap"] = cmap_switch(kwargs["cmap"], numcols)
+    else: 
+        kwargs["cmap"] = None
+        
+    mst = mean_std_txt(data["trend"])
+    
+    # plot data
+    fig = plt.figure(figsize=figsize)
+    fig.suptitle(textwrap.fill("{} [{}] with accompanying p-values".format(data["trend"].long_name,
+              data["trend"].units), 160),
+              fontsize=12)
+    gs = gridspec.GridSpec(4, 2,
+                           width_ratios=[1, 1],
+                           height_ratios=[1, 80, 1, 4])
+    __plot_map__(data["trend"], gs[1,0], vmin=vmin, vmax=vmax, **kwargs)
+    cax1 = plt.subplot(gs[3,0])
+    plt.colorbar(cax = cax1, ticks=ticks, orientation="horizontal")
+    kwargs["cmap"] = cm.get_cmap('Greens_r', 10)
+    __plot_map__(data["p-value"], gs[1,1], vmin=0, vmax=1, **kwargs)
+    cax2 = plt.subplot(gs[3,1])
+    plt.colorbar(cax = cax2, extend = "max", orientation="horizontal")
+    fig.text(xpos_add_txt[0], .15, mst, ha='left', fontsize=8)
+    fig.text(xpos_add_txt[1], .15, file, ha='right', fontsize=8)
+    
+    
+    plt.tight_layout()
+    
+    fig.savefig(fname = ("{}" + os.sep +
+                         "glob_trend_{}.{}").format(plotdir,
+                                         file.split(".")[0], fformat))
+    
+    return 
+    return
+
+def __threshold_trend_plot__(data, **kwargs):
+    """
+    produces trend map restricted to threshold
+    ------------------------------------------
+    produces the figures
+    """
+    # predefined settings
+    numcols = 11
+    figsize = (10,5)
+    xpos_add_txt = [.05,.80]
+    
+    # adjust min and max values
+    if "vminmax" in kwargs:
+        vminmax = kwargs.pop("vminmax")
+        if all(np.isnan(vminmax)):
+            vmin = None
+            vmax = None
+            ticks = None
+        else:
+            vmin = np.nanmin(vminmax)
+            vmax = np.nanmax(vminmax)
+            ticks = np.linspace(vmin, vmax, num=numcols)
+    else: 
+        vmin = None
+        vmax = None
+        ticks = None
+        
+    # check for format
+    fformat = kwargs.pop("fformat","pdf")
+        
+    # check for plotdir
+    plotdir = kwargs.pop("plotdir",".")
+        
+        
+    file = data.metadata.attributes["source_file"].split(os.sep)[-1]
+        
+    # adjust colorbar
+    if "cmap" in kwargs:
+        kwargs["cmap"] = cmap_switch(kwargs["cmap"], numcols)
+    else: 
+        kwargs["cmap"] = None
+           
+    mst = mean_std_txt(data)
+    
+    # plot data
+    fig = plt.figure(figsize=figsize)
+    gs = gridspec.GridSpec(1, 1)
+    __plot_map__(data, gs[0,0], vmin=vmin, vmax=vmax, **kwargs)
+    fig.text(xpos_add_txt[0], .05, mst, ha='left', fontsize=8)
+    fig.text(xpos_add_txt[1], .05, file, ha='right', fontsize=8)
+    plt.colorbar(ticks=ticks)
+    plt.title(textwrap.fill("{} [{}] (p-values <= {:.2f})".format(data.long_name,
+              data.units, data.attributes["pthreshold"]), 80),
+              pad=10, fontsize=12)
+    plt.tight_layout()
+    fig.savefig(fname = ("{}" + os.sep +
+                         "glob_trend_thresh_{}.{}").format(plotdir,
+                                         file.split(".")[0], fformat))
     return
