@@ -8,9 +8,10 @@ Created on Fri Jun 21 13:05:25 2019
 import iris
 import logging
 import os
-from .utilities import set_metadata, checked_ref, correlation, change_long_name
-from .utilities import calculate_trend, get_clim_categorisation, corr_extract
-from .utilities import get_differences_4_clim, delete_aux_coords, copy_metadata
+from .utilities import set_metadata, checked_ref, data_correlation
+from .utilities import calculate_anomalies, calculate_correlation
+from .utilities import calculate_trend, corr_extract
+from .utilities import delete_aux_coords
 import numpy as np
 import pandas as pd
 
@@ -117,7 +118,7 @@ def percentiles(data, **kwargs):
         refp = refperc.extract(perc_constraint)
         nonrefp = [nrp.extract(perc_constraint) for nrp in nonrefperc]
         
-        corrs = [correlation(refp, nrp) for nrp in nonrefp]
+        corrs = [data_correlation(refp, nrp) for nrp in nonrefp]
         
         res_list.append({str(p):{"ref":refp,
                                  "nonref":nonrefp,
@@ -173,30 +174,57 @@ def anomalytrend(data, **kwargs):
             logger.warning("no temporal_basis given (None), " +
                            "monthly climatology produced instead")
             
-    clim_fun = get_clim_categorisation(temporal_basis)
-    
-    added_clim = data.apply_iris_fun(clim_fun, ctype = "adjustment",
-                                       coord="time", name="clim")
-
-    clim_agg_data = added_clim.apply_iris_fun("aggregated_by",
-                                              ctype = "method",
-                                              coords="clim",
-                                              aggregator = iris.analysis.MEAN)
-
-    anomalies = added_clim.apply_iris_fun(get_differences_4_clim,
-                                                 ctype = "elementwise",
-                                                 other = clim_agg_data)
-    
-    anomalies.apply_iris_fun(change_long_name, ctype = "adjustment",
-                             how = ["overwrite"],
-                             text = "Anomalies of " + 
-                                 list(set(
-                                         [d.long_name for d in data.get_all()]
-                                         ))[0])
-    
-    anomalies.apply_iris_fun(copy_metadata, ctype = "elementwise",
-                             other = data)
+    anomalies = calculate_anomalies(data, temporal_basis)
     
     cubes = trend(anomalies, **kwargs)
+    
+    return cubes
+
+def correlation(data, **kwargs):
+    """
+    produces pixelwise correlations
+    -------------------------
+    returns a list of correlation related cubes
+    """
+    
+    pthreshold = kwargs.pop("pthreshold", None)
+    
+    if len(data.get_ref()) != 1:
+        logger.error("There needs to be one and only one reference dataset")
+    ref = data.get_ref()[0]
+    
+    cubes = []
+    
+    for cube in data.get_nonref():
+        cubes.append(calculate_correlation(cube, ref))
+        
+    if pthreshold is not None:
+        for c in cubes:
+            thresholded = c["correlation"].copy()
+            thresholded.attributes.update({"pthreshold": pthreshold})
+            iris.util.mask_cube(thresholded, c["p-value"].data > pthreshold)
+            c.update({"threshold": thresholded})
+    
+    return cubes
+
+def anomalycorrelation(data, **kwargs):
+    """
+    produces pixelwise correlations for climatologies
+    -------------------------------------------
+    returns a list of correlation related cubes
+    """
+    
+    if "temporal_basis" not in kwargs.keys():
+        logger.error("option temporal_basis required for this diagnostic")
+    else:
+        temporal_basis = kwargs["temporal_basis"]
+        if len(temporal_basis) == 0:
+            temporal_basis = "month"
+            logger.warning("no temporal_basis given (None), " +
+                           "monthly climatology produced instead")
+    
+    anomalies = calculate_anomalies(data, temporal_basis)
+    
+    cubes = correlation(anomalies, **kwargs)
     
     return cubes

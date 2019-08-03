@@ -287,7 +287,7 @@ def clean_filename(string):
     return string
 
 
-def correlation(c1, c2):
+def data_correlation(c1, c2):
     """
     calculates Kendall-Tau correlation for input cubes
     --------------------------------------------------
@@ -333,7 +333,7 @@ def mean_std_txt(cube):
     
     return txt
 
-def calculate_trend(cube,  pthres=1.01):
+def calculate_trend(cube):
     """
     calculates temporal trend and p-value from cube
     -----------------------------------------------
@@ -376,9 +376,50 @@ def calculate_trend(cube,  pthres=1.01):
     slope_cube.long_name = "Decadal Trend of " + cube.long_name
     pvalue_cube.long_name = "pvalue"
     
-#    copy_metadata(slope_cube, cube)
-    
     return dict({"trend": slope_cube,
+                 "p-value": pvalue_cube})
+    
+def calculate_correlation(cube, ref):
+    """
+    calculates temporal trend and p-value from cube
+    -----------------------------------------------
+    returns cube dictionary for trend and p-value
+    """
+    
+    corr_list = []
+    pvalue_list = []
+    
+    # realization of data for speed
+    cube.data 
+    
+    # deleting of aux_coords of data for speed
+    delete_aux_coords(cube)
+    
+    for time_series in cube.slices("time"):
+        corr = __make_dummy_cube__(time_series, ["latitude", "longitude"])
+        pvalue = corr.copy()
+        ts_ref = ref.extract(iris.Constraint(
+                longitude = time_series.coord("longitude").points))
+        ts_ref = ts_ref.extract(iris.Constraint(
+                latitude = time_series.coord("latitude").points))
+        if not np.all(time_series.data.mask):
+            ts_corr = data_correlation(ts_ref, time_series)
+            corr.data[0,0] = ts_corr["r"]
+            pvalue.data[0,0] = ts_corr["p-value"]
+
+        corr.units = cf_units.Unit("-")
+        pvalue.units = cf_units.Unit("-")
+        
+        corr_list.append(corr)
+        pvalue_list.append(pvalue)
+        
+    corr_cube = iris.cube.CubeList(corr_list).concatenate_cube()
+    pvalue_cube = iris.cube.CubeList(pvalue_list).concatenate_cube()
+    
+    corr_cube.long_name = "Correlation of " + cube.long_name
+    pvalue_cube.long_name = "pvalue"
+    
+    return dict({"correlation": corr_cube,
                  "p-value": pvalue_cube})
 
 def __make_dummy_cube__(cube, dims="time"):
@@ -514,6 +555,39 @@ def copy_metadata(cube, other):
     cube.attributes = other.attributes.copy()
     
     return
+
+def calculate_anomalies(data, temporal_basis):
+    """
+    calculates anomalies based on aggregation information
+    -----------------------------------------------------
+    returns anomalies
+    """
+            
+    clim_fun = get_clim_categorisation(temporal_basis)
+    
+    added_clim = data.apply_iris_fun(clim_fun, ctype = "adjustment",
+                                       coord="time", name="clim")
+
+    clim_agg_data = added_clim.apply_iris_fun("aggregated_by",
+                                              ctype = "method",
+                                              coords="clim",
+                                              aggregator = iris.analysis.MEAN)
+
+    anomalies = added_clim.apply_iris_fun(get_differences_4_clim,
+                                                 ctype = "elementwise",
+                                                 other = clim_agg_data)
+    
+    anomalies.apply_iris_fun(change_long_name, ctype = "adjustment",
+                             how = ["overwrite"],
+                             text = "Anomalies of " + 
+                                 list(set(
+                                         [d.long_name for d in data.get_all()]
+                                         ))[0])
+    
+    anomalies.apply_iris_fun(copy_metadata, ctype = "elementwise",
+                             other = data)
+    
+    return anomalies
 
 class input_handler(object):
     """
