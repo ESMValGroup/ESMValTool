@@ -24,6 +24,5 @@ dependencies:
   - ncl>=6.5.0
   - r-base
   - r-curl  # Dependency of lintr, but fails to compile because it cannot find libcurl installed from conda.
-  - r-lintr
   - r-udunits2  # Fails to compile because it cannot find udunits2 installed from conda.
   # - julia>=1.0.0  # The Julia package on conda is apparently broken
