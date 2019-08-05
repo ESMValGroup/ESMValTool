@@ -102,22 +102,38 @@ diagnostics:
 #        requests: [anomalytrend]
 #        temporal_basis: day
 #        vminmax: [-0.005, +0.005]
-      correlations:
-        script: surfacecollection/main_diag_selector.py
-        colormap: ['darkgoldenrod', 'whitesmoke', 'lightseagreen']
-        requests: [correlation]
-        pthreshold: 0.05
-        vminmax: [-1, +1]
-      anomalycorrelations_month:
-        script: surfacecollection/main_diag_selector.py
-        colormap: ['darkgoldenrod', 'whitesmoke', 'lightseagreen']
-        requests: [anomalycorrelation]
-        pthreshold: 0.1
-        temporal_basis: month
-        vminmax: [-1, +1]
-      anomalycorrelations_day:
-        script: surfacecollection/main_diag_selector.py
-        colormap: ['darkgoldenrod', 'whitesmoke', 'lightseagreen']
-        requests: [anomalycorrelation]
-        temporal_basis: day
-        vminmax: [-1, +1]
+#      climatologytrends_month:
+#        script: surfacecollection/main_diag_selector.py
+#        colormap: ['darkgoldenrod', 'whitesmoke', 'lightseagreen']
+#        requests: [climatologytrend]
+#        pthreshold: 0.1
+#        temporal_basis: month
+#        vminmax: [-0.2, +0.2]
+#      correlations:
+#        script: surfacecollection/main_diag_selector.py
+#        colormap: ['darkgoldenrod', 'whitesmoke', 'lightseagreen']
+#        requests: [correlation]
+#        pthreshold: 0.05
+#        vminmax: [-1, +1]
+#      anomalycorrelations_month:
+#        script: surfacecollection/main_diag_selector.py
+#        colormap: ['darkgoldenrod', 'whitesmoke', 'lightseagreen']
+#        requests: [anomalycorrelation]
+#        pthreshold: 0.1
+#        temporal_basis: month
+#        vminmax: [-1, +1]
+#      anomalycorrelations_day:
+#        script: surfacecollection/main_diag_selector.py
+#        colormap: ['darkgoldenrod', 'whitesmoke', 'lightseagreen']
+#        requests: [anomalycorrelation]
+#        temporal_basis: day
+#        vminmax: [-1, +1]
+#      climatologycorrelations_month:
+#        script: surfacecollection/main_diag_selector.py
+#        colormap: ['darkgoldenrod', 'whitesmoke', 'lightseagreen']
+#        requests: [climatologycorrelation]
+#        pthreshold: 0.1
+#        temporal_basis: month
+#        vminmax: [-1, +1]
+
+

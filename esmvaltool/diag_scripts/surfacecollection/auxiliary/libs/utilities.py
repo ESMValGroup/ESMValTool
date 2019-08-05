@@ -333,7 +333,7 @@ def mean_std_txt(cube):
     
     return txt
 
-def calculate_trend(cube):
+def calculate_trend(cube, decadal = True):
     """
     calculates temporal trend and p-value from cube
     -----------------------------------------------
@@ -371,8 +371,13 @@ def calculate_trend(cube):
     slope_cube = iris.cube.CubeList(slope_list).concatenate_cube()
     pvalue_cube = iris.cube.CubeList(pvalue_list).concatenate_cube()
     
-    slope_cube.convert_units(cf_units.Unit(str(cube.units) + 
-                                           " (10 years)-1"))
+    if decadal:
+        slope_cube.convert_units(cf_units.Unit(str(cube.units) + 
+                                               " (10 years)-1"))
+    else:
+        slope_cube.convert_units(cf_units.Unit(str(cube.units) + 
+                                               " year-1"))
+        
     slope_cube.long_name = "Decadal Trend of " + cube.long_name
     pvalue_cube.long_name = "pvalue"
     
@@ -407,17 +412,21 @@ def calculate_correlation(cube, ref):
             corr.data[0,0] = ts_corr["r"]
             pvalue.data[0,0] = ts_corr["p-value"]
 
-        corr.units = cf_units.Unit("-")
-        pvalue.units = cf_units.Unit("-")
-        
         corr_list.append(corr)
         pvalue_list.append(pvalue)
         
     corr_cube = iris.cube.CubeList(corr_list).concatenate_cube()
     pvalue_cube = iris.cube.CubeList(pvalue_list).concatenate_cube()
     
+    corr_cube.metadata = set_metadata(corr_cube, ref, "correlation")
+    pvalue_cube.metadata = set_metadata(pvalue_cube, ref, "pvalue")
+    
     corr_cube.long_name = "Correlation of " + cube.long_name
     pvalue_cube.long_name = "pvalue"
+    
+    corr_cube.units = cf_units.Unit("-")
+    pvalue_cube.units = cf_units.Unit("-")
+    
     
     return dict({"correlation": corr_cube,
                  "p-value": pvalue_cube})
@@ -588,6 +597,35 @@ def calculate_anomalies(data, temporal_basis):
                              other = data)
     
     return anomalies
+
+def calculate_climatology(data, temporal_basis):
+    """
+    calculates climatology based on aggregation information
+    -----------------------------------------------------
+    returns climatology
+    """
+            
+    clim_fun = get_clim_categorisation(temporal_basis)
+    
+    added_clim = data.apply_iris_fun(clim_fun, ctype = "adjustment",
+                                       coord="time", name="clim")
+
+    clim_agg_data = added_clim.apply_iris_fun("aggregated_by",
+                                              ctype = "method",
+                                              coords="clim",
+                                              aggregator = iris.analysis.MEAN)
+    
+    clim_agg_data.apply_iris_fun(change_long_name, ctype = "adjustment",
+                                 how = ["overwrite"],
+                                 text = "Climatology of " + 
+                                     list(set(
+                                         [d.long_name for d in data.get_all()]
+                                         ))[0])
+    
+    clim_agg_data.apply_iris_fun(copy_metadata, ctype = "elementwise",
+                                 other = data)
+    
+    return clim_agg_data
 
 class input_handler(object):
     """

@@ -11,7 +11,7 @@ import os
 from .utilities import set_metadata, checked_ref, data_correlation
 from .utilities import calculate_anomalies, calculate_correlation
 from .utilities import calculate_trend, corr_extract
-from .utilities import delete_aux_coords
+from .utilities import delete_aux_coords, calculate_climatology
 import numpy as np
 import pandas as pd
 
@@ -41,8 +41,6 @@ def glob_temp_mean_absdiff(data, **kwargs):
     """
     cubes = []
     
-    if len(data.get_ref()) != 1:
-        logger.error("There needs to be one and only one reference dataset")
     ref = glob_temp_mean(data.ref_only())
     ref = checked_ref(ref, num=1)
     nonref = glob_temp_mean(data.nonref_only())
@@ -92,8 +90,6 @@ def percentiles(data, **kwargs):
             logger.warning("no percentiles given (None), " +
                            "median (0.5) produced instead")
     
-    if len(data.get_ref()) != 1:
-        logger.error("There needs to be one and only one reference dataset")
     ref = checked_ref(data.get_ref(), num=1)
     
     nonref = data.get_nonref()
@@ -146,8 +142,9 @@ def trend(data, **kwargs):
     
     cubes = []
     
+    decadal = kwargs.pop("decadal", True)
     for cube in data.get_all():
-        cubes.append(calculate_trend(cube))
+        cubes.append(calculate_trend(cube, decadal = decadal))
         
     if pthreshold is not None:
         for c in cubes:
@@ -159,6 +156,30 @@ def trend(data, **kwargs):
     return cubes
 
 def anomalytrend(data, **kwargs):
+    """
+    produces pixelwise trends for anomalies
+    ---------------------------------------
+    returns a list of trend related cubes
+    """
+    
+    if "temporal_basis" not in kwargs.keys():
+        logger.error("option temporal_basis required for this diagnostic")
+    else:
+        temporal_basis = kwargs["temporal_basis"]
+        if len(temporal_basis) == 0:
+            temporal_basis = "month"
+            logger.warning("no temporal_basis given (None), " +
+                           "monthly climatology produced instead")
+            
+    anomalies = calculate_anomalies(data, temporal_basis)
+    
+    kwargs.update({"decadal": True})
+    
+    cubes = trend(anomalies, **kwargs)
+    
+    return cubes
+
+def climatologytrend(data, **kwargs):
     """
     produces pixelwise trends for climatologies
     -------------------------------------------
@@ -174,24 +195,24 @@ def anomalytrend(data, **kwargs):
             logger.warning("no temporal_basis given (None), " +
                            "monthly climatology produced instead")
             
-    anomalies = calculate_anomalies(data, temporal_basis)
+    climatology = calculate_climatology(data, temporal_basis)
     
-    cubes = trend(anomalies, **kwargs)
+    kwargs.update({"decadal": False})
+    
+    cubes = trend(climatology, **kwargs)
     
     return cubes
 
 def correlation(data, **kwargs):
     """
     produces pixelwise correlations
-    -------------------------
+    -------------------------------
     returns a list of correlation related cubes
     """
     
     pthreshold = kwargs.pop("pthreshold", None)
     
-    if len(data.get_ref()) != 1:
-        logger.error("There needs to be one and only one reference dataset")
-    ref = data.get_ref()[0]
+    ref = checked_ref(data.get_ref(), num=1)
     
     cubes = []
     
@@ -209,8 +230,8 @@ def correlation(data, **kwargs):
 
 def anomalycorrelation(data, **kwargs):
     """
-    produces pixelwise correlations for climatologies
-    -------------------------------------------
+    produces pixelwise correlations for anomalies
+    ---------------------------------------------
     returns a list of correlation related cubes
     """
     
@@ -226,5 +247,27 @@ def anomalycorrelation(data, **kwargs):
     anomalies = calculate_anomalies(data, temporal_basis)
     
     cubes = correlation(anomalies, **kwargs)
+    
+    return cubes
+
+def climatologycorrelation(data, **kwargs):
+    """
+    produces pixelwise correlations for climatologies
+    -------------------------------------------------
+    returns a list of correlation related cubes
+    """
+    
+    if "temporal_basis" not in kwargs.keys():
+        logger.error("option temporal_basis required for this diagnostic")
+    else:
+        temporal_basis = kwargs["temporal_basis"]
+        if len(temporal_basis) == 0:
+            temporal_basis = "month"
+            logger.warning("no temporal_basis given (None), " +
+                           "monthly climatology produced instead")
+    
+    climatology = calculate_climatology(data, temporal_basis)
+    
+    cubes = correlation(climatology, **kwargs)
     
     return cubes

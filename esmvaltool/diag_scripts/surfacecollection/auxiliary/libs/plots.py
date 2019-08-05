@@ -197,7 +197,7 @@ def glob_temp_mean_reldiff(data, **kwargs):
     numcols = 10
     figsize = (10,5)
     xpos_add_txt = [.05,.80]
-    extend = None
+    extend = "neither"
     
     # adjust min and max values
     if "vminmax" in kwargs:
@@ -448,6 +448,16 @@ def anomalytrend(data, **kwargs):
     trend(data, **kwargs)
     return
 
+def climatologytrend(data, **kwargs):
+    """
+    produces trend map, restricted to threshold or with additional p-values
+    -----------------------------------------------------------------------
+    deligates figures
+    """
+
+    trend(data, **kwargs)
+    return
+
 def __standard_trend_plot__(data, **kwargs):
     """
     produces trend map with additional p-values
@@ -458,6 +468,7 @@ def __standard_trend_plot__(data, **kwargs):
     numcols = 11
     figsize = (14,5)
     xpos_add_txt = [.02,.48,.52,.98]
+    extend = 'neither'
     
     # adjust min and max values
     if "vminmax" in kwargs:
@@ -466,7 +477,6 @@ def __standard_trend_plot__(data, **kwargs):
             vmin = None
             vmax = None
             ticks = None
-            extend = None
         else:
             vmin = np.nanmin(vminmax)
             vmax = np.nanmax(vminmax)
@@ -476,7 +486,6 @@ def __standard_trend_plot__(data, **kwargs):
         vmin = None
         vmax = None
         ticks = None
-        extend = None
         
     # check for format
     fformat = kwargs.pop("fformat", "pdf")
@@ -537,6 +546,7 @@ def __threshold_trend_plot__(data, **kwargs):
     numcols = 11
     figsize = (10,5)
     xpos_add_txt = [.05,.80]
+    extend = 'neither'
     
     # adjust min and max values
     if "vminmax" in kwargs:
@@ -549,6 +559,7 @@ def __threshold_trend_plot__(data, **kwargs):
             vmin = np.nanmin(vminmax)
             vmax = np.nanmax(vminmax)
             ticks = np.linspace(vmin, vmax, num=numcols)
+            extend = "both"
     else: 
         vmin = None
         vmax = None
@@ -577,7 +588,7 @@ def __threshold_trend_plot__(data, **kwargs):
     __plot_map__(data, gs[0,0], vmin=vmin, vmax=vmax, **kwargs)
     fig.text(xpos_add_txt[0], .05, mst, ha='left', fontsize=8)
     fig.text(xpos_add_txt[1], .05, file, ha='right', fontsize=8)
-    plt.colorbar(ticks=ticks)
+    plt.colorbar(ticks = ticks, extend = extend)
     plt.title(textwrap.fill("{} [{}] (p-values <= {:.2f})".format(data.long_name,
               data.units, data.attributes["pthreshold"]), 80),
               pad=10, fontsize=12)
@@ -612,6 +623,16 @@ def anomalycorrelation(data, **kwargs):
     correlation(data, **kwargs)
     return
 
+def climatologycorrelation(data, **kwargs):
+    """
+    produces correlation map, restricted to threshold or with add. p-values
+    -----------------------------------------------------------------------
+    deligates figures
+    """
+
+    correlation(data, **kwargs)
+    return
+
 def __standard_correlation_plot__(data, **kwargs):
     """
     produces correlation map with additional p-values
@@ -630,17 +651,14 @@ def __standard_correlation_plot__(data, **kwargs):
             vmin = None
             vmax = None
             ticks = None
-            extend = None
         else:
             vmin = np.nanmin(vminmax)
             vmax = np.nanmax(vminmax)
             ticks = np.linspace(vmin, vmax, num=numcols)
-            extend = "both"
     else: 
         vmin = None
         vmax = None
         ticks = None
-        extend = None
         
     # check for format
     fformat = kwargs.pop("fformat", "pdf")
@@ -649,8 +667,9 @@ def __standard_correlation_plot__(data, **kwargs):
     plotdir = kwargs.pop("plotdir", ".")
         
         
-    file = data["correlation"].metadata.attributes["source_file"].split(os.sep)[-1]
-        
+    files = get_filenames(
+            data["correlation"].metadata.attributes["source_file"])          
+    
     # adjust colorbar
     if "cmap" in kwargs:
         kwargs["cmap"] = cmap_switch(kwargs["cmap"], numcols)
@@ -671,7 +690,7 @@ def __standard_correlation_plot__(data, **kwargs):
     __plot_map__(data["correlation"], gs[1,0], vmin=vmin, vmax=vmax, **kwargs)
     cax1 = plt.subplot(gs[3,0])
     plt.colorbar(cax = cax1, ticks = ticks,
-                 orientation="horizontal", extend = extend)
+                 orientation="horizontal")
     kwargs["cmap"] = cm.get_cmap('Greens_r', 10)
     __plot_map__(data["p-value"], gs[1,1], vmin=0, vmax=1, **kwargs)
     cax2 = plt.subplot(gs[3,1])
@@ -679,14 +698,16 @@ def __standard_correlation_plot__(data, **kwargs):
     fig.text(xpos_add_txt[0], .15, mst, ha='left', fontsize=8)
     fig.text(xpos_add_txt[1], .15, "correlation", ha='right', fontsize=10)
     fig.text(xpos_add_txt[2], .15, "p-value", ha='left', fontsize=10)
-    fig.text(xpos_add_txt[3], .15, file, ha='right', fontsize=8)
+    fig.text(xpos_add_txt[3], .15, "\n".join(files), ha='right', fontsize=8)
     
     
     plt.tight_layout()
     
     fig.savefig(fname = ("{}" + os.sep +
                          "glob_correlation_{}.{}").format(plotdir,
-                                         file.split(".")[0], fformat))
+                                          clean_filename("_".join(
+                                                         f.split(".")[0] for
+                                                 f in files)), fformat))
     
     return 
     return
@@ -725,7 +746,7 @@ def __threshold_correlation_plot__(data, **kwargs):
     plotdir = kwargs.pop("plotdir",".")
         
         
-    file = data.metadata.attributes["source_file"].split(os.sep)[-1]
+    files = get_filenames(data.metadata.attributes["source_file"])
         
     # adjust colorbar
     if "cmap" in kwargs:
@@ -740,13 +761,16 @@ def __threshold_correlation_plot__(data, **kwargs):
     gs = gridspec.GridSpec(1, 1)
     __plot_map__(data, gs[0,0], vmin=vmin, vmax=vmax, **kwargs)
     fig.text(xpos_add_txt[0], .05, mst, ha='left', fontsize=8)
-    fig.text(xpos_add_txt[1], .05, file, ha='right', fontsize=8)
+    fig.text(xpos_add_txt[1], .05, "\n".join(files), ha='right', fontsize=8)
     plt.colorbar(ticks=ticks)
-    plt.title(textwrap.fill("{} [{}] (p-values <= {:.2f})".format(data.long_name,
-              data.units, data.attributes["pthreshold"]), 80),
+    plt.title(textwrap.fill("{} [{}] (p-values <= {:.2f})".format(
+              data.long_name, data.units,
+              data.attributes["pthreshold"]), 80),
               pad=10, fontsize=12)
     plt.tight_layout()
     fig.savefig(fname = ("{}" + os.sep +
                          "glob_correlation_thresh_{}.{}").format(plotdir,
-                                         file.split(".")[0], fformat))
+                                         clean_filename("_".join(
+                                                         f.split(".")[0] for
+                                                 f in files)), fformat))
     return
