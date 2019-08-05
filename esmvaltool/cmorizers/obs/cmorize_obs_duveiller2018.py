@@ -35,7 +35,7 @@ from warnings import catch_warnings, filterwarnings
 import cf_units
 import iris
 import numpy as np
-from dask import array as da
+
 
 from .utilities import (fix_coords, fix_var_metadata, save_variable,
                         set_global_atts)
@@ -83,7 +83,7 @@ def fix_time_coord_duveiller2018(cube):
     cube.coord('time').units = cf_units.Unit(custom_time_units)
 
 
-def extract_variable(var_info, raw_info, out_dir, attrs, cfg):
+def extract_variable(var_info, raw_info, out_dir, attrs):
     """Extract to all vars."""
     var = var_info.short_name
     with catch_warnings():
@@ -98,8 +98,7 @@ def extract_variable(var_info, raw_info, out_dir, attrs, cfg):
     for cube in cubes:
         if cube.var_name == rawvar:
             # Extracting a certain vegetation transition code
-            # Read iTr parameter from the cfg
-            itr = raw_info['iTr'] #cfg['parameters']['iTr']
+            itr = raw_info['iTr']
             itr_index = np.where(
                 cube.coord('Vegetation transition code').points ==
                 itr)[0][0]
@@ -140,7 +139,7 @@ def cmorization(in_dir, out_dir, cfg, _):
         logger.info("CMORizing var %s from file %s", var, inpfile)
         var_info = cmor_table.get_variable(vals['mip'], var)
         print("var = ", var)
-        raw_info = {'name': vals['raw'], 'file': inpfile, 'iTr' : vals['iTr']}
+        raw_info = {'name': vals['raw'], 'file': inpfile, 'iTr': vals['iTr']}
         glob_attrs['mip'] = vals['mip']
         with catch_warnings():
             filterwarnings(
@@ -150,4 +149,4 @@ def cmorization(in_dir, out_dir, cfg, _):
                 category=UserWarning,
                 module='iris',
             )
-            extract_variable(var_info, raw_info, out_dir, glob_attrs, cfg)
+            extract_variable(var_info, raw_info, out_dir, glob_attrs)
