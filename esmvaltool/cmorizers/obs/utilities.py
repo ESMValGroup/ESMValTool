@@ -134,7 +134,8 @@ def flip_dim_coord(cube, coord_name):
     coord = cube.coord(coord_name, dim_coords=True)
     coord_idx = cube.coord_dims(coord)[0]
     coord.points = np.flip(coord.points)
-    coord.bounds = np.flip(coord.bounds, axis=0)
+    if coord.bounds is not None:
+        coord.bounds = np.flip(coord.bounds, axis=0)
     cube.data = da.flip(cube.core_data(), axis=coord_idx)
 
 
