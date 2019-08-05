@@ -21,8 +21,3 @@ variables:
     # input file name
     file: albedo_IGBPgen.nc
     iTr: 13
-
-# This script has one parameter
-parameters:
-  iTr: 13 # The vegetation cover transition code (variable name iTr on the original file) to extract, see data source for explanation.
-
