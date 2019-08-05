@@ -14,12 +14,13 @@ attributes:
 
 # Variables to cmorize
 variables:
-  albDiff:
+  albDiffiTr13:
     mip: Amon
     # Match CMOR variables with input file one
     raw: Delta_albedo
     # input file name
     file: albedo_IGBPgen.nc
+    iTr: 13
 
 # This script has one parameter
 parameters:

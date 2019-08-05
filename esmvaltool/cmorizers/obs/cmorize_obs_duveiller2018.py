@@ -99,9 +99,9 @@ def extract_variable(var_info, raw_info, out_dir, attrs, cfg):
         if cube.var_name == rawvar:
             # Extracting a certain vegetation transition code
             # Read iTr parameter from the cfg
-            itr = cfg['parameters']['iTr']
+            itr = raw_info['iTr'] #cfg['parameters']['iTr']
             itr_index = np.where(
-                cube.coords('Vegetation transition code')[0].points ==
+                cube.coord('Vegetation transition code').points ==
                 itr)[0][0]
             cube = cube[itr_index, :, :, :]
             # Add the vegetation transition code as an attribute
@@ -140,7 +140,7 @@ def cmorization(in_dir, out_dir, cfg, _):
         logger.info("CMORizing var %s from file %s", var, inpfile)
         var_info = cmor_table.get_variable(vals['mip'], var)
         print("var = ", var)
-        raw_info = {'name': vals['raw'], 'file': inpfile}
+        raw_info = {'name': vals['raw'], 'file': inpfile, 'iTr' : vals['iTr']}
         glob_attrs['mip'] = vals['mip']
         with catch_warnings():
             filterwarnings(
