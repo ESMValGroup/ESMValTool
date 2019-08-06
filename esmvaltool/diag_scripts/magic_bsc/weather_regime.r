@@ -297,8 +297,9 @@ filencdf1 <-   paste0(work_dir, "/", var0, "_", frequency, "_WR_ref_",
 ArrayToNetCDF(variable_list, filencdf1) #nolint
    # Set provenance for output files
     xprov <- list(ancestors = list(fullpath_filenames[reference_files]),
-                  authors = list("torr_ve", "fuck_ne","cort_ni", "guem_vi",
-                                 "hunt_al", "manu_ni"),
+                  authors = list("torralba_veronica", "fuckar_neven",
+		                 "cortesi_nicola", "guemas_virginie",
+				 "hunter_alasdair", "manubens_nicolau"),
                   projects = list("c3s-magic"),
                   caption = "Reference modes of variability",
                   statistics = list("eof"),
@@ -506,8 +507,9 @@ ArrayToNetCDF(variable_list, filencdf2) #nolint
    # Set provenance for output files
     xprov <- list(ancestors = list(filencdf1,
                               fullpath_filenames[projection_files]),
-                  authors = list("torr_ve", "fuck_ne","cort_ni", "guem_vi",
-                                 "hunt_al", "manu_ni"),
+                  authors = list("torralba_veronica", "fuckar_neven",
+		                 "cortesi_nicola", "guemas_virginie",
+				 "hunter_alasdair", "manubens_nicolau"),
                   projects = list("c3s-magic"),
                   caption = "Predicted modes of variability",
                   statistics = list("other"),
@@ -594,8 +596,9 @@ dev.off()
 
     # Set provenance for output files
     xprov <- list(ancestors = list(filencdf1, filencdf2),
-                  authors = list("torr_ve", "fuck_ne","cort_ni", "guem_vi",
-                                 "hunt_al", "manu_ni"),
+                  authors = list("torralba_veronica", "fuckar_neven",
+		                 "cortesi_nicola", "guemas_virginie",
+				 "hunter_alasdair", "manubens_nicolau"),
                   projects = list("c3s-magic"),
                   caption = title,
                   statistics = list("rmsd"),

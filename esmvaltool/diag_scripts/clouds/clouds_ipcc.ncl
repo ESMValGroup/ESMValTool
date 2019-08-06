@@ -60,7 +60,7 @@
 ;   20160901-lauer_axel: added regridding option 1 deg x 1 deg
 ;   20151027-lauer_axel: moved call to 'write_references' to the beginning
 ;                        of the code
-;   20150428A-lauer_axel: written.
+;   20150428-lauer_axel: written.
 ;
 ; ############################################################################
 
