@@ -43,6 +43,7 @@ def _get_filepath(in_dir, basename):
     raise OSError(
         f"Cannot find input file matching pattern  '{basename}' in '{in_dir}'")
 
+
 def _extract_variable(cmor_info, attrs, filepath, out_dir):
     """Extract variable."""
     var = cmor_info.short_name
@@ -62,7 +63,10 @@ def _extract_variable(cmor_info, attrs, filepath, out_dir):
         cube = utils.set_global_atts(cube, attrs)
         cube = utils.flip_dim_coord(cube, 'latitude')
         logger.info("Saving file")
-        utils.save_variable(cube, var, out_dir, attrs,
+        utils.save_variable(cube,
+                            var,
+                            out_dir,
+                            attrs,
                             unlimited_dimensions=['time'])
 
 
