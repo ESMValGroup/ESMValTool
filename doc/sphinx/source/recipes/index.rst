@@ -6,6 +6,7 @@ Recipes
 .. toctree::
    :maxdepth: 1
 
+   recipe_arctic_ocean
    recipe_autoassess_stratosphere
    recipe_capacity_factor
    recipe_clouds
