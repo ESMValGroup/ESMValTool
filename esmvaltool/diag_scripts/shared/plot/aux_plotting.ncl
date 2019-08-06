@@ -349,12 +349,12 @@ begin
     end if
     ia = 0
     ie = nvert * nhori - 1
-    ie = min((/dimsizes(plots) - 1, ie/))  ; a_lauer_axel: added for cloud diag
+    ie = min((/dimsizes(plots) - 1, ie/))
     do ipage = 0, npages - 1
       gsn_panel(wks, plots(ia:ie), (/nvert, nhori/), pres)
       ia = ie + 1
       ie = ia + (nvert * nhori) - 1
-      ie = min((/dimsizes(plots) - 1, ie/))  ; a_lauer_axel
+      ie = min((/dimsizes(plots) - 1, ie/))
     end do
   else
     pres@gsnPaperOrientation   = "auto"
