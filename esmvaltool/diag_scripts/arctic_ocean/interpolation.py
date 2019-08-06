@@ -7,7 +7,7 @@ import pyresample
 from cartopy.util import add_cyclic_point
 from netCDF4 import Dataset
 
-from esmvaltool.diag_scripts.ocean3d.getdata import load_meta
+from esmvaltool.diag_scripts.arctic_ocean.getdata import load_meta
 
 logger = logging.getLogger(os.path.basename(__file__))
 

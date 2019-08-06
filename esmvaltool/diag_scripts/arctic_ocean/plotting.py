@@ -12,10 +12,10 @@ import numpy as np
 import pandas as pd
 from netCDF4 import Dataset
 
-from esmvaltool.diag_scripts.ocean3d.getdata import load_meta, transect_points
-from esmvaltool.diag_scripts.ocean3d.interpolation import (closest_depth,
+from esmvaltool.diag_scripts.arctic_ocean.getdata import load_meta, transect_points
+from esmvaltool.diag_scripts.arctic_ocean.interpolation import (closest_depth,
                                                            interpolate_esmf)
-from esmvaltool.diag_scripts.ocean3d.utils import (dens_back, genfilename,
+from esmvaltool.diag_scripts.arctic_ocean.utils import (dens_back, genfilename,
                                                    point_distance)
 
 logger = logging.getLogger(os.path.basename(__file__))

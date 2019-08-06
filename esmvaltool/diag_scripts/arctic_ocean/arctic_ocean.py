@@ -10,13 +10,13 @@ import matplotlib as mpl
 from matplotlib import cm
 import numpy as np
 
-from esmvaltool.diag_scripts.ocean3d.getdata import (aw_core, hofm_data,
+from esmvaltool.diag_scripts.arctic_ocean.getdata import (aw_core, hofm_data,
                                                      transect_data,
                                                      tsplot_data)
-from esmvaltool.diag_scripts.ocean3d.plotting import (
+from esmvaltool.diag_scripts.arctic_ocean.plotting import (
     hofm_plot, plot2d_bias, plot2d_original_grid, plot_aw_core_stat,
     plot_profile, transect_map, transect_plot, tsplot_plot)
-from esmvaltool.diag_scripts.ocean3d.utils import (find_observations_name,
+from esmvaltool.diag_scripts.arctic_ocean.utils import (find_observations_name,
                                                    get_clim_model_filenames,
                                                    get_cmap, get_fx_filenames,
                                                    timmean)
