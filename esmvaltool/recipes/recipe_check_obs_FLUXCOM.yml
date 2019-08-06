@@ -9,13 +9,6 @@ documentation:
   authors:
     - swam_ra
 
-preprocessors:
-  nopp:
-    extract_levels: false
-    regrid: false
-    mask_fillvalues: false
-    multi_model_statistics: false
-
 diagnostics:
 
   FLUXCOM-GPP-ANN:
