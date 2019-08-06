@@ -1759,7 +1759,7 @@ procedure xy_line_anom(wks[1],
 ; Caveats
 ;
 ; Modification history
-;    20160822-bock_li: written
+;    20160822-bock_lisa: written
 ;
 
 local funcname, scriptname, verbosity, res, res_in, res_stddev, source, \
