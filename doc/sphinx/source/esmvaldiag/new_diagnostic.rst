@@ -104,7 +104,8 @@ An example preprocessor metadata.yml file could look like this:
 .. code-block:: yaml
 
   ? /path/to/recipe_output/preproc/diagnostic_name/pr/CMIP5_GFDL-ESM2G_Amon_historical_r1i1p1_T2Ms_pr_2000-2002.nc
-  : cmor_table: CMIP5
+  : alias: GFDL-ESM2G
+    cmor_table: CMIP5
     dataset: GFDL-ESM2G
     diagnostic: diagnostic_name
     end_year: 2002
@@ -126,7 +127,8 @@ An example preprocessor metadata.yml file could look like this:
     units: kg m-2 s-1
     variable_group: pr
   ? /path/to/recipe_output/preproc/diagnostic_name/pr/CMIP5_MPI-ESM-LR_Amon_historical_r1i1p1_T2Ms_pr_2000-2002.nc
-  : cmor_table: CMIP5
+  : alias: MPI-ESM-LR
+    cmor_table: CMIP5
     dataset: MPI-ESM-LR
     diagnostic: diagnostic_name
     end_year: 2002
