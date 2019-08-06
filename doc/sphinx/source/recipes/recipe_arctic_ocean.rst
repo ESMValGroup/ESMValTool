@@ -233,9 +233,9 @@ Available diagnostics
 
 The following python modules are included in the diagnostics package:
 
+* arctic_ocean.py : Reads settings from the recipe and call functions to do analysis and plots.
 * getdata.py : Deals with data preparation.
 * interpolation.py	: Include horizontal and vertical interpolation functions specific for ocean models.
-* ocean3d.py : Reads settings from the recipe and call functions to do analysis and plots.
 * plotting.py : Ocean specific plotting functions
 * regions.py : Contains code to select specific regions, and definition of the regions themselves.
 * utils.py : Helpful utilites.
