@@ -268,8 +268,8 @@ for (j in 1 : 4) {
    # Set provenance for output files
      xprov <- list(ancestors = list(projection_filenames, reference_filenames),
                   authors = list("hunter_alasdair",
-		                 "manubens_nicolau",
-				 "caron_louis-philippe"),
+                                 "manubens_nicolau",
+                                 "caron_louis-philippe"),
                   projects = list("c3s-magic"),
                   caption = title,
                   statistics = list("other"),
@@ -321,8 +321,8 @@ nc_close(file)
 
 xprov <- list(ancestors = list(fullpath_filenames),
                   authors = list("hunter_alasdair",
-		                 "manubens_nicolau",
-				 "perez-zanon_nuria"),
+                                 "manubens_nicolau",
+                                 "perez-zanon_nuria"),
                   projects = list("c3s-magic"),
                   plot_file = paste0(plot_dir, "/", "CombinedIndices.png"),
                   caption = "Combined selection",
