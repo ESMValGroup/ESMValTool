@@ -100,6 +100,10 @@ authors:
     name: Cagnazzo, Chiara
     institute: CNR, Italy
     orcid: https://orcid.org/0000-0002-2054-0448
+  capistrano_vinicius:
+    name: Capistrano, Vinicius
+    institute: INPE, Brazil
+    orcid: https://orcid.org/0000-0001-8653-2312
   caron_louis-philippe:
     name: Caron, Louis-Philippe
     institute: BSC, Spain
@@ -183,7 +187,7 @@ authors:
   hassler_birgit:
     name: Hassler, Birgit
     institute: DLR, Germany
-    orcid: 
+    orcid: https://orcid.org/0000-0003-2724-709X
   hempelmann_nils:
     name: Hempelmann, Nils
     institute: IPSL, France
@@ -191,7 +195,7 @@ authors:
   hunter_alasdair:
     name: Hunter, Alasdair
     institute: BSC, Spain
-    orcid: 
+    orcid: https://orcid.org/0000-0001-8365-3709
   hutjes_ronald:
     name: Hutjes, Ronald
     institute: Univ. of Wageningen, NL
@@ -207,23 +211,19 @@ authors:
   kindermann_stephan:
     name: Kindermann, Stephan
     institute: DKRZ, Germany
-    orcid: 
+    orcid: https://orcid.org/0000-0001-9335-1093
   krasting_john:
     name: Krasting, John
     institute: NOAA, USA
-    orcid: 
-  kunert_dominik:
-    name: Kunert, Dominik
-    institute: DLR, Germany
-    orcid: 
+    orcid: https://orcid.org/0000-0002-4650-9844
   lembo_valerio:
     name: Lembo, Valerio
-    institute: CEN, University of Hamburg
-    orcid: 
+    institute: CEN, University of Hamburg, Germany
+    orcid: https://orcid.org/0000-0001-6085-5914
   levine_richard:
     name: Levine, Richard
     institute: MetOffice, UK
-    orcid: 
+    orcid: https://orcid.org/0000-0003-1210-0415
   little_bill:
     name: Little, Bill
     institute: MetOffice, UK
@@ -235,23 +235,23 @@ authors:
   lorenz_ruth:
     name: Lorenz, Ruth
     institute: ETH Zurich, Switzerland
-    orcid: 
+    orcid: https://orcid.org/0000-0002-3986-1268
   lovato_tomas:
     name: Lovato, Tomas
     institute: CMCC, IT
-    orcid: 
+    orcid: https://orcid.org/0000-0002-5188-6767
   makela_jarmo:
     name: Makela, Jarmo
     institute: FMI, Finland
     orcid: 
   maloney_eric:
     name: Maloney, Eric
-    institute: Colorado State University
-    orcid: 
+    institute: Colorado State University, USA
+    orcid: https://orcid.org/0000-0002-2660-2611
   manubens_nicolau:
     name: Manubens, Nicolau
     institute: BSC, Spain
-    orcid: 
+    orcid: https://orcid.org/0000-0002-0114-508X
   mason_erik:
     name: Mason, Erik
     institute: NOAA, USA
@@ -262,36 +262,36 @@ authors:
     orcid: 
   massonnet_francois:
     name: Massonnet, Francois
-    institute: Spain
+    institute: Universite Catholique de Louvain, Belgium
     orcid: 
   martin_gill:
     name: Martin, Gill
     institute: MetOffice, UK
-    orcid: 
+    orcid: https://orcid.org/0000-0003-0851-6020
   mavilia_irene:
     name: Mavilia, Irene
     institute: ISAC-CNR, Bologna, Italy
-    orcid: 
+    orcid: https://orcid.org/0000-0002-4938-2906
   mello_felipe:
     name: Mello, Felipe
     institute: INPE, Brazil
-    orcid: 
+    orcid: https://orcid.org/0000-0002-8832-2869
   dalvi_mohit:
     name: Dalvi, Mohit
     institute: MetOffice, UK
-    orcid: 
+    orcid: https://orcid.org/0000-0003-1669-0811
   nikulin_grigory:
     name: Nikulin, Grigory
     institute: SMHI, Sweden
-    orcid: 
+    orcid: https://orcid.org/0000-0002-4226-8713
   nobre_paulo:
     name: Nobre, Paulo
     institute: INPE, Brazil
-    orcid: 
+    orcid: https://orcid.org/0000-0001-9061-4556
   gonzalez-reviriego_nube:
     name: Gonzalez-Reviriego, Nube
     institute: BSC, Spain
-    orcid: 
+    orcid: https://orcid.org/0000-0002-5919-6701
   oliveira_arildo:
     name: Oliveira, Arildo
     institute: INPE, Brazil
@@ -303,7 +303,7 @@ authors:
   phillips_adam:
     name: Phillips, Adam
     institute: NCAR, USA
-    orcid: 
+    orcid: https://orcid.org/0000-0003-4859-8585
   pugh_thomas:
     name: Pugh, Thomas
     institute: KIT, Germany
@@ -315,23 +315,19 @@ authors:
   ringer_mark:
     name: Ringer, Mark
     institute: MetOffice, UK
-    orcid: 
+    orcid: https://orcid.org/0000-0003-4014-2583
   rio_catherine:
     name: Rio, Catherine
     institute: IPSL, France
-    orcid: 
+    orcid: https://orcid.org/0000-0002-6590-7733
   roehrig_romain:
     name: Roehrig, Romain
     institute: MeteoFr, France
-    orcid: 
-  senftleben_daniel:
-    name: Senftleben, Daniel
-    institute: DLR, Germany
-    orcid: 
+    orcid: https://orcid.org/0000-0002-3903-3841
   serva_federico:
     name: Serva, Federico
     institute: CNR, Italy
-    orcid: 
+    orcid: https://orcid.org/0000-0002-7118-0817
   sommer_philipp:
     name: Sommer, Philipp
     institute: Univ. of Hamburg, Germany
@@ -339,18 +335,18 @@ authors:
   stacke_tobias:
     name: Stacke, Tobias
     institute: MPI-M, Germany
-    orcid: 
+    orcid: https://orcid.org/0000-0003-4637-5337
   sterl_andreas:
     name: Sterl, Andreas
     institute: KNMI, Netherlands
-    orcid: 
+    orcid: https://orcid.org/0000-0003-3457-0434
   swaminathan_ranjini:
     name: Swaminathan, Ranjini
     institute: University of Reading, UK
-    orcid: 
+    orcid: https://orcid.org/0000-0001-5853-2673
   teichmann_claas:
     name: Teichmann, Claas
-    institute: CSC2, Germany
+    institute: GERICS, Hamburg, Germany
     orcid: 
   torralba_veronica:
     name: Torralba, Veronica
@@ -363,15 +359,11 @@ authors:
   vanulft_bert:
     name: van Ulft, Bert
     institute: KNMI, Netherlands
-    orcid: 
-  vinicius_capistrano:
-    name: Vinicius, Capistrano
-    institute: INPE, Brazil
-    orcid: 
+    orcid: https://orcid.org/0000-0001-8653-2312
   walton_jeremy:
     name: Walton, Jeremy
     institute: MetOffice, UK
-    orcid: 
+    orcid: https://orcid.org/0000-0001-7372-178X
   wang_shiyu:
     name: Wang, Shiyu
     institute: SMHI, Sweden
@@ -379,7 +371,7 @@ authors:
   weigel_katja:
     name: Weigel, Katja
     institute: University of Bremen and DLR, Germany
-    orcid: 
+    orcid: https://orcid.org/0000-0001-6133-7801
   wenzel_sabrina:
     name: Wenzel, Sabrina
     institute: DLR, Germany
@@ -501,7 +493,11 @@ authors:
   kolax_michael:
     name: Kolax, Michael
     institute: SMHI, Sweden
-    orcid: 
+    orcid:
+  kunert_dominik:
+    name: Kunert, Dominik
+    institute: DLR, Germany
+    orcid:      
   loew_alexander:
     name: Loew, Alexander
     institute: LMU, Germany
@@ -517,6 +513,10 @@ authors:
   pascoe_stephen:
     name: Pascoe, Stephen
     institute: STFC, UK
+    orcid: 
+  senftleben_daniel:
+    name: Senftleben, Daniel
+    institute: DLR, Germany
     orcid: 
   stevens_mark:
     name: Stevens, Mark
