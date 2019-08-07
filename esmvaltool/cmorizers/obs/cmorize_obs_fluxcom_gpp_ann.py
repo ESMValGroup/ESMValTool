@@ -50,10 +50,10 @@ def _extract_variable(cmor_info, attrs, filepath, out_dir):
     logger.info("Var is %s", var)
     cubes = iris.load(filepath)
     for cube in cubes:
-        #convert data from gc/m2/day to kg/m2/s
+        # convert data from gc/m2/day to kg/m2/s
         cube.convert_units('kg m-2 s-1')
 
-        #The following two lines are needed for iris.util.guess_coord_axis
+        # The following two lines are needed for iris.util.guess_coord_axis
         cube.coord('lat').standard_name = 'latitude'
         cube.coord('lon').standard_name = 'longitude'
 
