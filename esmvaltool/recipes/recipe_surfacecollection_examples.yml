@@ -52,8 +52,8 @@ diagnostics:
         reference_dataset: IPSL-CM5A-MR
         derive: true
         force_derivation: false
-#        preprocessor: t63
-        preprocessor: regrid10
+        preprocessor: t63
+#        preprocessor: regrid10
         start_year: 1950
         end_year: 2005
     additional_datasets:
@@ -62,6 +62,11 @@ diagnostics:
       - {dataset: MRI-ESM1,  project: CMIP5,  mip: Lmon,  exp: historical,  ensemble: r1i1p1}
       #- {dataset: ESACCI-SOILMOISTURE, project: OBS, type: sat, version: L3S-SSMV-COMBINED, tier: 3}
     scripts:
+      ts:
+        script: surfacecollection/main_diag_selector.py
+        vminmax: [0.0, 0.5]
+        requests: [time_series]
+        subregions: [climes.shp]
 #      gtm:
 #        script: surfacecollection/main_diag_selector.py
 #        colormap: ['whitesmoke', 'lightblue', 'dodgerblue', 'mediumblue']
@@ -93,14 +98,8 @@ diagnostics:
 #        script: surfacecollection/main_diag_selector.py
 #        colormap: ['darkgoldenrod', 'whitesmoke', 'lightseagreen']
 #        requests: [anomalytrend]
-#        pthreshold: 0.1
+#        pthreshold: 0.05
 #        temporal_basis: month
-#        vminmax: [-0.005, +0.005]
-#      anomalytrends_day:
-#        script: surfacecollection/main_diag_selector.py
-#        colormap: ['darkgoldenrod', 'whitesmoke', 'lightseagreen']
-#        requests: [anomalytrend]
-#        temporal_basis: day
 #        vminmax: [-0.005, +0.005]
 #      climatologytrends_month:
 #        script: surfacecollection/main_diag_selector.py
@@ -119,20 +118,14 @@ diagnostics:
 #        script: surfacecollection/main_diag_selector.py
 #        colormap: ['darkgoldenrod', 'whitesmoke', 'lightseagreen']
 #        requests: [anomalycorrelation]
-#        pthreshold: 0.1
+#        pthreshold: 0.05
 #        temporal_basis: month
-#        vminmax: [-1, +1]
-#      anomalycorrelations_day:
-#        script: surfacecollection/main_diag_selector.py
-#        colormap: ['darkgoldenrod', 'whitesmoke', 'lightseagreen']
-#        requests: [anomalycorrelation]
-#        temporal_basis: day
 #        vminmax: [-1, +1]
 #      climatologycorrelations_month:
 #        script: surfacecollection/main_diag_selector.py
 #        colormap: ['darkgoldenrod', 'whitesmoke', 'lightseagreen']
 #        requests: [climatologycorrelation]
-#        pthreshold: 0.1
+#        pthreshold: 0.05
 #        temporal_basis: month
 #        vminmax: [-1, +1]
 

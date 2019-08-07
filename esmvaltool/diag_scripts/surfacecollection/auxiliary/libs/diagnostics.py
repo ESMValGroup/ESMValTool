@@ -10,13 +10,33 @@ import logging
 import os
 from .utilities import set_metadata, checked_ref, data_correlation
 from .utilities import calculate_anomalies, calculate_correlation
-from .utilities import calculate_trend, corr_extract
+from .utilities import calculate_trend, corr_extract, unify_cubes
 from .utilities import delete_aux_coords, calculate_climatology
 import numpy as np
 import pandas as pd
 
-
 logger = logging.getLogger(os.path.basename(__file__))
+
+def time_series(data, **kwargs):
+    """
+    produces spatially aggregated mean time series
+    ----------------------------------------------
+    returns a combined time series cube
+    """
+    cubes  = []
+        
+    for cube in data.get_all():
+        delete_aux_coords(cube)
+        cubes.append(cube.collapsed(["latitude", "longitude"],
+                                    iris.analysis.MEAN,
+                                    weights = 
+                                    iris.analysis.cartography.area_weights(
+                                            cube)))
+        
+    uni_cube = unify_cubes(cubes)
+    #TODO: include regional subsetting
+    
+    return uni_cube
 
 def glob_temp_mean(data, **kwargs):
     """

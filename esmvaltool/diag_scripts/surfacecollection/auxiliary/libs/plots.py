@@ -17,6 +17,7 @@ from matplotlib import cm
 import numpy as np
 import pandas as pd
 import textwrap
+import cf_units
 from .utilities import adjust_minmax, cmap_switch, mean_std_txt
 from .utilities import get_filenames, clean_filename
 import random
@@ -61,6 +62,99 @@ def simple_plot(data, **kwargs):
                                          randomString(), "png"))
     return
 
+def time_series(data, **kwargs):
+    """
+    produces time_series plots
+    --------------------------
+    produces the figure
+    """
+    
+    # predefined settings
+    figsize = (14,5)
+    
+    # check for format
+    fformat = kwargs.pop("fformat", "pdf")
+    
+    # check for plotdir
+    plotdir = kwargs.pop("plotdir", ".")
+    
+    fig = plt.figure(figsize=figsize)
+    gs = gridspec.GridSpec(2, 1,
+                           width_ratios=[1],
+                           height_ratios=[9, 1]
+                           )
+    
+    col = plt.get_cmap("jet", len(data.metadata.attributes["elements"]))
+    
+    files = []
+    
+    for indx, cube in enumerate(data.slices('unified_time')):
+        
+        ax=plt.subplot(gs[0,0])
+        
+        # Create a string label
+        cube_label = data.metadata.attributes["elements"][
+                cube.coord("element").points[0]].split(".")[0]
+        
+        files.append(cube_label)
+
+        # Plot the cube, and associate it with a label.
+        iplt.plot(cube, label=cube_label, color=col(indx))
+    
+    locs, labels = __time_label_and_loc__(cube.coord("unified_time"))
+        
+    plt.xticks(locs, labels, rotation=15)
+        
+    ax.set(xlim=[min(locs), max(locs)],
+           ylim=kwargs.pop("vminmax", [None, None]),
+           xlabel='Time',
+           ylabel=textwrap.fill("{} [{}]".format(cube.long_name,
+                   cube.units), 50),
+           title="Spatially averaged time series"
+           )
+        
+    # Add the legend
+    plt.legend(bbox_to_anchor=(0.95,0.05), loc="lower right",
+               bbox_transform=fig.transFigure, ncol=2)
+
+    # Put a grid on the plot.
+    plt.grid(True)
+
+    plt.tight_layout()
+    
+    fig.savefig(fname = ("{}" + os.sep +
+                         "time_series_{}.{}").format(plotdir,
+                                                 "_".join(files), fformat))
+    
+    return 
+
+def __time_label_and_loc__(time_coord):
+    """
+    produces labels and locators for time axis
+    ------------------------------------------
+    returns locations and labels
+    """
+    
+    locs = [tp for tp in time_coord.points if
+            np.isclose(tp % 365.2425, 0,
+                       atol=np.mean(
+                           np.diff(time_coord.points)))]
+            
+    while len(locs) > 7:
+        locs = [locs[lind] for (lind, _) in
+                enumerate(locs) if not lind % 2]
+        
+    locs = locs + [time_coord.points[-1]]
+    
+    labels = cf_units.num2date(locs,
+                           time_coord.units.name,
+                           time_coord.units.calendar)
+    for (idx, _) in enumerate(labels):
+        labels[idx] = labels[idx].strftime('%Y-%m-%d')
+        
+    locs = [l - 365.2425*50 for l in locs]
+        
+    return locs, labels
 
 def glob_temp_mean(data, **kwargs):
     """

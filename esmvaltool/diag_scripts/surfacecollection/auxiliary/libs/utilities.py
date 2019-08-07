@@ -555,6 +555,19 @@ def delete_aux_coords(cube):
             
     return
 
+def delete_scalar_coords(cube):
+    """
+    deletes all scalar coords from cube
+    --------------------------------
+    returns nothing (in place functions)
+    """
+
+    for ad in cube.coords():
+        if len(ad.points) == 1:
+            cube.remove_coord(ad)
+            
+    return
+
 def copy_metadata(cube, other):
     """
     copies the metadata from other into cube
@@ -626,6 +639,57 @@ def calculate_climatology(data, temporal_basis):
                                  other = data)
     
     return clim_agg_data
+
+def unify_cubes(list_of_cubes):
+    """
+    produces a ensemble based unification of the cubes
+    --------------------------------------------------
+    returns unified cube
+    """
+    element_list = []
+    
+    for el_ind, cube in enumerate(list_of_cubes):
+        delete_scalar_coords(cube)
+        element_list.append(get_filenames(
+                [cube.metadata.attributes.pop("source_file")])[0])
+        element = iris.coords.AuxCoord(el_ind,
+                                       long_name = "element", units='-')
+        cube.add_aux_coord(element)
+        
+    list_of_cubes = unify_time(list_of_cubes)
+    
+    element_cube = iris.cube.CubeList(list_of_cubes).merge_cube()
+    element_cube.metadata.attributes.update({"elements": element_list})
+    
+    return [element_cube]
+
+def unify_time(list_of_cubes):
+    """
+    produces a unification of the time coordinates of cubes
+    -------------------------------------------------------
+    returns unified cube
+    """
+    tcoords = [c.coord("time") for c in list_of_cubes]
+    
+    if len(list(set([len(t.points) for t in tcoords]))) == 1:
+        master_tcoord = tcoords[0]
+        master_tcoord.standard_name = None
+        master_tcoord.long_name = "unified_time"
+        for loc in list_of_cubes:
+            try:
+                loc.add_aux_coord(master_tcoord, data_dims=0)
+                #TODO: make sure that 0 is the right coordinate
+                iris.util.demote_dim_coord_to_aux_coord(loc, "time")
+                iris.util.promote_aux_coord_to_dim_coord(loc, "unified_time")
+                loc.remove_coord("time")
+            except ValueError: # this happens if dimension already available
+                pass
+    else:
+        ValueError("The time coordinates of " +
+                   "the cubes are not of equal length: {}".format(tcoords))
+    
+    return list_of_cubes
+
 
 class input_handler(object):
     """
@@ -917,32 +981,3 @@ class input_handler(object):
         hld = self.apply_iris_fun("has_lazy_data", "method")
         
         return hld
-        
-#    def realize_data(self):
-#        """
-#        realizes all iris cubes
-#        -----------------------
-#        returns nothing
-#        """
-#        
-#        cd = self.apply_iris_fun("core_data", "method")
-#        
-#        hld = self.has_lazy_data()
-#        
-#        def __check_before_compute__(core_data, has_lazy_data):
-#            """
-#            checks if objects each are lazy 
-#            ------------------------------
-#            returns nothing
-#            """
-#            
-#            if has_lazy_data:
-#                core_data.compute()
-#            
-#            return
-#        
-#        cd.apply_iris_fun(__check_before_compute__,
-#                          "elementwise",
-#                          other = hld)
-#        
-#        return
