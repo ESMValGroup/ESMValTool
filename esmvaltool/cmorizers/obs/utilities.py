@@ -139,6 +139,7 @@ def flip_dim_coord(cube, coord_name):
     cube.data = da.flip(cube.core_data(), axis=coord_idx)
     return cube
 
+
 def read_cmor_config(dataset):
     """Read the associated dataset-specific config file."""
     reg_path = os.path.join(os.path.dirname(__file__), 'cmor_config',
@@ -225,6 +226,7 @@ def set_global_atts(cube, attrs):
     glob_dict.update(attrs)
     cube.attributes = glob_dict
     return cube
+
 
 def var_name_constraint(var_name):
     """:mod:`iris.Constraint` using `var_name` of an :mod:`iris.cube.Cube`."""
