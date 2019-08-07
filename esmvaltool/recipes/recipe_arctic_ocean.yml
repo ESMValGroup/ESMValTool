@@ -66,7 +66,7 @@ diagnostics:
       - {dataset: PHC,        project: OBS,    tier: 2,    type: climatology,    version: 3,        start_year: 1800,  end_year: 1800}
     scripts:
       script1: &Global_Ocean_surface_map
-        script: ocean3d/ocean3d.py
+        script: arctic_ocean/arctic_ocean.py
         # Define if we calculate data for Hovmoeller diagrams.
         # This data are also needed for mean vertical profiles.
         hofm_data: True
