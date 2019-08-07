@@ -47,6 +47,8 @@ REQUIREMENTS = {
         'stratify',
         'xarray>=0.12',
         'xlsxwriter',
+        'cmocean',
+        'pyresample'
     ],
     # Test dependencies
     # Execute 'python setup.py test' to run tests
