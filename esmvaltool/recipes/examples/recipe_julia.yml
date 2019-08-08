@@ -28,5 +28,5 @@ diagnostics:
 
     scripts:
       main:
-        script: /home/jost/work/esmvaltool2/ESMValTool2/esmvaltool/diag_scripts/examples/diagnostic.jl
+        script: examples/diagnostic.jl
         parameter1:   1    # example parameter
