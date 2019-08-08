@@ -1,0 +1,32 @@
+# ESMValTool
+# recipe_julia.yml
+---
+documentation:
+  description: Recipe for example diagnostic written in Julia.
+  
+  authors: 
+    - hard_jo
+
+  maintainer:
+    - hard_jo
+
+datasets:
+  - {dataset: EC-EARTH, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1997, end_year: 1997}
+
+preprocessors:
+  preproc:
+    extract_levels: false
+
+diagnostics:
+  example:
+    description: Example diagnostic written in Julia
+    variables:
+      pr:
+        preprocessor: preproc
+        reference_dataset: "EC-EARTH"
+        mip: Amon
+
+    scripts:
+      main:
+        script: /home/jost/work/esmvaltool2/ESMValTool2/esmvaltool/diag_scripts/examples/diagnostic.jl
+        parameter1:   1    # example parameter
