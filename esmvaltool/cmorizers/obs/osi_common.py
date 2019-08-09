@@ -104,25 +104,10 @@ def extract_variable(var_infos, raw_info, out_dir, attrs, year, mips):
                 continue
             total_days = 366 if isleap(year) else 365
             if cube.coord('time').shape[0] < total_days:
-                add_day_of_year(cube, 'time')
-                cubes = CubeList(cube.slices_over('time'))
-                model_cube = cubes[0].copy()
-                model_cube.remove_coord('day_of_year')
-                for day_of_year in range(total_days):
-                    day_constraint = iris.Constraint(
-                        day_of_year=day_of_year + 1
-                    )
-                    if cubes.extract(day_constraint):
-                        continue
-                    nan_cube = _create_nan_cube(
-                        model_cube, day_of_year, month=False
-                    )
-                    add_day_of_year(nan_cube, 'time')
-                    cubes.append(nan_cube)
+                cubes = add_nan_timesteps(cube, total_days, cubes)
                 cube = cubes.merge_cube()
                 cube.remove_coord('day_of_year')
                 del cubes
-                del model_cube
 
         logger.debug(cube)
         fix_var_metadata(cube, var_info)
@@ -130,6 +115,26 @@ def extract_variable(var_infos, raw_info, out_dir, attrs, year, mips):
         set_global_atts(cube, attrs)
         save_variable(cube, var_info.short_name, out_dir, attrs)
     return cube
+
+
+def add_nan_timesteps(cube, total_days, cubes):
+    add_day_of_year(cube, 'time')
+    cubes = CubeList(cube.slices_over('time'))
+    model_cube = cubes[0].copy()
+    model_cube.remove_coord('day_of_year')
+    for day_of_year in range(total_days):
+        day_constraint = iris.Constraint(
+            day_of_year=day_of_year + 1
+        )
+        if cubes.extract(day_constraint):
+            continue
+        nan_cube = _create_nan_cube(
+            model_cube, day_of_year, month=False
+        )
+        add_day_of_year(nan_cube, 'time')
+        cubes.append(nan_cube)
+    del model_cube
+    return cubes
 
 
 def _create_nan_cube(model_cube, num, month):
