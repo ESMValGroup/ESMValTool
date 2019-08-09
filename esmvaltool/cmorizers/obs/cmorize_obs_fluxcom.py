@@ -11,9 +11,9 @@ Last access
 
 Download and processing instructions
     From the website, select FLUXCOM as the data choice and click download.
-    Two files will be displayed. One for Land Carbon Fluxes and one for 
-    Land Energy fluxes. The Land Carbon Flux file (RS + METEO) using 
-    CRUNCEP data file has several data files for different variables. 
+    Two files will be displayed. One for Land Carbon Fluxes and one for
+    Land Energy fluxes. The Land Carbon Flux file (RS + METEO) using
+    CRUNCEP data file has several data files for different variables.
     The data for GPP generated using the
     Artificial Neural Network Method will be in files with name:
     GPP.ANN.CRUNCEPv6.monthly.*.nc
