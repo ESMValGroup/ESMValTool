@@ -56,6 +56,7 @@ jobs:
             # to 4.7.11 (latest, buggy) but for some reason, only in this container
             # also the AssertionError() is a WIDESPREAD error and conda are doing diddlysquat
             # see eg https://github.com/conda/conda/issues/8831
+            conda install _libgcc_mutex > /logs/conda.txt 2>&1
             conda install -y conda=4.7.10 > /logs/conda.txt 2>&1
             conda -V > /logs/conda.txt 2>&1
             # conda update -y conda > /logs/conda.txt 2>&1
