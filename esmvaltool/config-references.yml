@@ -307,7 +307,7 @@ authors:
   serv_fe:
     name: Serva, Federico
     institute: CNR, Italy
-    email: federico.serva 'at' artov.isac.cnr.it
+    email: federico.serva 'at' artov.ismar.cnr.it
   somm_ph:
     name: Sommer, Philipp
     institute: Univ. of Hamburg, Germany
@@ -615,6 +615,7 @@ references:
   aura-tes: "Beer, R., IEEE Trans. Geosci. Rem. Sens., doi:10.1109/TGRS.2005.863716, 2006."
   ceres-syn1deg: "Wielicki et al., Bull. Amer. Meteor. Soc., doi: 10.1175/1520-0477(1996)077<0853:CATERE>2.0.CO;2, 1996."
   cru: "Harris, I. et al., Int. J. Climatol., 34, doi: 10.1002/joc.3711, 2014."
+  eppley-vgpm-modis: "Behrenfeld, M. J., & Falkowski, P. G. (1997). Photosynthetic rates derived from satellite-based chlorophyll concentration. Limnology and oceanography, 42(1), 1-20."
   era-interim: "Dee, D. P. et al., Q. J. Roy. Meteor. Soc., doi:10.1002/qj.828, 2011."
   esacci-aerosol: "Popp et al., ESA Aerosol Climate Change Initiative (ESA Aerosol_cci) data: AOD v4.21 via Centre for Environmental Data Analysis, 2016."
   esacci-cloud: "Stengel et al., Earth Syst. Sci. Data, doi:10.5194/essd-9-881-2017, 2017."
@@ -627,6 +628,7 @@ references:
   osi-409: "EUMETSAT Global sea ice concentration climate data records 1978-2015 (v1.2, 2015) doi: 10.15770/EUM_SAF_OSI_0001 and 10.15770/EUM_SAF_OSI_0005"
   osi-450: "EUMETSAT Global sea ice concentration climate data record 1979-2015 (v2.0, 2017). doi: 10.15770/EUM_SAF_OSI_0008"
   hadisst: "Rayner et al., J. Geophys. Res., doi:10.1029/2002JD002670, 2013."
+  lai3g: "Zhu et al., Remote Sens., 5, doi:10.3390/rs5020927, 2013."
   landflux-eval: "Mueller, B. et al., Hydrol. Earth Syst. Sci., 17, 3707-3720, doi:10.5194/hess-17-3707-2013, 2013."
   modis: "Not available."
   mte: "Jung et al., J. Geophys. Res., 116, doi:10.1029/2010JG001566, 2011."
