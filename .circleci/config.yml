@@ -57,10 +57,11 @@ jobs:
             # also the AssertionError() is a WIDESPREAD error and conda are doing diddlysquat
             # see eg https://github.com/conda/conda/issues/8831
             # no solution found atm so turning off conda update temporarily
+            # ESMValTool issue: 1241
             # conda install -y conda=4.7.11 > /logs/conda.txt 2>&1
             # conda -V > /logs/conda.txt 2>&1
             # conda update -y conda > /logs/conda.txt 2>&1
-            conda env update >> /logs/conda.txt 2>&1
+            # conda env update >> /logs/conda.txt 2>&1
             set +x; conda activate esmvaltool; set -x
             pip install . > /logs/install.txt 2>&1
             Rscript esmvaltool/install/R/setup.R > /logs/R_install.txt 2>&1
