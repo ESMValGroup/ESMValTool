@@ -58,11 +58,13 @@ jobs:
             # see eg https://github.com/conda/conda/issues/8831
             # no solution found atm so turning off conda update temporarily
             # ESMValTool issue: 1241
-            # conda install -y conda=4.7.11 > /logs/conda.txt 2>&1
-            # conda -V > /logs/conda.txt 2>&1
-            # conda update -y conda > /logs/conda.txt 2>&1
-            # conda env update >> /logs/conda.txt 2>&1
+            # update: conda update and env update work within an environment
+            conda create -y --name esmvaltool
             set +x; conda activate esmvaltool; set -x
+            conda install -y conda=4.7.11 > /logs/conda.txt 2>&1
+            conda -V > /logs/conda.txt 2>&1
+            conda update -y conda > /logs/conda.txt 2>&1
+            conda env update >> /logs/conda.txt 2>&1
             pip install . > /logs/install.txt 2>&1
             Rscript esmvaltool/install/R/setup.R > /logs/R_install.txt 2>&1
             julia esmvaltool/install/Julia/setup.jl > /logs/julia_install.txt 2>&1
@@ -206,6 +208,7 @@ jobs:
             ln -s $(pwd)/julia-*/bin/julia /usr/bin/julia
             conda update -n base -c defaults conda > /logs/conda.txt 2>&1
             conda update -y conda > /logs/conda.txt 2>&1
+            conda -V
             # Create and activate conda environment
             conda create -y --name esmvaltool
             set +x; conda activate esmvaltool; set -x
