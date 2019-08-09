@@ -61,8 +61,6 @@ jobs:
             # update: conda update and env update work within an environment
             conda create -y --name esmvaltool
             set +x; conda activate esmvaltool; set -x
-            conda install -y conda=4.7.11 > /logs/conda.txt 2>&1
-            conda -V > /logs/conda.txt 2>&1
             conda update -y conda > /logs/conda.txt 2>&1
             conda env update >> /logs/conda.txt 2>&1
             pip install . > /logs/install.txt 2>&1
