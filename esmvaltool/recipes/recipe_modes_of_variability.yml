@@ -24,43 +24,33 @@ documentation:
     - fuckar
 
 datasets:
-  #- {dataset: IPSL-CM5A-MR, project: CMIP5,  start_year: 1961,  end_year: 1990, ensemble: r1i1p1, exp: historical, type: exp}
-  #- {dataset: IPSL-CM5A-MR, project: CMIP5,  start_year: 2006,  end_year: 2026, ensemble: r1i1p1, exp: rcp85, type: exp}
-  - {dataset: bcc-csm1-1, project: CMIP5, start_year: 1971, end_year: 2000, ensemble: r1i1p1, exp: historical, type: exp}
-  - {dataset: bcc-csm1-1, project: CMIP5, start_year: 2020, end_year: 2050, ensemble: r1i1p1, exp: rcp85, type: exp}
+  - {dataset: CNRM-CM5, project: CMIP5, start_year: 1971, end_year: 2000, ensemble: r1i1p1, exp: historical}
+  - {dataset: CNRM-CM5, project: CMIP5, start_year: 2020, end_year: 2075, ensemble: r1i1p1, exp: rcp85}
 
 preprocessors:
   preproc:
-    regrid:
-      target_grid: bcc-csm1-1
-      scheme: linear
-    mask_fillvalues:
-      threshold_fraction: 0.95
     extract_region:
       start_longitude: 0
       end_longitude: 360
-      start_latitude: 30
+      start_latitude: 50
       end_latitude: 90
-
+    extract_levels:
+      levels: 50000
+      scheme: nearest
 diagnostics:
   weather_regime:
     description: Compute modes of variability.
     variables:
-      psl:
+      zg:
         preprocessor: preproc
         mip: Amon
     scripts:
       main:
         script: magic_bsc/weather_regime.r
-        region: North-Atlantic # North-Atlantic or Polar
-
-        start_historical: "1971-01-01"
-        end_historical: "2000-12-31"
-        start_projection: "2020-01-01"
-        end_projection: "2050-12-31"
+        plot_type: polar  # rectangular or polar
 
         ncenters: 3
-        detrend_order: 2
-        cluster_method: "kmeans" # select hclust or kmeans
-        EOFS: true
-        frequency: 'JAN' # Select a month (format: JAN, FEB, ...) or should work with season also but not jet format: JJA, SON, MAM, DJF
+        detrend_order: 2  # 0, 1 or 2 for daily data
+        cluster_method: "kmeans"  # select hclust or kmeans
+        EOFS: false
+        frequency: 'SON'  # Select a month (format: JAN, FEB, ...) or season (JJA, SON, MAM(only monthly), DJF)

@@ -31,6 +31,14 @@ diagnostics:
       - {dataset: CRU, project: OBS, tier: 2, type: reanaly, version: TS4.02, start_year: 1901, end_year: 2017}
     scripts: null
 
+  Eppley-VGPM-MODIS:
+    description: Eppley-VGPM-MODIS
+    variables:
+      intpp:
+        mip: Omon
+    additional_datasets:
+      - {dataset: Eppley-VGPM-MODIS, project: OBS, tier: 2, type: sat, version: R2018, start_year: 2003, end_year: 2018}
+    scripts: null
 
   ESACCI-AEROSOL:
     description: ESACCI-AEROSOL
@@ -568,6 +576,28 @@ diagnostics:
         mip: Omon
     additional_datasets:
       - {dataset: ERA-Interim, project: OBS, tier: 3, type: reanaly, version: 1, start_year: 1979, end_year: 2018}
+    scripts: null
+
+
+  LAI3g:
+    description: LAI3g
+    variables:
+      lai:
+        mip: Lmon
+    additional_datasets:
+      - {dataset: LAI3g, project: OBS, tier: 3, type: reanaly, version: 1_regridded, start_year: 1981, end_year: 2018}
+    scripts: null
+
+
+  LandFlux-EVAL:
+    description: LandFlux-EVAL
+    variables:
+      et:
+        mip: Lmon
+      etStderr:
+        mip: Lmon
+    additional_datasets:
+      - {dataset: LandFlux-EVAL, project: OBS, tier: 3, type: reanaly, version: Oct13, start_year: 1989, end_year: 2005}
     scripts: null
 
 

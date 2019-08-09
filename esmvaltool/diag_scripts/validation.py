@@ -20,7 +20,7 @@ import numpy as np
 from esmvaltool.diag_scripts.shared import (apply_supermeans,
                                             get_control_exper_obs,
                                             group_metadata, run_diagnostic)
-from esmvaltool.preprocessor import extract_region, extract_season
+from esmvalcore.preprocessor import extract_region, extract_season
 
 logger = logging.getLogger(os.path.basename(__file__))
 

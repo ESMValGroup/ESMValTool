@@ -2,10 +2,12 @@
 name: esmvaltool
 channels:
   - conda-forge
+  - esmvalgroup
 
 dependencies:
   # Python packages that cannot be installed from PyPI:
   - esmpy
+  - esmvalcore>=2.0.0b0,<2.1
   - iris>=2.2
   - matplotlib<3  # Can be installed from PyPI, but is a dependency of iris and should be pinned.
   - python-stratify
@@ -13,6 +15,8 @@ dependencies:
   # Non-Python dependencies
   - graphviz
   - cdo
+  - imagemagick
+  - nco
 
   # Multi language support:
   - python>=3.6
@@ -20,4 +24,5 @@ dependencies:
   - ncl>=6.5.0
   - r-base
   - r-curl  # Dependency of lintr, but fails to compile because it cannot find libcurl installed from conda.
+  - r-udunits2  # Fails to compile because it cannot find udunits2 installed from conda.
   # - julia>=1.0.0  # The Julia package on conda is apparently broken

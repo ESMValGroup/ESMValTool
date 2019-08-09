@@ -83,9 +83,9 @@ test-reports/
 /python_test_out.txt
 
 # Build folder
-doc/sphinx/source/diag_scripts/**
-doc/sphinx/source/plot_scripts/**
 doc/sphinx/build
+doc/sphinx/source/_sidebar.rst.inc
+doc/sphinx/source/gallery.rst
 
 # Data files
 *.nc

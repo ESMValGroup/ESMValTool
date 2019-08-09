@@ -108,6 +108,10 @@ authors:
     name: Crezee, Bas
     institute: ETH Zurich, Switzerland
     email: bas.crezee 'at' env.ethz.ch
+  mohr_cw:
+    name: Mohr, Christian Wilhelm
+    institute: Cicero, Norway
+    email: c.w.mohr 'at' cicero.oslo.no
   davi_ed:
     name: Davin, Edouard Leopold
     institute: ETH Zurich, Switzerland
@@ -142,7 +146,7 @@ authors:
   gier_be:
     name: Gier, Bettina
     institute: University of Bremen, Germany
-    email: bettina.gier 'at' dlr.de
+    email: gier 'at' uni-bremen.de
   gott_kl:
     name: Gottschaldt, Klaus-Dirk
     institute: DLR, Germany
@@ -236,6 +240,10 @@ authors:
     name: Mason, Erik
     institute: NOAA, USA
     email: erik.mason 'at' noaa.gov
+  sand_ma:
+    name: Sandstad, Marit
+    institute: Cicero, Norway
+    email: marit.sandstad 'at' cicero.oslo.no
   mass_fr:
     name: Massonnet, Francois
     institute: Spain
@@ -299,7 +307,7 @@ authors:
   serv_fe:
     name: Serva, Federico
     institute: CNR, Italy
-    email: federico.serva 'at' artov.isac.cnr.it
+    email: federico.serva 'at' artov.ismar.cnr.it
   somm_ph:
     name: Sommer, Philipp
     institute: Univ. of Hamburg, Germany
@@ -343,6 +351,10 @@ authors:
     name: Wang, Shiyu
     institute: SMHI, Sweden
     email: shiyu.wang 'at' smhi.se
+  weig_ka:
+    name: Weigel, Katja
+    institute: University of Bremen and DLR, Germany
+    email: weigel 'at' iup.physik.uni-bremen.de
   wenz_sa:
     name: Wenzel, Sabrina
     institute: DLR, Germany
@@ -538,6 +550,7 @@ references:
   cox18nature: "Cox, P. M. et al., Nature, 553, 319-322, doi:10.1038/nature25450, 2018."
   davini12jclim: "Davini P., C. Cagnazzo, S. Gualdi, and A. Navarra. J. Climate, 25, 6496-6509, doi: 10.1175/JCLI-D-12-00032.1, 2012"
   davini18: "Davini, P. MiLES - Mid Latitude Evaluation System. Zenodo. doi:10.5281/zenodo.1237837, 2018"
+  deangelis15nat: "DeAngelis, A. M. et al., Nature, 528(7581), 249-253, doi:10.1038/nature15770, 2015."
   demora2018gmd: "de Mora et al., Geosci. Model Dev., 11, 4215-4240, doi:10.5194/gmd-11-4215-2018, 2018."
   dong08grl: "Dong, S. et al., J. Geophys. Res., 113, C06013, doi:10.1029/2006JC004051, 2008."
   donofrio14jh: "D'Onofrio et al., J of Hydrometeorology 15, 830-843, 2014."
@@ -566,6 +579,7 @@ references:
   lembo16climdyn: "Lembo et al., Clim. Dyn., 48, 1793-1812, doi:10.1007/s00382-016-3173-9"
   lembo19gmdd: "Lembo et al., Geosci. Model Dev. Discuss., doi:10.5194/gmd-2019-37, 2019"
   li14jclim: "Li and Xie, J. Climate, 27, 1765-1780, doi:10.1175/JCLI-D-13-00337.1, 2014."
+  li17natcc: "Li, G., S.-P. Xie, C. He, and Z. Chen, Nat Clim Change, 7, 708, doi:10.1038/nclimate3387, 2017."
   lin08jclim: "Lin, J-L. et al., J. Climate, 21, 4541-4567, doi: 10.1175/2008JCLI1816.1, 2008."
   lloyd-hughes02jclim: "Lloyd-Hughes, B. and Saunders, M. A., Int. J. Climatol., 22, 1571-1592, doi:10.1002/joc.846, 2002."
   locarini10usgov: "Locarnini, R. A. et al., World Ocean Atlas 2009, Volume 1: Temperature. S. Levitus, Ed. NOAA Atlas NESDIS 68, U.S. Government Printing Office, Washington, D.C., 184 pp.,2010."
@@ -601,6 +615,7 @@ references:
   aura-tes: "Beer, R., IEEE Trans. Geosci. Rem. Sens., doi:10.1109/TGRS.2005.863716, 2006."
   ceres-syn1deg: "Wielicki et al., Bull. Amer. Meteor. Soc., doi: 10.1175/1520-0477(1996)077<0853:CATERE>2.0.CO;2, 1996."
   cru: "Harris, I. et al., Int. J. Climatol., 34, doi: 10.1002/joc.3711, 2014."
+  eppley-vgpm-modis: "Behrenfeld, M. J., & Falkowski, P. G. (1997). Photosynthetic rates derived from satellite-based chlorophyll concentration. Limnology and oceanography, 42(1), 1-20."
   era-interim: "Dee, D. P. et al., Q. J. Roy. Meteor. Soc., doi:10.1002/qj.828, 2011."
   esacci-aerosol: "Popp et al., ESA Aerosol Climate Change Initiative (ESA Aerosol_cci) data: AOD v4.21 via Centre for Environmental Data Analysis, 2016."
   esacci-cloud: "Stengel et al., Earth Syst. Sci. Data, doi:10.5194/essd-9-881-2017, 2017."
@@ -611,12 +626,16 @@ references:
   esacci-soilmoisture: "Not available."
   esacci-sst: "Merchant et al., Geosci. Data J., doi:10.1002/gdj3.20, 2014."
   hadisst: "Rayner et al., J. Geophys. Res., doi:10.1029/2002JD002670, 2013."
+  lai3g: "Zhu et al., Remote Sens., 5, doi:10.3390/rs5020927, 2013."
+  landflux-eval: "Mueller, B. et al., Hydrol. Earth Syst. Sci., 17, 3707-3720, doi:10.5194/hess-17-3707-2013, 2013."
   modis: "Not available."
   mte: "Jung et al., J. Geophys. Res., 116, doi:10.1029/2010JG001566, 2011."
   ncep: "Kalnay et al., B. Am. Meteorol. Soc., doi:10.1175/1520-0477(1996)077<0437:TNYRP>2.0.CO;2, 1996."
   niwa-bs: "Bodeker et al., Atmos. Chem. Phys., doi:10.5194/acp-5-2603-2005, 2005."
   patmos-x: "Heidinger et al., NOAA National Centers for Environmental Information, doi:10.7289/V5348HCK, last access: 10 February 2019."
   woa: "Locarnini et al., World Ocean Atlas 2013, Vol. 1: Temperature, 2013."
+  zhang-2011: "Zhang et al., WIREs Clim. Change, doi:10.1002/wcc.147, 2011"
+  sillman-2013: "Sillmann et al., J. Geophys. Res., doi:10.1029/2012JD018390, 2013" 
 
 projects:
   c3s-magic: Copernicus Climate Change Service 34a Lot 2 (MAGIC) project
@@ -628,6 +647,7 @@ projects:
   dlrveu2: DLR project VEU2
   embrace: EU FP7 project EMBRACE
   esmval: DLR project ESMVal
+  eval4cmip: DLR and University of Bremen project funded by the Initiative and Networking Fund of the Helmholtz Society
   qa4ecv: QA4ECV
   trr181: DFG Project TRR-181
   ukesm: UKESM, UK Earth System Model project (NERC)
