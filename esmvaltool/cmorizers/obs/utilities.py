@@ -53,56 +53,6 @@ def convert_timeunits(cube, start_year):
     return cube
 
 
-def _fix_dim_coordnames(cube):
-    """Perform a check on dim coordinate names."""
-    # first check for CMOR standard coord;
-    for coord in cube.coords():
-        # guess the CMOR-standard x, y, z and t axes if not there
-        coord_type = iris.util.guess_coord_axis(coord)
-        try:
-            coord = cube.coord(axis=coord_type)
-        except iris.exceptions.CoordinateNotFoundError:
-            logger.warning(
-                'Multiple coordinates for axis %s. '
-                'This may be an error, specially for regular grids',
-                coord_type
-            )
-            continue
-
-        if coord_type == 'T':
-            coord.var_name = 'time'
-            coord.attributes = {}
-
-        if coord_type == 'X':
-            coord.var_name = 'lon'
-            coord.standard_name = 'longitude'
-            coord.long_name = 'longitude coordinate'
-            coord.units = Unit('degrees')
-            coord.attributes = {}
-
-        if coord_type == 'Y':
-            coord.var_name = 'lat'
-            coord.standard_name = 'latitude'
-            coord.long_name = 'latitude coordinate'
-            coord.units = Unit('degrees')
-            coord.attributes = {}
-
-        if coord_type == 'Z':
-            if coord.var_name == 'depth':
-                coord.standard_name = 'depth'
-                coord.long_name = \
-                    'ocean depth coordinate'
-                coord.var_name = 'lev'
-                coord.attributes['positive'] = 'down'
-            if coord.var_name == 'pressure':
-                coord.standard_name = 'air_pressure'
-                coord.long_name = 'pressure'
-                coord.var_name = 'air_pressure'
-                coord.attributes['positive'] = 'up'
-
-    return cube
-
-
 def _fix_bounds(cube, dim_coord):
     """Reset and fix all bounds."""
     if len(cube.coord(dim_coord).points) > 1:
@@ -121,6 +71,8 @@ def _fix_bounds(cube, dim_coord):
         cube.coord(dim_coord).bounds = da.array(
             cube.coord(dim_coord).core_bounds(), dtype='float64')
     return cube
+
+
 def convert_units(cube, source_units, target_units):
     """Convert units."""
     source_units = Unit(source_units)
@@ -306,57 +258,52 @@ def var_name_constraint(var_name):
     return iris.Constraint(cube_func=lambda c: c.var_name == var_name)
 
 
-def _fix_bounds(cube, dim_coord):
-    """Reset and fix all bounds."""
-    if len(cube.coord(dim_coord).points) > 1:
-        if cube.coord(dim_coord).has_bounds():
-            cube.coord(dim_coord).bounds = None
-        cube.coord(dim_coord).guess_bounds()
-
-    if cube.coord(dim_coord).has_bounds():
-        cube.coord(dim_coord).bounds = da.array(
-            cube.coord(dim_coord).core_bounds(), dtype='float64')
-    return cube
-
-
 def _fix_dim_coordnames(cube):
     """Perform a check on dim coordinate names."""
     # first check for CMOR standard coord;
     for coord in cube.coords():
         # guess the CMOR-standard x, y, z and t axes if not there
         coord_type = iris.util.guess_coord_axis(coord)
+        try:
+            coord = cube.coord(axis=coord_type)
+        except iris.exceptions.CoordinateNotFoundError:
+            logger.warning(
+                'Multiple coordinates for axis %s. '
+                'This may be an error, specially for regular grids',
+                coord_type
+            )
+            continue
 
         if coord_type == 'T':
-            cube.coord(axis=coord_type).var_name = 'time'
-            cube.coord(axis=coord_type).attributes = {}
+            coord.var_name = 'time'
+            coord.attributes = {}
 
         if coord_type == 'X':
-            cube.coord(axis=coord_type).var_name = 'lon'
-            cube.coord(axis=coord_type).standard_name = 'longitude'
-            cube.coord(axis=coord_type).long_name = 'longitude coordinate'
-            cube.coord(axis=coord_type).units = Unit('degrees')
-            cube.coord(axis=coord_type).attributes = {}
+            coord.var_name = 'lon'
+            coord.standard_name = 'longitude'
+            coord.long_name = 'longitude coordinate'
+            coord.units = Unit('degrees')
+            coord.attributes = {}
 
         if coord_type == 'Y':
-            cube.coord(axis=coord_type).var_name = 'lat'
-            cube.coord(axis=coord_type).standard_name = 'latitude'
-            cube.coord(axis=coord_type).long_name = 'latitude coordinate'
-            cube.coord(axis=coord_type).units = Unit('degrees')
-            cube.coord(axis=coord_type).attributes = {}
+            coord.var_name = 'lat'
+            coord.standard_name = 'latitude'
+            coord.long_name = 'latitude coordinate'
+            coord.units = Unit('degrees')
+            coord.attributes = {}
 
         if coord_type == 'Z':
-            if cube.coord(axis=coord_type).var_name == 'depth':
-                cube.coord(axis=coord_type).standard_name = 'depth'
-                cube.coord(axis=coord_type).long_name = \
+            if coord.var_name == 'depth':
+                coord.standard_name = 'depth'
+                coord.long_name = \
                     'ocean depth coordinate'
-                cube.coord(axis=coord_type).var_name = 'lev'
-                cube.coord(axis=coord_type).attributes['positive'] = 'down'
-            if cube.coord(axis=coord_type).var_name == 'pressure':
-                cube.coord(axis=coord_type).standard_name = 'air_pressure'
-                cube.coord(axis=coord_type).long_name = 'pressure'
-                cube.coord(axis=coord_type).var_name = 'air_pressure'
-                cube.coord(axis=coord_type).attributes['positive'] = 'up'
-
+                coord.var_name = 'lev'
+                coord.attributes['positive'] = 'down'
+            if coord.var_name == 'pressure':
+                coord.standard_name = 'air_pressure'
+                coord.long_name = 'pressure'
+                coord.var_name = 'air_pressure'
+                coord.attributes['positive'] = 'up'
     return cube
 
 
