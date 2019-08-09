@@ -20,13 +20,12 @@ logger = logging.getLogger(__name__)
 def add_height2m(cube):
     """Add scalar coordinate 'height' with value of 2m."""
     logger.info("Adding height coordinate (2m)")
-    height_coord = iris.coords.AuxCoord(
-        2.0,
-        var_name='height',
-        standard_name='height',
-        long_name='height',
-        units=Unit('m'),
-        attributes={'positive': 'up'})
+    height_coord = iris.coords.AuxCoord(2.0,
+                                        var_name='height',
+                                        standard_name='height',
+                                        long_name='height',
+                                        units=Unit('m'),
+                                        attributes={'positive': 'up'})
     cube.add_aux_coord(height_coord, ())
 
 
@@ -51,6 +50,22 @@ def convert_timeunits(cube, start_year):
         real_unit = cube.coord('time').units
     cube.coord('time').units = real_unit
     return cube
+
+
+def convert_units(cube, source_units, target_units):
+    """Convert units."""
+    source_units = Unit(source_units)
+    target_units = Unit(target_units)
+    try:
+        source_units.convert(1.0, target_units)
+    except ValueError:
+        logger.warning("Cannot convert units from '%s' to '%s'", source_units,
+                       target_units)
+        return
+    logger.info("Converting cube units from '%s' to '%s'...", source_units,
+                target_units)
+    cube.units = source_units
+    cube.convert_units(target_units)
 
 
 def fix_coords(cube):
@@ -119,14 +134,15 @@ def flip_dim_coord(cube, coord_name):
     coord = cube.coord(coord_name, dim_coords=True)
     coord_idx = cube.coord_dims(coord)[0]
     coord.points = np.flip(coord.points)
-    coord.bounds = np.flip(coord.bounds, axis=0)
+    if coord.bounds is not None:
+        coord.bounds = np.flip(coord.bounds, axis=0)
     cube.data = da.flip(cube.core_data(), axis=coord_idx)
 
 
 def read_cmor_config(dataset):
     """Read the associated dataset-specific config file."""
-    reg_path = os.path.join(
-        os.path.dirname(__file__), 'cmor_config', dataset + '.yml')
+    reg_path = os.path.join(os.path.dirname(__file__), 'cmor_config',
+                            dataset + '.yml')
     with open(reg_path, 'r') as file:
         cfg = yaml.safe_load(file)
     cfg['cmor_table'] = \
