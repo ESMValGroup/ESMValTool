@@ -52,7 +52,10 @@ jobs:
             wget https://julialang-s3.julialang.org/bin/linux/x64/1.0/julia-1.0.3-linux-x86_64.tar.gz
             tar xfz julia-*-linux-x86_64.tar.gz
             ln -s $(pwd)/julia-*/bin/julia /usr/bin/julia
-            conda -V
+            # force install the latest conda; circleCI has 4.6.14 and it finds it difficult to update
+            # but for some reason, only in this container
+            conda install conda=4.7.11 > /logs/conda.txt 2>&1
+            conda -V > /logs/conda.txt 2>&1
             conda update -y conda > /logs/conda.txt 2>&1
             conda env update >> /logs/conda.txt 2>&1
             set +x; conda activate esmvaltool; set -x
