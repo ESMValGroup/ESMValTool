@@ -1,4 +1,4 @@
-"""Common functionalities for OSI-450 and OSI-407 dataset cmorization"""
+"""Common functionalities for OSI-450 and OSI-407 dataset cmorization."""
 
 import logging
 import os
@@ -15,21 +15,16 @@ from iris.coord_categorisation import (
     add_month_number, add_year, add_day_of_year)
 from iris.analysis import MEAN
 
-from .utilities import (set_global_atts, convert_timeunits, fix_coords,
-                        fix_var_metadata, save_variable)
+from .utilities import (set_global_atts, convert_timeunits, fix_var_metadata,
+                        save_variable)
 
 logger = logging.getLogger(__name__)
 
 
 def cmorize_osi(in_dir, out_dir, cfg, hemisphere):
-    """
-    Cmorize OSI-450 or OSI-407 dataset
-    """
-    cmor_table = cfg['cmor_table']
-    glob_attrs = cfg['attributes']
-
+    """Cmorize OSI-450 or OSI-407 dataset"""
     logger.info("Starting cmorization for Tier%s OBS files: %s",
-                glob_attrs['tier'], glob_attrs['dataset_id'])
+                cfg['attributes']['tier'], cfg['attributes']['dataset_id'])
     logger.info("Input data from: %s", in_dir)
     logger.info("Output will be written to: %s", out_dir)
 
@@ -38,7 +33,7 @@ def cmorize_osi(in_dir, out_dir, cfg, hemisphere):
     for var, vals in cfg['variables'].items():
         var_info = {}
         for mip in vals['mip']:
-            var_info[mip] = cmor_table.get_variable(mip, var)
+            var_info[mip] = cfg['cmor_table'].get_variable(mip, var)
         file_pattern = '{0}_{1}_{2}_*.nc'.format(
             vals['raw'], hemisphere, vals['grid']
         )
@@ -51,9 +46,8 @@ def cmorize_osi(in_dir, out_dir, cfg, hemisphere):
                 'name': vals['raw'],
                 'file': os.path.join(in_dir, str(year), '??', file_pattern)
             }
-            extract_variable(
-                var_info, raw_info, out_dir, glob_attrs, year, vals['mip']
-            )
+            extract_variable(var_info, raw_info, out_dir, cfg['attributes'],
+                             year, vals['mip'])
             if first_run:
                 sample_file = glob.glob(os.path.join(
                     in_dir, str(year), '01', file_pattern))[0]
@@ -62,11 +56,7 @@ def cmorize_osi(in_dir, out_dir, cfg, hemisphere):
                     iris.Constraint(
                         cube_func=lambda c: c.var_name == raw_info['name'])
                 )
-                _create_areacello(
-                    cfg,
-                    cube,
-                    glob_attrs,
-                    out_dir)
+                _create_areacello(cfg, cube, cfg['attributes'], out_dir)
                 first_run = False
 
 
@@ -95,9 +85,10 @@ def extract_variable(var_infos, raw_info, out_dir, attrs, year, mips):
                 cubes = CubeList(cube.slices_over('time'))
                 model_cube = cubes[0].copy()
                 for month in range(1, 13):
-                    if cubes.extract(iris.Constraint(
+                    month_constraint = iris.Constraint(
                         time=lambda cell: cell.point.month == month
-                    )):
+                    )
+                    if cubes.extract(month_constraint):
                         continue
                     cubes.append(_create_nan_cube(
                         model_cube, month, month=True))
@@ -118,9 +109,10 @@ def extract_variable(var_infos, raw_info, out_dir, attrs, year, mips):
                 model_cube = cubes[0].copy()
                 model_cube.remove_coord('day_of_year')
                 for day_of_year in range(total_days):
-                    if cubes.extract(
-                        iris.Constraint(day_of_year=day_of_year+1)
-                    ):
+                    day_constraint = iris.Constraint(
+                        day_of_year=day_of_year + 1
+                    )
+                    if cubes.extract(day_constraint):
                         continue
                     nan_cube = _create_nan_cube(
                         model_cube, day_of_year, month=False
