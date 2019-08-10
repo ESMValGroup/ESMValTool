@@ -42,7 +42,7 @@ diagnostics:
         mip: day
     scripts:
       rainfarm:
-        script: rainfarm/rainfarm.R
+        script: rainfarm/rainfarm.jl
         slope: 1.7             # spatial spectral slope (set to 0 to compute from large scales)
         nens: 2                # number of ensemble members to be calculated
         nf: 8                  # subdivisions for downscaling
