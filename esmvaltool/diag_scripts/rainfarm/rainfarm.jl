@@ -29,18 +29,18 @@ using RainFARM
 using Printf
 
 function provenance_record(infile)
-  xprov = Dict( "ancestors" => infile,
-    "authors" => ["hard_jo", "arno_en"],
-    "references" => ["donofrio14jh", "rebora06jhm",
-                     "terzago18nhess"],
-    "projects" => ["c3s-magic"],
-    "caption" => "RainFARM precipitation downscaling",
-    "statistics" => ["other"],
-    "realms" => ["atmos"],
-    "themes" => ["phys"],
-    "domains" => ["reg"]
-  )
-  return(xprov)
+    xprov = Dict( "ancestors" => infile,
+        "authors" => ["hard_jo", "arno_en"],
+        "references" => ["donofrio14jh", "rebora06jhm",
+                         "terzago18nhess"],
+        "projects" => ["c3s-magic"],
+        "caption" => "RainFARM precipitation downscaling",
+        "statistics" => ["other"],
+        "realms" => ["atmos"],
+        "themes" => ["phys"],
+        "domains" => ["reg"]
+    )
+    return(xprov)
 end
 
 let
@@ -81,55 +81,53 @@ ww = 1.
 
   # Conservation options
 if (conserv_glob)
-  println("Conserving global field")
+    println("Conserving global field")
 elseif (conserv_smooth)
-  println("Smooth conservation")
+    println("Smooth conservation")
 else
-  println("Box conservation")
+    println("Box conservation")
 end
 
 for (infile, value) in metadata
-  println("SLOPE", settings["slope"])
-  println("SLOPE", slope)
-  (infilename, ) = splitext(basename(infile))
-  outfilename = string(work_dir, "/", infilename, "_downscaled")
+    (infilename, ) = splitext(basename(infile))
+    outfilename = string(work_dir, "/", infilename, "_downscaled")
 
-  println(diag_base, ": calling RainFARM")
+    println(diag_base, ": calling RainFARM")
 
-  (pr, lon_mat, lat_mat) = read_netcdf2d(infile, varname)
+    (pr, lon_mat, lat_mat) = read_netcdf2d(infile, varname)
 
-  # Ensure grid is square and with even dims
-  #nmin <- min(dim(pr)[1], dim(pr)[2])
-  #nmin <- floor(nmin / 2) * 2
-  #pr <- pr[1:nmin, 1:nmin, ]
-  #if (is.vector(lon_mat)) {
-  #  lon_mat <- lon_mat[1:nmin]
-  #  lat_mat <- lat_mat[1:nmin]
-  #} else {
-  #  lon_mat <- lon_mat[1:nmin, 1:nmin]
-  #  lat_mat <- lat_mat[1:nmin, 1:nmin]
-  #}
+    # Ensure grid is square and with even dims
+    nmin = min(size(pr)[1], size(pr)[2])
+    nmin = floor(Int, nmin / 2) * 2
+    pr = pr[1:nmin, 1:nmin, :]
+    if (ndims(lon_mat) == 1)
+        lon_mat = lon_mat[1:nmin]
+        lat_mat = lat_mat[1:nmin]
+    else
+        lon_mat = lon_mat[1:nmin, 1:nmin]
+        lat_mat = lat_mat[1:nmin, 1:nmin]
+    end
 
-  (lon_f, lat_f) = lon_lat_fine(lon_mat, lat_mat, nf);
+    (lon_f, lat_f) = lon_lat_fine(lon_mat, lat_mat, nf);
 
-  # Automatic spectral slope
-  if (slope == 0.)
-    (fxp, ftp)=fft3d(pr)
-    slope =fitslopex(fxp, kmin=kmin)
-    println("Computed spatial spectral slope: ", slope)
-  else
-    println("Fixed spatial spectral slope: ", slope)
-  end
+    # Automatic spectral slope
+    if (slope == 0.)
+        (fxp, ftp)=fft3d(pr)
+        slope =fitslopex(fxp, kmin=kmin)
+        println("Computed spatial spectral slope: ", slope)
+    else
+        println("Fixed spatial spectral slope: ", slope)
+    end
 
-  for iens=1:nens
-    println("Realization ", iens)
-    rd=rainfarm(pr, slope, nf, ww, fglob = conserv_glob,
-                fsmooth = conserv_smooth, verbose=true)
-    fname=@sprintf("%s_%04d.nc", outfilename, iens);
-    write_netcdf2d(fname, rd, lon_f, lat_f, varname, infile)
-    xprov = provenance_record(infile)
-    provenance[fname] = xprov
-  end
+    for iens=1:nens
+        println("Realization ", iens)
+        rd=rainfarm(pr, slope, nf, ww, fglob = conserv_glob,
+                    fsmooth = conserv_smooth, verbose=true)
+        fname=@sprintf("%s_%04d.nc", outfilename, iens);
+        write_netcdf2d(fname, rd, lon_f, lat_f, varname, infile)
+        xprov = provenance_record(infile)
+        provenance[fname] = xprov
+     end
 end
 
 # Write provenance file
