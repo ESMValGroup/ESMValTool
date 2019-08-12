@@ -141,11 +141,11 @@ jobs:
             # Install
             . /opt/conda/etc/profile.d/conda.sh
             conda install -c conda-forge -y pip
-            pip install -r doc/sphinx/source/requirements.txt > /logs/install.txt 2>&1
-            pip install sphinx sphinx_rtd_theme >> /logs/install.txt 2>&1
+            /opt/conda/bin/pip install -r doc/sphinx/source/requirements.txt > /logs/install.txt 2>&1
+            /opt/conda/bin/pip install sphinx sphinx_rtd_theme >> /logs/install.txt 2>&1
             # Log versions
             dpkg -l > /logs/versions.txt
-            pip freeze > /logs/requirements.txt
+            /opt/conda/bin/pip freeze > /logs/requirements.txt
             # Test building documentation
             MPLBACKEND=Agg python setup.py build_sphinx --warning-is-error
       - save_cache:
