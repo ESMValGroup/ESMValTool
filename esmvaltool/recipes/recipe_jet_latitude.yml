@@ -1,0 +1,48 @@
+# ESMValTool
+---
+documentation:
+  description: |
+    This is an example recipe for a personal diagnostic.
+    You can run any Python diagnostic of your choice
+    without installing ESMValTool as developer or git pushing.
+    Simply include the full path to your script of choice in script,
+    see example /path/to/your/my_little_diagnostic.py
+    An example personal diagnostic can be found in
+    esmvaltool/diag_scripts/examples/my_little_diagnostic.py
+
+  authors:
+    - pred_va
+
+  maintainer:
+    - pred_va
+
+datasets:
+  - {activity: HighResMIP, dataset: HadGEM3-GC31-LM,  project: CMIP6, mip: day, exp: highresSST-present,  ensemble: r1i1p1f1, grid: gn,  start_year: 2000,  end_year: 2002}
+
+preprocessors:
+  get_region:
+    extract_levels:
+      levels: [85000.,]
+      scheme: nearest
+    extract_region:
+      start_longitude: 0
+      end_longitude: 60
+      start_latitude: 20
+      end_latitude: 70
+    zonal_means:
+      coordinate: longitude
+      mean_type: mean
+
+diagnostics:
+  jetlat:
+    description: "Jet latitude index"
+    variables:
+      ua:
+        preproc: get_region
+
+    scripts:
+      jetlat:
+        script: primavera/jet_latitude.py
+
+
+
