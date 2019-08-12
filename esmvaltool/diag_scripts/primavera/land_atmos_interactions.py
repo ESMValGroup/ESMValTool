@@ -1,17 +1,13 @@
 import os
 import logging
-import string
 
 import iris
 import iris.cube
 import iris.analysis
-from iris.cube import CubeList
 from iris.analysis import stats
 import iris.util
 
-import numpy as np
 from scipy import signal
-from dask import array as da
 
 import esmvaltool.diag_scripts.shared
 import esmvaltool.diag_scripts.shared.names as n
@@ -35,14 +31,15 @@ class LandAtmosInteractions(object):
     def compute(self):
         data = group_metadata(self.cfg['input_data'].values(), 'alias')
         for alias in data:
-            hfls = iris.load_cube(data[alias][0]['filename'])
-            hfss = iris.load_cube(data[alias][1]['filename'])
-            rsds = iris.load_cube(data[alias][2]['filename'])
-            rlds = iris.load_cube(data[alias][3]['filename'])
-            clt = iris.load_cube(data[alias][4]['filename'])
-            tas = iris.load_cube(data[alias][5]['filename'])
-            mrso = iris.load_cube(data[alias][6]['filename'])
-            self.sftlf = [data[alias][6]['fx_files']['sftlf']]
+            var = group_metadata(data[alias], 'short_name')
+            hfls = iris.load_cube(var['hfls'][0]['filename'])
+            hfss = iris.load_cube(var['hfss'][0]['filename'])
+            rsds = iris.load_cube(var['rsds'][0]['filename'])
+            rlds = iris.load_cube(var['rlds'][0]['filename'])
+            clt = iris.load_cube(var['clt'][0]['filename'])
+            tas = iris.load_cube(var['tas'][0]['filename'])
+            mrso = iris.load_cube(var['mrso'][0]['filename'])
+
             self.grid_cube = iris.load_cube(self.target_grid)
 
             clim_ef, stdv_ef = self.evaporative_fraction_stats(hfls, hfss)
@@ -50,8 +47,8 @@ class LandAtmosInteractions(object):
             self.save([clim_ef, stdv_ef], alias, data)
 
             metrics = self.compute_correlation_metrics(
-                          hfls, rsds, rlds, clt, tas, mrso
-                      )
+                hfls, rsds, rlds, clt, tas, mrso
+                )
             self.output_name = 'Correlation_metrics'
             self.save(metrics, alias, data)
 
@@ -64,8 +61,8 @@ class LandAtmosInteractions(object):
             tas = tas.copy(signal.detrend(tas.lazy_data(), axis=0))
             mrso = mrso.copy(signal.detrend(mrso.lazy_data(), axis=0))
             detrended_metrics = self.compute_correlation_metrics(
-                                    hfls, rsds, rlds, clt, tas, mrso
-                                )
+                hfls, rsds, rlds, clt, tas, mrso
+                )
             self.output_name = 'Detrended_correlation_metrics'
             self.save(detrended_metrics, alias, data)
 
