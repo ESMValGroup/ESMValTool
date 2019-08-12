@@ -89,7 +89,7 @@ jobs:
       - run:
           when: always
           command: |
-            pip install codacy-coverage
+            /opt/conda/envs/esmvaltool/bin/pip install codacy-coverage
             python-codacy-coverage -r test-reports/coverage.xml
 
   develop:
