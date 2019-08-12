@@ -32,7 +32,8 @@ class JetLatitude(object):
     def compute(self):
         data = group_metadata(self.cfg['input_data'].values(), 'alias')
         lanczos_weight = np.load(
-            '/home/users/panos/work_space/jetlat/python/LF_weights.npy')
+            '/home/users/panos/work_space/jetlat/python/LF_weights.npy'
+        )
         for alias in data:
             ua = iris.load_cube(data[alias][0]['filename'])
 
@@ -41,44 +42,44 @@ class JetLatitude(object):
                 axis=ua.coord_dims('time')[0],
                 arr=ua.core_data()
             )
-            ua_filtered = ua.copy(ua_filtered)
+            ua = ua.copy(ua_filtered)
 
-            ua_max = ua_filtered.collapsed('latitude', iris.analysis.MAX)
-            ua_max_lat = np.argmax(
-                ua_filtered.core_data(),
+            wind = ua.collapsed('latitude', iris.analysis.MAX)
+            latitude = np.argmax(
+                ua.data,
                 axis=ua.coord_dims('latitude')[0]
             )
-            ua_max_lat = ua_max.copy(ua_max_lat)
+            del ua
+            del ua_filtered
+            latitude = wind.copy(latitude)
+            latitude.varname = 'lat'
+            latitude.standard_name = 'latitude'
+            latitude.long_name = 'Jet latitude'
+            latitude.units = 'degrees_north'
 
-            wind_smooth = self._compute_histogram(ua_max)
-            wind_anom = ua_max - wind_smooth
+            logger.debug(wind)
+            logger.debug(latitude)
 
-            qp.plot(wind_smooth)
-            plt.savefig(os.path.join(
-                self.cfg[n.PLOT_DIR], '{}_wind_climatolgy.png'.format(alias)))
-            plt.close()
-            qp.plot(wind_anom)
-            plt.savefig(os.path.join(
-                self.cfg[n.PLOT_DIR], '{}_wind_anomaliess.png'.format(alias)))
-            plt.close()
-
-            lat_smooth = self._compute_histogram(ua_max_lat)
-            qp.plot(lat_smooth)
-            plt.savefig(os.path.join(
-                self.cfg[n.PLOT_DIR], '{}_lat.png'.format(alias)))
-            plt.close()
+            self._compute_histogram(wind)
+            self._compute_histogram(latitude)
 
     def _compute_histogram(self, data):
-        iris.coord_categorisation.add_day_of_year(data, 'time')
-        iris.coord_categorisation.add_year(data, 'time')
-        data.collapsed('year', iris.analysis.MEAN)
+        clim = data.collapsed('year', iris.analysis.MEAN)
+        clim_fft = np.fft.rfft(clim.data)
+        clim_fft[3:np.size(clim_fft)] = 0
+        clim = np.fft.irfft(clim_fft)
+        clim = clim.copy(clim)
 
-        transform = np.fft.rfft(data.data)
-        transform[3:np.size(transform)] = 0
-        smooth = np.fft.irfft(transform)
-        smooth_data = data.copy(smooth)
-        logger.debug(smooth_data)
-        return smooth_data
+        qp.plot(clim)
+        plt.savefig(os.path.join(
+            self.cfg[n.PLOT_DIR], '{}_{}_clim.png'.format(alias, ua.varname)))
+        plt.close()
+
+        anom = data - clim
+        qp.plot(anom)
+        plt.savefig(os.path.join(
+            self.cfg[n.PLOT_DIR], '{}_{}_anom.png'.format(alias, ua.varname)))
+        plt.close()
 
 
 def main():
