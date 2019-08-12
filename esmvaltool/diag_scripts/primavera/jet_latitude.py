@@ -31,7 +31,8 @@ class JetLatitude(object):
             ua = iris.load_cube(data[alias][0]['filename'])
             logger.debug(ua)
             qp.pcolor(ua)
-            plt.savefig('{}.png', alias)
+            plt.savefig(os.path.join(
+                self.cfg[n.PLOT_DIR], '{}.png'.format(alias)))
 
 
 def main():
