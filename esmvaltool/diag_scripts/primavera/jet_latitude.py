@@ -10,6 +10,7 @@ import iris
 import iris.cube
 import iris.analysis
 import iris.util
+import iris.coord_categorisation
 import iris.quickplot as qp
 
 import esmvaltool.diag_scripts.shared
@@ -30,34 +31,45 @@ class JetLatitude(object):
 
     def compute(self):
         data = group_metadata(self.cfg['input_data'].values(), 'alias')
-        lanczos_weight = np.load('/home/users/panos/work_space/jetlat/python/LF_weights.npy')
+        lanczos_weight = np.load(
+            '/home/users/panos/work_space/jetlat/python/LF_weights.npy')
         for alias in data:
             ua = iris.load_cube(data[alias][0]['filename'])
-            logger.debug(ua)
-            ua_filtered = da.apply_along_axis(
+
+            ua_filtered = np.apply_along_axis(
                 lambda m: np.convolve(m, lanczos_weight, mode='same'),
                 axis=ua.coord_dims('time')[0],
                 arr=ua.core_data()
             )
             ua_filtered = ua.copy(ua_filtered)
+
             ua_max = ua_filtered.collapsed('latitude', iris.analysis.MAX)
-            ua_max_lat = da.argmax(
+            ua_max_lat = np.argmax(
                 ua_filtered.core_data(),
                 axis=ua.coord_dims('latitude')[0]
             )
             ua_max_lat = ua_max.copy(ua_max_lat)
-            qp.pcolor(ua)
+
+            wind_smooth = self._compute_histogram(ua_max)
+            qp.plot(wind_smooth)
             plt.savefig(os.path.join(
-                self.cfg[n.PLOT_DIR], '{}.png'.format(alias)))
-            qp.pcolor(ua_filtered)
+                self.cfg[n.PLOT_DIR], '{}_wind.png'.format(alias)))
+            lat_smooth = self._compute_histogram(ua_max_lat)
+            qp.plot(lat_smooth)
             plt.savefig(os.path.join(
-                self.cfg[n.PLOT_DIR], '{}_filtered.png'.format(alias)))
-            qp.plot(ua_max)
-            plt.savefig(os.path.join(
-                self.cfg[n.PLOT_DIR], '{}_max.png'.format(alias)))
-            qp.plot(ua_max_lat)
-            plt.savefig(os.path.join(
-                self.cfg[n.PLOT_DIR], '{}_maxlat.png'.format(alias)))
+                self.cfg[n.PLOT_DIR], '{}_lat.png'.format(alias)))
+
+    def _compute_histogram(self, data):
+        iris.coord_categorisation.add_day_of_year(data, 'time')
+        iris.coord_categorisation.add_year(data, 'time')
+        data.collapsed('year', iris.analysis.MEAN)
+
+        transform = np.fft.rfft(data.data)
+        transform[3:np.size(transform)] = 0
+        smooth = np.fft.irfft(transform)
+        smooth_data = data.copy(smooth)
+        logger.debug(smooth_data)
+        return smooth_data
 
 
 def main():
