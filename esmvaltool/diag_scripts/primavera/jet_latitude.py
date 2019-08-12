@@ -60,10 +60,10 @@ class JetLatitude(object):
             logger.debug(wind)
             logger.debug(latitude)
 
-            self._compute_histogram(wind)
-            self._compute_histogram(latitude)
+            self._compute_histogram(alias, wind)
+            self._compute_histogram(alias, latitude)
 
-    def _compute_histogram(self, data):
+    def _compute_histogram(self, alias, data):
         clim = data.collapsed('year', iris.analysis.MEAN)
         clim_fft = np.fft.rfft(clim.data)
         clim_fft[3:np.size(clim_fft)] = 0
@@ -72,13 +72,13 @@ class JetLatitude(object):
 
         qp.plot(clim)
         plt.savefig(os.path.join(
-            self.cfg[n.PLOT_DIR], '{}_{}_clim.png'.format(alias, ua.varname)))
+            self.cfg[n.PLOT_DIR], '{}_{}_clim.png'.format(alias, data.varname)))
         plt.close()
 
         anom = data - clim
         qp.plot(anom)
         plt.savefig(os.path.join(
-            self.cfg[n.PLOT_DIR], '{}_{}_anom.png'.format(alias, ua.varname)))
+            self.cfg[n.PLOT_DIR], '{}_{}_anom.png'.format(alias, data.varname)))
         plt.close()
 
 
