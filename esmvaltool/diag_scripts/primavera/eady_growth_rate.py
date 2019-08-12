@@ -30,23 +30,24 @@ class EadyGrowthRate(object):
         self.omega = 7.292e-5
 
     def compute(self):
-        data = group_metadata(self.cfg['input_data'].values(), 'dataset')
-        for dataset in data:
-            ta = iris.load_cube(data[dataset][0]['filename'])
+        data = group_metadata(self.cfg['input_data'].values(), 'alias')
+        for alias in data:
+            var = group_metadata(data[alias], 'short_name')
+            ta = iris.load_cube(var['ta'][0]['filename'])
             plev = ta.dim_coords[1]
 
             theta = self.potential_temperature(ta, plev)
 
             del ta
 
-            zg = iris.load_cube(data[dataset][1]['filename'])
+            zg = iris.load_cube(var['zg'][0]['filename'])
 
             brunt = self.brunt_vaisala_frq(theta, zg)
 
             lats = zg.dim_coords[2]
             fcor = self.coriolis(lats, zg.shape)
 
-            ua = iris.load_cube(data[dataset][2]['filename'])
+            ua = iris.load_cube(var['ua'][0]['filename'])
 
             egr = self.eady_growth_rate(fcor, ua, zg, brunt)
 
@@ -54,7 +55,7 @@ class EadyGrowthRate(object):
 
             cube_egr = cube_egr.collapsed('time', iris.analysis.MEAN)
 
-            self.save(cube_egr, dataset)
+            self.save(cube_egr, alias, data)
 
     def potential_temperature(self, ta, plev):
         p0 = iris.coords.AuxCoord(self.ref_p, long_name='reference_pressure',
@@ -118,13 +119,14 @@ class EadyGrowthRate(object):
 
         return egr
 
-    def save(self, egr, dataset):
+    def save(self, egr, alias, data):
         egr.standard_name = None
         egr.long_name = 'eady_growth_rate'
         egr.var_name = 'egr'
         egr.units = 'day-1'
 
         script = self.cfg[n.SCRIPT]
+        dataset = data[alias][0]['dataset']
         filename = '{dataset}_{script}.nc'.format(
             dataset=dataset,
             script=script
