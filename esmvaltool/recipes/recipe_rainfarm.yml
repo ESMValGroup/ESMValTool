@@ -48,4 +48,4 @@ diagnostics:
         nf: 8                  # subdivisions for downscaling
         conserv_glob: false    # conserve precipitation over full domain (choose either glob or smooth, glob has priority)
         conserv_smooth: true   # conserve precipitation using convolution (if neither is chosen box conservation is used)
-        weights_climo: false   # orographic weights: set to false or full path to a fine-scale precipitation climatology file
+        weights_climo: false   # orographic weights: set to false (or omit) or path to a fine-scale precipitation climatology file

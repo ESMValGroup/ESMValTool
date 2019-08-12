@@ -45,7 +45,7 @@ end
 
 let
 diag_scripts_dir = ENV["diag_scripts"]
-include(string(diag_scripts_dir, "/shared/external.jl"))
+include(joinpath(diag_scripts_dir, "shared/external.jl"))
 
 settings = YAML.load_file(ARGS[1])
 
@@ -64,7 +64,7 @@ mkpath(run_dir)
 cd(run_dir)
 
 # setup provenance file and list
-provenance_file = string(run_dir, "/diagnostic_provenance.yml")
+provenance_file = joinpath(run_dir, "diagnostic_provenance.yml")
 provenance = Dict()
 
 # Reading parameters from the settings
@@ -75,11 +75,13 @@ nens = get(settings, "nens", 1)
 weights_climo = get(settings, "weights_climo", "")
 conserv_glob = get(settings, "conserv_glob", false)
 conserv_smooth = get(settings, "conserv_smooth", true) 
+auxiliary_data_dir = get(settings, "auxiliary_data_dir", "") 
 
-# WEIGHTS CLIMO MISSING
-ww = 1.
+if weights_climo isa Bool # Compatibility with old standard
+    weights_climo = ""
+end
 
-  # Conservation options
+# Conservation options
 if (conserv_glob)
     println("Conserving global field")
 elseif (conserv_smooth)
@@ -90,9 +92,9 @@ end
 
 for (infile, value) in metadata
     (infilename, ) = splitext(basename(infile))
-    outfilename = string(work_dir, "/", infilename, "_downscaled")
+    outfilename = joinpath(work_dir, infilename * "_downscaled")
 
-    println(diag_base, ": calling RainFARM")
+    println(diag_base, ": calling RainFARM for ", infilename)
 
     (pr, lon_mat, lat_mat) = read_netcdf2d(infile, varname)
 
@@ -117,6 +119,20 @@ for (infile, value) in metadata
         println("Computed spatial spectral slope: ", slope)
     else
         println("Fixed spatial spectral slope: ", slope)
+    end
+
+    if weights_climo != ""
+        if weights_climo[1] != '/'
+            weights_climo = joinpath(auxiliary_data_dir, weights_climo)
+        end
+        println("Using external climatology for weights: ", weights_climo)
+        fileweights = joinpath(work_dir, infilename * "_w.nc")
+
+        ww = rfweights(weights_climo, infile, nf,
+                       weightsfn = fileweights, varname = varname,
+                       fsmooth = conserv_smooth)
+    else
+       ww = 1.
     end
 
     for iens=1:nens
