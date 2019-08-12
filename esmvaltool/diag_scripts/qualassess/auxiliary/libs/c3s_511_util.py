@@ -49,6 +49,16 @@ def __getInfoFromFile__(filename):
     return __config__
 
 
+def __remove_all_aux_coords__(cube):
+    """
+    remove all auxiliary coordinates from cube
+    """
+    for dim in cube.coords():
+        if isinstance(dim, iris.coords.AuxCoord):
+             cube.remove_coord(dim)
+            
+    return
+
 def __minmeanmax__(array):
     """
     calculate minimum, maximum and average of array

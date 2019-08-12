@@ -887,6 +887,7 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
 
         if "availability" in self.__requested_diags__:
     
+            utils.__remove_all_aux_coords__(cube)
             try:
                 sp_masked_vals = cube.collapsed(
                     "time", iris.analysis.COUNT,
@@ -1148,6 +1149,8 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
             percentiles = [1., 5., 10., 50., 90., 95., 99.]
             
             for d in ["time"]:
+                
+                utils.__remove_all_aux_coords__(cube)
                 
                 long_left_over = [rd for rd in reg_dimensions if rd != d]
             
