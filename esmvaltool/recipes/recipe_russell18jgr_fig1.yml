@@ -66,7 +66,7 @@ diagnostics:
     
     scripts:
       polar-contour:
-        script: russell18/russell18jgr-polar.ncl
+        script: russell18jgr/russell18jgr-polar.ncl
         # Plot style
         styleset: CMIP5
         ncdf: default

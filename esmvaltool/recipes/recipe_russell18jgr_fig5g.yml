@@ -79,6 +79,6 @@ diagnostics:
     
     scripts:
       Figure-5g:
-        script: russell18/russell18jgr-fig5g.ncl
+        script: russell18jgr/russell18jgr-fig5g.ncl
         # Plot style
         styleset: CMIP5

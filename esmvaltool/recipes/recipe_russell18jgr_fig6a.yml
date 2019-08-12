@@ -101,7 +101,7 @@ diagnostics:
        
     scripts:
       Figure6:
-        script: russell18/russell18jgr-fig6a.ncl
+        script: russell18jgr/russell18jgr-fig6a.ncl
         # Plot style
         styleset: CMIP5
         ncdf: default

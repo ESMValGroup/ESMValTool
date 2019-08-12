@@ -80,7 +80,7 @@ diagnostics:
     
     scripts:
       Figure5:
-        script: russell18/russell18jgr-fig5.ncl
+        script: russell18jgr/russell18jgr-fig5.ncl
         # Plot style
         styleset: CMIP5
         ncdf: default

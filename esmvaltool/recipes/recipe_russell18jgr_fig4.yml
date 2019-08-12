@@ -78,7 +78,7 @@ diagnostics:
    
     scripts:
       Figure4:
-        script: russell18/russell18jgr-fig4.ncl
+        script: russell18jgr/russell18jgr-fig4.ncl
         styleset: CMIP5
         ncdf: default
         max_vert:  2

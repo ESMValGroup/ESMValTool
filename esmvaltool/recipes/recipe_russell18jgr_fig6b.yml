@@ -100,6 +100,6 @@ diagnostics:
        
     scripts:
       Figure6:
-        script: russell18/russell18jgr-fig6b.ncl
+        script: russell18jgr/russell18jgr-fig6b.ncl
         styleset: CMIP5
         ncdf: default

@@ -80,7 +80,7 @@ diagnostics:
        
     scripts:
       Subantarctic-Front:
-        script: russell18/russell18jgr-fig3b.ncl
+        script: russell18jgr/russell18jgr-fig3b.ncl
         # Plot style
         styleset: CMIP5
         ncdf: CMIP5

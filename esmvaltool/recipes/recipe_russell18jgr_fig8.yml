@@ -57,7 +57,7 @@ diagnostics:
      
     scripts:
       Polar-ph:
-        script: russell18/russell18jgr-polar.ncl
+        script: russell18jgr/russell18jgr-polar.ncl
         styleset: CMIP5
         ncdf: default
         grid_min: 8.0

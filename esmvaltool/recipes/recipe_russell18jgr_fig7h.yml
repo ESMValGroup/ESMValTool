@@ -68,7 +68,7 @@ diagnostics:
      
     scripts:
       Fig7h_line:
-        script: russell18/fig7h.ncl
+        script: russell18jgr/fig7h.ncl
         # Plot style
         styleset: CMIP5
         ncdf: default
