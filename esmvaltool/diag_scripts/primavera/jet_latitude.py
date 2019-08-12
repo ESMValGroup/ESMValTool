@@ -36,14 +36,14 @@ class JetLatitude(object):
             logger.debug(ua)
             ua_filtered = da.apply_along_axis(
                 lambda m: np.convolve(m, lanczos_weight, mode='same'),
-                axis=ua.dim_coords('time')[0],
+                axis=ua.coord_dims('time')[0],
                 arr=ua.core_data()
             )
             ua_filtered = ua.copy(ua_filtered)
             ua_max = ua_filtered.collapsed('latitude', iris.analysis.MAX)
             ua_max_lat = da.argmax(
                 ua_filtered.core_data(),
-                axis=ua.dim_coords('latitude')[0]
+                axis=ua.coord_dims('latitude')[0]
             )
             ua_max_lat = ua_max.copy(ua_max_lat)
             qp.pcolor(ua)
