@@ -52,7 +52,7 @@ class JetLatitude(object):
             del ua
             del ua_filtered
             latitude = wind.copy(latitude)
-            latitude.varname = 'lat'
+            latitude.var_name = 'lat'
             latitude.standard_name = 'latitude'
             latitude.long_name = 'Jet latitude'
             latitude.units = 'degrees_north'
@@ -64,21 +64,27 @@ class JetLatitude(object):
             self._compute_histogram(alias, latitude)
 
     def _compute_histogram(self, alias, data):
-        clim = data.collapsed('year', iris.analysis.MEAN)
+        clim = data.aggregated_by('day_of_year', iris.analysis.MEAN)
+        clim.remove_coord('time')
+        clim.remove_coord('month_number')
+        clim.remove_coord('day_of_month')
+        clim.remove_coord('year')
+        iris.util.promote_aux_coord_to_dim_coord(clim, 'day_of_year')
+        logger.debug(clim)
         clim_fft = np.fft.rfft(clim.data)
         clim_fft[3:np.size(clim_fft)] = 0
-        clim = np.fft.irfft(clim_fft)
-        clim = clim.copy(clim)
+        clim_fft = np.fft.irfft(clim_fft)
+        clim = clim.copy(clim_fft)
 
         qp.plot(clim)
         plt.savefig(os.path.join(
-            self.cfg[n.PLOT_DIR], '{}_{}_clim.png'.format(alias, data.varname)))
+            self.cfg[n.PLOT_DIR], '{}_{}_clim.png'.format(alias, data.var_name)))
         plt.close()
 
         anom = data - clim
         qp.plot(anom)
         plt.savefig(os.path.join(
-            self.cfg[n.PLOT_DIR], '{}_{}_anom.png'.format(alias, data.varname)))
+            self.cfg[n.PLOT_DIR], '{}_{}_anom.png'.format(alias, data.var_name)))
         plt.close()
 
 
