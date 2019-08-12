@@ -35,51 +35,63 @@ def _clean(filepath):
         logger.info("Removed cached file %s", filepath)
 
 
-def _extract_variable(raw_var, cmor_info, attrs, filepath, out_dir):
+def _extract_variable(short_name, var, cfg, filepath, out_dir):
     """Extract variable."""
-    var = cmor_info.short_name
+    raw_var = var.get('raw', short_name)
     cube = iris.load_cube(filepath, utils.var_name_constraint(raw_var))
-    utils.fix_var_metadata(cube, cmor_info)
+
+    # Fix units
+    cmor_info = cfg['cmor_table'].get_variable(var['mip'], short_name)
+    if 'raw_units' in var:
+        utils.convert_units(cube, var['raw_units'], cmor_info.units)
     utils.convert_timeunits(cube, 1950)
+
+    # Fix coordinates
     utils.fix_coords(cube)
-    utils.set_global_atts(cube, attrs)
-    if var in ('tas', ):
+    if 'height2m' in cmor_info.dimensions:
         utils.add_height2m(cube)
+
+    # Fix metadata
+    attrs = cfg['attributes']
+    attrs['mip'] = var['mip']
+    utils.fix_var_metadata(cube, cmor_info)
+    utils.set_global_atts(cube, attrs)
+
+    # Save variable
     utils.save_variable(cube,
-                        var,
+                        short_name,
                         out_dir,
                         attrs,
                         unlimited_dimensions=['time'])
 
 
-def _unzip(filepath, out_dir):
+def _unzip(short_name, var, raw_filepath, out_dir):
     """Unzip `*.gz` file."""
-    filename = os.path.basename(filepath.replace('.gz', ''))
+    raw_var = var.get('raw', short_name)
+    zip_path = raw_filepath.format(raw_name=raw_var)
+    if not os.path.isfile(zip_path):
+        logger.debug("Skipping '%s', file '%s' not found", short_name,
+                     zip_path)
+        return None
+    logger.info("Found input file '%s'", zip_path)
+    filename = os.path.basename(zip_path.replace('.gz', ''))
     new_path = os.path.join(out_dir, filename)
-    with gzip.open(filepath, 'rb') as zip_file:
+    with gzip.open(zip_path, 'rb') as zip_file:
         with open(new_path, 'wb') as new_file:
             shutil.copyfileobj(zip_file, new_file)
     logger.info("Succefully extracted file to %s", new_path)
     return new_path
 
 
-def cmorization(in_dir, out_dir, cfg):
+def cmorization(in_dir, out_dir, cfg, _):
     """Cmorization func call."""
-    glob_attrs = cfg['attributes']
-    cmor_table = cfg['cmor_table']
     raw_filepath = os.path.join(in_dir, cfg['filename'])
 
     # Run the cmorization
-    for (var, var_info) in cfg['variables'].items():
-        logger.info("CMORizing variable '%s'", var)
-        glob_attrs['mip'] = var_info['mip']
-        cmor_info = cmor_table.get_variable(var_info['mip'], var)
-        raw_var = var_info.get('raw', var)
-        zip_file = os.path.join(in_dir, raw_filepath.format(raw_name=raw_var))
-        if not os.path.isfile(zip_file):
-            logger.debug("Skipping '%s', file '%s' not found", var, zip_file)
+    for (short_name, var) in cfg['variables'].items():
+        logger.info("CMORizing variable '%s'", short_name)
+        filepath = _unzip(short_name, var, raw_filepath, out_dir)
+        if filepath is None:
             continue
-        logger.info("Found input file '%s'", zip_file)
-        filepath = _unzip(zip_file, out_dir)
-        _extract_variable(raw_var, cmor_info, glob_attrs, filepath, out_dir)
+        _extract_variable(short_name, var, cfg, filepath, out_dir)
         _clean(filepath)
