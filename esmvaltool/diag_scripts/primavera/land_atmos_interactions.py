@@ -39,6 +39,7 @@ class LandAtmosInteractions(object):
             clt = iris.load_cube(var['clt'][0]['filename'])
             tas = iris.load_cube(var['tas'][0]['filename'])
             mrso = iris.load_cube(var['mrso'][0]['filename'])
+            self.sftlf = [var['mrso'][0]['fx_files']['sftlf']]
 
             self.grid_cube = iris.load_cube(self.target_grid)
 
