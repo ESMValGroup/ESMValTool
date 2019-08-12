@@ -29,6 +29,7 @@ class JetLatitude(object):
         data = group_metadata(self.cfg['input_data'].values(), 'alias')
         for alias in data:
             ua = iris.load_cube(data[alias][0]['filename'])
+            logger.debug(ua)
             qp.pcolor(ua)
             plt.savefig('{}.png', alias)
 

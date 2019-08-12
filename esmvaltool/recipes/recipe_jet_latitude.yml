@@ -38,7 +38,7 @@ diagnostics:
     description: "Jet latitude index"
     variables:
       ua:
-        preproc: get_region
+        preprocessor: get_region
 
     scripts:
       jetlat:
