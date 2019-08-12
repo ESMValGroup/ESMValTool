@@ -20,34 +20,44 @@ datasets:
   - {activity: HighResMIP, dataset: HadGEM3-GC31-LM,  project: CMIP6, mip: Amon, exp: highresSST-present,  ensemble: r1i1p1f1, grid: gn,  start_year: 2000,  end_year: 2002}
 
 preprocessors:
-  summer:
-    mask_landsea:
-      mask_out: sea
+  ppsummer:
     extract_season:
       season: 'JJA'
+    seasonal_mean:
+  ppmrso:
     seasonal_mean:
 
 diagnostics:
   interactions:
     description: "Simple personal diagnostic"
     variables:
-      clt:
-        preprocessor: summer
-        mip: Amon
-      tas:
-        preprocessor: summer
-        mip: Amon
       hfls:
-        preprocessor: summer
         mip: Amon
+        preprocessor: ppsummer
       hfss:
-        preprocessor: summer
         mip: Amon
+        preprocessor: ppsummer
       rsds:
-        preprocessor: summer
         mip: Amon
+        preprocessor: ppsummer
       rlds:
-        preprocessor: summer
         mip: Amon
+        preprocessor: ppsummer
+      clt:
+        mip: Amon
+        preprocessor: ppsummer
+      tas:
+        mip: Amon
+        preprocessor: ppsummer
+      mrso:
+        mip: Lmon
+        preprocessor: ppmrso
+        fx_files: [sftlf]
+
     scripts:
+      interactions:
+        script: primavera/land_atmos_interactions.py
+        target_grid: '/gws/nopw/j04/primavera1/cache/jboe/WP1/FOR_INTERP/lsm_ERA5.nc'
+
+
 
