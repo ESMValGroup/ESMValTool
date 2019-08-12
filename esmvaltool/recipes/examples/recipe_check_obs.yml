@@ -328,7 +328,6 @@ diagnostics:
     description: PIOMAS
     variables:
       sithick:
-        preproc: nopp
         mip: day
         fx_files: [areacello]
     additional_datasets:
