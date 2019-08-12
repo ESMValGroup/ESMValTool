@@ -51,13 +51,22 @@ class JetLatitude(object):
             ua_max_lat = ua_max.copy(ua_max_lat)
 
             wind_smooth = self._compute_histogram(ua_max)
+            wind_anom = ua_max - wind_smooth
+
             qp.plot(wind_smooth)
             plt.savefig(os.path.join(
-                self.cfg[n.PLOT_DIR], '{}_wind.png'.format(alias)))
+                self.cfg[n.PLOT_DIR], '{}_wind_climatolgy.png'.format(alias)))
+            plt.close()
+            qp.plot(wind_anom)
+            plt.savefig(os.path.join(
+                self.cfg[n.PLOT_DIR], '{}_wind_anomaliess.png'.format(alias)))
+            plt.close()
+
             lat_smooth = self._compute_histogram(ua_max_lat)
             qp.plot(lat_smooth)
             plt.savefig(os.path.join(
                 self.cfg[n.PLOT_DIR], '{}_lat.png'.format(alias)))
+            plt.close()
 
     def _compute_histogram(self, data):
         iris.coord_categorisation.add_day_of_year(data, 'time')
