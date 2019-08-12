@@ -25,6 +25,8 @@ preprocessors:
         scheme: area_weighted
       mask_fillvalues:
         threshold_fraction: 0.0
+      regrid_time:
+        frequency: mon
 
   regrid10:
       regrid:
@@ -32,14 +34,18 @@ preprocessors:
         scheme: nearest
       mask_fillvalues:
         threshold_fraction: 0.0
-
+      regrid_time:
+        frequency: mon
+        
   regrid2:
       regrid:
         target_grid: 2x2
         scheme: nearest
       mask_fillvalues:
         threshold_fraction: 0.0
-        
+      regrid_time:
+        frequency: mon
+                
 diagnostics:
   TEST:
     themes:

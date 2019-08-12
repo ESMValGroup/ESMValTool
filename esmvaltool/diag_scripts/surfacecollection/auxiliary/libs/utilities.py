@@ -690,6 +690,33 @@ def unify_time(list_of_cubes):
     
     return list_of_cubes
 
+def weighted_spatial_mean(cube, weighted=True):
+    """
+    produces a weighted spatial mean along the time coordinates of cubes
+    --------------------------------------------------------------------
+    returns collapsed cube
+    """
+    
+    cubes = []
+    
+    delete_aux_coords(cube)
+    
+    SPW = spatial_weights(cube)
+    
+    for latlon in cube.slices(["latitude","longitude"]):
+        
+        pass
+    
+    return
+
+def spatial_weights(cube):
+    """
+    produces a weighted spatial mean along the time coordinates of cubes
+    --------------------------------------------------------------------
+    returns collapsed cube
+    """
+    
+    return
 
 class input_handler(object):
     """

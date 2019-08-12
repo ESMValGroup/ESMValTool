@@ -37,7 +37,6 @@ class ecv_handler(object):
         self.input = input_handler()
         self.files_read = False
         
-        logger.info("init completed")
         return
     
     def set_info(self, cfg):
@@ -53,7 +52,6 @@ class ecv_handler(object):
         # handle input
         self.input.set_files(cfg['input_data'], read = False)
         
-        logger.info("set_info completed")
         return
     
     def read(self):
@@ -68,7 +66,6 @@ class ecv_handler(object):
         
         self.files_read = True
         
-        logger.info("read completed")
         return
     
     def run(self):
@@ -89,13 +86,11 @@ class ecv_handler(object):
                                  temporal_basis=self.cfg["temporal_basis"],
                                  )
                 for r in results:
-                    getattr(plots, diag)(r,
-                           cmap=self.cfg["colormap"],
-                           vminmax=self.cfg["vminmax"],
-                           plotdir=self.cfg["plot_dir"],
-                           fformat=self.cfg["output_file_type"])
+                    getattr(plots, diag)(
+                            r,
+                            cmap=self.cfg["colormap"],
+                            vminmax=self.cfg["vminmax"],
+                            plotdir=self.cfg["plot_dir"],
+                            fformat=self.cfg["output_file_type"])
             
-#        logger.info('\n'.join("%s: %s" % item for item in vars(self).items()))
-        
-        logger.info("run completed")
         return

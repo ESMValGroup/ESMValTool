@@ -34,7 +34,8 @@ def time_series(data, **kwargs):
                                             cube)))
         
     uni_cube = unify_cubes(cubes)
-    #TODO: include regional subsetting
+    
+    logger.info(kwargs)
     
     return uni_cube
 

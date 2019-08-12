@@ -101,11 +101,14 @@ def time_series(data, **kwargs):
         # Plot the cube, and associate it with a label.
         iplt.plot(cube, label=cube_label, color=col(indx))
     
-    locs, labels = __time_label_and_loc__(cube.coord("unified_time"))
-        
-    plt.xticks(locs, labels, rotation=15)
-        
-    ax.set(xlim=[min(locs), max(locs)],
+# not needed if preprocessor changes time
+#    locs, labels = __time_label_and_loc__(cube.coord("unified_time"))
+#    plt.xticks(locs, labels, rotation=15)
+#    xlim=[min(locs), max(locs)]
+
+    ax.autoscale(tight=True)
+
+    ax.set(
            ylim=kwargs.pop("vminmax", [None, None]),
            xlabel='Time',
            ylabel=textwrap.fill("{} [{}]".format(cube.long_name,
