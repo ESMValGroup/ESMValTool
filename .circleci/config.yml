@@ -147,7 +147,7 @@ jobs:
             dpkg -l > /logs/versions.txt
             /opt/conda/bin/pip freeze > /logs/requirements.txt
             # Test building documentation
-            MPLBACKEND=Agg python setup.py build_sphinx --warning-is-error
+            MPLBACKEND=Agg /opt/conda/bin/python setup.py build_sphinx --warning-is-error
       - save_cache:
           key: documentation-{{ .Branch }}
           paths:
