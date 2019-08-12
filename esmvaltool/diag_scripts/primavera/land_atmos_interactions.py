@@ -55,7 +55,6 @@ class LandAtmosInteractions(object):
 
             # Compute the metrics but with detrended data.
             hfls = hfls.copy(signal.detrend(hfls.lazy_data(), axis=0))
-            hfls = mask_landsea(hfls, None, 'sea')
             rsds = rsds.copy(signal.detrend(rsds.lazy_data(), axis=0))
             rlds = rlds.copy(signal.detrend(rlds.lazy_data(), axis=0))
             clt = clt.copy(signal.detrend(clt.lazy_data(), axis=0))
