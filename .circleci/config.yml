@@ -140,7 +140,8 @@ jobs:
             mkdir /logs
             # Install
             . /opt/conda/etc/profile.d/conda.sh
-            conda install -c conda-forge -y pip
+            conda install -c conda-forge -y pip > /logs/install.txt 2>&1
+            conda install -c conda-forge -y setuptools > /logs/install.txt 2>&1
             /opt/conda/bin/pip install -r doc/sphinx/source/requirements.txt > /logs/install.txt 2>&1
             /opt/conda/bin/pip install sphinx sphinx_rtd_theme >> /logs/install.txt 2>&1
             # Log versions
