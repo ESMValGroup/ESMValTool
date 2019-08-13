@@ -135,7 +135,8 @@ class JetLatitude(object):
             bbox_inches='tight'
         )
 
-        def main():
+        
+def main():
     with esmvaltool.diag_scripts.shared.run_diagnostic() as config:
         JetLatitude(config).compute()
 
