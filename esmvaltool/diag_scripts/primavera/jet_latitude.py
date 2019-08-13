@@ -65,6 +65,7 @@ class JetLatitude(object):
             self._compute_histogram(alias, latitude)
 
     def _compute_histogram(self, alias, data):
+        var_name = data.var_name
         clim = data.aggregated_by('day_of_year', iris.analysis.MEAN)
         clim.remove_coord('time')
         clim.remove_coord('month_number')
@@ -102,21 +103,23 @@ class JetLatitude(object):
             kde.set_bandwidth(bw_method='silverman')
             kde.set_bandwidth(bw_method=kde.factor*1.06)
             pdf = kde(lats)
+            anom_slice.var_name = var_name
             self._plot_histogram(alias, anom_slice, hist, lats, pdf)
 
-    def _plot_histogram(self, alias, season_slice, histogram, lats, pdf):
-        season = season_slice.coord('season').points[0]
-        lat_bounds = season_slice.coord('latitude').bounds
-        g = 0.4; G = 0.5
+    def _plot_histogram(self, alias, anomalies, histogram, lats, pdf):
+        season = anomalies.coord('season').points[0]
+        lat_bounds = anomalies.coord('latitude').bounds
+        g = 0.4
+        G = 0.5
         plt.figure(figsize=(14, 8), dpi=250)
         plt.bar(
-            season_slice.coord('latitude').points,
+            anomalies.coord('latitude').points,
             histogram / 2.5 * histogram.sum(),
             width=2.5, align='center',
-            color=[g,g,g], alpha=1, edgecolor=[G,G,G]
+            color=[g, g, g], alpha=1, edgecolor=[G, G, G]
         )
         plt.plot(
-            (np.mean(season_slice.data), np.mean(season_slice.data)), (0, 1),
+            (np.mean(anomalies.data), np.mean(anomalies.data)), (0, 1),
             color=[0.7, 0.7, 0.7], lw=3, ls='--'
         )
         plt.plot(lats, pdf, color=[0.8, 0.2, 0.2], lw=3, ls='-')
@@ -130,12 +133,12 @@ class JetLatitude(object):
         plt.savefig(
             os.path.join(
                 self.cfg[n.PLOT_DIR],
-                '{}_{}_{}.png'.format(season_slice.var_name, alias, season)
+                '{}_{}_{}.png'.format(alias, anomalies.var_name, alias, season)
             ),
             bbox_inches='tight'
         )
 
-        
+
 def main():
     with esmvaltool.diag_scripts.shared.run_diagnostic() as config:
         JetLatitude(config).compute()
