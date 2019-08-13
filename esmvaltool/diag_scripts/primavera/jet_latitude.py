@@ -133,7 +133,7 @@ class JetLatitude(object):
         plt.savefig(
             os.path.join(
                 self.cfg[n.PLOT_DIR],
-                '{}_{}_{}.png'.format(alias, anomalies.var_name, alias, season)
+                '{}_{}_{}.png'.format(alias, anomalies.var_name, season)
             ),
             bbox_inches='tight'
         )
