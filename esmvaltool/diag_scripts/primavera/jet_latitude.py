@@ -78,13 +78,25 @@ class JetLatitude(object):
 
         qp.plot(clim)
         plt.savefig(os.path.join(
-            self.cfg[n.PLOT_DIR], '{}_{}_clim.png'.format(alias, data.var_name)))
+            self.cfg[n.PLOT_DIR],
+            '{}_{}_clim.png'.format(alias, data.var_name))
+        )
         plt.close()
-
-        anom = data - clim
+        anom = iris.cube.CubeList()
+        for day_slice in clim.slices_over('day_of_year'):
+            day_constraint = iris.Constraint(
+                day_of_year=day_slice.coord('day_of_year').points[0]
+            )
+            data_slice = data.extract(day_constraint)
+            anom.append(data_slice - day_slice)
+        logger.debug(anom)
+        anom = anom.concatenate_cube()
+        logger.debug(anom)
         qp.plot(anom)
         plt.savefig(os.path.join(
-            self.cfg[n.PLOT_DIR], '{}_{}_anom.png'.format(alias, data.var_name)))
+            self.cfg[n.PLOT_DIR],
+            '{}_{}_anom.png'.format(alias, data.var_name))
+        )
         plt.close()
 
 
