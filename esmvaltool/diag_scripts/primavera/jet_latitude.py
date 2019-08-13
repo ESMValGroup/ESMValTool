@@ -36,6 +36,7 @@ class JetLatitude(object):
         )
         for alias in data:
             ua = iris.load_cube(data[alias][0]['filename'])
+            iris.coord_categorisation.add_season(ua, 'time')
 
             ua_filtered = np.apply_along_axis(
                 lambda m: np.convolve(m, lanczos_weight, mode='same'),
@@ -89,12 +90,12 @@ class JetLatitude(object):
         plt.close()
         season_clim = clim.aggregated_by('season', iris.analysis.MEAN)
         current_season = anom.coord('day_of_year').points
-        latitude = anom.coords('latitude')
-        for season_slice in anom.slices_over('season'):
-            season_mean = season_clim.extract(iris.Constraint(season=season_slice.coord('season').points[0]))
+        latitude = anom.coord('latitude')
+        for season_slice in season_clim.slices_over('season'):
+            anom_slice = season_clim.extract(iris.Constraint(season=season_slice.coord('season').points[0]))
             season = season_slice.coord('season').points[0]
-            season_slice.data[current_season == season] = season_slice.data[current_season == season] - season_slice.data
-            hist, bin_edges = np.histogram(season_slice, bins=np.arange(latitude.bounds[0], latitude.bounds[1], 2.5)-1.25)
+            anom_slice.data[current_season == season] = anom_slice.data[current_season == season] - season_slice.data
+            hist, bin_edges = np.histogram(season_slice, bins=np.arange(latitude.min(), latitude.max(), 2.5)-1.25)
             kde = stats.gaussian_kde(season_slice.data)
             lats = np.linspace(bin_edges.min(), bin_edges.max(), 100)
             kde.set_bandwidth(bw_method='silverman')
@@ -104,7 +105,7 @@ class JetLatitude(object):
 
     def _plot_histogram(self, alias, season_slice, histogram, lats, pdf):
         season = season_slice.coord('season').points[0]
-        lat_bounds = season.coords('latitude').bounds
+        lat_bounds = season.coord('latitude').bounds
         g = 0.4; G = 0.5
         plt.figure(figsize=(14, 8), dpi=250)
         plt.bar(
@@ -120,7 +121,7 @@ class JetLatitude(object):
         plt.plot(lats, pdf, color=[0.8, 0.2, 0.2], lw=3, ls='-')
         # --- X-axes properties ---
         plt.xlabel(u'Latitude (\u00B0N)')
-        plt.xlim(17.5,72.5)
+        plt.xlim(lat_bounds.min(), lat_bounds.max())
         # --- Y-axes properties ---
         plt.ylabel('Relative Frequency Density')
         plt.ylim(0,0.1)
