@@ -3,8 +3,8 @@ import logging
 
 import matplotlib.pyplot as plt
 
-import dask.array as da
 import numpy as np
+from scipy import stats
 
 import iris
 import iris.cube
@@ -70,35 +70,64 @@ class JetLatitude(object):
         clim.remove_coord('day_of_month')
         clim.remove_coord('year')
         iris.util.promote_aux_coord_to_dim_coord(clim, 'day_of_year')
-        logger.debug(clim)
         clim_fft = np.fft.rfft(clim.data)
         clim_fft[3:np.size(clim_fft)] = 0
         clim_fft = np.fft.irfft(clim_fft)
         clim = clim.copy(clim_fft)
 
-        qp.plot(clim)
-        plt.savefig(os.path.join(
-            self.cfg[n.PLOT_DIR],
-            '{}_{}_clim.png'.format(alias, data.var_name))
-        )
-        plt.close()
-        anom = iris.cube.CubeList()
+        anom = data.data
+        day_year = data.coord('day_of_year').points
         for day_slice in clim.slices_over('day_of_year'):
-            day_constraint = iris.Constraint(
-                day_of_year=day_slice.coord('day_of_year').points[0]
-            )
-            data_slice = data.extract(day_constraint)
-            anom.append(data_slice - day_slice)
-        logger.debug(anom)
-        anom = anom.concatenate_cube()
-        logger.debug(anom)
-        qp.plot(anom)
+            num_day = day_slice.coord('day_of_year').points[0]
+            anom[day_year == num_day] = anom[day_year == num_day] - day_slice.data
+        anom = data.copy(anom)
+        qp.plot(data)
         plt.savefig(os.path.join(
             self.cfg[n.PLOT_DIR],
             '{}_{}_anom.png'.format(alias, data.var_name))
         )
         plt.close()
+        season_clim = clim.aggregated_by('season', iris.analysis.MEAN)
+        current_season = anom.coord('day_of_year').points
+        latitude = anom.coords('latitude')
+        for season_slice in anom.slices_over('season'):
+            season_mean = season_clim.extract(iris.Constraint(season=season_slice.coord('season').points[0]))
+            season = season_slice.coord('season').points[0]
+            season_slice.data[current_season == season] = season_slice.data[current_season == season] - season_slice.data
+            hist, bin_edges = np.histogram(season_slice, bins=np.arange(latitude.bounds[0], latitude.bounds[1], 2.5)-1.25)
+            kde = stats.gaussian_kde(season_slice.data)
+            lats = np.linspace(bin_edges.min(), bin_edges.max(), 100)
+            kde.set_bandwidth(bw_method='silverman')
+            kde.set_bandwidth(bw_method=kde.factor*1.06)
+            pdf = kde(lats)
+            self._plot_histogram(alias, season_slice, hist, lats, pdf)
 
+    def _plot_histogram(self, alias, season_slice, histogram, lats, pdf):
+        season = season_slice.coord('season').points[0]
+        lat_bounds = season.coords('latitude').bounds
+        g = 0.4; G = 0.5
+        plt.figure(figsize=(14, 8), dpi=250)
+        plt.bar(
+            season_slice.coord('latitude').points,
+            histogram / 2.5 * histogram.sum(),
+            width=2.5, align='center',
+            color=[g,g,g], alpha=1, edgecolor=[G,G,G]
+        )
+        plt.plot(
+            (np.mean(season_slice.data), np.mean(season_slice.data)), (0, 1),
+            color=[0.7, 0.7, 0.7], lw=3, ls='--'
+        )
+        plt.plot(lats, pdf, color=[0.8, 0.2, 0.2], lw=3, ls='-')
+        # --- X-axes properties ---
+        plt.xlabel(u'Latitude (\u00B0N)')
+        plt.xlim(17.5,72.5)
+        # --- Y-axes properties ---
+        plt.ylabel('Relative Frequency Density')
+        plt.ylim(0,0.1)
+        plt.yticks([0, 0.02, 0.04, 0.06, 0.08, 0.1])
+        plt.title('Jet-Latitude Distribution for ' + alias + ', ' + season + ' (1979-2016)')
+        plt.grid()
+        plt.savefig('{}_{}_{}.png'.format(season_slice.var_name, alias, season), bbox_inches='tight')
 
 def main():
     with esmvaltool.diag_scripts.shared.run_diagnostic() as config:
