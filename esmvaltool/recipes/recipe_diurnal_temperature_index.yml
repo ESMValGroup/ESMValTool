@@ -26,17 +26,13 @@ datasets:
 
 preprocessors:
   preproc:
-    regrid:
-      target_grid: MPI-ESM-MR
-      scheme: linear
-    mask_fillvalues:
-      threshold_fraction: 0.95
     extract_region:
       start_longitude: -10
       end_longitude: 40
       start_latitude: 27
       end_latitude: 70
-
+    mask_landsea:
+      mask_out: sea
 diagnostics:
   diurnal_temperature_indicator:
     description: Calculate the diurnal temperature indicator.
