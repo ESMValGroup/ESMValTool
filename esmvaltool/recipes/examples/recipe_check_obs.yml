@@ -612,6 +612,14 @@ diagnostics:
       - {dataset: MTE, project: OBS, tier: 3, type: reanaly, version: May12, start_year: 1982, end_year: 2011}
     scripts: null
 
+  FLUXCOM:
+    description: FLUXCOM
+    variables:
+      gpp:
+        mip: Lmon
+    additional_datasets:
+      - {dataset: FLUXCOM, project: OBS, tier: 3, type: reanaly, version: ANN-v1, start_year: 1980, end_year: 2013}
+    scripts: null
 
   MODIS:
     description: MODIS
