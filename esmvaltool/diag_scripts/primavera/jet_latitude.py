@@ -97,9 +97,9 @@ class JetLatitude(object):
             sea_data.var_name = var_name
             if self.cfg[n.WRITE_NETCDF]:
                 self._save_cube(
-                    hist, '{}hist{}_{}.nc'.format(alias, var_name, season))
+                    hist, '{}_{}hist_{}.nc'.format(alias, var_name, season))
                 self._save_cube(
-                    pdf, '{}pdf{}_{}.nc'.format(alias, var_name, season))
+                    pdf, '{}_{}pdf_{}.nc'.format(alias, var_name, season))
             self._plot_histogram(alias, sea_data, hist, pdf, metadata)
 
     def _smooth_daily_clim(self, data):
@@ -182,9 +182,12 @@ class JetLatitude(object):
         plt.ylabel('Relative Frequency Density')
         y_max = plot_config.get('probability_limit', 0.14)
         plt.ylim(0, y_max)
-        plt.yticks(np.arange(0, y_max, plot_config.get('probability_tick', 0.1)))
-        plt.title('{} distribution for {}, {} ({}-{})'.format(
-            anomalies.long_name, alias, season,
+        plt.yticks(
+            np.arange(0, y_max, plot_config.get('probability_tick', 0.1))
+        )
+        plt.title('{} distribution for {} ({} hPa), {} ({}-{})'.format(
+            anomalies.long_name, alias,
+            int(anomalies.coord('air_pressure').points[0] / 100), season,
             metadata[n.START_YEAR], metadata[n.END_YEAR],
         ))
         plt.grid()

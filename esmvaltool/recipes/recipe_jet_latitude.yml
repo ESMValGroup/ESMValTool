@@ -11,7 +11,24 @@ documentation:
     - pred_va
 
 datasets:
-  - {activity: HighResMIP, dataset: HadGEM3-GC31-LM,  project: CMIP6, mip: day, exp: highresSST-present,  ensemble: r1i1p1f1, grid: gn,  start_year: 1979,  end_year: 2014}
+  - &HighResMIP {activity: HighResMIP, dataset: HadGEM3-GC31-LM,  project: CMIP6, mip: day, exp: highresSST-present,  ensemble: r1i1p1f1, grid: gn,  start_year: 1979,  end_year: 2014}
+  - {<<: *HighResMIP, dataset: HadGEM3-GC31-MM}
+  - {<<: *HighResMIP, dataset: HadGEM3-GC31-HM}
+  - {<<: *HighResMIP, dataset: HadGEM3-GC31-LL}
+  - {<<: *HighResMIP, dataset: CMCC-CM2-HR4}
+  - {<<: *HighResMIP, dataset: CMCC-CM2-VHR4}
+  - {<<: *HighResMIP, dataset: CNRM-CM6-1}
+  - {<<: *HighResMIP, dataset: CNRM-CM6-1-HR}
+  - {<<: *HighResMIP, dataset: ECMWF-IFS-LR}
+  - {<<: *HighResMIP, dataset: ECMWF-IFS-HR}
+  - {<<: *HighResMIP, dataset: IPSL-CM6A-LR}
+  - {<<: *HighResMIP, dataset: IPSL-CM6A-ATM-HR}
+  - {<<: *HighResMIP, dataset: NICAM16-7S}
+  - {<<: *HighResMIP, dataset: MPI-ESM1-2-HR}
+  - {<<: *HighResMIP, dataset: MPI-ESM1-2-XR}
+  - {<<: *HighResMIP, dataset: MRI-AGCM3-2-H}
+  - {<<: *HighResMIP, dataset: MRI-AGCM3-2-S}
+  - {<<: *HighResMIP, dataset: HadGEM3-GC31-HH}
 
 preprocessors:
   get_region:
@@ -39,7 +56,7 @@ diagnostics:
         script: primavera/jet_latitude.py
         plot:
           probability_limit: 0.15
-          probability_tick: 0.1
+          probability_tick: 0.01
 
 
 
