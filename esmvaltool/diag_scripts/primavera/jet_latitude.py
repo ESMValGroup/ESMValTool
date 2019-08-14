@@ -112,7 +112,7 @@ class JetLatitude(object):
         clim.remove_coord('year')
         clim_fft = np.fft.rfft(clim.data)
         clim_fft[3:np.size(clim_fft)] = 0
-        clim_fft = np.fft.irfft(clim_fft, data.shape[0])
+        clim_fft = np.fft.irfft(clim_fft, clim.shape[0])
         return clim.copy(clim_fft)
 
     def _compute_histogram(self, data, bins):
