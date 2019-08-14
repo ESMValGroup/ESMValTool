@@ -7,7 +7,7 @@ channels:
 dependencies:
   # Python packages that cannot be installed from PyPI:
   - esmpy
-  - esmvalcore>=2.0.0a1,<2.1
+  - esmvalcore>=2.0.0b0,<2.1
   - iris>=2.2
   - matplotlib<3  # Can be installed from PyPI, but is a dependency of iris and should be pinned.
   - python-stratify
@@ -21,6 +21,7 @@ dependencies:
   # Multi language support:
   - python>=3.6
   - libunwind  # Needed for Python3.7+
+  - tiledb>=1.6.0  # Needed by the new ncl=6.6.2; conda keeps it at 1.2.2
   - ncl>=6.5.0
   - r-base
   - r-curl  # Dependency of lintr, but fails to compile because it cannot find libcurl installed from conda.
