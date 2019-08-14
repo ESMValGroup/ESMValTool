@@ -22,6 +22,7 @@ PACKAGES = [
 REQUIREMENTS = {
     # Installation script (this file) dependencies
     'setup': [
+        'pytest-runner',
         'setuptools_scm',
     ],
     # Installation dependencies
@@ -58,6 +59,7 @@ REQUIREMENTS = {
         'pytest>=3.9',
         'pytest-cov',
         'pytest-env',
+        'pytest-flake8',
         'pytest-html',
         'pytest-metadata>=1.5.1',
     ],
@@ -103,44 +105,6 @@ class CustomCommand(Command):
                 self.distribution.install_requires)
         if self.distribution.tests_require:
             self.distribution.fetch_build_eggs(self.distribution.tests_require)
-
-
-class RunTests(CustomCommand):
-    """Class to run tests and generate reports."""
-
-    user_options = [('installation', None,
-                     'Run tests that require installation.')]
-
-    def initialize_options(self):
-        """Initialize custom options."""
-        self.installation = False
-
-    def finalize_options(self):
-        """Do nothing."""
-
-    def run(self):
-        """Run tests and generate a coverage report."""
-        self.install_deps_temp()
-
-        import pytest
-
-        report_dir = 'test-reports'
-        args = [
-            'tests',
-            'esmvaltool',  # for doctests
-            '--doctest-modules',
-            '--cov=esmvaltool',
-            '--cov-report=term',
-            '--cov-report=html:{}/coverage_html'.format(report_dir),
-            '--cov-report=xml:{}/coverage.xml'.format(report_dir),
-            '--junit-xml={}/report.xml'.format(report_dir),
-            '--html={}/report.html'.format(report_dir),
-        ]
-        if self.installation:
-            args.append('--installation')
-        errno = pytest.main(args)
-
-        sys.exit(errno)
 
 
 class RunLinter(CustomCommand):
@@ -217,8 +181,7 @@ setup(
     install_requires=REQUIREMENTS['install'],
     tests_require=REQUIREMENTS['test'],
     extras_require={
-        'develop': (set(REQUIREMENTS['develop'] + REQUIREMENTS['test']) -
-                    {'pycodestyle'}),
+        'develop': (set(REQUIREMENTS['develop'] + REQUIREMENTS['test'])),
     },
     entry_points={
         'console_scripts': [
@@ -231,7 +194,6 @@ setup(
         ],
     },
     cmdclass={
-        'test': RunTests,
         'lint': RunLinter,
     },
     zip_safe=False,
