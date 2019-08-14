@@ -99,6 +99,8 @@ class JetLatitude(object):
             sea_data.var_name = var_name
             if self.cfg[n.WRITE_NETCDF]:
                 self._save_cube(
+                    data, '{}_{}_{}.nc'.format(alias, var_name, season))
+                self._save_cube(
                     hist, '{}_{}hist_{}.nc'.format(alias, var_name, season))
                 self._save_cube(
                     pdf, '{}_{}pdf_{}.nc'.format(alias, var_name, season))
@@ -199,6 +201,7 @@ class JetLatitude(object):
             ),
             bbox_inches='tight'
         )
+        plt.close()
 
     def _save_cube(self, cube, filename):
         iris.save(
