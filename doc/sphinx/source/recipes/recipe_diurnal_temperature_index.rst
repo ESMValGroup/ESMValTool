@@ -69,6 +69,6 @@ Example plots
 -------------
 
 .. _fig_diurnal:
-.. figure::  /recipes/figures/diurnal_temp_index/rcp85_diurnal.png
+.. figure::  /recipes/figures/diurnal_temp_index/Seasonal_DTRindicator_MPI-ESM-MR_2030_2080_1961_1990.png
    :align:   center
    :width:   14cm
