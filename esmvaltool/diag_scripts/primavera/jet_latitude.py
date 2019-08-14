@@ -34,7 +34,7 @@ class JetLatitude(object):
             '$HOME/jetlat/python/LF_weights.npy'
         ))
         for alias in data:
-            logger.info('Working on %s', alias)
+            logger.info('Processing %s', alias)
             ua = iris.load_cube(data[alias][0]['filename'])
             iris.coord_categorisation.add_season(ua, 'time')
 
@@ -53,6 +53,7 @@ class JetLatitude(object):
                 ua.data,
                 axis=ua.coord_dims('latitude')[0]
             )
+            latitude = ua.coord('latitude').points[latitude]
             del ua
             del ua_filtered
             latitude = wind.copy(latitude)
@@ -68,11 +69,11 @@ class JetLatitude(object):
                 ((lat_bounds.max() // interval) + 1) * interval,
                 interval,
             )
-            logger.info('Working on jet latitude')
+            logger.info('Analysing jet latitude')
             self._compute_var(alias, latitude, lat_bins + 1.25, data[alias][0])
 
-            logger.info('Working on jet speed')
-            interval = self.cfg.get('wind_bins', 2.5)
+            logger.info('Analysing jet speed')
+            interval = self.cfg.get('speed_bins', 1)
             wind_bins = np.arange(0, 40 + interval, interval)
             self._compute_var(alias, wind, wind_bins, data[alias][0])
 
@@ -98,8 +99,6 @@ class JetLatitude(object):
 
             sea_data.var_name = var_name
             if self.cfg[n.WRITE_NETCDF]:
-                self._save_cube(
-                    data, '{}_{}_{}.nc'.format(alias, var_name, season))
                 self._save_cube(
                     hist, '{}_{}hist_{}.nc'.format(alias, var_name, season))
                 self._save_cube(
