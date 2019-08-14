@@ -37,6 +37,9 @@ diagnostics:
     scripts:
       jetlat:
         script: primavera/jet_latitude.py
+        plot:
+          probability_limit: 0.15
+          probability_tick: 0.1
 
 
 

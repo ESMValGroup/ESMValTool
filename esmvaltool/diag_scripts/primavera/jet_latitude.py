@@ -11,7 +11,6 @@ import iris.cube
 import iris.analysis
 import iris.util
 import iris.coord_categorisation
-import iris.quickplot as qp
 
 import esmvaltool.diag_scripts.shared
 import esmvaltool.diag_scripts.shared.names as n
@@ -31,9 +30,9 @@ class JetLatitude(object):
 
     def compute(self):
         data = group_metadata(self.cfg['input_data'].values(), 'alias')
-        lanczos_weight = np.load(
-            '/home/users/panos/work_space/jetlat/python/LF_weights.npy'
-        )
+        lanczos_weight = np.load(os.path.expandvars(
+            '$HOME/jetlat/python/LF_weights.npy'
+        ))
         for alias in data:
             ua = iris.load_cube(data[alias][0]['filename'])
             iris.coord_categorisation.add_season(ua, 'time')
@@ -46,6 +45,10 @@ class JetLatitude(object):
             ua = ua.copy(ua_filtered)
 
             wind = ua.collapsed('latitude', iris.analysis.MAX)
+            wind.var_name = 'jet'
+            wind.standard_name = None
+            wind.long_name = 'Jet speed'
+
             latitude = np.argmax(
                 ua.data,
                 axis=ua.coord_dims('latitude')[0]
@@ -58,24 +61,23 @@ class JetLatitude(object):
             latitude.long_name = 'Jet latitude'
             latitude.units = 'degrees_north'
 
+            lat_bounds = latitude.coord('latitude').bounds
             logger.debug(wind)
             logger.debug(latitude)
+            interval = 2.5
+            lat_bins = np.arange(
+                (lat_bounds.min() // interval) * interval,
+                ((lat_bounds.max() // interval) + 1) * interval,
+                interval,
+            )
+            wind_bins = np.arange(0, 41, 1)
+            self._compute_var(alias, wind, wind_bins, data[alias][0])
+            self._compute_var(alias, latitude, lat_bins + 1.25, data[alias][0])
 
-            self._compute_histogram(alias, wind)
-            self._compute_histogram(alias, latitude)
-
-    def _compute_histogram(self, alias, data):
+    def _compute_var(self, alias, data, bins, metadata):
         var_name = data.var_name
-        clim = data.aggregated_by('day_of_year', iris.analysis.MEAN)
-        clim.remove_coord('time')
-        clim.remove_coord('month_number')
-        clim.remove_coord('day_of_month')
-        clim.remove_coord('year')
-        iris.util.promote_aux_coord_to_dim_coord(clim, 'day_of_year')
-        clim_fft = np.fft.rfft(clim.data)
-        clim_fft[3:np.size(clim_fft)] = 0
-        clim_fft = np.fft.irfft(clim_fft)
-        clim = clim.copy(clim_fft)
+        clim = self._smooth_daily_clim(data)
+        season_clim = clim.aggregated_by('season', iris.analysis.MEAN)
 
         anom = data.data
         day_year = data.coord('day_of_year').points
@@ -85,50 +87,106 @@ class JetLatitude(object):
             anom[indexes] = anom[indexes] - day_slice.data
         anom = data.copy(anom)
 
-        season_clim = clim.aggregated_by('season', iris.analysis.MEAN)
-        current_season = anom.coord('day_of_year').points
-        latitude = anom.coord('latitude')
         for season_slice in season_clim.slices_over('season'):
             season = season_slice.coord('season').points[0].split('|')[0]
-            anom_slice = anom.extract(iris.Constraint(season=season))
-            anom_slice = anom_slice + season_slice.data
-            hist, bin_edges = np.histogram(
-                anom_slice.data,
-                bins=np.arange(
-                    latitude.bounds.min(), latitude.bounds.max(), 2.5
-                ) - 1.25
-            )
-            kde = stats.gaussian_kde(anom_slice.data)
-            lats = np.linspace(bin_edges.min(), bin_edges.max(), 100)
-            kde.set_bandwidth(bw_method='silverman')
-            kde.set_bandwidth(bw_method=kde.factor*1.06)
-            pdf = kde(lats)
-            anom_slice.var_name = var_name
-            self._plot_histogram(alias, anom_slice, hist, lats, pdf)
+            sea_data = anom.extract(iris.Constraint(season=season))
+            sea_data = sea_data.copy(sea_data.data + season_slice.data)
+            hist = self._compute_histogram(sea_data, bins)
+            pdf = self._compute_pdf(sea_data, bins)
 
-    def _plot_histogram(self, alias, anomalies, histogram, lats, pdf):
+            sea_data.var_name = var_name
+            if self.cfg[n.WRITE_NETCDF]:
+                self._save_cube(
+                    hist, '{}hist{}_{}.nc'.format(alias, var_name, season))
+                self._save_cube(
+                    pdf, '{}pdf{}_{}.nc'.format(alias, var_name, season))
+            self._plot_histogram(alias, sea_data, hist, pdf, metadata)
+
+    def _smooth_daily_clim(self, data):
+        clim = data.aggregated_by('day_of_year', iris.analysis.MEAN)
+        clim.remove_coord('time')
+        clim.remove_coord('month_number')
+        clim.remove_coord('day_of_month')
+        clim.remove_coord('year')
+        iris.util.promote_aux_coord_to_dim_coord(clim, 'day_of_year')
+        clim_fft = np.fft.rfft(clim.data)
+        clim_fft[3:np.size(clim_fft)] = 0
+        clim_fft = np.fft.irfft(clim_fft)
+        return clim.copy(clim_fft)
+
+    def _compute_histogram(self, data, bins):
+        hist, _ = np.histogram(data.data, bins=bins)
+        cube = iris.cube.Cube(
+            hist,
+            var_name='n',
+            long_name='ocurrences',
+            units=1.0
+        )
+        cube.add_dim_coord(
+            iris.coords.DimCoord(
+                points=np.array([(bins[x-1] + bins[x]) / 2
+                                 for x in range(1, len(bins))]),
+                var_name=data.var_name,
+                long_name=data.long_name,
+                units=data.units,
+                bounds=np.array([[bins[x-1], bins[x]]
+                                 for x in range(1, len(bins))]),
+            ),
+            0
+        )
+        return cube
+
+    def _compute_pdf(self, data, bins):
+        kde = stats.gaussian_kde(data.data)
+        samples = np.linspace(bins.min(), bins.max(), 100)
+        kde.set_bandwidth(bw_method='silverman')
+        kde.set_bandwidth(bw_method=kde.factor * 1.06)
+        pdf = kde(samples)
+        cube = iris.cube.Cube(
+            pdf,
+            var_name='p',
+            long_name='probability',
+            units=1.0
+        )
+        cube.add_dim_coord(
+            iris.coords.DimCoord(
+                points=samples,
+                var_name=data.var_name,
+                long_name=data.long_name,
+                units=data.units,
+            ),
+            0
+        )
+        return cube
+
+    def _plot_histogram(self, alias, anomalies, histogram, pdf, metadata):
+        plot_config = self.cfg.get('plot', {})
         season = anomalies.coord('season').points[0]
-        lat_bounds = anomalies.coord('latitude').bounds
-        g = 0.4
-        G = 0.5
         plt.figure(figsize=(14, 8), dpi=250)
+        x_coord = histogram.coord(anomalies.long_name)
+        spacing = x_coord.points[1] - x_coord.points[0]
         plt.bar(
-            anomalies.coord('latitude').points,
-            histogram / 2.5 * histogram.sum(),
-            width=2.5, align='center',
-            color=[g, g, g], alpha=1, edgecolor=[G, G, G]
+            x_coord.points,
+            histogram.data / (spacing * histogram.data.sum()),
+            width=spacing, align='center',
+            color=[0.4, 0.4, 0.4], alpha=1, edgecolor=[0.5, 0.5, 0.5]
         )
         plt.plot(
             (np.mean(anomalies.data), np.mean(anomalies.data)), (0, 1),
             color=[0.7, 0.7, 0.7], lw=3, ls='--'
         )
-        plt.plot(lats, pdf, color=[0.8, 0.2, 0.2], lw=3, ls='-')
-        plt.xlabel(u'Latitude (\u00B0N)')
-        plt.xlim(lat_bounds.min(), lat_bounds.max())
+        plt.plot(pdf.coord(anomalies.long_name).points, pdf.data,
+                 color=[0.8, 0.2, 0.2], lw=3, ls='-')
+        plt.xlabel('{0.long_name} ({0.units})'.format(x_coord))
+        plt.xlim(x_coord.bounds.min(), x_coord.bounds.max())
         plt.ylabel('Relative Frequency Density')
-        plt.ylim(0,0.1)
-        plt.yticks([0, 0.02, 0.04, 0.06, 0.08, 0.1])
-        plt.title('Jet-Latitude Distribution for ' + alias + ', ' + season + ' (1979-2016)')
+        y_max = plot_config.get('probability_limit', 0.14)
+        plt.ylim(0, y_max)
+        plt.yticks(np.arange(0, y_max, plot_config.get('probability_tick', 0.1)))
+        plt.title('{} distribution for {}, {} ({}-{})'.format(
+            anomalies.long_name, alias, season,
+            metadata[n.START_YEAR], metadata[n.END_YEAR],
+        ))
         plt.grid()
         plt.savefig(
             os.path.join(
@@ -136,6 +194,13 @@ class JetLatitude(object):
                 '{}_{}_{}.png'.format(alias, anomalies.var_name, season)
             ),
             bbox_inches='tight'
+        )
+
+    def _save_cube(self, cube, filename):
+        iris.save(
+            cube,
+            os.path.join(self.cfg[n.WORK_DIR], filename),
+            zlib=True
         )
 
 
