@@ -23,8 +23,8 @@ jobs:
             conda env update
             conda activate esmvaltool
             # Install missing r-yaml and r-lintr
-            conda install -c conda-forge -yS r-yaml
-            conda install -c conda-forge -yS r-lintr=1.0.2
+            Rscript esmvaltool/install/R/setup_devutils.R
+            # Run tests
             python setup.py test
       - save_cache:
           key: test-{{ .Branch }}-{{ checksum "cache_key.txt" }}
