@@ -22,7 +22,7 @@ jobs:
             conda update -y conda
             conda env update
             conda activate esmvaltool
-            conda install -c conda-forge -yS r-lintr=1.0.2
+            Rscript esmvaltool/install/R/setup_lintr.R
             python setup.py test
       - save_cache:
           key: test-{{ .Branch }}-{{ checksum "cache_key.txt" }}
