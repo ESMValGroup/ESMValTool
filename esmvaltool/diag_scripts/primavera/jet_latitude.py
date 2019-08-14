@@ -34,6 +34,7 @@ class JetLatitude(object):
             '$HOME/jetlat/python/LF_weights.npy'
         ))
         for alias in data:
+            logger.info('Working on %s', alias)
             ua = iris.load_cube(data[alias][0]['filename'])
             iris.coord_categorisation.add_season(ua, 'time')
 
@@ -43,7 +44,6 @@ class JetLatitude(object):
                 arr=ua.core_data()
             )
             ua = ua.copy(ua_filtered)
-
             wind = ua.collapsed('latitude', iris.analysis.MAX)
             wind.var_name = 'jet'
             wind.standard_name = None
@@ -62,17 +62,19 @@ class JetLatitude(object):
             latitude.units = 'degrees_north'
 
             lat_bounds = latitude.coord('latitude').bounds
-            logger.debug(wind)
-            logger.debug(latitude)
-            interval = 2.5
+            interval = self.cfg.get('latitud_bins', 2.5)
             lat_bins = np.arange(
                 (lat_bounds.min() // interval) * interval,
                 ((lat_bounds.max() // interval) + 1) * interval,
                 interval,
             )
-            wind_bins = np.arange(0, 41, 1)
-            self._compute_var(alias, wind, wind_bins, data[alias][0])
+            logger.info('Working on jet latitude')
             self._compute_var(alias, latitude, lat_bins + 1.25, data[alias][0])
+
+            logger.info('Working on jet speed')
+            interval = self.cfg.get('wind_bins', 2.5)
+            wind_bins = np.arange(0, 40 + interval, interval)
+            self._compute_var(alias, wind, wind_bins, data[alias][0])
 
     def _compute_var(self, alias, data, bins, metadata):
         var_name = data.var_name
@@ -108,10 +110,9 @@ class JetLatitude(object):
         clim.remove_coord('month_number')
         clim.remove_coord('day_of_month')
         clim.remove_coord('year')
-        iris.util.promote_aux_coord_to_dim_coord(clim, 'day_of_year')
         clim_fft = np.fft.rfft(clim.data)
         clim_fft[3:np.size(clim_fft)] = 0
-        clim_fft = np.fft.irfft(clim_fft)
+        clim_fft = np.fft.irfft(clim_fft, data.shape[0])
         return clim.copy(clim_fft)
 
     def _compute_histogram(self, data, bins):

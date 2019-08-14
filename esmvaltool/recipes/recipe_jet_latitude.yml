@@ -17,8 +17,8 @@ datasets:
   - {<<: *HighResMIP, dataset: HadGEM3-GC31-LL}
   - {<<: *HighResMIP, dataset: CMCC-CM2-HR4}
   - {<<: *HighResMIP, dataset: CMCC-CM2-VHR4}
-  - {<<: *HighResMIP, dataset: CNRM-CM6-1}
-  - {<<: *HighResMIP, dataset: CNRM-CM6-1-HR}
+  - {<<: *HighResMIP, dataset: CNRM-CM6-1, ensemble: r1i1p1f2}
+  - {<<: *HighResMIP, dataset: CNRM-CM6-1-HR, ensemble: r1i1p1f2}
   - {<<: *HighResMIP, dataset: ECMWF-IFS-LR}
   - {<<: *HighResMIP, dataset: ECMWF-IFS-HR}
   - {<<: *HighResMIP, dataset: IPSL-CM6A-LR}
@@ -57,6 +57,8 @@ diagnostics:
         plot:
           probability_limit: 0.15
           probability_tick: 0.01
+        latitude_bins: 2.5
+        speed_bins: 1.0
 
 
 
