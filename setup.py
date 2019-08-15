@@ -107,6 +107,44 @@ class CustomCommand(Command):
             self.distribution.fetch_build_eggs(self.distribution.tests_require)
 
 
+class RunTests(CustomCommand):
+    """Class to run tests and generate reports."""
+
+    user_options = [('installation', None,
+                     'Run tests that require installation.')]
+
+    def initialize_options(self):
+        """Initialize custom options."""
+        self.installation = False
+
+    def finalize_options(self):
+        """Do nothing."""
+
+    def run(self):
+        """Run tests and generate a coverage report."""
+        self.install_deps_temp()
+
+        import pytest
+
+        report_dir = 'test-reports'
+        args = [
+            'tests',
+            'esmvaltool',  # for doctests
+            '--doctest-modules',
+            '--cov=esmvaltool',
+            '--cov-report=term',
+            '--cov-report=html:{}/coverage_html'.format(report_dir),
+            '--cov-report=xml:{}/coverage.xml'.format(report_dir),
+            '--junit-xml={}/report.xml'.format(report_dir),
+            '--html={}/report.html'.format(report_dir),
+        ]
+        if self.installation:
+            args.append('--installation')
+        errno = pytest.main(args)
+
+        sys.exit(errno)
+
+
 class RunLinter(CustomCommand):
     """Class to run a linter and generate reports."""
 
@@ -181,7 +219,8 @@ setup(
     install_requires=REQUIREMENTS['install'],
     tests_require=REQUIREMENTS['test'],
     extras_require={
-        'develop': (set(REQUIREMENTS['develop'] + REQUIREMENTS['test'])),
+        'develop': (set(REQUIREMENTS['develop'] + REQUIREMENTS['test']) -
+                    {'pycodestyle'}),
     },
     entry_points={
         'console_scripts': [
@@ -194,6 +233,7 @@ setup(
         ],
     },
     cmdclass={
+        'test': RunTests,
         'lint': RunLinter,
     },
     zip_safe=False,
