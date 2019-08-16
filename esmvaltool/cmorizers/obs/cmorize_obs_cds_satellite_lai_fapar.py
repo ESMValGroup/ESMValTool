@@ -47,6 +47,21 @@ from esmvaltool.cmorizers.obs import utilities as utils
 logger = logging.getLogger(__name__)
 
 
+def _check_non_unique_attrs(cubelist):
+    allattrs = cubelist[0].attributes
+    for key in allattrs:
+        try:
+            unique_attr_vals = {cube.attributes[key] for cube in cubelist}
+        # This exception is needed for valid_range, which is an
+        # array and therefore not hashable
+        except TypeError:
+            unique_attr_vals = {tuple(cube.attributes[key])
+                                for cube in cubelist}
+        if len(unique_attr_vals) > 1:
+            print("Different values found for {0}-attribute: {1}"
+                  .format(key, unique_attr_vals))
+
+
 def _cmorize_dataset(in_file, var, cfg, out_dir):
     logger.info("CMORizing variable '%s' from input file '%s'",
                 var['short_name'], in_file)
@@ -120,15 +135,13 @@ def _regrid_dataset(in_dir, var, cfg):
         iris.save(lai_cube, outfile)
 
 
-def _concatenate_dataset_over_time(in_dir, var):
-    """Concatenate single files over time and returns on single cube."""
+def _set_time_bnds(in_dir, var):
+    """Set time_bnds by using attribute and returns a cubelist."""
     # This is a complicated expression, but necessary to keep local
     # variables below the limit, otherwise prospector complains.
     cubelist = iris.load(glob.glob(os.path.join(
         in_dir, var['file'].replace('c3s', 'c3s_regridded'))))
 
-    # For saving the identifiers
-    identifiers = []
     # The purpose of the following loop is to remove any attributes
     # that differ between cubes (otherwise concatenation over time fails).
     # In addition, care is taken of the time coordinate, by adding the
@@ -138,8 +151,6 @@ def _concatenate_dataset_over_time(in_dir, var):
             attributes.pop('time_coverage_start')
         time_coverage_end = cubelist[n_cube].\
             attributes.pop('time_coverage_end')
-        # Remove identifier from attrs, add to list for later usage
-        identifiers.append(cubelist[n_cube].attributes.pop('identifier'))
 
         # Now put time_coverage_start/end as time_bnds
         # Convert time_coverage_xxxx to datetime
@@ -158,13 +169,7 @@ def _concatenate_dataset_over_time(in_dir, var):
         # Put them on the file
         cubelist[n_cube].coord('time').bounds = time_bnds
 
-    # Now the cubes can be concatenated over the time dimension
-    cube = cubelist.concatenate_cube()
-
-    # Add identifiers from each cube to the concatenated cube
-    # as a comma separated list
-    cube.attributes['identifiers_comma_separated'] = ','.join(identifiers)
-    return cube
+    return cubelist
 
 
 def cmorization(in_dir, out_dir, cfg, cfg_user):
@@ -189,17 +194,22 @@ def cmorization(in_dir, out_dir, cfg, cfg_user):
         logger.info("Finished regridding")
 
         # File concatenation
-        logger.info("Start file concatenation over time")
-        result_cube = _concatenate_dataset_over_time(
-            cfg['work_dir'], var)
-        savename = os.path.join(cfg['work_dir'],
-                                var['short_name'] + '_regridded.nc')
-        logger.info("saving as: %s", savename)
-        iris.save(result_cube, savename)
-        logger.info("Finished file concatenation over time")
+        logger.info("Start setting time_bnds")
+        cubelist = _set_time_bnds(cfg['work_dir'], var)
 
-        # Finish with actual cmorization
-        in_file = savename
-        logger.info("Start CMORization of file")
-        _cmorize_dataset(in_file, var, cfg, out_dir)
-        logger.info("Finished regridding and CMORizing %s", in_file)
+        # Loop over two different platform names
+        for platformname in ['SPOT-4', 'SPOT-5']:
+            # Now split the cubelist on the different platform
+            logger.info("Start processing part of dataset: %s", platformname)
+            cubelist_platform = cubelist.extract(iris.AttributeConstraint(
+                platform=platformname))
+            cube = cubelist_platform.concatenate_cube()
+            savename = os.path.join(cfg['work_dir'],
+                                    var['short_name'] + platformname + '.nc')
+            logger.info("Saving as: %s", savename)
+            iris.save(cube, savename)
+            logger.info("Finished file concatenation over time")
+            in_file = savename
+            logger.info("Start CMORization of file %s", in_file)
+            _cmorize_dataset(in_file, var, cfg, out_dir)
+            logger.info("Finished regridding and CMORizing %s", in_file)
