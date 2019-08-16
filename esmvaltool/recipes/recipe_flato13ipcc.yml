@@ -38,9 +38,8 @@ preprocessors:
       exclude: [reference_dataset]
 
   spatial_mean:
-    average_region:
-      coord1: latitude
-      coord2: longitude
+    area_statistics:
+      operator: mean
 
   clim_ref:
     regrid:
