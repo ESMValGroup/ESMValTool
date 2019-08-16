@@ -24,11 +24,12 @@ datasets:
   - {<<: *HighResMIP, dataset: IPSL-CM6A-LR}
   - {<<: *HighResMIP, dataset: IPSL-CM6A-ATM-HR}
   - {<<: *HighResMIP, dataset: NICAM16-7S}
-  - {<<: *HighResMIP, dataset: MPI-ESM1-2-HR}
-  - {<<: *HighResMIP, dataset: MPI-ESM1-2-XR}
-  - {<<: *HighResMIP, dataset: MRI-AGCM3-2-H}
-  - {<<: *HighResMIP, dataset: MRI-AGCM3-2-S}
-  - {<<: *HighResMIP, dataset: HadGEM3-GC31-HH}
+  - {<<: *HighResMIP, dataset: MPI-ESM1-2-HR, institute: MPI-M}
+  - {<<: *HighResMIP, dataset: MPI-ESM1-2-XR, institute: MPI-M}
+  - {<<: *HighResMIP, dataset: MRI-AGCM3-2-H, institute: MRI}
+  - {<<: *HighResMIP, dataset: MRI-AGCM3-2-S, institute: MRI}
+  - {<<: *HighResMIP, dataset: HadGEM3-GC31-HH, institute: NERC}
+
 
 preprocessors:
   get_region:
