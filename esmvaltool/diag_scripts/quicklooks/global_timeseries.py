@@ -136,13 +136,14 @@ def plot_multiple_datasets(cfg, datasets, short_name):
     logger.info("Plotting time series for multiple datasets for variable '%s'",
                 short_name)
     cubes = {}
-    for dataset in datasets:
+    for (color_idx, dataset) in enumerate(datasets):
+        color = f'C{color_idx % 10}'
         cube = load_cube(dataset, ['time'])
         if cube is None:
             continue
-        # Make annual means from:
         cube = cube.aggregated_by('year', iris.analysis.MEAN)
-        global_time_series_plot(cube, ls='-', lw=2.0, label=dataset['dataset'])
+        global_time_series_plot(cube, color=color, ls='-', lw=2.0,
+                                label=dataset['dataset'])
         cubes[dataset['dataset']] = cube
     if not cubes:
         return
