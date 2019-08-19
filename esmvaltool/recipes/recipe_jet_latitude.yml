@@ -11,185 +11,33 @@ documentation:
     - pred_va
 
 datasets:
-  - &cmip {activity: CMIP, dataset: AWI-CM-1-1-MR,  project: CMIP6, mip: day, exp: historical,  ensemble: r1i1p1f1, grid: gn,  start_year: 1979,  end_year: 2014}
-  - {<<: *cmip, dataset: AWI-CM-1-1-MR,  ensemble: r2i1p1f1}
-  - {<<: *cmip, dataset: AWI-CM-1-1-MR,  ensemble: r3i1p1f1}
-  - {<<: *cmip, dataset: AWI-CM-1-1-MR,  ensemble: r4i1p1f1}
-  - {<<: *cmip, dataset: AWI-CM-1-1-MR,  ensemble: r5i1p1f1}
-
-  - {<<: *cmip, dataset: BCC-CSM2-MR}
+  - &cmip {activity: CMIP, dataset: AWI-CM-1-1-MR,  project: CMIP6, mip: day, exp: historical,   grid: gn,  start_year: 1979,  end_year: 2014}
+  - {<<: *cmip, dataset: AWI-CM-1-1-MR,  ensemble: "r[2:5]i1p1f1"}
+  - {<<: *cmip, dataset: BCC-CSM2-MR, ensemble: 'r[1:3]i1p1f1'}
   - {<<: *cmip, dataset: BCC-CSM2-MR,  ensemble: r2i1p1f1}
   - {<<: *cmip, dataset: BCC-CSM2-MR,  ensemble: r3i1p1f1}
-
-  - {<<: *cmip, dataset: BCC-ESM1}
-  - {<<: *cmip, dataset: BCC-ESM1,  ensemble: r2i1p1f1}
-  - {<<: *cmip, dataset: BCC-ESM1,  ensemble: r3i1p1f1}
-
+  - {<<: *cmip, dataset: BCC-ESM1, ensemble: 'r[1:3]i1p1f1'}
   - {<<: *cmip, dataset: CAMS-CSM1-0}
-
   - {<<: *cmip, dataset: FGOALS-f3-L}
   - {<<: *cmip, dataset: FGOALS-f3-L,  ensemble: r2i1p1f1}
   - {<<: *cmip, dataset: FGOALS-f3-L,  ensemble: r3i1p1f1}
-
-  - {<<: *cmip, dataset: CanESM5}
-  - {<<: *cmip, dataset: CanESM5,  ensemble: r2i1p1f1}
-  - {<<: *cmip, dataset: CanESM5,  ensemble: r3i1p1f1}
-  - {<<: *cmip, dataset: CanESM5,  ensemble: r4i1p1f1}
-  - {<<: *cmip, dataset: CanESM5,  ensemble: r5i1p1f1}
-  - {<<: *cmip, dataset: CanESM5,  ensemble: r6i1p1f1}
-  - {<<: *cmip, dataset: CanESM5,  ensemble: r7i1p1f1}
-  - {<<: *cmip, dataset: CanESM5,  ensemble: r8i1p1f1}
-  - {<<: *cmip, dataset: CanESM5,  ensemble: r9i1p1f1}
-  - {<<: *cmip, dataset: CanESM5,  ensemble: r10i1p1f1}
-  - {<<: *cmip, dataset: CanESM5,  ensemble: r11i1p1f1}
-  - {<<: *cmip, dataset: CanESM5,  ensemble: r12i1p1f1}
-  - {<<: *cmip, dataset: CanESM5,  ensemble: r13i1p1f1}
-  - {<<: *cmip, dataset: CanESM5,  ensemble: r14i1p1f1}
-  - {<<: *cmip, dataset: CanESM5,  ensemble: r15i1p1f1}
-  - {<<: *cmip, dataset: CanESM5,  ensemble: r16i1p1f1}
-  - {<<: *cmip, dataset: CanESM5,  ensemble: r17i1p1f1}
-  - {<<: *cmip, dataset: CanESM5,  ensemble: r18i1p1f1}
-  - {<<: *cmip, dataset: CanESM5,  ensemble: r19i1p1f1}
-  - {<<: *cmip, dataset: CanESM5,  ensemble: r20i1p1f1}
-  - {<<: *cmip, dataset: CanESM5,  ensemble: r21i1p1f1}
-  - {<<: *cmip, dataset: CanESM5,  ensemble: r22i1p1f1}
-  - {<<: *cmip, dataset: CanESM5,  ensemble: r23i1p1f1}
-  - {<<: *cmip, dataset: CanESM5,  ensemble: r24i1p1f1}
-  - {<<: *cmip, dataset: CanESM5,  ensemble: r25i1p1f1}
-
-  - {<<: *cmip, dataset: CNRM-CM6-1,  ensemble: r1i1p1f2}
-  - {<<: *cmip, dataset: CNRM-CM6-1,  ensemble: r2i1p1f2}
-  - {<<: *cmip, dataset: CNRM-CM6-1,  ensemble: r3i1p1f2}
-  - {<<: *cmip, dataset: CNRM-CM6-1,  ensemble: r4i1p1f2}
-  - {<<: *cmip, dataset: CNRM-CM6-1,  ensemble: r5i1p1f2}
-  - {<<: *cmip, dataset: CNRM-CM6-1,  ensemble: r6i1p1f2}
-  - {<<: *cmip, dataset: CNRM-CM6-1,  ensemble: r7i1p1f2}
-  - {<<: *cmip, dataset: CNRM-CM6-1,  ensemble: r8i1p1f2}
-  - {<<: *cmip, dataset: CNRM-CM6-1,  ensemble: r9i1p1f2}
-  - {<<: *cmip, dataset: CNRM-CM6-1,  ensemble: r10i1p1f2}
-
-  - {<<: *cmip, dataset: CNRM-ESM2-1,  ensemble: r1i1p1f2}
-  - {<<: *cmip, dataset: CNRM-ESM2-1,  ensemble: r2i1p1f2}
-  - {<<: *cmip, dataset: CNRM-ESM2-1,  ensemble: r3i1p1f2}
-  - {<<: *cmip, dataset: CNRM-ESM2-1,  ensemble: r4i1p1f2}
-  - {<<: *cmip, dataset: CNRM-ESM2-1,  ensemble: r5i1p1f2}
-
+  - {<<: *cmip, dataset: CanESM5,  ensemble: "r[1:25]i1p1f1"}
+  - {<<: *cmip, dataset: CNRM-CM6-1,  ensemble: "r[1:10]i1p1f2"}
+  - {<<: *cmip, dataset: CNRM-ESM2-1,  ensemble: 'r[1:5]i1p1f2'}
   - {<<: *cmip, dataset: E3SM-1-0}
-
   - {<<: *cmip, dataset: EC-Earth3, institute: EC-Earth-Consortium}
   - {<<: *cmip, dataset: EC-Earth3, ensemble: r2i1p1f1, institute: EC-Earth-Consortium}
   - {<<: *cmip, dataset: EC-Earth, ensemble: r24i1p1f1, institute: EC-Earth-Consortium}
-
   - {<<: *cmip, dataset: EC-Earth3-Veg, institute: EC-Earth-Consortium}
-
-  - {<<: *cmip, dataset: IPSL-CM6A-LR}
-  - {<<: *cmip, dataset: IPSL-CM6A-LR,  ensemble: r2i1p1f1}
-  - {<<: *cmip, dataset: IPSL-CM6A-LR,  ensemble: r3i1p1f1}
-  - {<<: *cmip, dataset: IPSL-CM6A-LR,  ensemble: r4i1p1f1}
-  - {<<: *cmip, dataset: IPSL-CM6A-LR,  ensemble: r5i1p1f1}
-  - {<<: *cmip, dataset: IPSL-CM6A-LR,  ensemble: r6i1p1f1}
-  - {<<: *cmip, dataset: IPSL-CM6A-LR,  ensemble: r7i1p1f1}
-  - {<<: *cmip, dataset: IPSL-CM6A-LR,  ensemble: r8i1p1f1}
-  - {<<: *cmip, dataset: IPSL-CM6A-LR,  ensemble: r9i1p1f1}
-  - {<<: *cmip, dataset: IPSL-CM6A-LR,  ensemble: r10i1p1f1}
-  - {<<: *cmip, dataset: IPSL-CM6A-LR,  ensemble: r11i1p1f1}
-  - {<<: *cmip, dataset: IPSL-CM6A-LR,  ensemble: r12i1p1f1}
-  - {<<: *cmip, dataset: IPSL-CM6A-LR,  ensemble: r13i1p1f1}
-  - {<<: *cmip, dataset: IPSL-CM6A-LR,  ensemble: r14i1p1f1}
-  - {<<: *cmip, dataset: IPSL-CM6A-LR,  ensemble: r15i1p1f1}
-  - {<<: *cmip, dataset: IPSL-CM6A-LR,  ensemble: r16i1p1f1}
-  - {<<: *cmip, dataset: IPSL-CM6A-LR,  ensemble: r17i1p1f1}
-  - {<<: *cmip, dataset: IPSL-CM6A-LR,  ensemble: r18i1p1f1}
-  - {<<: *cmip, dataset: IPSL-CM6A-LR,  ensemble: r19i1p1f1}
-  - {<<: *cmip, dataset: IPSL-CM6A-LR,  ensemble: r20i1p1f1}
-  - {<<: *cmip, dataset: IPSL-CM6A-LR,  ensemble: r21i1p1f1}
-  - {<<: *cmip, dataset: IPSL-CM6A-LR,  ensemble: r22i1p1f1}
-  - {<<: *cmip, dataset: IPSL-CM6A-LR,  ensemble: r23i1p1f1}
-  - {<<: *cmip, dataset: IPSL-CM6A-LR,  ensemble: r24i1p1f1}
-  - {<<: *cmip, dataset: IPSL-CM6A-LR,  ensemble: r25i1p1f1}
-  - {<<: *cmip, dataset: IPSL-CM6A-LR,  ensemble: r26i1p1f1}
-  - {<<: *cmip, dataset: IPSL-CM6A-LR,  ensemble: r27i1p1f1}
-  - {<<: *cmip, dataset: IPSL-CM6A-LR,  ensemble: r28i1p1f1}
-  - {<<: *cmip, dataset: IPSL-CM6A-LR,  ensemble: r29i1p1f1}
-  - {<<: *cmip, dataset: IPSL-CM6A-LR,  ensemble: r30i1p1f1}
-
-  - {<<: *cmip, dataset: MIROC6}
-  - {<<: *cmip, dataset: MIROC6,  ensemble: r2i1p1f1}
-  - {<<: *cmip, dataset: MIROC6,  ensemble: r3i1p1f1}
-  - {<<: *cmip, dataset: MIROC6,  ensemble: r4i1p1f1}
-  - {<<: *cmip, dataset: MIROC6,  ensemble: r5i1p1f1}
-  - {<<: *cmip, dataset: MIROC6,  ensemble: r6i1p1f1}
-  - {<<: *cmip, dataset: MIROC6,  ensemble: r7i1p1f1}
-  - {<<: *cmip, dataset: MIROC6,  ensemble: r8i1p1f1}
-  - {<<: *cmip, dataset: MIROC6,  ensemble: r9i1p1f1}
-  - {<<: *cmip, dataset: MIROC6,  ensemble: r10i1p1f1}
-
-  - {<<: *cmip, dataset: HadGEM3-GC31-LL}
-  - {<<: *cmip, dataset: HadGEM3-GC31-LL, ensemble: r2i1p1f1}
-  - {<<: *cmip, dataset: HadGEM3-GC31-LL, ensemble: r3i1p1f1}
-  - {<<: *cmip, dataset: HadGEM3-GC31-LL, ensemble: r4i1p1f1}
-
-  - {<<: *cmip, dataset: UKESM1-0-LL}
-  - {<<: *cmip, dataset: UKESM1-0-LL,  ensemble: r2i1p1f1}
-  - {<<: *cmip, dataset: UKESM1-0-LL,  ensemble: r3i1p1f1}
-  - {<<: *cmip, dataset: UKESM1-0-LL,  ensemble: r4i1p1f1}
-  - {<<: *cmip, dataset: UKESM1-0-LL,  ensemble: r5i1p1f1}
-  - {<<: *cmip, dataset: UKESM1-0-LL,  ensemble: r6i1p1f1}
-  - {<<: *cmip, dataset: UKESM1-0-LL,  ensemble: r7i1p1f1}
-  - {<<: *cmip, dataset: UKESM1-0-LL,  ensemble: r8i1p1f1}
-  - {<<: *cmip, dataset: UKESM1-0-LL,  ensemble: r9i1p1f1}
-
-  - {<<: *cmip, dataset: MRI-ESM2-0}
-  - {<<: *cmip, dataset: MRI-ESM2-0,  ensemble: r2i1p1f1}
-  - {<<: *cmip, dataset: MRI-ESM2-0,  ensemble: r3i1p1f1}
-  - {<<: *cmip, dataset: MRI-ESM2-0,  ensemble: r4i1p1f1}
-  - {<<: *cmip, dataset: MRI-ESM2-0,  ensemble: r5i1p1f1}
-  - {<<: *cmip, dataset: MRI-ESM2-0,  ensemble: r6i1p1f1}
-  - {<<: *cmip, dataset: MRI-ESM2-0,  ensemble: r7i1p1f1}
-  - {<<: *cmip, dataset: MRI-ESM2-0,  ensemble: r8i1p1f1}
-  - {<<: *cmip, dataset: MRI-ESM2-0,  ensemble: r9i1p1f1}
-  - {<<: *cmip, dataset: MRI-ESM2-0,  ensemble: r10i1p1f1}
-  - {<<: *cmip, dataset: MRI-ESM2-0,  ensemble: r11i1p1f1}
-  - {<<: *cmip, dataset: MRI-ESM2-0,  ensemble: r12i1p1f1}
-  - {<<: *cmip, dataset: MRI-ESM2-0,  ensemble: r13i1p1f1}
-
-  - {<<: *cmip, dataset: GISS-E2-1-G}
-  - {<<: *cmip, dataset: GISS-E2-1-G,  ensemble: r2i1p1f1}
-  - {<<: *cmip, dataset: GISS-E2-1-G,  ensemble: r3i1p1f1}
-  - {<<: *cmip, dataset: GISS-E2-1-G,  ensemble: r4i1p1f1}
-  - {<<: *cmip, dataset: GISS-E2-1-G,  ensemble: r5i1p1f1}
-  - {<<: *cmip, dataset: GISS-E2-1-G,  ensemble: r6i1p1f1}
-  - {<<: *cmip, dataset: GISS-E2-1-G,  ensemble: r7i1p1f1}
-  - {<<: *cmip, dataset: GISS-E2-1-G,  ensemble: r8i1p1f1}
-  - {<<: *cmip, dataset: GISS-E2-1-G,  ensemble: r9i1p1f1}
-  - {<<: *cmip, dataset: GISS-E2-1-G,  ensemble: r10i1p1f1}
-
-  - {<<: *cmip, dataset: GISS-E2-1-H}
-  - {<<: *cmip, dataset: GISS-E2-1-H,  ensemble: r2i1p1f1}
-  - {<<: *cmip, dataset: GISS-E2-1-H,  ensemble: r3i1p1f1}
-  - {<<: *cmip, dataset: GISS-E2-1-H,  ensemble: r4i1p1f1}
-  - {<<: *cmip, dataset: GISS-E2-1-H,  ensemble: r5i1p1f1}
-  - {<<: *cmip, dataset: GISS-E2-1-H,  ensemble: r6i1p1f1}
-  - {<<: *cmip, dataset: GISS-E2-1-H,  ensemble: r7i1p1f1}
-  - {<<: *cmip, dataset: GISS-E2-1-H,  ensemble: r8i1p1f1}
-  - {<<: *cmip, dataset: GISS-E2-1-H,  ensemble: r9i1p1f1}
-  - {<<: *cmip, dataset: GISS-E2-1-H,  ensemble: r10i1p1f1}
-
-  - {<<: *cmip, dataset: CESM2}
-  - {<<: *cmip, dataset: CESM2,  ensemble: r2i1p1f1}
-  - {<<: *cmip, dataset: CESM2,  ensemble: r3i1p1f1}
-  - {<<: *cmip, dataset: CESM2,  ensemble: r4i1p1f1}
-  - {<<: *cmip, dataset: CESM2,  ensemble: r5i1p1f1}
-  - {<<: *cmip, dataset: CESM2,  ensemble: r6i1p1f1}
-  - {<<: *cmip, dataset: CESM2,  ensemble: r7i1p1f1}
-  - {<<: *cmip, dataset: CESM2,  ensemble: r8i1p1f1}
-  - {<<: *cmip, dataset: CESM2,  ensemble: r9i1p1f1}
-  - {<<: *cmip, dataset: CESM2,  ensemble: r10i1p1f1}
-
-  - {<<: *cmip, dataset: CESM2-WACCM}
-  - {<<: *cmip, dataset: CESM2-WACCM,  ensemble: r2i1p1f1}
-  - {<<: *cmip, dataset: CESM2-WACCM,  ensemble: r3i1p1f1}
-
+  - {<<: *cmip, dataset: IPSL-CM6A-LR, ensemble: 'r[1:30]i1p1f1'}
+  - {<<: *cmip, dataset: MIROC6, ensemble: 'r[1:10]i1p1f1'}
+  - {<<: *cmip, dataset: HadGEM3-GC31-LL, ensemble: 'r[1:4]i1p1f1'}
+  - {<<: *cmip, dataset: UKESM1-0-LL, ensemble: 'r[1:9]i1p1f1'}
+  - {<<: *cmip, dataset: MRI-ESM2-0, ensemble: 'r[1:13]i1p1f1'}
+  - {<<: *cmip, dataset: GISS-E2-1-G, ensemble: 'r[1:10]i1p1f1'}
+  - {<<: *cmip, dataset: GISS-E2-1-H, ensemble: 'r[1:10]i1p1f1'}
+  - {<<: *cmip, dataset: CESM2, ensemble: 'r[1:10]i1p1f1'}
+  - {<<: *cmip, dataset: CESM2-WACCM, ensemble: 'r[1:3]i1p1f1'}
   - {<<: *cmip, dataset: GFDL-AM4}
   - {<<: *cmip, dataset: GFDL-CM4}
   - {<<: *cmip, dataset: GFDL-ESM4}
@@ -236,6 +84,7 @@ diagnostics:
     variables:
       ua:
         preprocessor: get_region
+        ensemble: "r[1:10]i1p1f1"
 
     scripts:
       jetlat:
