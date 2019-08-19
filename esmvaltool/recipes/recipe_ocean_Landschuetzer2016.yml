@@ -111,12 +111,4 @@ diagnostics:
         script: ocean/diagnostic_maps.py
       Global_Ocean_model_vs_obs:
         script: ocean/diagnostic_model_vs_obs.py
-<<<<<<< HEAD
         observational_dataset: {dataset: Landschutzer2016, project: OBS}
-=======
-        observational_dataset: {dataset: Landschuetzer2016, project: OBS}
-
-
-
-
->>>>>>> 5580709e1650a151793a9569a8c68929b40e9051
