@@ -22,6 +22,7 @@ To install in development mode, follow these instructions.
 -   If you want to use Julia diagnostics, run `julia esmvaltool/install/Julia/setup.jl` to install the Julia dependences.
 -   Test that your installation was succesful by running `esmvaltool -h`.
 -   If you log into a cluster or other device via `ssh` and your origin machine sends the `locale` environment via the `ssh` connection, make sure the environment is set correctly, specifically `LANG` and `LC_ALL` are set correctly (for GB English UTF-8 encoding these variables must be set to `en_GB.UTF-8`; you can set them by adding `export LANG=en_GB.UTF-8` and `export LC_ALL=en_GB.UTF-8` in your origin or login machines' `.profile`)
+-   Do not run `conda update --update-all` in the `esmvaltool` environment since that will update some packages that are pinned to specific versions for the correct functionality of the environment.
 
 ## Using the development version of the ESMValTool Core package
 
