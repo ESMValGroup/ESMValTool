@@ -21,8 +21,8 @@ dependencies:
   # Multi language support:
   - python>=3.6
   - libunwind  # Needed for Python3.7+
-  - tiledb>=1.6.0  # Needed by the new ncl=6.6.2; conda keeps it at 1.2.2
-  - ncl>=6.5.0
+  - tiledb=1.6.0  # Needed by the new ncl=6.6.2; evolved to 1.6.2 but ncl 6.6.2 still needs libtiledb1.6.0.so
+  - ncl
   - r-base
   - r-curl  # Dependency of lintr, but fails to compile because it cannot find libcurl installed from conda.
   - r-udunits2  # Fails to compile because it cannot find udunits2 installed from conda.
