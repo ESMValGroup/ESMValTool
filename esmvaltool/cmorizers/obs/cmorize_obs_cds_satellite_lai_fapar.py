@@ -203,6 +203,8 @@ def cmorization(in_dir, out_dir, cfg, cfg_user):
             logger.info("Start processing part of dataset: %s", platformname)
             cubelist_platform = cubelist.extract(iris.AttributeConstraint(
                 platform=platformname))
+            for n_cube, _ in enumerate(cubelist_platform):
+                cubelist_platform[n_cube].attributes.pop('identifier')
             cube = cubelist_platform.concatenate_cube()
             savename = os.path.join(cfg['work_dir'],
                                     var['short_name'] + platformname + '.nc')
