@@ -91,9 +91,6 @@ def _cmorize_dataset(in_file, var, cfg, out_dir):
     # Convert units if required
     cube.convert_units(definition.units)
 
-    # Make latitude increasing
-    cube = cube[:, ::-1, ...]
-
     # Set global attributes
     utils.set_global_atts(cube, attributes)
 
