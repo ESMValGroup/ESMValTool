@@ -48,6 +48,7 @@ logger = logging.getLogger(__name__)
 
 
 def _check_non_unique_attrs(cubelist):
+    
     allattrs = cubelist[0].attributes
     for key in allattrs:
         try:
@@ -70,9 +71,6 @@ def _cmorize_dataset(in_file, var, cfg, out_dir):
 
     cmor_table = cfg['cmor_table']
     definition = cmor_table.get_variable(var['mip'], var['short_name'])
-    if not definition:
-        cmor_table = CMOR_TABLES['custom']
-        definition = cmor_table.get_variable(var['mip'], var['short_name'])
 
     cube = iris.load_cube(
         str(in_file),
@@ -202,6 +200,9 @@ def cmorization(in_dir, out_dir, cfg, cfg_user):
                 platform=platformname))
             for n_cube, _ in enumerate(cubelist_platform):
                 cubelist_platform[n_cube].attributes.pop('identifier')
+            if len(cubelist_platform)==0:
+                logger.warning("No files found for platform %s (check input data)", platformname)
+                continue
             cube = cubelist_platform.concatenate_cube()
             savename = os.path.join(cfg['work_dir'],
                                     var['short_name'] + platformname + '.nc')
