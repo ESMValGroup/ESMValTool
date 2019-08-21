@@ -201,9 +201,9 @@ def cmorization(in_dir, out_dir, cfg, cfg_user):
             cubelist_platform = cubelist.extract(iris.AttributeConstraint(
                 platform=platformname))
             for n_cube, _ in enumerate(cubelist_platform):
-                assert _attrs_are_the_same(cubelist_platform)
                 cubelist_platform[n_cube].attributes.pop('identifier')
             if cubelist_platform:
+                assert _attrs_are_the_same(cubelist_platform)
                 cube = cubelist_platform.concatenate_cube()
             else:
                 logger.warning("No files found for platform %s \
