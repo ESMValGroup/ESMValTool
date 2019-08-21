@@ -39,6 +39,21 @@ you can install that into the same conda environment:
 
 Go to the directory where the repository is cloned and run `python setup.py test --installation`. Tests will also be run automatically by [CircleCI](https://circleci.com/gh/ESMValGroup/ESMValTool).
 
+## Using the safe environment
+
+In some cases, ESMValTool/Core dependencies and their own respective dependencies evolve differentially resulting in temporary failure to solve
+the environment (due to conda's incapacity to solve the environment due to version mismatch; the temporary nature may vary from a few hours to weeks, unfortunately). In this case, the user should report the problem immediately by opening a gitHub issue; in the meantime, they can still build the environment and install the tool by using the fallback (safe) environment file `environment-safe.yml`. The procedure to install ESMValTool using the safe environment is slightly different:
+
+- create the ESMValTool environment as before but using the safe environment file: `conda env create -n esmvaltool-safe -f environment-safe.yml`
+- activate it: `conda activate esmvaltool-safe`
+- get the ESMValCore package: `git clone https://github.com/ESMValGroup/ESMValCore.git esmvalcore`
+- install `esmvalcore` in the new environment: `cd esmvalcore && pip install -e '.[develop]' && cd ..`
+- optionally install the R packages: `Rscript esmvaltool/install/R/setup.R`
+- install `yaml` and `lintr` for R: `Rscript esmvaltool/install/R/setup_devutils.R`
+- test the new installation: `python setup.py test --installation`
+
+Note that once `esmvalcore` will be added to PyPi, manually downloading and installing the package (steps 3 and 4) will not be necessary anymore since `esmvalcore` will be installed in safe mode via `pip` as part of the `environment-safe.yml` file.
+ 
 ## Code style
 
 To increase the readability and maintainability or the ESMValTool source code, we aim to adhere to best practices and coding standards. All pull requests are reviewed and tested by one or more members of the core development team. For code in all languages, it is highly recommended that you split your code up in functions that are short enough to view without scrolling.
