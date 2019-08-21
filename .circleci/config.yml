@@ -92,6 +92,67 @@ jobs:
             /opt/conda/envs/esmvaltool/bin/pip install codacy-coverage
             /opt/conda/envs/esmvaltool/bin/python-codacy-coverage -r test-reports/coverage.xml
 
+  test_safe_installation:
+    # Test Python 3 installation in SAFE mode
+    working_directory: /test_safe_installation
+    docker:
+      - image: continuumio/anaconda3
+    steps:
+      - checkout
+      - restore_cache:
+          key: test-safe-install-{{ .Branch }}
+      - run:
+          command: |
+            . /opt/conda/etc/profile.d/conda.sh
+            set -x
+            mkdir /logs
+            # Install
+            wget https://julialang-s3.julialang.org/bin/linux/x64/1.0/julia-1.0.3-linux-x86_64.tar.gz
+            tar xfz julia-*-linux-x86_64.tar.gz
+            ln -s $(pwd)/julia-*/bin/julia /usr/bin/julia
+            conda update -y conda > /logs/conda.txt 2>&1
+            git clone https://github.com/ESMValGroup/ESMValCore.git esmvalcore > /logs/git.txt 2>&1
+            conda env create --name esmvaltool-safe --file esmvaltool-safe.yml > /logs/conda.txt 2>&1
+            set +x; conda activate esmvaltool-safe; set -x
+            cd esmvalcore
+            pip install . > /logs/esmvalcore-install.txt 2>&1
+            cd ..
+            pip install . > /logs/esmvaltool-install.txt 2>&1
+            Rscript esmvaltool/install/R/setup.R > /logs/R_install.txt 2>&1
+            julia esmvaltool/install/Julia/setup.jl > /logs/julia_install.txt 2>&1
+            # Log versions
+            dpkg -l > /logs/versions.txt
+            conda env export > /logs/environment.yml
+            pip freeze > /logs/requirements.txt
+            # Install missing r-yaml
+            conda install -c conda-forge -yS r-yaml
+            # Test full and test installation
+            python setup.py test
+            python setup.py test --installation
+            esmvaltool -h
+            ncl -V
+            # cdo test, check that it supports hdf5
+            cdo --version
+            echo 0 | cdo -f nc input,r1x1 tmp.nc
+            ncdump tmp.nc | ncgen -k hdf5 -o tmp.nc
+            cdo -f nc copy tmp.nc tmp2.nc
+      - save_cache:
+          key: test-install-{{ .Branch }}
+          paths:
+            - "/opt/conda/pkgs"
+            - ".eggs"
+      - store_artifacts:
+          path: /logs
+      - store_artifacts:
+          path: test-reports/
+      - store_test_results:
+          path: test-reports/
+      - run:
+          when: always
+          command: |
+            /opt/conda/envs/esmvaltool/bin/pip install codacy-coverage
+            /opt/conda/envs/esmvaltool/bin/python-codacy-coverage -r test-reports/coverage.xml
+
   develop:
     # Test development installation
     working_directory: /develop
@@ -247,6 +308,7 @@ workflows:
     jobs:
       - test
       - test_installation
+      - test_safe_installation
       - documentation
   nightly:
     triggers:
@@ -260,6 +322,7 @@ workflows:
     jobs:
       - test
       - test_installation
+      - test_safe_installation
       - develop
       - documentation
       - conda_build
