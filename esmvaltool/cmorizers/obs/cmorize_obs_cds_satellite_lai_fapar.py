@@ -40,7 +40,6 @@ from warnings import catch_warnings, filterwarnings
 import cf_units
 import iris
 
-from esmvalcore.cmor.table import CMOR_TABLES
 from esmvalcore.preprocessor import regrid
 from esmvaltool.cmorizers.obs import utilities as utils
 
@@ -48,7 +47,6 @@ logger = logging.getLogger(__name__)
 
 
 def _check_non_unique_attrs(cubelist):
-    
     allattrs = cubelist[0].attributes
     for key in allattrs:
         try:
@@ -200,10 +198,12 @@ def cmorization(in_dir, out_dir, cfg, cfg_user):
                 platform=platformname))
             for n_cube, _ in enumerate(cubelist_platform):
                 cubelist_platform[n_cube].attributes.pop('identifier')
-            if len(cubelist_platform)==0:
-                logger.warning("No files found for platform %s (check input data)", platformname)
+            if cubelist_platform:
+                cube = cubelist_platform.concatenate_cube()
+            else:
+                logger.warning("No files found for platform %s \
+                               (check input data)", platformname)
                 continue
-            cube = cubelist_platform.concatenate_cube()
             savename = os.path.join(cfg['work_dir'],
                                     var['short_name'] + platformname + '.nc')
             logger.info("Saving as: %s", savename)
