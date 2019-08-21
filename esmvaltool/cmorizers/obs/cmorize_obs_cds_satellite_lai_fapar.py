@@ -46,7 +46,9 @@ from esmvaltool.cmorizers.obs import utilities as utils
 logger = logging.getLogger(__name__)
 
 
-def _check_non_unique_attrs(cubelist):
+def _attrs_are_the_same(cubelist):
+    # assume they are the same
+    attrs_the_same = True
     allattrs = cubelist[0].attributes
     for key in allattrs:
         try:
@@ -57,8 +59,10 @@ def _check_non_unique_attrs(cubelist):
             unique_attr_vals = {tuple(cube.attributes[key])
                                 for cube in cubelist}
         if len(unique_attr_vals) > 1:
+            attrs_the_same = False
             print("Different values found for {0}-attribute: {1}"
                   .format(key, unique_attr_vals))
+    return attrs_the_same
 
 
 def _cmorize_dataset(in_file, var, cfg, out_dir):
@@ -197,6 +201,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user):
             cubelist_platform = cubelist.extract(iris.AttributeConstraint(
                 platform=platformname))
             for n_cube, _ in enumerate(cubelist_platform):
+                assert _attrs_are_the_same(cubelist_platform)
                 cubelist_platform[n_cube].attributes.pop('identifier')
             if cubelist_platform:
                 cube = cubelist_platform.concatenate_cube()
