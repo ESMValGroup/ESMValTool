@@ -64,8 +64,8 @@ jobs:
             dpkg -l > /logs/versions.txt
             conda env export > /logs/environment.yml
             pip freeze > /logs/requirements.txt
-            # Install missing r-yaml
-            conda install -c conda-forge -yS r-yaml
+            # Install missing r-yaml and r-linter
+            Rscript esmvaltool/install/R/setup_devutils.R
             # Test installation
             python setup.py test --installation
             esmvaltool -h
@@ -124,8 +124,8 @@ jobs:
             dpkg -l > /logs/versions.txt
             conda env export > /logs/environment.yml
             pip freeze > /logs/requirements.txt
-            # Install missing r-yaml
-            conda install -c conda-forge -yS r-yaml
+            # Install missing r-yaml and r-lintr
+            Rscript esmvaltool/install/R/setup_devutils.R
             # Test full and test installation
             python setup.py test
             python setup.py test --installation
@@ -150,8 +150,8 @@ jobs:
       - run:
           when: always
           command: |
-            /opt/conda/envs/esmvaltool/bin/pip install codacy-coverage
-            /opt/conda/envs/esmvaltool/bin/python-codacy-coverage -r test-reports/coverage.xml
+            /opt/conda/envs/esmvaltool-safe/bin/pip install codacy-coverage
+            /opt/conda/envs/esmvaltool-safe/bin/python-codacy-coverage -r test-reports/coverage.xml
 
   develop:
     # Test development installation
