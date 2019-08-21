@@ -112,7 +112,7 @@ jobs:
             ln -s $(pwd)/julia-*/bin/julia /usr/bin/julia
             conda update -y conda > /logs/conda.txt 2>&1
             git clone http://git@github.com/ESMValGroup/ESMValCore.git esmvalcore > /logs/git.txt 2>&1
-            conda create -y --name esmvaltool-safe --file esmvaltool-safe.yml > /logs/conda.txt 2>&1
+            conda create -y --name esmvaltool-safe --file environment-safe.yml > /logs/conda.txt 2>&1
             set +x; conda activate esmvaltool-safe; set -x
             cd esmvalcore
             pip install . > /logs/esmvalcore-install.txt 2>&1
