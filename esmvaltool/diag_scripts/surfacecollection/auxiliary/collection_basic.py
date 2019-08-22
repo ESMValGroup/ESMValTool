@@ -84,6 +84,8 @@ class ecv_handler(object):
                                  pthreshold=self.cfg["pthreshold"],
                                  percentiles=self.cfg["percentiles"],
                                  temporal_basis=self.cfg["temporal_basis"],
+                                 subregions=self.cfg["subregions"],
+                                 names_column=self.cfg["names_column"]
                                  )
                 for r in results:
                     getattr(plots, diag)(

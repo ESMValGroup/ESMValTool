@@ -12,8 +12,10 @@ from .utilities import set_metadata, checked_ref, data_correlation
 from .utilities import calculate_anomalies, calculate_correlation
 from .utilities import calculate_trend, corr_extract, unify_cubes
 from .utilities import delete_aux_coords, calculate_climatology
-import numpy as np
+from .utilities import weighted_spatial_mean, read_regions
+from .utilities import get_masked_from_shape, timer
 import pandas as pd
+import numpy as np
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -26,18 +28,30 @@ def time_series(data, **kwargs):
     cubes  = []
         
     for cube in data.get_all():
-        delete_aux_coords(cube)
-        cubes.append(cube.collapsed(["latitude", "longitude"],
-                                    iris.analysis.MEAN,
-                                    weights = 
-                                    iris.analysis.cartography.area_weights(
-                                            cube)))
+        return_cube = weighted_spatial_mean(cube)
+        cubes.append(return_cube)
         
-    uni_cube = unify_cubes(cubes)
+    glob_cube = unify_cubes(cubes)
     
-    logger.info(kwargs)
+    return_dict = {"global": glob_cube}
     
-    return uni_cube
+    regions = kwargs.pop("subregions", None)
+    if regions is not None:
+        regions = read_regions(regions)
+    
+    region_names = np.array(regions.records())[:,kwargs.pop("names_column", 0)]
+    
+    for indx, shape in enumerate(regions.shapes()):
+        loc_poly = shape.points
+        masked_data = get_masked_from_shape(data, loc_poly)
+        masked_cubes = []
+        for cube in masked_data.get_all():
+            return_cube = weighted_spatial_mean(cube)
+            masked_cubes.append(return_cube)
+        loc_cube = unify_cubes(masked_cubes)
+        return_dict.update({region_names[indx]:loc_cube})
+    
+    return [return_dict]
 
 def glob_temp_mean(data, **kwargs):
     """

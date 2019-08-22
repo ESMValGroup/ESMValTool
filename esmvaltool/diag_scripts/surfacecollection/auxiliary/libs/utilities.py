@@ -15,9 +15,11 @@ from copy import copy as copy
 from scipy.stats.stats import kendalltau
 from scipy.stats import linregress
 import cf_units
-
+import matplotlib.gridspec as gridspec
 import functools
 import time
+import shapefile
+import dask.array as da
 
 def timer(func):
     """
@@ -37,6 +39,22 @@ def timer(func):
 
 logger = logging.getLogger(os.path.basename(__file__))
 
+def read_regions(filename):
+    """
+    reads regions from filename
+    ---------------------------
+    returns shape object
+    """
+    
+    shapefile_dir = os.path.dirname(os.path.abspath(__file__)) + os.sep + \
+            "shapefiles"
+    
+    try:
+        return shapefile.Reader(shapefile_dir + os.sep + filename)
+    except shapefile.ShapefileException:
+        logger.error("Cannot find shapefile {} in {}".format(filename,
+                     shapefile_dir))
+    
 def set_metadata(c1, c2, fun):
     """
     combines the metadata of 2 cubes
@@ -210,6 +228,10 @@ def cfg_checker(cfg):
         cfg['pthreshold'] = None
     if "temporal_basis" not in cfg.keys():
         cfg['temporal_basis'] = [None]
+    if "subregions" not in cfg.keys():
+        cfg['subregions'] = None
+    if "names_column" not in cfg.keys():
+        cfg['names_column'] = None
 
     __none_caster__(cfg)
 
@@ -661,7 +683,7 @@ def unify_cubes(list_of_cubes):
     element_cube = iris.cube.CubeList(list_of_cubes).merge_cube()
     element_cube.metadata.attributes.update({"elements": element_list})
     
-    return [element_cube]
+    return element_cube
 
 def unify_time(list_of_cubes):
     """
@@ -690,13 +712,12 @@ def unify_time(list_of_cubes):
     
     return list_of_cubes
 
-def weighted_spatial_mean(cube, weighted=True):
+def weighted_spatial_mean(cube):
     """
     produces a weighted spatial mean along the time coordinates of cubes
     --------------------------------------------------------------------
     returns collapsed cube
     """
-    
     cubes = []
     
     delete_aux_coords(cube)
@@ -705,18 +726,120 @@ def weighted_spatial_mean(cube, weighted=True):
     
     for latlon in cube.slices(["latitude","longitude"]):
         
-        pass
+        time = latlon.collapsed(["latitude", "longitude"],
+                                iris.analysis.MEAN,
+                                weights = SPW)
+        
+        cubes.append(time)
+        
+    cube = iris.cube.CubeList(cubes).merge_cube()
+        
+    return cube
+
+def get_masked_from_shape(data, polygon):
+    """
+    produce a mask for all data based on a polygon
+    --------------------------------------------
+    returns masked data
+    """
     
-    return
+    base_cube = next((data.get_all()[0]).slices_over("time")) * 0
+
+    mask = []
+
+    for pos in base_cube.slices_over(["latitude","longitude"]):
+        pos.data = __out_of_poly__(pos, polygon)
+        iris.util.new_axis(pos, 'latitude')
+        iris.util.new_axis(pos, 'longitude')
+        mask.append(pos)
+    
+    mask = iris.cube.CubeList(mask).merge_cube()
+    
+    masked_data = data.apply_iris_fun(__mask2cube__,
+                                      "overwrite",
+                                      mask = mask.data)
+    
+    return masked_data
+
+def __out_of_poly__(cube, poly):
+    """
+    checks if coordinate of scalar cube is outside of polygon
+    ---------------------------------------------------------
+    returns boolean
+    """
+    point = [cube.coord("longitude").points, cube.coord("latitude").points]
+    # longitudes in cube are usually [0,360], in shapefiles [-180,180] 
+    if point[0] > 180:
+        point[0] = point[0] - 360
+    
+    n = len(poly)
+    inside = False
+    
+    p1x,p1y = poly[0]
+    for i in range(n+1):
+        p2x,p2y = poly[i % n]
+        if point[1] > min(p1y,p2y):
+            if point[1] <= max(p1y,p2y):
+                if point[0] <= max(p1x,p2x):
+                    if p1y != p2y:
+                        xints = (point[1]-p1y)*(p2x-p1x)/(p2y-p1y)+p1x
+                    if p1x == p2x or point[0] <= xints:
+                        inside = not inside
+        p1x,p1y = p2x,p2y
+    
+    return not inside
+
+def __mask2cube__(cube, mask = False):
+    """
+    applies mask to cube
+    --------------------
+    returns masked cube
+    """
+    
+    return_cube = cube.copy()
+    
+    if np.ma.is_masked(return_cube.data):
+        return_cube.data.mask = np.logical_or(return_cube.data.mask, mask)
+    else:
+        return_cube.data = da.ma.masked_array(
+                return_cube.core_data(),
+                mask)
+        
+    return return_cube
+    
 
 def spatial_weights(cube):
     """
-    produces a weighted spatial mean along the time coordinates of cubes
-    --------------------------------------------------------------------
-    returns collapsed cube
+    produces a spatial weights for a cube
+    -------------------------------------
+    returns weighting cube
+    """
+    time_slice = next(cube.slices(["latitude","longitude"]))
+    
+    return iris.analysis.cartography.area_weights(time_slice)
+
+def multiplot_gridspec(num_elements, num_plots, figsize):
+    """
+    rearranges plot grid and figure size 
+    based on the number of plots and elements
+    -----------------------------------------
+    returns gridspec and figsize
     """
     
-    return
+    num_rows = int(1 + (num_plots+1.)//2)
+    num_cols = int(1 + (num_plots > 1))
+    
+    height = np.append(np.repeat(20, num_rows-1),1*(num_elements+1.)//2)
+    
+    gs = gridspec.GridSpec(num_rows,
+                           num_cols,
+                           width_ratios=np.repeat(1,num_cols),
+                           height_ratios=height
+                           )
+    
+    figsize = (figsize[0], figsize[1] * np.sum(height)/21)
+    
+    return gs, figsize
 
 class input_handler(object):
     """
@@ -778,7 +901,23 @@ class input_handler(object):
                 for idat in self.files_nonref])
             self.files_read = True
             
+            self.__check_shapes__()
+            
         return
+    
+    def __check_shapes__(self):
+        """
+        checks if all data has a common shape
+        -------------------------------------
+        produces error
+        """
+        
+        shapes = [cube.shape for cube in self.get_all()]
+        
+        if len(list(set(shapes)))>1:
+            raise ValueError("The shapes of the data sets do not fit. " +
+                             "Please review the preprocessor setup. " +
+                             "Shapes are: {}".format(shapes))
     
     def get_ref(self):
         """

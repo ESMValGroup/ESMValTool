@@ -18,8 +18,8 @@ import numpy as np
 import pandas as pd
 import textwrap
 import cf_units
-from .utilities import adjust_minmax, cmap_switch, mean_std_txt
-from .utilities import get_filenames, clean_filename
+from .utilities import adjust_minmax, cmap_switch, mean_std_txt, timer
+from .utilities import get_filenames, clean_filename, multiplot_gridspec
 import random
 import string
 
@@ -40,7 +40,7 @@ def __plot_map__(data, gs, **kwargs):
     
     return
 
-
+@timer
 def simple_plot(data, **kwargs):
     """ 
     simple 2D plotting routine
@@ -70,7 +70,7 @@ def time_series(data, **kwargs):
     """
     
     # predefined settings
-    figsize = (14,5)
+    basic_figsize = (15,5)
     
     # check for format
     fformat = kwargs.pop("fformat", "pdf")
@@ -78,53 +78,66 @@ def time_series(data, **kwargs):
     # check for plotdir
     plotdir = kwargs.pop("plotdir", ".")
     
-    fig = plt.figure(figsize=figsize)
-    gs = gridspec.GridSpec(2, 1,
-                           width_ratios=[1],
-                           height_ratios=[9, 1]
-                           )
+    # get size informations
+    num_elements = len(data["global"].metadata.attributes["elements"])
+    num_plots = len(data)
+    ylim = kwargs.pop("vminmax", [None, None])
     
-    col = plt.get_cmap("jet", len(data.metadata.attributes["elements"]))
+    gs, figsize = multiplot_gridspec(num_elements, num_plots, basic_figsize)
+    
+    fig = plt.figure(figsize=figsize)
+    
+    col = plt.get_cmap("jet", num_elements)
     
     files = []
     
-    for indx, cube in enumerate(data.slices('unified_time')):
+    for jindx, sp in enumerate(gs):
+        if jindx < len(data):
+            ax = plt.subplot(sp)
+            plt.sca(ax)
+            name = list(data.keys())[jindx]
+            
+            if np.ma.is_masked(data[name].data):
+                if np.all(data[name].data.mask):
+                    data[name].data = np.ma.MaskedArray(
+                            (data[name].data.data * 0 + 1) * -1e16,
+                            mask = np.logical_not(data[name].data.mask))
+            
+            for indx, cube in enumerate(data[name].slices('unified_time')):
+                cube_label = data[name].metadata.attributes["elements"][
+                    cube.coord("element").points[0]].split(".")[0]
+                if jindx == 0:
+                    files.append(cube_label)
+                iplt.plot(cube, label=cube_label, color=col(indx))
+                
+            ax.autoscale(tight=True)
         
-        ax=plt.subplot(gs[0,0])
-        
-        # Create a string label
-        cube_label = data.metadata.attributes["elements"][
-                cube.coord("element").points[0]].split(".")[0]
-        
-        files.append(cube_label)
-
-        # Plot the cube, and associate it with a label.
-        iplt.plot(cube, label=cube_label, color=col(indx))
+            ax.set(
+                   ylim=ylim,
+                   xlabel='Time',
+                   ylabel=textwrap.fill("{} [{}]".format(cube.long_name,
+                           cube.units), 50),
+                   title=name
+                   )
+                   
+            plt.grid(True)
+            
+            plt.tight_layout()
+                
+    all_axes = fig.get_axes()
     
-# not needed if preprocessor changes time
-#    locs, labels = __time_label_and_loc__(cube.coord("unified_time"))
-#    plt.xticks(locs, labels, rotation=15)
-#    xlim=[min(locs), max(locs)]
-
-    ax.autoscale(tight=True)
-
-    ax.set(
-           ylim=kwargs.pop("vminmax", [None, None]),
-           xlabel='Time',
-           ylabel=textwrap.fill("{} [{}]".format(cube.long_name,
-                   cube.units), 50),
-           title="Spatially averaged time series"
-           )
+    for indx, ax in enumerate(all_axes):
+        if not indx in [num_plots-2, num_plots-1]:
+            ax.set_xticklabels([])
+            ax.set(xlabel='')
+        if indx%2:
+            ax.set_yticklabels([])
+            ax.set(ylabel='')
         
     # Add the legend
-    plt.legend(bbox_to_anchor=(0.95,0.05), loc="lower right",
+    plt.legend(bbox_to_anchor=(1,0), loc="lower right",
                bbox_transform=fig.transFigure, ncol=2)
 
-    # Put a grid on the plot.
-    plt.grid(True)
-
-    plt.tight_layout()
-    
     fig.savefig(fname = ("{}" + os.sep +
                          "time_series_{}.{}").format(plotdir,
                                                  "_".join(files), fformat))
@@ -686,8 +699,10 @@ def __threshold_trend_plot__(data, **kwargs):
     fig.text(xpos_add_txt[0], .05, mst, ha='left', fontsize=8)
     fig.text(xpos_add_txt[1], .05, file, ha='right', fontsize=8)
     plt.colorbar(ticks = ticks, extend = extend)
-    plt.title(textwrap.fill("{} [{}] (p-values <= {:.2f})".format(data.long_name,
-              data.units, data.attributes["pthreshold"]), 80),
+    plt.title(textwrap.fill("{} [{}] (p-values <= {:.2f})".format(
+            data.long_name,
+            data.units,
+            data.attributes["pthreshold"]), 80),
               pad=10, fontsize=12)
     plt.tight_layout()
     fig.savefig(fname = ("{}" + os.sep +

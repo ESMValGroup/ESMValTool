@@ -72,7 +72,8 @@ diagnostics:
         script: surfacecollection/main_diag_selector.py
         vminmax: [0.0, 0.5]
         requests: [time_series]
-        subregions: [climes.shp]
+        subregions: continents.shp
+        names_column: 1
 #      gtm:
 #        script: surfacecollection/main_diag_selector.py
 #        colormap: ['whitesmoke', 'lightblue', 'dodgerblue', 'mediumblue']
