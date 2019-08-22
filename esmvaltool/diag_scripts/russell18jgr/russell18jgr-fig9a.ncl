@@ -57,11 +57,6 @@
 ;; Caveats
 ;;  - Does not work for models without hfds, these models will be made compatible
 ;;     in future. 
-;;    
-;; Optional diag_script_info attributes (diagnostic specific)
-;;   
-;; Caveats
-;;  - MRI doesnt work as it has 0 as fillvalue  
 ;; 
 ;; Modification history
 ;;    
@@ -262,6 +257,9 @@ begin
   res@tmXBTickStartF    = xval_start_point
   res@tmXBTickSpacingF  = 1.0 
   res@tmXBTickEndF      = xval_end_point
+  res@xyMarkLineMode    = "Lines"
+  res@xyDashPatterns    = 1            ; solid line 
+  res@xyLineThicknessF  = 1            ; set second line to 2
 
   aaa = fspan(xval_start_point, xval_end_point, nDatasets) 
   ; array of x coordinates for line of best fit
@@ -273,28 +271,21 @@ begin
   data1(1,:) = linereg
   data1!0 = "i"
   data1&i = (/1,2/)
-
-  res@xyMarkLineMode             = "Lines"
-  res@xyDashPatterns             = 1            ; solid line 
-  res@xyLineThicknessF           = 1            ; set second line to 2
   plot  = gsn_csm_xy (wks, aaa, linereg, res)   ; create plot
  
   mres                    = True
   mres@gsMarkerSizeF      = 0.0125             ; choose marker size
 
   do i= 0, dimsizes(lat_width)-1
-  
+    ; overlaying the markers on the plot 
     mres@gsMarkerColor   = colors(i)            ; set marker colors
     mres@gsMarkerIndex   = markers(i)           ; choose marker types
     id = unique_string("mark")                  ; create unique id
-    plot@$id$ = gsn_add_polymarker(wks,plot,lat_width(i), heat_flux_iii(i),mres) ;-- add marker to plot
-    
+    plot@$id$ = gsn_add_polymarker(wks,plot,lat_width(i), heat_flux_iii(i),mres) ; add marker to plot  
   end do
-
+  
   draw(plot)    ; draw the plot
-  
 
-  
   legend = create "Legend" legendClass wks 
   "vpXF"                     : 0.675                  ; orientation on page
   "vpYF"                     : 0.925
