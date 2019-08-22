@@ -55,7 +55,7 @@ def color_lookup(ecv_name):
                        "Diverging":"bwr"}),
         "lai": dict({"Data": "RdYlGn",
                     "Sequential":"YlGn",
-                    "Diverging":"BrBg"}),
+                    "Diverging":"BrBG"}),
         "lwp": dict({"Data": "RdYlGn",
                     "Sequential":"YlGn",
                     "Diverging":"BrBG"}),
