@@ -24,6 +24,20 @@ To install in development mode, follow these instructions.
 -   If you log into a cluster or other device via `ssh` and your origin machine sends the `locale` environment via the `ssh` connection, make sure the environment is set correctly, specifically `LANG` and `LC_ALL` are set correctly (for GB English UTF-8 encoding these variables must be set to `en_GB.UTF-8`; you can set them by adding `export LANG=en_GB.UTF-8` and `export LC_ALL=en_GB.UTF-8` in your origin or login machines' `.profile`)
 -   Do not run `conda update --update-all` in the `esmvaltool` environment since that will update some packages that are pinned to specific versions for the correct functionality of the environment.
 
+## Getting started on MacOS OSX-64
+At the moment the conda package for `esmvaltool` (and `esmvalcore`) is only Linux (`linux-64`), so to install on a MacOS you will have to perform a slightly different installation procedure:
+
+  - Download and install Anaconda [for OSX](https://repo.anaconda.com/archive/Anaconda3-2019.07-MacOSX-x86_64.sh)(install by e.g. `bash Anaconda3-2019.07-MacOSX-x86_64.sh` or whatever the installer is called);
+  - Answer yes when, at the end of the installation, Anaconda asks you to initialize the installation in your `.bash_profile`;
+  - Clone the ESMValTool Core Git repository: `git clone git@github.com:ESMValGroup/ESMValCore`
+  - Go to the source code directory: `cd ESMValCore` and follow the Getting started on MacOS OSX-64 instructions in the `CONTRIBUTING.md` file from ESMValCore; this will install `esmvalcore` that is a dependency of `esmvaltool` and without it it will not work; also note that this is needed only on MacOS installations since on Linux installations the `esmvalcore` package is downloaded and installed automatically via conda;
+  - After installing ESMValCore, Now leave the ESMValCore directory and go back to your `$HOME`;
+  - Clone the ESMValTool public github repository: `git clone git@github.com:ESMValGroup/ESMValTool`, or one of the private github repositories (e.g. `git clone git@github.com:ESMValGroup/ESMValTool-private`)
+  - Go to the esmvaltool directory: `cd ESMValTool`
+  - Update the already built `esmvaltool` conda environment using the special `environment-osx.yml` file for OSX: `conda env update -n esmvaltool -f environment-osx.yml`
+  - Install in development mode: `pip install -e '.[develop]'`. If you are installing behind a proxy that does not trust the usual pip-urls you can declare them with the option `--trusted-host`, e.g. `pip install --trusted-host=pypi.python.org --trusted-host=pypi.org --trusted-host=files.pythonhosted.org -e .[develop]`
+  - All other R or Julia packages install just as instructed above
+
 ## Using the development version of the ESMValTool Core package
 
 If you need the latest developments of the ESMValTool Core package,
