@@ -37,7 +37,7 @@ you can install that into the same conda environment:
 
 ## Installing Julia
 
-To run Julia diagnostics you will have to install Julia; the safest way is to install from source:
+To run Julia diagnostics you will have to install Julia; the safest way is to use the official pre-built executable and link it in the conda environment:
 
 - Get the tarball (for v1.0.3 in this case): `wget https://julialang-s3.julialang.org/bin/linux/x64/1.0/julia-1.0.3-linux-x86_64.tar.gz`
 - Unpack the tarball: `tar xfz julia-*-linux-x86_64.tar.gz`
