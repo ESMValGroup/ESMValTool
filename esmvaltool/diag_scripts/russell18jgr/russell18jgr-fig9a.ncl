@@ -268,7 +268,7 @@ begin
   linereg = rc@yintercept + (rc * aaa)
   ; calculates the y coordinates of line of best fit
   data1(0,:) = heat_flux_iii 
-  data1(1,:) = linereg
+  data1(1,:) = lat_width
   data1!0 = "i"
   data1&i = (/1,2/)
   plot  = gsn_csm_xy (wks, aaa, linereg, res)   ; create plot
@@ -310,10 +310,15 @@ begin
     outvar@var   = "heat-flux_lat-width"
     outvar@diag_script = "russell18jgr_fig9a.ncl" 
     outvar@model_name = annots(idd) 
+    outvar@regline_y_coord = linereg
+    outvar@regline_x_coord = aaa
     
     outvar@description = "Total heat flux and lat width of southern westerly band" \
-                        + "for dataset :" + annots(idd) + " for years " \
-                        + (start_years_data(idd)) +"-"+ (end_years_data(idd)) 
+                        + "for dataset : " + annots(idd) + " for years " \
+                        + (start_years_data(idd)) +"-"+ (end_years_data(idd)) \
+                        + " are in 0th and 1st " \
+                        + "dimension respectively. Line of best fit's " \
+                        + "coordinates are added as attributes regline_coords" 
     ncdf_outfile = ncdf_write( outvar, nc_filename)
     
     log_provenance(ncdf_outfile, \
