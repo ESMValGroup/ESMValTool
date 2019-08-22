@@ -206,7 +206,7 @@ class ESMValToolTest(EasyTest):
 
         return matches
 
-    def _compare_netcdf_values(self, F1, F2, allow_subset=False):
+    def _compare_netcdf_values(self, f1, f2, allow_subset=False):
         """Compare two netCDF4 Dataset instances.
 
         Check if dataset2 contains the same variable values as dataset1.
@@ -217,9 +217,9 @@ class ESMValToolTest(EasyTest):
         if allow_subset:  # allow that only a subset of data is compared
             raise NotImplementedError
 
-        for key in F1.variables:
-            values1 = F1.variables[key][:]
-            values2 = F2.variables[key][:]
+        for key in f1.variables:
+            values1 = f1.variables[key][:]
+            values2 = f2.variables[key][:]
 
             if not np.array_equal(values1, values2):
                 return False
