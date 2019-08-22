@@ -564,9 +564,12 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
             for c in color_lookup(self.__varname__).keys():
                 matplotlib.cm.get_cmap(color_lookup(self.__varname__)[c])
             self.colormaps = color_lookup(self.__varname__)
-        except:
+        except KeyError:
             logging.warning("There is no usable specification of data " + 
                             "colors. Falling back to default.")
+        except ValueError:
+            logging.error("The specified cmap could not be found. Falling back to default.")
+
 
 #        self.__output_type__ = self.__cfg__['output_file_type']  # default ouput file type for the basic diagnostics
 #        if not self.__output_type__ == 'png':
