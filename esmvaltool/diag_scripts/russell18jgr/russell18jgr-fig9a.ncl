@@ -200,7 +200,7 @@ begin
     delete(fx_var)
   
 
-    if (iscoord(tauu_lon, "lat")) then
+    if (iscoord(tauu_lon, "lat")) then ; extracting lat values
       var_lat = tauu_lon&lat 
     else
       infile_path = tauu_inputfile_paths(iii)
