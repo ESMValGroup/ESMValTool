@@ -13,7 +13,7 @@ import iris.plot as iplt
 import iris.quickplot as qplt
 import cf_units as unit
 import matplotlib.cm as mpl_cm
-import matplotlib.colors as colors
+import matplotlib.colors as mpl_colors
 import cartopy.crs as ccrs
 from ..libs import c3s_511_util as utils
 #import random
@@ -796,10 +796,14 @@ class Plot2D(object):
                 
                 loc_cube = cube.copy()
                 loc_data = loc_cube.core_data()
-                loc_data.mask = np.logical_or(loc_data.mask,loc_data<=0.0)
-                loc_cube.data = loc_data
-                
-                temp_min=np.min(loc_data)
+                if isinstance(np.ma.getmask(loc_data), bool):
+                    if np.ma.getmask(loc_data) == np.ma.nomask:
+                        loc_data = da.ma.masked_where(loc_data<=0.0, loc_data)
+                else:
+                    loc_data = da.ma.masked_where(da.logical_or(np.ma.getmask(loc_data),
+                                                  loc_data<=0.0), loc_data)
+                loc_cube.data = loc_data.compute()
+                temp_min= da.min(loc_data)
                 temp_min=10**np.floor(np.log10(temp_min))
                 if temp_min<vmin:
                     vmin = temp_min
@@ -819,7 +823,8 @@ class Plot2D(object):
 
             # Plot map
             # (this needs to be done due to an error in cartopy)
-            try:
+#            try:
+            for i in [1]:
                 if y_logarithmic:
                     cube.coord(lev_var).points = np.log10(
                         cube.coord(lev_var).points)
@@ -845,34 +850,30 @@ class Plot2D(object):
                     plt.clabel(cs, cs.levels)
 
                 if dat_log:
-                    loc_cube = cube.copy()
-                    loc_data = loc_cube.core_data()
-                    loc_data.mask = np.logical_or(loc_data.mask,loc_data<=0.0)
-                    loc_cube.data = loc_data
+#                    loc_cube = cube.copy()
+#                    loc_data = loc_cube.core_data()
+#                    if np.ma.getmask(loc_data) == np.ma.nomask:
+#                        loc_data = np.ma.MaskedArray(loc_data,mask=loc_data<=0.0)
+#                    else:
+#                        loc_data.mask = np.logical_or(loc_data.mask,loc_data<=0.0)
+#                    loc_cube.data = loc_data
                     
                     logticks=np.linspace(np.log10(vmin),
                                             np.log10(vmax),
                                             len(levels)+1)
                     ticks = 10**logticks
                     
-                    self.logger.info(logticks)
-                    self.logger.info(ticks)
-                    
                     pcm = iplt.pcolormesh(loc_cube,
                                     cmap=brewer_cmap,
                                     vmin=vmin,
                                     vmax=vmax,
-                                    norm=colors.LogNorm())
+                                    norm=mpl_colors.LogNorm())
                 else:
                     pcm = iplt.pcolormesh(cube,
                                           cmap=brewer_cmap,
                                           vmin=vmin,
                                           vmax=vmax)
                 if y_logarithmic:
-#                    (locs, _) = plt.yticks()
-#                    (bottom, top) = plt.ylim()
-#                    labels = np.round(10**locs, decimals=1)
-#                    plt.yticks(locs, labels)
                     plt.ylim(levrange[::-1])
                     plt.gca().yaxis.set_major_formatter(
                             FuncFormatter(label_in_exp))
@@ -898,18 +899,19 @@ class Plot2D(object):
                     else:
                         plt.xticks(locs, labels, rotation=25)
                         plt.xlabel(self.__class__.TIME_LABEL)
-            except Exception as e:
-                self.logger.exception(e)
-                exc_type, exc_obj, exc_tb = sys.exc_info()
-                fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-                self.logger.debug(exc_type, fname, exc_tb.tb_lineno)
-                qplt.pcolormesh(cube, cmap=brewer_cmap,
-                                vmin=vmin, vmax=vmax, norm=None)
-                plt.text(0.5, 0.5, 'Data cannot be displayed as intended due '
-                         'to cartopy issues with the data cube!',
-                         horizontalalignment='center',
-                         verticalalignment='center',
-                         transform=plt.gca().transAxes)
+#            except Exception as e:
+#                self.logger.exception(e)
+#                exc_type, exc_obj, exc_tb = sys.exc_info()
+#                fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+#                self.logger.debug(exc_type, fname, exc_tb.tb_lineno)
+#                pcm = qplt.pcolormesh(cube, cmap=brewer_cmap,
+#                                      vmin=vmin, vmax=vmax, norm=None)
+#                plt.text(0.5, 0.5, 'Data cannot be displayed as intended due '
+#                         'to cartopy issues with the data cube!',
+#                         horizontalalignment='center',
+#                         verticalalignment='center',
+#                         transform=plt.gca().transAxes)
+                        
             if self.plot_type == 'latlon':
                 mean = cube.collapsed(
                     [coord.name() for coord in cube.coords()],
@@ -954,7 +956,6 @@ class Plot2D(object):
                 ticks = ticks,
 #                boundaries=(levels)
                 )
-            self.logger.info([str(np.max([-int(np.log10(x)),0])) for x in ticks])
             cbar.ax.set_xticklabels([('{:.'+str(2)+'g}').format(x) for x in ticks])
 #            pass
         else:

@@ -64,6 +64,7 @@ class __Diagnostic_skeleton__(object):
         self.diagname = "Diagnostic_skeleton.py"
 
         # config
+        # TODO explain all attributes
         self.__cfg__ = None
         self.__logger__ = logging.getLogger(os.path.basename(__file__))
 
@@ -106,6 +107,9 @@ class __Diagnostic_skeleton__(object):
         self.__requested_diags__ = []
         self.__report_directories__ = None
         self.__report_order__ = []
+        
+        self.__extremes__ = {}
+        self.__extremes_regions__ = {}
         
         self.reporting_structure = collections.OrderedDict()
 
@@ -401,11 +405,12 @@ class __Diagnostic_skeleton__(object):
                 logger.error("Region " + R +
                              " specifications not specified correctly: " +
                              str(dict_of_regions[R]) + "!")
-
+        #BAS: TODO the warning below can be made more helpfull, printing the 
+        # key of the empty subsets.
         if any([subset_cubes[sc] is None for sc in subset_cubes]):
             raise ValueError(
                 "Could not calculate all subsets. " + 
-                "Some are none overlapping! " +
+                "Some are non-overlapping! " +
                 str(subset_cubes))
 
         return subset_cubes
@@ -513,6 +518,7 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
 ##        self.__logger__.info(np.sort([*self.li1]))
         #######################################################################
 
+        # TODO use self.__cfg__.pop() here!!!
         if not isinstance(self.__cfg__, dict) or len(self.__cfg__) == 0:
             raise EmptyContentError("__cfg__", "Element is empty.")
 
@@ -545,7 +551,18 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
             self.__report_order__ = self.__cfg__['order']
         except BaseException:
             self.__report_order__ = self.__cfg__["input_files"]
-
+            
+        try:
+            # reads extremes setup from recipe
+            self.__extremes__ = dict({"min_measurements": self.__cfg__["minimal_number_measurements"],
+                                      "which_percentile": self.__cfg__["which_percentile"],
+                                      "window_size": self.__cfg__["window_size"],
+                                      "extreme_events": self.__cfg__["extreme_events"],
+                                      "multiprocessing": self.__cfg__["multiprocessing"],
+                                      })
+        except BaseException:
+            pass
+            
         self.__plot_dir__ = self.__cfg__['plot_dir']
         self.__work_dir__ = self.__cfg__['work_dir']
         self.__report_dir__ = self.__work_dir__ + os.sep + "c3s_511" + os.sep
@@ -564,12 +581,9 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
             for c in color_lookup(self.__varname__).keys():
                 matplotlib.cm.get_cmap(color_lookup(self.__varname__)[c])
             self.colormaps = color_lookup(self.__varname__)
-        except KeyError:
+        except:
             logging.warning("There is no usable specification of data " + 
                             "colors. Falling back to default.")
-        except ValueError:
-            logging.error("The specified cmap could not be found. Falling back to default.")
-
 
 #        self.__output_type__ = self.__cfg__['output_file_type']  # default ouput file type for the basic diagnostics
 #        if not self.__output_type__ == 'png':
@@ -578,8 +592,8 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
             'Europe_2000': {
                 'latitude': (30, 75),
                 'longitude': (-10, 35),
-                'time': (datetime.datetime(2000, 1, 1),
-                         datetime.datetime(2000, 12, 31)
+                'time': (datetime.datetime(2000, 5, 1),
+                         datetime.datetime(2000, 9, 30)
                          )}}  # default region
 #
 #        # for metadata
@@ -890,7 +904,6 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
 
         if "availability" in self.__requested_diags__:
     
-            utils.__remove_all_aux_coords__(cube)
             try:
                 sp_masked_vals = cube.collapsed(
                     "time", iris.analysis.COUNT,
@@ -1153,8 +1166,6 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
             
             for d in ["time"]:
                 
-                utils.__remove_all_aux_coords__(cube)
-                
                 long_left_over = [rd for rd in reg_dimensions if rd != d]
             
                 perc_comp_dict = utils.lazy_percentiles(cube,percentiles)
@@ -1351,7 +1362,7 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                          ('NA-values and values of 0 and below are shown ' + 
                           'in grey.' if self.log_data else
                           'NA-values are shown in grey.'),
-                         '#C3S' + "mymean" + "".join(
+                         '#C3S' + "mean_var" + "".join(
                              np.array([sl[0:3] for sl in di["llo"]])) + \
                          self.__varname__,
                          self.__infile__,
@@ -1396,7 +1407,7 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                              ' (' + self.__time_period__ + 
                              '); Data can ' +
                              'not be displayed due to cartopy error!'),
-                         '#C3S' + "mymean" + "".join(
+                         '#C3S' + "mean_var" + "".join(
                              np.array([sl[0:3] for sl in di["llo"]])) +
                          self.__varname__,
                          self.__infile__, 

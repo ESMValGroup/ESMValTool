@@ -1,24 +1,6 @@
-###############################################################################
-# recipe_C3S_51_SPQB.yml
-#
-# Description
-# Independent assessment of single products for the C3S_511 quality brief
-#
-# Author
-# Benjamin Mueller (LMU, Germany - b.mueller@iggf.geo.uni-muenchen.de)
-# Birgit Hassler (DLR, Germany - birgit.hassler@dlr.de)
-#
-# Project
-# C3S_511
-#
-# Reference
-
-#
-# This namelist is part of the ESMValTool
-###############################################################################
 documentation:
   description: |
-    Independent assessment of single products for the C3S_511 quality brief
+    Independent assessment of single snow products for the C3S_511 quality brief
 
   authors:
     - muel_bn
@@ -33,6 +15,10 @@ datasets:
   - {dataset: CDS-ERA5-SNOWDEPTH, type: reanalysis, project: OBS, mip: LImon, version: L3, tier: 3, start_year: 1990,  end_year: 2018}
 preprocessors:
   noop: {}
+  regrid_ex:
+    regrid:
+      target_grid: 10x10
+      scheme: nearest
 
 diagnostics:
   SPQB:
@@ -55,6 +41,7 @@ diagnostics:
       diag_MV_ts:
         script: qualassess/DUMMY_C3S_511_SPQB.py
         requests: [time_series]
+        log_data: True
       diag_MV_mean:
         script: qualassess/DUMMY_C3S_511_SPQB.py
         requests: [mean]
@@ -95,18 +82,3 @@ diagnostics:
 #        order: [diag_tables, diag_MV_mean]
 #        order: [diag_MV_ts, iag_MV_mean, diag_MV_std_dev]
         show_latex: False #options are: True/False/no_latex
-#        
-#  diagnostic1:
-#    description: Multi-product quality brief.
-#    variables:
-#      additional_datasets:
-#        - {dataset: ATSR,  project: obs4mips,  level: L3,  version: ARC-v1.1.1,  start_year: 2001,  end_year: 2003, tier: 3}
-#      ta:
-#        preprocessor: noop
-#        field: T3Ms
-#    scripts:
-#      script0:
-#        script: qualassess/DUMMY_C3S_511_MPQB.py
-#        data_colors: RdYlGn
-#        levels: [30000.,10000.]
-#        show_latex: False

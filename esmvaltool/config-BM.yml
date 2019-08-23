@@ -46,4 +46,4 @@ rootpath:
 # See config-developer.yml for definitions.
 drs:
   CMIP5: default
-  OBS: CDS
+#  OBS: OBS

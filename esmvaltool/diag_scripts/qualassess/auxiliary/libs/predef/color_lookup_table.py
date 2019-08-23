@@ -114,8 +114,8 @@ def color_lookup(ecv_name):
                     "Diverging":"BrBG"}),
         "snc": dict(),
         "snd": dict({"Data": "jet", #bone
-                    "Sequential": "BuPu",
-                    "Diverging": "Spectral"}),
+                     "Sequential": "BuPu",
+                     "Diverging": "Spectral"}),
         "swe": dict(),
         "so": dict({"Data": "viridis",
                     "Sequential":"YlGn",
