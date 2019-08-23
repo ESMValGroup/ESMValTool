@@ -109,7 +109,7 @@ def _extract_variable(in_file, var, cfg, out_dir):
     utils.save_variable(cube, cube.var_name, out_dir, attributes)
 
 
-def cmorization(in_dir, out_dir, cfg):
+def cmorization(in_dir, out_dir, cfg, _):
     """Cmorization func call."""
     cfg['attributes']['comment'] = cfg['attributes']['comment'].format(
         year=datetime.now().year)
