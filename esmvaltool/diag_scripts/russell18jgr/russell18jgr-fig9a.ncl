@@ -259,7 +259,7 @@ begin
   res@tmXBTickEndF      = xval_end_point
   res@xyMarkLineMode    = "Lines"
   res@xyDashPatterns    = 1            ; solid line 
-  res@xyLineThicknessF  = 1            ; set second line to 2
+  res@xyLineThicknessF  = 1           
 
   aaa = fspan(xval_start_point, xval_end_point, nDatasets) 
   ; array of x coordinates for line of best fit
