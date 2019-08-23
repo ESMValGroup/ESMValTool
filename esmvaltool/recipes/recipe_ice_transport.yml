@@ -1,0 +1,43 @@
+# ESMValTool
+---
+documentation:
+  description: |
+    This is an example recipe for a personal diagnostic.
+    You can run any Python diagnostic of your choice
+    without installing ESMValTool as developer or git pushing.
+    Simply include the full path to your script of choice in script,
+    see example /path/to/your/my_little_diagnostic.py
+    An example personal diagnostic can be found in
+    esmvaltool/diag_scripts/examples/my_little_diagnostic.py
+  authors:
+    - pred_va
+
+  maintainer:
+    - pred_va
+
+datasets:
+  - {project: CMIP6, activity: CMIP, dataset: HadGEM3-GC31-LL, mip: SImon, exp: historical, ensemble: r1i1p1f3, grid: gn, start_year: 1850, end_year: 2014}
+
+preprocessors:
+  bering: &bering
+    extract_region:
+      start_longitude: -174.
+      end_longitude: -165.
+      start_latitude: 63.9
+      end_latitude: 67.3
+  bering_levels:
+    <<: *bering
+
+diagnostics:
+  bering:
+    description: "Simple personal diagnostic"
+    variables:
+      siconc:
+        preprocessor: bering
+      sivol:
+        preprocessor: bering
+      siv:
+        preprocessor: bering
+    scripts:
+      ice_transport:
+        script: primavera/ice_transport.py
