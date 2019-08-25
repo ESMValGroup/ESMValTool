@@ -9,6 +9,7 @@ numpy
 pillow
 prov[dot]
 pyyaml
+setuptools
 shapely
 six
 xarray
