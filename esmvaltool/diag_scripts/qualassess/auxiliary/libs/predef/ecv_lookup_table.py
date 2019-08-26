@@ -11,6 +11,7 @@ def ecv_lookup(ecv_name):
         "cfc12": "mole concentration of CFC-12 in sea water",
         "clt": "total cloud fraction",
         "cod": "atmosphere optical thickness due to cloud",
+        "fapar": "fraction of absorbed photosynthetically active radiation",
         "hfds": "surface downward heat flux in sea water",
         "hur": "relative humidity",
         "intdic": "dissolved inorganic carbon content",
