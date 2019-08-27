@@ -8,7 +8,8 @@ import iris.coord_categorisation as ic
 
 from esmvaltool.diag_scripts.shared import run_diagnostic, group_metadata
 from esmvaltool.diag_scripts.shared import names as n
-from esmvaltool.diag_scripts.energy_vectors.common import low_pass_weights, lanczos_filter
+from esmvaltool.diag_scripts.energy_vectors.common import (low_pass_weights,
+                                                           lanczos_filter)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -39,7 +40,9 @@ class HeatFlux(object):
             heat_flux = self.eddy_heat_flux(ta_cube, va_cube, filter_weights)
 
             ic.add_month_number(heat_flux, 'time', 'month_number')
-            heat_flux = heat_flux.aggregated_by('month_number', iris.analysis.MEAN)
+            heat_flux = heat_flux.aggregated_by(
+                'month_number', iris.analysis.MEAN
+            )
             logger.info("Saving results")
             iris.save(
                 heat_flux,
@@ -81,7 +84,7 @@ class HeatFlux(object):
         heat_flux.attributes['filtering'] = \
             "Lanczos filtering with window width=%s (%s days)" % (
                 len(filter_weights), self.window
-            )
+        )
         heat_flux._var_name = 'VpTp'
         return heat_flux
 

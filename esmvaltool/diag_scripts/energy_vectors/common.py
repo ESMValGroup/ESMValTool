@@ -2,6 +2,7 @@ import numpy as np
 
 from iris.analysis import SUM
 
+
 def low_pass_weights(window, freq):
     """
     Calculate weights for a low pass Lanczos filter.
@@ -15,8 +16,8 @@ def low_pass_weights(window, freq):
         The frequency of the data.
 
     Notes: (MSM)
-        From
-        http://www.scitools.org.uk/iris/docs/latest/examples/graphics/SOI_filtering.html
+        From "http://www.scitools.org.uk/iris/docs/latest/examples/"
+        "graphics/SOI_filtering.html"
         Similar to LN's LanczosWeights function, but arrays are two elements
         shorter.
         LN's LanczosWeights returns very small numbers for the extra elements
