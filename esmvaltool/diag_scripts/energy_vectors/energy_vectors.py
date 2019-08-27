@@ -11,7 +11,7 @@ from esmvaltool.diag_scripts.shared import run_diagnostic, group_metadata
 from esmvaltool.diag_scripts.shared import names as NAMES
 from esmvaltool.diag_scripts.shared.plot import quickplot
 from esmvaltool.diag_scripts.energy_vectors.common import (
-    low_pass_weights, lanczos_filter, IDENTIFY_DATASET
+    low_pass_weights, lanczos_filter
 )
 
 logger = logging.getLogger(os.path.basename(__file__))
@@ -76,8 +76,6 @@ class EnergyVectors(object):
 
         # get high frequency components by subtracting filtered values
         half_window = window_size//2
-        ua_cube.coord('time').bounds = None
-        va_cube.coord('time').bounds = None
 
         ua_high = ua_cube[half_window:-(half_window)] - ua_cube_filtered
         va_high = va_cube[half_window:-(half_window)] - va_cube_filtered
@@ -87,7 +85,6 @@ class EnergyVectors(object):
             va_high ** 2 - ua_high ** 2, filter_weights
         )
         evector_y = lanczos_filter(-1.0 * ua_high * va_high, filter_weights)
-        logger.debug(evector_y.data)
 
         # Add some appropriate meta data
         units = ua_cube.units ** 2
@@ -131,7 +128,7 @@ class EnergyVectors(object):
         iris.save(evector_y, os.path.join(subdir, 'evector_y.nc'))
 
     def _plot(self, alias, evector_x, evector_y):
-        if not self.cfg[NAMES.WRITE_NETCDF]:
+        if not self.cfg[NAMES.WRITE_PLOTS]:
             return
 
         logger.info("Plotting results")

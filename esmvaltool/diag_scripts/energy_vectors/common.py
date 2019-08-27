@@ -2,10 +2,6 @@ import numpy as np
 
 from iris.analysis import SUM
 
-IDENTIFY_DATASET = (
-    NAMES.PROJECT, NAMES.ACTIVITY, NAMES.DATASET, NAMES.EXP, NAMES.ENSEMBLE
-)
-
 def low_pass_weights(window, freq):
     """
     Calculate weights for a low pass Lanczos filter.
@@ -64,6 +60,7 @@ def lanczos_filter(cube, weights):
      * weights:
         numpy 1D array of weights to do the filtering with.
     """
+    cube.coord('time').bounds = None
     cube_filtered = cube.rolling_window(
         'time', SUM, len(weights), weights=weights
     )

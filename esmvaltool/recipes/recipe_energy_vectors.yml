@@ -7,7 +7,7 @@ documentation:
   mantainer: [vega_ja]
 
 datasets:
- - {dataset: HadGEM3-GC31-LM, project: CMIP6, activity: HighResMIP, exp: highresSST-present, ensemble: r1i1p1f1, start_year: 1950, end_year: 2014}
+ - {project: CMIP6, activity: CMIP, dataset: IPSL-CM6A-LR, exp: historical, ensemble: r1i1p1f1, start_year: 1950, end_year: 2014}
 # - {dataset: HadGEM3-GC31-MM, project: CMIP6, activity: HighResMIP, exp: highresSST-present, ensemble: r1i1p1f1, start_year: 1950, end_year: 2014}
 # - {dataset: HadGEM3-GC31-HM, project: CMIP6, activity: HighResMIP, exp: highresSST-present, ensemble: r1i1p1f1, start_year: 1950, end_year: 2014}
 
@@ -19,7 +19,7 @@ preprocessors:
 
   extract_850:
     extract_levels:
-      levels: [20000,]
+      levels: [85000,]
       scheme: nearest
 
 diagnostics:
@@ -28,12 +28,12 @@ diagnostics:
     variables:
       ua:
         mip: day
-        grid: gn
+        grid: gr
         preprocessor: extract_200
 
       va:
         mip: day
-        grid: gn
+        grid: gr
         preprocessor: extract_200
 
     scripts:
@@ -41,19 +41,20 @@ diagnostics:
         script: energy_vectors/energy_vectors.py
         window: 10 # in days
 
-#  heat_flux:
-#    description: Energy vectors
-#    variables:
-#      va850:
-#        mip: 6hrPlev
-#        grid: gn
+  heat_flux:
+    description: Energy vectors
+    variables:
+      va:
+        mip: day
+        grid: gr
+        preprocessor: extract_850
 
-#      ta:
-#        mip: 6hrPlev
-#        grid: gn
-#        preprocessor: extract_850
+      ta:
+        mip: day
+        grid: gr
+        preprocessor: extract_850
 
-#    scripts:
-#      heat_flux:
-#        script: energy_vectors/heat_flux.py
-#        low_pass_window: 10 # in days
+    scripts:
+      heat_flux:
+        script: energy_vectors/heat_flux.py
+        window: 10 # in days
