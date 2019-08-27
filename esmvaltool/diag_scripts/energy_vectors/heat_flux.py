@@ -21,37 +21,29 @@ class HeatFlux(object):
         self.window = self.cfg['window']
 
     def compute(self):
+        data = group_metadata(self.cfg['input_data'].values(), 'alias')
+        for alias in data:
+            logger.info("Processing %s", alias)
+            var = group_metadata(data[alias], 'standard_name')
+            va_cube = iris.load_cube(var['northward_wind'][0]['filename'])
+            ta_cube = iris.load_cube(var['air_temperature'][0]['filename'])
 
-        va_paths = self.datasets.get_path_list(standard_name='northward_wind')
-        for va_path in va_paths:
-            va_info = self.datasets.get_dataset_info(va_path)
-            logger.info(va_info)
-            ta_info = {
-                key: va_info[key]
-                for key in IDENTIFY_DATASET if key in va_info
-            }
-            ta_info['standard_name'] =
-            ta_path = self.datasets.get_path(**va_info)
-
-            logger.info("Processing %s", ua_path)
-            va_cube = iris.load_cube(va_path)
-            ta_cube = iris.load_cube(ta_path)
-
-            filter_weights = low_pass_weights(self.window, 1.0 / self.window)
+            filter_weights = low_pass_weights(
+                self.window,
+                freq=var['northward_wind'][0]['frequency']
+            )
             assert abs(sum(filter_weights)-1) < 1e-8
 
-            ta_cube = ta_cube / H_low
-            va_cube = va_cube / H_low
-
             logger.info("Calculating eddy heat flux")
-            heat_flux_cube = self.eddy_heat_flux(ta_cube, va_cube, filter_weights)
+            heat_flux = self.eddy_heat_flux(ta_cube, va_cube, filter_weights)
 
-            ic.add_month_number(VpTp, 'time', 'month_number')
-            heat_flux_cube = heat_flux_cube.aggregated_by('month_number', iris.analysis.MEAN)
+            ic.add_month_number(heat_flux, 'time', 'month_number')
+            heat_flux = heat_flux.aggregated_by('month_number', iris.analysis.MEAN)
+            logger.info("Saving results")
             iris.save(heat_flux_cube, outfile)
 
     def eddy_heat_flux(self, va_cube, ta_cube, filter_weights):
-        '''
+        """
         calculate eddy_heat_flux from time series cubes of T and V.
         window and filter_weights required for the Lanczos filter
 
@@ -65,12 +57,13 @@ class HeatFlux(object):
         * filter_weights:
             weights for lanczos filtering
 
-        '''
+        """
+        window_size = len(filter_weights)
         ta_cube_filterd = lanczos_filter(ta_cube, filter_weights)
         va_cube_filtered = lanczos_filter(va_cube, filter_weights)
 
-        ta_high = ta_cube[window//2:-(window//2)] - ta_cube_filterd
-        va_high = va_cube[window//2:-(window//2)] - va_cube_filtered
+        ta_high = ta_cube[window_size//2:-(window_size//2)] - ta_cube_filterd
+        va_high = va_cube[window_size//2:-(window_size//2)] - va_cube_filtered
 
         heat_flux = lanczos_filter(ta_high * va_high, filter_weights)
 

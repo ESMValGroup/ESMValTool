@@ -7,7 +7,7 @@ import iris
 from iris.analysis import MEAN
 import iris.coord_categorisation as ic
 
-from esmvaltool.diag_scripts.shared import Variables, Datasets, run_diagnostic
+from esmvaltool.diag_scripts.shared import run_diagnostic, group_metadata
 from esmvaltool.diag_scripts.shared import names as NAMES
 from esmvaltool.diag_scripts.shared.plot import quickplot
 from esmvaltool.diag_scripts.energy_vectors.common import (
@@ -21,32 +21,21 @@ class EnergyVectors(object):
 
     def __init__(self, config):
         self.cfg = config
-        self.datasets = Datasets(self.cfg)
-        self.variables = Variables(self.cfg)
         self.window = self.cfg['window']
 
     def compute(self):
-        ua_paths = self.datasets.get_path_list(standard_name='eastward_wind')
-        for ua_path in ua_paths:
-            ua_info = self.datasets.get_dataset_info(ua_path)
-            logger.info(ua_info)
-            va_info = {
-                key: ua_info[key]
-                for key in IDENTIFY_DATASET if key in ua_info
-            }
-            va_info[NAMES.STANDARD_NAME] = 'northward_wind'
-            va_path = self.datasets.get_path(**va_info)
-
-            logger.info("Processing %s", ua_path)
-            ua_cube = iris.load_cube(ua_path)
+        data = group_metadata(self.cfg['input_data'].values(), 'alias')
+        for alias in data:
+            logger.info("Processing %s", alias)
+            var = group_metadata(data[alias], 'standard_name')
+            ua_cube = iris.load_cube(var['eastward_wind'][0]['filename'])
+            va_cube = iris.load_cube(var['northward_wind'][0]['filename'])
             self._remove_extra_coords(ua_cube)
-
-            va_cube = iris.load_cube(va_path)
             self._remove_extra_coords(va_cube)
 
             filter_weights = low_pass_weights(
                 self.window,
-                freq=ua_info['frequency']
+                freq=var['eastward_wind'][0]['frequency']
             )
             assert abs(sum(filter_weights)-1) < 1e-8
 
@@ -58,8 +47,8 @@ class EnergyVectors(object):
             evector_x = self._get_monthly_mean(evector_x)
             evector_y = self._get_monthly_mean(evector_y)
 
-            self._save(evector_x, evector_y, ua_path)
-            self._plot(evector_x, evector_y, ua_path)
+            self._save(alias, evector_x, evector_y)
+            self._plot(alias, evector_x, evector_y)
 
     def _compute_evectors(self, ua_cube, va_cube, filter_weights):
         '''
@@ -129,20 +118,19 @@ class EnergyVectors(object):
         ic.add_month_number(vector, 'time')
         return vector.aggregated_by(('month_number', 'year'), MEAN)
 
-    def _save(self, evector_x, evector_y, dataset):
+    def _save(self, alias, evector_x, evector_y):
         if not self.cfg[NAMES.WRITE_NETCDF]:
             return
         logger.info("Saving results")
         subdir = os.path.join(
             self.cfg[NAMES.WORK_DIR],
-            self.datasets.get_info(NAMES.PROJECT, dataset),
-            self.datasets.get_info(NAMES.DATASET, dataset),
+            alias,
         )
         os.makedirs(subdir, exist_ok=True)
         iris.save(evector_x, os.path.join(subdir, 'evector_x.nc'))
         iris.save(evector_y, os.path.join(subdir, 'evector_y.nc'))
 
-    def _plot(self, evector_x, evector_y, dataset):
+    def _plot(self, alias, evector_x, evector_y):
         if not self.cfg[NAMES.WRITE_NETCDF]:
             return
 
@@ -151,8 +139,7 @@ class EnergyVectors(object):
         evector_y = evector_y.collapsed('time', MEAN)
         subdir = os.path.join(
             self.cfg[NAMES.PLOT_DIR],
-            self.datasets.get_info(NAMES.PROJECT, dataset),
-            self.datasets.get_info(NAMES.DATASET, dataset),
+            alias,
         )
         os.makedirs(subdir, exist_ok=True)
         quickplot(
