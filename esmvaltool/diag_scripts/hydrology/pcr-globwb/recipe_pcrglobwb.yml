@@ -1,0 +1,31 @@
+# ESMValTool
+# recipe_pcrglobwb.yml
+---
+documentation:
+  description:
+    Needs to be added.
+
+  authors: ['dros_ni']
+  
+datasets:
+ - {dataset: ERA-Interim, project: OBS, tier: 3, type: reanaly, version: 1, start_year: 1979, end_year: 1979}
+
+preprocessors:
+
+  preprocessor1:
+    extract_levels:
+      levels: ERA-Interim
+      scheme: nearest
+    regrid:
+      target_grid: ERA-Interim
+      lon_offset: True
+      lat_offset: True
+      scheme: linear
+        
+diagnostics:
+  diagnostic1:
+    description: Test diag.
+    scripts:
+      script1:
+        model: PCR-GLOBWB
+        script: diag.py
