@@ -14,6 +14,7 @@ from dask import array as da
 import esmvaltool.diag_scripts.shared
 import esmvaltool.diag_scripts.shared.names as n
 from esmvaltool.diag_scripts.shared import group_metadata
+# from esmvaltool.diag_scripts.shared._base import ProvenanceLogger
 
 
 logger = logging.getLogger(os.path.basename(__file__))
@@ -64,6 +65,7 @@ class EadyGrowthRate(object):
         p = (p0.points/plev.points)**(2/7)
         theta = ta * iris.util.broadcast_to_shape(p, ta.shape, (1,))
         theta.long_name = 'potential_air_temperature'
+
         return theta
 
     def vertical_integration(self, x, y):
@@ -107,7 +109,7 @@ class EadyGrowthRate(object):
         return brunt
 
     def coriolis(self, lats, ndim):
-        fcor = 2.0*self.omega*np.sin(np.radians(lats.points))
+        fcor = 2.0 * self.omega * np.sin(np.radians(lats.points))
         fcor = fcor[np.newaxis, np.newaxis, :, np.newaxis]
         fcor = da.broadcast_to(fcor, ndim)
 
@@ -126,13 +128,38 @@ class EadyGrowthRate(object):
         egr.units = 'day-1'
 
         script = self.cfg[n.SCRIPT]
+        project = data[alias][0]['project']
         dataset = data[alias][0]['dataset']
-        filename = '{dataset}_{script}.nc'.format(
+        exp = data[alias][0]['exp']
+        start = data[alias][0]['start_year']
+        end = data[alias][0]['end_year']
+        output = '{project}_{dataset}_{exp}_{script}_{start}_{end}.nc'.format(
+            project=project,
             dataset=dataset,
-            script=script
+            exp=exp,
+            script=script,
+            start=start,
+            end=end
         )
 
-        iris.save(egr, os.path.join(self.cfg[n.WORK_DIR], filename))
+        iris.save(egr, os.path.join(self.cfg[n.WORK_DIR], output))
+
+        # caption = ("{script} between {start} and {end}"
+        #           "according to {dataset}").format(
+        #               script=script.split('_'),
+        #               start=start,
+        #               end=end,
+        #               dataset=dataset
+        #           )
+
+        # record = {
+        #    'caption': caption,
+        #    'domains': ['global'],
+        #    'autors': ['sanc_em'],
+        #    'references': ['primavera'],
+        #    'ancestors': output
+        # }
+        # ProvenanceLogger(self.cfg).log(output, record)
 
 
 def main():
