@@ -28,6 +28,10 @@ class EnergyBudget(object):
         self.cfg = config
         self.filenames = esmvaltool.diag_scripts.shared.Datasets(self.cfg)
         self.template = self.cfg.get('plot_template')
+        self.start = None
+        self.end = None
+        self.project = None
+        self.exp = None
 
         self.pos = {}
         self.pos['rsdt'] = (511, 170)
@@ -152,21 +156,31 @@ class EnergyBudget(object):
         for filename in self.filenames:
             dataset = self.filenames.get_info(n.DATASET, filename)
             short_name = self.filenames.get_info(n.SHORT_NAME, filename)
+            self.project = self.filenames.get_info('project', filename)
+            self.exp = self.filenames.get_info('exp', filename)
+            self.start = self.filenames.get_info('start_year', filename)
+            self.end = self.filenames.get_info('end_year', filename)
             cube = iris.load_cube(filename)
             data[short_name][dataset] = cube
 
         return data
 
     def save(self, dataset, cubes):
-        file_name = '{dataset}_{script}_variables.nc'.format(
-            dataset=dataset,
-            script=self.cfg[n.SCRIPT]
-            )
+        file_name = ('{project}_{dataset}_{exp}_{script}_variables'
+                    '_{start}_{end}.nc').format(
+                        project=self.project,
+                        dataset=dataset,
+                        exp=self.exp,
+                        script=self.cfg[n.SCRIPT],
+                        start=self.start,
+                        end=self.end
+                    )
         iris.save(cubes, os.path.join(self.cfg[n.WORK_DIR], file_name))
 
     def plot(self, data):
         fig, ax = plt.subplots()
-        img = Image.open(self.template).convert("RGBA")
+        plot_file = os.path.join(os.path.dirname(__file__), self.template)
+        img = Image.open(plot_file).convert("RGBA")
         plt.imshow(img)
         for var in data.keys():
             if None in self.pos[var]:
