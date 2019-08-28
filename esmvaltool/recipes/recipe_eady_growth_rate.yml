@@ -32,7 +32,7 @@ preprocessors:
     seasonal_mean:
 
 diagnostics:
-  annual_EGR:
+  annual_egr:
     variables:
       ta:
         preprocessor: annual_mean
@@ -44,7 +44,7 @@ diagnostics:
       annual_eady_growth_rate:
         script: primavera/eady_growth_rate.py
 
-  summer_EGR:
+  summer_egr:
     variables:
       ta:
         preprocessor: summer_mean
@@ -56,7 +56,7 @@ diagnostics:
       summer_eady_growth_rate:
         script: primavera/eady_growth_rate.py
 
-  winter_EGR:
+  winter_egr:
     variables:
       ta:
         preprocessor: winter_mean
@@ -64,4 +64,6 @@ diagnostics:
         preprocessor: winter_mean
       ua:
         preprocessor: winter_mean
-    script: primavera/eady_growth_rate.py
+    scripts:
+      winter_eady_growth_rate:
+        script: primavera/eady_growth_rate.py
