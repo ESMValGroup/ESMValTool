@@ -70,7 +70,7 @@ diagnostics:
     scripts:
       energy_budget:
         script: primavera/energy_budget.py
-        plot_template: '/home/Earth/sloosvel/energy_budget_template.png'
+        plot_template: plot_templates/energy_budget_template.png
   land_energy_budget:
     description: "Energy budget excluding ocean domain"
     variables:
@@ -97,7 +97,7 @@ diagnostics:
     scripts:
       energy_budget_land:
         script: primavera/energy_budget.py
-        plot_template: '/home/Earth/sloosvel/energy_budget_template.png'
+        plot_template: plot_templates/energy_budget_template.png
   ocean_energy_budget:
     description: "Energy budget excluding land domain"
     variables:
