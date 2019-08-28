@@ -44,13 +44,13 @@ class LandAtmosInteractions(object):
             self.grid_cube = iris.load_cube(self.target_grid)
 
             clim_ef, stdv_ef = self.evaporative_fraction_stats(hfls, hfss)
-            self.output_name = 'Evaporative_fraction_statistics'
+            self.output_name = 'evaporative_fraction_statistics'
             self.save([clim_ef, stdv_ef], alias, data)
 
             metrics = self.compute_correlation_metrics(
                 hfls, rsds, rlds, clt, tas, mrso
                 )
-            self.output_name = 'Correlation_metrics'
+            self.output_name = 'correlation_metrics'
             self.save(metrics, alias, data)
 
             # Compute the metrics but with detrended data.
@@ -63,25 +63,25 @@ class LandAtmosInteractions(object):
             detrended_metrics = self.compute_correlation_metrics(
                 hfls, rsds, rlds, clt, tas, mrso
                 )
-            self.output_name = 'Detrended_correlation_metrics'
+            self.output_name = 'detrended_correlation_metrics'
             self.save(detrended_metrics, alias, data)
 
     def save(self, cubelist, alias, data):
         if self.output_name:
+            project = data[alias][0]
             dataset = data[alias][0]['dataset']
             experiment = data[alias][0]['exp']
-            ensemble = data[alias][0]['ensemble']
             start_year = data[alias][0]['start_year']
             end_year = data[alias][0]['end_year']
-            filename = '{output}_' \
+            filename = '{project}_' \
                        '{dataset}_' \
                        '{experiment}_' \
-                       '{ensemble}_' \
+                       '{output}_' \
                        '{start_year}_' \
-                       '{end_year}.nc'.format(output=self.output_name,
+                       '{end_year}.nc'.format(project=project,
                                               dataset=dataset,
                                               experiment=experiment,
-                                              ensemble=ensemble,
+                                              output=self.output_name,
                                               start_year=start_year,
                                               end_year=end_year)
 
