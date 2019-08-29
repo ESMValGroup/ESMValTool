@@ -56,6 +56,10 @@ authors:
     institute: BSC, Spain
     email: javier.vegas 'at' bsc.es
   # Development team
+  aert_je:
+    name: Aerts, Jerom
+    institute: University of Delft, Netherlands
+    email: J.P.M.Aerts@tudelft.nl
   anav_al:
     name: Anav, Alessandro
     institute: Univ. of Exeter, UK
@@ -523,13 +527,6 @@ authors:
     name: Tilmes, Simone
     institute: NCAR, US
     email: tilmes 'at' ucar.edu
-  lova_to:
-    name: Lovato, Tomas
-    institute: CMCC, IT
-    email: tomas.lovato 'at' cmcc.it
-
-
-
 
 references:
   acknow_author: "Please acknowledge the author(s)."
@@ -584,8 +581,8 @@ references:
   lloyd-hughes02jclim: "Lloyd-Hughes, B. and Saunders, M. A., Int. J. Climatol., 22, 1571-1592, doi:10.1002/joc.846, 2002."
   locarini10usgov: "Locarnini, R. A. et al., World Ocean Atlas 2009, Volume 1: Temperature. S. Levitus, Ed. NOAA Atlas NESDIS 68, U.S. Government Printing Office, Washington, D.C., 184 pp.,2010."
   lucarini14revgeop: "Lucarini et al., Rev. Geophys., 52, 809-859, doi:https://doi.org/10.1002/2013RG000446"
-  mehran14jgr: "Mehran, A. et al., J. Geophys. Res., 119, 4, 1695-1707, doi: 10.1002/2013JD021152, 2014." 
-  manubens:  "Manubens, N., et al., ENVIRON MODELL SOFTW 103, 29-42. doi:10.1016/j.envsoft.2018.01.018"
+  mehran14jgr: "Mehran, A. et al., J. Geophys. Res., 119, 4, 1695-1707, doi: 10.1002/2013JD021152, 2014."
+  manubens: "Manubens, N., et al., ENVIRON MODELL SOFTW 103, 29-42. doi:10.1016/j.envsoft.2018.01.018"
   mckee93: "McKee, T. B. and Doesken, N. J. and Kleist, J.  In Proceedings of the 8th Conference on Applied Climatology, 17(22), 179-183, Boston, MA: American Meteorological Society, 1993."
   mueller14grl: "Mueller, B. and Seneviratne, S. I. Geophys. Res. Lett., 41, 128-134, doi:10.1002/2013GL058055, 2014."
   mueller13hess: "Mueller, B. et al., Hydrol. Earth Syst. Sci., 17, 3707-3720, doi:10.5194/hess-17-3707-2013, 2013."
@@ -598,6 +595,7 @@ references:
   roehrig13jclim: "Roehrig, R. et al., J. Climate, 26, 6471-6505, doi:10.1175/JCLI-D-12-00505.1, 2013."
   sperber12asl: "Sperber and Kim, Atmos. Sci. Lett., 13, 3, 187-193, doi:10.1002/asl.378, 2012."
   straus07jcli: "Straus, D.M., S. Corti, and F. Molteni. J. Climate, 20, 2251-2272, doi:10.1175/JCLI4070.1, 2007"
+  sutanudjaja2018gmd: "Sutanudjaja, E. H. et al., Geosci. Model Dev., 11, 2429-2453, doi:10.5194/gmd-11-2429-2018, 2018."
   stroeve07grl: "Stroeve, J. et al., Geophys. Res. Lett., 34, L09501, doi:10.1029/2007GL029703, 2007."
   tibaldi90tel: "Tibaldi S. and Molteni F. Tellus A 42(3): 343-365, doi:10.1034/j.1600-0870.1990.t01-2-00003.x, 1990."
   taylor12: "Taylor et al., Nature, 489, 423-426, doi:10.1038/nature11377, 2012."
@@ -635,7 +633,7 @@ references:
   patmos-x: "Heidinger et al., NOAA National Centers for Environmental Information, doi:10.7289/V5348HCK, last access: 10 February 2019."
   woa: "Locarnini et al., World Ocean Atlas 2013, Vol. 1: Temperature, 2013."
   zhang-2011: "Zhang et al., WIREs Clim. Change, doi:10.1002/wcc.147, 2011"
-  sillman-2013: "Sillmann et al., J. Geophys. Res., doi:10.1029/2012JD018390, 2013" 
+  sillman-2013: "Sillmann et al., J. Geophys. Res., doi:10.1029/2012JD018390, 2013"
 
 projects:
   c3s-magic: Copernicus Climate Change Service 34a Lot 2 (MAGIC) project
@@ -648,6 +646,7 @@ projects:
   embrace: EU FP7 project EMBRACE
   esmval: DLR project ESMVal
   eval4cmip: DLR and University of Bremen project funded by the Initiative and Networking Fund of the Helmholtz Society
+  ewatercycle: eWaterCycle project
   qa4ecv: QA4ECV
   trr181: DFG Project TRR-181
   ukesm: UKESM, UK Earth System Model project (NERC)

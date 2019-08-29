@@ -6,9 +6,28 @@ import dask.array as da
 import iris
 
 from esmvaltool.diag_scripts.shared import (get_diagnostic_filename,
-                                            group_metadata, run_diagnostic)
+                                            group_metadata, run_diagnostic, ProvenanceLogger)
 
 logger = logging.getLogger(Path(__file__).name)
+
+def get_provenance_record(ancestor_file):
+    """Create a provenance record."""
+    record = {
+        'caption': "Forcings for the PCR-GLOBWB hydrological model.",
+        'domains': ['global'],
+        'authors': [
+            'aert_je',
+            'ande_bo',
+        ],
+        'projects': [
+            'ewatercycle',
+        ], 
+        'references': [
+            'acknow_project',
+        ],
+        'ancestors': [ancestor_file],
+    }
+    return record
 
 
 def main(cfg):
@@ -33,9 +52,15 @@ def main(cfg):
             # Set lat from highest to lowest value
             cube = cube[:, ::-1, ...]
 
+            # Save data
             output_file = get_diagnostic_filename(
                 Path(input_file).stem + '_pcrglobwb', cfg)
             iris.save(cube, output_file, fill_value=1.e20)
+            
+            # Store provenance
+            provenance_record = get_provenance_record(input_file)
+            with ProvenanceLogger(cfg) as provenance_logger:
+                provenance_logger.log(output_file, provenance_record)
 
 
 if __name__ == '__main__':
