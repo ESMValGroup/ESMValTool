@@ -2,7 +2,7 @@
 # recipe_pcrglobwb.yml
 ---
 documentation:
-  description:
+  description: |
     Recipe pre-processes ERA-Interim reanalyses files for use in the PCR-GLOBWB hydrological model.
 
     PCR-GLOBWB (PCRaster Global Water Balance) is a large-scale hydrological model intended for global
@@ -16,34 +16,29 @@ documentation:
     Straatsma, M. W., Vannametee, E., Wisser, D., and Bierkens, M. F. P.: PCR-GLOBWB 2: a 5 arcmin global hydrological
     and water resources model, Geosci. Model Dev., 11, 2429-2453, https://doi.org/10.5194/gmd-11-2429-2018, 2018.
 
-  authors: ['dros_ni']
+  authors: ['dros_ni', 'ande_bo']
 
 datasets:
-  - {dataset: ERA-Interim, project: OBS, tier: 3, type: reanaly, version: 1, start_year: 1979,  end_year: 1979}
+  - {dataset: ERA-Interim, project: OBS, tier: 3, type: reanaly, version: 1}
 
 preprocessors:
   preprocessor1:
-    extract_levels:
-      levels: ERA-Interim
-      scheme: nearests
     regrid:
       target_grid: 0.5x0.5
-      lon_offset: True
-      lat_offset: True
+      lon_offset: true
+      lat_offset: true
       scheme: linear
 
 diagnostics:
   diagnostic1:
     description: PCR-GLOBWB input preprocessor
     variables:
-      tas:
+      tas: &var
         mip: day
+        start_year: 1979
+        end_year: 1979
         preprocessor: preprocessor1
-      pr:
-        mip: day
-        preprocessor: preprocessor1
+      pr: *var
     scripts:
       script1:
-        script: pcrglobwb_diag.py
-
-
+        script: hydrology/pcrglobwb_diag.py
