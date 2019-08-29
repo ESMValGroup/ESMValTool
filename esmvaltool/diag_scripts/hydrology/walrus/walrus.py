@@ -4,17 +4,19 @@ import os
 from copy import deepcopy
 
 import fiona
-import pandas as pd
 import iris
 import numpy as np
+import pandas as pd
 from netCDF4 import Dataset, num2date
 from shapely.geometry import MultiPoint, shape
 from shapely.ops import nearest_points
 
-from esmvaltool.diag_scripts.shared import (run_diagnostic, ProvenanceLogger,
-                                            get_diagnostic_filename)
+from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
+                                            get_diagnostic_filename,
+                                            run_diagnostic)
 
 logger = logging.getLogger(os.path.basename(__file__))
+
 
 #TODO check merging the Q
 def get_provenance_record(cfg, basename, caption, extension):
@@ -144,11 +146,11 @@ def getdata(filename, ncts):
 def convunit(input_dt):
     """unit conversion"""
     if 'pr' in input_dt.columns:
-        input_dt['pr'] = input_dt['pr']*60*60
+        input_dt['pr'] = input_dt['pr'] * 60 * 60
     if 'evspsblpot' in input_dt.columns:
-        input_dt['evspsblpot'] = input_dt['evspsblpot']*60*60
+        input_dt['evspsblpot'] = input_dt['evspsblpot'] * 60 * 60
     if 'tas' in input_dt.columns:
-        input_dt['tas'] = input_dt['tas']-273.15
+        input_dt['tas'] = input_dt['tas'] - 273.15
     return input_dt
 
 
@@ -167,7 +169,7 @@ def renamecol(input_dt):
 
 def writdat(cfg, input_dt):
     """Write the content of a dataframe as .dat."""
-    input_dt['Q'] = [None]*input_dt.shape[0]
+    input_dt['Q'] = [None] * input_dt.shape[0]
     if cfg['model_calib']:
         dtpath = cfg['calibdata']
         if not os.path.isabs(dtpath):
