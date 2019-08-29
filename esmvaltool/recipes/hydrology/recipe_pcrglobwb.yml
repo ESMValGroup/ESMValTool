@@ -22,7 +22,7 @@ datasets:
   - {dataset: ERA-Interim, project: OBS, tier: 3, type: reanaly, version: 1}
 
 preprocessors:
-  preprocessor1:
+  preprocessor:
     regrid:
       target_grid: 0.5x0.5
       lon_offset: true
@@ -37,8 +37,8 @@ diagnostics:
         mip: day
         start_year: 1979
         end_year: 1979
-        preprocessor: preprocessor1
+        preprocessor: preprocessor
       pr: *var
     scripts:
-      script1:
-        script: hydrology/pcrglobwb_diag.py
+      script:
+        script: hydrology/pcrglobwb.py
