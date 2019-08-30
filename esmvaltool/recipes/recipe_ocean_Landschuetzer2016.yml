@@ -62,15 +62,14 @@ diagnostics:
       dpco2:
         preprocessor: prep_global_Surface_average_timeseries_2D
         mip: Omon
-        fx_files: [areacello, ]
+      areacello:
+        mip: fx
       spco2:
         preprocessor: prep_global_Surface_average_timeseries_2D
         mip: Omon
-        fx_files: [areacello, ]
       fgco2:
         preprocessor: prep_global_Surface_average_timeseries_2D
         mip: Omon
-        fx_files: [areacello, ]
     additional_datasets:
       - {dataset: Landschuetzer2016,  project: OBS,  type: clim,  version: v2016,  start_year: 2000,  end_year: 2010,  tier: 2}
     scripts:
@@ -88,19 +87,18 @@ diagnostics:
       dpco2:
         preprocessor: prep_surface_map_2D
         mip: Omon
-        fx_files: [areacello, ]
         maps_range: [-90., 90.]
         diff_range: [-50., 50.]
+      areacello:
+        mip: fx
       spco2:
         preprocessor: prep_surface_map_2D
         mip: Omon
-        fx_files: [areacello, ]
         maps_range: [300., 400.]
         diff_range: [-50., 50.]
       fgco2:
         preprocessor: prep_surface_map_2D
         mip: Omon
-        fx_files: [areacello, ]
         maps_range: [-0.2, 0.2]
         diff_range: [-0.1, 0.1]
     additional_datasets:
