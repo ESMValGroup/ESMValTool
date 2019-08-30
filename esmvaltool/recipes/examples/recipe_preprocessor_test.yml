@@ -80,7 +80,10 @@ diagnostics:
     variables:
       ta:
         preprocessor: preprocessor_1
-        fx_files: [orog, sftlf]
+      orog:
+        mip: fx
+      sftlf:
+        mip: fx
     additional_datasets:
       - {dataset: NCEP,        project: OBS,    tier: 2,    type: reanaly,    version: 1,        start_year: 2000,  end_year: 2002}
     scripts: null
