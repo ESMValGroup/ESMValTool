@@ -68,8 +68,9 @@ diagnostics:
       vas:
         mip: day
       ta:
-        fx_files: [sftlf]
         mip: day
+      sftlf:
+        mip: fx
       ua:
         mip: day
       va:
