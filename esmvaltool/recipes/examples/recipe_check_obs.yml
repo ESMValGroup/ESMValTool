@@ -498,7 +498,8 @@ diagnostics:
       clivi:
         preproc: nopp
         mip: Amon
-        fx_files: [sftlf]
+      sftlf:
+        mip: fx
       clt:
         preproc: nopp
         mip: Amon
