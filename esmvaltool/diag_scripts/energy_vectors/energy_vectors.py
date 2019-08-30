@@ -1,8 +1,7 @@
-import sys
+"""Energy vectors diagnostic."""
 import os
 import logging
 
-import numpy as np
 import iris
 from iris.analysis import MEAN
 import iris.coord_categorisation as ic
@@ -18,12 +17,14 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 
 class EnergyVectors(object):
+    """Energy evctor diagnostic class."""
 
     def __init__(self, config):
         self.cfg = config
         self.window = self.cfg['window']
 
     def compute(self):
+        """Compute energy vectors."""
         data = group_metadata(self.cfg['input_data'].values(), 'alias')
         for alias in data:
             logger.info("Processing %s", alias)

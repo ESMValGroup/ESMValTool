@@ -1,13 +1,13 @@
+"""Heat flux diagnostic."""
 import os
-import sys
 import logging
 
-import numpy as np
 import iris
 import iris.coord_categorisation as ic
 
 from esmvaltool.diag_scripts.shared import run_diagnostic, group_metadata
 from esmvaltool.diag_scripts.shared import names as n
+from esmvaltool.diag_scripts.shared.plot import quickplot
 from esmvaltool.diag_scripts.energy_vectors.common import (low_pass_weights,
                                                            lanczos_filter)
 
@@ -15,12 +15,14 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 
 class HeatFlux(object):
+    """Heat flux diagnostic class."""
 
     def __init__(self, config):
         self.cfg = config
         self.window = self.cfg['window']
 
     def compute(self):
+        """Compute diagnostic."""
         data = group_metadata(self.cfg['input_data'].values(), 'alias')
         for alias in data:
             logger.info("Processing %s", alias)
@@ -51,6 +53,7 @@ class HeatFlux(object):
                     'heatflux_{}.nc'.format(alias)
                 )
             )
+            self._plot(alias, heat_flux)
 
     def eddy_heat_flux(self, va_cube, ta_cube, filter_weights):
         """
@@ -85,7 +88,7 @@ class HeatFlux(object):
             "Lanczos filtering with window width=%s (%s days)" % (
                 len(filter_weights), self.window
         )
-        heat_flux._var_name = 'VpTp'
+        heat_flux.var_name = 'vptp'
         return heat_flux
 
     @staticmethod
@@ -94,6 +97,29 @@ class HeatFlux(object):
         cube.remove_coord('day_of_year')
         cube.remove_coord('month_number')
         cube.remove_coord('day_of_month')
+
+    def _plot(self, alias, heat_flux):
+        if not self.cfg[n.WRITE_PLOTS]:
+            return
+
+        logger.info("Plotting results")
+        heat_flux = heat_flux.collapsed('time', iris.analysis.MEAN)
+        subdir = os.path.join(
+            self.cfg[n.PLOT_DIR],
+            alias,
+        )
+        os.makedirs(subdir, exist_ok=True)
+        quickplot(
+            heat_flux,
+            filename=os.path.join(
+                subdir,
+                'heat_flux.{}'.format(self.cfg[n.OUTPUT_FILE_TYPE])
+            ),
+            **(self.cfg.get(
+                'quickplot',
+                {'plot_type': 'pcolormesh', 'cmap': 'bwr'}
+            ))
+        )
 
     def _save(self, alias, heat_flux_cube):
         if not self.cfg[n.WRITE_NETCDF]:
