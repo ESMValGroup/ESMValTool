@@ -14,14 +14,26 @@
 
 import sys
 import os
+from pathlib import Path
+from datetime import datetime
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-os.chdir(os.path.abspath(os.path.dirname(__file__)))
-sys.path.insert(0, os.path.abspath('./../../..'))
+root = Path(__file__).absolute().parent.parent.parent.parent
+sys.path.insert(0, str(root))
 
 from esmvaltool import __version__
+
+# -- RTD configuration ------------------------------------------------
+
+# on_rtd is whether we are on readthedocs.org, this line of code grabbed from docs.readthedocs.org
+on_rtd = os.environ.get("READTHEDOCS", None) == "True"
+
+# This is used for linking and such so we link to the thing we're building
+rtd_version = os.environ.get("READTHEDOCS_VERSION", "latest")
+if rtd_version not in ["latest"]:  # TODO: add "stable" once we have it
+    rtd_version = "latest"
 
 # Generate gallery
 sys.path.append(os.path.dirname(__file__))
@@ -84,7 +96,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'ESMValTool'
-copyright = u'2015, Veronika Eyring, Axel Lauer, Mattia Righi, Martin Evaldsson et al.'
+copyright = u'{0}, Veronika Eyring, Axel Lauer, Mattia Righi, Martin Evaldsson et al.'.format(datetime.now().year)
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -272,8 +284,7 @@ latex_elements = {
 latex_documents = [
     ('index', 'ESMValTool_Users_Guide.tex',
      u'ESMValTool User\'s and Developer\'s Guide',
-     u'ESMValTool Development Team',
-     'manual'),
+     u'ESMValTool Development Team', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -409,4 +420,20 @@ intersphinx_mapping = {
     'iris': ('https://scitools.org.uk/iris/docs/latest/', None),
     'numpy': ('https://docs.scipy.org/doc/numpy/', None),
     'scipy': ('https://docs.scipy.org/doc/scipy/reference/', None),
+    'esmvaltool':
+    ('https://esmvaltool.readthedocs.io/en/%s/' % rtd_version, None),
+    'esmvalcore':
+    ('https://esmvaltool.readthedocs.io/projects/esmvalcore/en/%s/' %
+     rtd_version, None),
 }
+
+# -- Custom Document processing ----------------------------------------------
+
+try:
+    from esmvalcore.utils.doc import gensidebar
+except ModuleNotFoundError:
+    # TODO: remove after next esmvalcore release
+    import gensidebar
+
+gensidebar.generate_sidebar(globals(), "esmvaltool")
+
