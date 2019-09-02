@@ -122,8 +122,6 @@ for (i in 1 : length(model_names)) {
   seas_data_cf3 <- Mean1Dim(data_cf3, 2)
   seas_data_cf4 <- Mean1Dim(data_cf4, 2)
   seas_data_cf5 <- Mean1Dim(data_cf5, 2)
- 
-
 
 ##############################
 # Make some plots
@@ -135,7 +133,7 @@ for (i in 1 : length(model_names)) {
   q <- colorRampPalette(rev(brewer.pal(11, "RdBu")))
   years <- seq(start_year, end_year)
   turb_types <- c("IEC I", "IEC I/II", "IEC II", "IEC II/III", "IEC III")
- 
+
   seas_data_cf_all <- abind(seas_data_cf1, seas_data_cf2, seas_data_cf3,
                             seas_data_cf4, seas_data_cf5, along = 0)
   mean_data_cf_all <- Mean1Dim(seas_data_cf_all, 2)
@@ -156,7 +154,7 @@ for (i in 1 : length(model_names)) {
   PlotLayout(PlotEquiMap, # nolint
              c(3, 2), Mean1Dim(seas_data_cf_all, 2), lon, lat, colNA = "white",
              brks = seq(from = 0, to = max(seas_data_cf_all, na.rm = TRUE),
-                        length.out = 10), color_fun = clim.palette("yellowred"),
+                    length.out = 10), color_fun = clim.palette("yellowred"),
              filled.continents = FALSE, toptitle = title,
              titles = PW_names, fileout = filepng)
 
