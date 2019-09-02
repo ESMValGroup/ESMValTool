@@ -19,9 +19,13 @@ documentation:
 
 datasets:
   - {dataset: IPSL-CM5A-MR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
+  - {dataset: CMCC-CMS, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
 
 preprocessors:
   preproc:
+    regrid:
+      target_grid: IPSL-CM5A-MR
+      scheme: linear 
     extract_region:
       start_longitude: -20
       end_longitude: 60
