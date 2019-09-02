@@ -175,27 +175,26 @@ def cmorization(in_dir, out_dir, cfg, cfg_user):
         #_regrid_dataset(in_dir, var, cfg)
         logger.info("Finished regridding")
 
-
-
-        # File concatenation
-        logger.info("Concatenating files over time")
-
         #TODO move this block to a function
-        filelist = glob.glob(cfg['work_dir']+'uerra_regridded*.nc')
-        cubelist = iris.load(filelist)
-        for cube in cubelist:
-            cube.remove_coord('time') # Time has strange values, so use 
-                                      # forecast_reference_time instead
-            cube.coord('forecast_reference_time').rename('time')
-        
-        cube_concatenated = cubelist.concatenate()[0]
+        for year in range(2008,2009):
+            # File concatenation
+            logger.info("Concatenating files over time for year {0}".format(year))
 
-        in_file = os.path.join(cfg['work_dir'],'master_cube.nc')
-        iris.save(cube_concatenated,in_file)
+            filelist = glob.glob(cfg['work_dir']+'uerra_regridded_{0}??.nc'.format(year))
+            cubelist = iris.load(filelist)
+            for cube in cubelist:
+                cube.remove_coord('time') # Time has strange values, so use 
+                                          # forecast_reference_time instead
+                cube.coord('forecast_reference_time').rename('time')
 
-        # Read in the full dataset here from 'workdir'
-        logger.info("CMORizing")
-        logger.info("Start CMORization of file %s", in_file)
-        _cmorize_dataset(in_file, var, cfg, out_dir)
-        #import IPython;IPython.embed()
-        logger.info("Finished regridding and CMORizing %s", in_file)
+            cube_concatenated = cubelist.concatenate()[0]
+
+            in_file = os.path.join(cfg['work_dir'],'concatenated_{0}.nc'.format(year))
+            logger.info("Saving as: {0}".format(in_file))
+            iris.save(cube_concatenated,in_file)
+
+            # Read in the full dataset here from 'workdir'
+            logger.info("CMORizing")
+            logger.info("Start CMORization of file %s", in_file)
+            _cmorize_dataset(in_file, var, cfg, out_dir)
+            logger.info("Finished processing year %s", year)
