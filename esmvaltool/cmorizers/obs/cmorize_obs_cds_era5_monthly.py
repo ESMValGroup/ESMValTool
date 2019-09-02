@@ -5,24 +5,16 @@ Tier
  to be retrieved or provided upon request to the respective contact or PI).
 
 Source
-    https://cds.climate.copernicus.eu/cdsapp#!/dataset/reanalysis-era5-pressure-levels
-    https://cds.climate.copernicus.eu/cdsapp#!/dataset/reanalysis-era5-single-levels
+    https://cds.climate.copernicus.eu/cdsapp#!/dataset/reanalysis-era5-single-levels-monthly-means
 
 Last access
-    20190718
+    20190830
 
 Download and processing instructions
-    This cmorization script currently supports hourly data of the following
-variables:
-        2m_temperature
-        potential_evaporation
-        total_precipitation
+    TODO
 
-    Downloading ERA5 data can either be done via the Climate Data Store (cds)
-web form or era5cli:
-        $pip install era5cli
-        $era5cli hourly --variable total_precipitation --startyear 1990
-
+History
+    20190902 crez_ba adapted from cmorize_obs_era5.py
 """
 
 import logging
@@ -62,15 +54,6 @@ def _extract_variable(in_file, var, cfg, out_dir):
             str(in_file),
             constraint=utils.var_name_constraint(var['raw']),
         )
-        if cube.var_name == 'tcc':
-            # Change cloud cover units from fraction to percentage
-            cube.units = definition.units
-            cube.data = cube.core_date() * 100.
-        if cube.var_name in ['tp', 'pev']:
-            # Change units from meters of water to kg of water
-            # and add missing 'per hour'
-            cube.units = cube.units * 'kg m-3 h-1'
-            cube.data = cube.core_data() * 1000.
 
     # Set correct names
     cube.var_name = definition.short_name
@@ -87,16 +70,13 @@ def _extract_variable(in_file, var, cfg, out_dir):
     cube.coord('latitude').var_name = 'lat'
     cube.coord('longitude').var_name = 'lon'
 
+    #TODO fix time seperately, set bnds as month start; end
     for coord_name in 'latitude', 'longitude', 'time':
         coord = cube.coord(coord_name)
         coord.points = coord.core_points().astype('float64')
         coord.guess_bounds()
 
-    if 'height2m' in definition.dimensions:
-        utils.add_scalar_height_coord(cube, 2.)
-    if 'height10m' in definition.dimensions:
-        utils.add_scalar_height_coord(cube, 10.)
-
+    import IPython;IPython.embed()
     # Convert units if required
     cube.convert_units(definition.units)
 
@@ -111,28 +91,29 @@ def _extract_variable(in_file, var, cfg, out_dir):
                 np.prod(cube.shape) * 4 / 2**30)
     utils.save_variable(cube, cube.var_name, out_dir, attributes)
 
-
 def cmorization(in_dir, out_dir, cfg, _):
     """Cmorization func call."""
     cfg['attributes']['comment'] = cfg['attributes']['comment'].format(
         year=datetime.now().year)
     cfg.pop('cmor_table')
 
-    n_workers = int(cpu_count() / 1.5)
-    logger.info("Using at most %s workers", n_workers)
-    futures = {}
-    with ProcessPoolExecutor(max_workers=1) as executor:
+#    n_workers = int(cpu_count() / 1.5)
+#    logger.info("Using at most %s workers", n_workers)
+#    futures = {}
+#    with ProcessPoolExecutor(max_workers=1) as executor:
+    if True:
         for short_name, var in cfg['variables'].items():
             var['short_name'] = short_name
             for in_file in sorted(Path(in_dir).glob(var['file'])):
-                future = executor.submit(_extract_variable, in_file, var, cfg,
-                                         out_dir)
-                futures[future] = in_file
+#                future = executor.submit(_extract_variable, in_file, var, cfg,
+#                                         out_dir)
+                _extract_variable(in_file,var,cfg,out_dir)
+#                futures[future] = in_file
 
-    for future in as_completed(futures):
-        try:
-            future.result()
-        except:  # noqa
-            logger.error("Failed to CMORize %s", futures[future])
-            raise
-        logger.info("Finished CMORizing %s", futures[future])
+#    for future in as_completed(futures):
+#        try:
+#            future.result()
+#        except:  # noqa
+#            logger.error("Failed to CMORize %s", futures[future])
+#            raise
+#        logger.info("Finished CMORizing %s", futures[future])
