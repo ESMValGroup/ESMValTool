@@ -35,6 +35,27 @@ from . import utilities as utils
 logger = logging.getLogger(__name__)
 
 
+def _guess_bnds_time_monthly(cube):
+    import cf_units
+    import calendar
+    from dateutil import relativedelta
+    coord = cube.coord('time')
+    time_as_datetime = cf_units.num2date(coord.points,coord.units.origin,coord.units.calendar)
+    time_bnds = []
+    for timestep in time_as_datetime:
+        _,monthend = calendar.monthrange(timestep.year,timestep.month)
+        a_datetime = datetime(timestep.year,timestep.month,1,0,0)
+        b_datetime = a_datetime + relativedelta.relativedelta(months=1)
+        bnd_a = int(cf_units.date2num(a_datetime,coord.units.origin,
+                                  coord.units.calendar))
+        bnd_b = int(cf_units.date2num(b_datetime,coord.units.origin,
+                                  coord.units.calendar))
+        time_bnds.append([bnd_a,bnd_b])
+    # Convert them to an array
+    time_bnds = np.array(time_bnds)
+    # Set them as bounds
+    coord.bounds = time_bnds
+
 def _extract_variable(in_file, var, cfg, out_dir):
     logger.info("CMORizing variable '%s' from input file '%s'",
                 var['short_name'], in_file)
@@ -66,17 +87,19 @@ def _extract_variable(in_file, var, cfg, out_dir):
     # Fix data type
     cube.data = cube.core_data().astype('float32')
 
-    # Fix coordinates
+    # Fix lat/lon coordinates
     cube.coord('latitude').var_name = 'lat'
     cube.coord('longitude').var_name = 'lon'
-
-    #TODO fix time seperately, set bnds as month start; end
-    for coord_name in 'latitude', 'longitude', 'time':
+    for coord_name in 'latitude', 'longitude':
         coord = cube.coord(coord_name)
         coord.points = coord.core_points().astype('float64')
         coord.guess_bounds()
 
-    import IPython;IPython.embed()
+    # Fix time
+    cube.coord('time').points = cube.coord('time').core_points().astype('float64')
+    # Set time bounds by setting manually to month start; month end
+    _guess_bnds_time_monthly(cube)
+    
     # Convert units if required
     cube.convert_units(definition.units)
 
