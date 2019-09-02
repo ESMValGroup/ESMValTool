@@ -2,6 +2,7 @@
 
 # Common global attributes for Cmorizer output
 attributes:
+  frequency: 6h
   dataset_id: cds-uerra-reanalysis
   version: 'UERRA-HARMONIE'
   tier: 3

@@ -82,15 +82,22 @@ def _cmorize_dataset(in_file, var, cfg, out_dir):
         str(in_file),
         constraint=utils.var_name_constraint(var['raw']))
 
+    #import IPython;IPython.embed()
+
+
+    # The following lines are essential before applying the common function fix_coords
+    # Convert time calendar from proleptic_gregorian to gregorian
+    cube.coord('time').units = cf_units.Unit(cube.coord('time').units.origin,'gregorian')
+
+    # Set standard_names for lat and lon
+    cube.coord('lat').standard_name = 'latitude'
+    cube.coord('lon').standard_name = 'longitude'
+    
+    cube = fix_coords(cube)
 
     # Set correct names
     cube.var_name = definition.short_name
-    try:
-        cube.standard_name = definition.standard_name
-    except ValueError:
-        logger.warning(
-            "Could not set standard name %s for variable (var_name=) %s",
-            definition.standard_name, cube.var_name)
+
     cube.long_name = definition.long_name
 
     # Convert units if required
