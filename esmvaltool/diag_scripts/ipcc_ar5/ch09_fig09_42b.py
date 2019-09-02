@@ -43,7 +43,7 @@ from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
 logger = logging.getLogger(os.path.basename(__file__))
 
 
-def _get_reg_line(x_cube, y_cube, xlim=(1.5, 5.0), n_points=100):
+def _get_reg_line(x_cube, y_cube, xlim=(1.5, 6.0), n_points=100):
     """Get regression line and means for two cubes."""
     reg = stats.linregress(x_cube.data, y_cube.data)
     x_reg = np.linspace(xlim[0], xlim[1], n_points)
@@ -101,7 +101,7 @@ def plot_data(cfg, ecs_cube, tcr_cube):
     axes.set_title(f"TCR vs. ECS for {project} models")
     axes.set_xlabel("ECS / K")
     axes.set_ylabel("TCR / K")
-    axes.set_xlim([1.5, 5.0])
+    axes.set_xlim([1.5, 6.0])
     axes.set_ylim([0.5, 3.0])
     legend = axes.legend(loc='center left',
                          bbox_to_anchor=[1.05, 0.5],
