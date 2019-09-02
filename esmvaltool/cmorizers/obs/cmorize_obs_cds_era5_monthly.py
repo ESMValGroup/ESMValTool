@@ -40,7 +40,8 @@ def _guess_bnds_time_monthly(cube):
     import calendar
     from dateutil import relativedelta
     coord = cube.coord('time')
-    time_as_datetime = cf_units.num2date(coord.points,coord.units.origin,coord.units.calendar)
+    time_as_datetime = cf_units.num2date(coord.points,
+        coord.units.origin,coord.units.calendar)
     time_bnds = []
     for timestep in time_as_datetime:
         _,monthend = calendar.monthrange(timestep.year,timestep.month)
