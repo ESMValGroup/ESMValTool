@@ -500,7 +500,7 @@ NCEP:
   facecolor: '#000000'
   mark: o
   thick: 3
-NIWA:
+NIWA-BS:
   avgstd: 1
   color: '#000000'
   dash: --
@@ -542,7 +542,7 @@ NorESM1-ME:
   facecolor: none
   mark: ^
   thick: 1
-PATMOS:
+PATMOS-x:
   avgstd: 0
   color: '#0000ff'
   dash: '-'

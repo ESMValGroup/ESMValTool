@@ -1,0 +1,226 @@
+###############################################################################
+# PYTHON STYLE FILE
+# cox18nature.yml
+# created by 'convert_ncl_style.py'.
+###############################################################################
+# This file defines plot attributes for certain datasets.
+#
+# Template:
+#
+# DATASET:
+#   avgstd: 0
+#   color: '#ffffff'
+#   dash: --
+#   facecolor: none
+#   mark: x
+#   thick: 1
+#
+# DATASET:   dataset name (same as given in the main recipe)
+# avgstd:    0 = takes part in the calculation of mean and stddev
+#            1 = does not take part in the calculation of mean and stddev
+#            (usually 0 for models, 1 for observations/reanalysis)
+# color:     hex RGB or RGBA string (e.g. #0f0fa1), see
+#            http://www.ncl.ucar.edu/Applications/Scripts/rgb.txt
+#            https://www.ncl.ucar.edu/Document/glossary.shtml#RGB
+#            https://www.ncl.ucar.edu/Document/glossary.shtml#RGBA
+# dash:      matplotlib dash pattern (linestyle)
+# facecolor: Color of the filling (none = no filling)
+# mark:      marker string for markers (used in matplotlib), see
+#            https://matplotlib.org/api/markers_api.html
+#            https://www.ncl.ucar.edu/Document/Graphics/Images/markers.png
+# thick:     line thickness
+# size:      Size of the marker
+###############################################################################
+
+ACCESS1-0:
+  color: '#800060'
+  dash: '-'
+  thick: 1
+  mark: $a$
+  size: 8
+  avgstd: 0
+  facecolor: none
+bcc-csm1-1:
+  color: '#009900'
+  dash: '-'
+  thick: 1
+  mark: $n$
+  size: 7
+  avgstd: 0
+  facecolor: none
+bcc-csm1-1-m:
+  color: '#009900'
+  dash: --
+  thick: 1
+  mark: $n^x$
+  size: 7
+  avgstd: 0
+  facecolor: none
+BNU-ESM:
+  color: '#009900'
+  dash: '-'
+  thick: 1
+  mark: $p$
+  size: 10
+  avgstd: 0
+  facecolor: none
+CanESM2:
+  color: '#009900'
+  dash: --
+  thick: 1
+  mark: $b$
+  size: 10
+  avgstd: 0
+  facecolor: none
+CCSM4:
+  color: '#009900'
+  dash: '-'
+  thick: 1
+  mark: $c$
+  size: 8
+  avgstd: 0
+  facecolor: none
+CNRM-CM5:
+  color: '#009900'
+  dash: '-'
+  thick: 1
+  mark: $d$
+  size: 10
+  avgstd: 0
+  facecolor: none
+CSIRO-Mk3-6-0:
+  color: '#800060'
+  dash: '-'
+  thick: 1
+  mark: $e$
+  size: 8
+  avgstd: 0
+  facecolor: none
+GFDL-CM3:
+  color: '#800060'
+  dash: --
+  thick: 1
+  mark: $f^y$
+  size: 10
+  avgstd: 0
+  facecolor: none
+GFDL-ESM2G:
+  color: '#009900'
+  dash: ':'
+  thick: 1
+  mark: $f^x$
+  size: 10
+  avgstd: 0
+  facecolor: none
+GFDL-ESM2M:
+  color: '#009900'
+  dash: '-.'
+  thick: 1
+  mark: $f$
+  size: 10
+  avgstd: 0
+  facecolor: none
+GISS-E2-H:
+  color: '#009900'
+  dash: '-'
+  thick: 1
+  mark: $o^x$
+  size: 8
+  avgstd: 0
+  facecolor: none
+GISS-E2-R:
+  color: '#009900'
+  dash: ':'
+  thick: 1
+  mark: $o$
+  size: 8
+  avgstd: 0
+  facecolor: none
+HadGEM2-ES:
+  color: '#800060'
+  dash: '-.'
+  thick: 1
+  mark: $g$
+  size: 10
+  avgstd: 0
+  facecolor: none
+inmcm4:
+  color: '#009900'
+  dash: '-'
+  thick: 1
+  mark: $h$
+  size: 10
+  avgstd: 0
+  facecolor: none
+IPSL-CM5A-LR:
+  color: '#800060'
+  dash: '-'
+  thick: 1
+  mark: $i^x$
+  size: 10
+  avgstd: 0
+  facecolor: none
+IPSL-CM5B-LR:
+  color: '#009900'
+  dash: ':'
+  thick: 1
+  mark: $i$
+  size: 10
+  avgstd: 0
+  facecolor: none
+MIROC5:
+  color: '#009900'
+  dash: --
+  thick: 1
+  mark: $j^x$
+  size: 10
+  avgstd: 0
+  facecolor: none
+MIROC-ESM:
+  color: '#800060'
+  dash: ':'
+  thick: 1
+  mark: $j$
+  size: 10
+  avgstd: 0
+  facecolor: none
+MPI-ESM-LR:
+  color: '#009900'
+  dash: '-'
+  thick: 1
+  mark: $k$
+  size: 10
+  avgstd: 0
+  facecolor: none
+MRI-CGCM3:
+  color: '#009900'
+  dash: '-'
+  thick: 1
+  mark: $l$
+  size: 10
+  avgstd: 0
+  facecolor: none
+NorESM1-M:
+  color: '#009900'
+  dash: '-'
+  thick: 1
+  mark: $m$
+  size: 10
+  avgstd: 0
+  facecolor: none
+OBS:
+  color: '#000000'
+  dash: '-'
+  thick: 1
+  mark: o
+  size: 8
+  avgstd: 0
+  facecolor: '#000000'
+default:
+  color: '#000000'
+  dash: '-'
+  thick: 1
+  mark: o
+  size: 8
+  avgstd: 0
+  facecolor: '#000000'

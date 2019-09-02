@@ -48,10 +48,8 @@ diagnostics:
     variables:
       ta:
         preprocessor: preprocessor1
-        field: T3M
         reference_dataset: CanESM2
       pr:
-        field: T2Ms
         reference_dataset: MPI-ESM-LR
     scripts:
       script1:

@@ -25,10 +25,10 @@
 ;   long_name: description of variable
 ;
 ; Caveats
-;   TO DO (ESMValTool v2.0.0)
-;   1) get tags from namelist and write meta data to plots
+;   none
 ;
 ; Modification history
+;   20190222-A_laue_ax: added output of provenance (v2.0)
 ;   20181119-A_laue_ax: adapted code to multi-variable capable framework
 ;   20180923-A_laue_ax: added writing of results to netcdf
 ;   20180914-A_laue_ax: code rewritten for ESMValTool v2.0
@@ -40,14 +40,12 @@
 ;
 ; ############################################################################
 
-load "interface_scripts/interface.ncl"
+load "$diag_scripts/../interface_scripts/interface.ncl"
 
-load "./diag_scripts/shared/scaling.ncl"
-load "./diag_scripts/shared/statistics.ncl"
-load "./diag_scripts/shared/plot/style.ncl"
-load "./diag_scripts/shared/plot/contour_maps.ncl"
-
-; load "./diag_scripts/shared/meta_data.ncl"
+load "$diag_scripts/shared/scaling.ncl"
+load "$diag_scripts/shared/statistics.ncl"
+load "$diag_scripts/shared/plot/style.ncl"
+load "$diag_scripts/shared/plot/contour_maps.ncl"
 
 begin
 
@@ -65,17 +63,6 @@ begin
   log_info("++++++++++++++++++++++++++++++++++++++++++")
   log_info(DIAG_SCRIPT + " (var: " + var0 + ")")
   log_info("++++++++++++++++++++++++++++++++++++++++++")
-
-  ; ========================================================================
-  ; ========================= write references =============================
-  ; ========================================================================
-  ; FIX-ME: to be replaced by new method
-  ; write_references(DIAG_SCRIPT,  \   ; script name
-  ;                  "A_laue_ax",  \   ; authors
-  ;                  "",  \            ; contributors
-  ;                  "",  \            ; diag_references
-  ;                  "",  \            ; obs_references
-  ;                  (/"P_embrace"/))  ; proj_references
 
   ; time averaging: at the moment, only "annualclim" and "seasonalclim"
   ; are supported
@@ -96,16 +83,18 @@ begin
     season = (/"annual"/)
   end if
 
-  ; make sure path for (optional) netcdf output exists
+  ; create string for caption (netcdf provenance)
 
-  if (config_user_info@write_netcdf.eq."True") then
-    write_nc = True
-    work_dir = config_user_info@work_dir + "/"
-    ; Create work dir
-    system("mkdir -p " + work_dir)
-  else
-    write_nc = False
-  end if
+  allseas = season(0)
+  do is = 1, numseas - 1
+    allseas = allseas + "/" + season(i)
+  end do
+
+  ; make sure path for (mandatory) netcdf output exists
+
+  work_dir = config_user_info@work_dir + "/"
+  ; Create work dir
+  system("mkdir -p " + work_dir)
 
   if (config_user_info@write_plots.eq."True") then
     write_plots = True
@@ -198,9 +187,6 @@ begin
   climofiles(0) = infiles(mm_ind)
   climofiles(1) = infiles(ref_ind)
 
-;  alltags = array_append_record(tags, (/"PT_geo", "ST_clim", "ST_diff", \
-;                                        "DM_global"/), 0)
-
   diff@res_gsnMaximize  = True  ; use full page for the plot
   diff@res_cnFillOn  = True  ; color plot desired
   diff@res_cnLineLabelsOn  = False  ; contour lines
@@ -260,30 +246,30 @@ begin
   if (var0.eq."tas") then
     mmdata@res_cnLevels = ispan(-30, 30, 3)
 
-    pal = read_colormap_file("diag_scripts/shared/plot/rgb/" \
+    pal = read_colormap_file("$diag_scripts/shared/plot/rgb/" \
                              + "ipcc-tas.rgb")
     mmdata@res_cnFillColors = pal
-    pal2 = read_colormap_file("diag_scripts/shared/plot/rgb/" \
+    pal2 = read_colormap_file("$diag_scripts/shared/plot/rgb/" \
                               + "ipcc-tas-delta.rgb")
     diff@res_cnFillColors = pal2
     if (plot_abs_diff) then
-      pal3 = read_colormap_file("diag_scripts/shared/plot/rgb/" \
+      pal3 = read_colormap_file("$diag_scripts/shared/plot/rgb/" \
                                 + "ipcc-tas-absdelta.rgb")
     end if
     else if (var0.eq."pr") then
       mmdata@res_cnLevels = ispan(10, 100, 15) * 0.1
 
-      pal = read_colormap_file("diag_scripts/shared/plot/rgb/ipcc-precip.rgb")
+      pal = read_colormap_file("$diag_scripts/shared/plot/rgb/ipcc-precip.rgb")
       mmdata@res_cnFillColors = pal
-      pal2 = read_colormap_file("diag_scripts/shared/plot/rgb/" \
+      pal2 = read_colormap_file("$diag_scripts/shared/plot/rgb/" \
                                 + "ipcc-precip-delta.rgb")
       diff@res_cnFillColors = pal2
       if (plot_abs_diff) then
-        pal3 = read_colormap_file("diag_scripts/shared/plot/rgb/" \
+        pal3 = read_colormap_file("$diag_scripts/shared/plot/rgb/" \
                                   + "ipcc-precip-absdelta.rgb")
       end if
       if (plot_rel_diff) then
-        pal4 = read_colormap_file("diag_scripts/shared/plot/rgb/" \
+        pal4 = read_colormap_file("$diag_scripts/shared/plot/rgb/" \
                                   + "ipcc-precip-reldelta.rgb")
       end if
     else
@@ -362,6 +348,9 @@ begin
   pres@gsnPanelYWhiteSpacePercent = 5
   pres@gsnPanelXWhiteSpacePercent = 5
 
+  plotfile = new(numseas, string)
+  plotfile(:) = ""
+
   if (write_plots) then
     do is = 0, numseas - 1
       ; --------------------------------------------------------------------
@@ -373,6 +362,8 @@ begin
 
       wks = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_bias_" + var0 \
                     + "_" + season(is))
+
+      plotfile(is) = wks@fullname
 
       if (numseas.gt.1) then
         pres@txString = season(is)
@@ -407,37 +398,52 @@ begin
       if (plot_rel_diff) then
         caption = caption + ", relative error"
       end if
-      caption = caption + " for variable " + var0 \
-        + " (" + season(is) + "), reference = " + names(ref_ind) + "."
-      id = DIAG_SCRIPT + "_" + var0 + "_" + season(is)
-
-      contrib_authors = "A_laue_ax"
-
-;      ESMValMD(wks@fullname, alltags, caption, id, var0, \
-;               names, climofiles, DIAG_SCRIPT, \
-;               contrib_authors)
 
     end do  ; is-loop (seasons)
   end if  ; if write_plots
 
   ; ###########################################
-  ; # Optional output to netCDF  #
+  ; # output to netCDF                        #
   ; ###########################################
 
-  if (write_nc) then
-    nc_filename = work_dir + "clouds_bias_mmm_" + var0 + ".nc"
-    nc_outfile = ncdf_write(mmdata, nc_filename)
-    nc_filename = work_dir + "clouds_bias_diff_" + var0 + ".nc"
-    nc_outfile = ncdf_write(diff, nc_filename)
-    if (isvar("absdiff")) then
-      nc_filename = work_dir + "clouds_bias_abs_diff_" + var0 + ".nc"
-      nc_outfile = ncdf_write(absdiff, nc_filename)
-    end if
-    if (isvar("reldiff")) then
-      nc_filename = work_dir + "clouds_bias_rel_diff_" + var0 + ".nc"
-      nc_outfile = ncdf_write(reldiff, nc_filename)
-    end if
+  nc_filename = work_dir + "clouds_bias_" + var0 + ".nc"
+  nc_filename@existing = "append"
+
+  mmdata@var = var0 + "_mean"
+  mmdata@long_name = var0 + " (multi-model mean)"
+  nc_outfile = ncdf_write(mmdata, nc_filename)
+
+  diff@var = var0 + "_bias"
+  diff@long_name = var0 + " (multi-model bias)"
+  nc_outfile = ncdf_write(diff, nc_filename)
+
+  if (isvar("absdiff")) then
+    absdiff@var = var0 + "_abs_bias"
+    absdiff@long_name = var0 + " (multi-model absolute bias)"
+    nc_outfile = ncdf_write(absdiff, nc_filename)
   end if
+
+  if (isvar("reldiff")) then
+    reldiff@var = var0 + "_rel_bias"
+    reldiff@long_name = var0 + " (multi-model relative bias)"
+    reldiff@units = reldiff@units
+    nc_outfile = ncdf_write(reldiff, nc_filename)
+  end if
+
+  ; ------------------------------------------------------------------------
+  ; write provenance to netcdf output and plot file(s) (mean)
+  ; ------------------------------------------------------------------------
+
+  statistics = (/"clim", "diff"/)
+  domain = "global"
+  plottype = "geo"
+  prov_caption = caption + " for variable " + var0 \
+    + " (" + allseas + "), reference = " + names(ref_ind) + "."
+
+  do is = 0, numseas - 1
+    log_provenance(nc_outfile, plotfile(is), prov_caption, statistics, \
+                   domain, plottype, "", "", climofiles)
+  end do
 
   leave_msg(DIAG_SCRIPT, "")
 

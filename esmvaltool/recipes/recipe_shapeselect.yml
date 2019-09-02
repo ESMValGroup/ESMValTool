@@ -1,0 +1,30 @@
+---
+documentation:
+  description: 'Selects grid points belonging to a provided shapefile.'
+  authors: ['berg_pe']
+  projects: ['c3s-magic']
+  references: ['acknow_project']
+
+datasets:
+  - {dataset: EC-EARTH, project: CMIP5, mip: Amon, exp: historical, ensemble: r12i1p1, start_year: 1990, end_year: 1999}
+#  - {dataset: CRU, mip: Amon, project: OBS, type: reanaly, version: 1, start_year: 1990, end_year: 1994, tier: 3}
+#  - {dataset: bcc-csm1-1-m,  project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 1998,  end_year: 1999}
+
+
+diagnostics:
+  diagnostic1:
+    description: Extracting data for user defined shapefile.
+    variables:
+      tas:
+      pr:
+    scripts:
+      script1:
+        script: shapeselect/diag_shapeselect.py
+        # Example shapefiles can be found in:
+        # esmvaltool/diag_scripts/shapeselect/testdata/
+        # Relative paths are relative to 'auxiliary_data_dir' as configured in
+        # the config-user.yml file.
+        shapefile: 'Thames.shp'
+        weighting_method: 'mean_inside'
+        write_xlsx: true
+        write_netcdf: true

@@ -35,10 +35,13 @@ preprocessors:
 diagnostics:
   example:
     description: Example diagnostic
+    themes:
+      - phys
+    realms:
+      - atmos
     variables:
       ta:
         preprocessor: preprocessor_1
-        field: T3M
         reference_dataset: ERA-Interim
         fx_files: [sftlf]
     additional_datasets:

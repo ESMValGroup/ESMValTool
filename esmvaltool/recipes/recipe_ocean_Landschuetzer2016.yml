@@ -1,0 +1,117 @@
+# ESMValTool
+# Landschuetzer2016.yml
+---
+documentation:
+  description: |
+    Recipe to evaluate CO2 Fluxes of marine biogeochemistry models of CMIP5
+    using Landschuetzer et al (2016) dataset.
+    Written by Tomas Lovato, CMCC, tomas.lovato@cmcc.it
+
+  authors:
+    - lova_to
+  
+  maintainer:
+    - lova_to
+
+  references:
+    - acknow_project
+
+  projects:
+    - crescendo
+
+
+datasets:
+# working datasets
+  - {dataset: CanESM2,       project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
+
+
+# --------------------------------------------------
+# Preprocessors
+# --------------------------------------------------
+preprocessors:
+  # --------------------------------------------------
+  # map preprocessors
+  # --------------------------------------------------
+  # For a 2D global surface map
+  prep_surface_map_2D:
+    time_average:
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+
+  # Global area-weighted Average from 2D field
+  prep_global_Surface_average_timeseries_2D:
+    custom_order: true
+    area_statistics:
+      operator: mean
+    multi_model_statistics:
+      span: overlap
+      statistics: [mean ]
+
+# --------------------------------------------------
+# Diagnostics
+# --------------------------------------------------
+diagnostics:
+
+  # --------------------------------------------------
+  # Surface time series vs OBS
+  # --------------------------------------------------
+  diag_timeseries_surface_average_vs_OBS:
+    description: Global surface time series (Landschuetzer2016 observations)
+    variables:
+      dpco2:
+        preprocessor: prep_global_Surface_average_timeseries_2D
+        mip: Omon
+        fx_files: [areacello, ]
+      spco2:
+        preprocessor: prep_global_Surface_average_timeseries_2D
+        mip: Omon
+        fx_files: [areacello, ]
+      fgco2:
+        preprocessor: prep_global_Surface_average_timeseries_2D
+        mip: Omon
+        fx_files: [areacello, ]
+    additional_datasets:
+      - {dataset: Landschuetzer2016,  project: OBS,  type: clim,  version: v2016,  start_year: 2000,  end_year: 2010,  tier: 2}
+    scripts:
+      Global_surface_timeseries:
+        script: ocean/diagnostic_timeseries.py
+        observational_dataset: {dataset: Landschuetzer2016, project: OBS}
+
+
+  # --------------------------------------------------
+  # Map diagnostics vs OBS
+  # --------------------------------------------------
+  diag_surface_maps_vs_OBS:
+    description: Global Ocean Surface maps vs OBS
+    variables:
+      dpco2:
+        preprocessor: prep_surface_map_2D
+        mip: Omon
+        fx_files: [areacello, ]
+        maps_range: [-90., 90.]
+        diff_range: [-50., 50.]
+      spco2:
+        preprocessor: prep_surface_map_2D
+        mip: Omon
+        fx_files: [areacello, ]
+        maps_range: [300., 400.]
+        diff_range: [-50., 50.]
+      fgco2:
+        preprocessor: prep_surface_map_2D
+        mip: Omon
+        fx_files: [areacello, ]
+        maps_range: [-0.2, 0.2]
+        diff_range: [-0.1, 0.1]
+    additional_datasets:
+      - {dataset: Landschuetzer2016,  project: OBS,  type: clim,  version: v2016,  start_year: 2000,  end_year: 2010,  tier: 2}
+    scripts:
+      Global_Ocean_surface_map:
+        script: ocean/diagnostic_maps.py
+      Global_Ocean_model_vs_obs:
+        script: ocean/diagnostic_model_vs_obs.py
+        observational_dataset: {dataset: Landschuetzer2016, project: OBS}
+
+
+
+

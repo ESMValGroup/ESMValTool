@@ -29,11 +29,9 @@ diagnostics:
     variables:
       tas:
         mip: Amon
-        field: T3M
         fx_files: [sftlf, mrsofc]
       tsl:
         mip: Lmon
-        field: T2Ms
         fx_files: [sftlf, mrsofc]
     scripts:
       autoassess_landsurf_permafrost: &autoassess_landsurf_permafrost_settings

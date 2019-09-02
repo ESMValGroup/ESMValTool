@@ -10,11 +10,11 @@
 ;
 ; #############################################################################
 
-load "./interface_scripts/auxiliary.ncl"
-load "./interface_scripts/logging.ncl"
+load "$diag_scripts/../interface_scripts/auxiliary.ncl"
+load "$diag_scripts/../interface_scripts/logging.ncl"
 
-load "./diag_scripts/shared/plot/style.ncl"
-load "./diag_scripts/shared/plot/aux_plotting.ncl"
+load "$diag_scripts/shared/plot/style.ncl"
+load "$diag_scripts/shared/plot/aux_plotting.ncl"
 
 ; #############################################################################
 undef("scatterplot")
@@ -22,7 +22,8 @@ function scatterplot(wks_in[1],
                      source,
                      varname[1]: string,
                      reflines: logical,
-                     stats: logical)
+                     stats: logical,
+                     inlist:list)
 ;
 ; Arguments
 ;    wks_in: workstation ("graphic" object or default will be used).
@@ -31,6 +32,7 @@ function scatterplot(wks_in[1],
 ;    varname: variable name in the file.
 ;    reflines: show/hide reference lines (1:1 and +/- factor 2).
 ;    stats: show/hide summary of statistical values on the plot.
+;    inlist: list of input_file_info items
 ;
 ; Source prototype
 ;    source = (2, npoints)
@@ -77,7 +79,7 @@ begin
   end if
 
   ; Style options
-  colors  = project_style(diag_script_info, "colors")
+  colors  = project_style(inlist, diag_script_info, "colors")
 
   ; Define x and y points
   xpts = data(0, :)
@@ -92,7 +94,7 @@ begin
   end if
 
   ; Check if a valid wks has been provided, otherwise invoke default
-  wks = get_wks(wks_in, diag_script, var)
+  wks = get_wks(wks_in, DIAG_SCRIPT, var)
   gsn_define_colormap(wks, array_append_record((/"white", "black"/), \
                       colors, 0))
 
@@ -319,7 +321,7 @@ begin
   end if
 
   ; Check if a valid wks has been provided, otherwise invoke default
-  wks = get_wks(wks_in, diag_script, var)
+  wks = get_wks(wks_in, DIAG_SCRIPT, var)
 
   ; Create a 2D scatter plot
   res = True
@@ -438,13 +440,15 @@ end
 undef("scatterplot_markers")
 function scatterplot_markers(wks_in[1],
                              source,
-                             varname[1])
+                             varname[1],
+                             inlist:list)
 ;
 ; Arguments
 ;    wks_in: workstation ("graphic" object or default will be used).
 ;    source: data to be plotted (see source prototype above) or a NetCDF
 ;            filename with data.
 ;    varname: variable name in the file.
+;    inlist: list of input_file_info items
 ;
 ; Source prototype
 ;    source = (2, npoints)
@@ -493,12 +497,26 @@ begin
   end if
 
   ; Check if a valid wks has been provided, otherwise invoke default
-  wks = get_wks(wks_in, diag_script, var)
+  wks = get_wks(wks_in, DIAG_SCRIPT, var)
 
   ; Define style
-  annots = project_style(diag_script_info, "annots")
-  colors  = project_style(diag_script_info, "colors")
-  markers = project_style(diag_script_info, "markers")
+  ; new: if data array has attributes annots, colors, markers, use those
+  ;      instead of function project_style
+  if (isatt(data, "annots")) then
+    annots = data@annots
+  else
+    annots = project_style(inlist, diag_script_info, "annots")
+  end if
+  if (isatt(data, "colors")) then
+    colors = data@colors
+  else
+    colors  = project_style(inlist, diag_script_info, "colors")
+  end if
+  if (isatt(data, "markers")) then
+    markers = data@markers
+  else
+    markers = project_style(inlist, diag_script_info, "markers")
+  end if
 
   ; Create a 2D scatter plot
   res = True
@@ -520,6 +538,25 @@ begin
       " [" + format_units(data@units(0)) + "]"
     res@tiYAxisString = res@tiYAxisString + \
       " [" + format_units(data@units(1)) + "]"
+  end if
+
+  if (isatt(data, "trYMinF")) then
+    res@trYMinF = data@trYMinF        ; min value on y-axis
+  end if
+  if (isatt(data, "trYMaxF")) then
+    res@trYMaxF = data@trYMaxF        ; max value on y-axis
+  end if
+  if (isatt(data, "trXMinF")) then
+    res@trXMinF = data@trXMinF        ; min value on x-axis
+  end if
+  if (isatt(data, "trXMaxF")) then
+    res@trXMaxF = data@trXMaxF        ; max value on x-axis
+  end if
+  if (isatt(data, "trXReverse")) then
+    res@trXReverse = data@trXReverse  ; flip the x axis
+  end if
+  if (isatt(data, "trYReverse")) then
+    res@trYReverse = data@trYReverse  ; flip the y axis
   end if
 
   ; Override defaults with "res_" attributes of "data"

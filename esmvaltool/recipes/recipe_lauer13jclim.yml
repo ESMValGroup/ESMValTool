@@ -11,12 +11,13 @@ documentation:
 
   maintainer:
     - laue_ax
-    
+
   references:
     - lauer13jclim
 
   projects:
     - esmval
+    - embrace
 
 datasets:
   - {dataset: ACCESS1-0, project: CMIP5, exp: historical, ensemble: r1i1p1,
@@ -127,12 +128,15 @@ diagnostics:
 
   clouds_fig1_lwp:
     description: climatological annual means
+    themes:
+      - clouds
+    realms:
+      - atmos
     variables:
       lwp:
         preprocessor: clim
         reference_dataset: UWisc
         mip: Amon
-        field: T2Ms
         derive: true
     additional_datasets:
       - {dataset: UWisc, project: OBS, type: sat, version: v2,
@@ -153,12 +157,15 @@ diagnostics:
 
   clouds_fig1_clt:
     description: climatological annual means
+    themes:
+      - clouds
+    realms:
+      - atmos
     variables:
       clt:
         preprocessor: clim
         reference_dataset: MODIS
         mip: Amon
-        field: T2Ms
     additional_datasets:
       - {dataset: MODIS, project: obs4mips, level: L3, version: C5,
          start_year: 2001, end_year: 2010, tier: 1}
@@ -168,12 +175,15 @@ diagnostics:
 
   clouds_fig1_pr:
     description: climatological annual means
+    themes:
+      - clouds
+    realms:
+      - atmos
     variables:
       pr:
         preprocessor: clim
         reference_dataset: GPCP-SG
         mip: Amon
-        field: T2Ms
     additional_datasets:
       - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.2,
          start_year: 1986, end_year: 2005, tier: 1}
@@ -183,12 +193,16 @@ diagnostics:
 
   clouds_fig1_swcre:
     description: climatological annual means
+    themes:
+      - clouds
+      - phys
+    realms:
+      - atmos
     variables:
       swcre:
         preprocessor: clim
         reference_dataset: CERES-EBAF
         mip: Amon
-        field: T2Ms
         derive: true
     additional_datasets:
       - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
@@ -199,12 +213,16 @@ diagnostics:
 
   clouds_fig1_lwcre:
     description: climatological annual means
+    themes:
+      - clouds
+      - phys
+    realms:
+      - atmos
     variables:
       lwcre:
         preprocessor: clim
         reference_dataset: CERES-EBAF
         mip: Amon
-        field: T2Ms
         derive: true
     additional_datasets:
       - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
@@ -220,12 +238,15 @@ diagnostics:
 
   clouds_fig3_clt:
     description: climatological annual means
+    themes:
+      - clouds
+    realms:
+      - atmos
     variables:
       clt:
         preprocessor: clim
         reference_dataset: MODIS
         mip: Amon
-        field: T2Ms
     additional_datasets:
       - {dataset: MODIS, project: obs4mips, level: L3, version: C5,
          start_year: 2001, end_year: 2010, tier: 1}
@@ -272,12 +293,16 @@ diagnostics:
 
   clouds_fig3_lwp:
     description: climatological annual means
+    themes:
+      - clouds
+      - phys
+    realms:
+      - atmos
     variables:
       lwp:
         preprocessor: clim
         reference_dataset: UWisc
         mip: Amon
-        field: T2Ms
         derive: true
     additional_datasets:
       - {dataset: UWisc, project: OBS, type: sat, version: v2,
@@ -288,12 +313,16 @@ diagnostics:
 
   clouds_fig3_swcre:
     description: climatological annual means
+    themes:
+      - clouds
+      - phys
+    realms:
+      - atmos
     variables:
       swcre:
         preprocessor: clim
         reference_dataset: CERES-EBAF
         mip: Amon
-        field: T2Ms
         derive: true
     additional_datasets:
       - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
@@ -304,12 +333,16 @@ diagnostics:
 
   clouds_fig3_lwcre:
     description: climatological annual means
+    themes:
+      - clouds
+      - phys
+    realms:
+      - atmos
     variables:
       lwcre:
         preprocessor: clim
         reference_dataset: CERES-EBAF
         mip: Amon
-        field: T2Ms
         derive: true
     additional_datasets:
       - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
@@ -320,12 +353,15 @@ diagnostics:
 
   clouds_fig3_pr:
     description: climatological annual means
+    themes:
+      - clouds
+    realms:
+      - atmos
     variables:
       pr:
         preprocessor: clim
         reference_dataset: GPCP-SG
         mip: Amon
-        field: T2Ms
     additional_datasets:
       - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.2,
          start_year: 1986, end_year: 2005, tier: 1}
@@ -342,12 +378,15 @@ diagnostics:
 
   clouds_fig8_lwp:
     description: interannual variability
+    themes:
+      - clouds
+    realms:
+      - atmos
     variables:
       lwp:
         preprocessor: clim
         reference_dataset: UWisc
         mip: Amon
-        field: T2Ms
         derive: true
     additional_datasets:
       - {dataset: UWisc, project: OBS, type: sat, version: v2,
@@ -375,12 +414,15 @@ diagnostics:
 
   clouds_fig8_clt:
     description: interannual variability
+    themes:
+      - clouds
+    realms:
+      - atmos
     variables:
       clt:
         preprocessor: clim
         reference_dataset: MODIS
         mip: Amon
-        field: T2Ms
     additional_datasets:
       - {dataset: MODIS, project: obs4mips, level: L3, version: C5,
          start_year: 2001, end_year: 2010, tier: 1}
@@ -390,12 +432,16 @@ diagnostics:
 
   clouds_fig8_swcre:
     description: interannual variability
+    themes:
+      - clouds
+      - phys
+    realms:
+      - atmos
     variables:
       swcre:
         preprocessor: clim
         reference_dataset: CERES-EBAF
         mip: Amon
-        field: T2Ms
         derive: true
     additional_datasets:
       - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
@@ -406,12 +452,16 @@ diagnostics:
 
   clouds_fig8_lwcre:
     description: interannual variability
+    themes:
+      - clouds
+      - phys
+    realms:
+      - atmos
     variables:
       lwcre:
         preprocessor: clim
         reference_dataset: CERES-EBAF
         mip: Amon
-        field: T2Ms
         derive: true
     additional_datasets:
       - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
@@ -422,12 +472,15 @@ diagnostics:
 
   clouds_fig8_pr:
     description: interannual variability
+    themes:
+      - clouds
+    realms:
+      - atmos
     variables:
       pr:
         preprocessor: clim
         reference_dataset: GPCP-SG
         mip: Amon
-        field: T2Ms
     additional_datasets:
       - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.2,
          start_year: 1986, end_year: 2005, tier: 1}

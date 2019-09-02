@@ -20,21 +20,21 @@ documentation:
     - c3s-magic
 
 datasets:
-  - {dataset: MPI-ESM-LR,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+  - {dataset: ACCESS1-0,  project: CMIP5, exp: historical,  ensemble: r1i1p1,  start_year: 1850,  end_year: 2005}
 
 diagnostics:
 
   diagnostic1:
     description: Run the NCAR CVDPackage.
     variables:
+      ts:
+        mip: Amon
       tas:
-        field: T2Ms
-        #reference_dataset: bcc-csm1-1
+        mip: Amon
       pr:
-        field: T2Ms
-        #reference_dataset: MPI-ESM-LR
+        mip: Amon
       psl:
-        field: T2Ms
+        mip: Amon
     scripts:
       cvdp:
         script: cvdp/cvdp_wrapper.py

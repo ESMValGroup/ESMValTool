@@ -9,7 +9,7 @@
 ;
 ; #############################################################################
 
-load "./interface_scripts/logging.ncl"
+load "$diag_scripts/../interface_scripts/logging.ncl"
 
 ; #############################################################################
 undef("convert_units")

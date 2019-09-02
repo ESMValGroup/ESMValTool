@@ -26,10 +26,10 @@
 ;   reference_dataset: name of reference datatset
 ;
 ; Caveats
-;   TO DO (ESMValTool v2.0.0)
-;     1) get tags from namelist and write meta data to plots
+;   none
 ;
 ; Modification history
+;   20190220-A_laue_ax: added provenance to output (v2.0)
 ;   20181120-A_laue_ax: adapted code to multi-variable capable framework
 ;   20180923-A_laue_ax: added writing of results to netcdf
 ;   20180611-A_laue_ax: code rewritten for ESMValTool v2.0
@@ -48,14 +48,12 @@
 ; A temporary file written by the invoking Python script
 ; Passes on a number of variables from Python to NCL
 
-load "interface_scripts/interface.ncl"
+load "$diag_scripts/../interface_scripts/interface.ncl"
 
-load "./diag_scripts/shared/plot/aux_plotting.ncl"
-load "./diag_scripts/shared/statistics.ncl"
-load "./diag_scripts/shared/plot/style.ncl"
-load "./diag_scripts/shared/plot/contour_maps.ncl"
-
-; load "./diag_scripts/lib/ncl/meta_data.ncl"
+load "$diag_scripts/shared/plot/aux_plotting.ncl"
+load "$diag_scripts/shared/statistics.ncl"
+load "$diag_scripts/shared/plot/style.ncl"
+load "$diag_scripts/shared/plot/contour_maps.ncl"
 
 begin
   enter_msg(DIAG_SCRIPT, "")
@@ -73,39 +71,17 @@ begin
   log_info(DIAG_SCRIPT + " (var: " + var0 + ")")
   log_info("++++++++++++++++++++++++++++++++++++++++++")
 
-  ; ###############################
-  ; define diagnostic specific tags
-  ; ###############################
-
-  diag_tags = (/"PT_geo", "DM_global", "ST_clim", "ST_var"/)
-
-  ; ###########################################
-  ; # references                              #
-  ; ###########################################
-  ; FIX-ME: to be replaced by new method
-  ; write_references(DIAG_SCRIPT,      \  ; script name
-  ;                  "A_laue_ax",      \  ; authors
-  ;                  "",               \  ; contributors
-  ;                  "D_lauer13jclim", \  ; diag_references
-  ;                  "",               \  ; obs_references
-  ;                  (/"P_embrace"/))     ; proj_references
-
   set_default_att(diag_script_info, "colormap", "WhiteBlueGreenYellowRed")
   set_default_att(diag_script_info, "extrafiles", False)
   set_default_att(diag_script_info, "projection", "CylindricalEquidistant")
 
   extrafiles = diag_script_info@extrafiles
 
-  ; make sure path for (optional) netcdf output exists
+  ; make sure path for (mandatory) netcdf output exists
 
-  if (config_user_info@write_netcdf.eq."True") then
-    write_nc = True
-    work_dir = config_user_info@work_dir + "/"
-    ; Create work dir
-    system("mkdir -p " + work_dir)
-  else
-    write_nc = False
-  end if
+  work_dir = config_user_info@work_dir + "/"
+  ; Create work dir
+  system("mkdir -p " + work_dir)
 
   if (config_user_info@write_plots.eq."True") then
     write_plots = True
@@ -139,11 +115,11 @@ begin
     ind_all_sorted(1:dim_MOD - 1) = ind_wo_ref
   end if
 
+  maps = new(dim_MOD, graphic)  ; collect individual maps in a graphic array
+
   ; ###########################################
   ; # get data and average time               #
   ; ###########################################
-
-  maps = new(dim_MOD, graphic)  ; collect individual maps in a graphic array
 
   do ii = 0, dim_MOD - 1
 
@@ -175,6 +151,12 @@ begin
     idx = ind(dims .eq. "lon")
       if (ismissing(idx)) then
       error_msg("f", DIAG_SCRIPT, "", "no lon dimension")
+    end if
+
+    if (var0.eq."pr") then
+      ; convert from kg m-2 s-1 to mm day-1
+      A0 = A0 * 86400.0
+      A0@units = "mm day-1"
     end if
 
     ; subtract climatological seasonal cycle from time series
@@ -253,7 +235,7 @@ begin
       data1@res_mpFillOn           = True
       data1@res_mpLandFillColor    = "Black"
 ;      delete(pal)
-;      pal = read_colormap_file("diag_scripts/shared/plot/rgb/qcm3.rgb")
+;      pal = read_colormap_file("$diag_scripts/shared/plot/rgb/qcm3.rgb")
     end if
 
     nboxes = dimsizes(data1@res_cnLevels)
@@ -305,10 +287,17 @@ begin
       data1@diag_script = (/DIAG_SCRIPT/)
     end if
     data1@var = var0  ; Overwrite existing entry
-    if (isatt(variable_info, "long_name")) then
-      data1@var_long_name = variable_info@long_name
+    if (isatt(variable_info[0], "long_name")) then
+      data1@var_long_name = variable_info[0]@long_name
+    else
+      data1@var_long_name = var0
     end if
     data1@var_units    = "%"
+
+    ; copy attributes for netCDF output
+
+    data1@long_name = "interannual variability " + data1@var_long_name
+    data1@units = data1@var_units
 
     ; ###########################################
     ; # create the plot                         #
@@ -337,42 +326,55 @@ begin
 
     maps(ii) = contour_map(wks, data1, var0)
 
-    ; ###########################################
-    ; # optional output to netCDF               #
-    ; ###########################################
+    if (extrafiles) then
+      if (write_plots) then  ; add labels
+        txres = True
+        txres@txFontHeightF = 0.03
+        txres@txJust = "BottomRight"
+        txres@txPerimOn = True
+        txres@txBackgroundFillColor = "white"
+        text = gsn_add_text(wks, maps(ii), annots(imod), 170, -80, txres)
+        draw(maps(ii))
+        frame(wks)
+        plotfile = maps@outfile
+      else
+        plotfile = ""
+      end if
 
-    if (write_nc) then
+      ; ##########################################
+      ; # output each dataset to separate netCDF #
+      ; ##########################################
+
       nc_filename = work_dir + "clouds_interannual_" + var0 + "_" \
-                    + names(imod) + ".nc"
+        + annots(imod) + ".nc"
       nc_outfile = ncdf_write(data1, nc_filename)
-    end if
 
-    if (write_plots .and. extrafiles) then  ; add labels
-      txres = True
-      txres@txFontHeightF = 0.03
-      txres@txJust = "BottomRight"
-      txres@txPerimOn = True
-      txres@txBackgroundFillColor = "white"
-      text = gsn_add_text(wks, maps(ii), annots(imod), 170, -80, txres)
-      draw(maps(ii))
-      frame(wks)
+      ; -------------------------------------------------------------------
+      ; write provenance info
+      ; -------------------------------------------------------------------
 
-      ; *** add meta data for reporting to plots ***
-
-;      alltags = array_append_record(tags, diag_tags, 0)
-      caption = "Interannual variability of variable " + var0 + \
-        " from dataset " + names(imod) + "."
-      id = DIAG_SCRIPT + "_" + names(imod)
+      statistics = (/"clim", "var"/)
+      domain = ("glob")
+      plottype = ("geo")
       climofile = infiles(imod)
-      contrib_authors = "A_laue_ax"
+      caption = "Interannual variability of variable " + var0 + \
+                " from dataset " + annots(imod) + "."
 
-;      ESMValMD(maps@outfile, alltags, caption, id, var0, \
-;               name(imod), climofile, DIAG_SCRIPT, \
-;               contrib_authors)
+      log_provenance(nc_outfile, plotfile, caption, statistics, domain, \
+                     plottype, "", "", climofile)
 
-;      delete([/alltags, caption, id, climofile/])
+    else  ; extrafiles .eq. false
 
-    end if
+      ; #########################################
+      ; # output all datasets to common netCDF  #
+      ; #########################################
+
+      nc_filename = work_dir + "clouds_interannual_" + var0 + ".nc"
+      nc_filename@existing = "append"
+      data1@var = var0 + "_var_" + annots(imod)
+      nc_outfile = ncdf_write(data1, nc_filename)
+
+    end if  ; if extrafiles
   end do  ; ii-loop (datasets)
 
   if (write_plots) then
@@ -416,23 +418,23 @@ begin
     else
       outfile = panelling(wks, maps, (dim_MOD + 3) / 4, 4, pres)
       log_info(" Wrote " + outfile)
-
-;      alltags = array_append_record(tags, diag_tags, 0)
-        caption = "Interannual variability of variable " + var0 + "."
-        id = DIAG_SCRIPT + "_" + var0 + "_all_models"
-
-        climofiles = new(dim_MOD, string)
-        climofiles = infiles
-        contrib_authors = "A_laue_ax"
-
-;        ESMValMD(outfile, alltags, caption, id, var0, \
-;                 names, climofiles, DIAG_SCRIPT, \
-;                 contrib_authors)
-;
-;        delete([/alltags, caption, id, climofiles/])
-
     end if
+  else
+    outfile = ""
   end if  ; if write_plots
+
+  ; ------------------------------------------------------------------------
+  ; write provenance to common netcdf and plot file
+  ; ------------------------------------------------------------------------
+
+  if (.not. extrafiles) then
+    statistics = (/"clim", "var"/)
+    domain = "global"
+    plottype = "geo"
+    caption = "Interannual variability of variable " + var0 + "."
+    log_provenance(nc_outfile, outfile, caption, statistics, domain, \
+                   plottype, "", "", infiles)
+  end if
 
   leave_msg(DIAG_SCRIPT, "")
 

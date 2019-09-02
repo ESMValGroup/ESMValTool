@@ -317,6 +317,8 @@ def extract_variables(cfg, as_iris=False):
         # Replace short_name by var_name if desired
         if as_iris:
             info['var_name'] = info.pop('short_name')
+            if info['standard_name'] == '':
+                info['standard_name'] = None
 
     return variables
 
@@ -468,6 +470,10 @@ def run_diagnostic():
         if args.ignore_existing and os.path.exists(output_directory):
             continue
         os.makedirs(output_directory)
+
+    provenance_file = os.path.join(cfg['run_dir'], 'diagnostic_provenance.yml')
+    if os.path.exists(provenance_file):
+        os.remove(provenance_file)
 
     yield cfg
 

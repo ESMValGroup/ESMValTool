@@ -14,7 +14,7 @@ documentation:
 
   maintainer:
     - righ_ma
-    
+
   references:
     - flato13ipcc
 
@@ -38,9 +38,8 @@ preprocessors:
       exclude: [reference_dataset]
 
   spatial_mean:
-    average_region:
-      coord1: latitude
-      coord2: longitude
+    area_statistics:
+      operator: mean
 
   clim_ref:
     regrid:
@@ -63,12 +62,15 @@ diagnostics:
 
   fig09-2:
     description: IPCC AR5 Ch. 9, Fig. 9.2 (near-surface temperature)
+    themes:
+      - phys
+    realms:
+      - atmos
     variables:
       tas:
         preprocessor: clim
         reference_dataset: ERA-Interim
         mip: Amon
-        field: T2Ms
     additional_datasets:
       - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1,
          start_year: 1986, end_year: 2005, tier: 3}
@@ -174,12 +176,15 @@ diagnostics:
 
   fig09-4:
     description: IPCC AR5 Ch. 9, Fig. 9.4 (precipitation)
+    themes:
+      - clouds
+    realms:
+      - atmos
     variables:
       pr:
         preprocessor: clim
         reference_dataset: GPCP-SG
         mip: Amon
-        field: T2Ms
     additional_datasets:
       - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.2,
          start_year: 1986, end_year: 2005, tier: 1}
@@ -284,12 +289,15 @@ diagnostics:
 
   fig09-5a:
     description: differences of multi-model mean and reference dataset
+    themes:
+      - clouds
+    realms:
+      - atmos
     variables:
       swcre:
         preprocessor: clim
         reference_dataset: CERES-EBAF
         mip: Amon
-        field: T2Ms
         derive: true
     additional_datasets:
       - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
@@ -387,12 +395,15 @@ diagnostics:
 
   fig09-5b:
     description: differences of multi-model mean and reference dataset
+    themes:
+      - clouds
+    realms:
+      - atmos
     variables:
       lwcre:
         preprocessor: clim
         reference_dataset: CERES-EBAF
         mip: Amon
-        field: T2Ms
         derive: true
     additional_datasets:
       - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
@@ -487,12 +498,15 @@ diagnostics:
 
   fig09-5c:
     description: differences of multi-model mean and reference dataset
+    themes:
+      - clouds
+    realms:
+      - atmos
     variables:
       netcre:
         preprocessor: clim
         reference_dataset: CERES-EBAF
         mip: Amon
-        field: T2Ms
         derive: true
     additional_datasets:
       - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
@@ -588,17 +602,21 @@ diagnostics:
 
   # **********************************************************************
   # Flato et al. (2013) - IPCC AR5, chap. 9
-  # similar to fig. 9.8       
+  # similar to fig. 9.8
   # **********************************************************************
   # Time series of anomalies of annual and global surface temperature
   # **********************************************************************
 
   fig09-8:
     description: IPCC AR5 Ch. 9, Fig. 9.8 (near-surface temperature)
+    themes:
+      - phys
+    realms:
+      - atmos
     variables:
       tas:
-        preprocessor: clim_ref   
-        reference_dataset: HadCRUT4   
+        preprocessor: clim_ref
+        reference_dataset: HadCRUT4
         alternative_dataset: HadCRUT4-clim
         mip: Amon
         field: T2Ms
@@ -661,9 +679,9 @@ diagnostics:
       - {dataset: HadCRUT4, project: OBS, type: ground, version: 1,
          start_year: 1870, end_year: 2017, tier: 2}
       - {dataset: HadCRUT4-clim, project: OBS, type: ground, version: 1,
-         start_year: 1990, end_year: 1990, tier: 2}
+         start_year: 1976, end_year: 1976, tier: 2}
     scripts:
-      fig09-8: 
+      fig09-8:
         script: ipcc_ar5/tsline.ncl
         time_avg: "yearly"
         ts_anomaly: "anom"    #"anom" for anomaly-plot else "noanom"
@@ -677,28 +695,31 @@ diagnostics:
 
   # **********************************************************************
   # Flato et al. (2013) - IPCC AR5, chap. 9
-  # similar to fig. 9.42a       
+  # similar to fig. 9.42a
   # **********************************************************************
-  # 
+  #
   # **********************************************************************
 
-  ecs:
-    description: Calculate ECS.
+  ecs_cmip5:
+    description: Calculate ECS for CMIP5 models.
+    themes:
+      - EC
+    realms:
+      - atmos
     variables:
-      tas: &spatial_mean_cmip5_r1i1p1_amon_t2ms
+      tas: &ecs_settings
         preprocessor: spatial_mean
         project: CMIP5
         ensemble: r1i1p1
         mip: Amon
-        field: T2Ms
-      rtmt:
-        <<: *spatial_mean_cmip5_r1i1p1_amon_t2ms
+      rtnt:
+        <<: *ecs_settings
+        derive: true
     additional_datasets:
       - {dataset: bcc-csm1-1, exp: piControl, start_year: 160, end_year: 309}
       - {dataset: bcc-csm1-1, exp: abrupt4xCO2, start_year: 160, end_year: 309}
       - {dataset: bcc-csm1-1-m, exp: piControl, start_year: 240, end_year: 389}
-      - {dataset: bcc-csm1-1-m, exp: abrupt4xCO2, start_year: 240,
-         end_year: 389}
+      - {dataset: bcc-csm1-1-m, exp: abrupt4xCO2, start_year: 240, end_year: 389}
       - {dataset: CanESM2, exp: piControl, start_year: 2015, end_year: 2164}
       - {dataset: CanESM2, exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
       - {dataset: CCSM4, exp: piControl, start_year: 800, end_year: 949}
@@ -715,41 +736,38 @@ diagnostics:
       - {dataset: GISS-E2-R, exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
       - {dataset: inmcm4, exp: piControl, start_year: 2090, end_year: 2239}
       - {dataset: inmcm4, exp: abrupt4xCO2, start_year: 2090, end_year: 2239}
-      - {dataset: IPSL-CM5A-LR, exp: piControl, start_year: 1850,
-         end_year: 1999}
-      - {dataset: IPSL-CM5A-LR, exp: abrupt4xCO2, start_year: 1850,
-         end_year: 1999}
-      - {dataset: IPSL-CM5B-LR, exp: piControl, start_year: 1850,
-         end_year: 1999}
-      - {dataset: IPSL-CM5B-LR, exp: abrupt4xCO2, start_year: 1850,
-         end_year: 1999}
+      - {dataset: IPSL-CM5A-LR, exp: piControl, start_year: 1850, end_year: 1999}
+      - {dataset: IPSL-CM5A-LR, exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
+      - {dataset: IPSL-CM5B-LR, exp: piControl, start_year: 1850, end_year: 1999}
+      - {dataset: IPSL-CM5B-LR, exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
       - {dataset: MIROC5, exp: piControl, start_year: 2100, end_year: 2249}
       - {dataset: MIROC5, exp: abrupt4xCO2, start_year: 2100, end_year: 2249}
       - {dataset: MIROC-ESM, exp: piControl, start_year: 1800, end_year: 1949}
       - {dataset: MIROC-ESM, exp: abrupt4xCO2, start_year: 1, end_year: 150}
       - {dataset: MPI-ESM-LR, exp: piControl, start_year: 2015, end_year: 2164}
-      - {dataset: MPI-ESM-LR, exp: abrupt4xCO2, start_year: 1850,
-         end_year: 1999}
+      - {dataset: MPI-ESM-LR, exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
       # Day is out of range for month (wait for iris > 2.0)
       # - {dataset: ACCESS1-0, exp: piControl, start_year: 300, end_year: 449}
       # - {dataset: ACCESS1-0, exp: abrupt4xCO2, start_year: 300, end_year: 449}
     scripts:
-      ecs:
+      ecs: &ecs_script
         script: climate_metrics/ecs.py
-        plot_ecs_regression: 'True'
-        output_name: 'ecs'
 
-  fig09-42a:
-    description: Plot ECS vs. GMSAT.
+  fig09-42a_cmip5:
+    description: Plot ECS vs. GMSAT for CMIP5 models.
+    themes:
+      - EC
+      - phys
+    realms:
+      - atmos
     variables:
       tas:
-        <<: *spatial_mean_cmip5_r1i1p1_amon_t2ms
+        <<: *ecs_settings
     additional_datasets:
       - {dataset: bcc-csm1-1, exp: piControl, start_year: 160, end_year: 309}
       - {dataset: bcc-csm1-1, exp: historical, start_year: 1961, end_year: 1990}
       - {dataset: bcc-csm1-1-m, exp: piControl, start_year: 240, end_year: 389}
-      - {dataset: bcc-csm1-1-m, exp: historical, start_year: 1961,
-         end_year: 1990}
+      - {dataset: bcc-csm1-1-m, exp: historical, start_year: 1961, end_year: 1990}
       - {dataset: CanESM2, exp: piControl, start_year: 2015, end_year: 2164}
       - {dataset: CanESM2, exp: historical, start_year: 1961, end_year: 1990}
       - {dataset: CCSM4, exp: piControl, start_year: 800, end_year: 949}
@@ -757,8 +775,7 @@ diagnostics:
       - {dataset: CNRM-CM5, exp: piControl, start_year: 1850, end_year: 1999}
       - {dataset: CNRM-CM5, exp: historical, start_year: 1961, end_year: 1990}
       - {dataset: CSIRO-Mk3-6-0, exp: piControl, start_year: 1, end_year: 150}
-      - {dataset: CSIRO-Mk3-6-0, exp: historical, start_year: 1961,
-         end_year: 1990}
+      - {dataset: CSIRO-Mk3-6-0, exp: historical, start_year: 1961, end_year: 1990}
       - {dataset: GFDL-CM3, exp: piControl, start_year: 1, end_year: 150}
       - {dataset: GFDL-CM3, exp: historical, start_year: 1961, end_year: 1990}
       - {dataset: GISS-E2-H, exp: piControl, start_year: 1200, end_year: 1349}
@@ -767,14 +784,10 @@ diagnostics:
       - {dataset: GISS-E2-R, exp: historical, start_year: 1961, end_year: 1990}
       - {dataset: inmcm4, exp: piControl, start_year: 2090, end_year: 2239}
       - {dataset: inmcm4, exp: historical, start_year: 1961, end_year: 1990}
-      - {dataset: IPSL-CM5A-LR, exp: piControl, start_year: 1850,
-         end_year: 1999}
-      - {dataset: IPSL-CM5A-LR, exp: historical, start_year: 1961,
-         end_year: 1990}
-      - {dataset: IPSL-CM5B-LR, exp: piControl, start_year: 1850,
-         end_year: 1999}
-      - {dataset: IPSL-CM5B-LR, exp: historical, start_year: 1961,
-         end_year: 1990}
+      - {dataset: IPSL-CM5A-LR, exp: piControl, start_year: 1850, end_year: 1999}
+      - {dataset: IPSL-CM5A-LR, exp: historical, start_year: 1961, end_year: 1990}
+      - {dataset: IPSL-CM5B-LR, exp: piControl, start_year: 1850, end_year: 1999}
+      - {dataset: IPSL-CM5B-LR, exp: historical, start_year: 1961, end_year: 1990}
       - {dataset: MIROC5, exp: piControl, start_year: 2100, end_year: 2249}
       - {dataset: MIROC5, exp: historical, start_year: 1961, end_year: 1990}
       - {dataset: MIROC-ESM, exp: piControl, start_year: 1800, end_year: 1949}
@@ -786,16 +799,14 @@ diagnostics:
       # - {dataset: ACCESS1-0, exp: historical, start_year: 1961,
       #    end_year: 1990}
     scripts:
-      fig09-42a:
+      fig09-42a: &fig09_42a_script
         script: ipcc_ar5/ch09_fig09_42a.py
-        ancestors: ['tas', 'ecs/ecs']
-        ecs_filename: 'ecs'
-        output_name: 'ch09_fig09-42a'
+        ancestors: ['tas', 'ecs_cmip5/ecs']
         tas_units: celsius
         save:
           bbox_inches: tight
           orientation: landscape
-        axes_functions:
+        axes_functions: &axes_functions
           set_title: GMSAT vs. ECS for CMIP5 models
           set_xlabel: ECS / °C
           set_ylabel: GMSAT / °C
@@ -806,3 +817,67 @@ diagnostics:
               bbox_to_anchor: [1.05, 0.5]
               borderaxespad: 0.0
               ncol: 2
+
+  ecs_cmip6:
+    description: Calculate ECS for CMIP6 models.
+    themes:
+      - EC
+    realms:
+      - atmos
+    variables:
+      tas:
+        <<: *ecs_settings
+        project: CMIP6
+      rtnt:
+        <<: *ecs_settings
+        project: CMIP6
+        derive: true
+    additional_datasets:
+      - {dataset: BCC-CSM2-MR,  exp: piControl,    ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 1999}
+      - {dataset: BCC-CSM2-MR,  exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 1999}
+      - {dataset: CNRM-CM6-1,   exp: piControl,    ensemble: r1i1p1f2, grid: gr, start_year: 1850, end_year: 1999}
+      - {dataset: CNRM-CM6-1,   exp: abrupt-4xCO2, ensemble: r1i1p1f2, grid: gr, start_year: 1850, end_year: 1999}
+      - {dataset: GISS-E2-1-G,  exp: piControl,    ensemble: r1i1p1f1, grid: gn, start_year: 4150, end_year: 4299}
+      - {dataset: GISS-E2-1-G,  exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 1999}
+      - {dataset: IPSL-CM6A-LR, exp: piControl,    ensemble: r1i1p1f1, grid: gr, start_year: 1850, end_year: 1999}
+      - {dataset: IPSL-CM6A-LR, exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gr, start_year: 1850, end_year: 1999}
+      - {dataset: MIROC6,       exp: piControl,    ensemble: r1i1p1f1, grid: gn, start_year: 3200, end_year: 3349}
+      - {dataset: MIROC6,       exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn, start_year: 3200, end_year: 3349}
+      - {dataset: MRI-ESM2-0,   exp: piControl,    ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 1999}
+      - {dataset: MRI-ESM2-0,   exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 1999}
+    scripts:
+      ecs:
+        <<: *ecs_script
+
+  fig09-42a_cmip6:
+    description: Plot ECS vs. GMSAT for CMIP6 models.
+    themes:
+      - EC
+      - phys
+    realms:
+      - atmos
+    variables:
+      tas:
+        <<: *ecs_settings
+        project: CMIP6
+    additional_datasets:
+      - {dataset: BCC-CSM2-MR,  exp: piControl,    ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 1999}
+      - {dataset: BCC-CSM2-MR,  exp: historical,   ensemble: r1i1p1f1, grid: gn, start_year: 1961, end_year: 1990}
+      - {dataset: CNRM-CM6-1,   exp: piControl,    ensemble: r1i1p1f2, grid: gr, start_year: 1850, end_year: 1999}
+      - {dataset: CNRM-CM6-1,   exp: historical,   ensemble: r1i1p1f2, grid: gr, start_year: 1961, end_year: 1990}
+      - {dataset: GISS-E2-1-G,  exp: piControl,    ensemble: r1i1p1f1, grid: gn, start_year: 4150, end_year: 4299}
+      - {dataset: GISS-E2-1-G,  exp: historical,   ensemble: r1i1p1f1, grid: gn, start_year: 1961, end_year: 1990}
+      - {dataset: IPSL-CM6A-LR, exp: piControl,    ensemble: r1i1p1f1, grid: gr, start_year: 1850, end_year: 1999}
+      - {dataset: IPSL-CM6A-LR, exp: historical,   ensemble: r1i1p1f1, grid: gr, start_year: 1961, end_year: 1990}
+      - {dataset: MIROC6,       exp: piControl,    ensemble: r1i1p1f1, grid: gn, start_year: 3200, end_year: 3349}
+      - {dataset: MIROC6,       exp: historical,   ensemble: r1i1p1f1, grid: gn, start_year: 1961, end_year: 1990}
+      - {dataset: MRI-ESM2-0,   exp: piControl,    ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 1999}
+      - {dataset: MRI-ESM2-0,   exp: historical,   ensemble: r1i1p1f1, grid: gn, start_year: 1961, end_year: 1990}
+    scripts:
+      fig09-42a:
+        <<: *fig09_42a_script
+        ancestors: ['tas', 'ecs_cmip6/ecs']
+        axes_functions:
+          <<: *axes_functions
+          set_title: GMSAT vs. ECS for CMIP6 models
+        dataset_style: cmip6

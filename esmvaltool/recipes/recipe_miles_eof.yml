@@ -1,0 +1,80 @@
+###############################################################################
+## namelist_miles.xml
+##
+## Description
+## Namelist to compute EOFs using the MiLES package by P. Davini (ISAC-CNR)
+## MiLES (Mid-Latitude Evaluation System) v0.31
+##
+## Authors
+## Paolo Davini (ISAC-CNR, Italy - p.davini@isac.cnr.it)
+## J. von Hardenberg (ISAC-CNR, Italy - j.vonhardenberg@isac.cnr.it)
+## E. Arnone (ISAC-CNR, Italy - e.arnone@isac.cnr.it)
+##
+## Project
+## Copernicus C3S-MAGIC (C3S 34a Lot2) 
+##
+## References:
+## https://github.com/oloapinivad/MiLES
+## Davini, P., C. Cagnazzo, S. Gualdi, and A. Navarra, 2012: Bidimensional Diagnostics, Variability, and Trends of Northern Hemisphere Blocking. J. Climate, 25, 6496–6509, doi: 10.1175/JCLI-D-12-00032.1
+## Tibaldi S, Molteni F. 1990. On the operational predictability of blocking. Tellus A 42(3): 343–365, doi:10.1034/j.1600- 0870.1990.t01- 2- 00003.x
+##
+## This namelist is part of the ESMValTool
+################################################################################
+#
+# mask_landocean: false
+# multi_model_statistics: false
+---
+documentation:
+  description: |
+    Recipe for computing and plotting EOFs using 
+    the MiLES (Mid-Latitude Evaluation System) package
+
+  authors:
+    - hard_jo
+    - davi_pa
+    - arno_en
+
+  references:
+    - davini18
+    - davini12jclim
+    - tibaldi90tel
+
+  projects:
+    - c3s-magic
+
+datasets:
+   - {dataset: EC-EARTH,    project: CMIP5,  exp: historical,  ensemble: r2i1p1,  start_year: 1980,  end_year: 1989}
+   - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3, start_year: 1980,  end_year: 1989 }
+
+preprocessors:
+    preproc1:
+      extract_levels:
+        levels: 50000
+        scheme: linear
+      regrid:
+        target_grid: 2.5x2.5
+        lat_offset: False
+        scheme: linear_extrapolate
+      extract_region:
+        start_longitude: 0.
+        end_longitude: 360.
+        start_latitude: 1.25
+        end_latitude: 90.
+
+diagnostics:
+
+  miles_diagnostics:
+    description: MiLES EOF Diagnostics 
+    variables:
+      zg:
+        preprocessor: preproc1
+        mip: day
+        reference_dataset: "ERA-Interim"
+    scripts:
+        miles_eof: 
+            script: miles/miles_eof.R
+            seasons: DJF # Select season ('DJF','MAM','JJA','SON','ALL') or your period as e.g. 'Jan_Feb_Mar'
+            teles: NAO   # Select EOFs ('NAO','AO','PNA') or specify custom area as "lon1_lon2_lat1_lat2"
+        
+        
+

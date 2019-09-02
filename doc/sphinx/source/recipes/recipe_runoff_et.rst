@@ -1,3 +1,5 @@
+.. _recipes_runoff_et:
+
 Runoff_ET
 =========
 
@@ -47,17 +49,17 @@ Diagnostics are stored in diag_scripts/runoff_et/
       runoff, evapotranspiration and precipitation
 
 
-User settings
--------------
+User settings in recipe
+-----------------------
 
-runoff_et.yml
+#. Script catchment_analysis.py
 
-   *Required settings for script*
+   *Required settings (scripts)*
 
    * catchmentmask: netCDF file indicating the grid cell for a specific catchment. Modus of
      distribution not yet clearified. ESGF?
 
-   *Optional settings for variables*
+   *Optional settings (variables)*
 
    * reference_dataset: dataset_name
      Datasets can be used as reference instead of defaults provided with the diagnostics.

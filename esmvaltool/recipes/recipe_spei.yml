@@ -1,0 +1,50 @@
+---
+documentation:
+  description: 'Calculates the SPI and SPEI drought indices.'
+  authors: ['berg_pe']
+  projects: ['c3s-magic']
+  references: ['acknow_project']
+
+datasets:
+#  - {dataset: CRU, project: OBS, type: reanaly, version: 1, tier: 3}
+  - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
+  - {dataset: ACCESS1-0, project: CMIP5, exp: historical, ensemble: r1i1p1}
+#  - {dataset: ACCESS1-0, project: CMIP5, exp: historical, ensemble: r1i1p1}
+#  - {dataset: ACCESS1-3, project: CMIP5, exp: historical, ensemble: r1i1p1}
+#  - {dataset: BNU-ESM, project: CMIP5, exp: historical, ensemble: r1i1p1}
+#  - {dataset: CNRM-CM5, project: CMIP5, exp: historical, ensemble: r1i1p1}
+#  - {dataset: EC-EARTH, project: CMIP5, exp: historical, ensemble: r12i1p1}
+#  - {dataset: GFDL-CM3, project: CMIP5, exp: historical, ensemble: r1i1p1}
+#  - {dataset: GISS-E2-H, project: CMIP5, exp: historical, ensemble: r6i1p1}
+#  - {dataset: HadGEM2-CC, project: CMIP5, exp: historical, ensemble: r1i1p1}
+#  - {dataset: HadGEM2-ES, project: CMIP5, exp: historical, ensemble: r1i1p1}
+#  - {dataset: inmcm4, project: CMIP5, exp: historical, ensemble: r1i1p1}
+#  - {dataset: IPSL-CM5A-LR, project: CMIP5, exp: historical, ensemble: r1i1p1}
+#  - {dataset: IPSL-CM5A-MR, project: CMIP5, exp: historical, ensemble: r1i1p1}
+#  - {dataset: IPSL-CM5B-LR, project: CMIP5, exp: historical, ensemble: r1i1p1}
+#  - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical, ensemble: r1i1p1}
+#  - {dataset: NorESM1-M, project: CMIP5, exp: historical, ensemble: r1i1p1}
+
+preprocessors:
+  preprocessor:
+    regrid:
+      target_grid: reference_dataset
+      scheme: linear
+
+diagnostics:
+  diagnostic:
+    description: Calculating SPI and SPEI index
+    variables:
+      pr: &var
+        reference_dataset: ERA-Interim
+        preprocessor: preprocessor
+        start_year: 2000
+        end_year: 2005
+        mip: Amon
+      tas: *var
+    scripts:
+      spi:
+        script: droughtindex/diag_spi.r
+        ancestors: [pr]
+      spei:
+        script: droughtindex/diag_spei.r

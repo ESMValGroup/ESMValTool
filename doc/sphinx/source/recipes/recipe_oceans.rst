@@ -1,4 +1,4 @@
-.. _nml_oceans:
+.. _XML_oceans:
 
 Recipes for evaluating models of the ocean
 ==========================================
@@ -42,6 +42,7 @@ Available recipes
 * recipe_ocean_scalar_fields.yml_
 * recipe_ocean_bgc.yml_
 * recipe_ocean_quadmap.yml_
+* recipe_ocean_Landschutzer2014.yml_
 
 
 recipe_ocean_amoc.yml
@@ -424,9 +425,9 @@ diagnostic_model_vs_obs.py
 The diagnostic_model_vs_obs.py_ diagnostic makes model vs observations maps
 and scatter plots. The map plots shows four latitude vs longitude maps:
 
-=================            =======================
+========================     =======================
 Model                        Observations
------------------            -----------------------
+------------------------     -----------------------
 Model minus Observations     Model over Observations
 ========================     =======================
 
@@ -434,6 +435,13 @@ Note that this diagnostic assumes that the preprocessors do the bulk of the
 hard work, and that the cube received by this diagnostic (via the settings.yml
 and metadata.yml files) has no time component, a small number of depth layers,
 and a latitude and longitude coordinates.
+
+This diagnostic also includes the optional arguments, `maps_range` and
+`diff_range` to manually define plot ranges. Both arguments are a list of two floats
+to set plot range minimun and maximum values respectively for Model and Observations
+maps (Top panels) and for the Model minus Observations panel (bottom left).
+Note that if input data have negative values the Model over Observations map 
+(bottom right) is not produced.
 
 The scatter plots plot the matched model coordinate on the x axis, and the
 observational dataset on the y coordinate, then performs a linear
@@ -480,9 +488,8 @@ An appropriate preprocessor for a 3D+time field would be:
 	      lat2:  30.
 	      z_min: 0.
 	      z_max: 3000.
-	    average_region:
-	      coord1: longitude
-	      coord2: latitude
+	    area_statistics:
+              operator: mean
 
 
 
@@ -516,18 +523,15 @@ For a global area-weighted average 2D field:
 
   .. code-block:: yaml
 
-	average_area:
-	  coord1: longitude
-	  coord2: latitude
+	area_statistics:
+          operator: mean
 
 For a global volume-weighted average 3D field:
 
   .. code-block:: yaml
 
-	average_volume:
-	  coord1: longitude
-	  coord2: latitude
-	  coordz: depth
+	volume_statistics:
+          operator: mean
 
 For a global area-weighted surface of a 3D field:
 
@@ -536,9 +540,8 @@ For a global area-weighted surface of a 3D field:
 	extract_levels:
 	  levels: [0., ]
 	  scheme: linear_horizontal_extrapolate_vertical
-	average_area:
-	  coord1: longitude
-	  coord2: latitude
+	area_statistics:
+          operator: mean
 
 
 An example of the multi-model time series plots can seen here:
@@ -693,6 +696,29 @@ We just show a simple description here, each individual function is more fully
 documented in the diagnostic_tools.py_ module.
 
 
+A note on the auxiliary data directory
+......................................
+
+Some of these diagnostic scripts may not function on machines with no access
+to the internet, as cartopy may try to download the shape files. The solution
+to this issue is the put the relevant cartopy shapefiles in a directory which
+is visible to esmvaltool, then link that path to ESMValTool via
+the `auxiliary_data_dir` variable in your config-user.yml file.
+
+The cartopy masking files can be downloaded from:
+https://www.naturalearthdata.com/downloads/
+
+
+In these recipes, cartopy uses the 1:10, physical coastlines and land files::
+
+      110m_coastline.dbf
+      110m_coastline.shp
+      110m_coastline.shx
+      110m_land.dbf
+      110m_land.shp
+      110m_land.shx
+
+
 Associated Observational datasets
 ........................................
 
@@ -714,8 +740,22 @@ The following WOA datasets are used by the ocean diagnostics:
  - Silicate
  - Dissolved Oxygen
 
-These files need to be reformatted using the `reformat_obs_woa_o2.py` script
-in the `reformat_scripts/obs/` directory.
+These files need to be reformatted using the `cmorize_obs_py` script with output name `WOA`.
+
+
+Landschutzer 2014
+-----------------
+These data can be downloaded from:
+ftp://ftp.nodc.noaa.gov/nodc/archive/arc0105/0160558/1.1/data/0-data/spco2_1998-2011_ETH_SOM-FFN_CDIAC_G05.nc
+(last access 02/28/2019)
+
+The following variables are used by the ocean diagnostics:
+ - fgco2, Surface Downward Flux of Total CO2
+ - spco2, Surface Aqueous Partial Pressure of CO2
+ - dpco2, Delta CO2 Partial Pressure
+
+The file needs to be reformatted using the `cmorize_obs_py` script with output name `Landschutzer2014`.
+
 
 
 .. Links:
@@ -726,6 +766,7 @@ in the `reformat_scripts/obs/` directory.
 .. _recipe_ocean_scalar_fields.yml: https://github.com/ESMValGroup/ESMValTool/tree/version2_development/esmvaltool/recipes/recipe_ocean_scalar_fields.yml
 .. _recipe_ocean_bgc.yml: https://github.com/ESMValGroup/ESMValTool/tree/version2_development/esmvaltool/recipes/recipe_ocean_bgc.yml
 .. _recipe_ocean_quadmap.yml: https://github.com/ESMValGroup/ESMValTool/tree/version2_development/esmvaltool/recipes/recipe_ocean_quadmap.yml
+.. _recipe_ocean_Landschutzer2014.yml: https://github.com/ESMValGroup/ESMValTool/tree/version2_development/esmvaltool/recipes/recipe_ocean_Landschutzer2014.yml
 
 .. Diagnostics:
 .. _ocean: https://github.com/ESMValGroup/ESMValTool/tree/version2_development/esmvaltool/diag_scripts/ocean/:

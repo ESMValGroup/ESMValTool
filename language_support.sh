@@ -1,6 +1,6 @@
 #!/bin/bash
 
-tools=(R Rscript)
+tools=(R Rscript julia)
 
 for tool in "${tools[@]}"; do
     if ! command -v "$tool" > /dev/null 2>&1; then
@@ -10,3 +10,4 @@ for tool in "${tools[@]}"; do
 done
 
 Rscript $PREFIX/lib/python*/site-packages/esmvaltool/install/R/setup.R >> $PREFIX/.messages.txt
+julia $PREFIX/lib/python*/site-packages/esmvaltool/install/Julia/setup.jl >> $PREFIX/.messages.txt

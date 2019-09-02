@@ -1,115 +1,85 @@
 ---
 version: 2
 jobs:
-  python3_test:
+  test:
     # Run Python 3 tests
-    working_directory: /python3_test
+    working_directory: /test
     docker:
-      - image: continuumio/miniconda3
+      - image: continuumio/anaconda3
     steps:
       - checkout
       - run:
           command: |
-            apt update && apt -y install build-essential gfortran
             # Create a file to checksum as cache key
             date --rfc-3339 date > cache_key.txt
             cat environment.yml >> cache_key.txt
-            cat esmvaltool/install/R/r_requirements.txt >> cache_key.txt
       - restore_cache:
-          key: deps3-{{ .Branch }}-{{ checksum "cache_key.txt" }}
+          key: test-{{ .Branch }}-{{ checksum "cache_key.txt" }}
       - run:
-          # Update/Create Conda Environment
+          # Update/Create Conda environment and run tests
           command: |
             . /opt/conda/etc/profile.d/conda.sh
             conda update -y conda
             conda env update
             conda activate esmvaltool
-            Rscript esmvaltool/install/R/setup.R
+            # Install missing r-yaml and r-lintr
+            Rscript esmvaltool/install/R/setup_devutils.R
+            # Run tests
+            python setup.py test
       - save_cache:
-          key: deps3-{{ .Branch }}-{{ checksum "cache_key.txt" }}
+          key: test-{{ .Branch }}-{{ checksum "cache_key.txt" }}
           paths:
             - "/opt/conda/envs/esmvaltool"
-      - run:
-          # Activate Conda environment and run tests
-          command: |
-            . /opt/conda/etc/profile.d/conda.sh
-            conda activate esmvaltool
-            python setup.py test
+            - ".eggs"
       - store_test_results:
           path: test-reports/
       - store_artifacts:
           path: test-reports/
 
-  python2_test:
-    # Run Python 2 tests
-    working_directory: /python2_test
-    docker:
-      - image: continuumio/miniconda3
-    steps:
-      - checkout
-      - run:
-          command: |
-            apt update && apt -y install build-essential gfortran
-            # Create a file to checksum as cache key
-            date --rfc-3339 date > cache_key.txt
-            cat environment.yml >> cache_key.txt
-            cat esmvaltool/install/R/r_requirements.txt >> cache_key.txt
-      - restore_cache:
-          key: deps2-{{ .Branch }}-{{ checksum "cache_key.txt" }}
-      - run:
-          # Update/Create Conda Environment
-          command: |
-            . /opt/conda/etc/profile.d/conda.sh
-            conda update -y conda
-            if ! test -d "/opt/conda/envs/esmvaltool"; then
-              conda create -y --name esmvaltool python=2
-            fi
-            conda env update
-            conda activate esmvaltool
-            Rscript esmvaltool/install/R/setup.R
-      - save_cache:
-          key: deps2-{{ .Branch }}-{{ checksum "cache_key.txt" }}
-          paths:
-            - "/opt/conda/envs/esmvaltool"
-      - run:
-          # Activate Conda environment and run tests
-          command: |
-            . /opt/conda/etc/profile.d/conda.sh
-            conda activate esmvaltool
-            python setup.py test
-      - store_test_results:
-          path: test-reports/
-      - store_artifacts:
-          path: test-reports/
-
-  python3_install:
+  test_installation:
     # Test Python 3 installation
-    working_directory: /python3_install
+    working_directory: /test_installation
     docker:
-      - image: continuumio/miniconda3
+      - image: continuumio/anaconda3
     steps:
       - checkout
+      - restore_cache:
+          key: test-install-{{ .Branch }}
       - run:
           command: |
             . /opt/conda/etc/profile.d/conda.sh
             set -x
             mkdir /logs
             # Install
-            apt update > /logs/apt.txt 2>&1
-            apt -y install build-essential gfortran >> /logs/apt.txt 2>&1
+            wget https://julialang-s3.julialang.org/bin/linux/x64/1.0/julia-1.0.3-linux-x86_64.tar.gz
+            tar xfz julia-*-linux-x86_64.tar.gz
+            ln -s $(pwd)/julia-*/bin/julia /usr/bin/julia
             conda update -y conda > /logs/conda.txt 2>&1
             conda env update >> /logs/conda.txt 2>&1
             set +x; conda activate esmvaltool; set -x
             pip install . > /logs/install.txt 2>&1
-            Rscript ./esmvaltool/install/R/setup.R > /logs/R_install.txt 2>&1
+            Rscript esmvaltool/install/R/setup.R > /logs/R_install.txt 2>&1
+            julia esmvaltool/install/Julia/setup.jl > /logs/julia_install.txt 2>&1
             # Log versions
             dpkg -l > /logs/versions.txt
             conda env export > /logs/environment.yml
             pip freeze > /logs/requirements.txt
+            # Install missing r-yaml
+            conda install -c conda-forge -yS r-yaml
             # Test installation
             python setup.py test --installation
             esmvaltool -h
             ncl -V
+            # cdo test, check that it supports hdf5
+            cdo --version
+            echo 0 | cdo -f nc input,r1x1 tmp.nc
+            ncdump tmp.nc | ncgen -k hdf5 -o tmp.nc
+            cdo -f nc copy tmp.nc tmp2.nc
+      - save_cache:
+          key: test-install-{{ .Branch }}
+          paths:
+            - "/opt/conda/pkgs"
+            - ".eggs"
       - store_artifacts:
           path: /logs
       - store_artifacts:
@@ -119,46 +89,14 @@ jobs:
       - run:
           when: always
           command: |
-            pip install codacy-coverage
-            python-codacy-coverage -r test-reports/python3/coverage.xml
-
-  python2_install:
-    # Test Python 2 installation
-    working_directory: /python2_install
-    docker:
-      - image: continuumio/miniconda3
-    steps:
-      - checkout
-      - run:
-          command: |
-            . /opt/conda/etc/profile.d/conda.sh
-            set -x
-            mkdir /logs
-            # Install
-            apt update > /logs/apt.txt 2>&1
-            apt -y install build-essential gfortran >> /logs/apt.txt 2>&1
-            conda update -y conda > /logs/conda.txt 2>&1
-            conda create -y --name esmvaltool python=2 > /logs/conda.txt 2>&1
-            conda env update >> /logs/conda.txt 2>&1
-            set +x; conda activate esmvaltool; set -x
-            pip install . > /logs/install.txt 2>&1
-            Rscript ./esmvaltool/install/R/setup.R > /logs/R_install.txt 2>&1
-            # Log versions
-            dpkg -l > /logs/versions.txt
-            conda env export > /logs/environment.yml
-            pip freeze > /logs/requirements.txt
-            # Test installation
-            python setup.py test --installation
-            esmvaltool -h
-            ncl -V
-      - store_artifacts:
-          path: /logs
+            /opt/conda/envs/esmvaltool/bin/pip install codacy-coverage
+            /opt/conda/envs/esmvaltool/bin/python-codacy-coverage -r test-reports/coverage.xml
 
   develop:
     # Test development installation
     working_directory: /develop
     docker:
-      - image: continuumio/miniconda3
+      - image: continuumio/anaconda3
     steps:
       - checkout
       - run:
@@ -167,13 +105,15 @@ jobs:
             set -x
             mkdir /logs
             # Install
-            apt update > /logs/apt.txt 2>&1
-            apt -y install build-essential gfortran >> /logs/apt.txt 2>&1
+            wget https://julialang-s3.julialang.org/bin/linux/x64/1.0/julia-1.0.3-linux-x86_64.tar.gz
+            tar xfz julia-*-linux-x86_64.tar.gz
+            ln -s $(pwd)/julia-*/bin/julia /usr/bin/julia
             conda update -y conda > /logs/conda.txt 2>&1
             conda env update >> /logs/conda.txt 2>&1
             set +x; conda activate esmvaltool; set -x
             pip install -e .[develop] > /logs/install.txt 2>&1
-            Rscript ./esmvaltool/install/R/setup.R > /logs/R_install.txt 2>&1
+            Rscript esmvaltool/install/R/setup.R > /logs/R_install.txt 2>&1
+            julia esmvaltool/install/Julia/setup.jl > /logs/julia_install.txt 2>&1
             # Log versions
             dpkg -l > /logs/versions.txt
             conda env export > /logs/environment.yml
@@ -182,34 +122,36 @@ jobs:
             esmvaltool -h
             python setup.py test --installation
             ncl -V
+            cdo --version
       - store_artifacts:
           path: /logs
 
-  doc:
+  documentation:
     # Test building documentation
     working_directory: /doc
     docker:
-      - image: continuumio/miniconda3
+      - image: continuumio/anaconda3
     steps:
       - checkout
+      - restore_cache:
+          key: documentation-{{ .Branch }}
       - run:
           command: |
-            . /opt/conda/etc/profile.d/conda.sh
-            set -x
             mkdir /logs
             # Install
-            apt update > /logs/apt.txt 2>&1
-            apt -y install build-essential gfortran >> /logs/apt.txt 2>&1
-            conda update -y conda > /logs/conda.txt 2>&1
-            conda env update >> /logs/conda.txt 2>&1
-            set +x; conda activate esmvaltool; set -x
-            pip install -e .[develop] > /logs/install.txt 2>&1
+            . /opt/conda/etc/profile.d/conda.sh
+            conda install -c conda-forge -y pip > /logs/install.txt 2>&1
+            /opt/conda/bin/pip install -r doc/sphinx/source/requirements.txt > /logs/install.txt 2>&1
+            /opt/conda/bin/pip install sphinx sphinx_rtd_theme >> /logs/install.txt 2>&1
             # Log versions
             dpkg -l > /logs/versions.txt
-            conda env export > /logs/environment.yml
-            pip freeze > /logs/requirements.txt
+            /opt/conda/bin/pip freeze > /logs/requirements.txt
             # Test building documentation
-            python setup.py build_sphinx
+            MPLBACKEND=Agg /opt/conda/bin/python setup.py build_sphinx --warning-is-error
+      - save_cache:
+          key: documentation-{{ .Branch }}
+          paths:
+            - ".eggs"
       - store_artifacts:
           path: /logs
 
@@ -217,7 +159,7 @@ jobs:
     # Test conda build
     working_directory: /esmvaltool
     docker:
-      - image: continuumio/miniconda3
+      - image: continuumio/anaconda3
     steps:
       - checkout
       - run:
@@ -226,29 +168,22 @@ jobs:
             set -x
             # Install prerequisites
             mkdir /logs
-            apt update > /logs/apt.txt 2>&1
-            apt -y install build-essential gfortran >> /logs/apt.txt 2>&1
+            wget https://julialang-s3.julialang.org/bin/linux/x64/1.0/julia-1.0.3-linux-x86_64.tar.gz
+            tar xfz julia-*-linux-x86_64.tar.gz
+            ln -s $(pwd)/julia-*/bin/julia /usr/bin/julia
             conda update -y conda > /logs/conda_base.txt 2>&1
             conda install -y conda-build conda-verify >> /logs/conda_base.txt 2>&1
             # Log versions
             dpkg -l > /logs/versions.txt
             conda env export -n base > /logs/build_environment.yml
             # Build conda package
-            conda build . -c conda-forge -c birdhouse > /logs/build_log.txt
+            conda build . -c conda-forge -c esmvalgroup > /logs/build_log.txt
             # Install Python 3 conda package
             conda create -y --name esmvaltool3 > /logs/conda_esmvaltool3.txt 2>&1
             set +x; conda activate esmvaltool3; set -x
-            conda install -y esmvaltool --use-local -c conda-forge -c birdhouse
+            conda install -y esmvaltool --use-local -c conda-forge -c esmvalgroup
             conda env export > /logs/test_environment3.yml
             esmvaltool -h
-            set +x; conda deactivate; set -x
-            # Install Python 2 conda package
-            conda create -y --name esmvaltool2 python=2 > /logs/conda_esmvaltool2.txt 2>&1
-            set +x; conda activate esmvaltool2; set -x
-            conda install -y esmvaltool --use-local -c conda-forge -c birdhouse
-            conda env export > /logs/environment2.yml
-            esmvaltool -h
-            set +x; conda deactivate; set -x
       - store_artifacts:
           path: /logs
 
@@ -256,7 +191,7 @@ jobs:
     # Test conda package installation
     working_directory: /esmvaltool
     docker:
-      - image: continuumio/miniconda3
+      - image: continuumio/anaconda3
     steps:
       - run:
           command: |
@@ -264,25 +199,27 @@ jobs:
             set -x
             # Install prerequisites
             mkdir /logs
-            apt update > /logs/apt.txt 2>&1
-            apt -y install build-essential gfortran >> /logs/apt.txt 2>&1
+            wget https://julialang-s3.julialang.org/bin/linux/x64/1.0/julia-1.0.3-linux-x86_64.tar.gz
+            tar xfz julia-*-linux-x86_64.tar.gz
+            ln -s $(pwd)/julia-*/bin/julia /usr/bin/julia
             conda update -y conda > /logs/conda.txt 2>&1
             # Create and activate conda environment
             conda create -y --name esmvaltool
             set +x; conda activate esmvaltool; set -x
             # Install
-            conda install -y esmvaltool -c esmvalgroup -c conda-forge -c birdhouse
+            conda install -y esmvaltool -c conda-forge -c esmvalgroup
             # Log versions
             conda env export > /logs/environment.yml
             # Test installation
             esmvaltool -h
             ncl -V
+            cdo --version
 
-  ncl:
-    # Test ncl conda package
+  ncl_cdo_test:
+    # Test ncl and cdo conda packages
     working_directory: /ncl
     docker:
-      - image: continuumio/miniconda3
+      - image: continuumio/anaconda3
     steps:
       - checkout
       - run:
@@ -291,17 +228,16 @@ jobs:
             set -x
             mkdir /logs
             # Install
-            apt update > /logs/apt.txt 2>&1
-            apt -y install build-essential gfortran >> /logs/apt.txt 2>&1
             conda update -y conda > /logs/conda.txt 2>&1
             conda create -y --name ncl > /logs/conda.txt 2>&1
             set +x; conda activate ncl; set -x
-            conda install -y --channel conda-forge ncl >> /logs/conda.txt 2>&1
+            conda install -y --channel conda-forge ncl cdo >> /logs/conda.txt 2>&1
             # Log versions
             dpkg -l > /logs/versions.txt
             conda env export > /logs/environment.yml
             # Test if NCL installed successfully
             ncl -V
+            cdo --version
       - store_artifacts:
           path: /logs
 
@@ -309,9 +245,9 @@ workflows:
   version: 2
   commit:
     jobs:
-      - python3_test
-      - python2_test
-      - python3_install
+      - test
+      - test_installation
+      - documentation
   nightly:
     triggers:
       - schedule:
@@ -322,12 +258,10 @@ workflows:
                 - version2_development
                 - version2_master
     jobs:
-      - python3_test
-      - python2_test
-      - python3_install
-      - python2_install
+      - test
+      - test_installation
       - develop
-      - doc
+      - documentation
       - conda_build
       - conda_install
-      - ncl
+      - ncl_cdo_test

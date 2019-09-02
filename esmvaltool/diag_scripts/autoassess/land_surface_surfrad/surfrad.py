@@ -6,7 +6,7 @@ import numpy as np
 
 import iris
 
-from esmvaltool.preprocessor._regrid import regrid
+from esmvalcore.preprocessor._regrid import regrid
 from esmvaltool.diag_scripts.shared._supermeans import get_supermean
 
 
@@ -39,18 +39,18 @@ def land_surf_rad(run):
         for fld in rad_fld:
             if fld == 'SurfRadNSW':
                 ebaf_fld = get_supermean(
-                    'surface_net_downward_shortwave_radiation', season,
+                    'Surface Net downward Shortwave Radiation', season,
                     run['clim_root'], obs_flag='CERES-EBAF')
                 run_fld_rad = get_supermean(
-                    'surface_net_downward_shortwave_radiation', season,
+                    'Surface Net downward Shortwave Radiation', season,
                     supermean_data_dir)
 
             elif fld == 'SurfRadNLW':
                 ebaf_fld = get_supermean(
-                    'surface_net_downward_longwave_radiation', season,
+                    'Surface Net downward Longwave Radiation', season,
                     run['clim_root'], obs_flag='CERES-EBAF')
                 run_fld_rad = get_supermean(
-                    'surface_net_downward_longwave_radiation', season,
+                    'Surface Net downward Longwave Radiation', season,
                     supermean_data_dir)
 
             else:
@@ -72,9 +72,9 @@ def land_surf_rad(run):
 
             # apply the mask
             reg_run_fld.data = np.ma.masked_array(
-                reg_run_fld.data, mask=(lnd.data < 0.98))
+                reg_run_fld.data, mask=(lnd.data > 90.))
             reg_ebaf_fld.data = np.ma.masked_array(
-                reg_ebaf_fld.data, mask=(lnd.data < 0.98))
+                reg_ebaf_fld.data, mask=(lnd.data > 90.))
 
             # do a simple diff
             dff = reg_run_fld - reg_ebaf_fld

@@ -11,8 +11,8 @@
 ;
 ; #############################################################################
 
-load "./interface_scripts/constants.ncl"
-load "./interface_scripts/logging.ncl"
+load "$diag_scripts/../interface_scripts/constants.ncl"
+load "$diag_scripts/../interface_scripts/logging.ncl"
 
 ; #############################################################################
 undef("legend_lines")

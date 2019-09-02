@@ -4,9 +4,8 @@
 
 Description
 -----------
-Calculate and plot the equilibrium climate sensitivity (ECS) vs. the global
-mean surface temperature (GMSAT) for several CMIP5 models (see IPCC AR5 WG1 ch.
-9, fig. 9.42a).
+Calculate and plot the effective climate sensitivity (ECS) vs. the global
+mean surface temperature (GMSAT) (see IPCC AR5 WG1 ch.9, fig. 9.42a).
 
 Author
 ------
@@ -16,18 +15,18 @@ Project
 -------
 CRESCENDO
 
-Configuration options in recips
+Configuration options in recipe
 -------------------------------
-ecs_filename : str, optional
-    Name of the netcdf in which the ECS data is saved (default: ecs.nc).
-output_name : str, optional
-    Name of the output netcdf file (default: fig09-42a.*.
 save : dict, optional
-    Keyword arguments for the fig.saveplot() function.
+    Keyword arguments for the `fig.saveplot()` function.
 axes_functions : dict, optional
     Keyword arguments for the plot appearance functions.
-
-###############################################################################
+dataset_style : str, optional
+    Dataset style file (located in
+    :mod:`esmvaltool.diag_scripts.shared.plot.styles_python`).
+matplotlib_style : str, optional
+    Dataset style file (located in
+    :mod:`esmvaltool.diag_scripts.shared.plot.styles_python.matplotlib`).
 
 """
 
@@ -37,17 +36,39 @@ import os
 import iris
 from iris import Constraint
 
-from esmvaltool.diag_scripts.shared import (extract_variables, plot,
-                                            run_diagnostic,
-                                            variables_available)
+from esmvaltool.diag_scripts.shared import (
+    ProvenanceLogger, extract_variables, get_diagnostic_filename,
+    get_plot_filename, group_metadata, io, plot, run_diagnostic,
+    variables_available)
 
 logger = logging.getLogger(os.path.basename(__file__))
+
+
+def get_provenance_record(project, ancestor_files):
+    """Create a provenance record describing the diagnostic data and plot."""
+    record = {
+        'caption':
+        ('Effective climate sensitivity (ECS) against the global '
+         'mean surface temperature of {} models, both for the '
+         'period 1961-1990 (larger symbols) and for the '
+         'pre-industrial control runs (smaller symbols).'.format(project)),
+        'statistics': ['mean'],
+        'domains': ['global'],
+        'plot_types': ['scatter'],
+        'authors': ['schl_ma'],
+        'references': ['flato13ipcc'],
+        'realms': ['atmos'],
+        'themes': ['phys'],
+        'ancestors':
+        ancestor_files,
+    }
+    return record
 
 
 def plot_data(cfg, hist_cubes, pi_cubes, ecs_cube):
     """Plot data."""
     if not cfg['write_plots']:
-        return
+        return None
     x_data = []
     y_data = []
     dataset_names = []
@@ -77,74 +98,72 @@ def plot_data(cfg, hist_cubes, pi_cubes, ecs_cube):
         })
 
     # Plot data
-    filepath = os.path.join(
-        cfg['plot_dir'],
-        cfg.get('output_name', 'fig09-42a') + '.' + cfg['output_file_type'])
+    path = get_plot_filename('ch09_fig09_42a', cfg)
     plot.multi_dataset_scatterplot(
         x_data,
         y_data,
         dataset_names,
-        filepath,
+        path,
         plot_kwargs=plot_kwargs,
         save_kwargs=cfg.get('save', {}),
-        axes_functions=cfg.get('axes_functions', {}))
-    return
+        axes_functions=cfg.get('axes_functions', {}),
+        dataset_style_file=cfg.get('dataset_style'),
+        mpl_style_file=cfg.get('matplotlib_style'),
+    )
+    return path
 
 
 def write_data(cfg, hist_cubes, pi_cubes, ecs_cube):
     """Write netcdf file."""
-    if cfg['write_plots']:
-        datasets = list(hist_cubes)
+    datasets = list(hist_cubes)
 
-        # Collect data
-        data_ecs = []
-        data_hist = []
-        data_pi = []
-        for dataset in datasets:
-            data_ecs.append(ecs_cube.extract(Constraint(dataset=dataset)).data)
-            data_hist.append(hist_cubes[dataset].data)
-            data_pi.append(pi_cubes[dataset].data)
+    # Collect data
+    data_ecs = []
+    data_hist = []
+    data_pi = []
+    for dataset in datasets:
+        data_ecs.append(ecs_cube.extract(Constraint(dataset=dataset)).data)
+        data_hist.append(hist_cubes[dataset].data)
+        data_pi.append(pi_cubes[dataset].data)
 
-        # Create cube
-        dataset_coord = iris.coords.AuxCoord(datasets, long_name='dataset')
-        tas_hist_coord = iris.coords.AuxCoord(
-            data_hist,
-            attributes={'exp': 'historical'},
-            **extract_variables(cfg, as_iris=True)['tas'])
-        tas_picontrol_coord = iris.coords.AuxCoord(
-            data_pi,
-            attributes={'exp': 'piControl'},
-            **extract_variables(cfg, as_iris=True)['tas'])
-        cube = iris.cube.Cube(
-            data_ecs,
-            var_name='ecs',
-            long_name='equilibrium_climate_sensitivity',
-            aux_coords_and_dims=[(dataset_coord, 0), (tas_hist_coord, 0),
-                                 (tas_picontrol_coord, 0)])
+    # Create cube
+    dataset_coord = iris.coords.AuxCoord(datasets, long_name='dataset')
+    tas_hist_coord = iris.coords.AuxCoord(
+        data_hist,
+        attributes={'exp': 'historical'},
+        **extract_variables(cfg, as_iris=True)['tas'])
+    tas_picontrol_coord = iris.coords.AuxCoord(
+        data_pi,
+        attributes={'exp': 'piControl'},
+        **extract_variables(cfg, as_iris=True)['tas'])
+    cube = iris.cube.Cube(
+        data_ecs,
+        var_name='ecs',
+        long_name='Effective Climate Sensitivity (ECS)',
+        aux_coords_and_dims=[(dataset_coord, 0), (tas_hist_coord, 0),
+                             (tas_picontrol_coord, 0)])
 
-        # Save file
-        filepath = os.path.join(cfg['work_dir'],
-                                cfg.get('output_name', 'fig09_42a') + '.nc')
-        iris.save(cube, filepath)
+    # Save file
+    path = get_diagnostic_filename('ch09_fig09_42a', cfg)
+    io.iris_save(cube, path)
+    return path
 
 
 def main(cfg):
     """Run the diagnostic."""
     input_data = cfg['input_data'].values()
+    project = list(group_metadata(input_data, 'project').keys())
+    project = [p for p in project if 'obs' not in p.lower()]
+    if len(project) == 1:
+        project = project[0]
 
     # Check if tas is available
     if not variables_available(cfg, ['tas']):
         raise ValueError("This diagnostic needs 'tas' variable")
 
-    # Get ECS data (ignore metadata.yml files)
-    input_dirs = [
-        d for d in cfg['input_files'] if not d.endswith('metadata.yml')
-    ]
-    if len(input_dirs) != 1:
-        logging.error("Input files directory from ancestors should contain "
-                      "exactly one directory (ECS directory)")
-    ecs_filepath = os.path.join(input_dirs[0],
-                                cfg.get('ecs_filename', 'ecs') + '.nc')
+    # Get ECS data
+    ecs_filepath = io.get_ancestor_file(cfg, 'ecs.nc')
+    ecs_cube = iris.load_cube(ecs_filepath)
 
     # Create iris cubes for each dataset
     hist_cubes = {}
@@ -166,14 +185,19 @@ def main(cfg):
         else:
             pass
 
-    # Create iris cube for ECS data
-    ecs_cube = iris.load_cube(ecs_filepath)
-
     # Plot data
-    plot_data(cfg, hist_cubes, pi_cubes, ecs_cube)
+    plot_path = plot_data(cfg, hist_cubes, pi_cubes, ecs_cube)
 
     # Write netcdf file
-    write_data(cfg, hist_cubes, pi_cubes, ecs_cube)
+    netcdf_path = write_data(cfg, hist_cubes, pi_cubes, ecs_cube)
+
+    # Provenance
+    ancestor_files = [d['filename'] for d in input_data]
+    provenance_record = get_provenance_record(project, ancestor_files)
+    if plot_path is not None:
+        provenance_record['plot_file'] = plot_path
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(netcdf_path, provenance_record)
 
 
 if __name__ == '__main__':

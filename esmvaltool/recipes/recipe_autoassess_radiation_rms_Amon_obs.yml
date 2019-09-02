@@ -12,7 +12,7 @@ documentation:
 
   maintainer:
     - pred_va
-  
+
   projects:
     - cmug
 
@@ -35,50 +35,41 @@ preprocessors:
 
 diagnostics:
   radiation_Amon_obs_CERES-EBAF:
-    description: "CMIP5 vs CERES-EBAF" 
+    description: "CMIP5 vs CERES-EBAF"
     variables:
       rtnt: # TOA TOT net
         preprocessor: pp_rad_derive_var
-        field: T2Ms
         derive: true
         force_derivation: false
       rsnt: # TOA SW net
         preprocessor: pp_rad_derive_var
-        field: T2Ms
         derive: true
         force_derivation: false
       swcre: # TOA SW Cloud Radiative Effect
         preprocessor: pp_rad_derive_var
-        field: T2Ms
         derive: true
         force_derivation: false
       lwcre: # TOA LW Cloud Radiative Effect
         preprocessor: pp_rad_derive_var
-        field: T2Ms
         derive: true
         force_derivation: false
       rsns: # Surf SW net all sky
         preprocessor: pp_rad_derive_var
-        field: T2Ms
         derive: true
         force_derivation: false
       rlns: # Surf LW net all sky
         preprocessor: pp_rad_derive_var
-        field: T2Ms
         derive: true
         force_derivation: false
       rsut: # TOA SW up all sky
         preprocessor: pp_rad
-        field: T2Ms
       rlut: # TOA LW up all sky
         preprocessor: pp_rad
-        field: T2Ms
       rsutcs: # TOA SW up clear sky
         preprocessor: pp_rad
-        field: T2Ms
     additional_datasets:
       - {dataset: CERES-EBAF,    project: obs4mips,  level: L3B,  version: Ed2-7,  start_year: 2001,  end_year: 2012, tier: 1}
-      - {dataset: CERES-SYN1deg, project: OBS,       type: comp,  version: Ed3A,   start_year: 2001,  end_year: 2015, tier: 2}
+      - {dataset: CERES-SYN1deg, project: OBS,       type: sat,  version: Ed3A,   start_year: 2001,  end_year: 2015, tier: 3}
     scripts:
       autoassess_Radiation_rms_Amon_obs:
         script: autoassess/autoassess_radiation_rms.py
@@ -94,13 +85,11 @@ diagnostics:
     variables:
       rlutcs: # TOA LW up clear sky
         preprocessor: pp_rad
-        field: T2Ms
       rldscs: # Surf LW down clear sky
         preprocessor: pp_rad
-        field: T2Ms
     additional_datasets:
       - {dataset: JRA-55,        project: ana4mips,  type: reanalysis,          start_year: 2001,  end_year: 2005, tier: 1}
-      - {dataset: CERES-SYN1deg, project: OBS,       type: comp, version: Ed3A, start_year: 2001,  end_year: 2015, tier: 2}
+      - {dataset: CERES-SYN1deg, project: OBS,       type: sat, version: Ed3A, start_year: 2001,  end_year: 2015, tier: 3}
     scripts:
       autoassess_Radiation_rms_Amon_obs:
         script: autoassess/autoassess_radiation_rms.py
@@ -116,7 +105,6 @@ diagnostics:
     variables:
       prw: # Column Water vapour
         preprocessor: pp_rad
-        field: T2Ms
     additional_datasets:
       - {dataset: SSMI-MERIS,  project: obs4mips,  level: L3,  version: v1-00,      start_year: 2003,  end_year: 2008, tier: 1}
       - {dataset: SSMI,        project: obs4mips,  level: L3,  version: RSSv07r00,  start_year: 1988,  end_year: 2006, tier: 1}
@@ -135,7 +123,6 @@ diagnostics:
     variables:
       pr: # Precipitation
         preprocessor: pp_rad
-        field: T2Ms
     additional_datasets:
       - {dataset: GPCP-SG,  project: obs4mips,  level: L3,  version: v2.2,  start_year: 2001,  end_year: 2009, tier: 1}
       - {dataset: TRMM-L3,  project: obs4mips,  level: v7,  version: 7A,    start_year: 1998,  end_year: 2013, tier: 1}

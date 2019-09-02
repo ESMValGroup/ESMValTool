@@ -55,9 +55,7 @@
 ;   none
 ;
 ; Caveats
-;   TO DO (ESMValTool v2.0.0)
-;     1) get tags from namelist and write meta data to plots
-;   KNOWN LIMITATIONS (all versions)
+;   KNOWN LIMITATIONS
 ;     1) only 2-dim variables are currently supported
 ;     2) observational uncertainties are regridded like standard variables
 ;     3) for derived variables (e.g. SW_CRE), also the original variables have
@@ -69,6 +67,7 @@
 ;        variable has been calculated from) the *second* (third, ...)
 ;
 ; Modification history
+;   20190221-A_laue_ax: added provenance to output (v2.0)
 ;   20181120-A_laue_ax: adapted code to multi-variable capable framework
 ;   20180923-A_laue_ax: added writing of results to netcdf
 ;   20180611-A_laue_ax: code rewritten for ESMValTool v2.0
@@ -86,14 +85,12 @@
 ; ###########################################################################
 
 
-load "interface_scripts/interface.ncl"
+load "$diag_scripts/../interface_scripts/interface.ncl"
 
-load "./diag_scripts/shared/plot/aux_plotting.ncl"
-load "./diag_scripts/shared/statistics.ncl"
-load "./diag_scripts/shared/plot/style.ncl"
-load "./diag_scripts/shared/plot/taylor_diagram_less_hardcoded.ncl"
-
-; load "./diag_scripts/lib/ncl/meta_data.ncl"
+load "$diag_scripts/shared/plot/aux_plotting.ncl"
+load "$diag_scripts/shared/statistics.ncl"
+load "$diag_scripts/shared/plot/style.ncl"
+load "$diag_scripts/shared/plot/taylor_plot.ncl"
 
 begin
 
@@ -216,17 +213,6 @@ begin
     delete(auxind)
   end if
 
-  ; ========================================================================
-  ; ========================= write references =============================
-  ; ========================================================================
-  ; FIX-ME: to be replaced by new method
-  ; write_references(DIAG_SCRIPT,      \  ; script name
-  ;                  "A_laue_ax",      \  ; authors
-  ;                  "",               \  ; contributors
-  ;                  "D_lauer13jclim", \  ; diag_references
-  ;                  "",               \  ; obs_references
-  ;                  (/"P_embrace"/))     ; proj_references
-
   ; time averaging: at the moment, only "annualclim" and "seasonalclim"
   ; are supported
 
@@ -240,16 +226,18 @@ begin
     season = (/"DJF", "MAM", "JJA", "SON"/)
   end if
 
-  ; make sure path for (optional) netcdf output exists
+  ; create string for caption (netcdf provenance)
 
-  if (config_user_info@write_netcdf.eq."True") then
-    write_nc = True
-    work_dir = config_user_info@work_dir + "/"
-    ; Create work dir
-    system("mkdir -p " + work_dir)
-  else
-    write_nc = False
-  end if
+  allseas = season(0)
+  do is = 1, numseas - 1
+    allseas = allseas + "/" + season(i)
+  end do
+
+  ; make sure path for (mandatory) netcdf output exists
+
+  work_dir = config_user_info@work_dir + "/"
+  ; Create work dir
+  system("mkdir -p " + work_dir)
 
   if (config_user_info@write_plots.eq."True") then
     write_plots = True
@@ -693,9 +681,6 @@ begin
   ; ============================= plotting =================================
   ; ========================================================================
 
-;  alltags = array_append_record(tags, (/"PT_taylor", "DM_global",
-;                                "ST_clim"/), 0)
-
   nummods = dim_MOD - dim_REF
 
   colors  = new(nummods, string)
@@ -719,6 +704,8 @@ begin
                  "(/0.50, 0.50, 0.50/)", "(/0.30, 0.30, 0.30/)"/)
     markertab = (/16, 4, 5, 0/)
   end if
+
+  plotfile = new((/numseas/), string)
 
   do is = 0, numseas - 1
     if (isvar("wks")) then
@@ -889,36 +876,46 @@ begin
       plot = taylor_diagram(wks, legendwks, ratio(:, :, is), cc(:, :, is), \
                             ropts)
 
-      log_info("Wrote " + wks@fullname)
-
-      ; add meta data to plot (for reporting)
-
-      caption = "Taylor diagram for variable " + var0 \
-                + " (" + season(is) + "), reference = " \
-                + refname + "."
-      id = DIAG_SCRIPT + "_" + var0 + "_" + season(is)
-
-      contrib_authors = "A_laue_ax"
-
-;      ESMValMD(wks@fullname, alltags, caption, id, var0, \
-;               input_file_info@dataset, infiles, DIAG_SCRIPT, \
-;               contrib_authors)
+      plotfile(is) = wks@fullname
+      log_info("Wrote " + plotfile)
 
       if (embracelegend.and.(is.eq.(numseas-1))) then
         frame(legendwks)
       end if
+    else
+      plotfile(is) = ""
     end if  ; if write_plots
   end do  ; is-loop (seasons)
 
-  ; write optional netCDF output
+  ; write netCDF output
 
-  if (write_nc) then
-    if (any(rmsobs .gt. 0.0)) then
-      val@RMSE_observations = rmsobs
-    end if
-    nc_filename = work_dir + "clouds_taylor_" + var0 + filename_add + ".nc"
-    nc_outfile = ncdf_write(val, nc_filename)
+  if (any(rmsobs .gt. 0.0)) then
+    val@RMSE_observations = rmsobs
   end if
+
+  nc_filename = work_dir + "clouds_taylor_" + var0 + filename_add + ".nc"
+  nc_outfile = ncdf_write(val, nc_filename)
+
+  ; ------------------------------------------------------------------------
+  ; write provenance to netcdf output and plot file(s)
+  ; ------------------------------------------------------------------------
+
+  statistics = "clim"
+  domain = "global"
+  plottype = "taylor"
+
+  do is = 0, numseas - 1
+    ; note: because function log_provenance does not yet support to attach
+    ;       different captions to netcdf (contains all seasons) and plots
+    ;       (contain one season each), the caption cannot specifiy the
+    ;       season plotted; using "annual" or "DJF/MAM/JJA/SON" instead.
+
+    caption = "Taylor diagram for variable " + var0 + " (" + allseas \
+              + "), reference = " + refname + "."
+
+    log_provenance(nc_outfile, plotfile, caption, statistics, domain, \
+                   plottype, "", "", infiles)
+  end do
 
   leave_msg(DIAG_SCRIPT, "")
 
