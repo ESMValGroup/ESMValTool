@@ -320,18 +320,20 @@ def main(cfg):
         os.makedirs(wdir)
         os.makedirs(pdir)
         # Reading file names for the specific model
+        # TODO data file retrieval as list indices is prone to bugs
         filenames = data.get_info_list('filename', dataset=model)
         logger.info('Processing model: %s \n', model)
         rlds_file = filenames[6]
         rlus_file = filenames[7]
         rsds_file = filenames[9]
         rsus_file = filenames[11]
-        ta_file = filenames[13]
         ts_file = filenames[15]
         # Read path to land-sea mask
-        for filename, attributes in cfg['input_data'].items():
-            if filename == ta_file:
-                sftlf_fx = attributes['fx_files']['sftlf']
+        sftlf_fx = [
+            filename for filename in filenames if
+            os.path.isfile(filename) and
+            filename.split(os.sep)[-2] == 'sftlf'
+        ][0]
         aux_file = wdir + '/aux.nc'
         te_ymm_file, te_gmean_constant, _, _ = mkthe.init_mkthe(
             model, wdir, filenames, flags)
