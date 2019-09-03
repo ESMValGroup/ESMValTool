@@ -11,7 +11,25 @@ Last access
     20190830
 
 Download and processing instructions
-    TODO
+    The data can be downloaded using the CDS API: 
+        https://cds.climate.copernicus.eu/api-how-to
+
+    The retrieval command is the following and should be embedded in a 
+    loop over all years and months.
+
+        datarequest = cds.retrieve(
+        'reanalysis-era5-single-levels-monthly-means',
+        {
+                'variable' : 'swvl1,
+                'grid' : ['0.25','0.25'],
+                'product_type': 'monthly_averaged_reanalysis',
+                'year': year,
+                'month': month,
+                'time': ['00:00'],
+                'format':'netcdf'
+                }
+        )
+
 
 History
     20190902 crez_ba adapted from cmorize_obs_era5.py
