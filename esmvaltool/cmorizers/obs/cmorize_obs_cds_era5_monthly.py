@@ -113,23 +113,8 @@ def cmorization(in_dir, out_dir, cfg, _):
         year=datetime.now().year)
     cfg.pop('cmor_table')
 
-#    n_workers = int(cpu_count() / 1.5)
-#    logger.info("Using at most %s workers", n_workers)
-#    futures = {}
-#    with ProcessPoolExecutor(max_workers=1) as executor:
-    if True:
-        for short_name, var in cfg['variables'].items():
-            var['short_name'] = short_name
-            for in_file in sorted(Path(in_dir).glob(var['file'])):
-#                future = executor.submit(_extract_variable, in_file, var, cfg,
-#                                         out_dir)
-                _extract_variable(in_file,var,cfg,out_dir)
-#                futures[future] = in_file
-
-#    for future in as_completed(futures):
-#        try:
-#            future.result()
-#        except:  # noqa
-#            logger.error("Failed to CMORize %s", futures[future])
-#            raise
-#        logger.info("Finished CMORizing %s", futures[future])
+    for short_name, var in cfg['variables'].items():
+        var['short_name'] = short_name
+        for in_file in sorted(Path(in_dir).glob(var['file'])):
+            _extract_variable(in_file,var,cfg,out_dir)
+        logger.info("Finished CMORizing variable %s", short_name)
