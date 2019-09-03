@@ -19,5 +19,5 @@ custom:
 variables:
   sm:
     mip: Lmon
-    raw: vsw # uerra_201805.nc
-    file: uerra_*.nc
+    raw: vsw 
+    file: uerra_??????.nc
