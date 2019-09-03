@@ -11,10 +11,10 @@ Last access
     20190901
 
 Download and processing instructions
-    The data can be downloaded using the CDS API: 
+    The data can be downloaded using the CDS API:
         https://cds.climate.copernicus.eu/api-how-to
 
-    The retrieval command is the following and should be embedded in a 
+    The retrieval command is the following and should be embedded in a
     loop over all years and months.
 
         datarequest = cds.retrieve(
