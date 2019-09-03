@@ -103,8 +103,6 @@ def _extract_variable(in_file, var, cfg, out_dir):
     utils.set_global_atts(cube, attributes)
 
     logger.info("Saving cube\n%s", cube)
-    logger.info("Expected output size is %.1fGB",
-                np.prod(cube.shape) * 4 / 2**30)
     utils.save_variable(cube, cube.var_name, out_dir, attributes)
 
 
