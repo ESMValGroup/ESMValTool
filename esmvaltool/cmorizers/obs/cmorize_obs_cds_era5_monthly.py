@@ -47,10 +47,10 @@ def _guess_bnds_time_monthly(cube):
         _,monthend = calendar.monthrange(timestep.year,timestep.month)
         a_datetime = datetime(timestep.year,timestep.month,1,0,0)
         b_datetime = a_datetime + relativedelta.relativedelta(months=1)
-        bnd_a = int(cf_units.date2num(a_datetime,coord.units.origin,
-                                  coord.units.calendar))
-        bnd_b = int(cf_units.date2num(b_datetime,coord.units.origin,
-                                  coord.units.calendar))
+        bnd_a = cf_units.date2num(a_datetime,coord.units.origin,
+                                  coord.units.calendar)
+        bnd_b = cf_units.date2num(b_datetime,coord.units.origin,
+                                  coord.units.calendar)
         time_bnds.append([bnd_a,bnd_b])
     # Convert them to an array
     time_bnds = np.array(time_bnds)
@@ -65,17 +65,9 @@ def _extract_variable(in_file, var, cfg, out_dir):
     cmor_table = CMOR_TABLES[attributes['project_id']]
     definition = cmor_table.get_variable(var['mip'], var['short_name'])
 
-    with catch_warnings():
-        filterwarnings(
-            action='ignore',
-            message="Ignoring netCDF variable 'tcc' invalid units '(0 - 1)'",
-            category=UserWarning,
-            module='iris',
-        )
-        cube = iris.load_cube(
-            str(in_file),
-            constraint=utils.var_name_constraint(var['raw']),
-        )
+    cube = iris.load_cube(
+        str(in_file),
+        constraint=utils.var_name_constraint(var['raw']))
 
     # Set correct names
     cube.var_name = definition.short_name
