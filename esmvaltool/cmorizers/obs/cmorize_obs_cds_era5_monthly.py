@@ -18,12 +18,9 @@ History
 """
 
 import logging
-from concurrent.futures import ProcessPoolExecutor, as_completed
 from copy import deepcopy
 from datetime import datetime
-from os import cpu_count
 from pathlib import Path
-from warnings import catch_warnings, filterwarnings
 
 import iris
 import numpy as np
@@ -36,26 +33,27 @@ logger = logging.getLogger(__name__)
 
 
 def _guess_bnds_time_monthly(cube):
+    """Guess time bounds from time points for monthly data."""
     import cf_units
-    import calendar
     from dateutil import relativedelta
     coord = cube.coord('time')
     time_as_datetime = cf_units.num2date(coord.points,
-        coord.units.origin,coord.units.calendar)
+                                         coord.units.origin,
+                                         coord.units.calendar)
     time_bnds = []
     for timestep in time_as_datetime:
-        _,monthend = calendar.monthrange(timestep.year,timestep.month)
-        a_datetime = datetime(timestep.year,timestep.month,1,0,0)
+        a_datetime = datetime(timestep.year, timestep.month, 1)
         b_datetime = a_datetime + relativedelta.relativedelta(months=1)
-        bnd_a = cf_units.date2num(a_datetime,coord.units.origin,
+        bnd_a = cf_units.date2num(a_datetime, coord.units.origin,
                                   coord.units.calendar)
-        bnd_b = cf_units.date2num(b_datetime,coord.units.origin,
+        bnd_b = cf_units.date2num(b_datetime, coord.units.origin,
                                   coord.units.calendar)
-        time_bnds.append([bnd_a,bnd_b])
+        time_bnds.append([bnd_a, bnd_b])
     # Convert them to an array
     time_bnds = np.array(time_bnds)
     # Set them as bounds
     coord.bounds = time_bnds
+
 
 def _extract_variable(in_file, var, cfg, out_dir):
     logger.info("CMORizing variable '%s' from input file '%s'",
@@ -74,7 +72,8 @@ def _extract_variable(in_file, var, cfg, out_dir):
     try:
         cube.standard_name = definition.standard_name
     except ValueError:
-        logger.error("Failed setting standard_name for variable short_name %s",cube.var_name)
+        logger.error("Failed setting standard_name for variable\
+                     short_name %s", cube.var_name)
     cube.long_name = definition.long_name
 
     # Fix data type
@@ -89,10 +88,11 @@ def _extract_variable(in_file, var, cfg, out_dir):
         coord.guess_bounds()
 
     # Fix time
-    cube.coord('time').points = cube.coord('time').core_points().astype('float64')
+    cube.coord('time').points = cube.coord('time').\
+        core_points().astype('float64')
     # Set time bounds by setting manually to month start; month end
     _guess_bnds_time_monthly(cube)
-    
+
     # Convert units if required
     cube.convert_units(definition.units)
 
@@ -107,6 +107,7 @@ def _extract_variable(in_file, var, cfg, out_dir):
                 np.prod(cube.shape) * 4 / 2**30)
     utils.save_variable(cube, cube.var_name, out_dir, attributes)
 
+
 def cmorization(in_dir, out_dir, cfg, _):
     """Cmorization func call."""
     cfg['attributes']['comment'] = cfg['attributes']['comment'].format(
@@ -116,5 +117,5 @@ def cmorization(in_dir, out_dir, cfg, _):
     for short_name, var in cfg['variables'].items():
         var['short_name'] = short_name
         for in_file in sorted(Path(in_dir).glob(var['file'])):
-            _extract_variable(in_file,var,cfg,out_dir)
+            _extract_variable(in_file, var, cfg, out_dir)
         logger.info("Finished CMORizing variable %s", short_name)
