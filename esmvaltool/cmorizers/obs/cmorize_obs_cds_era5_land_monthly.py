@@ -2,7 +2,7 @@
 
 Tier
     Tier 3: restricted datasets (i.e., dataset which requires a registration
- to be retrieved or provided upon request to the respective contact or PI).
+    to be retrieved or provided upon request to the respective contact or PI).
 
 Source
     https://cds.climate.copernicus.eu/cdsapp#!/dataset/reanalysis-era5-land-monthly-means
@@ -11,7 +11,24 @@ Last access
     20190901
 
 Download and processing instructions
-    TODO
+    The data can be downloaded using the CDS API: 
+        https://cds.climate.copernicus.eu/api-how-to
+
+    The retrieval command is the following and should be embedded in a 
+    loop over all years and months.
+
+        datarequest = cds.retrieve(
+        'reanalysis-era5-land-monthly-means',
+        {
+                'variable' : 'swvl1',
+                'grid' : ['0.25','0.25'],
+                'product_type': 'monthly_averaged_reanalysis',
+                'year': year,
+                'month': month,
+                'time': ['00:00'],
+                'format':'netcdf'
+                }
+        )
 
 History
     20190903 crez_ba adapted from cmorize_obs_era5.py
