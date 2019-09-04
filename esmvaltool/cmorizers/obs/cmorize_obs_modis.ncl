@@ -89,7 +89,10 @@ begin
 
   ; Global attributes
   SOURCE = "https://ladsweb.modaps.eosdis.nasa.gov/search/order"
-  REF = ""
+  REF1 = "Platnick et al., IEEE Trans. Geosci. Remote Sens., " + \
+    "doi:10.1109/TGRS.2002.808301, 2003."
+  REF2 = "Levy et al., Atmos. Meas. Tech., " + \
+    "doi:10.5194/amt-6-2989-2013, 2013."
   COMMENT = ""
 
 end
@@ -221,7 +224,11 @@ begin
       bounds = guess_coord_bounds(output, FREQ(vv))
 
       ; Set global attributes
-      gAtt = set_global_atts(OBSNAME, TIER, SOURCE, REF, COMMENT)
+      if (VAR(vv).ne."od550aer") then
+        gAtt = set_global_atts(OBSNAME, TIER, SOURCE, REF1, COMMENT)
+      else
+        gAtt = set_global_atts(OBSNAME, TIER, SOURCE, REF2, COMMENT)
+      end if
 
       ; Output file
       DATESTR = \

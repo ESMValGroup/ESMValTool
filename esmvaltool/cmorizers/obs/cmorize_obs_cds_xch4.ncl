@@ -64,7 +64,8 @@ begin
   ; Global attributes
   SOURCE = "https://cds.climate.copernicus.eu/cdsapp#!/dataset/" + \
     "satellite-methane?tab=form"
-  REF = ""
+  REF = "Buchwitz et al., Adv. Astronaut. Sci. Technol., " + \
+    "doi:10.1007/s42423-018-0004-6, 2018."
   COMMENT = ""
 
 end

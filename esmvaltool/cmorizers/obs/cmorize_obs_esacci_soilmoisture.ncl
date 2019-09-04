@@ -66,7 +66,8 @@ begin
 
   ; Global attributes
   SOURCE = "ftp://anon-ftp.ceda.ac.uk/neodc/esacci/soil_moisture/data/"
-  REF = ""
+  REF = \
+    "Liu et al., Hydrol. Earth Syst. Sci., doi:10.5194/hess-15-425-2011, 2011."
   COMMENT = ""
 
 end
