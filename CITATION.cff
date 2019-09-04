@@ -1,7 +1,7 @@
 # YAML 1.2
 ---
-abstract: |
-    "ESMValCore: A community tool for pre-processing data from Earth system models in CMIP and running analysis scripts."
+abstract: "ESMValTool: A community diagnostic and performance metrics tool for routine evaluation of Earth system models in CMIP."
+
 authors:
   -
     affiliation: "University of Bremen, Germany"
