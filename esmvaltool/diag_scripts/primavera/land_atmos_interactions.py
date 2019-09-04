@@ -54,6 +54,7 @@ class LandAtmosInteractions(object):
             self.save(metrics, alias, data)
 
             # Compute the metrics but with detrended data.
+            # Update when PR #218 on ESMValCore gets merged
             hfls = hfls.copy(signal.detrend(hfls.lazy_data(), axis=0))
             rsds = rsds.copy(signal.detrend(rsds.lazy_data(), axis=0))
             rlds = rlds.copy(signal.detrend(rlds.lazy_data(), axis=0))
@@ -125,6 +126,7 @@ class LandAtmosInteractions(object):
     def heat_soil_stats(self, hfls, mrso):
         mrso_mam = extract_season(mrso, 'MAM')
         mrso_jja = extract_season(mrso, 'JJA')
+        # Avoid Iris complaints about metadata
         dummy = mrso_jja.copy(mrso_mam.lazy_data())
         correlation = stats.pearsonr(hfls, mrso_jja, 'time')
         correlation = self.mask_and_regrid(correlation)
