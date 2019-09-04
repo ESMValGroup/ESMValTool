@@ -3,19 +3,14 @@ import os
 import logging
 import itertools
 import calendar
-import math
 
 import numpy as np
 from numba import vectorize
 
-import matplotlib
-matplotlib.use('Agg')  # noqa
 import matplotlib.pyplot as plt
 import matplotlib.path as mpath
 from matplotlib import colors
-from matplotlib.patches import Patch
 from matplotlib.lines import Line2D
-from matplotlib.ticker import FormatStrFormatter
 
 import iris
 import iris.time
@@ -31,7 +26,7 @@ import skill_metrics
 
 import esmvaltool.diag_scripts.shared
 import esmvaltool.diag_scripts.shared.names as n
-from esmvaltool.preprocessor import regrid
+from esmvalcore.preprocessor import regrid
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -87,6 +82,7 @@ class Blocking(object):
         self.max_latitude = self.central_latitude + self.span + self.offset
 
         self.blocking_2D = {}
+        self._latitude_data = {}
 
         @vectorize()
         def _get_index(high, central, low,
@@ -130,11 +126,15 @@ class Blocking(object):
                 diff = dataset_2d - reference_2d
                 diff.long_name = 'Differences between model and ' \
                                  'reference in blocking index'
+                self.plot_differences(
+                    filename, diff, cmap, projection, min_lat, max_lat
+                )
                 taylor_data = skill_metrics.taylor_statistics(
                     np.ravel(dataset_2d.data),
                     np.ravel(reference_2d.data),
                 )
-                corr = iris.analysis.stats.pearsonr(reference_2d, dataset_2d).data
+                corr = iris.analysis.stats.pearsonr(
+                    reference_2d, dataset_2d).data
                 taylor_data['ccoef'][1] = corr
                 skills['total'][filename] = taylor_data
                 logger.debug(dataset_2d)
@@ -143,7 +143,8 @@ class Blocking(object):
                     ref_slice = reference_2d.extract(
                         iris.Constraint(month_number=month)
                     )
-                    corr = iris.analysis.stats.pearsonr(ref_slice, month_slice).data
+                    corr = iris.analysis.stats.pearsonr(
+                        ref_slice, month_slice).data
                     taylor_data = skill_metrics.taylor_statistics(
                         np.ravel(month_slice.data),
                         np.ravel(ref_slice.data),
@@ -152,19 +153,13 @@ class Blocking(object):
                     skills[month][filename] = taylor_data
 
         if self.cfg[n.WRITE_PLOTS] and self.compute_2d:
-            self.create_comparison_plot(datasets, skills['total'])
+            self.create_comparison_plot(
+                datasets, skills['total'], 'blocking2D'
+            )
             for month in range(1, 13):
-                crmsd = [list(metrics.values())[0]['crmsd'][0]]
-                sdev = [list(metrics.values())[0]['sdev'][0]]
-                ccoef = [1]
-
-                for key in metrics:
-                    value = metrics[key]
-                    crmsd.append(value['crmsd'][1])
-                    sdev.append(value['sdev'][1])
-                    ccoef.append(value['ccoef'][1])
+                metrics = skills[month]
                 self.create_comparison_plot(
-                    datasets, sdev], 'blocking_2D_{}'.format(month)
+                    datasets, metrics, 'blocking_2D_{}'.format(month)
                 )
 
     def _get_blocking_indices(self, filename):
@@ -210,7 +205,7 @@ class Blocking(object):
                          self.central_latitude + self.offset)
 
         blocking = iris.cube.CubeList()
-        self.latitude_data = {}
+        self._latitude_data = {}
         total_years = len(set(zg500.coord('year').points))
         block1d_data = None
         for lat_point in latitudes:
@@ -250,7 +245,6 @@ class Blocking(object):
             ) / total_years
             result.remove_coord('time')
             iris.util.promote_aux_coord_to_dim_coord(result, 'month_number')
-
             self.blocking_cube1d = result
 
         blocking_cube = blocking.merge_cube()
@@ -296,39 +290,19 @@ class Blocking(object):
         return result
 
     def _get_plot_name(self, name, filename, month=None):
-        dataset = self.datasets.get_info(n.DATASET, filename)
-        project = self.datasets.get_info(n.PROJECT, filename)
-        ensemble = self.datasets.get_info(n.ENSEMBLE, filename)
+        alias = self.datasets.get_info(n.ALIAS, filename)
         start = self.datasets.get_info(n.START_YEAR, filename)
         end = self.datasets.get_info(n.END_YEAR, filename)
 
-        plot_path = os.path.join(
-            self.cfg[n.PLOT_DIR],
-            project, dataset)
-        if ensemble is not None:
-            plot_path = os.path.join(plot_path, ensemble)
+        plot_path = os.path.join(self.cfg[n.PLOT_DIR], alias)
         if not os.path.isdir(plot_path):
             os.makedirs(plot_path)
 
-        if ensemble is None:
-            ensemble = ''
-        else:
-            ensemble += '_'
         if month is not None:
             name = '{}_{:02}'.format(name, month)
         out_type = self.cfg[n.OUTPUT_FILE_TYPE]
 
-        plot_filename = '{name}_{project}_{dataset}_' \
-                        '{ensemble}{start}-{end}' \
-                        '.{out_type}'.format(
-                            name=name,
-                            dataset=dataset,
-                            project=project,
-                            ensemble=ensemble,
-                            start=start,
-                            end=end,
-                            out_type=out_type)
-
+        plot_filename = f'{name}_{alias}_{start}-{end}.{out_type}'
         return os.path.join(plot_path, plot_filename)
 
     def _smooth_over_longitude(self, cube):
@@ -371,7 +345,7 @@ class Blocking(object):
             north_distance, south_distance,
             self.north_threshold, self.south_threshold)
 
-        del self.latitude_data[low_lat]
+        del self._latitude_data[low_lat]
 
         blocking_cube = self._create_blocking_cube(
             blocking_index, zg500, central_latitude, central_lat.bound)
@@ -396,11 +370,11 @@ class Blocking(object):
         return blocking_cube
 
     def _extract_lat(self, zg500, latitude):
-        if latitude not in self.latitude_data:
+        if latitude not in self._latitude_data:
             lat_data = zg500.extract(iris.Constraint(latitude=latitude)).data
-            self.latitude_data[latitude] = lat_data
+            self._latitude_data[latitude] = lat_data
         else:
-            lat_data = self.latitude_data[latitude]
+            lat_data = self._latitude_data[latitude]
         return lat_data
 
     def _apply_persistence(self, blocking_cube):
@@ -424,7 +398,7 @@ class Blocking(object):
                                        new_filename)
             iris.save(blocking_index, netcdf_path, zlib=True)
 
-        if not self.cfg[n.WRITE_PLOTS]:
+        if self.cfg[n.WRITE_PLOTS]:
             projection = ccrs.NorthPolarStereo()
             min_lat = np.min(blocking_index.coord('latitude').bounds)
             max_lat = np.max(blocking_index.coord('latitude').bounds)
@@ -473,7 +447,7 @@ class Blocking(object):
         blocking_index.coord('month_number').attributes.clear()
         return blocking_index
 
-    def plot_differences(self, filename, diff_cube, cmap, projection,
+    def plot_differences(self, dataset, diff_cube, cmap, projection,
                          min_lat, max_lat):
         plt.figure()
         axes = plt.axes(projection=projection)
@@ -481,27 +455,40 @@ class Blocking(object):
             (-180, 180, min_lat, max_lat),
             crs=ccrs.PlateCarree()
         )
-        iris.quickplot.pcolormesh(
-            diff_cube,
-            coords=('longitude', 'latitude'),
-            cmap=cmap,
-            vmin=-self.max_color_scale,
-            vmax=self.max_color_scale
-        )
-        axes.coastlines()
-        axes.gridlines(alpha=0.5, linestyle='--')
-        theta = np.linspace(0, 2*np.pi, 100)
-        center, radius = [0.5, 0.5], 0.5
-        verts = np.vstack([np.sin(theta), np.cos(theta)]).T
-        circle = mpath.Path(verts * radius + center)
-        axes.set_boundary(circle, transform=axes.transAxes)
-        plt.savefig(self._get_plot_name(
-            'blocking2Ddiff',
-            filename,
-            diff_cube.coord('month_number').points[0]))
-        plt.close()
+        for diff_month in diff_cube.slices_over('month_number'):
+            month_number = diff_month.coord('month_number').points[0]
+            month_name = calendar.month_name[month_number]
+            logger.info('Plotting 2D blocking for ' + month_name)
+            diff_month.long_name += ' (' + month_name.title() + ')'
+            iris.quickplot.pcolormesh(
+                diff_month,
+                coords=('longitude', 'latitude'),
+                cmap=cmap,
+                vmin=-self.max_color_scale,
+                vmax=self.max_color_scale
+            )
+            axes.coastlines()
+            axes.gridlines(alpha=0.5, linestyle='--')
+            theta = np.linspace(0, 2*np.pi, 100)
+            center, radius = [0.5, 0.5], 0.5
+            verts = np.vstack([np.sin(theta), np.cos(theta)]).T
+            circle = mpath.Path(verts * radius + center)
+            axes.set_boundary(circle, transform=axes.transAxes)
+            plt.savefig(self._get_plot_name(
+                'blocking2Ddiff',
+                dataset,
+                month_number
+            ))
+            plt.close()
 
-    def create_comparison_plot(self, datasets, metrics, name=None):
+    def create_comparison_plot(self, datasets, metrics, name):
+        logger.debug(metrics)
+        sdev = [metrics[datasets[0]]['sdev'][0]] + \
+            [m['sdev'][1] for m in metrics.values()]
+        crmsd = [metrics[datasets[0]]['crmsd'][0]] + \
+            [m['crmsd'][1] for m in metrics.values()]
+        ccoef = [metrics[datasets[0]]['ccoef'][0]] + \
+            [m['ccoef'][1] for m in metrics.values()]
         skill_metrics.taylor_diagram(
             np.array(sdev),
             np.array(crmsd),
@@ -509,13 +496,12 @@ class Blocking(object):
             styleOBS='-',
             colOBS='r',
             markerobs='o',
-            titleOBS='reference'
+            titleOBS='reference',
         )
         out_type = self.cfg[n.OUTPUT_FILE_TYPE]
         name = '{}.{}'.format(name, out_type)
         plt.savefig(os.path.join(self.cfg[n.PLOT_DIR], name))
         plt.close()
-
 
     def _create_dataset_legend(self, datasets):
         handles = []

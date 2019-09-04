@@ -17,15 +17,59 @@ documentation:
     - primavera
 
 datasets:
-  - {dataset: GFDL-ESM2M,
-     project: CMIP5, exp: historical,  ensemble: r1i1p1,
-     start_year: 1950,  end_year: 1999}
-  - {dataset: MPI-ESM-LR,
-     project: CMIP5, exp: historical,  ensemble: r1i1p1,
-     start_year: 1950,  end_year: 1999}
-  - {dataset: HadGEM2-CC,
-     project: CMIP5,  exp: historical,  ensemble: r1i1p1,
-     start_year: 1950,  end_year: 1999}
+  - &cmip {activity: CMIP, dataset: AWI-CM-1-1-MR,  project: CMIP6, mip: day, exp: historical,   grid: gn,  start_year: 1979,  end_year: 2014}
+  - {<<: *cmip, dataset: AWI-CM-1-1-MR,  ensemble: "r[2:5]i1p1f1"}
+  - {<<: *cmip, dataset: BCC-CSM2-MR, ensemble: 'r[1:3]i1p1f1'}
+  - {<<: *cmip, dataset: BCC-CSM2-MR,  ensemble: r2i1p1f1}
+  - {<<: *cmip, dataset: BCC-CSM2-MR,  ensemble: r3i1p1f1}
+  - {<<: *cmip, dataset: BCC-ESM1, ensemble: 'r[1:3]i1p1f1'}
+  - {<<: *cmip, dataset: CAMS-CSM1-0}
+  - {<<: *cmip, dataset: FGOALS-f3-L}
+  - {<<: *cmip, dataset: FGOALS-f3-L,  ensemble: r2i1p1f1}
+  - {<<: *cmip, dataset: FGOALS-f3-L,  ensemble: r3i1p1f1}
+  - {<<: *cmip, dataset: CanESM5,  ensemble: "r[1:25]i1p1f1"}
+  - {<<: *cmip, dataset: CNRM-CM6-1,  ensemble: "r[1:10]i1p1f2"}
+  - {<<: *cmip, dataset: CNRM-ESM2-1,  ensemble: 'r[1:5]i1p1f2'}
+  - {<<: *cmip, dataset: E3SM-1-0}
+  - {<<: *cmip, dataset: EC-Earth3, institute: EC-Earth-Consortium}
+  - {<<: *cmip, dataset: EC-Earth3, ensemble: r2i1p1f1, institute: EC-Earth-Consortium}
+  - {<<: *cmip, dataset: EC-Earth, ensemble: r24i1p1f1, institute: EC-Earth-Consortium}
+  - {<<: *cmip, dataset: EC-Earth3-Veg, institute: EC-Earth-Consortium}
+  - {<<: *cmip, dataset: IPSL-CM6A-LR, ensemble: 'r[1:30]i1p1f1'}
+  - {<<: *cmip, dataset: MIROC6, ensemble: 'r[1:10]i1p1f1'}
+  - {<<: *cmip, dataset: HadGEM3-GC31-LL, ensemble: 'r[1:4]i1p1f1'}
+  - {<<: *cmip, dataset: UKESM1-0-LL, ensemble: 'r[1:9]i1p1f1'}
+  - {<<: *cmip, dataset: MRI-ESM2-0, ensemble: 'r[1:13]i1p1f1'}
+  - {<<: *cmip, dataset: GISS-E2-1-G, ensemble: 'r[1:10]i1p1f1'}
+  - {<<: *cmip, dataset: GISS-E2-1-H, ensemble: 'r[1:10]i1p1f1'}
+  - {<<: *cmip, dataset: CESM2, ensemble: 'r[1:10]i1p1f1'}
+  - {<<: *cmip, dataset: CESM2-WACCM, ensemble: 'r[1:3]i1p1f1'}
+  - {<<: *cmip, dataset: GFDL-AM4}
+  - {<<: *cmip, dataset: GFDL-CM4}
+  - {<<: *cmip, dataset: GFDL-ESM4}
+  - {<<: *cmip, dataset: NESM3}
+  - {<<: *cmip, dataset: SAM0-UNICON}
+
+  - &HighResMIP {activity: HighResMIP, dataset: HadGEM3-GC31-LM,  project: CMIP6, mip: day, exp: highresSST-present,  ensemble: r1i1p1f1, grid: gn,  start_year: 1979,  end_year: 2014}
+  - {<<: *HighResMIP, dataset: HadGEM3-GC31-MM}
+  - {<<: *HighResMIP, dataset: HadGEM3-GC31-HM}
+  - {<<: *HighResMIP, dataset: HadGEM3-GC31-LL}
+  - {<<: *HighResMIP, dataset: CMCC-CM2-HR4}
+  - {<<: *HighResMIP, dataset: CMCC-CM2-VHR4}
+  - {<<: *HighResMIP, dataset: CNRM-CM6-1, ensemble: r1i1p1f2}
+  - {<<: *HighResMIP, dataset: CNRM-CM6-1-HR, ensemble: r1i1p1f2}
+  - {<<: *HighResMIP, dataset: ECMWF-IFS-LR}
+  - {<<: *HighResMIP, dataset: ECMWF-IFS-HR}
+  - {<<: *HighResMIP, dataset: IPSL-CM6A-LR}
+  - {<<: *HighResMIP, dataset: IPSL-CM6A-ATM-HR}
+  - {<<: *HighResMIP, dataset: NICAM16-7S}
+  - {<<: *HighResMIP, dataset: MPI-ESM1-2-HR, institute: MPI-M}
+  - {<<: *HighResMIP, dataset: MPI-ESM1-2-XR, institute: MPI-M}
+  - {<<: *HighResMIP, dataset: MRI-AGCM3-2-H, institute: MRI}
+  - {<<: *HighResMIP, dataset: MRI-AGCM3-2-S, institute: MRI}
+  - {<<: *HighResMIP, dataset: HadGEM3-GC31-HH, institute: NERC}
+
+- {project: OBS, tier: 3, dataset: ERA-Interim, mip: day, start_year: 1979,  end_year: 2010}
 
 preprocessors:
   extract:
