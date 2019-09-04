@@ -69,7 +69,7 @@ datasets:
   - {<<: *HighResMIP, dataset: MRI-AGCM3-2-S, institute: MRI}
   - {<<: *HighResMIP, dataset: HadGEM3-GC31-HH, institute: NERC}
 
-  - {project: OBS, tier: 3, dataset: ERA-Interim, mip: day, start_year: 1979,  end_year: 2010}
+  - {project: OBS, tier: 3, dataset: ERA-Interim, mip: day, type: reanaly, version: 1, start_year: 1979,  end_year: 2010}
 
 preprocessors:
   extract:
