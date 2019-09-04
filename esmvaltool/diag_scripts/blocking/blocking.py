@@ -449,17 +449,19 @@ class Blocking(object):
 
     def plot_differences(self, dataset, diff_cube, cmap, projection,
                          min_lat, max_lat):
-        plt.figure()
-        axes = plt.axes(projection=projection)
-        axes.set_extent(
-            (-180, 180, min_lat, max_lat),
-            crs=ccrs.PlateCarree()
-        )
+
         for diff_month in diff_cube.slices_over('month_number'):
             month_number = diff_month.coord('month_number').points[0]
             month_name = calendar.month_name[month_number]
             logger.info('Plotting 2D blocking for ' + month_name)
             diff_month.long_name += ' (' + month_name.title() + ')'
+
+            plt.figure()
+            axes = plt.axes(projection=projection)
+            axes.set_extent(
+                (-180, 180, min_lat, max_lat),
+                crs=ccrs.PlateCarree()
+            )
             iris.quickplot.pcolormesh(
                 diff_month,
                 coords=('longitude', 'latitude'),
