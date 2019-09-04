@@ -17,7 +17,7 @@ documentation:
     - primavera
 
 datasets:
-  - &cmip {activity: CMIP, dataset: AWI-CM-1-1-MR,  project: CMIP6, mip: day, exp: historical,   grid: gn,  start_year: 1979,  end_year: 2014}
+  - &cmip {activity: CMIP, dataset: AWI-CM-1-1-MR,  project: CMIP6, mip: day, exp: historical, ensemble: r1i1p1f1, grid: gn,  start_year: 1979,  end_year: 2014}
   - {<<: *cmip, dataset: AWI-CM-1-1-MR,  ensemble: "r[2:5]i1p1f1"}
   - {<<: *cmip, dataset: BCC-CSM2-MR, ensemble: 'r[1:3]i1p1f1'}
   - {<<: *cmip, dataset: BCC-CSM2-MR,  ensemble: r2i1p1f1}
@@ -69,7 +69,7 @@ datasets:
   - {<<: *HighResMIP, dataset: MRI-AGCM3-2-S, institute: MRI}
   - {<<: *HighResMIP, dataset: HadGEM3-GC31-HH, institute: NERC}
 
-- {project: OBS, tier: 3, dataset: ERA-Interim, mip: day, start_year: 1979,  end_year: 2010}
+  - {project: OBS, tier: 3, dataset: ERA-Interim, mip: day, start_year: 1979,  end_year: 2010}
 
 preprocessors:
   extract:
@@ -89,7 +89,7 @@ diagnostics:
     description: Blocking
     variables:
       zg:
-        reference_dataset: HadGEM2-CC
+        reference_dataset: ERA-Interim
         mip: day
         field: T2M
         preprocessor: extract
