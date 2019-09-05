@@ -9,12 +9,10 @@ write_plots: true
 write_netcdf: true
 # Set the console log level debug, [info], warning, error
 log_level: info
-# verbosity is deprecated and will be removed in the future
-# verbosity: 1
 # Exit on warning? true/[false]
 exit_on_warning: false
 # Plot file format? [ps]/pdf/png/eps/epsi
-output_file_type: pdf
+output_file_type: png
 # Destination directory
 output_dir: ./esmvaltool_output
 # Auxiliary data directory (used for some additional datasets)
@@ -31,7 +29,7 @@ remove_preproc_dir: true
 max_parallel_tasks: 1
 # Path to custom config-developer file, to customise project configurations.
 # See config-developer.yml for an example. Set to None to use the default
-config_developer_file: null
+# config_developer_file: null
 # Get profiling information for diagnostics
 # Only available for Python diagnostics
 profile_diagnostic: false
