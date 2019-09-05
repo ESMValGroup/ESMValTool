@@ -22,6 +22,7 @@ PACKAGES = [
 REQUIREMENTS = {
     # Installation script (this file) dependencies
     'setup': [
+        'pytest-runner',
         'setuptools_scm',
     ],
     # Installation dependencies
@@ -58,6 +59,7 @@ REQUIREMENTS = {
         'pytest>=3.9',
         'pytest-cov',
         'pytest-env',
+        'pytest-flake8',
         'pytest-html',
         'pytest-metadata>=1.5.1',
     ],

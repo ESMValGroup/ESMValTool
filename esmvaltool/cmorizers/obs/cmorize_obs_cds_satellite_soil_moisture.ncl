@@ -70,7 +70,8 @@ begin
   ; Global attributes
   SOURCE = "https://cds.climate.copernicus.eu/cdsapp#!/" + \
     "dataset/satellite-soil-moisture"
-  REF = ""
+  REF = "Gruber et al., Earth Syst. Sci. Data, " + \
+    "doi: 10.5194/essd-11-717-2019, 2019."
   COMMENT = ""
 
 end

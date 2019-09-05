@@ -4,14 +4,6 @@
 User configuration file
 ***********************
 
-ESMValTool includes several yaml files which are used to 
-store information and settings. The most important
-yaml files are `config-user.yml`_ and 
-`config-developer.yml`_.
-
-config-user.yml
-===============
-
 The ``config-user.yml`` configuration file contains all the global level
 information needed by ESMValTool. The following shows the default settings from
 the ``config-user.yml`` file.
@@ -91,52 +83,8 @@ not for model or observational datasets, rather it is for data files used in
 plotting such as coastline descriptions and so on.
 
 
-Tip: You choose your config.yml file at run time, so you could have several
-available with different purposes. One for formalised run, one for debugging,
-etc...
+.. note::
 
-config-developer.yml
-====================
-
-The config-developer.yml holds the project and machine specific varying part of the path
-to datasets. 
-
-This is necessary, because the CMIP data is widely distributed and not all
-machines use the same paths or directory structure. 
-
-If you are using one of the machines listed in the file, then you inform
-ESMValTool about this in the config-user.yml file (described above).
-
-If you are using a machine which is not listed, you can either
-use a flat data directory (ie put all the files in one directory - this is risky and can
-slow down your system). Alternatively, you could make your data
-structure resemble one of the listed sites, or you can create your own 
-data structure in this file. 
-
-An example of the data structure would be:
-
-.. code-block:: yaml
-
-    CMIP6:
-      input_dir:
-        default: '/'
-        BADC: '[institute]/[dataset]/[exp]/[ensemble]/[mip]/[short_name]/[grid]/[latestversion]'
-
-
-The following table shows some examples of these values in the data structure.
-
-============= ===========
-Value         Example
-============= ===========
-institute     MOHC
-dataset       UKESM
-exp           Historical
-ensemble      r1i1p1
-mip           Omon
-short_name    thetao
-grid          gn
-latestversion latest
-============= ===========
-
-
-
+   The ``config-user.yml`` file is specified as argument at run time, so it is
+   possible to have several available with different purposes: one for
+   formalised runs, one for debugging, etc...
