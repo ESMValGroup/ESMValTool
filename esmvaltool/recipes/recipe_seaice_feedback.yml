@@ -17,20 +17,11 @@ datasets:
   - {dataset: HadGEM2-ES, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1989, end_year: 2004, }
   # - {dataset: EC-EARTH, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1989, end_year: 2004, }
 
-preprocessors:
-  get_arctic:
-    extract_region:
-      start_longitude: 0
-      end_longitude: 360
-      start_latitude: 80
-      end_latitude: 90
-
 diagnostics:
   NegativeSeaIceFeedback:
     description: Computes the negative seaice feedback
     variables:
       sit:
-        preprocessor: get_arctic
         mip: OImon
         fx_files: [areacello]
     scripts:
