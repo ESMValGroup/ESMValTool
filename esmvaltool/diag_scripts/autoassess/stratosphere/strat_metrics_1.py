@@ -166,6 +166,11 @@ def calc_qbo_index(qbo):
             (kup, kdown) = (1, 0)
     else:
         logger.warning('QBO metric can not be computed; no zero crossings!')
+        logger.warning(
+            f"This means the model U(30hPa) does not oscillate"
+            f"between positive and negative"
+            f"with a period < 12 months, so QBO will be set to 0."
+        )
         (kup, kdown) = (0, 0)
     # Translate upwards and downwards indices into U wind values
     periodsmin = counterup - kup
