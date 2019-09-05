@@ -159,10 +159,14 @@ def calc_qbo_index(qbo):
     counterdown = len(indiciesdown)
 
     # Did we start on an upwards or downwards cycle?
-    if indiciesdown[0] < indiciesup[0]:
-        (kup, kdown) = (0, 1)
+    if indiciesdown and indiciesup:
+        if indiciesdown[0] < indiciesup[0]:
+            (kup, kdown) = (0, 1)
+        else:
+            (kup, kdown) = (1, 0)
     else:
-        (kup, kdown) = (1, 0)
+        logger.warning('QBO metric can not be computed; no zero crossings!')
+        (kup, kdown) = (0, 0)
     # Translate upwards and downwards indices into U wind values
     periodsmin = counterup - kup
     periodsmax = counterdown - kdown
