@@ -25,7 +25,7 @@
 ;    with years)
 ;
 ; Modification history
-;    20190314-A_crez_ba: adapted from file cmorize_obs_esacci_soilmoisture.ncl
+;    20190314-crezee_bas: written based on cmorize_obs_esacci_soilmoisture.ncl.
 ;
 ; #############################################################################
 loadscript(getenv("esmvaltool_root") + \

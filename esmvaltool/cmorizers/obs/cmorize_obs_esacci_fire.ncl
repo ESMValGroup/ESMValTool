@@ -17,7 +17,7 @@
 ;    Put all files in input_dir_path (no subdirectories with years).
 ;
 ; Modification history
-;    20190124-A_righ_ma: written based on a python script by muel_bn.
+;    20190124-righi_mattia: written based on a python script by Ben Mueller.
 ;
 ; #############################################################################
 loadscript(getenv("esmvaltool_root") + \
