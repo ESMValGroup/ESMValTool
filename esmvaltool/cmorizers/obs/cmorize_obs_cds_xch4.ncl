@@ -19,7 +19,7 @@
 ;    A registration is required to download the data.
 ;
 ; Modification history
-;    20190311-A_hass_bg: written.
+;    20190311-hassler_birgit: written.
 ;
 ; ############################################################################
 loadscript(getenv("esmvaltool_root") + \
