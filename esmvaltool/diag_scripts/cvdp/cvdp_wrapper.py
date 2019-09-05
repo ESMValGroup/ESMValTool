@@ -5,7 +5,7 @@ import re
 import shutil
 import subprocess
 
-from esmvaltool._task import DiagnosticError
+from esmvalcore._task import DiagnosticError
 from esmvaltool.diag_scripts.shared import (group_metadata, run_diagnostic,
                                             select_metadata)
 from esmvaltool.diag_scripts.shared import ProvenanceLogger

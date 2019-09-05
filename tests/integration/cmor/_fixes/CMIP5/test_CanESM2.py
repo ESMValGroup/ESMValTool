@@ -3,7 +3,7 @@ import unittest
 from cf_units import Unit
 from iris.cube import Cube
 
-from esmvaltool.cmor._fixes.CMIP5.CanESM2 import fgco2
+from esmvalcore.cmor._fixes.CMIP5.CanESM2 import fgco2
 
 
 class TestCanESM2Fgco2(unittest.TestCase):

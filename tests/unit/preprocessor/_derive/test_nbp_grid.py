@@ -1,7 +1,7 @@
 """Test derivation of `nbp_grid`."""
 import mock
 
-import esmvaltool.preprocessor._derive.nbp_grid as nbp_grid
+import esmvalcore.preprocessor._derive.nbp_grid as nbp_grid
 
 CUBES = 'mocked cubes'
 STD_NAME = ('surface_net_downward_mass_flux_of_carbon_dioxide_expressed_as_'

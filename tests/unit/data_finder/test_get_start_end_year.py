@@ -1,8 +1,8 @@
-"""Unit tests for :func:`esmvaltool._data_finder.regrid._stock_cube`"""
+"""Unit tests for :func:`esmvalcore._data_finder.regrid._stock_cube`"""
 
 import unittest
 
-from esmvaltool._data_finder import get_start_end_year
+from esmvalcore._data_finder import get_start_end_year
 
 
 class TestGetStartEndYear(unittest.TestCase):

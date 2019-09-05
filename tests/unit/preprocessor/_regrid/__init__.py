@@ -1,5 +1,5 @@
 """
-Unit tests for the :mod:`esmvaltool.preprocessor.regrid` module.
+Unit tests for the :mod:`esmvalcore.preprocessor.regrid` module.
 
 """
 

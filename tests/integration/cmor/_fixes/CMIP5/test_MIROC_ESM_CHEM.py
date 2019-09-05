@@ -3,7 +3,7 @@ import unittest
 from cf_units import Unit
 from iris.cube import Cube
 
-from esmvaltool.cmor._fixes.CMIP5.MIROC_ESM_CHEM import tro3
+from esmvalcore.cmor._fixes.CMIP5.MIROC_ESM_CHEM import tro3
 
 
 class TestTro3(unittest.TestCase):

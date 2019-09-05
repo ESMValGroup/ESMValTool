@@ -1,16 +1,20 @@
 """
-_mask.py
+Mask module.
 
-module that performs missing values masking
-and geographical area eslection
+Module that performs a number of masking
+operations that include: masking with fx files, masking with
+Natural Earth shapefiles (land or ocean), masking on thresholds,
+missing values masking.
 """
 
 import logging
 import os
 
+import numpy as np
+
+import dask.array as da
 import cartopy.io.shapereader as shpreader
 import iris
-import numpy as np
 import shapely.vectorized as shp_vect
 from iris.analysis import Aggregator
 from iris.util import rolling_window
@@ -19,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 
 def _check_dims(cube, mask_cube):
-    """Check for same dims for mask and data"""
+    """Check for same ndim and x-y dimensions for data and mask cubes."""
     x_dim = cube.coord('longitude').points.ndim
     y_dim = cube.coord('latitude').points.ndim
     mx_dim = mask_cube.coord('longitude').points.ndim
@@ -41,7 +45,7 @@ def _check_dims(cube, mask_cube):
 
 
 def _get_fx_mask(fx_data, fx_option, mask_type):
-    """Build a 50 percent land or sea mask"""
+    """Build a percentage-thresholded mask from an fx file."""
     inmask = np.zeros_like(fx_data, bool)
     if mask_type == 'sftlf':
         if fx_option == 'land':
@@ -69,7 +73,7 @@ def _get_fx_mask(fx_data, fx_option, mask_type):
 
 
 def _apply_fx_mask(fx_mask, var_data):
-    """Apply the fx mask"""
+    """Apply the fx data extracted mask on the actual processed data."""
     # Broadcast mask
     var_mask = np.zeros_like(var_data, bool)
     var_mask = np.broadcast_to(fx_mask, var_mask.shape).copy()
@@ -86,30 +90,35 @@ def _apply_fx_mask(fx_mask, var_data):
 
 def mask_landsea(cube, fx_files, mask_out):
     """
-    Mask out either land or sea
-
-    Function that masks out either land mass or seas (oceans, seas and lakes)
+    Mask out either land mass or sea (oceans, seas and lakes).
 
     It uses dedicated fx files (sftlf or sftof) or, in their absence, it
-    applies a Natural Earth mask (land or ocean contours). Not that the
+    applies a Natural Earth mask (land or ocean contours). Note that the
     Natural Earth masks have different resolutions: 10m for land, and 50m
     for seas; these are more than enough for ESMValTool puprpose.
 
     Parameters
     ----------
-
-    * cube (iris.Cube.cube instance):
+    cube: iris.cube.Cube
         data cube to be masked.
 
-    * fx_files (list):
+    fx_files: list
         list holding the full paths to fx files.
 
-    * mask_out (string):
+    mask_out: str
         either "land" to mask out land mass or "sea" to mask out seas.
 
     Returns
     -------
-    masked iris cube
+    iris.cube.Cube
+        Returns the masked iris cube.
+
+    Raises
+    -------
+    ValueError
+        Error raised if masking on irregular grids is attempted.
+        Irregular grids are not currently supported for masking
+        with Natural Earth shapefile masks.
 
     """
     # Dict to store the Natural Earth masks
@@ -146,8 +155,9 @@ def mask_landsea(cube, fx_files, mask_out):
                     "Applying land-sea mask from Natural Earth"
                     " shapefile: \n%s", shapefiles[mask_out])
             else:
-                logger.error("Use of shapefiles with irregular grids not "
-                             "yet implemented, land-sea mask not applied")
+                msg = (f"Use of shapefiles with irregular grids not "
+                       f"yet implemented, land-sea mask not applied.")
+                raise ValueError(msg)
     else:
         if cube.coord('longitude').points.ndim < 2:
             cube = _mask_with_shp(cube, shapefiles[mask_out])
@@ -155,34 +165,42 @@ def mask_landsea(cube, fx_files, mask_out):
                 "Applying land-sea mask from Natural Earth"
                 " shapefile: \n%s", shapefiles[mask_out])
         else:
-            logger.error("Use of shapefiles with irregular grids not "
-                         "yet implemented, land-sea mask not applied")
+            msg = (f"Use of shapefiles with irregular grids not "
+                   f"yet implemented, land-sea mask not applied.")
+            raise ValueError(msg)
 
     return cube
 
 
 def mask_landseaice(cube, fx_files, mask_out):
     """
-    Mask out either landsea (combined) or ice
+    Mask out either landsea (combined) or ice.
 
     Function that masks out either landsea (land and seas) or ice (Antarctica
     and Greenland and some wee glaciers). It uses dedicated fx files (sftgif).
 
     Parameters
     ----------
-
-    * cube (iris.Cube.cube instance):
+    cube: iris.cube.Cube
         data cube to be masked.
 
-    * fx_files (list):
+    fx_files: list
         list holding the full paths to fx files.
 
-    * mask_out (string):
+    mask_out: str
         either "landsea" to mask out landsea or "ice" to mask out ice.
 
     Returns
     -------
-    masked iris cube
+    iris.cube.Cube
+        Returns the masked iris cube with either land or ice masked out.
+
+    Raises
+    -------
+    ValueError
+        Error raised if fx mask and data have different dimensions.
+    ValueError
+        Error raised if fx_files list is empty.
 
     """
     # sftgif is the only one so far
@@ -194,14 +212,18 @@ def mask_landseaice(cube, fx_files, mask_out):
                 landice_mask = _get_fx_mask(fx_cube.data, mask_out, 'sftgif')
                 cube.data = _apply_fx_mask(landice_mask, cube.data)
                 logger.debug("Applying landsea-ice mask: sftgif")
+            else:
+                msg = "Landsea-ice mask and data have different dimensions."
+                raise ValueError(msg)
     else:
-        logger.warning("Landsea-ice mask could not be found ")
+        msg = "Landsea-ice mask could not be found. Stopping. "
+        raise ValueError(msg)
 
     return cube
 
 
 def _get_geometry_from_shp(shapefilename):
-    """Get the mask geometry out from a shapefile"""
+    """Get the mask geometry out from a shapefile."""
     reader = shpreader.Reader(shapefilename)
     # Index 0 grabs the lowest resolution mask (no zoom)
     main_geom = [contour for contour in reader.geometries()][0]
@@ -209,7 +231,15 @@ def _get_geometry_from_shp(shapefilename):
 
 
 def _mask_with_shp(cube, shapefilename):
-    """Apply a Natural Earth land/sea mask"""
+    """
+    Apply a Natural Earth land/sea mask.
+
+    Apply a pre-made land or sea mask that is extracted form a
+    Natural Earth shapefile (proprietary file format). The masking
+    process is performed by checking if any given (x, y) point from
+    the data cube lies within the desired geometry (eg land, sea) stored
+    in the shapefile (this is done via shapefle vectorization and is fast).
+    """
     # Create the region
     region = _get_geometry_from_shp(shapefilename)
 
@@ -224,9 +254,10 @@ def _mask_with_shp(cube, shapefilename):
             cube.coord(axis='Y').points)
     # 2D irregular grids; spit an error for now
     else:
-        logger.error('No fx-files found (sftlf or sftof)!\n \
-                     2D grids are suboptimally masked with\n \
-                     Natural Earth masks. Exiting.')
+        msg = (f"No fx-files found (sftlf or sftof)!"
+               f"2D grids are suboptimally masked with "
+               f"Natural Earth masks. Exiting.")
+        raise ValueError(msg)
 
     # Wrap around longitude coordinate to match data
     x_p_180 = np.where(x_p >= 180., x_p - 360., x_p)
@@ -251,12 +282,13 @@ def _mask_with_shp(cube, shapefilename):
     return cube
 
 
-# Define a function to perform the custom statistical operation.
-# Note: in order to meet the requirements of iris.analysis.Aggregator, it must
-# do the calculation over an arbitrary (given) data axis.
 def count_spells(data, threshold, axis, spell_length):
     """
-    Count data occurences
+    Count data occurences.
+
+    Define a function to perform the custom statistical operation.
+    Note: in order to meet the requirements of iris.analysis.Aggregator,
+    it must do the calculation over an arbitrary (given) data axis.
 
     Function to calculate the number of points in a sequence where the value
     has exceeded a threshold value for at least a certain number of timepoints.
@@ -264,20 +296,25 @@ def count_spells(data, threshold, axis, spell_length):
     Generalised to operate on multiple time sequences arranged on a specific
     axis of a multidimensional array.
 
-    Args:
-
-    * data (array):
+    Parameters
+    ----------
+    data: ndarray
         raw data to be compared with value threshold.
 
-    * threshold (float):
+    threshold: float
         threshold point for 'significant' datapoints.
 
-    * axis (int):
+    axis: int
         number of the array dimension mapping the time sequences.
         (Can also be negative, e.g. '-1' means last dimension)
 
-    * spell_length (int):
+    spell_length: int
         number of consecutive times at which value > threshold to "count".
+
+    Returns
+    -------
+    int
+        Number of counts.
 
     """
     if axis < 0:
@@ -300,71 +337,26 @@ def count_spells(data, threshold, axis, spell_length):
     return spell_point_counts
 
 
-def window_counts(mycube, value_threshold, window_size, pctile):
-    """
-    Find data counts in a time window
-
-    Function that returns a flat array containing
-    the number of data points within a time window `window_size'
-    per grid point that satify a condition
-    value > value_threshold.
-    It also returns statistical measures for the flat array
-    window_counts[0] = array
-    window_counts[1] = mean(array)
-    window_counts[2] = std(array)
-    window_counts[3] = percentile(array, pctile)
-    """
-    # Make an aggregator from the user function.
-    spell_count = Aggregator(
-        'spell_count', count_spells, units_func=lambda units: 1)
-
-    # Calculate the statistic.
-    counts_windowed_cube = mycube.collapsed(
-        'time',
-        spell_count,
-        threshold=value_threshold,
-        spell_length=window_size)
-
-    # if one wants to print the whole array
-    # np.set_printoptions(threshold=np.nan)
-    r_p = counts_windowed_cube.data.flatten()
-    meanr = np.mean(r_p)
-    stdr = np.std(r_p)
-    prcr = np.percentile(r_p, pctile)
-    return r_p, meanr, stdr, prcr
-
-
-def mask_cube_counts(mycube, value_threshold, counts_threshold, window_size):
-    """Build the counts mask"""
-    # Make an aggregator from the user function.
-    spell_count = Aggregator(
-        'spell_count', count_spells, units_func=lambda units: 1)
-
-    # Calculate the statistic.
-    counts_windowed_cube = mycube.collapsed(
-        'time',
-        spell_count,
-        threshold=value_threshold,
-        spell_length=window_size)
-
-    mask = counts_windowed_cube.data >= counts_threshold
-    mask.astype(np.int)
-    # preserving the original cube metadata
-    dummyar = np.ones(mycube.data.shape, dtype=mycube.data.dtype)
-    newmask = dummyar * mask
-    newmask[newmask == 0] = 1e+20  # np.nan
-    masked_cube = mycube.copy()
-    # masked_cube.data = masked_cube.data * newmask
-    masked_cube.data = newmask
-    return counts_windowed_cube, newmask, masked_cube
-
-
 def mask_above_threshold(cube, threshold):
     """
     Mask above a specific threshold value.
 
     Takes a value 'threshold' and masks off anything that is above
     it in the cube data. Values equal to the threshold are not masked.
+
+    Parameters
+    ----------
+    cube: iris.cube.Cube
+        iris cube to be thresholded.
+
+    threshold: float
+        threshold to be applied on input cube data.
+
+    Returns
+    --------
+    iris.cube.Cube
+        thresholded cube.
+
     """
     cube.data = np.ma.masked_where(cube.data > threshold, cube.data)
     return cube
@@ -376,6 +368,19 @@ def mask_below_threshold(cube, threshold):
 
     Takes a value 'threshold' and masks off anything that is below
     it in the cube data. Values equal to the threshold are not masked.
+
+    Parameters
+    ----------
+    cube: iris.cube.Cube
+        iris cube to be thresholded
+    threshold: float
+        threshold to be applied on input cube data.
+
+    Returns
+    --------
+    iris.cube.Cube
+        thresholded cube.
+
     """
     cube.data = np.ma.masked_where(cube.data < threshold, cube.data)
     return cube
@@ -387,6 +392,21 @@ def mask_inside_range(cube, minimum, maximum):
 
     Takes a MINIMUM and a MAXIMUM value for the range, and masks off anything
     that's between the two in the cube data.
+
+    Parameters
+    ----------
+    cube: iris.cube.Cube
+        iris cube to be thresholded
+    minimum: float
+        lower threshold to be applied on input cube data.
+    maximum: float
+        upper threshold to be applied on input cube data.
+
+    Returns
+    --------
+    iris.cube.Cube
+        thresholded cube.
+
     """
     cube.data = np.ma.masked_inside(cube.data, minimum, maximum)
     return cube
@@ -398,6 +418,21 @@ def mask_outside_range(cube, minimum, maximum):
 
     Takes a MINIMUM and a MAXIMUM value for the range, and masks off anything
     that's outside the two in the cube data.
+
+    Parameters
+    ----------
+    cube: iris.cube.Cube
+        iris cube to be thresholded
+    minimum: float
+        lower threshold to be applied on input cube data.
+    maximum: float
+        upper threshold to be applied on input cube data.
+
+    Returns
+    --------
+    iris.cube.Cube
+        thresholded cube.
+
     """
     cube.data = np.ma.masked_outside(cube.data, minimum, maximum)
     return cube
@@ -407,7 +442,42 @@ def mask_fillvalues(products,
                     threshold_fraction,
                     min_value=-1.e10,
                     time_window=1):
-    """Compute and apply a multi-dataset fillvalues mask"""
+    """
+    Compute and apply a multi-dataset fillvalues mask.
+
+    Construct the mask that fills a certain time window with missing values
+    if the number of values in that specific window is less than a given
+    fractional threshold.
+    This function is the extension of _get_fillvalues_mask and performs the
+    combination of missing values masks from each model (of multimodels)
+    into a single fillvalues mask to be applied to each model.
+
+    Parameters
+    ----------
+    products: iris.cube.Cube
+        data products to be masked.
+
+    threshold_fraction: float
+        fractional threshold to be used as argument for Aggregator.
+        Must be between 0 and 1.
+
+    min_value: float
+        minumum value threshold; default set to -1e10.
+
+    time_window: float
+        time window to compute missing data counts; default set to 1.
+
+    Returns
+    -------
+    iris.cube.Cube
+        Masked iris cubes.
+
+    Raises
+    -------
+    NotImplementedError
+        Implementation missing for data with higher dimensionality than 4.
+
+    """
     combined_mask = None
 
     logger.debug("Creating fillvalues mask")
@@ -449,7 +519,16 @@ def mask_fillvalues(products,
 
 
 def _get_fillvalues_mask(cube, threshold_fraction, min_value, time_window):
+    """
+    Compute the per-model missing values mask.
 
+    Construct the mask that fills a certain time window with missing values
+    if the number of values in that specific window is less than a given
+    fractional threshold; it uses a custom iris Aggregator function that
+    aggregates the cube data by a given time window and counts the number of
+    valid (unmasked) data points within that window;
+    a simple value thresholding is also applied if needed.
+    """
     # basic checks
     if threshold_fraction < 0 or threshold_fraction > 1.0:
         raise ValueError(
@@ -457,8 +536,8 @@ def _get_fillvalues_mask(cube, threshold_fraction, min_value, time_window):
                 threshold_fraction))
     nr_time_points = len(cube.coord('time').points)
     if time_window > nr_time_points:
-        logger.warning("Time window (in time units) larger "
-                       "than total time span")
+        msg = "Time window (in time units) larger than total time span. Stop."
+        raise ValueError(msg)
 
     max_counts_per_time_window = nr_time_points / time_window
     # round to lower integer

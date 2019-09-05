@@ -46,9 +46,8 @@ preprocessors:
       scheme: linear
 
   spatial_mean:
-    average_region:
-      coord1: latitude
-      coord2: longitude
+    area_statistics:
+      operator: mean
 
   clim_ref:
     regrid:

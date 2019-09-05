@@ -8,7 +8,7 @@ from iris.cube import Cube, CubeList
 
 from .._provenance import TrackedFile
 from .._task import BaseTask
-from ._area import (average_region, extract_named_regions, extract_region,
+from ._area import (area_statistics, extract_named_regions, extract_region,
                     zonal_means)
 from ._derive import derive
 from ._download import download
@@ -23,7 +23,7 @@ from ._reformat import (cmor_check_data, cmor_check_metadata, fix_data,
 from ._regrid import extract_levels, regrid
 from ._time import (annual_mean, extract_month, extract_season, extract_time,
                     regrid_time, seasonal_mean, time_average)
-from ._volume import (average_volume, depth_integration, extract_trajectory,
+from ._volume import (volume_statistics, depth_integration, extract_trajectory,
                       extract_transect, extract_volume)
 
 logger = logging.getLogger(__name__)
@@ -72,8 +72,8 @@ __all__ = [
     # Grid-point operations
     'extract_named_regions',
     'depth_integration',
-    'average_region',
-    'average_volume',
+    'area_statistics',
+    'volume_statistics',
     # Time operations
     # 'annual_cycle': annual_cycle,
     # 'diurnal_cycle': diurnal_cycle,

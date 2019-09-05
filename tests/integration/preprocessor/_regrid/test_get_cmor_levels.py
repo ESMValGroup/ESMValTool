@@ -1,15 +1,15 @@
 """
 Integration tests for the :func:
-`esmvaltool.preprocessor.regrid.get_cmor_levels`
+`esmvalcore.preprocessor.regrid.get_cmor_levels`
 function.
 
 """
 
 import unittest
 
-from esmvaltool._config import read_config_developer_file
-from esmvaltool.cmor.table import read_cmor_tables
-from esmvaltool.preprocessor import _regrid
+from esmvalcore._config import read_config_developer_file
+from esmvalcore.cmor.table import read_cmor_tables
+from esmvalcore.preprocessor import _regrid
 
 
 class TestGetCmorLevels(unittest.TestCase):

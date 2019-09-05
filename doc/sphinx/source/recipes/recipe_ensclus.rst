@@ -1,3 +1,5 @@
+.. _recipes_ensclus:
+
 EnsClus - Ensemble Clustering - a cluster analysis tool for climate model simulations
 =====================================================================================
 

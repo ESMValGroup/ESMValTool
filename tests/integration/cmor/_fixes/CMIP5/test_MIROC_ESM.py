@@ -5,7 +5,7 @@ from iris.coords import DimCoord
 from iris.cube import Cube
 from iris.exceptions import CoordinateNotFoundError
 
-from esmvaltool.cmor._fixes.CMIP5.MIROC_ESM import allvars, co2, tro3
+from esmvalcore.cmor._fixes.CMIP5.MIROC_ESM import allvars, co2, tro3
 
 
 class TestCo2(unittest.TestCase):

@@ -15,7 +15,7 @@ from multiprocessing import Pool, cpu_count
 import psutil
 import yaml
 
-from ._config import TAGS, replace_tags
+from ._config import TAGS, replace_tags, DIAGNOSTICS_PATH
 from ._provenance import TrackedFile, get_task_provenance
 
 logger = logging.getLogger(__name__)
@@ -267,7 +267,7 @@ class DiagnosticTask(BaseTask):
     def _initialize_cmd(self, script):
         """Create a an executable command from script."""
         diagnostics_root = os.path.join(
-            os.path.dirname(__file__), 'diag_scripts')
+            DIAGNOSTICS_PATH, 'diag_scripts')
         script_file = os.path.abspath(os.path.join(diagnostics_root, script))
 
         if not os.path.isfile(script_file):
@@ -457,7 +457,7 @@ class DiagnosticTask(BaseTask):
         else:
             # Make diag_scripts path available to diagostics scripts
             env['diag_scripts'] = os.path.join(
-                os.path.dirname(__file__), 'diag_scripts')
+                DIAGNOSTICS_PATH, 'diag_scripts')
 
         cmd = list(self.cmd)
         settings_file = self.write_settings()

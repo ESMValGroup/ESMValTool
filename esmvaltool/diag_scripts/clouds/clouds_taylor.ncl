@@ -90,7 +90,7 @@ load "$diag_scripts/../interface_scripts/interface.ncl"
 load "$diag_scripts/shared/plot/aux_plotting.ncl"
 load "$diag_scripts/shared/statistics.ncl"
 load "$diag_scripts/shared/plot/style.ncl"
-load "$diag_scripts/shared/plot/taylor_diagram_less_hardcoded.ncl"
+load "$diag_scripts/shared/plot/taylor_plot.ncl"
 
 begin
 
