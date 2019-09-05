@@ -617,6 +617,7 @@ references:
   cru: "Harris, I. et al., Int. J. Climatol., 34, doi: 10.1002/joc.3711, 2014."
   eppley-vgpm-modis: "Behrenfeld, M. J., & Falkowski, P. G. (1997). Photosynthetic rates derived from satellite-based chlorophyll concentration. Limnology and oceanography, 42(1), 1-20."
   era-interim: "Dee, D. P. et al., Q. J. Roy. Meteor. Soc., doi:10.1002/qj.828, 2011."
+  era5: "Copernicus Climate Change Service (C3S) (2017): ERA5: Fifth generation of ECMWF atmospheric reanalyses of the global climate. Copernicus Climate Change Service Climate Data Store (CDS)"
   esacci-aerosol: "Popp et al., ESA Aerosol Climate Change Initiative (ESA Aerosol_cci) data: AOD v4.21 via Centre for Environmental Data Analysis, 2016."
   esacci-cloud: "Stengel et al., Earth Syst. Sci. Data, doi:10.5194/essd-9-881-2017, 2017."
   esacci-fire: "Not available."
