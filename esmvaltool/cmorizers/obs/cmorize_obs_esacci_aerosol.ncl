@@ -78,9 +78,7 @@ begin
 
   ; Global attributes
   SOURCE = "ftp://anon-ftp.ceda.ac.uk/neodc/esacci/aerosol/data/"
-  REF = "Popp et al., ESA Aerosol Climate Change Initiative " + \
-    "(ESA Aerosol_cci) data: AOD v4.21 via Centre for Environmental " + \
-    "Data Analysis, 2016"
+  REF = "Popp et al., Remote Sens., doi:10.3390/rs8050421, 2016."
   COMMENT = "Combined dataset ERS2-ATSR2 (1997-2002) and ENVISAT-AATSR " + \
     "(2003-2011), based on the University of Swansea algorithm " + \
     "(monthly mean L3 data)"
