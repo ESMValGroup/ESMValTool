@@ -61,8 +61,8 @@ begin
 
   ; Global attributes
   SOURCE = "https://www.esrl.noaa.gov/psd/data/gridded/data.ghcngridded.html"
-  REF = "Jones, P. D., and A. Moberg, J. Climate, " + \
-    "doi:10.1175/1520-0442(2003)016<0206:HALSSA>2.0.CO;2, 2003"
+  REF = "Jones and Moberg, J. Clim., " + \
+    "doi:10.1175/1520-0442(2003)016<0206:HALSSA>2.0.CO;2, 2003."
   COMMENT = ""
 
 end
