@@ -46,6 +46,7 @@ class NegativeSeaIceFeedback(object):
         p_value = list()
         datasets = list()
         for dataset in self.datasets:
+            logger.info('Computing %s', dataset_info[n.ALIAS])
             # Load cell area
             dataset_info = self.datasets.get_dataset_info(dataset)
             area_cello = iris.load_cube(dataset_info[n.FX_FILES]['areacello'])

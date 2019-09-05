@@ -12,9 +12,9 @@ documentation:
     - applicate
 
 datasets:
-  - {dataset: HadGEM2-CC, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1900, end_year: 2005}
-  - {dataset: HadGEM2-ES, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1900, end_year: 2005}
-  - {dataset: EC-EARTH, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1900, end_year: 2005}
+  - {dataset: HadGEM2-CC, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1979, end_year: 2005}
+  - {dataset: HadGEM2-ES, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1979, end_year: 2005}
+  - {dataset: EC-EARTH, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1979, end_year: 2005}
 
 diagnostics:
   NegativeSeaIceFeedback:
