@@ -33,17 +33,13 @@ def ens_eof_kmeans(dir_output, name_outputs, numens, numpcs, perc, numclus):
     print('Model: {0}'.format(model))
     # Either perc (cluster analysis is applied on a number of PCs
     # such as they explain 'perc' of total variance) or numpcs
-    # (number of PCs to retain) is set:
-    if numpcs != 'no':
+    # (number of PCs to retain) is set.
+    # numpcs has priority over perc, ignored if it is set to 0
+    if numpcs:
         numpcs = int(numpcs)
         print('Number of principal components: {0}'.format(numpcs))
-
-    if perc != 'no':
-        perc = int(perc)
-        print('Percentage of explained variance: {0}%'.format(perc))
-
-    if (perc == 'no' and numpcs == 'no') or (perc != 'no' and numpcs != 'no'):
-        raise ValueError('You have to specify either "perc" or "numpcs".')
+    else:
+        print('Percentage of variance explained: {0}'.format(perc))
 
     print('Number of clusters: {0}'.format(numclus))
 
@@ -61,7 +57,9 @@ def ens_eof_kmeans(dir_output, name_outputs, numens, numpcs, perc, numclus):
     _, _, _, pcs_unscal0, eofs_unscal0, varfrac = eof_computation(var, lat)
 
     acc = np.cumsum(varfrac * 100)
-    if perc != 'no':
+    if numpcs:
+        exctperc = acc[numpcs - 1]
+    else:
         # Find how many PCs explain a certain percentage of variance
         # (find the mode relative to the percentage closest to perc,
         #  but bigger than perc)
@@ -70,8 +68,6 @@ def ens_eof_kmeans(dir_output, name_outputs, numens, numpcs, perc, numclus):
               'to {0}% of variance (but grater than {0}%) is {1}'
               .format(perc, numpcs))
         exctperc = min(enumerate(acc), key=lambda x: x[1] <= perc)[1]
-    if numpcs != 'no':
-        exctperc = acc[numpcs - 1]
     print('(the first {0} PCs explain exactly the {1}% of variance)'
           .format(numpcs, "%.2f" % exctperc))
 
@@ -81,8 +77,9 @@ def ens_eof_kmeans(dir_output, name_outputs, numens, numpcs, perc, numclus):
 
     pcs = pcs_unscal0[:, :numpcs]
 
-    clus = KMeans(n_clusters=numclus, n_init=600, max_iter=1000)
-
+    clus = KMeans(n_clusters=numclus, n_init=2000,
+                  init='k-means++', tol=1e-4,
+                  max_iter=1000, random_state=42)
     start = datetime.datetime.now()
     clus.fit(pcs)
     end = datetime.datetime.now()
@@ -129,43 +126,12 @@ def ens_eof_kmeans(dir_output, name_outputs, numens, numpcs, perc, numclus):
           'the same as the member #1 PC vector dim {1}\n'
           .format(centroids[1, :].shape, pcs[1, :].shape))
 
-    norm = np.empty([numclus, numens])
-    final_output = []
-    repres = []
-    for nclus in range(numclus):
-        for ens in range(numens):
-            normens = centroids[nclus, :] - pcs[ens, :]
-            norm[nclus, ens] = math.sqrt(sum(normens**2))
-        print('The distances between centroid of cluster {0} and '
-              'member #0 to #{1} are:\n{2}'
-              .format(nclus, numens - 1, np.round(norm[nclus], 3)))
-        print('MINIMUM DISTANCE FOR CLUSTER {0} IS {1} --> member #{2}'
-              .format(nclus, round(norm[nclus].min(), 3),
-                      list(np.where(norm[nclus] == norm[nclus].min())[0])))
-        repres.append(np.where(norm[nclus] == norm[nclus].min())[0][0])
-        print('MAXIMUM DISTANCE FOR CLUSTER {0} IS {1} --> member #{2}\n'
-              .format(nclus, round(norm[nclus].max(), 3),
-                      list(np.where(norm[nclus] == norm[nclus].max())[0])))
-
-        txt = ('Closest ensemble member/members '
-               'to centroid of cluster {0} is/are {1}\n'
-               .format(nclus, list(np.where(norm[nclus] ==
-                                            norm[nclus].min())[0])))
-        final_output.append(txt)
-    with open(os.path.join(dir_output, 'RepresentativeEnsembleMembers_{0}.txt'
-                           .format(name_outputs)), "w") as text_file:
-        text_file.write(''.join(str(e) for e in final_output))
-
-    # ____________Save the most representative ensemble members
-    namef = os.path.join(dir_output, 'repr_ens_{0}.txt'.format(name_outputs))
-    np.savetxt(namef, repres, fmt='%i')
-    outfiles.append(namef)
-
     print('_________________________________________________________')
     print('In order to study the spread of each cluster,')
     print('the standard deviation of the distances between each member '
           'in a cluster and the cluster centroid is computed in the PC space')
     stat_output = []
+    repres = []
     for nclus in range(numclus):
         members = clusters[nclus][2]
         norm = np.empty([numclus, len(members)])
@@ -179,6 +145,8 @@ def ens_eof_kmeans(dir_output, name_outputs, numens, numpcs, perc, numclus):
               .format(nclus, round(norm[nclus].min(), 3),
                       members[np.where(norm[nclus] ==
                                        norm[nclus].min())[0][0]]))
+        repres.append(members[np.where(norm[nclus] ==
+                                       norm[nclus].min())[0][0]])
         print('MAXIMUM DISTANCE WITHIN CLUSTER {0} IS {1} --> member #{2}'
               .format(nclus, round(norm[nclus].max(), 3),
                       members[np.where(norm[nclus] ==
@@ -196,6 +164,12 @@ def ens_eof_kmeans(dir_output, name_outputs, numens, numpcs, perc, numclus):
         d_stat['freq(%)'] = round(clusters[nclus][1], 3)
         stat = pd.DataFrame(d_stat)
         stat_output.append(stat)
+
+    # ____________Save the most representative ensemble members
+    namef = os.path.join(dir_output, 'repr_ens_{0}.txt'.format(name_outputs))
+    np.savetxt(namef, repres, fmt='%i')
+    outfiles.append(namef)
+
     stat_output = pd.concat(stat_output, axis=0)
     # ____________Save statistics of cluster analysis
     namef = os.path.join(dir_output, 'statistics_clustering_{0}.txt'

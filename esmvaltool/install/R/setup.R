@@ -49,23 +49,30 @@ if (is.na(Ncpus)) {
   Ncpus <- 1
 }
 
-for (package_name in package_list) {
-    log("Installing package:", package_name)
+log("Installing packages:", package_list)
+if ( length(package_list) != 0 ) {
     install.packages(
-        package_name,
+        package_list,
         repos = pkg_mirror,
         Ncpus = Ncpus,
         dependencies = c("Depends", "Imports", "LinkingTo")
     )
+}
+
+failed <- list()
+for (package_name in dependencies) {
     success <- library(
         package_name,
         character.only = TRUE,
         logical.return = TRUE
     )
     if ( ! success ) {
-        log("Failed to install package:", package_name)
-        quit(status = 1, save = "no")
+        failed <- c(failed, package_name)
     }
+}
+if ( length(failed) != 0 ) {
+    log("Failed to install packages:", paste(failed, collapse = ", "))
+    quit(status = 1, save = "no")
 }
 
 log("Successfully installed all packages")

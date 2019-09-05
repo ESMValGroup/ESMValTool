@@ -2,15 +2,11 @@
 Provides testing capabilities for :mod:`esmvaltool` package.
 
 """
-
-from __future__ import absolute_import, division, print_function
-
+import unittest
 from functools import wraps
 
 import mock
 import numpy as np
-import unittest
-import sys
 
 
 class Test(unittest.TestCase):
@@ -69,9 +65,6 @@ class Test(unittest.TestCase):
 
         # Return patch replacement object.
         return start_result
-
-    if sys.version_info[0] == 2:
-        assertRaisesRegex = unittest.TestCase.assertRaisesRegexp
 
     @wraps(np.testing.assert_array_equal)
     def assertArrayEqual(self, a, b, err_msg='', verbose=True):

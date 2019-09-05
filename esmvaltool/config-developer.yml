@@ -21,9 +21,11 @@
 CMIP6:
   input_dir:
     default: '/'
+    BADC: '[institute]/[dataset]/[exp]/[ensemble]/[mip]/[short_name]/[grid]/[latestversion]'
     DKRZ: '[institute]/[dataset]/[exp]/[ensemble]/[mip]/[short_name]/[grid]/[latestversion]'
+    ETHZ: '[exp]/[mip]/[short_name]/[dataset]/[ensemble]/[grid]/'
   input_file: '[short_name]_[mip]_[dataset]_[exp]_[ensemble]_[grid]_*.nc'
-  output_file: '[project]_[dataset]_[mip]_[exp]_[ensemble]_[field]_[short_name]_[start_year]-[end_year]'
+  output_file: '[project]_[dataset]_[mip]_[exp]_[ensemble]_[short_name]_[start_year]-[end_year]'
   cmor_type: 'CMIP6'
   institutes:
     'ACCESS-CM2': ['CSIRO-ARCCSS-BoM']
@@ -144,7 +146,7 @@ CMIP5:
     DKRZ: '[institute]/[dataset]/[exp]/[frequency]/[modeling_realm]/[mip]/[ensemble]/[latestversion]/[short_name]'
     ETHZ: '[exp]/[mip]/[short_name]/[dataset]/[ensemble]/'
     SMHI: '[dataset]/[ensemble]/[exp]/[frequency]'
-    BSC: '[project]/[exp]/[dataset.lower]'
+    BSC: '[type]/[project]/[exp]/[dataset.lower]'
   input_file: '[short_name]_[mip]_[dataset]_[exp]_[ensemble]_*.nc'
   input_fx_dir:
     default: '/'
@@ -165,7 +167,7 @@ CMIP5:
     'sftlf': 'Amon'
     'sftof': 'Omon'
     'volcello': 'Omon'
-  output_file: '[project]_[dataset]_[mip]_[exp]_[ensemble]_[field]_[short_name]_[start_year]-[end_year]'
+  output_file: '[project]_[dataset]_[mip]_[exp]_[ensemble]_[short_name]_[start_year]-[end_year]'
   institutes:
     'ACCESS1-0': ['CSIRO-BOM']
     'ACCESS1-3': ['CSIRO-BOM']
@@ -230,20 +232,22 @@ CMIP5:
     'NorESM1-ME': ['NCC']
 
 OBS:
+  cmor_strict: false
   input_dir:
     default: 'Tier[tier]/[dataset]'
     BSC: '[type]/[institute.lower]/[dataset.lower]/[freq_folder]/[short_name][freq_base]'
   input_file:
-    default: '[project]_[dataset]_[type]_[version]_[field]_[short_name]_*.nc'
+    default: '[project]_[dataset]_[type]_[version]_[mip]_[short_name]_*.nc'
     BSC: '[short_name]_*.nc'
   input_fx_dir:
     default: 'Tier[tier]/[dataset]'
   input_fx_file:
-    default: '[project]_[dataset]_[type]_fx_[fx_var].nc'
-  output_file: '[project]_[dataset]_[type]_[version]_[field]_[short_name]_[start_year]-[end_year]'
+    default: '[project]_[dataset]_[type]_[version]_fx_[fx_var].nc'
+  output_file: '[project]_[dataset]_[type]_[version]_[mip]_[short_name]_[start_year]-[end_year]'
   cmor_type: 'CMIP5'
 
 obs4mips:
+  cmor_strict: false
   input_dir:
     default: 'Tier[tier]/[dataset]'
   input_file: '[short_name]_[dataset]_[level]_[version]_*.nc'
@@ -251,35 +255,21 @@ obs4mips:
     default: 'Tier[tier]/[dataset]'
   input_fx_file:
     default: '[project]_[dataset]_fx_[fx_var].nc'
-  output_file: '[project]_[dataset]_[level]_[version]_[field]_[short_name]_[start_year]-[end_year]'
+  output_file: '[project]_[dataset]_[level]_[version]_[short_name]_[start_year]-[end_year]'
   cmor_type: 'CMIP6'
   cmor_path: 'obs4mips'
-  cmor_strict: False
 
 ana4mips:
+  cmor_strict: false
   input_dir:
     default: 'Tier[tier]/[dataset]'
   input_file: '[short_name]_[mip]_[type]_[dataset]_*.nc'
-  output_file: '[project]_[mip]_[type]_[dataset]_[field]_[short_name]_[start_year]-[end_year]'
-  cmor_type: 'CMIP5'
-
-CCMVal1:
-  input_dir:
-    default: '[exp]/[dataset]'
-  input_file: '[project]_[exp]_[name]_[ensemble]_[field]_[short_name].nc'
-  output_file: '[project]_[exp]_[name]_[ensemble]_[field]_[short_name]_[start_year]-[end_year]'
-  cmor_type: 'CMIP5'
-
-CCMVal2:
-  input_dir:
-    default: '[exp]/[dataset]'
-  input_file: '[project]_[exp]_[name]_[ensemble]_[field]_[short_name].nc'
-  output_file: '[project]_[exp]_[name]_[ensemble]_[field]_[short_name]_[start_year]-[end_year]'
+  output_file: '[project]_[mip]_[type]_[dataset]_[short_name]_[start_year]-[end_year]'
   cmor_type: 'CMIP5'
 
 EMAC:
   input_dir:
     default: '[dataset]'
   input_file: ''
-  output_file: '[dataset]_[ensemble]_[field]_[short_name]_[start_year]-[end_year]'
+  output_file: '[dataset]_[ensemble]_[short_name]_[start_year]-[end_year]'
   cmor_type: 'CMIP5'

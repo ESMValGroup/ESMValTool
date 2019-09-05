@@ -1,0 +1,27 @@
+SOURCE: CMIP5
+!============
+variable_entry:    rsut
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     toa_outgoing_shortwave_flux
+units:             W m-2
+cell_methods:      time: mean
+cell_measures:     area: areacella
+long_name:         TOA Outgoing Shortwave Radiation
+comment:           at the top of the atmosphere
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          rsut
+type:              real
+positive:          up
+valid_min:         -0.02689
+valid_max:         421.9
+ok_min_mean_abs:   96.72
+ok_max_mean_abs:   114.1
+!----------------------------------
+!

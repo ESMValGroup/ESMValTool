@@ -32,12 +32,10 @@ diagnostics:
     variables:
       rtnt: # TOA TOT net
         preprocessor: pp_rad_derive_var
-        field: T2Ms
         derive: true
         force_derivation: false
       rsut: # TOA SW up all sky
         preprocessor: pp_rad
-        field: T2Ms
     additional_datasets:
       - {dataset: CERES-EBAF,  project: obs4mips,  level: L3B,  version: Ed2-7,  start_year: 2001,  end_year: 2012, tier: 1}
     scripts:

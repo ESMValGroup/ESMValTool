@@ -1,9 +1,7 @@
 """Lint tests."""
-from __future__ import print_function
-
 import os
-import textwrap
 import subprocess
+import textwrap
 
 import pycodestyle  # formerly known as pep8
 
@@ -17,8 +15,7 @@ def test_pep8_conformance():
         'tests',
     ]
     exclude_paths = [
-        'esmvaltool/doc',
-        'esmvaltool/diag_scripts/cvdp/cvdp',
+        'esmvaltool/doc', 'esmvaltool/diag_scripts/cvdp/cvdp',
         'esmvaltool/cmor/tables'
     ]
 

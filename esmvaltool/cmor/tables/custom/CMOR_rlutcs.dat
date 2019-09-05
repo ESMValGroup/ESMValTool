@@ -1,0 +1,26 @@
+SOURCE: CMIP5
+!============
+variable_entry:    rlutcs
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     toa_outgoing_longwave_flux_assuming_clear_sky
+units:             W m-2
+cell_methods:      time: mean
+cell_measures:     area: areacella
+long_name:         TOA Outgoing Clear-Sky Longwave Radiation
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          rlutcs
+type:              real
+positive:          up
+valid_min:         70.59
+valid_max:         377.5
+ok_min_mean_abs:   228.9
+ok_max_mean_abs:   260.4
+!----------------------------------
+!

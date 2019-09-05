@@ -65,6 +65,9 @@ def main(cfg):
     logger.info('The name of the output files will be <variable>_%s.txt',
                 name_outputs)
     variable_name = element['short_name']
+    max_plot_panels = cfg.get('max_plot_panels', 72)
+    numpcs = cfg.get('numpcs', 0)
+    perc = cfg.get('numpcs', 80)
 
     filenames_cat = []
     legend_cat = []
@@ -89,8 +92,8 @@ def main(cfg):
                         numens, cfg['season'], cfg['area'], cfg['extreme'])
 
     # ###################### EOF AND K-MEANS ANALYSES #######################
-    outfiles2 = ens_eof_kmeans(out_dir, name_outputs, numens, cfg['numpcs'],
-                               cfg['perc'], cfg['numclus'])
+    outfiles2 = ens_eof_kmeans(out_dir, name_outputs, numens, numpcs,
+                               perc, cfg['numclus'])
 
     outfiles = outfiles + outfiles2
     provenance_record = get_provenance_record(
@@ -98,12 +101,14 @@ def main(cfg):
 
     # ###################### PLOT AND SAVE FIGURES ##########################
     if write_plots:
-        plot_file = ens_plots(out_dir, cfg['plot_dir'], name_outputs,
+        plotfiles = ens_plots(out_dir, cfg['plot_dir'], name_outputs,
                               cfg['numclus'], 'anomalies',
-                              cfg['output_file_type'])
-        provenance_record['plot_file'] = plot_file
+                              cfg['output_file_type'], cfg['season'],
+                              cfg['area'], cfg['extreme'], max_plot_panels)
+    else:
+        plotfiles = []
 
-    for file in outfiles:
+    for file in outfiles + plotfiles:
         with ProvenanceLogger(cfg) as provenance_logger:
             provenance_logger.log(file, provenance_record)
 

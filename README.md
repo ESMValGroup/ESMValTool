@@ -21,11 +21,12 @@ Please see [CONTRIBUTING.md](https://github.com/ESMValGroup/ESMValTool/blob/vers
 The Anaconda package can be found on [ESMValGroup Anaconda Channel.](https://anaconda.org/ESMValGroup)
 
 First install gcc, g++ and gfortran if these are not available on your system. On Debian based systems, this can be done by
-running `apt install build-essential gfortran`.
+running `apt install build-essential gfortran`. In order to run
+Julia diagnostics, you will also need to [install Julia](https://julialang.org/downloads/) version 1 or greater.
 
 If you already installed Anaconda, you can install ESMValTool by running:
 ```
-conda install -c esmvalgroup esmvaltool -c conda-forge -c birdhouse
+conda install -c esmvalgroup -c conda-forge esmvaltool
 ```
 
 ## Using Docker

@@ -6,7 +6,7 @@ modeling_realm:    atmos
 !----------------------------------
 ! Variable attributes:
 !----------------------------------
-standard_name:     toa_longwave_cloud_radiative_effect
+standard_name:     
 units:             W m-2
 cell_methods:      time: mean
 cell_measures:     area: areacella

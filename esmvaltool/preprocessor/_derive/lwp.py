@@ -4,7 +4,7 @@ import logging
 
 from iris import Constraint
 
-from ._derived_variable_base import DerivedVariableBase
+from ._baseclass import DerivedVariableBase
 
 logger = logging.getLogger(__name__)
 
@@ -13,17 +13,17 @@ class DerivedVariable(DerivedVariableBase):
     """Derivation of variable `lwp`."""
 
     # Required variables
-    _required_variables = {
-        'vars': [{
-            'short_name': 'clwvi',
-            'field': 'T2{frequency}s'
-        }, {
-            'short_name': 'clivi',
-            'field': 'T2{frequency}s'
-        }]
-    }
+    required = [
+        {
+            'short_name': 'clwvi'
+        },
+        {
+            'short_name': 'clivi'
+        },
+    ]
 
-    def calculate(self, cubes):
+    @staticmethod
+    def calculate(cubes):
         """Compute liquid water path.
 
         Note
@@ -61,8 +61,7 @@ class DerivedVariable(DerivedVariableBase):
             'MPI-ESM-LR',
             'MPI-ESM-P',
         ]
-        if ((project in ["CMIP5", "CMIP5_ETHZ"] and dataset in bad_datasets)
-                or (project == 'OBS' and dataset == 'UWisc')):
+        if (project in ["CMIP5", "CMIP5_ETHZ"] and dataset in bad_datasets):
             logger.info(
                 "Assuming that variable clwvi from %s dataset %s "
                 "contains only liquid water", project, dataset)

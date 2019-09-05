@@ -2,12 +2,11 @@
 
 import cf_units
 import iris
-from iris import Constraint
 import numba
 import numpy as np
 from scipy import constants
 
-from ._derived_variable_base import DerivedVariableBase
+from ._baseclass import DerivedVariableBase
 
 # Constants
 AVOGADRO_CONST = constants.value('Avogadro constant')
@@ -25,17 +24,17 @@ class DerivedVariable(DerivedVariableBase):
     """Derivation of variable `toz`."""
 
     # Required variables
-    _required_variables = {
-        'vars': [{
-            'short_name': 'tro3',
-            'field': 'T3{frequency}'
-        }, {
-            'short_name': 'ps',
-            'field': 'T2{frequency}s'
-        }]
-    }
+    required = [
+        {
+            'short_name': 'tro3'
+        },
+        {
+            'short_name': 'ps'
+        },
+    ]
 
-    def calculate(self, cubes):
+    @staticmethod
+    def calculate(cubes):
         """Compute total column ozone.
 
         Note
@@ -45,8 +44,9 @@ class DerivedVariable(DerivedVariableBase):
 
         """
         tro3_cube = cubes.extract_strict(
-            Constraint(name='mole_fraction_of_ozone_in_air'))
-        ps_cube = cubes.extract_strict(Constraint(name='surface_air_pressure'))
+            iris.Constraint(name='mole_fraction_of_ozone_in_air'))
+        ps_cube = cubes.extract_strict(
+            iris.Constraint(name='surface_air_pressure'))
 
         p_layer_widths = _pressure_level_widths(
             tro3_cube, ps_cube, top_limit=0.0)

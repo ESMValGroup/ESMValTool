@@ -7,7 +7,8 @@ Cloud Regime Error Metrics (CREM).
 
   Description
     Calculates the Cloud Regime Error Metric (CREM) following Williams and
-    Webb (2009, Clim. Dyn.)
+    Webb (2009, Clim. Dyn.). Regridding to the 2.5x2.5 degree ISCCP grid is
+    done by the ESMValTool preprocessor.
 
   Required diag_script_info attributes (diagnostics specific)
     none
@@ -22,12 +23,12 @@ Cloud Regime Error Metrics (CREM).
     none
 
   Caveats
-    TO DO:
-      1) add metadata to plot
-      2) add metadata to netcdf output
-      3) use preprocessor for regridding input data
+    none
 
   Modification history
+    20190216-A_laue_ax: outsourced regridding to preprocessor
+    20190215-A_laue_ax: added metadata to netcdf output and plot
+    20190213-A_laue_ax: made code more flexible to support CMIP6 data
     20181012-A_laue_ax: extended (optional) netCDF output
     20180920-A_laue_ax: code adapted for ESMValTool v2.0
     20171128-A_laue_ax: added author and diagname to meta data
@@ -45,14 +46,14 @@ Cloud Regime Error Metrics (CREM).
 import logging
 import os
 import sys
+from pprint import pformat
 
 import matplotlib.pyplot as plt
 import numpy as np
 from netCDF4 import Dataset
-from scipy.ndimage.interpolation import map_coordinates as interp2d
 
-from esmvaltool.diag_scripts.shared import (group_metadata, run_diagnostic,
-                                            select_metadata)
+from esmvaltool.diag_scripts.shared import (
+    group_metadata, ProvenanceLogger, run_diagnostic, select_metadata)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -77,6 +78,8 @@ def main(cfg):
     ww_vars = ('albisccp', 'pctisccp', 'cltisccp', 'rsut', 'rsutcs', 'rlut',
                'rlutcs', 'sic')
     ww_vars_plus = ('snc', 'snw')
+    # alternative variable names to check if variable was not found (CMIP6)
+    ww_vars_alternative = {'sic': 'siconc'}
 
     # for human readable output
     # regions/regimes as they come from the CREM calculation
@@ -102,11 +105,6 @@ def main(cfg):
 
     # provenance information
     climofiles = []
-    vartags = []
-    modeltags = []
-
-    for var in ww_vars:
-        vartags.append("V_" + var)
 
     # create list of dataset names (plot labels)
     models = []
@@ -116,18 +114,28 @@ def main(cfg):
 
     for dataset in grouped_input_data:
         models.append(dataset)
-        modeltags.append('M_' + dataset)
-
         pointers = {}
 
         for var in ww_vars:
             selection = select_metadata(input_data, dataset=dataset,
                                         short_name=var)
+            alt_var = None
+            if not selection:
+                # try alternative variable name (if defined)
+                if var in ww_vars_alternative:
+                    alt_var = ww_vars_alternative[var]
+                    selection = select_metadata(input_data, dataset=dataset,
+                                                short_name=alt_var)
             if not selection:
                 missing_vars.append(var)
             else:
-                key = var + '_nc'
-                pointers[key] = selection[0]['filename']
+                key_nc = var + '_nc'
+                key_var = var
+                pointers[key_nc] = selection[0]['filename']
+                if alt_var is None:
+                    pointers[key_var] = var
+                else:
+                    pointers[key_var] = alt_var
 
         # snow variable: use 'snc' if available or alternatively use 'snw'
 
@@ -136,22 +144,25 @@ def main(cfg):
         for var in ww_vars_plus:
             selection = select_metadata(input_data, dataset=dataset,
                                         short_name=var)
-            key = var + '_nc'
+            key_nc = var + '_nc'
+            key_var = var
             if not selection:
                 logger.info("%s: no data for variable snc found, trying "
                             "variable snw instead", dataset)
-                pointers[key] = ""
+                pointers[key_nc] = ""
+                pointers[key_var] = ""
             else:
-                pointers[key] = selection[0]["filename"]
-                vartags.append('V_' + var)
+                pointers[key_nc] = selection[0]["filename"]
+                pointers[key_var] = var
                 missing_snow = False
                 break
 
         if missing_snow:
             missing_vars.append(ww_vars_plus[0] + " or " + ww_vars_plus[1])
 
-        for filen in pointers:
-            climofiles.append(','.join(filen))
+        for key in pointers:
+            if key[-3:] == '_nc':
+                climofiles.append(pointers[key])
 
         # check if all variables are available
 
@@ -169,24 +180,15 @@ def main(cfg):
 
         # sort results into output array
 
-        # logger.info("==================================")
-        # logger.info(dataset)
-        # logger.info("==================================")
-        # logger.info(crem_pd)
-        # logger.info("..................................")
         j = 0
         for region in regions:
-            # logger.info("*** " + region + " ***")
             regime = regions[region]
             k = 0
             for reg in regime:
                 idx = allregimes.index(reg)
                 r_crems[i, j, idx] = r_crem_pd[j, k]
-                # printstr = ": %f" % r_crem_pd[j, k]
-                # logger.info("  * " + reg + printstr)
                 k = k + 1
             j = j + 1
-        # logger.info("==================================")
 
         i = i + 1
 
@@ -196,14 +198,32 @@ def main(cfg):
     logger.info(crems)
     logger.info("==================================")
 
+    # define diagnostic internal provenance data
+
+    provenance_record = {
+        'caption': 'Cloud Regime Error Metric (CREM) following Williams ' +
+                   'and Webb (2009, Clim. Dyn.).',
+        'statistics': ['other'],
+        'domains': ['global'],
+        'plot_type': 'bar',
+        'authors': [
+            'will_ke',
+            'laue_ax',
+        ],
+        'references': [
+            'acknow_project',
+        ],
+        'ancestors': climofiles,
+    }
+
     # plot results
 
     if cfg['write_plots']:
-        oname = os.path.join(
+        plotname = os.path.join(
             cfg['plot_dir'],
             'ww09_metric_multimodel.' + cfg['output_file_type'],
         )
-        logger.debug("Plotting results to %s", oname)
+        logger.debug("Plotting results to %s", plotname)
 
         plt.figure()
         ypos = np.arange(nummod)
@@ -214,153 +234,59 @@ def main(cfg):
         # draw observational uncertainties (dashed red line)
         plt.plot([0.96, 0.96], [-0.5, nummod - 0.5], 'r--')
 
-        plt.savefig(oname, bbox_inches='tight')
+        plt.savefig(plotname, bbox_inches='tight')
 
-        # add meta data to plot (for reporting)
+        provenance_record['plot_file'] = plotname
 
-#        basetags = 'TO BE DONE'
-#
-#        ESMValMD("both",
-#            oname,
-#            basetags + ['DM_global', 'PT_bar'] + modeltags + vartags,
-#            'Cloud Regime Error Metric (CREM) following Williams and Webb '
-#            '(2009, Clim. Dyn.).',
-#            '#ID_ww09_crem',
-#            ','.join(climofiles), 'ww09_ESMValTool.py', 'A_will_ke')
+    # save results to netcdf
 
-    if cfg['write_netcdf']:
-        oname = os.path.join(cfg['work_dir'], 'ww09_metric_multimodel.nc')
-        logger.debug("Saving results to %s", oname)
-        # convert strings
-        modstr_out = np.array(models, dtype=object)
-        regionstr_out = np.array(list(regions.keys()), dtype=object)
-        regimestr_out = np.array(allregimes, dtype=object)
-        # open a new netCDF file for writing
-        ncfile = Dataset(oname, 'w')
-        # create dimensions
-        ncfile.createDimension('model', nummod)
-        ncfile.createDimension('region', len(regions))
-        ncfile.createDimension('regime', len(allregimes))
-        # create variables
-        data = ncfile.createVariable('crem', np.dtype('float32').char,
-                                     ('model'))
-        r_data = ncfile.createVariable('r_crem', np.dtype('float32').char,
-                                       ('model', 'region', 'regime'),
-                                       fill_value=999.9)
-        mod = ncfile.createVariable('model', np.dtype('int32').char,
-                                    ('model'))
-        reg = ncfile.createVariable('region', np.dtype('int32').char,
-                                    ('region'))
-        rgm = ncfile.createVariable('regime', np.dtype('int32').char,
-                                    ('regime'))
-        mod_name = ncfile.createVariable('model_name', str, ('model'))
-        reg_name = ncfile.createVariable('region_name', str, ('region'))
-        rgm_name = ncfile.createVariable('regime_name', str, ('regime'))
-        # write data to variable
-        data[:] = crems
-        r_data[:, :, :] = r_crems
-        mod[:] = range(nummod)
-        reg[:] = range(len(regions))
-        rgm[:] = range(len(allregimes))
-        mod_name[:] = modstr_out
-        reg_name[:] = regionstr_out
-        rgm_name[:] = regimestr_out
-        # close the file
-        ncfile.close()
+    oname = os.path.join(cfg['work_dir'], 'ww09_metric_multimodel.nc')
+    logger.debug("Saving results to %s", oname)
+    # convert strings
+    modstr_out = np.array(models, dtype=object)
+    regionstr_out = np.array(list(regions.keys()), dtype=object)
+    regimestr_out = np.array(allregimes, dtype=object)
+    # open a new netCDF file for writing
+    ncfile = Dataset(oname, 'w')
+    # create dimensions
+    ncfile.createDimension('model', nummod)
+    ncfile.createDimension('region', len(regions))
+    ncfile.createDimension('regime', len(allregimes))
+    # create variables
+    data = ncfile.createVariable('crem', np.dtype('float32').char, ('model'))
+    r_data = ncfile.createVariable('r_crem', np.dtype('float32').char,
+                                   ('model', 'region', 'regime'),
+                                   fill_value=999.9)
+    mod = ncfile.createVariable('model', np.dtype('int32').char, ('model'))
+    reg = ncfile.createVariable('region', np.dtype('int32').char, ('region'))
+    rgm = ncfile.createVariable('regime', np.dtype('int32').char, ('regime'))
+    mod_name = ncfile.createVariable('model_name', str, ('model'))
+    reg_name = ncfile.createVariable('region_name', str, ('region'))
+    rgm_name = ncfile.createVariable('regime_name', str, ('regime'))
+    # write data to variable
+    data[:] = crems
+    r_data[:, :, :] = r_crems
+    mod[:] = range(nummod)
+    reg[:] = range(len(regions))
+    rgm[:] = range(len(allregimes))
+    mod_name[:] = modstr_out
+    reg_name[:] = regionstr_out
+    rgm_name[:] = regimestr_out
+    # close the file
+    ncfile.close()
+
+    # add provenance data to netcdf and plot
+
+    logger.info("Recording provenance of %s:\n%s", oname,
+                pformat(provenance_record))
+
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(oname, provenance_record)
 
 
-# Reading and Regridding functions (scroll down for main program)
-
-
-def regrid(a_in, x_in, y_in, x_out, y_out, fixmdis=True, x_cyclic=0.0):
+def read_and_check(srcfilename, varname, lons2, lats2, time2):
     """
-    Function for regridding.
-
-    Regridding data onto 2.5 degree lat-long grid as the ISCCP
-    obs data used for comparison was stored on.
-
-    a_in : float
-        input data
-    x_in : float
-        x coordinates (longitudes) of input data
-    y_in : float
-        y coordinates (latitudes) of input data
-    x_out : float
-        x coordinates (longitudes) of target grid
-    y_out : float
-        y coordinates (latitudes) of target grid
-    fixmdis : Bool
-        post-process regridded results: replace with original values for
-        any "exact" coordinate matches
-    x_cyclic : float
-        xxxxx
-    """
-    # first represent missing data as np.NAN
-    # - this replicates the default "hard MDI" behaviour of IDL regrid
-    # code used by WW09 (in conjunction with the post-regrid "put back
-    # exact coord matches" - see last part)
-    a_in = a_in.copy()  # avoid overwriting
-    if isinstance(a_in, np.ma.masked_array):
-        a_in[np.ma.getmaskarray(a_in)] = np.NAN
-
-    # replicate a column to the right if we have "x-cyclic" data
-
-    # copy inputs to avoid changing them
-    x_in = x_in.copy()
-    y_in = y_in.copy()
-
-    # sort the input Xs and Ys to guarantee ascending order
-    n_x = len(x_in)
-    n_y = len(y_in)
-    i_sort_x = np.argsort(x_in)
-    x_in = np.array(x_in)[i_sort_x]
-    a_in = a_in[:, i_sort_x]
-    i_sort_y = np.argsort(y_in)
-    y_in = np.array(y_in)[i_sort_y]
-    a_in = a_in[i_sort_y, :]
-
-    # simulate cyclic X-coords, if enabled
-    if x_cyclic > 0.0:
-        a_inew = list(range(n_x)) + [0]   # Python 2-->3: range-->list(range)
-        n_x += 1
-        a_in = a_in[:, a_inew]   # recopy one lhs column on rhs
-        x_in = x_in[a_inew]      # ditto for coords
-        x_in[-1] += x_cyclic    # bump last element by range
-
-    # convert input+output coordinate specs to "fractional coordinate values"
-    xinds = np.interp(x_out, x_in, range(n_x))
-    yinds = np.interp(y_out, y_in, range(n_y))
-
-    # make a full coordinate mesh
-    ainds = np.meshgrid(xinds, yinds)
-    ainds = np.array(ainds)
-    ainds = ainds[[1, 0]]
-
-    # do main interpolation
-    result = interp2d(a_in, ainds, order=1, mode='nearest', cval=np.NAN,
-                      prefilter=False)
-    # 1st-order spline is just bilinear interpolation
-
-    # post-process replacing originals for any "exact" coordinate matches
-    if fixmdis:
-        bx_exact = abs(xinds - np.round(xinds, 0)) < 1e-6
-        i_xout_exact = np.arange(n_x)[bx_exact]
-        i_xin_exact = [int(round(ix)) for ix in xinds[i_xout_exact]]
-
-        by_exact = abs(yinds - np.round(yinds, 0)) < 1e-6
-        i_yout_exact = np.arange(n_y)[by_exact]
-        i_yin_exact = [int(round(iy)) for iy in yinds[i_yout_exact]]
-
-        for (i, ix_out) in enumerate(i_xout_exact):
-            for (j, iy_out) in enumerate(i_yout_exact):
-                result[iy_out, ix_out] = a_in[i_yin_exact[j], i_xin_exact[i]]
-
-    return result
-
-
-def read_and_regrid(srcfilename, varname, lons2, lats2):
-    """
-    Function for reading and regridding cmor compliant input data.
+    Function for reading and checking for correct regridding of input data.
 
     Parameters
     ----------
@@ -369,33 +295,70 @@ def read_and_regrid(srcfilename, varname, lons2, lats2):
     varname : str
         variable name in netcdf
     lons2 : float
-        longitudes of target grid
+        longitudes of target grid (ISCCP)
     lats2 : float
-        latitudes of target grid
+        latitudes of target grid (ISCCP)
+    time2: integer
+        number of time steps
     """
-    npts = len(lons2)
-    nrows = len(lats2)
+    nlon = len(lons2)
+    nlat = len(lats2)
 
-    n_time = len(Dataset(srcfilename, 'r').variables['time'][:])
-    data_rg = np.zeros((n_time, nrows, npts))
-    logger.debug('Number of data times in file %i', n_time)
+    src_dataset = Dataset(srcfilename, 'r')
+
+    n_time = len(src_dataset.variables['time'][:])
+    logger.debug('Number of data times in file %s is %i', srcfilename, n_time)
+
+    # check number of time steps is matching
+
+    if n_time != time2:
+        logger.error("error: number of time steps in input files are "
+                     "not equal")
+        raise Exception('Variables contain different number of time steps '
+                        '(see log file for details).')
+
+    grid_mismatch = False
+    coord_mismatch = False
+
+    # check longitudes
+
+    lons = src_dataset.variables['lon'][:]
+    if nlon != len(lons):
+        grid_mismatch = True
+    if np.amax(np.absolute(lons - lons2)) > 1.0e-3:
+        coord_mismatch = True
+
+    # check latitudes
+
+    lats = src_dataset.variables['lat'][:]
+    if nlat != len(lats):
+        grid_mismatch = True
+    if np.amax(np.absolute(lats - lats2)) > 1.0e-3:
+        coord_mismatch = True
+
+    if grid_mismatch:
+        logger.error("error: input data are not on 2.5x2.5 deg ISCCP grid."
+                     "lons = %i (required: %i), lats = %i (required: %i)",
+                     len(lons), nlon, len(lats), nlat)
+
+    if coord_mismatch:
+        logger.error("error: input data are not on 2.5x2.5 deg ISCCP grid, "
+                     "longitudes and/or latitudes differ from ISCCP grid by "
+                     "more than 1.0e-3")
+
+    if (grid_mismatch or coord_mismatch):
+        raise Exception('Input variables are not on 2.5x2.5 deg ISCCP grid '
+                        '(see log file for details).')
 
     # read data
-    src_dataset = Dataset(srcfilename, 'r')
     src_data = src_dataset.variables[varname]
 
-    # grid of input data
-    lats = src_dataset.variables['lat'][:]
-    lons = src_dataset.variables['lon'][:]
-
     # create mask (missing values)
-    data = np.ma.masked_equal(src_data, getattr(src_data, "_FillValue"))
-
-    for i_t in range(n_time):    # range over fields in the file
-        data_rg[i_t, :, :] = regrid(data[i_t, :, :], lons, lats, lons2, lats2,
-                                    False, x_cyclic=360.0)
-
-    rgmasked = np.ma.masked_invalid(data_rg)
+    try:
+        data = np.ma.masked_equal(src_data, getattr(src_data, "_FillValue"))
+        rgmasked = np.ma.masked_invalid(data)
+    except AttributeError:
+        rgmasked = np.ma.masked_invalid(src_data)
     np.ma.set_fill_value(rgmasked, 0.0)
 
     return np.ma.filled(rgmasked)
@@ -473,14 +436,6 @@ def crem_calc(pointers):
     # Note this has been tested with regular lat-long grids - other grid
     # types may need changes to the regrid subroutine.
 
-    usrnames = ['albisccp', 'pctisccp', 'cltisccp', 'rsut', 'rsutcs', 'rlut',
-                'rlutcs', 'snc', 'sic']
-
-    varnames = usrnames[:]    # names used for nc vars.
-
-    if not pointers['snc_nc']:
-        varnames[7] = 'snw'
-
     # target grid spec
     npts = 144
     nrows = 72
@@ -492,50 +447,44 @@ def crem_calc(pointers):
     lons2 = np.array([z_x + d_x * (i + 1.0) for i in range(npts)])
     lats2 = np.array([z_y + d_y * (j + 1.0) for j in range(nrows)])
 
-    # Read in and regrid input data
+    # Read input data
+    # ---------------
+    # pointers['xxx_nc'] = file name of input file
+    # pointers['xxx'] = actual variable name in input file
 
-    logger.debug('Reading and regridding albisccp_nc')
-    albisccp_data = read_and_regrid(pointers['albisccp_nc'], varnames[0],
-                                    lons2, lats2)
-#    E.add_to_filelist(pointers['albisccp_nc'])
-    logger.debug('Reading and regridding pctisccp_nc')
-    pctisccp_data = read_and_regrid(pointers['pctisccp_nc'], varnames[1],
-                                    lons2, lats2)
-#    E.add_to_filelist(pointers['pctisccp_nc'])
-    logger.debug('Reading and regridding cltisccp_nc')
-    cltisccp_data = read_and_regrid(pointers['cltisccp_nc'], varnames[2],
-                                    lons2, lats2)
-#    E.add_to_filelist(pointers['cltisccp_nc'])
-    logger.debug('Reading and regridding rsut_nc')
-    rsut_data = read_and_regrid(pointers['rsut_nc'], varnames[3],
-                                lons2, lats2)
-#    E.add_to_filelist(pointers['rsut_nc'])
-    logger.debug('Reading and regridding rsutcs_nc')
-    rsutcs_data = read_and_regrid(pointers['rsutcs_nc'], varnames[4],
-                                  lons2, lats2)
-#    E.add_to_filelist(pointers['rsutcs_nc'])
-    logger.debug('Reading and regridding rlut_nc')
-    rlut_data = read_and_regrid(pointers['rlut_nc'], varnames[5],
-                                lons2, lats2)
-#    E.add_to_filelist(pointers['rlut_nc'])
-    logger.debug('Reading and regridding rlutcs_nc')
-    rlutcs_data = read_and_regrid(pointers['rlutcs_nc'], varnames[6],
-                                  lons2, lats2)
-#    E.add_to_filelist(pointers['rlutcs_nc'])
-    logger.debug('Reading and regridding sic_nc')
-    sic_data = read_and_regrid(pointers['sic_nc'], varnames[8],
-                               lons2, lats2)
-#    E.add_to_filelist(pointers['sic_nc'])
+    logger.debug('Reading albisccp')
+    ntime2 = len(Dataset(pointers['albisccp_nc'], 'r').variables['time'][:])
+    albisccp_data = read_and_check(pointers['albisccp_nc'],
+                                   pointers['albisccp'], lons2, lats2, ntime2)
+    logger.debug('Reading pctisccp')
+    pctisccp_data = read_and_check(pointers['pctisccp_nc'],
+                                   pointers['pctisccp'], lons2, lats2, ntime2)
+    logger.debug('Reading cltisccp')
+    cltisccp_data = read_and_check(pointers['cltisccp_nc'],
+                                   pointers['cltisccp'], lons2, lats2, ntime2)
+    logger.debug('Reading rsut')
+    rsut_data = read_and_check(pointers['rsut_nc'],
+                               pointers['rsut'], lons2, lats2, ntime2)
+    logger.debug('Reading rsutcs')
+    rsutcs_data = read_and_check(pointers['rsutcs_nc'],
+                                 pointers['rsutcs'], lons2, lats2, ntime2)
+    logger.debug('Reading rlut')
+    rlut_data = read_and_check(pointers['rlut_nc'],
+                               pointers['rlut'], lons2, lats2, ntime2)
+    logger.debug('Reading rlutcs')
+    rlutcs_data = read_and_check(pointers['rlutcs_nc'],
+                                 pointers['rlutcs'], lons2, lats2, ntime2)
+    logger.debug('Reading sic')
+    sic_data = read_and_check(pointers['sic_nc'],
+                              pointers['sic'], lons2, lats2, ntime2)
     if not pointers['snc_nc']:
-        logger.debug('Reading and regridding snw_nc')
-        snc_data = read_and_regrid(pointers['snw_nc'], varnames[7],
-                                   lons2, lats2)
-#        E.add_to_filelist(pointers['snw_nc'])
+        logger.debug('Reading snw')
+        snc_data = read_and_check(pointers['snw_nc'],
+                                  pointers['snw'], lons2, lats2, ntime2)
     else:
-        logger.debug('Reading and regridding snc_nc')
-        snc_data = read_and_regrid(pointers['snc_nc'], varnames[7],
-                                   lons2, lats2)
-#        E.add_to_filelist(pointers['snc_nc'])
+        logger.debug('Reading snc')
+        snc_data = read_and_check(pointers['snc_nc'],
+                                  pointers['snc'], lons2, lats2, ntime2)
 
     # -----------------------------------------------------------
 

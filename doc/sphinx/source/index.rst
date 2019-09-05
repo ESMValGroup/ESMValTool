@@ -9,15 +9,13 @@ Welcome to ESMValTool's documentation!
 .. toctree::
    :maxdepth: 2
 
-   preface
-   known_issues
-
+   preface/index
+   getting_started/index
+   esmvalcore/index
+   esmvaldiag/index
    recipes/index
-
-   user_guide2/index
-   developer_guide2/index
-
    codedoc2/esmvaltool
+
 
 Indices and tables
 ==================

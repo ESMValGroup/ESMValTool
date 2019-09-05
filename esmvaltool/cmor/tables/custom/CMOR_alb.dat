@@ -6,7 +6,7 @@ modeling_realm:    atmos
 !----------------------------------
 ! Variable attributes:
 !----------------------------------
-standard_name:     surface_albedo
+standard_name:     
 units:             1
 cell_methods:      time: mean
 cell_measures:     area: areacella

@@ -2,6 +2,7 @@
 
 import sys
 import unittest
+from io import StringIO
 
 import iris
 import iris.coord_categorisation
@@ -112,10 +113,6 @@ class TestCMORCheck(unittest.TestCase):
 
     def test_warning_fail_on_error(self):
         """Test report warning function with fail_on_error"""
-        if sys.version_info[0] == 2:
-            from StringIO import StringIO
-        else:
-            from io import StringIO
         checker = CMORCheck(self.cube, self.var_info, fail_on_error=True)
         stdout = sys.stdout
         sys.stdout = StringIO()
@@ -129,12 +126,17 @@ class TestCMORCheck(unittest.TestCase):
         self._check_cube()
 
     def _check_cube(self, automatic_fixes=False, frequency=None):
-        checker = CMORCheck(
-            self.cube, self.var_info,
-            automatic_fixes=automatic_fixes, frequency=frequency
-        )
-        checker.check_metadata()
-        checker.check_data()
+        """Apply checks and optionally automatic fixes to self.cube."""
+
+        def checker(cube):
+            return CMORCheck(
+                cube,
+                self.var_info,
+                automatic_fixes=automatic_fixes,
+                frequency=frequency)
+
+        self.cube = checker(self.cube).check_metadata()
+        self.cube = checker(self.cube).check_data()
 
     def test_check_with_month_number(self):
         """Test checks succeeds for a good cube with month number"""
@@ -157,15 +159,15 @@ class TestCMORCheck(unittest.TestCase):
         self._check_cube()
 
     def test_check_with_unit_conversion(self):
-        """Test check succeds for a good cube requiring unit converision"""
+        """Test check succeeds for a good cube requiring unit conversion"""
         self.cube.units = 'days'
         self._check_cube()
 
     def test_check_with_psu_units(self):
-        """Test check succeds for a good cube with psu units"""
+        """Test check succeeds for a good cube with psu units"""
         self.var_info.units = 'psu'
         self.cube = self.get_cube(self.var_info)
-        self._check_cube()
+        self._check_cube(automatic_fixes=True)
 
     def test_check_with_positive(self):
         """Check variable with positive attribute"""
@@ -201,8 +203,7 @@ class TestCMORCheck(unittest.TestCase):
     def test_rank_with_scalar_coords(self):
         """Check succeeds even if a required coordinate is a scalar coord"""
         self.cube = self.cube.extract(
-            iris.Constraint(time=self.cube.coord('time').cell(0))
-        )
+            iris.Constraint(time=self.cube.coord('time').cell(0)))
         self._check_cube()
 
     def test_rank_unestructured_grid(self):
@@ -272,8 +273,8 @@ class TestCMORCheck(unittest.TestCase):
         cube_points = self.cube.coord('latitude').points
         reference = numpy.linspace(90, -90, 20, endpoint=True)
         for index in range(20):
-            self.assertTrue(iris.util.approx_equal(cube_points[index],
-                                                   reference[index]))
+            self.assertTrue(
+                iris.util.approx_equal(cube_points[index], reference[index]))
 
     def test_not_correct_lons(self):
         """Fail if longitudes are not correct in metadata step"""
@@ -342,10 +343,8 @@ class TestCMORCheck(unittest.TestCase):
         """Test automatic fix for time units"""
         self.cube.coord('time').units = 'days since 1860-1-1 00:00:00'
         self._check_cube()
-        self.assertEquals(
-            self.cube.coord('time').units.origin,
-            'days since 1950-1-1 00:00:00'
-        )
+        assert (self.cube.coord('time').units.origin ==
+                'days since 1950-1-1 00:00:00')
 
     def test_time_automatic_fix_failed(self):
         """Test automatic fix fail for incompatible time units"""

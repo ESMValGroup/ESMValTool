@@ -45,17 +45,33 @@ begin
   YEAR2 = 2016
 
     ; Selected variable (standard name)
-  VARS = (/"clt"/)
+  VAR = (/"clt"/)
 
   ; Name in the raw data
   NAME = (/"cloud_fraction"/)
 
-  ; MIPS
-  MIPS = (/"Amon"/)
+  ; MIP
+  MIP = (/"Amon"/)
+
+  ; Frequency
+  FREQ = (/"mon"/)
 
   ; CMOR table
   CMOR_TABLE = getenv("esmvaltool_root") + \
-    "/cmor/tables/cmip5/Tables/CMIP5_" + MIPS
+    "/cmor/tables/cmip5/Tables/CMIP5_" + MIP
+
+  ; Type
+  TYPE = "sat"
+
+  ; Version
+  VERSION = "NOAA"
+
+  ; Global attributes
+  SOURCE = "https://www.ncdc.noaa.gov/cdr/atmospheric/avhrr-cloud-" + \
+    "properties-patmos-x"
+  REF = "Heidinger et al., NOAA National Centers for Environmental " + \
+    "Information, doi:10.7289/V5348HCK, last access: 10 February 2019"
+  COMMENT = ""
 
 end
 
@@ -75,9 +91,9 @@ begin
   delete(files)
   delete(f)
 
-  do vv = 0, dimsizes(VARS) - 1
+  do vv = 0, dimsizes(VAR) - 1
 
-    log_info("Processing " + VARS(vv))
+    log_info("Processing " + VAR(vv) + " (" + MIP(vv) + ")")
 
     do yy = YEAR1, YEAR2
 
@@ -89,8 +105,6 @@ begin
       output&time = create_timec(yy, yy)
       output&lat = lat
       output&lon = lon
-
-      log_info("Year " + yy)
 
       do mm = 1, 12
 
@@ -168,65 +182,39 @@ begin
 
       end do  ; month
 
-      if (VARS(vv).eq."clt") then
+      if (VAR(vv).eq."clt") then
         output = 100. * output  ; [1] --> [%]
       end if
 
-      ; Format time coordinate
-      ctime = time_attrib(output&time, yy, yy, "M")
-      delete(output&time)
-      output&time = ctime
-      delete(ctime)
-
-      ; Format latitude coordinate
+      ; Format coordinates
+      output!0 = "time"
       output!1 = "lat"
-      if (isMonotonic(output&lat) .eq. 0) then
-        error_msg("f", DIAG_SCRIPT, "", "non-monotonic latitude coordinate")
-      end if
-      if (isMonotonic(output&lat) .eq. -1) then
-        output = output(:, ::-1, :)
-      end if
-      clat = lat_attrib(output&lat)
-      delete(output&lat)
-      output&lat = clat
-      delete(clat)
-
-      ; Format longitude coordinate
       output!2 = "lon"
-      if (isMonotonic(output&lon) .eq. 0) then
-        error_msg("f", DIAG_SCRIPT, "", "non-monotonic longitude coordinate")
-      end if
-      if (any(output&lon.lt.0.)) then
-        output = lonFlip(output)
-      end if
-      clon = lon_attrib(output&lon)
-      delete(output&lon)
-      output&lon = clon
-      delete(clon)
+      format_coords(output, yy + "0101", yy + "1231", FREQ(vv))
 
       ; Set variable attributes
-      tmp = var_attrib(output, VARS(vv), CMOR_TABLE(vv))
+      tmp = format_variable(output, VAR(vv), CMOR_TABLE(vv))
       delete(output)
       output = tmp
       delete(tmp)
 
-      ; Set global attributes
-      gAtt = set_global_atts( \
-        OBSNAME, TIER, \
-        "https://www.ncdc.noaa.gov/cdr/atmospheric/avhrr-cloud-" + \
-        "properties-patmos-x", \
-        "Heidinger et al., NOAA National Centers for Environmental " + \
-        "Information, doi:10.7289/V5348HCK, last access: 10 February 2019", \
-        "")
+      ; Calculate coordinate bounds
+      bounds = guess_coord_bounds(output, FREQ(vv))
 
-      ; Outfile
-      fout = output_dir_path + "OBS_" + OBSNAME + "_sat_NOAA_" + MIPS(vv) + \
-        "_" + VARS(vv) + "_" + yy + "01-" + yy + "12.nc"
+      ; Set global attributes
+      gAtt = set_global_atts(OBSNAME, TIER, SOURCE, REF, COMMENT)
+
+      ; Output file
+      DATESTR = yy + "01-" + yy + "12"
+      fout = output_dir_path + \
+        str_join((/"OBS", OBSNAME, TYPE, VERSION, \
+                   MIP(vv), VAR(vv), DATESTR/), "_") + ".nc"
 
       ; Write variable
-      write_nc(fout, VARS(vv), output, gAtt)
+      write_nc(fout, VAR(vv), output, bounds, gAtt)
       delete(gAtt)
       delete(output)
+      delete(bounds)
 
     end do  ; year
 

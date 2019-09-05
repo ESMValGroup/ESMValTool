@@ -79,7 +79,6 @@ diagnostics:
     variables:
       pr:
         preprocessor: preproc
-        field: T2Ms
     scripts:
       main:
         script: ensclus/ensclus.py
@@ -88,7 +87,6 @@ diagnostics:
         ## Information required:
         ##-------------------------------about data-------------------------------------------
         ## Write only letters or numbers, no punctuation marks!
-        ## If you want to leave the field empty write 'no' 
         season: 'JJA'               #seasonal average
         area: 'EU'                  #regional average (examples:'EAT':Euro-Atlantic
                                     #                           'PNA': Pacific North American
@@ -100,4 +98,5 @@ diagnostics:
         #Either set perc or numpcs:
         perc: 80               #cluster analysis is applied on a number of PCs such as they explain
                                #'perc' of total variance
-        numpcs: 'no'           #number of PCs
+        numpcs: 0              #number of PCs to retain. Has priority over perc unless set to 0
+        max_plot_panels: 72    #threshold in number of panels in a plot to create multiple figures

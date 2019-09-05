@@ -2,10 +2,8 @@
 import logging
 
 import cf_units
-import iris
 import iris.coord_categorisation
 import iris.coords
-import iris.cube
 import iris.exceptions
 import iris.util
 import numpy as np
@@ -17,7 +15,7 @@ class CMORCheckError(Exception):
     """Exception raised when a cube does not pass the CMORCheck."""
 
 
-class CMORCheck(object):
+class CMORCheck():
     """Class used to check the CMOR-compliance of the data.
 
     It can also fix some minor errors and does some minor data
@@ -78,13 +76,14 @@ class CMORCheck(object):
 
         It will also report some warnings in case of minor errors and
         homogenize some data:
+
             - Equivalent calendars will all default to the same name.
             - Auxiliary coordinates year, month_number, day_of_month and
               day_of_year will be added for the time axis.
 
         Raises
         ------
-        CMORCheckException:
+        CMORCheckError
             If errors are found. If fail_on_error attribute is set to True,
             raises as soon as an error is detected. If set to False, it perform
             all checks and then raises.
@@ -104,13 +103,14 @@ class CMORCheck(object):
         self.report_errors()
 
         self._add_auxiliar_time_coordinates()
+        return self._cube
 
     def report_errors(self):
         """Report detected errors.
 
         Raises
         ------
-        CMORCheckError:
+        CMORCheckError
             If any errors were reported before calling this method.
 
         """
@@ -144,7 +144,7 @@ class CMORCheck(object):
 
         Raises
         ------
-        CMORCheckException:
+        CMORCheckError
             If errors are found. If fail_on_error attribute is set to True,
             raises as soon as an error is detected. If set to False, it perform
             all checks and then raises.
@@ -154,7 +154,7 @@ class CMORCheck(object):
             logger = logging.getLogger(__name__)
 
         if self._cmor_var.units:
-            units = self._get_efective_units()
+            units = self._get_effective_units()
             if str(self._cube.units) != units:
                 self._cube.convert_units(units)
 
@@ -162,6 +162,7 @@ class CMORCheck(object):
 
         self.report_warnings(logger)
         self.report_errors()
+        return self._cube
 
     def _check_fill_value(self):
         """Check fill value."""
@@ -170,7 +171,6 @@ class CMORCheck(object):
         #  be encoded in the numpy.ma object created.
         #
         #  => Very difficult to check!
-        pass
 
     def _check_var_metadata(self):
         """Check metadata of variable."""
@@ -182,17 +182,18 @@ class CMORCheck(object):
                     self._cmor_var.standard_name, self._cube.standard_name)
 
         # Check units
-        if self._cube.attributes.get('invalid_units', '').lower() == 'psu':
+        if (self.automatic_fixes and self._cube.attributes.get(
+                'invalid_units', '').lower() == 'psu'):
             self._cube.units = '1.0'
             del self._cube.attributes['invalid_units']
 
         if self._cmor_var.units:
-            units = self._get_efective_units()
+            units = self._get_effective_units()
 
             if not self._cube.units.is_convertible(units):
-                self.report_error('Variable {0} units () can not be '
-                                  'converted to {2}', self._cube.var_name,
-                                  self._cmor_var.units, self._cube.units)
+                self.report_error(f'Variable {self._cube.var_name} units '
+                                  f'{self._cube.units} can not be '
+                                  f'converted to {self._cmor_var.units}')
 
         # Check other variable attributes that match entries in cube.attributes
         attrs = ('positive', )
@@ -207,7 +208,7 @@ class CMORCheck(object):
                                       attr, attr_value,
                                       self._cube.attributes[attr])
 
-    def _get_efective_units(self):
+    def _get_effective_units(self):
         """Get effective units."""
         if self._cmor_var.units.lower() == 'psu':
             units = '1.0'
@@ -245,23 +246,25 @@ class CMORCheck(object):
                 try:
                     cube_coord = self._cube.coord(var_name=coordinate.out_name)
                     if cube_coord.standard_name != coordinate.standard_name:
-                        self.report_error(self._attr_msg, coordinate.out_name,
-                                          'standard_name',
-                                          coordinate.standard_name,
-                                          cube_coord.standard_name)
+                        self.report_error(
+                            self._attr_msg,
+                            coordinate.out_name,
+                            'standard_name',
+                            coordinate.standard_name,
+                            cube_coord.standard_name,
+                        )
                 except iris.exceptions.CoordinateNotFoundError:
                     try:
                         coord = self._cube.coord(coordinate.standard_name)
                         self.report_error(
                             'Coordinate {0} has var name {1} instead of {2}',
                             coordinate.name,
-                            coord.var_name, coordinate.out_name
+                            coord.var_name,
+                            coordinate.out_name,
                         )
-
                     except iris.exceptions.CoordinateNotFoundError:
-                        self.report_error(
-                            self._does_msg, coordinate.name, 'exist'
-                        )
+                        self.report_error(self._does_msg, coordinate.name,
+                                          'exist')
 
     def _check_coords(self):
         """Check coordinates."""
@@ -341,9 +344,8 @@ class CMORCheck(object):
     def _reverse_coord(self, coord):
         """Reverse coordinate."""
         if coord.ndim == 1:
-            self._cube.data = iris.util.reverse(self._cube.data,
-                                                self._cube.coord_dims(coord))
-            coord.points = iris.util.reverse(coord.points, 0)
+            self._cube = iris.util.reverse(self._cube,
+                                           self._cube.coord_dims(coord))
 
     def _check_coord_values(self, coord_info, coord, var_name):
         """Check coordinate values."""
@@ -403,39 +405,34 @@ class CMORCheck(object):
                 cf_units.Unit(
                     'days since 1950-1-1 00:00:00',
                     calendar=coord.units.calendar))
-            simplified_cal = self._simplify_calendars(coord.units.calendar)
+            simplified_cal = self._simplify_calendar(coord.units.calendar)
             coord.units = cf_units.Unit(coord.units.origin, simplified_cal)
 
         tol = 0.001
-        intervals = {
-            'dec': (3600, 3660),
-            'day': (1, 1)
-        }
+        intervals = {'dec': (3600, 3660), 'day': (1, 1)}
         if self.frequency == 'mon':
-            with iris.FUTURE.context(cell_datetime_objects=True):
-                for i in range(len(coord.points) - 1):
-                    first = coord.cell(i).point
-                    second = coord.cell(i + 1).point
-                    second_month = first.month + 1
-                    second_year = first.year
-                    if second_month == 13:
-                        second_month = 1
-                        second_year += 1
-                    if second_month != second.month or \
-                       second_year != second.year:
-                        msg = '{}: Frequency {} does not match input data'
-                        self.report_error(msg, var_name, self.frequency)
-                        break
+            for i in range(len(coord.points) - 1):
+                first = coord.cell(i).point
+                second = coord.cell(i + 1).point
+                second_month = first.month + 1
+                second_year = first.year
+                if second_month == 13:
+                    second_month = 1
+                    second_year += 1
+                if second_month != second.month or \
+                   second_year != second.year:
+                    msg = '{}: Frequency {} does not match input data'
+                    self.report_error(msg, var_name, self.frequency)
+                    break
         elif self.frequency == 'yr':
-            with iris.FUTURE.context(cell_datetime_objects=True):
-                for i in range(len(coord.points) - 1):
-                    first = coord.cell(i).point
-                    second = coord.cell(i + 1).point
-                    second_month = first.month + 1
-                    if first.year + 1 != second.year:
-                        msg = '{}: Frequency {} does not match input data'
-                        self.report_error(msg, var_name, self.frequency)
-                        break
+            for i in range(len(coord.points) - 1):
+                first = coord.cell(i).point
+                second = coord.cell(i + 1).point
+                second_month = first.month + 1
+                if first.year + 1 != second.year:
+                    msg = '{}: Frequency {} does not match input data'
+                    self.report_error(msg, var_name, self.frequency)
+                    break
         else:
             if self.frequency in intervals:
                 interval = intervals[self.frequency]
@@ -460,21 +457,14 @@ class CMORCheck(object):
                     self.report_error(msg, var_name, self.frequency)
                     break
 
-    CALENDARS = [
-        ['gregorian', 'standard'],
-        ['proleptic_gregorian'],
-        ['365_day', 'noleap'],
-        ['366_day', 'all_leap'],
-        ['360_day'],
-        ['julian'],
-        ['none'],
-    ]
-
     @staticmethod
-    def _simplify_calendars(calendar):
-        for calendar_type in CMORCheck.CALENDARS:
-            if calendar in calendar_type:
-                return calendar_type[0]
+    def _simplify_calendar(calendar):
+        calendar_aliases = {
+            'all_leap': '366_day',
+            'noleap': '365_day',
+            'standard': 'gregorian',
+        }
+        return calendar_aliases.get(calendar, calendar)
 
     def has_errors(self):
         """Check if there are reported errors.
@@ -515,8 +505,7 @@ class CMORCheck(object):
         msg = message.format(*args)
         if self._failerr:
             raise CMORCheckError(msg + '\nin cube:\n{}'.format(self._cube))
-        else:
-            self._errors.append(msg)
+        self._errors.append(msg)
 
     def report_warning(self, message, *args):
         """Report a warning.
@@ -558,9 +547,10 @@ def _get_cmor_checker(table,
                       automatic_fixes=False):
     """Get a CMOR checker/fixer."""
     if table not in CMOR_TABLES:
-        raise NotImplementedError("No CMOR checker implemented for table {}."
-                                  "\nThe following options are available: {}"
-                                  .format(table, ', '.join(CMOR_TABLES)))
+        raise NotImplementedError(
+            "No CMOR checker implemented for table {}."
+            "\nThe following options are available: {}".format(
+                table, ', '.join(CMOR_TABLES)))
 
     cmor_table = CMOR_TABLES[table]
     var_info = cmor_table.get_variable(mip, short_name)

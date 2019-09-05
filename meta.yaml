@@ -5,7 +5,7 @@
 # conda build . -c conda-forge -c birdhouse
 
 # Package version number
-{% set version = "2.0a1" %}
+{% set version = "2.0a2" %}
 
 package:
   name: esmvaltool
@@ -21,7 +21,7 @@ source:
 build:
   # Increment the build number when building a new conda package of the same
   # esmvaltool version, reset to 0 when building a new version.
-  number: 1
+  number: 0
   script: |
       python setup.py install --single-version-externally-managed --record=/tmp/record.txt
       POST_LINK="${PREFIX}/bin/.esmvaltool-post-link.sh"
@@ -38,12 +38,12 @@ requirements:
     # esmvaltool
     - python
     - libunwind  #  specifically for Python3.7+
-    - graphviz    
-    - iris
+    - graphviz
+    - iris>=2.2
     - python-stratify
     # Normally installed via pip:
     - cartopy
-    - cf_units
+    - cf-units
     - cython
     - eofs
     - esmpy
@@ -63,15 +63,20 @@ requirements:
     - shapely
     - six
     - vmprof
-    - xarray
+    - xarray>=0.12.0
     - yamale  # in birdhouse channel
+    - fiona
+    - xlsxwriter
+    # Command line tools used by diagnostic scripts
+    - cdo
+    - imagemagick
+    - nco
     # Multi language support:
-    - ncl
-    - jasper!=1.900.31  # pinned NCL dependency
+    - ncl>=6.5.0
     - r-base
-    - r-rcpp
-    - cdo=1.9.3
-    # TODO: add julia
+    - r-curl  # Dependency of lintr, but fails to compile because it cannot find libcurl installed from conda.
+    - r-udunits2  # Fails to compile because it cannot find udunits2 installed from conda.
+
 test:
   # TODO: add unit tests? This seems to require installing the tests
   imports:
@@ -83,3 +88,5 @@ about:
   home: https://www.esmvaltool.org
   license: Apache License, Version 2.0
   license_file: LICENSE
+  summary: A community diagnostic and performance metrics tool for routine evaluation of Earth system models in CMIP.
+  description: A community diagnostic and performance metrics tool for routine evaluation of Earth system models in CMIP.

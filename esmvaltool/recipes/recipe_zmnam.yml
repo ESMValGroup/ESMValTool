@@ -47,7 +47,6 @@ diagnostics:
     variables: 
       zg:
         preprocessor: preproc
-        field: T3D
     scripts: 
       main: 
         script: zmnam/zmnam.py                              

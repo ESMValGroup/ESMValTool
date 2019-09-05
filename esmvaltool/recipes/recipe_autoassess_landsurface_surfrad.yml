@@ -32,12 +32,10 @@ diagnostics:
     description: Autoassess test diag for Land-Surface Surfrad.
     variables:
       rsns: # Surf SW net all sky
-        field: T2Ms
         derive: true
         force_derivation: false
         fx_files: [sftlf]
       rlns: # Surf LW net all sky
-        field: T2Ms
         derive: true
         force_derivation: false
         fx_files: [sftlf]

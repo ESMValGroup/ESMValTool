@@ -12,26 +12,35 @@
 ;    20190205
 ;
 ; Download and processing instructions
-;    Select Type of level ("Pressure levels" or "Surface") and
-;    ERA Interim Fields ("Monthly means of daily means" or "Daily").
-;    For "Daily" select only the step 0 and all times (00, 06, 12, 18).
+;    Select "Era Interim Fields":
+;      Daily: for daily values
+;      Invariant: for time invariant variables (like land-sea mask)
+;      Monthly Means of Daily Means: for monthly values
+;      Monthly Means of Daily Forecast Accumulation: for accumulated variables
+;      like precipitation or radiation fluxes
+;    Select "Type of level" (Surface or Pressure levels)
 ;    Download the data on a single variable and single year basis, and save
-;    them as ERA-Interim_<var>_<mean>_YYYY.nc,
-;    where <var> is the ERA-Interim variable name and <mean> is either monthly
-;    or daily. Further download "land-sea mask" from the "Invariant" data and
-;    save it in ERA-Interim_lsm.nc.
+;    them as ERA-Interim_<var>_<mean>_YYYY.nc, where <var> is the ERA-Interim
+;    variable name and <mean> is either monthly or daily. Further download
+;    "land-sea mask" from the "Invariant" data and save it in
+;    ERA-Interim_lsm.nc.
 ;    It is also possible to download data in an automated way, see:
 ;      https://confluence.ecmwf.int/display/WEBAPI/Access+ECMWF+Public+Datasets
 ;      https://confluence.ecmwf.int/display/WEBAPI/Python+ERA-interim+examples
 ;    A registration is required for downloading the data.
 ;
 ; Caveats
+;    Make sure to select the right steps for accumulated fluxes, see:
+;      https://confluence.ecmwf.int/pages/viewpage.action?pageId=56658233
+;      https://confluence.ecmwf.int/display/CKB/ERA-Interim%3A+monthly+means
+;    for a detailed explanation.
 ;    The data are updated regularly: recent years are added, but also the past
 ;    years are sometimes corrected. To have a consistent timeseries, it is
 ;    therefore recommended to download the full timeseries and not just add
 ;    new years to a previous version of the data.
 ;
 ; Modification history
+;    20190311-A_righ_ma: added surface fluxes.
 ;    20190204-A_righ_ma: adapted to v2.
 ;    20171023-A_laue_ax: added variables prw, ts
 ;    20160913-A_laue_ax: added variable tcc
@@ -57,38 +66,56 @@ begin
   YEAR1 = 1979
   YEAR2 = 2018
 
-  ; Selected variable (standard name)
-  VARS = (/"zg", "psl", "ta", "zg", "hus", \
-           "ua", "va", "tas", "ps", "tos",  \
-           "tauu", "tauv", "clwvi", "clivi", "sftlf", \
-           "clt", "prw", "ts", "wap", "psl"/)
+  ; Acceleration of gravity [m s-2]
+  G = 9.80665
 
-  ; Name in the raw data
-  NAME = (/"z", "msl", "t", "z", "q", \
-           "u", "v", "t2m", "sp", "sst", \
-           "iews", "inss", "p56.162", "p57.162", "lsm", \
-           "tcc", "tcwv", "skt", "w", "msl"/)
+  ; Variable settings as list [VAR, NAME, CONVERSION, MIP, FREQ]
+  ; VAR: selected variable (standard name)
+  ; NAME: name in the raw data
+  ; RAWUNITS: expected units in the input data
+  ; CONVERSION: corresponding conversion factor to CMOR units
+  ; MIP: mip
+  ; FREQ: frequency
+  VLIST = \
+    [/[/"sftlf",  "lsm",                            100.,   "fx",   "fx"/], \
+      [/"pr",     "tp",                             1.e3,   "day",  "day"/], \
+      [/"psl",    "msl",                            1.,     "day",  "day"/], \
+      [/"tas",    "t2m",                            1.,     "day",  "day"/], \
+      [/"tasmax", "mx2t",                           1.,     "day",  "day"/], \
+      [/"tasmin", "mn2t",                           1.,     "day",  "day"/], \
+      [/"zg",     "z",                              1. / G, "day",  "day"/], \
+      [/"clivi",  "p57.162",                        1.,     "Amon", "mon"/], \
+      [/"clt",    "tcc",                            100.,   "Amon", "mon"/], \
+      [/"clwvi",  (/"p56.162", "p57.162"/),         1.,     "Amon", "mon"/], \
+      [/"hfds",   (/"ssr", "str", "slhf", "sshf"/), 1.,     "Omon", "mon"/], \
+      [/"hur",    "r",                              1.,     "Amon", "mon"/], \
+      [/"hus",    "q",                              1.,     "Amon", "mon"/], \
+      [/"pr",     "tp",                             1.e3,   "Amon", "mon"/], \
+      [/"prw",    "tcwv",                           1.,     "Amon", "mon"/], \
+      [/"ps",     "sp",                             1.,     "Amon", "mon"/], \
+      [/"psl",    "msl",                            1.,     "Amon", "mon"/], \
+      [/"ta",     "t",                              1.,     "Amon", "mon"/], \
+      [/"tas",    "t2m",                            1.,     "Amon", "mon"/], \
+      [/"tauu",   "iews",                           1.,     "Amon", "mon"/], \
+      [/"tauv",   "inss",                           1.,     "Amon", "mon"/], \
+      [/"tos",    "sst",                            1.,     "Omon", "mon"/], \
+      [/"ts",     "skt",                            1.,     "Amon", "mon"/], \
+      [/"ua",     "u",                              1.,     "Amon", "mon"/], \
+      [/"va",     "v",                              1.,     "Amon", "mon"/], \
+      [/"wap",    "w",                              1.,     "Amon", "mon"/], \
+      [/"zg",     "z",                              1. / G, "Amon", "mon"/], \
+      [""]/]
 
-  ; Units in the input  data and corresponding conversion facto to CMOR units
-  RAWUNITS = (/"m**2 s**-2", "Pa", "K", "m**2 s**-2", "kg kg**-1", \
-               "m s**-1", "m s**-1", "K", "Pa", "K", \
-               "N m**-2", "N m**-2", "kg m**-2", "kg m**-2", "(0 - 1)", \
-               "(0 - 1)", "kg m**-2", "K", "Pa s**-1", "Pa"/)
+  ; Type
+  TYPE = "reanaly"
 
-  CONVERSION = (/1./9.80665, 1., 1., 1./9.80665, 1., \
-                1., 1., 1., 1., 1., \
-                1., 1., 1., 1., 100., \
-                100., 1., 1., 1., 1./)
+  ; Version
+  VERSION = "1"
 
-  ; MIPs
-  MIPS = (/"day", "day", "Amon", "Amon", "Amon", \
-           "Amon", "Amon", "Amon", "Amon", "Omon", \
-           "Amon", "Amon", "Amon", "Amon", "fx", \
-           "Amon", "Amon", "Amon", "Amon", "Amon"/)
-
-  ; CMOR table
-  CMOR_TABLE = getenv("esmvaltool_root") + \
-    "/cmor/tables/cmip5/Tables/CMIP5_" + MIPS
+  ; Global attributes
+  SOURCE =  "http://apps.ecmwf.int/datasets/data/interim_full_moda/"
+  REF = "Dee, D. P. et al., Q. J. Roy. Meteor. Soc., doi:10.1002/qj.828, 2011"
+  COMMENT = ""
 
 end
 ; #############################################################################
@@ -97,22 +124,31 @@ loadscript(getenv("esmvaltool_root") + "/utils/cmorizers/obs/interface.ncl")
 begin
 
   ; Loop over variables
-  do vID = 0, dimsizes(VARS) - 1
+  do vv = 0, ListCount(VLIST) - 2
 
-    log_info("Processing " + VARS(vID))
+    ; Setting for the current variable
+    clist = VLIST[vv]
+    VAR = clist[0]
+    NAME = clist[1]
+    CONVERSION = clist[2]
+    MIP = clist[3]
+    FREQ = clist[4]
+    CMOR_TABLE = \
+      getenv("esmvaltool_root") + "/cmor/tables/cmip5/Tables/CMIP5_" + MIP
+    delete(clist)
+
+    log_info("Processing " + VAR + " (" + MIP + ")")
 
     l_day = False
     l_fx = False
-    if (isStrSubset(MIPS(vID), "mon")) then
-      freq1 = "monthly"
-      freq2 = "M"
+    if (isStrSubset(MIP, "mon")) then
+      freqkey = "monthly"
     end if
-    if (isStrSubset(MIPS(vID), "day")) then
-      freq1 = "daily"
-      freq2 = "D"
+    if (isStrSubset(MIP, "day")) then
+      freqkey = "daily"
       l_day = True
     end if
-    if (isStrSubset(MIPS(vID), "fx")) then
+    if (isStrSubset(MIP, "fx")) then
       l_fx = True
     end if
 
@@ -121,23 +157,16 @@ begin
 
       ; fx variables are time invariant
       if (l_fx) then
-        fname = input_dir_path + "ERA-Interim_" + NAME(vID) + ".nc"
+        fname = input_dir_path + "ERA-Interim_" + NAME(0) + ".nc"
         f = addfile(fname, "r")
       else
         fname = input_dir_path + \
-          "ERA-Interim_" + NAME(vID) + "_" + freq1 + "_" + yy + ".nc"
+          "ERA-Interim_" + NAME(0) + "_" + freqkey + "_" + yy + ".nc"
         f = addfile(fname, "r")
-
-        ; Check time coordinate
-        date = cd_calendar(f->time, 0)
-        if (any(date(:, 0).ne.yy)) then
-          error_msg("f", DIAG_SCRIPT, "", "time coordinate not " + \
-                    "corresponding to selected year")
-        end if
       end if
 
       ; Rank of the input data
-      rank = dimsizes(getfilevardims(f, NAME(vID)))
+      rank = dimsizes(getfilevardims(f, NAME(0)))
 
       ; For daily data, split in monthly files, otherwise yearly
       if (l_day) then
@@ -150,223 +179,172 @@ begin
 
         ; Read variable
         if (l_day) then
+
+          ; Check time-index
+          time = f->time
+          if (any(VAR.eq.(/"tasmin", "tasmax", "pr"/))) then
+            time = time - 1  ; Shift back 1h to include 12:00 + step=12h
+          end if
+          date = cd_calendar(time, 0)
+          idxt = ind(date(:, 1).eq.mm)
+
+          ; Extract current month
           if (rank.eq.4) then
-            xx = f->$NAME(vID)$(ind(date(:, 1).eq.mm), :, :, :)
-          else if (rank.eq.3) then
-            xx = f->$NAME(vID)$(ind(date(:, 1).eq.mm), :, :)
+            xx = f->$NAME(0)$(idxt, :, :, :)
+          elseif (rank.eq.3) then
+            xx = f->$NAME(0)$(idxt, :, :)
           else
             error_msg("f", DIAG_SCRIPT, "", "invalid rank")
           end if
+          start_date = yy + sprinti("%0.2i", mm) + "01"
+          end_date = yy + sprinti("%0.2i", mm) + \
+            sprinti("%0.2i", days_in_month(yy, mm))
+
+          ; Shift back 1h to include 12:00 + step=12h
+          if (any(VAR.eq.(/"tasmin", "tasmax", "pr"/))) then
+            xx&time = xx&time - 1
           end if
+          delete(date)
+          delete(time)
+          delete(idxt)
+
         else
-          xx = f->$NAME(vID)$
+
+          xx = f->$NAME(0)$
+          start_date = yy + "0101"
+          end_date = yy + "1231"
+
         end if
 
         ; Unpack variable according to metadata information
-        tmp1 = todouble(xx)
-        tmp1 = tmp1 * xx@scale_factor + xx@add_offset
-        output = tofloat(tmp1)
-        copy_VarMeta(xx, output)
+        output = short2flt(xx)
         delete(xx)
-        delete(tmp1)
 
-        ; Calculate clwvi = lwp + iwp (Amon case only)
-        if (VARS(vID).eq."clwvi") then
+        ; Multiple input case
+        if (dimsizes(NAME).gt.1) then
 
           if (l_day) then
-            error_msg("f", DIAG_SCRIPT, "", "clwvi calculation for daily " + \
+            error_msg("f", DIAG_SCRIPT, "", "multiple input for daily " + \
                       "values not implemented")
           end if
 
-          ; Read 2nd file containing iwp (variable "p57.162")
-          iwpname = "p57.162"
-          fname2 = input_dir_path + \
-            "ERA-Interim_" + iwpname + "_" + freq1 + "_" + yy + ".nc"
-          f2 = addfile(fname2, "r")
-
-          ; Read iwp from 2nd file
-          xx2 = f2->$iwpname$
-
-          ; Unpack variable according to metadata information
-          tmp1a = todouble(xx2)
-          tmp1a = tmp1a * xx2@scale_factor + xx2@add_offset
-          tmp2a = tofloat(tmp1a)
-          copy_VarMeta(xx2, tmp2a)
-          delete(xx2)
-          delete(tmp1a)
-
-          ; Add iwp to lwp to calculate cmor variable "clwvi"
-          output = output + tmp2a
-          delete(tmp2a)
+          do iv = 1, dimsizes(NAME) - 1
+            fname2 = input_dir_path + \
+              "ERA-Interim_" + NAME(iv) + "_" + freqkey + "_" + yy + ".nc"
+            f2 = addfile(fname2, "r")
+            xx2 = f2->$NAME(iv)$
+            output = output + short2flt(xx2)
+            delete(xx2)
+            delete(f2)
+            delete(fname2)
+          end do
 
         end if
 
         ; Calculate daily mean
-        if (l_day)
-          if (rank.eq.4) then
-            dmean = output(::4, :, :, :)
-            do ii = 0, dimsizes(dmean&time) - 1
-              dmean(ii, :, :, :) = \
-                dim_avg_n_Wrap(output(4*ii:4*ii + 3, :, :, :), 0)
-            end do
-          else if (rank.eq.3) then
-            dmean = output(::4, :, :)
-            do ii = 0, dimsizes(dmean&time) - 1
-              dmean(ii, :, :) = dim_avg_n_Wrap(output(4*ii:4*ii + 3, :, :), 0)
-            end do
+        if (l_day) then
+
+          if (VAR.eq."tasmin") then
+            dmean = calculate_daily_values(output, "min", 0, False)
+          elseif (VAR.eq."tasmax") then
+            dmean = calculate_daily_values(output, "max", 0, False)
+          elseif (VAR.eq."pr") then
+            dmean = calculate_daily_values(output, "sum", 0, False)
           else
-            error_msg(f, DIAG_SCRIPT, "", "invalid rank")
-          end if
+            dmean = calculate_daily_values(output, "avg", 0, False)
           end if
           delete(output)
           output = dmean
           delete(dmean)
+
+        end if
+
+        ; Time-invariant variables
+        if (l_fx) then
+          output := output(0, :, :)
+          rank = 2
         end if
 
         ; Convert units
-        if (output@units.ne.RAWUNITS(vID)) then
-          error_msg("f", DIAG_SCRIPT, "", "unexpected units for " + NAME(vID))
-        else
-          output = output * CONVERSION(vID)
-        end if
+        output = output * CONVERSION
 
-        ; Format time coordinate
-        if (l_day) then
-          newdate = cd_calendar(output&time, 0)
-          newdate(:, 3) = 12.
-          newdate(:, 4) = 0.
-          newdate(:, 5) = 0.
-          output!0 = "time"
-          ctime = \
-            cd_inv_calendar(newdate(:, 0), newdate(:, 1), newdate(:, 2), \
-                            newdate(:, 3), newdate(:, 4), newdate(:, 5), \
-                            TUNITS, 0)
-          ctime@calendar = "standard"
-          ctime@long_name = "time"
-          ctime@axis = "T"
-          ctime@standard_name = "time"
-          if (isatt(ctime, "_FillValue")) then
-            delete(ctime@_FillValue)
-          end if
-          delete(output&time)
-          output&time = ctime
-          delete(ctime)
-          delete(newdate)
-        else if (l_fx) then
-          output := output(0, :, :)
-          rank = 2
-        else
-          ctime = time_attrib(output&time, yy, yy, freq2)
-          delete(output&time)
-          output&time = ctime
-          delete(ctime)
-        end if
-        end if
-
-        ; Format vertical coordinate
-        if (rank.eq.4) then
-          output!1 = "plev"
-          if (isMonotonic(output&plev).eq.1) then
-            output = output(:, ::-1, :, :)
-          end if
-          if (output&plev@units.eq."millibars") then
-            output&plev = output&plev * 100
+        ; Special case: accumulated fluxes
+        if (any(VAR.eq.(/"pr", "hfds"/))) then  ; [X] --> [X s-1]
+          if (l_day) then
+            output = output / 24. / 3600.
           else
-            error_msg("f", DIAG_SCRIPT, "", \
-                      "unexpected units for plev " + output&plev@units)
+            locy = new(12, integer)
+            locy = yy
+            dm = conform(output, days_in_month(locy, ispan(1, 12, 1)), 0)
+            output = output / 24. / 3600. / dm
+            delete(locy)
+            delete(dm)
           end if
-          cplev = plev_attrib(output&plev)
-          delete(output&plev)
-          output&plev = cplev
-          delete(cplev)
         end if
 
-        ; Format latitude coordinate
+        ; Format coordinates
         if (rank.eq.4) then
+          output!0 = "time"
+          output!1 = "plev"
           output!2 = "lat"
-          if (isMonotonic(output&lat) .eq. -1) then
-            output = output(:, :, ::-1, :)
-          end if
-        else if (rank.eq.3) then
-          output!1 = "lat"
-          if (isMonotonic(output&lat) .eq. -1) then
-            output = output(:, ::-1, :)
-          end if
-        else if (rank.eq.2) then
-          output!0 = "lat"
-          if (isMonotonic(output&lat) .eq. -1) then
-            output = output(::-1, :)
-          end if
-        else
-          error_msg("f", DIAG_SCRIPT, "", "invalid rank")
-        end if
-        end if
-        end if
-
-        clat = lat_attrib(output&lat)
-        delete(output&lat)
-        output&lat = clat
-        delete(clat)
-
-        ; Format longitude coordinate
-        if (rank.eq.4) then
           output!3 = "lon"
-        else if (rank.eq.3) then
+          output&plev = output&plev * 100  ; [mb] --> [Pa]
+        elseif (rank.eq.3) then
+          output!0 = "time"
+          output!1 = "lat"
           output!2 = "lon"
-        else if (rank.eq.2) then
+        elseif (rank.eq.2) then
+          output!0 = "lat"
           output!1 = "lon"
         else
           error_msg("f", DIAG_SCRIPT, "", "invalid rank")
         end if
-        end if
-        end if
-        if (any(output&lon.lt.0.)) then
-          output = lonFlip(output)
-        end if
-        clon = lon_attrib(output&lon)
-        delete(output&lon)
-        output&lon = clon
-        delete(clon)
+        format_coords(output, start_date, end_date, FREQ)
 
         ; Set variable attributes
-        tmp = var_attrib(output, VARS(vID), CMOR_TABLE(vID))
+        tmp = format_variable(output, VAR, CMOR_TABLE)
         delete(output)
         output = tmp
         delete(tmp)
 
-        ; Set global attributes
-        gAtt = set_global_atts( \
-          OBSNAME, TIER, \
-          "http://apps.ecmwf.int/datasets/data/interim_full_moda/", \
-          "Dee, D. P. et al., Q. J. Roy. Meteor. Soc., " + \
-          "doi:10.1002/qj.828, 2011", "")
+        ; Calculate coordinate bounds
+        bounds = guess_coord_bounds(output, FREQ)
 
-        ; Outfile
+        ; Set global attributes
+        gAtt = set_global_atts(OBSNAME, TIER, SOURCE, REF, COMMENT)
+
+        ; Output file
         if (l_fx) then
-          datestr = ""
-        else if (l_day) then
-          datestr = \
-            "_" + yy + sprinti("%0.2i", mm) + "-" + yy + sprinti("%0.2i", mm)
+          DATESTR = ""
+        elseif (l_day) then
+          DATESTR = \
+            yy + sprinti("%0.2i", mm) + "-" + yy + sprinti("%0.2i", mm)
         else
-          datestr = "_" + yy + "01-" + yy + "12"
+          DATESTR = yy + "01-" + yy + "12"
         end if
+        if (DATESTR.eq."") then
+          fout = output_dir_path + \
+            str_join((/"OBS", OBSNAME, TYPE, VERSION, MIP, VAR/), "_") + ".nc"
+
+        else
+          fout = output_dir_path + \
+            str_join((/"OBS", OBSNAME, TYPE, VERSION, \
+                       MIP, VAR, DATESTR/), "_") + ".nc"
         end if
-        fout = output_dir_path + \
-          "OBS_" + OBSNAME + "_reanaly_1_" + MIPS(vID) + \
-          "_" + VARS(vID) + datestr + ".nc"
 
         ; Add height coordinate to tas variable (required by the new backend)
-        if (VARS(vID).eq."tas") then
+        if (any(VAR.eq.(/"tas", "tasmin", "tasmax"/))) then
           output@coordinates = "height"
         end if
 
         ; Write variable
-        write_nc(fout, VARS(vID), output, gAtt)
+        write_nc(fout, VAR, output, bounds, gAtt)
         delete(gAtt)
         delete(output)
+        delete(bounds)
 
         ; Add height coordinate to tas variable (required by the new backend)
-        if (VARS(vID).eq."tas") then
+        if (any(VAR.eq.(/"tas", "tasmin", "tasmax"/))) then
           height = 2.d
           height!0 = "ncl_scalar"
           height@units = "m"
@@ -386,9 +364,9 @@ begin
         break
       end if
 
-      delete(date)
-
     end do  ; year
+
+    delete(NAME)
 
   end do  ; variable
 

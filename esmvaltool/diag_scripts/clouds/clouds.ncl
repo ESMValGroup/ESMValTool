@@ -46,10 +46,10 @@
 ;   units:             variable units (for labeling plot only)
 ;
 ; Caveats
-;   TO DO (ESMValTool v2.0.0)
-;     1) get tags from namelist and write meta data to plots
+;   none
 ;
 ; Modification history
+;   20190220-A_laue_ax: added output of provenance (v2.0)
 ;   20181119-A_laue_ax: adapted code to multi-variable capable framework
 ;   20180923-A_laue_ax: added writing of results to netcdf
 ;   20180518-A_laue_ax: code rewritten for ESMValTool v2.0
@@ -67,8 +67,6 @@ load "$diag_scripts/shared/statistics.ncl"
 load "$diag_scripts/shared/plot/style.ncl"
 load "$diag_scripts/shared/plot/contour_maps.ncl"
 
-; load "$diag_scripts/shared/meta_data.ncl"
-
 begin
 
   enter_msg(DIAG_SCRIPT, "")
@@ -85,17 +83,6 @@ begin
   log_info("++++++++++++++++++++++++++++++++++++++++++")
   log_info(DIAG_SCRIPT + " (var: " + var0 + ")")
   log_info("++++++++++++++++++++++++++++++++++++++++++")
-
-  ; ###########################################
-  ; # references                    #
-  ; ###########################################
-  ; FIX-ME: to be replaced by new method
-  ; write_references(DIAG_SCRIPT,      \  ; script name
-  ;                  "A_laue_ax",      \  ; authors
-  ;                  "",               \  ; contributors
-  ;                  "D_lauer13jclim", \  ; diag_references
-  ;                  "",               \  ; obs_references
-  ;                  (/"P_embrace"/))     ; proj_references
 
   ; Set default values for non-required diag_script_info attributes
 
@@ -147,22 +134,24 @@ begin
     season = (/"DJF", "MAM", "JJA", "SON"/)
   end if
 
+  ; create string for caption (netcdf provenance)
+
+  allseas = season(0)
+  do is = 1, numseas - 1
+    allseas = allseas + "/" + season(i)
+  end do
+
   panel_labels = diag_script_info@panel_labels
 
   treat_var_as_error = diag_script_info@treat_var_as_error
 
   extralegend = diag_script_info@extralegend
 
-  ; make sure path for (optional) netcdf output exists
+  ; make sure path for (mandatory) netcdf output exists
 
-  if (config_user_info@write_netcdf.eq."True") then
-    write_nc = True
-    work_dir = config_user_info@work_dir + "/"
-    ; Create work dir
-    system("mkdir -p " + work_dir)
-  else
-    write_nc = False
-  end if
+  work_dir = config_user_info@work_dir + "/"
+  ; Create work dir
+  system("mkdir -p " + work_dir)
 
   if (config_user_info@write_plots.eq."True") then
     write_plots = True
@@ -184,18 +173,12 @@ begin
 
   climofiles = metadata_att_as_array(info0, "filename")
 
-;  if (isatt(diag_script_info, "region")) then
-;    alltags = array_append_record(tags, (/"PT_geo", "ST_clim", "DM_reg"/), 0)
-;  else
-;    alltags = array_append_record(tags, (/"PT_geo", "ST_clim", \
-;                                  "DM_global"/), 0)
-;  end if
-
   outfile = new(numseas, string)
+  outfile(:) = ""
 
   if (flag_diff) then
     outfile_d = new(numseas, string)
-;    difftags = array_append_record(alltags, (/"ST_diff"/), 0)
+    outfile_d(:) = ""
 
     ; check for reference model definition
     if (.not.isvar("refname")) then
@@ -216,7 +199,7 @@ end
 
 begin
   ; ###########################################
-  ; # get data and average time          #
+  ; # get data and average time               #
   ; ###########################################
 
   maps = new((/dim_MOD, 4/), graphic)
@@ -234,6 +217,13 @@ begin
   gavg = new((/numseas/), float)
   rmsd = new((/numseas/), float)
   bias = new((/numseas/), float)
+
+  ; filenames for netcdf output
+
+  nc_filename_bias = work_dir + "clouds_" + var0 + "_bias.nc"
+  nc_filename_bias@existing = "append"
+  nc_filename_mean = work_dir + "clouds_" + var0 + "_mean.nc"
+  nc_filename_mean@existing = "append"
 
   do ii = 0, dim_MOD - 1
 
@@ -400,7 +390,7 @@ begin
 
     ; specified in namelist
 
-    data1@res_mpProjection       = diag_script_info@projection
+    data1@res_mpProjection       = projection
 
     ; set explicit contour levels
 
@@ -429,10 +419,11 @@ begin
       data1@diag_script = (/DIAG_SCRIPT/)
     end if
 
-    data1@var = var0  ; Overwrite existing entry
     if (isatt(variable_info[0], "long_name")) then
       data1@var_long_name = variable_info[0]@long_name
     end if
+
+    data1@var = var0
 
     if (isatt(variable_info[0], "units")) then
       data1@var_units = variable_info[0]@units
@@ -510,7 +501,7 @@ begin
       ; difference plots will be saved to a different file
       if (flag_diff) then
         wks0d = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_" + var0 + \
-                        "_diff_" + season(0) + filename_add)
+                        "_bias_" + season(0) + filename_add)
       end if
       if (numseas.gt.1) then
         wks1 = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_" + var0 + \
@@ -522,11 +513,11 @@ begin
         ; difference plots will be saved to a different files
         if (flag_diff) then
           wks1d = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_" + var0 + \
-                          "_diff_" + season(1) + filename_add)
+                          "_bias_" + season(1) + filename_add)
           wks2d = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_" + var0 + \
-                          "_diff_" + season(2) + filename_add)
+                          "_bias_" + season(2) + filename_add)
           wks3d = get_wks("dummy_for_wks", DIAG_SCRIPT, "clouds_" + var0 + \
-                          "_diff_" + season(3) + filename_add)
+                          "_bias_" + season(3) + filename_add)
         end if
       end if
     end if
@@ -580,13 +571,10 @@ begin
       maps(imod, 0) = contour_map(wks0, data1, var0)
     end if
 
-    ; optional netcdf output
+    ; mandatory netcdf output
 
-    if (write_nc) then
-      nc_filename = work_dir + "clouds_" + var0 + "_" \
-                    + names(imod) + ".nc"
-      nc_outfile = ncdf_write(data1, nc_filename)
-    end if
+    data1@var = var0 + "_mean_" + names(imod)
+    nc_outfile_mean = ncdf_write(data1, nc_filename_mean)
 
     ; =======================================================================
     ; Create difference plots (if requested)
@@ -796,7 +784,7 @@ begin
 
       ; specified in namelist
 
-      diff@res_mpProjection       = diag_script_info@projection
+      diff@res_mpProjection       = projection
 
       ; set explicit contour levels
 
@@ -813,7 +801,6 @@ begin
       ; ###########################################
       ; add to diff as attributes without prefix
 
-      diff@var = var0  ; Overwrite existing entry
       if (isatt(variable_info, "long_name")) then
         diff@var_long_name = variable_info@long_name
       end if
@@ -872,13 +859,10 @@ begin
         maps_d(imod, 0) = contour_map(wks0d, diff, var0)
       end if
 
-      ; optional netcdf output
+      ; mandatory netcdf output
 
-      if (write_nc) then
-        nc_filename = work_dir + "clouds_" + var0 + "_bias_" \
-                      + names(imod) + ".nc"
-        nc_outfile = ncdf_write(diff, nc_filename)
-      end if
+      diff@var = var0 + "_bias_" + names(imod)
+      nc_outfile_bias = ncdf_write(diff, nc_filename_bias)
 
     end if  ; if flag_diff
 
@@ -1045,18 +1029,25 @@ begin
 
     do is = 0, numseas - 1
       log_info("Wrote " + outfile(is))
+    end do
 
-      ; add meta data to plot (for reporting)
+    ; ------------------------------------------------------------------------
+    ; write provenance to netcdf output and plot file(s) (mean)
+    ; ------------------------------------------------------------------------
 
+    statistics = (/"clim", "mean"/)
+    if (isatt(diag_script_info, "region")) then
+      domain = "reg"
+    else
+      domain = "global"
+    end if
+    plottype = "geo"
+
+    do is = 0, numseas - 1
       caption = "Mean values for variable " + var0 \
-                + " (" + season(is) + ")."
-      id = DIAG_SCRIPT + "_" + var0 + "_" + season(is)
-
-      contrib_authors = "A_laue_ax"
-
-;      ESMValMD(outfile(is), alltags, caption, id, var0, \
-;               names, climofiles, DIAG_SCRIPT, \
-;               contrib_authors)
+                + " (" + allseas + ")."
+      log_provenance(nc_outfile_mean, outfile(is), caption, statistics, \
+                     domain, plottype, "", "", climofiles)
     end do
 
     ; ========================================================================
@@ -1202,18 +1193,27 @@ begin
       do is = 0, numseas - 1
         log_info(" Wrote " + outfile(is))
 
-        ; add meta data to plot (for reporting)
+        ; --------------------------------------------------------------------
+        ; write provenance to netcdf output and plot file(s) (bias)
+        ; --------------------------------------------------------------------
+
+        statistics = (/"clim", "diff"/)
+        if (isatt(diag_script_info, "region")) then
+          domain = "reg"
+        else
+          domain = "global"
+        end if
+        plottype = "geo"
+
+        ; note: because function log_provenance does not yet support to attach
+        ;       different captions to netcdf (contains all seasons) and plots
+        ;       (contain one season each), the caption cannot specifiy the
+        ;       season plotted; using "annual" or "DJF/MAM/JJA/SON" instead.
 
         caption = "Differences for variable " + var0 \
-                  + " (" + season(is) + "), reference = " \
-                  + refname + "."
-        id = DIAG_SCRIPT + "_" + var0 + "_diff_" + season(is)
-
-        contrib_authors = "A_laue_ax"
-
-;        ESMValMD(outfile_d(is), difftags, caption, id, var0, \
-;                 names, climofiles, DIAG_SCRIPT, \
-;                 contrib_authors)
+                  + " (" + allseas + "), reference = " + refname + "."
+        log_provenance(nc_outfile_bias, outfile_d(is), caption, statistics, \
+                       domain, plottype, "", "", climofiles)
       end do
 
     end if  ; if flag_diff

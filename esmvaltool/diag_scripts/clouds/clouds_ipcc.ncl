@@ -37,13 +37,20 @@
 ;   units:              variable units
 ;
 ; Caveats
-;   TO DO (ESMValTool v2.0.0)
-;     1) get tags from namelist and write meta data to plots
 ;   KNOWN ISSUES
 ;     1) specifying more than one data set for the observational uncertainties
-;       my lead to unexpected or undefined results
+;        may lead to unexpected or undefined results
+;     2) Bias and zonal means cannot be written to the same netCDF because
+;        function ncdf_write does not support writing variables with different
+;        dimensions to the same output file yet. As the Python function for
+;        writing the provenance information called by function log_provenance
+;        does not support different captions for netCDF and (associated)
+;        plotfile, the caption does not represent the contents of the netCDF
+;        exactly but rather those of the plot. The data used for creating the
+;        plot is written to 2 separate netCDFs.
 ;
 ; Modification history
+;   20190222-A_laue_ax: added output of provenance (v2.0)
 ;   20181119-A_laue_ax: adapted code to multi-variable capable framework
 ;   20180923-A_laue_ax: added writing of results to netcdf
 ;   20180529-A_laue_ax: code rewritten for ESMValTool v2.0
@@ -62,8 +69,6 @@ load "$diag_scripts/../interface_scripts/interface.ncl"
 load "$diag_scripts/shared/statistics.ncl"
 load "$diag_scripts/shared/plot/style.ncl"
 load "$diag_scripts/shared/plot/contour_maps.ncl"
-
-; load "$diag_scripts/lib/ncl/meta_data.ncl"
 
 begin
 
@@ -120,17 +125,6 @@ begin
   log_info(DIAG_SCRIPT + " (var: " + var0 + ")")
   log_info("++++++++++++++++++++++++++++++++++++++++++")
 
-  ; ========================================================================
-  ; ========================= write references =============================
-  ; ========================================================================
-  ; FIX-ME: to be replaced by new method
-  ; write_references(DIAG_SCRIPT,    \   ; script name
-  ;                  "A_laue_ax",    \   ; authors
-  ;                  "",             \   ; contributors
-  ;                  "",             \   ; diag_references
-  ;                  "",             \   ; obs_references
-  ;                  (/"P_embrace"/))    ; proj_references
-
   ; Set default values for non-required diag_script_info attributes
   set_default_att(diag_script_info, "mask_ts_sea_ice", False)
   set_default_att(diag_script_info, "projection", "CylindricalEquidistant")
@@ -151,16 +145,19 @@ begin
     season = (/"DJF", "MAM", "JJA", "SON"/)
   end if
 
-  ; make sure path for (optional) netcdf output exists
+  ; create string for caption (netcdf provenance)
 
-  if (config_user_info@write_netcdf.eq."True") then
-    write_nc = True
-    work_dir = config_user_info@work_dir + "/"
-    ; Create work dir
-    system("mkdir -p " + work_dir)
-  else
-    write_nc = False
-  end if
+  allseas = season(0)
+  do is = 1, numseas - 1
+    allseas = allseas + "/" + season(i)
+  end do
+
+  ; make sure path for (mandatory) netcdf output exists
+
+  write_nc = True
+  work_dir = config_user_info@work_dir + "/"
+  ; Create work dir
+  system("mkdir -p " + work_dir)
 
   if (config_user_info@write_plots.eq."True") then
     write_plots = True
@@ -484,9 +481,6 @@ begin
     cnLevels = fspan(min(diff), max(diff), 20)
   end if
 
-;  alltags = array_append_record(tags, (/"PT_geo", "PT_zonal", "ST_clim", \
-;                                        "DM_global"/), 0)
-
   diff@diag_script = DIAG_SCRIPT
   diff@res = True
 
@@ -565,6 +559,8 @@ begin
   end if
 
   plots = new((/2, numseas/), graphic)
+  plotfile = new(numseas, string)
+  plotfile(:) = ""
 
   do is = 0, numseas - 1
 
@@ -716,40 +712,49 @@ begin
       outfile = panelling(wks, plots(:, is), 1, 2, pres)
       log_info("Wrote " + wks@fullname)
 
-      ; add meta data to plot (for reporting)
-
-      caption = "Multi model mean bias (left) and zonal averages (right) " \
-                + "for variable " + var0 + " (" + season(is) \
-                + "), reference = " + names(ref_ind) + "."
-      id = DIAG_SCRIPT + "_" + var0 + "_" + season(is)
-
-      contrib_authors = "A_laue_ax"
-
-;      ESMValMD(wks@fullname, alltags, caption, id, var0, \
-;               names, climofiles, DIAG_SCRIPT, \
-;               contrib_authors)
-
+      plotfile(is) = wks@fullname
     end if  ; if write_plots
   end do  ; is-loop (seasons)
 
   ; ###########################################
-  ; # Optional output to netCDF               #
+  ; # Output to netCDF                        #
   ; ###########################################
 
-  if (write_nc) then
-    nc_filename = work_dir + "clouds_ipcc_" + var0 + ".nc"
-    nc_outfile = ncdf_write(diff, nc_filename)
-    nc_filename = work_dir + "clouds_ipcc_zonal_means_" + var0 + ".nc"
-    zonalmean@var = var0
-    zonalmean@diag_script = DIAG_SCRIPT
-    nc_outfile = ncdf_write(zonalmean, nc_filename)
-    if (isvar("err_zm")) then
-      nc_filename = work_dir + "clouds_ipcc_error_zonal_means_" + var0 + ".nc"
-      err_zm@var = var1
-      err_zm@diag_script = DIAG_SCRIPT
-      nc_outfile = ncdf_write(err_zm, nc_filename)
-    end if
+  ; note: function ncdf_write currently does not support writing variables
+  ;       diff and zonalmean to the same netCDF.
+
+  nc_filename = work_dir + "clouds_ipcc_" + var0 + "_bias.nc"
+  diff@var = var0 + "_bias"
+  diff@diag_script = DIAG_SCRIPT
+  nc_outfile_bias = ncdf_write(diff, nc_filename)
+
+  nc_filename = work_dir + "clouds_ipcc_" + var0 + "_zonal.nc"
+  nc_filename@existing = "append"
+  zonalmean@var = var0 + "_zonal"
+  zonalmean@diag_script = DIAG_SCRIPT
+  nc_outfile_zonal = ncdf_write(zonalmean, nc_filename)
+  if (isvar("err_zm")) then
+    err_zm@var = var1 + "_zonal"
+    nc_outfile_zonal = ncdf_write(err_zm, nc_filename)
   end if
+
+  ; ------------------------------------------------------------------------
+  ; write provenance to netcdf output and plot file(s)
+  ; ------------------------------------------------------------------------
+
+  statistics = "clim"
+  domain = "global"
+  plottype = (/"geo", "zonal"/)
+  caption = "Multi model mean bias (left) and zonal averages (right) " \
+            + "for variable " + var0 + " (" + allseas \
+            + "), reference = " + names(ref_ind) + "."
+
+  do is = 0, numseas - 1
+    log_provenance(nc_outfile_bias, plotfile(is), caption, statistics, \
+                   domain, plottype, "", "", climofiles)
+    log_provenance(nc_outfile_zonal, plotfile(is), caption, statistics, \
+                   domain, plottype, "", "", climofiles)
+  end do
 
   leave_msg(DIAG_SCRIPT, "")
 
