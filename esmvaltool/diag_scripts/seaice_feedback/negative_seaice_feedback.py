@@ -19,6 +19,8 @@ from esmvaltool.diag_scripts.shared.plot import multi_dataset_scatterplot
 import esmvaltool.diag_scripts.shared.names as n
 
 logger = logging.getLogger(os.path.basename(__file__))
+
+
 class NegativeSeaIceFeedback(object):
     """
     Diagnostic to evaluate the negative ice growth-ice thickness feedback
@@ -320,6 +322,7 @@ def main():
     """Run diagnostic"""
     with esmvaltool.diag_scripts.shared.run_diagnostic() as config:
         NegativeSeaIceFeedback(config).compute()
+
 
 if __name__ == '__main__':
     main()
