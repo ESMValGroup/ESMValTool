@@ -28,7 +28,7 @@ function portrait_plot(wks_in[1],
 ;    source: data to be plotted or a NetCDF filename with data.
 ;    varname: variable name in the file.
 ;
-; Source prototype:
+; Source prototype
 ;    source = (ndiag, nmod)
 ;    source!0 = diagnostics
 ;    source!1 = models
@@ -39,16 +39,16 @@ function portrait_plot(wks_in[1],
 ;    source!0 = diagnostics
 ;    source!1 = models
 ;
-; Return value:
+; Return value
 ;    A graphic variable.
 ;
 ; Caveats
 ;
-; Modification history:
-;    20151027-A_righ_ma: added option for displaying rankings.
-;    20140605-A_righ_ma: modified with flexible plot shapes.
-;    20140204-A_fran_fr: extended.
-;    20140114-A_righ_ma: written.
+; Modification history
+;    20151027-righi_mattia: added option for displaying rankings.
+;    20140605-righi_mattia: modified with flexible plot shapes.
+;    20140204-frank_franziska: extended.
+;    20140114-righi_mattia: written.
 ;
 local funcname, scriptname, wks, wks_in, data, source, res, atts, \
     base, varname
@@ -599,20 +599,20 @@ function circle_plot(wks_in[1],
 ;    source: data to be plotted or a NetCDF filename with data.
 ;    varname: variable name in the file.
 ;
-; Source prototype:
+; Source prototype
 ;    source = (nmod, 2)
 ;    source!0 = models
 ;    source!1 = statistic
 ;    source(:, 0) = SMPI
 ;    source(:, 1) = 95% conf radius
 ;
-; Return value:
+; Return value
 ;    A graphic variable.
 ;
 ; Caveats
 ;
-; Modification history:
-;    20170424-A_gier_be: written.
+; Modification history
+;    20170424-gier_bettina: written.
 ;
 local funcname, scriptname, verbosity, wks, wks_in, data, source, res, atts, \
   base, varname
