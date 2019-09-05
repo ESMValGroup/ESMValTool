@@ -1,0 +1,50 @@
+# ESMValTool
+# recipy_lisflood.yml
+---
+documentation:
+  description: |
+
+  authors: [verh_st]
+  projects: [ewatercycle]
+  references: []
+
+datasets:
+  - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
+
+preprocessors:
+  preprocessor:
+    regrid:
+      target_grid: 0.1x0.1
+      lon_offset: true
+      lat_offset: true
+      scheme: nearest
+
+diagnostics:
+  diagnostic1:
+    description: LISFLOOD input preprocessor
+    variables:
+      pr: &var
+        mip: day
+        start_year: 1990
+        end_year: 1990
+        preprocessor: preprocessor
+      tas: *var
+      tasmax: *var
+      tasmin: *var
+      # Not all ERA-interim variables required for lisflood are available in esmvaltool/cmorizers/obs/cmorize_obs_era_interim.ncl
+      
+      # actual_vapour_pressure ??
+      # era-interim name: 2m_dewpoint_temperature aka d2
+      # Actual vapour pressure computed with cdo by e=6.11*exp(7.5*(d2m-273.15)/(237.3+(d2m-273.15))) expression
+      
+      # windspeed ??
+      # era-interim name: era 10m_u_component_of_wind aka u10 and 10m_v_component_of_wind are combined into windspeed aka v10
+      # Windspeed computed with cdo by uvw10=sqrt(u10*u10+v10*v10) expression
+
+      # surface_solar_radiation_downwards: ??
+      # era-interim-name: surface_solar_radiation_downwards aka ssrd
+      # 
+    scripts:
+      script:
+        script: hydrology/lisflood.py
+        shapefilesdir: lisflood/catchments
