@@ -21,7 +21,7 @@ variables:
     Downloading ERA5 data can either be done via the Climate Data Store (cds)
 web form or era5cli:
         $pip install era5cli
-        $era5cli hourly --variable total_precipitation --startyear 1990
+        $era5cli hourly --variables total_precipitation --startyear 1990
 
 """
 
@@ -62,15 +62,15 @@ def _extract_variable(in_file, var, cfg, out_dir):
             str(in_file),
             constraint=utils.var_name_constraint(var['raw']),
         )
-        if cube.var_name == 'tcc':
-            # Change cloud cover units from fraction to percentage
-            cube.units = definition.units
-            cube.data = cube.core_date() * 100.
-        if cube.var_name in ['tp', 'pev']:
-            # Change units from meters of water to kg of water
-            # and add missing 'per hour'
-            cube.units = cube.units * 'kg m-3 h-1'
-            cube.data = cube.core_data() * 1000.
+    if cube.var_name == 'tcc':
+        # Change cloud cover units from fraction to percentage
+        cube.units = definition.units
+        cube.data = cube.core_date() * 100.
+    if cube.var_name in ['tp', 'pev']:
+        # Change units from meters of water to kg of water
+        # and add missing 'per hour'
+        cube.units = cube.units * 'kg m-3 h-1'
+        cube.data = cube.core_data() * 1000.
 
     # Set correct names
     cube.var_name = definition.short_name
