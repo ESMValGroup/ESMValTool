@@ -40,6 +40,7 @@ from copy import deepcopy
 from datetime import datetime
 from pathlib import Path
 
+import cf_units
 import iris
 import numpy as np
 
@@ -52,7 +53,6 @@ logger = logging.getLogger(__name__)
 
 def _guess_bnds_time_monthly(cube):
     """Guess time bounds from time points for monthly data."""
-    import cf_units
     from dateutil import relativedelta
     coord = cube.coord('time')
     time_as_datetime = cf_units.num2date(coord.points,
@@ -112,8 +112,8 @@ def _extract_variable(in_file, var, cfg, out_dir):
     _guess_bnds_time_monthly(cube)
 
     # Now convert them to the recommended calendar
-    cube.coord('time').convert_units(
-                Unit('days since 1950-1-1 00:00:00', calendar='gregorian'))
+    cube.coord('time').convert_units(cf_units.Unit(
+        'days since 1950-1-1 00:00:00', calendar='gregorian'))
 
     # Convert units if required
     cube.convert_units(definition.units)
