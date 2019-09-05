@@ -111,6 +111,10 @@ def _extract_variable(in_file, var, cfg, out_dir):
     # Set time bounds by setting manually to month start; month end
     _guess_bnds_time_monthly(cube)
 
+    # Now convert them to the recommended calendar
+    cube.coord('time').convert_units(
+                Unit('days since 1950-1-1 00:00:00', calendar='gregorian'))
+
     # Convert units if required
     cube.convert_units(definition.units)
 
