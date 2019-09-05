@@ -12,9 +12,51 @@ documentation:
     - applicate
 
 datasets:
-  - {dataset: HadGEM2-CC, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1979, end_year: 2005}
-  - {dataset: HadGEM2-ES, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1979, end_year: 2005}
-  - {dataset: EC-EARTH, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1979, end_year: 2005}
+  - &cmip5 {project: CMIP5, exp: historical, dataset: ACCESS1-0,  ensemble: r1i1p1, start_year: 1979, end_year: 2004}
+  - {<<: *cmip5, dataset: ACCESS1-3}
+  - {<<: *cmip5, dataset: bcc-csm1-1}
+  - {<<: *cmip5, dataset: BNU-ESM}
+  - {<<: *cmip5, dataset: CCSM4}
+  - {<<: *cmip5, dataset: CESM1-BGC}
+  - {<<: *cmip5, dataset: CESM1-CAM5}
+  - {<<: *cmip5, dataset: CESM1-FASTCHEM}
+  - {<<: *cmip5, dataset: CESM1-WACCM}
+  - {<<: *cmip5, dataset: CMCC-CESM}
+  - {<<: *cmip5, dataset: CMCC-CM}
+  - {<<: *cmip5, dataset: CMCC-CMS}
+  - {<<: *cmip5, dataset: CNRM-CM5}
+  - {<<: *cmip5, dataset: CNRM-CM5-2}
+  - {<<: *cmip5, dataset: FGOALS-g2}
+  - {<<: *cmip5, dataset: GFDL-CM2p1}
+  - {<<: *cmip5, dataset: GFDL-CM3}
+  - {<<: *cmip5, dataset: GFDL-ESM2G}
+  - {<<: *cmip5, dataset: GFDL-ESM2M}
+  - {<<: *cmip5, dataset: HadCM3}
+  - {<<: *cmip5, dataset: HadGEM2-CC}
+  - {<<: *cmip5, dataset: HadGEM2-ES}
+  - {<<: *cmip5, dataset: IPSL-CM5A-LR}
+  - {<<: *cmip5, dataset: IPSL-CM5A-MR}
+  - {<<: *cmip5, dataset: IPSL-CM5B-LR}
+  - {<<: *cmip5, dataset: MPI-ESM-LR}
+  - {<<: *cmip5, dataset: MPI-ESM-MR}
+  - {<<: *cmip5, dataset: MPI-ESM-P}
+  - {<<: *cmip5, dataset: NorESM1-M}
+  - {<<: *cmip5, dataset: NorESM1-ME}
+
+  # Problems with areacello
+  # - {<<: *cmip5, dataset: bcc-csm1-1-m}
+  # - {<<: *cmip5, dataset: CanCM4}
+  # - {<<: *cmip5, dataset: CanESM2}
+  # - {<<: *cmip5, dataset: CESM1-CAM5-1-FV2}
+  # - {<<: *cmip5, dataset: CSIRO-Mk3-6-0}
+  # - {<<: *cmip5, dataset: EC-EARTH}
+  # - {<<: *cmip5, dataset: FIO-ESM}
+  # - {<<: *cmip5, dataset: GISS-E2-H, ensemble: r1i1p2}
+  # - {<<: *cmip5, dataset: GISS-E2-H-CC}
+  # - {<<: *cmip5, dataset: GISS-E2-R, ensemble: r1i1p2}
+  # - {<<: *cmip5, dataset: GISS-E2-R-CC}
+  # - {<<: *cmip5, dataset: HadGEM2-AO}
+  # - {<<: *cmip5, dataset: inmcm4}
 
 diagnostics:
   NegativeSeaIceFeedback:
@@ -26,19 +68,11 @@ diagnostics:
     scripts:
       negative_seaice_feedback:
         script: seaice_feedback/negative_seaice_feedback.py
-        save:
-          bbox_inches: tight
-          orientation: landscape
-        axes_functions: &axes_functions
-          set_title: Seaice negative feedback
-          set_xlabel: Feedback value
-          set_ylabel: P-value
-          legend:
-            kwargs:
-              loc: center left
-              bbox_to_anchor: [1.05, 0.5]
-              borderaxespad: 0.0
-              ncol: 2a
+        plot:
+          point_color: black
+          point_size: 10
+          show_values: True
+
 
   # SeaIceEdge:
   #   description: Plots the sea-ice edge

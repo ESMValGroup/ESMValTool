@@ -9,13 +9,15 @@ branch develop-fmasson
 
 import os
 import logging
+import math
+import warnings
 import numpy as np
 
 import scipy.stats
 import iris
+import matplotlib.pyplot as plt
 
 import esmvaltool.diag_scripts.shared
-from esmvaltool.diag_scripts.shared.plot import multi_dataset_scatterplot
 import esmvaltool.diag_scripts.shared.names as n
 
 logger = logging.getLogger(os.path.basename(__file__))
@@ -46,53 +48,86 @@ class NegativeSeaIceFeedback(object):
         p_value = list()
         datasets = list()
         for dataset in self.datasets:
-            logger.info('Computing %s', dataset_info[n.ALIAS])
-            # Load cell area
-            dataset_info = self.datasets.get_dataset_info(dataset)
-            area_cello = iris.load_cube(dataset_info[n.FX_FILES]['areacello'])
-            cellarea = area_cello.data
-            sit = iris.load_cube(dataset)
-            mask = np.asarray(
-                sit.coord('latitude').points > 80.0,
-                dtype=np.int8
-            )
             try:
-                mask = np.broadcast_to(mask, cellarea.shape)
-            except ValueError:
+                dataset_info = self.datasets.get_dataset_info(dataset)
+                logger.info('Computing %s', dataset_info[n.ALIAS])
+                area_cello = iris.load_cube(
+                    dataset_info[n.FX_FILES]['areacello']
+                )
+                cellarea = area_cello.data
+                sit = iris.load_cube(dataset)
+                mask = np.asarray(
+                    sit.coord('latitude').points > 80.0,
+                    dtype=np.int8
+                )
                 try:
-                    mask = np.broadcast_to(np.expand_dims(mask, -1),
-                                           cellarea.shape)
+                    mask = np.broadcast_to(mask, cellarea.shape)
                 except ValueError:
-                    mask = np.broadcast_to(np.expand_dims(mask, 0),
-                                           cellarea.shape)
+                    try:
+                        mask = np.broadcast_to(np.expand_dims(mask, -1),
+                                            cellarea.shape)
+                    except ValueError:
+                        mask = np.broadcast_to(np.expand_dims(mask, 0),
+                                            cellarea.shape)
+                volume = self.compute_volume(sit, cellarea, mask=mask)
+                del cellarea, sit
 
-            volume = self.compute_volume(sit, cellarea, mask=mask)
-            del cellarea, sit
+                neg_feedback, stats, _ = self.negative_seaice_feedback(
+                    volume, period=12, order=2
+                )
+                del volume
+                logger.info("Negative feedback: %10.4f", neg_feedback)
+                logger.info("P-Value:           %10.4f", stats[1])
+            except Exception as ex: #  noqa
+                logger.error('Failed to compute for %s', dataset_info[n.ALIAS])
+                logger.exception(ex)
+            else:
+                negative_feedback.append(neg_feedback)
+                p_value.append(stats[1])
+                datasets.append(dataset_info[n.ALIAS])
 
-            neg_feedback, stats, _ = self.negative_seaice_feedback(
-                volume, period=12, order=2
-            )
-            del volume
-
-            logger.info("Negative feedback: %20.4f", neg_feedback)
-            logger.info("P-Value: %20.4f", stats[1])
-            negative_feedback.append([neg_feedback])
-            p_value.append([stats[1]])
-            datasets.append('{}_{}'.format(
-                dataset_info[n.PROJECT], dataset_info[n.DATASET]
-            ))
         path = os.path.join(
             self.cfg[n.PLOT_DIR],
             'negative_feedback.{}'.format(self.cfg[n.OUTPUT_FILE_TYPE])
         )
-        multi_dataset_scatterplot(
+
+        fig = plt.figure()
+        index = np.arange(len(negative_feedback))
+        plt.scatter(
+            index,
             negative_feedback,
-            p_value,
-            datasets,
-            path,
-            save_kwargs=self.cfg.get('save', {}),
-            axes_functions=self.cfg.get('axes_functions', {}),
+            plot_options.get('point_size', 8),
+            color=plot_options.get('point_color', 'black'),
         )
+        ax = plt.gca()
+        limit = math.ceil(max(abs(np.array(negative_feedback))))
+
+        if plot_options.get('show_values', True):
+            def _get_y_position(value):
+                if value > 0:
+                    return value - limit // 4.0
+                else:
+                    return value + limit // 5.0
+            for i, value in enumerate(negative_feedback):
+                ax.annotate(
+                    f'{value:.2f}',
+                    xy=(index[i], value),
+                    xycoords='data',
+                    textcoords='data',
+                    xytext=(index[i], _get_y_position(value)),
+                    rotation=90,
+                )
+
+        # axes and labels
+        ax.set_ylim(-limit, limit)
+        ax.set_ylabel('Feedback')
+        ax.set_title('Negative sea ice feedback')
+        _, xtick_names = plt.xticks(index, datasets)
+        plt.setp(xtick_names, rotation=90, fontsize=10)
+        plt.grid(True, 'both', 'y')
+        plt.tight_layout()
+        fig.savefig(path)
+        plt.close(fig)
 
     def compute_volume(self, avg_thick, cellarea, mask=1):
         """
@@ -119,8 +154,11 @@ class NegativeSeaIceFeedback(object):
         """
         if np.max(mask) != 1.0 or np.min(mask) < 0.0:
             raise ValueError("Mask not between 0 and 1")
-        max_thick = avg_thick.collapsed(avg_thick.coords(),
-                                        iris.analysis.MAX)
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore")
+            max_thick = avg_thick.collapsed(
+                avg_thick.coords(), iris.analysis.MAX
+            )
         if float(max_thick.data) > 20.0:
             logger.warning("Large sea ice thickness:"
                            "Max = %f",
