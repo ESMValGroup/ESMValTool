@@ -22,6 +22,7 @@ build:
   # Increment the build number when building a new conda package of the same
   # esmvaltool version, reset to 0 when building a new version.
   number: 0
+  noarch: python
   script: |
       python setup.py install --single-version-externally-managed --record=/tmp/record.txt
       POST_LINK="${PREFIX}/bin/.esmvaltool-post-link.sh"
@@ -31,25 +32,25 @@ build:
 requirements:
   build:
     - git
-    - python {{ python }}
+    - python>=3.6
     # Normally installed via pip:
     - pytest-runner
     - setuptools_scm
   run:
     # esmvaltool
-    - python
+    - python>=3.6
     - libunwind  #  specifically for Python3.7+
     - graphviz
-    - iris>=2.2
+    - iris
     # Normally installed via pip:
     - cartopy
     - cf-units
     - cython
     - eofs
     - esmpy
-    - esmvalcore>=2.0.0a1,<2.1
+    - esmvalcore>=2.0.0b1,<2.1
     - jinja2
-    - matplotlib<3
+    - matplotlib
     - nc-time-axis
     - netCDF4
     - numpy
@@ -60,7 +61,7 @@ requirements:
     - scikit-learn
     - shapely
     - xarray>=0.12.0
-    - yamale  # in birdhouse channel
+    - yamale  # in esmvalgroup channel
     - fiona
     - xlsxwriter
     # Command line tools used by diagnostic scripts
