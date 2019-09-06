@@ -13,27 +13,7 @@ ESMValTool: A community diagnostic and performance metrics tool for routine eval
 
 # Getting started
 
-This is the development branch for version 2 of ESMValTool. ESMValTool version 2 is under rapid development, an installation from source is recommended at the moment.
-
-## Installing from source [recommended]
-
-Please see [CONTRIBUTING.md](https://github.com/ESMValGroup/ESMValTool/blob/version2_development/CONTRIBUTING.md) for instructions on installing ESMValTool from source.
-
-## Installing from Anaconda
-
-The Anaconda package can be found on [ESMValGroup Anaconda Channel.](https://anaconda.org/ESMValGroup)
-
-First [install Julia](https://julialang.org/downloads/) version 1 or greater, because this cannot be installed from conda.
-
-If you already installed Anaconda, you can install ESMValTool by running:
-
-    conda install -c esmvalgroup -c conda-forge esmvaltool
-
-## Running ESMValTool
-
--   Review `config-user.yml`. To customize for your system, create a copy, edit and use the command line option `-c` to instruct `esmvaltool` to use your custom configuration.
--   Available recipes are located in the directory `esmvaltool/recipes`.
--   Run e.g. \`esmvaltool -c ~/config-user.yml examples/recipe_python.yml
+Please see [getting started](https://esmvaltool.readthedocs.io/en/latest/getting_started/index.html) on readthedocs.
 
 ## Getting help
 
