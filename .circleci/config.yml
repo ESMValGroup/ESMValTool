@@ -18,6 +18,7 @@ jobs:
       - run:
           # Update/Create Conda environment and run tests
           command: |
+            mkdir /logs
             conda update -y conda >> /logs/conda.txt 2>&1
             conda env update >> /logs/conda.txt 2>&1
             conda activate esmvaltool
