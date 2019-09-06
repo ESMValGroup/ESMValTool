@@ -25,10 +25,10 @@
 ;    the temperature climatology (1961-1990).
 ;
 ; Modification history
-;    20190229-A_righ_ma: added output for anomaly (tasa).
-;    20190208-A_righ_ma: added output for climatology and adapted to v2.
-;    20180222-A_laue_ax: bug fix (added swapping of latitudes if needed).
-;    20160203-A_laue_ax: written.
+;    20190229-righi_mattia: added output for anomaly (tasa).
+;    20190208-righi_mattia: added output for climatology and adapted to v2.
+;    20180222-lauer_axel: bug fix (added swapping of latitudes if needed).
+;    20160203-lauer_axel: written.
 ;
 ; #############################################################################
 loadscript(getenv("esmvaltool_root") + \
