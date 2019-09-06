@@ -5,7 +5,7 @@ jobs:
     # Run Python 3 tests
     working_directory: /test
     docker:
-      - image: continuumio/anaconda3
+      - image: continuumio/miniconda3
     steps:
       - checkout
       - run:
@@ -40,7 +40,7 @@ jobs:
     # Test Python 3 installation
     working_directory: /test_installation
     docker:
-      - image: continuumio/anaconda3
+      - image: continuumio/miniconda3
     steps:
       - checkout
       - restore_cache:
@@ -96,7 +96,7 @@ jobs:
     # Test development installation
     working_directory: /develop
     docker:
-      - image: continuumio/anaconda3
+      - image: continuumio/miniconda3
     steps:
       - checkout
       - run:
@@ -130,7 +130,7 @@ jobs:
     # Test building documentation
     working_directory: /doc
     docker:
-      - image: continuumio/anaconda3
+      - image: continuumio/miniconda3
     steps:
       - checkout
       - restore_cache:
@@ -159,7 +159,7 @@ jobs:
     # Test conda build
     working_directory: /esmvaltool
     docker:
-      - image: continuumio/anaconda3
+      - image: continuumio/miniconda3
     steps:
       - checkout
       - run:
@@ -191,7 +191,7 @@ jobs:
     # Test conda package installation
     working_directory: /esmvaltool
     docker:
-      - image: continuumio/anaconda3
+      - image: continuumio/miniconda3
     steps:
       - run:
           command: |
@@ -219,7 +219,7 @@ jobs:
     # Test ncl and cdo conda packages
     working_directory: /ncl
     docker:
-      - image: continuumio/anaconda3
+      - image: continuumio/miniconda3
     steps:
       - checkout
       - run:
