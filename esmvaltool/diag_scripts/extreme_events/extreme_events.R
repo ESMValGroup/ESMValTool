@@ -9,16 +9,18 @@
 #    Calculate extreme events with plotting functionality
 #
 # Modification history
-#    2019 0506-hard_jo  : conversion to ESMValTool2
-#    2018 1006-A_cwmohr : observation read and sorting fixes
-#    2018 1003-A_cwmohr : correcting r.interface output for observation data.
-#    2018 0725-A_cwmohr : modification of timeseries_main() and climdex selection
-#    2018 0615-A_cwmohr : more clean up of code
-#    2018 0131-A_laue_ax: clean-up of code, adaptation to ESMValTool standards
-#                        added tagging support
-#    2017 0920-A_sand_ma: modification to include plotting
-#    2016 0414-A_broe_bj: written
-# ############################################################################
+#    20190506-vonhardenberg_jost: conversion to ESMValTool2
+#    20181006-mohr_christianwilhelm: observation read and sorting fixes
+#    20181003-mohr_christianwilhelm: correcting r.interface output for
+#                                    observation data.
+#    20180725-mohr_christianwilhelm: modification of timeseries_main() and
+#                                    climdex selection
+#    20180615-mohr_christianwilhelm: more clean up of code
+#    20180131-lauer_axel: clean-up of code, adaptation to ESMValTool standards
+#                         added tagging support
+#    20170920-sandstad_marit: modification to include plotting
+#    2016 0414-A_broetz_bjoern: written
+# #############################################################################
 
 library(tools)
 library(yaml)
@@ -30,7 +32,8 @@ library(RColorBrewer)  # nolint
 provenance_record <- function(infile) {
   xprov <- list(
     ancestors = as.list(infile),
-    authors = list("broe_bj", "sand_ma", "mohr_cw", "hard_jo"),
+    authors = list("broetz_bjoern", "sandstad_marit",
+                   "mohr_christianwilhelm", "vonhardenberg_jost"),
     references = list("zhang-2011"),
     projects = list("crescendo", "c3s-magic"),
     caption = "Extreme events indices",
