@@ -18,11 +18,11 @@ jobs:
       - run:
           # Update/Create Conda environment and run tests
           command: |
-            conda update -y conda
-            conda env update
+            conda update -y conda >> /logs/conda.txt 2>&1
+            conda env update >> /logs/conda.txt 2>&1
             conda activate esmvaltool
-            # Install missing r-yaml and r-lintr
-            Rscript esmvaltool/install/R/setup_devutils.R
+            # Install r-lintr for r linter test
+            Rscript esmvaltool/install/R/setup_devutils.R > /logs/R_install.txt 2>&1
             # Run tests
             python setup.py test
       - save_cache:
@@ -30,9 +30,11 @@ jobs:
           paths:
             - "/opt/conda/envs/esmvaltool"
             - ".eggs"
-      - store_test_results:
-          path: test-reports/
       - store_artifacts:
+          path: /logs
+      - store_artifacts:
+          path: test-reports/
+      - store_test_results:
           path: test-reports/
 
   test_installation:
