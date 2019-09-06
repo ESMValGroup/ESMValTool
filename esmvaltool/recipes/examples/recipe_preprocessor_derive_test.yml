@@ -6,11 +6,11 @@ documentation:
     Recipe that demonstrates various uses of the preprocessor derive functionality.
 
   authors:
-    - ande_bo
-    - schl_ma
+    - andela_bouwe
+    - schlund_manuel
 
   maintainer:
-    - righ_ma
+    - righi_mattia
 
   projects:
     - c3s-magic
