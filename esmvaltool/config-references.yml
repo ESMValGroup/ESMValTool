@@ -10,7 +10,7 @@ authors:
   eyring_veronika:
     name: Eyring, Veronika
     institute: DLR, Germany
-    email: veronika.eyring@dlr.de    
+    email: veronika.eyring@dlr.de
     orcid: https://orcid.org/0000-0002-6887-4885
   andela_bouwe:
     name: Andela, Bouwe
@@ -20,54 +20,54 @@ authors:
   broetz_bjoern:
     name: Broetz, Bjoern
     institute: DLR, Germany
-    email: bjoern.broetz@dlr.de    
-    orcid: 
+    email: bjoern.broetz@dlr.de
+    orcid:
   demora_lee:
     name: de Mora, Lee
     institute: PML, UK
-    email: ledm@pml.ac.uK    
+    email: ledm@pml.ac.uK
     orcid: https://orcid.org/0000-0002-5080-3149
   drost_niels:
     name: Drost, Niels
     institute: NLeSC, Netherlands
-    email: n.drost@esciencecenter.nl    
-    orcid: 
+    email: n.drost@esciencecenter.nl
+    orcid:
   koldunov_nikolay:
     name: Koldunov, Nikolay
     institute: AWI, Germany
-    email: nikolay.koldunov@awi.de    
+    email: nikolay.koldunov@awi.de
     orcid: https://orcid.org/0000-0002-3365-8146
   lauer_axel:
     name: Lauer, Axel
     institute: DLR, Germany
-    email: axel.lauer@dlr.de    
+    email: axel.lauer@dlr.de
     orcid: https://orcid.org/0000-0002-9270-1044
   mueller_benjamin:
     name: Mueller, Benjamin
     institute: LMU, Germany
-    email: b.mueller@iggf.geo.uni-muenchen.de    
-    orcid: 
+    email: b.mueller@iggf.geo.uni-muenchen.de
+    orcid:
   predoi_valeriu:
     name: Predoi, Valeriu
     institute: URead, UK
-    email: valeriu.predoi@ncas.ac.uk    
+    email: valeriu.predoi@ncas.ac.uk
     orcid: https://orcid.org/0000-0002-9729-6578
   righi_mattia:
     name: Righi, Mattia
     institute: DLR, Germany
-    email: mattia.righi@dlr.de    
+    email: mattia.righi@dlr.de
     orcid: https://orcid.org/0000-0003-3827-5950
   schlund_manuel:
     name: Schlund, Manuel
     institute: DLR, Germany
-    email: manuel.schlund@dlr.de    
+    email: manuel.schlund@dlr.de
     orcid: https://orcid.org/0000-0001-5251-0158
   vegas-regidor_javier:
     name: Vegas-Regidor, Javier
     institute: BSC, Spain
-    email: javier.vegas@bsc.es    
+    email: javier.vegas@bsc.es
     orcid: https://orcid.org/0000-0003-0096-4291
-  # Development team      
+  # Development team
   anav_alessandro:
     name: Anav, Alessandro
     institute: Univ. of Exeter, UK
@@ -111,7 +111,7 @@ authors:
   chen_jack:
     name: Chen, Jack
     institute: NCAR, USA
-    orcid: 
+    orcid:
   cionni_irene:
     name: Cionni, Irene
     institute: ENEA, Italy
@@ -139,15 +139,15 @@ authors:
   ehbrecht_carsten:
     name: Ehbrecht, Carsten
     institute: DKRZ, Germany
-    orcid: 
+    orcid:
   frank_franziska:
     name: Frank, Franziska
     institute: DLR, Germany
-    orcid: 
+    orcid:
   fuckar_neven:
     name: Fuckar, Neven
     institute: BSC, Spain
-    orcid: 
+    orcid:
   gainusa-bogdan_alina:
     name: Gainusa-Bogdan, Alina
     institute: France
@@ -163,7 +163,7 @@ authors:
   gier_bettina:
     name: Gier, Bettina
     institute: University of Bremen, Germany
-    orcid: 
+    orcid:
   gottschaldt_klaus-dirk:
     name: Gottschaldt, Klaus-Dirk
     institute: DLR, Germany
@@ -179,7 +179,7 @@ authors:
   hansson_ulf:
     name: Hansson, Ulf
     institute: SMHI, Sweden
-    orcid: 
+    orcid:
   vonhardenberg_jost:
     name: von Hardenberg, Jost
     institute: ISAC-CNR, Torino, Italy
@@ -191,7 +191,7 @@ authors:
   hempelmann_nils:
     name: Hempelmann, Nils
     institute: IPSL, France
-    orcid: 
+    orcid:
   hunter_alasdair:
     name: Hunter, Alasdair
     institute: BSC, Spain
@@ -199,15 +199,15 @@ authors:
   hutjes_ronald:
     name: Hutjes, Ronald
     institute: Univ. of Wageningen, NL
-    orcid: 
+    orcid:
   juckes_martin:
     name: Juckes, Martin
     institute: BADC, UK
-    orcid: 
+    orcid:
   kadygrov_nikolay:
     name: Kadygrov, Nikolay
     institute: IPSL, France
-    orcid: 
+    orcid:
   kindermann_stephan:
     name: Kindermann, Stephan
     institute: DKRZ, Germany
@@ -227,11 +227,11 @@ authors:
   little_bill:
     name: Little, Bill
     institute: MetOffice, UK
-    orcid: 
+    orcid:
   lledo_llorenc:
     name: Lledo, Llorenc
     institute: BSC, Spain
-    orcid: 
+    orcid:
   lorenz_ruth:
     name: Lorenz, Ruth
     institute: ETH Zurich, Switzerland
@@ -243,7 +243,7 @@ authors:
   makela_jarmo:
     name: Makela, Jarmo
     institute: FMI, Finland
-    orcid: 
+    orcid:
   maloney_eric:
     name: Maloney, Eric
     institute: Colorado State University, USA
@@ -255,15 +255,15 @@ authors:
   mason_erik:
     name: Mason, Erik
     institute: NOAA, USA
-    orcid: 
+    orcid:
   sandstad_marit:
     name: Sandstad, Marit
     institute: Cicero, Norway
-    orcid: 
+    orcid:
   massonnet_francois:
     name: Massonnet, Francois
     institute: Universite Catholique de Louvain, Belgium
-    orcid: 
+    orcid:
   martin_gill:
     name: Martin, Gill
     institute: MetOffice, UK
@@ -299,7 +299,7 @@ authors:
   perez-zanon_nuria:
     name: Perez-Zanon, Nuria
     institute: BSC, Spain
-    orcid:      
+    orcid:
   phillips_adam:
     name: Phillips, Adam
     institute: NCAR, USA
@@ -307,11 +307,11 @@ authors:
   pugh_thomas:
     name: Pugh, Thomas
     institute: KIT, Germany
-    orcid: 
+    orcid:
   read_simon:
     name: Read, Simon
     institute: Univ. of Reading, UK
-    orcid: 
+    orcid:
   ringer_mark:
     name: Ringer, Mark
     institute: MetOffice, UK
@@ -331,7 +331,7 @@ authors:
   sommer_philipp:
     name: Sommer, Philipp
     institute: Univ. of Hamburg, Germany
-    orcid: 
+    orcid:
   stacke_tobias:
     name: Stacke, Tobias
     institute: MPI-M, Germany
@@ -347,15 +347,15 @@ authors:
   teichmann_claas:
     name: Teichmann, Claas
     institute: GERICS, Hamburg, Germany
-    orcid: 
+    orcid:
   torralba_veronica:
     name: Torralba, Veronica
     institute: BSC, Spain
-    orcid: 
+    orcid:
   tsushima_yoko:
     name: Tsushima, Yoko
     institute: MetOffice, UK
-    orcid: 
+    orcid:
   vanulft_bert:
     name: van Ulft, Bert
     institute: KNMI, Netherlands
@@ -367,7 +367,7 @@ authors:
   wang_shiyu:
     name: Wang, Shiyu
     institute: SMHI, Sweden
-    orcid: 
+    orcid:
   weigel_katja:
     name: Weigel, Katja
     institute: University of Bremen and DLR, Germany
@@ -375,93 +375,93 @@ authors:
   wenzel_sabrina:
     name: Wenzel, Sabrina
     institute: DLR, Germany
-    orcid: 
+    orcid:
   williams_keith:
     name: Williams, Keith
     institute: MetOffice, UK
     orcid:
-  # Viewers (not active developers)      
+  # Viewers (not active developers)
   balaji_venkatramani:
     name: Balaji, Venkatramani
     institute: GFDL, USA
-    orcid: 
+    orcid:
   bunzel_felix:
     name: Bunzel, Felix
     institute: MPI-M, Germany
-    orcid: 
+    orcid:
   charlton-perez_andrew:
     name: Charlton-Perez, Andrew
     institute: Univ. of Reading, UK
-    orcid: 
+    orcid:
   corti_susanna:
     name: Corti, Susanna
     institute: ISAC-CNR, Torino, Italy
-    orcid: 
+    orcid:
   dennis_john:
     name: Dennis, John
     institute: NCAR, USA
-    orcid: 
+    orcid:
   graf_phoebe:
     name: Graf, Phoebe
     institute: DLR, Germany
-    orcid: 
+    orcid:
   hegglin_michaela:
     name: Hegglin, Michaela
     institute: Univ. of Reading, UK
-    orcid: 
+    orcid:
   hendricks_johannes:
     name: Hendricks, Johannes
     institute: DLR, Germany
-    orcid: 
+    orcid:
   john_jasmin:
     name: John, Jasmin
     institute: NOAA, USA
-    orcid: 
+    orcid:
   jones_colin:
     name: Jones, Colin
     institute: MetOffice, UK
-    orcid: 
+    orcid:
   kaiser_christopher:
     name: Kaiser, Christopher
     institute: DLR, Germany
-    orcid: 
+    orcid:
   karpechko_alexey:
     name: Karpechko, Alexey,
     institute: FMI, Finland
-    orcid: 
+    orcid:
   lawrence_bryan:
     name: Lawrence, Bryan
     institute: STFC, UK
-    orcid: 
+    orcid:
   mickelson_sheri:
     name: Mickelson, Sheri
     institute: NCAR, USA
-    orcid: 
+    orcid:
   oconnor_fiona:
     name: OConnor, Fiona
     institute: MetOffice, UK
-    orcid: 
+    orcid:
   radhakrishnan_aparna:
     name: Radhakrishnan, Aparna
     institute: GFDL, USA
-    orcid: 
+    orcid:
   sellar_alistair:
     name: Sellar, Alistair
     institute: MetOffice, UK
-    orcid: 
+    orcid:
   wyser_klaus:
     name: Wyser, Klaus
     institute: SMHI, Sweden
     orcid:
-  # Former developers      
+  # Former developers
   braeu_melanie:
     name: Braeu, Melanie
     institute: DLR, Germany
-    orcid: 
+    orcid:
   duscha_christiane:
     name: Duscha, Christiane
     institute: DLR, Germany
-    orcid: 
+    orcid:
   enright_clare:
     name: Enright, Clare
     institute: UEA, UK
@@ -469,27 +469,27 @@ authors:
   evaldsson_martin:
     name: Evaldsson, Martin
     institute: SMHI, Sweden
-    orcid: 
+    orcid:
   haluszczynski_alexander:
     name: Haluszczynski, Alexander
     institute: DLR, Germany
-    orcid: 
+    orcid:
   herman_michael:
     name: Herman, Michael
     institute: New Mexico Tech, USA
-    orcid: 
+    orcid:
   huebner_michael:
     name: Huebner, Michael
     institute: DLR, Germany
-    orcid: 
+    orcid:
   johnston_marston:
     name: Johnston, Marston
     institute: SMHI, Sweden
-    orcid: 
+    orcid:
   klinger_carolin:
     name: Klinger, Carolin
     institute: DLR, Germany
-    orcid: 
+    orcid:
   kolax_michael:
     name: Kolax, Michael
     institute: SMHI, Sweden
@@ -497,60 +497,60 @@ authors:
   kunert_dominik:
     name: Kunert, Dominik
     institute: DLR, Germany
-    orcid:      
+    orcid:
   loew_alexander:
     name: Loew, Alexander
     institute: LMU, Germany
-    orcid: 
+    orcid:
   neale_richard:
     name: Neale, Richard
     institute: NCAR, US
-    orcid: 
+    orcid:
   orlowsky_boris:
     name: Orlowsky, Boris
     institute: ETH, Switzerland
-    orcid: 
+    orcid:
   pascoe_stephen:
     name: Pascoe, Stephen
     institute: STFC, UK
-    orcid: 
+    orcid:
   senftleben_daniel:
     name: Senftleben, Daniel
     institute: DLR, Germany
-    orcid: 
+    orcid:
   stevens_mark:
     name: Stevens, Mark
     institute: NCAR, US
     orcid:
-  # Former viewers (not active viewers)      
+  # Former viewers (not active viewers)
   butchart_neal:
     name: Butchart, Neal
     institute: MetOffice, UK
-    orcid: 
+    orcid:
   hassell_david:
     name: Hassell, David
     institute: Univ. of Reading, UK
-    orcid: 
+    orcid:
   ivanova_detelina:
     name: Ivanova, Detelina
     institute: NERSC, Norway
-    orcid: 
+    orcid:
   moise_aurel:
     name: Moise, Aurel
     institute: BOM, Australia
-    orcid: 
+    orcid:
   pendlebury_diane:
     name: Pendlebury, Diane
     institute: Univ. of Toronto, Canada
-    orcid: 
+    orcid:
   stepanova_daria:
     name: Stepanova, Daria
     institute: FMI, Finland
-    orcid: 
+    orcid:
   tilmes_simone:
     name: Tilmes, Simone
     institute: NCAR, US
-    orcid: 
+    orcid:
 
 references:
   # If possible as: "[Last name] et al., [journal abbr.], doi:[doi], [year]."
@@ -606,7 +606,7 @@ references:
   lloyd-hughes02jclim: "Lloyd-Hughes, B. and Saunders, M. A., Int. J. Climatol., 22, 1571-1592, doi:10.1002/joc.846, 2002."
   locarini10usgov: "Locarnini, R. A. et al., World Ocean Atlas 2009, Volume 1: Temperature. S. Levitus, Ed. NOAA Atlas NESDIS 68, U.S. Government Printing Office, Washington, D.C., 184 pp.,2010."
   lucarini14revgeop: "Lucarini et al., Rev. Geophys., 52, 809-859, doi:https://doi.org/10.1002/2013RG000446"
-  mehran14jgr: "Mehran, A. et al., J. Geophys. Res., 119, 4, 1695-1707, doi: 10.1002/2013JD021152, 2014." 
+  mehran14jgr: "Mehran, A. et al., J. Geophys. Res., 119, 4, 1695-1707, doi: 10.1002/2013JD021152, 2014."
   manubens:  "Manubens, N., et al., ENVIRON MODELL SOFTW 103, 29-42. doi:10.1016/j.envsoft.2018.01.018"
   mckee93: "McKee, T. B. and Doesken, N. J. and Kleist, J.  In Proceedings of the 8th Conference on Applied Climatology, 17(22), 179-183, Boston, MA: American Meteorological Society, 1993."
   mueller14grl: "Mueller, B. and Seneviratne, S. I. Geophys. Res. Lett., 41, 128-134, doi:10.1002/2013GL058055, 2014."
@@ -618,7 +618,7 @@ references:
   rk2008bams: "Reichler and Kim, Bull. Amer. Meteor. Soc., 89, 303-312, doi:10.1175/BAMS-89-3-303, 2008."
   roedenbeck13os: "Roedenbeck, C. et al., Ocean Sci., 9, 193-216, doi:10.5194/os-9-193-2013, 2013."
   roehrig13jclim: "Roehrig, R. et al., J. Climate, 26, 6471-6505, doi:10.1175/JCLI-D-12-00505.1, 2013."
-  sillman13jgr: "Sillmann et al., J. Geophys. Res., doi:10.1029/2012JD018390, 2013" 
+  sillman13jgr: "Sillmann et al., J. Geophys. Res., doi:10.1029/2012JD018390, 2013"
   sperber12asl: "Sperber and Kim, Atmos. Sci. Lett., 13, 3, 187-193, doi:10.1002/asl.378, 2012."
   straus07jcli: "Straus, D.M., S. Corti, and F. Molteni. J. Climate, 20, 2251-2272, doi:10.1175/JCLI4070.1, 2007"
   stroeve07grl: "Stroeve, J. et al., Geophys. Res. Lett., 34, L09501, doi:10.1029/2007GL029703, 2007."
