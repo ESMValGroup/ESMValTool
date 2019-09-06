@@ -5,7 +5,7 @@ jobs:
     # Run Python 3 tests
     working_directory: /test
     docker:
-      - image: continuumio/anaconda3
+      - image: continuumio/miniconda3
     steps:
       - checkout
       - run:
@@ -19,11 +19,12 @@ jobs:
           # Update/Create Conda environment and run tests
           command: |
             . /opt/conda/etc/profile.d/conda.sh
-            conda update -y conda
-            conda env update
+            mkdir /logs
+            conda update -y conda >> /logs/conda.txt 2>&1
+            conda env update >> /logs/conda.txt 2>&1
             conda activate esmvaltool
-            # Install missing r-yaml and r-lintr
-            Rscript esmvaltool/install/R/setup_devutils.R
+            # Install r-lintr for r linter test
+            Rscript esmvaltool/install/R/setup_devutils.R > /logs/R_install.txt 2>&1
             # Run tests
             python setup.py test
       - save_cache:
@@ -31,16 +32,18 @@ jobs:
           paths:
             - "/opt/conda/envs/esmvaltool"
             - ".eggs"
-      - store_test_results:
-          path: test-reports/
       - store_artifacts:
+          path: /logs
+      - store_artifacts:
+          path: test-reports/
+      - store_test_results:
           path: test-reports/
 
   test_installation:
     # Test Python 3 installation
     working_directory: /test_installation
     docker:
-      - image: continuumio/anaconda3
+      - image: continuumio/miniconda3
     steps:
       - checkout
       - restore_cache:
@@ -64,8 +67,6 @@ jobs:
             dpkg -l > /logs/versions.txt
             conda env export > /logs/environment.yml
             pip freeze > /logs/requirements.txt
-            # Install missing r-yaml
-            conda install -c conda-forge -yS r-yaml
             # Test installation
             python setup.py test --installation
             esmvaltool -h
@@ -89,14 +90,14 @@ jobs:
       - run:
           when: always
           command: |
-            /opt/conda/envs/esmvaltool/bin/pip install codacy-coverage
-            /opt/conda/envs/esmvaltool/bin/python-codacy-coverage -r test-reports/coverage.xml
+            pip install codacy-coverage
+            python-codacy-coverage -r test-reports/coverage.xml
 
   develop:
     # Test development installation
     working_directory: /develop
     docker:
-      - image: continuumio/anaconda3
+      - image: continuumio/miniconda3
     steps:
       - checkout
       - run:
@@ -130,7 +131,7 @@ jobs:
     # Test building documentation
     working_directory: /doc
     docker:
-      - image: continuumio/anaconda3
+      - image: continuumio/miniconda3
     steps:
       - checkout
       - restore_cache:
@@ -139,15 +140,13 @@ jobs:
           command: |
             mkdir /logs
             # Install
-            . /opt/conda/etc/profile.d/conda.sh
-            conda install -c conda-forge -y pip > /logs/install.txt 2>&1
-            /opt/conda/bin/pip install -r doc/sphinx/source/requirements.txt > /logs/install.txt 2>&1
-            /opt/conda/bin/pip install sphinx sphinx_rtd_theme >> /logs/install.txt 2>&1
+            pip install -r doc/sphinx/source/requirements.txt > /logs/install.txt 2>&1
+            pip install sphinx sphinx_rtd_theme >> /logs/install.txt 2>&1
             # Log versions
             dpkg -l > /logs/versions.txt
-            /opt/conda/bin/pip freeze > /logs/requirements.txt
+            pip freeze > /logs/requirements.txt
             # Test building documentation
-            MPLBACKEND=Agg /opt/conda/bin/python setup.py build_sphinx --warning-is-error
+            MPLBACKEND=Agg python setup.py build_sphinx --warning-is-error
       - save_cache:
           key: documentation-{{ .Branch }}
           paths:
@@ -159,7 +158,7 @@ jobs:
     # Test conda build
     working_directory: /esmvaltool
     docker:
-      - image: continuumio/anaconda3
+      - image: continuumio/miniconda3
     steps:
       - checkout
       - run:
@@ -177,13 +176,8 @@ jobs:
             dpkg -l > /logs/versions.txt
             conda env export -n base > /logs/build_environment.yml
             # Build conda package
-            conda build . -c conda-forge -c esmvalgroup > /logs/build_log.txt
-            # Install Python 3 conda package
-            conda create -y --name esmvaltool3 > /logs/conda_esmvaltool3.txt 2>&1
-            set +x; conda activate esmvaltool3; set -x
-            conda install -y esmvaltool --use-local -c conda-forge -c esmvalgroup
-            conda env export > /logs/test_environment3.yml
-            esmvaltool -h
+            apt update && apt install time
+            \time -v conda build . -c conda-forge -c esmvalgroup > /logs/build_log.txt
       - store_artifacts:
           path: /logs
 
@@ -191,7 +185,7 @@ jobs:
     # Test conda package installation
     working_directory: /esmvaltool
     docker:
-      - image: continuumio/anaconda3
+      - image: continuumio/miniconda3
     steps:
       - run:
           command: |
@@ -219,7 +213,7 @@ jobs:
     # Test ncl and cdo conda packages
     working_directory: /ncl
     docker:
-      - image: continuumio/anaconda3
+      - image: continuumio/miniconda3
     steps:
       - checkout
       - run:
@@ -245,9 +239,11 @@ workflows:
   version: 2
   commit:
     jobs:
-      - test
-      - test_installation
       - documentation
+      - test
+      - test_installation:
+          requires:
+            - test
   nightly:
     triggers:
       - schedule:
