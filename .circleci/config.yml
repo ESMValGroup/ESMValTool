@@ -67,8 +67,6 @@ jobs:
             dpkg -l > /logs/versions.txt
             conda env export > /logs/environment.yml
             pip freeze > /logs/requirements.txt
-            # Install missing r-yaml
-            conda install -c conda-forge -yS r-yaml
             # Test installation
             python setup.py test --installation
             esmvaltool -h
