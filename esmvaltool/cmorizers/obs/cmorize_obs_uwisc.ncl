@@ -16,7 +16,7 @@
 ;    University, USA).
 ;
 ; Modification history
-;    20190208-A_righ_ma: adapted to v2.
+;    20190208-righi_mattia: adapted to v2.
 ;
 ; #############################################################################
 loadscript(getenv("esmvaltool_root") + \
