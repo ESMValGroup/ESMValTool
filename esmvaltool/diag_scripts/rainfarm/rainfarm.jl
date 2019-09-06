@@ -4,8 +4,10 @@
 #                E. Arnone (ISAC-CNR, Italy)
 # #############################################################################
 # Description
-# ESMValTool diagnostic calling the RainFARM library written in Julia (by von Hardenberg, ISAC-CNR, Italy).
-# RainFARM is a stochastic precipitation downscaling method, further adapted for climate downscaling.
+# ESMValTool diagnostic calling the RainFARM library written in Julia
+# (by von Hardenberg, ISAC-CNR, Italy).
+# RainFARM is a stochastic precipitation downscaling method, further adapted
+# for climate downscaling.
 #
 # Required
 # CDO
@@ -17,10 +19,10 @@
 # Caveats
 #
 # Modification history
-#    20190810 hard_jo: rewritten in pure Julia, no R
-#    20181210 hard_jo: cleanup and using juliacall
-#    20180508-A_arnone_e: Conversion to v2.0
-#    20170908-A_arnone_e: 1st github version
+#    20190810-vonhardenberg_jost: rewritten in pure Julia, no R
+#    20181210-vonhardenberg_jost: cleanup and using juliacall
+#    20180508-arnone_enrico: Conversion to v2.0
+#    20170908-arnone_enrico: 1st github version
 #
 # ############################################################################
 
@@ -30,7 +32,7 @@ using Printf
 
 function provenance_record(infile)
     xprov = Dict( "ancestors" => infile,
-        "authors" => ["hard_jo", "arno_en"],
+        "authors" => ["vonhardenberg_jost", "arnone_enrico"],
         "references" => ["donofrio14jh", "rebora06jhm",
                          "terzago18nhess"],
         "projects" => ["c3s-magic"],
