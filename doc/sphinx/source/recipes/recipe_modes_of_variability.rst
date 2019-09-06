@@ -6,12 +6,12 @@ Modes of variability
 Overview
 --------
 
-The goal of this recipe is to compute modes of variability from a reference/observational dataset and a set of climate projections and calculate the root-mean-square error between the mean anomalies obtained for the clusters from the reference and projection data sets. 
-This is done through K-means clustering applied either directly to the spatial data or after computing the EOFs. 
+The goal of this recipe is to compute modes of variability from a reference or observational dataset and from a set of climate projections and calculate the root-mean-square error between the mean anomalies obtained for the clusters from the reference and projection data sets.
+This is done through K-means or hierarchical clustering applied either directly to the spatial data or after computing the EOFs.
 
-The user can specify the number of clusters to be computed. 
+The user can specify the number of clusters to be computed.
 
-The recipe's output consist of netcdf files of the time series of the cluster occurrences, the mean anomaly corresponding to each cluster at each location and the corresponding p-value, for both the observed and projected weather regimes and the RMSE between them.
+The recipe's output consist of three netcdf files for both the observed and projected weather regimes and the RMSE between them.
 
 
 Available recipes and diagnostics
@@ -19,12 +19,12 @@ Available recipes and diagnostics
 
 Recipes are stored in recipes/
 
-* recipe_modes_of_variability_wp4.yml
+* recipe_modes_of_variability.yml
 
 
 Diagnostics are stored in diag_scripts/magic_bsc/
 
-* WeatherRegime.r - function for computing the EOFs and k-means clusters.
+* WeatherRegime.r - function for computing the EOFs and k-means and hierarchical clusters.
 
 * weather_regime.r - applies the above weather regimes function to the datasets
 
@@ -35,25 +35,22 @@ User settings
 
 User setting files are stored in recipes/
 
-#. recipe_modes_of_variability_wp4.yml
+#. recipe_modes_of_variability.yml
 
    *Required settings for script*
 
-   * start_historical: start date (YYYY-MM-DD) of the reference dataset to be used (please make sure this matches the available data)
-   * end_historical: end date (YYYY-MM-DD) of the reference dataset to be used (please make sure this matches the available data)
-   * start_projection: start date (YYYY-MM-DD) of the projection dataset to be used (please make sure this matches the available data)
-   * end_projection: end date (YYYY-MM-DD) of the projection dataset to be used (please make sure this matches the available data)
-   * region: North-Atlantic or Polar
-   * ncenters: number of centers to be computed by the k-means clustering algorithm (does not work yet)
-   * detrend_order: the order of the polynomial detrending to be applied
+   * plot type: rectangular or polar
+   * ncenters: number of centers to be computed by the clustering algorithm (maximum 4)
+   * cluster_method: kmeans (only psl variable) or hierarchical clustering (for psl or sic variables) 
+   * detrend_order: the order of the polynomial detrending to be applied (0, 1 or 2)
    * EOFs: logical indicating wether the k-means clustering algorithm is applied directly to the spatial data ('false') or to the EOFs ('true')
-   * frequency: select the month (format: JAN, FEB, ...) or season (format: JJA, SON, MAM, DJF) for the diagnostic to be computed for (does not work yet for MAM).
+   * frequency: select the month (format: JAN, FEB, ...) or season (format: JJA, SON, MAM, DJF) for the diagnostic to be computed for (does not work yet for MAM with daily data).
 
 
 Variables
 ---------
 
-* psl or sic (atmos, daily, longitude, latitude, time)
+* psl (atmos, monthly/daily, longitude, latitude, time)
 
 
 Observations and reformat scripts
@@ -72,9 +69,9 @@ References
 
 * Hannachi, A., D. M. Straus, C. L. E. Franzke, S. Corti, and T. Woollings, 2017: Low Frequency Nonlinearity and Regime Behavior in the Northern Hemisphere Extra-Tropical Atmosphere. Reviews of Geophysics, https://doi.org/10.1002/2015RG000509.
 
-* Michelangeli, P.-A., R. Vautard, and B. Legras, 1995: Weather regimes: Recurrence and quasi stationarity. Journal of the atmospheric sciences, 52 (8), 1237-1256, doi: 10.1175/1520-0469(1995)052<1237:WRRAQS>2.0.CO. `link <https://journals.ametsoc.org/doi/10.1175/1520-0469%281995%29052%3C1237%3AWRRAQS%3E2.0.CO%3B2>`_ 
+* Michelangeli, P.-A., R. Vautard, and B. Legras, 1995: Weather regimes: Recurrence and quasi stationarity. Journal of the atmospheric sciences, 52 (8), 1237-1256, doi: `10.1175/1520-0469(1995)052<1237:WRRAQS>2.0.CO <https://journals.ametsoc.org/doi/10.1175/1520-0469%281995%29052%3C1237%3AWRRAQS%3E2.0.CO%3B2>`_. 
 
-* Vautard, R., 1990: Multiple weather regimes over the North Atlantic: Analysis of precursors and successors. Monthly weather review, 118 (10), 2056-2081, doi: 10.1175/1520-0493(1990)118<2056:MWROTN>2.0.CO;2. `link <https://journals.ametsoc.org/doi/10.1175/1520-0493%281990%29118%3C2056%3AMWROTN%3E2.0.CO%3B2>`_
+* Vautard, R., 1990: Multiple weather regimes over the North Atlantic: Analysis of precursors and successors. Monthly weather review, 118 (10), 2056-2081, doi: `10.1175/1520-0493(1990)118<2056:MWROTN>2.0.CO;2 <https://journals.ametsoc.org/doi/10.1175/1520-0493%281990%29118%3C2056%3AMWROTN%3E2.0.CO%3B2>`_.
 
 * Yiou, P., K. Goubanova, Z. X. Li, and M. Nogaj, 2008: Weather regime dependence of extreme value statistics for summer temperature and precipitation. Nonlinear Processes in Geophysics, 15 (3), 365-378, https://doi.org/10.5194/npg-15-365-2008.
 
@@ -85,7 +82,7 @@ Example plots
 -------------
 
 .. _fig_modesofvar:
-.. figure::  /recipes/figures/modes_of_variability/DJF-psl_observed_regimes.png
+.. figure::  /recipes/figures/modes_of_variability/SON-psl_predicted_regimes.png
    :align:   center
    :width:   14cm
 

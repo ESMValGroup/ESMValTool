@@ -1,20 +1,20 @@
-###############################################################################
-# recipe_smpi.xml
+# ESMValTool
+# recipe_smpi.yml
 ---
 documentation:
   description: |
     Recipe for computing Single Model Performance Index. Follows Reichler
-    and Kim 2008. Considers variables:
+    and Kim 2008. Considers the following variables:
     Sea level pressure, Air Temperature, Zonal Wind Stress, Meridional Wind
     Stress, 2m air temperature, Zonal Wind, Meridional Wind, Net surface heat
     flux, Precipitation, Specific Humidity, Snow fraction, Sea Surface
     Temperature, Sea Ice Fraction and sea surface salinity.
 
   authors:
-    - hass_bg
-    - gier_be
-    - righ_ma
-    - eyri_ve
+    - hassler_birgit
+    - gier_bettina
+    - righi_mattia
+    - eyring_veronika
 
   references:
     - rk2008bams
@@ -24,17 +24,17 @@ documentation:
     - c3s-magic
 
 datasets:
-  - {dataset: CNRM-CM5,       project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
-  - {dataset: CSIRO-Mk3-6-0,  project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
-#  - {dataset: GFDL-ESM2G,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
-#  - {dataset: MIROC5,         project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
-#  - {dataset: MIROC-ESM,      project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
-#  - {dataset: MIROC-ESM-CHEM, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
-#  - {dataset: MPI-ESM-LR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
-#  - {dataset: MPI-ESM-MR,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
-#  - {dataset: MRI-CGCM3,      project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
-#  - {dataset: NorESM1-M,      project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
-#  - {dataset: NorESM1-ME,     project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1980, end_year: 2005}
+  - {dataset: CNRM-CM5,       project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: CSIRO-Mk3-6-0,  project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: GFDL-ESM2G,     project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: MIROC5,         project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: MIROC-ESM,      project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: MIROC-ESM-CHEM, project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: MPI-ESM-LR,     project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: MPI-ESM-MR,     project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: MRI-CGCM3,      project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: NorESM1-M,      project: CMIP5, exp: historical, ensemble: r1i1p1}
+  - {dataset: NorESM1-ME,     project: CMIP5, exp: historical, ensemble: r1i1p1}
 
 preprocessors:
 
@@ -53,7 +53,6 @@ preprocessors:
       exclude: [reference_dataset]
 
   ppNOLEV:
-   # extract_levels: false
     regrid:
       target_grid: reference_dataset
       scheme: linear
@@ -65,7 +64,6 @@ preprocessors:
       exclude: [reference_dataset]
 
   ppNOLEVirreg:
-    #extract_levels: false
     regrid:
       target_grid: 1x1
       scheme: linear
@@ -85,20 +83,20 @@ diagnostics:
     realms:
       - atmos
     variables:
-      ta:
+      ta: &variable_settings
         preprocessor: ppALL
         reference_dataset: ERA-Interim
         mip: Amon
-        field: T3M
+        start_year: 1980
+        end_year: 2005
     additional_datasets:
-      - {dataset: ERA-Interim,      project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 3}
+      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
     scripts:
       grading: &grading_settings
         script: perfmetrics/main.ncl
         plot_type: cycle_zonal
         time_avg: yearly
-        region: Global
-        draw_plots: false
+        region: global
         calc_grading: true
         metric: [SMPI]
         normalization: CMIP5
@@ -112,19 +110,15 @@ diagnostics:
       - atmos
     variables:
       va:
-        preprocessor: ppALL
-        reference_dataset: ERA-Interim
-        mip: Amon
-        field: T3M
+        <<: *variable_settings
     additional_datasets:
-      - {dataset: ERA-Interim,      project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 3}
+      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
     scripts:
       grading:
         script: perfmetrics/main.ncl
         plot_type: cycle_zonal
         time_avg: yearly
-        region: Global
-        draw_plots: false
+        region: global
         calc_grading: true
         metric: [SMPI]
         normalization: CMIP5
@@ -138,19 +132,15 @@ diagnostics:
       - atmos
     variables:
       ua:
-        preprocessor: ppALL
-        reference_dataset: ERA-Interim
-        mip: Amon
-        field: T3M
+        <<: *variable_settings
     additional_datasets:
-      - {dataset: ERA-Interim,      project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 3}
+      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
     scripts:
       grading:
         script: perfmetrics/main.ncl
         plot_type: cycle_zonal
         time_avg: yearly
-        region: Global
-        draw_plots: false
+        region: global
         calc_grading: true
         metric: [SMPI]
         normalization: CMIP5
@@ -164,19 +154,15 @@ diagnostics:
       - atmos
     variables:
       hus:
-        preprocessor: ppALL
-        reference_dataset: ERA-Interim
-        mip: Amon
-        field: T3M
+        <<: *variable_settings
     additional_datasets:
-      - {dataset: ERA-Interim,      project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 3}
+      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
     scripts:
       grading:
         script: perfmetrics/main.ncl
         plot_type: cycle_zonal
         time_avg: yearly
-        region: Global
-        draw_plots: false
+        region: global
         calc_grading: true
         metric: [SMPI]
         normalization: CMIP5
@@ -190,19 +176,16 @@ diagnostics:
       - atmos
     variables:
       tas:
+        <<: *variable_settings
         preprocessor: ppNOLEV
-        reference_dataset: ERA-Interim
-        mip: Amon
-        field: T2Ms
     additional_datasets:
-      - {dataset: ERA-Interim,      project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 3}
+      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
     scripts:
       grading:
         script: perfmetrics/main.ncl
         plot_type: cycle_latlon
         time_avg: yearly
-        region: Global
-        draw_plots: false
+        region: global
         calc_grading: true
         metric: [SMPI]
         normalization: CMIP5
@@ -216,19 +199,16 @@ diagnostics:
       - atmos
     variables:
       psl:
+        <<: *variable_settings
         preprocessor: ppNOLEV
-        reference_dataset: ERA-Interim
-        mip: Amon
-        field: T2Ms
     additional_datasets:
-      - {dataset: ERA-Interim,      project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 3}
+      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
     scripts:
       grading:
         script: perfmetrics/main.ncl
         plot_type: cycle_latlon
         time_avg: yearly
-        region: Global
-        draw_plots: false
+        region: global
         calc_grading: true
         metric: [SMPI]
         normalization: CMIP5
@@ -242,19 +222,17 @@ diagnostics:
       - atmos
     variables:
       pr:
+        <<: *variable_settings
         preprocessor: ppNOLEV
         reference_dataset: GPCP-SG
-        mip: Amon
-        field: T2Ms
     additional_datasets:
-      - {dataset: GPCP-SG,      project: obs4mips, level: L3, version: v2.2, start_year: 1980, end_year: 2005, tier: 1}
+      - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.2, tier: 1}
     scripts:
       grading:
         script: perfmetrics/main.ncl
         plot_type: cycle_latlon
         time_avg: yearly
-        region: Global
-        draw_plots: false
+        region: global
         calc_grading: true
         metric: [SMPI]
         normalization: CMIP5
@@ -268,19 +246,18 @@ diagnostics:
       - ocean
     variables:
       tos:
+        <<: *variable_settings
         preprocessor: ppNOLEVirreg
         reference_dataset: HadISST
         mip: Omon
-        field: T2Ms
     additional_datasets:
-      - {dataset: HadISST,      project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 2}
+      - {dataset: HadISST, project: OBS, type: reanaly, version: 1, tier: 2}
     scripts:
       grading:
         script: perfmetrics/main.ncl
         plot_type: cycle_latlon
         time_avg: yearly
-        region: Global
-        draw_plots: false
+        region: global
         calc_grading: true
         metric: [SMPI]
         normalization: CMIP5
@@ -294,19 +271,18 @@ diagnostics:
       - seaIce
     variables:
       sic:
+        <<: *variable_settings
         preprocessor: ppNOLEVirreg
         reference_dataset: HadISST
         mip: OImon
-        field: T2Ms
     additional_datasets:
-      - {dataset: HadISST,      project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 2}
+      - {dataset: HadISST, project: OBS, type: reanaly, version: 1, tier: 2}
     scripts:
       grading:
         script: perfmetrics/main.ncl
         plot_type: cycle_latlon
         time_avg: yearly
-        region: Global
-        draw_plots: false
+        region: global
         calc_grading: true
         metric: [SMPI]
         normalization: CMIP5
@@ -320,19 +296,17 @@ diagnostics:
       - ocean
     variables:
       hfds:
+        <<: *variable_settings
         preprocessor: ppNOLEVirreg
-        reference_dataset: ERA-Interim
         mip: Omon
-        field: T2Ms
     additional_datasets:
-      - {dataset: ERA-Interim,      project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 3}
+      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
     scripts:
       grading:
         script: perfmetrics/main.ncl
         plot_type: cycle_latlon
         time_avg: yearly
-        region: Global
-        draw_plots: false
+        region: global
         calc_grading: true
         metric: [SMPI]
         normalization: CMIP5
@@ -346,19 +320,16 @@ diagnostics:
       - atmos
     variables:
       tauu:
+        <<: *variable_settings
         preprocessor: ppNOLEV
-        reference_dataset: ERA-Interim
-        mip: Amon
-        field: TO2Ms
     additional_datasets:
-      - {dataset: ERA-Interim,      project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 3}
+      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
     scripts:
       grading:
         script: perfmetrics/main.ncl
         plot_type: cycle_latlon
         time_avg: yearly
-        region: Global
-        draw_plots: false
+        region: global
         calc_grading: true
         metric: [SMPI]
         normalization: CMIP5
@@ -372,25 +343,22 @@ diagnostics:
       - atmos
     variables:
       tauv:
+        <<: *variable_settings
         preprocessor: ppNOLEV
-        reference_dataset: ERA-Interim
-        mip: Amon
-        field: TO2Ms
     additional_datasets:
-      - {dataset: ERA-Interim,      project: OBS, type: reanaly, version: 1, start_year: 1980, end_year: 2005, tier: 3}
+      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
     scripts:
       grading:
         script: perfmetrics/main.ncl
         plot_type: cycle_latlon
         time_avg: yearly
-        region: Global
-        draw_plots: false
+        region: global
         calc_grading: true
         metric: [SMPI]
         normalization: CMIP5
         smpi_n_bootstrap: 100
 
-### COLLECT METRICS ###################
+  ### COLLECT METRICS ###################
   collect:
     description: Wrapper to collect and plot previously calculated metrics
     scripts:

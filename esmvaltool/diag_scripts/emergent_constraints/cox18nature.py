@@ -4,7 +4,7 @@
 
 Description
 -----------
-Plot equilibrium climate sensitivity ECS vs. temperature variability metric psi
+Plot effective climate sensitivity ECS vs. temperature variability metric psi
 to establish an emergent relationship for ECS.
 
 Author
@@ -45,7 +45,7 @@ COLOR_LARGE_LAMBDA = '#009900'
 
 ECS_ATTRS = {
     'short_name': 'ecs',
-    'long_name': 'Equilibrium Climate Sensitivity (ECS)',
+    'long_name': 'Effective Climate Sensitivity (ECS)',
     'units': 'K',
 }
 TASA_ATTRS = {
@@ -76,7 +76,7 @@ def _get_ancestor_files(cfg, obs_name, projects=None):
 
 
 def _get_model_color(model, lambda_cube):
-    """Get color of model dependent on climate sensitivity."""
+    """Get color of model dependent on climate feedback parameter."""
     clim_sens = lambda_cube.extract(iris.Constraint(dataset=model)).data
     if clim_sens < 1.0:
         col = COLOR_SMALL_LAMBDA
@@ -148,14 +148,14 @@ def _save_fig(cfg, basename, legend=None):
 
 def get_external_cubes(cfg):
     """Get external cubes for psi, ECS and lambda."""
-    cubes = []
+    cubes = iris.cube.CubeList()
     for filename in ('psi.nc', 'ecs.nc', 'lambda.nc'):
         filepath = io.get_ancestor_file(cfg, filename)
         cube = iris.load_cube(filepath)
         cube = cube.extract(
             ih.iris_project_constraint(['OBS'], cfg, negate=True))
         cubes.append(cube)
-    cubes = ih.match_dataset_coordinates(cubes)
+    cubes = ih.intersect_dataset_coordinates(cubes)
     return (cubes[0], cubes[1], cubes[2])
 
 
@@ -163,7 +163,7 @@ def get_provenance_record(caption, statistics, plot_type, ancestor_files):
     """Create a provenance record describing the diagnostic data and plot."""
     record = {
         'ancestors': ancestor_files,
-        'authors': ['schl_ma'],
+        'authors': ['schlund_manuel'],
         'caption': caption,
         'domains': ['global'],
         'plot_type': plot_type,
@@ -288,7 +288,7 @@ def plot_emergent_relationship(cfg, psi_cube, ecs_cube, lambda_cube, obs_cube):
         iris.coords.AuxCoord(psi_cube.data, **ih.convert_to_iris(PSI_ATTRS)),
         0)
     netcdf_path = get_diagnostic_filename(filename, cfg)
-    io.save_iris_cube(cube, netcdf_path)
+    io.iris_save(cube, netcdf_path)
     provenance_record = get_provenance_record(
         "Emergent relationship between ECS and the psi metric. The black dot-"
         "dashed line shows the best-fit linear regression across the model "
@@ -368,7 +368,7 @@ def plot_pdf(cfg, psi_cube, ecs_cube, obs_cube):
         units='K-1')
     cube.add_aux_coord(
         iris.coords.AuxCoord(ecs_lin, **ih.convert_to_iris(ECS_ATTRS)), 0)
-    io.save_iris_cube(cube, netcdf_path)
+    io.iris_save(cube, netcdf_path)
     project = _get_project(cfg)
     provenance_record = get_provenance_record(
         "The PDF for ECS. The orange histograms show the prior distributions "
@@ -424,7 +424,7 @@ def plot_cdf(cfg, psi_cube, ecs_cube, obs_cube):
         units='1')
     cube.add_aux_coord(
         iris.coords.AuxCoord(ecs_lin, **ih.convert_to_iris(ECS_ATTRS)), 0)
-    io.save_iris_cube(cube, netcdf_path)
+    io.iris_save(cube, netcdf_path)
     project = _get_project(cfg)
     provenance_record = get_provenance_record(
         "The CDF for ECS. The horizontal dot-dashed lines show the {}% "
@@ -511,8 +511,8 @@ def main(cfg):
     # Get time-dependent psi data
     psi_cubes = {}
     psi_obs = []
-    psi_data = io.netcdf_to_metadata(cfg, pattern='psi_*.nc')
-    for (dataset, [data]) in group_metadata(psi_data, 'dataset').items():
+    for (dataset, [data]) in group_metadata(
+            io.netcdf_to_metadata(cfg, pattern='psi_*.nc'), 'dataset').items():
         cube = iris.load_cube(data['filename'])
         cube = cube.aggregated_by('year', iris.analysis.MEAN)
         psi_cubes[dataset] = cube

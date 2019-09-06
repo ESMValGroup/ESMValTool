@@ -1,0 +1,62 @@
+# ESMValTool
+# recipe_multimodel_products.yml
+---
+documentation:
+  description: |
+    Tool to  compute the ensemble mean anomaly and the ensemble
+    variance and agreement and plot the results as maps and time series.
+
+  authors:
+    - manubens_nicolau
+    - hunter_alasdair
+    - perez-zanon_nuria
+
+
+  projects:
+    - c3s-magic
+
+  references:
+    - manubens
+
+datasets:
+  - {dataset: bcc-csm1-1, type: exp, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1961,  end_year: 1990}
+  - {dataset: MPI-ESM-MR, type: exp, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1961,  end_year: 1990}
+  - {dataset: IPSL-CM5A-LR, type: exp, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1961,  end_year: 1990}
+  - {dataset: MPI-ESM-MR, type: exp, project: CMIP5,  mip: Amon,  exp: rcp26,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2099}
+  - {dataset: bcc-csm1-1, type: exp, project: CMIP5,  mip: Amon,  exp: rcp26,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2099}
+  - {dataset: IPSL-CM5A-LR, type: exp, project: CMIP5,  mip: Amon,  exp: rcp26,  ensemble: r1i1p1,  start_year: 2006,  end_year: 2099}
+
+preprocessors:
+  preproc:
+    regrid:
+      target_grid: bcc-csm1-1
+      scheme: linear
+    mask_fillvalues:
+      threshold_fraction: 0.95
+    extract_region:
+      start_longitude: 0
+      end_longitude: 360
+      start_latitude: -90
+      end_latitude: 90
+
+diagnostics:
+  anomaly_agreement:
+    description: Calculate multi-member anomalies and their spread/agreement.
+    variables:
+      tas:
+        preprocessor: preproc
+        mip: Amon
+    scripts:
+      main:
+        script: magic_bsc/multimodel_products.r
+
+        #Parameters for Season() function
+        moninf: 6   #If this is null, then the monthly anomalies will be computed
+        monsup: 6
+
+        agreement_threshold: 80
+        #Time series plot options
+        running_mean: 5 #Length of running mean to use for the time series plot
+
+        # Timeseries plot
+        time_series_plot: single # Either single or maxmin (plot the mean with/without shading between the max and min.

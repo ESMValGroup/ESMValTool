@@ -8,12 +8,12 @@ documentation:
     9.2, 9.4, 9.5, 9.8, 9.42a.
 
   authors:
-    - bock_ls
-    - laue_ax
-    - schl_ma
+    - bock_lisa
+    - lauer_axel
+    - schlund_manuel
 
   maintainer:
-    - righ_ma
+    - righi_mattia
 
   references:
     - flato13ipcc
@@ -38,9 +38,8 @@ preprocessors:
       exclude: [reference_dataset]
 
   spatial_mean:
-    average_region:
-      coord1: latitude
-      coord2: longitude
+    area_statistics:
+      operator: mean
 
   clim_ref:
     regrid:
@@ -713,8 +712,9 @@ diagnostics:
         project: CMIP5
         ensemble: r1i1p1
         mip: Amon
-      rtmt:
+      rtnt:
         <<: *ecs_settings
+        derive: true
     additional_datasets:
       - {dataset: bcc-csm1-1, exp: piControl, start_year: 160, end_year: 309}
       - {dataset: bcc-csm1-1, exp: abrupt4xCO2, start_year: 160, end_year: 309}
@@ -752,7 +752,6 @@ diagnostics:
     scripts:
       ecs: &ecs_script
         script: climate_metrics/ecs.py
-        plot_ecs_regression: true
 
   fig09-42a_cmip5:
     description: Plot ECS vs. GMSAT for CMIP5 models.
@@ -829,16 +828,23 @@ diagnostics:
       tas:
         <<: *ecs_settings
         project: CMIP6
-      rtmt:
+      rtnt:
         <<: *ecs_settings
         project: CMIP6
+        derive: true
     additional_datasets:
-      # - {dataset: GISS-E2-1-G,  exp: piControl,    ensemble: r1i1p1f1, grid: gn, start_year: 4550, end_year: 4699}
-      # - {dataset: GISS-E2-1-G,  exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 1999}
+      - {dataset: BCC-CSM2-MR,  exp: piControl,    ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 1999}
+      - {dataset: BCC-CSM2-MR,  exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 1999}
+      - {dataset: CNRM-CM6-1,   exp: piControl,    ensemble: r1i1p1f2, grid: gr, start_year: 1850, end_year: 1999}
+      - {dataset: CNRM-CM6-1,   exp: abrupt-4xCO2, ensemble: r1i1p1f2, grid: gr, start_year: 1850, end_year: 1999}
+      - {dataset: GISS-E2-1-G,  exp: piControl,    ensemble: r1i1p1f1, grid: gn, start_year: 4150, end_year: 4299}
+      - {dataset: GISS-E2-1-G,  exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 1999}
       - {dataset: IPSL-CM6A-LR, exp: piControl,    ensemble: r1i1p1f1, grid: gr, start_year: 1850, end_year: 1999}
       - {dataset: IPSL-CM6A-LR, exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gr, start_year: 1850, end_year: 1999}
       - {dataset: MIROC6,       exp: piControl,    ensemble: r1i1p1f1, grid: gn, start_year: 3200, end_year: 3349}
       - {dataset: MIROC6,       exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn, start_year: 3200, end_year: 3349}
+      - {dataset: MRI-ESM2-0,   exp: piControl,    ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 1999}
+      - {dataset: MRI-ESM2-0,   exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 1999}
     scripts:
       ecs:
         <<: *ecs_script
@@ -855,13 +861,18 @@ diagnostics:
         <<: *ecs_settings
         project: CMIP6
     additional_datasets:
-      # - {dataset: GISS-E2-1-G,  exp: piControl,    ensemble: r1i1p1f1, grid: gn, start_year: 4550, end_year: 4699}
-      # - {dataset: GISS-E2-1-G,  exp: historical,   ensemble: r1i1p1f1, grid: gn, start_year: 1961, end_year: 1990}
+      - {dataset: BCC-CSM2-MR,  exp: piControl,    ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 1999}
+      - {dataset: BCC-CSM2-MR,  exp: historical,   ensemble: r1i1p1f1, grid: gn, start_year: 1961, end_year: 1990}
+      - {dataset: CNRM-CM6-1,   exp: piControl,    ensemble: r1i1p1f2, grid: gr, start_year: 1850, end_year: 1999}
+      - {dataset: CNRM-CM6-1,   exp: historical,   ensemble: r1i1p1f2, grid: gr, start_year: 1961, end_year: 1990}
+      - {dataset: GISS-E2-1-G,  exp: piControl,    ensemble: r1i1p1f1, grid: gn, start_year: 4150, end_year: 4299}
+      - {dataset: GISS-E2-1-G,  exp: historical,   ensemble: r1i1p1f1, grid: gn, start_year: 1961, end_year: 1990}
       - {dataset: IPSL-CM6A-LR, exp: piControl,    ensemble: r1i1p1f1, grid: gr, start_year: 1850, end_year: 1999}
-        # TODO
-      - {dataset: IPSL-CM6A-LR, exp: historical,   ensemble: r29i1p1f1, grid: gr, start_year: 1961, end_year: 1990}
+      - {dataset: IPSL-CM6A-LR, exp: historical,   ensemble: r1i1p1f1, grid: gr, start_year: 1961, end_year: 1990}
       - {dataset: MIROC6,       exp: piControl,    ensemble: r1i1p1f1, grid: gn, start_year: 3200, end_year: 3349}
       - {dataset: MIROC6,       exp: historical,   ensemble: r1i1p1f1, grid: gn, start_year: 1961, end_year: 1990}
+      - {dataset: MRI-ESM2-0,   exp: piControl,    ensemble: r1i1p1f1, grid: gn, start_year: 1850, end_year: 1999}
+      - {dataset: MRI-ESM2-0,   exp: historical,   ensemble: r1i1p1f1, grid: gn, start_year: 1961, end_year: 1990}
     scripts:
       fig09-42a:
         <<: *fig09_42a_script

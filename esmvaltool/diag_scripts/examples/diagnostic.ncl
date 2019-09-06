@@ -34,15 +34,14 @@
 ; Caveats
 ;
 ; Modification history
-;    20181107-A_righ_ma: revised and extended to include new metadata handling
-;    20151027-A_laue_ax: moved call to 'write_references' to the beginning
-;                        of the code
-;    20150325-A_laue_ax: modified reference tags used for acknowledgements
-;                        (projects, observations, etc)
-;    20140312-A_righ_ma: adapted to new time_operations structure
-;    20130618-A_gott_kl: adjusted to r738 of
-;                        https://svn.dlr.de/ESM-Diagnostic/sources/trunk
-;    20121130-A_gott_kl: written
+;    20181107-righi_mattia: revised and extended to include new metadata
+;                           handling
+;    20151027-lauer_axel: moved call to 'write_references' to the beginning
+;                         of the code
+;    20150325-lauer_axel: modified reference tags used for acknowledgements
+;                         (projects, observations, etc)
+;    20140312-righi_mattia: adapted to new time_operations structure
+;    20121130-gottschaldt_klaus-dirk: written
 ;
 ; #############################################################################
 
@@ -184,17 +183,15 @@ begin
   ; -> useful for non-NCL routines & metrics
   ; map = contour_map("dummy_for_wks", ncdf_outfile,"dummy_for_var")
 
-  ; collect meta-data and call ESMValMD function
-  nc_file = ncdf_outfile
-  plot_file = map@outfile
-  caption = "Mean of variable: " + var0
-  statistics = ("mean")
-  domain = ("glob")
-  plottype = ("geo")
-  authors = (/"righ_ma", "gott_kl"/)
-  references = (/"acknow_author"/)
-  infiles = metadata_att_as_array(info0, "filename")
-  log_provenance(nc_file, plot_file, caption, statistics, domain, plottype, \
-                 authors, references, infiles)
+  ; Call provenance logger
+  log_provenance(ncdf_outfile, \
+                 map@outfile, \
+                 "Mean of variable: " + var0, \
+                 "mean", \
+                 "global", \
+                 "geo", \
+                 (/"righi_mattia", "gottschaldt_klaus-dirk"/), \
+                 (/"acknow_author"/), \
+                 metadata_att_as_array(info0, "filename"))
 
 end

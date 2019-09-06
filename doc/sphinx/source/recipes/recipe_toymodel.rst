@@ -14,7 +14,7 @@ Available recipes and diagnostics
 
 Recipes are stored in recipes/
 
-* recipe_toymodel_wp4.yml
+* recipe_toymodel.yml
 
 
 Diagnostics are stored in diag_scripts/magic_bsc/
@@ -29,18 +29,32 @@ User settings
 
 User setting files are stored in recipes/
 
-#.	recipe_toymodel_wp4.yml
+#.	recipe_toymodel.yml
+
+   *Required settings for preprocessor*
+
+	extract_region:
+
+   * start_longitude: minimum longitude
+   * end_longitude: maximum longitude
+   * start_latitude: minimum longitude
+   * end_latitude: maximum latitude
+  
+  	extract_levels: (for 3D variables)
+
+   * levels: [50000] # e.g. for 500 hPa level
+   
 
    *Required settings for script*
 
    * number_of_members: integer specifying the number of members to be generated
-   * beta: the user defined underdispersion
+   * beta: the user defined underdispersion (beta >= 0)
 
 
 Variables
 ---------
 
-* (atmos, daily, longitude, latitude, time)
+* any variable (atmos/ocean, daily-monthly, longitude, latitude, time)
 
 
 Observations and reformat scripts
@@ -62,7 +76,7 @@ Example plots
 -------------
 
 .. _fig_toymodel:
-.. figure::  /recipes/figures/toymodel/synthetic_CMIP5_IPSL-CM5A-LR_day_historical_r1i1p1_T2M_tasmax_1999-2000.jpg
+.. figure::  /recipes/figures/toymodel/synthetic_CMIP5_bcc-csm1-1_Amon_rcp45_r1i1p1_psl_2051-2060.jpg
 
 
 

@@ -1,0 +1,43 @@
+# ESMValTool
+# recipe_combined_indices.yml
+---
+documentation:
+  description: |
+    Recipe for for computing seasonal means or running avergaes,
+    combining indices from multiple models and computing area averages
+
+  authors:
+    - hunter_alasdair
+    - perez-zanon_nuria
+    - manubens_nicolau
+
+  projects:
+    - c3s-magic
+
+datasets:
+  - {dataset: MPI-ESM-MR,  project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 1950,  end_year: 2005}
+  #- {dataset: bcc-csm1-1,  type: exp, project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+  #- {dataset: IPSL-CM5A-MR, type: exp, project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 1981,  end_year: 2000}
+
+   
+diagnostics:
+  combine_indices:
+    description: Combine indices and/or compute area weighted averages.
+    variables:
+      psl:
+        mip: Amon
+    scripts:
+      main:
+        script: magic_bsc/combined_indices.r
+        ## Weights for combining indices - if not "equal" or "NULL", must be the same length as the number of indices
+        region: NAO #Nino3, Nino3.4, Nino4, NAO or SOI  
+
+        # Compute running mean?
+        running_mean: 11 #3
+
+        # Compute seasons? 
+        moninf: 12  # First month
+        monsup: 2  # Last month
+
+        # Compute standarization?
+        standardized: true

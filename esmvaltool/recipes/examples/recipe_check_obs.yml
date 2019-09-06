@@ -7,7 +7,7 @@ documentation:
     just to check correct reading of the CMORized data.
 
   authors:
-    - righ_ma
+    - righi_mattia
 
 preprocessors:
   nopp:
@@ -19,6 +19,26 @@ preprocessors:
 diagnostics:
 
   ### TIER 2 ##################################################################
+
+  CRU:
+    description: CRU
+    variables:
+      tas:
+        mip: Amon
+      pr:
+        mip: Amon
+    additional_datasets:
+      - {dataset: CRU, project: OBS, tier: 2, type: reanaly, version: TS4.02, start_year: 1901, end_year: 2017}
+    scripts: null
+
+  Eppley-VGPM-MODIS:
+    description: Eppley-VGPM-MODIS
+    variables:
+      intpp:
+        mip: Omon
+    additional_datasets:
+      - {dataset: Eppley-VGPM-MODIS, project: OBS, tier: 2, type: sat, version: R2018, start_year: 2003, end_year: 2018}
+    scripts: null
 
   ESACCI-AEROSOL:
     description: ESACCI-AEROSOL
@@ -100,6 +120,17 @@ diagnostics:
     scripts: null
 
 
+  ESACCI-OC:
+    description: ESACCI-OC
+    variables:
+      chl:
+        preproc: nopp
+        mip: Omon
+    additional_datasets:
+      - {dataset: ESACCI-OC, project: OBS, tier: 2, type: sat, version: fv3.1, start_year: 1997, end_year: 2016}
+    scripts: null
+
+
   ESACCI-OZONE:
     description: ESACCI-OZONE
     variables:
@@ -159,6 +190,7 @@ diagnostics:
       - {dataset: ESACCI-SST, project: OBS, tier: 2, type: sat, version: L4-GHRSST-SSTdepth-OSTIA-GLOB, start_year: 1992, end_year: 2010}
     scripts: null
 
+
   GHCN:
     description: GHCN
     variables:
@@ -168,6 +200,7 @@ diagnostics:
     additional_datasets:
       - {dataset: GHCN, project: OBS, tier: 2, type: ground, version: 1, start_year: 1900, end_year: 2014}
     scripts: null
+
 
   HadCRUT3:
     description: HadCRUT3
@@ -219,10 +252,10 @@ diagnostics:
         mip: Omon
       fgco2:
         preproc: nopp
-        mip: Omon        
+        mip: Omon
       spco2:
         preproc: nopp
-        mip: Omon        
+        mip: Omon
     additional_datasets:
       - {dataset: Landschuetzer2016, project: OBS, tier: 2, type: clim, version: v2016, start_year: 1982, end_year: 2015}
     scripts: null
@@ -362,7 +395,6 @@ diagnostics:
       xco2:
         preproc: nopp
         mip: Amon
-        field: T2Ms
     additional_datasets:
       - {dataset: CDS-XCO2, project: OBS, tier: 3, type: sat, version: L3, start_year: 2003, end_year: 2016}
     scripts: null
@@ -544,6 +576,40 @@ diagnostics:
         mip: Omon
     additional_datasets:
       - {dataset: ERA-Interim, project: OBS, tier: 3, type: reanaly, version: 1, start_year: 1979, end_year: 2018}
+    scripts: null
+
+
+  LAI3g:
+    description: LAI3g
+    variables:
+      lai:
+        mip: Lmon
+    additional_datasets:
+      - {dataset: LAI3g, project: OBS, tier: 3, type: reanaly, version: 1_regridded, start_year: 1981, end_year: 2018}
+    scripts: null
+
+
+  LandFlux-EVAL:
+    description: LandFlux-EVAL
+    variables:
+      et:
+        mip: Lmon
+      etStderr:
+        mip: Lmon
+    additional_datasets:
+      - {dataset: LandFlux-EVAL, project: OBS, tier: 3, type: reanaly, version: Oct13, start_year: 1989, end_year: 2005}
+    scripts: null
+
+
+  MTE:
+    description: MTE
+    variables:
+      gpp:
+        mip: Lmon
+      gppStderr:
+        mip: Lmon
+    additional_datasets:
+      - {dataset: MTE, project: OBS, tier: 3, type: reanaly, version: May12, start_year: 1982, end_year: 2011}
     scripts: null
 
 

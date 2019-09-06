@@ -1,4 +1,4 @@
-.. _recipe_diurnal_temperature_index_wp7:
+.. _recipe_diurnal_temperature_index:
 
 Diurnal temperature variation indicator: Difference between Tmax and Tmin for a specific day
 ============================================================================================
@@ -10,7 +10,7 @@ The goal of this diagnostic is to compute a vulnerability indicator for the diur
 
 As well as being of use to the energy sector, the global‐average DTR has been evaluated using both observations and climate model simulations (Braganza et. al., 2004) and changes in the mean and variability of the DTR have been shown to have a wide range of impacts on society, such as on the transmission of diseases (Lambrechts et al., 2011;  Paaijmans et al., 2010) and energy consumption (Deandreis et al., N.D.).
 
-The recipe recipe_diurnal_temperature_index_wp7.yml computes first a mean DTR for a reference period using historical simulations and then, the number of days when the DTR from the future climate projections exceeds that of the reference period by 5 degrees or more. The user can define both the reference and projection periods, and the region to be considered.  The output produced by this recipe consists of a four panel plot showing the maps of the projected mean DTR indicator for each season and a netcdf file containing the corresponding data.
+The recipe recipe_diurnal_temperature_index.yml computes first a mean DTR for a reference period using historical simulations and then, the number of days when the DTR from the future climate projections exceeds that of the reference period by 5 degrees or more. The user can define both the reference and projection periods, and the region to be considered.  The output produced by this recipe consists of a four panel plot showing the maps of the projected mean DTR indicator for each season and a netcdf file containing the corresponding data.
 
 
 
@@ -19,7 +19,7 @@ Available recipes and diagnostics
 
 Recipes are stored in recipes/
 
-* recipe_diurnal_temperature_index_wp7.yml
+* recipe_diurnal_temperature_index.yml
 
 Diagnostics are stored in diag_scripts/magic_bsc/
 
@@ -31,7 +31,7 @@ User settings
 
 User setting files are stored in recipes/
 
-#. recipe_diurnal_temperature_index_wp7.yml
+#. recipe_diurnal_temperature_index.yml
 
    *Required settings for script*
 
@@ -69,6 +69,6 @@ Example plots
 -------------
 
 .. _fig_diurnal:
-.. figure::  /recipes/figures/diurnal_temp_index/rcp85_diurnal.png
+.. figure::  /recipes/figures/diurnal_temp_index/Seasonal_DTRindicator_MPI-ESM-MR_2030_2080_1961_1990.png
    :align:   center
    :width:   14cm

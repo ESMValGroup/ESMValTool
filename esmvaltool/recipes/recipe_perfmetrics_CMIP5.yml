@@ -8,12 +8,12 @@ documentation:
     variables (like ozone, sea-ice, aerosol...)
 
   authors:
-    - fran_fr
-    - righ_ma
-    - eyri_ve
+    - frank_franziska
+    - righi_mattia
+    - eyring_veronika
 
   maintainer:
-    - righ_ma
+    - righi_mattia
 
   references:
     - gleckler08jgr
@@ -256,12 +256,12 @@ diagnostics:
     scripts:
       cycle: &cycle_settings
         script: perfmetrics/main.ncl
-        # Plot type ('cycle', 'zonal', 'latlon', 'cycle_latlon')
+        # Plot type ('cycle', 'zonal', 'latlon', 'cycle_latlon', 'cycle_zonal')
         plot_type: cycle
         # Time average ('opt' argument of time_operations.ncl)
         time_avg: monthlyclim
-        # Region ('Global', 'Tropics', 'NH extratropics', 'SH extratropics')
-        region: Global
+        # Region ('global', 'trop', 'nhext', 'shext')
+        region: global
         # Plot standard deviation ('all', 'none', 'ref_model' or dataset name)
         plot_stddev: ref_model
         # Plot legend in a separate file
@@ -270,10 +270,8 @@ diagnostics:
         styleset: CMIP5
       grading: &grading_settings
         <<: *cycle_settings
-        # Plot type ('cycle', 'zonal', 'latlon', 'cycle_latlon')
+        # Plot type ('cycle', 'zonal', 'latlon', 'cycle_latlon', 'cycle_zonal')
         plot_type: cycle_latlon
-        # Draw plots
-        draw_plots: false
         # Calculate grading
         calc_grading: true
         # Metric ('RMSD', 'BIAS', taylor')
@@ -586,12 +584,12 @@ diagnostics:
     scripts:
       zonal: &zonal_settings
         script: perfmetrics/main.ncl
-        # Plot type ('cycle', 'zonal', 'latlon', 'cycle_latlon')
+        # Plot type ('cycle', 'zonal', 'latlon', 'cycle_latlon', 'cycle_zonal')
         plot_type: zonal
         # Time average ('opt' argument of time_operations.ncl)
         time_avg: annualclim
-        # Region ('Global', 'Tropics', 'NH extratropics', 'SH extratropics')
-        region: Global
+        # Region ('global', 'trop', 'nhext', 'shext')
+        region: global
         # Draw difference plots
         plot_diff: true
         # Calculate t-test in difference plots
@@ -1139,12 +1137,12 @@ diagnostics:
     scripts:
       latlon: &latlon_settings
         script: perfmetrics/main.ncl
-        # Plot type ('cycle', 'zonal', 'latlon', 'cycle_latlon')
+        # Plot type ('cycle', 'zonal', 'latlon', 'cycle_latlon', 'cycle_zonal')
         plot_type: latlon
         # Time average ('opt' argument of time_operations.ncl)
         time_avg: annualclim
-        # Region ('Global', 'Tropics', 'NH extratropics', 'SH extratropics')
-        region: Global
+        # Region ('global', 'trop', 'nhext', 'shext')
+        region: global
         # Draw difference plots
         plot_diff: true
         # Calculate t-test in difference plots
@@ -1600,6 +1598,11 @@ diagnostics:
         diff_levs: [-30, -25, -20, -15, -10, -5, 0, 5, 10, 15, 20, 25, 30]
       grading:
         <<: *grading_settings
+        # Metric ('RMSD', 'BIAS', taylor')
+        metric: [RMSD]
+        # Normalization ('mean', 'median', 'centered_median', 'none')
+        normalization: [centered_median]
+
 
 
   ### swcre: SHORTWAVE CLOUD FORCING ##########################################
@@ -1678,6 +1681,10 @@ diagnostics:
   ### od550aer: AEROSOL OPTICAL DEPTH AT 550 nm ###############################
   od550aer:
     description: Aerosol optical depth at 550 nm
+    themes:
+      - aerosols
+    realms:
+      - atmos
     variables:
       od550aer:
         preprocessor: ppNOLEV2thr10
@@ -1724,6 +1731,10 @@ diagnostics:
   ### od870aer: AEROSOL OPTICAL DEPTH AT 870 nm ###############################
   od870aer:
     description: Aerosol optical depth at 870 nm
+    themes:
+      - aerosols
+    realms:
+      - atmos
     variables:
       od870aer:
         preprocessor: ppNOLEV1thr10
@@ -1760,6 +1771,10 @@ diagnostics:
   ### abs550aer: ABSORPTION OPTICAL DEPTH AT 550 nm ###########################
   abs550aer:
     description: Absorption optical depth at 550 nm
+    themes:
+      - aerosols
+    realms:
+      - atmos
     variables:
       abs550aer:
         preprocessor: ppNOLEV1thr10
@@ -1796,6 +1811,10 @@ diagnostics:
   ### od550lt1aer: FINE MODE AEROSOL OPTICAL DEPTH AT 550 nm ##################
   od550lt1aer:
     description: Fine mode optical depth at 550 nm
+    themes:
+      - aerosols
+    realms:
+      - atmos
     variables:
       od550lt1aer:
         preprocessor: ppNOLEV1thr10
@@ -1831,6 +1850,11 @@ diagnostics:
   ### toz: TOTAL COLUMN OZONE #################################################
   toz:
     description: Total column ozone
+    themes:
+      - chem
+      - ghg
+    realms:
+      - atmosChem
     variables:
       toz:
         preprocessor: ppNOLEV2thr10
@@ -1860,10 +1884,10 @@ diagnostics:
         metric: [RMSD]
         # Normalization ('mean', 'median', 'centered_median', 'none')
         normalization: [centered_median]
-      grading_antarctic:
+      grading_shpolar:
         <<: *grading_settings
         # Region
-        region: Antarctic
+        region: shpolar
         # Metric ('RMSD', 'BIAS', taylor')
         metric: [RMSD]
         # Normalization ('mean', 'median', 'centered_median', 'none')
@@ -1876,6 +1900,10 @@ diagnostics:
   ### sm: SOIL MOISTURE #######################################################
   sm:
     description: Soil moisture
+    themes:
+      - phys
+    realms:
+      - land
     variables:
       sm:
         preprocessor: ppNOLEV1thr10
@@ -1943,6 +1971,15 @@ diagnostics:
         cm_interval: [2, 241]
         # Sort dataset in alphabetic order (excluding MMM)
         sort: true
+        # Sort diagnostics in a specific order (name = 'diagnositic'-'region')
+        diag_order: ['ta850-global', 'ta200-global', 'ua850-global',
+                     'ua200-global', 'va850-global', 'va200-global',
+                     'zg500-global', 'hus400-global', 'tas-global',
+                     'ts-global', 'pr-global', 'clt-global', 'rlut-global',
+                     'rsut-global', 'lwcre-global', 'swcre-global',
+                     'od550aer-global', 'od870aer-global', 'abs550aer-global',
+                     'od550lt1aer-global', 'toz-global', 'toz-shpolar',
+                     'sm-global']
       taylor:
         script: perfmetrics/collect.ncl
         ancestors: ['*/grading']

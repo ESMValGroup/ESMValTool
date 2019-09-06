@@ -1,37 +1,29 @@
 ---
-# conda-forge after conda switch to gcc7 (gxx conda compiler, Jan 2019)
-# Notes on ncl-cdo-R packages relation for future releases:
-# cdo=1.9.6 works only with ncl=6.6.2 but that
-# implies the use of R packages from the r channel
-# and those packages are R=3.2.2 << 3.5.1 and are
-# obsolete (installing ncl=6.6.2 automatically removes
-# the conda-forge-installed R (3.5.1) packages
-# These issues are a direct consequence of changes in conda-forge
-# related to the switch to gcc7(gxx-conda); hopefully they will be
-# fixed in future releases of conda; also note that gxx_linux-64 may have
-# to be added in the dependency list when switching from cf201901.
-# Why use conda-forge/label/cf201901:
-# https://github.com/fermi-lat/Fermitools-conda/wiki/User-Notes
-# https://github.com/NCAR/ncl/issues/87
-
 name: esmvaltool
 channels:
-  - conda-forge/label/cf201901
+  - conda-forge
+  - esmvalgroup
 
 dependencies:
   # Python packages that cannot be installed from PyPI:
   - esmpy
+  - esmvalcore>=2.0.0b0,<2.1
   - iris>=2.2
   - matplotlib<3  # Can be installed from PyPI, but is a dependency of iris and should be pinned.
   - python-stratify
-  - xarray  # Can be installed from PyPI, but here to get a consistent set of depencies with iris.
+  - xarray>=0.12.0  # Can be installed from PyPI, but here to get a consistent set of depencies with iris.
   # Non-Python dependencies
   - graphviz
   - cdo
+  - imagemagick
+  - nco
 
   # Multi language support:
-  - ncl>=6.5.0
-  - jasper!=1.900.31  # pinned NCL dependency
-  - r-base
+  - python>=3.6
   - libunwind  # Needed for Python3.7+
+  - tiledb=1.6.0  # Needed by the new ncl=6.6.2; evolved to 1.6.2 but ncl 6.6.2 still needs libtiledb1.6.0.so
+  - ncl
+  - r-base
+  - r-curl  # Dependency of lintr, but fails to compile because it cannot find libcurl installed from conda.
+  - r-udunits2  # Fails to compile because it cannot find udunits2 installed from conda.
   # - julia>=1.0.0  # The Julia package on conda is apparently broken

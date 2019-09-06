@@ -36,22 +36,30 @@ begin
   copy_VarAtts(diag_script_info, var_all)
   var_all@ref_model = variable_info[0]@reference_dataset
 
+  ; Search for level
+  f = addfile(info_items[0]@filename, "r")
+  if (isfilevar(f, "plev")) then
+    if (dimsizes(f->plev).eq.1) then
+      level = toint(f->plev/100.)
+    end if
+  end if
+
+  ; Set path for saving processed data
+  system("mkdir -p " + config_user_info@work_dir)
+  if (isdefined("level")) then
+    vv = var0 + level
+  else
+    vv = var0
+  end if
+  fname = str_join((/"perfmetrics", "cycle", vv, \
+                     diag_script_info@time_avg, diag_script_info@region/), "_")
+  workpath = config_user_info@work_dir + fname + ".nc"
+  plotpath = config_user_info@plot_dir + fname
+
   ; Loop over datasets
   do imod = 0, nDatasets - 1
 
     log_debug("Processing " + datasetnames(imod))
-
-    ; Set path for saving processed data ; FIX-ME add preproc_id
-    fullpath = config_user_info@work_dir + "/"
-    system("mkdir -p " + fullpath)
-    fname = basename(systemfunc("basename " + info_items[imod]@filename))
-    fname = fname + "_" + basename(DIAG_SCRIPT) + "_cycle"
-    fname = fname + "_" + diag_script_info@time_avg
-    if (isatt(diag_script_info, "level")) then
-      fname = fname + "_" + diag_script_info@level  ; FIX-ME
-    end if
-    fname = fname + "_" + str_sub_str(diag_script_info@region, " ", "")
-    procpath = fullpath + fname + ".nc"
 
     ; Determine start/end year
     start_year = info_items[imod]@start_year
@@ -83,20 +91,22 @@ begin
     end if
     delete(var_reg)
 
-    ; Write output
+    ; Store in global array
     var_all(imod, :, 0) = var_avg
     var_all(imod, :, 1) = var_std
     delete(var_avg)
     delete(var_std)
-    if (config_user_info@write_netcdf.eq."True") then
-      var_all@ncdf = procpath
-      ncdf_outfile = ncdf_write(var_all(imod, :, :), procpath)
-    end if
 
   end do
 
+  ; Write output
+  if (config_user_info@write_netcdf) then
+    var_all@ncdf = workpath
+    ncdf_outfile = ncdf_write(var_all, workpath)
+  end if
+
   ; Plotting
-  if (.not.diag_script_info@draw_plots) then
+  if (.not.config_user_info@write_plots) then
     return
   end if
 
@@ -106,66 +116,32 @@ begin
   end if
 
   ; Annotation and file names
-  region_name = ""  ; priority 3
-  location = ""  ; priority 3
-  if (isatt(diag_script_info, "aux_info")) then
-    region_name = "_" + diag_script_info@aux_info  ; priority 2
-    location = " - " + diag_script_info@aux_info  ; priority 2
+  title = var_all@long_name
+  caption = var0
+  if (isdefined("level")) then
+    title = title + " " + level + " hPa"
+    caption = caption + level
+    delete(level)
   end if
-  if (isatt(diag_script_info, "location")) then
-    location = " - " + diag_script_info@location  ; priority 1
-  end if
-  if (isatt(diag_script_info, "region")) then
-    region_name = "_" + region@name  ; priority 1
-    location = " - " + diag_script_info@region
-  end if
-  if (isatt(var_all, "long_name")) then
-    varstring = var_all@long_name  ; priority 3
-  end if
-  if (isatt(var_all, "short_name")) then
-    varstring = var_all@short_name  ; priority 2
-  end if
-  if (isStrSubset(var0, "vmr").and.isStrSubset(var0, "_")) then
-    varstring = var0  ; priority 1
-  end if
-  altitude = ""  ; priority 2
-  if (isatt(diag_script_info, "altitude")) then
-    altitude = " - " + diag_script_info@altitude  ; priority 1
-  end if
-  if (isatt(diag_script_info, "level")) then  ; FIX-ME
-    if (diag_script_info@level.ne."all") then
-      altitude = " - " + diag_script_info@level + " hPa"
-    end if
-  end if
-  outfile = config_user_info@plot_dir + var0 + "_cycle_" + \
-    diag_script_info@time_avg + "_" + region_name
+  title = title + " - " + diag_script_info@region
 
-  wks = gsn_open_wks(file_type, outfile)
-  wks@legendfile = outfile + "_legend"
-  var_all@res_tiMainString = varstring
-  var_all@res_tiMainString = var_all@res_tiMainString + location + altitude
+  ; Draw plot
+  wks = gsn_open_wks(file_type, plotpath)
+  wks@legendfile = plotpath + "_legend"
+  var_all@res_tiMainString = title
   plot = cycle_plot(wks, var_all, var0, info_items)
   draw(plot)
   frame(wks)
 
-  log_info(" gv " + outfile + "." + file_type)
-
-  ; collect meta-data and call ESMValMD function
-  nc_file = "nonexistent"
-  plot_file = outfile+"."+file_type
-  caption = "Cycle plot of variable: " + var0
-  statistics = (/"mean", "rmsd"/)
-  domain = "global"
-  plottype = "seas"
-  diag_des = "Calculates and (optionally) plots annual/seasonal cycles, " \
-             + "zonal means, lat-lon fields and time-lat-lon fields from " \
-             + "input 2D/3D monthly data. The calculated fields can be " \
-             + "plotted as difference w.r.t. a given reference dataset. It " \
-             + "also calculates grading and taylor metrics."
-  authors = (/"righ_ma", "fran_fr", "eyri_ve", "gott_kl", "senf_da"/)
-  references = (/"righi15gmd", "gleckler08jgr"/)
-  infiles = (/"infile1", "infile2"/)
-  ; ESMValMD(nc_file, plot_file, caption, statistics, domain, plottype, \
-  ;          diag_des, authors, references, infiles)
+  ; Call provenance logger
+  log_provenance(ncdf_outfile, \
+                 plotpath + "." + file_type, \
+                 "Cycle plot of variable " + caption, \
+                 (/"mean", "stddev"/), \
+                 diag_script_info@region, \
+                 "seas", \
+                 (/"frank_franziska", "righi_mattia", "eyring_veronika"/), \
+                 (/"righi15gmd", "gleckler08jgr"/), \
+                 metadata_att_as_array(info_items, "filename"))
 
 end

@@ -4,7 +4,7 @@
 
 Description
 -----------
-Calculate and plot the equilibrium climate sensitivity (ECS) vs. the global
+Calculate and plot the effective climate sensitivity (ECS) vs. the global
 mean surface temperature (GMSAT) (see IPCC AR5 WG1 ch.9, fig. 9.42a).
 
 Author
@@ -48,14 +48,14 @@ def get_provenance_record(project, ancestor_files):
     """Create a provenance record describing the diagnostic data and plot."""
     record = {
         'caption':
-        ('Equilibrium climate sensitivity (ECS) against the global '
+        ('Effective climate sensitivity (ECS) against the global '
          'mean surface temperature of {} models, both for the '
          'period 1961-1990 (larger symbols) and for the '
          'pre-industrial control runs (smaller symbols).'.format(project)),
         'statistics': ['mean'],
         'domains': ['global'],
         'plot_types': ['scatter'],
-        'authors': ['schl_ma'],
+        'authors': ['schlund_manuel'],
         'references': ['flato13ipcc'],
         'realms': ['atmos'],
         'themes': ['phys'],
@@ -139,13 +139,13 @@ def write_data(cfg, hist_cubes, pi_cubes, ecs_cube):
     cube = iris.cube.Cube(
         data_ecs,
         var_name='ecs',
-        long_name='equilibrium_climate_sensitivity',
+        long_name='Effective Climate Sensitivity (ECS)',
         aux_coords_and_dims=[(dataset_coord, 0), (tas_hist_coord, 0),
                              (tas_picontrol_coord, 0)])
 
     # Save file
     path = get_diagnostic_filename('ch09_fig09_42a', cfg)
-    io.save_iris_cube(cube, path)
+    io.iris_save(cube, path)
     return path
 
 

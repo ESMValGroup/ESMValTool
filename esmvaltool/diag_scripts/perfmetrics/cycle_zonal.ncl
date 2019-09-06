@@ -4,6 +4,8 @@
 ; ESMVal project
 ; #############################################################################
 
+load "$diag_scripts/shared/plot/style.ncl"
+
 procedure perfmetrics_ptype_script()
 begin
 
@@ -17,6 +19,8 @@ begin
     modidx := array_append_record(ref_ind, modidx(ind(modidx.ne.ref_ind)), 0)
   end if
 
+  annots = project_style(info_items, diag_script_info, "annots")
+
   ; Loop over datasets
   do ii = 0, dimsizes(modidx) - 1
 
@@ -24,17 +28,12 @@ begin
 
     log_debug("Processing " + datasetnames(imod))
 
-    ; Set path for saving processed data ; FIX-ME add preproc_id
-    fullpath = config_user_info@work_dir + "/"
-    system("mkdir -p " + fullpath)
-    fname = basename(systemfunc("basename " + info_items[imod]@filename))
-    fname = fname + "_" + basename(DIAG_SCRIPT) + "_cycle_latlon"
-    fname = fname + "_" + diag_script_info@time_avg
-    if (isatt(diag_script_info, "level")) then
-      fname = fname + "_" + diag_script_info@level  ; FIX-ME
-    end if
-    fname = fname + "_" + str_sub_str(diag_script_info@region, " ", "")
-    procpath = fullpath + fname + ".nc"
+    ; Set path for saving processed data
+    system("mkdir -p " + config_user_info@work_dir)
+    fname = \
+      str_join((/"perfmetrics", "cycle_zonal", annots(imod), var0, \
+                 diag_script_info@time_avg, diag_script_info@region/), "_")
+    workpath = config_user_info@work_dir + fname + ".nc"
 
     ; Determine start/end year
     start_year = info_items[imod]@start_year
@@ -42,7 +41,6 @@ begin
 
     ; Read data
     var = read_data(info_items[imod])
-    dnames = getVarDimNames(var)
 
     ; Calculate zonal mean
     var_reg = dim_avg_Wrap(var)
@@ -56,7 +54,7 @@ begin
     ; Standard deviation calculation for this ptype is not yet implemented in
     ; diag_scripts/shared/statistics.ncl, but is anyway not required here
 
-    ; Write output
+    ; Store in global array
     var_all = new(array_append_record(dimsizes(var_avg), 2, 0), float)
     var_all!3 = "statistic"
     var_all&statistic = (/"mean", "stddev"/)
@@ -65,15 +63,7 @@ begin
     var_all@diag_script = (/DIAG_SCRIPT/)
     copy_VarAtts(diag_script_info, var_all)
     var_all@ref_model = variable_info[0]@reference_dataset
-    if (config_user_info@write_netcdf.eq."True") then
-      var_all@ncdf = procpath
-      ncdf_outfile = ncdf_write(var_all, procpath)
-    end if
-
-    ; Calculate grading
-    if (.not.diag_script_info@calc_grading) then
-      continue
-    end if
+    delete(var_avg)
 
     ; Store reference dataset
     if (imod.eq.ref_ind) then
@@ -85,6 +75,28 @@ begin
       if (imod.eq.alt_ind) then
         var_alt = var_all
       end if
+    end if
+
+    ; Write output
+    if (config_user_info@write_netcdf) then
+      var_all@ncdf = workpath
+      ncdf = ncdf_write(var_all, workpath)
+    end if
+
+    ; Call provenance logger
+    log_provenance(ncdf, \
+                   "n/a", \
+                   "n/a", \
+                   (/"mean", "rmsd"/), \
+                   diag_script_info@region, \
+                   "other", \
+                   (/"frank_franziska", "righi_mattia", "eyring_veronika"/), \
+                   (/"righi15gmd", "gleckler08jgr"/), \
+                   info_items[imod]@filename)
+
+    ; Calculate grading
+    if (.not.diag_script_info@calc_grading) then
+      continue
     end if
 
     ; Loop over requested metrics
@@ -133,4 +145,5 @@ begin
     end do
 
   end do
+
 end

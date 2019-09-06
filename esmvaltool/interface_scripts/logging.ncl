@@ -35,7 +35,7 @@ procedure log_info(output_string[*]:string)
 ; References
 ;
 ; Modification history
-;    20180202-A_righ_ma: written to replace info_output.
+;    20180202-righi_mattia: written to replace info_output.
 ;
 local nn, ii
 begin
@@ -70,7 +70,7 @@ procedure log_debug(output_string[*]:string)
 ; References
 ;
 ; Modification history
-;    20180202-A_righ_ma: written to replace info_output.
+;    20180202-righi_mattia: written to replace info_output.
 ;
 local nn, ii
 begin
@@ -105,8 +105,8 @@ procedure enter_msg(script[1]:string,
 ; References
 ;
 ; Modification history
-;    20180202_A_righ_ma: removed required verbosity.
-;    20150319-A_righ_ma: written.
+;    20180202-righi_mattia: removed required verbosity.
+;    20150319-righi_mattia: written.
 ;
 begin
 
@@ -135,8 +135,8 @@ procedure leave_msg(script[1]:string,
 ; References
 ;
 ; Modification history
-;    20180202_A_righ_ma: removed required verbosity.
-;    20150319-A_righ_ma: written.
+;    20180202-righi_mattia: removed required verbosity.
+;    20150319-righi_mattia: written.
 ;
 begin
 
@@ -169,8 +169,8 @@ procedure error_msg(type[1]:string,
 ; References
 ;
 ; Modification history
-;    20150924-A_laue_ax: added type "error" (treated as "fatal")
-;    20140929-A_righ_ma: written.
+;    20150924-lauer_axel: added type "error" (treated as "fatal").
+;    20140929-righi_mattia: written.
 ;
 local nn, ii, msg_level, msg_origin
 begin
@@ -215,7 +215,7 @@ procedure tool_stop()
 ; Arguments
 ;
 ; Description
-;    Forces the tool execution to stop at any point of an ncl script.
+;    Force the tool execution to stop at any point of an ncl script.
 ;    For dubugging purposes only.
 ;
 ; Caveats
@@ -225,7 +225,7 @@ procedure tool_stop()
 ; References
 ;
 ; Modification history
-;    20150521-A_righ_ma: written.
+;    20150521-righi_mattia: written.
 ;
 begin
 
@@ -255,7 +255,7 @@ procedure exit_if_missing_atts(in[1], \
 ; References
 ;
 ; Modification history
-;    20141002-A_righ_ma: written.
+;    20141002-righi_mattia: written.
 ;
 local funcname, scriptname
 begin
@@ -279,92 +279,71 @@ procedure log_provenance(nc_file:string,
                          outfile:string,
                          caption:string,
                          statistics[*]:string,
-                         domain:string,
-                         plottype:string,
+                         domains[*]:string,
+                         plot_types[*]:string,
                          diag_authors[*]:string,
                          diag_refs[*]:string,
                          infiles[*]:string)
 ;
 ; Arguments
-;  nc_file: netcdf file with data related to the plot
-;  outfile: file name of the figure (including path)
-;  caption: figure caption
-;  statistics: list of metrics/statistics calculated
-;  domain: of the data displayed
-;  plottype: plot type of the figure
-;  diag_authors: authors related to the diagnostic
-;  diag_refs: references related to the diagnotic
+;    nc_file: netcdf file with data related to the plot
+;    outfile: file name of the figure (including path)
+;    caption: figure caption
+;    statistics: list of metrics/statistics calculated
+;    domains: of the data displayed
+;    plot_types: plot type of the figure
+;    diag_authors: authors related to the diagnostic
+;    diag_refs: references related to the diagnotic
+;    infiles: input files (from preproc) used to generate the plot
 ;
 ; Description
-;   Creates a yaml file with meta data from the diagnostic
-;   script and save it in the plot directory
+;    Create a yaml file with meta data from the diagnostic script and save it
+;    in the run directory
 ;
 ; Caveats
 ;
 ; References
 ;
-local funcname, scriptname, verbosity
+; Modification history
+;    20190415-righi_mattia: turn domains into a list.
+;    20190415-righi_mattia: extended to avoid overwriting previous call.
+;    20190225-bock_lisa: written.
+;
+local funcname, scriptname, yaml_file, outstring, existing
 begin
 
   funcname = "log_provenance"
   scriptname = "interface_scripts/logging.ncl"
   enter_msg(scriptname, funcname)
 
-  str0 = "? " + nc_file
-  n = dimsizes(infiles)
-  str1 = ": ancestors: ["
-  str1 = str1 + infiles(0)
-  if(n.ge.1) then
-    do i = 1, n-1
-      str1 = str1 + ", " + infiles(i)
-    end do
-  end if
-  str1 = str1 + "]"
-  n = dimsizes(diag_authors)
-  str2 = "  authors: ["
-  str2 = str2 + diag_authors(0)
-  if(n.ge.1) then
-    do i = 1, n-1
-      str2 = str2 + ", " + diag_authors(i)
-    end do
-  end if
-  str2 = str2 + "]"
-  str3 = "  caption: '" + caption + "'"
-  str4 = "  domain: " + domain
-  str5 = "  plot_file: " + outfile
-  str6 = "  plot_type: " + plottype
-  n = dimsizes(diag_refs)
-  str7 = "  references: ["
-  str7 = str7 + diag_refs(0)
-  if(n.ge.1) then
-    do i = 1, n-1
-      str7 = str7 + ", " + diag_refs(i)
-    end do
-  end if
-  str7 = str7 + "]"
-  n = dimsizes(statistics)
-  str8 = "  statistics: ["
-  str8 = str8 + statistics(0)
-  if(n.ge.1) then
-    do i = 1, n-1
-      str8 = str8 + ", " + statistics(i)
-    end do
-  end if
-  str8 = str8 + "]"
+  ; Define output
+  outstring = new(9, string)
 
-  str := array_append_record(str7, str8, 0)
-  str := array_append_record(str6, str, 0)
-  str := array_append_record(str5, str, 0)
-  str := array_append_record(str4, str, 0)
-  str := array_append_record(str3, str, 0)
-  str := array_append_record(str2, str, 0)
-  str := array_append_record(str1, str, 0)
-  str := array_append_record(str0, str, 0)
-
+  ; Set yaml file path
   yaml_file = config_user_info@run_dir + "diagnostic_provenance.yml"
-  asciiwrite(yaml_file, str)
 
-  log_info(" write meta data to " + yaml_file)
+  ; Save entries
+  outstring(0) = "? " + nc_file
+  outstring(1) = ": ancestors: [" + str_join(infiles, ", ") + "]"
+  outstring(2) = "  authors: [" + str_join(diag_authors, ", ") + "]"
+  outstring(3) = "  caption: '" + caption + "'"
+  outstring(4) = "  domains: [" + str_join(domains, ", ") + "]"
+  outstring(5) = "  plot_file: " + outfile
+  outstring(6) = "  plot_types: [" + str_join(plot_types, ", ") + "]"
+  outstring(7) = "  references: [" + str_join(diag_refs, ", ") + "]"
+  outstring(8) = "  statistics: [" + str_join(statistics, ", ") + "]"
+
+  ; Save existing information to avoid overwriting
+  if (fileexists(yaml_file)) then
+    existing = asciiread(yaml_file, -1, "string")
+    outstring := array_append_record(existing, outstring, 0)
+    delete(existing)
+  end if
+
+  ; Save provenance information
+  asciiwrite(yaml_file, outstring)
+
+  log_info("Provenance information saved in " + yaml_file)
 
   leave_msg(scriptname, funcname)
 

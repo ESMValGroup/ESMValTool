@@ -10,10 +10,10 @@ documentation:
     Written by Lee de Mora, Plymouth Marine Laboratory, ledm@pml.ac.uk
 
   authors:
-    - demo_le
+    - demora_lee
 
   maintainer:
-    - demo_le
+    - demora_lee
 
   references:
     - demora2018gmd
@@ -56,9 +56,8 @@ preprocessors:
   # Global 3D Volume-weighted Average
   prep_timeseries_global_volume_average:
     custom_order: true
-    average_volume:
-      coord1: longitude
-      coord2: latitude
+    volume_statistics:
+      operator: mean
     multi_model_statistics:
       span: overlap
       statistics: [mean ]
@@ -66,9 +65,8 @@ preprocessors:
   # Global area-weighted Average from 2D field
   prep_global_Surface_average_timeseries_2D:
     custom_order: true
-    average_region:
-      coord1: longitude
-      coord2: latitude
+    area_statistics:
+      operator: mean
     multi_model_statistics:
       span: overlap
       statistics: [mean ]
@@ -79,9 +77,8 @@ preprocessors:
     extract_levels:
       levels:  [0., ]
       scheme: linear_horizontal_extrapolate_vertical
-    average_region:
-      coord1: longitude
-      coord2: latitude
+    area_statistics:
+      operator: mean
     multi_model_statistics:
       span: overlap
       statistics: [mean ]
@@ -114,16 +111,14 @@ preprocessors:
 
   prep_global_profile:
     annual_mean:
-    average_region:
-      coord1: longitude
-      coord2: latitude
+    area_statistics:
+      operator: mean
 
   prep_global_profile_decadal:
     annual_mean:
        decadal: true
-    average_region:
-      coord1: longitude
-      coord2: latitude
+    area_statistics:
+      operator: mean
 
   prep_transect_AMT: # Atlantic Meridional Transect (28W)
     custom_order: true
@@ -149,10 +144,8 @@ preprocessors:
 #   prep_depth_integration_timeseries:
 #     custom_order: true
 #     depth_integration:
-#     average_region:
-#       coord1: longitude
-#       coord2: latitude
-
+#     area_statistics:
+#       operator: mean
 
 
 # --------------------------------------------------

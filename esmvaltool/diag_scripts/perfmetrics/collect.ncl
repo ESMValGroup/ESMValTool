@@ -19,6 +19,7 @@
 ;    cm_interval: min and max color of the color table
 ;    cm_reverse: reverse color table
 ;    sort: sort datasets in alphabetic order (excluding MMM)
+;    diag_order: sort diagnostics in the specified order
 ;    title: plot title
 ;    scale_font: scaling factor applied to the default font size
 ;    disp_values: switch on/off the grading values on the plot
@@ -28,16 +29,18 @@
 ; Caveats
 ;
 ; Modification history
-;    20190315-A_hass_bg: added SMPI case
-;    20180508-A_righ_ma: renamed and generalized
-;    20151027-A_laue_ax: moved call to 'write_references' to the beginning
-;                        of the code
-;    20150325-A_laue_ax: modified reference tags used for acknowledgements
-;                        (projects, observations, etc)
-;    20150109-A_gott_kl: distinguish RMSD & BIAS in output file naming.
-;    20140620-A_gott_kl: modified output file naming (variable outfile_plot)
-;                     and added option for explicit plot title.
-;    20140204-A_fran_fr: written.
+;    20190315-hassler_birgit: added SMPI case
+;    20180508-righi_mattia: renamed and generalized
+;    20151027-lauer_axel: moved call to 'write_references' to the beginning
+;                         of the code
+;    20150325-lauer_axel: modified reference tags used for acknowledgements
+;                         (projects, observations, etc)
+;    20150109-gottschaldt_klaus-dirk: distinguish RMSD & BIAS in output file
+;                                     naming.
+;    20140620-gottschaldt_klaus-dirk: modified output file naming (variable
+;                                     plotpath) and added option for explicit
+;                                     plot title.
+;    20140204-frank_franziska: written.
 ;
 ; #############################################################################
 
@@ -95,16 +98,18 @@ begin
       end if
 
       ; Define the string array for input file provenance
-      if (ii.eq.0) then
-        climofiles = new(dimsizes(input_files) * \
-                         data_all_smpi@num_climofiles, string)
+      if (.not.isdefined("preproc_files")) then
+        preproc_files = new(dimsizes(input_files) * \
+                            data_all_smpi@num_preproc_files, string)
       end if
 
       ; Add the input file info to the file for provenance
-      do iclim = 0, toint(data_all_smpi@num_climofiles) - 1
-        num_climo = "climofile_" + iclim
-        climo_idx = iclim + ii*data_all_smpi@num_climofiles
-        climofiles(climo_idx) = data_temp_smpi@$num_climo$
+      do ipf = 0, toint(data_all_smpi@num_preproc_files) - 1
+        num_preproc = "preproc_file_" + ipf
+        preproc_idx = ipf + ii * data_all_smpi@num_preproc_files
+        if (isatt(data_temp_smpi, num_preproc)) then
+          preproc_files(preproc_idx) = data_temp_smpi@$num_preproc$
+        end if
       end do
 
       ; Make sure dataset coordinate is consistent
@@ -177,6 +182,21 @@ begin
         data_all&models = data_temp&models
       end if
 
+      ; Define the string array for input file provenance
+      if (.not.isdefined("preproc_files")) then
+        preproc_files = new(dimsizes(input_files) * \
+                            data_all@num_preproc_files, string)
+      end if
+
+      ; Add the input file info to the file for provenance
+      do ipf = 0, toint(data_all@num_preproc_files) - 1
+        num_preproc = "preproc_file_" + ipf
+        preproc_idx = ipf + ii * data_all@num_preproc_files
+        if (isatt(data_temp, num_preproc)) then
+          preproc_files(preproc_idx) = data_temp@$num_preproc$
+        end if
+      end do
+
       ; Make sure model coordinate is consistent
       consistent = False
       if (dimsizes(data_temp&models).eq.dimsizes(data_all&models)) then
@@ -218,6 +238,7 @@ begin
   end do
 
   if (diag_script_info@metric.eq."SMPI") then
+
     data_all_smpi&vars = vars
     delete(vars)
 
@@ -274,15 +295,9 @@ begin
 
     data_smpi!1 = "statistic"
     data_smpi&statistic = (/"SMPI", "95_conf"/)
-    name = ""
-    data_smpi@ncdf_dir = config_user_info@work_dir + "/" + name + "_SMPI.nc"
     data_smpi@diag_script = DIAG_SCRIPT
     data_smpi@var = "SMPI"
     data_smpi@ensemble_name = data_all_smpi@ensemble_name
-
-    ; Create outfile directory
-    system("mkdir -p " + config_user_info@work_dir)
-    ncdf_outfile = ncdf_write(data_smpi, data_smpi@ncdf_dir)
 
     ; Sort datasets in alphabetical order (exclude MMM and set to end)
     pid = sort_alphabetically(data_smpi&models, \
@@ -295,18 +310,21 @@ begin
     delete(tmp)
     delete(pid)
 
+    ; Define output filenames
+    workpath = config_user_info@work_dir + "SMPI.nc"
+    plotpath = config_user_info@plot_dir + "SMPI"
+
+    ; Write output
+    if (config_user_info@write_netcdf) then
+      system("mkdir -p " + config_user_info@work_dir)
+      ncdf_outfile = ncdf_write(data_smpi, workpath)
+    end if
+
     ; Attach plotting options
     copy_VarAtts(diag_script_info, data_smpi)
     if (isatt(diag_script_info, "title")) then
       data_smpi@res_tiMainString = diag_script_info@title
     end if
-
-    ; Create outfile directory
-    system("mkdir -p " + config_user_info@plot_dir)
-    diags = "test"
-
-    ; Define outfile name
-    outfile_plot = config_user_info@plot_dir + diags + "_SMPI"
 
   else  ; if metric not SMPI
 
@@ -317,9 +335,7 @@ begin
       data_all = data_new
       delete(data_new)
     end if
-    delete(data_all@var)
-    delete(data_all@title)
-    delete(data_all@ncdf_dir)
+    data_all@var = "grade"
     if (isatt(data_all, "reference")) then
       delete(data_all@reference)
     end if
@@ -340,6 +356,56 @@ begin
       end if
     end if
 
+    ; Sort diagnostics in the order specified in the settings
+    if (isatt(diag_script_info, "diag_order")) then
+      l_ok = True
+      if (dimsizes(data_all&diagnostics).ne. \
+          dimsizes(diag_script_info@diag_order)) then
+        error_msg("w", DIAG_SCRIPT, "", "specified order of diagnostics " + \
+                  "cannot be applied, number of diagnostics does not match")
+        l_ok = False
+      end if
+      pid = new(dimsizes(diag_script_info@diag_order), integer)
+      do ii = 0, dimsizes(diag_script_info@diag_order) - 1
+        tmp = ind(data_all&diagnostics.eq.diag_script_info@diag_order(ii))
+        if (any(ismissing(tmp)) .or. dimsizes(tmp).gt.1) then
+          error_msg("w", DIAG_SCRIPT, "", "specified order of diagnostics " + \
+                    "cannot be applied, invalid entry in diag_order")
+          break
+        end if
+        pid(ii) = tmp
+        delete(tmp)
+      end do
+      if (l_ok) then
+        if (dimsizes(dimsizes(data_all)).eq.3) then
+          data_all := data_all(pid, :, :)
+        else
+          data_all := data_all(pid, :)
+        end if
+      end if
+    end if
+
+    ; Define output filenames
+    if (dimsizes(data_all&diagnostics).gt.1) then
+      diags = data_all&diagnostics(0) + "_to_" + \
+        data_all&diagnostics(dimsizes(data_all&diagnostics) - 1)
+    else
+      diags = str_concat(data_all&diagnostics)
+    end if
+    workpath = config_user_info@work_dir + diags
+    plotpath = config_user_info@plot_dir + diags
+    if (isatt(data_all, "metric")) then
+      workpath = workpath + "_" + data_all@metric + ".nc"
+      plotpath = plotpath + "_" + data_all@metric
+    end if
+    delete(diags)
+
+    ; Write output
+    if (config_user_info@write_netcdf) then
+      system("mkdir -p " + config_user_info@work_dir)
+      ncdf_outfile = ncdf_write(data_all, workpath)
+    end if
+
     ; Attach plotting options
     copy_VarAtts(diag_script_info, data_all)
     if (isatt(diag_script_info, "title")) then
@@ -350,66 +416,61 @@ begin
       data_all@res_caseLabels = data_all&diagnostics
     end if
 
-    ; Create outfile directory
-    system("mkdir -p " + config_user_info@plot_dir)
-    if (dimsizes(data_all&diagnostics).gt.1) then
-      diags = data_all&diagnostics(0) + "_to_" + \
-        data_all&diagnostics(dimsizes(data_all&diagnostics) - 1)
-    else
-      diags = str_concat(data_all&diagnostics)
-    end if
-
-    ; Define outfile name
-    outfile_plot = config_user_info@plot_dir + diags
-    if (isatt(data_all, "metric")) then
-      outfile_plot = outfile_plot + "_" + data_all@metric
-    end if
   end if
 
   ; Create workspace
-  wks = gsn_open_wks(file_type, outfile_plot)
+  system("mkdir -p " + config_user_info@plot_dir)
+  wks = gsn_open_wks(file_type, plotpath)
   if (diag_script_info@metric.eq."taylor") then
-    wks@legendfile = outfile_plot + "_legend"
+    wks@legendfile = plotpath + "_legend"
   end if
 
   ; Call plotting function
   if (diag_script_info@metric.eq."taylor") then
     plot = taylor_plot(wks, data_all, "grade")
-  else if (diag_script_info@metric.eq."SMPI") then
+  elseif (diag_script_info@metric.eq."SMPI") then
     plot = circle_plot(wks, data_smpi, "performance_index", \
                        data_smpi@ensemble_name)
   else
     plot = portrait_plot(wks, data_all, "grade")
   end if
-  end if
 
-  log_info(" gv " + outfile_plot + "." + file_type)
-
-  ; Collect meta-data and call provenance function
-  if (diag_script_info@metric.eq."SMPI") then
-    nc_file = ncdf_outfile
-    plot_file = outfile_plot
-    domains = ("global")
-    statistics = ("smpi")
+  ; Call provenance logger
+  if (diag_script_info@metric.eq."RMSD") then
+    caption = "RMSD performance metric"
+    statistics = (/"rmsd"/)
+    authors = (/"frank_franziska", "righi_mattia", "eyring_veronika"/)
+    plottype = "portrait"
+    references = (/"righi15gmd", "gleckler08jgr"/)
+  elseif (diag_script_info@metric.eq."BIAS") then
+    caption = "Bias performance metric"
+    statistics = (/"diff"/)
+    authors = (/"frank_franziska", "righi_mattia", "eyring_veronika"/)
+    plottype = "portrait"
+    references = (/"righi15gmd", "gleckler08jgr"/)
+  elseif (diag_script_info@metric.eq."taylor") then
+    caption = "Taylor diagram"
+    statistics = (/"rmsd", "corr"/)
+    authors = (/"frank_franziska", "righi_mattia", "eyring_veronika"/)
+    plottype = "taylor"
+    references = (/"righi15gmd", "gleckler08jgr"/)
+  elseif (diag_script_info@metric.eq."SMPI") then
     caption = \
       "Performance index I2. Similar to Figure 1 of Reichler and Kim (2008)."
-    plottype = ("circle")
-    authors = (/"righ_ma", "fran_fr", "gier_be", "hass_bg"/)
+    statistics = "smpi"
+    authors = (/"gier_bettina", "hassler_birgit"/)
+    plottype = "circle"
     references = (/"rk2008bams"/)
-    infiles = climofiles
-    log_provenance(nc_file, plot_file, caption, statistics, domains, \
-                   plottype, authors, references, infiles)
   else
-    statistics = ("mean")
-    caption = "Performance metric."
-    plottype = ("taylor")
-    authors = (/"righ_ma", "fran_fr"/)
-    references = (/"righi15gmd", "gleckler08jgr"/)
-    ; FIX-ME
-    ; infiles = climofiles
-    ; log_provenance(nc_file, plot_file, caption, statistics, domains, \
-    ;                plottype, authors, references, infiles)
+    error_msg("f", DIAG_SCRIPT, "", "cannot add provenance information " + \
+              "for metric " + diag_script_info@metric)
   end if
+  domains = (/"global"/)
+
+  ; Call provenance logger
+  preproc_files := preproc_files(ind(.not.ismissing(preproc_files)))
+  log_provenance(ncdf_outfile, plotpath, caption, statistics, domains, \
+                 plottype, authors, references, preproc_files)
 
   leave_msg(DIAG_SCRIPT, "")
 

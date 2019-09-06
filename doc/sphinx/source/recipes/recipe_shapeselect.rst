@@ -1,3 +1,5 @@
+.. _recipes_shapeselect:
+
 Shapeselect
 ===========
 
@@ -34,4 +36,9 @@ User settings in recipe
    * write_xlsx: true or false to write output as Excel sheet or not.
 
    * write_netcdf: true or false to write output as NetCDF or not.
+
+Variables
+---------
+
+* pr,tas      (daily)
 

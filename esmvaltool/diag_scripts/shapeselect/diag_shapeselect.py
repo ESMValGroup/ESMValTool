@@ -23,7 +23,7 @@ def get_provenance_record(cfg, basename, caption, extension, ancestor_files):
         'caption': caption,
         'statistics': ['other'],
         'domains': ['global'],
-        'authors': ['berg_pe'],
+        'authors': ['berg_peter'],
         'references': ['acknow_project'],
         'ancestors': ancestor_files,
     }
@@ -41,6 +41,7 @@ def main(cfg):
                     attributes['standard_name'], attributes['dataset'])
         logger.debug("Loading %s", filename)
         cube = iris.load_cube(filename)
+
         ncts, nclon, nclat = shapeselect(cfg, cube)
         name = os.path.splitext(os.path.basename(filename))[0] + '_polygon'
         if cfg['write_xlsx']:
@@ -111,7 +112,7 @@ def writexls(cfg, filename, ncts, nclon1, nclat1):
     worksheet.set_column(0, 0, 20)
     for row, attr in enumerate(ncfile.ncattrs()):
         worksheet.write(row, 0, attr)
-        worksheet.write(row, 1, getattr(ncfile, attr))
+        worksheet.write(row, 1, str(getattr(ncfile, attr)))
     worksheet = workbook.add_worksheet('ESMValTool')
     worksheet.set_column(0, 0, 20)
     row = 0

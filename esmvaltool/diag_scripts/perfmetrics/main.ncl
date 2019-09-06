@@ -29,7 +29,6 @@
 ;                                       (default: False)
 ;    projection: map projection for lat-lon plots (default:
 ;                CylindricalEquidistant)
-;    draw_plots: draw plots (default: True)
 ;    plot_diff: draw difference plots (default: False)
 ;    calc_grading: calculate grading (default: False)
 ;    stippling: use stippling to mark stat. significant differences (default:
@@ -54,35 +53,38 @@
 ; Caveats
 ;
 ; Modification history
-;    20190315-A_hass_bg: extended to smpi metric
-;    20180503-A_righ_ma: completely rewritten and modularized
-;    20171215-A_righ_ma: merged with perfmetrics_grading and
-;                        permetrics_taylor.ncl
-;    20171124-A_righ_ma: completely revised to adapt it to the new backend
-;                        (level selection, regridding and masking now done
-;                        by the python preprocessor)
-;    20161220-A_laue_ax: added option to set map projection for lat-lon plots
-;                        (diag_script_info@projection)
-;                        added option to choose how to plot t-test results:
-;                        stippling or masking out in gray (lat-lon plots only)
-;    20161019-A_laue_ax: changed plotting of t-test results:
-;                        now stippling significant grid cells (old version:
-;                        masking out non-significant values in gray)
-;    20160628-A_righ_ma: moving ref_model specification from cfg- files to
+;    20190405-righi_mattia: added provenance logging
+;    20190315-hassler_birgit: extended to smpi metric
+;    20180503-righi_mattia: completely rewritten and modularized
+;    20171215-righi_mattia: merged with perfmetrics_grading and
+;                           permetrics_taylor.ncl
+;    20171124-righi_mattia: completely revised to adapt it to the new backend
+;                           (level selection, regridding and masking now done
+;                           by the python preprocessor)
+;    20161220-lauer_axel: added option to set map projection for lat-lon plots
+;                         (diag_script_info@projection)
+;                         added option to choose how to plot t-test results:
+;                         stippling or masking out in gray (lat-lon plots only)
+;    20161019-lauer_axel: changed plotting of t-test results:
+;                         now stippling significant grid cells (old version:
+;                         masking out non-significant values in gray)
+;    20160628-righi_mattia: moving ref_model specification from cfg- files to
 ;                        recipe file
-;    20160628-A_senf_da: added regridding for irregular grids (ESMF_regrid).
-;    20151027-A_laue_ax: moved call to 'write_references' to the beginning
-;                        of the code.
-;    20151013-A_righ_ma: fixed t-test mask in lat-lon difference plots.
-;    20150325-A_laue_ax: modified reference tags used for acknowledgements
-;                        (projects, observations, etc.).
-;    20150119-A-gott_kl: removed "grid", "region" from req_atts
-;                        (for T2Ms vmrco).
-;    20150113-A_gott_kl: reconciled generalised regridding with T1* & T0*
-;    20140905-A_righ_ma: consistent regridding and missing values mask.
-;    20140701-A_gott_kl: Adapted for T1M.
-;    20140630-A_gott_kl: Adapted for T0Ms.
-;    20131203-A_fran_fr: written.
+;    20160628-senftleben_daniel: added regridding for irregular grids
+;                                (ESMF_regrid).
+;    20151027-lauer_axel: moved call to 'write_references' to the beginning
+;                         of the code.
+;    20151013-righi_mattia: fixed t-test mask in lat-lon difference plots.
+;    20150325-lauer_axel: modified reference tags used for acknowledgements
+;                         (projects, observations, etc.).
+;    20150119-gottschaldt_klaus-dirk: removed "grid", "region" from req_atts
+;                                     (for T2Ms vmrco).
+;    20150113-gottschaldt_klaus-dirk: reconciled generalised regridding with
+;                                     T1* & T0*
+;    20140905-righi_mattia: consistent regridding and missing values mask.
+;    20140701-gottschaldt_klaus-dirk: Adapted for T1M.
+;    20140630-gottschaldt_klaus-dirk: Adapted for T0Ms.
+;    20131203-frank_franziska: written.
 ;
 ; #############################################################################
 
@@ -127,14 +129,13 @@ begin
   end if
 
   if ((ptype.eq."zonal" .or. ptype.eq."latlon") .and. \
-      diag_script_info@region.ne."Global") then
+      diag_script_info@region.ne."global") then
     error_msg("f", DIAG_SCRIPT, "", "plot_type " + ptype + \
-              " implemented only for region='Global'")
+              " implemented only for region 'global'")
   end if
 
   ; Set default values for non-required diag_script_info attributes
   set_default_att(diag_script_info, "projection", "CylindricalEquidistant")
-  set_default_att(diag_script_info, "draw_plots", True)
   set_default_att(diag_script_info, "plot_diff", False)
   set_default_att(diag_script_info, "calc_grading", False)
   set_default_att(diag_script_info, "stippling", False)
@@ -166,8 +167,8 @@ begin
   ; Set dataset names
   datasetnames = metadata_att_as_array(info_items, "dataset")
 
-  ; Get climofile information
-  climofiles = metadata_att_as_array(info_items, "filename")
+  ; Save list of preproc files for provenance in collect.ncl
+  preproc_files = metadata_att_as_array(info_items, "filename")
 
   ; Check for reference dataset definition
   if (variable_info[0]@reference_dataset.eq."None") then
@@ -187,7 +188,7 @@ begin
   end if
 
   ; Create output plot directory
-  if (diag_script_info@draw_plots) then
+  if (config_user_info@write_plots) then
     plot_dir = config_user_info@plot_dir
     system("mkdir -p " + plot_dir)
   end if
@@ -201,33 +202,6 @@ begin
   ; Grading settings
   if (diag_script_info@calc_grading) then
 
-    ; Define variable name
-    region_name = ""  ; priority 3
-    location = ""  ; priority 3
-    if (isatt(diag_script_info, "aux_info")) then
-      region_name = "_" + diag_script_info@aux_info  ; priority 2
-      location = " - " + diag_script_info@aux_info  ; priority 2
-    end if
-    if (isatt(diag_script_info, "location")) then
-      location = " - " + diag_script_info@location  ; priority 1
-    end if
-    if (isatt(diag_script_info, "region")) then
-      region_name = "_" + region@name  ; priority 1
-      location = " - " + diag_script_info@region
-    end if
-    altitude = ""  ; priority 2
-    if (isatt(diag_script_info, "altitude")) then
-      altitude = " - " + diag_script_info@altitude  ; priority 1
-    end if
-    if (isatt(diag_script_info, "level")) then
-      altitude = " - " + diag_script_info@level + " hPa"  ; priority 1
-    end if
-    var0_grade = var0
-    var0_grade = var0_grade + region_name
-    if (isatt(diag_script_info, "level")) then
-      var0_grade = var0_grade + "-" + diag_script_info@level  ; FIX-ME
-    end if
-
     ; Define grading arrays
     nmetrics = dimsizes(diag_script_info@metric)
     ncdf_dir = new(nmetrics, string)
@@ -238,7 +212,8 @@ begin
     grading!1 = "diagnostics"  ; dummy coord. to facilitate appending
     grading!2 = "models"
     grading!3 = "reference"
-    grading&diagnostics = var0_grade
+    grading&diagnostics = \
+      variable_info[0]@diagnostic + "-" + diag_script_info@region
     grading&models = remove_index(datasetnames, ref_inds)
     if (isdim(grading, "reference")) then
       grading&reference = datasetnames(ref_inds)
@@ -251,7 +226,8 @@ begin
       taylor!0 = "diagnostics"  ; dummy coord. to facilitate appending
       taylor!1 = "models"
       taylor!2 = "statistic"
-      taylor&diagnostics = var0_grade
+      taylor&diagnostics = \
+        variable_info[0]@diagnostic + "-" + diag_script_info@region
       taylor&statistic = (/"stddev_ratio", "correlation"/)
       taylor&models = remove_index(datasetnames, ref_ind)
     end if
@@ -268,8 +244,9 @@ begin
 
     ; Define grading filename
     do met = 0, nmetrics - 1
-      ncdf_dir(met) = config_user_info@work_dir + "/" + \
-        diag_script_info@metric(met) + "_" + var0_grade + ".nc"
+      ncdf_dir(met) = config_user_info@work_dir + \
+        diag_script_info@metric(met) + "_" + \
+        variable_info[0]@diagnostic + "-" + diag_script_info@region + ".nc"
     end do
 
   end if
@@ -342,15 +319,16 @@ begin
         smpi@title = "metrics"
         smpi@long_name = "1 variable's Performance Index for " + \
           "the Single Model Performance Index"
+        smpi@metric = diag_script_info@metric(met)
         smpi@diag_script = (/DIAG_SCRIPT/)
         smpi@var = "performance_index"
         smpi@invar = var0
-        smpi@region = location
+        smpi@region = region@name
         smpi@ensemble_name = diag_script_info@normalization(met)
-        smpi@num_climofiles = dimsizes(climofiles)
-        do imod = 0, smpi@num_climofiles - 1
-          num_climo = "climofile_" + imod
-          smpi@$num_climo$ = climofiles(imod)
+        smpi@num_preproc_files = dimsizes(preproc_files)
+        do imod = 0, smpi@num_preproc_files - 1
+          num_preproc = "preproc_file_" + imod
+          smpi@$num_preproc$ = preproc_files(imod)
         end do
         smpi@ncdf_dir = ncdf_dir(met)
 
@@ -364,11 +342,11 @@ begin
         metric@metric = diag_script_info@metric(met)
         metric@diag_script = (/DIAG_SCRIPT/)
         metric@var = "grade"
-        metric@region = location
-        metric@num_climofiles = nDatasets
-        do imod = 0, nDatasets - 1
-          num_climo = "climofile_" + imod
-          metric@$num_climo$ = info_items[imod]@filename
+        metric@region = region@name
+        metric@num_preproc_files = dimsizes(preproc_files)
+        do imod = 0, metric@num_preproc_files - 1
+          num_preproc = "preproc_file_" + imod
+          metric@$num_preproc$ = preproc_files(imod)
         end do
         metric@ncdf_dir = ncdf_dir(met)
 

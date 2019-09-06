@@ -1,20 +1,3 @@
-# nolint start
-####REQUIRED SYSTEM LIBS
-####ŀibssl-dev
-####libnecdf-dev
-####cdo
-
-# conda install -c conda-forge r-ncdf4
-
-#R package dependencies installation script
-#install.packages("yaml")
-#install.packages("devtools")
-#library(devtools)
-#Sys.setenv(TAR = "/bin/tar")
-#install_git("https://earth.bsc.es/gitlab/es/startR", branch = "develop-hotfixes-0.0.2")
-#install_git("https://earth.bsc.es/gitlab/es/easyNCDF", branch = "master")
-# nolint end
-
 
 Sys.setenv(TAR = "/bin/tar") # nolint
 library(s2dverification)
@@ -42,9 +25,6 @@ provenance_file <- paste0(run_dir, "/", "diagnostic_provenance.yml")
 provenance <- list()
 
 input_files_per_var <- yaml::read_yaml(params$input_files)
-var_names <- names(input_files_per_var)
-model_names <- lapply(input_files_per_var, function(x) x$dataset)
-model_names <- unique(unlist(unname(model_names)))
 
 var0 <- lapply(input_files_per_var, function(x) x$short_name)
 fullpath_filenames <- names(var0)
@@ -52,18 +32,26 @@ var0 <- unname(var0)[1]
 experiment <- lapply(input_files_per_var, function(x) x$exp)
 experiment <- unlist(unname(experiment))
 
-climatology_class <- params$climatology_class
-anomaly_class <- params$anomaly_class
-climatology_files <- which(
-  unname(experiment) == as.character(climatology_class)
-)
-anomaly_files <- which(unname(experiment) == as.character(anomaly_class))
+climatology_files <- which(unname(experiment) == "historical")
+projection_files <- which(unname(experiment) != "historical")
+
+rcp_scenario <- unique(experiment[projection_files])
+model_names <-  lapply(input_files_per_var, function(x) x$dataset)
+model_names <- unlist(unname(model_names))[projection_files]
+
+start_climatology <- lapply(input_files_per_var, function(x) x$start_year)
+start_climatology <- c(unlist(unname(start_climatology))[climatology_files])[1]
+end_climatology <- lapply(input_files_per_var, function(x) x$end_year)
+end_climatology <- c(unlist(unname(end_climatology))[climatology_files])[1]
+
+start_projection <- lapply(input_files_per_var, function(x) x$start_year)
+start_projection <- c(unlist(unname(start_projection))[projection_files])[1]
+end_projection <- lapply(input_files_per_var, function(x) x$end_year)
+end_projection <- c(unlist(unname(end_projection))[projection_files])[1]
+
 
 agreement_threshold <- params$agreement_threshold
-start_climatology <- params$climatology_start_year
-end_climatology <- params$climatology_end_year
-start_anomaly <- params$anomaly_start_year
-end_anomaly <- params$anomaly_end_year
+
 font_size <- 12
 
 #Parameters for Season() function
@@ -215,8 +203,8 @@ if (moninf <= monsup) {
 margins <- list(c(1 : length(dim(reference_seasonal_mean)))[-c(time_dim + 1)])
 years_dim <- which(names(dim(reference_seasonal_mean)) == "year")
 climatology <- Mean1Dim(reference_seasonal_mean, years_dim) #nolint
-anomaly_filenames <- fullpath_filenames[anomaly_files]
-rcp_nc <- nc_open(anomaly_filenames[1])
+projection_filenames <- fullpath_filenames[projection_files]
+rcp_nc <- nc_open(projection_filenames[1])
 lat <- ncvar_get(rcp_nc, "lat")
 lon <- ncvar_get(rcp_nc, "lon")
 units <- ncatt_get(rcp_nc, var0, "units")$value
@@ -229,8 +217,8 @@ start_date <- as.POSIXct(substr(ncatt_get(rcp_nc, "time",
 time <- as.Date(time, origin = start_date, calendar = calendar)
 
 nc_close(rcp_nc)
-for (i in 2 : length(anomaly_filenames)) {
-  rcp_nc <- nc_open(anomaly_filenames[i])
+for (i in 2 : length(projection_filenames)) {
+  rcp_nc <- nc_open(projection_filenames[i])
   rcp_data <- abind(rcp_data, InsertDim(ncvar_get(rcp_nc, var0), 1, 1), #nolint
                                         along = 1)
   nc_close(rcp_nc)
@@ -248,14 +236,14 @@ names(dim(rcp_data)) <- c("model", "lon", "lat", "time")
 #  print("Different calendars between climatology and anomaly.")
 #}
 # nolint end
-if ( (end_anomaly - start_anomaly + 1) * 12 == length(time)) {
+if ( (end_projection - start_projection + 1) * 12 == length(time)) {
   time <- seq(
     as.Date(
-      paste(start_anomaly, "01", "01", sep = "-"),
+      paste(start_projection, "01", "01", sep = "-"),
       format = "%Y-%m-%d"
     ),
     as.Date(
-      paste(end_anomaly, "12", "01", sep = "-"),
+      paste(end_projection, "12", "01", sep = "-"),
       format = "%Y-%m-%d"
     ),
     "month"
@@ -353,7 +341,7 @@ climatology <- InsertDim( # nolint
 anomaly <- rcp_seasonal_mean - climatology
 multi_year_anomaly <- Mean1Dim(anomaly, years_dim)
 
-time <- seq(start_anomaly, end_anomaly, by = 1)
+time <- seq(start_projection, end_projection, by = 1)
 month <- moninf
   if (month <= 9) {
     month <- paste0(as.character(0), as.character(month))
@@ -416,7 +404,7 @@ if (!is.null(params$running_mean)) {
   )
 }
 data_frame <- as.data.frame.table(t(model_anomalies[, ]))
-years <- rep(start_anomaly : end_anomaly, dim(model_anomalies)[1])
+years <- rep(start_projection : end_projection, dim(model_anomalies)[1])
 data_frame$Year <- c(years)
 names(data_frame)[2] <- "Model"
 
@@ -436,8 +424,8 @@ if (time_series_plot == "single") {
             mapping = aes(x = data_frame$Year, y = data_frame$Freq,
             group = interaction(data_frame[2, 3]),
             color = data_frame$Model), geom = "line", size = 1) +
-         ggtitle(paste0(months, " ", var0, " anomaly (", start_anomaly, "-",
-         end_anomaly, ") - ", "(", start_climatology, "-", end_climatology,
+         ggtitle(paste0(months, " ", var0, " anomaly (", start_projection, "-",
+         end_projection, ") - ", "(", start_climatology, "-", end_climatology,
          ")"))
 } else {
   g <- ggplot(data_frame, aes(x = Year, y = Freq)) + theme_bw() +
@@ -453,13 +441,13 @@ if (time_series_plot == "single") {
             fun.ymax = "max", mapping = aes(x = data_frame$Year,
             y = data_frame$Freq, group = interaction(data_frame[2, 3])),
             alpha = 0.3, color = "red", fill = "red") +
-         ggtitle(paste0(months, " ", var0, " anomaly (", start_anomaly, "-",
-         end_anomaly, ") - ", "(", start_climatology, "-", end_climatology,
+         ggtitle(paste0(months, " ", var0, " anomaly (", start_projection, "-",
+         end_projection, ") - ", "(", start_climatology, "-", end_climatology,
          ")"))
 }
 filepng1 <-  paste0(
     plot_dir, "/", "Area-averaged_", var0, "_", months, "_multimodel-anomaly_",
-    start_anomaly, "_", end_anomaly, "_", start_climatology, "_",
+    start_projection, "_", end_projection, "_", start_climatology, "_",
     end_climatology, ".png")
 ggsave(
   filename = filepng1,
@@ -481,13 +469,13 @@ if (!is.null(agreement_threshold)) {
 colorbar_lim <- ceiling(max(abs(max(multi_year_anomaly)), abs(min(data))))
 brks <- seq(-colorbar_lim, colorbar_lim, length.out = 21)
 title <- paste0(
-  months, " ", var0, " anomaly (", start_anomaly, "-", end_anomaly,
+  months, " ", var0, " anomaly (", start_projection, "-", end_projection,
   ") - (", start_climatology, "-", end_climatology, ")")
 data <- drop(Mean1Dim(multi_year_anomaly, model_dim))
 
 filepng2 <- paste0(plot_dir, "/", var0, "_", months, "_multimodel-anomaly_",
-                    start_anomaly,
-    "_", end_anomaly, "_", start_climatology, "_", end_climatology, ".png")
+                    start_projection,
+    "_", end_projection, "_", start_climatology, "_", end_climatology, ".png")
 PlotEquiMap( # nolint
   data,
   lat = lat,
@@ -530,7 +518,7 @@ defagreement <- ncvar_def(
   longname = "Agremeent between models")
 filencdf <- paste0(
     work_dir, "/", var0, "_", months, "_multimodel-anomaly_",
-    model_names_filename, "_", start_anomaly, "_", end_anomaly, "_",
+    model_names_filename, "_", start_projection, "_", end_projection, "_",
     start_climatology, "_", end_climatology, ".nc")
 file <- nc_create(filencdf, list(defdata, defagreement))
 ncvar_put(file, defdata, data)
@@ -540,7 +528,7 @@ nc_close(file)
 
     # Set provenance for output files
     xprov <- list(ancestors = list(fullpath_filenames),
-                  authors = list("hunt_al", "manu_ni"),
+                  authors = list("hunter_alasdair", "manubens_nicolau"),
                   projects = list("c3s-magic"),
                   caption = title,
                   statistics = list("other"),
