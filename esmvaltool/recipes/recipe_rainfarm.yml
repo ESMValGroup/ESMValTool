@@ -5,9 +5,10 @@ documentation:
   description: |
     Recipe for performing stochastic downscaling of precipitation fields
     calling the RainFARM package by J. von Hardenberg (ISAC-CNR)
+
   authors:
-    - arno_en
-    - hard_jo
+    - arnone_enrico
+    - vonhardenberg_jost
 
   references:
     - donofrio14jh
