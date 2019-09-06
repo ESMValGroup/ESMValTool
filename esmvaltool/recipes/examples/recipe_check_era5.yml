@@ -5,7 +5,7 @@ documentation:
   description: Check that ERA5 data works with ESMValTool
   authors:
     - ande_bo
-    - camp_ja
+    - camphuijsen_jaro
 
 datasets:
   - {project: OBS6, dataset: ERA5, tier: 3, type: reanaly, version: 1, start_year: 1990, end_year: 1990}
