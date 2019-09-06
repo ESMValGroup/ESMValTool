@@ -37,10 +37,10 @@ class DerivedVariable(DerivedVariableBase):
         clivi_cube = cubes.extract_strict(
             Constraint(name='atmosphere_cloud_ice_content'))
 
-        # Should we check that the model_id/project_id are the same on both
-        # cubes?
         dataset = clwvi_cube.attributes.get('model_id')
         project = clwvi_cube.attributes.get('project_id')
+        # Should we check that the model_id/project_id are the same on both
+        # cubes?
 
         bad_datasets = [
             'CESM1-CAM5-1-FV2',

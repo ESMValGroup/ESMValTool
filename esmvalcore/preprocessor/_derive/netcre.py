@@ -32,7 +32,6 @@ class DerivedVariable(DerivedVariableBase):
         ----
         Calculate net cloud radiative effect as sum of longwave and shortwave
         cloud radiative effects.
-
         """
         lwcre_var = Lwcre()
         swcre_var = Swcre()

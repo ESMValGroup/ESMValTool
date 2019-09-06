@@ -34,8 +34,6 @@ class allvars(Fix):
         _get_and_remove(cubes, 'Start time for average period')
         _get_and_remove(cubes, 'End time for average period')
         _get_and_remove(cubes, 'Length of average period')
-        _get_and_remove(cubes, 'Latitude of tracer (h) points')
-        _get_and_remove(cubes, 'Longitude of tracer (h) points')
         return cubes
 
 

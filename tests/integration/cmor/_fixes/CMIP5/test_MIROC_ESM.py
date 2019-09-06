@@ -5,7 +5,7 @@ from iris.coords import DimCoord
 from iris.cube import Cube
 from iris.exceptions import CoordinateNotFoundError
 
-from esmvalcore.cmor._fixes.CMIP5.MIROC_ESM import allvars, co2, tro3
+from esmvalcore.cmor._fixes.CMIP5.MIROC_ESM import allvars, co2, gpp, tro3
 
 
 class TestCo2(unittest.TestCase):
@@ -28,6 +28,17 @@ class TestTro3(unittest.TestCase):
         cube = self.fix.fix_data(self.cube)
         self.assertEqual(cube.data[0], 1000)
         self.assertEqual(cube.units, Unit('J'))
+
+
+class TestGpp(unittest.TestCase):
+    def setUp(self):
+        self.cube = Cube([1.0], var_name='gpp', units='J')
+        self.fix = gpp()
+
+    def test_fix_metadata(self):
+        cube = self.fix.fix_metadata([self.cube])[0]
+        self.assertEqual(cube.data[0], 1)
+        self.assertEqual(cube.units, Unit('g m-2 day-1'))
 
 
 class TestAll(unittest.TestCase):

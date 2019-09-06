@@ -1,5 +1,6 @@
 # pylint: disable=invalid-name, no-self-use, too-few-public-methods
 """Fixes for MIROC ESM model"""
+import cf_units
 from iris.coords import DimCoord
 from iris.exceptions import CoordinateNotFoundError
 
@@ -31,7 +32,7 @@ class tro3(Fix):
 
 
 class co2(Fix):
-    """Fixes for co2."""
+    """Fixes for co2"""
 
     def fix_metadata(self, cubes):
         """
@@ -52,8 +53,31 @@ class co2(Fix):
         return cubes
 
 
+class gpp(Fix):
+    """Fixes for gpp"""
+
+    def fix_metadata(self, cubes):
+        """
+        Fix metadata.
+
+        Fixes error in cube units
+
+        Parameters
+        ----------
+        cube: iris.cube.CubeList
+
+        Returns
+        -------
+        iris.cube.CubeList
+
+        """
+        # Fixing the metadata, automatic unit conversion should do the trick
+        self.get_cube_from_list(cubes).units = cf_units.Unit('g m-2 day-1')
+        return cubes
+
+
 class allvars(Fix):
-    """Common fixes to all vars."""
+    """Common fixes to all vars"""
 
     def fix_metadata(self, cubes):
         """

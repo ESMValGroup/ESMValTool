@@ -1,7 +1,9 @@
 # pylint: disable=invalid-name, no-self-use, too-few-public-methods
-"""Fixes for GFDL ESM2M."""
-from ..CMIP5.GFDL_ESM2G import allvars as base_allvars
+"""Fixes for GFDL ESM2M"""
+from cf_units import Unit
+
 from ..fix import Fix
+from ..CMIP5.GFDL_ESM2G import allvars as base_allvars
 
 
 class allvars(base_allvars):
@@ -9,12 +11,13 @@ class allvars(base_allvars):
 
 
 class sftof(Fix):
-    """Fixes for sftof."""
+    """Fixes for sftof"""
 
     def fix_data(self, cube):
-        """Fix data.
+        """
+        Fix data.
 
-        Fixes discrepancy between declared units and real units.
+        Fixes discrepancy between declared units and real units
 
         Parameters
         ----------
@@ -32,12 +35,13 @@ class sftof(Fix):
 
 
 class co2(Fix):
-    """Fixes for co2."""
+    """Fixes for co2"""
 
     def fix_data(self, cube):
-        """Fix data.
+        """
+        Fix data.
 
-        Fixes discrepancy between declared units and real units.
+        Fixes discrepancy between declared units and real units
 
         Parameters
         ----------
@@ -52,25 +56,3 @@ class co2(Fix):
         cube *= 1e6
         cube.metadata = metadata
         return cube
-
-
-class tos(Fix):
-    """Fixes for tos."""
-
-    def fix_metadata(self, cubes):
-        """Fix metadata.
-
-        Fixes cube `standard_name`.
-
-        Parameters
-        ----------
-        cube: iris.cube.CubeList
-
-        Returns
-        -------
-        iris.cube.Cube
-
-        """
-        cube = self.get_cube_from_list(cubes)
-        cube.standard_name = 'sea_surface_temperature'
-        return [cube]
