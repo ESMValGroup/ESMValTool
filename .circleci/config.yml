@@ -176,13 +176,7 @@ jobs:
             dpkg -l > /logs/versions.txt
             conda env export -n base > /logs/build_environment.yml
             # Build conda package
-            conda build . -c conda-forge -c esmvalgroup > /logs/build_log.txt
-            # Install Python 3 conda package
-            conda create -y --name esmvaltool3 > /logs/conda_esmvaltool3.txt 2>&1
-            set +x; conda activate esmvaltool3; set -x
-            conda install -y esmvaltool --use-local -c conda-forge -c esmvalgroup
-            conda env export > /logs/test_environment3.yml
-            esmvaltool -h
+            \time conda build . -c conda-forge -c esmvalgroup > /logs/build_log.txt
       - store_artifacts:
           path: /logs
 
@@ -244,13 +238,12 @@ workflows:
   version: 2
   commit:
     jobs:
-      - test
-      - test_installation
-      - develop
       - documentation
+      - test
+      - test_installation:
+          requires:
+            - test
       - conda_build
-      - conda_install
-      - ncl_cdo_test
   nightly:
     triggers:
       - schedule:
