@@ -526,14 +526,14 @@ function regrid_3D_to_rectilinear_grid(data_in:numeric,
 ; References
 ;
 ; Modification history
-;    20151026_A_righ_ma: added warning for unavailable lat/lon vertices
-;                        in input.
-;    20151023_A_righ_ma: moved to regridding.ncl and renamed
-;                        regrid_3D_data_to_global_rectilinear_grid -->
-;                        regrid_3D_to_rectilinear_grid.
-;    20150703_A_wenz_sa: moved to anav13jclim_func.ncl and adapted to
-;                        ESMValTool structure.
-;    201505??_A_anav_al: written.
+;    20151026-righi_mattia: added warning for unavailable lat/lon vertices
+;                           in input.
+;    20151023-righi_mattia: moved to regridding.ncl and renamed
+;                           regrid_3D_data_to_global_rectilinear_grid -->
+;                           regrid_3D_to_rectilinear_grid.
+;    20150703-wenzel_sabrina: moved to anav13jclim_func.ncl and adapted to
+;                             ESMValTool structure.
+;    201505??-anav_alessandro: written.
 ;
 local funcname, scriptname, INTERP_METHOD, srcGridName, dstGridName, dimx, \
   ntime, nlat, nlon, temp, Opt, sfile, var
