@@ -18,6 +18,7 @@ jobs:
       - run:
           # Update/Create Conda environment and run tests
           command: |
+            . /opt/conda/etc/profile.d/conda.sh
             mkdir /logs
             conda update -y conda >> /logs/conda.txt 2>&1
             conda env update >> /logs/conda.txt 2>&1
@@ -49,6 +50,7 @@ jobs:
           key: test-install-{{ .Branch }}
       - run:
           command: |
+            . /opt/conda/etc/profile.d/conda.sh
             set -x
             mkdir /logs
             # Install
@@ -102,6 +104,7 @@ jobs:
       - checkout
       - run:
           command: |
+            . /opt/conda/etc/profile.d/conda.sh
             set -x
             mkdir /logs
             # Install
@@ -162,6 +165,7 @@ jobs:
       - checkout
       - run:
           command: |
+            . /opt/conda/etc/profile.d/conda.sh
             set -x
             # Install prerequisites
             mkdir /logs
@@ -192,6 +196,7 @@ jobs:
     steps:
       - run:
           command: |
+            . /opt/conda/etc/profile.d/conda.sh
             set -x
             # Install prerequisites
             mkdir /logs
@@ -220,6 +225,7 @@ jobs:
       - checkout
       - run:
           command: |
+            . /opt/conda/etc/profile.d/conda.sh
             set -x
             mkdir /logs
             # Install
@@ -242,9 +248,11 @@ workflows:
     jobs:
       - test
       - test_installation
-      - documentation
       - develop
+      - documentation
       - conda_build
+      - conda_install
+      - ncl_cdo_test
   nightly:
     triggers:
       - schedule:
