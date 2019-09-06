@@ -176,7 +176,8 @@ jobs:
             dpkg -l > /logs/versions.txt
             conda env export -n base > /logs/build_environment.yml
             # Build conda package
-            \time conda build . -c conda-forge -c esmvalgroup > /logs/build_log.txt
+            apt update && apt install time
+            \time -v conda build . -c conda-forge -c esmvalgroup > /logs/build_log.txt
       - store_artifacts:
           path: /logs
 
