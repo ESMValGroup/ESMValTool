@@ -23,7 +23,7 @@ def get_provenance_record(cfg, basename, caption, extension, ancestor_files):
         'caption': caption,
         'statistics': ['other'],
         'domains': ['global'],
-        'authors': ['berg_pe'],
+        'authors': ['berg_peter'],
         'references': ['acknow_project'],
         'ancestors': ancestor_files,
     }
