@@ -1,12 +1,31 @@
 documentation:
   description: |
-    Recipe to evaluate the negative ice growth-ice thickness feedback
+    This recipeis related to the negative sea-ice growth–thickness feedback
+    In this recipe, one process-based diagnostic named the
+    Ice Formation Efficiency (IFE) is computed based on monthly mean
+    sea-ice volume estimated north of 80°N. The choice of this domain
+    is motivated by the desire to minimize the influence of dynamic
+    processes but also by the availability of sea-ice thickness measurements.
+    The diagnostic intends to evaluate the strength of the negative sea-ice
+    thickness/growth feedback, which causes late-summer negative anomalies
+    in sea-ice area and volume to be partially recovered during the next
+    growing season. A chief cause behind the existence of this feedback is
+    the non-linear inverse dependence between heat conduction fluxes and
+    sea-ice thickness, which implies that thin sea ice grows faster than thick
+    sea ice. To estimate the strength of that feedback, anomalies of the annual
+    minimum of sea-ice volume north of 80°N are first estimated. Then,
+    the increase in sea-ice volume until the next annual maximum is computed
+    for each year. The IFE is defined as the regression of this ice volume
+    production onto the baseline summer volume anomaly
 
   authors:
     - mass_fr
 
+  mantainer:
+    - vega_ja
+
   references:
-    - gleckler08jgr
+    - massonet18
 
   projects:
     - applicate
@@ -27,7 +46,7 @@ datasets:
   - {<<: *cmip5, dataset: CNRM-CM5}
   - {<<: *cmip5, dataset: CNRM-CM5-2}
   - {<<: *cmip5, dataset: FGOALS-g2}
-  - {<<: *cmip5, dataset: GFDL-CM2p1}
+  # - {<<: *cmip5, dataset: GFDL-CM2p1} Calendar issue
   - {<<: *cmip5, dataset: GFDL-CM3}
   - {<<: *cmip5, dataset: GFDL-ESM2G}
   - {<<: *cmip5, dataset: GFDL-ESM2M}

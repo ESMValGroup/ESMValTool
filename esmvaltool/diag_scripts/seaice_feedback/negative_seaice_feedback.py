@@ -1,7 +1,7 @@
 """
 Diagnostic to evaluate the negative ice growth-ice thickness feedback
 
-The codes presented here is a copy of
+The codes presented here is derived from
 TECLIM's GitHub code developed by F. Massonnet:
 http://www.climate.be:3000/TECLIM/ClimateData.git
 branch develop-fmasson
@@ -73,7 +73,7 @@ class NegativeSeaIceFeedback(object):
                 del cellarea, sit
 
                 neg_feedback, stats, _ = self.negative_seaice_feedback(
-                    volume, period=12, order=2
+                    dataset_info[n.ALIAS], volume, period=12, order=2
                 )
                 del volume
                 logger.info("Negative feedback: %10.4f", neg_feedback)
@@ -91,6 +91,7 @@ class NegativeSeaIceFeedback(object):
             'negative_feedback.{}'.format(self.cfg[n.OUTPUT_FILE_TYPE])
         )
 
+        plot_options = self.cfg.get('plot', {})
         fig = plt.figure()
         index = np.arange(len(negative_feedback))
         plt.scatter(
@@ -100,14 +101,18 @@ class NegativeSeaIceFeedback(object):
             color=plot_options.get('point_color', 'black'),
         )
         ax = plt.gca()
-        limit = math.ceil(max(abs(np.array(negative_feedback))))
+        max_limit = math.ceil(max(negative_feedback))
+        if max_limit < 0:
+            max_limit = 0
+        min_limit = math.floor(min(negative_feedback))
+        separation = max_limit - min_limit
 
         if plot_options.get('show_values', True):
             def _get_y_position(value):
-                if value > 0:
-                    return value - limit // 4.0
+                if value > min_limit + separation * 0.75:
+                    return value - separation * 0.05
                 else:
-                    return value + limit // 5.0
+                    return value + separation * 0.10
             for i, value in enumerate(negative_feedback):
                 ax.annotate(
                     f'{value:.2f}',
@@ -119,7 +124,7 @@ class NegativeSeaIceFeedback(object):
                 )
 
         # axes and labels
-        ax.set_ylim(-limit, limit)
+        ax.set_ylim(min_limit, max_limit)
         ax.set_ylabel('Feedback')
         ax.set_title('Negative sea ice feedback')
         _, xtick_names = plt.xticks(index, datasets)
@@ -262,7 +267,7 @@ class NegativeSeaIceFeedback(object):
                                   for i in range(order + 1)], axis=0)
         return residuals
 
-    def negative_seaice_feedback(self, volume, period, order=1):
+    def negative_seaice_feedback(self, alias, volume, period, order=1):
         """
         Function to estimate the negative ice-thickness ice growth feedback
         and its significance.
@@ -319,6 +324,28 @@ class NegativeSeaIceFeedback(object):
         #    compute volume production *after* the summer minimum
         vol_min = self.detrend(volume[imin[:-1]], order=order)
         dvol = self.detrend(volume[imax[1:]] - volume[imin[:-1]], order=order)
+
+        if self.cfg[n.WRITE_PLOTS]:
+            path = os.path.join(
+                self.cfg[n.PLOT_DIR],
+                f'volume_vs_volumediff_{alias}.{self.cfg[n.OUTPUT_FILE_TYPE]}'
+            )
+            plot_options = self.cfg.get('plot', {})
+            fig = plt.figure()
+            plt.scatter(
+                vol_min,
+                dvol,
+                plot_options.get('point_size', 8),
+                color=plot_options.get('point_color', 'black'),
+            )
+            ax = plt.gca()
+            ax.set_title(alias)
+            ax.set_ylabel('dV')
+            ax.set_xlabel('Volume')
+            plt.grid(True, 'both', 'both')
+            plt.tight_layout()
+            fig.savefig(path)
+            plt.close(fig)
 
         # 4. Compute diagnostics
         # If all Vmins are zero or all dVs are zero, return Nan
