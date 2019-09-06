@@ -18,7 +18,6 @@ jobs:
       - run:
           # Update/Create Conda environment and run tests
           command: |
-            . /opt/conda/etc/profile.d/conda.sh
             conda update -y conda
             conda env update
             conda activate esmvaltool
@@ -47,7 +46,6 @@ jobs:
           key: test-install-{{ .Branch }}
       - run:
           command: |
-            . /opt/conda/etc/profile.d/conda.sh
             set -x
             mkdir /logs
             # Install
@@ -89,8 +87,8 @@ jobs:
       - run:
           when: always
           command: |
-            /opt/conda/envs/esmvaltool/bin/pip install codacy-coverage
-            /opt/conda/envs/esmvaltool/bin/python-codacy-coverage -r test-reports/coverage.xml
+            pip install codacy-coverage
+            python-codacy-coverage -r test-reports/coverage.xml
 
   develop:
     # Test development installation
@@ -101,7 +99,6 @@ jobs:
       - checkout
       - run:
           command: |
-            . /opt/conda/etc/profile.d/conda.sh
             set -x
             mkdir /logs
             # Install
@@ -139,15 +136,13 @@ jobs:
           command: |
             mkdir /logs
             # Install
-            . /opt/conda/etc/profile.d/conda.sh
-            conda install -c conda-forge -y pip > /logs/install.txt 2>&1
-            /opt/conda/bin/pip install -r doc/sphinx/source/requirements.txt > /logs/install.txt 2>&1
-            /opt/conda/bin/pip install sphinx sphinx_rtd_theme >> /logs/install.txt 2>&1
+            pip install -r doc/sphinx/source/requirements.txt > /logs/install.txt 2>&1
+            pip install sphinx sphinx_rtd_theme >> /logs/install.txt 2>&1
             # Log versions
             dpkg -l > /logs/versions.txt
-            /opt/conda/bin/pip freeze > /logs/requirements.txt
+            pip freeze > /logs/requirements.txt
             # Test building documentation
-            MPLBACKEND=Agg /opt/conda/bin/python setup.py build_sphinx --warning-is-error
+            MPLBACKEND=Agg python setup.py build_sphinx --warning-is-error
       - save_cache:
           key: documentation-{{ .Branch }}
           paths:
@@ -164,7 +159,6 @@ jobs:
       - checkout
       - run:
           command: |
-            . /opt/conda/etc/profile.d/conda.sh
             set -x
             # Install prerequisites
             mkdir /logs
@@ -195,7 +189,6 @@ jobs:
     steps:
       - run:
           command: |
-            . /opt/conda/etc/profile.d/conda.sh
             set -x
             # Install prerequisites
             mkdir /logs
@@ -224,7 +217,6 @@ jobs:
       - checkout
       - run:
           command: |
-            . /opt/conda/etc/profile.d/conda.sh
             set -x
             mkdir /logs
             # Install
