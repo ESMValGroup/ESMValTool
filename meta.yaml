@@ -41,7 +41,7 @@ requirements:
     - python>=3.6
     - libunwind  #  specifically for Python3.7+
     - graphviz
-    - iris>=2.2.1
+    - iris
     # Normally installed via pip:
     - cartopy
     - cf-units
@@ -50,7 +50,7 @@ requirements:
     - esmpy
     - esmvalcore>=2.0.0b1,<2.1
     - jinja2
-    - matplotlib<3
+    - matplotlib
     - nc-time-axis
     - netCDF4
     - numpy
