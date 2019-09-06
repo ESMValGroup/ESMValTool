@@ -9,7 +9,7 @@ created in the form of output_dir/CMOR_DATE_TIME/TierTIER/DATASET.
 The user can specify a list of DATASETS that the CMOR reformatting
 can by run on by using -o (--obs-list-cmorize) command line argument.
 The CMOR reformatting scripts are to be found in:
-esmvaltool/cmor/cmorizers/obs
+esmvalcore.cmor/cmorizers/obs
 """
 import argparse
 import datetime
@@ -18,8 +18,8 @@ import logging
 import os
 import subprocess
 
-from esmvaltool._config import read_config_user_file
-from esmvaltool._task import write_ncl_settings
+from esmvalcore._config import read_config_user_file
+from esmvalcore._task import write_ncl_settings
 
 logger = logging.getLogger(__name__)
 
@@ -55,6 +55,9 @@ def _assemble_datasets(raw_obs, obs_list):
             for dataset_name in obs_list.split(','):
                 if os.path.isdir(os.path.join(raw_obs, tier, dataset_name)):
                     datasets[tier].append(dataset_name)
+                else:
+                    logger.warning("Could not find raw data %s in %s/%s",
+                                   dataset_name, raw_obs, tier)
 
     # otherwise go through the whole raw_obs dir
     else:
@@ -217,6 +220,9 @@ def _cmor_reformat(config, obs_list):
     run_dir = os.path.join(config['output_dir'], 'run')
     # datsets dictionary of Tier keys
     datasets = _assemble_datasets(raw_obs, obs_list)
+    if not datasets:
+        logger.warning("Check input: could not find required %s in %s",
+                       obs_list, raw_obs)
     logger.info("Processing datasets %s", datasets)
 
     # loop through tier/datasets to be cmorized

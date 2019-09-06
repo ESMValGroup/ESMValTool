@@ -3,7 +3,7 @@ import unittest
 from cf_units import Unit
 from iris.cube import Cube
 
-from esmvaltool.cmor._fixes.CMIP5.FIO_ESM import ch4, co2
+from esmvalcore.cmor._fixes.CMIP5.FIO_ESM import ch4, co2
 
 
 class TestCh4(unittest.TestCase):

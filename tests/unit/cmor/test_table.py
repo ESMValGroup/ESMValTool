@@ -2,7 +2,7 @@
 
 import unittest
 
-from esmvaltool.cmor.table import CoordinateInfo, VariableInfo
+from esmvalcore.cmor.table import CoordinateInfo, VariableInfo
 
 
 class TestVariableInfo(unittest.TestCase):

@@ -1,5 +1,5 @@
 """
-Integration tests for the :func:`esmvaltool.preprocessor.regrid.regrid`
+Integration tests for the :func:`esmvalcore.preprocessor.regrid.regrid`
 function.
 
 """
@@ -11,7 +11,7 @@ import numpy as np
 from numpy import ma
 
 import tests
-from esmvaltool.preprocessor import regrid
+from esmvalcore.preprocessor import regrid
 from tests.unit.preprocessor._regrid import _make_cube
 
 

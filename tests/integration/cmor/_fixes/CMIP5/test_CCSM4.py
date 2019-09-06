@@ -4,7 +4,7 @@ import numpy as np
 from iris.coords import DimCoord
 from iris.cube import Cube
 
-from esmvaltool.cmor._fixes.CMIP5.CCSM4 import rlut, rlutcs, so
+from esmvalcore.cmor._fixes.CMIP5.CCSM4 import rlut, rlutcs, so
 
 
 class TestsRlut(unittest.TestCase):

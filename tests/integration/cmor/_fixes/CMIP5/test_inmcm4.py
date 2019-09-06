@@ -8,7 +8,7 @@ import iris
 from cf_units import Unit
 from iris.cube import Cube
 
-from esmvaltool.cmor._fixes.CMIP5.inmcm4 import gpp, lai, nbp
+from esmvalcore.cmor._fixes.CMIP5.inmcm4 import gpp, lai, nbp
 
 
 class TestGpp(unittest.TestCase):

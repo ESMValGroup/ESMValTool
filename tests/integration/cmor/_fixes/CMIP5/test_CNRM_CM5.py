@@ -3,7 +3,7 @@ import unittest
 from cf_units import Unit
 from iris.cube import Cube
 
-from esmvaltool.cmor._fixes.CMIP5.CNRM_CM5 import msftmyz, msftmyzba
+from esmvalcore.cmor._fixes.CMIP5.CNRM_CM5 import msftmyz, msftmyzba
 
 
 class TestMsftmyz(unittest.TestCase):

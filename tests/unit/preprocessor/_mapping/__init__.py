@@ -1,1 +1,1 @@
-"""Unit tests for the :mod:`esmvaltool.preprocessor._mapping` module."""
+"""Unit tests for the :mod:`esmvalcore.preprocessor._mapping` module."""

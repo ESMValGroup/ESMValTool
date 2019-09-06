@@ -3,7 +3,7 @@ import unittest
 from cf_units import Unit
 from iris.cube import Cube
 
-from esmvaltool.cmor._fixes.CMIP5.MPI_ESM_LR import pctisccp
+from esmvalcore.cmor._fixes.CMIP5.MPI_ESM_LR import pctisccp
 
 
 class TestPctisccp2(unittest.TestCase):

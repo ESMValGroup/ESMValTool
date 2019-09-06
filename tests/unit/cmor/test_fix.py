@@ -4,7 +4,7 @@ import unittest
 
 import mock
 
-from esmvaltool.cmor.fix import Fix, fix_data, fix_file, fix_metadata
+from esmvalcore.cmor.fix import Fix, fix_data, fix_file, fix_metadata
 
 
 class TestFixFile(unittest.TestCase):
@@ -19,7 +19,7 @@ class TestFixFile(unittest.TestCase):
     def test_fix(self):
         """Check that the returned fix is applied"""
         with mock.patch(
-                'esmvaltool.cmor._fixes.fix.Fix.get_fixes',
+                'esmvalcore.cmor._fixes.fix.Fix.get_fixes',
                 return_value=[self.mock_fix]):
             file_returned = fix_file('filename', 'short_name', 'project',
                                      'model', 'output_dir')
@@ -29,7 +29,7 @@ class TestFixFile(unittest.TestCase):
     def test_nofix(self):
         """Check that the same file is returned if no fix is available"""
         with mock.patch(
-                'esmvaltool.cmor._fixes.fix.Fix.get_fixes', return_value=[]):
+                'esmvalcore.cmor._fixes.fix.Fix.get_fixes', return_value=[]):
             file_returned = fix_file('filename', 'short_name', 'project',
                                      'model', 'output_dir')
             self.assertEqual(file_returned, self.filename)
@@ -83,7 +83,7 @@ class TestFixMetadata(unittest.TestCase):
     def test_fix(self):
         """Check that the returned fix is applied."""
         with mock.patch(
-                'esmvaltool.cmor._fixes.fix.Fix.get_fixes',
+                'esmvalcore.cmor._fixes.fix.Fix.get_fixes',
                 return_value=[self.mock_fix]):
             cube_returned = fix_metadata([self.cube], 'short_name', 'project',
                                          'model')[0]
@@ -93,7 +93,7 @@ class TestFixMetadata(unittest.TestCase):
     def test_nofix(self):
         """Check that the same cube is returned if no fix is available."""
         with mock.patch(
-                'esmvaltool.cmor._fixes.fix.Fix.get_fixes', return_value=[]):
+                'esmvalcore.cmor._fixes.fix.Fix.get_fixes', return_value=[]):
             cube_returned = fix_metadata([self.cube], 'short_name', 'project',
                                          'model')[0]
             self.assertTrue(cube_returned is self.cube)
@@ -104,9 +104,9 @@ class TestFixMetadata(unittest.TestCase):
         checker = mock.Mock()
         checker.return_value = mock.Mock()
         with mock.patch(
-                'esmvaltool.cmor._fixes.fix.Fix.get_fixes', return_value=[]):
+                'esmvalcore.cmor._fixes.fix.Fix.get_fixes', return_value=[]):
             with mock.patch(
-                    'esmvaltool.cmor.fix._get_cmor_checker',
+                    'esmvalcore.cmor.fix._get_cmor_checker',
                     return_value=checker) as get_mock:
                 fix_metadata([self.cube], 'short_name', 'project', 'model',
                              'cmor_table', 'mip', 'frequency')
@@ -134,7 +134,7 @@ class TestFixData(unittest.TestCase):
     def test_fix(self):
         """Check that the returned fix is applied."""
         with mock.patch(
-                'esmvaltool.cmor._fixes.fix.Fix.get_fixes',
+                'esmvalcore.cmor._fixes.fix.Fix.get_fixes',
                 return_value=[self.mock_fix]):
             cube_returned = fix_data(self.cube, 'short_name', 'project',
                                      'model')
@@ -144,7 +144,7 @@ class TestFixData(unittest.TestCase):
     def test_nofix(self):
         """Check that the same cube is returned if no fix is available."""
         with mock.patch(
-                'esmvaltool.cmor._fixes.fix.Fix.get_fixes', return_value=[]):
+                'esmvalcore.cmor._fixes.fix.Fix.get_fixes', return_value=[]):
             cube_returned = fix_data(self.cube, 'short_name', 'project',
                                      'model')
             self.assertTrue(cube_returned is self.cube)
@@ -155,9 +155,9 @@ class TestFixData(unittest.TestCase):
         checker = mock.Mock()
         checker.return_value = mock.Mock()
         with mock.patch(
-                'esmvaltool.cmor._fixes.fix.Fix.get_fixes', return_value=[]):
+                'esmvalcore.cmor._fixes.fix.Fix.get_fixes', return_value=[]):
             with mock.patch(
-                    'esmvaltool.cmor.fix._get_cmor_checker',
+                    'esmvalcore.cmor.fix._get_cmor_checker',
                     return_value=checker) as get_mock:
                 fix_data(self.cube, 'short_name', 'project', 'model',
                          'cmor_table', 'mip', 'frequency')

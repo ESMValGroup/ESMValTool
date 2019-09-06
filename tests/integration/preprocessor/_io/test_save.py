@@ -1,4 +1,4 @@
-"""Integration tests for :func:`esmvaltool.preprocessor.save`"""
+"""Integration tests for :func:`esmvalcore.preprocessor.save`"""
 
 import os
 import tempfile
@@ -10,11 +10,11 @@ import numpy as np
 from iris.coords import DimCoord
 from iris.cube import Cube
 
-from esmvaltool.preprocessor import save
+from esmvalcore.preprocessor import save
 
 
 class TestSave(unittest.TestCase):
-    """Tests for :func:`esmvaltool.preprocessor.save`"""
+    """Tests for :func:`esmvalcore.preprocessor.save`"""
 
     def setUp(self):
         self.temp_files = []

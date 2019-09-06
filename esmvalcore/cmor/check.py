@@ -70,7 +70,8 @@ class CMORCheck():
         self.automatic_fixes = automatic_fixes
 
     def check_metadata(self, logger=None):
-        """Check the cube metadata.
+        """
+        Check the cube metadata.
 
         Perform all the tests that do not require to have the data in memory.
 

@@ -1,11 +1,11 @@
-"""Unit tests for the esmvaltool.preprocessor._mapping module."""
+"""Unit tests for the esmvalcore.preprocessor._mapping module."""
 import cf_units
 import iris
 import mock
 import numpy as np
 
 import tests
-from esmvaltool.preprocessor._mapping import (get_empty_data, map_slices,
+from esmvalcore.preprocessor._mapping import (get_empty_data, map_slices,
                                               ref_to_dims_index)
 
 
@@ -232,7 +232,7 @@ class Test(tests.Test):
             shape=(2, 2),
         )
 
-    @mock.patch('esmvaltool.preprocessor._mapping.get_empty_data')
+    @mock.patch('esmvalcore.preprocessor._mapping.get_empty_data')
     @mock.patch('iris.cube.Cube')
     def test_map_slices(self, mock_cube, mock_get_empty_data):
         """Test map_slices."""

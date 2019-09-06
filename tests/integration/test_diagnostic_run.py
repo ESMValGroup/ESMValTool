@@ -7,7 +7,7 @@ import pytest
 import yaml
 from six import text_type
 
-from esmvaltool._main import run
+from esmvalcore._main import run
 
 
 def write_config_user_file(dirname):

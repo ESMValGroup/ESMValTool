@@ -17,6 +17,18 @@ logger = logging.getLogger(__name__)
 CFG = {}
 CFG_USER = {}
 
+def find_diagnostics():
+    """Try to find installed diagnostic scripts."""
+    try:
+        import esmvaltool
+    except ImportError:
+        return ''
+    else:
+        return os.path.dirname(esmvaltool.__file__)
+
+
+DIAGNOSTICS_PATH = find_diagnostics()
+
 
 def use_legacy_iris():
     """Return True if legacy iris is used."""
@@ -188,14 +200,19 @@ def replace_mip_fx(fx_file):
 
 
 TAGS_CONFIG_FILE = os.path.join(
-    os.path.dirname(__file__), 'config-references.yml')
+    DIAGNOSTICS_PATH, 'config-references.yml')
 
 
 def _load_tags(filename=TAGS_CONFIG_FILE):
     """Load the refence tags used for provenance recording."""
-    logger.debug("Loading tags from %s", filename)
-    with open(filename) as file:
-        return yaml.safe_load(file)
+    if os.path.exists(filename):
+        logger.debug("Loading tags from %s", filename)
+        with open(filename) as file:
+            return yaml.safe_load(file)
+    else:
+        # This happens if no diagnostics are installed
+        logger.debug("No tags loaded, file %s not present", filename)
+        return {}
 
 
 TAGS = _load_tags()

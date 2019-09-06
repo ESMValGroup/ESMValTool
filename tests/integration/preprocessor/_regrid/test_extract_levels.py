@@ -1,5 +1,5 @@
 """
-Integration tests for the :func:`esmvaltool.preprocessor.regrid.extract_levels`
+Integration tests for the :func:`esmvalcore.preprocessor.regrid.extract_levels`
 function.
 
 """
@@ -10,7 +10,7 @@ import iris
 import numpy as np
 
 import tests
-from esmvaltool.preprocessor._regrid import _MDI, extract_levels
+from esmvalcore.preprocessor._regrid import _MDI, extract_levels
 from tests.unit.preprocessor._regrid import _make_cube, _make_vcoord
 
 

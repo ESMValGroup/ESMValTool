@@ -1,4 +1,4 @@
-:: _preprocessor:
+.. _preprocessor:
 
 ************
 Preprocessor
@@ -50,7 +50,7 @@ These start and end points are set using the datasets native calendar.
 All six arguments should be given as integers - the named month string
 will not be accepted.
 
-See also :func:`esmvaltool.preprocessor.extract_time`.
+See also :func:`esmvalcore.preprocessor.extract_time`.
 
 
 2. extract_season
@@ -68,7 +68,7 @@ monthly datapoints per year.
 If you want the seasonal average, then this function needs to be combined with
 the seasonal_mean function, below.
 
-See also :func:`esmvaltool.preprocessor.extract_season`.
+See also :func:`esmvalcore.preprocessor.extract_season`.
 
 
 3. extract_month
@@ -78,7 +78,7 @@ The function extracts the times that occur within a specific month.
 This function only has one argument: `month`. This value should be an integer
 between 1 and 12 as the named month string will not be accepted.
 
-See also :func:`esmvaltool.preprocessor.extract_month`.
+See also :func:`esmvalcore.preprocessor.extract_month`.
 
 
 4. time_average
@@ -87,7 +87,7 @@ See also :func:`esmvaltool.preprocessor.extract_month`.
 This functions takes the weighted average over the time dimension. This
 function requires no arguments and removes the time dimension of the cube.
 
-See also :func:`esmvaltool.preprocessor.time_average`.
+See also :func:`esmvalcore.preprocessor.time_average`.
 
 
 5. seasonal_mean
@@ -101,7 +101,7 @@ the first DJF field will only contain data from January and February.
 We recommend using the extract_time to start the dataset from the following
 December and remove such biased initial datapoints.
 
-See also :func:`esmvaltool.preprocessor.seasonal_mean`.
+See also :func:`esmvalcore.preprocessor.seasonal_mean`.
 
 
 6. annual_mean
@@ -111,7 +111,7 @@ This function produces an annual or a decadal mean. The only argument is the
 decadal boolean switch. When this switch is set to true, this function
 will output the decadal averages.
 
-See also :func:`esmvaltool.preprocessor.annual_mean`.
+See also :func:`esmvalcore.preprocessor.annual_mean`.
 
 
 7. regrid_time
@@ -131,7 +131,7 @@ The _area.py module contains the following preprocessor functions:
 
 * extract_region: Extract a region from a cube based on lat/lon corners.
 * zonal_means: Calculates the zonal or meridional means.
-* average_region: Calculates the average value over a region.
+* area_statistics: Calculates the average value over a region.
 * extract_named_regions: Extract a specific region from in the region cooordinate.
 
 
@@ -149,7 +149,7 @@ arguments:
 
 Note that this function can only be used to extract a rectangular region.
 
-See also :func:`esmvaltool.preprocessor.extract_region`.
+See also :func:`esmvalcore.preprocessor.extract_region`.
 
 
 2. zonal_means
@@ -163,21 +163,19 @@ This function takes two arguments:
 * coordinate: Which direction to apply the operation: latitude or longitude
 * mean_type: Which operation to apply: mean, std_dev, variance, median, min or max
 
-See also :func:`esmvaltool.preprocessor.zonal_means`.
+See also :func:`esmvalcore.preprocessor.zonal_means`.
 
 
-3. average_region
------------------
+3. area_statistics
+------------------
 
 This function calculates the average value over a region - weighted by the
 cell areas of the region.
 
-This function takes three arguments:
-coord1: the name of the coordinate in the first direction.
-coord2: the name of the coordinate in the second dimension.
-operator: the name of the operation to apply (default: mean).
+This function takes the argument,
+operator: the name of the operation to apply.
 
-While this function is named `average_region`, it can be used to apply several
+This function can be used to apply several
 different operations in the horizonal plane: mean, standard deviation, median
 variance, minimum and maximum.
 
@@ -185,7 +183,7 @@ Note that this function is applied over the entire dataset. If only a specific
 region, depth layer or time period is required, then those regions need to be
 removed using other preprocessor operations in advance.
 
-See also :func:`esmvaltool.preprocessor.average_region`.
+See also :func:`esmvalcore.preprocessor.area_statistics`.
 
 
 4. extract_named_regions
@@ -197,7 +195,7 @@ of strings of named regions. Note that the dataset must have a `region`
 cooordinate which includes a list of strings as values. This function then
 matches the named regions against the requested string.
 
-See also :func:`esmvaltool.preprocessor.extract_named_regions`.
+See also :func:`esmvalcore.preprocessor.extract_named_regions`.
 
 
 Volume manipulation
@@ -205,7 +203,7 @@ Volume manipulation
 The _volume.py module contains the following preprocessor functions:
 
 * extract_volume: Extract a specific depth range from a cube.
-* average_volume: Calculate the volume-weighted average.
+* volume_statistics: Calculate the volume-weighted average.
 * depth_integration: Integrate over the depth dimension.
 * extract_transect: Extract data along a line of constant latitude or longitude.
 * extract_trajectory: Extract data along a specified trajectory.
@@ -222,22 +220,22 @@ Note that this requires the requested z-coordinate range to be the
 same sign as the iris cube. ie, if the cube has z-coordinate as
 negative, then z_min and z_max need to be negative numbers.
 
-See also :func:`esmvaltool.preprocessor.extract_volume`.
+See also :func:`esmvalcore.preprocessor.extract_volume`.
 
 
-2. average_volume
------------------
+2. volume_statistics
+--------------------
 
 This function calculates the volume-weighted average across three dimensions,
 but maintains the time dimension. The following arguments are required:
 
-coord1: the name of the coordinate in the first direction.
-coord2: the name of the coordinate in the second dimension.
+This function takes the argument: operator, which defines the
+operation to apply over the volume.
 
 No depth coordinate is required as this is determined by iris. This
 function works best when the fx_files provide the cell volume.
 
-See also :func:`esmvaltool.preprocessor.average_volume`.
+See also :func:`esmvalcore.preprocessor.volume_statistics`.
 
 
 3. depth_integration
@@ -247,7 +245,7 @@ This function integrate over the depth dimension. This function does a
 weighted sum along the z-coordinate, and removes the z direction of the output
 cube. This preprocessor takes no arguments.
 
-See also :func:`esmvaltool.preprocessor.depth_integration`.
+See also :func:`esmvalcore.preprocessor.depth_integration`.
 
 
 4. extract_transect
@@ -263,7 +261,7 @@ cube along the equator. On the other hand, if we set latitude to 0 and then
 set longitude to `[40., 100.]` this will produce a transect of the equator
 in the indian ocean.
 
-See also :func:`esmvaltool.preprocessor.extract_transect`.
+See also :func:`esmvalcore.preprocessor.extract_transect`.
 
 
 5. extract_trajectory
@@ -283,7 +281,7 @@ of the cube to those points, and `number_points` is not needed.
 Note that this function uses the expensive interpolate method, but it may be
 necceasiry for irregular grids.
 
-See also :func:`esmvaltool.preprocessor.extract_trajectory`.
+See also :func:`esmvalcore.preprocessor.extract_trajectory`.
 
 
 CMORization and dataset-specific fixes
@@ -294,14 +292,20 @@ Vertical interpolation
 ======================
 Documentation of _regrid.py (part 1)
 
-Land/Sea/Ice Masking
-====================
+Masking
+=======
 Documentation of _mask.py (part 1)
+
+1. Introduction to masking
+--------------------------
 
 Certain metrics and diagnostics need to be computed and performed on restricted regions of the Globe; ESMValTool supports subsetting the input data on land mass, oceans and seas, ice. This is achived by masking the model data and keeping only the values associated with grid points that correspond to e.g. land mass
 or oceans and seas; masking is done either by using standard mask files that have the same grid resolution as the model data (these files are usually produced
 at the same time with the model data and are called fx files) or, in the absence of these files, by using Natural Earth masks. Natural Earth masks, even if they are not model-specific, represent a good approximation since their grid resolution is almost always much higher than the model data, and they are constantly updated with changing
 geographical features.
+
+2. Land-sea masking
+-------------------
 
 In ESMValTool v2 land-seas-ice masking can be done in two places: in the preprocessor, to apply a mask on the data before any subsequent preprocessing step, and before
 running the diagnostic, or in the disgnostic phase. We present both these implementations below.
@@ -321,6 +325,9 @@ kept in the data after applying the mask; conversely, it will retrieve the `fx: 
 type of files; observational data is missing them altogether), then the tool attempts to mask using Natural Earth mask files (that are vectorized rasters).
 Note that the resolutions for the Natural Earth masks are much higher than any usual CMIP model: 10m for land and 50m for ocean masks.
 
+3. Ice masking
+--------------
+
 Note that for masking out ice the preprocessor is using a different function, this so that both land and sea or ice can be masked out without
 losing generality. To mask ice out one needs to add the preprocessing step much as above:
 
@@ -333,6 +340,9 @@ losing generality. To mask ice out one needs to add the preprocessing step much 
 
 To keep only the ice, one needs to mask out landsea, so use that as value for mask_out. As in the case of mask_landsea, the tool will automatically
 retrieve the `fx: sftgif` file corresponding the the used variable and extract the ice mask from it.
+
+4. mask files
+-------------
 
 At the core of the land/sea/ice masking in the preprocessor are the mask files (whether it be fx type or Natural Earth type of files); these files (bar Natural Earth)
 can be retrived and used in the diagnostic phase as well or solely. By specifying the `fx_files:` key in the variable in diagnostic in the recipe, and populating it
@@ -348,7 +358,7 @@ with a list of desired files e.g.:
 Such a recipe will automatically retrieve all the `[sftlf, sftof, sftgif, areacello, areacella]`-type fx files for each of the variables that are needed for
 and then, in the diagnostic phase, these mask files will be available for the developer to use them as they need to. They `fx_files` attribute of the big `variable`
 nested dictionary that gets passed to the diagnostic is, in turn, a dictionary on its own, and members of it can be accessed in the diagnostic through a simple loop over
-the 'config' diagnostic variable items e.g.:
+the `config` diagnostic variable items e.g.:
 
 .. code-block:: bash
 
@@ -356,6 +366,42 @@ the 'config' diagnostic variable items e.g.:
         sftlf_file = attributes['fx_files']['sftlf']
         areacello_file = attributes['fx_files']['areacello']
 
+5. Missing values masks
+-----------------------
+
+Missing (masked) values can be a nuisance especially when dealing with multimodel ensembles and having to compute
+multimodel statistics; different numbers of missing data from dataset to datest may introduce biases and artifically
+assign more weight to the datasets that have less missing data. This is handled in ESMValTool via the missing values
+masks: two types of such masks are available: one for the multimodel case and another for the single model case.
+
+The multimodel missing values mask (mask_fillvalues) is a preprocessor step that usually comes after all the single-model
+steps (regridding, area selection etc) have been performed; in a nutshell, it combines missing values masks from individual
+models into a multimodel missing values mask; the individual model masks are built according to common criteria:
+the user chooses a time window in which missing data points are counted, and if the number of missing data points relative
+to the number of total data points in a window is less than a chosen fractional theshold, the window is discarded i.e.
+all the points in the window are masked (set to missing).
+
+.. code-block:: bash
+
+    preprocessors:
+      missing_values_preprocessor:
+        mask_fillvalues:
+          threshold_fraction: 0.95
+          min_value: 19.0
+          time_window: 10.0
+
+In the example above, the fractional threshold for missing data vs. total data is set to 95% and the time window is set to
+10.0 (units of the time coordinate units). Optionally, a minimum value threshold can be applied, in this case it is set
+to 19.0 (in units of the variable units).
+
+A similar preprocessor step exists for the single-dataset: mask_window_threshold (with the same arguments as mask_fillvalues).
+
+6. Min, max and interval masking
+--------------------------------
+
+Thresholding on minimum and maximum accepted data values can also be performed: masks are constructed based on the
+results of thresholding; inside and outside interval thresholding and masking can also be performed. These functions
+are mask_above_threshold, mask_below_threshold, mask_inside_range, and mask_outside_range.
 
 Horizontal regridding
 =====================

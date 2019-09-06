@@ -7,4 +7,3 @@ Getting started
 .. include:: inputdata.inc
 .. include:: running.inc
 .. include:: outputdata.inc
-

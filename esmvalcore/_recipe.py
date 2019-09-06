@@ -413,7 +413,7 @@ def _update_fx_settings(settings, variable, config_user):
             settings['mask_landseaice']['fx_files'].append(
                 fx_files_dict['sftgif'])
 
-    for step in ('average_region', 'average_volume'):
+    for step in ('area_statistics', 'volume_statistics'):
         if settings.get(step, {}).get('fx_files'):
             settings[step]['fx_files'] = get_input_fx_filelist(
                 variable=variable,

@@ -1,4 +1,4 @@
-:: _inputdata:
+.. _inputdata:
 
 **********
 Input data

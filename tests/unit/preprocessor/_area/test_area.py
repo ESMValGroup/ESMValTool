@@ -1,4 +1,4 @@
-"""Unit tests for the :func:`esmvaltool.preprocessor._area` module."""
+"""Unit tests for the :func:`esmvalcore.preprocessor._area` module."""
 
 import unittest
 
@@ -7,12 +7,12 @@ import numpy as np
 from cf_units import Unit
 
 import tests
-from esmvaltool.preprocessor._area import (
-    average_region, extract_named_regions, extract_region)
+from esmvalcore.preprocessor._area import (
+    area_statistics, extract_named_regions, extract_region)
 
 
 class Test(tests.Test):
-    """Test class for the :func:`esmvaltool.preprocessor._area_pp` module."""
+    """Test class for the :func:`esmvalcore.preprocessor._area_pp` module."""
 
     def setUp(self):
         """Prepare tests."""
@@ -50,50 +50,45 @@ class Test(tests.Test):
         self.negative_grid = iris.cube.Cube(
             ndata, dim_coords_and_dims=coords_spec)
 
-    def test_average_region_mean(self):
+    def test_area_statistics_mean(self):
         """Test for area average of a 2D field."""
-        result = average_region(self.grid, 'latitude', 'longitude')
+        result = area_statistics(self.grid, 'mean')
         expected = np.array([1.])
         self.assertArrayEqual(result.data, expected)
 
-    def test_average_region_min(self):
+    def test_area_statistics_min(self):
         """Test for area average of a 2D field."""
-        result = average_region(self.grid, 'latitude', 'longitude',
-                                operator='min')
+        result = area_statistics(self.grid, 'min')
         expected = np.array([1.])
         self.assertArrayEqual(result.data, expected)
 
-    def test_average_region_max(self):
+    def test_area_statistics_max(self):
         """Test for area average of a 2D field."""
-        result = average_region(self.grid, 'latitude', 'longitude',
-                                operator='max')
+        result = area_statistics(self.grid, 'max')
         expected = np.array([1.])
         self.assertArrayEqual(result.data, expected)
 
-    def test_average_region_median(self):
+    def test_area_statistics_median(self):
         """Test for area average of a 2D field."""
-        result = average_region(self.grid, 'latitude', 'longitude',
-                                operator='median')
+        result = area_statistics(self.grid, 'median')
         expected = np.array([1.])
         self.assertArrayEqual(result.data, expected)
 
-    def test_average_region_std_dev(self):
+    def test_area_statistics_std_dev(self):
         """Test for area average of a 2D field."""
-        result = average_region(self.grid, 'latitude', 'longitude',
-                                operator='std_dev')
+        result = area_statistics(self.grid, 'std_dev')
         expected = np.array([0.])
         self.assertArrayEqual(result.data, expected)
 
-    def test_average_region_variance(self):
+    def test_area_statistics_variance(self):
         """Test for area average of a 2D field."""
-        result = average_region(self.grid, 'latitude', 'longitude',
-                                operator='variance')
+        result = area_statistics(self.grid, 'variance')
         expected = np.array([0.])
         self.assertArrayEqual(result.data, expected)
 
-    def test_average_region_neg_lon(self):
+    def test_area_statistics_neg_lon(self):
         """Test for area average of a 2D field."""
-        result = average_region(self.negative_grid, 'latitude', 'longitude')
+        result = area_statistics(self.negative_grid, 'mean')
         expected = np.array([1.])
         self.assertArrayEqual(result.data, expected)
 
