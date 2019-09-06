@@ -3,12 +3,14 @@ name: esmvaltool
 channels:
   - conda-forge
   - esmvalgroup
+  - r
 
 dependencies:
   # Python packages that cannot be installed from PyPI:
   - esmpy
   - esmvalcore>=2.0.0b0,<2.1
   - iris>=2.2
+  - dask<2
   - matplotlib<2.2.3  # Can be installed from PyPI, but is a dependency of iris and should be pinned.
   - python-stratify
   - xarray>=0.12.0  # Can be installed from PyPI, but here to get a consistent set of depencies with iris.
@@ -17,7 +19,8 @@ dependencies:
   - cdo
   - imagemagick
   - nco
-
+  - statsmodels
+  - rpy2
 
   # Multi language support:
   - python>=3.6
