@@ -91,16 +91,3 @@ diagnostics:
           point_color: black
           point_size: 10
           show_values: True
-
-
-  # SeaIceEdge:
-  #   description: Plots the sea-ice edge
-  #   variables:
-  #     sic:
-  #       mip: OImon
-  #   scripts:
-  #     sea_ice_edge:
-  #       script: seaice_edge/sea_ice_edge.r
-  #       concentration_treshold: 15
-  #       plot_all_years: True
-  #       plot_climatology: True
