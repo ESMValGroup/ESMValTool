@@ -1,6 +1,6 @@
 documentation:
   description: |
-    This recipeis related to the negative sea-ice growth–thickness feedback
+    This recipe is related to the negative sea-ice growth–thickness feedback
     In this recipe, one process-based diagnostic named the
     Ice Formation Efficiency (IFE) is computed based on monthly mean
     sea-ice volume estimated north of 80°N. The choice of this domain

@@ -65,10 +65,10 @@ class NegativeSeaIceFeedback(object):
                 except ValueError:
                     try:
                         mask = np.broadcast_to(np.expand_dims(mask, -1),
-                                            cellarea.shape)
+                                               cellarea.shape)
                     except ValueError:
                         mask = np.broadcast_to(np.expand_dims(mask, 0),
-                                            cellarea.shape)
+                                               cellarea.shape)
                 volume = self.compute_volume(sit, cellarea, mask=mask)
                 del cellarea, sit
 
@@ -78,7 +78,7 @@ class NegativeSeaIceFeedback(object):
                 del volume
                 logger.info("Negative feedback: %10.4f", neg_feedback)
                 logger.info("P-Value:           %10.4f", stats[1])
-            except Exception as ex: #  noqa
+            except Exception as ex:  # noqa
                 logger.error('Failed to compute for %s', dataset_info[n.ALIAS])
                 logger.exception(ex)
             else:
