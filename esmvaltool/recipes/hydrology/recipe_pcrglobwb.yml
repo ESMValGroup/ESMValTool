@@ -16,7 +16,7 @@ documentation:
     Straatsma, M. W., Vannametee, E., Wisser, D., and Bierkens, M. F. P.: PCR-GLOBWB 2: a 5 arcmin global hydrological
     and water resources model, Geosci. Model Dev., 11, 2429-2453, https://doi.org/10.5194/gmd-11-2429-2018, 2018.
 
-  authors: ['aert_je', 'ande_bo', 'dros_ni']
+  authors: ['aerts_jerom', 'andela_bouwe', 'drost_niels']
   projects: ['ewatercycle']
   references: ['acknow_project', 'sutanudjaja2018gmd']
 

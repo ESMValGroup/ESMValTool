@@ -18,8 +18,8 @@ def get_provenance_record(ancestor_file):
         'caption': "Forcings for the PCR-GLOBWB hydrological model.",
         'domains': ['global'],
         'authors': [
-            'aert_je',
-            'ande_bo',
+            'aerts_jerom',
+            'andela_bouwe',
         ],
         'projects': [
             'ewatercycle',

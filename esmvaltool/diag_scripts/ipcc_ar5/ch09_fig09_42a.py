@@ -55,7 +55,7 @@ def get_provenance_record(project, ancestor_files):
         'statistics': ['mean'],
         'domains': ['global'],
         'plot_types': ['scatter'],
-        'authors': ['schl_ma'],
+        'authors': ['schlund_manuel'],
         'references': ['flato13ipcc'],
         'realms': ['atmos'],
         'themes': ['phys'],
