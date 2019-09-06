@@ -8,7 +8,7 @@ from esmvaltool.cmor._fixes.CMIP5.CanESM2 import fgco2
 
 class TestCanESM2Fgco2(unittest.TestCase):
     def setUp(self):
-        self.cube = Cube([1], var_name='fgco2', units='J')
+        self.cube = Cube([1.0], var_name='fgco2', units='J')
         self.fix = fgco2()
 
     def test_fix_data(self):

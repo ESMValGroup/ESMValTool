@@ -49,18 +49,8 @@ begin
   ; Years
   YEARS = (/2000, 2005, 2010/)
 
-  ; Version
-  VERSION = "L4-LCCS-Map-300m-P5Y-aggregated-0.500000Deg"
-
-  ; MIP
-  MIP = "Lmon"
-
-  ; CMOR table
-  CMOR_TABLE = \
-    getenv("esmvaltool_root") + "/cmor/tables/cmip5/Tables/CMIP5_Lmon"
-
   ; Variable names
-  VARIABLES = \
+  VAR = \
     (/"baresoilFrac", "cropFrac", "grassFrac", "shrubFrac", "treeFrac"/)
 
   ; Corresponding aggregation classes in the raw data
@@ -74,6 +64,28 @@ begin
                 "Tree_Broadleaf_Evergreen",  \
                 "Tree_Needleleaf_Deciduous", \
                 "Tree_Needleleaf_Evergreen"/)/]
+
+  ; MIPs
+  MIP = (/"Lmon", "Lmon", "Lmon", "Lmon", "Lmon"/)
+
+  ; Frequency
+  FREQ = (/"mon", "mon", "mon", "mon", "mon"/)
+
+  ; CMOR table
+  CMOR_TABLE = \
+    getenv("esmvaltool_root") + "/cmor/tables/cmip5/Tables/CMIP5_Lmon"
+
+  ; Type
+  TYPE = "sat"
+
+  ; Version
+  VERSION = "L4-LCCS-Map-300m-P5Y-aggregated-0.500000Deg"
+
+  ; Global attributes
+  SOURCE = "ftp://anon-ftp.ceda.ac.uk/neodc/esacci/land_cover/data/"
+  REF = "Defourny et al.. ESA Land Cover Climate Change Initiative " + \
+    "(ESA LC_cci) data, 2015"
+  COMMENT = ""
 
 end
 
@@ -91,9 +103,9 @@ begin
     YEAR2 = YEARS(yy) + 2
     time = create_timec(YEAR1, YEAR2)
 
-    do vv = 0, dimsizes(VARIABLES) - 1
+    do vv = 0, dimsizes(VAR) - 1
 
-      log_info("Processing variable " + VARIABLES(vv))
+      log_info("Processing " + VAR(vv) + " (" + MIP(vv) + ")")
 
       ; Set classes to be added up
       class = CLASSES[vv]
@@ -151,56 +163,43 @@ begin
       output = output * 100
       output@units = "%"
 
-      ; Format time coordinate
-      ctime = time_attrib(output&time, YEAR1, YEAR2, "M")
-      delete(output&time)
-      output&time = ctime
-      delete(ctime)
-
-      ; Format latitude coordinate
-      output = output(:, ::-1, :)
-      clat = lat_attrib(output&lat)
-      delete(output&lat)
-      output&lat = clat
-      delete(clat)
-
-      ; Format longitude coordinate
-      output = lonFlip(output)
-      clon = lon_attrib(output&lon)
-      delete(output&lon)
-      output&lon = clon
-      delete(clon)
+      ; Format coordinates
+      output!0 = "time"
+      output!1 = "lat"
+      output!2 = "lon"
+      format_coords(output, YEAR1 + "0101", YEAR2 + "1231", FREQ(vv))
 
       ; Set variable attributes
-      tmp = var_attrib(output, VARIABLES(vv), CMOR_TABLE)
+      tmp = format_variable(output, VAR(vv), CMOR_TABLE)
       delete(output)
       output = tmp
       delete(tmp)
 
+      ; Calculate coordinate bounds
+      bounds = guess_coord_bounds(output, FREQ(vv))
+
+      ; Set global attributes
+      gAtt = set_global_atts(OBSNAME, TIER, SOURCE, REF, COMMENT)
+
+      ; Output file
+      DATESTR = YEAR1 + "01-" + YEAR2 + "12"
+      fout = output_dir_path + \
+        str_join((/"OBS", OBSNAME, TYPE, VERSION, \
+                   MIP(vv), VAR(vv), DATESTR/), "_") + ".nc"
+
       ; Special case for baresoilFrac: add auxiliary coordinate
-      if (VARIABLES(vv).eq."baresoilFrac") then
+      if (VAR(vv).eq."baresoilFrac") then
         output@coordinates = "type"
       end if
 
-      ; Set global attributes
-      gAtt = set_global_atts( \
-        OBSNAME, TIER, \
-        "ftp://anon-ftp.ceda.ac.uk/neodc/esacci/land_cover/data/", \
-        "Defourny et al.. ESA Land Cover " + \
-        "Climate Change Initiative (ESA LC_cci) data, 2015", "")
-
-      ; Outfile
-      fout = output_dir_path + \
-        "OBS_" + OBSNAME + "_sat_" + VERSION + "_" + MIP + "_" + \
-        VARIABLES(vv) + "_" + YEAR1 + "01-" + YEAR2 + "12.nc"
-
       ; Write variable
-      write_nc(fout, VARIABLES(vv), output, gAtt)
+      write_nc(fout, VAR(vv), output, bounds, gAtt)
       delete(gAtt)
       delete(output)
+      delete(bounds)
 
       ; Special case for baresoilFrac: add auxiliary coordinate
-      if (VARIABLES(vv).eq."baresoilFrac") then
+      if (VAR(vv).eq."baresoilFrac") then
         type = tochar("bare_ground")
         type!0 = "strlen"
         type@long_name = "surface type"

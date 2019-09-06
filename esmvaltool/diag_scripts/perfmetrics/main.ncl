@@ -6,8 +6,8 @@
 ;
 ; Description
 ;    Calculates and (optionally) plots annual/seasonal cycles, zonal means,
-;    lat-lon fields and time-lat-lon fields from input T3M or T2Ms data.
-;    The calculated fields can be also plotted as difference w.r.t. a given
+;    lat-lon fields and time-lat-lon fields from input 2D/3D monthly data.
+;    The calculated fields can be plotted as difference w.r.t. a given
 ;    reference dataset. It also calculates grading and taylor metrics.
 ;    Input data have to be regridded to a common grid in the preprocessor.
 ;
@@ -29,7 +29,6 @@
 ;                                       (default: False)
 ;    projection: map projection for lat-lon plots (default:
 ;                CylindricalEquidistant)
-;    draw_plots: draw plots (default: True)
 ;    plot_diff: draw difference plots (default: False)
 ;    calc_grading: calculate grading (default: False)
 ;    stippling: use stippling to mark stat. significant differences (default:
@@ -54,6 +53,8 @@
 ; Caveats
 ;
 ; Modification history
+;    20190405-A_righ_ma: added provenance logging
+;    20190315-A_hass_bg: extended to smpi metric
 ;    20180503-A_righ_ma: completely rewritten and modularized
 ;    20171215-A_righ_ma: merged with perfmetrics_grading and
 ;                        permetrics_taylor.ncl
@@ -95,15 +96,12 @@ load "$diag_scripts/shared/scaling.ncl"
 
 load "$diag_scripts/shared/plot/style.ncl"
 
-load "$diag_scripts/shared/meta_data.ncl"
-
 begin
 
   enter_msg(DIAG_SCRIPT, "")
 
   ; Get variables and datasets
   var0 = variable_info[0]@short_name
-  field0 = variable_info[0]@field
   info_items = select_metadata_by_name(input_file_info, var0)
   nDatasets = ListCount(info_items)
 
@@ -116,7 +114,8 @@ begin
   ; Store required attributes
   ptype = diag_script_info@plot_type
 
-  if (all(ptype.ne.(/"cycle", "zonal", "latlon", "cycle_latlon"/))) then
+  if (all(ptype.ne. \
+          (/"cycle", "zonal", "latlon", "cycle_latlon", "cycle_zonal"/))) then
     error_msg("f", DIAG_SCRIPT, "", "plot_type " + ptype + " is not a " + \
               "supported plot_type in this diagnostic")
   end if
@@ -128,27 +127,13 @@ begin
   end if
 
   if ((ptype.eq."zonal" .or. ptype.eq."latlon") .and. \
-      diag_script_info@region.ne."Global") then
+      diag_script_info@region.ne."global") then
     error_msg("f", DIAG_SCRIPT, "", "plot_type " + ptype + \
-              " implemented only for region='Global'")
-  end if
-
-  ; Check valid field
-  if ((ptype.eq."zonal" .and. \
-      all(field0.ne.(/"T3M", "T2Mz"/))) .or. \
-      (ptype.eq."cycle" .and. \
-      all(field0.ne.(/"T3M", "T2Ms", "T1M", "T0Ms"/))) .or. \
-      (ptype.eq."latlon" .and. \
-      all(field0.ne.(/"T3M", "T2Ms"/))) .or. \
-      (ptype.eq."cycle_latlon" .and. \
-      all(field0.ne.(/"T3M", "T2Ms"/)))) then
-    error_msg("f", DIAG_SCRIPT, "", "input field " + field0 + \
-              " is not compatible with plot_type " + ptype)
+              " implemented only for region 'global'")
   end if
 
   ; Set default values for non-required diag_script_info attributes
   set_default_att(diag_script_info, "projection", "CylindricalEquidistant")
-  set_default_att(diag_script_info, "draw_plots", True)
   set_default_att(diag_script_info, "plot_diff", False)
   set_default_att(diag_script_info, "calc_grading", False)
   set_default_att(diag_script_info, "stippling", False)
@@ -180,6 +165,9 @@ begin
   ; Set dataset names
   datasetnames = metadata_att_as_array(info_items, "dataset")
 
+  ; Save list of preproc files for provenance in collect.ncl
+  preproc_files = metadata_att_as_array(info_items, "filename")
+
   ; Check for reference dataset definition
   if (variable_info[0]@reference_dataset.eq."None") then
     error_msg("f", DIAG_SCRIPT, "", "no reference dataset is specified")
@@ -198,7 +186,7 @@ begin
   end if
 
   ; Create output plot directory
-  if (diag_script_info@draw_plots) then
+  if (config_user_info@write_plots) then
     plot_dir = config_user_info@plot_dir
     system("mkdir -p " + plot_dir)
   end if
@@ -212,37 +200,6 @@ begin
   ; Grading settings
   if (diag_script_info@calc_grading) then
 
-    ; Define variable name
-    region_name = ""  ; priority 3
-    location = ""  ; priority 3
-    if(isatt(diag_script_info, "aux_info")) then
-      region_name = "_" + diag_script_info@aux_info  ; priority 2
-      location = " - " + diag_script_info@aux_info  ; priority 2
-    end if
-    if(isatt(diag_script_info, "location")) then
-      location = " - " + diag_script_info@location  ; priority 1
-    end if
-    if(isatt(diag_script_info, "region")) then
-      region_name = "_" + region@name  ; priority 1
-      location = " - " + diag_script_info@region
-    end if
-    altitude = ""  ; priority 2
-    if(any(field0.eq.(/"T0M", "T0Ms"/))) then
-      if(isatt(diag_script_info, "altitude")) then
-        altitude = " - " + diag_script_info@altitude  ; priority 1
-      end if
-    else
-      if(isatt(diag_script_info, "level")) then
-        altitude = " - " + diag_script_info@level + " hPa"  ; priority 1
-      end if
-    end if
-    var0_grade = var0
-    var0_grade = var0_grade + region_name
-    if(isatt(diag_script_info, "level").and. \
-       any(field0.eq.(/"T3M", "T1M"/))) then
-      var0_grade = var0_grade + "-" + diag_script_info@level  ; FIX-ME
-    end if
-
     ; Define grading arrays
     nmetrics = dimsizes(diag_script_info@metric)
     ncdf_dir = new(nmetrics, string)
@@ -253,7 +210,8 @@ begin
     grading!1 = "diagnostics"  ; dummy coord. to facilitate appending
     grading!2 = "models"
     grading!3 = "reference"
-    grading&diagnostics = var0_grade
+    grading&diagnostics = \
+      variable_info[0]@diagnostic + "-" + diag_script_info@region
     grading&models = remove_index(datasetnames, ref_inds)
     if (isdim(grading, "reference")) then
       grading&reference = datasetnames(ref_inds)
@@ -266,15 +224,27 @@ begin
       taylor!0 = "diagnostics"  ; dummy coord. to facilitate appending
       taylor!1 = "models"
       taylor!2 = "statistic"
-      taylor&diagnostics = var0_grade
+      taylor&diagnostics = \
+        variable_info[0]@diagnostic + "-" + diag_script_info@region
       taylor&statistic = (/"stddev_ratio", "correlation"/)
       taylor&models = remove_index(datasetnames, ref_ind)
     end if
 
+    ; Special case SMPI
+    if (any(diag_script_info@metric.eq."SMPI")) then
+      nModels = dimsizes(datasetnames) - 1  ; always 1 reference model
+      smpi = new((/diag_script_info@smpi_n_bootstrap + 1, nModels/), float)
+      smpi!0 = "bootstrap_member"
+      smpi!1 = "models"
+      smpi&bootstrap_member = ispan(0, diag_script_info@smpi_n_bootstrap, 1)
+      smpi&models = remove_index(datasetnames, ref_ind)
+    end if
+
     ; Define grading filename
     do met = 0, nmetrics - 1
-      ncdf_dir(met) = config_user_info@work_dir + "/" + \
-        diag_script_info@metric(met) + "_" + var0_grade + ".nc"
+      ncdf_dir(met) = config_user_info@work_dir + \
+        diag_script_info@metric(met) + "_" + \
+        variable_info[0]@diagnostic + "-" + diag_script_info@region + ".nc"
     end do
 
   end if
@@ -301,11 +271,37 @@ begin
       end if
 
       ; Apply normalization
-      if (diag_script_info@metric(met).ne."taylor") then
+      if (diag_script_info@metric(met).ne."taylor" .and. \
+          diag_script_info@metric(met).ne."SMPI") then
         do iobs = 0, nobs - 1
           metric(:, :, iobs) = \
             normalize_metric(metric(:, :, iobs), \
                              diag_script_info@normalization(met))
+        end do
+      end if
+
+      ; Special case, SMPI normalization
+      if (diag_script_info@metric(met).eq."SMPI") then
+        ens_idx = new(dimsizes(smpi&models), integer)
+        atts = True
+        atts@project = diag_script_info@normalization(met)
+        info = select_metadata_by_atts(input_file_info, atts)
+        delete(atts)
+
+        do ii = 0, dimsizes(ens_idx) - 1
+          if (dimsizes(info).ne.0) then
+            ens_idx(ii) = ii
+          end if
+        end do
+        if (all(ismissing(ens_idx))) then
+          error_msg("f", DIAG_SCRIPT, "", "No datasets for the selected " + \
+                    "normalization (" + diag_script_info@normalization(met) + \
+                    ") found")
+        end if
+        ens_idx := ens_idx(ind(.not.ismissing(ens_idx)))
+        ; Apply normalization
+        do iboot = 0, dimsizes(smpi&bootstrap_member)-1
+          smpi(iboot, :) = smpi(iboot, :) / avg(smpi(iboot, ens_idx))
         end do
       end if
 
@@ -315,23 +311,46 @@ begin
         delete(metric@reference)
       end if
 
-      ; Attach attributes to the results
-      metric@title = diag_script_info@metric(met) + " metric"
-      metric@long_name = \
-        "Grading table of metric " + diag_script_info@metric(met)
-      metric@metric = diag_script_info@metric(met)
-      metric@diag_script = (/DIAG_SCRIPT/)
-      metric@var = "grade"
-      metric@region = location
-      metric@num_climofiles = nDatasets
-      do imod = 0, nDatasets - 1
-        num_climo = "climofile_" + imod
-        metric@$num_climo$ = info_items[imod]@filename
-      end do
-      metric@ncdf_dir = ncdf_dir(met)
+      ; Attach attributes to results and write NetCDF output
+      if (diag_script_info@metric(met).eq."SMPI") then
 
-      ; Write NetCDF output
-      ncdf_outfile = ncdf_write(metric, metric@ncdf_dir)
+        smpi@title = "metrics"
+        smpi@long_name = "1 variable's Performance Index for " + \
+          "the Single Model Performance Index"
+        smpi@metric = diag_script_info@metric(met)
+        smpi@diag_script = (/DIAG_SCRIPT/)
+        smpi@var = "performance_index"
+        smpi@invar = var0
+        smpi@region = region@name
+        smpi@ensemble_name = diag_script_info@normalization(met)
+        smpi@num_preproc_files = dimsizes(preproc_files)
+        do imod = 0, smpi@num_preproc_files - 1
+          num_preproc = "preproc_file_" + imod
+          smpi@$num_preproc$ = preproc_files(imod)
+        end do
+        smpi@ncdf_dir = ncdf_dir(met)
+
+        ncdf_outfile = ncdf_write(smpi, smpi@ncdf_dir)
+
+      else
+
+        metric@title = diag_script_info@metric(met) + " metric"
+        metric@long_name = \
+          "Grading table of metric " + diag_script_info@metric(met)
+        metric@metric = diag_script_info@metric(met)
+        metric@diag_script = (/DIAG_SCRIPT/)
+        metric@var = "grade"
+        metric@region = region@name
+        metric@num_preproc_files = dimsizes(preproc_files)
+        do imod = 0, metric@num_preproc_files - 1
+          num_preproc = "preproc_file_" + imod
+          metric@$num_preproc$ = preproc_files(imod)
+        end do
+        metric@ncdf_dir = ncdf_dir(met)
+
+        ncdf_outfile = ncdf_write(metric, metric@ncdf_dir)
+
+      end if
 
       ; Write results of temporary grading list
       temp_dir = config_user_info@work_dir + "/" + \

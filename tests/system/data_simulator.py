@@ -1,14 +1,10 @@
 """Simulate test data for `esmvaltool`."""
-from __future__ import print_function
-
 import os
 import sys
 import tempfile
 import time
 
 import numpy as np
-from dummydata.model2 import Model2
-from dummydata.model3 import Model3
 
 from esmvaltool._config import read_config_user_file
 from esmvaltool._recipe import read_recipe_file
@@ -23,13 +19,16 @@ def get_input_filename(variable, rootpath, drs):
 
 def write_data_file(short_name, filename, field, start_year, end_year):
     """Write a file containing simulated data."""
+    from dummydata.model2 import Model2
+    from dummydata.model3 import Model3
+
     if 'T2M' in field:
         writer = Model2
     elif 'T3M' in field:
         writer = Model3
     else:
-        raise NotImplementedError("Cannot create a model from field {}"
-                                  .format(field))
+        raise NotImplementedError(
+            "Cannot create a model from field {}".format(field))
 
     # TODO: Maybe this should be made configurable per diagnostic or model
     cfg = {
@@ -94,8 +93,8 @@ def simulate_input_data(recipe_file, config_user_file=None):
                     end_year=variable['end_year'],
                 )
 
-    print("Simulating data took {:.0f} seconds"
-          .format(time.time() - start_time))
+    print(
+        "Simulating data took {:.0f} seconds".format(time.time() - start_time))
 
 
 if __name__ == '__main__':

@@ -2,24 +2,24 @@
 
 from iris import Constraint
 
-from ._derived_variable_base import DerivedVariableBase
+from ._baseclass import DerivedVariableBase
 
 
 class DerivedVariable(DerivedVariableBase):
     """Derivation of variable `lwcre`."""
 
     # Required variables
-    _required_variables = {
-        'vars': [{
-            'short_name': 'rlut',
-            'field': 'T2{frequency}s'
-        }, {
-            'short_name': 'rlutcs',
-            'field': 'T2{frequency}s'
-        }]
-    }
+    required = [
+        {
+            'short_name': 'rlut'
+        },
+        {
+            'short_name': 'rlutcs'
+        },
+    ]
 
-    def calculate(self, cubes):
+    @staticmethod
+    def calculate(cubes):
         """Compute longwave cloud radiative effect."""
         rlut_cube = cubes.extract_strict(
             Constraint(name='toa_outgoing_longwave_flux'))

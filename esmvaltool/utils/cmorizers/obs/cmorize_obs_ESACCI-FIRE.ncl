@@ -37,18 +37,32 @@ begin
   YEAR1 = 2005
   YEAR2 = 2011
 
-  ; MIP
-  MIP = "Lmon"
-
   ; Selected variable (standard name)
-  VARS = "burntArea"
+  VAR = "burntArea"
 
   ; Name in the raw data
   NAME = "burned_area"
 
+  ; MIP
+  MIP = "Lmon"
+
+  ; Frequency
+  FREQ = "mon"
+
   ; CMOR table
   CMOR_TABLE = getenv("esmvaltool_root") + \
     "/cmor/tables/cmip5/Tables/CMIP5_Lmon"
+
+  ; Type
+  TYPE = "sat"
+
+  ; Version
+  VERSION = "L4-BA-MERIS-fv4.1"
+
+  ; Global attributes
+  SOURCE = "ftp://anon-ftp.ceda.ac.uk/neodc/esacci/fire/data/"
+  REF = ""
+  COMMENT = ""
 
 end
 
@@ -115,56 +129,34 @@ begin
   ; Convert units [1] --> [%]
   output = output * 100.
 
-  ; Format time coordinate
-  ctime = time_attrib(output&time, YEAR1, YEAR2, "M")
-  delete(output&time)
-  output&time = ctime
-  delete(ctime)
-
-  ; Format latitude coordinate
+  ; Format coordinates
+  output!0 = "time"
   output!1 = "lat"
-  if (isMonotonic(output&lat) .eq. 0) then
-    error_msg("f", DIAG_SCRIPT, "", "non-monotonic latitude coordinate")
-  end if
-  if (isMonotonic(output&lat) .eq. -1) then
-    output = output(:, ::-1, :)
-  end if
-  clat = lat_attrib(output&lat)
-  delete(output&lat)
-  output&lat = clat
-  delete(clat)
-
-  ; Format longitude coordinate
   output!2 = "lon"
-  if (isMonotonic(output&lon) .eq. 0) then
-    error_msg("f", DIAG_SCRIPT, "", "non-monotonic longitude coordinate")
-  end if
-  if (any(output&lon.lt.0.)) then
-    output = lonFlip(output)
-  end if
-  clon = lon_attrib(output&lon)
-  delete(output&lon)
-  output&lon = clon
-  delete(clon)
+  format_coords(output, YEAR1 + "0101", YEAR2 + "1231", FREQ)
 
   ; Set variable attributes
-  tmp = var_attrib(output, VARS, CMOR_TABLE)
+  tmp = format_variable(output, VAR, CMOR_TABLE)
   delete(output)
   output = tmp
   delete(tmp)
 
-    ; Set global attributes
-    gAtt = set_global_atts( \
-      OBSNAME, TIER, \
-      "ftp://anon-ftp.ceda.ac.uk/neodc/esacci/fire/data/", "", "")
+  ; Calculate coordinate bounds
+  bounds = guess_coord_bounds(output, FREQ)
 
-    ; Outfile
-    fout = output_dir_path + "OBS_" + OBSNAME + "_sat_L4-BA-MERIS-fv4.1_" + \
-      MIP + "_" + VARS + "_" + YEAR1 + "01-" + YEAR2 + "12.nc"
+  ; Set global attributes
+  gAtt = set_global_atts(OBSNAME, TIER, SOURCE, REF, COMMENT)
 
-    ; Write variable
-    write_nc(fout, VARS, output, gAtt)
-    delete(gAtt)
-    delete(output)
+  ; Output file
+  DATESTR = YEAR1 + "01-" + YEAR2 + "12"
+  fout = output_dir_path + \
+    str_join((/"OBS", OBSNAME, TYPE, VERSION, \
+               MIP, VAR, DATESTR/), "_") + ".nc"
+
+  ; Write variable
+  write_nc(fout, VAR, output, bounds, gAtt)
+  delete(gAtt)
+  delete(output)
+  delete(bounds)
 
 end

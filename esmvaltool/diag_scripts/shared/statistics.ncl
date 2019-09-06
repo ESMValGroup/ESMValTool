@@ -123,8 +123,6 @@ function time_operations(field:numeric,
 ;           "seasonalclim": seasonal climatology for the standard seasons DJF,
 ;                           MAM, JJA, SON.
 ;           "monthlyclim": monthly climatology jan-dec.
-;                For monthly input data only! Apply mymm first, if necessary.
-;           "mymm": multi year monthly mean
 ;           "yearly": time average over every year in [y1:y2].
 ;           [month strings]: climatology of selected (consecutive) months
 ;                            (e.g., "MAM", "SONDJ").
@@ -143,8 +141,7 @@ function time_operations(field:numeric,
 ;
 ; Caveats
 ;    The weighted standard deviation is not yet implmented for all cases
-;    The weighted standard deviation is calculated using the unbiased
-;    estimator, c
+;    The weighted standard deviation is calculated using the unbiased estimator
 ;    This should take into account missing values and exclude the w_i for
 ;    which the field contains only missing values. This feature is not
 ;    implemented yet.
@@ -152,6 +149,8 @@ function time_operations(field:numeric,
 ; References
 ;
 ; Modification history
+;    20190503-A_righ_ma: removed obsolete option "mymm" (used only in
+;                        reformat_obs, now outdated).
 ;    20140703-A_gott_kl: added option "mymm".
 ;    20140312-A_righ_ma: extended with standard deviation.
 ;    20140109-A_righ_ma: written.
@@ -466,147 +465,6 @@ begin
     out!0 = "month"
     delete(out&month)
     out&month = (/"J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"/)
-
-    leave_msg(scriptname, funcname)
-    return(out)
-  end if
-
-  ; Multi year monthly mean
-  ;   Output 12 months for each year that occurs in variable "year".
-  ;   Months without an input value are set to missing.
-  if (opt.eq."mymm") then
-
-    ; Concatenate year and month of input field
-    ym_in = 100 * toint(year) + toint(month)
-
-    ; Init target field
-    years = ispan(toint(min(year)), toint(max(year)), 1)
-    nyear = dimsizes(years)
-    ym = new(nyear * 12, integer)
-    do yy = 0, nyear - 1
-      do mm = 0, 11  ; concatenate as well, to avoid nested loop
-        ym((yy * 12) + mm) = 100 * years(yy) + mm + 1
-      end do
-    end do
-    dims = dimsizes(subfield)
-    if(rank.eq.4) then
-      dims(0, :, :, :) = dimsizes(ym)
-    else if(rank.eq.3) then
-      dims(0, :, :) = dimsizes(ym)
-    else if(rank.eq.2) then
-      dims(0, :) = dimsizes(ym)
-    else if(rank.eq.1) then
-      dims(0) = dimsizes(ym)
-    else
-      error_msg("f", scriptname, funcname, "rank = " + tostring(rank) + \
-                " not implemented for mymm in time_operations")
-    end if
-    end if
-    end if
-    end if
-    out = new(dims, typeof(subfield))
-    copy_VarCoords_l1(subfield, out)  ; auxiliary.ncl
-    timec = create_timec(min(years), max(years))
-    out!0 = "time"
-    out&time = timec
-
-    ; Determine FillValue
-    if(isatt(subfield, "_FillValue")) then
-      FillValue = subfield@_FillValue
-    else
-      FillValue = default_fillvalue(typeof(subfield))
-    end if
-    out@_FillValue = FillValue
-
-    ; Fill target field
-    if(rank.eq.4) then
-      do i = 0, dimsizes(ym) - 1
-        index = ind(ym_in.eq.ym(i))
-        if(.not.all(ismissing(index))) then
-          out(i, :, :, :) = \
-            dim_avg_wgt_n_Wrap(subfield(index, :, :, :), weights(index), 1, 0)
-          if (oper.eq."stddev") then
-            p1 = subfield(index, :, :, :)
-            p2 = conform(p1, out(i, :, :, :), (/1, 2, 3/)) ^ 2
-            d2 = (p1 - p2) ^ 2
-            arg = dim_sum_wgt_n_Wrap(d2, weights(index), 1, 0)
-            v1 = sum(weights(index))
-            v2 = sum(weights(index) ^ 2)
-            out(i) = sqrt(v1 / (v1 ^ 2 - v2) * arg)
-            delete([/p1, p2, d2, arg, v1, v2/])
-          end if
-        else
-          out(i, :, :, :) = FillValue
-        end if
-        delete(index)
-      end do
-    else if(rank.eq.3) then
-      do i = 0, dimsizes(ym) - 1
-        index = ind(ym_in.eq.ym(i))
-        if(.not.all(ismissing(index))) then
-          out(i, :, :) = \
-            dim_avg_wgt_n_Wrap(subfield(index, :, :), weights(index), 1, 0)
-          if (oper.eq."stddev") then
-            p1 = subfield(index, :, :)
-            p2 = conform(p1, out(i, :, :), (/1, 2/)) ^ 2
-            d2 = (p1 - p2) ^ 2
-            arg = dim_sum_wgt_n_Wrap(d2, weights(index), 1, 0)
-            v1 = sum(weights(index))
-            v2 = sum(weights(index) ^ 2)
-            out(i) = sqrt(v1 / (v1 ^ 2 - v2) * arg)
-            delete([/p1, p2, d2, arg, v1, v2/])
-          end if
-        else
-          out(i, :, :) = FillValue
-        end if
-        delete(index)
-      end do
-    else if(rank.eq.2) then
-      do i = 0, dimsizes(ym) - 1
-        index = ind(ym_in.eq.ym(i))
-        if(.not.all(ismissing(index))) then
-          out(i, :) = \
-            dim_avg_wgt_n_Wrap(subfield(index, :), weights(index), 1, 0)
-          if (oper.eq."stddev") then
-            p1 = subfield(index, :)
-            p2 = conform(p1, out(i, :), 1) ^ 2
-            d2 = (p1 - p2) ^ 2
-            arg = dim_sum_wgt_n_Wrap(d2, weights(index), 1, 0)
-            v1 = sum(weights(index))
-            v2 = sum(weights(index) ^ 2)
-            out(i) = sqrt(v1 / (v1 ^ 2 - v2) * arg)
-            delete([/p1, p2, d2, arg, v1, v2/])
-          end if
-        else
-          out(i, :) = FillValue
-        end if
-        delete(index)
-      end do
-    else if(rank.eq.1) then
-      do i = 0, dimsizes(ym) - 1
-        index = ind(ym_in.eq.ym(i))
-        if(.not.all(ismissing(index))) then
-          out(i) = dim_avg_wgt_Wrap(subfield(index), weights(index), 1)
-          if (oper.eq."stddev") then
-            d2 = (subfield(index) - out(i)) ^ 2
-            arg = dim_sum_wgt_Wrap(d2, weights(index), 1)
-            v1 = sum(weights(index))
-            v2 = sum(weights(index) ^ 2)
-            out(i) = sqrt(v1 / (v1 ^ 2 - v2) * arg)
-            delete([/d2, arg, v1, v2/])
-          end if
-        else
-          out(i) = FillValue
-        end if
-        delete(index)
-      end do
-    else
-      error_msg("f", scriptname, funcname, "rank = " + tostring(rank) + \
-                " not implemented for mymm in time_operations")
-    end if
-    end if
-    end if
-    end if
 
     leave_msg(scriptname, funcname)
     return(out)
@@ -1471,8 +1329,26 @@ begin
       time_weights = sdays
     end if
 
+    ; Annual-mean time-series
+    if (dim_names(0).eq."year") then
+      time_weights = new(dims_var(0), float)
+      time_weights = 1.
+    end if
+
     if (dim_names(1).eq."lat" .and. dim_names(2).eq."lon") then
       area_weights = map_area(var&lat, var&lon)
+    end if
+
+    if (dim_names(1).eq."plev" .and. dim_names(2).eq."lat") then
+      areas = map_area(ref&lat, (/1.0, 2.0/))
+      nlev = dimsizes(ref&plev)
+      ptop = ref&plev(nlev - 1) - \
+        0.5 * (ref&plev(nlev - 2) - ref&plev(nlev - 1))
+      delta_p = dpres_plevel(ref&plev, 101325., ptop, 0)
+      area_weights = new((/nlev, dimsizes(ref&lat)/), float)
+      wdims = dimsizes(area_weights)
+      area_weights = conform_dims(wdims, delta_p, 0) * \
+        conform_dims(wdims, areas(:, 0), 1)
     end if
 
     if (isdefined("time_weights").and.isdefined("area_weights")) then
@@ -1531,6 +1407,61 @@ begin
     p2 = sqrt(dim_sum_wgt_Wrap((var1d - avg_var) ^ 2, wgt1d, 1))
     p3 = sqrt(dim_sum_wgt_Wrap((ref1d - avg_ref) ^ 2, wgt1d, 1))
     out = p1 / (p2 * p3)
+    leave_msg(scriptname, funcname)
+    return(out)
+  end if
+
+  ; Single Model Performance Index
+  if (metric.eq."SMPI") then
+    nyears = dimsizes(var&year)
+    out = new(diag_script_info@smpi_n_bootstrap + 1, float)
+    do ibootstrap = 0, diag_script_info@smpi_n_bootstrap
+      if (ibootstrap.eq.0) then
+        bootvect = ispan(0, nyears - 1, 1)
+      else
+        icnt = 0
+        do while (icnt .le. 10)
+          bootvect = generate_sample_indices(nyears, 1)
+          icnt = icnt + 1
+          if (.not.all(bootvect(:).eq.bootvect(0))) then
+            break
+          end if
+        end do
+        if (all(bootvect(:).eq.bootvect(0))) then
+          error_msg("f", scriptname, funcname, \
+                    "Number of years too small for bootstrapping. Abort.")
+        end if
+      end if
+      obs = ref(bootvect, :, :)
+      mod1D = ndtooned(dim_avg_n(var, 0))
+      ref1D = ndtooned(dim_avg_n(obs, 0))
+      sig1D = ndtooned(dim_stddev_n_Wrap(obs, 0))
+      sig1D@_FillValue = default_fillvalue(typeof(sig1D))
+      sig1D = where(sig1D.eq.0, sig1D@_FillValue, sig1D)
+
+      delete(weights)
+      delete(wgt1d)
+      if (isdim(obs, "lon").and.isdim(obs, "lat")) then
+        weights = map_area(obs&lat, obs&lon)
+      elseif (isdim(obs, "plev").and.isdim(obs, "lat")) then
+        areas = map_area(obs&lat, (/1.0, 2.0/))
+        nlev = dimsizes(obs&plev)
+        ptop = \
+          obs&plev(nlev - 1) - 0.5 * (obs&plev(nlev - 2) - obs&plev(nlev - 1))
+        delta_p = dpres_plevel(obs&plev, 101325., ptop, 0)
+        weights = new((/dimsizes(obs&plev), dimsizes(obs&lat)/), float)
+        wdims = dimsizes(weights)
+        weights = \
+          conform_dims(wdims, delta_p, 0) * conform_dims(wdims, areas(:, 0), 1)
+      else
+        error_msg("f", diag_script, "", "Unknown dimensions in variable obs.")
+      end if
+
+      wgt1d = ndtooned(weights)
+      out(ibootstrap) = \
+        dim_avg_wgt_Wrap((mod1D - ref1D) ^ 2 / sig1D ^ 2, wgt1d, 1)
+
+    end do
     leave_msg(scriptname, funcname)
     return(out)
   end if

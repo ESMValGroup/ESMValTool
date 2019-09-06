@@ -1,7 +1,5 @@
 """Horizontal and vertical regridding module."""
 
-from __future__ import absolute_import, division, print_function
-
 import os
 import re
 from copy import deepcopy
@@ -12,11 +10,11 @@ import six
 import stratify
 from iris.analysis import AreaWeighted, Linear, Nearest, UnstructuredNearest
 
-from ..cmor.fix import fix_file, fix_metadata
-from ..cmor.table import CMOR_TABLES
 from ._io import concatenate_callback, load
 from ._regrid_esmpy import ESMF_REGRID_METHODS
 from ._regrid_esmpy import regrid as esmpy_regrid
+from ..cmor.fix import fix_file, fix_metadata
+from ..cmor.table import CMOR_TABLES
 
 # Regular expression to parse a "MxN" cell-specification.
 _CELL_SPEC = re.compile(
@@ -170,7 +168,7 @@ def regrid(cube, target_grid, scheme, lat_offset=True, lon_offset=True):
     ----------
     cube : cube
         The source cube to be regridded.
-    tgt_cube : cube or str
+    target_grid : cube or str
         The cube that specifies the target or reference grid for the regridding
         operation. Alternatively, a string cell specification may be provided,
         of the form 'MxN', which specifies the extent of the cell, longitude by
@@ -458,8 +456,9 @@ def get_cmor_levels(cmor_table, coordinate):
 
     """
     if cmor_table not in CMOR_TABLES:
-        raise ValueError("Level definition cmor_table '{}' not available".
-                         format(cmor_table))
+        raise ValueError(
+            "Level definition cmor_table '{}' not available".format(
+                cmor_table))
 
     if coordinate not in CMOR_TABLES[cmor_table].coords:
         raise ValueError('Coordinate {} not available for {}'.format(
@@ -481,16 +480,13 @@ def get_reference_levels(filename,
                          project,
                          dataset,
                          short_name,
-                         fix_dir,
-                         coordinate='air_pressure'):
+                         fix_dir):
     """Get level definition from a CMOR coordinate.
 
     Parameters
     ----------
     filename: str
         Path to the reference file
-    coordinate: str
-        Coordinate name
 
     Returns
     -------
@@ -508,8 +504,7 @@ def get_reference_levels(filename,
     cubes = fix_metadata(cubes, short_name, project, dataset)
     cube = cubes[0]
     try:
-        coord = cube.coord(coordinate)
+        coord = cube.coord(axis='Z')
     except iris.exceptions.CoordinateNotFoundError:
-        raise ValueError('Coordinate {} not available in {}'.format(
-            coordinate, filename))
+        raise ValueError('z-coord not available in {}'.format(filename))
     return coord.points.tolist()

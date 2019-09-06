@@ -12,6 +12,7 @@
 ;    procedure error_msg
 ;    procedure tool_stop
 ;    procedure exit_if_missing_atts
+;    procedure log_provenance
 ;
 ; #############################################################################
 
@@ -214,7 +215,7 @@ procedure tool_stop()
 ; Arguments
 ;
 ; Description
-;    Forces the tool execution to stop at any point of an ncl script.
+;    Force the tool execution to stop at any point of an ncl script.
 ;    For dubugging purposes only.
 ;
 ; Caveats
@@ -267,6 +268,82 @@ begin
     error_msg("f", DIAG_SCRIPT, "", "missing required diag_script_info " + \
               "attribute: " + reqatts(ind(.not.isatt(in, reqatts))))
   end if
+
+  leave_msg(scriptname, funcname)
+
+end
+
+; #############################################################################
+undef("log_provenance")
+procedure log_provenance(nc_file:string,
+                         outfile:string,
+                         caption:string,
+                         statistics[*]:string,
+                         domains[*]:string,
+                         plot_types[*]:string,
+                         diag_authors[*]:string,
+                         diag_refs[*]:string,
+                         infiles[*]:string)
+;
+; Arguments
+;    nc_file: netcdf file with data related to the plot
+;    outfile: file name of the figure (including path)
+;    caption: figure caption
+;    statistics: list of metrics/statistics calculated
+;    domains: of the data displayed
+;    plot_types: plot type of the figure
+;    diag_authors: authors related to the diagnostic
+;    diag_refs: references related to the diagnotic
+;    infiles: input files (from preproc) used to generate the plot
+;
+; Description
+;    Create a yaml file with meta data from the diagnostic script and save it
+;    in the run directory
+;
+; Caveats
+;
+; References
+;
+; Modification history
+;    20190415-A_righ_ma: turn domains into a list.
+;    20190415-A_righ_ma: extended to avoid overwriting previous call.
+;    20190225-A_bock_li: written.
+;
+local funcname, scriptname, yaml_file, outstring, existing
+begin
+
+  funcname = "log_provenance"
+  scriptname = "interface_scripts/logging.ncl"
+  enter_msg(scriptname, funcname)
+
+  ; Define output
+  outstring = new(9, string)
+
+  ; Set yaml file path
+  yaml_file = config_user_info@run_dir + "diagnostic_provenance.yml"
+
+  ; Save entries
+  outstring(0) = "? " + nc_file
+  outstring(1) = ": ancestors: [" + str_join(infiles, ", ") + "]"
+  outstring(2) = "  authors: [" + str_join(diag_authors, ", ") + "]"
+  outstring(3) = "  caption: '" + caption + "'"
+  outstring(4) = "  domains: [" + str_join(domains, ", ") + "]"
+  outstring(5) = "  plot_file: " + outfile
+  outstring(6) = "  plot_types: [" + str_join(plot_types, ", ") + "]"
+  outstring(7) = "  references: [" + str_join(diag_refs, ", ") + "]"
+  outstring(8) = "  statistics: [" + str_join(statistics, ", ") + "]"
+
+  ; Save existing information to avoid overwriting
+  if (fileexists(yaml_file)) then
+    existing = asciiread(yaml_file, -1, "string")
+    outstring := array_append_record(existing, outstring, 0)
+    delete(existing)
+  end if
+
+  ; Save provenance information
+  asciiwrite(yaml_file, outstring)
+
+  log_info("Provenance information saved in " + yaml_file)
 
   leave_msg(scriptname, funcname)
 

@@ -1,18 +1,26 @@
 # pylint: disable=invalid-name, no-self-use, too-few-public-methods
-"""Fixes for GFDL ESM2G"""
+"""Fixes for GFDL ESM2G."""
+
 import iris
-from iris.coords import AuxCoord
+
 from ..fix import Fix
+
+
+def _get_and_remove(cubes, long_name):
+    try:
+        cube = cubes.extract_strict(long_name)
+        cubes.remove(cube)
+    except iris.exceptions.ConstraintMismatchError:
+        pass
 
 
 class allvars(Fix):
     """Common fixes."""
 
     def fix_metadata(self, cubes):
-        """
-        Fix metadata.
+        """Fix metadata.
 
-        Fixes bad standard names
+        Fixes bad standard names.
 
         Parameters
         ----------
@@ -20,30 +28,22 @@ class allvars(Fix):
 
         Returns
         -------
-        iris.cube.Cube
+        iris.cube.CubeList
 
         """
-        self._get_and_remove(cubes, 'Start time for average period')
-        self._get_and_remove(cubes, 'End time for average period')
-        self._get_and_remove(cubes, 'Length of average period')
+        _get_and_remove(cubes, 'Start time for average period')
+        _get_and_remove(cubes, 'End time for average period')
+        _get_and_remove(cubes, 'Length of average period')
         return cubes
-
-    def _get_and_remove(self, cubes, long_name):
-        try:
-            cube = cubes.extract_strict(long_name)
-            cubes.remove(cube)
-        except iris.exceptions.ConstraintMismatchError:
-            pass
 
 
 class co2(Fix):
     """Fixes for co2."""
 
     def fix_data(self, cube):
-        """
-        Fix data.
+        """Fix data.
 
-        Fixes discrepancy between declared units and real units
+        Fixes discrepancy between declared units and real units.
 
         Parameters
         ----------
@@ -58,3 +58,25 @@ class co2(Fix):
         cube *= 1e6
         cube.metadata = metadata
         return cube
+
+
+class fgco2(Fix):
+    """Fixes for fgco2."""
+
+    def fix_metadata(self, cubes):
+        """Fix metadata.
+
+        Remove unnecessary variables prohibiting cube concatenation.
+
+        Parameters
+        ----------
+        cubes: iris.cube.CubeList
+
+        Returns
+        -------
+        iris.cube.CubeList
+
+        """
+        _get_and_remove(cubes, 'Latitude of tracer (h) points')
+        _get_and_remove(cubes, 'Longitude of tracer (h) points')
+        return cubes

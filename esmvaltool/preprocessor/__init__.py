@@ -8,9 +8,8 @@ from iris.cube import Cube, CubeList
 
 from .._provenance import TrackedFile
 from .._task import BaseTask
-from ._area_pp import area_average as average_region
-from ._area_pp import area_slice as extract_region
-from ._area_pp import (zonal_means, extract_named_regions)
+from ._area import (average_region, extract_named_regions, extract_region,
+                    zonal_means)
 from ._derive import derive
 from ._download import download
 from ._io import (_get_debug_filename, cleanup, concatenate, load, save,
@@ -22,12 +21,10 @@ from ._multimodel import multi_model_statistics
 from ._reformat import (cmor_check_data, cmor_check_metadata, fix_data,
                         fix_file, fix_metadata)
 from ._regrid import extract_levels, regrid
-from ._time_area import (extract_month, extract_season, seasonal_mean,
-                         time_average)
-from ._time_area import time_slice as extract_time
-from ._volume_pp import depth_integration, extract_trajectory, extract_transect
-from ._volume_pp import volume_average as average_volume
-from ._volume_pp import volume_slice as extract_volume
+from ._time import (annual_mean, extract_month, extract_season, extract_time,
+                    regrid_time, seasonal_mean, time_average)
+from ._volume import (average_volume, depth_integration, extract_trajectory,
+                      extract_transect, extract_volume)
 
 logger = logging.getLogger(__name__)
 
@@ -71,18 +68,20 @@ __all__ = [
     'extract_transect',
     # 'average_zone': average_zone,
     # 'cross_section': cross_section,
-    # Time operations
-    # 'annual_cycle': annual_cycle,
-    # 'diurnal_cycle': diurnal_cycle,
     'multi_model_statistics',
     # Grid-point operations
     'extract_named_regions',
     'depth_integration',
     'average_region',
     'average_volume',
+    # Time operations
+    # 'annual_cycle': annual_cycle,
+    # 'diurnal_cycle': diurnal_cycle,
     'zonal_means',
+    'annual_mean',
     'seasonal_mean',
     'time_average',
+    'regrid_time',
     'cmor_check_data',
     # Save to file
     'save',

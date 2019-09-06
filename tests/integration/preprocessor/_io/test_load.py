@@ -1,7 +1,5 @@
 """Integration tests for :func:`esmvaltool.preprocessor._io.load`."""
 
-from __future__ import absolute_import, division, print_function
-
 import os
 import tempfile
 import unittest
@@ -61,15 +59,12 @@ class TestLoad(unittest.TestCase):
                 cube.attributes[attr] = attr
             self._save_cube(cube)
         for temp_file in self.temp_files:
-            cubes = load(
-                temp_file,
-                callback=concatenate_callback)
+            cubes = load(temp_file, callback=concatenate_callback)
             cube = cubes[0]
             self.assertEqual(1, len(cubes))
             self.assertTrue((cube.data == np.array([1, 2])).all())
             self.assertTrue(
-                (cube.coord('latitude').points == np.array([1, 2])).all()
-            )
+                (cube.coord('latitude').points == np.array([1, 2])).all())
             for attr in attributes:
                 self.assertTrue(attr not in cube.attributes)
 

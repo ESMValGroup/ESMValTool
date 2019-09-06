@@ -12,6 +12,9 @@ documentation:
   authors:
     - demo_le
 
+  maintainer:
+    - demo_le
+
   references:
     - demora2018gmd
 
@@ -56,7 +59,6 @@ preprocessors:
     average_volume:
       coord1: longitude
       coord2: latitude
-      coordz: depth
     multi_model_statistics:
       span: overlap
       statistics: [mean ]
@@ -111,6 +113,14 @@ preprocessors:
 
 
   prep_global_profile:
+    annual_mean:
+    average_region:
+      coord1: longitude
+      coord2: latitude
+
+  prep_global_profile_decadal:
+    annual_mean:
+       decadal: true
     average_region:
       coord1: longitude
       coord2: latitude
@@ -132,7 +142,6 @@ preprocessors:
 #   # 2D map global depth integration
 #   prep_depth_integration:
 #     depth_integration:
-#       coordz: depth
 # #      new_units: kg m-2 # need to specify in advance, as cf_units has strange behaviour.
 #     time_average:
 #
@@ -140,7 +149,6 @@ preprocessors:
 #   prep_depth_integration_timeseries:
 #     custom_order: true
 #     depth_integration:
-#       coordz: depth
 #     average_region:
 #       coord1: longitude
 #       coord2: latitude
@@ -174,37 +182,30 @@ diagnostics:
     variables:
       thetao: # Temperature 3D
         preprocessor: prep_timeseries_global_volume_average
-        field: TO3M
         mip: Omon
         fx_files: [volcello,]
       so: # Salinity 3D
         preprocessor: prep_timeseries_global_volume_average
-        field: TO3M
         mip: Omon
         fx_files: [volcello,]
       no3: # nitrate
         preprocessor: prep_timeseries_global_volume_average
-        field: TO3Y
         mip: Oyr
         fx_files: [volcello,]
       o2: # oxygen
         preprocessor: prep_timeseries_global_volume_average
-        field: TO3Y
         mip: Oyr
         fx_files: [volcello,]
       si: # Silicate
         preprocessor: prep_timeseries_global_volume_average
-        field: TO3Y
         mip: Oyr
         fx_files: [volcello,]
     #   po4: # phosphate # No HadGEM2-ES phosphate.
     #     preprocessor: prep_timeseries_global_volume_average
-    #     field: TO3Y
     #     mip: Oyr
     #    fx_files: [volcello,]
     additional_datasets:
-      # https://data.nodc.noaa.gov/woa/WOA13/DATAv2/
-        - {dataset: WOA,  project: obs4mips,  level: L3,  version: clim,  tier: 3, start_year: 2000,  end_year: 2000}
+      - {dataset: WOA,  project: OBS,  type: clim,  version: 2013v2,  start_year: 2000,  end_year: 2000,  tier: 2}
     scripts:
       Global_Volume_Average_timeseries:
         script: ocean/diagnostic_timeseries.py
@@ -218,29 +219,24 @@ diagnostics:
 #      This can't run on jasmin until issue #773 is resolved.
 #      gtfgco2: # Global Total flux co2
 #        preprocessor: prep_timeseries_scalar
-#        field: TOM
 #        mip: Omon
 #        derive: true
 #        force_derivation: false
 #        fx_files: [areacello, ]
       chl: # chlorophyll
         preprocessor: prep_timeseries_global_volume_average
-        field: TO3Y
         mip: Oyr
         fx_files: [volcello,]
       dfe: # iron
         preprocessor: prep_timeseries_global_volume_average
-        field: TO3Y
         mip: Oyr
         fx_files: [volcello,]
       talk: # alkalinity
         preprocessor: prep_timeseries_global_volume_average
-        field: TO3Y
         mip: Oyr
         fx_files: [volcello,]
     #   dic: # Dissolved inorganic carbon
     #     preprocessor: prep_timeseries_global_volume_average
-    #     field: TO3Y
     #     mip: Oyr
     #    fx_files: [volcello,]
     scripts:
@@ -256,28 +252,23 @@ diagnostics:
     variables:
       talk: # alkalinity
         preprocessor: prep_global_Surface_average_timeseries_3D
-        field: TO3Y
         mip: Oyr
         fx_files: [areacello, ]
       intpp:
         preprocessor: prep_global_Surface_average_timeseries_2D
-        field: TO2M
         mip: Omon
         fx_files: [areacello, ]
       chl:
         preprocessor: prep_global_Surface_average_timeseries_3D
-        field: TO3Y
         mip: Oyr
         thresholds: [0.1, 0.2, 0.5]
         fx_files: [areacello, ]
     #   dfe: # iron
     #     preprocessor: prep_global_Surface_average_timeseries_3D
-    #     field: TO3Y
     #     mip: Oyr
     #    fx_files: [areacello, ]
     #   dic: # Dissolved inorganic carbon
     #     preprocessor: prep_global_Surface_average_timeseries_3D
-    #     field: TO3Y
     #     mip: Oyr
     #    fx_files: [areacello, ]
     scripts:
@@ -292,41 +283,34 @@ diagnostics:
     variables:
       thetao: # Temperature ocean surface
         preprocessor: prep_global_Surface_average_timeseries_3D
-        field: TO2M
         mip: Omon
         fx_files: [areacello, ]
       so: # Salinity ocean surface
         preprocessor: prep_global_Surface_average_timeseries_3D
-        field: TO2M
         mip: Omon
         fx_files: [areacello, ]
       no3: # Nitrate ocean surface
         preprocessor: prep_global_Surface_average_timeseries_3D
-        field: TO3Y
         mip: Oyr
         fx_files: [areacello, ]
       o2: # oxygen
         preprocessor: prep_global_Surface_average_timeseries_3D
-        field: TO3Y
         mip: Oyr
         fx_files: [areacello, ]
       si: # Silicate
         preprocessor: prep_global_Surface_average_timeseries_3D
-        field: TO3Y
         mip: Oyr
         fx_files: [areacello, ]
     #   po4: # Phosphate
     #     preprocessor: prep_global_Surface_average_timeseries_3D
-    #     field: TO3Y
     #     mip: Oyr
     #    fx_files: [areacello, ]
     additional_datasets:
-      # https://data.nodc.noaa.gov/woa/WOA13/DATAv2/
-      - {dataset: WOA,  project: obs4mips,  level: L3,  version: clim,  tier: 3, start_year: 2000,  end_year: 2000,}
+      - {dataset: WOA,  project: OBS,  type: clim,  version: 2013v2,  start_year: 2000,  end_year: 2000,  tier: 2}
     scripts:
       Global_Volume_Average_timeseries:
         script: ocean/diagnostic_timeseries.py
-        observational_dataset: {dataset: WOA, project: obs4mips,}
+        observational_dataset: {dataset: WOA, project: OBS}
 
 
   # --------------------------------------------------
@@ -337,7 +321,6 @@ diagnostics:
     variables:
       mfo: # Marine currents flux
         preprocessor: prep_timeseries_scalar
-        field: TO0M
         mip: Omon
     scripts:
       Scalar_timeseries:
@@ -352,41 +335,34 @@ diagnostics:
     variables:
       thetao: # Temperature ocean surface
         preprocessor: prep_global_profile
-        field: TO2M
         mip: Omon
         fx_files: [volcello,]
       so: # Salinity ocean surface
         preprocessor: prep_global_profile
-        field: TO2M
         mip: Omon
         fx_files: [volcello,]
       no3: # Nitrate ocean surface
         preprocessor: prep_global_profile
-        field: TO3Y
         mip: Oyr
         fx_files: [volcello,]
       o2: # oxygen
         preprocessor: prep_global_profile
-        field: TO3Y
         mip: Oyr
         fx_files: [volcello,]
       si: # Silicate
         preprocessor: prep_global_profile
-        field: TO3Y
         mip: Oyr
         fx_files: [volcello,]
     #   po4: # Phosphate
     #     preprocessor: prep_global_profile
-    #     field: TO3Y
     #     mip: Oyr
     #    fx_files: [volcello,]
     additional_datasets:
-      # https://data.nodc.noaa.gov/woa/WOA13/DATAv2/
-      - {dataset: WOA,  project: obs4mips,  level: L3,  version: clim,  tier: 3, start_year: 2000,  end_year: 2000,}
+      - {dataset: WOA,  project: OBS,  type: clim,  version: 2013v2,  start_year: 2000,  end_year: 2000,  tier: 2}
     scripts:
       Global_profile_vs_WOA:
         script: ocean/diagnostic_profiles.py
-        observational_dataset: {dataset: WOA, project: obs4mips,}
+        observational_dataset: {dataset: WOA, project: OBS}
 
   # --------------------------------------------------
   # Profile diagnostics - no data
@@ -396,22 +372,18 @@ diagnostics:
     variables:
       chl: # chlorophyll
         preprocessor: prep_global_profile
-        field: TO3Y
         mip: Oyr
         fx_files: [volcello,]
       dfe: # iron
         preprocessor: prep_global_profile
-        field: TO3Y
         mip: Oyr
         fx_files: [volcello,]
       talk: # alkalinity
         preprocessor: prep_global_profile
-        field: TO3Y
         mip: Oyr
         fx_files: [volcello,]
     #   dic: # Dissolved inorganic carbon
     #     preprocessor: prep_global_profile
-    #     field: TO3Y
     #     mip: Oyr
     #    fx_files: [volcello,]
     scripts:
@@ -427,43 +399,36 @@ diagnostics:
     variables:
       thetao:
         preprocessor: prep_surface_map_regrid_3D
-        field: TO2M
         mip: Omon
         fx_files: [areacello, ]
       so:
         preprocessor: prep_surface_map_regrid_3D
-        field: TO2M
         mip: Omon
         fx_files: [areacello, ]
       no3:
         preprocessor: prep_surface_map_regrid_3D
-        field: TO3Y
         mip: Oyr
         fx_files: [areacello, ]
       si: # Silicate
         preprocessor: prep_surface_map_regrid_3D
-        field: TO3Y
         mip: Oyr
         fx_files: [areacello, ]
       o2: # Oxygen
         preprocessor: prep_surface_map_regrid_3D
-        field: TO3Y
         mip: Oyr
         fx_files: [areacello, ]
     #   po4:
     #     preprocessor: prep_surface_map_3D
-    #     field: TO3Y
     #     mip: Oyr
     #    fx_files: [areacello, ]
     additional_datasets:
-      # https://data.nodc.noaa.gov/woa/WOA13/DATAv2/
-      - {dataset: WOA,  project: obs4mips,  level: L3,  version: clim,  tier: 3, start_year: 2000,  end_year: 2000,}
+      - {dataset: WOA,  project: OBS,  type: clim,  version: 2013v2,  start_year: 2000,  end_year: 2000,  tier: 2}
     scripts:
       Global_Ocean_surface_map:
         script: ocean/diagnostic_maps.py
       Global_Ocean_model_vs_obs:
         script: ocean/diagnostic_model_vs_obs.py
-        observational_dataset: {dataset: WOA, project: obs4mips,}
+        observational_dataset: {dataset: WOA, project: OBS}
 
   # --------------------------------------------------
   # Map diagnostics - no data
@@ -473,29 +438,24 @@ diagnostics:
     variables:
       intpp:
         preprocessor: prep_surface_map_2D
-        field: TO2M
         mip: Omon
         fx_files: [areacello, ]
       fgco2:
         preprocessor: prep_surface_map_2D
-        field: TO2M
         mip: Omon
         fx_files: [areacello, ]
       chl:
         preprocessor: prep_surface_map_3D
-        field: TO3Y
         mip: Oyr
         # thresholds: [0.1, 0.2, 0.5]
         fx_files: [areacello, ]
       dfe:
         preprocessor: prep_surface_map_3D
-        field: TO3Y
         mip: Oyr
         fx_files: [areacello, ]
 
     #   dic:
     #     preprocessor: prep_surface_map_3D
-    #     field: TO3Y
     #     mip: Oyr
     #    fx_files: [areacello, ]
     scripts:
@@ -513,38 +473,31 @@ diagnostics:
     variables:
       thetao:
         preprocessor: prep_transect_AMT
-        field: TO2M
         mip: Omon
         thresholds: [0., 5., 10., 15., 20., 25., 30.]
       so:
         preprocessor: prep_transect_AMT
-        field: TO2M
         mip: Omon
       no3:
         preprocessor: prep_transect_AMT
-        field: TO3Y
         mip: Oyr
         thresholds: [10., 20., 30.]
       si: # Silicate
         preprocessor: prep_transect_AMT
-        field: TO3Y
         mip: Oyr
       o2: # Oxygen
         preprocessor: prep_transect_AMT
-        field: TO3Y
         mip: Oyr
         thresholds: [0.03, ]
     #   po4:
     #     preprocessor: prep_transect_AMT
-    #     field: TO3Y
     #     mip: Oyr
     additional_datasets:
-      # https://data.nodc.noaa.gov/woa/WOA13/DATAv2/
-      - {dataset: WOA,  project: obs4mips,  level: L3,  version: clim,  tier: 3, start_year: 2000,  end_year: 2000,}
+      - {dataset: WOA,  project: OBS,  type: clim,  version: 2013v2,  start_year: 2000,  end_year: 2000,  tier: 2}
     scripts:
       Transects_vs_WOA:
         script: ocean/diagnostic_transects.py
-        # observational_dataset: {dataset: WOA, project: obs4mips,}
+        # observational_dataset: {dataset: WOA, project: OBS}
 
   # # --------------------------------------------------
   # # Map diagnostics - no data
@@ -554,15 +507,12 @@ diagnostics:
     variables:
       chl:
         preprocessor: prep_transect_AMT
-        field: TO3Y
         mip: Oyr
       dfe:
         preprocessor: prep_transect_AMT
-        field: TO3Y
         mip: Oyr
     #   dic:
     #     preprocessor: prep_transect_AMT
-    #     field: TO3Y
     #     mip: Oyr
     scripts:
       Transects_no_data:
@@ -578,11 +528,9 @@ diagnostics:
   # #   variables:
   # #     chl:
   # #       preprocessor: prep_depth_integration
-  # #       field: TO3Y
   # #       mip: Oyr
   # #     # intpp:
   # #     #   preprocessor: prep_depth_integration
-  # #     #   field: TO3Y
   # #     #   mip: Oyr
   # #   scripts:
   # #     Global_Ocean_DepthIntegration_map:
@@ -593,11 +541,9 @@ diagnostics:
   #   variables:
   #     chl:
   #       preprocessor: prep_depth_integration_timeseries
-  #       field: TO3Y
   #       mip: Oyr
   #     # intpp:
   #     #   preprocessor: prep_depth_integration_timeseries
-  #     #   field: TO3Y
   #     #   mip: Oyr
   #   scripts:
   #     Global_Ocean_DepthIntegration_timeseries:

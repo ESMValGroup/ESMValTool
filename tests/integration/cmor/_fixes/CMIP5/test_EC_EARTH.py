@@ -8,7 +8,7 @@ from esmvaltool.cmor._fixes.CMIP5.EC_EARTH import sftlf, sic
 
 class TestSic(unittest.TestCase):
     def setUp(self):
-        self.cube = Cube([1], var_name='sic', units='J')
+        self.cube = Cube([1.0], var_name='sic', units='J')
         self.fix = sic()
 
     def test_fix_data(self):
@@ -19,7 +19,7 @@ class TestSic(unittest.TestCase):
 
 class TestSftlf(unittest.TestCase):
     def setUp(self):
-        self.cube = Cube([1], var_name='sftlf', units='J')
+        self.cube = Cube([1.0], var_name='sftlf', units='J')
         self.fix = sftlf()
 
     def test_fix_data(self):

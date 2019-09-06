@@ -10,7 +10,7 @@ from esmvaltool.cmor._fixes.CMIP5.MIROC_ESM import allvars, co2, gpp, tro3
 
 class TestCo2(unittest.TestCase):
     def setUp(self):
-        self.cube = Cube([1], var_name='co2', units='J')
+        self.cube = Cube([1.0], var_name='co2', units='J')
         self.fix = co2()
 
     def test_fix_metadata(self):
@@ -21,7 +21,7 @@ class TestCo2(unittest.TestCase):
 
 class TestTro3(unittest.TestCase):
     def setUp(self):
-        self.cube = Cube([1], var_name='tro3', units='J')
+        self.cube = Cube([1.0], var_name='tro3', units='J')
         self.fix = tro3()
 
     def test_fix_data(self):
@@ -32,7 +32,7 @@ class TestTro3(unittest.TestCase):
 
 class TestGpp(unittest.TestCase):
     def setUp(self):
-        self.cube = Cube([1], var_name='gpp', units='J')
+        self.cube = Cube([1.0], var_name='gpp', units='J')
         self.fix = gpp()
 
     def test_fix_metadata(self):
@@ -43,7 +43,7 @@ class TestGpp(unittest.TestCase):
 
 class TestAll(unittest.TestCase):
     def setUp(self):
-        self.cube = Cube([[1, 2], [3, 4]], var_name='co2', units='J')
+        self.cube = Cube([[1.0, 2.0], [3.0, 4.0]], var_name='co2', units='J')
         self.cube.add_dim_coord(
             DimCoord(
                 [0, 1],

@@ -32,7 +32,6 @@ diagnostics:
     variables:
       mrsos: # moisture_content_of_soil_layer
         mip: Lmon
-        field: T2Ms
       # TODO: mass_fraction_of_unfrozen_water_in_soil_moisture
       # TODO: mass_fraction_of_frozen_water_in_soil_moisture
     scripts:

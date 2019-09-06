@@ -1,15 +1,11 @@
 """Unit tests for the esmvaltool.preprocessor._mapping module."""
-# pylint: disable=invalid-name, no-self-use, too-few-public-methods
-from __future__ import absolute_import, division, print_function
-
 import cf_units
 import iris
 import mock
 import numpy as np
 
 import tests
-from esmvaltool.preprocessor._mapping import (get_empty_data,
-                                              map_slices,
+from esmvaltool.preprocessor._mapping import (get_empty_data, map_slices,
                                               ref_to_dims_index)
 
 
@@ -41,8 +37,10 @@ class TestHelpers(tests.Test):
                 return []
             else:
                 raise iris.exceptions.CoordinateNotFoundError('')
+
         self.cube = mock.Mock(
             spec=iris.cube.Cube,
+            dtype=np.float32,
             coord_system=self.coord_system,
             coords=self.coords,
             coord=coord,
@@ -64,15 +62,13 @@ class TestHelpers(tests.Test):
 
     def test_ref_to_dims_index__invalid_int(self):
         """Test ref_to_dims_index with invalid integer."""
-        self.assertRaises(ValueError,
-                          ref_to_dims_index, self.cube, -1)
-        self.assertRaises(ValueError,
-                          ref_to_dims_index, self.cube, 100)
+        self.assertRaises(ValueError, ref_to_dims_index, self.cube, -1)
+        self.assertRaises(ValueError, ref_to_dims_index, self.cube, 100)
 
     def test_ref_to_dims_index__scalar_coord(self):
         """Test ref_to_dims_index with scalar coordinate."""
-        self.assertRaises(ValueError,
-                          ref_to_dims_index, self.cube, 'scalar_coord')
+        self.assertRaises(ValueError, ref_to_dims_index, self.cube,
+                          'scalar_coord')
 
     def test_ref_to_dims_index__valid_coordinate_name(self):
         """Test ref_to_dims_index with valid coordinate name."""
@@ -86,9 +82,8 @@ class TestHelpers(tests.Test):
 
     def test_ref_to_dims_index__invalid_type(self):
         """Test ref_to_dims_index with invalid argument."""
-        self.assertRaises(ValueError,
-                          ref_to_dims_index,
-                          self.cube, mock.sentinel.something)
+        self.assertRaises(ValueError, ref_to_dims_index, self.cube,
+                          mock.sentinel.something)
 
 
 class Test(tests.Test):
@@ -102,40 +97,40 @@ class Test(tests.Test):
             spec=iris.coords.DimCoord,
             standard_name='time',
             long_name='time',
-            shape=(3,),
+            shape=(3, ),
         )
         self.z = mock.Mock(
             spec=iris.coords.DimCoord,
             standard_name='height',
             long_name='height',
-            shape=(4,),
+            shape=(4, ),
         )
         self.src_latitude = mock.Mock(
             spec=iris.coords.DimCoord,
             standard_name='latitude',
             long_name='latitude',
-            shape=(5,),
+            shape=(5, ),
             points=np.array([1.1, 2.2, 3.3, 4.4, 5.5]),
         )
         self.src_longitude = mock.Mock(
             spec=iris.coords.DimCoord,
             standard_name='longitude',
             long_name='longitude',
-            shape=(6,),
+            shape=(6, ),
             points=np.array([1.1, 2.2, 3.3, 4.4, 5.5, 6.6]),
         )
         self.dst_latitude = mock.Mock(
             spec=iris.coords.DimCoord,
             standard_name='latitude',
             long_name='latitude',
-            shape=(2,),
+            shape=(2, ),
             points=np.array([1.1, 2.2]),
         )
         self.dst_longitude = mock.Mock(
             spec=iris.coords.DimCoord,
             standard_name='longitude',
             long_name='longitude',
-            shape=(2,),
+            shape=(2, ),
             points=np.array([1.1, 2.2]),
         )
 
@@ -176,10 +171,9 @@ class Test(tests.Test):
             """Return selected coords for source cube."""
             # pylint: disable=unused-argument
             # Here, args is ignored.
-            dim_coords_list = [self.time,
-                               self.z,
-                               self.src_latitude,
-                               self.src_longitude]
+            dim_coords_list = [
+                self.time, self.z, self.src_latitude, self.src_longitude
+            ]
             contains_dimension = kwargs.get('contains_dimension', None)
             if contains_dimension is not None:
                 return [dim_coords_list[contains_dimension]]
@@ -207,8 +201,10 @@ class Test(tests.Test):
             if kwargs.get('dim_coords', False):
                 return dim_coords
             return [self.scalar_coord] + dim_coords
+
         self.src_cube = mock.Mock(
             spec=iris.cube.Cube,
+            dtype=np.float32,
             coord_system=self.coord_system,
             coords=src_coords,
             coord=src_coord,
@@ -225,11 +221,13 @@ class Test(tests.Test):
         )
         self.src_repr = mock.Mock(
             spec=iris.cube.Cube,
+            dtype=np.float32,
             coords=src_repr_coords,
             ndim=2,
         )
         self.dst_repr = mock.Mock(
             spec=iris.cube.Cube,
+            dtype=np.float32,
             coords=dst_repr_coords,
             shape=(2, 2),
         )

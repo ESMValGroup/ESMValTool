@@ -6,7 +6,7 @@ modeling_realm:    land
 !----------------------------------
 ! Variable attributes:
 !----------------------------------
-standard_name:     degree_of_saturation
+standard_name:     
 units:             m3 m-3
 cell_methods:      time: mean area: mean where land
 cell_measures:     area: areacella

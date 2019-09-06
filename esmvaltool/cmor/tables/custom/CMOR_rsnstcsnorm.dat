@@ -1,0 +1,22 @@
+SOURCE: CMIP5
+!============
+variable_entry:    rsnstcsnorm
+!============
+modeling_realm:    atmos
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     
+units:             %
+cell_methods:      time: mean
+cell_measures:     area: areacella
+long_name:         Heating from Shortwave Absorbtion assuming clear sky normalized by incoming solar radiation
+comment:           (For definition see: DeAngelis et al. 2015)
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+type:              real
+positive:          up
+!----------------------------------
+!

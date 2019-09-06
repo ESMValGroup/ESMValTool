@@ -23,7 +23,6 @@ diagnostics:
         preprocessor: preproc
         reference_dataset: "EC-EARTH"
         mip: day
-        field: T2Ds
     scripts:
       main:
         script: examples/diagnostic.r

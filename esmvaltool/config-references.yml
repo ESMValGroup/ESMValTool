@@ -68,10 +68,30 @@ authors:
     name: Arnone, Enrico
     institute: ISAC-CNR, Torino, Italy
     email: e.arnone 'at' isac.cnr.it
+  bell_om:
+    name: Bellprat, Omar
+    institute: BSC, Spain
+    email: omar.bellprat 'at' bsc.es
+  berg_pe:
+    name: Berg, Peter
+    institute: SMHI, Sweden
+    email: peter.berg 'at' smhi.se
   bock_ls:
     name: Bock, Lisa
     institute: DLR, Germany
     email: lisa.bock 'at' dlr.de
+  bojo_dr:
+    name: Bojovic, Dragana
+    institute: BSC, Spain
+    email: dragana.bojovic 'at' bsc.es
+  cagn_ch:
+    name: Cagnazzo, Chiara
+    institute: CNR, Italy
+    email: chiara.cagnazzo 'at' cnr.it
+  caro_lo:
+    name: Caron, Louis-Philippe
+    institute: BSC, Spain
+    email: louis-philippe.caron 'at' bsc.es
   chen_ja:
     name: Chen, Jack
     institute: NCAR, USA
@@ -80,14 +100,26 @@ authors:
     name: Cionni, Irene
     institute: ENEA, Italy
     email: irene.cionni 'at' enea.it
+  cort_ni:
+    name: Nicola Cortesi
+    institute: BSC, Spain
+    email: nicola.cortesi 'at' bsc.es
   crez_ba:
     name: Crezee, Bas
-    institute: ETH Zürich, Switzerland
+    institute: ETH Zurich, Switzerland
     email: bas.crezee 'at' env.ethz.ch
+  mohr_cw:
+    name: Mohr, Christian Wilhelm
+    institute: Cicero, Norway
+    email: c.w.mohr 'at' cicero.oslo.no
   davi_ed:
     name: Davin, Edouard Leopold
-    institute: ETH Zürich, Switzerland
+    institute: ETH Zurich, Switzerland
     email: edouard.davin 'at' env.ethz.ch
+  davi_pa:
+    name: Davini, Paolo
+    institute: CNR-ISAC, Italy
+    email: p.davini 'at' isac.cnr.it
   ehbr_ca:
     name: Ehbrecht, Carsten
     institute: DKRZ, Germany
@@ -96,6 +128,10 @@ authors:
     name: Frank, Franziska
     institute: DLR, Germany
     email: franziska.frank 'at' dlr.de
+  fuck_ne:
+    name: Neven Fuckar
+    institute: BSC, Spain
+    email: neven.fuckar 'at' bsc.es
   gain_al:
     name: Gainusa-Bogdan, Alina
     institute: France
@@ -107,10 +143,18 @@ authors:
     name: Gettelman, Andrew
     institute: NCAR, USA
     email: andrew 'at' ucar.edu
+  gier_be:
+    name: Gier, Bettina
+    institute: University of Bremen, Germany
+    email: gier 'at' uni-bremen.de
   gott_kl:
     name: Gottschaldt, Klaus-Dirk
     institute: DLR, Germany
     email: klaus-dirk.gottschaldt 'at' dlr.de
+  guem_vi:
+    name: Guemas, Virginie
+    institute: BSC, Spain
+    email: virginie.guemas 'at' bsc.es
   hage_st:
     name: Hagemann, Stefan
     institute: MPI-M, Germany
@@ -130,6 +174,10 @@ authors:
     name: Hempelmann, Nils
     institute: IPSL, France
     email: nils.hempelmann 'at' ipsl.jussieu.fr
+  hunt_al:
+    name: Hunter, Alasdair
+    institute: BSC, Spain
+    email: alasdair.hunter 'at' bsc.es
   hutj_ro:
     name: Hutjes, Ronald
     institute: Univ. of Wageningen, NL
@@ -154,6 +202,10 @@ authors:
     name: Kunert, Dominik
     institute: DLR, Germany
     email: dominik.kunert 'at' dlr.de
+  lemb_va:
+    name: Lembo, Valerio
+    institute: CEN, University of Hamburg
+    email: valerio.lembo 'at' uni-hamburg.de
   levi_ri:
     name: Levine, Richard
     institute: MetOffice, UK
@@ -162,20 +214,36 @@ authors:
     name: Little, Bill
     institute: MetOffice, UK
     email: bill.little 'at' metoffice.gov.uk
+  lled_ll:
+    name: Lledó, Llorenç
+    institute: BSC, Spain
+    email: llorenç.lledo 'at' bsc.es
   lore_ru:
     name: Lorenz, Ruth
     institute: ETH Zurich, Switzerland
     email: ruth.lorenz 'at' env.ethz.ch
+  lova_to:
+    name: Lovato, Tomas
+    institute: CMCC, IT
+    email: tomas.lovato 'at' cmcc.it
   maek_ja:
     name: Makela, Jarmo
   malo_er:
     name: Maloney, Eric
     institute: Colorado State University
     email: emaloney 'at' atmos.colostate.edu
+  manu_ni:
+    name: Manubens, Nicolau
+    institute: BSC, Spain
+    email: nicolau.manubens 'at' bsc.es
   maso_er:
     name: Mason, Erik
     institute: NOAA, USA
     email: erik.mason 'at' noaa.gov
+  sand_ma:
+    name: Sandstad, Marit
+    institute: Cicero, Norway
+    email: marit.sandstad 'at' cicero.oslo.no
   mass_fr:
     name: Massonnet, Francois
     institute: Spain
@@ -183,6 +251,10 @@ authors:
     name: Martin, Gill
     institute: MetOffice, UK
     email: gill.martin 'at' metoffice.gov.uk
+  mavi_ir:
+    name: Mavilia, Irene
+    institute: ISAC-CNR, Bologna, Italy
+    email: i.mavilia 'at' isac.cnr.it
   mell_fe:
     name: Mello, Felipe
     institute: INPE, Brazil
@@ -197,6 +269,10 @@ authors:
   nobr_pa:
     name: Nobre, Paulo
     institute: INPE, Brazil
+  gonz_nu:
+    name: González-Reviriego, Nube
+    institute: BSC, Spain
+    email: nube.gonzalez 'at' bsc.es
   oliv_ar:
     name: Oliveira, Arildo
     institute: INPE, Brazil
@@ -228,6 +304,10 @@ authors:
     name: Senftleben, Daniel
     institute: DLR, Germany
     email: daniel.senftleben 'at' dlr.de
+  serv_fe:
+    name: Serva, Federico
+    institute: CNR, Italy
+    email: federico.serva 'at' artov.isac.cnr.it
   somm_ph:
     name: Sommer, Philipp
     institute: Univ. of Hamburg, Germany
@@ -240,10 +320,18 @@ authors:
     name: Sterl, Andreas
     institute: KNMI, Netherlands
     email: sterl 'at' knmi.nl
+  swam_ra:
+    name: Swaminathan, Ranjini
+    institute: University of Reading, UK
+    email: r.swaminathan 'at' reading.ac.uk
   teic_ca:
     name: Teichmann, Claas
     institute: CSC2, Germany
     email: claas.teichmann 'at' hzg.de
+  torr_ve:
+    name: Veronica Torralba
+    institute: BSC, Spain
+    email: veronica.torralba 'at' bsc.es
   tsus_yo:
     name: Tsushima, Yoko
     institute: MetOffice, UK
@@ -263,6 +351,10 @@ authors:
     name: Wang, Shiyu
     institute: SMHI, Sweden
     email: shiyu.wang 'at' smhi.se
+  weig_ka:
+    name: Weigel, Katja
+    institute: University of Bremen and DLR, Germany
+    email: weigel 'at' iup.physik.uni-bremen.de
   wenz_sa:
     name: Wenzel, Sabrina
     institute: DLR, Germany
@@ -288,6 +380,10 @@ authors:
     name: Charlton-Perez, Andrew
     institute: Univ. of Reading, UK
     email: a.j.charlton-perez 'at' reading.ac.uk
+  cort_su:
+    name: Corti, Susanna
+    institute: ISAC-CNR, Torino, Italy
+    email: s.corti 'at' isac.cnr.it
   denn_jo:
     name: Dennis, John
     institute: NCAR, USA
@@ -394,6 +490,10 @@ authors:
     name: Pascoe, Stephen
     institute: STFC, UK
     email: stephen.pascoe 'at' stfc.ac.uk
+  pere_nu:
+    name: Perez_Zanon, Nuria
+    institute: BSC, Spain
+    email: nuria.perez 'at' bsc.es
   stev_ma:
     name: Stevens, Mark
     institute: NCAR, US
@@ -427,22 +527,34 @@ authors:
     name: Tilmes, Simone
     institute: NCAR, US
     email: tilmes 'at' ucar.edu
+  lova_to:
+    name: Lovato, Tomas
+    institute: CMCC, IT
+    email: tomas.lovato 'at' cmcc.it
+
+
 
 
 references:
   acknow_author: "Please acknowledge the author(s)."
   contact_authors: "Please contact the author(s) to discuss acknowledgment or co-authorship."
   acknow_project: "Please acknowledge the project(s)."
+  alexander: "Alexander L.V., et al., J. Geophys. Res., 111, D05109, doi:10.1029/2005JD006290"
   anav13jclim: "Anav et al., J. Clim., 26, 6801-6843, doi:10.1175/JCLI-D-12-00417.1, 2013."
   andrews12grl: "Andrews et al., Geophys. Res. Lett., 39, L09712, doi:10.1029/2012GL051607, 2012."
   antonov10usgov: "Antonov, J. I. et al., World Ocean Atlas 2009, Volume 2: Salinity. S. Levitus, Ed. NOAA Atlas NESDIS 69, U.S. Government Printing Office, Washington, D.C., 184 pp., 2010."
   aquila11gmd: "Aquila et al., Geosci. Model Dev. 4, 325-355, doi:10.5194/gmd-4-325-2011, 2011."
   bakker14essd: "Bakker, D. C. E. et al., Earth Syst. Sci. Data, 6, 69-90, doi:10.5194/essd-6-69-2014, 2014."
+  baldwin09qjrms: "Baldwin, D. P. et al., Q. J. R. Meteorol. Soc., 135, 1661-1672, doi:10.1002/qj.479, 2009"
   bianchi12gbc: "Bianchi, D. et al., Global Biogeochem. Cy., 26, GB2009, doi:10.1029/2011GB004209, 2012."
   cionni11acp: "Cionni et al., Atmos. Chem. Phys., 11, 11267-11292, doi:10.5194/acp-11-11267-2011, 2011."
   clivar09jclim: "CLIVAR Madden-Julian Oscillation Working Group, J. Climate, 22, 3006-3030, doi:10.1175/2008JCLI2731.1, 2009."
-  cox18nature: "Cox, P. M. et al., Nature, 553, 319-322, doi:10.1038/nature25450, 2018."
   collins13ipcc: "Collins, M. et al., Long-term climate change: Projections, Commitments, and Irreversibility, in: Climate Change 2013: the Physical Science Basis, contribution of Working Group I to the Fifth Assessment Report of the Intergovernmental Panel on Climate Change, edited by: Stocker, T. F., Qin, D., Plattner, G.-K., Tignor, M., Allen, S. K., Boschung, J., Nauels, A., Xia, Y., Bex, V., and Midgley, P. M., Cambridge University Press, Cambridge, UK and New York, NY, USA (2013)."
+  corti99nat: "Corti, S. et al. Nature 398, 799-801, doi:10.1038/19745"
+  cox18nature: "Cox, P. M. et al., Nature, 553, 319-322, doi:10.1038/nature25450, 2018."
+  davini12jclim: "Davini P., C. Cagnazzo, S. Gualdi, and A. Navarra. J. Climate, 25, 6496-6509, doi: 10.1175/JCLI-D-12-00032.1, 2012"
+  davini18: "Davini, P. MiLES - Mid Latitude Evaluation System. Zenodo. doi:10.5281/zenodo.1237837, 2018"
+  deangelis15nat: "DeAngelis, A. M. et al., Nature, 528(7581), 249-253, doi:10.1038/nature15770, 2015."
   demora2018gmd: "de Mora et al., Geosci. Model Dev., 11, 4215-4240, doi:10.5194/gmd-11-4215-2018, 2018."
   dong08grl: "Dong, S. et al., J. Geophys. Res., 113, C06013, doi:10.1029/2006JC004051, 2008."
   donofrio14jh: "D'Onofrio et al., J of Hydrometeorology 15, 830-843, 2014."
@@ -451,7 +563,11 @@ references:
   eyring06jgr: "Eyring et al., J. Geophys. Res., 111, D22308, doi:10.1029/2006JD007327, 2006."
   eyring13jgr: "Eyring et al., J. Geophys. Res., 118, 5029-5060, doi:10.1002/jgrd.50316, 2013."
   flato13ipcc: "Flato, G. et al., Evaluation of climate models, in: Climate Change 2013: the Physical Science Basis, 2013."
+  fuckar: "Fuckar et al., Clima Dynam, 47, 5-6, 1527-1543, doi:10.1007/s00382-015-2917-2, 2016."
   gen14jclim: "Gen, L. et al., J. Climate, 27, 1765-1780, doi:10.1175/JCLI-D-13-00337.1, 2014."
+  georgievski18tac: "Georgievski, G. & Hagemann, S. Theor Appl Climatol (2018). https://doi.org/10.1007/s00704-018-2675-2"
+  giorgi11jc: "Giorgi et al., J. Climate 24, 5309-5324, doi:10.1175/2011JCLI3979.1, 2011."
+  giorgi14jgr: "Giorgi et al., J. Geophys. Res. Atmos., 119, 11695-11708, doi:10.1002/ 2014JD022238, 2014."
   gleckler08jgr: "Gleckler et al., J. Geophys. Res., 113, D06104, doi:10.1029/2007JD008972, 2008."
   goswami99qjrms: "Goswami, B., V. Krishnamurthy, and H. Annamalai, Q. J. R. Meteorol. Soc., 125, 611-633, doi:10.1002/qj.49712555412, 1999."
   hagemann13james: "Hagemann et al., J. Adv. Model. Earth Syst., 5, doi:10.1029/2012MS000173, 2013."
@@ -460,80 +576,72 @@ references:
   kim09jclim: "Kim, D. et al., J. Climate, 22, 6413-6436, doi:10.1175/2009JCLI3063.1, 2009."
   kim12grl: "Kim and Yu, Geophys. Res. Lett., 39, L11704, doi:10.1029/2012GL052006, 2012."
   key04gbc: "Key, R. M. et al., Global Biogeochem. Cy., 18, GB4031, doi:10.109/2004GB002247, 2004."
+  landschuetzer2016: "Landschuetzer, P., Gruber, N., Bakker, D. C. E.: Decadal variations and trends of the global ocean carbon sink, Global Biogeochemical Cycles, 30, doi:10.1002/2015GB005359 (2016)"
   lauer05acp: "Lauer et al., Atmos. Chem. Phys., 5, 3251-3276, doi:10.5194/acp-5-3251-2005, 2005."
   lauer13jclim: "Lauer and Hamilton, J. Climate, 26, 3823-3845, doi:10.1175/JCLI-D-12-00451.1, 2013."
   lauer17rse: "Lauer et al., Remote Sens. Environ., 203, 9-39, doi:10.1016/j.rse.2017.01.007, 2017."
+  lembo16climdyn: "Lembo et al., Clim. Dyn., 48, 1793-1812, doi:10.1007/s00382-016-3173-9"
+  lembo19gmdd: "Lembo et al., Geosci. Model Dev. Discuss., doi:10.5194/gmd-2019-37, 2019"
   li14jclim: "Li and Xie, J. Climate, 27, 1765-1780, doi:10.1175/JCLI-D-13-00337.1, 2014."
+  li17natcc: "Li, G., S.-P. Xie, C. He, and Z. Chen, Nat Clim Change, 7, 708, doi:10.1038/nclimate3387, 2017."
   lin08jclim: "Lin, J-L. et al., J. Climate, 21, 4541-4567, doi: 10.1175/2008JCLI1816.1, 2008."
   lloyd-hughes02jclim: "Lloyd-Hughes, B. and Saunders, M. A., Int. J. Climatol., 22, 1571-1592, doi:10.1002/joc.846, 2002."
   locarini10usgov: "Locarnini, R. A. et al., World Ocean Atlas 2009, Volume 1: Temperature. S. Levitus, Ed. NOAA Atlas NESDIS 68, U.S. Government Printing Office, Washington, D.C., 184 pp.,2010."
+  lucarini14revgeop: "Lucarini et al., Rev. Geophys., 52, 809-859, doi:https://doi.org/10.1002/2013RG000446"
+  mehran14jgr: "Mehran, A. et al., J. Geophys. Res., 119, 4, 1695-1707, doi: 10.1002/2013JD021152, 2014." 
+  manubens:  "Manubens, N., et al., ENVIRON MODELL SOFTW 103, 29-42. doi:10.1016/j.envsoft.2018.01.018"
+  mckee93: "McKee, T. B. and Doesken, N. J. and Kleist, J.  In Proceedings of the 8th Conference on Applied Climatology, 17(22), 179-183, Boston, MA: American Meteorological Society, 1993."
   mueller14grl: "Mueller, B. and Seneviratne, S. I. Geophys. Res. Lett., 41, 128-134, doi:10.1002/2013GL058055, 2014."
   mueller13hess: "Mueller, B. et al., Hydrol. Earth Syst. Sci., 17, 3707-3720, doi:10.5194/hess-17-3707-2013, 2013."
   phillips14eos: "Phillips, A. S. et al., EOS T. Am. Geophys. Un., 95, 453-455, 2014."
   rebora06jhm: "Rebora et. al., JHM 7, 724, 2006."
   righi13acp: "Righi et al., Atmos. Chem. Phys., 13, 9939-9970, doi:10.5194/acp-13-9939-2013, 2013."
   righi15gmd: "Righi et al., Geosci. Model Dev., 8, 733-768 doi:10.5194/gmd-8-733-2015, 2015."
+  rk2008bams: "Reichler and Kim, Bull. Amer. Meteor. Soc., 89, 303-312, doi:10.1175/BAMS-89-3-303, 2008."
   roedenbeck13os: "Roedenbeck, C. et al., Ocean Sci., 9, 193-216, doi:10.5194/os-9-193-2013, 2013."
   roehrig13jclim: "Roehrig, R. et al., J. Climate, 26, 6471-6505, doi:10.1175/JCLI-D-12-00505.1, 2013."
   sperber12asl: "Sperber and Kim, Atmos. Sci. Lett., 13, 3, 187-193, doi:10.1002/asl.378, 2012."
+  straus07jcli: "Straus, D.M., S. Corti, and F. Molteni. J. Climate, 20, 2251-2272, doi:10.1175/JCLI4070.1, 2007"
   stroeve07grl: "Stroeve, J. et al., Geophys. Res. Lett., 34, L09501, doi:10.1029/2007GL029703, 2007."
+  tibaldi90tel: "Tibaldi S. and Molteni F. Tellus A 42(3): 343-365, doi:10.1034/j.1600-0870.1990.t01-2-00003.x, 1990."
   taylor12: "Taylor et al., Nature, 489, 423-426, doi:10.1038/nature11377, 2012."
+  terzago18nhess: "Terzago, S. et al., Nat. Hazards Earth Syst. Sci., 18, 2825-2840, doi:10.5194/nhess-18-2825-2018, 2018."
   takahashi14marchem: "Takahashi et al., Mar. Chem., 164, 95-125, doi:10.1016/j.marchem.2014.06.004, 2014."
+  vicente10jclim: "Vicente-Serrano, S. M. and Beguería, S. and López-Moreno, J. I., Journal of climate, 23(7), 1696-1718, 10.1175/2009JCLI2909.1, 2010"
   wang99bams: "Wang, B. and Z. Fan, Bull. Amer. Meteor. Soc., 80, 629-638, doi:10.1175/1520-0477(1999)080&lt;0629:COSASM&gt;2.0.CO;2, 1999."
   wang11climdyn: "Wang, B. et al., Clim. Dyn., 39, 1123-1135, doi:10.1007/s00382-011-1266-z, 2011."
   webster92qjrms: "Webster, P. J. and Yang, S., Q.J.R. Meteorol. Soc., 118: 877-926. doi:10.1002/qj.49711850705, 1992."
   weedon14wrr: "Weedon, G. P. et al., Water Resour. Res., 50, 7505-7514, doi:10.1002/2014WR015638, 2014."
+  weigel: "Weigel, A P., et al., Q. J. Royal Meteorol. Soc. 134, 630, 241-260. doi:10.1002/qj.210"
   wenzel14jgr: "Wenzel et al., J. Geophys. Res. Biogeosci., 119(5), doi:2013JG002591, 2014."
   wenzel16jclim: "Wenzel et al., J. Climate, 29, 673-687, doi:10.1175/JCLI-D-15-0412.1, 2016"
   williams09climdyn: "Williams and Webb, Clim. Dynam., 33, 141-157, doi:10.1007/s00382-008-0443-1, 2009."
-
-observation references:
-  access2: "ACCESS2 - Roiger et al., accepted"
-  aeronet: "AERONET - See http://aeronet.gsfc.nasa.gov/new_web/data_usage.html"
-  airs: "AIRS"
-  auramls: "Aura MLS"
-  cirrus: "CIRRUS - Baumgardner et al., Environ. Res. Lett., 3, 025010, 2008."
-  castnet: "CASTNET - See http://epa.gov/castnet/javaweb/index.html"
-  ceresebaf: "CERES-EBAF"
-  concert: "CONCERT - Dahlkoetter et al., Atmos. Chem. Phys., 14, 6111-6137, 2014."
-  cr-ave: "CR-AVE - Schwarz et al., J. Geophys. Res., 113, D03203, 2008."
-  dc3: "DC3 - B. Weinzierl (DLR)"
-  duemenil00mpi: "GRDC station observations - Duemenil et al., Max Planck Institute for Meteorology Report 307, Hamburg, Germany, 2000."
-  eanet: "EANET - See http://www.eanet.cc/"
-  emep: "EMEP - See http://www.emep.int/"
-  emmons00jgr: "Emmons et al., J. Geophys. Res., 105, D16, 20497-20538, 2000."
-  era40: "ERA40"
-  erainterim: "ERA-Interim"
-  esacci-aerosol: "ESACCI-AEROSOL - Popp, T. et al. (2015): ESA Aerosol Climate Change Initiative (ESA Aerosol_cci) data: AOD v4.21 via Centre for Environmental Data Analysis, May 2016"
-  esacci-landcover: "ESACCI-LANDCOVER - Defourny et al. (2015): ESA Land Cover Climate Change Initiative (ESA LC_cci) data: ESACCI-LC-L4-LCCS-Map-300m-P5Y-[2000,2005,2010]-v1.6.1 via Centre for Environmental Data Analysis"
-  esacci-sm: "ESACCI-SOILMOISTURE - Liu, et al. (2011), Hydrology and Earth System Sciences, 15, 425-436; Liu, et al. (2012), Remote Sensing of Environment, 123, 280-297; Wagner, et al. (2012), Remote Sensing and Spatial Information Sciences, Volume I-7"
-  esacci-sst: "ESACCI-SST - Merchant, et al. (2014): ESA Sea Surface Temperature Climate Change Initiative (ESA SST CCI): Analysis long term product version 1.0, NERC Earth Observation Data Centre, 24th February 2014, doi:10.5285/878bef44-d32a-40cd-a02d-49b6286f0ea4."
-  haloe: "HALOE"
-  hippo: "HIPPO - Schwarz et al., Geophys. Res. Lett., 40, 5542-5547, 2013."
-  improve: "IMPROVE - See http://vista.cira.colostate.edu/improve/data/improve/improve_data.htm"
-  inca: "INCA - Minikin et al., Geophys. Res. Lett., 30, 1503, 2003."
-  isccp_d1: "ISCCP D1 - Rossow and Schiffer, Bull. Amer. Meteor. Soc., 80, 2261-2287, 1999."
-  king03tgrs: "MODIS-CFMIP - King, M. D., et al., IEEE Trans. Geosci. Remote Sens., 41, 442-458, 2003."
-  ncep: "NCEP - Kalnay et al., Bull. Amer. Meteor. Soc., 77, 437-470, 1996."
-  misr: "MISR"
-  modis: "MODIS"
-  niwa: "NIWA"
-  odell08jcli: "UWisc - O'Dell et al., J. Climate, 21, 1721-1739, 2008."
-  lace1: "LACE - Petzold et al., J. Geophys. Res., 107, D21, 8128, 2002."
-  lace2: "LACE - Schroeder et al., J. Geophys. Res., 107, D21, 8126, 2002."
-  oct-ave: "Oct-AVE - Schwarz et al., J. Geophys. Res., 111, D16207, 2006."
-  pincus08jcli: "MODIS-CFMIP - Pincus et al., J. Climate, 25, 4699-4720, 2012."
-  saltrace1: "SALTRACE - B. Weinzierl (DLR)"
-  saltrace2: "SALTRACE - K. Fomba (TROPOS)"
-  samum1: "SAMUM - Weinzierl et al., Tellus B, 2009."
-  samum2: "SAMUM - K. Kandler (TU Darmstadt)"
-  srb: "SRB"
-  tc4: "TC4 - Spackman et al., Geophys. Res. Lett., 38, L09803, 2011."
-  ucnpacific: "UCN-Pacific - Clarke and Kapustin, J. Atmos. Sci. 59, 363, 2002."
-  ukmo: "UKMO"
-  weedon14waterresourres: "WFDEI - Weedon et al., Water Resour. Res. 50, 2014."
+  # Observations
+  aura-tes: "Beer, R., IEEE Trans. Geosci. Rem. Sens., doi:10.1109/TGRS.2005.863716, 2006."
+  ceres-syn1deg: "Wielicki et al., Bull. Amer. Meteor. Soc., doi: 10.1175/1520-0477(1996)077<0853:CATERE>2.0.CO;2, 1996."
+  cru: "Harris, I. et al., Int. J. Climatol., 34, doi: 10.1002/joc.3711, 2014."
+  era-interim: "Dee, D. P. et al., Q. J. Roy. Meteor. Soc., doi:10.1002/qj.828, 2011."
+  esacci-aerosol: "Popp et al., ESA Aerosol Climate Change Initiative (ESA Aerosol_cci) data: AOD v4.21 via Centre for Environmental Data Analysis, 2016."
+  esacci-cloud: "Stengel et al., Earth Syst. Sci. Data, doi:10.5194/essd-9-881-2017, 2017."
+  esacci-fire: "Not available."
+  esacci-landcover: "Defourny et al.. ESA Land Cover Climate Change Initiative (ESA LC_cci) data, 2015."
+  esacci-oc: "Volpe, G., et al., 2018. PRODUCT USER MANUAL. http://resources.marine.copernicus.eu/documents/PUM/CMEMS-OC-PUM-009-ALL.pdf"
+  esacci-ozone: "Loyola et al., Int. J. Remote Sens. doi:10.1080/01431160902825016, 2009."
+  esacci-soilmoisture: "Not available."
+  esacci-sst: "Merchant et al., Geosci. Data J., doi:10.1002/gdj3.20, 2014."
+  hadisst: "Rayner et al., J. Geophys. Res., doi:10.1029/2002JD002670, 2013."
+  landflux-eval: "Mueller, B. et al., Hydrol. Earth Syst. Sci., 17, 3707-3720, doi:10.5194/hess-17-3707-2013, 2013."
+  modis: "Not available."
+  mte: "Jung et al., J. Geophys. Res., 116, doi:10.1029/2010JG001566, 2011."
+  ncep: "Kalnay et al., B. Am. Meteorol. Soc., doi:10.1175/1520-0477(1996)077<0437:TNYRP>2.0.CO;2, 1996."
+  niwa-bs: "Bodeker et al., Atmos. Chem. Phys., doi:10.5194/acp-5-2603-2005, 2005."
+  patmos-x: "Heidinger et al., NOAA National Centers for Environmental Information, doi:10.7289/V5348HCK, last access: 10 February 2019."
+  woa: "Locarnini et al., World Ocean Atlas 2013, Vol. 1: Temperature, 2013."
+  zhang-2011: "Zhang et al., WIREs Clim. Change, doi:10.1002/wcc.147, 2011"
+  sillman-2013: "Sillmann et al., J. Geophys. Res., doi:10.1029/2012JD018390, 2013" 
 
 projects:
+  c3s-magic: Copernicus Climate Change Service 34a Lot 2 (MAGIC) project
   climval: BMBF MiKlip Project ClimVal
   cmip6dicad: BMBF CMIP6 Project Germany
   cmug: ESA CMUG
@@ -542,8 +650,9 @@ projects:
   dlrveu2: DLR project VEU2
   embrace: EU FP7 project EMBRACE
   esmval: DLR project ESMVal
+  eval4cmip: DLR and University of Bremen project funded by the Initiative and Networking Fund of the Helmholtz Society
   qa4ecv: QA4ECV
-  c3s-magic: Copernicus Climate Change Service 34a Lot 2 (MAGIC) project
+  trr181: DFG Project TRR-181
   ukesm: UKESM, UK Earth System Model project (NERC)
 
 realms:
@@ -572,24 +681,35 @@ themes:
   varmodes: modes of variability
 
 domains:
+  eq: equatorial
   et: extra tropics
   global: global
-  midlat: mid-latittudes
+  midlat: mid-latitudes
   nh: northern hemisphere
+  nhext: northern extra tropics
+  nhmidlat: northern mid-latitudes
+  nhpolar: northern polar
+  nhtrop: northern tropics
   polar: polar
   reg: regional
   sh: southern hemisphere
+  shext: southern extra tropics
+  shmidlat: southern mid-latitudes
+  shpolar: southern polar
+  shtrop: southern tropics
   trop: tropics
 
 plot_types:
   errorbar: error bar plot
   bar: bar chart
+  circle: different overlapping circles
   diurn: diurnal cycle
   geo: geographical distribution
   portrait: portrait diagram
   polar: polar-stereographic plot
   scatter: scatter plot
   seas: seasonal cycle
+  sect: meridional section
   size: size-distribution
   vert: vertical profile
   taylor: taylor diagram
@@ -614,4 +734,5 @@ statistics:
   perc: percentiles
   median: median
   detrend: detrend
+  smpi: single metric performance index statistics
   other: other statistics

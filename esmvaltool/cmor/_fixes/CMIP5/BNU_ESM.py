@@ -1,6 +1,7 @@
 # pylint: disable=invalid-name, no-self-use, too-few-public-methods
 """Fixes for BNU ESM model."""
 from cf_units import Unit
+from dask import array as da
 
 from ..fix import Fix
 
@@ -159,10 +160,9 @@ class tro3(Fix):
     """Fixes for tro3"""
 
     def fix_data(self, cube):
-        """
-        Fix data
+        """Fix data.
 
-        Fixes cube units
+        Fixes cube units.
 
         Parameters
         ----------
@@ -177,6 +177,28 @@ class tro3(Fix):
         cube *= 1.e9
         cube.metadata = metadata
         return cube
+
+
+class od550aer(Fix):
+    """Fixes for od550aer."""
+
+    def fix_data(self, cube):
+        """
+        Fix data.
+
+        Masks invalid values.
+
+        Parameters
+        ----------
+        cube: iris.cube.Cube
+
+        Returns
+        -------
+        iris.cube.Cube
+
+        """
+        data = da.ma.masked_equal(cube.core_data(), 1.e36)
+        return cube.copy(data)
 
 
 # No clear way to apply this fix now that we are working with cubes, not files
