@@ -49,8 +49,8 @@ function taylor_plot(wks_in[1],
 ;                 plot frame: one for the variables (markers) and one for the
 ;                 models (numbers).
 ;
-; Modification history:
-;    20150505-A_righ_ma: written based on the original NCL code.
+; Modification history
+;    20150505-righi_mattia: written based on the original NCL code.
 ;
 local funcname, scriptname
 begin
@@ -463,8 +463,8 @@ function taylor_diagram(wks:graphic,
 ;
 ; Caveats
 ;
-; Modification history:
-;    20190605-A_righ_ma: ported from v1.
+; Modification history
+;    20190605-righi_mattia: ported from v1.
 ;
 local dimR, nCase, nVar, X, Y, nc, angle, xyMin, xyOne, ceil_max_val, xyMax, \
   xyMax_Panel, FontHeightF, rxy, tempo_values, tempo_values1, temp_string, \
