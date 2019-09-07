@@ -53,36 +53,38 @@
 ; Caveats
 ;
 ; Modification history
-;    20190405-A_righ_ma: added provenance logging
-;    20190315-A_hass_bg: extended to smpi metric
-;    20180503-A_righ_ma: completely rewritten and modularized
-;    20171215-A_righ_ma: merged with perfmetrics_grading and
-;                        permetrics_taylor.ncl
-;    20171124-A_righ_ma: completely revised to adapt it to the new backend
-;                        (level selection, regridding and masking now done
-;                        by the python preprocessor)
-;    20161220-A_laue_ax: added option to set map projection for lat-lon plots
-;                        (diag_script_info@projection)
-;                        added option to choose how to plot t-test results:
-;                        stippling or masking out in gray (lat-lon plots only)
-;    20161019-A_laue_ax: changed plotting of t-test results:
-;                        now stippling significant grid cells (old version:
-;                        masking out non-significant values in gray)
-;    20160628-A_righ_ma: moving ref_model specification from cfg- files to
+;    20190405-righi_mattia: added provenance logging
+;    20190315-hassler_birgit: extended to smpi metric
+;    20180503-righi_mattia: completely rewritten and modularized
+;    20171215-righi_mattia: merged with perfmetrics_grading and
+;                           permetrics_taylor.ncl
+;    20171124-righi_mattia: completely revised to adapt it to the new backend
+;                           (level selection, regridding and masking now done
+;                           by the python preprocessor)
+;    20161220-lauer_axel: added option to set map projection for lat-lon plots
+;                         (diag_script_info@projection)
+;                         added option to choose how to plot t-test results:
+;                         stippling or masking out in gray (lat-lon plots only)
+;    20161019-lauer_axel: changed plotting of t-test results:
+;                         now stippling significant grid cells (old version:
+;                         masking out non-significant values in gray)
+;    20160628-righi_mattia: moving ref_model specification from cfg- files to
 ;                        recipe file
-;    20160628-A_senf_da: added regridding for irregular grids (ESMF_regrid).
-;    20151027-A_laue_ax: moved call to 'write_references' to the beginning
-;                        of the code.
-;    20151013-A_righ_ma: fixed t-test mask in lat-lon difference plots.
-;    20150325-A_laue_ax: modified reference tags used for acknowledgements
-;                        (projects, observations, etc.).
-;    20150119-A-gott_kl: removed "grid", "region" from req_atts
-;                        (for T2Ms vmrco).
-;    20150113-A_gott_kl: reconciled generalised regridding with T1* & T0*
-;    20140905-A_righ_ma: consistent regridding and missing values mask.
-;    20140701-A_gott_kl: Adapted for T1M.
-;    20140630-A_gott_kl: Adapted for T0Ms.
-;    20131203-A_fran_fr: written.
+;    20160628-senftleben_daniel: added regridding for irregular grids
+;                                (ESMF_regrid).
+;    20151027-lauer_axel: moved call to 'write_references' to the beginning
+;                         of the code.
+;    20151013-righi_mattia: fixed t-test mask in lat-lon difference plots.
+;    20150325-lauer_axel: modified reference tags used for acknowledgements
+;                         (projects, observations, etc.).
+;    20150119-gottschaldt_klaus-dirk: removed "grid", "region" from req_atts
+;                                     (for T2Ms vmrco).
+;    20150113-gottschaldt_klaus-dirk: reconciled generalised regridding with
+;                                     T1* & T0*
+;    20140905-righi_mattia: consistent regridding and missing values mask.
+;    20140701-gottschaldt_klaus-dirk: Adapted for T1M.
+;    20140630-gottschaldt_klaus-dirk: Adapted for T0Ms.
+;    20131203-frank_franziska: written.
 ;
 ; #############################################################################
 

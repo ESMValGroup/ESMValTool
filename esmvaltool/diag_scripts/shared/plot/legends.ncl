@@ -35,15 +35,15 @@ function legend_lines(wks_in[1],
 ;     source@nrow: number of rows (optional)
 ;     source@ncol: number of columns (optional)
 ;
-; Returns value
-;    wks : Workstation with legend
+; Return value
+;    wks: workstation with legend
 ;
 ; Description
 ;    Creates an extra plot with a legend, specified by labels and line styles.
 ;    It will be saved in the outfile directory and returned as a workstation
 ;
-; Modification history:
-;    20140326 A-gott_kl: written based on code by A-fran_fr
+; Modification history
+;    20140326-gottschaldt_klaus-dirk: written based on code by frank_franziska
 ;
 local data, defaults, var, diag_script, colors, annots, dashes, thicks
 begin
@@ -200,12 +200,12 @@ function legend_markers(wks_in[1],
 ; Return value
 ;    wks: workstation with legend
 ;
-; Description:
+; Description
 ;    Creates an extra plot with a legend, specified by labels and line styles.
 ;    It will be saved in the outfile directory and returned as a workstation
 ;
-; Modification history:
-;    20140326 A-wenz_sa: written based on legend_lines.
+; Modification history
+;    20140326-wenzel_sabrina: written based on legend_lines.
 ;
 local data, defaults, var, diag_script, colors, annots, dashes, thicks
 begin
