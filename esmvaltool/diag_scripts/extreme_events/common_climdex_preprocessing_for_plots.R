@@ -13,9 +13,10 @@
 #    and producing timemeans.
 #
 # Modification history
-#    2019 0506-hard_jo        : Conversion to ESMValTool2
-#    2018 0725-A_cwmohr       : Modification of setTimeForFilesEqual() function
-#    2017 0920-A_maritsandstad: Creation
+#    20190506-vonhardenberg_jost:    conversion to ESMValTool2
+#    20180725-mohr_christianwilhelm: modification of setTimeForFilesEqual()
+#                                    function
+#    2017 0920-sandstad_marit:       creation
 #
 # #############################################################################
 
