@@ -49,15 +49,15 @@
 ;   none
 ;
 ; Modification history
-;   20190220-A_laue_ax: added output of provenance (v2.0)
-;   20181119-A_laue_ax: adapted code to multi-variable capable framework
-;   20180923-A_laue_ax: added writing of results to netcdf
-;   20180518-A_laue_ax: code rewritten for ESMValTool v2.0
-;   20170621-A_laue_ax: reworked code to add tags for reporting
-;   20160901-A_laue_ax: added regridding option 1 deg x 1 deg
-;   20151027-A_laue_ax: moved call to 'write_references' to the beginning
-;                       of the code
-;   20150415-A-laue_ax: written.
+;   20190220-lauer_axel: added output of provenance (v2.0)
+;   20181119-lauer_axel: adapted code to multi-variable capable framework
+;   20180923-lauer_axel: added writing of results to netcdf
+;   20180518-lauer_axel: code rewritten for ESMValTool v2.0
+;   20170621-lauer_axel: reworked code to add tags for reporting
+;   20160901-lauer_axel: added regridding option 1 deg x 1 deg
+;   20151027-lauer_axel: moved call to 'write_references' to the beginning
+;                        of the code
+;   20150415-lauer_axel: written.
 ;
 ; ############################################################################
 
