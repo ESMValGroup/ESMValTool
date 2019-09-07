@@ -9,13 +9,16 @@
 #    Code to plot a timeseries plot for a set of climdex indices
 #
 # Modification history
-#    2019 0506-hard_jo : conversion to ESMValTool2
-#    2018 0816-A_cwmohr: adding input procedure and plotting for/of observation data
-#    2018 0725-A_cwmohr: modification of time croppin
-#    2018 0618-A_cwmohr: alpha levels for polygon plotting, second y-axis,
-#    2018 0131-A_laue_ax: clean-up of code, adaptation to ESMValTool standards,
-#                         added tagging, bugfixes: time axis, cdo, filenames
-#    2017 0920-A_maritsandstad: Creation
+#    20190506-vonhardenberg_jost:    conversion to ESMValTool2
+#    20180816-mohr_christianwilhelm: adding input procedure and plotting for/of
+#                                    observation data
+#    20180725-mohr_christianwilhelm: modification of time croppin
+#    20180618-mohr_christianwilhelm: alpha levels for polygon plotting,
+#                                    second y-axis,
+#    20180131-lauer_axel:            clean-up of code, adaptation to ESMValTool
+#                                    standards, added tagging, bugfixes: time
+#                                    axis, cdo, filenames
+#    2017 0920-sandstad_marit:       creation
 #
 # #############################################################################
 
