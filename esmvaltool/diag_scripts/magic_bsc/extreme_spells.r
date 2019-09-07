@@ -208,7 +208,9 @@ ggsave(filename = filepng1, g, device = NULL, dpi = "print",
         # Set provenance for output files
 
     xprov <- list(ancestors = list(projection_filenames, reference_filenames),
-                  authors = list("hunt_al", "manu_ni", "caro_lo"),
+                  authors = list("hunter_alasdair",
+                                 "manubens_nicolau",
+                                 "caron_louis-philippe"),
                   projects = list("c3s-magic"),
                   caption = title,
                   statistics = list("other"),
