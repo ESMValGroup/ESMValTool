@@ -48,7 +48,7 @@ function create_timec(y1:integer,
 ;    Create a monthly time coordinate for the given time range.
 ;
 ; Modification history
-;    20140124-A_righ_ma: written.
+;    20140124-righi_mattia: written.
 ;
 local funcname, scriptname, yy, mm, out
 begin
@@ -90,7 +90,7 @@ procedure format_time(var:numeric,
 ; References
 ;
 ; Modification history
-;    20190216-A_righ_ma: written.
+;    20190216-righi_mattia: written.
 ;
 local funcname, scriptname, ctime, ntime, year1, month1, day1, year2, month2, \
   day2, calendar, date, exp_ntime, yy, mm, m1, m2, dd, opt, newtime
@@ -324,7 +324,7 @@ procedure format_plev(var:numeric)
 ; References
 ;
 ; Modification history
-;    20190216-A_righ_ma: written.
+;    20190216-righi_mattia: written.
 ;
 local funcname, scriptname, rank, cplev, newplev
 begin
@@ -386,7 +386,7 @@ procedure format_lev(var:numeric)
 ; References
 ;
 ; Modification history
-;    20190216-A_righ_ma: written.
+;    20190216-righi_mattia: written.
 ;
 local funcname, scriptname, rank, clev, newlev
 begin
@@ -449,7 +449,7 @@ procedure format_lat(var:numeric)
 ; References
 ;
 ; Modification history
-;    20190216-A_righ_ma: written.
+;    20190216-righi_mattia: written.
 ;
 local funcname, scriptname, rank, dims, dpos, lcheck, clat, newlat
 begin
@@ -531,7 +531,7 @@ procedure format_lon(var:numeric)
 ; References
 ;
 ; Modification history
-;    20190216-A_righ_ma: written.
+;    20190216-righi_mattia: written.
 ;
 local funcname, scriptname, clon, newlon
 begin
@@ -592,7 +592,7 @@ procedure format_coords(var:numeric,
 ; References
 ;
 ; Modification history
-;    20190216-A_righ_ma: written.
+;    20190216-righi_mattia: written.
 ;
 begin
 
@@ -661,8 +661,8 @@ function read_cmor(name:string,
 ; References
 ;
 ; Modification history
-;    20190107-A_righ_ma: modify to read standard CMIP5 tables
-;    20130528-A_righ_ma: written.
+;    20190107-righi_mattia: modify to read standard CMIP5 tables
+;    20130528-righi_mattia: written.
 ;
 local funcname, scriptname, data, idxu, idxd, attn, attv, out
 begin
@@ -748,9 +748,9 @@ function format_variable(var:numeric,
 ; References
 ;
 ; Modification history
-;    20190107-A_righ_ma: add extra argument for CMOR table
-;    20161202-A_laue_ax: preserve attribute "coordinates" if present
-;    20130528-A_righ_ma: written.
+;    20190107-righi_mattia: add extra argument for CMOR table
+;    20161202-lauer_axel: preserve attribute "coordinates" if present
+;    20130528-righi_mattia: written.
 ;
 local funcname, scriptname, coordattr, out, tmp, att, ii
 begin
@@ -816,7 +816,7 @@ function guess_bounds_time(coord[*]:double,
 ; References
 ;
 ; Modification history
-;    20190217-A_righ_ma: written.
+;    20190217-righi_mattia: written.
 ;
 local funcname, scriptname, date, year, month, day, opt, units, tyear, tmonth
 begin
@@ -922,7 +922,7 @@ function guess_bounds_lev(coord[*]:double)
 ; References
 ;
 ; Modification history
-;    20190217-A_righ_ma: written.
+;    20190217-righi_mattia: written.
 ;
 local funcname, scriptname, size, top
 begin
@@ -973,7 +973,7 @@ function guess_bounds_lat(coord[*]:double)
 ; References
 ;
 ; Modification history
-;    20190217-A_righ_ma: written.
+;    20190217-righi_mattia: written.
 ;
 local funcname, scriptname
 begin
@@ -1019,7 +1019,7 @@ function guess_bounds_lon(coord[*]:double)
 ; References
 ;
 ; Modification history
-;    20190217-A_righ_ma: written.
+;    20190217-righi_mattia: written.
 ;
 local funcname, scriptname
 begin
@@ -1131,7 +1131,7 @@ function set_global_atts(obsname:string,
 ;    provided information with default ones (author, host, date, etc.).
 ;
 ; Modification history
-;    20190202-A_righ_ma: written.
+;    20190202-righi_mattia: written.
 ;
 local funcname, scriptname,
     dim_unlim, ii
@@ -1182,8 +1182,8 @@ procedure write_nc(outfile:string,
 ;    coordinates and boundaries, and append the provided global attributes.
 ;
 ; Modification history
-;    20190218_A_righ_ma: extend with coordinate bounds.
-;    20140123-A_righ_ma: written.
+;    20190218_righi_mattia: extend with coordinate bounds.
+;    20140123-righi_mattia: written.
 ;
 local funcname, scriptname, w, gAtt, dim_names, ndims, dim_sizes, dim_types, \
     dim_unlim, ii
@@ -1278,7 +1278,7 @@ procedure write_nc_profile(outfile:string,
 ;    Designed to write multiple variables for the vertical profiles data.
 ;
 ; Modification history
-;    20140422-A_righ_ma: written.
+;    20140422-righi_mattia: written.
 ;
 local funcname, scriptname, w, coords, cc, jj, locname, locvar, cname
 begin
@@ -1358,7 +1358,7 @@ function set_size_array()
 ; References
 ;
 ; Modification history
-;    20130528-A_righ_ma: written.
+;    20130528-righi_mattia: written.
 ;
 local funcname, scriptname, minsize, maxsize, nbins, bin, out
 begin
@@ -1419,8 +1419,8 @@ function process_EBAS_data(in_vars[*]:string,
 ;    currently accepted.
 ;
 ; Modification history
-;    20150413-A_righ_ma: improved time selection.
-;    20140124-A_righ_ma: written.
+;    20150413-righi_mattia: improved time selection.
+;    20140124-righi_mattia: written.
 ;
 local timec, datec, vID, fID, bn, en, head, hh, cline, syear, smonth, sday, \
   scode, comp, matr, unit, scale, fills, lline, cols, data_col, flag_col, \
