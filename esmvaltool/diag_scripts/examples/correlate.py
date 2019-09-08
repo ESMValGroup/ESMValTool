@@ -23,7 +23,7 @@ def get_provenance_record(attributes, ancestor_files, plot_type):
         'domains': ['global'],
         'plot_type': plot_type,
         'authors': [
-            'ande_bo',
+            'andela_bouwe',
         ],
         'references': [
             'acknow_project',
