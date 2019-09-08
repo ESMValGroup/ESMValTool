@@ -6,11 +6,11 @@ documentation:
     Tool for calculation of precipitation quantile bias
 
   authors:
-    - arno_en
-    - hard_jo
+    - arnone_enrico
+    - vonhardenberg_jost
 
   maintainer:
-    - hard_jo
+    - vonhardenberg_jost
 
   references:
     - mehran14jgr
