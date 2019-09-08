@@ -8,13 +8,13 @@ documentation:
     strat-trop coupling in the boreal hemisphere
 
   authors:
-    - serv_fe      
-    - hard_jo
-    - arno_en
-    - cagn_ch  
+    - serva_federico
+    - vonhardenberg_jost
+    - arnone_enrico
+    - cagnazzo_chiara
 
   maintainer:
-    - serv_fe
+    - serva_federico
 
   references:
     - baldwin09qjrms
