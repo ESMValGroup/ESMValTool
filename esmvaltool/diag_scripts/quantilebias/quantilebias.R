@@ -18,8 +18,8 @@
 # Caveats
 #
 # Modification history
-#    20180926-A_arno_en: Refined for usage as recipe
-#    20180518-A_arno_en: Written for v2.0
+#    20180926-arnone_enrico: Refined for usage as recipe
+#    20180518-arnone_enrico: Written for v2.0
 #
 # #############################################################################
 
@@ -157,7 +157,7 @@ for (model_idx in c(1:(length(models_name)))) {
   caption <- paste0("Precipitation quantile bias ", perc_lev, "% for years ",
                     year1, " to ", year2, " according to ", exp)
   xbase <- list(ancestors = list(infile, ref_data_file),
-                authors = list("arno_en", "hard_jo"),
+                authors = list("arnone_enrico", "vonhardenberg_jost"),
                 projects = list("c3s-magic"), references = list("mehran14jgr"),
                 caption = caption, statistics = list("perc"),
                 realms = list("atmos"), themes = list("phys"),
