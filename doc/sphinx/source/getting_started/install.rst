@@ -21,7 +21,18 @@ this methods.
 Conda installation
 ==================
 
-A conda package will be available after the release of ESMValTool 2.
+In order to install the Conda package, you will need both conda and Julia
+pre-installed, this is because Julia cannot be installed from conda.
+For a minimal conda installation go to https://conda.io/miniconda.html.
+Installation instructions for Julia can be found on the
+`Julia download page <https://julialang.org/downloads/>`_.
+
+Once you have installed the above prerequisites, you can install ESMValTool by running:
+
+.. code-block:: bash
+
+
+    conda install -c esmvalgroup -c conda-forge esmvaltool
 
 
 Docker installation
