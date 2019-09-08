@@ -59,7 +59,7 @@ function profile_plev(wks_in[1],
 ;    modifying the defaults!
 ;
 ; Modification history
-;    20140214-A_gott_kl: written.
+;    20140214-gottschaldt_klaus-dirk: written.
 ;
 local funcname, scriptname, diag_script, data, var, font, font_size_fac, \
   i_ref, FuncCode, i_N, i_mean, i_stddev, i_min, i_max, i_5, i_25, \
@@ -519,10 +519,10 @@ function aerosol_profile(wks_in[1],
 ; Caveats
 ;
 ; Modification history
-;    20161013_A_righ_ma: moved size distributions to a separate routine.
-;    20140917-A_righ_ma: renamed to aerosol_profile and extended for plotting
-;                        size distributions.
-;    20140705-A_righ_ma: written.
+;    20161013-righi_mattia: moved size distributions to a separate routine.
+;    20140917-righi_mattia: renamed to aerosol_profile and extended for
+;                           plotting size distributions.
+;    20140705-righi_mattia: written.
 ;
 local funcname, scriptname, tmp, colors, annots, res, res_new
 begin
@@ -1026,7 +1026,7 @@ function aerosol_sizedist(wks_in[1],
 ; Caveats
 ;
 ; Modification history
-;    20161013-A_righ_ma: written based on aerosol_profile.
+;    20161013-righi_mattia: written based on aerosol_profile.
 ;
 local funcname, scriptname, tmp, colors, annots, res, res_new
 begin
@@ -1495,8 +1495,8 @@ procedure xy_line(wks[1],
 ; Caveats
 ;
 ; Modification history
-;    20150511_A_senf_da: modified legend
-;    20140109-A_senf_da: written.
+;    20150511-senftleben_daniel: modified legend.
+;    20140109-senftleben_daniel: written.
 ;
 local funcname, scriptname, res, res_in, res_stddev, source, source_x, \
   source_stddev, wks, wks_in, colors, colors_mm, dashes, dashes_mm, thicks, \
@@ -1759,7 +1759,7 @@ procedure xy_line_anom(wks[1],
 ; Caveats
 ;
 ; Modification history
-;    20160822_A_bock_li: written
+;    20160822-bock_lisa: written
 ;
 
 local funcname, scriptname, verbosity, res, res_in, res_stddev, source, \
@@ -2001,7 +2001,7 @@ function timeseries_station(wks_in[1],
 ;    Selection of defaults for res almost arbitrary.
 ;
 ; Modification history:
-;    20140325_righ_ma: written.
+;    20140325-righi_mattia: written.
 ;
 local funcname, scriptname
 begin
@@ -2162,7 +2162,7 @@ function cycle_plot(wks_in[1],
 ; Caveats
 ;
 ; Modification history
-;    20131206-A_fran_fr: written.
+;    20131206-frank_franziska: written.
 ;
 local funcname, scriptname, wks_out, wks_in, data, source, res, atts, base, \
   varname
@@ -2372,7 +2372,7 @@ function errorbar_plot(wks_in[1],
 ; Caveats
 ;
 ; Modification history
-;    20151105-A_righ_ma: written.
+;    20151105-righi_mattia: written.
 ;
 local funcname, scriptname, data, defaults, var, wks, res, ren_new, resL, \
   error_bar
