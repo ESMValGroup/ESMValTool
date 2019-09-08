@@ -17,7 +17,7 @@
 ;    Put all files in input_dir_path (no subdirectories with years).
 ;
 ; Modification history
-;    20190124-A_righ_ma: written based on a python script by muel_bn.
+;    20190124-righi_mattia: written based on a python script by Ben Mueller.
 ;
 ; #############################################################################
 loadscript(getenv("esmvaltool_root") + \
@@ -61,7 +61,10 @@ begin
 
   ; Global attributes
   SOURCE = "ftp://anon-ftp.ceda.ac.uk/neodc/esacci/fire/data/"
-  REF = ""
+  REF = "Chuvieco et al.ESA Fire Climate Change Initiative (Fire_cci): " + \
+    "Burned Area Grid Product Version 4.1. " + \
+    "Centre for Environmental Data Analysis, " + \
+    "doi:10.5285/D80636D4-7DAF-407E-912D-F5BB61C142FA, 2016."
   COMMENT = ""
 
 end
