@@ -13,8 +13,8 @@
 # ECMWF ERA-Interim reanalysis.
 #
 # Modification history
-#   20180525-arno_en: Conversion to v2.0
-#   20181203 hard_jo: Completed conversion, rlint compliant
+#   20180525-arnone_enrico: Conversion to v2.0
+#   20181203-vonhardenberg_jost: Completed conversion, rlint compliant
 #
 # ############################################################################
 
@@ -23,7 +23,8 @@ library(yaml)
 
 provenance_record <- function(infile) {
   xprov <- list(ancestors = infile,
-                authors = list("hard_jo", "davi_pa", "arno_en"),
+                authors = list("vonhardenberg_jost", "davini_paolo",
+                               "arnone_enrico"),
                 references = list("davini18", "davini12jclim",
                                   "tibaldi90tel"),
                 projects = list("c3s-magic"),
