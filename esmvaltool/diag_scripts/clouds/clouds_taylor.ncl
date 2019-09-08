@@ -67,20 +67,20 @@
 ;        variable has been calculated from) the *second* (third, ...)
 ;
 ; Modification history
-;   20190221-A_laue_ax: added provenance to output (v2.0)
-;   20181120-A_laue_ax: adapted code to multi-variable capable framework
-;   20180923-A_laue_ax: added writing of results to netcdf
-;   20180611-A_laue_ax: code rewritten for ESMValTool v2.0
-;   20170620-A_laue_ax: added tags for reporting
-;   20161104-A_laue_ax: changed calculation of correlation and standard
-;                       deviation ratio from unweighted to grid area weighted
-;   20160901-A_laue_ax: added regridding option 1 deg x 1 deg
-;   20160818-A_laue_ax: added support for variable attribute "ref_model"
-;   20160404-A_laue_ax: added optional drawing of observational
-;                uncertainties
-;   20151027-A_laue_ax: moved call to 'write_references' to the beginning
-;                       of the code
-;   20150415-A-laue_ax: written.
+;   20190221-lauer_axel: added provenance to output (v2.0)
+;   20181120-lauer_axel: adapted code to multi-variable capable framework
+;   20180923-lauer_axel: added writing of results to netcdf
+;   20180611-lauer_axel: code rewritten for ESMValTool v2.0
+;   20170620-lauer_axel: added tags for reporting
+;   20161104-lauer_axel: changed calculation of correlation and standard
+;                        deviation ratio from unweighted to grid area weighted
+;   20160901-lauer_axel: added regridding option 1 deg x 1 deg
+;   20160818-lauer_axel: added support for variable attribute "ref_model"
+;   20160404-lauer_axel: added optional drawing of observational
+;                        uncertainties
+;   20151027-lauer_axel: moved call to 'write_references' to the beginning
+;                        of the code
+;   20150415-lauer_axel: written.
 ;
 ; ###########################################################################
 
