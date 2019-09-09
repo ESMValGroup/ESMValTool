@@ -23,19 +23,19 @@
 ; Caveats
 ;
 ; Modification history
-;    20181112-A_bock_ls: code rewritten for ESMValTool v2.0
-;    20170623-A_laue_ax: added tags for reporting
-;    20160905-A-Bock_li: implemented multi-model mean and variable refence
-;                        period for anomaly with refence mean value.
-;    20151027-A_laue_ax: moved call to 'write_references' to the beginning
-;                        of the code
-;    20150622-A_wenz_sa: added optional anomaly calculation, choise of
-;                        area opperations (sum, average) and detrending of
-;                        time series.
-;    20150420-A_righ_ma: adapted to new structure. Some of the original
-;                        features not ported yet (seasonal average, smoothing,
-;                        multi-model mean, etc.).
-;    20??????-A_cion_ir: written.
+;    20181112-bock_lisa: code rewritten for ESMValTool v2.0
+;    20170623-lauer_axel: added tags for reporting
+;    20160905-bock_lisa: implemented multi-model mean and variable refence
+;                        period for anomaly with refence mean value
+;    20151027-lauer_axel: moved call to 'write_references' to the beginning
+;                         of the code
+;    20150622-wenzel_sabrina: added optional anomaly calculation, choise of
+;                             area opperations (sum, average) and detrending of
+;                             time series.
+;    20150420-righi_mattia: adapted to new structure. Some of the original
+;                           features not ported yet (seasonal average,
+;                            smoothing, multi-model mean, etc.).
+;    20??????-cionni_irene: written.
 ;
 ; #############################################################################
 
@@ -445,7 +445,8 @@ begin
 ;
 ;  id = DIAG_SCRIPT + "_" + variables(0)
 ;
-;  contrib_authors = (/"A_cion_ir", "A_righ_ma", "A_wenz_sa", "A_bock_ls"/)
+;  contrib_authors = (/"cionni_irene", "righi_mattia", \
+;                      "wenzel_sabrina", "bock_lisa"/)
 ;
 ;  ; ESMValMD(wks@fullname, alltags, caption, id, variables(0), \
 ;  ;          allmodelnames, climofiles, DIAG_SCRIPT, contrib_authors)

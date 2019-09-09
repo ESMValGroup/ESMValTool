@@ -25,8 +25,8 @@ def get_provenance_record(attributes, ancestor_files):
         'domains': ['global'],
         'plot_type': 'zonal',
         'authors': [
-            'ande_bo',
-            'righ_ma',
+            'andela_bouwe',
+            'righi_mattia',
         ],
         'references': [
             'acknow_project',
