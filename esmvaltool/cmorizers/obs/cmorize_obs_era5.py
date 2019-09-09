@@ -58,19 +58,40 @@ def _extract_variable(in_file, var, cfg, out_dir):
             category=UserWarning,
             module='iris',
         )
+        filterwarnings(
+            action='ignore',
+            message=("Ignoring netCDF variable 'e' invalid units "
+                     "'m of water equivalent'"),
+            category=UserWarning,
+            module='iris',
+        )
+        filterwarnings(
+            action='ignore',
+            message=("Ignoring netCDF variable 'e' invalid units "
+                     "'m of water equivalent'"),
+            category=UserWarning,
+            module='iris',
+        )
         cube = iris.load_cube(
             str(in_file),
             constraint=utils.var_name_constraint(var['raw']),
         )
+    if cube.var_name in {'e', 'sf'}:
+        # Change evaporation and snowfall units from
+        # 'm of water equivalent' to m
+        cube.units = 'm'
     if cube.var_name == 'tcc':
         # Change cloud cover units from fraction to percentage
         cube.units = definition.units
-        cube.data = cube.core_date() * 100.
-    if cube.var_name in ['tp', 'pev']:
+        cube.data = cube.core_data() * 100.
+    if cube.var_name in {'e', 'ro', 'sf', 'tp', 'pev'}:
         # Change units from meters of water to kg of water
         # and add missing 'per hour'
         cube.units = cube.units * 'kg m-3 h-1'
         cube.data = cube.core_data() * 1000.
+    if cube.var_name in {'ssr', 'ssrd', 'tisr'}:
+        # Add missing 'per hour'
+        cube.units = cube.units * 'h-1'
 
     # Set correct names
     cube.var_name = definition.short_name
