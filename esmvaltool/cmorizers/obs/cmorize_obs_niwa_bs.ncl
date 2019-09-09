@@ -19,8 +19,8 @@
 ;    the patched one. Only complete years should be downloaded.
 ;
 ; Modification history
-;    20190207-A_righ_ma: renamed to NIWA-BS and adapted to v2.
-;    20140528-A_gott_kl: written.
+;    20190207-righi_mattia: renamed to NIWA-BS and adapted to v2.
+;    20140528-gottschaldt_klaus-dirk: written.
 ;
 ; #############################################################################
 loadscript(getenv("esmvaltool_root") + \
