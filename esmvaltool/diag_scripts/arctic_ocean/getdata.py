@@ -1,4 +1,4 @@
-"""APPLICATE/TRR Ocean Diagnostics."""
+# -*- coding: utf-8 -*-
 import logging
 import os
 import ESMF
@@ -6,8 +6,9 @@ import numpy as np
 from netCDF4 import Dataset, num2date
 
 from esmvaltool.diag_scripts.arctic_ocean.regions import (hofm_regions,
-                                                     transect_points)
-from esmvaltool.diag_scripts.arctic_ocean.utils import genfilename, point_distance
+                                                          transect_points)
+from esmvaltool.diag_scripts.arctic_ocean.utils import (genfilename,
+                                                        point_distance)
 
 logger = logging.getLogger(os.path.basename(__file__))
 

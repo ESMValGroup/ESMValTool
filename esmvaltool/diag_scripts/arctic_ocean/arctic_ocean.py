@@ -1,4 +1,24 @@
-"""APPLICATE/TRR Ocean Diagnostics."""
+# -*- coding: utf-8 -*-
+"""Script to calculate Arctic Ocean diagnostics.
+
+Description
+-----------
+The main focus of this diagnostics is evaluation of ocean components of climate models in the Arctic Ocean, however most of the diagnostics are implemented in a way that can be easily expanded to other parts of the World Ocean. Most of the diagnostics aim at model comparison to climatological data (PHC3), so we target historical CMIP simulations. However scenario runs also can be analysed to have an impression of how Arcti Ocean hydrography will chnage in the future.
+
+Author
+------
+Nikolay Koldunov (MARUM/AWI, Germany)
+
+Project
+-------
+TRR181/APPLICATE
+
+Configuration options in recipe
+-------------------------------
+See documentation
+
+"""
+
 import itertools
 import logging
 import os
@@ -27,6 +47,17 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 
 def run_hofm_data(cfg, areacello_fx, diagworkdir):
+    '''Extract data for Hovmoeller diagrams.
+
+    Parameters
+    ----------
+    cfg: dict
+        configuration dictionary ESMValTool format.
+    areacello_fx : dict
+        configuration dictionary with names of the areacello_fx files associated to dataset names.
+    diagworkdir: str
+        path to the diagnostic work directory.
+    '''
 
     logger.info("The `hofm_data` is True, going \
                  to extract monthly values for `hofm_regions`")
@@ -49,6 +80,19 @@ def run_hofm_data(cfg, areacello_fx, diagworkdir):
 
 
 def run_hofm_plot(cfg, diagworkdir, diagplotdir, observations):
+    '''Plot Hovmoeller diagrams for each variable.
+
+    Parameters
+    ----------
+    cfg: dict
+        configuration dictionary ESMValTool format.
+    diagworkdir: str
+        path to the diagnostic work directory.
+    diagplotdir: str
+        path to the diagnostic plot directory.
+    observations: str
+        name of the observation data set
+    '''
     # loop over variables
     for var_number, hofm_var in enumerate(cfg['hofm_vars']):
         # get dictionary with model names as key and path to the
@@ -90,7 +134,17 @@ def run_hofm_plot(cfg, diagworkdir, diagplotdir, observations):
 
 
 def run_mean(cfg, diagworkdir, observations):
+    '''Create time mean.
 
+    Parameters
+    ----------
+    cfg: dict
+        configuration dictionary ESMValTool format.
+    diagworkdir: str
+        path to the diagnostic work directory.
+    observations: str
+        name of the observation data set
+    '''
     # loop over variables
     for hofm_var in cfg['hofm_vars']:
         model_filenames = get_clim_model_filenames(
@@ -109,9 +163,21 @@ def run_mean(cfg, diagworkdir, observations):
 
 
 def run_profiles(cfg, diagworkdir, diagplotdir, observations):
+    '''Plot average vertical profiles for regions.
 
+    Parameters
+    ----------
+    cfg: dict
+        configuration dictionary ESMValTool format.
+    diagworkdir: str
+        path to the diagnostic work directory.
+    diagplotdir: str
+        path to the diagnostic plot directory.
+    observations: str
+        name of the observation data set
+    '''
     # loop over variables
-    for var_number, hofm_var in enumerate(cfg['hofm_vars']):
+    for hofm_var in cfg['hofm_vars']:
         model_filenames = get_clim_model_filenames(cfg, hofm_var)
         model_filenames = OrderedDict(
             sorted(model_filenames.items(), key=lambda t: t[0]))
@@ -129,6 +195,18 @@ def run_profiles(cfg, diagworkdir, diagplotdir, observations):
 
 
 def run_plot2d(cfg, diagworkdir, diagplotdir):
+    '''Plot 2d maps on original grid.
+
+    Parameters
+    ----------
+    cfg: dict
+        configuration dictionary ESMValTool format.
+    diagworkdir: str
+        path to the diagnostic work directory.
+    diagplotdir: str
+        path to the diagnostic plot directory.
+    '''
+
     # loop over variables
     for var_number, plot2d_var in enumerate(cfg['plot2d_vars']):
         model_filenames = get_clim_model_filenames(cfg, plot2d_var)
@@ -143,7 +221,7 @@ def run_plot2d(cfg, diagworkdir, diagplotdir):
         if cfg['plot2d_ncol']:
             ncols = cfg['plot2d_ncol']
         else:
-            ncols = 3
+            ncols = 4
         # create color limits for the plot
         vmin, vmax, sstep, roundlimit = cfg['plot2d_limits'][var_number]
         # loop over depths
@@ -156,11 +234,25 @@ def run_plot2d(cfg, diagworkdir, diagplotdir):
                                      roundlimit),
                                  diagworkdir=diagworkdir,
                                  diagplotdir=diagplotdir,
-                                 dpi=100)
+                                 cmap=cmap,
+                                 dpi=100,
+                                 ncols=ncols)
 
 
 def run_plot2d_bias(cfg, diagworkdir, diagplotdir, observations):
+    '''Plot model biases over depth.
 
+    Parameters
+    ----------
+    cfg: dict
+        configuration dictionary ESMValTool format.
+    diagworkdir: str
+        path to the diagnostic work directory.
+    diagplotdir: str
+        path to the diagnostic plot directory.
+    observations: str
+        name of the observation data set
+    '''
     # loop over variables
     for var_number, plot2d_bias_var in enumerate(cfg['plot2d_bias_vars']):
 
@@ -186,14 +278,26 @@ def run_plot2d_bias(cfg, diagworkdir, diagplotdir, observations):
                         depth,
                         diagworkdir,
                         diagplotdir,
+                        cmap,
                         levels=np.round(np.linspace(vmin, vmax, sstep),
                                         roundlimit),
                         dpi=100,
-                        observations=observations)
+                        observations=observations,
+                        ncols=ncols)
 
 
 def run_transects(cfg, diagworkdir, diagplotdir):
+    '''Plot transects.
 
+    Parameters
+    ----------
+    cfg: dict
+        configuration dictionary ESMValTool format.
+    diagworkdir: str
+        path to the diagnostic work directory.
+    diagplotdir: str
+        path to the diagnostic plot directory.
+    '''
     # First plot the map woth transect points for each "region"
     for region in cfg['transects_regions']:
         transect_map(region,
@@ -237,7 +341,19 @@ def run_transects(cfg, diagworkdir, diagplotdir):
                           cmap=cmap)
 
 
-def run_AW_core(cfg, diagworkdir, diagplotdir):
+def run_aw_core(cfg, diagworkdir, diagplotdir):
+    '''Calculate depth and temperature of the Atlantic Water core
+    and make plots.
+
+    Parameters
+    ----------
+    cfg: dict
+        configuration dictionary ESMValTool format.
+    diagworkdir: str
+        path to the diagnostic work directory.
+    diagplotdir: str
+        path to the diagnostic plot directory.
+    '''
     model_filenames = get_clim_model_filenames(cfg, 'thetao')
     model_filenames = OrderedDict(
         sorted(model_filenames.items(), key=lambda t: t[0]))
@@ -246,7 +362,22 @@ def run_AW_core(cfg, diagworkdir, diagplotdir):
     return aw_core_parameters
 
 
-def run_AW_core_2d(cfg, diagworkdir, diagplotdir, aw_core_parameters):
+def run_aw_core_2d(cfg, diagworkdir, diagplotdir, aw_core_parameters):
+    '''Plot temperature spatial distribution at the depth of the
+    atlantic water core in different models.
+
+    Parameters
+    ----------
+    cfg: dict
+        configuration dictionary ESMValTool format.
+    diagworkdir: str
+        path to the diagnostic work directory.
+    diagplotdir: str
+        path to the diagnostic plot directory.
+    aw_core_parameters: dict
+        dictionary that contain AW core parameters generated
+        by run_aw_core function.
+    '''
     model_filenames = get_clim_model_filenames(cfg, 'thetao')
     model_filenames = OrderedDict(
         sorted(model_filenames.items(), key=lambda t: t[0]))
@@ -260,12 +391,26 @@ def run_AW_core_2d(cfg, diagworkdir, diagplotdir, aw_core_parameters):
         levels=np.round(np.linspace(-2, 2.3, 41), 1),
         diagworkdir=diagworkdir,
         diagplotdir=diagplotdir,
+        cmap=cm.Spectral_r,
         dpi=100,
         explicit_depths=aw_core_parameters,
     )
 
 
-def run_tsdiag(cfg, diagworkdir, observations, diagplotdir):
+def run_tsdiag(cfg, diagworkdir, diagplotdir, observations):
+    '''Plot TS diagrams.
+
+    Parameters
+    ----------
+    cfg: dict
+        configuration dictionary ESMValTool format.
+    diagworkdir: str
+        path to the diagnostic work directory.
+    diagplotdir: str
+        path to the diagnostic plot directory.
+    observations: str
+        name of the observation data set
+    '''
     # get the dictionary with model file names
     model_filenames = get_clim_model_filenames(cfg, 'thetao')
     model_filenames = OrderedDict(
@@ -288,14 +433,15 @@ def run_tsdiag(cfg, diagworkdir, observations, diagplotdir):
         ncols = 3
     # actually plot TS diagrams
     for region in cfg['tsdiag_regions']:
-        tsplot_plot(model_filenames,
-                    cfg['tsdiag_depth'],
-                    region,
-                    diagworkdir,
-                    diagplotdir,
-                    ncols=ncols,
-                    cmap=cm.Set1,
-                    observations=observations)
+        tsplot_plot(
+            model_filenames,
+            cfg['tsdiag_depth'],
+            region,
+            diagworkdir,
+            diagplotdir,
+            ncols=ncols,
+            cmap=cm.Set1,
+        )
 
 
 def main(cfg):
@@ -311,7 +457,7 @@ def main(cfg):
     logger.info("Starting APPLICATE/TRR Arctic Ocean diagnostics")
 
     # find the name of the observational dataset
-    observations = find_observations_name(cfg, 'thetao')
+    observations = find_observations_name(cfg)
     logger.info("Name of the Observations: %s{}", observations)
 
     # get the names of fx filenames (for now are the same for
@@ -342,14 +488,14 @@ def main(cfg):
 
     # Calculate depth and temperature of the Atlantic Water core
     # and make plots.
-    aw_core_parameters = run_AW_core(cfg, diagworkdir, diagplotdir)
+    aw_core_parameters = run_aw_core(cfg, diagworkdir, diagplotdir)
 
     # Plot temperature spatial distribution at the depth of the
     # atlantic water core in different models
-    run_AW_core_2d(cfg, diagworkdir, diagplotdir, aw_core_parameters)
+    run_aw_core_2d(cfg, diagworkdir, diagplotdir, aw_core_parameters)
 
     # Plot TS diagrams
-    run_tsdiag(cfg, diagworkdir, observations, diagplotdir)
+    run_tsdiag(cfg, diagworkdir, diagplotdir, observations)
 
 
 if __name__ == '__main__':

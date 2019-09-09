@@ -6,10 +6,10 @@ documentation:
     Arctic Ocean diagnostics.
 
   authors:
-    - kold_ni
+    - koldunov_nikolay
 
   maintainer:
-    - kold_ni
+    - koldunov_nikolay
 
   references:
     - acknow_project
@@ -111,7 +111,7 @@ diagnostics:
         # each entry is [vmin, vmax, number of levels, rounding limit]
         plot2d_limits: [[-2, 4, 20, 1], [30.5, 35.1, 47, 2]]
         # number of columns for plots
-        plot2d_ncol: 3
+        plot2d_ncol: 4
         # Plot spatial distribution of the bias plots
         plot2d_bias: True
         # Depths for spatial distribution of the bias
@@ -125,7 +125,7 @@ diagnostics:
         # each entry is [vmin, vmax, number of levels, rounding limit]
         plot2d_bias_limits: [[-3, 3, 20, 1], [-2, 2, 47, 2]]
         # number of columns in the bias plots
-        plot2d_bias_ncol: 3
+        plot2d_bias_ncol: 4
         # Plot transects
         transects: True
         # Select regions (transects) to plot

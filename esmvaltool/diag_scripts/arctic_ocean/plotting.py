@@ -1,4 +1,4 @@
-"""APPLICATE/TRR Ocean Diagnostics."""
+# -*- coding: utf-8 -*-
 import logging
 import math
 import os
@@ -12,11 +12,12 @@ import numpy as np
 import pandas as pd
 from netCDF4 import Dataset
 
-from esmvaltool.diag_scripts.arctic_ocean.getdata import load_meta, transect_points
-from esmvaltool.diag_scripts.arctic_ocean.interpolation import (closest_depth,
-                                                           interpolate_esmf)
+from esmvaltool.diag_scripts.arctic_ocean.getdata import (load_meta,
+                                                          transect_points)
+from esmvaltool.diag_scripts.arctic_ocean.interpolation import (
+    closest_depth, interpolate_esmf)
 from esmvaltool.diag_scripts.arctic_ocean.utils import (dens_back, genfilename,
-                                                   point_distance)
+                                                        point_distance)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -233,8 +234,7 @@ def tsplot_plot(model_filenames,
                 diagworkdir,
                 diagplotdir,
                 ncols=3,
-                cmap=cm.Set1,
-                observations='PHC'):
+                cmap=cm.Set1):
     """Plot a TS diagram.
 
     Parameters
@@ -453,10 +453,12 @@ def plot2d_original_grid(model_filenames,
                          levels,
                          diagworkdir,
                          diagplotdir,
+                         cmap,
                          dpi=100,
                          explicit_depths=None,
                          projection=ccrs.NorthPolarStereo(),
-                         bbox=[-180, 180, 60, 90]):
+                         bbox=[-180, 180, 60, 90],
+                         ncols=4):
     """Plot 2d maps on original grid using cartopy.
 
     Parameters
@@ -475,6 +477,8 @@ def plot2d_original_grid(model_filenames,
         path to the working directory
     diagplotdir: str
         path to the plot directory
+    cmap:  matplotlib colormap
+        colormap
     dpi: int
         the dpi values to save the figure
     explicit_depths: dict
@@ -485,12 +489,14 @@ def plot2d_original_grid(model_filenames,
     projection: instance of cartopy projection (ccrs)
     bbox: list
         bounding box. It will be the input for cartopy `set_extent`.
+    ncols: int
+        number of columns.
 
     Retuns
     ------
     None
     """
-    fig, ax = create_plot(model_filenames, ncols=4, projection=projection)
+    fig, ax = create_plot(model_filenames, ncols=ncols, projection=projection)
 
     for ind, mmodel in enumerate(model_filenames):
         logger.info("Plot plot2d_original_grid %s for %s", cmor_var, mmodel)
@@ -533,7 +539,7 @@ def plot2d_original_grid(model_filenames,
             vmin=levels[0],
             vmax=levels[-1],
             transform=ccrs.PlateCarree(),
-            cmap=cmo.balance,
+            cmap=cmap,
         )
 
         ax[ind].add_feature(
@@ -575,11 +581,13 @@ def plot2d_bias(model_filenames,
                 depth,
                 diagworkdir,
                 diagplotdir,
+                cmap,
                 levels,
                 dpi=100,
                 observations='PHC',
                 projection=ccrs.NorthPolarStereo(),
-                bbox=[-180, 180, 60, 90]):
+                bbox=(-180, 180, 60, 90),
+                ncols=4):
     """Plot 2d maps of the bias relative to climatology.
 
     Parameters
@@ -604,13 +612,15 @@ def plot2d_bias(model_filenames,
     projection: instance of cartopy projection (ccrs)
     bbox: list
         bounding box. It will be the input for cartopy `set_extent`.
+    ncols: int
+        number of columns.
 
     Retuns
     ------
     None
     """
     # setupa a base figure
-    fig, ax = create_plot(model_filenames, ncols=4, projection=projection)
+    fig, ax = create_plot(model_filenames, ncols=ncols, projection=projection)
     # get the filename of observations
     ifilename_obs = genfilename(diagworkdir,
                                 cmor_var,
@@ -662,7 +672,7 @@ def plot2d_bias(model_filenames,
             # vmin=contours[0],
             # vmax=contours[-1],
             transform=ccrs.PlateCarree(),
-            cmap=cmo.balance,
+            cmap=cmap,
         )
         # fill continents
         ax[ind].add_feature(
@@ -765,7 +775,7 @@ def plot_aw_core_stat(aw_core_parameters, diagplotdir):
 def transect_map(region,
                  diagplotdir,
                  projection=ccrs.NorthPolarStereo(),
-                 bbox=[-180, 180, 60, 90],
+                 bbox=(-180, 180, 60, 90),
                  mult=2):
     """Plot the map with points of the transect overlayed.
 

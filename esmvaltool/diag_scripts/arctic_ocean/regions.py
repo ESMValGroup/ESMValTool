@@ -1,4 +1,4 @@
-"""APPLICATE/TRR Ocean Diagnostics."""
+# -*- coding: utf-8 -*-
 import logging
 import os
 import numpy as np

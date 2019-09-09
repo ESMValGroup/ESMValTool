@@ -1,4 +1,4 @@
-"""APPLICATE/TRR Ocean Diagnostics."""
+# -*- coding: utf-8 -*-
 import logging
 import os
 import shutil
@@ -110,13 +110,13 @@ def get_clim_model_filenames(config, variable):
 def get_fx_filenames(config, variable, fx_var):
     """Extract fx file names."""
     areacello_fxdataset = {}
-    for key, value in config['input_data'].items():
+    for _, value in config['input_data'].items():
         if value['short_name'] == variable:
             areacello_fxdataset[value['dataset']] = value['fx_files'][fx_var]
     return areacello_fxdataset
 
 
-def find_observations_name(config, variable):
+def find_observations_name(config):
     """Find "model name" of the observations data set.
 
     Assumes that there is only one observational data set.
@@ -238,8 +238,8 @@ def point_distance(lon_s4new, lat_s4new):
         1d array of distances between points in km.
     """
     g = pyproj.Geod(ellps='WGS84')
-    (az12, _, dist) = g.inv(lon_s4new[0:-1], lat_s4new[0:-1], lon_s4new[1:],
-                            lat_s4new[1:])
+    (_, _, dist) = g.inv(lon_s4new[0:-1], lat_s4new[0:-1], lon_s4new[1:],
+                         lat_s4new[1:])
     dist = dist.cumsum() / 1000
     dist = np.insert(dist, 0, 0)
     return dist
