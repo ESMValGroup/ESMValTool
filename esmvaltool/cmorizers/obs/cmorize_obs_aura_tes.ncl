@@ -20,8 +20,8 @@
 ;    Data is freely available, but a registration is required.
 ;
 ; Modification history
-;    20190108-A_righ_ma: adapted to v2.
-;    20140129-A_righ_ma: written.
+;    20190108-righi_mattia: adapted to v2.
+;    20140129-righi_mattia: written.
 ;
 ; #############################################################################
 loadscript(getenv("esmvaltool_root") + \

@@ -8,17 +8,17 @@ documentation:
      shown in the IPCC_AR4 report
 
   authors:
-    - broe_bj
-    - sand_ma
-    - mohr_cw
-    - arno_en
-    - hard_jo
+    - broetz_bjoern
+    - sandstad_marit
+    - mohr_christianwilhelm
+    - arnone_enrico
+    - vonhardenberg_jost
 
   maintainer:
-    - sand_ma
+    - sandstad_marit
 
   references:
-    - zhang-2011
+    - zhang11wcc
 
   projects:
     - crescendo   
