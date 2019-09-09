@@ -28,11 +28,11 @@
 ;    Put all files under a single directory (no subdirectories with years).
 ;
 ; Modification history
-;    20190201-A_righ_ma: adapted to v2.
-;    20181116-A_laue_ax: changed to use CLOUD-CCI v3.0 data (AVHRR-PM), gaps
-;                        (1994/09 - 1995/01) are filled with AVHRR-AM data
-;    20180522-A_righ_ma: changed to use AVHRR-PM data.
-;    20160519-A_laue_ax: written (reformat_obs_ESACCI-AEROSOL.ncl).
+;    20190201-righi_mattia: adapted to v2.
+;    20181116-lauer_axel: changed to use CLOUD-CCI v3.0 data (AVHRR-PM), gaps
+;                         (1994/09 - 1995/01) are filled with AVHRR-AM data
+;    20180522-righi_mattia: changed to use AVHRR-PM data.
+;    20160519-laue_axel: written (reformat_obs_ESACCI-AEROSOL.ncl).
 ;
 ; #############################################################################
 loadscript(getenv("esmvaltool_root") + \
