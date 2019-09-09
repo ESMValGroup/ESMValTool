@@ -247,7 +247,7 @@ Variables
 ---------
 
 * thetao (ocean, monthly, longitude, latitude, time)
-so (ocean, monthly, longitude, latitude, time)
+* so (ocean, monthly, longitude, latitude, time)
 
 
 Observations and reformat scripts
