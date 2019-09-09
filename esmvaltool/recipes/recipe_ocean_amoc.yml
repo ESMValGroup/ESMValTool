@@ -57,7 +57,8 @@ preprocessors:
       end_year: 2003
       end_month: 12
       end_day: 31
-    time_average:
+    climate_statistics:
+      operator: mean
 
 diagnostics:
   # --------------------------------------------------
