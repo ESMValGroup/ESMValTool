@@ -65,7 +65,6 @@ def run_hofm_data(cfg, areacello_fx, diagworkdir):
     diagworkdir: str
         path to the diagnostic work directory.
     """
-
     logger.info("The `hofm_data` is True, going \
                  to extract monthly values for `hofm_regions`")
 
