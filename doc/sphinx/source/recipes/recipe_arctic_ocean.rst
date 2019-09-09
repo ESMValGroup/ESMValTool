@@ -246,7 +246,7 @@ Diagnostics are stored in diag_scripts/arcit_ocean/
 Variables
 ---------
 
-thetao (ocean, monthly, longitude, latitude, time)
+* thetao (ocean, monthly, longitude, latitude, time)
 so (ocean, monthly, longitude, latitude, time)
 
 
