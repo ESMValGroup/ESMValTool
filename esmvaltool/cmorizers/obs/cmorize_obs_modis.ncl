@@ -26,19 +26,14 @@
 ;    fraction as a first guess
 ;
 ; Modification history
-;    20180209-A_righ_ma: fixed bug in lwpStderr.
-;    20180209-A_hass_bg: adapted to v2.
-;    20180810-A_righ_ma: fix minor calendar issue.
-;    20180806-A_righ_ma: code cleaning.
-;    20170116-A-laue_ax: using cirrus fraction to convert lwp and iwp
-;                        from in-cloud values to gridbox averages
-;                        (test).
-;    20160408-A-laue_ax: added processing of uncertainties
-;                        removed suffixes for variables names.
-;    20151118-A-laue_ax: bugfix: added unit conversion
-;                        clivi, clwvi: g/m2 --> kg/m2
-;                        clt: frac --> %
-;    20150430-eval_ma: written.
+;    20180209-righi_mattia: fixed bug in lwpStderr.
+;    20180209-hassler_birgit: adapted to v2.
+;    20180810-righi_mattia: fix minor calendar issue.
+;    20180806-righi_mattia: code cleaning.
+;    20170116-lauer_axel: using cirrus fraction to gridbox averages.
+;    20160408-lauer_axel: added processing of uncertainties.
+;    20151118-lauer_axel: bugfix: added unit conversion.
+;    20150430-evaldsson_martin: written.
 ;
 ; #############################################################################
 loadscript(getenv("esmvaltool_root") + \
@@ -94,7 +89,10 @@ begin
 
   ; Global attributes
   SOURCE = "https://ladsweb.modaps.eosdis.nasa.gov/search/order"
-  REF = ""
+  REF1 = "Platnick et al., IEEE Trans. Geosci. Remote Sens., " + \
+    "doi:10.1109/TGRS.2002.808301, 2003."
+  REF2 = "Levy et al., Atmos. Meas. Tech., " + \
+    "doi:10.5194/amt-6-2989-2013, 2013."
   COMMENT = ""
 
 end
@@ -226,7 +224,11 @@ begin
       bounds = guess_coord_bounds(output, FREQ(vv))
 
       ; Set global attributes
-      gAtt = set_global_atts(OBSNAME, TIER, SOURCE, REF, COMMENT)
+      if (VAR(vv).ne."od550aer") then
+        gAtt = set_global_atts(OBSNAME, TIER, SOURCE, REF1, COMMENT)
+      else
+        gAtt = set_global_atts(OBSNAME, TIER, SOURCE, REF2, COMMENT)
+      end if
 
       ; Output file
       DATESTR = \

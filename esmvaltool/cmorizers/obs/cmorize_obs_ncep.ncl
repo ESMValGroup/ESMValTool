@@ -45,8 +45,8 @@
 ;    complete years (Jan to Dec).
 ;
 ; Modification history
-;    20190204-A_righ_ma: merged with NCEP-daily and adapted to v2.
-;    20140128-A_righ_ma: written.
+;    20190204-righi_mattia: merged with NCEP-daily and adapted to v2.
+;    20140128-righi_mattia: written.
 ;
 ; #############################################################################
 loadscript(getenv("esmvaltool_root") + \
