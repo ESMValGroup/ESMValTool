@@ -25,6 +25,9 @@ max_parallel_tasks: 1
 # Destination directory
 output_dir: ./esmvaltool_output
 
+# Auxiliary data directory (used for some additional datasets)
+auxiliary_data_dir: ./auxiliary_data
+
 # Diagnostics create plots? [true]/false
 write_plots: true
 # Diagnositcs write NetCDF files? [true]/false
@@ -35,8 +38,6 @@ log_level: info
 exit_on_warning: false
 # Plot file format? [ps]/pdf/png/eps/epsi
 output_file_type: png
-# Auxiliary data directory (used for some additional datasets)
-auxiliary_data_dir: ./auxiliary_data
 # Use netCDF compression true/[false]
 compress_netcdf: false
 # Save intermediary cubes in the preprocessor true/[false]
