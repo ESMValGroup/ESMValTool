@@ -111,35 +111,35 @@ References
 Example plots
 -------------
 
-.. _fig_ecs_1:
+.. _fig_ec_ecs_1:
 .. figure::  /recipes/figures/emergent_constraints/ltmi.png
    :align:   center
 
    Lower tropospheric mixing index (LTMI; Sherwood et al., 2014) vs.
    equilibrium climate sensitivity from CMIP5 models.
 
-.. _fig_ecs_2:
+.. _fig_ec_ecs_2:
 .. figure::  /recipes/figures/emergent_constraints/shhc.png
    :align:   center
 
    Climatological Hadley cell extent (Lipat et al., 2017) vs.
    equilibrium climate sensitivity from CMIP5 models.
 
-.. _fig_ecs_3:
+.. _fig_ec_ecs_3:
 .. figure::  /recipes/figures/emergent_constraints/humidx.png
    :align:   center
 
    Tropical mid-tropospheric humidity asymmetry index (Tian, 2015) vs.
    equilibrium climate sensitivity from CMIP5 models.
 
-.. _fig_ecs_4:
+.. _fig_ec_ecs_4:
 .. figure::  /recipes/figures/emergent_constraints/itczidx.png
    :align:   center
 
    Southern ITCZ index (Tian, 2015) vs.
    equilibrium climate sensitivity from CMIP5 models.
 
-.. _fig_ecs_5:
+.. _fig_ec_ecs_5:
 .. figure::  /recipes/figures/emergent_constraints/covrefl.png
    :align:   center
 
