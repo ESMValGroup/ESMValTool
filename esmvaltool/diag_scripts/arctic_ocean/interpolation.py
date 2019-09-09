@@ -1,4 +1,8 @@
 # -*- coding: utf-8 -*-
+"""Part of the ESMValTool Arctic Ocean diagnostics.
+
+This module contains functions for data interpolation.
+"""
 import logging
 import os
 import ESMF

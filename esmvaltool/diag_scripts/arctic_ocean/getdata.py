@@ -1,4 +1,10 @@
 # -*- coding: utf-8 -*-
+"""Part of the ESMValTool Arctic Ocean diagnostics.
+
+This module contains functions for extracting the data
+from netCDF files and prepearing them for plotting.
+"""
+Arctic Ocean diagnostics
 import logging
 import os
 import ESMF

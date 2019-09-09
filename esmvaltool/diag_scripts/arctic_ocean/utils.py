@@ -1,4 +1,8 @@
 # -*- coding: utf-8 -*-
+"""Part of the ESMValTool Arctic Ocean diagnostics.
+
+This module contains utility functions.
+"""
 import logging
 import os
 import shutil

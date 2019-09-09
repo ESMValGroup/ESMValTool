@@ -1,4 +1,8 @@
 # -*- coding: utf-8 -*-
+"""Part of the ESMValTool Arctic Ocean diagnostics.
+
+This module contains functions with definitions of regions.
+"""
 import logging
 import os
 import numpy as np
