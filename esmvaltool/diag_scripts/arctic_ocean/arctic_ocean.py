@@ -28,7 +28,6 @@ See documentation
 import itertools
 import logging
 import os
-import pickle
 from collections import OrderedDict
 
 import cartopy.crs as ccrs
@@ -450,8 +449,8 @@ def run_tsdiag(cfg, diagworkdir, diagplotdir, observations):
 def main(cfg):
     """Compute the time average for each input model."""
     # for debuging save the configuration in a pickle file
-    with open('cfg_NK.joblib', 'wb') as handle:
-        pickle.dump(cfg, handle, protocol=pickle.HIGHEST_PROTOCOL)
+    # with open('cfg_NK.joblib', 'wb') as handle:
+    #     pickle.dump(cfg, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
     # sets the directories
     diagworkdir = cfg['work_dir']
