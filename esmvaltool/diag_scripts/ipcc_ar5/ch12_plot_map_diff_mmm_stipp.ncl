@@ -421,12 +421,12 @@ begin
       "12.11 of Collins et al. (2013)."
   end if
   statistics = ("mean")
-  domain = ("glob")
-  plottype = ("map")
+  domains = ("global")
+  plot_types = ("geo")
   authors = (/"lore_ru"/)
   references = (/"collins13ipcc"/)
   infiles = metadata_att_as_array(info_items, "filename")
-  log_provenance(nc_file, plot_file, caption, statistics, domain, plottype, \
+  log_provenance(nc_file, plot_file, caption, statistics, domains, plot_types, \
                  authors, references, infiles)
 
   leave_msg(DIAG_SCRIPT, "")

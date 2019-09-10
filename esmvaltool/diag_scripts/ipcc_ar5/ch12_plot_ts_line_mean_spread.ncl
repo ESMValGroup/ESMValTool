@@ -276,12 +276,12 @@ begin
     " the figure indicate the number of different models " + \
     "contributing to the different time periods."
   statistics = ("mean")
-  domain = ("glob")
-  plottype = ("times")
+  domains = ("global")
+  plot_types = ("times")
   authors = (/"lore_ru"/)
   references = (/"collins13ipcc"/)
   infiles = metadata_att_as_array(info_items, "filename")
-  log_provenance(nc_file, plot_file, caption, statistics, domain, plottype, \
+  log_provenance(nc_file, plot_file, caption, statistics, domains, plot_types, \
                  authors, references, infiles)
 
   leave_msg(DIAG_SCRIPT, "")

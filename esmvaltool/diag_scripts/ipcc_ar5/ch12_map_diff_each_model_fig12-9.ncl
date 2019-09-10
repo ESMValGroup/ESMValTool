@@ -290,12 +290,12 @@ begin
     "-" + info_items[0]@end_year + " for " + \
     diag_script_info@experiment + "."
   statistics = ("mean")
-  domain = ("glob")
-  plottype = ("geo")
+  domains = ("global")
+  plot_types = ("geo")
   authors = (/"lore_ru"/)
   references = (/"collins13ipcc"/)
   infiles = metadata_att_as_array(info_items, "filename")
-  log_provenance(nc_file, plot_file, caption, statistics, domain, plottype, \
+  log_provenance(nc_file, plot_file, caption, statistics, domains, plot_types, \
                  authors, references, infiles)
 
   leave_msg(DIAG_SCRIPT, "")

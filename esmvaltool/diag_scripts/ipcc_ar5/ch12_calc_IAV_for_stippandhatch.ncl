@@ -413,12 +413,12 @@ begin
   plot_file = "None"
   caption = "Inter-annual variability based on piControl runs."
   statistics = ("var")
-  domain = ("glob")
-  plottype = ("other")
+  domains = ("global")
+  plot_types = ("other")
   authors = (/"lore_ru"/)
   references = (/"collins13ipcc"/)
   infiles = metadata_att_as_array(info_items, "filename")
-  log_provenance(nc_file, plot_file, caption, statistics, domain, plottype, \
+  log_provenance(nc_file, plot_file, caption, statistics, domains, plot_types, \
                  authors, references, infiles)
 
   leave_msg(DIAG_SCRIPT, "")
