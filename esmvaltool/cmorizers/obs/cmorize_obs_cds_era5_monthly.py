@@ -64,7 +64,8 @@ def _guess_bnds_time_monthly(cube):
         # Deal with time points
         midmonth_datetime = datetime(timestep.year, timestep.month, 15)
         midmonth_point = cf_units.date2num(midmonth_datetime,
-            coord.units.origin, coord.units.calendar)
+                                           coord.units.origin,
+                                           coord.units.calendar)
         time_points.append(midmonth_point)
         # Deal with time bounds
         a_datetime = datetime(timestep.year, timestep.month, 1)
