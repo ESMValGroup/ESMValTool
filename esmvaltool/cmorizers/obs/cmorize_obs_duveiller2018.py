@@ -4,7 +4,7 @@ Tier
    Tier 2: other freely-available dataset.
 
 Source
-   https://www.nature.com/articles/sdata201814
+   https://ndownloader.figshare.com/files/9969496
 
 Last access
    20190430
@@ -19,7 +19,6 @@ Download and processing instructions
 Modification history
    20190701-A_crez_ba: submitted PR
    20190430-A_crez_ba: started with cmorize_obs_Landschuetzer2016.py as an
-   example to follow
 
 Caveats
    Please be aware that the selected vegetation transition code is not written
