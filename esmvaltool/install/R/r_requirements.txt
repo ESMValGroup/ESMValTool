@@ -6,7 +6,6 @@ dotCall64
 functional
 ggplot2
 gridExtra
-JuliaCall
 lintr
 logging
 mapproj
