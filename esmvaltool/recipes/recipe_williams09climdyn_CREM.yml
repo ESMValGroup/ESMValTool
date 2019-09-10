@@ -6,11 +6,11 @@ documentation:
     Cloud Regime Error Metric (CREM) by Williams and Webb (2009).
 
   authors:
-    - will_ke
-    - laue_ax
+    - williams_keith
+    - lauer_axel
 
   maintainer:
-    - laue_ax
+    - lauer_axel
 
   references:
     - williams09climdyn
