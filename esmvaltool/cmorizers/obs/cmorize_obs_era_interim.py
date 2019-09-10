@@ -51,6 +51,8 @@ import iris
 import numpy as np
 
 from esmvalcore.cmor.table import CMOR_TABLES
+from esmvalcore.preprocessor import extract_month
+from iris.coord_categorisation import add_month_number
 
 from . import utilities as utils
 
@@ -108,10 +110,32 @@ def _extract_variable(in_file, var, cfg, out_dir):
     # Set global attributes
     utils.set_global_atts(cube, attributes)
 
-    logger.info("Saving cube\n%s", cube)
-    logger.info("Expected output size is %.1fGB",
-                np.prod(cube.shape) * 4 / 2**30)
-    utils.save_variable(cube, cube.var_name, out_dir, attributes)
+    # Add height coordinate to tas variable (required by the new backend)
+    if cube.var_name in {'tas', 'taxmin', 'taxmax'}:
+        cube.add_aux_coord(iris.coords.DimCoord(2.0,
+                                                standard_name='height',
+                                                long_name='height',
+                                                var_name='height',
+                                                units='m',
+                                                attributes={
+                                                    'positive': 'up',
+                                                }))
+
+    # For daily data write a netcdf for each month
+    if var['mip'] == 'day':
+        add_month_number(cube, 'time')
+        for month_number in range(1, 13):
+            month_cube = extract_month(cube, month_number)
+            month_cube.remove_coord(cube.coord('month_number'))
+            logger.info("Saving cube\n%s", month_cube)
+            logger.info("Expected output size is %.1fGB",
+                        np.prod(month_cube.shape) * 4 / 2**30)
+            utils.save_variable(month_cube, month_cube.var_name, out_dir, attributes)
+    elif var['mip'] == 'fx':
+        logger.info("Saving cube\n%s", cube)
+        logger.info("Expected output size is %.1fGB",
+                    np.prod(cube.shape) * 4 / 2 ** 30)
+        utils.save_variable(cube, cube.var_name, out_dir, attributes)
 
 
 def cmorization(in_dir, out_dir, cfg, _):

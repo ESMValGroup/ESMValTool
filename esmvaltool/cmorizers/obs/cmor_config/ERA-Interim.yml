@@ -2,7 +2,7 @@
 # Global attributes of NetCDF file
 attributes:
   dataset_id: ERA-Interim
-  project_id: OBS6
+  project_id: OBS
   tier: 3
   version: '1'
   modeling_realm: reanaly
@@ -13,31 +13,39 @@ attributes:
 
 # Variables to CMORize
 variables:
-#  clt:
-#    mip: E1hr
-#    raw: tcc
-#    file: 'era5_total_cloud_cover_*_hourly.nc'
-#  evspsblpot:
-#    mip: E1hr
-#    raw: pev
-#    file: 'era5_potential_evaporation_*_hourly.nc'
+# TODO add branching for fx
+#  sftlf:
+#    mip: fx
+#    raw: lsm
+#    file: 'ERA-Interim_lsm.nc'
   pr:
     mip: day
     raw: tp
-    file: 'era-interim_total_precipitation_*_daily.nc'
-#  uas:
-#    mip: E1hr
-#    raw: u10
-#    file: 'era5_10m_u_component_of_wind_*_hourly.nc'
-#  vas:
-#    mip: E1hr
-#    raw: v10
-#    file: 'era5_10m_v_component_of_wind_*_hourly.nc'
-#  tas:
-#    mip: E1hr
-#    raw: t2m
-#    file: 'era5_2m_temperature_*_hourly.nc'
-#  tdps:
-#    mip: E1hr
-#    raw: d2m
-#    file: 'era5_2m_dewpoint_temperature_*_hourly.nc'
+    file: 'ERA-Interim_tp_daily_*.nc'
+# TODO download
+#  psl:
+#    mip: day
+#    raw: msl
+#    file: 'ERA-Interim_msl_daily_*.nc'
+  tas:
+    mip: day
+    raw: t2m
+    file: 'ERA-Interim_t2m_daily_*.nc'
+  tasmax:
+    mip: day
+    raw: mx2t
+    file: 'ERA-Interim_mx2t_daily_*.nc'
+  tasmin:
+    mip: day
+    raw: mn2t
+    file: 'ERA-Interim_mn2t_daily_*.nc'
+# TODO Don't know variable name on https://apps.ecmwf.int/datasets/data/interim-full-daily/levtype=sfc/
+#  zg:
+#    mip: day
+#    raw: z
+#    file: 'ERA-Interim_z_daily_*.nc'
+# TODO pr key is already used, so instead have both daily and monthly input files use iris to compute monthly from daily
+#  pr:
+#    mip: month
+#    raw: tp
+#    file: 'ERA-Interim_tp_monthly_*.nc'
