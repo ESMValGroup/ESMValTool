@@ -9,10 +9,10 @@ documentation:
     the years 2001-2004.
 
   authors:
-    - demo_le
+    - demora_lee
 
   maintainer:
-    - demo_le
+    - demora_lee
 
   references:
     - demora2018gmd
@@ -57,7 +57,8 @@ preprocessors:
       end_year: 2003
       end_month: 12
       end_day: 31
-    time_average:
+    climate_statistics:
+      operator: mean
 
 diagnostics:
   # --------------------------------------------------
