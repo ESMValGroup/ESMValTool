@@ -35,30 +35,29 @@ import logging
 import os
 
 from esmvaltool.diag_scripts.shared import run_diagnostic
-#from pprint import pprint
-from auxiliary.collection_basic import ecv_handler
+
+from .auxiliary.collection_basic import ECVHandler
 
 logger = logging.getLogger(os.path.basename(__file__))
 
 
 def main(cfg):
-    logger.info('>>>>>>>> diagnostic selector is running! <<<<<<<<<<<<')
-    
-    logger.info("Preparing diagnostic")
-    Diag = ecv_handler()
-    Diag.set_info(cfg = cfg)
-    
-    logger.info("Reading data")
-    Diag.read()
-    logger.info("Running diagnostic")
-    Diag.run()
-    
+    logger.info('>>>>>>>> The diagnostic selector is running! <<<<<<<<<<<<')
+
+    logger.info("Preparing diagnostic...")
+    diag = ECVHandler()
+    diag.set_info(cfg=cfg)
+
+    logger.info("Reading data...")
+    diag.read()
+    logger.info("Running diagnostic...")
+    diag.run()
+
     logger.info("Thank you for your patience!")
 
-    logger.info('>>>>>>>> ENDED SUCCESSFULLY!! <<<<<<<<<<<<')
+    logger.info('>>>>>>>>         ENDED SUCCESSFULLY!!        <<<<<<<<<<<<')
 
 
 if __name__ == '__main__':
-
     with run_diagnostic() as config:
         main(config)
