@@ -24,7 +24,7 @@
 ;    in this case the most recent version (NOAA-vv) is chosen.
 
 ; Modification history
-;    20190208-A_righ_ma: written.
+;    20190208-righi_mattia: written.
 ;
 ; #############################################################################
 loadscript(getenv("esmvaltool_root") + \
