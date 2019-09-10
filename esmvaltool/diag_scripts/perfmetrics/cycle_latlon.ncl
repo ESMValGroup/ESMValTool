@@ -91,7 +91,7 @@ begin
                    (/"mean", "stddev"/), \
                    diag_script_info@region, \
                    "other", \
-                   (/"fran_fr", "righ_ma", "eyri_ve"/), \
+                   (/"frank_franziska", "righi_mattia", "eyring_veronika"/), \
                    (/"righi15gmd", "gleckler08jgr"/), \
                    info_items[imod]@filename)
 
