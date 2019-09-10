@@ -4,7 +4,7 @@ Tier
    Tier 2: other freely-available dataset.
 
 Source
-   https://www.nature.com/articles/sdata201814
+   https://ndownloader.figshare.com/files/9969496
 
 Last access
    20190430
