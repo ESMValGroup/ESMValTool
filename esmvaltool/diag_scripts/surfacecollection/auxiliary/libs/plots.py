@@ -527,7 +527,7 @@ def __perc_map_plot__(ref, nonref, **kwargs):
     return
 
 
-def __perc_format__(x):
+def __perc_format__(x, _):
     """
     reformats tick labels to percent
     --------------------------------

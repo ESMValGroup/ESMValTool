@@ -36,7 +36,7 @@ import os
 
 from esmvaltool.diag_scripts.shared import run_diagnostic
 
-from .auxiliary.collection_basic import ECVHandler
+from auxiliary.collection_basic import ECVHandler
 
 logger = logging.getLogger(os.path.basename(__file__))
 
