@@ -10,8 +10,8 @@
 ;    relative to reference period (e.g 1986-2005) as in Fig. 12.32 of IPCC AR5
 ;
 ; Modification history
-;    20180718-A_lore_ru: ported to v2 and bugs in area calculation fixed
-;    20170120-A_lore_ru: written.
+;    20180718-A_lorenz_ruth: ported to v2 and bugs in area calculation fixed
+;    20170120-A_lorenz_ruth: written.
 ;
 ; #############################################################################
 

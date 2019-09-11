@@ -10,10 +10,10 @@
 ;    in namelist which exist for both, historical and rcp.
 ;
 ; Modification history
-;    20181806-A_lore_ru: ported to version2
-;    20171002-A_lore_ru: Added tags for searching
-;    20160428-A_lore_ru: adapted to ESMValTool
-;    20130501-A_sedl_ja: written for IPCC AR5.
+;    20181806-A_lorenz_ruth: ported to version2
+;    20171002-A_lorenz_ruth: Added tags for searching
+;    20160428-A_lorenz_ruth: adapted to ESMValTool
+;    20130501-A_sedlacek_jan: written for IPCC AR5.
 ;
 ; #############################################################################
 
@@ -292,7 +292,7 @@ begin
   statistics = ("mean")
   domains = ("global")
   plot_types = ("geo")
-  authors = (/"lore_ru"/)
+  authors = (/"lorenz_ruth"/)
   references = (/"collins13ipcc"/)
   infiles = metadata_att_as_array(info_items, "filename")
   log_provenance(nc_file, plot_file, caption, statistics, domains, plot_types, \

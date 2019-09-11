@@ -9,10 +9,10 @@
 ;    Can either plot seasonal means or annual means in one panel, but not both
 ;
 ; Modification history
-;    20181307-A_lore_ru: Ported to version 2
-;    20171002-A_lore_ru: Added tags for searching
-;    20170530-A_lore_ru: multiple variables possible
-;    20170120-A_lore_ru: adapted towritten for ESMValTool
+;    20181307-A_lorenz_ruth: Ported to version 2
+;    20171002-A_lorenz_ruth: Added tags for searching
+;    20170530-A_lorenz_ruth: multiple variables possible
+;    20170120-A_lorenz_ruth: adapted towritten for ESMValTool
 ;                        based on IPCC AR5 scripts.
 ;
 ; #############################################################################
@@ -423,7 +423,7 @@ begin
   statistics = ("mean")
   domains = ("global")
   plot_types = ("geo")
-  authors = (/"lore_ru"/)
+  authors = (/"lorenz_ruth"/)
   references = (/"collins13ipcc"/)
   infiles = metadata_att_as_array(info_items, "filename")
   log_provenance(nc_file, plot_file, caption, statistics, domains, plot_types, \

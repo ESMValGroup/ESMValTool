@@ -11,12 +11,12 @@
 ;    to the same file, if the file already exists overwrites
 ;
 ; Modification history
-;    20181307-A_lore_ru: Ported to version 2
-;    20170120-A_lore_ru: separated plotting from calculations
-;    20161027-A_lore_ru: added stippling and hatching for significance
-;    20161024-A_lore_ru: adjusted to plot multiple figs with one diag script
-;    20160621-A_lore_ru: adapted to ESMValTool
-;    20130501-A_sedl_ja: written for IPCC AR5.
+;    20181307-A_lorenz_ruth: Ported to version 2
+;    20170120-A_lorenz_ruth: separated plotting from calculations
+;    20161027-A_lorenz_ruth: added stippling and hatching for significance
+;    20161024-A_lorenz_ruth: adjusted to plot multiple figs with one diag script
+;    20160621-A_lorenz_ruth: adapted to ESMValTool
+;    20130501-A_sedlacek_jan: written for IPCC AR5.
 ;
 ; #############################################################################
 
