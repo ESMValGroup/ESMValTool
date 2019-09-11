@@ -14,8 +14,24 @@ Last access
 Download and processing instructions
     This cmorization script currently supports hourly data of the following
 variables:
+        10m_u_component_of_wind
+        10m_v_component_of_wind
+        2m_dewpoint_temperature
         2m_temperature
+        evaporation
+        maximum_2m_temperature_since_previous_post_processing
+        mean_sea_level_pressure
+        mean_surface_net_long_wave_radiation_flux
+        minimum_2m_temperature_since_previous_post_processing
         potential_evaporation
+        runoff
+        skin_temperature
+        snowfall
+        surface_net_solar_radiation
+        surface_solar_radiation_downwards
+        temperature_of_snow_layer
+        toa_incident_solar_radiation
+        total_cloud_cover
         total_precipitation
 
     Downloading ERA5 data can either be done via the Climate Data Store (cds)
