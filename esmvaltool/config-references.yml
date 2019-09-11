@@ -100,6 +100,10 @@ authors:
     name: Cagnazzo, Chiara
     institute: CNR, Italy
     orcid: https://orcid.org/0000-0002-2054-0448
+  camphuijsen_jaro:
+    name: Camphuijsen, Jaro
+    institute: NLeSC, Netherlands
+    orcid:
   capistrano_vinicius:
     name: Capistrano, Vinicius
     institute: INPE, Brazil
@@ -644,6 +648,7 @@ references:
   cru: "Harris et al., Int. J. Climatol., doi:10.1002/joc.3711, 2014."
   eppley-vgpm-modis: "Behrenfeld and Falkowski, Limnol. Oceanogr., doi:10.4319/lo.1997.42.1.0001, 1997."
   era-interim: "Dee et al., Q. J. Roy. Meteor. Soc., doi:10.1002/qj.828, 2011."
+  era5: "Copernicus Climate Change Service (C3S) (2017): ERA5: Fifth generation of ECMWF atmospheric reanalyses of the global climate. Copernicus Climate Change Service Climate Data Store (CDS)"
   esacci-aerosol: "Popp et al., Remote Sens., doi:10.3390/rs8050421, 2016."
   esacci-cloud: "Stengel et al., Earth Syst. Sci. Data, doi:10.5194/essd-9-881-2017, 2017."
   esacci-fire: "Chuvieco et al.ESA Fire Climate Change Initiative (Fire_cci): Burned Area Grid Product Version 4.1. Centre for Environmental Data Analysis, doi:10.5285/D80636D4-7DAF-407E-912D-F5BB61C142FA, 2016."
