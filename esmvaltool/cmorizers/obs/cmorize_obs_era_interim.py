@@ -51,7 +51,7 @@ import iris
 import numpy as np
 
 from esmvalcore.cmor.table import CMOR_TABLES
-from esmvalcore.preprocessor import extract_month
+from esmvalcore.preprocessor import extract_month, daily_statistics
 from iris.coord_categorisation import add_month_number
 
 from . import utilities as utils
@@ -100,6 +100,20 @@ def _extract_variable(in_file, var, cfg, out_dir):
         coord = cube.coord(coord_name)
         coord.points = coord.core_points().astype('float64')
         coord.guess_bounds()
+
+    # era-interim is in 3hr or 6hr or 12hr freq need to convert to daily
+    if var['mip'] in {'day', 'Eday'}:
+        if cube.var_name == 'tasmax':
+            daily_statistics(cube, 'max')
+        elif cube.var_name == 'tasmin':
+            daily_statistics(cube, 'min')
+        elif cube.var_name in {'pr', 'rsds', 'hfds'}:
+            # Sum is not available in daily_statistics so call iris directly
+            iris.coord_categorisation.add_day_of_year(cube, 'time')
+            iris.coord_categorisation.add_year(cube, 'time')
+            cube = cube.aggregated_by(['day_of_year', 'year'], iris.analysis.SUM)
+        else:
+            daily_statistics(cube, 'mean')
 
     # Add height coordinate to tas variable (required by the new backend)
     if 'height2m' in definition.dimensions:
