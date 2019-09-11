@@ -14,16 +14,17 @@ Calculates equilibrium climate sensitivity (ECS) versus
 
 The results are displayed as scatterplots.
 
-Note: this recipe requires pre-calulation of the equilibrium climate
-      sensitivites (ECS) for all models. The ECS values are calculated
-      with recipe_ecs.yml. The netcdf file containing the ECS values
-      (path and filename) is specified by diag_script_info@ecs_file.
-      Alternatively, the netcdf file containing the ECS values can be
-      generated with the cdl-script
-      $diag_scripts/emergent_constraints/ecs_cmip.cdl (recommended method):
-      1) save script given at the end of this namelist as ecs_cmip.cdl
-      2) run command: ncgen -o ecs_cmip.nc ecs_cmip.cdl
-      3) copy ecs_cmip.nc to directory given by diag_script_info@ecs_file (e.g. $diag_scripts/emergent_constraints/ecs_cmip.nc)
+.. note:: This recipe requires pre-calulation of the equilibrium climate
+  sensitivites (ECS) for all models. The ECS values are calculated
+  with recipe_ecs.yml. The netcdf file containing the ECS values
+  (path and filename) is specified by diag_script_info@ecs_file.
+  Alternatively, the netcdf file containing the ECS values can be
+  generated with the cdl-script
+  $diag_scripts/emergent_constraints/ecs_cmip.cdl (recommended method):
+          
+  1) save script given at the end of this recipe as ecs_cmip.cdl
+  2) run command: ncgen -o ecs_cmip.nc ecs_cmip.cdl
+  3) copy ecs_cmip.nc to directory given by diag_script_info@ecs_file (e.g. $diag_scripts/emergent_constraints/ecs_cmip.nc)
 
 
 Available recipes and diagnostics
@@ -89,9 +90,8 @@ Variables
 Observations and reformat scripts
 ---------------------------------
 
-*Note: (1) obs4mips data can be used directly without any preprocessing;
-(2) see headers of reformat scripts for non-obs4mips data for download
-instructions.*
+.. note:: (1) obs4mips data can be used directly without any preprocessing.
+          (2) See headers of reformat scripts for non-obs4mips data for download instructions.
 
 * AIRS (obs4mips): hus, husStderr
 * CERES-EBAF (obs4mips): rsdt, rsut, rsutcs
