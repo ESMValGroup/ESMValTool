@@ -14,14 +14,30 @@ Last access
 Download and processing instructions
     This cmorization script currently supports hourly data of the following
 variables:
+        10m_u_component_of_wind
+        10m_v_component_of_wind
+        2m_dewpoint_temperature
         2m_temperature
+        evaporation
+        maximum_2m_temperature_since_previous_post_processing
+        mean_sea_level_pressure
+        mean_surface_net_long_wave_radiation_flux
+        minimum_2m_temperature_since_previous_post_processing
         potential_evaporation
+        runoff
+        skin_temperature
+        snowfall
+        surface_net_solar_radiation
+        surface_solar_radiation_downwards
+        temperature_of_snow_layer
+        toa_incident_solar_radiation
+        total_cloud_cover
         total_precipitation
 
     Downloading ERA5 data can either be done via the Climate Data Store (cds)
 web form or era5cli:
         $pip install era5cli
-        $era5cli hourly --variable total_precipitation --startyear 1990
+        $era5cli hourly --variables total_precipitation --startyear 1990
 
 """
 
@@ -58,19 +74,40 @@ def _extract_variable(in_file, var, cfg, out_dir):
             category=UserWarning,
             module='iris',
         )
+        filterwarnings(
+            action='ignore',
+            message=("Ignoring netCDF variable 'e' invalid units "
+                     "'m of water equivalent'"),
+            category=UserWarning,
+            module='iris',
+        )
+        filterwarnings(
+            action='ignore',
+            message=("Ignoring netCDF variable 'e' invalid units "
+                     "'m of water equivalent'"),
+            category=UserWarning,
+            module='iris',
+        )
         cube = iris.load_cube(
             str(in_file),
             constraint=utils.var_name_constraint(var['raw']),
         )
-        if cube.var_name == 'tcc':
-            # Change cloud cover units from fraction to percentage
-            cube.units = definition.units
-            cube.data = cube.core_date() * 100.
-        if cube.var_name in ['tp', 'pev']:
-            # Change units from meters of water to kg of water
-            # and add missing 'per hour'
-            cube.units = cube.units * 'kg m-3 h-1'
-            cube.data = cube.core_data() * 1000.
+    if cube.var_name in {'e', 'sf'}:
+        # Change evaporation and snowfall units from
+        # 'm of water equivalent' to m
+        cube.units = 'm'
+    if cube.var_name == 'tcc':
+        # Change cloud cover units from fraction to percentage
+        cube.units = definition.units
+        cube.data = cube.core_data() * 100.
+    if cube.var_name in {'e', 'ro', 'sf', 'tp', 'pev'}:
+        # Change units from meters of water to kg of water
+        # and add missing 'per hour'
+        cube.units = cube.units * 'kg m-3 h-1'
+        cube.data = cube.core_data() * 1000.
+    if cube.var_name in {'ssr', 'ssrd', 'tisr'}:
+        # Add missing 'per hour'
+        cube.units = cube.units * 'h-1'
 
     # Set correct names
     cube.var_name = definition.short_name
