@@ -58,6 +58,8 @@ from . import utilities as utils
 
 logger = logging.getLogger(__name__)
 
+# Acceleration of gravity [m s-2], required for surface geopotential height, see https://confluence.ecmwf.int/pages/viewpage.action?pageId=79955800
+G = 9.80665
 
 def _extract_variable(in_file, var, cfg, out_dir):
     logger.info("CMORizing variable '%s' from input file '%s'",
@@ -78,11 +80,20 @@ def _extract_variable(in_file, var, cfg, out_dir):
             str(in_file),
             constraint=utils.var_name_constraint(var['raw']),
         )
-        if cube.var_name in ['tp']:
-            # Change units from meters of water to kg of water
-            # and add missing 'per hour'
-            cube.units = cube.units * 'kg m-3 h-1'
-            cube.data = cube.core_data() * 1000.
+
+    if cube.var_name in {'e', 'ro', 'sf', 'tp', 'pev'}:
+        # Change units from meters per day of water to kg of water per h
+        cube.units = cube.units * 'kg m-3 h-1'
+        cube.data = cube.core_data() * 1000. / 24
+    if cube.var_name in {'ssr', 'ssrd', 'tisr'}:
+        # Add missing 'per hour'
+        cube.units = cube.units * 'h-1'
+    if cube.var_name in {'lsm', 'tcc'}:
+        # Change cloud cover units from fraction to percentage
+        cube.units = definition.units
+        cube.data = cube.core_data() * 100
+    if cube.var_name in {'z'}:
+        cube.data = cube.core_data() / G
 
     # Set correct names
     cube.var_name = definition.short_name

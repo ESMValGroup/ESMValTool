@@ -13,7 +13,7 @@ attributes:
 
 # Variables to CMORize
 variables:
-# TODO add branching for fx
+# TODO add branching for fx|invariant
 #  sftlf:
 #    mip: fx
 #    raw: lsm
@@ -23,14 +23,16 @@ variables:
     mip: day
     raw: tp
     file: 'ERA-Interim_tp_daily_*.nc'
-  psl:
+  psl_day:
+    short_name: psl
     mip: day
     raw: msl
     file: 'ERA-Interim_msl_daily_*.nc'
-  tas:
+  tas_day:
+    short_name: tas
     mip: day
     raw: t2m
-    file: 'ERA-Interim_t2m_*_*.nc'
+    file: 'ERA-Interim_t2m_daily_*.nc'
   tasmax:
     mip: day
     raw: mx2t
@@ -55,11 +57,15 @@ variables:
     mip: day
     raw: ssrd
     file: 'ERA-Interim_ssrd_daily_*.nc'
-  evspsblpot:
+  evspsbl:
     mip: Eday
-    raw: pev
-    file: 'ERA-Interim_pev_daily_*.nc'
-# TODO Download geopotential from https://apps.ecmwf.int/datasets/data/interim-full-invariant/ + divide by G for Geopotential Height
+    raw: e
+    file: 'ERA-Interim_e_daily_*.nc'
+  # TODO era-interim does not not have potential evaporation
+#  evspsblpot:
+#    mip: Eday
+#    raw: pev
+#    file: 'ERA-Interim_pev_daily_*.nc'
   zg:
     mip: fx
     raw: z
@@ -69,3 +75,45 @@ variables:
     mip: Amon
     raw: tp
     file: 'ERA-Interim_tp_monthly_*.nc'
+  clivi:
+    mip: Amon
+    raw: p57.162
+    file: 'ERA-Interim_p57.162_monthly_*.nc'
+  clt:
+    mip: Amon
+    raw: tcc
+    file: 'ERA-Interim_tcc_monthly_*.nc'
+  prw:
+    mip: Amon
+    raw: tcwv
+    file: 'ERA-Interim_tcwv_monthly_*.nc'
+  psl_month:
+    short_name: psl
+    mip: Amon
+    raw: msl
+    file: 'ERA-Interim_msl_monthly_*.nc'
+  ps:
+    mip: Amon
+    raw: sp
+    file: 'ERA-Interim_sp_monthly_*.nc'
+  tas_month:
+    short_name: tas
+    mip: Amon
+    raw: t2m
+    file: 'ERA-Interim_t2m_monthly_*.nc'
+  tauu:
+    mip: Amon
+    raw: iews
+    file: 'ERA-Interim_iews_monthly_*.nc'
+  tauv:
+    mip: Amon
+    raw: inss
+    file: 'ERA-Interim_inss_monthly_*.nc'
+  tos:
+    mip: Omon
+    raw: sst
+    file: 'ERA-Interim_sst_monthly_*.nc'
+  ts:
+    mip: Amon
+    raw: skt
+    file: 'ERA-Interim_skt_monthly_*.nc'
