@@ -86,7 +86,7 @@ def get_provenance_record(caption, ancestor_files):
         'caption': caption,
         'statistics': ['var', 'diff', 'corr', 'detrend'],
         'domains': ['global'],
-        'authors': ['schl_ma'],
+        'authors': ['schlund_manuel'],
         'references': ['cox18nature'],
         'realms': ['atmos'],
         'themes': ['phys'],

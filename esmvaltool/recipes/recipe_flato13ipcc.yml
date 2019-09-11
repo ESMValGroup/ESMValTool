@@ -8,12 +8,12 @@ documentation:
     9.2, 9.4, 9.5, 9.8, 9.42a.
 
   authors:
-    - bock_ls
-    - laue_ax
-    - schl_ma
+    - bock_lisa
+    - lauer_axel
+    - schlund_manuel
 
   maintainer:
-    - righ_ma
+    - righi_mattia
 
   references:
     - flato13ipcc
