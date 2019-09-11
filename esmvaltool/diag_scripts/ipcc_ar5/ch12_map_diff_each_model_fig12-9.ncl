@@ -295,8 +295,8 @@ begin
   authors = (/"lorenz_ruth"/)
   references = (/"collins13ipcc"/)
   infiles = metadata_att_as_array(info_items, "filename")
-  log_provenance(nc_file, plot_file, caption, statistics, domains, plot_types, \
-                 authors, references, infiles)
+  log_provenance(nc_file, plot_file, caption, statistics, domains, \
+                 plot_types, authors, references, infiles)
 
   leave_msg(DIAG_SCRIPT, "")
 

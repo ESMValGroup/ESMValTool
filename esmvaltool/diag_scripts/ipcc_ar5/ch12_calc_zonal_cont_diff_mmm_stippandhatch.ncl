@@ -33,11 +33,12 @@
 ; Modification history
 ;    20181024-A_lorenz_ruth: ported to v2, regridding in preprocessor
 ;    20170517-A_lorenz_ruth: changed to regrid to common grid first before
-;                        calculating zonal average and added ability to use
-;                        irregular grids (e.g. thetao)
+;                            calculating zonal average and added ability to use
+;                            irregular grids (e.g. thetao)
 ;    20170127-A_lorenz_ruth: changed routine for plotting stippling/hatching to
-;                        zonalmean_profile to get dots and hatch
-;    20161031-A_lorenz_ruth: increased flexibility and add stippling and hatching
+;                            zonalmean_profile to get dots and hatch
+;    20161031-A_lorenz_ruth: increased flexibility and added
+;                            stippling and hatching
 ;    20160831-A_lorenz_ruth: adapted for ESMValTool
 ;    20130503-A_sedlacek_jan: written for IPCC AR5
 ;
