@@ -2,7 +2,7 @@
 # Global attributes of NetCDF file
 attributes:
   dataset_id: ERA-Interim
-  project_id: OBS
+  project_id: OBS6
   tier: 3
   version: '1'
   modeling_realm: reanaly
@@ -22,15 +22,14 @@ variables:
     mip: day
     raw: tp
     file: 'ERA-Interim_tp_daily_*.nc'
-# TODO download
-#  psl:
-#    mip: day
-#    raw: msl
-#    file: 'ERA-Interim_msl_daily_*.nc'
-  tas:
+  psl:
     mip: day
+    raw: msl
+    file: 'ERA-Interim_msl_daily_*.nc'
+  tas:
+    mip: [day, Amon]
     raw: t2m
-    file: 'ERA-Interim_t2m_daily_*.nc'
+    file: 'ERA-Interim_t2m_*_*.nc'
   tasmax:
     mip: day
     raw: mx2t
@@ -39,7 +38,24 @@ variables:
     mip: day
     raw: mn2t
     file: 'ERA-Interim_mn2t_daily_*.nc'
-# TODO Don't know variable name on https://apps.ecmwf.int/datasets/data/interim-full-daily/levtype=sfc/
+  tdps:
+    mip: Eday
+    raw: d2m
+    file: 'ERA-Interim_d2m_daily_*.nc'
+  uas:
+    mip: day
+    raw: u10
+    file: 'ERA-Interim_u10_daily_*.nc'
+  vas:
+    mip: day
+    raw: v10
+    file: 'ERA-Interim_v10_daily_*.nc'
+  # TODO check cmip6 surface_net_downward_longwave_flux var is equiv to era-interim Surface solar radiation downwards
+  rsds:
+    mip: day
+    raw: ssrd
+    file: 'ERA-Interim_ssrd_daily_*.nc'
+# TODO Download geopotential from https://apps.ecmwf.int/datasets/data/interim-full-invariant/ + divide by G for Geopotential Height
 #  zg:
 #    mip: day
 #    raw: z

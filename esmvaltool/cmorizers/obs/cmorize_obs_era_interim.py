@@ -101,6 +101,12 @@ def _extract_variable(in_file, var, cfg, out_dir):
         coord.points = coord.core_points().astype('float64')
         coord.guess_bounds()
 
+    # Add height coordinate to tas variable (required by the new backend)
+    if 'height2m' in definition.dimensions:
+        utils.add_scalar_height_coord(cube, 2.)
+    if 'height10m' in definition.dimensions:
+        utils.add_scalar_height_coord(cube, 10.)
+
     # Convert units if required
     cube.convert_units(definition.units)
 
@@ -109,17 +115,6 @@ def _extract_variable(in_file, var, cfg, out_dir):
 
     # Set global attributes
     utils.set_global_atts(cube, attributes)
-
-    # Add height coordinate to tas variable (required by the new backend)
-    if cube.var_name in {'tas', 'taxmin', 'taxmax'}:
-        cube.add_aux_coord(iris.coords.DimCoord(2.0,
-                                                standard_name='height',
-                                                long_name='height',
-                                                var_name='height',
-                                                units='m',
-                                                attributes={
-                                                    'positive': 'up',
-                                                }))
 
     # For daily data write a netcdf for each month
     if var['mip'] == 'day':
