@@ -117,7 +117,7 @@ def _extract_variable(in_file, var, cfg, out_dir):
     utils.set_global_atts(cube, attributes)
 
     # For daily data write a netcdf for each month
-    if var['mip'] == 'day':
+    if var['mip'] in {'day', 'Eday'}:
         add_month_number(cube, 'time')
         for month_number in range(1, 13):
             month_cube = extract_month(cube, month_number)
@@ -126,6 +126,11 @@ def _extract_variable(in_file, var, cfg, out_dir):
             logger.info("Expected output size is %.1fGB",
                         np.prod(month_cube.shape) * 4 / 2**30)
             utils.save_variable(month_cube, month_cube.var_name, out_dir, attributes)
+    elif var['mip'] in {'Amon'}:
+        logger.info("Saving cube\n%s", cube)
+        logger.info("Expected output size is %.1fGB",
+                    np.prod(cube.shape) * 4 / 2 ** 30)
+        utils.save_variable(cube, cube.var_name, out_dir, attributes)
     elif var['mip'] == 'fx':
         logger.info("Saving cube\n%s", cube)
         logger.info("Expected output size is %.1fGB",
@@ -144,7 +149,8 @@ def cmorization(in_dir, out_dir, cfg, _):
     futures = {}
     with ProcessPoolExecutor(max_workers=1) as executor:
         for short_name, var in cfg['variables'].items():
-            var['short_name'] = short_name
+            if 'short_name' not in var:
+                var['short_name'] = short_name
             for in_file in sorted(Path(in_dir).glob(var['file'])):
                 future = executor.submit(_extract_variable, in_file, var, cfg,
                                          out_dir)

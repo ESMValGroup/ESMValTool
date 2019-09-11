@@ -18,7 +18,8 @@ variables:
 #    mip: fx
 #    raw: lsm
 #    file: 'ERA-Interim_lsm.nc'
-  pr:
+  pr_day:
+    short_name: pr
     mip: day
     raw: tp
     file: 'ERA-Interim_tp_daily_*.nc'
@@ -27,7 +28,7 @@ variables:
     raw: msl
     file: 'ERA-Interim_msl_daily_*.nc'
   tas:
-    mip: [day, Amon]
+    mip: day
     raw: t2m
     file: 'ERA-Interim_t2m_*_*.nc'
   tasmax:
@@ -50,18 +51,21 @@ variables:
     mip: day
     raw: v10
     file: 'ERA-Interim_v10_daily_*.nc'
-  # TODO check cmip6 surface_net_downward_longwave_flux var is equiv to era-interim Surface solar radiation downwards
   rsds:
     mip: day
     raw: ssrd
     file: 'ERA-Interim_ssrd_daily_*.nc'
+  evspsblpot:
+    mip: Eday
+    raw: pev
+    file: 'ERA-Interim_pev_daily_*.nc'
 # TODO Download geopotential from https://apps.ecmwf.int/datasets/data/interim-full-invariant/ + divide by G for Geopotential Height
-#  zg:
-#    mip: day
-#    raw: z
-#    file: 'ERA-Interim_z_daily_*.nc'
-# TODO pr key is already used, so instead have both daily and monthly input files use iris to compute monthly from daily
-#  pr:
-#    mip: month
-#    raw: tp
-#    file: 'ERA-Interim_tp_monthly_*.nc'
+  zg:
+    mip: fx
+    raw: z
+    file: 'ERA-Interim_z.nc'
+  pr_month:
+    short_name: pr
+    mip: Amon
+    raw: tp
+    file: 'ERA-Interim_tp_monthly_*.nc'
