@@ -21,12 +21,12 @@ documentation:
     Independent assessment of single products for the C3S_511 quality brief
 
   authors:
-    - muel_bn
-    - hass_bg
+    - mueller_benjamin
+#    - hass_bg
 
   maintainer:
-    - muel_bn
-    - hass_bg
+    - mueller_benjamin
+#    - hass_bg
 
 
 datasets:
