@@ -42,8 +42,7 @@ def _extract_variable(short_name, var, cfg, filepath, out_dir):
 
     # Fix units
     cmor_info = cfg['cmor_table'].get_variable(var['mip'], short_name)
-    if 'raw_units' in var:
-        utils.convert_units(cube, var['raw_units'], cmor_info.units)
+    cube.convert_units(cmor_info.units)
     utils.convert_timeunits(cube, 1950)
 
     # Fix coordinates
