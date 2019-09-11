@@ -92,6 +92,10 @@ def _extract_variable(in_file, var, cfg, out_dir):
             str(in_file),
             constraint=utils.var_name_constraint(var['raw']),
         )
+
+    # Set global attributes
+    utils.set_global_atts(cube, attributes)
+
     if cube.var_name in {'e', 'sf'}:
         # Change evaporation and snowfall units from
         # 'm of water equivalent' to m
@@ -108,6 +112,9 @@ def _extract_variable(in_file, var, cfg, out_dir):
     if cube.var_name in {'ssr', 'ssrd', 'tisr'}:
         # Add missing 'per hour'
         cube.units = cube.units * 'h-1'
+    if cube.var_name in {'msnlwrf', 'ssrd', 'tisr', 'ssr'}:
+        # Radiation fluxes are positive in downward direction
+        cube.attributes['positive'] = 'down'
 
     # Set correct names
     cube.var_name = definition.short_name
@@ -137,13 +144,16 @@ def _extract_variable(in_file, var, cfg, out_dir):
     # Make latitude increasing
     cube = cube[:, ::-1, ...]
 
-    # Set global attributes
-    utils.set_global_atts(cube, attributes)
-
     logger.info("Saving cube\n%s", cube)
     logger.info("Expected output size is %.1fGB",
                 np.prod(cube.shape) * 4 / 2**30)
-    utils.save_variable(cube, cube.var_name, out_dir, attributes)
+    utils.save_variable(
+        cube,
+        cube.var_name,
+        out_dir,
+        attributes,
+        local_keys=['positive'],
+    )
 
 
 def cmorization(in_dir, out_dir, cfg, _):
