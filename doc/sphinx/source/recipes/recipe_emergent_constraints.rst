@@ -24,7 +24,8 @@ The results are displayed as scatterplots.
           
   1) save script given at the end of this recipe as ecs_cmip.cdl
   2) run command: ncgen -o ecs_cmip.nc ecs_cmip.cdl
-  3) copy ecs_cmip.nc to directory given by diag_script_info@ecs_file (e.g. $diag_scripts/emergent_constraints/ecs_cmip.nc)
+  3) copy ecs_cmip.nc to directory given by diag_script_info@ecs_file
+     (e.g. $diag_scripts/emergent_constraints/ecs_cmip.nc)
 
 
 Available recipes and diagnostics
@@ -48,6 +49,8 @@ User settings in recipe
 
    * diag: emergent constraint to calculate ("itczidx", "humidx", "ltmi",
      "covrefl", "shhc")
+   * ecs_file: path and filename of netCDF containing precalculated
+     ECS values (see note above)
 
    *Optional settings (scripts)*
 
@@ -90,7 +93,7 @@ Variables
 Observations and reformat scripts
 ---------------------------------
 
-.. note:: (1) obs4mips data can be used directly without any preprocessing.
+.. note:: (1) Obs4mips data can be used directly without any preprocessing.
           (2) See headers of reformat scripts for non-obs4mips data for download instructions.
 
 * AIRS (obs4mips): hus, husStderr
