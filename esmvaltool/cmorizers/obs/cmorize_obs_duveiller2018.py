@@ -17,7 +17,6 @@ Download and processing instructions
    - Run cmorize_obs
 
 Modification history
-   20190701-A_crez_ba: submitted PR
    20190430-crezee_bas: written based on cmorize_obs_Landschuetzer2016.py.
 
 Caveats
