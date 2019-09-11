@@ -7,10 +7,10 @@ documentation:
     Based on the ocean assess/Marine Assess toolkit plots.
 
   authors:
-    - demo_le
+    - demora_lee
 
   maintainer:
-    - demo_le
+    - demora_lee
 
   references:
     - demora2018gmd
@@ -34,7 +34,8 @@ preprocessors:
       end_year: 2003
       end_month: 12
       end_day: 31
-    time_average:
+    climate_statistics:
+      operator: mean
     regrid:
       target_grid: 1x1
       scheme: linear
@@ -53,7 +54,7 @@ diagnostics:
      additional_datasets:
 #        filename: tos_ATSR_L3_ARC-v1.1.1_199701-201112.nc
 #        download from: https://datashare.is.ed.ac.uk/handle/10283/536
-       - {dataset: ATSR,  project: obs4mips,  level: L3,  version: ARC-v1.1.1,  start_year: 2001,  end_year: 2003, tier: 3}
+       - {dataset: ATSR,  project: obs4mips,  level: L3,  version: ARC-v1.1.1,  start_year: 2001,  end_year: 2003, tier: 1}
      scripts:
        Global_Ocean_map: &Global_Ocean_map
          script: ocean/diagnostic_maps_quad.py
