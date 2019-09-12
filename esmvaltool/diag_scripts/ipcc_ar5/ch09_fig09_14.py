@@ -90,9 +90,9 @@ def _lon_heimisphere(longitude):
     if longitude in (0, 180):
         hemisphere = ''
     elif longitude > 0:
-        hemisphere = 'E'
+        hemisphere = ' E'
     elif longitude < 0:
-        hemisphere = 'W'
+        hemisphere = ' W'
     else:
         hemisphere = ''
     return hemisphere
@@ -101,9 +101,9 @@ def _lon_heimisphere(longitude):
 def _lat_heimisphere(latitude):
     """Return the hemisphere (N, S or '' for 0) for the given latitude."""
     if latitude > 0:
-        hemisphere = 'N'
+        hemisphere = ' N'
     elif latitude < 0:
-        hemisphere = 'S'
+        hemisphere = ' S'
     else:
         hemisphere = ''
     return hemisphere
@@ -251,7 +251,8 @@ def plot_zonal_mean_errors_ensemble(axes, zonal_mean_errors, ref_line_style):
     axes.xaxis.set_major_formatter(LATITUDE_FORMATTER)
     axes.set_ylim(-5., 5.)
     axes.set_xlim(-90., 90.)
-    axes.tick_params(which='both', direction='in')
+    axes.tick_params(which='both', direction='in', top=True, right=True,
+                     labelsize=7.)
     axes.xaxis.set_label_text(u'Latitude')
     lines = []
     labels = []
@@ -260,7 +261,7 @@ def plot_zonal_mean_errors_ensemble(axes, zonal_mean_errors, ref_line_style):
         lines.append(iplt.plot(error, axes=axes)[0])
         labels.append(error.attributes['model_id'])
     ensemble_mean = cube_list.collapsed('model', iris.analysis.MEAN)
-    mean_line = iplt.plot(ensemble_mean, axes=axes, **ref_line_style)[0]
+    mean_line = iplt.plot(ensemble_mean, axes=axes, color='#e61f25', **ref_line_style)[0]
     lines = [mean_line] + lines
     labels = ['CMIP5 mean'] + labels
     return (lines, labels)
@@ -277,13 +278,14 @@ def plot_equatorial_errors(axes, equatorial_errors, ref_line_style):
     axes.xaxis.set_major_formatter(LONGITUDE_FORMATTER)
     axes.set_ylim(-5., 5.)
     axes.set_xlim(25., 360.)
-    axes.tick_params(which='both', direction='in')
+    axes.tick_params(which='both', direction='in', top=True, right=True,
+                     labelsize=7.)
     axes.xaxis.set_label_text(u'Longitude')
     for error in equatorial_errors:
         iplt.plot(error, label=error.attributes['model_id'], axes=axes)
     cube_list = multi_model_merge(equatorial_errors)
     ensemble_mean = cube_list.collapsed('model', iris.analysis.MEAN)
-    iplt.plot(ensemble_mean, label='CMIP5 mean', axes=axes, **ref_line_style)
+    iplt.plot(ensemble_mean, label='CMIP5 mean', axes=axes, color='#e61f25', **ref_line_style)
 
 
 def plot_zonal_mean_errors_project(axes, zonal_mean_errors, ref_line_style):
@@ -297,14 +299,15 @@ def plot_zonal_mean_errors_project(axes, zonal_mean_errors, ref_line_style):
     axes.xaxis.set_major_formatter(LATITUDE_FORMATTER)
     axes.set_ylim(-5., 5.)
     axes.set_xlim(-90., 90.)
-    axes.tick_params(which='both', direction='in')
+    axes.tick_params(which='both', direction='in', top=True, right=True,
+                     labelsize=7.)
     axes.xaxis.set_label_text(u'Latitude')
     lat = zonal_mean_errors[0].coord('latitude').points
     data = np.ma.vstack([m.data for m in zonal_mean_errors])
     std = data.std(axis=0)
     avg = data.mean(axis=0)
-    axes.fill_between(lat, avg - std, avg + std, alpha=.5)
-    axes.plot(lat, avg, **ref_line_style)
+    axes.fill_between(lat, avg - std, avg + std, facecolor='#e61f25', alpha=.5)
+    axes.plot(lat, avg, color='#e61f25', **ref_line_style)
 
 
 def plot_equatorials(axes, reference, equatorials, ref_line_style):
@@ -318,14 +321,15 @@ def plot_equatorials(axes, reference, equatorials, ref_line_style):
     axes.xaxis.set_major_formatter(LONGITUDE_FORMATTER)
     axes.set_ylim(22., 31.)
     axes.set_xlim(25., 360.)
-    axes.tick_params(which='both', direction='in')
+    axes.tick_params(which='both', direction='in', top=True, right=True,
+                     labelsize=7.)
     axes.xaxis.set_label_text(u'Longitude')
     lon = reference.coord('longitude').points
     data = np.ma.vstack([m.data for m in equatorials[1:]])
     std = data.std(axis=0)
     avg = data.mean(axis=0)
-    axes.fill_between(lon, avg - std, avg + std, alpha=.5)
-    axes.plot(lon, avg, **ref_line_style)
+    axes.fill_between(lon, avg - std, avg + std, facecolor='#e61f25', alpha=.5)
+    axes.plot(lon, avg, color='#e61f25', **ref_line_style)
     lines = axes.plot(lon, reference.data, 'k', **ref_line_style)
     return (lines, ['HadISST'])
 
@@ -334,7 +338,7 @@ def draw_legend(fig, lines, labels):
     """Draw the legend."""
     return fig.legend(lines, labels,
                       loc='upper left',
-                      fontsize=7.,
+                      fontsize=6.,
                       bbox_to_anchor=(.81, .92))
 
 
