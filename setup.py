@@ -24,7 +24,6 @@ REQUIREMENTS = {
     'setup': [
         'pytest-runner',
         'setuptools_scm',
-        'xlsxwriter'
     ],
     # Installation dependencies
     # Use with pip install . to install from source
