@@ -7,7 +7,8 @@ assignees: ''
 
 ---
 
-Please discuss your idea for modifications to a diagnostic or recipe with the development team and the author of the diagnostic before getting started, to avoid disappointment later. A good way to do this is to open an issue on GitHub. This is also a good way to get help.
+Please discuss your idea for modifications to a diagnostic or recipe with the development team and the author of the diagnostic before getting started, to avoid disappointment later. The best way to do this is to open an issue on GitHub. This is also a good way to get help. 
+Note: The author of a recipe can be found in the documentation section of the recipe. Contact information of the author can then be found in esmvaltool/config-references.yml
 
 ---
 
@@ -18,10 +19,9 @@ Please discuss your idea for modifications to a diagnostic or recipe with the de
 ---
 
 **Tasks**
-
-- [ ] Add any additional dependencies needed for the diagnostic script to setup.py
+- [ ] Make your changes to the recipe and/or diagnostic script
+- [ ] Add any additional dependencies needed for the diagnostic script to setup.py (before adding dependencies, make sure there is no other way by discussing it with the core development team)
 - [ ] Change the documentation for the recipe
-- [ ] 
 
 ---
 
