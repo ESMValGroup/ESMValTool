@@ -62,7 +62,9 @@ class Blocking(object):
                 self.datasets.get_info('reference_dataset', filename)
             )
             break
-
+        self.ref_alias = self.datasets.get_info(
+            n.ALIAS, self.reference_dataset
+        )
         self.compute_1d = self.cfg.get('compute_1d', True)
         self.compute_2d = self.cfg.get('compute_2d', True)
 
@@ -154,12 +156,15 @@ class Blocking(object):
 
         if self.cfg[n.WRITE_PLOTS] and self.compute_2d:
             self.create_comparison_plot(
-                datasets, skills['total'], 'blocking2D'
+                datasets, skills['total'], 'blocking2D',
+                f'Blocking'
             )
             for month in range(1, 13):
                 metrics = skills[month]
+                month_name = calendar.month_name[month]
                 self.create_comparison_plot(
-                    datasets, metrics, 'blocking_2D_{}'.format(month)
+                    datasets, metrics, 'blocking_2D_{}'.format(month),
+                    f'Blocking {month_name}'
                 )
 
     def _get_blocking_indices(self, filename):
@@ -289,12 +294,15 @@ class Blocking(object):
         # iris.util.promote_aux_coord_to_dim_coord(result, 'month_number')
         return result
 
-    def _get_plot_name(self, name, filename, month=None):
+    def _get_plot_name(self, name, filename, month=None,
+                       add_alias_folder=False):
         alias = self.datasets.get_info(n.ALIAS, filename)
         start = self.datasets.get_info(n.START_YEAR, filename)
         end = self.datasets.get_info(n.END_YEAR, filename)
 
-        plot_path = os.path.join(self.cfg[n.PLOT_DIR], alias)
+        plot_path = os.path.join(self.cfg[n.PLOT_DIR])
+        if add_alias_folder:
+            plot_path = os.path.join(plot_path, alias)
         if not os.path.isdir(plot_path):
             os.makedirs(plot_path)
 
@@ -407,11 +415,15 @@ class Blocking(object):
                 ((0.92, 0.92, 0.92), (0.7, 0.1, 0.09)),
                 N=self.max_color_scale
             )
+            alias = self.datasets.get_info(n.ALIAS, filename)
             for month_slice in blocking_index.slices_over('month_number'):
                 month_number = month_slice.coord('month_number').points[0]
                 month_name = calendar.month_name[month_number]
                 logger.info('Plotting 2D blocking for ' + month_name)
-                month_slice.long_name += ' (' + month_name.title() + ')'
+                month_slice.long_name = (
+                    f'{month_slice.long_name} {alias}'
+                    ' (' + month_name.title() + ')'
+                )
 
                 plt.figure()
                 axes = plt.axes(projection=projection)
@@ -435,7 +447,8 @@ class Blocking(object):
                 plot_path = self._get_plot_name(
                     'blocking2D',
                     filename,
-                    month_number
+                    month_number,
+                    add_alias_folder=True,
                 )
                 plt.savefig(plot_path, bbox_inches='tight', pad_inches=0.2,
                             dpi=500)
@@ -453,7 +466,7 @@ class Blocking(object):
         for diff_month in diff_cube.slices_over('month_number'):
             month_number = diff_month.coord('month_number').points[0]
             month_name = calendar.month_name[month_number]
-            logger.info('Plotting 2D blocking for ' + month_name)
+            logger.info('Plotting 2D blocking for %s', month_name)
             diff_month.long_name += ' (' + month_name.title() + ')'
 
             plt.figure()
@@ -479,11 +492,12 @@ class Blocking(object):
             plt.savefig(self._get_plot_name(
                 'blocking2Ddiff',
                 dataset,
-                month_number
+                month_number,
+                add_alias_folder=True,
             ))
             plt.close()
 
-    def create_comparison_plot(self, datasets, metrics, name):
+    def create_comparison_plot(self, datasets, metrics, name, title):
         logger.debug(metrics)
         sdev = [metrics[datasets[0]]['sdev'][0]] + \
             [m['sdev'][1] for m in metrics.values()]
@@ -498,11 +512,21 @@ class Blocking(object):
             styleOBS='-',
             colOBS='r',
             markerobs='o',
-            titleOBS='reference',
+            titleOBS=self.ref_alias,
+            colCOR='grey',
+            colRMS='blue',
+            markerLabel=['ref', ] + [chr(ord('A') + x)
+                                     for x in range(len(datasets))],
+            markerSize=5,
         )
         out_type = self.cfg[n.OUTPUT_FILE_TYPE]
         name = '{}.{}'.format(name, out_type)
-        plt.savefig(os.path.join(self.cfg[n.PLOT_DIR], name))
+        self._create_dataset_legend(datasets)
+        plt.title(title, pad=30)
+        plt.savefig(
+            os.path.join(self.cfg[n.PLOT_DIR], name),
+            bbox_inches='tight',
+        )
         plt.close()
 
     def _create_dataset_legend(self, datasets):
@@ -514,7 +538,7 @@ class Blocking(object):
                     marker=self._get_marker(num),
                     color='white',
                     markerfacecolor='#000000', markeredgecolor='#000000',
-                    label=self.datasets.get_info(n.DATASET, filename)
+                    label=self.datasets.get_info(n.ALIAS, filename)
                 )
             )
 
