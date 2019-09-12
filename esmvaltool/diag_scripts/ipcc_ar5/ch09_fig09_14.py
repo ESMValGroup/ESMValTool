@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 
-"""Diagnostic script to plot figure 9.42a of IPCC AR5 chapter 9.
+"""Diagnostic script to plot figure 9.14 of IPCC AR5 chapter 9.
 
 Description
 -----------
 Calculate and plot the following quantities with regards to sea
 surface temperature: zonal mean error, equatorial mean error,
-equatorial mean.  The errors are calculated agains the reference given
+equatorial mean.  The errors are calculated against the reference given
 in the namelist.  Equatorial here means between 5 degrees north and 5
 degrees south.  This has been modelled after IPCC AR5 WG1 Ch. 9,
 Fig. 9.14.
@@ -61,7 +61,7 @@ def get_provenance_record(ancestor_files):
         'statistics': ['anomaly', 'mean', 'stddev', 'clim'],
         'domains': ['eq', 'global'],
         'plot_types': ['geo', 'sect', 'zonal'],
-        'authors': ['zimm_kl'],
+        'authors': ['zimmermann_klaus'],
         'projects': ['crescendo'],
         'references': ['flato13ipcc', 'hadisst'],
         'realms': ['ocean'],
