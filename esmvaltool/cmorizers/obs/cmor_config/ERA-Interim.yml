@@ -13,11 +13,10 @@ attributes:
 
 # Variables to CMORize
 variables:
-# TODO add branching for fx|invariant
-#  sftlf:
-#    mip: fx
-#    raw: lsm
-#    file: 'ERA-Interim_lsm.nc'
+  sftlf:
+    mip: fx
+    raw: lsm
+    file: 'ERA-Interim_lsm.nc'
   pr_day:
     short_name: pr
     mip: day
@@ -118,16 +117,28 @@ variables:
     mip: Amon
     raw: skt
     file: 'ERA-Interim_skt_monthly_*.nc'
-  ua:
-    mip: Amon
-    raw: u
-    file: 'ERA-Interim_u_monthly_*.nc'
-  va:
-    mip: Amon
-    raw: v
-    file: 'ERA-Interim_v_monthly_*.nc'
-  wap:
-    mip: Amon
-    raw: w
-    file: 'ERA-Interim_w_monthly_*.nc'
-
+  # TODO unable to find variables on download forms
+#  ta:
+#    mip: Amon
+#    raw: t
+#    file: 'ERA-Interim_t_monthly_*.nc'
+#  ua:
+#    mip: Amon
+#    raw: u
+#    file: 'ERA-Interim_u_monthly_*.nc'
+#  va:
+#    mip: Amon
+#    raw: v
+#    file: 'ERA-Interim_v_monthly_*.nc'
+#  wap:
+#    mip: Amon
+#    raw: w
+#    file: 'ERA-Interim_w_monthly_*.nc'
+#  hus:
+#    mip: Amon
+#    raw: q
+#    file: 'ERA-Interim_q_monthly_*.nc'
+#  hur:
+#    mip: Amon
+#    raw: r
+#    file: 'ERA-Interim_r_monthly_*.nc'

@@ -80,6 +80,12 @@ def _extract_variable(in_file, var, cfg, out_dir):
         )
         filterwarnings(
             action='ignore',
+            message="Ignoring netCDF variable 'lsm' invalid units '(0 - 1)'",
+            category=UserWarning,
+            module='iris',
+        )
+        filterwarnings(
+            action='ignore',
             message=("Ignoring netCDF variable 'e' invalid units "
                      "'m of water equivalent'"),
             category=UserWarning,
@@ -126,7 +132,8 @@ def _extract_variable(in_file, var, cfg, out_dir):
     for coord_name in 'latitude', 'longitude', 'time':
         coord = cube.coord(coord_name)
         coord.points = coord.core_points().astype('float64')
-        coord.guess_bounds()
+        if len(coord.points) > 1:
+            coord.guess_bounds()
 
     # era-interim is in 3hr or 6hr or 12hr freq need to convert to daily
     if var['mip'] in {'day', 'Eday'}:
