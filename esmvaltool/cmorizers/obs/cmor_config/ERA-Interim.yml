@@ -142,3 +142,18 @@ variables:
 #    mip: Amon
 #    raw: r
 #    file: 'ERA-Interim_r_monthly_*.nc'
+# TODO handle multi raw
+#  clwvi:
+#    mip: Amon
+#    raw: [p56.162 p57.162]
+#    files:
+#      - 'ERA-Interim_p56.162_monthly_*.nc'
+#      - 'ERA-Interim_p57.162_monthly_*.nc'
+#  hfds:
+#    mip: Amon
+#    raw: [ssr str slhf sshf]
+#    files:
+#      -  'ERA-Interim_ssr_monthly_*.nc'
+#      -  'ERA-Interim_str_monthly_*.nc'
+#      -  'ERA-Interim_slhf_monthly_*.nc'
+#      -  'ERA-Interim_sshf_monthly_*.nc'

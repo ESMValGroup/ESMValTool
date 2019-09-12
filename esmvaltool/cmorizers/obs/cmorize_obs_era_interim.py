@@ -49,6 +49,7 @@ from warnings import catch_warnings, filterwarnings
 
 import iris
 import numpy as np
+from cf_units import Unit
 
 from esmvalcore.cmor.table import CMOR_TABLES
 from esmvalcore.preprocessor import extract_month, daily_statistics
@@ -147,10 +148,11 @@ def _extract_variable(in_file, var, cfg, out_dir):
             iris.coord_categorisation.add_day_of_year(cube, 'time')
             iris.coord_categorisation.add_year(cube, 'time')
             cube = cube.aggregated_by(['day_of_year', 'year'], iris.analysis.SUM)
-            cube.remove_coord(cube.coord('day_of_year'))
-            cube.remove_coord(cube.coord('year'))
         else:
             daily_statistics(cube, 'mean')
+        # Remove daily statistics helpers
+        cube.remove_coord(cube.coord('day_of_year'))
+        cube.remove_coord(cube.coord('year'))
 
     # Add height coordinate to tas variable (required by the new backend)
     if 'height2m' in definition.dimensions:
@@ -162,20 +164,24 @@ def _extract_variable(in_file, var, cfg, out_dir):
     cube.convert_units(definition.units)
 
     # Make latitude increasing
-    # cube = cube[:, ::-1, ...]
-    fix_coords(cube)
+    cube = cube[:, ::-1, ...]
+
+    # Fix time unit to days
+    cube.coord('time').convert_units(Unit('days since 1950-1-1 00:00:00', calendar='gregorian'))
 
     # For daily data write a netcdf for each month
     if var['mip'] == 'fx':
-        logger.info("Saving cube\n%s", cube)
-        logger.info("Expected output size is %.1fGB",
-                    np.prod(cube.shape) * 4 / 2 ** 30)
-        utils.save_variable(cube, cube.var_name, out_dir, attributes)
-    else:
-        logger.info("Saving cube\n%s", cube)
-        logger.info("Expected output size is %.1fGB",
-                    np.prod(cube.shape) * 4 / 2 ** 30)
-        utils.save_variable(cube, cube.var_name, out_dir, attributes)
+        # Drop time dimension for fx variables
+        if len(cube.coord('time').points) == 1:
+            cube = cube.extract(iris.Constraint(time=cube.coord('time').cell(0)))
+            # TODO file name still contains year because of time coord,
+            #  dropping time coord causes save_variable to fail
+            # cube.remove_coord('time')
+
+    logger.info("Saving cube\n%s", cube)
+    logger.info("Expected output size is %.1fGB",
+                np.prod(cube.shape) * 4 / 2 ** 30)
+    utils.save_variable(cube, cube.var_name, out_dir, attributes)
 
 
 def cmorization(in_dir, out_dir, cfg, _):
