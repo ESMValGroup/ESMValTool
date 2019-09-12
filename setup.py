@@ -24,6 +24,7 @@ REQUIREMENTS = {
     'setup': [
         'pytest-runner',
         'setuptools_scm',
+        'xlsxwriter'
     ],
     # Installation dependencies
     # Use with pip install . to install from source
@@ -48,7 +49,6 @@ REQUIREMENTS = {
         'SkillMetrics',
         'stratify',
         'xarray>=0.12',
-        'xlsxwriter',
     ],
     # Test dependencies
     # Execute 'python setup.py test' to run tests
