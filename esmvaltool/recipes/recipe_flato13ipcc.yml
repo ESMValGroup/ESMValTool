@@ -53,7 +53,7 @@ preprocessors:
 
   zonal_mean:
     custom_order: true
-    time_average:
+    climate_statistics:
     regrid:
       target_grid: 1x1
       scheme: linear
@@ -65,7 +65,7 @@ preprocessors:
 
   equatorial:
     custom_order: true
-    time_average:
+    climate_statistics:
     regrid:
       target_grid: 1x1
       scheme: linear
