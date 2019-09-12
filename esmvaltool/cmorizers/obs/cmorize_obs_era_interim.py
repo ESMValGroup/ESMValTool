@@ -58,8 +58,10 @@ from . import utilities as utils
 
 logger = logging.getLogger(__name__)
 
-# Acceleration of gravity [m s-2], required for surface geopotential height, see https://confluence.ecmwf.int/pages/viewpage.action?pageId=79955800
+# Acceleration of gravity [m s-2],
+# required for surface geopotential height, see https://confluence.ecmwf.int/pages/viewpage.action?pageId=79955800
 G = 9.80665
+
 
 def _extract_variable(in_file, var, cfg, out_dir):
     logger.info("CMORizing variable '%s' from input file '%s'",
@@ -76,11 +78,25 @@ def _extract_variable(in_file, var, cfg, out_dir):
             category=UserWarning,
             module='iris',
         )
+        filterwarnings(
+            action='ignore',
+            message=("Ignoring netCDF variable 'e' invalid units "
+                     "'m of water equivalent'"),
+            category=UserWarning,
+            module='iris',
+        )
         cube = iris.load_cube(
             str(in_file),
             constraint=utils.var_name_constraint(var['raw']),
         )
 
+    # Set global attributes
+    utils.set_global_atts(cube, attributes)
+
+    if cube.var_name in {'e', 'sf'}:
+        # Change evaporation and snowfall units from
+        # 'm of water equivalent' to m
+        cube.units = 'm'
     if cube.var_name in {'e', 'ro', 'sf', 'tp', 'pev'}:
         # Change units from meters per day of water to kg of water per h
         cube.units = cube.units * 'kg m-3 h-1'
@@ -137,9 +153,6 @@ def _extract_variable(in_file, var, cfg, out_dir):
 
     # Make latitude increasing
     cube = cube[:, ::-1, ...]
-
-    # Set global attributes
-    utils.set_global_atts(cube, attributes)
 
     # For daily data write a netcdf for each month
     if var['mip'] in {'day', 'Eday'}:

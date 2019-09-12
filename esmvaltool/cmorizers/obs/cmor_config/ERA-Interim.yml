@@ -66,10 +66,11 @@ variables:
 #    mip: Eday
 #    raw: pev
 #    file: 'ERA-Interim_pev_daily_*.nc'
-  zg:
-    mip: fx
-    raw: z
-    file: 'ERA-Interim_z.nc'
+  # TODO zg is a daily and monthly dataset in ncl, but downloaded as invariant with a single time stamp
+#  zg:
+#    mip: fx
+#    raw: z
+#    file: 'ERA-Interim_z.nc'
   pr_month:
     short_name: pr
     mip: Amon
@@ -117,3 +118,16 @@ variables:
     mip: Amon
     raw: skt
     file: 'ERA-Interim_skt_monthly_*.nc'
+  ua:
+    mip: Amon
+    raw: u
+    file: 'ERA-Interim_u_monthly_*.nc'
+  va:
+    mip: Amon
+    raw: v
+    file: 'ERA-Interim_v_monthly_*.nc'
+  wap:
+    mip: Amon
+    raw: w
+    file: 'ERA-Interim_w_monthly_*.nc'
+
