@@ -48,7 +48,7 @@ requirements:
     - cython
     - eofs
     - esmpy
-    - esmvalcore>=2.0.0b1,<2.1
+    - esmvalcore>=2.0.0b2,<2.1
     - jinja2
     - matplotlib
     - nc-time-axis

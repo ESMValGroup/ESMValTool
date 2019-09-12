@@ -2,7 +2,7 @@
 import os
 import logging
 import iris
-from esmvalcore.preprocessor import time_average
+from esmvalcore.preprocessor import climate_statistics
 from esmvaltool.diag_scripts.shared import select_metadata
 
 
@@ -53,12 +53,12 @@ def get_control_exper_obs(short_name, input_data, cfg, cmip_type):
 
 
 # apply supermeans: handy function that loads CONTROL, EXPERIMENT
-# and OBS (if any) files and applies time_average() to mean the cubes
+# and OBS (if any) files and applies climate_statistics() to mean the cubes
 def apply_supermeans(ctrl, exper, obs_list):
     """
     Apply supermeans on data components ie MEAN on time
 
-    This function is an extension of time_average() meant to ease the
+    This function is an extension of climate_statistics() meant to ease the
     time-meaning procedure when dealing with CONTROL, EXPERIMENT and OBS
     (if any) datasets.
     ctrl: dictionary of CONTROL dataset
@@ -71,14 +71,14 @@ def apply_supermeans(ctrl, exper, obs_list):
     exper_file = exper['filename']
     ctrl_cube = iris.load_cube(ctrl_file)
     exper_cube = iris.load_cube(exper_file)
-    ctrl_cube = time_average(ctrl_cube)
-    exper_cube = time_average(exper_cube)
+    ctrl_cube = climate_statistics(ctrl_cube)
+    exper_cube = climate_statistics(exper_cube)
     if obs_list:
         obs_cube_list = []
         for obs in obs_list:
             obs_file = obs['filename']
             obs_cube = iris.load_cube(obs_file)
-            obs_cube = time_average(obs_cube)
+            obs_cube = climate_statistics(obs_cube)
             obs_cube_list.append(obs_cube)
     else:
         obs_cube_list = None
