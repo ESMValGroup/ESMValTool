@@ -54,6 +54,7 @@ from esmvalcore.cmor.table import CMOR_TABLES
 from esmvalcore.preprocessor import extract_month, daily_statistics
 from iris.coord_categorisation import add_month_number
 
+from esmvaltool.cmorizers.obs.utilities import fix_coords
 from . import utilities as utils
 
 logger = logging.getLogger(__name__)
@@ -146,6 +147,8 @@ def _extract_variable(in_file, var, cfg, out_dir):
             iris.coord_categorisation.add_day_of_year(cube, 'time')
             iris.coord_categorisation.add_year(cube, 'time')
             cube = cube.aggregated_by(['day_of_year', 'year'], iris.analysis.SUM)
+            cube.remove_coord(cube.coord('day_of_year'))
+            cube.remove_coord(cube.coord('year'))
         else:
             daily_statistics(cube, 'mean')
 
@@ -159,24 +162,16 @@ def _extract_variable(in_file, var, cfg, out_dir):
     cube.convert_units(definition.units)
 
     # Make latitude increasing
-    cube = cube[:, ::-1, ...]
+    # cube = cube[:, ::-1, ...]
+    fix_coords(cube)
 
     # For daily data write a netcdf for each month
-    if var['mip'] in {'day', 'Eday'}:
-        add_month_number(cube, 'time')
-        for month_number in range(1, 13):
-            month_cube = extract_month(cube, month_number)
-            month_cube.remove_coord(cube.coord('month_number'))
-            logger.info("Saving cube\n%s", month_cube)
-            logger.info("Expected output size is %.1fGB",
-                        np.prod(month_cube.shape) * 4 / 2**30)
-            utils.save_variable(month_cube, month_cube.var_name, out_dir, attributes)
-    elif var['mip'] in {'Amon'}:
+    if var['mip'] == 'fx':
         logger.info("Saving cube\n%s", cube)
         logger.info("Expected output size is %.1fGB",
                     np.prod(cube.shape) * 4 / 2 ** 30)
         utils.save_variable(cube, cube.var_name, out_dir, attributes)
-    elif var['mip'] == 'fx':
+    else:
         logger.info("Saving cube\n%s", cube)
         logger.info("Expected output size is %.1fGB",
                     np.prod(cube.shape) * 4 / 2 ** 30)
