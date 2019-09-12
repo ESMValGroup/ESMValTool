@@ -6,18 +6,37 @@ documentation:
     Diagnostics of water vapor with ESACCI data.
 
   authors:
-    - laue_ax
+    - lauer_axel
 
   maintainer:
-    - laue_ax
+    - lauer_axel
 
   projects:
     - cmug
 
 datasets:
-  - {dataset: IPSL-CM5A-LR, project: CMIP5, ensemble: r1i1p1}
-  - {dataset: MPI-ESM-LR, project: CMIP5, ensemble: r1i1p1}
+# CMIP5
+#  - {dataset: IPSL-CM5A-LR, project: CMIP5, ensemble: r1i1p1}
+#  - {dataset: MPI-ESM-LR, project: CMIP5, ensemble: r1i1p1}
   - {dataset: ESACCI-WV, project: OBS, type: sat, version: HOAPS-v4.0, tier: 2}
+# CMIP6 prw
+  - {dataset: BCC-CSM2-MR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+  - {dataset: BCC-ESM1, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+  - {dataset: CAMS-CSM1-0, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+  - {dataset: CanESM5, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+  - {dataset: CNRM-CM6-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gr}
+  - {dataset: CNRM-ESM2-1, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gr}
+  - {dataset: IPSL-CM6A-LR, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gr}
+  - {dataset: MIROC6, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+  - {dataset: HadGEM3-GC31-LL, project: CMIP6, exp: historical, ensemble: r1i1p1f3, grid: gn}
+  - {dataset: UKESM1-0-LL, project: CMIP6, exp: historical, ensemble: r1i1p1f2, grid: gn}
+  - {dataset: MRI-ESM2-0, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+  - {dataset: GISS-E2-1-G, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+  - {dataset: GISS-E2-1-H, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+  - {dataset: CESM2, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+  - {dataset: CESM2-WACCM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gn}
+  - {dataset: GFDL-CM4, project: CMIP6, exp: historical, ensemble: r1i1p1f1, grid: gr1}
+
 
 
 preprocessors:
@@ -40,95 +59,98 @@ diagnostics:
   # Geographical distribution of multi-year annual/seasonal means (panel plot)
   # ==========================================================================
 
-#  clim_prw:
-#    description: climatological annual means
-#    themes:
-#      - clouds
-#    realms:
-#      - atmos
-#    variables:
-#      prw:
-#        preprocessor: clim
-#        reference_dataset: ESACCI-WV
-#        mip: Amon
-#        exp: [historical, rcp45]
-#        start_year: 1988
-#        end_year: 2014
-##    additional_datasets:
-##      - {dataset: ESACCI-WV, project: OBS, type: sat, version: HOAPS-v4.0, tier: 2}
-#    scripts:
-#      clim: &clim_settings
-#        script: clouds/clouds.ncl
-#        # projection
-#        # ----------
-#        # map projection, e.g., Mollweide, Mercator, CylindricalEquidistant
-#        projection: CylindricalEquidistant
-#        # timemean
-#        # --------
-#        # - annualclim: 1 plot (annual mean)
-#        # - seasonalclim: 4 plots (DJF, MAM, JJA, SON)
-#        timemean: annualclim
-#        showdiff: true
+  clim_prw:
+    description: climatological annual means
+    themes:
+      - clouds
+    realms:
+      - atmos
+    variables:
+      prw:
+        preprocessor: clim
+        reference_dataset: ESACCI-WV
+        mip: Amon
+        exp: [historical, rcp45]
+        start_year: 1988
+        end_year: 2014
+#    additional_datasets:
+#      - {dataset: ESACCI-WV, project: OBS, type: sat, version: HOAPS-v4.0, tier: 2}
+    scripts:
+      clim: &clim_settings
+        script: clouds/clouds.ncl
+        # projection
+        # ----------
+        # map projection, e.g., Mollweide, Mercator, CylindricalEquidistant
+        projection: CylindricalEquidistant
+        # timemean
+        # --------
+        # - annualclim: 1 plot (annual mean)
+        # - seasonalclim: 4 plots (DJF, MAM, JJA, SON)
+        timemean: annualclim
+        showdiff: true
   
   # ==========================================================================
   # Lauer and Hamilton (2013) - Figure 3
   # Taylor plots of multi-year mean quantities
   # ==========================================================================
 
-#  tay_prw:
-#    description: climatological annual means
-#    themes:
-#      - clouds
-#    realms:
-#      - atmos
-#    variables:
-#      clt:
-#        preprocessor: clim
-#        reference_dataset: MODIS
-#        mip: Amon
+  tay_prw:
+    description: climatological annual means
+    themes:
+      - clouds
+    realms:
+      - atmos
+    variables:
+      prw:
+        preprocessor: clim
+        reference_dataset: ESACCI-WV
+        mip: Amon
+        exp: [historical, rcp45]
+        start_year: 1988
+        end_year: 2014
 #    additional_datasets:
 #      - {dataset: MODIS, project: obs4mips, level: L3, version: C5,
 #         start_year: 2001, end_year: 2010, tier: 1}
-#    scripts:
-#      clim: &taylor_settings
-#        script: clouds/clouds_taylor.ncl
-#        # emrabcelegend
-#        # -------------
-#        # - true:  1) save legend to separate file
-#        #          2) plot alternative reference data set (if available) as a
-#        #             black or red star and use "altern. ref. dataset" as label
-#        # - false: 1) plot legend into taylor plot (same file)
-#        #          2) plot alternative reference data set (if available) using
-#        #             model symbols and use name of observations as label
-#        embracelegend: false
-#        # estimate_obs_uncertainty
-#        # ------------------------
-#        # - true:  estimate observational uncertainties from mean values
-#        #          (assuming fractions of obs. RMSE from documentation of the
-#        #          obs data); only available for "CERES-EBAF", "MODIS",
-#        #          "MODIS-L3"
-#        # - false: do not estimate obs. uncertainties from mean values
-#        estimate_obs_uncertainty: false
-#        # mask_ts_sea_ice
-#        # ---------------
-#        # - true:  mask T < 272 K as sea ice (only for variable "ts")
-#        # - false: no additional grid cells masked for variable "ts"
-#        mask_ts_sea_ice: false
-#        # styleset
-#        # --------
-#        # styleset (line styles + symbols) used for plotting
-#        # ("CMIP5", "DEFAULT")
-#        styleset: CMIP5
-#        # timemean
-#        # --------
-#        # - annualclim: 1 plot (annual mean)
-#        # - seasonalclim: 4 plots (DJF, MAM, JJA, SON)
-#        timemean: annualclim
-#        # valid_fraction
-#        # --------------
-#        # used for creating sea ice mask (mask_ts_sea_ice = true): fraction of
-#        # valid time steps required to mask grid cell as valid data
-#        valid_fraction: 0.5
+    scripts:
+      clim: &taylor_settings
+        script: clouds/clouds_taylor.ncl
+        # emrabcelegend
+        # -------------
+        # - true:  1) save legend to separate file
+        #          2) plot alternative reference data set (if available) as a
+        #             black or red star and use "altern. ref. dataset" as label
+        # - false: 1) plot legend into taylor plot (same file)
+        #          2) plot alternative reference data set (if available) using
+        #             model symbols and use name of observations as label
+        embracelegend: false
+        # estimate_obs_uncertainty
+        # ------------------------
+        # - true:  estimate observational uncertainties from mean values
+        #          (assuming fractions of obs. RMSE from documentation of the
+        #          obs data); only available for "CERES-EBAF", "MODIS",
+        #          "MODIS-L3"
+        # - false: do not estimate obs. uncertainties from mean values
+        estimate_obs_uncertainty: false
+        # mask_ts_sea_ice
+        # ---------------
+        # - true:  mask T < 272 K as sea ice (only for variable "ts")
+        # - false: no additional grid cells masked for variable "ts"
+        mask_ts_sea_ice: false
+        # styleset
+        # --------
+        # styleset (line styles + symbols) used for plotting
+        # ("CMIP5", "DEFAULT")
+        styleset: CMIP5
+        # timemean
+        # --------
+        # - annualclim: 1 plot (annual mean)
+        # - seasonalclim: 4 plots (DJF, MAM, JJA, SON)
+        timemean: annualclim
+        # valid_fraction
+        # --------------
+        # used for creating sea ice mask (mask_ts_sea_ice = true): fraction of
+        # valid time steps required to mask grid cell as valid data
+        valid_fraction: 0.5
 
 
   # ==========================================================================
@@ -138,94 +160,94 @@ diagnostics:
   # seasonal cycle
   # ==========================================================================
 
-#  var_prw:
-#    description: interannual variability
-#    themes:
-#      - clouds
-#    realms:
-#      - atmos
-#    variables:
-#      prw:
-#        preprocessor: clim
-#        reference_dataset: ESACCI-WV
-#        mip: Amon
-#        exp: [historical, rcp45]
-#        start_year: 1988
-#        end_year: 2014
-##    additional_datasets:
-##      - {dataset: UWisc, project: OBS, type: sat, version: v2,
-##         start_year: 1988, end_year: 2007, tier: 3}
-#    scripts:
-#      clim: &intera_settings
-#        script: clouds/clouds_interannual.ncl
-#        # colormap
-#        # --------
-#        # colors for scale bar (e.g., WhiteBlueGreenYellowRed, rainbow)
-#        colormap: WhiteBlueGreenYellowRed
-#        # extrafiles
-#        # ----------
-#        # write plots for individual models to separate files (true, false)
-#        extrafiles: false
-#        explicit_cn_levels: [0, 1, 2, 3, 4, 5, 6, 8, 10, 12, 14]
-#        # projection
-#        # ----------
-#        # map projection, e.g., Mollweide, Mercator, CylindricalEquidistant
-#        projection: CylindricalEquidistant
-#        # timemean
-#        # --------
-#        # - annualclim: 1 plot (annual mean)
-#        # - seasonalclim: 4 plots (DJF, MAM, JJA, SON)
-#        timemean: annualclim
+  var_prw:
+    description: interannual variability
+    themes:
+      - clouds
+    realms:
+      - atmos
+    variables:
+      prw:
+        preprocessor: clim
+        reference_dataset: ESACCI-WV
+        mip: Amon
+        exp: [historical, rcp45]
+        start_year: 1988
+        end_year: 2014
+#    additional_datasets:
+#      - {dataset: UWisc, project: OBS, type: sat, version: v2,
+#         start_year: 1988, end_year: 2007, tier: 3}
+    scripts:
+      clim: &intera_settings
+        script: clouds/clouds_interannual.ncl
+        # colormap
+        # --------
+        # colors for scale bar (e.g., WhiteBlueGreenYellowRed, rainbow)
+        colormap: WhiteBlueGreenYellowRed
+        # extrafiles
+        # ----------
+        # write plots for individual models to separate files (true, false)
+        extrafiles: false
+        explicit_cn_levels: [0, 1, 2, 3, 4, 5, 6, 8, 10, 12, 14]
+        # projection
+        # ----------
+        # map projection, e.g., Mollweide, Mercator, CylindricalEquidistant
+        projection: CylindricalEquidistant
+        # timemean
+        # --------
+        # - annualclim: 1 plot (annual mean)
+        # - seasonalclim: 4 plots (DJF, MAM, JJA, SON)
+        timemean: annualclim
 
 
   # ==========================================================================
   # Time series averaged over different regions
   # ==========================================================================
 
-#  ts_prw:
-#    description: time series
-#    themes:
-#      - clouds
-#    realms:
-#      - atmos
-#    variables:
-#      prw:
-#        preprocessor: clim
-#        reference_dataset: ESACCI-WV
-#        field: T2Ms
-#        mip: Amon
-#        exp: [historical, rcp45]
-#        start_year: 1988
-#        end_year: 2014
-#    scripts:
-#      glob:
-#        script: ipcc_ar5/tsline.ncl
-#        styleset: CMIP5
-#        ts_minlat: -90
-#        ts_maxlat: 90    
-#        ts_minlon: 0
-#        ts_maxlon: 360
-#      midlat_n:
-#        script: ipcc_ar5/tsline.ncl
-#        styleset: CMIP5
-#        ts_minlat: 30
-#        ts_maxlat: 60    
-#        ts_minlon: 0
-#        ts_maxlon: 360
-#      tropics:
-#        script: ipcc_ar5/tsline.ncl
-#        styleset: CMIP5
-#        ts_minlat: -30
-#        ts_maxlat: 30    
-#        ts_minlon: 0
-#        ts_maxlon: 360
-#      midlat_s:
-#        script: ipcc_ar5/tsline.ncl
-#        styleset: CMIP5
-#        ts_minlat: -60
-#        ts_maxlat: -30    
-#        ts_minlon: 0
-#        ts_maxlon: 360
+  ts_prw:
+    description: time series
+    themes:
+      - clouds
+    realms:
+      - atmos
+    variables:
+      prw:
+        preprocessor: clim
+        reference_dataset: ESACCI-WV
+        field: T2Ms
+        mip: Amon
+        exp: [historical, rcp45]
+        start_year: 1988
+        end_year: 2014
+    scripts:
+      glob:
+        script: ipcc_ar5/tsline.ncl
+        styleset: CMIP5
+        ts_minlat: -90
+        ts_maxlat: 90    
+        ts_minlon: 0
+        ts_maxlon: 360
+      midlat_n:
+        script: ipcc_ar5/tsline.ncl
+        styleset: CMIP5
+        ts_minlat: 30
+        ts_maxlat: 60    
+        ts_minlon: 0
+        ts_maxlon: 360
+      tropics:
+        script: ipcc_ar5/tsline.ncl
+        styleset: CMIP5
+        ts_minlat: -30
+        ts_maxlat: 30    
+        ts_minlon: 0
+        ts_maxlon: 360
+      midlat_s:
+        script: ipcc_ar5/tsline.ncl
+        styleset: CMIP5
+        ts_minlat: -60
+        ts_maxlat: -30    
+        ts_minlon: 0
+        ts_maxlon: 360
 
 
   # ==========================================================================
@@ -251,7 +273,7 @@ diagnostics:
         script: eyring13jgr/eyring13jgr_fig01.ncl
         font: 21
         range_option: 0
-        lbLabelBarOn: false
+        lbLabelBarOn: true
         show_mask: true
         e13fig01_diff_ref: true
         e13fig01_list_chem_mod_string: CMIP5

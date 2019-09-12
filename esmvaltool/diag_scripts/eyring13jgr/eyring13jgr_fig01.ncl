@@ -354,7 +354,7 @@ begin
     statistics = (/"clim", "mean"/)
     domain = "global"
     plottype = (/"seas", "zonal"/)
-    contrib_authors = (/"cion_ir", "laue_ax"/)
+    contrib_authors = (/"cionni_irene", "lauer_axel"/)
     diag_ref = "eyring13jgr"
 
     caption = "Mean seasonal cycle of " + var0 \
