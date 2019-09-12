@@ -364,7 +364,6 @@ authors:
     name: van Ulft, Bert
     institute: KNMI, Netherlands
     orcid: https://orcid.org/0000-0001-8653-2312
-    email: bert.van.ulft 'at' knmi.nl
   verh_st:
     name: Verhoeven, Stefan
     institute: NLeSC, Netherlands
@@ -674,16 +673,9 @@ references:
   mte: "Jung et al., J. Geophys. Res., doi:10.1029/2010JG001566, 2011."
   ncep: "Kalnay et al., B. Am. Meteorol. Soc., doi:10.1175/1520-0477(1996)077<0437:TNYRP>2.0.CO;2, 1996."
   niwa-bs: "Bodeker et al., Atmos. Chem. Phys., doi:10.5194/acp-5-2603-2005, 2005."
-<<<<<<< HEAD
-  patmos-x: "Heidinger et al., NOAA National Centers for Environmental Information, doi:10.7289/V5348HCK, last access: 10 February 2019."
-  woa: "Locarnini et al., World Ocean Atlas 2013, Vol. 1: Temperature, 2013."
-  zhang-2011: "Zhang et al., WIREs Clim. Change, doi:10.1002/wcc.147, 2011"
-  sillman-2013: "Sillmann et al., J. Geophys. Res., doi:10.1029/2012JD018390, 2013"
-=======
   patmos-x: "Heidinger et al., Bull. Amer. Meteor. Soc., doi:10.1175/BAMS-D-12-00246.1, 2013."
   uwisc: "O'Dell et al., J. Clim., doi:10.1175/2007JCLI1958.1, 2008."
   woa: "Locarnini et al., World Ocean Atlas 2013, Volume 1: Temperature, NOAA Atlas NESDIS 73, 2013."
->>>>>>> origin/era5
 
 projects:
   c3s-magic: Copernicus Climate Change Service 34a Lot 2 (MAGIC) project
@@ -696,7 +688,6 @@ projects:
   embrace: EU FP7 project EMBRACE
   esmval: DLR project ESMVal
   eval4cmip: DLR and University of Bremen project funded by the Initiative and Networking Fund of the Helmholtz Society
-  ewatercycle: eWaterCycle project
   qa4ecv: QA4ECV
   trr181: DFG Project TRR-181
   ukesm: UKESM, UK Earth System Model project (NERC)
