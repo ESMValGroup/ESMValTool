@@ -7,23 +7,25 @@ assignees: ''
 
 ---
 
-Please discuss your idea for a new diagnostic or recipe with the development team before getting started, to avoid disappointment later. A good way to do this is to open an issue on GitHub. This is also a good way to get help.
+Before you start, read [contributing.md](https://github.com/ESMValGroup/ESMValTool/blob/version2_development/CONTRIBUTING.md) and the [guide for diagnostic developers](https://esmvaltool.readthedocs.io/en/latest/esmvaldiag/index.html).
 
----
-
-**Acceptance Criteria**
-
-* All tests must pass (see the CI tests at the bottom of the discussion and click on "Details" to see why a test fails
+Please discuss your idea for a new diagnostic or recipe with the development team before getting started, to avoid disappointment later. The way to do this is to open an issue on GitHub.
 
 ---
 
 **Tasks**
 
+- [ ] Create an issue to explain what you are going to do (and add the link at the bottom)
 - [ ] Add a recipe file in esmvaltool/recipes 
 - [ ] Add a diagnostic script in esmvaltool/diag_scripts
-- [ ] Add any additional dependencies needed for the diagnostic script to setup.py
-- [ ] Add documentation for the recipe (and add a new entry to index.rst)
-- [ ] 
+- [ ] Add documentation for the recipe to the `doc/sphinx/source/recipes` folder and add a new entry to index.rst
+- [ ] Make sure your code is composed of functions of no more than 50 lines and uses meaningful names for variables
+- [ ] (Only if really necessary) Add any additional dependencies needed for the diagnostic script to setup.py, esmvaltool/install/R or esmvaltool/install/Julia (depending on the language of your script)and also to meta.yaml for conda dependencies (includes python and others, but not R/Julia)
+- [ ] Make sure the license of new dependencies is compatible with [Apache2.0](https://github.com/ESMValGroup/ESMValTool/blob/version2_development/LICENSE)
+- [ ] Make sure the Circle/CI tests pass
+- [ ] Preferably the Codacy code quality test should pass, however a few remaining hard to solve Codacy issues are still acceptable
+- [ ] Please use `yamllint` to check that your YAML files do not contain mistakes 
+
 
 ---
 

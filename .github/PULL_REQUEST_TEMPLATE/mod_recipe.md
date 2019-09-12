@@ -7,21 +7,24 @@ assignees: ''
 
 ---
 
-Please discuss your idea for modifications to a diagnostic or recipe with the development team and the author of the diagnostic before getting started, to avoid disappointment later. The best way to do this is to open an issue on GitHub. This is also a good way to get help. 
+Before you start, read [contributing.md](https://github.com/ESMValGroup/ESMValTool/blob/version2_development/CONTRIBUTING.md) and the [guide for diagnostic developers](https://esmvaltool.readthedocs.io/en/latest/esmvaldiag/index.html).
+
+Please discuss your idea for a new diagnostic or recipe with the development team and the original author before getting started, to avoid disappointment later. The way to do this is to open an issue on GitHub.
 Note: The author of a recipe can be found in the documentation section of the recipe. Contact information of the author can then be found in esmvaltool/config-references.yml
 
 ---
 
-**Acceptance Criteria**
-
-* All tests must pass (see the CI tests at the bottom of the discussion and click on "Details" to see why a test fails
-
----
-
 **Tasks**
+
+- [ ] Create an issue to explain what you are going to do (and add the link at the bottom)
 - [ ] Make your changes to the recipe and/or diagnostic script
-- [ ] Add any additional dependencies needed for the diagnostic script to setup.py (before adding dependencies, make sure there is no other way by discussing it with the core development team)
-- [ ] Change the documentation for the recipe
+- [ ] Update the documentation for the recipe
+- [ ] Make sure your code is composed of functions of no more than 50 lines and uses meaningful names for variables
+- [ ] Make sure the Circle/CI tests pass
+- [ ] Preferably the Codacy code quality test should pass, however a few remaining hard to solve Codacy issues are still acceptable
+- [ ] Please use `yamllint` to check that your YAML files do not contain mistakes 
+
+
 
 ---
 
