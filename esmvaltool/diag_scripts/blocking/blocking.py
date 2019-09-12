@@ -317,17 +317,19 @@ class Blocking(object):
         if self.smoothing_window == 0:
             return cube
         logger.debug('Smoothing...')
-        smoothed = iris.cube.CubeList()
-        for lon_slice in cube.slices_over('longitude'):
-            longitude = lon_slice.coord('longitude').points[0]
+        smoothed = np.empty_like(cube.data)
+        coord = cube.coord('longitude')
+        coord_dim = cube.coord_dims(coord)[0]
+        for x in range(coord.shape[0]):
+            longitude = coord.points[x]
             lon_window = cube.intersection(
                 longitude=(longitude - self.smoothing_window / 2.,
                            longitude + self.smoothing_window / 2.)
             )
             lon_mean = lon_window.collapsed('longitude', iris.analysis.MEAN)
-            lon_slice.data[...] = lon_mean.data
-            smoothed.append(lon_slice)
-        cube = smoothed.merge_cube()
+            slices = [x if coord_dim == n else slice(None) for n in range(cube.ndim)]
+            smoothed[slices] = lon_mean.data
+        cube = cube.copy(smoothed)
         logger.debug('Smoothing finished!')
         return cube
 
