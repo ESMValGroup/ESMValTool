@@ -395,7 +395,7 @@ def main(config):
         plot_path = produce_plots(config, data)
     ancestor_files = list(config['input_data'].keys())
     provenance_record = get_provenance_record(ancestor_files)
-    if plot_path is not None:
+    if config['write_plots']:
         provenance_record['plot_file'] = plot_path
     netcdf_path = write_data(config, data)
     with ProvenanceLogger(config) as provenance_logger:
