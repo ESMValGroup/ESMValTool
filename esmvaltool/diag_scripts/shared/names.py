@@ -25,6 +25,8 @@ SHORT_NAME = 'short_name'
 STANDARD_NAME = 'standard_name'
 UNITS = 'units'
 VAR_NAME = 'var_name'
+START_YEAR = 'start_year'
+END_YEAR = 'end_year'
 
 INPUT_DATA = 'input_data'
 INPUT_FILES = 'input_files'

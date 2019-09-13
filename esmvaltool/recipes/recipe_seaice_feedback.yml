@@ -19,16 +19,17 @@ documentation:
     production onto the baseline summer volume anomaly
 
   authors:
-    - mass_fr
+    - massonnet_francois
 
   mantainer:
-    - vega_ja
+    - vegas-regidor_javier
 
   references:
     - massonet18
 
   projects:
     - applicate
+    - primavera
 
 datasets:
   - &cmip5 {project: CMIP5, exp: historical, dataset: ACCESS1-0,  ensemble: r1i1p1, start_year: 1979, end_year: 2004}
@@ -90,4 +91,4 @@ diagnostics:
         plot:
           point_color: black
           point_size: 10
-          show_values: True
+          show_values: False

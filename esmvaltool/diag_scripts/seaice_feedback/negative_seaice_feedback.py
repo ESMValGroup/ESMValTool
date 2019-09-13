@@ -73,7 +73,7 @@ class NegativeSeaIceFeedback(object):
                 del cellarea, sit
 
                 neg_feedback, stats, _ = self.negative_seaice_feedback(
-                    dataset_info[n.ALIAS], volume, period=12, order=2
+                    dataset_info, volume, period=12, order=2
                 )
                 del volume
                 logger.info("Negative feedback: %10.4f", neg_feedback)
@@ -86,53 +86,9 @@ class NegativeSeaIceFeedback(object):
                 p_value.append(stats[1])
                 datasets.append(dataset_info[n.ALIAS])
 
-        path = os.path.join(
-            self.cfg[n.PLOT_DIR],
-            'negative_feedback.{}'.format(self.cfg[n.OUTPUT_FILE_TYPE])
-        )
-
-        plot_options = self.cfg.get('plot', {})
-        fig = plt.figure()
-        index = np.arange(len(negative_feedback))
-        plt.scatter(
-            index,
-            negative_feedback,
-            plot_options.get('point_size', 8),
-            color=plot_options.get('point_color', 'black'),
-        )
-        ax = plt.gca()
-        max_limit = math.ceil(max(negative_feedback))
-        if max_limit < 0:
-            max_limit = 0
-        min_limit = math.floor(min(negative_feedback))
-        separation = max_limit - min_limit
-
-        if plot_options.get('show_values', True):
-            def _get_y_position(value):
-                if value > min_limit + separation * 0.75:
-                    return value - separation * 0.05
-                else:
-                    return value + separation * 0.10
-            for i, value in enumerate(negative_feedback):
-                ax.annotate(
-                    f'{value:.2f}',
-                    xy=(index[i], value),
-                    xycoords='data',
-                    textcoords='data',
-                    xytext=(index[i], _get_y_position(value)),
-                    rotation=90,
-                )
-
-        # axes and labels
-        ax.set_ylim(min_limit, max_limit)
-        ax.set_ylabel('Feedback')
-        ax.set_title('Negative sea ice feedback')
-        _, xtick_names = plt.xticks(index, datasets)
-        plt.setp(xtick_names, rotation=90, fontsize=10)
-        plt.grid(True, 'both', 'y')
-        plt.tight_layout()
-        fig.savefig(path)
-        plt.close(fig)
+        if self.cfg[n.WRITE_PLOTS]:
+            self._plot_comparison(negative_feedback, datasets)
+            self._plot_comparison(p_value, datasets, p_values=True)
 
     def compute_volume(self, avg_thick, cellarea, mask=1):
         """
@@ -267,7 +223,7 @@ class NegativeSeaIceFeedback(object):
                                   for i in range(order + 1)], axis=0)
         return residuals
 
-    def negative_seaice_feedback(self, alias, volume, period, order=1):
+    def negative_seaice_feedback(self, dataset_info, volume, period, order=1):
         """
         Function to estimate the negative ice-thickness ice growth feedback
         and its significance.
@@ -320,6 +276,8 @@ class NegativeSeaIceFeedback(object):
         imax = [t + np.nanargmax(volume.data[t:t + period])
                 for t in np.arange(0, volume.size, period)]
 
+        volume /= 1e12
+
         # 3. Detrend series. A one-year shift is introduced to make sure we
         #    compute volume production *after* the summer minimum
         vol_min = self.detrend(volume[imin[:-1]], order=order)
@@ -328,7 +286,7 @@ class NegativeSeaIceFeedback(object):
         if self.cfg[n.WRITE_PLOTS]:
             path = os.path.join(
                 self.cfg[n.PLOT_DIR],
-                f'volume_vs_volumediff_{alias}.{self.cfg[n.OUTPUT_FILE_TYPE]}'
+                f'ife_{dataset_info[n.ALIAS]}.{self.cfg[n.OUTPUT_FILE_TYPE]}'
             )
             plot_options = self.cfg.get('plot', {})
             fig = plt.figure()
@@ -339,9 +297,12 @@ class NegativeSeaIceFeedback(object):
                 color=plot_options.get('point_color', 'black'),
             )
             ax = plt.gca()
-            ax.set_title(alias)
-            ax.set_ylabel('dV')
-            ax.set_xlabel('Volume')
+            ax.set_title(
+                f'Evaluation of the IFE \n{dataset_info[n.ALIAS]} '
+                f'({dataset_info[n.START_YEAR]}-{dataset_info[n.END_YEAR]})'
+            )
+            ax.set_ylabel('Wintertime volume range \n(anomalies) [10³ km³]')
+            ax.set_xlabel('Volume at minimum\n(anomalies) [10³ km³]')
             plt.grid(True, 'both', 'both')
             plt.tight_layout()
             fig.savefig(path)
@@ -382,6 +343,67 @@ class NegativeSeaIceFeedback(object):
                 raise
 
         return [fit, [corr, pval, std], [vol_min, dvol]]
+
+    def _plot_comparison(self, data, datasets, p_values=False):
+        if p_values:
+            filename = 'feedback_p_values'
+        else:
+            filename = 'feedback'
+
+        path = os.path.join(
+            self.cfg[n.PLOT_DIR],
+            f'{filename}.{self.cfg[n.OUTPUT_FILE_TYPE]}'
+        )
+
+        plot_options = self.cfg.get('plot', {})
+        fig = plt.figure()
+        index = np.arange(len(data))
+        plt.scatter(
+            index,
+            data,
+            plot_options.get('point_size', 8),
+            color=plot_options.get('point_color', 'black'),
+        )
+        if p_values:
+            plt.hlines(0.05, -1, index[-1] + 1, colors='red')
+        ax = plt.gca()
+        logger.debug(data)
+        max_limit = math.ceil(max(data))
+        if max_limit < 0:
+            max_limit = 0
+        min_limit = math.floor(min(data))
+        separation = max_limit - min_limit
+
+        if plot_options.get('show_values', False):
+            def _get_y_position(value):
+                if value > min_limit + separation * 0.75:
+                    return value - separation * 0.05
+                else:
+                    return value + separation * 0.10
+            for i, value in enumerate(data):
+                ax.annotate(
+                    f'{value:.2f}',
+                    xy=(index[i], value),
+                    xycoords='data',
+                    textcoords='data',
+                    xytext=(index[i], _get_y_position(value)),
+                    rotation=90,
+                )
+
+        # axes and labels
+        ax.set_ylim(min_limit, max_limit)
+        if p_values:
+            ax.set_ylabel('P-value')
+        else:
+            ax.set_ylabel('Feedback')
+        ax.set_title('IFE comparison')
+        _, xtick_names = plt.xticks(index, datasets)
+        plt.xlim(index[0] - 0.5, index[-1] + 0.5)
+        plt.setp(xtick_names, rotation=90, fontsize=10)
+        plt.grid(True, 'both', 'y')
+        plt.tight_layout()
+        fig.savefig(path)
+        plt.close(fig)
 
 
 def main():
