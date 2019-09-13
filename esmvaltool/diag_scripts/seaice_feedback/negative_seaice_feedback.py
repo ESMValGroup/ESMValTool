@@ -70,6 +70,7 @@ class NegativeSeaIceFeedback(object):
                         mask = np.broadcast_to(np.expand_dims(mask, 0),
                                                cellarea.shape)
                 volume = self.compute_volume(sit, cellarea, mask=mask)
+                logger.info(volume)
                 del cellarea, sit
 
                 neg_feedback, stats, _ = self.negative_seaice_feedback(
@@ -131,7 +132,7 @@ class NegativeSeaIceFeedback(object):
                 vol.append(
                     np.sum(
                         thick_slice.data * cellarea.data * mask.data
-                    )
+                    ) / 1e12
                 )
             vol = np.asarray(vol)
         elif len(avg_thick.shape) == 2:
@@ -393,7 +394,8 @@ class NegativeSeaIceFeedback(object):
         # axes and labels
         ax.set_ylim(min_limit, max_limit)
         if p_values:
-            ax.set_ylabel('P-value')
+            ax.set_ylabel('P-value [log]')
+            plt.yscale('log')
         else:
             ax.set_ylabel('Feedback')
         ax.set_title('IFE comparison')
