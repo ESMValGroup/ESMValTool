@@ -40,14 +40,14 @@
 ;    new years to a previous version of the data.
 ;
 ; Modification history
-;    20190311-A_righ_ma: added surface fluxes.
-;    20190204-A_righ_ma: adapted to v2.
-;    20171023-A_laue_ax: added variables prw, ts
-;    20160913-A_laue_ax: added variable tcc
-;    20150820-A_laue_ax: added variables lwp, iwp, sftlf
-;    20150327-A_righ_ma: merged with ERA-Interim-surf.ncl and
-;                        ERA-Interim-surf_daily.ncl.
-;    20140128-A_righ_ma: written.
+;    20190311-righi_mattia: added surface fluxes.
+;    20190204-righi_mattia: adapted to v2.
+;    20171023-lauer_axel: added variables prw, ts.
+;    20160913-lauer_axel: added variable tcc.
+;    20150820-lauer_axel: added variables lwp, iwp, sftlf.
+;    20150327-righi_mattia: merged with ERA-Interim-surf.ncl and
+;                           ERA-Interim-surf_daily.ncl.
+;    20140128-righi_mattia: written.
 ;
 ; #############################################################################
 

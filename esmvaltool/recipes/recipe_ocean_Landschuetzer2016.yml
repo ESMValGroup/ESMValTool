@@ -8,10 +8,10 @@ documentation:
     Written by Tomas Lovato, CMCC, tomas.lovato@cmcc.it
 
   authors:
-    - lova_to
+    - lovato_tomas
   
   maintainer:
-    - lova_to
+    - lovato_tomas
 
   references:
     - acknow_project
@@ -34,7 +34,8 @@ preprocessors:
   # --------------------------------------------------
   # For a 2D global surface map
   prep_surface_map_2D:
-    time_average:
+    climate_statistics:
+      operator: mean
     regrid:
       target_grid: 2x2
       scheme: linear
@@ -108,8 +109,4 @@ diagnostics:
         script: ocean/diagnostic_maps.py
       Global_Ocean_model_vs_obs:
         script: ocean/diagnostic_model_vs_obs.py
-        observational_dataset: {dataset: Landschuetzer2016, project: OBS}
-
-
-
-
+        observational_dataset: {dataset: Landschutzer2016, project: OBS}
