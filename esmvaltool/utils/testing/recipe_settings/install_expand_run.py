@@ -28,19 +28,22 @@ def linear_expand(filename, cwd):
     recipe = yaml.safe_load(filename.read_text())
 
     for key in options or {}:
-        for diag_name, diagnostic in recipe['diagnostics'].items():
-            for script_name, script in diagnostic['scripts'].items():
-                for value in options[key]:
+        for value in options[key]:
+            outrecipe = copy.deepcopy(recipe)
+            write_recipe = False
+            for diag_name, diagnostic in recipe['diagnostics'].items():
+                for script_name, script in diagnostic['scripts'].items():
                     if key in script and script[key] != value:
-                        outrecipe = copy.deepcopy(recipe)
+                        write_recipe = True
                         outrecipe['diagnostics'][diag_name]['scripts'][
                             script_name][key] = value
-                        outfile = cwd / Path('{}_{}_{}.yml'.format(
-                            filename.stem, key,
-                            str(value).replace(os.sep, '-')))
-                        print("Creating", outfile)
-                        outfile.write_text(yaml.safe_dump(outrecipe))
-                        yield outfile
+            if write_recipe:
+                outfile = cwd / Path('{}_{}_{}.yml'.format(
+                    filename.stem, key,
+                    str(value).replace(os.sep, '-')))
+                print("Creating", outfile)
+                outfile.write_text(yaml.safe_dump(outrecipe))
+                yield outfile
 
 
 def matrix_expand(filename, cwd, max_recipes=100):
