@@ -44,10 +44,10 @@ diagnostics:
         preprocessor: preprocessor_1
         reference_dataset: ERA-Interim
         mip: Amon
+        additional_datasets:
+          - {dataset: NCEP,        project: OBS,    tier: 2,    type: reanaly,    version: 1,        start_year: 2000,  end_year: 2002}
       sftlf:
         mip: fx
-    additional_datasets:
-      - {dataset: NCEP,        project: OBS,    tier: 2,    type: reanaly,    version: 1,        start_year: 2000,  end_year: 2002}
     scripts:
       test_ta: &settings
         script: examples/diagnostic.ncl
