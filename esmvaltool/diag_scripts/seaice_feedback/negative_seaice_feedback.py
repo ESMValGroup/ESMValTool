@@ -397,7 +397,7 @@ class NegativeSeaIceFeedback(object):
             ax.set_ylabel('P-value [log]')
             plt.ylim(0, max(0.25, max(data)))
         else:
-            ax.set_ylabel('Feedback')
+            ax.set_ylabel('IFE')
         ax.set_title('IFE comparison')
         _, xtick_names = plt.xticks(index, datasets)
         plt.xlim(index[0] - 0.5, index[-1] + 0.5)
