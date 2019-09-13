@@ -2,7 +2,6 @@
 import os
 import logging
 import iris
-from esmvalcore.preprocessor import time_average
 from esmvaltool.diag_scripts.shared import select_metadata
 
 
@@ -67,6 +66,7 @@ def apply_supermeans(ctrl, exper, obs_list):
 
     Returns: control and experiment cubes and list of obs cubes
     """
+    from esmvalcore.preprocessor import time_average
     ctrl_file = ctrl['filename']
     exper_file = exper['filename']
     ctrl_cube = iris.load_cube(ctrl_file)
