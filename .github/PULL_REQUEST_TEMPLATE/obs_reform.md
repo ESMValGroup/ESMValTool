@@ -7,7 +7,7 @@ assignees: ''
 
 ---
 
-Before you start, read [contributing.md](https://github.com/ESMValGroup/ESMValTool/blob/version2_development/CONTRIBUTING.md) and the documentation on [contributing a CMORizing script for an observational dataset](https://esmvaltool.readthedocs.io/en/latest/esmvaldiag/observations.html).
+Before you start, read [CONTRIBUTING.md](https://github.com/ESMValGroup/ESMValTool/blob/version2_development/CONTRIBUTING.md) and the documentation on [contributing a CMORizing script for an observational dataset](https://esmvaltool.readthedocs.io/en/latest/esmvaldiag/observations.html).
 
 Please discuss your idea for a new diagnostic or recipe with the development team before getting started, to avoid disappointment later. The way to do this is to open an issue on GitHub.
 

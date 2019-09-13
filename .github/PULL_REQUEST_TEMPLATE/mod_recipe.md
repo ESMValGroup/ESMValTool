@@ -7,7 +7,7 @@ assignees: ''
 
 ---
 
-Before you start, read [contributing.md](https://github.com/ESMValGroup/ESMValTool/blob/version2_development/CONTRIBUTING.md) and the [guide for diagnostic developers](https://esmvaltool.readthedocs.io/en/latest/esmvaldiag/index.html).
+Before you start, read [CONTRIBUTING.md](https://github.com/ESMValGroup/ESMValTool/blob/version2_development/CONTRIBUTING.md) and the [guide for diagnostic developers](https://esmvaltool.readthedocs.io/en/latest/esmvaldiag/index.html).
 
 Please discuss your idea for a new diagnostic or recipe with the development team and the original author before getting started, to avoid disappointment later. The way to do this is to open an issue on GitHub.
 Note: The author of a recipe can be found in the documentation section of the recipe. Contact information of the author can then be found in esmvaltool/config-references.yml
