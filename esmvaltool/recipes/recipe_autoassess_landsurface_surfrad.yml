@@ -34,11 +34,13 @@ diagnostics:
       rsns: # Surf SW net all sky
         derive: true
         force_derivation: false
-        fx_files: [sftlf]
+      sftlf:
+        mip: fx
       rlns: # Surf LW net all sky
         derive: true
         force_derivation: false
-        fx_files: [sftlf]
+      sftlf:
+        mip: fx
     additional_datasets:
       - {dataset: CERES-EBAF,  project: obs4mips,  level: L3B,  version: Ed2-7,  start_year: 2001,  end_year: 2012, tier: 1}
     scripts:
@@ -50,7 +52,6 @@ diagnostics:
         exp_model: MPI-ESM-MR
         obs_models: [CERES-EBAF]
         obs_type: obs4mips
-        fx: [sftlf]
         start: 1997/12/01
         end: 2002/12/01
 
