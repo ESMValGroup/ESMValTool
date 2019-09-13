@@ -29,10 +29,12 @@ diagnostics:
     variables:
       tas:
         mip: Amon
-        fx_files: [sftlf, mrsofc]
       tsl:
         mip: Lmon
-        fx_files: [sftlf, mrsofc]
+      sftlf:
+        mip: fx
+      mrsofc:
+        mip: fx
     scripts:
       autoassess_landsurf_permafrost: &autoassess_landsurf_permafrost_settings
         script: autoassess/autoassess_area_base.py
