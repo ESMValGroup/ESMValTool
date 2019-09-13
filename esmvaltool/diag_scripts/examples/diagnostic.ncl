@@ -92,13 +92,6 @@ begin
   dataset = read_data(info[0])
   printVarSummary(dataset)
 
-  ; Read fx-variable for the second dataset in the list
-  ; fx-variable are specified in the recipe, the field is returned as a list
-  ; where also auxiliary coordinates are stored (if available).
-  ; If no fx-variable is found a missing value is returned
-  fx_var = read_fx_data(info[1], "sftlf")
-  printVarSummary(fx_var)
-
   ; Retrieve metadata item for the reference dataset
   atts = True
   atts@short_name = var0
