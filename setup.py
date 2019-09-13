@@ -235,7 +235,7 @@ setup(
             'showcolortables = '
             'esmvaltool.utils.color_tables.show_color_tables:run',
             'test_recipe = '
-            'esmvaltool.utils.testing.recipe_settings.install_expand_run:main'            
+            'esmvaltool.utils.testing.recipe_settings.install_expand_run:main'
         ],
     },
     cmdclass={
