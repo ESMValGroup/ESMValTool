@@ -70,7 +70,6 @@ class NegativeSeaIceFeedback(object):
                         mask = np.broadcast_to(np.expand_dims(mask, 0),
                                                cellarea.shape)
                 volume = self.compute_volume(sit, cellarea, mask=mask)
-                logger.info(volume)
                 del cellarea, sit
 
                 neg_feedback, stats, _ = self.negative_seaice_feedback(
@@ -277,37 +276,10 @@ class NegativeSeaIceFeedback(object):
         imax = [t + np.nanargmax(volume.data[t:t + period])
                 for t in np.arange(0, volume.size, period)]
 
-        volume /= 1e12
-
         # 3. Detrend series. A one-year shift is introduced to make sure we
         #    compute volume production *after* the summer minimum
         vol_min = self.detrend(volume[imin[:-1]], order=order)
         dvol = self.detrend(volume[imax[1:]] - volume[imin[:-1]], order=order)
-
-        if self.cfg[n.WRITE_PLOTS]:
-            path = os.path.join(
-                self.cfg[n.PLOT_DIR],
-                f'ife_{dataset_info[n.ALIAS]}.{self.cfg[n.OUTPUT_FILE_TYPE]}'
-            )
-            plot_options = self.cfg.get('plot', {})
-            fig = plt.figure()
-            plt.scatter(
-                vol_min,
-                dvol,
-                plot_options.get('point_size', 8),
-                color=plot_options.get('point_color', 'black'),
-            )
-            ax = plt.gca()
-            ax.set_title(
-                f'Evaluation of the IFE \n{dataset_info[n.ALIAS]} '
-                f'({dataset_info[n.START_YEAR]}-{dataset_info[n.END_YEAR]})'
-            )
-            ax.set_ylabel('Wintertime volume range \n(anomalies) [10³ km³]')
-            ax.set_xlabel('Volume at minimum\n(anomalies) [10³ km³]')
-            plt.grid(True, 'both', 'both')
-            plt.tight_layout()
-            fig.savefig(path)
-            plt.close(fig)
 
         # 4. Compute diagnostics
         # If all Vmins are zero or all dVs are zero, return Nan
@@ -333,8 +305,9 @@ class NegativeSeaIceFeedback(object):
                 )
 
             try:
-                fit, cov = np.polyfit(vol_min, dvol, 1, cov=True)
-                fit = fit[0]  # Fit parameter
+                fit_complete, cov = np.polyfit(vol_min, dvol, 1, cov=True)
+                logger.info(fit_complete)
+                fit = fit_complete[0]  # Fit parameter
                 std = np.sqrt(cov[0, 0])  # Standard deviation on it
             except ValueError:
                 logger.error("(negative_seaice_feedback) PROBLEM,"
@@ -342,6 +315,33 @@ class NegativeSeaIceFeedback(object):
                              "Input volume: %f Vmin: %f dv: %f",
                              volume, vol_min, dvol)
                 raise
+        if self.cfg[n.WRITE_PLOTS]:
+            path = os.path.join(
+                self.cfg[n.PLOT_DIR],
+                f'ife_{dataset_info[n.ALIAS]}.{self.cfg[n.OUTPUT_FILE_TYPE]}'
+            )
+            plot_options = self.cfg.get('plot', {})
+            fig = plt.figure()
+            plt.scatter(
+                vol_min,
+                dvol,
+                plot_options.get('point_size', 8),
+                color=plot_options.get('point_color', 'black'),
+            )
+            minx, maxx = plt.xlim()
+            x = np.linspace(minx, maxx)
+            plt.plot(x, x * fit_complete[0] + fit_complete[1])
+            ax = plt.gca()
+            ax.set_title(
+                f'Evaluation of the IFE \n{dataset_info[n.ALIAS]} '
+                f'({dataset_info[n.START_YEAR]}-{dataset_info[n.END_YEAR]})'
+            )
+            ax.set_ylabel('Wintertime volume range \n(anomalies) [10³ km³]')
+            ax.set_xlabel('Volume at minimum\n(anomalies) [10³ km³]')
+            plt.grid(True, 'both', 'both')
+            plt.tight_layout()
+            fig.savefig(path)
+            plt.close(fig)
 
         return [fit, [corr, pval, std], [vol_min, dvol]]
 
@@ -395,7 +395,7 @@ class NegativeSeaIceFeedback(object):
         ax.set_ylim(min_limit, max_limit)
         if p_values:
             ax.set_ylabel('P-value [log]')
-            plt.yscale('log')
+            plt.ylim(0, max(0.25, max(data)))
         else:
             ax.set_ylabel('Feedback')
         ax.set_title('IFE comparison')
