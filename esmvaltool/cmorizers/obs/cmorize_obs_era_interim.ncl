@@ -157,7 +157,7 @@ begin
 
       ; fx variables are time invariant
       if (l_fx) then
-        fname = input_dir_path + "ERA-Interim_" + NAME(0) + ".nc"
+        fname = input_dir_path + "ERA-Interim_" + NAME(0) + "_.nc"
         f = addfile(fname, "r")
       else
         fname = input_dir_path + \
