@@ -152,23 +152,11 @@ def _get_filelists(cfg):
         fullpath_file = filename
         if base_file.split('_')[1] == cfg['control_model']:
             metrics_dict['control_model'].append(fullpath_file)
-            if 'fx_files' in attributes:
-                for fx_file in cfg['fx']:
-                    metrics_dict['control_model'].append(
-                        attributes['fx_files'][fx_file])
         if base_file.split('_')[1] == cfg['exp_model']:
             metrics_dict['exp_model'].append(fullpath_file)
-            if 'fx_files' in attributes:
-                for fx_file in cfg['fx']:
-                    metrics_dict['exp_model'].append(
-                        attributes['fx_files'][fx_file])
         if additional_metrics and base_file.split(
                 '_')[1] in cfg['additional_metrics']:
             metrics_dict[base_file.split('_')[1]].append(fullpath_file)
-            if 'fx_files' in attributes:
-                for fx_file in cfg['fx']:
-                    metrics_dict[base_file.split('_')[1]].append(
-                        attributes['fx_files'][fx_file])
         if obs_types and base_file.split('_')[1] in obs_types:
             obs_list.append(fullpath_file)
 
