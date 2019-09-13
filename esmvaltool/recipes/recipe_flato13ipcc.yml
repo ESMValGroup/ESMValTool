@@ -768,9 +768,13 @@ diagnostics:
       - {dataset: HadISST, project: OBS, type: reanaly, version: 1, tier: 2}
       - {dataset: ACCESS1-0}
       - {dataset: ACCESS1-3}
+      - {dataset: bcc-csm1-1}
+      - {dataset: bcc-csm1-1-m}
       - {dataset: CanCM4}
       - {dataset: CanESM2}
       - {dataset: CCSM4}
+      - {dataset: CESM1-BGC}
+      - {dataset: CESM1-CAM5-1-FV2}
       - {dataset: CESM1-FASTCHEM}
       - {dataset: CESM1-WACCM}
       - {dataset: CMCC-CESM}
@@ -780,6 +784,7 @@ diagnostics:
       - {dataset: CSIRO-Mk3-6-0}
       - {dataset: EC-EARTH}
       - {dataset: FGOALS-g2}
+      - {dataset: FIO-ESM, version: v20120522}
       - {dataset: GFDL-CM2p1}
       - {dataset: GFDL-CM3}
       - {dataset: GFDL-ESM2G}
