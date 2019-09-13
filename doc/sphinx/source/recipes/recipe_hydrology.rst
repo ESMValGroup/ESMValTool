@@ -1,6 +1,6 @@
 .. _recipes_hydrology:
 
-Data pre-processing for hydrological models 
+Data pre-processing for hydrological models
 ============================================
 
 Overview
@@ -30,7 +30,7 @@ User settings in recipe
 
 #. recipe_pcrglobwb.yml
 
-   *Required settings for script:*
+   *Required preprocessor settings:*
 
    * start_year: 1979
    * end_year: 1979
@@ -40,12 +40,14 @@ Variables
 
 #. recipe_pcrglobwb.yml
 
-   * tas (reanaly, daily, longitude, latitude, time)
-   * pr (reanaly, daily, longitude, latitude, time)
+   * tas (atmos, daily, longitude, latitude, time)
+   * pr (atmos, daily, longitude, latitude, time)
 
 Observations and reformat scripts
 ---------------------------------
-*  ERA-Interim (tas, pr)
+*Note: see headers of cmorization scripts (in esmvaltool/utils/cmorizers/obs) for download instructions.*
+
+*  ERA-Interim (tas, pr - esmvaltool/utils/cmorizers/obs/cmorize_obs_ERA-Interim.ncl)
 
 References
 ----------
