@@ -6,7 +6,7 @@ IPCC AR5 Chapter 9
 Overview
 --------
 
-The goal of this effort is to code up routines to reproduce Chapter 9 of AR5, 
+The goal of this recipe is to collect diagnostics to reproduce Chapter 9 of AR5, 
 so that the plots can be readily reproduced and compared to previous CMIP 
 versions. In this way we can next time start with what was available in the 
 previous round and can focus on developing more innovative methods of analysis 
