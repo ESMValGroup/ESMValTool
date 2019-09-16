@@ -32,8 +32,8 @@
 ;    For orders larger than 2 GB a registration is required.
 ;
 ; Modification history
-;    20190124-A_righ_ma: written based on v1 different bash scripts by laue_ax
-;                        and eval_ma.
+;    20190124-righi_mattia: written based on v1 different bash scripts by
+;                           Axel Lauer and Martin Evaldsson.
 ;
 ; #############################################################################
 loadscript(getenv("esmvaltool_root") + \
