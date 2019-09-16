@@ -80,12 +80,9 @@ def _cmorize_dataset(in_file, var, cfg, out_dir):
 
     # Set correct names
     cube.var_name = definition.short_name
-    try:
+    if definition.standard_name:
         cube.standard_name = definition.standard_name
-    except ValueError:
-        logger.warning(
-            "Could not set standard name %s for variable (var_name=) %s",
-            definition.standard_name, cube.var_name)
+
     cube.long_name = definition.long_name
 
     # Convert units if required
