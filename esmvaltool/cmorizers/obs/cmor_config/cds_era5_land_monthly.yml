@@ -16,4 +16,4 @@ variables:
   sm:
     mip: Lmon
     raw: swvl1
-    file: 'era5-land_recent.swvl1.025deg.1m.2008.nc'
+    file: 'era5-land_recent.swvl1.025deg.1m.*.nc'

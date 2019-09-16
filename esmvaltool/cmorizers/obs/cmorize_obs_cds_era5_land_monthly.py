@@ -40,6 +40,7 @@ from copy import deepcopy
 from datetime import datetime
 from pathlib import Path
 
+import cf_units
 import iris
 import numpy as np
 
