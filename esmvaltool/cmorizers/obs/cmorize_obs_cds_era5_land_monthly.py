@@ -31,7 +31,7 @@ Download and processing instructions
         )
 
 History
-    20190903 crez_ba adapted from cmorize_obs_era5.py
+    20190903 crezee_bas adapted from cmorize_obs_era5.py
 
 """
 
