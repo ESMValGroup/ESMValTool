@@ -657,7 +657,6 @@ references:
   era-interim: "Dee et al., Q. J. Roy. Meteor. Soc., doi:10.1002/qj.828, 2011."
   era5: "Copernicus Climate Change Service (C3S) (2017): ERA5: Fifth generation of ECMWF atmospheric reanalyses of the global climate. Copernicus Climate Change Service Climate Data Store (CDS)"
   esacci-aerosol: "Popp et al., Remote Sens., doi:10.3390/rs8050421, 2016."
->>>>>>> version2_development
   esacci-cloud: "Stengel et al., Earth Syst. Sci. Data, doi:10.5194/essd-9-881-2017, 2017."
   esacci-fire: "Chuvieco et al.ESA Fire Climate Change Initiative (Fire_cci): Burned Area Grid Product Version 4.1. Centre for Environmental Data Analysis, doi:10.5285/D80636D4-7DAF-407E-912D-F5BB61C142FA, 2016."
   esacci-landcover: "Defourny, P.: ESA Land Cover Climate Change Initiative (Land_Cover_cci): Global Land Cover Maps, Version 1.6.1. Centre for Environmental Data Analysis, http://catalogue.ceda.ac.uk/uuid/4761751d7c844e228ec2f5fe11b2e3b0, 2016."
