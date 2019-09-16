@@ -617,7 +617,6 @@ diagnostics:
       tas:
         preprocessor: clim_ref
         reference_dataset: HadCRUT4
-        alternative_dataset: HadCRUT4-clim
         mip: Amon
         field: T2Ms
         project: CMIP5
