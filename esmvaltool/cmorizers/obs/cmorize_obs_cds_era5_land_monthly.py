@@ -52,14 +52,21 @@ logger = logging.getLogger(__name__)
 
 def _guess_bnds_time_monthly(cube):
     """Guess time bounds from time points for monthly data."""
-    import cf_units
     from dateutil import relativedelta
     coord = cube.coord('time')
     time_as_datetime = cf_units.num2date(coord.points,
                                          coord.units.origin,
                                          coord.units.calendar)
     time_bnds = []
+    time_points = []
     for timestep in time_as_datetime:
+        # Deal with time points
+        midmonth_datetime = datetime(timestep.year, timestep.month, 15)
+        midmonth_point = cf_units.date2num(midmonth_datetime,
+                                           coord.units.origin,
+                                           coord.units.calendar)
+        time_points.append(midmonth_point)
+        # Deal with time bounds
         a_datetime = datetime(timestep.year, timestep.month, 1)
         b_datetime = a_datetime + relativedelta.relativedelta(months=1)
         bnd_a = cf_units.date2num(a_datetime, coord.units.origin,
@@ -69,8 +76,10 @@ def _guess_bnds_time_monthly(cube):
         time_bnds.append([bnd_a, bnd_b])
     # Convert them to an array
     time_bnds = np.array(time_bnds)
+    time_points = np.array(time_points)
     # Set them as bounds
     coord.bounds = time_bnds
+    coord.points = time_points
 
 
 def _extract_variable(in_file, var, cfg, out_dir):
