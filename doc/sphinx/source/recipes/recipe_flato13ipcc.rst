@@ -12,7 +12,7 @@ versions. In this way we can next time start with what was available in the
 previous round and can focus on developing more innovative methods of analysis 
 rather than constantly having to "re-invent the wheel".
 
-The plots will be done based on a collection of individual namelists. The 
+The plots are produced collecting the diagnostics from individual recipes. The 
 following figures from Flato et al. (2013) can currently be reproduced:
 
     * Figure 9.2 a,b,c: Annual-mean surface air temperature for the period 
