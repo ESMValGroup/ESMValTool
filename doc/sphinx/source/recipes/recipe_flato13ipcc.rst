@@ -56,10 +56,10 @@ Recipes are stored in esmvaltool/recipes/
 Diagnostics are stored in esmvaltool/diag_scripts/
 
     * clouds/clouds_bias.ncl: global maps of the multi-model mean and the multi-model
-      mean bias
+      mean bias (Fig. 9.2, 9.4)
     * clouds/clouds_isccp: global maps of multi-model mean minus observations + zonal
-      averages of individual models, multi-model mean and observations
-    * ipcc_ar5/tsline.ncl: time series of the global mean (anomaly)
+      averages of individual models, multi-model mean and observations (Fig. 9.5)
+    * ipcc_ar5/tsline.ncl: time series of the global mean (anomaly) (Fig: 9.8)
 
 
 User settings in recipe
