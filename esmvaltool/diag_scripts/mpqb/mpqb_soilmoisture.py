@@ -17,42 +17,58 @@ from esmvaltool.diag_scripts.shared.plot import quickplot
 logger = logging.getLogger(os.path.basename(__file__))
 
 
-#def array2cube(array_in,cube_template):
-#    newcube = cube_template.collapsed('time', iris.analysis.MEAN)
-#    newcube.data = np.ma.fix_invalid(array_in)
-#    return newcube
-
-#TODO: put results of functions into CUBE
-#TODO: loop over pairs of mpqb datasets
-
+def array2cube(array_in,cube_template):
+    newcube = cube_template.copy()
+    newcube.data = np.ma.fix_invalid(array_in)
+    return newcube
 
 class mpqb_pair:
-    def __init__(self,ds_cfg,ds1name,ds2name):
+    def __init__(self,cfg,ds_cfg,ds1name,ds2name):
         '''  ds_cfg should be input data grouped on dataset '''
+        self.cfg = cfg
         self.ds_cfg = ds_cfg
         self.ds1 = ds1name
         self.ds2 = ds2name
         self.metrics = {}
     def load(self):
         self.ds1cube = iris.load_cube(self.ds_cfg[self.ds1][0]['filename'])
+        self.template = self.ds1cube.collapsed('time', iris.analysis.MEAN)
         self.ds1dat = self.ds1cube.data.filled(np.nan)
         self.ds2dat = iris.load_cube(self.ds_cfg[self.ds2][0]['filename']).data.filled(np.nan)
     def pearsonr(self):
-        self.metrics['pearsonr'] = parallel_apply_along_axis(pearsonr1d, 0, (self.ds1dat,self.ds2dat))
+        self.metrics['pearsonr'],_ = parallel_apply_along_axis(pearsonr1d, 0, (self.ds1dat,self.ds2dat))
     def rmsd(self):
         self.metrics['rmsd'] = parallel_apply_along_axis(rmsd1d, 0, (self.ds1dat,self.ds2dat))
     def absdiff(self):
         self.metrics['absdiff'] = parallel_apply_along_axis(absdiffaxismean1d, 0, (self.ds1dat,self.ds2dat))
     def reldiff(self):
         self.metrics['reldiff'] = parallel_apply_along_axis(reldiffaxismean1d, 0, (self.ds1dat,self.ds2dat))
-    def template(self):
-        self.template = self.ds1cube.collapsed('time', iris.analysis.MEAN)
-#    def results2cube(self):
-#        for metric in self.metrics:
-#            self.metrics[metric] = array2cube(self.metrics[metric],self.ds1cube)
+    def results2cube(self):
+        for metric in self.metrics:
+            self.metrics[metric] = array2cube(self.metrics[metric],self.template)
+    def plot(self):
+        for metricname,cube in self.metrics.items():
+            basename = '{0}_{1}_{2}'.format(metricname,self.ds1,self.ds2)
+            diagnostic_file = get_diagnostic_filename(basename, cfg)
+            logger.info("Saving analysis results to %s", diagnostic_file)
+            iris.save(cube, target=diagnostic_file)
+            
+            plot_file = get_plot_filename(basename, cfg)
+            logger.info("Plotting analysis results to %s", plot_file)
 
+            # Create provenance record
+            provenance_record = {
+                #TODO complete provenance record
+                'caption' : "{0} between {1} and {2}".format(metricname,self.ds1,self.ds2),
+                'plot_file' : plot_file
+            }
 
+            quickplot(cube, plot_file, cfg['quickplot'])
 
+            logger.info("Recording provenance of %s:\n%s", diagnostic_file,
+                    pformat(provenance_record))
+            with ProvenanceLogger(cfg) as provenance_logger:
+                provenance_logger.log(diagnostic_file, provenance_record)
 
 def compute_diagnostic(filename):
     """Compute an example diagnostic."""
@@ -61,26 +77,6 @@ def compute_diagnostic(filename):
 
     logger.debug("Running example computation")
     return cube.collapsed('time', iris.analysis.MEAN)
-
-
-def plot_diagnostic(cube, basename, provenance_record, cfg):
-    """Create diagnostic data and plot it."""
-    diagnostic_file = get_diagnostic_filename(basename, cfg)
-
-    logger.info("Saving analysis results to %s", diagnostic_file)
-    iris.save(cube, target=diagnostic_file)
-
-    if cfg['write_plots'] and cfg.get('quickplot'):
-        plot_file = get_plot_filename(basename, cfg)
-        logger.info("Plotting analysis results to %s", plot_file)
-        provenance_record['plot_file'] = plot_file
-        quickplot(cube, filename=plot_file, **cfg['quickplot'])
-
-    logger.info("Recording provenance of %s:\n%s", diagnostic_file,
-                pformat(provenance_record))
-    with ProvenanceLogger(cfg) as provenance_logger:
-        provenance_logger.log(diagnostic_file, provenance_record)
-
 
 def main(cfg):
     """Compute the time average for each input dataset."""
@@ -97,32 +93,20 @@ def main(cfg):
         "Example of how to group and sort input data by standard_name:"
         "\n%s", pformat(grouped_input_data))
 
-    # Just create a sample plot for now, to test provenance logging.
-    for key in grouped_input_data:
-        inputfile = grouped_input_data[key][0]['filename']
-        output_basename = os.path.splitext(
-            os.path.basename(inputfile))[0] + '_' + key
-
-
-        provenance_record = {'caption' : 'this is a test record'}
-        resultcube = compute_diagnostic(inputfile)
-        plot_diagnostic(resultcube, output_basename, provenance_record, cfg)
-
-    # Example of how to loop over variables/datasets in alphabetical order
-    pair = mpqb_pair(grouped_input_data, 'cds-era5-monthly', 'cds-era5-monthly')
+    # Create a pair of two datasets for inter-comparison
+    pair = mpqb_pair(cfg, grouped_input_data, 'cds-era5-monthly', 'cds-uerra-reanalysis')
     pair.load()
-   
-    # Just as an example for now.
-    # Touch the coords, otherwise core dumped 
-    pair.ds1cube.coords()
-    meancube = pair.ds1cube.collapsed('time', iris.analysis.MEAN)
-
-    # Now go through metrics
+    # Execute the requested metrics
     for metricname in metrics_to_calculate:
         try:
             getattr(pair,metricname)()
         except AttributeError:
             logger.error("Metric %s is not defined. ", metricname)
+    # Put the results back into cubes for plotting
+    pair.results2cube()
+    # Plot the results (if configured to plot)
+    if cfg['write_plots']:
+        pair.plot()
 
     logger.info("Finished!")
 
