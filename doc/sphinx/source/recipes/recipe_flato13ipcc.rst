@@ -235,24 +235,24 @@ Example plots
 .. figure::  /recipes/figures/flato13ipcc/fig-9-5.png
    :align:   center
 
-    Figure 9.5: Climatological (1985-2005) annual-mean cloud radiative 
-    effects in Wm-2 for the CMIP5 models against CERES EBAF (2001-2011) in 
-    Wm-2. Top row shows the shortwave effect; middle row the longwave effect, 
-    and bottom row the net effect. Multi-model-mean biases against CERES 
-    EBAF 2.6 are shown on the left, whereas the right panels show zonal 
-    averages from CERES EBAF 2.6 (black), the individual CMIP5 models (thin 
-    gray lines), and the multi-model mean (thick red line).
+   Figure 9.5: Climatological (1985-2005) annual-mean cloud radiative 
+   effects in Wm-2 for the CMIP5 models against CERES EBAF (2001-2011) in 
+   Wm-2. Top row shows the shortwave effect; middle row the longwave effect, 
+   and bottom row the net effect. Multi-model-mean biases against CERES 
+   EBAF 2.6 are shown on the left, whereas the right panels show zonal 
+   averages from CERES EBAF 2.6 (black), the individual CMIP5 models (thin 
+   gray lines), and the multi-model mean (thick red line).
 
 .. _fig_flato13ipcc_4:
 .. figure::  /recipes/figures/flato13ipcc/fig-9-8.png
    :align:   center
 
-    Figure 9.8: Observed and simulated time series of the anomalies in annual 
-    and global mean surface temperature. All anomalies are differences from 
-    the 1961-1990 time-mean of each individual time series. The reference 
-    period 1961-1990 is indicated by yellow shading; vertical dashed grey 
-    lines represent times of major volcanic eruptions. Single simulations 
-    for CMIP5 models (thin lines); multi-model mean (thick red line); 
-    different observations (thick black lines). Dataset pre-processing like
-    described in Jones et al., 2013.
+   Figure 9.8: Observed and simulated time series of the anomalies in annual 
+   and global mean surface temperature. All anomalies are differences from 
+   the 1961-1990 time-mean of each individual time series. The reference 
+   period 1961-1990 is indicated by yellow shading; vertical dashed grey 
+   lines represent times of major volcanic eruptions. Single simulations 
+   for CMIP5 models (thin lines); multi-model mean (thick red line); 
+   different observations (thick black lines). Dataset pre-processing like
+   described in Jones et al., 2013.
 
