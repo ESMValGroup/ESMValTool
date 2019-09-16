@@ -7,6 +7,8 @@ from diag1d import *
 import numpy as np
 
 import iris
+import itertools as it
+import warnings
 
 from esmvaltool.diag_scripts.shared import (group_metadata, run_diagnostic,
                                             select_metadata, sorted_metadata)
@@ -15,6 +17,45 @@ from esmvaltool.diag_scripts.shared._base import (
 from esmvaltool.diag_scripts.shared.plot import quickplot
 
 logger = logging.getLogger(os.path.basename(__file__))
+
+
+def mpqb_custom_plot(cube,filename,**plotkwargs):
+    import matplotlib.pyplot as plt
+    logger.debug("Creating plot %s", filename)
+    plottitle = plotkwargs.pop('title')
+    fig = plt.figure()
+    ax = fig.add_subplot(projection=iris.plot.default_projection(cube))
+    iris.quickplot.pcolormesh(cube,**plotkwargs)
+    plt.gca().coastlines()
+    plt.title(plottitle)
+    fig.savefig(filename)
+    plt.close(fig)
+
+metrics_plot_dictionary = {
+    'pearsonr' : {
+        'title' : 'pearsonr',
+        'vmin' : -1.,
+        'vmax' : 1.,
+        'cmap' : 'RdYlBu', # diverging
+    },
+    'rmsd' : {
+        'title' : 'rmsd',
+        'vmin' : 0.,
+        'vmax' : 1.,
+        'cmap' : 'RdYlBu', # diverging
+    },
+    'absdiff' : {
+        'title' : 'absdiff',
+        'vmin' : -.5,
+        'vmax' : .5,
+        'cmap' : 'RdYlBu', # diverging
+    },
+    'reldiff' : {
+        'title' : 'reldiff',
+        'cmap' : 'RdYlBu', # diverging
+    },
+}
+
 
 
 def array2cube(array_in,cube_template):
@@ -40,7 +81,10 @@ class mpqb_pair:
     def rmsd(self):
         self.metrics['rmsd'] = parallel_apply_along_axis(rmsd1d, 0, (self.ds1dat,self.ds2dat))
     def absdiff(self):
-        self.metrics['absdiff'] = parallel_apply_along_axis(absdiffaxismean1d, 0, (self.ds1dat,self.ds2dat))
+        with warnings.catch_warnings(): # silence the mean of empty slice warnings
+                                        # this is expected behaviour
+            warnings.simplefilter("ignore", category=RuntimeWarning) 
+            self.metrics['absdiff'] = parallel_apply_along_axis(absdiffaxismean1d, 0, (self.ds1dat,self.ds2dat))
     def reldiff(self):
         self.metrics['reldiff'] = parallel_apply_along_axis(reldiffaxismean1d, 0, (self.ds1dat,self.ds2dat))
     def results2cube(self):
@@ -63,7 +107,7 @@ class mpqb_pair:
                 'plot_file' : plot_file
             }
 
-            quickplot(cube, plot_file, cfg['quickplot'])
+            mpqb_custom_plot(cube, plot_file, **metrics_plot_dictionary[metricname])
 
             logger.info("Recording provenance of %s:\n%s", diagnostic_file,
                     pformat(provenance_record))
@@ -83,6 +127,7 @@ def main(cfg):
 
     #TODO move these parameters to config file
     metrics_to_calculate = ['pearsonr', 'rmsd', 'absdiff', 'reldiff']
+    reference_dataset = 'CDS-SATELLITE-SOILMOISTURE'
 
     # Get a description of the preprocessed data that we will use as input.
     input_data = cfg['input_data'].values()
@@ -94,20 +139,24 @@ def main(cfg):
         "\n%s", pformat(grouped_input_data))
 
     # Create a pair of two datasets for inter-comparison
-    pair = mpqb_pair(cfg, grouped_input_data, 'cds-era5-monthly', 'cds-uerra-reanalysis')
-    pair.load()
-    # Execute the requested metrics
-    for metricname in metrics_to_calculate:
-        try:
-            getattr(pair,metricname)()
-        except AttributeError:
-            logger.error("Metric %s is not defined. ", metricname)
-    # Put the results back into cubes for plotting
-    pair.results2cube()
-    # Plot the results (if configured to plot)
-    if cfg['write_plots']:
-        pair.plot()
-
+    for dataset in grouped_input_data.keys():
+        if dataset != reference_dataset:
+            logger.info("Opening dataset: {0}".format(dataset))
+            # Opening the pair 
+            pair = mpqb_pair(cfg, grouped_input_data, dataset, reference_dataset)
+            pair.load()
+            # Execute the requested metrics
+            for metricname in metrics_to_calculate:
+                try:
+                    getattr(pair,metricname)()
+                except AttributeError:
+                    logger.error("Metric %s is not defined. ", metricname)
+            # Put the results back into cubes for plotting
+            pair.results2cube()
+            # Plot the results (if configured to plot)
+            if cfg['write_plots']:
+                pair.plot()
+            logger.info("Finished comparison to ref for dataset: {0}".format(dataset))
     logger.info("Finished!")
 
 
