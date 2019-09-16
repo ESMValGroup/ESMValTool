@@ -139,11 +139,10 @@ begin
             time(12 * (yy - start_year) + mm - 1) = 100 * yy + mm
         end do
     end do
-  else if (time_avg.eq."yearly") then
+  elseif (time_avg.eq."yearly") then
     ntime = end_year - start_year + 1
     time = new(ntime, integer)
     time = ispan(start_year, end_year, 1)
-  end if
   end if
 
   ; get multi-model mean index
