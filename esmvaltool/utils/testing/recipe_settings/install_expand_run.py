@@ -112,7 +112,7 @@ def run(script, cwd, method=''):
 def install(args):
     """Install ESMValTool from GitHub."""
     cwd = absolute(args.directory)
-    cwd.mkdir(parents=True)
+    cwd.mkdir(parents=True, exist_ok=True)
     script_template = Path(__file__).parent / 'install.sh.template'
     script = script_template.read_text().format(branch=args.branch)
 
