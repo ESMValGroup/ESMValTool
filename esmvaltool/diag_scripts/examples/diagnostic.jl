@@ -10,6 +10,7 @@
 # ############################################################################
 
 import YAML
+import JSON
 
 function provenance_record(infile)
   xprov = Dict( "ancestors" => infile,
@@ -26,7 +27,6 @@ function provenance_record(infile)
 end
 
 diag_scripts_dir = ENV["diag_scripts"]
-include(string(diag_scripts_dir, "/shared/external.jl"))
 
 settings = YAML.load_file(ARGS[1])
 
@@ -77,4 +77,6 @@ for (infile, value) in metadata
 end
 
 # Write provenance file
-create_yaml(provenance, provenance_file)
+open(provenance_file, "w") do f
+        JSON.print(f, provenance, 4)
+end

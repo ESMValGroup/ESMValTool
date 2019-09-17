@@ -3,3 +3,4 @@ Compat
 DataFrames
 RainFARM
 YAML
+JSON
