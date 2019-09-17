@@ -17,6 +17,7 @@ Recipes
    recipe_cvdp
    recipe_diurnal_temperature_index
    recipe_ecs
+   recipe_energy_vectors
    recipe_ensclus
    recipe_extreme_events
    recipe_flato13ipcc
