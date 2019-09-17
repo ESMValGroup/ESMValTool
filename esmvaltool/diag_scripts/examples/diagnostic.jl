@@ -13,21 +13,52 @@ import YAML
 import JSON
 
 function provenance_record(infile)
-  xprov = Dict( "ancestors" => infile,
-    "authors" => ["hard_jo", "arno_en"],
-    "references" => ["zhang-2011"],
-    "projects" => ["crescendo", "c3s-magic"],
-    "caption" => "Example diagnostic in Julia",
-    "statistics" => ["other"],
-    "realms" => ["atmos"],
-    "themes" => ["phys"],
-    "domains" => ["global"]
-  )
-  return(xprov)
+    xprov = Dict("ancestors" => infile,
+                 "authors" => ["hard_jo", "arno_en"],
+                 "references" => ["zhang-2011"],
+                 "projects" => ["crescendo", "c3s-magic"],
+                 "caption" => "Example diagnostic in Julia",
+                 "statistics" => ["other"],
+                 "realms" => ["atmos"],
+                 "themes" => ["phys"],
+                 "domains" => ["global"])
+    return(xprov)
 end
 
-diag_scripts_dir = ENV["diag_scripts"]
+function compute_diagnostic(metadata, diag_base, parameter, work_dir)
+    provenance = Dict()
+    for (infile, value) in metadata
+        dataset = value["dataset"]
+        reference_dataset = value["reference_dataset"]
+        start_year = value["start_year"]
+        end_year = value["end_year"]
+        exp = value["exp"]
+        ensemble = value["ensemble"]
+        println(diag_base, ": working on file ", infile)
+        println(diag_base, ": calling diagnostic with following parameters")
+        println(dataset, " ", reference_dataset, " ", start_year, " ",
+                end_year, " ", exp, " ", ensemble, parameter)
+        # Call here actual diagnostic
+        println(diag_base, ": I am your Julia diagnostic")
 
+        # Fake output file
+        outfile = string(work_dir, "/", "outfile.txt")
+        open(outfile, "w") do io
+            println(io, "diagnostic output")
+        end 
+        # Create provenance record for the output file
+        xprov = provenance_record(infile)
+        provenance[outfile] = xprov
+    end
+    return provenance
+end
+
+# This is useful to avoid the "global scope debacle"
+# https://github.com/JuliaLang/julia/issues/28789
+# i.e. the following scope is local, as if we were in a function, not a script
+let
+
+diag_scripts_dir = ENV["diag_scripts"]
 settings = YAML.load_file(ARGS[1])
 
 metadata = YAML.load_file(settings["input_files"][1])
@@ -44,39 +75,18 @@ mkpath(work_dir)
 mkpath(run_dir)
 cd(run_dir)
 
-# setup provenance file and list
-provenance_file = string(run_dir, "/diagnostic_provenance.yml")
-provenance = Dict()
-
 # Reading an example parameter from the settings
 parameter = settings["parameter1"]
 
-for (infile, value) in metadata
-   dataset = value["dataset"]
-   reference_dataset = value["reference_dataset"]
-   start_year = value["start_year"]
-   end_year = value["end_year"]
-   exp = value["exp"]
-   ensemble = value["ensemble"]
-   println(diag_base, ": working on file ", infile)
-   println(diag_base, ": calling diagnostic with following parameters")
-   println(dataset, " ", reference_dataset, " ", start_year, " ",
-           end_year, " ", exp, " ", ensemble, parameter)
-   # Call here actual diagnostic
-   println(diag_base, ": I am your Julia diagnostic")
+# Compute the main diagnostic
+provenance = compute_diagnostic(metadata, diag_base, parameter, work_dir)
 
-   # Fake output file
-   outfile = string(work_dir, "/", "outfile.txt")
-   io = open(outfile, "w")
-   println(io, "diagnostic output")
-   close(io)
-   
-   # Create provenance record for the output file
-   xprov = provenance_record(infile)
-   provenance[outfile] = xprov
-end
+# setup provenance file
+provenance_file = string(run_dir, "/diagnostic_provenance.yml")
 
 # Write provenance file
-open(provenance_file, "w") do f
-        JSON.print(f, provenance, 4)
+open(provenance_file, "w") do io
+    JSON.print(io, provenance, 4)
+end
+
 end
