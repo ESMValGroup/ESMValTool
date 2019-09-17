@@ -13,7 +13,7 @@ Download and processing instructions
       - Tick variables FAPAR and LAI
       - Tick SPOT
       - Tick V1
-      - Tick all available years
+      - Tick all available years  (if request is too large, split request up in different years)
       - Tick all available months
       - Tick Nominal day 20
    - Click 'submit form'
@@ -27,7 +27,7 @@ Caveats
    - Fails setting standard name for variable FAPAR
 
 Modification history
-   20190703-A_crez_ba: written.
+   20190703-crezee_bas: written.
 """
 
 import glob
