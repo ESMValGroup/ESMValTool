@@ -23,7 +23,7 @@ Please discuss your idea for a new diagnostic or recipe with the development tea
 -   [ ] Make sure the Circle/CI tests pass
 -   [ ] Preferably the Codacy code quality test should pass, however a few remaining hard to solve Codacy issues are still acceptable
 -   [ ] Please use `yamllint` to check that your YAML files do not contain mistakes 
--   [ ] Inform @mattiarighi that a new dataset is available, it will be added to the OBS data pool at DKRZ and synchronized with CEDA-Jasmin 
+-   [ ] Tag @mattiarighi in this pull request, so that the new dataset can be added to the OBS data pool at DKRZ and synchronized with CEDA-Jasmin
 
 If you need help with any of the tasks above, please do not hesitate to ask by commenting in the issue or pull request.
 
