@@ -11,7 +11,7 @@ documentation:
 
 
   authors:
-    - bell_om
+    - bellprat_omar
 
   projects:
     - c3s-magic
@@ -50,5 +50,5 @@ diagnostics:
     scripts:
       main:
         script: magic_bsc/toymodel.r
-        beta: 0.7
-        number_of_members: 2
+        beta: 500
+        number_of_members: 20

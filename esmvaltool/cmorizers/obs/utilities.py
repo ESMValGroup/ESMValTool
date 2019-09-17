@@ -19,9 +19,14 @@ logger = logging.getLogger(__name__)
 
 def add_height2m(cube):
     """Add scalar coordinate 'height' with value of 2m."""
-    logger.info("Adding height coordinate (2m)")
+    add_scalar_height_coord(cube, height=2.)
+
+
+def add_scalar_height_coord(cube, height=2.):
+    """Add scalar coordinate 'height' with value of `height`m."""
+    logger.info("Adding height coordinate (%sm)", height)
     height_coord = iris.coords.AuxCoord(
-        2.0,
+        height,
         var_name='height',
         standard_name='height',
         long_name='height',
@@ -119,7 +124,8 @@ def flip_dim_coord(cube, coord_name):
     coord = cube.coord(coord_name, dim_coords=True)
     coord_idx = cube.coord_dims(coord)[0]
     coord.points = np.flip(coord.points)
-    coord.bounds = np.flip(coord.bounds, axis=0)
+    if coord.bounds is not None:
+        coord.bounds = np.flip(coord.bounds, axis=0)
     cube.data = da.flip(cube.core_data(), axis=coord_idx)
 
 
@@ -131,7 +137,7 @@ def read_cmor_config(dataset):
         cfg = yaml.safe_load(file)
     cfg['cmor_table'] = \
         CMOR_TABLES[cfg['attributes']['project_id']]
-    if 'comment' not in cfg:
+    if 'comment' not in cfg['attributes']:
         cfg['attributes']['comment'] = ''
     return cfg
 
@@ -151,7 +157,7 @@ def save_variable(cube, var, outdir, attrs, **kwargs):
         time_suffix = '-'.join([date1, date2])
 
     file_name = '_'.join([
-        'OBS',
+        attrs['project_id'],
         attrs['dataset_id'],
         attrs['modeling_realm'],
         attrs['version'],

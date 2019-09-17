@@ -19,9 +19,9 @@ Download and processing instructions
      silicate/netcdf/all/1.00/woa13_all_i00_01.nc
 
 Modification history
-   20130328-A_lova_to: cmorizer revision
-   20190131-A_pred_va: adapted to v2.
-   20190131-A_demo_le: written.
+   20130328-lovato_tomas: cmorizer revision
+   20190131-predoi_valeriu: adapted to v2.
+   20190131-demora_lee: written.
 
 """
 
@@ -67,7 +67,7 @@ def extract_variable(var_info, raw_info, out_dir, attrs, year):
                 cube, var, out_dir, attrs, unlimited_dimensions=['time'])
 
 
-def cmorization(in_dir, out_dir, cfg):
+def cmorization(in_dir, out_dir, cfg, _):
     """Cmorization func call."""
     cmor_table = cfg['cmor_table']
     glob_attrs = cfg['attributes']
