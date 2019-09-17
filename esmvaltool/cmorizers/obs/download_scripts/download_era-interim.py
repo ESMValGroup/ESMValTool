@@ -40,7 +40,7 @@ rawobs_dir = os.path.abspath(
 erainterim_dir = f'{rawobs_dir}/Tier3/ERA-Interim'
 os.makedirs(erainterim_dir, exist_ok=True)
 
-years = range(args.start_year, args.end_year)
+years = range(args.start_year, args.end_year + 1)
 server = ECMWFDataServer()
 
 day_timesteps = {
