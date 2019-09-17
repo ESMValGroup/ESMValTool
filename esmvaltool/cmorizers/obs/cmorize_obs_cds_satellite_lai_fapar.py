@@ -27,7 +27,7 @@ Caveats
    - Fails setting standard name for variable FAPAR
 
 Modification history
-   20190703-A_crez_ba: written.
+   20190703-crezee_bas: written.
 """
 
 import glob
