@@ -13,7 +13,7 @@ Before running the script:
 2. Create an account at https://www.ecmwf.int/ 
 3. Follow the instruction https://confluence.ecmwf.int/display/WEBAPI/Accessing+ECMWF+data+servers+in+batch
 4. Copy/paste the text in https://api.ecmwf.int/v1/key/ into a blank text file and save it as $HOME/.ecmwfapirc
-5. Use esmvaltool/config-user.yml as an template and set the rootpath of the output directory in RAWOBS
+5. Use ESMValCore/esmvalcore/config-user.yml as an template and set the rootpath of the output directory in RAWOBS
 6. check the description of the variables at https://apps.ecmwf.int/codes/grib/param-db
 
 ```bash
@@ -73,7 +73,6 @@ day_params = [
     ('228.128', 'tp', 'accu'),  #Total precipitation
     ('151.128', 'msl', 'an'),  #Mean sea level pressure
     ('182.128', 'e', 'accu'),  #Evaporation
-    # ('251.228', 'pev', 'accu')  #Potential evaporation
     # TODO not found in era-interim yet
     # ('', 'pev'),  # Potential evaporation
 ]
