@@ -19,7 +19,7 @@ from esmvaltool.diag_scripts.shared.plot import quickplot
 logger = logging.getLogger(os.path.basename(__file__))
 
 
-def mpqb_custom_plot(cube,filename,**plotkwargs):
+def mpqb_mapplot(cube,filename,**plotkwargs):
     import matplotlib.pyplot as plt
     logger.debug("Creating plot %s", filename)
     plottitle = plotkwargs.pop('title')
@@ -36,23 +36,23 @@ metrics_plot_dictionary = {
         'title' : 'pearsonr',
         'vmin' : -1.,
         'vmax' : 1.,
-        'cmap' : 'RdYlBu', # diverging
+        'cmap' : 'RdYlBu_r', # diverging
     },
     'rmsd' : {
         'title' : 'rmsd',
         'vmin' : 0.,
         'vmax' : 1.,
-        'cmap' : 'RdYlBu', # diverging
+        'cmap' : 'YlOrBr', # diverging
     },
     'absdiff' : {
         'title' : 'absdiff',
         'vmin' : -.5,
         'vmax' : .5,
-        'cmap' : 'RdYlBu', # diverging
+        'cmap' : 'RdYlBu_r', # diverging
     },
     'reldiff' : {
         'title' : 'reldiff',
-        'cmap' : 'RdYlBu', # diverging
+        'cmap' : 'RdYlBu_r', # diverging
     },
 }
 
@@ -107,7 +107,7 @@ class mpqb_pair:
                 'plot_file' : plot_file
             }
 
-            mpqb_custom_plot(cube, plot_file, **metrics_plot_dictionary[metricname])
+            mpqb_mapplot(cube, plot_file, **metrics_plot_dictionary[metricname])
 
             logger.info("Recording provenance of %s:\n%s", diagnostic_file,
                     pformat(provenance_record))
