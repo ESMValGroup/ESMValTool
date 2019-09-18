@@ -15,18 +15,17 @@ Please discuss your idea for a new diagnostic or recipe with the development tea
 
 **Tasks**
 
--   [ ] Create an issue to explain what you are going to do (and add the link at the bottom)
--   [ ] Add a recipe file in esmvaltool/recipes 
+-   [ ] [Create an issue](https://github.com/ESMValGroup/ESMValTool/issues) to discuss what you are going to do, if you haven't done so already (and add the link at the bottom)
+-   [ ] Add a recipe file in esmvaltool/recipes
 -   [ ] Add a diagnostic script in esmvaltool/diag_scripts
 -   [ ] Add documentation for the recipe to the `doc/sphinx/source/recipes` folder and add a new entry to index.rst
 -   [ ] Make sure your code is composed of functions of no more than 50 lines and uses meaningful names for variables
--   [ ] (Only if really necessary) Add any additional dependencies needed for the diagnostic script to setup.py, esmvaltool/install/R or esmvaltool/install/Julia (depending on the language of your script)and also to meta.yaml for conda dependencies (includes python and others, but not R/Julia)
--   [ ] Make sure the license of new dependencies is compatible with [Apache2.0](https://github.com/ESMValGroup/ESMValTool/blob/version2_development/LICENSE)
--   [ ] Make sure the Circle/CI tests pass
--   [ ] Preferably the Codacy code quality test should pass, however a few remaining hard to solve Codacy issues are still acceptable
+-   [ ] Circle/CI tests pass. Status can be seen below your pull request. If the tests are failing, click the link to find out why.
+-   [ ] Preferably Codacy code quality checks pass, however a few remaining hard to solve Codacy issues are still acceptable. Status can be seen below your pull request. If there is an error, click the link to find out why. If you suspect Codacy may be wrong, please ask by commenting.
 -   [ ] Please use `yamllint` to check that your YAML files do not contain mistakes 
+-   [ ] (Only if really necessary) Add any additional dependencies needed for the diagnostic script to setup.py, esmvaltool/install/R/r_requirements.txt or esmvaltool/install/Julia/julia_requirements.txt (depending on the language of your script) and also to meta.yaml for conda dependencies (includes Python and others, but not R/Julia)
+-   [ ] If new dependencies are introduced, check that the license is compatible with [Apache2.0](https://github.com/ESMValGroup/ESMValTool/blob/version2_development/LICENSE)
 
 ---
 
-**Links to info and code**
-Fixes {Link to corresponding issue}
+Closes {Link to corresponding issue}

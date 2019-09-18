@@ -15,16 +15,15 @@ Please discuss your idea for a new diagnostic or recipe with the development tea
 
 **Tasks**
 
--   [ ] Create an issue to explain what you are going to do (and add the link at the bottom)
+-   [ ] [Create an issue](https://github.com/ESMValGroup/ESMValTool/issues) to discuss what you are going to do, if you haven't done so already (and add the link at the bottom)
 -   [ ] Make your changes to the recipe and/or diagnostic script
 -   [ ] Update the documentation for the recipe
 -   [ ] Make sure your code is composed of functions of no more than 50 lines and uses meaningful names for variables
--   [ ] Make sure the Circle/CI tests pass
--   [ ] Preferably the Codacy code quality test should pass, however a few remaining hard to solve Codacy issues are still acceptable
+-   [ ] Circle/CI tests pass. Status can be seen below your pull request. If the tests are failing, click the link to find out why.
+-   [ ] Preferably Codacy code quality checks pass, however a few remaining hard to solve Codacy issues are still acceptable. Status can be seen below your pull request. If there is an error, click the link to find out why. If you suspect Codacy may be wrong, please ask by commenting.
 -   [ ] Please use `yamllint` to check that your YAML files do not contain mistakes 
 -   [ ] Assign the author(s) of the affected recipe(s) as reviewer(s)
 
 ---
 
-**Links to info and code**
-Fixes {Link to corresponding issue}
+Closes {Link to corresponding issue}
