@@ -17,10 +17,10 @@
 ;    Put all files under a single directory (no subdirectories with years).
 ;
 ; Modification history
-;    20190201-A_righ_ma: adapted to v2.
-;    20180529-A_righ_ma: modified to have consistent metadata across multiple
-;                        files and to speed up processing time
-;    20160818-A_laue_ax: written
+;    20190201-righi_mattia: adapted to v2.
+;    20180529-righi_mattia: modified to have consistent metadata across
+;                           multiple files and to speed up processing time.
+;    20160818-lauer_axel: written.
 ;
 ; #############################################################################
 loadscript(getenv("esmvaltool_root") + \

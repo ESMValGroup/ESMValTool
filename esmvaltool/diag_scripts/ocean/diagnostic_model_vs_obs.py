@@ -30,7 +30,8 @@ An approproate preprocessor for a 3D + time field would be::
       extract_levels:
         levels:  [100., ]
         scheme: linear_extrap
-      time_average:
+      climate_statistics:
+        operator: mean
       regrid:
         target_grid: 1x1
         scheme: linear
