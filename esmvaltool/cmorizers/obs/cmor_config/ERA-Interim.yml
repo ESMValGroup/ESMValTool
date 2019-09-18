@@ -60,16 +60,34 @@ variables:
     mip: Eday
     raw: e
     file: 'ERA-Interim_e_daily_*.nc'
-  # TODO era-interim does not not have potential evaporation
-#  evspsblpot:
-#    mip: Eday
-#    raw: pev
-#    file: 'ERA-Interim_pev_daily_*.nc'
-  # TODO zg is a daily and monthly dataset in ncl, but downloaded as invariant with a single time stamp
-#  zg:
-#    mip: fx
-#    raw: z
-#    file: 'ERA-Interim_z.nc'
+  ts:
+    mip: Eday
+    raw: skt
+    file: 'ERA-Interim_skt_daily_*.nc'
+  prsn:
+    mip: day
+    raw: sf
+    file: 'ERA-Interim_sf_daily_*.nc'
+  rss:
+    mip: day
+    raw: ssr
+    file: 'ERA-Interim_ssr_daily_*.nc'
+  tsns:
+    mip: Eday
+    raw: tsn
+    file: 'ERA-Interim_tsn_daily_*.nc'
+  rsdt:
+    mip: CFday
+    raw: tisr
+    file: 'ERA-Interim_tisr_daily_*.nc'
+  clt:
+    mip: day
+    raw: tcc
+    file: 'ERA-Interim_tcc_daily_*.nc'
+  zg:
+    mip: day
+    raw: z
+    file: 'ERA-Interim_z_daily_*.nc'
   pr_month:
     short_name: pr
     mip: Amon
@@ -117,31 +135,66 @@ variables:
     mip: Amon
     raw: skt
     file: 'ERA-Interim_skt_monthly_*.nc'
-  # TODO unable to find variables on download forms
-#  ta:
-#    mip: Amon
-#    raw: t
-#    file: 'ERA-Interim_t_monthly_*.nc'
-#  ua:
-#    mip: Amon
-#    raw: u
-#    file: 'ERA-Interim_u_monthly_*.nc'
-#  va:
-#    mip: Amon
-#    raw: v
-#    file: 'ERA-Interim_v_monthly_*.nc'
-#  wap:
-#    mip: Amon
-#    raw: w
-#    file: 'ERA-Interim_w_monthly_*.nc'
-#  hus:
-#    mip: Amon
-#    raw: q
-#    file: 'ERA-Interim_q_monthly_*.nc'
-#  hur:
-#    mip: Amon
-#    raw: r
-#    file: 'ERA-Interim_r_monthly_*.nc'
+  zg:
+    mip: Amon
+    raw: z
+    file: 'ERA-Interim_z_monthly_*.nc'
+  ta:
+    mip: Amon
+    raw: t
+    file: 'ERA-Interim_t_monthly_*.nc'
+  ua:
+    mip: Amon
+    raw: u
+    file: 'ERA-Interim_u_monthly_*.nc'
+  va:
+    mip: Amon
+    raw: v
+    file: 'ERA-Interim_v_monthly_*.nc'
+  wap:
+    mip: Amon
+    raw: w
+    file: 'ERA-Interim_w_monthly_*.nc'
+  hus:
+    mip: Amon
+    raw: q
+    file: 'ERA-Interim_q_monthly_*.nc'
+  hur:
+    mip: Amon
+    raw: r
+    file: 'ERA-Interim_r_monthly_*.nc'
+  evspsbl:
+    mip: Amon
+    raw: e
+    file: 'ERA-Interim_e_monthly_*.nc'
+  uas:
+    mip: Amon
+    raw: u10
+    file: 'ERA-Interim_u10_monthly_*.nc'
+  vas:
+    mip: Amon
+    raw: v10
+    file: 'ERA-Interim_v10_monthly_*.nc'
+  tdps:
+    mip: Emon
+    raw: d2m
+    file: 'ERA-Interim_d2m_monthly_*.nc'
+  prsn:
+    mip: Amon
+    raw: sf
+    file: 'ERA-Interim_sf_monthly_*.nc'
+  rss:
+    mip: Emon
+    raw: ssr
+    file: 'ERA-Interim_ssr_monthly_*.nc'
+  rsds:
+    mip: Amon
+    raw: ssrd
+    file: 'ERA-Interim_ssrd_monthly_*.nc'
+  rsdt:
+    mip: Amon
+    raw: tisr
+    file: 'ERA-Interim_tisr_monthly_*.nc'
 # TODO handle multi raw
 #  clwvi:
 #    mip: Amon
