@@ -44,38 +44,57 @@ os.makedirs(erainterim_dir, exist_ok=True)
 years = range(args.start_year, args.end_year + 1)
 server = ECMWFDataServer()
 
+
 day_timesteps = {
     'fc': {
         'step': '3/6/9/12',
         'time': '00:00:00/12:00:00',
         'type': 'fc',
+        'levtype': 'sfc',
     },
     'accu': {
         'step': '12',
         'time': '00:00:00/12:00:00',
         'type': 'fc',
+        'levtype': 'sfc',
     },
     'an': {
         'type': 'an',
         'time': '00:00:00/06:00:00/12:00:00/18:00:00',
         'step': '0',
+        'levtype': 'sfc',
+    },
+    '3d': {
+        'type': 'an',
+        'time': '00:00:00/06:00:00/12:00:00/18:00:00',
+        'step': '0',
+        'levelist': '1/5/10/20/30/50/70/100/150/200/' + \
+                    '250/300/400/500/600/700/850/925/1000',
+        'levtype': 'pl',
     }
 }
 
 day_params = [
-    ('165.128', 'u10', 'an'),  #10 metre U wind component
-    ('166.128', 'v10', 'an'),  #10 metre V wind component
     ('167.128', 't2m', 'an'),  #2 metre temperature
-    ('168.128', 'd2m', 'an'),  #2 metre dewpoint temperature
-    ('169.128', 'ssrd', 'accu'),  #Surface solar radiation downwards
+    ('228.128', 'tp', 'accu'),  #Total precipitation
+    ('182.128', 'e', 'accu'),  #Evaporation
     ('201.128', 'mx2t', 'fc'),  #Max. temp at 2m since previous post-processing
     ('202.128', 'mn2t', 'fc'),  #Min. temp at 2m since previous post-processing
-    ('228.128', 'tp', 'accu'),  #Total precipitation
+    ('235.128', 'skt', 'an'),  #Skin temperature
+    ('165.128', 'u10', 'an'),  #10 metre U wind component
+    ('166.128', 'v10', 'an'),  #10 metre V wind component
+    ('168.128', 'd2m', 'an'),  #2 metre dewpoint temperature
     ('151.128', 'msl', 'an'),  #Mean sea level pressure
-    ('182.128', 'e', 'accu'),  #Evaporation
-    # TODO not found in era-interim yet
-    # ('', 'pev'),  # Potential evaporation
+    ('144.128', 'sf', 'accu'),  #Snowfall
+    ('176.128', 'ssr', 'accu'),  #Surface net solar radiation
+    ('169.128', 'ssrd', 'accu'),  #Surface solar radiation downwards
+    ('238.128', 'tsn', 'an'),  #Temperature of snow layer
+    ('212.128', 'tisr', 'accu'),  #TOA incident solar radiation
+    ('164.128', 'tcc', 'an'),  #Total cloud cover
+    ('129.128', 'z', '3d'),  # Geopotential
 ]
+
+
 for no, symbol, timestep in day_params:
     fr = 'daily'
     for year in years:
@@ -85,7 +104,6 @@ for no, symbol, timestep in day_params:
             'date': f'{year}-01-01/to/{year}-12-31',
             'expver': '1',
             'grid': '0.75/0.75',
-            'levtype': 'sfc',
             'param': no,
             'stream': 'oper',
             'format': 'netcdf',
@@ -109,34 +127,50 @@ month_timesteps = {
         'levtype': 'sfc',
         'stream': 'moda',
         'type': 'fc'
+    },
+    '3d': {
+        'levtype': 'pl',
+        'stream': 'moda',
+        'type': 'an',
+        'levelist': '1/5/10/20/30/50/70/100/150/200/' + \
+                    '250/300/400/500/600/700/850/925/1000'
     }
 }
 
 month_params = [
+    ('167.128', 't2m', 'an'),  #2 metre temperature
     ('228.128', 'tp', 'accu'),  #Total precipitation
+    ('182.128', 'e', 'accu'),  #Evaporation
+    ('235.128', 'skt', 'an'),  #Skin temperature
+    ('165.128', 'u10', 'an'),  #10 metre U wind component
+    ('166.128', 'v10', 'an'),  #10 metre V wind component
+    ('168.128', 'd2m', 'an'),  #2 metre dewpoint temperature
+    ('151.128', 'msl', 'an'),  #Mean sea level pressure
+    ('144.128', 'sf', 'accu'),  #Snowfall
+    ('176.128', 'ssr', 'accu'),  #Surface net solar radiation
+    ('169.128', 'ssrd', 'accu'),  #Surface solar radiation downwards
+    ('238.128', 'tsn', 'an'),  #Temperature of snow layer
+    ('212.128', 'tisr', 'accu'),  #TOA incident solar radiation
     ('164.128', 'tcc', 'an'),  #Total cloud cover
     ('56.162', 'p56.162', 'an'),  #Vertical integral of cloud liquid water
     ('57.162', 'p57.162', 'an'),  #Vertical integral of cloud frozen water
     ('137.128', 'tcwv', 'an'),  #Total column water vapour
     ('134.128', 'sp', 'an'),  #Surface pressure
     ('151.128', 'msl', 'an'),  #Mean sea level pressure
-    ('167.128', 't2m', 'an'),  #2 metre temperature
     ('229.128', 'iews', 'fc'),  #Inst. eastward turbulent surface stress
     ('230.128', 'inss', 'fc'),  #Inst. northward turbulent surface stress
     ('34.128', 'sst', 'an'),  #Sea surface temperature
-    ('235.128', 'skt', 'an'),  #Skin temperature
-    ('176.128', 'ssr', 'accu'),  #Surface net solar radiation
     ('177.128', 'str', 'accu'),  #Surface net thermal radiation
     ('147.128', 'slhf', 'accu'),  #Surface latent heat flux
     ('146.128', 'sshf', 'accu'),  #Surface sensible heat flux
-    # TODO not found in era-interim yet
-    # ('157.128', 'r', ''),  #Relative humidity
-    # ('130.128', 't', ''),  #
-    # ('131.128', 'u', ''),  #
-    # ('132.128', 'v', ''),  #
-    # ('135.128', 'w', ''),  #
-    # ('133.128', 'q', ''),  #
+    ('157.128', 'r', '3d'),  #Relative humidity
+    ('130.128', 't', '3d'),  #Temperature
+    ('131.128', 'u', '3d'),  #U component of wind
+    ('132.128', 'v', '3d'),  #V component of wind
+    ('135.128', 'w', '3d'),  #Vertical velocity
+    ('133.128', 'q', '3d'),  #Specific humidity
 ]
+
 
 for no, symbol, timestep in month_params:
     fr = 'monthly'
@@ -156,7 +190,6 @@ for no, symbol, timestep in month_params:
 
 invariant_params = [
     ('172.128', 'lsm'),  # Land-sea mask
-    ('129.128', 'z'),  # Geopotential
 ]
 
 for no, symbol in invariant_params:
