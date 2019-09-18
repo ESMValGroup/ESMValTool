@@ -51,6 +51,7 @@ from warnings import catch_warnings, filterwarnings
 
 import iris
 import numpy as np
+from dask import array as da
 
 from esmvalcore.cmor.table import CMOR_TABLES
 
@@ -67,27 +68,23 @@ def _extract_variable(in_file, var, cfg, out_dir):
     cmor_table = CMOR_TABLES[attributes['project_id']]
     definition = cmor_table.get_variable(var['mip'], var['short_name'])
 
+    invalid_units = {
+        'e': 'm of water equivalent',
+        'ptype': 'code table (4.201)',
+        'sf': 'm of water equivalent',
+        'tcc': '(0 - 1)',
+    }
+
     with catch_warnings():
-        filterwarnings(
-            action='ignore',
-            message="Ignoring netCDF variable 'tcc' invalid units '(0 - 1)'",
-            category=UserWarning,
-            module='iris',
-        )
-        filterwarnings(
-            action='ignore',
-            message=("Ignoring netCDF variable 'e' invalid units "
-                     "'m of water equivalent'"),
-            category=UserWarning,
-            module='iris',
-        )
-        filterwarnings(
-            action='ignore',
-            message=("Ignoring netCDF variable 'e' invalid units "
-                     "'m of water equivalent'"),
-            category=UserWarning,
-            module='iris',
-        )
+        # TODO: check warnings
+        for var_name, units in invalid_units.items():
+            filterwarnings(
+                action='ignore',
+                message=f"Ignoring netCDF variable '{var_name}' "
+                f"invalid units '{units}'",
+                category=UserWarning,
+                module='iris',
+            )
         cube = iris.load_cube(
             str(in_file),
             constraint=utils.var_name_constraint(var['raw']),
@@ -115,10 +112,14 @@ def _extract_variable(in_file, var, cfg, out_dir):
     if cube.var_name in {'msnlwrf', 'ssrd', 'tisr', 'ssr'}:
         # Radiation fluxes are positive in downward direction
         cube.attributes['positive'] = 'down'
+    if cube.var_name == 'ptype':
+        cube.units = 1
+        cube.data = da.ma.masked_equal(da.round(cube.core_data()), 0)
 
     # Set correct names
     cube.var_name = definition.short_name
-    cube.standard_name = definition.standard_name
+    if definition.standard_name:
+        cube.standard_name = definition.standard_name
     cube.long_name = definition.long_name
 
     # Fix data type

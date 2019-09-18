@@ -8,8 +8,7 @@ attributes:
   modeling_realm: reanaly
   source: 'https://www.ecmwf.int/en/forecasts/datasets/reanalysis-datasets/era5'
   reference: 'era5'
-  comment: |
-    'Contains modified Copernicus Climate Change Service Information {year}'
+  comment: 'Contains modified Copernicus Climate Change Service Information {year}'
 
 # Variables to CMORize
 variables:
@@ -41,6 +40,10 @@ variables:
     mip: E1hr
     raw: msl
     file: 'era5_mean_sea_level_pressure_*_hourly.nc'
+  ptype:
+    mip: E1hr
+    raw: ptype
+    file: 'era5_precipitation_type_*_hourly.nc'
   rls:
     mip: E1hr
     raw: msnlwrf
