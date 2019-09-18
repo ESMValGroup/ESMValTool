@@ -1,7 +1,7 @@
 ---
 # Global attributes of NetCDF file
 attributes:
-  dataset_id: cds-satellite-lai-fapar
+  dataset_id: CDS-SATELLITE-LAI-FAPAR
   project_id: OBS
   tier: 3
   version: 'V1' # Version as listed on source 
