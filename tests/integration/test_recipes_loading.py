@@ -5,6 +5,7 @@ import os
 
 import iris
 import pytest
+import numpy as np
 
 import esmvalcore
 from esmvalcore._recipe import read_recipe_file
@@ -42,9 +43,20 @@ def create_test_file(filename, tracking_id=None):
     attributes = {}
     if tracking_id is not None:
         attributes['tracking_id'] = tracking_id
-    print(attributes)
-    cube = iris.cube.Cube([], attributes=attributes)
-
+    cube = iris.cube.Cube([],
+                          attributes=attributes)
+    xcoord = iris.coords.DimCoord(np.linspace(0, 5, 5),
+                                  standard_name="longitude")
+    ycoord = iris.coords.DimCoord(np.linspace(0, 5, 12),
+                                  standard_name="latitude")
+    zcoord = iris.coords.DimCoord(np.linspace(0, 5, 17),
+                                  standard_name="height",
+                                  attributes={'positive': 'up'})
+    cube = iris.cube.Cube(np.zeros((5, 12, 17), np.float32),
+                          dim_coords_and_dims=[(xcoord, 0),
+                                               (ycoord, 1),
+                                               (zcoord, 2)],
+                          attributes=attributes)
     iris.save(cube, filename)
 
 
@@ -70,10 +82,20 @@ def patched_datafinder(tmp_path, monkeypatch):
         if filename.endswith('*.nc'):
             filename = filename[:-len('*.nc')]
             intervals = [
+                '1960_1969',
+                '1970_1979',
                 '1980_1989',
                 '1990_1999',
                 '2000_2009',
                 '2010_2019',
+                '2020_2029',
+                '2030_2039',
+                '2040_2049',
+                '2050_2059',
+                '2060_2069',
+                '2070_2079',
+                '2080_2089',
+                '2090_2099',
             ]
             for interval in intervals:
                 filenames.append(filename + interval + '.nc')
