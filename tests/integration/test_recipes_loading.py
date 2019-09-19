@@ -72,7 +72,6 @@ def patched_datafinder(tmp_path, monkeypatch):
     def find_files(_, filenames):
         # Any occurrence of [something] in filename should have
         # been replaced before this function is called.
-        print(filenames)
         for filename in filenames:
             assert '[' not in filename
 
@@ -82,6 +81,20 @@ def patched_datafinder(tmp_path, monkeypatch):
         if filename.endswith('*.nc'):
             filename = filename[:-len('*.nc')]
             intervals = [
+                '1820_1829',
+                '1830_1839',
+                '1840_1849',
+                '1850_1859',
+                '1860_1869',
+                '1870_1879',
+                '1880_1889',
+                '1890_1899',
+                '1900_1909',
+                '1910_1919',
+                '1920_1929',
+                '1930_1939',
+                '1940_1949',
+                '1950_1959',
                 '1960_1969',
                 '1970_1979',
                 '1980_1989',
