@@ -6,6 +6,7 @@ Recipes
 .. toctree::
    :maxdepth: 1
 
+   recipe_autoassess_stratosphere
    recipe_capacity_factor
    recipe_clouds
    recipe_combined_climate_extreme_index
@@ -21,6 +22,7 @@ Recipes
    recipe_flato13ipcc
    recipe_heatwaves_coldwaves
    recipe_hyint
+   recipe_hydrology
    recipe_landcover
    recipe_miles
    recipe_modes_of_variability
@@ -35,4 +37,5 @@ Recipes
    recipe_spei
    recipe_toymodel
    recipe_thermodyn_diagtool
+   recipe_validation
    recipe_zmnam
