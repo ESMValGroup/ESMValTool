@@ -19,19 +19,24 @@ jobs:
           # Update/Create Conda environment and run tests
           command: |
             . /opt/conda/etc/profile.d/conda.sh
-            conda update -y conda
-            conda env update
+            mkdir /logs
+            conda update -y conda >> /logs/conda.txt 2>&1
+            conda env update >> /logs/conda.txt 2>&1
             conda activate esmvaltool
-            conda install -yS r-lintr
+            # Install r-lintr for r linter test
+            Rscript esmvaltool/install/R/setup_devutils.R > /logs/R_install.txt 2>&1
+            # Run tests
             python setup.py test
       - save_cache:
           key: test-{{ .Branch }}-{{ checksum "cache_key.txt" }}
           paths:
             - "/opt/conda/envs/esmvaltool"
             - ".eggs"
-      - store_test_results:
-          path: test-reports/
       - store_artifacts:
+          path: /logs
+      - store_artifacts:
+          path: test-reports/
+      - store_test_results:
           path: test-reports/
 
   test_installation:
@@ -171,13 +176,8 @@ jobs:
             dpkg -l > /logs/versions.txt
             conda env export -n base > /logs/build_environment.yml
             # Build conda package
-            conda build . -c conda-forge -c esmvalgroup > /logs/build_log.txt
-            # Install Python 3 conda package
-            conda create -y --name esmvaltool3 > /logs/conda_esmvaltool3.txt 2>&1
-            set +x; conda activate esmvaltool3; set -x
-            conda install -y esmvaltool --use-local -c conda-forge -c esmvalgroup
-            conda env export > /logs/test_environment3.yml
-            esmvaltool -h
+            apt update && apt install time
+            \time -v conda build . -c conda-forge -c esmvalgroup > /logs/build_log.txt
       - store_artifacts:
           path: /logs
 
@@ -239,9 +239,11 @@ workflows:
   version: 2
   commit:
     jobs:
-      - test
-      - test_installation
       - documentation
+      - test
+      - test_installation:
+          requires:
+            - test
   nightly:
     triggers:
       - schedule:
