@@ -138,6 +138,7 @@ class RunTests(CustomCommand):
             '--cov-report=xml:{}/coverage.xml'.format(report_dir),
             '--junit-xml={}/report.xml'.format(report_dir),
             '--html={}/report.html'.format(report_dir),
+            '--disable-warnings'
         ]
         if self.installation:
             args.append('--installation')
