@@ -24,6 +24,7 @@ variables:
         mean_surface_net_long_wave_radiation_flux
         minimum_2m_temperature_since_previous_post_processing
         potential_evaporation
+        precipitation_type
         runoff
         skin_temperature
         snowfall
