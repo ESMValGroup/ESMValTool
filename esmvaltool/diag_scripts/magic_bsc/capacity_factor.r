@@ -66,6 +66,21 @@ for (i in 1 : length(model_names)) {
   time <-  as.POSIXct(time, format = "%Y-%m-%d")
   time_dim <- which(names(dim(data)) == "time")
   time <- as.PCICt(time, cal = calendar)
+  if (calendar != "360_day" & calendar != "365_day"){
+    time <- as.character(time)
+    jdays <- as.numeric(strftime(time, format = "%j"))
+    pos <- which(substr(time, 6, 10) == "02-29")
+    print(dim(data))
+    if (length(pos) > 0) {
+        time <- time[-pos]
+        data <- apply(data, c(1 : length(dim(data)))[-time_dim],
+                      function(x){
+                                  x[-pos]
+                                 })
+        data <- aperm(data, c(2, 3, 1))
+        names(dim(data)) <- c("lon", "lat", "time")
+    }
+  }
   time <- as.character(time)
   jdays <- as.numeric(strftime(time, format = "%j"))
   pos <- which(substr(time, 6, 10) == "02-29")
