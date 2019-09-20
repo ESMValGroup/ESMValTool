@@ -1,0 +1,51 @@
+# ESMValTool
+# recipe_python.yml
+---
+documentation:
+  description: |
+    Example recipe extracting precipitation in the Elbe catchment.
+
+    The shapefile can be copied from
+    esmvaltool/diag_scripts/shapeselect/testdata/Elbe.shp and
+    placed in the auxiliary_data_dir defined in config-user.yml.
+
+  authors:
+    - andela_bouwe
+
+  maintainer:
+    - andela_bouwe
+
+  references:
+    - acknow_project
+
+  projects:
+    - ewatercycle
+
+datasets:
+  - {dataset: CanESM2, project: CMIP5, exp: historical, ensemble: r1i1p1}
+
+preprocessors:
+
+  preproc:
+    extract_shape:
+      shapefile: Elbe.shp
+
+diagnostics:
+
+  diagnostic:
+    description: Extract data about the Elbe catchment.
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      pr:
+        mip: Amon
+        start_year: 2000
+        end_year: 2002
+        preprocessor: preproc
+    scripts:
+      script1:
+        script: examples/diagnostic.py
+        quickplot:
+          plot_type: pcolormesh
