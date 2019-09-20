@@ -27,6 +27,8 @@ Download and processing instructions
         https://confluence.ecmwf.int/display/WEBAPI/Access+ECMWF+Public+Datasets
         https://confluence.ecmwf.int/display/WEBAPI/Python+ERA-interim+examples
     A registration is required for downloading the data.
+    It is alo possible to use the script in:
+    esmvaltool/cmorizers/obs/download_scripts/download_era-interim.py
 
 Caveats
     Make sure to select the right steps for accumulated fluxes, see:
@@ -63,7 +65,8 @@ from . import utilities as utils
 logger = logging.getLogger(__name__)
 
 # Acceleration of gravity [m s-2],
-# required for surface geopotential height, see https://confluence.ecmwf.int/pages/viewpage.action?pageId=79955800
+# required for surface geopotential height, see:
+# https://confluence.ecmwf.int/pages/viewpage.action?pageId=79955800
 G = 9.80665
 
 
@@ -108,12 +111,14 @@ def _extract_variable(in_file, var, cfg, out_dir):
         # 'm of water equivalent' to m
         cube.units = 'm'
     if cube.var_name in {'e', 'ro', 'sf', 'tp', 'pev'}:
-        # Change units from meters per day of water to kg of water per h
-        cube.units = cube.units * 'kg m-3 h-1'
-        cube.data = cube.core_data() * 1000. / 24
+        # Change units from meters per day of water to kg of water per day
+        cube.units = cube.units * 'kg m-3 d-1'
+        cube.data = cube.core_data() * 1000
     if cube.var_name in {'ssr', 'ssrd', 'tisr'}:
-        # Add missing 'per hour'
-        cube.units = cube.units * 'h-1'
+        # Add missing 'per day'
+        cube.units = cube.units * 'd-1'
+        # Radiation fluxes are positive in downward direction
+        cube.attributes['positive'] = 'down'
     if cube.var_name in {'lsm', 'tcc'}:
         # Change cloud cover units from fraction to percentage
         cube.units = definition.units
@@ -140,18 +145,22 @@ def _extract_variable(in_file, var, cfg, out_dir):
             coord.guess_bounds()
 
     # era-interim is in 3hr or 6hr or 12hr freq need to convert to daily
-    if var['mip'] in {'day', 'Eday'}:
+    if var['mip'] in {'day', 'Eday', 'CFday'}:
         if cube.var_name == 'tasmax':
-            daily_statistics(cube, 'max')
+            cube = daily_statistics(cube, 'max')
         elif cube.var_name == 'tasmin':
-            daily_statistics(cube, 'min')
-        elif cube.var_name in {'pr', 'rsds', 'hfds'}:
+            cube = daily_statistics(cube, 'min')
+        elif cube.var_name in {'pr', 'rsds', 'hfds',
+                               'rsdt', 'rss', 'prsn'}:
             # Sum is not available in daily_statistics so call iris directly
-            iris.coord_categorisation.add_day_of_year(cube, 'time')
-            iris.coord_categorisation.add_year(cube, 'time')
-            cube = cube.aggregated_by(['day_of_year', 'year'], iris.analysis.SUM)
+            if not cube.coords('day_of_year'):
+                iris.coord_categorisation.add_day_of_year(cube, 'time')
+            if not cube.coords('year'):
+                iris.coord_categorisation.add_year(cube, 'time')
+            cube = cube.aggregated_by(['day_of_year', 'year'],
+                                      iris.analysis.SUM)
         else:
-            daily_statistics(cube, 'mean')
+            cube = daily_statistics(cube, 'mean')
         # Remove daily statistics helpers
         cube.remove_coord(cube.coord('day_of_year'))
         cube.remove_coord(cube.coord('year'))
@@ -169,7 +178,8 @@ def _extract_variable(in_file, var, cfg, out_dir):
     cube = cube[:, ::-1, ...]
 
     # Fix time unit to days
-    cube.coord('time').convert_units(Unit('days since 1950-1-1 00:00:00', calendar='gregorian'))
+    # cube.coord('time').convert_units(Unit('days since 1950-1-1 00:00:00', 
+    #                                       calendar='gregorian'))
     # TODO mip=mon shifted from 1 day of month to mid month
     # if var['mip'] in {'Amon', '0Mon'}:
     #     cube.coord('time').points = [
@@ -188,18 +198,24 @@ def _extract_variable(in_file, var, cfg, out_dir):
     #     ]
 
     # For daily data write a netcdf for each month
-    if var['mip'] == 'fx':
-        # Drop time dimension for fx variables
-        if len(cube.coord('time').points) == 1:
-            cube = cube.extract(iris.Constraint(time=cube.coord('time').cell(0)))
-            # TODO file name still contains year because of time coord,
-            #  dropping time coord causes save_variable to fail
-            # cube.remove_coord('time')
+    # if var['mip'] == 'fx':
+    #     # Drop time dimension for fx variables
+    #     if len(cube.coord('time').points) == 1:
+    #         cube = cube.extract(iris.Constraint(time=cube.coord('time').cell(0)))
+    #         # TODO file name still contains year because of time coord,
+    #         #  dropping time coord causes save_variable to fail
+    #         # cube.remove_coord('time')
 
     logger.info("Saving cube\n%s", cube)
     logger.info("Expected output size is %.1fGB",
                 np.prod(cube.shape) * 4 / 2 ** 30)
-    utils.save_variable(cube, cube.var_name, out_dir, attributes)
+    utils.save_variable(
+        cube,
+        cube.var_name,
+        out_dir,
+        attributes,
+        local_keys=['positive'],
+    )
 
 
 def cmorization(in_dir, out_dir, cfg, _):

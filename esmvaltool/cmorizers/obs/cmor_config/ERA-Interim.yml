@@ -84,11 +84,12 @@ variables:
     mip: day
     raw: tcc
     file: 'ERA-Interim_tcc_daily_*.nc'
-  zg:
+  zg_day:
+    short_name: zg
     mip: day
     raw: z
     file: 'ERA-Interim_z_daily_*.nc'
-  pr_month:
+  pr_mon:
     short_name: pr
     mip: Amon
     raw: tp
@@ -105,7 +106,7 @@ variables:
     mip: Amon
     raw: tcwv
     file: 'ERA-Interim_tcwv_monthly_*.nc'
-  psl_month:
+  psl_mon:
     short_name: psl
     mip: Amon
     raw: msl
@@ -114,7 +115,7 @@ variables:
     mip: Amon
     raw: sp
     file: 'ERA-Interim_sp_monthly_*.nc'
-  tas_month:
+  tas_mon:
     short_name: tas
     mip: Amon
     raw: t2m
@@ -135,7 +136,8 @@ variables:
     mip: Amon
     raw: skt
     file: 'ERA-Interim_skt_monthly_*.nc'
-  zg:
+  zg_mon:
+    ]short_name: zg
     mip: Amon
     raw: z
     file: 'ERA-Interim_z_monthly_*.nc'
@@ -195,6 +197,10 @@ variables:
     mip: Amon
     raw: tisr
     file: 'ERA-Interim_tisr_monthly_*.nc'
+  tsn:
+    mip: LImon
+    raw: tsn
+    file: 'ERA-Interim_tsn_monthly_*.nc'
 # TODO handle multi raw
 #  clwvi:
 #    mip: Amon
