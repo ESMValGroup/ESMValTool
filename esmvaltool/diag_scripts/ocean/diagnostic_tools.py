@@ -122,11 +122,13 @@ def bgc_units(cube, name):
         the cube with the new units.
     """
     new_units = ''
-    if name in ['tos', 'thetao']:
+    if name in ['tos', 'thetao', 'thetaoga',]:
         new_units = 'celsius'
 
     if name in ['no3', ]:
         new_units = 'mmol m-3'
+        # Set minimum value (remove negative values!)
+        cube.data = np.ma.clip(cube.data, 0.000001, cube.data.max())
 
     if name in ['chl', ]:
         new_units = 'mg m-3'
@@ -136,6 +138,9 @@ def bgc_units(cube, name):
 
     if name in ['fgco2', ]:
         new_units = 'g m-2 d-1'
+
+    if name in ['zostoga', ]:
+        new_units = 'mm'
 
     if name in ['spco2', 'dpco2', ]:
         new_units = 'uatm'

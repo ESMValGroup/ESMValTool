@@ -50,13 +50,15 @@ Author: Lee de Mora (PML)
 
 import logging
 import os
-
+import datetime
 import iris
 import matplotlib.pyplot as plt
 import numpy as np
 
+from esmvalcore.preprocessor._time import extract_time
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic
+
 
 # This part sends debug statements to stdout
 logger = logging.getLogger(os.path.basename(__file__))
@@ -173,6 +175,55 @@ def moving_average(cube, window):
     return cube
 
 
+def calculate_anomaly(cube, anomaly):
+    """
+    Calculate the anomaly using a specified time range.
+
+    The anomaly window is a list which includes a starting year and and end
+    year to indicate the start and end of the time period in which to calculate
+    the anomaly.
+
+    Parameters
+    ----------
+    cube: iris.cube.Cube
+        Input cube
+    anomaly: list
+        A start year and end year to calculate an anomaly.
+
+    Returns
+    ----------
+    iris.cube.Cube:
+        A cube with the anomaly calculated.
+    """
+    start_year = int(np.array(anomaly).min())
+    end_year = int(np.array(anomaly).max())
+    start_month = 1
+    end_month = 12
+    start_day = 1
+    end_day = 31
+
+    time_units = cube.coord('time').units
+    if time_units.calendar == '360_day':
+            start_day = 30
+            end_day = 30
+
+    start_date = datetime.datetime(
+        int(start_year), int(start_month), int(start_day))
+    end_date = datetime.datetime(int(end_year), int(end_month), int(end_day))
+
+    t_1 = time_units.date2num(start_date)
+    t_2 = time_units.date2num(end_date)
+    constraint = iris.Constraint(
+        time=lambda t: t_1 < time_units.date2num(t.point) < t_2)
+
+    new_cube = cube.extract(constraint)
+    if new_cube == None:
+         return None
+    mean = new_cube.data.mean()
+    cube.data = cube.data - mean
+    return cube
+
+
 def make_time_series_plots(
         cfg,
         metadata,
@@ -214,6 +265,12 @@ def make_time_series_plots(
         if 'moving_average' in cfg:
             cube_layer = moving_average(cube_layer, cfg['moving_average'])
 
+        if 'anomaly' in cfg:
+
+            cube_layer = calculate_anomaly(cube_layer, cfg['anomaly'])
+            if cube_layer is None:
+                return
+
         if multi_model:
             timeplot(cube_layer, label=metadata['dataset'], ls=':')
         else:
@@ -221,6 +278,8 @@ def make_time_series_plots(
 
         # Add title, legend to plots
         title = ' '.join([metadata['dataset'], metadata['long_name']])
+        if 'anomaly' in cfg:
+            title = ' '.join([title, 'anomaly'])
         if layer != '':
             if cube_layer.coords('depth'):
                 z_units = cube_layer.coord('depth').units
@@ -229,7 +288,11 @@ def make_time_series_plots(
             title = ' '.join([title, '(', layer, str(z_units), ')'])
         plt.title(title)
         plt.legend(loc='best')
-        plt.ylabel(str(cube_layer.units))
+
+        ylabel = str(cube_layer.units)
+        if 'ylabel' in cfg:
+            ylabel = cfg['ylabel']
+        plt.ylabel(ylabel)
 
         # Determine image filename:
         if multi_model:
@@ -319,17 +382,25 @@ def multi_model_time_series(
             else:
                 cube = model_cubes[filename][layer]
 
-            if 'MultiModel' in metadata[filename]['dataset']:
+            if 'anomaly' in cfg:
+                cube = calculate_anomaly(cube, cfg['anomaly'])
+                if cube is None:
+                   print('Not enough time for anomaly calculation', metadata[filename]['dataset'])
+                   continue
+
+
+            if metadata[filename]['dataset'].lower().find('multimodel') > -1:
+                print('plotting - Multi:',metadata[filename]['dataset'])
                 timeplot(
                     cube,
-                    c=color,
+                    c='black',
                     # label=metadata[filename]['dataset'],
-                    ls=':',
+                    ls='--',
                     lw=2.,
                 )
                 plot_details[filename] = {
-                    'c': color,
-                    'ls': ':',
+                    'c': 'black',
+                    'ls': '--',
                     'lw': 2.,
                     'label': metadata[filename]['dataset']
                 }
@@ -349,24 +420,38 @@ def multi_model_time_series(
                 }
 
             title = metadata[filename]['long_name']
+            ylabel = str(model_cubes[filename][layer].units)
             if layer != '':
                 if model_cubes[filename][layer].coords('depth'):
                     z_units = model_cubes[filename][layer].coord('depth').units
                 else:
                     z_units = ''
+
         # Add title, legend to plots
+        if 'anomaly' in cfg:
+            title = ' '.join([title, 'anomaly'])
+
         if layer:
             title = ' '.join([title, '(', str(layer), str(z_units), ')'])
+
+        # check to see if the title is mentionned in the recipe.
+        # If so, it overwrites the dafult title.
+        if 'title' in cfg:
+            title = cfg['title']
+
+        if 'ylabel' in cfg:
+            ylabel = cfg['ylabel']
+
         plt.title(title)
         plt.legend(loc='best')
-        plt.ylabel(str(model_cubes[filename][layer].units))
+        plt.ylabel(ylabel)
 
         # Saving files:
         if cfg['write_plots']:
             path = diagtools.get_image_path(
                 cfg,
                 metadata[filename],
-                prefix='MultipleModels_',
+                prefix='MultipleModels',
                 suffix='_'.join(['timeseries',
                                  str(layer) + image_extention]),
                 metadata_id_list=[
@@ -376,9 +461,14 @@ def multi_model_time_series(
             )
 
         # Resize and add legend outside thew axes.
-        plt.gcf().set_size_inches(9., 6.)
-        diagtools.add_legend_outside_right(
-            plot_details, plt.gca(), column_width=0.15)
+        if len(plot_details) <25:
+            plt.gcf().set_size_inches(9., 6.)
+            diagtools.add_legend_outside_right(
+                plot_details, plt.gca(), column_width=0.15)
+        if len(plot_details) > 25:
+            plt.gcf().set_size_inches(11., 6.)
+            diagtools.add_legend_outside_right(
+                plot_details, plt.gca(), column_width=0.18)
 
         logger.info('Saving plots to %s', path)
         plt.savefig(path)
