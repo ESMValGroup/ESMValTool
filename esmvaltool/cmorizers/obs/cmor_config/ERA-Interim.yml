@@ -89,7 +89,7 @@ variables:
     mip: day
     raw: z
     file: 'ERA-Interim_z_daily_*.nc'
-  pr_mon:
+  pr_month:
     short_name: pr
     mip: Amon
     raw: tp
@@ -106,7 +106,7 @@ variables:
     mip: Amon
     raw: tcwv
     file: 'ERA-Interim_tcwv_monthly_*.nc'
-  psl_mon:
+  psl_month:
     short_name: psl
     mip: Amon
     raw: msl
@@ -115,7 +115,7 @@ variables:
     mip: Amon
     raw: sp
     file: 'ERA-Interim_sp_monthly_*.nc'
-  tas_mon:
+  tas_month:
     short_name: tas
     mip: Amon
     raw: t2m
@@ -136,8 +136,8 @@ variables:
     mip: Amon
     raw: skt
     file: 'ERA-Interim_skt_monthly_*.nc'
-  zg_mon:
-    ]short_name: zg
+  zg_month:
+    short_name: zg
     mip: Amon
     raw: z
     file: 'ERA-Interim_z_monthly_*.nc'

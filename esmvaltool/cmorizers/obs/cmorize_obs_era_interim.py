@@ -177,8 +177,11 @@ def _extract_variable(in_file, var, cfg, out_dir):
     # Make latitude increasing
     cube = cube[:, ::-1, ...]
 
+    # removing the first day of next year
+    if var['mip'] in {'day', 'Eday', 'CFday'}:
+        cube = cube[:-1]
     # Fix time unit to days
-    # cube.coord('time').convert_units(Unit('days since 1950-1-1 00:00:00', 
+    # cube.coord('time').convert_units(Unit('days since 1950-1-1 00:00:00',
     #                                       calendar='gregorian'))
     # TODO mip=mon shifted from 1 day of month to mid month
     # if var['mip'] in {'Amon', '0Mon'}:
