@@ -71,7 +71,7 @@ Example plots
 -------------
 
 .. _fig_capfactor1:
-.. figure::  /recipes/figures/capacity_factor_IPSL-CM5A-MR_2021-2050.png
+.. figure::  /recipes/figures/capacity_factor/capacity_factor_IPSL-CM5A-MR_2021-2050.png
    :align:   center
    :width:   14cm
 

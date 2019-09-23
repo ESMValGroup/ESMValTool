@@ -27,8 +27,6 @@ import esmvaltool.utils.cmorizers.obs.utilities as utils
 
 logger = logging.getLogger(__name__)
 
-CFG = utils.read_cmor_config('CRU.yml')
-
 
 def _clean(filepath):
     """Remove unzipped input file."""
@@ -67,16 +65,17 @@ def _unzip(filepath, out_dir):
 
 def cmorization(in_dir, out_dir):
     """Cmorization func call."""
-    glob_attrs = CFG['attributes']
-    cmor_table = CFG['cmor_table']
+    cfg = utils.read_cmor_config('CRU.yml')
+    glob_attrs = cfg['attributes']
+    cmor_table = cfg['cmor_table']
     logger.info("Starting cmorization for Tier%s OBS files: %s",
                 glob_attrs['tier'], glob_attrs['dataset_id'])
     logger.info("Input data from: %s", in_dir)
     logger.info("Output will be written to: %s", out_dir)
-    raw_filepath = os.path.join(in_dir, CFG['filename'])
+    raw_filepath = os.path.join(in_dir, cfg['filename'])
 
     # Run the cmorization
-    for (var, var_info) in CFG['variables'].items():
+    for (var, var_info) in cfg['variables'].items():
         logger.info("CMORizing variable '%s'", var)
         glob_attrs['mip'] = var_info['mip']
         cmor_info = cmor_table.get_variable(var_info['mip'], var)

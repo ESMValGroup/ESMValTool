@@ -2,24 +2,27 @@
 ---
 documentation:
   description: |
-    This is an example recipe for a personal diagnostic.
-    You can run any Python diagnostic of your choice
-    without installing ESMValTool as developer or git pushing.
-    Simply include the full path to your script of choice in script,
-    see example /path/to/your/my_little_diagnostic.py
-    An example personal diagnostic can be found in
-    esmvaltool/diag_scripts/examples/my_little_diagnostic.py
+    Recipe to compute energy budgets in global, land and ocean domains.
+    The path to the Trenberth Diagram template needs to be provided to
+    generate the plot. If left empty, the output will be a netCDF file per
+    model containing the budget variables.
 
   authors:
-    - pred_va
+    - vann_be
 
   maintainer:
-    - pred_va
+    - loos_sa
+
+  projects:
+    - primavera
 
 datasets:
-  - {dataset: HadGEM3-GC31-LM,  project: CMIP6, mip: Amon, exp: highresSST-present,  ensemble: r1i1p1f1, grid: gn,  start_year: 2000,  end_year: 2002}
+  - {dataset: CMCC-CM,  project: CMIP5, mip: Amon, exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+  - {dataset: CMCC-CMS,  project: CMIP5, mip: Amon, exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+#  - {dataset: HadGEM3-GC31-LM,  project: CMIP6, mip: Amon, exp: highresSST-present,  ensemble: r1i1p1f1, grid: gn,  start_year: 2000,  end_year: 2002}
 #  - {dataset: HadGEM3-GC31-HM,  project: CMIP6, mip: Amon, exp: highresSST-present,  ensemble: r1i1p1f1, grid: gn,  start_year: 2000,  end_year: 2002}
 #  - {dataset: HadGEM3-GC31-MM,  project: CMIP6, mip: Amon, exp: highresSST-present,  ensemble: r1i1p1f1, grid: gn,  start_year: 2000,  end_year: 2002}
+
 preprocessors:
   global_mean:
     area_statistics:
@@ -68,6 +71,8 @@ diagnostics:
     scripts:
       energy_budget:
         script: primavera/energy_budget.py
+        plot_template: plot_templates/energy_budget_template.png
+
   land_energy_budget:
     description: "Energy budget excluding ocean domain"
     variables:
@@ -92,8 +97,10 @@ diagnostics:
       hfls:
         preprocessor: land_mean
     scripts:
-      energy_budget:
+      energy_budget_land:
         script: primavera/energy_budget.py
+        plot_template: plot_templates/energy_budget_template.png
+
   ocean_energy_budget:
     description: "Energy budget excluding land domain"
     variables:
@@ -118,6 +125,6 @@ diagnostics:
       hfls:
         preprocessor: ocean_mean
     scripts:
-      energy_budget:
+      energy_budget_ocean:
         script: primavera/energy_budget.py
-
+        plot_template:

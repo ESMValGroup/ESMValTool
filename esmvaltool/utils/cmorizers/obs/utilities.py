@@ -131,7 +131,7 @@ def read_cmor_config(cmor_config):
         cfg = yaml.safe_load(file)
     cfg['cmor_table'] = \
         CMOR_TABLES[cfg['attributes']['project_id']]
-    if 'comment' not in cfg.keys():
+    if 'comment' not in cfg:
         cfg['attributes']['comment'] = ''
     return cfg
 

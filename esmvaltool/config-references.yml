@@ -218,6 +218,10 @@ authors:
     name: Lledó, Llorenç
     institute: BSC, Spain
     email: llorenç.lledo 'at' bsc.es
+  loos_sa:
+    name: Loosveldt-Tomas, Saskia
+    institute: BSC, Spain
+    email: saskia.loosveldt 'at' bsc.es
   lore_ru:
     name: Lorenz, Ruth
     institute: ETH Zurich, Switzerland
@@ -340,6 +344,10 @@ authors:
     name: van Ulft, Bert
     institute: KNMI, Netherlands
     email: bert.van.ulft 'at' knmi.nl
+  vann_be:
+    name: Vanniere, Benoit
+    institute: Univ. of Reading, UK
+    email: b.vanniere 'at' reading.ac.uk 
   vini_ca:
     name: Vinicius, Capistrano
     institute: INPE, Brazil
@@ -647,6 +655,7 @@ projects:
   esmval: DLR project ESMVal
   eval4cmip: DLR and University of Bremen project funded by the Initiative and Networking Fund of the Helmholtz Society
   qa4ecv: QA4ECV
+  primavera: EU H2020 project PRIMAVERA
   trr181: DFG Project TRR-181
   ukesm: UKESM, UK Earth System Model project (NERC)
 

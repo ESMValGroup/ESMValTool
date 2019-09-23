@@ -1,4 +1,4 @@
-.. _new_diagnostic:
+.. _new-diagnostic:
 
 ***************************************
 Contributing a new diagnostic or recipe
@@ -66,9 +66,9 @@ Using the interfaces from NCL
 Always call the ``log_provenance`` procedure after plotting from your NCL diag_script. You could find available shortcuts for
 statistics, domain, plottype, authors and references in the ``config-references.yml`` file.
 
-.. code-block:: bash
+.. code-block:: console
 
-        log_provenance(nc-file,plot_file,caption,statistics,domain,plottype,authors,references,input-files)
+  log_provenance(nc-file,plot_file,caption,statistics,domain,plottype,authors,references,input-files)
 
 Have a look at the example NCL diagnostic in ``esmvaltool/diag_scripts/examples/diagnostic.ncl`` for a complete example.
 
@@ -80,14 +80,14 @@ argument to the diagnostic script.
 
 The most interesting settings provided in this file are
 
-.. code:: yaml
+.. code-block:: yaml
 
-	run_dir:  /path/to/recipe_output/run/diagnostic_name/script_name
-	work_dir: /path/to/recipe_output/work/diagnostic_name/script_name
-	plot_dir: /path/to/recipe_output/work/diagnostic_name/script_name
-	input_files:
-	    - /path/to/recipe_output/preproc/diagnostic_name/ta/metadata.yml
-	    - /path/to/recipe_output/preproc/diagnostic_name/pr/metadata.yml
+  run_dir:  /path/to/recipe_output/run/diagnostic_name/script_name
+  work_dir: /path/to/recipe_output/work/diagnostic_name/script_name
+  plot_dir: /path/to/recipe_output/plots/diagnostic_name/script_name
+  input_files:
+    - /path/to/recipe_output/preproc/diagnostic_name/ta/metadata.yml
+    - /path/to/recipe_output/preproc/diagnostic_name/pr/metadata.yml
 
 Custom settings in the script section of the recipe will also be made available in this file.
 
@@ -99,54 +99,55 @@ There are three directories defined:
 
 Finally :code:`input_files` is a list of YAML files, containing a description of the preprocessed data. Each entry in these
 YAML files is a path to a preprocessed file in NetCDF format, with a list of various attributes.
-An example preprocessor metadata.yml file could look like this
+An example preprocessor metadata.yml file could look like this:
 
-.. code:: yaml
+.. code-block:: yaml
 
-	? /path/to/recipe_output/preproc/diagnostic_name/pr/CMIP5_GFDL-ESM2G_Amon_historical_r1i1p1_T2Ms_pr_2000-2002.nc
-	: cmor_table: CMIP5
-	  dataset: GFDL-ESM2G
-	  diagnostic: diagnostic_name
-	  end_year: 2002
-	  ensemble: r1i1p1
-	  exp: historical
-	  filename: /path/to/recipe_output/preproc/diagnostic_name/pr/CMIP5_GFDL-ESM2G_Amon_historical_r1i1p1_T2Ms_pr_2000-2002.nc
-	  frequency: mon
-	  institute: [NOAA-GFDL]
-	  long_name: Precipitation
-	  mip: Amon
-	  modeling_realm: [atmos]
-	  preprocessor: preprocessor_name
-	  project: CMIP5
-	  recipe_dataset_index: 1
-	  reference_dataset: MPI-ESM-LR
-	  short_name: pr
-	  standard_name: precipitation_flux
-	  start_year: 2000
-	  units: kg m-2 s-1
-	  variable_group: pr
-	? /path/to/recipe_output/preproc/diagnostic_name/pr/CMIP5_MPI-ESM-LR_Amon_historical_r1i1p1_T2Ms_pr_2000-2002.nc
-	: cmor_table: CMIP5
-	  dataset: MPI-ESM-LR
-	  diagnostic: diagnostic_name
-	  end_year: 2002
-	  ensemble: r1i1p1
-	  exp: historical
-	  filename: /path/to/recipe_output/preproc/diagnostic1/pr/CMIP5_MPI-ESM-LR_Amon_historical_r1i1p1_T2Ms_pr_2000-2002.nc
-	  frequency: mon
-	  institute: [MPI-M]
-	  long_name: Precipitation
-	  mip: Amon
-	  modeling_realm: [atmos]
-	  preprocessor: preprocessor_name
-	  project: CMIP5
-	  recipe_dataset_index: 2
-	  reference_dataset: MPI-ESM-LR
-	  short_name: pr
-	  standard_name: precipitation_flux
-	  start_year: 2000
-	  units: kg m-2 s-1
-	  variable_group: pr
+  ? /path/to/recipe_output/preproc/diagnostic_name/pr/CMIP5_GFDL-ESM2G_Amon_historical_r1i1p1_T2Ms_pr_2000-2002.nc
+  : cmor_table: CMIP5
+    dataset: GFDL-ESM2G
+    diagnostic: diagnostic_name
+    end_year: 2002
+    ensemble: r1i1p1
+    exp: historical
+    filename: /path/to/recipe_output/preproc/diagnostic_name/pr/CMIP5_GFDL-ESM2G_Amon_historical_r1i1p1_T2Ms_pr_2000-2002.nc
+    frequency: mon
+    institute: [NOAA-GFDL]
+    long_name: Precipitation
+    mip: Amon
+    modeling_realm: [atmos]
+    preprocessor: preprocessor_name
+    project: CMIP5
+    recipe_dataset_index: 1
+    reference_dataset: MPI-ESM-LR
+    short_name: pr
+    standard_name: precipitation_flux
+    start_year: 2000
+    units: kg m-2 s-1
+    variable_group: pr
+  ? /path/to/recipe_output/preproc/diagnostic_name/pr/CMIP5_MPI-ESM-LR_Amon_historical_r1i1p1_T2Ms_pr_2000-2002.nc
+  : cmor_table: CMIP5
+    dataset: MPI-ESM-LR
+    diagnostic: diagnostic_name
+    end_year: 2002
+    ensemble: r1i1p1
+    exp: historical
+    filename: /path/to/recipe_output/preproc/diagnostic1/pr/CMIP5_MPI-ESM-LR_Amon_historical_r1i1p1_T2Ms_pr_2000-2002.nc
+    frequency: mon
+    institute: [MPI-M]
+    long_name: Precipitation
+    mip: Amon
+    modeling_realm: [atmos]
+    preprocessor: preprocessor_name
+    project: CMIP5
+    recipe_dataset_index: 2
+    reference_dataset: MPI-ESM-LR
+    short_name: pr
+    standard_name: precipitation_flux
+    start_year: 2000
+    units: kg m-2 s-1
+    variable_group: pr
+
 
 Generic interface between diagnostic and backend
 ------------------------------------------------
@@ -169,28 +170,27 @@ It is possible to add custom provenance information by adding custom items to en
 
 An example :code:`diagnostic_provenance.yml` file could look like this
 
-.. code:: yaml
+.. code-block:: yaml
 
-	? /path/to/recipe_output/work/diagnostic_name/script_name/CMIP5_GFDL-ESM2G_Amon_historical_r1i1p1_T2Ms_pr_2000-2002_mean.nc
-	: ancestors:
-	    - /path/to/recipe_output/preproc/diagnostic_name/pr/CMIP5_GFDL-ESM2G_Amon_historical_r1i1p1_T2Ms_pr_2000-2002.nc
-	  authors: [ande_bo, righ_ma]
-	  caption: Average Precipitation between 2000 and 2002 according to GFDL-ESM2G.
-	  domains: [global]
-	  plot_file: /path/to/recipe_output/plots/diagnostic_name/script_name/CMIP5_GFDL-ESM2G_Amon_historical_r1i1p1_T2Ms_pr_2000-2002_mean.png
-	  plot_type: zonal
-	  references: [acknow_project]
-	  statistics: [mean]
-	? /path/to/recipe_output/work/diagnostic_name/script_name/CMIP5_MPI-ESM-LR_Amon_historical_r1i1p1_T2Ms_pr_2000-2002_mean.nc
-	: ancestors:
-	    - /path/to/recipe_output/preproc/diagnostic_name/pr/CMIP5_MPI-ESM-LR_Amon_historical_r1i1p1_T2Ms_pr_2000-2002.nc
-	  authors: [ande_bo, righ_ma]
-	  caption: Average Precipitation between 2000 and 2002 according to MPI-ESM-LR.
-	  domains: [global]
-	  plot_file: /path/to/recipe_output/plots/diagnostic_name/script_name/CMIP5_MPI-ESM-LR_Amon_historical_r1i1p1_T2Ms_pr_2000-2002_mean.png
-	  plot_type: zonal
-	  references: [acknow_project]
-	  statistics: [mean]
+  ? /path/to/recipe_output/work/diagnostic_name/script_name/CMIP5_GFDL-ESM2G_Amon_historical_r1i1p1_T2Ms_pr_2000-2002_mean.nc
+  : ancestors:[/path/to/recipe_output/preproc/diagnostic_name/pr/CMIP5_GFDL-ESM2G_Amon_historical_r1i1p1_T2Ms_pr_2000-2002.nc]
+    authors: [ande_bo, righ_ma]
+    caption: Average Precipitation between 2000 and 2002 according to GFDL-ESM2G.
+    domains: [global]
+    plot_file: /path/to/recipe_output/plots/diagnostic_name/script_name/CMIP5_GFDL ESM2G_Amon_historical_r1i1p1_T2Ms_pr_2000-2002_mean.png
+    plot_type: zonal
+    references: [acknow_project]
+    statistics: [mean]
+
+  ? /path/to/recipe_output/work/diagnostic_name/script_name/CMIP5_MPI-ESM-LR_Amon_historical_r1i1p1_T2Ms_pr_2000-2002_mean.nc
+  : ancestors: [/path/to/recipe_output/preproc/diagnostic_name/pr/CMIP5_MPI-ESM-LR_Amon_historical_r1i1p1_T2Ms_pr_2000-2002.nc]
+    authors: [ande_bo, righ_ma]
+    caption: Average Precipitation between 2000 and 2002 according to MPI-ESM-LR.
+    domains: [global]
+    plot_file: /path/to/recipe_output/plots/diagnostic_name/script_name/CMIP5_MPI-ESM-LR_Amon_historical_r1i1p1_T2Ms_pr_2000-2002_mean.png
+    plot_type: zonal
+    references: [acknow_project]
+    statistics: [mean]
 
 You can check whether your diagnostic script successfully provided the provenance information to the backend by
 verifying that
@@ -199,4 +199,67 @@ verifying that
 - any NetCDF files created by your diagnostic script contain a 'provenance' global attribute
 - any PNG plots created by your diagnostic script contain the provenance information in the 'Image History' attribute
 
-Note that this is done automatically by the ESMValTool backend.
+Note that this is done automatically by the ESMValTool Core.
+
+********************************************
+How to prepare and run your first diagnostic
+********************************************
+
+Instructions for personal diagnostic
+====================================
+
+Anyone can run a personal diagnostic, no matter where the location of it;
+there is no need to install esmvaltool in developer mode nor is it to
+git push or for that matter, do any git operations; the example recipe
+
+.. code-block:: console
+
+  esmvaltool/recipes/recipe_my_personal_diagnostic.yml
+
+shows the use of running a personal diagnostic; the example
+
+.. code-block:: console
+
+  esmvaltool/diag_scripts/examples/my_little_diagnostic.py
+
+and any of its alterations may be used as training wheels for the future ESMValTool
+diagnostic developer. The purpose of this example is to familiarize the user with
+the framework of ESMValTool without the constraints of installing and running the
+tool as developer.
+
+Functionality
+=============
+
+`my_little_diagnostic` (or whatever the user will call their diagnostic) makes full use
+of ESMValTool's preprocessor output (both phyisical files and run variables); this output
+comes in form of a nested dictionary, or config dictionary, see an example below;
+it also makes full use of the ability to call any of the preprocessor's functions,
+note that relative imports of modules from the esmvaltool package are allowed and
+work without altering the $PYTHONPATH.
+
+The user may parse this dictionary so that they execute a number of operations on the
+preprocessed data; for example the `my_little_diagnostic.plot_time_series` grabs the
+preprocessed data output, computes global area averages for each model, then plots
+a time-series for each model. Different manipulation functionalities for grouping,
+sorting etc of the data in the config dictionary are available,
+please consult ESMValTool User Manual.
+
+
+Writing a basic recipe
+======================
+The user will need to write a basic recipe to be able to run their own personal diagnostic.
+An example of such a recipe is found in `esmvaltool/recipes/recipe_my_personal_diagnostic.yml`.
+For general guidelines with regards to ESMValTool recipes please consult the User Guide;
+the specific parameters needed by a recipe that runs a personal diagnostic are:
+
+.. code-block:: yaml
+
+  scripts:
+    my_diagnostic:
+    script: /path/to/your/my_little_diagnostic.py
+
+i.e. the full path to the personal diagnostic that the user needs to run.
+
+Example of config dictionary
+============================
+To be added (use python-style code-block).
