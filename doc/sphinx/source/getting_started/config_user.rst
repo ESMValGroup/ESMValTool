@@ -5,7 +5,14 @@ User configuration file
 ***********************
 
 The ``config-user.yml`` configuration file contains all the global level
-information needed by ESMValTool. The following shows the default settings from
+information needed by ESMValTool. The configuration is passed to ESMValTool
+as a command line argument (see :ref:`Running ESMValTool <running>`).
+
+The default user configuration file is stored in the ESMValCore install
+directory, but for general users it may be easier to copy the default settings
+listed below in a suitable project directory.
+
+The following shows the default settings from
 the ``config-user.yml`` file.
 
 .. code-block:: yaml
@@ -67,6 +74,10 @@ The ``write_plots`` setting is used to inform ESMValTool about your preference
 for saving figures. Similarly, the ``write_netcdf`` setting is a boolean which
 turns on or off the writing of netCDF files.
 
+The ```rootpath`` specifies the directories where ESMValTool will look for input
+data. Similarly, ``output_dir`` specifies where ESMValTool will store its
+output, i.e. figures, data, logs, etc. Make sure to set appropriate paths.
+
 .. code-block:: yaml
 
   # Auxiliary data directory (used for some additional datasets)
@@ -88,3 +99,6 @@ plotting such as coastline descriptions and so on.
    The ``config-user.yml`` file is specified as argument at run time, so it is
    possible to have several available with different purposes: one for
    formalised runs, one for debugging, etc...
+
+More information on various configuration files can be found in
+Section :ref:`ESMValCore/Configuration files <esmvalcore/config>`
