@@ -7,24 +7,21 @@ Input data
 ESMValTool accepts input data from various models as well as
 observations and reanalysis data, provided that they adhere to the
 CF/CMOR format. This section provides some guidelines for unfamiliar users.
-More information can be found in
-Section :ref:`ESMValCore/Finding data <esmvalcore/datafinder>`
 
 Models
 ======
 
 ESMValTool will look for existing data in the directories specified in the
-:ref:`user config file <config_user>`. Alternatively, it can use an external
+user config file. Alternatively, it can use an external
 tool called Synda (http://prodiguer.github.io/synda/index.html). Here, we
 describe the basic steps to configure EMSValTool to work with Synda. This is
 the recommended approach for first-time users to quickly get up to speed with
 ESMValTool.
 
-To install Synda, follow the steps listed in the :ref:`Synda documentation
-<http://prodiguer.github.io/synda/sdt/conda_install.html>`. This description
-assumes that you use the conda install. As the last step, Synda will ask to
-set your openID credentials. Therefore, you'll need to create an account at
-https://esgf-node.llnl.gov/projects/esgf-llnl/ and join a Data Access Control
+To install Synda, follow the steps listed in the Synda documentation. This
+description assumes that you use the conda install. As the last step, Synda will
+ask to set your openID credentials. Therefore, you'll need to create an account
+at https://esgf-node.llnl.gov/projects/esgf-llnl/ and join a Data Access Control
 Group, e.g. CMIP5 Research. For more information, see
 https://esgf.github.io/esgf-user-support/user_guide.html.
 

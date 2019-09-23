@@ -99,6 +99,3 @@ plotting such as coastline descriptions and so on.
    The ``config-user.yml`` file is specified as argument at run time, so it is
    possible to have several available with different purposes: one for
    formalised runs, one for debugging, etc...
-
-More information on various configuration files can be found in
-Section :ref:`ESMValCore/Configuration files <esmvalcore/config>`

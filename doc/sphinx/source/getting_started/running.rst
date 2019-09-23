@@ -7,7 +7,7 @@ Running ESMValTool
 ESMValTool is mostly used as a command line tool. Whenever your
 conda environment for ESMValTool is active, you can just run the command
 ``esmvaltool <options> <recipe>``. One of the options that must be specified
-is the :ref:`user-config file <config_user>`, which is specified using the
+is the user-config file, which is specified using the
 option ``-c /path/to/config-user.yaml``. An example recipe is available in the
 ESMValTool installation folder as ``examples/recipe_python.yml``:
 
@@ -90,7 +90,7 @@ the following also works:
 
 	esmvaltool -c /path/to/config-user.yml examples/recipe_python.yml
 
-Note that this command does not call Synda. The required data should thus be 
+Note that this command does not call Synda. The required data should thus be
 located in the directories specified in your user config file.
 Recall that the chapter :ref:`User configuration file <config-user>`
 provides an explanation of how to create your own config-user.yml file.
