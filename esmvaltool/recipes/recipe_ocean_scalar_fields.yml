@@ -101,7 +101,7 @@ diagnostics:
 #           - {dataset: MIROC-ESM-CHEM, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
 #           - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
 #           - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
-#           - {dataset: MRI-ESM1, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1851, end_year: 2005, }
+#           - {dataset: MRI-ESM1, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
 #           - {dataset: NorESM1-ME, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
 #     scripts:
 #       Regional_Ocean_Surface_mean_timeseries:
@@ -135,7 +135,7 @@ diagnostics:
 #          - {dataset: MIROC-ESM-CHEM, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, } # Output on Atmospheric grid
           - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
           - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
-          - {dataset: MRI-ESM1, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1851, end_year: 2005, }
+          - {dataset: MRI-ESM1, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
           - {dataset: NorESM1-ME, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
           - {dataset: bcc-csm1-1, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
 #          - {dataset: bcc-csm1-1-m, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2012, } # Can't find FX files
@@ -170,7 +170,7 @@ diagnostics:
           - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
           - {dataset: MPI-ESM-P, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
           - {dataset: MRI-CGCM3, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
-          - {dataset: MRI-ESM1, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1851, end_year: 2005, }
+          - {dataset: MRI-ESM1, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
           - {dataset: NorESM1-M, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
           - {dataset: NorESM1-ME, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
 #          - {dataset: inmcm4, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, } # Needs a fix.
@@ -196,7 +196,7 @@ diagnostics:
           - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
           - {dataset: MPI-ESM-P, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
           - {dataset: MRI-CGCM3, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
-          - {dataset: MRI-ESM1, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1851, end_year: 2005, }
+          - {dataset: MRI-ESM1, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
           - {dataset: NorESM1-M, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
           - {dataset: NorESM1-ME, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
     scripts:
@@ -242,7 +242,7 @@ diagnostics:
           - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
           - {dataset: MPI-ESM-P, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
 #          - {dataset: MRI-CGCM3, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
-#          - {dataset: MRI-ESM1, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1851, end_year: 2005, }
+#          - {dataset: MRI-ESM1, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
           - {dataset: NorESM1-M, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
           - {dataset: NorESM1-ME, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
           - {dataset: bcc-csm1-1, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
@@ -292,7 +292,7 @@ diagnostics:
           - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
           - {dataset: MPI-ESM-P, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
           - {dataset: MRI-CGCM3, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
-          - {dataset: MRI-ESM1, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1851, end_year: 2005, }
+          - {dataset: MRI-ESM1, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
           - {dataset: NorESM1-M, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
           - {dataset: NorESM1-ME, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
           - {dataset: bcc-csm1-1, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
@@ -334,7 +334,7 @@ diagnostics:
           - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
           - {dataset: MPI-ESM-P, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
           - {dataset: MRI-CGCM3, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
-          - {dataset: MRI-ESM1, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1851, end_year: 2005, }
+          - {dataset: MRI-ESM1, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
           - {dataset: NorESM1-M, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
           - {dataset: NorESM1-ME, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
           - {dataset: bcc-csm1-1, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
@@ -368,7 +368,7 @@ diagnostics:
 # #          - {dataset: MIROC-ESM-CHEM, project: CMIP5, exp: historical, mip: Oyr, ensemble: r1i1p1, start_year: 1860, end_year: 2005, } # Needs a fix
 #           - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, mip: Oyr, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
 #           - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical, mip: Oyr, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
-#           - {dataset: MRI-ESM1, project: CMIP5, exp: historical, mip: Oyr, ensemble: r1i1p1, start_year: 1851, end_year: 2005, }
+#           - {dataset: MRI-ESM1, project: CMIP5, exp: historical, mip: Oyr, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
 #         preprocessor: prep_timeseries_2
 #         fx_files: [areacello, ]
 #    scripts:
