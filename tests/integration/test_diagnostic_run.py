@@ -5,9 +5,8 @@ from textwrap import dedent
 
 import pytest
 import yaml
-from six import text_type
 
-from esmvaltool._main import run
+from esmvalcore._main import run
 
 
 def write_config_user_file(dirname):
@@ -115,13 +114,13 @@ def test_diagnostic_run(tmp_path, script_file, script):
     result_file = tmp_path / 'result.yml'
 
     # Write script to file
-    script_file.write_text(text_type(script))
+    script_file.write_text(str(script))
 
     # Create recipe
     recipe = dedent("""
         documentation:
           description: Recipe with no data.
-          authors: [ande_bo]
+          authors: [andela_bouwe]
 
         diagnostics:
           diagnostic_name:
@@ -130,7 +129,7 @@ def test_diagnostic_run(tmp_path, script_file, script):
                 script: {}
                 setting_name: {}
         """.format(script_file, result_file))
-    recipe_file.write_text(text_type(recipe))
+    recipe_file.write_text(str(recipe))
 
     config_user_file = write_config_user_file(tmp_path)
     with arguments(

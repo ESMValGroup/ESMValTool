@@ -10,10 +10,10 @@ documentation:
     Written by Lee de Mora, Plymouth Marine Laboratory, ledm@pml.ac.uk
 
   authors:
-    - demo_le
+    - demora_lee
 
   maintainer:
-    - demo_le
+    - demora_lee
 
   references:
     - demora2018gmd
@@ -56,9 +56,8 @@ preprocessors:
   # Global 3D Volume-weighted Average
   prep_timeseries_global_volume_average:
     custom_order: true
-    average_volume:
-      coord1: longitude
-      coord2: latitude
+    volume_statistics:
+      operator: mean
     multi_model_statistics:
       span: overlap
       statistics: [mean ]
@@ -66,9 +65,8 @@ preprocessors:
   # Global area-weighted Average from 2D field
   prep_global_Surface_average_timeseries_2D:
     custom_order: true
-    average_region:
-      coord1: longitude
-      coord2: latitude
+    area_statistics:
+      operator: mean
     multi_model_statistics:
       span: overlap
       statistics: [mean ]
@@ -79,9 +77,8 @@ preprocessors:
     extract_levels:
       levels:  [0., ]
       scheme: linear_horizontal_extrapolate_vertical
-    average_region:
-      coord1: longitude
-      coord2: latitude
+    area_statistics:
+      operator: mean
     multi_model_statistics:
       span: overlap
       statistics: [mean ]
@@ -92,42 +89,45 @@ preprocessors:
 
   # For a 2D global surface map
   prep_surface_map_2D:
-    time_average:
+    climate_statistics:
+      operator: mean
 
   # For a 3D global surface map
   prep_surface_map_3D:
     extract_levels:
       levels:  [0., ]
       scheme: linear_horizontal_extrapolate_vertical
-    time_average:
+    climate_statistics:
+      operator: mean
 
   prep_surface_map_regrid_3D:
     custom_order: true
     extract_levels:
       levels:  [0., ]
       scheme: linear_horizontal_extrapolate_vertical
-    time_average:
+    climate_statistics:
+      operator: mean
     regrid:
       target_grid: 1x1
       scheme: linear
 
 
   prep_global_profile:
-    annual_mean:
-    average_region:
-      coord1: longitude
-      coord2: latitude
+    annual_statistics:
+      operator: mean
+    area_statistics:
+      operator: mean
 
   prep_global_profile_decadal:
-    annual_mean:
-       decadal: true
-    average_region:
-      coord1: longitude
-      coord2: latitude
+    decadal_statistics:
+      operator: mean
+    area_statistics:
+      operator: mean
 
   prep_transect_AMT: # Atlantic Meridional Transect (28W)
     custom_order: true
-    time_average:
+    climate_statistics:
+      operator: mean
     extract_region:
       start_longitude: 320.
       end_longitude: 345.
@@ -143,16 +143,15 @@ preprocessors:
 #   prep_depth_integration:
 #     depth_integration:
 # #      new_units: kg m-2 # need to specify in advance, as cf_units has strange behaviour.
-#     time_average:
+#     climate_statistics:
+#      operator: mean
 #
 #   # 2D map global depth integration time series maps
 #   prep_depth_integration_timeseries:
 #     custom_order: true
 #     depth_integration:
-#     average_region:
-#       coord1: longitude
-#       coord2: latitude
-
+#     area_statistics:
+#       operator: mean
 
 
 # --------------------------------------------------

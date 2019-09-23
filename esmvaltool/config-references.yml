@@ -7,519 +7,562 @@
 
 authors:
   # Core Team (PI and core developers)
-  eyri_ve:
+  eyring_veronika:
     name: Eyring, Veronika
     institute: DLR, Germany
-    email: veronika.eyring 'at' dlr.de
-  ande_bo:
+    email: veronika.eyring@dlr.de
+    orcid: https://orcid.org/0000-0002-6887-4885
+  andela_bouwe:
     name: Andela, Bouwe
     institute: NLeSC, Netherlands
-    email: b.andela 'at' esciencecenter.nl
-  broe_bj:
+    email: b.andela@esciencecenter.nl
+    orcid: https://orcid.org/0000-0001-9005-8940
+  broetz_bjoern:
     name: Broetz, Bjoern
     institute: DLR, Germany
-    email: bjoern.broetz 'at' dlr.de
-  demo_le:
+    email: bjoern.broetz@dlr.de
+    orcid:
+  demora_lee:
     name: de Mora, Lee
     institute: PML, UK
-    email: ledm 'at' pml.ac.uK
-  dros_ni:
+    email: ledm@pml.ac.uK
+    orcid: https://orcid.org/0000-0002-5080-3149
+  drost_niels:
     name: Drost, Niels
     institute: NLeSC, Netherlands
-    email: n.drost 'at' esciencecenter.nl
-  kold_ni:
+    email: n.drost@esciencecenter.nl
+    orcid:
+  koldunov_nikolay:
     name: Koldunov, Nikolay
     institute: AWI, Germany
-    email: nikolay.koldunov 'at' awi.de
-  laue_ax:
+    email: nikolay.koldunov@awi.de
+    orcid: https://orcid.org/0000-0002-3365-8146
+  lauer_axel:
     name: Lauer, Axel
     institute: DLR, Germany
-    email: axel.lauer 'at' dlr.de
-  muel_bn:
+    email: axel.lauer@dlr.de
+    orcid: https://orcid.org/0000-0002-9270-1044
+  mueller_benjamin:
     name: Mueller, Benjamin
     institute: LMU, Germany
-    email: b.mueller 'at' iggf.geo.uni-muenchen.de
-  pred_va:
+    email: b.mueller@iggf.geo.uni-muenchen.de
+    orcid:
+  predoi_valeriu:
     name: Predoi, Valeriu
     institute: URead, UK
-    email: valeriu.predoi 'at' ncas.ac.uk
-  righ_ma:
+    email: valeriu.predoi@ncas.ac.uk
+    orcid: https://orcid.org/0000-0002-9729-6578
+  righi_mattia:
     name: Righi, Mattia
     institute: DLR, Germany
-    email: mattia.righi 'at' dlr.de
-  schl_ma:
+    email: mattia.righi@dlr.de
+    orcid: https://orcid.org/0000-0003-3827-5950
+  schlund_manuel:
     name: Schlund, Manuel
     institute: DLR, Germany
-    email: manuel.schlund 'at' dlr.de
-  vega_ja:
+    email: manuel.schlund@dlr.de
+    orcid: https://orcid.org/0000-0001-5251-0158
+  vegas-regidor_javier:
     name: Vegas-Regidor, Javier
     institute: BSC, Spain
-    email: javier.vegas 'at' bsc.es
+    email: javier.vegas@bsc.es
+    orcid: https://orcid.org/0000-0003-0096-4291
   # Development team
-  anav_al:
+  aerts_jerom:
+    name: Aerts, Jerom
+    institute: University of Delft, Netherlands
+    email: J.P.M.Aerts@tudelft.nl
+    orcid:
+  anav_alessandro:
     name: Anav, Alessandro
     institute: Univ. of Exeter, UK
-    email: a.anav 'at' exeter.ac.uk
-  andr_ol:
+    orcid: https://orcid.org/0000-0002-4217-7563
+  andrews_oliver:
     name: Andrews, Oliver
     institute: Tyndall Centre, UK
-    email: oliverdandrews 'at' googlemail.com
-  arno_en:
+    orcid: https://orcid.org/0000-0002-1921-475X
+  arnone_enrico:
     name: Arnone, Enrico
     institute: ISAC-CNR, Torino, Italy
-    email: e.arnone 'at' isac.cnr.it
-  bell_om:
+    orcid: https://orcid.org/0000-0001-6740-5051
+  bellprat_omar:
     name: Bellprat, Omar
     institute: BSC, Spain
-    email: omar.bellprat 'at' bsc.es
-  berg_pe:
+    orcid: https://orcid.org/0000-0001-6434-1793
+  berg_peter:
     name: Berg, Peter
     institute: SMHI, Sweden
-    email: peter.berg 'at' smhi.se
-  bock_ls:
+    orcid: https://orcid.org/0000-0002-1469-2568
+  bock_lisa:
     name: Bock, Lisa
     institute: DLR, Germany
-    email: lisa.bock 'at' dlr.de
-  bojo_dr:
+    orcid: https://orcid.org/0000-0001-7058-5938
+  bojovic_dragana:
     name: Bojovic, Dragana
     institute: BSC, Spain
-    email: dragana.bojovic 'at' bsc.es
-  cagn_ch:
+    orcid: https://orcid.org/0000-0001-7354-1885
+  cagnazzo_chiara:
     name: Cagnazzo, Chiara
     institute: CNR, Italy
-    email: chiara.cagnazzo 'at' cnr.it
-  caro_lo:
+    orcid: https://orcid.org/0000-0002-2054-0448
+  camphuijsen_jaro:
+    name: Camphuijsen, Jaro
+    institute: NLeSC, Netherlands
+    orcid:
+  capistrano_vinicius:
+    name: Capistrano, Vinicius
+    institute: INPE, Brazil
+    orcid: https://orcid.org/0000-0001-8653-2312
+  caron_louis-philippe:
     name: Caron, Louis-Philippe
     institute: BSC, Spain
-    email: louis-philippe.caron 'at' bsc.es
-  chen_ja:
+    orcid: https://orcid.org/0000-0001-5221-0147
+  chen_jack:
     name: Chen, Jack
     institute: NCAR, USA
-    email: cchen 'at' ucar.edu
-  cion_ir:
+    orcid:
+  cionni_irene:
     name: Cionni, Irene
     institute: ENEA, Italy
-    email: irene.cionni 'at' enea.it
-  cort_ni:
-    name: Nicola Cortesi
+    orcid: https://orcid.org/0000-0002-0591-9193
+  cortesi_nicola:
+    name: Cortesi, Nicola
     institute: BSC, Spain
-    email: nicola.cortesi 'at' bsc.es
-  crez_ba:
+    orcid: https://orcid.org/0000-0002-1442-9225
+  crezee_bas:
     name: Crezee, Bas
     institute: ETH Zurich, Switzerland
-    email: bas.crezee 'at' env.ethz.ch
-  davi_ed:
+    orcid: https://orcid.org/0000-0002-1774-1126
+  mohr_christianwilhelm:
+    name: Mohr, Christian Wilhelm
+    institute: Cicero, Norway
+    orcid: https://orcid.org/0000-0003-2656-1802
+  davin_edouardleopold:
     name: Davin, Edouard Leopold
     institute: ETH Zurich, Switzerland
-    email: edouard.davin 'at' env.ethz.ch
-  davi_pa:
+    orcid: https://orcid.org/0000-0003-3322-9330
+  davini_paolo:
     name: Davini, Paolo
     institute: CNR-ISAC, Italy
-    email: p.davini 'at' isac.cnr.it
-  ehbr_ca:
+    orcid: https://orcid.org/0000-0003-3389-7849
+  ehbrecht_carsten:
     name: Ehbrecht, Carsten
     institute: DKRZ, Germany
-    email: ehbrecht 'at' dkrz.de
-  fran_fr:
+    orcid:
+  frank_franziska:
     name: Frank, Franziska
     institute: DLR, Germany
-    email: franziska.frank 'at' dlr.de
-  fuck_ne:
-    name: Neven Fuckar
+    orcid:
+  fuckar_neven:
+    name: Fuckar, Neven
     institute: BSC, Spain
-    email: neven.fuckar 'at' bsc.es
-  gain_al:
+    orcid:
+  gainusa-bogdan_alina:
     name: Gainusa-Bogdan, Alina
     institute: France
-  gall_be:
+    orcid: https://orcid.org/0000-0001-6147-1883
+  gallego-elvira_belen:
     name: Gallego-Elvira, Belen
     institute: NERC, UK
-    email: belgal 'at' nerc.ac.uk
-  gett_an:
+    orcid: https://orcid.org/0000-0002-2328-0354
+  gettelman_andrew:
     name: Gettelman, Andrew
     institute: NCAR, USA
-    email: andrew 'at' ucar.edu
-  gier_be:
+    orcid: https://orcid.org/0000-0002-8284-2599
+  gier_bettina:
     name: Gier, Bettina
     institute: University of Bremen, Germany
-    email: bettina.gier 'at' dlr.de
-  gott_kl:
+    orcid:
+  gottschaldt_klaus-dirk:
     name: Gottschaldt, Klaus-Dirk
     institute: DLR, Germany
-    email: klaus-dirk.gottschaldt 'at' dlr.de
-  guem_vi:
+    orcid: https://orcid.org/0000-0002-2046-6137
+  guemas_virginie:
     name: Guemas, Virginie
     institute: BSC, Spain
-    email: virginie.guemas 'at' bsc.es
-  hage_st:
+    orcid: https://orcid.org/0000-0002-6340-3558
+  hagemann_stefan:
     name: Hagemann, Stefan
     institute: MPI-M, Germany
-    email: stefan.hagemann 'at' mpimet.mpg.de
-  hann_ul:
+    orcid: https://orcid.org/0000-0001-5444-2945
+  hansson_ulf:
     name: Hansson, Ulf
     institute: SMHI, Sweden
-  hard_jo:
+    orcid:
+  vonhardenberg_jost:
     name: von Hardenberg, Jost
     institute: ISAC-CNR, Torino, Italy
-    email: j.vonhardenberg 'at' isac.cnr.it
-  hass_bg:
+    orcid: https://orcid.org/0000-0002-5312-8070
+  hassler_birgit:
     name: Hassler, Birgit
     institute: DLR, Germany
-    email: birgit.hassler 'at' dlr.de
-  hemp_ni:
+    orcid: https://orcid.org/0000-0003-2724-709X
+  hempelmann_nils:
     name: Hempelmann, Nils
     institute: IPSL, France
-    email: nils.hempelmann 'at' ipsl.jussieu.fr
-  hunt_al:
+    orcid:
+  hunter_alasdair:
     name: Hunter, Alasdair
     institute: BSC, Spain
-    email: alasdair.hunter 'at' bsc.es
-  hutj_ro:
+    orcid: https://orcid.org/0000-0001-8365-3709
+  hutjes_ronald:
     name: Hutjes, Ronald
     institute: Univ. of Wageningen, NL
-    email: ronald.hutjes 'at' wur.nl
-  juck_ma:
+    orcid:
+  juckes_martin:
     name: Juckes, Martin
     institute: BADC, UK
-    email: martin.juckes 'at' stfc.ac.uk
-  kady_ni:
+    orcid:
+  kadygrov_nikolay:
     name: Kadygrov, Nikolay
     institute: IPSL, France
-    email: nikolay.kadygrov 'at' ipsl.jussieu.fr
-  kind_st:
+    orcid:
+  kindermann_stephan:
     name: Kindermann, Stephan
     institute: DKRZ, Germany
-    email: kindermann 'at' dkrz.de
-  kras_jo:
+    orcid: https://orcid.org/0000-0001-9335-1093
+  krasting_john:
     name: Krasting, John
     institute: NOAA, USA
-    email: john.krasting 'at' noaa.gov
-  kune_dm:
-    name: Kunert, Dominik
-    institute: DLR, Germany
-    email: dominik.kunert 'at' dlr.de
-  lemb_va:
+    orcid: https://orcid.org/0000-0002-4650-9844
+  lembo_valerio:
     name: Lembo, Valerio
-    institute: CEN, University of Hamburg
-    email: valerio.lembo 'at' uni-hamburg.de
-  levi_ri:
+    institute: CEN, University of Hamburg, Germany
+    orcid: https://orcid.org/0000-0001-6085-5914
+  levine_richard:
     name: Levine, Richard
     institute: MetOffice, UK
-    email: richard.levine 'at' metoffice.gov.uk
-  litt_bi:
+    orcid: https://orcid.org/0000-0003-1210-0415
+  little_bill:
     name: Little, Bill
     institute: MetOffice, UK
-    email: bill.little 'at' metoffice.gov.uk
-  lled_ll:
-    name: Lledó, Llorenç
+    orcid:
+  lledo_llorenc:
+    name: Lledo, Llorenc
     institute: BSC, Spain
-    email: llorenç.lledo 'at' bsc.es
-  lore_ru:
+    orcid:
+  lorenz_ruth:
     name: Lorenz, Ruth
     institute: ETH Zurich, Switzerland
-    email: ruth.lorenz 'at' env.ethz.ch
-  lova_to:
+    orcid: https://orcid.org/0000-0002-3986-1268
+  lovato_tomas:
     name: Lovato, Tomas
     institute: CMCC, IT
-    email: tomas.lovato 'at' cmcc.it
-  maek_ja:
+    orcid: https://orcid.org/0000-0002-5188-6767
+  makela_jarmo:
     name: Makela, Jarmo
-  malo_er:
+    institute: FMI, Finland
+    orcid:
+  maloney_eric:
     name: Maloney, Eric
-    institute: Colorado State University
-    email: emaloney 'at' atmos.colostate.edu
-  manu_ni:
+    institute: Colorado State University, USA
+    orcid: https://orcid.org/0000-0002-2660-2611
+  manubens_nicolau:
     name: Manubens, Nicolau
     institute: BSC, Spain
-    email: nicolau.manubens 'at' bsc.es
-  maso_er:
+    orcid: https://orcid.org/0000-0002-0114-508X
+  mason_erik:
     name: Mason, Erik
     institute: NOAA, USA
-    email: erik.mason 'at' noaa.gov
-  mass_fr:
+    orcid:
+  sandstad_marit:
+    name: Sandstad, Marit
+    institute: Cicero, Norway
+    orcid:
+  massonnet_francois:
     name: Massonnet, Francois
-    institute: Spain
-  mart_gi:
+    institute: Universite Catholique de Louvain, Belgium
+    orcid:
+  martin_gill:
     name: Martin, Gill
     institute: MetOffice, UK
-    email: gill.martin 'at' metoffice.gov.uk
-  mavi_ir:
+    orcid: https://orcid.org/0000-0003-0851-6020
+  mavilia_irene:
     name: Mavilia, Irene
     institute: ISAC-CNR, Bologna, Italy
-    email: i.mavilia 'at' isac.cnr.it
-  mell_fe:
+    orcid: https://orcid.org/0000-0002-4938-2906
+  mello_felipe:
     name: Mello, Felipe
     institute: INPE, Brazil
-  mohi_da:
+    orcid: https://orcid.org/0000-0002-8832-2869
+  dalvi_mohit:
     name: Dalvi, Mohit
     institute: MetOffice, UK
-    email: mohit.dalvi 'at' metoffice.gov.uk
-  niku_gr:
+    orcid: https://orcid.org/0000-0003-1669-0811
+  nikulin_grigory:
     name: Nikulin, Grigory
     institute: SMHI, Sweden
-    email: grigory.nikulin 'at' smhi.se
-  nobr_pa:
+    orcid: https://orcid.org/0000-0002-4226-8713
+  nobre_paulo:
     name: Nobre, Paulo
     institute: INPE, Brazil
-  gonz_nu:
-    name: González-Reviriego, Nube
+    orcid: https://orcid.org/0000-0001-9061-4556
+  gonzalez-reviriego_nube:
+    name: Gonzalez-Reviriego, Nube
     institute: BSC, Spain
-    email: nube.gonzalez 'at' bsc.es
-  oliv_ar:
+    orcid: https://orcid.org/0000-0002-5919-6701
+  oliveira_arildo:
     name: Oliveira, Arildo
     institute: INPE, Brazil
-  phil_ad:
+    orcid:
+  perez-zanon_nuria:
+    name: Perez-Zanon, Nuria
+    institute: BSC, Spain
+    orcid:
+  phillips_adam:
     name: Phillips, Adam
     institute: NCAR, USA
-    email: asphilli 'at' ucar.edu
-  pugh_th:
+    orcid: https://orcid.org/0000-0003-4859-8585
+  pugh_thomas:
     name: Pugh, Thomas
     institute: KIT, Germany
-    email: thomas.pugh 'at' kit.edu
-  read_si:
+    orcid:
+  read_simon:
     name: Read, Simon
     institute: Univ. of Reading, UK
-    email: s.read 'at' reading.ac.uk
-  ring_ma:
+    orcid:
+  ringer_mark:
     name: Ringer, Mark
     institute: MetOffice, UK
-    email: mark.ringer 'at' metoffice.gov.uk
-  rio_ca:
+    orcid: https://orcid.org/0000-0003-4014-2583
+  rio_catherine:
     name: Rio, Catherine
     institute: IPSL, France
-    email: catherine.rio 'at' lmd.jussieu.fr
-  roeh_ro:
+    orcid: https://orcid.org/0000-0002-6590-7733
+  roehrig_romain:
     name: Roehrig, Romain
     institute: MeteoFr, France
-    email: romain.roehrig 'at' meteo.fr
-  senf_da:
-    name: Senftleben, Daniel
-    institute: DLR, Germany
-    email: daniel.senftleben 'at' dlr.de
-  serv_fe:
+    orcid: https://orcid.org/0000-0002-3903-3841
+  serva_federico:
     name: Serva, Federico
     institute: CNR, Italy
-    email: federico.serva 'at' artov.isac.cnr.it
-  somm_ph:
+    orcid: https://orcid.org/0000-0002-7118-0817
+  sommer_philipp:
     name: Sommer, Philipp
     institute: Univ. of Hamburg, Germany
-    email: 'at'
-  stac_to:
+    orcid:
+  stacke_tobias:
     name: Stacke, Tobias
     institute: MPI-M, Germany
-    email: tobias.stacke 'at' mpimet.mpg.de
-  ster_an:
+    orcid: https://orcid.org/0000-0003-4637-5337
+  sterl_andreas:
     name: Sterl, Andreas
     institute: KNMI, Netherlands
-    email: sterl 'at' knmi.nl
-  swam_ra:
+    orcid: https://orcid.org/0000-0003-3457-0434
+  swaminathan_ranjini:
     name: Swaminathan, Ranjini
     institute: University of Reading, UK
-    email: r.swaminathan 'at' reading.ac.uk
-  teic_ca:
+    orcid: https://orcid.org/0000-0001-5853-2673
+  teichmann_claas:
     name: Teichmann, Claas
-    institute: CSC2, Germany
-    email: claas.teichmann 'at' hzg.de
-  torr_ve:
-    name: Veronica Torralba
+    institute: GERICS, Hamburg, Germany
+    orcid:
+  torralba_veronica:
+    name: Torralba, Veronica
     institute: BSC, Spain
-    email: veronica.torralba 'at' bsc.es
-  tsus_yo:
+    orcid:
+  tsushima_yoko:
     name: Tsushima, Yoko
     institute: MetOffice, UK
-    email: yoko.tsushima 'al' metoffice.gov.uk
-  vanu_be:
+    orcid:
+  vanulft_bert:
     name: van Ulft, Bert
     institute: KNMI, Netherlands
-    email: bert.van.ulft 'at' knmi.nl
-  vini_ca:
-    name: Vinicius, Capistrano
-    institute: INPE, Brazil
-  walt_je:
+    orcid: https://orcid.org/0000-0001-8653-2312
+  walton_jeremy:
     name: Walton, Jeremy
     institute: MetOffice, UK
-    email: jeremy.walton 'at' metoffice.gov.uk
-  wang_sh:
+    orcid: https://orcid.org/0000-0001-7372-178X
+  wang_shiyu:
     name: Wang, Shiyu
     institute: SMHI, Sweden
-    email: shiyu.wang 'at' smhi.se
-  wenz_sa:
+    orcid:
+  weigel_katja:
+    name: Weigel, Katja
+    institute: University of Bremen and DLR, Germany
+    orcid: https://orcid.org/0000-0001-6133-7801
+  wenzel_sabrina:
     name: Wenzel, Sabrina
     institute: DLR, Germany
-    email: sabrina.wenzel 'at' dlr.de
-  will_ke:
+    orcid:
+  williams_keith:
     name: Williams, Keith
     institute: MetOffice, UK
-    email: keith.williams 'at' metoffice.gov.uk
+    orcid:
   # Viewers (not active developers)
-  bala_ve:
+  balaji_venkatramani:
     name: Balaji, Venkatramani
     institute: GFDL, USA
-    email: balaji 'at' princeton.edu
-  bunz_fe:
+    orcid:
+  bunzel_felix:
     name: Bunzel, Felix
     institute: MPI-M, Germany
-    email: felix.bunzel 'at' mpimet.mpg.de
-  char_an:
+    orcid:
+  charlton-perez_andrew:
     name: Charlton-Perez, Andrew
     institute: Univ. of Reading, UK
-    email: a.j.charlton-perez 'at' reading.ac.uk
-  cort_su:
+    orcid:
+  corti_susanna:
     name: Corti, Susanna
     institute: ISAC-CNR, Torino, Italy
-    email: s.corti 'at' isac.cnr.it
-  denn_jo:
+    orcid:
+  dennis_john:
     name: Dennis, John
     institute: NCAR, USA
-    email: dennis 'at' ucar.edu
-  graf_po:
+    orcid:
+  graf_phoebe:
     name: Graf, Phoebe
     institute: DLR, Germany
-    email: phoebe.graf 'at' dlr.de
-  hegg_mi:
+    orcid:
+  hegglin_michaela:
     name: Hegglin, Michaela
     institute: Univ. of Reading, UK
-    email: m.i.hegglin 'at' reading.ac.uk
-  hend_jo:
+    orcid:
+  hendricks_johannes:
     name: Hendricks, Johannes
     institute: DLR, Germany
-    email: johannes.hendricks 'at' dlr.de
-  john_ja:
+    orcid:
+  john_jasmin:
     name: John, Jasmin
     institute: NOAA, USA
-    email: jasmin.john 'at' noaa.gov
-  jone_co:
+    orcid:
+  jones_colin:
     name: Jones, Colin
     institute: MetOffice, UK
-    email: colin.jones 'at' metoffice.gov.uk
-  kais_ch:
+    orcid:
+  kaiser_christopher:
     name: Kaiser, Christopher
     institute: DLR, Germany
-    email: christopher.kaiser 'at' dlr.de
-  karp_al:
+    orcid:
+  karpechko_alexey:
     name: Karpechko, Alexey,
     institute: FMI, Finland
-    email: Alexey.Karpechko 'at' fmi.fi
-  lawr_br:
+    orcid:
+  lawrence_bryan:
     name: Lawrence, Bryan
     institute: STFC, UK
-    email: Bryan.Lawrence 'at' stfc.ac.uk
-  mick_sh:
+    orcid:
+  mickelson_sheri:
     name: Mickelson, Sheri
     institute: NCAR, USA
-    email: mickelso 'at' ucar.edu
-  ocon_fi:
+    orcid:
+  oconnor_fiona:
     name: OConnor, Fiona
     institute: MetOffice, UK
-    email: fiona.oconnor 'at' metoffice.gov.uk
-  radh_ap:
+    orcid:
+  radhakrishnan_aparna:
     name: Radhakrishnan, Aparna
     institute: GFDL, USA
-    email: aparna.radhakrishnan 'at' noaa.gov
-  sell_al:
+    orcid:
+  sellar_alistair:
     name: Sellar, Alistair
     institute: MetOffice, UK
-    email: alistair.sellar 'at' metoffice.gov.uk
-  wyse_kl:
+    orcid:
+  wyser_klaus:
     name: Wyser, Klaus
     institute: SMHI, Sweden
-    email: klaus.wyser 'at' smhi.se
+    orcid:
   # Former developers
-  brae_me:
+  braeu_melanie:
     name: Braeu, Melanie
     institute: DLR, Germany
-    email: braeu.melanie 'at' physik.uni-muenchen.de
-  dusc_ch:
+    orcid:
+  duscha_christiane:
     name: Duscha, Christiane
     institute: DLR, Germany
-    email: christiane.duscha 'at' dlr.de
-  enri_cl:
+    orcid:
+  enright_clare:
     name: Enright, Clare
     institute: UEA, UK
-    email: c.enright 'at' uea.ac.uk
-  halu_al:
+    orcid:
+  evaldsson_martin:
+    name: Evaldsson, Martin
+    institute: SMHI, Sweden
+    orcid:
+  haluszczynski_alexander:
     name: Haluszczynski, Alexander
     institute: DLR, Germany
-    email: alexander.haluszczynski 'at' dlr.de
-  herm_mi:
+    orcid:
+  herman_michael:
     name: Herman, Michael
     institute: New Mexico Tech, USA
-    email: mherman 'at' nmt.edu
-  hueb_mi:
+    orcid:
+  huebner_michael:
     name: Huebner, Michael
     institute: DLR, Germany
-    email: michael.huebner 'at' dlr.de
-  john_ma:
+    orcid:
+  johnston_marston:
     name: Johnston, Marston
     institute: SMHI, Sweden
-    email: shejo284 'at' gmail.com
-  klin_ca:
+    orcid:
+  klinger_carolin:
     name: Klinger, Carolin
     institute: DLR, Germany
-    email: carolin.klinger 'at' physik.uni-muenchen.de
-  kola_mi:
+    orcid:
+  kolax_michael:
     name: Kolax, Michael
-  loew_al:
+    institute: SMHI, Sweden
+    orcid:
+  kunert_dominik:
+    name: Kunert, Dominik
+    institute: DLR, Germany
+    orcid:
+  loew_alexander:
     name: Loew, Alexander
     institute: LMU, Germany
-  neal_ri:
+    orcid:
+  neale_richard:
     name: Neale, Richard
     institute: NCAR, US
-    email: rneale 'at' ucar.edu
-  orlo_bo:
+    orcid:
+  orlowsky_boris:
     name: Orlowsky, Boris
     institute: ETH, Switzerland
-    email: boris.orlowsky 'at' env.ethz.ch
-  pasc_st:
+    orcid:
+  pascoe_stephen:
     name: Pascoe, Stephen
     institute: STFC, UK
-    email: stephen.pascoe 'at' stfc.ac.uk
-  pere_nu:
-    name: Perez_Zanon, Nuria
-    institute: BSC, Spain
-    email: nuria.perez 'at' bsc.es
-  stev_ma:
+    orcid:
+  senftleben_daniel:
+    name: Senftleben, Daniel
+    institute: DLR, Germany
+    orcid:
+  stevens_mark:
     name: Stevens, Mark
     institute: NCAR, US
-    email: stevens 'at' ucar.edu
+    orcid:
   # Former viewers (not active viewers)
-  butc_ne:
+  butchart_neal:
     name: Butchart, Neal
     institute: MetOffice, UK
-    email: neal.butchart 'at' metoffice.gov.uk
-  hass_da:
+    orcid:
+  hassell_david:
     name: Hassell, David
     institute: Univ. of Reading, UK
-    email: d.c.hassell 'at' reading.ac.uk
-  ivan_de:
+    orcid:
+  ivanova_detelina:
     name: Ivanova, Detelina
     institute: NERSC, Norway
-    email: detelina.ivanova 'at' nersc.no
-  mois_au:
+    orcid:
+  moise_aurel:
     name: Moise, Aurel
     institute: BOM, Australia
-    email: a.moise 'at' bom.gov.au
-  pend_di:
+    orcid:
+  pendlebury_diane:
     name: Pendlebury, Diane
     institute: Univ. of Toronto, Canada
-    email: diane 'at' atmosp.physics.utoronto.ca
-  step_da:
+    orcid:
+  stepanova_daria:
     name: Stepanova, Daria
     institute: FMI, Finland
-    email: daria.stepanova 'at' fmi.fi
-  tilm_si:
+    orcid:
+  tilmes_simone:
     name: Tilmes, Simone
     institute: NCAR, US
-    email: tilmes 'at' ucar.edu
-  lova_to:
-    name: Lovato, Tomas
-    institute: CMCC, IT
-    email: tomas.lovato 'at' cmcc.it
-
-
-
+    orcid:
 
 references:
+  # If possible as: "[Last name] et al., [journal abbr.], doi:[doi], [year]."
   acknow_author: "Please acknowledge the author(s)."
   contact_authors: "Please contact the author(s) to discuss acknowledgment or co-authorship."
   acknow_project: "Please acknowledge the project(s)."
@@ -538,6 +581,7 @@ references:
   cox18nature: "Cox, P. M. et al., Nature, 553, 319-322, doi:10.1038/nature25450, 2018."
   davini12jclim: "Davini P., C. Cagnazzo, S. Gualdi, and A. Navarra. J. Climate, 25, 6496-6509, doi: 10.1175/JCLI-D-12-00032.1, 2012"
   davini18: "Davini, P. MiLES - Mid Latitude Evaluation System. Zenodo. doi:10.5281/zenodo.1237837, 2018"
+  deangelis15nat: "DeAngelis, A. M. et al., Nature, 528(7581), 249-253, doi:10.1038/nature15770, 2015."
   demora2018gmd: "de Mora et al., Geosci. Model Dev., 11, 4215-4240, doi:10.5194/gmd-11-4215-2018, 2018."
   dong08grl: "Dong, S. et al., J. Geophys. Res., 113, C06013, doi:10.1029/2006JC004051, 2008."
   donofrio14jh: "D'Onofrio et al., J of Hydrometeorology 15, 830-843, 2014."
@@ -554,24 +598,25 @@ references:
   gleckler08jgr: "Gleckler et al., J. Geophys. Res., 113, D06104, doi:10.1029/2007JD008972, 2008."
   goswami99qjrms: "Goswami, B., V. Krishnamurthy, and H. Annamalai, Q. J. R. Meteorol. Soc., 125, 611-633, doi:10.1002/qj.49712555412, 1999."
   hagemann13james: "Hagemann et al., J. Adv. Model. Earth Syst., 5, doi:10.1029/2012MS000173, 2013."
+  jones13jgr: "Jones et al., J. Geophys. Res. Atmos., 118, 4001-4024, doi:10.1002/jgrd.50239, 2013."
   jones15james: "Jones et al., J. Adv. Model. Earth Syst., 7, 1554-1575, doi:10.1002/2014MS000416, 2015."
   kerry06jclim: "Kerry H. et al, J. Climate, 19, 3681-3703, doi:10.1175/JCLI3814.1, 2006."
   kim09jclim: "Kim, D. et al., J. Climate, 22, 6413-6436, doi:10.1175/2009JCLI3063.1, 2009."
   kim12grl: "Kim and Yu, Geophys. Res. Lett., 39, L11704, doi:10.1029/2012GL052006, 2012."
   key04gbc: "Key, R. M. et al., Global Biogeochem. Cy., 18, GB4031, doi:10.109/2004GB002247, 2004."
-  landschuetzer2016: "Landschuetzer, P., Gruber, N., Bakker, D. C. E.: Decadal variations and trends of the global ocean carbon sink, Global Biogeochemical Cycles, 30, doi:10.1002/2015GB005359 (2016)"
   lauer05acp: "Lauer et al., Atmos. Chem. Phys., 5, 3251-3276, doi:10.5194/acp-5-3251-2005, 2005."
   lauer13jclim: "Lauer and Hamilton, J. Climate, 26, 3823-3845, doi:10.1175/JCLI-D-12-00451.1, 2013."
   lauer17rse: "Lauer et al., Remote Sens. Environ., 203, 9-39, doi:10.1016/j.rse.2017.01.007, 2017."
   lembo16climdyn: "Lembo et al., Clim. Dyn., 48, 1793-1812, doi:10.1007/s00382-016-3173-9"
   lembo19gmdd: "Lembo et al., Geosci. Model Dev. Discuss., doi:10.5194/gmd-2019-37, 2019"
   li14jclim: "Li and Xie, J. Climate, 27, 1765-1780, doi:10.1175/JCLI-D-13-00337.1, 2014."
+  li17natcc: "Li, G., S.-P. Xie, C. He, and Z. Chen, Nat Clim Change, 7, 708, doi:10.1038/nclimate3387, 2017."
   lin08jclim: "Lin, J-L. et al., J. Climate, 21, 4541-4567, doi: 10.1175/2008JCLI1816.1, 2008."
   lloyd-hughes02jclim: "Lloyd-Hughes, B. and Saunders, M. A., Int. J. Climatol., 22, 1571-1592, doi:10.1002/joc.846, 2002."
   locarini10usgov: "Locarnini, R. A. et al., World Ocean Atlas 2009, Volume 1: Temperature. S. Levitus, Ed. NOAA Atlas NESDIS 68, U.S. Government Printing Office, Washington, D.C., 184 pp.,2010."
   lucarini14revgeop: "Lucarini et al., Rev. Geophys., 52, 809-859, doi:https://doi.org/10.1002/2013RG000446"
-  mehran14jgr: "Mehran, A. et al., J. Geophys. Res., 119, 4, 1695-1707, doi: 10.1002/2013JD021152, 2014." 
-  manubens:  "Manubens, N., et al., ENVIRON MODELL SOFTW 103, 29-42. doi:10.1016/j.envsoft.2018.01.018"
+  mehran14jgr: "Mehran, A. et al., J. Geophys. Res., 119, 4, 1695-1707, doi: 10.1002/2013JD021152, 2014."
+  manubens: "Manubens, N., et al., ENVIRON MODELL SOFTW 103, 29-42. doi:10.1016/j.envsoft.2018.01.018"
   mckee93: "McKee, T. B. and Doesken, N. J. and Kleist, J.  In Proceedings of the 8th Conference on Applied Climatology, 17(22), 179-183, Boston, MA: American Meteorological Society, 1993."
   mueller14grl: "Mueller, B. and Seneviratne, S. I. Geophys. Res. Lett., 41, 128-134, doi:10.1002/2013GL058055, 2014."
   mueller13hess: "Mueller, B. et al., Hydrol. Earth Syst. Sci., 17, 3707-3720, doi:10.5194/hess-17-3707-2013, 2013."
@@ -582,14 +627,16 @@ references:
   rk2008bams: "Reichler and Kim, Bull. Amer. Meteor. Soc., 89, 303-312, doi:10.1175/BAMS-89-3-303, 2008."
   roedenbeck13os: "Roedenbeck, C. et al., Ocean Sci., 9, 193-216, doi:10.5194/os-9-193-2013, 2013."
   roehrig13jclim: "Roehrig, R. et al., J. Climate, 26, 6471-6505, doi:10.1175/JCLI-D-12-00505.1, 2013."
+  sillman13jgr: "Sillmann et al., J. Geophys. Res., doi:10.1029/2012JD018390, 2013"
   sperber12asl: "Sperber and Kim, Atmos. Sci. Lett., 13, 3, 187-193, doi:10.1002/asl.378, 2012."
   straus07jcli: "Straus, D.M., S. Corti, and F. Molteni. J. Climate, 20, 2251-2272, doi:10.1175/JCLI4070.1, 2007"
+  sutanudjaja2018gmd: "Sutanudjaja, E. H. et al., Geosci. Model Dev., 11, 2429-2453, doi:10.5194/gmd-11-2429-2018, 2018."
   stroeve07grl: "Stroeve, J. et al., Geophys. Res. Lett., 34, L09501, doi:10.1029/2007GL029703, 2007."
   tibaldi90tel: "Tibaldi S. and Molteni F. Tellus A 42(3): 343-365, doi:10.1034/j.1600-0870.1990.t01-2-00003.x, 1990."
   taylor12: "Taylor et al., Nature, 489, 423-426, doi:10.1038/nature11377, 2012."
   terzago18nhess: "Terzago, S. et al., Nat. Hazards Earth Syst. Sci., 18, 2825-2840, doi:10.5194/nhess-18-2825-2018, 2018."
   takahashi14marchem: "Takahashi et al., Mar. Chem., 164, 95-125, doi:10.1016/j.marchem.2014.06.004, 2014."
-  vicente10jclim: "Vicente-Serrano, S. M. and Beguería, S. and López-Moreno, J. I., Journal of climate, 23(7), 1696-1718, 10.1175/2009JCLI2909.1, 2010"
+  vicente10jclim: "Vicente-Serrano, S. M. and Beguera, S. and Lopez-Moreno, J. I., Journal of climate, 23(7), 1696-1718, 10.1175/2009JCLI2909.1, 2010"
   wang99bams: "Wang, B. and Z. Fan, Bull. Amer. Meteor. Soc., 80, 629-638, doi:10.1175/1520-0477(1999)080&lt;0629:COSASM&gt;2.0.CO;2, 1999."
   wang11climdyn: "Wang, B. et al., Clim. Dyn., 39, 1123-1135, doi:10.1007/s00382-011-1266-z, 2011."
   webster92qjrms: "Webster, P. J. and Yang, S., Q.J.R. Meteorol. Soc., 118: 877-926. doi:10.1002/qj.49711850705, 1992."
@@ -597,24 +644,41 @@ references:
   weigel: "Weigel, A P., et al., Q. J. Royal Meteorol. Soc. 134, 630, 241-260. doi:10.1002/qj.210"
   wenzel14jgr: "Wenzel et al., J. Geophys. Res. Biogeosci., 119(5), doi:2013JG002591, 2014."
   williams09climdyn: "Williams and Webb, Clim. Dynam., 33, 141-157, doi:10.1007/s00382-008-0443-1, 2009."
+  zhang11wcc: "Zhang et al., WIREs Clim. Change, doi:10.1002/wcc.147, 2011."
   # Observations
-  aura-tes: "Beer, R., IEEE Trans. Geosci. Rem. Sens., doi:10.1109/TGRS.2005.863716, 2006."
+  aura-tes: "Beer, R., IEEE Trans. Geosci. Remote Sens., doi:10.1109/TGRS.2005.863716, 2006."
+  cds-satellite-lai-fapar: "Baret et al., Remote Sens. Environ., doi:10.1016/j.rse.2007.02.018, 2007.OB"
+  cds-satellite-soil-moisture: "Gruber et al., Earth Syst. Sci. Data, doi: 10.5194/essd-11-717-2019, 2019."
+  cds-xch4: "Buchwitz et al., Adv. Astronaut. Sci. Technol., doi:10.1007/s42423-018-0004-6, 2018."
+  cds-xco2: "Buchwitz et al., Adv. Astronaut. Sci. Technol., doi:10.1007/s42423-018-0004-6, 2018."
   ceres-syn1deg: "Wielicki et al., Bull. Amer. Meteor. Soc., doi: 10.1175/1520-0477(1996)077<0853:CATERE>2.0.CO;2, 1996."
-  era-interim: "Dee, D. P. et al., Q. J. Roy. Meteor. Soc., doi:10.1002/qj.828, 2011."
-  esacci-aerosol: "Popp et al., ESA Aerosol Climate Change Initiative (ESA Aerosol_cci) data: AOD v4.21 via Centre for Environmental Data Analysis, 2016."
+  cru: "Harris et al., Int. J. Climatol., doi:10.1002/joc.3711, 2014."
+  eppley-vgpm-modis: "Behrenfeld and Falkowski, Limnol. Oceanogr., doi:10.4319/lo.1997.42.1.0001, 1997."
+  era-interim: "Dee et al., Q. J. Roy. Meteor. Soc., doi:10.1002/qj.828, 2011."
+  era5: "Copernicus Climate Change Service (C3S) (2017): ERA5: Fifth generation of ECMWF atmospheric reanalyses of the global climate. Copernicus Climate Change Service Climate Data Store (CDS)"
+  esacci-aerosol: "Popp et al., Remote Sens., doi:10.3390/rs8050421, 2016."
   esacci-cloud: "Stengel et al., Earth Syst. Sci. Data, doi:10.5194/essd-9-881-2017, 2017."
-  esacci-fire: "Not available."
-  esacci-landcover: "Defourny et al.. ESA Land Cover Climate Change Initiative (ESA LC_cci) data, 2015."
+  esacci-fire: "Chuvieco et al.ESA Fire Climate Change Initiative (Fire_cci): Burned Area Grid Product Version 4.1. Centre for Environmental Data Analysis, doi:10.5285/D80636D4-7DAF-407E-912D-F5BB61C142FA, 2016."
+  esacci-landcover: "Defourny, P.: ESA Land Cover Climate Change Initiative (Land_Cover_cci): Global Land Cover Maps, Version 1.6.1. Centre for Environmental Data Analysis, http://catalogue.ceda.ac.uk/uuid/4761751d7c844e228ec2f5fe11b2e3b0, 2016."
+  esacci-oc: "Sathyendranath et al., ESA Ocean Colour Climate Change Initiative (Ocean_Colour_cci): Global chlorophyll-a data products gridded on a geographic projection, Version 3.1. Centre for Environmental Data Analysis, http://catalogue.ceda.ac.uk/uuid/12d6f4bdabe144d7836b0807e65aa0e2, 2016."
   esacci-ozone: "Loyola et al., Int. J. Remote Sens. doi:10.1080/01431160902825016, 2009."
-  esacci-soilmoisture: "Not available."
+  esacci-soilmoisture: "Liu et al., Hydrol. Earth Syst. Sci., doi:10.5194/hess-15-425-2011, 2011."
   esacci-sst: "Merchant et al., Geosci. Data J., doi:10.1002/gdj3.20, 2014."
+  ghcn: "Jones and Moberg, J. Clim., doi:10.1175/1520-0442(2003)016<0206:HALSSA>2.0.CO;2, 2003."
+  hadcrut3: "Brohan et al., J. Geophys. Res., doi:10.1029/2005JD006548, 2006."
+  hadcrut4: "Morice et al., J. Goophys. Res., doi:10.1029/2011JD017187, 2012."
   hadisst: "Rayner et al., J. Geophys. Res., doi:10.1029/2002JD002670, 2013."
-  modis: "Not available."
-  mte: "Jung et al., J. Geophys. Res., 116, doi:10.1029/2010JG001566, 2011."
+  lai3g: "Zhu et al., Remote Sens., doi:10.3390/rs5020927, 2013."
+  landflux-eval: "Mueller et al., Hydrol. Earth Syst. Sci., doi:10.5194/hess-17-3707-2013, 2013."
+  landschuetzer2016: "Landschuetzer et al., Global Biogeochem. Cycles, doi:10.1002/2015GB005359, 2016."
+  modis1: "Platnick et al., IEEE Trans. Geosci. Remote Sens., doi:10.1109/TGRS.2002.808301, 2003."
+  modis2: "Levy et al., Atmos. Meas. Tech., doi:10.5194/amt-6-2989-2013, 2013."
+  mte: "Jung et al., J. Geophys. Res., doi:10.1029/2010JG001566, 2011."
   ncep: "Kalnay et al., B. Am. Meteorol. Soc., doi:10.1175/1520-0477(1996)077<0437:TNYRP>2.0.CO;2, 1996."
   niwa-bs: "Bodeker et al., Atmos. Chem. Phys., doi:10.5194/acp-5-2603-2005, 2005."
-  patmos-x: "Heidinger et al., NOAA National Centers for Environmental Information, doi:10.7289/V5348HCK, last access: 10 February 2019."
-  woa: "Locarnini et al., World Ocean Atlas 2013, Vol. 1: Temperature, 2013."
+  patmos-x: "Heidinger et al., Bull. Amer. Meteor. Soc., doi:10.1175/BAMS-D-12-00246.1, 2013."
+  uwisc: "O'Dell et al., J. Clim., doi:10.1175/2007JCLI1958.1, 2008."
+  woa: "Locarnini et al., World Ocean Atlas 2013, Volume 1: Temperature, NOAA Atlas NESDIS 73, 2013."
 
 projects:
   c3s-magic: Copernicus Climate Change Service 34a Lot 2 (MAGIC) project
@@ -626,6 +690,8 @@ projects:
   dlrveu2: DLR project VEU2
   embrace: EU FP7 project EMBRACE
   esmval: DLR project ESMVal
+  eval4cmip: DLR and University of Bremen project funded by the Initiative and Networking Fund of the Helmholtz Society
+  ewatercycle: eWaterCycle project
   qa4ecv: QA4ECV
   trr181: DFG Project TRR-181
   ukesm: UKESM, UK Earth System Model project (NERC)

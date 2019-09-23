@@ -6,18 +6,7 @@
 Welcome to ESMValTool's documentation!
 ======================================
 
-.. toctree::
-   :maxdepth: 2
-
-   preface
-   known_issues
-
-   recipes/index
-
-   user_guide2/index
-   developer_guide2/index
-
-   codedoc2/esmvaltool
+.. include:: _sidebar.rst.inc
 
 Indices and tables
 ==================
