@@ -765,6 +765,7 @@ statistics:
   trend: temporal trend
   clim: climatology
   perc: percentiles
+  pdf: probability density function
   median: median
   detrend: detrend
   smpi: single metric performance index statistics

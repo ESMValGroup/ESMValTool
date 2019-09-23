@@ -38,6 +38,41 @@ load "$diag_scripts/../interface_scripts/auxiliary.ncl"
 load "$diag_scripts/../interface_scripts/logging.ncl"
 
 ; #############################################################################
+undef("output_type")
+function output_type()
+;
+; Arguments
+;
+; Return value
+;    A string with the output file type
+;
+; Description
+;    Provides a default, if file type is not explicitly specified
+;
+; Caveats
+;
+; Modification history
+;    20131028-gottschaldt_klaus-dirk: written.
+;
+local funcname, scriptname, file_type
+begin
+
+  funcname = "output_type"
+  scriptname = "diag_scripts/shared/plot/aux_plotting.ncl"
+  enter_msg(scriptname, funcname)
+
+  file_type = config_user_info@output_file_type
+  if (ismissing(file_type)) then
+    file_type = "ps"
+  end if
+  file_type = str_lower(file_type)
+
+  leave_msg(scriptname, funcname)
+  return(file_type)
+
+end
+
+; #############################################################################
 undef("create_legend_lines")
 procedure create_legend_lines(labels:string, \
                               styles, \
@@ -61,6 +96,7 @@ procedure create_legend_lines(labels:string, \
 ; Caveats
 ;
 ; Modification history
+;    20190920-laue_axel: changed epsi format to user defined file type
 ;    20150511-lauer_axel: added safe lower limits for panelling plot
 ;    20150508-righi_mattia: added lines/markers option.
 ;    20150120-gottschaldt_klaus-dirk: remove pre-existing file type suffix
@@ -82,7 +118,7 @@ begin
   end if
 
   ; Open workstation
-  wks_legend = gsn_open_wks("epsi", outfile)
+  wks_legend = gsn_open_wks(output_type(), outfile)
 
   ; General resources
   res = True
@@ -187,41 +223,6 @@ begin
   frame(wks_legend)
 
   leave_msg(scriptname, funcname)
-
-end
-
-; #############################################################################
-undef("output_type")
-function output_type()
-;
-; Arguments
-;
-; Return value
-;    A string with the output file type
-;
-; Description
-;    Provides a default, if file type is not explicitly specified
-;
-; Caveats
-;
-; Modification history
-;    20131028-gottschaldt_klaus-dirk: written.
-;
-local funcname, scriptname, file_type
-begin
-
-  funcname = "output_type"
-  scriptname = "diag_scripts/shared/plot/aux_plotting.ncl"
-  enter_msg(scriptname, funcname)
-
-  file_type = config_user_info@output_file_type
-  if (ismissing(file_type)) then
-    file_type = "ps"
-  end if
-  file_type = str_lower(file_type)
-
-  leave_msg(scriptname, funcname)
-  return(file_type)
 
 end
 
