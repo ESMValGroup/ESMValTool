@@ -6,6 +6,7 @@ from sharedutils import parallel_apply_along_axis
 from diag1d import *
 import numpy as np
 
+from mpqb_plots import mpqb_mapplot, metrics_plot_dictionary
 import iris
 import itertools as it
 import warnings
@@ -17,44 +18,6 @@ from esmvaltool.diag_scripts.shared._base import (
 from esmvaltool.diag_scripts.shared.plot import quickplot
 
 logger = logging.getLogger(os.path.basename(__file__))
-
-
-def mpqb_mapplot(cube,filename,**plotkwargs):
-    import matplotlib.pyplot as plt
-    logger.debug("Creating plot %s", filename)
-    plottitle = plotkwargs.pop('title')
-    fig = plt.figure()
-    ax = fig.add_subplot(projection=iris.plot.default_projection(cube))
-    iris.quickplot.pcolormesh(cube,**plotkwargs)
-    plt.gca().coastlines()
-    plt.title(plottitle)
-    fig.savefig(filename)
-    plt.close(fig)
-
-metrics_plot_dictionary = {
-    'pearsonr' : {
-        'title' : 'pearsonr',
-        'vmin' : -1.,
-        'vmax' : 1.,
-        'cmap' : 'RdYlBu_r', # diverging
-    },
-    'rmsd' : {
-        'title' : 'rmsd',
-        'vmin' : 0.,
-        'vmax' : 1.,
-        'cmap' : 'YlOrBr', # diverging
-    },
-    'absdiff' : {
-        'title' : 'absdiff',
-        'vmin' : -.5,
-        'vmax' : .5,
-        'cmap' : 'RdYlBu_r', # diverging
-    },
-    'reldiff' : {
-        'title' : 'reldiff',
-        'cmap' : 'RdYlBu_r', # diverging
-    },
-}
 
 
 
@@ -107,6 +70,7 @@ class mpqb_pair:
                 'plot_file' : plot_file
             }
 
+            metrics_plot_dictionary = get_plot_config(self.ds_cfg[self.ds1][0]['short_name'])
             mpqb_mapplot(cube, plot_file, **metrics_plot_dictionary[metricname])
 
             logger.info("Recording provenance of %s:\n%s", diagnostic_file,

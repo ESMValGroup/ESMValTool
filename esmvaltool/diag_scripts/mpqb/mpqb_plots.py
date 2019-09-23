@@ -1,47 +1,64 @@
 
 import iris
 import matplotlib.pyplot as plt
+import copy
+
+cmap_dict = {
+    'sm' : {
+        'sequential' : 'YlOrBr',
+        'diverging'  : 'RdYlBu',
+         },
+    'lai' : {
+        'sequential' : 'YlOrBr',
+        'diverging'  : 'BrBG',
+        }
+}
+
 
 metrics_plot_dictionary = {
     'pearsonr' : {
         'title' : 'pearsonr',
         'vmin' : -1.,
         'vmax' : 1.,
-        'cmap' : 'RdYlBu_r', # diverging
+        'cmap' : 'diverging', 
     },
     'rmsd' : {
         'title' : 'rmsd',
         'vmin' : 0.,
         'vmax' : 1.,
-        'cmap' : 'YlOrBr', # sequential
+        'cmap' : 'sequential',
     },
     'absdiff' : {
         'title' : 'absdiff',
         'vmin' : -.5,
         'vmax' : .5,
-        'cmap' : 'RdYlBu_r', # diverging
+        'cmap' : 'diverging',
     },
     'reldiff' : {
         'title' : 'reldiff',
-        'cmap' : 'RdYlBu_r', # diverging
+        'cmap' : 'diverging',
         'vmin' : -150,
         'vmax' : 150,
     },
-    'theilsen' : {
+    'theilsenmk' : {
         'title' : 'theilsen',
-        'cmap' : 'RdYlBu', # diverging, blue -> wettening, red drying
-        'vmin' : -0.001,
-        'vmax' : 0.001,
+        'cmap' : 'diverging',
+        'vmin' : -0.05,
+        'vmax' : 0.05,
     },
     'timemean' : {
         'title' : 'timemean',
-        'cmap' : 'YlGnBu', # sequential 
+        'cmap' : 'sequential',
         'vmin' : 0.0,
         'vmax' : 0.5,
     }
 }
 
-
+def get_plot_config(ecv_name):
+    plot_config = copy.deepcopy(metrics_plot_dictionary)
+    for metricname in plot_config:
+        plot_config[metricname]['cmap'] = cmap_dict[ecv_name][plot_config[metricname]['cmap']]
+    return plot_config
 
 def mpqb_mapplot(cube,filename,**plotkwargs):
     plottitle = plotkwargs.pop('title')

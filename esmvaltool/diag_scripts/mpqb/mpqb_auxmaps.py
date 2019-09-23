@@ -3,11 +3,12 @@ import logging
 import os
 from pprint import pformat
 from sharedutils import parallel_apply_along_axis
-from diag1d import *
-from mpqb_plots import mpqb_mapplot, metrics_plot_dictionary
+from diag1d import theilslopes1d, mannkendall1d
+from mpqb_plots import mpqb_mapplot, get_plot_config
 import numpy as np
 from esmvalcore.preprocessor._time import annual_statistics
 
+import cf_units
 import iris
 import itertools as it
 import warnings
@@ -21,14 +22,22 @@ from esmvaltool.diag_scripts.shared.plot import quickplot
 logger = logging.getLogger(os.path.basename(__file__))
 
 
-def theilsen(cube):
+def theilsenmk(cube):
     template = cube.collapsed('time', iris.analysis.MEAN)
     cube = annual_statistics(cube, operator='mean')
     indata = cube.data.filled(np.nan)
     theilsendata = parallel_apply_along_axis(theilslopes1d, 0, indata)
     outcube = template.copy()
-    outcube.data = theilsendata
+    outcube.data = np.ma.fix_invalid(theilsendata)
+    # Now mask based on MK test
+    mkdata = parallel_apply_along_axis(mannkendall1d, 0, indata)
+    mkmask = (mkdata == 0) # create mask where MK test is zero
+    outcube.data.mask |= mkmask
+    # Set name
+    outcube.rename('theil-sen trend of '+outcube.name())
+    outcube.units = cf_units.Unit(str(outcube.units)+' year-1')
     return outcube
+
 
 def timemean(cube):
     fullmean = cube.collapsed('time', iris.analysis.MEAN)
@@ -53,7 +62,7 @@ def main(cfg):
 
     #TODO move these parameters to config file
     reference_dataset = 'CDS-SATELLITE-SOIL-MOISTURE'
-    metrics_to_calculate = ['theilsen', 'timemean']
+    metrics_to_calculate = ['theilsenmk', 'timemean']
 
     # Get a description of the preprocessed data that we will use as input.
     input_data = cfg['input_data'].values()
@@ -78,6 +87,7 @@ def main(cfg):
             # Plot the results (if configured to plot)
             plot_file = get_plot_filename(metricname+'_'+dataset, cfg)
             if cfg['write_plots']:
+                metrics_plot_dictionary = get_plot_config(dataset_cfg[0]['short_name'])
                 mpqb_mapplot(resultcube, plot_file, **metrics_plot_dictionary[metricname])
             logger.info("Finished aux plots for dataset: {0}".format(dataset))
     logger.info("Finished!")
