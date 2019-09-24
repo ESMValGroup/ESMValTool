@@ -30,12 +30,6 @@ preprocessors:
       span: full
       statistics: [mean ]
 
-  prep_timeseries_2D: # For 0D fields
-    annual_mean:
-    multi_model_statistics:
-      span: full
-      statistics: [mean ]
-
   prep_timeseries_drake:
     custom_order: true
     extract_named_regions:
@@ -75,41 +69,6 @@ diagnostics:
         moving_average: 6 years
 
 
-
-#   diag_timeseries_intpp:
-#     variables:
-#       gtintpp:
-#         derive: true
-#         force_derivation: false
-#         fx_files: [areacello, ]
-#         preprocessor: prep_timeseries_0D
-#         additional_datasets:
-#           - {dataset: CESM1-BGC, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
-#           - {dataset: CMCC-CESM, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
-#           - {dataset: CNRM-CM5, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
-#           - {dataset: CanESM2, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
-# #          - {dataset: GFDL-ESM2G, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1861, end_year: 2005, }# Needs a fix
-#           - {dataset: GFDL-ESM2M, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1861, end_year: 2005, }
-# #          - {dataset: GISS-E2-H-CC, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2010, } # Can't find FX files
-# #          - {dataset: GISS-E2-R-CC, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2010, } # Can't find FX files
-#           - {dataset: HadGEM2-CC, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1859, end_year: 2005, }
-#           - {dataset: HadGEM2-ES, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1859, end_year: 2005, }
-#           - {dataset: IPSL-CM5A-LR, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
-#           - {dataset: IPSL-CM5A-MR, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
-#           - {dataset: IPSL-CM5B-LR, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
-#           - {dataset: MIROC-ESM, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
-#           - {dataset: MIROC-ESM-CHEM, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
-#           - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
-#           - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
-#           - {dataset: MRI-ESM1, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
-#           - {dataset: NorESM1-ME, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
-#     scripts:
-#       Regional_Ocean_Surface_mean_timeseries:
-#         script: ocean/diagnostic_timeseries.py
-#         moving_average: 6 years
-# #        title: Primary Organic Carbon Production by Phytoplankton
-# #        ylabel: 'intpp_label'
-
   diag_timeseries_fgco2:
     variables:
       gtfgco2: # Global Total flux co2
@@ -147,6 +106,7 @@ diagnostics:
         # ylabel: 'fgco2_label'
         # title: 'Global Total Surface downwards CO2 flux'
 
+
   diag_timeseries_amoc:
     description: atlantic_meridional_overturning_circulation
     variables:
@@ -179,6 +139,7 @@ diagnostics:
         script: ocean/diagnostic_timeseries.py
         moving_average: 6 years
 
+
   diag_timeseries_drake:
     description: Drake_passge_current
     variables:
@@ -203,6 +164,7 @@ diagnostics:
      Drake_timeseries:
         script: ocean/diagnostic_timeseries.py
         moving_average: 6 years
+
 
   diag_timeseries_temperature:
     variables:
@@ -254,6 +216,7 @@ diagnostics:
         moving_average: 6 years
         anomaly: [1860, 1900]
 
+
   diag_timeseries_salinity:
     variables:
       soga: # Global Mean Sea Water Salinity
@@ -304,6 +267,7 @@ diagnostics:
         moving_average: 6 years
         anomaly: [1860, 1900]
 
+
   diag_timeseries_sealevel:
     variables:
       zostoga: # Global Average Thermosteric Sea Level Change
@@ -346,33 +310,37 @@ diagnostics:
         moving_average: 6 years
         anomaly: [1860, 1900]
 
-#   diag_timeseries_chl:
-#    variables:
-#       # Chl requires the memory problem described in https://github.com/ESMValGroup/ESMValCore/issues/123 to be fixed.
-#       chl:
-#         additional_datasets:
-#           - {dataset: BNU-ESM, project: CMIP5, exp: historical, mip: Oyr, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
-#           - {dataset: CMCC-CESM, project: CMIP5, exp: historical, mip: Oyr, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
-#           - {dataset: CNRM-CM5, project: CMIP5, exp: historical, mip: Oyr, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
-# #          - {dataset: CanESM2, project: CMIP5, exp: historical, mip: Oyr, ensemble: r1i1p1, start_year: 1860, end_year: 2005, } # Needs a fix
-# #          - {dataset: GFDL-ESM2G, project: CMIP5, exp: historical, mip: Oyr, ensemble: r1i1p1, start_year: 1861, end_year: 2005, } # Needs a fix
-#           - {dataset: GFDL-ESM2M, project: CMIP5, exp: historical, mip: Oyr, ensemble: r1i1p1, start_year: 1861, end_year: 2005, }
-# #          - {dataset: GISS-E2-H-CC, project: CMIP5, exp: historical, mip: Oyr, ensemble: r1i1p1, start_year: 1860, end_year: 2010, } # Can't find FX files
-# #          - {dataset: GISS-E2-R-CC, project: CMIP5, exp: historical, mip: Oyr, ensemble: r1i1p1, start_year: 1860, end_year: 2010, } # Can't find FX files
-#           - {dataset: HadGEM2-CC, project: CMIP5, exp: historical, mip: Oyr, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
-#           - {dataset: HadGEM2-ES, project: CMIP5, exp: historical, mip: Oyr, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
-#           - {dataset: IPSL-CM5A-LR, project: CMIP5, exp: historical, mip: Oyr, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
-# #          - {dataset: IPSL-CM5A-MR, project: CMIP5, exp: historical, mip: Oyr, ensemble: r1i1p1, start_year: 1860, end_year: 2005, } # Needs a fix
-#           - {dataset: IPSL-CM5B-LR, project: CMIP5, exp: historical, mip: Oyr, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
-# #          - {dataset: MIROC-ESM, project: CMIP5, exp: historical, mip: Oyr, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }  # Needs a fix
-# #          - {dataset: MIROC-ESM-CHEM, project: CMIP5, exp: historical, mip: Oyr, ensemble: r1i1p1, start_year: 1860, end_year: 2005, } # Needs a fix
-#           - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, mip: Oyr, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
-#           - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical, mip: Oyr, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
-#           - {dataset: MRI-ESM1, project: CMIP5, exp: historical, mip: Oyr, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
-#         preprocessor: prep_timeseries_2
-#         fx_files: [areacello, ]
-#    scripts:
-#      Regional_Ocean_Surface_mean_timeseries:
-#        script: ocean/diagnostic_timeseries.py
-#        moving_average: 6 years
-#        anomaly: [1860, 1900]
+
+  diag_timeseries_intpp:
+    variables:
+      intppgt:
+        derive: true
+        force_derivation: false
+        fx_files: [areacello, ]
+        preprocessor: prep_timeseries_0D
+        additional_datasets:
+          - {dataset: CESM1-BGC, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
+          - {dataset: CMCC-CESM, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
+          - {dataset: CNRM-CM5, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
+          - {dataset: CanESM2, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
+#          - {dataset: GFDL-ESM2G, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1861, end_year: 2005, }# Needs a fix
+          - {dataset: GFDL-ESM2M, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1861, end_year: 2005, }
+#          - {dataset: GISS-E2-H-CC, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2010, } # Can't find FX files
+#          - {dataset: GISS-E2-R-CC, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2010, } # Can't find FX files
+          - {dataset: HadGEM2-CC, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1859, end_year: 2005, }
+          - {dataset: HadGEM2-ES, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1859, end_year: 2005, }
+          - {dataset: IPSL-CM5A-LR, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
+          - {dataset: IPSL-CM5A-MR, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
+          - {dataset: IPSL-CM5B-LR, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
+          - {dataset: MIROC-ESM, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
+          - {dataset: MIROC-ESM-CHEM, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
+          - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
+          - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
+          - {dataset: MRI-ESM1, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
+          - {dataset: NorESM1-ME, project: CMIP5, exp: historical, mip: Omon, ensemble: r1i1p1, start_year: 1860, end_year: 2005, }
+    scripts:
+      Regional_Ocean_Surface_mean_timeseries:
+        script: ocean/diagnostic_timeseries.py
+        moving_average: 6 years
+#        title: Primary Organic Carbon Production by Phytoplankton
+#        ylabel: 'intpp_label'
