@@ -4,7 +4,7 @@ attributes:
   dataset_id: ERA5
   project_id: OBS6
   tier: 3
-  version: '1'
+  version: 'v1'
   modeling_realm: reanaly
   source: 'https://www.ecmwf.int/en/forecasts/datasets/reanalysis-datasets/era5'
   reference: 'era5'
