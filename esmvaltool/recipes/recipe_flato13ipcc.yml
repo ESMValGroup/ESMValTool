@@ -8,12 +8,12 @@ documentation:
     9.2, 9.4, 9.5, 9.8, 9.42a.
 
   authors:
-    - bock_ls
-    - laue_ax
-    - schl_ma
+    - bock_lisa
+    - lauer_axel
+    - schlund_manuel
 
   maintainer:
-    - righ_ma
+    - righi_mattia
 
   references:
     - flato13ipcc
@@ -38,9 +38,8 @@ preprocessors:
       exclude: [reference_dataset]
 
   spatial_mean:
-    average_region:
-      coord1: latitude
-      coord2: longitude
+    area_statistics:
+      operator: mean
 
   clim_ref:
     regrid:
@@ -49,7 +48,7 @@ preprocessors:
     multi_model_statistics:
       span: overlap
       statistics: [mean]
-      exclude: [reference_dataset, alternative_dataset]
+      exclude: [reference_dataset]
 
 diagnostics:
 
@@ -618,80 +617,95 @@ diagnostics:
       tas:
         preprocessor: clim_ref
         reference_dataset: HadCRUT4
-        alternative_dataset: HadCRUT4-clim
         mip: Amon
         field: T2Ms
         project: CMIP5
-        exp: historical
+        exp: [historical, rcp45]
         ensemble: r1i1p1
         start_year: 1870
-        end_year: 2004
+        end_year: 2017
     additional_datasets:
       - {dataset: ACCESS1-0}
       - {dataset: ACCESS1-3}
-      - {dataset: bcc-csm1-1}
-      - {dataset: bcc-csm1-1-m}
+      # Historical data end year is 2012, not 2005 (overlaps with RCP4.5)
+      # - {dataset: bcc-csm1-1}
+      # Historical data end year is 2012, not 2005 (overlaps with RCP4.5)
+      # - {dataset: bcc-csm1-1-m}
       - {dataset: BNU-ESM}
-      #- {dataset: CanCM4}
-      - {dataset: CanESM2}
-      - {dataset: CCSM4}
+      # - {dataset: CanCM4}
+      # - {dataset: CanESM2}
+      # rcp starts with year 2005 - not 2006
+      # - {dataset: CCSM4}
       - {dataset: CESM1-BGC}
       - {dataset: CESM1-CAM5}
-      #- {dataset: CESM1-CAM5-1-FV2}
-      - {dataset: CESM1-FASTCHEM}
-      - {dataset: CESM1-WACCM}
-      - {dataset: CMCC-CESM}
+      # - {dataset: CESM1-CAM5-1-FV2}
+      # no rcp45 at DKRZ
+      # - {dataset: CESM1-FASTCHEM}
+      # no historival and rcp45 from the same exp
+      # - {dataset: CESM1-WACCM}
+      # no rcp45 at DKRZ
+      # - {dataset: CMCC-CESM}
       - {dataset: CMCC-CM}
       - {dataset: CMCC-CMS}
-      - {dataset: CNRM-CM5}
-      - {dataset: CNRM-CM5-2}
+      # no rcp45 at DKRZ
+      # - {dataset: CNRM-CM5}
+      # no rcp45 at DKRZ
+      # - {dataset: CNRM-CM5-2}
       - {dataset: CSIRO-Mk3-6-0}
       #- {dataset: EC-EARTH, ensemble: r6i1p1}
       #- {dataset: FGOALS-g2}
       #- {dataset: FGOALS-s2}
       - {dataset: FIO-ESM}
-      - {dataset: GFDL-CM2p1}
+      # Historical data end year is 2040, not 2005 (overlaps with RCP4.5)
+      # - {dataset: GFDL-CM2p1}
       - {dataset: GFDL-CM3}
       - {dataset: GFDL-ESM2G}
       - {dataset: GFDL-ESM2M}
       - {dataset: GISS-E2-H, ensemble: r1i1p2}
-      - {dataset: GISS-E2-H-CC}
+      # Historical data end year is 2010, not 2005 (overlaps with RCP4.5)
+      # - {dataset: GISS-E2-H-CC}
       - {dataset: GISS-E2-R, ensemble: r1i1p2}
-      - {dataset: GISS-E2-R-CC}
+      # Historical data end year is 2010, not 2005 (overlaps with RCP4.5)
+      # - {dataset: GISS-E2-R-CC}
       - {dataset: HadCM3}
       - {dataset: HadGEM2-AO}
-      - {dataset: HadGEM2-CC}
-      - {dataset: HadGEM2-ES}
+      # dataset ends November 2005
+      #- {dataset: HadGEM2-CC}
+      # dataset ends November 2005
+      #- {dataset: HadGEM2-ES}
       - {dataset: inmcm4}
       - {dataset: IPSL-CM5A-LR}
       - {dataset: IPSL-CM5A-MR}
       - {dataset: IPSL-CM5B-LR}
-      #- {dataset: MIROC4h}
-      - {dataset: MIROC5}
+      # - {dataset: MIROC4h}
+      # Historical data end year is 2012, not 2005 (overlaps with RCP4.5)
+      # - {dataset: MIROC5}
       - {dataset: MIROC-ESM}
       - {dataset: MIROC-ESM-CHEM}
       - {dataset: MPI-ESM-LR}
       - {dataset: MPI-ESM-MR}
-      - {dataset: MPI-ESM-P}
+      # no rcp45 at DKRZ
+      # - {dataset: MPI-ESM-P}
       - {dataset: MRI-CGCM3}
-      - {dataset: MRI-ESM1}
+      # no rcp45 at DKRZ
+      # - {dataset: MRI-ESM1}
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
       - {dataset: HadCRUT4, project: OBS, type: ground, version: 1,
          start_year: 1870, end_year: 2017, tier: 2}
-      - {dataset: HadCRUT4-clim, project: OBS, type: ground, version: 1,
-         start_year: 1976, end_year: 1976, tier: 2}
     scripts:
       fig09-8:
         script: ipcc_ar5/tsline.ncl
         time_avg: "yearly"
-        ts_anomaly: "anom"    #"anom" for anomaly-plot else "noanom"
-        ref_start: 1961       #start year of reference period for anomalies
-        ref_end: 1990         #end year of reference period for anomalies
-        range_option: 0
+        ts_anomaly: "anom"
+        ref_start: 1961
+        ref_end: 1990
+        ref_mask: True
         plot_units: "degC"
-        # Plot style
-        styleset: CMIP5
+        y_min: -1.2
+        y_max: 1.5
+        volcanoes: True
+        styleset: CMIP5       # Plot style
 
 
   # **********************************************************************

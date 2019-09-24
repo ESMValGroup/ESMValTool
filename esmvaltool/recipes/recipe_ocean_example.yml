@@ -8,10 +8,10 @@ documentation:
     fields into the ocean. This work based on the BGC-val toolkit GMD-2018-103.
 
   authors:
-    - demo_le
+    - demora_lee
 
   maintainer:
-    - demo_le
+    - demora_lee
 
   references:
     - demora2018gmd
@@ -53,9 +53,8 @@ preprocessors:
   # --------------------------------------------------
   prep_timeseries_1: # For 2D fields
     custom_order: true
-    average_region:
-      coord1: longitude
-      coord2: latitude
+    area_statistics:
+      operator: mean
     multi_model_statistics:
       span: overlap
       statistics: [mean ]
@@ -65,9 +64,8 @@ preprocessors:
     extract_levels:
       levels: [0., 10., 100., 1000.]
       scheme: linear_horizontal_extrapolate_vertical
-    average_region:
-      coord1: longitude
-      coord2: latitude
+    area_statistics:
+      operator: mean
     multi_model_statistics:
       span: overlap
       statistics: [mean ]
@@ -79,9 +77,8 @@ preprocessors:
       end_longitude: 30.
       start_latitude: -80.
       end_latitude: 80.
-    average_region:
-      coord1: longitude
-      coord2: latitude
+    area_statistics:
+      operator: mean
     multi_model_statistics:
       span: overlap
       statistics: [mean ]
@@ -96,18 +93,16 @@ preprocessors:
       end_longitude: 30.
       start_latitude: -80.
       end_latitude: 80.
-    average_region:
-      coord1: longitude
-      coord2: latitude
+    area_statistics:
+      operator: mean
     multi_model_statistics:
       span: overlap
       statistics: [mean ]
 
   prep_timeseries_5: # For Global Volume Averaged
     custom_order: true
-    average_volume:
-      coord1: longitude
-      coord2: latitude
+    volume_statistics:
+      operator: mean
     multi_model_statistics:
       span: overlap
       statistics: [mean ]
@@ -119,9 +114,8 @@ preprocessors:
       end_longitude: 30.
       start_latitude: -80.
       end_latitude: 80.
-    average_volume:
-      coord1: longitude
-      coord2: latitude
+    volume_statistics:
+      operator: mean
     multi_model_statistics:
       span: overlap
       statistics: [mean ]
@@ -136,9 +130,8 @@ preprocessors:
     extract_volume:
       z_min: 0.
       z_max: 100.
-    average_volume:
-      coord1: longitude
-      coord2: latitude
+    volume_statistics:
+      operator: mean
     multi_model_statistics:
       span: overlap
       statistics: [mean ]
@@ -148,14 +141,16 @@ preprocessors:
   # Map preprocessors - 2D fields
   # --------------------------------------------------
   prep_map_1: # For Global 2D fields
-    time_average:
+    climate_statistics:
+      operator: mean
 
   prep_map_2: # For Global 2D fields with regridding
     custom_order: true
     regrid:
       target_grid: 1x1
       scheme: linear
-    time_average:
+    climate_statistics:
+      operator: mean
     multi_model_statistics:
       span: overlap
       statistics: [mean ]
@@ -166,7 +161,8 @@ preprocessors:
     extract_levels:
       levels: [0., 10., 100., 1000.,]
       scheme: linear_horizontal_extrapolate_vertical
-    time_average:
+    climate_statistics:
+      operator: mean
     regrid:
       target_grid: 1x1
       scheme: linear
@@ -181,7 +177,8 @@ preprocessors:
       end_longitude: 30.
       start_latitude: -80.
       end_latitude: 80.
-    time_average:
+    climate_statistics:
+      operator: mean
     regrid:
       target_grid: 1x1
       scheme: linear
@@ -194,7 +191,8 @@ preprocessors:
     extract_levels:
       levels: [0., 10., 100., 1000.,]
       scheme: linear_horizontal_extrapolate_vertical
-    time_average:
+    climate_statistics:
+      operator: mean
     extract_region:
       start_longitude: -80.
       end_longitude: 30.
@@ -211,20 +209,23 @@ preprocessors:
   # Transects preprocessors
   # --------------------------------------------------
   prep_transect_1: # For extracting along a trajectory
-    time_average:
+    climate_statistics:
+      operator: mean
     extract_trajectory:
       latitudes: [-5., 5.,]
       longitudes: [332.,332.]
       number_points: 4              # VERY SLOW with high numbers!
 
   prep_transect_2: # For extracting a transect
-    time_average:
+    climate_statistics:
+      operator: mean
     extract_transect: # Pacific Equator
       latitude: 0.
       longitude: [120., 300.]
 
   prep_transect_3: # For extracting a transect
-    time_average:
+    climate_statistics:
+      operator: mean
     extract_transect: # Atlantic Meridional Transect
       latitude: [-50.,50.]
       longitude: 332.
@@ -233,9 +234,8 @@ preprocessors:
   # Depth-profile preprocessors
   # --------------------------------------------------
   prep_profile_1: # For a global profile
-    average_region:
-      coord1: longitude
-      coord2: latitude
+    area_statistics:
+      operator: mean
 
   prep_profile_2: # For a regional profile
     extract_region:
@@ -246,16 +246,17 @@ preprocessors:
     extract_volume:
       z_min: 0.
       z_max: 100.
-    average_region:
-      coord1: longitude
-      coord2: latitude
+    area_statistics:
+      operator: mean
+
 
   # --------------------------------------------------
   # Depth-profile preprocessors
   # --------------------------------------------------
   prep_depth_integration_1: # For a 2D map global profile
     depth_integration:
-    time_average:
+    climate_statistics:
+      operator: mean
 
 
 diagnostics:

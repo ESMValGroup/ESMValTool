@@ -21,10 +21,11 @@ import os
 
 # to manipulate iris cubes
 import iris
+import matplotlib.pyplot as plt
 
 # import internal esmvaltool modules here
 from esmvaltool.diag_scripts.shared import group_metadata, run_diagnostic
-from esmvalcore.preprocessor import average_region
+from esmvalcore.preprocessor import area_statistics
 
 
 def _plot_time_series(cfg, cube, dataset):
@@ -118,7 +119,7 @@ def run_my_diagnostic(cfg):
         # compute an area average over the squared cube
         # to apply the area average use a preprocessor function
         # rather than writing your own function
-        area_avg_cube = average_region(squared_cube, 'latitude', 'longitude')
+        area_avg_cube = area_statistics(squared_cube, 'mean')
 
         # finalize your analysis by plotting a time series of the
         # diffed, squared and area averaged cube; call the plot function:

@@ -7,10 +7,10 @@ documentation:
     variability (Cox et al., 2018).
 
   authors:
-    - schl_ma
+    - schlund_manuel
 
   maintainer:
-    - schl_ma
+    - schlund_manuel
 
   references:
     - cox18nature
@@ -22,9 +22,8 @@ documentation:
 preprocessors:
 
   spatial_mean:
-    average_region:
-      coord1: latitude
-      coord2: longitude
+    area_statistics:
+      operator: mean
 
 
 diagnostics:
