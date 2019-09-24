@@ -20,4 +20,4 @@ variables:
   sm:
     mip: E6hr
     raw: vsw
-    file: uerra_200801.nc
+    file: uerra_??????.nc
