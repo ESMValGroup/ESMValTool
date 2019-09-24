@@ -35,9 +35,12 @@ variables:
         total_precipitation
 
     Downloading ERA5 data can either be done via the Climate Data Store (cds)
-web form or era5cli:
+    web form or era5cli:
         $pip install era5cli
         $era5cli hourly --variables total_precipitation --startyear 1990
+
+    Check out the docs at https://era5cli.readthedocs.io/en/latest/ for detailed
+    instructions about installation, registration at CDS, configuration, etc.
 
 """
 
