@@ -49,8 +49,8 @@ A list of the datasets for which a cmorizers is available is provided in the fol
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | Eppley-VGPM-MODIS            | intpp (Omon)                                                                                         |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
-| ERA5                         | clt, evspsbl, evspsblpot, mrro, pr, prsn, psl, rls, rsds, rsdt, rss, uas, vas, tas, tasmax, tasmin,  |   3  | Python          |
-|                              | tdps, ts, tsn (E1hr)                                                                          |      |      |                 |
+| ERA5                         | cliwi, clt, evspsbl, evspsblpot, lwp, mrro, pr, prsn, prw, psl, rls, rsds, rsdt, rss, tas,           |   3  | Python          |
+|                              | tasmax, tasmin, tdps, ts, tsn, uas, vas (E1hr)                                                       |      |                 |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | ERA-Interim                  | clivi, clt, clwvi, hfds, hur, hus, pr, prw, ps, psl, ta, tas, tauu, tauv, ts, ua, va, wap, zg (Amon) |   3  | NCL             |
 |                              | pr, psl, tas, tasmin, tasmax, zg (day), sftlf (fx), tos (Omon)                                       |      |                 |
