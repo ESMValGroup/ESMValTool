@@ -469,28 +469,25 @@ diagnostics:
   ERA5:
     description: ERA5 check check
     variables:
-      clivi:
       clt:
       evspsbl:
       evspsblpot:
-      lwp:
       mrro:
       pr:
       prsn:
-      prw:
       psl:
       rls:
       rsds:
       rsdt:
       rss:
+      uas:
+      vas:
       tas:
       tasmax:
       tasmin:
       tdps:
       ts:
       tsn:
-      uas:
-      vas:
     additional_datasets:
       - {project: OBS6, dataset: ERA5, mip: E1hr,
          frequency: 1hr, tier: 3, type: reanaly, version: 1,
