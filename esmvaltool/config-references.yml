@@ -666,7 +666,7 @@ references:
   esacci-ozone: "Loyola et al., Int. J. Remote Sens. doi:10.1080/01431160902825016, 2009."
   esacci-soilmoisture: "Not available."
   esacci-sst: "Merchant et al., Geosci. Data J., doi:10.1002/gdj3.20, 2014."
-  fluxcom-gpp-ann: "Jung et al., Sci. Data, doi:10.1038/s41597-019-0076-8, 2019"
+  fluxcom: "Jung et al., Sci. Data, doi:10.1038/s41597-019-0076-8, 2019."
   hadisst: "Rayner et al., J. Geophys. Res., doi:10.1029/2002JD002670, 2013."
   lai3g: "Zhu et al., Remote Sens., 5, doi:10.3390/rs5020927, 2013."
   landflux-eval: "Mueller, B. et al., Hydrol. Earth Syst. Sci., 17, 3707-3720, doi:10.5194/hess-17-3707-2013, 2013."
