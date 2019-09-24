@@ -105,7 +105,8 @@ def _extract_variable(in_file, var, cfg, out_dir):
 
     # Set global attributes
     utils.set_global_atts(cube, attributes)
-
+    
+    # Here var_name is the raw era-interim name
     if cube.var_name in {'e', 'sf'}:
         # Change evaporation and snowfall units from
         # 'm of water equivalent' to m
@@ -143,14 +144,14 @@ def _extract_variable(in_file, var, cfg, out_dir):
         coord.points = coord.core_points().astype('float64')
         if len(coord.points) > 1:
             coord.guess_bounds()
-
+    # Here var_name is the CMIP name
     # era-interim is in 3hr or 6hr or 12hr freq need to convert to daily
     if var['mip'] in {'day', 'Eday', 'CFday'}:
         if cube.var_name == 'tasmax':
             cube = daily_statistics(cube, 'max')
         elif cube.var_name == 'tasmin':
             cube = daily_statistics(cube, 'min')
-        elif cube.var_name in {'pr', 'rsds', 'hfds',
+        elif cube.var_name in {'pr', 'rsds', 'hfds', 'evspsbl',
                                'rsdt', 'rss', 'prsn'}:
             # Sum is not available in daily_statistics so call iris directly
             if not cube.coords('day_of_year'):
