@@ -110,7 +110,7 @@ def _extract_variable(in_file, var, cfg, out_dir):
         # Change evaporation and snowfall units from
         # 'm of water equivalent' to m
         cube.units = 'm'
-    if cube.var_name in {'e', 'ro', 'sf', 'tp', 'pev'}:
+    if cube.var_name in {'e', 'sf', 'tp', 'pev'}:
         # Change units from meters per day of water to kg of water per day
         cube.units = cube.units * 'kg m-3 day-1'
         cube.data = cube.core_data() * 1000.
