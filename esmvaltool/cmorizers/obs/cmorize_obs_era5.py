@@ -33,6 +33,9 @@ variables:
         toa_incident_solar_radiation
         total_cloud_cover
         total_precipitation
+        total_column_water_vapour
+        total_column_cloud_ice_water
+        total_column_cloud_liquid_water
 
     Downloading ERA5 data can either be done via the Climate Data Store (cds)
 web form or era5cli:
