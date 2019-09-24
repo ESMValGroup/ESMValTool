@@ -91,7 +91,7 @@ def main(cfg):
 
     #TODO move these parameters to config file
     metrics_to_calculate = ['pearsonr', 'rmsd', 'absdiff', 'reldiff']
-    reference_dataset = 'CDS-SATELLITE-SOIL-MOISTURE'
+    reference_dataset = 'cds-era5-land-monthly'
 
     # Get a description of the preprocessed data that we will use as input.
     input_data = cfg['input_data'].values()

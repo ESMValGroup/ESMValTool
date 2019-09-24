@@ -14,7 +14,6 @@ import cf_units
 import iris
 import itertools as it
 import warnings
-from basaux import freqchecker
 
 from esmvaltool.diag_scripts.shared import (group_metadata, run_diagnostic,
                                             select_metadata, sorted_metadata)

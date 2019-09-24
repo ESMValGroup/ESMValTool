@@ -3,32 +3,32 @@ sm:
     title : pearsonr
     vmin : -1.
     vmax : 1.
-    cmap : RdYlBu
+    cmap : BrBG
   rmsd:
     title : rmsd
     vmin : 0.
     vmax : 1.
-    cmap : YlOrBr
+    cmap : YlGn
   absdiff:
     title : absdiff
     vmin : -.5
     vmax : .5
-    cmap : RdYlBu
+    cmap : BrBG
   reldiff:
      title : reldiff
-     cmap : RdYlBu
+     cmap : BrBG
      vmin : -150
      vmax : 150
   theilsenmk:
      title : theilsen
-     cmap : RdYlBu
+     cmap : BrBG
      vmin : -0.001
      vmax : 0.001
   timemean:
      title : timemean
-     cmap : YlOrBr
-     vmin : 0.0
-     vmax : 0.5
+     cmap : YlGn
+     vmin : 0.
+     vmax : 0.
 
 lai:
   pearsonr:
