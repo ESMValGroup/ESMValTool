@@ -19,5 +19,5 @@ custom:
 variables:
   sm:
     mip: E6hr
-    raw: vsw 
-    file: uerra_??????.nc
+    raw: vsw
+    file: uerra_201801.nc
