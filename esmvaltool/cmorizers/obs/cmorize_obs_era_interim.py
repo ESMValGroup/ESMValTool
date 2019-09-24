@@ -138,7 +138,6 @@ def _extract_variable(in_file, var, cfg, out_dir):
 
     # Set global attributes
     utils.set_global_atts(cube, attributes)
-    
     # Here var_name is the raw era-interim name
     if cube.var_name in {'e', 'sf'}:
         # Change evaporation and snowfall units from
@@ -179,11 +178,14 @@ def _extract_variable(in_file, var, cfg, out_dir):
             coord.guess_bounds()
     # Here var_name is the CMIP name
     # era-interim is in 3hr or 6hr or 12hr freq need to convert to daily
+    # only variables with step 12 need removing the first day of next year
     if var['mip'] in {'day', 'Eday', 'CFday'}:
         if cube.var_name == 'tasmax':
             cube = daily_statistics(cube, 'max')
+            cube = cube[:-1] # removing the first day of next year
         elif cube.var_name == 'tasmin':
             cube = daily_statistics(cube, 'min')
+            cube = cube[:-1] # removing the first day of next year
         elif cube.var_name in {'pr', 'rsds', 'hfds', 'evspsbl',
                                'rsdt', 'rss', 'prsn'}:
             # Sum is not available in daily_statistics so call iris directly
@@ -193,6 +195,7 @@ def _extract_variable(in_file, var, cfg, out_dir):
                 iris.coord_categorisation.add_year(cube, 'time')
             cube = cube.aggregated_by(['day_of_year', 'year'],
                                       iris.analysis.SUM)
+            cube = cube[:-1] # removing the first day of next year
         else:
             cube = daily_statistics(cube, 'mean')
         # Remove daily statistics helpers
@@ -211,9 +214,6 @@ def _extract_variable(in_file, var, cfg, out_dir):
     # Make latitude increasing
     cube = cube[:, ::-1, ...]
 
-    # removing the first day of next year
-    if var['mip'] in {'day', 'Eday', 'CFday'}:
-        cube = cube[:-1]
     # Fix time unit to days
     # cube.coord('time').convert_units(Unit('days since 1950-1-1 00:00:00',
     #                                       calendar='gregorian'))
