@@ -4,9 +4,11 @@ import os
 from pprint import pformat
 from sharedutils import parallel_apply_along_axis
 from diag1d import theilslopes1d, mannkendall1d
-from mpqb_plots import mpqb_mapplot, get_plot_config
+from mpqb_plots import mpqb_mapplot, get_ecv_plot_config
 import numpy as np
 from esmvalcore.preprocessor._time import annual_statistics
+from esmvaltool.diag_scripts.shared._base import get_diagnostic_filename
+
 
 import cf_units
 import iris
@@ -87,7 +89,7 @@ def main(cfg):
             # Plot the results (if configured to plot)
             plot_file = get_plot_filename(metricname+'_'+dataset, cfg)
             if cfg['write_plots']:
-                metrics_plot_dictionary = get_plot_config(dataset_cfg[0]['short_name'])
+                metrics_plot_dictionary = get_ecv_plot_config(dataset_cfg[0]['short_name'])
                 mpqb_mapplot(resultcube, plot_file, **metrics_plot_dictionary[metricname])
             logger.info("Finished aux plots for dataset: {0}".format(dataset))
     logger.info("Finished!")

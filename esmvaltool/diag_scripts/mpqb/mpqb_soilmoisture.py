@@ -6,7 +6,7 @@ from sharedutils import parallel_apply_along_axis
 from diag1d import *
 import numpy as np
 
-from mpqb_plots import mpqb_mapplot, metrics_plot_dictionary
+from mpqb_plots import mpqb_mapplot, get_ecv_plot_config
 import iris
 import itertools as it
 import warnings
@@ -70,7 +70,7 @@ class mpqb_pair:
                 'plot_file' : plot_file
             }
 
-            metrics_plot_dictionary = get_plot_config(self.ds_cfg[self.ds1][0]['short_name'])
+            metrics_plot_dictionary = get_ecv_plot_config(self.ds_cfg[self.ds1][0]['short_name'])
             mpqb_mapplot(cube, plot_file, **metrics_plot_dictionary[metricname])
 
             logger.info("Recording provenance of %s:\n%s", diagnostic_file,

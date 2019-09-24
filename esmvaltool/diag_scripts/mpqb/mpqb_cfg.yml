@@ -1,0 +1,63 @@
+sm:
+  pearsonr:
+    title : pearsonr
+    vmin : -1.
+    vmax : 1.
+    cmap : RdYlBu
+  rmsd:
+    title : rmsd,
+    vmin : 0.
+    vmax : 1.
+    cmap : YlOrBr
+  absdiff:
+    title : absdiff
+    vmin : -.5
+    vmax : .5
+    cmap : RdYlBu
+  reldiff:
+     title : reldiff
+     cmap : RdYlBu
+     vmin : -150
+     vmax : 150
+  theilsenmk:
+     title : theilsen
+     cmap : RdYlBu
+     vmin : -0.001
+     vmax : 0.001
+  timemean:
+     title : timemean
+     cmap : YlOrBr
+     vmin : 0.0
+     vmax : 0.5
+
+lai:
+  pearsonr:
+    title : pearsonr
+    vmin : -1.
+    vmax : 1.
+    cmap : BrBG
+  rmsd:
+    title : rmsd,
+    vmin : 0.
+    vmax : 1.
+    cmap : YlOrBr
+  absdiff:
+    title : absdiff
+    vmin : -.5
+    vmax : .5
+    cmap : BrBG
+  reldiff:
+     title : reldiff
+     cmap : BrBG
+     vmin : -150
+     vmax : 150
+  theilsenmk:
+     title : theilsen
+     cmap : BrBG
+     vmin : -0.05
+     vmax : 0.05
+  timemean:
+     title : timemean
+     cmap : YlOrBr
+     vmin : 0.0
+     vmax : 0.5
