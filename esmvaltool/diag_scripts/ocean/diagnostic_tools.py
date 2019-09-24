@@ -557,7 +557,7 @@ def get_image_path(
 
 def make_cube_layer_dict(cube):
     """
-    Take a cube and return a dictionairy layer:cube
+    Take a cube and return a dictionairy layer:cube.
 
     Each item in the dict is a layer with a separate cube for each layer.
     ie: cubes[depth] = cube from specific layer

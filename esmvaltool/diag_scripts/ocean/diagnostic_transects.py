@@ -549,8 +549,7 @@ def multi_model_contours(
 
 def main(cfg):
     """
-    Load the config file and some metadata, then pass them the plot making
-    tools.
+    Load the config file and some metadata, make the plots.
 
     Parameters
     ----------

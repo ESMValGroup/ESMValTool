@@ -138,35 +138,35 @@ def moving_average(cube, window):
 
     times = cube.coord('time').units.num2date(cube.coord('time').points)
 
-    datetime = diagtools.guess_calendar_datetime(cube)
+    cal_dt = diagtools.guess_calendar_datetime(cube)
 
     output = []
 
     times = np.array([
-        datetime(time_itr.year, time_itr.month, time_itr.day, time_itr.hour,
-                 time_itr.minute) for time_itr in times
+        cal_dt(time_itr.year, time_itr.month, time_itr.day, time_itr.hour,
+               time_itr.minute) for time_itr in times
     ])
 
     for time_itr in times:
         if win_units in ['years', 'yrs', 'year', 'yr']:
-            tmin = datetime(time_itr.year - window_len, time_itr.month,
-                            time_itr.day, time_itr.hour, time_itr.minute)
-            tmax = datetime(time_itr.year + window_len, time_itr.month,
-                            time_itr.day, time_itr.hour, time_itr.minute)
+            tmin = cal_dt(time_itr.year - window_len, time_itr.month,
+                          time_itr.day, time_itr.hour, time_itr.minute)
+            tmax = cal_dt(time_itr.year + window_len, time_itr.month,
+                          time_itr.day, time_itr.hour, time_itr.minute)
 
         if win_units in ['months', 'month', 'mn']:
-            tmin = datetime(time_itr.year, time_itr.month - window_len,
-                            time_itr.day, time_itr.hour, time_itr.minute)
-            tmax = datetime(time_itr.year, time_itr.month + window_len,
-                            time_itr.day, time_itr.hour, time_itr.minute)
+            tmin = cal_dt(time_itr.year, time_itr.month - window_len,
+                          time_itr.day, time_itr.hour, time_itr.minute)
+            tmax = cal_dt(time_itr.year, time_itr.month + window_len,
+                          time_itr.day, time_itr.hour, time_itr.minute)
 
         if win_units in ['days', 'day', 'dy']:
-            tmin = datetime(time_itr.year, time_itr.month,
-                            time_itr.day - window_len, time_itr.hour,
-                            time_itr.minute)
-            tmax = datetime(time_itr.year, time_itr.month,
-                            time_itr.day + window_len, time_itr.hour,
-                            time_itr.minute)
+            tmin = cal_dt(time_itr.year, time_itr.month,
+                          time_itr.day - window_len, time_itr.hour,
+                          time_itr.minute)
+            tmax = cal_dt(time_itr.year, time_itr.month,
+                          time_itr.day + window_len, time_itr.hour,
+                          time_itr.minute)
 
         arr = np.ma.masked_where((times < tmin) + (times > tmax), cube.data)
         output.append(arr.mean())
@@ -196,19 +196,14 @@ def calculate_anomaly(cube, anomaly):
     """
     start_year = int(np.array(anomaly).min())
     end_year = int(np.array(anomaly).max())
-    start_month = 1
-    end_month = 12
-    start_day = 1
-    end_day = 31
 
+    end_day = 31
     time_units = cube.coord('time').units
     if time_units.calendar == '360_day':
-        start_day = 30
         end_day = 30
 
-    start_date = datetime.datetime(
-        int(start_year), int(start_month), int(start_day))
-    end_date = datetime.datetime(int(end_year), int(end_month), int(end_day))
+    start_date = datetime.datetime(int(start_year), 1, 1)
+    end_date = datetime.datetime(int(end_year), 12, end_day)
 
     t_1 = time_units.date2num(start_date)
     t_2 = time_units.date2num(end_date)
@@ -265,7 +260,6 @@ def make_time_series_plots(
             cube_layer = moving_average(cube_layer, cfg['moving_average'])
 
         if 'anomaly' in cfg:
-
             cube_layer = calculate_anomaly(cube_layer, cfg['anomaly'])
             if cube_layer is None:
                 return
@@ -342,7 +336,6 @@ def multi_model_time_series(
         The metadata dictionairy for a specific model.
 
     """
-
     ####
     # Load the data for each layer as a separate cube
     model_cubes = {}
@@ -384,7 +377,7 @@ def multi_model_time_series(
             if 'anomaly' in cfg:
                 cube = calculate_anomaly(cube, cfg['anomaly'])
                 if cube is None:
-                    logger.warning('Not enough time for anomaly calculation %s',
+                    logger.warning('Not enough time to calculate anomaly: %s',
                                    metadata[filename]['dataset'])
                     continue
 
@@ -477,8 +470,7 @@ def multi_model_time_series(
 
 def main(cfg):
     """
-    Load the config file and some metadata, then pass them the plot making
-    tools.
+    Load the config file and some metadata, then make plots.
 
     Parameters
     ----------
