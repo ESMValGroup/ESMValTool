@@ -29,6 +29,39 @@ Download and processing instructions
     A registration is required for downloading the data.
     It is alo possible to use the script in:
     esmvaltool/cmorizers/obs/download_scripts/download_era-interim.py
+    This cmorization script currently supports daily and monthly data of
+the following variables:
+        10m u component of wind
+        10m v component of wind
+        2m dewpoint temperature
+        2m temperature
+        evaporation
+        maximum 2m temperature since previous post processing
+        mean sea level pressure
+        minimum 2m temperature since previous post processing
+        skin temperature
+        snowfall
+        surface net solar radiation
+        surface solar radiation downwards
+        temperature of snow layer
+        toa incident solar radiation
+        total cloud cover
+        total precipitation
+        Geopotential
+        Relative humidity
+        Temperature
+        U component of wind
+        V component of wind
+        Vertical velocity
+        specific humidity
+
+and monthly data of:
+        Inst. eastward turbulent surface stress
+        Inst. northward turbulent surface stress
+        Sea surface temperature
+        Surface net thermal radiation
+        Surface latent heat flux
+        Surface sensible heat flux
 
 Caveats
     Make sure to select the right steps for accumulated fluxes, see:
