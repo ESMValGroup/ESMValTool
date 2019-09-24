@@ -17,7 +17,7 @@ def get_ecv_plot_config(ecv_name):
 
 def mpqb_mapplot(cube,filename,**plotkwargs):
     plottitle = plotkwargs.pop('title')
-    fig = plt.figure()
+    fig = plt.figure(dpi=200)
     ax = fig.add_subplot(projection=iris.plot.default_projection(cube))
     iris.quickplot.pcolormesh(cube,**plotkwargs)
     plt.gca().coastlines()

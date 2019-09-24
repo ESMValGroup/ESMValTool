@@ -14,6 +14,7 @@ import cf_units
 import iris
 import itertools as it
 import warnings
+from basaux import freqchecker
 
 from esmvaltool.diag_scripts.shared import (group_metadata, run_diagnostic,
                                             select_metadata, sorted_metadata)
@@ -26,7 +27,6 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 def theilsenmk(cube):
     template = cube.collapsed('time', iris.analysis.MEAN)
-    cube = annual_statistics(cube, operator='mean')
     indata = cube.data.filled(np.nan)
     theilsendata = parallel_apply_along_axis(theilslopes1d, 0, indata)
     outcube = template.copy()
