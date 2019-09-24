@@ -112,17 +112,17 @@ def _extract_variable(in_file, var, cfg, out_dir):
         cube.units = 'm'
     if cube.var_name in {'e', 'ro', 'sf', 'tp', 'pev'}:
         # Change units from meters per day of water to kg of water per day
-        cube.units = cube.units * 'kg m-3 d-1'
-        cube.data = cube.core_data() * 1000
+        cube.units = cube.units * 'kg m-3 day-1'
+        cube.data = cube.core_data() * 1000.
     if cube.var_name in {'ssr', 'ssrd', 'tisr'}:
         # Add missing 'per day'
-        cube.units = cube.units * 'd-1'
+        cube.units = cube.units * 'day-1'
         # Radiation fluxes are positive in downward direction
         cube.attributes['positive'] = 'down'
     if cube.var_name in {'lsm', 'tcc'}:
         # Change cloud cover units from fraction to percentage
         cube.units = definition.units
-        cube.data = cube.core_data() * 100
+        cube.data = cube.core_data() * 100.
     if cube.var_name in {'z'}:
         cube.data = cube.core_data() / G
 
