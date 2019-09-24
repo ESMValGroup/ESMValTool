@@ -10,7 +10,7 @@ attributes:
   project_id: OBS6
   source: 'https://cds.climate.copernicus.eu/cdsapp#!/dataset/reanalysis-uerra-europe-soil-levels?tab=form'
   reference: 'cds-uerra-reanalysis'
-  comment: ''
+  comment: 'This dataset has been regridded for usage in ESMValTool'
 
 custom:
   regrid: 0.25x0.25
@@ -20,4 +20,4 @@ variables:
   sm:
     mip: E6hr
     raw: vsw
-    file: uerra_201801.nc
+    file: uerra_??????.nc

@@ -83,7 +83,7 @@ def _cmorize_dataset(in_file, var, cfg, out_dir):
 
     logger.info("Saving CMORized cube for variable %s", cube.var_name)
     utils.save_variable(cube, cube.var_name, out_dir, attributes)
-    import IPython;IPython.embed()
+
     return in_file
 
 
