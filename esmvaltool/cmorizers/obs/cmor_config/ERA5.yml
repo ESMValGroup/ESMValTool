@@ -89,3 +89,15 @@ variables:
     mip: E1hr
     raw: tsn
     file: 'era5_temperature_of_snow_layer_*_hourly.nc'
+  prw:
+    mip: E1hr
+    raw: tcwv
+    file: 'era5_total_column_water_vapour_*_hourly.nc'
+  clivi:
+    mip: E1hr
+    raw: tciw
+    file: 'era5_total_column_cloud_ice_water_*_hourly.nc'
+  lwp:
+    mip: E1hr
+    raw: tclw
+    file: 'era5_total_column_cloud_liquid_water_*_hourly.nc'
