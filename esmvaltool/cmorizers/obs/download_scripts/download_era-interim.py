@@ -87,6 +87,7 @@ day_params = [
     ('144.128', 'sf', 'accu'),  #Snowfall
     ('176.128', 'ssr', 'accu'),  #Surface net solar radiation
     ('169.128', 'ssrd', 'accu'),  #Surface solar radiation downwards
+    ('205.128', 'ro', 'accu'),  #Runoff
     ('238.128', 'tsn', 'an'),  #Temperature of snow layer
     ('212.128', 'tisr', 'accu'),  #TOA incident solar radiation
     ('164.128', 'tcc', 'an'),  #Total cloud cover
@@ -149,6 +150,7 @@ month_params = [
     ('144.128', 'sf', 'accu'),  #Snowfall
     ('176.128', 'ssr', 'accu'),  #Surface net solar radiation
     ('169.128', 'ssrd', 'accu'),  #Surface solar radiation downwards
+    ('205.128', 'ro', 'accu'),  #Runoff
     ('238.128', 'tsn', 'an'),  #Temperature of snow layer
     ('212.128', 'tisr', 'accu'),  #TOA incident solar radiation
     ('164.128', 'tcc', 'an'),  #Total cloud cover
