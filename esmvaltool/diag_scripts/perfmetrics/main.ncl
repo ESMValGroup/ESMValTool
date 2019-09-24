@@ -365,7 +365,7 @@ begin
 
         ; Provenance information
         statistics = "smpi"
-        authors = (/"gier_be", "hass_bg"/)
+        authors = (/"gier_bettina", "hassler_birgit"/)
         references = (/"rk2008bams"/)
 
       else
