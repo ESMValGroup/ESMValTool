@@ -166,7 +166,7 @@ begin
                  "Russell et al 2018 figure 7h" , \
                  "mean", \
                  "sh", \
-                 "geo", \
+                 "zonal", \
                  " ", \
                  (/""/), \
                   infile_path )
