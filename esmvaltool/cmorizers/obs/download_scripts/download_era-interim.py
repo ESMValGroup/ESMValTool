@@ -15,6 +15,7 @@ Before running the script:
 4. Copy/paste the text in https://api.ecmwf.int/v1/key/ into a blank text file and save it as $HOME/.ecmwfapirc
 5. Use ESMValCore/esmvalcore/config-user.yml as an template and set the rootpath of the output directory in RAWOBS
 6. check the description of the variables at https://apps.ecmwf.int/codes/grib/param-db
+7. check the invariant variables at https://apps.ecmwf.int/datasets/data/interim-full-invariant
 
 ```bash
 python download_era-interim.py -c config-user.yml --start_year 2000 --end_year 2000
@@ -108,7 +109,7 @@ for no, symbol, timestep in day_params:
             'format': 'netcdf',
             'target': f'{erainterim_dir}/ERA-Interim_{symbol}_{fr}_{year}.nc',
             **day_timesteps[timestep]
-        })
+            })
 
 month_timesteps = {
     'accu': {
@@ -192,6 +193,7 @@ for no, symbol, timestep in month_params:
 
 invariant_params = [
     ('172.128', 'lsm'),  # Land-sea mask
+    ('129.128', 'z'),  # Geopotential
 ]
 
 for no, symbol in invariant_params:
