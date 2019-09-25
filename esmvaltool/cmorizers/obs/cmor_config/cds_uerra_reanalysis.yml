@@ -3,13 +3,13 @@
 # Common global attributes for Cmorizer output
 attributes:
   frequency: 6h
-  dataset_id: CDS-UERRA-REANALYSIS
+  dataset_id: CDS-UERRA
   version: 'UERRA-HARMONIE'
   tier: 3
   modeling_realm: reanaly
   project_id: OBS6
   source: 'https://cds.climate.copernicus.eu/cdsapp#!/dataset/reanalysis-uerra-europe-soil-levels?tab=form'
-  reference: 'cds-uerra-reanalysis'
+  reference: 'cds-uerra'
   comment: 'This dataset has been regridded for usage in ESMValTool'
 
 custom:

@@ -70,6 +70,10 @@ def _cmorize_dataset(in_file, var, cfg, out_dir):
 
     cube = utils.fix_coords(cube)
 
+    # The above command does not return bounds for longitude
+    # so explicitly get them here. 
+    cube.coord('longitude').guess_bounds()
+
     # Set correct names
     cube.var_name = definition.short_name
 
