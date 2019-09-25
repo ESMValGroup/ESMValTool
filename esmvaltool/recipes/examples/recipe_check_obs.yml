@@ -311,6 +311,14 @@ diagnostics:
     scripts: null
 
 
+  CDS-UERRA:
+    description: CDS-UERRA check
+    variables:
+      sm:
+    additional_datasets:
+      - { dataset: cds-uerra-reanalysis, type: reanaly, project: OBS, mip: Lmon, version: UERRA-HARMONIE, tier: 3, start_year: 1979, end_year: 2018}
+
+
   CDS-XCH4:
     description: CDS-XCH4 check
     variables:
