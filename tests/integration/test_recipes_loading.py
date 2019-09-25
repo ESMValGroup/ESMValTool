@@ -1,29 +1,23 @@
 """Test recipes are well formed."""
 
-import glob
 import os
 
 import iris
 import pytest
 import numpy as np
 
+from pathlib import Path
+
 import esmvalcore
+import esmvaltool
 from esmvalcore._recipe import read_recipe_file
 
 from .test_diagnostic_run import write_config_user_file
 
 
 def _get_recipes():
-    recipes_path = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)),
-        '..',
-        '..',
-        'esmvaltool',
-        'recipes',
-    )
-    recipes_path = os.path.abspath(recipes_path)
-    recipes = glob.glob(os.path.join(recipes_path, '*.yml'))
-    recipes += glob.glob(os.path.join(recipes_path, 'examples', '*.yml'))
+    recipes_path = Path(esmvaltool.__file__).absolute().parent / 'recipes'
+    recipes = recipes_path.glob("**/recipe*.yml")
     return recipes
 
 
