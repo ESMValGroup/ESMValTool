@@ -11,7 +11,7 @@ Last access
     20190905
 
 Download and processing instructions
-    Select "Era Interim Fields":
+    Select "ERA Interim Fields":
         Daily: for daily values
         Invariant: for time invariant variables (like land-sea mask)
         Monthly Means of Daily Means: for monthly values
@@ -47,13 +47,6 @@ the following variables:
         toa incident solar radiation
         total cloud cover
         total precipitation
-        Geopotential
-        Relative humidity
-        Temperature
-        U component of wind
-        V component of wind
-        Vertical velocity
-        specific humidity
 
 and monthly data of:
         Inst. eastward turbulent surface stress
@@ -74,25 +67,19 @@ Caveats
     new years to a previous version of the data.
 
 """
-from calendar import monthrange
-from datetime import datetime, timedelta
+from datetime import datetime
 import logging
 from concurrent.futures import as_completed, ProcessPoolExecutor
 from copy import deepcopy
 from os import cpu_count
 from pathlib import Path
-from statistics import mean
 from warnings import catch_warnings, filterwarnings
 
 import iris
 import numpy as np
-from cf_units import Unit
 
 from esmvalcore.cmor.table import CMOR_TABLES
-from esmvalcore.preprocessor import extract_month, daily_statistics
-from iris.coord_categorisation import add_month_number
-
-from esmvaltool.cmorizers.obs.utilities import fix_coords
+from esmvalcore.preprocessor import daily_statistics
 from . import utilities as utils
 
 logger = logging.getLogger(__name__)
@@ -214,34 +201,7 @@ def _extract_variable(in_file, var, cfg, out_dir):
     # Make latitude increasing
     cube = cube[:, ::-1, ...]
 
-    # Fix time unit to days
-    # cube.coord('time').convert_units(Unit('days since 1950-1-1 00:00:00',
-    #                                       calendar='gregorian'))
-    # TODO mip=mon shifted from 1 day of month to mid month
-    # if var['mip'] in {'Amon', '0Mon'}:
-    #     cube.coord('time').points = [
-    #         cube.coord('time').units.date2num(
-    #             cell.point + timedelta(days=mean(monthrange(cell.point.year, cell.point.month)))
-    #         )
-    #         for cell in cube.coord('time').cells()
-    #     ]
-    # TODO mip=day shifted from 00:00:00 to 12:00:00
-    # if var['mip'] in {'day', 'Eday'}:
-    #     cube.coord('time').points = [
-    #         cube.coord('time').units.date2num(
-    #             cell.point + timedelta(hours=12)
-    #         )
-    #         for cell in cube.coord('time').cells()
-    #     ]
-
-    # For daily data write a netcdf for each month
-    # if var['mip'] == 'fx':
-    #     # Drop time dimension for fx variables
-    #     if len(cube.coord('time').points) == 1:
-    #         cube = cube.extract(iris.Constraint(time=cube.coord('time').cell(0)))
-    #         # TODO file name still contains year because of time coord,
-    #         #  dropping time coord causes save_variable to fail
-    #         # cube.remove_coord('time')
+    # TODO add support for 3d variables
 
     logger.info("Saving cube\n%s", cube)
     logger.info("Expected output size is %.1fGB",
