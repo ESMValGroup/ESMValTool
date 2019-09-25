@@ -17,8 +17,7 @@ Before running the script:
 6. check the description of the variables at https://apps.ecmwf.int/codes/grib/param-db
 
 ```bash
-python download_era-interim.py -c config-user.yml
-cmorize_obs -c config-user.yml
+python download_era-interim.py -c config-user.yml --start_year 2000 --end_year 2000
 ```
 ''')
 parser.add_argument('--config_file', '-c',
@@ -171,6 +170,7 @@ month_params = [
     ('132.128', 'v', '3d'),  #V component of wind
     ('135.128', 'w', '3d'),  #Vertical velocity
     ('133.128', 'q', '3d'),  #Specific humidity
+    ('129.128', 'z', '3d'),  # Geopotential
 ]
 
 
