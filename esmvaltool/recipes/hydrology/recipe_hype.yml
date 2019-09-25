@@ -1,0 +1,39 @@
+# ESMValTool
+# recipe_pcrglobwb.yml
+---
+documentation:
+  description: |
+    Recipe pre-processes ERA-Interim reanalyses files for use in the Hype hydrological model.
+
+
+  authors: ['pelupessy_inti']
+  projects: ['ewatercycle']
+  references: ['acknow_project']
+
+
+datasets:
+  - {dataset: ERA-Interim, project: OBS, tier: 3, type: reanaly, version: 1}
+
+preprocessors:
+  preprocessor:
+    extract_shape:
+      shapefile: HYPE_Shapefiles/Meuse_HYPE/Meuse_HYPE.shp
+      method: contains
+      decomposed: True
+    area_statistics:
+      operator: mean
+
+
+diagnostics:
+  diagnostic1:
+    description: PCR-GLOBWB input preprocessor
+    variables:
+      tas: &var
+        mip: day
+        start_year: 1979
+        end_year: 1979
+        preprocessor: preprocessor
+      pr: *var
+    scripts:
+      script:
+        script: hydrology/hype.py
