@@ -598,7 +598,7 @@ begin
                     "Russell et al 2018 figure 6 part a" , \
                     "mean", \
                     "sh",   \
-                    "geo",  \
+                    (/"bar","vert"/),  \
                     "russ_jo", \
                     "russell18jgr", \
             (/ vo_inputfile_paths(iii) , thetao_inputfile_paths(iii), so_inputfile_paths(iii) /)  )
