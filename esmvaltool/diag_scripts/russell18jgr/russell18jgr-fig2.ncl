@@ -158,7 +158,7 @@ begin
                  "Russell et al 2018 figure 2" , \
                  "mean", \
                  "sh", \
-                 "geo", \
+                 "zonal", \
                  "russ_jo", \
                  "russell18jgr", \
                   infile_path )
