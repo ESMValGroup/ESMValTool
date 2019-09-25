@@ -203,7 +203,7 @@ begin
                    "Russell et al 2018 figure 5g" , \
                    "mean", \
                    "sh",   \
-                   "geo",  \
+                   "times",  \
                    "russ_jo", \
                    "russell18jgr", \
                    infile_path )
