@@ -28,7 +28,7 @@ sm:
      title : timemean
      cmap : YlGn
      vmin : 0.
-     vmax : 0.
+     vmax : 0.6
 
 lai:
   pearsonr:
