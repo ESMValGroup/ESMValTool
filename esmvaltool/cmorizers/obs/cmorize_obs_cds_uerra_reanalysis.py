@@ -1,4 +1,4 @@
-"""ESMValTool CMORizer for cds-uerra-reanalysis version UERRA-HARMONIE.
+"""ESMValTool CMORizer for CDS-UERRA version UERRA-HARMONIE.
 
 Tier
    Tier 3
@@ -16,11 +16,13 @@ Download and processing instructions
       - Tick all available years
       - Tick all available months
       - Tick all available days
+      - Tick all available timesteps
    - Click 'submit form'
    - According to ESMValTool practice, put them in the right rawobsdir folder
 
 Notes
 -----
+   - It might be needed to split up the request into smaller chunks
    - This script uses the xesmf regridder, which is not standard included in
      ESMValTool, install it in the esmvaltool environment:
            conda install -c conda-forge xesmf
