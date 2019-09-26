@@ -1,7 +1,7 @@
 .. _outputdata:
 
 ******
-Output
+Inspecting the output
 ******
 
 ESMValTool automatically generates a new output directory with every run. The

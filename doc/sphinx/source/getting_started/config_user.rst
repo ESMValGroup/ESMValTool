@@ -1,7 +1,7 @@
 .. _config-user:
 
 ***********************
-User configuration file
+Configuring ESMValTool
 ***********************
 
 The ``config-user.yml`` configuration file contains all the global level
