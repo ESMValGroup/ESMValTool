@@ -1,5 +1,6 @@
 
 import iris
+import matplotlib
 import matplotlib.pyplot as plt
 import copy
 import yaml
@@ -19,6 +20,11 @@ def mpqb_mapplot(cube,filename,**plotkwargs):
     plottitle = plotkwargs.pop('title')
     fig = plt.figure(dpi=200)
     ax = fig.add_subplot(projection=iris.plot.default_projection(cube))
+    # replace the cmap key with the cmap object, and add grey shading for masked values
+    cmapname = plotkwargs.pop('cmap')
+    cmap = matplotlib.cm.get_cmap(cmapname)
+    cmap.set_bad("grey", 0.1)
+    plotkwargs['cmap'] = cmap
     iris.quickplot.pcolormesh(cube,**plotkwargs)
     plt.gca().coastlines()
     plt.title(plottitle)
