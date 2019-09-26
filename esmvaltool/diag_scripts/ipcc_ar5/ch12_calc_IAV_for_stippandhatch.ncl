@@ -391,7 +391,7 @@ begin
     ; # Output to netCDF                        #
     ; ###########################################
     outfile = "IAV_mmm_piControl_" + \
-      + var0 + "_" + diag_script_info@time_avg + ".nc"
+      var0 + "_" + diag_script_info@time_avg + ".nc"
 
     IAV_mmm@diag_script = (/DIAG_SCRIPT/)
     IAV_mmm@var = "iav"
