@@ -1,0 +1,53 @@
+# ESMValTool
+# recipe_python.yml
+# ---
+documentation:
+  description: |
+    Example recipe that plots the mean precipitation and temperature.
+
+  authors:
+    - bock_lisa
+
+  references:
+    - acknow_project
+
+
+datasets:
+  - &cmip3 {dataset: bccr_bcm2_0,  institute: BCCR, project: CMIP3,  mip: A1,  modeling_realm: atm,  exp: 20c3m,  frequency: mo, ensemble: run1,  start_year: 1997,  end_year: 1999}
+  - {<<: *cmip3, dataset: cccma_cgcm3_1, institute: CCCMA}
+  - {<<: *cmip3, dataset: cccma_cgcm3_1_t63, institute: CCCMA}
+  - {<<: *cmip3, dataset: csiro_mk3_0, institute: CSIRO}
+  #- {<<: *cmip3, dataset: gfdl_cm2_0, institute: GFDL}
+  #- {<<: *cmip3, dataset: gfdl_cm2_1, institute: GFDL}
+  - {<<: *cmip3, dataset: giss_aom, institute: NASA}
+  - {<<: *cmip3, dataset: giss_model_e_h, institute: NASA}
+  - {<<: *cmip3, dataset: giss_model_e_r, institute: NASA}
+  - {<<: *cmip3, dataset: iap_fgoals1_0_g, institute: LASG}
+  - {<<: *cmip3, dataset: ingv_echam4, institute: INGV}
+  - {<<: *cmip3, dataset: inmcm3_0, institute: INM}
+  - {<<: *cmip3, dataset: ipsl_cm4, institute: IPSL}
+  - {<<: *cmip3, dataset: miroc3_2_hires, institute: NIES}
+  - {<<: *cmip3, dataset: miroc3_2_medres, institute: NIES}
+  #- {<<: *cmip3, dataset: miub_echo_g, institute: MIUB-KMA}
+  - {<<: *cmip3, dataset: mpi_echam5, institute: MPIM}
+  #- {<<: *cmip3, dataset: mri_cgcm2_3_2a, institute: MRI}
+  - {<<: *cmip3, dataset: ncar_ccsm3_0, institute: NCAR}
+  - {<<: *cmip3, dataset: ncar_pcm1, institute: NCAR} 
+  - {<<: *cmip3, dataset: ukmo_hadcm3, institute: UKMO} 
+  - {<<: *cmip3, dataset: ukmo_hadgem1, institute: UKMO}
+
+preprocessors:
+  clim:
+    climate_statistics:
+      period: 'season'
+
+diagnostics:
+  sit_anom:
+    description: Computes the negative seaice feedback 
+    variables:
+      tas:
+        mip: A1
+        frequency: mon
+        modeling_realm: atmos
+        preprocessor: clim
+    scripts: null
