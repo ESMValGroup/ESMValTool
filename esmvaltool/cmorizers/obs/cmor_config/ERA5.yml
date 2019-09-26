@@ -17,18 +17,46 @@ variables:
     mip: E1hr
     raw: tcc
     file: 'era5_total_cloud_cover_*_hourly.nc'
+  evspsbl:
+    mip: E1hr
+    raw: e
+    file: 'era5_evaporation_*_hourly.nc'
   evspsblpot:
     mip: E1hr
     raw: pev
     file: 'era5_potential_evaporation_*_hourly.nc'
+  mrro:
+    mip: E1hr
+    raw: ro
+    file: 'era5_runoff_*_hourly.nc'
   pr:
     mip: E1hr
     raw: tp
     file: 'era5_total_precipitation_*_hourly.nc'
+  prsn:
+    mip: E1hr
+    raw: sf
+    file: 'era5_snowfall_*_hourly.nc'
   psl:
     mip: E1hr
     raw: msl
     file: 'era5_mean_sea_level_pressure_*_hourly.nc'
+  rls:
+    mip: E1hr
+    raw: msnlwrf
+    file: 'era5_mean_surface_net_long_wave_radiation_flux_*_hourly.nc'
+  rsds:
+    mip: E1hr
+    raw: ssrd
+    file: 'era5_surface_solar_radiation_downwards_*_hourly.nc'
+  rsdt:
+    mip: E1hr
+    raw: tisr
+    file: 'era5_toa_incident_solar_radiation_*_hourly.nc'
+  rss:
+    mip: E1hr
+    raw: ssr
+    file: 'era5_surface_net_solar_radiation_*_hourly.nc'
   uas:
     mip: E1hr
     raw: u10
@@ -41,6 +69,14 @@ variables:
     mip: E1hr
     raw: t2m
     file: 'era5_2m_temperature_*_hourly.nc'
+  tasmax:
+    mip: E1hr
+    raw: mx2t
+    file: 'era5_maximum_2m_temperature_since_previous_post_processing_*_hourly.nc'
+  tasmin:
+    mip: E1hr
+    raw: mn2t
+    file: 'era5_minimum_2m_temperature_since_previous_post_processing_*_hourly.nc'
   tdps:
     mip: E1hr
     raw: d2m
