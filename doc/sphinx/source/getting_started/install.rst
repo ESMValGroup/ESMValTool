@@ -69,9 +69,6 @@ It is also possible to work in one of the ESMValTool private repositories, e.g.:
 By default, this command will create a folder called ESMValTool containing the
 source code of the tool.
 
-If you're planning to contribute to ESMValTool, you might want to select an
-alternative branch, e.g. ``version2_development``.
-
 GitHub also allows to download the source code in as a tar.gz or zip file. If
 you choose to use this option, download the compressed file and extract its
 contents at the desired location.
