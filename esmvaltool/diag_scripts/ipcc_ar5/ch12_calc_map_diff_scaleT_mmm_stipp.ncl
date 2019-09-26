@@ -58,8 +58,7 @@ begin
   ; ##############################################################
   enter_msg(DIAG_SCRIPT, "")
 
-  ; 'datasets', 'variables' and 'field_types' are fetched from the
-  ; above 'interface.ncl' file
+  ; 'datasets', 'variables' are fetched from the above 'interface.ncl' file
   var0 = variable_info[0]@short_name
   info_items = select_metadata_by_name(input_file_info, var0)
   dim_MOD = ListCount(info_items)

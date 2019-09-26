@@ -60,10 +60,8 @@ begin
   ; ##############################################################
   enter_msg(DIAG_SCRIPT, "")
 
-  ; 'datasets', 'variables' and 'field_types' are fetched from the
-  ; above 'interface.ncl' file
+  ; 'datasets', 'variables' are fetched from the above 'interface.ncl' file
   var0 = variable_info[0]@short_name
-  field_type0 = variable_info[0]@field
   info_items = select_metadata_by_name(input_file_info, var0)
   dim_MOD = ListCount(info_items)
   dim_VAR = ListCount(variable_info)
@@ -218,7 +216,7 @@ begin
         iav_file = addfile(input_dir + "/" + \
                            "IAV_piControl_" + \
                            info_items[imod]@dataset + "_" + \
-                           info_items[imod]@ensemble + "_" + field_type0 \
+                           info_items[imod]@ensemble + "_" \
                            + "_" + var0 + "_" + \
                            diag_script_info@time_avg + ".nc", "r")
         iav_native = iav_file->iav
@@ -252,7 +250,7 @@ begin
       log_info("Read precalculated natural variability for multi-model")
       ; read already calculated mmm iav
       natvar_file = addfile(input_dir + "/" + \
-                            "IAV_mmm_piControl_" + field_type0 + \
+                            "IAV_mmm_piControl_" + \
                             "_" + var0 + "_" + diag_script_info@time_avg + \
                             ".nc", "r")
       natvar_mmm = natvar_file->iav
@@ -275,7 +273,7 @@ begin
     log_info("Read precalculated natural variability for multi-model")
     ; read already calculated mmm iav
     natvar_file = addfile(input_dir + "/" + \
-                          "IAV_mmm_piControl_" + field_type0 + \
+                          "IAV_mmm_piControl_" + \
                           "_" + var0 + "_" + diag_script_info@time_avg + \
                           ".nc", "r")
     natvar_mmm = natvar_file->iav

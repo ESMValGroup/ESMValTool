@@ -96,7 +96,6 @@ diagnostics:
     variables:
       tas:
         mip: Amon
-        field: T2Ms
         project: CMIP5
         ensemble: r1i1p1
         exp: historical
@@ -160,7 +159,6 @@ diagnostics:
         project: CMIP5
         ensemble: r1i1p1
         mip: Amon
-        field: T2Ms
         exp: historical
     additional_datasets:
       - {dataset: bcc-csm1-1-m,     start_year: 1850, end_year: 2005}
@@ -408,7 +406,6 @@ diagnostics:
         project: CMIP5
         ensemble: r1i1p1
         mip: Amon
-        field: T2Ms
         exp: historical
     additional_datasets:
       - {dataset: CanESM2,       start_year: 1850, end_year: 2005}
@@ -504,7 +501,6 @@ diagnostics:
     variables:
       rlut:
         mip: Amon
-        field: T2Ms
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
@@ -601,7 +597,6 @@ diagnostics:
     variables:
       rtmt:
         mip: Amon
-        field: T2Ms
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
@@ -702,7 +697,6 @@ diagnostics:
         preprocessor: preproc_map
         project: CMIP5
         mip: Amon
-        field: T2Ms
         exp: piControl
         ensemble: r1i1p1
     additional_datasets:
@@ -748,7 +742,6 @@ diagnostics:
         project: CMIP5
         ensemble : r1i1p1
         mip: Amon
-        field: T2Ms
     additional_datasets:
       - {dataset: GFDL-ESM2G, exp: historical, start_year: 1986, end_year: 2005}
       - {dataset: MPI-ESM-LR, exp: historical, start_year: 1986, end_year: 2005}
@@ -834,7 +827,6 @@ diagnostics:
         preprocessor: preproc_map
         project: CMIP5
         mip: Amon
-        field: T2Ms
         exp: piControl
         ensemble: r1i1p1
     additional_datasets:
@@ -875,7 +867,6 @@ diagnostics:
         project: CMIP5
         ensemble: r1i1p1
         mip: Amon
-        field: T2Ms
         exp: historical
     additional_datasets:
       - {dataset: CSIRO-Mk3-6-0, start_year: 1986, end_year: 2005}
@@ -967,7 +958,6 @@ diagnostics:
         preprocessor: preproc_map
         project: CMIP5
         mip: Amon
-        field: T2Ms
         exp: piControl
         ensemble: r1i1p1
     additional_datasets:
@@ -1020,7 +1010,6 @@ diagnostics:
         project: CMIP5
         ensemble: r1i1p1
         mip: Amon
-        field: T2Ms
         exp: historical
     additional_datasets:
 
@@ -1106,7 +1095,6 @@ diagnostics:
         preprocessor: preproc_map
         project: CMIP5
         mip: Amon
-        field: T2Ms
         exp: piControl
         ensemble: r1i1p1
     additional_datasets:
@@ -1159,7 +1147,6 @@ diagnostics:
         project: CMIP5
         ensemble: r1i1p1
         mip: Amon
-        field: T2Ms
         exp: historical
     additional_datasets:
 
@@ -1247,7 +1234,6 @@ diagnostics:
         preprocessor: preproc_map
         project: CMIP5
         mip: Amon
-        field: T2Ms
         exp: piControl
         ensemble: r1i1p1
     additional_datasets:
@@ -1300,7 +1286,6 @@ diagnostics:
         project: CMIP5
         ensemble: r1i1p1
         mip: Amon
-        field: T2Ms
         exp: historical
     additional_datasets:
 
@@ -1388,7 +1373,6 @@ diagnostics:
         preprocessor: preproc_map
         project: CMIP5
         mip: Amon
-        field: T2Ms
         exp: piControl
         ensemble: r1i1p1
     additional_datasets:
@@ -1432,7 +1416,6 @@ diagnostics:
         project: CMIP5
         ensemble : r1i1p1
         mip: Amon
-        field: T2Ms
     additional_datasets:
       - {dataset: GFDL-ESM2G, exp: historical, start_year: 1986, end_year: 2005}
       - {dataset: MPI-ESM-LR, exp: historical, start_year: 1986, end_year: 2005}
@@ -1518,7 +1501,6 @@ diagnostics:
         preprocessor: preproc_map
         project: CMIP5
         mip: Amon
-        field: T2Ms
         exp: piControl
         ensemble: r1i1p1
     additional_datasets:
@@ -1562,7 +1544,6 @@ diagnostics:
         project: CMIP5
         ensemble : r1i1p1
         mip: Amon
-        field: T2Ms
     additional_datasets:
       - {dataset: GFDL-ESM2G, exp: historical, start_year: 1986, end_year: 2005}
       - {dataset: MPI-ESM-LR, exp: historical, start_year: 1986, end_year: 2005}
@@ -1652,7 +1633,6 @@ diagnostics:
         preprocessor: preproc_map
         project: CMIP5
         mip: Amon
-        field: T2Ms
         exp: piControl
         ensemble: r1i1p1
     additional_datasets:
@@ -1704,7 +1684,6 @@ diagnostics:
         project: CMIP5
         ensemble: r1i1p1
         mip: Amon
-        field: T2Ms
     additional_datasets:
       - {dataset: CESM1-CAM5, exp: historical, start_year: 1986, end_year: 2005}
       - {dataset: GFDL-ESM2G, exp: historical, start_year: 1986, end_year: 2005}
@@ -1789,7 +1768,6 @@ diagnostics:
         preprocessor: preproc_map
         project: CMIP5
         mip: Omon
-        field: T2Ms
         exp: piControl
         ensemble: r1i1p1
     additional_datasets:
@@ -1831,7 +1809,6 @@ diagnostics:
         project: CMIP5
         ensemble: r1i1p1
         mip: Omon
-        field: T2Ms
         exp: historical
     additional_datasets:
       - {dataset: CSIRO-Mk3-6-0,  start_year: 1986, end_year: 2005}
@@ -1943,7 +1920,6 @@ diagnostics:
         reference_dataset: CanESM2
         project: CMIP5
         mip: Amon
-        field: T3Ms
         ensemble: r1i1p1
         exp: piControl
     additional_datasets:
@@ -1981,7 +1957,6 @@ diagnostics:
         reference_dataset: CanESM2
         project: CMIP5
         mip: Amon
-        field: T3Ms
         ensemble: r1i1p1
     additional_datasets:
       - {dataset: CanESM2,    exp: historical, start_year: 1986, end_year: 2005}
@@ -2062,7 +2037,6 @@ diagnostics:
         reference_dataset: CanESM2
         project: CMIP5
         mip: Amon
-        field: T3Ms
         exp: piControl
         ensemble: r1i1p1
     additional_datasets:
@@ -2100,7 +2074,6 @@ diagnostics:
         reference_dataset: CanESM2
         project: CMIP5
         mip: Amon
-        field: T3Ms
         ensemble: r1i1p1
     additional_datasets:
       - {dataset: CanESM2,    exp: historical, start_year: 1986, end_year: 2005}
@@ -2188,7 +2161,6 @@ diagnostics:
         preprocessor: preproc_ocean
         project: CMIP5
         mip: Omon
-        field: T3Ms
         exp: piControl
         ensemble: r1i1p1
     additional_datasets:
@@ -2224,7 +2196,6 @@ diagnostics:
         reference_dataset: CanESM2
         project: CMIP5
         mip: Omon
-        field: T3Ms
         ensemble: r1i1p1
         exp: historical
     additional_datasets:
@@ -2297,7 +2268,6 @@ diagnostics:
         preprocessor: preproc_map_land
         project: CMIP5
         mip: Lmon
-        field: T2Ms
         exp: piControl
         ensemble: r1i1p1
         fx_files: [sftlf, sftgif]
@@ -2336,7 +2306,6 @@ diagnostics:
         preprocessor: preproc_map_land
         project: CMIP5
         mip: Lmon
-        field: T2Ms
         ensemble: r1i1p1
         exp: historical
         fx_files: [sftlf, sftgif]
@@ -2445,7 +2414,6 @@ diagnostics:
         preprocessor: preproc_map_land
         project: CMIP5
         mip: Lmon
-        field: T2Ms
         exp: piControl
         ensemble: r1i1p1
         fx_files: [sftlf, sftgif]
@@ -2499,7 +2467,6 @@ diagnostics:
         project: CMIP5
         ensemble: r1i1p1
         mip: Lmon
-        field: T2Ms
         exp: historical
         fx_files: [sftlf, sftgif]
     additional_datasets:
@@ -2607,7 +2574,6 @@ diagnostics:
         preprocessor: preproc_map
         project: CMIP5
         mip: Amon
-        field: T2Ms
         exp: piControl
         ensemble: r1i1p1
     additional_datasets:
@@ -2660,7 +2626,6 @@ diagnostics:
         project: CMIP5
         ensemble: r1i1p1
         mip: Amon
-        field: T2Ms
         exp: historical
     additional_datasets:
       - {dataset: CanESM2,       start_year: 1986, end_year: 2005}
@@ -2772,7 +2737,6 @@ diagnostics:
         project: CMIP5
         ensemble: r1i1p1
         mip: Amon
-        field: T2Ms
         exp: historical
     additional_datasets:
       - {dataset: CCSM4,        start_year: 1986, end_year: 2005}
@@ -2872,14 +2836,12 @@ diagnostics:
         preprocessor: preproc_map
         project: CMIP5
         mip: Amon
-        field: T2Ms
         ensemble: r1i1p1
         exp: historical
       pr:
         preprocessor: preproc_map
         project: CMIP5
         mip: Amon
-        field: T2Ms
         ensemble: r1i1p1
         exp: historical
     additional_datasets:
@@ -2977,7 +2939,6 @@ diagnostics:
       snw:
         project: CMIP5
         mip: LImon
-        field: T2Ms
         ensemble: r1i1p1
         exp: historical
         fx_files: [sftlf, sftgif]

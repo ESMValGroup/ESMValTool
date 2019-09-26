@@ -39,10 +39,8 @@ begin
   ; ##############################################################
   enter_msg(DIAG_SCRIPT, "")
 
-  ; 'datasets', 'variables' and 'field_types' are fetched from the
-  ; above 'interface.ncl' file
+  ; 'datasets', 'variables' are fetched from the above 'interface.ncl' file
   var0 = variable_info[0]@short_name
-  field_type0 = variable_info[0]@field
   info_items = select_metadata_by_name(input_file_info, var0)
   dim_MOD = ListCount(info_items)
   dim_VAR = ListCount(variable_info)
@@ -199,7 +197,7 @@ begin
         log_info("Read natural variability for stippling for each model")
         iav_file = addfile(input_dir + "/" + "IAV_piControl_" + \
                            info_items[imod]@dataset + "_" +  \
-                           info_items[imod]@ensemble + "_" + field_type0 + \
+                           info_items[imod]@ensemble + "_" + \
                            "_" + var0 + "_" + diag_script_info@time_avg + \
                            ".nc", "r")
         if ((dim_seas .eq. 1) .and. \
@@ -225,7 +223,7 @@ begin
     else if (diag_script_info@iavmode .eq. "mmm") then
       log_info("Read precalculated natural variability for multi-model")
       natvar_file = addfile(input_dir + "/" + "IAV_mmm_piControl_" + \
-                            field_type0 + "_" + var0 + "_" + \
+                            var0 + "_" + \
                             diag_script_info@time_avg + ".nc", "r")
       natvar_mmm = natvar_file->iav
       if ((dim_seas .ne. 4) .and. \
@@ -247,7 +245,7 @@ begin
     ; Read already calculated mmm iav as default
     log_info("Read precalculated natural variability for multi-model")
     natvar_file = addfile(input_dir + "/" + "IAV_mmm_piControl_" + \
-                          field_type0 + "_" + var0 + "_" + \
+                          var0 + "_" + \
                           diag_script_info@time_avg + ".nc", "r")
     natvar_mmm = natvar_file->iav
     if ((dim_seas .ne. 4) .and. \
