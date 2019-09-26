@@ -1,8 +1,8 @@
 .. _inputdata:
 
-**********
+********************
 Acquiring input data
-**********
+********************
 
 ESMValTool accepts input data from various models as well as
 observations and reanalysis data, provided that they adhere to the

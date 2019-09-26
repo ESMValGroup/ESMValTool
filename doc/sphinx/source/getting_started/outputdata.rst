@@ -1,8 +1,8 @@
 .. _outputdata:
 
-******
+*********************
 Inspecting the output
-******
+*********************
 
 ESMValTool automatically generates a new output directory with every run. The
 location is determined by the output_dir option  in the config-user.yml file,
