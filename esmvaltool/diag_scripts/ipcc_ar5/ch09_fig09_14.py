@@ -365,7 +365,7 @@ def produce_plots(config, data):
     all_lines = ref_ls + lines
     all_labels = ref_labels + labels
     legend = draw_legend(fig, all_lines, all_labels)
-    path = get_plot_filename('ch09_fig09_14', config)
+    path = get_plot_filename('fig-9-14', config)
     fig.savefig(path, additional_artists=[legend], tight_layout=True)
     return path
 
@@ -376,7 +376,7 @@ def write_data(config, data):
                                + data['zonal_mean_errors']
                                + data['equatorials']
                                + data['equatorial_errors'])
-    path = get_diagnostic_filename('ch09_fig09_14', config)
+    path = get_diagnostic_filename('fig-9-14', config)
     iris.save(cubes, path)
     return path
 

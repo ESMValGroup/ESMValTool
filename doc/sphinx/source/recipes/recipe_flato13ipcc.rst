@@ -264,7 +264,7 @@ Example plots
    described in Jones et al., 2013.
 
 .. _fig_flato13ipcc_5:
-.. figure:: /recipes/figures/flato13ipcc/ch09_fig09_14.png
+.. figure:: /recipes/figures/flato13ipcc/fig-9-14.png
    :align: center
 
    Fig. 9.14: (a) Zonally averaged sea surface temperature (SST) error
