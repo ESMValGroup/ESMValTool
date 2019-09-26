@@ -94,7 +94,7 @@ begin
   ; Check dimensions
   dims = getvardims(A0)
   ndim = dimsizes(dims)
-  
+
   if (ndim .lt. 3) then
     error_msg("f", DIAG_SCRIPT, "", dimsizes(dims) + " dimensions, " + \
               "need 3 or 4")
