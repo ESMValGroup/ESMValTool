@@ -1890,31 +1890,78 @@ begin
 
   plot(0) = gsn_csm_xy(wks, source_x, source, res)  ; create plot
 
-  ; Add right panel with mean values in anomaly plot
+  if (diag_script_info@ts_anomaly .eq. "anom") then
 
-  var = fspan(0., 2., 3)
-  mean = new((/dimsizes(source_mean), 3/), double)
-  mean(:, 0) = source_mean(:)
-  mean(:, 1) = source_mean(:)
-  mean(:, 2) = source_mean(:)
+    if (diag_script_info@ref_value) then
+      ; Add right panel with mean values in anomaly plot
 
-  plot2 = gsn_csm_xy(wks, var, mean, res0)  ; create plot
+      var = fspan(0., 2., 3)
+      mean = new((/dimsizes(source_mean), 3/), double)
+      mean(:, 0) = source_mean(:)
+      mean(:, 1) = source_mean(:)
+      mean(:, 2) = source_mean(:)
+
+      plot2 = gsn_csm_xy(wks, var, mean, res0)  ; create plot
+    end if
+
+    ; ---------------------------------------------------------------------
+    ; yellow shading of reference period
+    ; ---------------------------------------------------------------------
+    gsres                = True
+    gsres@gsFillColor    = "yellow"
+    gsres@gsFillOpacityF = 0.1
+    xbox = (/ref_start, ref_end, ref_end, ref_start, ref_start/)
+    ybox = (/res@trYMinF, res@trYMinF, res@trYMaxF, res@trYMaxF, res@trYMinF/)
+    newplot00 = gsn_add_polygon(wks, plot(0), xbox, ybox, gsres)
+
+    txtres               = True
+    txtres@txFont        = "helvetica-bold"
+    txtres@txFontColor   = "yellow3"
+    txtres@txFontHeightF = 0.013
+    ref_txt = gsn_add_text(wks, plot, "reference period", \
+                           (ref_start + ref_end) / 0.5, -1., txtres)
+
+  end if
 
   ; ---------------------------------------------------------------------
-  ; Procedure to attach a box to the given plot, given the lower left
-  ; corner, width, color, and opacity.
+  ; add lines and names for volcanic eruptions
   ; ---------------------------------------------------------------------
-  gsres                = True
-  gsres@gsFillColor    = "yellow"
-  gsres@gsFillOpacityF = 0.1
-  xbox = (/ref_start, ref_end, ref_end, ref_start, ref_start/)
-  ybox = (/res@trYMinF, res@trYMinF, res@trYMaxF, res@trYMaxF, res@trYMinF/)
-  newplot00 = gsn_add_polygon(wks, plot(0), xbox, ybox, gsres)
+  if (diag_script_info@volcanoes .eq. True) then
+    vres = True
+    vres@gsLineColor       = "grey20"
+    vres@gsLineThicknessF  = 1.
+    vres@gsLineDashPattern = 2.
+    txres               = True
+    txres@txAngleF      = 90
+    txres@txFont        = "helvetica-bold"
+    txres@txFontColor   = "grey20"
+    txres@txFontHeightF = 0.013
 
-  ; Draw some lines to create a legend
+    yy = (/res@trYMinF, res@trYMaxF/)
+
+    vol_name1 = gsn_add_text(wks, plot, "Krakatoa", 1885, 1.1, txres)
+    xx = (/1883.0, 1883.0/)
+    vol1 = gsn_add_polyline(wks, plot(0), xx, yy, vres)
+    vol_name2 = gsn_add_text(wks, plot, "Santa Maria", 1904, 1.1, txres)
+    xx = (/1902.0, 1902.0/)
+    vol2 = gsn_add_polyline(wks, plot(0), xx, yy, vres)
+    vol_name3 = gsn_add_text(wks, plot, "Agung", 1965, 1.1, txres)
+    xx = (/1963.0, 1963.0/)
+    vol3 = gsn_add_polyline(wks, plot(0), xx, yy, vres)
+    vol_name4 = gsn_add_text(wks, plot, "El Chichon", 1984, 1.1, txres)
+    xx = (/1982.0, 1982.0/)
+    vol4 = gsn_add_polyline(wks, plot(0), xx, yy, vres)
+    vol_name5 = gsn_add_text(wks, plot, "Pinatubo", 1993, 1.1, txres)
+    xx = (/1991.0, 1991.0/)
+    vol5 = gsn_add_polyline(wks, plot(0), xx, yy, vres)
+  end if
+
+  ; ---------------------------------------------------------------------
+  ; add line at 0.0
+  ; ---------------------------------------------------------------------
   res_lines                   = True      ; polyline mods desired
   res_lines@tfPolyDrawOrder   = "Predraw"
-  res_lines@gsLineColor       = "grey"    ; line color
+  res_lines@gsLineColor       = "grey20"  ; line color
   res_lines@gsLineThicknessF  = 1.        ; line thicker
   res_lines@gsLineDashPattern = 1.        ; dash pattern
 
@@ -1935,16 +1982,6 @@ begin
   lgres@lgPerimColor       = "gray"    ; draw the box perimeter in orange
   lgres@lgPerimThicknessF  = 1.0       ; thicken the box perimeter
 
-  if (.not.isatt(diag_script_info, "EMs_in_lg")) then
-    diag_script_info@EMs_in_lg = True  ; Set default
-  end if
-  if (.not.diag_script_info@EMs_in_lg) then
-    idcs_modelnames = annots
-    colors := colors(idcs_modelnames)
-    dashes := dashes(idcs_modelnames)
-    thicks := thicks(idcs_modelnames)
-    annots := models@name(idcs_modelnames)
-  end if
   lgres@lgLineColors      = colors
   lgres@lgDashIndexes     = dashes
   lgres@lgLineThicknesses = thicks + 0.5
