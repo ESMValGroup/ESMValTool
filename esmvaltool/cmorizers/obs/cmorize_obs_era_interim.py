@@ -84,11 +84,6 @@ from . import utilities as utils
 
 logger = logging.getLogger(__name__)
 
-# Acceleration of gravity [m s-2],
-# required for surface geopotential height, see:
-# https://confluence.ecmwf.int/pages/viewpage.action?pageId=79955800
-G = 9.80665
-
 
 def _extract_variable(in_file, var, cfg, out_dir):
     logger.info("CMORizing variable '%s' from input file '%s'",
@@ -144,7 +139,11 @@ def _extract_variable(in_file, var, cfg, out_dir):
         cube.units = definition.units
         cube.data = cube.core_data() * 100.
     if cube.var_name in {'z'}:
-        cube.data = cube.core_data() / G
+        # Divide by acceleration of gravity [m s-2],
+        # required for surface geopotential height, see:
+        # https://confluence.ecmwf.int/pages/viewpage.action?pageId=79955800
+        cube.units = cube.units / 'm s-2'
+        cube.data = cube.core_data() / 9.80665
 
     # Set correct names
     cube.var_name = definition.short_name
