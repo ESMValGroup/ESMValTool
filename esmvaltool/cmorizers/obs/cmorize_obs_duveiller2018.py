@@ -49,7 +49,7 @@ def fix_time_coord_duveiller2018(cube):
     # Create arrays for storing datetime objects
     custom_time = np.zeros((12), dtype=object)
     custom_time_bounds = np.empty((12, 2), dtype=object)
-    custom_time_units = 'days since 1950-01-01'
+    custom_time_units = 'days since 1950-01-01 00:00:00.0'
 
     # Now fill the object arrays defined above with datetime objects
     # corresponding to correct time and time_bnds
