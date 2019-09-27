@@ -181,23 +181,26 @@ for (i in 1 : length(model_names)) {
   ncvar_put(file, defdata, seas_data_cf_all)
   nc_close(file)
 
-# Set provenance for output files
+  # Set provenance for output files
   xprov <- list(ancestors = list(fullpath_filenames[i],
-                              file.path(script_dirname, power_curves[1]),
-                              file.path(script_dirname, power_curves[2]),
-                              file.path(script_dirname, power_curves[3]),
-                              file.path(script_dirname, power_curves[4]),
-                              file.path(script_dirname, power_curves[5])),
-                  authors = list("hunt_al", "pere_nu", "manu_ni", "lled_ll",
-                                 "caro_lo", "bojo_dr", "gonz_nu"),
-                  projects = list("c3s-magic"),
-                  caption = title,
-                  statistics = list("other"),
-                  realms = list("atmos"),
-                  themes = list("phys"),
-                  plot_file = filepng)
+                            file.path(script_dirname, power_curves[1]),
+                            file.path(script_dirname, power_curves[2]),
+                            file.path(script_dirname, power_curves[3]),
+                            file.path(script_dirname, power_curves[4]),
+                            file.path(script_dirname, power_curves[5])),
+                authors = list("hunter_alasdair", "perez-zanon_nuria",
+                               "manubens_nicolau", "lledo_llorenc",
+                               "caron_louis-philippe", "bojovic_dragana",
+                               "gonzalez-reviriego_nube"),
+                projects = list("c3s-magic"),
+                caption = title,
+                statistics = list("other"),
+                realms = list("atmos"),
+                themes = list("phys"),
+                plot_file = filepng)
 
   provenance[[filencdf]] <- xprov
 }
+
 # Write provenance to file
 write_yaml(provenance, provenance_file)
