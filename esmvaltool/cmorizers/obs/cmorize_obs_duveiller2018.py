@@ -136,7 +136,6 @@ def cmorization(in_dir, out_dir, cfg, _):
         inpfile = os.path.join(in_dir, vals['file'])
         logger.info("CMORizing var %s from file %s", var, inpfile)
         var_info = cmor_table.get_variable(vals['mip'], var)
-        print("var = ", var)
         raw_info = {'name': vals['raw'], 'file': inpfile, 'iTr': vals['iTr']}
         glob_attrs['mip'] = vals['mip']
         with catch_warnings():
