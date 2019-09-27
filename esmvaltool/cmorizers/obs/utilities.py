@@ -228,6 +228,19 @@ def var_name_constraint(var_name):
     return iris.Constraint(cube_func=lambda c: c.var_name == var_name)
 
 
+def _fix_bounds(cube, dim_coord):
+    """Reset and fix all bounds."""
+    if len(cube.coord(dim_coord).points) > 1:
+        if cube.coord(dim_coord).has_bounds():
+            cube.coord(dim_coord).bounds = None
+        cube.coord(dim_coord).guess_bounds()
+
+    if cube.coord(dim_coord).has_bounds():
+        cube.coord(dim_coord).bounds = da.array(
+            cube.coord(dim_coord).core_bounds(), dtype='float64')
+    return cube
+
+
 def _fix_dim_coordnames(cube):
     """Perform a check on dim coordinate names."""
     # first check for CMOR standard coord;
