@@ -14,43 +14,15 @@ datasets:
 preprocessors:
   preprocessor:
     regrid:
-      target_grid: 0.1x0.1 # or use area.nc grid specification?
+      target_grid: 0.1x0.1 # We're using the lisflood01degree version
       lon_offset: true
       lat_offset: true
       scheme: nearest
     extract_shape:
-      shapefile: ??????
+      shapefile: rhine_meuse_hydrosheds.shp # In aux folder of config-user.yml
       method: contains
-
-# All preprocessing steps as following by the scripts in git repo:
-#------------------------------------------------------------------
-# There is a python script in the lisflood installation on the jupyter server:
-# pre_process/catchment.py , which combines multiple shapefiles into one big
-# raster file with masked/unmasked fields. This is probably not possible
-# with ESMValTool preprocessor, but we can start with a single basin and
-# extent it later.
-
-# -[x] spatial_interpolation.sh --> cdo remapnn to a file called maps_netcdf/area.nc
-# Can be done with preprocessor: regrid to 0.1x0.1 (this is the resolution
-# with which our target lisflood version will work)
-
-# - [x] mask_basins.sh --> masks data based on input file forcing_msk.nc
-# This is taken care of by the preprocessor extract_shape
-
-# - [ ] concatenate_years.sh --> combines all years into one big file per variable
-# Apparently, lisflood wants one input file per variable, so need to combine.
-
-# - [ ] nc_variable_cleanup.py
-# This converts the input nc files to the exact format that lisflood wants.
-
-# - [ ] rm temporary files (???)
-
-
-# Some test data is available in https://github.com/ec-jrc/lisflood-code
-# See tests/
-
-# Also see the jupyter lab server for output of preprocessing scripts.
-
+      crop: true # set to false to keep the entire globe (memory intensive!)
+      # Perhaps a single shapefile needs to be created covering multiple basins
 
 diagnostics:
   diagnostic1:
@@ -58,25 +30,23 @@ diagnostics:
     variables:
       pr: &var
         mip: day
-        start_year: 1990
-        end_year: 1990
+        start_year: 2000
+        end_year: 2000
         preprocessor: preprocessor
       tas: *var
-
       # For now we only include pr and tas
-
       # tasmax: *var
       # tasmin: *var
       # Not all ERA-interim variables required for lisflood are available in esmvaltool/cmorizers/obs/cmorize_obs_era_interim.ncl
-
+      #
       # actual_vapour_pressure ??
       # era-interim name: 2m_dewpoint_temperature aka d2
       # Actual vapour pressure computed with cdo by e=6.11*exp(7.5*(d2m-273.15)/(237.3+(d2m-273.15))) expression
-
+      #
       # windspeed ??
       # era-interim name: era 10m_u_component_of_wind aka u10 and 10m_v_component_of_wind are combined into windspeed aka v10
       # Windspeed computed with cdo by uvw10=sqrt(u10*u10+v10*v10) expression
-
+      #
       # surface_solar_radiation_downwards: ??
       # era-interim-name: surface_solar_radiation_downwards aka ssrd
       #

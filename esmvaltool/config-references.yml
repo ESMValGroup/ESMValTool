@@ -217,6 +217,10 @@ authors:
     name: Kadygrov, Nikolay
     institute: IPSL, France
     orcid:
+  kalverla_peter:
+    name: Kalverla, Peter
+    institute: NLeSC, Netherlands
+    orcid: https://orcid.org/0000-0002-5025-7862
   kindermann_stephan:
     name: Kindermann, Stephan
     institute: DKRZ, Germany
