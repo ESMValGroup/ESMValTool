@@ -35,28 +35,28 @@ NX = 360
 NY = 120
 
 
-def cmorization(in_dir, out_dir, CFG):
+def cmorization(in_dir, out_dir, cfg, _):
     """Cmorization func call."""
-    glob_attrs = CFG['attributes']
+    glob_attrs = cfg['attributes']
 
     logger.info("Starting cmorization for Tier%s OBS files: %s",
                 glob_attrs['tier'], glob_attrs['dataset_id'])
     logger.info("Input data from: %s", in_dir)
     logger.info("Output will be written to: %s", out_dir)
 
-    grids = np.loadtxt(os.path.join(in_dir, CFG['custom']['scalar_file']))
+    grids = np.loadtxt(os.path.join(in_dir, cfg['custom']['scalar_file']))
     grids = grids.reshape(2, NY, NX)
     lat_sca, lon_sca = _create_lat_lon_coords(grids[1, ...], grids[0, ...])
 
-    grids = np.loadtxt(os.path.join(in_dir, CFG['custom']['vector_file']))
+    grids = np.loadtxt(os.path.join(in_dir, cfg['custom']['vector_file']))
     grids = grids.reshape(7, NY, NX)
     lat_vec, lon_vec = _create_lat_lon_coords(grids[1, ...], grids[0, ...])
     # Area in m2
     area_cello = grids[2, ...] * grids[3, ...] * 1e6
     # run the cmorization
-    for var, vals in CFG['variables'].items():
-        var_info = CFG['cmor_table'].get_variable(vals['mip'], var)
-        CFG['attributes']['mip'] = vals['mip']
+    for var, vals in cfg['variables'].items():
+        var_info = cfg['cmor_table'].get_variable(vals['mip'], var)
+        cfg['attributes']['mip'] = vals['mip']
         if vals['type'] == 'scalar':
             lat = lat_sca
             lon = lon_sca
@@ -66,9 +66,9 @@ def cmorization(in_dir, out_dir, CFG):
 
         if var == "areacello":
             cube = _create_areacello(lon, lat, area_cello, var_info)
-            set_global_atts(cube, CFG['attributes'])
+            set_global_atts(cube, cfg['attributes'])
             save_variable(
-                cube, var_info.short_name, out_dir, CFG['attributes'],
+                cube, var_info.short_name, out_dir, cfg['attributes'],
             )
             continue
 
@@ -81,9 +81,9 @@ def cmorization(in_dir, out_dir, CFG):
                 var_info,
                 vals['units']
             )
-            set_global_atts(cube, CFG['attributes'])
+            set_global_atts(cube, cfg['attributes'])
             save_variable(
-                cube, var_info.short_name, out_dir, CFG['attributes']
+                cube, var_info.short_name, out_dir, cfg['attributes']
             )
 
 
