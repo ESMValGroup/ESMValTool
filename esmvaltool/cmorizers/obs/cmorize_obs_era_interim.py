@@ -142,6 +142,9 @@ def _extract_variable(in_file, var, cfg, out_dir):
         cube.units = cube.units * 'day-1'
         # Radiation fluxes are positive in downward direction
         cube.attributes['positive'] = 'down'
+    if cube.var_name in {'iews', 'inss'}:
+        # TODO: check that fluxes are positive in downward direction
+        cube.attributes['positive'] = 'down'
     if cube.var_name in {'lsm', 'tcc'}:
         # Change cloud cover units from fraction to percentage
         cube.units = definition.units
@@ -162,14 +165,20 @@ def _extract_variable(in_file, var, cfg, out_dir):
     cube.data = cube.core_data().astype('float32')
 
     # Fix coordinates
-    cube.coord('latitude').var_name = 'lat'
-    cube.coord('longitude').var_name = 'lon'
-
-    for coord_name in 'latitude', 'longitude', 'time':
-        coord = cube.coord(coord_name)
-        coord.points = coord.core_points().astype('float64')
-        if len(coord.points) > 1:
-            coord.guess_bounds()
+    for axis in 'T', 'X', 'Y', 'Z':
+        coord_def = definition.coordinates.get(axis)
+        if coord_def:
+            coord = cube.coord(axis=axis)
+            if axis == 'T':
+                coord.convert_units('days since 1850-1-1 00:00:00.0')
+            if axis == 'Z':
+                coord.convert_units(coord_def.units)
+            coord.standard_name = coord_def.standard_name
+            coord.var_name = coord_def.out_name
+            coord.long_name = coord_def.long_name
+            coord.points = coord.core_points().astype('float64')
+            if len(coord.points) > 1:
+                coord.guess_bounds()
     # Here var_name is the CMIP name
     # era-interim is in 3hr or 6hr or 12hr freq need to convert to daily
     # only variables with step 12 need accounting time 00 AM as time 24 PM
