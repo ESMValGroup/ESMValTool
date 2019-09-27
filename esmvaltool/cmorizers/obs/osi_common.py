@@ -104,7 +104,7 @@ def extract_variable(var_infos, raw_info, out_dir, attrs, year, mips):
                 continue
             total_days = 366 if isleap(year) else 365
             if cube.coord('time').shape[0] < total_days:
-                cubes = add_nan_timesteps(cube, total_days, cubes)
+                cubes = add_nan_timesteps(cube, total_days)
                 cube = cubes.merge_cube()
                 cube.remove_coord('day_of_year')
                 del cubes
@@ -117,7 +117,7 @@ def extract_variable(var_infos, raw_info, out_dir, attrs, year, mips):
     return cube
 
 
-def add_nan_timesteps(cube, total_days, cubes):
+def add_nan_timesteps(cube, total_days):
     add_day_of_year(cube, 'time')
     cubes = CubeList(cube.slices_over('time'))
     model_cube = cubes[0].copy()
@@ -139,7 +139,7 @@ def add_nan_timesteps(cube, total_days, cubes):
 
 def _create_nan_cube(model_cube, num, month):
     nan_cube = model_cube.copy(
-        np.ma.masked_all(model_cube.shape)
+        np.ma.masked_all(model_cube.shape, dtype=model_cube.dtype)
     )
     time_coord = nan_cube.coord('time')
     nan_cube.remove_coord(time_coord)
