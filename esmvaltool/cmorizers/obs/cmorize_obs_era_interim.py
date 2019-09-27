@@ -143,7 +143,7 @@ def _extract_variable(in_file, var, cfg, out_dir):
         # Radiation fluxes are positive in downward direction
         cube.attributes['positive'] = 'down'
     if cube.var_name in {'iews', 'inss'}:
-        # TODO: check that fluxes are positive in downward direction
+        # TODO: check that turbulent are positive in downward direction
         cube.attributes['positive'] = 'down'
     if cube.var_name in {'lsm', 'tcc'}:
         # Change cloud cover units from fraction to percentage
