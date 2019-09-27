@@ -18,7 +18,6 @@ Download and processing instructions
 
 
 """
-from .utilities import (read_cmor_config)
 from .nsidc_common import cmorize
 
 
