@@ -221,14 +221,14 @@ def make_gwt_map_plots(cfg):
     # Calculate the anomaly for each ensemble/threshold combination
     for ensemble in ensembles:
         for variable_group in variable_groups:
-            if variable_group == 'tas_hist':
+            if variable_group == 'tas_historical':
                 continue
             print('Plotting:', ensemble, variable_group)
 
             if (variable_group, ensemble) not in files_dict:
                 continue
             fn = files_dict[(variable_group, ensemble)][0]
-            fn_hist = files_dict[('tas_hist', ensemble)][0]
+            fn_hist = files_dict[('tas_historical', ensemble)][0]
 
             details = metadatas[fn]
             cube = iris.load_cube( fn)
@@ -245,7 +245,7 @@ def make_gwt_map_plots(cfg):
             make_map_plots(cfg, details, cube, key)
 
     for variable_group in variable_groups:
-        if variable_group == 'tas_hist':
+        if variable_group == 'tas_historical':
             continue
         cube_list = []
         for vari, cube in anomaly_cubes[variable_group].items():

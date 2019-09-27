@@ -263,8 +263,6 @@ def make_time_series_plots(
     # Making plots for each layer
     for layer_index, (layer, cube_layer) in enumerate(cubes.items()):
         layer = str(layer)
-        print(metadata['ensemble'])
-        if metadata['ensemble'] in ['r3i1p1f2', 'r4i1p1f2','r5i1p1f2', 'r8i1p1f2',]: assert 0
 
         if 'anomaly' in cfg:
             cube_layer = calculate_anomaly(cube_layer, cfg['anomaly'])
@@ -337,8 +335,6 @@ def make_time_series_plots(
             plt.axvline(time.year, color='k', ls='--', lw=0.5,)
 
             exd_key = (metadata['exp'], metadata['ensemble'], threshold)
-            print(metadata['ensemble'])
-            if metadata['ensemble'] in ['r3i1p1f2', 'r4i1p1f2','r5i1p1f2', 'r8i1p1f2',]: assert 0
             exceedance_dates[exd_key] = time.year
 
         # Add top left legend
@@ -534,39 +530,62 @@ def print_exceedance_dates(cfg, exceedance_dates, window = 10, short_name = 'tas
         exps.add(exp)
         ensembles.add(ens)
         thresholds.add(thresh)
-    print(exceedance_dates)
 
-    txt=''
+    txt='      # Procedurally generated recipe contents:'
+    # Add the historical ensembles:
+    lines = []
+    lines.append('\n') #
+    lines.append('      '+ '_'.join([short_name, 'historical'])+':') #  tas_ssp119_15:
+    lines.append('        short_name: '+ short_name)
+    lines.append('        preprocessor: '+ preprocessor)
+    lines.append('        additional_datasets:')
+    for ens in sorted(ensembles):
+        lines.append('         - {'
+                     'dataset: UKESM1-0-LL, '
+                     'project: CMIP6, '
+                     'mip: ' + mip + ', '
+                     'exp: historical, '
+                     'ensemble: ' + ens + ', '
+                     'start_year: 1850, '
+                     'end_year: 1900, '
+                     'grid: ' + grid + '}'
+                     )
+    txt += '\n'.join(lines)
+
     # For each combination of short_name, threshold:
     for exp, thresh in product(sorted(exps), sorted(thresholds)):
         ssp = exp[exp.find('-')+1:]
         lines = []
         lines.append('\n') #
-        lines.append('      '+ '_'.join([short_name, ssp, str(thresh)])) #  tas_ssp119_15:
+        lines.append('      '+ '_'.join([short_name, ssp, str(thresh)])+':') #  tas_ssp119_15:
         lines.append('        short_name: '+ short_name)
         lines.append('        preprocessor: '+ preprocessor)
         lines.append('        additional_datasets:')
 
         # matches = []
-        for ens in ensembles:
+        for ens in sorted(ensembles):
             print(exp, thresh, ens)
             try:
                 exceedance_date = float(exceedance_dates[(exp, ens, thresh)])
             except:
                 continue
 
-            start_year = str(exceedance_date - window)
-            end_year = str(exceedance_date + window)
+            start_year = str(int(exceedance_date - window))
+            end_year = str(int(exceedance_date + window))
+
+            # What if end year is after 2100?
+            if int(end_year)> 2099:
+                continue
 
             lines.append('         - {'
                          'dataset: UKESM1-0-LL, '
                          'project: CMIP6, '
-                         'mip: '+mip+', '
-                         'exp: [historical, '+ssp+'], '
-                         'ensemble: '+ens +', '
-                         'start_year: '+start_year+', '
-                         'end_year: '+end_year+', '
-                         'grid:'+grid+', }'
+                         'mip: ' + mip + ', '
+                         'exp: [historical, ' + ssp + '], '
+                         'ensemble: ' + ens + ', '
+                         'start_year: ' + start_year + ', '
+                         'end_year: ' + end_year + ', '
+                         'grid: ' + grid + '}'
                          )
         if len(lines) == 5:
             continue
@@ -614,8 +633,6 @@ def main(cfg):
 
             ######
             # Time series of individual model
-            print(metadatas[filename]['ensemble'])
-            if metadatas[filename]['ensemble'] in ['r3i1p1f2', 'r4i1p1f2','r5i1p1f2', 'r8i1p1f2',]: assert 0
             exceedance_date = make_time_series_plots(cfg, metadatas[filename], filename)
             exceedance_dates.update(exceedance_date)
     print(exceedance_dates)
