@@ -251,7 +251,7 @@ begin
       ; read already calculated mmm iav
       natvar_file = addfile(input_dir + "/" + \
                             "IAV_mmm_piControl_" + \
-                            "_" + var0 + "_" + diag_script_info@time_avg + \
+                            var0 + "_" + diag_script_info@time_avg + \
                             ".nc", "r")
       natvar_mmm = natvar_file->iav
       if ((dim_seas .ne. 4) .and. \
@@ -274,7 +274,7 @@ begin
     ; read already calculated mmm iav
     natvar_file = addfile(input_dir + "/" + \
                           "IAV_mmm_piControl_" + \
-                          "_" + var0 + "_" + diag_script_info@time_avg + \
+                          var0 + "_" + diag_script_info@time_avg + \
                           ".nc", "r")
     natvar_mmm = natvar_file->iav
     if ((dim_seas .ne. 4) .and. \
