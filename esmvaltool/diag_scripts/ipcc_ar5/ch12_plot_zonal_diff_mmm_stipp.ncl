@@ -13,9 +13,9 @@
 ;    Only handles one variable at a time
 ;
 ; Modification history
-;    20181105-A_lorenz_ruth: ported to v2
-;    20171002-A_lorenz_ruth: Added tags for searching
-;    20170523-A_lorenz_ruth: written for ESMValTool
+;    20181105-A_lore_ru: ported to v2
+;    20171002-A_lore_ru: Added tags for searching
+;    20170523-A_lore_ru: written for ESMValTool
 ;                        based on IPCC AR5 scripts.
 ;
 ; #############################################################################
@@ -388,7 +388,7 @@ begin
   statistics = ("mean")
   domains = ("global")
   plot_types = ("zonal")
-  authors = (/"lorenz_ruth"/)
+  authors = (/"lore_ru"/)
   references = (/"collins13ipcc"/)
   infiles = metadata_att_as_array(info_items, "filename")
   log_provenance(nc_file, plot_file, caption, statistics, domains, \
