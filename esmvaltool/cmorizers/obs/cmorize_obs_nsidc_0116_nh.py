@@ -22,7 +22,6 @@ from .utilities import (read_cmor_config)
 from .nsidc_common import cmorize
 
 
-def cmorization(in_dir, out_dir):
+def cmorization(in_dir, out_dir, cfg, _):
     """Cmorization func call."""
-    cfg = read_cmor_config('NSIDC-0116_nh.yml')
     cmorize(cfg, 'nh', in_dir, out_dir)

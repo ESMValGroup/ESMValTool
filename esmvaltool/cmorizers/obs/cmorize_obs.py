@@ -257,6 +257,7 @@ def _cmor_reformat(config, obs_list):
             os.chdir(out_data_dir)
 
             # figure out what language the script is in
+            logger.info("Reformat script: %s", reformat_script_root)
             if os.path.isfile(reformat_script_root + '.ncl'):
                 reformat_script = reformat_script_root + '.ncl'
                 _run_ncl_script(
@@ -273,7 +274,7 @@ def _cmor_reformat(config, obs_list):
                 logger.error('Could not find cmorizer for %s', dataset)
                 failed_datasets.append(dataset)
     raise Exception(
-        'Could not find cmorizers for %s datasets ' +
+        'Could not find cmorizers for %s datasets ' %
         ' '.join(failed_datasets)
     )
 
