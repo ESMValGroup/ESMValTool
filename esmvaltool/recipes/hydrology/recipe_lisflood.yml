@@ -4,7 +4,7 @@
 documentation:
   description: |
 
-  authors: [verh_st]
+  authors: [verh_st, kalverla_peter]
   projects: [ewatercycle]
   references: []
 
@@ -12,44 +12,67 @@ datasets:
   - {dataset: ERA-Interim, project: OBS, tier: 3, type: reanaly, version: 1}
 
 preprocessors:
-  preprocessor:
+  preprocessor: &general
     regrid:
       target_grid: 0.1x0.1 # We're using the lisflood01degree version
       lon_offset: true
       lat_offset: true
       scheme: nearest
     extract_shape:
-      shapefile: rhine_meuse_hydrosheds.shp # In aux folder of config-user.yml
+      shapefile: rhine_meuse_hydrosheds.shp # In aux folder: see config-user.yml
       method: contains
       crop: true # set to false to keep the entire globe (memory intensive!)
       # Perhaps a single shapefile needs to be created covering multiple basins
+  # Perhaps move unit conversion to lisflood.py diag, for its a bit ugly.
+  # also, mm or mm d-1 doesn't work, because cmip unit is kg m-2 s-1
+  to_mm_per_day:
+    <<: *general
+    convert_units:
+      units: mm d-1
+  to_deg_C:
+    <<: *general
+    convert_units:
+      units: degC
+  to_J_per_m2:
+    <<: *general
+    convert_units:
+      units: J m-2 day-1
 
 diagnostics:
   diagnostic1:
     description: LISFLOOD input preprocessor
     variables:
-      pr: &var
+      pr: &select_time # total precipitation
         mip: day
         start_year: 2000
         end_year: 2000
-        preprocessor: preprocessor
-      tas: *var
-      # For now we only include pr and tas
-      # tasmax: *var
-      # tasmin: *var
-      # Not all ERA-interim variables required for lisflood are available in esmvaltool/cmorizers/obs/cmorize_obs_era_interim.ncl
-      #
-      # actual_vapour_pressure ??
-      # era-interim name: 2m_dewpoint_temperature aka d2
-      # Actual vapour pressure computed with cdo by e=6.11*exp(7.5*(d2m-273.15)/(237.3+(d2m-273.15))) expression
-      #
-      # windspeed ??
-      # era-interim name: era 10m_u_component_of_wind aka u10 and 10m_v_component_of_wind are combined into windspeed aka v10
-      # Windspeed computed with cdo by uvw10=sqrt(u10*u10+v10*v10) expression
-      #
-      # surface_solar_radiation_downwards: ??
-      # era-interim-name: surface_solar_radiation_downwards aka ssrd
-      #
+      pr:
+        <<: *select_time
+        # preprocessor: to_mm_per_day # doesn't work with cmips kg m-2 s-1
+      tas: # average daily temperature at 2m (ERA-interim: t2m)
+        <<: *select_time
+        preprocessor: to_deg_C
+      tasmax: # maximum daily temperature (ERA-interim: mn2t)
+        <<: *select_time
+        preprocessor: to_deg_C
+      tasmin: # minimum daily temperature (ERA-interim: mx2t)
+        <<: *select_time
+        preprocessor: to_deg_C
+      ##########################################################################
+      # Currently using old ncl cmorizer for ERA-Interim, which uses CMIP5 (OBS)
+      # files. The new python cmorizer will create CMIP6/OBS6 files. Once
+      # finished, the following variables can be uncommented:
+      ##########################################################################
+      # tdps: # average dew point temperature at 2m (ERA-Interim: d2m)
+      #   << *select_time
+      #   preprocessor: to_deg_C
+      # uas: # 10-m u-wind component (ERA-Interim: u10)
+      #   <<: *select_time
+      # vas: # 10-m u-wind component (ERA-Interim: v10)
+      #   <<: *select_time
+      # rsds: # surface solar radiation downwards (ERA-Interim: ssrd)
+      #   <<: *select_time
+      #   preprocessor: to_J_per_m2
     scripts:
       script:
         script: hydrology/lisflood.py

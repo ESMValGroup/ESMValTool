@@ -31,9 +31,9 @@ def get_provenance_record(ancestor_file):
     return record
 
 def main(cfg):
-    """Process data for use as input to the LISFLOOD hydrological model
-    """
+    """Process data for use as input to the LISFLOOD hydrological model """
     input_data = cfg['input_data'].values()
+    logger.info(input_data)
     grouped_input_data = group_metadata(input_data,
                                         'standard_name',
                                         sort='dataset')
@@ -62,6 +62,10 @@ def main(cfg):
 
             # Concatenation
             # lisflood wants one file per variable (not per year)
+
+            # Target output file
+            # In the cdo example, the output format was:
+            # 2m_temperature_final_1990-1996.nc
 
             # Save data
             output_file = get_diagnostic_filename(
