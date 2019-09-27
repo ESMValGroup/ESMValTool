@@ -253,7 +253,7 @@ def make_threshold_ensemble_map_plots(
         logger.warning('Not able to add coastlines')
 
     # Add title to plot
-    title = ' '.join([variable, '- ensemble mean after', threshold, 'warming'])
+    title = ' '.join(['Ensemble mean after', threshold, 'warming'])
     plt.title(title)
 
     # Saving files:
@@ -318,16 +318,18 @@ def make_gwt_map_plots(cfg):
     # Calculate the anomaly for each ensemble/threshold combination
     for ensemble in ensembles:
         for variable_group in variable_groups:
-            if variable_group == 'tas_historical':
+            # guess historical group name:
+            historical_group = variable_group[:variable_group.find('_')] +'_historical'
+            if variable_group == historical_group:
                 continue
+
             print('Plotting:', ensemble, variable_group)
             variable, exp, threshold = split_variable_groups(variable_group)
-
 
             if (variable_group, ensemble) not in files_dict:
                 continue
             fn = files_dict[(variable_group, ensemble)][0]
-            fn_hist = files_dict[('tas_historical', ensemble)][0]
+            fn_hist = files_dict[(historical_group, ensemble)][0]
 
             details = metadatas[fn]
             cube = iris.load_cube( fn)
@@ -349,7 +351,9 @@ def make_gwt_map_plots(cfg):
 
     # Ensemble mean for each variable_group:
     for variable_group in variable_groups:
-        if variable_group == 'tas_historical':
+        # guess historical group name:
+        historical_group = variable_group[:variable_group.find('_')] +'historical'
+        if variable_group == historical_group:
             continue
         cube_list = []
         for vari, cube in anomaly_cubes[variable_group].items():
