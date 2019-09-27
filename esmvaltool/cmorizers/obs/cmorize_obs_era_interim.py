@@ -75,7 +75,7 @@ Caveats
     new years to a previous version of the data.
 
 """
-from datetime import datetime
+from datetime import datetime, timedelta
 import logging
 from concurrent.futures import as_completed, ProcessPoolExecutor
 from copy import deepcopy
@@ -172,14 +172,22 @@ def _extract_variable(in_file, var, cfg, out_dir):
             coord.guess_bounds()
     # Here var_name is the CMIP name
     # era-interim is in 3hr or 6hr or 12hr freq need to convert to daily
-    # only variables with step 12 need removing the first day of next year
+    # only variables with step 12 need accounting time 00 AM as time 24 PM
     if var['mip'] in {'day', 'Eday', 'CFday'}:
+        # accounting time 00 AM as time 24 PM
+        if cube.var_name in {'tasmax', 'tasmin', 'pr',
+                             'rsds', 'hfds', 'evspsbl',
+                             'rsdt', 'rss', 'prsn'}:
+            cube.coord('time').points = [
+                cube.coord('time').units.date2num(
+                    cell.point - timedelta(seconds=1)
+                )
+                for cell in cube.coord('time').cells()
+            ]
         if cube.var_name == 'tasmax':
             cube = daily_statistics(cube, 'max')
-            cube = cube[:-1] # removing the first day of next year
         elif cube.var_name == 'tasmin':
             cube = daily_statistics(cube, 'min')
-            cube = cube[:-1] # removing the first day of next year
         elif cube.var_name in {'pr', 'rsds', 'hfds', 'evspsbl',
                                'rsdt', 'rss', 'prsn'}:
             # Sum is not available in daily_statistics so call iris directly
@@ -189,12 +197,21 @@ def _extract_variable(in_file, var, cfg, out_dir):
                 iris.coord_categorisation.add_year(cube, 'time')
             cube = cube.aggregated_by(['day_of_year', 'year'],
                                       iris.analysis.SUM)
-            cube = cube[:-1] # removing the first day of next year
         else:
             cube = daily_statistics(cube, 'mean')
         # Remove daily statistics helpers
         cube.remove_coord(cube.coord('day_of_year'))
         cube.remove_coord(cube.coord('year'))
+        # Correct the time bound
+        cube.coord('time').points = cube.coord('time').units.date2num(
+            [
+                cell.point.replace(hour=12, minute=0, second=0,
+                                   microsecond=0)
+                for cell in cube.coord('time').cells()
+            ]
+        )
+        cube.coord('time').bounds = None
+        cube.coord('time').guess_bounds()
 
     # Add height coordinate to tas variable (required by the new backend)
     if 'height2m' in definition.dimensions:
