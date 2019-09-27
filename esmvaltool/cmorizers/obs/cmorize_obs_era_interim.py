@@ -47,6 +47,8 @@ the following variables:
         toa incident solar radiation
         total cloud cover
         total precipitation
+and daily, monthly and invariant data of:
+        Geopotential
 
 and monthly data of:
         Inst. eastward turbulent surface stress
@@ -55,6 +57,12 @@ and monthly data of:
         Surface net thermal radiation
         Surface latent heat flux
         Surface sensible heat flux
+        Relative humidity
+        Temperature
+        U component of wind
+        V component of wind
+        Vertical velocity
+        Specific humidity
 
 Caveats
     Make sure to select the right steps for accumulated fluxes, see:
@@ -199,8 +207,6 @@ def _extract_variable(in_file, var, cfg, out_dir):
 
     # Make latitude increasing
     cube = cube[:, ::-1, ...]
-
-    # TODO add support for 3d variables
 
     logger.info("Saving cube\n%s", cube)
     logger.info("Expected output size is %.1fGB",
