@@ -36,7 +36,7 @@ function zonalmean_profile(wks_in[1],
 ; Caveats
 ;
 ; Modification history
-;    20131210-A_fran_fr: written.
+;    20131210-frank_franziska: written.
 ;
 local funcname, scriptname, wks, wks_in, data, source, res, atts, base, varname
 begin
