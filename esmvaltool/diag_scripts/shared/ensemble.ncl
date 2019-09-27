@@ -34,7 +34,7 @@ function get_start_year(dataset_index[1]:numeric)
 ; References
 ;
 ; Modification history
-;    20140128-A_senf_da: written.
+;    20140128-senftleben_daniel: written.
 ;
 local funcname, scriptname, dataset_index
 begin
@@ -82,7 +82,7 @@ function get_end_year(dataset_index:numeric)
 ; References
 ;
 ; Modification history
-;    20140128-A_senf_da: written.
+;    20140128-senftleben_daniel: written.
 ;
 local funcname, scriptname, dataset_index
 begin

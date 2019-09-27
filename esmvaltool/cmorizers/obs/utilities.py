@@ -20,13 +20,19 @@ logger = logging.getLogger(__name__)
 
 def add_height2m(cube):
     """Add scalar coordinate 'height' with value of 2m."""
-    logger.info("Adding height coordinate (2m)")
-    height_coord = iris.coords.AuxCoord(2.0,
-                                        var_name='height',
-                                        standard_name='height',
-                                        long_name='height',
-                                        units=Unit('m'),
-                                        attributes={'positive': 'up'})
+    add_scalar_height_coord(cube, height=2.)
+
+
+def add_scalar_height_coord(cube, height=2.):
+    """Add scalar coordinate 'height' with value of `height`m."""
+    logger.info("Adding height coordinate (%sm)", height)
+    height_coord = iris.coords.AuxCoord(
+        height,
+        var_name='height',
+        standard_name='height',
+        long_name='height',
+        units=Unit('m'),
+        attributes={'positive': 'up'})
     cube.add_aux_coord(height_coord, ())
 
 
@@ -51,42 +57,6 @@ def convert_timeunits(cube, start_year):
         real_unit = cube.coord('time').units
     cube.coord('time').units = real_unit
     return cube
-
-
-def _fix_bounds(cube, dim_coord):
-    """Reset and fix all bounds."""
-    if len(cube.coord(dim_coord).points) > 1:
-        if not cube.coord(dim_coord).has_bounds():
-            cube.coord(dim_coord).bounds = None
-            try:
-                cube.coord(dim_coord).guess_bounds()
-            except iris.exceptions.CoordinateMultiDimError:
-                logger.warning(
-                    'Bounds could not be guessed for multidimensional %s '
-                    'coordinate',
-                    dim_coord.standard_name
-                )
-
-    if cube.coord(dim_coord).has_bounds():
-        cube.coord(dim_coord).bounds = da.array(
-            cube.coord(dim_coord).core_bounds(), dtype='float64')
-    return cube
-
-
-def convert_units(cube, source_units, target_units):
-    """Convert units."""
-    source_units = Unit(source_units)
-    target_units = Unit(target_units)
-    try:
-        source_units.convert(1.0, target_units)
-    except ValueError:
-        logger.warning("Cannot convert units from '%s' to '%s'", source_units,
-                       target_units)
-        return
-    logger.info("Converting cube units from '%s' to '%s'...", source_units,
-                target_units)
-    cube.units = source_units
-    cube.convert_units(target_units)
 
 
 def fix_coords(cube):
@@ -164,13 +134,13 @@ def flip_dim_coord(cube, coord_name):
 
 def read_cmor_config(dataset):
     """Read the associated dataset-specific config file."""
-    reg_path = os.path.join(os.path.dirname(__file__), 'cmor_config',
-                            dataset + '.yml')
+    reg_path = os.path.join(
+        os.path.dirname(__file__), 'cmor_config', dataset + '.yml')
     with open(reg_path, 'r') as file:
         cfg = yaml.safe_load(file)
     cfg['cmor_table'] = \
         CMOR_TABLES[cfg['attributes']['project_id']]
-    if 'comment' not in cfg:
+    if 'comment' not in cfg['attributes']:
         cfg['attributes']['comment'] = ''
     return cfg
 
@@ -192,7 +162,7 @@ def save_variable(cube, var, outdir, attrs, **kwargs):
     except iris.exceptions.CoordinateNotFoundError:
         time_suffix = None
     name_elements = [
-        'OBS',
+        attrs['project_id'],
         attrs['dataset_id'],
         attrs['modeling_realm'],
         attrs['version'],
