@@ -179,6 +179,102 @@ def make_ensemble_map_plots(
 
 
 
+    def make_ensemble_map_plots(
+            cfg,
+            cube,
+            variable_group,
+            cmap='YlOrRd'
+    ):
+        """
+        Make a simple map plot for an individual model.
+
+        Parameters
+        ----------
+        cfg: dict
+            the opened global config dictionary, passed by ESMValTool.
+
+        """
+        # Load image format extention
+        image_extention = diagtools.get_image_format(cfg)
+
+        # Determine image filename:
+        path = diagtools.folder([cfg['plot_dir'], 'ensemble_plots'])+'Ensemblemean_'+variable_group+image_extention
+
+        # Making plots for each layer
+        qplt.contourf(cube, 12, linewidth=0, rasterized=True, cmap=cmap)
+
+        try:
+            plt.gca().coastlines()
+        except AttributeError:
+            logger.warning('Not able to add coastlines')
+
+        # tas_ssp585_6
+        variable, exp, threshold = split_variable_groups(variable_group)
+
+        # Add title to plot
+        title = ' '.join([variable, '- ensemble mean of', exp, 'after', threshold, 'warming'])
+        plt.title(title)
+
+        # Saving files:
+        if cfg['write_plots']:
+            logger.info('Saving plots to %s', path)
+            plt.savefig(path)
+
+        plt.close()
+
+
+def make_threshold_ensemble_map_plots(
+        cfg,
+        cube,
+        threshold,
+        cmap='YlOrRd'
+):
+    """
+    Make a simple map plot for an individual model.
+
+    Parameters
+    ----------
+    cfg: dict
+        the opened global config dictionary, passed by ESMValTool.
+
+    """
+    # Load image format extention
+    image_extention = diagtools.get_image_format(cfg)
+
+    # Determine image filename:
+    path = diagtools.folder([cfg['plot_dir'], 'threshold_ensemble_plots'])+'Ensemble_mean_'+threshold+image_extention
+
+    # Making plots for each layer
+    qplt.contourf(cube, 12, linewidth=0, rasterized=True, cmap=cmap)
+
+    try:
+        plt.gca().coastlines()
+    except AttributeError:
+        logger.warning('Not able to add coastlines')
+
+    # Add title to plot
+    title = ' '.join([variable, '- ensemble mean after', threshold, 'warming'])
+    plt.title(title)
+
+    # Saving files:
+    if cfg['write_plots']:
+        logger.info('Saving plots to %s', path)
+        plt.savefig(path)
+
+    plt.close()
+
+def calc_ensemble_mean(cube_list):
+    """"
+    """
+    if len(cube_list)<=1:
+        return cube_list[0]
+    cube_data = cube_list[0].data
+    for c in cube_list[1:]:
+        cube_data += c.data
+    cube_data = cube_data/float(len(cube_list))
+    ensemble_mean = cube_list[0]
+    ensemble_mean.data = cube_data
+    return ensemble_mean
 
 
 def make_gwt_map_plots(cfg):
@@ -199,6 +295,7 @@ def make_gwt_map_plots(cfg):
     ensembles = set()
     exps = set()
     variable_groups = set()
+    thresholds = {}
 
     for fn, details in metadatas.items():
         #print(fn, details.keys())
@@ -224,6 +321,8 @@ def make_gwt_map_plots(cfg):
             if variable_group == 'tas_historical':
                 continue
             print('Plotting:', ensemble, variable_group)
+            variable, exp, threshold = split_variable_groups(variable_group)
+
 
             if (variable_group, ensemble) not in files_dict:
                 continue
@@ -237,13 +336,18 @@ def make_gwt_map_plots(cfg):
             cube_hist =  iris.load_cube( fn_hist)
             cube_hist = diagtools.bgc_units(cube_hist, details['short_name'])
 
-            cube.data = cube.data - cube_hist.data
+            cube.data = cube.data - cube_hist.data - cube.data.mean()
             anomaly_cubes[variable_group][ensemble] = cube
+            try:
+                thresholds[threshold].append([variable_group, ensemble])
+            except:
+                thresholds[threshold] = [[variable_group, ensemble], ]
             key = variable_group.replace('_',' ') + ' '+ensemble
 
             # Produce a plot of the anomaly.
             make_map_plots(cfg, details, cube, key)
 
+    # Ensemble mean for each variable_group:
     for variable_group in variable_groups:
         if variable_group == 'tas_historical':
             continue
@@ -253,18 +357,19 @@ def make_gwt_map_plots(cfg):
             cube_list.append(cube)
 
         if cube_list == []: continue
-        if len(cube_list)<=1:
-            ensemble_mean = cube_list[0]
-        else:
-            cube_data = cube_list[0].data
-            for c in cube_list[1:]:
-                cube_data += c.data
-            cube_data = cube_data/float(len(cube_list))
-            ensemble_mean = cube_list[0]
-            ensemble_mean.data = cube_data
-
+        ensemble_mean = calc_ensemble_mean(cube_list)
         make_ensemble_map_plots(cfg, ensemble_mean, variable_group)
 
+    # Ensemble mean for each threshold:
+    for threshold, paths in sorted(thresholds.items()):
+        cube_list = []
+        for [variable_group, ensemble] in paths:
+            cube_list.append(anomaly_cubes[variable_group][ensemble])
+
+        if cube_list == []: continue
+        ensemble_mean = calc_ensemble_mean(cube_list)
+
+        make_threshold_ensemble_map_plots(cfg, ensemble_mean, threshold)
 
 
 
