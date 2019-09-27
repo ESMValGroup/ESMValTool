@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 
 def cmorize_osi(in_dir, out_dir, cfg, hemisphere):
-    """Cmorize OSI-450 or OSI-407 dataset"""
+    """Cmorize OSI-450 or OSI-407 dataset."""
     logger.info("Starting cmorization for Tier%s OBS files: %s",
                 cfg['attributes']['tier'], cfg['attributes']['dataset_id'])
     logger.info("Input data from: %s", in_dir)
@@ -46,8 +46,8 @@ def cmorize_osi(in_dir, out_dir, cfg, hemisphere):
                 'name': vals['raw'],
                 'file': os.path.join(in_dir, str(year), '??', file_pattern)
             }
-            extract_variable(var_info, raw_info, out_dir, cfg['attributes'],
-                             year, vals['mip'])
+            _extract_variable(var_info, raw_info, out_dir, cfg['attributes'],
+                              year, vals['mip'])
             if first_run:
                 sample_file = glob.glob(os.path.join(
                     in_dir, str(year), '01', file_pattern))[0]
@@ -60,7 +60,7 @@ def cmorize_osi(in_dir, out_dir, cfg, hemisphere):
                 first_run = False
 
 
-def extract_variable(var_infos, raw_info, out_dir, attrs, year, mips):
+def _extract_variable(var_infos, raw_info, out_dir, attrs, year, mips):
     """Extract to all vars."""
     cubes = iris.load(
         raw_info['file'],
@@ -75,40 +75,17 @@ def extract_variable(var_infos, raw_info, out_dir, attrs, year, mips):
     cube.coord('projection_y_coordinate').var_name = 'y'
     lon_coord = cube.coord('longitude')
     lon_coord.points = _correct_lons(lon_coord.points)
-
+    source_cube = cube
     for mip in mips:
         var_info = var_infos[mip]
         attrs['mip'] = mip
         if var_info.frequency == 'mon':
-            cube = _monthly_mean(cube)
-            if cube.coord('time').shape[0] < 12:
-                cubes = CubeList(cube.slices_over('time'))
-                model_cube = cubes[0].copy()
-                for month in range(1, 13):
-                    month_constraint = iris.Constraint(
-                        time=lambda cell: cell.point.month == month
-                    )
-                    if cubes.extract(month_constraint):
-                        continue
-                    cubes.append(_create_nan_cube(
-                        model_cube, month, month=True))
-                cube = cubes.merge_cube()
-                del cubes
-                del model_cube
+            cube = _monthly_mean(source_cube)
+            cube = _fill_months(cube)
         elif var_info.frequency == 'day':
-            if cube.coord('time').shape[0] < 300:
-                logger.warning(
-                    'Only %s days available. Can not generate daily files',
-                    cube.coord('time').shape[0]
-                )
-                continue
-            total_days = 366 if isleap(year) else 365
-            if cube.coord('time').shape[0] < total_days:
-                cubes = add_nan_timesteps(cube, total_days)
-                cube = cubes.merge_cube()
-                cube.remove_coord('day_of_year')
-                del cubes
-
+            cube = _fill_days(source_cube, year)
+        if not cube:
+            continue
         logger.debug(cube)
         fix_var_metadata(cube, var_info)
         convert_timeunits(cube, year)
@@ -117,7 +94,40 @@ def extract_variable(var_infos, raw_info, out_dir, attrs, year, mips):
     return cube
 
 
-def add_nan_timesteps(cube, total_days):
+def _fill_months(cube):
+    if cube.coord('time').shape[0] == 12:
+        return cube
+    cubes = CubeList(cube.slices_over('time'))
+    model_cube = cubes[0].copy()
+    for month in range(1, 13):
+        month_constraint = iris.Constraint(
+            time=lambda cell: cell.point.month == month
+        )
+        if cubes.extract(month_constraint):
+            continue
+        cubes.append(_create_nan_cube(
+            model_cube, month, month=True))
+    cube = cubes.merge_cube()
+    return cube
+
+
+def _fill_days(cube, year):
+    if cube.coord('time').shape[0] < 300:
+        logger.warning(
+            'Only %s days available. Can not generate daily files',
+            cube.coord('time').shape[0]
+        )
+        return None
+    total_days = 366 if isleap(year) else 365
+    if cube.coord('time').shape[0] < total_days:
+        cubes = _add_nan_timesteps(cube, total_days)
+        cube = cubes.merge_cube()
+        cube.remove_coord('day_of_year')
+        del cubes
+    return cube
+
+
+def _add_nan_timesteps(cube, total_days):
     add_day_of_year(cube, 'time')
     cubes = CubeList(cube.slices_over('time'))
     model_cube = cubes[0].copy()
