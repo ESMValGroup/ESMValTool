@@ -54,6 +54,7 @@ import datetime
 import iris
 import matplotlib.pyplot as plt
 import numpy as np
+from itertools import product
 
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic
@@ -130,7 +131,7 @@ def moving_average(cube, window):
     win_units = str(window[1])
 
     if win_units not in [
-            'days', 'day', 'dy', 'months', 'month', 'mn', 'years', 'yrs',
+            'years', 'yrs',
             'year', 'yr'
     ]:
         raise ValueError("Moving average window units not recognised: " +
@@ -148,25 +149,13 @@ def moving_average(cube, window):
     ])
 
     for time_itr in times:
-        if win_units in ['years', 'yrs', 'year', 'yr']:
-            tmin = cal_dt(time_itr.year - window_len, time_itr.month,
-                          time_itr.day, time_itr.hour, time_itr.minute)
-            tmax = cal_dt(time_itr.year + window_len, time_itr.month,
-                          time_itr.day, time_itr.hour, time_itr.minute)
+        tmin = cal_dt(time_itr.year - window_len, time_itr.month,
+                      time_itr.day, time_itr.hour, time_itr.minute)
 
-        if win_units in ['months', 'month', 'mn']:
-            tmin = cal_dt(time_itr.year, time_itr.month - window_len,
-                          time_itr.day, time_itr.hour, time_itr.minute)
-            tmax = cal_dt(time_itr.year, time_itr.month + window_len,
-                          time_itr.day, time_itr.hour, time_itr.minute)
+        tmax = cal_dt(time_itr.year + window_len, time_itr.month,
+                      time_itr.day, time_itr.hour, time_itr.minute)
 
-        if win_units in ['days', 'day', 'dy']:
-            tmin = cal_dt(time_itr.year, time_itr.month,
-                          time_itr.day - window_len, time_itr.hour,
-                          time_itr.minute)
-            tmax = cal_dt(time_itr.year, time_itr.month,
-                          time_itr.day + window_len, time_itr.hour,
-                          time_itr.minute)
+        #if time_itr.year - times.min().year < window_len:
 
         arr = np.ma.masked_where((times < tmin) + (times > tmax), cube.data)
         output.append(arr.mean())
@@ -252,6 +241,9 @@ def make_time_series_plots(
         The metadata dictionairy for a specific model.
     filename: str
         The preprocessed model file.
+    Returns:
+    --------
+        dict
 
     """
     # Load cube and set up units
@@ -267,9 +259,12 @@ def make_time_series_plots(
     # Load image format extention
     image_extention = diagtools.get_image_format(cfg)
 
+    exceedance_dates = {}
     # Making plots for each layer
     for layer_index, (layer, cube_layer) in enumerate(cubes.items()):
         layer = str(layer)
+        print(metadata['ensemble'])
+        if metadata['ensemble'] in ['r3i1p1f2', 'r4i1p1f2','r5i1p1f2', 'r8i1p1f2',]: assert 0
 
         if 'anomaly' in cfg:
             cube_layer = calculate_anomaly(cube_layer, cfg['anomaly'])
@@ -326,32 +321,38 @@ def make_time_series_plots(
         # Add thresholds part
         for threshold in thresholds:
             if threshold > np.max(plt.ylim()): continue
-            plt.axhline(threshold, color='k', ls='--', lw=0.5,)
-        plt.axhline(0., color='k', ls='--', lw=0.5,)
+            plt.axhline(threshold, color='k', ls='--', lw=0.5)
+        plt.axhline(0., color='k', ls='--', lw=0.5)
 
         # Add thresholds legend:
         txt = [metadata['dataset'], metadata['exp'], metadata['ensemble']]
-
 
         print('----------\nSearching for thresholds', txt)
         for threshold in thresholds:
             time = get_threshold_exceedance_date(cube, threshold)
             print('threshold:', threshold, time)
-            if not time: continue
+            if not time:
+                continue
             txt.append('>'+str(threshold)+': '+str(time.year))
             plt.axvline(time.year, color='k', ls='--', lw=0.5,)
 
+            exd_key = (metadata['exp'], metadata['ensemble'], threshold)
+            print(metadata['ensemble'])
+            if metadata['ensemble'] in ['r3i1p1f2', 'r4i1p1f2','r5i1p1f2', 'r8i1p1f2',]: assert 0
+            exceedance_dates[exd_key] = time.year
+
+        # Add top left legend
         ntxt = plt.text(.05, .95, '\n'.join(txt),
             transform=plt.gca().transAxes, ha="left", va="top")
-        ntxt.set_bbox(dict(facecolor='grey', alpha=0.8, edgecolor='black'))
+        ntxt.set_bbox(dict(facecolor='grey', alpha=0.7, edgecolor='black'))
 
         # Saving files:
         if cfg['write_plots']:
-
             logger.info('Saving plots to %s', path)
             plt.savefig(path)
 
         plt.close()
+    return exceedance_dates
 
 
 def multi_model_time_series(
@@ -374,7 +375,6 @@ def multi_model_time_series(
         The metadata dictionairy for a specific model.
 
     """
-
     ####
     # Load the data for each layer as a separate cube
     model_cubes = {}
@@ -393,7 +393,6 @@ def multi_model_time_series(
 
     # Make a plot for each layer
     for layer in layers:
-
         title = ''
         z_units = ''
         plot_details = {}
@@ -423,7 +422,6 @@ def multi_model_time_series(
                 timeplot(
                     cube,
                     c='black',
-                    # label=metadata[filename]['dataset'],
                     ls='--',
                     lw=2.,
                 )
@@ -437,7 +435,6 @@ def multi_model_time_series(
                 timeplot(
                     cube,
                     c=color,
-                    # label=metadata[filename]['dataset'])
                     ls='-',
                     lw=2.,
                 )
@@ -458,10 +455,10 @@ def multi_model_time_series(
 
         # Add thresholds part
         for threshold in thresholds:
-            if threshold > np.max(plt.ylim()): continue
-            plt.axhline(threshold, color='k', ls='--', lw=0.5,)
-        plt.axhline(0., color='k', ls='--', lw=0.5,)
-
+            if threshold > np.max(plt.ylim()):
+                continue
+            plt.axhline(threshold, color='k', ls='--', lw=0.5)
+        plt.axhline(0., color='k', ls='--', lw=0.5)
 
         # Add title, legend to plots
         if 'anomaly' in cfg:
@@ -511,6 +508,79 @@ def multi_model_time_series(
         plt.close()
 
 
+def print_exceedance_dates(cfg, exceedance_dates, window = 10, short_name = 'tas',mip='Amon', preprocessor='prep_1', grid = 'gn'):
+    """
+    prints the exceedance_dates in a format ready to go into a recipe.
+    exceednace key: (metadata['exp'], metadata['ensemble'], threshold)
+    Like this:
+      tas_ssp119_15:
+        short_name: tas
+        preprocessor: prep_1
+        additional_datasets:
+          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: [historical, ssp119], ensemble: r1i1p1f2, start_year: 2014, end_year: 2034, grid: gn}
+          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: [historical, ssp119], ensemble: r3i1p1f2, start_year: 2013, end_year: 2033, grid: gn}
+          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: [historical, ssp119], ensemble: r4i1p1f2, start_year: 2017, end_year: 2037, grid: gn}
+    """
+    # Define the contents
+    exps = set()
+    ensembles = set()
+    thresholds = set()
+
+    for (exp, ens, thresh) in exceedance_dates.keys():
+        if exp == 'historical':
+            continue
+        # print(exp, exp.find('-')+1, exp[exp.find('-')+1:])
+        # exp = exp[exp.find('-'):]
+        exps.add(exp)
+        ensembles.add(ens)
+        thresholds.add(thresh)
+    print(exceedance_dates)
+
+    txt=''
+    # For each combination of short_name, threshold:
+    for exp, thresh in product(sorted(exps), sorted(thresholds)):
+        ssp = exp[exp.find('-')+1:]
+        lines = []
+        lines.append('\n') #
+        lines.append('      '+ '_'.join([short_name, ssp, str(thresh)])) #  tas_ssp119_15:
+        lines.append('        short_name: '+ short_name)
+        lines.append('        preprocessor: '+ preprocessor)
+        lines.append('        additional_datasets:')
+
+        # matches = []
+        for ens in ensembles:
+            print(exp, thresh, ens)
+            try:
+                exceedance_date = float(exceedance_dates[(exp, ens, thresh)])
+            except:
+                continue
+
+            start_year = str(exceedance_date - window)
+            end_year = str(exceedance_date + window)
+
+            lines.append('         - {'
+                         'dataset: UKESM1-0-LL, '
+                         'project: CMIP6, '
+                         'mip: '+mip+', '
+                         'exp: [historical, '+ssp+'], '
+                         'ensemble: '+ens +', '
+                         'start_year: '+start_year+', '
+                         'end_year: '+end_year+', '
+                         'grid:'+grid+', }'
+                         )
+        if len(lines) == 5:
+            continue
+        txt += '\n'.join(lines)
+
+    txt += '\n'
+    print(txt)
+    fn = cfg['work_dir']+'/new_recipe.yml'
+    print('Saved to: ', fn)
+    out = open(fn, 'w')
+    out.write(txt)
+    out.close()
+
+
 def main(cfg):
     """
     Load the config file and some metadata, then make plots.
@@ -521,6 +591,7 @@ def main(cfg):
         the opened global config dictionairy, passed by ESMValTool.
 
     """
+    exceedance_dates = {}
     for index, metadata_filename in enumerate(cfg['input_files']):
         logger.info('metadata filename:\t%s', metadata_filename)
 
@@ -543,8 +614,14 @@ def main(cfg):
 
             ######
             # Time series of individual model
-            make_time_series_plots(cfg, metadatas[filename], filename)
+            print(metadatas[filename]['ensemble'])
+            if metadatas[filename]['ensemble'] in ['r3i1p1f2', 'r4i1p1f2','r5i1p1f2', 'r8i1p1f2',]: assert 0
+            exceedance_date = make_time_series_plots(cfg, metadatas[filename], filename)
+            exceedance_dates.update(exceedance_date)
+    print(exceedance_dates)
+    print_exceedance_dates(cfg, exceedance_dates)
     logger.info('Success')
+
 
 
 if __name__ == '__main__':
