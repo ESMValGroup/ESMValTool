@@ -22,14 +22,15 @@ diagnostics:
       - {dataset: CRU, project: OBS, mip: Amon, tier: 2,
          type: reanaly, version: TS4.02, start_year: 1901, end_year: 2017}
     scripts: null
-    
+
+
   Duveiller2018:
-    description: Duveiller2018
+    description: Duveiller2018 check
     variables:
       albDiffiTr13:
-        mip: Amon
     additional_datasets:
-      - {dataset: Duveiller2018, project: OBS, tier: 2, type: clim, version: v2018, start_year: 2010, end_year: 2010}
+      - {dataset: Duveiller2018, project: OBS, mip: Amon, tier: 2,
+         type: clim, version: v2018, start_year: 2010, end_year: 2010}
     scripts: null
 
 
