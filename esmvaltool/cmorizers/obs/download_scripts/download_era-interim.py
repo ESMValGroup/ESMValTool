@@ -1,26 +1,38 @@
-#!/usr/bin/env python3
+"""Script to download era-interim data.
+
+Before running the script:
+1. Install the dependency i.e. ECMWFDataServer.
+For this, run pip install ecmwf-api-client
+
+2. Create an account at https://www.ecmwf.int/
+
+3. Follow the instruction at:
+https://confluence.ecmwf.int/display/WEBAPI/Accessing+ECMWF+data+servers+in+batch
+
+4. Copy/paste the text in https://api.ecmwf.int/v1/key/ into a blank text file and
+save it as $HOME/.ecmwfapirc
+
+5. Use ESMValCore/esmvalcore/config-user.yml as an template
+and set the rootpath of the output directory in RAWOBS
+
+6. check the description of the variables at
+https://apps.ecmwf.int/codes/grib/param-db
+
+7. check the invariant variables at
+https://apps.ecmwf.int/datasets/data/interim-full-invariant
+
+```bash
+python download_era-interim.py -c config-user.yml --start_year 2000 --end_year 2000
+```
+
+"""
 import argparse
 import os
 
 import yaml
 from ecmwfapi import ECMWFDataServer
 
-parser = argparse.ArgumentParser(description='''
-Script to download era-interim data, so it can be cmorized and used by esmvaltool recipes.
-
-Before running the script:
-1. Install the dependency i.e. ECMWFDataServer. For this, run pip install ecmwf-api-client
-2. Create an account at https://www.ecmwf.int/ 
-3. Follow the instruction https://confluence.ecmwf.int/display/WEBAPI/Accessing+ECMWF+data+servers+in+batch
-4. Copy/paste the text in https://api.ecmwf.int/v1/key/ into a blank text file and save it as $HOME/.ecmwfapirc
-5. Use ESMValCore/esmvalcore/config-user.yml as an template and set the rootpath of the output directory in RAWOBS
-6. check the description of the variables at https://apps.ecmwf.int/codes/grib/param-db
-7. check the invariant variables at https://apps.ecmwf.int/datasets/data/interim-full-invariant
-
-```bash
-python download_era-interim.py -c config-user.yml --start_year 2000 --end_year 2000
-```
-''')
+parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--config_file', '-c',
                     default=os.path.join(os.path.dirname(__file__),
                                          'config-user.yml'),
