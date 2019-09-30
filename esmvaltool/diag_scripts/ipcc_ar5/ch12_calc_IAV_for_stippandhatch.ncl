@@ -30,7 +30,7 @@
 ;  Modification history
 ;     20161219-A_lorenz_ruth: remove seasonal cycle before std if seasonal
 ;     20161024-A_lorenz_ruth: adapted to ESMValTool
-;     20130501-A_sedl_ja: written for IPCC AR5 as get_natvar.ncl.
+;     20130501-A_sedlacek_jan: written for IPCC AR5 as get_natvar.ncl.
 ;
 ; #############################################################################
 
