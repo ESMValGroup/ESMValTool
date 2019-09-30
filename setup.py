@@ -42,6 +42,7 @@ REQUIREMENTS = {
         'stratify',
         'xarray>=0.12',
         'xlsxwriter',
+        'ecmwf-api-client',
     ],
     # Test dependencies
     # Execute 'python setup.py test' to run tests
