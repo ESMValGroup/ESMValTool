@@ -5,8 +5,7 @@ from pathlib import Path
 import dask.array as da
 import iris
  
-import numpy 
- 
+import numpy
 # daskframe is possible if
 # pip install 'fsspec>=0.3.3'
 import pandas
@@ -57,13 +56,12 @@ def main(cfg):
             time_coord.points = da.floor(time_coord.core_points())
             time_coord.bounds = None
 
-            print(cube)
-
             # Save data
-            times=[str(x.point.date()) for x in time_coord.cells()]
-            ids=cube.coord('catchment_ID').core_points()
+            times = [str(x.point.date()) for x in time_coord.cells()]
+            ids = cube.coord('shape_id').core_points()
             
-            frame=pandas.DataFrame(numpy.array(cube.core_data()).T, index=times, columns=ids)
+            frame = pandas.DataFrame(numpy.array(cube.core_data()).T,
+                                     index=times, columns=ids)
 
             output_file = get_diagnostic_filename(
                 Path(input_file).stem + '_hype', cfg, 'txt')
