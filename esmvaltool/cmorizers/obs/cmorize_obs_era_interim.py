@@ -47,7 +47,7 @@ the following variables:
         toa incident solar radiation
         total cloud cover
         total precipitation
-and daily, monthly and invariant data of:
+and daily, monthly (not invariant) data of:
         Geopotential
 
 and monthly data of:
@@ -143,7 +143,6 @@ def _extract_variable(in_file, var, cfg, out_dir):
         # Radiation fluxes are positive in downward direction
         cube.attributes['positive'] = 'down'
     if cube.var_name in {'iews', 'inss'}:
-        # TODO: check that turbulent are positive in downward direction
         cube.attributes['positive'] = 'down'
     if cube.var_name in {'lsm', 'tcc'}:
         # Change cloud cover units from fraction to percentage
@@ -165,6 +164,11 @@ def _extract_variable(in_file, var, cfg, out_dir):
     cube.data = cube.core_data().astype('float32')
 
     # Fix coordinates
+    # Add height coordinate to tas variable (required by the new backend)
+    if 'height2m' in definition.dimensions:
+        utils.add_scalar_height_coord(cube, 2.)
+    if 'height10m' in definition.dimensions:
+        utils.add_scalar_height_coord(cube, 10.)
     for axis in 'T', 'X', 'Y', 'Z':
         coord_def = definition.coordinates.get(axis)
         if coord_def:
@@ -221,12 +225,6 @@ def _extract_variable(in_file, var, cfg, out_dir):
         )
         cube.coord('time').bounds = None
         cube.coord('time').guess_bounds()
-
-    # Add height coordinate to tas variable (required by the new backend)
-    if 'height2m' in definition.dimensions:
-        utils.add_scalar_height_coord(cube, 2.)
-    if 'height10m' in definition.dimensions:
-        utils.add_scalar_height_coord(cube, 10.)
 
     # Convert units if required
     cube.convert_units(definition.units)
