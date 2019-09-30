@@ -14,10 +14,10 @@
 ;    rcp4.5, rcp6.0, rcp8.5)
 ;
 ; Modification history
-;    20171002-A_lore_ru: Added tags for searching
-;    20170523-A_lore_ru: separated plotting from calculations
-;    20160625-A_lore_ru: adapted to ESMValTool in ts_line_collins_ipcc_ch12
-;    20130506-A_sedl_ja: written for IPCC AR5.
+;    20171002-A_lorenz_ruth: Added tags for searching
+;    20170523-A_lorenz_ruth: separated plotting from calculations
+;    20160625-A_lorenz_ruth: adapted to ESMValTool in ts_line_collins_ipcc_ch12
+;    20130506-A_sedlacek_jan: written for IPCC AR5.
 ;
 ; #############################################################################
 
@@ -276,7 +276,7 @@ begin
   statistics = ("mean")
   domains = ("global")
   plot_types = ("times")
-  authors = (/"lore_ru"/)
+  authors = (/"lorenz_ruth"/)
   references = (/"collins13ipcc"/)
   infiles = metadata_att_as_array(info_items, "filename")
   log_provenance(nc_file, plot_file, caption, statistics, domains, \

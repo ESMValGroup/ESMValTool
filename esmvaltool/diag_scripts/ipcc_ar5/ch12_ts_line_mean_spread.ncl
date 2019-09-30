@@ -12,10 +12,10 @@
 ;    reference, if no corresponding model found in scenario log_info
 ;
 ; Modification history
-;    20182006-A_lore_ru: ported to version2
-;    20170523-A_lore_ru: separated plotting from calcuation
-;    20160625-A_lore_ru: adapted to ESMValTool
-;    20130506-A_sedl_ja: written for IPCC AR5.
+;    20182006-A_lorenz_ruth: ported to version2
+;    20170523-A_lorenz_ruth: separated plotting from calcuation
+;    20160625-A_lorenz_ruth: adapted to ESMValTool
+;    20130506-A_sedlacek_jan: written for IPCC AR5.
 ;
 ; #############################################################################
 

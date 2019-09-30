@@ -37,8 +37,8 @@
 ;    Only handles one variable at a time
 ;
 ; Modification history
-;    20180618-A_lore_ru: refactored for v2, fixed calculation of stippling
-;    20161027-A_lore_ru: written for ESMValTool
+;    20180618-A_lorenz_ruth: refactored for v2, fixed calculation of stippling
+;    20161027-A_lorenz_ruth: written for ESMValTool
 ;
 ; #############################################################################
 ; A temporary file written by the invoking Python script

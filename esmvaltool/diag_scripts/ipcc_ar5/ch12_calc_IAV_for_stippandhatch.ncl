@@ -28,8 +28,8 @@
 ;     Needs lots of memory for 3D ocean variables
 ;
 ;  Modification history
-;     20161219-A_lore_ru: remove seasonal cycle before std if seasonal
-;     20161024-A_lore_ru: adapted to ESMValTool
+;     20161219-A_lorenz_ruth: remove seasonal cycle before std if seasonal
+;     20161024-A_lorenz_ruth: adapted to ESMValTool
 ;     20130501-A_sedl_ja: written for IPCC AR5 as get_natvar.ncl.
 ;
 ; #############################################################################
@@ -413,7 +413,7 @@ begin
   statistics = ("var")
   domains = ("global")
   plot_types = ("other")
-  authors = (/"lore_ru"/)
+  authors = (/"lorenz_ruth"/)
   references = (/"collins13ipcc"/)
   infiles = metadata_att_as_array(info_items, "filename")
   log_provenance(nc_file, plot_file, caption, statistics, domains, \
