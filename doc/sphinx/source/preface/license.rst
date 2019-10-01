@@ -4,12 +4,19 @@
 License
 *******
 
-The ESMValTool is released under the Apache License, version 2.0 and citation
+The ESMValTool is released under the Apache License, version 2.0. Citation
 of the ESMValTool paper ("Software Documentation Paper") is kindly requested
-upon use alongside with the software doi (to be added for v2)
-and version number:
+upon use, alongside with the software DOI for ESMValTool
+(`doi:10.5281/zenodo.3401363 <https://doi.org/10.5281/zenodo.3401363>`_) and
+ESMValCore (`doi:10.5281/zenodo.3387139
+<https://doi.org/10.5281/zenodo.3387139>`_) and version number:
 
-* Righi et al. to be added
+* Righi, M., Andela, B., Eyring, V., Lauer, A., Predoi, V., Schlund, M.,
+  Vegas-Regidor, J., Bock, L., Brötz, B., de Mora, L., Diblen, F., Dreyer,
+  L., Drost, N., Earnshaw, P., Hassler, B., Koldunov, N., Little, B.,
+  Loosveldt Tomas, S., and Zimmermann, K.: ESMValTool v2.0 - Technical
+  overview, Geosci. Model Dev. Discuss., https://doi.org/10.5194/gmd-2019-226, 
+  in review, 2019. 
 
 Besides the above citation, users are kindly asked to register any journal
 articles (or other scientific documents) that use the software at the
