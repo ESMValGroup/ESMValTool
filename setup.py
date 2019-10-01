@@ -165,6 +165,7 @@ class RunLinter(CustomCommand):
         ]
         ignore = [
             'doc/',
+            'esmvaltool/cmorizers/obs/download_scripts/',
         ]
 
         # try to install missing dependencies and import prospector
