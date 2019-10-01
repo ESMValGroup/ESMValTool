@@ -44,28 +44,21 @@ class LandAtmosInteractions(object):
             self.grid_cube = iris.load_cube(self.target_grid)
 
             clim_ef, stdv_ef = self.evaporative_fraction_stats(hfls, hfss)
-            self.output_name = 'evaporative_fraction_statistics'
+
+            if 'detrend' in self.cfg[n.SCRIPT]:
+                self.output_name = 'detrended_evaporative_fraction_statistics'
+            else:
+                self.output_name = 'evaporative_fraction_statistics'
             self.save([clim_ef, stdv_ef], alias, data)
 
             metrics = self.compute_correlation_metrics(
                 hfls, rsds, rlds, clt, tas, mrso
                 )
-            self.output_name = 'correlation_metrics'
+            if 'detrend' in self.cfg[n.SCRIPT]:
+                self.output_name = 'detrended_correlation_metrics'
+            else:
+                self.output_name = 'correlation_metrics'
             self.save(metrics, alias, data)
-
-            # Compute the metrics but with detrended data.
-            # Update when PR #218 on ESMValCore gets merged
-            hfls = hfls.copy(signal.detrend(hfls.lazy_data(), axis=0))
-            rsds = rsds.copy(signal.detrend(rsds.lazy_data(), axis=0))
-            rlds = rlds.copy(signal.detrend(rlds.lazy_data(), axis=0))
-            clt = clt.copy(signal.detrend(clt.lazy_data(), axis=0))
-            tas = tas.copy(signal.detrend(tas.lazy_data(), axis=0))
-            mrso = mrso.copy(signal.detrend(mrso.lazy_data(), axis=0))
-            detrended_metrics = self.compute_correlation_metrics(
-                hfls, rsds, rlds, clt, tas, mrso
-                )
-            self.output_name = 'detrended_correlation_metrics'
-            self.save(detrended_metrics, alias, data)
 
     def save(self, cubelist, alias, data):
         if self.output_name:

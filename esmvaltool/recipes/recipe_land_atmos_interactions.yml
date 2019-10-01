@@ -23,9 +23,20 @@ preprocessors:
   ppsummer:
     extract_season:
       season: 'JJA'
-    seasonal_mean:
+    seasonal_statistics:
+
   ppmrso:
-    seasonal_mean:
+    seasonal_statistics:
+
+  ppsummerdetrend:
+    extract_season:
+      season: 'JJA'
+    seasonal_statistics:
+    detrend:
+
+  ppmrsodetrend:
+    seasonal_statistics:
+    detrend:
 
 diagnostics:
   interactions:
@@ -57,7 +68,38 @@ diagnostics:
     scripts:
       interactions:
         script: primavera/land_atmos_interactions.py
-        target_grid: '/gws/nopw/j04/primavera1/cache/jboe/WP1/FOR_INTERP/lsm_ERA5.nc'
+        target_grid: '/gws/nopw/j04/primavera1/cache/jboe/WP1/FOR_INTERP/landsea_mask_ERAI.nc'
+
+  detrended_interactions:
+    variables:
+      hfls:
+        mip: Amon
+        preprocessor: ppsummerdetrend
+      hfss:
+        mip: Amon
+        preprocessor: ppsummerdetrend
+      rsds:
+        mip: Amon
+        preprocessor: ppsummerdetrend
+      rlds:
+        mip: Amon
+        preprocessor: ppsummerdetrend
+      clt:
+        mip: Amon
+        preprocessor: ppsummerdetrend
+      tas:
+        mip: Amon
+        preprocessor: ppsummerdetrend
+      mrso:
+        mip: Lmon
+        preprocessor: ppmrsodetrend
+        fx_files: [sftlf]
+
+    scripts:
+      detrended_interactions:
+        script: primavera/land_atmos_interactions.py
+        target_grid: '/gws/nopw/j04/primavera1/cache/jboe/WP1/FOR_INTERP/landsea_mask_ERAI.nc'
+
 
 
 
