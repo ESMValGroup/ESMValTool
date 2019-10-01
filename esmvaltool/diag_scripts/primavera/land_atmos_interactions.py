@@ -134,7 +134,9 @@ class LandAtmosInteractions(object):
         return correlation, mrso_correlation
 
     def mask_and_regrid(self, var):
-        var = mask_landsea(var, self.sftlf, 'sea')
+        if self.sftlf is None:
+            always_use_ne_mask = True
+        var = mask_landsea(var, self.sftlf, 'sea', always_use_ne_mask)
         var = regrid(var,
                      self.grid_cube,
                      method='area_weighted')
