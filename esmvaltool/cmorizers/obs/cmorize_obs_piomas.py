@@ -1,4 +1,3 @@
-# pylint: disable=invalid-name
 """ESMValTool CMORizer for WOA data.
 
 Tier
