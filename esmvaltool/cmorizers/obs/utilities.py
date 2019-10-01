@@ -150,6 +150,9 @@ def save_variable(cube, var, outdir, attrs, **kwargs):
     # CMOR standard
     try:
         cube_time = cube.coord('time')
+    except iris.exceptions.CoordinateNotFoundError:
+        time_suffix = None
+    else:
         reftime = Unit(cube_time.units.origin, cube_time.units.calendar)
         dates = reftime.num2date(cube_time.points[[0, -1]])
         if len(cube_time.points) == 1:
@@ -159,8 +162,7 @@ def save_variable(cube, var, outdir, attrs, **kwargs):
             date1 = str(dates[0].year) + '%02d' % dates[0].month
             date2 = str(dates[1].year) + '%02d' % dates[1].month
             time_suffix = '-'.join([date1, date2])
-    except iris.exceptions.CoordinateNotFoundError:
-        time_suffix = None
+
     name_elements = [
         attrs['project_id'],
         attrs['dataset_id'],

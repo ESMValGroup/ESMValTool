@@ -20,6 +20,7 @@ logger = logging.getLogger(__name__)
 
 
 class OSICmorizer(object):
+    """Cmorizer for OSI-407 y OSI-450 datasets"""
 
     def __init__(self, in_dir, out_dir, cfg, hemisphere):
         self.in_dir = in_dir

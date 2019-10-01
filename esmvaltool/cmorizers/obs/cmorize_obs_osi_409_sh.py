@@ -23,4 +23,3 @@ def cmorization(in_dir, out_dir, cfg, _):
     """Cmorization func call."""
     cmorizer = OSICmorizer(in_dir, out_dir, cfg, 'sh')
     cmorizer.cmorize()
-
