@@ -4,7 +4,7 @@ from pathlib import Path
 
 import dask.array as da
 import iris
- 
+
 import numpy
 # daskframe is possible if
 # pip install 'fsspec>=0.3.3'
@@ -65,7 +65,7 @@ def main(cfg):
 
             output_file = get_diagnostic_filename(
                 Path(input_file).stem + '_hype', cfg, 'txt')
-                                    
+
             frame.to_csv(output_file, sep=' ', index_label="DATE")
 
             # Store provenance
