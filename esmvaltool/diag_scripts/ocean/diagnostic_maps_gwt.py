@@ -92,9 +92,6 @@ def make_map_plots(
         suffix = '_'.join([metadata['dataset'], key])+image_extention
         path = diagtools.folder([cfg['plot_dir'], 'Trend_intact', 'single_plots'])+suffix
 
-    # Load cube and set up units
-    # cube = diagtools.bgc_units(cube, metadata['short_name'])
-
     # Making plots for each layer
     qplt.contourf(cube, 12, linewidth=0, rasterized=True, cmap=cmap)
 
@@ -189,6 +186,7 @@ def make_ensemble_map_plots(
 def make_threshold_ensemble_map_plots(
         cfg,
         cube,
+        variable,
         threshold,
         detrend,
         cmap='YlOrRd'
@@ -207,10 +205,10 @@ def make_threshold_ensemble_map_plots(
 
     # Determine image filename:
     if detrend:
-        suffix = '_'.join(['variable_group_ensembles', 'Detrended', threshold, ]) + image_extention
+        suffix = '_'.join(['variable_group_ensembles', 'Detrended', threshold, variable]) + image_extention
         path = diagtools.folder([cfg['plot_dir'], 'Detrended', 'threshold_ensemble']) + suffix
     else:
-        suffix = '_'.join(['variable_group_ensembles', 'Trend_intact', threshold, ]) + image_extention
+        suffix = '_'.join(['variable_group_ensembles', 'Trend_intact', threshold, variable]) + image_extention
         path = diagtools.folder([cfg['plot_dir'], 'Trend_intact', 'threshold_ensemble']) + suffix
 
     # Making plots for each layer
@@ -273,6 +271,7 @@ def make_gwt_map_plots(cfg, detrend = True, do_single_plots=False):
     ensembles = set()
     exps = set()
     variable_groups = set()
+    variables = set()
     thresholds = {}
 
     for fn, details in metadatas.items():
@@ -303,6 +302,7 @@ def make_gwt_map_plots(cfg, detrend = True, do_single_plots=False):
 
             print('Plotting:', ensemble, variable_group)
             variable, exp, threshold = split_variable_groups(variable_group)
+            variables.add(variable)
 
             if (variable_group, ensemble) not in files_dict:
                 continue
@@ -353,15 +353,20 @@ def make_gwt_map_plots(cfg, detrend = True, do_single_plots=False):
         make_ensemble_map_plots(cfg, ensemble_mean, variable_group, detrend)
 
     # Ensemble mean for each threshold:
-    for threshold, paths in sorted(thresholds.items()):
-        cube_list = []
-        for [variable_group, ensemble] in paths:
-            cube_list.append(anomaly_cubes[variable_group][ensemble])
+    for variable in variables:
+        for threshold, paths in sorted(thresholds.items()):
+            cube_list = []
+            for [variable_group, ensemble] in paths:
+                var_g, exp, threshold = split_variable_groups(variable_group)
+                if var_g != variable:
+                    continue
+                cube_list.append(anomaly_cubes[variable_group][ensemble])
 
-        if cube_list == []: continue
-        ensemble_mean = calc_ensemble_mean(cube_list)
+            if cube_list == []:
+                continue
+            ensemble_mean = calc_ensemble_mean(cube_list)
 
-        make_threshold_ensemble_map_plots(cfg, ensemble_mean, threshold, detrend)
+            make_threshold_ensemble_map_plots(cfg, ensemble_mean, variable, threshold, detrend, )
 
 
 def main(cfg):
