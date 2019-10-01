@@ -5,7 +5,7 @@ Tier
  to be retrieved or provided upon request to the respective contact or PI).
 
 Source
-    TODO
+    https://apps.ecmwf.int/datasets/data/interim-land/type=an/
 
 Last access
     20190718
@@ -15,7 +15,7 @@ Download and processing instructions
 variables:
         swvl1 (soil moisture at layer 1)
 
-    TODO include download instructions. 
+    Use the Python ecmwfapi or the online form (see source) for downloading the data
 
 """
 
@@ -76,7 +76,6 @@ def _extract_variable(in_file, var, cfg, out_dir):
 
     # Set correct names
     cube.var_name = definition.short_name
-    cube.standard_name = definition.standard_name
     cube.long_name = definition.long_name
 
     # Fix data type

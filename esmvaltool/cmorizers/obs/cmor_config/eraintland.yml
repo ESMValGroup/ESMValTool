@@ -1,0 +1,19 @@
+---
+# Global attributes of NetCDF file
+attributes:
+  dataset_id: eraintland
+  project_id: OBS6
+  tier: 3
+  version: '1'
+  modeling_realm: reanaly
+  source: 'https://apps.ecmwf.int/datasets/data/interim-land/type=an/'
+  reference: 'eraintland'
+#  comment: |
+#    'Contains modified Copernicus Climate Change Service Information {year}'
+
+# Variables to CMORize
+variables:
+  sm:
+    mip: E6hr
+    raw: swvl1
+    file: 'eraintland_swvl1_????.nc' 
