@@ -8,8 +8,7 @@ The ``config-user.yml`` configuration file contains all the global level
 information needed by ESMValTool. The configuration is passed to ESMValTool
 as a command line argument (see :ref:`Running ESMValTool <running>`).
 
-An example configuration file can be downloaded `here<https://github.com\
-/ESMValGroup/ESMValTool/blob/version2_development/config-user-example.yml>`_
+An example configuration file can be downloaded `here<https://github.com/ESMValGroup/ESMValTool/blob/version2_development/config-user-example.yml>`_
 and tailored for your system using the explanation below.
 
 Most of these settings are fairly self-explanatory, ie:

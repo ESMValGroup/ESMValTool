@@ -29,10 +29,12 @@ Once you have set up Synda, you'll need to configure ESMValTool to recognize
 your Synda installation. Note that it is not possible to combine the two in a
 single conda environment, for Synda requires python 2 and ESMValTool requires
 Python 3. Typing ``which synda`` while your synda environment
-is active will print the location. Then, activate your conda environment for
-ESMValTool. ``which esmvaltool`` will print the path to your esmvaltool
-installation. Now, you can make a link to synda:
-``ln -s /home/path/to/your/syndaenv/bin/synda /home/path/to/esmvaltool/bin``.
+is active will print its location. To make synda from ESMValTool we suggest
+creating a directory ``mkdir ~/bin`` and and appending that folder to your PATH
+environment variable, e.g. by adding the following line to your ``bashrc`` file:
+``PATH=$PATH:$HOME/BIN``.
+ Finally, in the new bin folder, make a link to synda:
+``ln -s /path/to/conda/envs/synda/bin/synda ~/bin/synda``.
 Now, ESMValTool should be able to recognize your Synda installation. First time
 users can now continue with :ref:`Running ESMValTool <running>`.
 
@@ -75,8 +77,6 @@ A list of the datasets for which a cmorizers is available is provided in the fol
 |                              | rlds, rldscs, rlus, rlut, rlutcs, rsds, rsdt, rsus, rsut, rsutcs (Amon)                              |      |                 |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | CRU                          | tas, pr (Amon)                                                                                       |   2  | Python          |
-+------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
-| Duveiller2018                | albDiffiTr13                                                                                         |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | Eppley-VGPM-MODIS            | intpp (Omon)                                                                                         |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
