@@ -51,15 +51,19 @@ def cmorization(in_dir, out_dir, cfg, _):
 Coords = collections.namedtuple('Coords', 'lat lon')
 
 
-class PIOMAS(object):
-    """Cmorizer class for PIOMAS"""
+class PIOMAS():
+    """Cmorizer class for PIOMAS."""
 
     def __init__(self, cfg, in_dir, out_dir):
         self.cfg = cfg
         self.in_dir = in_dir
         self.out_dir = out_dir
+        self.scalar_coords = None
+        self.vector_coords = None
+        self.areacello = None
 
     def prepare_grid_info(self):
+        """Read grid information."""
         grids = np.loadtxt(os.path.join(
             self.in_dir, self.cfg['custom']['scalar_file']))
         grids = grids.reshape(2, NY, NX)
@@ -76,6 +80,7 @@ class PIOMAS(object):
         self.areacello = grids[2, ...] * grids[3, ...] * 1e6
 
     def cmorize(self):
+        """Cmorize available data."""
         # run the cmorization
         for var, vals in self.cfg['variables'].items():
             var_info = self.cfg['cmor_table'].get_variable(vals['mip'], var)
@@ -99,8 +104,8 @@ class PIOMAS(object):
         file_expression = os.path.join(
             self.in_dir, '{0}.H????'.format(vals['raw']))
         for file_path in glob.glob(file_expression):
-            cube = self._create_cube(
-                self._read_binary_file(file_path),
+            cube = PIOMAS._create_cube(
+                PIOMAS._read_binary_file(file_path),
                 coords,
                 int(file_path[-4:]),
                 var_info,
@@ -111,7 +116,8 @@ class PIOMAS(object):
                 cube, var_info.short_name, self.out_dir, self.cfg['attributes']
             )
 
-    def _create_lat_lon_coords(self, lat, lon):
+    @staticmethod
+    def _create_lat_lon_coords(lat, lon):
         lon_coord = AuxCoord(
             lon,
             standard_name='longitude',
@@ -127,7 +133,8 @@ class PIOMAS(object):
         )
         return Coords(lat_coord, lon_coord)
 
-    def _create_cube(self, data, coords, year, var_info, raw_units):
+    @staticmethod
+    def _create_cube(data, coords, year, var_info, raw_units):
         time_coord = DimCoord(
             np.arange(0, data.shape[0]),
             standard_name='time',
@@ -157,7 +164,8 @@ class PIOMAS(object):
         cube.add_aux_coord(coords.lat, (0, 1))
         return cube
 
-    def _read_binary_file(self, data_path, vector=False):
+    @staticmethod
+    def _read_binary_file(data_path, vector=False):
         fd_data = open(data_path, 'rb')
         data = np.fromfile(fd_data, dtype=np.dtype('f'), count=-1)
         days = data.shape[0] // NX // NY
