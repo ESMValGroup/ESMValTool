@@ -9,7 +9,7 @@ conda environment for ESMValTool is active, you can just run the command
 ``esmvaltool <options> <recipe>``. One of the options that must be specified
 is the user configuration file, which is specified using the
 option ``-c /path/to/config-user.yaml``. An
-`example recipe<https://github.com/ESMValGroup/ESMValTool/blob/version2_development/esmvaltool/recipes/examples/recipe_python.yml>`_
+`example recipe <https://github.com/ESMValGroup/ESMValTool/blob/version2_development/esmvaltool/recipes/examples/recipe_python.yml>`_
 is available in the ESMValTool installation folder as
 ``examples/recipe_python.yml``.
 
@@ -17,9 +17,9 @@ This recipe finds data from CanESM2 and MPI-ESM-LR for 2000 - 2002,
 extracts a single level (850 hPa), regrids it to a 1x1 degree mesh and runs
 a diagnostic script that creates some plots of Air temperature and
 precipitation flux. You can download the recipe from
-`github<https://github.com/ESMValGroup/ESMValTool/blob/version2_development/esmvaltool/recipes/examples/recipe_python.yml>`_
- and save it in your project directory as (e.g.) ``recipe_python.yml``
- and then run ESMValTool with
+`github <https://github.com/ESMValGroup/ESMValTool/blob/version2_development/esmvaltool/recipes/examples/recipe_python.yml>`_
+and save it in your project directory as (e.g.) ``recipe_python.yml``
+and then run ESMValTool with
 
 .. code:: bash
 

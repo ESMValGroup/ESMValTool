@@ -33,8 +33,10 @@ is active will print its location. To make synda from ESMValTool we suggest
 creating a directory ``mkdir ~/bin`` and and appending that folder to your PATH
 environment variable, e.g. by adding the following line to your ``bashrc`` file:
 ``PATH=$PATH:$HOME/BIN``.
- Finally, in the new bin folder, make a link to synda:
+
+Finally, in the new bin folder, make a link to synda:
 ``ln -s /path/to/conda/envs/synda/bin/synda ~/bin/synda``.
+
 Now, ESMValTool should be able to recognize your Synda installation. First time
 users can now continue with :ref:`Running ESMValTool <running>`.
 
