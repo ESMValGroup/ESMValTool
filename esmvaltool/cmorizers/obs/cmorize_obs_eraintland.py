@@ -15,7 +15,8 @@ Download and processing instructions
 variables:
         swvl1 (soil moisture at layer 1)
 
-    Use the Python ecmwfapi or the online form (see source) for downloading the data
+    Use the Python ecmwfapi or the online form (see source) for downloading
+    the data
 
 """
 
@@ -28,7 +29,6 @@ from pathlib import Path
 from warnings import catch_warnings, filterwarnings
 
 import iris
-import numpy as np
 
 from esmvalcore.cmor.table import CMOR_TABLES
 
