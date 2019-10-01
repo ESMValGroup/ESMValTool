@@ -7,7 +7,7 @@ Running ESMValTool
 ESMValTool is mostly used as a command line tool. Whenever your
 conda environment for ESMValTool is active, you can just run the command
 ``esmvaltool <options> <recipe>``. One of the options that must be specified
-is the user-config file, which is specified using the
+is the user configuration file, which is specified using the
 option ``-c /path/to/config-user.yaml``. An example recipe is available in the
 ESMValTool installation folder as ``examples/recipe_python.yml``:
 

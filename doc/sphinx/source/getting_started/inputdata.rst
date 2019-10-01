@@ -15,8 +15,8 @@ ESMValTool will look for existing data in the directories specified in the
 user config file. Alternatively, it can use an external
 tool called Synda (http://prodiguer.github.io/synda/index.html). Here, we
 describe the basic steps to configure EMSValTool to work with Synda. This is
-the recommended approach for first-time users to quickly get up to speed with
-ESMValTool.
+the recommended approach for first-time users to quickly obtain some data for
+running ESMValTool.
 
 To install Synda, follow the steps listed in the Synda documentation. This
 description assumes that you use the conda install. As the last step, Synda will
