@@ -59,7 +59,7 @@ def get_provenance_record(project, ancestor_files):
          'pre-industrial control runs (smaller symbols).'.format(project)),
         'statistics': ['mean'],
         'domains': ['global'],
-        'authors': ['schl_ma'],
+        'authors': ['schlund_manuel'],
         'references': ['flato13ipcc'],
         'realms': ['atmos'],
         'themes': ['phys'],

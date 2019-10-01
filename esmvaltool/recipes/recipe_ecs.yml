@@ -6,7 +6,7 @@ documentation:
     Calculate ECS using linear regression following Andrews et al. (2012).
 
   authors:
-    - schl_ma
+    - schlund_manuel
 
   references:
     - andrews12grl

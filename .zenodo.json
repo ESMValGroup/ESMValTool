@@ -1,0 +1,304 @@
+{
+    "creators": [
+        {
+            "affiliation": "University of Bremen, Germany",
+            "name": "Adeniyi, Kemisola"
+        },
+        {
+            "affiliation": "NLeSC, Netherlands",
+            "name": "Andela, Bouwe",
+            "orcid": "0000-0001-9005-8940"
+        },
+        {
+            "affiliation": "ISAC-CNR, Italy",
+            "name": "Arnone, Enrico",
+            "orcid": "0000-0001-6740-5051"
+        },
+        {
+            "affiliation": "BSC, Spain",
+            "name": "Bellprat, Omar",
+            "orcid": "0000-0001-6434-1793"
+        },
+        {
+            "affiliation": "SMHI, Sweden",
+            "name": "Berg, Peter",
+            "orcid": "0000-0002-1469-2568"
+        },
+        {
+            "affiliation": "DLR, Germany",
+            "name": "Bock, Lisa",
+            "orcid": "0000-0001-7058-5938"
+        },
+        {
+            "affiliation": "DLR, Germany",
+            "name": "Broetz, Bjoern"
+        },
+        {
+            "affiliation": "BSC, Spain",
+            "name": "Caron, Louis-Philippe",
+            "orcid": "0000-0001-5221-0147"
+        },
+        {
+            "affiliation": "MPI for Biogeochemistry, Germany",
+            "name": "Carvalhais, Nuno"
+        },
+        {
+            "affiliation": "ENEA, Italy",
+            "name": "Cionni, Irene",
+            "orcid": "0000-0002-0591-9193"
+        },
+        {
+            "affiliation": "BSC, Spain",
+            "name": "Cortesi, Nicola",
+            "orcid": "0000-0002-1442-9225"
+        },
+        {
+            "affiliation": "ISAC-CNR, Italy",
+            "name": "Corti, Susanna"
+        },
+        {
+            "affiliation": "ETH Zurich, Switzerland",
+            "name": "Crezee, Bas",
+            "orcid": "0000-0002-1774-1126"
+        },
+        {
+            "affiliation": "ETH Zurich, Switzerland",
+            "name": "Davin, Edouard Leopold",
+            "orcid": "0000-0003-3322-9330"
+        },
+        {
+            "affiliation": "ISAC-CNR, Italy",
+            "name": "Davini, Paolo",
+            "orcid": "0000-0003-3389-7849"
+        },
+        {
+            "affiliation": "NCAR, USA",
+            "name": "Deser, Clara"
+        },
+        {
+            "affiliation": "NLeSC, Netherlands",
+            "name": "Diblen, Faruk"
+        },
+        {
+            "affiliation": "UCLouvain, Belgium",
+            "name": "Docquier, David"
+        },
+        {
+            "affiliation": "MetOffice, UK",
+            "name": "Dreyer, Laura"
+        },
+        {
+            "affiliation": "DKRZ, Germany",
+            "name": "Ehbrecht, Carsten"
+        },
+        {
+            "affiliation": "NLeSC, Netherlands",
+            "name": "Drost, Niels",
+            "orcid": "0000-0001-9795-7981"
+        },
+        {
+            "affiliation": "MetOffice, UK",
+            "name": "Earnshaw, Paul"
+        },
+        {
+            "affiliation": "DLR, Germany",
+            "name": "Eyring, Veronika",
+            "orcid": "0000-0002-6887-4885"
+        },
+        {
+            "affiliation": "University of Bremen, Germany",
+            "name": "Gier, Bettina"
+        },
+        {
+            "affiliation": "BSC, Spain",
+            "name": "Gonzalez-Reviriego, Nube",
+            "orcid": "0000-0002-5919-6701"
+        },
+        {
+            "affiliation": "University of Arizona, USA",
+            "name": "Goodman, Paul"
+        },
+        {
+            "affiliation": "HZG, Germany",
+            "name": "Hagemann, Stefan",
+            "orcid": "0000-0001-5444-2945"
+        },
+        {
+            "affiliation": "ISAC-CNR, Italy",
+            "name": "von Hardenberg, Jost",
+            "orcid": "0000-0002-5312-8070"
+        },
+        {
+            "affiliation": "DLR, Germany",
+            "name": "Hassler, Birgit",
+            "orcid": "0000-0003-2724-709X"
+        },
+        {
+            "affiliation": "BSC, Spain",
+            "name": "Hunter, Alasdair",
+            "orcid": "0000-0001-8365-3709"
+        },
+        {
+            "affiliation": "FUB, Germany",
+            "name": "Kadow, Christopher"
+        },
+        {
+            "affiliation": "DKRZ, Germany",
+            "name": "Kindermann, Stephan",
+            "orcid": "0000-0001-9335-1093"
+        },
+        {
+            "affiliation": "MPI for Biogeochemistry, Germany",
+            "name": "Koirala, Sujan"
+        },
+        {
+            "affiliation": "AWI, Germany",
+            "name": "Koldunov, Nikolay",
+            "orcid": "0000-0002-3365-8146"
+        },
+        {
+            "affiliation": "DLR, Germany",
+            "name": "Lauer, Axel",
+            "orcid": "0000-0002-9270-1044"
+        },
+        {
+            "affiliation": "BSC, Spain",
+            "name": "Lledó, Llorenç"
+        },
+        {
+            "affiliation": "ETH Zurich, Switzerland",
+            "name": "Lejeune, Quentin"
+        },
+        {
+            "affiliation": "University of Hamburg, German",
+            "name": "Lembo, Valerio",
+            "orcid": "0000-0001-6085-5914"
+        },
+        {
+            "affiliation": "MetOffice, UK",
+            "name": "Little, Bill"
+        },
+        {
+            "affiliation": "BSC, Spain",
+            "name": "Loosveldt-Tomas, Saskia"
+        },
+        {
+            "affiliation": "ETH Zurich, Switzerland",
+            "name": "Lorenz, Ruth",
+            "orcid": "0000-0002-3986-1268"
+        },
+        {
+            "affiliation": "CMCC, Italy",
+            "name": "Lovato, Tomas",
+            "orcid": "0000-0002-5188-6767"
+        },
+        {
+            "affiliation": "University of Hamburg, German",
+            "name": "Lucarini, Valerio"
+        },
+        {
+            "affiliation": "UCLouvain, Belgium",
+            "name": "Massonnet, François"
+        },
+        {
+            "affiliation": "NIBIO, Norway",
+            "name": "Mohr, Christian Wilhelm",
+            "orcid": "0000-0003-2656-1802"
+        },
+        {
+            "affiliation": "LMU, Germany",
+            "name": "Mueller, Benjamin"
+        },
+        {
+            "affiliation": "PML, UK",
+            "name": "de Mora, Lee",
+            "orcid": "0000-0002-5080-3149"
+        },
+        {
+            "affiliation": "University of Arizona, USA",
+            "name": "Amarjiit, Pandde"
+        },
+        {
+            "affiliation": "BSC, Spain",
+            "name": "Pérez-Zanón, Núria"
+        },
+        {
+            "affiliation": "NCAR, USA",
+            "name": "Phillips, Adam",
+            "orcid": "0000-0003-4859-8585"
+        },
+        {
+            "affiliation": "URead, UK",
+            "name": "Predoi, Valeriu",
+            "orcid": "0000-0002-9729-6578"
+        },
+        {
+            "affiliation": "DLR, Germany",
+            "name": "Righi, Mattia",
+            "orcid": "0000-0003-3827-5950"
+        },
+        {
+            "affiliation": "University of Arizona, USA",
+            "name": "Russell, Joellen"
+        },
+        {
+            "affiliation": "CICERO, Norway",
+            "name": "Sandstad, Marit"
+        },
+        {
+            "affiliation": "DLR, Germany",
+            "name": "Schlund, Manuel",
+            "orcid": "0000-0001-5251-0158"
+        },
+        {
+            "affiliation": "MetOffice, UK",
+            "name": "Sellar, Alistair"
+        },
+        {
+            "affiliation": "DLR, Germany",
+            "name": "Senftleben, Daniel"
+        },
+        {
+            "affiliation": "ISMAR-CNR, Italy",
+            "name": "Serva, Federico",
+            "orcid": "0000-0002-7118-0817"
+        },
+        {
+            "affiliation": "CICERO, Norway",
+            "name": "Sillmann, Jana"
+        },
+        {
+            "affiliation": "MPI-M, Germany",
+            "name": "Stacke, Tobias",
+            "orcid": "0000-0003-4637-5337"
+        },
+        {
+            "affiliation": "URead, UK",
+            "name": "Swaminathan, Ranjini",
+            "orcid": "0000-0001-5853-2673"
+        },
+        {
+            "affiliation": "BSC, Spain",
+            "name": "Torralba, Verónica"
+        },
+        {
+            "affiliation": "BSC, Spain",
+            "name": "Vegas-Regidor, Javier",
+            "orcid": "0000-0003-0096-4291"
+        },
+        {
+            "affiliation": "University of Bremen, Germany",
+            "name": "Weigel, Katja",
+            "orcid": "0000-0001-6133-7801"
+        },
+        {
+            "affiliation": "SMHI, Sweden",
+            "name": "Zimmermann, Klaus"
+        }
+    ],
+    "description": "ESMValTool: A community diagnostic and performance metrics tool for routine evaluation of Earth system models in CMIP.",
+    "license": {
+        "id": "Apache-2.0"
+    },
+    "title": "ESMValTool"
+}
