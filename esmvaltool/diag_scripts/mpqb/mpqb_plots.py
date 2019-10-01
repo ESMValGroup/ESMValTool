@@ -31,5 +31,5 @@ def mpqb_mapplot(cube,filename,**plotkwargs):
     iris.quickplot.pcolormesh(cube,**plotkwargs)
     plt.gca().coastlines()
     plt.title(plottitle)
-    fig.savefig(filename)
+    fig.savefig(filename, bbox_inches='tight')
     plt.close(fig)
