@@ -156,8 +156,8 @@ def save_variable(cube, var, outdir, attrs, **kwargs):
         else:
             date1 = str(time.cell(0).point.year) + '%02d' % \
                 time.cell(0).point.month
-            date2 = str(time.cell(1).point.year) + '%02d' % \
-                time.cell(1).point.month
+            date2 = str(time.cell(-1).point.year) + '%02d' % \
+                time.cell(-1).point.month
             time_suffix = '-'.join([date1, date2])
 
     name_elements = [

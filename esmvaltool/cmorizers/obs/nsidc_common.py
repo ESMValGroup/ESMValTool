@@ -4,7 +4,6 @@ import logging
 import os
 import glob
 import numpy as np
-from numba import vectorize
 import iris
 from iris.coords import AuxCoord
 from iris.cube import Cube
@@ -31,7 +30,7 @@ def cmorize(cfg, region, in_dir, out_dir):
         logger.debug(cubes)
         lat_coord = _create_coord(cubes, 'lat', 'latitude')
         lon_coord = _create_coord(cubes, 'lon', 'longitude')
-        lon_coord.points = _correct_lons(lon_coord.points)
+        lon_coord.points[lon_coord.points < 0] += 360
 
         for var, vals in cfg['variables'].items():
             var_info = cfg['cmor_table'].get_variable(vals['mip'], var)
@@ -53,13 +52,6 @@ def cmorize(cfg, region, in_dir, out_dir):
             cubes.remove(cube)
 
     _create_areacello(cfg, cube, glob_attrs, out_dir)
-
-
-@vectorize
-def _correct_lons(lon):
-    if lon < 0:
-        return lon + 360
-    return lon
 
 
 def _create_areacello(cfg, sample_cube, glob_attrs, out_dir):
