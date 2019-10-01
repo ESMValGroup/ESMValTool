@@ -250,7 +250,9 @@ diagnostics:
       sic:
         preproc: nopp
         mip: OImon
-        fx_files: [areacello]
+      areacello:
+        preproc: nopp
+        mip: fx
     additional_datasets:
       - {dataset: OSI-450-nh, project: OBS, tier: 2, type: reanaly, version: v2, start_year: 1979, end_year: 2015}
       - {dataset: OSI-450-sh, project: OBS, tier: 2, type: reanaly, version: v2, start_year: 1979, end_year: 2015}
@@ -262,7 +264,9 @@ diagnostics:
       sic:
         preproc: nopp
         mip: day
-        fx_files: [areacello]
+      areacello:
+        preproc: nopp
+        mip: fx
     additional_datasets:
       - {dataset: OSI-450-nh, project: OBS, tier: 2, type: reanaly, version: v2, start_year: 1988, end_year: 2015}
       - {dataset: OSI-450-sh, project: OBS, tier: 2, type: reanaly, version: v2, start_year: 1988, end_year: 2015}
@@ -274,6 +278,9 @@ diagnostics:
       sic:
         preproc: nopp
         mip: Omon
+      areacello:
+        preproc: nopp
+        mip: fx
     additional_datasets:
       - {dataset: OSI-407-nh, project: OBS, tier: 2, type: reanaly, version: 2, start_year: 1948, end_year: 2018}
       - {dataset: OSI-407-sh, project: OBS, tier: 2, type: reanaly, version: 2, start_year: 1948, end_year: 2018}
@@ -285,6 +292,9 @@ diagnostics:
       sic:
         preproc: nopp
         mip: day
+      areacello:
+        preproc: nopp
+        mip: fx
     additional_datasets:
       - {dataset: OSI-407-nh, project: OBS, tier: 2, type: reanaly, version: 2, start_year: 1948, end_year: 2018}
       - {dataset: OSI-407-sh, project: OBS, tier: 2, type: reanaly, version: 2, start_year: 1948, end_year: 2018}

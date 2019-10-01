@@ -16,10 +16,10 @@ Download and processing instructions
     Please, keep folder structure and uncompress gz files before launching.
 
 """
-from .osi_common import cmorize_osi
+from .osi_common import OSICmorizer
 
 
 def cmorization(in_dir, out_dir, cfg, _):
     """Cmorization func call."""
-    # read in CMOR configuration
-    cmorize_osi(in_dir, out_dir, cfg, 'nh')
+    cmorizer = OSICmorizer(in_dir, out_dir, cfg, 'nh')
+    cmorizer.cmorize()

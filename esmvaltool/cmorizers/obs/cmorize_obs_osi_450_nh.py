@@ -16,9 +16,10 @@ Download and processing instructions
     Please, keep folder structure.
 
 """
-from .osi_common import cmorize_osi
+from .osi_common import OSICmorizer
 
 
 def cmorization(in_dir, out_dir, cfg, _):
     """Cmorization func call."""
-    cmorize_osi(in_dir, out_dir, cfg, 'nh')
+    cmorizer = OSICmorizer(in_dir, out_dir, cfg, 'nh')
+    cmorizer.cmorize()
