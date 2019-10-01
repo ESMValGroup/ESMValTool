@@ -24,6 +24,16 @@ diagnostics:
     scripts: null
 
 
+  Duveiller2018:
+    description: Duveiller2018 check
+    variables:
+      albDiffiTr13:
+    additional_datasets:
+      - {dataset: Duveiller2018, project: OBS, mip: Amon, tier: 2,
+         type: clim, version: v2018, start_year: 2010, end_year: 2010}
+    scripts: null
+
+
   Eppley-VGPM-MODIS:
     description: Eppley-VGPM-MODIS check
     variables:
