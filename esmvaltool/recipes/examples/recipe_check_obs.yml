@@ -259,7 +259,8 @@ diagnostics:
     variables:
       sithick:
         mip: day
-        fx_files: [areacello]
+      sithick:
+        areacello: fx
     additional_datasets:
       - {dataset: PIOMAS, project: OBS, tier: 2, type: reanaly, version: 2.1, start_year: 1979, end_year: 2018}
     scripts: null
