@@ -52,7 +52,7 @@ with open(config_file, 'r') as f:
 rawobs_dir = os.path.abspath(
     os.path.expandvars(os.path.expanduser(config['rootpath']['RAWOBS'])))
 era_interim_dir = f'{rawobs_dir}/Tier3/ERA-Interim'
-os.makedirs(erainterim_dir, exist_ok=True)
+os.makedirs(era_interim_dir, exist_ok=True)
 
 years = range(args.start_year, args.end_year + 1)
 server = ECMWFDataServer()
@@ -120,7 +120,7 @@ for no, symbol, timestep in day_params:
             'param': no,
             'stream': 'oper',
             'format': 'netcdf',
-            'target': f'{erainterim_dir}/ERA-Interim_{symbol}_{fr}_{year}.nc',
+            'target': f'{era_interim_dir}/ERA-Interim_{symbol}_{fr}_{year}.nc',
             **day_timesteps[timestep]
         })
 
@@ -200,7 +200,7 @@ for no, symbol, timestep in month_params:
             'grid': '0.75/0.75',
             'param': no,
             'format': 'netcdf',
-            'target': f'{erainterim_dir}/ERA-Interim_{symbol}_{fr}_{year}.nc',
+            'target': f'{era_interim_dir}/ERA-Interim_{symbol}_{fr}_{year}.nc',
             **month_timesteps[timestep]
         })
 
@@ -223,5 +223,5 @@ for no, symbol in invariant_params:
         'time': '12:00:00',
         'type': 'an',
         'format': 'netcdf',
-        'target': f'{erainterim_dir}/ERA-Interim_{symbol}.nc',
+        'target': f'{era_interim_dir}/ERA-Interim_{symbol}.nc',
     })
