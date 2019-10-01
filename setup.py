@@ -235,6 +235,8 @@ setup(
             'nclcodestyle = esmvaltool.utils.nclcodestyle.nclcodestyle:_main',
             'showcolortables = '
             'esmvaltool.utils.color_tables.show_color_tables:run',
+            'test_recipe = '
+            'esmvaltool.utils.testing.recipe_settings.install_expand_run:main'
         ],
     },
     cmdclass={
