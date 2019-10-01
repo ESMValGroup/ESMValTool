@@ -63,6 +63,7 @@ def make_map_plots(
         metadata,
         cube,
         key,
+        detrend,
         cmap='YlOrRd'
 ):
     """
@@ -76,25 +77,20 @@ def make_map_plots(
         the metadata dictionary
     filename: str
         the preprocessed model file.
+    detrend: bool
+        key to show wherether the mean was subtracted.
 
     """
-    # Is this data is a multi-model dataset?
-    multi_model = metadata['dataset'].find('MultiModel') > -1
     # Load image format extention
     image_extention = diagtools.get_image_format(cfg)
 
     # Determine image filename:
-    if multi_model:
-        path = diagtools.folder(cfg['plot_dir'])
-        path +=os.path.basename(filename).replace(
-                    '.nc', '_map_'+ key.replace(' ', ''), image_extention
-                )
+    if detrend:
+        suffix = '_'.join([metadata['dataset'], key, 'detrended'])+image_extention
+        path = diagtools.folder([cfg['plot_dir'], 'Detrended', 'single_plots'])+ suffix
     else:
-            path = diagtools.get_image_path(
-                cfg,
-                metadata,
-                suffix='map_' + key.replace(' ', '') + image_extention,
-            )
+        suffix = '_'.join([metadata['dataset'], key])+image_extention
+        path = diagtools.folder([cfg['plot_dir'], 'Trend_intact', 'single_plots'])+suffix
 
     # Load cube and set up units
     cube = diagtools.bgc_units(cube, metadata['short_name'])
@@ -108,7 +104,11 @@ def make_map_plots(
         logger.warning('Not able to add coastlines')
 
     # Add title to plot
-    title = ' '.join([metadata['dataset'], key])
+    if detrend:
+        title = ' '.join([metadata['dataset'], key, '- detrended'])
+    else:
+        title = ' '.join([metadata['dataset'], key, '- trend intact'])
+
     plt.title(title)
 
     # Saving files:
@@ -138,10 +138,11 @@ def make_ensemble_map_plots(
         cfg,
         cube,
         variable_group,
+        detrend,
         cmap='YlOrRd'
 ):
     """
-    Make a simple map plot for an individual model.
+    Make a simple map plot for each variable_group.
 
     Parameters
     ----------
@@ -153,7 +154,13 @@ def make_ensemble_map_plots(
     image_extention = diagtools.get_image_format(cfg)
 
     # Determine image filename:
-    path = diagtools.folder([cfg['plot_dir'], 'ensemble_plots'])+'Ensemblemean_'+variable_group+image_extention
+    # Determine image filename:
+    if detrend:
+        suffix = '_'.join(['variable_group_ensembles', metadata['dataset'], key, 'Detrended']) + image_extention
+        path = diagtools.folder([cfg['plot_dir'], 'Detrended', 'variable_group_ensembles']) + suffix
+    else:
+        suffix = '_'.join(['variable_group_ensembles', metadata['dataset'], key, 'Trend_intact']) + image_extention
+        path = diagtools.folder([cfg['plot_dir'], 'Trend_intact', 'variable_group_ensembles']) + suffix
 
     # Making plots for each layer
     qplt.contourf(cube, 12, linewidth=0, rasterized=True, cmap=cmap)
@@ -167,7 +174,10 @@ def make_ensemble_map_plots(
     variable, exp, threshold = split_variable_groups(variable_group)
 
     # Add title to plot
-    title = ' '.join([variable, '- ensemble mean of', exp, 'after', threshold, 'warming'])
+    if detrend:
+        title = ' '.join([variable, '- ensemble mean of', exp, 'after', threshold, 'warming - detrended'])
+    else:
+        title = ' '.join([variable, '- ensemble mean of', exp, 'after', threshold, 'warming - trend intact'])
     plt.title(title)
 
     # Saving files:
@@ -176,51 +186,6 @@ def make_ensemble_map_plots(
         plt.savefig(path)
 
     plt.close()
-
-
-
-    def make_ensemble_map_plots(
-            cfg,
-            cube,
-            variable_group,
-            cmap='YlOrRd'
-    ):
-        """
-        Make a simple map plot for an individual model.
-
-        Parameters
-        ----------
-        cfg: dict
-            the opened global config dictionary, passed by ESMValTool.
-
-        """
-        # Load image format extention
-        image_extention = diagtools.get_image_format(cfg)
-
-        # Determine image filename:
-        path = diagtools.folder([cfg['plot_dir'], 'ensemble_plots'])+'Ensemblemean_'+variable_group+image_extention
-
-        # Making plots for each layer
-        qplt.contourf(cube, 12, linewidth=0, rasterized=True, cmap=cmap)
-
-        try:
-            plt.gca().coastlines()
-        except AttributeError:
-            logger.warning('Not able to add coastlines')
-
-        # tas_ssp585_6
-        variable, exp, threshold = split_variable_groups(variable_group)
-
-        # Add title to plot
-        title = ' '.join([variable, '- ensemble mean of', exp, 'after', threshold, 'warming'])
-        plt.title(title)
-
-        # Saving files:
-        if cfg['write_plots']:
-            logger.info('Saving plots to %s', path)
-            plt.savefig(path)
-
-        plt.close()
 
 
 def make_threshold_ensemble_map_plots(
@@ -243,6 +208,12 @@ def make_threshold_ensemble_map_plots(
 
     # Determine image filename:
     path = diagtools.folder([cfg['plot_dir'], 'threshold_ensemble_plots'])+'Ensemble_mean_'+threshold+image_extention
+    if detrend:
+        suffix = '_'.join(['variable_group_ensembles', metadata['dataset'], 'Detrended', threshold, ]) + image_extention
+        path = diagtools.folder([cfg['plot_dir'], 'Detrended', 'threshold_ensemble']) + suffix
+    else:
+        suffix = '_'.join(['variable_group_ensembles', metadata['dataset'], 'Trend_intact', threshold, ]) + image_extention
+        path = diagtools.folder([cfg['plot_dir'], 'Trend_intact', 'threshold_ensemble']) + suffix
 
     # Making plots for each layer
     qplt.contourf(cube, 12, linewidth=0, rasterized=True, cmap=cmap)
@@ -253,7 +224,11 @@ def make_threshold_ensemble_map_plots(
         logger.warning('Not able to add coastlines')
 
     # Add title to plot
-    title = ' '.join(['Ensemble mean after', threshold, 'warming'])
+    if detrend:
+        title = ' '.join(['Ensemble mean after', threshold, 'warming - detrended'])
+    else:
+        title = ' '.join(['Ensemble mean after', threshold, 'warming - trend intact'])
+
     plt.title(title)
 
     # Saving files:
@@ -262,6 +237,7 @@ def make_threshold_ensemble_map_plots(
         plt.savefig(path)
 
     plt.close()
+
 
 def calc_ensemble_mean(cube_list):
     """"
@@ -277,7 +253,7 @@ def calc_ensemble_mean(cube_list):
     return ensemble_mean
 
 
-def make_gwt_map_plots(cfg):
+def make_gwt_map_plots(cfg, detrend = True, do_single_plots=False):
     """
     Make plots
 
@@ -285,6 +261,11 @@ def make_gwt_map_plots(cfg):
     ----------
     cfg: dict
         the opened global config dictionary, passed by ESMValTool.
+
+    detrend: bool
+        Subtract the mean from the figure.
+    do_single_plots: bool
+        Make individual plots for each dataset.
 
     """
     metadatas = diagtools.get_input_files(cfg)
@@ -338,7 +319,11 @@ def make_gwt_map_plots(cfg):
             cube_hist =  iris.load_cube( fn_hist)
             cube_hist = diagtools.bgc_units(cube_hist, details['short_name'])
 
-            cube.data = cube.data - cube_hist.data - cube.data.mean()
+            cube.data = cube.data - cube_hist.data
+
+            if detrend:
+                cube.data = cube.data - cube.data.mean()
+
             anomaly_cubes[variable_group][ensemble] = cube
             try:
                 thresholds[threshold].append([variable_group, ensemble])
@@ -347,7 +332,8 @@ def make_gwt_map_plots(cfg):
             key = variable_group.replace('_',' ') + ' '+ensemble
 
             # Produce a plot of the anomaly.
-            make_map_plots(cfg, details, cube, key)
+            if do_single_plots:
+                make_map_plots(cfg, details, cube, key, detrend)
 
     # Ensemble mean for each variable_group:
     for variable_group in variable_groups:
@@ -373,23 +359,7 @@ def make_gwt_map_plots(cfg):
         if cube_list == []: continue
         ensemble_mean = calc_ensemble_mean(cube_list)
 
-        make_threshold_ensemble_map_plots(cfg, ensemble_mean, threshold)
-
-
-
-
-    # thresholds = ['15', '2']
-    # for short_name in short_names:
-    #     for exp in exps:
-    #         if exp == 'historical': continue
-    #         exp = exp[11:]
-    #         for ensemble in ensembles:
-    #             for threshold in thresholds:
-    #                 #print(short_name, exp, ensemble)
-    #                 unique_key = short_name+'_'+exp+'_'+ensemble
-    #                 print(unique_key, unique_key in files_dict)
-
-
+        make_threshold_ensemble_map_plots(cfg, ensemble_mean, threshold, detrend)
 
 
 def main(cfg):
@@ -404,7 +374,8 @@ def main(cfg):
     """
     cartopy.config['data_dir'] = cfg['auxiliary_data_dir']
 
-    make_gwt_map_plots(cfg)
+    for detrend in [True, False]:
+        make_gwt_map_plots(cfg, detrend)
 
 
     # for index, metadata_filename in enumerate(cfg['input_files']):
