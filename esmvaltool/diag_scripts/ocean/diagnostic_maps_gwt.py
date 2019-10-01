@@ -156,10 +156,10 @@ def make_ensemble_map_plots(
     # Determine image filename:
     # Determine image filename:
     if detrend:
-        suffix = '_'.join(['variable_group_ensembles', metadata['dataset'], key, 'Detrended']) + image_extention
+        suffix = '_'.join(['variable_group_ensembles', key, 'Detrended']) + image_extention
         path = diagtools.folder([cfg['plot_dir'], 'Detrended', 'variable_group_ensembles']) + suffix
     else:
-        suffix = '_'.join(['variable_group_ensembles', metadata['dataset'], key, 'Trend_intact']) + image_extention
+        suffix = '_'.join(['variable_group_ensembles', key, 'Trend_intact']) + image_extention
         path = diagtools.folder([cfg['plot_dir'], 'Trend_intact', 'variable_group_ensembles']) + suffix
 
     # Making plots for each layer
@@ -207,12 +207,11 @@ def make_threshold_ensemble_map_plots(
     image_extention = diagtools.get_image_format(cfg)
 
     # Determine image filename:
-    path = diagtools.folder([cfg['plot_dir'], 'threshold_ensemble_plots'])+'Ensemble_mean_'+threshold+image_extention
     if detrend:
-        suffix = '_'.join(['variable_group_ensembles', metadata['dataset'], 'Detrended', threshold, ]) + image_extention
+        suffix = '_'.join(['variable_group_ensembles', 'Detrended', threshold, ]) + image_extention
         path = diagtools.folder([cfg['plot_dir'], 'Detrended', 'threshold_ensemble']) + suffix
     else:
-        suffix = '_'.join(['variable_group_ensembles', metadata['dataset'], 'Trend_intact', threshold, ]) + image_extention
+        suffix = '_'.join(['variable_group_ensembles', 'Trend_intact', threshold, ]) + image_extention
         path = diagtools.folder([cfg['plot_dir'], 'Trend_intact', 'threshold_ensemble']) + suffix
 
     # Making plots for each layer
@@ -348,7 +347,7 @@ def make_gwt_map_plots(cfg, detrend = True, do_single_plots=False):
 
         if cube_list == []: continue
         ensemble_mean = calc_ensemble_mean(cube_list)
-        make_ensemble_map_plots(cfg, ensemble_mean, variable_group)
+        make_ensemble_map_plots(cfg, ensemble_mean, variable_group, detrend)
 
     # Ensemble mean for each threshold:
     for threshold, paths in sorted(thresholds.items()):
