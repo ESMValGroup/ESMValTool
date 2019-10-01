@@ -19,8 +19,8 @@ from .utilities import (set_global_atts, convert_timeunits, fix_var_metadata,
 logger = logging.getLogger(__name__)
 
 
-class OSICmorizer(object):
-    """Cmorizer for OSI-407 y OSI-450 datasets"""
+class OSICmorizer():
+    """Cmorizer for OSI-407 y OSI-450 datasets."""
 
     def __init__(self, in_dir, out_dir, cfg, hemisphere):
         self.in_dir = in_dir
@@ -63,7 +63,8 @@ class OSICmorizer(object):
                     cube = iris.load_cube(
                         sample_file,
                         iris.Constraint(
-                            cube_func=lambda c: c.var_name == raw_info['name'])  # noqa
+                            # pylint: disable=cell-var-from-loop
+                            cube_func=lambda c: c.var_name == raw_info['name'])
                     )
                     self._create_areacello(cube)
                     first_run = False
@@ -110,7 +111,8 @@ class OSICmorizer(object):
         model_cube = cubes[0].copy()
         for month in range(1, 13):
             month_constraint = iris.Constraint(
-                time=lambda cell: cell.point.month == month  # noqa
+                # pylint: disable=cell-var-from-loop
+                time=lambda cell: cell.point.month == month
             )
             if cubes.extract(month_constraint):
                 continue
