@@ -93,7 +93,7 @@ def make_map_plots(
         path = diagtools.folder([cfg['plot_dir'], 'Trend_intact', 'single_plots'])+suffix
 
     # Load cube and set up units
-    cube = diagtools.bgc_units(cube, metadata['short_name'])
+    # cube = diagtools.bgc_units(cube, metadata['short_name'])
 
     # Making plots for each layer
     qplt.contourf(cube, 12, linewidth=0, rasterized=True, cmap=cmap)
@@ -115,7 +115,6 @@ def make_map_plots(
     if cfg['write_plots']:
         logger.info('Saving plots to %s', path)
         plt.savefig(path)
-
     plt.close()
 
 
@@ -156,10 +155,10 @@ def make_ensemble_map_plots(
     # Determine image filename:
     # Determine image filename:
     if detrend:
-        suffix = '_'.join(['variable_group_ensembles', key, 'Detrended']) + image_extention
+        suffix = '_'.join(['variable_group_ensembles', variable_group, 'Detrended']) + image_extention
         path = diagtools.folder([cfg['plot_dir'], 'Detrended', 'variable_group_ensembles']) + suffix
     else:
-        suffix = '_'.join(['variable_group_ensembles', key, 'Trend_intact']) + image_extention
+        suffix = '_'.join(['variable_group_ensembles', variable_group, 'Trend_intact']) + image_extention
         path = diagtools.folder([cfg['plot_dir'], 'Trend_intact', 'variable_group_ensembles']) + suffix
 
     # Making plots for each layer
@@ -184,7 +183,6 @@ def make_ensemble_map_plots(
     if cfg['write_plots']:
         logger.info('Saving plots to %s', path)
         plt.savefig(path)
-
     plt.close()
 
 
@@ -192,6 +190,7 @@ def make_threshold_ensemble_map_plots(
         cfg,
         cube,
         threshold,
+        detrend,
         cmap='YlOrRd'
 ):
     """
@@ -234,7 +233,6 @@ def make_threshold_ensemble_map_plots(
     if cfg['write_plots']:
         logger.info('Saving plots to %s', path)
         plt.savefig(path)
-
     plt.close()
 
 
@@ -294,7 +292,7 @@ def make_gwt_map_plots(cfg, detrend = True, do_single_plots=False):
 
     # lets look at  minus the historical
     anomaly_cubes = {variable_group:{} for variable_group in variable_groups}
-
+    hist_cubes = {}
     # Calculate the anomaly for each ensemble/threshold combination
     for ensemble in ensembles:
         for variable_group in variable_groups:
@@ -315,8 +313,13 @@ def make_gwt_map_plots(cfg, detrend = True, do_single_plots=False):
             cube = iris.load_cube( fn)
             cube = diagtools.bgc_units(cube, details['short_name'])
 
-            cube_hist =  iris.load_cube( fn_hist)
-            cube_hist = diagtools.bgc_units(cube_hist, details['short_name'])
+            # Check is historial cube is loaded already
+            if fn_hist in hist_cubes:
+                cube_hist = hist_cubes[fn_hist]
+            else:
+                cube_hist =  iris.load_cube( fn_hist)
+                hist_cubes[fn_hist] = cube_hist
+                cube_hist = diagtools.bgc_units(cube_hist, details['short_name'])
 
             cube.data = cube.data - cube_hist.data
 

@@ -146,7 +146,7 @@ def bgc_units(cube, name):
 
     if new_units != '':
         logger.info(' '.join(
-            ["Changing units from",
+            ["Changing ", name, "units from",
              str(cube.units), 'to', new_units]))
         cube.convert_units(new_units)
 
