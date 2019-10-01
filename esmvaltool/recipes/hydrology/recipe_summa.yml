@@ -1,0 +1,38 @@
+# ESMValTool
+# recipe_summa.yml
+---
+documentation:
+  description: |
+    Recipe pre-processes ERA-Interim reanalyses files for use in the summa hydrological model.
+
+    Summa is ...
+    Main reference/paper: ...
+  authors: ['kalverla_peter']
+  projects: ['ewatercycle']
+  references: ['acknow_project', 'sutanudjaja2018gmd']
+
+
+datasets:
+  - {dataset: ERA-Interim, project: OBS, tier: 3, type: reanaly, version: 1}
+
+preprocessors:
+  preprocessor:
+    regrid:
+      target_grid: 0.5x0.5
+      lon_offset: true
+      lat_offset: true
+      scheme: linear
+
+diagnostics:
+  diagnostic1:
+    description: SUMMA input preprocessor
+    variables:
+      tas: &var
+        mip: day
+        start_year: 2000
+        end_year: 2000
+        preprocessor: preprocessor
+      pr: *var
+    scripts:
+      script:
+        script: hydrology/summa.py
