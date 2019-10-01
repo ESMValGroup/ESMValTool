@@ -59,7 +59,7 @@ def main(cfg):
             # Save data
             times = [str(x.point.date()) for x in time_coord.cells()]
             ids = cube.coord('shape_id').core_points()
-            
+
             frame = pandas.DataFrame(numpy.array(cube.core_data()).T,
                                      index=times, columns=ids)
 
