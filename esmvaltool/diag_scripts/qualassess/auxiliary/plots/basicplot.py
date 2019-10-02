@@ -1188,11 +1188,6 @@ class Plot1D(object):
             self.logger.debug('We did not expect this to fail!')
             plt.plot()
             
-#        if dat_log:
-#            seq_y = 10**np.linspace((np.floor(np.log10(ymin - buffer)*100)/100), (np.ceil(np.log10(ymax + buffer)*100)/100),10)
-#            plt.yticks(seq_y, seq_y)
-#            self.logger.info(seq_y)
-            
         if 'time' == self.plot_type:
             pointsum = list(
                 set([np.sum(c.coords("time")[0].points) for c in self.cube]))

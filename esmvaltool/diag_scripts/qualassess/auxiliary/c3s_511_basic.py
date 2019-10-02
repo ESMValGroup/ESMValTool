@@ -1146,6 +1146,7 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                 long_left_over = [rd for rd in reg_dimensions if rd != d]
 
                 plotcube = utils.dask_weighted_stddev_wrapper(cube,self.map_area_frac,dims=d)
+                plotcube.units = cube.units
                 
                 vminmax = utils.minmax_cubelist([plotcube], [5, 95]) 
                 
