@@ -1,0 +1,37 @@
+# ESMValTool
+# recipe_wflow.yml
+---
+documentation:
+  description: |
+    Recipe pre-processes ERA-Interim reanalyses files for use in the WFlow hydrological model.
+
+    WFlow is ...
+  authors: ['kalverla_peter', 'camphuijsen_jaro']
+  projects: ['ewatercycle']
+  references: ['acknow_project']
+
+
+datasets:
+  - {dataset: ERA-Interim, project: OBS, tier: 3, type: reanaly, version: 1}
+
+preprocessors:
+  preprocessor:
+    regrid:
+      target_grid: 0.5x0.5
+      lon_offset: true
+      lat_offset: true
+      scheme: linear
+
+diagnostics:
+  diagnostic1:
+    description: WFlow input preprocessor
+    variables:
+      tas: &var
+        mip: day
+        start_year: 2000
+        end_year: 2000
+        preprocessor: preprocessor
+      pr: *var
+    scripts:
+      script:
+        script: hydrology/wflow.py
