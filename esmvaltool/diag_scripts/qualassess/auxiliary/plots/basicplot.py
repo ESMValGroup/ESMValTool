@@ -25,10 +25,10 @@ import logging
 #from memory_profiler import profile
 from dask import array as da
 
+logger = logging.getLogger(os.path.basename(__file__))
 
 def label_in_perc_multiple(x, pos=0):
     return '%1.1f%%' % (x)
-
 
 def label_in_perc_single(x, pos=0):
     return '%1.1f%%' % (x * 100)
@@ -36,10 +36,18 @@ def label_in_perc_single(x, pos=0):
 def label_in_exp(x,pos=0):
     return r"$10^{%.1f}$" % (x)
 
+def label_in_exp_perc(x,pos=0):
+    if x * 100 < 0.1:
+        return "{}%".format(r"$10^{%d}$" % (np.log10(x*100)))
+    else:
+        return label_in_perc_single(x)
+
 
 MPLSTYLE = os.path.dirname(
     os.path.realpath(__file__)
 ) + os.sep + 'default.mplstyle'
+
+
 
 
 #class PlotHist2(object):
@@ -321,10 +329,8 @@ class PlotHist(object):
         
         if dat_log:
             self.ax.set_yscale('log', nonposy='clip')
-#            self.ax.set_ylim(np.min(freqs)*0.1, np.max(freqs) * 1.1)
-        self.ax.set_ylim(top=np.max(hist) * 1.1)
         
-        self.ax.yaxis.set_major_formatter(FuncFormatter(label_in_perc_single))
+        self.ax.yaxis.set_major_formatter(FuncFormatter(label_in_exp_perc))#label_in_perc_single))
         if (title is not None):
             self.ax.set_title(title)
         self.ax.set_xlabel(x_label)
