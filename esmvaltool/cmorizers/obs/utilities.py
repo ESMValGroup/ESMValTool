@@ -146,18 +146,18 @@ def save_variable(cube, var, outdir, attrs, **kwargs):
     """Saver function."""
     # CMOR standard
     try:
-        cube_time = cube.coord('time')
+        time = cube.coord('time')
     except iris.exceptions.CoordinateNotFoundError:
         time_suffix = None
     else:
-        reftime = Unit(cube_time.units.origin, cube_time.units.calendar)
-        dates = reftime.num2date(cube_time.points[[0, -1]])
-        if len(cube_time.points) == 1:
-            year = str(dates[0].year)
+        if len(time.points) == 1:
+            year = str(time.cell(0).point.year)
             time_suffix = '-'.join([year + '01', year + '12'])
         else:
-            date1 = str(dates[0].year) + '%02d' % dates[0].month
-            date2 = str(dates[1].year) + '%02d' % dates[1].month
+            date1 = str(time.cell(0).point.year) + '%02d' % \
+                time.cell(0).point.month
+            date2 = str(time.cell(-1).point.year) + '%02d' % \
+                time.cell(-1).point.month
             time_suffix = '-'.join([date1, date2])
 
     name_elements = [
@@ -168,7 +168,6 @@ def save_variable(cube, var, outdir, attrs, **kwargs):
         attrs['mip'],
         var,
     ]
-
     if time_suffix:
         name_elements.append(time_suffix)
     file_name = '_'.join(name_elements) + '.nc'
