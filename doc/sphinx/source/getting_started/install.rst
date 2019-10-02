@@ -124,8 +124,7 @@ code (called ESMValTool if you did not choose a different name) and run
 
     conda env create --name esmvaltool --file environment.yml
 
-This installs ESMValCore as a dependency. Developers might want to
-install ESMValCore from source as well.
+This installs ESMValCore as a dependency. 
 The environment is called ``esmvaltool`` by default, but it is possible to use
 the option ``--name ENVIRONMENT_NAME`` to define a custom name. You can activate
 the environment using the command:
