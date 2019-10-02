@@ -38,10 +38,12 @@ diagnostics:
     variables:
       # Procedurally generated recipe contents:
       ################################################
-      # baresoilFrac
-      baresoilFrac_historical:
-        short_name: baresoilFrac
+      # vegfrac
+      vegfrac_historical:
+        short_name: vegfrac
         preprocessor: prep_1
+        derive: true
+        force_derivation: false
         additional_datasets:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: historical, ensemble: r1i1p1f2, start_year: 1850, end_year: 1900, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: historical, ensemble: r2i1p1f2, start_year: 1850, end_year: 1900, grid: gn}
@@ -49,25 +51,31 @@ diagnostics:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: historical, ensemble: r4i1p1f2, start_year: 1850, end_year: 1900, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: historical, ensemble: r8i1p1f2, start_year: 1850, end_year: 1900, grid: gn}
 
-      baresoilFrac_ssp119_1.5:
-        short_name: baresoilFrac
+      vegfrac_ssp119_1.5:
+        short_name: vegfrac
         preprocessor: prep_1
+        derive: true
+        force_derivation: false
         additional_datasets:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp119], ensemble: r1i1p1f2, start_year: 2015, end_year: 2035, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp119], ensemble: r3i1p1f2, start_year: 2013, end_year: 2033, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp119], ensemble: r4i1p1f2, start_year: 2017, end_year: 2037, grid: gn}
 
-      baresoilFrac_ssp119_2.0:
-        short_name: baresoilFrac
+      vegfrac_ssp119_2.0:
+        short_name: vegfrac
         preprocessor: prep_1
+        derive: true
+        force_derivation: false
         additional_datasets:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp119], ensemble: r1i1p1f2, start_year: 2030, end_year: 2050, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp119], ensemble: r3i1p1f2, start_year: 2028, end_year: 2048, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp119], ensemble: r4i1p1f2, start_year: 2030, end_year: 2050, grid: gn}
 
-      baresoilFrac_ssp126_1.5:
-        short_name: baresoilFrac
+      vegfrac_ssp126_1.5:
+        short_name: vegfrac
         preprocessor: prep_1
+        derive: true
+        force_derivation: false
         additional_datasets:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp126], ensemble: r1i1p1f2, start_year: 2014, end_year: 2034, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp126], ensemble: r2i1p1f2, start_year: 2018, end_year: 2038, grid: gn}
@@ -75,9 +83,11 @@ diagnostics:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp126], ensemble: r4i1p1f2, start_year: 2019, end_year: 2039, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp126], ensemble: r8i1p1f2, start_year: 2011, end_year: 2031, grid: gn}
 
-      baresoilFrac_ssp126_2.0:
-        short_name: baresoilFrac
+      vegfrac_ssp126_2.0:
+        short_name: vegfrac
         preprocessor: prep_1
+        derive: true
+        force_derivation: false
         additional_datasets:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp126], ensemble: r1i1p1f2, start_year: 2027, end_year: 2047, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp126], ensemble: r2i1p1f2, start_year: 2029, end_year: 2049, grid: gn}
@@ -85,9 +95,11 @@ diagnostics:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp126], ensemble: r4i1p1f2, start_year: 2031, end_year: 2051, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp126], ensemble: r8i1p1f2, start_year: 2023, end_year: 2043, grid: gn}
 
-      baresoilFrac_ssp245_1.5:
-        short_name: baresoilFrac
+      vegfrac_ssp245_1.5:
+        short_name: vegfrac
         preprocessor: prep_1
+        derive: true
+        force_derivation: false
         additional_datasets:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp245], ensemble: r1i1p1f2, start_year: 2014, end_year: 2034, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp245], ensemble: r2i1p1f2, start_year: 2014, end_year: 2034, grid: gn}
@@ -95,9 +107,11 @@ diagnostics:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp245], ensemble: r4i1p1f2, start_year: 2018, end_year: 2038, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp245], ensemble: r8i1p1f2, start_year: 2011, end_year: 2031, grid: gn}
 
-      baresoilFrac_ssp245_2.0:
-        short_name: baresoilFrac
+      vegfrac_ssp245_2.0:
+        short_name: vegfrac
         preprocessor: prep_1
+        derive: true
+        force_derivation: false
         additional_datasets:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp245], ensemble: r1i1p1f2, start_year: 2025, end_year: 2045, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp245], ensemble: r2i1p1f2, start_year: 2023, end_year: 2043, grid: gn}
@@ -105,9 +119,11 @@ diagnostics:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp245], ensemble: r4i1p1f2, start_year: 2027, end_year: 2047, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp245], ensemble: r8i1p1f2, start_year: 2021, end_year: 2041, grid: gn}
 
-      baresoilFrac_ssp245_3.0:
-        short_name: baresoilFrac
+      vegfrac_ssp245_3.0:
+        short_name: vegfrac
         preprocessor: prep_1
+        derive: true
+        force_derivation: false
         additional_datasets:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp245], ensemble: r1i1p1f2, start_year: 2050, end_year: 2070, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp245], ensemble: r2i1p1f2, start_year: 2045, end_year: 2065, grid: gn}
@@ -115,9 +131,11 @@ diagnostics:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp245], ensemble: r4i1p1f2, start_year: 2048, end_year: 2068, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp245], ensemble: r8i1p1f2, start_year: 2045, end_year: 2065, grid: gn}
 
-      baresoilFrac_ssp370_1.5:
-        short_name: baresoilFrac
+      vegfrac_ssp370_1.5:
+        short_name: vegfrac
         preprocessor: prep_1
+        derive: true
+        force_derivation: false
         additional_datasets:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp370], ensemble: r1i1p1f2, start_year: 2014, end_year: 2034, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp370], ensemble: r2i1p1f2, start_year: 2016, end_year: 2036, grid: gn}
@@ -125,9 +143,11 @@ diagnostics:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp370], ensemble: r4i1p1f2, start_year: 2017, end_year: 2037, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp370], ensemble: r8i1p1f2, start_year: 2012, end_year: 2032, grid: gn}
 
-      baresoilFrac_ssp370_2.0:
-        short_name: baresoilFrac
+      vegfrac_ssp370_2.0:
+        short_name: vegfrac
         preprocessor: prep_1
+        derive: true
+        force_derivation: false
         additional_datasets:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp370], ensemble: r1i1p1f2, start_year: 2022, end_year: 2042, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp370], ensemble: r2i1p1f2, start_year: 2025, end_year: 2045, grid: gn}
@@ -135,9 +155,11 @@ diagnostics:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp370], ensemble: r4i1p1f2, start_year: 2026, end_year: 2046, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp370], ensemble: r8i1p1f2, start_year: 2022, end_year: 2042, grid: gn}
 
-      baresoilFrac_ssp370_3.0:
-        short_name: baresoilFrac
+      vegfrac_ssp370_3.0:
+        short_name: vegfrac
         preprocessor: prep_1
+        derive: true
+        force_derivation: false
         additional_datasets:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp370], ensemble: r1i1p1f2, start_year: 2041, end_year: 2061, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp370], ensemble: r2i1p1f2, start_year: 2042, end_year: 2062, grid: gn}
@@ -145,9 +167,11 @@ diagnostics:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp370], ensemble: r4i1p1f2, start_year: 2044, end_year: 2064, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp370], ensemble: r8i1p1f2, start_year: 2041, end_year: 2061, grid: gn}
 
-      baresoilFrac_ssp370_4.0:
-        short_name: baresoilFrac
+      vegfrac_ssp370_4.0:
+        short_name: vegfrac
         preprocessor: prep_1
+        derive: true
+        force_derivation: false
         additional_datasets:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp370], ensemble: r1i1p1f2, start_year: 2060, end_year: 2080, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp370], ensemble: r2i1p1f2, start_year: 2058, end_year: 2078, grid: gn}
@@ -155,9 +179,11 @@ diagnostics:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp370], ensemble: r4i1p1f2, start_year: 2060, end_year: 2080, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp370], ensemble: r8i1p1f2, start_year: 2058, end_year: 2078, grid: gn}
 
-      baresoilFrac_ssp370_5.0:
-        short_name: baresoilFrac
+      vegfrac_ssp370_5.0:
+        short_name: vegfrac
         preprocessor: prep_1
+        derive: true
+        force_derivation: false
         additional_datasets:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp370], ensemble: r1i1p1f2, start_year: 2075, end_year: 2095, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp370], ensemble: r2i1p1f2, start_year: 2073, end_year: 2093, grid: gn}
@@ -165,33 +191,41 @@ diagnostics:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp370], ensemble: r4i1p1f2, start_year: 2075, end_year: 2095, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp370], ensemble: r8i1p1f2, start_year: 2073, end_year: 2093, grid: gn}
 
-      baresoilFrac_ssp434_1.5:
-        short_name: baresoilFrac
+      vegfrac_ssp434_1.5:
+        short_name: vegfrac
         preprocessor: prep_1
+        derive: true
+        force_derivation: false
         additional_datasets:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp434], ensemble: r1i1p1f2, start_year: 2015, end_year: 2035, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp434], ensemble: r2i1p1f2, start_year: 2014, end_year: 2034, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp434], ensemble: r3i1p1f2, start_year: 2014, end_year: 2034, grid: gn}
 
-      baresoilFrac_ssp434_2.0:
-        short_name: baresoilFrac
+      vegfrac_ssp434_2.0:
+        short_name: vegfrac
         preprocessor: prep_1
+        derive: true
+        force_derivation: false
         additional_datasets:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp434], ensemble: r1i1p1f2, start_year: 2024, end_year: 2044, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp434], ensemble: r2i1p1f2, start_year: 2024, end_year: 2044, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp434], ensemble: r3i1p1f2, start_year: 2026, end_year: 2046, grid: gn}
 
-      baresoilFrac_ssp434_3.0:
-        short_name: baresoilFrac
+      vegfrac_ssp434_3.0:
+        short_name: vegfrac
         preprocessor: prep_1
+        derive: true
+        force_derivation: false
         additional_datasets:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp434], ensemble: r1i1p1f2, start_year: 2053, end_year: 2073, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp434], ensemble: r2i1p1f2, start_year: 2052, end_year: 2072, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp434], ensemble: r3i1p1f2, start_year: 2051, end_year: 2071, grid: gn}
 
-      baresoilFrac_ssp585_1.5:
-        short_name: baresoilFrac
+      vegfrac_ssp585_1.5:
+        short_name: vegfrac
         preprocessor: prep_1
+        derive: true
+        force_derivation: false
         additional_datasets:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp585], ensemble: r1i1p1f2, start_year: 2014, end_year: 2034, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp585], ensemble: r2i1p1f2, start_year: 2015, end_year: 2035, grid: gn}
@@ -199,9 +233,11 @@ diagnostics:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp585], ensemble: r4i1p1f2, start_year: 2016, end_year: 2036, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp585], ensemble: r8i1p1f2, start_year: 2011, end_year: 2031, grid: gn}
 
-      baresoilFrac_ssp585_2.0:
-        short_name: baresoilFrac
+      vegfrac_ssp585_2.0:
+        short_name: vegfrac
         preprocessor: prep_1
+        derive: true
+        force_derivation: false
         additional_datasets:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp585], ensemble: r1i1p1f2, start_year: 2022, end_year: 2042, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp585], ensemble: r2i1p1f2, start_year: 2023, end_year: 2043, grid: gn}
@@ -209,9 +245,11 @@ diagnostics:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp585], ensemble: r4i1p1f2, start_year: 2024, end_year: 2044, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp585], ensemble: r8i1p1f2, start_year: 2021, end_year: 2041, grid: gn}
 
-      baresoilFrac_ssp585_3.0:
-        short_name: baresoilFrac
+      vegfrac_ssp585_3.0:
+        short_name: vegfrac
         preprocessor: prep_1
+        derive: true
+        force_derivation: false
         additional_datasets:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp585], ensemble: r1i1p1f2, start_year: 2037, end_year: 2057, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp585], ensemble: r2i1p1f2, start_year: 2037, end_year: 2057, grid: gn}
@@ -219,9 +257,11 @@ diagnostics:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp585], ensemble: r4i1p1f2, start_year: 2039, end_year: 2059, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp585], ensemble: r8i1p1f2, start_year: 2037, end_year: 2057, grid: gn}
 
-      baresoilFrac_ssp585_4.0:
-        short_name: baresoilFrac
+      vegfrac_ssp585_4.0:
+        short_name: vegfrac
         preprocessor: prep_1
+        derive: true
+        force_derivation: false
         additional_datasets:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp585], ensemble: r1i1p1f2, start_year: 2051, end_year: 2071, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp585], ensemble: r2i1p1f2, start_year: 2051, end_year: 2071, grid: gn}
@@ -229,9 +269,11 @@ diagnostics:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp585], ensemble: r4i1p1f2, start_year: 2052, end_year: 2072, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp585], ensemble: r8i1p1f2, start_year: 2052, end_year: 2072, grid: gn}
 
-      baresoilFrac_ssp585_5.0:
-        short_name: baresoilFrac
+      vegfrac_ssp585_5.0:
+        short_name: vegfrac
         preprocessor: prep_1
+        derive: true
+        force_derivation: false
         additional_datasets:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp585], ensemble: r1i1p1f2, start_year: 2063, end_year: 2083, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp585], ensemble: r2i1p1f2, start_year: 2064, end_year: 2084, grid: gn}
@@ -239,9 +281,11 @@ diagnostics:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp585], ensemble: r4i1p1f2, start_year: 2064, end_year: 2084, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp585], ensemble: r8i1p1f2, start_year: 2064, end_year: 2084, grid: gn}
 
-      baresoilFrac_ssp585_6.0:
-        short_name: baresoilFrac
+      vegfrac_ssp585_6.0:
+        short_name: vegfrac
         preprocessor: prep_1
+        derive: true
+        force_derivation: false
         additional_datasets:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp585], ensemble: r1i1p1f2, start_year: 2076, end_year: 2096, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Lmon, exp: [historical, ssp585], ensemble: r2i1p1f2, start_year: 2076, end_year: 2096, grid: gn}
