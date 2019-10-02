@@ -248,7 +248,7 @@ def calc_ensemble_mean(cube_list):
     return ensemble_mean
 
 
-def make_gwt_map_plots(cfg, detrend = True, do_single_plots=False):
+def make_gwt_map_plots(cfg, detrend = True, do_single_plots=True):
     """
     Make plots
 
