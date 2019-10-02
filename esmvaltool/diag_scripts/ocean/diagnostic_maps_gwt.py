@@ -159,10 +159,10 @@ def make_ensemble_map_plots(
         path = diagtools.folder([cfg['plot_dir'], 'Trend_intact', 'variable_group_ensembles']) + suffix
 
     # Making plots for each layer
-    try: qplt.contourf(cube, 12, linewidth=0, rasterized=True, cmap=cmap)
+    try: qplt.contourf(cube, 12, cmap=cmap) # linewidth=0, rasterized=True,
     except:
         print('Unable to plot cube:', cube)
-        qplt.contourf(cube, 12, linewidth=0, rasterized=True, cmap=cmap)
+        qplt.contourf(cube, 12, cmap=cmap) #linewidth=0, rasterized=True, cmap=cmap)
 
     try:
         plt.gca().coastlines()
@@ -215,7 +215,13 @@ def make_threshold_ensemble_map_plots(
         path = diagtools.folder([cfg['plot_dir'], 'Trend_intact', 'threshold_ensemble']) + suffix
 
     # Making plots for each layer
-    qplt.contourf(cube, 12, linewidth=0, rasterized=True, cmap=cmap)
+    if detrend:
+        cmap = 'seismic'
+        drange = diagtools.get_cube_range_diff([cube, ])
+        dlinspace = np.linspace(zrange2[0], zrange2[1], 12, endpoint=True)
+        qplt.contourf(cube, dlinspace, cmap=cmap) # linewidth=0, rasterized=True,
+    else:
+        qplt.contourf(cube, 12, cmap=cmap) # linewidth=0, rasterized=True,
 
     try:
         plt.gca().coastlines()
@@ -255,7 +261,7 @@ def calc_ensemble_mean(cube_list):
     return ensemble_mean
 
 
-def make_gwt_map_plots(cfg, detrend = True, do_single_plots=True):
+def make_gwt_map_plots(cfg, detrend = True,):
     """
     Make plots
 
@@ -271,6 +277,10 @@ def make_gwt_map_plots(cfg, detrend = True, do_single_plots=True):
 
     """
     metadatas = diagtools.get_input_files(cfg)
+    do_single_plots=True
+    do_variable_group_plots=True
+    do_threshold_plots=True
+
     #print('\n', cfg.keys())
 
     files_dict = {}
@@ -346,6 +356,7 @@ def make_gwt_map_plots(cfg, detrend = True, do_single_plots=True):
 
     # Ensemble mean for each variable_group:
     for variable_group in sorted(variable_groups):
+        if not do_variable_group_plots: continue
 
         # guess historical group name:
         historical_group = variable_group[:variable_group.find('_')] + 'historical'
@@ -363,6 +374,7 @@ def make_gwt_map_plots(cfg, detrend = True, do_single_plots=True):
 
     # Ensemble mean for each threshold:
     for variable in sorted(variables):
+        if not do_threshold_plots: continue
         for threshold, paths in sorted(thresholds.items()):
             cube_list = []
             for [variable_group, ensemble] in sorted(paths):
