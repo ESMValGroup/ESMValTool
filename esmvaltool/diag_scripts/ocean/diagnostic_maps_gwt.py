@@ -49,6 +49,7 @@ import matplotlib.pyplot as plt
 import iris
 import iris.quickplot as qplt
 import cartopy
+import numpy as np
 
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic
@@ -93,7 +94,15 @@ def make_map_plots(
         path = diagtools.folder([cfg['plot_dir'], 'Trend_intact', 'single_plots'])+suffix
 
     # Making plots for each layer
-    qplt.contourf(cube, 12, linewidth=0, rasterized=True, cmap=cmap)
+    if detrend:
+        cmap = 'seismic'
+        drange = diagtools.get_cube_range_diff([cube, ])
+        dlinspace = np.linspace(drange[0], drange[1], 22, endpoint=True)
+        ticks = [t for t in np.linspace(dlinspace.min(),dlinspace.max(), 7)]
+        qplot = qplt.contourf(cube, dlinspace, cmap=cmap) # linewidth=0, rasterized=True,
+        qplot.colorbar.set_ticks(ticks)
+    else:
+        qplt.contourf(cube, 12, linewidth=0, rasterized=True, cmap=cmap)
 
     try:
         plt.gca().coastlines()
@@ -158,15 +167,32 @@ def make_ensemble_map_plots(
         suffix = '_'.join(['variable_group_ensembles', variable_group, 'Trend_intact']) + image_extention
         path = diagtools.folder([cfg['plot_dir'], 'Trend_intact', 'variable_group_ensembles']) + suffix
 
-    # Making plots for each layer
-    try: qplt.contourf(cube, 12, linewidth=0, rasterized=True, cmap=cmap)
-    except:
-        print('Trying to make figure:', path)
-        print('variable_group:', variable_group)
-        print('Unable to plot cube:', cube)
-        #qplt.contourf(cube, 12, linewidth=0, rasterized=True, cmap=cmap)
-        plt.close()
-        return
+    # Making plots
+    if detrend:
+        cmap = 'seismic'
+        drange = diagtools.get_cube_range_diff([cube, ])
+        dlinspace = np.linspace(drange[0], drange[1], 22, endpoint=True)
+        ticks = [t for t in np.linspace(dlinspace.min(),dlinspace.max(), 7)]
+        try:
+            qplot = qplt.contourf(cube, dlinspace, cmap=cmap) # linewidth=0, rasterized=True,
+            qplot.colorbar.set_ticks(ticks)
+        except:
+            print('Trying to make figure:', path)
+            print('variable_group:', variable_group)
+            print('Unable to plot cube:', cube)
+            #qplt.contourf(cube, 12, linewidth=0, rasterized=True, cmap=cmap)
+            plt.close()
+            return
+
+    else:
+        try: qplt.contourf(cube, 12, cmap=cmap) # linewidth=0, rasterized=True,
+        except:
+            print('Trying to make figure:', path)
+            print('variable_group:', variable_group)
+            print('Unable to plot cube:', cube)
+            #qplt.contourf(cube, 12, linewidth=0, rasterized=True, cmap=cmap)
+            plt.close()
+            return
 
     try:
         plt.gca().coastlines()
@@ -219,15 +245,41 @@ def make_threshold_ensemble_map_plots(
         path = diagtools.folder([cfg['plot_dir'], 'Trend_intact', 'threshold_ensemble']) + suffix
 
     # Making plots for each layer
-    try: qplt.contourf(cube, 12, linewidth=0, rasterized=True, cmap=cmap)
-    except:
-        print('Trying to make figure:', path)
-        print('variable_group:', variable, threshold)
-        print('Unable to plot cube:', cube)
-        plt.close()
-        return
-        #qplt.contourf(cube, 12, linewidth=0, rasterized=True, cmap=cmap)
+    #try: qplt.contourf(cube, 12, linewidth=0, rasterized=True, cmap=cmap)
+    #except:
+    #    print('Trying to make figure:', path)
+    #    print('variable_group:', variable, threshold)
+    #    print('Unable to plot cube:', cube)
+    #    plt.close()
+    #    return
+    #    #qplt.contourf(cube, 12, linewidth=0, rasterized=True, cmap=cmap)
 
+    if detrend:
+        cmap = 'seismic'
+        drange = diagtools.get_cube_range_diff([cube, ])
+        dlinspace = np.linspace(drange[0], drange[1], 22, endpoint=True)
+        ticks = [t for t in np.linspace(dlinspace.min(),dlinspace.max(), 7)]
+        qplot = qplt.contourf(cube, dlinspace, cmap=cmap) # linewidth=0, rasterized=True,
+        qplot.colorbar.set_ticks(ticks)
+
+#        try: 
+#            qplt.contourf(cube, dlinspace, cmap=cmap) # linewidth=0, rasterized=True,
+#            qplt.colorbar.set_ticks(ticks)
+#        except:
+#            print('Trying to make figure:', path)
+#            print('variable_group:', variable, threshold)
+#            print('Unable to plot cube:', cube)
+#            plt.close()
+#            return
+
+    else:
+        try: qplt.contourf(cube, 12, cmap=cmap) # linewidth=0, rasterized=True,
+        except:
+            print('Trying to make figure:', path)
+            print('variable_group:', variable, threshold)
+            print('Unable to plot cube:', cube)
+            plt.close()
+            return
 
     try:
         plt.gca().coastlines()
@@ -267,7 +319,7 @@ def calc_ensemble_mean(cube_list):
     return ensemble_mean
 
 
-def make_gwt_map_plots(cfg, detrend = True, do_single_plots=True):
+def make_gwt_map_plots(cfg, detrend = True,):
     """
     Make plots
 
@@ -283,6 +335,10 @@ def make_gwt_map_plots(cfg, detrend = True, do_single_plots=True):
 
     """
     metadatas = diagtools.get_input_files(cfg)
+    do_single_plots=True
+    do_variable_group_plots=True
+    do_threshold_plots=True
+
     #print('\n', cfg.keys())
 
     files_dict = {}
@@ -358,6 +414,7 @@ def make_gwt_map_plots(cfg, detrend = True, do_single_plots=True):
 
     # Ensemble mean for each variable_group:
     for variable_group in sorted(variable_groups):
+        if not do_variable_group_plots: continue
 
         # guess historical group name:
         historical_group = variable_group[:variable_group.find('_')] + 'historical'
@@ -375,6 +432,7 @@ def make_gwt_map_plots(cfg, detrend = True, do_single_plots=True):
 
     # Ensemble mean for each threshold:
     for variable in sorted(variables):
+        if not do_threshold_plots: continue
         for threshold, paths in sorted(thresholds.items()):
             cube_list = []
             for [variable_group, ensemble] in sorted(paths):
@@ -402,7 +460,7 @@ def main(cfg):
     """
     cartopy.config['data_dir'] = cfg['auxiliary_data_dir']
 
-    for detrend in [False, ]:
+    for detrend in [True, False, ]:
         make_gwt_map_plots(cfg, detrend)
 
 
