@@ -24,6 +24,16 @@ diagnostics:
     scripts: null
 
 
+  Duveiller2018:
+    description: Duveiller2018 check
+    variables:
+      albDiffiTr13:
+    additional_datasets:
+      - {dataset: Duveiller2018, project: OBS, mip: Amon, tier: 2,
+         type: clim, version: v2018, start_year: 2010, end_year: 2010}
+    scripts: null
+
+
   Eppley-VGPM-MODIS:
     description: Eppley-VGPM-MODIS check
     variables:
@@ -242,6 +252,21 @@ diagnostics:
     additional_datasets:
       - {dataset: NCEP, project: OBS, tier: 2,
          type: reanaly, version: 1, start_year: 1948, end_year: 2018}
+    scripts: null
+
+
+  NSIDC-0116:
+    description: NSIDC-0116 check
+    variables:
+      usi:
+        fx_files: [areacello]
+      vsi:
+        fx_files: [areacello]
+    additional_datasets:
+      - {dataset: NSIDC-0116-nh, project: OBS, mip: day, tier: 3,
+         type: reanaly, version: "4.1", start_year: 1978, end_year: 2018}
+      - {dataset: NSIDC-0116-sh, project: OBS, tier: 3,
+         type: reanaly, version: "4.1", start_year: 1978, end_year: 2018}
     scripts: null
 
 
@@ -557,7 +582,6 @@ diagnostics:
       - {dataset: NIWA-BS, project: OBS, mip: Amon, tier: 3,
          type: sat, version: v3.3, start_year: 1979, end_year: 2016}
     scripts: null
-
 
   UWisc:
     description: UWisc check
