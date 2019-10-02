@@ -248,7 +248,6 @@ diagnostics:
     description: OSI 450 monthly data
     variables:
       sic:
-        preproc: nopp
         mip: OImon
       areacello:
         preproc: nopp
