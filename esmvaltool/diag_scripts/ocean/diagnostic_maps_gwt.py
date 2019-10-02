@@ -161,8 +161,12 @@ def make_ensemble_map_plots(
     # Making plots for each layer
     try: qplt.contourf(cube, 12, linewidth=0, rasterized=True, cmap=cmap)
     except:
+        print('Trying to make figure:', path)
+        print('variable_group:', variable_group)
         print('Unable to plot cube:', cube)
-        qplt.contourf(cube, 12, linewidth=0, rasterized=True, cmap=cmap)
+        #qplt.contourf(cube, 12, linewidth=0, rasterized=True, cmap=cmap)
+        plt.close()
+        return
 
     try:
         plt.gca().coastlines()
@@ -215,7 +219,15 @@ def make_threshold_ensemble_map_plots(
         path = diagtools.folder([cfg['plot_dir'], 'Trend_intact', 'threshold_ensemble']) + suffix
 
     # Making plots for each layer
-    qplt.contourf(cube, 12, linewidth=0, rasterized=True, cmap=cmap)
+    try: qplt.contourf(cube, 12, linewidth=0, rasterized=True, cmap=cmap)
+    except:
+        print('Trying to make figure:', path)
+        print('variable_group:', variable, threshold)
+        print('Unable to plot cube:', cube)
+        plt.close()
+        return
+        #qplt.contourf(cube, 12, linewidth=0, rasterized=True, cmap=cmap)
+
 
     try:
         plt.gca().coastlines()
@@ -390,7 +402,7 @@ def main(cfg):
     """
     cartopy.config['data_dir'] = cfg['auxiliary_data_dir']
 
-    for detrend in [True, False]:
+    for detrend in [False, ]:
         make_gwt_map_plots(cfg, detrend)
 
 
