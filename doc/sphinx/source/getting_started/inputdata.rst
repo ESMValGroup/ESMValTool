@@ -31,7 +31,7 @@ single conda environment, for Synda requires python 2 and ESMValTool requires
 Python 3. Typing ``which synda`` while your synda environment
 is active will print its location. To make the ``synda`` program usable from ESMValTool we suggest
 creating a directory ``mkdir ~/bin`` and and appending that folder to your PATH
-environment variable, e.g. by adding the following line to your ``bashrc`` file:
+environment variable, e.g. by adding the following line to your ``~/.bashrc`` file:
 ``PATH=$PATH:$HOME/BIN``.
 
 Finally, in the new bin folder, make a link to synda:
