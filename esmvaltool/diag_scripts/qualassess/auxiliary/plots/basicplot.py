@@ -20,6 +20,7 @@ from ..libs import c3s_511_util as utils
 import sys
 import string
 from matplotlib.ticker import FuncFormatter
+import textwrap
 #import matplotlib.colors as colors
 import logging
 #from memory_profiler import profile
@@ -1176,7 +1177,7 @@ class Plot1D(object):
                 ymin=np.nanmin([ymin,np.nanmin(c.data)])
                 ymax=np.nanmax([ymax,np.nanmax(c.data)])
                 buffer = 0.1 * (ymax - ymin)
-            plt.gca().set_ylabel(self.name + " " + str(self.units),
+            plt.gca().set_ylabel(textwrap.fill(self.name + " " + str(self.units),45),
                                  rotation=90)
 
         except Exception as e:
