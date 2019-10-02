@@ -159,7 +159,10 @@ def make_ensemble_map_plots(
         path = diagtools.folder([cfg['plot_dir'], 'Trend_intact', 'variable_group_ensembles']) + suffix
 
     # Making plots for each layer
-    qplt.contourf(cube, 12, linewidth=0, rasterized=True, cmap=cmap)
+    try: qplt.contourf(cube, 12, linewidth=0, rasterized=True, cmap=cmap)
+    except:
+        print('Unable to plot cube:', cube)
+        qplt.contourf(cube, 12, linewidth=0, rasterized=True, cmap=cmap)
 
     try:
         plt.gca().coastlines()
@@ -235,13 +238,17 @@ def make_threshold_ensemble_map_plots(
 
 
 def calc_ensemble_mean(cube_list):
-    """"
     """
-    if len(cube_list)<=1:
+    Calculate the ensemble mean of a list of cubes.
+
+    """
+    if len(cube_list)==1:
         return cube_list[0]
+
     cube_data = cube_list[0].data
     for c in cube_list[1:]:
         cube_data += c.data
+
     cube_data = cube_data/float(len(cube_list))
     ensemble_mean = cube_list[0]
     ensemble_mean.data = cube_data
@@ -339,13 +346,15 @@ def make_gwt_map_plots(cfg, detrend = True, do_single_plots=True):
 
     # Ensemble mean for each variable_group:
     for variable_group in sorted(variable_groups):
+
         # guess historical group name:
-        historical_group = variable_group[:variable_group.find('_')] +'historical'
+        historical_group = variable_group[:variable_group.find('_')] + 'historical'
         if variable_group == historical_group:
             continue
+
         cube_list = []
         for vari, cube in sorted(anomaly_cubes[variable_group].items()):
-            print(variable_group, vari )
+            print(variable_group, vari)
             cube_list.append(cube)
 
         if cube_list == []: continue
