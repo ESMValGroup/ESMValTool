@@ -12,7 +12,7 @@ Models
 ======
 
 ESMValTool will look for existing data in the directories specified in the
-user config file. Alternatively, it can use an external
+user configuration file. Alternatively, it can use an external
 tool called Synda (http://prodiguer.github.io/synda/index.html). Here, we
 describe the basic steps to configure EMSValTool to work with Synda. This is
 the recommended approach for first-time users to quickly obtain some data for
