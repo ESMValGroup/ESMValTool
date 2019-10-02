@@ -32,7 +32,7 @@ Python 3. Typing ``which synda`` while your synda environment
 is active will print its location. To make the ``synda`` program usable from ESMValTool we suggest
 creating a directory ``mkdir ~/bin`` and and appending that folder to your PATH
 environment variable, e.g. by adding the following line to your ``~/.bashrc`` file:
-``PATH=$PATH:$HOME/BIN``.
+``PATH=$PATH:$HOME/bin``.
 
 Finally, in the new bin folder, make a link to synda:
 ``ln -s /path/to/conda/envs/synda/bin/synda ~/bin/synda``.
