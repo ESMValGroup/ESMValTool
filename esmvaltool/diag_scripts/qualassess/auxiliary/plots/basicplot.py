@@ -48,8 +48,6 @@ MPLSTYLE = os.path.dirname(
 ) + os.sep + 'default.mplstyle'
 
 
-
-
 #class PlotHist2(object):
 #    """
 #    Description
@@ -1118,7 +1116,7 @@ class Plot1D(object):
 
 ###############################################################################
 
-    def plot(self, title=None, ax=None, colors=None):
+    def plot(self, title=None, ax=None, colors=None, dat_log=True):
         """
         Arguments
             title          : title of the plot
@@ -1157,7 +1155,7 @@ class Plot1D(object):
             cols = colors
             
         plt.sca(ax[0])
-
+        
         ymin = ymax = np.nan
         
         plotlist = []
@@ -1165,15 +1163,19 @@ class Plot1D(object):
         # plot line
         try:
             for ind, c in enumerate(self.cube):
+                c.data = 10**(c.data / 70)
                 linplot = plt.plot(
                                 c.coords("time")[0].points,
                                 c.data,
                                 color=cols[ind],
                                 label=title[ind],
                                 )
+                if dat_log:
+                    plt.gca().set_yscale("log")
                 plotlist.append(linplot.copy())
                 ymin=np.nanmin([ymin,np.nanmin(c.data)])
                 ymax=np.nanmax([ymax,np.nanmax(c.data)])
+                buffer = 0.1 * (ymax - ymin)
             plt.gca().set_ylabel(self.name + " " + str(self.units),
                                  rotation=90)
 
@@ -1184,7 +1186,12 @@ class Plot1D(object):
             self.logger.exception(e)
             self.logger.debug('We did not expect this to fail!')
             plt.plot()
-
+            
+#        if dat_log:
+#            seq_y = 10**np.linspace((np.floor(np.log10(ymin - buffer)*100)/100), (np.ceil(np.log10(ymax + buffer)*100)/100),10)
+#            plt.yticks(seq_y, seq_y)
+#            self.logger.info(seq_y)
+            
         if 'time' == self.plot_type:
             pointsum = list(
                 set([np.sum(c.coords("time")[0].points) for c in self.cube]))
@@ -1215,23 +1222,25 @@ class Plot1D(object):
 
             plt.xticks(locs, labels, rotation=25)
             plt.xlabel(self.__class__.TIME_LABEL)
-            buffer = 0.1 * (ymax - ymin)
-            plt.ylim(ymin - buffer, ymax + buffer)
-            plt.grid()
-
-        if len(self.cube) > 1:
-            box = plt.gca().get_position()
-            plt.gca().set_position([box.x0, box.y0 + 0.05 * box.height,
-                                    box.width, box.y1 - box.height * 0.15])
-            handles, labels = plt.gca().get_legend_handles_labels()
-            order = [labels.index(t) for t in title]
-            handles = [handles[o] for o in order]
             
-            # Put a legend above current axis
-            plt.gca().legend(handles, title, 
-                   bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
-                   ncol=7, mode="expand", borderaxespad=0.)
+            plt.ylim(ymin - buffer, ymax + buffer)
+            plt.grid()  
+            
 
+    
+            if len(self.cube) > 1:
+                box = plt.gca().get_position()
+                plt.gca().set_position([box.x0, box.y0 + 0.05 * box.height,
+                                        box.width, box.y1 - box.height * 0.15])
+                handles, labels = plt.gca().get_legend_handles_labels()
+                order = [labels.index(t) for t in title]
+                handles = [handles[o] for o in order]
+                
+                # Put a legend above current axis
+                plt.gca().legend(handles, title, 
+                       bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
+                       ncol=7, mode="expand", borderaxespad=0.)
+            
 #        # removes ylabel instead of whitespace?!
 #        try:
 #            plt.tight_layout()

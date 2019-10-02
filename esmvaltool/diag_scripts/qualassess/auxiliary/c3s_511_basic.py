@@ -1264,6 +1264,7 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                 fig.set_figheight(1.2 * fig.get_figheight())
                 x.plot(ax=ax,
                        title=["{}%".format(p) for p in percentiles],
+                       dat_log=self.log_data,
                        colors=["skyblue",
                                "blue",
                                "darkorchid",
