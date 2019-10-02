@@ -3,14 +3,10 @@
 ---
 documentation:
   description: |
-  Recipe pre-process ERA-Interim reanalyses files for use in the LISFLOOD hydrological model.
 
-  LISFLOOD is ....
-
-  Main reference/paper: ...
   authors: [verh_st, kalverla_peter]
   projects: [ewatercycle]
-  references: ['acknow_project']
+  references: []
 
 datasets:
   - {dataset: ERA-Interim, project: OBS, tier: 3, type: reanaly, version: 1}
