@@ -38,7 +38,7 @@ Thus, the following also works:
 	esmvaltool -c /path/to/config-user.yml examples/recipe_python.yml
 
 Note that this command does not call Synda. The required data should thus be
-located in the directories specified in your user config file.
+located in the directories specified in your user configuration file.
 Recall that the chapter :ref:`User configuration file <config-user>`
 provides an explanation of how to create your own config-user.yml file.
 
