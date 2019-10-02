@@ -4,8 +4,8 @@
 
 Description
 -----------
-Create scatterplot for different datasets of a single variable. This
-diagnostics neeeds preprocessed 1D cubes with single dimension `dataset`.
+Create scatterplot for different datasets of a single variable. This diagnostic
+needs preprocessed 1D cubes with single dimension `dataset`.
 
 Author
 ------
@@ -20,8 +20,11 @@ Configuration options in recipe
 dataset_style : str, optional
     Dataset style file (located in
     :mod:`esmvaltool.diag_scripts.shared.plot.styles_python`).
-patterns : list of str, optional
-    Patterns to filter list of input data.
+pattern : str, optional
+    Pattern to filter list of input data.
+seaborn_settings : dict, optional
+    Options for seaborn's `set()` method (affects all plots), see
+    <https://seaborn.pydata.org/generated/seaborn.set.html>.
 y_range : list of float, optional
     Range for the y axis in the plot.
 
@@ -29,7 +32,6 @@ y_range : list of float, optional
 
 import logging
 import os
-from pprint import pformat
 
 import iris
 import matplotlib.pyplot as plt
@@ -47,7 +49,7 @@ def get_provenance_record(caption, ancestor_files, **kwargs):
     """Create a provenance record describing the diagnostic data and plot."""
     record = {
         'caption': caption,
-        'authors': ['schl_ma'],
+        'authors': ['schlund_manuel'],
         'references': ['acknow_project'],
         'ancestors': ancestor_files,
     }
@@ -115,46 +117,41 @@ def write_data(cfg, cube):
 def main(cfg):
     """Run the diagnostic."""
     sns.set(**cfg.get('seaborn_settings', {}))
-    patterns = cfg.get('patterns')
-    if patterns is None:
-        input_files = io.get_all_ancestor_files(cfg)
-    else:
-        input_files = []
-        for pattern in patterns:
-            input_files.extend(io.get_all_ancestor_files(cfg, pattern=pattern))
-    logger.info("Found input files:\n%s", pformat(input_files))
+    input_files = io.get_all_ancestor_files(cfg, pattern=cfg.get('pattern'))
+    if len(input_files) != 1:
+        raise ValueError(f"Expected exactly 1 file, got {len(input_files)}")
+    input_file = input_files[0]
+    logger.info("Found input file: %s", input_file)
 
-    # Iterate over filename and create plots
-    for filename in input_files:
-        cube = iris.load_cube(filename)
-        try:
-            cube.coord('dataset')
-        except iris.exceptions.CoordinateNotFoundError:
-            logger.warning(
-                "File '%s' does not contain necessary coordinate 'dataset'",
-                filename)
-            continue
-        logger.info("Processing '%s'", filename)
+    # Create plots
+    cube = iris.load_cube(input_file)
+    try:
+        cube.coord('dataset')
+    except iris.exceptions.CoordinateNotFoundError as exc:
+        logger.error(
+            "File '%s' does not contain necessary coordinate 'dataset'",
+            input_file)
+        raise exc
 
-        # Sort coordinate 'dataset'
-        [cube] = iris_helpers.intersect_dataset_coordinates([cube])
+    # Sort coordinate 'dataset'
+    [cube] = iris_helpers.intersect_dataset_coordinates([cube])
 
-        # Create plot and netcdf file
-        plot_path = plot_data(cfg, cube)
-        netcdf_path = write_data(cfg, cube)
+    # Create plot and netcdf file
+    plot_path = plot_data(cfg, cube)
+    netcdf_path = write_data(cfg, cube)
 
-        # Provenance
-        project = cube.attributes.get('project')
-        caption = "{}{} for multiple datasets".format(
-            cube.long_name, '' if project is None else f' for {project}')
-        provenance_record = get_provenance_record(caption, [filename])
-        if plot_path is not None:
-            provenance_record.update({
-                'plot_file': plot_path,
-                'plot_types': ['scatter'],
-            })
-        with ProvenanceLogger(cfg) as provenance_logger:
-            provenance_logger.log(netcdf_path, provenance_record)
+    # Provenance
+    project = cube.attributes.get('project')
+    caption = "{}{} for multiple datasets".format(
+        cube.long_name, '' if project is None else f' for {project}')
+    provenance_record = get_provenance_record(caption, [input_file])
+    if plot_path is not None:
+        provenance_record.update({
+            'plot_file': plot_path,
+            'plot_types': ['scatter'],
+        })
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(netcdf_path, provenance_record)
 
 
 if __name__ == '__main__':

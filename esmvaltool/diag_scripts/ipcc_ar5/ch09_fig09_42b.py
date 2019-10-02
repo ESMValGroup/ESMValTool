@@ -61,7 +61,7 @@ def get_provenance_record(project, ancestor_files):
          f'response of {project} models.'),
         'statistics': ['mean'],
         'domains': ['global'],
-        'authors': ['schl_ma'],
+        'authors': ['schlund_manuel'],
         'references': ['flato13ipcc'],
         'realms': ['atmos'],
         'themes': ['phys'],

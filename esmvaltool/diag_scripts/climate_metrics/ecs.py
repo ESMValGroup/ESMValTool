@@ -17,6 +17,8 @@ CRESCENDO
 
 Configuration options in recipe
 -------------------------------
+calculate_mmm : bool, optional (default: True)
+    Calculate multi-model mean ECS.
 read_external_file : str, optional
     Read ECS from external file.
 seaborn_settings : dict, optional
@@ -225,7 +227,8 @@ def preprocess_data(cfg):
     input_data = _get_anomaly_data(input_data)
 
     # Calculate multi-model mean
-    input_data = _get_multi_model_mean(input_data)
+    if cfg.get('calculate_mmm', True):
+        input_data = _get_multi_model_mean(input_data)
 
     # Group data in terms of dataset
     tas_data = select_metadata(input_data, short_name='tas')

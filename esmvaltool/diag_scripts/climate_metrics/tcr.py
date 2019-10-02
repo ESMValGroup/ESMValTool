@@ -217,7 +217,7 @@ def get_provenance_record(caption):
         'caption': caption,
         'statistics': ['mean', 'diff'],
         'domains': ['global'],
-        'authors': ['schl_ma'],
+        'authors': ['schlund_manuel'],
         'references': ['gregory08jgr'],
         'realms': ['atmos'],
         'themes': ['phys'],

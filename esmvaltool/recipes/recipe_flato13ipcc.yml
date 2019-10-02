@@ -1020,12 +1020,21 @@ diagnostics:
         <<: *tcr_settings
         project: CMIP6
         additional_datasets:
+          # Only daily data
+          # - {dataset: AWI-CM-1-1-MR,   ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1989}
           - {dataset: BCC-CSM2-MR,     ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1989}
+          - {dataset: BCC-ESM1,        ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1989}
+          - {dataset: CAMS-CSM1-0,     ensemble: r1i1p1f1, grid: gn,  start_year: 3030, end_year: 3169}
           - {dataset: CanESM5,         ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1989}
           - {dataset: CESM2,           ensemble: r1i1p1f1, grid: gn,  start_year:    1, end_year:  140}
           - {dataset: CESM2-WACCM,     ensemble: r1i1p1f1, grid: gn,  start_year:    1, end_year:  140}
           - {dataset: CNRM-CM6-1,      ensemble: r1i1p1f2, grid: gr,  start_year: 1850, end_year: 1989}
           - {dataset: CNRM-ESM2-1,     ensemble: r1i1p1f2, grid: gr,  start_year: 1850, end_year: 1989}
+          # No 1pctCO2 available
+          # - {dataset: EC-Earth3,     ensemble: r1i1p1f2, grid: gr,  start_year: 1850, end_year: 1989}
+          - {dataset: EC-Earth3-Veg,   ensemble: r1i1p1f1, grid: gr,  start_year: 1850, end_year: 1989}
+          # Only amip
+          # - {dataset: FGOALS-f3-L,     ensemble: r1i1p1f1, grid: gr1, start_year:    1, end_year:  140}
           - {dataset: GFDL-CM4,        ensemble: r1i1p1f1, grid: gr1, start_year:    1, end_year:  140}
           - {dataset: GISS-E2-1-G,     ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1989}
           - {dataset: GISS-E2-1-H,     ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1989}
@@ -1042,12 +1051,21 @@ diagnostics:
         project: CMIP6
         exp: piControl
         additional_datasets:
+          # Only daily data
+          # - {dataset: AWI-CM-1-1-MR,   ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1989}
           - {dataset: BCC-CSM2-MR,     ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1989}
+          - {dataset: BCC-ESM1,        ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1989}
+          - {dataset: CAMS-CSM1-0,     ensemble: r1i1p1f1, grid: gn,  start_year: 3030, end_year: 3169}
           - {dataset: CanESM5,         ensemble: r1i1p1f1, grid: gn,  start_year: 5201, end_year: 5340}
           - {dataset: CESM2,           ensemble: r1i1p1f1, grid: gn,  start_year:  501, end_year:  640}
           - {dataset: CESM2-WACCM,     ensemble: r1i1p1f1, grid: gn,  start_year:   70, end_year:  209}
           - {dataset: CNRM-CM6-1,      ensemble: r1i1p1f2, grid: gr,  start_year: 1850, end_year: 1989}
           - {dataset: CNRM-ESM2-1,     ensemble: r1i1p1f2, grid: gr,  start_year: 1850, end_year: 1989}
+          # No 1pctCO2 available
+          # - {dataset: EC-Earth3,     ensemble: r1i1p1f2, grid: gr,  start_year: 1850, end_year: 1989}
+          - {dataset: EC-Earth3-Veg,   ensemble: r1i1p1f1, grid: gr,  start_year: 1850, end_year: 1989}
+          # Only amip
+          # - {dataset: FGOALS-f3-L,     ensemble: r1i1p1f1, grid: gr1, start_year:    1, end_year:  140}
           # Wrong start year (must be 101)
           - {dataset: GFDL-CM4,        ensemble: r1i1p1f1, grid: gr1, start_year:  151, end_year:  290}
           - {dataset: GISS-E2-1-G,     ensemble: r1i1p1f1, grid: gn,  start_year: 4150, end_year: 4289}
