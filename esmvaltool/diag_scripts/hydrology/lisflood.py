@@ -2,6 +2,7 @@
 import logging
 from pathlib import Path
 
+# import dask.array as da
 import iris
 
 from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
@@ -30,6 +31,7 @@ def get_provenance_record(ancestor_file):
     }
     return record
 
+
 def main(cfg):
     """Process data for use as input to the LISFLOOD hydrological model """
     input_data = cfg['input_data'].values()
@@ -47,7 +49,8 @@ def main(cfg):
             cube = iris.load_cube(input_file)
 
             # Compute additional variables as input for lisvap
-            # Actual vapour pressure computed with cdo by e=6.11*exp(7.5*(d2m-273.15)/(237.3+(d2m-273.15))) expression
+            # Actual vapour pressure computed with cdo by expression:
+            # e=6.11*exp(7.5*(d2m-273.15)/(237.3+(d2m-273.15)))
             #
             # windspeed: wspd = sqrt(u10*u10+v10*v10)
             # surface_solar_radiation_downwards: ??
