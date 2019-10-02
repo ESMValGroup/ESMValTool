@@ -274,7 +274,7 @@ def make_gwt_map_plots(cfg, detrend = True, do_single_plots=False):
     variables = set()
     thresholds = {}
 
-    for fn, details in metadatas.items():
+    for fn, details in sorted(metadatas.items()):
         #print(fn, details.keys())
         short_names.add(details['short_name'])
         ensembles.add(details['ensemble'])
@@ -293,8 +293,8 @@ def make_gwt_map_plots(cfg, detrend = True, do_single_plots=False):
     anomaly_cubes = {variable_group:{} for variable_group in variable_groups}
     hist_cubes = {}
     # Calculate the anomaly for each ensemble/threshold combination
-    for ensemble in ensembles:
-        for variable_group in variable_groups:
+    for ensemble in sorted(ensembles):
+        for variable_group in sorted(variable_groups):
             # guess historical group name:
             historical_group = variable_group[:variable_group.find('_')] +'_historical'
             if variable_group == historical_group:
@@ -338,13 +338,13 @@ def make_gwt_map_plots(cfg, detrend = True, do_single_plots=False):
                 make_map_plots(cfg, details, cube, key, detrend)
 
     # Ensemble mean for each variable_group:
-    for variable_group in variable_groups:
+    for variable_group in sorted(variable_groups):
         # guess historical group name:
         historical_group = variable_group[:variable_group.find('_')] +'historical'
         if variable_group == historical_group:
             continue
         cube_list = []
-        for vari, cube in anomaly_cubes[variable_group].items():
+        for vari, cube in sorted(anomaly_cubes[variable_group].items()):
             print(variable_group, vari )
             cube_list.append(cube)
 
@@ -353,10 +353,10 @@ def make_gwt_map_plots(cfg, detrend = True, do_single_plots=False):
         make_ensemble_map_plots(cfg, ensemble_mean, variable_group, detrend)
 
     # Ensemble mean for each threshold:
-    for variable in variables:
+    for variable in sorted(variables):
         for threshold, paths in sorted(thresholds.items()):
             cube_list = []
-            for [variable_group, ensemble] in paths:
+            for [variable_group, ensemble] in sorted(paths):
                 var_g, exp, threshold = split_variable_groups(variable_group)
                 if var_g != variable:
                     continue
