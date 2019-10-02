@@ -93,39 +93,7 @@ from . import utilities as utils
 logger = logging.getLogger(__name__)
 
 
-def _extract_variable(in_file, var, cfg, out_dir):
-    logger.info("CMORizing variable '%s' from input file '%s'",
-                var['short_name'], in_file)
-    attributes = deepcopy(cfg['attributes'])
-    attributes['mip'] = var['mip']
-    cmor_table = CMOR_TABLES[attributes['project_id']]
-    definition = cmor_table.get_variable(var['mip'], var['short_name'])
-
-    with catch_warnings():
-        filterwarnings(
-            action='ignore',
-            message="Ignoring netCDF variable 'tcc' invalid units '(0 - 1)'",
-            category=UserWarning,
-            module='iris',
-        )
-        filterwarnings(
-            action='ignore',
-            message="Ignoring netCDF variable 'lsm' invalid units '(0 - 1)'",
-            category=UserWarning,
-            module='iris',
-        )
-        filterwarnings(
-            action='ignore',
-            message=("Ignoring netCDF variable 'e' invalid units "
-                     "'m of water equivalent'"),
-            category=UserWarning,
-            module='iris',
-        )
-        cube = iris.load_cube(
-            str(in_file),
-            constraint=utils.var_name_constraint(var['raw']),
-        )
-
+def _set_global_attributes(cube, attributes, definition):
     # Set global attributes
     utils.set_global_atts(cube, attributes)
     # Here var_name is the raw era-interim name
@@ -155,14 +123,8 @@ def _extract_variable(in_file, var, cfg, out_dir):
         cube.units = cube.units / 'm s-2'
         cube.data = cube.core_data() / 9.80665
 
-    # Set correct names
-    cube.var_name = definition.short_name
-    cube.standard_name = definition.standard_name
-    cube.long_name = definition.long_name
 
-    # Fix data type
-    cube.data = cube.core_data().astype('float32')
-
+def _fix_coordinates(cube, definition, var):
     # Fix coordinates
     # Add height coordinate to tas variable (required by the new backend)
     if 'height2m' in definition.dimensions:
@@ -225,6 +187,52 @@ def _extract_variable(in_file, var, cfg, out_dir):
         )
         cube.coord('time').bounds = None
         cube.coord('time').guess_bounds()
+
+
+def _extract_variable(in_file, var, cfg, out_dir):
+    logger.info("CMORizing variable '%s' from input file '%s'",
+                var['short_name'], in_file)
+    attributes = deepcopy(cfg['attributes'])
+    attributes['mip'] = var['mip']
+    cmor_table = CMOR_TABLES[attributes['project_id']]
+    definition = cmor_table.get_variable(var['mip'], var['short_name'])
+
+    with catch_warnings():
+        filterwarnings(
+            action='ignore',
+            message="Ignoring netCDF variable 'tcc' invalid units '(0 - 1)'",
+            category=UserWarning,
+            module='iris',
+        )
+        filterwarnings(
+            action='ignore',
+            message="Ignoring netCDF variable 'lsm' invalid units '(0 - 1)'",
+            category=UserWarning,
+            module='iris',
+        )
+        filterwarnings(
+            action='ignore',
+            message=("Ignoring netCDF variable 'e' invalid units "
+                     "'m of water equivalent'"),
+            category=UserWarning,
+            module='iris',
+        )
+        cube = iris.load_cube(
+            str(in_file),
+            constraint=utils.var_name_constraint(var['raw']),
+        )
+
+    _set_global_attributes(cube, attributes, definition)
+
+    # Set correct names
+    cube.var_name = definition.short_name
+    cube.standard_name = definition.standard_name
+    cube.long_name = definition.long_name
+
+    # Fix data type
+    cube.data = cube.core_data().astype('float32')
+
+    _fix_coordinates(cube, definition, var)
 
     # Convert units if required
     cube.convert_units(definition.units)
