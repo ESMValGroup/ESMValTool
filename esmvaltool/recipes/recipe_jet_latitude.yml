@@ -73,10 +73,14 @@ preprocessors:
       start_longitude: 0
       end_longitude: 60
       start_latitude: 20
-      end_latitude: 70
+      end_latitude: 75
     zonal_means:
       coordinate: longitude
       mean_type: mean
+    lanczos_filter:
+      low_cut: 0
+      upper_cut: 0.1
+      ratio: 2.3
 
 diagnostics:
   jetlat:

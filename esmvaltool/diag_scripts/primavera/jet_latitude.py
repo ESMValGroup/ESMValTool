@@ -1,9 +1,11 @@
 import os
 import logging
+from math import pi, sin, cos, ceil
 
 import matplotlib.pyplot as plt
 
 import numpy as np
+import dask.array as da
 from scipy import stats
 
 import iris
@@ -30,15 +32,13 @@ class JetLatitude(object):
 
     def compute(self):
         data = group_metadata(self.cfg['input_data'].values(), 'alias')
-        lanczos_weight = np.load(os.path.expandvars(
-            '$HOME/jetlat/python/LF_weights.npy'
-        ))
+        lanczos = self._get_lanczos_weights()
         for alias in data:
             logger.info('Processing %s', alias)
             ua = iris.load_cube(data[alias][0]['filename'])
             iris.coord_categorisation.add_season(ua, 'time')
 
-            ua_filtered = np.apply_along_axis(
+            ua_filtered = da.apply_along_axis(
                 lambda m: np.convolve(m, lanczos_weight, mode='same'),
                 axis=ua.coord_dims('time')[0],
                 arr=ua.core_data()
@@ -76,6 +76,64 @@ class JetLatitude(object):
             interval = self.cfg.get('speed_bins', 1)
             wind_bins = np.arange(0, 40 + interval, interval)
             self._compute_var(alias, wind, wind_bins, data[alias][0])
+
+    @staticmethod
+    def _get_lanczos_weights(lower_cut=0, upper_cut=1/10, ratio=1/2.3):
+        """
+        Get the weights for Lanczos band-pass filters.
+
+        First calculates the required number of weights (2{N}+1) and
+        after calculates these weights (a sequence of numbers symmetric around
+        the central one and returns them in an 1-D array.
+
+        Parameters:
+        -----------
+        lower_cut: float
+            Lower cut-off frequency
+        upper_cut: float
+            Upper cut-off frequency
+        ratio: float
+            The ratio 0<{R}<1 that expresses the part of the band-width
+            expected to have a response function amplitude less than unity
+            due to the attenuation around the window boundaries.
+
+        """
+
+        # Here frequencies are: CYCLES/(TIME INTERVAL).
+        # Thus the Nyquist frequency always equals 0.5
+        # For example if you have 6-hourly data a frequency
+        # corresponding to a period of 3 days would be = 6/(3x24).
+
+        # Fc1 = 0
+        # Fc2 = 1/10  # Low-pass with cut-off at periods of 10 days
+        # (daily data)
+        # # This value gives a window of 61 days (Woollings et al., 2010)
+        # R = 1/2.3
+
+        n = ceil(1.3 / (ratio * (upper_cut - lower_cut)))
+        weights = np.empty(2 * n + 1)
+
+        for k in range(-n, 0):
+            weights[n+k] = (
+                sin(2 * pi * upper_cut * k) / (pi * k) -
+                sin(2 * pi * lower_cut * k) / (pi * k)
+            ) * (sin(pi * k / n) / (pi * k / n))
+        weights[n] = 2 * (upper_cut - lower_cut)
+
+        for k in range(1, n + 1):
+            weights[n + k] = (
+                sin(2 * pi * upper_cut * k) / (pi * k) -
+                sin(2 * pi * lower_cut * k) / (pi * k)
+            ) * (sin(pi * k / n) / (pi * k / n))
+        # print(weights)
+        # f = np.arange(0, 0.5, 0.001)
+        # pro = np.empty(n)
+        # R = np.empty(500)
+        # for i in range(500):
+        #     for j in range(n):
+        #         pro[j] = weights[n + j + 1] * cos(2 * pi * f[i] * (j + 1))
+        #     R[i] = weights[n+1] + 2 * sum(pro)
+        return weights
 
     def _compute_var(self, alias, data, bins, metadata):
         var_name = data.var_name
@@ -216,4 +274,11 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    # main()
+    lanczos_weight = np.load(os.path.expandvars(
+        '$HOME/jetlat/python/LF_weights.npy'
+    ))
+    print(lanczos_weight)
+    print(lanczos_weight.shape)
+    new_lanczos = JetLatitude._get_lanczos_weights()
+    print(lanczos_weight - new_lanczos)
