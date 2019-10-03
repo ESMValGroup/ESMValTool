@@ -13,7 +13,7 @@ Last access
 Download and processing instructions
     Download the desired years from the following ftp:
         ftp://osisaf.met.no/reprocessed/ice/conc/v2p0
-    Please, keep folder structure.
+    Please, keep folder structure and download only the nh files, using, e.g., wget -r -A '*_nh*.nc'.
 
 """
 from .osi_common import OSICmorizer
