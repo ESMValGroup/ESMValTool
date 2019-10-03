@@ -146,6 +146,7 @@ def _fix_coordinates(cube, definition):
             if len(coord.points) > 1:
                 coord.guess_bounds()
 
+
 def _fix_frequency(cube, var):
     # Here var_name is the CMIP name
     # era-interim is in 3hr or 6hr or 12hr freq need to convert to daily
