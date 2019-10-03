@@ -22,7 +22,7 @@ https://apps.ecmwf.int/codes/grib/param-db
 https://apps.ecmwf.int/datasets/data/interim-full-invariant
 
 ```bash
-python download_era-interim.py -c config-user.yml --start_year 2000
+python download_era_interim.py -c config-user.yml --start_year 2000
 --end_year 2000
 ```
 
@@ -33,32 +33,8 @@ import os
 import yaml
 from ecmwfapi import ECMWFDataServer
 
-parser = argparse.ArgumentParser(description=__doc__)
-parser.add_argument('--config_file', '-c',
-                    default=os.path.join(os.path.dirname(__file__),
-                                         'config-user.yml'),
-                    help='Config file')
-parser.add_argument('--start_year', type=int, default=1979, help='Start year')
-parser.add_argument('--end_year', type=int, default=2019, help='End year')
-args = parser.parse_args()
 
-# get and read config file
-config_file = os.path.abspath(
-    os.path.expandvars(os.path.expanduser(args.config_file)))
-
-with open(config_file, 'r') as f:
-    config = yaml.safe_load(f)
-
-rawobs_dir = os.path.abspath(
-    os.path.expandvars(os.path.expanduser(config['rootpath']['RAWOBS'])))
-era_interim_dir = f'{rawobs_dir}/Tier3/ERA-Interim'
-os.makedirs(era_interim_dir, exist_ok=True)
-
-years = range(args.start_year, args.end_year + 1)
-server = ECMWFDataServer()
-
-
-day_timesteps = {
+DAY_TIMESTEPS = {
     'fc': {
         'step': '3/6/9/12',
         'time': '00:00:00/12:00:00',
@@ -86,7 +62,8 @@ day_timesteps = {
     }
 }
 
-day_params = [
+
+DAY_PARAMS = [
     ('167.128', 't2m', 'an'),  # 2 metre temperature
     ('228.128', 'tp', 'accu'),  # Total precipitation
     ('182.128', 'e', 'accu'),  # Evaporation
@@ -108,23 +85,7 @@ day_params = [
 ]
 
 
-for no, symbol, timestep in day_params:
-    fr = 'daily'
-    for year in years:
-        server.retrieve({
-            'class': 'ei',
-            'dataset': 'interim',
-            'date': f'{year}-01-01/to/{year}-12-31',
-            'expver': '1',
-            'grid': '0.75/0.75',
-            'param': no,
-            'stream': 'oper',
-            'format': 'netcdf',
-            'target': f'{era_interim_dir}/ERA-Interim_{symbol}_{fr}_{year}.nc',
-            **day_timesteps[timestep]
-        })
-
-month_timesteps = {
+MONTH_TIMESTEPS = {
     'accu': {
         'levtype': 'sfc',
         'stream': 'mdfa',
@@ -151,7 +112,8 @@ month_timesteps = {
     }
 }
 
-month_params = [
+
+MONTH_PARAMS = [
     ('167.128', 't2m', 'an'),  # 2 metre temperature
     ('228.128', 'tp', 'accu'),  # Total precipitation
     ('182.128', 'e', 'accu'),  # Evaporation
@@ -188,40 +150,101 @@ month_params = [
 ]
 
 
-for no, symbol, timestep in month_params:
-    fr = 'monthly'
-    for year in years:
-        server.retrieve({
-            'class': 'ei',
-            'dataset': 'interim',
-            # All months of a year eg. 19900101/19900201/.../19901101/19901201
-            'date': '/'.join([f'{year}{m:02}01' for m in range(1, 13)]),
-            'expver': '1',
-            'grid': '0.75/0.75',
-            'param': no,
-            'format': 'netcdf',
-            'target': f'{era_interim_dir}/ERA-Interim_{symbol}_{fr}_{year}.nc',
-            **month_timesteps[timestep]
-        })
-
-invariant_params = [
+INVARIANT_PARAMS = [
     ('172.128', 'lsm'),  # Land-sea mask
     ('129.128', 'z'),  # Geopotential
 ]
 
-for no, symbol in invariant_params:
-    server.retrieve({
-        'class': 'ei',
-        'dataset': 'interim',
-        'date': '1989-01-01',
-        'expver': '1',
-        'grid': '0.75/0.75',
-        'levtype': 'sfc',
-        'param': no,
-        'step': '0',
-        'stream': 'oper',
-        'time': '12:00:00',
-        'type': 'an',
-        'format': 'netcdf',
-        'target': f'{era_interim_dir}/ERA-Interim_{symbol}.nc',
-    })
+
+def _get_daily_data(params, timesteps, years, server, era_interim_dir):
+    for param_id, symbol, timestep in params:
+        frequency = 'daily'
+        for year in years:
+            server.retrieve({
+                'class': 'ei',
+                'dataset': 'interim',
+                'date': f'{year}-01-01/to/{year}-12-31',
+                'expver': '1',
+                'grid': '0.75/0.75',
+                'param': param_id,
+                'stream': 'oper',
+                'format': 'netcdf',
+                'target': f'{era_interim_dir}/ERA-Interim_{symbol}'\
+                          f'_{frequency}_{year}.nc',
+                **timesteps[timestep]
+            })
+
+
+def _get_monthly_data(params, timesteps, years, server, era_interim_dir):
+    for param_id, symbol, timestep in params:
+        frequency = 'monthly'
+        for year in years:
+            server.retrieve({
+                'class': 'ei',
+                'dataset': 'interim',
+                # All months of a year eg. 19900101/.../19901101/19901201
+                'date': '/'.join([f'{year}{m:02}01' for m in range(1, 13)]),
+                'expver': '1',
+                'grid': '0.75/0.75',
+                'param': param_id,
+                'format': 'netcdf',
+                'target': f'{era_interim_dir}/ERA-Interim_{symbol}'\
+                          f'_{frequency}_{year}.nc',
+                **timesteps[timestep]
+            })
+
+
+def _get_invariant_data(params, server, era_interim_dir):
+    for param_id, symbol in params:
+        server.retrieve({
+            'class': 'ei',
+            'dataset': 'interim',
+            'date': '1989-01-01',
+            'expver': '1',
+            'grid': '0.75/0.75',
+            'levtype': 'sfc',
+            'param': param_id,
+            'step': '0',
+            'stream': 'oper',
+            'time': '12:00:00',
+            'type': 'an',
+            'format': 'netcdf',
+            'target': f'{era_interim_dir}/ERA-Interim_{symbol}.nc',
+        })
+
+
+def cli():
+    """Download ERA-Interim variables from ECMWF data server
+    """
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--config_file', '-c',
+                        default=os.path.join(os.path.dirname(__file__),
+                                             'config-user.yml'),
+                        help='Config file')
+    parser.add_argument('--start_year', type=int,
+                        default=1979, help='Start year')
+    parser.add_argument('--end_year', type=int, default=2019, help='End year')
+    args = parser.parse_args()
+
+    # get and read config file
+    config_file = os.path.abspath(
+        os.path.expandvars(os.path.expanduser(args.config_file)))
+
+    with open(config_file, 'r') as f:
+        config = yaml.safe_load(f)
+
+    rawobs_dir = os.path.abspath(
+        os.path.expandvars(os.path.expanduser(config['rootpath']['RAWOBS'])))
+    era_interim_dir = f'{rawobs_dir}/Tier3/ERA-Interim'
+    os.makedirs(era_interim_dir, exist_ok=True)
+
+    years = range(args.start_year, args.end_year + 1)
+    server = ECMWFDataServer()
+
+    _get_daily_data(DAY_PARAMS, DAY_TIMESTEPS, years, server, era_interim_dir)
+    _get_monthly_data(MONTH_PARAMS, MONTH_TIMESTEPS,
+                      years, server, era_interim_dir)
+    _get_invariant_data(INVARIANT_PARAMS, server, era_interim_dir)
+
+if __name__ == "__main__":
+    cli()
