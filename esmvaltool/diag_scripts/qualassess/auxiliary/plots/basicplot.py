@@ -132,7 +132,17 @@ MPLSTYLE = os.path.dirname(
 #            20180209-A_schl_ma: written
 #        """
 #
-#        # Parse arguments
+#        # Parse arguments                if mean > 10**4:
+                    txt = r'mean: {:.2g} $\pm$ {:.2g} '.format(mean, std)
+                else:
+                    txt = r'mean: {:.2f} $\pm$ {:.2f} '.format(mean, std)
+                plt.gca().text(0, #TODO: here we are working on the text position
+                       -0.02,
+                       #- 0.1 * ((self.n_cubes // n_columns) * 0.7 if self.n_cubes>n_columns else 1),
+                       txt,
+                       horizontalalignment='left',
+                       verticalalignment='top',
+                       transform=plt.gca().transAxes)
 #        if (x_label is None):
 #            x_label = self.name + self.units
 #        if (y_label is None):
@@ -931,12 +941,14 @@ class Plot2D(object):
                 plt.gca().coastlines()
                 plt.gca().gridlines(crs=ccrs.Geodetic(), color="k",
                                     linestyle=':')
+                if np.log10(mean) >= 4 or np.log(mean) <= -2:
+                    txt = r'mean: {:.2g} $\pm$ {:.2g} '.format(mean, std)
+                else:
+                    txt = r'mean: {:.2f} $\pm$ {:.2f} '.format(mean, std)
                 plt.gca().text(0, #TODO: here we are working on the text position
                        -0.02,
                        #- 0.1 * ((self.n_cubes // n_columns) * 0.7 if self.n_cubes>n_columns else 1),
-                       r'mean: {:.2g} $\pm$ {:.2g} '.format(
-                           mean,
-                           std),
+                       txt,
                        horizontalalignment='left',
                        verticalalignment='top',
                        transform=plt.gca().transAxes)
