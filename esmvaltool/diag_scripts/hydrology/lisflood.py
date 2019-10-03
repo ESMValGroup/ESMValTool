@@ -18,7 +18,7 @@ def get_provenance_record(ancestor_file):
         'caption': "Forcings for the LISFLOOD hydrological model.",
         'domains': ['global'],
         'authors': [
-            'verh_st',
+            'verhoeven_stefan',
             'kalverla_peter',
         ],
         'projects': [
