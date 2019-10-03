@@ -107,6 +107,9 @@ def _extract_variable(in_file, var, cfg, out_dir):
     # Fix data type
     cube.data = cube.core_data().astype('float32')
 
+    # Make latitude increasing
+    cube = cube[:, ::-1, ...]
+
     # Fix lat/lon coordinates
     cube.coord('latitude').var_name = 'lat'
     cube.coord('longitude').var_name = 'lon'
@@ -127,9 +130,6 @@ def _extract_variable(in_file, var, cfg, out_dir):
 
     # Convert units if required
     cube.convert_units(definition.units)
-
-    # Make latitude increasing
-    cube = cube[:, ::-1, ...]
 
     # Set global attributes
     utils.set_global_atts(cube, attributes)
