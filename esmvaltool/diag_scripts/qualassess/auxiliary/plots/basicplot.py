@@ -829,8 +829,7 @@ class Plot2D(object):
 
             # Plot map
             # (this needs to be done due to an error in cartopy)
-#            try:
-            for i in [1]:
+            try:
                 if y_logarithmic:
                     cube.coord(lev_var).points = np.log10(
                         cube.coord(lev_var).points)
@@ -905,18 +904,18 @@ class Plot2D(object):
                     else:
                         plt.xticks(locs, labels, rotation=25)
                         plt.xlabel(self.__class__.TIME_LABEL)
-#            except Exception as e:
-#                self.logger.exception(e)
-#                exc_type, exc_obj, exc_tb = sys.exc_info()
-#                fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-#                self.logger.debug(exc_type, fname, exc_tb.tb_lineno)
-#                pcm = qplt.pcolormesh(cube, cmap=brewer_cmap,
-#                                      vmin=vmin, vmax=vmax, norm=None)
-#                plt.text(0.5, 0.5, 'Data cannot be displayed as intended due '
-#                         'to cartopy issues with the data cube!',
-#                         horizontalalignment='center',
-#                         verticalalignment='center',
-#                         transform=plt.gca().transAxes)
+            except Exception as e:
+                self.logger.exception(e)
+                exc_type, exc_obj, exc_tb = sys.exc_info()
+                fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+                self.logger.debug(exc_type, fname, exc_tb.tb_lineno)
+                pcm = qplt.pcolormesh(cube, cmap=brewer_cmap,
+                                      vmin=vmin, vmax=vmax, norm=None)
+                plt.text(0.5, 0.5, 'Data cannot be displayed as intended due '
+                         'to cartopy issues with the data cube!',
+                         horizontalalignment='center',
+                         verticalalignment='center',
+                         transform=plt.gca().transAxes)
                         
             if self.plot_type == 'latlon':
                 mean = cube.collapsed(
@@ -932,11 +931,14 @@ class Plot2D(object):
                 plt.gca().coastlines()
                 plt.gca().gridlines(crs=ccrs.Geodetic(), color="k",
                                     linestyle=':')
-                plt.gca().text(0,
-                       - 0.1 * ((self.n_cubes // n_columns) * 0.7 if self.n_cubes>n_columns else 1),
+                plt.gca().text(0, #TODO: here we are working on the text position
+                       -0.02,
+                       #- 0.1 * ((self.n_cubes // n_columns) * 0.7 if self.n_cubes>n_columns else 1),
                        r'mean: {:.2g} $\pm$ {:.2g} '.format(
-                           mean,#str(np.round(mean, 2)),
-                           std),#str(np.round(std, 2))),
+                           mean,
+                           std),
+                       horizontalalignment='left',
+                       verticalalignment='top',
                        transform=plt.gca().transAxes)
 
             # Label plots (supports at most 26 figures at the moment)
@@ -1247,7 +1249,7 @@ class Plot1D(object):
 
 
 def plot_setup(d="time", m="module", numfigs=1, fig=plt.figure(), caption=''):
-
+    #TODO: make sure that anomalies and climatologies look good
     if d in ["longitude", "levels"]:
         gs = gridspec.GridSpec(10, 5)
         ax = np.array([plt.subplot(gs[:-2, :-1]),
@@ -1264,14 +1266,18 @@ def plot_setup(d="time", m="module", numfigs=1, fig=plt.figure(), caption=''):
                        plt.subplot(gs[-5:-2, 0]), plt.subplot(gs[-2:, 0])])
         fig.set_figheight(1.7 * fig.get_figheight())
     if "climatology" == m:
+        logger.info(fig.get_figheight())
         fig.set_figheight(1.7 * fig.get_figheight())
+        logger.info(fig.get_figheight())
         caption = caption + ' Subplots a) - l) show months January - December.'
     if "percentiles" == m:
         fig.set_figheight(1.3 * fig.get_figheight())
         caption = caption + ' Subplots a) - g) show percentiles ' + \
             '1%, 5%, 10%, 50%, 90%, 95%, and 99%.'
     if "anomalies" in m:
+        logger.info(fig.get_figheight())
         fig.set_figheight(np.ceil(numfigs / 9.) * fig.get_figheight())
+        logger.info(fig.get_figheight())
         caption = caption + ' Subplots ' + __my_string_ascii_lc__(0) + \
             ') - ' + __my_string_ascii_lc__(numfigs - 1) +  \
             ') show single years (max. last 21 years only).'

@@ -545,9 +545,11 @@ def lazy_climatology(cube, t_coord):
         sub_cube = cube.extract(
                 iris.Constraint(
                         coord_values={t_coord:lambda point: point == act_t}))
-#        sub_cube = cube.extract(iris.Constraint(month_number = lambda point: point == act_t))
-
-        sub_mean = sub_cube.collapsed("time",iris.analysis.MEAN)
+        
+        try:        
+            sub_mean = sub_cube.collapsed("time",iris.analysis.MEAN)
+        except:
+            sub_mean = sub_cube
             
         t_coord_dict.update({act_t:sub_mean})
     
