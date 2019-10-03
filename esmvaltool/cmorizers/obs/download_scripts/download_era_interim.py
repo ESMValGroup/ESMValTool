@@ -245,5 +245,6 @@ def cli():
                       years, server, era_interim_dir)
     _get_invariant_data(INVARIANT_PARAMS, server, era_interim_dir)
 
+
 if __name__ == "__main__":
     cli()
