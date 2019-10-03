@@ -19,13 +19,9 @@ documentation:
 
 preprocessors:
   prep_1:
-    custom_order: true
     climate_statistics:
       operator: mean
       period: full
-    # multi_model_statistics:
-    #   span: full
-    #   statistics: [mean ]
 
 diagnostics:
   # --------------------------------------------------
