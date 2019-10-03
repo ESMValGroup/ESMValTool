@@ -29,8 +29,8 @@ The ``--synda`` option tells ESMValTool to use Synda to search for and download
 the necessary datasets.
 
 ESMValTool will also find recipes that are stored in its installation directory.
-A copy of the example recipe is available in
-``/path/to/installation/esmvaltool/recipes/examples/recipe_python``.
+A copy of the example recipe is shipped with ESMValTool as:
+``/path/to/installation/esmvaltool/recipes/examples/recipe_python.yml``.
 Thus, the following also works:
 
 .. code:: bash
