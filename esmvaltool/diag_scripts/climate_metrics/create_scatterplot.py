@@ -88,7 +88,7 @@ def plot_data(cfg, cube):
                      bottom=False,
                      top=False,
                      labelbottom=False)
-    axes.set_ylabel(f"{cube.var_name} / {cube.units}")
+    axes.set_ylabel(f"{cube.var_name.upper()} / {cube.units}")
     axes.set_ylim(cfg.get('y_range'))
     legend = axes.legend(loc='center left',
                          bbox_to_anchor=[1.05, 0.5],

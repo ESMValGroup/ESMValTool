@@ -173,7 +173,7 @@ def main(cfg):
         new_metadata = {
             'long_name': cube.long_name,
             'units': cube.units,
-            'var_name': cube.var_name,
+            'var_name': cube.var_name.upper(),
         }
         if metadata is None:
             metadata = new_metadata
