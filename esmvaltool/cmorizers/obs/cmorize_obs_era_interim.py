@@ -124,7 +124,7 @@ def _set_global_attributes(cube, attributes, definition):
         cube.data = cube.core_data() / 9.80665
 
 
-def _fix_coordinates(cube, definition, var):
+def _fix_coordinates(cube, definition):
     # Fix coordinates
     # Add height coordinate to tas variable (required by the new backend)
     if 'height2m' in definition.dimensions:
@@ -145,6 +145,8 @@ def _fix_coordinates(cube, definition, var):
             coord.points = coord.core_points().astype('float64')
             if len(coord.points) > 1:
                 coord.guess_bounds()
+
+def _fix_frequency(cube, var):
     # Here var_name is the CMIP name
     # era-interim is in 3hr or 6hr or 12hr freq need to convert to daily
     # only variables with step 12 need accounting time 00 AM as time 24 PM
@@ -187,6 +189,7 @@ def _fix_coordinates(cube, definition, var):
         )
         cube.coord('time').bounds = None
         cube.coord('time').guess_bounds()
+    return cube
 
 
 def _extract_variable(in_file, var, cfg, out_dir):
@@ -232,7 +235,8 @@ def _extract_variable(in_file, var, cfg, out_dir):
     # Fix data type
     cube.data = cube.core_data().astype('float32')
 
-    _fix_coordinates(cube, definition, var)
+    _fix_coordinates(cube, definition)
+    cube = _fix_frequency(cube, var)
 
     # Convert units if required
     cube.convert_units(definition.units)
