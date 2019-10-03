@@ -169,7 +169,7 @@ def _get_daily_data(params, timesteps, years, server, era_interim_dir):
                 'param': param_id,
                 'stream': 'oper',
                 'format': 'netcdf',
-                'target': f'{era_interim_dir}/ERA-Interim_{symbol}'\
+                'target': f'{era_interim_dir}/ERA-Interim_{symbol}'
                           f'_{frequency}_{year}.nc',
                 **timesteps[timestep]
             })
@@ -188,7 +188,7 @@ def _get_monthly_data(params, timesteps, years, server, era_interim_dir):
                 'grid': '0.75/0.75',
                 'param': param_id,
                 'format': 'netcdf',
-                'target': f'{era_interim_dir}/ERA-Interim_{symbol}'\
+                'target': f'{era_interim_dir}/ERA-Interim_{symbol}'
                           f'_{frequency}_{year}.nc',
                 **timesteps[timestep]
             })
@@ -214,8 +214,7 @@ def _get_invariant_data(params, server, era_interim_dir):
 
 
 def cli():
-    """Download ERA-Interim variables from ECMWF data server
-    """
+    """Download ERA-Interim variables from ECMWF data server."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--config_file', '-c',
                         default=os.path.join(os.path.dirname(__file__),
@@ -227,11 +226,11 @@ def cli():
     args = parser.parse_args()
 
     # get and read config file
-    config_file = os.path.abspath(
+    config_file_name = os.path.abspath(
         os.path.expandvars(os.path.expanduser(args.config_file)))
 
-    with open(config_file, 'r') as f:
-        config = yaml.safe_load(f)
+    with open(config_file_name, 'r') as config_file:
+        config = yaml.safe_load(config_file)
 
     rawobs_dir = os.path.abspath(
         os.path.expandvars(os.path.expanduser(config['rootpath']['RAWOBS'])))
