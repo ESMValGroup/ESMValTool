@@ -66,7 +66,7 @@ diagnostics:
         additional_datasets:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp126], ensemble: r1i1p1f2, start_year: 2014, end_year: 2034, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp126], ensemble: r2i1p1f2, start_year: 2018, end_year: 2038, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp126], ensemble: r3i1p1f2, start_year: 2015, end_year: 2035, grid: gn}
+        #  - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp126], ensemble: r3i1p1f2, start_year: 2015, end_year: 2035, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp126], ensemble: r4i1p1f2, start_year: 2019, end_year: 2039, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp126], ensemble: r8i1p1f2, start_year: 2011, end_year: 2031, grid: gn}
 
@@ -76,7 +76,7 @@ diagnostics:
         additional_datasets:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp126], ensemble: r1i1p1f2, start_year: 2027, end_year: 2047, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp126], ensemble: r2i1p1f2, start_year: 2029, end_year: 2049, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp126], ensemble: r3i1p1f2, start_year: 2027, end_year: 2047, grid: gn}
+        #  - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp126], ensemble: r3i1p1f2, start_year: 2027, end_year: 2047, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp126], ensemble: r4i1p1f2, start_year: 2031, end_year: 2051, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp126], ensemble: r8i1p1f2, start_year: 2023, end_year: 2043, grid: gn}
 
