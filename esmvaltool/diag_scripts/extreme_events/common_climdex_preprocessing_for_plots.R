@@ -30,11 +30,14 @@
 create_grid <- function(path = idx_dir, loc = "./gridDef") {
   ## Picking the grid found in the first file to regrid over
   first_file <- list.files(path,
-    pattern = paste0(".*", regrid_dataset, ".*\\.nc"),
-    full.names = TRUE
-  )[1]
-  cdo("griddes -delvar,time_bnds", input = first_file,
-      stdout = loc, options = "-O")
+                           pattern = paste0(".*", regrid_dataset, ".*\\.nc"),
+                           full.names = TRUE)[1]
+  cdo(
+    "griddes -delvar,time_bnds",
+    input = first_file,
+    stdout = loc,
+    options = "-O"
+  )
 }
 
 #
@@ -42,8 +45,9 @@ create_grid <- function(path = idx_dir, loc = "./gridDef") {
 # @param regrid name w/path of gridfile to use
 # to put the landdseamask on
 #
-create_land_sea_mask <- function(regrid = "./gridDef", loc = "./",
-                              landmask = "./landSeaMask.nc") {
+create_land_sea_mask <- function(regrid = "./gridDef",
+                                 loc = "./",
+                                 landmask = "./landSeaMask.nc") {
   # Test if gridfile exists
   # otherwise call function to generate one
   if (!file.exists(regrid)) {
@@ -54,19 +58,32 @@ create_land_sea_mask <- function(regrid = "./gridDef", loc = "./",
   topof <- cdo("topo", options = "-O -f nc")
 
   ## Regridding the topographic map to chosen grid
-  rtopof <- cdo("remapcon", args = regrid, input = topof, options = "-O")
+  rtopof <-
+    cdo("remapcon",
+        args = regrid,
+        input = topof,
+        options = "-O")
 
   # Set above sea-level gridpoints to missing
   rtopomissf <- cdo("setrtomiss",
-                    args = "0,9000", input = rtopof, options = "-O")
+                    args = "0,9000",
+                    input = rtopof,
+                    options = "-O")
 
   # Set above sea-level gridpoints to 1
   rtopo1posf <- cdo("setmisstoc",
-                    args = "1", input = rtopomissf, options = "-O")
+                    args = "1",
+                    input = rtopomissf,
+                    options = "-O")
 
   # Set below sea-level gridpoints to missing
-  cdo("setrtomiss",
-    args = "-9000,0", input = rtopo1posf, output = landmask, options = "-O")
+  cdo(
+    "setrtomiss",
+    args = "-9000,0",
+    input = rtopo1posf,
+    output = landmask,
+    options = "-O"
+  )
 
   unlink(c(topof, rtopof, rtopomissf, rtopo1posf))
 }
@@ -82,23 +99,21 @@ create_land_sea_mask <- function(regrid = "./gridDef", loc = "./",
 ## @param max_start is an optional crop start
 ## @param min_end is an optional crop end
 ##
-set_time_for_files_equal <- function(path, idx, model_list,
-                                 time_cropped = "./timeCropped",
-                                 max_start = 0, min_end = 2500) {
-
+set_time_for_files_equal <- function(path,
+                                     idx,
+                                     model_list,
+                                     time_cropped = "./timeCropped",
+                                     max_start = 0,
+                                     min_end = 2500) {
   ## Getting a list of all the files for the index
-  models_avail <- basename(Sys.glob(file.path(
-    path,
-    paste(idx, "*.nc", sep = "")
-  )))
+  models_avail <- basename(Sys.glob(file.path(path,
+                                              paste(idx, "*.nc", sep = ""))))
 
   ## Selecting only the files from the model list
   models <- vector(mode = "character", length = length(model_list))
   for (i in seq_along(model_list)) {
-    models[i] <- models_avail[grep(
-      pattern = model_list[i],
-      x = models_avail
-    )]
+    models[i] <- models_avail[grep(pattern = model_list[i],
+                                   x = models_avail)]
   }
 
   print(models)
@@ -151,14 +166,28 @@ set_time_for_files_equal <- function(path, idx, model_list,
       beg <- max_start - start[i]
       sto <- min_end - max_start + beg
       newname <- paste(substr(m, 1, nchar(m) - 12),
-        max_start, "-", min_end, ".nc",
-        sep = ""
+                       max_start,
+                       "-",
+                       min_end,
+                       ".nc",
+                       sep = "")
+      nco(
+        "ncks",
+        paste0(
+          "-d time,",
+          beg,
+          ",",
+          sto,
+          " ",
+          path,
+          "/",
+          m,
+          " ",
+          time_cropped,
+          "/",
+          newname
+        )
       )
-      nco("ncks", paste0(
-        "-d time,", beg, ",", sto, " ",
-        path, "/", m, " ",
-        time_cropped, "/", newname
-      ))
     }
     i <- i + 1
   }
@@ -174,17 +203,20 @@ set_time_for_files_equal <- function(path, idx, model_list,
 ## @param landmask gives the file that defines the landseamask to be used
 ##
 ##
-regrid_and_land_sea_mask <- function(idx_raw, regrid = "./gridDef",
-                                 landmask = "./landSeaMask.nc",
-                                 regridded = "./Regridded",
-                                 land = "./Land", loc = "./") {
-
+regrid_and_land_sea_mask <- function(idx_raw,
+                                     regrid = "./gridDef",
+                                     landmask = "./landSeaMask.nc",
+                                     regridded = "./Regridded",
+                                     land = "./Land",
+                                     loc = "./") {
   ## Getting just the raw name of the file
   idx_name <- basename(idx_raw)
 
   ## If the landmask does not exist, we create one.
   if (!file.exists(landmask)) {
-    create_land_sea_mask(regrid = regrid, loc = loc, landmask = landmask)
+    create_land_sea_mask(regrid = regrid,
+                         loc = loc,
+                         landmask = landmask)
   }
 
   ## Checking if directories are present and creating them if not:
@@ -197,24 +229,35 @@ regrid_and_land_sea_mask <- function(idx_raw, regrid = "./gridDef",
 
   ## Regridding file:
   varname <- strsplit(idx_name, "_")[[1]][1]
-  tmpsel <- cdo("selvar", args = varname, input = idx_raw, options = "-O")
-  cdo("remapcon",
-    args = regrid, input = tmpsel,
-    output = paste0(regridded, "/", idx_name), options = "-O"
+  tmpsel <-
+    cdo("selvar",
+        args = varname,
+        input = idx_raw,
+        options = "-O")
+  cdo(
+    "remapcon",
+    args = regrid,
+    input = tmpsel,
+    output = paste0(regridded, "/", idx_name),
+    options = "-O"
   )
   unlink(tmpsel)
 
   ## Applying landseamask:
-  cdo("div",
+  cdo(
+    "div",
     input = c(paste0(regridded, "/", idx_name), landmask),
-    output = paste0(land, "/", idx_name), options = "-O"
+    output = paste0(land, "/", idx_name),
+    options = "-O"
   )
 
   ## Also produce timemean:
   ## !! check is this should be subject to some reference period or
   ## time change
-  cdo("timmean",
+  cdo(
+    "timmean",
     input = paste0(land, "/", idx_name),
-    output = paste0(land, "/tm_", idx_name), options = "-O"  # nolint
+    output = paste0(land, "/tm_", idx_name),
+    options = "-O"  # nolint
   )
 }

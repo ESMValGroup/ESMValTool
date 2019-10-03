@@ -23,11 +23,11 @@ test.get.thresholds.chunk <- function() {
     thresholds.netcdf <- lapply(thresh.files, nc_open)
     t.f.idx <- get.var.file.idx(thresholds.name.map, lapply(thresholds.netcdf,
                                                             ncdf4.helpers::nc.get.variable.list, min.dims=2))
-    
+
     ## Get thresholds chunk.
     dat <- get.thresholds.chunk(list(), cdx.funcs, thresholds.netcdf, t.f.idx, thresholds.name.map)
     checkEquals(thresholds.chunk.tmax.only, dat)
-    
+
     lapply(thresholds.netcdf, nc_close)
   }
 }
@@ -53,7 +53,7 @@ test.compute.indices.for.stripe <- function() {
     t.f.idx <- get.var.file.idx(thresholds.name.map, lapply(thresholds.netcdf,
                                                             ncdf4.helpers::nc.get.variable.list, min.dims=2))
     thresh.dat <- get.thresholds.chunk(list(), cdx.funcs, thresholds.netcdf, t.f.idx, thresholds.name.map)
-    
+
     ## Compute indices for stripe
     cdx <- compute.indices.for.stripe(list(X=1:2, Y=1:2), cdx.funcs, f.meta$ts, c(1981, 1990), f.meta$dim.axes,
                                       f.meta$v.f.idx, variable.name.map, f.meta$src.units, f.meta$dest.units,
@@ -68,12 +68,12 @@ test.compute.indices.for.stripe <- function() {
       nc_close(f.valid)
       d.comparison <- t(do.call(cbind, lapply(cdx, function(cr) { cr[[x]] })))
       dim(d.comparison) <- dim(d.input)
-      
+
       ## Apparently there are differences at the 3e-6 level between calculated and saved data... who knew?
       checkEquals(d.input, d.comparison, tolerance=1e-5)
       mean(abs(d.input - d.comparison))
     })
-    
+
     lapply(f, nc_close)
   }
   invisible(0)
@@ -83,24 +83,24 @@ test.get.quantiles.for.stripe <- function() {
   historical.files <- list.files("historical/", full.names=TRUE)
   if(length(historical.files) > 0) {
     ## FIXME: This is untestable with the current input data.
-    
+
     ## Establish basic inputs.
     author.data <- list(institution="Looney Bin", institution_id="LBC")
     input.files <- list.files("test1/", full.names=TRUE)
-    
+
     ## Prepare derived inputs.
     f <- lapply(input.files, ncdf4::nc_open)
     variable.name.map <- c(tmax="tasmax", tmin="tasmin", prec="pr")
     f.meta <- create.file.metadata(f, variable.name.map)
     threshold.dat <- get.thresholds.metadata(names(f.meta$v.f.idx))
-    
+
     ## Compute threshold quantiles for stripe
     q <- get.quantiles.for.stripe(list(Y=1), f.meta$ts, c(1981, 1990), f.meta$dim.axes,
                                   f.meta$v.f.idx, variable.name.map, f.meta$src.units,
                                   f.meta$dest.units, f)
-    
+
     ## FIXME: Compare to valid data.
-    
+
     lapply(f, nc_close)
   }
 }
@@ -119,12 +119,12 @@ test.get.quantiles.object <- function() {
                                                             ncdf4.helpers::nc.get.variable.list, min.dims=2))
     ## Get thresholds chunk.
     dat <- get.thresholds.chunk(list(Y=1), cdx.funcs, thresholds.netcdf, t.f.idx, thresholds.name.map)
-    
+
     ## Get quantiles object for index 2
     q <- get.quantiles.object(dat, 2)
-    
+
     ## FIXME: Compare to a correct object.
-    
+
     lapply(thresholds.netcdf, nc_close)
   }
 }
@@ -156,7 +156,7 @@ test.get.data <- function() {
     f.meta <- create.file.metadata(f, variable.name.map)
     d <- get.data(f[[f.meta$v.f.idx['prec']]], "pr", list(Y=2), "kg m-2 s-1", "kg m-2 s-1", c(lon="X",lat="Y",time="T"))
     lapply(f, ncdf4::nc_close)
-  }    
+  }
 }
 
 ## FIXME: Needs proper test data. This is just a framework...
@@ -194,11 +194,11 @@ test.thresholds.create.and.indices <- function() {
       d.correct <- ncvar_get(f.correct, ncdf4.helpers::nc.get.variable.list(f.correct)[1])
 
       checkEquals(d.test, d.correct)
-      
+
       nc_close(f.test)
       nc_close(f.correct)
     })
-    
+
     create.indices.from.files(input.file.list, indices.dir.thresh, input.file.list[1], author.data, parallel=FALSE, thresholds.files=thresh.file)
     create.indices.from.files(input.file.list, indices.dir.nothresh, input.file.list[1], author.data, parallel=FALSE, base.range=c(2010, 2019))
 

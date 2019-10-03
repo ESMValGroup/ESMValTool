@@ -4,8 +4,11 @@ base_range <- NA
 analysis_range <- NA
 climdex_parallel <- 4
 mip_name <- "cmip"
-ts_col_list <- c("dodgerblue2", "darkgreen",
-                 "firebrick2", "darkorchid", "aquamarine3")
+ts_col_list <- c("dodgerblue2",
+                 "darkgreen",
+                 "firebrick2",
+                 "darkorchid",
+                 "aquamarine3")
 ts_png_width <- 640
 ts_png_height <- 480
 ts_png_units <- "px"
@@ -15,14 +18,14 @@ ts_lty_list <- c(1, 4, 2, 3, 5)
 ts_lwd_list <- c(2, 2, 2, 2, 2)
 ts_data <- TRUE
 normalize <- FALSE
-timeseries_idx <- c(
-  "tn10pETCCDI_yr", "tn90pETCCDI_yr",
-  "tx10pETCCDI_yr", "tx90pETCCDI_yr"
-)
-gleckler_idx <- c(
-  "tn10pETCCDI_yr", "tn90pETCCDI_yr",
-  "tx10pETCCDI_yr", "tx90pETCCDI_yr"
-)
+timeseries_idx <- c("tn10pETCCDI_yr",
+                    "tn90pETCCDI_yr",
+                    "tx10pETCCDI_yr",
+                    "tx90pETCCDI_yr")
+gleckler_idx <- c("tn10pETCCDI_yr",
+                  "tn90pETCCDI_yr",
+                  "tx10pETCCDI_yr",
+                  "tx90pETCCDI_yr")
 
 ts_plt <- TRUE
 glc_plt <- TRUE

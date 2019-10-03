@@ -17,36 +17,38 @@
 # ############################################################################
 library(tools)
 library(yaml)
- # get path to script and source subroutines (if needed)
+# get path to script and source subroutines (if needed)
 diag_scripts_dir <- Sys.getenv("diag_scripts")
 # source paste0(diag_scripts_dir,"/subroutine.r")
 print(file.path("source ", diag_scripts_dir, "subroutine.r"))
- # read settings and metadata files (assuming one variable only)
+# read settings and metadata files (assuming one variable only)
 args <- commandArgs(trailingOnly = TRUE)
 settings <- yaml::read_yaml(args[1])
 for (myname in names(settings)) {
-  temp <- get(myname, settings); assign(myname, temp)
+  temp <- get(myname, settings)
+  assign(myname, temp)
 }
 metadata <- yaml::read_yaml(settings$input_files)
 # get name of climofileis for first variable and list
 # associated to first climofile
 climofiles <- names(metadata)
 climolist <- get(climofiles[1], metadata)
- # get diagnostic name from metadata file
+# get diagnostic name from metadata file
 diag_base <- climolist$diagnostic
 print(paste0(diag_base, ": starting routine"))
- # create work and plot directories if they do not exist
+# create work and plot directories if they do not exist
 print(paste0(diag_base, ": creating work and plot directories"))
 dir.create(work_dir, recursive = T, showWarnings = F)
 dir.create(plot_dir, recursive = T, showWarnings = F)
- # extract metadata
+# extract metadata
 models_name <- unname(sapply(metadata, "[[", "dataset"))
-reference_model <- unname(sapply(metadata, "[[", "reference_dataset"))[1]
+reference_model <-
+  unname(sapply(metadata, "[[", "reference_dataset"))[1]
 models_start_year <- unname(sapply(metadata, "[[", "start_year"))
 models_end_year <- unname(sapply(metadata, "[[", "end_year"))
 models_experiment <- unname(sapply(metadata, "[[", "exp"))
 models_ensemble <- unname(sapply(metadata, "[[", "ensemble"))
- ## Loop through input models
+## Loop through input models
 for (model_idx in c(1:(length(models_name)))) {
   # Setup parameters and path
   model  <- models_name[model_idx]
