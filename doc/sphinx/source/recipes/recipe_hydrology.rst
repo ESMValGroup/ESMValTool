@@ -1,6 +1,6 @@
 .. _recipes_hydrology:
 
-Data pre-processing for hydrological models
+Hydrology: Data pre-processing for hydrological models
 ============================================
 
 Overview
