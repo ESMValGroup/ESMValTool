@@ -281,8 +281,8 @@ diagnostics:
       - {dataset: OSI-450-sh, project: OBS, tier: 2, type: reanaly, version: v2, start_year: 1988, end_year: 2015}
     scripts: null
 
-  OSI-407:
-    description: OSI 407 monthly data
+  OSI-409:
+    description: OSI 409 monthly data
     variables:
       sic:
         preproc: nopp
@@ -291,12 +291,12 @@ diagnostics:
         preproc: nopp
         mip: fx
     additional_datasets:
-      - {dataset: OSI-407-nh, project: OBS, tier: 2, type: reanaly, version: 2, start_year: 1948, end_year: 2018}
-      - {dataset: OSI-407-sh, project: OBS, tier: 2, type: reanaly, version: 2, start_year: 1948, end_year: 2018}
+      - {dataset: OSI-409-nh, project: OBS, tier: 2, type: reanaly, version: 2, start_year: 1948, end_year: 2018}
+      - {dataset: OSI-409-sh, project: OBS, tier: 2, type: reanaly, version: 2, start_year: 1948, end_year: 2018}
     scripts: null
 
-  OSI-407-daily:
-    description: OSI 407 daily data
+  OSI-409-daily:
+    description: OSI 409 daily data
     variables:
       sic:
         preproc: nopp
@@ -305,8 +305,8 @@ diagnostics:
         preproc: nopp
         mip: fx
     additional_datasets:
-      - {dataset: OSI-407-nh, project: OBS, tier: 2, type: reanaly, version: 2, start_year: 1948, end_year: 2018}
-      - {dataset: OSI-407-sh, project: OBS, tier: 2, type: reanaly, version: 2, start_year: 1948, end_year: 2018}
+      - {dataset: OSI-409-nh, project: OBS, tier: 2, type: reanaly, version: 2, start_year: 1948, end_year: 2018}
+      - {dataset: OSI-409-sh, project: OBS, tier: 2, type: reanaly, version: 2, start_year: 1948, end_year: 2018}
     scripts: null
 
 

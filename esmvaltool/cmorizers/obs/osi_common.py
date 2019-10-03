@@ -1,4 +1,4 @@
-"""Common functionalities for OSI-450 and OSI-407 dataset cmorization."""
+"""Common functionalities for OSI-450 and OSI-409 dataset cmorization."""
 
 import logging
 import os
@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 
 class OSICmorizer():
-    """Cmorizer for OSI-407 y OSI-450 datasets."""
+    """Cmorizer for OSI-409 y OSI-450 datasets."""
 
     def __init__(self, in_dir, out_dir, cfg, hemisphere):
         self.in_dir = in_dir
@@ -29,7 +29,7 @@ class OSICmorizer():
         self.hemisphere = hemisphere
 
     def cmorize(self):
-        """Cmorize OSI-450 or OSI-407 dataset."""
+        """Cmorize OSI-450 or OSI-409 dataset."""
         logger.info(
             "Starting cmorization for Tier%s OBS files: %s",
             self.cfg['attributes']['tier'],
