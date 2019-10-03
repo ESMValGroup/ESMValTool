@@ -15,6 +15,13 @@ Download and processing instructions
         ftp://osisaf.met.no/reprocessed/ice/conc/v1p2
     Please, keep folder structure and uncompress gz files before launching.
 
+    If you want to use only the nh data download only the nh files,
+    using, e.g., wget -r -A '*_sh*.nc'.
+
+    If you also want to cmorize the nh, download everything and create a link
+    for OSI-409-nh pointing to the data folder. Both cmorizers will ignore
+    files belonging to the other hemisphere.
+
 """
 from .osi_common import OSICmorizer
 

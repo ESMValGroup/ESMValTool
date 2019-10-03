@@ -13,7 +13,14 @@ Last access
 Download and processing instructions
     Download the desired years from the following ftp:
         ftp://osisaf.met.no/reprocessed/ice/conc/v2p0
-    Please, keep folder structure and download only the sh files, using, e.g., wget -r -A '*_sh*.nc'.
+    Please, keep folder structure.
+
+    If you want to use only the sh data download only the sh files,
+    using, e.g., wget -r -A '*_sh*.nc'.
+
+    If you also want to cmorize the sh, download everything and create a link
+    for OSI-409-nh pointing to the data folder. Both cmorizers will ignore
+    files belonging to the other hemisphere.
 
 """
 from .osi_common import OSICmorizer
