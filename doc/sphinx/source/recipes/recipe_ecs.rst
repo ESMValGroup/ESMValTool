@@ -10,12 +10,10 @@ Overview
 Equilibrium climate sensitivity is defined as the change in global mean
 temperature as a result of a doubling of the atmospheric CO\ :sub:`2`
 concentration compared to pre-industrial times after the climate system has
-reached a new equilibrium `Gregory et al. (2004)`_. This recipe uses a
-regression method based on `Andrews et al. (2012)`_ to calculate it for
-several CMIP model.
+reached a new equilibrium. This recipe uses a regression method based on
+`Gregory et al. (2004)`_ to calculate it for several CMIP models.
 
 .. _`Gregory et al. (2004)`: https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2003GL018747
-.. _`Andrews et al. (2012)`: https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2012GL051607
 
 
 Available recipes and diagnostics
@@ -40,8 +38,13 @@ User settings in recipe
 
 #. Script climate_metrics/ecs.py
 
+   * ``calculate_mmm``, *bool*, optional (default: ``True``): Calculate
+     multi-model mean ECS.
    * ``read_external_file``, *str*, optional: Read ECS and net climate feedback
      parameter from external file. All other input data is ignored.
+   * ``seaborn_settings``, *dict*, optional: Options for seaborn's ``set()``
+     method (affects all plots), see
+     https://seaborn.pydata.org/generated/seaborn.set.html.
 
 
 Variables
@@ -62,9 +65,6 @@ Observations and reformat scripts
 References
 ----------
 
-* Andrews, Timothy, et al. "Forcing, feedbacks and climate sensitivity in CMIP5
-  coupled atmosphere‐ocean climate models." Geophysical Research Letters 39.9
-  (2012).
 * Gregory, Jonathan M., et al. "A new method for diagnosing radiative forcing
   and climate sensitivity." Geophysical research letters 31.3 (2004).
 

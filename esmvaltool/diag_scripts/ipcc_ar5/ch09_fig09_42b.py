@@ -4,7 +4,7 @@
 
 Description
 -----------
-Calculate and plot the effective climate sensitivity (ECS) vs. the transient
+Calculate and plot the equilibrium climate sensitivity (ECS) vs. the transient
 climate response (TCR) (see IPCC AR5 WG1 ch.9, fig. 9.42b).
 
 Author
@@ -57,7 +57,7 @@ def get_provenance_record(project, ancestor_files):
     """Create a provenance record describing the diagnostic data and plot."""
     record = {
         'caption':
-        (f'Effective climate sensitivity (ECS) against transient climate '
+        (f'Equilibrium climate sensitivity (ECS) against transient climate '
          f'response of {project} models.'),
         'statistics': ['mean'],
         'domains': ['global'],

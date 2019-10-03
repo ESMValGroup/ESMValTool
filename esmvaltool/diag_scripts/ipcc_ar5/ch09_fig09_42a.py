@@ -4,7 +4,7 @@
 
 Description
 -----------
-Calculate and plot the effective climate sensitivity (ECS) vs. the global
+Calculate and plot the equilibrium climate sensitivity (ECS) vs. the global
 mean surface temperature (GMSAT) (see IPCC AR5 WG1 ch.9, fig. 9.42a).
 
 Author
@@ -53,7 +53,7 @@ def get_provenance_record(project, ancestor_files):
     """Create a provenance record describing the diagnostic data and plot."""
     record = {
         'caption':
-        ('Effective climate sensitivity (ECS) against the global '
+        ('Equilibrium climate sensitivity (ECS) against the global '
          'mean surface temperature of {} models, both for the '
          'period 1961-1990 (larger symbols) and for the '
          'pre-industrial control runs (smaller symbols).'.format(project)),
@@ -149,7 +149,7 @@ def write_data(cfg, hist_cubes, pi_cubes, ecs_cube):
                                                    cfg, as_iris=True)['tas'])
     cube = iris.cube.Cube(data_ecs,
                           var_name='ecs',
-                          long_name='Effective Climate Sensitivity (ECS)',
+                          long_name='Equilibrium Climate Sensitivity (ECS)',
                           aux_coords_and_dims=[(dataset_coord, 0),
                                                (tas_hist_coord, 0),
                                                (tas_picontrol_coord, 0)])

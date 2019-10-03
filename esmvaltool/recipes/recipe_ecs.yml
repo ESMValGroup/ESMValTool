@@ -3,13 +3,13 @@
 documentation:
 
   description: |
-    Calculate ECS using linear regression following Andrews et al. (2012).
+    Calculate ECS using linear regression following Gregory et al. (2004).
 
   authors:
     - schlund_manuel
 
   references:
-    - andrews12grl
+    - gregory04grl
 
   projects:
     - crescendo

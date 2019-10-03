@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""Diagnostic script to calculate ECS following Andrews et al. (2012).
+"""Diagnostic script to calculate ECS following Gregory et al. (2004).
 
 Description
 -----------
-Calculate the effective climate sensitivity (ECS) using the regression method
-proposed by Andrews et al. (2012).
+Calculate the equilibrium climate sensitivity (ECS) using the regression method
+proposed by Gregory et al. (2004).
 
 Author
 ------
@@ -245,7 +245,7 @@ def get_provenance_record(caption):
         'statistics': ['mean', 'diff'],
         'domains': ['global'],
         'authors': ['schlund_manuel'],
-        'references': ['andrews12grl'],
+        'references': ['gregory04grl'],
         'realms': ['atmos'],
         'themes': ['phys'],
     }
@@ -361,7 +361,7 @@ def write_data(ecs_data, feedback_parameter_data, ancestor_files, cfg):
     var_attrs = [
         {
             'short_name': 'ecs',
-            'long_name': 'Effective Climate Sensitivity (ECS)',
+            'long_name': 'Equilibrium Climate Sensitivity (Gregory method)',
             'units': cf_units.Unit('K'),
         },
         {
