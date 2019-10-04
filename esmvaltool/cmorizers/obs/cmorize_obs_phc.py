@@ -15,48 +15,46 @@ Go to the `DOWNLOAD DATA (NetCDF)`, and download `ANNUAL` fields.
 """
 import logging
 import os
+from collections import OrderedDict
 import iris
 import xarray as xr
-from collections import OrderedDict
 import numpy as np
 import seawater as sw
 
-from .utilities import (constant_metadata, convert_timeunits, fix_coords,
-                        fix_var_metadata, save_variable, set_global_atts)
+from .utilities import (constant_metadata, fix_coords, fix_var_metadata,
+                        save_variable, set_global_atts)
 
 logger = logging.getLogger(__name__)
 
+
 def save_fx_variable(cube, var, out_dir, attrs):
-    """Saver function for fx variable
-    """
+    """Saver function for fx variable."""
     file_name = '_'.join([
-            attrs['project_id'],
-            attrs['dataset_id'],
-            attrs['modeling_realm'],
-            attrs['version'],
-            attrs['mip'],
-            var]) + '.nc'
+        attrs['project_id'], attrs['dataset_id'], attrs['modeling_realm'],
+        attrs['version'], attrs['mip'], var
+    ]) + '.nc'
     file_path = os.path.join(out_dir, file_name)
     iris.save(cube, file_path, fill_value=1e20)
 
+
 def _fix_fx_areacello(xr_time, var):
-    """Specific data fix for areacello"""
+    """Specific data fix for areacello."""
     cube = xr_time.salt.to_iris()
     cube.coord('latitude').guess_bounds()
     cube.coord('longitude').guess_bounds()
     grid_areas = iris.analysis.cartography.area_weights(cube)
     grid_areas_xr = xr.DataArray(grid_areas[0, 0, :, :],
-                                    coords={
-                                        'lat': xr_time.temp.coords['lat'],
-                                        'lon': xr_time.temp.coords['lon'],
-                                    },
-                                    dims=['lat', 'lon'],
-                                    name='areacello')
-    grid_areas_xr.attrs = OrderedDict([('cell_area',
-                                        'Ocean Grid-Cell Area'),
-                                        ('units', 'm2')])
+                                 coords={
+                                     'lat': xr_time.temp.coords['lat'],
+                                     'lon': xr_time.temp.coords['lon'],
+                                 },
+                                 dims=['lat', 'lon'],
+                                 name=var)
+    grid_areas_xr.attrs = OrderedDict([('cell_area', 'Ocean Grid-Cell Area'),
+                                       ('units', 'm2')])
     cube = grid_areas_xr.to_iris()
     return cube.copy()
+
 
 def _fix_data(xr_time, var):
     """Specific data fixes for different variables."""
@@ -86,10 +84,10 @@ def _fix_data(xr_time, var):
         return cube.copy()
     elif var == 'areacello':
         cube = _fix_fx_areacello(xr_time, var)
-        return cube
+        return cube.copy()
 
 
-def extract_variable(var_info, raw_info, out_dir, attrs, year):
+def extract_variable(var_info, raw_info, out_dir, attrs):
     """Extract to all vars."""
     var = var_info.short_name
     xr_file = xr.open_dataset(raw_info['file'])
@@ -110,7 +108,6 @@ def extract_variable(var_info, raw_info, out_dir, attrs, year):
         save_fx_variable(cube, var, out_dir, attrs)
 
 
-
 def cmorization(in_dir, out_dir, cfg, _):
     """Cmorization func call."""
     cmor_table = cfg['cmor_table']
@@ -124,4 +121,4 @@ def cmorization(in_dir, out_dir, cfg, _):
             var_info = cmor_table.get_variable(vals['mip'], var)
             raw_info = {'name': vals['raw'], 'file': inpfile}
             glob_attrs['mip'] = vals['mip']
-            extract_variable(var_info, raw_info, out_dir, glob_attrs, yr)
+            extract_variable(var_info, raw_info, out_dir, glob_attrs)
