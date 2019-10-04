@@ -4,34 +4,53 @@
 documentation:
   description: |
     Recipe pre-processes ERA-Interim reanalyses files for use in the WFlow hydrological model.
-
-    WFlow is ...
   authors: ['kalverla_peter', 'camphuijsen_jaro']
   projects: ['ewatercycle']
   references: ['acknow_project']
 
-
-datasets:
-  - {dataset: ERA-Interim, project: OBS, tier: 3, type: reanaly, version: 1}
-
 preprocessors:
   preprocessor:
-    regrid:
-      target_grid: 0.5x0.5
-      lon_offset: true
-      lat_offset: true
-      scheme: linear
+    hourly_water:
+      daily_statistics:
+        operator: sum  # TODO: replace by sum
+    hourly_temperature:
+      daily_statistics:
+        operator: mean
 
 diagnostics:
-  diagnostic1:
-    description: WFlow input preprocessor
+  diagnostic_daily:
+    description: WFlow input preprocessor for daily data
+    additional_datasets:
+      - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
     variables:
-      tas: &var
+      tas: &var_daily
         mip: day
         start_year: 2000
         end_year: 2000
-        preprocessor: preprocessor
-      pr: *var
+      pr: *var_daily
+      evspsbl:  # this should be potentail evapo.. which doesn't exist.
+        <<: *var_daily
+        mip: Eday
     scripts:
       script:
         script: hydrology/wflow.py
+
+  # diagnostic_daily:
+  #   description: WFlow input preprocessor for hourly data
+  #   additional_datasets:
+  #     - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1}
+  #   variables:
+  #     tas: &var_hourly
+  #       mip: day
+  #       start_year: 2000
+  #       end_year: 2000
+  #       preprocessor: hourly_temperature
+  #     pr:
+  #       <<: *var_hourly
+  #       preprocessor: hourly_water
+  #     evspsblpot: *var_hourly
+  #       <<: *var_hourly
+  #       preprocessor: hourly_water
+  #   scripts:
+  #     script:
+  #       script: hydrology/wflow.py

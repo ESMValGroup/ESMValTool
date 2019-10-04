@@ -51,6 +51,28 @@ def main(cfg):
             # Do stuff
             # ...
 
+            # There is a preprocessing record on the jupyter server
+            # They do the following steps:
+            # 1. Convert to daily statistics with timestamp at midnight
+            # 2. Convert 2m temperature to sea level temp using a
+            #    lapse rate of 6.5 K/km. This thus also requires an
+            #    orography file (or geopotential at the surface).
+            # 3. Regrid to a target grid for the desired basin. This
+            #    target grid is specified by a DEM called e.g.
+            #    wflow_dem_Meuse.nc (which is based on a .map file, ask #    Jerom). Some of these can be found on cartesius:
+            #    /lustre1/0/wtrcycle/lorentz-workshop/wflow_sbm/model_input/wflow_sbm_meuse/staticmaps/
+            #     This regridding cannot use a preprocessor in the
+            #     recipe, but it can use the ESMValCore API regridder,
+            #     as it is possible to specify a target cube.
+            # 4.  Convert sea level temperature back to the new target
+            #     grid elevation.
+            #
+            # Note: The example preprocessing on the jupyter server uses
+            #       evaporation. However, the model needs potential
+            #       evaporation (according to Jerom). He has a script to
+            #       convert it, but that requires several additional
+            #       input variables.
+
             # Save data
             output_file = get_diagnostic_filename(
                 Path(input_file).stem + '_wflow', cfg)
