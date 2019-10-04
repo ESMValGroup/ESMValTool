@@ -43,7 +43,7 @@ preprocessors:
 
 diagnostics:
 
-  derive_diagnostic:
+  arctic_ocean:
     description: Derive ocean variables
     variables:
       thetao:
@@ -63,7 +63,7 @@ diagnostics:
       #   preprocessor: preprocessor1
       #   field: T3OM
     additional_datasets:
-      - {dataset: PHC,        project: OBS,    tier: 2,    type: climatology,    version: 3,        start_year: 1800,  end_year: 1800}
+      - {dataset: PHC,        project: OBS6,    tier: 2,    type: clim,    version: 3,        start_year: 1950,  end_year: 1950}
     scripts:
       script1: &Global_Ocean_surface_map
         script: arctic_ocean/arctic_ocean.py

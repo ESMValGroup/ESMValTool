@@ -127,7 +127,7 @@ def find_observations_name(config):
     """
     obsname = []
     for _, value in config['input_data'].items():
-        if value['project'] == "OBS":
+        if value['project'] == "OBS6":
             obsname = value['dataset']
             print(obsname)
     if not obsname:

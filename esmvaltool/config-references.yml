@@ -672,6 +672,7 @@ references:
   patmos-x: "Heidinger et al., Bull. Amer. Meteor. Soc., doi:10.1175/BAMS-D-12-00246.1, 2013."
   uwisc: "O'Dell et al., J. Clim., doi:10.1175/2007JCLI1958.1, 2008."
   woa: "Locarnini et al., World Ocean Atlas 2013, Volume 1: Temperature, NOAA Atlas NESDIS 73, 2013."
+  phc: "Steele et al., PHC: A global ocean hydrography with a high-quality Arctic Ocean, J. Clim., 14(9), 2079-2087, 2001."
 
 projects:
   c3s-magic: Copernicus Climate Change Service 34a Lot 2 (MAGIC) project
