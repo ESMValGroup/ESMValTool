@@ -59,6 +59,68 @@ logger = logging.getLogger(os.path.basename(__file__))
 logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
 
+def detrended_contourf(cube):
+    """
+    make the detrended contouf plot
+    """
+    cmap = 'RdBu_r'
+    drange = diagtools.get_cube_range_diff([cube, ])
+    dlinspace = np.linspace(drange[0], drange[1], 22, endpoint=True)
+    ticks = [t for t in np.linspace(dlinspace.min(),dlinspace.max(), 7)]
+    try:
+        qplot = qplt.contourf(cube, dlinspace, cmap=cmap) # linewidth=0, rasterized=True,
+        qplot.colorbar.set_ticks(ticks)
+    except:
+        print('Unable to plot cube:', cube)
+        return False
+    return True
+
+
+def trended_contourf(cube, cmap='YlOrRd'):
+    """
+    make the detrended contouf plot
+    """
+    try:
+        qplt.contourf(cube, 12, cmap=cmap) # linewidth=0, rasterized=True,
+    except:
+        print('Unable to plot cube:', cube)
+        return False
+    return True
+
+
+def split_variable_groups(variable_group):
+    """
+    Split variable group into variable and experiment.
+    """
+    variable, exp, threshold = variable_group.split('_')
+    if variable == 'tas':
+        variable = 'Surface Temperature'
+    exp = exp.upper()
+    exp = ' '.join([exp[:3], exp[3], exp[4:]])
+    if threshold == '15':
+        threshold = '1.5'
+    threshold += u'\N{DEGREE SIGN}'
+    return variable, exp, threshold
+
+
+def calc_ensemble_mean(cube_list):
+    """
+    Calculate the ensemble mean of a list of cubes.
+
+    """
+    if len(cube_list) ==1:
+        return cube_list[0]
+
+    cube_data = cube_list[0].data
+    for c in cube_list[1:]:
+        cube_data += c.data
+
+    cube_data = cube_data/float(len(cube_list))
+    ensemble_mean = cube_list[0]
+    ensemble_mean.data = cube_data
+    return ensemble_mean
+
+
 def make_map_plots(
         cfg,
         metadata,
@@ -93,16 +155,16 @@ def make_map_plots(
         suffix = '_'.join([metadata['dataset'], key])+image_extention
         path = diagtools.folder([cfg['plot_dir'], 'Trend_intact', 'single_plots'])+suffix
 
-    # Making plots for each layer
+    # Making plots
     if detrend:
-        cmap = 'seismic'
-        drange = diagtools.get_cube_range_diff([cube, ])
-        dlinspace = np.linspace(drange[0], drange[1], 22, endpoint=True)
-        ticks = [t for t in np.linspace(dlinspace.min(),dlinspace.max(), 7)]
-        qplot = qplt.contourf(cube, dlinspace, cmap=cmap) # linewidth=0, rasterized=True,
-        qplot.colorbar.set_ticks(ticks)
+        success = detrended_contourf(cube)
     else:
-        qplt.contourf(cube, 12, linewidth=0, rasterized=True, cmap=cmap)
+        success = trended_contourf(cube, cmap=cmap)
+    if not success:
+        print('Failed to make figure:', path)
+        print('key:', key)
+        plt.close()
+        return
 
     try:
         plt.gca().coastlines()
@@ -122,21 +184,6 @@ def make_map_plots(
         logger.info('Saving plots to %s', path)
         plt.savefig(path)
     plt.close()
-
-
-def split_variable_groups(variable_group):
-    """
-    Split variable group into variable and experiment.
-    """
-    variable, exp, threshold = variable_group.split('_')
-    if variable == 'tas':
-        variable = 'Surface Temperature'
-    exp = exp.upper()
-    exp = ' '.join([exp[:3], exp[3], exp[4:]])
-    if threshold == '15':
-        threshold = '1.5'
-    threshold += u'\N{DEGREE SIGN}'
-    return variable, exp, threshold
 
 
 def make_ensemble_map_plots(
@@ -169,31 +216,16 @@ def make_ensemble_map_plots(
 
     # Making plots
     if detrend:
-        cmap = 'seismic'
-        drange = diagtools.get_cube_range_diff([cube, ])
-        dlinspace = np.linspace(drange[0], drange[1], 22, endpoint=True)
-        ticks = [t for t in np.linspace(dlinspace.min(),dlinspace.max(), 7)]
-        try:
-            qplot = qplt.contourf(cube, dlinspace, cmap=cmap) # linewidth=0, rasterized=True,
-            qplot.colorbar.set_ticks(ticks)
-        except:
-            print('Trying to make figure:', path)
-            print('variable_group:', variable_group)
-            print('Unable to plot cube:', cube)
-            #qplt.contourf(cube, 12, linewidth=0, rasterized=True, cmap=cmap)
-            plt.close()
-            return
-
+        success = detrended_contourf(cube)
     else:
-        try: qplt.contourf(cube, 12, cmap=cmap) # linewidth=0, rasterized=True,
-        except:
-            print('Trying to make figure:', path)
-            print('variable_group:', variable_group)
-            print('Unable to plot cube:', cube)
-            #qplt.contourf(cube, 12, linewidth=0, rasterized=True, cmap=cmap)
-            plt.close()
-            return
-    plt.gca().coastlines()
+        success = trended_contourf(cube, cmap=cmap)
+    if not success:
+        print('Unable to make figure:', path)
+        print('variable_group:', variable_group)
+        plt.close()
+        return
+
+    #plt.gca().coastlines()
 
     try:
         plt.gca().coastlines()
@@ -255,33 +287,18 @@ def make_threshold_ensemble_map_plots(
     #    return
     #    #qplt.contourf(cube, 12, linewidth=0, rasterized=True, cmap=cmap)
 
+    # Making plots
     if detrend:
-        cmap = 'seismic'
-        drange = diagtools.get_cube_range_diff([cube, ])
-        dlinspace = np.linspace(drange[0], drange[1], 22, endpoint=True)
-        ticks = [t for t in np.linspace(dlinspace.min(),dlinspace.max(), 7)]
-        qplot = qplt.contourf(cube, dlinspace, cmap=cmap) # linewidth=0, rasterized=True,
-        qplot.colorbar.set_ticks(ticks)
-
-#        try: 
-#            qplt.contourf(cube, dlinspace, cmap=cmap) # linewidth=0, rasterized=True,
-#            qplt.colorbar.set_ticks(ticks)
-#        except:
-#            print('Trying to make figure:', path)
-#            print('variable_group:', variable, threshold)
-#            print('Unable to plot cube:', cube)
-#            plt.close()
-#            return
-
+        success = detrended_contourf(cube)
     else:
-        try: qplt.contourf(cube, 12, cmap=cmap) # linewidth=0, rasterized=True,
-        except:
-            print('Trying to make figure:', path)
-            print('variable_group:', variable, threshold)
-            print('Unable to plot cube:', cube)
-            plt.close()
-            return
-    plt.gca().coastlines()
+        success = trended_contourf(cube,cmap=cmap)
+    if not success:
+        print('Unable to make figure:', path)
+        print('variable_group:',threshold, variable)
+        plt.close()
+        return
+
+    # plt.gca().coastlines()
     try:
         plt.gca().coastlines()
     except AttributeError:
@@ -300,24 +317,6 @@ def make_threshold_ensemble_map_plots(
         logger.info('Saving plots to %s', path)
         plt.savefig(path)
     plt.close()
-
-
-def calc_ensemble_mean(cube_list):
-    """
-    Calculate the ensemble mean of a list of cubes.
-
-    """
-    if len(cube_list)==1:
-        return cube_list[0]
-
-    cube_data = cube_list[0].data
-    for c in cube_list[1:]:
-        cube_data += c.data
-
-    cube_data = cube_data/float(len(cube_list))
-    ensemble_mean = cube_list[0]
-    ensemble_mean.data = cube_data
-    return ensemble_mean
 
 
 def make_gwt_map_plots(cfg, detrend = True,):
