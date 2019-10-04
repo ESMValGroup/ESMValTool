@@ -2,7 +2,7 @@
 #-----Blocking routines computation for MiLES--------#
 #-------------P. Davini (Oct 2014)-------------------#
 ######################################################
-miles_block_fast <-
+miles_block_fast <- # nolint
   function(dataset,
              expid,
              ens,
@@ -475,8 +475,6 @@ miles_block_fast <-
     ncfile1 <- nc_create(savefile1, nclist1)
     for (var in fieldlist) {
       # put variables into the ncdf file
-      # ncvar_put(ncfile1, fieldlist[which(var==fieldlist)],
-      # get(paste0("field",var)), start = c(1, 1, 1, 1),  count = c(-1,-1,-1,-1))
       ndims <- get(paste0("var", var))$ndims
       ncvar_put(
         ncfile1,
@@ -495,9 +493,6 @@ miles_block_fast <-
     ncfile2 <- nc_create(savefile2, nclist2)
     for (var in full_fieldlist) {
       # put variables into the ncdf file
-      # ncvar_put(ncfile2, full_fieldlist[which(var==full_fieldlist)],
-      #   get(paste0("full_field",var)), start = c(1, 1, 1, 1),
-      #   count = c(-1,-1,-1,-1))
       ndims <- get(paste0("full_var", var))$ndims
       ncvar_put(
         ncfile2,

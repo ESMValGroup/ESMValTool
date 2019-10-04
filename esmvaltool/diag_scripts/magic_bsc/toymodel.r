@@ -74,7 +74,7 @@ data <- WeightedMean(
 names(dim(data)) <- dim_names[-c(lon_dim, lat_dim)]
 time_dim <- which(names(dim(data)) == "time")
 
-ToyModel <-
+ToyModel <- # nolint
   function(alpha = 0.1,
              beta = 0.4,
              gamma = 1,

@@ -1,5 +1,6 @@
-# mini script to compile and install lintr (r-lintr) and yaml (r-yaml) from source
-# without doing this from conda; conda installations introduce bugs in shared libs
+# mini script to compile and install lintr (r-lintr) and yaml (r-yaml) from
+# source without doing this from conda; conda installations introduce bugs in
+# shared libs
 log <- function(..., level = "INFO") {
   cat(format(Sys.time(), "%Y-%m-%d %X"), level, ":", ..., "\n")
 }

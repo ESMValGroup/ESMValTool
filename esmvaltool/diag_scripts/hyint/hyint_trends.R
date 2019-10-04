@@ -5,7 +5,7 @@
 
 
 # MAIN TRENDS FUNCTION
-hyint_trends <- function(work_dir, model_idx, season, prov_info) {
+hyint_trends <- function(work_dir, model_idx, season, prov_info) { # nolint
   # setup useful strings
   var_type <- c("tseries", "tseries-sd", "trend", "trend-stat")
   var_type_long <- c(

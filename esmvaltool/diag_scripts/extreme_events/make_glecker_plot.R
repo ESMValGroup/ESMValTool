@@ -1,11 +1,11 @@
-# #########################################################################################################
+# ############################################################################
 # make_glecker_plot.R
 #
 # Author: Christian W. Mohr (CICERO, Norway)
 #         Marit Sandstad (CICERO, Norway)
 #
 #
-# #########################################################################################################
+# ############################################################################
 # Description:
 # Code to plot Glecker polygon diagram to compare climdex index
 # 	performance between models and reanalysis.
@@ -18,7 +18,7 @@
 #                                    "make_timeseries_plot.r" and
 #                                    "make_Glecker_plot.r")
 #
-# #########################################################################################################
+# ############################################################################
 
 gleckler_main <-
   function(path = "./",
@@ -450,7 +450,8 @@ gleckler_plotting <-
     glbw <- gray(seq(0, 1, length.out = length(sclseq_bw)))
     glbw <- rev(glbw)
 
-    ## Determining what shapes should be plotted, based on number of observations
+    ## Determining what shapes should be plotted, based on number of
+    ## observations
     if (nobs == 1) {
       # One reanalysis references
       x1 <- c(0, 1, 1, 0)

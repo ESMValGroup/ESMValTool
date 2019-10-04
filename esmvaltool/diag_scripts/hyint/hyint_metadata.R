@@ -23,7 +23,7 @@ getmetadata_indices <- function(var, sfile) {
   return(metadata)
 }
 
-setmetadata_indices <- function(var) {
+setmetadata_indices <- function(var) { # nolint
   longvar <- ""
   unit <- ""
 

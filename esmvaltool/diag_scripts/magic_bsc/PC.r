@@ -7,7 +7,6 @@ read_pc <- function(file) {
   pc$fun <- approxfun(
     pc$points$WindSpeed,
     pc$points$Power,
-    # nolint
     method = "linear",
     yleft = NA,
     yright = 0
@@ -17,7 +16,7 @@ read_pc <- function(file) {
       paste(
         "perl -e 'open FH,\"",
         file,
-        "\";while(<FH>){@parts= /^# (.+): (.+) /;print \"@parts \";}'",
+        "\";while(<FH>){@parts= /^# (.+): (.+) /;print \"@parts \";}'", # nolint
         sep = ""
       ),
       intern = TRUE

@@ -80,8 +80,8 @@ jdays <- as.numeric(strftime(time, format = "%j"))
 if (calendar == "gregorian" | calendar == "standard" |
   calendar == "proleptic_gregorian") {
   year <- as.numeric(strftime(time, format = "%Y"))
-  pos <- ((year / 100) %% 1 == 0) + ((year / 4) %% 1 == 0)
-  +((year / 400) %% 1 == 0)
+  pos <- (((year / 100) %% 1 == 0) + ((year / 4) %% 1 == 0)
+    + ((year / 400) %% 1 == 0))
   pos <- which(pos == 1)
   bisiesto <- which(jdays == 60)
   if (length(intersect(pos, bisiesto)) > 0) {

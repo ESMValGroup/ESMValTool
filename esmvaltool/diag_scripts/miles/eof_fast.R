@@ -2,7 +2,7 @@
 #-----EOFs routines computation for MiLES--------#
 #-------------P. Davini (Feb 2018)-------------------#
 ######################################################
-miles_eofs_fast <-
+miles_eofs_fast <- # nolint
   function(dataset,
              expid,
              ens,

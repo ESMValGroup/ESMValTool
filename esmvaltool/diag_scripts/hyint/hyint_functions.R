@@ -549,7 +549,10 @@ calc_region_timeseries <-
       ))
     }
     if (is.na(retx[1]) | is.na(rety[1])) {
-      print("calc.region.timeseries: no data in selected region. Returning NA.")
+      cat(
+        "calc.region.timeseries: no data in selected region.",
+        "Returning NA."
+      )
       outdata <- array(dim = dimtimedata)
     } else {
       retdata <- indata[retx, rety, , drop = F]
@@ -808,7 +811,7 @@ get_elevation <-
 # "grid" can be used to specify the target grid name
 # time selection based on package PCICt must be specifed with both "tmonths"
 #  and "tyears" flags. It returns a list including its own dimensions
-ncdf_opener_universal <-
+ncdf_opener_universal <- # nolint
   function(namefile,
              namevar = NULL,
              namelon = NULL,
@@ -1102,7 +1105,7 @@ ncdf_opener <- function(namefile,
 
 
 # function to open ncdf files (much more refined, with CDO-based interpolation)
-ncdf_opener_time <-
+ncdf_opener_time <- # nolint
   function(namefile,
              namevar = NULL,
              namelon = NULL,
@@ -1420,7 +1423,7 @@ graphics_close <- function(figname) {
 }
 
 # extensive filled.contour function
-filled_contour3 <-
+filled_contour3 <- # nolint
   function(x = seq(0, 1, length.out = nrow(z)),
              y = seq(0, 1, length.out = ncol(z)),
              z,

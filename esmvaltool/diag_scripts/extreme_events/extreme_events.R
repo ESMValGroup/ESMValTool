@@ -189,10 +189,13 @@ for (i in 1:length(climofiles)) {
 }
 
 ##
-## At this stage climdex indices are calculated. This process is extremely tedious and check points are in place to check whether the indicese are already produced.
-## If the climdex files are there, then this process is skipped. Delete the climdex files from the work folder if you wish to have the climdex indices recalculated.
+## At this stage climdex indices are calculated. This process is extremely
+## tedious and check points are in place to check whether the indicese are
+## already produced. If the climdex files are there, then this process is
+## skipped. Delete the climdex files from the work folder if you wish to have
+## the climdex indices recalculated.
 ##
-for (model_idx in c(1:length(models_name))) {
+for (model_idx in c(1:length(models_name))) { # nolint
   author.data <- list(institution = "None", institution_id = "None")
   template <- paste(
     "var_timeres_",
@@ -326,7 +329,7 @@ for (model_idx in c(1:length(models_name))) {
   }
 }
 
-if (write_plots) {
+if (write_plots) { # nolint
   #############################
   # A climdex processing section is needed here for observation data.
   # CMORized observation data found in the obs directory,

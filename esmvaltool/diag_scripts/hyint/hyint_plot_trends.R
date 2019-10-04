@@ -3,7 +3,7 @@
 #-------------E. Arnone (September 2017)-------------#
 ######################################################
 
-hyint_plot_trends <- function(work_dir,
+hyint_plot_trends <- function(work_dir, # nolint
                               plot_dir,
                               ref_idx,
                               season,
@@ -579,7 +579,8 @@ hyint_plot_trends <- function(work_dir,
             }
           }
           if ((plot_type == 14) | (plot_type == 15)) {
-            # plot trend coefficients for different regions, one panel per field
+            # plot trend coefficients for different regions,
+            # one panel per field
             if (anyNA(tlevels_m[ifield, ])) {
               print("No value for range: assigning min and max")
               ylim <- c(
@@ -626,7 +627,8 @@ hyint_plot_trends <- function(work_dir,
               xlab <- "" # "Models"
               xlabels <- models_name
             }
-            # hereafter xregions is the x which also holds models for plottype 15
+            # hereafter xregions is the x which also holds models
+            # for plottype 15
             xregions <- 1:nx
 
             # Actual plotting

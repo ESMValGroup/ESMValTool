@@ -101,8 +101,9 @@ miles_regimes_fast <-
         alg = "Hartigan-Wong"
       )
 
-    # Cluster assignation: based on the position of the absolute maximum/minimum
-    # negative value for NAO-, maximum for the other 3 regimes
+    # Cluster assignation: based on the position of the absolute
+    # maximum/minimum negative value for NAO-, maximum for the other
+    # 3 regimes
     compose <- weather_regimes$regimes
     names <- paste("Regimes", 1:nclusters)
     position <- rbind(c(-45, 65), c(-35, 50), c(10, 60), c(-20, 60))
@@ -124,7 +125,8 @@ miles_regimes_fast <-
 
       # use maximum or minimum (use special vector to alterate
       # distance when needed)
-      if (max(compose[, , i], na.rm = T) > abs(min(compose[, , i], na.rm = T))) {
+      if (max(compose[, , i], na.rm = T)
+      > abs(min(compose[, , i], na.rm = T))) {
         distmatrix <- rbind(
           c(ics[MM[1]], ipsilon[MM[2]]),
           position + c(0, 0, 0, 1000)

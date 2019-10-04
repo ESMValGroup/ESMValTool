@@ -10,7 +10,8 @@ library("maps")
 library("ncdf4")
 library("PCICt")
 
-# check if fast linear fit is operative (after R 3.1): 3x faster than lm.fit, 36x faster than lm
+# check if fast linear fit is operative (after R 3.1): 3x faster
+# than lm.fit, 36x faster than lm
 if (exists(".lm.fit")) {
   lin.fit <- .lm.fit
 } else {
@@ -144,7 +145,8 @@ info_builder <-
     return(info)
   }
 
-# basic switch to create NetCDF file names and folders (use recursive structure from v0.6)
+# basic switch to create NetCDF file names and folders
+# (use recursive structure from v0.6)
 file_builder <-
   function(DATADIR,
              dir_name,
@@ -323,7 +325,7 @@ power_date_new <- function(datas) {
 # time selection based on package PCICt must be specifed with
 # both "tmonths" and "tyears" flags
 # it returns a list including its own dimensions
-ncdf_opener_universal <-
+ncdf_opener_universal <- # nolint
   function(namefile,
              namevar = NULL,
              namelon = NULL,
@@ -377,7 +379,10 @@ ncdf_opener_universal <-
       cdo <- Sys.which("cdo")
       tempfile <-
         paste0(file.path(filedir, paste0("tempfile_", filename)))
-      system2(cdo, args = c(paste0(remap_method, ",", grid), namefile, tempfile))
+      system2(
+        cdo,
+        args = c(paste0(remap_method, ",", grid), namefile, tempfile)
+      )
       namefile <- tempfile
     }
 
@@ -716,7 +721,7 @@ open_plot_device <-
 
 
 # extensive filled_contour function
-filled_contour3 <-
+filled_contour3 <- # nolint
   function(x = seq(0, 1, length.out = nrow(z)),
              y = seq(0, 1, length.out = ncol(z)),
              z,
@@ -1259,7 +1264,10 @@ blocking_persistence <-
     pers2 <- function(timeseries, persistence, time.array) {
       dd <- min(time.array$season):max(time.array$season)
       nn <- sapply(dd, function(x) {
-        time_persistence(timeseries[which(time.array$season == x)], persistence)
+        time_persistence(
+          timeseries[which(time.array$season == x)],
+          persistence
+        )
       })
       xx <- c(unlist(nn))
       return(xx)

@@ -2,7 +2,7 @@
 #-----Hydroclimatic Intensity (HyInt) diagnostic-----#
 #-------------E. Arnone (June 2017)------------------#
 ######################################################
-hyint_diagnostic <- function(work_dir,
+hyint_diagnostic <- function(work_dir, # nolint
                              infile,
                              model_idx,
                              season,

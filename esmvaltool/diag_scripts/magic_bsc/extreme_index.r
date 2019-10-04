@@ -30,7 +30,7 @@ provenance_file <- paste0(run_dir, "/", "diagnostic_provenance.yml")
 provenance <- list()
 
 wdata <- NULL
-for (j in 1:4) {
+for (j in 1:4) { # nolint
   input_files_per_var <- yaml::read_yaml(params$input_files[j])
   var0 <- lapply(input_files_per_var, function(x)
     x$short_name)

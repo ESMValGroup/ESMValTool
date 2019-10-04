@@ -168,7 +168,7 @@ timeseries_main <- function(path = "../work/extreme_events",
 # @param path is the path to index file location
 # @param idx is the index to be processed.
 #
-time_series_preprocessing <-
+time_series_preprocessing <- # nolint
   function(land = "./Land",
              idx = "tnnETCCDI_yr",
              model_list = model_list,
@@ -176,7 +176,7 @@ time_series_preprocessing <-
              plot_dir = "./plot",
              work_dir = "./work",
              normalize = FALSE) {
-    tseriesdir <- paste0(work_dir, "/timeseries") # nolint
+    tseriesdir <- paste0(work_dir, "/timeseries")
     if (!file.exists(tseriesdir)) {
       dir.create(tseriesdir)
     }

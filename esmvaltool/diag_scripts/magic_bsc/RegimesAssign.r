@@ -1,4 +1,4 @@
-anom2regime <- function(ref, target, method = "distance", lat) {
+anom2regime <- function(ref, target, method = "distance", lat) { # nolint
   posdim <- which(names(dim(ref)) == "nclust")
   poslat <- which(names(dim(ref)) == "lat")
   poslon <- which(names(dim(ref)) == "lon")

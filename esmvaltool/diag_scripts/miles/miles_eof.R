@@ -129,7 +129,7 @@ for (model_idx in c(1:(length(models_dataset)))) {
 ##
 ## Make the plots
 ##
-if (write_plots) {
+if (write_plots) { # nolint
   ref_idx <- which(models_dataset == reference_model)
   if (length(ref_idx) == 0) {
     ref_idx <- length(models_dataset)

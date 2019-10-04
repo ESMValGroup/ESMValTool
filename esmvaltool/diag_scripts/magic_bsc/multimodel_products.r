@@ -212,7 +212,11 @@ if (moninf <= monsup) {
     dims[time_dim] <- 1
     dim(empty_array) <- dims[-time_dim]
     nom <- names(dim(reference_seasonal_mean))
-    reference_seasonal_mean <- abind(reference_seasonal_mean, empty_array, along = time_dim)
+    reference_seasonal_mean <- abind(
+      reference_seasonal_mean,
+      empty_array,
+      along = time_dim
+    )
     # and removing the last december
     names(dim(reference_seasonal_mean)) <- nom
     dimensiones <- 1:length(dim(reference_seasonal_mean))
@@ -351,7 +355,11 @@ if (moninf <= monsup) {
     dims[time_dim] <- 1
     dim(empty_array) <- dims[-time_dim]
     nom <- names(dim(rcp_seasonal_mean))
-    rcp_seasonal_mean <- abind(rcp_seasonal_mean, empty_array, along = time_dim)
+    rcp_seasonal_mean <- abind(
+      rcp_seasonal_mean,
+      empty_array,
+      along = time_dim
+    )
     borrar <- dim(rcp_seasonal_mean)[time_dim]
     names(dim(rcp_seasonal_mean)) <- nom
     dimensiones <- 1:length(dim(rcp_seasonal_mean))

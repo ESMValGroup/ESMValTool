@@ -5,7 +5,7 @@
 
 # DECLARING THE FUNCTION: EXECUTION IS AT THE BOTTOM OF THE SCRIPT
 
-hyint_plot_maps <-
+hyint_plot_maps <- # nolint
   function(work_dir,
              plot_dir,
              ref_dir,
