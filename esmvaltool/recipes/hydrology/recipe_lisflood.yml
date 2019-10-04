@@ -95,7 +95,7 @@ diagnostics:
       tasmin:
         <<: *var_daily
         preprocessor: daily_temperature
-      # Following vars only work with obs6 data (from new ERA-Interim cmorizer)
+      # These vars only work with obs6 data (from new ERA-Interim cmorizer):
       tdps:
         <<: *var_daily
         mip: Eday
@@ -113,42 +113,37 @@ diagnostics:
       script:
         script: hydrology/lisflood.py
 
-  # diagnostic_hourly:
-  #   description: LISFLOOD input preprocesor for hourly data
-  #   additional_datasets:
-  #     - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1}
-  #   variables:
-  #     pr: &var_hourly
-  #       mip: E1hr
-  #       start_year: 2000
-  #       end_year: 2000
-  #       preprocessor: hourly_water
-  #     tas:
-  #       <<: *var_hourly
-  #       preprocessor: hourly_temperature_mean
-  #     # tasmax:
-  #     #   <<: *var_hourly
-  #     #   preprocessor: hourly_temperature_max
-  #     # tasmin:
-  #     #   <<: *var_hourly
-  #     #   preprocessor: hourly_temperature_min
-  #     ##########################################################################
-  #     # Currently using old ncl cmorizer for ERA-Interim, which uses CMIP5 (OBS)
-  #     # files. The new python cmorizer will create CMIP6/OBS6 files. Once
-  #     # finished, the following variables can be uncommented:
-  #     ##########################################################################
-  #     # tdps: # average dew point temperature at 2m (ERA-Interim: d2m)
-  #     #   << *var_hourly
-  #     #   preprocessor: hourly_temperature_mean
-  #     # uas: # 10-m u-wind component (ERA-Interim: u10)
-  #     #   <<: *var_hourly
-  #     #   preprocessor: hourly_windspeed
-  #     # vas: # 10-m u-wind component (ERA-Interim: v10)
-  #     #   <<: *var_hourly
-  #     #   preprocessor: hourly_windspeed
-  #     # rsds: # surface solar radiation downwards (ERA-Interim: ssrd)
-  #     #   <<: *var_hourly
-  #     #   preprocessor: hourly_radiation
-  #   scripts:
-  #     script:
-  #       script: hydrology/lisflood.py
+  diagnostic_hourly:
+    description: LISFLOOD input preprocesor for hourly data
+    additional_datasets:
+      - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1}
+    variables:
+      pr: &var_hourly
+        mip: E1hr
+        start_year: 2000
+        end_year: 2000
+        preprocessor: hourly_water
+      tas:
+        <<: *var_hourly
+        preprocessor: hourly_temperature_mean
+      tasmax:
+        <<: *var_hourly
+        preprocessor: hourly_temperature_max
+      tasmin:
+        <<: *var_hourly
+        preprocessor: hourly_temperature_min
+      tdps:
+        <<: *var_hourly
+        preprocessor: hourly_temperature_mean
+      uas:
+        <<: *var_hourly
+        preprocessor: hourly_windspeed
+      vas:
+        <<: *var_hourly
+        preprocessor: hourly_windspeed
+      rsds:
+        <<: *var_hourly
+        preprocessor: hourly_radiation
+    scripts:
+      script:
+        script: hydrology/lisflood.py
