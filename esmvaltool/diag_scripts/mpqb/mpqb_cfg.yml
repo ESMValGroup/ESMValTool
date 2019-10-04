@@ -4,6 +4,11 @@ sm:
     vmin : -1.
     vmax : 1.
     cmap : BrBG
+  ubrmsd:
+    title : ubrmsd
+    vmin : 0.
+    vmax : 1.
+    cmap : YlGn
   rmsd:
     title : rmsd
     vmin : 0.
@@ -36,6 +41,11 @@ lai:
     vmin : -1.
     vmax : 1.
     cmap : BrBG
+  ubrmsd:
+    title : ubrmsd
+    vmin : 0.
+    vmax : 1.
+    cmap : YlOrBr
   rmsd:
     title : rmsd
     vmin : 0.

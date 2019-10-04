@@ -39,10 +39,18 @@ class mpqb_pair:
         self.template = self.ds1cube.collapsed('time', iris.analysis.MEAN)
         self.ds1dat = self.ds1cube.data.filled(np.nan)
         self.ds2dat = iris.load_cube(self.ds_cfg[self.ds2][0]['filename']).data.filled(np.nan)
+        # Assert that shapes are the same of the two datasets
+        if not len(set([self.ds1dat.shape,self.ds2dat.shape])) == 1:
+            logger.error("Shapes of datasets should be the same")
+            logger.error("{0} has shape: {1}".format(self.ds1,self.ds1dat.shape))
+            logger.error("{0} has shape: {1}".format(self.ds2,self.ds2dat.shape))
+            raise ValueError
     def pearsonr(self):
         self.metrics['pearsonr'],_ = parallel_apply_along_axis(pearsonr1d, 0, (self.ds1dat,self.ds2dat))
     def rmsd(self):
         self.metrics['rmsd'] = parallel_apply_along_axis(rmsd1d, 0, (self.ds1dat,self.ds2dat))
+    def ubrmsd(self):
+        self.metrics['ubrmsd'] = parallel_apply_along_axis(ubrmsd1d, 0, (self.ds1dat,self.ds2dat))
     def absdiff(self):
         with warnings.catch_warnings(): # silence the mean of empty slice warnings
                                         # this is expected behaviour
@@ -90,7 +98,7 @@ def main(cfg):
     """Compute the time average for each input dataset."""
 
     #TODO move these parameters to config file
-    metrics_to_calculate = ['pearsonr', 'rmsd', 'absdiff', 'reldiff']
+    metrics_to_calculate = ['pearsonr', 'rmsd', 'absdiff', 'reldiff', 'ubrmsd']
     reference_dataset = 'cds-era5-land-monthly'
 
     # Get a description of the preprocessed data that we will use as input.
@@ -101,6 +109,7 @@ def main(cfg):
     logger.info(
         "Example of how to group and sort input data by standard_name:"
         "\n%s", pformat(grouped_input_data))
+
 
     # Create a pair of two datasets for inter-comparison
     for dataset in grouped_input_data.keys():
