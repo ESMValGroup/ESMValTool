@@ -132,17 +132,7 @@ MPLSTYLE = os.path.dirname(
 #            20180209-A_schl_ma: written
 #        """
 #
-#        # Parse arguments                if mean > 10**4:
-                    txt = r'mean: {:.2g} $\pm$ {:.2g} '.format(mean, std)
-                else:
-                    txt = r'mean: {:.2f} $\pm$ {:.2f} '.format(mean, std)
-                plt.gca().text(0, #TODO: here we are working on the text position
-                       -0.02,
-                       #- 0.1 * ((self.n_cubes // n_columns) * 0.7 if self.n_cubes>n_columns else 1),
-                       txt,
-                       horizontalalignment='left',
-                       verticalalignment='top',
-                       transform=plt.gca().transAxes)
+#        # Parse arguments
 #        if (x_label is None):
 #            x_label = self.name + self.units
 #        if (y_label is None):
