@@ -193,6 +193,7 @@ def make_ensemble_map_plots(
             #qplt.contourf(cube, 12, linewidth=0, rasterized=True, cmap=cmap)
             plt.close()
             return
+    plt.gca().coastlines()
 
     try:
         plt.gca().coastlines()
@@ -280,7 +281,7 @@ def make_threshold_ensemble_map_plots(
             print('Unable to plot cube:', cube)
             plt.close()
             return
-
+    plt.gca().coastlines()
     try:
         plt.gca().coastlines()
     except AttributeError:

@@ -160,29 +160,29 @@ diagnostics:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp370], ensemble: r4i1p1f2, start_year: 2075, end_year: 2095, grid: gn}
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp370], ensemble: r8i1p1f2, start_year: 2073, end_year: 2093, grid: gn}
 
-      mlotstmax_ssp434_1.5:
-        short_name: mlotstmax
-        preprocessor: prep_1
-        additional_datasets:
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434], ensemble: r1i1p1f2, start_year: 2015, end_year: 2035, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434], ensemble: r2i1p1f2, start_year: 2014, end_year: 2034, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434], ensemble: r3i1p1f2, start_year: 2014, end_year: 2034, grid: gn}
-
-      mlotstmax_ssp434_2.0:
-        short_name: mlotstmax
-        preprocessor: prep_1
-        additional_datasets:
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434], ensemble: r1i1p1f2, start_year: 2024, end_year: 2044, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434], ensemble: r2i1p1f2, start_year: 2024, end_year: 2044, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434], ensemble: r3i1p1f2, start_year: 2026, end_year: 2046, grid: gn}
-
-      mlotstmax_ssp434_3.0:
-        short_name: mlotstmax
-        preprocessor: prep_1
-        additional_datasets:
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434], ensemble: r1i1p1f2, start_year: 2053, end_year: 2073, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434], ensemble: r2i1p1f2, start_year: 2052, end_year: 2072, grid: gn}
-         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434], ensemble: r3i1p1f2, start_year: 2051, end_year: 2071, grid: gn}
+#      mlotstmax_ssp434_1.5:
+#        short_name: mlotstmax
+#        preprocessor: prep_1
+#        additional_datasets:
+#         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434], ensemble: r1i1p1f2, start_year: 2015, end_year: 2035, grid: gn}
+#         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434], ensemble: r2i1p1f2, start_year: 2014, end_year: 2034, grid: gn}
+#         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434], ensemble: r3i1p1f2, start_year: 2014, end_year: 2034, grid: gn}
+#
+#      mlotstmax_ssp434_2.0:
+#        short_name: mlotstmax
+#        preprocessor: prep_1
+#        additional_datasets:
+#         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434], ensemble: r1i1p1f2, start_year: 2024, end_year: 2044, grid: gn}
+#         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434], ensemble: r2i1p1f2, start_year: 2024, end_year: 2044, grid: gn}
+#         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434], ensemble: r3i1p1f2, start_year: 2026, end_year: 2046, grid: gn}
+#
+#      mlotstmax_ssp434_3.0:
+#        short_name: mlotstmax
+#        preprocessor: prep_1
+#        additional_datasets:
+#         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434], ensemble: r1i1p1f2, start_year: 2053, end_year: 2073, grid: gn}
+#         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434], ensemble: r2i1p1f2, start_year: 2052, end_year: 2072, grid: gn}
+#         - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp434], ensemble: r3i1p1f2, start_year: 2051, end_year: 2071, grid: gn}
 
       mlotstmax_ssp585_1.5:
         short_name: mlotstmax

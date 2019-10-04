@@ -22,12 +22,16 @@ documentation:
 preprocessors:
   prep_1:
     custom_order: true
-    extract_levels:
-      levels:  [0., ]
-      scheme: linear_horizontal_extrapolate_vertical
+#    extract_levels:
+#      levels:  [0., ]
+#      scheme: nearest_horizontal_extrapolate_vertical
     climate_statistics:
       operator: mean
       period: full
+    extract_levels:
+      levels:  [0., ]
+      scheme: nearest_horizontal_extrapolate_vertical
+        
     # multi_model_statistics:
     #   span: full
     #   statistics: [mean ]
