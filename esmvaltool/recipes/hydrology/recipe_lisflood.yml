@@ -36,6 +36,10 @@ preprocessors:
     <<: *general
     convert_units:
       units: J m-2 day-1
+  daily_windspeed:
+    <<: *general
+    convert_units:
+      units: m s-1
   hourly_water:
     <<: *general
     convert_units:
@@ -75,8 +79,7 @@ diagnostics:
   diagnostic_daily:
     description: LISFLOOD input preprocessor for daily data
     additional_datasets:
-      - {dataset: ERA-Interim, project: OBS, tier: 3, type: reanaly, version: 1}
-
+      - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
     variables:
       pr: &var_daily
         mip: day
@@ -92,61 +95,60 @@ diagnostics:
       tasmin:
         <<: *var_daily
         preprocessor: daily_temperature
-      ##########################################################################
-      # Currently using old ncl cmorizer for ERA-Interim, which uses CMIP5 (OBS)
-      # files. The new python cmorizer will create CMIP6/OBS6 files. Once
-      # finished, the following variables can be uncommented:
-      ##########################################################################
-      # tdps: # average dew point temperature at 2m (ERA-Interim: d2m)
-      #   << *var_daily
-      #   preprocessor: daily_temperature
-      # uas: # 10-m u-wind component (ERA-Interim: u10)
-      #   <<: *var_daily
-      # vas: # 10-m u-wind component (ERA-Interim: v10)
-      #   <<: *var_daily
-      # rsds: # surface solar radiation downwards (ERA-Interim: ssrd)
-      #   <<: *var_daily
-      #   preprocessor: daily_radiation
+      # Following vars only work with obs6 data (from new ERA-Interim cmorizer)
+      tdps:
+        <<: *var_daily
+        mip: Eday
+        preprocessor: daily_temperature
+      uas:
+        <<: *var_daily
+        preprocessor: daily_windspeed
+      vas:
+        <<: *var_daily
+        preprocessor: daily_windspeed
+      rsds:
+        <<: *var_daily
+        preprocessor: daily_radiation
     scripts:
       script:
         script: hydrology/lisflood.py
 
-  diagnostic_hourly:
-    description: LISFLOOD input preprocesor for hourly data
-    additional_datasets:
-      - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1}
-    variables:
-      pr: &var_hourly
-        mip: E1hr
-        start_year: 2000
-        end_year: 2000
-        preprocessor: hourly_water
-      tas:
-        <<: *var_hourly
-        preprocessor: hourly_temperature_mean
-      # tasmax:
-      #   <<: *var_hourly
-      #   preprocessor: hourly_temperature_max
-      # tasmin:
-      #   <<: *var_hourly
-      #   preprocessor: hourly_temperature_min
-      ##########################################################################
-      # Currently using old ncl cmorizer for ERA-Interim, which uses CMIP5 (OBS)
-      # files. The new python cmorizer will create CMIP6/OBS6 files. Once
-      # finished, the following variables can be uncommented:
-      ##########################################################################
-      # tdps: # average dew point temperature at 2m (ERA-Interim: d2m)
-      #   << *var_hourly
-      #   preprocessor: hourly_temperature_mean
-      # uas: # 10-m u-wind component (ERA-Interim: u10)
-      #   <<: *var_hourly
-      #   preprocessor: hourly_windspeed
-      # vas: # 10-m u-wind component (ERA-Interim: v10)
-      #   <<: *var_hourly
-      #   preprocessor: hourly_windspeed
-      # rsds: # surface solar radiation downwards (ERA-Interim: ssrd)
-      #   <<: *var_hourly
-      #   preprocessor: hourly_radiation
-    scripts:
-      script:
-        script: hydrology/lisflood.py
+  # diagnostic_hourly:
+  #   description: LISFLOOD input preprocesor for hourly data
+  #   additional_datasets:
+  #     - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1}
+  #   variables:
+  #     pr: &var_hourly
+  #       mip: E1hr
+  #       start_year: 2000
+  #       end_year: 2000
+  #       preprocessor: hourly_water
+  #     tas:
+  #       <<: *var_hourly
+  #       preprocessor: hourly_temperature_mean
+  #     # tasmax:
+  #     #   <<: *var_hourly
+  #     #   preprocessor: hourly_temperature_max
+  #     # tasmin:
+  #     #   <<: *var_hourly
+  #     #   preprocessor: hourly_temperature_min
+  #     ##########################################################################
+  #     # Currently using old ncl cmorizer for ERA-Interim, which uses CMIP5 (OBS)
+  #     # files. The new python cmorizer will create CMIP6/OBS6 files. Once
+  #     # finished, the following variables can be uncommented:
+  #     ##########################################################################
+  #     # tdps: # average dew point temperature at 2m (ERA-Interim: d2m)
+  #     #   << *var_hourly
+  #     #   preprocessor: hourly_temperature_mean
+  #     # uas: # 10-m u-wind component (ERA-Interim: u10)
+  #     #   <<: *var_hourly
+  #     #   preprocessor: hourly_windspeed
+  #     # vas: # 10-m u-wind component (ERA-Interim: v10)
+  #     #   <<: *var_hourly
+  #     #   preprocessor: hourly_windspeed
+  #     # rsds: # surface solar radiation downwards (ERA-Interim: ssrd)
+  #     #   <<: *var_hourly
+  #     #   preprocessor: hourly_radiation
+  #   scripts:
+  #     script:
+  #       script: hydrology/lisflood.py
