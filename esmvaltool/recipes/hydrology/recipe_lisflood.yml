@@ -14,7 +14,7 @@ preprocessors:
       target_grid: 0.1x0.1  # We're using the lisflood01degree version
       lon_offset: true
       lat_offset: true
-      scheme: nearest
+      scheme: linear
     extract_shape:
       # Perhaps a single shapefile needs to be created covering multiple basins
       shapefile: rhine_meuse_hydrosheds.shp  # In aux (config-user.yml)
