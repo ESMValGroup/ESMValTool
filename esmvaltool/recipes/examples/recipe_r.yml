@@ -25,5 +25,5 @@ diagnostics:
         mip: day
     scripts:
       main:
-        script: examples/diagnostic.r
+        script: examples/diagnostic.R
         parameter1:   1    # example parameter

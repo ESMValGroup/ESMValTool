@@ -19,7 +19,7 @@ script_name <- sub(
 )
 script_dirname <- dirname(script_name)
 
-source(file.path(script_dirname, "PC.r"))
+source(file.path(script_dirname, "PC.R"))
 plot_dir <- params$plot_dir
 run_dir <- params$run_dir
 work_dir <- params$work_dir

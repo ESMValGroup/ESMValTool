@@ -14,8 +14,8 @@ script_name <-
     initial_options
   )])
 script_dirname <- dirname(script_name)
-source(file.path(script_dirname, "WeatherRegime.r"))
-source(file.path(script_dirname, "RegimesAssign.r"))
+source(file.path(script_dirname, "WeatherRegime.R"))
+source(file.path(script_dirname, "RegimesAssign.R"))
 
 ## Regimes namelist
 args <- commandArgs(trailingOnly = TRUE)

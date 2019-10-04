@@ -49,6 +49,6 @@ diagnostics:
 
     scripts:
       main:
-        script: magic_bsc/toymodel.r
+        script: magic_bsc/toymodel.R
         beta: 500
         number_of_members: 20

@@ -26,7 +26,7 @@ Recipes are stored in recipes/
 
 Diagnostics are stored in diag_scripts/magic_bsc/
 
-* combined_indices.r : calculates the area-weighted means and multi-model means, with or without weights
+* combined_indices.R : calculates the area-weighted means and multi-model means, with or without weights
 
 
 

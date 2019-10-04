@@ -41,7 +41,7 @@ diagnostics:
         mip: day
     scripts:
       main:
-        script: magic_bsc/capacity_factor.r
+        script: magic_bsc/capacity_factor.R
         power_curves:
           - PowerCurves/Enercon_E70_2.3MW.txt
           - PowerCurves/Gamesa_G80_2.0MW.txt

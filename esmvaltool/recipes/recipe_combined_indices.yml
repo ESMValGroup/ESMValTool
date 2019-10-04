@@ -28,7 +28,7 @@ diagnostics:
         mip: Amon
     scripts:
       main:
-        script: magic_bsc/combined_indices.r
+        script: magic_bsc/combined_indices.R
         ## Weights for combining indices - if not "equal" or "NULL", must be the same length as the number of indices
         region: NAO #Nino3, Nino3.4, Nino4, NAO or SOI  
 

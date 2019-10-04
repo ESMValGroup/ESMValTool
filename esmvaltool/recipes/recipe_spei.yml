@@ -44,7 +44,7 @@ diagnostics:
       tas: *var
     scripts:
       spi:
-        script: droughtindex/diag_spi.r
+        script: droughtindex/diag_spi.R
         ancestors: [pr]
       spei:
-        script: droughtindex/diag_spei.r
+        script: droughtindex/diag_spei.R

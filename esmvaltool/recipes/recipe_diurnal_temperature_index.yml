@@ -45,4 +45,4 @@ diagnostics:
         mip: day
     scripts:
       main:
-        script: magic_bsc/diurnal_temp_index.r
+        script: magic_bsc/diurnal_temp_index.R

@@ -24,9 +24,9 @@ Recipes are stored in recipes/
 
 Diagnostics are stored in diag_scripts/magic_bsc/
 
-* WeatherRegime.r - function for computing the EOFs and k-means and hierarchical clusters.
+* WeatherRegime.R - function for computing the EOFs and k-means and hierarchical clusters.
 
-* weather_regime.r - applies the above weather regimes function to the datasets
+* weather_regime.R - applies the above weather regimes function to the datasets
 
 
 

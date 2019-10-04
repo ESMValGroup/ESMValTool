@@ -46,7 +46,7 @@ diagnostics:
         mip: Amon
     scripts:
       main:
-        script: magic_bsc/weather_regime.r
+        script: magic_bsc/weather_regime.R
         plot_type: polar  # rectangular or polar
 
         ncenters: 3
