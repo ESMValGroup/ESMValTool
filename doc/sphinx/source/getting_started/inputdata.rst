@@ -1,11 +1,44 @@
 .. _inputdata:
 
-**********
-Input data
-**********
+********************
+Acquiring input data
+********************
+
+ESMValTool accepts input data from various models as well as
+observations and reanalysis data, provided that they adhere to the
+CF/CMOR format. This section provides some guidelines for unfamiliar users.
 
 Models
 ======
+
+ESMValTool will look for existing data in the directories specified in the
+user configuration file. Alternatively, it can use an external
+tool called Synda (http://prodiguer.github.io/synda/index.html). Here, we
+describe the basic steps to configure EMSValTool to work with Synda. This is
+the recommended approach for first-time users to quickly obtain some data for
+running ESMValTool.
+
+To install Synda, follow the steps listed in the Synda documentation. This
+description assumes that you use the conda install. As the last step, Synda will
+ask to set your openID credentials. Therefore, you'll need to create an account
+at https://esgf-node.llnl.gov/projects/esgf-llnl/ and join a Data Access Control
+Group, e.g. CMIP5 Research. For more information, see
+https://esgf.github.io/esgf-user-support/user_guide.html.
+
+Once you have set up Synda, you'll need to configure ESMValTool to recognize
+your Synda installation. Note that it is not possible to combine the two in a
+single conda environment, for Synda requires python 2 and ESMValTool requires
+Python 3. Typing ``which synda`` while your synda environment
+is active will print its location. To make the ``synda`` program usable from ESMValTool we suggest
+creating a directory ``mkdir ~/bin`` and and appending that folder to your PATH
+environment variable, e.g. by adding the following line to your ``~/.bashrc`` file:
+``PATH=$PATH:$HOME/bin``.
+
+Finally, in the new bin folder, make a link to synda:
+``ln -s /path/to/conda/envs/synda/bin/synda ~/bin/synda``.
+
+Now, ESMValTool should be able to recognize your Synda installation. First time
+users can now continue with :ref:`Running ESMValTool <running>`.
 
 Observations
 ============
