@@ -21,8 +21,8 @@ import xarray as xr
 import numpy as np
 import seawater as sw
 
-from .utilities import (constant_metadata, fix_coords, fix_var_metadata,
-                        save_variable, set_global_atts)
+from .utilities import (fix_coords, fix_var_metadata, save_variable,
+                        set_global_atts)
 
 logger = logging.getLogger(__name__)
 
@@ -46,7 +46,7 @@ def _fix_fx_areacello(xr_time, var):
     grid_areas_xr = xr.DataArray(grid_areas[0, 0, :, :],
                                  coords={
                                      'lat': xr_time.temp.coords['lat'],
-                                     'lon': xr_time.temp.coords['lon'],
+                                     'lon': xr_time.temp.coords['lon']
                                  },
                                  dims=['lat', 'lon'],
                                  name=var)
@@ -85,6 +85,8 @@ def _fix_data(xr_time, var):
     elif var == 'areacello':
         cube = _fix_fx_areacello(xr_time, var)
         return cube.copy()
+    else:
+        return None
 
 
 def extract_variable(var_info, raw_info, out_dir, attrs):
@@ -95,7 +97,7 @@ def extract_variable(var_info, raw_info, out_dir, attrs):
     xr_time = xr_time.assign_coords(time=[1])
     xr_time.time.attrs = OrderedDict([('standard_name', 'time'),
                                       ('units', 'days since 1950-1-1 00:00:00')
-                                      ])
+                                     ])
 
     cube = _fix_data(xr_time, var)
     fix_var_metadata(cube, var_info)
@@ -115,10 +117,9 @@ def cmorization(in_dir, out_dir, cfg, _):
 
     # run the cmorization
     for var, vals in cfg['variables'].items():
-        for yr in cfg['custom']['years']:
-            inpfile = os.path.join(in_dir, vals['file'])
-            logger.info("CMORizing var %s from file %s", var, inpfile)
-            var_info = cmor_table.get_variable(vals['mip'], var)
-            raw_info = {'name': vals['raw'], 'file': inpfile}
-            glob_attrs['mip'] = vals['mip']
-            extract_variable(var_info, raw_info, out_dir, glob_attrs)
+        inpfile = os.path.join(in_dir, vals['file'])
+        logger.info("CMORizing var %s from file %s", var, inpfile)
+        var_info = cmor_table.get_variable(vals['mip'], var)
+        raw_info = {'name': vals['raw'], 'file': inpfile}
+        glob_attrs['mip'] = vals['mip']
+        extract_variable(var_info, raw_info, out_dir, glob_attrs)

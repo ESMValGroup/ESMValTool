@@ -461,7 +461,7 @@ def plot2d_original_grid(model_filenames,
                          dpi=100,
                          explicit_depths=None,
                          projection=ccrs.NorthPolarStereo(),
-                         bbox=[-180, 180, 60, 90],
+                         bbox=(-180, 180, 60, 90),
                          ncols=4):
     """Plot 2d maps on original grid using cartopy.
 
