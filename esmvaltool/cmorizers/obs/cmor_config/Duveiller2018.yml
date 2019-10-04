@@ -1,0 +1,23 @@
+---
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: Duveiller2018 
+  version: 'v2018' 
+  tier: 2
+  modeling_realm: clim
+  project_id: OBS
+  source: 'https://ndownloader.figshare.com/files/9969496'
+  reference: 'duveiller2018'
+  comment: ''
+  climatology_start: '2008-01-01T00:00:00Z'
+  climatology_end: '2012-12-31T23:59:59Z'
+
+# Variables to cmorize
+variables:
+  albDiffiTr13:
+    mip: Amon
+    # Match CMOR variables with input file one
+    raw: Delta_albedo
+    # input file name
+    file: albedo_IGBPgen.nc
+    iTr: 13
