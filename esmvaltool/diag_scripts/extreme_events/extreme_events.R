@@ -27,7 +27,7 @@ library(yaml)
 library(ncdf4)
 library(ncdf4.helpers)
 library(scales)
-library(RColorBrewer)  # nolint
+library(RColorBrewer) # nolint
 
 provenance_record <- function(infile) {
   xprov <- list(
@@ -51,25 +51,31 @@ provenance_record <- function(infile) {
 
 diag_scripts_dir <- Sys.getenv("diag_scripts")
 climdex_src <-
-  paste0(diag_scripts_dir,
-         "/extreme_events/climdex.pcic.ncdf/R/ncdf.R")  # nolint
+  paste0(
+    diag_scripts_dir,
+    "/extreme_events/climdex.pcic.ncdf/R/ncdf.R"
+  ) # nolint
 source(paste0(
   diag_scripts_dir,
   "/extreme_events/climdex.pcic.ncdf/R/ncdf.R"
-))  # nolint
-source(paste0(diag_scripts_dir, "/shared/external.R"))  # nolint
-source(paste0(diag_scripts_dir, "/extreme_events/cfg_climdex.R"))  # nolint
-source(paste0(diag_scripts_dir, "/extreme_events/cfg_extreme.R"))  # nolint
+)) # nolint
+source(paste0(diag_scripts_dir, "/shared/external.R")) # nolint
+source(paste0(diag_scripts_dir, "/extreme_events/cfg_climdex.R")) # nolint
+source(paste0(diag_scripts_dir, "/extreme_events/cfg_extreme.R")) # nolint
 source(
   paste0(
     diag_scripts_dir,
     "/extreme_events/common_climdex_preprocessing_for_plots.R"
   )
-)  # nolint
-source(paste0(diag_scripts_dir,
-              "/extreme_events/make_timeseries_plot.R"))  # nolint
-source(paste0(diag_scripts_dir,
-              "/extreme_events/make_glecker_plot.R"))  # nolint
+) # nolint
+source(paste0(
+  diag_scripts_dir,
+  "/extreme_events/make_timeseries_plot.R"
+)) # nolint
+source(paste0(
+  diag_scripts_dir,
+  "/extreme_events/make_glecker_plot.R"
+)) # nolint
 
 # read settings and metadata files
 args <- commandArgs(trailingOnly = TRUE)
@@ -115,8 +121,9 @@ regridding_dir <- settings$run_dir
 plot_dir <- settings$plot_dir
 dir.create(work_dir, recursive = T, showWarnings = F)
 dir.create(regridding_dir,
-           recursive = T,
-           showWarnings = F)
+  recursive = T,
+  showWarnings = F
+)
 dir.create(plot_dir, recursive = T, showWarnings = F)
 
 # setup provenance file and list
@@ -127,10 +134,12 @@ provenance <- list()
 if (anyNA(base_range)) {
   stop("Please choose a base_range!")
 }
-model_range <- c(max(strtoi(models_start_year)),
-                 min(strtoi(models_end_year)))
+model_range <- c(
+  max(strtoi(models_start_year)),
+  min(strtoi(models_end_year))
+)
 if ((base_range[1] < max(strtoi(models_start_year))) |
-    (base_range[2] > min(strtoi(models_end_year)))) {
+  (base_range[2] > min(strtoi(models_end_year)))) {
   stop(
     paste(
       "Base range",
@@ -161,14 +170,20 @@ climdex_files <- list.files(path = work_dir, pattern = "ETCCDI")
 print("Removing bounds from preprocessed files")
 for (i in 1:length(climofiles)) {
   tmp <- tempfile()
-  nco("ncks",
-      paste("-C -O -x -v lat_bnds,lon_bnds,time_bnds",
-            climofiles[i], tmp))
+  nco(
+    "ncks",
+    paste(
+      "-C -O -x -v lat_bnds,lon_bnds,time_bnds",
+      climofiles[i], tmp
+    )
+  )
   nco("ncatted", paste("-O -a bounds,time,d,,", tmp))
   nco("ncatted", paste("-O -a bounds,lat,d,,", tmp))
   nco("ncatted", paste("-O -a bounds,lon,d,,", tmp))
-  nco("ncatted",
-      paste0("-O -a coordinates,", variables[i], ",d,, ", tmp))
+  nco(
+    "ncatted",
+    paste0("-O -a coordinates,", variables[i], ",d,, ", tmp)
+  )
   file.copy(tmp, climofiles[i], overwrite = TRUE)
   unlink(tmp)
 }
@@ -273,7 +288,7 @@ for (model_idx in c(1:length(models_name))) {
       chunk <-
         floor(
           (nc$dim$time$len * nc$dim$lon$len * nc$dim$lat$len +
-             1000.0) / (climdex_parallel * 1000000)
+            1000.0) / (climdex_parallel * 1000000)
         )
       chunk <- max(min(100, chunk), 1)
       nc_close(nc)
@@ -338,7 +353,7 @@ if (write_plots) {
     )
   }
   if ((analysis_range[1] < max(strtoi(models_start_year))) |
-      (analysis_range[2] > min(strtoi(models_end_year)))) {
+    (analysis_range[2] > min(strtoi(models_end_year)))) {
     stop(
       paste(
         "Analysis range",
@@ -392,13 +407,15 @@ if (write_plots) {
     }
     # The ensemble timeseries get provenance from all model datasets
     ncfiles <- list.files(file.path(work_dir, "timeseries"),
-                          pattern = "ETCCDI.*ens",
-                          full.names = TRUE)
+      pattern = "ETCCDI.*ens",
+      full.names = TRUE
+    )
 
     ancestors <- sapply(setdiff(models_name, reference_datasets),
-                        grep,
-                        climofiles,
-                        value = TRUE)
+      grep,
+      climofiles,
+      value = TRUE
+    )
     xprov <- provenance_record(ancestors)
     for (fname in ncfiles) {
       provenance[[fname]] <- xprov
@@ -416,14 +433,16 @@ if (write_plots) {
     nidx <- length(gleckler_idx) # number of indices
     nmodel <- length(models_name) # number of models
     nobs <- length(reference_datasets) # number of observations
-    arrayname <- paste0("Gleckler-Array_",
-                        nidx,
-                        "-idx_",
-                        nmodel,
-                        "-models_",
-                        nobs,
-                        "-obs",
-                        ".RDS")
+    arrayname <- paste0(
+      "Gleckler-Array_",
+      nidx,
+      "-idx_",
+      nmodel,
+      "-models_",
+      nobs,
+      "-obs",
+      ".RDS"
+    )
     arraydirname <- paste0(plot_dir, "/", diag_base, "/", arrayname)
     if (glc_arr) {
       if (file.exists(arraydirname)) {

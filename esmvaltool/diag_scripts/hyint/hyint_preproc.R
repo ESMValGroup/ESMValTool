@@ -29,9 +29,10 @@ hyint_preproc <- function(work_dir,
   }
 
   cdo("-copy",
-      options = "-L -f nc -a",
-      input = tempf,
-      output = regfile)
+    options = "-L -f nc -a",
+    input = tempf,
+    output = regfile
+  )
 
   unlink(tempf)
 

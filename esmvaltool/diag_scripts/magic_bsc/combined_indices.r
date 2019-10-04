@@ -4,11 +4,11 @@ library(multiApply) # nolint
 library(ggplot2)
 library(yaml)
 library(ncdf4)
-library(ClimProjDiags) #nolint
+library(ClimProjDiags) # nolint
 library(abind)
 library(climdex.pcic)
 
-#Parsing input file paths and creating output dirs
+# Parsing input file paths and creating output dirs
 args <- commandArgs(trailingOnly = TRUE)
 params <- read_yaml(args[1])
 
@@ -49,7 +49,7 @@ start_year <-
 end_year <-
   as.POSIXct(as.Date(paste0(ending, "-12-31"), "%Y-%m-%d"))
 
-#Parameters for Season() function
+# Parameters for Season() function
 monini <- 1
 moninf <- params$moninf
 monsup <- params$monsup
@@ -75,14 +75,14 @@ if (region == "Nino3") {
   lat_min <- -5
   lat_max <- 5
 } else if (region == "NAO") {
-  lon_min <- 360 + c(-90,-90)
+  lon_min <- 360 + c(-90, -90)
   lon_max <- c(40, 40)
   lat_min <- c(25, 60)
   lat_max <- c(45, 80)
 } else if (region == "SOI") {
   lon_min <- c(90, 360 - 130)
   lon_max <- c(140, 360 - 80)
-  lat_min <- c(-5,-5)
+  lat_min <- c(-5, -5)
   lat_max <- c(5, 5)
 }
 ### Load data
@@ -90,7 +90,7 @@ data_nc <- nc_open(fullpath_filenames)
 lat <- as.vector(ncvar_get(data_nc, "lat"))
 lon <- as.vector(ncvar_get(data_nc, "lon"))
 units <- ncatt_get(data_nc, var0, "units")$value
-long_names <-  ncatt_get(data_nc, var0, "long_name")$value
+long_names <- ncatt_get(data_nc, var0, "long_name")$value
 
 data <- InsertDim(ncvar_get(data_nc, var0), 1, 1) # nolint
 names(dim(data)) <- c("model", "lon", "lat", "time")
@@ -104,14 +104,14 @@ if (standardized) {
     fun = function(x) {
       (x - mean(x)) / sqrt(var(x))
     }
-  ) #nolint
+  ) # nolint
   data <- aperm(data$output1, c(2, 3, 4, 1))
   names(dim(data)) <- c("model", "lon", "lat", "time")
 }
 
 if (!is.null(running_mean)) {
   data <-
-    Smoothing(data, runmeanlen = running_mean, numdimt = 4) #nolint
+    Smoothing(data, runmeanlen = running_mean, numdimt = 4) # nolint
   timestamp <- paste0(running_mean, "-month-running-mean-")
 }
 
@@ -120,7 +120,7 @@ if (!is.null(moninf)) {
     data,
     posdim = 4,
     monini = monini,
-    #nolint
+    # nolint
     moninf = moninf,
     monsup = monsup
   )
@@ -132,7 +132,7 @@ if (length(lon_min) == 1) {
     data,
     lon = lon,
     lat = lat,
-    #nolint
+    # nolint
     region = c(lon_min, lon_max, lat_min, lat_max),
     londim = 2,
     latdim = 3,
@@ -145,7 +145,7 @@ if (length(lon_min) == 1) {
     data,
     lon = lon,
     lat = lat,
-    #nolint
+    # nolint
     region = c(lon_min[1], lon_max[1], lat_min[1], lat_max[1]),
     londim = 2,
     latdim = 3,
@@ -155,7 +155,7 @@ if (length(lon_min) == 1) {
     data,
     lon = lon,
     lat = lat,
-    #nolint
+    # nolint
     region = c(lon_min[2], lon_max[2], lat_min[2], lat_max[2]),
     londim = 2,
     latdim = 3,
@@ -165,9 +165,10 @@ if (length(lon_min) == 1) {
   data2 <- drop(data2)
   data <-
     CombineIndices(list(data1, data2),
-                   weights = c(1,-1),
-                   #nolint
-                   operation = "add")
+      weights = c(1, -1),
+      # nolint
+      operation = "add"
+    )
 }
 
 if (moninf > monsup) {
@@ -190,18 +191,20 @@ defdata <-
     longname = paste("Index for region", region, "Variable", var0)
   )
 filencdf <-
-  paste0(work_dir,
-         "/",
-         var0,
-         "_",
-         timestamp,
-         "_",
-         months,
-         "_",
-         starting,
-         ending,
-         "_",
-         ".nc")
+  paste0(
+    work_dir,
+    "/",
+    var0,
+    "_",
+    timestamp,
+    "_",
+    months,
+    "_",
+    starting,
+    ending,
+    "_",
+    ".nc"
+  )
 file <- nc_create(filencdf, list(defdata))
 ncvar_put(file, defdata, data)
 nc_close(file)

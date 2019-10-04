@@ -22,15 +22,17 @@ miles_eof_figures <- function(dataset,
                               PROGDIR,
                               tele) {
   # use filebuilding script to access to file
-  nomefile_exp <- file_builder(FILESDIR,
-                               paste0("EOFs/", tele),
-                               "EOFs",
-                               dataset,
-                               expid,
-                               ens,
-                               year1,
-                               year2,
-                               season)
+  nomefile_exp <- file_builder(
+    FILESDIR,
+    paste0("EOFs/", tele),
+    "EOFs",
+    dataset,
+    expid,
+    ens,
+    year1,
+    year2,
+    season
+  )
 
   # check for REFDIR==FILESDIR, i.e. if we are using the
   # climatology provided by MiLES or another dataset MiLES-generated
@@ -72,19 +74,23 @@ miles_eof_figures <- function(dataset,
 
   # loading anomalies and variances of experiment
   variance_exp <- ncdf_opener(nomefile_exp,
-                              namevar = "Variances",
-                              rotate = "no") * 100 # convert to percentage
+    namevar = "Variances",
+    rotate = "no"
+  ) * 100 # convert to percentage
   regressions_exp <- ncdf_opener(nomefile_exp,
-                                 namevar = "Regressions",
-                                 rotate = "no")
+    namevar = "Regressions",
+    rotate = "no"
+  )
 
   # loading reference field
   variance_ref <- ncdf_opener(nomefile_ref,
-                              namevar = "Variances",
-                              rotate = "no") * 100 # convert to percentage
+    namevar = "Variances",
+    rotate = "no"
+  ) * 100 # convert to percentage
   regressions_ref <- ncdf_opener(nomefile_ref,
-                                 namevar = "Regressions",
-                                 rotate = "no")
+    namevar = "Regressions",
+    rotate = "no"
+  )
 
 
   ##########################################################
@@ -94,8 +100,10 @@ miles_eof_figures <- function(dataset,
   # plot properties
   info_exp <-
     info_builder(dataset, expid, ens, year1, year2, season)
-  info_ref <- info_builder(dataset_ref, expid_ref, ens_ref,
-                           year1_ref, year2_ref, season)
+  info_ref <- info_builder(
+    dataset_ref, expid_ref, ens_ref,
+    year1_ref, year2_ref, season
+  )
   lev_field <- seq(-150, 150, 20)
   lev_diff <- seq(-95, 95, 10)
 
@@ -156,10 +164,11 @@ miles_eof_figures <- function(dataset,
 
     im <-
       plot_prepare(ics,
-                   ipsilon,
-                   linear_exp,
-                   proj = map_projection,
-                   lat_lim = lat_lim)
+        ipsilon,
+        linear_exp,
+        proj = map_projection,
+        lat_lim = lat_lim
+      )
     filled_contour3(
       im$x,
       im$y,
@@ -183,18 +192,21 @@ miles_eof_figures <- function(dataset,
     )
     proj_addland(proj = map_projection)
     text(varpoints[1],
-         varpoints[2],
-         paste("Variance Explained: ",
-               round(variance_exp[neof], 2), "%",
-               sep = ""),
-         cex = 2)
+      varpoints[2],
+      paste("Variance Explained: ",
+        round(variance_exp[neof], 2), "%",
+        sep = ""
+      ),
+      cex = 2
+    )
 
     im <-
       plot_prepare(ics,
-                   ipsilon,
-                   linear_ref,
-                   proj = map_projection,
-                   lat_lim = lat_lim)
+        ipsilon,
+        linear_ref,
+        proj = map_projection,
+        lat_lim = lat_lim
+      )
     filled_contour3(
       im$x,
       im$y,
@@ -228,18 +240,21 @@ miles_eof_figures <- function(dataset,
       line.label = imgscl_line
     )
     text(varpoints[1],
-         varpoints[2],
-         paste("Variance Explained: ",
-               round(variance_ref[neof], 2), "%",
-               sep = ""),
-         cex = 2)
+      varpoints[2],
+      paste("Variance Explained: ",
+        round(variance_ref[neof], 2), "%",
+        sep = ""
+      ),
+      cex = 2
+    )
 
     # delta field plot
     im <- plot_prepare(ics,
-                       ipsilon,
-                       linear_exp - linear_ref,
-                       proj = map_projection,
-                       lat_lim = lat_lim)
+      ipsilon,
+      linear_exp - linear_ref,
+      proj = map_projection,
+      lat_lim = lat_lim
+    )
     filled_contour3(
       im$x,
       im$y,

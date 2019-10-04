@@ -16,7 +16,7 @@
 # The following indices are calculated based on input daily precipitation data:
 # PRY = mean annual precipitation
 # INT = mean annual precipitation intensity (intensity during wet days, or
-#       simple precipitation intensity index SDII)
+#        simple precipitation intensity index SDII)
 # WSL = mean annual wet spell length (number of consecutive days
 #       during each wet spell)
 # DSL = mean annual dry spell lenght (number of consecutive days
@@ -66,7 +66,8 @@ library(ncdf4)
 args <- commandArgs(trailingOnly = FALSE)
 spath <- paste0(dirname(unlist(strsplit(
   grep("--file", args,
-       value = TRUE), "="
+    value = TRUE
+  ), "="
 ))[2]), "/")
 
 source(paste0(spath, "hyint_functions.R"))
@@ -191,11 +192,14 @@ if (write_netcdf) {
     # If needed, pre-process file and add absolute time axis
     if (run_regridding) {
       if (!file.exists(regfile) | force_regridding) {
-        dummy <- hyint_preproc(work_dir, model_idx, ref_idx, climofile,
-                               regfile, rgrid)
+        dummy <- hyint_preproc(
+          work_dir, model_idx, ref_idx, climofile,
+          regfile, rgrid
+        )
       } else {
         gridfile <- getfilename_indices(work_dir, diag_base, model_idx,
-                                        grid = T)
+          grid = T
+        )
         cdo("griddes", input = regfile, stdout = gridfile)
         print(paste0(diag_base, ": data file exists: ", regfile))
         print(paste0(diag_base, ": corresponding grid: ", gridfile))
@@ -206,7 +210,9 @@ if (write_netcdf) {
       # Loop through seasons and call diagnostic
       for (seas in seasons) {
         prov_info <- hyint_diagnostic(work_dir, regfile, model_idx, seas,
-                                      prov_info, rewrite = force_diagnostic)
+          prov_info,
+          rewrite = force_diagnostic
+        )
       }
     }
   }
@@ -219,12 +225,13 @@ if (write_netcdf & etccdi_preproc) {
       getfilename_indices(work_dir, diag_base, model_idx, grid = T)
     dummy <-
       hyint_etccdi_preproc(work_dir,
-                           etccdi_dir,
-                           etccdi_list_import,
-                           gridfile,
-                           model_idx,
-                           "ALL",
-                           yrmon = "yr")
+        etccdi_dir,
+        etccdi_list_import,
+        gridfile,
+        model_idx,
+        "ALL",
+        yrmon = "yr"
+      )
   }
 }
 

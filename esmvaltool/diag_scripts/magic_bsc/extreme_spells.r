@@ -39,7 +39,7 @@ reference_files <- which(unname(experiment) == "historical")
 projection_files <- which(unname(experiment) != "historical")
 
 rcp_scenario <- unique(experiment[projection_files])
-model_names <-  lapply(input_files_per_var, function(x)
+model_names <- lapply(input_files_per_var, function(x)
   x$dataset)
 model_names <- unlist(unname(model_names))[projection_files]
 
@@ -70,9 +70,9 @@ qtile <- params$quantile
 spell_length <- params$min_duration
 season <- params$season
 
-reference_filenames <-  fullpath_filenames[reference_files]
+reference_filenames <- fullpath_filenames[reference_files]
 projection <- "NULL"
-reference_filenames <-  fullpath_filenames[reference_files]
+reference_filenames <- fullpath_filenames[reference_files]
 hist_nc <- nc_open(reference_filenames)
 var0 <- unlist(var0)
 historical_data <- ncvar_get(hist_nc, var0)
@@ -82,10 +82,12 @@ lat <- ncvar_get(hist_nc, "lat")
 lon <- ncvar_get(hist_nc, "lon")
 units <- ncatt_get(hist_nc, var0, "units")$value
 calendar <- ncatt_get(hist_nc, "time", "calendar")$value
-long_names <-  ncatt_get(hist_nc, var0, "long_name")$value
-time <-  ncvar_get(hist_nc, "time")
-start_date <- as.POSIXct(substr(ncatt_get(hist_nc, "time",
-                                          "units")$value, 11, 29))
+long_names <- ncatt_get(hist_nc, var0, "long_name")$value
+time <- ncvar_get(hist_nc, "time")
+start_date <- as.POSIXct(substr(ncatt_get(
+  hist_nc, "time",
+  "units"
+)$value, 11, 29))
 nc_close(hist_nc)
 time <- as.Date(time, origin = start_date, calendar = calendar)
 
@@ -104,26 +106,30 @@ names(dim(historical_data)) <-
   c("model", "var", "time", "lon", "lat")
 time_dimension <- which(names(dim(historical_data)) == "time")
 
-base_range <- c(as.numeric(substr(start_reference, 1, 4)),
-                as.numeric(substr(end_reference, 1, 4)))
+base_range <- c(
+  as.numeric(substr(start_reference, 1, 4)),
+  as.numeric(substr(end_reference, 1, 4))
+)
 threshold <-
   Threshold(
     historical_data,
     base.range = base_range,
-    #nolint
+    # nolint
     calendar = calendar,
     qtiles = qtile,
     ncores = NULL,
     na.rm = TRUE
   )
 
-projection_filenames <-  fullpath_filenames[projection_files]
+projection_filenames <- fullpath_filenames[projection_files]
 for (i in 1:length(projection_filenames)) {
   proj_nc <- nc_open(projection_filenames[i])
   projection_data <- ncvar_get(proj_nc, var0)
-  time <-  ncvar_get(proj_nc, "time")
-  start_date <- as.POSIXct(substr(ncatt_get(proj_nc, "time",
-                                            "units")$value, 11, 29))
+  time <- ncvar_get(proj_nc, "time")
+  start_date <- as.POSIXct(substr(ncatt_get(
+    proj_nc, "time",
+    "units"
+  )$value, 11, 29))
   calendar <- ncatt_get(hist_nc, "time", "calendar")$value
   time <- as.Date(time, origin = start_date, calendar = calendar)
   nc_close(proj_nc)
@@ -143,7 +149,7 @@ for (i in 1:length(projection_filenames)) {
   heatwave <- WaveDuration(
     projection_data,
     threshold,
-    #nolint
+    # nolint
     calendar = calendar,
     op = op,
     spell.length = spell_length,
@@ -153,25 +159,29 @@ for (i in 1:length(projection_filenames)) {
   if (season == "summer") {
     heatwave_season <-
       heatwave$result[seq(2, dim(heatwave$result)[1] - 2,
-                          by = 4), 1, 1, ,]#nolint
+        by = 4
+      ), 1, 1, , ] # nolint
     years <-
       heatwave$years[seq(2, length(heatwave$years) - 2, by = 4)]
   } else if (season == "winter") {
     heatwave_season <-
       heatwave$result[seq(1, dim(heatwave$result)[1] - 2,
-                          by = 4), 1, 1, ,]#nolint
+        by = 4
+      ), 1, 1, , ] # nolint
     years <-
       heatwave$years[seq(1, length(heatwave$years) - 1, by = 4)]
   } else if (season == "spring") {
     heatwave_season <-
       heatwave$result[seq(3, dim(heatwave$result)[1] - 2,
-                          by = 4), 1, 1, ,]#nolint
+        by = 4
+      ), 1, 1, , ] # nolint
     years <-
       heatwave$years[seq(3, length(heatwave$years) - 2, by = 4)]
   } else {
     heatwave_season <-
       heatwave$result[seq(4, dim(heatwave$result)[1] - 2,
-                          by = 4), 1, 1, ,]#nolint
+        by = 4
+      ), 1, 1, , ] # nolint
     years <-
       heatwave$years[seq(4, length(heatwave$years) - 2, by = 4)]
   }
@@ -180,7 +190,7 @@ for (i in 1:length(projection_filenames)) {
   names(dim(data)) <- c("time", "lon", "lat")
   attributes(lon) <- NULL
   attributes(lat) <- NULL
-  dim(lon) <-  c(lon = length(lon))
+  dim(lon) <- c(lon = length(lon))
   dim(lat) <- c(lat = length(lat))
   time <- as.numeric(substr(years, 1, 4))
   attributes(time) <- NULL
@@ -262,9 +272,9 @@ for (i in 1:length(projection_filenames)) {
 
   # Check dimension order:
   if (length(lat) != dim(data)["lat"] |
-      length(lon) != dim(data)["lon"]) {
+    length(lon) != dim(data)["lon"]) {
     if (length(lat) == dim(data)["lon"] &
-        length(lon) == dim(data)["lat"]) {
+      length(lon) == dim(data)["lat"]) {
       poslat <- which(names(dim(data)) == "lat")
       poslon <- which(names(dim(data)) == "lon")
       names(dim(data))[poslat] <- "lon"
@@ -272,10 +282,11 @@ for (i in 1:length(projection_filenames)) {
     }
   }
   timeseries <- WeightedMean(data,
-                             lon = as.vector(lon),
-                             #nolint
-                             lat = as.vector(lat),
-                             mask = NULL)
+    lon = as.vector(lon),
+    # nolint
+    lat = as.vector(lat),
+    mask = NULL
+  )
   data_frame <- data.frame(Experiment = timeseries)
   years <- rep(start_projection:end_projection)
   data_frame$Year <- c(years)
@@ -361,7 +372,7 @@ for (i in 1:length(projection_filenames)) {
     Mean1Dim(data, 1),
     lat = lat,
     lon = lon,
-    #nolint
+    # nolint
     filled.continents = FALSE,
     brks = brks,
     color_fun = clim.palette("yellowred"),

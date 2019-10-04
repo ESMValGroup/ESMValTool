@@ -4,16 +4,16 @@
 ######################################################
 miles_eofs_fast <-
   function(dataset,
-           expid,
-           ens,
-           year1,
-           year2,
-           season,
-           tele,
-           z500filename,
-           FILESDIR,
-           PROGDIR,
-           doforce) {
+             expid,
+             ens,
+             year1,
+             year2,
+             season,
+             tele,
+             z500filename,
+             FILESDIR,
+             PROGDIR,
+             doforce) {
     # standard defined 4 EOFs
     neofs <- 4
 
@@ -29,15 +29,17 @@ miles_eofs_fast <-
     print(dataset)
     print(expid)
     print(ens)
-    savefile1 <- file_builder(FILESDIR,
-                              paste0("EOFs/", tele),
-                              "EOFs",
-                              dataset,
-                              expid,
-                              ens,
-                              year1,
-                              year2,
-                              season)
+    savefile1 <- file_builder(
+      FILESDIR,
+      paste0("EOFs/", tele),
+      "EOFs",
+      dataset,
+      expid,
+      ens,
+      year1,
+      year2,
+      season
+    )
 
     # select teleconnection region
     if (tele == "NAO") {
@@ -157,17 +159,21 @@ miles_eofs_fast <-
           posreg <- c(-180, 180, 20, 50)
         } # Arctic Oscillation
         if (i == 2) {
-          posreg <- c(-120,-60, 40, 60)
+          posreg <- c(-120, -60, 40, 60)
         } # PNA
       }
 
       # if definition of region exists
       if (!is.null(posreg)) {
         # convert into indices
-        xbox <- whicher(EOFS$pattern$x, posreg[1]):whicher(EOFS$pattern$x,
-                                                           posreg[2])
-        ybox <- whicher(EOFS$pattern$y, posreg[3]):whicher(EOFS$pattern$y,
-                                                           posreg[4])
+        xbox <- whicher(EOFS$pattern$x, posreg[1]):whicher(
+          EOFS$pattern$x,
+          posreg[2]
+        )
+        ybox <- whicher(EOFS$pattern$y, posreg[3]):whicher(
+          EOFS$pattern$y,
+          posreg[4]
+        )
         valuereg <- mean(EOFS$pattern$z[xbox, ybox, i])
 
         # if negative in the box, flip all signs!
@@ -180,8 +186,10 @@ miles_eofs_fast <-
 
     # expand EOF pattern to save it
     expanded_pattern <- EOFS$regression * NA
-    expanded_pattern[whicher(ics, xlim[1]):whicher(ics, xlim[2]),
-                     whicher(ipsilon, ylim[1]):whicher(ipsilon, ylim[2]),] <-
+    expanded_pattern[
+      whicher(ics, xlim[1]):whicher(ics, xlim[2]),
+      whicher(ipsilon, ylim[1]):whicher(ipsilon, ylim[2]),
+    ] <-
       EOFS$pattern$z
 
     t1 <- proc.time() - t0
@@ -201,8 +209,9 @@ miles_eofs_fast <-
 
     # dimensions definition
     TIME <- paste(tunit, " since ", year1, "-", timeseason[1],
-                  "-01 00:00:00",
-                  sep = "")
+      "-01 00:00:00",
+      sep = ""
+    )
     LEVEL <- 50000
     x <- ncdim_def("lon", "degrees_east", ics, longname = "longitude")
     y <-
@@ -270,32 +279,36 @@ miles_eofs_fast <-
     )
 
     # saving files
-    ncfile1 <- nc_create(savefile1,
-                         list(pattern_ncdf, pc_ncdf, variance_ncdf, regression_ncdf))
+    ncfile1 <- nc_create(
+      savefile1,
+      list(pattern_ncdf, pc_ncdf, variance_ncdf, regression_ncdf)
+    )
     ncvar_put(
       ncfile1,
       "Patterns",
       expanded_pattern,
       start = c(1, 1, 1, 1),
-      count = c(-1,-1,-1,-1)
+      count = c(-1, -1, -1, -1)
     )
     ncvar_put(
       ncfile1,
       "Regressions",
       EOFS$regression,
       start = c(1, 1, 1, 1),
-      count = c(-1,-1,-1,-1)
+      count = c(-1, -1, -1, -1)
     )
     ncvar_put(ncfile1,
-              "PCs",
-              EOFS$coeff,
-              start = c(1, 1),
-              count = c(-1,-1))
+      "PCs",
+      EOFS$coeff,
+      start = c(1, 1),
+      count = c(-1, -1)
+    )
     ncvar_put(ncfile1,
-              "Variances",
-              EOFS$variance,
-              start = c(1),
-              count = c(-1))
+      "Variances",
+      EOFS$variance,
+      start = c(1),
+      count = c(-1)
+    )
     nc_close(ncfile1)
     return(savefile1)
   }

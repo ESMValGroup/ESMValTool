@@ -8,7 +8,7 @@ hyint_plot_trends <- function(work_dir,
                               ref_idx,
                               season,
                               prov_info) {
-  # Define subscripts for variable names
+  #  Define subscripts for variable names
   var_type <- c("tseries", "tseries-sd", "trend", "trend-stat")
 
   # Set main paths
@@ -27,7 +27,7 @@ hyint_plot_trends <- function(work_dir,
     nregions <- 1
   }
 
-  # Check whether enough panels are allocated for plotting the
+  #  Check whether enough panels are allocated for plotting the
   # indices requested. In not, drop extra indices
   npanels <- npancol * npanrow
   if (npanels < length(selfields)) {
@@ -84,11 +84,13 @@ hyint_plot_trends <- function(work_dir,
 
   # Set figure dimensions
   plot_size <-
-    scale_figure(plot_type,
-                 diag_script_cfg,
-                 length(selfields),
-                 npancol,
-                 npanrow)
+    scale_figure(
+      plot_type,
+      diag_script_cfg,
+      length(selfields),
+      npancol,
+      npanrow
+    )
 
   # Startup graphics for multi-model timeseries or trends
   plot_type_now <- (plot_type == 13) | (plot_type == 15)
@@ -254,7 +256,8 @@ hyint_plot_trends <- function(work_dir,
           for (stype in var_type[1:2]) {
             svar <- paste0(var, "_", stype)
             rfield <- ncdf_opener(infile, svar, "region", timedimname,
-                                  rotate = "no")
+              rotate = "no"
+            )
             assign(svar, rfield) # assign field data to field name
             nc <- nc_open(infile)
             dlname <- ncatt_get(nc, svar, "long_name")
@@ -267,17 +270,21 @@ hyint_plot_trends <- function(work_dir,
             svar <- paste0(var, "_", stype)
             rfield <-
               ncdf_opener(infile, svar, "region", "coefficients",
-                          rotate = "no")
+                rotate = "no"
+              )
             assign(svar, rfield) # assign field data to field name
           }
         }
 
         # store size of time and region arrays
         time <- ncdf_opener(infile, timedimname,
-                            timedimname, rotate = "no") + 1950
+          timedimname,
+          rotate = "no"
+        ) + 1950
         regions <-
           ncdf_opener(infile, "regions", "region", "boundaries",
-                      rotate = "no")
+            rotate = "no"
+          )
         # setup time selection for trends
         rettimes <- which(!is.na(time))
         if (trend_years[1] != F) {
@@ -343,10 +350,12 @@ hyint_plot_trends <- function(work_dir,
           }
 
           if (is.na(levels_m[ifield, 1]) |
-              is.na(levels_m[ifield, 2])) {
+            is.na(levels_m[ifield, 2])) {
             print("No value for range: assigning min and max")
-            tmp.levels <- c(min(tfield_exp, na.rm = T),
-                            max(tfield_exp, na.rm = T))
+            tmp.levels <- c(
+              min(tfield_exp, na.rm = T),
+              max(tfield_exp, na.rm = T)
+            )
             if (add_trend_sd | add_trend_sd_shade) {
               tmp.levels <- c(
                 min(tfield_exp - tfield_exp_sd, na.rm = T),
@@ -360,8 +369,10 @@ hyint_plot_trends <- function(work_dir,
           if (nyears < 20 & (!autolevels)) {
             levrange <- max(tmp.levels, na.rm = T) - min(tmp.levels, na.rm = T)
             meanrange <- mean(tmp.levels, na.rm = T)
-            tmp.levels <- c(meanrange - levrange * 1.5,
-                            meanrange + levrange * 1.5)
+            tmp.levels <- c(
+              meanrange - levrange * 1.5,
+              meanrange + levrange * 1.5
+            )
           }
 
           #  Startup graphics for one timeseries in one figure
@@ -391,7 +402,7 @@ hyint_plot_trends <- function(work_dir,
 
           # Actual plotting
           if ((plot_type == 11) |
-              (plot_type == 12) | (plot_type == 13)) {
+            (plot_type == 12) | (plot_type == 13)) {
             if (plot_type != 11) {
               # set active panel
               par_row <- (ifield - 1) %/% npancol + 1
@@ -402,7 +413,7 @@ hyint_plot_trends <- function(work_dir,
             # scale autolevels if required
             if (autolevels && (autolevels_scale != 1)) {
               autorange <- max(tmp.levels, nat.rm = T)
-              - min(tmp.levels, na.rm = T)
+              -min(tmp.levels, na.rm = T)
               meanrange <- mean(tmp.levels, na.rm = T)
               tmp.levels <-
                 c(
@@ -416,11 +427,13 @@ hyint_plot_trends <- function(work_dir,
               # NOTE: this works as long as only one region at the time is used
               minmax_levels <- get(paste0(field, "_levels"))
               minmax_levels[1] <-
-                min(c(minmax_levels[1], tmp.levels[1])
-                    , na.rm = T)
+                min(c(minmax_levels[1], tmp.levels[1]),
+                  na.rm = T
+                )
               minmax_levels[2] <-
-                max(c(minmax_levels[2], tmp.levels[2])
-                    , na.rm = T)
+                max(c(minmax_levels[2], tmp.levels[2]),
+                  na.rm = T
+                )
               assign(paste0(field, "_levels"), minmax_levels)
               next
             }
@@ -457,14 +470,17 @@ hyint_plot_trends <- function(work_dir,
             if (add_trend_sd_shade) {
               for (ireg in 1:nregions) {
                 iselreg <- selregions[ireg]
-                shade_area <- c(tfield_exp[ireg,] + tfield_exp_sd[ireg,],
-                                rev(tfield_exp[ireg,] - tfield_exp_sd[ireg,]))
+                shade_area <- c(
+                  tfield_exp[ireg, ] + tfield_exp_sd[ireg, ],
+                  rev(tfield_exp[ireg, ] - tfield_exp_sd[ireg, ])
+                )
                 shade_area[shade_area < tmp.levels[1]] <-
                   tmp.levels[1]
                 polygon(c(time, rev(time)),
-                        shade_area,
-                        col = "grey95",
-                        border = NA)
+                  shade_area,
+                  col = "grey95",
+                  border = NA
+                )
               }
             }
             for (ireg in 1:nregions) {
@@ -486,18 +502,20 @@ hyint_plot_trends <- function(work_dir,
               }
               if (add_trend_sd) {
                 lines(time,
-                      tfield_exp[ireg,] + tfield_exp_sd[ireg,],
-                      lty = 3,
-                      col = col_ts)
+                  tfield_exp[ireg, ] + tfield_exp_sd[ireg, ],
+                  lty = 3,
+                  col = col_ts
+                )
                 lines(time,
-                      tfield_exp[ireg,] - tfield_exp_sd[ireg,],
-                      lty = 3,
-                      col = col_ts)
+                  tfield_exp[ireg, ] - tfield_exp_sd[ireg, ],
+                  lty = 3,
+                  col = col_ts
+                )
               }
               if (add_tseries_lines) {
-                lines(time, tfield_exp[ireg,], col = col_ts)
+                lines(time, tfield_exp[ireg, ], col = col_ts)
               }
-              points(time, tfield_exp[ireg,], col = col_ts)
+              points(time, tfield_exp[ireg, ], col = col_ts)
               if (add_trend) {
                 lines(
                   time[rettimes],
@@ -519,12 +537,12 @@ hyint_plot_trends <- function(work_dir,
               }
             }
             if (abs(add_legend) & ((plot_type == 11) |
-                                   (plot_type == 12)) & (ifield == 1)) {
+              (plot_type == 12)) & (ifield == 1)) {
               pos_legend <- c(
                 plot_limits[1, ifield] + (plot_limits[2, ifield]
-                                          - plot_limits[1, ifield]) * xy_legend[1],
+                - plot_limits[1, ifield]) * xy_legend[1],
                 plot_limits[3, ifield] + (plot_limits[4, ifield]
-                                          - plot_limits[3, ifield]) * xy_legend[2]
+                - plot_limits[3, ifield]) * xy_legend[2]
               )
               ncol <- 1
               if (add_legend < 0) {
@@ -562,7 +580,7 @@ hyint_plot_trends <- function(work_dir,
           }
           if ((plot_type == 14) | (plot_type == 15)) {
             # plot trend coefficients for different regions, one panel per field
-            if (anyNA(tlevels_m[ifield,])) {
+            if (anyNA(tlevels_m[ifield, ])) {
               print("No value for range: assigning min and max")
               ylim <- c(
                 min(trend_exp_stat[, 1] - trend_exp_stat[, 2], na.rm = T),
@@ -578,7 +596,7 @@ hyint_plot_trends <- function(work_dir,
                 )
               }
             } else {
-              ylim <- tlevels_m[ifield,]
+              ylim <- tlevels_m[ifield, ]
             }
 
             if (trend_years[1] != F) {
@@ -621,10 +639,12 @@ hyint_plot_trends <- function(work_dir,
               # Recursively store min and max values to be plotted
               # NOTE: this works as long as only one region at the time is used
               minmax_tlevels <- get(paste0(field, "_tlevels"))
-              minmax_tlevels[1] <- min(c(minmax_tlevels[1], ylim[1])
-                                       , na.rm = T)
-              minmax_tlevels[2] <- max(c(minmax_tlevels[2], ylim[2])
-                                       , na.rm = T)
+              minmax_tlevels[1] <- min(c(minmax_tlevels[1], ylim[1]),
+                na.rm = T
+              )
+              minmax_tlevels[2] <- max(c(minmax_tlevels[2], ylim[2]),
+                na.rm = T
+              )
               assign(paste0(field, "_tlevels"), minmax_tlevels)
               next
             }
@@ -645,8 +665,10 @@ hyint_plot_trends <- function(work_dir,
                 ylab = ylab,
                 ylim = ylim,
                 main = (
-                  paste0(title_unit_m[ifield, 1],
-                         " trend (", xlim[1], "-", xlim[2], ")")
+                  paste0(
+                    title_unit_m[ifield, 1],
+                    " trend (", xlim[1], "-", xlim[2], ")"
+                  )
                 )
               )
               box()
@@ -663,7 +685,7 @@ hyint_plot_trends <- function(work_dir,
                 ixregion <- model_idx
               }
               # add errorbar (standard error)
-              if (!anyNA(trend_exp_stat[iregion,])) {
+              if (!anyNA(trend_exp_stat[iregion, ])) {
                 arrows(
                   xregions[ixregion],
                   trend_exp[iregion, 2] -
@@ -733,10 +755,10 @@ hyint_plot_trends <- function(work_dir,
                   ", region ",
                   region_codes[iregion]
                 ))
-                print(trend_exp_stat[iregion,])
+                print(trend_exp_stat[iregion, ])
               }
             }
-            if (length(label) >  1) {
+            if (length(label) > 1) {
               retsig90 <- which(trend_exp_stat[, 4] < 0.1)
               if (!is.na(retsig90[1])) {
                 points(
@@ -786,7 +808,7 @@ hyint_plot_trends <- function(work_dir,
               )
               axis(2)
             }
-          }  # close if on plot_type 14 and 15
+          } # close if on plot_type 14 and 15
         } # close loop over field
       } # close loop over label
       if ((plot_type == 12) | (plot_type == 14)) {
@@ -799,9 +821,11 @@ hyint_plot_trends <- function(work_dir,
             models_name[model_idx]
           )
         if (plot_type == 14) {
-          caption <- paste0("Hyint trends for multiple indices and regions ",
-                            "according to ",
-                            models_name[model_idx])
+          caption <- paste0(
+            "Hyint trends for multiple indices and regions ",
+            "according to ",
+            models_name[model_idx]
+          )
         }
         prov_fig_now <- list(
           figname = figname,
@@ -828,26 +852,31 @@ hyint_plot_trends <- function(work_dir,
     # set active panel
     par_row <- (ifield - 1) %/% npancol + 1
     par_col <- (ifield - 1) %% npancol + 1
-    par(mfg = c(par_row, par_col, npanrow, npancol),
-        usr = plot_limits[, ifield])
+    par(
+      mfg = c(par_row, par_col, npanrow, npancol),
+      usr = plot_limits[, ifield]
+    )
     pos_legend <- c(
       plot_limits[1, ifield] + (plot_limits[2, ifield] -
-                                  plot_limits[1, ifield]) * xy_legend[1],
+        plot_limits[1, ifield]) * xy_legend[1],
       plot_limits[3, ifield] + (plot_limits[4, ifield] -
-                                  plot_limits[3, ifield]) * xy_legend[2]
+        plot_limits[3, ifield]) * xy_legend[2]
     )
     legend_label <- ""
-    if (tag_legend[1])
+    if (tag_legend[1]) {
       legend_label <- models_name
+    }
     if (tag_legend[2]) {
       legend_label <- paste(legend_label,
-                            models_experiments,
-                            sep = " ")
+        models_experiments,
+        sep = " "
+      )
     }
     if (tag_legend[3]) {
       legend_label <- paste(legend_label,
-                            models_ensemble,
-                            sep = " ")
+        models_ensemble,
+        sep = " "
+      )
     }
     legend(
       pos_legend[1],
@@ -859,7 +888,6 @@ hyint_plot_trends <- function(work_dir,
     )
     print(legend_label)
     print("legend_label")
-
   }
   if ((plot_type == 13) | (plot_type == 15)) {
     graphics_close(figname)

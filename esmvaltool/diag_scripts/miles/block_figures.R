@@ -40,15 +40,17 @@ miles_block_figures <- function(dataset,
   # open field
   for (field in fieldlist) {
     # use file.builder function
-    nomefile <- file_builder(FILESDIR,
-                             "Block",
-                             "BlockClim",
-                             dataset,
-                             expid,
-                             ens,
-                             year1,
-                             year2,
-                             season)
+    nomefile <- file_builder(
+      FILESDIR,
+      "Block",
+      "BlockClim",
+      dataset,
+      expid,
+      ens,
+      year1,
+      year2,
+      season
+    )
     field_exp <-
       ncdf_opener(nomefile, namevar = field, rotate = "no")
     assign(paste(field, "_exp", sep = ""), field_exp)
@@ -99,8 +101,10 @@ miles_block_figures <- function(dataset,
   # standard properties
   info_exp <-
     info_builder(dataset, expid, ens, year1, year2, season)
-  info_ref <- info_builder(dataset_ref, expid_ref, ens_ref, year1_ref,
-                           year2_ref, season)
+  info_ref <- info_builder(
+    dataset_ref, expid_ref, ens_ref, year1_ref,
+    year2_ref, season
+  )
 
   filenames <- c()
   # loop on fields
@@ -113,16 +117,18 @@ miles_block_figures <- function(dataset,
     field_exp <- get(paste(field, "_exp", sep = ""))
 
     # create figure names with ad-hoc function
-    figname <- fig_builder(FIGDIR,
-                           "Block",
-                           field,
-                           dataset,
-                           expid,
-                           ens,
-                           year1,
-                           year2,
-                           season,
-                           output_file_type)
+    figname <- fig_builder(
+      FIGDIR,
+      "Block",
+      field,
+      dataset,
+      expid,
+      ens,
+      year1,
+      year2,
+      season,
+      output_file_type
+    )
     print(figname)
     filenames <- c(filenames, figname)
 
@@ -141,9 +147,9 @@ miles_block_figures <- function(dataset,
 
       # rotation to simplify the view (90 deg to the west)
       n <- (-length(ics) / 4)
-      ics2 <- c(tail(ics, n), head(ics,-n) + 360)
-      field_exp2 <- c(tail(field_exp, n), head(field_exp,-n))
-      field_ref2 <- c(tail(field_ref, n), head(field_ref,-n))
+      ics2 <- c(tail(ics, n), head(ics, -n) + 360)
+      field_exp2 <- c(tail(field_exp, n), head(field_exp, -n))
+      field_ref2 <- c(tail(field_ref, n), head(field_ref, -n))
 
       # plot properties
       lwdline <- 4
@@ -193,10 +199,11 @@ miles_block_figures <- function(dataset,
 
     # main experiment plot
     im <- plot_prepare(ics,
-                       ipsilon,
-                       field_exp,
-                       proj = map_projection,
-                       lat_lim = lat_lim)
+      ipsilon,
+      field_exp,
+      proj = map_projection,
+      lat_lim = lat_lim
+    )
     filled_contour3(
       im$x,
       im$y,
@@ -222,10 +229,11 @@ miles_block_figures <- function(dataset,
 
     # reference field plot
     im <- plot_prepare(ics,
-                       ipsilon,
-                       field_ref,
-                       proj = map_projection,
-                       lat_lim = lat_lim)
+      ipsilon,
+      field_ref,
+      proj = map_projection,
+      lat_lim = lat_lim
+    )
     filled_contour3(
       im$x,
       im$y,
@@ -253,10 +261,11 @@ miles_block_figures <- function(dataset,
 
     # delta field plot
     im <- plot_prepare(ics,
-                       ipsilon,
-                       field_exp - field_ref,
-                       proj = map_projection,
-                       lat_lim = lat_lim)
+      ipsilon,
+      field_exp - field_ref,
+      proj = map_projection,
+      lat_lim = lat_lim
+    )
     filled_contour3(
       im$x,
       im$y,

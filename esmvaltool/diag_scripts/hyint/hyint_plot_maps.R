@@ -7,11 +7,11 @@
 
 hyint_plot_maps <-
   function(work_dir,
-           plot_dir,
-           ref_dir,
-           ref_idx,
-           season,
-           prov_info) {
+             plot_dir,
+             ref_dir,
+             ref_idx,
+             season,
+             prov_info) {
     # setting up path and parameters
     dataset_ref <- models_name[ref_idx]
     year1_ref <- models_start_year[ref_idx]
@@ -61,7 +61,8 @@ hyint_plot_maps <-
         )
       }
       relevation <- ncdf_opener(topofile, "topo", "lon", "lat",
-                                rotate = "no")
+        rotate = "no"
+      )
     }
     if (highreselevation) {
       highresel <- get_elevation(elev_range = c(highreselevation, 9000))
@@ -97,8 +98,10 @@ hyint_plot_maps <-
         field_ref <- field_ref * ref_retdes3D
       }
       if (masksealand) {
-        field_ref <- apply_elevation_mask(field_ref, relevation,
-                                          sealandelevation)
+        field_ref <- apply_elevation_mask(
+          field_ref, relevation,
+          sealandelevation
+        )
       }
       # if requested calculate multiyear average and store at time=1
       # in this case skip multi-year plot_type 4
@@ -116,7 +119,9 @@ hyint_plot_maps <-
         retyears[skipyears] <- NA
         retyears <- retyears[which(is.finite(retyears))]
         field_ref[, , 1] <- apply(field_ref[, , retyears],
-                                  c(1, 2), mean, na.rm = T)
+          c(1, 2), mean,
+          na.rm = T
+        )
       }
       assign(paste(field, "_ref", sep = ""), field_ref)
     }
@@ -125,13 +130,13 @@ hyint_plot_maps <-
     for (model_idx in c(1:(length(models_name)))) {
       # Do not compare reference with itself
       if ((model_idx == ref_idx) &&
-          ((plot_type == 2) || (plot_type == 3))) {
+        ((plot_type == 2) || (plot_type == 3))) {
         if (length(models_name) == 1) {
           print("skipping comparison plots because
                 only one dataset was requested")
         }
         next
-        }
+      }
 
       # setting up path and parameters
       exp <- models_name[model_idx]
@@ -152,8 +157,10 @@ hyint_plot_maps <-
 
       # Remove deserts if required
       if (removedesert) {
-        filename <- getfilename_indices(work_dir_exp, diag_base, model_idx,
-                                        season)
+        filename <- getfilename_indices(
+          work_dir_exp, diag_base, model_idx,
+          season
+        )
         if ((rgrid == F) & ((plot_type == 2) | (plot_type == 3))) {
           # regrid when comparing
           pry <-
@@ -180,8 +187,10 @@ hyint_plot_maps <-
       #-----------------Loading data-----------------------#
       # open experiment field
       for (field in field_names) {
-        infile <- getfilename_indices(work_dir_exp, diag_base, model_idx,
-                                      season)
+        infile <- getfilename_indices(
+          work_dir_exp, diag_base, model_idx,
+          season
+        )
         print(paste("Reading ", field, " from experiment ", infile))
         if ((rgrid == F) & ((plot_type == 2) | (plot_type == 3))) {
           # regrid when comparing
@@ -202,19 +211,25 @@ hyint_plot_maps <-
           field_exp <- field_exp * exp_retdes3D
         }
         if (masksealand) {
-          field_exp <- apply_elevation_mask(field_exp, relevation,
-                                            sealandelevation)
+          field_exp <- apply_elevation_mask(
+            field_exp, relevation,
+            sealandelevation
+          )
         }
         # if requested calculate multiyear average and store it at time=1
         if (rmultiyear_mean) {
           years <- year1:year2
           retyears <- 1:length(years)
-          skipyears <- which(as.logical(match(years,
-                                              norm_years[1]:norm_years[2])))
+          skipyears <- which(as.logical(match(
+            years,
+            norm_years[1]:norm_years[2]
+          )))
           retyears[skipyears] <- NA
           retyears <- retyears[which(is.finite(retyears))]
           field_exp[, , 1] <- apply(field_exp[, , retyears],
-                                    c(1, 2), mean, na.rm = T)
+            c(1, 2), mean,
+            na.rm = T
+          )
         }
         if (highreselevation_only) {
           field_exp[] <- NA
@@ -233,11 +248,13 @@ hyint_plot_maps <-
 
       # Set figure dimensions
       plot_size <-
-        scale_figure(plot_type,
-                     diag_script_cfg,
-                     length(selfields),
-                     npancol,
-                     npanrow)
+        scale_figure(
+          plot_type,
+          diag_script_cfg,
+          length(selfields),
+          npancol,
+          npanrow
+        )
       if (boxregion != 0) {
         # boxregion will plot region boxes over a global map of selected field
         nregions <- 1
@@ -352,14 +369,16 @@ hyint_plot_maps <-
             }
             tmp.palette <- palette_giorgi2011
             if (is.na(levels_m[ifield, 1]) |
-                is.na(levels_m[ifield, 2])) {
+              is.na(levels_m[ifield, 2])) {
               print("No value for range: assigning min and max")
               tmp.levels <- seq(min(field_ref, na.rm = T),
-                                max(field_ref, na.rm = T),
-                                len = nlev)
+                max(field_ref, na.rm = T),
+                len = nlev
+              )
             } else {
               tmp.levels <- seq(levels_m[ifield, 1], levels_m[ifield, 2],
-                                len = nlev)
+                len = nlev
+              )
             }
             if (highreselevation_only) {
               title_unit_m[ifield, 1] <- "Elevation"
@@ -414,13 +433,15 @@ hyint_plot_maps <-
                 tmp.palette <- palette2
                 tmp_field <- field_exp - field_ref
                 if (is.na(levels_m[ifield, 3]) |
-                    is.na(levels_m[ifield, 4])) {
+                  is.na(levels_m[ifield, 4])) {
                   tmp_field_max <- max(abs(tmp_field), na.rm = T)
                   tmp.levels <- seq(-tmp_field_max, tmp_field_max,
-                                    len = nlev)
+                    len = nlev
+                  )
                 } else {
                   tmp.levels <- seq(levels_m[ifield, 3], levels_m[ifield, 4],
-                                    len = nlev)
+                    len = nlev
+                  )
                 }
               }
               # Startup graphics for individual field in each figure
@@ -449,7 +470,7 @@ hyint_plot_maps <-
                   mar = c(5, 5, 4, 8),
                   oma = c(1, 1, 1, 1)
                 )
-                #mar = c(3, 3, 4, 8), oma = c(1, 1, 1, 1))
+                # mar = c(3, 3, 4, 8), oma = c(1, 1, 1, 1))
               }
 
               # set active panel
@@ -479,11 +500,11 @@ hyint_plot_maps <-
 
               # drop data outside region limits
               retlon <- which(ics < regions[iregion, 1]
-                              | ics > regions[iregion, 2])
+              | ics > regions[iregion, 2])
               retlat <- which(ipsilon < regions[iregion, 3]
-                              | ipsilon > regions[iregion, 4])
+              | ipsilon > regions[iregion, 4])
               mask_field <- tmp_field
-              mask_field[retlon,] <- NA
+              mask_field[retlon, ] <- NA
               mask_field[, retlat] <- NA
               tmp_field <- mask_field
 
@@ -518,7 +539,7 @@ hyint_plot_maps <-
                 col = continents_col,
                 lwd = abs(map_continents)
               )
-              #rect(regions[iregion, 1], regions[iregion, 3],
+              # rect(regions[iregion, 1], regions[iregion, 3],
               #     regions[iregion, 2], regions[iregion, 4],
               #     border = "grey90", lwd = 3)
               # grid points
@@ -576,11 +597,12 @@ hyint_plot_maps <-
               # axis
               if (plot_type <= 2) {
                 if ((regions[iregion, 2] - regions[iregion, 1] > 90)
-                    |
-                    (regions[iregion, 4] - regions[iregion, 3] > 90)) {
+                |
+                  (regions[iregion, 4] - regions[iregion, 3] > 90)) {
                   axis(1,
-                       col = "grey40",
-                       at = seq(-180, 180, 45))
+                    col = "grey40",
+                    at = seq(-180, 180, 45)
+                  )
                   axis(2, col = "grey40", at = seq(-90, 90, 30))
                 } else {
                   axis(1, col = "grey40")
@@ -589,22 +611,24 @@ hyint_plot_maps <-
               } else if (plot_type == 3) {
                 if (iquantity == 1) {
                   if ((regions[iregion, 2] - regions[iregion, 1] > 90)
-                      |
-                      (regions[iregion, 4] - regions[iregion, 3] > 90)) {
+                  |
+                    (regions[iregion, 4] - regions[iregion, 3] > 90)) {
                     axis(2,
-                         col = "grey40",
-                         at = seq(-90, 90, 30))
+                      col = "grey40",
+                      at = seq(-90, 90, 30)
+                    )
                   } else {
                     axis(2, col = "grey40")
                   }
                 }
                 if (ifield == length(field_names)) {
                   if ((regions[iregion, 2] - regions[iregion, 1] > 90)
-                      |
-                      (regions[iregion, 4] - regions[iregion, 3] > 90)) {
+                  |
+                    (regions[iregion, 4] - regions[iregion, 3] > 90)) {
                     axis(1,
-                         col = "grey40",
-                         at = seq(-180, 180, 45))
+                      col = "grey40",
+                      at = seq(-180, 180, 45)
+                    )
                   } else {
                     axis(1, col = "grey40")
                   }
@@ -612,22 +636,24 @@ hyint_plot_maps <-
               } else if (plot_type == 4) {
                 if (iyear == nyears) {
                   if ((regions[iregion, 2] - regions[iregion, 1] > 90)
-                      |
-                      (regions[iregion, 4] - regions[iregion, 3] > 90)) {
+                  |
+                    (regions[iregion, 4] - regions[iregion, 3] > 90)) {
                     axis(1,
-                         col = "grey40",
-                         at = seq(-180, 180, 45))
+                      col = "grey40",
+                      at = seq(-180, 180, 45)
+                    )
                   } else {
                     axis(1, col = "grey40")
                   }
                 }
                 if (field == "int_norm") {
                   if ((regions[iregion, 2] - regions[iregion, 1] > 90)
-                      |
-                      (regions[iregion, 4] - regions[iregion, 3] > 90)) {
+                  |
+                    (regions[iregion, 4] - regions[iregion, 3] > 90)) {
                     axis(2,
-                         col = "grey40",
-                         at = seq(-90, 90, 30))
+                      col = "grey40",
+                      at = seq(-90, 90, 30)
+                    )
                   } else {
                     axis(2, col = "grey40")
                   }
@@ -635,18 +661,18 @@ hyint_plot_maps <-
               }
 
               # colorbar
-              new_fig_scale <- c(-0.11,-0.04, 0.1,-0.1)
+              new_fig_scale <- c(-0.11, -0.04, 0.1, -0.1)
               line_label <- 2.7
               cex_label <- 1.2
               cex_colorbar <- 1
               if (plot_type == 2) {
-                new_fig_scale <- c(-0.07,-0.02, 0.1,-0.1)
+                new_fig_scale <- c(-0.07, -0.02, 0.1, -0.1)
                 line_label <- 2.7
                 cex_label <- 1
                 cex_colorbar <- 1.5
               }
               if (plot_type == 3) {
-                new_fig_scale <- c(-0.11,-0.03, 0.1,-0.1)
+                new_fig_scale <- c(-0.11, -0.03, 0.1, -0.1)
                 line_label <- 3
                 cex_label <- 1
                 cex_colorbar <- 1.2
@@ -658,8 +684,10 @@ hyint_plot_maps <-
                   new_fig_scale = new_fig_scale,
                   color.palette = tmp.palette,
                   colorbar.label =
-                    paste(title_unit_m[ifield, 1],
-                          title_unit_m[ifield, 4]),
+                    paste(
+                      title_unit_m[ifield, 1],
+                      title_unit_m[ifield, 4]
+                    ),
                   cex.colorbar = cex_colorbar,
                   cex.label = cex_label,
                   colorbar.width = 1,
@@ -713,9 +741,11 @@ hyint_plot_maps <-
           if (plot_type == 3) {
             graphics_close(figname)
             # Store data for provenance
-            caption <- paste0("Comparison maps for multiple indices",
-                              " over region ",
-                              region_codes[iregion])
+            caption <- paste0(
+              "Comparison maps for multiple indices",
+              " over region ",
+              region_codes[iregion]
+            )
             prov_fig_now <- list(
               figname = figname,
               caption = caption,
@@ -741,4 +771,4 @@ hyint_plot_maps <-
       } # close loop over regions
     } # close loop over models
     return(prov_info)
-    } # close function
+  } # close function

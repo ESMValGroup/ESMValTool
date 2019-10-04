@@ -1,10 +1,10 @@
 library(s2dverification)
 library(ncdf4)
-library(multiApply) #nolint
+library(multiApply) # nolint
 library(yaml)
 library(abind)
-library(ClimProjDiags) #nolint
-library(RColorBrewer) #nolint
+library(ClimProjDiags) # nolint
+library(RColorBrewer) # nolint
 
 args <- commandArgs(trailingOnly = TRUE)
 params <- read_yaml(args[1])
@@ -40,7 +40,7 @@ nleadt <- params$no_of_lead_times
 var0 <- unlist(var0)
 data_nc <- nc_open(fullpath_filenames)
 data <- ncvar_get(data_nc, var0)
-data <- InsertDim(InsertDim(data, 1, 1), 1, 1) #nolint
+data <- InsertDim(InsertDim(data, 1, 1), 1, 1) # nolint
 names(dim(data)) <- c("model", "var", "lon", "lat", "time")
 lat <- ncvar_get(data_nc, "lat")
 lon <- ncvar_get(data_nc, "lon")
@@ -50,11 +50,13 @@ attributes(lon) <- NULL
 attributes(lat) <- NULL
 units <- ncatt_get(data_nc, var0, "units")$value
 calendar <- ncatt_get(data_nc, "time", "calendar")$value
-long_names <-  ncatt_get(data_nc, var0, "long_name")$value
-time <-  ncvar_get(data_nc, "time")
+long_names <- ncatt_get(data_nc, var0, "long_name")$value
+time <- ncvar_get(data_nc, "time")
 start_date <-
-  as.POSIXct(substr(ncatt_get(data_nc, "time", "units")$value,
-                    11, 29))
+  as.POSIXct(substr(
+    ncatt_get(data_nc, "time", "units")$value,
+    11, 29
+  ))
 nc_close(data_nc)
 time <- as.Date(time, origin = start_date, calendar = calendar)
 
@@ -65,7 +67,7 @@ data <- WeightedMean(
   data,
   lat = lat,
   lon = lon,
-  #nolint
+  # nolint
   londim = lon_dim,
   latdim = lat_dim
 )
@@ -73,17 +75,17 @@ names(dim(data)) <- dim_names[-c(lon_dim, lat_dim)]
 time_dim <- which(names(dim(data)) == "time")
 
 ToyModel <-
-  function (alpha = 0.1,
-            beta = 0.4,
-            gamma = 1,
-            sig = 1,
-            #nolint
-            trend = 0,
-            nstartd = 30,
-            nleadt = 4,
-            nmemb = 10,
-            obsini = NULL,
-            fxerr = NULL) {
+  function(alpha = 0.1,
+             beta = 0.4,
+             gamma = 1,
+             sig = 1,
+             # nolint
+             trend = 0,
+             nstartd = 30,
+             nleadt = 4,
+             nmemb = 10,
+             obsini = NULL,
+             fxerr = NULL) {
     if (any(!is.numeric(c(
       alpha, beta, gamma, sig, trend, nstartd,
       nleadt, nmemb
@@ -147,7 +149,7 @@ ToyModel <-
     for (j in 1:nstartd) {
       for (f in 1:nleadt) {
         for (g in 1:length(gamma)) {
-          auto_term <-  obs_ano[1, 1, j, f]
+          auto_term <- obs_ano[1, 1, j, f]
           if (is.numeric(fxerr)) {
             conf_term <- fxerr
           }
@@ -156,10 +158,11 @@ ToyModel <-
           }
           trend_term <- gamma[g] * trend * j
           var_corr <- rnorm(nmemb,
-                            mean = 0,
-                            sd = sqrt(sig - alpha ^ 2 - beta ^ 2))
+            mean = 0,
+            sd = sqrt(sig - alpha^2 - beta^2)
+          )
           forecast[g, , j, f] <-
-            matrix(auto_term, c(nmemb, 1)) + #nolint
+            matrix(auto_term, c(nmemb, 1)) + # nolint
             matrix(conf_term, c(nmemb, 1)) + matrix(trend_term, c(nmemb, 1))
         }
       }
@@ -173,7 +176,7 @@ forecast <-
     beta = b,
     gamma = g,
     nmemb = nm,
-    #nolint
+    # nolint
     obsini = InsertDim(data, 1, 1),
     # nolint
     nstartd = 1,
@@ -183,8 +186,10 @@ forecast <-
 ymin <- min(forecast$mod, na.rm = TRUE)
 ymax <- max(forecast$mod, na.rm = TRUE)
 
-filepng <- paste0(plot_dir, "/", "synthetic_", gsub(".nc", "",
-                                                    basename(fullpath_filenames)), ".jpg")
+filepng <- paste0(plot_dir, "/", "synthetic_", gsub(
+  ".nc", "",
+  basename(fullpath_filenames)
+), ".jpg")
 jpeg(
   filepng,
   height = 15,
@@ -202,14 +207,15 @@ plot(
   bty = "n",
   ylim = c(ymin, ymax)
 )
-matlines(time, t(forecast$mod[1, , 1,]), #nolint
-         col = brewer.pal(n = nm, name = "Blues"))
+matlines(time, t(forecast$mod[1, , 1, ]), # nolint
+  col = brewer.pal(n = nm, name = "Blues")
+)
 lines(time, forecast$obs, lwd = 2)
 dev.off()
 
 
 obs_data <- forecast$obs
-data <- forecast$mod[1, , 1,] #nolint
+data <- forecast$mod[1, , 1, ] # nolint
 names(dim(data))[c(1, 2)] <- c("number", "time")
 
 attributes(time) <- NULL
@@ -227,8 +233,10 @@ metadata <-
 attr(time, "variables") <- metadata
 metadata <-
   list(index = list(dim = list(
-    list(name = "time", unlim = FALSE,
-         prec = "double")
+    list(
+      name = "time", unlim = FALSE,
+      prec = "double"
+    )
   )))
 names(metadata)[1] <- var0
 attr(data, "variables") <- metadata
@@ -236,7 +244,7 @@ variable_list <- list(variable = data, time = time)
 names(variable_list)[1] <- var0
 filencdf <-
   paste0(work_dir, "/", "synthetic_", basename(fullpath_filenames))
-ArrayToNetCDF(variable_list, filencdf) #nolint
+ArrayToNetCDF(variable_list, filencdf) # nolint
 
 # Set provenance for output files
 xprov <- list(

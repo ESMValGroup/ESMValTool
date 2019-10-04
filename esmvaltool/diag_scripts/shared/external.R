@@ -3,14 +3,15 @@
 
 cdo <-
   function(command,
-           args = "",
-           input = "",
-           options = "",
-           output = "",
-           stdout = "",
-           noout = F) {
-    if (args != "")
+             args = "",
+             input = "",
+             options = "",
+             output = "",
+             stdout = "",
+             noout = F) {
+    if (args != "") {
       args <- paste0(",", args)
+    }
     if (stdout != "") {
       stdout <- paste0(" > '", stdout, "'")
       noout <- T
@@ -28,8 +29,10 @@ cdo <-
       output <- tempfile()
       output0 <- output
     }
-    argstr <- paste0(options, " ", command, args, " ", input, " ", output,
-                     " ", stdout)
+    argstr <- paste0(
+      options, " ", command, args, " ", input, " ", output,
+      " ", stdout
+    )
     print(paste("cdo", argstr))
     ret <- system2("cdo", args = argstr)
     if (ret != 0) {

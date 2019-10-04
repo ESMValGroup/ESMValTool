@@ -14,9 +14,11 @@ getmetadata_indices <- function(var, sfile) {
   }
   nc_close(ncfile)
   metadata <-
-    list(long_name = long_name,
-         units = units,
-         missval = missval)
+    list(
+      long_name = long_name,
+      units = units,
+      missval = missval
+    )
 
   return(metadata)
 }

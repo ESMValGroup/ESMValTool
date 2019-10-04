@@ -7,14 +7,16 @@ library(RColorBrewer) # nolint
 library(s2dverification)
 library(yaml)
 
-#Parsing input file paths and creating output dirs
+# Parsing input file paths and creating output dirs
 args <- commandArgs(trailingOnly = TRUE)
 params <- read_yaml(args[1])
 print(args)
 initial.options <- commandArgs(trailingOnly = FALSE)
 file_arg_name <- "--file="
-script_name <- sub(file_arg_name, "",
-                   initial.options[grep(file_arg_name, initial.options)])
+script_name <- sub(
+  file_arg_name, "",
+  initial.options[grep(file_arg_name, initial.options)]
+)
 script_dirname <- dirname(script_name)
 
 source(file.path(script_dirname, "PC.r"))
@@ -61,31 +63,35 @@ lat <- ncvar_get(data_nc, "lat")
 lon <- ncvar_get(data_nc, "lon")
 units <- ncatt_get(data_nc, var0, "units")$value
 calendar <- ncatt_get(data_nc, "time", "calendar")$value
-long_names <-  ncatt_get(data_nc, var0, "long_name")$value
-time <-  ncvar_get(data_nc, "time")
-start_date <- as.POSIXct(substr(ncatt_get(data_nc, "time",
-                                          "units")$value, 11, 29))
+long_names <- ncatt_get(data_nc, var0, "long_name")$value
+time <- ncvar_get(data_nc, "time")
+start_date <- as.POSIXct(substr(ncatt_get(
+  data_nc, "time",
+  "units"
+)$value, 11, 29))
 nc_close(data_nc)
 time <- as.Date(time, origin = start_date, calendar = calendar)
-time <-  as.POSIXct(time, format = "%Y-%m-%d")
+time <- as.POSIXct(time, format = "%Y-%m-%d")
 
 time_dim <- which(names(dim(data)) == "time")
 time <- as.PCICt(time, cal = calendar)
 time <- as.character(time)
 jdays <- as.numeric(strftime(time, format = "%j"))
 if (calendar == "gregorian" | calendar == "standard" |
-    calendar == "proleptic_gregorian") {
+  calendar == "proleptic_gregorian") {
   year <- as.numeric(strftime(time, format = "%Y"))
   pos <- ((year / 100) %% 1 == 0) + ((year / 4) %% 1 == 0)
-  + ((year / 400) %% 1 == 0)
+  +((year / 400) %% 1 == 0)
   pos <- which(pos == 1)
   bisiesto <- which(jdays == 60)
   if (length(intersect(pos, bisiesto)) > 0) {
     time <- time[-intersect(pos, bisiesto)]
-    data <- apply(data, c(1:length(dim(data)))[-time_dim],
-                  function(x) {
-                    x[-intersect(pos, bisiesto)]
-                  })
+    data <- apply(
+      data, c(1:length(dim(data)))[-time_dim],
+      function(x) {
+        x[-intersect(pos, bisiesto)]
+      }
+    )
     data <- aperm(data, c(2, 3, 1))
     names(dim(data)) <- c("lon", "lat", "time")
   }
@@ -93,7 +99,7 @@ if (calendar == "gregorian" | calendar == "standard" |
 
 dims <- dim(data)
 dims <- append(dims[-time_dim], c(no_of_years, dims[time_dim] /
-                                    no_of_years), after = 2)
+  no_of_years), after = 2)
 
 dim(data) <- dims
 # Convert to 100 m wind:
@@ -152,43 +158,52 @@ turb_types <-
 
 seas_data_cf_all <-
   abind(seas_data_cf1,
-        seas_data_cf2,
-        seas_data_cf3,
-        seas_data_cf4,
-        seas_data_cf5,
-        along = 0)
+    seas_data_cf2,
+    seas_data_cf3,
+    seas_data_cf4,
+    seas_data_cf5,
+    along = 0
+  )
 mean_data_cf_all <- Mean1Dim(seas_data_cf_all, 2)
-anom_data_cf_all <- seas_data_cf_all - InsertDim(# nolint
-  Mean1Dim(seas_data_cf_all, 2), 2, dim(data)[1]) # nolint
-pct_anom_data_cf_all <- (seas_data_cf_all / InsertDim(# nolint
-  Mean1Dim(seas_data_cf_all, 2), 2, dim(data)[1])) - 1 # nolint
+anom_data_cf_all <- seas_data_cf_all - InsertDim( # nolint
+  Mean1Dim(seas_data_cf_all, 2), 2, dim(data)[1]
+) # nolint
+pct_anom_data_cf_all <- (seas_data_cf_all / InsertDim( # nolint
+  Mean1Dim(seas_data_cf_all, 2), 2, dim(data)[1]
+)) - 1 # nolint
 #---------------------------
 # Plot seasonal CF maps
 #---------------------------
 filepng <-
-  paste0(plot_dir,
-         "/",
-         "capacity_factor_",
-         model_names,
-         "_",
-         start_year,
-         "-",
-         end_year,
-         ".png")
-title <- paste0(seasons,
-                " CF from ",
-                model_names,
-                " (",
-                start_year,
-                "-",
-                end_year,
-                ")")
+  paste0(
+    plot_dir,
+    "/",
+    "capacity_factor_",
+    model_names,
+    "_",
+    start_year,
+    "-",
+    end_year,
+    ".png"
+  )
+title <- paste0(
+  seasons,
+  " CF from ",
+  model_names,
+  " (",
+  start_year,
+  "-",
+  end_year,
+  ")"
+)
 
-PW_names <- c("Enercon E70",
-              "Gamesa G80",
-              "Gamesa G87",
-              "Vestas V100",
-              "Vestas V110")
+PW_names <- c(
+  "Enercon E70",
+  "Gamesa G80",
+  "Gamesa G87",
+  "Vestas V100",
+  "Vestas V110"
+)
 PlotLayout(
   PlotEquiMap,
   # nolint
@@ -210,15 +225,17 @@ PlotLayout(
 )
 
 filencdf <-
-  paste0(work_dir,
-         "/",
-         "capacity_factor_",
-         model_names,
-         "_",
-         start_year,
-         "-",
-         end_year,
-         ".nc")
+  paste0(
+    work_dir,
+    "/",
+    "capacity_factor_",
+    model_names,
+    "_",
+    start_year,
+    "-",
+    end_year,
+    ".nc"
+  )
 dimlon <- ncdim_def(
   name = "lon",
   units = "degrees_east",
@@ -253,8 +270,10 @@ defdata <- ncvar_def(
     lat = dimlat,
     lon = dimlon
   ),
-  longname = paste("Capacity Factor of wind on",
-                   "different turbines")
+  longname = paste(
+    "Capacity Factor of wind on",
+    "different turbines"
+  )
 )
 file <- nc_create(filencdf, list(defdata))
 ncvar_put(file, defdata, seas_data_cf_all)

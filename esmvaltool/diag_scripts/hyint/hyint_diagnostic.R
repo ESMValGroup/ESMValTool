@@ -101,7 +101,8 @@ hyint_diagnostic <- function(work_dir,
     ))
     r95_threshold <-
       ncdf_opener(external_r95[r95_idx], "r95_threshold",
-                  rotate = "no")
+        rotate = "no"
+      )
   }
   r95_threshold360 <- replicate(360, r95_threshold)
   r95_threshold365 <- replicate(365, r95_threshold)
@@ -114,10 +115,10 @@ hyint_diagnostic <- function(work_dir,
     pr_year <- pr[, , ret_year]
 
     r95_thresh_year <- r95_threshold365
-    if (length(pr_year[1, 1,]) == 360) {
+    if (length(pr_year[1, 1, ]) == 360) {
       r95_thresh_year <- r95_threshold360
     }
-    if (length(pr_year[1, 1,]) == 366) {
+    if (length(pr_year[1, 1, ]) == 366) {
       r95_thresh_year <- r95_threshold366
     }
 
@@ -204,7 +205,7 @@ hyint_diagnostic <- function(work_dir,
           ": no data over selected normalization period,
           unable to normalize"
         )
-        )
+      )
     }
     pry_mean <- apply(pry[, , ret_years], c(1, 2), mean, na.rm = T)
     dsl_mean <- apply(dsl[, , ret_years], c(1, 2), mean, na.rm = T)
@@ -218,62 +219,68 @@ hyint_diagnostic <- function(work_dir,
     int_mean_sd <- apply(int[, , ret_years], c(1, 2), sd, na.rm = T)
     pa_mean_sd <- apply(pa[, , ret_years], c(1, 2), sd, na.rm = T)
     r95_mean_sd <- apply(r95[, , ret_years], c(1, 2), sd, na.rm = T)
-    } else {
-      # load normalization data from file
-      mean_idx <-
-        model_idx # assume each model has its normalization file
-      if (external_norm[1] == "HIST") {
-        # if required, use HyInt file from historical period
-        external_norm <-
-          getfilename_indices(
-            work_dir,
-            diag_base,
-            model_idx,
-            season,
-            hist = T,
-            hist_years = norm_years
-          )
-      }
-      if (length(external_norm) == 1) {
-        mean_idx <- 1
-      }
-      # if list of files with normalization functions has only 1 entry,
-      # use that for all models
-      print(paste(
-        diag_base,
-        ": loading external normalization data from ",
-        external_norm[mean_idx]
-      ))
-      pry_mean <-
-        ncdf_opener(external_norm[mean_idx], "pry_mean", rotate = "no")
-      dsl_mean <-
-        ncdf_opener(external_norm[mean_idx], "dsl_mean", rotate = "no")
-      wsl_mean <-
-        ncdf_opener(external_norm[mean_idx], "wsl_mean", rotate = "no")
-      int_mean <-
-        ncdf_opener(external_norm[mean_idx], "int_mean", rotate = "no")
-      pa_mean <-
-        ncdf_opener(external_norm[mean_idx], "pa_mean", rotate = "no")
-      r95_mean <-
-        ncdf_opener(external_norm[mean_idx], "r95_mean", rotate = "no")
-      pry_mean_sd <-
-        ncdf_opener(external_norm[mean_idx], "pry_mean_sd",
-                    rotate = "no")
-      dsl_mean_sd <-
-        ncdf_opener(external_norm[mean_idx], "dsl_mean_sd",
-                    rotate = "no")
-      wsl_mean_sd <-
-        ncdf_opener(external_norm[mean_idx], "wsl_mean_sd",
-                    rotate = "no")
-      int_mean_sd <-
-        ncdf_opener(external_norm[mean_idx], "int_mean_sd",
-                    rotate = "no")
-      pa_mean_sd <- ncdf_opener(external_norm[mean_idx], "pa_mean_sd",
-                                rotate = "no")
-      r95_mean_sd <-
-        ncdf_opener(external_norm[mean_idx], "r95_mean_sd",
-                    rotate = "no")
+  } else {
+    # load normalization data from file
+    mean_idx <-
+      model_idx # assume each model has its normalization file
+    if (external_norm[1] == "HIST") {
+      # if required, use HyInt file from historical period
+      external_norm <-
+        getfilename_indices(
+          work_dir,
+          diag_base,
+          model_idx,
+          season,
+          hist = T,
+          hist_years = norm_years
+        )
     }
+    if (length(external_norm) == 1) {
+      mean_idx <- 1
+    }
+    # if list of files with normalization functions has only 1 entry,
+    # use that for all models
+    print(paste(
+      diag_base,
+      ": loading external normalization data from ",
+      external_norm[mean_idx]
+    ))
+    pry_mean <-
+      ncdf_opener(external_norm[mean_idx], "pry_mean", rotate = "no")
+    dsl_mean <-
+      ncdf_opener(external_norm[mean_idx], "dsl_mean", rotate = "no")
+    wsl_mean <-
+      ncdf_opener(external_norm[mean_idx], "wsl_mean", rotate = "no")
+    int_mean <-
+      ncdf_opener(external_norm[mean_idx], "int_mean", rotate = "no")
+    pa_mean <-
+      ncdf_opener(external_norm[mean_idx], "pa_mean", rotate = "no")
+    r95_mean <-
+      ncdf_opener(external_norm[mean_idx], "r95_mean", rotate = "no")
+    pry_mean_sd <-
+      ncdf_opener(external_norm[mean_idx], "pry_mean_sd",
+        rotate = "no"
+      )
+    dsl_mean_sd <-
+      ncdf_opener(external_norm[mean_idx], "dsl_mean_sd",
+        rotate = "no"
+      )
+    wsl_mean_sd <-
+      ncdf_opener(external_norm[mean_idx], "wsl_mean_sd",
+        rotate = "no"
+      )
+    int_mean_sd <-
+      ncdf_opener(external_norm[mean_idx], "int_mean_sd",
+        rotate = "no"
+      )
+    pa_mean_sd <- ncdf_opener(external_norm[mean_idx], "pa_mean_sd",
+      rotate = "no"
+    )
+    r95_mean_sd <-
+      ncdf_opener(external_norm[mean_idx], "r95_mean_sd",
+        rotate = "no"
+      )
+  }
 
   # remove 0s from normalizing functions
   pry_mean[pry_mean == 0] <- NA
@@ -316,10 +323,12 @@ hyint_diagnostic <- function(work_dir,
       mean_idx <- 1
     }
     hyint_mean <- ncdf_opener(external_norm[mean_idx], "hyint_mean",
-                              rotate = "no")
+      rotate = "no"
+    )
     hyint_mean_sd <-
       ncdf_opener(external_norm[mean_idx], "hyint_mean_sd",
-                  rotate = "no")
+        rotate = "no"
+      )
   }
 
   # HyInt list
@@ -361,7 +370,7 @@ hyint_diagnostic <- function(work_dir,
       sdii, dsl, wsl, pa, r95 (absolute and normalized values)
       and hyint indices"
     )
-    )
+  )
 
 
   ##########################################################
@@ -405,7 +414,8 @@ hyint_diagnostic <- function(work_dir,
 
   TIME <-
     paste(tunit, " since ", year1, "-", timeseason[1], "-01 00:00:00",
-          sep = "")
+      sep = ""
+    )
 
   # dimensions definition
   x <- ncdim_def("lon", "degrees_east", ics, longname = "longitude")
@@ -442,14 +452,14 @@ hyint_diagnostic <- function(work_dir,
       compression = 1
     )
     if ((var == "pry_mean") |
-        (var == "int_mean") | (var == "dsl_mean") |
-        (var == "wsl_mean") |
-        (var == "pa_mean") | (var == "r95_mean") |
-        (var == "hyint_mean") | (var == "pry_mean_sd") |
-        (var == "int_mean_sd") | (var == "dsl_mean_sd") |
-        (var == "wsl_mean_sd") | (var == "pa_mean_sd") |
-        (var == "r95_mean_sd") | (var == "hyint_mean_sd") |
-        (var == "r95_threshold")) {
+      (var == "int_mean") | (var == "dsl_mean") |
+      (var == "wsl_mean") |
+      (var == "pa_mean") | (var == "r95_mean") |
+      (var == "hyint_mean") | (var == "pry_mean_sd") |
+      (var == "int_mean_sd") | (var == "dsl_mean_sd") |
+      (var == "wsl_mean_sd") | (var == "pa_mean_sd") |
+      (var == "r95_mean_sd") | (var == "hyint_mean_sd") |
+      (var == "r95_threshold")) {
       var_ncdf <- ncvar_def(
         var,
         unit,
@@ -484,12 +494,14 @@ hyint_diagnostic <- function(work_dir,
 
   # Set provenance for this output file
   caption <-
-    paste0("Hyint indices  for years ",
-           year1,
-           " to ",
-           year2,
-           " according to ",
-           models_name[model_idx])
+    paste0(
+      "Hyint indices  for years ",
+      year1,
+      " to ",
+      year2,
+      " according to ",
+      models_name[model_idx]
+    )
   xprov <- list(
     ancestors = list(infile),
     model_idx = list(model_idx),

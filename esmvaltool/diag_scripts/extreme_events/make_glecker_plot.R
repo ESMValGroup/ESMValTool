@@ -22,21 +22,21 @@
 
 gleckler_main <-
   function(path = "./",
-           idx_list,
-           model_list,
-           obs_list,
-           plot_dir = "../plot/extreme_events/",
-           promptinput = promptinput,
-           start_yr = 2000,
-           end_yr = 2009) {
+             idx_list,
+             model_list,
+             obs_list,
+             plot_dir = "../plot/extreme_events/",
+             promptinput = promptinput,
+             start_yr = 2000,
+             end_yr = 2009) {
     #### CLIMDEX PREPROCESSING ####
 
     ## For file structure and files
-    tsgrid <- paste(path, "/tsGridDef", sep = "")  # nolint
-    time_cropped <- paste(path, "/timeCropped", sep = "")  # nolint
-    landmask <- paste(path, "/landSeaMask.nc", sep = "")  # nolint
-    regridded <- paste(path, "/regridded", sep = "")  # nolint
-    land <- paste(path, "/Land", sep = "")  # nolint
+    tsgrid <- paste(path, "/tsGridDef", sep = "") # nolint
+    time_cropped <- paste(path, "/timeCropped", sep = "") # nolint
+    landmask <- paste(path, "/landSeaMask.nc", sep = "") # nolint
+    regridded <- paste(path, "/regridded", sep = "") # nolint
+    land <- paste(path, "/Land", sep = "") # nolint
 
     nmodel <- length(model_list) # number of models
     nidx <- length(idx_list) # number of indices
@@ -60,9 +60,12 @@ gleckler_main <-
 
     if (promptinput == "y") {
       # Initial nc-file time crop, regrid, land and plot purge
-      unlink(c(time_cropped, regridded, land,
-               landmask, tsgrid),
-             recursive = TRUE)
+      unlink(c(
+        time_cropped, regridded, land,
+        landmask, tsgrid
+      ),
+      recursive = TRUE
+      )
 
       ## Initial grid and landmask creation reset
       grid_and_landmask <- TRUE
@@ -93,8 +96,10 @@ gleckler_main <-
         }
 
         ## Find the new model and observation names (after time cropping)
-        modelsandobs <- basename(Sys.glob(file.path(time_cropped,
-                                                    paste0(idx, "*.nc"))))
+        modelsandobs <- basename(Sys.glob(file.path(
+          time_cropped,
+          paste0(idx, "*.nc")
+        )))
         split_modelsandobs <- strsplit(modelsandobs, split = "_")
         modelsandobs_index <-
           unlist(lapply(split_modelsandobs, function(x) {
@@ -116,9 +121,11 @@ gleckler_main <-
         # !produced here
         if (grid_and_landmask) {
           create_grid(path = path, loc = tsgrid)
-          create_land_sea_mask(regrid = tsgrid,
-                               loc = path,
-                               landmask = landmask)
+          create_land_sea_mask(
+            regrid = tsgrid,
+            loc = path,
+            landmask = landmask
+          )
           grid_and_landmask <- FALSE
         }
 
@@ -146,7 +153,7 @@ gleckler_main <-
       )
 
       ## Save Array
-      glecdir <- paste0(path, "/gleckler")  # nolint
+      glecdir <- paste0(path, "/gleckler") # nolint
       if (!file.exists(glecdir)) {
         dir.create(glecdir)
       }
@@ -164,14 +171,21 @@ gleckler_main <-
           ".RDS"
         )
       )
-      saveRDS(object = returnvalue,
-              file = paste0(path,
-                            "/gleckler/Gleckler-years.RDS"))
+      saveRDS(
+        object = returnvalue,
+        file = paste0(
+          path,
+          "/gleckler/Gleckler-years.RDS"
+        )
+      )
 
       # Final cleanup
-      unlink(c(time_cropped, regridded, land,
-               landmask, tsgrid),
-             recursive = TRUE)
+      unlink(c(
+        time_cropped, regridded, land,
+        landmask, tsgrid
+      ),
+      recursive = TRUE
+      )
     }
 
     #### Gleckler Plotting ####
@@ -188,8 +202,10 @@ gleckler_main <-
         ".RDS"
       )
     )
-    year_range <- readRDS(file = paste0(path,
-                                        "/gleckler/Gleckler-years.RDS"))
+    year_range <- readRDS(file = paste0(
+      path,
+      "/gleckler/Gleckler-years.RDS"
+    ))
 
     plotfile <-
       gleckler_plotting(
@@ -252,9 +268,9 @@ gleckler_array <- function(path = land,
   ## Equation 1, from Sillmann et. al 2013
   RMSE <-
     function(model = tm_model_idx,
-             obs = tm_obs_idx,
-             lat = model_lat) {
-      RMSE <- sqrt(area.mean((model - obs) ^ 2, lat))
+                 obs = tm_obs_idx,
+                 lat = model_lat) {
+      RMSE <- sqrt(area.mean((model - obs)^2, lat))
       return(RMSE)
     }
 
@@ -274,9 +290,11 @@ gleckler_array <- function(path = land,
       ## Read in model annual climatology
 
       tm_model <- nc_open(Sys.glob(file.path(
-        path, paste0("tm_", idx_list[i],
-                     "_", model_list[m],
-                     "*.nc")
+        path, paste0(
+          "tm_", idx_list[i],
+          "_", model_list[m],
+          "*.nc"
+        )
       )))
       idxs <- unlist(strsplit(idx_list[i], split = "_"))[1]
       tm_model_idx <- ncvar_get(tm_model, idxs)
@@ -324,15 +342,19 @@ gleckler_array <- function(path = land,
       ## Read in reannalysis annual climatology
       for (o in seq_along(obs_list)) {
         tm_obs <- nc_open(Sys.glob(file.path(
-          path, paste0("tm_", idx_list[i],
-                       "_", obs_list[o],
-                       "*.nc")
+          path, paste0(
+            "tm_", idx_list[i],
+            "_", obs_list[o],
+            "*.nc"
+          )
         )))
         tm_obs_idx <- ncvar_get(tm_obs, idxs)
         nc_close(tm_obs)
-        rmsearr[i + 1, j, o] <- RMSE(model = ensarr[, , j],
-                                     obs = tm_obs_idx,
-                                     lat = model_lat) # Calculate each RMSE and place value in RMSE-array
+        rmsearr[i + 1, j, o] <- RMSE(
+          model = ensarr[, , j],
+          obs = tm_obs_idx,
+          lat = model_lat
+        ) # Calculate each RMSE and place value in RMSE-array
 
         ## Calculate the model standard deviation.
         ## Later used for calculating the rmsemedian,std.
@@ -340,15 +362,17 @@ gleckler_array <- function(path = land,
         rmsearr[i + 1, ncol(rmsearr), o] <-
           sqrt(area.mean((
             tm_obs_idx - area.mean(tm_obs_idx,
-                                   lat = model_lat)
-          ) ^ 2,
-          lat = model_lat))
+              lat = model_lat
+            )
+          )^2,
+          lat = model_lat
+          ))
       }
     }
   }
 
   ## Calculate the RMSE median for the models
-  tmprmsearr <- rmsearr[,-c(1, 2, ncol(rmsearr)),]
+  tmprmsearr <- rmsearr[, -c(1, 2, ncol(rmsearr)), ]
   if (length(dim(tmprmsearr)) == 3) {
     rmsemed <- apply(tmprmsearr, c(1, 3), function(x) {
       median(x, na.rm = TRUE)
@@ -370,26 +394,30 @@ gleckler_array <- function(path = land,
   ## Calculating the relative RMSE (RMSE'xy)
   m <- 1
   for (m in 1:(ncol(rmsearr) - 1)) {
-    rmserelarr[, m,] <-
-      rmserel(rmse = rmsearr[, m,], rmsemed = rmsemed)
+    rmserelarr[, m, ] <-
+      rmserel(rmse = rmsearr[, m, ], rmsemed = rmsemed)
   }
 
   ## Calculating the RMSE median,std. Equation 3, from Sillmann et. al 2013
-  rmserelarr[, ncol(rmserelarr),] <-
-    rmsemed / rmsearr[, ncol(rmsearr),]
+  rmserelarr[, ncol(rmserelarr), ] <-
+    rmsemed / rmsearr[, ncol(rmsearr), ]
 
   ## Calculating the RSME mean
-  tmprmsearr <- rmserelarr[,-ncol(rmserelarr),]
+  tmprmsearr <- rmserelarr[, -ncol(rmserelarr), ]
   if (length(dim(tmprmsearr)) == 3) {
-    rmserelarr[1,-ncol(rmserelarr),] <- apply(tmprmsearr, c(2, 3),
-                                              function(x) {
-                                                mean(x, na.rm = TRUE)
-                                              })
+    rmserelarr[1, -ncol(rmserelarr), ] <- apply(
+      tmprmsearr, c(2, 3),
+      function(x) {
+        mean(x, na.rm = TRUE)
+      }
+    )
   } else {
-    rmserelarr[1,-ncol(rmserelarr),] <- apply(tmprmsearr, c(2),
-                                              function(x) {
-                                                mean(x, na.rm = TRUE)
-                                              })
+    rmserelarr[1, -ncol(rmserelarr), ] <- apply(
+      tmprmsearr, c(2),
+      function(x) {
+        mean(x, na.rm = TRUE)
+      }
+    )
   }
   print(rmserelarr)
   return(rmserelarr)
@@ -398,12 +426,12 @@ gleckler_array <- function(path = land,
 #### Plotting Routine ####
 gleckler_plotting <-
   function(arr = rmserelarr,
-           idx_list,
-           model_list,
-           obs_list,
-           plot_dir = "../plots/extreme_events/",
-           syear = max_start,
-           eyear = min_end) {
+             idx_list,
+             model_list,
+             obs_list,
+             plot_dir = "../plots/extreme_events/",
+             syear = max_start,
+             eyear = min_end) {
     nidx <- length(idx_list) # number of indices
     nmodel <- length(model_list) # number of models
     nobs <- length(obs_list) # number of reanalyses
@@ -412,7 +440,7 @@ gleckler_plotting <-
     sclseq <- seq(-0.55, 0.55, 0.1)
 
     ## Colour scale
-    glc <- brewer.pal(length(sclseq) - 2, "RdYlBu")  # nolint
+    glc <- brewer.pal(length(sclseq) - 2, "RdYlBu") # nolint
     glc <- c("#662506", glc, "#3f007d")
     glc <- rev(glc)
 
@@ -485,7 +513,7 @@ gleckler_plotting <-
       ys <- list(y1, y2, y3, y4)
 
       # text coordinates
-      xtx <- c(0.5,-0.25, 0.5, 1.25)
+      xtx <- c(0.5, -0.25, 0.5, 1.25)
       ytx <- c(-0.25, 0.5, 1.25, 0.5)
       rotx <- c(0, 90, 0, 90) # text rotation in degrees
     }
@@ -627,11 +655,11 @@ gleckler_plotting <-
 
     ## Scale for Gleckler plot
     gleckler_scale <- function(sclseq,
-                               glc,
-                               xn,
-                               scaling_factor,
-                               text.scaling_factor,
-                               xscale_spacer) {
+                                   glc,
+                                   xn,
+                                   scaling_factor,
+                                   text.scaling_factor,
+                                   xscale_spacer) {
       par(xpd = TRUE)
       ## Square legend
       sqrxs <- c(0, 1, 1, 0)
@@ -659,10 +687,12 @@ gleckler_plotting <-
           xtmp <- scaling_factor * (dtrixs / xn) + 1 + xscale_spacer / xn
           ytmp <-
             (scaling_factor * (dtriys / exlen + (a - 1) / exlen) +
-               yscale_spacer)
-          polygon(x = xtmp,
-                  y = ytmp,
-                  col = glc[a])
+              yscale_spacer)
+          polygon(
+            x = xtmp,
+            y = ytmp,
+            col = glc[a]
+          )
           text(
             x = max(xtmp),
             y = max(ytmp),
@@ -674,18 +704,22 @@ gleckler_plotting <-
           xtmp <- scaling_factor * (utrixs / xn) + 1 + xscale_spacer / xn
           ytmp <-
             (scaling_factor * (utriys / exlen + (a - 1) / exlen) +
-               yscale_spacer)
-          polygon(x = xtmp,
-                  y = ytmp,
-                  col = glc[a])
+              yscale_spacer)
+          polygon(
+            x = xtmp,
+            y = ytmp,
+            col = glc[a]
+          )
         } else {
           xtmp <- scaling_factor * (sqrxs / xn) + 1 + xscale_spacer / xn
           ytmp <-
             (scaling_factor * (sqrys / exlen + (a - 1) / exlen) +
-               yscale_spacer)
-          polygon(x = xtmp,
-                  y = ytmp,
-                  col = glc[a])
+              yscale_spacer)
+          polygon(
+            x = xtmp,
+            y = ytmp,
+            col = glc[a]
+          )
           text(
             x = max(xtmp),
             y = max(ytmp),
@@ -732,7 +766,7 @@ gleckler_plotting <-
     for (zk in 1:nobs) {
       xsym <- gl_symb_scaling_factor * (xs[[zk]] / xn) + gl_symb_xshift
       ysym <- (gl_symb_scaling_factor * (ys[[zk]] / xn)
-               - gl_symb_yshift / xn) * width.fct / height.fct
+        - gl_symb_yshift / xn) * width.fct / height.fct
       print(paste("xs:", xsym))
       print(paste("ys:", ysym))
       polygon(
@@ -745,7 +779,7 @@ gleckler_plotting <-
       xtxsym <-
         gl_symb_scaling_factor * (xtx[[zk]] / xn) + gl_symb_xshift
       ytxsym <- (gl_symb_scaling_factor * (ytx[[zk]] / xn)
-                 - gl_symb_yshift / xn) * width.fct / height.fct
+        - gl_symb_yshift / xn) * width.fct / height.fct
 
       text(
         x = xtxsym,
@@ -790,7 +824,7 @@ gleckler_plotting <-
       vector(mode = "character", length = length(idx_list))
     for (i in seq_along(idx_list)) {
       row_names[i] <- idx_df$idx_etccdi[which(idx_df$idx_etccdi_time
-                                              %in% idx_list[i])]
+        %in% idx_list[i])]
     }
     row_names <- rev(c(expression("RSME"["all"]), row_names))
     ytcks1 <- seq((1 / yn) * 0.5, 1, by = (1 / yn))

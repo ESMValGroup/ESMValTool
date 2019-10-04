@@ -46,15 +46,16 @@ timeseries_main <- function(path = "../work/extreme_events",
                             start_yr = 2000,
                             end_yr = 2006) {
   ## For file structure and files
-  tsgrid <- paste(path, "/tsGridDef", sep = "")  # nolint
-  time_cropped <- paste(path, "/timeCropped", sep = "")  # nolint
-  landmask <- paste(path, "/landSeaMask.nc", sep = "")  # nolint
-  regridded <- paste(path, "/regridded", sep = "")  # nolint
-  land <- paste(path, "/Land", sep = "")  # nolint
+  tsgrid <- paste(path, "/tsGridDef", sep = "") # nolint
+  time_cropped <- paste(path, "/timeCropped", sep = "") # nolint
+  landmask <- paste(path, "/landSeaMask.nc", sep = "") # nolint
+  regridded <- paste(path, "/regridded", sep = "") # nolint
+  land <- paste(path, "/Land", sep = "") # nolint
 
   # Initial nc-file time crop, regrid, land and plot purge
   unlink(c(time_cropped, regridded, land, landmask, tsgrid),
-         recursive = TRUE)
+    recursive = TRUE
+  )
 
   # Initial grid and landmask creation reset
   gridandlandmask <- TRUE
@@ -67,10 +68,13 @@ timeseries_main <- function(path = "../work/extreme_events",
     modelobs_list <- unique(c(model_list, obs_list))
 
     ## Find the model files
-    modelandobs <- basename(Sys.glob(file.path(path,
-                                               paste(
-                                                 idx, "*.nc", sep = ""
-                                               ))))
+    modelandobs <- basename(Sys.glob(file.path(
+      path,
+      paste(
+        idx, "*.nc",
+        sep = ""
+      )
+    )))
 
     if (ts_data) {
       ## Time crop
@@ -92,17 +96,21 @@ timeseries_main <- function(path = "../work/extreme_events",
       }
 
       ## Find the new model files after time cropping
-      modelandobs <- basename(Sys.glob(file.path(time_cropped,
-                                                 paste0(idx, "*.nc"))))
+      modelandobs <- basename(Sys.glob(file.path(
+        time_cropped,
+        paste0(idx, "*.nc")
+      )))
 
       # !New Grid and landseamask for each idx
       # !(or just the first idx set) should be
       # !produced here
       if (gridandlandmask) {
         create_grid(path = path, loc = tsgrid)
-        create_land_sea_mask(regrid = tsgrid,
-                             loc = path,
-                             landmask = landmask)
+        create_land_sea_mask(
+          regrid = tsgrid,
+          loc = path,
+          landmask = landmask
+        )
         gridandlandmask <- FALSE
       }
 
@@ -147,7 +155,8 @@ timeseries_main <- function(path = "../work/extreme_events",
 
   # Final cleanup
   unlink(c(time_cropped, regridded, land, landmask, tsgrid),
-         recursive = TRUE)
+    recursive = TRUE
+  )
 
   return(plotfiles)
 }
@@ -161,13 +170,13 @@ timeseries_main <- function(path = "../work/extreme_events",
 #
 time_series_preprocessing <-
   function(land = "./Land",
-           idx = "tnnETCCDI_yr",
-           model_list = model_list,
-           obs_list = obs_list,
-           plot_dir = "./plot",
-           work_dir = "./work",
-           normalize = FALSE) {
-    tseriesdir <- paste0(work_dir, "/timeseries")  # nolint
+             idx = "tnnETCCDI_yr",
+             model_list = model_list,
+             obs_list = obs_list,
+             plot_dir = "./plot",
+             work_dir = "./work",
+             normalize = FALSE) {
+    tseriesdir <- paste0(work_dir, "/timeseries") # nolint
     if (!file.exists(tseriesdir)) {
       dir.create(tseriesdir)
     }
@@ -228,7 +237,9 @@ time_series_preprocessing <-
 
           ## add the preprocessed file to the filestring
           file_string_models <- paste(file_string_models, land,
-                                      "/fldm_", m, " ", sep = "")  # nolint
+            "/fldm_", m, " ",
+            sep = ""
+          ) # nolint
         } else {
           # Subtracting timemeans from land files:
           cdo(
@@ -263,10 +274,10 @@ time_series_preprocessing <-
             input = c(
               paste0(land, "/norm", m),
               # nolint
-              paste0(land, "/detrend_std_", m)  # nolint
+              paste0(land, "/detrend_std_", m) # nolint
             ),
             output = paste0(land, "/detrend_standard_", m),
-            options = "-O"  # nolint
+            options = "-O" # nolint
           )
 
           # Fieldmean results
@@ -275,16 +286,17 @@ time_series_preprocessing <-
             input = paste0(land, "/detrend_standard_", m),
             # nolint
             output = paste0(land, "/detrend_std_fldm_", m),
-            options = "-O"  # nolint
+            options = "-O" # nolint
           )
 
           ## add the preprocessed file to the filestring
           file_string_models <- paste(file_string_models,
-                                      land,
-                                      "/detrend_std_fldm_",
-                                      m,
-                                      " ",
-                                      sep = "")  # nolint
+            land,
+            "/detrend_std_fldm_",
+            m,
+            " ",
+            sep = ""
+          ) # nolint
         }
       }
       # Find model ensemble mean
@@ -347,7 +359,7 @@ time_series_preprocessing <-
             input = c(paste0(land, "/", o), paste0(land, "/tm_", o)),
             # nolint
             output = paste0(land, "/norm_", o),
-            options = "-O"  # nolint
+            options = "-O" # nolint
           )
 
           # Detrended results:
@@ -356,7 +368,7 @@ time_series_preprocessing <-
             input = paste0(land, "/norm_", o),
             # nolint
             output = paste0(land, "/detrend_", o),
-            options = "-O"  # nolint
+            options = "-O" # nolint
           )
 
           # Timstd of detrend
@@ -365,7 +377,7 @@ time_series_preprocessing <-
             input = paste0(land, "/detrend_", o),
             # nolint
             output = paste0(land, "/detrend_std_", o),
-            options = "-O"  # nolint
+            options = "-O" # nolint
           )
 
           # Divide normalized by timstded detrend
@@ -374,10 +386,10 @@ time_series_preprocessing <-
             input = c(
               paste0(land, "/norm", o),
               # nolint
-              paste0(land, "/detrend_std_", o)  # nolint
+              paste0(land, "/detrend_std_", o) # nolint
             ),
             output = paste0(land, "/detrend_standard_", o),
-            options = "-O"  # nolint
+            options = "-O" # nolint
           )
 
           # Fieldmean results
@@ -386,7 +398,7 @@ time_series_preprocessing <-
             input = paste0(land, "/detrend_standard_", o),
             # nolint
             output = paste0(land, "/detrend_std_fldm_", o),
-            options = "-O"  # nolint
+            options = "-O" # nolint
           )
 
           # Copy obs file to plot
@@ -419,12 +431,14 @@ time_series_preprocessing <-
           "fldmean",
           input = paste0(land, "/", m),
           output = paste0(land, "/fldm_", m),
-          options = "-O"  # nolint
+          options = "-O" # nolint
         )
 
         ## add the preprocessed file to the filestring
         file_string_models <- paste(file_string_models, land,
-                                    "/fldm_", m, " ", sep = "")  # nolint
+          "/fldm_", m, " ",
+          sep = ""
+        ) # nolint
       }
       # Find model ensemble mean
       cdo(
@@ -466,7 +480,7 @@ time_series_preprocessing <-
           "fldmean",
           input = paste0(land, "/", o),
           output = paste0(land, "/fldm_", o),
-          options = "-O"  # nolint
+          options = "-O" # nolint
         )
         # Copy obs file to plot
         n <- n + 1
@@ -501,11 +515,11 @@ time_series_preprocessing <-
 
 timeseries_plot <-
   function(plot_dir = "./plot",
-           idx = "tn10pETCCDI_yr",
-           obs_list,
-           start_yr = 2006,
-           end_yr = 2010,
-           normalize = FALSE) {
+             idx = "tn10pETCCDI_yr",
+             obs_list,
+             start_yr = 2006,
+             end_yr = 2010,
+             normalize = FALSE) {
     # Drawing parameters
     leg_names <- c(mip_name, obs_list)
 
@@ -537,7 +551,7 @@ timeseries_plot <-
     ))
 
     ## Reading in time variable and converting to years:
-    ts <- nc.get.time.series(ensm)  # nolint
+    ts <- nc.get.time.series(ensm) # nolint
     time_conv <- format(ts, "%Y") # extract years
 
     ## Stripping off the _yr tail to the index name
@@ -575,7 +589,7 @@ timeseries_plot <-
         "_for_timeseries.nc",
         sep = ""
       ))
-      ts_obs <- nc.get.time.series(nc_obs)  # nolint
+      ts_obs <- nc.get.time.series(nc_obs) # nolint
       time_conv_obs <- format(ts_obs, "%Y") # extract years
       idx_obs <- ncvar_get(nc_obs, idx_name)
       nc_close(nc_obs)
@@ -605,12 +619,13 @@ timeseries_plot <-
 
     ## Making name string for the plot
     plotname <- paste(plot_dir,
-                      "/",
-                      idx,
-                      "_",
-                      length(obs_list),
-                      "-obs_ensmean_timeseriesplot",
-                      sep = "")
+      "/",
+      idx,
+      "_",
+      length(obs_list),
+      "-obs_ensmean_timeseriesplot",
+      sep = ""
+    )
 
     ## Setting device to write the plot to
     figure_filename <- paste(plotname, output_file_type, sep = ".")

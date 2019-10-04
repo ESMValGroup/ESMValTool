@@ -28,15 +28,17 @@ miles_regimes_figures <- function(dataset,
 
   # loading anomalies and variances of experiment
   nomefile <-
-    file_builder(FILESDIR,
-                 "Regimes",
-                 "RegimesPattern",
-                 dataset,
-                 expid,
-                 ens,
-                 year1,
-                 year2,
-                 season)
+    file_builder(
+      FILESDIR,
+      "Regimes",
+      "RegimesPattern",
+      dataset,
+      expid,
+      ens,
+      year1,
+      year2,
+      season
+    )
   frequencies_exp <- ncdf_opener(nomefile, "Frequencies")
   regimes_exp <-
     ncdf_opener(nomefile, namevar = "Regimes", rotate = "no")
@@ -97,8 +99,10 @@ miles_regimes_figures <- function(dataset,
   # standard properties
   info_exp <-
     info_builder(dataset, expid, ens, year1, year2, season)
-  info_ref <- info_builder(dataset_ref, expid_ref, ens_ref,
-                           year1_ref, year2_ref, season)
+  info_ref <- info_builder(
+    dataset_ref, expid_ref, ens_ref,
+    year1_ref, year2_ref, season
+  )
 
   filenames <- c()
   kk0 <- 1
@@ -147,10 +151,11 @@ miles_regimes_figures <- function(dataset,
     par(plotpar)
 
     im <- plot_prepare(ics,
-                       ipsilon,
-                       regimes_exp[, , ii],
-                       proj = map_projection,
-                       lat_lim = lat_lim)
+      ipsilon,
+      regimes_exp[, , ii],
+      proj = map_projection,
+      lat_lim = lat_lim
+    )
     filled_contour3(
       im$x,
       im$y,
@@ -174,15 +179,17 @@ miles_regimes_figures <- function(dataset,
     )
     proj_addland(proj = map_projection)
     text(varpoints[1],
-         varpoints[2],
-         paste("Frequencies: ", round(frequencies_exp[ii], 2), "%", sep = ""),
-         cex = 2)
+      varpoints[2],
+      paste("Frequencies: ", round(frequencies_exp[ii], 2), "%", sep = ""),
+      cex = 2
+    )
 
     im <- plot_prepare(ics,
-                       ipsilon,
-                       regimes_ref[, , jj],
-                       proj = map_projection,
-                       lat_lim = lat_lim)
+      ipsilon,
+      regimes_ref[, , jj],
+      proj = map_projection,
+      lat_lim = lat_lim
+    )
     filled_contour3(
       im$x,
       im$y,
@@ -198,10 +205,13 @@ miles_regimes_figures <- function(dataset,
     )
     proj_addland(proj = map_projection)
     text(varpoints[1],
-         varpoints[2],
-         paste("Frequencies: ",
-               round(frequencies_ref[ii], 2), "%", sep = ""),
-         cex = 2)
+      varpoints[2],
+      paste("Frequencies: ",
+        round(frequencies_ref[ii], 2), "%",
+        sep = ""
+      ),
+      cex = 2
+    )
     image_scale3(
       volcano,
       levels = lev_field,
@@ -216,10 +226,11 @@ miles_regimes_figures <- function(dataset,
     # delta field plot
     im <-
       plot_prepare(ics,
-                   ipsilon,
-                   regimes_exp[, , ii] - regimes_ref[, , jj],
-                   proj = map_projection,
-                   lat_lim = lat_lim)
+        ipsilon,
+        regimes_exp[, , ii] - regimes_ref[, , jj],
+        proj = map_projection,
+        lat_lim = lat_lim
+      )
     filled_contour3(
       im$x,
       im$y,

@@ -1,10 +1,10 @@
 library(s2dverification)
-library(multiApply) #nolint
+library(multiApply) # nolint
 library(yaml)
 library(ncdf4)
 library(abind)
 library(parallel)
-library(ClimProjDiags) #nolint
+library(ClimProjDiags) # nolint
 
 args <- commandArgs(trailingOnly = TRUE)
 params <- read_yaml(args[1])
@@ -44,7 +44,7 @@ for (j in 1:4) {
   projection_files <- which(unname(experiment) != "historical")
 
   rcp_scenario <- unique(experiment[projection_files])
-  model_names <-  lapply(input_files_per_var, function(x)
+  model_names <- lapply(input_files_per_var, function(x)
     x$dataset)
   model_names <- unlist(unname(model_names))[projection_files]
 
@@ -72,7 +72,7 @@ for (j in 1:4) {
 
   var0 <- unlist(var0)
   projection <- "NULL"
-  reference_filenames <-  fullpath_filenames[reference_files]
+  reference_filenames <- fullpath_filenames[reference_files]
   hist_nc <- nc_open(reference_filenames)
   historical_data <- ncvar_get(hist_nc, var0)
 
@@ -81,21 +81,23 @@ for (j in 1:4) {
   lon <- ncvar_get(hist_nc, "lon")
   units <- ncatt_get(hist_nc, var0, "units")$value
   calendar <- ncatt_get(hist_nc, "time", "calendar")$value
-  long_names <-  ncatt_get(hist_nc, var0, "long_name")$value
-  time <-  ncvar_get(hist_nc, "time")
+  long_names <- ncatt_get(hist_nc, var0, "long_name")$value
+  time <- ncvar_get(hist_nc, "time")
   # Time correction:
   start_date <-
     as.POSIXct(paste0(start_reference, "-01-01"),
-               tz = "UTC",
-               format = "%Y-%m-%d")
+      tz = "UTC",
+      format = "%Y-%m-%d"
+    )
   end_date <-
     as.POSIXct(paste0(end_reference, "-12-31"),
-               tz = "UTC",
-               format = "%Y-%m-%d")
+      tz = "UTC",
+      format = "%Y-%m-%d"
+    )
   nc_close(hist_nc)
   time <- seq(start_date, end_date, "day")
   if (calendar == "noleap" |
-      calendar == "365_day" | calendar == "365") {
+    calendar == "365_day" | calendar == "365") {
     time <- time[format(time, "%m-%d") != "02-29"]
   } else if (calendar == "360_day" | calendar == "360") {
     time <- time[format(time, "%m-%d") != "02-29"]
@@ -106,10 +108,10 @@ for (j in 1:4) {
     time <- time[format(time, "%m-%d") != "12-31"]
   }
   # nolint start
-  #hist_names <- names(dim(historical_data))
-  #jpeg(paste0(plot_dir, "/plot1.jpg"))
-  #PlotEquiMap(historical_data[1,1,1,,], lon = lon, lat = lat, filled = F)
-  #dev.off()
+  # hist_names <- names(dim(historical_data))
+  # jpeg(paste0(plot_dir, "/plot1.jpg"))
+  # PlotEquiMap(historical_data[1,1,1,,], lon = lon, lat = lat, filled = F)
+  # dev.off()
   # ------------------------------
   # Provisional solution to error in dimension order:
   # nolint end
@@ -124,9 +126,9 @@ for (j in 1:4) {
   historical_data <- aperm(historical_data, c(1, 2, 5, 3, 4))
   # nolint start
   # ------------------------------
-  #jpeg(paste0(plot_dir, "/plot2.jpg"))
-  #PlotEquiMap(historical_data[1,1,1,,], lon = lon, lat = lat, filled = F)
-  #dev.off()
+  # jpeg(paste0(plot_dir, "/plot2.jpg"))
+  # PlotEquiMap(historical_data[1,1,1,,], lon = lon, lat = lat, filled = F)
+  # dev.off()
   # nolint end
   names(dim(historical_data)) <-
     c("model", "var", "time", "lon", "lat")
@@ -134,10 +136,10 @@ for (j in 1:4) {
   attributes(lon) <- NULL
   attributes(lat) <- NULL
 
-  dim(lon) <-  c(lon = length(lon))
+  dim(lon) <- c(lon = length(lon))
   dim(lat) <- c(lat = length(lat))
   model_dim <- which(names(dim(historical_data)) == "model")
-  ###Compute the quantiles and standard deviation for the historical period.
+  ### Compute the quantiles and standard deviation for the historical period.
   if (var0 == "tasmin") {
     quantile <- 0.1
     metric <- "t10p"
@@ -145,7 +147,7 @@ for (j in 1:4) {
     quantile <- 0.9
     metric <- "t90p"
   } else if (var0 == "sfcWind") {
-    historical_data <- 0.5 * 1.23 * (historical_data ** 3)
+    historical_data <- 0.5 * 1.23 * (historical_data**3)
     quantile <- 0.9
     metric <- "Wx"
   } else if (var0 == "pr") {
@@ -158,7 +160,7 @@ for (j in 1:4) {
   for (m in 1:length(metric)) {
     if (var0 != "pr") {
       thresholds <- Threshold(
-        #nolint
+        # nolint
         historical_data,
         calendar = calendar,
         qtiles = quantile,
@@ -166,7 +168,7 @@ for (j in 1:4) {
       )
       str(thresholds)
       base_index <- Climdex(
-        #nolint
+        # nolint
         data = historical_data,
         calendar = calendar,
         metric = metric[m],
@@ -175,51 +177,59 @@ for (j in 1:4) {
       )
     } else {
       base_index <- Climdex(
-        #nolint
+        # nolint
         data = historical_data,
         calendar = calendar,
         metric = metric[m],
         ncores = detectCores() - 1
       )
     }
-    base_sd[[m]] <- Apply(#nolint
-      list(base_index$result), target_dims = list(c(1)),
-      "sd")$output1
-    base_sd_historical[[m]] <- InsertDim(#nolint
-      base_sd[[m]], 1, dim(base_index$result)[1])
+    base_sd[[m]] <- Apply( # nolint
+      list(base_index$result),
+      target_dims = list(c(1)),
+      "sd"
+    )$output1
+    base_sd_historical[[m]] <- InsertDim( # nolint
+      base_sd[[m]], 1, dim(base_index$result)[1]
+    )
 
     if (var0 != "pr") {
       base_mean[[m]] <- 10
       base_mean_historical <- 10
     } else {
-      base_mean[[m]] <- Apply(#nolint
-        list(base_index$result), target_dims = list(c(1)),
-        "mean")$output1
-      base_mean_historical <- InsertDim(#nolint
-        base_mean[[m]], 1, dim(base_index$result)[1])
+      base_mean[[m]] <- Apply( # nolint
+        list(base_index$result),
+        target_dims = list(c(1)),
+        "mean"
+      )$output1
+      base_mean_historical <- InsertDim( # nolint
+        base_mean[[m]], 1, dim(base_index$result)[1]
+      )
     }
   }
   # Compute the time series of the relevant index, using the quantiles
   # and standard deviation from the index
-  projection_filenames <-  fullpath_filenames[projection_files]
+  projection_filenames <- fullpath_filenames[projection_files]
 
   for (i in 1:length(projection_filenames)) {
     proj_nc <- nc_open(projection_filenames[i])
     projection_data <- ncvar_get(proj_nc, var0)
-    time <-  ncvar_get(proj_nc, "time")
+    time <- ncvar_get(proj_nc, "time")
     # Time correction:
     start_date <-
       as.POSIXct(paste0(start_projection, "-01-01"),
-                 tz = "UTC",
-                 format = "%Y-%m-%d")
+        tz = "UTC",
+        format = "%Y-%m-%d"
+      )
     end_date <-
       as.POSIXct(paste0(end_projection, "-12-31"),
-                 tz = "UTC",
-                 format = "%Y-%m-%d")
+        tz = "UTC",
+        format = "%Y-%m-%d"
+      )
     nc_close(proj_nc)
     time <- seq(start_date, end_date, "day")
     if (calendar == "noleap" |
-        calendar == "365_day" | calendar == "365") {
+      calendar == "365_day" | calendar == "365") {
       time <- time[format(time, "%m-%d") != "02-29"]
     } else if (calendar == "360_day" | calendar == "360") {
       time <- time[format(time, "%m-%d") != "02-29"]
@@ -245,14 +255,14 @@ for (j in 1:4) {
     print(num_model)
     # nolint start
     # ------------------------------
-    #jpeg(paste0(plot_dir, "/plot4.jpg"))
-    #PlotEquiMap(projection_data[1,1,1,,], lon = lon, lat = lat, filled = F)
-    #dev.off()
+    # jpeg(paste0(plot_dir, "/plot4.jpg"))
+    # PlotEquiMap(projection_data[1,1,1,,], lon = lon, lat = lat, filled = F)
+    # dev.off()
     # nolint end
     if (var0 == "pr") {
       projection_data <- projection_data * 60 * 60 * 24
     } else if (var0 == "sfcWind") {
-      projection_data <- 0.5 * 1.23 * (projection_data ** 3)
+      projection_data <- 0.5 * 1.23 * (projection_data**3)
     }
 
     for (m in 1:length(metric)) {
@@ -267,7 +277,7 @@ for (j in 1:4) {
           )
         projection_mean <- 10
       } else {
-        #nolint
+        # nolint
         projection_index <-
           Climdex(
             data = projection_data,
@@ -275,11 +285,15 @@ for (j in 1:4) {
             calendar = calendar,
             ncores = detectCores() - 1
           )
-        projection_mean <- InsertDim(base_mean[[m]], 1, #nolint
-                                     dim(projection_index$result)[1])
+        projection_mean <- InsertDim(
+          base_mean[[m]], 1, # nolint
+          dim(projection_index$result)[1]
+        )
       }
-      base_sd_proj <- InsertDim(base_sd[[m]], 1, #nolint
-                                dim(projection_index$result)[1])
+      base_sd_proj <- InsertDim(
+        base_sd[[m]], 1, # nolint
+        dim(projection_index$result)[1]
+      )
       projection_index_standardized <-
         (projection_index$result - projection_mean) / base_sd_proj
       for (mod in 1:num_model) {
@@ -366,8 +380,10 @@ for (j in 1:4) {
         )
 
         breaks <-
-          seq(-1 * ceiling(max(abs(data))), ceiling(max(abs(data))),
-              2 * ceiling(max(abs(data))) / 16)
+          seq(
+            -1 * ceiling(max(abs(data))), ceiling(max(abs(data))),
+            2 * ceiling(max(abs(data))) / 16
+          )
         filepng <- paste0(
           plot_dir,
           "/",
@@ -383,7 +399,7 @@ for (j in 1:4) {
           ".png"
         )
         PlotEquiMap(
-          #nolint
+          # nolint
           data,
           lon = lon,
           lat = lat,
@@ -416,23 +432,25 @@ for (j in 1:4) {
         lat <- as.vector(lat)
         temporal <-
           WeightedMean(projection_index_standardized,
-                       #nolint
-                       lon = lon,
-                       lat = lat)
+            # nolint
+            lon = lon,
+            lat = lat
+          )
         time_dim <- which(names(dim(temporal)) == "year")
         if (!is.null(running_mean)) {
           temporal <- Smoothing(temporal,
-                                runmeanlen = running_mean,
-                                #nolint
-                                numdimt = time_dim)
+            runmeanlen = running_mean,
+            # nolint
+            numdimt = time_dim
+          )
           timestamp <-
             paste0(running_mean, "-month-running-mean-")
         }
         wdata[[j + (m - 1)]] <- temporal
-      } #model index
+      } # model index
     } # metric index
-  }  # number of projections
-}  # variable index
+  } # number of projections
+} # variable index
 if (!is.numeric(weights)) {
   data <- CombineIndices(wdata, weights = NULL) # nolint
 } else {
@@ -467,17 +485,21 @@ defdata <- ncvar_def(
   longname = paste("Combination", long_names)
 )
 filencdf <-
-  paste0(work_dir, "/", "_", paste0(model_names, collapse = "_"),
-         ".nc")
+  paste0(
+    work_dir, "/", "_", paste0(model_names, collapse = "_"),
+    ".nc"
+  )
 file <- nc_create(filencdf, list(defdata))
 ncvar_put(file, defdata, data)
 nc_close(file)
 
 xprov <- list(
   ancestors = list(fullpath_filenames),
-  authors = list("hunter_alasdair",
-                 "manubens_nicolau",
-                 "perez-zanon_nuria"),
+  authors = list(
+    "hunter_alasdair",
+    "manubens_nicolau",
+    "perez-zanon_nuria"
+  ),
   projects = list("c3s-magic"),
   plot_file = paste0(plot_dir, "/", "CombinedIndices.png"),
   caption = "Combined selection",

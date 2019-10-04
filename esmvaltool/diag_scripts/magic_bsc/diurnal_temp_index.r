@@ -2,7 +2,7 @@ library(yaml)
 library(s2dverification)
 library(multiApply) # nolint
 library(climdex.pcic)
-library(ClimProjDiags) #nolint
+library(ClimProjDiags) # nolint
 library(parallel)
 library(ncdf4)
 
@@ -22,24 +22,24 @@ dir.create(work_dir, recursive = TRUE)
 provenance_file <- paste0(run_dir, "/", "diagnostic_provenance.yml")
 provenance <- list()
 
-#FOR THE FIRST METADATA.yml
+# FOR THE FIRST METADATA.yml
 input_files_tasmax <- yaml::read_yaml(params$input_files[1])
 model_names <- input_files_tasmax[[1]]$dataset
 var_names_tmax <- input_files_tasmax[[1]]$short_name
 experiment <- lapply(input_files_tasmax, function(x) {
   x$exp
-}) #nolint
+}) # nolint
 filename_tasmax <-
   lapply(input_files_tasmax, function(x) {
     x$filename
-  }) #nolint
+  }) # nolint
 
 input_files_tasmin <- yaml::read_yaml(params$input_files[2])
 var_names_tmin <- input_files_tasmin[[1]]$short_name
 filename_tasmin <-
   lapply(input_files_tasmin, function(x) {
     x$filename
-  }) #nolint
+  }) # nolint
 
 reference_files <- which(experiment == "historical")
 projection_files <- which(experiment != "historical")
@@ -59,10 +59,12 @@ lat <- ncvar_get(file, "lat")
 lon <- ncvar_get(file, "lon")
 units <- ncatt_get(file, "tasmax", "units")$value
 calendario <- ncatt_get(file, "time", "calendar")$value
-long_names <-  ncatt_get(file, "tasmax", "long_name")$value
-time <-  ncvar_get(file, "time")
-start_date <- as.POSIXct(substr(ncatt_get(file, "time",
-                                          "units")$value, 11, 29))
+long_names <- ncatt_get(file, "tasmax", "long_name")$value
+time <- ncvar_get(file, "time")
+start_date <- as.POSIXct(substr(ncatt_get(
+  file, "time",
+  "units"
+)$value, 11, 29))
 nc_close(file)
 
 fullpath_hist_tasmin <- filename_tasmin[[reference_files]]
@@ -73,11 +75,13 @@ lat <- ncvar_get(file, "lat")
 lon <- ncvar_get(file, "lon")
 units <- ncatt_get(file, "tasmin", "units")$value
 calendario <- ncatt_get(file, "time", "calendar")$value
-long_names <-  ncatt_get(file, "tasmin", "long_name")$value
+long_names <- ncatt_get(file, "tasmin", "long_name")$value
 tunits <- ncatt_get(file, "time", "units")$value
-time <-  ncvar_get(file, "time")
-start_date <- as.POSIXct(substr(ncatt_get(file, "time",
-                                          "units")$value, 11, 29))
+time <- ncvar_get(file, "time")
+start_date <- as.POSIXct(substr(ncatt_get(
+  file, "time",
+  "units"
+)$value, 11, 29))
 nc_close(file)
 dia <- as.Date(strsplit(tunits, " ")[[1]][3], format = "%Y-%m-%d")
 time <- time + dia
@@ -85,7 +89,7 @@ time <- time + dia
 
 dtr_base <- DTRRef(
   tmax = historical_tasmax,
-  #nolint
+  # nolint
   tmin = historical_tasmin,
   by.seasons = TRUE,
   ncores = NULL,
@@ -102,10 +106,12 @@ for (i in 1:length(projection_files)) {
   lon <- ncvar_get(file, "lon")
   units <- ncatt_get(file, "tasmax", "units")$value
   calendario <- ncatt_get(file, "time", "calendar")$value
-  long_names <-  ncatt_get(file, "tasmax", "long_name")$value
-  time <-  ncvar_get(file, "time")
-  start_date <- as.POSIXct(substr(ncatt_get(file, "time",
-                                            "units")$value, 11, 29))
+  long_names <- ncatt_get(file, "tasmax", "long_name")$value
+  time <- ncvar_get(file, "time")
+  start_date <- as.POSIXct(substr(ncatt_get(
+    file, "time",
+    "units"
+  )$value, 11, 29))
   nc_close(file)
 
   fullpath_projection_tasmin <-
@@ -117,11 +123,13 @@ for (i in 1:length(projection_files)) {
   lon <- ncvar_get(file, "lon")
   units <- ncatt_get(file, "tasmin", "units")$value
   calendario <- ncatt_get(file, "time", "calendar")$value
-  long_names <-  ncatt_get(file, "tasmin", "long_name")$value
+  long_names <- ncatt_get(file, "tasmin", "long_name")$value
   tunits <- ncatt_get(file, "time", "units")$value
-  time <-  ncvar_get(file, "time")
-  start_date <- as.POSIXct(substr(ncatt_get(file, "time",
-                                            "units")$value, 11, 29))
+  time <- ncvar_get(file, "time")
+  start_date <- as.POSIXct(substr(ncatt_get(
+    file, "time",
+    "units"
+  )$value, 11, 29))
   nc_close(file)
 
   dia <-
@@ -141,8 +149,8 @@ for (i in 1:length(projection_files)) {
 
   dtr_rcp <- array(dim = c(4, length(lon), length(lat)))
   for (j in 1:4) {
-    dtr_rcp[j , ,] <-
-      Mean1Dim(dtr_indicator$indicator[, j, ,], 1)
+    dtr_rcp[j, , ] <-
+      Mean1Dim(dtr_indicator$indicator[, j, , ], 1)
   }
   names(dim(dtr_rcp)) <- c("season", "lon", "lat")
   title <- paste0(
@@ -155,7 +163,7 @@ for (i in 1:length(projection_files)) {
   PlotLayout(
     PlotEquiMap,
     plot_dims = c("lon", "lat"),
-    #nolint
+    # nolint
     var = dtr_rcp,
     colNA = "white",
     lon = lon,

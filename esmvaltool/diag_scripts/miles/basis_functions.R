@@ -65,17 +65,17 @@ sector_details <- function(SECTOR) {
     namesec <- "Central Europe"
   }
   if (SECTOR == "Azores") {
-    lons <- c(-70,-10)
+    lons <- c(-70, -10)
     lats <- c(30, 40)
     namesec <- "Central Atlantic"
   }
   if (SECTOR == "Greenland") {
-    lons <- c(-65,-15)
+    lons <- c(-65, -15)
     lats <- c(62.5, 72.5)
     namesec <- "Greenland"
   }
   if (SECTOR == "FullPacific") {
-    lons <- c(130,-150)
+    lons <- c(130, -150)
     lats <- c(60, 75)
     namesec <- "North Pacific"
   }
@@ -123,8 +123,8 @@ weighted_cor <- function(x, y, w) {
 weighted_sd <- function(x, w) {
   w_mean <- sum(w * x) / sum(w)
   v1 <- sum(w)
-  v2 <- sum(w ^ 2)
-  var <- v1 / (v1 ^ 2 - v2) * sum(w * (x - w_mean) ^ 2)
+  v2 <- sum(w^2)
+  var <- v1 / (v1^2 - v2) * sum(w * (x - w_mean)^2)
   sdd <- sqrt(var)
   return(sdd)
 }
@@ -147,14 +147,14 @@ info_builder <-
 # basic switch to create NetCDF file names and folders (use recursive structure from v0.6)
 file_builder <-
   function(DATADIR,
-           dir_name,
-           file_name,
-           dataset,
-           expid,
-           ens,
-           year1,
-           year2,
-           season) {
+             dir_name,
+             file_name,
+             dataset,
+             expid,
+             ens,
+             year1,
+             year2,
+             season) {
     # loop on descriptors that are concatenated to create dir and file name
     descriptors <-
       c(dataset, expid, ens, paste0(year1, "-", year2), season)
@@ -260,7 +260,7 @@ season2timeseason <- function(season) {
   }
   print(timeseason)
   if (length(timeseason) == 0 |
-      min(timeseason) < 0 | max(timeseason) > 13) {
+    min(timeseason) < 0 | max(timeseason) > 13) {
     stop("wrong season selected!")
   }
   return(timeseason)
@@ -269,7 +269,7 @@ season2timeseason <- function(season) {
 # leap year treu/false function
 is_leapyear <- function(year) {
   return(((year %% 4 == 0) &
-            (year %% 100 != 0)) | (year %% 400 == 0))
+    (year %% 100 != 0)) | (year %% 400 == 0))
 }
 
 # check number of days for each month
@@ -325,17 +325,17 @@ power_date_new <- function(datas) {
 # it returns a list including its own dimensions
 ncdf_opener_universal <-
   function(namefile,
-           namevar = NULL,
-           namelon = NULL,
-           namelat = NULL,
-           tmonths = NULL,
-           tyears = NULL,
-           rotate = "full",
-           interp2grid = F,
-           grid = "r144x73",
-           remap_method = "remapcon2",
-           exportlonlat = TRUE,
-           verbose = TRUE) {
+             namevar = NULL,
+             namelon = NULL,
+             namelat = NULL,
+             tmonths = NULL,
+             tyears = NULL,
+             rotate = "full",
+             interp2grid = F,
+             grid = "r144x73",
+             remap_method = "remapcon2",
+             exportlonlat = TRUE,
+             verbose = TRUE) {
     # load package
     require(ncdf4)
 
@@ -394,23 +394,23 @@ ncdf_opener_universal <-
       # for x,y data
       if (dims == 2) {
         ll <- length(line[, 1])
-        line[(ll * move1):ll,] <- vettore[1:(ll * move2 + 1),]
-        line[1:(ll * move1 - 1),] <- vettore[(ll * move2 + 2):ll,]
+        line[(ll * move1):ll, ] <- vettore[1:(ll * move2 + 1), ]
+        line[1:(ll * move1 - 1), ] <- vettore[(ll * move2 + 2):ll, ]
       }
       # for x,y,t data
       if (dims == 3) {
         ll <- length(line[, 1, 1])
-        line[(ll * move1):ll, ,] <- vettore[1:(ll * move2 + 1), ,]
-        line[1:(ll * move1 - 1), ,] <-
-          vettore[(ll * move2 + 2):ll, ,]
+        line[(ll * move1):ll, , ] <- vettore[1:(ll * move2 + 1), , ]
+        line[1:(ll * move1 - 1), , ] <-
+          vettore[(ll * move2 + 2):ll, , ]
       }
       # for x,y,z,t data
       if (dims == 4) {
         ll <- length(line[, 1, 1, 1])
-        line[(ll * move1):ll, , ,] <-
-          vettore[1:(ll * move2 + 1), , ,]
-        line[1:(ll * move1 - 1), , ,] <-
-          vettore[(ll * move2 + 2):ll, , ,]
+        line[(ll * move1):ll, , , ] <-
+          vettore[1:(ll * move2 + 1), , , ]
+        line[1:(ll * move1 - 1), , , ] <-
+          vettore[(ll * move2 + 2):ll, , , ]
       }
       return(line)
     }
@@ -419,16 +419,16 @@ ncdf_opener_universal <-
     flipper <- function(field) {
       dims <- length(dim(field))
       if (dims == 2) {
-        ll <- length(field[1,])
+        ll <- length(field[1, ])
         field <- field[, ll:1]
       } # for x,y data
       if (dims == 3) {
         ll <- length(field[1, , 1])
-        field <- field[, ll:1,]
+        field <- field[, ll:1, ]
       } # for x,y,t data
       if (dims == 4) {
         ll <- length(field[1, , 1, 1])
-        field <- field[, ll:1, ,]
+        field <- field[, ll:1, , ]
       } # for x,y,z,t data
       return(field)
     }
@@ -470,12 +470,13 @@ ncdf_opener_universal <-
       units <- ncatt_get(a, "time", "units")$value
       caldata <- ncatt_get(a, "time", "calendar")$value
       if (grepl("day as", units, fixed = TRUE) |
-          grepl("days as", units, fixed = TRUE)) {
+        grepl("days as", units, fixed = TRUE)) {
         timeline <- as.PCICt(as.character(time),
-                             format = "%Y%m%d",
-                             cal = caldata)
+          format = "%Y%m%d",
+          cal = caldata
+        )
       } else if (grepl("day since", units, fixed = TRUE) |
-                 grepl("days since", units, fixed = TRUE)) {
+        grepl("days since", units, fixed = TRUE)) {
         origin <- unlist(strsplit(units, "[a-zA-Z ]+"))[2]
         origin.pcict <-
           as.PCICt(origin, cal = caldata, format = "%Y-%m-%d")
@@ -506,8 +507,9 @@ ncdf_opener_universal <-
       )
       firstday <-
         as.PCICt(paste0(min(tyears), "-", min(tmonths), "-01"),
-                 cal = caldata,
-                 format = "%Y-%m-%d")
+          cal = caldata,
+          format = "%Y-%m-%d"
+        )
 
       if (max(timeline) < lastday | min(timeline) > firstday) {
         print(firstday)
@@ -525,13 +527,15 @@ ncdf_opener_universal <-
     if (timeflag) {
       # select data we need
       select <- which(as.numeric(format(timeline, "%Y")) %in%
-                        tyears & as.numeric(format(timeline, "%m")) %in% tmonths)
+        tyears & as.numeric(format(timeline, "%m")) %in% tmonths)
       field <- field[, , select]
       time <- timeline[select]
 
       printv(paste("This is a", caldata, "calendar"))
-      printv(paste(length(time), "days selected from", time[1], "to",
-                   time[length(time)]))
+      printv(paste(
+        length(time), "days selected from", time[1], "to",
+        time[length(time)]
+      ))
 
       printv(paste("Months that have been loaded are.. "))
       printv(unique(format(time, "%Y-%m")))
@@ -659,9 +663,11 @@ open_plot_device <-
     output_file_type <- tolower(output_file_type)
     if (special == FALSE) {
       if (output_file_type == "png") {
-        png(filename = figname,
-            width = png_width,
-            height = png_height)
+        png(
+          filename = figname,
+          width = png_width,
+          height = png_height
+        )
       } else if (output_file_type == "pdf") {
         pdf(
           file = figname,
@@ -670,8 +676,8 @@ open_plot_device <-
           onefile = T
         )
       } else if ((output_file_type == "eps") |
-                 (output_file_type == "epsi") |
-                 (output_file_type == "ps")) {
+        (output_file_type == "epsi") |
+        (output_file_type == "ps")) {
         setEPS(
           width = pdf_width,
           height = pdf_height,
@@ -682,9 +688,11 @@ open_plot_device <-
       }
     } else {
       if (output_file_type == "png") {
-        png(filename = figname,
-            width = png_width / af,
-            height = png_height * af / 2)
+        png(
+          filename = figname,
+          width = png_width / af,
+          height = png_height * af / 2
+        )
       } else if (output_file_type == "pdf") {
         pdf(
           file = figname,
@@ -693,8 +701,8 @@ open_plot_device <-
           onefile = T
         )
       } else if ((output_file_type == "eps") |
-                 (output_file_type == "epsi") |
-                 (output_file_type == "ps")) {
+        (output_file_type == "epsi") |
+        (output_file_type == "ps")) {
         setEPS(
           width = pdf_width / af,
           height = pdf_height * af / 2,
@@ -710,28 +718,28 @@ open_plot_device <-
 # extensive filled_contour function
 filled_contour3 <-
   function(x = seq(0, 1, length.out = nrow(z)),
-           y = seq(0, 1, length.out = ncol(z)),
-           z,
-           xlim = range(x, finite = TRUE),
-           ylim = range(y, finite = TRUE),
-           zlim = range(z, finite = TRUE),
-           levels = pretty(zlim, nlevels),
-           nlevels = 20,
-           color.palette = cm.colors,
-           col = color.palette(length(levels) - 1),
-           extend = TRUE,
-           plot.title,
-           plot.axes,
-           key.title,
-           key.axes,
-           asp = NA,
-           xaxs = "i",
-           yaxs = "i",
-           las = 1,
-           axes = TRUE,
-           frame.plot = axes,
-           mar,
-           ...) {
+             y = seq(0, 1, length.out = ncol(z)),
+             z,
+             xlim = range(x, finite = TRUE),
+             ylim = range(y, finite = TRUE),
+             zlim = range(z, finite = TRUE),
+             levels = pretty(zlim, nlevels),
+             nlevels = 20,
+             color.palette = cm.colors,
+             col = color.palette(length(levels) - 1),
+             extend = TRUE,
+             plot.title,
+             plot.axes,
+             key.title,
+             key.axes,
+             asp = NA,
+             xaxs = "i",
+             yaxs = "i",
+             las = 1,
+             axes = TRUE,
+             frame.plot = axes,
+             mar,
+             ...) {
     # modification by Ian Taylor of the filled_contour function
     # to remove the key and facilitate overplotting with contour()
     # further modified by Carey McGilliard and Bridget Ferris
@@ -769,11 +777,12 @@ filled_contour3 <-
 
     plot.new()
     plot.window(xlim,
-                ylim,
-                "",
-                xaxs = xaxs,
-                yaxs = yaxs,
-                asp = asp)
+      ylim,
+      "",
+      xaxs = xaxs,
+      yaxs = yaxs,
+      asp = asp
+    )
     if (!is.matrix(z) || nrow(z) <= 1 || ncol(z) <= 1) {
       stop("no proper 'z' matrix specified")
     }
@@ -781,12 +790,15 @@ filled_contour3 <-
       storage.mode(z) <- "double"
     }
     .filled.contour(as.double(x), as.double(y), z, as.double(levels),
-                    col = col)
+      col = col
+    )
     if (missing(plot.axes)) {
       if (axes) {
-        title(main = "",
-              xlab = "",
-              ylab = "")
+        title(
+          main = "",
+          xlab = "",
+          ylab = ""
+        )
         Axis(x, side = 1, ...)
         Axis(y, side = 2, ...)
       }
@@ -840,9 +852,11 @@ image_scale3 <- function(z,
   col <- color.palette(length(levels) - 1)
 
   # starting plot
-  par(mar = c(1, 1, 1, 1),
-      fig = new.fig,
-      new = TRUE)
+  par(
+    mar = c(1, 1, 1, 1),
+    fig = new.fig,
+    new = TRUE
+  )
 
   # creating polygons for legend
   poly <- vector(mode = "list", length(col))
@@ -877,26 +891,32 @@ image_scale3 <- function(z,
 
   if (extend) {
     polygon(c(0, 1, 1 / 2),
-            c(levels[1], levels[1], levels[1] - dl),
-            col = col[1],
-            border = NA)
+      c(levels[1], levels[1], levels[1] - dl),
+      col = col[1],
+      border = NA
+    )
     polygon(c(0, 1, 1 / 2),
-            c(levels[length(levels)], levels[length(levels)],
-              levels[length(levels)] + dl),
-            col = col[length(col)],
-            border = NA)
+      c(
+        levels[length(levels)], levels[length(levels)],
+        levels[length(levels)] + dl
+      ),
+      col = col[length(col)],
+      border = NA
+    )
     polygon(
       c(0, 0, 1 / 2, 1, 1, 1 / 2),
-      c(levels[1], levels[length(levels)],
+      c(
+        levels[1], levels[length(levels)],
         levels[length(levels)] + dl, levels[length(levels)], levels[1],
-        levels[1] - dl),
+        levels[1] - dl
+      ),
       border = "black",
       lwd = 2
     )
     ylim0 <- range(levels)
     prettyspecial <- pretty(ylim0)
     prettyspecial <- prettyspecial[prettyspecial <= max(ylim0) &
-                                     prettyspecial >= min(ylim0)]
+      prettyspecial >= min(ylim0)]
     axis(
       4,
       las = 1,
@@ -912,10 +932,11 @@ image_scale3 <- function(z,
 
   # box, axis and leged
   mtext(colorbar.label,
-        line = line.label,
-        side = 4,
-        cex = cex.label,
-        ...)
+    line = line.label,
+    side = 4,
+    cex = cex.label,
+    ...
+  )
 
   # resetting properties for starting a new plot (mfrow style)
   par(old.par)
@@ -927,13 +948,13 @@ image_scale3 <- function(z,
 # mapproj R projection
 proj_plot <-
   function(lon,
-           lat,
-           field,
-           lmin = NULL,
-           proj = "azequalarea",
-           param = NULL,
-           orient = c(90, 0, 0),
-           npoints = 201) {
+             lat,
+             field,
+             lmin = NULL,
+             proj = "azequalarea",
+             param = NULL,
+             orient = c(90, 0, 0),
+             npoints = 201) {
     # default is azimuthal equal area map
 
     # required packages
@@ -960,32 +981,36 @@ proj_plot <-
 
     # provide limits for future plots (for polar projection)
     limiter <- mapproject(c(0, 90, 180, 270),
-                          rep(lmin, 4),
-                          proj = "",
-                          orientation = orient)
+      rep(lmin, 4),
+      proj = "",
+      orientation = orient
+    )
     xlims <- sort(c(limiter$x[2], limiter$x[4]))
     ylims <- sort(c(limiter$y[1], limiter$y[3]))
 
     # plot grid
     lon.plot <-
       seq(min(proj.grid$x, na.rm = T),
-          max(proj.grid$x, na.rm = T),
-          length.out = npoints)
+        max(proj.grid$x, na.rm = T),
+        length.out = npoints
+      )
     lat.plot <-
       seq(min(proj.grid$y, na.rm = T),
-          max(proj.grid$y, na.rm = T),
-          length.out = npoints)
+        max(proj.grid$y, na.rm = T),
+        length.out = npoints
+      )
 
     # interpolation (akima needed)
     good <-
       is.finite(field) & is.finite(proj.grid$x) & is.finite(proj.grid$y)
     projected <-
       interp(proj.grid$x[good],
-             proj.grid$y[good],
-             field[good],
-             lon.plot,
-             lat.plot,
-             duplicate = "strip")
+        proj.grid$y[good],
+        field[good],
+        lon.plot,
+        lat.plot,
+        duplicate = "strip"
+      )
     return(projected = list(
       x = projected$x,
       y = projected$y,
@@ -1241,29 +1266,36 @@ blocking_persistence <-
     }
 
     # check for etime
-    if (length(time.array$month) != length(field[1, 1,])) {
+    if (length(time.array$month) != length(field[1, 1, ])) {
       stop("Wrong time array! Exiting...")
     }
 
     print("Time filtering...")
     newfield <- apply(field, c(1, 2), function(x)
       pers2(x,
-            persistence = minduration, time.array))
+        persistence = minduration, time.array
+      ))
     newfield <- aperm(newfield, c(2, 3, 1))
     print("Mean field...")
     meanfield <- apply(newfield, c(1, 2), mean, na.rm = T) * 100
 
 
     print("Events detection...")
-    maxdim <- max(apply(newfield, c(1, 2),
-                        function(x)
-                          length(rle(x)$length[which(rle(x)$values == 1)])))
-    events <- apply(newfield, c(1, 2),
-                    function(x)
-                      c(rle(x)$lengths[which(rle(x)$values == 1)],
-                        rep(NA, maxdim - length(rle(
-                          x
-                        )$length[which(rle(x)$values == 1)]))))
+    maxdim <- max(apply(
+      newfield, c(1, 2),
+      function(x)
+        length(rle(x)$length[which(rle(x)$values == 1)])
+    ))
+    events <- apply(
+      newfield, c(1, 2),
+      function(x)
+        c(
+          rle(x)$lengths[which(rle(x)$values == 1)],
+          rep(NA, maxdim - length(rle(
+            x
+          )$length[which(rle(x)$values == 1)]))
+        )
+    )
     events <- aperm(events, c(2, 3, 1))
     print("Mean Duration...")
     duration <- apply(events, c(1, 2), mean, na.rm = T)
@@ -1317,10 +1349,12 @@ largescale_extension_if <- function(ics, ipsilon, field) {
     for (i in 1:length(ics)) {
       ii <- i + length(ics)
       # check to speed up
-      if (!all(new[(ii - passo):(ii + passo),] == 0)) {
+      if (!all(new[(ii - passo):(ii + passo), ] == 0)) {
         for (j in range) {
-          control[i, j] <- mean(new[(ii - passo):(ii + passo),
-                                    (j - vertical):(j + vertical)], na.rm = T)
+          control[i, j] <- mean(new[
+            (ii - passo):(ii + passo),
+            (j - vertical):(j + vertical)
+          ], na.rm = T)
         }
       }
     }
@@ -1350,7 +1384,7 @@ longitude_filter <- function(ics, ipsilon, field) {
 
   print(paste("Continous longitude contrain", passo * xreso, "° lon"))
 
-  tt <- length(field[1, 1,])
+  tt <- length(field[1, 1, ])
   for (t in 1:tt) {
     progression_bar(t, tt)
 
@@ -1358,7 +1392,7 @@ longitude_filter <- function(ics, ipsilon, field) {
     for (j in startipsilon:((startipsilon + estension))) {
       new[, j] <- time_persistence(new[, j], persistence = passo)
     }
-    field[, , t] <- new[length(ics) + (1:length(ics)),]
+    field[, , t] <- new[length(ics) + (1:length(ics)), ]
   }
   return(field)
 }
@@ -1370,14 +1404,14 @@ longitude_filter <- function(ics, ipsilon, field) {
 
 eofs <-
   function(lon,
-           lat,
-           field,
-           neof = 4,
-           xlim,
-           ylim,
-           method = "SVD",
-           do_standardize = F,
-           do_regression = F) {
+             lat,
+             field,
+             neof = 4,
+             xlim,
+             ylim,
+             method = "SVD",
+             do_standardize = F,
+             do_regression = F) {
     # R tool for computing EOFs based on Singular Value Decomposition
     # ("SVD", default)
     # or with the eigenvectors of the covariance matrix ("covariance", slower)
@@ -1392,8 +1426,10 @@ eofs <-
     wwfield <- sweep(field, c(1, 2), ww, "*")
 
     # selection of the box
-    box <- wwfield[whicher(lon, xlim[1]):whicher(lon, xlim[2]),
-                   whicher(lat, ylim[1]):whicher(lat, ylim[2]),]
+    box <- wwfield[
+      whicher(lon, xlim[1]):whicher(lon, xlim[2]),
+      whicher(lat, ylim[1]):whicher(lat, ylim[2]),
+    ]
     slon <- lon[whicher(lon, xlim[1]):whicher(lon, xlim[2])]
     slat <- lat[whicher(lat, ylim[1]):whicher(lat, ylim[2])]
 
@@ -1410,7 +1446,7 @@ eofs <-
       # expansions coefficient and variance explained
       pattern <- array(SVD$u, dim = c(dim(box)[1], dim(box)[2], neof))
       coefficient <- SVD$v
-      variance <- (SVD$d[1:neof]) ^ 2 / sum((SVD$d) ^ 2)
+      variance <- (SVD$d[1:neof])^2 / sum((SVD$d)^2)
       if (do_standardize) {
         coefficient <- apply(coefficient, c(2), standardize)
       } else {
@@ -1424,8 +1460,10 @@ eofs <-
       covma <- cov(t(new_box))
       eig <- eigen(covma)
       coef <- (t(new_box) %*% eig$vector)[, 1:neof]
-      pattern <- array(eig$vectors, dim = c(dim(box)[1], dim(box)[2],
-                                            dim(box)[3]))[, , 1:neof]
+      pattern <- array(eig$vectors, dim = c(
+        dim(box)[1], dim(box)[2],
+        dim(box)[3]
+      ))[, , 1:neof]
       variance <- eig$values[1:neof] / sum(eig$values)
       if (do_standardize) {
         coefficient <- apply(coef, c(2), standardize)
@@ -1442,10 +1480,13 @@ eofs <-
       # for (i in 1:neof) {regression[,,i]=apply(field,c(1,2),
       #                          function(x) coef(lm(x ~ coefficient[,i]))[2])}
       for (i in 1:neof) {
-        regression[, , i] <- apply(field, c(1, 2),
-                                   function(x)
-                                     lin.fit(as.matrix(coefficient[, i],
-                                                       ncol = 1), x)$coefficients)
+        regression[, , i] <- apply(
+          field, c(1, 2),
+          function(x)
+            lin.fit(as.matrix(coefficient[, i],
+              ncol = 1
+            ), x)$coefficients
+        )
       }
     }
 
@@ -1463,10 +1504,10 @@ eofs <-
 
 eofs_coeff <-
   function(lon,
-           lat,
-           field,
-           eof_object,
-           do_standardize = F) {
+             lat,
+             field,
+             eof_object,
+             do_standardize = F) {
     # Computes expansion coefficient (i.e. PCs) of a given dataset on the
     # loading pattern of EOF previously computed
     # Works only on eof_object obtained with "eofs" function
@@ -1479,17 +1520,20 @@ eofs_coeff <-
     # selection of the box
     xlim <- c(min(eof_object$pattern$x), max(eof_object$pattern$x))
     ylim <- c(min(eof_object$pattern$y), max(eof_object$pattern$y))
-    box <- wwfield[whicher(lon, xlim[1]):whicher(lon, xlim[2]),
-                   whicher(lat, ylim[1]):whicher(lat, ylim[2]),]
+    box <- wwfield[
+      whicher(lon, xlim[1]):whicher(lon, xlim[2]),
+      whicher(lat, ylim[1]):whicher(lat, ylim[2]),
+    ]
 
     # transform 3D field in a matrix
     new_box <-
       array(box, dim = c(dim(box)[1] * dim(box)[2], dim(box)[3]))
     new_pattern <- array(eof_object$pattern$z,
-                         dim = c(
-                           dim(eof_object$pattern$z)[1] * dim(eof_object$pattern$z)[2],
-                           dim(eof_object$pattern$z)[3]
-                         ))
+      dim = c(
+        dim(eof_object$pattern$z)[1] * dim(eof_object$pattern$z)[2],
+        dim(eof_object$pattern$z)[3]
+      )
+    )
 
     # projects the coefficients
     coef <- (t(new_box) %*% new_pattern)
@@ -1578,14 +1622,14 @@ regimes <- function(lon,
 
 regimes2 <-
   function(lon,
-           lat,
-           field,
-           ncluster = 4,
-           ntime = 1000,
-           minvar = 0.8,
-           xlim,
-           ylim,
-           alg = "Hartigan-Wong") {
+             lat,
+             field,
+             ncluster = 4,
+             ntime = 1000,
+             minvar = 0.8,
+             xlim,
+             ylim,
+             alg = "Hartigan-Wong") {
     # R tool to compute cluster analysis based on k-means.
     # Requires "personal" function eofs (see above)
     # Take as input a 3D anomaly field
@@ -1664,11 +1708,15 @@ regimes2 <-
 # vectorization and rowMeans
 monthly_mean <- function(ics, ipsilon, field, etime) {
   condition <- paste(etime$month, etime$year)
-  monthly <- array(NA, dim = c(length(ics), length(ipsilon),
-                               length(unique(condition))))
+  monthly <- array(NA, dim = c(
+    length(ics), length(ipsilon),
+    length(unique(condition))
+  ))
   for (t in unique(condition)) {
-    monthly[, , which(t == unique(condition))] <- rowMeans(field[, ,
-                                                                 t == condition], dims = 2)
+    monthly[, , which(t == unique(condition))] <- rowMeans(field[
+      , ,
+      t == condition
+    ], dims = 2)
   }
   return(monthly)
 }
@@ -1696,7 +1744,8 @@ run_mean5 <- function(field) {
     c(NA, field[1:(length(field) - 1)]),
     c(NA, NA, field[1:(length(field) - 2)])
   ),
-  na.rm = T)
+  na.rm = T
+  )
   return(newfield)
 }
 
@@ -1704,15 +1753,19 @@ run_mean5 <- function(field) {
 # and rowMeans (40 times faster!)
 daily_anom_mean <- function(ics, ipsilon, field, etime) {
   condition <- paste(etime$day, etime$month)
-  daily <- array(NA, dim = c(length(ics), length(ipsilon),
-                             length(unique(condition))))
+  daily <- array(NA, dim = c(
+    length(ics), length(ipsilon),
+    length(unique(condition))
+  ))
   anom <- field * NA
   for (t in unique(condition)) {
     daily[, , which(t == unique(condition))] <-
       rowMeans(field[, , t == condition], dims = 2)
     anom[, , which(t == condition)] <-
-      sweep(field[, , which(t == condition)], c(1, 2),
-            daily[, , which(t == unique(condition))], "-")
+      sweep(
+        field[, , which(t == condition)], c(1, 2),
+        daily[, , which(t == unique(condition))], "-"
+      )
   }
   return(anom)
 }
@@ -1721,8 +1774,10 @@ daily_anom_mean <- function(ics, ipsilon, field, etime) {
 # (only 50% slower that standard daily avg)
 daily_anom_run_mean <- function(ics, ipsilon, field, etime) {
   condition <- paste(etime$day, etime$month)
-  daily <- array(NA, dim = c(length(ics), length(ipsilon),
-                             length(unique(condition))))
+  daily <- array(NA, dim = c(
+    length(ics), length(ipsilon),
+    length(unique(condition))
+  ))
   for (t in unique(condition)) {
     daily[, , which(t == unique(condition))] <-
       rowMeans(field[, , t == condition], dims = 2)
@@ -1730,8 +1785,10 @@ daily_anom_run_mean <- function(ics, ipsilon, field, etime) {
   anom <- field * NA
   for (t in unique(condition)) {
     anom[, , which(t == condition)] <-
-      sweep(field[, , which(t == condition)], c(1, 2),
-            daily[, , which(t == unique(condition))], "-")
+      sweep(
+        field[, , which(t == condition)], c(1, 2),
+        daily[, , which(t == unique(condition))], "-"
+      )
   }
   return(anom)
 }

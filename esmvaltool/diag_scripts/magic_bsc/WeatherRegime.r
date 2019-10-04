@@ -1,13 +1,13 @@
-AtomicWeatherRegime <- function(# nolint
-  data,
-  EOFS = TRUE,
-  neofs = 30,
-  threshold = NULL,
-  lon = NULL,
-  lat = NULL,
-  ncenters = NULL,
-  method = "kmeans",
-  nstart = 30) {
+AtomicWeatherRegime <- function( # nolint
+                                data,
+                                EOFS = TRUE,
+                                neofs = 30,
+                                threshold = NULL,
+                                lon = NULL,
+                                lat = NULL,
+                                ncenters = NULL,
+                                method = "kmeans",
+                                nstart = 30) {
   names(dim(data)) <- c("sdate", "ftime", "lat", "lon")
   sdate <- which(names(dim(data)) == "sdate")
   ftime <- which(names(dim(data)) == "ftime")
@@ -18,24 +18,25 @@ AtomicWeatherRegime <- function(# nolint
   data <- aperm(data, c(ftime, sdate, lat2, lon2))
   nlon <- dim(data)[lon2]
   nlat <- dim(data)[lat2]
-  dim(data) <- c(nftimes *  nsdates, nlat, nlon)
+  dim(data) <- c(nftimes * nsdates, nlat, nlon)
 
   if (is.null(ncenters)) {
     stop("ncenters must be specified")
   }
-  if (EOFS  == TRUE && is.null(lon)) {
+  if (EOFS == TRUE && is.null(lon)) {
     stop("longitudes must be specified")
   }
-  if (EOFS  == TRUE && is.null(lat)) {
+  if (EOFS == TRUE && is.null(lat)) {
     stop("latitudes must be specified")
   }
 
-  if (EOFS  == TRUE) {
-    data_pc <- EOF(# nolint
+  if (EOFS == TRUE) {
+    data_pc <- EOF( # nolint
       data,
       lat = as.vector(lat),
       lon = as.vector(lon),
-      neofs = neofs)
+      neofs = neofs
+    )
     if (is.null(threshold)) {
       threshold <- sum(data_pc$var)
       cluster_input <- data_pc$PC
@@ -47,11 +48,12 @@ AtomicWeatherRegime <- function(# nolint
     }
   } else {
     cluster_input <- data
-    latWeights <- InsertDim(#nolint
-      InsertDim(cos(lat * pi / 180), 1, nftimes * nsdates), #nolint
+    latWeights <- InsertDim( # nolint
+      InsertDim(cos(lat * pi / 180), 1, nftimes * nsdates), # nolint
       3,
-      nlon)
-    cluster_input <- cluster_input * latWeights #nolint
+      nlon
+    )
+    cluster_input <- cluster_input * latWeights # nolint
     dim(cluster_input) <- c(nftimes * nsdates, nlat * nlon)
   }
   if (method == "kmeans") {
@@ -79,14 +81,14 @@ AtomicWeatherRegime <- function(# nolint
       for (j in 1:ncenters) {
         total <- sum(occurences$lengths[occurences$values == j])
         frequency[i, j] <-
-          (total /  nftimes) * 100
+          (total / nftimes) * 100
         persistence[i, j] <-
           mean(occurences$lengths[occurences$values == j])
       }
     }
   } else {
     result <- hclust(dist(cluster_input), method = method)
-    clusterCut <- cutree(result, ncenters) #nolint
+    clusterCut <- cutree(result, ncenters) # nolint
     data <- aperm(data, c(3, 2, 1))
     result <- Composite(data, clusterCut) # nolint
   }
@@ -112,18 +114,18 @@ AtomicWeatherRegime <- function(# nolint
   }
 }
 
-WeatherRegime <- function(# nolint
-  data,
-  EOFS = TRUE,
-  neofs = 30,
-  threshold = NULL,
-  lon = NULL,
-  lat = NULL,
-  ncenters = NULL,
-  method = "kmeans",
-  nstart = 30,
-  iter.max = 100,
-  ncores = NULL) {
+WeatherRegime <- function( # nolint
+                          data,
+                          EOFS = TRUE,
+                          neofs = 30,
+                          threshold = NULL,
+                          lon = NULL,
+                          lat = NULL,
+                          ncenters = NULL,
+                          method = "kmeans",
+                          nstart = 30,
+                          iter.max = 100,
+                          ncores = NULL) {
   if (length(dim(data)) > 4) {
     sdate <- which(names(dim(data)) == "sdate")
     ftime <- which(names(dim(data)) == "ftime")

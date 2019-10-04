@@ -23,7 +23,7 @@ af <- 1
 # All projection from mapproj package should be supported
 # but error may arise for non-polar plots
 # DEFAULT IS POLAR PLOT
-map_projection <- "azequalarea"  # Alternative: "azequidistant"
+map_projection <- "azequalarea" # Alternative: "azequidistant"
 
 # Number of panels per figure (rows and column): default for polar plots
 panels <- c(3, 1)
@@ -140,11 +140,13 @@ palette3 <- colorRampPalette(c(
 ))
 
 # additional color palette used for extradiagnostics histogram
-KOL <- c("black",
-         "darkgreen",
-         "blue",
-         "darkorange",
-         "red",
-         "violet",
-         "grey50",
-         "black")
+KOL <- c(
+  "black",
+  "darkgreen",
+  "blue",
+  "darkorange",
+  "red",
+  "violet",
+  "grey50",
+  "black"
+)

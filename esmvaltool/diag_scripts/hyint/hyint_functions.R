@@ -65,38 +65,42 @@ getfilename_regridded <- function(spath, rgrid, var0, model_idx) {
 
 getfilename_indices <-
   function(spath,
-           label,
-           model_idx,
-           season,
-           hist = F,
-           hist_years = hist_years,
-           grid = F,
-           topo = F) {
+             label,
+             model_idx,
+             season,
+             hist = F,
+             hist_years = hist_years,
+             grid = F,
+             topo = F) {
     exp <- models_name[model_idx]
     model_exp <- models_experiment[model_idx]
     model_ens <- models_ensemble[model_idx]
     if (grid) {
-      filename <- paste0(spath,
-                         "/",
-                         label,
-                         "_",
-                         exp,
-                         "_",
-                         model_exp,
-                         "_",
-                         model_ens,
-                         ".grid")
+      filename <- paste0(
+        spath,
+        "/",
+        label,
+        "_",
+        exp,
+        "_",
+        model_exp,
+        "_",
+        model_ens,
+        ".grid"
+      )
     } else if (topo) {
-      filename <- paste0(spath,
-                         "/",
-                         label,
-                         "_",
-                         exp,
-                         "_",
-                         model_exp,
-                         "_",
-                         model_ens,
-                         "_topo.nc")
+      filename <- paste0(
+        spath,
+        "/",
+        label,
+        "_",
+        exp,
+        "_",
+        model_exp,
+        "_",
+        model_ens,
+        "_topo.nc"
+      )
     } else {
       year1 <- models_start_year[model_idx]
       year2 <- models_end_year[model_idx]
@@ -198,17 +202,17 @@ getfilename_trends <- function(spath, label, model_idx, season) {
 
 getfilename_figure <-
   function(spath,
-           var,
-           year1,
-           year2,
-           model_idx,
-           season,
-           syears,
-           sregion,
-           label,
-           map,
-           output_file_type,
-           multimodel = F) {
+             var,
+             year1,
+             year2,
+             model_idx,
+             season,
+             syears,
+             sregion,
+             label,
+             map,
+             output_file_type,
+             multimodel = F) {
     if (nchar(var) > 10) {
       var <- substr(var, 1, 10)
     }
@@ -282,8 +286,8 @@ whicher <- function(axis, number) {
 # area of longitude/latitude rectangle
 area_lonlat <- function(lon1, lon2, lat1, lat2) {
   R <- 6378
-  return(2 * pi * R ^ 2 * abs(sin(lat1 / 180. * pi) - sin(lat2 / 180. * pi))
-         * abs(lon1 - lon2) / 360)
+  return(2 * pi * R^2 * abs(sin(lat1 / 180. * pi) - sin(lat2 / 180. * pi))
+    * abs(lon1 - lon2) / 360)
 }
 
 
@@ -293,7 +297,7 @@ area_size <- function(ics,
                       resolution = NA,
                       norm = F) {
   if (is.na(resolution) &
-      (length(ics) == 1) & (length(ipsilon) == 1)) {
+    (length(ics) == 1) & (length(ipsilon) == 1)) {
     stop("Provide either resolution or two adjacent elements")
   }
   if (is.na(resolution) & (length(ics) != 1)) {
@@ -301,10 +305,12 @@ area_size <- function(ics,
   }
   field <- array(NA, dim = c(length(ics), length(ipsilon)))
   for (j in 1:length(ipsilon)) {
-    field[, j] <- area_lonlat(0,
-                              resolution,
-                              ipsilon[j] - 0.5 * resolution,
-                              ipsilon[j] + 0.5 * resolution)
+    field[, j] <- area_lonlat(
+      0,
+      resolution,
+      ipsilon[j] - 0.5 * resolution,
+      ipsilon[j] + 0.5 * resolution
+    )
   }
   if (norm) {
     field <- field / sum(field)
@@ -341,14 +347,15 @@ area_weight <- function(ics,
 # normalize a 2D or 3D field by a 2d matrix of area weight
 area_weight_norm <-
   function(ics,
-           ipsilon,
-           field,
-           root = T,
-           norm = F) {
+             ipsilon,
+             field,
+             root = T,
+             norm = F) {
     timedim <- dim(field)[length(dim(field))]
     weights <- replicate(timedim, area_weight(ics, ipsilon,
-                                              root = root,
-                                              norm = norm))
+      root = root,
+      norm = norm
+    ))
     field <- field * weights
     return(field)
   }
@@ -477,8 +484,10 @@ power_date_no_leap <- function(season, ANNO1, ANNO2) {
     season,
     "season"
   ))
-  print(paste("From", dataline.leap$data[1], "to",
-              dataline.leap$data[length(dataline.leap$season)]))
+  print(paste(
+    "From", dataline.leap$data[1], "to",
+    dataline.leap$data[length(dataline.leap$season)]
+  ))
   return(dataline.leap)
 }
 
@@ -497,9 +506,11 @@ power_date_30day <- function(season, ANNO1, ANNO2) {
     }
     seas[i + 1] <- ss
   }
-  dataline_30day <- list(day = dd,
-                         month = mm,
-                         season = seas)
+  dataline_30day <- list(
+    day = dd,
+    month = mm,
+    season = seas
+  )
   print("SIMPLIFIED CALENDAR FOR 30-day CALENDAR: Time Array Built")
   print(paste(
     "Length:",
@@ -513,14 +524,14 @@ power_date_30day <- function(season, ANNO1, ANNO2) {
 
 calc_region_timeseries <-
   function(x,
-           y,
-           indata,
-           region,
-           calc_sd = F,
-           weighted_mean = T,
-           root = F,
-           norm = T,
-           ..) {
+             y,
+             indata,
+             region,
+             calc_sd = F,
+             weighted_mean = T,
+             root = F,
+             norm = T,
+             ..) {
     # This function subsets a lon/lat/time array based on an input
     # region(lon1,loni2,lat1,lat2) and returns its timeseries.
     # Area weights are applied if requested. The function returns also
@@ -532,8 +543,10 @@ calc_region_timeseries <-
     retx <- which(region[1] <= x & x <= region[2])
     rety <- which(region[3] <= y & y <= region[4])
     if (!calc_sd) {
-      print(paste("Calc.region.timeseries: ",
-                  length(retx) * length(rety)))
+      print(paste(
+        "Calc.region.timeseries: ",
+        length(retx) * length(rety)
+      ))
     }
     if (is.na(retx[1]) | is.na(rety[1])) {
       print("calc.region.timeseries: no data in selected region. Returning NA.")
@@ -542,7 +555,8 @@ calc_region_timeseries <-
       retdata <- indata[retx, rety, , drop = F]
       if (weighted_mean & !calc_sd) {
         retdata <- area_weight_norm(x[retx], y[rety], retdata,
-                                    root = root, norm = norm)
+          root = root, norm = norm
+        )
       }
       outdata <- apply(retdata, idimtimedata, mean, na.rm = T)
       if (calc_sd) {
@@ -583,11 +597,11 @@ create_grid <- function(ref_file = "./reffile",
 #
 create_landseamask <-
   function(regrid = "./gridDef",
-           ref_file = ref_file,
-           loc = "./",
-           regridded_topo = paste0("./", "regridded_topo.nc"),
-           landmask = "./landSeaMask.nc",
-           topo_only = F) {
+             ref_file = ref_file,
+             loc = "./",
+             regridded_topo = paste0("./", "regridded_topo.nc"),
+             landmask = "./landSeaMask.nc",
+             topo_only = F) {
     # Test if gridfile exists
     # otherwise call function to generate one
     if (!file.exists(regrid)) {
@@ -619,9 +633,10 @@ create_landseamask <-
 
       # Set below sea-level gridpoints to missing
       cdo("setrtomiss",
-          args = "-9000,0",
-          input = ftopo1pos,
-          output = landmask)
+        args = "-9000,0",
+        input = ftopo1pos,
+        output = landmask
+      )
       unlink(c(ftopomiss1, ftopo1pos))
     }
     unlink(ftopo)
@@ -666,7 +681,7 @@ apply_elevation_mask <- function(rfield,
   rfield <- rfield * myear_relevation
 
   return(rfield)
-  }
+}
 
 
 
@@ -697,7 +712,7 @@ mean_spell_length <- function(m) {
   # Loop through grid points
   for (ilon in 1:nlon) {
     for (ilat in 1:nlat) {
-      spell_point <- (m[ilon, ilat,])
+      spell_point <- (m[ilon, ilat, ])
       # Look for variations along time axis
       diff_spell_point <-
         spell_point[2:ntime] - spell_point[1:ntime - 1]
@@ -727,9 +742,9 @@ mean_spell_length <- function(m) {
 
 get_elevation <-
   function(filename = NULL,
-           elev_range = c(-1000, 10000),
-           mask = F,
-           elev_plot = F) {
+             elev_range = c(-1000, 10000),
+             mask = F,
+             elev_plot = F) {
     # get elevation data from a high resolution topography file.
 
     funlink <- F
@@ -749,10 +764,10 @@ get_elevation <-
     lat_el <-
       ncdf_opener(filename, namevar = "latitude", rotate = "no")
     elevation[which(elevation < elev_range[1] |
-                      elevation > elev_range[2])] <- NA
+      elevation > elev_range[2])] <- NA
     if (mask) {
       elevation[which(elevation >= elev_range[1] &
-                        elevation <= elev_range[2])] <- 1
+        elevation <= elev_range[2])] <- 1
     }
     if (elev_plot) {
       filled_contour3(lon_el, lat_el, elevation, color.palette = rainbow)
@@ -768,11 +783,14 @@ get_elevation <-
       )
     }
     el_list <-
-      list(elevation = elevation,
-           lon_el = lon_el,
-           lat_el = lat_el)
-    if (funlink)
+      list(
+        elevation = elevation,
+        lon_el = lon_el,
+        lat_el = lat_el
+      )
+    if (funlink) {
       unlink(filename)
+    }
     return(el_list)
   }
 
@@ -792,17 +810,17 @@ get_elevation <-
 #  and "tyears" flags. It returns a list including its own dimensions
 ncdf_opener_universal <-
   function(namefile,
-           namevar = NULL,
-           namelon = NULL,
-           namelat = NULL,
-           tmonths = NULL,
-           tyears = NULL,
-           rotate = "full",
-           interp2grid = F,
-           grid = "r144x73",
-           remap_method = "remapcon2",
-           exportlonlat = TRUE,
-           verbose = F) {
+             namevar = NULL,
+             namelon = NULL,
+             namelat = NULL,
+             tmonths = NULL,
+             tyears = NULL,
+             rotate = "full",
+             interp2grid = F,
+             grid = "r144x73",
+             remap_method = "remapcon2",
+             exportlonlat = TRUE,
+             verbose = F) {
     # load package
     require(ncdf4)
 
@@ -841,8 +859,9 @@ ncdf_opener_universal <-
       print(paste("Remapping with CDO on", grid, "grid"))
       if (is.null(namevar)) {
         namefile <- cdo(remap_method,
-                        args = paste0("'", grid, "'"),
-                        input = namefile)
+          args = paste0("'", grid, "'"),
+          input = namefile
+        )
       } else {
         selectf <- cdo("selvar", args = namevar, input = namefile)
         gridf <- tempfile()
@@ -865,15 +884,15 @@ ncdf_opener_universal <-
       # for x,y data
       if (dims == 2) {
         ll <- length(line[, 1])
-        line[(ll * move1):ll,] <- vettore[1:(ll * move2 + 1),]
-        line[1:(ll * move1 - 1),] <- vettore[(ll * move2 + 2):ll,]
+        line[(ll * move1):ll, ] <- vettore[1:(ll * move2 + 1), ]
+        line[1:(ll * move1 - 1), ] <- vettore[(ll * move2 + 2):ll, ]
       }
       # for x,y,t data
       if (dims == 3) {
         ll <- length(line[, 1, 1])
-        line[(ll * move1):ll, ,] <- vettore[1:(ll * move2 + 1), ,]
-        line[1:(ll * move1 - 1), ,] <-
-          vettore[(ll * move2 + 2):ll, ,]
+        line[(ll * move1):ll, , ] <- vettore[1:(ll * move2 + 1), , ]
+        line[1:(ll * move1 - 1), , ] <-
+          vettore[(ll * move2 + 2):ll, , ]
       }
       return(line)
     }
@@ -882,12 +901,12 @@ ncdf_opener_universal <-
     flipper <- function(field) {
       dims <- length(dim(field))
       if (dims == 2) {
-        ll <- length(field[1,])
+        ll <- length(field[1, ])
         field <- field[, ll:1]
       } # for x,y data
       if (dims == 3) {
         ll <- length(field[1, , 1])
-        field <- field[, ll:1,]
+        field <- field[, ll:1, ]
       } # for x,y,t data
       return(field)
     }
@@ -905,7 +924,7 @@ ncdf_opener_universal <-
         stop("More than one var in the files, please select it
              with namevar=yourvar")
       }
-      }
+    }
 
     # load axis: updated version, looking for dimension directly stored
     # inside the variable
@@ -938,14 +957,18 @@ ncdf_opener_universal <-
         maxdays <- 30
       }
       # uses number_days_month, which loops to get the month change
-      lastday <- as.PCICt(paste0(max(tyears), "-", max(tmonths), "-",
-                                 maxdays),
-                          cal = caldata,
-                          format = "%Y-%m-%d")
+      lastday <- as.PCICt(paste0(
+        max(tyears), "-", max(tmonths), "-",
+        maxdays
+      ),
+      cal = caldata,
+      format = "%Y-%m-%d"
+      )
       firstday <-
         as.PCICt(paste0(min(tyears), "-", min(tmonths), "-01"),
-                 cal = caldata,
-                 format = "%Y-%m-%d")
+          cal = caldata,
+          format = "%Y-%m-%d"
+        )
       if (max(timeline) < lastday | min(timeline) > firstday) {
         stop("You requested a time interval that is not present in the NetCDF")
       }
@@ -958,13 +981,15 @@ ncdf_opener_universal <-
     if (timeflag) {
       # select data we need
       select <- which(as.numeric(format(timeline, "%Y")) %in% tyears &
-                        as.numeric(format(timeline, "%m")) %in% tmonths)
+        as.numeric(format(timeline, "%m")) %in% tmonths)
       field <- field[, , select]
       time <- timeline[select]
 
       printv(paste("This is a", caldata, "calendar"))
-      printv(paste(length(time), "days selected from", time[1],
-                   "to", time[length(time)]))
+      printv(paste(
+        length(time), "days selected from", time[1],
+        "to", time[length(time)]
+      ))
 
       printv(paste("Months that have been loaded are.. "))
       printv(unique(format(time, "%Y-%m")))
@@ -1043,7 +1068,7 @@ ncdf_opener_universal <-
 
     # returning file list
     return(mget(c("field", naxis)))
-    }
+  }
 
 # ncdf.opener is a simplified wrapper for ncdf.opener.universal which returns
 # only the field, ignoring the list
@@ -1079,17 +1104,17 @@ ncdf_opener <- function(namefile,
 # function to open ncdf files (much more refined, with CDO-based interpolation)
 ncdf_opener_time <-
   function(namefile,
-           namevar = NULL,
-           namelon = NULL,
-           namelat = NULL,
-           tmonths = NULL,
-           tyears = NULL,
-           ics = ics,
-           ipsilon = ipsilon,
-           rotate = "full",
-           interp2grid = F,
-           grid = "r144x73",
-           remap_method = "remapcon2") {
+             namevar = NULL,
+             namelon = NULL,
+             namelat = NULL,
+             tmonths = NULL,
+             tyears = NULL,
+             ics = ics,
+             ipsilon = ipsilon,
+             rotate = "full",
+             interp2grid = F,
+             grid = "r144x73",
+             remap_method = "remapcon2") {
     # function to open netcdf files. It uses ncdf4 library
     # time selection of month and years needed automatically rotate matrix
     # to place greenwich at the center (flag "rotate")
@@ -1120,8 +1145,9 @@ ncdf_opener_time <-
     if (interp2grid) {
       print(paste("Remapping with CDO on", grid, "grid"))
       namefile <- cdo(remap_method,
-                      args = paste0("'", grid, "'"),
-                      input = namefile)
+        args = paste0("'", grid, "'"),
+        input = namefile
+      )
     }
 
     # define rotate function (faster than with apply)
@@ -1137,15 +1163,15 @@ ncdf_opener_time <-
       if (dims == 2) {
         # for x,y data
         ll <- length(line[, 1])
-        line[(ll * move1):ll,] <- vettore[1:(ll * move2 + 1),]
-        line[1:(ll * move1 - 1),] <- vettore[(ll * move2 + 2):ll,]
+        line[(ll * move1):ll, ] <- vettore[1:(ll * move2 + 1), ]
+        line[1:(ll * move1 - 1), ] <- vettore[(ll * move2 + 2):ll, ]
       }
       if (dims == 3) {
         # for x,y,t data
         ll <- length(line[, 1, 1])
-        line[(ll * move1):ll, ,] <- vettore[1:(ll * move2 + 1), ,]
-        line[1:(ll * move1 - 1), ,] <-
-          vettore[(ll * move2 + 2):ll, ,]
+        line[(ll * move1):ll, , ] <- vettore[1:(ll * move2 + 1), , ]
+        line[1:(ll * move1 - 1), , ] <-
+          vettore[(ll * move2 + 2):ll, , ]
       }
       return(line)
     }
@@ -1154,12 +1180,12 @@ ncdf_opener_time <-
     flipper <- function(field) {
       dims <- length(dim(field))
       if (dims == 2) {
-        ll <- length(field[1,])
+        ll <- length(field[1, ])
         field <- field[, ll:1]
       } # for x,y data
       if (dims == 3) {
         ll <- length(field[1, , 1])
-        field <- field[, ll:1,]
+        field <- field[, ll:1, ]
       } # for x,y,t data
       return(field)
     }
@@ -1210,8 +1236,9 @@ ncdf_opener_time <-
     )
     firstday <-
       as.PCICt(paste0(min(tyears), "-", min(tmonths), "-01"),
-               cal = caldata,
-               format = "%Y-%m-%d")
+        cal = caldata,
+        format = "%Y-%m-%d"
+      )
     if (max(timeline) < lastday | min(timeline) > firstday) {
       stop("You requested a time interval that is not present in the NetCDF")
     }
@@ -1225,7 +1252,7 @@ ncdf_opener_time <-
 
     # select data we need
     select <- which(as.numeric(format(timeline, "%Y")) %in% tyears &
-                      as.numeric(format(timeline, "%m")) %in% tmonths)
+      as.numeric(format(timeline, "%m")) %in% tmonths)
 
     field <- field[, , select]
     time <- timeline[select]
@@ -1334,7 +1361,7 @@ scale_figure <- function(plot_type,
   x11_width <- x11_width * figure_rel_width[plot_type]
 
   figure_aspect_ratio[plot_type] <- (figure_aspect_ratio[plot_type]
-                                     * npancol / npanrow)
+  * npancol / npanrow)
 
   plot_size <-
     c(png_width, png_width / figure_aspect_ratio[plot_type])
@@ -1342,8 +1369,8 @@ scale_figure <- function(plot_type,
     plot_size[1] <- pdf_width
     plot_size[2] <- pdf_width / figure_aspect_ratio[plot_type]
   } else if ((tolower(output_file_type) == "eps") |
-             (tolower(output_file_type) == "epsi") |
-             (tolower(output_file_type) == "ps")) {
+    (tolower(output_file_type) == "epsi") |
+    (tolower(output_file_type) == "ps")) {
     plot_size[1] <- pdf_width
     plot_size[2] <- pdf_width / figure_aspect_ratio[plot_type]
   } else if (tolower(output_file_type) == "x11") {
@@ -1358,9 +1385,11 @@ graphics_startup <- function(figname, output_file_type, plot_size) {
   source(diag_script_cfg)
   # choose output format for figure - by JvH
   if (tolower(output_file_type) == "png") {
-    png(filename = figname,
-        width = plot_size[1],
-        height = plot_size[2])
+    png(
+      filename = figname,
+      width = plot_size[1],
+      height = plot_size[2]
+    )
   } else if (tolower(output_file_type) == "pdf") {
     pdf(
       file = figname,
@@ -1369,8 +1398,8 @@ graphics_startup <- function(figname, output_file_type, plot_size) {
       onefile = T
     )
   } else if ((tolower(output_file_type) == "eps") |
-             (tolower(output_file_type) == "epsi") |
-             (tolower(output_file_type) == "ps")) {
+    (tolower(output_file_type) == "epsi") |
+    (tolower(output_file_type) == "ps")) {
     setEPS(
       width = plot_size[1],
       height = plot_size[2],
@@ -1393,28 +1422,28 @@ graphics_close <- function(figname) {
 # extensive filled.contour function
 filled_contour3 <-
   function(x = seq(0, 1, length.out = nrow(z)),
-           y = seq(0, 1, length.out = ncol(z)),
-           z,
-           xlim = range(x, finite = TRUE),
-           ylim = range(y, finite = TRUE),
-           zlim = range(z, finite = TRUE),
-           levels = pretty(zlim, nlevels),
-           nlevels = 20,
-           color.palette = cm.colors,
-           col = color.palette(length(levels) - 1),
-           extend = TRUE,
-           plot.title,
-           plot.axes,
-           key.title,
-           key.axes,
-           asp = NA,
-           xaxs = "i",
-           yaxs = "i",
-           las = 1,
-           axes = TRUE,
-           frame.plot = axes,
-           mar,
-           ...) {
+             y = seq(0, 1, length.out = ncol(z)),
+             z,
+             xlim = range(x, finite = TRUE),
+             ylim = range(y, finite = TRUE),
+             zlim = range(z, finite = TRUE),
+             levels = pretty(zlim, nlevels),
+             nlevels = 20,
+             color.palette = cm.colors,
+             col = color.palette(length(levels) - 1),
+             extend = TRUE,
+             plot.title,
+             plot.axes,
+             key.title,
+             key.axes,
+             asp = NA,
+             xaxs = "i",
+             yaxs = "i",
+             las = 1,
+             axes = TRUE,
+             frame.plot = axes,
+             mar,
+             ...) {
     # modification by Ian Taylor of the filled.contour function
     # to remove the key and facilitate overplotting with contour()
     # further modified by Carey McGilliard and Bridget Ferris
@@ -1453,11 +1482,12 @@ filled_contour3 <-
 
     plot.new()
     plot.window(xlim,
-                ylim,
-                "",
-                xaxs = xaxs,
-                yaxs = yaxs,
-                asp = asp)
+      ylim,
+      "",
+      xaxs = xaxs,
+      yaxs = yaxs,
+      asp = asp
+    )
     if (!is.matrix(z) || nrow(z) <= 1 || ncol(z) <= 1) {
       stop("no proper 'z' matrix specified")
     }
@@ -1465,12 +1495,15 @@ filled_contour3 <-
       storage.mode(z) <- "double"
     }
     .filled.contour(as.double(x), as.double(y), z, as.double(levels),
-                    col = col)
+      col = col
+    )
     if (missing(plot.axes)) {
       if (axes) {
-        title(main = "",
-              xlab = "",
-              ylab = "")
+        title(
+          main = "",
+          xlab = "",
+          ylab = ""
+        )
         Axis(x, side = 1, ...)
         Axis(y, side = 2, ...)
       }
@@ -1499,7 +1532,7 @@ image_scale3 <- function(z,
                          cex.label = 1,
                          cex.colorbar = 1,
                          colorbar.width = 1,
-                         new_fig_scale = c(-0.07,-0.03, 0.1,-0.1),
+                         new_fig_scale = c(-0.07, -0.03, 0.1, -0.1),
                          ...) {
   # save properties from main plotting region
   old.par <- par(no.readonly = TRUE)
@@ -1525,9 +1558,11 @@ image_scale3 <- function(z,
   col <- color.palette(length(levels) - 1)
 
   # starting plot
-  par(mar = c(1, 1, 1, 1),
-      fig = new.fig,
-      new = TRUE)
+  par(
+    mar = c(1, 1, 1, 1),
+    fig = new.fig,
+    new = TRUE
+  )
 
   # creating polygons for legend
   poly <- vector(mode = "list", length(col))
@@ -1561,25 +1596,31 @@ image_scale3 <- function(z,
   }
   if (extend) {
     polygon(c(0, 1, 1 / 2),
-            c(levels[1], levels[1], levels[1] - dl),
-            col = col[1],
-            border = NA)
+      c(levels[1], levels[1], levels[1] - dl),
+      col = col[1],
+      border = NA
+    )
     polygon(c(0, 1, 1 / 2),
-            c(levels[length(levels)], levels[length(levels)],
-              levels[length(levels)] + dl),
-            col = col[length(col)],
-            border = NA)
+      c(
+        levels[length(levels)], levels[length(levels)],
+        levels[length(levels)] + dl
+      ),
+      col = col[length(col)],
+      border = NA
+    )
     polygon(
       c(0, 0, 1 / 2, 1, 1, 1 / 2),
-      c(levels[1], levels[length(levels)], levels[length(levels)] + dl,
-        levels[length(levels)], levels[1], levels[1] - dl),
+      c(
+        levels[1], levels[length(levels)], levels[length(levels)] + dl,
+        levels[length(levels)], levels[1], levels[1] - dl
+      ),
       border = "black",
       lwd = 2
     )
     ylim0 <- range(levels)
     prettyspecial <- pretty(ylim0)
     prettyspecial <- prettyspecial[prettyspecial <= max(ylim0) &
-                                     prettyspecial >= min(ylim0)]
+      prettyspecial >= min(ylim0)]
     axis(
       4,
       las = 1,
@@ -1595,10 +1636,11 @@ image_scale3 <- function(z,
 
   # box, axis and leged
   mtext(colorbar.label,
-        line = line.label,
-        side = 4,
-        cex = cex.label,
-        ...)
+    line = line.label,
+    side = 4,
+    cex = cex.label,
+    ...
+  )
 
   # resetting properties for starting a new plot (mfrow style)
   par(old.par)
@@ -1608,14 +1650,15 @@ image_scale3 <- function(z,
 
 cdo <-
   function(command,
-           args = "",
-           input = "",
-           options = "",
-           output = "",
-           stdout = "",
-           noout = F) {
-    if (args != "")
+             args = "",
+             input = "",
+             options = "",
+             output = "",
+             stdout = "",
+             noout = F) {
+    if (args != "") {
       args <- paste0(",", args)
+    }
     if (stdout != "") {
       stdout <- paste0(" > '", stdout, "'")
       noout <- T
@@ -1634,8 +1677,10 @@ cdo <-
       output0 <- output
     }
     argstr <-
-      paste0(options, " ", command, args, " ", input, " ", output,
-             " ", stdout)
+      paste0(
+        options, " ", command, args, " ", input, " ", output,
+        " ", stdout
+      )
     print(paste("cdo", argstr))
     ret <- system2("cdo", args = argstr)
     if (ret != 0) {

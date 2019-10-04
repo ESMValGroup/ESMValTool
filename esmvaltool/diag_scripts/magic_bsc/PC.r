@@ -12,16 +12,18 @@ read_pc <- function(file) {
     yleft = NA,
     yright = 0
   )
-  attr <- strsplit(trimws(system(
-    paste(
-      "perl -e 'open FH,\"",
-      file,
-      "\";while(<FH>){@parts= /^# (.+): (.+) /;print \"@parts \";}'",
-      sep = ""
-    ),
-    intern = TRUE
-  )),
-  "\\s+")
+  attr <- strsplit(
+    trimws(system(
+      paste(
+        "perl -e 'open FH,\"",
+        file,
+        "\";while(<FH>){@parts= /^# (.+): (.+) /;print \"@parts \";}'",
+        sep = ""
+      ),
+      intern = TRUE
+    )),
+    "\\s+"
+  )
   attr <- matrix(unlist(attr), ncol = 2, byrow = T)
   pc$attr <- as.list(attr[, 2])
   names(pc$attr) <- attr[, 1]
@@ -36,9 +38,11 @@ read_xml_pc <- function(file) {
   pcs <- xml_data$wind_turbine_properties$power_curves
   for (i in 1:length(pcs)) {
     if (pcs[[i]]$air_density == 1.225) {
-      pc$points <- ldply(pcs[[i]]$power_curve_table, #nolint
-                         data.frame)[, c(2, 3)]
-      colnames(pc$points) <- c("WindSpeed", "Power") #nolint
+      pc$points <- ldply(
+        pcs[[i]]$power_curve_table, # nolint
+        data.frame
+      )[, c(2, 3)]
+      colnames(pc$points) <- c("WindSpeed", "Power") # nolint
       pc$points <- transform(
         pc$points,
         WindSpeed = as.numeric(as.character(WindSpeed)),
@@ -51,7 +55,7 @@ read_xml_pc <- function(file) {
   }
   pc$fun <- approxfun(
     pc$points$WindSpeed,
-    #nolint
+    # nolint
     pc$points$Power,
     # nolint
     method = "linear",
@@ -76,7 +80,7 @@ read_xml_pc <- function(file) {
   return(pc)
 }
 plot_pc <- function(pc) {
-  plot <- ggplot(pc$points, aes(x = WindSpeed, y = Power)) +  # nolint
+  plot <- ggplot(pc$points, aes(x = WindSpeed, y = Power)) + # nolint
     geom_point() +
     stat_function(fun = pc$fun) +
     xlim(0, 35)
@@ -89,12 +93,16 @@ plot_pc_list <- function(list_pcs) {
     } # nolint
   })
   names <- lapply(list_pcs, function(x)
-    x$attr$Name)  # nolint
-  plot <- ggplot(NULL, aes(x = x, colour = Turbine)) #nolint
+    x$attr$Name) # nolint
+  plot <- ggplot(NULL, aes(x = x, colour = Turbine)) # nolint
   for (i in 1:length(list_pcs)) {
-    plot <- plot + stat_function(data = data.frame(x = 0:30,
-                                                   Turbine = factor(names[[i]])),
-                                 fun = list_funs[[i]])
+    plot <- plot + stat_function(
+      data = data.frame(
+        x = 0:30,
+        Turbine = factor(names[[i]])
+      ),
+      fun = list_funs[[i]]
+    )
   }
   plot <-
     plot + xlab("Wind speed (m/s)") + ylab("Capacity Factor (%)") +
@@ -116,14 +124,14 @@ wind2power <- function(wind, pc) {
 }
 wind2CF <- function(wind, pc) {
   power <- pc$fun(wind)
-  CF <- power / pc$attr$RatedPower #nolint
+  CF <- power / pc$attr$RatedPower # nolint
 }
 WPD <- function(wind, ro) {
-  return(0.5 * ro * wind ^ 3)
+  return(0.5 * ro * wind^3)
 }
 bump <- function(x) {
   f <- function(y) {
-    exp(-1 / y ^ 2)
+    exp(-1 / y^2)
   }
   return(f(x) / (f(x) + f(1 - x)))
 }

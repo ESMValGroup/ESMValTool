@@ -4,14 +4,14 @@
 ######################################################
 miles_block_fast <-
   function(dataset,
-           expid,
-           ens,
-           year1,
-           year2,
-           season,
-           z500filename,
-           FILESDIR,
-           doforce) {
+             expid,
+             ens,
+             year1,
+             year2,
+             season,
+             z500filename,
+             FILESDIR,
+             doforce) {
     t0 <- proc.time()
 
     # setting up time domain
@@ -19,24 +19,28 @@ miles_block_fast <-
     timeseason <- season2timeseason(season)
 
     # define folders using file.builder function (takes care of ensembles)
-    savefile1 <- file_builder(FILESDIR,
-                              "Block",
-                              "BlockClim",
-                              dataset,
-                              expid,
-                              ens,
-                              year1,
-                              year2,
-                              season)
-    savefile2 <- file_builder(FILESDIR,
-                              "Block",
-                              "BlockFull",
-                              dataset,
-                              expid,
-                              ens,
-                              year1,
-                              year2,
-                              season)
+    savefile1 <- file_builder(
+      FILESDIR,
+      "Block",
+      "BlockClim",
+      dataset,
+      expid,
+      ens,
+      year1,
+      year2,
+      season
+    )
+    savefile2 <- file_builder(
+      FILESDIR,
+      "Block",
+      "BlockFull",
+      dataset,
+      expid,
+      ens,
+      year1,
+      year2,
+      season
+    )
 
     # check if data is already there to avoid re-run
     if (file.exists(savefile1) & file.exists(savefile2)) {
@@ -109,10 +113,10 @@ miles_block_fast <-
 
     # TM90: beta version, the amazing power of R vectorization!
     # 6 lines to get the climatology
-    tm90_ghgn <- (z500[, tm90_north + tm90_range,] -
-                    z500[, tm90_central + tm90_range,]) / (tm90_fin - tm90_fi0)
-    tm90_ghgs <- (z500[, tm90_central + tm90_range,] -
-                    z500[, tm90_south + tm90_range,]) / (tm90_fi0 - tm90_fis)
+    tm90_ghgn <- (z500[, tm90_north + tm90_range, ] -
+      z500[, tm90_central + tm90_range, ]) / (tm90_fin - tm90_fi0)
+    tm90_ghgs <- (z500[, tm90_central + tm90_range, ] -
+      z500[, tm90_south + tm90_range, ]) / (tm90_fi0 - tm90_fis)
     tm90_check <-
       (tm90_ghgs > 0 & tm90_ghgn < (-10)) # TM90 conditions
     tm90_check[tm90_check == T] <- 1
@@ -147,8 +151,9 @@ miles_block_fast <-
     print("Davini et al. (2012) index and diagnostics...")
     print(c("distance for gradients:", step0 * diff(ics)[1]))
     print(paste("range of latitudes ", fi0, "-", 90 - step0 * diff(ics)[1],
-                " N",
-                sep = ""))
+      " N",
+      sep = ""
+    ))
 
     ##########################################################
     #--------------Istantaneous Blocking---------------------#
@@ -164,11 +169,11 @@ miles_block_fast <-
       # computing blocking for different latitudes
       for (delta in 0:range) {
         ghgn <- (z500[, north + delta, t] -
-                   z500[, central + delta, t]) / (fin - fi0)
+          z500[, central + delta, t]) / (fin - fi0)
         ghgs <- (z500[, central + delta, t] -
-                   z500[, south + delta, t]) / (fi0 - fis)
+          z500[, south + delta, t]) / (fi0 - fis)
         gh2gs <- (z500[, south + delta, t] -
-                    z500[, maxsouth + delta, t]) / (fi0 - fis)
+          z500[, maxsouth + delta, t]) / (fi0 - fis)
         check1 <- which(ghgs > 0 & ghgn < (-10))
         check2 <- which(ghgs > 0 & ghgn < (-10) & gh2gs < (-5))
         # supplementary condition
@@ -239,11 +244,11 @@ miles_block_fast <-
     cn <-
       apply(totrwb, c(1, 2), function(x)
         sum(x[x == (-10)], na.rm = T)) /
-      (totdays) * (-10)
+        (totdays) * (-10)
     acn <-
       apply(totrwb, c(1, 2), function(x)
         sum(x[x == (10)], na.rm = T)) /
-      (totdays) * (10)
+        (totdays) * (10)
 
     t1 <- proc.time() - t0
     print(t1)
@@ -266,8 +271,9 @@ miles_block_fast <-
 
     # 10-day persistence for extreme long block
     longblock <- blocking_persistence(large,
-                                      minduration = 10,
-                                      time.array = etime)
+      minduration = 10,
+      time.array = etime
+    )
 
     tf <- proc.time() - t1
     print(tf)
@@ -311,8 +317,9 @@ miles_block_fast <-
     # dimensions definition
     fulltime <- as.numeric(etime$data) - as.numeric(etime$data)[1]
     TIME <- paste(tunit, " since ", year1, "-", timeseason[1],
-                  "-01 00:00:00",
-                  sep = "")
+      "-01 00:00:00",
+      sep = ""
+    )
     LEVEL <- 50000
     x <- ncdim_def("lon", "degrees_east", ics, longname = "longitude")
     y <-

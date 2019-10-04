@@ -5,15 +5,15 @@
 
 miles_regimes_fast <-
   function(dataset,
-           expid,
-           ens,
-           year1,
-           year2,
-           season,
-           z500filename,
-           FILESDIR,
-           nclusters,
-           doforce) {
+             expid,
+             ens,
+             year1,
+             year2,
+             season,
+             z500filename,
+             FILESDIR,
+             nclusters,
+             doforce) {
     # t0
     t0 <- proc.time()
 
@@ -31,15 +31,17 @@ miles_regimes_fast <-
 
     # define file where save data
     savefile1 <-
-      file_builder(FILESDIR,
-                   "Regimes",
-                   "RegimesPattern",
-                   dataset,
-                   expid,
-                   ens,
-                   year1,
-                   year2,
-                   season)
+      file_builder(
+        FILESDIR,
+        "Regimes",
+        "RegimesPattern",
+        dataset,
+        expid,
+        ens,
+        year1,
+        year2,
+        season
+      )
 
     # check if data is already there to avoid re-run
     if (file.exists(savefile1)) {
@@ -104,8 +106,10 @@ miles_regimes_fast <-
     compose <- weather_regimes$regimes
     names <- paste("Regimes", 1:nclusters)
     position <- rbind(c(-45, 65), c(-35, 50), c(10, 60), c(-20, 60))
-    rownames(position) <- c("NAO-", "Atlantic Ridge",
-                            "Scandinavian Blocking", "NAO+")
+    rownames(position) <- c(
+      "NAO-", "Atlantic Ridge",
+      "Scandinavian Blocking", "NAO+"
+    )
 
     # minimum distance in degrees to assign a regime name
     min_dist_in_deg <- 20
@@ -121,11 +125,15 @@ miles_regimes_fast <-
       # use maximum or minimum (use special vector to alterate
       # distance when needed)
       if (max(compose[, , i], na.rm = T) > abs(min(compose[, , i], na.rm = T))) {
-        distmatrix <- rbind(c(ics[MM[1]], ipsilon[MM[2]]),
-                            position + c(0, 0, 0, 1000))
+        distmatrix <- rbind(
+          c(ics[MM[1]], ipsilon[MM[2]]),
+          position + c(0, 0, 0, 1000)
+        )
       } else {
-        distmatrix <- rbind(c(ics[mm[1]], ipsilon[mm[2]]),
-                            position + c(1000, 1000, 1000, 0))
+        distmatrix <- rbind(
+          c(ics[mm[1]], ipsilon[mm[2]]),
+          position + c(1000, 1000, 1000, 0)
+        )
       }
 
       # compute distances and names assignation
@@ -163,7 +171,9 @@ miles_regimes_fast <-
     # dimensions definition
     fulltime <- as.numeric(etime$data) - as.numeric(etime$data)[1]
     TIME <- paste(tunit, " since ", year1, "-", timeseason[1],
-                  "-01 00:00:00", sep = "")
+      "-01 00:00:00",
+      sep = ""
+    )
     x <- ncdim_def("lon", "degrees_east", ics, longname = "longitude")
     y <-
       ncdim_def("lat", "degrees_north", ipsilon, longname = "latitude")
@@ -220,20 +230,25 @@ miles_regimes_fast <-
 
     # testnames
     dimnchar <- ncdim_def("nchar", "", 1:max(nchar(names)),
-                          create_dimvar = FALSE)
+      create_dimvar = FALSE
+    )
     names_ncdf <-
       ncvar_def("Names", "", list(dimnchar, cl), prec = "char")
 
     # saving file
-    ncfile1 <- nc_create(savefile1,
-                         list(pattern_ncdf, cluster_ncdf,
-                              frequencies_ncdf, names_ncdf))
+    ncfile1 <- nc_create(
+      savefile1,
+      list(
+        pattern_ncdf, cluster_ncdf,
+        frequencies_ncdf, names_ncdf
+      )
+    )
     ncvar_put(
       ncfile1,
       "Regimes",
       weather_regimes$regimes,
       start = c(1, 1, 1),
-      count = c(-1,-1,-1)
+      count = c(-1, -1, -1)
     )
     ncvar_put(
       ncfile1,

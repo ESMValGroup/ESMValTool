@@ -7,9 +7,9 @@ library(abind)
 library(ggplot2)
 library(yaml)
 library(ncdf4)
-library(multiApply)# nolint
+library(multiApply) # nolint
 
-#Parsing input file paths and creating output dirs
+# Parsing input file paths and creating output dirs
 args <- commandArgs(trailingOnly = TRUE)
 params <- read_yaml(args[1])
 plot_dir <- params$plot_dir
@@ -39,7 +39,7 @@ climatology_files <- which(unname(experiment) == "historical")
 projection_files <- which(unname(experiment) != "historical")
 
 rcp_scenario <- unique(experiment[projection_files])
-model_names <-  lapply(input_files_per_var, function(x)
+model_names <- lapply(input_files_per_var, function(x)
   x$dataset)
 model_names <- unlist(unname(model_names))[projection_files]
 
@@ -70,7 +70,7 @@ agreement_threshold <- params$agreement_threshold
 
 font_size <- 12
 
-#Parameters for Season() function
+# Parameters for Season() function
 monini <- 1
 moninf <- params$moninf
 monsup <- params$monsup
@@ -79,18 +79,20 @@ if (is.null(moninf) & !is.null(monsup)) {
 } else if (!is.null(moninf) & is.null(monsup)) {
   monsup <- moninf
 }
-month_names <- c("JAN",
-                 "FEB",
-                 "MAR",
-                 "APR",
-                 "MAY",
-                 "JUN",
-                 "JUL",
-                 "AGO",
-                 "SEP",
-                 "OCT",
-                 "NOV",
-                 "DEC")
+month_names <- c(
+  "JAN",
+  "FEB",
+  "MAR",
+  "APR",
+  "MAY",
+  "JUN",
+  "JUL",
+  "AGO",
+  "SEP",
+  "OCT",
+  "NOV",
+  "DEC"
+)
 if (moninf == monsup) {
   months <- month_names[moninf]
 } else {
@@ -107,38 +109,46 @@ lat <- ncvar_get(ref_nc, "lat")
 lon <- ncvar_get(ref_nc, "lon")
 units <- ncatt_get(ref_nc, var0, "units")$value
 calendar <- ncatt_get(ref_nc, "time", "calendar")$value
-long_names <-  ncatt_get(ref_nc, var0, "long_name")$value
-time <-  ncvar_get(ref_nc, "time")
+long_names <- ncatt_get(ref_nc, var0, "long_name")$value
+time <- ncvar_get(ref_nc, "time")
 reference_data <- InsertDim(ncvar_get(ref_nc, var0), 1, 1) # nolint
-start_date <- as.POSIXct(substr(ncatt_get(ref_nc, "time",
-                                          "units")$value, 11, 29))
+start_date <- as.POSIXct(substr(ncatt_get(
+  ref_nc, "time",
+  "units"
+)$value, 11, 29))
 time <- as.Date(time, origin = start_date, calendar = calendar)
 projection <- "NULL"
 nc_close(ref_nc)
 for (i in 2:length(fullpath_filenames[climatology_files])) {
   ref_nc <- nc_open(fullpath_filenames[climatology_files][i])
   reference_data <- abind(reference_data,
-                          InsertDim(ncvar_get(ref_nc, var0), 1, 1), along = 1) # nolint
+    InsertDim(ncvar_get(ref_nc, var0), 1, 1),
+    along = 1
+  ) # nolint
   nc_close(ref_nc)
 }
 attr(reference_data, "Variables")$dat1$time <- time
 
 names(dim(reference_data)) <- c("model", "lon", "lat", "time")
 # nolint start
-#jpeg(paste0(plot_dir, "/plot.jpg"))
-#PlotEquiMap(reference_data[1,1,1,,], lon = lon, lat = lat, filled = F)
-#dev.off()
+# jpeg(paste0(plot_dir, "/plot.jpg"))
+# PlotEquiMap(reference_data[1,1,1,,], lon = lon, lat = lat, filled = F)
+# dev.off()
 # ------------------------------
 # Provisional solution to error in dimension order and time values:
 # nolint end
 time <- attr(reference_data, "Variables")$dat1$time
 attributes(time)$variables$time$calendar <- calendar
 if ((end_climatology - start_climatology + 1) * 12 == length(time)) {
-  time <- seq(as.Date(paste(start_climatology, "01", "01", sep = "-"),
-                      format = "%Y-%m-%d"),
-              as.Date(paste(end_climatology, "12", "01", sep = "-"),
-                      format = "%Y-%m-%d"),
-              "month")
+  time <- seq(
+    as.Date(paste(start_climatology, "01", "01", sep = "-"),
+      format = "%Y-%m-%d"
+    ),
+    as.Date(paste(end_climatology, "12", "01", sep = "-"),
+      format = "%Y-%m-%d"
+    ),
+    "month"
+  )
 }
 
 num_models <-
@@ -157,9 +167,9 @@ names(dim(reference_data)) <-
   c("model", "var", "time", "lat", "lon")
 # nolint start
 # ------------------------------
-#jpeg(paste0(plot_dir, "/plot1.jpg"))
-#PlotEquiMap(reference_data[1,1,1,,], lon = lon, lat = lat, filled = F)
-#dev.off()
+# jpeg(paste0(plot_dir, "/plot1.jpg"))
+# PlotEquiMap(reference_data[1,1,1,,], lon = lon, lat = lat, filled = F)
+# dev.off()
 #---------------------------------------------
 # MONTHLY - SEASONAL - ANNUAL
 # MONTH:  moninf = monsup
@@ -189,7 +199,7 @@ if (moninf <= monsup) {
 } else {
   if (monsup == 2 & moninf == 12) {
     reference_seasonal_mean <- SeasonSelect(
-      #nolint
+      # nolint
       reference_data,
       season = "DJF",
       dates = time,
@@ -209,7 +219,7 @@ if (moninf <= monsup) {
     reference_seasonal_mean <- Apply(
       reference_seasonal_mean,
       target_dims = time_dim,
-      fun = function (x) {
+      fun = function(x) {
         x[1:(length(x) - 1)]
       }
     )$output1
@@ -221,7 +231,8 @@ if (moninf <= monsup) {
     names(dim(reference_seasonal_mean))[c(time_dim, time_dim + 1)] <-
       c("season", "year")
     reference_seasonal_mean <- Mean1Dim(reference_seasonal_mean,
-                                        posdim = time_dim)
+      posdim = time_dim
+    )
   }
 }
 
@@ -230,47 +241,54 @@ margins <-
     reference_seasonal_mean
   )))[-c(time_dim + 1)])
 years_dim <- which(names(dim(reference_seasonal_mean)) == "year")
-climatology <- Mean1Dim(reference_seasonal_mean, years_dim) #nolint
+climatology <- Mean1Dim(reference_seasonal_mean, years_dim) # nolint
 projection_filenames <- fullpath_filenames[projection_files]
 rcp_nc <- nc_open(projection_filenames[1])
 lat <- ncvar_get(rcp_nc, "lat")
 lon <- ncvar_get(rcp_nc, "lon")
 units <- ncatt_get(rcp_nc, var0, "units")$value
 calendar <- ncatt_get(rcp_nc, "time", "calendar")$value
-long_names <-  ncatt_get(rcp_nc, var0, "long_name")$value
-time <-  ncvar_get(rcp_nc, "time")
+long_names <- ncatt_get(rcp_nc, var0, "long_name")$value
+time <- ncvar_get(rcp_nc, "time")
 rcp_data <- InsertDim(ncvar_get(rcp_nc, var0), 1, 1) # nolint
-start_date <- as.POSIXct(substr(ncatt_get(rcp_nc, "time",
-                                          "units")$value, 11, 29))
+start_date <- as.POSIXct(substr(ncatt_get(
+  rcp_nc, "time",
+  "units"
+)$value, 11, 29))
 time <- as.Date(time, origin = start_date, calendar = calendar)
 
 nc_close(rcp_nc)
 for (i in 2:length(projection_filenames)) {
   rcp_nc <- nc_open(projection_filenames[i])
   rcp_data <-
-    abind(rcp_data, InsertDim(ncvar_get(rcp_nc, var0), 1, 1), #nolint
-          along = 1)
+    abind(rcp_data, InsertDim(ncvar_get(rcp_nc, var0), 1, 1), # nolint
+      along = 1
+    )
   nc_close(rcp_nc)
 }
 attr(rcp_data, "Variables")$dat1$time <- time
 
 names(dim(rcp_data)) <- c("model", "lon", "lat", "time")
 # nolint start
-#jpeg(paste0(plot_dir, "/plot2.jpg"))
-#PlotEquiMap(rcp_data[1,1,1,,], lon = lon, lat = lat, filled = F)
-#dev.off()
+# jpeg(paste0(plot_dir, "/plot2.jpg"))
+# PlotEquiMap(rcp_data[1,1,1,,], lon = lon, lat = lat, filled = F)
+# dev.off()
 # ------------------------------
 # Provisional solution to error in dimension order
-#if (attributes(time)$variables$time$calendar != calendar) {
+# if (attributes(time)$variables$time$calendar != calendar) {
 #  print("Different calendars between climatology and anomaly.")
-#}
+# }
 # nolint end
 if ((end_projection - start_projection + 1) * 12 == length(time)) {
-  time <- seq(as.Date(paste(start_projection, "01", "01", sep = "-"),
-                      format = "%Y-%m-%d"),
-              as.Date(paste(end_projection, "12", "01", sep = "-"),
-                      format = "%Y-%m-%d"),
-              "month")
+  time <- seq(
+    as.Date(paste(start_projection, "01", "01", sep = "-"),
+      format = "%Y-%m-%d"
+    ),
+    as.Date(paste(end_projection, "12", "01", sep = "-"),
+      format = "%Y-%m-%d"
+    ),
+    "month"
+  )
 }
 num_models <- dim(rcp_data)[which(names(dim(rcp_data)) == "model")]
 rcp_data <- as.vector(rcp_data)
@@ -287,9 +305,9 @@ attr(rcp_data, "Variables")$dat1$time <- time
 
 # nolint start
 # ------------------------------
-#jpeg(paste0(plot_dir, "/plot3.jpg"))
-#PlotEquiMap(rcp_data[1,1,1,,], lon = lon, lat = lat, filled = F)
-#dev.off()
+# jpeg(paste0(plot_dir, "/plot3.jpg"))
+# PlotEquiMap(rcp_data[1,1,1,,], lon = lon, lat = lat, filled = F)
+# dev.off()
 
 
 #---------------------------------------------
@@ -321,11 +339,12 @@ if (moninf <= monsup) {
   rcp_seasonal_mean <- adrop(adrop(rcp_seasonal_mean, 2), 2)
 } else {
   if (monsup == 2 & moninf == 12) {
-    rcp_seasonal_mean <- SeasonSelect(#nolint
+    rcp_seasonal_mean <- SeasonSelect( # nolint
       rcp_data,
       season = "DJF",
       dates = time,
-      calendar = calendar)$data
+      calendar = calendar
+    )$data
     time_dim <- which(names(dim(rcp_seasonal_mean)) == "time")
     dims <- dim(rcp_seasonal_mean)
     empty_array <- rep(NA, prod(dims[-time_dim]))
@@ -340,7 +359,7 @@ if (moninf <= monsup) {
       # nolint
       rcp_seasonal_mean,
       target_dims = time_dim,
-      fun = function (x) {
+      fun = function(x) {
         x[1:(length(x) - 1)]
       }
     )$output1
@@ -357,10 +376,11 @@ if (moninf <= monsup) {
   }
 }
 years_dim <- which(names(dim(rcp_seasonal_mean)) == "year")
-climatology <- InsertDim(# nolint
+climatology <- InsertDim( # nolint
   climatology,
   years_dim,
-  lendim = dim(rcp_seasonal_mean)[years_dim])
+  lendim = dim(rcp_seasonal_mean)[years_dim]
+)
 anomaly <- rcp_seasonal_mean - climatology
 multi_year_anomaly <- Mean1Dim(anomaly, years_dim)
 
@@ -387,15 +407,17 @@ metadata <- list(
 )
 attr(time, "variables") <- metadata
 
-#Save the single model anomalies
+# Save the single model anomalies
 for (mod in 1:length(model_names)) {
-  data <- anomaly[mod, , ,] # nolint
+  data <- anomaly[mod, , , ] # nolint
   data <- aperm(data, c(2, 3, 1))
   names(dim(data)) <- c("lat", "lon", "time")
-  metadata <- list(variable = list(dim = list(list(
-    name = "time", unlim = FALSE
-  )),
-  units = units))
+  metadata <- list(variable = list(
+    dim = list(list(
+      name = "time", unlim = FALSE
+    )),
+    units = units
+  ))
   names(metadata)[1] <- var0
   attr(data, "variables") <- metadata
   attributes(lat) <- NULL
@@ -411,28 +433,30 @@ for (mod in 1:length(model_names)) {
     )
   names(variable_list)[1] <- var0
 
-  #ArrayToNetCDF( # nolint
+  # ArrayToNetCDF( # nolint
   #  variable_list,
   #  paste0(
   #    plot_dir,  "/", var0, "_", months, "_anomaly_", model_names[mod],
   #    "_", start_anomaly, "_", end_anomaly, "_", start_climatology, "_",
   #    end_climatology, ".nc"
   #  )
-  #)
+  # )
 }
 
-model_anomalies <- WeightedMean(# nolint
+model_anomalies <- WeightedMean( # nolint
   anomaly,
   lon = as.vector(lon),
   lat = as.vector(lat),
-  mask = NULL)
+  mask = NULL
+)
 if (!is.null(params$running_mean)) {
-  model_anomalies <- Smoothing(# nolint
+  model_anomalies <- Smoothing( # nolint
     model_anomalies,
     runmeanlen = params$running_mean,
-    numdimt = 2)
+    numdimt = 2
+  )
 }
-data_frame <- as.data.frame.table(t(model_anomalies[,]))
+data_frame <- as.data.frame.table(t(model_anomalies[, ]))
 years <-
   rep(start_projection:end_projection, dim(model_anomalies)[1])
 data_frame$Year <- c(years)
@@ -443,16 +467,18 @@ for (i in 1:length(levels(data_frame$Model))) {
 }
 
 if (time_series_plot == "single") {
-  g <- ggplot(data_frame,
-              aes(x = Year, y = Freq, color = Model)) + theme_bw() +
-    geom_line() + ylab(paste0("Anomaly (", units, ")")) +  xlab("Year") +
+  g <- ggplot(
+    data_frame,
+    aes(x = Year, y = Freq, color = Model)
+  ) + theme_bw() +
+    geom_line() + ylab(paste0("Anomaly (", units, ")")) + xlab("Year") +
     theme(
       text = element_text(size = font_size),
       legend.text = element_text(size = font_size),
       axis.title = element_text(size = font_size)
     ) +
     stat_summary(
-      data =  data_frame,
+      data = data_frame,
       fun.y = "mean",
       mapping = aes(
         x = data_frame$Year,
@@ -482,14 +508,14 @@ if (time_series_plot == "single") {
     )
 } else {
   g <- ggplot(data_frame, aes(x = Year, y = Freq)) + theme_bw() +
-    ylab(paste0("Anomaly (", units, ")")) +  xlab("Year") +
+    ylab(paste0("Anomaly (", units, ")")) + xlab("Year") +
     theme(
       text = element_text(size = font_size),
       legend.text = element_text(size = font_size),
       axis.title = element_text(size = font_size)
     ) +
     stat_summary(
-      data =  data_frame,
+      data = data_frame,
       fun.y = "mean",
       mapping = aes(
         x = data_frame$Year,
@@ -501,7 +527,7 @@ if (time_series_plot == "single") {
       size = 0.8
     ) +
     stat_summary(
-      data =  data_frame,
+      data = data_frame,
       geom = "ribbon",
       fun.ymin = "min",
       fun.ymax = "max",
@@ -532,7 +558,7 @@ if (time_series_plot == "single") {
       )
     )
 }
-filepng1 <-  paste0(
+filepng1 <- paste0(
   plot_dir,
   "/",
   "Area-averaged_",
@@ -549,15 +575,18 @@ filepng1 <-  paste0(
   end_climatology,
   ".png"
 )
-ggsave(filename = filepng1,
-       g,
-       device = NULL)
+ggsave(
+  filename = filepng1,
+  g,
+  device = NULL
+)
 
 if (!is.null(agreement_threshold)) {
   model_dim <- which(names(dim(multi_year_anomaly)) == "model")
   agreement <- AnoAgree(multi_year_anomaly + # nolint
-                          rnorm(length(unique(model_names)) * length(lat) * length(lon)),
-                        membersdim = model_dim)
+    rnorm(length(unique(model_names)) * length(lat) * length(lon)),
+  membersdim = model_dim
+  )
 } else {
   agreement_threshold <- 1000
   agreement <- NULL

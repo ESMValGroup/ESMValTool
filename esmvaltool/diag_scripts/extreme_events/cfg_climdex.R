@@ -195,7 +195,9 @@ idx_df <- data.frame(
 )
 
 idx_df$idx_etccdi_time <- paste(idx_df$idx_etccdi, "ETCCDI_",
-                                idx_df$time, sep = "")
+  idx_df$time,
+  sep = ""
+)
 
 # Unfortunatley expressions cannot be added to dataframes.
 # These expreesion are required for the timeseries.

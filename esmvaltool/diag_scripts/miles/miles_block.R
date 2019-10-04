@@ -24,10 +24,14 @@ library(yaml)
 provenance_record <- function(infile) {
   xprov <- list(
     ancestors = infile,
-    authors = list("vonhardenberg_jost", "davini_paolo",
-                   "arnone_enrico"),
-    references = list("davini18", "davini12jclim",
-                      "tibaldi90tel"),
+    authors = list(
+      "vonhardenberg_jost", "davini_paolo",
+      "arnone_enrico"
+    ),
+    references = list(
+      "davini18", "davini12jclim",
+      "tibaldi90tel"
+    ),
     projects = list("c3s-magic"),
     caption = "MiLES blocking statistics",
     statistics = list("other"),
@@ -74,8 +78,9 @@ regridding_dir <- settings$run_dir
 plot_dir <- settings$plot_dir
 dir.create(work_dir, recursive = T, showWarnings = F)
 dir.create(regridding_dir,
-           recursive = T,
-           showWarnings = F)
+  recursive = T,
+  showWarnings = F
+)
 dir.create(plot_dir, recursive = T, showWarnings = F)
 
 # setup provenance file and list
@@ -164,8 +169,10 @@ if (write_plots) {
           REFDIR = work_dir
         )
         # Set provenance for output files (same as diagnostic files)
-        xprov <- provenance_record(list(climofiles[model_idx],
-                                        climofiles[ref_idx]))
+        xprov <- provenance_record(list(
+          climofiles[model_idx],
+          climofiles[ref_idx]
+        ))
         for (fname in filenames$figs) {
           provenance[[fname]] <- xprov
         }

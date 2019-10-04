@@ -4,15 +4,15 @@ log <- function(..., level = "INFO") {
   cat(format(Sys.time(), "%Y-%m-%d %X"), level, ":", ..., "\n")
 }
 
-#check for present library paths
+# check for present library paths
 RLIBPATH <- .libPaths()
 
-#check if we can write in the present R libaries paths
+# check if we can write in the present R libaries paths
 if (any(file.access(RLIBPATH, 2) == 0)) {
-  #if possible, use the standard one for following instalation
+  # if possible, use the standard one for following instalation
   RLIBLOC <- RLIBPATH[which(file.access(RLIBPATH, 2) == 0)[1]]
 } else {
-  #if not possible, create a local library in the home directory
+  # if not possible, create a local library in the home directory
   RLIBLOC <- Sys.getenv("R_LIBS_USER")
   dir.create(
     path = Sys.getenv("R_LIBS_USER"),
@@ -35,8 +35,9 @@ install.packages(
 failed <- list()
 for (package_name in pkg_list) {
   success <- library(package_name,
-                     character.only = TRUE,
-                     logical.return = TRUE)
+    character.only = TRUE,
+    logical.return = TRUE
+  )
   if (!success) {
     failed <- c(failed, package_name)
   }

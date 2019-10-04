@@ -51,9 +51,9 @@ models_ensemble <- unname(sapply(metadata, "[[", "ensemble"))
 ## Loop through input models
 for (model_idx in c(1:(length(models_name)))) {
   # Setup parameters and path
-  model  <- models_name[model_idx]
-  year1  <- models_start_year[model_idx]
-  year2  <- models_end_year[model_idx]
+  model <- models_name[model_idx]
+  year1 <- models_start_year[model_idx]
+  year2 <- models_end_year[model_idx]
   infile <- climofiles[model_idx]
   model_exp <- models_experiment[model_idx]
   model_ens <- models_ensemble[model_idx]

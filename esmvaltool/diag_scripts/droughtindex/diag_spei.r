@@ -5,17 +5,18 @@ library(RColorBrewer) # nolint
 
 leap_year <- function(year) {
   return(ifelse((year %% 4 == 0 & year %% 100 != 0) |
-                  year %% 400 == 0, TRUE, FALSE))
+    year %% 400 == 0, TRUE, FALSE))
 }
 
 getnc <- function(yml, m, lat = FALSE) {
   id <- nc_open(yml[m][[1]]$filename, readunlim = FALSE)
   if (lat) {
     v <- ncvar_get(id, "lat")
-  } else{
+  } else {
     v <- ncvar_get(id, yml[m][[1]]$short_name)
-    if (yml[m][[1]]$short_name == "tas")
+    if (yml[m][[1]]$short_name == "tas") {
       v <- v - 273.15
+    }
     if (yml[m][[1]]$short_name == "pr") {
       time <- ncvar_get(id, "time")
       tcal <- ncatt_get(id, "time", attname = "calendar")
@@ -32,7 +33,7 @@ getnc <- function(yml, m, lat = FALSE) {
       }
       if (tcal$value == "360_day") {
         v <- v * 30 * 24 * 3600.
-      } else{
+      } else {
         cnt <- 1
         monarr <- c(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
         date <- stdate
@@ -46,7 +47,7 @@ getnc <- function(yml, m, lat = FALSE) {
             pdays <- 29
             if (tcal$value != "365_day") {
               mdays <- 29
-            } else{
+            } else {
               mdays <- 28
             }
           }
@@ -119,7 +120,7 @@ nmods <- length(names(var1_input))
 provenance_file <- paste0(rundir, "/", "diagnostic_provenance.yml")
 provenance <- list()
 
-histbrks <- c(-99999,-2,-1.5,-1, 1, 1.5, 2, 99999)
+histbrks <- c(-99999, -2, -1.5, -1, 1, 1.5, 2, 99999)
 histnams <- c(
   "Extremely dry",
   "Moderately dry",
@@ -132,15 +133,18 @@ histnams <- c(
 refnam <- var1_input[1][[1]]$reference_dataset
 n <- 1
 while (n <= nmods) {
-  if (var1_input[n][[1]]$dataset == refnam)
+  if (var1_input[n][[1]]$dataset == refnam) {
     break
+  }
   n <- n + 1
 }
 nref <- n
 lat <- getnc(var1_input, nref, lat = TRUE)
 if (max(lat) > 90) {
-  print(paste0("Latitude must be [-90,90]: min=",
-               min(lat), " max=", max(lat)))
+  print(paste0(
+    "Latitude must be [-90,90]: min=",
+    min(lat), " max=", max(lat)
+  ))
   stop("Aborting!")
 }
 ref <- getnc(var1_input, nref, lat = FALSE)
@@ -165,14 +169,15 @@ for (mod in 1:nmods) {
   lat <- getnc(var1_input, mod, TRUE)
   v1 <- getnc(var1_input, mod, FALSE)
   v2 <- getnc(var2_input, mod, FALSE)
-  if (var1_input[1][[1]]$short_name == "pr")
+  if (var1_input[1][[1]]$short_name == "pr") {
     prtas <- TRUE
-  else
+  } else {
     prtas <- FALSE
+  }
   if (prtas) {
     pet <- dothornthwaite(v2, lat)
     pme <- v1 - pet
-  } else{
+  } else {
     pet <- dothornthwaite(v1, lat)
     pme <- v2 - pet
   }
@@ -214,8 +219,10 @@ for (mod in 1:nmods) {
   # Weight against latitude
   h <- c(1:length(histnams)) * 0
   for (j in 1:d[2]) {
-    h <- h + hist(pme_spei[j, , ], breaks = histbrks,
-                  plot = FALSE)$counts * cos(lat[j] * pi / 180.)
+    h <- h + hist(pme_spei[j, , ],
+      breaks = histbrks,
+      plot = FALSE
+    )$counts * cos(lat[j] * pi / 180.)
   }
   histarr[mod, ] <- h / sum(h, na.rm = TRUE)
 }
@@ -238,14 +245,17 @@ for (m in marr) {
 parr <- c(nref, marr)
 
 mnam <- c(1:nmods) * NA
-for (m in 1:nmods)
+for (m in 1:nmods) {
   mnam[m] <- var1_input[m][[1]]$dataset
+}
 
 qual_col_pals <-
   brewer.pal.info[brewer.pal.info$category == "qual", ] # nolint
 col_vector <-
-  unlist(mapply(brewer.pal, qual_col_pals$maxcolors, # nolint
-                rownames(qual_col_pals)))
+  unlist(mapply(
+    brewer.pal, qual_col_pals$maxcolors, # nolint
+    rownames(qual_col_pals)
+  ))
 cols <- c("black", sample(col_vector, nmods - 1))
 
 png(plot_file, width = 1000, height = 500)

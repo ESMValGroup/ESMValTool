@@ -30,8 +30,9 @@
 create_grid <- function(path = idx_dir, loc = "./gridDef") {
   ## Picking the grid found in the first file to regrid over
   first_file <- list.files(path,
-                           pattern = paste0(".*", regrid_dataset, ".*\\.nc"),
-                           full.names = TRUE)[1]
+    pattern = paste0(".*", regrid_dataset, ".*\\.nc"),
+    full.names = TRUE
+  )[1]
   cdo(
     "griddes -delvar,time_bnds",
     input = first_file,
@@ -60,21 +61,24 @@ create_land_sea_mask <- function(regrid = "./gridDef",
   ## Regridding the topographic map to chosen grid
   rtopof <-
     cdo("remapcon",
-        args = regrid,
-        input = topof,
-        options = "-O")
+      args = regrid,
+      input = topof,
+      options = "-O"
+    )
 
   # Set above sea-level gridpoints to missing
   rtopomissf <- cdo("setrtomiss",
-                    args = "0,9000",
-                    input = rtopof,
-                    options = "-O")
+    args = "0,9000",
+    input = rtopof,
+    options = "-O"
+  )
 
   # Set above sea-level gridpoints to 1
   rtopo1posf <- cdo("setmisstoc",
-                    args = "1",
-                    input = rtopomissf,
-                    options = "-O")
+    args = "1",
+    input = rtopomissf,
+    options = "-O"
+  )
 
   # Set below sea-level gridpoints to missing
   cdo(
@@ -106,14 +110,18 @@ set_time_for_files_equal <- function(path,
                                      max_start = 0,
                                      min_end = 2500) {
   ## Getting a list of all the files for the index
-  models_avail <- basename(Sys.glob(file.path(path,
-                                              paste(idx, "*.nc", sep = ""))))
+  models_avail <- basename(Sys.glob(file.path(
+    path,
+    paste(idx, "*.nc", sep = "")
+  )))
 
   ## Selecting only the files from the model list
   models <- vector(mode = "character", length = length(model_list))
   for (i in seq_along(model_list)) {
-    models[i] <- models_avail[grep(pattern = model_list[i],
-                                   x = models_avail)]
+    models[i] <- models_avail[grep(
+      pattern = model_list[i],
+      x = models_avail
+    )]
   }
 
   print(models)
@@ -166,11 +174,12 @@ set_time_for_files_equal <- function(path,
       beg <- max_start - start[i]
       sto <- min_end - max_start + beg
       newname <- paste(substr(m, 1, nchar(m) - 12),
-                       max_start,
-                       "-",
-                       min_end,
-                       ".nc",
-                       sep = "")
+        max_start,
+        "-",
+        min_end,
+        ".nc",
+        sep = ""
+      )
       nco(
         "ncks",
         paste0(
@@ -214,9 +223,11 @@ regrid_and_land_sea_mask <- function(idx_raw,
 
   ## If the landmask does not exist, we create one.
   if (!file.exists(landmask)) {
-    create_land_sea_mask(regrid = regrid,
-                         loc = loc,
-                         landmask = landmask)
+    create_land_sea_mask(
+      regrid = regrid,
+      loc = loc,
+      landmask = landmask
+    )
   }
 
   ## Checking if directories are present and creating them if not:
@@ -231,9 +242,10 @@ regrid_and_land_sea_mask <- function(idx_raw,
   varname <- strsplit(idx_name, "_")[[1]][1]
   tmpsel <-
     cdo("selvar",
-        args = varname,
-        input = idx_raw,
-        options = "-O")
+      args = varname,
+      input = idx_raw,
+      options = "-O"
+    )
   cdo(
     "remapcon",
     args = regrid,
@@ -258,6 +270,6 @@ regrid_and_land_sea_mask <- function(idx_raw,
     "timmean",
     input = paste0(land, "/", idx_name),
     output = paste0(land, "/tm_", idx_name),
-    options = "-O"  # nolint
+    options = "-O" # nolint
   )
 }

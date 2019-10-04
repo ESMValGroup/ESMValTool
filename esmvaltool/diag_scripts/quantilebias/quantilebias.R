@@ -30,11 +30,12 @@ library(yaml)
 args <- commandArgs(trailingOnly = FALSE)
 spath <- paste0(dirname(unlist(strsplit(
   grep("--file", args,
-       value = TRUE), "="
+    value = TRUE
+  ), "="
 ))[2]), "/")
 
 source(paste0(spath, "quantilebias_functions.R"))
-source(paste0(spath, "../shared/external.R"))  # nolint
+source(paste0(spath, "../shared/external.R")) # nolint
 
 # read settings and metadata files
 args <- commandArgs(trailingOnly = TRUE)
@@ -120,8 +121,9 @@ for (model_idx in c(1:(length(models_name)))) {
   refminf <- cdo("timmin", input = reff)
   refmaxf <- cdo("timmax", input = reff)
   ref_perc_pf <- cdo("timpctl",
-                     args = perc_lev,
-                     input = c(reff, refminf, refmaxf))
+    args = perc_lev,
+    input = c(reff, refminf, refmaxf)
+  )
 
   # Select points with monthly precipitation greater than (75)th perc
   mask_reff <- cdo("ge", input = c(reff, ref_perc_pf))
@@ -142,13 +144,15 @@ for (model_idx in c(1:(length(models_name)))) {
   temp2f <-
     cdo("setattribute", args = "qb@units=' '", input = temp1f)
   temp1f <- cdo("setattribute",
-                args = "qb@long_name='Precipitation quantile bias'",
-                input = temp2f,
-                output = temp1f)
+    args = "qb@long_name='Precipitation quantile bias'",
+    input = temp2f,
+    output = temp1f
+  )
   cdo("setattribute",
-      args = "qb@standard_name='precipitation_quantile_bias'",
-      input = temp1f,
-      output = outfile)
+    args = "qb@standard_name='precipitation_quantile_bias'",
+    input = temp1f,
+    output = outfile
+  )
 
   # Remove temporary files
   unlink(
@@ -222,9 +226,9 @@ for (model_idx in c(1:(length(models_name)))) {
   axis(1, col = "grey40", at = seq(-180, 180, 45))
   axis(2, col = "grey40", at = seq(-90, 90, 30))
 
-  colorbar_scale <- c(-0.15,-0.08, 0.1,-0.1)
+  colorbar_scale <- c(-0.15, -0.08, 0.1, -0.1)
   if (tolower(output_file_type) != "png") {
-    colorbar_scale <- c(-0.13,-0.06, 0.1,-0.1)
+    colorbar_scale <- c(-0.13, -0.06, 0.1, -0.1)
   }
   image_scale3(
     volcano,

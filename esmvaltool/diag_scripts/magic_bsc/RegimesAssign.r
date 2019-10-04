@@ -31,7 +31,7 @@ anom2regime <- function(ref, target, method = "distance", lat) {
 
   # weights are defined
   latWeights <-
-    InsertDim(sqrt(cos(lat * pi / 180)), 2, dim(ref)[3]) #nolint
+    InsertDim(sqrt(cos(lat * pi / 180)), 2, dim(ref)[3]) # nolint
 
 
   rmsdiff <- function(x, y) {
@@ -43,7 +43,7 @@ anom2regime <- function(ref, target, method = "distance", lat) {
     map_diff <- NA * x
     for (i in 1:dims[1]) {
       for (j in 1:dims[2]) {
-        map_diff[i, j] <- (x[i, j] - y[i, j]) ^ 2
+        map_diff[i, j] <- (x[i, j] - y[i, j])^2
       }
     }
     rmsdiff <- sqrt(mean(map_diff, na.rm = TRUE))
@@ -54,14 +54,16 @@ anom2regime <- function(ref, target, method = "distance", lat) {
     corr <- rep(NA, nclust)
     for (i in 1:nclust) {
       corr[i] <-
-        ACC(InsertDim(InsertDim(
-          #nolint
-          InsertDim(ref[i, ,] * latWeights, 1, 1), 2, 1 #nolint
-        ), 3, 1),
-        InsertDim(InsertDim(
-          #nolint
-          InsertDim(target * latWeights, 1, 1), 2, 1 #nolint
-        ), 3, 1))$ACC[2]
+        ACC(
+          InsertDim(InsertDim(
+            # nolint
+            InsertDim(ref[i, , ] * latWeights, 1, 1), 2, 1 # nolint
+          ), 3, 1),
+          InsertDim(InsertDim(
+            # nolint
+            InsertDim(target * latWeights, 1, 1), 2, 1 # nolint
+          ), 3, 1)
+        )$ACC[2]
     }
     assign <- which(corr == max(corr))
   }
@@ -70,14 +72,14 @@ anom2regime <- function(ref, target, method = "distance", lat) {
     rms <- rep(NA, nclust)
     for (i in 1:nclust) {
       rms[i] <-
-        rmsdiff(ref[i, ,] * latWeights, target * latWeights)#nolint
+        rmsdiff(ref[i, , ] * latWeights, target * latWeights) # nolint
     }
     assign <- which(rms == min(rms, na.rm = TRUE))
   }
   return(assign)
-  }
+}
 
-RegimesAssign <- function(var_ano, ref_maps, lats, #nolint
+RegimesAssign <- function(var_ano, ref_maps, lats, # nolint
                           method = "distance") {
   posdim <- which(names(dim(ref_maps)) == "nclust")
   poslat <- which(names(dim(ref_maps)) == "lat")
@@ -91,7 +93,7 @@ RegimesAssign <- function(var_ano, ref_maps, lats, #nolint
 
 
   if (is.null(names(dim(ref_maps))) |
-      is.null(names(dim(var_ano)))) {
+    is.null(names(dim(var_ano)))) {
     stop(
       "The arrays should include dimensions names ref[nclust,lat,lon]
       and target [lat,lon]"
@@ -121,8 +123,10 @@ RegimesAssign <- function(var_ano, ref_maps, lats, #nolint
   }
 
   anom_array <-
-    array(var_ano, dim = c(prod(dim(var_ano)[-c(poslat_ano, poslon_ano)]),
-                           dim_order))
+    array(var_ano, dim = c(
+      prod(dim(var_ano)[-c(poslat_ano, poslon_ano)]),
+      dim_order
+    ))
 
   rm(var_ano)
 
@@ -141,4 +145,4 @@ RegimesAssign <- function(var_ano, ref_maps, lats, #nolint
       frequency = freqs
     )
   return(output)
-  }
+}

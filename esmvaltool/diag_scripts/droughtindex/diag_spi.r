@@ -7,7 +7,7 @@ getnc <- function(yml, m, lat = FALSE) {
   id <- nc_open(yml[m][[1]]$filename, readunlim = FALSE)
   if (lat) {
     v <- ncvar_get(id, "lat")
-  } else{
+  } else {
     v <- ncvar_get(id, yml[m][[1]]$short_name)
   }
   nc_close(id)
@@ -54,7 +54,7 @@ nmods <- length(names(var1_input))
 provenance_file <- paste0(rundir, "/", "diagnostic_provenance.yml")
 provenance <- list()
 
-histbrks <- c(-99999,-2,-1.5,-1, 1, 1.5, 2, 99999)
+histbrks <- c(-99999, -2, -1.5, -1, 1, 1.5, 2, 99999)
 histnams <- c(
   "Extremely dry",
   "Moderately dry",
@@ -67,15 +67,18 @@ histnams <- c(
 refnam <- var1_input[1][[1]]$reference_dataset
 n <- 1
 while (n <= nmods) {
-  if (var1_input[n][[1]]$dataset == refnam)
+  if (var1_input[n][[1]]$dataset == refnam) {
     break
+  }
   n <- n + 1
 }
 nref <- n
 lat <- getnc(var1_input, nref, lat = TRUE)
 if (max(lat) > 90) {
-  print(paste0("Latitude must be [-90,90]: min=",
-               min(lat), " max=", max(lat)))
+  print(paste0(
+    "Latitude must be [-90,90]: min=",
+    min(lat), " max=", max(lat)
+  ))
   stop("Aborting!")
 }
 ref <- getnc(var1_input, nref, lat = FALSE)
@@ -105,8 +108,10 @@ for (mod in 1:nmods) {
     wh <- which(!is.na(refmsk[i, ]))
     if (length(wh) > 0) {
       tmp <- v1[i, wh, ]
-      v1_spi[i, wh, ] <- t(spi(t(tmp), 1, na.rm = TRUE,
-                               distribution = "PearsonIII")$fitted)
+      v1_spi[i, wh, ] <- t(spi(t(tmp), 1,
+        na.rm = TRUE,
+        distribution = "PearsonIII"
+      )$fitted)
     }
   }
   v1_spi[is.infinite(v1_spi)] <- NA
@@ -114,10 +119,11 @@ for (mod in 1:nmods) {
   hist_spi <- array(NA, c(d[1], d[2], length(histbrks) - 1))
   for (nnh in 1:(length(histbrks) - 1)) {
     hist_spi[, , nnh] <- apply(v1_spi,
-                               c(1, 2),
-                               FUN = whfcn,
-                               ilow = histbrks[nnh],
-                               ihigh = histbrks[nnh + 1])
+      c(1, 2),
+      FUN = whfcn,
+      ilow = histbrks[nnh],
+      ihigh = histbrks[nnh + 1]
+    )
   }
   filename <- ncwritenew(var1_input, mod, hist_spi, wdir, histbrks)
   # Set provenance for output files
@@ -127,10 +133,12 @@ for (mod in 1:nmods) {
   # Weight against latitude
   h <- c(1:length(histnams)) * 0
   for (j in 1:d[2]) {
-    h <- h + hist(v1_spi[j, , ], breaks = histbrks,
-                  plot = FALSE)$counts * cos(lat[j] * pi / 180.)
+    h <- h + hist(v1_spi[j, , ],
+      breaks = histbrks,
+      plot = FALSE
+    )$counts * cos(lat[j] * pi / 180.)
   }
-  histarr[mod,] <- h / sum(h, na.rm = TRUE)
+  histarr[mod, ] <- h / sum(h, na.rm = TRUE)
 }
 filehist <- paste0(params$work_dir, "/", "histarr.rsav")
 save(histarr, file = filehist)
@@ -145,20 +153,23 @@ bhistarr <- array(NA, c(nmods - 1, 7))
 marr <- c(1:nmods)[c(1:nmods) != nref]
 cnt <- 1
 for (m in marr) {
-  bhistarr[cnt,] <- histarr[m,] - histarr[nref,]
+  bhistarr[cnt, ] <- histarr[m, ] - histarr[nref, ]
   cnt <- cnt + 1
 }
 parr <- c(nref, marr)
 
 mnam <- c(1:nmods) * NA
-for (m in 1:nmods)
+for (m in 1:nmods) {
   mnam[m] <- var1_input[m][[1]]$dataset
+}
 
 qual_col_pals <-
-  brewer.pal.info[brewer.pal.info$category == "qual",] # nolint
+  brewer.pal.info[brewer.pal.info$category == "qual", ] # nolint
 col_vector <-
-  unlist(mapply(brewer.pal, qual_col_pals$maxcolors, # nolint
-                rownames(qual_col_pals)))
+  unlist(mapply(
+    brewer.pal, qual_col_pals$maxcolors, # nolint
+    rownames(qual_col_pals)
+  ))
 cols <- c("black", sample(col_vector, nmods - 1))
 
 png(plot_file, width = 1000, height = 500)
@@ -168,7 +179,7 @@ par(
   mar = c(2, 1, 1, 1)
 )
 barplot(
-  histarr[parr,],
+  histarr[parr, ],
   beside = 1,
   names.arg = histnams,
   col = cols,
