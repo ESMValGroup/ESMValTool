@@ -56,10 +56,10 @@ def generate_sidebar(conf, conf_api):
     _write("esmvaltool", "Gallery", "gallery")
     _write("esmvaltool", "Getting started", "getting_started/index")
     _write("esmvaltool", "Recipes", "recipes/index")
-    _write("esmvalcore", "Core", "esmvalcore/index")
+    _write("esmvalcore", "ESMValCore", "esmvalcore/index")
     _write("esmvaltool", "Guidelines for diagnostic developers",
            "esmvaldiag/index")
-    _write("esmvalcore", "Core API Reference",
+    _write("esmvalcore", "ESMValCore API Reference",
            "api/esmvalcore")
     _write("esmvaltool", "Diagnostics API Reference",
            "api/esmvaltool")
