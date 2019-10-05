@@ -6,7 +6,7 @@ Getting started
    :maxdepth: 1
 
     Installing ESMValTool <install>
-    User configuration file <config_user>
-    Input data <inputdata>
+    Configuring ESMValTool <config_user>
+    Acquiring input data <inputdata>
     Running ESMValTool <running>
-    Output <outputdata>
+    Inspecting the output <outputdata>
