@@ -90,8 +90,14 @@ jobs:
       - run:
           when: always
           command: |
-            pip install codacy-coverage
-            python-codacy-coverage -r test-reports/coverage.xml
+            if [[ -v CODACY_PROJECT_TOKEN ]]
+            then
+              echo Uploading coverage report
+              pip install codacy-coverage
+              python-codacy-coverage -r test-reports/coverage.xml
+            else
+              echo Not uploading coverage report
+            fi
 
   develop:
     # Test development installation
