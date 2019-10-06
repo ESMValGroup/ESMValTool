@@ -38,7 +38,7 @@ provenance_record <- function(infile) {
       "mohr_christianwilhelm",
       "vonhardenberg_jost"
     ),
-    references = list("zhang-2011"),
+    references = list("zhang11wcc"),
     projects = list("crescendo", "c3s-magic"),
     caption = "Extreme events indices",
     statistics = list("other"),
