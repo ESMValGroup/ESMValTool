@@ -7,7 +7,7 @@ documentation:
 
     PCR-GLOBWB (PCRaster Global Water Balance) is a large-scale hydrological model intended for global
     to regional studies and developed at the Department of Physical Geography, Utrecht University (Netherlands).
- 
+
   authors: ['aerts_jerom', 'andela_bouwe', 'drost_niels', 'camphuijsen_jaro', 'kalverla_peter']
   projects: ['ewatercycle']
   references: ['acknow_project', 'sutanudjaja2018gmd']
@@ -31,13 +31,15 @@ preprocessors:
       operator: sum
   daily:
     regrid:
-      target_grid: ERA5
+      target_grid: ERA-Interim
       lon_offset: true
       lat_offset: true
       scheme: linear
 
 diagnostics:
   diagnostic_era_interim:
+    additional_datasets:
+      - {dataset: ERA-Interim, project: OBS, tier: 3, type: reanaly, version: 1}
     description: PCR-GLOBWB input preprocessor
     variables:
       tas: &var
@@ -46,26 +48,24 @@ diagnostics:
         end_year: 2000
         preprocessor: daily
       pr: *var
-    additional_datasets:  
-      - {dataset: ERA-Interim, project: OBS, tier: 3, type: reanaly, version: 1}
     scripts:
       script:
         script: hydrology/pcrglobwb.py
   diagnostic_era5:
     description: PCR-GLOBWB input preprocessor
+    additional_datasets:
+      - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1}
     variables:
       tas:
-        mip: hourly
+        mip: E1hr
         start_year: 2000
         end_year: 2000
         preprocessor: hourly_tas
       pr:
-        mip: hourly
+        mip: E1hr
         start_year: 2000
         end_year: 2000
         preprocessor: hourly_pr
-    additional_datasets:
-      - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1}
     scripts:
       script:
         script: hydrology/pcrglobwb.py
