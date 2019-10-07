@@ -4,18 +4,24 @@
 documentation:
   description: |
     Recipe pre-processes ERA-Interim reanalyses files for use in the WFlow hydrological model.
-  authors: ['kalverla_peter', 'camphuijsen_jaro']
+  authors: ['kalverla_peter', 'camphuijsen_jaro', 'alidoost_sarah']
   projects: ['ewatercycle']
   references: ['acknow_project']
 
 preprocessors:
-  preprocessor:
-    hourly_water:
-      daily_statistics:
-        operator: sum  # TODO: replace by sum
-    hourly_temperature:
-      daily_statistics:
-        operator: mean
+  save_memory: &preproc
+    extract_time:
+      end_year: 2000
+      end_month: 1
+      end_day: 3
+  hourly_water:
+    <<: *preproc
+    daily_statistics:
+      operator: sum
+  hourly_temperature:
+    <<: *preproc
+    daily_statistics:
+      operator: mean
 
 diagnostics:
   diagnostic_daily:
@@ -31,26 +37,35 @@ diagnostics:
       evspsbl:  # this should be potentail evapo.. which doesn't exist.
         <<: *var_daily
         mip: Eday
+      # If we want to compute potentail evaporation, we also need:
+      psl: *var_daily
+      rsds: *var_daily
+      tdps:
+        <<: *var_daily
+        mip: Eday
+      rsdt:
+        <<: *var_daily
+        mip: CFday
     scripts:
       script:
         script: hydrology/wflow.py
 
-  # diagnostic_daily:
-  #   description: WFlow input preprocessor for hourly data
-  #   additional_datasets:
-  #     - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1}
-  #   variables:
-  #     tas: &var_hourly
-  #       mip: day
-  #       start_year: 2000
-  #       end_year: 2000
-  #       preprocessor: hourly_temperature
-  #     pr:
-  #       <<: *var_hourly
-  #       preprocessor: hourly_water
-  #     evspsblpot: *var_hourly
-  #       <<: *var_hourly
-  #       preprocessor: hourly_water
-  #   scripts:
-  #     script:
-  #       script: hydrology/wflow.py
+  diagnostic_hourly:
+    description: WFlow input preprocessor for hourly data
+    additional_datasets:
+      - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1}
+    variables:
+      tas: &var_hourly
+        mip: E1hr
+        start_year: 2000
+        end_year: 2000
+        preprocessor: hourly_temperature
+      pr:
+        <<: *var_hourly
+        preprocessor: hourly_water
+      evspsblpot:
+        <<: *var_hourly
+        preprocessor: hourly_water
+    scripts:
+      script:
+        script: hydrology/wflow.py

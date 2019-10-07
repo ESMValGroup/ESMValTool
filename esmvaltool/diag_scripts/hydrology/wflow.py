@@ -20,6 +20,7 @@ def get_provenance_record(ancestor_file):
         'authors': [
             'kalverla_peter',
             'camphuijsen_jaro',
+            'alidoost_sarah',
         ],
         'projects': [
             'ewatercycle',
@@ -71,7 +72,12 @@ def main(cfg):
             #       evaporation. However, the model needs potential
             #       evaporation (according to Jerom). He has a script to
             #       convert it, but that requires several additional
-            #       input variables.
+            #       input variables. We have added these to the recipe
+            #       as optional input (for now, they are commented out)
+            #
+            #   Output format: wflow_local_forcing_ERA5_Meuse_1990_2018.nc
+            #   one file for all years and all variables.
+
 
             # Save data
             output_file = get_diagnostic_filename(
