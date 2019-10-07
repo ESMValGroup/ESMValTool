@@ -186,6 +186,112 @@ def make_map_plots(
     plt.close()
 
 
+def add_map_subplot(subplot, cube, nspace, title='', cmap=''):
+    """
+    Add a map subplot to the current pyplot figure.
+
+    Parameters
+    ----------
+    subplot: int
+        The matplotlib.pyplot subplot number. (ie 221)
+    cube: iris.cube.Cube
+        the iris cube to be plotted.
+    nspace: numpy.array
+        An array of the ticks of the colour part.
+    title: str
+        A string to set as the subplot title.
+    cmap: str
+        A string to describe the matplotlib colour map.
+
+    """
+    plt.subplot(subplot)
+    qplot = qplt.contourf(cube, nspace, linewidth=0,
+                          cmap=plt.cm.get_cmap(cmap))
+    qplot.colorbar.set_ticks([nspace.min(),
+                              (nspace.max() + nspace.min()) / 2.,
+                              nspace.max()])
+
+    try: plt.gca().coastlines()
+    except: pass
+    plt.title(title)
+
+
+def weighted_mean(cube):
+    """
+    Calculate the weighted mean.
+    """
+    return cube.data.mean()
+
+
+def make_four_pane_map_plot(
+        cfg,
+        cube_ssp,
+        cube_hist,
+        cube_anomaly,
+        cube_detrended,
+        key,
+        plot_type,
+):
+    """
+    Make a four pane map plot for an individual.
+
+    Parameters
+    ----------
+    cfg: dict
+        the opened global config dictionary, passed by ESMValTool.
+    metadata: dict
+        the metadata dictionary
+    filename: str
+        the preprocessed model file.
+    detrend: bool
+        key to show wherether the mean was subtracted.
+
+    """
+    # Load image format extention
+    image_extention = diagtools.get_image_format(cfg)
+
+    # Determine image filename:
+    suffix = '_'.join([plot_type, key]) + image_extention
+    path = diagtools.folder([cfg['plot_dir'], 'four_pane_plots', plot_type]) + suffix
+
+    fig = plt.figure()
+    fig.set_size_inches(9, 6)
+
+    # Create the cubes
+    cube221 = cube_ssp
+    cube222 = cube_hist
+    cube223 = cube_anomaly
+    cube224 = cube_detrended
+
+    # create the z axis for plots 2, 3, 4.
+    zrange1 = diagtools.get_cube_range([cube221, cube222 ])
+    zrange3 = diagtools.get_cube_range_diff([cube223, ])
+    zrange4 = diagtools.get_cube_range_diff([cube224, ])
+
+    linspace1 = np.linspace(zrange1[0], zrange1[1], 12, endpoint=True)
+    linspace3 = np.linspace(zrange3[0], zrange3[1], 12, endpoint=True)
+    linspace4 = np.linspace(zrange4[0], zrange4[1], 12, endpoint=True)
+
+    # Add the sub plots to the figure.
+    add_map_subplot(221, cube221, linspace1, cmap='viridis',
+                    title='SSP')
+    add_map_subplot(222, cube222, linspace1, cmap='viridis',
+                    title='Historical')
+    add_map_subplot(223, cube223, linspace3, cmap='RdBu_r',
+                    title='SSP minus historical')
+    add_map_subplot(224, cube224, linspace4, cmap='RdBu_r',
+                    title='Detrended SSP minus historical')
+
+    # Add overall title
+    fig.suptitle(key, fontsize=14)
+
+    # Saving files:
+    if cfg['write_plots']:
+        logger.info('Saving plots to %s', path)
+        plt.savefig(path)
+    plt.close()
+
+
 def make_ensemble_map_plots(
         cfg,
         cube,
@@ -319,6 +425,199 @@ def make_threshold_ensemble_map_plots(
     plt.close()
 
 
+def make_gwt_map_four_plots(cfg, ):
+    """
+    Make plots
+
+    Parameters
+    ----------
+    cfg: dict
+        the opened global config dictionary, passed by ESMValTool.
+
+    do_single_plots: bool
+        Make individual plots for each dataset.
+
+    """
+    metadatas = diagtools.get_input_files(cfg)
+    do_single_plots=False
+    do_variable_group_plots=True
+    do_threshold_plots=True
+
+    #print('\n', cfg.keys())
+
+    files_dict = {}
+    short_names = set()
+    ensembles = set()
+    exps = set()
+    variable_groups = set()
+    variables = set()
+    thresholds = {}
+
+    for fn, details in sorted(metadatas.items()):
+        #print(fn, details.keys())
+        short_names.add(details['short_name'])
+        ensembles.add(details['ensemble'])
+        exps.add(details['exp'])
+        variable_groups.add(details['variable_group'])
+
+        unique_key = (details['variable_group'], details['ensemble'])
+        try:
+            files_dict[unique_key].append(fn)
+        except:
+            files_dict[unique_key] = [fn, ]
+
+    if len(short_names) ==1:
+        short_name = list(short_names)[0]
+    print(files_dict.keys())
+
+
+    # lets look at  minus the historical
+    hist_cubes = {variable_group:{} for variable_group in variable_groups}
+    ssp_cubes = {variable_group:{} for variable_group in variable_groups}
+    anomaly_cubes = {variable_group:{} for variable_group in variable_groups}
+    detrended_anomaly_cubes = {variable_group:{} for variable_group in variable_groups}
+    viable_keys = {}
+
+    hist_cubes_fns = {}
+    # Calculate the anomaly for each ensemble/threshold combination
+    for ensemble in sorted(ensembles):
+        for variable_group in sorted(variable_groups):
+            # guess historical group name:
+            historical_group = variable_group[:variable_group.find('_')] +'_historical'
+            if variable_group == historical_group:
+                continue
+
+            print('Plotting:', ensemble, variable_group)
+            variable, exp, threshold = split_variable_groups(variable_group)
+            variables.add(variable)
+
+            if (variable_group, ensemble) not in files_dict:
+                continue
+            fn = files_dict[(variable_group, ensemble)][0]
+            fn_hist = files_dict[(historical_group, ensemble)][0]
+
+            details = metadatas[fn]
+            cube = iris.load_cube( fn)
+            cube = diagtools.bgc_units(cube, details['short_name'])
+
+            # Check is historial cube is loaded already
+            if fn_hist in hist_cubes_fns:
+                cube_hist = hist_cubes_fns[fn_hist]
+            else:
+                cube_hist =  iris.load_cube( fn_hist)
+                cube_hist = diagtools.bgc_units(cube_hist, details['short_name'])
+
+            cube_anomaly = cube - cube_hist
+            detrended_cube_anomaly = cube_anomaly - weighted_mean(cube_anomaly)
+
+            ssp_cubes[variable_group][ensemble] = cube
+            hist_cubes[variable_group][ensemble] = cube_hist
+            anomaly_cubes[variable_group][ensemble] = cube_anomaly
+            detrended_anomaly_cubes[variable_group][ensemble] = detrended_cube_anomaly
+            viable_keys[(variable_group, ensemble)] = True
+            try:
+                thresholds[threshold].append([variable_group, ensemble])
+            except:
+                thresholds[threshold] = [[variable_group, ensemble], ]
+
+            key = variable_group.replace('_',' ') + ' '+ensemble
+
+
+    # single plots:
+    for ensemble in sorted(ensembles):
+        for variable_group in sorted(variable_groups):
+            if not do_single_plots:
+                continue
+            if (variable_group, ensemble) not in viable_keys:
+                print("Not in viable keys:", ensemble, variable_group)
+                continue
+
+            historical_group = variable_group[:variable_group.find('_')] +'_historical'
+            if variable_group == historical_group:
+                continue
+
+            cube_ssp = ssp_cubes[variable_group][ensemble]
+            cube_hist = hist_cubes[variable_group][ensemble]
+            cube_anomaly = anomaly_cubes[variable_group][ensemble]
+            cube_detrend = detrended_anomaly_cubes[variable_group][ensemble]
+            key = ' '.join([short_name, variable_group, ensemble])
+
+            make_four_pane_map_plot(
+                cfg,
+                cube_ssp,
+                cube_hist,
+                cube_anomaly,
+                cube_detrend,
+                key,
+                'single_plots',
+            )
+
+    # Ensemble mean for each variable_group:
+    for variable_group in sorted(variable_groups):
+        # check to make plots.
+        if not do_variable_group_plots:
+            continue
+
+        # guess historical group name:
+        historical_group = variable_group[:variable_group.find('_')] + '_historical'
+        if variable_group == historical_group:
+            continue
+
+        # Calculate ensemble means
+        output_cubes = []
+        for cubes in [ssp_cubes, hist_cubes, anomaly_cubes, detrended_anomaly_cubes]:
+            cube_list = []
+            for vari, cube in sorted(cubes[variable_group].items()):
+                print(variable_group, vari)
+                cube_list.append(cube)
+            if cube_list == []:
+                continue
+            ensemble_mean = calc_ensemble_mean(cube_list)
+            output_cubes.append(ensemble_mean)
+        key = ' '.join([short_name, variable_group])
+
+        if len(output_cubes) != 4:
+            print('Problem with ', variable_group, 'four plots.', historical_group)
+            assert 0
+
+        make_four_pane_map_plot(
+            cfg,
+            output_cubes[0],
+            output_cubes[1],
+            output_cubes[2],
+            output_cubes[3],
+            key,
+            'variable_group_ensembles',
+            )
+
+    # Ensemble mean for each threshold:
+    for threshold, paths in sorted(thresholds.items()):
+        if not do_threshold_plots: continue
+        output_cubes = []
+        for cubes in [ssp_cubes, hist_cubes, anomaly_cubes, detrended_anomaly_cubes]:
+            cube_list = []
+            for (variable_group, ensemble) in viable_keys.keys():
+                var_g, exp, thres = split_variable_groups(variable_group)
+                if thres != threshold:
+                    continue
+                cube_list.append(cubes[variable_group][ensemble])
+            ensemble_mean = calc_ensemble_mean(cube_list)
+            output_cubes.append(ensemble_mean)
+
+        key = ' '.join([short_name, threshold])
+        make_four_pane_map_plot(
+            cfg,
+            output_cubes[0],
+            output_cubes[1],
+            output_cubes[2],
+            output_cubes[3],
+            key,
+            'threshold_ensemble',
+            )
+
+
+
+
 def make_gwt_map_plots(cfg, detrend = True,):
     """
     Make plots
@@ -396,12 +695,12 @@ def make_gwt_map_plots(cfg, detrend = True,):
                 hist_cubes[fn_hist] = cube_hist
                 cube_hist = diagtools.bgc_units(cube_hist, details['short_name'])
 
-            cube.data = cube.data - cube_hist.data
+            cube_anomaly = cube - cube_hist
 
             if detrend:
-                cube.data = cube.data - cube.data.mean()
+                cube_anomaly = cube_anomaly - weighted_mean(cube_anomaly)
 
-            anomaly_cubes[variable_group][ensemble] = cube
+            anomaly_cubes[variable_group][ensemble] = cube_anomaly
             try:
                 thresholds[threshold].append([variable_group, ensemble])
             except:
@@ -410,14 +709,17 @@ def make_gwt_map_plots(cfg, detrend = True,):
 
             # Produce a plot of the anomaly.
             if do_single_plots:
-                make_map_plots(cfg, details, cube, key, detrend)
+                make_map_plots(cfg, details, cube_anomaly, key, detrend)
 
+    historical_ensemble_mean={}
     # Ensemble mean for each variable_group:
     for variable_group in sorted(variable_groups):
-        if not do_variable_group_plots: continue
+        # check to make plots.
+        if not do_variable_group_plots:
+            continue
 
         # guess historical group name:
-        historical_group = variable_group[:variable_group.find('_')] + 'historical'
+        historical_group = variable_group[:variable_group.find('_')] + '_historical'
         if variable_group == historical_group:
             continue
 
@@ -426,7 +728,8 @@ def make_gwt_map_plots(cfg, detrend = True,):
             print(variable_group, vari)
             cube_list.append(cube)
 
-        if cube_list == []: continue
+        if cube_list == []:
+            continue
         ensemble_mean = calc_ensemble_mean(cube_list)
         make_ensemble_map_plots(cfg, ensemble_mean, variable_group, detrend)
 
@@ -444,7 +747,6 @@ def make_gwt_map_plots(cfg, detrend = True,):
             if cube_list == []:
                 continue
             ensemble_mean = calc_ensemble_mean(cube_list)
-
             make_threshold_ensemble_map_plots(cfg, ensemble_mean, variable, threshold, detrend, )
 
 
@@ -459,6 +761,8 @@ def main(cfg):
 
     """
     cartopy.config['data_dir'] = cfg['auxiliary_data_dir']
+
+    make_gwt_map_four_plots(cfg)
 
     for detrend in [True, False, ]:
         make_gwt_map_plots(cfg, detrend)
