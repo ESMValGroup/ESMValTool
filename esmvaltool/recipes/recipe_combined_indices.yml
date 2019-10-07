@@ -39,7 +39,7 @@ diagnostics:
         region: Nino3.4 #Nino3, Nino3.4, Nino4, NAO or SOI  
 
         # Compute running mean?
-        running_mean: NULL  #3
+        running_mean: null
 
         # Compute seasons? 
         moninf: 12  # First month
