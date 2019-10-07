@@ -133,7 +133,7 @@ for (i in seq(1, length(model_names), 1)) {
 } # close for loop i
 # convert to data frame for ggplot
 data_frame_plot <- as.data.frame.table(data_frame[,])
-data_frame_plot$Year <- rep(period, length(model_names))
+data_frame_plot$year <- rep(period, length(model_names))
 names(data_frame_plot)[2] <- "model"
 data_frame_plot$model <- as.factor(sort(rep(seq(1, length(model_names), 1),
                                              length(period))))
@@ -142,7 +142,7 @@ for (i in seq(1, length(levels(data_frame_plot$model, 1)))) {
                                               ensemble[i])
 }
 font_size <- 12
-g <- ggplot(data_frame_plot, aes(x = Year, y = Freq, color = model)) +
+g <- ggplot(data_frame_plot, aes(x = year, y = Freq, color = model)) +
      theme_bw() +
      geom_line() + ylab(paste0("Anomaly (", units, ")")) + xlab("Year") +
      theme(text = element_text(size = font_size),
@@ -163,7 +163,7 @@ ggsave(filename = filepng, g, device = NULL)
 dimtime <- ncdim_def(name = "Time", units = "years",
                      vals = period, longname = "Time")
 dimmodel <- ncdim_def(name = "Models", units = "names",
-                      vals = 1 : length(model_names),
+                      vals = seq(1, length(model_names, 1),
                       longname = paste(model_names, scenario))
 defdata <- ncvar_def(name = "data", units = units,
                      dim = list(time = dimtime, model = dimmodel),
@@ -178,7 +178,8 @@ nc_close(file)
 
 # Set provenance for output files
 xprov <- list(ancestors = list(fullpath_filenames),
-              authors = list("perez-zanon_nuria", "hunter_alasdair", "manubens_nicolau"),
+              authors = list("perez-zanon_nuria", "hunter_alasdair", 
+                             "manubens_nicolau"),
               projects = list("c3s-magic"),
               caption = "Combined selection",
               statistics = list("other"),
