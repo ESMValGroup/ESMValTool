@@ -49,6 +49,7 @@ diagnostics:
     scripts:
       script:
         script: hydrology/wflow.py
+        dem_file: 'path/to/aux/data/meuse_dem' # currently in shapes_et_al repo
 
   diagnostic_hourly:
     description: WFlow input preprocessor for hourly data
@@ -69,3 +70,5 @@ diagnostics:
     scripts:
       script:
         script: hydrology/wflow.py
+          dem_file: 'path/to/aux/data/meuse_dem' # currently in shapes_et_al repo
+
