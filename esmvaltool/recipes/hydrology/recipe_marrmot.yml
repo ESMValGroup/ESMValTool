@@ -12,27 +12,62 @@ documentation:
   references: ['acknow_project']
 
 
-datasets:
-  - {dataset: ERA-Interim, project: OBS, tier: 3, type: reanaly, version: 1}
-
 preprocessors:
-  preprocessor:
+  hourly_tas:
     regrid:
-      target_grid: 0.5x0.5
+      target_grid: ERA5
+      lon_offset: true
+      lat_offset: true
+      scheme: linear
+    daily_statistics:
+      operator: mean
+  hourly_pr:
+    regrid:
+      target_grid: ERA5
+      lon_offset: true
+      lat_offset: true
+      scheme: linear
+    daily_statistics:
+      operator: sum
+  daily:
+    regrid:
+      target_grid: ERA5
       lon_offset: true
       lat_offset: true
       scheme: linear
 
+
 diagnostics:
-  diagnostic1:
-    description: marrmot input preprocessor
+  diagnostic_daily_data_era_interim:
+    description: marrmot input preprocessor for daily data
+    additional_datasets:
+      - {dataset: ERA-Interim, project: OBS, tier: 3, type: reanaly, version: 1}
     variables:
       tas: &var
         mip: day
         start_year: 2000
         end_year: 2000
-        preprocessor: preprocessor
+        preprocessor: daily
       pr: *var
+    scripts:
+      script:
+        script: hydrology/marrmot.py
+
+  diagnostic_hourly_data_era5:
+    description: marrmot input preprocessor for hourly data
+    additional_datasets:
+      - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1}
+    variables:
+      tas: #note to self: check!
+        mip: E1hr
+        start_year: 2000
+        end_year: 2000
+        preprocessor: hourly_tas
+      pr:
+        mip: E1hr
+        start_year: 2000
+        end_year: 2000
+        preprocessor: hourly_pr
     scripts:
       script:
         script: hydrology/marrmot.py
