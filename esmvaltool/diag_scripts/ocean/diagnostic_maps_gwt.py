@@ -93,10 +93,10 @@ def split_variable_groups(variable_group):
     Split variable group into variable and experiment.
     """
     variable, exp, threshold = variable_group.split('_')
-    if variable == 'tas':
-        variable = 'Surface Temperature'
+    #if variable == 'tas':
+    #    variable = 'Surface Temperature'
     exp = exp.upper()
-    exp = ' '.join([exp[:3], exp[3], exp[4:]])
+    exp = ' '.join([exp[:3], exp[3], exp[4]+'.'+exp[5]])
     if threshold == '15':
         threshold = '1.5'
     threshold += u'\N{DEGREE SIGN}'
@@ -220,6 +220,7 @@ def weighted_mean(cube):
     """
     Calculate the weighted mean.
     """
+    assert 0
     return cube.data.mean()
 
 
@@ -252,6 +253,7 @@ def make_four_pane_map_plot(
 
     # Determine image filename:
     suffix = '_'.join([plot_type, key]) + image_extention
+    suffix = suffix.replace(' ', '')
     path = diagtools.folder([cfg['plot_dir'], 'four_pane_plots', plot_type]) + suffix
 
     fig = plt.figure()
@@ -264,7 +266,7 @@ def make_four_pane_map_plot(
     cube224 = cube_detrended
 
     # create the z axis for plots 2, 3, 4.
-    zrange1 = diagtools.get_cube_range([cube221, cube222 ])
+    zrange1 = diagtools.get_cube_range([cube221, cube222])
     zrange3 = diagtools.get_cube_range_diff([cube223, ])
     zrange4 = diagtools.get_cube_range_diff([cube224, ])
 
@@ -274,16 +276,17 @@ def make_four_pane_map_plot(
 
     # Add the sub plots to the figure.
     add_map_subplot(221, cube221, linspace1, cmap='viridis',
-                    title='SSP')
+                    title='Projection')
     add_map_subplot(222, cube222, linspace1, cmap='viridis',
-                    title='Historical')
+                    title='Historical mean (1850-1900)')
     add_map_subplot(223, cube223, linspace3, cmap='RdBu_r',
-                    title='SSP minus historical')
+                    title='Projection minus historical')
     add_map_subplot(224, cube224, linspace4, cmap='RdBu_r',
-                    title='Detrended SSP minus historical')
+                    title='Detrended projection minus historical')
 
     # Add overall title
-    fig.suptitle(key, fontsize=14)
+    title = key.replace('_', ' ')
+    fig.suptitle(title, fontsize=14)
 
     # Saving files:
     if cfg['write_plots']:
@@ -398,6 +401,7 @@ def make_threshold_ensemble_map_plots(
         success = detrended_contourf(cube)
     else:
         success = trended_contourf(cube,cmap=cmap)
+
     if not success:
         print('Unable to make figure:', path)
         print('variable_group:',threshold, variable)
@@ -439,7 +443,7 @@ def make_gwt_map_four_plots(cfg, ):
 
     """
     metadatas = diagtools.get_input_files(cfg)
-    do_single_plots=False
+    do_single_plots=True
     do_variable_group_plots=True
     do_threshold_plots=True
 
@@ -447,6 +451,7 @@ def make_gwt_map_four_plots(cfg, ):
 
     files_dict = {}
     short_names = set()
+    standard_names = {}
     ensembles = set()
     exps = set()
     variable_groups = set()
@@ -456,6 +461,7 @@ def make_gwt_map_four_plots(cfg, ):
     for fn, details in sorted(metadatas.items()):
         #print(fn, details.keys())
         short_names.add(details['short_name'])
+        standard_names[details['short_name']] = details['standard_name']
         ensembles.add(details['ensemble'])
         exps.add(details['exp'])
         variable_groups.add(details['variable_group'])
@@ -468,8 +474,10 @@ def make_gwt_map_four_plots(cfg, ):
 
     if len(short_names) ==1:
         short_name = list(short_names)[0]
-    print(files_dict.keys())
+    else:
+        assert 0
 
+    print(files_dict.keys())
 
     # lets look at  minus the historical
     hist_cubes = {variable_group:{} for variable_group in variable_groups}
@@ -520,9 +528,6 @@ def make_gwt_map_four_plots(cfg, ):
             except:
                 thresholds[threshold] = [[variable_group, ensemble], ]
 
-            key = variable_group.replace('_',' ') + ' '+ensemble
-
-
     # single plots:
     for ensemble in sorted(ensembles):
         for variable_group in sorted(variable_groups):
@@ -540,8 +545,12 @@ def make_gwt_map_four_plots(cfg, ):
             cube_hist = hist_cubes[variable_group][ensemble]
             cube_anomaly = anomaly_cubes[variable_group][ensemble]
             cube_detrend = detrended_anomaly_cubes[variable_group][ensemble]
-            key = ' '.join([short_name, variable_group, ensemble])
 
+            variable, exp, threshold = split_variable_groups(variable_group)
+            key = ' '.join([standard_names[variable].title(),
+                            exp,
+                            'at', threshold,
+                            '('+ ensemble+')'])
             make_four_pane_map_plot(
                 cfg,
                 cube_ssp,
@@ -574,7 +583,13 @@ def make_gwt_map_four_plots(cfg, ):
                 continue
             ensemble_mean = calc_ensemble_mean(cube_list)
             output_cubes.append(ensemble_mean)
-        key = ' '.join([short_name, variable_group])
+
+        variable, exp, threshold = split_variable_groups(variable_group)
+        key = ' '.join([standard_names[variable].title(),
+                        'in', exp,
+                        'at', threshold ,
+                        'ensemble mean'
+                        ])
 
         if len(output_cubes) != 4:
             print('Problem with ', variable_group, 'four plots.', historical_group)
@@ -605,6 +620,11 @@ def make_gwt_map_four_plots(cfg, ):
             output_cubes.append(ensemble_mean)
 
         key = ' '.join([short_name, threshold])
+        key = ' '.join([standard_names[variable].title(),
+                        'at', threshold,
+                        'ensemble mean'
+                        ])
+
         make_four_pane_map_plot(
             cfg,
             output_cubes[0],
