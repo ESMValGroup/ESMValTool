@@ -80,7 +80,7 @@ if (region == "Nino3") {
   lat_max <- c(5, 5)
 }
 ### Load data
-for (i in 1 : length(model_names)) {
+for (i in seq(1, length(model_names), 1)) {
     data_nc <- nc_open(fullpath_filenames[i])
     lat <- as.vector(ncvar_get(data_nc, "lat"))
     lon <- as.vector(ncvar_get(data_nc, "lon"))
@@ -134,15 +134,15 @@ for (i in 1 : length(model_names)) {
 # convert to data frame for ggplot
 data_frame_plot <- as.data.frame.table(data_frame[,])
 data_frame_plot$Year <- rep(period, length(model_names))
-names(data_frame_plot)[2] <- "Model"
-data_frame_plot$Model <- as.factor(sort(rep(1 : length(model_names),
+names(data_frame_plot)[2] <- "model"
+data_frame_plot$model <- as.factor(sort(rep(seq(1, length(model_names), 1),
                                              length(period))))
-for (i in 1 : length(levels(data_frame_plot$Model))) {
-    levels(data_frame_plot$Model)[i] <- paste(model_names[i], scenario[i],
+for (i in seq(1, length(levels(data_frame_plot$model, 1)))) {
+    levels(data_frame_plot$model)[i] <- paste(model_names[i], scenario[i],
                                               ensemble[i])
 }
 font_size <- 12
-g <- ggplot(data_frame_plot, aes(x = Year, y = Freq, color = Model)) +
+g <- ggplot(data_frame_plot, aes(x = Year, y = Freq, color = model)) +
      theme_bw() +
      geom_line() + ylab(paste0("Anomaly (", units, ")")) + xlab("Year") +
      theme(text = element_text(size = font_size),
@@ -151,7 +151,7 @@ g <- ggplot(data_frame_plot, aes(x = Year, y = Freq, color = Model)) +
      stat_summary(data =  data_frame_plot, fun.y = "mean",
            mapping = aes(x = data_frame_plot$Year, y = data_frame_plot$Freq,
                   group = interaction(data_frame_plot[2, 3]),
-                  color = data_frame_plot$Model), geom = "line", size = 1) +
+                  color = data_frame_plot$model), geom = "line", size = 1) +
       ggtitle(paste0(region, " index for ", var0, " on ", months,
                      " (", starting, "-", ending, ")"))
 
@@ -178,7 +178,7 @@ nc_close(file)
 
 # Set provenance for output files
 xprov <- list(ancestors = list(fullpath_filenames),
-              authors = list("pere_nu", "hunt_al", "manu_ni"),
+              authors = list("perez-zanon_nuria", "hunter_alasdair", "manubens_nicolau"),
               projects = list("c3s-magic"),
               caption = "Combined selection",
               statistics = list("other"),
