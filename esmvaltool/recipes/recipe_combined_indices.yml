@@ -7,9 +7,9 @@ documentation:
     combining indices from multiple models and computing area averages
 
   authors:
-    - hunt_al
-    - pere_nu
-    - manu_ni
+    - hunter_alasdair
+    - perez-zanon_nuria
+    - manubens_nicolau
 
   projects:
     - c3s-magic
@@ -39,7 +39,7 @@ diagnostics:
         region: Nino3.4 #Nino3, Nino3.4, Nino4, NAO or SOI  
 
         # Compute running mean?
-        running_mean: 7 7 7 7 7 
+        running_mean: null 
 
         # Compute seasons? 
         moninf: 12  # First month
