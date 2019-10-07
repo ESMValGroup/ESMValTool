@@ -6,6 +6,7 @@
 Welcome to ESMValTool's documentation!
 ======================================
 
+<<<<<<< HEAD
 .. toctree::
    :maxdepth: 2
 
@@ -15,6 +16,9 @@ Welcome to ESMValTool's documentation!
    esmvaldiag/index
    recipes/index
    codedoc2/esmvaltool
+=======
+.. include:: _sidebar.rst.inc
+>>>>>>> version2_development
 
 
 Indices and tables

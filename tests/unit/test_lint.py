@@ -3,11 +3,10 @@ import os
 import subprocess
 import textwrap
 
-import pycodestyle  # formerly known as pep8
-
 from esmvaltool.utils.nclcodestyle import nclcodestyle
 
 
+<<<<<<< HEAD
 def test_pep8_conformance():
     """Test that we conform to PEP-8."""
     check_paths = [
@@ -50,6 +49,8 @@ def test_pep8_conformance():
     assert success, "Your code does not conform to PEP8"
 
 
+=======
+>>>>>>> version2_development
 def test_nclcodestyle():
     """Test that NCL code is formatted according to our standards."""
     check_paths = [

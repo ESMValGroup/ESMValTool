@@ -26,10 +26,11 @@ dir.create(work_dir, recursive = TRUE)
 provenance_file <- paste0(run_dir, "/", "diagnostic_provenance.yml")
 provenance <- list()
 
-input_files_per_var <- yaml::read_yaml(params$input_files) #[1])
+input_files_per_var <- yaml::read_yaml(params$input_files[1])
 var_names <- names(input_files_per_var)
 model_names <- lapply(input_files_per_var, function(x) x$dataset)
 model_names <- unique(unlist(unname(model_names)))
+
 var0 <- lapply(input_files_per_var, function(x) x$short_name)
 scenario <- unlist(lapply(input_files_per_var, function(x) x$exp))
 ensemble <- unlist(lapply(input_files_per_var, function(x) x$ensemble))
@@ -53,7 +54,7 @@ region <- params$region
 running_mean <- params$running_mean
 timestamp <- ""
 standardized <- params$standardized
-data_frame <- NULL
+
 if (region == "Nino3") {
   lon_min <- 360 - 150
   lon_max <- 360 - 90
@@ -81,45 +82,49 @@ if (region == "Nino3") {
   lat_max <- c(5, 5)
 }
 ### Load data
-for (i in 1 : length(model_names)) {
-    data_nc <- nc_open(fullpath_filenames[i])
-    lat <- as.vector(ncvar_get(data_nc, "lat"))
-    lon <- as.vector(ncvar_get(data_nc, "lon"))
-    units <- ncatt_get(data_nc, var0, "units")$value
-    long_names <-  ncatt_get(data_nc, var0, "long_name")$value
+data_nc <- nc_open(fullpath_filenames)
+lat <- as.vector(ncvar_get(data_nc, "lat"))
+lon <- as.vector(ncvar_get(data_nc, "lon"))
+units <- ncatt_get(data_nc, var0, "units")$value
+long_names <-  ncatt_get(data_nc, var0, "long_name")$value
 
-    data <- InsertDim(ncvar_get(data_nc, var0), 1, 1) # nolint
+data <- InsertDim(ncvar_get(data_nc, var0), 1, 1) # nolint
+names(dim(data)) <- c("model", "lon", "lat", "time")
+time <- seq(start_year, end_year, "month")
+nc_close(data_nc)
+
+if (standardized) {
+    data <- Apply(list(data), target_dims = c("time"),
+                 fun = function(x) {(x - mean(x)) / sqrt(var(x))}) #nolint
+    data <- aperm(data$output1, c(2, 3, 4, 1))
     names(dim(data)) <- c("model", "lon", "lat", "time")
-    time <- seq(start_year, end_year, "month")
-    nc_close(data_nc)
-    if (standardized) {
-        data <- Apply(list(data), target_dims = c("time"),
-                     fun = function(x) {(x - mean(x)) / sqrt(var(x))}) #nolint
-        data <- aperm(data$output1, c(2, 3, 4, 1))
-        names(dim(data)) <- c("model", "lon", "lat", "time")
-    }
-    if (!is.null(running_mean)) {
-        data <- Smoothing(data, runmeanlen = running_mean, numdimt = 4) #nolint
-        timestamp <- paste0(running_mean, "-month-running-mean-")
-    }
-    if (!is.null(moninf)) {
-        data <- Season(data, posdim = 4, monini = monini, #nolint
-                       moninf = moninf, monsup = monsup)
-        months <- paste0(month.abb[moninf], "-", month.abb[monsup])
-    }
-    if (length(lon_min) == 1) {
-        data <- WeightedMean(data, lon = lon, lat = lat, #nolint
-                             region = c(lon_min, lon_max, lat_min, lat_max),
-                             londim = 2, latdim = 3, mask = NULL)
+}
 
-        data <- drop(data)
-    } else {
-        data1 <- WeightedMean(data, lon = lon, lat = lat, #nolint
+if (!is.null(running_mean)) {
+    data <- Smoothing(data, runmeanlen = running_mean, numdimt = 4) #nolint
+    timestamp <- paste0(running_mean, "-month-running-mean-")
+}
+
+if (!is.null(moninf)) {
+  data <- Season(data, posdim = 4, monini = monini, #nolint
+                 moninf = moninf, monsup = monsup)
+  months <- paste0(month.abb[moninf], "-", month.abb[monsup])
+}
+
+if (length(lon_min) == 1) {
+  data <- WeightedMean(data, lon = lon, lat = lat, #nolint
+                       region = c(lon_min, lon_max, lat_min, lat_max),
+                       londim = 2, latdim = 3, mask = NULL)
+
+  data <- drop(data)
+} else {
+    data1 <- WeightedMean(data, lon = lon, lat = lat, #nolint
                     region = c(lon_min[1], lon_max[1], lat_min[1], lat_max[1]),
                     londim = 2, latdim = 3, mask = NULL)
-        data2 <- WeightedMean(data, lon = lon, lat = lat, #nolint
+    data2 <- WeightedMean(data, lon = lon, lat = lat, #nolint
                     region = c(lon_min[2], lon_max[2], lat_min[2], lat_max[2]),
                     londim = 2, latdim = 3, mask = NULL)
+<<<<<<< HEAD
         data1 <- drop(data1)
         data2 <- drop(data2)
         data <- CombineIndices(list(data1, data2), weights = c(1, -1), #nolint
@@ -169,16 +174,43 @@ defdata <- ncvar_def(name = "data", units = units,
                      dim = list(time = dimtime, model = dimmodel),
                      longname = paste("Index for region", region,
                                       "Variable", var0))
+=======
+    data1 <- drop(data1)
+    data2 <- drop(data2)
+    data <- CombineIndices(list(data1, data2), weights = c(1, -1), #nolint
+                           operation = "add")
+}
+
+if (moninf > monsup) {
+    period <- (starting : ending)[-1]
+} else {
+    period <- starting : ending
+}
+
+dimtime <- ncdim_def(name = "Time", units = "years",
+                     vals = period, longname = "Time")
+defdata <- ncvar_def(name = "data", units = units, dim = list(time = dimtime),
+               longname = paste("Index for region", region, "Variable", var0))
+>>>>>>> version2_development
 filencdf <- paste0(work_dir, "/", var0, "_", timestamp, "_", months, "_",
-                   paste(model_names, collapse = ""),
                    starting, ending, "_", ".nc")
 file <- nc_create(filencdf, list(defdata))
-ncvar_put(file, defdata, data_frame)
+ncvar_put(file, defdata, data)
 nc_close(file)
+
+
+png(paste0(plot_dir, "/", "Index_", region, ".png"), width = 7, height = 4,
+    units = "in", res = 150)
+plot(period, data, type = "l", col = "purple", lwd = 2, bty = "n",
+     xlab = "Time (years)", ylab = "Index",
+     main = paste("Region", region, "and Variable", var0))
+abline(h = 0, col = "grey", lty = 4)
+dev.off()
+
 
 # Set provenance for output files
 xprov <- list(ancestors = list(fullpath_filenames),
-              authors = list("pere_nu", "hunt_al", "manu_ni"),
+              authors = list("hunt_al", "manu_ni"),
               projects = list("c3s-magic"),
               caption = "Combined selection",
               statistics = list("other"),

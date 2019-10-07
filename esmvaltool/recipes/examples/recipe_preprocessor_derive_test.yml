@@ -125,3 +125,11 @@ diagnostics:
       netcre:
         <<: *toz
     scripts: null
+
+  diag8:
+    description: Test sispeed
+    variables:
+      clltkisccp:
+        <<: *cloud
+        mip: OImon
+    scripts: null

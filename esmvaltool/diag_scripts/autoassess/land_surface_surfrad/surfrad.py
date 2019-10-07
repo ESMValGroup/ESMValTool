@@ -72,9 +72,9 @@ def land_surf_rad(run):
 
             # apply the mask
             reg_run_fld.data = np.ma.masked_array(
-                reg_run_fld.data, mask=(lnd.data < 0.98))
+                reg_run_fld.data, mask=(lnd.data > 90.))
             reg_ebaf_fld.data = np.ma.masked_array(
-                reg_ebaf_fld.data, mask=(lnd.data < 0.98))
+                reg_ebaf_fld.data, mask=(lnd.data > 90.))
 
             # do a simple diff
             dff = reg_run_fld - reg_ebaf_fld

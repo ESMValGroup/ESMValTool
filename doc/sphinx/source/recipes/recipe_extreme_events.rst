@@ -1,3 +1,5 @@
+.. _recipes_extreme_events:
+
 Extreme Events Indices - Computation of ETCCDI extreme indices and plotting
 =====================================================================================
 
