@@ -42,7 +42,7 @@ User settings in recipe
 
    * styleset : CMIP5(recommended), default, etc.
    * ncdf     : default(recommended), CMIP5, etc. 
-   *max_lat   : -30.0
+   * max_lat   : -30.0
 
    *Optional settings (scripts)*
    
@@ -241,7 +241,7 @@ Variables
 Observations and reformat scripts 
 ---------------------------------
 
-*Note: (1) WOA data has not been tested with reciepe_russell18jgr.yml and corresponding diag_scripts
+* Note: (1) WOA data has not been tested with reciepe_russell18jgr.yml and corresponding diag_scripts
 
 * WOA (temperature, salinity)
 
