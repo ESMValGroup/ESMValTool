@@ -149,7 +149,7 @@ g <- ggplot(data_frame_plot, aes(x = year, y = Freq, color = model)) +
            legend.text = element_text(size = font_size),
            axis.title = element_text(size = font_size)) +
      stat_summary(data =  data_frame_plot, fun.y = "mean",
-           mapping = aes(x = data_frame_plot$Year, y = data_frame_plot$Freq,
+           mapping = aes(x = data_frame_plot$year, y = data_frame_plot$Freq,
                   group = interaction(data_frame_plot[2, 3]),
                   color = data_frame_plot$model), geom = "line", size = 1) +
       ggtitle(paste0(region, " index for ", var0, " on ", months,
