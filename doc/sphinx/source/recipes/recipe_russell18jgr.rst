@@ -259,11 +259,11 @@ Example plots
 
 
 .. _fig_1:
-.. figure::  /recipes/figures/russell18jgr/Fig1(Russell_polar-contour_tauu_1986-2005).pdf
+.. figure::  doc/sphinx/source/recipes/figures/russell18jgr/Fig1(Russell_polar-contour_tauu_1986-2005).pdf
    :align:   center
 
 
-.. image:: /recipes/figures/russell18jgr/Fig2(russell18jgr_fig2_1986-2005).pdf
+.. image:: doc/sphinx/source/recipes/figures/russell18jgr/Fig2(russell18jgr_fig2_1986-2005).pdf
    
 
 .. |pic_permetrics3| image:: /recipes/figures/perfmetrics/perfmetrics_fig_3.png
