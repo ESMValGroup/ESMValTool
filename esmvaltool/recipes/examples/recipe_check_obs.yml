@@ -14,7 +14,7 @@ diagnostics:
   ### TIER 2 ##################################################################
 
   CRU:
-    description: CRU
+    description: CRU check
     variables:
       tas:
       pr:
@@ -23,8 +23,19 @@ diagnostics:
          type: reanaly, version: TS4.02, start_year: 1901, end_year: 2017}
     scripts: null
 
+
+  Duveiller2018:
+    description: Duveiller2018 check
+    variables:
+      albDiffiTr13:
+    additional_datasets:
+      - {dataset: Duveiller2018, project: OBS, mip: Amon, tier: 2,
+         type: clim, version: v2018, start_year: 2010, end_year: 2010}
+    scripts: null
+
+
   Eppley-VGPM-MODIS:
-    description: Eppley-VGPM-MODIS
+    description: Eppley-VGPM-MODIS check
     variables:
       intpp:
     additional_datasets:
@@ -32,8 +43,9 @@ diagnostics:
          type: sat, version: R2018, start_year: 2003, end_year: 2018}
     scripts: null
 
+
   ESACCI-AEROSOL:
-    description: ESACCI-AEROSOL
+    description: ESACCI-AEROSOL check
     variables:
       abs550aer:
       od550aer:
@@ -48,7 +60,7 @@ diagnostics:
 
 
   ESACCI-CLOUD:
-    description: ESACCI-CLOUD
+    description: ESACCI-CLOUD check
     variables:
       clivi:
       clt:
@@ -61,7 +73,7 @@ diagnostics:
 
 
   ESACCI-FIRE:
-    description: ESACCI-FIRE
+    description: ESACCI-FIRE check
     variables:
       burntArea:
     additional_datasets:
@@ -72,7 +84,7 @@ diagnostics:
 
 
   ESACCI-LANDCOVER:
-    description: ESACCI-LANDCOVER
+    description: ESACCI-LANDCOVER check
     variables:
       baresoilFrac:
       cropFrac:
@@ -87,7 +99,7 @@ diagnostics:
 
 
   ESACCI-OC:
-    description: ESACCI-OC
+    description: ESACCI-OC check
     variables:
       chl:
     additional_datasets:
@@ -97,7 +109,7 @@ diagnostics:
 
 
   ESACCI-OZONE:
-    description: ESACCI-OZONE
+    description: ESACCI-OZONE check
     variables:
       toz:
         additional_datasets:
@@ -119,7 +131,7 @@ diagnostics:
 
 
   ESACCI-SOILMOISTURE:
-    description: ESACCI-SOILMOISTURE
+    description: ESACCI-SOILMOISTURE check
     variables:
       dos:
       dosStderr:
@@ -133,7 +145,7 @@ diagnostics:
 
 
   ESACCI-SST:
-    description: ESACCI-SST
+    description: ESACCI-SST check
     variables:
       ts:
       tsStderr:
@@ -145,7 +157,7 @@ diagnostics:
 
 
   GHCN:
-    description: GHCN
+    description: GHCN check
     variables:
       pr:
     additional_datasets:
@@ -155,7 +167,7 @@ diagnostics:
 
 
   HadCRUT3:
-    description: HadCRUT3
+    description: HadCRUT3 check
     variables:
       tasa:
     additional_datasets:
@@ -165,7 +177,7 @@ diagnostics:
 
 
   HadCRUT4:
-    description: HadCRUT4
+    description: HadCRUT4 check
     variables:
       tas:
       tasa:
@@ -176,7 +188,7 @@ diagnostics:
 
 
   HadISST:
-    description: HadISST
+    description: HadISST check
     variables:
       ts:
         mip: Amon
@@ -191,7 +203,7 @@ diagnostics:
 
 
   Landschuetzer2016:
-    description: Landschuetzer2016
+    description: Landschuetzer2016 check
     variables:
       dpco2:
       fgco2:
@@ -203,7 +215,7 @@ diagnostics:
 
 
   NCEP:
-    description: NCEP monthly data
+    description: NCEP check
     variables:
       hur:
         mip: Amon
@@ -243,8 +255,23 @@ diagnostics:
     scripts: null
 
 
+  NSIDC-0116:
+    description: NSIDC-0116 check
+    variables:
+      usi:
+        fx_files: [areacello]
+      vsi:
+        fx_files: [areacello]
+    additional_datasets:
+      - {dataset: NSIDC-0116-nh, project: OBS, mip: day, tier: 3,
+         type: reanaly, version: "4.1", start_year: 1978, end_year: 2018}
+      - {dataset: NSIDC-0116-sh, project: OBS, tier: 3,
+         type: reanaly, version: "4.1", start_year: 1978, end_year: 2018}
+    scripts: null
+
+
   PATMOS-x:
-    description: PATMOS-x
+    description: PATMOS-x check
     variables:
       clt:
     additional_datasets:
@@ -254,7 +281,7 @@ diagnostics:
 
 
   WOA:
-    description: WOA
+    description: WOA check
     variables:
       so:
         mip: Omon
@@ -277,7 +304,7 @@ diagnostics:
   ### TIER 3 ##################################################################
 
   AURA-TES:
-    description: AURA-TES
+    description: AURA-TES check
     variables:
       tro3:
     additional_datasets:
@@ -286,8 +313,19 @@ diagnostics:
     scripts: null
 
 
+  CDS-SATELLITE-LAI-FAPAR:
+    description: CDS-SATELLITE-LAI-FAPAR check
+    variables:
+      fapar:
+      lai:
+    additional_datasets:
+      - {dataset: CDS-SATELLITE-LAI-FAPAR, project: OBS, mip: Lmon, tier: 3,
+         type: sat, version: V1, start_year: 1999, end_year: 2013}
+    scripts: null
+
+
   CDS-SATELLITE-SOIL-MOISTURE:
-    description: CDS-SATELLITE-SOIL-MOISTURE
+    description: CDS-SATELLITE-SOIL-MOISTURE check
     variables:
       sm:
       smStderr:
@@ -299,7 +337,7 @@ diagnostics:
 
 
   CDS-XCH4:
-    description: CDS-XCH4
+    description: CDS-XCH4 check
     variables:
       xch4:
     additional_datasets:
@@ -309,7 +347,7 @@ diagnostics:
 
 
   CDS-XCO2:
-    description: CDS-XCO2
+    description: CDS-XCO2 check
     variables:
       xco2:
     additional_datasets:
@@ -319,7 +357,7 @@ diagnostics:
 
 
   CERES_mon:
-    description: CERES-SYN1deg monthly data
+    description: CERES-SYN1deg check
     variables:
       rlds_month:
         short_name: rlds
@@ -390,7 +428,7 @@ diagnostics:
 
 
   ERA-Interim:
-    description: ERA-Interim
+    description: ERA-Interim check
     variables:
       clivi:
         mip: Amon
@@ -452,8 +490,9 @@ diagnostics:
          type: reanaly, version: 1, start_year: 1979, end_year: 2018}
     scripts: null
 
+
   ERA5:
-    description: ERA5 check
+    description: ERA5 check check
     variables:
       clt:
       evspsbl:
@@ -475,11 +514,14 @@ diagnostics:
       ts:
       tsn:
     additional_datasets:
-      - {project: OBS6, dataset: ERA5, mip: E1hr, frequency: 1hr, tier: 3, type: reanaly, version: 1, start_year: 1990, end_year: 1990}
+      - {project: OBS6, dataset: ERA5, mip: E1hr,
+         frequency: 1hr, tier: 3, type: reanaly, version: 1,
+         start_year: 1990, end_year: 1990}
     scripts: null
 
+
   LAI3g:
-    description: LAI3g
+    description: LAI3g check
     variables:
       lai:
     additional_datasets:
@@ -489,7 +531,7 @@ diagnostics:
 
 
   LandFlux-EVAL:
-    description: LandFlux-EVAL
+    description: LandFlux-EVAL check
     variables:
       et:
       etStderr:
@@ -500,7 +542,7 @@ diagnostics:
 
 
   MTE:
-    description: MTE
+    description: MTE check
     variables:
       gpp:
       gppStderr:
@@ -511,7 +553,7 @@ diagnostics:
 
 
   MODIS:
-    description: MODIS
+    description: MODIS check
     variables:
       od550aer:
         mip: aero
@@ -532,7 +574,7 @@ diagnostics:
 
 
   NIWA-BS:
-    description: NIWA-BS
+    description: NIWA-BS check
     variables:
       toz:
       tozStderr:
@@ -541,9 +583,8 @@ diagnostics:
          type: sat, version: v3.3, start_year: 1979, end_year: 2016}
     scripts: null
 
-
   UWisc:
-    description: UWisc
+    description: UWisc check
     variables:
       lwp:
       lwpStderr:
