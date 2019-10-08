@@ -279,15 +279,17 @@ diagnostics:
          type: sat, version: NOAA, start_year: 1982, end_year: 2016}
     scripts: null
 
+
   PIOMAS:
     description: PIOMAS
     variables:
       sithick:
         mip: day
-      sithick:
-        areacello: fx
+      areacello:
+        mip: fx
     additional_datasets:
-      - {dataset: PIOMAS, project: OBS, tier: 2, type: reanaly, version: 2.1, start_year: 1979, end_year: 2018}
+      - {dataset: PIOMAS, project: OBS, tier: 2,
+         type: reanaly, version: 2.1, start_year: 1979, end_year: 2018}
     scripts: null
 
 
