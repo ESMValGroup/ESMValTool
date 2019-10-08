@@ -197,8 +197,6 @@ begin
       area_lat = infile_iii->lat       
       fgco2_dataset = fgco2_dataset * 0.000031536    
       ; unit conversion from kg/s to Pg/yr
-      printVarSummary(fgco2_dataset)
-      printVarSummary(areacello_2d)
       carbon_flux = fgco2_dataset * areacello_2d            
       ; flux per cell   = (flux per area) * (area per cell)
       carbon_flux_per_lat = dim_sum_n_Wrap(carbon_flux, 1)  
