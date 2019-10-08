@@ -10,7 +10,7 @@ Last access
    20190510
 
 Download and processing instructions
-   Download the sithick files from:
+   Download and unpack the sithick files from:
    https://pscfiles.apl.washington.edu/zhang/PIOMAS/data/v2.1/hiday/
 
    And the grid info files from:
