@@ -21,13 +21,14 @@ if (any(file.access(RLIBPATH, 2) == 0)) {
 log("Installing packages to --> ", RLIBLOC)
 
 pkg_mirror <- "https://cloud.r-project.org"
-pkg_list <- c("remotes", "yaml")
+pkg_list <- c("devtools", "yaml")
 install.packages(
     pkg_list,
     repos = pkg_mirror,
     Ncpus = 1,
     dependencies = c("Depends", "Imports", "LinkingTo")
 )
+devtools::install_version("lintr", version = "1.0.3", repos = pkg_mirror,)
 
 failed <- list()
 for (package_name in pkg_list) {
@@ -44,6 +45,6 @@ if ( length(failed) != 0 ) {
     log("Failed to install packages:", paste(failed, collapse = ", "))
     quit(status = 1, save = "no")
 }
-remotes::install_github("jimhester/lintr@v1.0.3")
+
 
 log("Successfully installed all packages")
