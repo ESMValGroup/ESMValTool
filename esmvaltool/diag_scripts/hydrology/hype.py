@@ -66,7 +66,8 @@ def main(cfg):
             output_file = get_diagnostic_filename(
                 Path(input_file).stem + '_hype', cfg, 'txt')
 
-            frame.to_csv(output_file, sep=' ', index_label="DATE")
+            frame.to_csv(output_file, sep=' ', index_label="DATE",
+                          float_format='%.3f')
 
             # Store provenance
             provenance_record = get_provenance_record(input_file)

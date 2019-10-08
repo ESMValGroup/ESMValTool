@@ -16,25 +16,47 @@ datasets:
   - {dataset: ERA-Interim, project: OBS, tier: 3, type: reanaly, version: 1}
 
 preprocessors:
-  preprocessor:
+  preprocessor: &general
     extract_shape:
       shapefile: HYPE_Shapefiles/Meuse_HYPE/Meuse_HYPE.shp
       method: contains
       decomposed: true
     area_statistics:
       operator: mean
+      
+  daily_temperature:  
+    <<: *general
+    convert_units:
+      units: degC
+    daily_statistics:
+      operator: mean 
+
+  daily_water:
+    <<: *general
+    convert_units:
+      units: mm d-1    
+    daily_statistics:
+        operator: mean 
 
 
 diagnostics:
   diagnostic1:
-    description: PCR-GLOBWB input preprocessor
+    description: HYPE input preprocessor
     variables:
       tas: &var
         mip: day
         start_year: 1979
         end_year: 1979
-        preprocessor: preprocessor
-      pr: *var
+        preprocessor: daily_temperature
+      tasmin:
+        <<: *var
+        preprocessor: daily_temperature
+      tasmax:
+        <<: *var
+        preprocessor: daily_temperature
+      pr:
+        <<: *var
+        preprocessor: daily_water
     scripts:
       script:
         script: hydrology/hype.py
