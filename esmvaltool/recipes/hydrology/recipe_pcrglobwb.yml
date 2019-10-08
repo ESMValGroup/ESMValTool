@@ -7,65 +7,86 @@ documentation:
 
     PCR-GLOBWB (PCRaster Global Water Balance) is a large-scale hydrological model intended for global
     to regional studies and developed at the Department of Physical Geography, Utrecht University (Netherlands).
+    PCR-GLOBWB input and output files for the runs made in Sutanudjaja et al. (2018, https://doi.org/10.5194/gmd-11-2429-2018)
+    are available on https://geo.data.uu.nl/research-pcrglobwb/pcr-globwb_gmd_paper_sutanudjaja_et_al_2018/.
+    For requesting access, please send an e-mail to E.H.Sutanudjaja@uu.nl.
 
-  authors: ['aerts_jerom', 'andela_bouwe', 'drost_niels', 'camphuijsen_jaro', 'kalverla_peter']
+    Main reference/paper: Sutanudjaja, E. H., van Beek, R., Wanders, N., Wada, Y., Bosmans, J. H. C., Drost, N., van der Ent,
+    R. J., de Graaf, I. E. M., Hoch, J. M., de Jong, K., Karssenberg, D., López López, P., Peßenteiner, S., Schmitz, O.,
+    Straatsma, M. W., Vannametee, E., Wisser, D., and Bierkens, M. F. P.: PCR-GLOBWB 2: a 5 arcmin global hydrological
+    and water resources model, Geosci. Model Dev., 11, 2429-2453, https://doi.org/10.5194/gmd-11-2429-2018, 2018.
+
+  authors: ['aerts_jerom', 'andela_bouwe', 'drost_niels']
   projects: ['ewatercycle']
   references: ['acknow_project', 'sutanudjaja2018gmd']
 
+
 preprocessors:
-  hourly_tas:
+  preprocessor: &general
     regrid:
       target_grid: ERA5
       lon_offset: true
       lat_offset: true
       scheme: linear
-    daily_statistics:
-      operator: mean
-  hourly_pr:
-    regrid:
-      target_grid: ERA5
-      lon_offset: true
-      lat_offset: true
-      scheme: linear
+    extract_time:
+      end_year: 2000
+      end_month: 1
+      end_day: 3
+      
+  daily_water:
+    <<: *general
+    convert_units:
+      units: kg m-2 d-1
+  daily_temperature:
+    <<: *general
+    convert_units:
+      units: degC    
+     
+  hourly_water:
+    <<: *general
+    convert_units:
+      units: kg m-2 h-1
     daily_statistics:
       operator: sum
-  daily:
-    regrid:
-      target_grid: ERA-Interim
-      lon_offset: true
-      lat_offset: true
-      scheme: linear
-
+      
+  hourly_temperature_mean:
+    <<: *general
+    convert_units:
+      units: degC
+    daily_statistics:
+      operator: mean  
+     
 diagnostics:
-  diagnostic_era_interim:
+  diagnostic_daily:
+    description: PCR-GLOBWB input preprocessor for daily data
     additional_datasets:
-      - {dataset: ERA-Interim, project: OBS, tier: 3, type: reanaly, version: 1}
-    description: PCR-GLOBWB input preprocessor
+      - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
     variables:
-      tas: &var
+      pr: &var_daily
         mip: day
         start_year: 2000
         end_year: 2000
-        preprocessor: daily
-      pr: *var
+        preprocessor: daily_water
+      tas:
+        <<: *var_daily
+        preprocessor: daily_temperature
     scripts:
       script:
         script: hydrology/pcrglobwb.py
-  diagnostic_era5:
-    description: PCR-GLOBWB input preprocessor
+
+  diagnostic_hourly:
+    description: PCR-GLOBWB  input preprocesor for hourly data
     additional_datasets:
       - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1}
     variables:
+      pr: &var_hourly
+        mip: E1hr
+        start_year: 2000
+        end_year: 2000
+        preprocessor: hourly_water
       tas:
-        mip: E1hr
-        start_year: 2000
-        end_year: 2000
-        preprocessor: hourly_tas
-      pr:
-        mip: E1hr
-        start_year: 2000
-        end_year: 2000
-        preprocessor: hourly_pr
+        <<: *var_hourly
+        preprocessor: hourly_temperature_mean
     scripts:
       script:
         script: hydrology/pcrglobwb.py
