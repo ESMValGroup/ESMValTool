@@ -11,8 +11,8 @@
 #     version: my_version
 
 # The next ones are NOT allowed on final code, but we support them to
-# facilitate developing and testing of recipes before merging
-# From github:
+# facilitate developing and testing of recipes before merging if the CRAN
+# version is not available yet
 
 # From GitHub:
 #   mypackage:
