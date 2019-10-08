@@ -257,13 +257,14 @@ Example plots
 -------------
 * these plots are converted into pdf, but default output from esmvaltool is ps
 
-.. figure:: /recipes/figures/russell18jgr/Fig1(Russell_polar-contour_tauu_1986-2005).pdf
-   
 
-.. |Figure 2| image:: Fig2(russell18jgr_fig2_1986-2005).pdf
-   
+.. _fig_1:
+.. figure::  /recipes/figures/russell18jgr/Fig1(Russell_polar-contour_tauu_1986-2005).pdf
+   :align:   center
 
-.. centered:: |pic_permetrics3| |pic_permetrics4|
+
+.. image:: /recipes/figures/russell18jgr/Fig2(russell18jgr_fig2_1986-2005).pdf
+   
 
 .. |pic_permetrics3| image:: /recipes/figures/perfmetrics/perfmetrics_fig_3.png
    :width: 30%
