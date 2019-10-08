@@ -1,0 +1,27 @@
+---
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: PIOMAS
+  version: '2.1'
+  tier: 2
+  modeling_realm: reanaly
+  project_id: OBS
+  source: 'http://psc.apl.uw.edu/research/projects/arctic-sea-ice-volume-anomaly/data/model_grid'
+  reference: 'piomas'
+  comment: ''
+
+# Variables to cmorize (here use only filename prefix)
+variables:
+  sithick:
+    mip: day
+    raw: hiday
+    type: scalar
+    units: m
+
+  areacello:
+    mip: fx
+    type: scalar
+
+custom:
+  scalar_file: grid.dat
+  vector_file: grid.dat.pop
