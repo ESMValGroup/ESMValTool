@@ -10,9 +10,15 @@ Last access
    20190510
 
 Download and processing instructions
-   Download the desired files from:
-   https://pscfiles.apl.washington.edu/zhang/PIOMAS/data/
+   Download the sithick files from:
+   https://pscfiles.apl.washington.edu/zhang/PIOMAS/data/v2.1/hiday/
 
+   And the grid info files from:
+   https://pscfiles.apl.washington.edu/zhang/PIOMAS/utilities/grid.dat
+   https://pscfiles.apl.washington.edu/zhang/PIOMAS/utilities/grid.dat.pop
+
+   Other variables provided by PIOMAS are not supported, but extending support
+   should be achievable for most of them just modifying the config file
 """
 
 import logging
