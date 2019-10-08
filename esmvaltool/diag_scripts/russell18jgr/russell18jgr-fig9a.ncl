@@ -71,7 +71,6 @@ load "$diag_scripts/shared/plot/contour_maps.ncl"  ; load plot function
 load "$diag_scripts/shared/latlon.ncl"
 
 begin
-   print("st art")
   enter_msg(DIAG_SCRIPT, "")
   nVariables = ListCount(variable_info)
   hfds_var = variable_info[0]@short_name
@@ -326,7 +325,7 @@ begin
                   "Russell et al 2018 figure 9a" , \
                   "mean", \
                   "sh", \
-                  "geo", \
+                  "scatter", \
                   "russ_jo", \
                   "russell18jgr", \
                   (/tauu_inputfile_paths(idd), hfds_inputfile_paths(idd)/))
