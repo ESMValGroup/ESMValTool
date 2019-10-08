@@ -645,6 +645,7 @@ references:
   sillman-2013: "Sillmann et al., J. Geophys. Res., doi:10.1029/2012JD018390, 2013" 
 
 projects:
+  russell_project: US Clivar, Ocean Carbon Biogeochemistry, ESGF, NOAA, NSF, NASA, US Antarctic program
   c3s-magic: Copernicus Climate Change Service 34a Lot 2 (MAGIC) project
   climval: BMBF MiKlip Project ClimVal
   cmip6dicad: BMBF CMIP6 Project Germany
