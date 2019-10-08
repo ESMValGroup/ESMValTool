@@ -258,12 +258,14 @@ diagnostics:
   NSIDC-0116:
     description: NSIDC-0116 check
     variables:
+      areacello:
+        mip: fx
       usi:
-        fx_files: [areacello]
+        mip: day
       vsi:
-        fx_files: [areacello]
+        mip: day
     additional_datasets:
-      - {dataset: NSIDC-0116-nh, project: OBS, mip: day, tier: 3,
+      - {dataset: NSIDC-0116-nh, project: OBS, tier: 3,
          type: reanaly, version: "4.1", start_year: 1978, end_year: 2018}
       - {dataset: NSIDC-0116-sh, project: OBS, tier: 3,
          type: reanaly, version: "4.1", start_year: 1978, end_year: 2018}
@@ -432,8 +434,6 @@ diagnostics:
     variables:
       clivi:
         mip: Amon
-      sftlf:
-        mip: fx
       clt:
         mip: Amon
       clwvi:
@@ -442,30 +442,32 @@ diagnostics:
         mip: Omon
       hus:
         mip: Amon
-      pr_month:
-        short_name: pr
-        mip: Amon
       pr_day:
         short_name: pr
         mip: day
+      pr_month:
+        short_name: pr
+        mip: Amon
       prw:
         mip: Amon
       ps:
         mip: Amon
-      psl_month:
-        short_name: psl
-        mip: Amon
       psl_day:
         short_name: psl
         mip: day
-      ta:
+      psl_month:
+        short_name: psl
         mip: Amon
-      tas_month:
-        short_name: tas
+      sftlf:
+        mip: fx
+      ta:
         mip: Amon
       tas_day:
         short_name: tas
         mip: day
+      tas_month:
+        short_name: tas
+        mip: Amon
       tasmin:
         mip: day
       tasmax:
@@ -474,6 +476,8 @@ diagnostics:
         mip: Amon
       tauv:
         mip: Amon
+      tos:
+        mip: Omon
       ts:
         mip: Amon
       ua:
@@ -484,8 +488,6 @@ diagnostics:
         mip: Amon
       zg:
         mip: Amon
-      tos:
-        mip: Omon
     additional_datasets:
       - {dataset: ERA-Interim, project: OBS, tier: 3,
          type: reanaly, version: 1, start_year: 1979, end_year: 2018}
