@@ -3,7 +3,8 @@
 ---
 documentation:
   description: |
-    Recipe pre-processes ERA-Interim reanalyses files for use in the Hype hydrological model.
+    Recipe pre-processes ERA-Interim reanalyses files for use in the Hype
+    hydrological model.
 
 
   authors: ['pelupessy_inti']
@@ -19,7 +20,7 @@ preprocessors:
     extract_shape:
       shapefile: HYPE_Shapefiles/Meuse_HYPE/Meuse_HYPE.shp
       method: contains
-      decomposed: True
+      decomposed: true
     area_statistics:
       operator: mean
 
