@@ -28,7 +28,9 @@
 ;;  Caveats:                                                                   #
 ;;     
 ;;     1) i-j models are assigned lat - lon arrays assuming the grid has 
-;;          constant lat across j and constant lon across i. 
+;;         constant lat across j and constant lon across i. 
+;;     2) CNRM-CM5 model doesnt work with ncdf_write function as it has 
+;;         x,y coordinate variable instead of lat-lon or i-j or rlat-rlon
 ;;   
 ;; 
 ;; Modification history
