@@ -132,7 +132,7 @@ for (i in seq(1, length(model_names), 1)) {
        data_frame <- cbind(data_frame, data)
 } # close for loop i
 # convert to data frame for ggplot
-data_frame_plot <- as.data.frame.table(data_frame[,])
+data_frame_plot <- as.data.frame.table(data_frame)
 data_frame_plot$year <- rep(period, length(model_names))
 names(data_frame_plot)[2] <- "model"
 data_frame_plot$model <- as.factor(sort(rep(seq(1, length(model_names), 1),
