@@ -259,20 +259,67 @@ Example plots
 
 
 .. _fig_1:
-.. figure::  doc/sphinx/source/recipes/figures/russell18jgr/Fig1(Russell_polar-contour_tauu_1986-2005).pdf
+.. figure::  /recipes/figures/russell18jgr/Fig1(Russell_polar-contour_tauu_1986-2005).pdf
    :align:   center
 
+.. _fig_2:
+.. figure::  /recipes/figures/russell18jgr/Fig2(russell18jgr_fig2_1986-2005).pdf
+   :align:   center
 
-.. image:: doc/sphinx/source/recipes/figures/russell18jgr/Fig2(russell18jgr_fig2_1986-2005).pdf
+.. _fig_3b:
+.. figure::  /recipes/figures/russell18jgr/Fig3(Polar-Front).pdf
+   :align:   center
+
+.. _fig_3b:
+.. figure::  /recipes/figures/russell18jgr/Fig3(Subantarctic-Fronts).pdf
+   :align:   center
+
+.. _fig_4:
+.. figure::  /recipes/figures/russell18jgr/Fig4(Drake_passage).pdf
+   :align:   center
+
+.. _fig_5:
+.. figure::  /recipes/figures/russell18jgr/Fig5(sic-max-min).pdf
+   :align:   center
+
+. _fig_5g:
+.. figure::  /recipes/figures/russell18jgr/Fig5g(sic-line).pdf	
+   :align:   center
    
+.. _fig_6a:
+.. figure::  /recipes/figures/russell18jgr/Fig6a.pdf
+   :align:   center
 
-.. |pic_permetrics3| image:: /recipes/figures/perfmetrics/perfmetrics_fig_3.png
-   :width: 30%
+.. _fig_6b:
+.. figure::  /recipes/figures/russell18jgr/Fig6b.pdf
+   :align:   center
 
-.. |pic_permetrics4| image:: /recipes/figures/perfmetrics/perfmetrics_fig_4.png
-   :width: 52%
+.. _fig_7:
+.. figure::  /recipes/figures/russell18jgr/Fig7(fgco2_polar).pdf
+   :align:   center
 
-.. figure:: /recipes/figures/perfmetrics/perfmetrics_fig_5.png
-   :width: 75%
-   :align: center
+.. _fig_7h:
+.. figure:: /recipes/figures/russell18jgr/Fig7h(fgco2_zonal-flux).pdf
+   :align:   center
 
+.. _fig_7i:
+.. figure::  /recipes/figures/russell18jgr/Fig7i(fgco2_integrated-flux).pdf
+   :align:   center
+
+.. _fig_8:
+.. figure::  /recipes/figures/russell18jgr/Fig8(polar-ph).pdf
+   :align:   center
+
+.. _fig_9a:
+.. figure::  /recipes/figures/russell18jgr/Fig9a.pdf
+   :align:   center
+
+.. _fig_9b:
+.. figure::  /recipes/figures/russell18jgr/Fig9b.pdf
+   :align:   center
+
+.. _fig_9c:
+.. figure:: /recipes/figures/russell18jgr/Fig9c.pdf
+   :align:   center
+   
+ 
