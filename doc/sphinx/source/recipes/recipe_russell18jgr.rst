@@ -257,7 +257,7 @@ Example plots
 -------------
 * these plots are converted into pdf, but default output from esmvaltool is ps
 
-.. |Figure 1| image:: /recipes/figures/russell18jgr/Fig1(Russell_polar-contour_tauu_1986-2005).pdf
+.. figure:: /recipes/figures/russell18jgr/Fig1(Russell_polar-contour_tauu_1986-2005).pdf
    
 
 .. |Figure 2| image:: Fig2(russell18jgr_fig2_1986-2005).pdf
