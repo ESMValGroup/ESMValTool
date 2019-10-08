@@ -98,7 +98,7 @@ end
 
 begin
    
-  plotpath = config_user_info@plot_dir + "/russell18jgr-fig9a_" \ 
+  plotpath = config_user_info@plot_dir + "/russell18jgr-fig9c_" \ 
             + sprinti("%0.4i", min(toint(start_years_data))) + "-" \
             + sprinti("%0.4i", max(toint(end_years_data)))
 
