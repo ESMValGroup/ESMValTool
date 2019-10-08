@@ -40,7 +40,9 @@
 ;;         mask_out : "land"
 ;;
 ;; Caveats
-;;   - no caveats known on May 10, 2019 
+;;  - fgco2 of CNRM-CM5 model doesnt work with ncdf_write function as it has 
+;;      x,y coordinate variable instead of lat-lon or i-j or rlat-rlon
+;;   
 ;; 
 ;;
 ;; Modification history
