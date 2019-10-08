@@ -153,8 +153,8 @@ begin
       infile_iii  = addfile(infile_path, "r")
       area_lon    = infile_iii->lon
       area_lat    = infile_iii->lat
-      dataset_1!1   = "lat"
-      dataset_1!2   = "lon"
+      dataset_1!0   = "lat"
+      dataset_1!1   = "lon"
       dataset_1&lat = tofloat(area_lat(:,10))
       dataset_1&lon = tofloat(area_lon(10,:))
       delete(area_lat)
