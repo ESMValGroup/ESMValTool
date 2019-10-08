@@ -143,16 +143,13 @@ begin
     lev_a = closest_val(200.0, lev_data)
     
     if (lev_data(lev_a) .lt. 200.0 ) then
- ;     lev_new = lev_data(0: lev_a)
       dataset_1 = dataset_lev(0:lev_a,:,:)
     else 
-;      lev_new = lev_data(0: lev_a -1)
       dataset_1 = dataset_lev(0:lev_a-1,:,:)
     end if 
     ;dataset_1 = dataset_lev(lev_new)
     delete(dataset_lev)
     delete(lev_data)
-  ;  delete(lev_new)
 
     if (iscoord(dataset_1,"i")) then ; changes i-j coordinates to lat-lon
       delete(dataset_1&i)
