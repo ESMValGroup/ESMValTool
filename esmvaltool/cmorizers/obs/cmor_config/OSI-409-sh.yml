@@ -20,3 +20,5 @@ variables:
 custom:
   create_areacello: true
   grid_cell_size: 12533.7625
+  # Minimum number of days with data to generate daily files
+  min_days: 50
