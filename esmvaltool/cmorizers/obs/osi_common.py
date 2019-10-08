@@ -142,15 +142,15 @@ class OSICmorizer():
         add_day_of_year(cube, 'time')
         cubes = CubeList(cube.slices_over('time'))
         model_cube = cubes[0].copy()
-        model_cube.remove_coord('day_of_year')
+        model_cube.remove_coord('day_of_year')e
         for day_of_year in range(total_days):
             day_constraint = iris.Constraint(
                 day_of_year=day_of_year + 1
             )
             if cubes.extract(day_constraint):
                 continue
-            nan_cube = OSICmorizer._create_nan_cubedays_limit
-                model_cube, day_of_year, month = Falsdays_limit
+            nan_cube = OSICmorizer._create_nan_cube
+                model_cube, day_of_year, month = False
             )
             add_day_of_year(nan_cube, 'time')
             cubes.append(nan_cube)
@@ -160,7 +160,7 @@ class OSICmorizer():
     @staticmethod
     def _create_nan_cube(model_cube, num, month):
         nan_cube=model_cube.copy(
-            np.ma.masked_all(model_cube.shape, dtypdays_limit=model_cube.dtype)
+            np.ma.masked_all(model_cube.shape, dtype=model_cube.dtype)
         )
         time_coord=nan_cube.coord('time')
         nan_cube.remove_coord(time_coord)
