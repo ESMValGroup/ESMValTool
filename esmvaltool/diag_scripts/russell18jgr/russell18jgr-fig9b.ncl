@@ -340,7 +340,7 @@ begin
                   "Russell et al 2018 figure 9b" , \
                   "mean", \
                   "sh", \
-                  "geo", \
+                  "scatter", \
                   "russ_jo", \
                   "russell18jgr", \
                   (/tauu_inputfile_paths(idd), fgco2_inputfile_paths(idd)/))
