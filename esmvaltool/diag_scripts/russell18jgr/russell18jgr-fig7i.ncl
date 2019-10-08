@@ -64,7 +64,7 @@ begin
   ; Loop over all n_datasets info items to read all datasets in a loop
   ; Draw plot
 
-  plotpath = config_user_info@plot_dir + "/Russell_figure7h_" + var0 + "_" \ 
+  plotpath = config_user_info@plot_dir + "/Russell_figure7i_" + var0 + "_" \ 
             + sprinti("%0.4i", min(toint(start_years_data))) + "-" \
             + sprinti("%0.4i", max(toint(end_years_data)))
 
