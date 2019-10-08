@@ -30,37 +30,82 @@ script_name <- sub(file_arg_name, "",
 script_dirname <- dirname(script_name)
 
 # read the dependencies
-dependencies <- scan(
-    paste(script_dirname, "r_requirements.txt", sep = "/"),
-    what = "character"
+dependencies <- yaml::read_yaml(
+  paste(script_dirname, "r_requirements.yml", sep = "/"),
 )
 # TODO: find a solution for script directory
+
+log(paste(unlist(names(dependencies)), collapse=', '))
 inst_packages <- installed.packages()
-package_list <- dependencies[!(dependencies %in% inst_packages[, "Package"])]
+package_list <- names(dependencies)[!(names(dependencies) %in% inst_packages[, "Package"])]
+package_list <- names(dependencies)
 
 if (length(package_list) == 0) {
     log("All packages are already installed!")
+    quit()
 } else {
     log("Number of packages to be installed: ", length(package_list))
 }
-
 Ncpus <- parallel::detectCores()
 if (is.na(Ncpus)) {
   Ncpus <- 1
 }
 
-log("Installing packages:", package_list)
+# Install packages required for installation
+install_dependencies = list("remotes", "devtools")
+install_dependencies <- install_dependencies[!install_dependencies %in% inst_packages[, "Package"]]
+if (length(install_dependencies) > 0) {
+  log("Installing installation dependencies from CRAN:",
+    paste( unlist(install_dependencies), collapse=', '))
+  install.packages(
+    unlist(install_dependencies),
+    repos = pkg_mirror,
+    Ncpus = Ncpus,
+    dependencies = c("Depends", "Imports", "LinkingTo")
+  )
+}
+
+# Special installations
+install <- function(package, info){
+  if(!is.null(info)){
+    if(info$origin == 'github'){
+      log("Installing ", package, "from Github")
+      remotes::install_github(info$path)
+    }
+    if(info$origin == 'git'){
+      log("Installing ", package, "from Git")
+      remotes::install_git(info$url, ref=info$ref)
+    }
+    if(info$origin == 'cran'){
+      log("Installing version", info$version, "of", package, "from CRAN")
+      devtools::install_version(
+        package,
+        version = info$version,
+        repos = pkg_mirror
+      )
+    }
+  }
+}
+for (package_name in names(dependencies)) {
+  install(package_name, dependencies[[package_name]])
+}
+
+# Get missing packages from CRAN, last versions
+inst_packages <- installed.packages()
+package_list <- names(dependencies)[!(names(dependencies) %in% inst_packages[, "Package"])]
+log("Installing packages from CRAN:",
+    paste( unlist(package_list), collapse=', '))
 if ( length(package_list) != 0 ) {
-    install.packages(
-        package_list,
-        repos = pkg_mirror,
-        Ncpus = Ncpus,
-        dependencies = c("Depends", "Imports", "LinkingTo")
-    )
+  install.packages(
+    package_list,
+    repos = pkg_mirror,
+    Ncpus = Ncpus,
+    dependencies = c("Depends", "Imports", "LinkingTo")
+  )
 }
 
 failed <- list()
-for (package_name in dependencies) {
+for (package_name in names(dependencies)) {
     success <- library(
         package_name,
         character.only = TRUE,
