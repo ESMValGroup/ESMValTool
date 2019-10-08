@@ -332,7 +332,7 @@ begin
                   "Russell et al 2018 figure 9c" , \
                   "mean", \
                   "sh", \
-                  "geo", \
+                  "scatter", \
                   "russ_jo", \
                   "russell18jgr", \
                   (/fgco2_inputfile_paths(idd), hfds_inputfile_paths(idd)/))
