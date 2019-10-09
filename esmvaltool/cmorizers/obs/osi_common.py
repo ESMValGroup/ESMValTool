@@ -1,4 +1,4 @@
-"""Common functionalities for OSI-450 and OSI-409 dataset cmorization."""
+"""Common functionalities for OSI-450 dataset cmorization."""
 
 import logging
 import os
@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 
 class OSICmorizer():
-    """Cmorizer for OSI-409 y OSI-450 datasets."""
+    """Cmorizer for OSI-450 datasets."""
 
     def __init__(self, in_dir, out_dir, cfg, hemisphere):
         self.in_dir = in_dir

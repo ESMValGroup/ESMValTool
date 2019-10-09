@@ -281,34 +281,6 @@ diagnostics:
       - {dataset: OSI-450-sh, project: OBS, tier: 2, type: reanaly, version: v2, start_year: 1988, end_year: 2015}
     scripts: null
 
-  OSI-409:
-    description: OSI 409 monthly data
-    variables:
-      sic:
-        preproc: nopp
-        mip: Omon
-      areacello:
-        preproc: nopp
-        mip: fx
-    additional_datasets:
-      - {dataset: OSI-409-nh, project: OBS, tier: 2, type: reanaly, version: 2, start_year: 1948, end_year: 2018}
-      - {dataset: OSI-409-sh, project: OBS, tier: 2, type: reanaly, version: 2, start_year: 1948, end_year: 2018}
-    scripts: null
-
-  OSI-409-daily:
-    description: OSI 409 daily data
-    variables:
-      sic:
-        preproc: nopp
-        mip: day
-      areacello:
-        preproc: nopp
-        mip: fx
-    additional_datasets:
-      - {dataset: OSI-409-nh, project: OBS, tier: 2, type: reanaly, version: 2, start_year: 1948, end_year: 2018}
-      - {dataset: OSI-409-sh, project: OBS, tier: 2, type: reanaly, version: 2, start_year: 1948, end_year: 2018}
-    scripts: null
-
 
   NSIDC-0116:
     description: NSIDC-0116 check

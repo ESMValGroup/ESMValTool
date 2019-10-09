@@ -19,7 +19,7 @@ Download and processing instructions
     using, e.g., wget -r -A '*_sh*.nc'.
 
     If you also want to cmorize the sh, download everything and create a link
-    for OSI-409-nh pointing to the data folder. Both cmorizers will ignore
+    for OSI-450-nh pointing to the data folder. Both cmorizers will ignore
     files belonging to the other hemisphere.
 
 """
