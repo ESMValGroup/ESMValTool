@@ -67,7 +67,7 @@ If a diagnostic fails, you will get the message
 
    INFO    To re-run this diagnostic script, run:
 
-Ifg you run the command in the stdout you will be able to re-run the
+If you run the command in the stdout you will be able to re-run the
 diagnostic without having to re-run the whole preprocessor. If you add the ``-f``
 argument that will force an overwrite, and it will deletes not just the failed diagnostic,
 but the contents of the entire ``plots`` directory - this is risky but useful when needing to
