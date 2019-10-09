@@ -12,7 +12,7 @@ Last access
 
 Download and processing instructions
     Download the desired years from the following ftp:
-        ftp://osisaf.met.no/reprocessed/ice/conc/v2p0
+        ftp://osisaf.met.no/reprocessed/ice/conc/v1p2
     Please, keep folder structure and uncompress gz files before launching.
 
     If you want to use only the nh data download only the nh files,
