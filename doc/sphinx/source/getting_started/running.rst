@@ -85,6 +85,13 @@ This is a useful functionality because it allows the user to `fix` things on-the
 quitting the Ipython console, code execution continues as per normal.
 
 
+Use multiple config-user.yml files
+----------------------------------
+
+The user profiles the configuration yaml file at run time. It's possible to 
+have several configurations files. For instance, it may be practical to have one 
+config file for debugging runs and another for production runs.
+
 Create a symbolic link to the latest output directory
 -----------------------------------------------------
 When running multiple times the same recipe, the tool creates separate output directories
