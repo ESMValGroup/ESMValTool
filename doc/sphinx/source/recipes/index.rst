@@ -23,6 +23,7 @@ Recipes
    recipe_flato13ipcc
    recipe_heatwaves_coldwaves
    recipe_hyint
+   recipe_hydrology
    recipe_landcover
    recipe_miles
    recipe_modes_of_variability
