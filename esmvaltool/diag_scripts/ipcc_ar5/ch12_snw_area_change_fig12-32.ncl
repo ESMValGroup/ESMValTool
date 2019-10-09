@@ -30,10 +30,36 @@ begin
   enter_msg(DIAG_SCRIPT, "")
 
   ; 'datasets', 'variables' are fetched from the above 'interface.ncl' file
-  var0 = variable_info[0]@short_name
-  info_items = select_metadata_by_name(input_file_info, var0)
-  dim_MOD = ListCount(info_items)
   dim_VAR = ListCount(variable_info)
+  if (dim_VAR .eq. 3) then
+    var0 = variable_info[0]@short_name
+    info_items0 = select_metadata_by_name(input_file_info, var0)
+    var1 = variable_info[1]@short_name
+    info_items1 = select_metadata_by_name(input_file_info, var1)
+    var2 = variable_info[2]@short_name
+    info_items2 = select_metadata_by_name(input_file_info, var2)
+  else
+    error_msg("f", DIAG_SCRIPT, "", "3 variables are needed, " + \
+              "'snw', 'sftlf' and 'sftgif'")
+  end if
+
+  ; Match snw variable to correct variable
+  if (var0 .eq. "snw") then
+    var_snw = var0
+    info_items = info_items0
+    idx_snw = 0
+  else if (var1 .eq. "snw") then
+    var_snw = var1
+    info_items = info_items1
+    idx_snw = 1
+  else if (var2 .eq. "snw") then
+    var_snw = var2
+    info_items = info_items2
+    idx_snw = 2
+  end if
+  end if
+  end if
+  dim_MOD = ListCount(info_items)
 
   ; Check required diag_script_info attributes
   req_atts = (/"scenarios", "syears", "eyears", "begin_ref_year", \
@@ -101,16 +127,39 @@ begin
   dim_SEAS = dimsizes(months)
 
   ; we need to calculate the snow area using sftgif and sftlf
-  list_sftgif = read_fx_data(info_items[imod], "sftgif")
-  var_idx = ListIndexFromName(list_sftgif, "sftgif")
-  land_ice_sftgif = list_sftgif[var_idx]
+  ; read sftgif and sftlf (land sea mask)
+  if (var0 .eq. "sftlf") then
+    land_sea_sftlf = read_data(info_items0[imod])
+    var_sftlf = var0
+    info_items_sftlf = info_items0
+  else if (var1 .eq. "sftlf") then
+    land_sea_sftlf = read_data(info_items1[imod])
+    var_sftlf = var1
+    info_items_sftlf = info_items1
+  else if (var2 .eq. "sftlf") then
+    land_sea_sftlf = read_data(info_items2[imod])
+    var_sftlf = var2
+    info_items_sftlf = info_items2
+  end if    
+  end if
+  end if
 
-  ; read sftlf (land sea mask)
-  list_sftlf = read_fx_data(info_items[imod], "sftlf")
-  var_idx2 = ListIndexFromName(list_sftlf, "sftlf")
-  land_sea_sftlf = list_sftlf[var_idx2]
+  if (var0 .eq. "sftgif") then
+    land_ice_sftgif = read_data(info_items0[imod])
+    var_sftgif = var0
+    info_items_sftgif = info_items0
+  else if (var1 .eq. "sftgif") then
+    land_ice_sftgif = read_data(info_items1[imod])
+    var_sftgif = var1
+    info_items_sftgif = info_items1
+  else if (var2 .eq. "sftgif") then
+    land_ice_sftgif = read_data(info_items2[imod])
+    var_sftgif = var2
+    info_items_sftgif = info_items2
+  end if
+  end if
+  end if
   sftifl = land_sea_sftlf - land_ice_sftgif
-  delete([/var_idx, var_idx2/])
 
   sftifl_conf = conform(A0, sftifl, (/1, 2/))
   tmp2 = (A0 * sftifl_conf) / 100  ; sftifl in percent -> / 100
@@ -218,16 +267,10 @@ begin
     else
       A0 = read_data(info_items[imod])
       ; we need to calculate the snow area using sftgif (glacier) and sftlf
-      list_sftgif = read_fx_data(info_items[imod], "sftgif")
-      var_idx = ListIndexFromName(list_sftgif, "sftgif")
-      land_ice_sftgif = list_sftgif[var_idx]
-
+      land_ice_sftgif = read_data(info_items_sftgif[imod])
       ; read sftlf (land sea mask)
-      list_sftlf = read_fx_data(info_items[imod], "sftlf")
-      var_idx2 = ListIndexFromName(list_sftlf, "sftlf")
-      land_sea_sftlf = list_sftlf[var_idx2]
+      land_sea_sftlf = read_data(info_items_sftlf[imod])
       sftifl = land_sea_sftlf - land_ice_sftgif
-      delete([/var_idx, var_idx2/])
 
       sftifl_conf = conform(A0, sftifl, (/1, 2/))
       tmp2 = (A0 * sftifl_conf) / 100
@@ -279,16 +322,8 @@ begin
       if (ListCount(item_rcp) .ne. 0) then
         A1 = read_data(item_rcp[0])
         ; we need to calculate the snow area using sftgif (glacier) and sftlf
-        list_sftgif = read_fx_data(item_rcp[0], "sftgif")
-        var_idx = ListIndexFromName(list_sftgif, "sftgif")
-        land_ice_sftgif = list_sftgif[var_idx]
-
-        ; read sftlf (land sea mask)
-        list_sftlf = read_fx_data(item_rcp[0], "sftlf")
-        var_idx2 = ListIndexFromName(list_sftlf, "sftlf")
-        land_sea_sftlf = list_sftlf[var_idx2]
-        sftifl = land_sea_sftlf - land_ice_sftgif  ; land areas sans glaciers
-        delete([/var_idx, var_idx2/])
+        ; these are fx files and should not change between runs, use same
+        ; sftifl as for historical
         sftifl_conf = conform(A1, sftifl, (/1, 2/))
         tmp2 = (A1 * sftifl_conf) / 100  ; sftifl in percent -> / 100
         ; where > 5 kg m**-2 considered snow covered
@@ -486,12 +521,7 @@ begin
   end if
 
   do j = 0, dims_data(0) - 1
-    ; if variable sw or lw TOA flux: change direction
-    if (var0 .eq. "rlut" .or. var0 .eq. "rsut") then
-      to_plot(j * 3, :) = - mean_val(j, :)
-    else
-      to_plot(j * 3, :) = mean_val(j, :)
-    end if
+    to_plot(j * 3, :) = mean_val(j, :)
     to_plot((j * 3) + 1, :) = to_plot(j * 3, :) + spread * std_val(j, :)
     to_plot((j * 3) + 2, :) = to_plot(j * 3, :) - spread * std_val(j, :)
   end do
@@ -548,12 +578,12 @@ begin
   else  ; Add as new attribute
     to_plot@diag_script = (/DIAG_SCRIPT/)
   end if
-  to_plot@var = var0  ; Overwrite existing entry
-  if(isatt(variable_info[0], "long_name")) then
-    to_plot@var_long_name = variable_info[0]@long_name
+  to_plot@var = var_snw  ; Overwrite existing entry
+  if(isatt(variable_info[idx_snw], "long_name")) then
+    to_plot@var_long_name = variable_info[idx_snw]@long_name
   end if
   if(isatt(variable_info[0], "units")) then
-    to_plot@units     = variable_info[0]@units
+    to_plot@units     = variable_info[idx_snw]@units
   end if
 
   runs@var = "nr"

@@ -33,8 +33,8 @@ preprocessors:
   preproc_map_land:
     mask_landsea:
       mask_out: sea
-#    mask_landseaice:
-#      mask_out: ice
+    mask_landseaice:
+      mask_out: ice
     regrid:
       target_grid: 1x1
       scheme: linear
@@ -419,6 +419,7 @@ diagnostics:
       - {dataset: CanESM2,       exp: rcp26, start_year: 2006, end_year: 2100}
       - {dataset: CCSM4,         exp: rcp26, start_year: 2006, end_year: 2100}
       - {dataset: CSIRO-Mk3-6-0, exp: rcp26, start_year: 2006, end_year: 2100}
+      - {dataset: IPSL-CM5A-LR,  exp: rcp26, start_year: 2006, end_year: 2100}
       - {dataset: MPI-ESM-LR,    exp: rcp26, start_year: 2006, end_year: 2100}
 
       - {dataset: CanESM2,       exp: rcp45, start_year: 2006, end_year: 2100}
@@ -2270,7 +2271,6 @@ diagnostics:
         mip: Lmon
         exp: piControl
         ensemble: r1i1p1
-        fx_files: [sftlf, sftgif]
     additional_datasets:
       - {dataset: CanESM2,       start_year: 2015, end_year: 3010}
       - {dataset: CESM1-CAM5,    start_year: 1, end_year: 319}
@@ -2308,7 +2308,6 @@ diagnostics:
         mip: Lmon
         ensemble: r1i1p1
         exp: historical
-        fx_files: [sftlf, sftgif]
     additional_datasets:
       - {dataset: CanESM2,       start_year: 1986, end_year: 2005}
       - {dataset: CCSM4,         start_year: 1986, end_year: 2005}
@@ -2416,16 +2415,15 @@ diagnostics:
         mip: Lmon
         exp: piControl
         ensemble: r1i1p1
-        fx_files: [sftlf, sftgif]
     additional_datasets:
       - {dataset: bcc-csm1-1,     start_year:    1, end_year:  500}
       - {dataset: bcc-csm1-1-m,   start_year:    1, end_year:  400}
-      - {dataset: BNU-ESM,        start_year: 1450, end_year: 2008}
+#      - {dataset: BNU-ESM,        start_year: 1450, end_year: 2008}
       - {dataset: CanESM2,        start_year: 2015, end_year: 3010}
       - {dataset: CESM1-CAM5,     start_year:    1, end_year:  319}
       - {dataset: CNRM-CM5,       start_year: 1850, end_year: 2699}
       - {dataset: CSIRO-Mk3-6-0,  start_year:    1, end_year:  500}
-      - {dataset: inmcm4,         start_year: 1850, end_year: 2349}
+#      - {dataset: inmcm4,         start_year: 1850, end_year: 2349}
       - {dataset: IPSL-CM5A-LR,   start_year: 1800, end_year: 2799}
       - {dataset: IPSL-CM5A-MR,   start_year: 1800, end_year: 2099}
       - {dataset: IPSL-CM5B-LR,   start_year: 1830, end_year: 2129}
@@ -2468,7 +2466,6 @@ diagnostics:
         ensemble: r1i1p1
         mip: Lmon
         exp: historical
-        fx_files: [sftlf, sftgif]
     additional_datasets:
       - {dataset: CanESM2,       start_year: 1986, end_year: 2005}
       - {dataset: CCSM4,         start_year: 1986, end_year: 2005}
@@ -2941,7 +2938,16 @@ diagnostics:
         mip: LImon
         ensemble: r1i1p1
         exp: historical
-        fx_files: [sftlf, sftgif]
+      sftlf:
+        project: CMIP5
+        mip: fx
+        exp: historical
+        ensemble: r0i0p0
+      sftgif:
+        project: CMIP5
+        mip: fx
+        exp: historical
+        ensemble: r0i0p0
 
     additional_datasets:
       - {dataset: CanESM2,       start_year: 1980, end_year: 2005}
