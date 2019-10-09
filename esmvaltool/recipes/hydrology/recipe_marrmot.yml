@@ -13,61 +13,67 @@ documentation:
 
 
 preprocessors:
-  hourly_tas:
+  daily: &daily
     regrid:
-      target_grid: ERA5
+      target_grid: 0.25x0.25
       lon_offset: true
       lat_offset: true
       scheme: linear
+    extract_shape:
+      # Lumped model: needs catchment-aggregated input data
+      shapefile: rhine_meuse_hydrosheds.shp  # In aux (config-user.yml)
+      method: contains
+      crop: true
+  hourly_temperature:
+    <<: *daily
     daily_statistics:
       operator: mean
-  hourly_pr:
-    regrid:
-      target_grid: ERA5
-      lon_offset: true
-      lat_offset: true
-      scheme: linear
+  hourly_water:
+    <<: *daily
     daily_statistics:
       operator: sum
-  daily:
-    regrid:
-      target_grid: ERA5
-      lon_offset: true
-      lat_offset: true
-      scheme: linear
-
 
 diagnostics:
-  diagnostic_daily_data_era_interim:
+  diagnostic_daily_data:
     description: marrmot input preprocessor for daily data
     additional_datasets:
       - {dataset: ERA-Interim, project: OBS, tier: 3, type: reanaly, version: 1}
     variables:
-      tas: &var
+      tas: &var_daily
         mip: day
         start_year: 2000
         end_year: 2000
         preprocessor: daily
-      pr: *var
+      pr: *var_daily
+      # MARRMoT requires PET. Thus, we might also need...
+      # This is what we did for wflow for *evaporation* (PET = evapoTRANSPIration)
+      psl: *var_daily
+      rsds: *var_daily
+      tdps:
+        <<: *var_daily
+        mip: Eday
+      rsdt:
+        <<: *var_daily
+        mip: CFday
     scripts:
       script:
         script: hydrology/marrmot.py
 
-  diagnostic_hourly_data_era5:
+  diagnostic_hourly_data:
     description: marrmot input preprocessor for hourly data
     additional_datasets:
       - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1}
     variables:
-      tas: #note to self: check!
+      tas:
         mip: E1hr
         start_year: 2000
         end_year: 2000
-        preprocessor: hourly_tas
+        preprocessor: hourly_temperature
       pr:
         mip: E1hr
         start_year: 2000
         end_year: 2000
-        preprocessor: hourly_pr
+        preprocessor: hourly_water
     scripts:
       script:
         script: hydrology/marrmot.py
