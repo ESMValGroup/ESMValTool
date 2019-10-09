@@ -45,7 +45,7 @@ preprocessors:
     convert_units:
       units: kg m-2 d-1
     daily_statistics:
-      operator: mean  # TODO: replace with sum
+      operator: sum
   hourly_temperature_mean:
     <<: *general
     convert_units:
@@ -69,7 +69,7 @@ preprocessors:
     convert_units:
       units: J m-2 day-1
     daily_statistics:
-      operator: mean  # TODO: replace with sum
+      operator: sum
   hourly_windspeed:
     <<: *general
     daily_statistics:
