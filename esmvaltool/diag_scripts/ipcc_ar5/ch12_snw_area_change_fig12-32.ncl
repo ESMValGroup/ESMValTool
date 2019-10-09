@@ -140,7 +140,7 @@ begin
     land_sea_sftlf = read_data(info_items2[imod])
     var_sftlf = var2
     info_items_sftlf = info_items2
-  end if    
+  end if
   end if
   end if
 
