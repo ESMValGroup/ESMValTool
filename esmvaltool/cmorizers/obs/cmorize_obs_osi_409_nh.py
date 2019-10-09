@@ -16,7 +16,7 @@ Download and processing instructions
     Please, keep folder structure and uncompress gz files before launching.
 
     If you want to use only the nh data download only the nh files,
-    using, e.g., wget -r -A '*_nh*.nc'.
+    using, e.g., wget -r -A '*_nh*.nc.gz'.
 
     If you also want to cmorize the sh, download everything and create a link
     for OSI-409-sh pointing to the data folder. Both cmorizers will ignore
