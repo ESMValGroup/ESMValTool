@@ -216,12 +216,15 @@ def add_map_subplot(subplot, cube, nspace, title='', cmap=''):
     plt.title(title)
 
 
-def weighted_mean(cube):
+def weighted_mean(cube, fx_fn):
     """
     Calculate the weighted mean.
     """
-    assert 0
-    return cube.data.mean()
+    fx_cube = iris.load_cube(fx_fn)
+
+
+    return cube.collapsed(['lat', 'lon'], iris.analysis.MEAN, weights=grid_areas)
+    #return cube.data.mean()
 
 
 def make_four_pane_map_plot(
@@ -456,8 +459,9 @@ def make_gwt_map_four_plots(cfg, ):
     exps = set()
     variable_groups = set()
     variables = set()
+    mips = set()
     thresholds = {}
-
+    fx_fn = ''
     for fn, details in sorted(metadatas.items()):
         #print(fn, details.keys())
         short_names.add(details['short_name'])
@@ -465,8 +469,11 @@ def make_gwt_map_four_plots(cfg, ):
         ensembles.add(details['ensemble'])
         exps.add(details['exp'])
         variable_groups.add(details['variable_group'])
-
         unique_key = (details['variable_group'], details['ensemble'])
+        mips.add(details['mip'])
+        if details['mip'] in ['fx', 'Ofx']:
+            fx_fn = fn
+            print('Found FX MIP', fx_fn)
         try:
             files_dict[unique_key].append(fn)
         except:
@@ -516,7 +523,7 @@ def make_gwt_map_four_plots(cfg, ):
                 cube_hist = diagtools.bgc_units(cube_hist, details['short_name'])
 
             cube_anomaly = cube - cube_hist
-            detrended_cube_anomaly = cube_anomaly - weighted_mean(cube_anomaly)
+            detrended_cube_anomaly = cube_anomaly - weighted_mean(cube_anomaly, fx_fn)
 
             ssp_cubes[variable_group][ensemble] = cube
             hist_cubes[variable_group][ensemble] = cube_hist
@@ -636,8 +643,6 @@ def make_gwt_map_four_plots(cfg, ):
             )
 
 
-
-
 def make_gwt_map_plots(cfg, detrend = True,):
     """
     Make plots
@@ -718,7 +723,7 @@ def make_gwt_map_plots(cfg, detrend = True,):
             cube_anomaly = cube - cube_hist
 
             if detrend:
-                cube_anomaly = cube_anomaly - weighted_mean(cube_anomaly)
+                cube_anomaly = cube_anomaly - weighted_mean(cube_anomaly, fx_fn)
 
             anomaly_cubes[variable_group][ensemble] = cube_anomaly
             try:
