@@ -24,7 +24,7 @@ Recipes are stored in recipes/
 Diagnostics are stored in diag_scripts/magic_bsc/
 
 * capacity_factor.R: calculates the capacity factor for the three turbine classes.
-* PC.r: calculates the power curves for the three turbine classes.
+* PC.R: calculates the power curves for the three turbine classes.
 
 
 User settings
