@@ -1,4 +1,4 @@
-anom2regime <- function(ref, target, method = "distance", lat) {
+anom2regime <- function(ref, target, method = "distance", lat) { # nolint
   posdim <- which(names(dim(ref)) == "nclust")
   poslat <- which(names(dim(ref)) == "lat")
   poslon <- which(names(dim(ref)) == "lon")
@@ -30,7 +30,8 @@ anom2regime <- function(ref, target, method = "distance", lat) {
     )) == "lon")))
 
   # weights are defined
-  latWeights <- InsertDim(sqrt(cos(lat * pi / 180)), 2, dim(ref)[3]) #nolint
+  latWeights <-
+    InsertDim(sqrt(cos(lat * pi / 180)), 2, dim(ref)[3]) # nolint
 
 
   rmsdiff <- function(x, y) {
@@ -40,9 +41,9 @@ anom2regime <- function(ref, target, method = "distance", lat) {
       stop("x and y should be maps")
     }
     map_diff <- NA * x
-    for (i in 1 : dims[1]) {
-      for (j in 1 : dims[2]) {
-        map_diff[i, j] <- (x[i, j] - y[i, j]) ^ 2
+    for (i in 1:dims[1]) {
+      for (j in 1:dims[2]) {
+        map_diff[i, j] <- (x[i, j] - y[i, j])^2
       }
     }
     rmsdiff <- sqrt(mean(map_diff, na.rm = TRUE))
@@ -53,27 +54,32 @@ anom2regime <- function(ref, target, method = "distance", lat) {
     corr <- rep(NA, nclust)
     for (i in 1:nclust) {
       corr[i] <-
-        ACC(InsertDim(InsertDim( #nolint
-          InsertDim(ref[i, , ] * latWeights, 1, 1), 2, 1 #nolint
-        ), 3, 1),
-        InsertDim(InsertDim( #nolint
-          InsertDim(target * latWeights, 1, 1), 2, 1 #nolint
-        ), 3, 1))$ACC[2]
+        ACC(
+          InsertDim(InsertDim(
+            # nolint
+            InsertDim(ref[i, , ] * latWeights, 1, 1), 2, 1 # nolint
+          ), 3, 1),
+          InsertDim(InsertDim(
+            # nolint
+            InsertDim(target * latWeights, 1, 1), 2, 1 # nolint
+          ), 3, 1)
+        )$ACC[2]
     }
     assign <- which(corr == max(corr))
   }
 
   if (method == "distance") {
     rms <- rep(NA, nclust)
-    for (i in 1 : nclust) {
-      rms[i] <- rmsdiff(ref[i, , ] * latWeights, target * latWeights)#nolint
+    for (i in 1:nclust) {
+      rms[i] <-
+        rmsdiff(ref[i, , ] * latWeights, target * latWeights) # nolint
     }
     assign <- which(rms == min(rms, na.rm = TRUE))
   }
   return(assign)
 }
 
-RegimesAssign <- function(var_ano, ref_maps, lats, #nolint
+RegimesAssign <- function(var_ano, ref_maps, lats, # nolint
                           method = "distance") {
   posdim <- which(names(dim(ref_maps)) == "nclust")
   poslat <- which(names(dim(ref_maps)) == "lat")
@@ -86,7 +92,8 @@ RegimesAssign <- function(var_ano, ref_maps, lats, #nolint
   nlon <- dim(ref_maps)[poslon]
 
 
-  if (is.null(names(dim(ref_maps))) | is.null(names(dim(var_ano)))) {
+  if (is.null(names(dim(ref_maps))) |
+    is.null(names(dim(var_ano)))) {
     stop(
       "The arrays should include dimensions names ref[nclust,lat,lon]
       and target [lat,lon]"
@@ -96,33 +103,38 @@ RegimesAssign <- function(var_ano, ref_maps, lats, #nolint
   if (length(lats) != dim(ref_maps)[poslat]) {
     stop("latitudes do not match with the maps")
   }
-print(str(var_ano))
+  print(str(var_ano))
   assign <-
     Apply(
       data = list(target = var_ano),
-      margins = c( (1 : length(dim(var_ano)) )[-c(poslat_ano, poslon_ano)]),
+      margins = c((1:length(dim(
+        var_ano
+      )))[-c(poslat_ano, poslon_ano)]),
       fun = "anom2regime",
       ref = ref_maps,
       lat = lats,
       method = method
     )
 
-   if (poslat_ano < poslon_ano) {
+  if (poslat_ano < poslon_ano) {
     dim_order <- c(nlat, nlon)
   } else {
     dim_order <- c(nlon, nlat)
   }
 
   anom_array <-
-    array(var_ano, dim = c(prod(dim(var_ano)[-c(poslat_ano, poslon_ano)]),
-                           dim_order))
+    array(var_ano, dim = c(
+      prod(dim(var_ano)[-c(poslat_ano, poslon_ano)]),
+      dim_order
+    ))
 
   rm(var_ano)
 
   index <- as.vector(assign$output1)
-  recon <- Composite(var = aperm(anom_array, c(3, 2, 1)), occ = index)
+  recon <-
+    Composite(var = aperm(anom_array, c(3, 2, 1)), occ = index)
   freqs <- rep(NA, nclust)
-  for (n in 1 : nclust) {
+  for (n in 1:nclust) {
     freqs[n] <- (length(which(index == n)) / length(index)) * 100
   }
   output <-
