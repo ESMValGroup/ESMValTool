@@ -23,7 +23,7 @@ Recipes are stored in recipes/
 
 Diagnostics are stored in diag_scripts/magic_bsc/
 
-* diurnal_temp_index.r : calculates the diaurnal temperature vulnerability index.
+* diurnal_temp_index.R : calculates the diaurnal temperature vulnerability index.
 
 
 User settings
