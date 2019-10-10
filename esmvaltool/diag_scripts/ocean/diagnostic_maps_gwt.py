@@ -228,7 +228,7 @@ def weighted_mean(cube, fx_fn):
         if fx_fn.find(fx_var) > -1:
             fx_key = fx_var
 
-    fx_cube = fx_cube.extract_strict(iris.Constraint(name=fx_key))
+    #fx_cube = fx_cube.extract_strict(iris.Constraint(name=fx_key))
 
     return cube.collapsed(['latitude', 'longitude'],
                           iris.analysis.MEAN,
@@ -458,8 +458,7 @@ def make_gwt_map_four_plots(cfg, ):
     do_variable_group_plots=True
     do_threshold_plots=True
 
-    #print('\n', cfg.keys())
-
+    # 
     files_dict = {}
     short_names = set()
     standard_names = {}
@@ -472,7 +471,9 @@ def make_gwt_map_four_plots(cfg, ):
     fx_fn = ''
     for fn, details in sorted(metadatas.items()):
         #print(fn, details.keys())
-        short_names.add(details['short_name'])
+        short_name = details['short_name']
+        if short_name not in ['areacella', 'areacello']:
+            short_names.add(details['short_name'])
         standard_names[details['short_name']] = details['standard_name']
         ensembles.add(details['ensemble'])
         exps.add(details['exp'])
@@ -509,6 +510,11 @@ def make_gwt_map_four_plots(cfg, ):
             historical_group = variable_group[:variable_group.find('_')] +'_historical'
             if variable_group == historical_group:
                 continue
+
+            fx_group = variable_group[:variable_group.find('_')] +'_fx'
+            if variable_group == fx_group:
+                continue
+
 
             print('Plotting:', ensemble, variable_group)
             variable, exp, threshold = split_variable_groups(variable_group)
@@ -556,6 +562,10 @@ def make_gwt_map_four_plots(cfg, ):
             if variable_group == historical_group:
                 continue
 
+            fx_group = variable_group[:variable_group.find('_')] +'_fx'
+            if variable_group == fx_group:
+                continue
+
             cube_ssp = ssp_cubes[variable_group][ensemble]
             cube_hist = hist_cubes[variable_group][ensemble]
             cube_anomaly = anomaly_cubes[variable_group][ensemble]
@@ -585,6 +595,10 @@ def make_gwt_map_four_plots(cfg, ):
         # guess historical group name:
         historical_group = variable_group[:variable_group.find('_')] + '_historical'
         if variable_group == historical_group:
+            continue
+
+        fx_group = variable_group[:variable_group.find('_')] +'_fx'
+        if variable_group == fx_group:
             continue
 
         # Calculate ensemble means
@@ -682,13 +696,20 @@ def make_gwt_map_plots(cfg, detrend = True,):
     thresholds = {}
 
     for fn, details in sorted(metadatas.items()):
-        #print(fn, details.keys())
-        short_names.add(details['short_name'])
+        short_name = details['short_name']
+        if short_name not in ['areacella', 'areacello']:
+            short_names.add(details['short_name'])
+
         ensembles.add(details['ensemble'])
         exps.add(details['exp'])
         variable_groups.add(details['variable_group'])
 
         unique_key = (details['variable_group'], details['ensemble'])
+
+        if details['mip'] in ['fx', 'Ofx']:
+            fx_fn = fn
+            print('Found FX MIP', fx_fn)
+
         try:
             files_dict[unique_key].append(fn)
         except:
@@ -705,6 +726,10 @@ def make_gwt_map_plots(cfg, detrend = True,):
             # guess historical group name:
             historical_group = variable_group[:variable_group.find('_')] +'_historical'
             if variable_group == historical_group:
+                continue
+
+            fx_group = variable_group[:variable_group.find('_')] +'_fx'
+            if variable_group == fx_group:
                 continue
 
             print('Plotting:', ensemble, variable_group)
@@ -754,6 +779,10 @@ def make_gwt_map_plots(cfg, detrend = True,):
         # guess historical group name:
         historical_group = variable_group[:variable_group.find('_')] + '_historical'
         if variable_group == historical_group:
+            continue
+
+        fx_group = variable_group[:variable_group.find('_')] +'_fx'
+        if variable_group == fx_group:
             continue
 
         cube_list = []

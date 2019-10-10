@@ -39,6 +39,13 @@ diagnostics:
       # Procedurally generated recipe contents:
       ################################################
       # vegfrac
+
+      vegfrac_fx:
+        mip: fx
+        short_name: areacella
+        additional_datasets:
+          - {dataset: UKESM1-0-LL, project: CMIP6, mip: fx, exp: piControl, ensemble: r1i1p1f2, grid: gn, start_year: 1850, end_year: 1850,}
+
       vegfrac_historical:
         short_name: vegfrac
         preprocessor: prep_1
