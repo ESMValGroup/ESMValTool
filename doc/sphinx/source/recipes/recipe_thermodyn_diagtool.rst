@@ -1,30 +1,32 @@
+.. _recipes_thermodyn_diagtool:
+
 TheDiaTo v1.0 - A Diagnostic Tool for the Thermodynamics of the Climate System
 ==============================================================================
 
 Overview
 --------
 
-The tool allows to compute TOA, atmospheric and surface energy budgets, latent energy and water mass budgets, 
-meridional heat transports, the Lorenz Energy Cycle (LEC), the material entropy production with the direct 
+The tool allows to compute TOA, atmospheric and surface energy budgets, latent energy and water mass budgets,
+meridional heat transports, the Lorenz Energy Cycle (LEC), the material entropy production with the direct
 and indirect method.
 
-The energy budgets are computed from monthly mean radiative and heat fluxes at the TOA and at the surface 
-(cfr. Wild et al., 2013). The meridional heat transports are obtained from the latitudinal integration 
-of the zonal mean energy budgets. When a land-sea mask is provided, results are also available for 
+The energy budgets are computed from monthly mean radiative and heat fluxes at the TOA and at the surface
+(cfr. Wild et al., 2013). The meridional heat transports are obtained from the latitudinal integration
+of the zonal mean energy budgets. When a land-sea mask is provided, results are also available for
 land and oceans, separately.
 
-The water mass budget is obtained from monthly mean latent heat fluxes (for evaporation), total and snowfall 
-precipitation (cfr. Liepert et al., 2012). The latent energy budget is obtained multiplying each component of 
-the water mass budget by the respective latent heat constant. When a land-sea mask is provided, results are 
+The water mass budget is obtained from monthly mean latent heat fluxes (for evaporation), total and snowfall
+precipitation (cfr. Liepert et al., 2012). The latent energy budget is obtained multiplying each component of
+the water mass budget by the respective latent heat constant. When a land-sea mask is provided, results are
 also available for land and oceans, separately.
 
-The LEC is computed from 3D fields of daily mean velocity and temperature fields in the troposphere over 
-pressure levels. The analysis is carried on in spectral fields, converting lonlat grids in Fourier coefficients. 
+The LEC is computed from 3D fields of daily mean velocity and temperature fields in the troposphere over
+pressure levels. The analysis is carried on in spectral fields, converting lonlat grids in Fourier coefficients.
 The components of the LEC are computed as in Ulbrich and Speth, 1991. In order to account for possible gaps
 in pressure levels, the daily fields of 2D near-surface temperature and horizontal velocities.
 
 The material entropy production is computed by using the indirect or the direct method (or both). The former
-method relies on the convergence of radiative heat in the atmosphere (cfr. Lucarini et al., 2011; Pascale et al., 2011), 
+method relies on the convergence of radiative heat in the atmosphere (cfr. Lucarini et al., 2011; Pascale et al., 2011),
 the latter on all viscous and non-viscous dissipative processes occurring in the atmosphere
 (namely the sensible heat fluxes, the hydrological cycle with its components and the kinetic energy dissipation).
 
@@ -42,11 +44,11 @@ Recipes are stored in recipes/
 Diagnostics are stored in diag_scripts/thermodyn_diagtool/
 
     * thermodyn_diagnostics.py: the main script, handling input files, calling computation and plotting scricpts;
-    
+
     * computations.py: a module containing all the main computations that are carried out by the program;
 
     * fluxogram.py: a module for the retrieval of the block diagrams displaying the reservoirs and conversion terms of the LEC
-    
+
     * fourier_coefficients.py: a module for the computation of the Fourier coefficients from the lonlat input grid
 
     * lorenz_cycle.py: a module for the computation of the LEC components in Fourier coefficients
@@ -113,11 +115,11 @@ Example plots
 -------------
 
 .. _fig_1:
-.. figure:: /recipes/figures/thermodyn_diagtool/meridional_transp.png  
+.. figure:: /recipes/figures/thermodyn_diagtool/meridional_transp.png
    :align:   left
    :width:   14cm
 
 .. _fig_2:
-.. figure:: /recipes/figures/thermodyn_diagtool/CanESM2_wmb_transp.png  
+.. figure:: /recipes/figures/thermodyn_diagtool/CanESM2_wmb_transp.png
    :align:   right
    :width:   14cm

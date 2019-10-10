@@ -47,9 +47,9 @@ begin
   ; Set path for saving processed data
   system("mkdir -p " + config_user_info@work_dir)
   if (isdefined("level")) then
-    vv = var0
-  else
     vv = var0 + level
+  else
+    vv = var0
   end if
   fname = str_join((/"perfmetrics", "cycle", vv, \
                      diag_script_info@time_avg, diag_script_info@region/), "_")
@@ -121,9 +121,9 @@ begin
   if (isdefined("level")) then
     title = title + " " + level + " hPa"
     caption = caption + level
+    delete(level)
   end if
   title = title + " - " + diag_script_info@region
-  delete(level)
 
   ; Draw plot
   wks = gsn_open_wks(file_type, plotpath)
@@ -140,7 +140,7 @@ begin
                  (/"mean", "stddev"/), \
                  diag_script_info@region, \
                  "seas", \
-                 (/"fran_fr", "righ_ma", "eyri_ve"/), \
+                 (/"frank_franziska", "righi_mattia", "eyring_veronika"/), \
                  (/"righi15gmd", "gleckler08jgr"/), \
                  metadata_att_as_array(info_items, "filename"))
 

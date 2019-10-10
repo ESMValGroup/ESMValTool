@@ -19,7 +19,8 @@ library(yaml)
 
 provenance_record <- function(infile) {
   xprov <- list(ancestors = infile,
-                authors = list("hard_jo", "davi_pa", "arno_en"),
+                authors = list("vonhardenberg_jost", "davini_paolo",
+                               "arnone_enrico"),
                 references = list("davini18"),
                 projects = list("c3s-magic"),
                 caption = "MiLES EOF statistics",

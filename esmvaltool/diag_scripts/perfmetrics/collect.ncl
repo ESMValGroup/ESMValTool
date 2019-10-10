@@ -29,16 +29,18 @@
 ; Caveats
 ;
 ; Modification history
-;    20190315-A_hass_bg: added SMPI case
-;    20180508-A_righ_ma: renamed and generalized
-;    20151027-A_laue_ax: moved call to 'write_references' to the beginning
-;                        of the code
-;    20150325-A_laue_ax: modified reference tags used for acknowledgements
-;                        (projects, observations, etc)
-;    20150109-A_gott_kl: distinguish RMSD & BIAS in output file naming.
-;    20140620-A_gott_kl: modified output file naming (variable plotpath)
-;                     and added option for explicit plot title.
-;    20140204-A_fran_fr: written.
+;    20190315-hassler_birgit: added SMPI case
+;    20180508-righi_mattia: renamed and generalized
+;    20151027-lauer_axel: moved call to 'write_references' to the beginning
+;                         of the code
+;    20150325-lauer_axel: modified reference tags used for acknowledgements
+;                         (projects, observations, etc)
+;    20150109-gottschaldt_klaus-dirk: distinguish RMSD & BIAS in output file
+;                                     naming.
+;    20140620-gottschaldt_klaus-dirk: modified output file naming (variable
+;                                     plotpath) and added option for explicit
+;                                     plot title.
+;    20140204-frank_franziska: written.
 ;
 ; #############################################################################
 
@@ -437,26 +439,26 @@ begin
   if (diag_script_info@metric.eq."RMSD") then
     caption = "RMSD performance metric"
     statistics = (/"rmsd"/)
-    authors = (/"fran_fr", "righ_ma", "eyri_ve"/)
+    authors = (/"frank_franziska", "righi_mattia", "eyring_veronika"/)
     plottype = "portrait"
     references = (/"righi15gmd", "gleckler08jgr"/)
   elseif (diag_script_info@metric.eq."BIAS") then
     caption = "Bias performance metric"
     statistics = (/"diff"/)
-    authors = (/"fran_fr", "righ_ma", "eyri_ve"/)
+    authors = (/"frank_franziska", "righi_mattia", "eyring_veronika"/)
     plottype = "portrait"
     references = (/"righi15gmd", "gleckler08jgr"/)
   elseif (diag_script_info@metric.eq."taylor") then
     caption = "Taylor diagram"
     statistics = (/"rmsd", "corr"/)
-    authors = (/"fran_fr", "righ_ma", "eyri_ve"/)
+    authors = (/"frank_franziska", "righi_mattia", "eyring_veronika"/)
     plottype = "taylor"
     references = (/"righi15gmd", "gleckler08jgr"/)
   elseif (diag_script_info@metric.eq."SMPI") then
     caption = \
       "Performance index I2. Similar to Figure 1 of Reichler and Kim (2008)."
     statistics = "smpi"
-    authors = (/"gier_be", "hass_bg"/)
+    authors = (/"gier_bettina", "hassler_birgit"/)
     plottype = "circle"
     references = (/"rk2008bams"/)
   else

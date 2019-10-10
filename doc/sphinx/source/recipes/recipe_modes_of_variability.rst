@@ -82,7 +82,7 @@ Example plots
 -------------
 
 .. _fig_modesofvar:
-.. figure::  /recipes/figures/modes_of_variability/DJF-psl_observed_regimes.png
+.. figure::  /recipes/figures/modes_of_variability/SON-psl_predicted_regimes.png
    :align:   center
    :width:   14cm
 

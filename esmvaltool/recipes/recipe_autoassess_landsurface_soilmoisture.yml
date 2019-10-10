@@ -11,10 +11,10 @@ documentation:
     mass_fraction_of_frozen_water_in_soil_moisture.
 
   authors:
-    - pred_va
+    - predoi_valeriu
 
   maintainer:
-    - pred_va
+    - predoi_valeriu
 
 datasets:
   - {dataset: IPSL-CM5A-LR,  project: CMIP5, exp: historical,  ensemble: r1i1p1,  start_year: 1992,  end_year: 2002}

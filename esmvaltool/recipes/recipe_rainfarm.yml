@@ -5,9 +5,10 @@ documentation:
   description: |
     Recipe for performing stochastic downscaling of precipitation fields
     calling the RainFARM package by J. von Hardenberg (ISAC-CNR)
+
   authors:
-    - arno_en
-    - hard_jo
+    - arnone_enrico
+    - vonhardenberg_jost
 
   references:
     - donofrio14jh
@@ -42,10 +43,10 @@ diagnostics:
         mip: day
     scripts:
       rainfarm:
-        script: rainfarm/rainfarm.R
+        script: rainfarm/rainfarm.jl
         slope: 1.7             # spatial spectral slope (set to 0 to compute from large scales)
         nens: 2                # number of ensemble members to be calculated
         nf: 8                  # subdivisions for downscaling
         conserv_glob: false    # conserve precipitation over full domain (choose either glob or smooth, glob has priority)
         conserv_smooth: true   # conserve precipitation using convolution (if neither is chosen box conservation is used)
-        weights_climo: false   # orographic weights: set to false or full path to a fine-scale precipitation climatology file
+        weights_climo: false   # orographic weights: set to false (or omit) or path to a fine-scale precipitation climatology file

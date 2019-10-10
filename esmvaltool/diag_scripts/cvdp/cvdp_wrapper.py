@@ -5,7 +5,7 @@ import re
 import shutil
 import subprocess
 
-from esmvaltool._task import DiagnosticError
+from esmvalcore._task import DiagnosticError
 from esmvaltool.diag_scripts.shared import (group_metadata, run_diagnostic,
                                             select_metadata)
 from esmvaltool.diag_scripts.shared import ProvenanceLogger
@@ -274,7 +274,7 @@ def set_provenance(cfg):
             'plot_type': _get_plot_type(filename),
             'plot_file': filename,
             'authors': [
-                'phil_ad',
+                'phillips_adam',
             ],
             'references': [
                 'acknow_project',

@@ -49,7 +49,7 @@ User setting files are stored in recipes/
 Variables
 ---------
 
-* psl, tasmax, tasmin, pr or sfcWind (atmos, monthly, longitude, latitude, time)
+* psl (atmos, monthly, longitude, latitude, time)
 * tos (ocean, monthly, longitude, latitude, time)
 
 

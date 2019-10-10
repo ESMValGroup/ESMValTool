@@ -232,7 +232,7 @@ if (lim < 1) {
 
 if (region == "polar") {
     filepng1 <- paste0(plot_dir, "/", frequency, "-", var0,
-                       "_observed_regimes.png")
+                       "_reference_regimes.png")
     title <- paste0(paste0("Cluster ", 1 : 4), " (", clim_frequencies, " )")
     PlotLayout(PlotStereoMap, c(2, 3), lon = lon, lat = lat, #nolint
              var = cosa / 100, titles = title, filled.continents = FALSE,
@@ -290,17 +290,18 @@ variable_list <- list(variable = WR_obs$composite, pvalue = WR_obs$pvalue,
                       lat = lat, lon = lon, time = time)
 names(variable_list)[1] <- var0
 attributes(variable_list) <- NULL
-filencdf1 <-   paste0(work_dir, "/", var0, "_", frequency, "_WR_obs_",
+filencdf1 <-   paste0(work_dir, "/", var0, "_", frequency, "_WR_ref_",
                       model_names, "_", start_projection, "_", end_projection,
                       "_", start_historical, "_", end_historical, ".nc")
 
 ArrayToNetCDF(variable_list, filencdf1) #nolint
    # Set provenance for output files
     xprov <- list(ancestors = list(fullpath_filenames[reference_files]),
-                  authors = list("torr_ve", "fuck_ne","cort_ni", "guem_vi",
-                                 "hunt_al", "manu_ni"),
+                  authors = list("torralba_veronica", "fuckar_neven",
+                                 "cortesi_nicola", "guemas_virginie",
+                                 "hunter_alasdair", "manubens_nicolau"),
                   projects = list("c3s-magic"),
-                  caption = "Observed modes of variability",
+                  caption = "Reference modes of variability",
                   statistics = list("eof"),
                   ncenters = params$ncenters,
                   cluster_method = cluster_method,
@@ -405,7 +406,7 @@ if (length(lon) != dim(anom_exp)["lon"]) {
 
 if (any(names(dim(reference)) == "Cluster")) {
     pos <- which(names(dim(reference)) == "Cluster")
-	    names(dim(reference)) <- "nclust" #nolint
+            names(dim(reference)) <- "nclust" #nolint
 }
 if ((which(names(dim(reference)) == "lon") < #nolint
     which(names(dim(reference)) == "lat") &
@@ -506,8 +507,9 @@ ArrayToNetCDF(variable_list, filencdf2) #nolint
    # Set provenance for output files
     xprov <- list(ancestors = list(filencdf1,
                               fullpath_filenames[projection_files]),
-                  authors = list("torr_ve", "fuck_ne","cort_ni", "guem_vi",
-                                 "hunt_al", "manu_ni"),
+                  authors = list("torralba_veronica", "fuckar_neven",
+                                 "cortesi_nicola", "guemas_virginie",
+                                 "hunter_alasdair", "manubens_nicolau"),
                   projects = list("c3s-magic"),
                   caption = "Predicted modes of variability",
                   statistics = list("other"),
@@ -567,7 +569,7 @@ print(rmse)
 
 dimpattern <- ncdim_def(name = "pattern", units = "undim",
                         vals = 1 : ncenters, longname = "Pattern")
-title <- paste0("Root Mean Squared Error between observed and ",
+title <- paste0("Root Mean Squared Error between reference and ",
                 "future projected patterns")
 defrmse <- ncvar_def(name = "rmse", units = "undim",
                      dim = list(observed = dimpattern,
@@ -582,7 +584,7 @@ ncvar_put(file, defrmse, rmse)
 
 nc_close(file)
 
-colnames(rmse) <- paste("Obs", 1 : ncenters)
+colnames(rmse) <- paste("Ref", 1 : ncenters)
 rownames(rmse) <- paste("Pre", 1 : ncenters)
 filepng3 <- paste0(file.path(plot_dir, "Table_"), var0, "_", frequency,
                    "_rmse_", model_names, "_", start_projection, "_",
@@ -594,8 +596,9 @@ dev.off()
 
     # Set provenance for output files
     xprov <- list(ancestors = list(filencdf1, filencdf2),
-                  authors = list("torr_ve", "fuck_ne","cort_ni", "guem_vi",
-                                 "hunt_al", "manu_ni"),
+                  authors = list("torralba_veronica", "fuckar_neven",
+                                 "cortesi_nicola", "guemas_virginie",
+                                 "hunter_alasdair", "manubens_nicolau"),
                   projects = list("c3s-magic"),
                   caption = title,
                   statistics = list("rmsd"),

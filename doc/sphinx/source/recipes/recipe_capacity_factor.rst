@@ -1,4 +1,4 @@
-.. _yml_capacity_factor:
+.. _recipes_capacity_factor:
 
 Capacity factor of wind power: Ratio of average estimated power to theoretical maximum power
 ============================================================================================
@@ -6,14 +6,13 @@ Capacity factor of wind power: Ratio of average estimated power to theoretical m
 Overview
 --------
 
-The goal of this diagnostic is to compute the wind capacity factor,  taking as input the daily instantaneous surface wind speed, which is then extrapolated to obtain the  wind speed at a height of 100 m as described in Lledó (2017). 
+The goal of this diagnostic is to compute the wind capacity factor,  taking as input the daily instantaneous surface wind speed, which is then extrapolated to obtain the  wind speed at a height of 100 m as described in Lledó (2017).
 
-The capacity factor is a normalized indicator of the suitability of wind speed conditions to produce electricity, irrespective of the size and number of installed turbines. This indicator is provided for three different classes of wind turbines (IEC, 2005) that are designed specifically for low, medium and high wind speed conditions. 
+The capacity factor is a normalized indicator of the suitability of wind speed conditions to produce electricity, irrespective of the size and number of installed turbines. This indicator is provided for three different classes of wind turbines (IEC, 2005) that are designed specifically for low, medium and high wind speed conditions.
 
-The user can select the region, temporal range and season of interest. 
+The user can select the region, temporal range and season of interest.
 
 The output of the recipe is a netcdf file containing the capacity factor for each of the three turbine classes.
-.
 
 Available recipes and diagnostics
 ---------------------------------
@@ -48,7 +47,18 @@ Variables
 Observations and reformat scripts
 ---------------------------------
 
-*None*
+Main features of the selected turbines:
+
+=================  ==================  ================  ==================  =================  ===================
+Turbine name       Rotor diameter (m)  Rated power (MW)  Cut-in speed (m/s)  Rated speed (m/s)  Cut-out speed (m/s)
+
+-----------------  ------------------  ----------------  ------------------  -----------------  -------------------
+Enercon E70 2.3MW  70                  2.3               2.0                 16.0               25.0
+Gamesa G80 2.0MW   80                  2.0               4.0                 17.0               25.0
+Gamesa G87 2.0MW   87                  2.0               4.0                 16.0               25.0
+Vestas V100 2.0MW  100                 2.0               3.0                 15.0               20.0
+Vestas V110 2.0MW  110                 2.0               3.0                 11.5               20.0
+=================  ==================  ================  ==================  =================  ===================
 
 References
 ----------
@@ -61,7 +71,7 @@ Example plots
 -------------
 
 .. _fig_capfactor1:
-.. figure::  /recipes/figures/capacity_factor/capacity_factor_IPSL-CM5A-LR_1980-2005.png
+.. figure::  /recipes/figures/capacity_factor/capacity_factor_IPSL-CM5A-MR_2021-2050.png
    :align:   center
    :width:   14cm
 

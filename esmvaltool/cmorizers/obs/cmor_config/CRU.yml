@@ -1,0 +1,25 @@
+---
+# Filename (will be extended by variable name)
+filename: 'cru_ts4.02.1901.2017.{raw_name}.dat.nc.gz'
+
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: CRU
+  version: 'TS4.02'
+  tier: 2
+  modeling_realm: reanaly
+  project_id: OBS
+  source: 'https://crudata.uea.ac.uk/cru/data/hrg/cru_ts_4.02/cruts.1811131722.v4.02/'
+  reference: 'cru'
+  comment: ''
+
+# Variables to cmorize
+variables:
+  tas:
+    mip: Amon
+    raw: tmp
+    raw_units: celsius
+  pr:
+    mip: Amon
+    raw: pre
+    raw_units: kg m-2 month-1
