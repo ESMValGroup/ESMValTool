@@ -39,7 +39,7 @@ diagnostics:
         mip: day
     scripts:
       main:
-        script: magic_bsc/extreme_spells.r
+        script: magic_bsc/extreme_spells.R
         quantile: 0.80   # quantile defining the exceedance/non-exceedance threshold
         min_duration: 5  # Min duration of a heatwave/coldwave event in days
         operator: '>'    # or '>'
