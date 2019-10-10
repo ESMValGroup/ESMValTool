@@ -21,7 +21,7 @@ Recipes are stored in recipes/
 
 Diagnostics are stored in diag_scripts/magic_bsc/
 
-* extreme_spells.r: calculates the heatwave or coldwave duration.
+* extreme_spells.R: calculates the heatwave or coldwave duration.
 
 
 User settings
