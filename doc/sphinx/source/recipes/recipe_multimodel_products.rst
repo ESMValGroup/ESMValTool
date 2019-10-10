@@ -24,7 +24,7 @@ Recipes are stored in recipes/
 
 Diagnostics are stored in diag_scripts/magic_bsc/
 
-* multimodel_products.r - script for computing multimodel anomalies and their agreement.
+* multimodel_products.R - script for computing multimodel anomalies and their agreement.
 
 
 
