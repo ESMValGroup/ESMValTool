@@ -1,19 +1,22 @@
-log <- function(..., level="INFO") {
-    cat(format(Sys.time(), "%Y-%m-%d %X"), level, ":", ..., "\n")
+log <- function(..., level = "INFO") {
+  cat(format(Sys.time(), "%Y-%m-%d %X"), level, ":", ..., "\n")
 }
 
-#check for present library paths
+# check for present library paths
 RLIBPATH <- .libPaths()
 
-#check if we can write in the present R libaries paths
+# check if we can write in the present R libaries paths
 if (any(file.access(RLIBPATH, 2) == 0)) {
-    #if possible, use the standard one for following instalation
-    RLIBLOC <- RLIBPATH[which(file.access(RLIBPATH, 2) == 0)[1]]
+  # if possible, use the standard one for following instalation
+  RLIBLOC <- RLIBPATH[which(file.access(RLIBPATH, 2) == 0)[1]]
 } else {
-    #if not possible, create a local library in the home directory
-    RLIBLOC <- Sys.getenv("R_LIBS_USER")
-    dir.create(path = Sys.getenv("R_LIBS_USER"), showWarnings = FALSE,
-               recursive = TRUE)
+  # if not possible, create a local library in the home directory
+  RLIBLOC <- Sys.getenv("R_LIBS_USER")
+  dir.create(
+    path = Sys.getenv("R_LIBS_USER"),
+    showWarnings = FALSE,
+    recursive = TRUE
+  )
 }
 
 log("Installing packages to --> ", RLIBLOC)
@@ -25,8 +28,10 @@ log("Using mirror: ", pkg_mirror)
 # get the script path
 initial_options <- commandArgs(trailingOnly = FALSE)
 file_arg_name <- "--file="
-script_name <- sub(file_arg_name, "",
-                   initial_options[grep(file_arg_name, initial_options)])
+script_name <- sub(
+  file_arg_name, "",
+  initial_options[grep(file_arg_name, initial_options)]
+)
 script_dirname <- dirname(script_name)
 
 # read the dependencies
@@ -37,14 +42,14 @@ dependencies <- yaml::read_yaml(
 
 log(paste(unlist(names(dependencies)), collapse=', '))
 inst_packages <- installed.packages()
-package_list <- names(dependencies)[!(names(dependencies) %in% inst_packages[, "Package"])]
-package_list <- names(dependencies)
+package_list <-
+  names(dependencies)[!(names(dependencies) %in% inst_packages[, "Package"])]
 
 if (length(package_list) == 0) {
     log("All packages are already installed!")
     quit()
 } else {
-    log("Number of packages to be installed: ", length(package_list))
+  log("Number of packages to be installed: ", length(package_list))
 }
 Ncpus <- parallel::detectCores()
 if (is.na(Ncpus)) {
@@ -53,7 +58,8 @@ if (is.na(Ncpus)) {
 
 # Install packages required for installation
 install_dependencies = list("remotes", "devtools")
-install_dependencies <- install_dependencies[!install_dependencies %in% inst_packages[, "Package"]]
+install_dependencies <-
+  install_dependencies[!install_dependencies %in% inst_packages[, "Package"]]
 if (length(install_dependencies) > 0) {
   log("Installing installation dependencies from CRAN:",
     paste( unlist(install_dependencies), collapse=', '))
@@ -92,10 +98,11 @@ for (package_name in names(dependencies)) {
 
 # Get missing packages from CRAN, last versions
 inst_packages <- installed.packages()
-package_list <- names(dependencies)[!(names(dependencies) %in% inst_packages[, "Package"])]
+package_list <-
+  names(dependencies)[!(names(dependencies) %in% inst_packages[, "Package"])]
 log("Installing packages from CRAN:",
     paste( unlist(package_list), collapse=', '))
-if ( length(package_list) != 0 ) {
+if (length(package_list) != 0) {
   install.packages(
     package_list,
     repos = pkg_mirror,
@@ -106,18 +113,18 @@ if ( length(package_list) != 0 ) {
 
 failed <- list()
 for (package_name in names(dependencies)) {
-    success <- library(
-        package_name,
-        character.only = TRUE,
-        logical.return = TRUE
-    )
-    if ( ! success ) {
-        failed <- c(failed, package_name)
-    }
+  success <- library(
+    package_name,
+    character.only = TRUE,
+    logical.return = TRUE
+  )
+  if ( ! success ) {
+    failed <- c(failed, package_name)
+  }
 }
-if ( length(failed) != 0 ) {
-    log("Failed to install packages:", paste(failed, collapse = ", "))
-    quit(status = 1, save = "no")
+if (length(failed) != 0) {
+  log("Failed to install packages:", paste(failed, collapse = ", "))
+  quit(status = 1, save = "no")
 }
 
 log("Successfully installed all packages")
