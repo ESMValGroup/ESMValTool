@@ -221,10 +221,18 @@ def weighted_mean(cube, fx_fn):
     Calculate the weighted mean.
     """
     fx_cube = iris.load_cube(fx_fn)
+    grid_areas = ''
+    fx_vars = ['areacella', 'areacello']
+    fx_key = ''
+    for fx_var in fx_vars:
+        if fx_fn.find(fx_var) > -1:
+            fx_key = fx_var
 
+    fx_cube = fx_cube.extract_strict(iris.Constraint(name=fx_key))
 
-    return cube.collapsed(['lat', 'lon'], iris.analysis.MEAN, weights=grid_areas)
-    #return cube.data.mean()
+    return cube.collapsed(['latitude', 'longitude'],
+                          iris.analysis.MEAN,
+                          weights=fx_cube.data)
 
 
 def make_four_pane_map_plot(
