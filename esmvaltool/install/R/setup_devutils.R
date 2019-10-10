@@ -25,14 +25,13 @@ if (any(file.access(RLIBPATH, 2) == 0)) {
 log("Installing packages to --> ", RLIBLOC)
 
 pkg_mirror <- "https://cloud.r-project.org"
-pkg_list <- c("devtools", "yaml")
+pkg_list <- c("devtools", "yaml", "lintr")
 install.packages(
   pkg_list,
   repos = pkg_mirror,
   Ncpus = 1,
   dependencies = c("Depends", "Imports", "LinkingTo")
 )
-devtools::install_version("lintr", version = "1.0.3", repos = pkg_mirror,)
 
 failed <- list()
 for (package_name in pkg_list) {

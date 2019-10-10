@@ -5,7 +5,7 @@
 # Latest version from CRAN:
 #  mypackage:
 
-# Specific version from CRAN:
+# Specific version from CRAN (use only if last version can not be used):
 #   mypackage:
 #     origin: cran
 #     version: my_version
@@ -34,8 +34,6 @@ functional:
 ggplot2:
 gridExtra:
 lintr:
-  origin: cran
-  version: "1.0.3"
 logging:
 mapproj:
 maps:
