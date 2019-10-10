@@ -9,6 +9,6 @@ if(require("RUnit", quietly=TRUE)) {
   testsuite <- defineTestSuite("climdex.pcic.ncdf", dirs=wd, testFileRegexp = "^test_.+.R$", testFuncRegexp = "^test.+")
   climdex.pcic.ncdf.test.result <- runTestSuite(testsuite)
   printTextProtocol(climdex.pcic.ncdf.test.result)
-  stopifnot(climdex.pcic.ncdf.test.result$climdex.pcic.ncdf$nFail == 0 && climdex.pcic.ncdf.test.result$climdex.pcic.ncdf$nErr == 0)    
+  stopifnot(climdex.pcic.ncdf.test.result$climdex.pcic.ncdf$nFail == 0 && climdex.pcic.ncdf.test.result$climdex.pcic.ncdf$nErr == 0)
 }
 #nolint end
