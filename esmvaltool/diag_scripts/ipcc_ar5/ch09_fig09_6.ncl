@@ -62,17 +62,6 @@ begin
 end
 
 begin
-  authors = "A_gier_be"
-
-  ; Check field type
-  plot_fields = (/"T2Ms"/)
-  if (field_type0.ne.plot_fields) then
-    error_msg("f", DIAG_SCRIPT, "", "can't use field " + field_type0 + \
-              " for this diag_script, currently only (" + \
-              str_join(plot_fields, ", ") + ") supported.")
-  end if
-  delete(plot_fields)
-
   ; Output directories
   ncdf_dir = config_user_info@work_dir + "pattern_cor.nc"
   modproj_dir = config_user_info@work_dir + "modprojnames.txt"
@@ -132,8 +121,10 @@ begin
 
   ; Write data
   all_cor@corvar = var0
+  all_cor@corvar_long = variable_info[0]@long_name
   all_cor@var = "cor"
   all_cor@diag_script = DIAG_SCRIPT
+  all_cor@diagnostics = variable_info[0]@diagnostic
   all_cor@ncdf = ncdf_dir
   all_cor@input = str_join(infiles, ",")
   ncdf_outfile = ncdf_write(all_cor, ncdf_dir)
