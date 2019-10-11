@@ -13,7 +13,7 @@
 ;                               all variables and plotting
 ;
 ; Optional diag_script_info attributes (diagnostic specific)
-;     diag_script_info@diag_order: give order of plotting variables on the 
+;     diag_script_info@diag_order: give order of plotting variables on the
 ;                                  x-axis
 ;
 ; Required variable_info attributes (variable specific)
@@ -419,7 +419,8 @@ begin
   nc_file = workpath
   plot_file = outfile
   caption = "Centered pattern correlations between models and observations" \
-       + " for the annual mean climatologies (similar to IPCC ch. 9 fig. 9.6)."
+            + " for the annual mean climatologies " \
+            + "(similar to IPCC ch. 9 fig. 9.6)."
   statistics = (/"corr", "clim"/)
   domains = (/"global"/)
   plottype = "other"
