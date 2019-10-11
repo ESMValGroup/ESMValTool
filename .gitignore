@@ -100,3 +100,5 @@ doc/sphinx/source/gallery.rst
 
 # ESMF log files
 *.ESMF_LogFile
+.Rproj.user
+esmvaltool.Rproj
