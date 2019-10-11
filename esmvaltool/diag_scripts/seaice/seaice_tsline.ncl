@@ -27,18 +27,16 @@
 ;   CMOR units expected: areacello in m2, sic in %
 ;
 ; Modification history
-;   20190227-A_senf_da: Added provenance.
-;   20190218-A_senf_da: Ported to ESMValTool v2.0a1
-;   20180620-A_senf_da: Ported to ESMValTool v2
-;   20160906-A_senf_da: Added option to fill polar observation hole
-;   20151027-A_laue_ax: Moved call to 'write_references' to the beginning
-;                       of the code
-;   20150325-A_laue_ax: Modified reference tags used for acknowledgements
-;                       (projects, observations, etc)
-;   20140312-A_righ_ma: Adapted to new time_operations structure.
-;   20140129-A_senf_da: Modularized to fit to new structure.
-;   20130419-A_gott_kl: Implemented into ./diag_scripts.
-;   20130405-A_gott_kl: Implemented.
+;   20190227-senftleben_daniel: added provenance.
+;   20190218-senftleben_daniel: ported to ESMValTool v2.0a1
+;   20180620-senftleben_daniel: ported to ESMValTool v2
+;   20160906-senftleben_daniel: added option to fill polar observation hole
+;   20151027-lauer_axel: moved call to 'write_references' to the beginning
+;   20150325-lauer_axel: modified reference tags used for acknowledgements
+;   20140312-lauer_axel: adapted to new time_operations structure
+;   20140129-senftleben_daniel: modularized to fit to new structure
+;   20130419-gottschaldt_klaus-dirk: implemented into ./diag_scripts
+;   20130405-gottschaldt_klaus-dirk: written
 ;
 ; #############################################################################
 
@@ -60,17 +58,17 @@ begin
 
   enter_msg(DIAG_SCRIPT, "")
 
-  n_variables = ListCount(variable_info)
-  var0 = variable_info[0]@short_name
-
-end
-
-
-begin
-
   ; Get metadata items
-  info = select_metadata_by_name(input_file_info, var0)
-  n_datasets = ListCount(info)
+  att = True
+  att@mip = "OImon"
+  info = select_metadata_by_atts(input_file_info, att)  ; variable
+  var0 = info[0]@short_name
+  datasets = metadata_att_as_array(info, "dataset")
+  n_datasets = dimsizes(datasets)
+  att@mip = "fx"
+  areainfo = select_metadata_by_atts(input_file_info, att)  ; area
+  areadatasets = metadata_att_as_array(areainfo, "dataset")
+  delete(att)
 
   ; Check required diag_script_info attributes
   exit_if_missing_atts(diag_script_info, (/"region", "month"/))
@@ -101,9 +99,9 @@ begin
   end if
 
   ; Determine time range
-  start_years = metadata_att_as_array(input_file_info, "start_year")
+  start_years = metadata_att_as_array(info, "start_year")
   start_year  = min(start_years)
-  end_years   = metadata_att_as_array(input_file_info, "end_year")
+  end_years   = metadata_att_as_array(info, "end_year")
   end_year    = max(end_years)
   all_years   = ispan(start_year, end_year, 1)
 
@@ -153,14 +151,68 @@ begin
   ; Loop over datasets
   do imod = 0, n_datasets - 1
 
+    log_info("Processing dataset " + datasets(imod))
+
     sic = read_data(info[imod])
 
-    ; Calcluate sea ice area / extent
-    sic_sum_ext  = sea_ice_area(sic, imod, info, diag_script_info@region, \
+    ; Check grid type
+    l_irreg = True
+    if (sic!1.eq."lat" .and. sic!2.eq."lon") then
+      if (dimsizes(dimsizes(sic&lat)).eq.1 .and. \
+          dimsizes(dimsizes(sic&lon)).eq.1) then
+        l_irreg = False
+      end if
+    end if
+
+    log_info("Irregular grid --> " + l_irreg)
+
+    ; Look for area variable
+    if (any(datasets(imod).eq.areadatasets)) then
+
+      ; Read areacello
+      log_info("Using variable areacello for the area")
+      area = read_data(areainfo[imod])
+      locinfo = areainfo[imod]
+      locinfo@short_name = "lat"  ; read auxiliary latitude coordinate
+      arealat = read_data(locinfo)
+      delete(locinfo)
+
+      ; Check grid consistency
+      if (.not.isconform(sic(0, :, :), area)) then
+        if (l_irreg) then
+          error_msg("f", DIAG_SCRIPT, "", "areacello not conformal")
+        else
+          delete(area)
+          delete(arealat)
+          log_info("areacello has inconsistent dimensions, " + \
+                   "calculating area for a regular grid instead")
+          area = map_area(sic&lat, sic&lon)
+          arealat = area&lat
+        end if
+      end if
+
+    else
+
+      if (.not.l_irreg) then
+        log_info("Calculating area for a regular grid")
+        area = map_area(sic&lat, sic&lon)
+        arealat = area&lat
+      else
+        error_msg("f", DIAG_SCRIPT, "", "cannot calculate area")
+      end if
+
+    end if
+
+    ; Calcluate sea ice area
+    sic_sum_ext  = sea_ice_area(sic, area, arealat, l_irreg, \
+                                diag_script_info@region, \
                                 start_years(imod), end_years(imod), \
                                 diag_script_info@month, "extent", \
                                 diag_script_info@fill_pole_hole)
-    sic_sum_area = sea_ice_area(sic, imod, info, diag_script_info@region, \
+
+    ; Calculate sea ice extent
+    sic_sum_area = sea_ice_area(sic, area, arealat, l_irreg, \
+                                diag_script_info@region, \
                                 start_years(imod), end_years(imod), \
                                 diag_script_info@month, "area", \
                                 diag_script_info@fill_pole_hole)
@@ -172,14 +224,12 @@ begin
     val_area(imod, ia:ie) = tofloat(sic_sum_area)
 
     ; Clean up
-    delete([/sic, sic_sum_ext, sic_sum_area, ia, ie/])
+    delete([/sic, area, arealat, sic_sum_ext, sic_sum_area, ia, ie/])
 
   end do  ; imod
 
   ; Calculate standard deviation of datasets
   if (multi_model_mean) then
-    ; See style_$project$.ncl for which data shall
-    ; be included in the statistics
     temp = ind(avgstd .eq. 0)
     do imonth = 0, dimsizes(val_ext&time) - 1
       ; For extent
@@ -307,8 +357,9 @@ begin
     nc_file_ext = ncdf_write(val_ext, outfile_ext + ".nc")
 
     log_provenance(nc_file_ext, outfile_ext, caption_ext, \
-                   (/"mean", "stddev", "clim"/), domain, "tsline", \
-                   (/"senf_da", "gott_kl"/), "stroeve07grl", infiles)
+                   (/"mean", "stddev", "clim"/), domain, "times", \
+                   (/"senftleben_daniel", "gottschaldt_klaus-dirk"/), \
+                   "stroeve07grl", infiles)
 
     val_area@var = var0
     val_area@diag_script = DIAG_SCRIPT
@@ -323,8 +374,9 @@ begin
     nc_file_area = ncdf_write(val_area, outfile_area + ".nc")
 
     log_provenance(nc_file_area, outfile_area, caption_area, \
-                   (/"mean", "stddev", "clim"/), domain, "tsline", \
-                   (/"senf_da", "gott_kl"/), "stroeve07grl", infiles)
+                   (/"mean", "stddev", "clim"/), domain, "times", \
+                   (/"senftleben_daniel", "gottschaldt_klaus-dirk"/), \
+                   "stroeve07grl", infiles)
 
   end if  ; More than 1 time step
 

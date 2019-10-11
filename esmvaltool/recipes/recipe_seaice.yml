@@ -6,10 +6,10 @@ documentation:
     Recipe for plotting sea ice diagnostics at the Arctic and Antarctic.
 
   authors:
-    - senf_da
+    - senftleben_daniel
 
   maintainer:
-    - laue_ax
+    - lauer_axel
 
   references:
     - stroeve07grl
@@ -30,7 +30,7 @@ datasets:
   - {dataset: CMCC-CMS}
   - {dataset: CNRM-CM5}
   - {dataset: CSIRO-Mk3-6-0}
-  - {dataset: FGOALS-g2}
+  # - {dataset: FGOALS-g2} # bug in fix-file (#304 ESMValCore)
   - {dataset: GFDL-CM3}
   - {dataset: GFDL-ESM2G}
   - {dataset: GFDL-ESM2M}
@@ -54,22 +54,12 @@ datasets:
   - {dataset: NorESM1-M}
   - {dataset: NorESM1-ME}
 
-
-preprocessors:
-  pp_mmm:
-    multi_model_statistics:  # do not use for SIE timeseries (too expensive)
-      span: overlap
-      statistics: mean
-      exclude: additional_datasets
-
-
 diagnostics:
   seaice_tsline_NH:
     description: Timeseries of September Arctic sea ice area and extent
     variables:
       sic:
         mip: OImon
-        fx_files: [areacello]
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
@@ -77,6 +67,13 @@ diagnostics:
         end_year: 2005
         additional_datasets:
           - {dataset: HadISST, project: OBS, type: reanaly, version: 1, tier: 2}
+      areacello:
+        mip: fx
+        project: CMIP5
+        exp: historical
+        ensemble: r0i0p0
+        start_year: 1960
+        end_year: 2005
     scripts:
       tsline:
         script: seaice/seaice_tsline.ncl
@@ -98,15 +95,20 @@ diagnostics:
     variables:
       sic:
         mip: OImon
-        fx_files: [areacello]
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
         start_year: 1960
         end_year: 2005
-
         additional_datasets:
           - {dataset: HadISST, project: OBS, type: reanaly, version: 1, tier: 2}
+      areacello:
+        mip: fx
+        project: CMIP5
+        exp: historical
+        ensemble: r0i0p0
+        start_year: 1960
+        end_year: 2005
     scripts:
       tsline:
         script: seaice/seaice_tsline.ncl
