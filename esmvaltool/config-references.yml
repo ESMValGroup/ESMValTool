@@ -217,6 +217,10 @@ authors:
     name: Kadygrov, Nikolay
     institute: IPSL, France
     orcid:
+  kalverla_peter:
+    name: Kalverla, Peter
+    institute: NLeSC, Netherlands
+    orcid: https://orcid.org/0000-0002-5025-7862
   kindermann_stephan:
     name: Kindermann, Stephan
     institute: DKRZ, Germany
@@ -368,6 +372,15 @@ authors:
   vanulft_bert:
     name: van Ulft, Bert
     institute: KNMI, Netherlands
+    email: bert.van.ulft 'at' knmi.nl
+  verhoeven_stefan:
+    name: Verhoeven, Stefan
+    institute: NLeSC, Netherlands
+    email: s.verhoeven 'at' esciencecenter.nl
+  vini_ca:
+    name: Vinicius, Capistrano
+    institute: INPE, Brazil
+  walt_je:
     orcid: https://orcid.org/0000-0001-8653-2312
   walton_jeremy:
     name: Walton, Jeremy
@@ -651,9 +664,8 @@ references:
   cds-satellite-soil-moisture: "Gruber et al., Earth Syst. Sci. Data, doi: 10.5194/essd-11-717-2019, 2019."
   cds-xch4: "Buchwitz et al., Adv. Astronaut. Sci. Technol., doi:10.1007/s42423-018-0004-6, 2018."
   cds-xco2: "Buchwitz et al., Adv. Astronaut. Sci. Technol., doi:10.1007/s42423-018-0004-6, 2018."
-  ceres-syn1deg: "Wielicki et al., Bull. Amer. Meteor. Soc., doi:10.1175/1520-0477(1996)077<0853:CATERE>2.0.CO;2, 1996."
+  ceres-syn1deg: "Wielicki et al., Bull. Amer. Meteor. Soc., doi: 10.1175/1520-0477(1996)077<0853:CATERE>2.0.CO;2, 1996."
   cru: "Harris et al., Int. J. Climatol., doi:10.1002/joc.3711, 2014."
-  duveiller2018: "Duveiller et al., Sci. Data, doi:10.1038/sdata.2018.14, 2018."
   eppley-vgpm-modis: "Behrenfeld and Falkowski, Limnol. Oceanogr., doi:10.4319/lo.1997.42.1.0001, 1997."
   era-interim: "Dee et al., Q. J. Roy. Meteor. Soc., doi:10.1002/qj.828, 2011."
   era5: "Copernicus Climate Change Service (C3S) (2017): ERA5: Fifth generation of ECMWF atmospheric reanalyses of the global climate. Copernicus Climate Change Service Climate Data Store (CDS)"
@@ -677,10 +689,12 @@ references:
   mte: "Jung et al., J. Geophys. Res., doi:10.1029/2010JG001566, 2011."
   ncep: "Kalnay et al., B. Am. Meteorol. Soc., doi:10.1175/1520-0477(1996)077<0437:TNYRP>2.0.CO;2, 1996."
   niwa-bs: "Bodeker et al., Atmos. Chem. Phys., doi:10.5194/acp-5-2603-2005, 2005."
-  nsidc-0116: "Tschudi, M., W. N. Meier, J. S. Stewart, C. Fowler, and J. Maslanik. 2019. Polar Pathfinder Daily 25 km EASE-Grid Sea Ice Motion Vectors, Version 4. [Indicate subset used]. Boulder, Colorado USA. NASA National Snow and Ice Data Center Distributed Active Archive Center. doi: https://doi.org/10.5067/INAWUWO7QH7B. [Date Accessed]."
+  patmos-x: "Heidinger et al., NOAA National Centers for Environmental Information, doi:10.7289/V5348HCK, last access: 10 February 2019."
   patmos-x: "Heidinger et al., Bull. Amer. Meteor. Soc., doi:10.1175/BAMS-D-12-00246.1, 2013."
+  sillman-2013: "Sillmann et al., J. Geophys. Res., doi:10.1029/2012JD018390, 2013"
   uwisc: "O'Dell et al., J. Clim., doi:10.1175/2007JCLI1958.1, 2008."
   woa: "Locarnini et al., World Ocean Atlas 2013, Volume 1: Temperature, NOAA Atlas NESDIS 73, 2013."
+  zhang-2011: "Zhang et al., WIREs Clim. Change, doi:10.1002/wcc.147, 2011"
 
 projects:
   c3s-magic: Copernicus Climate Change Service 34a Lot 2 (MAGIC) project

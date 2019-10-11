@@ -49,7 +49,18 @@ def main(cfg):
             cube = iris.load_cube(input_file)
 
             # Do stuff
-            # ...
+            # - Marrmot is a collection of lumped models, so we need
+            #   accumulated values of each variable.
+            # - Unit conversion: P = mm/d, PET = mm/d, T = K
+            # - Output format:
+            # >> A Matlab structure with fields 'precip', 'pet', 'temp',
+            # >> and 'delta_t'. 'precip', 'pet', and 'temp' are vectors
+            # >> of size 1x[length of time period] each. 'delta_t' is a
+            # >> scalar of size 1x1 that specifies the time resolution
+            # >> of the 'precip', 'pet' and 'temp' vectors in units [days].
+            # >>
+            # >> A vector with initial values for each of the model stores,
+            # >> of size 1x[number of stores].
 
             # Save data
             output_file = get_diagnostic_filename(
