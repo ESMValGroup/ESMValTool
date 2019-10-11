@@ -45,6 +45,7 @@ requirements:
     # Normally installed via pip:
     - cartopy
     - cf-units
+    - cmocean
     - cython
     - eofs
     - esmpy
@@ -55,10 +56,13 @@ requirements:
     - netCDF4
     - numpy
     - pandas
+    - palettable
+    - pyresample
     - python-cdo
     - python-stratify
     - pyyaml
     - scikit-learn
+    - seawater
     - shapely
     - xarray>=0.12.0
     - yamale  # in esmvalgroup channel

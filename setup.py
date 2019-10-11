@@ -25,6 +25,7 @@ REQUIREMENTS = {
         'cartopy',
         'cdo',
         'cf-units',
+        'cmocean',
         'cython',
         'jinja2',
         'eofs',
@@ -36,6 +37,7 @@ REQUIREMENTS = {
         'numpy',
         'pandas',
         'palettable',
+        'pyresample',
         'pyyaml',
         'scitools-iris>=2.2',
         'scikit-learn',
@@ -44,8 +46,6 @@ REQUIREMENTS = {
         'stratify',
         'xarray>=0.12',
         'xlsxwriter',
-        'cmocean',
-        'pyresample'
     ],
     # Test dependencies
     # Execute 'python setup.py test' to run tests
