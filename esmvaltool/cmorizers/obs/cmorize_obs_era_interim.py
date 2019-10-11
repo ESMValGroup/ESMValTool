@@ -82,6 +82,7 @@ from copy import deepcopy
 from os import cpu_count
 from pathlib import Path
 from warnings import catch_warnings, filterwarnings
+from collections import defaultdict
 
 import iris
 import numpy as np
@@ -105,7 +106,7 @@ def _set_global_attributes(cube, attributes, definition):
         # Change units from meters per day of water to kg of water per day
         cube.units = cube.units * 'kg m-3 day-1'
         cube.data = cube.core_data() * 1000.
-    if cube.var_name in {'ssr', 'ssrd', 'tisr'}:
+    if cube.var_name in {'ssr', 'ssrd', 'tisr', 'hfds'}:
         # Add missing 'per day'
         cube.units = cube.units * 'day-1'
         # Radiation fluxes are positive in downward direction
@@ -193,9 +194,24 @@ def _fix_frequency(cube, var):
     return cube
 
 
+def _get_files(in_dir, var):
+    files_dict = defaultdict(list)
+    for in_file in var['files']:
+        files_lst = sorted(list(Path(in_dir).glob(in_file)))
+        for item in files_lst:
+            key = str(item.stem).split('_')[-1]
+            files_dict[key].append(item)
+    # check if files are complete
+    return files_dict
+
+
 def _extract_variable(in_file, var, cfg, out_dir):
-    logger.info("CMORizing variable '%s' from input file '%s'",
-                var['short_name'], in_file)
+    if 'files' in var:
+        logger.info("CMORizing variable '%s' from input file/s '%s'",
+                    var['short_name'], [str(item) for item in in_file])
+    else:
+        logger.info("CMORizing variable '%s' from input file/s '%s'",
+                    var['short_name'], in_file)
     attributes = deepcopy(cfg['attributes'])
     attributes['mip'] = var['mip']
     cmor_table = CMOR_TABLES[attributes['project_id']]
@@ -221,10 +237,24 @@ def _extract_variable(in_file, var, cfg, out_dir):
             category=UserWarning,
             module='iris',
         )
-        cube = iris.load_cube(
-            str(in_file),
-            constraint=utils.var_name_constraint(var['raw']),
-        )
+        if 'files' in var:
+            if var['operator'] == 'sum':
+            # Multiple variables case using sum operation
+                for i, item in enumerate(in_file):
+                    in_cube = iris.load_cube(
+                        str(item),
+                        constraint=utils.var_name_constraint(var['raw'][i]),
+                    )
+                    if i == 0:
+                        cube = in_cube
+                    else:
+                        cube += in_cube
+                cube.var_name = var['short_name']
+        else:
+            cube = iris.load_cube(
+                str(in_file),
+                constraint=utils.var_name_constraint(var['raw']),
+            )
 
     _set_global_attributes(cube, attributes, definition)
 
@@ -270,10 +300,18 @@ def cmorization(in_dir, out_dir, cfg, _):
         for short_name, var in cfg['variables'].items():
             if 'short_name' not in var:
                 var['short_name'] = short_name
-            for in_file in sorted(Path(in_dir).glob(var['file'])):
-                future = executor.submit(_extract_variable, in_file, var, cfg,
-                                         out_dir)
-                futures[future] = in_file
+            if 'file' in var:
+                for in_file in sorted(Path(in_dir).glob(var['file'])):
+                    future = executor.submit(_extract_variable, in_file,
+                                             var, cfg, out_dir)
+                    futures[future] = in_file
+            if 'files' in var:
+                files_dict = _get_files(in_dir, var)
+                for key in files_dict:
+                    in_file = files_dict[key]
+                    future = executor.submit(_extract_variable, in_file,
+                                             var, cfg, out_dir)
+                    futures[future] = [str(item) for item in in_file]
 
     for future in as_completed(futures):
         try:
