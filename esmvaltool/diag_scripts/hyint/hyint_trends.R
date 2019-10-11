@@ -5,12 +5,13 @@
 
 
 # MAIN TRENDS FUNCTION
-hyint_trends <- function(work_dir, model_idx, season, prov_info) {
-
+hyint_trends <- function(work_dir, model_idx, season, prov_info) { # nolint
   # setup useful strings
   var_type <- c("tseries", "tseries-sd", "trend", "trend-stat")
   var_type_long <- c(
-    "Timeseries", "St.dev of timeseries", "Trend coeff. for two intervals ",
+    "Timeseries",
+    "St.dev of timeseries",
+    "Trend coeff. for two intervals ",
     "Trend statistics for trend 1 (Estimate, Std. Error, t value, Pr(>|t|))"
   )
 
@@ -38,8 +39,10 @@ hyint_trends <- function(work_dir, model_idx, season, prov_info) {
   #-----------------Loading data-----------------------#
   # open experiment field
 
-  gridfile <- getfilename_indices(work_dir, diag_base, model_idx, grid = T)
-  infile <- getfilename_indices(work_dir, diag_base, model_idx, season)
+  gridfile <-
+    getfilename_indices(work_dir, diag_base, model_idx, grid = T)
+  infile <-
+    getfilename_indices(work_dir, diag_base, model_idx, season)
   # test if file contains all requested variables and
   # keep file open for reading attributes
   nc <- nc_open(infile)
@@ -57,11 +60,15 @@ hyint_trends <- function(work_dir, model_idx, season, prov_info) {
 
   # Get seaLandElevation mask
   if (masksealand) {
-    topofile <- getfilename_indices(work_dir, diag_base, ref_idx, topo = T)
+    topofile <-
+      getfilename_indices(work_dir, diag_base, ref_idx, topo = T)
     if (!file.exists(topofile)) {
       create_landseamask(
-        regrid = gridfile, ref_file = infile, loc = run_dir,
-        regridded_topo = topofile, topo_only = T
+        regrid = gridfile,
+        ref_file = infile,
+        loc = run_dir,
+        regridded_topo = topofile,
+        topo_only = T
       )
     }
     relevation <- ncdf_opener(topofile, "topo", rotate = "no")
@@ -113,10 +120,11 @@ hyint_trends <- function(work_dir, model_idx, season, prov_info) {
         regions[iselreg, ],
         weighted_mean = weight_tseries
       )
-      tfield_sd[ireg, ] <- calc_region_timeseries(ics, ipsilon, rfield,
-        regions[iselreg, ],
-        calc_sd = T
-      )
+      tfield_sd[ireg, ] <-
+        calc_region_timeseries(ics, ipsilon, rfield,
+          regions[iselreg, ],
+          calc_sd = T
+        )
     }
 
     # setup time array
@@ -124,12 +132,12 @@ hyint_trends <- function(work_dir, model_idx, season, prov_info) {
     rettimes <- 1:length(times)
     if (trend_years[1] != F) {
       # apply trend to limited time interval if required
-      rettimes <- which( (times >= trend_years[1]) &
-                          times <= trend_years[2])
+      rettimes <- which((times >= trend_years[1]) &
+        times <= trend_years[2])
       if (length(trend_years) == 4) {
         # apply trend also to second time interval if required
-        rettimes2 <- which( (times >= trend_years[3]) &
-                             times <= trend_years[4])
+        rettimes2 <- which((times >= trend_years[3]) &
+          times <= trend_years[4])
       }
     }
 
@@ -156,7 +164,7 @@ hyint_trends <- function(work_dir, model_idx, season, prov_info) {
             temp_tfield2 <- tfield[ireg, rettimes2]
             if (length(which(!is.na(temp.tfield))) < 2) {
               print("less than 2 points in second trend over selected region
-                     - skipping")
+                    - skipping")
             } else {
               lm_fit2 <- lm(temp_tfield2 ~ times[rettimes2])
               # store 2nd interval trend coefficients
@@ -197,10 +205,12 @@ hyint_trends <- function(work_dir, model_idx, season, prov_info) {
   regiondim <- ncdim_def("region", "number", var_region)
   coeffdim <- ncdim_def("coefficients", "number", 1:4)
   boundarydim <- ncdim_def("boundaries", "degrees", 1:4)
-  timedim <- ncdim_def(timedimname, "years since 1950-01-01 00:00:00",
-    (years - 1950),
-    unlim = T
-  )
+  timedim <-
+    ncdim_def(timedimname,
+      "years since 1950-01-01 00:00:00",
+      (years - 1950),
+      unlim = T
+    )
 
   # variables definition
   for (var in field_names) {
@@ -211,19 +221,30 @@ hyint_trends <- function(work_dir, model_idx, season, prov_info) {
       # copy and update attributes
       metadata <- getmetadata_indices(var, infile)
       long_name <- metadata$long_name
-      description <<- paste0(var_type_long[itype], " of ", metadata$long_name)
+      description <<-
+        paste0(var_type_long[itype], " of ", metadata$long_name)
       units <- metadata$units
       missval <- metadata$missing_value
       # variable definitions
       var_ncdf <- ncvar_def(
-        svar, units, list(regiondim, timedim), missval,
-        longname = long_name, prec = "single", compression = 1
+        svar,
+        units,
+        list(regiondim, timedim),
+        missval,
+        longname = long_name,
+        prec = "single",
+        compression = 1
       )
       if (itype > 2) {
         # trends
         var_ncdf <- ncvar_def(
-          svar, units, list(regiondim, coeffdim), missval,
-          longname = long_name, prec = "single", compression = 1
+          svar,
+          units,
+          list(regiondim, coeffdim),
+          missval,
+          longname = long_name,
+          prec = "single",
+          compression = 1
         )
       }
       assign(paste0("var", svar), var_ncdf)
@@ -233,9 +254,13 @@ hyint_trends <- function(work_dir, model_idx, season, prov_info) {
   }
 
   varregions <- ncvar_def(
-    "regions", "degrees", list(regiondim, boundarydim), -999,
+    "regions",
+    "degrees",
+    list(regiondim, boundarydim),
+    -999,
     "region boundaries",
-    prec = "single", compression = 1
+    prec = "single",
+    compression = 1
   )
   regions_description <- "regions over which averages are performed"
   fieldregions <- regions[selregions, ]
@@ -253,7 +278,9 @@ hyint_trends <- function(work_dir, model_idx, season, prov_info) {
   for (var in namelist) {
     ndims <- get(paste0("var", var))$ndims
     tmp.field <- get(paste0("field", var))
-    ncvar_put(ncfile, var, tmp.field,
+    ncvar_put(ncfile,
+      var,
+      tmp.field,
       start = rep(1, ndims),
       count = rep(-1, ndims)
     )
@@ -261,23 +288,40 @@ hyint_trends <- function(work_dir, model_idx, season, prov_info) {
   }
 
   # put additional attributes into dimension and data variables
-  ncatt_put(ncfile, "regions", "regionnames", paste(fieldregion_names,
-    collapse = " "))
-  ncatt_put(ncfile, "regions", "region_codes",
-            paste(fieldregion_codes, collapse = " "))
+  ncatt_put(
+    ncfile,
+    "regions",
+    "regionnames",
+    paste(fieldregion_names,
+      collapse = " "
+    )
+  )
+  ncatt_put(
+    ncfile,
+    "regions",
+    "region_codes",
+    paste(fieldregion_codes, collapse = " ")
+  )
 
   nc_close(ncfile)
 
   # Set provenance for this output file
-    caption <- paste0("Hyint timeseries and trends for years ",
-                      year1, " to ", year2,
-                      " according to ", models_name[model_idx])
-    xprov <- list(ancestors = list(infile),
-                  model_idx = list(model_idx),
-                  caption = caption)
+  caption <- paste0(
+    "Hyint timeseries and trends for years ",
+    year1,
+    " to ",
+    year2,
+    " according to ",
+    models_name[model_idx]
+  )
+  xprov <- list(
+    ancestors = list(infile),
+    model_idx = list(model_idx),
+    caption = caption
+  )
 
-    # Store provenance in main provenance list
-    prov_info[[outfile]] <- xprov
+  # Store provenance in main provenance list
+  prov_info[[outfile]] <- xprov
 
   print(paste(diag_base, ": timeseries netCDF file saved"))
   return(prov_info)
