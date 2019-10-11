@@ -21,15 +21,15 @@ datasets:
 
 preprocessors:
   annual_mean:
-    annual_mean:
+    annual_statistics:
   summer_mean:
     extract_season:
       season: 'JJA'
-    seasonal_mean:
+    seasonal_statistics:
   winter_mean:
     extract_season:
       season: 'DJF'
-    seasonal_mean:
+    seasonal_statistics:
 
 diagnostics:
   annual_egr:
