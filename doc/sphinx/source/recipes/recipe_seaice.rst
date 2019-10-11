@@ -57,3 +57,10 @@ References
 Example plots
 -------------
 
+.. centered:: |pic_seaice1| |pic_seaice2|
+
+.. |pic_seaice1| image:: /recipes/figures/seaice/seaice_fig_1.png
+   :width: 50%
+
+.. |pic_seaice2| image:: /recipes/figures/seaice/seaice_fig_2.png
+   :width: 50%
