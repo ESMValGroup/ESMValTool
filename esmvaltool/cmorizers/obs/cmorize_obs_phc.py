@@ -43,13 +43,14 @@ def _fix_fx_areacello(xr_time, var):
     cube.coord('latitude').guess_bounds()
     cube.coord('longitude').guess_bounds()
     grid_areas = iris.analysis.cartography.area_weights(cube)
-    grid_areas_xr = xr.DataArray(grid_areas[0, 0, :, :],
-                                 coords={
-                                     'lat': xr_time.temp.coords['lat'],
-                                     'lon': xr_time.temp.coords['lon']
-                                 },
-                                 dims=['lat', 'lon'],
-                                 name=var)
+    grid_areas_xr = xr.DataArray(
+        grid_areas[0, 0, :, :],
+        coords={
+            'lat': xr_time.temp.coords['lat'],
+            'lon': xr_time.temp.coords['lon']
+        },
+        dims=['lat', 'lon'],
+        name=var)
     grid_areas_xr.attrs = OrderedDict([('cell_area', 'Ocean Grid-Cell Area'),
                                        ('units', 'm2')])
     cube = grid_areas_xr.to_iris()
