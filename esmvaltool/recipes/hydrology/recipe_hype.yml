@@ -3,17 +3,12 @@
 ---
 documentation:
   description: |
-    Recipe pre-processes ERA-Interim reanalyses files for use in the Hype
-    hydrological model.
+    Recipe pre-processes ERA5 and ERA-Interim reanalyses files
+    for use in the Hype hydrological model.
 
-
-  authors: ['pelupessy_inti']
+  authors: ['pelupessy_inti', 'kalverla_peter']
   projects: ['ewatercycle']
   references: ['acknow_project']
-
-
-datasets:
-  - {dataset: ERA-Interim, project: OBS, tier: 3, type: reanaly, version: 1}
 
 preprocessors:
   preprocessor: &general
@@ -23,39 +18,77 @@ preprocessors:
       decomposed: true
     area_statistics:
       operator: mean
-      
-  daily_temperature:  
+
+  daily_mean_temperature:
     <<: *general
     convert_units:
       units: degC
     daily_statistics:
-      operator: mean 
+      operator: mean
+
+  daily_min_temperature:
+    <<: *general
+    convert_units:
+      units: degC
+    daily_statistics:
+      operator: min
+
+  daily_max_temperature:
+    <<: *general
+    convert_units:
+      units: degC
+    daily_statistics:
+      operator: max
 
   daily_water:
     <<: *general
     convert_units:
-      units: mm d-1    
+      units: mm d-1
     daily_statistics:
-        operator: mean 
-
+        operator: mean
 
 diagnostics:
-  diagnostic1:
-    description: HYPE input preprocessor
+  diagnostic_daily_data:
+    description: HYPE input preprocessor for daily data
+    additional_datasets:
+        - {dataset: ERA-Interim, project: OBS, tier: 3, type: reanaly, version: 1}
     variables:
-      tas: &var
+      tas: &var_daily
         mip: day
         start_year: 1979
         end_year: 1979
-        preprocessor: daily_temperature
+        preprocessor: daily_mean_temperature
       tasmin:
-        <<: *var
-        preprocessor: daily_temperature
+        <<: *var_daily
+        preprocessor: daily_min_temperature
       tasmax:
-        <<: *var
-        preprocessor: daily_temperature
+        <<: *var_daily
+        preprocessor: daily_max_temperature
       pr:
-        <<: *var
+        <<: *var_daily
+        preprocessor: daily_water
+    scripts:
+      script:
+        script: hydrology/hype.py
+
+  diagnostic_hourly_data:
+    description: HYPE input preprocessor for hourly data
+    additional_datasets:
+        - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
+    variables:
+      tas: &var_hourly
+        mip: E1hr
+        start_year: 1979
+        end_year: 1979
+        preprocessor: daily_mean_temperature
+      tasmin:
+        <<: *var_hourly
+        preprocessor: daily_min_temperature
+      tasmax:
+        <<: *var_hourly
+        preprocessor: daily_max_temperature
+      pr:
+        <<: *var_hourly
         preprocessor: daily_water
     scripts:
       script:
