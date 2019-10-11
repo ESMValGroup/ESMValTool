@@ -89,7 +89,7 @@ Because there is no standard best practices document for NCL, we use [PEP8](http
 
 ### R
 
-A document on best practices for R is [Hadley Wickham's R Style Guide](http://r-pkgs.had.co.nz/style.html). We partially check adherence to this style guide by using [lintr](https://cran.r-project.org/web/packages/lintr/index.html) on CircleCI. In the future we would also like to make use of [goodpractice](https://cran.r-project.org/web/packages/goodpractice/index.html) to assess the quality of R code.
+Best practices for R code are described in [The tidyverse style guide](https://style.tidyverse.org/). We check adherence to this style guide by using [lintr](https://cran.r-project.org/web/packages/lintr/index.html) on CircleCI. Please use [styler](https://styler.r-lib.org/) to automatically format your code according to this style guide. In the future we would also like to make use of [goodpractice](https://cran.r-project.org/web/packages/goodpractice/index.html) to assess the quality of R code.
 
 ### YAML
 
