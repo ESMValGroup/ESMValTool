@@ -328,8 +328,10 @@ class PlotHist(object):
         
         if dat_log:
             self.ax.set_yscale('log', nonposy='clip')
-        
-        self.ax.yaxis.set_major_formatter(FuncFormatter(label_in_exp_perc))#label_in_perc_single))
+            self.ax.yaxis.set_major_formatter(FuncFormatter(label_in_exp_perc))
+        else:
+            self.ax.yaxis.set_major_formatter(FuncFormatter(label_in_perc_single))
+            
         if (title is not None):
             self.ax.set_title(title)
         self.ax.set_xlabel(x_label)
