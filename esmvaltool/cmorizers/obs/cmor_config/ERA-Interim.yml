@@ -231,7 +231,7 @@ variables:
       - 'ERA-Interim_p56.162_monthly_*.nc'
       - 'ERA-Interim_p57.162_monthly_*.nc'
   hfds:
-    mip: Amon
+    mip: Omon
     raw:
       - ssr
       - str
