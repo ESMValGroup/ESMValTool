@@ -30,7 +30,7 @@ datasets:
   - {dataset: CMCC-CMS}
   - {dataset: CNRM-CM5}
   - {dataset: CSIRO-Mk3-6-0}
-  # - {dataset: FGOALS-g2} # bug in fix-file (#304 ESMValCore)
+  - {dataset: FGOALS-g2}
   - {dataset: GFDL-CM3}
   - {dataset: GFDL-ESM2G}
   - {dataset: GFDL-ESM2M}
