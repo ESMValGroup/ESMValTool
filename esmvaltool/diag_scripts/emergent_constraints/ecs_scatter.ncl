@@ -1479,7 +1479,7 @@ begin
 
     if (diag_script_info@predef_minmax) then
       data_arr@trYMinF = 2.0     ; CMIP3/CMIP5
-      data_arr@trYMaxF = 5.0     ; CMIP3/CMIP5
+      data_arr@trYMaxF = 6.5     ; CMIP3/CMIP5: 5.0, CMIP6: 6.5
       if (diag.eq."itczidx") then
         data_arr@trXMinF = -1.0    ; southern ITCZ index
         data_arr@trXMaxF = 3.0     ; southern ITCZ index

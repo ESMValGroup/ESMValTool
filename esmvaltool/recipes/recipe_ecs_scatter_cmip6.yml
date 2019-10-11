@@ -78,9 +78,16 @@ diagnostics:
           - {dataset: TRMM-L3, project: obs4mips, level: v7,
              version: 7A, tier: 1}
           - {dataset: BCC-CSM2-MR, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: BCC-ESM1, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: CAMS-CSM1-0, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: CESM2, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: CESM2-WACCM, institute: NCAR, grid: gn, ensemble: r1i1p1f1}
           - {dataset: CNRM-CM6-1, grid: gr, ensemble: r1i1p1f2}
+          - {dataset: CNRM-ESM2-1, grid: gr, ensemble: r1i1p1f2}
+          - {dataset: GFDL-CM4, grid: gr1, ensemble: r1i1p1f1}
           - {dataset: GISS-E2-1-G, grid: gn, ensemble: r1i1p1f1}
-          - {dataset: IPSL-CM6A-LR, grid: gr, ensemble: r1i1p1f1}
+          - {dataset: GISS-E2-1-H, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: IPSL-CM6A-LR, grid: gr, ensemble: r15i1p1f1}
           - {dataset: MIROC6, grid: gn, ensemble: r1i1p1f1}
           - {dataset: MRI-ESM2-0, grid: gn, ensemble: r1i1p1f1}
       prStderr:
@@ -120,9 +127,16 @@ diagnostics:
           - {dataset: AIRS, project: obs4mips, level: L3,
              version: RetStd-v5, tier: 1}
           - {dataset: BCC-CSM2-MR, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: BCC-ESM1, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: CAMS-CSM1-0, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: CESM2, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: CESM2-WACCM, institute: NCAR, grid: gn, ensemble: r1i1p1f1}
           - {dataset: CNRM-CM6-1, grid: gr, ensemble: r1i1p1f2}
+          - {dataset: CNRM-ESM2-1, grid: gr, ensemble: r1i1p1f2}
+          - {dataset: GFDL-CM4, grid: gr1, ensemble: r1i1p1f1}
           - {dataset: GISS-E2-1-G, grid: gn, ensemble: r1i1p1f1}
-          - {dataset: IPSL-CM6A-LR, grid: gr, ensemble: r2i1p1f1}
+          - {dataset: GISS-E2-1-H, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: IPSL-CM6A-LR, grid: gr, ensemble: r15i1p1f1}
           - {dataset: MIROC6, grid: gn, ensemble: r1i1p1f1}
           - {dataset: MRI-ESM2-0, grid: gn, ensemble: r1i1p1f1}
       husStderr:
@@ -177,8 +191,16 @@ diagnostics:
         project: CMIP6
     additional_datasets:
       - {dataset: BCC-CSM2-MR, grid: gn, ensemble: r1i1p1f1}
+      - {dataset: BCC-ESM1, grid: gn, ensemble: r1i1p1f1}
+      - {dataset: CAMS-CSM1-0, grid: gn, ensemble: r1i1p1f1}
+      - {dataset: CESM2, grid: gn, ensemble: r1i1p1f1}
+      - {dataset: CESM2-WACCM, institute: NCAR, grid: gn, ensemble: r1i1p1f1}
       - {dataset: CNRM-CM6-1, grid: gr, ensemble: r1i1p1f2}
+      - {dataset: CNRM-ESM2-1, grid: gr, ensemble: r1i1p1f2}
+      - {dataset: GFDL-CM4, grid: gr1, ensemble: r1i1p1f1}
       - {dataset: GISS-E2-1-G, grid: gn, ensemble: r1i1p1f1}
+      - {dataset: GISS-E2-1-H, grid: gn, ensemble: r1i1p1f1}
+      - {dataset: IPSL-CM6A-LR, grid: gr, ensemble: r15i1p1f1}
       - {dataset: MIROC6, grid: gn, ensemble: r1i1p1f1}
       - {dataset: MRI-ESM2-0, grid: gn, ensemble: r1i1p1f1}
       - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
@@ -207,9 +229,16 @@ diagnostics:
         project: CMIP6
     additional_datasets:
       - {dataset: BCC-CSM2-MR, grid: gn, ensemble: r1i1p1f1}
+      - {dataset: BCC-ESM1, grid: gn, ensemble: r1i1p1f1}
+      - {dataset: CAMS-CSM1-0, grid: gn, ensemble: r1i1p1f1}
+      - {dataset: CESM2, grid: gn, ensemble: r1i1p1f1}
+      - {dataset: CESM2-WACCM, institute: NCAR, grid: gn, ensemble: r1i1p1f1}
       - {dataset: CNRM-CM6-1, grid: gr, ensemble: r1i1p1f2}
+      - {dataset: CNRM-ESM2-1, grid: gr, ensemble: r1i1p1f2}
+      - {dataset: GFDL-CM4, grid: gr1, ensemble: r1i1p1f1}
       - {dataset: GISS-E2-1-G, grid: gn, ensemble: r1i1p1f1}
-      - {dataset: IPSL-CM6A-LR, grid: gr, ensemble: r2i1p1f1}
+      - {dataset: GISS-E2-1-H, grid: gn, ensemble: r1i1p1f1}
+      - {dataset: IPSL-CM6A-LR, grid: gr, ensemble: r15i1p1f1}
       - {dataset: MIROC6, grid: gn, ensemble: r1i1p1f1}
       - {dataset: MRI-ESM2-0, grid: gn, ensemble: r1i1p1f1}
       - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
@@ -239,8 +268,16 @@ diagnostics:
         additional_datasets:
           - {dataset: HadISST, project: OBS, type: reanaly, version: 1, tier: 2}
           - {dataset: BCC-CSM2-MR, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: BCC-ESM1, grid: gn, ensemble: r2i1p1f1}
+#          - {dataset: CAMS-CSM1-0, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: CESM2, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: CESM2-WACCM, institute: NCAR, grid: gn, ensemble: r1i1p1f1}
           - {dataset: CNRM-CM6-1, grid: gr, ensemble: r1i1p1f2}
+          - {dataset: CNRM-ESM2-1, grid: gr, ensemble: r1i1p1f2}
+          - {dataset: GFDL-CM4, grid: gr1, ensemble: r1i1p1f1}
           - {dataset: GISS-E2-1-G, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: GISS-E2-1-H, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: IPSL-CM6A-LR, grid: gr, ensemble: r1i1p1f1}
           - {dataset: MIROC6, grid: gn, ensemble: r1i1p1f1}
           - {dataset: MRI-ESM2-0, grid: gn, ensemble: r1i1p1f1}
       hur:
@@ -255,8 +292,16 @@ diagnostics:
           - {dataset: ERA-Interim, project: OBS, type: reanaly,
              version: 1, tier: 3}
           - {dataset: BCC-CSM2-MR, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: BCC-ESM1, grid: gn, ensemble: r2i1p1f1}
+#          - {dataset: CAMS-CSM1-0, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: CESM2, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: CESM2-WACCM, institute: NCAR, grid: gn, ensemble: r1i1p1f1}
           - {dataset: CNRM-CM6-1, grid: gr, ensemble: r1i1p1f2}
+          - {dataset: CNRM-ESM2-1, grid: gr, ensemble: r1i1p1f2}
+          - {dataset: GFDL-CM4, grid: gr1, ensemble: r1i1p1f1}
           - {dataset: GISS-E2-1-G, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: GISS-E2-1-H, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: IPSL-CM6A-LR, grid: gr, ensemble: r15i1p1f1}
           - {dataset: MIROC6, grid: gn, ensemble: r1i1p1f1}
           - {dataset: MRI-ESM2-0, grid: gn, ensemble: r1i1p1f1}
       rsut:
@@ -270,8 +315,16 @@ diagnostics:
           - {dataset: CERES-EBAF, project: obs4mips, level: L3B,
              version: Ed2-7, tier: 1}
           - {dataset: BCC-CSM2-MR, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: BCC-ESM1, grid: gn, ensemble: r2i1p1f1}
+#          - {dataset: CAMS-CSM1-0, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: CESM2, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: CESM2-WACCM, institute: NCAR, grid: gn, ensemble: r1i1p1f1}
           - {dataset: CNRM-CM6-1, grid: gr, ensemble: r1i1p1f2}
+          - {dataset: CNRM-ESM2-1, grid: gr, ensemble: r1i1p1f2}
+          - {dataset: GFDL-CM4, grid: gr1, ensemble: r1i1p1f1}
           - {dataset: GISS-E2-1-G, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: GISS-E2-1-H, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: IPSL-CM6A-LR, grid: gr, ensemble: r1i1p1f1}
           - {dataset: MIROC6, grid: gn, ensemble: r1i1p1f1}
           - {dataset: MRI-ESM2-0, grid: gn, ensemble: r1i1p1f1}
       rsutcs:
@@ -285,8 +338,16 @@ diagnostics:
           - {dataset: CERES-EBAF, project: obs4mips, level: L3B,
              version: Ed2-7, tier: 1}
           - {dataset: BCC-CSM2-MR, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: BCC-ESM1, grid: gn, ensemble: r2i1p1f1}
+#          - {dataset: CAMS-CSM1-0, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: CESM2, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: CESM2-WACCM, institute: NCAR, grid: gn, ensemble: r1i1p1f1}
           - {dataset: CNRM-CM6-1, grid: gr, ensemble: r1i1p1f2}
+          - {dataset: CNRM-ESM2-1, grid: gr, ensemble: r1i1p1f2}
+          - {dataset: GFDL-CM4, grid: gr1, ensemble: r1i1p1f1}
           - {dataset: GISS-E2-1-G, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: GISS-E2-1-H, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: IPSL-CM6A-LR, grid: gr, ensemble: r1i1p1f1}
           - {dataset: MIROC6, grid: gn, ensemble: r1i1p1f1}
           - {dataset: MRI-ESM2-0, grid: gn, ensemble: r1i1p1f1}
       rsdt:
@@ -300,8 +361,16 @@ diagnostics:
           - {dataset: CERES-EBAF, project: obs4mips, level: L3B,
              version: Ed2-7, tier: 1}
           - {dataset: BCC-CSM2-MR, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: BCC-ESM1, grid: gn, ensemble: r2i1p1f1}
+#          - {dataset: CAMS-CSM1-0, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: CESM2, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: CESM2-WACCM, institute: NCAR, grid: gn, ensemble: r1i1p1f1}
           - {dataset: CNRM-CM6-1, grid: gr, ensemble: r1i1p1f2}
+          - {dataset: CNRM-ESM2-1, grid: gr, ensemble: r1i1p1f2}
+          - {dataset: GFDL-CM4, grid: gr1, ensemble: r1i1p1f1}
           - {dataset: GISS-E2-1-G, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: GISS-E2-1-H, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: IPSL-CM6A-LR, grid: gr, ensemble: r1i1p1f1}
           - {dataset: MIROC6, grid: gn, ensemble: r1i1p1f1}
           - {dataset: MRI-ESM2-0, grid: gn, ensemble: r1i1p1f1}
     scripts:
