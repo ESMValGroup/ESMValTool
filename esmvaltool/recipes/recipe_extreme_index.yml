@@ -7,10 +7,10 @@ documentation:
     coldwave, heavy precipitation, drought and high wind.
 
   authors:
-    - hunt_al
-    - pere_nu
-    - manu_ni
-    - caro_lo
+    - hunter_alasdair
+    - perez-zanon_nuria
+    - manubens_nicolau
+    - caron_louis-philippe
 
   projects:
     - c3s-magic
@@ -49,7 +49,7 @@ diagnostics:
 
     scripts:
       metric:
-        script: magic_bsc/extreme_index.r
+        script: magic_bsc/extreme_index.R
 
         weight_t90p: 0.2
         weight_t10p: 0.2

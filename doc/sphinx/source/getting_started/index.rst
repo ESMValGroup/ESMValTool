@@ -2,8 +2,11 @@
 Getting started
 #######################
 
-.. include:: install.inc
-.. include:: config_user.inc
-.. include:: inputdata.inc
-.. include:: running.inc
-.. include:: outputdata.inc
+.. toctree::
+   :maxdepth: 1
+
+    Installing ESMValTool <install>
+    Configuring ESMValTool <config_user>
+    Acquiring input data <inputdata>
+    Running ESMValTool <running>
+    Inspecting the output <outputdata>

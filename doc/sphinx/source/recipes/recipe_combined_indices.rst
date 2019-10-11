@@ -26,7 +26,7 @@ Recipes are stored in recipes/
 
 Diagnostics are stored in diag_scripts/magic_bsc/
 
-* combined_indices.r : calculates the area-weighted means and multi-model means, with or without weights
+* combined_indices.R : calculates the area-weighted means and multi-model means, with or without weights
 
 
 
@@ -49,7 +49,7 @@ User setting files are stored in recipes/
 Variables
 ---------
 
-* psl, tasmax, tasmin, pr or sfcWind (atmos, monthly, longitude, latitude, time)
+* psl (atmos, monthly, longitude, latitude, time)
 * tos (ocean, monthly, longitude, latitude, time)
 
 

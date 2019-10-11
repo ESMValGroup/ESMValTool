@@ -6,10 +6,10 @@ documentation:
     Calculate the Pearsons r correlation coefficient over specified dimensions.
     
   authors:
-    - ande_bo
+    - andela_bouwe
 
   maintainer:
-    - ande_bo
+    - andela_bouwe
     
   projects:
     - c3s-magic

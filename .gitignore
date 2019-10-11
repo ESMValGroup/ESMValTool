@@ -84,6 +84,7 @@ test-reports/
 
 # Build folder
 doc/sphinx/build
+doc/sphinx/source/_sidebar.rst.inc
 doc/sphinx/source/gallery.rst
 
 # Data files
@@ -99,3 +100,5 @@ doc/sphinx/source/gallery.rst
 
 # ESMF log files
 *.ESMF_LogFile
+.Rproj.user
+esmvaltool.Rproj
