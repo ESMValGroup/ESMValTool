@@ -201,12 +201,11 @@ begin
     if ((dim_seas .eq. 1) .and. \
         (diag_script_info@time_avg .eq. "annualclim")) then
       var_reg(imod, 0, :, :) = (/data1/)
-    else if ((dim_seas .eq. 1) .and. \
-             (diag_script_info@time_avg .eq. "seasonalclim")) then
+    elseif ((dim_seas .eq. 1) .and. \
+            (diag_script_info@time_avg .eq. "seasonalclim")) then
       var_reg(imod, 0, :, :) = (/data1(diag_script_info@seasons, :, :)/)
     else
       var_reg(imod, :, :, :) = (/data1(diag_script_info@seasons, :, :)/)
-    end if
     end if
     if (isatt(diag_script_info, "iavmode")) then
       if (diag_script_info@iavmode .eq. "each") then
@@ -225,8 +224,8 @@ begin
           ; Average over longitudes for zonal mean
           iav_zon = dim_avg_n_Wrap(iav_native, 2)
           iav(imod, 0, :, :) = iav_zon
-        else if ((dim_seas .eq. 1) .and. \
-                 (diag_script_info@time_avg .eq. "seasonalclim")) then
+        elseif ((dim_seas .eq. 1) .and. \
+                (diag_script_info@time_avg .eq. "seasonalclim")) then
           ; Average over longitudes for zonal mean
           iav_zon = dim_avg_n_Wrap(iav_native, 3)
           iav(imod, 0, :, :) = iav_zon(diag_script_info@seasons, :, :)
@@ -234,7 +233,6 @@ begin
           ; Average over longitudes for zonal mean
           iav_zon = dim_avg_n_Wrap(iav_native, 3)
           iav(imod, :, :, :) = iav_zon(diag_script_info@seasons, :, :)
-        end if
         end if
       end if
     end if
@@ -246,7 +244,7 @@ begin
       ; calculate multi-model mean of iav
       tmp_pow = dim_avg_n(iav ^ 2, 0)
       natvar_mmm = rm_single_dims(tmp_pow * sqrt(2.))
-    else if (diag_script_info@iavmode .eq. "mmm") then
+    elseif (diag_script_info@iavmode .eq. "mmm") then
       log_info("Read precalculated natural variability for multi-model")
       ; read already calculated mmm iav
       natvar_file = addfile(input_dir + "/" + \
@@ -259,15 +257,13 @@ begin
         tmp = natvar_mmm
         delete(natvar_mmm)
         natvar_mmm = rm_single_dims(tmp(diag_script_info@seasons, :, :))
-      else if (diag_script_info@time_avg .eq. "annualclim") then
+      elseif (diag_script_info@time_avg .eq. "annualclim") then
         tmp = natvar_mmm
         delete(natvar_mmm)
         natvar_mmm = rm_single_dims(tmp)
       end if
-      end if
     else
       error_msg("f", DIAG_SCRIPT, "", "Error: This iavmode is not know")
-    end if
     end if
   else
     log_info("Read precalculated natural variability for multi-model")
@@ -282,11 +278,10 @@ begin
       tmp = natvar_mmm
       delete(natvar_mmm)
       natvar_mmm = rm_single_dims(tmp(diag_script_info@seasons, :, :))
-    else if (diag_script_info@time_avg .eq. "annualclim") then
+    elseif (diag_script_info@time_avg .eq. "annualclim") then
       tmp = natvar_mmm
       delete(natvar_mmm)
       natvar_mmm = rm_single_dims(tmp)
-    end if
     end if
   end if
   ; ##############################################

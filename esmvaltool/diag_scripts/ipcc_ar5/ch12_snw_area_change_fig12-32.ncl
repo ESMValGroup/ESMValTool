@@ -48,16 +48,14 @@ begin
     var_snw = var0
     info_items = info_items0
     idx_snw = 0
-  else if (var1 .eq. "snw") then
+  elseif (var1 .eq. "snw") then
     var_snw = var1
     info_items = info_items1
     idx_snw = 1
-  else if (var2 .eq. "snw") then
+  elseif (var2 .eq. "snw") then
     var_snw = var2
     info_items = info_items2
     idx_snw = 2
-  end if
-  end if
   end if
   dim_MOD = ListCount(info_items)
 
@@ -132,32 +130,28 @@ begin
     land_sea_sftlf = read_data(info_items0[imod])
     var_sftlf = var0
     info_items_sftlf = info_items0
-  else if (var1 .eq. "sftlf") then
+  elseif (var1 .eq. "sftlf") then
     land_sea_sftlf = read_data(info_items1[imod])
     var_sftlf = var1
     info_items_sftlf = info_items1
-  else if (var2 .eq. "sftlf") then
+  elseif (var2 .eq. "sftlf") then
     land_sea_sftlf = read_data(info_items2[imod])
     var_sftlf = var2
     info_items_sftlf = info_items2
-  end if
-  end if
   end if
 
   if (var0 .eq. "sftgif") then
     land_ice_sftgif = read_data(info_items0[imod])
     var_sftgif = var0
     info_items_sftgif = info_items0
-  else if (var1 .eq. "sftgif") then
+  elseif (var1 .eq. "sftgif") then
     land_ice_sftgif = read_data(info_items1[imod])
     var_sftgif = var1
     info_items_sftgif = info_items1
-  else if (var2 .eq. "sftgif") then
+  elseif (var2 .eq. "sftgif") then
     land_ice_sftgif = read_data(info_items2[imod])
     var_sftgif = var2
     info_items_sftgif = info_items2
-  end if
-  end if
   end if
   sftifl = land_sea_sftlf - land_ice_sftgif
 
@@ -479,10 +473,9 @@ begin
       do r = 0, ListCount(item_runs) - 1
         if (item_runs[r]@end_year .gt. toint(diag_script_info@eyears(p))) then
           ListAppend(nrp1, item_runs[r])
-        else if \
-          (item_runs[r]@end_year .eq. toint(diag_script_info@eyears(p))) then
+        elseif (item_runs[r]@end_year .eq. \
+                toint(diag_script_info@eyears(p))) then
           ListAppend(nrp2, item_runs[r])
-        end if
         end if
       end do
       print(nrp1)
@@ -533,23 +526,14 @@ begin
                        "-" + str_spread + "std", \
                        "mean", "+" + str_spread + "std", \
                        "-" + str_spread + "std"/)
-  else if (dim_scen .eq. 2) then
+  elseif (dim_scen .eq. 2) then
     to_plot&metric = (/"mean", "+" + str_spread + "std", \
                        "-" + str_spread + "std", \
                        "mean", "+" + str_spread + "std", \
                        "-" + str_spread + "std", \
                        "mean", "+" + str_spread + "std", \
                        "-" + str_spread + "std"/)
-  else if (dim_scen .eq. 3) then
-    to_plot&metric = (/"mean", "+" + str_spread + "std", \
-                       "-" + str_spread + "std", \
-                       "mean", "+" + str_spread + "std", \
-                       "-" + str_spread + "std", \
-                       "mean", "+" + str_spread + "std", \
-                       "-" + str_spread + "std", \
-                       "mean", "+" + str_spread + "std", \
-                       "-" + str_spread + "std"/)
-  else if (dim_scen .eq. 4) then
+  elseif (dim_scen .eq. 3) then
     to_plot&metric = (/"mean", "+" + str_spread + "std", \
                        "-" + str_spread + "std", \
                        "mean", "+" + str_spread + "std", \
@@ -557,12 +541,18 @@ begin
                        "mean", "+" + str_spread + "std", \
                        "-" + str_spread + "std", \
                        "mean", "+" + str_spread + "std", \
+                       "-" + str_spread + "std"/)
+  elseif (dim_scen .eq. 4) then
+    to_plot&metric = (/"mean", "+" + str_spread + "std", \
+                       "-" + str_spread + "std", \
+                       "mean", "+" + str_spread + "std", \
+                       "-" + str_spread + "std", \
+                       "mean", "+" + str_spread + "std", \
+                       "-" + str_spread + "std", \
+                       "mean", "+" + str_spread + "std", \
                        "-" + str_spread + "std", \
                        "mean", "+" + str_spread + "std", \
                        "-" + str_spread + "std"/)
-  end if
-  end if
-  end if
   end if
   to_plot!1 = "year"
   to_plot&year = ispan(toint(syears(0)), toint(eyears(nperiods - 1)), 1)

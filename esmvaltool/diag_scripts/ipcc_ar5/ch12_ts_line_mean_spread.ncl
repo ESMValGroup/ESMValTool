@@ -407,10 +407,9 @@ begin
       do r = 0, ListCount(item_runs) - 1
         if (item_runs[r]@end_year .gt. toint(diag_script_info@eyears(p))) then
           ListAppend(nrp1, item_runs[r])
-        else if \
-          (item_runs[r]@end_year .eq. toint(diag_script_info@eyears(p))) then
+        elseif (item_runs[r]@end_year .eq. \
+                toint(diag_script_info@eyears(p))) then
           ListAppend(nrp2, item_runs[r])
-        end if
         end if
       end do
       tmp = ListCount(nrp1)
@@ -462,13 +461,13 @@ begin
                        str_spread + "std", "mean", "+" + \
                        str_spread + "std", "-" + str_spread + \
                        "std"/)
-  else if (dim_scen .eq. 2) then
+  elseif (dim_scen .eq. 2) then
     to_plot&metric = (/"mean", "+" + str_spread + "std", "-" + \
                        str_spread + "std", "mean", "+" + \
                        str_spread + "std", "-" + str_spread + \
                        "std", "mean", "+" + str_spread + "std", "-" \
                        + str_spread + "std"/)
-  else if (dim_scen .eq. 3) then
+  elseif (dim_scen .eq. 3) then
     to_plot&metric = (/"mean", "+" + str_spread + "std", "-" + \
                        str_spread + "std", "mean", "+" +  \
                        str_spread + "std", "-" + str_spread + \
@@ -476,7 +475,7 @@ begin
                        str_spread + "std", "mean", "+" + \
                        str_spread + "std", "-" + str_spread + \
                        "std"/)
-  else if (dim_scen .eq. 4) then
+  elseif (dim_scen .eq. 4) then
     to_plot&metric = (/"mean", "+" + str_spread + "std", "-" + \
                        str_spread + "std", "mean", "+" + \
                        str_spread + "std", "-" + str_spread + \
@@ -485,9 +484,6 @@ begin
                        str_spread + "std", "-" + str_spread + \
                        "std", "mean", "+" + str_spread + "std", "-" + \
                        str_spread + "std"/)
-  end if
-  end if
-  end if
   end if
 
   to_plot!1 = "year"

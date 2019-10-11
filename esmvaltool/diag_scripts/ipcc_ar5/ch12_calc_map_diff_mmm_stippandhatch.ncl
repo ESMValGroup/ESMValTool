@@ -203,13 +203,12 @@ begin
         if ((dim_seas .eq. 1) .and. \
             (diag_script_info@time_avg .eq. "annualclim")) then
           iav(imod, 0, :, :) = iav_file->iav
-        else if ((dim_seas .eq. 1) .and. \
-                 (diag_script_info@time_avg .eq. "seasonalclim")) then
+        elseif ((dim_seas .eq. 1) .and. \
+                (diag_script_info@time_avg .eq. "seasonalclim")) then
           tmp_iav = iav_file->iav
           iav(imod, 0, :, :) = tmp_iav(diag_script_info@seasons, :, :)
         else
           iav(imod, :, :, :) = iav_file->iav
-        end if
         end if
       end if
     end if
@@ -220,7 +219,7 @@ begin
       ; Calculate multi-model mean of iav
       log_info("Calculate multi-model mean of natural variability")
       natvar_mmm = rm_single_dims(dim_avg_n(iav, 0) * sqrt(2.))
-    else if (diag_script_info@iavmode .eq. "mmm") then
+    elseif (diag_script_info@iavmode .eq. "mmm") then
       log_info("Read precalculated natural variability for multi-model")
       natvar_file = addfile(input_dir + "/" + "IAV_mmm_piControl_" + \
                             var0 + "_" + \
@@ -231,15 +230,13 @@ begin
         tmp = natvar_mmm
         delete(natvar_mmm)
         natvar_mmm = rm_single_dims(tmp(diag_script_info@seasons, :, :))
-      else if (diag_script_info@time_avg .eq. "annualclim") then
+      elseif (diag_script_info@time_avg .eq. "annualclim") then
         tmp = natvar_mmm
         delete(natvar_mmm)
         natvar_mmm = rm_single_dims(tmp)
       end if
-      end if
     else
       error_msg("f", DIAG_SCRIPT, "", "Error: This iavmode is not know")
-    end if
     end if
   else
     ; Read already calculated mmm iav as default
@@ -253,11 +250,10 @@ begin
       tmp = natvar_mmm
       delete(natvar_mmm)
       natvar_mmm = rm_single_dims(tmp(diag_script_info@seasons, :, :))
-    else if (diag_script_info@time_avg .eq. "annualclim") then
+    elseif (diag_script_info@time_avg .eq. "annualclim") then
       tmp = natvar_mmm
       delete(natvar_mmm)
       natvar_mmm = rm_single_dims(tmp)
-    end if
     end if
   end if
   data2!0 = "models"

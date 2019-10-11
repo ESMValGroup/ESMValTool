@@ -137,7 +137,7 @@ begin
       IAV_mmm = new((/dim_seas, dimsizes(A0&lat), \
                      dimsizes(A0&lon)/), typeof(A0), Fill)
     end if
-  else if (ndim .eq. 4) then
+  elseif (ndim .eq. 4) then
     data1 = new((/dim_MOD, dim_seas, dimsizes(A0&$lev_name$), \
                  dimsizes(A0&lat), dimsizes(A0&lon)/), \
                 typeof(A0), Fill)
@@ -147,7 +147,6 @@ begin
                      dimsizes(A0&lat)/), \
                     typeof(A0), Fill)
     end if
-  end if
   end if
 
   do imod = 0, dim_MOD - 1
@@ -203,11 +202,10 @@ begin
       if (ndim .eq. 3) then
         data_tmp = new((/nr_periods, dim_seas, dimsizes(A0&$lat_name$), \
                         dimsizes(A0&$lon_name$)/), typeof(A0), Fill)
-      else if (ndim .eq. 4) then
+      elseif (ndim .eq. 4) then
         data_tmp = new((/nr_periods, dim_seas, dimsizes(A0&$lev_name$), \
                         dimsizes(A0&$lat_name$), dimsizes(A0&$lon_name$)/), \
                        typeof(A0), Fill)
-      end if
       end if
 
       do per = 0, nr_periods - 1
@@ -223,22 +221,20 @@ begin
             data_tmp(per, 0, :, :) = \
               time_operations(A0, start_yrs(per), new_end_yr, "average", \
                               diag_script_info@time_avg, True)
-          else if (ndim .eq. 4) then
+          elseif (ndim .eq. 4) then
             data_tmp(per, 0, :, :, :) = \
               time_operations(A0, start_yrs(per), new_end_yr, "average", \
                               diag_script_info@time_avg, True)
-          end if
           end if
         else
           if (ndim .eq. 3) then
             data_tmp(per, :, :, :) = \
               time_operations(A0, start_yrs(per), new_end_yr, "average", \
                               diag_script_info@time_avg, True)
-          else if (ndim .eq. 4) then
+          elseif (ndim .eq. 4) then
             data_tmp(per, :, :, :, :) = \
               time_operations(A0, start_yrs(per), new_end_yr, "average", \
                               diag_script_info@time_avg, True)
-          end if
           end if
         end if
       end do
@@ -249,8 +245,8 @@ begin
           tmp = data_dtr
           delete(data_dtr)
           data_dtr = doubletofloat(tmp)
-        else if ((typeof(data_dtr) .eq. "float") .and. \
-                 (typeof(data1) .eq. "double")) then
+        elseif ((typeof(data_dtr) .eq. "float") .and. \
+                (typeof(data1) .eq. "double")) then
           tmp = data_dtr
           delete(data_dtr)
           data_dtr = floattodouble(tmp)
@@ -259,13 +255,11 @@ begin
                     "data_dtr has a different type than data1 which is " + \
                     "neither float or double.")
         end if
-        end if
       end if
       if (ndim .eq. 3) then
         data1(imod, :, :, :) = dim_stddev_n(data_dtr, 0)
-      else if (ndim .eq. 4) then
+      elseif (ndim .eq. 4) then
         data1(imod, :, :, :, :) = dim_stddev_n(data_dtr, 0)
-      end if
       end if
       delete(start_yrs)
       delete(data_tmp)
@@ -276,9 +270,8 @@ begin
                                           "quadratic")
       if (ndim .eq. 3) then
         data1(imod, :, :, :) = data1_tmp
-      else if (ndim .eq. 4) then
+      elseif (ndim .eq. 4) then
         data1(imod, :, :, :, :) = data1_tmp
-      end if
       end if
     end if
     delete(start_yr)
@@ -301,7 +294,7 @@ begin
           data1!2 = "lat"
           data1!3 = "lon"
           data1&lon = A0&lon
-        else if (ndim .eq. 4) then
+        elseif (ndim .eq. 4) then
           data1!0 = "models"
           data1!1 = "season"
           data1!2 = lev_name
@@ -309,7 +302,6 @@ begin
           data1!3 = "lat"
           data1!4 = "lon"
           data1&lon = A0&lon
-        end if
         end if
         if (diag_script_info@time_avg .eq. "seasonalclim") then
           data1&season = (/ispan(0, dim_seas - 1, 1)/)
@@ -332,16 +324,14 @@ begin
       if (dim_seas .eq. 1) then
         if (ndim .eq. 3) then
           write_data = data1(imod, 0, :, :)
-        else if (ndim .eq. 4) then
+        elseif (ndim .eq. 4) then
           write_data = data1(imod, 0, :, :, :)
-        end if
         end if
       else
         if (ndim .eq. 3) then
           write_data = data1(imod, :, :, :)
-        else if (ndim .eq. 4) then
+        elseif (ndim .eq. 4) then
           write_data = data1(imod, :, :, :, :)
-        end if
         end if
       end if
       ; Function in ~/interface_scripts/auxiliary.ncl
@@ -358,13 +348,12 @@ begin
       if (ndim .eq. 3) then
         IAV_mmm(s, :, :) = \
           rm_single_dims(dim_avg_n(data1(:, s, :, :), 0) * sqrt(2.))
-      else if (ndim .eq. 4) then
+      elseif (ndim .eq. 4) then
         ; Calculate the zonal average
         tmp_zon = dim_avg_n_Wrap(data1, 4)  ; data1(mon, seas, lev, lat, lon)
         ; Calculate multi-model mean
         IAV_mmm(s, :, :) = \
           rm_single_dims(dim_avg_n(tmp_zon(:, s, :, :), 0) * sqrt(2.))
-      end if
       end if
     end do
 
@@ -373,12 +362,11 @@ begin
       IAV_mmm!1 = "lat"
       IAV_mmm!2 = "lon"
       IAV_mmm&lon = A0&lon
-    else if (ndim .eq. 4) then
+    elseif (ndim .eq. 4) then
       IAV_mmm!0 = "season"
       IAV_mmm!1 = lev_name
       IAV_mmm&$lev_name$ = A0&$lev_name$
       IAV_mmm!2 = "lat"
-    end if
     end if
     if (isatt(diag_script_info, "seasons")) then
       IAV_mmm&season = (/ispan(0, dim_seas - 1, 1)/)
