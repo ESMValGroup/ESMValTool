@@ -195,6 +195,7 @@ def _fix_frequency(cube, var):
 
 
 def _get_files(in_dir, var):
+    # Make a dictionary with the keys that are years
     files_dict = defaultdict(list)
     for in_file in var['files']:
         files_lst = sorted(list(Path(in_dir).glob(in_file)))
@@ -306,6 +307,7 @@ def cmorization(in_dir, out_dir, cfg, _):
                                              var, cfg, out_dir)
                     futures[future] = in_file
             if 'files' in var:
+            # Multiple variables case
                 files_dict = _get_files(in_dir, var)
                 for key in files_dict:
                     in_file = files_dict[key]
