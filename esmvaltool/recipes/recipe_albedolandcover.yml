@@ -1,0 +1,64 @@
+# ESMValTool
+---
+documentation:
+  description: |
+    analyzes relationship between landcover and albedo in CMIP models
+  authors:
+    - crezee_bas
+    - lejeune_quentin
+
+preprocessors:
+  pp:
+    custom_order: true
+    regrid:
+      target_grid: 2x2
+      scheme: linear
+    extract_month:
+      month: 7
+    climate_statistics:
+      operator: mean
+    mask_landsea:
+      mask_out: sea
+
+diagnostics:
+  albedolandcover:
+    description: "Multiple linear regression between albedo and xxFrac"
+    variables:
+      treeFrac: &variable_settings
+        preprocessor: pp
+        field: T2Ms
+        mip: Lmon
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 2000
+        end_year: 2004
+        fx_files: [areacella, ]
+        additional_datasets:
+          - {dataset: MPI-ESM-LR}
+      snc:
+        <<: *variable_settings
+        mip: LImon
+      alb:
+        <<: *variable_settings
+        mip: Amon
+        derive: true
+        force_derivation: false
+      cropFrac:
+        <<: *variable_settings
+      grassFrac:
+        <<: *variable_settings
+      shrubFrac:
+        <<: *variable_settings
+      pastureFrac:
+        <<: *variable_settings
+#      albDiffiTr13:
+#        preprocessor: pp
+#        mip: Amon
+#        additional_datasets:
+#          - {dataset: Duveiller2018, project: OBS, tier: 2, version: v2018, start_year: 2010, end_year: 2010, frequency: mon, type: clim}
+    scripts:
+      albedolandcover:
+        script: landclim/albedolandcover.py
+
+
