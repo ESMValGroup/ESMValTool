@@ -26,7 +26,6 @@ diagnostics:
     variables:
       treeFrac: &variable_settings
         preprocessor: pp
-        field: T2Ms
         mip: Lmon
         project: CMIP5
         exp: historical
@@ -59,6 +58,6 @@ diagnostics:
 #          - {dataset: Duveiller2018, project: OBS, tier: 2, version: v2018, start_year: 2010, end_year: 2010, frequency: mon, type: clim}
     scripts:
       albedolandcover:
-        script: landclim/albedolandcover.py
+        script: landcover/albedolandcover.py
 
 
