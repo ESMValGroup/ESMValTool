@@ -108,6 +108,15 @@ begin
   ; Select attributes
   avgstd = project_style(info, diag_script_info, "avgstd")
 
+  ; Create output plot directory
+  if (config_user_info@write_plots) then
+    plot_dir = config_user_info@plot_dir
+    system("mkdir -p " + plot_dir)
+  end if
+
+  ; Plot file type
+  file_type = config_user_info@output_file_type
+
   ; For annotation
   smonths = (/"January", "February", "March", "April", \
               "May", "June", "July", "August", \
@@ -115,16 +124,17 @@ begin
   i2months = sprinti("%0.2i", ispan(1, 12, 1))
 
   ; Output file name specifications (passed to get_wks for output file name)
+  system("mkdir -p " + config_user_info@work_dir)
   if (diag_script_info@month .eq. "A") then
     i2month = "annual"
   else
     i2month = smonths(toint(diag_script_info@month) - 1)
   end if
-  outfile_ext = "extent_" + var0 + "_" \
+  out_ext = "extent_" + var0 + "_" \
     + diag_script_info@region + "_" + i2month + "_" \
     + sprinti("%0.4i", start_year) + "-" \
     + sprinti("%0.4i", end_year)
-  outfile_area = "area_" + var0 + "_" \
+  out_area = "area_" + var0 + "_" \
     + diag_script_info@region + "_" + i2month + "_" \
     + sprinti("%0.4i", start_year) + "-" \
     + sprinti("%0.4i", end_year)
@@ -163,8 +173,6 @@ begin
         l_irreg = False
       end if
     end if
-
-    log_info("Irregular grid --> " + l_irreg)
 
     ; Look for area variable
     if (any(datasets(imod).eq.areadatasets)) then
@@ -286,9 +294,10 @@ begin
     log_info(" Skipping tsline: " + \
              "plot needs at least two time values, has 1")
   else
+
     ; Create plot variables
-    wks_ext = get_wks(0, DIAG_SCRIPT, outfile_ext)
-    wks_area = get_wks(0, DIAG_SCRIPT, outfile_area)
+    wks_ext = gsn_open_wks(file_type, config_user_info@plot_dir + out_ext)
+    wks_area = gsn_open_wks(file_type, config_user_info@plot_dir + out_area)
 
     ; Define plot resources
     res                 = True
@@ -346,34 +355,26 @@ begin
 
     val_ext@var = var0
     val_ext@diag_script = DIAG_SCRIPT
-    if (isatt(wks_ext, "fullname")) then
-      outfile_ext = wks_ext@fullname
-    else
-      outfile_ext = outfile_ext + "." + output_type()
-    end if
     caption_ext = "Timeseries of " + \
       smonths(toint(diag_script_info@month) - 1) + " " + \
       diag_script_info@region + " sea ice extent in " + val_ext@units
-    nc_file_ext = ncdf_write(val_ext, outfile_ext + ".nc")
+    nc_ext = \
+      ncdf_write(val_ext, config_user_info@work_dir + out_ext + ".nc")
 
-    log_provenance(nc_file_ext, outfile_ext, caption_ext, \
+    log_provenance(nc_ext, out_ext, caption_ext, \
                    (/"mean", "stddev", "clim"/), domain, "times", \
                    (/"senftleben_daniel", "gottschaldt_klaus-dirk"/), \
                    "stroeve07grl", infiles)
 
     val_area@var = var0
     val_area@diag_script = DIAG_SCRIPT
-    if (isatt(wks_area, "fullname")) then
-      outfile_area = wks_area@fullname
-    else
-      outfile_area = outfile_area + "." + output_type()
-    end if
     caption_area = "Timeseries of " + \
       smonths(toint(diag_script_info@month) - 1) + " " + \
       diag_script_info@region + " sea ice area in " + val_area@units
-    nc_file_area = ncdf_write(val_area, outfile_area + ".nc")
+    nc_area = \
+      ncdf_write(val_area, config_user_info@work_dir + out_area + ".nc")
 
-    log_provenance(nc_file_area, outfile_area, caption_area, \
+    log_provenance(nc_area, out_area, caption_area, \
                    (/"mean", "stddev", "clim"/), domain, "times", \
                    (/"senftleben_daniel", "gottschaldt_klaus-dirk"/), \
                    "stroeve07grl", infiles)
