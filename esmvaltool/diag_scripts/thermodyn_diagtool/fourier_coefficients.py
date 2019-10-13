@@ -180,7 +180,7 @@ def pr_output_diag(var1, nc_f, fileo, name1):
                                                 ('time', 'plev', 'lat', 'lon'))
         varatts(var1_nc_var, name1)
         var_nc_fid.variables[name1][:, :, :, :] = var1
-        var_nc_fid.close()  # close the new file
+        #var_nc_fid.close()  # close the new file
 
 
 def extr_lat(nc_fid, var_nc_fid, latn):
