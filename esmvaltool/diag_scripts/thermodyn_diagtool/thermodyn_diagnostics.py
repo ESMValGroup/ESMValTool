@@ -337,7 +337,7 @@ def main(cfg):
 	    os.path.isfile(filename) and
 	    filename.split(os.sep)[-2] == 'sftlf'
 	    ][0]
-	aux_file = wdir + '/aux.nc'
+        aux_file = wdir + '/aux.nc'
         te_ymm_file, te_gmean_constant, _, _ = mkthe.init_mkthe(
             model, wdir, filenames, flags)
         te_all[i_m] = te_gmean_constant
