@@ -26,6 +26,7 @@ import os
 import sys
 import warnings
 
+from cartopy import crs # test
 # import cartopy.crs # This line causes a segmentation fault in pylint
 import cartopy.feature as cfeature
 import iris
@@ -217,7 +218,7 @@ def _plot_cube(cube, cfg):
     """Plot the transition cube."""
     # Also plot the transition_cube
     plt.clf()
-    ax = plt.axes(projection=cartopy.crs.PlateCarree())
+    ax = plt.axes(projection=crs.PlateCarree())
     ax.add_feature(cfeature.LAND)
     cnt = iris.quickplot.contourf(cube, levels=np.linspace(-.24, .24, 25),
                                   cmap='bwr')
