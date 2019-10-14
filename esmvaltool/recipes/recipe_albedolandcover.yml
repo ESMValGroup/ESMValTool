@@ -8,7 +8,7 @@ documentation:
     - lejeune_quentin
 
 preprocessors:
-  pp:
+  pp_cmip5:
     custom_order: true
     regrid:
       target_grid: 2x2
@@ -19,13 +19,19 @@ preprocessors:
       operator: mean
     mask_landsea:
       mask_out: sea
+  pp_obs:
+    mask_landsea:
+      mask_out: sea
+    extract_month:
+      month: 7
+
 
 diagnostics:
   albedolandcover:
     description: "Multiple linear regression between albedo and xxFrac"
     variables:
       treeFrac: &variable_settings
-        preprocessor: pp
+        preprocessor: pp_cmip5
         mip: Lmon
         project: CMIP5
         exp: historical
@@ -51,11 +57,11 @@ diagnostics:
         <<: *variable_settings
       pastureFrac:
         <<: *variable_settings
-#      albDiffiTr13:
-#        preprocessor: pp
-#        mip: Amon
-#        additional_datasets:
-#          - {dataset: Duveiller2018, project: OBS, tier: 2, version: v2018, start_year: 2010, end_year: 2010, frequency: mon, type: clim}
+      albDiffiTr13:
+        preprocessor: pp_obs
+        mip: Amon
+        additional_datasets:
+          - {dataset: Duveiller2018, project: OBS, tier: 2, version: v2018, start_year: 2010, end_year: 2010, frequency: mon, type: clim}
     scripts:
       albedolandcover:
         script: landcover/albedolandcover.py
