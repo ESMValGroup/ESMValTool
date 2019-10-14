@@ -26,7 +26,7 @@ import os
 import sys
 import warnings
 
-#import cartopy.crs # This line causes a segmentation fault in pylint
+# import cartopy.crs # This line causes a segmentation fault in pylint
 import cartopy.feature as cfeature
 import iris
 import matplotlib.pyplot as plt
@@ -136,8 +136,8 @@ def _get_reconstructed_albedos(model_data, dia_cfg):
                               dia_cfg['lc3_class']]
                 lc_data = []
                 # Loop over lc_classes
-                for ii in range(3):
-                    current_class = lc_classes[ii]
+                for i_0 in range(3):
+                    current_class = lc_classes[i_0]
                     # First flatten the array
                     lc_flattened = {}
                     for varkey in current_class:
@@ -149,30 +149,30 @@ def _get_reconstructed_albedos(model_data, dia_cfg):
                     if (np.var(lc_sum) > 0. and
                             len(lc_sum) >= dia_cfg['mingc']):
                         lc_data.append(lc_sum)
-                        lc_logical[ii] = True
+                        lc_logical[i_0] = True
                     else:
                         print("Variance zero or not enough\
                                valid data for this landcover class")
-                        lc_logical[ii] = False
+                        lc_logical[i_0] = False
                 # Now the multiple lin reg part
-                xx = np.stack(lc_data)
-                xx = xx.swapaxes(0, 1)
+                x_0 = np.stack(lc_data)
+                x_0 = x_0.swapaxes(0, 1)
                 # Same mask, so shape is fine
-                yy = model_data['alb'].data[islice, jslice].compressed()
+                y_0 = model_data['alb'].data[islice, jslice].compressed()
 
                 # Check that the system is not over_parameterised
-                if len(yy) > np.sum(lc_logical.astype(int)) + 1 and\
+                if len(y_0) > np.sum(lc_logical.astype(int)) + 1 and\
                         np.sum(lc_logical.astype(int)) > 0:
                     # Do multiple linear regression
-                    linreg = linear_model.LinearRegression().fit(xx, yy)
+                    linreg = linear_model.LinearRegression().fit(x_0, y_0)
                     intercept = linreg.intercept_
                     coefficients = linreg.coef_
 
                     # Now loop again and reconstruct albedo's
                     lc_reg = 0
-                    for ii in range(3):
-                        if lc_logical[ii]:
-                            alb_lc[ii, i, j] = intercept\
+                    for i_0 in range(3):
+                        if lc_logical[i_0]:
+                            alb_lc[i_0, i, j] = intercept\
                                 + coefficients[lc_reg] * 100.
                             lc_reg = lc_reg + 1
     return alb_lc
