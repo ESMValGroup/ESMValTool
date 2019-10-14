@@ -220,7 +220,7 @@ def weighted_mean(cube):
     """
     Calculate the weighted mean.
     """
-    assert 0
+    #assert 0
     return cube.data.mean()
 
 
