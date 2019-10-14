@@ -216,12 +216,23 @@ def add_map_subplot(subplot, cube, nspace, title='', cmap=''):
     plt.title(title)
 
 
-def weighted_mean(cube):
+def weighted_mean(cube, fx_fn):
     """
     Calculate the weighted mean.
     """
-    #assert 0
-    return cube.data.mean()
+    fx_cube = iris.load_cube(fx_fn)
+    grid_areas = ''
+    fx_vars = ['areacella', 'areacello']
+    fx_key = ''
+    for fx_var in fx_vars:
+        if fx_fn.find(fx_var) > -1:
+            fx_key = fx_var
+
+    #fx_cube = fx_cube.extract_strict(iris.Constraint(name=fx_key))
+
+    return cube.collapsed(['latitude', 'longitude'],
+                          iris.analysis.MEAN,
+                          weights=fx_cube.data)
 
 
 def make_four_pane_map_plot(
@@ -447,8 +458,7 @@ def make_gwt_map_four_plots(cfg, ):
     do_variable_group_plots=True
     do_threshold_plots=True
 
-    #print('\n', cfg.keys())
-
+    # 
     files_dict = {}
     short_names = set()
     standard_names = {}
@@ -456,17 +466,23 @@ def make_gwt_map_four_plots(cfg, ):
     exps = set()
     variable_groups = set()
     variables = set()
+    mips = set()
     thresholds = {}
-
+    fx_fn = ''
     for fn, details in sorted(metadatas.items()):
         #print(fn, details.keys())
-        short_names.add(details['short_name'])
+        short_name = details['short_name']
+        if short_name not in ['areacella', 'areacello']:
+            short_names.add(details['short_name'])
         standard_names[details['short_name']] = details['standard_name']
         ensembles.add(details['ensemble'])
         exps.add(details['exp'])
         variable_groups.add(details['variable_group'])
-
         unique_key = (details['variable_group'], details['ensemble'])
+        mips.add(details['mip'])
+        if details['mip'] in ['fx', 'Ofx']:
+            fx_fn = fn
+            print('Found FX MIP', fx_fn)
         try:
             files_dict[unique_key].append(fn)
         except:
@@ -495,6 +511,11 @@ def make_gwt_map_four_plots(cfg, ):
             if variable_group == historical_group:
                 continue
 
+            fx_group = variable_group[:variable_group.find('_')] +'_fx'
+            if variable_group == fx_group:
+                continue
+
+
             print('Plotting:', ensemble, variable_group)
             variable, exp, threshold = split_variable_groups(variable_group)
             variables.add(variable)
@@ -516,7 +537,7 @@ def make_gwt_map_four_plots(cfg, ):
                 cube_hist = diagtools.bgc_units(cube_hist, details['short_name'])
 
             cube_anomaly = cube - cube_hist
-            detrended_cube_anomaly = cube_anomaly - weighted_mean(cube_anomaly)
+            detrended_cube_anomaly = cube_anomaly - weighted_mean(cube_anomaly, fx_fn)
 
             ssp_cubes[variable_group][ensemble] = cube
             hist_cubes[variable_group][ensemble] = cube_hist
@@ -539,6 +560,10 @@ def make_gwt_map_four_plots(cfg, ):
 
             historical_group = variable_group[:variable_group.find('_')] +'_historical'
             if variable_group == historical_group:
+                continue
+
+            fx_group = variable_group[:variable_group.find('_')] +'_fx'
+            if variable_group == fx_group:
                 continue
 
             cube_ssp = ssp_cubes[variable_group][ensemble]
@@ -570,6 +595,10 @@ def make_gwt_map_four_plots(cfg, ):
         # guess historical group name:
         historical_group = variable_group[:variable_group.find('_')] + '_historical'
         if variable_group == historical_group:
+            continue
+
+        fx_group = variable_group[:variable_group.find('_')] +'_fx'
+        if variable_group == fx_group:
             continue
 
         # Calculate ensemble means
@@ -636,8 +665,6 @@ def make_gwt_map_four_plots(cfg, ):
             )
 
 
-
-
 def make_gwt_map_plots(cfg, detrend = True,):
     """
     Make plots
@@ -669,13 +696,20 @@ def make_gwt_map_plots(cfg, detrend = True,):
     thresholds = {}
 
     for fn, details in sorted(metadatas.items()):
-        #print(fn, details.keys())
-        short_names.add(details['short_name'])
+        short_name = details['short_name']
+        if short_name not in ['areacella', 'areacello']:
+            short_names.add(details['short_name'])
+
         ensembles.add(details['ensemble'])
         exps.add(details['exp'])
         variable_groups.add(details['variable_group'])
 
         unique_key = (details['variable_group'], details['ensemble'])
+
+        if details['mip'] in ['fx', 'Ofx']:
+            fx_fn = fn
+            print('Found FX MIP', fx_fn)
+
         try:
             files_dict[unique_key].append(fn)
         except:
@@ -692,6 +726,10 @@ def make_gwt_map_plots(cfg, detrend = True,):
             # guess historical group name:
             historical_group = variable_group[:variable_group.find('_')] +'_historical'
             if variable_group == historical_group:
+                continue
+
+            fx_group = variable_group[:variable_group.find('_')] +'_fx'
+            if variable_group == fx_group:
                 continue
 
             print('Plotting:', ensemble, variable_group)
@@ -718,7 +756,7 @@ def make_gwt_map_plots(cfg, detrend = True,):
             cube_anomaly = cube - cube_hist
 
             if detrend:
-                cube_anomaly = cube_anomaly - weighted_mean(cube_anomaly)
+                cube_anomaly = cube_anomaly - weighted_mean(cube_anomaly, fx_fn)
 
             anomaly_cubes[variable_group][ensemble] = cube_anomaly
             try:
@@ -741,6 +779,10 @@ def make_gwt_map_plots(cfg, detrend = True,):
         # guess historical group name:
         historical_group = variable_group[:variable_group.find('_')] + '_historical'
         if variable_group == historical_group:
+            continue
+
+        fx_group = variable_group[:variable_group.find('_')] +'_fx'
+        if variable_group == fx_group:
             continue
 
         cube_list = []

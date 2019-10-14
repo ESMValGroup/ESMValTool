@@ -1,9 +1,12 @@
 # ESMValTool
-# recipe_gwt_temp.yml
+# recipe_gwt_tas.yml
 ---
 documentation:
   description: |
-    Recipe to calcualte threshold years for UKESM Global warming thresholds.
+    Recipe to calcualte changes in behaviour at specific years for the UKESM
+    Land surface Global warming thresholds.
+
+    The years were calculated using recipe_gwt_temp.yml
 
   authors:
     - demora_lee
@@ -27,9 +30,17 @@ diagnostics:
   # --------------------------------------------------
   # Time series diagnostics
   # --------------------------------------------------
-  diag_timeseries:
+  tas_maps:
     variables:
       # Procedurally generated recipe contents:
+      ################################################
+      # tas
+
+      tas_fx:
+        mip: fx
+        short_name: areacella
+        additional_datasets:
+          - {dataset: UKESM1-0-LL, project: CMIP6, mip: fx, exp: piControl, ensemble: r1i1p1f2, grid: gn, start_year: 1850, end_year: 1850,}
 
       tas_historical:
         short_name: tas
@@ -242,5 +253,5 @@ diagnostics:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Amon, exp: [historical, ssp585], ensemble: r8i1p1f2, start_year: 2076, end_year: 2096, grid: gn}
 
     scripts:
-      GWT_times_series:
+      tas_maps_diagnostic:
         script: ocean/diagnostic_maps_gwt.py
