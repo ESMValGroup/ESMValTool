@@ -1,5 +1,5 @@
 # ESMValTool
-# recipe_gwt_land.yml
+# recipe_gwt_land_gpp.yml
 ---
 documentation:
   description: |
@@ -22,13 +22,9 @@ documentation:
 
 preprocessors:
   prep_1:
-    custom_order: true
     climate_statistics:
       operator: mean
       period: full
-    # multi_model_statistics:
-    #   span: full
-    #   statistics: [mean ]
 
 diagnostics:
   # --------------------------------------------------
@@ -37,7 +33,14 @@ diagnostics:
   gpp_maps:
     variables:
       # Procedurally generated recipe contents:
-      ##############################################
+      ################################################
+
+      gppfrac_fx:
+        mip: fx
+        short_name: areacella
+        additional_datasets:
+          - {dataset: UKESM1-0-LL, project: CMIP6, mip: fx, exp: piControl, ensemble: r1i1p1f2, grid: gn, start_year: 1850, end_year: 1850,}
+
       # gpp
       gpp_historical:
         short_name: gpp

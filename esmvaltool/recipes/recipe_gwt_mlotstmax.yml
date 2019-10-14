@@ -3,8 +3,10 @@
 ---
 documentation:
   description: |
-    Recipe to calcualte multi years means for UKESM Global warming thresholds
-    (mlotstmax).
+    Recipe to calcualte changes in behaviour at specific years for the UKESM
+    surface Global warming thresholds.
+
+    The years were calculated using recipe_gwt_temp.yml
 
   authors:
     - demora_lee
@@ -30,9 +32,15 @@ diagnostics:
   # --------------------------------------------------
   # Time series diagnostics
   # --------------------------------------------------
-  diag_mlotstmax:
+  mlotstmax_maps:
     variables:
       # Procedurally generated recipe contents:
+
+      mlotstmax_fx:
+        mip: Ofx
+        short_name: areacello
+        additional_datasets:
+          - {dataset: UKESM1-0-LL, project: CMIP6, exp: piControl, ensemble: r1i1p1f2, grid: gn, start_year: 1850, end_year: 1850,}
 
       mlotstmax_historical:
         short_name: mlotstmax
@@ -245,5 +253,5 @@ diagnostics:
          - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp585], ensemble: r8i1p1f2, start_year: 2076, end_year: 2096, grid: gn}
 
     scripts:
-      diag_maps_mlotstmax:
+      mlotstmax_maps_diagnostic:
         script: ocean/diagnostic_maps_gwt.py

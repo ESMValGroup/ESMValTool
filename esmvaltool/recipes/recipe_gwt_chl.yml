@@ -3,8 +3,10 @@
 ---
 documentation:
   description: |
-    Recipe to calcualte multi years means for UKESM Global warming thresholds
-    (chl).
+    Recipe to calcualte changes in behaviour at specific years for the UKESM
+    surface Global warming thresholds.
+
+    The years were calculated using recipe_gwt_temp.yml
 
   authors:
     - demora_lee
@@ -44,6 +46,13 @@ diagnostics:
   diag_chl:
     variables:
       # Procedurally generated recipe contents:
+
+      chl_fx:
+        mip: Ofx
+        short_name: areacello
+        additional_datasets:
+          - {dataset: UKESM1-0-LL, project: CMIP6, exp: piControl, ensemble: r1i1p1f2, grid: gn, start_year: 1850, end_year: 1850,}
+
       chl_historical:
         short_name: chl
         preprocessor: prep_1
@@ -255,5 +264,5 @@ diagnostics:
         #  - {dataset: UKESM1-0-LL, project: CMIP6, mip: Omon, exp: [historical, ssp585], ensemble: r8i1p1f2, start_year: 2076, end_year: 2096, grid: gn}
 
     scripts:
-      diag_maps_chl:
+      chl_maps_diagnostic:
         script: ocean/diagnostic_maps_gwt.py
