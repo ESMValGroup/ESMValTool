@@ -203,6 +203,11 @@ def _get_files(in_dir, var):
             key = str(item.stem).split('_')[-1]
             files_dict[key].append(item)
     # check if files are complete
+    for key in files_dict.copy():
+        if len(files_dict[key]) != len(var['files']):
+            logger.info("CMORizing %s at time '%s' needs '%s' input file/s",
+                        var['short_name'], key, len(var['files']))
+            files_dict.pop(key)
     return files_dict
 
 
