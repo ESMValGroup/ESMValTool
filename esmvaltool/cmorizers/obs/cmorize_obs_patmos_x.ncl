@@ -24,7 +24,7 @@
 ;    in this case the most recent version (NOAA-vv) is chosen.
 
 ; Modification history
-;    20190208-A_righ_ma: written.
+;    20190208-righi_mattia: written.
 ;
 ; #############################################################################
 loadscript(getenv("esmvaltool_root") + \
@@ -69,8 +69,8 @@ begin
   ; Global attributes
   SOURCE = "https://www.ncdc.noaa.gov/cdr/atmospheric/avhrr-cloud-" + \
     "properties-patmos-x"
-  REF = "Heidinger et al., NOAA National Centers for Environmental " + \
-    "Information, doi:10.7289/V5348HCK, last access: 10 February 2019"
+  REF = "Heidinger et al., Bull. Amer. Meteor. Soc., " + \
+    "doi:10.1175/BAMS-D-12-00246.1, 2013."
   COMMENT = ""
 
 end

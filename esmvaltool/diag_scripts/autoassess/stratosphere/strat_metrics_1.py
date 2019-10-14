@@ -12,7 +12,6 @@ import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 import numpy as np
 from cartopy.mpl.gridliner import LATITUDE_FORMATTER
-from matplotlib.patches import Rectangle
 
 from esmvaltool.diag_scripts.autoassess.loaddata import load_run_ss
 
@@ -26,6 +25,12 @@ logger = logging.getLogger(__name__)
 def weight_lat_ave(cube):
     """Routine to calculate weighted latitudinal average."""
     grid_areas = iac.area_weights(cube)
+    return cube.collapsed('latitude', iris.analysis.MEAN, weights=grid_areas)
+
+
+def weight_cosine(cube):
+    """Routine to calculate weighted lat avg when there is no longitude."""
+    grid_areas = iac.cosine_latitude_weights(cube)
     return cube.collapsed('latitude', iris.analysis.MEAN, weights=grid_areas)
 
 
@@ -64,7 +69,7 @@ def plot_zmean(cube, levels, title, log=False, ax1=None):
     ax1.set_xticks([-90, -60, -30, 0, 30, 60, 90])
     ax1.xaxis.set_major_formatter(LATITUDE_FORMATTER)
     ax1.set_ylabel('Pressure (Pa)', fontsize='small')
-    ax1.set_ylim(100000., 1000.)
+    ax1.set_ylim(100000., 10.)
     if log:
         ax1.set_yscale("log")
 
@@ -95,7 +100,7 @@ def plot_timehgt(cube, levels, title, log=False, ax1=None):
     ax1.xaxis.set_major_locator(mdates.YearLocator(4))
     ax1.xaxis.set_major_formatter(mdates.DateFormatter('%Y'))
     ax1.set_ylabel('Pressure (Pa)', fontsize='small')
-    ax1.set_ylim(100000., 1000.)
+    ax1.set_ylim(100000., 10.)
     if log:
         ax1.set_yscale("log")
 
@@ -261,7 +266,7 @@ def pnj_strength(cube, winter=True):
     for nh/sh in winter and sh/nh in summer repsectively.
     """
     # Extract regions of interest
-    notrop = iris.Constraint(air_pressure=lambda p: p < 8000.0)
+    notrop = iris.Constraint(air_pressure=lambda p: p < 8000.)
     nh_cons = iris.Constraint(latitude=lambda l: l > 0)
     sh_cons = iris.Constraint(latitude=lambda l: l < 0)
     nh_tmp = cube.extract(notrop & nh_cons)
@@ -314,11 +319,13 @@ def qbo_metrics(run, ucube, metrics):
     """Routine to calculate QBO metrics from zonal mean U."""
     # TODO side effect: changes metrics without returning
     # Extract equatorial zonal mean U
-    # tropics = iris.Constraint(latitude=lambda lat: -5 <= lat <= 5)
+    tropics = iris.Constraint(latitude=lambda lat: -5 <= lat <= 5)
     p30 = iris.Constraint(air_pressure=3000.)
-    # qbo = weight_lat_ave(ucube.extract(tropics))
-    # qbo30 = qbo.extract(p30)
-    qbo = weight_lat_ave(ucube)
+    ucube_cds = [cdt.standard_name for cdt in ucube.coords()]
+    if 'longitude' in ucube_cds:
+        qbo = weight_lat_ave(ucube.extract(tropics))
+    else:
+        qbo = weight_cosine(ucube.extract(tropics))
     qbo30 = qbo.extract(p30)
 
     # write results to current working directory
@@ -360,10 +367,17 @@ def tpole_metrics(run, tcube, metrics):
     shpole = iris.Constraint(latitude=lambda la: la <= -60,
                              air_pressure=5000.0)
 
-    djf_polave = weight_lat_ave(t_djf.extract(nhpole))
-    mam_polave = weight_lat_ave(t_mam.extract(nhpole))
-    jja_polave = weight_lat_ave(t_jja.extract(shpole))
-    son_polave = weight_lat_ave(t_son.extract(shpole))
+    tcube_cds = [cdt.standard_name for cdt in tcube.coords()]
+    if 'longitude' in tcube_cds:
+        djf_polave = weight_lat_ave(t_djf.extract(nhpole))
+        mam_polave = weight_lat_ave(t_mam.extract(nhpole))
+        jja_polave = weight_lat_ave(t_jja.extract(shpole))
+        son_polave = weight_lat_ave(t_son.extract(shpole))
+    else:
+        djf_polave = weight_cosine(t_djf.extract(nhpole))
+        mam_polave = weight_cosine(t_mam.extract(nhpole))
+        jja_polave = weight_cosine(t_jja.extract(shpole))
+        son_polave = weight_cosine(t_son.extract(shpole))
 
     # Calculate metrics and add to metrics dictionary
     # TODO Why take off 180.0?
@@ -410,7 +424,11 @@ def teq_metrics(run, tcube, metrics):
 
     # Calculate area-weighted global monthly means from multi-annual data
     t_months = teq100.aggregated_by('month', iris.analysis.MEAN)
-    t_months = weight_lat_ave(t_months)
+    tcube_cds = [cdt.standard_name for cdt in tcube.coords()]
+    if 'longitude' in tcube_cds:
+        t_months = weight_lat_ave(t_months)
+    else:
+        t_months = weight_cosine(t_months)
 
     # write results to current working directory
     outfile = '{0}_teq100_{1}.nc'
@@ -435,7 +453,11 @@ def t_metrics(run, tcube, metrics):
 
     # Calculate area-weighted global monthly means from multi-annual data
     t_months = t100.aggregated_by('month', iris.analysis.MEAN)
-    t_months = weight_lat_ave(t_months)
+    tcube_cds = [cdt.standard_name for cdt in tcube.coords()]
+    if 'longitude' in tcube_cds:
+        t_months = weight_lat_ave(t_months)
+    else:
+        t_months = weight_cosine(t_months)
 
     # write results to current working directory
     outfile = '{0}_t100_{1}.nc'
@@ -460,7 +482,11 @@ def q_metrics(run, qcube, metrics):
 
     # Calculate area-weighted global monthly means from multi-annual data
     q_months = q70.aggregated_by('month', iris.analysis.MEAN)
-    q_months = weight_lat_ave(q_months)
+    qcube_cds = [cdt.standard_name for cdt in qcube.coords()]
+    if 'longitude' in qcube_cds:
+        q_months = weight_lat_ave(q_months)
+    else:
+        q_months = weight_cosine(q_months)
 
     # write results to current working directory
     outfile = '{0}_q70_{1}.nc'
@@ -521,7 +547,9 @@ def mainfunc(run):
     # removes longitude as a dimension coordinate and makes it a scalar
     # coordinate in line with how a zonal mean would be described.
     # Is there a better way of doing this?
-    ucube = ucube.collapsed('longitude', iris.analysis.MEAN)
+    ucube_cds = [cdt.standard_name for cdt in ucube.coords()]
+    if 'longitude' in ucube_cds:
+        ucube = ucube.collapsed('longitude', iris.analysis.MEAN)
     if not ucube.coord('latitude').has_bounds():
         ucube.coord('latitude').guess_bounds()
     # check for month_number
@@ -538,7 +566,9 @@ def mainfunc(run):
     # removes longitude as a dimension coordinate and makes it a scalar
     # coordinate in line with how a zonal mean would be described.
     # Is there a better way of doing this?
-    tcube = tcube.collapsed('longitude', iris.analysis.MEAN)
+    tcube_cds = [cdt.standard_name for cdt in tcube.coords()]
+    if 'longitude' in tcube_cds:
+        tcube = tcube.collapsed('longitude', iris.analysis.MEAN)
     if not tcube.coord('latitude').has_bounds():
         tcube.coord('latitude').guess_bounds()
     aux_coord_names = [aux_coord.var_name for aux_coord in tcube.aux_coords]
@@ -556,7 +586,9 @@ def mainfunc(run):
     # removes longitude as a dimension coordinate and makes it a scalar
     # coordinate in line with how a zonal mean would be described.
     # Is there a better way of doing this?
-    qcube = qcube.collapsed('longitude', iris.analysis.MEAN)
+    qcube_cds = [cdt.standard_name for cdt in qcube.coords()]
+    if 'longitude' in qcube_cds:
+        qcube = qcube.collapsed('longitude', iris.analysis.MEAN)
     if not qcube.coord('latitude').has_bounds():
         qcube.coord('latitude').guess_bounds()
     aux_coord_names = [aux_coord.var_name for aux_coord in qcube.aux_coords]
@@ -720,12 +752,49 @@ def calc_merra(run):
     with iris.FUTURE.context(cell_datetime_objects=True):
         t = t.extract(time)
         q = q.extract(time)
+
+    # zonal mean
+    t_cds = [cdt.standard_name for cdt in t.coords()]
+    if 'longitude' in t_cds:
+        t = t.collapsed('longitude', iris.analysis.MEAN)
+    q_cds = [cdt.standard_name for cdt in q.coords()]
+    if 'longitude' in q_cds:
+        q = q.collapsed('longitude', iris.analysis.MEAN)
+
+    # mean over tropics
+    equator = iris.Constraint(latitude=lambda lat: -10 <= lat <= 10)
+    p100 = iris.Constraint(air_pressure=10000.)
+    t = t.extract(equator & p100)
+
+    # Calculate area-weighted global monthly means from multi-annual data
+    iris.coord_categorisation.add_month(t, 'time', name='month')
+    t = t.aggregated_by('month', iris.analysis.MEAN)
+    if 'longitude' in t_cds:
+        t = weight_lat_ave(t)
+    else:
+        t = weight_cosine(t)
+
+    # Extract 10S-10N humidity at 100hPa
+    tropics = iris.Constraint(latitude=lambda lat: -10 <= lat <= 10)
+    p70 = iris.Constraint(air_pressure=7000.)
+    q = q.extract(tropics & p70)
+
+    # Calculate area-weighted global monthly means from multi-annual data
+    iris.coord_categorisation.add_month(q, 'time', name='month')
+    q = q.aggregated_by('month', iris.analysis.MEAN)
+    if 'longitude' in q_cds:
+        q = weight_lat_ave(q)
+    else:
+        q = weight_cosine(q)
+
     # Calculate time mean
     t = t.collapsed('time', iris.analysis.MEAN)
     q = q.collapsed('time', iris.analysis.MEAN)
     # Create return values
-    tmerra = t.data  # K
-    qmerra = ((1000000. * 29. / 18.) * q.data)  # ppmv
+    tmerra = t.data                        # K
+    # TODO magic numbers
+    qmerra = ((1000000. * 29. / 18.) * q.data)   # ppmv
+
     return tmerra, qmerra
 
 
@@ -818,26 +887,39 @@ def multi_t100_vs_q70_plot(run):
     ax1.set_ylim(merra_ymin, merra_ymax)
     ax1.xaxis.set_tick_params(labelsize='small')
     ax1.yaxis.set_tick_params(labelsize='small')
-    ax1.set_xlabel('T(10S-10N, 100hPa) bias wrt MERRA (K)', fontsize='large')
-    ax1.set_ylabel('q(10S-10N, 70hPa) bias wrt MERRA (ppmv)', fontsize='large')
+    ax1.set_xlabel('T(10S-10N, 100hPa) bias wrt ERA-I (K)', fontsize='large')
+    ax1.set_ylabel('q(10S-10N, 70hPa) bias wrt ERA-I (ppmv)', fontsize='large')
 
     # ERA-I axes
-    ax2 = ax1.twiny()  # twiny gives second horizontal axis
-    ay2 = ax1.twinx()  # twinx gives second vertical axis
-    ax2.xaxis.set_tick_params(labelsize='small')
-    ay2.yaxis.set_tick_params(labelsize='small')
-    ax2.set_xlabel('T(10S-10N, 100hPa) bias wrt ERA-I (K)', fontsize='large')
-    ay2.set_ylabel('q(10S-10N, 70hPa) bias wrt ERA-I (ppmv)', fontsize='large')
+    # ax2 = ax1.twiny()  # twiny gives second horizontal axis
+    # ay2 = ax1.twinx()  # twinx gives second vertical axis
+    # ax2.xaxis.set_tick_params(labelsize='small')
+    # ay2.yaxis.set_tick_params(labelsize='small')
+    # ax2.set_xlabel('T(10S-10N, 100hPa) bias wrt ERA-I (K)',
+    #                   fontsize='large')
+    # ay2.set_ylabel('q(10S-10N, 70hPa) bias wrt ERA-I (ppmv)',
+    #                   fontsize='large')
 
     # Plot ideal area
-    patch = Rectangle(
-        (0.0, 0.0),
-        2.0,
-        0.2 * q_merra[0, 0, 0],
-        fc='lime',
-        ec='None',
-        zorder=0)
-    ax1.add_patch(patch)
+    # Arbitrary box of acceptability for Met Office model
+    # development, designed to target warm
+    # tropopause temperature biases
+    # (e.g. Hardiman et al (2015) DOI: 10.1175/JCLI-D-15-0075.1.
+    # Defined as T bias < 2K and q bias < 20% relative to MERRA.
+    # MERRA is not used in this plot so ranges shifted by
+    # +0.8 K and +0.1 ppmv to account for
+    # differences between MERRA and ERA-Interim.
+    # TODO: Make box symmetric about zero to be relevant
+    # to models with a cold bias?
+    # TODO: add this to the final plot
+    # patch = Rectangle(
+    #     (0.8, 0.1),
+    #     2.0,
+    #     0.2 * q_merra,
+    #     fc='lime',
+    #     ec='None',
+    #     zorder=0)
+    # ax1.add_patch(patch)
 
     # Plot control
     tmon = iris.load_cube(t_cntl)

@@ -125,15 +125,15 @@ def _run_ncl_script(in_dir, out_dir, run_dir, dataset, reformat_script,
         logger.info('[NCL][subprocess.Popen ERROR] %s', err)
 
 
-def _run_pyt_script(in_dir, out_dir, dataset):
+def _run_pyt_script(in_dir, out_dir, dataset, user_cfg):
     """Run the Python cmorization mechanism."""
     module_name = 'esmvaltool.cmorizers.obs.cmorize_obs_{}'.format(
         dataset.lower().replace("-", "_"))
     module = importlib.import_module(module_name)
     logger.info("CMORizing dataset %s using Python script %s",
                 dataset, module.__file__)
-    cfg = read_cmor_config(dataset)
-    module.cmorization(in_dir, out_dir, cfg)
+    cmor_cfg = read_cmor_config(dataset)
+    module.cmorization(in_dir, out_dir, cmor_cfg, user_cfg)
 
 
 def main():
@@ -172,7 +172,8 @@ def main():
 
     # set logging for screen and file output
     root_logger = logging.getLogger()
-    out_fmt = "%(asctime)s %(levelname)-8s %(name)s,%(lineno)s\t%(message)s"
+    out_fmt = ("%(asctime)s [%(process)d] %(levelname)-8s "
+               "%(name)s,%(lineno)s\t%(message)s")
     logging.basicConfig(filename=os.path.join(run_dir, 'main_log.txt'),
                         filemode='a',
                         format=out_fmt,
@@ -237,6 +238,7 @@ def _cmor_reformat(config, obs_list):
     logger.info("Processing datasets %s", datasets)
 
     # loop through tier/datasets to be cmorized
+    failed_datasets = []
     for tier in datasets:
         for dataset in datasets[tier]:
             reformat_script_root = os.path.join(
@@ -255,6 +257,7 @@ def _cmor_reformat(config, obs_list):
             os.chdir(out_data_dir)
 
             # figure out what language the script is in
+            logger.info("Reformat script: %s", reformat_script_root)
             if os.path.isfile(reformat_script_root + '.ncl'):
                 reformat_script = reformat_script_root + '.ncl'
                 _run_ncl_script(
@@ -266,9 +269,14 @@ def _cmor_reformat(config, obs_list):
                     config['log_level'],
                 )
             elif os.path.isfile(reformat_script_root + '.py'):
-                _run_pyt_script(in_data_dir, out_data_dir, dataset)
+                _run_pyt_script(in_data_dir, out_data_dir, dataset, config)
             else:
-                logger.info('Could not find cmorizer for %s', datasets)
+                logger.error('Could not find cmorizer for %s', dataset)
+                failed_datasets.append(dataset)
+                raise Exception(
+                    'Could not find cmorizers for %s datasets ' %
+                    ' '.join(failed_datasets)
+                )
 
 
 if __name__ == '__main__':

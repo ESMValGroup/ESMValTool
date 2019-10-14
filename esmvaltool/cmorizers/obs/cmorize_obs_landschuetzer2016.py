@@ -1,3 +1,4 @@
+
 """ESMValTool CMORizer for Landschuetzer2016 data.
 
 Tier
@@ -13,7 +14,7 @@ Download and processing instructions
    Download the file spco2_1982-2015_MPI_SOM-FFN_v2016.nc
 
 Modification history
-   20190227-A_lova_to: written.
+   20190227-lovato_tomas: written.
 
 """
 
@@ -83,7 +84,7 @@ def extract_variable(var_info, raw_info, out_dir, attrs):
             )
 
 
-def cmorization(in_dir, out_dir, cfg):
+def cmorization(in_dir, out_dir, cfg, _):
     """Cmorization func call."""
     cmor_table = cfg['cmor_table']
     glob_attrs = cfg['attributes']

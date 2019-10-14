@@ -19,9 +19,9 @@
 ;    with respect to the period 1958-2001.
 ;
 ; Modification history
-;    20190221-A_righ_ma: adapted to v2 and renamed to HadCRUT3.
-;    20150330-A_righ_ma: updated paths and global attributes.
-;    20140311-A_senf_da: written.
+;    20190221-righi_mattia: adapted to v2 and renamed to HadCRUT3.
+;    20150330-righi_mattia: updated paths and global attributes.
+;    20140311-senftleben_daniel: written.
 ;
 ; #############################################################################
 loadscript(getenv("esmvaltool_root") + \
