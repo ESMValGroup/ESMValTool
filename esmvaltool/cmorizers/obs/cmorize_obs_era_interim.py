@@ -202,7 +202,7 @@ def _get_files(in_dir, var):
         for item in files_lst:
             key = str(item.stem).split('_')[-1]
             files_dict[key].append(item)
-    # check if files are complete
+    # Check if files are complete
     for key in files_dict.copy():
         if len(files_dict[key]) != len(var['files']):
             logger.info("CMORizing %s at time '%s' needs '%s' input file/s",
@@ -245,7 +245,7 @@ def _extract_variable(in_file, var, cfg, out_dir):
         )
         if 'files' in var:
             if var['operator'] == 'sum':
-            # Multiple variables case using sum operation
+                # Multiple variables case using sum operation
                 for i, item in enumerate(in_file):
                     in_cube = iris.load_cube(
                         str(item),
@@ -312,7 +312,7 @@ def cmorization(in_dir, out_dir, cfg, _):
                                              var, cfg, out_dir)
                     futures[future] = in_file
             if 'files' in var:
-            # Multiple variables case
+                # Multiple variables case
                 files_dict = _get_files(in_dir, var)
                 for key in files_dict:
                     in_file = files_dict[key]
