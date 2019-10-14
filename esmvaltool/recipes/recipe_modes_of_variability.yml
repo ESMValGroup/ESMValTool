@@ -9,13 +9,13 @@ documentation:
     each mode.
 
   authors:
-    - torr_ve
-    - fuck_ne
-    - cort_ni
-    - guem_vi
-    - hunt_al
-    - pere_nu
-    - manu_ni
+    - torralba_veronica
+    - fuckar_neven
+    - cortesi_nicola
+    - guemas_virginie
+    - hunter_alasdair
+    - perez-zanon_nuria
+    - manubens_nicolau
 
   projects:
     - c3s-magic
@@ -24,30 +24,29 @@ documentation:
     - fuckar
 
 datasets:
-  - {dataset: bcc-csm1-1, project: CMIP5, start_year: 1971, end_year: 2000, ensemble: r1i1p1, exp: historical}
-  - {dataset: bcc-csm1-1, project: CMIP5, start_year: 2020, end_year: 2075, ensemble: r1i1p1, exp: rcp85}
+  - {dataset: CNRM-CM5, project: CMIP5, start_year: 1971, end_year: 2000, ensemble: r1i1p1, exp: historical}
+  - {dataset: CNRM-CM5, project: CMIP5, start_year: 2020, end_year: 2075, ensemble: r1i1p1, exp: rcp85}
 
 preprocessors:
   preproc:
-    regrid:
-      target_grid: bcc-csm1-1
-      scheme: linear
     extract_region:
       start_longitude: 0
       end_longitude: 360
       start_latitude: 50
       end_latitude: 90
-
+    extract_levels:
+      levels: 50000
+      scheme: nearest
 diagnostics:
   weather_regime:
     description: Compute modes of variability.
     variables:
-      psl:
+      zg:
         preprocessor: preproc
         mip: Amon
     scripts:
       main:
-        script: magic_bsc/weather_regime.r
+        script: magic_bsc/weather_regime.R
         plot_type: polar  # rectangular or polar
 
         ncenters: 3

@@ -19,9 +19,14 @@ logger = logging.getLogger(__name__)
 
 def add_height2m(cube):
     """Add scalar coordinate 'height' with value of 2m."""
-    logger.info("Adding height coordinate (2m)")
+    add_scalar_height_coord(cube, height=2.)
+
+
+def add_scalar_height_coord(cube, height=2.):
+    """Add scalar coordinate 'height' with value of `height`m."""
+    logger.info("Adding height coordinate (%sm)", height)
     height_coord = iris.coords.AuxCoord(
-        2.0,
+        height,
         var_name='height',
         standard_name='height',
         long_name='height',
@@ -119,7 +124,8 @@ def flip_dim_coord(cube, coord_name):
     coord = cube.coord(coord_name, dim_coords=True)
     coord_idx = cube.coord_dims(coord)[0]
     coord.points = np.flip(coord.points)
-    coord.bounds = np.flip(coord.bounds, axis=0)
+    if coord.bounds is not None:
+        coord.bounds = np.flip(coord.bounds, axis=0)
     cube.data = da.flip(cube.core_data(), axis=coord_idx)
 
 
@@ -131,7 +137,7 @@ def read_cmor_config(dataset):
         cfg = yaml.safe_load(file)
     cfg['cmor_table'] = \
         CMOR_TABLES[cfg['attributes']['project_id']]
-    if 'comment' not in cfg:
+    if 'comment' not in cfg['attributes']:
         cfg['attributes']['comment'] = ''
     return cfg
 
@@ -139,26 +145,32 @@ def read_cmor_config(dataset):
 def save_variable(cube, var, outdir, attrs, **kwargs):
     """Saver function."""
     # CMOR standard
-    cube_time = cube.coord('time')
-    reftime = Unit(cube_time.units.origin, cube_time.units.calendar)
-    dates = reftime.num2date(cube_time.points[[0, -1]])
-    if len(cube_time.points) == 1:
-        year = str(dates[0].year)
-        time_suffix = '-'.join([year + '01', year + '12'])
+    try:
+        time = cube.coord('time')
+    except iris.exceptions.CoordinateNotFoundError:
+        time_suffix = None
     else:
-        date1 = str(dates[0].year) + '%02d' % dates[0].month
-        date2 = str(dates[1].year) + '%02d' % dates[1].month
-        time_suffix = '-'.join([date1, date2])
+        if len(time.points) == 1:
+            year = str(time.cell(0).point.year)
+            time_suffix = '-'.join([year + '01', year + '12'])
+        else:
+            date1 = str(time.cell(0).point.year) + '%02d' % \
+                time.cell(0).point.month
+            date2 = str(time.cell(-1).point.year) + '%02d' % \
+                time.cell(-1).point.month
+            time_suffix = '-'.join([date1, date2])
 
-    file_name = '_'.join([
-        'OBS',
+    name_elements = [
+        attrs['project_id'],
         attrs['dataset_id'],
         attrs['modeling_realm'],
         attrs['version'],
         attrs['mip'],
         var,
-        time_suffix,
-    ]) + '.nc'
+    ]
+    if time_suffix:
+        name_elements.append(time_suffix)
+    file_name = '_'.join(name_elements) + '.nc'
     file_path = os.path.join(outdir, file_name)
     logger.info('Saving: %s', file_path)
     status = 'lazy' if cube.has_lazy_data() else 'realized'

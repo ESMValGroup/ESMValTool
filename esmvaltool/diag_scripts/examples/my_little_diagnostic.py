@@ -21,6 +21,7 @@ import os
 
 # to manipulate iris cubes
 import iris
+import matplotlib.pyplot as plt
 
 # import internal esmvaltool modules here
 from esmvaltool.diag_scripts.shared import group_metadata, run_diagnostic

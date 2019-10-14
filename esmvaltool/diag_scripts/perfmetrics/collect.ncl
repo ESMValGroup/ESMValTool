@@ -29,16 +29,18 @@
 ; Caveats
 ;
 ; Modification history
-;    20190315-A_hass_bg: added SMPI case
-;    20180508-A_righ_ma: renamed and generalized
-;    20151027-A_laue_ax: moved call to 'write_references' to the beginning
-;                        of the code
-;    20150325-A_laue_ax: modified reference tags used for acknowledgements
-;                        (projects, observations, etc)
-;    20150109-A_gott_kl: distinguish RMSD & BIAS in output file naming.
-;    20140620-A_gott_kl: modified output file naming (variable plotpath)
-;                     and added option for explicit plot title.
-;    20140204-A_fran_fr: written.
+;    20190315-hassler_birgit: added SMPI case
+;    20180508-righi_mattia: renamed and generalized
+;    20151027-lauer_axel: moved call to 'write_references' to the beginning
+;                         of the code
+;    20150325-lauer_axel: modified reference tags used for acknowledgements
+;                         (projects, observations, etc)
+;    20150109-gottschaldt_klaus-dirk: distinguish RMSD & BIAS in output file
+;                                     naming.
+;    20140620-gottschaldt_klaus-dirk: modified output file naming (variable
+;                                     plotpath) and added option for explicit
+;                                     plot title.
+;    20140204-frank_franziska: written.
 ;
 ; #############################################################################
 
@@ -66,15 +68,16 @@ begin
 
   ; Filter out non-existing files
   input_files := input_files(ind(isfilepresent(input_files)))
+  data_files = new(dimsizes(input_files), string)
 
   ; Loop over files in the list, read and append data
   do ii = 0, dimsizes(input_files) - 1
 
     f = addfile(input_files(ii), "r")
-    curr_file = tostring(f->temp_list)
+    data_files(ii) = tostring(f->temp_list)
 
     if (diag_script_info@metric.eq."SMPI") then
-      data_temp_smpi = ncdf_read(curr_file, "performance_index")
+      data_temp_smpi = ncdf_read(data_files(ii), "performance_index")
 
       if (.not.isdefined("data_all_smpi")) then
 
@@ -94,21 +97,6 @@ begin
         data_all_smpi&bootstrap_member = data_temp_smpi&bootstrap_member
 
       end if
-
-      ; Define the string array for input file provenance
-      if (.not.isdefined("preproc_files")) then
-        preproc_files = new(dimsizes(input_files) * \
-                            data_all_smpi@num_preproc_files, string)
-      end if
-
-      ; Add the input file info to the file for provenance
-      do ipf = 0, toint(data_all_smpi@num_preproc_files) - 1
-        num_preproc = "preproc_file_" + ipf
-        preproc_idx = ipf + ii * data_all_smpi@num_preproc_files
-        if (isatt(data_temp_smpi, num_preproc)) then
-          preproc_files(preproc_idx) = data_temp_smpi@$num_preproc$
-        end if
-      end do
 
       ; Make sure dataset coordinate is consistent
       consistent = False
@@ -159,7 +147,7 @@ begin
 
     else  ; metric not SMPI
 
-      data_temp = ncdf_read(curr_file, "grade")
+      data_temp = ncdf_read(data_files(ii), "grade")
 
       ; Change to 3 dimensional
       if (dimsizes(dimsizes(data_temp)).eq.2) then
@@ -179,21 +167,6 @@ begin
         data_all!1 = "models"
         data_all&models = data_temp&models
       end if
-
-      ; Define the string array for input file provenance
-      if (.not.isdefined("preproc_files")) then
-        preproc_files = new(dimsizes(input_files) * \
-                            data_all@num_preproc_files, string)
-      end if
-
-      ; Add the input file info to the file for provenance
-      do ipf = 0, toint(data_all@num_preproc_files) - 1
-        num_preproc = "preproc_file_" + ipf
-        preproc_idx = ipf + ii * data_all@num_preproc_files
-        if (isatt(data_temp, num_preproc)) then
-          preproc_files(preproc_idx) = data_temp@$num_preproc$
-        end if
-      end do
 
       ; Make sure model coordinate is consistent
       consistent = False
@@ -437,26 +410,26 @@ begin
   if (diag_script_info@metric.eq."RMSD") then
     caption = "RMSD performance metric"
     statistics = (/"rmsd"/)
-    authors = (/"fran_fr", "righ_ma", "eyri_ve"/)
+    authors = (/"frank_franziska", "righi_mattia", "eyring_veronika"/)
     plottype = "portrait"
     references = (/"righi15gmd", "gleckler08jgr"/)
   elseif (diag_script_info@metric.eq."BIAS") then
     caption = "Bias performance metric"
     statistics = (/"diff"/)
-    authors = (/"fran_fr", "righ_ma", "eyri_ve"/)
+    authors = (/"frank_franziska", "righi_mattia", "eyring_veronika"/)
     plottype = "portrait"
     references = (/"righi15gmd", "gleckler08jgr"/)
   elseif (diag_script_info@metric.eq."taylor") then
     caption = "Taylor diagram"
     statistics = (/"rmsd", "corr"/)
-    authors = (/"fran_fr", "righ_ma", "eyri_ve"/)
+    authors = (/"frank_franziska", "righi_mattia", "eyring_veronika"/)
     plottype = "taylor"
     references = (/"righi15gmd", "gleckler08jgr"/)
   elseif (diag_script_info@metric.eq."SMPI") then
     caption = \
       "Performance index I2. Similar to Figure 1 of Reichler and Kim (2008)."
     statistics = "smpi"
-    authors = (/"gier_be", "hass_bg"/)
+    authors = (/"gier_bettina", "hassler_birgit"/)
     plottype = "circle"
     references = (/"rk2008bams"/)
   else
@@ -466,9 +439,8 @@ begin
   domains = (/"global"/)
 
   ; Call provenance logger
-  preproc_files := preproc_files(ind(.not.ismissing(preproc_files)))
   log_provenance(ncdf_outfile, plotpath, caption, statistics, domains, \
-                 plottype, authors, references, preproc_files)
+                 plottype, authors, references, data_files)
 
   leave_msg(DIAG_SCRIPT, "")
 

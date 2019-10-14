@@ -8,8 +8,8 @@
 #     Functions used in HyInt routines
 #
 # Modification history
-#    20170901-A_arno_en: adapted to HyInt and extended
-#    20170522-A_davi_pa: Creation for MiLES
+#    20170901-arnone_enrico: adapted to HyInt and extended
+#    20170522-davini_paolo: creation for MiLES
 # #############################################################################
 
 # basis functions
@@ -23,7 +23,7 @@ library("maps")
 library("ncdf4")
 library("PCICt")
 
-# check if fast linear fit is operative (after R 3.1): 
+# check if fast linear fit is operative (after R 3.1):
 # 3x faster than lm.fit, 36x faster than lm
 if (exists(".lm.fit")) {
   lin.fit <- .lm.fit
@@ -43,69 +43,133 @@ getfilename_regridded <- function(spath, rgrid, var0, model_idx) {
   model_exp <- models_experiment[model_idx]
   model_ens <- models_ensemble[model_idx]
   filename <- paste0(
-    spath, "/", exp, "_", model_exp, "_", model_ens,
-    "_", toString(year1), "-", toString(year2),
-    "_", var0, "_", rgrid, ".nc"
+    spath,
+    "/",
+    exp,
+    "_",
+    model_exp,
+    "_",
+    model_ens,
+    "_",
+    toString(year1),
+    "-",
+    toString(year2),
+    "_",
+    var0,
+    "_",
+    rgrid,
+    ".nc"
   )
   return(filename)
 }
 
-getfilename_indices <- function(spath, label, model_idx, season, hist = F,
-                                hist_years = hist_years, grid = F, topo = F) {
-  exp <- models_name[model_idx]
-  model_exp <- models_experiment[model_idx]
-  model_ens <- models_ensemble[model_idx]
-  if (grid) {
-    filename <- paste0(
-      spath, "/", label, "_", exp, "_",
-      model_exp, "_", model_ens, ".grid"
-    )
-  } else if (topo) {
-       filename <- paste0(
-      spath, "/", label, "_", exp, "_",
-      model_exp, "_", model_ens, "_topo.nc"
-    )
-  } else {
-    year1 <- models_start_year[model_idx]
-    year2 <- models_end_year[model_idx]
-    if (hist) {
-      model_exp <- "historical"
-      year1 <- hist_years[1]
-      year2 <- hist_years[2]
-    }
-    filename <- paste0(
-      spath, "/", label, "_", exp, "_", model_exp, "_",
-      model_ens, "_", toString(year1), "_", toString(year2),
-      "_", season, ".nc"
-    )
-  }
-  return(filename)
-}
-
-getfilename_etccdi <- function(spath, var, model_idx, yrmon = "yr") {
-  # Function to get names of files of ETCCDI indices
-  # If input 'var' is an array of names, 'filename' an array will be as well
-
-  filename <- ""
-  for (svar in var) {
+getfilename_indices <-
+  function(spath,
+             label,
+             model_idx,
+             season,
+             hist = F,
+             hist_years = hist_years,
+             grid = F,
+             topo = F) {
     exp <- models_name[model_idx]
     model_exp <- models_experiment[model_idx]
     model_ens <- models_ensemble[model_idx]
-    year1 <- toString(models_start_year[model_idx])
-    year2 <- toString(models_end_year[model_idx])
-    if (yrmon == "mon") {
-      year1 <- paste0(year1, "01")
-      year2 <- paste0(year2, "12")
+    if (grid) {
+      filename <- paste0(
+        spath,
+        "/",
+        label,
+        "_",
+        exp,
+        "_",
+        model_exp,
+        "_",
+        model_ens,
+        ".grid"
+      )
+    } else if (topo) {
+      filename <- paste0(
+        spath,
+        "/",
+        label,
+        "_",
+        exp,
+        "_",
+        model_exp,
+        "_",
+        model_ens,
+        "_topo.nc"
+      )
+    } else {
+      year1 <- models_start_year[model_idx]
+      year2 <- models_end_year[model_idx]
+      if (hist) {
+        model_exp <- "historical"
+        year1 <- hist_years[1]
+        year2 <- hist_years[2]
+      }
+      filename <- paste0(
+        spath,
+        "/",
+        label,
+        "_",
+        exp,
+        "_",
+        model_exp,
+        "_",
+        model_ens,
+        "_",
+        toString(year1),
+        "_",
+        toString(year2),
+        "_",
+        season,
+        ".nc"
+      )
     }
-    filenametmp <- paste0(
-      spath, "/", svar, "_", yrmon, "_", model_exp, "_",
-      exp, "_", model_ens, "_", year1, "-", year2, ".nc"
-    )
-    filename <- c(filename, filenametmp)
+    return(filename)
   }
-  filename <- filename[2:length(filename)]
-  return(filename)
-}
+
+getfilename_etccdi <-
+  function(spath, var, model_idx, yrmon = "yr") {
+    # Function to get names of files of ETCCDI indices
+    # If input 'var' is an array of names, 'filename' an array will be as well
+
+    filename <- ""
+    for (svar in var) {
+      exp <- models_name[model_idx]
+      model_exp <- models_experiment[model_idx]
+      model_ens <- models_ensemble[model_idx]
+      year1 <- toString(models_start_year[model_idx])
+      year2 <- toString(models_end_year[model_idx])
+      if (yrmon == "mon") {
+        year1 <- paste0(year1, "01")
+        year2 <- paste0(year2, "12")
+      }
+      filenametmp <- paste0(
+        spath,
+        "/",
+        svar,
+        "_",
+        yrmon,
+        "_",
+        model_exp,
+        "_",
+        exp,
+        "_",
+        model_ens,
+        "_",
+        year1,
+        "-",
+        year2,
+        ".nc"
+      )
+      filename <- c(filename, filenametmp)
+    }
+    filename <- filename[2:length(filename)]
+    return(filename)
+  }
 
 getfilename_trends <- function(spath, label, model_idx, season) {
   exp <- models_name[model_idx]
@@ -114,42 +178,90 @@ getfilename_trends <- function(spath, label, model_idx, season) {
   model_exp <- models_experiment[model_idx]
   model_ens <- models_ensemble[model_idx]
   filename <- paste0(
-    spath, "/", diag_base, "_", exp, "_", model_exp, "_",
-    model_ens, "_", toString(year1), "_", toString(year2),
-    "_", season, "_tseries_", label, ".nc"
+    spath,
+    "/",
+    diag_base,
+    "_",
+    exp,
+    "_",
+    model_exp,
+    "_",
+    model_ens,
+    "_",
+    toString(year1),
+    "_",
+    toString(year2),
+    "_",
+    season,
+    "_tseries_",
+    label,
+    ".nc"
   )
   return(filename)
 }
 
-getfilename_figure <- function(spath, var, year1, year2, model_idx, season,
-                               syears, sregion, label, map, output_file_type,
-                               multimodel = F) {
-  if (nchar(var) > 10) {
-    var <- substr(var, 1, 10)
+getfilename_figure <-
+  function(spath,
+             var,
+             year1,
+             year2,
+             model_idx,
+             season,
+             syears,
+             sregion,
+             label,
+             map,
+             output_file_type,
+             multimodel = F) {
+    if (nchar(var) > 10) {
+      var <- substr(var, 1, 10)
+    }
+    exp <- models_name[model_idx]
+    year1 <- models_start_year[model_idx]
+    year2 <- models_end_year[model_idx]
+    model_exp <- models_experiment[model_idx]
+    model_ens <- models_ensemble[model_idx]
+    model_tag <- paste(exp, model_exp, model_ens, sep = "_")
+    if (multimodel) {
+      model_tag <- "multimodel"
+    }
+    figname <- paste0(
+      spath,
+      "/",
+      paste(
+        var,
+        model_tag,
+        paste(year1, year2, sep = "-"),
+        season,
+        syears,
+        sregion,
+        map,
+        sep = "_"
+      ),
+      ".",
+      output_file_type
+    )
+    if (!(label == "") & !(label == F)) {
+      figname <- paste0(
+        spath,
+        "/",
+        paste(
+          var,
+          model_tag,
+          paste(year1, year2, sep = "-"),
+          season,
+          syears,
+          sregion,
+          label,
+          map,
+          sep = "_"
+        ),
+        ".",
+        output_file_type
+      )
+    }
+    return(figname)
   }
-  exp <- models_name[model_idx]
-  year1 <- models_start_year[model_idx]
-  year2 <- models_end_year[model_idx]
-  model_exp <- models_experiment[model_idx]
-  model_ens <- models_ensemble[model_idx]
-  model_tag <- paste(exp, model_exp, model_ens, sep = "_")
-  if (multimodel) {
-    model_tag <- "multimodel"
-  }
-  figname <- paste0(spath, "/", paste(var, model_tag,
-    paste(year1, year2, sep = "-"), season, syears, sregion,
-    map,
-    sep = "_"
-  ), ".", output_file_type)
-  if (!(label == "") & !(label == F)) {
-    figname <- paste0(spath, "/", paste(var, model_tag,
-      paste(year1, year2, sep = "-"), season, syears, sregion,
-      label, map,
-      sep = "_"
-    ), ".", output_file_type)
-  }
-  return(figname)
-}
 
 
 ##########################################################
@@ -158,7 +270,8 @@ getfilename_figure <- function(spath, var, year1, year2, model_idx, season,
 
 # normalize a time series
 standardize <- function(timeseries) {
-  out <- (timeseries - mean(timeseries, na.rm = T)) / sd(timeseries, na.rm = T)
+  out <-
+    (timeseries - mean(timeseries, na.rm = T)) / sd(timeseries, na.rm = T)
   return(out)
 }
 
@@ -173,14 +286,18 @@ whicher <- function(axis, number) {
 # area of longitude/latitude rectangle
 area_lonlat <- function(lon1, lon2, lat1, lat2) {
   R <- 6378
-  return(2 * pi * R ^ 2 * abs(sin(lat1 / 180. * pi) - sin(lat2 / 180. * pi))
+  return(2 * pi * R^2 * abs(sin(lat1 / 180. * pi) - sin(lat2 / 180. * pi))
     * abs(lon1 - lon2) / 360)
 }
 
 
 # produce a 2d matrix of area size for given longitude/latitude grid points
-area_size <- function(ics, ipsilon, resolution = NA, norm = F) {
-  if (is.na(resolution) & (length(ics) == 1) & (length(ipsilon) == 1)) {
+area_size <- function(ics,
+                      ipsilon,
+                      resolution = NA,
+                      norm = F) {
+  if (is.na(resolution) &
+    (length(ics) == 1) & (length(ipsilon) == 1)) {
     stop("Provide either resolution or two adjacent elements")
   }
   if (is.na(resolution) & (length(ics) != 1)) {
@@ -189,7 +306,9 @@ area_size <- function(ics, ipsilon, resolution = NA, norm = F) {
   field <- array(NA, dim = c(length(ics), length(ipsilon)))
   for (j in 1:length(ipsilon)) {
     field[, j] <- area_lonlat(
-      0, resolution, ipsilon[j] - 0.5 * resolution,
+      0,
+      resolution,
+      ipsilon[j] - 0.5 * resolution,
       ipsilon[j] + 0.5 * resolution
     )
   }
@@ -203,7 +322,10 @@ area_size <- function(ics, ipsilon, resolution = NA, norm = F) {
 
 
 # produce a 2d matrix of area weight
-area_weight <- function(ics, ipsilon, root = T, norm = F) {
+area_weight <- function(ics,
+                        ipsilon,
+                        root = T,
+                        norm = F) {
   field <- array(NA, dim = c(length(ics), length(ipsilon)))
   if (root == T) {
     for (j in 1:length(ipsilon)) {
@@ -223,15 +345,20 @@ area_weight <- function(ics, ipsilon, root = T, norm = F) {
 }
 
 # normalize a 2D or 3D field by a 2d matrix of area weight
-area_weight_norm <- function(ics, ipsilon, field, root = T, norm = F) {
-  timedim <- dim(field)[length(dim(field))]
-  weights <- replicate(timedim, area_weight(ics, ipsilon,
-    root = root,
-    norm = norm
-  ))
-  field <- field * weights
-  return(field)
-}
+area_weight_norm <-
+  function(ics,
+             ipsilon,
+             field,
+             root = T,
+             norm = F) {
+    timedim <- dim(field)[length(dim(field))]
+    weights <- replicate(timedim, area_weight(ics, ipsilon,
+      root = root,
+      norm = norm
+    ))
+    field <- field * weights
+    return(field)
+  }
 
 ##########################################################
 #--------------Time Based functions----------------------#
@@ -240,7 +367,6 @@ area_weight_norm <- function(ics, ipsilon, field, root = T, norm = F) {
 # check number of days for each month
 
 number_days_month <- function(datas) {
-
   # evaluate the number of days in a defined month of a year
   datas <- as.Date(datas)
   m <- format(datas, format = "%m")
@@ -276,7 +402,7 @@ season2timeseason <- function(season) {
 
 # leap year treu/false function
 is_leapyear <- function(year) {
-  return( ( (year %% 4 == 0) & (year %% 100 != 0)) | (year %% 400 == 0))
+  return(((year %% 4 == 0) & (year %% 100 != 0)) | (year %% 400 == 0))
 }
 
 power_date_new <- function(datas) {
@@ -294,7 +420,8 @@ power_date_new <- function(datas) {
     day = as.numeric(format(datas, "%d")),
     month = as.numeric(format(datas, "%m")),
     year = as.numeric(format(datas, "%Y")),
-    data = datas, season = seas
+    data = datas,
+    season = seas
   )
   return(etime)
 }
@@ -328,7 +455,8 @@ power_date <- function(season, ANNO1, ANNO2) {
     day = as.numeric(format(datas, "%d")),
     month = as.numeric(format(datas, "%m")),
     year = as.numeric(format(datas, "%Y")),
-    season = seas, data = datas
+    season = seas,
+    data = datas
   )
   print("Time Array Built")
   print(paste("Length:", length(seas), "days for", season, "season"))
@@ -342,15 +470,19 @@ power_date_no_leap <- function(season, ANNO1, ANNO2) {
   e <- power_date(season, ANNO1, ANNO2)
   leap.days <- which(e$month == 2 & e$day == 29)
   dataline.leap <- list(
-    day = e$day[-leap.days], month = e$month[-leap.days],
+    day = e$day[-leap.days],
+    month = e$month[-leap.days],
     year = e$year[-leap.days],
     season = e$season[-leap.days],
     data = e$data[-leap.days]
   )
   print("FIXED FOR NO LEAP CALENDAR: Time Array Built")
   print(paste(
-    "Length:", length(dataline.leap$season), "days for",
-    season, "season"
+    "Length:",
+    length(dataline.leap$season),
+    "days for",
+    season,
+    "season"
   ))
   print(paste(
     "From", dataline.leap$data[1], "to",
@@ -374,50 +506,68 @@ power_date_30day <- function(season, ANNO1, ANNO2) {
     }
     seas[i + 1] <- ss
   }
-  dataline_30day <- list(day = dd, month = mm, season = seas)
+  dataline_30day <- list(
+    day = dd,
+    month = mm,
+    season = seas
+  )
   print("SIMPLIFIED CALENDAR FOR 30-day CALENDAR: Time Array Built")
   print(paste(
-    "Length:", length(dataline.30day$season), "days for",
-    season, "season"
+    "Length:",
+    length(dataline.30day$season),
+    "days for",
+    season,
+    "season"
   ))
   return(dataline_30day)
 }
 
-calc_region_timeseries <- function(x, y, indata, region, calc_sd = F,
-                                   weighted_mean = T, root = F, norm = T, ..) {
-  # This function subsets a lon/lat/time array based on an input
-  # region(lon1,loni2,lat1,lat2) and returns its timeseries.
-  # Area weights are applied if requested. The function returns also
-  # the standard deviation of the averaging elements
-  # (currently excluding weights)
+calc_region_timeseries <-
+  function(x,
+             y,
+             indata,
+             region,
+             calc_sd = F,
+             weighted_mean = T,
+             root = F,
+             norm = T,
+             ..) {
+    # This function subsets a lon/lat/time array based on an input
+    # region(lon1,loni2,lat1,lat2) and returns its timeseries.
+    # Area weights are applied if requested. The function returns also
+    # the standard deviation of the averaging elements
+    # (currently excluding weights)
 
-  idimtimedata <- length(dim(indata))
-  dimtimedata <- (dim(indata))[idimtimedata]
-  retx <- which(region[1] <= x & x <= region[2])
-  rety <- which(region[3] <= y & y <= region[4])
-  if (!calc_sd) {
-    print(paste(
-      "Calc.region.timeseries: ",
-      length(retx) * length(rety)
-    ))
-  }
-  if (is.na(retx[1]) | is.na(rety[1])) {
-    print("calc.region.timeseries: no data in selected region. Returning NA.")
-    outdata <- array(dim = dimtimedata)
-  } else {
-    retdata <- indata[retx, rety, , drop = F]
-    if (weighted_mean & !calc_sd) {
-      retdata <- area_weight_norm(x[retx], y[rety], retdata,
-        root = root, norm = norm
+    idimtimedata <- length(dim(indata))
+    dimtimedata <- (dim(indata))[idimtimedata]
+    retx <- which(region[1] <= x & x <= region[2])
+    rety <- which(region[3] <= y & y <= region[4])
+    if (!calc_sd) {
+      print(paste(
+        "Calc.region.timeseries: ",
+        length(retx) * length(rety)
+      ))
+    }
+    if (is.na(retx[1]) | is.na(rety[1])) {
+      cat(
+        "calc.region.timeseries: no data in selected region.",
+        "Returning NA."
       )
+      outdata <- array(dim = dimtimedata)
+    } else {
+      retdata <- indata[retx, rety, , drop = F]
+      if (weighted_mean & !calc_sd) {
+        retdata <- area_weight_norm(x[retx], y[rety], retdata,
+          root = root, norm = norm
+        )
+      }
+      outdata <- apply(retdata, idimtimedata, mean, na.rm = T)
+      if (calc_sd) {
+        outdata <- apply(retdata, idimtimedata, sd, na.rm = T)
+      }
     }
-    outdata <- apply(retdata, idimtimedata, mean, na.rm = T)
-    if (calc_sd) {
-      outdata <- apply(retdata, idimtimedata, sd, na.rm = T)
-    }
+    return(outdata)
   }
-  return(outdata)
-}
 
 ##################
 #--------Data preprocessing
@@ -428,15 +578,16 @@ calc_region_timeseries <- function(x, y, indata, region, calc_sd = F,
 # to use to regrid on
 # @param idx_dir path of directory containing
 # files from which to create the grid
-# Adapted from 20170920-A_maritsandstad
+# Adapted from 20170920-sandstad_marit
 #
-create_grid <- function(ref_file = "./reffile", path = idx_dir,
+create_grid <- function(ref_file = "./reffile",
+                        path = idx_dir,
                         out_file = "./gridDef") {
-
   ## Picking the grid found in reference file to regrid over
   if (!file.exists(ref_file)) {
     ## Picking the grid found in the first file to regrid over
-    ref_file <- list.files(path, pattern = "*.nc", full.names = TRUE)[1]
+    ref_file <-
+      list.files(path, pattern = "*.nc", full.names = TRUE)[1]
   }
   cdo("griddes", input = ref_file, stdout = out_file)
 }
@@ -445,48 +596,61 @@ create_grid <- function(ref_file = "./reffile", path = idx_dir,
 # Method to create a landSeaMask on a suitable grid
 # @param regrid name w/path of gridfile to use
 # to put the landdseamask on
-# Adapted from 20170920-A_maritsandstad
+# Adapted from 20170920-sandstad_marit
 #
-create_landseamask <- function(regrid = "./gridDef", ref_file = ref_file,
-                loc = "./", regridded_topo = paste0("./", "regridded_topo.nc"),
-                landmask = "./landSeaMask.nc", topo_only = F) {
-
-  # Test if gridfile exists
-  # otherwise call function to generate one
-  if (!file.exists(regrid)) {
-    if (length(ref_file) == 0) {
-      print("Unable to access grid file")
-      stop
+create_landseamask <-
+  function(regrid = "./gridDef",
+             ref_file = ref_file,
+             loc = "./",
+             regridded_topo = paste0("./", "regridded_topo.nc"),
+             landmask = "./landSeaMask.nc",
+             topo_only = F) {
+    # Test if gridfile exists
+    # otherwise call function to generate one
+    if (!file.exists(regrid)) {
+      if (length(ref_file) == 0) {
+        print("Unable to access grid file")
+        stop
+      }
+      create_grid(ref_file = ref_file, out_file = regrid)
     }
-    create_grid(ref_file = ref_file, out_file = regrid)
+
+    ## Making topographic map
+    ftopo <- cdo("topo", options = "-f nc")
+
+    ## Regridding the topographic map to chosen grid
+    cdo(
+      "remapcon2",
+      args = paste0("'", regrid, "'"),
+      input = ftopo,
+      output = regridded_topo
+    )
+
+    if (!topo_only) {
+      # Set above sea-level gridpoints to missing
+      ftopomiss1 <-
+        cdo("setrtomiss", args = "0,9000", input = regridded_topo)
+
+      # Set above sea-level gridpoints to 1
+      ftopo1pos <- cdo("setmisstoc", args = "1", input = ftopomiss1)
+
+      # Set below sea-level gridpoints to missing
+      cdo("setrtomiss",
+        args = "-9000,0",
+        input = ftopo1pos,
+        output = landmask
+      )
+      unlink(c(ftopomiss1, ftopo1pos))
+    }
+    unlink(ftopo)
   }
-
-  ## Making topographic map
-  ftopo <- cdo("topo", options = "-f nc")
-
-  ## Regridding the topographic map to chosen grid
-  cdo("remapcon2", args = paste0("'", regrid, "'"),
-      input = ftopo, output = regridded_topo)
-
-  if (!topo_only) {
-
-    # Set above sea-level gridpoints to missing
-    ftopomiss1 <- cdo("setrtomiss", args = "0,9000", input = regridded_topo)
-
-    # Set above sea-level gridpoints to 1
-    ftopo1pos <- cdo("setmisstoc", args = "1", input = ftopomiss1)
-
-    # Set below sea-level gridpoints to missing
-    cdo("setrtomiss", args = "-9000,0", input = ftopo1pos, output = landmask)
-    unlink(c(ftopomiss1, ftopo1pos))
-  }
-  unlink(ftopo)
-}
 
 ##
 ## Read seaLandElevationMask and mask data
 ##
-apply_elevation_mask <- function(rfield, relevation, el_threshold,
+apply_elevation_mask <- function(rfield,
+                                 relevation,
+                                 el_threshold,
                                  reverse = F) {
   if (!reverse) {
     if (el_threshold >= 0) {
@@ -512,8 +676,10 @@ apply_elevation_mask <- function(rfield, relevation, el_threshold,
   itimedim <- dim(rfield)[length(dim(rfield))]
   myear_relevation <- replicate(itimedim, relevation)
   if (dim(myear_relevation) != dim(rfield)) {
-    stop("STOP - dimension of topography does not match
-dimension of field: remove old topography files if needed")
+    stop(
+      "STOP - dimension of topography does not match
+      dimension of field: remove old topography files if needed"
+    )
   }
   rfield <- rfield * myear_relevation
 
@@ -551,7 +717,8 @@ mean_spell_length <- function(m) {
     for (ilat in 1:nlat) {
       spell_point <- (m[ilon, ilat, ])
       # Look for variations along time axis
-      diff_spell_point <- spell_point[2:ntime] - spell_point[1:ntime - 1]
+      diff_spell_point <-
+        spell_point[2:ntime] - spell_point[1:ntime - 1]
       # select when variation is positive (starting spell)
       spell_start <- which(diff_spell_point == 1) + 1
       if (!is.na(spell_point[1])) {
@@ -569,43 +736,66 @@ mean_spell_length <- function(m) {
       # difference between stop and start gives spell length
       spell_length <- spell_stop - spell_start + 1
       # assign annual mean spell length to output array
-      mean_spell_length_year[ilon, ilat] <- mean(spell_length, na.rm = T)
+      mean_spell_length_year[ilon, ilat] <-
+        mean(spell_length, na.rm = T)
     }
   }
   return(mean_spell_length_year)
 }
 
-get_elevation <- function(filename = NULL, elev_range = c(-1000, 10000),
-                          mask = F, elev_plot = F) {
-  # get elevation data from a high resolution topography file.
+get_elevation <-
+  function(filename = NULL,
+             elev_range = c(-1000, 10000),
+             mask = F,
+             elev_plot = F) {
+    # get elevation data from a high resolution topography file.
 
-  funlink <- F
-  if (is.null(filename)) {
-    filename <- cdo("topo", options = "-f nc")
-    funlink <- T
-  }
-  elevation <- ncdf_opener(filename,
-    namevar = "elevation",
-    namelon = "longitude", namelat = "latitude", rotate = "no"
-  )
-  lon_el <- ncdf_opener(filename, namevar = "longitude", rotate = "no")
-  lat_el <- ncdf_opener(filename, namevar = "latitude", rotate = "no")
-  elevation[which(elevation < elev_range[1] | elevation > elev_range[2])] <- NA
-  if (mask) {
-    elevation[which(elevation >= elev_range[1] &
-      elevation <= elev_range[2])] <- 1
-  }
-  if (elev_plot) {
-    filled_contour3(lon_el, lat_el, elevation, color.palette = rainbow)
-    map("world",
-      regions = ".", interior = F, exact = F, boundary = T, add = T,
-      col = "gray", lwd = 1.5
+    funlink <- F
+    if (is.null(filename)) {
+      filename <- cdo("topo", options = "-f nc")
+      funlink <- T
+    }
+    elevation <- ncdf_opener(
+      filename,
+      namevar = "elevation",
+      namelon = "longitude",
+      namelat = "latitude",
+      rotate = "no"
     )
+    lon_el <-
+      ncdf_opener(filename, namevar = "longitude", rotate = "no")
+    lat_el <-
+      ncdf_opener(filename, namevar = "latitude", rotate = "no")
+    elevation[which(elevation < elev_range[1] |
+      elevation > elev_range[2])] <- NA
+    if (mask) {
+      elevation[which(elevation >= elev_range[1] &
+        elevation <= elev_range[2])] <- 1
+    }
+    if (elev_plot) {
+      filled_contour3(lon_el, lat_el, elevation, color.palette = rainbow)
+      map(
+        "world",
+        regions = ".",
+        interior = F,
+        exact = F,
+        boundary = T,
+        add = T,
+        col = "gray",
+        lwd = 1.5
+      )
+    }
+    el_list <-
+      list(
+        elevation = elevation,
+        lon_el = lon_el,
+        lat_el = lat_el
+      )
+    if (funlink) {
+      unlink(filename)
+    }
+    return(el_list)
   }
-  el_list <- list(elevation = elevation, lon_el = lon_el, lat_el = lat_el)
-  if (funlink) unlink(filename)
-  return(el_list)
-}
 
 
 ##########################################################
@@ -621,130 +811,412 @@ get_elevation <- function(filename = NULL, elev_range = c(-1000, 10000),
 # "grid" can be used to specify the target grid name
 # time selection based on package PCICt must be specifed with both "tmonths"
 #  and "tyears" flags. It returns a list including its own dimensions
-ncdf_opener_universal <- function(namefile, namevar = NULL, namelon = NULL,
-                                  namelat = NULL, tmonths = NULL,
-                                  tyears = NULL, rotate = "full",
-                                  interp2grid = F, grid = "r144x73",
-                                  remap_method = "remapcon2",
-                                  exportlonlat = TRUE, verbose = F) {
+ncdf_opener_universal <- # nolint
+  function(namefile,
+             namevar = NULL,
+             namelon = NULL,
+             namelat = NULL,
+             tmonths = NULL,
+             tyears = NULL,
+             rotate = "full",
+             interp2grid = F,
+             grid = "r144x73",
+             remap_method = "remapcon2",
+             exportlonlat = TRUE,
+             verbose = F) {
+    # load package
+    require(ncdf4)
 
-  # load package
-  require(ncdf4)
-
-  # verbose-only printing function
-  printv <- function(value) {
-    if (verbose) {
-      print(value)
+    # verbose-only printing function
+    printv <- function(value) {
+      if (verbose) {
+        print(value)
+      }
     }
-  }
 
-  # check if timeflag is activated or full file must be loaded
-  if (is.null(tyears) | is.null(tmonths)) {
-    timeflag <- FALSE
-    printv("No time and months specified, loading all the data")
-  } else {
-    timeflag <- TRUE
-    printv("tyears and tmonths are set!")
-    require(PCICt)
-  }
-
-  if (rotate == "full") {
-    rot <- T
-    move1 <- move2 <- 1 / 2
-  } # 180 degrees rotation of longitude
-  if (rotate == "half") {
-    rot <- T
-    move1 <- 1 / 4
-    move2 <- 3 / 4
-  } # 90 degree rotation (useful for TM90)
-  if (rotate == "no") {
-    rot <- F
-  } # keep as it is
-
-  # interpolation made with CDO: second order conservative remapping
-  if (interp2grid) {
-    print(paste("Remapping with CDO on", grid, "grid"))
-    if (is.null(namevar)) {
-      namefile <- cdo(remap_method, args = paste0("'", grid, "'"),
-                      input = namefile)
+    # check if timeflag is activated or full file must be loaded
+    if (is.null(tyears) | is.null(tmonths)) {
+      timeflag <- FALSE
+      printv("No time and months specified, loading all the data")
     } else {
-      selectf <- cdo("selvar", args = namevar, input = namefile)
-      gridf <- tempfile()
-      cdo("griddes", input = grid, stdout = gridf)
-      namefile <- cdo(remap_method, args = gridf, input = selectf)
-      unlink(c(selectf, gridf))
+      timeflag <- TRUE
+      printv("tyears and tmonths are set!")
+      require(PCICt)
     }
+
+    if (rotate == "full") {
+      rot <- T
+      move1 <- move2 <- 1 / 2
+    } # 180 degrees rotation of longitude
+    if (rotate == "half") {
+      rot <- T
+      move1 <- 1 / 4
+      move2 <- 3 / 4
+    } # 90 degree rotation (useful for TM90)
+    if (rotate == "no") {
+      rot <- F
+    } # keep as it is
+
+    # interpolation made with CDO: second order conservative remapping
+    if (interp2grid) {
+      print(paste("Remapping with CDO on", grid, "grid"))
+      if (is.null(namevar)) {
+        namefile <- cdo(remap_method,
+          args = paste0("'", grid, "'"),
+          input = namefile
+        )
+      } else {
+        selectf <- cdo("selvar", args = namevar, input = namefile)
+        gridf <- tempfile()
+        cdo("griddes", input = grid, stdout = gridf)
+        namefile <- cdo(remap_method, args = gridf, input = selectf)
+        unlink(c(selectf, gridf))
+      }
+    }
+
+    # define rotate function (faster than with apply)
+    rotation <- function(line) {
+      vettore <- line
+      dims <- length(dim(vettore))
+      # for longitudes
+      if (dims == 1) {
+        ll <- length(line)
+        line[(ll * move1):ll] <- vettore[1:(ll * move2 + 1)]
+        line[1:(ll * move1 - 1)] <- vettore[(ll * move2 + 2):ll] - 360
+      }
+      # for x,y data
+      if (dims == 2) {
+        ll <- length(line[, 1])
+        line[(ll * move1):ll, ] <- vettore[1:(ll * move2 + 1), ]
+        line[1:(ll * move1 - 1), ] <- vettore[(ll * move2 + 2):ll, ]
+      }
+      # for x,y,t data
+      if (dims == 3) {
+        ll <- length(line[, 1, 1])
+        line[(ll * move1):ll, , ] <- vettore[1:(ll * move2 + 1), , ]
+        line[1:(ll * move1 - 1), , ] <-
+          vettore[(ll * move2 + 2):ll, , ]
+      }
+      return(line)
+    }
+
+    # define flip function ('cos rev/apply is not working)
+    flipper <- function(field) {
+      dims <- length(dim(field))
+      if (dims == 2) {
+        ll <- length(field[1, ])
+        field <- field[, ll:1]
+      } # for x,y data
+      if (dims == 3) {
+        ll <- length(field[1, , 1])
+        field <- field[, ll:1, ]
+      } # for x,y,t data
+      return(field)
+    }
+
+    # opening file: getting variable (if namevar is given, that variable
+    # is extracted)
+    printv(paste("opening file:", namefile))
+    a <- nc_open(namefile)
+
+    # if no name provided load the only variable available
+    if (is.null(namevar)) {
+      namevar <- names(a$var)
+      if (length(namevar) > 1) {
+        print(namevar)
+        stop("More than one var in the files, please select it
+             with namevar=yourvar")
+      }
+    }
+
+    # load axis: updated version, looking for dimension directly stored
+    # inside the variable
+    naxis <-
+      unlist(lapply(a$var[[namevar]]$dim, function(x)
+        x["name"]))
+    for (axis in naxis) {
+      assign(axis, ncvar_get(a, axis))
+      printv(paste(axis, ":", length(get(axis)), "records"))
+    }
+
+    if (timeflag) {
+      printv("selecting years and months")
+
+      # based on preprocessing of CDO time format: get calendar type and
+      # use PCICt package for irregular data
+      caldata <- ncatt_get(a, "time", "calendar")$value
+      timeline <-
+        as.PCICt(as.character(time), format = "%Y%m%d", cal = caldata)
+
+      # break if the calendar has not been recognized
+      if (any(is.na(timeline))) {
+        stop("Calendar from NetCDF is unsupported or not present. Stopping!!!")
+      }
+
+      # break if the data requested is not there
+      lastday_base <- paste0(max(tyears), "-", max(tmonths), "-28")
+      maxdays <- number_days_month(lastday_base)
+      if (caldata == "360_day") {
+        maxdays <- 30
+      }
+      # uses number_days_month, which loops to get the month change
+      lastday <- as.PCICt(paste0(
+        max(tyears), "-", max(tmonths), "-",
+        maxdays
+      ),
+      cal = caldata,
+      format = "%Y-%m-%d"
+      )
+      firstday <-
+        as.PCICt(paste0(min(tyears), "-", min(tmonths), "-01"),
+          cal = caldata,
+          format = "%Y-%m-%d"
+        )
+      if (max(timeline) < lastday | min(timeline) > firstday) {
+        stop("You requested a time interval that is not present in the NetCDF")
+      }
+    }
+
+    # time selection and variable loading
+    printv("loading full field...")
+    field <- ncvar_get(a, namevar)
+
+    if (timeflag) {
+      # select data we need
+      select <- which(as.numeric(format(timeline, "%Y")) %in% tyears &
+        as.numeric(format(timeline, "%m")) %in% tmonths)
+      field <- field[, , select]
+      time <- timeline[select]
+
+      printv(paste("This is a", caldata, "calendar"))
+      printv(paste(
+        length(time), "days selected from", time[1],
+        "to", time[length(time)]
+      ))
+
+      printv(paste("Months that have been loaded are.. "))
+      printv(unique(format(time, "%Y-%m")))
+    }
+
+    # check for dimensions (presence or not of time dimension)
+    dimensions <- length(dim(field))
+
+    # if dimensions are multiple, get longitude, latitude
+    # if needed, rotate and flip the array
+    xlist <- c("lon", "Lon", "longitude", "Longitude")
+    ylist <- c("lat", "Lat", "latitude", "Latitude")
+    if (dimensions > 1) {
+      # assign ics and ipsilon
+      if (is.null(namelon)) {
+        if (any(xlist %in% naxis)) {
+          ics <- get(naxis[naxis %in% xlist], a$dim)$vals
+        } else {
+          print("WARNING: No lon found")
+          ics <- NA
+        }
+      } else {
+        ics <- ncvar_get(a, namelon)
+      }
+      if (is.null(namelat)) {
+        if (any(ylist %in% naxis)) {
+          ipsilon <- get(naxis[naxis %in% ylist], a$dim)$vals
+        } else {
+          print("WARNING: No lat found")
+          ipsilon <- NA
+        }
+      } else {
+        ipsilon <- ncvar_get(a, namelat)
+      }
+
+      # longitute rotation around Greenwich
+      if (rot) {
+        printv("rotating...")
+        ics <- rotation(ics)
+        field <- rotation(field)
+      }
+      if (ipsilon[2] < ipsilon[1] & length(ipsilon) > 1) {
+        if (length(ics) > 1) {
+          print("flipping...")
+          ipsilon <- sort(ipsilon)
+          field <- flipper(field)
+        }
+      }
+
+      # exporting variables to the main program
+      if (exportlonlat) {
+        assign("ics", ics, envir = .GlobalEnv)
+        assign("ipsilon", ipsilon, envir = .GlobalEnv)
+      }
+      assign(naxis[naxis %in% c(xlist, namelon)], ics)
+      assign(naxis[naxis %in% c(ylist, namelat)], ipsilon)
+    }
+
+    if (dimensions > 3) {
+      stop("This file is more than 3D file")
+    }
+
+    # close connection
+    nc_close(a)
+
+    # remove interpolated file
+    if (interp2grid) {
+      unlink(namefile)
+    }
+
+    # showing array properties
+    printv(paste(dim(field)))
+    if (timeflag) {
+      printv(paste("From", time[1], "to", time[length(time)]))
+    }
+
+    # returning file list
+    return(mget(c("field", naxis)))
   }
 
-  # define rotate function (faster than with apply)
-  rotation <- function(line) {
-    vettore <- line
-    dims <- length(dim(vettore))
-    # for longitudes
-    if (dims == 1) {
-      ll <- length(line)
-      line[(ll * move1):ll] <- vettore[1:(ll * move2 + 1)]
-      line[1:(ll * move1 - 1)] <- vettore[(ll * move2 + 2):ll] - 360
+# ncdf.opener is a simplified wrapper for ncdf.opener.universal which returns
+# only the field, ignoring the list
+ncdf_opener <- function(namefile,
+                        namevar = NULL,
+                        namelon = NULL,
+                        namelat = NULL,
+                        tmonths = NULL,
+                        tyears = NULL,
+                        rotate = "full",
+                        interp2grid = F,
+                        grid = "r144x73",
+                        remap_method = "remapcon2",
+                        exportlonlat = T) {
+  field <-
+    ncdf_opener_universal(
+      namefile,
+      namevar,
+      namelon,
+      namelat,
+      tmonths,
+      tyears,
+      rotate,
+      interp2grid,
+      grid,
+      remap_method,
+      exportlonlat = exportlonlat
+    )
+  return(field$field)
+}
+
+
+# function to open ncdf files (much more refined, with CDO-based interpolation)
+ncdf_opener_time <- # nolint
+  function(namefile,
+             namevar = NULL,
+             namelon = NULL,
+             namelat = NULL,
+             tmonths = NULL,
+             tyears = NULL,
+             ics = ics,
+             ipsilon = ipsilon,
+             rotate = "full",
+             interp2grid = F,
+             grid = "r144x73",
+             remap_method = "remapcon2") {
+    # function to open netcdf files. It uses ncdf4 library
+    # time selection of month and years needed automatically rotate matrix
+    # to place greenwich at the center (flag "rotate")
+    # and flip the latitudes in order to have increasing
+    # if require (flag "interp2grid") additional interpolation with CDO
+    # can be used. "grid" can be used to specify the grid name
+    require(ncdf4)
+    require(PCICt)
+
+    if (is.null(tyears) | is.null(tmonths)) {
+      stop("Please specify both months and years to load")
     }
-    # for x,y data
-    if (dims == 2) {
-      ll <- length(line[, 1])
-      line[(ll * move1):ll, ] <- vettore[1:(ll * move2 + 1), ]
-      line[1:(ll * move1 - 1), ] <- vettore[(ll * move2 + 2):ll, ]
+
+    if (rotate == "full") {
+      rot <- T
+      move1 <- move2 <- 1 / 2
+    } # 180 degrees rotation of longitude
+    if (rotate == "half") {
+      rot <- T
+      move1 <- 1 / 4
+      move2 <- 3 / 4
+    } # 90 degree rotation (useful for TM90)
+    if (rotate == "no") {
+      rot <- F
+    } # keep as it is, breaking at Greemwich
+
+    # interpolation made with CDO: second order conservative remapping
+    if (interp2grid) {
+      print(paste("Remapping with CDO on", grid, "grid"))
+      namefile <- cdo(remap_method,
+        args = paste0("'", grid, "'"),
+        input = namefile
+      )
     }
-    # for x,y,t data
-    if (dims == 3) {
-      ll <- length(line[, 1, 1])
-      line[(ll * move1):ll, , ] <- vettore[1:(ll * move2 + 1), , ]
-      line[1:(ll * move1 - 1), , ] <- vettore[(ll * move2 + 2):ll, , ]
+
+    # define rotate function (faster than with apply)
+    rotation <- function(line) {
+      vettore <- line
+      dims <- length(dim(vettore))
+      if (dims == 1) {
+        # for longitudes
+        ll <- length(line)
+        line[(ll * move1):ll] <- vettore[1:(ll * move2 + 1)]
+        line[1:(ll * move1 - 1)] <- vettore[(ll * move2 + 2):ll] - 360
+      }
+      if (dims == 2) {
+        # for x,y data
+        ll <- length(line[, 1])
+        line[(ll * move1):ll, ] <- vettore[1:(ll * move2 + 1), ]
+        line[1:(ll * move1 - 1), ] <- vettore[(ll * move2 + 2):ll, ]
+      }
+      if (dims == 3) {
+        # for x,y,t data
+        ll <- length(line[, 1, 1])
+        line[(ll * move1):ll, , ] <- vettore[1:(ll * move2 + 1), , ]
+        line[1:(ll * move1 - 1), , ] <-
+          vettore[(ll * move2 + 2):ll, , ]
+      }
+      return(line)
     }
-    return(line)
-  }
 
-  # define flip function ('cos rev/apply is not working)
-  flipper <- function(field) {
-    dims <- length(dim(field))
-    if (dims == 2) {
-      ll <- length(field[1, ])
-      field <- field[, ll:1]
-    } # for x,y data
-    if (dims == 3) {
-      ll <- length(field[1, , 1])
-      field <- field[, ll:1, ]
-    } # for x,y,t data
-    return(field)
-  }
-
-  # opening file: getting variable (if namevar is given, that variable
-  # is extracted)
-  printv(paste("opening file:", namefile))
-  a <- nc_open(namefile)
-
-  # if no name provided load the only variable available
-  if (is.null(namevar)) {
-    namevar <- names(a$var)
-    if (length(namevar) > 1) {
-      print(namevar)
-      stop("More than one var in the files, please select it
-with namevar=yourvar")
+    # define flip function ('cos rev/apply is not working)
+    flipper <- function(field) {
+      dims <- length(dim(field))
+      if (dims == 2) {
+        ll <- length(field[1, ])
+        field <- field[, ll:1]
+      } # for x,y data
+      if (dims == 3) {
+        ll <- length(field[1, , 1])
+        field <- field[, ll:1, ]
+      } # for x,y,t data
+      return(field)
     }
-  }
 
-  # load axis: updated version, looking for dimension directly stored
-  # inside the variable
-  naxis <- unlist(lapply(a$var[[namevar]]$dim, function(x) x["name"]))
-  for (axis in naxis) {
-    assign(axis, ncvar_get(a, axis))
-    printv(paste(axis, ":", length(get(axis)), "records"))
-  }
 
-  if (timeflag) {
-    printv("selecting years and months")
+    # opening file: getting variable (if namevar is given,
+    # that variable is extracted)
+    print(paste("opening file:", namefile))
+    a <- nc_open(namefile)
 
+    # load axis: old version, loading the variable dimensions with a max of
+    # 4 dimensions. It showed some issues with the time_bnds variable appearing
+    # in some NetCDF file. naxis=names(a$dim)[1:min(c(4,length(a$dim)))]
+    # load axis: updated version, looking for dimension directly stored inside
+    #  the variable
+    naxis <-
+      unlist(lapply(a$var[[namevar]]$dim, function(x)
+        x["name"]))
+    for (axis in naxis) {
+      print(axis)
+      assign(axis, ncvar_get(a, axis))
+    }
     # based on preprocessing of CDO time format: get calendar type and
     # use PCICt package for irregular data
     caldata <- ncatt_get(a, "time", "calendar")$value
-    timeline <- as.PCICt(as.character(time), format = "%Y%m%d", cal = caldata)
+    timeline <-
+      as.PCICt(as.character(time), format = "%Y%m%d", cal = caldata)
+    str(timeline)
 
     # break if the calendar has not been recognized
     if (any(is.na(timeline))) {
@@ -753,339 +1225,108 @@ with namevar=yourvar")
 
     # break if the data requested is not there
     lastday_base <- paste0(max(tyears), "-", max(tmonths), "-28")
-    maxdays <- number_days_month(lastday_base)
-    if (caldata == "360_day") {
-      maxdays <- 30
-    }
     # uses number_days_month, which loops to get the month change
-    lastday <- as.PCICt(paste0(
-      max(tyears), "-", max(tmonths), "-",
-      maxdays
-    ),
-    cal = caldata,
-    format = "%Y-%m-%d"
+    lastday <- as.PCICt(
+      paste0(
+        max(tyears),
+        "-",
+        max(tmonths),
+        "-",
+        number_days_month(lastday_base)
+      ),
+      cal = caldata,
+      format = "%Y-%m-%d"
     )
-    firstday <- as.PCICt(paste0(min(tyears), "-", min(tmonths), "-01"),
-      cal = caldata, format = "%Y-%m-%d"
-    )
+    firstday <-
+      as.PCICt(paste0(min(tyears), "-", min(tmonths), "-01"),
+        cal = caldata,
+        format = "%Y-%m-%d"
+      )
     if (max(timeline) < lastday | min(timeline) > firstday) {
       stop("You requested a time interval that is not present in the NetCDF")
     }
-  }
 
-  # time selection and variable loading
-  printv("loading full field...")
-  field <- ncvar_get(a, namevar)
-
-  if (timeflag) {
+    # time selection and variable loading
+    # if no name provided load the only variable available
+    if (is.null(namevar)) {
+      namevar <- names(a$var)
+    }
+    field <- ncvar_get(a, namevar)
 
     # select data we need
     select <- which(as.numeric(format(timeline, "%Y")) %in% tyears &
       as.numeric(format(timeline, "%m")) %in% tmonths)
+
     field <- field[, , select]
     time <- timeline[select]
 
-    printv(paste("This is a", caldata, "calendar"))
-    printv(paste(
-      length(time), "days selected from", time[1],
-      "to", time[length(time)]
-    ))
+    # check for dimensions (presence or not of time dimension)
+    dimensions <- length(dim(field))
 
-    printv(paste("Months that have been loaded are.. "))
-    printv(unique(format(time, "%Y-%m")))
-  }
-
-  # check for dimensions (presence or not of time dimension)
-  dimensions <- length(dim(field))
-
-  # if dimensions are multiple, get longitude, latitude
-  # if needed, rotate and flip the array
-  xlist <- c("lon", "Lon", "longitude", "Longitude")
-  ylist <- c("lat", "Lat", "latitude", "Latitude")
-  if (dimensions > 1) {
-    # assign ics and ipsilon
-    if (is.null(namelon)) {
-      if (any(xlist %in% naxis)) {
-        ics <- get(naxis[naxis %in% xlist], a$dim)$vals
+    # if dimensions are multiple, get longitude, latitude
+    # if needed, rotate and flip the array
+    if (dimensions > 1) {
+      # assign ics and ipsilon
+      if (is.null(namelon)) {
+        xlist <- c("lon", "Lon", "longitude", "Longitude")
+        if (any(xlist %in% naxis)) {
+          ics <- get(naxis[(naxis %in% xlist)], a$dim)$vals
+        } else {
+          stop("No lon found")
+        }
       } else {
-        print("WARNING: No lon found")
-        ics <- NA
+        ics <- ncvar_get(a, namelon)
       }
-    } else {
-      ics <- ncvar_get(a, namelon)
-    }
-    if (is.null(namelat)) {
-      if (any(ylist %in% naxis)) {
-        ipsilon <- get(naxis[naxis %in% ylist], a$dim)$vals
+      if (is.null(namelat)) {
+        ylist <- c("lat", "Lat", "latitude", "Latitude")
+        if (any(ylist %in% naxis)) {
+          ipsilon <- get(naxis[(naxis %in% ylist)], a$dim)$vals
+        } else {
+          stop("No lon found")
+        }
       } else {
-        print("WARNING: No lat found")
-        ipsilon <- NA
+        ipsilon <- ncvar_get(a, namelat)
       }
-    } else {
-      ipsilon <- ncvar_get(a, namelat)
-    }
 
-    # longitute rotation around Greenwich
-    if (rot) {
-      printv("rotating...")
-      ics <- rotation(ics)
-      field <- rotation(field)
-    }
-    if (ipsilon[2] < ipsilon[1] & length(ipsilon) > 1) {
-      if (length(ics) > 1) {
-        print("flipping...")
-        ipsilon <- sort(ipsilon)
-        field <- flipper(field)
+      print("flipping and rotating")
+      # longitute rotation around Greenwich
+      if (rot) {
+        ics <- rotation(ics)
+        field <- rotation(field)
       }
-    }
+      if (ipsilon[2] < ipsilon[1] & length(ipsilon) > 1) {
+        if (length(ics) > 1) {
+          ipsilon <- sort(ipsilon)
+          field <- flipper(field)
+        }
+      }
 
-    # exporting variables to the main program
-    if (exportlonlat) {
+      # exporting variables to the main program
       assign("ics", ics, envir = .GlobalEnv)
       assign("ipsilon", ipsilon, envir = .GlobalEnv)
-    }
-    assign(naxis[naxis %in% c(xlist, namelon)], ics)
-    assign(naxis[naxis %in% c(ylist, namelat)], ipsilon)
-  }
-
-  if (dimensions > 3) {
-    stop("This file is more than 3D file")
-  }
-
-  # close connection
-  nc_close(a)
-
-  # remove interpolated file
-  if (interp2grid) {
-    unlink(namefile)
-  }
-
-  # showing array properties
-  printv(paste(dim(field)))
-  if (timeflag) {
-    printv(paste("From", time[1], "to", time[length(time)]))
-  }
-
-  # returning file list
-  return(mget(c("field", naxis)))
-}
-
-# ncdf.opener is a simplified wrapper for ncdf.opener.universal which returns
-# only the field, ignoring the list
-ncdf_opener <- function(namefile, namevar = NULL, namelon = NULL,
-                        namelat = NULL, tmonths = NULL, tyears = NULL,
-                        rotate = "full", interp2grid = F, grid = "r144x73",
-                        remap_method = "remapcon2", exportlonlat = T) {
-  field <- ncdf_opener_universal(namefile, namevar, namelon, namelat, tmonths,
-    tyears, rotate, interp2grid, grid, remap_method,
-    exportlonlat = exportlonlat
-  )
-  return(field$field)
-}
-
-
-# function to open ncdf files (much more refined, with CDO-based interpolation)
-ncdf_opener_time <- function(namefile, namevar = NULL, namelon = NULL,
-                             namelat = NULL, tmonths = NULL, tyears = NULL,
-                             ics = ics, ipsilon = ipsilon, rotate = "full",
-                             interp2grid = F, grid = "r144x73",
-                             remap_method = "remapcon2") {
-  # function to open netcdf files. It uses ncdf4 library
-  # time selection of month and years needed automatically rotate matrix
-  # to place greenwich at the center (flag "rotate")
-  # and flip the latitudes in order to have increasing
-  # if require (flag "interp2grid") additional interpolation with CDO
-  # can be used. "grid" can be used to specify the grid name
-  require(ncdf4)
-  require(PCICt)
-
-  if (is.null(tyears) | is.null(tmonths)) {
-    stop("Please specify both months and years to load")
-  }
-
-  if (rotate == "full") {
-    rot <- T
-    move1 <- move2 <- 1 / 2
-  } # 180 degrees rotation of longitude
-  if (rotate == "half") {
-    rot <- T
-    move1 <- 1 / 4
-    move2 <- 3 / 4
-  } # 90 degree rotation (useful for TM90)
-  if (rotate == "no") {
-    rot <- F
-  } # keep as it is, breaking at Greemwich
-
-  # interpolation made with CDO: second order conservative remapping
-  if (interp2grid) {
-    print(paste("Remapping with CDO on", grid, "grid"))
-    namefile <- cdo(remap_method, args = paste0("'", grid, "'"),
-                    input = namefile)
-  }
-
-  # define rotate function (faster than with apply)
-  rotation <- function(line) {
-    vettore <- line
-    dims <- length(dim(vettore))
-    if (dims == 1) {
-      # for longitudes
-      ll <- length(line)
-      line[(ll * move1):ll] <- vettore[1:(ll * move2 + 1)]
-      line[1:(ll * move1 - 1)] <- vettore[(ll * move2 + 2):ll] - 360
-    }
-    if (dims == 2) {
-      # for x,y data
-      ll <- length(line[, 1])
-      line[(ll * move1):ll, ] <- vettore[1:(ll * move2 + 1), ]
-      line[1:(ll * move1 - 1), ] <- vettore[(ll * move2 + 2):ll, ]
-    }
-    if (dims == 3) {
-      # for x,y,t data
-      ll <- length(line[, 1, 1])
-      line[(ll * move1):ll, , ] <- vettore[1:(ll * move2 + 1), , ]
-      line[1:(ll * move1 - 1), , ] <- vettore[(ll * move2 + 2):ll, , ]
-    }
-    return(line)
-  }
-
-  # define flip function ('cos rev/apply is not working)
-  flipper <- function(field) {
-    dims <- length(dim(field))
-    if (dims == 2) {
-      ll <- length(field[1, ])
-      field <- field[, ll:1]
-    } # for x,y data
-    if (dims == 3) {
-      ll <- length(field[1, , 1])
-      field <- field[, ll:1, ]
-    } # for x,y,t data
-    return(field)
-  }
-
-
-  # opening file: getting variable (if namevar is given,
-  # that variable is extracted)
-  print(paste("opening file:", namefile))
-  a <- nc_open(namefile)
-
-  # load axis: old version, loading the variable dimensions with a max of
-  # 4 dimensions. It showed some issues with the time_bnds variable appearing
-  # in some NetCDF file. naxis=names(a$dim)[1:min(c(4,length(a$dim)))]
-  # load axis: updated version, looking for dimension directly stored inside
-  #  the variable
-  naxis <- unlist(lapply(a$var[[namevar]]$dim, function(x) x["name"]))
-  for (axis in naxis) {
-    print(axis)
-    assign(axis, ncvar_get(a, axis))
-  }
-  # based on preprocessing of CDO time format: get calendar type and
-  # use PCICt package for irregular data
-  caldata <- ncatt_get(a, "time", "calendar")$value
-  timeline <- as.PCICt(as.character(time), format = "%Y%m%d", cal = caldata)
-  str(timeline)
-
-  # break if the calendar has not been recognized
-  if (any(is.na(timeline))) {
-    stop("Calendar from NetCDF is unsupported or not present. Stopping!!!")
-  }
-
-  # break if the data requested is not there
-  lastday_base <- paste0(max(tyears), "-", max(tmonths), "-28")
-  # uses number_days_month, which loops to get the month change
-  lastday <- as.PCICt(paste0(
-    max(tyears), "-", max(tmonths), "-",
-    number_days_month(lastday_base)
-  ),
-  cal = caldata, format = "%Y-%m-%d"
-  )
-  firstday <- as.PCICt(paste0(min(tyears), "-", min(tmonths), "-01"),
-    cal = caldata, format = "%Y-%m-%d"
-  )
-  if (max(timeline) < lastday | min(timeline) > firstday) {
-    stop("You requested a time interval that is not present in the NetCDF")
-  }
-
-  # time selection and variable loading
-  # if no name provided load the only variable available
-  if (is.null(namevar)) {
-    namevar <- names(a$var)
-  }
-  field <- ncvar_get(a, namevar)
-
-  # select data we need
-  select <- which(as.numeric(format(timeline, "%Y")) %in% tyears &
-    as.numeric(format(timeline, "%m")) %in% tmonths)
-
-  field <- field[, , select]
-  time <- timeline[select]
-
-  # check for dimensions (presence or not of time dimension)
-  dimensions <- length(dim(field))
-
-  # if dimensions are multiple, get longitude, latitude
-  # if needed, rotate and flip the array
-  if (dimensions > 1) {
-    # assign ics and ipsilon
-    if (is.null(namelon)) {
-      xlist <- c("lon", "Lon", "longitude", "Longitude")
-      if (any(xlist %in% naxis)) {
-        ics <- get(naxis[(naxis %in% xlist)], a$dim)$vals
-      } else {
-        stop("No lon found")
-      }
-    } else {
-      ics <- ncvar_get(a, namelon)
-    }
-    if (is.null(namelat)) {
-      ylist <- c("lat", "Lat", "latitude", "Latitude")
-      if (any(ylist %in% naxis)) {
-        ipsilon <- get(naxis[(naxis %in% ylist)], a$dim)$vals
-      } else {
-        stop("No lon found")
-      }
-    } else {
-      ipsilon <- ncvar_get(a, namelat)
+      assign(naxis[naxis %in% xlist], ics)
+      assign(naxis[naxis %in% ylist], ipsilon)
     }
 
-    print("flipping and rotating")
-    # longitute rotation around Greenwich
-    if (rot) {
-      ics <- rotation(ics)
-      field <- rotation(field)
-    }
-    if (ipsilon[2] < ipsilon[1] & length(ipsilon) > 1) {
-      if (length(ics) > 1) {
-        ipsilon <- sort(ipsilon)
-        field <- flipper(field)
-      }
+
+    if (dimensions > 3) {
+      stop("This file is more than 3D file")
     }
 
-    # exporting variables to the main program
-    assign("ics", ics, envir = .GlobalEnv)
-    assign("ipsilon", ipsilon, envir = .GlobalEnv)
-    assign(naxis[naxis %in% xlist], ics)
-    assign(naxis[naxis %in% ylist], ipsilon)
+    # close connection
+    nc_close(a)
+
+    # remove interpolated file
+    if (interp2grid) {
+      unlink(namefile)
+    }
+
+    # showing array properties
+    print(paste(dim(field)))
+    print(paste("From", time[1], "to", time[length(time)]))
+
+    return(mget(c("field", naxis)))
   }
-
-
-  if (dimensions > 3) {
-    stop("This file is more than 3D file")
-  }
-
-  # close connection
-  nc_close(a)
-
-  # remove interpolated file
-  if (interp2grid) {
-    unlink(namefile)
-  }
-
-  # showing array properties
-  print(paste(dim(field)))
-  print(paste("From", time[1], "to", time[length(time)]))
-
-  return(mget(c("field", naxis)))
-}
 
 
 ##########################################################
@@ -1094,8 +1335,11 @@ ncdf_opener_time <- function(namefile, namevar = NULL, namelon = NULL,
 
 
 # Figure functions
-scale_figure <- function(plot_type, diag_script_cfg,
-                         nfields, npancol, npanrow) {
+scale_figure <- function(plot_type,
+                         diag_script_cfg,
+                         nfields,
+                         npancol,
+                         npanrow) {
   source(diag_script_cfg)
   if (plot_type == 1 || plot_type == 11) {
     npancol <- 1
@@ -1120,15 +1364,16 @@ scale_figure <- function(plot_type, diag_script_cfg,
   x11_width <- x11_width * figure_rel_width[plot_type]
 
   figure_aspect_ratio[plot_type] <- (figure_aspect_ratio[plot_type]
-                                    * npancol / npanrow)
+  * npancol / npanrow)
 
-  plot_size <- c(png_width, png_width / figure_aspect_ratio[plot_type])
+  plot_size <-
+    c(png_width, png_width / figure_aspect_ratio[plot_type])
   if (tolower(output_file_type) == "pdf") {
     plot_size[1] <- pdf_width
     plot_size[2] <- pdf_width / figure_aspect_ratio[plot_type]
-  } else if ( (tolower(output_file_type) == "eps") |
-              (tolower(output_file_type) == "epsi") |
-              (tolower(output_file_type) == "ps") ) {
+  } else if ((tolower(output_file_type) == "eps") |
+    (tolower(output_file_type) == "epsi") |
+    (tolower(output_file_type) == "ps")) {
     plot_size[1] <- pdf_width
     plot_size[2] <- pdf_width / figure_aspect_ratio[plot_type]
   } else if (tolower(output_file_type) == "x11") {
@@ -1143,16 +1388,26 @@ graphics_startup <- function(figname, output_file_type, plot_size) {
   source(diag_script_cfg)
   # choose output format for figure - by JvH
   if (tolower(output_file_type) == "png") {
-    png(filename = figname, width = plot_size[1], height = plot_size[2])
+    png(
+      filename = figname,
+      width = plot_size[1],
+      height = plot_size[2]
+    )
   } else if (tolower(output_file_type) == "pdf") {
-    pdf(file = figname, width = plot_size[1],
-               height = plot_size[2], onefile = T)
-  } else if ( (tolower(output_file_type) == "eps") |
-              (tolower(output_file_type) == "epsi") |
-              (tolower(output_file_type) == "ps") ) {
+    pdf(
+      file = figname,
+      width = plot_size[1],
+      height = plot_size[2],
+      onefile = T
+    )
+  } else if ((tolower(output_file_type) == "eps") |
+    (tolower(output_file_type) == "epsi") |
+    (tolower(output_file_type) == "ps")) {
     setEPS(
-      width = plot_size[1], height = plot_size[2],
-      onefile = T, paper = "special"
+      width = plot_size[1],
+      height = plot_size[2],
+      onefile = T,
+      paper = "special"
     )
     postscript(figname)
   } else if (tolower(output_file_type) == "x11") {
@@ -1168,16 +1423,30 @@ graphics_close <- function(figname) {
 }
 
 # extensive filled.contour function
-filled_contour3 <-
+filled_contour3 <- # nolint
   function(x = seq(0, 1, length.out = nrow(z)),
-           y = seq(0, 1, length.out = ncol(z)), z,
-           xlim = range(x, finite = TRUE),
-           ylim = range(y, finite = TRUE), zlim = range(z, finite = TRUE),
-           levels = pretty(zlim, nlevels), nlevels = 20,
-           color.palette = cm.colors, col = color.palette(length(levels) - 1),
-           extend = TRUE, plot.title, plot.axes,
-           key.title, key.axes, asp = NA, xaxs = "i", yaxs = "i", las = 1,
-           axes = TRUE, frame.plot = axes, mar, ...) {
+             y = seq(0, 1, length.out = ncol(z)),
+             z,
+             xlim = range(x, finite = TRUE),
+             ylim = range(y, finite = TRUE),
+             zlim = range(z, finite = TRUE),
+             levels = pretty(zlim, nlevels),
+             nlevels = 20,
+             color.palette = cm.colors,
+             col = color.palette(length(levels) - 1),
+             extend = TRUE,
+             plot.title,
+             plot.axes,
+             key.title,
+             key.axes,
+             asp = NA,
+             xaxs = "i",
+             yaxs = "i",
+             las = 1,
+             axes = TRUE,
+             frame.plot = axes,
+             mar,
+             ...) {
     # modification by Ian Taylor of the filled.contour function
     # to remove the key and facilitate overplotting with contour()
     # further modified by Carey McGilliard and Bridget Ferris
@@ -1215,7 +1484,13 @@ filled_contour3 <-
     }
 
     plot.new()
-    plot.window(xlim, ylim, "", xaxs = xaxs, yaxs = yaxs, asp = asp)
+    plot.window(xlim,
+      ylim,
+      "",
+      xaxs = xaxs,
+      yaxs = yaxs,
+      asp = asp
+    )
     if (!is.matrix(z) || nrow(z) <= 1 || ncol(z) <= 1) {
       stop("no proper 'z' matrix specified")
     }
@@ -1227,7 +1502,11 @@ filled_contour3 <-
     )
     if (missing(plot.axes)) {
       if (axes) {
-        title(main = "", xlab = "", ylab = "")
+        title(
+          main = "",
+          xlab = "",
+          ylab = ""
+        )
         Axis(x, side = 1, ...)
         Axis(y, side = 2, ...)
       }
@@ -1246,12 +1525,18 @@ filled_contour3 <-
     invisible()
   }
 
-image_scale3 <- function(z, levels, color.palette = heat.colors,
-                         colorbar.label = "image.scale", extend = T,
-                         line.label = 2, line.colorbar = 0, cex.label = 1,
-                         cex.colorbar = 1, colorbar.width = 1,
-                         new_fig_scale = c(-0.07, -0.03, 0.1, -0.1), ...) {
-
+image_scale3 <- function(z,
+                         levels,
+                         color.palette = heat.colors,
+                         colorbar.label = "image.scale",
+                         extend = T,
+                         line.label = 2,
+                         line.colorbar = 0,
+                         cex.label = 1,
+                         cex.colorbar = 1,
+                         colorbar.width = 1,
+                         new_fig_scale = c(-0.07, -0.03, 0.1, -0.1),
+                         ...) {
   # save properties from main plotting region
   old.par <- par(no.readonly = TRUE)
   mfg.save <- par()$mfg
@@ -1262,10 +1547,12 @@ image_scale3 <- function(z, levels, color.palette = heat.colors,
   yscal <- (old.fig[4] - old.fig[3])
   lw <- colorbar.width
   lp <- line.colorbar / 100
-  new.fig <- c(old.fig[2] + new_fig_scale[1] * xscal * lw - lp,
-               old.fig[2] + new_fig_scale[2] * xscal - lp,
-               old.fig[3] + new_fig_scale[3] * yscal,
-               old.fig[4] + new_fig_scale[4] * yscal)
+  new.fig <- c(
+    old.fig[2] + new_fig_scale[1] * xscal * lw - lp,
+    old.fig[2] + new_fig_scale[2] * xscal - lp,
+    old.fig[3] + new_fig_scale[3] * yscal,
+    old.fig[4] + new_fig_scale[4] * yscal
+  )
 
   if (missing(levels)) {
     levels <- seq(min(z), max(z), , 12)
@@ -1274,7 +1561,11 @@ image_scale3 <- function(z, levels, color.palette = heat.colors,
   col <- color.palette(length(levels) - 1)
 
   # starting plot
-  par(mar = c(1, 1, 1, 1), fig = new.fig, new = TRUE)
+  par(
+    mar = c(1, 1, 1, 1),
+    fig = new.fig,
+    new = TRUE
+  )
 
   # creating polygons for legend
   poly <- vector(mode = "list", length(col))
@@ -1290,34 +1581,56 @@ image_scale3 <- function(z, levels, color.palette = heat.colors,
   } else {
     ylim <- range(levels)
   }
-  plot(1, 1,
-    t = "n", ylim = ylim, xlim = xlim, axes = FALSE, xlab = "",
-    ylab = "", xaxs = "i", yaxs = "i", ...
+  plot(
+    1,
+    1,
+    t = "n",
+    ylim = ylim,
+    xlim = xlim,
+    axes = FALSE,
+    xlab = "",
+    ylab = "",
+    xaxs = "i",
+    yaxs = "i",
+    ...
   )
   for (i in seq(poly)) {
     polygon(c(0, 0, 1, 1), poly[[i]], col = col[i], border = NA)
   }
   if (extend) {
-    polygon(c(0, 1, 1 / 2), c(levels[1], levels[1], levels[1] - dl),
-      col = col[1], border = NA
+    polygon(c(0, 1, 1 / 2),
+      c(levels[1], levels[1], levels[1] - dl),
+      col = col[1],
+      border = NA
     )
-    polygon(c(0, 1, 1 / 2), c(
-      levels[length(levels)], levels[length(levels)],
-      levels[length(levels)] + dl
-    ),
-    col = col[length(col)], border = NA
+    polygon(c(0, 1, 1 / 2),
+      c(
+        levels[length(levels)], levels[length(levels)],
+        levels[length(levels)] + dl
+      ),
+      col = col[length(col)],
+      border = NA
     )
-    polygon(c(0, 0, 1 / 2, 1, 1, 1 / 2), c(
-      levels[1], levels[length(levels)], levels[length(levels)] + dl,
-      levels[length(levels)], levels[1], levels[1] - dl
-    ), border = "black", lwd = 2)
+    polygon(
+      c(0, 0, 1 / 2, 1, 1, 1 / 2),
+      c(
+        levels[1], levels[length(levels)], levels[length(levels)] + dl,
+        levels[length(levels)], levels[1], levels[1] - dl
+      ),
+      border = "black",
+      lwd = 2
+    )
     ylim0 <- range(levels)
     prettyspecial <- pretty(ylim0)
     prettyspecial <- prettyspecial[prettyspecial <= max(ylim0) &
       prettyspecial >= min(ylim0)]
-    axis(4,
-      las = 1, cex.axis = cex.colorbar, at = prettyspecial,
-      labels = prettyspecial, ...
+    axis(
+      4,
+      las = 1,
+      cex.axis = cex.colorbar,
+      at = prettyspecial,
+      labels = prettyspecial,
+      ...
     )
   } else {
     box()
@@ -1325,7 +1638,12 @@ image_scale3 <- function(z, levels, color.palette = heat.colors,
   }
 
   # box, axis and leged
-  mtext(colorbar.label, line = line.label, side = 4, cex = cex.label, ...)
+  mtext(colorbar.label,
+    line = line.label,
+    side = 4,
+    cex = cex.label,
+    ...
+  )
 
   # resetting properties for starting a new plot (mfrow style)
   par(old.par)
@@ -1333,32 +1651,43 @@ image_scale3 <- function(z, levels, color.palette = heat.colors,
   invisible()
 }
 
-cdo <- function(command, args = "", input = "", options = "", output = "",
-                stdout = "", noout = F) {
-  if (args != "") args <- paste0(",", args)
-  if (stdout != "") {
-    stdout <- paste0(" > '", stdout, "'")
-    noout <- T
-  }
-  if (input[1] != "") {
-    for (i in 1:length(input)) {
-      input[i] <- paste0("'", input[i], "'")
+cdo <-
+  function(command,
+             args = "",
+             input = "",
+             options = "",
+             output = "",
+             stdout = "",
+             noout = F) {
+    if (args != "") {
+      args <- paste0(",", args)
     }
-    input <- paste(input, collapse = " ")
-  }
-  output0 <- output
-  if (output != "") {
-    output <- paste0("'", output, "'")
-  } else if ( !noout ) {
-    output <- tempfile()
+    if (stdout != "") {
+      stdout <- paste0(" > '", stdout, "'")
+      noout <- T
+    }
+    if (input[1] != "") {
+      for (i in 1:length(input)) {
+        input[i] <- paste0("'", input[i], "'")
+      }
+      input <- paste(input, collapse = " ")
+    }
     output0 <- output
+    if (output != "") {
+      output <- paste0("'", output, "'")
+    } else if (!noout) {
+      output <- tempfile()
+      output0 <- output
+    }
+    argstr <-
+      paste0(
+        options, " ", command, args, " ", input, " ", output,
+        " ", stdout
+      )
+    print(paste("cdo", argstr))
+    ret <- system2("cdo", args = argstr)
+    if (ret != 0) {
+      stop(paste("Failed (", ret, "): cdo", argstr))
+    }
+    return(output0)
   }
-  argstr <- paste0(options, " ", command, args, " ", input, " ", output,
-                   " ", stdout)
-  print(paste("cdo", argstr))
-  ret <- system2("cdo", args = argstr)
-  if (ret != 0) {
-    stop(paste("Failed (", ret, "): cdo", argstr))
-  }
-  return(output0)
-}

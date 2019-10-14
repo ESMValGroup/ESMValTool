@@ -5,10 +5,10 @@ documentation:
   description: Recipe for example diagnostic written in R.
   
   authors: 
-    - arno_en
+    - arnone_enrico
 
   maintainer:
-    - ande_bo
+    - andela_bouwe
 
 datasets:
   - {dataset: EC-EARTH, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1997, end_year: 1997}
@@ -25,5 +25,5 @@ diagnostics:
         mip: day
     scripts:
       main:
-        script: examples/diagnostic.r
+        script: examples/diagnostic.R
         parameter1:   1    # example parameter

@@ -11,10 +11,10 @@ documentation:
     checked.
 
   authors:
-    - pred_va
+    - predoi_valeriu
 
   maintainer:
-    - pred_va
+    - predoi_valeriu
 
 datasets:
   - {dataset: MPI-ESM-LR,  project: CMIP5,  mip: Amon,  exp: amip,  ensemble: r1i1p1,  start_year: 1992,  end_year: 2002}
