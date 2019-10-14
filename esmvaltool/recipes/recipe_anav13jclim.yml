@@ -6,10 +6,10 @@ documentation:
     This recipe reproduces most of the figures of Anav et al. (2013).
 
   authors:
-    - anav_al
-    - wenz_sa
-    - righ_ma
-    - schl_ma
+    - anav_alessandro
+    - wenzel_sabrina
+    - righi_mattia
+    - schlund_manuel
 
   references:
     - anav13jclim
@@ -66,7 +66,6 @@ diagnostics:
         preprocessor: landmask_and_regrid
         project: CMIP5
         mip: Amon
-        field: T2Ms
         exp: historical
         ensemble: r1i1p1
         start_year: 1901
@@ -74,7 +73,7 @@ diagnostics:
         reference_dataset: CRU
         plot_units: degC
     additional_datasets: &tas_datasets
-      - {dataset: CRU, project: OBS, type: reanaly, version: 1, tier: 3}
+      - {dataset: CRU, project: OBS, type: reanaly, version: TS4.02, tier: 2}
       - {dataset: bcc-csm1-1}
       - {dataset: bcc-csm1-1-m}
       - {dataset: BNU-ESM}
@@ -87,8 +86,7 @@ diagnostics:
       - {dataset: inmcm4}
       - {dataset: IPSL-CM5A-LR}
       - {dataset: IPSL-CM5A-MR}
-      # Overlapping files for several variables at mistral
-      # - {dataset: IPSL-CM5B-LR}
+      - {dataset: IPSL-CM5B-LR}
       - {dataset: MIROC-ESM}
       - {dataset: MIROC-ESM-CHEM}
       - {dataset: MPI-ESM-LR}
@@ -208,8 +206,6 @@ diagnostics:
       - {dataset: HadISST, project: OBS, type: reanaly, version: 1, tier: 2}
       - {dataset: bcc-csm1-1}
       - {dataset: bcc-csm1-1-m}
-      # No data
-      # - {dataset: BNU-ESM}
       - {dataset: CanESM2}
       - {dataset: CESM1-BGC}
       - {dataset: GFDL-ESM2G}
@@ -262,66 +258,65 @@ diagnostics:
         <<: *main_trop
         evolution_plot_ref_dataset: HadISST
 
-  diag_main_nbp:
-    description: Error bar, sasonal cycle and evolution plots for nbp (Figures 5, 6, 7).
-    themes:
-      - phys
-    realms:
-      - land
-    variables:
-      nbp_grid:
-        <<: *landmaskregrid_Amon_1901_2005_refCRU
-        preprocessor: noop
-        mip: Lmon
-        reference_dataset: JMA-TRANSCOM
-        plot_units: PgC y-1
-        derive: true
-        additional_datasets:
-          - {dataset: GCP, project: OBS, type: reanaly, version: 1, tier: 2, start_year: 1959, end_year: 2015}
-    additional_datasets: &nbp_datasets
-      - {dataset: JMA-TRANSCOM, project: OBS, type: reanaly, version: 1, tier: 3, start_year: 1986, end_year: 2005}
-      - {dataset: BNU-ESM}
-      - {dataset: CanESM2}
-      - {dataset: CESM1-BGC}
-      - {dataset: GFDL-ESM2G}
-      - {dataset: GFDL-ESM2M}
-      - {dataset: HadGEM2-CC}
-      - {dataset: HadGEM2-ES}
-      - {dataset: inmcm4}
-      - {dataset: IPSL-CM5A-LR}
-      - {dataset: IPSL-CM5A-MR}
-      # Overlapping files for several variables at mistral
-      # - {dataset: IPSL-CM5B-LR}
-      - {dataset: MIROC-ESM}
-      - {dataset: MIROC-ESM-CHEM}
-      - {dataset: MPI-ESM-LR}
-      - {dataset: MPI-ESM-MR}
-      - {dataset: NorESM1-ME}
-    scripts:
-      main_global:
-        <<: *main_global
-        evolution_plot_ref_dataset: GCP
-        evolution_plot_anomaly: false
-        evolution_plot_volcanoes: false
-        anav_month: true
-      main_nh:
-        <<: *main_nh
-        evolution_plot_ref_dataset: GCP
-        evolution_plot_anomaly: false
-        evolution_plot_volcanoes: false
-        anav_month: true
-      main_sh:
-        <<: *main_sh
-        evolution_plot_ref_dataset: GCP
-        evolution_plot_anomaly: false
-        evolution_plot_volcanoes: false
-        anav_month: true
-      main_trop:
-        <<: *main_trop
-        evolution_plot_ref_dataset: GCP
-        evolution_plot_anomaly: false
-        evolution_plot_volcanoes: false
-        anav_month: true
+  # diag_main_nbp:
+  #   description: Error bar, sasonal cycle and evolution plots for nbp (Figures 5, 6, 7).
+  #   themes:
+  #     - phys
+  #   realms:
+  #     - land
+  #   variables:
+  #     nbp_grid:
+  #       <<: *landmaskregrid_Amon_1901_2005_refCRU
+  #       preprocessor: noop
+  #       mip: Lmon
+  #       reference_dataset: JMA-TRANSCOM
+  #       plot_units: PgC y-1
+  #       derive: true
+  #       additional_datasets:
+  #         - {dataset: GCP, project: OBS, type: reanaly, version: 1, tier: 2, start_year: 1959, end_year: 2015}
+  #   additional_datasets: &nbp_datasets
+  #     - {dataset: JMA-TRANSCOM, project: OBS, type: reanaly, version: 1, tier: 3, start_year: 1986, end_year: 2005}
+  #     - {dataset: BNU-ESM}
+  #     - {dataset: CanESM2}
+  #     - {dataset: CESM1-BGC}
+  #     - {dataset: GFDL-ESM2G}
+  #     - {dataset: GFDL-ESM2M}
+  #     - {dataset: HadGEM2-CC}
+  #     - {dataset: HadGEM2-ES}
+  #     - {dataset: inmcm4}
+  #     - {dataset: IPSL-CM5A-LR}
+  #     - {dataset: IPSL-CM5A-MR}
+  #     - {dataset: IPSL-CM5B-LR}
+  #     - {dataset: MIROC-ESM}
+  #     - {dataset: MIROC-ESM-CHEM}
+  #     - {dataset: MPI-ESM-LR}
+  #     - {dataset: MPI-ESM-MR}
+  #     - {dataset: NorESM1-ME}
+  #   scripts:
+  #     main_global:
+  #       <<: *main_global
+  #       evolution_plot_ref_dataset: GCP
+  #       evolution_plot_anomaly: false
+  #       evolution_plot_volcanoes: false
+  #       anav_month: true
+  #     main_nh:
+  #       <<: *main_nh
+  #       evolution_plot_ref_dataset: GCP
+  #       evolution_plot_anomaly: false
+  #       evolution_plot_volcanoes: false
+  #       anav_month: true
+  #     main_sh:
+  #       <<: *main_sh
+  #       evolution_plot_ref_dataset: GCP
+  #       evolution_plot_anomaly: false
+  #       evolution_plot_volcanoes: false
+  #       anav_month: true
+  #     main_trop:
+  #       <<: *main_trop
+  #       evolution_plot_ref_dataset: GCP
+  #       evolution_plot_anomaly: false
+  #       evolution_plot_volcanoes: false
+  #       anav_month: true
 
   diag_mvi_lai:
     description: MVI scatter plot for lai (Figure 10).
@@ -334,7 +329,6 @@ diagnostics:
         preprocessor: regridding
         project: CMIP5
         mip: Lmon
-        field: T2Ms
         exp: historical
         ensemble: r1i1p1
         start_year: 1986
@@ -342,7 +336,7 @@ diagnostics:
         reference_dataset: LAI3g
         derive: true
     additional_datasets: &lai_datasets
-      - {dataset: LAI3g, project: OBS, type: reanaly, version: 1, tier: 3}
+      - {dataset: LAI3g, project: OBS, type: reanaly, version: 1_regridded, tier: 3}
       - {dataset: bcc-csm1-1}
       - {dataset: bcc-csm1-1-m}
       - {dataset: BNU-ESM}
@@ -355,8 +349,7 @@ diagnostics:
       - {dataset: inmcm4}
       - {dataset: IPSL-CM5A-LR}
       - {dataset: IPSL-CM5A-MR}
-      # Overlapping files for several variables at mistral
-      # - {dataset: IPSL-CM5B-LR}
+      - {dataset: IPSL-CM5B-LR}
       - {dataset: MIROC-ESM}
       - {dataset: MIROC-ESM-CHEM}
       - {dataset: MPI-ESM-LR}
@@ -417,7 +410,7 @@ diagnostics:
         reference_dataset: MTE
         plot_units: PgC y-1
     additional_datasets: &gpp_datasets
-      - {dataset: MTE, project: OBS, type: reanaly, version: 1, tier: 2}
+      - {dataset: MTE, project: OBS, type: reanaly, version: May12, tier: 3}
       - {dataset: bcc-csm1-1}
       - {dataset: bcc-csm1-1-m}
       - {dataset: BNU-ESM}
@@ -430,8 +423,7 @@ diagnostics:
       - {dataset: inmcm4}
       - {dataset: IPSL-CM5A-LR}
       - {dataset: IPSL-CM5A-MR}
-      # Overlapping files for several variables at mistral
-      # - {dataset: IPSL-CM5B-LR}
+      - {dataset: IPSL-CM5B-LR}
       - {dataset: MIROC-ESM}
       - {dataset: MIROC-ESM-CHEM}
       - {dataset: MPI-ESM-LR}
@@ -482,124 +474,120 @@ diagnostics:
         evolution_plot_anomaly: false
         evolution_plot_volcanoes: false
 
-  diag_two_vars_scatter:
-    description: Two-variable scatter plot for cSoil and cVeg (Figure 12).
-    themes:
-      - phys
-    realms:
-      - land
-    variables:
-      cSoil_grid:
-        <<: *regrid_Lmon_1986_2005_refLAI3g
-        reference_dataset: HWSD
-        plot_units: PgC
-        additional_datasets:
-          - {dataset: HWSD, project: OBS, type: ground, version: 1, start_year: 2000, end_year: 2000, tier: 2}
-      cVeg_grid:
-        <<: *regrid_Lmon_1986_2005_refLAI3g
-        reference_dataset: NDP
-        plot_units: PgC
-        additional_datasets:
-          - {dataset: NDP, project: OBS, type: ground, version: 017b, start_year: 2000, end_year: 2000, tier: 2}
-    additional_datasets:
-      - {dataset: BNU-ESM}
-      # - {dataset: CanESM2}
-      - {dataset: CESM1-BGC}
-      - {dataset: GFDL-ESM2G}
-      - {dataset: GFDL-ESM2M}
-      - {dataset: HadGEM2-CC}
-      - {dataset: HadGEM2-ES}
-      # - {dataset: inmcm4}
-      - {dataset: IPSL-CM5A-LR}
-      - {dataset: IPSL-CM5A-MR}
-      # Overlapping files for several variables at mistral
-      # - {dataset: IPSL-CM5B-LR}
-      - {dataset: MIROC-ESM}
-      - {dataset: MIROC-ESM-CHEM}
-      - {dataset: MPI-ESM-LR}
-      - {dataset: MPI-ESM-MR}
-      - {dataset: NorESM1-ME}
-    scripts:
-      scat_global: &scat_glob
-        script: carbon_cycle/two_variables.ncl
-        legend_year_outside: false
-        styleset: CMIP5
-        region: Global
-      scat_nh:
-        <<: *scat_glob
-        region: Northern Hemisphere
-      scat_sh:
-        <<: *scat_glob
-        region: Southern Hemisphere
-      scat_trop:
-        <<: *scat_glob
-        region: Tropics
+  # diag_two_vars_scatter:
+  #   description: Two-variable scatter plot for cSoil and cVeg (Figure 12).
+  #   themes:
+  #     - phys
+  #   realms:
+  #     - land
+  #   variables:
+  #     cSoil_grid:
+  #       <<: *regrid_Lmon_1986_2005_refLAI3g
+  #       reference_dataset: HWSD
+  #       plot_units: PgC
+  #       additional_datasets:
+  #         - {dataset: HWSD, project: OBS, type: ground, version: 1, start_year: 2000, end_year: 2000, tier: 2}
+  #     cVeg_grid:
+  #       <<: *regrid_Lmon_1986_2005_refLAI3g
+  #       reference_dataset: NDP
+  #       plot_units: PgC
+  #       additional_datasets:
+  #         - {dataset: NDP, project: OBS, type: ground, version: 017b, start_year: 2000, end_year: 2000, tier: 2}
+  #   additional_datasets:
+  #     - {dataset: BNU-ESM}
+  #     # - {dataset: CanESM2}
+  #     - {dataset: CESM1-BGC}
+  #     - {dataset: GFDL-ESM2G}
+  #     - {dataset: GFDL-ESM2M}
+  #     - {dataset: HadGEM2-CC}
+  #     - {dataset: HadGEM2-ES}
+  #     # - {dataset: inmcm4}
+  #     - {dataset: IPSL-CM5A-LR}
+  #     - {dataset: IPSL-CM5A-MR}
+  #     - {dataset: IPSL-CM5B-LR}
+  #     - {dataset: MIROC-ESM}
+  #     - {dataset: MIROC-ESM-CHEM}
+  #     - {dataset: MPI-ESM-LR}
+  #     - {dataset: MPI-ESM-MR}
+  #     - {dataset: NorESM1-ME}
+  #   scripts:
+  #     scat_global: &scat_glob
+  #       script: carbon_cycle/two_variables.ncl
+  #       legend_year_outside: false
+  #       styleset: CMIP5
+  #       region: Global
+  #     scat_nh:
+  #       <<: *scat_glob
+  #       region: Northern Hemisphere
+  #     scat_sh:
+  #       <<: *scat_glob
+  #       region: Southern Hemisphere
+  #     scat_trop:
+  #       <<: *scat_glob
+  #       region: Tropics
 
-  diag_main_fgco2:
-    description: Error bar, sasonal cycle and evolution plots for fgco2 (Figure 13, 14, 15).
-    themes:
-      - phys
-    realms:
-      - ocean
-    variables:
-      fgco2_grid:
-        <<: *landmaskregrid_Amon_1901_2005_refCRU
-        preprocessor: regridding
-        mip: Omon
-        reference_dataset: JMA-TRANSCOM
-        plot_units: PgC y-1
-        derive: true
-        additional_datasets:
-          - {dataset: JMA-TRANSCOM, project: OBS, type: reanaly, version: 1, tier: 3, start_year: 1986, end_year: 2005}
-          # No data
-          # - {dataset: BNU-ESM}
-          - {dataset: CanESM2}
-          - {dataset: CESM1-BGC}
-          - {dataset: GFDL-ESM2G}
-          - {dataset: GFDL-ESM2M}
-          - {dataset: HadGEM2-CC}
-          - {dataset: HadGEM2-ES}
-          - {dataset: inmcm4}
-          - {dataset: IPSL-CM5A-LR}
-          - {dataset: IPSL-CM5A-MR}
-          - {dataset: IPSL-CM5B-LR}
-          # Shape of fx files and fgco2 differ on mistral
-          # - {dataset: MIROC-ESM}
-          # - {dataset: MIROC-ESM-CHEM}
-          - {dataset: MPI-ESM-LR}
-          - {dataset: MPI-ESM-MR}
-          - {dataset: NorESM1-ME}
-      fgco2_grid_GCP:
-        <<: *landmaskregrid_Amon_1901_2005_refCRU
-        short_name: fgco2_grid
-        preprocessor: noop
-        mip: Omon
-        reference_dataset: JMA-TRANSCOM
-        plot_units: PgC y-1
-        derive: true
-        additional_datasets:
-          - {dataset: GCP, project: OBS, type: reanaly, version: 1, tier: 2, start_year: 1959, end_year: 2015}
-    scripts:
-      main_global:
-        <<: *main_global
-        evolution_plot_ref_dataset: GCP
-        evolution_plot_anomaly: false
-        evolution_plot_volcanoes: false
-      main_nh:
-        <<: *main_nh
-        evolution_plot_ref_dataset: GCP
-        evolution_plot_anomaly: false
-        evolution_plot_volcanoes: false
-      main_sh:
-        <<: *main_sh
-        evolution_plot_ref_dataset: GCP
-        evolution_plot_anomaly: false
-        evolution_plot_volcanoes: false
-      main_trop:
-        <<: *main_trop
-        evolution_plot_ref_dataset: GCP
-        evolution_plot_anomaly: false
-        evolution_plot_volcanoes: false
+  # diag_main_fgco2:
+  #   description: Error bar, sasonal cycle and evolution plots for fgco2 (Figure 13, 14, 15).
+  #   themes:
+  #     - phys
+  #   realms:
+  #     - ocean
+  #   variables:
+  #     fgco2_grid:
+  #       <<: *landmaskregrid_Amon_1901_2005_refCRU
+  #       preprocessor: regridding
+  #       mip: Omon
+  #       reference_dataset: JMA-TRANSCOM
+  #       plot_units: PgC y-1
+  #       derive: true
+  #       additional_datasets:
+  #         - {dataset: JMA-TRANSCOM, project: OBS, type: reanaly, version: 1, tier: 3, start_year: 1986, end_year: 2005}
+  #         - {dataset: CanESM2}
+  #         - {dataset: CESM1-BGC}
+  #         - {dataset: GFDL-ESM2G}
+  #         - {dataset: GFDL-ESM2M}
+  #         - {dataset: HadGEM2-CC}
+  #         - {dataset: HadGEM2-ES}
+  #         - {dataset: inmcm4}
+  #         - {dataset: IPSL-CM5A-LR}
+  #         - {dataset: IPSL-CM5A-MR}
+  #         - {dataset: IPSL-CM5B-LR}
+  #         - {dataset: MIROC-ESM}
+  #         - {dataset: MIROC-ESM-CHEM}
+  #         - {dataset: MPI-ESM-LR}
+  #         - {dataset: MPI-ESM-MR}
+  #         - {dataset: NorESM1-ME}
+  #     fgco2_grid_GCP:
+  #       <<: *landmaskregrid_Amon_1901_2005_refCRU
+  #       short_name: fgco2_grid
+  #       preprocessor: noop
+  #       mip: Omon
+  #       reference_dataset: JMA-TRANSCOM
+  #       plot_units: PgC y-1
+  #       derive: true
+  #       additional_datasets:
+  #         - {dataset: GCP, project: OBS, type: reanaly, version: 1, tier: 2, start_year: 1959, end_year: 2015}
+  #   scripts:
+  #     main_global:
+  #       <<: *main_global
+  #       evolution_plot_ref_dataset: GCP
+  #       evolution_plot_anomaly: false
+  #       evolution_plot_volcanoes: false
+  #     main_nh:
+  #       <<: *main_nh
+  #       evolution_plot_ref_dataset: GCP
+  #       evolution_plot_anomaly: false
+  #       evolution_plot_volcanoes: false
+  #     main_sh:
+  #       <<: *main_sh
+  #       evolution_plot_ref_dataset: GCP
+  #       evolution_plot_anomaly: false
+  #       evolution_plot_volcanoes: false
+  #     main_trop:
+  #       <<: *main_trop
+  #       evolution_plot_ref_dataset: GCP
+  #       evolution_plot_anomaly: false
+  #       evolution_plot_volcanoes: false
 
   diag_grading_tas: &diag_grading
     description: Grading precalculations for tas.
@@ -674,34 +662,34 @@ diagnostics:
       grading_trop:
         <<: *grading_trop
 
-  diag_grading_nbp:
-    <<: *diag_grading
-    description: Grading precalculations for nbp.
-    realms:
-      - land
-    variables:
-      nbp_grid:
-        <<: *regrid_Lmon_1986_2005_refLAI3g
-        preprocessor: regrid_to_ref
-        reference_dataset: JMA-TRANSCOM
-    additional_datasets: *nbp_datasets
-    scripts:
-      cycle_global:
-        <<: *cycle_global
-      cycle_nh:
-        <<: *cycle_nh
-      cycle_sh:
-        <<: *cycle_sh
-      cycle_trop:
-        <<: *cycle_trop
-      grading_global:
-        <<: *grading_global
-      grading_nh:
-        <<: *grading_nh
-      grading_sh:
-        <<: *grading_sh
-      grading_trop:
-        <<: *grading_trop
+  # diag_grading_nbp:
+  #   <<: *diag_grading
+  #   description: Grading precalculations for nbp.
+  #   realms:
+  #     - land
+  #   variables:
+  #     nbp_grid:
+  #       <<: *regrid_Lmon_1986_2005_refLAI3g
+  #       preprocessor: regrid_to_ref
+  #       reference_dataset: JMA-TRANSCOM
+  #   additional_datasets: *nbp_datasets
+  #   scripts:
+  #     cycle_global:
+  #       <<: *cycle_global
+  #     cycle_nh:
+  #       <<: *cycle_nh
+  #     cycle_sh:
+  #       <<: *cycle_sh
+  #     cycle_trop:
+  #       <<: *cycle_trop
+  #     grading_global:
+  #       <<: *grading_global
+  #     grading_nh:
+  #       <<: *grading_nh
+  #     grading_sh:
+  #       <<: *grading_sh
+  #     grading_trop:
+  #       <<: *grading_trop
 
   diag_grading_lai:
     <<: *diag_grading
