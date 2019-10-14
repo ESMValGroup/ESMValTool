@@ -977,6 +977,7 @@ class Plot2D(object):
                 fraction=1.,
                 extend=ext_cmap,
                 boundaries=levels)
+            cbar.ax.set_xticklabels([('{:.'+str(2)+'g}').format(x) for x in ticks])
         cax.set_xlabel((list(set(self.names))[0] if list(
             set(self.names))[0] else "") + list(set(self.units))[0])
 
