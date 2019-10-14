@@ -38,7 +38,7 @@ diagnostics:
         ensemble: r1i1p1
         start_year: 2000
         end_year: 2004
-        fx_files: [areacella, ]
+        fx_files: [areacella]
         additional_datasets:
           - {dataset: MPI-ESM-LR}
       snc:
@@ -61,9 +61,8 @@ diagnostics:
         preprocessor: pp_obs
         mip: Amon
         additional_datasets:
-          - {dataset: Duveiller2018, project: OBS, tier: 2, version: v2018, start_year: 2010, end_year: 2010, frequency: mon, type: clim}
+          - {dataset: Duveiller2018, project: OBS, tier: 2, version: v2018,
+             start_year: 2010, end_year: 2010, frequency: mon, type: clim}
     scripts:
       albedolandcover:
         script: landcover/albedolandcover.py
-
-

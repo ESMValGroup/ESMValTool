@@ -26,7 +26,7 @@ import os
 import sys
 import warnings
 
-#import cartopy.crs
+#import cartopy.crs # This line causes a segmentation fault in pylint
 import cartopy.feature as cfeature
 import iris
 import matplotlib.pyplot as plt
