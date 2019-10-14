@@ -28,7 +28,6 @@ import warnings
 
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
-# to manipulate iris cubes
 import iris
 import matplotlib.pyplot as plt
 import numpy as np
@@ -241,14 +240,13 @@ def main(cfg):
                                       cmap='bwr')
         for c in cnt.collections:
             c.set_edgecolor("face")
-
-        plt.title(cube.attributes['plottitle'])
-        plt.suptitle(cube.attributes['plotsuptitle'])
-
-        try:
-            plt.gca().coastlines()
-        except AttributeError:
-            logger.warning('Not able to add coastlines')
+        # Set title/suptitle for plot
+        if 'plottitle' in cube.attributes:
+            plt.title(cube.attributes['plottitle'])
+        if 'suptitle' in cube.attributes:
+            plt.suptitle(cube.attributes['plotsuptitle'])
+        # Draw coast lines
+        plt.gca().coastlines()
         # Get right path for saving plots from the cfg dictionary.
         basename = cube.attributes['model_id'] + cube.name()
         savename_fig = get_plot_filename(basename, cfg)
@@ -272,6 +270,15 @@ def main(cfg):
             logger.info("Only do plotting for dataset %s", dataset_name)
             ncfile = dataset_dict[0]['filename']
             cube = iris.load_cube(ncfile)
+            # Set plot title and plot suptitle
+            template_time = cube.coord('time')
+            month_string = template_time.units.num2date(
+                template_time.points)[0].strftime('%b')
+
+            cube.attributes['plottitle'] = month_string + '-'\
+                + 'Duveiller2018'
+            cube.attributes['model_id'] = 'Duveiller2018'
+
             _plot_cube(cube)
             continue
 
