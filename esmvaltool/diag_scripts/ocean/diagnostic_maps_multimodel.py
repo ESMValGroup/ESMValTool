@@ -103,7 +103,6 @@ def add_map_plot(ax,
 
 
 def make_multiple_plots(cfg, metadata, obs_filename):
-
     """
     Produce multiple panel comparison maps of model(s) and data (if provided).
     If observations are not provided, plots of each model data are drawn.
@@ -129,14 +128,14 @@ def make_multiple_plots(cfg, metadata, obs_filename):
 
     # check if observations are provided
     hasobs = False
-    obsname = ''
-    if obs_filename != '':
+    if obs_filename:
         hasobs = True
         obsname = metadata[obs_filename]['dataset']
         filenames.remove(obs_filename)
         filenames.insert(0, obs_filename)
         layout[0] = layout[0] + 1
     else:
+        obsname = ''
         logger.info('Observations not provided. Plot each model data.')
 
     # Load the data for each layer as a separate cube
@@ -196,7 +195,7 @@ def make_multiple_plots(cfg, metadata, obs_filename):
         yy = 0
         xx = 0
         clevels = 13
-        for ii in range(len(maps_cubes)):
+        for ii, _ in enumerate(maps_cubes):
             hascbar = False
             cube = maps_cubes[ii]
             thename = name_cubes[ii]
@@ -258,7 +257,6 @@ def make_multiple_plots(cfg, metadata, obs_filename):
         # Determine image filename:
         fn_list = ['multimodel_vs', obsname, varname, str(layer), 'maps']
         path = diagtools.folder(cfg['plot_dir']) + '_'.join(fn_list)
-        path = path.replace(' ', '') + image_extention
 
         # Saving files:
         if cfg['write_plots']:
@@ -297,12 +295,12 @@ def main(cfg):
             index,
             metadatas,
         )
-        obs_filename = diagtools.match_model_to_key('observational_dataset',
-                                                    cfg[model_type], metadatas)
-
-        if not os.path.exists(obs_filename):
-            logger.info('OBS file not found %s', obs_filename)
-            obs_filename = ''
+        obs_filename = None
+        if model_type in cfg.keys():
+            obs_filename = diagtools.match_model_to_key(
+                'observational_dataset', cfg[model_type], metadatas)
+            if not os.path.isfile(obs_filename):
+                logger.info('OBS file not found %s', obs_filename)
 
         make_multiple_plots(cfg, metadatas, obs_filename)
 

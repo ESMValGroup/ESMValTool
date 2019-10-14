@@ -7,10 +7,10 @@ documentation:
     Written by Tomas Lovato, CMCC, tomas.lovato@cmcc.it
 
   authors:
-    - lova_to
+    - lovato_tomas
   
   maintainer:
-    - lova_to
+    - lovato_tomas
 
   references:
     - acknow_project
@@ -49,7 +49,8 @@ preprocessors:
   # --------------------------------------------------
   # For a 2D global surface map
   prep_surface_map_2D:
-    time_average:
+    climate_statistics:
+      operator: mean
     regrid:
       target_grid: 1x1
       scheme: linear
