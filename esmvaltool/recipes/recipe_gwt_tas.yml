@@ -4,7 +4,7 @@
 documentation:
   description: |
     Recipe to calcualte changes in behaviour at specific years for the UKESM
-    Land surface Global warming thresholds.
+    surface Global warming thresholds.
 
     The years were calculated using recipe_gwt_temp.yml
 
