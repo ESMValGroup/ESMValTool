@@ -28,7 +28,7 @@ REQUIREMENTS = {
         'cython',
         'jinja2',
         'eofs',
-        'esmvalcore>=2.0.0b1,<2.1',
+        'esmvalcore>=2.0.0b2,<2.1',
         'fiona',
         'matplotlib<3',
         'nc-time-axis',  # needed by iris.plot
@@ -234,6 +234,8 @@ setup(
             'nclcodestyle = esmvaltool.utils.nclcodestyle.nclcodestyle:_main',
             'showcolortables = '
             'esmvaltool.utils.color_tables.show_color_tables:run',
+            'test_recipe = '
+            'esmvaltool.utils.testing.recipe_settings.install_expand_run:main'
         ],
     },
     cmdclass={
