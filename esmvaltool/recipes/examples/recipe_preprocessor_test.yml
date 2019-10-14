@@ -17,9 +17,9 @@ documentation:
     - c3s-magic
 
 datasets:
-  - {dataset: MPI-ESM-LR,   project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
-  - {dataset: bcc-csm1-1,   project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
-  - {dataset: GFDL-ESM2G,   project: CMIP5,  mip: Amon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+  - {dataset: MPI-ESM-LR,   project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+  - {dataset: bcc-csm1-1,   project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+  - {dataset: GFDL-ESM2G,   project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
 
 preprocessors:
 
@@ -47,7 +47,7 @@ preprocessors:
       target_grid: 1x1
       scheme: nearest
     extract_levels:
-      levels: {cmor_table: CMIP6, coordinate: plev10}
+      levels: {cmor_table: CMIP6, coordinate: plev8}
       scheme: nearest
     mask_fillvalues: false
     multi_model_statistics:
@@ -79,6 +79,7 @@ diagnostics:
     variables:
       ta:
         preprocessor: preprocessor_1
+        mip: Amon
         additional_datasets:
           - {dataset: NCEP,        project: OBS,    tier: 2,    type: reanaly,    version: 1,        start_year: 2000,  end_year: 2002}
           - {dataset: ERA-Interim,  project: OBS,    tier: 3,    type: reanaly,    version: 1,        start_year: 2000,  end_year: 2002}
@@ -93,6 +94,7 @@ diagnostics:
     variables:
       ta:
         preprocessor: preprocessor_2
+        mip: Amon
     scripts: null
 
   diagnostic_3_and_4:
@@ -100,6 +102,8 @@ diagnostics:
     variables:
       ta:
         preprocessor: preprocessor_3
+        mip: Amon
       pr:
         preprocessor: preprocessor_4
+        mip: Amon
     scripts: null
