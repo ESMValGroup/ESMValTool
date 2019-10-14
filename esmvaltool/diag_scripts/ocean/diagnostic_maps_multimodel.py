@@ -26,17 +26,15 @@ import logging
 import os
 import sys
 
+import cartopy.crs as ccrs
+import iris
+import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
-import matplotlib.gridspec as gridspec
-from mpl_toolkits.axes_grid1.inset_locator import inset_axes
-
-import iris
-import cartopy.crs as ccrs
 import numpy as np
-
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic
+from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 
 # This part sends debug statements to stdout
 logger = logging.getLogger(os.path.basename(__file__))
