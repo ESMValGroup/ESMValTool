@@ -971,7 +971,7 @@ class Plot2D(object):
             cbar.ax.set_xticklabels([('{:.'+str(2)+'g}').format(x) for x in ticks])
 #            pass
         else:
-            plt.colorbar(pcm,
+            cbar = plt.colorbar(pcm,
                 cax=cax,
                 orientation='horizontal',
                 fraction=1.,
