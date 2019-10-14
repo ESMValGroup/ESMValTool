@@ -153,9 +153,6 @@ def make_multiple_plots(cfg, metadata, obs_filename):
     logger.debug('layers: %s', layers)
     logger.debug('cubes: %s', ', '.join(cubes.keys()))
 
-    # Load image format extention
-    image_extention = diagtools.get_image_format(cfg)
-
     # Make a plot for each layer
     extend = 'neither'
     for layer in layers:
