@@ -585,6 +585,14 @@ diagnostics:
          type: sat, version: MYD08-M3, start_year: 2003, end_year: 2018}
     scripts: null
 
+  NDP:
+    description: NDP check
+    variables:
+      cVeg:
+    additional_datasets:
+      - {dataset: NDP, project: OBS, tier: 3, mip: Lmon,
+         type: reanaly, version: 017b, start_year: 2000, end_year: 2000}
+    scripts: null
 
   NIWA-BS:
     description: NIWA-BS check
