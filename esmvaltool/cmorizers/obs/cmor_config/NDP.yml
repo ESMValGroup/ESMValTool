@@ -1,6 +1,8 @@
 ---
-# Filename (will be extended by variable name)
+# General attributes
 filename: 'ndp017b.tar.gz'
+delta_degrees: 0.083
+missing_values: [-2147483647, -9999, -9998]
 
 # Common global attributes for Cmorizer output
 attributes:
@@ -15,8 +17,8 @@ attributes:
 
 # Variables to cmorize
 variables:
-  cSoil:
+  cVeg:
     mip: Lmon
     raw: tmp
     raw_units: celsius
-    filename: 'med_c.tif.gz'
+    filename: 'med_c.e00.gz'
