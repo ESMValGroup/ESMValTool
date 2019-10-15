@@ -14,7 +14,7 @@ from dask import array as da
 import esmvaltool.diag_scripts.shared
 import esmvaltool.diag_scripts.shared.names as n
 from esmvaltool.diag_scripts.shared import group_metadata
-# from esmvaltool.diag_scripts.shared._base import ProvenanceLogger
+from esmvaltool.diag_scripts.shared._base import ProvenanceLogger
 
 
 logger = logging.getLogger(os.path.basename(__file__))
@@ -35,7 +35,7 @@ class EadyGrowthRate(object):
         for alias in data:
             var = group_metadata(data[alias], 'short_name')
             ta = iris.load_cube(var['ta'][0]['filename'])
-            plev = ta.dim_coords[1]
+            plev = ta.coord('air_pressure')
 
             theta = self.potential_temperature(ta, plev)
 
@@ -63,7 +63,7 @@ class EadyGrowthRate(object):
                                   units='hPa')
         p0.convert_units(plev.units)
         p = (p0.points/plev.points)**(2/7)
-        theta = ta * iris.util.broadcast_to_shape(p, ta.shape, (1,))
+        theta = ta * iris.util.broadcast_to_shape(p, ta.shape, ta.coord_dims('air_pressure'))
         theta.long_name = 'potential_air_temperature'
 
         return theta
@@ -133,7 +133,7 @@ class EadyGrowthRate(object):
         exp = data[alias][0]['exp']
         start = data[alias][0]['start_year']
         end = data[alias][0]['end_year']
-        output = '{project}_{dataset}_{exp}_{script}_{start}_{end}.nc'.format(
+        output_name = '{project}_{dataset}_{exp}_{script}_{start}_{end}.nc'.format(
             project=project,
             dataset=dataset,
             exp=exp,
@@ -141,25 +141,26 @@ class EadyGrowthRate(object):
             start=start,
             end=end
         )
+        output_file = os.path.join(self.cfg[n.WORK_DIR], output_name)
+        iris.save(egr, output_file)
+        caption = ("{script} between {start} and {end}"
+                   "according to {dataset}").format(
+                       script=script.split('_'),
+                       start=start,
+                       end=end,
+                       dataset=dataset
+                   )
+        ancestors = [data[alias][i]['filename'] for i in range(len(data[alias]))]
+        record = {
+            'caption': caption,
+            'domains': ['global'],
+            'autors': ['sanchez-gomez_emilia'],
+            'references': ['acknow_project'],
+            'ancestors': ancestors
+         }
+        with ProvenanceLogger(self.cfg) as provenance_logger:
+            provenance_logger.log(output_file, record)
 
-        iris.save(egr, os.path.join(self.cfg[n.WORK_DIR], output))
-
-        # caption = ("{script} between {start} and {end}"
-        #           "according to {dataset}").format(
-        #               script=script.split('_'),
-        #               start=start,
-        #               end=end,
-        #               dataset=dataset
-        #           )
-
-        # record = {
-        #    'caption': caption,
-        #    'domains': ['global'],
-        #    'autors': ['sanc_em'],
-        #    'references': ['primavera'],
-        #    'ancestors': output
-        # }
-        # ProvenanceLogger(self.cfg).log(output, record)
 
 
 def main():
