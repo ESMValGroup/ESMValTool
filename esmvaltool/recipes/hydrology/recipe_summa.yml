@@ -3,10 +3,10 @@
 ---
 documentation:
   description: |
-    Recipe pre-processes ERA-Interim reanalyses files for use in the summa hydrological model.
+    Recipe pre-processes ERA-Interim and ERA5 files for use in the SUMMA hydrological model.
 
     Summa is ...
-  authors: ['kalverla_peter', 'camphuijsen_jaro']
+  authors: ['kalverla_peter', 'camphuijsen_jaro', 'alidoost_sarah']
   projects: ['ewatercycle']
   references: ['acknow_project']
 
