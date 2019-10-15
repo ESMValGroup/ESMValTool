@@ -202,7 +202,11 @@ class EnergyBudget(object):
                                  bboxprops=self.bboxprops)
             ax.add_artist(ann)
             plt.axis('off')
-        ax.text(1, 0, '\n'.join(tags), fontsize=10)
+        ax.text(0, 0.95, '\n'.join(tags),
+                fontsize=5,
+                horizontalalignment='left',
+                verticalalignment='bottom',
+                transform=ax.transAxes)
         script = self.cfg[n.SCRIPT]
         out_type = self.cfg[n.OUTPUT_FILE_TYPE]
         models = '_'.join(data['rsdt'].keys())
