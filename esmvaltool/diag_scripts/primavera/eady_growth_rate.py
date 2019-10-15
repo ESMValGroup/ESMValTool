@@ -1,6 +1,5 @@
 import os
 import logging
-import string
 
 import iris
 import iris.cube
@@ -59,11 +58,14 @@ class EadyGrowthRate(object):
             self.save(cube_egr, alias, data)
 
     def potential_temperature(self, ta, plev):
-        p0 = iris.coords.AuxCoord(self.ref_p, long_name='reference_pressure',
+        p0 = iris.coords.AuxCoord(self.ref_p, 
+                                  long_name='reference_pressure',
                                   units='hPa')
         p0.convert_units(plev.units)
         p = (p0.points/plev.points)**(2/7)
-        theta = ta * iris.util.broadcast_to_shape(p, ta.shape, ta.coord_dims('air_pressure'))
+        theta = ta * iris.util.broadcast_to_shape(p, 
+                                                  ta.shape, 
+                                                  ta.coord_dims('air_pressure'))
         theta.long_name = 'potential_air_temperature'
 
         return theta
@@ -133,16 +135,20 @@ class EadyGrowthRate(object):
         exp = data[alias][0]['exp']
         start = data[alias][0]['start_year']
         end = data[alias][0]['end_year']
-        output_name = '{project}_{dataset}_{exp}_{script}_{start}_{end}.nc'.format(
-            project=project,
-            dataset=dataset,
-            exp=exp,
-            script=script,
-            start=start,
-            end=end
-        )
+        output_name = '{project}_'
+                      '{dataset}_'
+                      '{exp}_'
+                      '{script}_'
+                      '{start}_'
+                      '{end}.nc'.format(project=project,
+                                        dataset=dataset,
+                                        exp=exp,
+                                        script=script,
+                                        start=start,
+                                        end=end)
         output_file = os.path.join(self.cfg[n.WORK_DIR], output_name)
         iris.save(egr, output_file)
+
         caption = ("{script} between {start} and {end}"
                    "according to {dataset}").format(
                        script=script.split('_'),
@@ -150,7 +156,9 @@ class EadyGrowthRate(object):
                        end=end,
                        dataset=dataset
                    )
-        ancestors = [data[alias][i]['filename'] for i in range(len(data[alias]))]
+        for i in range(len(data[alias])):
+            ancestors = [data[alias][i]['filename']]
+
         record = {
             'caption': caption,
             'domains': ['global'],
