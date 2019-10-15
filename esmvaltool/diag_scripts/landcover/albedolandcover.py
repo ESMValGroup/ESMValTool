@@ -94,8 +94,11 @@ def _add_masks_albedolandcover(model_data, this_models_xxfracs, dia_cfg, cfg):
     plt.savefig(masksavedir + masksavename + 'snowfreemask.'
                 + cfg['output_file_type'])
 
-    # TODO also add the snowmask
-    mymask = copy.deepcopy(snowmask)
+    # Distinguish between snowfree and snow areas
+    if dia_cfg['snowfree']:
+        mymask = copy.deepcopy(snowfreemask)
+    else:
+        mymask = copy.deepcopy(snowmask)
 
     for varkey in model_data:
         model_data[varkey].data.mask = mymask
@@ -243,6 +246,7 @@ def main(cfg):
         'mingc': 3,
         'minnum_gc_bb': 15,
         'thres_fsnow': 0.1,
+        'snowfree': False,
         'lc1_class': ['treeFrac'],
         'lc2_class': ['shrubFrac'],
         'lc3_class': ['grassFrac', 'cropFrac']
