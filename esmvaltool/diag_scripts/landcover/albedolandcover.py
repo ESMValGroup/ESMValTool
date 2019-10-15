@@ -73,8 +73,6 @@ def _add_masks_albedolandcover(model_data, this_models_xxfracs, dia_cfg, cfg):
     masksavedir = os.path.join(cfg['plot_dir'], 'masks/')
     if not os.path.exists(masksavedir):
         os.mkdir(masksavedir)
-    else:
-        print("Dir exists, be aware of overwriting")
 
     template_time = model_data['snc'].coord('time')
     month_string = template_time.units.num2date(
@@ -104,16 +102,10 @@ def _add_masks_albedolandcover(model_data, this_models_xxfracs, dia_cfg, cfg):
 
     return model_data
 
-def _get_empty_lc_array(model_data):
-    alb_lc1 = copy.deepcopy(model_data['alb'].data)
-    alb_lc1[...] = np.nan  # Set all data to NaN
-    alb_lc2 = copy.deepcopy(alb_lc1)
-    alb_lc3 = copy.deepcopy(alb_lc1)
-    alb_lc = np.stack((alb_lc1, alb_lc2, alb_lc3))
-    return alb_lc
 
 def _get_reconstructed_albedos(model_data, dia_cfg):
-    alb_lc = _get_empty_lc_array(model_data)
+    alb_lc = np.zeros((3, ) + model_data['alb'].shape)
+    alb_lc[...] = np.nan
 
     # Now loop over these arrays and do the math
     for (indices, maskbool) in np.ndenumerate(model_data['alb'].data.mask):
@@ -152,7 +144,7 @@ def _get_reconstructed_albedos(model_data, dia_cfg):
                         lc_data.append(lc_sum)
                         lc_logical[i_0] = True
                     else:
-                        print("Variance zero or not enough\
+                        logger.info("Variance zero or not enough\
                                valid data for this landcover class")
                         lc_logical[i_0] = False
                 # Now the multiple lin reg part
@@ -181,6 +173,7 @@ def _get_reconstructed_albedos(model_data, dia_cfg):
 
 def _write_albedochanges_to_disk(alb_lc, dia_cfg,
                                  template_cube, datadict, cfg):
+    transition_cube = template_cube
     result_dict = {'lc1': alb_lc[0, :, :], 'lc2': alb_lc[1, :, :],
                    'lc3': alb_lc[2, :, :]}
     names = {'lc1': '-'.join(dia_cfg['lc1_class']),
@@ -188,16 +181,11 @@ def _write_albedochanges_to_disk(alb_lc, dia_cfg,
              'lc3': '-'.join(dia_cfg['lc3_class'])}
     for ikey, jkey in it.product(result_dict.keys(), result_dict.keys()):
         if not ikey == jkey:
-            print("Calculating transition from {0} to {1}".format(
-                ikey, jkey))
-            transition_name = "albedo_change_from_{0}_to_{1}".format(
-                names[ikey], names[jkey])
-            print(transition_name)
             # Take out Frac for readability
-            transition_name = transition_name.replace('Frac', '')
-            print(transition_name)
-            transition_data = result_dict[jkey] - result_dict[ikey]
-            transition_cube = template_cube.copy(transition_data)
+            transition_name = "albedo_change_from_{0}_to_{1}".format(
+                names[ikey], names[jkey]).replace('Frac', '')
+            logger.info("Calculating: %s", transition_name)
+            transition_cube.data = result_dict[jkey] - result_dict[ikey]
             transition_cube.rename(transition_name)
             # Get some usefull info for constructing the filenames
             month_string = template_cube.coord('time').units.num2date(
@@ -217,13 +205,12 @@ def _write_albedochanges_to_disk(alb_lc, dia_cfg,
 def _plot_cube(cube, cfg):
     """Plot the transition cube."""
     # Also plot the transition_cube
+    if not cube.ndim == 2:
+        raise ValueError("Cube should be two-dimensional")
     plt.clf()
-    ax = plt.axes(projection=crs.PlateCarree())
-    ax.add_feature(cfeature.LAND)
-    cnt = iris.quickplot.contourf(cube, levels=np.linspace(-.24, .24, 25),
-                                  cmap='bwr')
-    for contour in cnt.collections:
-        contour.set_edgecolor("face")
+    cow = plt.axes(projection=crs.PlateCarree())
+    cow.add_feature(cfeature.LAND)
+    iris.quickplot.pcolormesh(cube, vmin=-.24, vmax=.24, cmap='bwr')
     # Set title/suptitle for plot
     if 'plottitle' in cube.attributes:
         plt.title(cube.attributes['plottitle'])
