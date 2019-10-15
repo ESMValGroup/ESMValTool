@@ -19,6 +19,4 @@ attributes:
 variables:
   cVeg:
     mip: Lmon
-    raw: tmp
-    raw_units: celsius
     filename: 'med_c.e00.gz'
