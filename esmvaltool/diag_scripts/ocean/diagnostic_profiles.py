@@ -51,6 +51,7 @@ import sys
 
 import numpy as np
 import iris
+import iris.exceptions
 import iris.quickplot as qplt
 import matplotlib.pyplot as plt
 
@@ -121,7 +122,10 @@ def make_profiles_plots(
     cube = iris.load_cube(filename)
     cube = diagtools.bgc_units(cube, metadata['short_name'])
 
-    raw_times = diagtools.cube_time_to_float(cube)
+    try:
+        raw_times = diagtools.cube_time_to_float(cube)
+    except iris.exceptions.CoordinateNotFoundError:
+        return
 
     # Make annual or Decadal means from:
     if np.max(raw_times) - np.min(raw_times) < 20:
