@@ -79,8 +79,8 @@ CMIP6_RTNT: &cmip6_rtnt
   - {dataset: BCC-CSM2-MR,     exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
   - {dataset: BCC-CSM2-MR,     exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
   # Permission denied
-  # - {dataset: BCC-ESM1,        exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
-  # - {dataset: BCC-ESM1,        exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
+  - {dataset: BCC-ESM1,        exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
+  - {dataset: BCC-ESM1,        exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
   - {dataset: CAMS-CSM1-0,     exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year: 3030, end_year: 3179}
   - {dataset: CAMS-CSM1-0,     exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year: 3030, end_year: 3179}
   # Failed to read years 1-150 because of new version
@@ -92,9 +92,9 @@ CMIP6_RTNT: &cmip6_rtnt
   - {dataset: CNRM-CM6-1,      exp: abrupt-4xCO2, ensemble: r1i1p1f2, grid: gr,  start_year: 1850, end_year: 1999}
   - {dataset: CNRM-ESM2-1,     exp: piControl,    ensemble: r1i1p1f2, grid: gr,  start_year: 1850, end_year: 1999}
   - {dataset: CNRM-ESM2-1,     exp: abrupt-4xCO2, ensemble: r1i1p1f2, grid: gr,  start_year: 1850, end_year: 1999}
-  # No abrupt-4xCO2
-  # - {dataset: E3SM-1-0,        exp: piControl,    ensemble: r1i1p1f2, grid: gr,  start_year: 1850, end_year: 1999}
-  # - {dataset: E3SM-1-0,        exp: abrupt-4xCO2, ensemble: r1i1p1f2, grid: gr,  start_year: 1850, end_year: 1999}
+  # Not enough years for abrupt-4xCO2
+  # - {dataset: E3SM-1-0,        exp: piControl,    ensemble: r1i1p1f1, grid: gr,  start_year: 1850, end_year: 1999}
+  # - {dataset: E3SM-1-0,        exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gr,  start_year: 1850, end_year: 1999}
   # No abrupt-4xCO2
   # - {dataset: EC-Earth3,       exp: piControl,    ensemble: r1i1p1f2, grid: gr,  start_year: 1850, end_year: 1999}
   # - {dataset: EC-Earth3,       exp: abrupt-4xCO2, ensemble: r1i1p1f2, grid: gr,  start_year: 1850, end_year: 1999}
@@ -107,11 +107,9 @@ CMIP6_RTNT: &cmip6_rtnt
   # Wrong start year for piControl (must be 101)
   - {dataset: GFDL-CM4,        exp: piControl,    ensemble: r1i1p1f1, grid: gr1, start_year:  151, end_year:  300}
   - {dataset: GFDL-CM4,        exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gr1, start_year:    1, end_year:  150}
-
   # No radiation data
   # - {dataset: GFDL-ESM4,       exp: piControl,    ensemble: r1i1p1f1, grid: gr1, start_year:  101, end_year:  250}
   # - {dataset: GFDL-ESM4,       exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gr1, start_year:    1, end_year:  150}
-
   - {dataset: GISS-E2-1-G,     exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year: 4150, end_year: 4299}
   - {dataset: GISS-E2-1-G,     exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
   - {dataset: GISS-E2-1-H,     exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year: 3180, end_year: 3329}
@@ -128,16 +126,14 @@ CMIP6_RTNT: &cmip6_rtnt
   - {dataset: IPSL-CM6A-LR,    exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gr,  start_year: 1850, end_year: 1999}
   - {dataset: MIROC6,          exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year: 3200, end_year: 3349}
   - {dataset: MIROC6,          exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year: 3200, end_year: 3349}
-
   - {dataset: MPI-ESM1-2-HR,   exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
   - {dataset: MPI-ESM1-2-HR,   exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
-
   - {dataset: MRI-ESM2-0,      exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
   - {dataset: MRI-ESM2-0,      exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
-  # Only amip
+  # No piControl
   # - {dataset: NESM3,           exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
   # - {dataset: NESM3,           exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
-  # Data withdrawn
+  # Not enough years in piControl
   # - {dataset: SAM0-UNICON,     exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year:  274, end_year:  423}
   # - {dataset: SAM0-UNICON,     exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
 
