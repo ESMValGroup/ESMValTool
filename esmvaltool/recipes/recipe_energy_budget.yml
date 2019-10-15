@@ -8,10 +8,10 @@ documentation:
     model containing the budget variables.
 
   authors:
-    - vann_be
+    - vanniere_benoit
 
   maintainer:
-    - loos_sa
+    - loosveldt-tomas_saskia
 
   projects:
     - primavera
@@ -27,21 +27,21 @@ preprocessors:
   global_mean:
     area_statistics:
       operator: mean
-    time_average:
+    climate_statistics:
 
   land_mean:
     mask_landsea:
       mask_out: sea
     area_statistics:
       operator: mean
-    time_average:
+    climate_statistics:
 
   ocean_mean:
     mask_landsea:
       mask_out: land
     area_statistics:
       operator: mean
-    time_average:
+    climate_statistics:
 
 
 diagnostics:
