@@ -1,0 +1,22 @@
+---
+# Filename (will be extended by variable name)
+filename: 'ndp017b.tar.gz'
+
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: NDP
+  version: 017b
+  tier: 3
+  modeling_realm: reanaly
+  project_id: OBS
+  source: 'https://data.ess-dive.lbl.gov/view/doi:10.3334/CDIAC/LUE.NDP017.2006'
+  reference: 'ndp'
+  comment: ''
+
+# Variables to cmorize
+variables:
+  cSoil:
+    mip: Lmon
+    raw: tmp
+    raw_units: celsius
+    filename: 'med_c.tif.gz'

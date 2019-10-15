@@ -1,33 +1,31 @@
-"""ESMValTool CMORizer for LAI3g data.
+"""ESMValTool CMORizer for NDP data.
 
 Tier
     Tier 3: restricted dataset.
 
 Source
-    http://cliveg.bu.edu/modismisr/lai3g-fpar3g.html
+    https://data.ess-dive.lbl.gov/view/doi:10.3334/CDIAC/LUE.NDP017.2006
 
 Last access
-    20190503
+    20191014
 
 Download and processing instructions
-    To obtain the data sets it is necessary to contanct Ranga B. Myneni
-    (Department of Earth and Environment, Boston University). See link above
-    for more information.
-
-    By default, this dataset is regridded to a 1°x1° grid (original resoultion
-    is 1/12°). If you want to use the original resolution, remove the `regrid`
-    section in the configuration file (`LAI3g.yml`). Note that in this case,
-    preprocessing the dataset with ESMValTool (i.e. every time you run the
-    tool) can take a very long time (> 30 min).
+    Download the following files:
+        ndp017b.tar.gz
+    A registration is required for downloading the data.
 
 """
 
+import gdal
 import glob
+import gzip
 import logging
 import os
 import shutil
+import tarfile
 import zipfile
 from datetime import datetime
+from PIL import Image
 
 import iris
 import iris.coord_categorisation
@@ -40,35 +38,6 @@ from . import utilities as utils
 
 logger = logging.getLogger(__name__)
 
-# Properties of the binary file (cannot be stored in .yml since computations
-# are necessary)
-DTYPE = '>i2'
-N_LAT = 2160
-N_LON = 4320
-MISSING_VALUE = -32768
-SCALE_FACTOR = 1000.0
-UPPER_LEFT_LAT = 90.0 - 1.0 / 24.0
-UPPER_LEFT_LON = -180.0 + 1.0 / 24.0
-LOWER_RIGHT_LAT = -90.0 + 1.0 / 24.0
-LOWER_RIGHT_LON = 180.0 - 1.0 / 24.0
-MONTHS = {
-    'jan': 1,
-    'feb': 2,
-    'mar': 3,
-    'apr': 4,
-    'may': 5,
-    'jun': 6,
-    'jul': 7,
-    'aug': 8,
-    'sep': 9,
-    'oct': 10,
-    'nov': 11,
-    'dec': 12,
-}
-DAYS = {
-    'a': 8,
-    'b': 23,
-}
 
 
 def _clean(file_dir):
@@ -78,8 +47,20 @@ def _clean(file_dir):
         logger.info("Removed cached directory %s", file_dir)
 
 
-def _extract_variable(cmor_info, attrs, in_dir, out_dir, cfg):
+def _extract_variable(cmor_info, attrs, var_file, out_dir, cfg):
     """Extract variable."""
+    grid_file = gdal.Open(var_file)
+    array = grid_file.ReadAsArray()
+    print(np.min(array))
+    print(np.max(array))
+    print(np.mean(array))
+    print(array)
+    assert False
+
+    driver = ogr.GetDriverByName('E00GRID')
+    grid_file = driver.Open(var_file)
+    print(grid_file)
+    assert False
     nc_files = []
     for year in _get_years(in_dir, cfg):
         cube_path = _get_cube_for_year(year, in_dir, cfg)
@@ -185,13 +166,24 @@ def _get_years(in_dir, cfg):
     return years
 
 
-def _unzip(filepath, out_dir):
-    """Unzip `*.zip` file."""
+def _extract(filepath, out_dir):
+    """Extract `*.tar.gz` file."""
     logger.info("Starting extraction of %s to %s", filepath, out_dir)
-    with zipfile.ZipFile(filepath, 'r') as zip_ref:
-        zip_ref.extractall(out_dir)
-    new_path = os.path.join(out_dir, 'LAI')
-    logger.info("Succefully extracted files to %s", new_path)
+    with tarfile.open(filepath) as tar:
+        tar.extractall()
+    new_path = os.path.join(out_dir, 'ndp017b', 'revised')
+    logger.info("Succesfully extracted files to %s", new_path)
+    return new_path
+
+
+def _unzip(filepath, out_dir):
+    """Extract `*.gz` file."""
+    logger.info("Starting extraction of %s to %s", filepath, out_dir)
+    new_path = filepath.replace('.gz', '')
+    with gzip.open(filepath, 'rb') as zip_file:
+        with open(new_path, 'wb') as new_file:
+            shutil.copyfileobj(zip_file, new_file)
+    logger.info("Succesfully extracted '%s' to '%s'", filepath, new_path)
     return new_path
 
 
@@ -200,23 +192,17 @@ def cmorization(in_dir, out_dir, cfg, _):
     glob_attrs = cfg['attributes']
     cmor_table = cfg['cmor_table']
     filepath = os.path.join(in_dir, cfg['filename'])
+    tar_file = os.path.join(in_dir, filepath)
+    logger.info("Found input file '%s'", tar_file)
+    file_dir = _extract(tar_file, out_dir)
 
     # Run the cmorization
     for (var, var_info) in cfg['variables'].items():
         logger.info("CMORizing variable '%s'", var)
-        if cfg.get('regrid'):
-            cfg['regrid'].setdefault('target_grid', '1x1')
-            cfg['regrid'].setdefault('scheme', 'nearest')
-            logger.info(
-                "Final dataset will be regridded to %s grid using scheme '%s'",
-                cfg['regrid']['target_grid'], cfg['regrid']['scheme'])
         glob_attrs['mip'] = var_info['mip']
         cmor_info = cmor_table.get_variable(var_info['mip'], var)
-        zip_file = os.path.join(in_dir, filepath)
-        if not os.path.isfile(zip_file):
-            logger.debug("Skipping '%s', file '%s' not found", var, zip_file)
-            continue
-        logger.info("Found input file '%s'", zip_file)
-        file_dir = _unzip(zip_file, out_dir)
-        _extract_variable(cmor_info, glob_attrs, file_dir, out_dir, cfg)
-        _clean(file_dir)
+        zip_file = os.path.join(file_dir, var_info['filename'])
+        var_file = _unzip(zip_file, out_dir)
+        logger.info("Found input file '%s' for variable '%s'", var_file, var)
+        _extract_variable(cmor_info, glob_attrs, var_file, out_dir, cfg)
+    _clean(file_dir)
