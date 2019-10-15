@@ -11,9 +11,6 @@ documentation:
   references: ['acknow_project']
 
 
-datasets:
-  - {dataset: ERA-Interim, project: OBS, tier: 3, type: reanaly, version: 1}
-
 preprocessors:
   preprocessor:
     regrid:
@@ -21,17 +18,96 @@ preprocessors:
       lon_offset: true
       lat_offset: true
       scheme: linear
+  save_memory: &hourly
+    extract_time:
+      end_year: 2000
+      end_month: 1
+      end_day: 3
+  hourly_sum:
+    <<: *hourly
+    daily_statistics:
+      operator: sum
+  hourly_mean:
+    <<: *hourly
+    daily_statistics:
+      operator: mean
 
 diagnostics:
-  diagnostic1:
-    description: SUMMA input preprocessor
+  diagnostic_daily:
+    description: SUMMA input preprocessor for daily data
+    additional_datasets:
+      - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
     variables:
-      tas: &var
+      uas: &var_daily
         mip: day
         start_year: 2000
         end_year: 2000
-        preprocessor: preprocessor
-      pr: *var
+        preprocessor: hourly_mean
+      vas:
+        <<: *var_daily
+        preprocessor: hourly_mean
+      tas:
+        <<: *var_daily
+        preprocessor: hourly_mean
+      tdps:
+        <<: *var_daily
+        mip: Eday
+        preprocessor: hourly_mean
+      pr:
+        <<: *var_daily
+        preprocessor: hourly_sum
+      evspsblpot: # TODO ERA-Interim doesnt have.
+        <<: *var_daily
+        preprocessor: hourly_sum
+      rsds:
+        <<: *var_daily
+        preprocessor: hourly_sum
+      rss: # this one is needed to obtain downward lonwave radiation
+        <<: *var_daily
+        preprocessor: hourly_sum
+      #TODO: # add Air pressure
+        <<: *var_daily
+        preprocessor: hourly_sum
     scripts:
       script:
         script: hydrology/summa.py
+        shape_file: 'path/to/shapefiles' # currently in recipes_auxiliary_datasets repo
+
+  diagnostic_hourly:
+    description: SUMMA input preprocessor for hourly data
+    additional_datasets:
+      - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1}
+    variables:
+      uas: &var_hourly
+        mip: E1hr
+        start_year: 2000
+        end_year: 2000
+        preprocessor: hourly_mean
+      vas:
+        <<: *var_hourly
+        preprocessor: hourly_mean
+      tas:
+        <<: *var_hourly
+        preprocessor: hourly_mean
+      tdps:
+        <<: *var_hourly
+        preprocessor: hourly_mean
+      pr:
+        <<: *var_hourly
+        preprocessor: hourly_sum
+      evspsblpot:
+        <<: *var_hourly
+        preprocessor: hourly_sum
+      rsds:
+        <<: *var_hourly
+        preprocessor: hourly_sum
+      rss: # this one is needed to obtain downward lonwave radiation
+        <<: *var_hourly
+        preprocessor: hourly_sum
+      #TODO: # add Air pressure
+        <<: *var_hourly
+        preprocessor: hourly_sum
+    scripts:
+      script:
+        script: hydrology/summa.py
+        shape_file: 'path/to/shapefiles' # currently in recipes_auxiliary_datasets repo
