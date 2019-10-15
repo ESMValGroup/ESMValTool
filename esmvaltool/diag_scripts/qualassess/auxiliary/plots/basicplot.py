@@ -979,8 +979,8 @@ class Plot2D(object):
                 extend=ext_cmap,
                 boundaries=levels,
                                )
-            cbar.ax.xaxis.set_major_formatter(StrMethodFormatter('{x:.2g}'))
-            #cbar.ax.set_xticklabels([('{:.'+str(2)+'g}').format(float(x.get_text())) for x in cbar.ax.get_xticklabels()])
+            #cbar.ax.xaxis.set_major_formatter(StrMethodFormatter('{x:.2g}'))
+            cbar.ax.set_xticklabels([('{:.'+str(2)+'g}').format(x) for x in levels])
         cax.set_xlabel((list(set(self.names))[0] if list(
             set(self.names))[0] else "") + list(set(self.units))[0])
 
