@@ -116,10 +116,9 @@ def _get_reconstructed_albedos(model_data, dia_cfg):
     alb_lc = _get_empty_lc_array(model_data)
 
     # Now loop over these arrays and do the math
-    for i, j in it.product(range(model_data['alb'].shape[0]),
-                           range(model_data['alb'].shape[1])):
-        if model_data['alb'].data[i, j]:  # if it is not masked
-            # as a check
+    for (indices, maskbool) in np.ndenumerate(model_data['alb'].data.mask):
+        if not maskbool: # Only if not masked we need to check neighbourhood
+            i, j = indices
             assert(model_data['snc'].data[i, j] < dia_cfg['thres_fsnow'])
             # Now check the local neighbourhood.
             # Create indices
