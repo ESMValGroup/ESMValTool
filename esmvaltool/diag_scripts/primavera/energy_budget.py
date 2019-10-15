@@ -19,6 +19,8 @@ import iris.util
 
 import esmvaltool.diag_scripts.shared
 import esmvaltool.diag_scripts.shared.names as n
+from esmvaltool.diag_scripts.shared._base import ProvenanceLogger
+
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -174,9 +176,32 @@ class EnergyBudget(object):
                         start=self.start,
                         end=self.end
                     )
-        iris.save(cubes, os.path.join(self.cfg[n.WORK_DIR], file_name))
+        file_path = os.path.join(self.cfg[n.WORK_DIR], file_name)
+        iris.save(cubes, file_path)
+        ancestors = []
+        for filename in self.filenames:
+            if dataset in filename:
+                ancestors.append(filename)
+
+        caption = ("{script} between {start} and {end}"
+                   "according to {dataset}").format(
+                       script=self.cfg[n.SCRIPT].split('_'),
+                       start=self.start,
+                       end=self.end,
+                       dataset=dataset
+                   )
+        record = {
+            'caption': caption,
+            'domains': ['global'],
+            'autors': ['vanniere_benoit'],
+            'references': ['acknow_project'],
+            'ancestors': ancestors
+         }
+        with ProvenanceLogger(self.cfg) as provenance_logger:
+            provenance_logger.log(file_path, record)
 
     def plot(self, data):
+        iris.save(cubes, os.path.join(self.cfg[n.WORK_DIR], file_name))
         fig, ax = plt.subplots()
         plot_file = os.path.join(os.path.dirname(__file__), self.template)
         img = Image.open(plot_file).convert("RGBA")
