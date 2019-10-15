@@ -8,6 +8,7 @@ matplotlib.use('Agg')
 import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
 #from matplotlib.ticker import LogFormatterMathtext
+from matplotlib.ticker import FormatStrFormatter
 import iris
 import iris.plot as iplt
 import iris.quickplot as qplt
@@ -976,8 +977,10 @@ class Plot2D(object):
                 orientation='horizontal',
                 fraction=1.,
                 extend=ext_cmap,
-                boundaries=levels)
-            cbar.ax.set_xticklabels([('{:.'+str(2)+'g}').format(float(x.get_text())) for x in cbar.ax.get_xticklabels()])
+                boundaries=levels,
+                               )
+            cbar.ax.xaxis.set_major_formatter(FormatStrFormatter('%.2g'))
+            #cbar.ax.set_xticklabels([('{:.'+str(2)+'g}').format(float(x.get_text())) for x in cbar.ax.get_xticklabels()])
         cax.set_xlabel((list(set(self.names))[0] if list(
             set(self.names))[0] else "") + list(set(self.units))[0])
 
