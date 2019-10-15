@@ -95,7 +95,7 @@ def _add_masks_albedolandcover(model_data, this_models_xxfracs, dia_cfg, cfg):
                 + cfg['output_file_type'])
 
     # TODO also add the snowmask
-    mymask = copy.deepcopy(snowfreemask)
+    mymask = copy.deepcopy(snowmask)
 
     for varkey in model_data:
         model_data[varkey].data.mask = mymask
@@ -111,7 +111,8 @@ def _get_reconstructed_albedos(model_data, dia_cfg):
     for (indices, maskbool) in np.ndenumerate(model_data['alb'].data.mask):
         if not maskbool: # Only if not masked we need to check neighbourhood
             i, j = indices
-            assert(model_data['snc'].data[i, j] < dia_cfg['thres_fsnow'])
+            # TODO change back
+            #assert(model_data['snc'].data[i, j] < dia_cfg['thres_fsnow'])
             # Now check the local neighbourhood.
             # Create indices
             # Create the neighbourhood as bbox
