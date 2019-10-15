@@ -104,13 +104,16 @@ def _add_masks_albedolandcover(model_data, this_models_xxfracs, dia_cfg, cfg):
 
     return model_data
 
-
-def _get_reconstructed_albedos(model_data, dia_cfg):
+def _get_empty_lc_array(model_data):
     alb_lc1 = copy.deepcopy(model_data['alb'].data)
     alb_lc1[...] = np.nan  # Set all data to NaN
     alb_lc2 = copy.deepcopy(alb_lc1)
     alb_lc3 = copy.deepcopy(alb_lc1)
     alb_lc = np.stack((alb_lc1, alb_lc2, alb_lc3))
+    return alb_lc
+
+def _get_reconstructed_albedos(model_data, dia_cfg):
+    alb_lc = _get_empty_lc_array(model_data)
 
     # Now loop over these arrays and do the math
     for i, j in it.product(range(model_data['alb'].shape[0]),
@@ -126,11 +129,10 @@ def _get_reconstructed_albedos(model_data, dia_cfg):
             jslice = slice(int(j - (dia_cfg['latsize_BB'] - 1) / 2),
                            int(j + (dia_cfg['latsize_BB'] - 1) / 2 + 1))
             bbox_mask = model_data['alb'].data.mask[islice, jslice]
-            nvalid_bbox = np.sum((~bbox_mask).astype(int))
 
             # Check if there are enough valid data points
             # in the neighbourhood bbox
-            if nvalid_bbox > dia_cfg['minnum_gc_bb']:
+            if np.sum((~bbox_mask).astype(int)) > dia_cfg['minnum_gc_bb']:
                 lc_logical = np.full((3, ), True)
                 lc_classes = [dia_cfg['lc1_class'], dia_cfg['lc2_class'],
                               dia_cfg['lc3_class']]
