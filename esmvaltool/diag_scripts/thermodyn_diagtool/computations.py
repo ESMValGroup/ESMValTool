@@ -217,7 +217,7 @@ def direntr(logger, model, wdir, filelist, aux_file, lect, lec, flags):
     hfls_file = filelist[0]
     hfss_file = filelist[1]
     prsn_file = filelist[4]
-    ts_file = filelist[15]
+    ts_file = filelist[16]
     logger.info('Computation of the material entropy '
                 'production with the direct method\n')
     logger.info('1. Sensible heat fluxes\n')
@@ -770,11 +770,11 @@ def wmbudg(model, wdir, aux_file, filelist, auxlist):
     latent_gmean = write_eb('hfls', 'latent', aux_file, latene_file,
                             latene_gmean_file)
     varlist = [wmass_gmean, latent_gmean]
-    filelist = [wmbudg_file, latene_file]
+    fileout = [wmbudg_file, latene_file]
     remove_files = [wm_gmean_file, latene_gmean_file]
     for filen in remove_files:
         os.remove(filen)
-    return varlist, filelist
+    return varlist, fileout
 
 
 def write_eb(namein, nameout, aux_file, d3_file, gmean_file):

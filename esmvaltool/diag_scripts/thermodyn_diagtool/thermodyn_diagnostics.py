@@ -326,8 +326,8 @@ def main(cfg):
         rlus_file = filenames[7]
         rsds_file = filenames[9]
         rsus_file = filenames[11]
-        ta_file = filenames[13]
-        ts_file = filenames[15]
+        #ta_file = filenames[13]
+        ts_file = filenames[16]
         # Read path to land-sea mask
         #for filename, attributes in cfg['input_data'].items():
         #    if filename == ta_file:

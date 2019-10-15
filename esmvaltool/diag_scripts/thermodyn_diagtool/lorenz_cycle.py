@@ -882,13 +882,13 @@ def preproc_lec(model, wdir, pdir, filelist):
     """
     cdo = Cdo()
     fourc = fourier_coefficients
-    ta_file = filelist[13]
-    tas_file = filelist[14]
-    ua_file = filelist[16]
-    uas_file = filelist[17]
-    va_file = filelist[18]
-    vas_file = filelist[19]
-    wap_file = filelist[20]
+    ta_file = filelist[14]
+    tas_file = filelist[15]
+    ua_file = filelist[17]
+    uas_file = filelist[18]
+    va_file = filelist[19]
+    vas_file = filelist[20]
+    wap_file = filelist[21]
     ldir = os.path.join(pdir, 'LEC_results')
     os.makedirs(ldir)
     maskorog = wdir + '/orog.nc'

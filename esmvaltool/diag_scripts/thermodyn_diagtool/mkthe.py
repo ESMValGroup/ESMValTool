@@ -70,10 +70,10 @@ def init_mkthe(model, wdir, filelist, flags):
     hus_file = filelist[2]
     ps_file = filelist[5]
     rlut_file = filelist[8]
-    tas_file = filelist[14]
-    ts_file = filelist[15]
-    uas_file = filelist[17]
-    vas_file = filelist[19]
+    tas_file = filelist[15]
+    ts_file = filelist[16]
+    uas_file = filelist[18]
+    vas_file = filelist[20]
     # Compute monthly mean fields from 2D surface daily fields
     aux_file = wdir + '/aux.nc'
     cdo.selvar('tas', input=tas_file, output=aux_file)
