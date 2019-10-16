@@ -55,6 +55,16 @@ preprocessors:
       target_grid: 1x1
       scheme: linear
 
+  prep_surface_map_3D:
+    climate_statistics:
+      operator: mean
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    extract_levels:
+      levels:  [0., ]
+      scheme: linear_horizontal_extrapolate_vertical
+
 # --------------------------------------------------
 # Diagnostics
 # --------------------------------------------------
@@ -68,9 +78,7 @@ diagnostics:
     variables:
       fgco2:
         preprocessor: prep_surface_map_2D
-        field: TO2M
         mip: Omon
-        fx_files: [areacello, ]
         maps_range: [-0.12, 0.12]
         diff_range: [-0.09, 0.09]
         layout_rowcol: [3, 1]

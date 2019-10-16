@@ -20,7 +20,7 @@ An approproate preprocessor for a 2D + time field would be::
         target_grid: 1x1
         scheme: linear
 
-Author: lova_to
+Author: lovato_tomas
 """
 import logging
 import os
@@ -102,6 +102,80 @@ def add_map_plot(ax,
         cbar.set_ticks(nspace[::2])
 
 
+def adjust_subplot_spacing(fig, hasobs):
+    """
+    Adjust spacing to avoid subplots overlays and improve readability.
+
+    Parameters
+    ----------
+    fig: object
+         The matplotlib.pyplot Figure object
+    hasobs : logical
+         Check if obs are plotted
+    """
+    # Adjust subplots size & position
+    plt.subplots_adjust(
+        top=0.92, bottom=0.08, left=0.05, right=0.95, hspace=0.15, wspace=0.15)
+
+    # Vertically detach OBS plot and center
+    if hasobs:
+        axs = fig.axes
+        box = axs[0].get_position()
+        shift = box.y0 * 0.05
+        box.y0 = box.y0 + shift
+        box.y1 = box.y1 + shift
+        shift = box.x1 - box.x0
+        box.x0 = 0.5 - shift * 0.5
+        box.x1 = box.x0 + shift
+        axs[0].set_position(box)
+
+
+def select_cubes(cubes, layer, obsname, user_range, clevels):
+    """
+    Create a dictionary of input layer data & metadata for plot.
+    """
+    plot_cubes = {}
+    list_cubes = []
+
+    for thename in cubes:
+        plot_cubes[thename] = {
+            'cube': cubes[thename][layer],
+            'cmap': 'viridis',
+            'nspace': None,
+            'extend': 'neither'
+        }
+        if (obsname != '') & (thename != obsname):
+            plot_cubes[thename] = {
+                'cube': cubes[thename][layer] - cubes[obsname][layer],
+                'cmap': 'RdBu_r',
+                'nspace': None,
+                'extend': 'neither'
+            }
+        list_cubes.append(plot_cubes[thename]['cube'])
+
+    # set data ranges
+    mrange = diagtools.get_cube_range(list_cubes)
+    if (obsname != ''):
+        mrange = diagtools.get_cube_range([list_cubes[0]])
+        drange = diagtools.get_cube_range(list_cubes[1:])
+
+    # define contour levels using ranges
+    for thename in cubes:
+        range = mrange
+        if user_range['maps']:
+            range = user_range['maps']
+            plot_cubes[thename]['extend'] = 'both'
+        if (obsname != '') & (thename != obsname):
+            range = drange
+            if user_range['diff']:
+                range = user_range['diff']
+                plot_cubes[thename]['extend'] = 'both'
+        plot_cubes[thename]['nspace'] = np.linspace(
+            range[0], range[1], clevels, endpoint=True)
+
+    return plot_cubes
+
+
 def make_multiple_plots(cfg, metadata, obs_filename):
     """
     Produce multiple panel comparison maps of model(s) and data (if provided).
@@ -122,9 +196,17 @@ def make_multiple_plots(cfg, metadata, obs_filename):
     logger.debug('make_multiple_plots')
     # ####
     filenames = list(metadata.keys())
-    proj = ccrs.Robinson(central_longitude=0)
-    # plot layout
+    varname = metadata[filenames[0]]['short_name']
+    user_range = {'maps': None, 'diff': None}
+    if 'maps_range' in metadata[filenames[0]]:
+        user_range['maps'] = metadata[filenames[0]]['maps_range']
+    if 'diff_range' in metadata[filenames[0]]:
+        user_range['diff'] = metadata[filenames[0]]['diff_range']
+
+    # plot setting
     layout = metadata[filenames[0]]['layout_rowcol']
+    proj = ccrs.Robinson(central_longitude=0)
+    contour_lev = 13
 
     # check if observations are provided
     hasobs = False
@@ -144,7 +226,7 @@ def make_multiple_plots(cfg, metadata, obs_filename):
     for thename in filenames:
         logger.debug('loading: \t%s', thename)
         cube = iris.load_cube(thename)
-        cube = diagtools.bgc_units(cube, metadata[thename]['short_name'])
+        cube = diagtools.bgc_units(cube, varname)
         model_name = metadata[thename]['dataset']
         cubes[model_name] = diagtools.make_cube_layer_dict(cube)
         for layer in cubes[model_name]:
@@ -154,74 +236,41 @@ def make_multiple_plots(cfg, metadata, obs_filename):
     logger.debug('cubes: %s', ', '.join(cubes.keys()))
 
     # Make a plot for each layer
-    extend = 'neither'
     for layer in layers:
 
         fig = plt.figure()
         fig.set_size_inches(layout[1] * 4., layout[0] * 2. + 2.)
 
-        # aggregate cubes
-        name_cubes = []
-        maps_cubes = []
-        diff_cubes = []
-        for thename in cubes:
-            maps_cubes.append(cubes[thename][layer])
-            name_cubes.append(thename)
-            if (hasobs) & (thename != obsname):
-                diff_cubes.append(cubes[thename][layer] -
-                                  cubes[obsname][layer])
-
-        # data ranges
-        maps_range = diagtools.get_cube_range(maps_cubes)
-        if hasobs:
-            diff_range = diagtools.get_cube_range(diff_cubes)
-            maps_range = diagtools.get_cube_range([cubes[obsname][layer]])
-
-        if 'maps_range' in metadata[filenames[0]]:
-            maps_range = metadata[filenames[0]]['maps_range']
-            extend = 'both'
-        if 'diff_range' in metadata[filenames[0]]:
-            diff_range = metadata[filenames[0]]['diff_range']
-            extend = 'both'
+        # select cubes to plots
+        plot_cubes = select_cubes(cubes, layer, obsname, user_range,
+                                  contour_lev)
 
         # create subplots
-
-        varunit = str(maps_cubes[0].units)
-        varname = maps_cubes[0].var_name
         gsc = gridspec.GridSpec(layout[0], layout[1])
         yy = 0
         xx = 0
-        clevels = 13
-        for ii, _ in enumerate(maps_cubes):
+        #clevels = 13
+        for thename in plot_cubes:
             hascbar = False
-            cube = maps_cubes[ii]
-            thename = name_cubes[ii]
-            nspace = np.linspace(
-                maps_range[0], maps_range[1], clevels, endpoint=True)
-            cmap = 'viridis'
+            cube = plot_cubes[thename]['cube']
+            model_name = thename
 
-            if thename in [obsname, name_cubes[-1]]:
+            if thename in [obsname, list(plot_cubes.keys())[-1]]:
                 hascbar = True
 
-            if ii == 0:
-                thename = thename + ' (' + varname + ') [' + varunit + ']'
-
-            if (hasobs) & (ii > 0):
-                cube = diff_cubes[ii - 1]
-                nspace = np.linspace(
-                    diff_range[0], diff_range[1], clevels, endpoint=True)
-                cmap = 'RdBu_r'
-                thename = thename
+            if thename == list(plot_cubes.keys())[0]:
+                model_name = thename + ' (' + varname + ') [' + str(
+                    cube.units) + ']'
 
             axs = plt.subplot(gsc[xx, yy], projection=proj)
             add_map_plot(
                 axs,
                 cube,
-                nspace,
+                plot_cubes[thename]['nspace'],
                 yy,
-                cmap=cmap,
-                title=thename,
-                extend=extend,
+                cmap=plot_cubes[thename]['cmap'],
+                title=model_name,
+                extend=plot_cubes[thename]['extend'],
                 hascbar=hascbar)
 
             # next row & column indexes
@@ -230,26 +279,7 @@ def make_multiple_plots(cfg, metadata, obs_filename):
                 xx = 1 if hasobs else 0
                 yy = yy + 1
 
-        # Adjust subplots size & position
-        plt.subplots_adjust(
-            top=0.92,
-            bottom=0.08,
-            left=0.05,
-            right=0.95,
-            hspace=0.15,
-            wspace=0.15)
-
-        # Vertically detach OBS plot and center
-        if hasobs:
-            axs = fig.axes
-            box = axs[0].get_position()
-            shift = box.y0 * 0.05
-            box.y0 = box.y0 + shift
-            box.y1 = box.y1 + shift
-            shift = box.x1 - box.x0
-            box.x0 = 0.5 - shift * 0.5
-            box.x1 = box.x0 + shift
-            axs[0].set_position(box)
+        adjust_subplot_spacing(fig, hasobs)
 
         # Determine image filename:
         fn_list = ['multimodel_vs', obsname, varname, str(layer), 'maps']
