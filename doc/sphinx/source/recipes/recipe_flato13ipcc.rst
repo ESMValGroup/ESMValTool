@@ -37,6 +37,16 @@ following figures from Flato et al. (2013) can currently be reproduced:
       averages from CERES EBAF 2.6 (black), the individual CMIP5 models (thin 
       gray lines), and the multi-model mean (thick red line).
 
+    * Figure 9.6: Centred pattern correlations between models and observations 
+      for the annual mean climatology over the period 1980–1999. Results are 
+      shown for individual CMIP3 (black) and CMIP5 (blue) models as thin 
+      dashes, along with the corresponding ensemble average (thick dash) and 
+      median (open circle). The four variables shown are surface air 
+      temperature (TAS), top of the atmosphere (TOA) outgoing longwave 
+      radiation (RLUT), precipitation (PR) and TOA shortwave cloud radiative 
+      effect (SW CRE). The correlations between the reference and alternate 
+      observations are also shown (solid green circles).
+
     * Figure 9.8: Observed and simulated time series of the anomalies in annual 
       and global mean surface temperature. All anomalies are differences from 
       the 1961-1990 time-mean of each individual time series. The reference 
@@ -59,6 +69,10 @@ Diagnostics are stored in esmvaltool/diag_scripts/
       mean bias (Fig. 9.2, 9.4)
     * clouds/clouds_isccp: global maps of multi-model mean minus observations + zonal
       averages of individual models, multi-model mean and observations (Fig. 9.5)
+    * ipcc_ar5/ch09_fig09_6.ncl: calculating pattern correlations of annual mean
+      climatologies for one variable (Fig 9.6 preprocessing)
+    * ipcc_ar5/ch09_fig09_6_collect.ncl: collecting pattern correlation for each 
+      variable and plotting correlation plot (Fig 9.6)
     * ipcc_ar5/tsline.ncl: time series of the global mean (anomaly) (Fig: 9.8)
 
 
@@ -166,6 +180,50 @@ User settings in recipe
 
    * e.g. diag_scripts/shared/plot/styles/cmip5.style
 
+#. Script ipcc_ar5/ch09_fig09_6.ncl
+
+   *Required settings for script*
+
+   none
+
+   *Optional settings for script*
+
+   none
+
+   *Required settings for variables*
+ 
+   * reference_dataset: name of reference observation
+
+   *Optional settings for variables*
+
+   * alternaive_dataset: name of alternative observations
+
+   *Color tables*
+
+   none
+
+#. Script ipcc_ar5/ch09_fig09_6_collect.ncl
+
+   *Required settings for script*
+
+   none
+
+   *Optional settings for script*
+
+   * diag_order: List of diagnostic names in the order variables
+     should appear on x-axis
+
+   *Required settings for variables*
+ 
+   none
+
+   *Optional settings for variables*
+
+   none
+
+   *Color tables*
+
+   none
 
 Variables
 ---------
@@ -244,6 +302,20 @@ Example plots
    gray lines), and the multi-model mean (thick red line).
 
 .. _fig_flato13ipcc_4:
+.. figure::  /recipes/figures/flato13ipcc/fig-9-6.png
+   :align:   center
+
+   Figure 9.6: Centred pattern correlations between models and observations 
+   for the annual mean climatology over the period 1980–1999. Results are 
+   shown for individual CMIP3 (black) and CMIP5 (blue) models as thin 
+   dashes, along with the corresponding ensemble average (thick dash) and 
+   median (open circle). The four variables shown are surface air 
+   temperature (TAS), top of the atmosphere (TOA) outgoing longwave 
+   radiation (RLUT), precipitation (PR) and TOA shortwave cloud radiative 
+   effect (SW CRE). The correlations between the reference and alternate 
+   observations are also shown (solid green circles).
+
+.. _fig_flato13ipcc_5:
 .. figure::  /recipes/figures/flato13ipcc/fig-9-8.png
    :align:   center
 

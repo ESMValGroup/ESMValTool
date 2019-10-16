@@ -9,8 +9,6 @@
 ;    and plots them. Like IPCC ch. 9 fig 9.6
 ;
 ; Required diag_script_info attributes (diagnostics specific)
-;     diag_script_info@collect: Set to True for last variable for collecting
-;                               all variables and plotting
 ;
 ; Optional diag_script_info attributes (diagnostic specific)
 ;     diag_script_info@diag_order: give order of plotting variables on the
@@ -23,7 +21,7 @@
 ;     none
 ;
 ; Required variable attributes (defined in namelist)
-;    ref_model: name of reference data set (observations)
+;    reference_dataset: name of reference data set (observations)
 ;
 ; Caveats
 ;     Effect of different regridding methods not yet determined
