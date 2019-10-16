@@ -26,7 +26,7 @@ import os
 import sys
 import warnings
 
-from cartopy import crs # This line causes a segmentation fault in prospector
+from cartopy import crs #  This line causes a segmentation fault in prospector
 import cartopy.feature as cfeature
 import iris
 import matplotlib.pyplot as plt
