@@ -8,6 +8,9 @@ Recipes
 
 Atmosphere
 ^^^^^^^^^^
+.. toctree::
+   :maxdepth: 1
+
    recipe_miles                        Blocking metrics and indices, teleconnections and weather regimes (MiLES)
    recipe_clouds                       Clouds
    recipe_combined_climate_extreme_index   Combined Climate Extreme Index
@@ -27,6 +30,9 @@ Atmosphere
 
 Climate metrics and emergent constraints
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. toctree::
+   :maxdepth: 1
+
    recipe_cox18nature       Emergent constraint on equilibrium climate sensitivity from global temperature variability
    recipe_ecs               Equilibrium climate sensitivity
    recipe_perfmetrics       Performance metrics for essential climate parameters
@@ -34,23 +40,35 @@ Climate metrics and emergent constraints
 
 IPCC
 ^^^^
+.. toctree::
+   :maxdepth: 1
+
    recipe_flato13ipcc       IPCC AR5 Chapter 9
    recipe_collins13ipcc     IPCC AR5 Chapter 12
 
 Land
 ^^^^
+.. toctree::
+   :maxdepth: 1
+
    recipe_hydrology                    Hydrological models - data pre-processing
    recipe_landcover                    Landcover diagnostics
    recipe_runoff_et                    Runoff, Precipitation, Evapotranspiration
 
 Ocean
 ^^^^^
+.. toctree::
+   :maxdepth: 1
+
    recipe_cvdp                         Climate Variability Diagnostics Package (CVDP)
    recipe_combined_indices             Nino indices, North Atlantic Oscillation (NAO), Souther Oscillation Index (SOI)
    recipe_oceans                       Ocean diagnostics
 
 Other
 ^^^^^
+.. toctree::
+   :maxdepth: 1
+
    recipe_capacity_factor              Capacity factor of wind power: Ratio of average estimated power to theoretical maximum power
    recipe_ensclus                      Ensemble Clustering - a cluster analysis tool for climate model simulations (EnsClus)
    recipe_multimodel_products          Multi-model products
