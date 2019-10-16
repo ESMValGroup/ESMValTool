@@ -784,7 +784,7 @@ diagnostics:
       - {dataset: CSIRO-Mk3-6-0}
       - {dataset: EC-EARTH}
       - {dataset: FGOALS-g2}
-      - {dataset: FIO-ESM, version: v20120522}
+      - {dataset: FIO-ESM}
       - {dataset: GFDL-CM2p1}
       - {dataset: GFDL-CM3}
       - {dataset: GFDL-ESM2G}
