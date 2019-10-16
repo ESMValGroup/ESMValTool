@@ -13,9 +13,9 @@ Atmosphere
 
    recipe_miles
    recipe_clouds
+   recipe_crem
    recipe_combined_climate_extreme_index
    recipe_consecdrydays
-   recipe_crem
    recipe_diurnal_temperature_index
    recipe_extreme_events
    recipe_heatwaves_coldwaves
