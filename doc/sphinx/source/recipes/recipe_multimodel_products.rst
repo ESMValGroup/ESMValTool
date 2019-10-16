@@ -1,7 +1,7 @@
 .. _recipes_multimodel_products:
 
-Generic multi-model products
-====================================================
+Multi-model products
+====================
 
 Overview
 --------
@@ -73,6 +73,3 @@ Example plots
 
 .. _fig_multimodprod:
 .. figure::  /recipes/figures/multimodel_products/tas_JUN_multimodel-anomaly_2006_2099_1961_1990.png
-
-
-

@@ -1,48 +1,48 @@
 .. _recipes_flato13ipcc:
 
-IPCC AR5 Chapter 9
-==================
+IPCC AR5 Chapter 9 (selected figures)
+=====================================
 
 Overview
 --------
 
-The goal of this recipe is to collect diagnostics to reproduce Chapter 9 of AR5, 
-so that the plots can be readily reproduced and compared to previous CMIP 
-versions. In this way we can next time start with what was available in the 
-previous round and can focus on developing more innovative methods of analysis 
+The goal of this recipe is to collect diagnostics to reproduce Chapter 9 of AR5,
+so that the plots can be readily reproduced and compared to previous CMIP
+versions. In this way we can next time start with what was available in the
+previous round and can focus on developing more innovative methods of analysis
 rather than constantly having to "re-invent the wheel".
 
-The plots are produced collecting the diagnostics from individual recipes. The 
+The plots are produced collecting the diagnostics from individual recipes. The
 following figures from Flato et al. (2013) can currently be reproduced:
 
-    * Figure 9.2 a,b,c: Annual-mean surface air temperature for the period 
-      1980-2005. a) multi-model mean, b) bias as the difference between the 
-      CMIP5 multi-model mean and the climatology from ERA-Interim 
-      (Dee et al., 2011), c) mean absolute model error with respect to the 
+    * Figure 9.2 a,b,c: Annual-mean surface air temperature for the period
+      1980-2005. a) multi-model mean, b) bias as the difference between the
+      CMIP5 multi-model mean and the climatology from ERA-Interim
+      (Dee et al., 2011), c) mean absolute model error with respect to the
       climatology from ERA-Interim.
 
-    * Figure 9.4: Annual-mean precipitation rate (mm day-1) for the period 
-      1980-2005. a) multi-model mean, b) bias as the difference between the 
-      CMIP5 multi-model mean and the climatology from the Global Precipitation 
-      Climatology Project (Adler et al., 2003), c) difference between the 
-      multi-model mean and the ECMWF reanalysis of the seasonality, and d) 
-      difference between the multi-model mean and the ERA-Interim absolute 
+    * Figure 9.4: Annual-mean precipitation rate (mm day-1) for the period
+      1980-2005. a) multi-model mean, b) bias as the difference between the
+      CMIP5 multi-model mean and the climatology from the Global Precipitation
+      Climatology Project (Adler et al., 2003), c) difference between the
+      multi-model mean and the ECMWF reanalysis of the seasonality, and d)
+      difference between the multi-model mean and the ERA-Interim absolute
       seasonality.
 
-    * Figure 9.5: Climatological (1985-2005) annual-mean cloud radiative 
-      effects in Wm-2 for the CMIP5 models against CERES EBAF (2001-2011) in 
-      Wm-2. Top row shows the shortwave effect; middle row the longwave effect, 
-      and bottom row the net effect. Multi-model-mean biases against CERES 
-      EBAF 2.6 are shown on the left, whereas the right panels show zonal 
-      averages from CERES EBAF 2.6 (black), the individual CMIP5 models (thin 
+    * Figure 9.5: Climatological (1985-2005) annual-mean cloud radiative
+      effects in Wm-2 for the CMIP5 models against CERES EBAF (2001-2011) in
+      Wm-2. Top row shows the shortwave effect; middle row the longwave effect,
+      and bottom row the net effect. Multi-model-mean biases against CERES
+      EBAF 2.6 are shown on the left, whereas the right panels show zonal
+      averages from CERES EBAF 2.6 (black), the individual CMIP5 models (thin
       gray lines), and the multi-model mean (thick red line).
 
-    * Figure 9.8: Observed and simulated time series of the anomalies in annual 
-      and global mean surface temperature. All anomalies are differences from 
-      the 1961-1990 time-mean of each individual time series. The reference 
-      period 1961-1990 is indicated by yellow shading; vertical dashed grey 
-      lines represent times of major volcanic eruptions. Single simulations 
-      for CMIP5 models (thin lines); multi-model mean (thick red line); 
+    * Figure 9.8: Observed and simulated time series of the anomalies in annual
+      and global mean surface temperature. All anomalies are differences from
+      the 1961-1990 time-mean of each individual time series. The reference
+      period 1961-1990 is indicated by yellow shading; vertical dashed grey
+      lines represent times of major volcanic eruptions. Single simulations
+      for CMIP5 models (thin lines); multi-model mean (thick red line);
       different observations (thick black lines). Dataset pre-processing like
       described in Jones et al., 2013.
 
@@ -154,7 +154,7 @@ User settings in recipe
    * header: if true, region name as header
 
    *Required settings for variables*
- 
+
    none
 
    *Optional settings for variables*
@@ -187,7 +187,7 @@ instructions.*
 * ERA-Interim (tas, ta, ua, va, zg, hus - esmvaltool/utils/cmorizers/obs/cmorize_obs_ERA-Interim.ncl)
 * GPCP-SG (pr - obs4mips)
 * HadCRUT4 (tas - esmvaltool/utils/cmorizers/obs/cmorize_obs_hadcrut4.ncl)
- 
+
 
 References
 ----------
@@ -213,46 +213,45 @@ Example plots
 .. figure::  /recipes/figures/flato13ipcc/fig-9-2.png
    :align:   center
 
-   Figure 9.2 a,b,c: Annual-mean surface air temperature for the period 
-   1980-2005. a) multi-model mean, b) bias as the difference between the 
-   CMIP5 multi-model mean and the climatology from ERA-Interim 
-   (Dee et al., 2011), c) mean absolute model error with respect to the 
+   Figure 9.2 a,b,c: Annual-mean surface air temperature for the period
+   1980-2005. a) multi-model mean, b) bias as the difference between the
+   CMIP5 multi-model mean and the climatology from ERA-Interim
+   (Dee et al., 2011), c) mean absolute model error with respect to the
    climatology from ERA-Interim.
 
 .. _fig_flato13ipcc_2:
 .. figure::  /recipes/figures/flato13ipcc/fig-9-4.png
    :align:   center
 
-   Figure 9.4: Annual-mean precipitation rate (mm day-1) for the period 
-   1980-2005. a) multi-model mean, b) bias as the difference between the 
-   CMIP5 multi-model mean and the climatology from the Global Precipitation 
-   Climatology Project (Adler et al., 2003), c) difference between the 
-   multi-model mean and the ECMWF reanalysis of the seasonality, and d) 
-   difference between the multi-model mean and the ERA-Interim absolute 
+   Figure 9.4: Annual-mean precipitation rate (mm day-1) for the period
+   1980-2005. a) multi-model mean, b) bias as the difference between the
+   CMIP5 multi-model mean and the climatology from the Global Precipitation
+   Climatology Project (Adler et al., 2003), c) difference between the
+   multi-model mean and the ECMWF reanalysis of the seasonality, and d)
+   difference between the multi-model mean and the ERA-Interim absolute
    seasonality.
 
 .. _fig_flato13ipcc_3:
 .. figure::  /recipes/figures/flato13ipcc/fig-9-5.png
    :align:   center
 
-   Figure 9.5: Climatological (1985-2005) annual-mean cloud radiative 
-   effects in Wm-2 for the CMIP5 models against CERES EBAF (2001-2011) in 
-   Wm-2. Top row shows the shortwave effect; middle row the longwave effect, 
-   and bottom row the net effect. Multi-model-mean biases against CERES 
-   EBAF 2.6 are shown on the left, whereas the right panels show zonal 
-   averages from CERES EBAF 2.6 (black), the individual CMIP5 models (thin 
+   Figure 9.5: Climatological (1985-2005) annual-mean cloud radiative
+   effects in Wm-2 for the CMIP5 models against CERES EBAF (2001-2011) in
+   Wm-2. Top row shows the shortwave effect; middle row the longwave effect,
+   and bottom row the net effect. Multi-model-mean biases against CERES
+   EBAF 2.6 are shown on the left, whereas the right panels show zonal
+   averages from CERES EBAF 2.6 (black), the individual CMIP5 models (thin
    gray lines), and the multi-model mean (thick red line).
 
 .. _fig_flato13ipcc_4:
 .. figure::  /recipes/figures/flato13ipcc/fig-9-8.png
    :align:   center
 
-   Figure 9.8: Observed and simulated time series of the anomalies in annual 
-   and global mean surface temperature. All anomalies are differences from 
-   the 1961-1990 time-mean of each individual time series. The reference 
-   period 1961-1990 is indicated by yellow shading; vertical dashed grey 
-   lines represent times of major volcanic eruptions. Single simulations 
-   for CMIP5 models (thin lines); multi-model mean (thick red line); 
+   Figure 9.8: Observed and simulated time series of the anomalies in annual
+   and global mean surface temperature. All anomalies are differences from
+   the 1961-1990 time-mean of each individual time series. The reference
+   period 1961-1990 is indicated by yellow shading; vertical dashed grey
+   lines represent times of major volcanic eruptions. Single simulations
+   for CMIP5 models (thin lines); multi-model mean (thick red line);
    different observations (thick black lines). Dataset pre-processing like
    described in Jones et al., 2013.
-
