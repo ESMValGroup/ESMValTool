@@ -56,9 +56,6 @@ diagnostics:
       pr:
         <<: *var_daily
         preprocessor: hourly_sum
-      evspsblpot: # TODO ERA-Interim doesnt have.
-        <<: *var_daily
-        preprocessor: hourly_sum
       rsds:
         <<: *var_daily
         preprocessor: hourly_sum
@@ -93,9 +90,6 @@ diagnostics:
         <<: *var_hourly
         preprocessor: hourly_mean
       pr:
-        <<: *var_hourly
-        preprocessor: hourly_sum
-      evspsblpot:
         <<: *var_hourly
         preprocessor: hourly_sum
       rsds:
