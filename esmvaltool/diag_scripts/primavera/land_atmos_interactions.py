@@ -141,7 +141,14 @@ class LandAtmosInteractions(object):
         mrso_jja = extract_season(mrso, 'JJA')
         # Avoid Iris complaints about metadata
         dummy = mrso_jja.copy(mrso_mam.lazy_data())
-        correlation = stats.pearsonr(hfls, mrso_jja, 'time')
+        try:
+            correlation = stats.pearsonr(hfls, mrso_jja, 'time')
+        except ValueError:
+            dim_coord = hfls.coord_dims('latitude')
+            mrso_jja.remove_coord('latitude')
+            mrso_jja.add_dim_coord(hfls.coord('latitude'), dim_coord[0])
+            correlation = stats.pearsonr(hfls, mrso_jja, 'time')
+
         correlation = self.mask_and_regrid(correlation)
         correlation.long_name = ('interannual_correlation_between'
                                  '_latent_heat_flux_and_soil_moisture')
