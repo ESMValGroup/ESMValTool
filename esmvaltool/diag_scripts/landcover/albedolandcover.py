@@ -1,21 +1,17 @@
+"""Landcover analysis plots.
+###############################################################
+landcover/landcover.py
+Authors ESMValToolV1 Version
+    lejeune_quentin
+Port to ESMValTool Version 2
+    crezee_bas
+###############################################################
+Description
+-----------
+    Computes relationship between landcover and albedo for models
+    and compares this to observations.
 """
-Look at this module for guidance how to write your own.
 
-Read the README_PERSONAL_DIAGNOSTIC file associated with this example;
-
-Module for personal diagnostics (example).
-Internal imports from exmvaltool work e.g.:
-
-from esmvaltool.preprocessor import regrid
-from esmvaltool.diag_scripts.shared.supermeans import get_supermean
-
-Pipe output through logger;
-
-Please consult the documentation for help with esmvaltool's functionalities
-and best coding practices.
-
-
-"""
 
 
 import copy
@@ -114,10 +110,6 @@ def _get_reconstructed_albedos(model_data, dia_cfg):
     for (indices, maskbool) in np.ndenumerate(model_data['alb'].data.mask):
         if not maskbool: # Only if not masked we need to check neighbourhood
             i, j = indices
-            # TODO change back
-            #assert(model_data['snc'].data[i, j] < dia_cfg['thres_fsnow'])
-            # Now check the local neighbourhood.
-            # Create indices
             # Create the neighbourhood as bbox
             islice = slice(int(i - (dia_cfg['lonsize_BB'] - 1) / 2),
                            int(i + (dia_cfg['lonsize_BB'] - 1) / 2 + 1))
