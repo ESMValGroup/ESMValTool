@@ -40,10 +40,10 @@ class mpqb_pair:
         self.ds1dat = self.ds1cube.data.filled(np.nan)
         self.ds2dat = iris.load_cube(self.ds_cfg[self.ds2][0]['filename']).data.filled(np.nan)
         # Assert that shapes are the same of the two datasets
-        if not len(set([self.ds1dat.shape,self.ds2dat.shape])) == 1:
+        if not self.ds1dat.shape == self.ds2dat.shape:
             logger.error("Shapes of datasets should be the same")
-            logger.error("{0} has shape: {1}".format(self.ds1,self.ds1dat.shape))
-            logger.error("{0} has shape: {1}".format(self.ds2,self.ds2dat.shape))
+            logger.error("{0} has shape: {1}".format(self.ds1, self.ds1dat.shape))
+            logger.error("{0} has shape: {1}".format(self.ds2, self.ds2dat.shape))
             raise ValueError
     def pearsonr(self):
         self.metrics['pearsonr'],_ = parallel_apply_along_axis(pearsonr1d, 0, (self.ds1dat,self.ds2dat))
