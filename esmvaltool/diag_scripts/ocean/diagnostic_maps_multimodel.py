@@ -76,9 +76,7 @@ def add_map_plot(ax,
         nspace,
         linewidth=0,
         cmap=plt.cm.get_cmap(cmap),
-        extend=extend,
-        zmin=nspace.min(),
-        zmax=nspace.max())
+        extend=extend)
 
     ax.coastlines()
     gls = ax.gridlines(draw_labels=False, color='black', alpha=0.4)
@@ -132,7 +130,7 @@ def adjust_subplot_spacing(fig, hasobs):
 
 def load_cubes(filenames, obs_filename, metadata):
     """
-    Organize data provided by recipe
+    Organize data provided by recipe.
 
     Parameters
     ----------
@@ -177,7 +175,7 @@ def select_cubes(cubes, layer, obsname, user_range, clevels):
     Parameters
     ----------
     cubes: list
-        Input data iris cubes 
+        Input data iris cubes
     layer: list
         Data level to be plotted
     obsname: string
@@ -232,6 +230,7 @@ def select_cubes(cubes, layer, obsname, user_range, clevels):
 def make_multiple_plots(cfg, metadata, obs_filename):
     """
     Produce multiple panel comparison maps of model(s) and data (if provided).
+
     If observations are not provided, plots of each model data are drawn.
     Put on top row observational data (if available) and in following subplots
     model difference (or data) organized in rows/cols using row/col layout.
