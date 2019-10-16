@@ -220,15 +220,21 @@ def main(cfg):
         obs_key = 'observational_dataset'
         obs_filename = ''
         obs_metadata = {}
+
         if obs_key in cfg:
             obs_filename = diagtools.match_model_to_key(obs_key,
                                                         cfg[obs_key],
                                                         metadatas)
-            obs_metadata = metadatas[obs_filename]
-
+            if obs_filename:
+                obs_metadata = metadatas[obs_filename]
+            else:
+                obs_metadata = ''
         for filename in sorted(metadatas.keys()):
 
             if filename == obs_filename:
+                continue
+
+            if metadatas[filename]['frequency'] == 'fx':
                 continue
 
             logger.info('-----------------')
