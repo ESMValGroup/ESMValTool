@@ -29,8 +29,8 @@
 ;    generate a time series over their time range of validity.
 ;
 ; Modification history
-;    20190110-A_righ_ma: rewritten in NCL for v2.
-;    20160714-A_muel_bn: written.
+;    20190110-righi_mattia: rewritten in NCL for v2.
+;    20160714-benjamin_mueller: written.
 ;
 ; #############################################################################
 loadscript(getenv("esmvaltool_root") + \
@@ -83,8 +83,10 @@ begin
 
   ; Global attributes
   SOURCE = "ftp://anon-ftp.ceda.ac.uk/neodc/esacci/land_cover/data/"
-  REF = "Defourny et al.. ESA Land Cover Climate Change Initiative " + \
-    "(ESA LC_cci) data, 2015"
+  REF = "Defourny, P.: ESA Land Cover Climate Change Initiative " + \
+    "(Land_Cover_cci): Global Land Cover Maps, Version 1.6.1. " + \
+    "Centre for Environmental Data Analysis, " + \
+    "http://catalogue.ceda.ac.uk/uuid/4761751d7c844e228ec2f5fe11b2e3b0, 2016."
   COMMENT = ""
 
 end

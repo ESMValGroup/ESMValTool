@@ -17,7 +17,7 @@ Download and processing instructions
    in ${RAWOBS}/Tier2/ESACCI-OC
 
 Modification history
-   20190227-A_lova_to: written.
+   20190227-lovato_tomas: written.
 
 """
 
