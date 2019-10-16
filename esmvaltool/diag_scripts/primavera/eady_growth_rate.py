@@ -44,7 +44,7 @@ class EadyGrowthRate(object):
 
             brunt = self.brunt_vaisala_frq(theta, zg)
 
-            lats = zg.dim_coords[2]
+            lats = zg.coord('latitude')
             fcor = self.coriolis(lats, zg.shape)
 
             ua = iris.load_cube(var['ua'][0]['filename'])
@@ -135,11 +135,11 @@ class EadyGrowthRate(object):
         exp = data[alias][0]['exp']
         start = data[alias][0]['start_year']
         end = data[alias][0]['end_year']
-        output_name = '{project}_'
-                      '{dataset}_'
-                      '{exp}_'
-                      '{script}_'
-                      '{start}_'
+        output_name = '{project}_' \
+                      '{dataset}_' \
+                      '{exp}_' \
+                      '{script}_' \
+                      '{start}_' \
                       '{end}.nc'.format(project=project,
                                         dataset=dataset,
                                         exp=exp,
