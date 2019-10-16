@@ -975,12 +975,11 @@ class Plot2D(object):
             cbar = plt.colorbar(pcm,
                 cax=cax,
                 orientation='horizontal',
-                fraction=1.,
+#                fraction=1.,
                 extend=ext_cmap,
                 boundaries=levels,
+                format='%.4g'
                                )
-            #cbar.ax.xaxis.set_major_formatter(StrMethodFormatter('{x:.2g}'))
-            cbar.ax.set_xticklabels([('{:.'+str(2)+'g}').format(x) for x in levels])
         cax.set_xlabel((list(set(self.names))[0] if list(
             set(self.names))[0] else "") + list(set(self.units))[0])
 
