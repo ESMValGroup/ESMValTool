@@ -131,9 +131,7 @@ def adjust_subplot_spacing(fig, hasobs):
 
 
 def select_cubes(cubes, layer, obsname, user_range, clevels):
-    """
-    Create a dictionary of input layer data & metadata for plot.
-    """
+    """ Create a dictionary of input layer data & metadata for plot. """
     plot_cubes = {}
     list_cubes = []
 
@@ -153,25 +151,25 @@ def select_cubes(cubes, layer, obsname, user_range, clevels):
             }
         list_cubes.append(plot_cubes[thename]['cube'])
 
-    # set data ranges
+    # get cubes data ranges
     mrange = diagtools.get_cube_range(list_cubes)
-    if (obsname != ''):
+    if obsname != '':
         mrange = diagtools.get_cube_range([list_cubes[0]])
         drange = diagtools.get_cube_range(list_cubes[1:])
 
     # define contour levels using ranges
     for thename in cubes:
-        range = mrange
+        mrange = mrange
         if user_range['maps']:
-            range = user_range['maps']
+            mrange = user_range['maps']
             plot_cubes[thename]['extend'] = 'both'
         if (obsname != '') & (thename != obsname):
-            range = drange
+            mrange = drange
             if user_range['diff']:
-                range = user_range['diff']
+                mrange = user_range['diff']
                 plot_cubes[thename]['extend'] = 'both'
         plot_cubes[thename]['nspace'] = np.linspace(
-            range[0], range[1], clevels, endpoint=True)
+            mrange[0], mrange[1], clevels, endpoint=True)
 
     return plot_cubes
 
@@ -180,7 +178,6 @@ def make_multiple_plots(cfg, metadata, obs_filename):
     """
     Produce multiple panel comparison maps of model(s) and data (if provided).
     If observations are not provided, plots of each model data are drawn.
-
     Put on top row observational data (if available) and in following subplots
     model difference (or data) organized in rows/cols using row/col layout.
 
@@ -247,9 +244,8 @@ def make_multiple_plots(cfg, metadata, obs_filename):
 
         # create subplots
         gsc = gridspec.GridSpec(layout[0], layout[1])
-        yy = 0
-        xx = 0
-        #clevels = 13
+        y = 0
+        x = 0
         for thename in plot_cubes:
             hascbar = False
             cube = plot_cubes[thename]['cube']
@@ -262,7 +258,7 @@ def make_multiple_plots(cfg, metadata, obs_filename):
                 model_name = thename + ' (' + varname + ') [' + str(
                     cube.units) + ']'
 
-            axs = plt.subplot(gsc[xx, yy], projection=proj)
+            axs = plt.subplot(gsc[x, y], projection=proj)
             add_map_plot(
                 axs,
                 cube,
@@ -274,10 +270,10 @@ def make_multiple_plots(cfg, metadata, obs_filename):
                 hascbar=hascbar)
 
             # next row & column indexes
-            xx = xx + 1
-            if xx == layout[0]:
-                xx = 1 if hasobs else 0
-                yy = yy + 1
+            x = x + 1
+            if x == layout[0]:
+                x = 1 if hasobs else 0
+                y = y + 1
 
         adjust_subplot_spacing(fig, hasobs)
 
