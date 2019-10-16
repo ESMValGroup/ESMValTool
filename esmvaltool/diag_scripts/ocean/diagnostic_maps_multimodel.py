@@ -130,8 +130,63 @@ def adjust_subplot_spacing(fig, hasobs):
         axs[0].set_position(box)
 
 
+def load_cubes(filenames, obs_filename, metadata):
+    """
+    Organize data provided by recipe
+
+    Parameters
+    ----------
+    filenames: dict
+        input files listed in the recipe
+    obs_filename: str
+        the preprocessed observations file.
+    metadata: dict
+        the input files dictionary
+    """
+    # check if observations are provided
+    if obs_filename:
+        obsname = metadata[obs_filename]['dataset']
+        filenames.remove(obs_filename)
+        filenames.insert(0, obs_filename)
+    else:
+        obsname = ''
+        logger.info('Observations not provided. Plot each model data.')
+
+    # Load the data for each layer as a separate cube
+    layers = {}
+    cubes = {}
+    for thename in filenames:
+        logger.debug('loading: \t%s', thename)
+        cube = iris.load_cube(thename)
+        cube = diagtools.bgc_units(cube, cube.var_name)
+        model_name = metadata[thename]['dataset']
+        cubes[model_name] = diagtools.make_cube_layer_dict(cube)
+        for layer in cubes[model_name]:
+            layers[layer] = True
+
+    logger.debug('layers: %s', layers)
+    logger.debug('cubes: %s', ', '.join(cubes.keys()))
+
+    return cubes, layers, obsname
+
+
 def select_cubes(cubes, layer, obsname, user_range, clevels):
-    """ Create a dictionary of input layer data & metadata for plot. """
+    """
+    Create a dictionary of input layer data & metadata for plot.
+
+    Parameters
+    ----------
+    cubes: list
+        Input data iris cubes 
+    layer: list
+        Data level to be plotted
+    obsname: string
+         Observation data name
+    user_range: dict
+         Plot ranges read from recipe
+    clevels: integer
+         Number of contour levels
+    """
     plot_cubes = {}
     list_cubes = []
 
@@ -186,7 +241,7 @@ def make_multiple_plots(cfg, metadata, obs_filename):
     cfg: dict
         the opened global config dictionary, passed by ESMValTool.
     metadata: dict
-        the input files dictionairy
+        the input files dictionary
     obs_filename: str
         the preprocessed observations file.
     """
@@ -205,32 +260,15 @@ def make_multiple_plots(cfg, metadata, obs_filename):
     proj = ccrs.Robinson(central_longitude=0)
     contour_lev = 13
 
-    # check if observations are provided
-    hasobs = False
-    if obs_filename:
+    # load input data
+    [cubes, layers, obsname] = load_cubes(filenames, obs_filename, metadata)
+
+    if obsname != '':
         hasobs = True
-        obsname = metadata[obs_filename]['dataset']
-        filenames.remove(obs_filename)
-        filenames.insert(0, obs_filename)
         layout[0] = layout[0] + 1
     else:
-        obsname = ''
+        hasobs = False
         logger.info('Observations not provided. Plot each model data.')
-
-    # Load the data for each layer as a separate cube
-    layers = {}
-    cubes = {}
-    for thename in filenames:
-        logger.debug('loading: \t%s', thename)
-        cube = iris.load_cube(thename)
-        cube = diagtools.bgc_units(cube, varname)
-        model_name = metadata[thename]['dataset']
-        cubes[model_name] = diagtools.make_cube_layer_dict(cube)
-        for layer in cubes[model_name]:
-            layers[layer] = True
-
-    logger.debug('layers: %s', layers)
-    logger.debug('cubes: %s', ', '.join(cubes.keys()))
 
     # Make a plot for each layer
     for layer in layers:
@@ -244,8 +282,8 @@ def make_multiple_plots(cfg, metadata, obs_filename):
 
         # create subplots
         gsc = gridspec.GridSpec(layout[0], layout[1])
-        y = 0
-        x = 0
+        row = 0
+        col = 0
         for thename in plot_cubes:
             hascbar = False
             cube = plot_cubes[thename]['cube']
@@ -258,22 +296,22 @@ def make_multiple_plots(cfg, metadata, obs_filename):
                 model_name = thename + ' (' + varname + ') [' + str(
                     cube.units) + ']'
 
-            axs = plt.subplot(gsc[x, y], projection=proj)
+            axs = plt.subplot(gsc[row, col], projection=proj)
             add_map_plot(
                 axs,
                 cube,
                 plot_cubes[thename]['nspace'],
-                yy,
+                col,
                 cmap=plot_cubes[thename]['cmap'],
                 title=model_name,
                 extend=plot_cubes[thename]['extend'],
                 hascbar=hascbar)
 
             # next row & column indexes
-            x = x + 1
-            if x == layout[0]:
-                x = 1 if hasobs else 0
-                y = y + 1
+            row = row + 1
+            if row == layout[0]:
+                row = 1 if hasobs else 0
+                col = col + 1
 
         adjust_subplot_spacing(fig, hasobs)
 
