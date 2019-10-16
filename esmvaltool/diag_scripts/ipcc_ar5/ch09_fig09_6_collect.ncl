@@ -426,7 +426,7 @@ begin
   plottype = "other"
   authors = (/"gier_bettina", "bock_lisa"/)
   references = (/"flato13ipcc"/)
-  log_provenance(ncdf_outfile, outfile, caption, statistics, domains, plottype, \
-                 authors, references, prov_files)
+  log_provenance(ncdf_outfile, outfile, caption, statistics, domains, \
+                 plottype, authors, references, prov_files)
   leave_msg(DIAG_SCRIPT, "")
 end
