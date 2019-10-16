@@ -6,8 +6,7 @@ import shutil
 import subprocess
 
 from esmvalcore._task import DiagnosticError
-from esmvaltool.diag_scripts.shared import (group_metadata, run_diagnostic,
-                                            select_metadata)
+from esmvaltool.diag_scripts.shared import (group_metadata, run_diagnostic)
 from esmvaltool.diag_scripts.shared import ProvenanceLogger
 
 logger = logging.getLogger(os.path.basename(__file__))
@@ -88,8 +87,7 @@ def create_link(cfg, inpath, _name):
 def setup_namelist(cfg):
     """Set the namelist file of the cvdp package."""
     input_data = cfg['input_data'].values()
-    selection = select_metadata(input_data, project='CMIP5')
-    grouped_selection = group_metadata(selection, 'alias')
+    grouped_selection = group_metadata(input_data, 'alias')
 
     content = []
     for _, attributes in grouped_selection.items():
@@ -255,8 +253,7 @@ def _get_info(filename, dictionary):
 
 def _get_global_ancestors(cfg):
     input_data = cfg['input_data'].values()
-    selection = select_metadata(input_data, project='CMIP5')
-    grouped_selection = group_metadata(selection, 'dataset')
+    grouped_selection = group_metadata(input_data, 'dataset')
     ancestor = []
     for _, attributes in grouped_selection.items():
         ancestor += [item['filename'] for item in attributes]
