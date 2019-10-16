@@ -228,6 +228,8 @@ setup(
     },
     entry_points={
         'console_scripts': [
+            'create_quicklook_recipe = '
+            'esmvaltool.utils.create_quicklook_recipe.run:main',
             'cmorize_obs = esmvaltool.cmorizers.obs.cmorize_obs:main',
             'mip_convert_setup = '
             'esmvaltool.cmorizers.mip_convert.esmvt_mipconv_setup:main',

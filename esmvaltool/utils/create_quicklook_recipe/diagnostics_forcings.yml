@@ -1,0 +1,65 @@
+glob_timeseries_forcings_{run_id}:
+  description: Timeseries of forcings (emissions and prescribed trace gas concentrations).
+  themes:
+    - aerosols
+    - chem
+    - ghg
+  realms:
+    - atmos
+    - aerosol
+    - atmosChem
+  variables:
+    TN_GHG_CO2:
+      mip: custom
+      preprocessor: prep_zon
+    TN_GHG_N2O:
+      mip: custom
+      preprocessor: prep_zon
+    TN_GHG_CH4:
+      mip: custom
+      preprocessor: prep_zon
+    BB_CO_s:
+      mip: custom
+      preprocessor: prep_zon
+    BB_NO_s:
+      mip: custom
+      preprocessor: prep_zon
+    BB_SO2_s:
+      mip: custom
+      preprocessor: prep_zon
+    BB_AER_TC_s:
+      mip: custom
+      preprocessor: prep_zon
+    ANTHNT_NO_s:
+      mip: custom
+      preprocessor: prep_zon
+    ANTHNT_CO_s:
+      mip: custom
+      preprocessor: prep_zon
+    ANTHNT_SO2_s:
+      mip: custom
+      preprocessor: prep_zon
+    ANTHNT_AER_TC_s:
+      mip: custom
+      preprocessor: prep_zon
+    ROAD_NO:
+      mip: custom
+      preprocessor: prep_zon
+    ROAD_AER_BC:
+      mip: custom
+      preprocessor: prep_zon
+    SHIP_NO_s:
+      mip: custom
+      preprocessor: prep_zon
+    SHIP_SO2_s:
+      mip: custom
+      preprocessor: prep_zon
+    SHIP_AER_BC_s:
+      mip: custom
+      preprocessor: prep_zon
+    AIRC_NO_s:
+      mip: custom
+      preprocessor: prep_zon
+    VOLC_SO2_s:
+      mip: custom
+      preprocessor: prep_zon

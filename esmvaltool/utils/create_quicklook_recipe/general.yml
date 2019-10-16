@@ -1,0 +1,24 @@
+# ESMValTool
+---
+documentation:
+  description: Quicklook recipe.
+
+  authors:
+    - broe_bj
+    - bock_ls
+
+  maintainer:
+    - laue_ax
+
+  references:
+    - acknow_project
+
+  projects:
+    - cmip6dicad
+
+preprocessors:
+
+  prep_zon:
+    zonal_means:
+      coordinate: longitude
+      mean_type: mean
