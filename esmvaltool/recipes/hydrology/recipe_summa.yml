@@ -42,29 +42,21 @@ diagnostics:
         mip: day
         start_year: 2000
         end_year: 2000
-        preprocessor: hourly_mean
       vas:
         <<: *var_daily
-        preprocessor: hourly_mean
       tas:
         <<: *var_daily
-        preprocessor: hourly_mean
       tdps:
         <<: *var_daily
         mip: Eday
-        preprocessor: hourly_mean
       pr:
         <<: *var_daily
-        preprocessor: hourly_sum
       rsds:
         <<: *var_daily
-        preprocessor: hourly_sum
       rss: # this one is needed to obtain downward lonwave radiation
         <<: *var_daily
-        preprocessor: hourly_sum
       #TODO: # add Air pressure
         <<: *var_daily
-        preprocessor: hourly_sum
     scripts:
       script:
         script: hydrology/summa.py
