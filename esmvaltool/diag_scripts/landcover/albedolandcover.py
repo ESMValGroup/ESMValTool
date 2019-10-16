@@ -10,6 +10,13 @@ Description
 -----------
     Computes relationship between landcover and albedo for models
     and compares this to observations.
+
+Projects
+--------
+    CMIP5
+    CMIP6 (experimental)
+
+
 """
 
 
