@@ -66,6 +66,8 @@ def glob_temp_mean(data, **kwargs):
     """
     cubes = []
 
+    _ = kwargs
+
     for cube in data.get_all():
         delete_aux_coords(cube)
         cubes.append(cube.collapsed("time", iris.analysis.MEAN))
@@ -80,6 +82,8 @@ def glob_temp_mean_absdiff(data, **kwargs):
     returns a list of difference cubes
     """
     cubes = []
+
+    _ = kwargs
 
     ref = glob_temp_mean(data.ref_only())
     ref = checked_ref(ref, num=1)
@@ -148,7 +152,7 @@ def percentiles(data, **kwargs):
     res_list = []
 
     for p in loc_percentiles:
-        perc_check = lambda perc: perc == p * 100
+        perc_check = lambda perc, search_p=p: perc == search_p * 100
         perc_constraint = iris.Constraint(percentile_over_time=perc_check)
 
         refp = refperc.extract(perc_constraint)
