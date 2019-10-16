@@ -15,8 +15,6 @@ Projects
 --------
     CMIP5
     CMIP6 (experimental)
-
-
 """
 
 
@@ -37,9 +35,9 @@ import numpy as np
 # specific imports for this diagnostic
 from sklearn import linear_model
 
-from esmvaltool.diag_scripts.shared import group_metadata, run_diagnostic
+from esmvaltool.diag_scripts.shared import (group_metadata, run_diagnostic,
+                                            ProvenanceLogger)
 from esmvaltool.diag_scripts.shared._base import get_plot_filename
-
 
 # This part sends debug statements to stdout
 logger = logging.getLogger(os.path.basename(__file__))
@@ -177,6 +175,9 @@ def _get_reconstructed_albedos(model_data, dia_cfg):
 def _write_albedochanges_to_disk(alb_lc, dia_cfg,
                                  template_cube, datadict, cfg):
     transition_cube = template_cube
+    # Remove attributes that are not applicable to derived data
+    for att in ['comment', 'modeling_realm', 'table_id']:
+        transition_cube.attributes.pop(att)
     result_dict = {'lc1': alb_lc[0, :, :], 'lc2': alb_lc[1, :, :],
                    'lc3': alb_lc[2, :, :]}
     names = {'lc1': '-'.join(dia_cfg['lc1_class']),
@@ -204,6 +205,27 @@ def _write_albedochanges_to_disk(alb_lc, dia_cfg,
             logger.info("Saving file as: %s", savename_nc)
             iris.save(transition_cube, savename_nc)
 
+            # Create provenance record
+            # Create caption
+            caption = transition_cube.attributes['plottitle'] + ' '\
+                      + transition_cube.attributes['plotsuptitle']
+            prov_rec = {
+                'caption': caption,
+                'statistics': ['other'],
+                'domains': ['global'],
+                'plot_type': 'other',
+                'authors': [
+                    'lejeune_quentin',
+                    'crezee_bas',
+                ],
+                'references': [
+                    'crescendo',
+                ],
+            }
+            with ProvenanceLogger(cfg) as provenance_logger:
+                provenance_logger.log(savename_nc, prov_rec)
+
+
 
 def _plot_cube(cube, cfg):
     """Plot the transition cube."""
@@ -222,7 +244,8 @@ def _plot_cube(cube, cfg):
     # Draw coast lines
     plt.gca().coastlines()
     # Get right path for saving plots from the cfg dictionary.
-    basename = cube.attributes['model_id'] + cube.name().replace(' ', '_')
+    basename = cube.attributes['model_id'] + '_'\
+               + cube.name().replace(' ', '_')
     savename_fig = get_plot_filename(basename, cfg)
     logger.info("Saving figure as: %s", savename_fig)
     plt.savefig(savename_fig)
