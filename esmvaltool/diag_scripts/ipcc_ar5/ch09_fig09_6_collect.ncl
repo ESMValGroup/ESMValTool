@@ -413,11 +413,11 @@ begin
     system("mkdir -p " + config_user_info@work_dir)
     workpath = config_user_info@work_dir + "pattern_cor.nc"
     ncdf_outfile = ncdf_write(data_all, workpath)
+  else
+    ncdf_outfile = workpath
   end if
 
   ; collect meta-data and call ESMValMD function
-  nc_file = workpath
-  plot_file = outfile
   caption = "Centered pattern correlations between models and observations" \
             + " for the annual mean climatologies " \
             + "(similar to IPCC ch. 9 fig. 9.6)."
@@ -426,8 +426,7 @@ begin
   plottype = "other"
   authors = (/"gier_bettina", "bock_lisa"/)
   references = (/"flato13ipcc"/)
-  infiles = prov_files
-  log_provenance(nc_file, plot_file, caption, statistics, domains, plottype, \
-                 authors, references, infiles)
+  log_provenance(ncdf_outfile, outfile, caption, statistics, domains, plottype, \
+                 authors, references, prov_files)
   leave_msg(DIAG_SCRIPT, "")
 end

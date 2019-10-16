@@ -607,13 +607,12 @@ diagnostics:
 
 
   # ***************************************************************************
-  # Flato et al. (2013) - IPCC AR5, chap. 9                               
-  # similar to fig. 9.6                                                   
+  # Flato et al. (2013) - IPCC AR5, chap. 9
+  # similar to fig. 9.6
   # ***************************************************************************
   # Centred pattern correlations between models and observations for
   # the annual mean climatology over the period 1980-1999.
-  # Contribution by Bettina Gier
-  # ***************************************************************************     
+  # ***************************************************************************
 
   fig09-6_tas:
     description: Calculate pattern correlation for tas
@@ -670,7 +669,7 @@ diagnostics:
       - {dataset: CMCC-CMS}
       - {dataset: CNRM-CM5}
       - {dataset: CNRM-CM5-2}
-      # - {dataset: EC-EARTH} height2m: does not exist
+      - {dataset: EC-EARTH}
       - {dataset: FIO-ESM}
       - {dataset: GFDL-CM2p1}
       - {dataset: GFDL-CM3}
@@ -700,7 +699,7 @@ diagnostics:
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
       - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
-      - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}      
+      - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
     scripts:
       fig09-6_pattern_cor: &fig09_6_pattern_cor
         script: ipcc_ar5/ch09_fig09_6.ncl
@@ -788,7 +787,7 @@ diagnostics:
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
 
-      - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7, tier: 1, start_year: 2003, end_year: 2011}      
+      - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7, tier: 1, start_year: 2003, end_year: 2011}
     scripts:
       fig09-6_pattern_cor:
         <<: *fig09_6_pattern_cor
@@ -848,7 +847,7 @@ diagnostics:
       - {dataset: CMCC-CMS}
       - {dataset: CNRM-CM5}
       - {dataset: CNRM-CM5-2}
-     # - {dataset: EC-EARTH} cannot concatenate cubes
+      - {dataset: EC-EARTH}
       - {dataset: FIO-ESM}
       - {dataset: GFDL-CM2p1}
       - {dataset: GFDL-CM3}
@@ -884,90 +883,90 @@ diagnostics:
       fig09-6_pattern_cor:
         <<: *fig09_6_pattern_cor
 
-#  fig09-6_swcre:
-#    description: Calculate pattern correlation for shortwave cloud radiative effect
-#    variables:
-#      swcre:
-#        preprocessor: regrid_4_5
-#        reference_dataset: CERES-EBAF
-#        project: CMIP5
-#        exp: historical
-#        ensemble: r1i1p1
-#        mip: Amon
-#        field: T2Ms
-#        start_year: 1980
-#        end_year: 1999
-#        derive: true
-#        force_derivation: false
-#    additional_datasets:
-#      #- {<<: *cmip3, dataset: cccma_cgcm3_1, institute: CCCMA}
-#      - {<<: *cmip3, dataset: cccma_cgcm3_1_t63, institute: CCCMA}
-#      - {<<: *cmip3, dataset: csiro_mk3_0, institute: CSIRO}
-#      - {<<: *cmip3, dataset: gfdl_cm2_0, institute: GFDL}
-#      - {<<: *cmip3, dataset: gfdl_cm2_1, institute: GFDL}
-#      - {<<: *cmip3, dataset: giss_model_e_h, institute: NASA}
-#      - {<<: *cmip3, dataset: giss_model_e_r, institute: NASA}
-#      - {<<: *cmip3, dataset: iap_fgoals1_0_g, institute: LASG}
-#      - {<<: *cmip3, dataset: inmcm3_0, institute: INM}
-#      - {<<: *cmip3, dataset: ipsl_cm4, institute: IPSL}
-#      - {<<: *cmip3, dataset: miroc3_2_hires, institute: NIES}
-#      - {<<: *cmip3, dataset: miroc3_2_medres, institute: NIES}
-#      - {<<: *cmip3, dataset: miub_echo_g, institute: MIUB-KMA}
-#      - {<<: *cmip3, dataset: mpi_echam5, institute: MPIM}
-#      - {<<: *cmip3, dataset: mri_cgcm2_3_2a, institute: MRI}
-#      - {<<: *cmip3, dataset: ncar_ccsm3_0, institute: NCAR}
-#      - {<<: *cmip3, dataset: ncar_pcm1, institute: NCAR}
-#      - {<<: *cmip3, dataset: ukmo_hadcm3, institute: UKMO}
-#      - {<<: *cmip3, dataset: ukmo_hadgem1, institute: UKMO}
-#
-#      - {dataset: ACCESS1-0}
-#      - {dataset: ACCESS1-3}
-#      - {dataset: bcc-csm1-1}
-#      - {dataset: bcc-csm1-1-m}
-#      - {dataset: BNU-ESM}
-#      - {dataset: CanESM2}
-#      - {dataset: CCSM4}
-#      - {dataset: CESM1-BGC}
-#      - {dataset: CESM1-CAM5}
-#      - {dataset: CESM1-FASTCHEM}
-#      - {dataset: CESM1-WACCM}
-#      - {dataset: CMCC-CESM}
-#      - {dataset: CMCC-CM}
-#      - {dataset: CNRM-CM5}
-#      - {dataset: CNRM-CM5-2}
-#      - {dataset: FGOALS-g2}
-#      - {dataset: FIO-ESM}
-#      - {dataset: GFDL-CM3}
-#      - {dataset: GFDL-ESM2G}
-#      - {dataset: GFDL-ESM2M}
-#      - {dataset: GISS-E2-H}
-#      - {dataset: GISS-E2-H-CC}
-#      - {dataset: GISS-E2-R}
-#      - {dataset: GISS-E2-R-CC}
-#      - {dataset: HadCM3}
-#      - {dataset: HadGEM2-AO}
-#      - {dataset: HadGEM2-CC}
-#      - {dataset: HadGEM2-ES}
-#      - {dataset: inmcm4}
-#      - {dataset: IPSL-CM5A-LR}
-#      - {dataset: IPSL-CM5A-MR}
-#      - {dataset: IPSL-CM5B-LR}
-#      - {dataset: MIROC-ESM}
-#      - {dataset: MIROC-ESM-CHEM}
-#      - {dataset: MIROC4h}
-#      - {dataset: MIROC5}
-#      - {dataset: MPI-ESM-LR}
-#      - {dataset: MPI-ESM-MR}
-#      - {dataset: MPI-ESM-P}
-#      - {dataset: MRI-CGCM3}
-#      - {dataset: MRI-ESM1}
-#      - {dataset: NorESM1-M}
-#      - {dataset: NorESM1-ME}
-#
-#      - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7, tier: 1, start_year: 2003, end_year: 2011}      
-#    scripts:
-#      fig09-6_pattern_cor:
-#        <<: *fig09_6_pattern_cor
+  fig09-6_swcre:
+    description: Calculate pattern correlation for shortwave cloud radiative effect
+    variables:
+      swcre:
+        preprocessor: regrid_4_5
+        reference_dataset: CERES-EBAF
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        mip: Amon
+        field: T2Ms
+        start_year: 1980
+        end_year: 1999
+        derive: true
+        force_derivation: false
+    additional_datasets:
+      #- {<<: *cmip3, dataset: cccma_cgcm3_1, institute: CCCMA}
+      - {<<: *cmip3, dataset: cccma_cgcm3_1_t63, institute: CCCMA}
+      - {<<: *cmip3, dataset: csiro_mk3_0, institute: CSIRO}
+      - {<<: *cmip3, dataset: gfdl_cm2_0, institute: GFDL}
+      - {<<: *cmip3, dataset: gfdl_cm2_1, institute: GFDL}
+      - {<<: *cmip3, dataset: giss_model_e_h, institute: NASA}
+      - {<<: *cmip3, dataset: giss_model_e_r, institute: NASA}
+      - {<<: *cmip3, dataset: iap_fgoals1_0_g, institute: LASG}
+      - {<<: *cmip3, dataset: inmcm3_0, institute: INM}
+      - {<<: *cmip3, dataset: ipsl_cm4, institute: IPSL}
+      - {<<: *cmip3, dataset: miroc3_2_hires, institute: NIES}
+      - {<<: *cmip3, dataset: miroc3_2_medres, institute: NIES}
+      - {<<: *cmip3, dataset: miub_echo_g, institute: MIUB-KMA}
+      - {<<: *cmip3, dataset: mpi_echam5, institute: MPIM}
+      - {<<: *cmip3, dataset: mri_cgcm2_3_2a, institute: MRI}
+      - {<<: *cmip3, dataset: ncar_ccsm3_0, institute: NCAR}
+      - {<<: *cmip3, dataset: ncar_pcm1, institute: NCAR}
+      - {<<: *cmip3, dataset: ukmo_hadcm3, institute: UKMO}
+      - {<<: *cmip3, dataset: ukmo_hadgem1, institute: UKMO}
+
+      - {dataset: ACCESS1-0}
+      - {dataset: ACCESS1-3}
+      - {dataset: bcc-csm1-1}
+      - {dataset: bcc-csm1-1-m}
+      - {dataset: BNU-ESM}
+      - {dataset: CanESM2}
+      - {dataset: CCSM4}
+      - {dataset: CESM1-BGC}
+      - {dataset: CESM1-CAM5}
+      - {dataset: CESM1-FASTCHEM}
+      - {dataset: CESM1-WACCM}
+      - {dataset: CMCC-CESM}
+      - {dataset: CMCC-CM}
+      - {dataset: CNRM-CM5}
+      - {dataset: CNRM-CM5-2}
+      - {dataset: FGOALS-g2}
+      - {dataset: FIO-ESM}
+      - {dataset: GFDL-CM3}
+      - {dataset: GFDL-ESM2G}
+      - {dataset: GFDL-ESM2M}
+      - {dataset: GISS-E2-H}
+      - {dataset: GISS-E2-H-CC}
+      - {dataset: GISS-E2-R}
+      - {dataset: GISS-E2-R-CC}
+      - {dataset: HadCM3}
+      - {dataset: HadGEM2-AO}
+      - {dataset: HadGEM2-CC}
+      - {dataset: HadGEM2-ES}
+      - {dataset: inmcm4}
+      - {dataset: IPSL-CM5A-LR}
+      - {dataset: IPSL-CM5A-MR}
+      - {dataset: IPSL-CM5B-LR}
+      - {dataset: MIROC-ESM}
+      - {dataset: MIROC-ESM-CHEM}
+      - {dataset: MIROC4h}
+      - {dataset: MIROC5}
+      - {dataset: MPI-ESM-LR}
+      - {dataset: MPI-ESM-MR}
+      - {dataset: MPI-ESM-P}
+      - {dataset: MRI-CGCM3}
+      - {dataset: MRI-ESM1}
+      - {dataset: NorESM1-M}
+      - {dataset: NorESM1-ME}
+
+      - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7, tier: 1, start_year: 2003, end_year: 2011}
+    scripts:
+      fig09-6_pattern_cor:
+        <<: *fig09_6_pattern_cor
 
   ### COLLECT CORRELATIONS AND PLOT ###########################################
   fig09-6_cor_collect:
@@ -976,8 +975,7 @@ diagnostics:
       fig09-6_cor_collect:
         script: ipcc_ar5/ch09_fig09_6_collect.ncl
         ancestors: ['*/fig09-6_pattern_cor']
-        #diag_order: ['fig09-6_tas', 'fig09-6_rlut', 'fig09-6_pr', 'fig09-6_swcre']
-        diag_order: ['fig09-6_tas', 'fig09-6_rlut', 'fig09-6_pr']
+        diag_order: ['fig09-6_tas', 'fig09-6_rlut', 'fig09-6_pr', 'fig09-6_swcre']
 
 
   # **********************************************************************

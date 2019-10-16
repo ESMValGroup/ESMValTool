@@ -73,6 +73,9 @@ begin
 ; -------------------- Compute correlation for one var ------------------------
 ; -----------------------------------------------------------------------------
 
+  ; Save list of preproc files for provenance in collect.ncl
+  preproc_files = metadata_att_as_array(info_items, "filename")
+
   ; Reference model
   mod_idx = ispan(0, dim_MOD - 1, 1)
   mod_ind_woref = mod_idx(ind(mod_idx.ne.ref_ind))
@@ -128,6 +131,15 @@ begin
   all_cor@ncdf = ncdf_dir
   all_cor@input = str_join(infiles, ",")
   ncdf_outfile = ncdf_write(all_cor, ncdf_dir)
+
+  ; Write provenance
+  statistics = (/"corr", "clim"/)
+  domains = (/"global"/)
+  plottype = "other"
+  authors = (/"gier_bettina", "bock_lisa"/)
+  references = (/"flato13ipcc"/)
+  log_provenance(ncdf_outfile, "n/a", "n/a", statistics, domains, "other", \
+                 authors, references, preproc_files)
 
   ; Write list of models with project (arrays get squished as attributes)
   modnames = datasetnames(mod_ind_woref)
