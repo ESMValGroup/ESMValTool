@@ -56,27 +56,27 @@ def main(cfg):
         cube_all_years = cube_list_all_years.concatenate_cube()
         cube_list_all_vars.append(cube_all_years)
 
-            # Do stuff
-            # The data need to be aggregated for each HRU (subcatchment)
-            # Inti's `decomposed` function in extract_shape should add
-            # this as a dimension to the cubes, so it's just a matter of
-            # aggregating latitude and longitude. The resulting cubes
-            # will have dimensions 'time' and 'hru'.
-            #
-            # Lorenz workshop prepared output used metsim to compute spechum
-            # and a weird logarithmic wind profile expression... see notebook at:
-            # ssh userX@jupyter.ewatercycle.org
-            # cd /mnt/data/lorentz-models/SUMMA/summa_era5_scripts/
-            #
-            # Unit conversion:
-            # - precip: kg m-2 s-1
-            # - radiation: w m-2
-            # - temperature: K
-            # - wind speed: m s-1
-            # - pressure: Pa
-            # - specific humidity: g g-1
-            #
-            # example output file can also be found on jupyter server.
+        # Do stuff
+        # The data need to be aggregated for each HRU (subcatchment)
+        # Inti's `decomposed` function in extract_shape should add
+        # this as a dimension to the cubes, so it's just a matter of
+        # aggregating latitude and longitude. The resulting cubes
+        # will have dimensions 'time' and 'hru'.
+        #
+        # Lorenz workshop prepared output used metsim to compute spechum
+        # and a weird logarithmic wind profile expression... see notebook at:
+        # ssh userX@jupyter.ewatercycle.org
+        # cd /mnt/data/lorentz-models/SUMMA/summa_era5_scripts/
+        #
+        # Unit conversion:
+        # - precip: kg m-2 s-1
+        # - radiation: w m-2
+        # - temperature: K
+        # - wind speed: m s-1
+        # - pressure: Pa
+        # - specific humidity: g g-1
+        #
+        # example output file can also be found on jupyter server.
 
     # Extract wind component variables from the cube list
     for cube in cube_list_all_vars:
@@ -97,8 +97,8 @@ def main(cfg):
         if cube.var_name in ['uas', 'vas']:
             cube_list_all_vars.remove(cube)
 
-    # TODO: Specific humidity can be computed as function of 2m temperature
-    #   and surface pressure (e.g. https://github.com/Unidata/MetPy/issues/791).
+    # TODO: add specific humidity calculation
+    # specific_humidity = compute_specific_humidity(dewpoint_temperature, surface_pressure)
 
     # Save data # check the dataset!
     basename = dataset + '_summa'
@@ -125,6 +125,10 @@ def logarithmic_profile(windspeed, measurement_height):
                   a more general formula incorporating friction velocity or\
                   roughness length')
     return windspeed * 4.87/np.log(67.8*measurement_height-5.42)
+
+def compute_specific_humidity(dewpoint_temperature, surface_pressure):
+    # see e.g. https://github.com/Unidata/MetPy/issues/791
+    return
 
 if __name__ == '__main__':
 
