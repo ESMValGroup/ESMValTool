@@ -62,6 +62,50 @@ def weighting(distance):
     return weight
 
 
+def define_esmf_field(ifile, data_onlevel, name):
+    grid_obs = ESMF.Grid(filename=ifile, filetype=ESMF.FileFormat.GRIDSPEC)
+    mask_obs = grid_obs.add_item(ESMF.GridItem.MASK)
+    mask_obs[:] = data_onlevel.mask.astype('int').T
+    esmf_field = ESMF.Field(
+        grid_obs,
+        staggerloc=ESMF.StaggerLoc.CENTER,
+        name=name,
+    )
+    return esmf_field
+
+
+def add_esmf_cyclic(metadata_obs, data_onlevel, interpolated):
+
+    data_onlevel_cyc, lon_obs_cyc = add_cyclic_point(
+        data_onlevel, coord=metadata_obs['lon2d'][0, :])
+
+    lonc, latc = np.meshgrid(lon_obs_cyc, metadata_obs['lat2d'][:, 0])
+
+    interpolated_cyc, lon_obs_cyc = add_cyclic_point(
+        interpolated, coord=metadata_obs['lon2d'][0, :])
+    return lonc, latc, data_onlevel_cyc, interpolated_cyc
+
+
+def esmf_regriding(sourcefield, distfield, metadata_obs, data_onlev_obs):
+    # define the regrider
+    regrid = ESMF.Regrid(
+        sourcefield,
+        distfield,
+        regrid_method=ESMF.RegridMethod.NEAREST_STOD,
+        # regrid_method=ESMF.RegridMethod.BILINEAR,
+        unmapped_action=ESMF.UnmappedAction.IGNORE,
+        dst_mask_values=np.array([1]),
+        src_mask_values=np.array([1]))
+    # actual regriding
+    distfield = regrid(sourcefield, distfield)
+    # reshape the data and convert to masked array
+    data_interpolated = distfield.data[:].T
+    data_interpolated = np.ma.masked_equal(data_interpolated, 0)
+    lonc, latc, data_onlevel_cyc, interpolated_cyc = add_esmf_cyclic(
+        metadata_obs, data_onlev_obs, data_interpolated)
+    return lonc, latc, data_onlevel_cyc, interpolated_cyc
+
+
 def interpolate_esmf(obs_file, mod_file, depth, cmor_var):
     """The 2d interpolation with ESMF.
 
@@ -76,83 +120,28 @@ def interpolate_esmf(obs_file, mod_file, depth, cmor_var):
         depth to interpolate to. First the closest depth from the
         observations will be selected and then.
     """
-    metadata = load_meta(obs_file, fxpath=None)
-    # obs, lon_obs, lat_obs, depth_obs, time, areacello = metadata
-    obs = metadata['datafile']
-    lon_obs = metadata['lon2d']
-    lat_obs = metadata['lat2d']
-    depth_obs = metadata['lev']
+    metadata_obs = load_meta(obs_file, fxpath=None)
+    metadata_mod = load_meta(mod_file, fxpath=None)
 
-    data_obs = obs.variables[cmor_var][:]
+    data_obs = metadata_obs['datafile'].variables[cmor_var][:]
+    data_model = metadata_mod['datafile'].variables[cmor_var][:]
 
     # Select depth in climatology that is closest to the desired depth
-    target_depth, level_depth = closest_depth(depth_obs, depth)
+    target_depth, level_depth = closest_depth(metadata_obs['lev'], depth)
 
-    # climatology data on the level
+    # climatology and model data on the level
     data_onlev_obs = data_obs[0, level_depth, :, :]
+    data_onlev_mod = interpolate_vert(metadata_mod['lev'], target_depth,
+                                      data_model[0, :, :, :])
 
-    # Setting ESMF
-    grid_obs = ESMF.Grid(filename=obs_file, filetype=ESMF.FileFormat.GRIDSPEC)
-    mask_obs = grid_obs.add_item(ESMF.GridItem.MASK)
-    mask_obs[:] = data_onlev_obs.mask.astype('int').T
-    distfield = ESMF.Field(
-        grid_obs,
-        staggerloc=ESMF.StaggerLoc.CENTER,
-        name='OBS',
-    )
+    # prepear interpolation fields
+    distfield = define_esmf_field(obs_file, data_onlev_obs, 'OBS')
     distfield.data[:] = 0.0
 
-    # Now working with the model
-    metadata = load_meta(mod_file, fxpath=None)
-    model = metadata['datafile']
-    depth_model = metadata['lev']
+    sourcefield = define_esmf_field(mod_file, data_onlev_mod, 'Model')
+    sourcefield.data[...] = data_onlev_mod.T
 
-    data_model = model.variables[cmor_var][:]
+    lonc, latc, data_onlev_obs_cyc, data_interpolated_cyc = esmf_regriding(
+        sourcefield, distfield, metadata_obs, data_onlev_obs)
 
-    # Simple vertical interpolation
-    data = interpolate_vert(depth_model, target_depth, data_model[0, :, :, :])
-
-    # set the model grid
-    grid_model = ESMF.Grid(filename=mod_file,
-                           filetype=ESMF.FileFormat.GRIDSPEC)
-
-    model_mask = grid_model.add_item(ESMF.GridItem.MASK)
-    model_mask[:] = data.mask.astype('int').T
-
-    # define asource field
-    sourcefield = ESMF.Field(
-        grid_model,
-        staggerloc=ESMF.StaggerLoc.CENTER,
-        name='Model',
-    )
-    # define a destination field
-    # distfield = ESMF.Field(
-    #     grid_obs,
-    #     staggerloc=ESMF.StaggerLoc.CENTER,
-    #     name='Model_interp',
-    # )
-    sourcefield.data[...] = data.T
-
-    # define the regrider
-    regrid = ESMF.Regrid(
-        sourcefield,
-        distfield,
-        regrid_method=ESMF.RegridMethod.NEAREST_STOD,
-        # regrid_method=ESMF.RegridMethod.BILINEAR,
-        unmapped_action=ESMF.UnmappedAction.IGNORE,
-        dst_mask_values=np.array([1]),
-        src_mask_values=np.array([1]))
-    # actual regriding
-    distfield = regrid(sourcefield, distfield)
-    # reshape the data and convert to masked array
-    data_interpolated = distfield.data[:].T
-    interpolated = np.ma.masked_equal(data_interpolated, 0)
-    # add cyclic points
-    data_onlev_obs_cyc, lon_obs_cyc = add_cyclic_point(data_onlev_obs,
-                                                       coord=lon_obs[0, :])
-    lonc, latc = np.meshgrid(lon_obs_cyc, lat_obs[:, 0])
-
-    interpolated_cyc, lon_obs_cyc = add_cyclic_point(interpolated,
-                                                     coord=lon_obs[0, :])
-
-    return lonc, latc, target_depth, data_onlev_obs_cyc, interpolated_cyc
+    return lonc, latc, target_depth, data_onlev_obs_cyc, data_interpolated_cyc
