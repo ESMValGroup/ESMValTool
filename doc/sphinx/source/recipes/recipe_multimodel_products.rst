@@ -38,6 +38,8 @@ User setting files are stored in recipes/
 
    *Required settings for script*
 
+   * colorbar_lim: positive number specifying the range (-colorbar_lim ... +colorbar_lim) of the colorbar
+     (0 = automatic colorbar scaling)
    * moninf: integer specifying the first month of the seasonal mean period to be computed
    * monsup: integer specifying the last month of the seasonal mean period to be computed, if it's null the anomaly of month indicated in moninf will be computed
    * agreement_threshold: integer between 0 and 100 indicating the threshold in percent for the minimum agreement between models on the sign of the multi-model mean anomaly for the stipling to be plotted
