@@ -117,14 +117,14 @@ Example plots
 .. figure:: /recipes/figures/hyint/hyint_maps.png
    :width: 10cm
 
-Mean hydroclimatic intensity (figure type 1) for the EC-EARTH model historical + rcp8.5 projection over 1976-2099.
+   Mean hydroclimatic intensity (figure type 1) for the EC-EARTH model historical + rcp8.5 projection over 1976-2099.
 
 .. figure:: /recipes/figures/hyint/hyint_timeseries.png
    :width: 10cm
 
-Timeseries for multiple indices and regions (figure type 12) for the ACCESS1-0 model historical + RCP8.5 projection over 1976-2099.
+   Timeseries for multiple indices and regions (figure type 12) for the ACCESS1-0 model historical + RCP8.5 projection over 1976-2099.
 
 .. figure:: /recipes/figures/hyint/hyint_trends.png
    :width: 10cm
 
-Multi-model trend coefficients over selected indices (figure type 14) for rcp85 2006-2099 future projection normalized to the 1976-2005 historical period.
+   Multi-model trend coefficients over selected indices (figure type 14) for rcp85 2006-2099 future projection normalized to the 1976-2005 historical period.

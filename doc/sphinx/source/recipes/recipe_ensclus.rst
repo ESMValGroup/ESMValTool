@@ -81,4 +81,4 @@ Example plots
 .. figure:: /recipes/figures/ensclus/ensclus.png
    :width: 10cm
 
-Clustering based on historical JJA precipitation rate (mm/day), 75th percentile, CMIP5 models, 3 clusters, 80% variance explained by PCs.
+   Clustering based on historical JJA precipitation rate (mm/day), 75th percentile, CMIP5 models, 3 clusters, 80% variance explained by PCs.
