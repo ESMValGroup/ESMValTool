@@ -533,6 +533,21 @@ diagnostics:
     scripts: null
 
 
+  HWSD:
+    description: HWSD check
+    variables:
+      areacella:
+        mip: fx
+      cSoil:
+        mip: Lmon
+      sftlf:
+        mip: fx
+    additional_datasets:
+      - {dataset: HWSD, project: OBS, tier: 3, type: reanaly, version: 1.2,
+         start_year: 2000, end_year: 2000}
+    scripts: null
+
+
   LAI3g:
     description: LAI3g check
     variables:
@@ -585,6 +600,7 @@ diagnostics:
          type: sat, version: MYD08-M3, start_year: 2003, end_year: 2018}
     scripts: null
 
+
   NDP:
     description: NDP check
     variables:
@@ -593,6 +609,7 @@ diagnostics:
       - {dataset: NDP, project: OBS, tier: 3, mip: Lmon,
          type: reanaly, version: 017b, start_year: 2000, end_year: 2000}
     scripts: null
+
 
   NIWA-BS:
     description: NIWA-BS check
