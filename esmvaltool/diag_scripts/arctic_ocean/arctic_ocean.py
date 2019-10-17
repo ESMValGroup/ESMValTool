@@ -422,10 +422,8 @@ def run_tsdiag(cfg, diagworkdir, diagplotdir, observations):
         # this function will generate files with T and S points
         # selected from the region untill `tsdiag_depth` for
         # every model.
-        tsplot_data(mmodel,
-                    cfg['tsdiag_depth'],
+        tsplot_data(cfg, mmodel,
                     region,
-                    diagworkdir,
                     observations=observations)
     # setting the number of columns for the plot
     if cfg['tsdiag_ncol']:
