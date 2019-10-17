@@ -19,6 +19,7 @@ def get_provenance_record(ancestor_file):
         'domains': ['global'],
         'authors': [
             'kalverla_peter',
+            'alidoost_sarah',
             'camphuijsen_jaro',
         ],
         'projects': [
@@ -39,14 +40,20 @@ def main(cfg):
     grouped_input_data = group_metadata(input_data,
                                         'standard_name',
                                         sort='dataset')
-
-    # for now just open and save the input/output
+    cube_list_all_vars = iris.cube.CubeList()
     for standard_name in grouped_input_data:
+        # get the dataset name to use in save function later
+        dataset = grouped_input_data[standard_name][0]['alias']
         logger.info("Processing variable %s", standard_name)
+        cube_list_all_years = iris.cube.CubeList()
         for attributes in grouped_input_data[standard_name]:
             logger.info("Processing dataset %s", attributes['dataset'])
             input_file = attributes['filename']
             cube = iris.load_cube(input_file)
+            cube_list_all_years.append(cube)
+        cube_all_years = cube_list_all_years.concatenate_cube()
+
+        cube_list_all_vars.append(cube_all_years)
 
             # Do stuff
             # The data need to be aggregated for each HRU (subcatchment)
@@ -74,15 +81,15 @@ def main(cfg):
             #
             # example output file can also be found on jupyter server.
 
-            # Save data
-            output_file = get_diagnostic_filename(
-                Path(input_file).stem + '_summa', cfg)
-            iris.save(cube, output_file, fill_value=1.e20)
+    # Save data # check the dataset!
+    basename = dataset + '_summa'
+    output_file = get_diagnostic_filename(basename, cfg)
+    iris.save(cube_list_all_vars, output_file, fill_value=1.e20)
 
-            # Store provenance
-            provenance_record = get_provenance_record(input_file)
-            with ProvenanceLogger(cfg) as provenance_logger:
-                provenance_logger.log(output_file, provenance_record)
+    # Store provenance # check this!
+    provenance_record = get_provenance_record(input_file)
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(output_file, provenance_record)
 
 
 if __name__ == '__main__':
