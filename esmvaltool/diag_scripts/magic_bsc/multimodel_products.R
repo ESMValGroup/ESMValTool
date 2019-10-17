@@ -600,9 +600,15 @@ if (!is.null(agreement_threshold)) {
   agreement <- NULL
 }
 
-colorbar_lim <-
-  ceiling(max(abs(max(multi_year_anomaly)), abs(min(data))))
+colorbar_lim <- params$colorbar_lim
+
+if (colorbar_lim == 0) {
+  colorbar_lim <-
+    ceiling(max(abs(max(multi_year_anomaly)), abs(min(data))))
+}
+
 brks <- seq(-colorbar_lim, colorbar_lim, length.out = 21)
+
 title <- paste0(
   months,
   " ",
