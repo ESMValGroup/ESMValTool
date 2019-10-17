@@ -84,6 +84,11 @@ load "$diag_scripts/shared/plot/xy_line.ncl"
 
 begin
 
+  print("AAA")
+  print(input_file_info@dataset)
+  print(input_file_info@project)
+  print("AAA")
+
   enter_msg(DIAG_SCRIPT, "")
 
   ; Variable
@@ -113,14 +118,6 @@ begin
   log_info("++++++++++++++++++++++++++++++++++++++++++")
   log_info(DIAG_SCRIPT + " (var: " + var0 + ")")
   log_info("++++++++++++++++++++++++++++++++++++++++++")
-
-  ; Write references (TODO)
-  ; write_references(DIAG_SCRIPT, \
-  ;                  (/"A-anav_al"/), \
-  ;                  (/"A-wenz_sa", "A-righ_ma", "A-schl_ma"/), \
-  ;                  (/"D_anav13jclim"/), \
-  ;                  (/""/), \
-  ;                  (/"P_embrace"/))
 
 end
 
@@ -778,5 +775,10 @@ begin
   end if
 
   leave_msg(DIAG_SCRIPT, "")
+
+  print("BBB")
+  print(input_file_info@dataset)
+  print(input_file_info@project)
+  print("BBB")
 
 end
