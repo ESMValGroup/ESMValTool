@@ -335,7 +335,7 @@ Example plots
    different observations (thick black lines). Dataset pre-processing like
    described in Jones et al., 2013.
 
-.. _fig_flato13ipcc_5:
+.. _fig_flato13ipcc_6:
 .. figure:: /recipes/figures/flato13ipcc/fig-9-14.png
    :align: center
 
