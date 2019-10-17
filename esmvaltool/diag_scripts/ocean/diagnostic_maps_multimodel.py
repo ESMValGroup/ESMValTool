@@ -89,23 +89,41 @@ def add_map_plot(axs, plot_cube, cols):
         cbar.set_ticks(nspace[::2])
 
 
-def adjust_subplot_spacing(fig, hasobs):
+def make_subplots(cubes, layout, obsname, proj, fig):
     """
-    Adjust spacing to avoid subplots overlays and improve readability.
+    Realize subplots using cubes input data.
 
     Parameters
     ----------
+    cubes: dict
+        dictionary with data for plot defined in select_cubes
+    layout : list
+        subplot rows x cols organization
+    obsname: string
+        Observation data name
+    proj: ccrs object
+        map projection
     fig: object
          The matplotlib.pyplot Figure object
-    hasobs : logical
-         Check if obs are plotted
     """
+    gsc = gridspec.GridSpec(layout[0], layout[1])
+    row = 0
+    col = 0
+    for thename in cubes:
+        axs = plt.subplot(gsc[row, col], projection=proj)
+        add_map_plot(axs, cubes[thename], col)
+        # next row & column indexes
+        row = row + 1
+        if row == layout[0]:
+            row = 1 if obsname != '' else 0
+            col = col + 1
+
     # Adjust subplots size & position
     plt.subplots_adjust(
         top=0.92, bottom=0.08, left=0.05, right=0.95, hspace=0.15, wspace=0.15)
 
     # Vertically detach OBS plot and center
-    if hasobs:
+    if obsname != '':
         axs = fig.axes
         box = axs[0].get_position()
         shift = box.y0 * 0.05
@@ -279,25 +297,16 @@ def make_multiple_plots(cfg, metadata, obsname):
         plot_cubes = select_cubes(cubes, layer, obsname, user_range)
 
         # create subplots
-        gsc = gridspec.GridSpec(layout[0], layout[1])
-        row = 0
-        col = 0
-        for thename in plot_cubes:
-            axs = plt.subplot(gsc[row, col], projection=proj)
-            add_map_plot(axs, plot_cubes[thename], col)
-            # next row & column indexes
-            row = row + 1
-            if row == layout[0]:
-                row = 1 if obsname != '' else 0
-                col = col + 1
-
-        adjust_subplot_spacing(fig, (obsname != ''))
+        make_subplots(plot_cubes, layout, obsname, proj, fig)
 
         # Determine image filename:
-        fn_list = ['multimodel_vs', obsname, varname, str(layer), 'maps']
+        if obsname != '':
+            fn_list = ['multimodel_vs', obsname, varname, str(layer), 'maps']
+        else:
+            fn_list = ['multimodel', varname, str(layer), 'maps']
         path = diagtools.folder(cfg['plot_dir']) + '_'.join(fn_list)
 
-        # Saving files:
+        # Saving file:
         if cfg['write_plots']:
             logger.info('Saving plots to %s', path)
             plt.savefig(path, dpi=200)
