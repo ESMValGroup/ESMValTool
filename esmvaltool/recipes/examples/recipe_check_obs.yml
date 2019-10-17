@@ -536,10 +536,10 @@ diagnostics:
   HWSD:
     description: HWSD check
     variables:
-      cSoil:
-        mip: Lmon
       areacella:
         mip: fx
+      cSoil:
+        mip: Lmon
       sftlf:
         mip: fx
     additional_datasets:
