@@ -24,7 +24,6 @@ Author: lovato_tomas
 """
 import logging
 import os
-import sys
 
 import cartopy.crs as ccrs
 import iris
@@ -38,7 +37,6 @@ from esmvaltool.diag_scripts.shared import run_diagnostic
 
 # This part sends debug statements to stdout
 logger = logging.getLogger(os.path.basename(__file__))
-logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
 
 def add_map_plot(axs, plot_cube, cols):

@@ -55,16 +55,6 @@ preprocessors:
       target_grid: 1x1
       scheme: linear
 
-  prep_surface_map_3D:
-    climate_statistics:
-      operator: mean
-    regrid:
-      target_grid: 1x1
-      scheme: linear
-    extract_levels:
-      levels:  [0., ]
-      scheme: linear_horizontal_extrapolate_vertical
-
 # --------------------------------------------------
 # Diagnostics
 # --------------------------------------------------
