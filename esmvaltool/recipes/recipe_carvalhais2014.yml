@@ -1,0 +1,76 @@
+# ESMValTool
+# recipe_carvalhais2014.yml
+---
+documentation:
+  description: |
+    Recipe to calculate the ecosystem turnover time of carbon based on Carvalhais et al., 2014, Nature
+
+  authors:
+    - koirala_sujan
+
+  maintainer:
+    - koirala_sujan
+
+  references:
+    - carvalhais2014
+
+  projects:
+    - crescendo
+
+
+datasets:
+
+  - {dataset: HadGEM2-ES, project: CMIP5, mip: Lmon, exp: historical, ensemble: r1i1p1, start_year: 1985, end_year: 2005}
+#  - {dataset: MIROC-ESM, project: CMIP5, mip: Lmon, exp: historical, ensemble: r1i1p1, start_year: 1985, end_year: 2005}
+#  - {dataset: IPSL-CM5A-MR, project: CMIP5, mip: Lmon, exp: historical, ensemble: r1i1p1, start_year: 1985, end_year: 2005}
+  - {dataset: NorESM1-M, project: CMIP5, mip: Lmon, exp: historical, ensemble: r1i1p1, start_year: 1985, end_year: 2005}
+#  - {dataset: MPI-ESM-LR, project: CMIP5, mip: Lmon, exp: historical, ensemble: r1i1p1, start_year: 1985, end_year: 2005}
+##  - {dataset: inmcm4, project: CMIP5, mip: Lmon, exp: historical, ensemble: r1i1p1, start_year: 1985, end_year: 2005}
+##  - {dataset: bcc-csm1-1, project: CMIP5, mip: Lmon, exp: historical, ensemble: r1i1p1, start_year: 1985, end_year: 2005}
+##  - {dataset: CanESM2, project: CMIP5, mip: Lmon, exp: historical, ensemble: r1i1p1, start_year: 1985, end_year: 2005}
+#  - {dataset: CCSM4, project: CMIP5, mip: Lmon, exp: historical, ensemble: r1i1p1, start_year: 1985, end_year: 2005}
+#  - {dataset: GFDL-ESM2G, project: CMIP5, mip: Lmon, exp: historical, ensemble: r1i1p1, start_year: 1985, end_year: 2005}
+
+# TODO: All multi-model statistics are turned off until the preprocessor order is fixed.
+
+preprocessors:
+  # --------------------------------------------------
+  # Time series preprocessors
+  # --------------------------------------------------
+  preproc_turnover:
+    custom_order: true
+    climate_statistics:
+      operator: mean
+      period: full
+    regrid: 
+      target_grid: 1x1
+      scheme: nearest
+
+diagnostics:
+  # --------------------------------------------------
+  # Time series diagnostics
+  # --------------------------------------------------
+
+  diag_temporal_mean:
+    description: land carbon stocks and fluxes
+    variables:
+      gpp: # Gross primary productivity
+        preprocessor: preproc_turnover
+      ctotal: # Total carbon stock
+        derive: true
+        preprocessor: preproc_turnover
+    scripts:
+      Global_mean_maps:
+        script: ocean/diagnostic_maps.py
+
+  diag_calc_turnover:
+    description: calculate total carbon stock
+    variables:
+      gpp: # Gross primary productivity
+        preprocessor: preproc_turnover
+      ctotal: # total carbon stock
+        preprocessor: preproc_turnover
+        derive: true
+    scripts:
+      cTau:
+        script: land_carbon_cycle/calc_turnover.py
