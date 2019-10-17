@@ -32,68 +32,57 @@ import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
 import numpy as np
+from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic
-from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 
 # This part sends debug statements to stdout
 logger = logging.getLogger(os.path.basename(__file__))
 logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
 
-def add_map_plot(ax,
-                 cube,
-                 nspace,
-                 cols,
-                 title='',
-                 cmap='',
-                 extend='neither',
-                 hascbar=False):
+def add_map_plot(axs, plot_cube, cols):
     """
     Add a map in the current pyplot suplot.
 
     Parameters
     ----------
-    ax: object
+    axs: object
         The matplotlib.pyplot Axes object
-    cube: iris.cube.Cube
-        the iris cube to be plotted.
-    nspace: numpy.array
-        An array of the ticks of the colour part.
+    plot_cube: dictionary
+        dictionary with data for plot defined in select_cubes
     cols: integer
         Number of columns in the multipanel plot
-    title: str
-        A string to set as the subplot title.
-    cmap: str
-        A string to describe the matplotlib colour map.
-    extend: str
-        Contourf-coloring of values outside the levels range
-    hascbar: logical
-        Add colorbar to the subplot
     """
+    contour_lev = 13
+    nspace = np.linspace(
+        plot_cube['range'][0],
+        plot_cube['range'][1],
+        contour_lev,
+        endpoint=True)
     iris.plot.contourf(
-        cube,
+        plot_cube['cube'],
         nspace,
         linewidth=0,
-        cmap=plt.cm.get_cmap(cmap),
-        extend=extend)
+        cmap=plt.cm.get_cmap(plot_cube['cmap']),
+        extend=plot_cube['extend'])
 
-    ax.coastlines()
-    gls = ax.gridlines(draw_labels=False, color='black', alpha=0.4)
+    axs.coastlines()
+    gls = axs.gridlines(draw_labels=False, color='black', alpha=0.4)
     gls.ylocator = mticker.FixedLocator(np.linspace(-90., 90., 7))
-    ax.set_title(title, fontweight="bold", fontsize='large')
+    axs.set_title(plot_cube['title'], fontweight="bold", fontsize='large')
 
-    if hascbar:
+    if plot_cube['hascbar']:
         bba = (0., -0.1, 1, 1)
         if cols > 0:
             bba = ((0.5 - cols) * 1.1, -0.15, cols, 1)
         axins = inset_axes(
-            ax,
+            axs,
             width="95%",
             height="6%",
             loc='lower center',
             bbox_to_anchor=bba,
-            bbox_transform=ax.transAxes,
+            bbox_transform=axs.transAxes,
             borderpad=0,
         )
         cbar = plt.colorbar(orientation='horizontal', cax=axins)
@@ -168,9 +157,9 @@ def load_cubes(filenames, obs_filename, metadata):
     return cubes, layers, obsname
 
 
-def select_cubes(cubes, layer, obsname, user_range, clevels):
+def select_cubes(cubes, layer, obsname, user_range):
     """
-    Create a dictionary of input layer data & metadata for plot.
+    Create a dictionary of input layer data & metadata to plot.
 
     Parameters
     ----------
@@ -182,8 +171,6 @@ def select_cubes(cubes, layer, obsname, user_range, clevels):
          Observation data name
     user_range: dict
          Plot ranges read from recipe
-    clevels: integer
-         Number of contour levels
     """
     plot_cubes = {}
     list_cubes = []
@@ -191,17 +178,29 @@ def select_cubes(cubes, layer, obsname, user_range, clevels):
     for thename in cubes:
         plot_cubes[thename] = {
             'cube': cubes[thename][layer],
+            'title': thename,
             'cmap': 'viridis',
-            'nspace': None,
-            'extend': 'neither'
+            'range': None,
+            'extend': 'neither',
+            'hascbar': False
         }
         if (obsname != '') & (thename != obsname):
             plot_cubes[thename] = {
                 'cube': cubes[thename][layer] - cubes[obsname][layer],
+                'title': thename,
                 'cmap': 'RdBu_r',
-                'nspace': None,
-                'extend': 'neither'
+                'range': None,
+                'extend': 'neither',
+                'hascbar': False
             }
+        if thename in [obsname, list(cubes.keys())[-1]]:
+            plot_cubes[thename]['hascbar'] = True
+
+        if thename == list(cubes.keys())[0]:
+            cube = plot_cubes[thename]['cube']
+            plot_cubes[thename][
+                'title'] = thename + ' (' + cube.var_name + ') [' + str(
+                    cube.units) + ']'
         list_cubes.append(plot_cubes[thename]['cube'])
 
     # get cubes data ranges
@@ -221,13 +220,12 @@ def select_cubes(cubes, layer, obsname, user_range, clevels):
             if user_range['diff']:
                 mrange = user_range['diff']
                 plot_cubes[thename]['extend'] = 'both'
-        plot_cubes[thename]['nspace'] = np.linspace(
-            mrange[0], mrange[1], clevels, endpoint=True)
+        plot_cubes[thename]['range'] = mrange
 
     return plot_cubes
 
 
-def make_multiple_plots(cfg, metadata, obs_filename):
+def make_multiple_plots(cfg, metadata, obsname):
     """
     Produce multiple panel comparison maps of model(s) and data (if provided).
 
@@ -241,7 +239,7 @@ def make_multiple_plots(cfg, metadata, obs_filename):
         the opened global config dictionary, passed by ESMValTool.
     metadata: dict
         the input files dictionary
-    obs_filename: str
+    obsname: str
         the preprocessed observations file.
     """
     logger.debug('make_multiple_plots')
@@ -257,17 +255,19 @@ def make_multiple_plots(cfg, metadata, obs_filename):
     # plot setting
     layout = metadata[filenames[0]]['layout_rowcol']
     proj = ccrs.Robinson(central_longitude=0)
-    contour_lev = 13
 
     # load input data
-    [cubes, layers, obsname] = load_cubes(filenames, obs_filename, metadata)
+    [cubes, layers, obsname] = load_cubes(filenames, obsname, metadata)
 
     if obsname != '':
-        hasobs = True
         layout[0] = layout[0] + 1
     else:
-        hasobs = False
         logger.info('Observations not provided. Plot each model data.')
+
+    if len(filenames) > (layout[0] * layout[1]):
+        raise ValueError(
+            'Number of inputfiles is larger than layout scheme (rows x cols). '
+            'Revise layout_rowcol size in recipe.')
 
     # Make a plot for each layer
     for layer in layers:
@@ -276,43 +276,22 @@ def make_multiple_plots(cfg, metadata, obs_filename):
         fig.set_size_inches(layout[1] * 4., layout[0] * 2. + 2.)
 
         # select cubes to plots
-        plot_cubes = select_cubes(cubes, layer, obsname, user_range,
-                                  contour_lev)
+        plot_cubes = select_cubes(cubes, layer, obsname, user_range)
 
         # create subplots
         gsc = gridspec.GridSpec(layout[0], layout[1])
         row = 0
         col = 0
         for thename in plot_cubes:
-            hascbar = False
-            cube = plot_cubes[thename]['cube']
-            model_name = thename
-
-            if thename in [obsname, list(plot_cubes.keys())[-1]]:
-                hascbar = True
-
-            if thename == list(plot_cubes.keys())[0]:
-                model_name = thename + ' (' + varname + ') [' + str(
-                    cube.units) + ']'
-
             axs = plt.subplot(gsc[row, col], projection=proj)
-            add_map_plot(
-                axs,
-                cube,
-                plot_cubes[thename]['nspace'],
-                col,
-                cmap=plot_cubes[thename]['cmap'],
-                title=model_name,
-                extend=plot_cubes[thename]['extend'],
-                hascbar=hascbar)
-
+            add_map_plot(axs, plot_cubes[thename], col)
             # next row & column indexes
             row = row + 1
             if row == layout[0]:
-                row = 1 if hasobs else 0
+                row = 1 if obsname != '' else 0
                 col = col + 1
 
-        adjust_subplot_spacing(fig, hasobs)
+        adjust_subplot_spacing(fig, (obsname != ''))
 
         # Determine image filename:
         fn_list = ['multimodel_vs', obsname, varname, str(layer), 'maps']
