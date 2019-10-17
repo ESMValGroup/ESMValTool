@@ -33,6 +33,7 @@ Recipes
    recipe_quantilebias
    recipe_runoff_et
    recipe_rainfarm
+   recipe_seaice
    recipe_shapeselect
    recipe_smpi
    recipe_spei
