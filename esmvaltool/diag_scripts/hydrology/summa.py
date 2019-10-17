@@ -49,7 +49,30 @@ def main(cfg):
             cube = iris.load_cube(input_file)
 
             # Do stuff
-            # ...
+            # The data need to be aggregated for each HRU (subcatchment)
+            # Inti's `decomposed` function in extract_shape should add
+            # this as a dimension to the cubes, so it's just a matter of
+            # aggregating latitude and longitude. The resulting cubes
+            # will have dimensions 'time' and 'hru'.
+            #
+            # Wind speed needs to be computed from u and v by (u**2+v**2)**.5
+            # Specific humidity can be computed as function of 2m temperature
+            #   and surface pressure (e.g. https://github.com/Unidata/MetPy/issues/791).
+            #
+            # Lorenz workshop prepared output used metsim to compute spechum
+            # and a weird logarithmic wind profile expression... see notebook at:
+            # ssh userX@jupyter.ewatercycle.org
+            # cd /mnt/data/lorentz-models/SUMMA/summa_era5_scripts/
+            #
+            # Unit conversion:
+            # - precip: kg m-2 s-1
+            # - radiation: w m-2
+            # - temperature: K
+            # - wind speed: m s-1
+            # - pressure: Pa
+            # - specific humidity: g g-1
+            #
+            # example output file can also be found on jupyter server.
 
             # Save data
             output_file = get_diagnostic_filename(

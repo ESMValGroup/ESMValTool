@@ -31,6 +31,36 @@ preprocessors:
     <<: *hourly
     daily_statistics:
       operator: mean
+preprocessors:
+  preprocessor: &daily_preproc
+    # SUMMA is semi-distributed; it works with Hydrological Response Units (HRUs)
+    # These are lumped subcatchments, so we could use Inti's `decomposed` function.
+    # However, I can't find the necessary input shapefiles; for now use Inti's (for HYPE)
+    extract_shape:
+      shapefile: HYPE_Shapefiles/Meuse_HYPE/Meuse_HYPE.shp
+      method: contains
+      decomposed: true
+    save_memory: &preproc
+      extract_time:
+        end_year: 2000
+        end_month: 1
+        end_day: 3
+  hourly_water:
+    <<: daily_preproc
+    daily_statistics:
+      operator: sum
+  hourly_thermodynamics:
+    <<: daily_preproc
+    daily_statistics:
+      operator: mean
+  hourly_momentum:
+    <<: daily_preproc
+    daily_statistics:
+      operator: mean
+  hourly_radiation:
+    <<: daily_preproc
+    daily_statistics:
+      operator: sum
 
 diagnostics:
   diagnostic_daily:
@@ -93,6 +123,53 @@ diagnostics:
       #TODO: # add Air pressure
         <<: *var_hourly
         preprocessor: hourly_sum
+      - {dataset: ERA-Interim, project: OBS, tier: 3, type: reanaly, version: 1}
+    variables:
+      tas: &var_daily
+        mip: day
+        start_year: 2000
+        end_year: 2000
+        preprocessor: preprocessor
+      psl: *var_daily
+      uas: *var_daily
+      vas: *var_daily
+      pr: *var_daily
+      tdps: *var_daily
+      rsds: *var_daily
+      # missing: longwave radiation downwards
+    scripts:
+      script:
+        script: hydrology/summa.py
+
+  diagnostic_hourly:
+    description: SUMMA input preprocessor for hourly data
+    additional_datasets:
+      - {dataset: ERA5, project: OBS, tier: 3, type: reanaly, version: 1}
+    variables:
+      tas: &var_daily
+        mip: day
+        start_year: 2000
+        end_year: 2000
+        preprocessor: preprocessor
+      psl:
+        <<: *var_daily
+        preprocessor: hourly_thermodynamics
+      uas:
+        <<: *var_daily
+        preprocessor: hourly_momentum
+      vas:
+        <<: *var_daily
+        preprocessor: hourly_momentum
+      pr:
+        <<: *var_daily
+        preprocessor: hourly_water
+      tdps:
+        <<: *var_daily
+        preprocessor: hourly_thermodynamics
+      rsds:
+        <<: *var_daily
+        preprocessor: hourly_radiation
+      # missing: longwave radiation downwards
     scripts:
       script:
         script: hydrology/summa.py
