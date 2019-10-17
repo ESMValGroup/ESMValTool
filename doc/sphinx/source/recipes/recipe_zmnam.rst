@@ -70,9 +70,9 @@ Example plots
 .. figure:: /recipes/figures/zmnam/zmnam_reg.png
    :width: 10cm
 
-   Example output: time series of the zonal-mean NAM index.
+   Regression map for a selected pressure level (250 hPa).
 
 .. figure:: /recipes/figures/zmnam/zmnam_ts.png
    :width: 10cm
 
-   Example output: regression map for a selected pressure level.
+   Time series of the zonal-mean NAM index for a sample model experiment.
