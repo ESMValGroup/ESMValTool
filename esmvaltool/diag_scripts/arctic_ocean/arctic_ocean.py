@@ -51,7 +51,7 @@ mpl.use('agg')  # noqa
 logger = logging.getLogger(os.path.basename(__file__))
 
 
-def run_hofm_data(cfg, areacello_fx, diagworkdir):
+def run_hofm_data(cfg):
     """Extract data for Hovmoeller diagrams.
 
     Parameters
@@ -80,8 +80,7 @@ def run_hofm_data(cfg, areacello_fx, diagworkdir):
         for mmodel, region in itertools.product(model_filenames,
                                                 cfg['hofm_regions']):
             # actual extraction of the data for specific model and region
-            hofm_data(model_filenames, mmodel, hofm_var, areacello_fx,
-                      cfg['hofm_depth'], region, diagworkdir)
+            hofm_data(cfg, model_filenames, mmodel, hofm_var, region)
 
 
 def run_hofm_plot(cfg, diagworkdir, diagplotdir, observations):
@@ -468,7 +467,7 @@ def main(cfg):
     logger.info("areacello_fx files: %s", areacello_fx)
 
     # Extract data for Hovmoeller diagrams
-    run_hofm_data(cfg, areacello_fx, diagworkdir)
+    run_hofm_data(cfg)
 
     # Plot Hovmoeller diagrams for each variable
     run_hofm_plot(cfg, diagworkdir, diagplotdir, observations)

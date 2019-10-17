@@ -13,7 +13,8 @@ from netCDF4 import Dataset, num2date
 from esmvaltool.diag_scripts.arctic_ocean.regions import (hofm_regions,
                                                           transect_points)
 from esmvaltool.diag_scripts.arctic_ocean.utils import (genfilename,
-                                                        point_distance)
+                                                        point_distance,
+                                                        get_fx_filenames)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -74,8 +75,7 @@ def load_meta(datapath, fxpath=None):
     return metadata
 
 
-def hofm_data(model_filenames, mmodel, cmor_var, areacello_fx, max_level,
-              region, diagworkdir):
+def hofm_data(cfg, model_filenames, mmodel, cmor_var, region):
     """Extract data for Hovmoeller diagrams from monthly values.
 
     Saves the data to files in `diagworkdir`.
@@ -102,60 +102,59 @@ def hofm_data(model_filenames, mmodel, cmor_var, areacello_fx, max_level,
     None
     """
     logger.info("Extract  %s data for %s, region %s", cmor_var, mmodel, region)
+    areacello_fx = get_fx_filenames(cfg, 'thetao', 'areacello')
     metadata = load_meta(datapath=model_filenames[mmodel],
                          fxpath=areacello_fx[mmodel])
-    datafile = metadata['datafile']
-    lon2d = metadata['lon2d']
-    lat2d = metadata['lat2d']
-    lev = metadata['lev']
-    time = metadata['time']
-    areacello = metadata['areacello']
 
-    lev_limit = lev[lev <= max_level].shape[0] + 1
+    lev_limit = metadata['lev'][
+        metadata['lev'] <= cfg['hofm_depth']].shape[0] + 1
 
-    indexesi, indexesj = hofm_regions(region, lon2d, lat2d)
+    indexesi, indexesj = hofm_regions(region, metadata['lon2d'],
+                                      metadata['lat2d'])
 
     # Fix for climatology
     # ESMValTool reduces the dimentions if one of the
     # dimentions is "empty"
-    if datafile.variables[cmor_var].ndim < 4:
+    if metadata['datafile'].variables[cmor_var].ndim < 4:
         series_lenght = 1
     else:
-        series_lenght = datafile.variables[cmor_var].shape[0]
+        series_lenght = metadata['datafile'].variables[cmor_var].shape[0]
 
-    oce_hofm = np.zeros((lev[0:lev_limit].shape[0], series_lenght))
+    oce_hofm = np.zeros((metadata['lev'][0:lev_limit].shape[0], series_lenght))
     for mon in range(series_lenght):
-        for ind, _ in enumerate(lev[0:lev_limit]):
+        for ind, _ in enumerate(metadata['lev'][0:lev_limit]):
             # fix for climatology
-            if datafile.variables[cmor_var].ndim < 4:
-                level_pp = datafile.variables[cmor_var][ind, :, :]
+            if metadata['datafile'].variables[cmor_var].ndim < 4:
+                level_pp = metadata['datafile'].variables[cmor_var][ind, :, :]
             else:
-                level_pp = datafile.variables[cmor_var][mon, ind, :, :]
+                level_pp = metadata['datafile'].variables[cmor_var][mon,
+                                                                    ind, :, :]
 
             # This is fix fo make models with 0 as missing values work,
             # should be fixed in fixes.
             if not isinstance(level_pp, np.ma.MaskedArray):
                 level_pp = np.ma.masked_equal(level_pp, 0)
             data_mask = level_pp[indexesi, indexesj].mask
-            area_masked = np.ma.masked_where(data_mask,
-                                             areacello[indexesi, indexesj])
+            area_masked = np.ma.masked_where(
+                data_mask, metadata['areacello'][indexesi, indexesj])
             result = (area_masked *
                       level_pp[indexesi, indexesj]).sum() / area_masked.sum()
             oce_hofm[ind, mon] = result
 
-    ofilename = genfilename(diagworkdir, cmor_var, mmodel, region, 'hofm')
-    ofilename_levels = genfilename(diagworkdir, cmor_var, mmodel, region,
+    ofilename = genfilename(cfg['work_dir'], cmor_var, mmodel, region, 'hofm')
+    ofilename_levels = genfilename(cfg['work_dir'], cmor_var, mmodel, region,
                                    'levels')
-    ofilename_time = genfilename(diagworkdir, cmor_var, mmodel, region, 'time')
+    ofilename_time = genfilename(cfg['work_dir'], cmor_var, mmodel, region,
+                                 'time')
     # print(ofilename)
     np.save(ofilename, oce_hofm)
-    if isinstance(lev, np.ma.core.MaskedArray):
-        np.save(ofilename_levels, lev[0:lev_limit].filled())
+    if isinstance(metadata['lev'], np.ma.core.MaskedArray):
+        np.save(ofilename_levels, metadata['lev'][0:lev_limit].filled())
     else:
-        np.save(ofilename_levels, lev[0:lev_limit])
+        np.save(ofilename_levels, metadata['lev'][0:lev_limit])
 
-    np.save(ofilename_time, time)
-    datafile.close()
+    np.save(ofilename_time, metadata['time'])
+    metadata['datafile'].close()
 
 
 def transect_data(mmodel, cmor_var, region, diagworkdir, mult=2):
