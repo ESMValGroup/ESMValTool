@@ -533,16 +533,6 @@ diagnostics:
     scripts: null
 
 
-  LAI3g:
-    description: LAI3g check
-    variables:
-      lai:
-    additional_datasets:
-      - {dataset: LAI3g, project: OBS, mip: Lmon, tier: 3,
-         type: reanaly, version: 1_regridded, start_year: 1981, end_year: 2018}
-    scripts: null
-
-
   HWSD:
     description: HWSD check
     variables:
@@ -555,6 +545,16 @@ diagnostics:
     additional_datasets:
       - {dataset: HWSD, project: OBS, tier: 3, type: reanaly, version: 1.2,
          start_year: 2000, end_year: 2000}
+    scripts: null
+
+
+  LAI3g:
+    description: LAI3g check
+    variables:
+      lai:
+    additional_datasets:
+      - {dataset: LAI3g, project: OBS, mip: Lmon, tier: 3,
+         type: reanaly, version: 1_regridded, start_year: 1981, end_year: 2018}
     scripts: null
 
 

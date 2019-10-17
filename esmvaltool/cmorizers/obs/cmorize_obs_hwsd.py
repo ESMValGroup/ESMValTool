@@ -75,6 +75,7 @@ def _extract_variable(short_name, var, cfg, filepath, out_dir):
 def cmorization(in_dir, out_dir, cfg, _):
     """Cmorization func call."""
     filepath = os.path.join(in_dir, cfg['filename'])
+    logger.info("Reading file '%s'", filepath)
 
     # Run the cmorization
     for (short_name, var) in cfg['variables'].items():
