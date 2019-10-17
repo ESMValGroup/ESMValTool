@@ -29,7 +29,7 @@ Recipes are stored in recipes/
 
 Diagnostics are stored in diag_scripts/magic_bsc/
 
-* extreme_index.r
+* extreme_index.R
 
 
 User settings
