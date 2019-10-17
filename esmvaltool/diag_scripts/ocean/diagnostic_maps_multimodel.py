@@ -20,6 +20,8 @@ An approproate preprocessor for a 2D + time field would be::
         target_grid: 1x1
         scheme: linear
 
+This tool is part of the ocean diagnostic tools package in the ESMValTool.
+
 Author: lovato_tomas
 """
 import logging
