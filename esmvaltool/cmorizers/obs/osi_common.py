@@ -8,6 +8,7 @@ from calendar import monthrange, isleap
 
 import numpy as np
 import iris
+import iris.exceptions
 from iris.cube import Cube, CubeList
 from iris.coords import AuxCoord
 from iris.coord_categorisation import add_day_of_year
@@ -101,8 +102,19 @@ class OSICmorizer():
             fix_var_metadata(cube, var_info)
             convert_timeunits(cube, year)
             set_global_atts(cube, attrs)
+            self._try_remove_coord(cube, 'year')
+            self._try_remove_coord(cube, 'day_of_year')
+            self._try_remove_coord(cube, 'month_number')
+            self._try_remove_coord(cube, 'day_of_month')
             save_variable(cube, var_info.short_name, self.out_dir, attrs)
         return cube
+
+    @staticmethod
+    def _try_remove_coord(cube, coord):
+        try:
+            cube.remove_coord(coord)
+        except iris.exceptions.CoordinateNotFoundError:
+            pass
 
     @staticmethod
     def _fill_months(cube):
