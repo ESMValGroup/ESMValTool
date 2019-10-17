@@ -112,7 +112,10 @@ def transect_points(transect, mult=2):
     else:
         print('Transect {} is not recognized'.format(transect))
 
-    point_number = np.linspace(1, lon_s4.shape[0], num=lon_s4.shape[0], endpoint=True)
+    point_number = np.linspace(1,
+                               lon_s4.shape[0],
+                               num=lon_s4.shape[0],
+                               endpoint=True)
     f_lons = interp1d(point_number, lon_s4)
     g_lats = interp1d(point_number, lat_s4)
     xnew = np.linspace(1,
