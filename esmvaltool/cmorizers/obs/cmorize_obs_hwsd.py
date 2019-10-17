@@ -16,10 +16,8 @@ Download and processing instructions
 
 """
 
-import gzip
 import logging
 import os
-import shutil
 
 import iris
 from cf_units import Unit
@@ -35,7 +33,7 @@ def _extract_variable(short_name, var, cfg, filepath, out_dir):
     cube = iris.load_cube(filepath, utils.var_name_constraint(raw_var))
 
     # Sum over levels
-    if short_name in ('cSoil',):
+    if short_name in ('cSoil', ):
         level_coord = iris.coords.DimCoord([0, 1], long_name='level')
         cube.add_dim_coord(level_coord, 0)
         cube = cube.collapsed('level', iris.analysis.SUM)
@@ -44,9 +42,12 @@ def _extract_variable(short_name, var, cfg, filepath, out_dir):
     if var['mip'] != 'fx':
         cube = iris.util.new_axis(cube)
         time_dim = iris.coords.DimCoord(
-            [183.0], bounds=[0.0, 366.0],
-            units=Unit('days since 2000-01-01 00:00:00'), standard_name='time',
-            var_name='time', long_name='time')
+            [183.0],
+            bounds=[0.0, 366.0],
+            units=Unit('days since 2000-01-01 00:00:00'),
+            standard_name='time',
+            var_name='time',
+            long_name='time')
         cube.add_dim_coord(time_dim, 0)
         utils.convert_timeunits(cube, 1950)
     utils.fix_coords(cube)
