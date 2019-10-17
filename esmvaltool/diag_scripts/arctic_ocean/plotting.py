@@ -407,11 +407,11 @@ def plot_profile(model_filenames,
         profile = (hofdata)[:, :].mean(axis=1)
 
         if mmodel != observations:
-            c = next(color)
+            next_color = next(color)
         else:
-            c = 'k'
+            next_color = 'k'
 
-        plt.plot(profile, lev[0:lev_limit], label=mmodel, c=c)
+        plt.plot(profile, lev[0:lev_limit], label=mmodel, c=next_color)
 
         # interpolate to standard levels and add to mean profile
         profile_interpolated = np.interp(level_clim[:lev_limit_clim],
@@ -530,9 +530,9 @@ def plot2d_original_grid(model_filenames,
 
         cb_label, data = label_and_conversion(cmor_var, data)
 
-        left, right, down, up = bbox
+        left, right, down, upper = bbox
 
-        ax[ind].set_extent([left, right, down, up], crs=ccrs.PlateCarree())
+        ax[ind].set_extent([left, right, down, upper], crs=ccrs.PlateCarree())
         # Only pcolormesh is working for now with cartopy,
         # contourf is failing to plot curvilinear meshes,
         # let along the unstructures ones.
@@ -662,8 +662,8 @@ def plot2d_bias(model_filenames,
         # add to the mean model
         model_mean = model_mean + interpolated
         # set the map extent
-        left, right, down, up = bbox
-        ax[ind].set_extent([left, right, down, up], crs=ccrs.PlateCarree())
+        left, right, down, upper = bbox
+        ax[ind].set_extent([left, right, down, upper], crs=ccrs.PlateCarree())
         # Only pcolormesh is working for now with cartopy,
         # contourf is failing to plot curvilinear meshes,
         # let along the unstructures ones.
@@ -688,8 +688,12 @@ def plot2d_bias(model_filenames,
                           size=18)
         ax[ind].set_rasterization_zorder(-1)
     # calculate the model mean and plot it
+    if ind:
+        ind = ind
+    else:
+        ind = 0
     model_mean = model_mean / len(model_filenames)
-    ax[ind + 1].set_extent([left, right, down, up], crs=ccrs.PlateCarree())
+    ax[ind + 1].set_extent([left, right, down, upper], crs=ccrs.PlateCarree())
     image = ax[ind + 1].contourf(
         lonc,
         latc,

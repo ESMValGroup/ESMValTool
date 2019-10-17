@@ -193,12 +193,12 @@ def dens_back(smin, smax, tmin, tmax):
 
     dens = np.zeros((int(ydim), int(xdim)))
 
-    ti = np.linspace(tmin, tmax, ydim * 10)
-    si = np.linspace(smin, smax, xdim * 10)
+    ti_size = np.linspace(tmin, tmax, ydim * 10)
+    si_size = np.linspace(smin, smax, xdim * 10)
 
-    si2, ti2 = np.meshgrid(si, ti)
-    dens = sw.dens0(si2, ti2) - 1000
-    return si2, ti2, dens
+    si2d, ti2d = np.meshgrid(si_size, ti_size)
+    dens = sw.dens0(si2d, ti2d) - 1000
+    return si2d, ti2d, dens
 
 
 def get_cmap(cmap_name):
@@ -241,8 +241,8 @@ def point_distance(lon_s4new, lat_s4new):
     dist: numpy array
         1d array of distances between points in km.
     """
-    g = pyproj.Geod(ellps='WGS84')
-    (_, _, dist) = g.inv(lon_s4new[0:-1], lat_s4new[0:-1], lon_s4new[1:],
+    g_proj = pyproj.Geod(ellps='WGS84')
+    (_, _, dist) = g_proj.inv(lon_s4new[0:-1], lat_s4new[0:-1], lon_s4new[1:],
                          lat_s4new[1:])
     dist = dist.cumsum() / 1000
     dist = np.insert(dist, 0, 0)

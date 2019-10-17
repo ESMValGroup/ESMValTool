@@ -112,14 +112,14 @@ def transect_points(transect, mult=2):
     else:
         print('Transect {} is not recognized'.format(transect))
 
-    x = np.linspace(1, lon_s4.shape[0], num=lon_s4.shape[0], endpoint=True)
-    f = interp1d(x, lon_s4)
-    g = interp1d(x, lat_s4)
+    point_number = np.linspace(1, lon_s4.shape[0], num=lon_s4.shape[0], endpoint=True)
+    f_lons = interp1d(point_number, lon_s4)
+    g_lats = interp1d(point_number, lat_s4)
     xnew = np.linspace(1,
                        lon_s4.shape[0],
                        num=mult * lon_s4.shape[0],
                        endpoint=True)
 
-    lon_s4new = f(xnew)
-    lat_s4new = g(xnew)
+    lon_s4new = f_lons(xnew)
+    lat_s4new = g_lats(xnew)
     return lon_s4new, lat_s4new
