@@ -4,13 +4,10 @@ import logging
 import matplotlib
 matplotlib.use('Agg')  # noqa
 import matplotlib.pyplot as plt
-from matplotlib import colors
 import matplotlib.font_manager
 from matplotlib.offsetbox import TextArea, VPacker, AnnotationBbox
 
 from PIL import Image
-from PIL import ImageDraw
-from PIL import ImageFont
 
 import iris
 import iris.cube
@@ -21,8 +18,8 @@ import esmvaltool.diag_scripts.shared
 import esmvaltool.diag_scripts.shared.names as n
 from esmvaltool.diag_scripts.shared._base import ProvenanceLogger
 
-
 logger = logging.getLogger(os.path.basename(__file__))
+
 
 class EnergyBudget(object):
     def __init__(self, config):
@@ -66,7 +63,7 @@ class EnergyBudget(object):
     def compute(self):
         data = self.load()
         for dataset in data['rsdt'].keys():
-            #shortwave
+            # Shortwave
             data['up_sw_rfl_surf'][dataset] = (data['rsds'][dataset] -
                                                data['rsns'][dataset])
             long_name = 'Upward Shortwave Reflected Surface'
@@ -83,19 +80,19 @@ class EnergyBudget(object):
             long_name = 'Shortwave Absorbed Atmosphere'
             data['sw_abs_atm'][dataset].long_name = long_name
 
-            #longwave
+            # Longwave
             data['up_lw_emit_surf'][dataset] = (data['rlds'][dataset] -
                                                 data['rlns'][dataset])
             long_name = 'Upward Longwave Emitted Surface'
             data['up_lw_emit_surf'][dataset].long_name = long_name
 
-            #net
+            # Net
             data['net_surf_rad'][dataset] = (data['rsns'][dataset] +
                                              data['rlns'][dataset])
             long_name = 'Net Surface Radiation'
             data['net_surf_rad'][dataset].long_name = long_name
 
-            #surface fluxes
+            # Surface fluxes
             data['rad_ads_surface'][dataset] = (data['net_surf_rad'][dataset] -
                                                 data['hfss'][dataset] -
                                                 data['hfls'][dataset])
@@ -168,7 +165,7 @@ class EnergyBudget(object):
 
     def save(self, dataset, cubes):
         file_name = ('{project}_{dataset}_{exp}_{script}_variables'
-                    '_{start}_{end}.nc').format(
+                     '_{start}_{end}.nc').format(
                         project=self.project,
                         dataset=dataset,
                         exp=self.exp,
@@ -201,7 +198,6 @@ class EnergyBudget(object):
             provenance_logger.log(file_path, record)
 
     def plot(self, data):
-        iris.save(cubes, os.path.join(self.cfg[n.WORK_DIR], file_name))
         fig, ax = plt.subplots()
         plot_file = os.path.join(os.path.dirname(__file__), self.template)
         img = Image.open(plot_file).convert("RGBA")
@@ -213,10 +209,9 @@ class EnergyBudget(object):
             char = 'A'
             tags = []
             for dataset in data['rsdt'].keys():
-                text.append(TextArea((
-                    '{:}. {:.2f}'.format(char,
-                                         data[var][dataset].data)),
-                                         textprops=self.textprops))
+                text.append(TextArea(('{:}. {:.2f}'.format(char,
+                            data[var][dataset].data)),
+                            textprops=self.textprops))
                 tags.append('{:}. {:}'.format(char, dataset))
                 char = chr(ord(char) + 1)
             texts_vbox = VPacker(children=text, pad=self.pad, sep=self.sep)
