@@ -248,6 +248,7 @@ def point_distance(lon_s4new, lat_s4new):
     dist = np.insert(dist, 0, 0)
     return dist
 
+
 def get_series_lenght(datafile, cmor_var):
     """Get the length of the series.
 

@@ -7,9 +7,9 @@ import logging
 import os
 import ESMF
 import numpy as np
-import pyresample
+# import pyresample
 from cartopy.util import add_cyclic_point
-from netCDF4 import Dataset
+# from netCDF4 import Dataset
 
 from esmvaltool.diag_scripts.arctic_ocean.getdata import load_meta
 
@@ -60,100 +60,6 @@ def weighting(distance):
     """Weighting function for pyresample."""
     weight = 1 / distance**2
     return weight
-
-
-# def interpolate_pyresample(obs_file, mod_file, depth, cmor_var):
-#     """The 2d interpolation with pyresample.
-
-#     Simple realisation of horizontal 2d interpolation with
-#     pyresample. Before spatial interpolation data are linearly
-#     interpolated to the `obs_file` depth closest
-#     to the desired `depth`.
-
-#     Parameters
-#     ----------
-#     obs_file : str
-#         path to the file with target grid
-#     mod_file : str
-#         path to the file with source grid.
-#     depth : float
-#         desired depth.
-#     cmor_var : str
-#         cmor name of the variable to interpolate.
-#         In case of ocean it's isially 'thetao' or 'so'
-
-#     Returns
-#     -------
-#     lonc, latc, target_depth, data_onlev_obs_cyc, interpolated
-#     lonc : 2d np array
-#         numpy array with longitudes of target grid
-#     latc : 2d np array
-#         numpy array with longitudes of target grid
-#     target_depth : float
-#         the `obs_file` depth closest to the desired `depth`
-#         that was actually used for interpolation.
-#     interpolated : 2d np array
-#         Field with result of interpolation
-#     """
-#     # load observations data
-#     obs = Dataset(obs_file)
-#     data_obs = obs.variables[cmor_var][:]
-#     # salt_phc  = phc.variables['salt'][:]
-#     lon_obs = obs.variables['lon'][:]
-#     lat_obs = obs.variables['lat'][:]
-#     depth_obs = obs.variables['lev'][:]
-
-#     # Select depth in climatology that is closest to the desired depth
-#     target_depth, level_depth = closest_depth(depth_obs, depth)
-
-#     # climatology data on the level
-#     data_onlev_obs = data_obs[level_depth, :, :]
-
-#     # add cyclic point to data and coordinates
-#     data_onlev_obs_cyc, lon_obs_cyc = add_cyclic_point(data_onlev_obs,
-#                                                        lon_obs[0, :])
-#     lonc, latc = np.meshgrid(lon_obs_cyc, lat_obs[:, 0])
-
-#     # define target grid
-#     targ_def = pyresample.geometry.SwathDefinition(lons=lonc - 180, lats=latc)
-
-#     # Now working with the model
-#     model = Dataset(mod_file)
-#     data_model = model.variables['thetao'][:]
-#     lon_model = model.variables['lon'][:]
-#     lat_model = model.variables['lat'][:]
-
-#     lat_model[lat_model > 90] = 90
-#     depth_model = model.variables['lev'][:]
-
-#     # some ocean models still have 1d coordinates
-#     if lon_model.ndim == 2:
-#         lon2d, lat2d = lon_model, lat_model
-#     elif lon_model.ndim == 1:
-#         lon2d, lat2d = np.meshgrid(lon_model, lat_model)
-
-#     # Simple vertical interpolation
-#     data = interpolate_vert(depth_model, target_depth, data_model[0, :, :, :])
-
-#     # interpolation (weighted nearest neighbor)
-#     # here one can implement other methods available in pyresample
-#     # two main control parameters are radius_of_influence and neighbours,
-#     # that can be made available for the user too
-
-#     # define original (model) grid
-#     orig_def = pyresample.geometry.SwathDefinition(lons=lon2d - 180,
-#                                                    lats=lat2d)
-
-#     interpolated = pyresample.kd_tree.resample_custom(
-#         orig_def,
-#         data,
-#         targ_def,
-#         radius_of_influence=150000,
-#         neighbours=10,
-#         weight_funcs=weighting,
-#         fill_value=None)
-
-#     return lonc, latc, target_depth, data_onlev_obs_cyc, interpolated
 
 
 def interpolate_esmf(obs_file, mod_file, depth, cmor_var):
@@ -220,11 +126,11 @@ def interpolate_esmf(obs_file, mod_file, depth, cmor_var):
         name='Model',
     )
     # define a destination field
-    distfield = ESMF.Field(
-        grid_obs,
-        staggerloc=ESMF.StaggerLoc.CENTER,
-        name='Model_interp',
-    )
+    # distfield = ESMF.Field(
+    #     grid_obs,
+    #     staggerloc=ESMF.StaggerLoc.CENTER,
+    #     name='Model_interp',
+    # )
     sourcefield.data[...] = data.T
 
     # define the regrider

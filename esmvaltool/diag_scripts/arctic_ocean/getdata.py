@@ -175,7 +175,7 @@ def transect_level(datafile, cmor_var, level, grid, locstream):
     # create an object to regrid data
     # from the source to the destination field
     dst_mask_values = None
-    #if domask:
+    # if domask:
     dst_mask_values = np.array([0])
 
     regrid = ESMF.Regrid(
@@ -240,7 +240,7 @@ def transect_data(mmodel, cmor_var, region, diagworkdir, mult=2):
     # appoint the section locations
     locstream["ESMF:Lon"] = lon_s4new
     locstream["ESMF:Lat"] = lat_s4new
-    #if domask:
+    # if domask:
     locstream["ESMF:Mask"] = np.array(np.ones(lon_s4new.shape[0]),
                                       dtype=np.int32)
     # initialise array for the section
@@ -352,14 +352,15 @@ def tsplot_data(cfg, mmodel, region, observations='PHC'):
 
     # Saves the data to individual files
     ofiles = {}
-    ofiles['ofilename_t'] = genfilename(cfg['work_dir'], 'thetao', mmodel, region,
-                              'tsplot')
-    ofiles['ofilename_s'] = genfilename(cfg['work_dir'], 'so', mmodel, region, 'tsplot')
-    ofiles['ofilename_depth'] = genfilename(cfg['work_dir'], 'depth', mmodel, region,
-                                  'tsplot')
-    np.save(ofilename_t, temp)
-    np.save(ofilename_s, salt)
-    np.save(ofilename_depth, depth_model)
+    ofiles['ofilename_t'] = genfilename(cfg['work_dir'], 'thetao', mmodel,
+                                        region, 'tsplot')
+    ofiles['ofilename_s'] = genfilename(cfg['work_dir'], 'so', mmodel, region,
+                                        'tsplot')
+    ofiles['ofilename_depth'] = genfilename(cfg['work_dir'], 'depth', mmodel,
+                                            region, 'tsplot')
+    np.save(ofiles['ofilename_t'], temp)
+    np.save(ofiles['ofilename_s'], salt)
+    np.save(ofiles['ofilename_depth'], depth_model)
 
     metadata_t['datafile'].close()
     metadata_s['datafile'].close()
