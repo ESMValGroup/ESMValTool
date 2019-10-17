@@ -1,6 +1,8 @@
 """summa diagnostic."""
 import logging
 from pathlib import Path
+import warnings
+import numpy as np
 
 # import dask.array as da
 import iris
@@ -18,8 +20,8 @@ def get_provenance_record(ancestor_file):
         'caption': "Forcings for the summa hydrological model.",
         'domains': ['global'],
         'authors': [
-            'kalverla_peter',
-            'alidoost_sarah',
+            # 'kalverla_peter',
+            # 'alidoost_sarah',
             'camphuijsen_jaro',
         ],
         'projects': [
@@ -52,7 +54,6 @@ def main(cfg):
             cube = iris.load_cube(input_file)
             cube_list_all_years.append(cube)
         cube_all_years = cube_list_all_years.concatenate_cube()
-
         cube_list_all_vars.append(cube_all_years)
 
             # Do stuff
@@ -61,10 +62,6 @@ def main(cfg):
             # this as a dimension to the cubes, so it's just a matter of
             # aggregating latitude and longitude. The resulting cubes
             # will have dimensions 'time' and 'hru'.
-            #
-            # Wind speed needs to be computed from u and v by (u**2+v**2)**.5
-            # Specific humidity can be computed as function of 2m temperature
-            #   and surface pressure (e.g. https://github.com/Unidata/MetPy/issues/791).
             #
             # Lorenz workshop prepared output used metsim to compute spechum
             # and a weird logarithmic wind profile expression... see notebook at:
@@ -81,6 +78,28 @@ def main(cfg):
             #
             # example output file can also be found on jupyter server.
 
+    # Extract wind component variables from the cube list
+    for cube in cube_list_all_vars:
+        if cube.var_name == 'uas':
+            u_component = cube
+        if cube.var_name == 'vas':
+            v_component = cube
+        else:
+            pass
+
+    # compute wind speed and convert to 2m
+    wind_speed = compute_windspeed(u_component, v_component)
+    wind_speed_2m = logarithmic_profile(wind_speed, 10)
+
+    # Add wind speed to cube list and remove old vars
+    cube_list_all_vars.append(wind_speed_2m)
+    for cube in cube_list_all_vars:
+        if cube.var_name in ['uas', 'vas']:
+            cube_list_all_vars.remove(cube)
+
+    # TODO: Specific humidity can be computed as function of 2m temperature
+    #   and surface pressure (e.g. https://github.com/Unidata/MetPy/issues/791).
+
     # Save data # check the dataset!
     basename = dataset + '_summa'
     output_file = get_diagnostic_filename(basename, cfg)
@@ -91,6 +110,21 @@ def main(cfg):
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(output_file, provenance_record)
 
+
+def compute_windspeed(u_component, v_component):
+    """ Compute wind speed magnitude based on vector components """
+    wind_speed = (u_component**2 + v_component**2)**.5
+    #TODO: add variable names, attributes etc.
+    wind_speed.var_name = 'windspd'
+    return wind_speed
+
+def logarithmic_profile(windspeed, measurement_height):
+    """ Convert wind speed from input height to 2m with logarithmic profile """
+    warnings.warn('This version of the logarithmic wind profile is violating\
+                  general principles of transparancy. Better replace it with\
+                  a more general formula incorporating friction velocity or\
+                  roughness length')
+    return windspeed * 4.87/np.log(67.8*measurement_height-5.42)
 
 if __name__ == '__main__':
 
