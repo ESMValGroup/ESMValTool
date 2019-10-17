@@ -14,7 +14,8 @@ from esmvaltool.diag_scripts.arctic_ocean.regions import (hofm_regions,
                                                           transect_points)
 from esmvaltool.diag_scripts.arctic_ocean.utils import (genfilename,
                                                         point_distance,
-                                                        get_fx_filenames)
+                                                        get_fx_filenames,
+                                                        get_series_lenght)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -75,6 +76,23 @@ def load_meta(datapath, fxpath=None):
     return metadata
 
 
+def hofm_extract_region(metadata, cmor_var, indexes, level, time=0):
+    """Calculates mean over the region."""
+    # fix for climatology
+    if metadata['datafile'].variables[cmor_var].ndim < 4:
+        level_pp = metadata['datafile'].variables[cmor_var][level, :, :]
+    else:
+        level_pp = metadata['datafile'].variables[cmor_var][time, level, :, :]
+    if not isinstance(level_pp, np.ma.MaskedArray):
+        level_pp = np.ma.masked_equal(level_pp, 0)
+    data_mask = level_pp[indexes[0], indexes[1]].mask
+    area_masked = np.ma.masked_where(
+        data_mask, metadata['areacello'][indexes[0], indexes[1]])
+    result = (area_masked *
+              level_pp[indexes[0], indexes[1]]).sum() / area_masked.sum()
+    return result
+
+
 def hofm_data(cfg, model_filenames, mmodel, cmor_var, region):
     """Extract data for Hovmoeller diagrams from monthly values.
 
@@ -109,44 +127,22 @@ def hofm_data(cfg, model_filenames, mmodel, cmor_var, region):
     lev_limit = metadata['lev'][
         metadata['lev'] <= cfg['hofm_depth']].shape[0] + 1
 
-    indexesi, indexesj = hofm_regions(region, metadata['lon2d'],
-                                      metadata['lat2d'])
+    indexes = hofm_regions(region, metadata['lon2d'], metadata['lat2d'])
 
-    # Fix for climatology
-    # ESMValTool reduces the dimentions if one of the
-    # dimentions is "empty"
-    if metadata['datafile'].variables[cmor_var].ndim < 4:
-        series_lenght = 1
-    else:
-        series_lenght = metadata['datafile'].variables[cmor_var].shape[0]
+    series_lenght = get_series_lenght(metadata['datafile'], cmor_var)
 
     oce_hofm = np.zeros((metadata['lev'][0:lev_limit].shape[0], series_lenght))
     for mon in range(series_lenght):
         for ind, _ in enumerate(metadata['lev'][0:lev_limit]):
-            # fix for climatology
-            if metadata['datafile'].variables[cmor_var].ndim < 4:
-                level_pp = metadata['datafile'].variables[cmor_var][ind, :, :]
-            else:
-                level_pp = metadata['datafile'].variables[cmor_var][mon,
-                                                                    ind, :, :]
-
-            # This is fix fo make models with 0 as missing values work,
-            # should be fixed in fixes.
-            if not isinstance(level_pp, np.ma.MaskedArray):
-                level_pp = np.ma.masked_equal(level_pp, 0)
-            data_mask = level_pp[indexesi, indexesj].mask
-            area_masked = np.ma.masked_where(
-                data_mask, metadata['areacello'][indexesi, indexesj])
-            result = (area_masked *
-                      level_pp[indexesi, indexesj]).sum() / area_masked.sum()
-            oce_hofm[ind, mon] = result
+            oce_hofm[ind, mon] = hofm_extract_region(metadata, cmor_var,
+                                                     indexes, ind, mon)
 
     ofilename = genfilename(cfg['work_dir'], cmor_var, mmodel, region, 'hofm')
     ofilename_levels = genfilename(cfg['work_dir'], cmor_var, mmodel, region,
                                    'levels')
     ofilename_time = genfilename(cfg['work_dir'], cmor_var, mmodel, region,
                                  'time')
-    # print(ofilename)
+
     np.save(ofilename, oce_hofm)
     if isinstance(metadata['lev'], np.ma.core.MaskedArray):
         np.save(ofilename_levels, metadata['lev'][0:lev_limit].filled())
@@ -155,6 +151,44 @@ def hofm_data(cfg, model_filenames, mmodel, cmor_var, region):
 
     np.save(ofilename_time, metadata['time'])
     metadata['datafile'].close()
+
+
+def transect_level(datafile, cmor_var, level, grid, locstream):
+    sourcefield = ESMF.Field(
+        grid,
+        staggerloc=ESMF.StaggerLoc.CENTER,
+        name='MPI',
+    )
+    # load model data
+    model_data = datafile.variables[cmor_var][0, level, :, :]
+
+    # ESMF do not understand masked arrays, so fill them
+    if isinstance(model_data, np.ma.core.MaskedArray):
+        sourcefield.data[...] = model_data.filled(0).T
+    else:
+        sourcefield.data[...] = model_data.T
+
+    # create a field we giong to intorpolate TO
+    dstfield = ESMF.Field(locstream, name='dstfield')
+    dstfield.data[:] = 0.0
+
+    # create an object to regrid data
+    # from the source to the destination field
+    dst_mask_values = None
+    #if domask:
+    dst_mask_values = np.array([0])
+
+    regrid = ESMF.Regrid(
+        sourcefield,
+        dstfield,
+        regrid_method=ESMF.RegridMethod.NEAREST_STOD,
+        # regrid_method=ESMF.RegridMethod.BILINEAR,
+        unmapped_action=ESMF.UnmappedAction.IGNORE,
+        dst_mask_values=dst_mask_values)
+
+    # do the regridding from source to destination field
+    dstfield = regrid(sourcefield, dstfield)
+    return dstfield
 
 
 def transect_data(mmodel, cmor_var, region, diagworkdir, mult=2):
@@ -195,85 +229,45 @@ def transect_data(mmodel, cmor_var, region, diagworkdir, mult=2):
     # indexesi, indexesj = hofm_regions(region, lon2d, lat2d)
     lon_s4new, lat_s4new = transect_points(region, mult=mult)
 
-    # get instance of the coordinate system
-    coord_sys = ESMF.CoordSys.SPH_DEG
-
     # masking true
-    domask = True
+    # domask = True
 
     # create instans of the location stream (set of points)
     locstream = ESMF.LocStream(lon_s4new.shape[0],
                                name="Atlantic Inflow Section",
-                               coord_sys=coord_sys)
+                               coord_sys=ESMF.CoordSys.SPH_DEG)
 
     # appoint the section locations
     locstream["ESMF:Lon"] = lon_s4new
     locstream["ESMF:Lat"] = lat_s4new
-    if domask:
-        locstream["ESMF:Mask"] = np.array(np.ones(lon_s4new.shape[0]),
-                                          dtype=np.int32)
+    #if domask:
+    locstream["ESMF:Mask"] = np.array(np.ones(lon_s4new.shape[0]),
+                                      dtype=np.int32)
     # initialise array for the section
     secfield = np.zeros(
         (lon_s4new.shape[0], datafile.variables[cmor_var].shape[1]))
-    # get number of depth levels for the model
-    ndepths = datafile.variables[cmor_var].shape[1]
 
     # loop over depth levels
-    for kind in range(0, ndepths):
-        # define field we interpolate FROM
-        sourcefield = ESMF.Field(
-            grid,
-            staggerloc=ESMF.StaggerLoc.CENTER,
-            name='MPI',
-        )
-        # load model data
-        model_data = datafile.variables[cmor_var][0, kind, :, :]
-
-        # ESMF do not understand masked arrays, so fill them
-        if isinstance(model_data, np.ma.core.MaskedArray):
-            sourcefield.data[...] = model_data.filled(0).T
-        else:
-            sourcefield.data[...] = model_data.T
-
-        # create a field we giong to intorpolate TO
-        dstfield = ESMF.Field(locstream, name='dstfield')
-        dstfield.data[:] = 0.0
-
-        # create an object to regrid data
-        # from the source to the destination field
-        dst_mask_values = None
-        if domask:
-            dst_mask_values = np.array([0])
-
-        regrid = ESMF.Regrid(
-            sourcefield,
-            dstfield,
-            regrid_method=ESMF.RegridMethod.NEAREST_STOD,
-            # regrid_method=ESMF.RegridMethod.BILINEAR,
-            unmapped_action=ESMF.UnmappedAction.IGNORE,
-            dst_mask_values=dst_mask_values)
-
-        # do the regridding from source to destination field
-        dstfield = regrid(sourcefield, dstfield)
-        secfield[:, kind] = dstfield.data
-
-    # Calculate distance between points in km
-    dist = point_distance(lon_s4new, lat_s4new)
+    for level in range(0, datafile.variables[cmor_var].shape[1]):
+        secfield[:, level] = transect_level(datafile, cmor_var, level, grid,
+                                            locstream).data
 
     # save the data
-    ofilename = genfilename(diagworkdir, cmor_var, mmodel, region, 'transect')
-    ofilename_depth = genfilename(diagworkdir, 'depth', mmodel, region,
-                                  'transect')
-    ofilename_dist = genfilename(diagworkdir, 'distance', mmodel, region,
-                                 'transect')
+    ofiles = {}
+    ofiles['ofilename'] = genfilename(diagworkdir, cmor_var, mmodel, region,
+                                      'transect')
+    ofiles['ofilename_depth'] = genfilename(diagworkdir, 'depth', mmodel,
+                                            region, 'transect')
+    ofiles['ofilename_dist'] = genfilename(diagworkdir, 'distance', mmodel,
+                                           region, 'transect')
 
-    np.save(ofilename, secfield)
+    np.save(ofiles['ofilename'], secfield)
     # we have to fill masked arrays before saving
     if isinstance(lev, np.ma.core.MaskedArray):
-        np.save(ofilename_depth, lev.filled())
+        np.save(ofiles['ofilename_depth'], lev.filled())
     else:
-        np.save(ofilename_depth, lev)
-    np.save(ofilename_dist, dist)
+        np.save(ofiles['ofilename_depth'], lev)
+    np.save(ofiles['ofilename_dist'], point_distance(lon_s4new, lat_s4new))
 
     datafile.close()
 

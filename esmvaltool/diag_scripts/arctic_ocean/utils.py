@@ -247,3 +247,14 @@ def point_distance(lon_s4new, lat_s4new):
     dist = dist.cumsum() / 1000
     dist = np.insert(dist, 0, 0)
     return dist
+
+def get_series_lenght(datafile, cmor_var):
+    """Get the length of the series.
+
+    Fix for climatology, ESMValTool reduces the dimentions
+    if one of the dimentions is empty."""
+    if datafile.variables[cmor_var].ndim < 4:
+        series_lenght = 1
+    else:
+        series_lenght = datafile.variables[cmor_var].shape[0]
+    return series_lenght
