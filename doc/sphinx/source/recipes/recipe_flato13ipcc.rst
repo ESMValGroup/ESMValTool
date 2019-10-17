@@ -196,7 +196,7 @@ User settings in recipe
 
    *Optional settings for variables*
 
-   * alternaive_dataset: name of alternative observations
+   * alternative_dataset: name of alternative observations
 
    *Color tables*
 
