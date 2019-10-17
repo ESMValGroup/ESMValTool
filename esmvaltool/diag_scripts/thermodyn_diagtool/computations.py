@@ -164,7 +164,7 @@ def budgets(model, wdir, aux_file, input_data):
     cdo.add(input=" {} {}".format(rsds_file, rlds_file), output=aux_surb_file)
     cdo.sub(input="-sub -sub -sub {} {} {} {} {}".format(
         aux_surb_file, rsus_file, rlus_file, hfls_file, hfss_file),
-            output=aux_file)
+        output=aux_file)
     surb_gmean = write_eb('rsds', 'surb', aux_file, surb_file, surb_gmean_file)
     # Atmospheric energy budget
     removeif(aux_file)
