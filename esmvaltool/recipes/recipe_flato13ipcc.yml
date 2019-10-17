@@ -655,7 +655,6 @@ diagnostics:
         exp: historical
         ensemble: r1i1p1
         mip: Amon
-        field: T2Ms
         start_year: 1980
         end_year: 1999
     additional_datasets:
@@ -745,7 +744,6 @@ diagnostics:
         exp: historical
         ensemble: r1i1p1
         mip: Amon
-        field: T2Ms
         start_year: 1980
         end_year: 1999
     additional_datasets:
@@ -835,7 +833,6 @@ diagnostics:
         exp: historical
         ensemble: r1i1p1
         mip: Amon
-        field: T2Ms
         start_year: 1980
         end_year: 1999
     additional_datasets:
@@ -925,7 +922,6 @@ diagnostics:
         exp: historical
         ensemble: r1i1p1
         mip: Amon
-        field: T2Ms
         start_year: 1980
         end_year: 1999
         derive: true
