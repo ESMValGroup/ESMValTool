@@ -12,55 +12,44 @@ documentation:
 
 
 preprocessors:
-  preprocessor:
+  regrid: &regrid
     regrid:
       target_grid: 0.5x0.5
       lon_offset: true
       lat_offset: true
       scheme: linear
-  save_memory: &hourly
-    extract_time:
-      end_year: 2000
-      end_month: 1
-      end_day: 3
-  hourly_sum:
-    <<: *hourly
-    daily_statistics:
-      operator: sum
-  hourly_mean:
-    <<: *hourly
-    daily_statistics:
-      operator: mean
-preprocessors:
-  preprocessor: &daily_preproc
-    # SUMMA is semi-distributed; it works with Hydrological Response Units (HRUs)
-    # These are lumped subcatchments, so we could use Inti's `decomposed` function.
-    # However, I can't find the necessary input shapefiles; for now use Inti's (for HYPE)
+  # SUMMA is semi-distributed; it works with Hydrological Response Units (HRUs)
+  # These are lumped subcatchments, so we could use Inti's `decomposed` function.
+  # However, I can't find the necessary input shapefiles; for now use Inti's (for HYPE)
+  extract_meuse: &Meuse
     extract_shape:
       shapefile: HYPE_Shapefiles/Meuse_HYPE/Meuse_HYPE.shp
       method: contains
       decomposed: true
-    save_memory: &preproc
-      extract_time:
-        end_year: 2000
-        end_month: 1
-        end_day: 3
-  hourly_water:
-    <<: daily_preproc
+  save_memory: &save_memory
+    extract_time:
+      end_year: 2000
+      end_month: 1
+      end_day: 3
+  daily_sum: &sum
     daily_statistics:
       operator: sum
-  hourly_thermodynamics:
-    <<: daily_preproc
+  daily_mean: &mean
     daily_statistics:
       operator: mean
-  hourly_momentum:
-    <<: daily_preproc
-    daily_statistics:
-      operator: mean
-  hourly_radiation:
-    <<: daily_preproc
-    daily_statistics:
-      operator: sum
+  hourly_sum:
+    <<: *save_memory
+    <<: *Meuse
+    <<: *regrid
+    <<: *sum
+  hourly_mean:
+    <<: *save_memory
+    <<: *Meuse
+    <<: *regrid
+    <<: *mean
+  daily:
+    <<: *Meuse
+    <<: *regrid
 
 diagnostics:
   diagnostic_daily:
@@ -68,29 +57,22 @@ diagnostics:
     additional_datasets:
       - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
     variables:
-      uas: &var_daily
+      tas: &var_daily
         mip: day
         start_year: 2000
         end_year: 2000
-      vas:
-        <<: *var_daily
-      tas:
-        <<: *var_daily
+        preprocessor: daily
+      uas: *var_daily
+      vas: *var_daily
+      pr: *var_daily
       tdps:
         <<: *var_daily
         mip: Eday
-      pr:
-        <<: *var_daily
-      rsds:
-        <<: *var_daily
-      rss: # this one is needed to obtain downward lonwave radiation
-        <<: *var_daily
-      #TODO: # add Air pressure
-        <<: *var_daily
+      rsds: *var_daily
+      # missing: longwave radiation downwards and Air (surface!) pressure
     scripts:
       script:
         script: hydrology/summa.py
-        shape_file: 'path/to/shapefiles' # currently in recipes_auxiliary_datasets repo
 
   diagnostic_hourly:
     description: SUMMA input preprocessor for hourly data
@@ -117,60 +99,7 @@ diagnostics:
       rsds:
         <<: *var_hourly
         preprocessor: hourly_sum
-      rss: # this one is needed to obtain downward lonwave radiation
-        <<: *var_hourly
-        preprocessor: hourly_sum
-      #TODO: # add Air pressure
-        <<: *var_hourly
-        preprocessor: hourly_sum
-      - {dataset: ERA-Interim, project: OBS, tier: 3, type: reanaly, version: 1}
-    variables:
-      tas: &var_daily
-        mip: day
-        start_year: 2000
-        end_year: 2000
-        preprocessor: preprocessor
-      psl: *var_daily
-      uas: *var_daily
-      vas: *var_daily
-      pr: *var_daily
-      tdps: *var_daily
-      rsds: *var_daily
-      # missing: longwave radiation downwards
+        # missing: longwave radiation downwards and Air (surface!) pressure
     scripts:
       script:
         script: hydrology/summa.py
-
-  diagnostic_hourly:
-    description: SUMMA input preprocessor for hourly data
-    additional_datasets:
-      - {dataset: ERA5, project: OBS, tier: 3, type: reanaly, version: 1}
-    variables:
-      tas: &var_daily
-        mip: day
-        start_year: 2000
-        end_year: 2000
-        preprocessor: preprocessor
-      psl:
-        <<: *var_daily
-        preprocessor: hourly_thermodynamics
-      uas:
-        <<: *var_daily
-        preprocessor: hourly_momentum
-      vas:
-        <<: *var_daily
-        preprocessor: hourly_momentum
-      pr:
-        <<: *var_daily
-        preprocessor: hourly_water
-      tdps:
-        <<: *var_daily
-        preprocessor: hourly_thermodynamics
-      rsds:
-        <<: *var_daily
-        preprocessor: hourly_radiation
-      # missing: longwave radiation downwards
-    scripts:
-      script:
-        script: hydrology/summa.py
-        shape_file: 'path/to/shapefiles' # currently in recipes_auxiliary_datasets repo
