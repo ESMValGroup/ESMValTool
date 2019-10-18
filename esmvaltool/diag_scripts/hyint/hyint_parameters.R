@@ -25,64 +25,64 @@ if (!exists("etccdi_preproc")) {
 }
 
 # basic settings
-seasons <- c("ALL")   # seasons to be analysed: "ALL", "DJF", ...
+seasons <- c("ALL") # seasons to be analysed: "ALL", "DJF", ...
 
 timedimname <- "time"
 
 rotlongitude <- "full" # a) "full" to convert input arrays from 0/360 to
-                       # -180/180 longitude grid
-                       # b) "no" to leave input data on its original grid
+# -180/180 longitude grid
+# b) "no" to leave input data on its original grid
 
-grid_file <- "grid_file"  # suffix for grid file
+grid_file <- "grid_file" # suffix for grid file
 topography_file <- "topo" # suffix for topography file (needed for filtering
-                          # ocean/land or land elevation)
+# ocean/land or land elevation)
 
 # Diagnostic options
 # norm_years set in recipe
-external_norm <- F  # a) F=use internal data to normalize
-                 # b) list of names of normalization files 
-                 #    (one per input data file or one for all)
-                 # c) "HIST" to automatically generate the name of the 
-                 #    historical run associated with the model name 
+external_norm <- F # a) F=use internal data to normalize
+# b) list of names of normalization files
+#    (one per input data file or one for all)
+# c) "HIST" to automatically generate the name of the
+#    historical run associated with the model name
 
 external_r95 <- external_norm # a) F=use internal data for r95 threshold
-                           #    over the norm_years period  
-                           # b) list of names of files (one per input 
-                           #    data file or one for all) 
-                           # c) "HIST" to automatically generate the name of 
-                           #    the historical experiment associated with the 
-                           #    model name
+#    over the norm_years period
+# b) list of names of files (one per input
+#    data file or one for all)
+# c) "HIST" to automatically generate the name of
+#    the historical experiment associated with the
+#    model name
 
-masksealand <- F        # T to mask depending on seaLandElevation threshold
-sealandelevation <- 0   # a) 0 land; b) positive value: land above given
-                        # elevation; c) negative value: sea below given depth.
-                        # The topography/bathymetry file is generated with cdo 
-                        # from ETOPO data. 
+masksealand <- F # T to mask depending on seaLandElevation threshold
+sealandelevation <- 0 # a) 0 land; b) positive value: land above given
+# elevation; c) negative value: sea below given depth.
+# The topography/bathymetry file is generated with cdo
+# from ETOPO data.
 reverse_masksealand <- F # T to reject what selected,
-                         #  F to keep what selected
+#  F to keep what selected
 topography_highres <- ""
 
 # Plotting options
 # Plot_type set in namelist
-map_continents <- -2     # thickness of continents:
-                         # positive values in white, negative values in gray
+map_continents <- -2 # thickness of continents:
+# positive values in white, negative values in gray
 map_continents_regions <- F # plot also regional boundaries
-ryearplot <- 2006  # years to be plotted for experiments
-                         # (maps over individual years): 
-                         # a) actual years, b) "FIRST" = first year in dataset 
-                         # c) "ALL"  = all years in dataset. E.g. c(1998,2000)   
+ryearplot <- 2006 # years to be plotted for experiments
+# (maps over individual years):
+# a) actual years, b) "FIRST" = first year in dataset
+# c) "ALL"  = all years in dataset. E.g. c(1998,2000)
 rmultiyear_mean <- T # plot multiyear mean (this override ryearplot)
 
 
 
 ryearplot_ref <- c("EXP") # year to be plotted for reference dataset: options
-                          # a) "EXP" == same as experiments, 
-                          # b) one year only, e.g. c(1998)    
+# a) "EXP" == same as experiments,
+# b) one year only, e.g. c(1998)
 force_ref <- F # set TRUE to force plotting of reference data
-               # as any other experiment
+# as any other experiment
 
 # settings for trend calculation
-lm_trend <- T  # calculate linear trend
+lm_trend <- T # calculate linear trend
 
 # user defined extra label for figure file name
 label <- ""
@@ -92,15 +92,15 @@ add_colorbar <- T # T to add colorbar
 
 # timeseries options
 highreselevation <- F # a) F: neglect; b) value: threshold of minimum elevation
-                      #  to be overplotted with contour lines of elevation
+#  to be overplotted with contour lines of elevation
 highreselevation_only <- F # T to plot only high resolution elevation contours
 
 # timeseries and trend plotting options
-add_legend <- 4       # a) F=no legend; b) n>0 list disposed in n column;
-                      # c) <0 horizontal legend 
+add_legend <- 4 # a) F=no legend; b) n>0 list disposed in n column;
+# c) <0 horizontal legend
 xy_legend <- c(0.01, 0.98) # position of legend in fraction of plotting panel
 tag_legend <- c(T, F, F) # 1=model name, 2=model experiment, 3=model ensemble
-                       # (select one or more)
+# (select one or more)
 
 # define fields for timeseries calculation and plotting
 hyint_list <- c(
@@ -124,7 +124,7 @@ if (!exists("etccdi_list_import")) {
 
 field_names <- c(hyint_list, etccdi_yr_list)
 
-# region box matrix (predefined following Giorgi et al. 2011,2014): 
+# region box matrix (predefined following Giorgi et al. 2011,2014):
 # add here further regions and select those needed through iregion
 region_names <- c(
   "World", "World60", "Tropics", "South-America", "Africa",
@@ -134,7 +134,7 @@ region_codes <- c(
   "GL", "GL60", "TR", "SA", "AF",
   "NA", "IN", "EU", "EA", "AU"
 )
-# Select one or more index values through selregions in the standard 
+# Select one or more index values through selregions in the standard
 # settings above to define regions to be used. Default c(1) == global.
 
 regions <- matrix(nrow = length(region_names), ncol = 4)
@@ -187,7 +187,7 @@ title_unit_m[9, ] <- c(
 )
 
 
-# define levels for contour/yrange for abs. values: 
+# define levels for contour/yrange for abs. values:
 # (minlev,maxlev,minlev_diff,maxlev_diff) and nlev
 nlev <- 24
 levels_m <- matrix(nrow = length(field_names), ncol = 4)
@@ -282,20 +282,24 @@ tlevels_m[40, ] <- c(-100, 300) * 0.01
 
 # Figure details
 
-# Aspect ratio (width:height) 
+# Aspect ratio (width:height)
 # (depending on plot_type)
-figure_aspect_ratio <- c(1.6, 1.6, 1, 1.3, 1, 1, 1, 1, 1, 1,
-                         1.6, 1.8, 1.8, 1.8, 1.8, 1, 1, 1, 1, 1)
+figure_aspect_ratio <- c(
+  1.6, 1.6, 1, 1.3, 1, 1, 1, 1, 1, 1,
+  1.6, 1.8, 1.8, 1.8, 1.8, 1, 1, 1, 1, 1
+)
 
-figure_rel_width <- c(0.7, 0.7, 0.7, 1, 1, 1, 1, 1, 1, 1,
-                      0.7, 1, 1, 1, 1, 1, 1, 1, 1, 1)
+figure_rel_width <- c(
+  0.7, 0.7, 0.7, 1, 1, 1, 1, 1, 1, 1,
+  0.7, 1, 1, 1, 1, 1, 1, 1, 1, 1
+)
 
 # Figure width
 png_width <- 960
 pdf_width <- 10
 x11_width <- 7
 
-# Panel width when adopting multi-panel
+#  Panel width when adopting multi-panel
 # (this overrides figure width)
 png_width_multi <- 480
 pdf_width_multi <- 5
@@ -304,13 +308,17 @@ x11_width_multi <- 4
 # color palette to be used
 palette1 <- colorRampPalette(c("white", "orange", "darkred"))
 palette2 <- colorRampPalette(c("blue", "white", "red"))
-palette3 <- colorRampPalette(c("darkblue", "blue", "dodgerblue",
-                               "white", "orange", "red", "darkred"))
+palette3 <- colorRampPalette(c(
+  "darkblue", "blue", "dodgerblue",
+  "white", "orange", "red", "darkred"
+))
 palette_giorgi2011 <- colorRampPalette(c(
   "white", "khaki1", "darkseagreen2", "mediumseagreen", "lightskyblue1",
   "lightskyblue", "deepskyblue2", "dodgerblue2", "dodgerblue3", "royalblue4"
 ))
- palette_ts <- c("#377EB8", "#4DAF4A", "#984EA3", "#FF7F00", "#A65628",
-                 "#F781BF", "#E41A1C", "#8DD3C7", "#BEBADA", "#FB8072",
-                 "#80B1D3", "#FDB462", "#B3DE69", "#FCCDE5", "#D9D9D9",
-                 "#BC80BD", "#CCEBC5", "#FFED6F")
+palette_ts <- c(
+  "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00", "#A65628",
+  "#F781BF", "#E41A1C", "#8DD3C7", "#BEBADA", "#FB8072",
+  "#80B1D3", "#FDB462", "#B3DE69", "#FCCDE5", "#D9D9D9",
+  "#BC80BD", "#CCEBC5", "#FFED6F"
+)

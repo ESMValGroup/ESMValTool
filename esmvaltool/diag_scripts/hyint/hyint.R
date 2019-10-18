@@ -8,27 +8,27 @@
 # and additional hydroclimatic indices (Giorgi et al. 2014)
 # which allow an estimate of the overall behaviour of the hydroclimatic cycle.
 # The tool calculates also timeseries and trends over selected regions and
-# produces a variety of types of plots including maps and timeseries. The 
+# produces a variety of types of plots including maps and timeseries. The
 # timeseries/trend and plotting modules handle also ETCCDI indices data
 #  calculated with the climdex library through an ad hoc pre-processing.
 #
 # Details
 # The following indices are calculated based on input daily precipitation data:
 # PRY = mean annual precipitation
-# INT = mean annual precipitation intensity (intensity during wet days, or 
-#       simple precipitation intensity index SDII)
-# WSL = mean annual wet spell length (number of consecutive days 
+# INT = mean annual precipitation intensity (intensity during wet days, or
+#        simple precipitation intensity index SDII)
+# WSL = mean annual wet spell length (number of consecutive days
 #       during each wet spell)
 # DSL = mean annual dry spell lenght (number of consecutive days
 #       during each dry spell)
 # PA  = precipitation area (area over which of any given day i
 #       precipitation occurs)
-# R95 = heavy precipitation index (percent of total precipitation above the 95% 
+# R95 = heavy precipitation index (percent of total precipitation above the 95%
 #       percentile of the reference distribution)
 # HY-INT = hydroclimatic intensity. HY-INT = normalized(INT) x normalized(DSL).
 #
 # For EC-Earth data and then extended to any model and observational data,
-# producing plots of data vs. a reference dataset (e.g. ERA-INTERIM). Indices 
+# producing plots of data vs. a reference dataset (e.g. ERA-INTERIM). Indices
 # are normalized over a reference period. Both absolute and normalized values
 # are made available: users can select the indices to be stored and plotted.
 # The tool makes extensives use of the cfg_hyint configuration file for user
@@ -36,14 +36,14 @@
 # timeseries or value ranges and labels for figures).
 #
 # Required
-# It reads daily precipitation data through ESMValTool. If requested, input 
+# It reads daily precipitation data through ESMValTool. If requested, input
 # precipitation data are pre-processed interpolating on a common grid set by
-# the user in the hyint_parameters file. 
+# the user in the hyint_parameters file.
 # R libraries:"tools","PCICt","ncdf4","maps"
 #
 # Optional
 # Several options can be selected via the configuration file, e.g. provision
-# of an external normalization functions for the indices; a reference 
+# of an external normalization functions for the indices; a reference
 # climatology for the R95 index; type of plots; etc.
 #
 # Caveats
@@ -64,7 +64,8 @@ library(ncdf4)
 # get path to script and source subroutines (if needed)
 args <- commandArgs(trailingOnly = FALSE)
 spath <- paste0(dirname(unlist(strsplit(grep("--file", args,
-                                             value = TRUE), "="))[2]), "/")
+  value = TRUE
+), "="))[2]), "/")
 
 source(paste0(spath, "hyint_functions.R"))
 source(paste0(spath, "hyint_metadata.R"))
@@ -91,7 +92,7 @@ for (myname in names(settings)) {
 metadata <- yaml::read_yaml(settings$input_files[1])
 
 ## check required settings
-if (!all(plot_type %in% c(1, 2, 3, 11, 12, 13, 14, 15) ) ) {
+if (!all(plot_type %in% c(1, 2, 3, 11, 12, 13, 14, 15))) {
   stop("requested plot_type not available")
 }
 
@@ -100,7 +101,7 @@ provenance_file <- paste0(run_dir, "/", "diagnostic_provenance.yml")
 provenance <- list()
 prov_info <- list()
 
-# get name of climofile for selected variable and 
+# get name of climofile for selected variable and
 # list associated to first climofile
 climofiles <- names(metadata)
 climolist <- get(climofiles[1], metadata)
@@ -138,14 +139,20 @@ if (length(ref_idx) == 0) {
 }
 
 # check requested time intervals
-if (!anyNA(match(models_start_year[ref_idx]:models_end_year[ref_idx],
-                 norm_years[1]:norm_years[2]))) {
-  stop(paste0("normalization period covering entire dataset: ",
-              "reduce it to calculate meaningful results"))
+if (!anyNA(match(
+  models_start_year[ref_idx]:models_end_year[ref_idx],
+  norm_years[1]:norm_years[2]
+))) {
+  stop(paste0(
+    "normalization period covering entire dataset: ",
+    "reduce it to calculate meaningful results"
+  ))
 }
 if (trend_years != F) {
-  if (anyNA(match(trend_years[1]:trend_years[2],
-                  models_start_year[ref_idx]:models_end_year[ref_idx]))) {
+  if (anyNA(match(
+    trend_years[1]:trend_years[2],
+    models_start_year[ref_idx]:models_end_year[ref_idx]
+  ))) {
     stop("trend period outside available data")
   }
   if (trend_years[2] - trend_years[1] < 2) {
@@ -180,11 +187,14 @@ if (write_netcdf) {
     # If needed, pre-process file and add absolute time axis
     if (run_regridding) {
       if (!file.exists(regfile) | force_regridding) {
-        dummy <- hyint_preproc(work_dir, model_idx, ref_idx, climofile,
-                               regfile, rgrid)
+        dummy <- hyint_preproc(
+          work_dir, model_idx, ref_idx, climofile,
+          regfile, rgrid
+        )
       } else {
         gridfile <- getfilename_indices(work_dir, diag_base, model_idx,
-                                        grid = T)
+          grid = T
+        )
         cdo("griddes", input = regfile, stdout = gridfile)
         print(paste0(diag_base, ": data file exists: ", regfile))
         print(paste0(diag_base, ": corresponding grid: ", gridfile))
@@ -195,7 +205,9 @@ if (write_netcdf) {
       # Loop through seasons and call diagnostic
       for (seas in seasons) {
         prov_info <- hyint_diagnostic(work_dir, regfile, model_idx, seas,
-                         prov_info, rewrite = force_diagnostic)
+          prov_info,
+          rewrite = force_diagnostic
+        )
       }
     }
   }
@@ -205,7 +217,9 @@ if (write_netcdf) {
 if (write_netcdf & etccdi_preproc) {
   for (model_idx in c(1:(length(models_name)))) {
     dummy <- hyint_etccdi_preproc(work_dir, etccdi_dir, etccdi_list_import,
-                                  model_idx, "ALL", yrmon = "yr")
+      model_idx, "ALL",
+      yrmon = "yr"
+    )
   }
 }
 
@@ -227,11 +241,13 @@ if (write_plots) {
       if (plot_type <= 10) {
         # Plot maps
         prov_info <- hyint_plot_maps(
-                        work_dir, plot_dir, work_dir, ref_idx, seas, prov_info)
+          work_dir, plot_dir, work_dir, ref_idx, seas, prov_info
+        )
       } else {
         # Plot timeseries and trends
         prov_info <- hyint_plot_trends(
-                           work_dir, plot_dir, ref_idx, seas, prov_info)
+          work_dir, plot_dir, ref_idx, seas, prov_info
+        )
       }
     }
   }
@@ -239,15 +255,17 @@ if (write_plots) {
 
 # Assign provenance information for timeseries&trends figures
 for (fname in names(prov_info)) {
-  xprov <- list(ancestors = climofiles[unlist(prov_info[[fname]]$model_idx)],
-              authors = list("arno_en", "hard_jo"),
-              references = list("giorgi11jc", "giorgi14jgr"),
-              projects = list("c3s-magic"),
-              caption = prov_info[[fname]]$caption,
-              statistics = list("other"),
-              realms = list("atmos"),
-              themes = list("phys"),
-              domains = list("global"))
+  xprov <- list(
+    ancestors = climofiles[unlist(prov_info[[fname]]$model_idx)],
+    authors = list("arno_en", "hard_jo"),
+    references = list("giorgi11jc", "giorgi14jgr"),
+    projects = list("c3s-magic"),
+    caption = prov_info[[fname]]$caption,
+    statistics = list("other"),
+    realms = list("atmos"),
+    themes = list("phys"),
+    domains = list("global")
+  )
   provenance[[fname]] <- xprov
 }
 

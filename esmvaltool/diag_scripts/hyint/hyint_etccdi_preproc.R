@@ -13,7 +13,8 @@ hyint_etccdi_preproc <- function(work_dir, etccdi_dir, etccdi_list_import,
   year2 <- toString(models_end_year[model_idx])
   hyint_file <- getfilename_indices(work_dir, diag_base, model_idx, season)
   etccdi_files <- getfilename_etccdi(etccdi_dir, etccdi_list_import, model_idx,
-                                     yrmon = "yr")
+    yrmon = "yr"
+  )
   etccdi_files_tmp <- c()
   for (sfile in etccdi_files) {
     print(paste0("HyInt: pre-processing ", sfile))
@@ -21,8 +22,10 @@ hyint_etccdi_preproc <- function(work_dir, etccdi_dir, etccdi_list_import,
     gridf <- tempfile()
     cdo("griddes", input = hyint_file, stdout = gridf)
     sfile_tmp1 <- cdo("remapcon2", args = gridf, input = sfile_tmp0)
-    sfile_tmp <- cdo("sellonlatbox", args = "-180,180,-90,90",
-                                     input = sfile_tmp1)
+    sfile_tmp <- cdo("sellonlatbox",
+      args = "-180,180,-90,90",
+      input = sfile_tmp1
+    )
     etccdi_files_tmp <- c(etccdi_files_tmp, sfile_tmp)
     unlink(c(sfile_tmp0, sfile_tmp1))
   }
@@ -30,10 +33,14 @@ hyint_etccdi_preproc <- function(work_dir, etccdi_dir, etccdi_list_import,
   mv_command <- paste("mv -n ", hyint_file, hyint_file_tmp)
   system(mv_command)
   print(paste0("HyInt: merging ", length(etccdi_files), " ETCCDI files"))
-  hyint_file_tmp_sel <- cdo("sellonlatbox", args = "-180,180,-90,90",
-                           input = hyint_file_tmp)
-  cdo("merge", options = "-O", input = c(hyint_file_tmp_sel, etccdi_files_tmp),
-      output = hyint_file)
+  hyint_file_tmp_sel <- cdo("sellonlatbox",
+    args = "-180,180,-90,90",
+    input = hyint_file_tmp
+  )
+  cdo("merge",
+    options = "-O", input = c(hyint_file_tmp_sel, etccdi_files_tmp),
+    output = hyint_file
+  )
   unlink(c(etccdi_files_tmp, hyint_file_tmp, hyint_file_tmp_sel))
 
   return(0)

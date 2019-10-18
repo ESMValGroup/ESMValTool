@@ -23,7 +23,7 @@ library("maps")
 library("ncdf4")
 library("PCICt")
 
-# check if fast linear fit is operative (after R 3.1): 
+# check if fast linear fit is operative (after R 3.1):
 # 3x faster than lm.fit, 36x faster than lm
 if (exists(".lm.fit")) {
   lin.fit <- .lm.fit
@@ -61,7 +61,7 @@ getfilename_indices <- function(spath, label, model_idx, season, hist = F,
       model_exp, "_", model_ens, ".grid"
     )
   } else if (topo) {
-       filename <- paste0(
+    filename <- paste0(
       spath, "/", label, "_", exp, "_",
       model_exp, "_", model_ens, "_topo.nc"
     )
@@ -173,7 +173,7 @@ whicher <- function(axis, number) {
 # area of longitude/latitude rectangle
 area_lonlat <- function(lon1, lon2, lat1, lat2) {
   R <- 6378
-  return(2 * pi * R ^ 2 * abs(sin(lat1 / 180. * pi) - sin(lat2 / 180. * pi))
+  return(2 * pi * R^2 * abs(sin(lat1 / 180. * pi) - sin(lat2 / 180. * pi))
     * abs(lon1 - lon2) / 360)
 }
 
@@ -276,7 +276,7 @@ season2timeseason <- function(season) {
 
 # leap year treu/false function
 is_leapyear <- function(year) {
-  return( ( (year %% 4 == 0) & (year %% 100 != 0)) | (year %% 400 == 0))
+  return(((year %% 4 == 0) & (year %% 100 != 0)) | (year %% 400 == 0))
 }
 
 power_date_new <- function(datas) {
@@ -448,8 +448,8 @@ create_grid <- function(ref_file = "./reffile", path = idx_dir,
 # Adapted from 20170920-A_maritsandstad
 #
 create_landseamask <- function(regrid = "./gridDef", ref_file = ref_file,
-                loc = "./", regridded_topo = paste0("./", "regridded_topo.nc"),
-                landmask = "./landSeaMask.nc", topo_only = F) {
+                               loc = "./", regridded_topo = paste0("./", "regridded_topo.nc"),
+                               landmask = "./landSeaMask.nc", topo_only = F) {
 
   # Test if gridfile exists
   # otherwise call function to generate one
@@ -465,8 +465,10 @@ create_landseamask <- function(regrid = "./gridDef", ref_file = ref_file,
   ftopo <- cdo("topo", options = "-f nc")
 
   ## Regridding the topographic map to chosen grid
-  cdo("remapcon2", args = paste0("'", regrid, "'"),
-      input = ftopo, output = regridded_topo)
+  cdo("remapcon2",
+    args = paste0("'", regrid, "'"),
+    input = ftopo, output = regridded_topo
+  )
 
   if (!topo_only) {
 
@@ -665,8 +667,10 @@ ncdf_opener_universal <- function(namefile, namevar = NULL, namelon = NULL,
   if (interp2grid) {
     print(paste("Remapping with CDO on", grid, "grid"))
     if (is.null(namevar)) {
-      namefile <- cdo(remap_method, args = paste0("'", grid, "'"),
-                      input = namefile)
+      namefile <- cdo(remap_method,
+        args = paste0("'", grid, "'"),
+        input = namefile
+      )
     } else {
       selectf <- cdo("selvar", args = namevar, input = namefile)
       gridf <- tempfile()
@@ -919,8 +923,10 @@ ncdf_opener_time <- function(namefile, namevar = NULL, namelon = NULL,
   # interpolation made with CDO: second order conservative remapping
   if (interp2grid) {
     print(paste("Remapping with CDO on", grid, "grid"))
-    namefile <- cdo(remap_method, args = paste0("'", grid, "'"),
-                    input = namefile)
+    namefile <- cdo(remap_method,
+      args = paste0("'", grid, "'"),
+      input = namefile
+    )
   }
 
   # define rotate function (faster than with apply)
@@ -1120,15 +1126,15 @@ scale_figure <- function(plot_type, diag_script_cfg,
   x11_width <- x11_width * figure_rel_width[plot_type]
 
   figure_aspect_ratio[plot_type] <- (figure_aspect_ratio[plot_type]
-                                    * npancol / npanrow)
+  * npancol / npanrow)
 
   plot_size <- c(png_width, png_width / figure_aspect_ratio[plot_type])
   if (tolower(output_file_type) == "pdf") {
     plot_size[1] <- pdf_width
     plot_size[2] <- pdf_width / figure_aspect_ratio[plot_type]
-  } else if ( (tolower(output_file_type) == "eps") |
-              (tolower(output_file_type) == "epsi") |
-              (tolower(output_file_type) == "ps") ) {
+  } else if ((tolower(output_file_type) == "eps") |
+    (tolower(output_file_type) == "epsi") |
+    (tolower(output_file_type) == "ps")) {
     plot_size[1] <- pdf_width
     plot_size[2] <- pdf_width / figure_aspect_ratio[plot_type]
   } else if (tolower(output_file_type) == "x11") {
@@ -1145,11 +1151,13 @@ graphics_startup <- function(figname, output_file_type, plot_size) {
   if (tolower(output_file_type) == "png") {
     png(filename = figname, width = plot_size[1], height = plot_size[2])
   } else if (tolower(output_file_type) == "pdf") {
-    pdf(file = figname, width = plot_size[1],
-               height = plot_size[2], onefile = T)
-  } else if ( (tolower(output_file_type) == "eps") |
-              (tolower(output_file_type) == "epsi") |
-              (tolower(output_file_type) == "ps") ) {
+    pdf(
+      file = figname, width = plot_size[1],
+      height = plot_size[2], onefile = T
+    )
+  } else if ((tolower(output_file_type) == "eps") |
+    (tolower(output_file_type) == "epsi") |
+    (tolower(output_file_type) == "ps")) {
     setEPS(
       width = plot_size[1], height = plot_size[2],
       onefile = T, paper = "special"
@@ -1170,14 +1178,14 @@ graphics_close <- function(figname) {
 # extensive filled.contour function
 filled_contour3 <-
   function(x = seq(0, 1, length.out = nrow(z)),
-           y = seq(0, 1, length.out = ncol(z)), z,
-           xlim = range(x, finite = TRUE),
-           ylim = range(y, finite = TRUE), zlim = range(z, finite = TRUE),
-           levels = pretty(zlim, nlevels), nlevels = 20,
-           color.palette = cm.colors, col = color.palette(length(levels) - 1),
-           extend = TRUE, plot.title, plot.axes,
-           key.title, key.axes, asp = NA, xaxs = "i", yaxs = "i", las = 1,
-           axes = TRUE, frame.plot = axes, mar, ...) {
+             y = seq(0, 1, length.out = ncol(z)), z,
+             xlim = range(x, finite = TRUE),
+             ylim = range(y, finite = TRUE), zlim = range(z, finite = TRUE),
+             levels = pretty(zlim, nlevels), nlevels = 20,
+             color.palette = cm.colors, col = color.palette(length(levels) - 1),
+             extend = TRUE, plot.title, plot.axes,
+             key.title, key.axes, asp = NA, xaxs = "i", yaxs = "i", las = 1,
+             axes = TRUE, frame.plot = axes, mar, ...) {
     # modification by Ian Taylor of the filled.contour function
     # to remove the key and facilitate overplotting with contour()
     # further modified by Carey McGilliard and Bridget Ferris
@@ -1262,10 +1270,12 @@ image_scale3 <- function(z, levels, color.palette = heat.colors,
   yscal <- (old.fig[4] - old.fig[3])
   lw <- colorbar.width
   lp <- line.colorbar / 100
-  new.fig <- c(old.fig[2] + new_fig_scale[1] * xscal * lw - lp,
-               old.fig[2] + new_fig_scale[2] * xscal - lp,
-               old.fig[3] + new_fig_scale[3] * yscal,
-               old.fig[4] + new_fig_scale[4] * yscal)
+  new.fig <- c(
+    old.fig[2] + new_fig_scale[1] * xscal * lw - lp,
+    old.fig[2] + new_fig_scale[2] * xscal - lp,
+    old.fig[3] + new_fig_scale[3] * yscal,
+    old.fig[4] + new_fig_scale[4] * yscal
+  )
 
   if (missing(levels)) {
     levels <- seq(min(z), max(z), , 12)
@@ -1349,12 +1359,14 @@ cdo <- function(command, args = "", input = "", options = "", output = "",
   output0 <- output
   if (output != "") {
     output <- paste0("'", output, "'")
-  } else if ( !noout ) {
+  } else if (!noout) {
     output <- tempfile()
     output0 <- output
   }
-  argstr <- paste0(options, " ", command, args, " ", input, " ", output,
-                   " ", stdout)
+  argstr <- paste0(
+    options, " ", command, args, " ", input, " ", output,
+    " ", stdout
+  )
   print(paste("cdo", argstr))
   ret <- system2("cdo", args = argstr)
   if (ret != 0) {
