@@ -7,13 +7,15 @@ library(RColorBrewer) # nolint
 library(s2dverification)
 library(yaml)
 
-#Parsing input file paths and creating output dirs
+# Parsing input file paths and creating output dirs
 args <- commandArgs(trailingOnly = TRUE)
 params <- read_yaml(args[1])
 initial.options <- commandArgs(trailingOnly = FALSE)
 file_arg_name <- "--file="
-script_name <- sub(file_arg_name, "",
-                   initial.options[grep(file_arg_name, initial.options)])
+script_name <- sub(
+  file_arg_name, "",
+  initial.options[grep(file_arg_name, initial.options)]
+)
 script_dirname <- dirname(script_name)
 
 source(file.path(script_dirname, "PC.r"))
@@ -46,9 +48,9 @@ seasons <- params$seasons
 power_curves <- params$power_curves
 
 
-no_of_years <- length(start_year : end_year)
+no_of_years <- length(start_year:end_year)
 var0 <- unlist(var0)
-for (i in 1 : length(model_names)) {
+for (i in 1:length(model_names)) {
   data_nc <- nc_open(fullpath_filenames[i])
   data <- ncvar_get(data_nc, var0)
 
@@ -57,45 +59,49 @@ for (i in 1 : length(model_names)) {
   lon <- ncvar_get(data_nc, "lon")
   units <- ncatt_get(data_nc, var0, "units")$value
   calendar <- ncatt_get(data_nc, "time", "calendar")$value
-  long_names <-  ncatt_get(data_nc, var0, "long_name")$value
-  time <-  ncvar_get(data_nc, "time")
-  start_date <- as.POSIXct(substr(ncatt_get(data_nc, "time",
-                                            "units")$value, 11, 29))
+  long_names <- ncatt_get(data_nc, var0, "long_name")$value
+  time <- ncvar_get(data_nc, "time")
+  start_date <- as.POSIXct(substr(ncatt_get(
+    data_nc, "time",
+    "units"
+  )$value, 11, 29))
   nc_close(data_nc)
-  time <- as.Date(time, origin = substr(start_date,1, 10), calendar = calendar)
-  time <-  as.POSIXct(time, format = "%Y-%m-%d")
+  time <- as.Date(time, origin = substr(start_date, 1, 10), calendar = calendar)
+  time <- as.POSIXct(time, format = "%Y-%m-%d")
   time_dim <- which(names(dim(data)) == "time")
   time <- as.PCICt(time, cal = calendar)
-  if (calendar != "360_day" & calendar != "365_day"){
+  if (calendar != "360_day" & calendar != "365_day") {
     time <- as.character(time)
     jdays <- as.numeric(strftime(time, format = "%j"))
     pos <- which(substr(time, 6, 10) == "02-29")
     print(dim(data))
     if (length(pos) > 0) {
-        time <- time[-pos]
-        data <- apply(data, c(1 : length(dim(data)))[-time_dim],
-                      function(x){
-                                  x[-pos]
-                                 })
-        data <- aperm(data, c(2, 3, 1))
-        names(dim(data)) <- c("lon", "lat", "time")
+      time <- time[-pos]
+      data <- apply(
+        data, c(1:length(dim(data)))[-time_dim],
+        function(x) {
+          x[-pos]
+        }
+      )
+      data <- aperm(data, c(2, 3, 1))
+      names(dim(data)) <- c("lon", "lat", "time")
     }
   }
   dims <- dim(data)
   dims <- append(dims[-time_dim], c(no_of_years, dims[time_dim] /
-                 no_of_years), after = 2)
+    no_of_years), after = 2)
   dim(data) <- dims
   # Convert to 100 m wind:
   data <- data * 1.39
   data <- aperm(data, c(3, 4, 2, 1))
   names(dim(data)) <- c("year", "day", "lat", "lon")
-#####################################
-# Cross with PC
-####################################
+  #####################################
+  # Cross with PC
+  ####################################
 
-#---------------------------
-# Load PC to use and compute CF for 6h values
-#---------------------------
+  #---------------------------
+  # Load PC to use and compute CF for 6h values
+  #---------------------------
   seas_data <- Mean1Dim(data, 2)
   pc1 <- read_pc(file.path(script_dirname, power_curves[1]))
   pc2 <- read_pc(file.path(script_dirname, power_curves[2]))
@@ -115,9 +121,9 @@ for (i in 1 : length(model_names)) {
   data_cf5 <- wind2CF(data, pc5)
   dim(data_cf5) <- dim(data)
 
-#---------------------------
-# Aggregate daily data to seasonal means
-#---------------------------
+  #---------------------------
+  # Aggregate daily data to seasonal means
+  #---------------------------
 
   seas_data_cf1 <- Mean1Dim(data_cf1, 2)
   seas_data_cf2 <- Mean1Dim(data_cf2, 2)
@@ -125,79 +131,115 @@ for (i in 1 : length(model_names)) {
   seas_data_cf4 <- Mean1Dim(data_cf4, 2)
   seas_data_cf5 <- Mean1Dim(data_cf5, 2)
 
-##############################
-# Make some plots
-##############################
-#---------------------------
-# Prepare data, labels and colorscales
-#---------------------------
+  ##############################
+  # Make some plots
+  ##############################
+  #---------------------------
+  # Prepare data, labels and colorscales
+  #---------------------------
   p <- colorRampPalette(brewer.pal(9, "YlOrRd"))
   q <- colorRampPalette(rev(brewer.pal(11, "RdBu")))
   years <- seq(start_year, end_year)
   turb_types <- c("IEC I", "IEC I/II", "IEC II", "IEC II/III", "IEC III")
 
   seas_data_cf_all <- abind(seas_data_cf1, seas_data_cf2, seas_data_cf3,
-                            seas_data_cf4, seas_data_cf5, along = 0)
+    seas_data_cf4, seas_data_cf5,
+    along = 0
+  )
   mean_data_cf_all <- Mean1Dim(seas_data_cf_all, 2)
   anom_data_cf_all <- seas_data_cf_all - InsertDim( # nolint
-      Mean1Dim(seas_data_cf_all, 2), 2, dim(data)[1]) # nolint
+    Mean1Dim(seas_data_cf_all, 2), 2, dim(data)[1]
+  ) # nolint
   pct_anom_data_cf_all <- (seas_data_cf_all / InsertDim( # nolint
-      Mean1Dim(seas_data_cf_all, 2), 2, dim(data)[1])) - 1 # nolint
-#---------------------------
-# Plot seasonal CF maps
-#---------------------------
-  filepng <- paste0(plot_dir, "/", "capacity_factor_", model_names[i], "_",
-                    start_year, "-", end_year, ".png")
-  title <- paste0(seasons, " CF from ", model_names[i],
-                  " (", start_year, "-", end_year, ")")
+    Mean1Dim(seas_data_cf_all, 2), 2, dim(data)[1]
+  )) - 1 # nolint
+  #---------------------------
+  # Plot seasonal CF maps
+  #---------------------------
+  filepng <- paste0(
+    plot_dir, "/", "capacity_factor_", model_names[i], "_",
+    start_year, "-", end_year, ".png"
+  )
+  title <- paste0(
+    seasons, " CF from ", model_names[i],
+    " (", start_year, "-", end_year, ")"
+  )
 
-  PW_names <- c("Enercon E70", "Gamesa G80", "Gamesa G87",
-                "Vestas V100", "Vestas V110")
+  PW_names <- c(
+    "Enercon E70", "Gamesa G80", "Gamesa G87",
+    "Vestas V100", "Vestas V110"
+  )
   PlotLayout(PlotEquiMap, # nolint
-             c(3, 2), Mean1Dim(seas_data_cf_all, 2), lon, lat, colNA = "white",
-             brks = seq(from = 0, to = max(seas_data_cf_all, na.rm = TRUE),
-                    length.out = 10), color_fun = clim.palette("yellowred"),
-             filled.continents = FALSE, toptitle = title,
-             titles = PW_names, fileout = filepng)
+    c(3, 2), Mean1Dim(seas_data_cf_all, 2), lon, lat,
+    colNA = "white",
+    brks = seq(
+      from = 0, to = max(seas_data_cf_all, na.rm = TRUE),
+      length.out = 10
+    ), color_fun = clim.palette("yellowred"),
+    filled.continents = FALSE, toptitle = title,
+    titles = PW_names, fileout = filepng
+  )
 
-  filencdf <- paste0(work_dir, "/", "capacity_factor_", model_names[i],  "_",
-                     start_year, "-", end_year, ".nc")
-  dimlon <- ncdim_def(name = "lon", units = "degrees_east",
-                      vals = as.vector(lon), longname = "longitude")
-  dimlat <- ncdim_def(name = "lat", units = "degrees_north",
-                      vals = as.vector(lat), longname = "latitude")
-  dimtime <- ncdim_def(name = "season", units = "season",
-                       vals = start_year : end_year,
-                       longname = "season of the year: DJF, MAM, JJA, SON")
-  dimcurve <- ncdim_def(name = "curve", units = "name", vals = 1 : 5,
-                        longname = "Power curves of considered turbines")
+  filencdf <- paste0(
+    work_dir, "/", "capacity_factor_", model_names[i], "_",
+    start_year, "-", end_year, ".nc"
+  )
+  dimlon <- ncdim_def(
+    name = "lon", units = "degrees_east",
+    vals = as.vector(lon), longname = "longitude"
+  )
+  dimlat <- ncdim_def(
+    name = "lat", units = "degrees_north",
+    vals = as.vector(lat), longname = "latitude"
+  )
+  dimtime <- ncdim_def(
+    name = "season", units = "season",
+    vals = start_year:end_year,
+    longname = "season of the year: DJF, MAM, JJA, SON"
+  )
+  dimcurve <- ncdim_def(
+    name = "curve", units = "name", vals = 1:5,
+    longname = "Power curves of considered turbines"
+  )
   names(dim(seas_data_cf_all)) <- c("curve", "time", "lat", "lon")
-  defdata <- ncvar_def(name = "CapacityFactor", units = "%",
-                       dim = list(season = dimcurve, dimtime, lat = dimlat,
-                                  lon = dimlon),
-                       longname = paste("Capacity Factor of wind on",
-                                        "different turbines"))
+  defdata <- ncvar_def(
+    name = "CapacityFactor", units = "%",
+    dim = list(
+      season = dimcurve, dimtime, lat = dimlat,
+      lon = dimlon
+    ),
+    longname = paste(
+      "Capacity Factor of wind on",
+      "different turbines"
+    )
+  )
   file <- nc_create(filencdf, list(defdata))
   ncvar_put(file, defdata, seas_data_cf_all)
   nc_close(file)
 
   # Set provenance for output files
-  xprov <- list(ancestors = list(fullpath_filenames[i],
-                            file.path(script_dirname, power_curves[1]),
-                            file.path(script_dirname, power_curves[2]),
-                            file.path(script_dirname, power_curves[3]),
-                            file.path(script_dirname, power_curves[4]),
-                            file.path(script_dirname, power_curves[5])),
-                authors = list("hunter_alasdair", "perez-zanon_nuria",
-                               "manubens_nicolau", "lledo_llorenc",
-                               "caron_louis-philippe", "bojovic_dragana",
-                               "gonzalez-reviriego_nube"),
-                projects = list("c3s-magic"),
-                caption = title,
-                statistics = list("other"),
-                realms = list("atmos"),
-                themes = list("phys"),
-                plot_file = filepng)
+  xprov <- list(
+    ancestors = list(
+      fullpath_filenames[i],
+      file.path(script_dirname, power_curves[1]),
+      file.path(script_dirname, power_curves[2]),
+      file.path(script_dirname, power_curves[3]),
+      file.path(script_dirname, power_curves[4]),
+      file.path(script_dirname, power_curves[5])
+    ),
+    authors = list(
+      "hunter_alasdair", "perez-zanon_nuria",
+      "manubens_nicolau", "lledo_llorenc",
+      "caron_louis-philippe", "bojovic_dragana",
+      "gonzalez-reviriego_nube"
+    ),
+    projects = list("c3s-magic"),
+    caption = title,
+    statistics = list("other"),
+    realms = list("atmos"),
+    themes = list("phys"),
+    plot_file = filepng
+  )
 
   provenance[[filencdf]] <- xprov
 }
