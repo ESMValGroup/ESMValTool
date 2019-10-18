@@ -37,7 +37,6 @@ REQUIREMENTS = {
         'numpy<=1.15.4',
         'pandas',
         'palettable',
-        'pyresample',
         'pyyaml',
         'scitools-iris>=2.2',
         'scikit-learn',

@@ -54,10 +54,9 @@ requirements:
     - matplotlib
     - nc-time-axis
     - netCDF4
-    - numpy
+    - numpy<=1.15.4
     - pandas
     - palettable
-    - pyresample
     - python-cdo
     - python-stratify
     - pyyaml
