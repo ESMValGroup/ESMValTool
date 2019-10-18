@@ -35,6 +35,38 @@ def get_provenance_record(ancestor_file):
     return record
 
 
+def _rename_var(input_dict, output_name):
+    variables = {}
+    for key in output_name:
+        if key in input_dict:
+            cube = input_dict[key]
+            cube.var_name = output_name[key]
+            variables[key] = cube
+    return variables
+
+
+def compute_windspeed(u_component, v_component):
+    """ Compute wind speed magnitude based on vector components """
+    wind_speed = (u_component**2 + v_component**2)**.5
+    #TODO: add variable names, attributes etc.
+    wind_speed.var_name = 'windspd'
+    return wind_speed
+
+
+def logarithmic_profile(windspeed, measurement_height):
+    """ Convert wind speed from input height to 2m with logarithmic profile """
+    warnings.warn('This version of the logarithmic wind profile is violating\
+                  general principles of transparancy. Better replace it with\
+                  a more general formula incorporating friction velocity or\
+                  roughness length')
+    return windspeed * 4.87/np.log(67.8*measurement_height-5.42)
+
+
+def compute_specific_humidity(dewpoint_temperature, surface_pressure):
+    # see e.g. https://github.com/Unidata/MetPy/issues/791
+    return
+
+
 def main(cfg):
     """Process data for use as input to the summa hydrological model """
     input_data = cfg['input_data'].values()
@@ -43,7 +75,7 @@ def main(cfg):
                                         'standard_name',
                                         sort='dataset')
     variables = {}
-    # output variables name in SUMMA
+    # output variable's name in SUMMA
     output_var_name = {
         'tas':'airtemp',
         'rsds':'SWRadAtm',
@@ -98,13 +130,12 @@ def main(cfg):
     wind_speed = compute_windspeed(u_component, v_component)
     wind_speed_2m = logarithmic_profile(wind_speed, 10)
 
-    # Add wind speed to cube list and remove old vars
+    # Add wind speed to cube dict
     variables[wind_speed.var_name] = wind_speed_2m
     # TODO: add specific humidity calculation
     # specific_humidity = compute_specific_humidity(dewpoint_temperature, surface_pressure)
 
-
-    # Select the desired variables
+    # Select and rename the desired variables
     variables = _rename_var(variables, output_var_name)
 
     # Make a list from all cubes in dictionary
@@ -121,38 +152,6 @@ def main(cfg):
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(output_file, provenance_record)
 
-
-def _rename_var(input_dict, output_name):
-    variables = {}
-    for key in output_name:
-        if key in input_dict:
-            cube = input_dict[key]
-            cube.var_name = output_name[key]
-            variables[key] = cube
-    return variables
-
-
-
-def compute_windspeed(u_component, v_component):
-    """ Compute wind speed magnitude based on vector components """
-    wind_speed = (u_component**2 + v_component**2)**.5
-    #TODO: add variable names, attributes etc.
-    wind_speed.var_name = 'windspd'
-    return wind_speed
-
-
-def logarithmic_profile(windspeed, measurement_height):
-    """ Convert wind speed from input height to 2m with logarithmic profile """
-    warnings.warn('This version of the logarithmic wind profile is violating\
-                  general principles of transparancy. Better replace it with\
-                  a more general formula incorporating friction velocity or\
-                  roughness length')
-    return windspeed * 4.87/np.log(67.8*measurement_height-5.42)
-
-
-def compute_specific_humidity(dewpoint_temperature, surface_pressure):
-    # see e.g. https://github.com/Unidata/MetPy/issues/791
-    return
 
 if __name__ == '__main__':
 
