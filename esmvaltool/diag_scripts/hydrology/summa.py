@@ -15,10 +15,10 @@ from esmvaltool.cmorizers.obs import utilities as utils
 logger = logging.getLogger(Path(__file__).name)
 
 
-def get_provenance_record(ancestor_file):
+def get_provenance_record(dataset):
     """Create a provenance record."""
     record = {
-        'caption': "Forcings for the summa hydrological model.",
+        'caption': "Forcings for the SUMMA hydrological model.",
         'domains': ['global'],
         'authors': [
             # 'kalverla_peter',
@@ -31,7 +31,7 @@ def get_provenance_record(ancestor_file):
         'references': [
             'acknow_project',
         ],
-        'ancestors': [ancestor_file],
+        'dataset': [dataset],
     }
     return record
 
@@ -159,13 +159,13 @@ def main(cfg):
     cube_list_all_vars = iris.cube.CubeList()
     for key in variables:
         cube_list_all_vars.append(variables[key])
-    # Save data # check the dataset!
+    # Save data
     basename = dataset + '_summa'
     output_file = get_diagnostic_filename(basename, cfg)
     iris.save(cube_list_all_vars, output_file, fill_value=1.e20)
 
-    # Store provenance # check this!
-    provenance_record = get_provenance_record(input_file)
+    # Store provenance
+    provenance_record = get_provenance_record(dataset)
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(output_file, provenance_record)
 
