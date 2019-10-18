@@ -46,6 +46,10 @@ following figures from Flato et al. (2013) can currently be reproduced:
       different observations (thick black lines). Dataset pre-processing like
       described in Jones et al., 2013.
 
+    * Figure 9.14: Sea surface temperature plots for zonal mean error, equatorial
+      (5 deg north to 5 deg south) mean error, and multi model mean for zonal error
+      and equatorial mean.
+
 Available recipes and diagnostics
 ---------------------------------
 
@@ -59,8 +63,8 @@ Diagnostics are stored in esmvaltool/diag_scripts/
       mean bias (Fig. 9.2, 9.4)
     * clouds/clouds_isccp: global maps of multi-model mean minus observations + zonal
       averages of individual models, multi-model mean and observations (Fig. 9.5)
-    * ipcc_ar5/tsline.ncl: time series of the global mean (anomaly) (Fig: 9.8)
-
+    * ipcc_ar5/tsline.ncl: time series of the global mean (anomaly) (Fig. 9.8)
+    * ipcc_ar5/ch09_fig09_14.py: Zonally averaged and equatorial SST (Fig. 9.14)
 
 User settings in recipe
 -----------------------
@@ -174,6 +178,7 @@ Variables
 * pr (atmos, monthly mean, longitude latitude time)
 * rlut, rlutcs (atmos, monthly mean, longitude latitude time)
 * rsut, rsutcs (atmos, monthly mean, longitude latitude time)
+* tos (ocean, monthly mean, longitude, latitude, time)
 
 
 Observations and reformat scripts
@@ -187,6 +192,7 @@ instructions.*
 * ERA-Interim (tas, ta, ua, va, zg, hus - esmvaltool/utils/cmorizers/obs/cmorize_obs_ERA-Interim.ncl)
 * GPCP-SG (pr - obs4mips)
 * HadCRUT4 (tas - esmvaltool/utils/cmorizers/obs/cmorize_obs_hadcrut4.ncl)
+* HadISST (tos - esmvaltool/utils/cmorizers/obs/cmorize_obs_hadisst.ncl)
 
 
 References
@@ -205,6 +211,7 @@ References
 * Jones et al., 2013: Attribution of observed historical near-surface temperature
   variations to anthropogenic and natural causes using CMIP5 simulations. Journal
   of Geophysical Research: Atmosphere, 118, 4001-4024, doi:10.1002/jgrd.50239.
+
 
 Example plots
 -------------
@@ -255,3 +262,19 @@ Example plots
    for CMIP5 models (thin lines); multi-model mean (thick red line);
    different observations (thick black lines). Dataset pre-processing like
    described in Jones et al., 2013.
+
+.. _fig_flato13ipcc_5:
+.. figure:: /recipes/figures/flato13ipcc/fig-9-14.png
+   :align: center
+
+   Fig. 9.14: (a) Zonally averaged sea surface temperature (SST) error
+   in CMIP5 models. (b) Equatorial SST error in CMIP5 models. (c) Zonally
+   averaged multi-model mean SST error for CMIP5 together with
+   inter-model standard deviation (shading). (d) Equatorial multi-model
+   mean SST in CMIP5 together with inter-model standard deviation
+   (shading) and observations (black).  Model climatologies are derived
+   from the 1979-1999 mean of the historical simulations. The Hadley
+   Centre Sea Ice and Sea Surface Temperature (HadISST) (Rayner et
+   al., 2003) observational climatology for 1979-1999 is used as a
+   reference for the error calculation (a), (b), and (c); and for
+   observations in (d).

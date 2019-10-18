@@ -67,6 +67,11 @@ authors:
     institute: BSC, Spain
     email: javier.vegas@bsc.es
     orcid: https://orcid.org/0000-0003-0096-4291
+  zimmermann_klaus:
+    name: Zimmermann, Klaus
+    institute: SMHI, Sweden
+    email: klaus.zimmermann@smhi.se
+    orcid: https://orcid.org/0000-0003-3994-2057
   # Development team
   aerts_jerom:
     name: Aerts, Jerom
@@ -669,6 +674,7 @@ references:
   hadcrut3: "Brohan et al., J. Geophys. Res., doi:10.1029/2005JD006548, 2006."
   hadcrut4: "Morice et al., J. Goophys. Res., doi:10.1029/2011JD017187, 2012."
   hadisst: "Rayner et al., J. Geophys. Res., doi:10.1029/2002JD002670, 2013."
+  hwsd: "Wieder et al., doi:10.3334/ORNLDAAC/1247, 2014."
   lai3g: "Zhu et al., Remote Sens., doi:10.3390/rs5020927, 2013."
   landflux-eval: "Mueller et al., Hydrol. Earth Syst. Sci., doi:10.5194/hess-17-3707-2013, 2013."
   landschuetzer2016: "Landschuetzer et al., Global Biogeochem. Cycles, doi:10.1002/2015GB005359, 2016."
