@@ -1,13 +1,16 @@
 """wflow diagnostic."""
 import logging
 from pathlib import Path
+import os
 
 # import dask.array as da
 import iris
+from esmvalcore import preprocessor as preproc
 
 from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
                                             get_diagnostic_filename,
-                                            group_metadata, run_diagnostic)
+                                            group_metadata, run_diagnostic,
+                                            select_metadata)
 
 logger = logging.getLogger(Path(__file__).name)
 
@@ -20,7 +23,7 @@ def get_provenance_record(ancestor_file):
         'authors': [
             'kalverla_peter',
             'camphuijsen_jaro',
-            'alidoost_sarah',
+            # 'alidoost_sarah',
         ],
         'projects': [
             'ewatercycle',
@@ -41,56 +44,89 @@ def main(cfg):
                                         'standard_name',
                                         sort='dataset')
 
-    # for now just open and save the input/output
+    # Make a dictionary containing all variables
+    all_vars = {}
     for standard_name in grouped_input_data:
         logger.info("Processing variable %s", standard_name)
+
+        # Combine multiple years into a singe iris cube
+        all_years = []
         for attributes in grouped_input_data[standard_name]:
-            logger.info("Processing dataset %s", attributes['dataset'])
             input_file = attributes['filename']
             cube = iris.load_cube(input_file)
+            all_years.append(cube)
+        allyears = iris.cube.CubeList(all_years).concatenate_cube()
 
-            # Do stuff
-            # ...
+        all_vars[standard_name] = allyears
 
-            # There is a preprocessing record on the jupyter server
-            # They do the following steps:
-            # 1. Convert to daily statistics with timestamp at midnight
-            # 2. Convert 2m temperature to sea level temp using a
-            #    lapse rate of 6.5 K/km. This thus also requires an
-            #    orography file (or geopotential at the surface).
-            # 3. Regrid to a target grid for the desired basin. This
-            #    target grid is specified by a DEM called e.g.
-            #    wflow_dem_Meuse.nc (which is based on a .map file, ask #    Jerom). Some of these can be found on cartesius:
-            #    /lustre1/0/wtrcycle/lorentz-workshop/wflow_sbm/model_input/wflow_sbm_meuse/staticmaps/
-            #     This regridding cannot use a preprocessor in the
-            #     recipe, but it can use the ESMValCore API regridder,
-            #     as it is possible to specify a target cube.
-            # 4.  Convert sea level temperature back to the new target
-            #     grid elevation.
-            #
-            # Note: The example preprocessing on the jupyter server uses
-            #       evaporation. However, the model needs potential
-            #       evaporation (according to Jerom). He has a script to
-            #       convert it, but that requires several additional
-            #       input variables. We have added these to the recipe
-            #       as optional input (for now, they are commented out)
-            #
-            #   Output format: wflow_local_forcing_ERA5_Meuse_1990_2018.nc
-            #   one file for all years and all variables.
+        # For now, save intermediate output
+        output_file = get_diagnostic_filename(
+            Path(input_file).stem + '_wflow_test', cfg)
+        iris.save(allyears, output_file, fill_value=1.e20)
 
 
-            # Save data
-            output_file = get_diagnostic_filename(
-                Path(input_file).stem + '_wflow', cfg)
-            iris.save(cube, output_file, fill_value=1.e20)
+    # These keys are now available in all_vars:
+    # - air_temperature
+    # - precipitation_flux
 
-            # Store provenance
-            provenance_record = get_provenance_record(input_file)
-            with ProvenanceLogger(cfg) as provenance_logger:
-                provenance_logger.log(output_file, provenance_record)
+    # Interpolating precipitation to the target grid
+    # Read the target cube, which contains target grid and target elevation
+    dem_path = os.path.join(cfg['auxiliary_data_dir'],cfg['dem_file'])
+    dem_cube = iris.load_cube(dem_path)
 
+    # Read source orography (add era5 later) and try to make it cmor compatible
+    era_orography_path = os.path.join(
+        cfg['auxiliary_data_dir'], cfg['source_orography'])
+    era_orography_cube = iris.load_cube(era_orography_path)
+    oro.coord('longitude').long_name="Longitude"
+    oro.coord('latitude').long_name="Latitude"
+
+    ## Processing precipitation
+    # Interpolate precipitation to the target grid and save new output
+    pr = all_vars['precipitation_flux']
+    pr_dem = preproc.regrid(pr, target_grid=dem_cube, scheme='linear')
+    iris.save(pr_dem, output_file, fill_value=1.e20) #TODO: change filename
+
+    ## Processing temperature
+    tas = all_vars['air_temperature']
+
+    # Convert geopotential to surface elevation
+    g = iris.coords.AuxCoord(9.80665,
+                             long_name='Acceleration due to gravity',
+                             units='m s-2')
+    era_height = era_orography_cube / g
+
+    # Convert surface elevation to sea-level temperature correction
+    gamma = iris.coords.AuxCoord(0.0065,
+                                 long_name='Environmental lapse rate',
+                                 units='K/m')
+
+    # Convert surface (2m) temperature to sea-level temperature
+    t_sea_level = tas + era_height*gamma
+    #BUG this doesn't work:
+    # ValueError: This operation cannot be performed as there are differing coordinates (time, longitude, latitude) remaining which cannot be ignored.
+    # Related (?): https://github.com/SciTools/iris/issues/2765
+
+    # Interpolate sea-level temperature to target grid
+    tsl_target_grid = preproc.regrid(t_sea_level, target_grid=dem_cube, scheme='linear')
+
+    # Convert sea-level temperature to new target elevation
+    t_target_elevation = tsl_target_grid - dem_cube*gamma
+
+    # Save output
+    iris.save(t_target_elevation, output_file, fill_value=1.e20)
+
+    # TODO
+    # - Solve iris issue to make lapse rate temperature correction work
+    # - Move variable manipulation to separate functions
+    # - Add function(s) to calculate potential evapotranspiration
+    # - Check whether the correct units are used
+    # - See whether we can work with wflow pcraster .map files directly
+    #   (currently, we use .nc dem files that Jerom converted externally)
+    # - Compare output to prepared input during workshop
+    # - Save the output files with correct variable- and file-names
+    #   Output format: wflow_local_forcing_ERA5_Meuse_1990_2018.nc
 
 if __name__ == '__main__':
-
     with run_diagnostic() as config:
         main(config)

@@ -4,7 +4,11 @@
 documentation:
   description: |
     Recipe pre-processes ERA-Interim reanalyses files for use in the WFlow hydrological model.
-  authors: ['kalverla_peter', 'camphuijsen_jaro', 'alidoost_sarah']
+  authors: [
+    'kalverla_peter',
+    'camphuijsen_jaro',
+    # 'alidoost_sarah'
+    ]
   projects: ['ewatercycle']
   references: ['acknow_project']
 
@@ -34,41 +38,42 @@ diagnostics:
         start_year: 2000
         end_year: 2000
       pr: *var_daily
-      evspsbl:  # this should be potentail evapo.. which doesn't exist.
-        <<: *var_daily
-        mip: Eday
-      # If we want to compute potentail evaporation, we also need:
-      psl: *var_daily
-      rsds: *var_daily
-      tdps:
-        <<: *var_daily
-        mip: Eday
-      rsdt:
-        <<: *var_daily
-        mip: CFday
+      # evspsbl:  # this should be potentail evapo.. which doesn't exist.
+      #   <<: *var_daily
+      #   mip: Eday
+      # # If we want to compute potentail evaporation, we also need:
+      # psl: *var_daily
+      # rsds: *var_daily
+      # tdps:
+      #   <<: *var_daily
+      #   mip: Eday
+      # rsdt:
+      #   <<: *var_daily
+      #   mip: CFday
     scripts:
       script:
         script: hydrology/wflow.py
-        dem_file: 'path/to/aux/data/meuse_dem' # currently in shapes_et_al repo
+        dem_file: 'wflow_dem_Meuse.nc' # currently in shapes_et_al repo
+        source_orography: 'era_interim_orography_modified.nc' # i.e. geopotential
 
-  diagnostic_hourly:
-    description: WFlow input preprocessor for hourly data
-    additional_datasets:
-      - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1}
-    variables:
-      tas: &var_hourly
-        mip: E1hr
-        start_year: 2000
-        end_year: 2000
-        preprocessor: hourly_temperature
-      pr:
-        <<: *var_hourly
-        preprocessor: hourly_water
-      evspsblpot:
-        <<: *var_hourly
-        preprocessor: hourly_water
-    scripts:
-      script:
-        script: hydrology/wflow.py
-          dem_file: 'path/to/aux/data/meuse_dem' # currently in shapes_et_al repo
+  # diagnostic_hourly:
+  #   description: WFlow input preprocessor for hourly data
+  #   additional_datasets:
+  #     - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1}
+  #   variables:
+  #     tas: &var_hourly
+  #       mip: E1hr
+  #       start_year: 2000
+  #       end_year: 2000
+  #       preprocessor: hourly_temperature
+  #     pr:
+  #       <<: *var_hourly
+  #       preprocessor: hourly_water
+  #     evspsblpot:
+  #       <<: *var_hourly
+  #       preprocessor: hourly_water
+  #   scripts:
+  #     script:
+  #       script: hydrology/wflow.py
+  #         # dem_file: 'path/to/aux/data/meuse_dem' # currently in shapes_et_al repo
 
