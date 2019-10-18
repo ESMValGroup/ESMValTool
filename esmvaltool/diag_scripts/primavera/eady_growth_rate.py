@@ -13,7 +13,7 @@ from dask import array as da
 import esmvaltool.diag_scripts.shared
 import esmvaltool.diag_scripts.shared.names as n
 from esmvaltool.diag_scripts.shared import group_metadata
-from esmvaltool.diag_scripts.shared._base import ProvenanceLogger
+from esmvaltool.diag_scripts.shared import ProvenanceLogger
 
 
 logger = logging.getLogger(os.path.basename(__file__))
