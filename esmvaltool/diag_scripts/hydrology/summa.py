@@ -10,6 +10,7 @@ import iris
 from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
                                             get_diagnostic_filename,
                                             group_metadata, run_diagnostic)
+from esmvaltool.cmorizers.obs import utilities as utils
 
 logger = logging.getLogger(Path(__file__).name)
 
@@ -36,6 +37,7 @@ def get_provenance_record(ancestor_file):
 
 
 def _rename_var(input_dict, output_name):
+    """Change the cmor names for SUMMA"""
     variables = {}
     for key in output_name:
         if key in input_dict:
@@ -48,8 +50,6 @@ def _rename_var(input_dict, output_name):
 def compute_windspeed(u_component, v_component):
     """ Compute wind speed magnitude based on vector components """
     wind_speed = (u_component**2 + v_component**2)**.5
-    #TODO: add variable names, attributes etc.
-    wind_speed.var_name = 'windspd'
     return wind_speed
 
 
@@ -59,12 +59,26 @@ def logarithmic_profile(windspeed, measurement_height):
                   general principles of transparancy. Better replace it with\
                   a more general formula incorporating friction velocity or\
                   roughness length')
-    return windspeed * 4.87/np.log(67.8*measurement_height-5.42)
-
+    cube = windspeed * 4.87/np.log(67.8*measurement_height-5.42)
+    return cube
 
 def compute_specific_humidity(dewpoint_temperature, surface_pressure):
     # see e.g. https://github.com/Unidata/MetPy/issues/791
     return
+
+
+def _fix_cube(input_dict):
+    """Fixing attributes for new cube"""
+    for key in input_dict:
+        cube = input_dict[key]
+        if key in {'windspd'}:
+            # remove the height_0 coordinate (10m)
+            cube.remove_coord(cube.coord('height'))
+            # add the height coordinate (2m)
+            utils.add_scalar_height_coord(cube, 2.)
+            cube.var_name = 'windspd'
+            cube.standard_name = 'wind_speed'
+    return cube
 
 
 def main(cfg):
@@ -129,9 +143,12 @@ def main(cfg):
     # compute wind speed and convert to 2m
     wind_speed = compute_windspeed(u_component, v_component)
     wind_speed_2m = logarithmic_profile(wind_speed, 10)
-
     # Add wind speed to cube dict
-    variables[wind_speed.var_name] = wind_speed_2m
+    variables['windspd'] = wind_speed_2m
+
+    # Fix cube attributes
+    variables['windspd'] = _fix_cube(variables)
+
     # TODO: add specific humidity calculation
     # specific_humidity = compute_specific_humidity(dewpoint_temperature, surface_pressure)
 
