@@ -6,10 +6,10 @@ documentation:
     Tool to compute the  diurnal temperature indicator.
 
   authors:
-    - hunt_al
-    - pere_nu
-    - manu_ni
-    - caro_lo
+    - hunter_alasdair
+    - perez-zanon_nuria
+    - manubens_nicolau
+    - caron_louis-philippe
 
   projects:
     - c3s-magic
@@ -26,17 +26,13 @@ datasets:
 
 preprocessors:
   preproc:
-    regrid:
-      target_grid: MPI-ESM-MR
-      scheme: linear
-    mask_fillvalues:
-      threshold_fraction: 0.95
     extract_region:
       start_longitude: -10
       end_longitude: 40
       start_latitude: 27
       end_latitude: 70
-
+    mask_landsea:
+      mask_out: sea
 diagnostics:
   diurnal_temperature_indicator:
     description: Calculate the diurnal temperature indicator.
@@ -49,4 +45,4 @@ diagnostics:
         mip: day
     scripts:
       main:
-        script: magic_bsc/diurnal_temp_index.r
+        script: magic_bsc/diurnal_temp_index.R

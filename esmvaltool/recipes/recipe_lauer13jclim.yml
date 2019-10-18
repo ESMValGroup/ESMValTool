@@ -7,10 +7,10 @@ documentation:
     from Lauer and Hamilton (2013).
 
   authors:
-    - laue_ax
+    - lauer_axel
 
   maintainer:
-    - laue_ax
+    - lauer_axel
 
   references:
     - lauer13jclim

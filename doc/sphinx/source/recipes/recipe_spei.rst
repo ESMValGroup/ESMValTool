@@ -1,9 +1,11 @@
+.. _recipes_spei:
+
 SPEI
 ====
 
 Overview
 --------
-Droughts can be separated into three main types: meteorological, hydrological, and agricultural drought. 
+Droughts can be separated into three main types: meteorological, hydrological, and agricultural drought.
 
 Common for all types is that a drought needs to be put in context of local and seasonal characteristics, i.e. a drought should not be defined with an absolute threshold, but as an anomalous condition.
 
@@ -22,9 +24,9 @@ Recipes are stored in recipes/
 
 Diagnostics are stored in diag_scripts/droughtindex/
 
-    * diag_spi.r: calculate the SPI index
+    * diag_spi.R: calculate the SPI index
 
-    * diag_spei.r: calculate the SPEI index
+    * diag_spei.R: calculate the SPEI index
 
 
 User settings

@@ -9,8 +9,8 @@ Evaluation of stratosphere-troposphere coupling
 based on EOF/PC analysis of the geopotential height field.
 
 Modification history
-20180512-A_serv_fe: Added output netCDFs, more use of preprocessor.
-20180510-A_serv_fe: Routines written.
+20180512-serva_federico: Added output netCDFs, more use of preprocessor.
+20180510-serva_federico: Routines written.
 
 """
 
@@ -33,7 +33,12 @@ def get_provenance_record(vatt, ancestor_files):
                "{start_year} and {end_year} ".format(**vatt))
     record = {
         'caption': caption,
-        'authors': ['serv_fe', 'hard_jo', 'arno_en', 'cagn_ch'],
+        'authors': [
+            'serva_federico',
+            'vonhardenberg_jost',
+            'arnone_enrico',
+            'cagnazzo_chiara',
+        ],
         'projects': ['c3s-magic'],
         'references': ['baldwin09qjrms'],
         'plot_types': ['polar', 'zonal'],
