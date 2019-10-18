@@ -20,7 +20,7 @@ jobs:
           command: |
             . /opt/conda/etc/profile.d/conda.sh
             mkdir /logs
-            conda update -y conda >> /logs/conda.txt 2>&1
+            # conda update -y conda >> /logs/conda.txt 2>&1
             conda env update >> /logs/conda.txt 2>&1
             conda activate esmvaltool
             # Install r-lintr for r linter test
@@ -57,7 +57,7 @@ jobs:
             wget https://julialang-s3.julialang.org/bin/linux/x64/1.0/julia-1.0.3-linux-x86_64.tar.gz
             tar xfz julia-*-linux-x86_64.tar.gz
             ln -s $(pwd)/julia-*/bin/julia /usr/bin/julia
-            conda update -y conda > /logs/conda.txt 2>&1
+            # conda update -y conda > /logs/conda.txt 2>&1
             conda env update >> /logs/conda.txt 2>&1
             set +x; conda activate esmvaltool; set -x
             pip install . > /logs/install.txt 2>&1
@@ -90,8 +90,14 @@ jobs:
       - run:
           when: always
           command: |
-            pip install codacy-coverage
-            python-codacy-coverage -r test-reports/coverage.xml
+            if [[ -v CODACY_PROJECT_TOKEN ]]
+            then
+              echo Uploading coverage report
+              pip install codacy-coverage
+              python-codacy-coverage -r test-reports/coverage.xml
+            else
+              echo Not uploading coverage report
+            fi
 
   develop:
     # Test development installation
@@ -109,7 +115,7 @@ jobs:
             wget https://julialang-s3.julialang.org/bin/linux/x64/1.0/julia-1.0.3-linux-x86_64.tar.gz
             tar xfz julia-*-linux-x86_64.tar.gz
             ln -s $(pwd)/julia-*/bin/julia /usr/bin/julia
-            conda update -y conda > /logs/conda.txt 2>&1
+            # conda update -y conda > /logs/conda.txt 2>&1
             conda env update >> /logs/conda.txt 2>&1
             set +x; conda activate esmvaltool; set -x
             pip install -e .[develop] > /logs/install.txt 2>&1
@@ -170,7 +176,7 @@ jobs:
             wget https://julialang-s3.julialang.org/bin/linux/x64/1.0/julia-1.0.3-linux-x86_64.tar.gz
             tar xfz julia-*-linux-x86_64.tar.gz
             ln -s $(pwd)/julia-*/bin/julia /usr/bin/julia
-            conda update -y conda > /logs/conda_base.txt 2>&1
+            # conda update -y conda > /logs/conda_base.txt 2>&1
             conda install -y conda-build conda-verify >> /logs/conda_base.txt 2>&1
             # Log versions
             dpkg -l > /logs/versions.txt
@@ -196,7 +202,7 @@ jobs:
             wget https://julialang-s3.julialang.org/bin/linux/x64/1.0/julia-1.0.3-linux-x86_64.tar.gz
             tar xfz julia-*-linux-x86_64.tar.gz
             ln -s $(pwd)/julia-*/bin/julia /usr/bin/julia
-            conda update -y conda > /logs/conda.txt 2>&1
+            # conda update -y conda > /logs/conda.txt 2>&1
             # Create and activate conda environment
             conda create -y --name esmvaltool
             set +x; conda activate esmvaltool; set -x
@@ -222,7 +228,7 @@ jobs:
             set -x
             mkdir /logs
             # Install
-            conda update -y conda > /logs/conda.txt 2>&1
+            # conda update -y conda > /logs/conda.txt 2>&1
             conda create -y --name ncl > /logs/conda.txt 2>&1
             set +x; conda activate ncl; set -x
             conda install -y --channel conda-forge ncl cdo >> /logs/conda.txt 2>&1
