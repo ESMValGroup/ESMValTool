@@ -1,7 +1,7 @@
 .. _recipe_diurnal_temperature_index:
 
-Diurnal temperature variation indicator: Difference between Tmax and Tmin for a specific day
-============================================================================================
+Diurnal temperature range
+=========================
 
 Overview
 --------

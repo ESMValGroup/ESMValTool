@@ -1,7 +1,7 @@
 .. _recipes_flato13ipcc:
 
-IPCC AR5 Chapter 9
-==================
+IPCC AR5 Chapter 9 (selected figures)
+=====================================
 
 Overview
 --------
