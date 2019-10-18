@@ -85,6 +85,7 @@ def main(cfg):
         legend_cat.append(leg)
         logger.info('Processing: %s', leg)
     namef = os.path.join(out_dir, 'legend_{0}.txt'.format(name_outputs))
+    os.makedirs(os.path.dirname(namef), exist_ok=True)
     np.savetxt(namef, legend_cat, fmt='%s')
 
     # ###################### PRECOMPUTATION #######################

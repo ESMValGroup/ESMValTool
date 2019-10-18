@@ -79,6 +79,7 @@ def write_plotdata(infos, modnam, values):
         filepath = os.path.join(cfg[diag.names.WORK_DIR],
                                 '_'.join([metric, var]) + '.txt')
         ncol = len(regnam)
+        os.makedirs(os.path.dirname(filepath), exist_ok=True)
         with open(filepath, 'w') as fout:
             header = '{:35} ' + ncol * ' {:>12}' + '\n'
             body = '{:35} ' + ncol * ' {:12.4f}' + '\n'
@@ -341,7 +342,6 @@ def write_data(cfg, cubes, var, prov_rec):
     # Compile output path
     filepath = os.path.join(cfg[diag.names.WORK_DIR],
                             '_'.join(['postproc', var]) + '.nc')
-
     # Join cubes in one list with ref being the last entry
     outcubes = cubes['exp'][var] + cubes['ref'][var]
     if cfg[diag.names.WRITE_NETCDF]:
