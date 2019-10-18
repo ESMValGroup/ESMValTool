@@ -10,6 +10,8 @@ import numpy as np
 
 from dask import array as da
 
+from esmvalcore.preprocessor import regrid
+
 import esmvaltool.diag_scripts.shared
 import esmvaltool.diag_scripts.shared.names as n
 from esmvaltool.diag_scripts.shared import group_metadata
@@ -48,6 +50,8 @@ class EadyGrowthRate(object):
             fcor = self.coriolis(lats, zg.shape)
 
             ua = iris.load_cube(var['ua'][0]['filename'])
+            if ua.shape is not zg.shape:
+                ua = regrid(ua, zg, scheme='linear')
 
             egr = self.eady_growth_rate(fcor, ua, zg, brunt)
 
