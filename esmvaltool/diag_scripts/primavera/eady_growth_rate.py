@@ -64,10 +64,10 @@ class EadyGrowthRate(object):
         p0.convert_units(plev.units)
         p = (p0.points/plev.points)**(2/7)
         theta = ta * iris.util.broadcast_to_shape(
-                    p,
-                    ta.shape,
-                    ta.coord_dims('air_pressure')
-                    )
+            p,
+            ta.shape,
+            ta.coord_dims('air_pressure')
+            )
         theta.long_name = 'potential_air_temperature'
 
         return theta
@@ -167,7 +167,7 @@ class EadyGrowthRate(object):
             'autors': ['sanchez-gomez_emilia'],
             'references': ['acknow_project'],
             'ancestors': ancestors
-         }
+            }
         with ProvenanceLogger(self.cfg) as provenance_logger:
             provenance_logger.log(output_file, record)
 
