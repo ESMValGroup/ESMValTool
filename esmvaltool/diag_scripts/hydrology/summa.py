@@ -43,6 +43,16 @@ def main(cfg):
                                         'standard_name',
                                         sort='dataset')
     variables = {}
+    # output variables name in SUMMA
+    output_var_name = {
+        'tas':'airtemp',
+        'rsds':'SWRadAtm',
+        'windspd':'windspd',
+        'strd':'LWRadAtm',
+        'pr':'pptrate',
+        'spechum':'spechum',
+        'ps':'airpres'
+    }
     for standard_name in grouped_input_data:
         # get the dataset name to use in save function later
         # TODO add support multiple dataset in one diagnostic
@@ -89,16 +99,15 @@ def main(cfg):
     wind_speed_2m = logarithmic_profile(wind_speed, 10)
 
     # Add wind speed to cube list and remove old vars
-    variables[wind_speed_2m.var_name] = wind_speed_2m
-    # for key in variables.items():
-    #     if key in {'uas', 'vas'}:
-    #         variables.pop(key)
-
+    variables[wind_speed.var_name] = wind_speed_2m
     # TODO: add specific humidity calculation
     # specific_humidity = compute_specific_humidity(dewpoint_temperature, surface_pressure)
 
+
     # Select the desired variables
-    print('#######################')
+    variables = _rename_var(variables, output_var_name)
+
+    # Make a list from all cubes in dictionary
     cube_list_all_vars = iris.cube.CubeList()
     for key in variables:
         cube_list_all_vars.append(variables[key])
@@ -111,6 +120,17 @@ def main(cfg):
     provenance_record = get_provenance_record(input_file)
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(output_file, provenance_record)
+
+
+def _rename_var(input_dict, output_name):
+    variables = {}
+    for key in output_name:
+        if key in input_dict:
+            cube = input_dict[key]
+            cube.var_name = output_name[key]
+            variables[key] = cube
+    return variables
+
 
 
 def compute_windspeed(u_component, v_component):
