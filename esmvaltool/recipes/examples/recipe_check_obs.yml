@@ -548,6 +548,19 @@ diagnostics:
     scripts: null
 
 
+  JMA-TRANSCOM:
+    description: JMA-TRANSCOM check
+    variables:
+      nbp:
+        mip: Lmon
+      fgco2:
+        mip: Omon
+    additional_datasets:
+      - {dataset: JMA-TRANSCOM, project: OBS, tier: 3, type: reanaly,
+         version: 2018, start_year: 1985, end_year: 2016}
+    scripts: null
+
+
   LAI3g:
     description: LAI3g check
     variables:
