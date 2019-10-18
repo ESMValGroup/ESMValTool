@@ -53,6 +53,7 @@ diagnostics:
         #Parameters for Season() function
         moninf: 6   #If this is null, then the monthly anomalies will be computed
         monsup: 6
+        colorbar_lim: 3
 
         agreement_threshold: 80
         #Time series plot options
