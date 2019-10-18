@@ -7,6 +7,7 @@ Please discuss your idea with the development team before getting started, to av
 **Tasks**
 
 -   [ ] [Create an issue](https://github.com/ESMValGroup/ESMValTool/issues) to discuss what you are going to do, if you haven't done so already (and add the link at the bottom)
+-   [ ] Give this pull request a descriptive title that can be used as a one line summary in a changelog
 -   [ ] Make sure your code is composed of functions of no more than 50 lines and uses meaningful names for variables
 -   [ ] Circle/CI tests pass. Status can be seen below your pull request. If the tests are failing, click the link to find out why.
 -   [ ] Preferably Codacy code quality checks pass, however a few remaining hard to solve Codacy issues are still acceptable. Status can be seen below your pull request. If there is an error, click the link to find out why. If you suspect Codacy may be wrong, please ask by commenting.
@@ -17,10 +18,12 @@ Please discuss your idea with the development team before getting started, to av
 New recipe/diagnostic
 
 -   [ ] Add documentation for the recipe to the `doc/sphinx/source/recipes` folder and add a new entry to index.rst
+-   [ ] Add provenance information
 
 Modified recipe/diagnostic
 
 -   [ ] Update documentation for the recipe to the `doc/sphinx/source/recipes` folder
+-   [ ] Update provenance information if needed
 -   [ ] Assign the author(s) of the affected recipe(s) as reviewer(s)
 
 New data reformatting script
