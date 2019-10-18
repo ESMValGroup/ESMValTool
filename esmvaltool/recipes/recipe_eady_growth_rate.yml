@@ -16,8 +16,17 @@ documentation:
     - primavera
 
 datasets:
-  - {dataset: CNRM-CM5,  project: CMIP5, exp: historical,  ensemble: r1i1p1,
-     mip: Amon, start_year: 1979,  end_year: 2005}
+  - {dataset: CMCC-CM2-HR4,  project: CMIP6, exp: highresSST-present,  ensemble: r1i1p1f1, mip: Amon, grid: gn,start_year: 1950,  end_year: 2014}
+  - {dataset: CNRM-CM6-1,  project: CMIP6, exp: highresSST-present,  ensemble: r1i1p1f2, mip: Amon, grid: gr, start_year: 1950,  end_year: 2014}
+  - {dataset: CNRM-CM6-1-HR,  project: CMIP6, exp: highresSST-present,  ensemble: r1i1p1f2, mip: Amon, grid: gr, start_year: 1950,  end_year: 2014}
+  - {dataset: ECMWF-IFS-HR,  project: CMIP6, exp: highresSST-present,  ensemble: r1i1p1f1, mip: Amon, grid: gr, start_year: 1950,  end_year: 2014}
+  - {dataset: ECMWF-IFS-LR,  project: CMIP6, exp: highresSST-present,  ensemble: r1i1p1f1, mip: Amon, grid: gr, start_year: 1950,  end_year: 2014}
+  - {dataset: HadGEM3-GC31-HM,  project: CMIP6, exp: highresSST-present,  ensemble: r1i1p1f1, mip: Amon, grid: gn, start_year: 1950,  end_year: 2014}
+  - {dataset: HadGEM3-GC31-LM,  project: CMIP6, exp: highresSST-present,  ensemble: r1i1p1f1, mip: Amon, grid: gn, start_year: 1950,  end_year: 2014}
+  - {dataset: HadGEM3-GC31-MM,  project: CMIP6, exp: highresSST-present,  ensemble: r1i1p1f1, mip: Amon, grid: gn, start_year: 1950,  end_year: 2014}
+  - {dataset: MPI-ESM1-2-XR,  institute: MPI-M, project: CMIP6, exp: highresSST-present,  ensemble: r1i1p1f1, mip: Amon, grid: gn, start_year: 1950,  end_year: 2014}
+  - {dataset: MPI-ESM1-2-HR,  institute: MPI-M, project: CMIP6, exp: highresSST-present,  ensemble: r1i1p1f1, mip: Amon, grid: gn, start_year: 1950,  end_year: 2014}
+
 
 preprocessors:
   annual_mean:
