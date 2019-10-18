@@ -4,52 +4,235 @@
 documentation:
   description: |
     Recipe pre-processes ERA-Interim reanalyses files for use in the PCR-GLOBWB hydrological model.
-
     PCR-GLOBWB (PCRaster Global Water Balance) is a large-scale hydrological model intended for global
     to regional studies and developed at the Department of Physical Geography, Utrecht University (Netherlands).
-
-  authors: ['aerts_jerom', 'andela_bouwe', 'drost_niels', 'camphuijsen_jaro', 'kalverla_peter']
+  authors: ['aerts_jerom', 'andela_bouwe', 'drost_niels', 'camphuijsen_jaro']
   projects: ['ewatercycle']
   references: ['acknow_project', 'sutanudjaja2018gmd']
 
 
 preprocessors:
-  preprocessor: &general
+
+#Extract regions
+  preprocessor: &doring
+    extract_region:
+      start_longitude: 18 
+      end_longitude: 21
+      start_latitude: -33
+      end_latitude: -31
+  preprocessor: &greatkei
+    extract_region:
+      start_longitude: 26
+      end_longitude: 29
+      start_latitude: -33
+      end_latitude: -31
+  preprocessor: &merrimack
+    extract_region:
+      start_longitude: -73
+      end_longitude: -70
+      start_latitude: 42
+      end_latitude: 45
+  preprocessor: &meuse
+    extract_region:
+      start_longitude: 3 
+      end_longitude: 7
+      start_latitude: 47
+      end_latitude: 52
+  preprocessor: &rhine
+    extract_region:
+      start_longitude: 4
+      end_longitude: 12
+      start_latitude: 46
+      end_latitude: 53
+  preprocessor: &savannah
+    extract_region: 
+      start_longitude: -84
+      end_longitude: -80
+      start_latitude: 31
+      end_latitude: 36
+      
+#Define grid
+  preprocessor: &era5_grid
     regrid:
-      target_grid: 0.25x0.25
+      target_grid: 0.25 x 0.25 # Replace this by ERA5, does not work with ESMValTool build
       lon_offset: true
       lat_offset: true
-      scheme: linear
-    extract_time:
-      end_year: 2000
-      end_month: 1
-      end_day: 3
+      scheme: linear          
+  preprocessor: &era_interim_grid
+    regrid:
+      target_grid: 0.50 x 0.50 # Replace this by ERA-Interim, does not work with ESMValTool build
+      lon_offset: true
+      lat_offset: true
+      scheme: linear     
 
-  daily_water:
-    <<: *general
-    convert_units:
-      units: kg m-2 d-1
-  daily_temperature:
-    <<: *general
-    convert_units:
-      units: degC
-
-  hourly_water:
-    <<: *general
+# Convert time and units          
+  preprocessor: &hourly_water 
     convert_units:
       units: kg m-2 h-1
     daily_statistics:
       operator: sum
-
-  hourly_temperature:
-    <<: *general
+  preprocessor: &hourly_temperature
     convert_units:
       units: degC
     daily_statistics:
-      operator: mean
+      operator: mean  
+  preprocessor: &daily_water
+    convert_units:
+      units: kg m-2 d-1
+  preprocessor: &daily_temperature
+    convert_units:
+      units: degC
+
+# Doring Basin    
+  doring_era5_grid_hourly_water:
+    <<: *doring
+    <<: *era5_grid
+    <<: *hourly_water         
+  doring_era5_grid_hourly_temperature:
+    <<: *doring
+    <<: *era5_grid
+    <<: *hourly_temperature
+  doring_era_interim_grid_daily_water:
+    <<: *doring
+    <<: *era_interim_grid
+    <<: *daily_water         
+  doring_era_interim_grid_daily_temperature:
+    <<: *doring
+    <<: *era_interim_grid
+    <<: *daily_temperature
+     
+# Great Kei Basin    
+  greatkei_era5_grid_hourly_water:
+    <<: *greatkei
+    <<: *era5_grid
+    <<: *hourly_water         
+  greatkei_era5_grid_hourly_temperature:
+    <<: *greatkei
+    <<: *era5_grid
+    <<: *hourly_temperature
+  greatkei_era_interim_grid_daily_water:
+    <<: *greatkei
+    <<: *era_interim_grid
+    <<: *daily_water         
+  greatkei_era_interim_grid_daily_temperature:
+    <<: *greatkei
+    <<: *era_interim_grid
+    <<: *daily_temperature
+
+# Merrimack Basin    
+  merrimack_era5_grid_hourly_water:
+    <<: *merrimack
+    <<: *era5_grid
+    <<: *hourly_water         
+  merrimack_era5_grid_hourly_temperature:
+    <<: *merrimack
+    <<: *era5_grid
+    <<: *hourly_temperature
+  merrimack_era_interim_grid_daily_water:
+    <<: *merrimack
+    <<: *era_interim_grid
+    <<: *daily_water         
+  merrimack_era_interim_grid_daily_temperature:
+    <<: *merrimack
+    <<: *era_interim_grid
+    <<: *daily_temperature
+
+# Meuse Basin    
+  meuse_era5_grid_hourly_water:
+    <<: *meuse
+    <<: *era5_grid
+    <<: *hourly_water         
+  meuse_era5_grid_hourly_temperature:
+    <<: *meuse
+    <<: *era5_grid
+    <<: *hourly_temperature
+  meuse_era_interim_grid_daily_water:
+    <<: *meuse
+    <<: *era_interim_grid
+    <<: *daily_water         
+  meuse_era_interim_grid_daily_temperature:
+    <<: *meuse
+    <<: *era_interim_grid
+    <<: *daily_temperature
+
+# Rhine Basin    
+  rhine_era5_grid_hourly_water:
+    <<: *rhine
+    <<: *era5_grid
+    <<: *hourly_water         
+  rhine_era5_grid_hourly_temperature:
+    <<: *rhine
+    <<: *era5_grid
+    <<: *hourly_temperature
+  rhine_era_interim_grid_daily_water:
+    <<: *rhine
+    <<: *era_interim_grid
+    <<: *daily_water         
+  rhine_era_interim_grid_daily_temperature:
+    <<: *rhine
+    <<: *era_interim_grid
+    <<: *daily_temperature
+
+# Savannah Basin    
+  savannah_era5_grid_hourly_water:
+    <<: *savannah
+    <<: *era5_grid
+    <<: *hourly_water         
+  savannah_era5_grid_hourly_temperature:
+    <<: *savannah
+    <<: *era5_grid
+    <<: *hourly_temperature
+  savannah_era_interim_grid_daily_water:
+    <<: *savannah
+    <<: *era_interim_grid
+    <<: *daily_water         
+  savannah_era_interim_grid_daily_temperature:
+    <<: *savannah
+    <<: *era_interim_grid
+    <<: *daily_temperature
 
 diagnostics:
-  diagnostic_daily:
+#Doring Basin
+  doring_diagnostic_daily:
+    description: PCR-GLOBWB input preprocessor for daily data
+    additional_datasets:
+      - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
+    variables:
+      pr:
+        mip: day
+        start_year: 2000
+        end_year: 2000
+        preprocessor: doring_era5_grid_hourly_water
+      tas:
+        mip: day
+        start_year: 2000
+        end_year: 2000
+        preprocessor: doring_era5_grid_hourly_temperature
+    scripts:
+      script:
+        script: hydrology/pcrglobwb.py
+        
+  doring_diagnostic_hourly:
+    description: PCR-GLOBWB  input preprocesor for hourly data
+    additional_datasets:
+      - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1}
+    variables:
+      pr:
+        mip: E1hr
+        start_year: 2000
+        end_year: 2000
+        preprocessor: doring_era_interim_grid_daily_water
+      tas:
+        mip: E1hr
+        start_year: 2000
+        end_year: 2000
+        preprocessor: doring_era_interim_grid_daily_temperature
+    scripts:
+      script:
+        script: hydrology/pcrglobwb.py
+
+#Great Kei Basin        
+  greatkei_diagnostic_daily:
     description: PCR-GLOBWB input preprocessor for daily data
     additional_datasets:
       - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
@@ -58,15 +241,15 @@ diagnostics:
         mip: day
         start_year: 2000
         end_year: 2000
-        preprocessor: daily_water
+        preprocessor: greatkei_era5_grid_hourly_water
       tas:
         <<: *var_daily
-        preprocessor: daily_temperature
+        preprocessor: greatkei_era5_grid_hourly_temperature
     scripts:
       script:
         script: hydrology/pcrglobwb.py
 
-  diagnostic_hourly:
+  greatkei_diagnostic_hourly:
     description: PCR-GLOBWB  input preprocesor for hourly data
     additional_datasets:
       - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1}
@@ -75,10 +258,171 @@ diagnostics:
         mip: E1hr
         start_year: 2000
         end_year: 2000
-        preprocessor: hourly_water
+        preprocessor: greatkei_era_interim_grid_daily_water
       tas:
         <<: *var_hourly
-        preprocessor: hourly_temperature
+        preprocessor: greatkei_era_interim_grid_daily_temperature
     scripts:
       script:
         script: hydrology/pcrglobwb.py
+        
+#Merrimack Basin
+  merrimack_diagnostic_daily:
+    description: PCR-GLOBWB input preprocessor for daily data
+    additional_datasets:
+      - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
+    variables:
+      pr:
+        mip: day
+        start_year: 2000
+        end_year: 2000
+        preprocessor: merrimack_era5_grid_hourly_water
+      tas:
+        mip: day
+        start_year: 2000
+        end_year: 2000
+        preprocessor: merrimack_era5_grid_hourly_temperature
+    scripts:
+      script:
+        script: /lustre1/0/wtrcycle/esmvaltool/ESMValTool/esmvaltool/diag_scripts/hydrology/pcrglobwb.py
+        
+  merrimack_diagnostic_hourly:
+    description: PCR-GLOBWB  input preprocesor for hourly data
+    additional_datasets:
+      - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1}
+    variables:
+      pr:
+        mip: E1hr
+        start_year: 2000
+        end_year: 2000
+        preprocessor: merrimack_era_interim_grid_daily_water
+      tas:
+        mip: E1hr
+        start_year: 2000
+        end_year: 2000
+        preprocessor: merrimack_era_interim_grid_daily_temperature
+    scripts:
+      script:
+        script: hydrology/pcrglobwb.py
+
+#Meuse Basin
+  meuse_diagnostic_daily:
+    description: PCR-GLOBWB input preprocessor for daily data
+    additional_datasets:
+      - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
+    variables:
+      pr:
+        mip: day
+        start_year: 2000
+        end_year: 2000
+        preprocessor: meuse_era5_grid_hourly_water
+      tas:
+        mip: day
+        start_year: 2000
+        end_year: 2000
+        preprocessor: meuse_era5_grid_hourly_temperature
+    scripts:
+      script:
+        script: hydrology/pcrglobwb.py
+        
+  meuse_diagnostic_hourly:
+    description: PCR-GLOBWB  input preprocesor for hourly data
+    additional_datasets:
+      - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1}
+    variables:
+      pr:
+        mip: E1hr
+        start_year: 2000
+        end_year: 2000
+        preprocessor: meuse_era_interim_grid_daily_water
+      tas:
+        mip: E1hr
+        start_year: 2000
+        end_year: 2000
+        preprocessor: meuse_era_interim_grid_daily_temperature
+    scripts:
+      script:
+        script: hydrology/pcrglobwb.py
+
+#Rhine Basin
+  rhine_diagnostic_daily:
+    description: PCR-GLOBWB input preprocessor for daily data
+    additional_datasets:
+      - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
+    variables:
+      pr:
+        mip: day
+        start_year: 2000
+        end_year: 2000
+        preprocessor: rhine_era5_grid_hourly_water
+      tas:
+        mip: day
+        start_year: 2000
+        end_year: 2000
+        preprocessor: rhine_era5_grid_hourly_temperature
+    scripts:
+      script:
+        script: hydrology/pcrglobwb.py
+        
+  rhine_diagnostic_hourly:
+    description: PCR-GLOBWB  input preprocesor for hourly data
+    additional_datasets:
+      - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1}
+    variables:
+      pr:
+        mip: E1hr
+        start_year: 2000
+        end_year: 2000
+        preprocessor: rhine_era_interim_grid_daily_water
+      tas:
+        mip: E1hr
+        start_year: 2000
+        end_year: 2000
+        preprocessor: rhine_era_interim_grid_daily_temperature
+    scripts:
+      script:
+        script: hydrology/pcrglobwb.py
+
+#Savannah Basin
+  savannah_diagnostic_daily:
+    description: PCR-GLOBWB input preprocessor for daily data
+    additional_datasets:
+      - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
+    variables:
+      pr:
+        mip: day
+        start_year: 2000
+        end_year: 2000
+        preprocessor: savannah_era5_grid_hourly_water
+      tas:
+        mip: day
+        start_year: 2000
+        end_year: 2000
+        preprocessor: savannah_era5_grid_hourly_temperature
+    scripts:
+      script:
+        script: hydrology/pcrglobwb.py
+        
+  savannah_diagnostic_hourly:
+    description: PCR-GLOBWB  input preprocesor for hourly data
+    additional_datasets:
+      - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1}
+    variables:
+      pr:
+        mip: E1hr
+        start_year: 2000
+        end_year: 2000
+        preprocessor: savannah_era_interim_grid_daily_water
+      tas:
+        mip: E1hr
+        start_year: 2000
+        end_year: 2000
+        preprocessor: savannah_era_interim_grid_daily_temperature
+    scripts:
+      script:
+        script: hydrology/pcrglobwb.py
+        
+        
+        
+        
+        
