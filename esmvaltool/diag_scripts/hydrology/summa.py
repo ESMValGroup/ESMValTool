@@ -42,9 +42,10 @@ def main(cfg):
     grouped_input_data = group_metadata(input_data,
                                         'standard_name',
                                         sort='dataset')
-    cube_list_all_vars = iris.cube.CubeList()
+    variables = {}
     for standard_name in grouped_input_data:
         # get the dataset name to use in save function later
+        # TODO add support multiple dataset in one diagnostic
         dataset = grouped_input_data[standard_name][0]['alias']
         logger.info("Processing variable %s", standard_name)
         cube_list_all_years = iris.cube.CubeList()
@@ -54,7 +55,8 @@ def main(cfg):
             cube = iris.load_cube(input_file)
             cube_list_all_years.append(cube)
         cube_all_years = cube_list_all_years.concatenate_cube()
-        cube_list_all_vars.append(cube_all_years)
+        key = grouped_input_data[standard_name][0]['short_name']
+        variables[key] = cube_all_years
 
         # Do stuff
         # The data need to be aggregated for each HRU (subcatchment)
@@ -79,27 +81,27 @@ def main(cfg):
         # example output file can also be found on jupyter server.
 
     # Extract wind component variables from the cube list
-    for cube in cube_list_all_vars:
-        if cube.var_name == 'uas':
-            u_component = cube
-        if cube.var_name == 'vas':
-            v_component = cube
-        else:
-            pass
+    u_component = variables['uas']
+    v_component = variables['vas']
 
     # compute wind speed and convert to 2m
     wind_speed = compute_windspeed(u_component, v_component)
     wind_speed_2m = logarithmic_profile(wind_speed, 10)
 
     # Add wind speed to cube list and remove old vars
-    cube_list_all_vars.append(wind_speed_2m)
-    for cube in cube_list_all_vars:
-        if cube.var_name in ['uas', 'vas']:
-            cube_list_all_vars.remove(cube)
+    variables[wind_speed_2m.var_name] = wind_speed_2m
+    # for key in variables.items():
+    #     if key in {'uas', 'vas'}:
+    #         variables.pop(key)
 
     # TODO: add specific humidity calculation
     # specific_humidity = compute_specific_humidity(dewpoint_temperature, surface_pressure)
 
+    # Select the desired variables
+    print('#######################')
+    cube_list_all_vars = iris.cube.CubeList()
+    for key in variables:
+        cube_list_all_vars.append(variables[key])
     # Save data # check the dataset!
     basename = dataset + '_summa'
     output_file = get_diagnostic_filename(basename, cfg)
@@ -118,6 +120,7 @@ def compute_windspeed(u_component, v_component):
     wind_speed.var_name = 'windspd'
     return wind_speed
 
+
 def logarithmic_profile(windspeed, measurement_height):
     """ Convert wind speed from input height to 2m with logarithmic profile """
     warnings.warn('This version of the logarithmic wind profile is violating\
@@ -125,6 +128,7 @@ def logarithmic_profile(windspeed, measurement_height):
                   a more general formula incorporating friction velocity or\
                   roughness length')
     return windspeed * 4.87/np.log(67.8*measurement_height-5.42)
+
 
 def compute_specific_humidity(dewpoint_temperature, surface_pressure):
     # see e.g. https://github.com/Unidata/MetPy/issues/791
