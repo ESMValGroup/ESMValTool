@@ -49,11 +49,11 @@
 # Caveats
 #
 # Modification history
-#    20181001-A_arno_en: converted to latest v2.0
-#    20180302-A_arno_en: converted to ESMValTool2
-#    20171206-A_arno_en: modularized version accepting climdex indices
-#    20171010-A_arno_en: modularized version
-#    20170901-A_arno_en: 1st github version
+#    20181001-arnone_enrico: converted to latest v2.0
+#    20180302-arnone_enrico: converted to ESMValTool2
+#    20171206-arnone_enrico: modularized version accepting climdex indices
+#    20171010-arnone_enrico: modularized version
+#    20170901-arnone_enrico: 1st github version
 #
 # ############################################################################
 
