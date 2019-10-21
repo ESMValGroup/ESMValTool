@@ -66,3 +66,14 @@ diagnostics:
     scripts:
       albedolandcover:
         script: landcover/albedolandcover.py
+        params:
+          latsize_BB: 5
+          lonsize_BB: 5
+          threshold_sumpred: 90
+          mingc: 3
+          minnum_gc_bb: 15
+          thres_fsnow: 0.1
+          snowfree: False
+          lc1_class: ['treeFrac']
+          lc2_class: ['shrubFrac']
+          lc3_class: ['grassFrac', 'cropFrac']

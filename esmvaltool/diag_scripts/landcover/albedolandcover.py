@@ -1,4 +1,5 @@
 """Landcover analysis plots.
+
 ###############################################################
 landcover/landcover.py
 Authors ESMValToolV1 Version
@@ -18,7 +19,6 @@ Projects
 """
 
 
-
 import copy
 import glob
 import itertools as it
@@ -27,7 +27,7 @@ import os
 import sys
 import warnings
 
-from cartopy import crs #  This line causes a segmentation fault in prospector
+from cartopy import crs  # This line causes a segmentation fault in prospector
 import cartopy.feature as cfeature
 import iris
 import matplotlib.pyplot as plt
@@ -50,18 +50,18 @@ iris.FUTURE.netcdf_promote = True
 warnings.filterwarnings("ignore", category=FutureWarning)
 
 
-def _add_masks_albedolandcover(model_data, this_models_xxfracs, dia_cfg, cfg):
+def _add_masks_albedolandcover(model_data, this_models_xxfracs, cfg):
 
     total_frac = sum([model_data[key] for key in this_models_xxfracs])
 
     # Mask out regions where total_frac is too low
-    fracmask = (total_frac.data.data < dia_cfg['threshold_sumpred'])
+    fracmask = (total_frac.data.data < cfg['params']['threshold_sumpred'])
 
     # Start masking operations. Remember that a True means masked out.
     basemask = model_data['snc'].data.mask
 
     # Mask out regions where there is little snow
-    snowmask = model_data['snc'].data.data < dia_cfg['thres_fsnow']
+    snowmask = model_data['snc'].data.data < cfg['params']['thres_fsnow']
     snowfreemask = ~snowmask
 
     # Update the masks
@@ -96,7 +96,7 @@ def _add_masks_albedolandcover(model_data, this_models_xxfracs, dia_cfg, cfg):
                 + cfg['output_file_type'])
 
     # Distinguish between snowfree and snow areas
-    if dia_cfg['snowfree']:
+    if cfg['params']['snowfree']:
         mymask = copy.deepcopy(snowfreemask)
     else:
         mymask = copy.deepcopy(snowmask)
@@ -107,27 +107,29 @@ def _add_masks_albedolandcover(model_data, this_models_xxfracs, dia_cfg, cfg):
     return model_data
 
 
-def _get_reconstructed_albedos(model_data, dia_cfg):
+def _get_reconstructed_albedos(model_data, cfg):
     alb_lc = np.zeros((3, ) + model_data['alb'].shape)
     alb_lc[...] = np.nan
 
     # Now loop over these arrays and do the math
     for (indices, maskbool) in np.ndenumerate(model_data['alb'].data.mask):
-        if not maskbool: # Only if not masked we need to check neighbourhood
+        if not maskbool:  # Only if not masked we need to check neighbourhood
             i, j = indices
             # Create the neighbourhood as bbox
-            islice = slice(int(i - (dia_cfg['lonsize_BB'] - 1) / 2),
-                           int(i + (dia_cfg['lonsize_BB'] - 1) / 2 + 1))
-            jslice = slice(int(j - (dia_cfg['latsize_BB'] - 1) / 2),
-                           int(j + (dia_cfg['latsize_BB'] - 1) / 2 + 1))
+            islice = slice(int(i - (cfg['params']['lonsize_BB'] - 1) / 2),
+                           int(i + (cfg['params']['lonsize_BB'] - 1) / 2 + 1))
+            jslice = slice(int(j - (cfg['params']['latsize_BB'] - 1) / 2),
+                           int(j + (cfg['params']['latsize_BB'] - 1) / 2 + 1))
             bbox_mask = model_data['alb'].data.mask[islice, jslice]
 
             # Check if there are enough valid data points
             # in the neighbourhood bbox
-            if np.sum((~bbox_mask).astype(int)) > dia_cfg['minnum_gc_bb']:
+            if (np.sum((~bbox_mask).astype(int)) >
+                    cfg['params']['minnum_gc_bb']):
                 lc_logical = np.full((3, ), True)
-                lc_classes = [dia_cfg['lc1_class'], dia_cfg['lc2_class'],
-                              dia_cfg['lc3_class']]
+                lc_classes = [cfg['params']['lc1_class'],
+                              cfg['params']['lc2_class'],
+                              cfg['params']['lc3_class']]
                 lc_data = []
                 # Loop over lc_classes
                 for i_0 in range(3):
@@ -141,7 +143,7 @@ def _get_reconstructed_albedos(model_data, dia_cfg):
                                   for varkey in current_class])
                     # Now check thresholds
                     if (np.var(lc_sum) > 0. and
-                            len(lc_sum) >= dia_cfg['mingc']):
+                            len(lc_sum) >= cfg['params']['mingc']):
                         lc_data.append(lc_sum)
                         lc_logical[i_0] = True
                     else:
@@ -172,17 +174,17 @@ def _get_reconstructed_albedos(model_data, dia_cfg):
     return alb_lc
 
 
-def _write_albedochanges_to_disk(alb_lc, dia_cfg,
-                                 template_cube, datadict, cfg):
+def _write_albedochanges_to_disk(alb_lc, template_cube,
+                                 datadict, cfg):
     transition_cube = template_cube
     # Remove attributes that are not applicable to derived data
     for att in ['comment', 'modeling_realm', 'table_id']:
         transition_cube.attributes.pop(att)
     result_dict = {'lc1': alb_lc[0, :, :], 'lc2': alb_lc[1, :, :],
                    'lc3': alb_lc[2, :, :]}
-    names = {'lc1': '-'.join(dia_cfg['lc1_class']),
-             'lc2': '-'.join(dia_cfg['lc2_class']),
-             'lc3': '-'.join(dia_cfg['lc3_class'])}
+    names = {'lc1': '-'.join(cfg['params']['lc1_class']),
+             'lc2': '-'.join(cfg['params']['lc2_class']),
+             'lc3': '-'.join(cfg['params']['lc3_class'])}
     for ikey, jkey in it.product(result_dict.keys(), result_dict.keys()):
         if not ikey == jkey:
             # Take out Frac for readability
@@ -208,7 +210,7 @@ def _write_albedochanges_to_disk(alb_lc, dia_cfg,
             # Create provenance record
             # Create caption
             caption = transition_cube.attributes['plottitle'] + ' '\
-                      + transition_cube.attributes['plotsuptitle']
+                + transition_cube.attributes['plotsuptitle']
             prov_rec = {
                 'caption': caption,
                 'statistics': ['other'],
@@ -218,13 +220,12 @@ def _write_albedochanges_to_disk(alb_lc, dia_cfg,
                     'lejeune_quentin',
                     'crezee_bas',
                 ],
-                'references': [
+                'project': [
                     'crescendo',
                 ],
             }
             with ProvenanceLogger(cfg) as provenance_logger:
                 provenance_logger.log(savename_nc, prov_rec)
-
 
 
 def _plot_cube(cube, cfg):
@@ -245,7 +246,7 @@ def _plot_cube(cube, cfg):
     plt.gca().coastlines()
     # Get right path for saving plots from the cfg dictionary.
     basename = cube.attributes['model_id'] + '_'\
-               + cube.name().replace(' ', '_')
+        + cube.name().replace(' ', '_')
     savename_fig = get_plot_filename(basename, cfg)
     logger.info("Saving figure as: %s", savename_fig)
     plt.savefig(savename_fig)
@@ -260,20 +261,19 @@ def main(cfg):
         cfg - nested dictionary of metadata
 
     """
-    # Diagnostics cfg #TODO read from recipe
-    dia_cfg = {
-        'latsize_BB': 5,
-        'lonsize_BB': 5,
-        'threshold_sumpred': 90,
-        'mingc': 3,
-        'minnum_gc_bb': 15,
-        'thres_fsnow': 0.1,
-        'snowfree': False,
-        'lc1_class': ['treeFrac'],
-        'lc2_class': ['shrubFrac'],
-        'lc3_class': ['grassFrac', 'cropFrac']
-    }
-
+#
+# {
+#        'latsize_BB': 5,
+#        'lonsize_BB': 5,
+#        'threshold_sumpred': 90,
+#        'mingc': 3,
+#        'minnum_gc_bb': 15,
+#        'thres_fsnow': 0.1,
+#        'snowfree': False,
+#        'lc1_class': ['treeFrac'],
+#        'lc2_class': ['shrubFrac'],
+#        'lc3_class': ['grassFrac', 'cropFrac']
+#    }
     # assemble the data dictionary keyed by dataset name
     # this makes use of the handy group_metadata function that
     # orders the data by 'dataset'; the resulting dictionary is
@@ -311,9 +311,9 @@ def main(cfg):
         # Define the different lc classes
         this_models_xxfracs = [key for key in datadict if 'Frac' in key]
         # Note that lc3 class depends on the classes available for this model
-        lc3_class = dia_cfg['lc3_class']
-        dia_cfg['lc3_class'] = [key for key in this_models_xxfracs
-                                if key in lc3_class]
+        lc3_class = cfg['params']['lc3_class']
+        cfg['params']['lc3_class'] = [key for key in this_models_xxfracs
+                                      if key in lc3_class]
 
         # Load all data
         model_data = {fracKey: iris.load_cube(datadict[fracKey]['filename'])
@@ -328,13 +328,13 @@ def main(cfg):
         # Add the appropriate masks to model_data
         model_data = _add_masks_albedolandcover(model_data,
                                                 this_models_xxfracs,
-                                                dia_cfg, cfg)
+                                                cfg)
 
         # Now get albedo change due to landcover change
-        alb_lc = _get_reconstructed_albedos(model_data, dia_cfg)
+        alb_lc = _get_reconstructed_albedos(model_data, cfg)
 
         # Calculate differences between them
-        _write_albedochanges_to_disk(alb_lc, dia_cfg, model_data['snc'],
+        _write_albedochanges_to_disk(alb_lc, model_data['snc'],
                                      datadict, cfg)
 
         # Loop through all nc files and plot them
