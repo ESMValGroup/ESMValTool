@@ -25,13 +25,12 @@ def add_height2m(cube):
 def add_scalar_height_coord(cube, height=2.):
     """Add scalar coordinate 'height' with value of `height`m."""
     logger.info("Adding height coordinate (%sm)", height)
-    height_coord = iris.coords.AuxCoord(
-        height,
-        var_name='height',
-        standard_name='height',
-        long_name='height',
-        units=Unit('m'),
-        attributes={'positive': 'up'})
+    height_coord = iris.coords.AuxCoord(height,
+                                        var_name='height',
+                                        standard_name='height',
+                                        long_name='height',
+                                        units=Unit('m'),
+                                        attributes={'positive': 'up'})
     cube.add_aux_coord(height_coord, ())
 
 
@@ -131,8 +130,8 @@ def flip_dim_coord(cube, coord_name):
 
 def read_cmor_config(dataset):
     """Read the associated dataset-specific config file."""
-    reg_path = os.path.join(
-        os.path.dirname(__file__), 'cmor_config', dataset + '.yml')
+    reg_path = os.path.join(os.path.dirname(__file__), 'cmor_config',
+                            dataset + '.yml')
     with open(reg_path, 'r') as file:
         cfg = yaml.safe_load(file)
     cfg['cmor_table'] = \
@@ -145,6 +144,23 @@ def read_cmor_config(dataset):
 def save_variable(cube, var, outdir, attrs, **kwargs):
     """Saver function."""
     # CMOR standard
+    if cube.dtype != np.float32:
+        logger.info("Converting data type of data from '%s' to 'float32'",
+                    cube.dtype)
+        cube.data = cube.core_data().astype(np.float32, casting='same_kind')
+    for coord in cube.coords():
+        if coord.dtype != np.float64:
+            logger.info(
+                "Converting data type of coordinate points of '%s' from '%s' "
+                "to 'float64'", coord.name(), coord.dtype)
+            coord.points = coord.core_points().astype(np.float64,
+                                                      casting='same_kind')
+        if coord.has_bounds() and coord.bounds_dtype != np.float64:
+            logger.info(
+                "Converting data type of coordinate bounds of '%s' from '%s' "
+                "to 'float64'", coord.name(), coord.bounds_dtype)
+            coord.bounds = coord.core_bounds().astype(np.float64,
+                                                      casting='same_kind')
     try:
         time = cube.coord('time')
     except iris.exceptions.CoordinateNotFoundError:
