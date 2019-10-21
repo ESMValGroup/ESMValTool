@@ -169,13 +169,7 @@ def _fix_frequency(cube, var):
             cube = daily_statistics(cube, 'min')
         elif cube.var_name in {'pr', 'rsds', 'hfds', 'evspsbl',
                                'rsdt', 'rss', 'prsn'}:
-            # Sum is not available in daily_statistics so call iris directly
-            if not cube.coords('day_of_year'):
-                iris.coord_categorisation.add_day_of_year(cube, 'time')
-            if not cube.coords('year'):
-                iris.coord_categorisation.add_year(cube, 'time')
-            cube = cube.aggregated_by(['day_of_year', 'year'],
-                                      iris.analysis.SUM)
+            cube = daily_statistics(cube, 'sum')
         else:
             cube = daily_statistics(cube, 'mean')
         # Remove daily statistics helpers
