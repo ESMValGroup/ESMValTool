@@ -1,4 +1,4 @@
-"""ESMValToo CMORizer for ERA-Interim data.
+"""ESMValTool CMORizer for ERA-Interim data.
 
 Tier
     Tier 3: restricted datasets (i.e., dataset which requires a registration
