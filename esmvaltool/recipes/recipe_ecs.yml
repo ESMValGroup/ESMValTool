@@ -90,24 +90,22 @@ CMIP6_RTNT: &cmip6_rtnt
   - {dataset: CNRM-CM6-1,      exp: abrupt-4xCO2, ensemble: r1i1p1f2, grid: gr,  start_year: 1850, end_year: 1999}
   - {dataset: CNRM-ESM2-1,     exp: piControl,    ensemble: r1i1p1f2, grid: gr,  start_year: 1850, end_year: 1999}
   - {dataset: CNRM-ESM2-1,     exp: abrupt-4xCO2, ensemble: r1i1p1f2, grid: gr,  start_year: 1850, end_year: 1999}
-  # Not enough years for abrupt-4xCO2
-  # - {dataset: E3SM-1-0,        exp: piControl,    ensemble: r1i1p1f1, grid: gr,  start_year: 1850, end_year: 1999}
-  # - {dataset: E3SM-1-0,        exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gr,  start_year: 1850, end_year: 1999}
+  - {dataset: E3SM-1-0,        exp: piControl,    ensemble: r1i1p1f1, grid: gr,  start_year:  101, end_year:  250}
+  - {dataset: E3SM-1-0,        exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gr,  start_year:    1, end_year:  150}
   # No abrupt-4xCO2
   # - {dataset: EC-Earth3,       exp: piControl,    ensemble: r1i1p1f1, grid: gr,  start_year: 1850, end_year: 1999}
   # - {dataset: EC-Earth3,       exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gr,  start_year: 1850, end_year: 1999}
   # Not enough years for abrupt-4xCO2
-  # - {dataset: EC-Earth3-Veg,   exp: piControl,    ensemble: r1i1p1f1, grid: gr,  start_year: 1850, end_year: 1999}
-  # - {dataset: EC-Earth3-Veg,   exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gr,  start_year: 1850, end_year: 1999}
+  - {dataset: EC-Earth3-Veg,   exp: piControl,    ensemble: r1i1p1f1, grid: gr,  start_year: 1850, end_year: 1999}
+  - {dataset: EC-Earth3-Veg,   exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gr,  start_year: 1850, end_year: 1999}
   # Only amip
   # - {dataset: FGOALS-f3-L,     exp: piControl,    ensemble: r1i1p1f1, grid: gr1, start_year:  151, end_year:  300}
   # - {dataset: FGOALS-f3-L,     exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gr1, start_year:    1, end_year:  150}
   # Wrong start year for piControl (must be 101)
   - {dataset: GFDL-CM4,        exp: piControl,    ensemble: r1i1p1f1, grid: gr1, start_year:  151, end_year:  300}
   - {dataset: GFDL-CM4,        exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gr1, start_year:    1, end_year:  150}
-  # No radiation data
-  # - {dataset: GFDL-ESM4,       exp: piControl,    ensemble: r1i1p1f1, grid: gr1, start_year:  101, end_year:  250}
-  # - {dataset: GFDL-ESM4,       exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gr1, start_year:    1, end_year:  150}
+  - {dataset: GFDL-ESM4,       exp: piControl,    ensemble: r1i1p1f1, grid: gr1, start_year:  101, end_year:  250}
+  - {dataset: GFDL-ESM4,       exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gr1, start_year:    1, end_year:  150}
   - {dataset: GISS-E2-1-G,     exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year: 4150, end_year: 4299}
   - {dataset: GISS-E2-1-G,     exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
   - {dataset: GISS-E2-1-H,     exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year: 3180, end_year: 3329}
@@ -128,9 +126,8 @@ CMIP6_RTNT: &cmip6_rtnt
   - {dataset: MPI-ESM1-2-HR,   exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
   - {dataset: MRI-ESM2-0,      exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
   - {dataset: MRI-ESM2-0,      exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
-  # No piControl
-  # - {dataset: NESM3,           exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
-  # - {dataset: NESM3,           exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
+  - {dataset: NESM3,           exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year:  550, end_year:  699}
+  - {dataset: NESM3,           exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
   # Issue #286 (manual copying was necessary)
   - {dataset: SAM0-UNICON,     exp: piControl,    ensemble: r1i1p1f1, grid: gn,  start_year:  274, end_year:  423}
   - {dataset: SAM0-UNICON,     exp: abrupt-4xCO2, ensemble: r1i1p1f1, grid: gn,  start_year: 1850, end_year: 1999}
