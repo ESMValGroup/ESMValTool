@@ -3,7 +3,6 @@ import logging
 from pathlib import Path
 import os
 
-# import dask.array as da
 import iris
 from esmvalcore import preprocessor as preproc
 
@@ -51,6 +50,8 @@ def lapse_rate_correction(height):
 
 def regrid_temperature(src_temp, src_height, target_height):
     """ Convert temperature to target grid with lapse rate correction """
+    #TODO: Fix issue to get rid of workaround
+
     src_dtemp = lapse_rate_correction(src_height)
 
     # src_slt = src_temp + dtemp
@@ -106,8 +107,14 @@ def main(cfg):
 
 
     # These keys are now available in all_vars:
-    # - air_temperature
-    # - precipitation_flux
+    # print('###########3')
+    # print(all_vars)
+    # > air_temperature
+    # > precipitation_flux
+    # > air_pressure_at_mean_sea_level
+    # > dew_point_temperature
+    # > surface_downwelling_shortwave_flux_in_air
+    # > toa_incoming_shortwave_flux
 
     # Interpolating precipitation to the target grid
     # Read the target cube, which contains target grid and target elevation
@@ -130,6 +137,7 @@ def main(cfg):
     tas = all_vars['air_temperature']
     tas_dem = regrid_temperature(tas, oro, dem)
 
+    ## Calculating
     # Save output
     iris.save(tas_dem, output_file, fill_value=1.e20)
 
@@ -141,6 +149,50 @@ def main(cfg):
     # - Compare output to prepared input during workshop
     # - Save the output files with correct variable- and file-names
     #   Output format: wflow_local_forcing_ERA5_Meuse_1990_2018.nc
+    # - Add provencance stuff again in the diagnostic
+
+def debruin_PET(t2m, msl, d2m, tp, ssrd, tisr):
+    """ Determine De Bruin (2016) reference evaporation. """
+    beta = 20 # empirical constant from De Bruin 2016 in W m-2
+    Cs = 110 # empirical constant from De Bruin 2016 in W m-2
+    pha = msl/100 # pressure in hPa ??? Replace by unit conversion/check
+    cp = 1005 # specific heat of dry air in J kg-1 K-1 (??)
+    epsilon = 0.622 # ratio of dry air over water vapour (mass/pressure) (WH06 eq 3.14)
+
+    esat = saturated_vapor_pressure(t2m)
+    delta_wvp = delta_wvp(t2m, esat)
+    lambda_ = latent_heat(t2m)
+    Gamma = (cp * pha)/(epsilon * lambda_)
+    net_rad_down = (1-0.23)*ssrd - Cs * ssrd / (tisr + 0.00001)
+    pot_evap = delta_wvp / (delta_wvp + Gamma) * net_rad_down + beta
+
+    # What are we checking here?
+    pot_evap = np.where(tisr == 0, 0, pot_evap) # no PET if there is no sunlight??
+    pot_evap = np.where((pot_evap/lambda_)*1000*100 > 0,(pot_evap/lambda_)*1000*100,0)
+    return pot_evap
+
+def saturated_vapor_pressure(temperature):
+    """ Calculate saturated vapor pressure according to Tetens' (??) formula """
+    #TODO: Check formula
+    #TODO: Add unit check (t2m should be in celcius??)
+    e0 = iris.coords.AuxCoord(6.112,
+        long_name='reference_vapor_pressure????',
+        units='hPa')
+    a = 17.67 # empirical constant 1  --> find source
+    b = 243.5 # empirical constant 2  --> find source
+    return e0*np.exp((a * temperature)/(temperature+b))
+
+def delta_wvp(temperature, esat):
+    """ Determine slope of water vapour pressure according to ..."""
+    a = 17.269 # empirical constant 1 --> find source
+    b = 243.5 # empirical constant 2  --> find source
+    return esat*(a/(temperature+b))*(1-(temperature/temperature + b))
+
+def latent_heat(temperature):
+    """ Latent heat of vaporization ??? """
+    #TODO: where does this formula come from?
+    #TODO: Add units to these constants: J kg-1 K-1 ???
+    return 2.502e6 - 2250 * t2m
 
 
 

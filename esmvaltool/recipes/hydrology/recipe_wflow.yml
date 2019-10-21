@@ -41,15 +41,15 @@ diagnostics:
       # evspsbl:  # this should be potentail evapo.. which doesn't exist.
       #   <<: *var_daily
       #   mip: Eday
-      # # If we want to compute potentail evaporation, we also need:
-      # psl: *var_daily
-      # rsds: *var_daily
-      # tdps:
-      #   <<: *var_daily
-      #   mip: Eday
-      # rsdt:
-      #   <<: *var_daily
-      #   mip: CFday
+      # If we want to compute potentail evaporation, we also need:
+      psl: *var_daily
+      rsds: *var_daily
+      tdps:
+        <<: *var_daily
+        mip: Eday
+      rsdt:
+        <<: *var_daily
+        mip: CFday
     scripts:
       script:
         script: hydrology/wflow.py
