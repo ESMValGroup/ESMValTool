@@ -49,9 +49,6 @@
 ;     inconsistencies as the missing value mask is similar for all datasets
 ;     and observations and coincides with the land-sea mask.
 ;
-;     TODO (really?!):
-;     Modifies input_file_info@dataset and input_file_info@project.
-;
 ; Modification history:
 ;     20180816_A-schl_ma: continued porting to v2.0.
 ;     20180619_A-wenz_sa: adopted script to v2.
@@ -83,11 +80,6 @@ load "$diag_scripts/shared/plot/style.ncl"
 load "$diag_scripts/shared/plot/xy_line.ncl"
 
 begin
-
-  print("AAA")
-  print(input_file_info@dataset)
-  print(input_file_info@project)
-  print("AAA")
 
   enter_msg(DIAG_SCRIPT, "")
 
@@ -775,10 +767,5 @@ begin
   end if
 
   leave_msg(DIAG_SCRIPT, "")
-
-  print("BBB")
-  print(input_file_info@dataset)
-  print(input_file_info@project)
-  print("BBB")
 
 end

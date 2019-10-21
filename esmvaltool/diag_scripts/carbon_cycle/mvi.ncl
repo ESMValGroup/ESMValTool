@@ -12,7 +12,7 @@
 ;
 ; Required diag_script_info attributes:
 ;     region: region to be averaged.
-;     ref_dataset: reference for the MVI calculation.
+;     reference_dataset: reference for the MVI calculation.
 ;
 ; Optional diag_script_info attributes:
 ;     mean_time_range: time period over which the mean is calculated (default:
@@ -210,6 +210,7 @@ begin
       all_data_yearly&year = all_years
       all_data_yearly&lat = data_var&lat
       all_data_yearly&lon = data_var&lon
+      all_data_yearly@_FillValue = 1.0e20
     end if
 
     ; Check lat and lon dimensions
@@ -269,7 +270,7 @@ begin
     data_ref = all_data_yearly(ref_idx, :, :, :)
   end if
   ref = dim_stddev_n(data_ref, 0)
-  ref = where(ref .ne. 0, ref, all_data_yearly@_FillValue)
+  ref = where(ref .ne. 0, ref, ref@_FillValue)
 
   ; Loop over datasets
   do idat = 0, DIM_DAT - 1
@@ -282,9 +283,7 @@ begin
       data_temp = all_data_yearly(idat, :, :, :)
     end if
     dataset = dim_stddev_n(data_temp, 0)
-
-    ; Prevents a division by 0
-    dataset = where(dataset .ne. 0, dataset, all_data_yearly@_FillValue)
+    dataset = where(dataset .ne. 0, dataset, dataset@_FillValue)
 
     ; Compute MVI
     all_data_mvi(idat, :, :) = (dataset / ref - ref / dataset) ^ 2
@@ -309,9 +308,6 @@ begin
     delete([/dataset, rc/])
   end do
   copy_VarAtts(all_data_yearly, all_data_trend)
-
-  ; Cap MVI (TODO: why?)
-  all_data_mvi = where(all_data_mvi .lt. 10, all_data_mvi, 50)
 
   ; Special case for lai:
   ; Since datasets have different land covers, all sparse vegetated points must
@@ -416,21 +412,21 @@ begin
     regional_mean@var = var0
     regional_mean@diag_script = DIAG_SCRIPT
     regional_mean@ncdf = new_path
-    ncdf_outfile = ncdf_write(regional_mean, new_path)
+    ncdf_outfile_mean = ncdf_write(regional_mean, new_path)
 
     ; Trend
     new_path = work_dir + "trend_" + var0 + ".nc"
     regional_trend@var = var0
     regional_trend@diag_script = DIAG_SCRIPT
     regional_trend@ncdf = new_path
-    ncdf_outfile = ncdf_write(regional_trend, new_path)
+    ncdf_outfile_trend = ncdf_write(regional_trend, new_path)
 
     ; MVI
     new_path = work_dir + "MVI_" + var0 + ".nc"
     regional_mvi@var = var0
     regional_mvi@diag_script = DIAG_SCRIPT
     regional_mvi@ncdf = new_path
-    ncdf_outfile = ncdf_write(regional_mvi, new_path)
+    ncdf_outfile_mvi = ncdf_write(regional_mvi, new_path)
   end if
 
   ; ---------------------------------------------------------------------------
@@ -482,38 +478,26 @@ begin
     delete(tmp)
 
     ; Draw a 3D scatterplot
-    data_arr@res_tiMainString = var0 + " - " + \
-      diag_script_info@region
+    plot_path = outfile + "." + file_type
+    data_arr@res_tiMainString = var0 + " - " + diag_script_info@region
     plot = scatterplot3D(wks, data_arr, var0, levs)
-    log_info("Wrote " + outfile + "." + file_type)
+    log_info("Wrote " + plot_path)
     draw(plot)
     frame(wks)
 
-    ; ; Add meta data (TODO)
-    ; climofiles = new(dimsizes(DATASETS) * DIM_VAR, \
-    ;                  string)
-    ; alltags = array_append_record(tags, region@DM_tag, 0)
-    ; alltags := array_append_record(alltags, \
-    ;                                (/"PT_scatter", "PT_zonal", "ST_mean", \
-    ;                                 "ST_trend", "ST_clim", "ST_var"/), 0)
-    ; caption =  "Scatterplot for multiyear average " + var0 + \
-    ;            " in x axis, its linear trend in y axis, and MVI." + \
-    ;            " Like Anav et al. Fig 1 bottom"
-    ; id = DIAG_SCRIPT
-    ; do n_var = 0, DIM_VAR - 1
-    ;    do idat = 0, dimsizes(DATASETS) - 1
-    ;     climofiles(n_var * dimsizes(DATASETS) + idat) = \
-    ;       interface_get_inpaths(idat) + "/" + \
-    ;       interface_get_infile(variables(n_var), field_types(n_var), idat)
-    ;   end do
-    ; end do
-    ; contrib_authors = (/"A-anav_al", "A-wenz_sa", "A-righ_ma", "A-schl_ma"/)
-
-    ; ESMValMD(outfile + "." + file_type, alltags, caption, id, variables, \
-    ;          DATASETS, climofiles, DIAG_SCRIPT, \
-    ;          contrib_authors)
-
-    ; delete([/alltags, caption, id, climofiles/])
+    ; Provenance tracking
+    caption =  ("Scatterplot for multiyear average " + var0 + " in x " + \
+                "axis, its linear trend in y axis, and MVI. Similar to " + \
+                "Anav et al. (2013) figure 1 (bottom).")
+    domains = diag_script_info@region
+    statistics = (/"mean", "trend", "mvi"/)
+    authors = (/"anav_alessandro", "wenzel_sabrina", "righi_mattia", \
+                "schlund_manuel"/)
+    plot_type = "scatter"
+    references = (/"anav13jclim"/)
+    ancestors = metadata_att_as_array(INFO0, "filename")
+    log_provenance(ncdf_outfile_mvi, plot_path, caption, statistics, domains, \
+                   plot_type, authors, references, ancestors)
     delete(data_arr)
   end if
 
