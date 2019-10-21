@@ -29,7 +29,7 @@ Notes
 
 
 Modification history
-   20190821-A_crez_ba: written.
+   20190821-A_crezee_bas: written.
 """
 
 import glob
@@ -73,7 +73,7 @@ def _cmorize_dataset(in_file, var, cfg, out_dir):
     cube = utils.fix_coords(cube)
 
     # The above command does not return bounds for longitude
-    # so explicitly get them here. 
+    # so explicitly get them here.
     cube.coord('longitude').guess_bounds()
 
     # Set correct names
