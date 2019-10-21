@@ -185,8 +185,6 @@ def _fix_frequency(cube, var):
                 for cell in cube.coord('time').cells()
             ]
         )
-        cube.coord('time').bounds = None
-        cube.coord('time').guess_bounds()
     return cube
 
 
@@ -269,6 +267,9 @@ def _extract_variable(in_file, var, cfg, out_dir):
 
     _fix_coordinates(cube, definition)
     cube = _fix_frequency(cube, var)
+
+    cube.coord('time').bounds = None
+    cube.coord('time').guess_bounds()
 
     # Convert units if required
     cube.convert_units(definition.units)
