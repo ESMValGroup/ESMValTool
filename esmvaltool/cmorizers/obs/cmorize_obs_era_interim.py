@@ -127,6 +127,8 @@ def _set_global_attributes(cube, attributes, definition):
 
 def _fix_coordinates(cube, definition):
     # Fix coordinates
+    # Make latitude increasing
+    cube = cube[:, ::-1, ...]
     # Add height coordinate to tas variable (required by the new backend)
     if 'height2m' in definition.dimensions:
         utils.add_scalar_height_coord(cube, 2.)
@@ -271,9 +273,6 @@ def _extract_variable(in_file, var, cfg, out_dir):
 
     # Convert units if required
     cube.convert_units(definition.units)
-
-    # Make latitude increasing
-    cube = cube[:, ::-1, ...]
 
     logger.info("Saving cube\n%s", cube)
     logger.info("Expected output size is %.1fGB",
