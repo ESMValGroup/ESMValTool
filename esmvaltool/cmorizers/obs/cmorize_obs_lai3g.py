@@ -10,7 +10,7 @@ Last access
     20190503
 
 Download and processing instructions
-    To obtain the data sets it is necessary to contanct Ranga B. Myneni
+    To obtain the data sets it is necessary to contact Ranga B. Myneni
     (Department of Earth and Environment, Boston University). See link above
     for more information.
 

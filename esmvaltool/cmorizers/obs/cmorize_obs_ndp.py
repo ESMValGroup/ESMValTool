@@ -106,8 +106,7 @@ def cmorization(in_dir, out_dir, cfg, _):
     """Cmorization func call."""
     glob_attrs = cfg['attributes']
     cmor_table = cfg['cmor_table']
-    filepath = os.path.join(in_dir, cfg['filename'])
-    tar_file = os.path.join(in_dir, filepath)
+    tar_file = os.path.join(in_dir, cfg['filename'])
     logger.info("Found input file '%s'", tar_file)
     file_dir = _extract_tar(tar_file, out_dir)
 
