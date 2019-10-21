@@ -95,7 +95,7 @@ logger = logging.getLogger(__name__)
 
 
 def _set_global_attributes(cube, attributes, definition):
-    # Set global attributes
+    """Set global attributes"""
     utils.set_global_atts(cube, attributes)
     # Here var_name is the raw era-interim name
     if cube.var_name in {'e', 'sf'}:
@@ -114,7 +114,7 @@ def _set_global_attributes(cube, attributes, definition):
     if cube.var_name in {'iews', 'inss'}:
         cube.attributes['positive'] = 'down'
     if cube.var_name in {'lsm', 'tcc'}:
-        # Change cloud cover units from fraction to percentage
+        # Change units from fraction to percentage
         cube.units = definition.units
         cube.data = cube.core_data() * 100.
     if cube.var_name in {'z'}:
@@ -129,7 +129,7 @@ def _fix_coordinates(cube, definition):
     # Fix coordinates
     # Make latitude increasing
     cube = cube[:, ::-1, ...]
-    # Add height coordinate to tas variable (required by the new backend)
+    # Add height coordinate
     if 'height2m' in definition.dimensions:
         utils.add_scalar_height_coord(cube, 2.)
     if 'height10m' in definition.dimensions:
@@ -196,14 +196,14 @@ def _get_files(in_dir, var):
     for in_file in var['files']:
         files_lst = sorted(list(Path(in_dir).glob(in_file)))
         for item in files_lst:
-            key = str(item.stem).split('_')[-1]
-            files_dict[key].append(item)
+            year = str(item.stem).split('_')[-1]
+            files_dict[year].append(item)
     # Check if files are complete
-    for key in files_dict.copy():
-        if len(files_dict[key]) != len(var['files']):
+    for year in files_dict.copy():
+        if len(files_dict[year]) != len(var['files']):
             logger.info("CMORizing %s at time '%s' needs '%s' input file/s",
-                        var['short_name'], key, len(var['files']))
-            files_dict.pop(key)
+                        var['short_name'], year, len(var['files']))
+            files_dict.pop(year)
     return files_dict
 
 
