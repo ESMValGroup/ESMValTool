@@ -74,6 +74,11 @@ Caveats
     therefore recommended to download the full timeseries and not just add
     new years to a previous version of the data.
 
+For further details on obtaining daily values from ERA-Interim,
+    see:
+    https://confluence.ecmwf.int/pages/viewpage.action?pageId=56658233
+    https://confluence.ecmwf.int/display/CKB/ERA-Interim%3A+How+to+calculate+daily+total+precipitation
+
 """
 from datetime import datetime, timedelta
 import logging
