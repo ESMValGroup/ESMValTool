@@ -46,6 +46,7 @@ requirements:
     - cartopy
     - cf-units
     - cython
+    - ecmwf-api-client
     - eofs
     - esmpy
     - esmvalcore>=2.0.0b2,<2.1
