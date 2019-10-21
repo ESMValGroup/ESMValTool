@@ -98,18 +98,18 @@ diagnostics:
         legend_year_outside: true
         sort: true
         styleset: CMIP5
-        region: Global
+        region: global
         mean_time_range: [1986, 2005]
         mvi_time_range: [1986, 2005]
       mvi_nh: &mvi_nh
         <<: *mvi_global
-        region: Northern Hemisphere
+        region: nh
       mvi_sh: &mvi_sh
         <<: *mvi_global
-        region: Southern Hemisphere
+        region: sh
       mvi_trop: &mvi_trop
         <<: *mvi_global
-        region: Tropics
+        region: trop
 
   diag_main_tas:
     description: Error bar, sasonal cycle and evolution plots for tas (Figure 1).
@@ -132,20 +132,20 @@ diagnostics:
         errorbar_plot: true
         mean_IAV_plot: true
         styleset: CMIP5
-        region: Global
+        region: global
         evolution_plot: true
         evolution_plot_volcanoes: true
         evolution_plot_ref_dataset: CRU
         evolution_plot_anomaly: true
       main_nh: &main_nh
         <<: *main_global
-        region: Northern Hemisphere
+        region: nh
       main_sh: &main_sh
         <<: *main_global
-        region: Southern Hemisphere
+        region: sh
       main_trop: &main_trop
         <<: *main_global
-        region: Tropics
+        region: trop
 
   diag_mvi_pr:
     description: MVI scatter plot for pr (Figure 2).
@@ -515,16 +515,16 @@ diagnostics:
   #       script: carbon_cycle/two_variables.ncl
   #       legend_year_outside: false
   #       styleset: CMIP5
-  #       region: Global
+  #       region: global
   #     scat_nh:
   #       <<: *scat_glob
-  #       region: Northern Hemisphere
+  #       region: nh
   #     scat_sh:
   #       <<: *scat_glob
-  #       region: Southern Hemisphere
+  #       region: sh
   #     scat_trop:
   #       <<: *scat_glob
-  #       region: Tropics
+  #       region: trop
 
   # diag_main_fgco2:
   #   description: Error bar, sasonal cycle and evolution plots for fgco2 (Figure 13, 14, 15).
@@ -606,19 +606,19 @@ diagnostics:
         script: perfmetrics/main.ncl
         plot_type: cycle_latlon
         time_avg: monthlyclim
-        region: Global
+        region: global
         plot_stddev: all
         legend_outside: false
         styleset: CMIP5
       cycle_nh: &cycle_nh
         <<: *cycle_global
-        region: Northern Hemisphere
+        region: nh
       cycle_sh: &cycle_sh
         <<: *cycle_global
-        region: Southern Hemisphere
+        region: sh
       cycle_trop: &cycle_trop
         <<: *cycle_global
-        region: Tropics
+        region: trop
       grading_global: &grading_global
         <<: *cycle_global
         draw_plots: true
@@ -627,13 +627,13 @@ diagnostics:
         normalization: [maximum]
       grading_nh: &grading_nh
         <<: *grading_global
-        region: Northern Hemisphere
+        region: nh
       grading_sh: &grading_sh
         <<: *grading_global
-        region: Southern Hemisphere
+        region: sh
       grading_trop: &grading_trop
         <<: *grading_global
-        region: Tropics
+        region: trop
 
   diag_grading_pr:
     <<: *diag_grading
