@@ -1,7 +1,7 @@
 .. _recipe_diurnal_temperature_index:
 
-Diurnal temperature variation indicator: Difference between Tmax and Tmin for a specific day
-============================================================================================
+Diurnal temperature range
+=========================
 
 Overview
 --------
@@ -23,7 +23,7 @@ Recipes are stored in recipes/
 
 Diagnostics are stored in diag_scripts/magic_bsc/
 
-* diurnal_temp_index.r : calculates the diaurnal temperature vulnerability index.
+* diurnal_temp_index.R : calculates the diaurnal temperature vulnerability index.
 
 
 User settings

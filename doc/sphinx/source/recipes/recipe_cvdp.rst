@@ -1,7 +1,7 @@
 .. _recipes_cvdp:
 
-The Climate Variability Diagnostics Package (CVDP)
-==================================================
+Climate Variability Diagnostics Package (CVDP)
+==============================================
 
 Overview
 --------

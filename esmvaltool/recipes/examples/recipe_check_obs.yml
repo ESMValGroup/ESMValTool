@@ -255,6 +255,21 @@ diagnostics:
     scripts: null
 
 
+  NSIDC-0116:
+    description: NSIDC-0116 check
+    variables:
+      usi:
+        fx_files: [areacello]
+      vsi:
+        fx_files: [areacello]
+    additional_datasets:
+      - {dataset: NSIDC-0116-nh, project: OBS, mip: day, tier: 3,
+         type: reanaly, version: "4.1", start_year: 1978, end_year: 2018}
+      - {dataset: NSIDC-0116-sh, project: OBS, tier: 3,
+         type: reanaly, version: "4.1", start_year: 1978, end_year: 2018}
+    scripts: null
+
+
   PATMOS-x:
     description: PATMOS-x check
     variables:
@@ -262,6 +277,19 @@ diagnostics:
     additional_datasets:
       - {dataset: PATMOS-x, project: OBS, mip: Amon, tier: 2,
          type: sat, version: NOAA, start_year: 1982, end_year: 2016}
+    scripts: null
+
+
+  PIOMAS:
+    description: PIOMAS
+    variables:
+      sithick:
+        mip: day
+      areacello:
+        mip: fx
+    additional_datasets:
+      - {dataset: PIOMAS, project: OBS, tier: 2,
+         type: reanaly, version: 2.1, start_year: 1979, end_year: 2018}
     scripts: null
 
 
@@ -505,6 +533,34 @@ diagnostics:
     scripts: null
 
 
+  HWSD:
+    description: HWSD check
+    variables:
+      areacella:
+        mip: fx
+      cSoil:
+        mip: Lmon
+      sftlf:
+        mip: fx
+    additional_datasets:
+      - {dataset: HWSD, project: OBS, tier: 3, type: reanaly, version: 1.2,
+         start_year: 2000, end_year: 2000}
+    scripts: null
+
+
+  JMA-TRANSCOM:
+    description: JMA-TRANSCOM check
+    variables:
+      nbp:
+        mip: Lmon
+      fgco2:
+        mip: Omon
+    additional_datasets:
+      - {dataset: JMA-TRANSCOM, project: OBS, tier: 3, type: reanaly,
+         version: 2018, start_year: 1985, end_year: 2016}
+    scripts: null
+
+
   LAI3g:
     description: LAI3g check
     variables:
@@ -558,6 +614,16 @@ diagnostics:
     scripts: null
 
 
+  NDP:
+    description: NDP check
+    variables:
+      cVeg:
+    additional_datasets:
+      - {dataset: NDP, project: OBS, tier: 3, mip: Lmon,
+         type: reanaly, version: 017b, start_year: 2000, end_year: 2000}
+    scripts: null
+
+
   NIWA-BS:
     description: NIWA-BS check
     variables:
@@ -567,7 +633,6 @@ diagnostics:
       - {dataset: NIWA-BS, project: OBS, mip: Amon, tier: 3,
          type: sat, version: v3.3, start_year: 1979, end_year: 2016}
     scripts: null
-
 
   UWisc:
     description: UWisc check

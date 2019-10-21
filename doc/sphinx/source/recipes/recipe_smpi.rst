@@ -1,7 +1,7 @@
 .. _recipes_smpi:
 
-Single Model Perfomance Index (SMPI)
-====================================
+Single Model Performance Index (SMPI)
+=====================================
 
 Overview
 --------
