@@ -209,11 +209,11 @@ def _get_files(in_dir, var):
 
 def _extract_variable(in_file, var, cfg, out_dir):
     if 'files' in var:
-        logger.info("CMORizing variable '%s' from input file/s '%s'",
-                    var['short_name'], [str(item) for item in in_file])
+        in_file_lst = [str(item) for item in in_file]
     else:
-        logger.info("CMORizing variable '%s' from input file/s '%s'",
-                    var['short_name'], in_file)
+        in_file_lst = in_file
+    logger.info("CMORizing variable '%s' from input file/s '%s'",
+                var['short_name'], in_file_lst)
     attributes = deepcopy(cfg['attributes'])
     attributes['mip'] = var['mip']
     cmor_table = CMOR_TABLES[attributes['project_id']]
@@ -251,7 +251,6 @@ def _extract_variable(in_file, var, cfg, out_dir):
                         cube = in_cube
                     else:
                         cube += in_cube
-                cube.var_name = var['short_name']
         else:
             cube = iris.load_cube(
                 str(in_file),
