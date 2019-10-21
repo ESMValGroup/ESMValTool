@@ -180,6 +180,8 @@ def _write_albedochanges_to_disk(alb_lc, template_cube,
     # Remove attributes that are not applicable to derived data
     for att in ['comment', 'modeling_realm', 'table_id']:
         transition_cube.attributes.pop(att)
+    # Set correct unit
+    transition_cube.units = '1'
     result_dict = {'lc1': alb_lc[0, :, :], 'lc2': alb_lc[1, :, :],
                    'lc3': alb_lc[2, :, :]}
     names = {'lc1': '-'.join(cfg['params']['lc1_class']),
