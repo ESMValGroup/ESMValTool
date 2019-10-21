@@ -7,8 +7,17 @@ documentation:
     - crezee_bas
     - lejeune_quentin
 
+
+CMIP6_landcover: &CMIP6_landcover
+  additional_datasets:
+    - {dataset: CESM2, project: CMIP6, grid: gn, exp: historical, ensemble: r1i1p1f1}
+
+CMIP5_landcover: &CMIP5_landcover
+  additional_datasets:
+    - {dataset: MPI-ESM-LR, project: CMIP5, ensemble: r1i1p1}
+
 preprocessors:
-  pp_cmip5:
+  pp_cmip:
     custom_order: true
     regrid:
       target_grid: 2x2
@@ -31,16 +40,13 @@ diagnostics:
     description: "Multiple linear regression between albedo and xxFrac"
     variables:
       treeFrac: &variable_settings
-        preprocessor: pp_cmip5
+        preprocessor: pp_cmip
         mip: Lmon
-        project: CMIP5
         exp: historical
-        ensemble: r1i1p1
         start_year: 2000
         end_year: 2004
         fx_files: [areacella]
-        additional_datasets:
-          - {dataset: MPI-ESM-LR}
+        <<: *CMIP6_landcover
       snc:
         <<: *variable_settings
         mip: LImon
@@ -55,8 +61,8 @@ diagnostics:
         <<: *variable_settings
       shrubFrac:
         <<: *variable_settings
-      pastureFrac:
-        <<: *variable_settings
+#      pastureFrac:
+#        <<: *variable_settings
       albDiffiTr13:
         preprocessor: pp_obs
         mip: Amon
