@@ -25,6 +25,7 @@ Recipes
    recipe_hyint
    recipe_hydrology
    recipe_landcover
+   recipe_anav13jclim
    recipe_miles
    recipe_modes_of_variability
    recipe_multimodel_products
