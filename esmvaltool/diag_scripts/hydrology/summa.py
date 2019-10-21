@@ -64,7 +64,17 @@ def logarithmic_profile(windspeed, measurement_height):
 
 def compute_specific_humidity(dewpoint_temperature, surface_pressure):
     # see e.g. https://github.com/Unidata/MetPy/issues/791
-    return
+    # TODO confirm this after teleco
+    d2m = dewpoint_temperature
+    airpres = surface_pressure
+    kelvin = 273.15
+    vapour_pressure_act = 611 * np.exp((17.76*(d2m-kelvin))/(d2m-29.65))
+    vapor_pressure = vapour_pressure_act /1000.
+    air_pressure = airpres /1000.
+    eps = 0.62196351
+    mix_rat = (eps * vapor_pressure) / (air_pressure - vapor_pressure)
+    spechum = mix_rat/ (1 + mix_rat)
+    return spechum
 
 
 def _fix_cube(input_dict):
@@ -78,6 +88,10 @@ def _fix_cube(input_dict):
             utils.add_scalar_height_coord(cube, 2.)
             cube.var_name = 'windspd'
             cube.standard_name = 'wind_speed'
+        if key in {'spechum'}:
+            cube.var_name = 'spechum'
+            cube.standard_name = 'specific_humidity'
+            cube.unit = 'g/g'
     return cube
 
 
@@ -150,7 +164,13 @@ def main(cfg):
     variables['windspd'] = _fix_cube(variables)
 
     # TODO: add specific humidity calculation
-    # specific_humidity = compute_specific_humidity(dewpoint_temperature, surface_pressure)
+    dewpoint_temperature = variables['tdps']
+    surface_pressure = variables['ps']
+    variables['spechum'] = compute_specific_humidity(dewpoint_temperature,
+                                                     surface_pressure)
+    # Fix cube attributes
+    # TODO check the attributes, avoid code duplication
+    variables['spechum'] = _fix_cube(variables)
 
     # Select and rename the desired variables
     variables = _rename_var(variables, output_var_name)
