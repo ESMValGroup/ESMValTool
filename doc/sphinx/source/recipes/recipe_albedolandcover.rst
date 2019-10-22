@@ -7,7 +7,7 @@ Landcover - Albedo
 Overview
 --------
 
-The diagnostic computes the relationship between landcover and albedo using a multiple linear regression technique.
+The diagnostic determines the coefficients of multiple linear regressions fitted between the albedo values and the tree, shrub, short vegetation (crops and grasses) fractions of each grid cell within spatially moving windows encompassing 5x5 model grid cells. Solving these regressions provides the albedo values for trees, shrubs and short vegetation (crops and grasses) from which the albedo changes associated with transitions between these three landcover types are derived. The diagnostic distinguishes between snow-free and snow-covered grid cells.
 
 
 Available recipes and diagnostics
