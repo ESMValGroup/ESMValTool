@@ -12,9 +12,12 @@ documentation:
 
 
 preprocessors:
-  extract_region: &region
+  extract_region: &region # TODO fix this preprocessor
     extract_region:
-      configfile: path/to/boundingboxvalues
+      start_longitude:
+      end_longitude:
+      start_latitude:
+      end_latitude:
   regrid: &regrid
     regrid:
       target_grid: 0.25x0.25
