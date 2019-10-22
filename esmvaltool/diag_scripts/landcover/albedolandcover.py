@@ -24,8 +24,6 @@ import glob
 import itertools as it
 import logging
 import os
-import sys
-import warnings
 
 from cartopy import crs  # This line causes a segmentation fault in prospector
 import cartopy.feature as cfeature
@@ -75,18 +73,18 @@ def _add_masks_albedolandcover(model_data, this_models_xxfracs, cfg):
         month_string, model_data['snc'].attributes['model_id'])
     plt.imshow(total_frac.data[::-1])
     plt.savefig(os.path.join(masksavedir, masksavename +
-                'total_frac.' + cfg['output_file_type']))
+                             'total_frac.' + cfg['output_file_type']))
     plt.imshow(fracmask[::-1])
     plt.savefig(os.path.join(masksavedir, masksavename +
-                'fracmask.' + cfg['output_file_type']))
+                             'fracmask.' + cfg['output_file_type']))
     plt.imshow(snowmask[::-1])
     plt.title('snowmask')
     plt.savefig(os.path.join(masksavedir, masksavename +
-                'snowmask.' + cfg['output_file_type']))
+                             'snowmask.' + cfg['output_file_type']))
     plt.imshow(snowfreemask[::-1])
     plt.title('snowfreemask')
     plt.savefig(os.path.join(masksavedir, masksavename +
-                'snowfreemask.' + cfg['output_file_type']))
+                             'snowfreemask.' + cfg['output_file_type']))
 
     # Distinguish between snowfree and snow areas
     if cfg['params']['snowfree']:
