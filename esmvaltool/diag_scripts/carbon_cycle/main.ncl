@@ -24,8 +24,6 @@
 ;     sort: sort dataset in alphabetical order.
 ;     anav_month: Conversion of y-axis to PgC/month instead of /year,
 ;                 following Anav2013 fig 7, 9 (cycle plot).
-;     fignum: Reference to figure in Anav paper for evolution plot. "1 top"
-;             as default.
 ;     evolution_plot_ref_dataset: reference dataset for evolution_plot.
 ;     evolution_plot_anomaly: makes evolution_plot an anomaly plot.
 ;     evolution_plot_ignore: Datasets to ignore, obs are excluded
@@ -82,6 +80,9 @@ load "$diag_scripts/shared/plot/xy_line.ncl"
 begin
 
   enter_msg(DIAG_SCRIPT, "")
+  AUTHORS = (/"anav_alessandro", "wenzel_sabrina", "righi_mattia", \
+             "schlund_manuel"/)
+  REFERENCES = (/"anav13jclim"/)
 
   ; Variable
   VAR0 = variable_info[0]
@@ -106,6 +107,7 @@ begin
   DATASETS = metadata_att_as_array(INFO0, "dataset")
   DIM_DAT = dimsizes(DATASETS)
   DIM_DAT_ORIG = DIM_DAT
+  ALL_FILES = metadata_att_as_array(INFO0, "filename")
 
   log_info("++++++++++++++++++++++++++++++++++++++++++")
   log_info(DIAG_SCRIPT + " (var: " + var0 + ")")
@@ -207,10 +209,9 @@ begin
       data_var@_FillValue = 1.0e20
     end if
 
-    ; Check for irregular grids (FIXME)
+    ; Check for irregular grids
     if (.not. isdim(data_var, "lat") .and. isdim(data_var, "lon")) then
-      error_msg("f", DIAG_SCRIPT, "", "Irregular grids are currently not " + \
-                "supported")
+      error_msg("f", DIAG_SCRIPT, "", "Irregular grids are not supported")
     end if
 
     ; Set type of area operation (flux vs. non-flux variables)
@@ -267,94 +268,18 @@ begin
       area = 5.10072e14
     end if
 
-    ; Calculate standard deviations
-    ; FIXME: results to be checked
-    ; tmp = data_yearly * conform(data_yearly, area, (/1, 2/))
-    ; subr = area_operations(tmp, region(0), region(1), \
-    ;                        region(2), region(3), "extract", True)
-    ; y_std = dim_stddev_n_Wrap(subr, (/1, 2/))
-    ; tmp := data_monthly * conform(data_monthly, area, (/1, 2/))
-    ; subr := area_operations(tmp, region(0), region(1), \
-    ;                        region(2), region(3), "extract", True)
-    ; m_std = dim_stddev_n_Wrap(subr, (/1, 2/))
-    ; delete([/subr, tmp/])
-
     ; Assign to global arrays
     idx_1 = ind(min(y_mean&year) .eq. all_data_yearly&year)
     idx_2 = ind(max(y_mean&year) .eq. all_data_yearly&year)
     all_data_yearly(idat, idx_1:idx_2, 0) = (/y_mean/)
     all_data_yearly(idat, idx_1:idx_2, 1) = 0.0
-    ; FIXME: all_data_yearly(idat, idx_1:idx_2, 1) = (/y_std/)
     copy_VarAtts(y_mean, all_data_yearly)
     all_data_monthly(idat, :, 0) = (/m_mean/)
     all_data_monthly(idat, :, 1) = 0.0
-    ; FIXME: all_data_monthly(idat, :, 1) = (/m_std/)
     copy_VarAtts(m_mean, all_data_monthly)
     delete([/y_mean, idx_1, idx_2, m_mean, data_var, data_yearly, \
             data_monthly, area/])
-    ; FIXME: delete([/m_std, y_std/])
   end do
-
-  ; FIXME (necessary?):
-  ; Read in external observational data if necessary
-  ; if (isatt(diag_script_info, "obsfile")) then
-  ;   log_info("Reading in additional data from: " + diag_script_info@obsfile)
-  ;   data_dum = addfile(diag_script_info@obsfile, "r")
-  ;   data_dum2 = data_dum->$diag_script_info@ref_varname$
-
-  ;   ; Get the overlap of the temporal frames
-  ;   obs_time = cd_calendar(data_dum2&time, 0)
-  ;   min_obs_year = toint(min(obs_time(:, 0)))
-  ;   max_obs_year = toint(max(obs_time(:, 0)))
-  ;   obs_years = ispan(min_obs_year, max_obs_year, 1)
-  ;   if (start_year .lt. min_obs_year) then
-  ;     l_idx_1 = ind(all_data_yearly&year .eq. min_obs_year)
-  ;     l_idx_2 = 0
-  ;   else
-  ;     l_idx_1 = 0
-  ;     l_idx_2 = ind(start_year .eq. obs_years)
-  ;   end if
-  ;   if end_year .lt. max_obs_year then
-  ;     u_idx_1 = dimsizes(all_data_yearly&year) - 1
-  ;     u_idx_2 = ind(end_year .eq. obs_years)
-  ;   else
-  ;     u_idx_1 = ind(all_data_yearly&year.eq.max_obs_year)
-  ;     u_idx_2 = dimsizes(obs_years)-1
-  ;   end if
-
-  ;   ; Make an array like all_data_yearly to easily append data
-  ;   all_data_yearly_add = new((/1, DIM_TIME, 2/), float)
-  ;   all_data_yearly_add!0 = "dataset"
-  ;   all_data_yearly_add!1 = "year"
-  ;   all_data_yearly_add!2 = "statistic"
-  ;   all_data_yearly_add&dataset = diag_script_info@obsname
-  ;   all_data_yearly_add&year = all_years
-  ;   all_data_yearly_add&statistic = (/"mean", "stddev"/)
-
-  ;   ; Data saved in one month per year, also put it in right time range
-  ;   obs_ind = ind(.not. ismissing(data_dum2))
-  ;   all_data_yearly_add(0, l_idx_1:u_idx_1, 0) = \
-  ;     (/data_dum2(obs_ind(l_idx_2:u_idx_2))/)
-  ;   all_data_yearly_add(0, l_idx_1:u_idx_1, 1) = 0.0  ; (/y_std/)
-  ;   ; FIXME: all_data_yearly_add(0, l_idx_1:u_idx_1, 1) = (/y_std/)
-
-  ;   ; Add data to existing arrays, add project, name to datasets attributes
-  ;   all_data_yearly_new = array_append_record(all_data_yearly, \
-  ;                                             all_data_yearly_add, 0)
-  ;   delete([/data_dum, data_dum2, min_obs_year, max_obs_year, obs_time, \
-  ;           all_data_yearly_add, obs_years, obs_ind/])
-  ;   input_file_info@dataset_new = \
-  ;     array_append_record(input_file_info@dataset, \
-  ;                         diag_script_info@obsname, 0)
-  ;   input_file_info@project_new = \
-  ;     array_append_record(input_file_info@project, "OBS", 0)
-  ;   input_file_info@project := input_file_info@project_new
-  ;   input_file_info@dataset := input_file_info@dataset_new
-  ;   all_data_yearly := all_data_yearly_new
-  ;   delete([/input_file_info@project_new, input_file_info@dataset_new, \
-  ;           all_data_yearly_new/])
-  ;   DIM_DAT = dims
-  ; end if
 
   ; Convert units if appropriate [kg m-2 s-1] --> [PgC y-1]
   if (isatt(VAR0, "plot_units")) then
@@ -375,28 +300,22 @@ begin
   ; Write NETCDF
   ; ---------------------------------------------------------------------------
 
-  ; Optional output to NetCDF
-  if (config_user_info@write_netcdf) then
-    work_dir = config_user_info@work_dir
-    system("mkdir -p " + work_dir)
+  work_dir = config_user_info@work_dir
+  system("mkdir -p " + work_dir)
 
-    ; Yearly data
-    new_path = work_dir + "_yearly_" + var0 + "_" + region@name + \
-      ".nc"
-    all_data_yearly@var = var0
-    all_data_yearly@diag_script = DIAG_SCRIPT
-    all_data_yearly@ncdf = new_path
-    ncdf_outfile = ncdf_write(all_data_yearly, new_path)
+  ; Yearly data
+  new_path = work_dir + "yearly_" + var0 + "_" + region@name + ".nc"
+  all_data_yearly@var = var0
+  all_data_yearly@diag_script = DIAG_SCRIPT
+  all_data_yearly@ncdf = new_path
+  ncdf_outfile_yearly = ncdf_write(all_data_yearly, new_path)
 
-    ; Monthly data
-    new_path = work_dir + "_monthly_" + var0 + "_" + region@name + \
-      ".nc"
-    all_data_monthly@var = var0
-    all_data_monthly@diag_script = DIAG_SCRIPT
-    all_data_monthly@ncdf = new_path
-    ncdf_outfile = ncdf_write(all_data_monthly, new_path)
-    delete([/new_path, ncdf_outfile/])
-  end if
+  ; Monthly data
+  new_path = work_dir + "monthly_" + var0 + "_" + region@name + ".nc"
+  all_data_monthly@var = var0
+  all_data_monthly@diag_script = DIAG_SCRIPT
+  all_data_monthly@ncdf = new_path
+  ncdf_outfile_monthly = ncdf_write(all_data_monthly, new_path)
 
   ; ---------------------------------------------------------------------------
   ; Plots
@@ -427,40 +346,20 @@ begin
         format_units(data_arr@units) + "]"
       data_arr@res_tiMainString = region@name
       plot = cycle_plot(wks, data_arr, var0, INFO0)
+      plot_path = outfile + "." + file_type
+      log_info("Wrote " + plot_path)
       draw(plot)
       frame(wks)
 
-      ; ; Add meta data (TODO)
-      ; alltags = array_append_record(tags, region@DM_tag, 0)
-      ; alltags := array_append_record(alltags, (/"PT_seas", "ST_mean"/), 0)
-      ; caption = "Seasonal Cycle plot for " + var0 + \
-      ;   " over the period " + \
-      ;   start_year + "-" + end_year + ", similar to Anav et al., 2013, " + \
-      ;   "Fig. 9."
-      ; id = DIAG_SCRIPT
-      ; isize = DIM_DAT_ORIG * DIM_VAR
-      ; if (isatt(diag_script_info, "obsfile")) then
-      ;   isize = isize + 1
-      ; end if
-      ; climofiles = new(isize, string)
-      ; do n_var = 0, DIM_VAR - 1
-      ;   do idat = 0, DIM_DAT_ORIG - 1
-      ;     climofiles(n_var * DIM_DAT_ORIG + idat) = \
-      ;       interface_get_inpaths(idat) + "/" + \
-      ;       interface_get_infile(VARIABLES(n_var), field_types(n_var), idat)
-      ;   end do
-      ; end do
-      ; if (isatt(diag_script_info, "obsfile")) then
-      ;   climofiles(isize - 1) = diag_script_info@obsfile
-      ; end if
-      ; contrib_authors = (/"A-anav_al", "A-wenz_sa", "A-righ_ma", \
-      ;                    "A-schl_ma"/)
-      ; ESMValMD(outfile + "." + file_type, alltags, caption, id, VARIABLES, \
-      ;          DATASETS, climofiles, DIAG_SCRIPT, \
-      ;          contrib_authors)
-
-      ; delete([/alltags, caption, id, climofiles/])
-      delete([/plot, wks, data_arr/])
+      ; Provenance tracking
+      caption = ("Seasonal cycle plot for " + var0 + " over the period " + \
+                 start_year + "-" + end_year + ". Similar to Anav et al. " + \
+                 "(2013), Figure 9.")
+      statistics = (/"mean"/)
+      plot_type = "seas"
+      log_provenance(ncdf_outfile_monthly, plot_path, caption, statistics, \
+                     region@name, plot_type, AUTHORS, REFERENCES, ALL_FILES)
+      delete([/plot, wks, data_arr, caption, statistics, plot_type/])
     end if
 
     ; -------------------------------------------------------------------------
@@ -490,7 +389,8 @@ begin
         end if
       end if
 
-      ; Collect data
+      ; Collect data and save it
+      new_path = work_dir + "errorbar_" + var0 + "_" + region@name + ".nc"
       data_arr = new((/2, dimsizes(annual_mean)/), float)
       data_arr!0 = "statistic"
       data_arr!1 = "dataset"
@@ -499,6 +399,10 @@ begin
       data_arr(0, :) = (/annual_mean/)
       data_arr(1, :) = (/annual_std/)
       data_arr@units = annual_mean@units
+      data_arr@var = var0
+      data_arr@diag_script = DIAG_SCRIPT
+      data_arr@ncdf = new_path
+      ncdf_outfile_errorbar = ncdf_write(data_arr, new_path)
       delete([/annual_mean, annual_std/])
 
       ; Draw plot
@@ -506,40 +410,20 @@ begin
       wks = gsn_open_wks(file_type, outfile)
       data_arr@res_tiMainString = var0 + " - " + region@name
       plot = errorbar_plot(wks, data_arr, var0)
+      plot_path = outfile + "." + file_type
+      log_info("Wrote " + plot_path)
       draw(plot)
       frame(wks)
 
-      ; ; Add meta data (TODO)
-      ; alltags = array_append_record(tags, region@DM_tag, 0)
-      ; alltags := array_append_record(alltags, (/"PT_errorbar", "ST_stddev", \
-      ;                                          "ST_mean"/),  0)
-      ; caption = "Errorbar plot for " + var0 + \
-      ;   " over the period " + \
-      ;   start_year + "-" + end_year + ", similar to Anav et al., 2013, " + \
-      ;   "Fig. 6."
-      ; id = DIAG_SCRIPT
-      ; isize = DIM_DAT_ORIG * DIM_VAR
-      ; if (isatt(diag_script_info, "obsfile")) then
-      ;   isize = isize + 1
-      ; end if
-      ; climofiles = new(isize, string)
-      ; do n_var = 0, DIM_VAR - 1
-      ;   do idat = 0, DIM_DAT_ORIG - 1
-      ;     climofiles(n_var * DIM_DAT_ORIG + idat) = \
-      ;       interface_get_inpaths(idat) + "/" + \
-      ;       interface_get_infile(VARIABLES(n_var), field_types(n_var), idat)
-      ;   end do
-      ; end do
-      ; if (isatt(diag_script_info, "obsfile")) then
-      ;   climofiles(isize - 1) = diag_script_info@obsfile
-      ; end if
-      ; contrib_authors = (/"A-anav_al", "A-wenz_sa", "A-righ_ma", \
-      ;                    "A-schl_ma"/)
-      ; ESMValMD(outfile + "." + file_type, alltags, caption, id, VARIABLES, \
-      ;          DATASETS, climofiles, DIAG_SCRIPT, \
-      ;          contrib_authors)
-      ; delete([/alltags, caption, id, climofiles/])
-      delete([/plot, wks, data_arr/])
+      ; Provenance tracking
+      caption = ("Errorbar plot for " + var0 + " over the period " + \
+                 start_year + "-" + end_year + ". Similar to Anav et al. " + \
+                 "(2013), Figure 6.")
+      statistics = (/"mean", "stddev"/)
+      plot_type = "errorbar"
+      log_provenance(ncdf_outfile_errorbar, plot_path, caption, statistics, \
+                     region@name, plot_type, AUTHORS, REFERENCES, ALL_FILES)
+      delete([/plot, wks, data_arr, caption, statistics, plot_type/])
     end if
 
     ; -------------------------------------------------------------------------
@@ -564,7 +448,8 @@ begin
           all_data_yearly(idat, minyear_ind:maxyear_ind, 0))
       end do
 
-      ; Collect data
+      ; Collect data and save it
+      new_path = work_dir + "mean_iav_" + var0 + "_" + region@name + ".nc"
       data_arr = new((/2, DIM_DAT/), float)
       data_arr!0 = "statistic"
       data_arr!1 = "dataset"
@@ -574,6 +459,10 @@ begin
       data_arr(1, :) = (/annual_std/)
       data_arr@units = (/annual_mean@units, annual_std@units/)
       data_arr@legend_outside = diag_script_info@legend_outside
+      data_arr@var = var0
+      data_arr@diag_script = DIAG_SCRIPT
+      data_arr@ncdf = new_path
+      ncdf_outfile_mean_iav = ncdf_write(data_arr, new_path)
       delete([/annual_mean, annual_std/])
 
       ; Draw plot
@@ -582,39 +471,23 @@ begin
       wks@legendfile = outfile + "_legend"
       data_arr@res_tiMainString = var0 + " - " + region@name
       plot = scatterplot_markers(wks, data_arr, var0, INFO0)
+      plot_path = outfile + "." + file_type
+      log_info("Wrote " + plot_path)
       draw(plot)
       frame(wks)
 
-      ; ; Add meta data (TODO)
-      ; alltags = array_append_record(tags, region@DM_tag, 0)
-      ; alltags := array_append_record(alltags, (/"PT_scatter", "ST_mean"/), 0)
-      ; caption = "Scatterplot for " + var0 + \
-      ;   " over the period " + \
-      ;   start_year + "-" + end_year + \
-      ;   ", similar to Anav et al., 2013, Fig. 17."
-      ; id = DIAG_SCRIPT
-      ; isize = DIM_DAT_ORIG * DIM_VAR
-      ; if (isatt(diag_script_info, "obsfile")) then
-      ;   isize = isize + 1
-      ; end if
-      ; climofiles = new(isize, string)
-      ; do n_var = 0, DIM_VAR - 1
-      ;   do idat = 0, DIM_DAT_ORIG - 1
-      ;     climofiles(n_var * DIM_DAT_ORIG + idat) = \
-      ;       interface_get_inpaths(idat) + "/" + \
-      ;       interface_get_infile(VARIABLES(n_var), field_types(n_var), idat)
-      ;   end do
-      ; end do
-      ; if (isatt(diag_script_info, "obsfile")) then
-      ;   climofiles(isize - 1) = diag_script_info@obsfile
-      ; end if
-      ; contrib_authors = (/"A-anav_al", "A-wenz_sa", "A-righ_ma", \
-      ;                    "A-schl_ma"/)
-      ; ESMValMD(outfile + "." + file_type, alltags, caption, id, VARIABLES, \
-      ;          DATASETS, climofiles, DIAG_SCRIPT, \
-      ;          contrib_authors)
-      ; delete([/alltags, caption, id, climofiles/])
-      delete([/plot, wks, data_arr/])
+      ; Provenance tracking
+      caption = ("Errorbar plot for " + var0 + " over the period " + \
+                 start_year + "-" + end_year + ". Similar to Anav et al. " + \
+                 "(2013), Figure 6.")
+      caption = ("Scatterplot for " + var0 + " over the period " + \
+                 start_year + "-" + end_year + ". Similar to Anav et al. " + \
+                 "(2013), Figure 17.")
+      statistics = (/"mean", "stddev", "var"/)
+      plot_type = "scatter"
+      log_provenance(ncdf_outfile_mean_iav, plot_path, caption, statistics, \
+                     region@name, plot_type, AUTHORS, REFERENCES, ALL_FILES)
+      delete([/plot, wks, data_arr, caption, statistics, plot_type/])
     end if
 
     ; -------------------------------------------------------------------------
@@ -630,9 +503,6 @@ begin
           anomaly = True
         end if
       end if
-
-      ; Get name of plot
-      outfile = plot_dir + var0 + "_evolution_" + region@name
 
       ; Get index of reference dataset
       obs_ind = ind(DATASETS .eq. \
@@ -690,6 +560,8 @@ begin
         data_arr@contour_color = diag_script_info@evolution_plot_color
       end if
 
+      ; Draw plot
+      outfile = plot_dir + var0 + "_evolution_" + region@name
       wks = gsn_open_wks(file_type, outfile)
       wks@legendfile = outfile + "_legend"
       plot1 = evolution_base_plot(wks, data_arr, var0, anomaly)
@@ -722,47 +594,23 @@ begin
       NhlAddOverlay(plot1, plot3, plot1)
       draw(plot1)
       frame(wks)
+      plot_path = outfile + "." + file_type
+      log_info("Wrote " + plot_path)
 
-      ; ; Add meta data (TODO)
-      ; alltags = array_append_record(tags, region@DM_tag, 0)
-      ; alltags := array_append_record(alltags, (/"PT_times"/), 0)
-      ; if (anomaly) then
-      ;   alltags := array_append_record(alltags, (/"ST_anomaly"/), 0)
-      ;   tagstr = " (anomalies) "
-      ; else
-      ;   alltags := array_append_record(alltags, (/"ST_mean"/), 0)
-      ;   tagstr = " "
-      ; end if
-      ; if isatt(diag_script_info, "fignum") then
-      ;   fignum = diag_script_info@fignum
-      ; else
-      ;   fignum = "1 top"
-      ; end if
-      ; caption = "Time series of " + var0 + tagstr + \
-      ;   ", similar to Anav et al., 2013, Fig." + fignum
-      ; id = DIAG_SCRIPT
-      ; isize = DIM_DAT_ORIG * DIM_VAR
-      ; if (isatt(diag_script_info, "obsfile")) then
-      ;   isize = isize + 1
-      ; end if
-      ; climofiles = new(isize, string)
-      ; do n_var = 0, DIM_VAR - 1
-      ;   do idat = 0, DIM_DAT_ORIG - 1
-      ;     climofiles(n_var * DIM_DAT_ORIG + idat) = \
-      ;       interface_get_inpaths(idat) + "/" + \
-      ;       interface_get_infile(VARIABLES(n_var), field_types(n_var), idat)
-      ;   end do
-      ; end do
-      ; if (isatt(diag_script_info, "obsfile")) then
-      ;   climofiles(isize - 1) = diag_script_info@obsfile
-      ; end if
-      ; contrib_authors = (/"A_anav_al", "A_wenz_sa", "A_righ_ma", \
-      ;                    "A_schl_ma"/)
-      ; ESMValMD(outfile + "." + file_type, alltags, caption, id, VARIABLES, \
-      ;          DATASETS, climofiles, DIAG_SCRIPT, \
-      ;          contrib_authors)
-      ; delete([/alltags, caption, id, climofiles/])
-      delete([/data_arr, anomaly/])
+      ; Provenance tracking
+      if (anomaly) then
+        tagstr = " (anomalies)"
+        statistics = (/"mean", "stddev", "anomaly"/)
+      else
+        tagstr = ""
+        statistics = (/"mean", "stddev"/)
+      end if
+      caption = ("Time series of " + var0 + tagstr + ". Similar to Anav " + \
+                 "et al. (2013), Figure 1 (top).")
+      plot_type = "times"
+      log_provenance(ncdf_outfile_yearly, plot_path, caption, statistics, \
+                     region@name, plot_type, AUTHORS, REFERENCES, ALL_FILES)
+      delete([/data_arr, caption, statistics, plot_type/])
     end if
   end if
 

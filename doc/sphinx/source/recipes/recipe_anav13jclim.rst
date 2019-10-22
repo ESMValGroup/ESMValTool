@@ -64,8 +64,6 @@ User settings in recipe
      alphabetical order.
    * ``anav_month``, *bool*, optional (default: ``False``): Conversion of
      y-axis to PgC/month instead of /year.
-   * ``fignum``, *str*, optional: Reference to figure in original paper for
-     evolution plot.
    * ``evolution_plot_ref_dataset``, *str*, optional: Reference dataset for
      evolution_plot. Required when ``evolution_plot`` is ``True``.
    * ``evolution_plot_anomaly``, *str*, optional (default: ``False``): Plot

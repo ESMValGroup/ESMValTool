@@ -70,14 +70,6 @@ begin
   log_info(DIAG_SCRIPT + " (var: " + var0 + ")")
   log_info("++++++++++++++++++++++++++++++++++++++++++")
 
-  ; Write references (TODO)
-  ; write_references(DIAG_SCRIPT, \
-  ;                  (/"A-anav_al"/), \
-  ;                  (/"A-wenz_sa", "A-righ_ma", "A-schl_ma"/), \
-  ;                  (/"D_anav13jclim"/), \
-  ;                  (/""/), \
-  ;                  (/"P_embrace"/))
-
 end
 
 begin
@@ -180,9 +172,7 @@ begin
       DIM_LAT = dimsizes(data_var&lat)
       DIM_LON = dimsizes(data_var&lon)
     else
-      ; TODO
-      error_msg("f", DIAG_SCRIPT, "", "Irregular grids are currently not " + \
-                "supported")
+      error_msg("f", DIAG_SCRIPT, "", "Irregular grids are not supported")
     end if
 
     ; Cut off Antarctica if necessary (for land-based observations)
@@ -403,31 +393,29 @@ begin
   ; Write NETCDF
   ; ---------------------------------------------------------------------------
 
-  if (config_user_info@write_netcdf) then
-    work_dir = config_user_info@work_dir
-    system("mkdir -p " + work_dir)
+  work_dir = config_user_info@work_dir
+  system("mkdir -p " + work_dir)
 
-    ; Mean
-    new_path = work_dir + "mean_" + var0 + ".nc"
-    regional_mean@var = var0
-    regional_mean@diag_script = DIAG_SCRIPT
-    regional_mean@ncdf = new_path
-    ncdf_outfile_mean = ncdf_write(regional_mean, new_path)
+  ; Mean
+  new_path = work_dir + "mean_" + var0 + ".nc"
+  regional_mean@var = var0
+  regional_mean@diag_script = DIAG_SCRIPT
+  regional_mean@ncdf = new_path
+  ncdf_outfile_mean = ncdf_write(regional_mean, new_path)
 
-    ; Trend
-    new_path = work_dir + "trend_" + var0 + ".nc"
-    regional_trend@var = var0
-    regional_trend@diag_script = DIAG_SCRIPT
-    regional_trend@ncdf = new_path
-    ncdf_outfile_trend = ncdf_write(regional_trend, new_path)
+  ; Trend
+  new_path = work_dir + "trend_" + var0 + ".nc"
+  regional_trend@var = var0
+  regional_trend@diag_script = DIAG_SCRIPT
+  regional_trend@ncdf = new_path
+  ncdf_outfile_trend = ncdf_write(regional_trend, new_path)
 
-    ; MVI
-    new_path = work_dir + "MVI_" + var0 + ".nc"
-    regional_mvi@var = var0
-    regional_mvi@diag_script = DIAG_SCRIPT
-    regional_mvi@ncdf = new_path
-    ncdf_outfile_mvi = ncdf_write(regional_mvi, new_path)
-  end if
+  ; MVI
+  new_path = work_dir + "MVI_" + var0 + ".nc"
+  regional_mvi@var = var0
+  regional_mvi@diag_script = DIAG_SCRIPT
+  regional_mvi@ncdf = new_path
+  ncdf_outfile_mvi = ncdf_write(regional_mvi, new_path)
 
   ; ---------------------------------------------------------------------------
   ; Plots
@@ -478,9 +466,9 @@ begin
     delete(tmp)
 
     ; Draw a 3D scatterplot
-    plot_path = outfile + "." + file_type
-    data_arr@res_tiMainString = var0 + " - " + diag_script_info@region
+    data_arr@res_tiMainString = var0 + " - " + region@name
     plot = scatterplot3D(wks, data_arr, var0, levs)
+    plot_path = outfile + "." + file_type
     log_info("Wrote " + plot_path)
     draw(plot)
     frame(wks)
@@ -488,16 +476,15 @@ begin
     ; Provenance tracking
     caption =  ("Scatterplot for multiyear average " + var0 + " in x " + \
                 "axis, its linear trend in y axis, and MVI. Similar to " + \
-                "Anav et al. (2013) figure 1 (bottom).")
-    domains = diag_script_info@region
+                "Anav et al. (2013) Figure 1 (bottom).")
     statistics = (/"mean", "trend", "mvi"/)
     authors = (/"anav_alessandro", "wenzel_sabrina", "righi_mattia", \
                 "schlund_manuel"/)
     plot_type = "scatter"
     references = (/"anav13jclim"/)
     ancestors = metadata_att_as_array(INFO0, "filename")
-    log_provenance(ncdf_outfile_mvi, plot_path, caption, statistics, domains, \
-                   plot_type, authors, references, ancestors)
+    log_provenance(ncdf_outfile_mvi, plot_path, caption, statistics, \
+                   region@name, plot_type, authors, references, ancestors)
     delete(data_arr)
   end if
 
