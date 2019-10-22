@@ -78,7 +78,6 @@ def main(cfg):
         logger.info("Opening dataset: {0}".format(dataset))
         # Opening the pair 
         cube = iris.load_cube(dataset_cfg[0]['filename'])
-        import IPython;IPython.embed()
         
         for metricname in metrics_to_calculate:
             try:
