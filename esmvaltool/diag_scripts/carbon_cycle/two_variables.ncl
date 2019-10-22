@@ -75,14 +75,6 @@ begin
   log_info(DIAG_SCRIPT + " (vars: " + var(0) + ", " + var(1) + ")")
   log_info("++++++++++++++++++++++++++++++++++++++++++")
 
-  ; Write references (TODO)
-  ; write_references(DIAG_SCRIPT, \
-  ;                  (/"A-anav_al"/), \
-  ;                  (/"A-wenz_sa", "A-righ_ma", "A-schl_ma"/), \
-  ;                  (/"D_anav13jclim"/), \
-  ;                  (/""/), \
-  ;                  (/"P_embrace"/))
-
   ; ---------------------------------------------------------------------------
   ; Read recipe and config data
   ; ---------------------------------------------------------------------------
@@ -166,19 +158,34 @@ begin
   ; Write NETCDF
   ; ---------------------------------------------------------------------------
 
-  if (config_user_info@write_netcdf) then
-    work_dir = config_user_info@work_dir
-    system("mkdir -p " + work_dir)
+  work_dir = config_user_info@work_dir
+  system("mkdir -p " + work_dir)
 
-    ; Set attributes and save
-    do ivar = 0, DIM_VAR - 1
-      new_path = work_dir + var(ivar) + ".nc"
-      all_data[ivar]@var = var(ivar)
-      all_data[ivar]@diag_script = DIAG_SCRIPT
-      all_data[ivar]@ncdf = new_path
-      ncdf_outfile = ncdf_write(all_data[ivar], new_path)
-    end do
-  end if
+  ; Save individual variables
+  do ivar = 0, DIM_VAR - 1
+    new_path = work_dir + var(ivar) + ".nc"
+    all_data[ivar]@var = var(ivar)
+    all_data[ivar]@diag_script = DIAG_SCRIPT
+    all_data[ivar]@ncdf = new_path
+    ncdf_outfile = ncdf_write(all_data[ivar], new_path)
+    delete(ncdf_outfile)
+  end do
+
+  ; Save both variables
+  new_path = work_dir + var(0) + "_" + var(1) + ".nc"
+  both_vars = new((/DIM_VAR, DIM_DAT/), typeof(all_data[0]))
+  do ivar = 0, DIM_VAR - 1
+    both_vars(ivar, :) = all_data[ivar](:)
+  end do
+  both_vars!0 = "variable"
+  both_vars!1 = "dataset"
+  both_vars&variable = var
+  both_vars&dataset = DATASETS[0]
+  both_vars&dataset(ind(projects0 .eq. "OBS")) = "OBS"
+  both_vars@var = "scatter"
+  both_vars@diag_script = DIAG_SCRIPT
+  both_vars@ncdf = new_path
+  ncdf_outfile_both_vars = ncdf_write(both_vars, new_path)
 
   ; ---------------------------------------------------------------------------
   ; Plots
@@ -186,14 +193,6 @@ begin
 
   if (config_user_info@write_plots) then
     data_arr = new((/DIM_VAR, DIM_DAT(0)/), float)
-
-    ; Initialize output array
-    data_arr!0 = "statistic"
-    data_arr!1 = "dataset"
-    data_arr&statistic = (/var(0), var(1)/)
-    data_arr&dataset = DATASETS[0]
-    data_arr@units = (/all_data[0]@units, all_data[1]@units/)
-    data_arr@legend_outside = diag_script_info@legend_outside
 
     ; Collect data
     do ivar = 0, DIM_VAR - 1
@@ -213,39 +212,42 @@ begin
       data_arr(ivar, :) = (/all_data[ivar]/)
     end do
 
+    ; Setup metadata of output array
+    data_arr!0 = "statistic"
+    data_arr!1 = "dataset"
+    data_arr&statistic = (/var(0), var(1)/)
+    data_arr&dataset = DATASETS[0]
+    data_arr&dataset(ind(projects0 .eq. "OBS")) = "OBS"
+    data_arr@units = (/all_data[0]@units, all_data[1]@units/)
+    data_arr@legend_outside = diag_script_info@legend_outside
+    data_arr@annots = data_arr&dataset
+
     ; Draw plot
-    outfile = plot_dir + "_" + var(0) + "-" + var(1) + "_scatter_" + \
-      region@name
+    outfile = plot_dir + var(0) + "-" + var(1) + "_scatter_" + region@name
     wks = gsn_open_wks(file_type, outfile)
     wks@legendfile = outfile + "_legend"
-    data_arr@res_tiMainString = var(0) + "-" + var(1) + " - " + \
-      diag_script_info@region
+    data_arr@res_tiMainString = var(0) + "-" + var(1) + " - " + region@name
     plot = scatterplot_markers(wks, data_arr, var(0), info0)
     plot@outfile = outfile + "." + file_type
+    plot_path = outfile + "." + file_type
+    log_info("Wrote " + plot_path)
     draw(plot)
     frame(wks)
 
-    ; ; Add meta data (TODO)
-    ; alltags = array_append_record(tags, region@DM_tag, 0)
-    ; alltags := array_append_record(alltags, (/"PT_scatter", "ST_mean"/), 0)
-    ; caption = "Scatterplot for " + var0 + " and " + var1 + \
-    ;   " over the period " + start_year + "-" + end_year + \
-    ;   ", similar to Anav et al., 2013, Fig. 12."
-    ; id = DIAG_SCRIPT
-    ; climofiles = new(dimsizes(input_file_info@dataset) * DIM_VAR, \
-    ;                  string)
-    ; do ivar = 0, DIM_VAR - 1
-    ;   do idat = 0, dimsizes(input_file_info@dataset) - 1
-    ;     climofiles(ivar * dimsizes(input_file_info@dataset) + idat) = \
-    ;       interface_get_inpaths(idat) + "/" + \
-    ;       interface_get_infile(variables(ivar), field_types(ivar), idat)
-    ;   end do
-    ; end do
-    ; contrib_authors = (/"A-anav_al", "A-wenz_sa", "A-righ_ma", "A-schl_ma"/)
-    ; ESMValMD(plot@outfile, alltags, caption, id, variables, \
-    ;          input_file_info@dataset, climofiles, DIAG_SCRIPT,
-    ;          contrib_authors)
-    ; delete([/alltags, caption, id, climofiles/])
+    ; Provenance tracking
+    caption = ("Scatterplot for " + var(0) + " and " + var(1) + \
+               " over the period " + start_year + "-" + end_year + \
+               ". Similar to Anav et al. (2013), Figure 12.")
+    statistics = (/"mean"/)
+    authors = (/"anav_alessandro", "wenzel_sabrina", "righi_mattia", \
+                "schlund_manuel"/)
+    plot_type = "scatter"
+    references = (/"anav13jclim"/)
+    ancestors = metadata_att_as_array(info0, "filename")
+    ancestors := array_append_record( \
+      ancestors, metadata_att_as_array(info1, "filename"), 0)
+    log_provenance(ncdf_outfile_both_vars, plot_path, caption, statistics, \
+                   region@name, plot_type, authors, references, ancestors)
     delete(data_arr)
   end if
 
