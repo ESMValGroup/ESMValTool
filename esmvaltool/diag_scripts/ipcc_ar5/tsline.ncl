@@ -68,7 +68,6 @@ begin
   enter_msg(DIAG_SCRIPT, "")
 
   var0 = variable_info[0]@short_name
-  field_type0 = variable_info[0]@field
   exp0 = variable_info[0]@exp
   project0 = input_file_info[0]@project
   info_items = select_metadata_by_name(input_file_info, var0)
@@ -83,15 +82,6 @@ begin
   ; Create output plot directory
   plot_dir = config_user_info@plot_dir
   system("mkdir -p " + plot_dir)
-
-  ; Check field type
-  plot_fields = (/"T2Ms"/)
-  ind_f = any(field_type0 .eq. plot_fields)
-  if (all(ismissing(ind_f))) then
-    error_msg("f", DIAG_SCRIPT, "", "can't use field " + field_type0)
-  end if
-  delete(plot_fields)
-  delete(ind_f)
 
   ; Plot file type
   file_type = config_user_info@output_file_type
@@ -211,122 +201,112 @@ begin
       A0 = convert_units(A0, diag_script_info@plot_units)
     end if
 
-    ; time, lat, lon
-    if (field_type0.eq."T2Ms") then
+    if (isatt(variable_info[0], "reference_dataset")) then
 
-      if (isatt(variable_info[0], "reference_dataset")) then
-
-        ; masking with reference dataset
-        if(diag_script_info@ref_mask .and. imod .ne. ref_ind) then
-          ; Determine start/end year
-          start_year = info_items[imod]@start_year
-          end_year = info_items[imod]@end_year
-          A_ref_mask = time_operations(A_ref, start_year, \
-                                       end_year, "extract", "", 0)
-          A0_nomask_ref = time_operations(A0, ref_start, \
-                                          ref_end, "extract", "", 0)
-          A0 = where(A_ref_mask.eq.A_ref_mask@_FillValue, \
-                     A_ref_mask@_FillValue, A0)
-          delete(A_ref_mask)
-        end if
-
+      ; masking with reference dataset
+      if(diag_script_info@ref_mask .and. imod .ne. ref_ind) then
+        ; Determine start/end year
+        start_year = info_items[imod]@start_year
+        end_year = info_items[imod]@end_year
+        A_ref_mask = time_operations(A_ref, start_year, \
+                                     end_year, "extract", "", 0)
+        A0_nomask_ref = time_operations(A0, ref_start, \
+                                        ref_end, "extract", "", 0)
+        A0 = where(A_ref_mask.eq.A_ref_mask@_FillValue, \
+                   A_ref_mask@_FillValue, A0)
+        delete(A_ref_mask)
       end if
-
-      ; Anomaly
-      if(anom .eq. "anom") then
-        ; calculate monthly mean of ref period if 0.5 data points are available
-        tmp = time_operations(A0, ref_start, ref_end, "extract", "", 0)
-        limit  = toint(0.5 * dimsizes(tmp&time))
-        do i = 0, dimsizes(tmp!0)-1
-          tmp(i, :, :) = where(dim_num_n(.not.ismissing(tmp), 0).ge.limit, \
-                               tmp(i, :, :), tmp@_FillValue)
-        end do
-        A0_monavg_ref = time_operations(tmp, ref_start, ref_end, "average", \
-                                        "monthlyclim", True)
-
-        ; calculate anomaly for each grid point
-        do i = 0, dimsizes(A0&time) - 1
-          A0(i, :, :) = A0(i, :, :) - A0_monavg_ref(mod(i, 12), :, :)
-        end do
-
-        if (diag_script_info@ref_value) then
-          ; Calculate time average of ref period
-          ; annual mean if at least 2 months of data is available
-          ; if masking then take original unmasked dataset for ref mean
-          if (diag_script_info@ref_mask .and. imod .ne. ref_ind) then
-            tmp = A0_nomask_ref
-            delete(A0_nomask_ref)
-          end if
-          date := cd_calendar(tmp&time, 0)
-          year := date(:, 0)
-          month := date(:, 1)
-          weights = days_in_month(toint(year), toint(month))
-          A0_timavg_ref = dim_avg_wgt_n_Wrap(tmp, weights, 2, 0)
-          delete(year)
-          delete(month)
-          delete(date)
-          delete(tmp)
-          delete(A0_monavg_ref)
-
-          ; calculate global mean of reference period
-          ; first for each hemisphere - if choosen
-          if (diag_script_info@mean_nh_sh) then
-            tmp1 = area_operations(A0_timavg_ref, -90., 0., 0., 360., \
-                                   "average", True)
-            tmp2 = area_operations(A0_timavg_ref, 0., 90., 0., 360., \
-                                   "average", True)
-            anom_ref_tmp = (tmp1 + tmp2) / 2.
-            delete(tmp1)
-            delete(tmp2)
-          else
-            anom_ref_tmp = area_operations(A0_timavg_ref, -90., 90., \
-                                           0., 360., "average", True)
-          end if
-          delete(A0_timavg_ref)
-
-          anom_ref(imod) = anom_ref_tmp
-          ; delete(anom_ref_tmp)
-        end if
-
-      end if
-
-      ; Calculate time average of dataset
-      ; annual mean if at least 2 months of data is available
-      if (time_avg.eq."yearly") then
-        do i = 0, dimsizes(A0!0)-1
-          A0(i, :, :) = where(dim_num_n(.not.ismissing(A0), 0).ge.2, \
-                              A0(i, :, :), A0@_FillValue)
-        end do
-        A0_timavg = time_operations(A0, -1, -1, "average", \
-                                    "yearly", True)
-      else
-        A0_timavg = A0
-      end if
-      delete(A0)
-
-      ; calculate global mean of complete time series
-      ; first for each hemisphere - if choosen
-      if (diag_script_info@mean_nh_sh) then
-        tmp1 = area_operations(A0_timavg, -90., 0., 0., 360., \
-                               "average", True)
-        tmp2 = area_operations(A0_timavg, 0., 90., 0., 360., \
-                               "average", True)
-        procmod = tmp1
-        procmod = (tmp1 + tmp2) / 2.
-        delete(tmp1)
-        delete(tmp2)
-      else
-        procmod = area_operations(A0_timavg, -90., 90., 0., 360., \
-                                  "average", True)
-      end if
-      delete(A0_timavg)
 
     end if
 
-    if (.not.isdefined("procmod")) then
-      error_msg("f", diag_script_info, "", "cannot process this " + \
-                "field type " + field_type0)
+    ; Anomaly
+    if(anom .eq. "anom") then
+      ; calculate monthly mean of ref period if 0.5 data points are available
+      tmp = time_operations(A0, ref_start, ref_end, "extract", "", 0)
+      limit  = toint(0.5 * dimsizes(tmp&time))
+      do i = 0, dimsizes(tmp!0)-1
+        tmp(i, :, :) = where(dim_num_n(.not.ismissing(tmp), 0).ge.limit, \
+                             tmp(i, :, :), tmp@_FillValue)
+      end do
+      A0_monavg_ref = time_operations(tmp, ref_start, ref_end, "average", \
+                                      "monthlyclim", True)
+
+      ; calculate anomaly for each grid point
+      do i = 0, dimsizes(A0&time) - 1
+        A0(i, :, :) = A0(i, :, :) - A0_monavg_ref(mod(i, 12), :, :)
+      end do
+
+      if (diag_script_info@ref_value) then
+        ; Calculate time average of ref period
+        ; annual mean if at least 2 months of data is available
+        ; if masking then take original unmasked dataset for ref mean
+        if (diag_script_info@ref_mask .and. imod .ne. ref_ind) then
+          tmp = A0_nomask_ref
+          delete(A0_nomask_ref)
+        end if
+        date := cd_calendar(tmp&time, 0)
+        year := date(:, 0)
+        month := date(:, 1)
+        weights = days_in_month(toint(year), toint(month))
+        A0_timavg_ref = dim_avg_wgt_n_Wrap(tmp, weights, 2, 0)
+        delete(year)
+        delete(month)
+        delete(date)
+        delete(tmp)
+        delete(A0_monavg_ref)
+
+        ; calculate global mean of reference period
+        ; first for each hemisphere - if choosen
+        if (diag_script_info@mean_nh_sh) then
+          tmp1 = area_operations(A0_timavg_ref, -90., 0., 0., 360., \
+                                 "average", True)
+          tmp2 = area_operations(A0_timavg_ref, 0., 90., 0., 360., \
+                                 "average", True)
+          anom_ref_tmp = (tmp1 + tmp2) / 2.
+          delete(tmp1)
+          delete(tmp2)
+        else
+          anom_ref_tmp = area_operations(A0_timavg_ref, -90., 90., \
+                                         0., 360., "average", True)
+        end if
+        delete(A0_timavg_ref)
+
+        anom_ref(imod) = anom_ref_tmp
+        ; delete(anom_ref_tmp)
+      end if
+
     end if
+
+    ; Calculate time average of dataset
+    ; annual mean if at least 2 months of data is available
+    if (time_avg.eq."yearly") then
+      do i = 0, dimsizes(A0!0)-1
+        A0(i, :, :) = where(dim_num_n(.not.ismissing(A0), 0).ge.2, \
+                            A0(i, :, :), A0@_FillValue)
+      end do
+      A0_timavg = time_operations(A0, -1, -1, "average", \
+                                  "yearly", True)
+    else
+      A0_timavg = A0
+    end if
+    delete(A0)
+
+    ; calculate global mean of complete time series
+    ; first for each hemisphere - if choosen
+    if (diag_script_info@mean_nh_sh) then
+      tmp1 = area_operations(A0_timavg, -90., 0., 0., 360., \
+                             "average", True)
+      tmp2 = area_operations(A0_timavg, 0., 90., 0., 360., \
+                             "average", True)
+      procmod = tmp1
+      procmod = (tmp1 + tmp2) / 2.
+      delete(tmp1)
+      delete(tmp2)
+    else
+      procmod = area_operations(A0_timavg, -90., 90., 0., 360., \
+                                "average", True)
+    end if
+    delete(A0_timavg)
 
     ; Running Mean
     if(diag_script_info@run_ave .gt. 0) then
