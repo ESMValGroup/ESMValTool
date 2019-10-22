@@ -1,4 +1,4 @@
-.. _recipes_landcover:
+.. _recipes_albedolandcover:
 
 Landcover - Albedo
 ==================
