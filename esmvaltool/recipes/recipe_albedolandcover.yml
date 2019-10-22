@@ -67,8 +67,8 @@ diagnostics:
       albedolandcover:
         script: landcover/albedolandcover.py
         params:
-          latsize_BB: 5
-          lonsize_BB: 5
+          latsize_BB: 5    # size of the big box in the latitudinal direction
+          lonsize_BB: 5    # size of the big box in the longitudinal direction
           threshold_sumpred: 90
           mingc: 3
           minnum_gc_bb: 15
