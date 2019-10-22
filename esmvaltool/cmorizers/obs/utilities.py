@@ -143,24 +143,8 @@ def read_cmor_config(dataset):
 
 def save_variable(cube, var, outdir, attrs, **kwargs):
     """Saver function."""
+    _fix_dtype(cube)
     # CMOR standard
-    if cube.dtype != np.float32:
-        logger.info("Converting data type of data from '%s' to 'float32'",
-                    cube.dtype)
-        cube.data = cube.core_data().astype(np.float32, casting='same_kind')
-    for coord in cube.coords():
-        if coord.dtype != np.float64:
-            logger.info(
-                "Converting data type of coordinate points of '%s' from '%s' "
-                "to 'float64'", coord.name(), coord.dtype)
-            coord.points = coord.core_points().astype(np.float64,
-                                                      casting='same_kind')
-        if coord.has_bounds() and coord.bounds_dtype != np.float64:
-            logger.info(
-                "Converting data type of coordinate bounds of '%s' from '%s' "
-                "to 'float64'", coord.name(), coord.bounds_dtype)
-            coord.bounds = coord.core_bounds().astype(np.float64,
-                                                      casting='same_kind')
     try:
         time = cube.coord('time')
     except iris.exceptions.CoordinateNotFoundError:
@@ -295,6 +279,27 @@ def _fix_dim_coordnames(cube):
                 cube.coord(axis=coord_type).attributes['positive'] = 'up'
 
     return cube
+
+
+def _fix_dtype(cube):
+    """Fix `dtype` of a cube and its coordinates."""
+    if cube.dtype != np.float32:
+        logger.info("Converting data type of data from '%s' to 'float32'",
+                    cube.dtype)
+        cube.data = cube.core_data().astype(np.float32, casting='same_kind')
+    for coord in cube.coords():
+        if coord.dtype != np.float64:
+            logger.info(
+                "Converting data type of coordinate points of '%s' from '%s' "
+                "to 'float64'", coord.name(), coord.dtype)
+            coord.points = coord.core_points().astype(np.float64,
+                                                      casting='same_kind')
+        if coord.has_bounds() and coord.bounds_dtype != np.float64:
+            logger.info(
+                "Converting data type of coordinate bounds of '%s' from '%s' "
+                "to 'float64'", coord.name(), coord.bounds_dtype)
+            coord.bounds = coord.core_bounds().astype(np.float64,
+                                                      casting='same_kind')
 
 
 def _roll_cube_data(cube, shift, axis):
