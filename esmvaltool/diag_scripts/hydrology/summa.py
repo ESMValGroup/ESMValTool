@@ -64,16 +64,9 @@ def logarithmic_profile(windspeed, measurement_height):
 
 def compute_specific_humidity(dewpoint_temperature, surface_pressure):
     # see e.g. https://github.com/Unidata/MetPy/issues/791
-    # TODO confirm this after teleco
-    d2m = dewpoint_temperature
-    airpres = surface_pressure
-    kelvin = 273.15
-    vapour_pressure_act = 611 * np.exp((17.76*(d2m-kelvin))/(d2m-29.65))
-    vapor_pressure = vapour_pressure_act /1000.
-    air_pressure = airpres /1000.
-    eps = 0.62196351
-    mix_rat = (eps * vapor_pressure) / (air_pressure - vapor_pressure)
-    spechum = mix_rat/ (1 + mix_rat)
+    vapour_pressure = (611 * np.exp((17.76*(dewpoint_temperature-273.15))/(dewpoint_temperature-29.65)))/1000.
+    mix_rat = (0.62196351 * vapour_pressure) / ((surface_pressure/1000.) - vapour_pressure)
+    spechum = mix_rat / (1 + mix_rat)
     return spechum
 
 
