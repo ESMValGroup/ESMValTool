@@ -76,6 +76,82 @@ def regrid_temperature(src_temp, src_height, target_height):
 
     target_temp = target_slt - target_dtemp_compat
     return target_temp
+	
+def debruin_PET(t2m, msl, ssrd, tisr):
+	""" Determine De Bruin (2016) reference evaporation.
+		
+		Implement equation 6 from De Bruin (10.1175/JHM-D-15-0006.1)
+		Using Iris Python
+	"""
+	
+	# Definition of constants
+	rd = iris.coords.AuxCoord(287.0,
+		long_name='Gas constant dry air'
+		source='Wallace and Hobbs (2006), 2.6 equation 3.14'
+		units='J K-1 kg-1')
+
+	rv = iris.coords.AuxCoord(461.51,
+		long_name='Gas constant water vapour'
+		source='Wallace and Hobbs (2006), 2.6 equation 3.14'
+		units='J K-1 kg-1')
+	
+	lambda_ = iris.coords.AuxCoord(2.5e6,
+		long_name='Latent heat of vaporization',
+		source='Wallace and Hobbs 2006'
+		units='J kg-1')
+	
+	cp = iris.coords.AuxCoord(1004,
+		long_name='Specific heat of dry air constant pressure',
+		source='Wallace and Hobbs 2006'
+		units='J K-1 kg-1')
+
+	beta = iris.coords.AuxCoord(20,
+		long_name='Correction Constant',
+		source='De Bruin (2016), section 4a'
+		units='W m-2')
+		
+	cs = iris.coords.AuxCoord(110,
+		long_name = 'Empirical constant',
+		source = 'De Bruin (2016), section 4a',
+		units = 'W m-2')
+	
+	def tetens_derivative(temp):
+		""" Derivative of Teten's formula for saturated vapor pressure.
+
+		Tetens formula (https://en.wikipedia.org/wiki/Tetens_equation) :=
+		es(T) = e0 * exp(a * T / (T + b)) 
+		
+		Derivate (checked with Wolfram alpha)
+		des / dT = a * b * e0 * exp(a * T / (b + T)) / (b + T)^2
+		"""
+		# Assert temperature is in degC
+		temp = preproc.convert_units(temp,'degC')
+		
+		e0 = iris.coords.AuxCoord(6.112,
+			long_name='Saturated vapour pressure at 273 Kelvin',
+			units='hPa')
+		emp_a = 17.67 # empirical constant a
+		emp_b = 243.5 # empirical constant b
+		exponent = iris.analysis.maths.exp(emp_a * temp / (emp_b + temp))
+		return emp_a * emp_b * e0 * exponent / (emp_b + temp)**2
+	
+	# Unit checks:
+	msl = preproc.convert_units(msl,'hPa')
+	t2m = preproc.convert_units(t2m,'degC')
+	
+	# Variable derivation
+	delta_svp = tetens_derivative(t2m)
+	gamma = rv/rd * cp*msl/lambda_
+	
+	# Renaming for consistency with paper
+	kdown = ssrd
+	kdwon_ext = tisr
+	
+	# Equation 6
+	rad_term = (1-0.23)*kdown - cs*kdown/kdown_ext
+	ref_evap = delta_svp / (delta_svp + gamma) * rad_term + beta
+	
+	return ref_evap/lambda_
 
 def main(cfg):
     """Process data for use as input to the wflow hydrological model """
@@ -136,7 +212,14 @@ def main(cfg):
     ## Processing temperature
     tas = all_vars['air_temperature']
     tas_dem = regrid_temperature(tas, oro, dem)
-
+	
+	## Processing Reference EvapoTranspiration (PET)
+	t2m = all_vars['air_temperature']
+	msl = all_vars['air_pressure_at_mean_sea_level']
+	ssrd = all_vars['surface_downwelling_shortwave_flux_in_air']
+	tisr = all_vars['toa_incoming_shortwave_flux']
+	pet = debruin_PET(t2m, msl, ssrd, tisr)
+	
     ## Calculating
     # Save output
     iris.save(tas_dem, output_file, fill_value=1.e20)
@@ -151,50 +234,9 @@ def main(cfg):
     #   Output format: wflow_local_forcing_ERA5_Meuse_1990_2018.nc
     # - Add provencance stuff again in the diagnostic
 
-def debruin_PET(t2m, msl, d2m, tp, ssrd, tisr):
-    """ Determine De Bruin (2016) reference evaporation. """
-    beta = 20 # empirical constant from De Bruin 2016 in W m-2
-    Cs = 110 # empirical constant from De Bruin 2016 in W m-2
-    pha = msl/100 # pressure in hPa ??? Replace by unit conversion/check
-    cp = 1005 # specific heat of dry air in J kg-1 K-1 (??)
-    epsilon = 0.622 # ratio of dry air over water vapour (mass/pressure) (WH06 eq 3.14)
-
-    esat = saturated_vapor_pressure(t2m)
-    delta_wvp = delta_wvp(t2m, esat)
-    lambda_ = latent_heat(t2m)
-    Gamma = (cp * pha)/(epsilon * lambda_)
-    net_rad_down = (1-0.23)*ssrd - Cs * ssrd / (tisr + 0.00001)
-    pot_evap = delta_wvp / (delta_wvp + Gamma) * net_rad_down + beta
-
-    # What are we checking here?
-    pot_evap = np.where(tisr == 0, 0, pot_evap) # no PET if there is no sunlight??
-    pot_evap = np.where((pot_evap/lambda_)*1000*100 > 0,(pot_evap/lambda_)*1000*100,0)
-    return pot_evap
-
-def saturated_vapor_pressure(temperature):
-    """ Calculate saturated vapor pressure according to Tetens' (??) formula """
-    #TODO: Check formula
-    #TODO: Add unit check (t2m should be in celcius??)
-    e0 = iris.coords.AuxCoord(6.112,
-        long_name='reference_vapor_pressure????',
-        units='hPa')
-    a = 17.67 # empirical constant 1  --> find source
-    b = 243.5 # empirical constant 2  --> find source
-    return e0*np.exp((a * temperature)/(temperature+b))
-
-def delta_wvp(temperature, esat):
-    """ Determine slope of water vapour pressure according to ..."""
-    a = 17.269 # empirical constant 1 --> find source
-    b = 243.5 # empirical constant 2  --> find source
-    return esat*(a/(temperature+b))*(1-(temperature/temperature + b))
-
-def latent_heat(temperature):
-    """ Latent heat of vaporization ??? """
-    #TODO: where does this formula come from?
-    #TODO: Add units to these constants: J kg-1 K-1 ???
-    return 2.502e6 - 2250 * t2m
 
 
+	
 
 if __name__ == '__main__':
     with run_diagnostic() as config:
