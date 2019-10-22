@@ -41,13 +41,6 @@ from esmvaltool.diag_scripts.shared._base import get_plot_filename
 
 # This part sends debug statements to stdout
 logger = logging.getLogger(os.path.basename(__file__))
-logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
-
-
-# This suppresses a warning. Check if this is legitimate.
-iris.FUTURE.netcdf_promote = True
-
-warnings.filterwarnings("ignore", category=FutureWarning)
 
 
 def _add_masks_albedolandcover(model_data, this_models_xxfracs, cfg):
@@ -81,19 +74,19 @@ def _add_masks_albedolandcover(model_data, this_models_xxfracs, cfg):
     masksavename = '{0}-{1}'.format(
         month_string, model_data['snc'].attributes['model_id'])
     plt.imshow(total_frac.data[::-1])
-    plt.savefig(masksavedir + masksavename + 'total_frac.'
-                + cfg['output_file_type'])
+    plt.savefig(os.path.join(masksavedir, masksavename +
+                'total_frac.' + cfg['output_file_type']))
     plt.imshow(fracmask[::-1])
-    plt.savefig(masksavedir + masksavename + 'fracmask.'
-                + cfg['output_file_type'])
+    plt.savefig(os.path.join(masksavedir, masksavename +
+                'fracmask.' + cfg['output_file_type']))
     plt.imshow(snowmask[::-1])
     plt.title('snowmask')
-    plt.savefig(masksavedir + masksavename + 'snowmask.'
-                + cfg['output_file_type'])
+    plt.savefig(os.path.join(masksavedir, masksavename +
+                'snowmask.' + cfg['output_file_type']))
     plt.imshow(snowfreemask[::-1])
     plt.title('snowfreemask')
-    plt.savefig(masksavedir + masksavename + 'snowfreemask.'
-                + cfg['output_file_type'])
+    plt.savefig(os.path.join(masksavedir, masksavename +
+                'snowfreemask.' + cfg['output_file_type']))
 
     # Distinguish between snowfree and snow areas
     if cfg['params']['snowfree']:
@@ -263,24 +256,7 @@ def main(cfg):
         cfg - nested dictionary of metadata
 
     """
-#
-# {
-#        'latsize_BB': 5,
-#        'lonsize_BB': 5,
-#        'threshold_sumpred': 90,
-#        'mingc': 3,
-#        'minnum_gc_bb': 15,
-#        'thres_fsnow': 0.1,
-#        'snowfree': False,
-#        'lc1_class': ['treeFrac'],
-#        'lc2_class': ['shrubFrac'],
-#        'lc3_class': ['grassFrac', 'cropFrac']
-#    }
-    # assemble the data dictionary keyed by dataset name
-    # this makes use of the handy group_metadata function that
-    # orders the data by 'dataset'; the resulting dictionary is
-    # keyed on datasets e.g. dict = {'MPI-ESM-LR': [var1, var2...]}
-    # where var1, var2 are dicts holding all needed information per variable
+    # Assemble the data dictionary keyed by dataset name
     my_files_dict = group_metadata(cfg['input_data'].values(), 'dataset')
     all_short_names = ['alb', 'snc', 'cropFrac', 'treeFrac', 'grassFrac',
                        'shrubFrac', 'pastureFrac']
@@ -325,7 +301,7 @@ def main(cfg):
         model_data['snc'] = iris.load_cube(datadict['snc']['filename'])
 
         # Make sure that for each cube the dimension equals 2
-        assert {c.ndim for _, c in model_data.items()} == set([2])
+        assert {c.ndim for _, c in model_data.items()} == {2}
 
         # Add the appropriate masks to model_data
         model_data = _add_masks_albedolandcover(model_data,
