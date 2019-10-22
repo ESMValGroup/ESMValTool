@@ -12,6 +12,9 @@ documentation:
 
 
 preprocessors:
+  extract_region: &region
+    extract_region:
+      configfile: path/to/boundingboxvalues
   regrid: &regrid
     regrid:
       target_grid: 0.25x0.25
@@ -41,8 +44,9 @@ preprocessors:
     <<: *Meuse
     <<: *mean
   daily:
-    <<: *Meuse
+    <<: *region
     <<: *regrid
+    <<: *Meuse
 
 diagnostics:
   diagnostic_daily:
