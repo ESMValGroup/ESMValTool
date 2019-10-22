@@ -45,7 +45,7 @@ def lapse_rate_correction(height):
     """ Temperature correction over a given height interval """
     gamma = iris.coords.AuxCoord(0.0065,
         long_name='Environmental lapse rate',
-        units='K/m')
+        units='K m-1')
     return height*gamma
 
 def regrid_temperature(src_temp, src_height, target_height):
@@ -76,82 +76,83 @@ def regrid_temperature(src_temp, src_height, target_height):
 
     target_temp = target_slt - target_dtemp_compat
     return target_temp
-	
+
 def debruin_PET(t2m, msl, ssrd, tisr):
-	""" Determine De Bruin (2016) reference evaporation.
-		
-		Implement equation 6 from De Bruin (10.1175/JHM-D-15-0006.1)
-		Using Iris Python
-	"""
-	
-	# Definition of constants
-	rd = iris.coords.AuxCoord(287.0,
-		long_name='Gas constant dry air'
-		source='Wallace and Hobbs (2006), 2.6 equation 3.14'
-		units='J K-1 kg-1')
+    """ Determine De Bruin (2016) reference evaporation
 
-	rv = iris.coords.AuxCoord(461.51,
-		long_name='Gas constant water vapour'
-		source='Wallace and Hobbs (2006), 2.6 equation 3.14'
-		units='J K-1 kg-1')
-	
-	lambda_ = iris.coords.AuxCoord(2.5e6,
-		long_name='Latent heat of vaporization',
-		source='Wallace and Hobbs 2006'
-		units='J kg-1')
-	
-	cp = iris.coords.AuxCoord(1004,
-		long_name='Specific heat of dry air constant pressure',
-		source='Wallace and Hobbs 2006'
-		units='J K-1 kg-1')
+    Implement equation 6 from De Bruin (10.1175/JHM-D-15-0006.1)
+    Implementation using iris.
+    """
+    # Definition of constants
+    rv = iris.coords.AuxCoord(461.51,
+        long_name='Gas constant water vapour',
+        # source='Wallace and Hobbs (2006), 2.6 equation 3.14',
+        units='J K-1 kg-1')
 
-	beta = iris.coords.AuxCoord(20,
-		long_name='Correction Constant',
-		source='De Bruin (2016), section 4a'
-		units='W m-2')
-		
-	cs = iris.coords.AuxCoord(110,
-		long_name = 'Empirical constant',
-		source = 'De Bruin (2016), section 4a',
-		units = 'W m-2')
-	
-	def tetens_derivative(temp):
-		""" Derivative of Teten's formula for saturated vapor pressure.
+    rd = iris.coords.AuxCoord(287.0,
+        long_name='Gas constant dry air',
+        # source='Wallace and Hobbs (2006), 2.6 equation 3.14',
+        units='J K-1 kg-1')
 
-		Tetens formula (https://en.wikipedia.org/wiki/Tetens_equation) :=
-		es(T) = e0 * exp(a * T / (T + b)) 
-		
-		Derivate (checked with Wolfram alpha)
-		des / dT = a * b * e0 * exp(a * T / (b + T)) / (b + T)^2
-		"""
-		# Assert temperature is in degC
-		temp = preproc.convert_units(temp,'degC')
-		
-		e0 = iris.coords.AuxCoord(6.112,
-			long_name='Saturated vapour pressure at 273 Kelvin',
-			units='hPa')
-		emp_a = 17.67 # empirical constant a
-		emp_b = 243.5 # empirical constant b
-		exponent = iris.analysis.maths.exp(emp_a * temp / (emp_b + temp))
-		return emp_a * emp_b * e0 * exponent / (emp_b + temp)**2
-	
-	# Unit checks:
-	msl = preproc.convert_units(msl,'hPa')
-	t2m = preproc.convert_units(t2m,'degC')
-	
-	# Variable derivation
-	delta_svp = tetens_derivative(t2m)
-	gamma = rv/rd * cp*msl/lambda_
-	
-	# Renaming for consistency with paper
-	kdown = ssrd
-	kdwon_ext = tisr
-	
-	# Equation 6
-	rad_term = (1-0.23)*kdown - cs*kdown/kdown_ext
-	ref_evap = delta_svp / (delta_svp + gamma) * rad_term + beta
-	
-	return ref_evap/lambda_
+    lambda_ = iris.coords.AuxCoord(2.5e6,
+        long_name='Latent heat of vaporization',
+        # source='Wallace and Hobbs 2006',
+        units='J kg-1')
+
+    cp = iris.coords.AuxCoord(1004,
+        long_name='Specific heat of dry air constant pressure',
+        # source='Wallace and Hobbs 2006',
+        units='J K-1 kg-1')
+
+    beta = iris.coords.AuxCoord(20,
+        long_name='Correction Constant',
+        # source='De Bruin (2016), section 4a',
+        units='W m-2')
+
+    cs = iris.coords.AuxCoord(110,
+        long_name = 'Empirical constant',
+        # source = 'De Bruin (2016), section 4a',
+        units = 'W m-2')
+
+    def tetens_derivative(temp):
+        """ Derivative of Teten's formula for saturated vapor pressure.
+
+        Tetens formula (https://en.wikipedia.org/wiki/Tetens_equation) :=
+        es(T) = e0 * exp(a * T / (T + b))
+
+        Derivate (checked with Wolfram alpha)
+        des / dT = a * b * e0 * exp(a * T / (b + T)) / (b + T)^2
+        """
+        # Assert temperature is in degC
+        temp = preproc.convert_units(temp,'degC')
+
+        e0 = iris.coords.AuxCoord(6.112,
+            long_name='Saturated vapour pressure at 273 Kelvin',
+            units='hPa')
+        emp_a = 17.67 # empirical constant a
+        emp_b = 243.5 # empirical constant b
+        exponent = iris.analysis.maths.exp(emp_a * temp / (emp_b + temp))
+        return emp_a * emp_b * e0 * exponent / (emp_b + temp)**2
+
+    # Unit checks:
+    msl = preproc.convert_units(msl,'hPa')
+    t2m = preproc.convert_units(t2m,'degC')
+
+    # Variable derivation
+    delta_svp = tetens_derivative(t2m)
+    # gamma = rv/rd * cp*msl/lambda_
+    # iris.exceptions.NotYetImplementedError: coord / coord
+    gamma = rv.points/rd.points * cp*msl/lambda_
+
+    # Renaming for consistency with paper
+    kdown = ssrd
+    kdown_ext = tisr
+
+    # Equation 6
+    rad_term = (1-0.23)*kdown - cs*kdown/kdown_ext
+    ref_evap = delta_svp / (delta_svp + gamma) * rad_term + beta
+
+    return ref_evap/lambda_
 
 def main(cfg):
     """Process data for use as input to the wflow hydrological model """
@@ -180,7 +181,6 @@ def main(cfg):
         output_file = get_diagnostic_filename(
             Path(input_file).stem + '_wflow_test', cfg)
         iris.save(allyears, output_file, fill_value=1.e20)
-
 
     # These keys are now available in all_vars:
     # print('###########3')
@@ -212,14 +212,14 @@ def main(cfg):
     ## Processing temperature
     tas = all_vars['air_temperature']
     tas_dem = regrid_temperature(tas, oro, dem)
-	
-	## Processing Reference EvapoTranspiration (PET)
-	t2m = all_vars['air_temperature']
-	msl = all_vars['air_pressure_at_mean_sea_level']
-	ssrd = all_vars['surface_downwelling_shortwave_flux_in_air']
-	tisr = all_vars['toa_incoming_shortwave_flux']
-	pet = debruin_PET(t2m, msl, ssrd, tisr)
-	
+
+    ## Processing Reference EvapoTranspiration (PET)
+    t2m = all_vars['air_temperature']
+    msl = all_vars['air_pressure_at_mean_sea_level']
+    ssrd = all_vars['surface_downwelling_shortwave_flux_in_air']
+    tisr = all_vars['toa_incoming_shortwave_flux']
+    pet = debruin_PET(t2m, msl, ssrd, tisr)
+
     ## Calculating
     # Save output
     iris.save(tas_dem, output_file, fill_value=1.e20)
@@ -234,9 +234,6 @@ def main(cfg):
     #   Output format: wflow_local_forcing_ERA5_Meuse_1990_2018.nc
     # - Add provencance stuff again in the diagnostic
 
-
-
-	
 
 if __name__ == '__main__':
     with run_diagnostic() as config:

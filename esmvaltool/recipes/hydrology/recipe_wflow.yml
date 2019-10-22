@@ -44,9 +44,6 @@ diagnostics:
       # If we want to compute potentail evaporation, we also need:
       psl: *var_daily
       rsds: *var_daily
-      tdps:
-        <<: *var_daily
-        mip: Eday
       rsdt:
         <<: *var_daily
         mip: CFday
