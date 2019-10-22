@@ -14,7 +14,7 @@ documentation:
 preprocessors:
   regrid: &regrid
     regrid:
-      target_grid: 0.5x0.5
+      target_grid: 0.25x0.25
       lon_offset: true
       lat_offset: true
       scheme: linear
@@ -33,21 +33,12 @@ preprocessors:
       end_year: 2000
       end_month: 1
       end_day: 3
-  daily_sum: &sum
-    daily_statistics:
-      operator: sum
   daily_mean: &mean
     daily_statistics:
       operator: mean
-  hourly_sum:
-    <<: *save_memory
-    <<: *Meuse
-    <<: *regrid
-    <<: *sum
   hourly_mean:
     <<: *save_memory
     <<: *Meuse
-    <<: *regrid
     <<: *mean
   daily:
     <<: *Meuse
@@ -71,7 +62,8 @@ diagnostics:
         <<: *var_daily
         mip: Eday
       rsds: *var_daily
-      # missing: longwave radiation downwards and Air (surface!) pressure
+      rlds: *var_daily
+      ps: *var_daily
     scripts:
       script:
         script: hydrology/summa.py
@@ -101,7 +93,12 @@ diagnostics:
       rsds:
         <<: *var_hourly
         preprocessor: hourly_mean
-        # missing: longwave radiation downwards and Air (surface!) pressure
+      rlds:
+        <<: *var_hourly
+        preprocessor: hourly_mean
+      ps:
+        <<: *var_hourly
+        preprocessor: hourly_mean
     scripts:
       script:
         script: hydrology/summa.py

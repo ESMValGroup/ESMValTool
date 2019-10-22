@@ -53,38 +53,49 @@ def compute_windspeed(u_component, v_component):
     return wind_speed
 
 
-def logarithmic_profile(windspeed, measurement_height):
+def windspeed_conversion(windspeed_z, measurement_height):
     """ Convert wind speed from input height to 2m with logarithmic profile """
     warnings.warn('This version of the logarithmic wind profile is violating\
                   general principles of transparancy. Better replace it with\
                   a more general formula incorporating friction velocity or\
                   roughness length')
-    cube = windspeed * 4.87/np.log(67.8*measurement_height-5.42)
-    return cube
+    disp_height = 5.42 / 67.8
+    rough_length = 1 / 67.8
+    windspeed_2m = windspeed_z * np.log((2 - disp_height) / rough_length) 
+                   / np.log((measurement_height - disp_height) / rough_length)
+    return windspeed_2m
 
 def compute_specific_humidity(dewpoint_temperature, surface_pressure):
-    # see e.g. https://github.com/Unidata/MetPy/issues/791
-    vapour_pressure = (611 * np.exp((17.76*(dewpoint_temperature-273.15))/(dewpoint_temperature-29.65)))/1000.
-    mix_rat = (0.62196351 * vapour_pressure) / ((surface_pressure/1000.) - vapour_pressure)
+    # source 1: https://www.eoas.ubc.ca/books/Practical_Meteorology/prmet/PracticalMet_WholeBook-v1_00b.pdf page 96
+    
+    surface_pressure = surface_pressure/1000.
+    # to convert between celsius and kelvin
+    kelvin = 273.15
+    # ratio of gas constants for dry air and water vapor in g/g 
+    epsilon = 0.62196351 #from metsim python package
+    sat_vap_pres = 611 # saturated vapor pressure in Pa
+
+    vapour_pressure = sat_vap_pres * np.exp((17.76 * (dewpoint_temperature - kelvin)) / 
+                      (dewpoint_temperature - kelvin + 243.5))
+    vapour_pressure = vapour_pressure / 1000.
+    mix_rat = epsilon * vapour_pressure / (surface_pressure - vapour_pressure)
     spechum = mix_rat / (1 + mix_rat)
     return spechum
 
 
-def _fix_cube(input_dict):
+def _fix_cube(cube, var_name):
     """Fixing attributes for new cube"""
-    for key in input_dict:
-        cube = input_dict[key]
-        if key in {'windspd'}:
-            # remove the height_0 coordinate (10m)
-            cube.remove_coord(cube.coord('height'))
-            # add the height coordinate (2m)
-            utils.add_scalar_height_coord(cube, 2.)
-            cube.var_name = 'windspd'
-            cube.standard_name = 'wind_speed'
-        if key in {'spechum'}:
-            cube.var_name = 'spechum'
-            cube.standard_name = 'specific_humidity'
-            cube.unit = 'g/g'
+    if var_name == 'windspd':
+        # remove the height_0 coordinate (10m)
+        cube.remove_coord(cube.coord('height'))
+        # add the height coordinate (2m)
+        utils.add_scalar_height_coord(cube, 2.)
+        cube.var_name = var_name
+        cube.standard_name = 'wind_speed'
+    if var_name == 'spechum':
+        cube.var_name = var_name
+        cube.standard_name = 'specific_humidity'
+        cube.unit = 'g/g'
     return cube
 
 
@@ -128,11 +139,6 @@ def main(cfg):
         # aggregating latitude and longitude. The resulting cubes
         # will have dimensions 'time' and 'hru'.
         #
-        # Lorenz workshop prepared output used metsim to compute spechum
-        # and a weird logarithmic wind profile expression... see notebook at:
-        # ssh userX@jupyter.ewatercycle.org
-        # cd /mnt/data/lorentz-models/SUMMA/summa_era5_scripts/
-        #
         # Unit conversion:
         # - precip: kg m-2 s-1
         # - radiation: w m-2
@@ -149,21 +155,18 @@ def main(cfg):
 
     # compute wind speed and convert to 2m
     wind_speed = compute_windspeed(u_component, v_component)
-    wind_speed_2m = logarithmic_profile(wind_speed, 10)
-    # Add wind speed to cube dict
-    variables['windspd'] = wind_speed_2m
+    wind_speed_2m = windspeed_conversion(wind_speed, 10)
 
     # Fix cube attributes
-    variables['windspd'] = _fix_cube(variables)
+    variables['windspd'] = _fix_cube(wind_speed_2m, 'windspd')
 
-    # TODO: add specific humidity calculation
+    # Specific humidity calculation from dewpoint temp and surface pressure 
     dewpoint_temperature = variables['tdps']
     surface_pressure = variables['ps']
-    variables['spechum'] = compute_specific_humidity(dewpoint_temperature,
+    specific_humidity = compute_specific_humidity(dewpoint_temperature,
                                                      surface_pressure)
     # Fix cube attributes
-    # TODO check the attributes, avoid code duplication
-    variables['spechum'] = _fix_cube(variables)
+    variables['spechum'] = _fix_cube(specific_humidity, 'spechum')
 
     # Select and rename the desired variables
     variables = _rename_var(variables, output_var_name)
