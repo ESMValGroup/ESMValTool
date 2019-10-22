@@ -20,6 +20,8 @@ preprocessors:
       scheme: linear
   # SUMMA is semi-distributed; it works with Hydrological Response Units (HRUs)
   # These are lumped subcatchments, so we could use Inti's `decomposed` function.
+  # Another option is to consider gridcells as HRU's, making it a gridded model. 
+  # The latter is what was done in the Lorentz workshop.
   # However, I can't find the necessary input shapefiles; for now use Inti's (for HYPE)
   extract_meuse: &Meuse
     extract_shape:
