@@ -41,6 +41,7 @@ load "$diag_scripts/shared/plot/style.ncl"
 begin
 
   enter_msg(DIAG_SCRIPT, "")
+  DOMAIN = diag_script_info@region
 
   ; Variable
   DIM_VAR = ListCount(variable_info)
@@ -98,7 +99,7 @@ begin
   end if
 
   ; Set region
-  region = select_region(diag_script_info@region)
+  region = select_region(DOMAIN)
 
   ; ---------------------------------------------------------------------------
   ; Read and preprocess data
@@ -163,7 +164,7 @@ begin
 
   ; Save individual variables
   do ivar = 0, DIM_VAR - 1
-    new_path = work_dir + var(ivar) + ".nc"
+    new_path = work_dir + var(ivar) + "_" + DOMAIN + ".nc"
     all_data[ivar]@var = var(ivar)
     all_data[ivar]@diag_script = DIAG_SCRIPT
     all_data[ivar]@ncdf = new_path
@@ -172,7 +173,7 @@ begin
   end do
 
   ; Save both variables
-  new_path = work_dir + var(0) + "_" + var(1) + ".nc"
+  new_path = work_dir + var(0) + "_" + var(1) + "_" + DOMAIN + ".nc"
   both_vars = new((/DIM_VAR, DIM_DAT/), typeof(all_data[0]))
   do ivar = 0, DIM_VAR - 1
     both_vars(ivar, :) = all_data[ivar](:)
@@ -223,13 +224,13 @@ begin
     data_arr@annots = data_arr&dataset
 
     ; Draw plot
-    outfile = plot_dir + var(0) + "-" + var(1) + "_scatter_" + region@name
+    outfile = plot_dir + var(0) + "-" + var(1) + "_scatter_" + DOMAIN
     wks = gsn_open_wks(file_type, outfile)
     wks@legendfile = outfile + "_legend"
     data_arr@res_tiMainString = var(0) + "-" + var(1) + " - " + region@name
     plot = scatterplot_markers(wks, data_arr, var(0), info0)
-    plot@outfile = outfile + "." + file_type
     plot_path = outfile + "." + file_type
+    plot@outfile = plot_path
     log_info("Wrote " + plot_path)
     draw(plot)
     frame(wks)
@@ -247,7 +248,7 @@ begin
     ancestors := array_append_record( \
       ancestors, metadata_att_as_array(info1, "filename"), 0)
     log_provenance(ncdf_outfile_both_vars, plot_path, caption, statistics, \
-                   region@name, plot_type, authors, references, ancestors)
+                   DOMAIN, plot_type, authors, references, ancestors)
     delete(data_arr)
   end if
 

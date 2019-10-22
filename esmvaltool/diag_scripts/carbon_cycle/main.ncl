@@ -83,6 +83,7 @@ begin
   AUTHORS = (/"anav_alessandro", "wenzel_sabrina", "righi_mattia", \
              "schlund_manuel"/)
   REFERENCES = (/"anav13jclim"/)
+  DOMAIN = diag_script_info@region
 
   ; Variable
   VAR0 = variable_info[0]
@@ -137,17 +138,15 @@ begin
   exit_if_missing_atts(diag_script_info, req_atts)
 
   ; Set region - supports 2D array for lat and strings
-  if isstring(diag_script_info@region) then
-    region = select_region(diag_script_info@region)
-  else if dimsizes(diag_script_info@region) .eq. 2 then
-    region = (/diag_script_info@region(0), diag_script_info@region(1), \
+  if isstring(DOMAIN) then
+    region = select_region(DOMAIN)
+  else if dimsizes(DOMAIN) .eq. 2 then
+    region = (/DOMAIN(0), DOMAIN(1), \
               0.0, 360.0/)
-    region@name = flt2string(diag_script_info@region(0)) + "_-_" + \
-      flt2string(diag_script_info@region(1))
+    region@name = flt2string(DOMAIN(0)) + "_-_" + flt2string(DOMAIN(1))
     region@DM_tag = "DM_reg"
   else
-    error_msg("f", DIAG_SCRIPT, "", diag_script_info@region + \
-              " is an invalid region type")
+    error_msg("f", DIAG_SCRIPT, "", DOMAIN + " is an invalid region type")
   end if
   end if
 
@@ -304,14 +303,14 @@ begin
   system("mkdir -p " + work_dir)
 
   ; Yearly data
-  new_path = work_dir + "yearly_" + var0 + "_" + region@name + ".nc"
+  new_path = work_dir + "yearly_" + var0 + "_" + DOMAIN + ".nc"
   all_data_yearly@var = var0
   all_data_yearly@diag_script = DIAG_SCRIPT
   all_data_yearly@ncdf = new_path
   ncdf_outfile_yearly = ncdf_write(all_data_yearly, new_path)
 
   ; Monthly data
-  new_path = work_dir + "monthly_" + var0 + "_" + region@name + ".nc"
+  new_path = work_dir + "monthly_" + var0 + "_" + DOMAIN + ".nc"
   all_data_monthly@var = var0
   all_data_monthly@diag_script = DIAG_SCRIPT
   all_data_monthly@ncdf = new_path
@@ -339,7 +338,7 @@ begin
       end if
 
       ; Draw plot
-      outfile = plot_dir + var0 + "_cycle_" + region@name
+      outfile = plot_dir + var0 + "_cycle_" + DOMAIN
       wks = gsn_open_wks(file_type, outfile)
       wks@legendfile = outfile + "_legend"
       data_arr@res_tiYAxisString = var0 + " [" + \
@@ -358,7 +357,7 @@ begin
       statistics = (/"mean"/)
       plot_type = "seas"
       log_provenance(ncdf_outfile_monthly, plot_path, caption, statistics, \
-                     region@name, plot_type, AUTHORS, REFERENCES, ALL_FILES)
+                     DOMAIN, plot_type, AUTHORS, REFERENCES, ALL_FILES)
       delete([/plot, wks, data_arr, caption, statistics, plot_type/])
     end if
 
@@ -390,7 +389,7 @@ begin
       end if
 
       ; Collect data and save it
-      new_path = work_dir + "errorbar_" + var0 + "_" + region@name + ".nc"
+      new_path = work_dir + "errorbar_" + var0 + "_" + DOMAIN + ".nc"
       data_arr = new((/2, dimsizes(annual_mean)/), float)
       data_arr!0 = "statistic"
       data_arr!1 = "dataset"
@@ -406,7 +405,7 @@ begin
       delete([/annual_mean, annual_std/])
 
       ; Draw plot
-      outfile = plot_dir + var0 + "_errorbar_" + region@name
+      outfile = plot_dir + var0 + "_errorbar_" + DOMAIN
       wks = gsn_open_wks(file_type, outfile)
       data_arr@res_tiMainString = var0 + " - " + region@name
       plot = errorbar_plot(wks, data_arr, var0)
@@ -422,7 +421,7 @@ begin
       statistics = (/"mean", "stddev"/)
       plot_type = "errorbar"
       log_provenance(ncdf_outfile_errorbar, plot_path, caption, statistics, \
-                     region@name, plot_type, AUTHORS, REFERENCES, ALL_FILES)
+                     DOMAIN, plot_type, AUTHORS, REFERENCES, ALL_FILES)
       delete([/plot, wks, data_arr, caption, statistics, plot_type/])
     end if
 
@@ -449,7 +448,7 @@ begin
       end do
 
       ; Collect data and save it
-      new_path = work_dir + "mean_iav_" + var0 + "_" + region@name + ".nc"
+      new_path = work_dir + "mean_iav_" + var0 + "_" + DOMAIN + ".nc"
       data_arr = new((/2, DIM_DAT/), float)
       data_arr!0 = "statistic"
       data_arr!1 = "dataset"
@@ -466,7 +465,7 @@ begin
       delete([/annual_mean, annual_std/])
 
       ; Draw plot
-      outfile = plot_dir + var0 + "_scatter_" + region@name
+      outfile = plot_dir + var0 + "_scatter_" + DOMAIN
       wks = gsn_open_wks(file_type, outfile)
       wks@legendfile = outfile + "_legend"
       data_arr@res_tiMainString = var0 + " - " + region@name
@@ -486,7 +485,7 @@ begin
       statistics = (/"mean", "stddev", "var"/)
       plot_type = "scatter"
       log_provenance(ncdf_outfile_mean_iav, plot_path, caption, statistics, \
-                     region@name, plot_type, AUTHORS, REFERENCES, ALL_FILES)
+                     DOMAIN, plot_type, AUTHORS, REFERENCES, ALL_FILES)
       delete([/plot, wks, data_arr, caption, statistics, plot_type/])
     end if
 
@@ -561,7 +560,7 @@ begin
       end if
 
       ; Draw plot
-      outfile = plot_dir + var0 + "_evolution_" + region@name
+      outfile = plot_dir + var0 + "_evolution_" + DOMAIN
       wks = gsn_open_wks(file_type, outfile)
       wks@legendfile = outfile + "_legend"
       plot1 = evolution_base_plot(wks, data_arr, var0, anomaly)
@@ -609,7 +608,7 @@ begin
                  "et al. (2013), Figure 1 (top).")
       plot_type = "times"
       log_provenance(ncdf_outfile_yearly, plot_path, caption, statistics, \
-                     region@name, plot_type, AUTHORS, REFERENCES, ALL_FILES)
+                     DOMAIN, plot_type, AUTHORS, REFERENCES, ALL_FILES)
       delete([/data_arr, caption, statistics, plot_type/])
     end if
   end if

@@ -51,6 +51,7 @@ load "$diag_scripts/shared/plot/style.ncl"
 begin
 
   enter_msg(DIAG_SCRIPT, "")
+  DOMAIN = diag_script_info@region
 
   ; Variable
   VAR0 = variable_info[0]
@@ -94,7 +95,7 @@ begin
   delete(req_atts)
 
   ; Set region
-  region = select_region(diag_script_info@region)
+  region = select_region(DOMAIN)
 
   ; Set time range
   start_year = 9999
@@ -397,21 +398,21 @@ begin
   system("mkdir -p " + work_dir)
 
   ; Mean
-  new_path = work_dir + "mean_" + var0 + ".nc"
+  new_path = work_dir + "mean_" + var0 + "_" + DOMAIN + ".nc"
   regional_mean@var = var0
   regional_mean@diag_script = DIAG_SCRIPT
   regional_mean@ncdf = new_path
   ncdf_outfile_mean = ncdf_write(regional_mean, new_path)
 
   ; Trend
-  new_path = work_dir + "trend_" + var0 + ".nc"
+  new_path = work_dir + "trend_" + var0 + "_" + DOMAIN + ".nc"
   regional_trend@var = var0
   regional_trend@diag_script = DIAG_SCRIPT
   regional_trend@ncdf = new_path
   ncdf_outfile_trend = ncdf_write(regional_trend, new_path)
 
   ; MVI
-  new_path = work_dir + "MVI_" + var0 + ".nc"
+  new_path = work_dir + "MVI_" + var0 + "_" + DOMAIN + ".nc"
   regional_mvi@var = var0
   regional_mvi@diag_script = DIAG_SCRIPT
   regional_mvi@ncdf = new_path
@@ -423,7 +424,7 @@ begin
 
   if (config_user_info@write_plots) then
     ; Set plot output file
-    outfile = plot_dir + var0 + "_" + region@name
+    outfile = plot_dir + var0 + "_" + DOMAIN
     wks = gsn_open_wks(file_type, outfile)
     gsn_define_colormap(wks, "BlAqGrYeOrReVi200")
     gsn_reverse_colormap(wks)
@@ -484,7 +485,7 @@ begin
     references = (/"anav13jclim"/)
     ancestors = metadata_att_as_array(INFO0, "filename")
     log_provenance(ncdf_outfile_mvi, plot_path, caption, statistics, \
-                   region@name, plot_type, authors, references, ancestors)
+                   DOMAIN, plot_type, authors, references, ancestors)
     delete(data_arr)
   end if
 
