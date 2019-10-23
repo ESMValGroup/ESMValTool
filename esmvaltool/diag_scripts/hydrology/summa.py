@@ -124,7 +124,7 @@ def load_data(cfg):
     logger.info(input_data)
     grouped_input_data = group_metadata(input_data,
                                         'standard_name',
-                                        sort='dataset_name')
+                                        sort='dataset')
     var_dict = {}
     for standard_name in grouped_input_data:
         # get the dataset_name name to use in save function later
@@ -132,7 +132,7 @@ def load_data(cfg):
         logger.info("Processing variable %s", standard_name)
         cube_list_all_years = iris.cube.CubeList()
         for attributes in grouped_input_data[standard_name]:
-            logger.info("Processing dataset %s", attributes['dataset_name'])
+            logger.info("Processing dataset %s", attributes['dataset'])
             input_file = attributes['filename']
             cube = iris.load_cube(input_file)
             cube_list_all_years.append(cube)
@@ -146,7 +146,7 @@ def save_data(var_dict, cfg):
     # Make a list from all cubes in dictionary
     # and convert cube lat/lon to hru
     cube_list_all_vars = iris.cube.CubeList()
-    for key, cube in var_dict.items():
+    for cube in var_dict.values():
         new_cube = convert_to_hru(cube)
         cube_list_all_vars.append(new_cube)
     # Save data
