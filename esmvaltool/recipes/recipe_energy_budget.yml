@@ -1,4 +1,4 @@
-#ESMValTool
+# ESMValTool
 ---
 documentation:
   description: |
@@ -17,11 +17,27 @@ documentation:
     - primavera
 
 datasets:
-  - {dataset: CMCC-CM,  project: CMIP5, mip: Amon, exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
-  - {dataset: CMCC-CMS,  project: CMIP5, mip: Amon, exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
-#  - {dataset: HadGEM3-GC31-LM,  project: CMIP6, mip: Amon, exp: highresSST-present,  ensemble: r1i1p1f1, grid: gn,  start_year: 2000,  end_year: 2002}
-#  - {dataset: HadGEM3-GC31-HM,  project: CMIP6, mip: Amon, exp: highresSST-present,  ensemble: r1i1p1f1, grid: gn,  start_year: 2000,  end_year: 2002}
-#  - {dataset: HadGEM3-GC31-MM,  project: CMIP6, mip: Amon, exp: highresSST-present,  ensemble: r1i1p1f1, grid: gn,  start_year: 2000,  end_year: 2002}
+  - {dataset: CNRM-CM6-1, project: CMIP6, exp: highresSST-present,
+     ensemble: r1i1p1f2, mip: Amon, grid: gr, start_year: 1950, end_year: 2014}
+  - {dataset: CNRM-CM6-1-HR, project: CMIP6, exp: highresSST-present,
+     ensemble: r1i1p1f2, mip: Amon, grid: gr, start_year: 1950, end_year: 2014}
+  - {dataset: ECMWF-IFS-HR, project: CMIP6, exp: highresSST-present,
+     ensemble: r1i1p1f1, mip: Amon, grid: gr, start_year: 1950, end_year: 2014}
+  - {dataset: ECMWF-IFS-LR, project: CMIP6, exp: highresSST-present,
+     ensemble: r1i1p1f1, mip: Amon, grid: gr, start_year: 1950, end_year: 2014}
+  - {dataset: HadGEM3-GC31-HM, project: CMIP6, exp: highresSST-present,
+     ensemble: r1i1p1f1, mip: Amon, grid: gn, start_year: 1950, end_year: 2014}
+  - {dataset: HadGEM3-GC31-LM, project: CMIP6, exp: highresSST-present,
+     ensemble: r1i1p1f1, mip: Amon, grid: gn, start_year: 1950, end_year: 2014}
+  - {dataset: HadGEM3-GC31-MM, project: CMIP6, exp: highresSST-present,
+     ensemble: r1i1p1f1, mip: Amon, grid: gn, start_year: 1950, end_year: 2014}
+  - {dataset: MPI-ESM1-2-XR, institute: MPI-M, project: CMIP6,
+     exp: highresSST-present, ensemble: r1i1p1f1, mip: Amon, grid: gn,
+     start_year: 1950, end_year: 2014}
+  - {dataset: MPI-ESM1-2-HR, institute: MPI-M, project: CMIP6,
+     exp: highresSST-present, ensemble: r1i1p1f1, mip: Amon, grid: gn,
+     start_year: 1950, end_year: 2014}
+
 
 preprocessors:
   global_mean:
@@ -55,14 +71,14 @@ diagnostics:
       rsds:
         preprocessor: global_mean
       rsns:
-        derive: True
+        derive: true
         preprocessor: global_mean
       rlut:
         preprocessor: global_mean
       rlds:
         preprocessor: global_mean
       rlns:
-        derive: True
+        derive: true
         preprocessor: global_mean
       hfss:
         preprocessor: global_mean
@@ -83,14 +99,14 @@ diagnostics:
       rsds:
         preprocessor: land_mean
       rsns:
-        derive: True
+        derive: true
         preprocessor: land_mean
       rlut:
         preprocessor: land_mean
       rlds:
         preprocessor: land_mean
       rlns:
-        derive: True
+        derive: true
         preprocessor: land_mean
       hfss:
         preprocessor: land_mean
@@ -111,14 +127,14 @@ diagnostics:
       rsds:
         preprocessor: ocean_mean
       rsns:
-        derive: True
+        derive: true
         preprocessor: ocean_mean
       rlut:
         preprocessor: ocean_mean
       rlds:
         preprocessor: ocean_mean
       rlns:
-        derive: True
+        derive: true
         preprocessor: ocean_mean
       hfss:
         preprocessor: ocean_mean
