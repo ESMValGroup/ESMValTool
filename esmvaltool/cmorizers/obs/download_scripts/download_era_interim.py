@@ -152,7 +152,6 @@ MONTH_PARAMS = [
 
 INVARIANT_PARAMS = [
     ('172.128', 'lsm'),  # Land-sea mask
-    ('129.128', 'z'),  # Geopotential
 ]
 
 
