@@ -2,8 +2,8 @@
 import logging
 from pathlib import Path
 import warnings
-import numpy as np
 from copy import deepcopy
+import numpy as np
 
 # import dask.array as da
 import iris
@@ -71,7 +71,9 @@ def windspeed_conversion(windspeed_z, measurement_height, target_height):
 
 def compute_specific_humidity(dewpoint_temperature, surface_pressure):
     """Compute specific humidity from dewpoint temp and surface pressure"""
-    # source 1: https://www.eoas.ubc.ca/books/Practical_Meteorology/prmet/PracticalMet_WholeBook-v1_00b.pdf page 96
+    # source 1:
+    # https://www.eoas.ubc.ca/books/Practical_Meteorology/prmet/PracticalMet_WholeBook-v1_00b.pdf
+    # page 96
 
     surface_pressure = surface_pressure/1000.
     # to convert between celsius and kelvin
@@ -117,6 +119,7 @@ def convert_to_hru(cube):
     return cube_hru
 
 def load_data(cfg):
+    """Load each variable file as a iris cube"""
     input_data = cfg['input_data'].values()
     logger.info(input_data)
     grouped_input_data = group_metadata(input_data,
@@ -129,7 +132,7 @@ def load_data(cfg):
         logger.info("Processing variable %s", standard_name)
         cube_list_all_years = iris.cube.CubeList()
         for attributes in grouped_input_data[standard_name]:
-            logger.info("Processing dataset_name %s", attributes['dataset_name'])
+            logger.info("Processing dataset %s", attributes['dataset_name'])
             input_file = attributes['filename']
             cube = iris.load_cube(input_file)
             cube_list_all_years.append(cube)
@@ -139,7 +142,9 @@ def load_data(cfg):
     return var_dict
 
 def save_data(var_dict, cfg):
+    """Save all variables needed for SUMMA in one netcdf file"""
     # Make a list from all cubes in dictionary
+    # and convert cube lat/lon to hru
     cube_list_all_vars = iris.cube.CubeList()
     for key, cube in var_dict.items():
         new_cube = convert_to_hru(cube)
@@ -150,6 +155,10 @@ def save_data(var_dict, cfg):
     basename = dataset_name + '_summa'
     output_file = get_diagnostic_filename(basename, cfg)
     iris.save(cube_list_all_vars, output_file, fill_value=1.e20)
+    # Store provenance
+    provenance_record = get_provenance_record(dataset_name)
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(output_file, provenance_record)
 
 def main(cfg):
     """Process data for use as input to the summa hydrological model """
@@ -182,19 +191,17 @@ def main(cfg):
     dewpoint_temperature = variables['tdps']
     surface_pressure = variables['ps']
     specific_humidity = compute_specific_humidity(dewpoint_temperature,
-                                                     surface_pressure)
+                                                  surface_pressure)
     # Fix cube attributes
     variables['spechum'] = _fix_cube(specific_humidity, 'spechum')
 
     # Select and rename the desired variables
     variables = _rename_var(variables, output_var_name)
 
+    # Get the hru and save all variables
     save_data(variables, cfg)
 
-    # Store provenance
-    provenance_record = get_provenance_record(dataset_name)
-    with ProvenanceLogger(cfg) as provenance_logger:
-        provenance_logger.log(output_file, provenance_record)
+
 
 if __name__ == '__main__':
 
