@@ -77,7 +77,9 @@ begin
         var_alt = var_all
       end if
     end if
-
+    print(config_user_info)
+    print(config_user_info@write_netcdf)
+    print(workpath)
     ; Write output
     if (config_user_info@write_netcdf) then
       var_all@ncdf = workpath
