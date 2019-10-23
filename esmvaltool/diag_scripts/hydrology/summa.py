@@ -60,12 +60,12 @@ def windspeed_conversion(windspeed_z, measurement_height, target_height):
                   general principles of transparancy. Better replace it with\
                   a more general formula incorporating friction velocity or\
                   roughness length')
-    # source: 
+    # source:
     # http://www.fao.org/3/X0490E/x0490e07.htm#wind%20profile%20relationship
     disp_height = 5.42 / 67.8
     rough_length = 1 / 67.8
     windspeed = (windspeed_z
-                 * np.log((target_height - disp_height) / rough_length) 
+                 * np.log((target_height - disp_height) / rough_length)
                  / np.log((measurement_height - disp_height) / rough_length))
     return windspeed
 
@@ -113,7 +113,7 @@ def convert_to_hru(cube):
     time = cube.coord('time')
     hru = iris.coords.DimCoord(hru_list, long_name="hru")
     cube_hru = iris.cube.Cube(data, dim_coords_and_dims=[(time, 0), (hru, 1)])
-    cube_hru.CubeMetadata = deepcopy(cube.metadata)
+    cube_hru.metadata = deepcopy(cube.metadata)
     return cube_hru
 
 def load_data(cfg):
@@ -178,7 +178,7 @@ def main(cfg):
     # Fix cube attributes
     variables['windspd'] = _fix_cube(wind_speed_2m, 'windspd')
 
-    # Specific humidity calculation from dewpoint temp and surface pressure 
+    # Specific humidity calculation from dewpoint temp and surface pressure
     dewpoint_temperature = variables['tdps']
     surface_pressure = variables['ps']
     specific_humidity = compute_specific_humidity(dewpoint_temperature,
