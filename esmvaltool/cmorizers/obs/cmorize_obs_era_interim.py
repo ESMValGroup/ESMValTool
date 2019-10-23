@@ -80,49 +80,47 @@ For further details on obtaining daily values from ERA-Interim,
     https://confluence.ecmwf.int/display/CKB/ERA-Interim%3A+How+to+calculate+daily+total+precipitation
 
 """
-from datetime import datetime, timedelta
 import logging
-from concurrent.futures import as_completed, ProcessPoolExecutor
+import re
+from collections import defaultdict
+from concurrent.futures import ProcessPoolExecutor, as_completed
 from copy import deepcopy
+from datetime import datetime, timedelta
 from os import cpu_count
 from pathlib import Path
 from warnings import catch_warnings, filterwarnings
-from collections import defaultdict
 
 import iris
 import numpy as np
 
 from esmvalcore.cmor.table import CMOR_TABLES
 from esmvalcore.preprocessor import daily_statistics
+
 from . import utilities as utils
 
 logger = logging.getLogger(__name__)
 
 
-def _set_global_attributes(cube, attributes, definition):
-    """Set global attributes"""
-    utils.set_global_atts(cube, attributes)
-    # Here var_name is the raw era-interim name
-    if cube.var_name in {'e', 'sf'}:
-        # Change evaporation and snowfall units from
-        # 'm of water equivalent' to m
-        cube.units = 'm'
-    if cube.var_name in {'e', 'sf', 'tp', 'pev'}:
-        # Change units from meters per day of water to kg of water per day
+def _fix_units(cube, definition):
+    """Fix issues with the units."""
+    if cube.var_name in {'evspsbl', 'pr', 'prsn'}:
+        # Change units from meters of water per day
+        # to kg of water per m2 per day
+        cube.units = 'm'  # fix invalid units
         cube.units = cube.units * 'kg m-3 day-1'
         cube.data = cube.core_data() * 1000.
-    if cube.var_name in {'ssr', 'ssrd', 'tisr', 'hfds'}:
+    if cube.var_name in {'hfds', 'rss', 'rsds', 'rsdt'}:
         # Add missing 'per day'
         cube.units = cube.units * 'day-1'
         # Radiation fluxes are positive in downward direction
         cube.attributes['positive'] = 'down'
-    if cube.var_name in {'iews', 'inss'}:
+    if cube.var_name in {'tauu', 'tauv'}:
         cube.attributes['positive'] = 'down'
-    if cube.var_name in {'lsm', 'tcc'}:
+    if cube.var_name in {'sftlf', 'clt'}:
         # Change units from fraction to percentage
         cube.units = definition.units
         cube.data = cube.core_data() * 100.
-    if cube.var_name in {'z'}:
+    if cube.var_name in {'zg'}:
         # Divide by acceleration of gravity [m s-2],
         # required for surface geopotential height, see:
         # https://confluence.ecmwf.int/pages/viewpage.action?pageId=79955800
@@ -131,14 +129,16 @@ def _set_global_attributes(cube, attributes, definition):
 
 
 def _fix_coordinates(cube, definition):
-    # Fix coordinates
+    """Fix coordinates."""
     # Make latitude increasing
     cube = cube[:, ::-1, ...]
-    # Add height coordinate
+
+    # Add scalar height coordinates
     if 'height2m' in definition.dimensions:
         utils.add_scalar_height_coord(cube, 2.)
     if 'height10m' in definition.dimensions:
         utils.add_scalar_height_coord(cube, 10.)
+
     for axis in 'T', 'X', 'Y', 'Z':
         coord_def = definition.coordinates.get(axis)
         if coord_def:
@@ -155,133 +155,151 @@ def _fix_coordinates(cube, definition):
                 coord.guess_bounds()
 
 
-def _fix_frequency(cube, var):
-    # Here var_name is the CMIP name
-    # era-interim is in 3hr or 6hr or 12hr freq need to convert to daily
-    # only variables with step 12 need accounting time 00 AM as time 24 PM
-    if var['mip'] in {'day', 'Eday', 'CFday'}:
-        # accounting time 00 AM as time 24 PM
-        if cube.var_name in {'tasmax', 'tasmin', 'pr',
-                             'rsds', 'hfds', 'evspsbl',
-                             'rsdt', 'rss', 'prsn'}:
-            cube.coord('time').points = [
-                cube.coord('time').units.date2num(
-                    cell.point - timedelta(seconds=1)
-                )
-                for cell in cube.coord('time').cells()
-            ]
-        if cube.var_name == 'tasmax':
-            cube = daily_statistics(cube, 'max')
-        elif cube.var_name == 'tasmin':
-            cube = daily_statistics(cube, 'min')
-        elif cube.var_name in {'pr', 'rsds', 'hfds', 'evspsbl',
-                               'rsdt', 'rss', 'prsn'}:
-            cube = daily_statistics(cube, 'sum')
-        else:
-            cube = daily_statistics(cube, 'mean')
-        # Remove daily statistics helpers
-        cube.remove_coord(cube.coord('day_of_year'))
-        cube.remove_coord(cube.coord('year'))
-        # Correct the time bound
-        cube.coord('time').points = cube.coord('time').units.date2num(
-            [
-                cell.point.replace(hour=12, minute=0, second=0,
-                                   microsecond=0)
-                for cell in cube.coord('time').cells()
-            ]
-        )
+def _compute_daily(cube):
+    """Convert various frequencies to daily frequency.
+
+    ERA-Interim is in 3hr or 6hr or 12hr freq need to convert to daily
+    Only variables with step 12 need accounting time 00 AM as time 24 PM
+
+    """
+    # Account for time 00 AM as time 24 PM
+    if cube.var_name in {
+            'tasmax',
+            'tasmin',
+            'pr',
+            'rsds',
+            'hfds',
+            'evspsbl',
+            'rsdt',
+            'rss',
+            'prsn',
+    }:
+        cube.coord('time').points = cube.coord('time').units.date2num([
+            cell.point - timedelta(seconds=1)
+            for cell in cube.coord('time').cells()
+        ])
+
+    if cube.var_name == 'tasmax':
+        cube = daily_statistics(cube, 'max')
+    elif cube.var_name == 'tasmin':
+        cube = daily_statistics(cube, 'min')
+    elif cube.var_name in {
+            'pr',
+            'rsds',
+            'hfds',
+            'evspsbl',
+            'rsdt',
+            'rss',
+            'prsn',
+    }:
+        cube = daily_statistics(cube, 'sum')
+    else:
+        cube = daily_statistics(cube, 'mean')
+    # Remove daily statistics aux coordinates
+    cube.remove_coord(cube.coord('day_of_year'))
+    cube.remove_coord(cube.coord('year'))
+
+    # Correct the time coordinate
+    cube.coord('time').points = cube.coord('time').units.date2num([
+        cell.point.replace(hour=12, minute=0, second=0, microsecond=0)
+        for cell in cube.coord('time').cells()
+    ])
+    cube.coord('time').bounds = None
+    cube.coord('time').guess_bounds()
+
     return cube
 
 
-def _get_files(in_dir, var):
-    # Make a dictionary with the keys that are years
-    files_dict = defaultdict(list)
-    for in_file in var['files']:
-        files_lst = sorted(list(Path(in_dir).glob(in_file)))
-        for item in files_lst:
-            year = str(item.stem).split('_')[-1]
-            files_dict[year].append(item)
-    # Check if files are complete
-    for year in files_dict.copy():
-        if len(files_dict[year]) != len(var['files']):
-            logger.info("CMORizing %s at time '%s' needs '%s' input file/s",
-                        var['short_name'], year, len(var['files']))
-            files_dict.pop(year)
-    return files_dict
+def _load_cube(in_files, var):
+    """Load in_files into an iris cube."""
+    ignore_warnings = (
+        {
+            'raw': 'tcc',
+            'units': '(0 - 1)',
+        },
+        {
+            'raw': 'lsm',
+            'units': '(0 - 1)',
+        },
+        {
+            'raw': 'e',
+            'units': 'm of water equivalent',
+        },
+        {
+            'raw': 'sf',
+            'units': 'm of water equivalent',
+        },
+        {
+            'raw': 'tp',
+            'units': 'm of water equivalent',
+        },
+    )
+
+    with catch_warnings():
+        msg = "Ignoring netCDF variable '{raw}' invalid units '{units}'"
+        for warning in ignore_warnings:
+            filterwarnings(action='ignore',
+                           message=re.escape(msg.format(**warning)),
+                           category=UserWarning,
+                           module='iris')
+
+        if len(in_files) == 1:
+            cube = iris.load_cube(
+                in_files[0],
+                constraint=utils.var_name_constraint(var['raw']),
+            )
+        elif var.get('operator', '') == 'sum':
+            # Multiple variables case using sum operation
+            for i, filename in enumerate(in_files):
+                in_cube = iris.load_cube(
+                    filename,
+                    constraint=utils.var_name_constraint(var['raw'][i]),
+                )
+                if i == 0:
+                    cube = in_cube
+                else:
+                    cube += in_cube
+        else:
+            raise ValueError(
+                "Multiple input files found, with operator '{}' configured: {}"
+                .format(var.get('operator'), ', '.join(in_files)))
+
+    return cube
 
 
-def _extract_variable(in_file, var, cfg, out_dir):
-    if 'files' in var:
-        in_file_lst = [str(item) for item in in_file]
-    else:
-        in_file_lst = in_file
-    logger.info("CMORizing variable '%s' from input file/s '%s'",
-                var['short_name'], in_file_lst)
+def _extract_variable(in_files, var, cfg, out_dir):
+    logger.info("CMORizing variable '%s' from input files '%s'",
+                var['short_name'], ', '.join(in_files))
     attributes = deepcopy(cfg['attributes'])
     attributes['mip'] = var['mip']
     cmor_table = CMOR_TABLES[attributes['project_id']]
     definition = cmor_table.get_variable(var['mip'], var['short_name'])
 
-    with catch_warnings():
-        filterwarnings(
-            action='ignore',
-            message="Ignoring netCDF variable 'tcc' invalid units '(0 - 1)'",
-            category=UserWarning,
-            module='iris',
-        )
-        filterwarnings(
-            action='ignore',
-            message="Ignoring netCDF variable 'lsm' invalid units '(0 - 1)'",
-            category=UserWarning,
-            module='iris',
-        )
-        filterwarnings(
-            action='ignore',
-            message=("Ignoring netCDF variable 'e' invalid units "
-                     "'m of water equivalent'"),
-            category=UserWarning,
-            module='iris',
-        )
-        if 'files' in var:
-            if var['operator'] == 'sum':
-                # Multiple variables case using sum operation
-                for i, item in enumerate(in_file):
-                    in_cube = iris.load_cube(
-                        str(item),
-                        constraint=utils.var_name_constraint(var['raw'][i]),
-                    )
-                    if i == 0:
-                        cube = in_cube
-                    else:
-                        cube += in_cube
-        else:
-            cube = iris.load_cube(
-                str(in_file),
-                constraint=utils.var_name_constraint(var['raw']),
-            )
+    cube = _load_cube(in_files, var)
 
-    _set_global_attributes(cube, attributes, definition)
+    utils.set_global_atts(cube, attributes)
 
     # Set correct names
     cube.var_name = definition.short_name
     cube.standard_name = definition.standard_name
     cube.long_name = definition.long_name
 
+    _fix_units(cube, definition)
+
     # Fix data type
     cube.data = cube.core_data().astype('float32')
 
     _fix_coordinates(cube, definition)
-    cube = _fix_frequency(cube, var)
 
-    cube.coord('time').bounds = None
-    cube.coord('time').guess_bounds()
+    if var['mip'] in {'day', 'Eday', 'CFday'}:
+        cube = _compute_daily(cube)
 
     # Convert units if required
     cube.convert_units(definition.units)
 
-    logger.info("Saving cube\n%s", cube)
-    logger.info("Expected output size is %.1fGB",
-                np.prod(cube.shape) * 4 / 2 ** 30)
+    logger.debug("Saving cube\n%s", cube)
+    logger.debug("Expected output size is %.1fGB",
+                 np.prod(cube.shape) * 4 / 2**30)
     utils.save_variable(
         cube,
         cube.var_name,
@@ -289,39 +307,69 @@ def _extract_variable(in_file, var, cfg, out_dir):
         attributes,
         local_keys=['positive'],
     )
+    logger.info("Finished CMORizing %s", ', '.join(in_files))
 
 
-def cmorization(in_dir, out_dir, cfg, _):
-    """Cmorization func call."""
-    cfg['attributes']['comment'] = cfg['attributes']['comment'].format(
+def _get_in_files_by_year(in_dir, var):
+    """Find input files by year."""
+    if 'file' in var:
+        var['files'] = [var.pop('file')]
+
+    in_files = defaultdict(list)
+    for pattern in var['files']:
+        for filename in Path(in_dir).glob(pattern):
+            year = str(filename.stem).split('_')[-1]
+            in_files[year].append(str(filename))
+
+    # Check if files are complete
+    for year in in_files.copy():
+        if len(in_files[year]) != len(var['files']):
+            logger.warning(
+                "Skipping CMORizing %s for year '%s', %s input files needed, "
+                "but found only %s", var['short_name'], year,
+                len(var['files']), ', '.join(in_files[year]))
+            in_files.pop(year)
+
+    return in_files.values()
+
+
+def _run(jobs, n_workers):
+    """Run CMORization jobs using n_workers."""
+    if n_workers == 1:
+        for job in jobs:
+            _extract_variable(*job)
+    else:
+        futures = {}
+        with ProcessPoolExecutor(max_workers=1) as executor:
+            for job in jobs:
+                future = executor.submit(_extract_variable, *job)
+                futures[future] = job[0]
+
+        for future in as_completed(futures):
+            try:
+                future.result()
+            except:  # noqa
+                logger.error("Failed to CMORize %s",
+                             ', '.join(futures[future]))
+                raise
+
+
+def cmorization(in_dir, out_dir, cfg, config_user):
+    """Run CMORizer for ERA-Interim."""
+    cfg['attributes']['comment'] = cfg['attributes']['comment'].strip().format(
         year=datetime.now().year)
     cfg.pop('cmor_table')
 
-    n_workers = int(cpu_count() / 1.5)
+    n_workers = config_user.get('max_parallel_tasks')
+    if n_workers is None:
+        n_workers = int(cpu_count() / 1.5)
     logger.info("Using at most %s workers", n_workers)
-    futures = {}
-    with ProcessPoolExecutor(max_workers=1) as executor:
-        for short_name, var in cfg['variables'].items():
-            if 'short_name' not in var:
-                var['short_name'] = short_name
-            if 'file' in var:
-                for in_file in sorted(Path(in_dir).glob(var['file'])):
-                    future = executor.submit(_extract_variable, in_file,
-                                             var, cfg, out_dir)
-                    futures[future] = in_file
-            if 'files' in var:
-                # Multiple variables case
-                files_dict = _get_files(in_dir, var)
-                for key in files_dict:
-                    in_file = files_dict[key]
-                    future = executor.submit(_extract_variable, in_file,
-                                             var, cfg, out_dir)
-                    futures[future] = [str(item) for item in in_file]
 
-    for future in as_completed(futures):
-        try:
-            future.result()
-        except:  # noqa
-            logger.error("Failed to CMORize %s", futures[future])
-            raise
-        logger.info("Finished CMORizing %s", futures[future])
+    jobs = []
+    for short_name, var in cfg['variables'].items():
+        if 'short_name' not in var:
+            var['short_name'] = short_name
+        for in_files in _get_in_files_by_year(in_dir, var):
+            jobs.append([in_files, var, cfg, out_dir])
+
+    _run(jobs, n_workers)
