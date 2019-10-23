@@ -10,7 +10,11 @@ documentation:
 
 CMIP6_landcover: &CMIP6_landcover
   additional_datasets:
-    - {dataset: CESM2, project: CMIP6, grid: gn, exp: historical, ensemble: r1i1p1f1}
+#    - {dataset: CESM2, project: CMIP6, grid: gn, exp: historical, ensemble: r1i1p1f1}
+    - {dataset: UKESM1-0-LL, project: CMIP6, grid: gn, exp: historical, ensemble: r1i1p1f2}
+    - {dataset: HadGEM3-GC31-LL, project: CMIP6, grid: gn, exp: historical, ensemble: r1i1p1f3}
+    - {dataset: MPI-ESM1-2-HR, project: CMIP6, grid: gn, exp: historical, ensemble: r10i1p1f1}
+
 
 CMIP5_landcover: &CMIP5_landcover
   additional_datasets:
