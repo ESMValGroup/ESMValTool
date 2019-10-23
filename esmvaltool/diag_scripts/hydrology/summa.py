@@ -53,30 +53,35 @@ def compute_windspeed(u_component, v_component):
     return wind_speed
 
 
-def windspeed_conversion(windspeed_z, measurement_height):
-    """ Convert wind speed from input height to 2m with logarithmic profile """
+def windspeed_conversion(windspeed_z, measurement_height, target_height):
+    """ Convert wind speed from measurement height to target height """
     warnings.warn('This version of the logarithmic wind profile is violating\
                   general principles of transparancy. Better replace it with\
                   a more general formula incorporating friction velocity or\
                   roughness length')
+    # source: 
+    # http://www.fao.org/3/X0490E/x0490e07.htm#wind%20profile%20relationship
     disp_height = 5.42 / 67.8
     rough_length = 1 / 67.8
-    windspeed_2m = windspeed_z * np.log((2 - disp_height) / rough_length) 
-                   / np.log((measurement_height - disp_height) / rough_length)
-    return windspeed_2m
+    windspeed = (windspeed_z
+                 * np.log((target_height - disp_height) / rough_length) 
+                 / np.log((measurement_height - disp_height) / rough_length))
+    return windspeed
 
 def compute_specific_humidity(dewpoint_temperature, surface_pressure):
+    """Compute specific humidity from dewpoint temp and surface pressure"""
     # source 1: https://www.eoas.ubc.ca/books/Practical_Meteorology/prmet/PracticalMet_WholeBook-v1_00b.pdf page 96
-    
+
     surface_pressure = surface_pressure/1000.
     # to convert between celsius and kelvin
     kelvin = 273.15
-    # ratio of gas constants for dry air and water vapor in g/g 
+    # ratio of gas constants for dry air and water vapor in g/g
     epsilon = 0.62196351 #from metsim python package
     sat_vap_pres = 611 # saturated vapor pressure in Pa
 
-    vapour_pressure = sat_vap_pres * np.exp((17.76 * (dewpoint_temperature - kelvin)) / 
-                      (dewpoint_temperature - kelvin + 243.5))
+    vapour_pressure = (sat_vap_pres
+                       * np.exp((17.76 * (dewpoint_temperature - kelvin))
+                                / (dewpoint_temperature - kelvin + 243.5)))
     vapour_pressure = vapour_pressure / 1000.
     mix_rat = epsilon * vapour_pressure / (surface_pressure - vapour_pressure)
     spechum = mix_rat / (1 + mix_rat)
@@ -132,30 +137,13 @@ def main(cfg):
         key = grouped_input_data[standard_name][0]['short_name']
         variables[key] = cube_all_years
 
-        # Do stuff
-        # The data need to be aggregated for each HRU (subcatchment)
-        # Inti's `decomposed` function in extract_shape should add
-        # this as a dimension to the cubes, so it's just a matter of
-        # aggregating latitude and longitude. The resulting cubes
-        # will have dimensions 'time' and 'hru'.
-        #
-        # Unit conversion:
-        # - precip: kg m-2 s-1
-        # - radiation: w m-2
-        # - temperature: K
-        # - wind speed: m s-1
-        # - pressure: Pa
-        # - specific humidity: g g-1
-        #
-        # example output file can also be found on jupyter server.
-
     # Extract wind component variables from the cube list
     u_component = variables['uas']
     v_component = variables['vas']
 
     # compute wind speed and convert to 2m
     wind_speed = compute_windspeed(u_component, v_component)
-    wind_speed_2m = windspeed_conversion(wind_speed, 10)
+    wind_speed_2m = windspeed_conversion(wind_speed, 10, 2)
 
     # Fix cube attributes
     variables['windspd'] = _fix_cube(wind_speed_2m, 'windspd')
@@ -185,6 +173,16 @@ def main(cfg):
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(output_file, provenance_record)
 
+    # Do stuff
+        # The data need to be aggregated for each HRU (subcatchment)
+        # Inti's `decomposed` function in extract_shape should add
+        # this as a dimension to the cubes, so it's just a matter of
+        # aggregating latitude and longitude. The resulting cubes
+        # will have dimensions 'time' and 'hru'.
+        #
+
+        #
+        # example output file can also be found on jupyter server.
 
 if __name__ == '__main__':
 

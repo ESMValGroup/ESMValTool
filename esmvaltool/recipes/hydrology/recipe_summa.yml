@@ -6,29 +6,33 @@ documentation:
     Recipe pre-processes ERA-Interim and ERA5 files for use in the SUMMA hydrological model.
 
     Summa is ...
+     #Target variable units:
+        # - precip: kg m-2 s-1
+        # - radiation: w m-2
+        # - temperature: K
+        # - wind speed: m s-1
+        # - pressure: Pa
+        # - specific humidity: g g-1
+
   authors: ['kalverla_peter', 'camphuijsen_jaro', 'alidoost_sarah']
   projects: ['ewatercycle']
   references: ['acknow_project']
 
 
 preprocessors:
-  extract_region: &region # TODO fix this preprocessor
+  extract_meuse_bbox: &meuse_bbox
+  # current coordinates are for the Meuse basin
     extract_region:
-      start_longitude:
-      end_longitude:
-      start_latitude:
-      end_latitude:
+      start_longitude: 3
+      end_longitude: 7
+      start_latitude: 47
+      end_latitude: 52
   regrid: &regrid
     regrid:
       target_grid: 0.25x0.25
       lon_offset: true
       lat_offset: true
       scheme: linear
-  # SUMMA is semi-distributed; it works with Hydrological Response Units (HRUs)
-  # These are lumped subcatchments, so we could use Inti's `decomposed` function.
-  # Another option is to consider gridcells as HRU's, making it a gridded model.
-  # The latter is what was done in the Lorentz workshop.
-  # However, I can't find the necessary input shapefiles; for now use Inti's (for HYPE)
   extract_meuse: &Meuse
     extract_shape:
       shapefile: HYPE_Shapefiles/Meuse_HYPE/Meuse_HYPE.shp
@@ -47,7 +51,7 @@ preprocessors:
     <<: *Meuse
     <<: *mean
   daily:
-    <<: *region
+    <<: *meuse_bbox
     <<: *regrid
     <<: *Meuse
 
