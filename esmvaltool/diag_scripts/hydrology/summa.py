@@ -3,6 +3,7 @@ import logging
 from pathlib import Path
 import warnings
 import numpy as np
+from copy import deepcopy
 
 # import dask.array as da
 import iris
@@ -103,7 +104,18 @@ def _fix_cube(cube, var_name):
         cube.unit = 'g/g'
     return cube
 
-
+def convert_to_hru(cube):
+    """Converts cube with lat/lon coords to hru coord"""
+    data = []
+    for i in enumerate(cube.coord('time')):
+        data[i] = cube.data[i].compressed()
+    hru_list = range(len(data[0]))
+    time = cube.coord('time')
+    hru = iris.coords.DimCoord(hru_list, standard_name="hru")
+    cube_hru = iris.Cube(data, dim_coords_and_dims=[(time, 0), (hru, 1)])
+    cube_hru.CubeMetadata = deepcopy(cube.metadata)
+    return cube_hru
+    
 def main(cfg):
     """Process data for use as input to the summa hydrological model """
     input_data = cfg['input_data'].values()
@@ -161,8 +173,9 @@ def main(cfg):
 
     # Make a list from all cubes in dictionary
     cube_list_all_vars = iris.cube.CubeList()
-    for key in variables:
-        cube_list_all_vars.append(variables[key])
+    for cube in variables.values:
+        new_cube = convert_to_hru(cube)
+        cube_list_all_vars.append(new_cube)
     # Save data
     basename = dataset + '_summa'
     output_file = get_diagnostic_filename(basename, cfg)
@@ -172,17 +185,6 @@ def main(cfg):
     provenance_record = get_provenance_record(dataset)
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(output_file, provenance_record)
-
-    # Do stuff
-        # The data need to be aggregated for each HRU (subcatchment)
-        # Inti's `decomposed` function in extract_shape should add
-        # this as a dimension to the cubes, so it's just a matter of
-        # aggregating latitude and longitude. The resulting cubes
-        # will have dimensions 'time' and 'hru'.
-        #
-
-        #
-        # example output file can also be found on jupyter server.
 
 if __name__ == '__main__':
 
