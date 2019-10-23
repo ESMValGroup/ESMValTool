@@ -130,9 +130,16 @@ def debruin_PET(t2m, msl, ssrd, tisr):
             long_name='Saturated vapour pressure at 273 Kelvin',
             units='hPa')
         emp_a = 17.67 # empirical constant a
-        emp_b = 243.5 # empirical constant b
+        emp_b = iris.coords.AuxCoord(243.5,
+            long_name='Empirical constant b in Tetens formula',
+            units='degC')
         exponent = iris.analysis.maths.exp(emp_a * temp / (emp_b + temp))
-        return emp_a * emp_b * e0 * exponent / (emp_b + temp)**2
+        # return emp_a * emp_b * e0 * exponent / (emp_b + temp)**2
+        # iris.exceptions.NotYetImplementedError: coord * coord (emp_b * e0)
+        # workaround:
+        tmp1 = emp_a * emp_b
+        tmp2 = e0 * exponent / (emp_b + temp)**2
+        return tmp1 * tmp2
 
     # Unit checks:
     msl = preproc.convert_units(msl,'hPa')
@@ -142,7 +149,7 @@ def debruin_PET(t2m, msl, ssrd, tisr):
     delta_svp = tetens_derivative(t2m)
     # gamma = rv/rd * cp*msl/lambda_
     # iris.exceptions.NotYetImplementedError: coord / coord
-    gamma = rv.points/rd.points * cp*msl/lambda_
+    gamma = rv.points[0]/rd.points[0] * cp*msl/lambda_
 
     # Renaming for consistency with paper
     kdown = ssrd
@@ -225,7 +232,6 @@ def main(cfg):
     iris.save(tas_dem, output_file, fill_value=1.e20)
 
     # TODO
-    # - Add function(s) to calculate potential evapotranspiration
     # - Check whether the correct units are used
     # - See whether we can work with wflow pcraster .map files directly
     #   (currently, we use .nc dem files that Jerom converted externally)
