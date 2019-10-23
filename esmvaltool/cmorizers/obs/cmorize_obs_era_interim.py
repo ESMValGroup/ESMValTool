@@ -156,6 +156,23 @@ def _fix_coordinates(cube, definition):
     return cube
 
 
+def _fix_monthly_time_coord(cube):
+    """Set the monthly time coordinates to the middle of the month."""
+    coord = cube.coord(axis='T')
+    end = []
+    for cell in coord.cells():
+        month = cell.point.month + 1
+        year = cell.point.year
+        if month == 13:
+            month = 1
+            year = year + 1
+        end.append(cell.point.replace(month=month, year=year))
+    end = coord.units.date2num(end)
+    start = coord.points
+    coord.points = 0.5 * (start + end)
+    coord.bounds = np.column_stack([start, end])
+
+
 def _compute_daily(cube):
     """Convert various frequencies to daily frequency.
 
@@ -292,7 +309,10 @@ def _extract_variable(in_files, var, cfg, out_dir):
 
     cube = _fix_coordinates(cube, definition)
 
-    if var['mip'] in {'day', 'Eday', 'CFday'}:
+    if 'mon' in var['mip']:
+        _fix_monthly_time_coord(cube)
+
+    if 'day' in var['mip']:
         cube = _compute_daily(cube)
 
     # Convert units if required
