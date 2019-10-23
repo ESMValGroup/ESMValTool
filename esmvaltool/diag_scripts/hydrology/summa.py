@@ -173,7 +173,7 @@ def main(cfg):
 
     # Make a list from all cubes in dictionary
     cube_list_all_vars = iris.cube.CubeList()
-    for cube in variables.values:
+    for key, cube in variables.items():
         new_cube = convert_to_hru(cube)
         cube_list_all_vars.append(new_cube)
     # Save data
