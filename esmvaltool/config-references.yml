@@ -246,6 +246,11 @@ authors:
     name: Lledo, Llorenc
     institute: BSC, Spain
     orcid:
+  loosveld-tomas_saskia:
+    name: Loosveldt-Tomas, Saskia
+    institute: BSC, Spain
+    email: saskia.loosveldt 'at' bsc.es
+    orcid:
   lorenz_ruth:
     name: Lorenz, Ruth
     institute: ETH Zurich, Switzerland
@@ -374,6 +379,10 @@ authors:
     name: van Ulft, Bert
     institute: KNMI, Netherlands
     orcid: https://orcid.org/0000-0001-8653-2312
+  vanniere_benoit:
+    name: Vanniere, Benoit
+    institute: Univ. of Reading, UK
+    email: b.vanniere 'at' reading.ac.uk
   walton_jeremy:
     name: Walton, Jeremy
     institute: MetOffice, UK
@@ -704,6 +713,7 @@ projects:
   eval4cmip: DLR and University of Bremen project funded by the Initiative and Networking Fund of the Helmholtz Society
   ewatercycle: eWaterCycle project
   qa4ecv: QA4ECV
+  primavera: EU H2020 project PRIMAVERA
   trr181: DFG Project TRR-181
   ukesm: UKESM, UK Earth System Model project (NERC)
 
