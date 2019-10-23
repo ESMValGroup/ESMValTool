@@ -153,6 +153,7 @@ def _fix_coordinates(cube, definition):
             coord.points = coord.core_points().astype('float64')
             if len(coord.points) > 1:
                 coord.guess_bounds()
+    return cube
 
 
 def _compute_daily(cube):
@@ -289,7 +290,7 @@ def _extract_variable(in_files, var, cfg, out_dir):
     # Fix data type
     cube.data = cube.core_data().astype('float32')
 
-    _fix_coordinates(cube, definition)
+    cube = _fix_coordinates(cube, definition)
 
     if var['mip'] in {'day', 'Eday', 'CFday'}:
         cube = _compute_daily(cube)
