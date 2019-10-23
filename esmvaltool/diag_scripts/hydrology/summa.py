@@ -16,7 +16,7 @@ from esmvaltool.cmorizers.obs import utilities as utils
 logger = logging.getLogger(Path(__file__).name)
 
 
-def get_provenance_record(dataset):
+def get_provenance_record(dataset_name):
     """Create a provenance record."""
     record = {
         'caption': "Forcings for the SUMMA hydrological model.",
@@ -32,7 +32,7 @@ def get_provenance_record(dataset):
         'references': [
             'acknow_project',
         ],
-        'dataset': [dataset],
+        'dataset_name': [dataset_name],
     }
     return record
 
@@ -107,23 +107,53 @@ def _fix_cube(cube, var_name):
 def convert_to_hru(cube):
     """Converts cube with lat/lon coords to hru coord"""
     data = []
-    for i in enumerate(cube.coord('time')):
-        data[i] = cube.data[i].compressed()
+    for i, time in enumerate(cube.coord('time')):
+        data.append(cube.data[i].compressed())
     hru_list = range(len(data[0]))
     time = cube.coord('time')
-    hru = iris.coords.DimCoord(hru_list, standard_name="hru")
-    cube_hru = iris.Cube(data, dim_coords_and_dims=[(time, 0), (hru, 1)])
+    hru = iris.coords.DimCoord(hru_list, long_name="hru")
+    cube_hru = iris.cube.Cube(data, dim_coords_and_dims=[(time, 0), (hru, 1)])
     cube_hru.CubeMetadata = deepcopy(cube.metadata)
     return cube_hru
-    
-def main(cfg):
-    """Process data for use as input to the summa hydrological model """
+
+def load_data(cfg):
     input_data = cfg['input_data'].values()
     logger.info(input_data)
     grouped_input_data = group_metadata(input_data,
                                         'standard_name',
-                                        sort='dataset')
-    variables = {}
+                                        sort='dataset_name')
+    var_dict = {}
+    for standard_name in grouped_input_data:
+        # get the dataset_name name to use in save function later
+        # TODO add support multiple dataset_name in one diagnostic
+        logger.info("Processing variable %s", standard_name)
+        cube_list_all_years = iris.cube.CubeList()
+        for attributes in grouped_input_data[standard_name]:
+            logger.info("Processing dataset_name %s", attributes['dataset_name'])
+            input_file = attributes['filename']
+            cube = iris.load_cube(input_file)
+            cube_list_all_years.append(cube)
+        cube_all_years = cube_list_all_years.concatenate_cube()
+        key = grouped_input_data[standard_name][0]['short_name']
+        var_dict[key] = cube_all_years
+    return var_dict
+
+def save_data(var_dict, cfg):
+    # Make a list from all cubes in dictionary
+    cube_list_all_vars = iris.cube.CubeList()
+    for key, cube in var_dict.items():
+        new_cube = convert_to_hru(cube)
+        cube_list_all_vars.append(new_cube)
+    # Save data
+    # TODO get dataset_name name from cfg
+    dataset_name = "era-something"
+    basename = dataset_name + '_summa'
+    output_file = get_diagnostic_filename(basename, cfg)
+    iris.save(cube_list_all_vars, output_file, fill_value=1.e20)
+
+def main(cfg):
+    """Process data for use as input to the summa hydrological model """
+
     # output variable's name in SUMMA
     output_var_name = {
         'tas':'airtemp',
@@ -134,20 +164,8 @@ def main(cfg):
         'spechum':'spechum',
         'ps':'airpres'
     }
-    for standard_name in grouped_input_data:
-        # get the dataset name to use in save function later
-        # TODO add support multiple dataset in one diagnostic
-        dataset = grouped_input_data[standard_name][0]['alias']
-        logger.info("Processing variable %s", standard_name)
-        cube_list_all_years = iris.cube.CubeList()
-        for attributes in grouped_input_data[standard_name]:
-            logger.info("Processing dataset %s", attributes['dataset'])
-            input_file = attributes['filename']
-            cube = iris.load_cube(input_file)
-            cube_list_all_years.append(cube)
-        cube_all_years = cube_list_all_years.concatenate_cube()
-        key = grouped_input_data[standard_name][0]['short_name']
-        variables[key] = cube_all_years
+
+    variables = load_data(cfg)
 
     # Extract wind component variables from the cube list
     u_component = variables['uas']
@@ -171,18 +189,10 @@ def main(cfg):
     # Select and rename the desired variables
     variables = _rename_var(variables, output_var_name)
 
-    # Make a list from all cubes in dictionary
-    cube_list_all_vars = iris.cube.CubeList()
-    for key, cube in variables.items():
-        new_cube = convert_to_hru(cube)
-        cube_list_all_vars.append(new_cube)
-    # Save data
-    basename = dataset + '_summa'
-    output_file = get_diagnostic_filename(basename, cfg)
-    iris.save(cube_list_all_vars, output_file, fill_value=1.e20)
+    save_data(variables, cfg)
 
     # Store provenance
-    provenance_record = get_provenance_record(dataset)
+    provenance_record = get_provenance_record(dataset_name)
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(output_file, provenance_record)
 

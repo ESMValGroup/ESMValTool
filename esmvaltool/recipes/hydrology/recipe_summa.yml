@@ -37,7 +37,7 @@ preprocessors:
     extract_shape:
       shapefile: HYPE_Shapefiles/Meuse_HYPE/Meuse_HYPE.shp
       method: contains
-      decomposed: true
+      crop: true
   save_memory: &save_memory
     extract_time:
       end_year: 2000
