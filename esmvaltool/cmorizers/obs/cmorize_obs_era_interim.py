@@ -131,7 +131,7 @@ def _fix_units(cube, definition):
 def _fix_coordinates(cube, definition):
     """Fix coordinates."""
     # Make latitude increasing
-    cube = cube[:, ::-1, ...]
+    cube = cube[..., ::-1, :]
 
     # Add scalar height coordinates
     if 'height2m' in definition.dimensions:
