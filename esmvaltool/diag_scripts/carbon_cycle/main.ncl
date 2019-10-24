@@ -264,7 +264,15 @@ begin
     else
       y_mean = data_yearly
       m_mean = data_monthly
-      area = 5.10072e14
+      if (.not. isatt(data_var, "area")) then
+        error_msg("f", DIAG_SCRIPT, "", "Attribute 'area' not given for " + \
+                  "global dataset " + dataset_name)
+      end if
+      area = tofloat(data_var@area)
+      if (sp_opt .eq. "sum") then
+        y_mean = y_mean * area
+        m_mean = m_mean * area
+      end if
     end if
 
     ; Assign to global arrays
@@ -343,7 +351,8 @@ begin
       wks@legendfile = outfile + "_legend"
       data_arr@res_tiYAxisString = var0 + " [" + \
         format_units(data_arr@units) + "]"
-      data_arr@res_tiMainString = region@name
+      data_arr@res_tiMainString = (var0 + " - " + region@name + " (" + \
+                                   mean_minyear + "-" + mean_maxyear + ")")
       plot = cycle_plot(wks, data_arr, var0, INFO0)
       plot_path = outfile + "." + file_type
       log_info("Wrote " + plot_path)
@@ -407,7 +416,8 @@ begin
       ; Draw plot
       outfile = plot_dir + var0 + "_errorbar_" + DOMAIN
       wks = gsn_open_wks(file_type, outfile)
-      data_arr@res_tiMainString = var0 + " - " + region@name
+      data_arr@res_tiMainString = (var0 + " - " + region@name + " (" + \
+                                   mean_minyear + "-" + mean_maxyear + ")")
       plot = errorbar_plot(wks, data_arr, var0)
       plot_path = outfile + "." + file_type
       log_info("Wrote " + plot_path)
@@ -468,7 +478,8 @@ begin
       outfile = plot_dir + var0 + "_scatter_" + DOMAIN
       wks = gsn_open_wks(file_type, outfile)
       wks@legendfile = outfile + "_legend"
-      data_arr@res_tiMainString = var0 + " - " + region@name
+      data_arr@res_tiMainString = (var0 + " - " + region@name + " (" + \
+                                   mean_minyear + "-" + mean_maxyear + ")")
       plot = scatterplot_markers(wks, data_arr, var0, INFO0)
       plot_path = outfile + "." + file_type
       log_info("Wrote " + plot_path)
