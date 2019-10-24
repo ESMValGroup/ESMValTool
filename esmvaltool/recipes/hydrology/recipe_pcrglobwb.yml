@@ -54,13 +54,13 @@ preprocessors:
 #Define grid
   preprocessor: &era5_grid
     regrid:
-      target_grid: 0.25 x 0.25 # Replace this by ERA5, does not work with ESMValTool build
+      target_grid: ERA5 #0.25 x 0.25 Replace this by ERA5, does not work with ESMValTool build
       lon_offset: true
       lat_offset: true
       scheme: linear          
   preprocessor: &era_interim_grid
     regrid:
-      target_grid: 0.50 x 0.50 # Replace this by ERA-Interim, does not work with ESMValTool build
+      target_grid: ERA-Interim #0.50 x 0.50 Replace this by ERA-Interim, does not work with ESMValTool build
       lon_offset: true
       lat_offset: true
       scheme: linear     
@@ -70,7 +70,7 @@ preprocessors:
     convert_units:
       units: kg m-2 h-1
     daily_statistics:
-      operator: sum
+      operator: mean
   preprocessor: &hourly_temperature
     convert_units:
       units: degC
@@ -202,12 +202,12 @@ diagnostics:
         mip: day
         start_year: 2000
         end_year: 2000
-        preprocessor: doring_era5_grid_hourly_water
+        preprocessor: doring_era_interim_grid_daily_water
       tas:
         mip: day
         start_year: 2000
         end_year: 2000
-        preprocessor: doring_era5_grid_hourly_temperature
+        preprocessor: doring_era_interim_grid_daily_temperature
     scripts:
       script:
         script: hydrology/pcrglobwb.py
@@ -221,12 +221,12 @@ diagnostics:
         mip: E1hr
         start_year: 2000
         end_year: 2000
-        preprocessor: doring_era_interim_grid_daily_water
+        preprocessor: doring_era5_grid_hourly_water
       tas:
         mip: E1hr
         start_year: 2000
         end_year: 2000
-        preprocessor: doring_era_interim_grid_daily_temperature
+        preprocessor: doring_era5_grid_hourly_temperature
     scripts:
       script:
         script: hydrology/pcrglobwb.py
@@ -241,10 +241,10 @@ diagnostics:
         mip: day
         start_year: 2000
         end_year: 2000
-        preprocessor: greatkei_era5_grid_hourly_water
+        preprocessor: greatkei_era_interim_grid_daily_water
       tas:
         <<: *var_daily
-        preprocessor: greatkei_era5_grid_hourly_temperature
+        preprocessor: greatkei_era_interim_grid_daily_temperature
     scripts:
       script:
         script: hydrology/pcrglobwb.py
@@ -258,15 +258,15 @@ diagnostics:
         mip: E1hr
         start_year: 2000
         end_year: 2000
-        preprocessor: greatkei_era_interim_grid_daily_water
+        preprocessor: greatkei_era5_grid_hourly_water
       tas:
         <<: *var_hourly
-        preprocessor: greatkei_era_interim_grid_daily_temperature
+        preprocessor: greatkei_era5_grid_hourly_temperature
     scripts:
       script:
         script: hydrology/pcrglobwb.py
         
-#Merrimack Basin
+# Merrimack Basin
   merrimack_diagnostic_daily:
     description: PCR-GLOBWB input preprocessor for daily data
     additional_datasets:
@@ -276,12 +276,12 @@ diagnostics:
         mip: day
         start_year: 2000
         end_year: 2000
-        preprocessor: merrimack_era5_grid_hourly_water
+        preprocessor: merrimack_era_interim_grid_daily_water
       tas:
         mip: day
         start_year: 2000
         end_year: 2000
-        preprocessor: merrimack_era5_grid_hourly_temperature
+        preprocessor: merrimack_era_interim_grid_daily_temperature
     scripts:
       script:
         script: /lustre1/0/wtrcycle/esmvaltool/ESMValTool/esmvaltool/diag_scripts/hydrology/pcrglobwb.py
@@ -295,17 +295,17 @@ diagnostics:
         mip: E1hr
         start_year: 2000
         end_year: 2000
-        preprocessor: merrimack_era_interim_grid_daily_water
+        preprocessor: merrimack_era5_grid_hourly_water
       tas:
         mip: E1hr
         start_year: 2000
         end_year: 2000
-        preprocessor: merrimack_era_interim_grid_daily_temperature
+        preprocessor: merrimack_era5_grid_hourly_temperature
     scripts:
       script:
         script: hydrology/pcrglobwb.py
 
-#Meuse Basin
+# Meuse Basin
   meuse_diagnostic_daily:
     description: PCR-GLOBWB input preprocessor for daily data
     additional_datasets:
@@ -315,12 +315,12 @@ diagnostics:
         mip: day
         start_year: 2000
         end_year: 2000
-        preprocessor: meuse_era5_grid_hourly_water
+        preprocessor: meuse_era_interim_grid_daily_water
       tas:
         mip: day
         start_year: 2000
         end_year: 2000
-        preprocessor: meuse_era5_grid_hourly_temperature
+        preprocessor: meuse_era_interim_grid_daily_temperature
     scripts:
       script:
         script: hydrology/pcrglobwb.py
@@ -334,17 +334,17 @@ diagnostics:
         mip: E1hr
         start_year: 2000
         end_year: 2000
-        preprocessor: meuse_era_interim_grid_daily_water
+        preprocessor: meuse_era5_grid_hourly_water
       tas:
         mip: E1hr
         start_year: 2000
         end_year: 2000
-        preprocessor: meuse_era_interim_grid_daily_temperature
+        preprocessor: meuse_era5_grid_hourly_temperature
     scripts:
       script:
         script: hydrology/pcrglobwb.py
 
-#Rhine Basin
+# Rhine Basin
   rhine_diagnostic_daily:
     description: PCR-GLOBWB input preprocessor for daily data
     additional_datasets:
@@ -354,12 +354,12 @@ diagnostics:
         mip: day
         start_year: 2000
         end_year: 2000
-        preprocessor: rhine_era5_grid_hourly_water
+        preprocessor: rhine_era_interim_grid_daily_water
       tas:
         mip: day
         start_year: 2000
         end_year: 2000
-        preprocessor: rhine_era5_grid_hourly_temperature
+        preprocessor: rhine_era_interim_grid_daily_temperature
     scripts:
       script:
         script: hydrology/pcrglobwb.py
@@ -373,17 +373,17 @@ diagnostics:
         mip: E1hr
         start_year: 2000
         end_year: 2000
-        preprocessor: rhine_era_interim_grid_daily_water
+        preprocessor: rhine_era5_grid_hourly_water
       tas:
         mip: E1hr
         start_year: 2000
         end_year: 2000
-        preprocessor: rhine_era_interim_grid_daily_temperature
+        preprocessor: rhine_era5_grid_hourly_temperature
     scripts:
       script:
         script: hydrology/pcrglobwb.py
 
-#Savannah Basin
+# Savannah Basin
   savannah_diagnostic_daily:
     description: PCR-GLOBWB input preprocessor for daily data
     additional_datasets:
@@ -393,12 +393,12 @@ diagnostics:
         mip: day
         start_year: 2000
         end_year: 2000
-        preprocessor: savannah_era5_grid_hourly_water
+        preprocessor: savannah_era_interim_grid_daily_water
       tas:
         mip: day
         start_year: 2000
         end_year: 2000
-        preprocessor: savannah_era5_grid_hourly_temperature
+        preprocessor: savannah_era_interim_grid_daily_temperature
     scripts:
       script:
         script: hydrology/pcrglobwb.py
@@ -412,12 +412,12 @@ diagnostics:
         mip: E1hr
         start_year: 2000
         end_year: 2000
-        preprocessor: savannah_era_interim_grid_daily_water
+        preprocessor: savannah_era5_grid_hourly_water
       tas:
         mip: E1hr
         start_year: 2000
         end_year: 2000
-        preprocessor: savannah_era_interim_grid_daily_temperature
+        preprocessor: savannah_era5_grid_hourly_temperature
     scripts:
       script:
         script: hydrology/pcrglobwb.py
