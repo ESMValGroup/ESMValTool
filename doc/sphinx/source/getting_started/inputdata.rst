@@ -85,10 +85,13 @@ A list of the datasets for which a cmorizers is available is provided in the fol
 | Eppley-VGPM-MODIS            | intpp (Omon)                                                                                         |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | ERA5                         | clt, evspsbl, evspsblpot, mrro, pr, prsn, psl, rls, rsds, rsdt, rss, uas, vas, tas, tasmax, tasmin,  |   3  | Python          |
-|                              | tdps, ts, tsn (E1hr)                                                                          |      |      |                 |
+|                              | tdps, ts, tsn (E1hr)                                                                                 |      |                 |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
-| ERA-Interim                  | clivi, clt, clwvi, hfds, hur, hus, pr, prw, ps, psl, ta, tas, tauu, tauv, ts, ua, va, wap, zg (Amon) |   3  | NCL             |
-|                              | pr, psl, tas, tasmin, tasmax, zg (day), sftlf (fx), tos (Omon)                                       |      |                 |
+| ERA-Interim                  | | fx: sftlf                                                                                          |   3  | Python          |
+|                              | | daily: clt, evspsbl, pr, prsn, psl, rsds, rsdt, rss, tas, tasmax, tasmin, tdps, ts, tsns,          |      |                 |
+|                              | uas, vas, zg                                                                                         |      |                 |
+|                              | | monthly: clivi, clwvi, clt, clwvi, evspsbl, hfds, hur, hus, pr, prw, prsn, ps, psl, rsds, rsdt,    |      |                 |
+|                              | rss, ta, tas, tauu, tauv, tdps, tos, ts, tsn, ua, uas, va, vas, wap, zg                              |      |                 |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | ESACCI-AEROSOL               | abs550aer, od550aer, od550aerStderr, od550lt1aer, od870aer, od870aerStderr (aero)                    |   2  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
