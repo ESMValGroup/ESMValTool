@@ -11,9 +11,9 @@ documentation:
 CMIP6_landcover: &CMIP6_landcover
   additional_datasets:
 #    - {dataset: CESM2, project: CMIP6, grid: gn, exp: historical, ensemble: r1i1p1f1}
-    - {dataset: UKESM1-0-LL, project: CMIP6, grid: gn, exp: historical, ensemble: r1i1p1f2}
+#    - {dataset: UKESM1-0-LL, project: CMIP6, grid: gn, exp: historical, ensemble: r1i1p1f2}
     - {dataset: HadGEM3-GC31-LL, project: CMIP6, grid: gn, exp: historical, ensemble: r1i1p1f3}
-    - {dataset: MPI-ESM1-2-HR, project: CMIP6, grid: gn, exp: historical, ensemble: r10i1p1f1}
+#    - {dataset: MPI-ESM1-2-HR, project: CMIP6, grid: gn, exp: historical, ensemble: r1i1p1f1} # Problem rsds not available over 2000-2004
 
 
 CMIP5_landcover: &CMIP5_landcover
@@ -54,19 +54,19 @@ diagnostics:
       snc:
         <<: *variable_settings
         mip: LImon
-      alb:
-        <<: *variable_settings
-        mip: Amon
-        derive: true
-        force_derivation: false
+#      alb:
+#        <<: *variable_settings
+#        mip: Amon
+#        derive: true
+#        force_derivation: false
       cropFrac:
         <<: *variable_settings
       grassFrac:
         <<: *variable_settings
       shrubFrac:
         <<: *variable_settings
-#      pastureFrac:
-#        <<: *variable_settings
+      pastureFrac:
+        <<: *variable_settings
       albDiffiTr13:
         preprocessor: pp_obs
         mip: Amon
