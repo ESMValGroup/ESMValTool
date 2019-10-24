@@ -533,6 +533,34 @@ diagnostics:
     scripts: null
 
 
+  HWSD:
+    description: HWSD check
+    variables:
+      areacella:
+        mip: fx
+      cSoil:
+        mip: Lmon
+      sftlf:
+        mip: fx
+    additional_datasets:
+      - {dataset: HWSD, project: OBS, tier: 3, type: reanaly, version: 1.2,
+         start_year: 2000, end_year: 2000}
+    scripts: null
+
+
+  JMA-TRANSCOM:
+    description: JMA-TRANSCOM check
+    variables:
+      nbp:
+        mip: Lmon
+      fgco2:
+        mip: Omon
+    additional_datasets:
+      - {dataset: JMA-TRANSCOM, project: OBS, tier: 3, type: reanaly,
+         version: 2018, start_year: 1985, end_year: 2016}
+    scripts: null
+
+
   LAI3g:
     description: LAI3g check
     variables:
@@ -583,6 +611,16 @@ diagnostics:
     additional_datasets:
       - {dataset: MODIS, project: OBS, tier: 3,
          type: sat, version: MYD08-M3, start_year: 2003, end_year: 2018}
+    scripts: null
+
+
+  NDP:
+    description: NDP check
+    variables:
+      cVeg:
+    additional_datasets:
+      - {dataset: NDP, project: OBS, tier: 3, mip: Lmon,
+         type: reanaly, version: 017b, start_year: 2000, end_year: 2000}
     scripts: null
 
 

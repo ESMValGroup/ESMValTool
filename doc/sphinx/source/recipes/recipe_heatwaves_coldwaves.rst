@@ -1,14 +1,14 @@
 .. _recipes_heatwaves_coldwaves:
 
 Heat wave and cold wave duration
-====================================================
+================================
 
 Overview
 --------
 
-The goal of this diagnostic is to estimate the relative change in heat/cold wave characteristics  in future climates compared to a reference period using daily maximum or minimum temperatures. 
+The goal of this diagnostic is to estimate the relative change in heat/cold wave characteristics  in future climates compared to a reference period using daily maximum or minimum temperatures.
 
-The user can select whether to compute the frequency of exceedances or non-exceedances, which corresponds to extreme high or extreme low temperature events, respectively. The user can also select the minimum duration for an event to be classified as a heat/cold wave and the season of interest. 
+The user can select whether to compute the frequency of exceedances or non-exceedances, which corresponds to extreme high or extreme low temperature events, respectively. The user can also select the minimum duration for an event to be classified as a heat/cold wave and the season of interest.
 
 The diagnostic calculates the number of days in which the temperature exceeds or does not exceeds the necessary threshold for a consecutive number of days in future climate projections. The result is an annual time series of the total number of heat/cold wave days for the selected season at each grid point. The final output is the average number of heat/cold wave days for the selected season in the future climate projections.
 
@@ -68,4 +68,3 @@ Example plots
 .. figure::  /recipes/figures/heatwaves/tasmax_extreme_spell_durationsummer_IPSL-CM5A-LR_rcp85_2020_2040.png
    :align:   center
    :width:   14cm
-

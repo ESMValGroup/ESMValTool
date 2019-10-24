@@ -209,6 +209,11 @@ begin
     end if
   end do
 
+  if (.not.(isdefined("out"))) then
+    error_msg("f", scriptname, funcname, "attribute " + att + " not " + \
+              "found in list element(s)")
+  end if
+
   if (all(ismissing(out))) then
     error_msg("f", scriptname, funcname, "attribute " + att + " not " + \
               "found in list element(s)")

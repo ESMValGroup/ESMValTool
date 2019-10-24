@@ -1,7 +1,7 @@
 .. _recipes_combined_indices:
 
-Indices based on area averages
-====================================================
+Nino indices, North Atlantic Oscillation (NAO), Souther Oscillation Index (SOI)
+===============================================================================
 
 Overview
 --------
@@ -71,6 +71,3 @@ Example plots
 .. figure::  /recipes/figures/Index_NAO.png
    :align:   center
    :width:   14cm
-
-
-
