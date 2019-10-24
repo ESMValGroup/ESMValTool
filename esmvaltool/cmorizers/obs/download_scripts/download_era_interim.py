@@ -15,10 +15,10 @@ and save it as $HOME/.ecmwfapirc
 5. Use ESMValCore/esmvalcore/config-user.yml as an template
 and set the rootpath of the output directory in RAWOBS
 
-6. check the description of the variables at
+6. Check the description of the variables at
 https://apps.ecmwf.int/codes/grib/param-db
 
-7. check the invariant variables at
+7. Check the invariant variables at
 https://apps.ecmwf.int/datasets/data/interim-full-invariant
 
 ```bash
