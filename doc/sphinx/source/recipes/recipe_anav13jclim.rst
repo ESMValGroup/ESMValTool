@@ -21,6 +21,16 @@ In addition, performance metrics are calculated for all variables using the
 performance metric diagnostics (see details in :ref:`nml_perfmetrics`).
 
 
+MVI calculation
+---------------
+
+The Model variability index (MVI) (definition given on p. 6810 of
+`Anav et al. (2013)`_) is prone to small standard deviations. This is
+particularly important for some carbon cycle variables, which show very a very
+low interannual variability on some grid points where the values are very close
+to zero. Because of that, the MVI diagnostic offers two special parameters
+(``tolerance`` and ``mask_below``) to tackle this issue.
+
 .. _`Anav et al. (2013)`: https://journals.ametsoc.org/doi/full/10.1175/JCLI-D-12-00417.1
 
 
@@ -86,6 +96,11 @@ User settings in recipe
      is calculated (if not given, use whole time span).
    * ``mvi_time_range``, *list*, optional: Time period over which the MVI is
      calculated (if not given, use whole time span).
+   * ``tolerance``, *float*, optional (default: ``1e-10``): Threshold to ignore
+     very low (normalized) standard deviations in the MVI calculations. See
+     :ref:`MVI calculation`.
+   * ``mask_below``, *float*, optional: Threshold to mask low (absolute) values
+     in the input data. See :ref:`MVI calculation`.
 
 #. Script carbon_cycle/two_variables.ncl
 
@@ -142,17 +157,17 @@ Example plots
    :align: center
    :width: 50%
 
-   Simulated change in global temperature from CMIP5 models (coloured lines),
-   compared to the global temperature anomaly from the HadCRUT4 dataset (black
-   dots). The anomalies are relative to a baseline period of 1961–1990. The model
-   lines are colour-coded, with lower-sensitivity models (λ > 1
-   Wm\ :sup:`-2`\ K\ :sup:`-1`\ ) shown by green lines and higher-sensitivity
-   models (λ < 1 Wm\ :sup:`-2`\ K\ :sup:`-1`\ ) shown by magenta lines.
+   Seasonal cycle plot for GPP over the period 1986-2005. Similar to Anav et
+   al. (2013), Figure 9.
 
 .. _fig_anav13jclim_2:
 .. figure:: /recipes/figures/cox18nature/emergent_relationship_HadCRUT4.png
    :align: center
    :width: 50%
+
+   Errorbar plot for NBP over the period " + \
+   start_year + "-" + end_year + ". Similar to Anav et al. " + \
+   "(2013), Figure 6.")
 
    Emergent relationship between ECS and the ψ metric. The black dot-dashed
    line shows the best-fit linear regression across the model ensemble, with

@@ -68,6 +68,15 @@ begin
   ; Read data
   data = fin->$info_item@short_name$
 
+  ; Copy attributes from fin (do not overwrite existing ones)
+  fin_atts = getvaratts(fin)
+  do idx_att = 0, dimsizes(fin_atts) - 1
+    att = fin_atts(idx_att)
+    if (.not. isatt(data, att)) then
+      data@$att$ = fin@$att$
+    end if
+  end do
+
   leave_msg(scriptname, funcname)
   return(data)
 

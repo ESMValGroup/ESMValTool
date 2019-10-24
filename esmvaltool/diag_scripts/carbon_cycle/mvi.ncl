@@ -21,6 +21,10 @@
 ;                       (default: whole time span).
 ;     mvi_time_range: time period over which the MVI is calculated (default:
 ;                     whole time span).
+;     tolerance: ignore (normalized) standard deviations smaller than this to
+;                avoid numerical problems (default: 1e-10).
+;     mask_below: mask input data with an absolute value below a threshold to
+;                 avoid numerical problems in the MVI calculation.
 ;
 ; Caveats:
 ;     If CRU is the reference dataset it is important to apply a landmask in
@@ -78,6 +82,20 @@ begin
   ; ---------------------------------------------------------------------------
   ; Read recipe and config data
   ; ---------------------------------------------------------------------------
+
+  ; Settings to avoid numerical problems
+  if (isatt(diag_script_info, "tolerance")) then
+    TOLERANCE = diag_script_info@tolerance
+  else
+    TOLERANCE = 1e-10
+  end if
+  if (isatt(diag_script_info, "mask_below")) then
+    MASK = True
+    MASK_VALUE = diag_script_info@mask_below
+  else
+    MASK = False
+    MASK_VALUE = 0.0
+  end if
 
   ; Plot file type
   file_type = config_user_info@output_file_type
@@ -168,6 +186,13 @@ begin
       data_var@_FillValue = 1.0e20
     end if
 
+    ; Mask data if desired
+    if (MASK) then
+      log_info("Masking data with absolute values smaller than " + MASK_VALUE)
+      data_var = where(abs(data_var) .le. MASK_VALUE, data_var@_FillValue, \
+                       data_var)
+    end if
+
     ; Get dimensions
     if (isdim(data_var, "lat") .and. isdim(data_var, "lon")) then
       DIM_LAT = dimsizes(data_var&lat)
@@ -177,8 +202,8 @@ begin
     end if
 
     ; Cut off Antarctica if necessary (for land-based observations)
-    if ((isatt(VAR0, "reference_dataset") .and. \
-         VAR0@reference_dataset .eq. "CRU")) then
+    if (isatt(VAR0, "reference_dataset") .and. \
+        any(VAR0@reference_dataset .eq. (/"CRU", "MTE"/))) then
       if (dimsizes(data_var&lat) .gt. 1) then
         log_info("Masking Antarctica")
         data_var(:, {:-60}, :) = data_var@_FillValue
@@ -201,7 +226,7 @@ begin
       all_data_yearly&year = all_years
       all_data_yearly&lat = data_var&lat
       all_data_yearly&lon = data_var&lon
-      all_data_yearly@_FillValue = 1.0e20
+      all_data_yearly@_FillValue = data_var@_FillValue
     end if
 
     ; Check lat and lon dimensions
@@ -233,7 +258,7 @@ begin
   all_data_mvi&dataset = DATASETS
   all_data_mvi&lat = all_data_yearly&lat
   all_data_mvi&lon = all_data_yearly&lon
-  all_data_mvi@_FillValue = 1.0e20
+  all_data_mvi@_FillValue = all_data_yearly@_FillValue
 
   ; Trend array
   all_data_trend = new((/DIM_DAT, DIM_LAT, DIM_LON/), float)
@@ -243,7 +268,7 @@ begin
   all_data_trend&dataset = DATASETS
   all_data_trend&lat = all_data_yearly&lat
   all_data_trend&lon = all_data_yearly&lon
-  all_data_trend@_FillValue = 1.0e20
+  all_data_trend@_FillValue = all_data_yearly@_FillValue
 
   ; Determine reference dataset
   ref_idx = ind(DATASETS .eq. VAR0@reference_dataset)
@@ -261,7 +286,12 @@ begin
     data_ref = all_data_yearly(ref_idx, :, :, :)
   end if
   ref = dim_stddev_n(data_ref, 0)
-  ref = where(ref .ne. 0, ref, ref@_FillValue)
+
+  ; Normalize std_dev with mean to avoid numerical problems and remove very
+  ; small values
+  norm = avg(ref)
+  ref = ref / norm
+  ref = where(ref .le. TOLERANCE, ref@_FillValue, ref)
 
   ; Loop over datasets
   do idat = 0, DIM_DAT - 1
@@ -274,7 +304,8 @@ begin
       data_temp = all_data_yearly(idat, :, :, :)
     end if
     dataset = dim_stddev_n(data_temp, 0)
-    dataset = where(dataset .ne. 0, dataset, dataset@_FillValue)
+    dataset = dataset / norm
+    dataset = where(dataset .le. TOLERANCE, dataset@_FillValue, dataset)
 
     ; Compute MVI
     all_data_mvi(idat, :, :) = (dataset / ref - ref / dataset) ^ 2
@@ -298,6 +329,7 @@ begin
     all_data_trend(idat, :, :) = rc
     delete([/dataset, rc/])
   end do
+  delete([/ref, norm/])
   copy_VarAtts(all_data_yearly, all_data_trend)
 
   ; Special case for lai:
@@ -361,6 +393,7 @@ begin
                                          region(0), region(1), region(2), \
                                          region(3), "average", True)
   end do
+  print(regional_mvi)
 
   ; Diagnostic- and variable-specific units conversions
   regional_mvi@units = "1"
