@@ -268,12 +268,13 @@ def _load_cube(in_files, var):
             )
         elif var.get('operator', '') == 'sum':
             # Multiple variables case using sum operation
-            for i, filename in enumerate(in_files):
+            cube = None
+            for raw_name, filename in zip(var['raw'], in_files):
                 in_cube = iris.load_cube(
                     filename,
-                    constraint=utils.var_name_constraint(var['raw'][i]),
+                    constraint=utils.var_name_constraint(raw_name),
                 )
-                if i == 0:
+                if cube is None:
                     cube = in_cube
                 else:
                     cube += in_cube
@@ -361,7 +362,7 @@ def _run(jobs, n_workers):
             _extract_variable(*job)
     else:
         futures = {}
-        with ProcessPoolExecutor(max_workers=1) as executor:
+        with ProcessPoolExecutor(max_workers=n_workers) as executor:
             for job in jobs:
                 future = executor.submit(_extract_variable, *job)
                 futures[future] = job[0]
