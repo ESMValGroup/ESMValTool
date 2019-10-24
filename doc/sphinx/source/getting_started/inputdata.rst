@@ -89,9 +89,9 @@ A list of the datasets for which a cmorizers is available is provided in the fol
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | ERA-Interim                  | | fx: sftlf                                                                                          |   3  | Python          |
 |                              | | daily: clt, evspsbl, pr, prsn, psl, rsds, rsdt, rss, tas, tasmax, tasmin, tdps, ts, tsns,          |      |                 |
-|                              | uas, vas, zg                                                                                         |      |                 |
+|                              |   uas, vas, zg                                                                                       |      |                 |
 |                              | | monthly: clivi, clwvi, clt, clwvi, evspsbl, hfds, hur, hus, pr, prw, prsn, ps, psl, rsds, rsdt,    |      |                 |
-|                              | rss, ta, tas, tauu, tauv, tdps, tos, ts, tsn, ua, uas, va, vas, wap, zg                              |      |                 |
+|                              |   rss, ta, tas, tauu, tauv, tdps, tos, ts, tsn, ua, uas, va, vas, wap, zg                            |      |                 |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | ESACCI-AEROSOL               | abs550aer, od550aer, od550aerStderr, od550lt1aer, od870aer, od870aerStderr (aero)                    |   2  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
