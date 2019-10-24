@@ -20,7 +20,7 @@ documentation:
 
 
 preprocessors:
-  extract_meuse_bbox: &meuse_bbox
+  extract_bbox: &Meuse_bbox
   # current coordinates are for the Meuse basin
     extract_region:
       start_longitude: 3
@@ -33,25 +33,25 @@ preprocessors:
       lon_offset: true
       lat_offset: true
       scheme: linear
-  extract_meuse: &Meuse
+  extract_catchment: &Meuse
     extract_shape:
       shapefile: HYPE_Shapefiles/Meuse_HYPE/Meuse_HYPE.shp
       method: contains
       crop: true
-  save_memory: &save_memory
-    extract_time:
-      end_year: 2000
-      end_month: 1
-      end_day: 3
+  # save_memory: &save_memory
+  #   extract_time:
+  #     end_year: 2000
+  #     end_month: 1
+  #     end_day: 3
   daily_mean: &mean
     daily_statistics:
       operator: mean
   hourly_mean:
-    <<: *save_memory
+    <<: *Meuse_bbox
     <<: *Meuse
     <<: *mean
   daily:
-    <<: *meuse_bbox
+    <<: *Meuse_bbox
     <<: *regrid
     <<: *Meuse
 
