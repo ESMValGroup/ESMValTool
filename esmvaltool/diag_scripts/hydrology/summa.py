@@ -2,8 +2,8 @@
 import logging
 from pathlib import Path
 import warnings
-import numpy as np
 from copy import deepcopy
+import numpy as np
 
 # import dask.array as da
 import iris
@@ -65,7 +65,7 @@ def windspeed_conversion(windspeed_z, measurement_height, target_height):
     disp_height = 5.42 / 67.8
     rough_length = 1 / 67.8
     windspeed = (windspeed_z
-                 * np.log((target_height - disp_height) / rough_length) 
+                 * np.log((target_height - disp_height) / rough_length)
                  / np.log((measurement_height - disp_height) / rough_length))
     return windspeed
 
@@ -115,15 +115,16 @@ def convert_to_hru(cube):
     time = cube.coord('time')
     hru = iris.coords.DimCoord(hru_list, long_name="hru")
     cube_hru = iris.cube.Cube(data, dim_coords_and_dims=[(time, 0), (hru, 1)])
-    cube_hru.CubeMetadata = deepcopy(cube.metadata)
+    cube_hru.metadata = deepcopy(cube.metadata)
     return cube_hru
 
 def load_data(cfg):
+    """Load each variable file as a iris cube"""
     input_data = cfg['input_data'].values()
     logger.info(input_data)
     grouped_input_data = group_metadata(input_data,
                                         'standard_name',
-                                        sort='dataset_name')
+                                        sort='dataset')
     var_dict = {}
     for standard_name in grouped_input_data:
         # get the dataset_name name to use in save function later
@@ -131,7 +132,7 @@ def load_data(cfg):
         logger.info("Processing variable %s", standard_name)
         cube_list_all_years = iris.cube.CubeList()
         for attributes in grouped_input_data[standard_name]:
-            logger.info("Processing dataset_name %s", attributes['dataset_name'])
+            logger.info("Processing dataset %s", attributes['dataset'])
             input_file = attributes['filename']
             cube = iris.load_cube(input_file)
             cube_list_all_years.append(cube)
@@ -141,9 +142,11 @@ def load_data(cfg):
     return var_dict
 
 def save_data(var_dict, cfg):
+    """Save all variables needed for SUMMA in one netcdf file"""
     # Make a list from all cubes in dictionary
+    # and convert cube lat/lon to hru
     cube_list_all_vars = iris.cube.CubeList()
-    for key, cube in var_dict.items():
+    for cube in var_dict.values():
         new_cube = convert_to_hru(cube)
         cube_list_all_vars.append(new_cube)
     # Save data
@@ -157,7 +160,6 @@ def save_data(var_dict, cfg):
     provenance_record = get_provenance_record(dataset_name)
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(output_file, provenance_record)
-
 
 def main(cfg):
     """Process data for use as input to the summa hydrological model """
@@ -186,17 +188,18 @@ def main(cfg):
     # Fix cube attributes
     variables['windspd'] = _fix_cube(wind_speed_2m, 'windspd')
 
-    # Specific humidity calculation from dewpoint temp and surface pressure 
+    # Specific humidity calculation from dewpoint temp and surface pressure
     dewpoint_temperature = variables['tdps']
     surface_pressure = variables['ps']
     specific_humidity = compute_specific_humidity(dewpoint_temperature,
-                                                     surface_pressure)
+                                                  surface_pressure)
     # Fix cube attributes
     variables['spechum'] = _fix_cube(specific_humidity, 'spechum')
 
     # Select and rename the desired variables
     variables = _rename_var(variables, output_var_name)
 
+    # Get the hru and save all variables
     save_data(variables, cfg)
 
 
