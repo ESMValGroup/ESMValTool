@@ -361,19 +361,19 @@ def _run(jobs, n_workers):
         for job in jobs:
             _extract_variable(*job)
     else:
-        futures = {}
         with ProcessPoolExecutor(max_workers=n_workers) as executor:
+            futures = {}
             for job in jobs:
                 future = executor.submit(_extract_variable, *job)
                 futures[future] = job[0]
 
-        for future in as_completed(futures):
-            try:
-                future.result()
-            except:  # noqa
-                logger.error("Failed to CMORize %s",
-                             ', '.join(futures[future]))
-                raise
+            for future in as_completed(futures):
+                try:
+                    future.result()
+                except:  # noqa
+                    logger.error("Failed to CMORize %s",
+                                 ', '.join(futures[future]))
+                    raise
 
 
 def cmorization(in_dir, out_dir, cfg, config_user):
