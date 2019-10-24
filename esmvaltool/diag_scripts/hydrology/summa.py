@@ -60,7 +60,7 @@ def windspeed_conversion(windspeed_z, measurement_height, target_height):
                   general principles of transparancy. Better replace it with\
                   a more general formula incorporating friction velocity or\
                   roughness length')
-    # source: 
+    # source:
     # http://www.fao.org/3/X0490E/x0490e07.htm#wind%20profile%20relationship
     disp_height = 5.42 / 67.8
     rough_length = 1 / 67.8
@@ -71,7 +71,9 @@ def windspeed_conversion(windspeed_z, measurement_height, target_height):
 
 def compute_specific_humidity(dewpoint_temperature, surface_pressure):
     """Compute specific humidity from dewpoint temp and surface pressure"""
-    # source 1: https://www.eoas.ubc.ca/books/Practical_Meteorology/prmet/PracticalMet_WholeBook-v1_00b.pdf page 96
+    # source 1:
+    # https://www.eoas.ubc.ca/books/Practical_Meteorology/prmet/PracticalMet_WholeBook-v1_00b.pdf
+    # page 96
 
     surface_pressure = surface_pressure/1000.
     # to convert between celsius and kelvin
@@ -151,6 +153,12 @@ def save_data(var_dict, cfg):
     output_file = get_diagnostic_filename(basename, cfg)
     iris.save(cube_list_all_vars, output_file, fill_value=1.e20)
 
+    # Store provenance
+    provenance_record = get_provenance_record(dataset_name)
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(output_file, provenance_record)
+
+
 def main(cfg):
     """Process data for use as input to the summa hydrological model """
 
@@ -191,10 +199,6 @@ def main(cfg):
 
     save_data(variables, cfg)
 
-    # Store provenance
-    provenance_record = get_provenance_record(dataset_name)
-    with ProvenanceLogger(cfg) as provenance_logger:
-        provenance_logger.log(output_file, provenance_record)
 
 if __name__ == '__main__':
 
