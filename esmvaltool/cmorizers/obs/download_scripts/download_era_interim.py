@@ -26,6 +26,9 @@ python download_era_interim.py -c config-user.yml --start_year 2000
 --end_year 2000
 ```
 
+This will download and save the data in the RAWOBS directory,
+under Tier3/ERA-Interim.
+
 """
 import argparse
 import os
