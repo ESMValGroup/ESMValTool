@@ -316,6 +316,9 @@ def _extract_variable(in_files, var, cfg, out_dir):
     if 'day' in var['mip']:
         cube = _compute_daily(cube)
 
+    if 'fx' in var['mip']:
+        cube.remove_coord('time')
+
     # Convert units if required
     cube.convert_units(definition.units)
 
