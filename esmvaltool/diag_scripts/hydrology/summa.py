@@ -128,7 +128,7 @@ def load_data(cfg):
     var_dict = {}
     for standard_name in grouped_input_data:
         # get the dataset_name name to use in save function later
-        # TODO add support multiple dataset_name in one diagnostic
+        # TODO add support multiple datasetS in one diagnostic
         logger.info("Processing variable %s", standard_name)
         cube_list_all_years = iris.cube.CubeList()
         for attributes in grouped_input_data[standard_name]:
@@ -150,8 +150,14 @@ def save_data(var_dict, cfg):
         new_cube = convert_to_hru(cube)
         cube_list_all_vars.append(new_cube)
     # Save data
-    # TODO get dataset_name name from cfg
-    dataset_name = "era-something"
+    # TODO get catchment name from cfg
+    input_data = cfg['input_data'].values()
+    # Group input data based on dataset
+    grouped_input_data = group_metadata(input_data,
+                                        'dataset',
+                                        sort='standard_name')
+    # TODO add support for multiple datasets
+    dataset_name = list(grouped_input_data.keys())[0]
     basename = dataset_name + '_summa'
     output_file = get_diagnostic_filename(basename, cfg)
     iris.save(cube_list_all_vars, output_file, fill_value=1.e20)
