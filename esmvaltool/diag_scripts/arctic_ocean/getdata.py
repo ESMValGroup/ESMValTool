@@ -15,7 +15,9 @@ from esmvaltool.diag_scripts.arctic_ocean.regions import (hofm_regions,
 from esmvaltool.diag_scripts.arctic_ocean.utils import (genfilename,
                                                         point_distance,
                                                         get_fx_filenames,
-                                                        get_series_lenght)
+                                                        get_series_lenght,
+                                                        get_provenance_record)
+from esmvaltool.diag_scripts.shared._base import (ProvenanceLogger)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -93,6 +95,36 @@ def hofm_extract_region(metadata, cmor_var, indexes, level, time=0):
     return result
 
 
+def hofm_save_data(cfg, data_info, oce_hofm):
+
+    ofiles = {}
+    ofiles['ofilename'] = genfilename(**data_info, data_type='hofm')
+    ofiles['ofilename_levels'] = genfilename(**data_info, data_type='levels')
+    ofiles['ofilename_time'] = genfilename(**data_info, data_type='time')
+
+    np.save(ofiles['ofilename'], oce_hofm)
+    provenance_record = get_provenance_record(data_info, 'hofm', 'npy')
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(ofiles['ofilename'] + '.npy', provenance_record)
+
+    if isinstance(data_info['levels'], np.ma.core.MaskedArray):
+        np.save(ofiles['ofilename_levels'],
+                data_info['levels'][0:data_info['lev_limit']].filled())
+    else:
+        np.save(ofiles['ofilename_levels'],
+                data_info['levels'][0:data_info['lev_limit']])
+    provenance_record = get_provenance_record(data_info, 'lev', 'npy')
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(ofiles['ofilename_levels'] + '.npy',
+                              provenance_record)
+
+    np.save(ofiles['ofilename_time'], data_info['time'])
+    provenance_record = get_provenance_record(data_info, 'time', 'npy')
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(ofiles['ofilename_time'] + '.npy',
+                              provenance_record)
+
+
 def hofm_data(cfg, model_filenames, mmodel, cmor_var, region):
     """Extract data for Hovmoeller diagrams from monthly values.
 
@@ -136,20 +168,19 @@ def hofm_data(cfg, model_filenames, mmodel, cmor_var, region):
         for ind, _ in enumerate(metadata['lev'][0:lev_limit]):
             oce_hofm[ind, mon] = hofm_extract_region(metadata, cmor_var,
                                                      indexes, ind, mon)
+    data_info = {}
+    data_info['basedir'] = cfg['work_dir']
+    data_info['variable'] = cmor_var
+    data_info['mmodel'] = mmodel
+    data_info['region'] = region
+    data_info['time'] = metadata['time']
+    data_info['levels'] = metadata['lev']
+    data_info['lev_limit'] = lev_limit
+    data_info['ori_file'] = model_filenames[mmodel]
+    data_info['areacello'] = areacello_fx[mmodel]
 
-    ofilename = genfilename(cfg['work_dir'], cmor_var, mmodel, region, 'hofm')
-    ofilename_levels = genfilename(cfg['work_dir'], cmor_var, mmodel, region,
-                                   'levels')
-    ofilename_time = genfilename(cfg['work_dir'], cmor_var, mmodel, region,
-                                 'time')
+    hofm_save_data(cfg, data_info, oce_hofm)
 
-    np.save(ofilename, oce_hofm)
-    if isinstance(metadata['lev'], np.ma.core.MaskedArray):
-        np.save(ofilename_levels, metadata['lev'][0:lev_limit].filled())
-    else:
-        np.save(ofilename_levels, metadata['lev'][0:lev_limit])
-
-    np.save(ofilename_time, metadata['time'])
     metadata['datafile'].close()
 
 
@@ -191,7 +222,44 @@ def transect_level(datafile, cmor_var, level, grid, locstream):
     return dstfield
 
 
-def transect_data(mmodel, cmor_var, region, diagworkdir, mult=2):
+def transect_save_data(cfg, data_info, secfield, lon_s4new, lat_s4new):
+
+    ofiles = {}
+    ofiles['ofilename'] = genfilename(**data_info, data_type='transect')
+    ofiles['ofilename_depth'] = genfilename(
+        data_info['basedir'], 'depth', data_info['mmodel'],
+        data_info['region'], 'transect_' + data_info['variable'])
+    ofiles['ofilename_dist'] = genfilename(data_info['basedir'], 'distance',
+                                           data_info['mmodel'],
+                                           data_info['region'],
+                                           'transect_' + data_info['variable'])
+
+    np.save(ofiles['ofilename'], secfield)
+    print(ofiles['ofilename'])
+    provenance_record = get_provenance_record(data_info, 'transect', 'npy')
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(ofiles['ofilename'] + '.npy', provenance_record)
+    # we have to fill masked arrays before saving
+
+    if isinstance(data_info['levels'], np.ma.core.MaskedArray):
+        np.save(ofiles['ofilename_depth'], data_info['levels'].filled())
+    else:
+        np.save(ofiles['ofilename_depth'], data_info['levels'])
+    print(ofiles['ofilename_depth'])
+    provenance_record = get_provenance_record(data_info, 'levels', 'npy')
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(ofiles['ofilename_depth'] + '.npy',
+                              provenance_record)
+
+    np.save(ofiles['ofilename_dist'], point_distance(lon_s4new, lat_s4new))
+    provenance_record = get_provenance_record(data_info, 'distance', 'npy')
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(ofiles['ofilename_dist'] + '.npy',
+                              provenance_record)
+    print(ofiles['ofilename_dist'])
+
+
+def transect_data(cfg, mmodel, cmor_var, region, mult=2):
     """Extract data for transects (defined in regions.transect_points).
 
     Parameters
@@ -213,7 +281,7 @@ def transect_data(mmodel, cmor_var, region, diagworkdir, mult=2):
     logger.info("Extract  %s transect data for %s, region %s", cmor_var,
                 mmodel, region)
     # get the path to preprocessed file
-    ifilename = genfilename(diagworkdir,
+    ifilename = genfilename(cfg['work_dir'],
                             cmor_var,
                             mmodel,
                             data_type='timmean',
@@ -251,23 +319,16 @@ def transect_data(mmodel, cmor_var, region, diagworkdir, mult=2):
     for level in range(0, datafile.variables[cmor_var].shape[1]):
         secfield[:, level] = transect_level(datafile, cmor_var, level, grid,
                                             locstream).data
+    data_info = {}
+    data_info['basedir'] = cfg['work_dir']
+    data_info['variable'] = cmor_var
+    data_info['mmodel'] = mmodel
+    data_info['region'] = region
+    data_info['levels'] = lev
+    data_info['ori_file'] = ifilename
+    data_info['areacello'] = None
 
-    # save the data
-    ofiles = {}
-    ofiles['ofilename'] = genfilename(diagworkdir, cmor_var, mmodel, region,
-                                      'transect')
-    ofiles['ofilename_depth'] = genfilename(diagworkdir, 'depth', mmodel,
-                                            region, 'transect')
-    ofiles['ofilename_dist'] = genfilename(diagworkdir, 'distance', mmodel,
-                                           region, 'transect')
-
-    np.save(ofiles['ofilename'], secfield)
-    # we have to fill masked arrays before saving
-    if isinstance(lev, np.ma.core.MaskedArray):
-        np.save(ofiles['ofilename_depth'], lev.filled())
-    else:
-        np.save(ofiles['ofilename_depth'], lev)
-    np.save(ofiles['ofilename_dist'], point_distance(lon_s4new, lat_s4new))
+    transect_save_data(cfg, data_info, secfield, lon_s4new, lat_s4new)
 
     datafile.close()
 

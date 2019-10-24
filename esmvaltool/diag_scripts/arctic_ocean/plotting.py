@@ -881,9 +881,9 @@ def transect_plot(model_filenames,
         ifilename = genfilename(diagworkdir, cmor_var, mmodel, region,
                                 'transect', '.npy')
         ifilename_depth = genfilename(diagworkdir, 'depth', mmodel, region,
-                                      'transect', '.npy')
+                                      'transect_'+cmor_var, '.npy')
         ifilename_dist = genfilename(diagworkdir, 'distance', mmodel, region,
-                                     'transect', '.npy')
+                                     'transect_'+cmor_var, '.npy')
 
         data = np.load(ifilename, allow_pickle=True)
         data = np.ma.masked_equal(data.T, 0)

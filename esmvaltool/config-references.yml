@@ -685,6 +685,7 @@ references:
   phc: "Steele et al., PHC: A global ocean hydrography with a high-quality Arctic Ocean, J. Clim., 14(9), 2079-2087, 2001."
 
 projects:
+  applicate: EU Horizon 2020 Advanced prediction in polar regions and beyond
   c3s-magic: Copernicus Climate Change Service 34a Lot 2 (MAGIC) project
   climval: BMBF MiKlip Project ClimVal
   cmip6dicad: BMBF CMIP6 Project Germany
@@ -697,7 +698,7 @@ projects:
   eval4cmip: DLR and University of Bremen project funded by the Initiative and Networking Fund of the Helmholtz Society
   ewatercycle: eWaterCycle project
   qa4ecv: QA4ECV
-  trr181: DFG Project TRR-181
+  trr181: DFG Project TRR-181, Energy transfers in Atmosphere and Ocean
   ukesm: UKESM, UK Earth System Model project (NERC)
 
 realms:

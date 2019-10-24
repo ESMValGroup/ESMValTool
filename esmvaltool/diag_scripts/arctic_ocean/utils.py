@@ -30,7 +30,8 @@ def genfilename(basedir,
                 region=None,
                 data_type=None,
                 extension=None,
-                basis='arctic_ocean'):
+                basis='arctic_ocean',
+                **kwargs):
     """Generate file name for the output data.
 
     Parameters
@@ -259,3 +260,26 @@ def get_series_lenght(datafile, cmor_var):
     else:
         series_lenght = datafile.variables[cmor_var].shape[0]
     return series_lenght
+
+
+def get_provenance_record(attributes, data_type, file_type):
+    """Create a provenance record describing the diagnostic data and plot."""
+    if data_type == 'hofm' and file_type == 'npy':
+        caption = ("Data for Hovmoeller diagram. "
+                   "Region: {region}. Model: {mmodel} ".format(**attributes))
+    elif data_type == 'transect' and file_type == 'npy':
+        caption = ("Data for Transect. "
+                   "Region: {region}. Model: {mmodel} ".format(**attributes))
+    else:
+        caption = "None"
+
+    record = {
+        'caption': caption,
+        'region': attributes['region'],
+        'authors': ['koldunov_nikolay'],
+        'references': [
+            'contact_authors',
+        ],
+        'ancestors': [attributes['ori_file'], attributes['areacello']]
+    }
+    return record
