@@ -21,15 +21,38 @@ In addition, performance metrics are calculated for all variables using the
 performance metric diagnostics (see details in :ref:`nml_perfmetrics`).
 
 
+.. _mvi calculation:
+
 MVI calculation
 ---------------
 
-The Model variability index (MVI) (definition given on p. 6810 of
-`Anav et al. (2013)`_) is prone to small standard deviations. This is
-particularly important for some carbon cycle variables, which show very a very
-low interannual variability on some grid points where the values are very close
-to zero. Because of that, the MVI diagnostic offers two special parameters
-(``tolerance`` and ``mask_below``) to tackle this issue.
+The Model variability index (MVI) on a single grid point (calculated in
+``carbon_cycle/mvi.ncl`` is defined as
+
+.. math::
+
+   MVI = \left( \frac{s^M}{s^O} - \frac{s^O}{s^M} \right)^2
+
+where :math:`s^M` and :math:`s^O` are the standard deviations of the annual
+time series on a single grid point of a climate model :math:`M` and the
+reference observation :math:`O`. In order to get a global or regional result,
+this index is simple averaged over the respective domain.
+
+In its given form, this equation is prone to small standard deviations close to
+zero. For example, values of :math:`s^M = 10^{-5} \mu` and :math:`s^O = 10^{-7}
+\mu` (where :math:`\mu` is the mean of :math:`s^O` over all grid cells) results
+in an MVI in the magnitude of :math:`10^4` for this single grid cell even
+though the two standard deviations are close to zero and negligible compared to
+other grid cells. Due to the use of the arithmetic mean, a single high value is
+able to distort the overall MVI.
+
+In the original publication, the maximum MVI is in the order of 10 (for the
+variable `gpp`). However, a naive application of the MVI definition yields
+values over :math:`10^9` for some models. Unfortunately, `Anav et al. (2013)`_
+do not specify an explanation on how to deal with this problem. Nevertheless,
+this script provides two configuration options to avoid high MVI values, but
+they are not related to the original paper or any other peer-revied study and
+should be used with great caution (see :ref:`user settings`).
 
 .. _`Anav et al. (2013)`: https://journals.ametsoc.org/doi/full/10.1175/JCLI-D-12-00417.1
 
@@ -51,6 +74,8 @@ Diagnostics are stored in diag_scripts/
    * perfmetrics/collect.ncl
 
 
+.. _user settings:
+
 User settings in recipe
 -----------------------
 
@@ -58,7 +83,7 @@ User settings in recipe
 
    * ``mask_landsea``: Mask land/ocean.
    * ``regrid``: Regridding.
-   * ``mask_fillvalues`` Mask common missing values on different datasets.
+   * ``mask_fillvalues``: Mask common missing values on different datasets.
 
 #. Script carbon_cycle/main.ncl
 
@@ -96,11 +121,12 @@ User settings in recipe
      is calculated (if not given, use whole time span).
    * ``mvi_time_range``, *list*, optional: Time period over which the MVI is
      calculated (if not given, use whole time span).
-   * ``tolerance``, *float*, optional (default: ``1e-10``): Threshold to ignore
-     very low (normalized) standard deviations in the MVI calculations. See
-     :ref:`MVI calculation`.
-   * ``mask_below``, *float*, optional: Threshold to mask low (absolute) values
-     in the input data. See :ref:`MVI calculation`.
+   * ``stddev_threshold``, *float*, optional (default: ``1e-2``): Threshold to
+     ignore low standard deviations (relative to the mean) in the MVI
+     calculations. See also :ref:`mvi calculation`.
+   * ``mask_below``, *float*, optional: Threshold to mask low absolute values
+     (relative to the mean) in the input data (not used by default). See also
+     :ref:`mvi calculation`.
 
 #. Script carbon_cycle/two_variables.ncl
 
@@ -153,34 +179,57 @@ Example plots
 -------------
 
 .. _fig_anav13jclim_1:
-.. figure:: /recipes/figures/cox18nature/temperature_anomaly_HadCRUT4.png
+.. figure:: /recipes/figures/anav13jclim/nbp_evolution_global.png
    :align: center
-   :width: 50%
+   :width: 80%
 
-   Seasonal cycle plot for GPP over the period 1986-2005. Similar to Anav et
-   al. (2013), Figure 9.
+   Time series of global net biome productivity (NBP) over the period
+   1901-2005. Similar to Anav et al.  (2013), Figure 5.
 
 .. _fig_anav13jclim_2:
-.. figure:: /recipes/figures/cox18nature/emergent_relationship_HadCRUT4.png
+.. figure:: /recipes/figures/anav13jclim/gpp_cycle_nh.png
    :align: center
-   :width: 50%
+   :width: 80%
 
-   Errorbar plot for NBP over the period " + \
-   start_year + "-" + end_year + ". Similar to Anav et al. " + \
-   "(2013), Figure 6.")
-
-   Emergent relationship between ECS and the ψ metric. The black dot-dashed
-   line shows the best-fit linear regression across the model ensemble, with
-   the prediction error for the fit given by the black dashed lines. The
-   vertical blue lines show the observational constraint from the HadCRUT4
-   observations: the mean (dot-dashed line) and the mean plus and minus one
-   standard deviation (dashed lines).
+   Seasonal cycle plot for nothern hemisphere gross primary production (GPP)
+   over the period 1986-2005. Similar to Anav et al. (2013), Figure 9.
 
 .. _fig_anav13jclim_3:
-.. figure:: /recipes/figures/cox18nature/pdf_HadCRUT4.png
+.. figure:: /recipes/figures/anav13jclim/gpp_errorbar_trop.png
    :align: center
-   :width: 50%
+   :width: 80%
 
-   The PDF for ECS. The orange histograms (both panels) show the prior
-   distributions that arise from equal weighting of the CMIP5 models in 0.5 K
-   bins.
+   Errorbar plot for tropical gross primary production (GPP) over the period
+   1986-2005.
+
+.. _fig_anav13jclim_4:
+.. figure:: /recipes/figures/anav13jclim/tos_scatter_global.png
+   :align: center
+   :width: 80%
+
+   Scatterplot for interannual variability and mean of global sea surface
+   temperature (TOS) over the period 1986-2005.
+
+.. _fig_anav13jclim_5:
+.. figure:: /recipes/figures/anav13jclim/tas_global.png
+   :align: center
+   :width: 80%
+
+   Scatterplot for multiyear average of 2m surface temperature (TAS) in x axis,
+   its linear trend in y axis, and MVI. Similar to Anav et al. (2013) Figure 1
+   (bottom).
+
+.. _fig_anav13jclim_6:
+.. figure:: /recipes/figures/anav13jclim/nbp_evolution_global
+   :align: center
+   :width: 80%
+
+   Scatterplot for vegetation carbon content (cVeg) and soil carbon content
+   (cSoil) over the period 1986-2005. Similar to Anav et al. (2013), Figure 12.
+
+.. _fig_anav13jclim_7:
+.. figure:: /recipes/figures/anav13jclim/diag_grading_pr-global_to_diag_grading_gpp-global_RMSD.png
+   :align: center
+   :width: 80%
+
+   Performance metrics plot for carbon-cycle-relevant diagnostics.

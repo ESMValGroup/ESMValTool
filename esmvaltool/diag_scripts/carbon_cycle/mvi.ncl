@@ -21,10 +21,12 @@
 ;                       (default: whole time span).
 ;     mvi_time_range: time period over which the MVI is calculated (default:
 ;                     whole time span).
-;     tolerance: ignore (normalized) standard deviations smaller than this to
-;                avoid numerical problems (default: 1e-10).
-;     mask_below: mask input data with an absolute value below a threshold to
-;                 avoid numerical problems in the MVI calculation.
+;     stddev_threshold: ignore normalized (by mean) standard deviations smaller
+;                       than this to avoid numerical problems in the MVI
+;                       calculation (default: 1e-2).
+;     mask_below: mask input data with a normalized (by mean) absolute value
+;                 below a threshold to avoid numerical problems in the MVI
+;                 calculation.
 ;
 ; Caveats:
 ;     If CRU is the reference dataset it is important to apply a landmask in
@@ -84,17 +86,17 @@ begin
   ; ---------------------------------------------------------------------------
 
   ; Settings to avoid numerical problems
-  if (isatt(diag_script_info, "tolerance")) then
-    TOLERANCE = diag_script_info@tolerance
+  if (isatt(diag_script_info, "stddev_threshold")) then
+    TOLERANCE = diag_script_info@stddev_threshold
   else
-    TOLERANCE = 1e-10
+    TOLERANCE = 1e-2
   end if
   if (isatt(diag_script_info, "mask_below")) then
     MASK = True
     MASK_VALUE = diag_script_info@mask_below
   else
     MASK = False
-    MASK_VALUE = 0.0
+    MASK_VALUE = 0
   end if
 
   ; Plot file type
@@ -188,9 +190,13 @@ begin
 
     ; Mask data if desired
     if (MASK) then
-      log_info("Masking data with absolute values smaller than " + MASK_VALUE)
-      data_var = where(abs(data_var) .le. MASK_VALUE, data_var@_FillValue, \
+      log_info("Masking data with normalized absolute values smaller than " + \
+               MASK_VALUE)
+      norm_data = new(dimsizes(data_var), typeof(data_var))
+      norm_data = abs(data_var / avg(abs(data_var)))
+      data_var = where(norm_data .le. MASK_VALUE, data_var@_FillValue, \
                        data_var)
+      delete(norm_data)
     end if
 
     ; Get dimensions
@@ -285,13 +291,14 @@ begin
   else
     data_ref = all_data_yearly(ref_idx, :, :, :)
   end if
-  ref = dim_stddev_n(data_ref, 0)
+  ref_stddev = dim_stddev_n(data_ref, 0)
 
   ; Normalize std_dev with mean to avoid numerical problems and remove very
   ; small values
-  norm = avg(ref)
-  ref = ref / norm
-  ref = where(ref .le. TOLERANCE, ref@_FillValue, ref)
+  norm = avg(ref_stddev)
+  ref_stddev = ref_stddev / norm
+  ref_stddev = where(ref_stddev .le. TOLERANCE, ref_stddev@_FillValue, \
+                     ref_stddev)
 
   ; Loop over datasets
   do idat = 0, DIM_DAT - 1
@@ -303,13 +310,17 @@ begin
     else
       data_temp = all_data_yearly(idat, :, :, :)
     end if
-    dataset = dim_stddev_n(data_temp, 0)
-    dataset = dataset / norm
-    dataset = where(dataset .le. TOLERANCE, dataset@_FillValue, dataset)
+    dat_stddev = dim_stddev_n(data_temp, 0)
+    dat_stddev = where(ismissing(ref_stddev), dat_stddev@_FillValue, \
+                       dat_stddev)
+    dat_stddev = dat_stddev / norm
+    dat_stddev = where(dat_stddev .le. TOLERANCE, dat_stddev@_FillValue, \
+                       dat_stddev)
 
     ; Compute MVI
-    all_data_mvi(idat, :, :) = (dataset / ref - ref / dataset) ^ 2
-    delete([/dataset, data_temp/])
+    all_data_mvi(idat, :, :) = (dat_stddev / ref_stddev - \
+                                ref_stddev / dat_stddev) ^ 2
+    delete([/dat_stddev, data_temp/])
 
     ; Compute trend (restrict time range if desired)
     if (custom_trend_time_range) then
@@ -329,7 +340,7 @@ begin
     all_data_trend(idat, :, :) = rc
     delete([/dataset, rc/])
   end do
-  delete([/ref, norm/])
+  delete([/ref_stddev, norm/])
   copy_VarAtts(all_data_yearly, all_data_trend)
 
   ; Special case for lai:
@@ -393,7 +404,6 @@ begin
                                          region(0), region(1), region(2), \
                                          region(3), "average", True)
   end do
-  print(regional_mvi)
 
   ; Diagnostic- and variable-specific units conversions
   regional_mvi@units = "1"
