@@ -273,10 +273,3 @@ EMAC:
   input_file: ''
   output_file: '[dataset]_[ensemble]_[short_name]_[start_year]-[end_year]'
   cmor_type: 'CMIP5'
-
-Ozone_CMIP5_ACC_SPARC:
-  input_dir:
-    default: ''
-  input_file: '[project]_[exp]_[field]_[short_name]_*'
-  output_file: '[project]_[dataset]_[exp]_[field]_[short_name]_[start_year]-[end_year]'
-  cmor_type: 'CMIP5'

@@ -156,29 +156,6 @@ class spco2(Fix):
         return cube
 
 
-class tro3(Fix):
-    """Fixes for tro3"""
-
-    def fix_data(self, cube):
-        """Fix data.
-
-        Fixes cube units.
-
-        Parameters
-        ----------
-        cube: iris.cube.Cube
-
-        Returns
-        -------
-        iris.cube.Cube
-
-        """
-        metadata = cube.metadata
-        cube *= 1.e9
-        cube.metadata = metadata
-        return cube
-
-
 class od550aer(Fix):
     """Fixes for od550aer."""
 
