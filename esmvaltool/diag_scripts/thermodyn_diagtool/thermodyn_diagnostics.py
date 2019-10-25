@@ -271,7 +271,7 @@ def compute_water_mass_budget(cfg, wdir_up, pdir, model, wdir, input_data,
     - input_data: the names of the variables found in the input directory;
     - flags: a list with user options;
     - uax_file: the name of an auxiliary file;
-    
+
     Returns:
     Time mean and standard deviations of the water mass and latent
     heat budgets.
@@ -312,7 +312,7 @@ def compute_land_ocean(model, wdir, filein, sftlf_fx, name):
     - filein: a file containing the budget to be averaged over land and ocean;
     - sftlf_fx: a file containing the model-specific land-sea mask;
     - name: the name of the budget to be averaged;
-    
+
     Returns:
     Time means of the budgets over land and ocean.
 
