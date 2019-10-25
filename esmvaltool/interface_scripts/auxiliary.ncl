@@ -47,7 +47,7 @@ function bname(a[*]:string)
 ; References
 ;
 ; Modification history
-;    20131106-A_gott_kl: written.
+;    20131106-gottschaldt_klaus-dirk: written.
 ;
 local funcname, scriptname, a, i, b, rm_prefix, rm_suffix
 begin
@@ -87,7 +87,7 @@ function basename(name[1]:string)
 ; References
 ;
 ; Modification history
-;    20130419-A_gott_kl: written.
+;    20130419-gottschaldt_klaus-dirk: written.
 ;
 local funcname, scriptname, suffix
 begin
@@ -131,7 +131,7 @@ function att2var(data,
 ; References
 ;
 ; Modification history
-;    20131107-A_gott_kl: written.
+;    20131107-gottschaldt_klaus-dirk: written.
 ;
 local funcname, scriptname, data, meta, result, temp, atts, att, iatt
 begin
@@ -231,7 +231,7 @@ function att2var_default(data,
 ; References
 ;
 ; Modification history
-;    20140403-A_GoKl: written.
+;    20140403-gottschaldt_klaus-dirk: written.
 ;
 local funcname, scriptname, data, meta, result, default, option
 begin
@@ -271,7 +271,7 @@ function get_ncdf_name(var[1]:string)
 ; References
 ;
 ; Modification history
-;    20131108-A_gott_kl: written.
+;    20131108-gottschaldt_klaus-dirk: written.
 ;
 local funcname, scriptname, work_dir, diag_script, output_dir, ncdf_dir
 begin
@@ -315,7 +315,7 @@ function get_ncdf_dir(work_dir[1]:string,
 ; References
 ;
 ; Modification history
-;    20131108-A_gott_kl: written.
+;    20131108-gottschaldt_klaus-dirk: written.
 ;
 local funcname, scriptname, work_dir, subfolder, ncdf_dir
 begin
@@ -370,7 +370,7 @@ function ncdf_read(infile, varname)
 ; References
 ;
 ; Modification history
-;    20131111-A_gott_kl: written.
+;    20131111-gottschaldt_klaus-dirk: written.
 ;
 local funcname, scriptname, data, infile, ncdf, varname, i, ivar, nvar, \
   vdims, var, atts, temp, defaults
@@ -527,7 +527,7 @@ function ncdf_define(ncdf, data)
 ;    http://www.ncl.ucar.edu/Applications/method_2.shtml
 ;
 ; Modification history
-;    20131112-A_gott_kl: written.
+;    20131112-gottschaldt_klaus-dirk: written.
 ;
 local funcname, scriptname, data, diag_script, var, fAtt, dimNames, dimSzs, \
   dimUnlim, atts
@@ -662,7 +662,7 @@ function ncdf_write(data,
 ;    http://www.ncl.ucar.edu/Support/talk_archives/2009/0367.html
 ;
 ; Modification history
-;    20131107-A_gott_kl: written.
+;    20131107-gottschaldt_klaus-dirk: written.
 ;
 local funcname, scriptname, data, outfile, outfile_in, ncdf, varname
 begin
@@ -774,7 +774,7 @@ function ncdf_att(infile[1],
 ; References
 ;
 ; Modification history
-;    20140131-A_gott_kl: written.
+;    20140131-gottschaldt_klaus-dirk: written.
 ;
 local funcname, scriptname, f, file_atts, i, result
 begin
@@ -829,7 +829,7 @@ function copy_CoordNames_n(var_from,
 ; References
 ;
 ; Modification history
-;    20130419-A_gott_kl: written.
+;    20130419-gottschaldt_klaus-dirk: written.
 ;
 local funcname, scriptname, var_from, var_to, n, rank
 begin
@@ -882,7 +882,7 @@ function extend_var_at(var,
 ; References
 ;
 ; Modification history
-;    20130419-A_gott_kl: written.
+;    20130419-gottschaldt_klaus-dirk: written.
 ;
 local funcname, scriptname, var, coord, index, var_new, var_dim, \
   var_dim_plus, rank
@@ -978,7 +978,7 @@ function remove_index(array,
 ; References
 ;
 ; Modification history
-;    20160704-A_righ_ma: written.
+;    20160704-righi_mattia: written.
 ;
 local funcname, scriptname, dsize, rank, iarr
 begin
@@ -1038,7 +1038,7 @@ procedure set_default_att(info:logical,
 ; References
 ;
 ; Modification history
-;    20171214-A_righ_ma: written.
+;    20171214-righi_mattia: written.
 ;
 local funcname, scriptname
 begin
@@ -1073,7 +1073,7 @@ function empty_str(nn[1]:integer)
 ; References
 ;
 ; Modification history
-;     20140228-A_righ_ma: written.
+;    20140228-righi_mattia: written.
 ;
 local funcname, scriptname, ii
 begin

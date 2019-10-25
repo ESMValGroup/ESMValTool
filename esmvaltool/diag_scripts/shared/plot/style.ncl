@@ -56,11 +56,11 @@ function project_style(items: list,
 ; References
 ;
 ; Modification history
-;    20150512-A_righ_ma: modified to read style info from external style
-;                        files, instead of using hard-coded values in the
-;                        code. Functionalities of the project_styleset and
-;                        project_style_<styleset> functions porteed here.
-;    20130419-A_gott_kl: written.
+;    20150512-righi_mattia: modified to read style info from external style
+;                           files, instead of using hard-coded values in the
+;                           code. Functionalities of the project_styleset and
+;                           project_style_<styleset> functions porteed here.
+;    20130419-gottschaldt_klaus-dirk: written.
 ;
 local funcname, scriptname, result, info, flag, styleset, stylefile, tmp, sty
 begin
@@ -392,7 +392,7 @@ function gsnColorRange(lower:numeric,
 ;    http://www.ncl.ucar.edu/Applications/Scripts/contoursym_4.ncl
 ;
 ; Modification history
-;    20130422-A_gott_kl: written.
+;    20130422-gottschaldt_klaus-dirk: written.
 ;
 local funcname, scriptname, nboxes_left, nboxes_right, ncolors_left, \
   ncolors_right, output, color_start
@@ -463,7 +463,7 @@ function format_units(str[1]: string)
 ; References
 ;
 ; Modification history
-;    20140320-A_righ_ma: written.
+;    20140320-righi_mattia: written.
 ;
 local funcname, scriptname, loc_str
 begin
@@ -524,7 +524,7 @@ function set_log_ticks(fmin[1]:numeric,
 ; References
 ;
 ; Modification history
-;    20141003-A_righ_ma: written.
+;    20141003-righi_mattia: written.
 ;
 local funcname, scriptname, omin, omax, rmin, rmax, om, tmp, arr
 begin
@@ -614,7 +614,7 @@ function sort_alphabetically(orig_names[*], idx_exclude, dest_exclude)
 ; References
 ;
 ; Modification history
-;    20151028-A_righ:ma: written.
+;    20151028-righi_mattia: written.
 ;
 begin
 

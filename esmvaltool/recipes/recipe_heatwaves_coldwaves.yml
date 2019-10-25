@@ -7,10 +7,10 @@ documentation:
     for a minimum number of consecutive days.
 
   authors:
-    - hunt_al
-    - pere_nu
-    - manu_ni
-    - caro_lo
+    - hunter_alasdair
+    - perez-zanon_nuria
+    - manubens_nicolau
+    - caron_louis-philippe
 
   projects:
     - c3s-magic
@@ -23,28 +23,24 @@ datasets:
 
 preprocessors:
   preproc:
-    regrid:
-      target_grid: bcc-csm1-1
-      scheme: linear
-    mask_fillvalues:
-      threshold_fraction: 0.95
     extract_region:
-      start_longitude: 220
-      end_longitude: 320
+      start_longitude: -20
+      end_longitude: 60
       start_latitude: 30
       end_latitude: 80
-
+    mask_landsea:
+      mask_out: sea
 diagnostics:
   heatwaves_coldwaves:
     description: Calculate heatwaves and coldwaves.
     variables:
-      tasmin:
+      tasmax:
         preprocessor: preproc
         mip: day
     scripts:
       main:
-        script: magic_bsc/extreme_spells.r
+        script: magic_bsc/extreme_spells.R
         quantile: 0.80   # quantile defining the exceedance/non-exceedance threshold
         min_duration: 5  # Min duration of a heatwave/coldwave event in days
-        operator: '<'    # or '>'
-        season: winter   # or summer
+        operator: '>'    # or '>'
+        season: summer   # or summer
