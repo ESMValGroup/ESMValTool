@@ -674,6 +674,7 @@ references:
   esacci-ozone: "Loyola et al., Int. J. Remote Sens. doi:10.1080/01431160902825016, 2009."
   esacci-soilmoisture: "Liu et al., Hydrol. Earth Syst. Sci., doi:10.5194/hess-15-425-2011, 2011."
   esacci-sst: "Merchant et al., Geosci. Data J., doi:10.1002/gdj3.20, 2014."
+  gcp: "Le Quéré et al., Earth Syst. Sci. Data, doi:10.5194/essd-10-2141-2018, 2018."
   ghcn: "Jones and Moberg, J. Clim., doi:10.1175/1520-0442(2003)016<0206:HALSSA>2.0.CO;2, 2003."
   hadcrut3: "Brohan et al., J. Geophys. Res., doi:10.1029/2005JD006548, 2006."
   hadcrut4: "Morice et al., J. Goophys. Res., doi:10.1029/2011JD017187, 2012."
