@@ -14,7 +14,11 @@ documentation:
         # - pressure: Pa
         # - specific humidity: g g-1
 
-  authors: ['kalverla_peter', 'camphuijsen_jaro', 'alidoost_sarah']
+  authors: [
+            'kalverla_peter',
+            'camphuijsen_jaro',
+            'alidoost_sarah'
+            ]
   projects: ['ewatercycle']
   references: ['acknow_project']
 
@@ -89,27 +93,13 @@ diagnostics:
         start_year: 2000
         end_year: 2000
         preprocessor: hourly_mean
-      vas:
-        <<: *var_hourly
-        preprocessor: hourly_mean
-      tas:
-        <<: *var_hourly
-        preprocessor: hourly_mean
-      tdps:
-        <<: *var_hourly
-        preprocessor: hourly_mean
-      pr:
-        <<: *var_hourly
-        preprocessor: hourly_mean
-      rsds:
-        <<: *var_hourly
-        preprocessor: hourly_mean
-      rlds:
-        <<: *var_hourly
-        preprocessor: hourly_mean
-      ps:
-        <<: *var_hourly
-        preprocessor: hourly_mean
+      vas: *var_hourly
+      tas: *var_hourly
+      tdps: *var_hourly
+      pr: *var_hourly
+      rsds: *var_hourly
+      rlds: *var_hourly
+      ps: *var_hourly
     scripts:
       script:
         script: hydrology/summa.py
