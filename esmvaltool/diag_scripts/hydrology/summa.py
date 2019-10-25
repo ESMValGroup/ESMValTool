@@ -149,16 +149,16 @@ def save_data(var_dict, cfg):
     for cube in var_dict.values():
         new_cube = convert_to_hru(cube)
         cube_list_all_vars.append(new_cube)
-    # Save data
     # TODO get catchment name from cfg
+    # get the dataset name
     input_data = cfg['input_data'].values()
-    # Group input data based on dataset
-    grouped_input_data = group_metadata(input_data,
-                                        'dataset',
-                                        sort='standard_name')
-    # TODO add support for multiple datasets
-    dataset_name = list(grouped_input_data.keys())[0]
+    grouped_input_data = group_metadata(input_data, 'dataset')
+    dataset_name = list(grouped_input_data.keys())
+    if len(dataset_name) == 1:
+        dataset_name = dataset_name[0]
     basename = dataset_name + '_summa'
+
+    # Save data
     output_file = get_diagnostic_filename(basename, cfg)
     iris.save(cube_list_all_vars, output_file, fill_value=1.e20)
 
