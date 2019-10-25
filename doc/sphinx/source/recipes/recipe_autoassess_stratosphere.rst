@@ -1,7 +1,7 @@
 .. _recipe_autoassess_stratosphere.rst:
 
-Autoassess Stratosphere
-=======================
+Stratosphere - Autoassess diagnostics
+=====================================
 
 Overview
 --------
@@ -99,7 +99,7 @@ Inputs and usage
 ----------------
 The ``stratosphere`` area metric is part of the ``esmvaltool/diag_scripts/autoassess`` diagnostics,
 and, as any other ``autoassess`` metric, it uses the ``autoassess_area_base.py`` as general purpose
-wrapper. This wrapper accepts a number of input arguments that are read through from the recipe. 
+wrapper. This wrapper accepts a number of input arguments that are read through from the recipe.
 
 This recipe is part of the larger group of Autoassess metrics ported to ESMValTool
 from the native Autoassess package from the UK's Met Office. The ``diagnostics`` settings
@@ -198,7 +198,7 @@ QBO amplitude at 30 hPa (eastward)                  17.36                17.36
 ===============================================     ================     ====================
 
 Results from ``u-bc179`` have been obtained by running the native Autoassess/stratosphere
-on ``.pp`` data from UKESM1 ``u-bc179`` suite and are listed here to confirm the 
+on ``.pp`` data from UKESM1 ``u-bc179`` suite and are listed here to confirm the
 compliance between the ported Autoassess metric in ESMValTool and the original native metric.
 
 Another reference run comparing UKESM1-0-LL to the physical model HadGEM3-GC31-LL can be found

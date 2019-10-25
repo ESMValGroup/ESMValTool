@@ -280,6 +280,19 @@ diagnostics:
     scripts: null
 
 
+  PIOMAS:
+    description: PIOMAS
+    variables:
+      sithick:
+        mip: day
+      areacello:
+        mip: fx
+    additional_datasets:
+      - {dataset: PIOMAS, project: OBS, tier: 2,
+         type: reanaly, version: 2.1, start_year: 1979, end_year: 2018}
+    scripts: null
+
+
   WOA:
     description: WOA check
     variables:
@@ -520,6 +533,21 @@ diagnostics:
     scripts: null
 
 
+  HWSD:
+    description: HWSD check
+    variables:
+      areacella:
+        mip: fx
+      cSoil:
+        mip: Lmon
+      sftlf:
+        mip: fx
+    additional_datasets:
+      - {dataset: HWSD, project: OBS, tier: 3, type: reanaly, version: 1.2,
+         start_year: 2000, end_year: 2000}
+    scripts: null
+
+
   LAI3g:
     description: LAI3g check
     variables:
@@ -570,6 +598,16 @@ diagnostics:
     additional_datasets:
       - {dataset: MODIS, project: OBS, tier: 3,
          type: sat, version: MYD08-M3, start_year: 2003, end_year: 2018}
+    scripts: null
+
+
+  NDP:
+    description: NDP check
+    variables:
+      cVeg:
+    additional_datasets:
+      - {dataset: NDP, project: OBS, tier: 3, mip: Lmon,
+         type: reanaly, version: 017b, start_year: 2000, end_year: 2000}
     scripts: null
 
 
