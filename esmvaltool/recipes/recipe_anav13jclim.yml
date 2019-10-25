@@ -33,6 +33,10 @@ preprocessors:
     mask_landsea:
       mask_out: sea
 
+  landmask_and_regrid:
+    <<: *regridding
+    <<: *landmask
+
   land_fraction_weighting: &land_fraction_weighting
     weighting_landsea_fraction:
       area_type: land
@@ -42,10 +46,6 @@ preprocessors:
     weighting_landsea_fraction:
       area_type: sea
       strict: false
-
-  landmask_and_regrid: &landmask_and_regrid
-    <<: *regridding
-    <<: *landmask
 
   land_fraction_weighting_and_regrid:
     <<: *regridding
@@ -469,12 +469,16 @@ diagnostics:
     scripts:
       mvi_global:
         <<: *mvi_global
+        mask_below: 1e-2
       mvi_nh:
         <<: *mvi_nh
+        mask_below: 1e-2
       mvi_sh:
         <<: *mvi_sh
+        mask_below: 1e-2
       mvi_trop:
         <<: *mvi_trop
+        mask_below: 1e-2
 
   diag_main_gpp:
     description: Error bar, sasonal cycle and evolution plots for gpp (Figure 9).
@@ -635,124 +639,124 @@ diagnostics:
         <<: *main_trop
         evolution_plot: false
 
-  # diag_grading_tas: &diag_grading
-  #   description: Grading precalculations for tas.
-  #   themes:
-  #     - phys
-  #   realms:
-  #     - atmos
-  #   variables:
-  #     tas:
-  #       preprocessor: regrid_to_ref
-  #       project: CMIP5
-  #       mip: Amon
-  #       exp: historical
-  #       ensemble: r1i1p1
-  #       start_year: 1986
-  #       end_year: 2005
-  #       reference_dataset: CRU
-  #       plot_units: degC
-  #   additional_datasets: *tas_datasets
-  #   scripts:
-  #     cycle_global: &cycle_global
-  #       script: perfmetrics/main.ncl
-  #       plot_type: cycle_latlon
-  #       time_avg: monthlyclim
-  #       region: global
-  #       plot_stddev: all
-  #       legend_outside: false
-  #       styleset: CMIP5
-  #     cycle_nh: &cycle_nh
-  #       <<: *cycle_global
-  #       region: nh
-  #     cycle_sh: &cycle_sh
-  #       <<: *cycle_global
-  #       region: sh
-  #     cycle_trop: &cycle_trop
-  #       <<: *cycle_global
-  #       region: trop
-  #     grading_global: &grading_global
-  #       <<: *cycle_global
-  #       draw_plots: true
-  #       calc_grading: true
-  #       metric: [RMSD]
-  #       normalization: [maximum]
-  #     grading_nh: &grading_nh
-  #       <<: *grading_global
-  #       region: nh
-  #     grading_sh: &grading_sh
-  #       <<: *grading_global
-  #       region: sh
-  #     grading_trop: &grading_trop
-  #       <<: *grading_global
-  #       region: trop
+  diag_grading_tas: &diag_grading
+    description: Grading precalculations for tas.
+    themes:
+      - phys
+    realms:
+      - atmos
+    variables:
+      tas:
+        preprocessor: regrid_to_ref
+        project: CMIP5
+        mip: Amon
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 1986
+        end_year: 2005
+        reference_dataset: CRU
+        plot_units: degC
+    additional_datasets: *tas_datasets
+    scripts:
+      cycle_global: &cycle_global
+        script: perfmetrics/main.ncl
+        plot_type: cycle_latlon
+        time_avg: monthlyclim
+        region: global
+        plot_stddev: all
+        legend_outside: false
+        styleset: CMIP5
+      cycle_nh: &cycle_nh
+        <<: *cycle_global
+        region: nh
+      cycle_sh: &cycle_sh
+        <<: *cycle_global
+        region: sh
+      cycle_trop: &cycle_trop
+        <<: *cycle_global
+        region: trop
+      grading_global: &grading_global
+        <<: *cycle_global
+        draw_plots: true
+        calc_grading: true
+        metric: [RMSD]
+        normalization: [maximum]
+      grading_nh: &grading_nh
+        <<: *grading_global
+        region: nh
+      grading_sh: &grading_sh
+        <<: *grading_global
+        region: sh
+      grading_trop: &grading_trop
+        <<: *grading_global
+        region: trop
 
-  # diag_grading_pr:
-  #   <<: *diag_grading
-  #   description: Grading precalculations for pr.
-  #   variables:
-  #     pr:
-  #       preprocessor: regrid_to_ref
-  #       project: CMIP5
-  #       mip: Amon
-  #       exp: historical
-  #       ensemble: r1i1p1
-  #       start_year: 1986
-  #       end_year: 2005
-  #       reference_dataset: CRU
-  #       plot_units: mm yr-1
-  #   additional_datasets: *tas_datasets
-  #   scripts:
-  #     cycle_global:
-  #       <<: *cycle_global
-  #     cycle_nh:
-  #       <<: *cycle_nh
-  #     cycle_sh:
-  #       <<: *cycle_sh
-  #     cycle_trop:
-  #       <<: *cycle_trop
-  #     grading_global:
-  #       <<: *grading_global
-  #     grading_nh:
-  #       <<: *grading_nh
-  #     grading_sh:
-  #       <<: *grading_sh
-  #     grading_trop:
-  #       <<: *grading_trop
+  diag_grading_pr:
+    <<: *diag_grading
+    description: Grading precalculations for pr.
+    variables:
+      pr:
+        preprocessor: regrid_to_ref
+        project: CMIP5
+        mip: Amon
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 1986
+        end_year: 2005
+        reference_dataset: CRU
+        plot_units: mm yr-1
+    additional_datasets: *tas_datasets
+    scripts:
+      cycle_global:
+        <<: *cycle_global
+      cycle_nh:
+        <<: *cycle_nh
+      cycle_sh:
+        <<: *cycle_sh
+      cycle_trop:
+        <<: *cycle_trop
+      grading_global:
+        <<: *grading_global
+      grading_nh:
+        <<: *grading_nh
+      grading_sh:
+        <<: *grading_sh
+      grading_trop:
+        <<: *grading_trop
 
-  # diag_grading_nbp:
-  #   <<: *diag_grading
-  #   description: Grading precalculations for nbp.
-  #   realms:
-  #     - land
-  #   variables:
-  #     nbp:
-  #       preprocessor: land_fraction_weighting_and_regrid_to_ref
-  #       project: CMIP5
-  #       mip: Lmon
-  #       exp: historical
-  #       ensemble: r1i1p1
-  #       start_year: 1986
-  #       end_year: 2005
-  #       reference_dataset: JMA-TRANSCOM
-  #   additional_datasets: *nbp_datasets
-  #   scripts:
-  #     cycle_global:
-  #       <<: *cycle_global
-  #     cycle_nh:
-  #       <<: *cycle_nh
-  #     cycle_sh:
-  #       <<: *cycle_sh
-  #     cycle_trop:
-  #       <<: *cycle_trop
-  #     grading_global:
-  #       <<: *grading_global
-  #     grading_nh:
-  #       <<: *grading_nh
-  #     grading_sh:
-  #       <<: *grading_sh
-  #     grading_trop:
-  #       <<: *grading_trop
+  diag_grading_nbp:
+    <<: *diag_grading
+    description: Grading precalculations for nbp.
+    realms:
+      - land
+    variables:
+      nbp:
+        preprocessor: land_fraction_weighting_and_regrid_to_ref
+        project: CMIP5
+        mip: Lmon
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 1986
+        end_year: 2005
+        reference_dataset: JMA-TRANSCOM
+    additional_datasets: *nbp_datasets
+    scripts:
+      cycle_global:
+        <<: *cycle_global
+      cycle_nh:
+        <<: *cycle_nh
+      cycle_sh:
+        <<: *cycle_sh
+      cycle_trop:
+        <<: *cycle_trop
+      grading_global:
+        <<: *grading_global
+      grading_nh:
+        <<: *grading_nh
+      grading_sh:
+        <<: *grading_sh
+      grading_trop:
+        <<: *grading_trop
 
   # diag_grading_lai:
   #   <<: *diag_grading
@@ -788,66 +792,66 @@ diagnostics:
   #     grading_trop:
   #       <<: *grading_trop
 
-  # diag_grading_gpp:
-  #   <<: *diag_grading
-  #   description: Grading precalculations for gpp.
-  #   realms:
-  #     - land
-  #   variables:
-  #     gpp:
-  #       preprocessor: land_fraction_weighting_and_regrid_to_ref
-  #       project: CMIP5
-  #       mip: Lmon
-  #       exp: historical
-  #       ensemble: r1i1p1
-  #       start_year: 1986
-  #       end_year: 2005
-  #       reference_dataset: MTE
-  #   additional_datasets: *gpp_datasets
-  #   scripts:
-  #     cycle_global:
-  #       <<: *cycle_global
-  #     cycle_nh:
-  #       <<: *cycle_nh
-  #     cycle_sh:
-  #       <<: *cycle_sh
-  #     cycle_trop:
-  #       <<: *cycle_trop
-  #     grading_global:
-  #       <<: *grading_global
-  #     grading_nh:
-  #       <<: *grading_nh
-  #     grading_sh:
-  #       <<: *grading_sh
-  #     grading_trop:
-  #       <<: *grading_trop
+  diag_grading_gpp:
+    <<: *diag_grading
+    description: Grading precalculations for gpp.
+    realms:
+      - land
+    variables:
+      gpp:
+        preprocessor: land_fraction_weighting_and_regrid_to_ref
+        project: CMIP5
+        mip: Lmon
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 1986
+        end_year: 2005
+        reference_dataset: MTE
+    additional_datasets: *gpp_datasets
+    scripts:
+      cycle_global:
+        <<: *cycle_global
+      cycle_nh:
+        <<: *cycle_nh
+      cycle_sh:
+        <<: *cycle_sh
+      cycle_trop:
+        <<: *cycle_trop
+      grading_global:
+        <<: *grading_global
+      grading_nh:
+        <<: *grading_nh
+      grading_sh:
+        <<: *grading_sh
+      grading_trop:
+        <<: *grading_trop
 
-  # diag_collect:
-  #   <<: *diag_grading
-  #   description: Collect and plot previously calculated performance metrics.
-  #   realms:
-  #     - atmos
-  #     - land
-  #   scripts:
-  #     collect_global: &collect_global
-  #       script: perfmetrics/collect.ncl
-  #       ancestors: ['diag_grading_*/grading_global']
-  #       metric: RMSD
-  #       label_bounds: [0.0, 1.0]
-  #       label_scale: 0.1
-  #       disp_value: false
-  #       disp_rankings: true
-  #       rank_order: -1
-  #       colormap: matlab_jet
-  #       cm_reverse: true
-  #       cm_interval: [2, 63]
-  #       sort: true
-  #     collect_nh:
-  #       <<: *collect_global
-  #       ancestors: ['diag_grading_*/grading_nh']
-  #     collect_sh:
-  #       <<: *collect_global
-  #       ancestors: ['diag_grading_*/grading_sh']
-  #     collect_trop:
-  #       <<: *collect_global
-  #       ancestors: ['diag_grading_*/grading_trop']
+  diag_collect:
+    <<: *diag_grading
+    description: Collect and plot previously calculated performance metrics.
+    realms:
+      - atmos
+      - land
+    scripts:
+      collect_global: &collect_global
+        script: perfmetrics/collect.ncl
+        ancestors: ['diag_grading_*/grading_global']
+        metric: RMSD
+        label_bounds: [0.0, 1.0]
+        label_scale: 0.1
+        disp_value: false
+        disp_rankings: true
+        rank_order: -1
+        colormap: matlab_jet
+        cm_reverse: true
+        cm_interval: [2, 63]
+        sort: true
+      collect_nh:
+        <<: *collect_global
+        ancestors: ['diag_grading_*/grading_nh']
+      collect_sh:
+        <<: *collect_global
+        ancestors: ['diag_grading_*/grading_sh']
+      collect_trop:
+        <<: *collect_global
+        ancestors: ['diag_grading_*/grading_trop']

@@ -487,12 +487,9 @@ begin
       frame(wks)
 
       ; Provenance tracking
-      caption = ("Errorbar plot for " + var0 + " over the period " + \
-                 start_year + "-" + end_year + ". Similar to Anav et al. " + \
-                 "(2013), Figure 6.")
       caption = ("Scatterplot for " + var0 + " over the period " + \
                  start_year + "-" + end_year + ". Similar to Anav et al. " + \
-                 "(2013), Figure 17.")
+                 "(2013), Figure 16.")
       statistics = (/"mean", "stddev", "var"/)
       plot_type = "scatter"
       log_provenance(ncdf_outfile_mean_iav, plot_path, caption, statistics, \
