@@ -412,7 +412,7 @@ def kinentr(logger, aux_file, tasvert_file, lect, lec):
     """
     cdo = Cdo()
     removeif(aux_file)
-    if lec is True:
+    if lec is 'True':
         cdo.yearmonmean(input=tasvert_file, output=aux_file)
         with Dataset(aux_file) as f_l:
             tabl_mean = f_l.variables['ts'][:, 0, 0]
@@ -778,7 +778,7 @@ def wmbudg(model, wdir, aux_file, input_data, auxlist):
     removeif(aux_file)
     cdo.sub(input="{} -add -mulc,{} {} -mulc,{} {}".format(
         hfls_file, str(LC_SUB), prsn_file, str(L_C), auxlist[1]),
-            output=aux_file)
+        output=aux_file)
     latent_gmean = write_eb('hfls', 'latent', aux_file, latene_file,
                             latene_gmean_file)
     varlist = [wmass_gmean, latent_gmean]

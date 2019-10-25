@@ -257,6 +257,28 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 def compute_water_mass_budget(cfg, wdir_up, pdir, model, wdir, input_data,
                               flags, aux_file):
+    """Initialise computations of the water mass and latent heat budget.
+
+    This function calls the functions for the retrieveal of water mass and
+    latent energy budgets.
+
+    Arguments:
+    - cfg: a lot of metadata to handle input files;
+    - wdir_up: the work directory;
+    - pdir: the directory for the plots;
+    - model: the name of the model;
+    - wdir: the work directory of the specific model;
+    - input_data: the names of the variables found in the input directory;
+    - flags: a list with user options;
+    - uax_file: the name of an auxiliary file;
+    
+    Returns:
+    Time mean and standard deviations of the water mass and latent
+    heat budgets.
+
+    Author:
+    Valerio Lembo, University of Hamburg (2019).
+    """
     logger.info('Computing water mass and latent energy budgets\n')
     aux_list = mkthe.init_mkthe_wat(model, wdir, input_data, flags)
     wm_gmean, wm_file = computations.wmbudg(model, wdir, aux_file, input_data,
@@ -278,8 +300,26 @@ def compute_water_mass_budget(cfg, wdir_up, pdir, model, wdir, input_data,
             latent_time_std)
 
 
-def compute_land_ocean(model, wdir, file, sftlf_fx, name):
-    ocean_mean, land_mean = computations.landoc_budg(model, wdir, file,
+def compute_land_ocean(model, wdir, filein, sftlf_fx, name):
+    """Initialise computations of the budgets over land and ocean.
+
+    This function calls the function for the average of budgets over land and
+    ocean.
+
+    Arguments:
+    - model: the name of the model;
+    - wdir: the work directory of the specific model;
+    - filein: a file containing the budget to be averaged over land and ocean;
+    - sftlf_fx: a file containing the model-specific land-sea mask;
+    - name: the name of the budget to be averaged;
+    
+    Returns:
+    Time means of the budgets over land and ocean.
+
+    Author:
+    Valerio Lembo, University of Hamburg (2019).
+    """
+    ocean_mean, land_mean = computations.landoc_budg(model, wdir, filein,
                                                      sftlf_fx, name)
     logger.info('%s budget over oceans: %s\n', name, ocean_mean)
     logger.info('%s budget over land: %s\n', name, land_mean)
@@ -291,6 +331,9 @@ def main(cfg):
 
     Argument cfg, containing directory paths, preprocessed input dataset
     filenames and user-defined options, is passed by ESMValTool preprocessor.
+
+    Author:
+    Valerio Lembo, University of Hamburg (2019).
     """
     provlog = ProvenanceLogger(cfg)
     lorenz = lorenz_cycle

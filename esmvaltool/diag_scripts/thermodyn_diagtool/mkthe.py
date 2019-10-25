@@ -104,7 +104,7 @@ def init_mkthe_lec(model, wdir, input_data):
     Arguments:
     - model: the model name;
     - wdir: the working directory where the outputs are stored;
-    - filelist: a list of file names containing the input fields;
+    - filelist: a dictionary of file names containing the input fields;
     - flags: (wat: a flag for the water mass budget module (y or n),
               entr: a flag for the material entropy production (y or n);
               met: a flag for the material entropy production method
@@ -123,6 +123,25 @@ def init_mkthe_lec(model, wdir, input_data):
 
 
 def init_mkthe_direntr(model, wdir, input_data, te_file, flags):
+    """Compute the MEP with the direct method.
+
+    Arguments:
+    - model: the model name;
+    - wdir: the working directory where the outputs are stored;
+    - input_data: a dictionary of file names containing the input fields;
+    - te_file: a file containing the emission temperature computed from OLR;
+    - flags: (wat: a flag for the water mass budget module (y or n),
+              entr: a flag for the material entropy production (y or n);
+              met: a flag for the material entropy production method
+              (1: indirect, 2, direct, 3: both));
+
+    Returns:
+    A list of files cotiaining the components of the MEP with the direct
+    method.
+
+    Author:
+    Valerio Lembo, University of Hamburg (2019).
+    """
     cdo = Cdo()
     wat = flags[0]
     met = flags[3]
@@ -299,6 +318,20 @@ def mkthe_main(wdir, file_list, modelname):
 
 
 def mon_from_day(wdir, model, name, filein):
+    """Compute monthly mean from daily mean.
+
+    Arguments:
+    - wdir: the working directory path;
+    - model: the model name;
+    - name: the name of the field to be averaged;
+    - filein: the input file containing the field to be averaged;
+
+    Returns:
+    The name of the file containing the monthly averaged field.
+
+    Author:
+    Valerio Lembo, University of Hamburg, 2019
+    """
     cdo = Cdo()
     fileaux = wdir + '/aux.nc'
     cdo.selvar(name, input=filein, output=fileaux)
