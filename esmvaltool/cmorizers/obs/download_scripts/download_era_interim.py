@@ -22,7 +22,7 @@ https://apps.ecmwf.int/codes/grib/param-db
 https://apps.ecmwf.int/datasets/data/interim-full-invariant
 
 ```bash
-python download_era_interim.py -c config-user.yml --start_year 2000
+python download_era_interim.py --config_file config-user.yml --start_year 2000
 --end_year 2000
 ```
 
