@@ -39,7 +39,7 @@ preprocessors:
       scheme: linear
   extract_catchment: &Meuse
     extract_shape:
-      shapefile: HYPE_Shapefiles/Meuse_HYPE/Meuse_HYPE.shp
+      shapefile: meuse_hydrosheds.shp
       method: contains
       crop: true
   # save_memory: &save_memory
