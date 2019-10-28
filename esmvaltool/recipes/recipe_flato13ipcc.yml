@@ -102,7 +102,7 @@ diagnostics:
         reference_dataset: ERA-Interim
         mip: Amon
     additional_datasets:
-      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1,
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1,
          start_year: 1986, end_year: 2005, tier: 3}
       - {dataset: ACCESS1-0, project: CMIP5, exp: historical, ensemble: r1i1p1,
          start_year: 1986, end_year: 2005}

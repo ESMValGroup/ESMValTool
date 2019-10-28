@@ -251,7 +251,7 @@ diagnostics:
       - {dataset: MRI-ESM1}
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
-      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, tier: 3}
       - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
     scripts:
       cycle: &cycle_settings
@@ -1808,7 +1808,7 @@ diagnostics:
   #  themes:
   #    - aerosols
   #  realms:
-  #    - atmos    
+  #    - atmos
   #  description: Fine mode optical depth at 550 nm
   #  variables:
   #    od550lt1aer:
@@ -1849,7 +1849,7 @@ diagnostics:
   #    - chem
   #    - ghg
   #  realms:
-  #    - atmosChem    
+  #    - atmosChem
   #  variables:
   #    toz:
   #      preprocessor: ppNOLEV2thr10
