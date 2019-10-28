@@ -1,11 +1,16 @@
 .. _nml_seaice:
 
 Sea Ice
-====================================================
+=======
 
 Overview
 --------
-The sea ice diagnostics plot time series of Arctic and Antarctic sea ice area and extent (calculated as the total area (km2) of grid cells with sea ice concentrations (sic) of at least 15%).
+The sea ice diagnostics include:
+(1) time series of Arctic and Antarctic sea ice area and extent
+    (calculated as the total area (km\ :sup:`2`\) of grid cells with sea ice concentrations
+    (sic) of at least 15%).
+(2) ice extent trend distributions for the Arctic in September and the Antarctic in February.
+
 
 Available recipes and diagnostics
 -----------------------------------
@@ -16,11 +21,29 @@ Recipes are stored in recipes/
 
 Diagnostics are stored in diag_scripts/seaice/
 
-* seaice_tsline.ncl: creates a time series line plots of total sea ice area and extent (accumulated) for northern and southern hemispheres with optional multi-model mean and standard deviation. One value is used per model per year, either annual mean or the mean value of a selected month.
+* seaice_trends.ncl: calculates ice extent trend distributions (similar to IPCC AR5 Chapter 9, Fig. 9.24c/d)
+* seaice_tsline.ncl: creates a time series line plots of total sea ice area and extent (accumulated) for northern and southern
+  hemispheres with optional multi-model mean and standard deviation. One value is used per model per year, either annual mean
+  or the mean value of a selected month (similar to IPCC AR5 Chapter 9, Fig. 9.24a/b)
 * seaice_aux.ncl: contains a function for calculating sea ice area or extent from sea ice concentration.
 
 User settings in recipe
 -----------------------
+
+#. Script seaice_trends.ncl
+
+   *Required settings (scripts)*
+
+   * month: selected month (1, 2, ..., 12) or annual mean ("A")
+   * region: region to be analyzed ( "Arctic" or "Antarctic")
+
+   *Optional settings (scripts)*
+
+   * fill_pole_hole: fill observational hole at North pole, Default: False
+
+   *Optional settings (variables)*
+
+   * ref_model: array of references plotted as vertical lines
 
 #. Script seaice_tsline.ncl
 
@@ -57,10 +80,20 @@ References
 Example plots
 -------------
 
-.. centered:: |pic_seaice1| |pic_seaice2|
+.. centered:: |pic_seaice1a| |pic_seaice2a|
 
-.. |pic_seaice1| image:: /recipes/figures/seaice/seaice_fig_1.png
-   :width: 50%
+.. |pic_seaice1a| image:: /recipes/figures/seaice/trend_sic_extend_Arctic_September_histogram.png
+   :width: 40%
 
-.. |pic_seaice2| image:: /recipes/figures/seaice/seaice_fig_2.png
-   :width: 50%
+.. |pic_seaice2a| image:: /recipes/figures/seaice/trend_sic_extend_Antarctic_February_histogram.png
+   :width: 40%
+
+   Sea ice extent trend distributions for (left) the Arctic in September and (right) the
+   Antarctic in February (similar to IPCC AR5 Chapter 9, Fig. 9.24c/d).
+
+.. figure::  /recipes/figures/seaice/extent_sic_Arctic_September_1960-2005.png
+   :align:   center
+   :width:   12cm
+
+   Time series of total sea ice area and extent (accumulated) for the Arctic in September
+   including multi-model mean and standard deviation (similar to IPCC AR5 Chapter 9, Fig. 9.24a).
