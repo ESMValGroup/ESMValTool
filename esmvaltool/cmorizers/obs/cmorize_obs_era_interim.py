@@ -76,8 +76,8 @@ Caveats
 
 For further details on obtaining daily values from ERA-Interim,
     see:
-    https://confluence.ecmwf.int/pages/viewpage.action?pageId=56658233
-    https://confluence.ecmwf.int/display/CKB/ERA-Interim%3A+monthly+means
+    https://confluence.ecmwf.int/display/CKB/ERA-Interim
+    https://confluence.ecmwf.int/display/CKB/ERA-Interim+documentation#ERA-Interimdocumentation-Monthlymeans
     https://confluence.ecmwf.int/display/CKB/ERA-Interim%3A+How+to+calculate+daily+total+precipitation
 
 """
