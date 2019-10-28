@@ -14,7 +14,7 @@ from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
 logger = logging.getLogger(Path(__file__).name)
 
 
-def get_provenance_record(ancestor_file):
+def create_provenance_record():
     """Create a provenance record."""
     record = {
         'caption': "Forcings for the wflow hydrological model.",
@@ -30,7 +30,7 @@ def get_provenance_record(ancestor_file):
         'references': [
             'acknow_project',
         ],
-        'ancestors': [ancestor_file],
+        'ancestors': [],
     }
     return record
 
@@ -75,6 +75,7 @@ def regrid_temperature(src_temp, src_height, target_height):
     target_dtemp_compat.data = target_dtemp.data.copy()
 
     target_temp = target_slt - target_dtemp_compat
+    target_temp.var_name = src_temp.var_name
     return target_temp
 
 def debruin_PET(t2m, msl, ssrd, tisr):
@@ -169,25 +170,20 @@ def main(cfg):
                                         'standard_name',
                                         sort='dataset')
 
+    provenance = create_provenance_record()
     # Make a dictionary containing all variables
     all_vars = {}
     for standard_name in grouped_input_data:
-        logger.info("Processing variable %s", standard_name)
-
+        logger.info("Loading variable %s", standard_name)
         # Combine multiple years into a singe iris cube
         all_years = []
         for attributes in grouped_input_data[standard_name]:
             input_file = attributes['filename']
             cube = iris.load_cube(input_file)
             all_years.append(cube)
+            provenance['ancestors'].append(input_file)
         allyears = iris.cube.CubeList(all_years).concatenate_cube()
-
         all_vars[standard_name] = allyears
-
-        # For now, save intermediate output
-        output_file = get_diagnostic_filename(
-            Path(input_file).stem + '_wflow_test', cfg)
-        iris.save(allyears, output_file, fill_value=1.e20)
 
     # These keys are now available in all_vars:
     # print('###########3')
@@ -207,29 +203,38 @@ def main(cfg):
     # Read source orography (add era5 later) and try to make it cmor compatible
     era_orography_path = os.path.join(cfg['auxiliary_data_dir'], cfg['source_orography'])
     oro = iris.load_cube(era_orography_path)
-    # oro.coord('longitude').long_name="Longitude"
-    # oro.coord('latitude').long_name="Latitude"
 
     ## Processing precipitation
-    # Interpolate precipitation to the target grid and save new output
+    logger.info("Processing variable precipitation_flux")
     pr = all_vars['precipitation_flux']
     pr_dem = preproc.regrid(pr, target_grid=dem, scheme='linear')
-    iris.save(pr_dem, output_file, fill_value=1.e20) #TODO: change filename
 
     ## Processing temperature
+    logger.info("Processing variable temperature")
     tas = all_vars['air_temperature']
     tas_dem = regrid_temperature(tas, oro, dem)
 
     ## Processing Reference EvapoTranspiration (PET)
+    logger.info("Processing variable PET")
     t2m = all_vars['air_temperature']
     msl = all_vars['air_pressure_at_mean_sea_level']
     ssrd = all_vars['surface_downwelling_shortwave_flux_in_air']
     tisr = all_vars['toa_incoming_shortwave_flux']
     pet = debruin_PET(t2m, msl, ssrd, tisr)
+    pet.var_name = 'potential_evapotranspiration'
+    pet_dem = preproc.regrid(pet, target_grid=dem, scheme='linear')
 
-    ## Calculating
     # Save output
-    iris.save(tas_dem, output_file, fill_value=1.e20)
+    # Output format: "wflow_local_forcing_ERA5_Meuse_1990_2018.nc"
+    dataset = iris.cube.CubeList([pr_dem, tas_dem, pet_dem])
+    output_file = get_diagnostic_filename(Path(input_file).stem + '_wflow_local_forcing'
+        # + '_' + cfg['dataset'] + '_' + cfg['basin'] + '_' + cfg['start_year'] + '_' + cfg['end_year'], cfg)
+        + 'ERA-Interim_Meuse_2000_2001', cfg)
+    iris.save(dataset, output_file, fill_value=1.e20)
+
+    # Store provenance
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(output_file, provenance)
 
     # TODO
     # - Check whether the correct units are used
@@ -237,8 +242,6 @@ def main(cfg):
     #   (currently, we use .nc dem files that Jerom converted externally)
     # - Compare output to prepared input during workshop
     # - Save the output files with correct variable- and file-names
-    #   Output format: wflow_local_forcing_ERA5_Meuse_1990_2018.nc
-    # - Add provencance stuff again in the diagnostic
 
 
 if __name__ == '__main__':
