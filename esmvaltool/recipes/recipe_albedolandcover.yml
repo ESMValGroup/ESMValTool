@@ -16,7 +16,6 @@ albedolandcover_parameters: &albedolandcover_parameters
     threshold_sumpred: 90
     mingc: 3
     minnum_gc_bb: 15
-    thres_fsnow: 0.1
     snowfree: true
     lc1_class: ['treeFrac']
     lc2_class: ['shrubFrac']

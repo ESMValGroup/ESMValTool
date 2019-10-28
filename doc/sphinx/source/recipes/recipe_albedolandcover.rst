@@ -54,3 +54,13 @@ References
 * Duveiller, G., Hooker, J. and Cescatti, A., 2018a. A dataset mapping the potential biophysical effects of vegetation cover change. Scientific Data, 5: 180014.
 
 * Duveiller, G., Hooker, J. and Cescatti, A., 2018b. The mark of vegetation change on Earth’s surface energy balance. Nature communications, 9(1): 679.
+
+Example plots
+-------------
+
+.. _fig_landcoveralbedo_CMIP5_MPI-ESM-LR:
+.. figure::  /recipes/figures/albedolandcover/MPI-ESM-LR_albedo_change_from_tree_to_crop-grass.png
+   :align:   center
+   :width:   14cm
+
+   Example of albedo change from tree to crop and grass for the CMIP5 model MPI-ESM-LR derived for the month of July and averaged over the years 2000 to 2004.
