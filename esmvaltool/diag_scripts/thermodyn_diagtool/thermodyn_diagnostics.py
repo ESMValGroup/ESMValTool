@@ -471,6 +471,7 @@ def main(cfg):
                         'Cycle (year by year)\n')
             _, _ = mkthe.init_mkthe_lec(model, wdir, input_data)
             lect = lorenz.preproc_lec(model, wdir, pdir, input_data)
+            plotsmod.lec_plot(model, pdir, lect)
             lec_all[i_m, 0] = np.nanmean(lect)
             lec_all[i_m, 1] = np.nanstd(lect)
             logger.info(

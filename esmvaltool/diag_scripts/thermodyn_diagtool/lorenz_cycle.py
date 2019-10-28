@@ -535,21 +535,22 @@ def mkaeaz(v_t, wap, t_t, ttt, ttg, p_l, lat, gam, nlat, nlev):
     """
     dtdp = np.zeros([nlev, nlat])
     dtdy = np.zeros([nlev, nlat])
+    ttt = np.real(ttt)
     for l_l in np.arange(nlev):
         if l_l == 0:
-            t_1 = np.real(ttt[l_l, :, 0]) - ttg[l_l]
-            t_2 = np.real(ttt[l_l + 1, :, 0]) - ttg[l_l + 1]
+            t_1 = ttt[l_l, :, 0] - ttg[l_l]
+            t_2 = ttt[l_l + 1, :, 0] - ttg[l_l + 1]
             dtdp[l_l, :] = (t_2 - t_1) / (p_l[l_l + 1] - p_l[l_l])
         elif l_l == nlev - 1:
-            t_1 = np.real(ttt[l_l - 1, :, 0]) - ttg[l_l - 1]
-            t_2 = np.real(ttt[l_l, :, 0]) - ttg[l_l]
+            t_1 = ttt[l_l - 1, :, 0] - ttg[l_l - 1]
+            t_2 = ttt[l_l, :, 0] - ttg[l_l]
             dtdp[l_l, :] = (t_2 - t_1) / (p_l[l_l] - p_l[l_l - 1])
         else:
-            t_1 = np.real(ttt[l_l, :, 0]) - ttg[l_l]
-            t_2 = np.real(ttt[l_l + 1, :, 0]) - ttg[l_l + 1]
+            t_1 = ttt[l_l, :, 0] - ttg[l_l]
+            t_2 = ttt[l_l + 1, :, 0] - ttg[l_l + 1]
             dtdp1 = (t_2 - t_1) / (p_l[l_l + 1] - p_l[l_l])
             t_2 = t_1
-            t_1 = np.real(ttt[l_l - 1, :, 0]) - ttg[l_l - 1]
+            t_1 = ttt[l_l - 1, :, 0] - ttg[l_l - 1]
             dtdp2 = (t_2 - t_1) / (p_l[l_l] - p_l[l_l - 1])
             dtdp[l_l, :] = ((dtdp1 * (p_l[l_l] - p_l[l_l - 1]) + dtdp2 *
                              (p_l[l_l + 1] - p_l[l_l])) /
@@ -558,16 +559,16 @@ def mkaeaz(v_t, wap, t_t, ttt, ttg, p_l, lat, gam, nlat, nlev):
                                        (ttt[l_l, :, 0] - ttg[l_l]))
     for i_l in np.arange(nlat):
         if i_l == 0:
-            t_1 = np.real(ttt[:, i_l, 0])
-            t_2 = np.real(ttt[:, i_l + 1, 0])
+            t_1 = ttt[:, i_l, 0]
+            t_2 = ttt[:, i_l + 1, 0]
             dtdy[:, i_l] = (t_2 - t_1) / (lat[i_l + 1] - lat[i_l])
         elif i_l == nlat - 1:
-            t_1 = np.real(ttt[:, i_l - 1, 0])
-            t_2 = np.real(ttt[:, i_l, 0])
+            t_1 = ttt[:, i_l - 1, 0]
+            t_2 = ttt[:, i_l, 0]
             dtdy[:, i_l] = (t_2 - t_1) / (lat[i_l] - lat[i_l - 1])
         else:
-            t_1 = np.real(ttt[:, i_l - 1, 0])
-            t_2 = np.real(ttt[:, i_l + 1, 0])
+            t_1 = ttt[:, i_l - 1, 0]
+            t_2 = ttt[:, i_l + 1, 0]
             dtdy[:, i_l] = (t_2 - t_1) / (lat[i_l + 1] - lat[i_l - 1])
     dtdy = dtdy / AA
     c_1 = np.real(v_t * np.conj(t_t) + t_t * np.conj(v_t))
@@ -649,11 +650,11 @@ def mkkekz(u_t, v_t, wap, utt, vtt, p_l, lat, nlat, ntp, nlev):
     c_4 = np.zeros([nlev, nlat, ntp - 1])
     c_5 = np.zeros([nlev, nlat, ntp - 1])
     c_6 = np.zeros([nlev, nlat, ntp - 1])
-    u_u = u_t * np.conj(u_t) + u_t * np.conj(u_t)
-    u_v = u_t * np.conj(v_t) + v_t * np.conj(u_t)
-    v_v = v_t * np.conj(v_t) + v_t * np.conj(v_t)
-    u_w = u_t * np.conj(wap) + wap * np.conj(u_t)
-    v_w = v_t * np.conj(wap) + wap * np.conj(v_t)
+    u_u = np.real(u_t * np.conj(u_t) + u_t * np.conj(u_t))
+    u_v = np.real(u_t * np.conj(v_t) + v_t * np.conj(u_t))
+    v_v = np.real(v_t * np.conj(v_t) + v_t * np.conj(v_t))
+    u_w = np.real(u_t * np.conj(wap) + wap * np.conj(u_t))
+    v_w = np.real(v_t * np.conj(wap) + wap * np.conj(v_t))
     for i_l in np.arange(nlat):
         c_1[:, i_l, :] = dudy[:, i_l][:, np.newaxis] * u_v[:, i_l, :]
         c_2[:, i_l, :] = dvdy[:, i_l][:, np.newaxis] * v_v[:, i_l, :]
@@ -706,28 +707,33 @@ def mkatas(u_t, v_t, wap, t_t, ttt, g_w, p_l, lat, nlat, ntp, nlev):
     c_5 = np.zeros([nlev, nlat, ntp - 1])
     for i_l in range(nlat):
         if i_l == 0:
-            c_2[:, i_l, :] = (
-                t_v[:, i_l, :] / (AA * (lat[i_l + 1] - lat[i_l])) *
-                np.conj(ttt[:, i_l + 1, np.newaxis] - ttt[:, i_l, np.newaxis]))
-            c_3[:, i_l, :] = (
-                np.conj(t_v[:, i_l, :]) / (AA * (lat[i_l + 1] - lat[i_l])) *
-                (ttt[:, i_l + 1, np.newaxis] - ttt[:, i_l, np.newaxis]))
+            c_2[:, i_l, :] = np.real(
+                    t_v[:, i_l, :] / (AA * (lat[i_l + 1] - lat[i_l])) *
+                    np.conj(ttt[:, i_l + 1, np.newaxis] -
+                            ttt[:, i_l, np.newaxis]))
+            c_3[:, i_l, :] = np.real(
+                    np.conj(t_v[:, i_l, :]) / (AA *
+                                              (lat[i_l + 1] - lat[i_l])) *
+                    (ttt[:, i_l + 1, np.newaxis] - ttt[:, i_l, np.newaxis]))
         elif i_l == nlat - 1:
-            c_2[:, i_l, :] = (
-                t_v[:, i_l, :] / (AA * (lat[i_l] - lat[i_l - 1])) *
-                np.conj(ttt[:, i_l, np.newaxis] - ttt[:, i_l - 1, np.newaxis]))
-            c_3[:, i_l, :] = (
-                np.conj(t_v[:, i_l, :]) / (AA * (lat[i_l] - lat[i_l - 1])) *
-                (ttt[:, i_l, np.newaxis] - ttt[:, i_l - 1, np.newaxis]))
+            c_2[:, i_l, :] = np.real(
+                    t_v[:, i_l, :] / (AA * (lat[i_l] - lat[i_l - 1])) *
+                    np.conj(ttt[:, i_l, np.newaxis] -
+                            ttt[:, i_l - 1, np.newaxis]))
+            c_3[:, i_l, :] = np.real(
+                    np.conj(t_v[:, i_l, :]) / (AA *
+                                              (lat[i_l] - lat[i_l - 1])) *
+                    (ttt[:, i_l, np.newaxis] - ttt[:, i_l - 1, np.newaxis]))
         else:
-            c_2[:, i_l, :] = (t_v[:, i_l, :] /
-                              (AA * (lat[i_l + 1] - lat[i_l - 1])) *
-                              np.conj(ttt[:, i_l + 1, np.newaxis] -
-                                      ttt[:, i_l - 1, np.newaxis]))
-            c_3[:, i_l, :] = (
-                np.conj(t_v[:, i_l, :]) / (AA *
-                                           (lat[i_l + 1] - lat[i_l - 1])) *
-                (ttt[:, i_l + 1, np.newaxis] - ttt[:, i_l - 1, np.newaxis]))
+            c_2[:, i_l, :] = np.real(
+                    t_v[:, i_l, :] / (AA * (lat[i_l + 1] - lat[i_l - 1])) *
+                    np.conj(ttt[:, i_l + 1, np.newaxis] -
+                            ttt[:, i_l - 1, np.newaxis]))
+            c_3[:, i_l, :] = np.real(
+                    np.conj(t_v[:, i_l, :]) / (AA *
+                                              (lat[i_l + 1] - lat[i_l - 1])) *
+                    (ttt[:, i_l + 1, np.newaxis] -
+                     ttt[:, i_l - 1, np.newaxis]))
     for l_l in range(nlev):
         if l_l == 0:
             c_5[l_l, :, :] = (
@@ -772,6 +778,8 @@ def mkktks(u_t, v_t, utt, vtt, lat, nlat, ntp, nlev):
     dut = np.zeros([nlev, nlat, ntp - 1])
     dvt = np.zeros([nlev, nlat, ntp - 1])
     dlat = np.zeros([nlat])
+    utt = np.real(utt)
+    vtt = np.real(vtt)
     u_r = np.fft.irfft(u_t, axis=2)
     v_r = np.fft.irfft(v_t, axis=2)
     uur = u_r * u_r

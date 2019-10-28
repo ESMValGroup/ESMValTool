@@ -319,6 +319,30 @@ def latwgt(lat, t_r):
     return tr2
 
 
+def lec_plot(model, pdir, lect):
+    """Define options for plotting maps of entropy production components.
+
+    Arguments:
+    - model: the name of the model;
+    - path: the path to the plots directory;
+    - lect: a time series of annual mean LEC intensities;
+
+    Author:
+        Valerio Lembo, University of Hamburg (2019)
+    """
+    fig = plt.figure()
+    axi = plt.subplot(111)
+    time = np.linspace(0,len(lect), len(lect))
+    axi.plot(time, lect, 'k')
+    plt.title('Annual mean LEC intensity for {}'.format(model))
+    plt.xlabel('Years')
+    plt.ylabel('[W/m2]')
+    plt.tight_layout()
+    plt.grid()
+    plt.savefig(pdir + '/{}_lec_timeser.png'.format(model))
+    plt.close(fig)
+
+
 def plot_climap_eb(model, pdir, coords, tmean, ext_name):
     """Plot climatological mean maps of TOA, atmospheric, oceanic energy budg.
 
