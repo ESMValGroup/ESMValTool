@@ -459,8 +459,12 @@ diagnostics:
       clivi:
         mip: Amon
         fx_files: [sftlf]
-      clt:
+      clt_month:
+        short_name: clt
         mip: Amon
+      clt_day:
+        short_name: clt
+        mip: day
       clwvi:
         mip: Amon
       hfds:
@@ -499,20 +503,85 @@ diagnostics:
         mip: Amon
       tauv:
         mip: Amon
-      ts:
+      ts_month:
+        short_name: ts
         mip: Amon
+      ts_day:
+        short_name: ts
+        mip: Eday
       ua:
         mip: Amon
       va:
         mip: Amon
       wap:
         mip: Amon
-      zg:
+      zg_month:
+        short_name: zg
         mip: Amon
+      zg_day:
+        short_name: zg
+        mip: day
       tos:
         mip: Omon
+      sftlf:
+        mip: fx
+      tdps_day:
+        short_name: tdps
+        mip: Eday
+      tdps_month:
+        short_name: tdps
+        mip: Emon
+      uas_day:
+        short_name: uas
+        mip: day
+      uas_month:
+        short_name: uas
+        mip: Amon
+      vas_day:
+        short_name: vas
+        mip: day
+      vas_month:
+        short_name: vas
+        mip: Amon
+      rsds_day:
+        short_name: rsds
+        mip: day
+      rsds_month:
+        short_name: rsds
+        mip: Amon
+      evspsbl_day:
+        short_name: evspsbl
+        mip: Eday
+      evspsbl_month:
+        short_name: evspsbl
+        mip: Amon
+      prsn_day:
+        short_name: prsn
+        mip: day
+      prsn_month:
+        short_name: prsn
+        mip: Amon
+      rss_day:
+        short_name: rss
+        mip: day
+      rss_month:
+        short_name: rss
+        mip: Emon
+      tsns:
+        mip: Eday
+      rsdt_day:
+        short_name: rsdt
+        mip: CFday
+      rsdt_month:
+        short_name: rsdt
+        mip: Amon
+      hur:
+        mip: Amon
+      tsn:
+        mip: LImon
+        raw: tsn
     additional_datasets:
-      - {dataset: ERA-Interim, project: OBS, tier: 3,
+      - {dataset: ERA-Interim, project: OBS6, tier: 3,
          type: reanaly, version: 1, start_year: 1979, end_year: 2018}
     scripts: null
 
