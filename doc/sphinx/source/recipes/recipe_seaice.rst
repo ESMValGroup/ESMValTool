@@ -81,16 +81,12 @@ References
 Example plots
 -------------
 
-.. centered:: |pic_seaice1a| |pic_seaice2a|
+.. figure::  /recipes/figures/seaice/trend_sic_extend_Arctic_September_histogram.png
+   :align:   center
+   :width:   9cm
 
-.. |pic_seaice1a| image:: /recipes/figures/seaice/trend_sic_extend_Arctic_September_histogram.png
-   :width: 40%
-
-.. |pic_seaice2a| image:: /recipes/figures/seaice/trend_sic_extend_Antarctic_February_histogram.png
-   :width: 40%
-
-   Sea ice extent trend distributions for (left) the Arctic in September and (right) the
-   Antarctic in February (similar to IPCC AR5 Chapter 9, Fig. 9.24c/d).
+   Sea ice extent trend distribution for the Arctic in September
+   (similar to IPCC AR5 Chapter 9, Fig. 9.24c).
 
 .. figure::  /recipes/figures/seaice/extent_sic_Arctic_September_1960-2005.png
    :align:   center
