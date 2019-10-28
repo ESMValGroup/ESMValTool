@@ -59,7 +59,7 @@ Example plots
 -------------
 
 .. _fig_landcoveralbedo_CMIP5_MPI-ESM-LR:
-.. figure::  /recipes/figures/albedolandcover/MPI-ESM-LR_albedo_change_from_tree_to_crop-grass.png
+.. figure::  /figures/albedolandcover/MPI-ESM-LR_albedo_change_from_tree_to_crop-grass.png
    :align:   center
    :width:   14cm
 
