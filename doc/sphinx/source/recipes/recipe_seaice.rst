@@ -6,6 +6,7 @@ Sea Ice
 Overview
 --------
 The sea ice diagnostics include:
+
 (1) time series of Arctic and Antarctic sea ice area and extent
     (calculated as the total area (km\ :sup:`2`\) of grid cells with sea ice concentrations
     (sic) of at least 15%).
