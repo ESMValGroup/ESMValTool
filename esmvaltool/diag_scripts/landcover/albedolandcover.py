@@ -177,9 +177,9 @@ def _write_albedochanges_to_disk(alb_lc, template_cube,
     transition_cube = template_cube
     # Remove attributes that are not applicable to derived data
     attrs_to_be_removed = ['comment', 'modeling_realm', 'table_id']
-    attrs_to_be_removed = []
     for att in attrs_to_be_removed:
-        transition_cube.attributes.pop(att)
+        if att in transition_cube.attributes:
+            transition_cube.attributes.pop(att)
     # Set correct unit
     transition_cube.units = '1'
     result_dict = {'lc1': alb_lc[0, :, :], 'lc2': alb_lc[1, :, :],
