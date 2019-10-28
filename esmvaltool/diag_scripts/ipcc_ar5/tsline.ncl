@@ -280,7 +280,7 @@ begin
     ; Calculate time average of dataset
     ; annual mean if at least 2 months of data is available
     if (time_avg.eq."yearly") then
-      do i = 0, dimsizes(A0!0)-1
+      do i = 0, dimsizes(A0!0) - 1
         A0(i, :, :) = where(dim_num_n(.not.ismissing(A0), 0).ge.2, \
                             A0(i, :, :), A0@_FillValue)
       end do
