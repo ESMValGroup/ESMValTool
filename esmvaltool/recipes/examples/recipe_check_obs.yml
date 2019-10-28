@@ -156,6 +156,19 @@ diagnostics:
     scripts: null
 
 
+  GCP:
+    description: GCP check
+    variables:
+      nbp:
+        mip: Lmon
+      fgco2:
+        mip: Omon
+    additional_datasets:
+      - {dataset: GCP, project: OBS, tier: 2, type: reanaly, version: 2018,
+         start_year: 1959, end_year: 2017, frequency: yr}
+    scripts: null
+
+
   GHCN:
     description: GHCN check
     variables:

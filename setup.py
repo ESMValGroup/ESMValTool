@@ -41,6 +41,7 @@ REQUIREMENTS = {
         'shapely',
         'stratify',
         'xarray>=0.12',
+        'xlrd',
         'xlsxwriter',
     ],
     # Test dependencies
