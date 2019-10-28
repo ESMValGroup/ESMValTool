@@ -64,7 +64,6 @@ Recipes are stored in esmvaltool/recipes/
 Diagnostics are stored in esmvaltool/diag_scripts/
 
     * climate_metrics/ecs.py: See :ref:`recipes_ecs`.
-    * ipcc_ar5/ch09_fig09_42a.py: ECS vs. surface air temperature (Fig. 9.42a)
     * clouds/clouds_bias.ncl: global maps of the multi-model mean and the multi-model
       mean bias (Fig. 9.2, 9.4)
     * clouds/clouds_isccp: global maps of multi-model mean minus observations + zonal
