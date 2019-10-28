@@ -21,7 +21,7 @@
 ;
 ; Modification history
 ;    20191025-lauer_axel: rewritten for v2.0
-;    20170619-senftleben_daniel: written. 
+;    20170619-senftleben_daniel: written.
 ;
 ; #############################################################################
 
@@ -214,8 +214,8 @@ begin
   wks = get_wks("dummy_for_wks", DIAG_SCRIPT, out_ext)
 
   res = True
-  res@tiMainString = i2month + " " + diag_script_info@region + \
-                     " sea ice extent trends " + \
+  res@tiMainString = i2month + " " + diag_script_info@region \
+                     + " sea ice extent trends " + \
                      year0 + "-" + year1 + rcp_tag
   res@tiXAxisString = "10~S~6~N~ km~S~2~N~ per decade"
   res@tiYAxisString = "Number of models"
@@ -230,10 +230,10 @@ begin
 
   ; Add reference data as vertical lines
   if (dim_REF .gt. 0) then
-    getvalues plot ; Get plot parameters
+    getvalues plot  ; Get plot parameters
       "trYMinF" : ymin
       "trYMaxF" : ymax
-    end getvalues 
+    end getvalues
     xmin = min(xAxis)
     xmax = max(xAxis)
     res_ref = True
@@ -244,14 +244,14 @@ begin
       ref_val = SSIE_trnd_ref(iref)
       x = (ref_val - xmin) / (xmax - xmin)
       if (iref.eq.0) then
-         ref_line0 = gsn_add_polyline(wks, plot, (/x, x/), \
-                                      (/ymin, ymax/), res_ref)
+        ref_line0 = gsn_add_polyline(wks, plot, (/x, x/), \
+                                     (/ymin, ymax/), res_ref)
       else if (iref.eq.1) then
-         ref_line1 = gsn_add_polyline(wks, plot, (/x, x/), \
-                                      (/ymin, ymax/), res_ref)
+        ref_line1 = gsn_add_polyline(wks, plot, (/x, x/), \
+                                     (/ymin, ymax/), res_ref)
       else if (iref.eq.2) then
-         ref_line2 = gsn_add_polyline(wks, plot, (/x, x/), \
-                                      (/ymin, ymax/), res_ref)
+        ref_line2 = gsn_add_polyline(wks, plot, (/x, x/), \
+                                     (/ymin, ymax/), res_ref)
       else if (iref.eq.3) then
         ref_line3 = gsn_add_polyline(wks, plot, (/x, x/), \
                                      (/ymin, ymax/), res_ref)
