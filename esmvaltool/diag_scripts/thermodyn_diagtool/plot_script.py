@@ -332,7 +332,7 @@ def lec_plot(model, pdir, lect):
     """
     fig = plt.figure()
     axi = plt.subplot(111)
-    time = np.linspace(0,len(lect), len(lect))
+    time = np.linspace(0, len(lect), len(lect))
     axi.plot(time, lect, 'k')
     plt.title('Annual mean LEC intensity for {}'.format(model))
     plt.xlabel('Years')
@@ -627,7 +627,8 @@ def plot_mm_scatter(axi, varlist, title, xlabel, ylabel):
                      xytext=(xval[i_m] + d_x, yval[i_m] + d_y),
                      fontsize=12)
     axi.tick_params(axis='both', which='major', labelsize=12)
-    plt.subplots_adjust(hspace=.3)
+    axi.margins(0.002)
+    plt.axis('auto')
     plt.grid()
 
 
@@ -648,11 +649,8 @@ def plot_mm_scatter_spec(axi, varlist, title, xlabel, ylabel):
     """
     xval = varlist[0]
     yval = varlist[1]
-    axi.set_figsize = (50, 50)
     xrang = abs(max(xval) - min(xval))
     yrang = abs(max(yval) - min(yval))
-    plt.xlim(min(xval) - 0.1 * xrang, max(xval) + 0.1 * xrang)
-    plt.ylim(min(yval) - 0.1 * yrang, max(yval) + 0.1 * yrang)
     x_x = np.linspace(min(xval) - 0.1 * xrang, max(xval) + 0.1 * xrang, 10)
     y_y = np.linspace(min(yval) - 0.1 * yrang, max(yval) + 0.1 * yrang, 10)
     x_m, y_m = np.meshgrid(x_x, y_y)
@@ -694,7 +692,7 @@ def plot_mm_summaryscat(pdir, summary_varlist):
     vertentr_all = summary_varlist[7]
     indentr_all = horzentr_all[:, 0] + vertentr_all[:, 0]
     fig = plt.figure()
-    fig.set_size_inches(12, 22)
+    fig.set_size_inches(14, 22)
     axi = plt.subplot(321)
     title = '(a) TOA vs. atmospheric energy budget'
     xlabel = 'R_t [W m-2]'
@@ -703,33 +701,33 @@ def plot_mm_summaryscat(pdir, summary_varlist):
     plot_mm_scatter(axi, varlist, title, xlabel, ylabel)
     axi = plt.subplot(322)
     title = '(b) Baroclinic efficiency vs. Intensity of LEC'
-    xlabel = 'Eta'
+    xlabel = r'$\eta$'
     ylabel = 'W [W/m2]'
     varlist = [baroceff_all, lec_all[:, 0]]
     plot_mm_scatter(axi, varlist, title, xlabel, ylabel)
     axi = plt.subplot(323)
     title = '(c) Vertical vs. horizontal component'
-    xlabel = 'S_hor [W m-2 K-1]'
-    ylabel = 'S_ver [W m-2 K-1]'
+    xlabel = r'S$_{hor}$ [W m-2 K-1]'
+    ylabel = r'S$_{ver}$ [W m-2 K-1]'
     varlist = [horzentr_all[:, 0], vertentr_all[:, 0]]
     plot_mm_scatter_spec(axi, varlist, title, xlabel, ylabel)
     axi = plt.subplot(324)
     title = '(d) Indirect vs. direct method'
-    xlabel = 'S_ind [W m-2 K-1]'
-    ylabel = 'S_dir [W m-2 K-1]'
+    xlabel = r'S$_{ind}$ [W m-2 K-1]'
+    ylabel = r'S$_{dir}$ [W m-2 K-1]'
     varlist = [indentr_all, matentr_all[:, 0]]
     plot_mm_scatter(axi, varlist, title, xlabel, ylabel)
     axi = plt.subplot(325)
     title = '(e) Indirect vs. emission temperature'
-    xlabel = 'T_E [K]'
-    ylabel = 'S_mat [W m-2 K-1]'
+    xlabel = r'T$_E$ [K]'
+    ylabel = r'S$_{mat}$ [W m-2 K-1]'
     varlist = [te_all, indentr_all]
     plot_mm_scatter(axi, varlist, title, xlabel, ylabel)
     axi = plt.subplot(326)
     title = '(f) Baroclinic efficiency vs. emission temperature'
-    xlabel = 'T_E [K]'
-    ylabel = 'Eta'
-    varlist = [te_all, indentr_all]
+    xlabel = r'T$_E$ [K]'
+    ylabel = r'$\eta$'
+    varlist = [te_all, baroceff_all]
     plot_mm_scatter(axi, varlist, title, xlabel, ylabel)
     oname = pdir + '/scatters_summary.png'
     plt.savefig(oname)
