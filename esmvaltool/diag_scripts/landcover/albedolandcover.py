@@ -24,8 +24,6 @@ import glob
 import itertools as it
 import logging
 import os
-import sys
-import warnings
 
 from cartopy import crs  # This line causes a segmentation fault in prospector
 import cartopy.feature as cfeature
@@ -71,22 +69,29 @@ def _add_masks_albedolandcover(model_data, this_models_xxfracs, cfg):
     template_time = model_data['snc'].coord('time')
     month_string = template_time.units.num2date(
         template_time.points)[0].strftime('%b')
+    if 'source_id' in model_data['snc'].attributes:
+        model_attr_name = model_data['snc'].attributes['source_id']
+    elif 'model_id' in model_data['snc'].attributes:
+        model_attr_name = model_data['snc'].attributes['model_id']
+    else:
+        logger.warning("Could not find attribute that describes model name")
+
     masksavename = '{0}-{1}'.format(
-        month_string, model_data['snc'].attributes['model_id'])
+        month_string, model_attr_name)
     plt.imshow(total_frac.data[::-1])
     plt.savefig(os.path.join(masksavedir, masksavename +
-                'total_frac.' + cfg['output_file_type']))
+                             'total_frac.' + cfg['output_file_type']))
     plt.imshow(fracmask[::-1])
     plt.savefig(os.path.join(masksavedir, masksavename +
-                'fracmask.' + cfg['output_file_type']))
+                             'fracmask.' + cfg['output_file_type']))
     plt.imshow(snowmask[::-1])
     plt.title('snowmask')
     plt.savefig(os.path.join(masksavedir, masksavename +
-                'snowmask.' + cfg['output_file_type']))
+                             'snowmask.' + cfg['output_file_type']))
     plt.imshow(snowfreemask[::-1])
     plt.title('snowfreemask')
     plt.savefig(os.path.join(masksavedir, masksavename +
-                'snowfreemask.' + cfg['output_file_type']))
+                             'snowfreemask.' + cfg['output_file_type']))
 
     # Distinguish between snowfree and snow areas
     if cfg['params']['snowfree']:
@@ -171,7 +176,9 @@ def _write_albedochanges_to_disk(alb_lc, template_cube,
                                  datadict, cfg):
     transition_cube = template_cube
     # Remove attributes that are not applicable to derived data
-    for att in ['comment', 'modeling_realm', 'table_id']:
+    attrs_to_be_removed = ['comment', 'modeling_realm', 'table_id']
+    attrs_to_be_removed = []
+    for att in attrs_to_be_removed:
         transition_cube.attributes.pop(att)
     # Set correct unit
     transition_cube.units = '1'
@@ -240,7 +247,13 @@ def _plot_cube(cube, cfg):
     # Draw coast lines
     plt.gca().coastlines()
     # Get right path for saving plots from the cfg dictionary.
-    basename = cube.attributes['model_id'] + '_'\
+    if 'parent_mip_era' in cube.attributes:
+        model_attr_name = 'source_id' if\
+            cube.attributes['parent_mip_era'] == 'CMIP6'\
+            else 'model_id'
+    else:  # In this case it must be OBS, and we set it to model_id explicitly
+        model_attr_name = 'model_id'
+    basename = cube.attributes[model_attr_name] + '_'\
         + cube.name().replace(' ', '_')
     savename_fig = get_plot_filename(basename, cfg)
     logger.info("Saving figure as: %s", savename_fig)
@@ -248,13 +261,11 @@ def _plot_cube(cube, cfg):
 
 
 def main(cfg):
-    """
-    Calculate linear regression between albedo and xxfrac.
+    """Calculate linear regression between albedo and xxfrac.
 
     Arguments:
     ---------
         cfg - nested dictionary of metadata
-
     """
     # Assemble the data dictionary keyed by dataset name
     my_files_dict = group_metadata(cfg['input_data'].values(), 'dataset')
