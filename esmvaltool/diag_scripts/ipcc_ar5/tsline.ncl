@@ -204,7 +204,7 @@ begin
     if (isatt(variable_info[0], "reference_dataset")) then
 
       ; masking with reference dataset
-      if(diag_script_info@ref_mask .and. imod .ne. ref_ind) then
+      if (diag_script_info@ref_mask .and. imod .ne. ref_ind) then
         ; Determine start/end year
         start_year = info_items[imod]@start_year
         end_year = info_items[imod]@end_year
