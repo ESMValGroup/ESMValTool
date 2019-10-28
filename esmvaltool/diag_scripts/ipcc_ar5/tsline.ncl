@@ -220,7 +220,7 @@ begin
     end if
 
     ; Anomaly
-    if(anom .eq. "anom") then
+    if (anom .eq. "anom") then
       ; calculate monthly mean of ref period if 0.5 data points are available
       tmp = time_operations(A0, ref_start, ref_end, "extract", "", 0)
       limit  = toint(0.5 * dimsizes(tmp&time))
