@@ -52,8 +52,8 @@ def _add_masks_albedolandcover(model_data, this_models_xxfracs, cfg):
     basemask = model_data['snc'].data.mask
 
     # Mask out regions where there is little snow
-    snowmask = model_data['snc'].data.data < cfg['params']['thres_fsnow']
-    snowfreemask = ~snowmask
+    snowmask = model_data['snc'].data.data < 0.1
+    snowfreemask = model_data['snc'].data.data > 0.9
 
     # Update the masks
     snowmask |= basemask
