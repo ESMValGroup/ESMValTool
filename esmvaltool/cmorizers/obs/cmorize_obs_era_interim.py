@@ -134,6 +134,11 @@ def _fix_coordinates(cube, definition):
     # Make latitude increasing
     cube = cube[..., ::-1, :]
 
+    # Make pressure_level decreasing
+    coord_long_name = [item.long_name for item in cube.coords()]
+    if 'pressure_level' in coord_long_name:
+        cube = cube[:, ::-1, ...]
+
     # Add scalar height coordinates
     if 'height2m' in definition.dimensions:
         utils.add_scalar_height_coord(cube, 2.)
