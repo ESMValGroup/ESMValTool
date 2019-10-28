@@ -215,8 +215,7 @@ begin
 
   res = True
   res@tiMainString = i2month + " " + diag_script_info@region \
-                     + " sea ice extent trends " + \
-                     year0 + "-" + year1 + rcp_tag
+    + " sea ice extent trends " + year0 + "-" + year1 + rcp_tag
   res@tiXAxisString = "10~S~6~N~ km~S~2~N~ per decade"
   res@tiYAxisString = "Number of models"
   xAxis = fspan(-1.6, 0.2, 19)
