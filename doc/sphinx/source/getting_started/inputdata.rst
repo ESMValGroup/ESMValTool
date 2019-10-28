@@ -87,11 +87,10 @@ A list of the datasets for which a cmorizers is available is provided in the fol
 | ERA5                         | clt, evspsbl, evspsblpot, mrro, pr, prsn, psl, rls, rsds, rsdt, rss, uas, vas, tas, tasmax, tasmin,  |   3  | Python          |
 |                              | tdps, ts, tsn (E1hr)                                                                                 |      |                 |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
-| ERA-Interim                  | | fx: sftlf                                                                                          |   3  | Python          |
-|                              | | daily: clt, evspsbl, pr, prsn, psl, rsds, rsdt, rss, tas, tasmax, tasmin, tdps, ts, tsns,          |      |                 |
-|                              |   uas, vas, zg                                                                                       |      |                 |
-|                              | | monthly: clivi, clwvi, clt, clwvi, evspsbl, hfds, hur, hus, pr, prw, prsn, ps, psl, rsds, rsdt,    |      |                 |
-|                              |   rss, ta, tas, tauu, tauv, tdps, tos, ts, tsn, ua, uas, va, vas, wap, zg                            |      |                 |
+| ERA-Interim                  | clivi, clt, clwvi, evspsbl, hur, hus, pr, prsn, prw, ps, psl, rsds, rsdt, ta, tas, tauu, tauv, ts,   |   3  | Python          |
+|                              | ua, uas, va, vas, wap, zg (Amon), rsdt (CFday), clt, pr, prsn, psl, rsds, rss, tas, tasmax, tasmin,  |      |                 |
+|                              | uas, vas, zg (day), evspsbl, tdps, ts, tsns, rss, tdps (Eday), tsn (LImon), hfds, tos (Omon),        |      |                 |
+|                              | sftlf (fx)                                                                                           |      |                 |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | ESACCI-AEROSOL               | abs550aer, od550aer, od550aerStderr, od550lt1aer, od870aer, od870aerStderr (aero)                    |   2  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
