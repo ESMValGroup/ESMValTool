@@ -18,13 +18,14 @@ It ingests monthly mean fields of:
 - surface turbulent sensible heat fluxes (hfss);
 - emission temperature (te).
 
-@author: Valerio Lembo, valerio.lembo@uni-hamburg.de, Universitat Hamburg, 2018 
+@author: Valerio Lembo, valerio.lembo@uni-hamburg.de, Universitat Hamburg, 2018
 """
 import os
 from shutil import move
+
 import numpy as np
-from netCDF4 import Dataset
 from cdo import Cdo
+from netCDF4 import Dataset
 
 import esmvaltool.diag_scripts.shared as e
 from esmvaltool.diag_scripts.thermodyn_diagtool import fourier_coefficients

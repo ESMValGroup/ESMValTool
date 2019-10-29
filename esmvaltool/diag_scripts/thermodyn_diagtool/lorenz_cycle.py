@@ -51,9 +51,10 @@ References.
 import math
 import os
 import sys
+
 import numpy as np
-from netCDF4 import Dataset
 from cdo import Cdo
+from netCDF4 import Dataset
 
 import esmvaltool.diag_scripts.shared as e
 from esmvaltool.diag_scripts.thermodyn_diagtool import (fluxogram,
@@ -520,11 +521,11 @@ def mka2k(wap, t_t, w_g, t_g, p_l):
     t_g: a temperature vertical profile;
     p_l: the pressure levels;
     """
-    a2k = -np.real(R / p_l[:, np.newaxis, np.newaxis] *
-            (t_t * np.conj(wap) + np.conj(t_t) * wap))
-    a2k[:, :, 0] = -np.real(R / p_l[:, np.newaxis] *
-                     (t_t[:, :, 0] - t_g[:, np.newaxis]) *
-                     (wap[:, :, 0] - w_g[:, np.newaxis]))
+    a2k = - np.real(R / p_l[:, np.newaxis, np.newaxis] *
+                    (t_t * np.conj(wap) + np.conj(t_t) * wap))
+    a2k[:, :, 0] = - np.real(R / p_l[:, np.newaxis] *
+                             (t_t[:, :, 0] - t_g[:, np.newaxis]) *
+                             (wap[:, :, 0] - w_g[:, np.newaxis]))
     return a2k
 
 
@@ -721,25 +722,22 @@ def mkatas(u_t, v_t, wap, t_t, ttt, g_w, p_l, lat, nlat, ntp, nlev):
         if i_l == 0:
             c_2[:, i_l, :] = np.real(
                 t_v[:, i_l, :] / (AA * (lat[i_l + 1] - lat[i_l])) *
-                np.conj(ttt[:, i_l + 1, np.newaxis] -
-                        ttt[:, i_l, np.newaxis]))
+                np.conj(ttt[:, i_l + 1, np.newaxis] - ttt[:, i_l, np.newaxis]))
             c_3[:, i_l, :] = np.real(
-                np.conj(t_v[:, i_l, :]) / (AA *
-                                           (lat[i_l + 1] - lat[i_l])) *
+                np.conj(t_v[:, i_l, :]) / (AA * (lat[i_l + 1] - lat[i_l])) *
                 (ttt[:, i_l + 1, np.newaxis] - ttt[:, i_l, np.newaxis]))
         elif i_l == nlat - 1:
             c_2[:, i_l, :] = np.real(
                 t_v[:, i_l, :] / (AA * (lat[i_l] - lat[i_l - 1])) *
                 np.conj(ttt[:, i_l, np.newaxis] - ttt[:, i_l - 1, np.newaxis]))
             c_3[:, i_l, :] = np.real(
-                np.conj(t_v[:, i_l, :]) / (AA *
-                                           (lat[i_l] - lat[i_l - 1])) *
+                np.conj(t_v[:, i_l, :]) / (AA * (lat[i_l] - lat[i_l - 1])) *
                 (ttt[:, i_l, np.newaxis] - ttt[:, i_l - 1, np.newaxis]))
         else:
-            c_2[:, i_l, :] = np.real(
-                t_v[:, i_l, :] / (AA * (lat[i_l + 1] - lat[i_l - 1])) *
-                np.conj(ttt[:, i_l + 1, np.newaxis] -
-                        ttt[:, i_l - 1, np.newaxis]))
+            c_2[:, i_l, :] = np.real(t_v[:, i_l, :] /
+                                     (AA * (lat[i_l + 1] - lat[i_l - 1])) *
+                                     np.conj(ttt[:, i_l + 1, np.newaxis] -
+                                             ttt[:, i_l - 1, np.newaxis]))
             c_3[:, i_l, :] = np.real(
                 np.conj(t_v[:, i_l, :]) / (AA *
                                            (lat[i_l + 1] - lat[i_l - 1])) *
