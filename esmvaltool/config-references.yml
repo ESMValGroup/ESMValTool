@@ -78,6 +78,10 @@ authors:
     institute: University of Delft, Netherlands
     email: J.P.M.Aerts@tudelft.nl
     orcid:
+  alidoost_sarah:
+    name: Alidoost, Sarah
+    institute: NLeSC, Netherlands
+    email: f.alidoost 'at' esciencecenter.nl
   anav_alessandro:
     name: Anav, Alessandro
     institute: Univ. of Exeter, UK
@@ -374,6 +378,10 @@ authors:
     name: van Ulft, Bert
     institute: KNMI, Netherlands
     orcid: https://orcid.org/0000-0001-8653-2312
+  verh_st:
+    name: Verhoeven, Stefan
+    institute: NLeSC, Netherlands
+    email: s.verhoeven 'at' esciencecenter.nl
   walton_jeremy:
     name: Walton, Jeremy
     institute: MetOffice, UK
