@@ -446,95 +446,13 @@ diagnostics:
       clivi:
         mip: Amon
         fx_files: [sftlf]
-      clt_month:
-        short_name: clt
-        mip: Amon
       clt_day:
         short_name: clt
         mip: day
+      clt_month:
+        short_name: clt
+        mip: Amon
       clwvi:
-        mip: Amon
-      hfds:
-        mip: Omon
-      hus:
-        mip: Amon
-      pr_month:
-        short_name: pr
-        mip: Amon
-      pr_day:
-        short_name: pr
-        mip: day
-      prw:
-        mip: Amon
-      ps:
-        mip: Amon
-      psl_month:
-        short_name: psl
-        mip: Amon
-      psl_day:
-        short_name: psl
-        mip: day
-      ta:
-        mip: Amon
-      tas_month:
-        short_name: tas
-        mip: Amon
-      tas_day:
-        short_name: tas
-        mip: day
-      tasmin:
-        mip: day
-      tasmax:
-        mip: day
-      tauu:
-        mip: Amon
-      tauv:
-        mip: Amon
-      ts_month:
-        short_name: ts
-        mip: Amon
-      ts_day:
-        short_name: ts
-        mip: Eday
-      ua:
-        mip: Amon
-      va:
-        mip: Amon
-      wap:
-        mip: Amon
-      zg_month:
-        short_name: zg
-        mip: Amon
-      zg_day:
-        short_name: zg
-        mip: day
-      tos:
-        mip: Omon
-      sftlf:
-        mip: fx
-      tdps_day:
-        short_name: tdps
-        mip: Eday
-      tdps_month:
-        short_name: tdps
-        mip: Emon
-      uas_day:
-        short_name: uas
-        mip: day
-      uas_month:
-        short_name: uas
-        mip: Amon
-      vas_day:
-        short_name: vas
-        mip: day
-      vas_month:
-        short_name: vas
-        mip: Amon
-      rsds_day:
-        short_name: rsds
-        mip: day
-      rsds_month:
-        short_name: rsds
         mip: Amon
       evspsbl_day:
         short_name: evspsbl
@@ -542,11 +460,45 @@ diagnostics:
       evspsbl_month:
         short_name: evspsbl
         mip: Amon
+      hfds:
+        mip: Omon
+      hur:
+        mip: Amon
+      hus:
+        mip: Amon
+      pr_day:
+        short_name: pr
+        mip: day
+      pr_month:
+        short_name: pr
+        mip: Amon
       prsn_day:
         short_name: prsn
         mip: day
       prsn_month:
         short_name: prsn
+        mip: Amon
+      prw:
+        mip: Amon
+      ps:
+        mip: Amon
+      psl_day:
+        short_name: psl
+        mip: day
+      psl_month:
+        short_name: psl
+        mip: Amon
+      rsds_day:
+        short_name: rsds
+        mip: day
+      rsds_month:
+        short_name: rsds
+        mip: Amon
+      rsdt_day:
+        short_name: rsdt
+        mip: CFday
+      rsdt_month:
+        short_name: rsdt
         mip: Amon
       rss_day:
         short_name: rss
@@ -554,19 +506,68 @@ diagnostics:
       rss_month:
         short_name: rss
         mip: Emon
-      tsns:
+      sftlf:
+        mip: fx
+      ta:
+        mip: Amon
+      tas_day:
+        short_name: tas
+        mip: day
+      tas_month:
+        short_name: tas
+        mip: Amon
+      tasmax:
+        mip: day
+      tasmin:
+        mip: day
+      tauu:
+        mip: Amon
+      tauv:
+        mip: Amon
+      tdps_day:
+        short_name: tdps
         mip: Eday
-      rsdt_day:
-        short_name: rsdt
-        mip: CFday
-      rsdt_month:
-        short_name: rsdt
+      tdps_month:
+        short_name: tdps
+        mip: Emon
+      tos:
+        mip: Omon
+      ts_day:
+        short_name: ts
+        mip: Eday
+      ts_month:
+        short_name: ts
         mip: Amon
-      hur:
-        mip: Amon
-      tsn:
+      tsn_day:
+        short_name: tsn
+        mip: Eday
+      tsn_month:
+        short_name: tsn
         mip: LImon
-        raw: tsn
+      ua:
+        mip: Amon
+      uas_day:
+        short_name: uas
+        mip: day
+      uas_month:
+        short_name: uas
+        mip: Amon
+      va:
+        mip: Amon
+      vas_day:
+        short_name: vas
+        mip: day
+      vas_month:
+        short_name: vas
+        mip: Amon
+      wap:
+        mip: Amon
+      zg_day:
+        short_name: zg
+        mip: day
+      zg_month:
+        short_name: zg
+        mip: Amon
     additional_datasets:
       - {dataset: ERA-Interim, project: OBS6, tier: 3,
          type: reanaly, version: 1, start_year: 1979, end_year: 2018}
