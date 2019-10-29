@@ -537,12 +537,10 @@ diagnostics:
       ts_month:
         short_name: ts
         mip: Amon
-      tsn_day:
-        short_name: tsn
-        mip: Eday
-      tsn_month:
-        short_name: tsn
+      tsn:
         mip: LImon
+      tsns:
+        mip: Eday
       ua:
         mip: Amon
       uas_day:
