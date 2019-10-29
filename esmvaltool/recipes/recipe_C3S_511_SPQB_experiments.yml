@@ -53,11 +53,11 @@ diagnostics:
 #      bdalb:
       ta:
 #      xch4:
-        preprocessor: regrid30
+        preprocessor: regrid2
     scripts:
       diag_O_info:
         script: qualassess/DUMMY_C3S_511_SPQB.py
-        requests: [info, GCOS]
+        requests: [info]
       diag_O_avail:
         script: qualassess/DUMMY_C3S_511_SPQB.py
         requests: [availability]
@@ -74,6 +74,11 @@ diagnostics:
         script: qualassess/DUMMY_C3S_511_SPQB.py
         requests: [mean]
         levels: [3.00e+04,8.50e+04,1.00e+02]
+#      diag_MV_lmean:
+#        script: qualassess/DUMMY_C3S_511_SPQB.py
+#        requests: [mean]
+#        levels: [3.00e+04,8.50e+04,1.00e+02]
+#        log_data: True
       diag_MV_std_dev:
         script: qualassess/DUMMY_C3S_511_SPQB.py
         requests: [std_dev]
@@ -101,7 +106,7 @@ diagnostics:
       diag_tables:
         script: qualassess/DUMMY_C3S_511_SPQB.py
 #        requests: [SMM, GCOS, ESM]
-        requests: [SMM, ESM]
+        requests: [SMM]
       report:
         script: qualassess/DUMMY_C3S_511_SPQB.py
         ancestors: ['ta', '*/diag_*']

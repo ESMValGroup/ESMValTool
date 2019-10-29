@@ -964,7 +964,7 @@ class Plot2D(object):
                 cax=cax,
                 orientation='horizontal',
                 spacing='proportional',
-                fraction=1.,
+#                fraction=1.,
                 extend=ext_cmap,
                 ticks = ticks,
 #                boundaries=(levels)

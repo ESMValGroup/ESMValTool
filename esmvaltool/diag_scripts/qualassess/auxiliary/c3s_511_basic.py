@@ -1102,7 +1102,7 @@ class Basic_Diagnostic_SP(__Diagnostic_skeleton__):
                 cube = self.sp_data
     
             if level is not None:
-                basic_filename = self.__basic_filename__ + "_ledataset_idv" + str(level)
+                basic_filename = self.__basic_filename__ + "_lev" + str(level)
                 dataset_id = [self.__dataset_id__[1], "at", "level", str(
                     level), str(self.sp_data.coord(self.level_dim).units)]
             else:
