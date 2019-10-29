@@ -758,6 +758,7 @@ plot_types:
   circle: different overlapping circles
   diurn: diurnal cycle
   geo: geographical distribution
+  histogram: histogram
   portrait: portrait diagram
   polar: polar-stereographic plot
   scatter: scatter plot

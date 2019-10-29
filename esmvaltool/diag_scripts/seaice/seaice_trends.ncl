@@ -11,7 +11,7 @@
 ;   region: region to be analyzed ( "Arctic" or "Antarctic")
 ;
 ; Optional diag_script_info attributes (diagnostic specific)
-;   fill_pole_hole: fill observational hole at North pole, Default: False
+;   fill_pole_hole: fill observational hole at North pole (default: False)
 ;   ref_model: array of references plotted as vertical lines
 ;
 ; Required variable_info attributes (variable specific)
@@ -293,9 +293,9 @@ begin
 
   nc_ext = ncdf_write(alltrends, config_user_info@work_dir + out_ext + ".nc")
 
-  log_provenance(nc_ext, out_ext, caption, \
-                 (/"trend"/), domain, "times", \
-                 (/"senftleben_daniel"/), \
+  log_provenance(nc_ext, wks@fullname, caption, \
+                 (/"trend"/), domain, "histogram", \
+                 (/"senftleben_daniel", "lauer_axel"/), \
                  "", infiles)
 
   leave_msg(DIAG_SCRIPT, "")
