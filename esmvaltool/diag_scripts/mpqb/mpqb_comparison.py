@@ -1,84 +1,97 @@
 """Python example diagnostic."""
 import logging
 import os
+import warnings
 from pprint import pformat
-from sharedutils import parallel_apply_along_axis
-from diag1d import *
+
+import iris
 import numpy as np
 
-from mpqb_plots import mpqb_mapplot, get_ecv_plot_config
-import iris
-import itertools as it
-import warnings
-
-from esmvaltool.diag_scripts.shared import (group_metadata, run_diagnostic,
-                                            select_metadata, sorted_metadata)
-from esmvaltool.diag_scripts.shared._base import (
-    ProvenanceLogger, get_diagnostic_filename, get_plot_filename)
-from esmvaltool.diag_scripts.shared.plot import quickplot
+from diag1d import (absdiffaxismean1d, pearsonr1d, reldiffaxismean1d, rmsd1d,
+                    ubrmsd1d)
+from esmvaltool.diag_scripts.shared import group_metadata, run_diagnostic
+from esmvaltool.diag_scripts.shared._base import (ProvenanceLogger,
+                                                  get_diagnostic_filename,
+                                                  get_plot_filename)
+from mpqb_plots import get_ecv_plot_config, mpqb_mapplot
+from sharedutils import parallel_apply_along_axis
 
 logger = logging.getLogger(os.path.basename(__file__))
 
 
-def array2cube(array_in, cube_template):
+def _array2cube(array_in, cube_template):
     newcube = cube_template.copy()
     newcube.data = np.ma.fix_invalid(array_in)
     return newcube
 
 
-class mpqb_pair:
-    def __init__(self, cfg, ds_cfg, ds1name, ds2name):
-        '''  ds_cfg should be input data grouped on dataset '''
-        self.cfg = cfg
+class MPQBpair:
+    """Class for calculating metrics on one pair of datasets."""
+
+    def __init__(self, ds_cfg, ds1name, ds2name):
+        """ds_cfg should be input data grouped on dataset."""
         self.ds_cfg = ds_cfg
         self.ds1 = ds1name
         self.ds2 = ds2name
         self.metrics = {}
+        self.template = None
+        self.ds1dat = None
+        self.ds2dat = None
 
     def load(self):
-        self.ds1cube = iris.load_cube(self.ds_cfg[self.ds1][0]['filename'])
-        self.template = self.ds1cube.collapsed('time', iris.analysis.MEAN)
-        self.ds1dat = self.ds1cube.data.filled(np.nan)
+        """load."""
+        self.template = iris.load_cube(
+            self.ds_cfg[self.ds1][0]['filename']).\
+            ds1cube.collapsed('time', iris.analysis.MEAN)
+        self.ds1dat = iris.load_cube(
+            self.ds_cfg[self.ds1][0]['filename']).data.filled(np.nan)
         self.ds2dat = iris.load_cube(
             self.ds_cfg[self.ds2][0]['filename']).data.filled(np.nan)
         # Assert that shapes are the same of the two datasets
         if not self.ds1dat.shape == self.ds2dat.shape:
             logger.error("Shapes of datasets should be the same")
-            logger.error("{0} has shape: {1}".format(
-                self.ds1, self.ds1dat.shape))
-            logger.error("{0} has shape: {1}".format(
-                self.ds2, self.ds2dat.shape))
+            logger.error("%s has shape:\n", self.ds1)
+            logger.error("%s", self.ds1dat.shape)
+            logger.error("%s has shape:\n", self.ds2)
+            logger.error("%s", self.ds2dat.shape)
             raise ValueError
 
     def pearsonr(self):
+        """pearsonr."""
         self.metrics['pearsonr'], _ = parallel_apply_along_axis(
             pearsonr1d, 0, (self.ds1dat, self.ds2dat))
 
     def rmsd(self):
+        """rmsd."""
         self.metrics['rmsd'] = parallel_apply_along_axis(
             rmsd1d, 0, (self.ds1dat, self.ds2dat))
 
     def ubrmsd(self):
+        """ubrmsd."""
         self.metrics['ubrmsd'] = parallel_apply_along_axis(
             ubrmsd1d, 0, (self.ds1dat, self.ds2dat))
 
     def absdiff(self):
-        with warnings.catch_warnings():  # silence the mean of empty slice warnings
-                                        # this is expected behaviour
+        """absdiff."""
+        with warnings.catch_warnings():  # silence the mean of empty
+                # slice warnings this is expected behaviour
             warnings.simplefilter("ignore", category=RuntimeWarning)
             self.metrics['absdiff'] = parallel_apply_along_axis(
                 absdiffaxismean1d, 0, (self.ds1dat, self.ds2dat))
 
     def reldiff(self):
+        """reldiff."""
         self.metrics['reldiff'] = parallel_apply_along_axis(
             reldiffaxismean1d, 0, (self.ds1dat, self.ds2dat))
 
     def results2cube(self):
+        """results2cube."""
         for metric in self.metrics:
-            self.metrics[metric] = array2cube(
+            self.metrics[metric] = _array2cube(
                 self.metrics[metric], self.template)
 
     def plot(self):
+        """plot."""
         for metricname, cube in self.metrics.items():
             basename = '{0}_{1}_{2}'.format(metricname, self.ds1, self.ds2)
             diagnostic_file = get_diagnostic_filename(basename, cfg)
@@ -90,8 +103,8 @@ class mpqb_pair:
 
             # Create provenance record
             provenance_record = {
-                # TODO complete provenance record
-                'caption': "{0} between {1} and {2}".format(metricname, self.ds1, self.ds2),
+                'caption': "{0} between {1} and {2}".format(
+                    metricname, self.ds1, self.ds2),
                 'plot_file': plot_file
             }
 
@@ -115,10 +128,9 @@ def compute_diagnostic(filename):
     return cube.collapsed('time', iris.analysis.MEAN)
 
 
-def main(cfg):
-    """Compute the time average for each input dataset."""
-
-    # TODO move these parameters to config file
+def main():
+    """MPQB diagnostics."""
+    # The metrics to be calculated.
     metrics_to_calculate = ['pearsonr', 'rmsd', 'absdiff', 'reldiff', 'ubrmsd']
     reference_dataset = 'cds-era5-land-monthly'
 
@@ -128,16 +140,16 @@ def main(cfg):
     grouped_input_data = group_metadata(
         input_data, 'dataset', sort='dataset')
     logger.info(
-        "Example of how to group and sort input data by standard_name:"
-        "\n%s", pformat(grouped_input_data))
+        "Starting MPQB comparison script."
+    )
 
     # Create a pair of two datasets for inter-comparison
     for dataset in grouped_input_data.keys():
         if dataset != reference_dataset:
-            logger.info("Opening dataset: {0}".format(dataset))
+            logger.info("Opening dataset: %s", dataset)
             # Opening the pair
-            pair = mpqb_pair(cfg, grouped_input_data,
-                             dataset, reference_dataset)
+            pair = MPQBpair(grouped_input_data,
+                            dataset, reference_dataset)
             pair.load()
             # Execute the requested metrics
             for metricname in metrics_to_calculate:
@@ -151,10 +163,10 @@ def main(cfg):
             if cfg['write_plots']:
                 pair.plot()
             logger.info(
-                "Finished comparison to ref for dataset: {0}".format(dataset))
+                "Finished comparison to ref for dataset: %s", dataset)
     logger.info("Finished!")
 
 
 if __name__ == '__main__':
     with run_diagnostic() as cfg:
-        main(cfg)
+        main()

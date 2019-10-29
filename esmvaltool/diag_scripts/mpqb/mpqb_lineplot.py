@@ -19,6 +19,7 @@ from esmvaltool.diag_scripts.shared.plot import quickplot
 
 logger = logging.getLogger(os.path.basename(__file__))
 
+
 def main(cfg):
     # Get a description of the preprocessed data that we will use as input.
     input_data = cfg['input_data'].values()
@@ -36,12 +37,12 @@ def main(cfg):
         for dataset in grouped_input_data:
             logger.info("Opening dataset: {0}".format(dataset))
             cube = iris.load_cube(grouped_input_data[dataset][0]['filename'])
-            ax = iris.quickplot.plot(cube,label=dataset)
+            iris.quickplot.plot(cube, label=dataset)
         plt.legend()
         plt.xticks(rotation=90)
         plt.tight_layout()
         filename = get_plot_filename('lineplot', cfg)
-        logger.info("Saving as %s",filename)
+        logger.info("Saving as %s", filename)
         fig.savefig(filename)
         plt.close(fig)
     else:
