@@ -328,7 +328,8 @@ diagnostics:
       - {dataset: MRI-ESM1}
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
-      - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, tier: 3}
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly,
+         version: 1, tier: 3}
       - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
     scripts:
       zonal: &zonal_settings
@@ -510,7 +511,8 @@ diagnostics:
       - {dataset: MRI-ESM1}
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
-      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly,
+         version: 1, tier: 3}
       - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
     scripts:
       latlon:
@@ -737,7 +739,7 @@ diagnostics:
       - {dataset: MRI-CGCM3}
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
-      - {dataset: ERA-Interim, project: OBS, type: reanaly,
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly,
          version: 1, tier: 3}
       - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
     scripts:
@@ -1019,7 +1021,7 @@ diagnostics:
       - {dataset: NorESM1-ME}
       - {dataset: AIRS, project: obs4mips, level: L3,
          version: RetStd-v5, tier: 1}
-      - {dataset: ERA-Interim, project: OBS, type: reanaly,
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly,
          version: 1, tier: 3}
     scripts:
       grading:
@@ -1158,7 +1160,7 @@ diagnostics:
       - {dataset: MRI-ESM1}
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
-      - {dataset: ERA-Interim, project: OBS, type: reanaly,
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly,
          version: 1, tier: 3}
       - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
     scripts:
@@ -1233,7 +1235,7 @@ diagnostics:
       - {dataset: MRI-ESM1}
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
-      - {dataset: ERA-Interim, project: OBS, type: reanaly,
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly,
          version: 1, tier: 3}
       - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
     scripts:
@@ -1309,7 +1311,7 @@ diagnostics:
       - {dataset: MRI-ESM1}
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
-      - {dataset: ERA-Interim, project: OBS, type: reanaly,
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly,
          version: 1, tier: 3}
       - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
     scripts:
@@ -1384,7 +1386,7 @@ diagnostics:
       - {dataset: MRI-ESM1}
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
-      - {dataset: ERA-Interim, project: OBS, type: reanaly,
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly,
          version: 1, tier: 3}
       - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
     scripts:
@@ -1461,7 +1463,7 @@ diagnostics:
       - {dataset: MRI-ESM1}
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
-      - {dataset: ERA-Interim, project: OBS, type: reanaly,
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly,
          version: 1, tier: 3}
       - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
     scripts:
@@ -1550,7 +1552,7 @@ diagnostics:
       - {dataset: MRI-ESM1}
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
-      - {dataset: ERA-Interim, project: OBS, type: reanaly,
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly,
          version: 1, tier: 3}
       - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
     scripts:
@@ -1633,7 +1635,7 @@ diagnostics:
       - {dataset: MRI-ESM1}
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
-      - {dataset: ERA-Interim, project: OBS, type: reanaly,
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly,
          version: 1, tier: 3}
       - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
     scripts:
@@ -1710,7 +1712,7 @@ diagnostics:
       - {dataset: MRI-ESM1}
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
-      - {dataset: ERA-Interim, project: OBS, type: reanaly,
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly,
          version: 1, tier: 3}
       - {dataset: NCEP, project: OBS, type: reanaly, version: 1, tier: 2}
     scripts:
