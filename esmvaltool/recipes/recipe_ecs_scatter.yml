@@ -60,7 +60,7 @@ preprocessors:
 
 diagnostics:
 
-  shhc:
+  cmip5_shhc:
     description: climatological Hadley cell extent
     themes:
       - EC
@@ -112,7 +112,7 @@ diagnostics:
         predef_minmax: true
         script: emergent_constraints/ecs_scatter.ncl
 
-  itczidx:
+  cmip5_itczidx:
     description: southern ITCZ index
     themes:
       - EC
@@ -171,7 +171,7 @@ diagnostics:
         predef_minmax: true
         script: emergent_constraints/ecs_scatter.ncl
 
-  humidx:
+  cmip5_humidx:
     description: tropical mid-tropospheric humidity asymmetry index
     themes:
       - EC
@@ -232,7 +232,7 @@ diagnostics:
         predef_minmax: true
         script: emergent_constraints/ecs_scatter.ncl
 
-  ltmi:
+  cmip5_ltmi:
     description: lower tropospheric mixing index
     themes:
       - EC
@@ -300,7 +300,7 @@ diagnostics:
         predef_minmax: true
         script: emergent_constraints/ecs_scatter.ncl
 
-  covrefl:
+  cmip5_covrefl:
     description: covariance of shortwave cloud reflection
     themes:
       - EC
@@ -401,6 +401,328 @@ diagnostics:
         additional_datasets:
           - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7,
              start_year: 2001, end_year: 2005, tier: 1}
+    scripts:
+      ecs_scatter:
+        diag: covrefl
+        calcmm: true
+        ecs_file: $diag_scripts/emergent_constraints/ecs_cmip.nc
+        legend_outside: false
+        predef_minmax: true
+        script: emergent_constraints/ecs_scatter.ncl
+
+  cmip6_itczidx:
+    description: southern ITCZ index
+    themes:
+      - EC
+    realms:
+      - atmos
+    variables:
+      pr:
+        reference_dataset: TRMM-L3
+        start_year: 1998
+        end_year: 2013
+        exp: historical
+        mip: Amon
+        project: CMIP6
+        additional_datasets:
+          - {dataset: TRMM-L3, project: obs4mips, level: v7,
+             version: 7A, tier: 1}
+          - {dataset: BCC-CSM2-MR, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: BCC-ESM1, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: CAMS-CSM1-0, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: CESM2, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: CESM2-WACCM, institute: NCAR, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: CNRM-CM6-1, grid: gr, ensemble: r1i1p1f2}
+          - {dataset: CNRM-ESM2-1, grid: gr, ensemble: r1i1p1f2}
+          - {dataset: GFDL-CM4, grid: gr1, ensemble: r1i1p1f1}
+          - {dataset: GISS-E2-1-G, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: GISS-E2-1-H, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: IPSL-CM6A-LR, grid: gr, ensemble: r15i1p1f1}
+          - {dataset: MIROC6, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: MRI-ESM2-0, grid: gn, ensemble: r1i1p1f1}
+      prStderr:
+        reference_dataset: TRMM-L3
+        mip: Amon
+        frequency: mon
+        start_year: 1998
+        end_year: 2013
+        additional_datasets:
+          - {dataset: TRMM-L3, project: obs4mips, level: v7,
+             version: 7A, tier: 1}
+    scripts:
+      ecs_scatter:
+        diag: itczidx
+        calcmm: true
+        ecs_file: $diag_scripts/emergent_constraints/ecs_cmip.nc
+        legend_outside: false
+        predef_minmax: true
+        script: emergent_constraints/ecs_scatter.ncl
+
+  cmip6_humidx:
+    description: tropical mid-tropospheric humidity asymmetry index
+    themes:
+      - EC
+    realms:
+      - atmos
+    variables:
+      hus:
+        preprocessor: pp500
+        reference_dataset: AIRS
+        start_year: 2003
+        end_year: 2010
+        exp: historical
+        mip: Amon
+        project: CMIP6
+        additional_datasets:
+          - {dataset: AIRS, project: obs4mips, level: L3,
+             version: RetStd-v5, tier: 1}
+          - {dataset: BCC-CSM2-MR, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: BCC-ESM1, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: CAMS-CSM1-0, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: CESM2, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: CESM2-WACCM, institute: NCAR, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: CNRM-CM6-1, grid: gr, ensemble: r1i1p1f2}
+          - {dataset: CNRM-ESM2-1, grid: gr, ensemble: r1i1p1f2}
+          - {dataset: GFDL-CM4, grid: gr1, ensemble: r1i1p1f1}
+          - {dataset: GISS-E2-1-G, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: GISS-E2-1-H, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: IPSL-CM6A-LR, grid: gr, ensemble: r15i1p1f1}
+          - {dataset: MIROC6, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: MRI-ESM2-0, grid: gn, ensemble: r1i1p1f1}
+      husStderr:
+        preprocessor: pp500
+        reference_dataset: AIRS
+        mip: Amon
+        frequency: mon
+        start_year: 2003
+        end_year: 2010
+        additional_datasets:
+          - {dataset: AIRS, project: obs4mips, level: L3,
+             version: RetStd-v5, tier: 1}
+    scripts:
+      ecs_scatter:
+        diag: humidx
+        calcmm: true
+        ecs_file: $diag_scripts/emergent_constraints/ecs_cmip.nc
+        legend_outside: false
+        predef_minmax: true
+        script: emergent_constraints/ecs_scatter.ncl
+
+  cmip6_ltmi:
+    description: lower tropospheric mixing index
+    themes:
+      - EC
+    realms:
+      - atmos
+    variables:
+      hur:
+        preprocessor: pp_ltmi_1
+        reference_dataset: ERA-Interim
+        start_year: 1980
+        end_year: 2005
+        exp: historical
+        mip: Amon
+        project: CMIP6
+      ta:
+        preprocessor: pp_ltmi_1
+        reference_dataset: ERA-Interim
+        start_year: 1980
+        end_year: 2005
+        exp: historical
+        mip: Amon
+        project: CMIP6
+      wap:
+        preprocessor: pp_ltmi_0
+        reference_dataset: ERA-Interim
+        start_year: 1980
+        end_year: 2005
+        exp: historical
+        mip: Amon
+        project: CMIP6
+    additional_datasets:
+      - {dataset: BCC-CSM2-MR, grid: gn, ensemble: r1i1p1f1}
+      - {dataset: BCC-ESM1, grid: gn, ensemble: r1i1p1f1}
+      - {dataset: CAMS-CSM1-0, grid: gn, ensemble: r1i1p1f1}
+      - {dataset: CESM2, grid: gn, ensemble: r1i1p1f1}
+      - {dataset: CESM2-WACCM, institute: NCAR, grid: gn, ensemble: r1i1p1f1}
+      - {dataset: CNRM-CM6-1, grid: gr, ensemble: r1i1p1f2}
+      - {dataset: CNRM-ESM2-1, grid: gr, ensemble: r1i1p1f2}
+      - {dataset: GFDL-CM4, grid: gr1, ensemble: r1i1p1f1}
+      - {dataset: GISS-E2-1-G, grid: gn, ensemble: r1i1p1f1}
+      - {dataset: GISS-E2-1-H, grid: gn, ensemble: r1i1p1f1}
+      - {dataset: IPSL-CM6A-LR, grid: gr, ensemble: r15i1p1f1}
+      - {dataset: MIROC6, grid: gn, ensemble: r1i1p1f1}
+      - {dataset: MRI-ESM2-0, grid: gn, ensemble: r1i1p1f1}
+      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
+    scripts:
+      ecs_scatter:
+        diag: ltmi
+        calcmm: true
+        ecs_file: $diag_scripts/emergent_constraints/ecs_cmip.nc
+        legend_outside: false
+        predef_minmax: true
+        script: emergent_constraints/ecs_scatter.ncl
+
+  cmip6_shhc:
+    description: climatological Hadley cell extent
+    themes:
+      - EC
+    realms:
+      - atmos
+    variables:
+      va:
+        reference_dataset: ERA-Interim
+        start_year: 1980
+        end_year: 2005
+        exp: historical
+        mip: Amon
+        project: CMIP6
+    additional_datasets:
+      - {dataset: BCC-CSM2-MR, grid: gn, ensemble: r1i1p1f1}
+      - {dataset: BCC-ESM1, grid: gn, ensemble: r1i1p1f1}
+      - {dataset: CAMS-CSM1-0, grid: gn, ensemble: r1i1p1f1}
+      - {dataset: CESM2, grid: gn, ensemble: r1i1p1f1}
+      - {dataset: CESM2-WACCM, institute: NCAR, grid: gn, ensemble: r1i1p1f1}
+      - {dataset: CNRM-CM6-1, grid: gr, ensemble: r1i1p1f2}
+      - {dataset: CNRM-ESM2-1, grid: gr, ensemble: r1i1p1f2}
+      - {dataset: GFDL-CM4, grid: gr1, ensemble: r1i1p1f1}
+      - {dataset: GISS-E2-1-G, grid: gn, ensemble: r1i1p1f1}
+      - {dataset: GISS-E2-1-H, grid: gn, ensemble: r1i1p1f1}
+      - {dataset: IPSL-CM6A-LR, grid: gr, ensemble: r15i1p1f1}
+      - {dataset: MIROC6, grid: gn, ensemble: r1i1p1f1}
+      - {dataset: MRI-ESM2-0, grid: gn, ensemble: r1i1p1f1}
+      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, tier: 3}
+    scripts:
+      ecs_scatter:
+        diag: shhc
+        calcmm: true
+        ecs_file: $diag_scripts/emergent_constraints/ecs_cmip.nc
+        legend_outside: false
+        predef_minmax: true
+        script: emergent_constraints/ecs_scatter.ncl
+
+  cmip6_covrefl:
+    description: covariance of shortwave cloud reflection
+    themes:
+      - EC
+    realms:
+      - atmos
+    variables:
+      ts:
+        reference_dataset: HadISST
+        start_year: 2001
+        end_year: 2012
+        exp: historical
+        mip: Amon
+        project: CMIP6
+        additional_datasets:
+          - {dataset: HadISST, project: OBS, type: reanaly, version: 1, tier: 2}
+          - {dataset: BCC-CSM2-MR, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: BCC-ESM1, grid: gn, ensemble: r2i1p1f1}
+#          - {dataset: CAMS-CSM1-0, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: CESM2, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: CESM2-WACCM, institute: NCAR, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: CNRM-CM6-1, grid: gr, ensemble: r1i1p1f2}
+          - {dataset: CNRM-ESM2-1, grid: gr, ensemble: r1i1p1f2}
+          - {dataset: GFDL-CM4, grid: gr1, ensemble: r1i1p1f1}
+          - {dataset: GISS-E2-1-G, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: GISS-E2-1-H, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: IPSL-CM6A-LR, grid: gr, ensemble: r1i1p1f1}
+          - {dataset: MIROC6, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: MRI-ESM2-0, grid: gn, ensemble: r1i1p1f1}
+      hur:
+        preprocessor: pp500
+        reference_dataset: ERA-Interim
+        start_year: 2001
+        end_year: 2012
+        exp: historical
+        mip: Amon
+        project: CMIP6
+        additional_datasets:
+          - {dataset: ERA-Interim, project: OBS, type: reanaly,
+             version: 1, tier: 3}
+          - {dataset: BCC-CSM2-MR, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: BCC-ESM1, grid: gn, ensemble: r2i1p1f1}
+#          - {dataset: CAMS-CSM1-0, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: CESM2, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: CESM2-WACCM, institute: NCAR, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: CNRM-CM6-1, grid: gr, ensemble: r1i1p1f2}
+          - {dataset: CNRM-ESM2-1, grid: gr, ensemble: r1i1p1f2}
+          - {dataset: GFDL-CM4, grid: gr1, ensemble: r1i1p1f1}
+          - {dataset: GISS-E2-1-G, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: GISS-E2-1-H, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: IPSL-CM6A-LR, grid: gr, ensemble: r15i1p1f1}
+          - {dataset: MIROC6, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: MRI-ESM2-0, grid: gn, ensemble: r1i1p1f1}
+      rsut:
+        reference_dataset: CERES-EBAF
+        start_year: 2001
+        end_year: 2012
+        exp: historical
+        mip: Amon
+        project: CMIP6
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: obs4mips, level: L3B,
+             version: Ed2-7, tier: 1}
+          - {dataset: BCC-CSM2-MR, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: BCC-ESM1, grid: gn, ensemble: r2i1p1f1}
+#          - {dataset: CAMS-CSM1-0, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: CESM2, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: CESM2-WACCM, institute: NCAR, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: CNRM-CM6-1, grid: gr, ensemble: r1i1p1f2}
+          - {dataset: CNRM-ESM2-1, grid: gr, ensemble: r1i1p1f2}
+          - {dataset: GFDL-CM4, grid: gr1, ensemble: r1i1p1f1}
+          - {dataset: GISS-E2-1-G, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: GISS-E2-1-H, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: IPSL-CM6A-LR, grid: gr, ensemble: r1i1p1f1}
+          - {dataset: MIROC6, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: MRI-ESM2-0, grid: gn, ensemble: r1i1p1f1}
+      rsutcs:
+        reference_dataset: CERES-EBAF
+        start_year: 2001
+        end_year: 2012
+        exp: historical
+        mip: Amon
+        project: CMIP6
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: obs4mips, level: L3B,
+             version: Ed2-7, tier: 1}
+          - {dataset: BCC-CSM2-MR, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: BCC-ESM1, grid: gn, ensemble: r2i1p1f1}
+#          - {dataset: CAMS-CSM1-0, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: CESM2, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: CESM2-WACCM, institute: NCAR, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: CNRM-CM6-1, grid: gr, ensemble: r1i1p1f2}
+          - {dataset: CNRM-ESM2-1, grid: gr, ensemble: r1i1p1f2}
+          - {dataset: GFDL-CM4, grid: gr1, ensemble: r1i1p1f1}
+          - {dataset: GISS-E2-1-G, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: GISS-E2-1-H, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: IPSL-CM6A-LR, grid: gr, ensemble: r1i1p1f1}
+          - {dataset: MIROC6, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: MRI-ESM2-0, grid: gn, ensemble: r1i1p1f1}
+      rsdt:
+        reference_dataset: CERES-EBAF
+        start_year: 2001
+        end_year: 2012
+        exp: historical
+        mip: Amon
+        project: CMIP6
+        additional_datasets:
+          - {dataset: CERES-EBAF, project: obs4mips, level: L3B,
+             version: Ed2-7, tier: 1}
+          - {dataset: BCC-CSM2-MR, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: BCC-ESM1, grid: gn, ensemble: r2i1p1f1}
+#          - {dataset: CAMS-CSM1-0, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: CESM2, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: CESM2-WACCM, institute: NCAR, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: CNRM-CM6-1, grid: gr, ensemble: r1i1p1f2}
+          - {dataset: CNRM-ESM2-1, grid: gr, ensemble: r1i1p1f2}
+          - {dataset: GFDL-CM4, grid: gr1, ensemble: r1i1p1f1}
+          - {dataset: GISS-E2-1-G, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: GISS-E2-1-H, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: IPSL-CM6A-LR, grid: gr, ensemble: r1i1p1f1}
+          - {dataset: MIROC6, grid: gn, ensemble: r1i1p1f1}
+          - {dataset: MRI-ESM2-0, grid: gn, ensemble: r1i1p1f1}
     scripts:
       ecs_scatter:
         diag: covrefl
