@@ -233,7 +233,8 @@ for immediate model intercomparison.
 20170629-koldunov_nikolay: atmospheric budgets diagnostics written
 20180524-lembo_valerio: first complete working thermodynamics diagnostics
 20190325-lembo_valerio: complete updated version for ESMValTool v2.0b
-
+20191030-lembo_valerio: updated ingestion of input fields and several minor
+                        fixings
 #############################################################################
 """
 
@@ -241,9 +242,9 @@ for immediate model intercomparison.
 import logging
 import os
 import warnings
+import numpy as np
 
 import esmvaltool.diag_scripts.shared as e
-import numpy as np
 from esmvaltool.diag_scripts.shared import ProvenanceLogger
 from esmvaltool.diag_scripts.thermodyn_diagtool import (computations,
                                                         lorenz_cycle, mkthe,
@@ -262,21 +263,22 @@ def compute_water_mass_budget(cfg, wdir_up, pdir, model, wdir, input_data,
     latent energy budgets.
 
     Arguments:
-    - cfg: a lot of metadata to handle input files;
-    - wdir_up: the work directory;
-    - pdir: the directory for the plots;
-    - model: the name of the model;
-    - wdir: the work directory of the specific model;
-    - input_data: the names of the variables found in the input directory;
-    - flags: a list with user options;
-    - uax_file: the name of an auxiliary file;
+    ---------
+    cfg: a lot of metadata to handle input files;
+    wdir_up: the work directory;
+    pdir: the directory for the plots;
+    model: the name of the model;
+    wdir: the work directory of the specific model;
+    input_data: the names of the variables found in the input directory;
+    flags: a list with user options;
+    aux_file: the name of an auxiliary file;
 
-    Returns:
+    Returns
+    -------
     Time mean and standard deviations of the water mass and latent
     heat budgets.
 
-    Author:
-    Valerio Lembo, University of Hamburg (2019).
+    @author: Valerio Lembo, Hamburg University, 2018.
     """
     logger.info('Computing water mass and latent energy budgets\n')
     aux_list = mkthe.init_mkthe_wat(model, wdir, input_data, flags)
@@ -306,17 +308,18 @@ def compute_land_ocean(model, wdir, filein, sftlf_fx, name):
     ocean.
 
     Arguments:
-    - model: the name of the model;
-    - wdir: the work directory of the specific model;
-    - filein: a file containing the budget to be averaged over land and ocean;
-    - sftlf_fx: a file containing the model-specific land-sea mask;
-    - name: the name of the budget to be averaged;
+    ---------
+    model: the name of the model;
+    wdir: the work directory of the specific model;
+    filein: a file containing the budget to be averaged over land and ocean;
+    sftlf_fx: a file containing the model-specific land-sea mask;
+    name: the name of the budget to be averaged;
 
-    Returns:
+    Returns
+    -------
     Time means of the budgets over land and ocean.
 
-    Author:
-    Valerio Lembo, University of Hamburg (2019).
+    @author: Valerio Lembo, Hamburg University, 2018.
     """
     ocean_mean, land_mean = computations.landoc_budg(model, wdir, filein,
                                                      sftlf_fx, name)
@@ -328,11 +331,12 @@ def compute_land_ocean(model, wdir, filein, sftlf_fx, name):
 def main(cfg):
     """Execute the program.
 
-    Argument cfg, containing directory paths, preprocessed input dataset
-    filenames and user-defined options, is passed by ESMValTool preprocessor.
+    Arguments:
+    ---------
+    cfg: metadata containing directory paths, preprocessed input dataset
+         filenames and user-defined options, passed by ESMValTool preprocessor.
 
-    Author:
-    Valerio Lembo, University of Hamburg (2019).
+    @author: Valerio Lembo, Hamburg University, 2018.
     """
     provlog = ProvenanceLogger(cfg)
     lorenz = lorenz_cycle

@@ -18,19 +18,16 @@ It ingests monthly mean fields of:
 - surface turbulent sensible heat fluxes (hfss);
 - emission temperature (te).
 
-Authors: Frank Lunkeit and Valerio Lembo (University of Hamburg)
-
-Created on Fri Jun 15 10:06:30 2018
+@author: Valerio Lembo, valerio.lembo@uni-hamburg.de, Universitat Hamburg, 2018 
 """
 import os
 from shutil import move
+import numpy as np
+from netCDF4 import Dataset
+from cdo import Cdo
 
 import esmvaltool.diag_scripts.shared as e
-import numpy as np
 from esmvaltool.diag_scripts.thermodyn_diagtool import fourier_coefficients
-from netCDF4 import Dataset
-
-from cdo import Cdo
 
 ALV = 2.5008e6  # Latent heat of vaporization
 G_0 = 9.81  # Gravity acceleration
@@ -52,12 +49,16 @@ def init_mkthe_te(model, wdir, input_data):
     """Compute auxiliary fields or perform time averaging of existing fields.
 
     Arguments:
-    - model: the model name;
-    - wdir: the working directory where the outputs are stored;
-    - filelist: a list of file names containing the input fields;
+    ---------
+    model: the model name;
+    wdir: the working directory where the outputs are stored;
+    filelist: a list of file names containing the input fields;
 
-    Author:
-    Valerio Lembo, University of Hamburg (2019).
+    Returns
+    ------
+    A file containing annual mean emission temperature fields, the time mean
+    globally averaged emission temperature, the file containing emission
+    temperature fields.
     """
     cdo = Cdo()
     rlut_file = e.select_metadata(input_data, short_name='rlut',
@@ -80,16 +81,18 @@ def init_mkthe_wat(model, wdir, input_data, flags):
     """Compute auxiliary fields or perform time averaging of existing fields.
 
     Arguments:
-    - model: the model name;
-    - wdir: the working directory where the outputs are stored;
-    - filelist: a list of file names containing the input fields;
-    - flags: (wat: a flag for the water mass budget module (y or n),
-              entr: a flag for the material entropy production (y or n);
-              met: a flag for the material entropy production method
-              (1: indirect, 2, direct, 3: both));
+    ---------
+    model: the model name;
+    wdir: the working directory where the outputs are stored;
+    filelist: a list of file names containing the input fields;
+    flags: (wat: a flag for the water mass budget module (y or n),
+            entr: a flag for the material entropy production (y or n);
+            met: a flag for the material entropy production method
+            (1: indirect, 2, direct, 3: both));
 
-    Author:
-    Valerio Lembo, University of Hamburg (2019).
+    Returns
+    ------
+    A list of input fields.
     """
     wat = flags[0]
     if wat == 'True':
@@ -102,16 +105,19 @@ def init_mkthe_lec(model, wdir, input_data):
     """Compute auxiliary fields or perform time averaging of existing fields.
 
     Arguments:
-    - model: the model name;
-    - wdir: the working directory where the outputs are stored;
-    - filelist: a dictionary of file names containing the input fields;
-    - flags: (wat: a flag for the water mass budget module (y or n),
-              entr: a flag for the material entropy production (y or n);
-              met: a flag for the material entropy production method
-              (1: indirect, 2, direct, 3: both));
+    ---------
+    model: the model name;
+    wdir: the working directory where the outputs are stored;
+    filelist: a dictionary of file names containing the input fields;
+    flags: (wat: a flag for the water mass budget module (y or n),
+            entr: a flag for the material entropy production (y or n);
+            met: a flag for the material entropy production method
+            (1: indirect, 2, direct, 3: both));
 
-    Author:
-    Valerio Lembo, University of Hamburg (2019).
+    Returns
+    ------
+    The file containing monthly mean near-surface velocities in the zonal and
+    meridional direction.
     """
     uas_file = e.select_metadata(input_data, short_name='uas',
                                  dataset=model)[0]['filename']
@@ -126,21 +132,19 @@ def init_mkthe_direntr(model, wdir, input_data, te_file, flags):
     """Compute the MEP with the direct method.
 
     Arguments:
-    - model: the model name;
-    - wdir: the working directory where the outputs are stored;
-    - input_data: a dictionary of file names containing the input fields;
-    - te_file: a file containing the emission temperature computed from OLR;
-    - flags: (wat: a flag for the water mass budget module (y or n),
-              entr: a flag for the material entropy production (y or n);
-              met: a flag for the material entropy production method
-              (1: indirect, 2, direct, 3: both));
+    ---------
+    model: the model name;
+    wdir: the working directory where the outputs are stored;
+    input_data: a dictionary of file names containing the input fields;
+    te_file: a file containing the emission temperature computed from OLR;
+    flags: (wat: a flag for the water mass budget module (y or n),
+            entr: a flag for the material entropy production (y or n);
+            met: a flag for the material entropy production method
+            (1: indirect, 2, direct, 3: both));
 
     Returns:
     A list of files cotiaining the components of the MEP with the direct
     method.
-
-    Author:
-    Valerio Lembo, University of Hamburg (2019).
     """
     cdo = Cdo()
     wat = flags[0]
@@ -215,12 +219,14 @@ def input_fields(wdir, file_list):
     """Manipulate input fields and read datasets.
 
     Arguments:
-    - wdir: the working directory path;
-    - file_list: the list of file containing ts, hus,
-    ps, uas, vas, hfss, te;
+    ---------
+    wdir: the working directory path;
+    file_list: the list of file containing ts, hus,
+               ps, uas, vas, hfss, te;
 
-    Author:
-    Valerio Lembo, University of Hamburg, 2019
+    Returns
+    ------
+    hfss, huss, ps, te, ts and teh near-surface wind speed fields.
     """
     cdo = Cdo()
     ts_miss_file = wdir + '/ts.nc'
@@ -280,10 +286,16 @@ def mkthe_main(wdir, file_list, modelname):
     """Compute the auxiliary variables for the Thermodynamic diagnostic tool.
 
     Arguments:
-    - wdir: the working directory path;
-    - file_list: the list of file containing ts, hus,
-    ps, uas, vas, hfss, te;
-    - modelname: the name of the model from which the fields are;
+    ---------
+    wdir: the working directory path;
+    file_list: the list of file containing ts, hus,
+               ps, uas, vas, hfss, te;
+    modelname: the name of the model from which the fields are;
+
+    Returns
+    ------
+    The fields containing boundary layer top height, bondary layer mean
+    temperature, temperature at the lifting condensation level (LCL).
     """
     hfss, huss, p_s, t_e, t_s, vv_hor = input_fields(wdir, file_list)
     ricr = RIC_RU
@@ -321,16 +333,15 @@ def mon_from_day(wdir, model, name, filein):
     """Compute monthly mean from daily mean.
 
     Arguments:
-    - wdir: the working directory path;
-    - model: the model name;
-    - name: the name of the field to be averaged;
-    - filein: the input file containing the field to be averaged;
+    ---------
+    wdir: the working directory path;
+    model: the model name;
+    name: the name of the field to be averaged;
+    filein: the input file containing the field to be averaged;
 
-    Returns:
+    Returns
+    -------
     The name of the file containing the monthly averaged field.
-
-    Author:
-    Valerio Lembo, University of Hamburg, 2019
     """
     cdo = Cdo()
     fileaux = wdir + '/aux.nc'
@@ -356,12 +367,15 @@ def wfluxes(model, wdir, input_data):
     """Compute auxiliary fields and perform time averaging of existing fields.
 
     Arguments:
-    - model: the model name;
-    - wdir: the working directory where the outputs are stored;
-    - filelist: a list of file names containing the input fields;
+    ---------
+    model: the model name;
+    wdir: the working directory where the outputs are stored;
+    filelist: a list of file names containing the input fields;
 
-    Author:
-    Valerio Lembo, University of Hamburg (2019).
+    Returns
+    ------
+    The names of the files containing evaporation and rainfall precipitation
+    fluxes.
     """
     cdo = Cdo()
     hfls_file = e.select_metadata(input_data, short_name='hfls',
@@ -388,16 +402,20 @@ def write_output(wdir, model, file_list, varlist):
     """Write auxiliary variables to new NC files, write new attributes.
 
     Arguments:
-    - wdir: the work directory where the outputs are stored;
-    - model: the name of the model;
-    - file_list: the list containing the input fields;
-    - varlist: a list containing the variables to be written to NC files, i.e.
-      tlcl (the temperature at the LCL), t_z (the temperature at the boundary
-      layer top), htop (the height of the boundary layer top); their dimensions
-      are as (time, lat, lon);
+    ---------
+    wdir: the work directory where the outputs are stored;
+    model: the name of the model;
+    file_list: the list containing the input fields;
+    varlist: a list containing the variables to be written to NC files, i.e.
+             tlcl (the temperature at the LCL), t_z (the temperature at the
+             boundary layer top), htop (the height of the boundary layer top);
+             their dimensions are as (time, lat, lon);
 
-    Author:
-    Valerio Lembo, University of Hamburg (2019).
+    Returns
+    ------
+    The names of the files containing fields of boundary layer top height,
+    bondary layer mean temperature, temperature at the lifting condensation
+    level (LCL).
     """
     cdo = Cdo()
     fourc = fourier_coefficients
