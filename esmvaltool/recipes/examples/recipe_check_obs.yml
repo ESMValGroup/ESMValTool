@@ -445,7 +445,6 @@ diagnostics:
     variables:
       clivi:
         mip: Amon
-        fx_files: [sftlf]
       clt_day:
         short_name: clt
         mip: day
