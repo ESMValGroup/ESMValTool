@@ -52,13 +52,13 @@ import math
 import os
 import sys
 
-import numpy as np
-from cdo import Cdo
-from netCDF4 import Dataset
-
 import esmvaltool.diag_scripts.shared as e
+import numpy as np
 from esmvaltool.diag_scripts.thermodyn_diagtool import (fluxogram,
                                                         fourier_coefficients)
+from netCDF4 import Dataset
+
+from cdo import Cdo
 
 G = 9.81
 R = 287.00
@@ -511,9 +511,9 @@ def mka2k(wap, t_t, w_g, t_g, p_l):
     - t_g: a temperature vertical profile;
     - p_l: the pressure levels;
     """
-    a2k = -(R / p_l[:, np.newaxis, np.newaxis] *
+    a2k = -np.real(R / p_l[:, np.newaxis, np.newaxis] *
             (t_t * np.conj(wap) + np.conj(t_t) * wap))
-    a2k[:, :, 0] = -(R / p_l[:, np.newaxis] *
+    a2k[:, :, 0] = -np.real(R / p_l[:, np.newaxis] *
                      (t_t[:, :, 0] - t_g[:, np.newaxis]) *
                      (wap[:, :, 0] - w_g[:, np.newaxis]))
     return a2k

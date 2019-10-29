@@ -25,12 +25,12 @@ Created on Fri Jun 15 10:06:30 2018
 import os
 from shutil import move
 
+import esmvaltool.diag_scripts.shared as e
 import numpy as np
-from cdo import Cdo
+from esmvaltool.diag_scripts.thermodyn_diagtool import fourier_coefficients
 from netCDF4 import Dataset
 
-import esmvaltool.diag_scripts.shared as e
-from esmvaltool.diag_scripts.thermodyn_diagtool import fourier_coefficients
+from cdo import Cdo
 
 ALV = 2.5008e6  # Latent heat of vaporization
 G_0 = 9.81  # Gravity acceleration

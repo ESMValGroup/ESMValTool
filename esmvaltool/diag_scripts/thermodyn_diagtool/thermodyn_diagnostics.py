@@ -242,9 +242,8 @@ import logging
 import os
 import warnings
 
-import numpy as np
-
 import esmvaltool.diag_scripts.shared as e
+import numpy as np
 from esmvaltool.diag_scripts.shared import ProvenanceLogger
 from esmvaltool.diag_scripts.thermodyn_diagtool import (computations,
                                                         lorenz_cycle, mkthe,
