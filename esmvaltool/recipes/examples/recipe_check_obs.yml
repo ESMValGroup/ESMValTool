@@ -552,7 +552,7 @@ diagnostics:
         mip: Amon
       tsn:
         mip: LImon
-      tsns:
+      tsn:
         mip: Eday
       ua:
         mip: Amon
