@@ -18,6 +18,10 @@ variables:
     mip: fx
     raw: lsm
     file: 'ERA-Interim_lsm.nc'
+  orog:
+    mip: fx
+    raw: z
+    file: 'ERA-Interim_z.nc'
   # daily frequency
   clt_day:
     short_name: clt
