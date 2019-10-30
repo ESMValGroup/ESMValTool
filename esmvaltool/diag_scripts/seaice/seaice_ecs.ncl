@@ -19,9 +19,12 @@
 ; Optional diag_script_info attributes
 ;   fill_pole_hole: fill observational hole at North pole (default: False)
 ;
+; Optional variable_info attributes (variable specific)
+;   reference_dataset: reference dataset
+;
 ; Caveats
 ;   - CMOR units expected: areacello in m2, sic in %
-;   - Observations are currently being ignored
+;   - only 1 reference dataset supported
 ;
 ; Modification history
 ;    20191028-lauer_axel: rewritten for v2.0
@@ -63,13 +66,21 @@ begin
 
   ; Check for reference dataset
   if (isatt(info[0], "reference_dataset")) then
-    ref_models = info[0]@reference_dataset
-    rcp_tag = ""
-    dim_REF = dimsizes(ref_models)
+    refname = info[0]@reference_dataset
   else
-    ref_models = ""
-    rcp_tag = ", " + exps(0)
-    dim_REF = 0
+    refname = ""
+  end if
+
+  ref_ind = -1  ; set to invalid value
+
+  ; if attribute is present, use it so correlations can be calculated
+  if (refname.ne."") then
+    ; set reference model
+    ref_ind = ind(datasets .eq. refname)
+    if (ismissing(ref_ind)) then
+      log_info("warning: reference dataset (" + refname + ") not found.")
+      ref_ind = -1
+    end if
   end if
 
   ; Check fill_pole_hole option
@@ -103,11 +114,35 @@ begin
 
   ; Get experiment indices
 
-  idcs_hist = ind(exps.eq.hist_exp)
-  idcs_rcp  = ind(exps.eq.rcp_exp)
-  if (dimsizes(idcs_hist).ne.dimsizes(idcs_rcp)) then
+  ; historical experiments (with no reference dataset - if specified)
+  idcs_hist_tmp = ind(exps.eq.hist_exp)
+  itmp = ind(idcs_hist_tmp.ne.ref_ind)
+  idcs_hist = idcs_hist_tmp(itmp)
+
+  delete([/itmp, idcs_hist_tmp/])
+  idcs_rcp_tmp = ind(exps.eq.rcp_exp)
+  idcs_rcp = new(dimsizes(idcs_rcp_tmp), integer)
+
+  if (dimsizes(idcs_hist).ne.dimsizes(idcs_rcp_tmp)) then
         error_msg("fatal", DIAG_SCRIPT, "", "need same number of " \
                   + hist_exp + " and " + rcp_exp + " simulations")
+  end if
+
+  ; find indices of RCP experiments corresponding to historical experiments
+  ; (in case both lists of datasets are not in the same order)
+
+  datasets_rcp = datasets(idcs_rcp_tmp)  ; names of RCP datasets
+  datasets_hist = datasets(idcs_hist)  ; names of historical datasets
+  do imod = 0, dimsizes(idcs_hist) - 1
+    idcs_rcp(imod) = idcs_rcp_tmp(ind(datasets_rcp.eq.datasets_hist(imod)))
+  end do
+
+  delete([/datasets_rcp, datasets_hist, idcs_rcp_tmp/])
+
+  if (any(ismissing(idcs_rcp))) then
+        error_msg("fatal", DIAG_SCRIPT, "", "list of " \
+                  + hist_exp + " simulations does not contain all datasets " \
+                  + "specified in list of " + rcp_exp + " simulations")
   end if
 
   hist_ind = 0  ; counter for historical simulations
@@ -124,6 +159,7 @@ begin
   SSIE_MEAN!0 = "datasets"
   SSIE_MEAN&datasets = datasets(idcs_hist) + "_" + ensembles(idcs_hist)
   SSIE_TRND = SSIE_MEAN  ; trend of September Arctic sea ice extent
+  SSIE_TRND@units = "10~S~3~N~ km~S~2~N~ / 10 yr"
   YOD       = new((/dimsizes(idcs_rcp)/), float)  ; year of disappearance
   YOD!0     = "datasets"
   YOD&datasets = datasets(idcs_rcp) + "_" + ensembles(idcs_rcp)
@@ -188,15 +224,19 @@ begin
                          diag_script_info@month, "extent", \
                          diag_script_info@fill_pole_hole)
 
-    if (exps(imod).eq.hist_exp) then
-      ; calculate long-term mean of sea ice extent [10^6 km^2]
-      SSIE_MEAN(hist_ind) = dim_avg_Wrap(SSIE)
-
-      ; calculate sea ice extent trend [10^3 km^2 / 10 yr]
-      SSIE_TRND(hist_ind) = regline(time_hist, SSIE * 1.e3) * 10.
-      SSIE_TRND@units = "10~S~3~N~ km~S~2~N~ / 10 yr"
-
-      hist_ind = hist_ind + 1
+    if ((exps(imod).eq.hist_exp) .or. (imod.eq.ref_ind)) then
+      ; long-term mean of sea ice extent [10^6 km^2]
+      mean = dim_avg_Wrap(SSIE)
+      ; trend of sea ice extent [10^3 km^2 decade^-1]
+      trend = regline(time_hist, SSIE * 1.e3) * 10.
+      if (imod.eq.ref_ind) then
+        ssie_mean_ref = mean
+        ssie_trnd_ref = trend
+      else
+        SSIE_MEAN(hist_ind) = mean
+        SSIE_TRND(hist_ind) = trend
+        hist_ind = hist_ind + 1
+      end if
     end if
 
     ; calculate first year of disappearance (YOD)
@@ -239,7 +279,8 @@ begin
   end do  ; imod
 
   ; ===========================================================================
-  ; plots
+  ; plotting section
+  ; ===========================================================================
 
   smonths = (/"January", "February", "March", "April", \
               "May", "June", "July", "August", \
@@ -251,7 +292,9 @@ begin
     i2month = smonths(toint(diag_script_info@month) - 1)
   end if
 
-  ; plot scatter plot historical MEAN vs historical TRND
+  ; -----------------------------------------------
+  ; scatter plot historical MEAN vs historical TRND
+  ; -----------------------------------------------
 
   outf = "SSIE-MEAN_vs_SSIE-TRND_" + var0 + "_extend_" \
          + diag_script_info@region + "_" + i2month + "_" + min(time_hist) \
@@ -259,27 +302,54 @@ begin
 
   toplot = (/SSIE_MEAN, SSIE_TRND/)
   toplot!0 = "datasets"  ; Required by plot routine, becomes axes labels
-  toplot&datasets = (/"SSIE Mean [" + SSIE_MEAN@units + "]", \
-                      "SSIE Trend [" + SSIE_TRND@units + "]"/)
-  caption1 = toplot&datasets(0) + " vs " + toplot&datasets(1) + ", " \
-    + diag_script_info@region + ", " + i2month + " (" \
-    + min(time_hist) + "-" + max(time_hist) + ")."
+  toplot&datasets = (/i2month + " " + diag_script_info@region \
+                     + " SSIE averaged~C~over " \
+                     + min(time_hist) + "-" + max(time_hist) \
+                     + " [" + SSIE_MEAN@units + "]", \
+                     "Trend in " + i2month + " " + diag_script_info@region \
+                     + " SSIE~C~over " \
+                     + min(time_hist) + "-" + max(time_hist) \
+                     + " [" + SSIE_TRND@units + "]"/)
+  caption1 = toplot&datasets(0) + " vs " + toplot&datasets(1) + "."
   wks_MEAN_TRND = get_wks(0, DIAG_SCRIPT, outf)
 
-  toplot@res_tiMainString = i2month + " Sea Ice Extent (SSIE)"
-  toplot@res_gsnCenterString = min(time_hist) + "-" + max(time_hist)
-  toplot@res_trXMinF  = decimalPlaces((min(SSIE_MEAN) - 1), 0, False)
-  toplot@res_trXMaxF  = decimalPlaces((max(SSIE_MEAN) + 1), 0, False)
-  toplot@res_trYMinF  = decimalPlaces((min(SSIE_TRND) - 100), 0, False)
-  toplot@res_trYMaxF  = decimalPlaces((max(SSIE_TRND) + 100), 0, False)
+  min_mean = min((/min(SSIE_MEAN), ssie_mean_ref/))
+  max_mean = max((/max(SSIE_MEAN), ssie_mean_ref/))
+  min_trnd = min((/min(SSIE_TRND), ssie_trnd_ref/))
+  max_trnd = max((/max(SSIE_TRND), ssie_trnd_ref/))
+
+  toplot@res_tiMainString = diag_script_info@region + " Sea Ice Extent (SSIE)"
+  toplot@res_gsnCenterString = ""
+  toplot@res_trXMinF  = decimalPlaces((min_mean - 1), 0, False)
+  toplot@res_trXMaxF  = decimalPlaces((max_mean + 1), 0, False)
+  toplot@res_trYMinF  = decimalPlaces((min_trnd - 100), 0, False)
+  toplot@res_trYMaxF  = decimalPlaces((max_trnd + 100), 0, False)
   toplot@res_xyMarker = 16
   colors = project_style(info, diag_script_info, "colors")
   toplot@res_xyMarkerColors = colors
   plot_MEAN_TRND = scatterplot(wks_MEAN_TRND, toplot, var0, False, False, info)
+
+  res = True
+  res@gsLineColor = (/0.75, 0.75, 0.75/)
+  res@gsLineThicknessF = 4.0
+  res@tfPolyDrawOrder = "Draw"
+
+  x = (/ssie_mean_ref, ssie_mean_ref/)
+  y = (/toplot@res_trYMinF, toplot@res_trYMaxF/)
+  ref0 = gsn_add_polyline(wks_MEAN_TRND, plot_MEAN_TRND, x, y, res)
+
+  x = (/toplot@res_trXMinF, toplot@res_trXMaxF/)
+  y = (/ssie_trnd_ref, ssie_trnd_ref/)
+  ref1 = gsn_add_polyline(wks_MEAN_TRND, plot_MEAN_TRND, x, y, res)
+
+  delete([/x, y/])
+
   draw(plot_MEAN_TRND)
   frame(wks_MEAN_TRND)
 
-  ; Plot scatter plot historical MEAN vs RCP YOD
+  ; ---------------------------------------
+  ; scatter plot historical MEAN vs RCP YOD
+  ; ---------------------------------------
 
   outf2 = "SSIE-MEAN_vs_YOD_" + var0 + "_extend_" \
     + diag_script_info@region + "_" + i2month + "_" + min(time_hist) \
@@ -287,35 +357,54 @@ begin
 
   wks_MEAN_YOD = get_wks(0, DIAG_SCRIPT, outf2)
 
-  toplot = (/SSIE_MEAN, YOD/)  ; overwrite array --> retain most attributes
-  toplot&datasets = (/"SSIE mean [" + SSIE_MEAN@units + "]", \
-                      "First year of near disappearance"/)
-  caption2 = toplot&datasets(0) + " vs " + toplot&datasets(1) + ", " \
-    + diag_script_info@region + ", " + i2month + " (mean: " \
-    + min(time_hist) + "-" + max(time_hist) + ")."
+  ; overwrite array --> retain most attributes
+  toplot = (/SSIE_MEAN, YOD/)
+  toplot&datasets = (/i2month + " " + diag_script_info@region \
+                     + " SSIE averaged~C~over " \
+                     + min(time_hist) + "-" + max(time_hist) \
+                     + " [" + SSIE_MEAN@units + "]", \
+                     "First year of near disappearance"/)
+  caption2 = toplot&datasets(0) + " vs " + toplot&datasets(1) + "."
   toplot@res_gsnCenterString = ""
   toplot@res_trYMinF = 2000.
   toplot@res_trYMaxF = 2100.
   plot_MEAN_YOD = scatterplot(wks_MEAN_YOD, toplot, var0, False, False, info)
+
+  ; reference datasets (observations)
+  x = (/ssie_mean_ref, ssie_mean_ref/)
+  y = (/toplot@res_trYMinF, toplot@res_trYMaxF/)
+  ref2 = gsn_add_polyline(wks_MEAN_YOD, plot_MEAN_YOD, x, y, res)
+  delete(x)
+
   draw(plot_MEAN_YOD)
   frame(wks_MEAN_YOD)
 
-  ; plot scatter plot historical TRND vs RCP YOD
+  ; ---------------------------------------
+  ; scatter plot historical TRND vs RCP YOD
+  ; ---------------------------------------
+
   toplot = (/SSIE_TRND, YOD/)
-  toplot&datasets = (/"SSIE trend [" + SSIE_TRND@units + "]", \
+  toplot&datasets = (/"Trend in " + i2month + " " + diag_script_info@region \
+                     + " SSIE~C~over " \
+                     + min(time_hist) + "-" + max(time_hist) \
+                     + " [" + SSIE_TRND@units + "]", \
                      "First year of near disappearance"/)
-  caption3 = toplot&datasets(0) + " vs " + toplot&datasets(1) + ", " \
-    + diag_script_info@region + ", " + i2month + " (trend: " \
-    + min(time_hist) + "-" + max(time_hist) + ")."
+  caption3 = toplot&datasets(0) + " vs " + toplot&datasets(1) + "."
 
   outf3 = "SSIE-TRND_vs_YOD_" + var0 + "_extend_" \
     + diag_script_info@region + "_" + i2month + "_" \
     + min(time_hist) + "-" + max(time_rcp)
 
   wks_TRND_YOD = get_wks(0, DIAG_SCRIPT, outf3)
-  toplot@res_trXMinF = decimalPlaces((min(SSIE_TRND) - 100), 0, False)
-  toplot@res_trXMaxF = decimalPlaces((max(SSIE_TRND) + 100), 0, False)
+  toplot@res_trXMinF = decimalPlaces((min_trnd - 100), 0, False)
+  toplot@res_trXMaxF = decimalPlaces((max_trnd + 100), 0, False)
   plot_TRND_YOD = scatterplot(wks_TRND_YOD, toplot, var0, False, False, info)
+
+  ; reference datasets (observations)
+  x = (/ssie_trnd_ref, ssie_trnd_ref/)
+  ref3 = gsn_add_polyline(wks_TRND_YOD, plot_TRND_YOD, x, y, res)
+  delete([/x, y, res/])
+
   draw(plot_TRND_YOD)
   frame(wks_TRND_YOD)
 
