@@ -42,7 +42,7 @@ class MPQBpair:
         """load."""
         self.template = iris.load_cube(
             self.ds_cfg[self.ds1][0]['filename']).\
-            ds1cube.collapsed('time', iris.analysis.MEAN)
+            collapsed('time', iris.analysis.MEAN)
         self.ds1dat = iris.load_cube(
             self.ds_cfg[self.ds1][0]['filename']).data.filled(np.nan)
         self.ds2dat = iris.load_cube(
