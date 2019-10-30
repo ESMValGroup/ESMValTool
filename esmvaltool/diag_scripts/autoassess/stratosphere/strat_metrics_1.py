@@ -213,9 +213,12 @@ def calc_qbo_index(qbo):
             period = period2
         else:
             period = period1
-        return (period, ampl_west, ampl_east)
     else:
-        return (0.0, 0.0, 0.0)
+        period = 0.0
+        ampl_west = 0.0
+        ampl_east = 0.0
+
+    return (period, ampl_west, ampl_east)
 
 
 def flatten_list(list_):
