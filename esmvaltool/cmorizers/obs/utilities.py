@@ -24,13 +24,14 @@ def add_height2m(cube):
 
 def add_scalar_height_coord(cube, height=2.):
     """Add scalar coordinate 'height' with value of `height`m."""
-    logger.info("Adding height coordinate (%sm)", height)
-    height_coord = iris.coords.AuxCoord(height,
-                                        var_name='height',
-                                        standard_name='height',
-                                        long_name='height',
-                                        units=Unit('m'),
-                                        attributes={'positive': 'up'})
+    logger.debug("Adding height coordinate (%sm)", height)
+    height_coord = iris.coords.AuxCoord(
+        height,
+        var_name='height',
+        standard_name='height',
+        long_name='height',
+        units=Unit('m'),
+        attributes={'positive': 'up'})
     cube.add_aux_coord(height_coord, ())
 
 
@@ -180,7 +181,7 @@ def save_variable(cube, var, outdir, attrs, **kwargs):
 
 def set_global_atts(cube, attrs):
     """Complete the cmorized file with global metadata."""
-    logger.info("Setting global metadata...")
+    logger.debug("Setting global metadata...")
     attrs = dict(attrs)
     cube.attributes.clear()
     timestamp = datetime.datetime.utcnow()
