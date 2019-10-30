@@ -111,7 +111,7 @@ def convert_to_hru(cube):
     data = []
     for i, time in enumerate(cube.coord('time')):
         data.append(cube.data[i].compressed())
-    hru_list = range(len(data[0]))
+    hru_list = np.range(len(data[0]), dtype=float)
     time = cube.coord('time')
     hru = iris.coords.DimCoord(hru_list, long_name="hru")
     cube_hru = iris.cube.Cube(data, dim_coords_and_dims=[(time, 0), (hru, 1)])
