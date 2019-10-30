@@ -478,6 +478,8 @@ diagnostics:
         mip: Amon
       hus:
         mip: Amon
+      orog:
+        mip: fx
       pr_day:
         short_name: pr
         mip: day
