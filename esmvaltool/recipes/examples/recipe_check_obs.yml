@@ -272,11 +272,13 @@ diagnostics:
     description: NSIDC-0116 check
     variables:
       usi:
-        fx_files: [areacello]
+        mip: day
       vsi:
-        fx_files: [areacello]
+        mip: day
+      areacello:
+        mip: fx
     additional_datasets:
-      - {dataset: NSIDC-0116-nh, project: OBS, mip: day, tier: 3,
+      - {dataset: NSIDC-0116-nh, project: OBS, tier: 3,
          type: reanaly, version: "4.1", start_year: 1978, end_year: 2018}
       - {dataset: NSIDC-0116-sh, project: OBS, tier: 3,
          type: reanaly, version: "4.1", start_year: 1978, end_year: 2018}
@@ -552,7 +554,7 @@ diagnostics:
         mip: Amon
       tsn:
         mip: LImon
-      tsns:
+      tsn:
         mip: Eday
       ua:
         mip: Amon
