@@ -39,12 +39,12 @@ variables:
 web form or era5cli:
         $pip install era5cli
         $era5cli hourly --variables total_precipitation --startyear 1990
-        
-    [#1]: orography is a time-invariant variable, but ERA5 makes it available 
+
+    [#1]: orography is a time-invariant variable, but ERA5 makes it available
     as an hourly variable (which is the same for each time step). The CMORizer
-    will remove the time dimension from the data and hence only works for 2D 
+    will remove the time dimension from the data and hence only works for 2D
     data with a time dimension of length 1. Request example:
-        $era5cli hourly --variables orography 
+        $era5cli hourly --variables orography
         > --startyear 1989 --months 1 --days 1 --hours 12
     Note that the filename will still follow the pattern:
         "era5_orography_yyyy_hourly.nc"
@@ -150,7 +150,7 @@ def _extract_variable(in_file, var, cfg, out_dir):
             coord.guess_bounds()
         except iris.exceptions.CoordinateNotFoundError:
             if 'fx' in var['mip']:
-                pass 
+                pass
             else:
                 raise
 
