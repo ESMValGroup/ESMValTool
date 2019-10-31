@@ -172,7 +172,6 @@ def _extract_variable(in_file, var, cfg, out_dir):
     # Make latitude increasing
     cube = cube[:, ::-1, ...]
 
-
     logger.info("Saving cube\n%s", cube)
     logger.info("Expected output size is %.1fGB",
                 np.prod(cube.shape) * 4 / 2**30)
