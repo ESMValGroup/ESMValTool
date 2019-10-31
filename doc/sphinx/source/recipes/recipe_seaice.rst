@@ -11,10 +11,10 @@ The sea ice diagnostics include:
     (calculated as the total area (km\ :sup:`2`\) of grid cells with sea ice concentrations
     (sic) of at least 15%).
 (2) ice extent trend distributions for the Arctic in September and the Antarctic in February.
-(3) year of near disappearance of (Arctic) sea ice
-(4) scatter plots of (a) historical trend in (September Arctic) sea ice extent (SSIE) vs
+(3) calculation of year of near disappearance of Arctic sea ice
+(4) scatter plots of (a) historical trend in September Arctic sea ice extent (SSIE) vs
     historical long-term mean SSIE; (b) historical SSIE mean vs 1st year of disappearance
-   (YOD) RCP8.5; (c) historical SSIE trend vs YOD RCP8.5.
+    (YOD) RCP8.5; (c) historical SSIE trend vs YOD RCP8.5.
 
 Available recipes and diagnostics
 ---------------------------------
@@ -25,11 +25,17 @@ Recipes are stored in recipes/
 
 Diagnostics are stored in diag_scripts/seaice/
 
-* seaice_trends.ncl: calculates ice extent trend distributions (similar to IPCC AR5 Chapter 9, Fig. 9.24c/d)
-* seaice_tsline.ncl: creates a time series line plots of total sea ice area and extent (accumulated) for northern and southern
-  hemispheres with optional multi-model mean and standard deviation. One value is used per model per year, either annual mean
-  or the mean value of a selected month (similar to IPCC AR5 Chapter 9, Fig. 9.24a/b)
-* seaice_aux.ncl: contains a function for calculating sea ice area or extent from sea ice concentration.
+* seaice_aux.ncl: contains functions for calculating sea ice area or extent from sea ice
+  concentration and first year of disappearance
+* seaice_ecs.ncl: scatter plots of mean/trend of historical September Arctic sea ice extent
+  vs 1st year of disappearance (RCP8.5) (similar to IPCC AR5 Chapter 12, Fig. 12.31a)
+* seaice_trends.ncl: calculates ice extent trend distributions
+  (similar to IPCC AR5 Chapter 9, Fig. 9.24c/d)
+* seaice_tsline.ncl: creates a time series line plots of total sea ice area and extent (accumulated)
+  for northern and southern hemispheres with optional multi-model mean and standard deviation. One
+  value is used per model per year, either annual mean or the mean value of a selected month
+  (similar to IPCC AR5 Chapter 9, Fig. 9.24a/b)
+* seaice_yod.ncl: calculation of year of near disappearance of Arctic sea ice
 
 User settings in recipe
 -----------------------
