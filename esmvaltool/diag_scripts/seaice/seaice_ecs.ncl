@@ -18,10 +18,10 @@
 ;
 ; Optional diag_script_info attributes
 ;   fill_pole_hole: fill observational hole at North pole (default: False)
+;   styleset: color style (e.g. "CMIP5")
 ;
 ; Optional variable_info attributes (variable specific)
 ;   reference_dataset: reference dataset
-;   styleset: color style (e.g. "CMIP5")
 ;
 ; Caveats
 ;   - CMOR units expected: areacello in m2, sic in %
@@ -300,7 +300,6 @@ begin
   toplot@res_trYMaxF  = decimalPlaces((max_trnd + 100), 0, False)
   toplot@res_xyMarker = 16
   colors = project_style(info, diag_script_info, "colors")
-print(colors)
   toplot@res_xyMarkerColors = colors
   plot_MEAN_TRND = scatterplot(wks_MEAN_TRND, toplot, var0, False, False, info)
 
@@ -399,9 +398,9 @@ print(colors)
 
   ; --------------------------------------------------------------
 
-  SSIE_MEAN@var = var0 + "_mean"
+  SSIE_MEAN@var = "SSIE_mean"
   SSIE_MEAN@diag_script = DIAG_SCRIPT
-  SSIE_TRND@var = var0 + "_trnd"
+  SSIE_TRND@var = "SSIE_trnd"
   SSIE_TRND@diag_script = DIAG_SCRIPT
   delete(SSIE_TRND&datasets@_FillValue)
   outf = config_user_info@work_dir + outf + ".nc"

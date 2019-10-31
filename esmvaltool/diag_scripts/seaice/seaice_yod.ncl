@@ -49,10 +49,12 @@ begin
   datasets = metadata_att_as_array(info, "dataset")
   ensembles = metadata_att_as_array(info, "ensemble")
   exps = metadata_att_as_array(info, "exp")
+  infiles = metadata_att_as_array(info, "filename")
   dim_MOD = dimsizes(datasets)
   att@mip = "fx"
   areainfo = select_metadata_by_atts(input_file_info, att)  ; area
   areadatasets = metadata_att_as_array(areainfo, "dataset")
+  areafiles = metadata_att_as_array(areainfo, "filename")
   delete(att)
 
   ; Check required diag_script_info attributes
@@ -113,7 +115,6 @@ begin
 
   all_rcps   = exps(str_match_ind_ic(exps, "rcp"))
   which_rcps = get_unique_values(all_rcps)
-print(which_rcps)
 
   YOD     = new((/dimsizes(which_rcps), 2, 2/), float)
   YOD!0   = "rcp"
@@ -122,6 +123,15 @@ print(which_rcps)
   YOD&rcp = which_rcps
   YOD&wgt = (/"unweighted", "weighted"/)
   YOD&val = (/"avg", "std"/)
+
+  ; for writing provenance
+
+  if (diag_script_info@region.eq."Arctic") then
+    domain = "nh"
+  else if (diag_script_info@region.eq."Antarctic") then
+    domain = "sh"
+  end if
+  end if
 
   do ircp = 0, dimsizes(which_rcps) - 1
 
@@ -159,7 +169,8 @@ print(which_rcps)
     end if
 
     ; loop over datasets
-    do imod = min(rcp_ind), max(rcp_ind)
+    do ii = 0, dimsizes(rcp_ind) - 1
+      imod = rcp_ind(ii)
       log_info("Processing dataset " + datasets(imod))
 
       sic = read_data(info[imod])
@@ -369,7 +380,6 @@ print(which_rcps)
                                     max(SSIE_all&year)/), (/1., 1./), res_yod)
     draw(plot_ts)
     frame(wks_ts)
-    delete(wks_ts)
 
     ; store
     YOD(ircp, 0, 0) = avg(YOD_tmp)
@@ -379,9 +389,47 @@ print(which_rcps)
       YOD(ircp, 1, 1) = dim_stddev_wgt_Wrap(YOD_tmp, weights, 1)
     end if
 
+    ; ===========================================================================
+    ; Provenance
+    ; ===========================================================================
+
+    SSIE_all@var = "SSIE"
+    SSIE_all@diag_script = DIAG_SCRIPT
+    outf = config_user_info@work_dir + outfile_ts + ".nc"
+
+    MMM_uwt@var = "SSIE_MMM_uwt"
+    MMM_uwt@diag_script = DIAG_SCRIPT
+    STD_uwt@var = "SSIE_MMM_STD_uwt"
+    STD_uwt@diag_script = DIAG_SCRIPT
+
+    nc_ext = ncdf_write(SSIE_all, outf)
+    outf@existing = "append"
+    nc_ext = ncdf_write(MMM_uwt, outf)
+    nc_ext = ncdf_write(STD_uwt, outf)
+
+    if (wgt_flag) then
+      MMM_wgt@var = "SSIE_MMM_wgt"
+      MMM_wgt@diag_script = DIAG_SCRIPT
+      STD_wgt@var = "SSIE_MMM_STD_wgt"
+      STD_wgt@diag_script = DIAG_SCRIPT
+
+      nc_ext = ncdf_write(MMM_wgt, outf)
+      nc_ext = ncdf_write(STD_wgt, outf)
+    end if
+
+    caption = "Time series of " + timestring + " " + diag_script_info@region \
+              + " sea ice extent for individual models and multi-model mean," \
+              + " and multi-model standard deviation of year of dissaperance" \
+              + " for scenario " + which_rcps(ircp) + "."
+
+    log_provenance(nc_ext, wks_ts@fullname, caption, \
+                   "other", domain, "times", \
+                   (/"senftleben_daniel", "lauer_axel"/), \
+                   "", infiles(rcp_ind))
+
     ; clean up
     delete([/rcp_models, SSIE_all, YOD_tmp, MMM_uwt, MMM_wgt, STD_uwt, \
-           STD_wgt, YOD_MMM_uwt, YOD_MMM_wgt, res_yod/])
+           STD_wgt, YOD_MMM_uwt, YOD_MMM_wgt, res_yod, outf, nc_ext, wks_ts/])
   end do  ; ircp
 
   ; ---
@@ -389,7 +437,7 @@ print(which_rcps)
   ; ---
 
   outfile  = "YOD"
-  wks      = get_wks(0, DIAG_SCRIPT, outfile)
+  wks = get_wks(0, DIAG_SCRIPT, outfile)
   if (wgt_flag) then
     factor = 2
   else
@@ -432,30 +480,21 @@ print(which_rcps)
   ; Provenance
   ; ===========================================================================
 
-  if (diag_script_info@region.eq."Arctic") then
-    domain = "nh"
-  else if (diag_script_info@region.eq."Antarctic") then
-    domain = "sh"
-  end if
-  end if
+  YOD@var = "yod"
+  YOD@diag_script = DIAG_SCRIPT
 
-  infiles = metadata_att_as_array(info, "filename")
+  outf = config_user_info@work_dir + outfile + ".nc"
 
-;  SSIE_MEAN@var = var0 + "_mean"
-;  SSIE_MEAN@diag_script = DIAG_SCRIPT
-;  SSIE_TRND@var = var0 + "_trnd"
-;  SSIE_TRND@diag_script = DIAG_SCRIPT
-;  delete(SSIE_TRND&datasets@_FillValue)
-;  outf = config_user_info@work_dir + outf + ".nc"
-;
-;  nc_ext = ncdf_write(SSIE_MEAN, outf)
-;  outf@existing = "append"
-;  nc_ext = ncdf_write(SSIE_TRND, outf)
-;
-;  log_provenance(nc_ext, wks_MEAN_TRND@fullname, caption1, \
-;                 (/"mean", "trend"/), domain, "scatter", \
-;                 (/"senftleben_daniel", "lauer_axel"/), \
-;                 "massonnet12tc", infiles_hist)
+  nc_ext2 = ncdf_write(YOD, outf)
+
+  caption = "Year of dissaperance of " + timestring + " " \
+            + diag_script_info@region + " sea ice for scenarios " \
+            + tostring(which_rcps) + "."
+
+  log_provenance(nc_ext2, wks@fullname, caption, \
+                 "other", domain, "bar", \
+                 (/"senftleben_daniel", "lauer_axel"/), \
+                 "", infiles)
 
   leave_msg(DIAG_SCRIPT, "")
 

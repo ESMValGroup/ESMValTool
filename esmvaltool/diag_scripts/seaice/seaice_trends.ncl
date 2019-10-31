@@ -287,7 +287,7 @@ begin
   end if
   alltrends!0 = "dataset"
   alltrends&dataset = datasets
-  alltrends@var = var0
+  alltrends@var = "SSIE_trnd"
   alltrends@diag_script = DIAG_SCRIPT
   caption = res@tiMainString
 
