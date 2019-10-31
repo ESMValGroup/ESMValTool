@@ -5,6 +5,7 @@ from pathlib import Path
 import dask.array as da
 import iris
 
+from esmvalcore.cmor.table import CMOR_TABLES
 from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
                                             get_diagnostic_filename,
                                             select_metadata,
@@ -98,6 +99,10 @@ def main(cfg):
 
         # Set lat from highest to lowest value
         cube = cube[:, ::-1, ...]
+
+        # Unit conversion to m
+        cube.units = cube.units / 'kg m-3 day-1'
+        cube.data = cube.core_data() / 1000
 
         # Save data
         output_file = get_diagnostic_filename(
