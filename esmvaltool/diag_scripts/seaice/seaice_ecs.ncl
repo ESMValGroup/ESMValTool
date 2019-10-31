@@ -21,6 +21,7 @@
 ;
 ; Optional variable_info attributes (variable specific)
 ;   reference_dataset: reference dataset
+;   styleset: color style (e.g. "CMIP5")
 ;
 ; Caveats
 ;   - CMOR units expected: areacello in m2, sic in %
@@ -243,34 +244,7 @@ begin
     ;  = 1st year when 5-yr smoothed SSIE drops below 10^6 km^2
     ;    for more than 5 consecutive years
     if (exps(imod).eq.rcp_exp) then
-      SSIE_smoo = runave(SSIE, 5, 0)  ; 5-yr running mean of SSIE
-      copy_VarMeta(SSIE, SSIE_smoo)
-      copy_VarCoords(SSIE, SSIE_smoo)
-      a = 0  ; find 6 consec. years where SSIE < 10^6 km^2, 1st one is YOD
-      do itime = 0, dimsizes(SSIE_smoo&time) - 1
-        if (ismissing(SSIE_smoo(itime))) then
-          a = 0
-          continue
-        end if
-        if (SSIE_smoo(itime).lt.1.) then
-          a = a + 1
-          if (a.gt.5) then
-            iyod = itime - 5
-            break
-          else
-            continue
-          end if
-        else
-          a = 0
-        end if
-      end do
-      if (isdefined("iyod")) then
-        utc_date = cd_calendar(SSIE_smoo&time(iyod), 0)
-        YOD(rcp_ind) = tofloat(utc_date(0, 0))
-        delete(iyod)
-      else
-        YOD(rcp_ind) = YOD@_FillValue
-      end if
+      YOD(rcp_ind) = calc_yod(SSIE, 1., 5)
       rcp_ind = rcp_ind + 1
     end if
 
@@ -326,6 +300,7 @@ begin
   toplot@res_trYMaxF  = decimalPlaces((max_trnd + 100), 0, False)
   toplot@res_xyMarker = 16
   colors = project_style(info, diag_script_info, "colors")
+print(colors)
   toplot@res_xyMarkerColors = colors
   plot_MEAN_TRND = scatterplot(wks_MEAN_TRND, toplot, var0, False, False, info)
 
@@ -438,7 +413,7 @@ begin
   log_provenance(nc_ext, wks_MEAN_TRND@fullname, caption1, \
                  (/"mean", "trend"/), domain, "scatter", \
                  (/"senftleben_daniel", "lauer_axel"/), \
-                 "", infiles_hist)
+                 "massonnet12tc", infiles_hist)
 
   ; --------------------------------------------------------------
 
