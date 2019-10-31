@@ -39,7 +39,7 @@ variables:
 web form or era5cli:
         $pip install era5cli
         $era5cli hourly --variables total_precipitation --startyear 1990
-
+        
     [#1]: orography is a time-invariant variable, but ERA5 makes it available 
     as an hourly variable (which is the same for each time step). The CMORizer
     will remove the time dimension from the data and hence only works for 2D 
@@ -125,7 +125,7 @@ def _extract_variable(in_file, var, cfg, out_dir):
     if cube.var_name in {'msnlwrf', 'ssrd', 'tisr', 'ssr'}:
         # Radiation fluxes are positive in downward direction
         cube.attributes['positive'] = 'down'
-    
+
     # Remove time dimension and coordinate from invariant variables
     if 'fx' in var['mip']:
         cube = iris.util.squeeze(cube)
