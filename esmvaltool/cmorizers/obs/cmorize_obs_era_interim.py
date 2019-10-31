@@ -323,6 +323,7 @@ def _extract_variable(in_files, var, cfg, out_dir):
         cube = _compute_daily(cube)
 
     if 'fx' in var['mip']:
+        cube = iris.util.squeeze(cube)
         cube.remove_coord('time')
 
     # Convert units if required
