@@ -135,100 +135,101 @@ diagnostics:
     scripts:
       mpqb:
         script: mpqb/mpqb_comparison.py
+        script: mpqb/taylordiagram.py
     additional_datasets:
       - <<: *uerra
-  lineplots:
-    description: lineplots
-    variables:
-      sm:
-        preprocessor: pp_lineplots
-        mip: Lmon
-    scripts:
-      lineplot:
-        script: mpqb/mpqb_lineplot.py
-  lineplots_europe:
-    description: lineplots_europe
-    variables:
-      sm:
-        preprocessor: pp_lineplots
-        mip: Lmon
-    additional_datasets:
-      - <<: *uerra
-    scripts:
-      lineplot:
-        script: mpqb/mpqb_lineplot.py
-  mapplots_std:
-    description: mapplots
-    variables:
-      sm:
-        preprocessor: pp_mpqb_sm_std
-        mip: Lmon
-    scripts:
-      mpqb:
-        script: mpqb/mpqb_comparison.py
-    additional_datasets:
-      - <<: *uerra
-  lineplots_std:
-    description: lineplots_std
-    variables:
-      sm:
-        preprocessor: pp_lineplots_std
-        mip: Lmon
-    scripts:
-      lineplot:
-        script: mpqb/mpqb_lineplot.py
-  lineplots_europe_std:
-    description: lineplots_europe_std
-    variables:
-      sm:
-        preprocessor: pp_lineplots_std
-        mip: Lmon
-    additional_datasets:
-      - <<: *uerra
-    scripts:
-      lineplot:
-        script: mpqb/mpqb_lineplot.py
-  maps_yearmean:
-    description: auxiliary maps (trend; climatology)
-    variables:
-      sm:
-        preprocessor: pp_mpqb_yearmean
-        mip: Lmon
-    additional_datasets:
-      - <<: *uerra
-    scripts:
-      aux_maps:
-        script: mpqb/mpqb_auxmaps.py
-  maps_yearmin:
-    description: auxiliary maps (trend; climatology)
-    variables:
-      sm:
-        preprocessor: pp_mpqb_yearmin
-        mip: Lmon
-    additional_datasets:
-      - <<: *uerra
-    scripts:
-      aux_maps:
-        script: mpqb/mpqb_auxmaps.py
-  maps_yearmax:
-    description: auxiliary maps (trend; climatology)
-    variables:
-      sm:
-        preprocessor: pp_mpqb_yearmax
-        mip: Lmon
-    additional_datasets:
-      - <<: *uerra
-    scripts:
-      aux_maps:
-        script: mpqb/mpqb_auxmaps.py
-  maps_yearstddev:
-    description: auxiliary maps (trend; climatology)
-    variables:
-      sm:
-        preprocessor: pp_mpqb_yearstddev
-        mip: Lmon
-    additional_datasets:
-      - <<: *uerra
-    scripts:
-      aux_maps:
-        script: mpqb/mpqb_auxmaps.py
+#  lineplots:
+#    description: lineplots
+#    variables:
+#      sm:
+#        preprocessor: pp_lineplots
+#        mip: Lmon
+#    scripts:
+#      lineplot:
+#        script: mpqb/mpqb_lineplot.py
+#  lineplots_europe:
+#    description: lineplots_europe
+#    variables:
+#      sm:
+#        preprocessor: pp_lineplots
+#        mip: Lmon
+#    additional_datasets:
+#      - <<: *uerra
+#    scripts:
+#      lineplot:
+#        script: mpqb/mpqb_lineplot.py
+#  mapplots_std:
+#    description: mapplots
+#    variables:
+#      sm:
+#        preprocessor: pp_mpqb_sm_std
+#        mip: Lmon
+#    scripts:
+#      mpqb:
+#        script: mpqb/mpqb_comparison.py
+#    additional_datasets:
+#      - <<: *uerra
+#  lineplots_std:
+#    description: lineplots_std
+#    variables:
+#      sm:
+#        preprocessor: pp_lineplots_std
+#        mip: Lmon
+#    scripts:
+#      lineplot:
+#        script: mpqb/mpqb_lineplot.py
+#  lineplots_europe_std:
+#    description: lineplots_europe_std
+#    variables:
+#      sm:
+#        preprocessor: pp_lineplots_std
+#        mip: Lmon
+#    additional_datasets:
+#      - <<: *uerra
+#    scripts:
+#      lineplot:
+#        script: mpqb/mpqb_lineplot.py
+#  maps_yearmean:
+#    description: auxiliary maps (trend; climatology)
+#    variables:
+#      sm:
+#        preprocessor: pp_mpqb_yearmean
+#        mip: Lmon
+#    additional_datasets:
+#      - <<: *uerra
+#    scripts:
+#      aux_maps:
+#        script: mpqb/mpqb_auxmaps.py
+#  maps_yearmin:
+#    description: auxiliary maps (trend; climatology)
+#    variables:
+#      sm:
+#        preprocessor: pp_mpqb_yearmin
+#        mip: Lmon
+#    additional_datasets:
+#      - <<: *uerra
+#    scripts:
+#      aux_maps:
+#        script: mpqb/mpqb_auxmaps.py
+#  maps_yearmax:
+#    description: auxiliary maps (trend; climatology)
+#    variables:
+#      sm:
+#        preprocessor: pp_mpqb_yearmax
+#        mip: Lmon
+#    additional_datasets:
+#      - <<: *uerra
+#    scripts:
+#      aux_maps:
+#        script: mpqb/mpqb_auxmaps.py
+#  maps_yearstddev:
+#    description: auxiliary maps (trend; climatology)
+#    variables:
+#      sm:
+#        preprocessor: pp_mpqb_yearstddev
+#        mip: Lmon
+#    additional_datasets:
+#      - <<: *uerra
+#    scripts:
+#      aux_maps:
+#        script: mpqb/mpqb_auxmaps.py
