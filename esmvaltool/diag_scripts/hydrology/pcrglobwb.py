@@ -100,9 +100,10 @@ def main(cfg):
         # Set lat from highest to lowest value
         cube = cube[:, ::-1, ...]
 
-        # Unit conversion to m
-        cube.units = cube.units / 'kg m-3 day-1'
-        cube.data = cube.core_data() / 1000
+        # Unit conversion 'kg m-3 day-1' to 'm' precip
+        if short_name == "pr":
+            cube.units = cube.units / 'kg m-3 day-1'
+            cube.data = cube.core_data() / 1000
 
         # Save data
         output_file = get_diagnostic_filename(
