@@ -144,7 +144,7 @@ Example plots
    :width:   12cm
 
    Time series of September Arctic sea ice extent for individual CMIP5 models,
-   multi-model mean and multi-model standard deviation, year of dissaperance
+   multi-model mean and multi-model standard deviation, year of disappearance
    (similar to IPCC AR5 Chapter 12, Fig. 12.31e). [seaice_yod.ncl]
 
 .. figure::  /recipes/figures/seaice/SSIE-MEAN_vs_YOD_sic_extend_Arctic_September_1960-2100.png
