@@ -554,6 +554,8 @@ diagnostics:
         mip: Amon
       tsn:
         mip: LImon
+      tsn:
+        mip: Eday
       ua:
         mip: Amon
       uas_day:
