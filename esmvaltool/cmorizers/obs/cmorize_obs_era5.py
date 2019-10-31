@@ -23,6 +23,7 @@ variables:
         mean_sea_level_pressure
         mean_surface_net_long_wave_radiation_flux
         minimum_2m_temperature_since_previous_post_processing
+        orography [#1]
         potential_evaporation
         runoff
         skin_temperature
@@ -38,6 +39,13 @@ variables:
 web form or era5cli:
         $pip install era5cli
         $era5cli hourly --variables total_precipitation --startyear 1990
+
+    [#1]: orography is a time-invariant variable, but ERA5 makes it available as
+    an hourly variable (which is the same for each time step). The CMORizer will
+    remove the time dimension from the data and hence only works for 2D data 
+    with a time dimension of length 1. Request example:
+        $era5cli hourly --variables orography --startyear 1989 --months 1 --days 1 --hours 12
+    Note that the filename will still follow the pattern "era5_orography_yyyy_hourly.nc"
 
 """
 
@@ -115,6 +123,11 @@ def _extract_variable(in_file, var, cfg, out_dir):
     if cube.var_name in {'msnlwrf', 'ssrd', 'tisr', 'ssr'}:
         # Radiation fluxes are positive in downward direction
         cube.attributes['positive'] = 'down'
+    
+    # Remove time dimension and coordinate from invariant variables
+    if 'fx' in var['mip']:
+        cube = iris.util.squeeze(cube)
+        cube.remove_coord('time')
 
     # Set correct names
     cube.var_name = definition.short_name
@@ -129,9 +142,22 @@ def _extract_variable(in_file, var, cfg, out_dir):
     cube.coord('longitude').var_name = 'lon'
 
     for coord_name in 'latitude', 'longitude', 'time':
-        coord = cube.coord(coord_name)
-        coord.points = coord.core_points().astype('float64')
-        coord.guess_bounds()
+        try:
+            coord = cube.coord(coord_name)
+            coord.points = coord.core_points().astype('float64')
+            coord.guess_bounds()
+        except iris.exceptions.CoordinateNotFoundError:
+            if 'fx' in var['mip']:
+                pass 
+            else:
+                raise
+
+    if cube.var_name in {'zg', 'orog'}:
+        # Divide by acceleration of gravity [m s-2],
+        # required for geopotential height, see:
+        # https://apps.ecmwf.int/codes/grib/param-db?id=129
+        cube.units = cube.units / 'm s-2'
+        cube.data = cube.core_data() / 9.80665
 
     if 'height2m' in definition.dimensions:
         utils.add_scalar_height_coord(cube, 2.)
@@ -143,6 +169,7 @@ def _extract_variable(in_file, var, cfg, out_dir):
 
     # Make latitude increasing
     cube = cube[:, ::-1, ...]
+
 
     logger.info("Saving cube\n%s", cube)
     logger.info("Expected output size is %.1fGB",

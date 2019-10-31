@@ -590,6 +590,10 @@ diagnostics:
 
   ERA5:
     description: ERA5 check check
+    additional_datasets:
+      - {project: OBS6, dataset: ERA5, mip: E1hr,
+         frequency: 1hr, tier: 3, type: reanaly, version: 1,
+         start_year: 1990, end_year: 1990}
     variables:
       clt:
       evspsbl:
@@ -610,10 +614,8 @@ diagnostics:
       tdps:
       ts:
       tsn:
-    additional_datasets:
-      - {project: OBS6, dataset: ERA5, mip: E1hr,
-         frequency: 1hr, tier: 3, type: reanaly, version: 1,
-         start_year: 1990, end_year: 1990}
+      orog:
+        mip: fx
     scripts: null
 
 
