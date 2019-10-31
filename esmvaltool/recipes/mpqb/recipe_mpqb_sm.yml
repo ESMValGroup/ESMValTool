@@ -1,0 +1,234 @@
+# ESMValTool
+# recipe_mpqb.yml
+---
+documentation:
+  description: |
+    Test recipe for the MPQB (C3S_511) for soil moisture
+
+  authors:
+    - crezee_bas
+
+
+################################################
+# Define some default parameters using anchors #
+################################################
+timeperiod: &timeperiod
+  start_year: 2001  # 1979
+  end_year: 2010
+
+# We handle UERRA seperately, since it has only coverage over Europe
+uerra: &uerra
+  - {dataset: CDS-UERRA, type: reanaly, project: OBS6, mip: E6hr,
+     version: UERRA-HARMONIE, tier: 3, frequency: 6hr, <<: *timeperiod}
+
+
+mpqbregridder: &mpqbregridder
+  regrid:
+    target_grid: 2x2
+    scheme: area_weighted
+  monthly_statistics:
+    operator: mean
+
+# The main preprocessor for all
+# input data
+default_pp_maps: &pp_maps
+  custom_order: true
+  mask_below_threshold:
+    threshold: 0.01
+  <<: *mpqbregridder
+  mask_landsea:
+    mask_out: sea
+  mask_glaciated:
+    mask_out: glaciated
+
+# Additional preprocessor for
+# line plots
+default_pp_line: &pp_line
+  mask_fillvalues:
+    threshold_fraction: 0.8
+  area_statistics:
+    operator: mean
+
+reproduce_dorigo2012: &pp_reproduce_dorigo2012
+  custom_order: true
+  mask_below_threshold:
+    threshold: 0.01
+  <<: *mpqbregridder
+  seasonal_statistics:
+    operator: mean
+  mask_landsea:
+    mask_out: sea
+  mask_glaciated:
+    mask_out: glaciated
+
+
+################################################
+################################################
+################################################
+
+datasets:
+  - {dataset: eraintland, type: reanaly, project: OBS6, mip: E6hr,
+     version: 1, tier: 3, frequency: 6hr, <<: *timeperiod}
+  - {dataset: CDS-SATELLITE-SOIL-MOISTURE, type: sat, project: OBS, mip: Lmon,
+     version: COMBINED-TCDR-v201812.0.0, tier: 3, <<: *timeperiod}
+  - {dataset: cds-era5-land-monthly, type: reanaly, project: OBS, mip: Lmon,
+     version: 1, tier: 3, <<: *timeperiod}
+  - {dataset: cds-era5-monthly, type: reanaly, project: OBS, mip: Lmon,
+     version: 1, tier: 3, <<: *timeperiod}
+
+preprocessors:
+  pp_tmp:
+    annual_statistics:
+      operator: mean
+
+  pp_reproduce_dorigo2012:
+    <<: *pp_reproduce_dorigo2012
+
+  pp_mpqb_sm:
+    <<: *pp_maps
+
+  pp_mpqb_sm_std:
+    anomalies:
+      period: monthly
+      standardize: true
+    <<: *pp_maps
+
+  pp_lineplots:
+    <<: *pp_maps
+    <<: *pp_line
+
+  pp_lineplots_std:
+    anomalies:
+      period: monthly
+      standardize: true
+    <<: *pp_maps
+    <<: *pp_line
+
+  pp_mpqb_yearmean:
+    <<: *pp_maps
+    annual_statistics:
+      operator: mean
+
+  pp_mpqb_yearmin:
+    <<: *pp_maps
+    annual_statistics:
+      operator: min
+
+  pp_mpqb_yearmax:
+    <<: *pp_maps
+    annual_statistics:
+      operator: max
+
+  pp_mpqb_yearstddev:
+    <<: *pp_maps
+    annual_statistics:
+      operator: std_dev
+
+
+diagnostics:
+  mapplots:
+    description: mapplots
+    variables:
+      sm:
+        preprocessor: pp_mpqb_sm
+        mip: Lmon
+    scripts:
+      mpqb:
+        script: mpqb/mpqb_comparison.py
+    additional_datasets:
+      - <<: *uerra
+  lineplots:
+    description: lineplots
+    variables:
+      sm:
+        preprocessor: pp_lineplots
+        mip: Lmon
+    scripts:
+      lineplot:
+        script: mpqb/mpqb_lineplot.py
+  lineplots_europe:
+    description: lineplots_europe
+    variables:
+      sm:
+        preprocessor: pp_lineplots
+        mip: Lmon
+    additional_datasets:
+      - <<: *uerra
+    scripts:
+      lineplot:
+        script: mpqb/mpqb_lineplot.py
+  mapplots_std:
+    description: mapplots
+    variables:
+      sm:
+        preprocessor: pp_mpqb_sm_std
+        mip: Lmon
+    scripts:
+      mpqb:
+        script: mpqb/mpqb_comparison.py
+    additional_datasets:
+      - <<: *uerra
+  lineplots_std:
+    description: lineplots_std
+    variables:
+      sm:
+        preprocessor: pp_lineplots_std
+        mip: Lmon
+    scripts:
+      lineplot:
+        script: mpqb/mpqb_lineplot.py
+  lineplots_europe_std:
+    description: lineplots_europe_std
+    variables:
+      sm:
+        preprocessor: pp_lineplots_std
+        mip: Lmon
+    additional_datasets:
+      - <<: *uerra
+    scripts:
+      lineplot:
+        script: mpqb/mpqb_lineplot.py
+  maps_yearmean:
+    description: auxiliary maps (trend; climatology)
+    variables:
+      sm:
+        preprocessor: pp_mpqb_yearmean
+        mip: Lmon
+    additional_datasets:
+      - <<: *uerra
+    scripts:
+      aux_maps:
+        script: mpqb/mpqb_auxmaps.py
+  maps_yearmin:
+    description: auxiliary maps (trend; climatology)
+    variables:
+      sm:
+        preprocessor: pp_mpqb_yearmin
+        mip: Lmon
+    additional_datasets:
+      - <<: *uerra
+    scripts:
+      aux_maps:
+        script: mpqb/mpqb_auxmaps.py
+  maps_yearmax:
+    description: auxiliary maps (trend; climatology)
+    variables:
+      sm:
+        preprocessor: pp_mpqb_yearmax
+        mip: Lmon
+    additional_datasets:
+      - <<: *uerra
+    scripts:
+      aux_maps:
+        script: mpqb/mpqb_auxmaps.py
+  maps_yearstddev:
+    description: auxiliary maps (trend; climatology)
+    variables:
+      sm:
+        preprocessor: pp_mpqb_yearstddev
+        mip: Lmon
+    additional_datasets:
+      - <<: *uerra
+    scripts:
+      aux_maps:
+        script: mpqb/mpqb_auxmaps.py
