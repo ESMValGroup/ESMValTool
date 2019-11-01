@@ -86,18 +86,18 @@ def baroceff(model, wdir, aux_file, toab_file, te_file):
     tegainm_file = wdir + '/{}_teGainm.nc'.format(model)
     cdo.div(input='-fldmean {0} -fldmean -div {0} {1} '.format(
         toabgain_file, tegain_file),
-        output=tegainm_file)
+            output=tegainm_file)
     telossm_file = wdir + '/{}_teLossm.nc'.format(model)
     cdo.div(input='-fldmean {0} -fldmean -div {0} {1} '.format(
         toabloss_file, teloss_file),
-        output=telossm_file)
+            output=telossm_file)
     aux_baroceff_file = (wdir + '/{}_aux_barocEff.nc'.format(model))
     cdo.sub(input='-reci {} -reci {}'.format(telossm_file, tegainm_file),
             output=aux_baroceff_file)
     baroceff_file = wdir + '/{}_barocEff.nc'.format(model)
     cdo.div(input='{} -mulc,0.5 -add -reci {} -reci {}'.format(
         aux_baroceff_file, tegainm_file, telossm_file),
-        output=baroceff_file)
+            output=baroceff_file)
     with Dataset(baroceff_file) as f_l:
         baroc = f_l.variables['toab'][0, 0, 0]
     remove_files = [
@@ -164,7 +164,7 @@ def budgets(model, wdir, aux_file, input_data):
     cdo.add(input=" {} {}".format(rsds_file, rlds_file), output=aux_surb_file)
     cdo.sub(input="-sub -sub -sub {} {} {} {} {}".format(
         aux_surb_file, rsus_file, rlus_file, hfls_file, hfss_file),
-        output=aux_file)
+            output=aux_file)
     surb_gmean = write_eb('rsds', 'surb', aux_file, surb_file, surb_gmean_file)
     # Atmospheric energy budget
     removeif(aux_file)
@@ -310,8 +310,8 @@ def entr(filelist, nin, nout, entr_file, entr_mean_file):
     removeif(aux_file)
     cdo.timmean(input='-yearmonmean -monmean -div {} {}'.format(
         en_file, tem_file),
-        options='-b F32',
-        output=aux_file)
+                options='-b F32',
+                output=aux_file)
     entr_gmean = write_eb(nin, nout, aux_file, entr_file, entr_mean_file)
     return entr_gmean
 
@@ -378,12 +378,12 @@ def indentr(model, wdir, infile, input_data, aux_file, toab_gmean):
     removeif(aux_file)
     cdo.yearmonmean(input='-mulc,-1 -div -subc,{}  {}  {}'.format(
         np.nanmean(toab_gmean), infile[1], infile[0]),
-        output=aux_file)
+                    output=aux_file)
     horzentr_mean = write_eb('toab', 'shor', aux_file, horzentropy_file,
                              horzentropy_mean_file)
     cdo.yearmonmean(input=' -add {} -sub {} -add {} {}'.format(
         rlds_file, rsds_file, rlus_file, rsus_file),
-        output=vertenergy_file)
+                    output=vertenergy_file)
     cdo.mul(input='{} -sub -yearmonmean -reci {} -yearmonmean -reci {}'.format(
         vertenergy_file, infile[0], ts_file),
             output=aux_file)
@@ -778,7 +778,7 @@ def wmbudg(model, wdir, aux_file, input_data, auxlist):
     removeif(aux_file)
     cdo.sub(input="{} -add -mulc,{} {} -mulc,{} {}".format(
         hfls_file, str(LC_SUB), prsn_file, str(L_C), auxlist[1]),
-        output=aux_file)
+            output=aux_file)
     latent_gmean = write_eb('hfls', 'latent', aux_file, latene_file,
                             latene_gmean_file)
     varlist = [wmass_gmean, latent_gmean]
