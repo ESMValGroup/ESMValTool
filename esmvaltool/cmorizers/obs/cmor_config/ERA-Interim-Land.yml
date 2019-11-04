@@ -8,8 +8,8 @@ attributes:
   modeling_realm: reanaly
   source: 'https://apps.ecmwf.int/datasets/data/interim-land/type=an/'
   reference: 'era-interim-land'
-#  comment: |
-#    'Contains modified Copernicus Climate Change Service Information {year}'
+  comment: |
+    'Contains modified Copernicus Climate Change Service Information {year}'
 
 # Variables to CMORize
 variables:
