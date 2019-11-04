@@ -8,7 +8,7 @@ Source
     https://apps.ecmwf.int/datasets/data/interim-land/type=fc/
 
 Last access
-    20190905
+    20191104
 
 Download and processing instructions
      See script cmorize_obs_era_interim.py
@@ -16,6 +16,3 @@ Download and processing instructions
 """
 
 from .cmorize_obs_era_interim import cmorization
-
-
-import IPython;IPython.embed()
