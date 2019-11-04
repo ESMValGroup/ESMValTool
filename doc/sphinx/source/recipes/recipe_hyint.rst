@@ -127,4 +127,4 @@ Example plots
 .. figure:: /recipes/figures/hyint/hyint_trends.png
    :width: 10cm
 
-   Multi-model trend coefficients over selected indices for CMIP5 models in the RCP8.5 2006-2099 projection, normalized to the 1976-2005 historical period
+   Multi-model trend coefficients over selected indices for CMIP5 models in the RCP8.5 2006-2099 projection, normalized to the 1976-2005 historical period.
