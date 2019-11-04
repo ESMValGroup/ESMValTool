@@ -19,11 +19,13 @@ documentation:
     - c3s-magic
 
 datasets:
-  #- {dataset: ACCESS1-0, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1997, end_year: 1997}
-   - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.3, tier: 1, start_year: 1997, end_year: 1997}
+   - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.3, tier: 1, start_year: 1979, end_year: 2005}
 
 preprocessors:
-  masking_preprocessor:
+  mask_regrid_preproc:
+    regrid:
+      target_grid: 2x2
+      scheme: area_weighted
     mask_landsea:
       mask_out: sea
 
@@ -32,20 +34,20 @@ diagnostics:
     description: Tool for calculation of precipitation quantile bias 
     variables:
       pr:
-        preprocessor: masking_preprocessor 
+        preprocessor: mask_regrid_preproc 
         reference_dataset: "GPCP-SG"
         mip: Amon
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
-        start_year: 1997
-        end_year: 1997
+        start_year: 1979
+        end_year: 2005
     additional_datasets:
-      - {dataset: ACCESS1-0}
-      - {dataset: ACCESS1-3}
+      #- {dataset: ACCESS1-0}
+      #- {dataset: ACCESS1-3}
       #- {dataset: bcc-csm1-1}
       #- {dataset: bcc-csm1-1-m}
-      #- {dataset: CanESM2}
+      - {dataset: CanESM2}
       #- {dataset: CCSM4}
       #- {dataset: CESM1-BGC}
       #- {dataset: CESM1-CAM5}
