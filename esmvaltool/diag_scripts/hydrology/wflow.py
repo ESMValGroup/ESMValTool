@@ -35,21 +35,17 @@ def create_provenance_record():
 
 def get_input_cubes(cfg):
     """ Return a dict with all (preprocessed) input files """
-    #TODO:
-    # - Use short_name instead of standard_name
-    # - Load multiple years in one iris statement, not a loop
-
     provenance = create_provenance_record()
     input_data = cfg['input_data'].values()
     grouped_input_data = group_metadata(input_data,
-                                        'standard_name',
+                                        'short_name',
                                         sort='dataset')
     all_vars = {}
-    for standard_name in grouped_input_data:
-        logger.info("Loading variable %s", standard_name)
-        input_files = [attr['filename'] for attr in grouped_input_data[standard_name]]
+    for short_name in grouped_input_data:
+        logger.info("Loading variable %s", short_name)
+        input_files = [attr['filename'] for attr in grouped_input_data[short_name]]
         allyears = iris.load_cubes(input_files).concatenate_cube()
-        all_vars[standard_name] = allyears
+        all_vars[short_name] = allyears
         provenance['ancestors'].append(input_files)
     return all_vars, provenance
 
@@ -185,14 +181,15 @@ def main(cfg):
     """Process data for use as input to the wflow hydrological model """
     all_vars, provenance = get_input_cubes(cfg)
     # These keys are now available in all_vars:
+    # NOTE: I think these are dataset-specific,
+    # but the CMIP general name is not in cfg/input_data
     # print('############')
     # print(all_vars)
-    # > air_temperature
-    # > precipitation_flux
-    # > air_pressure_at_mean_sea_level
-    # > dew_point_temperature
-    # > surface_downwelling_shortwave_flux_in_air
-    # > toa_incoming_shortwave_flux
+    # > tas (air_temperature)
+    # > pr (precipitation_flux)
+    # > psl (air_pressure_at_mean_sea_level)
+    # > rsds (surface_downwelling_shortwave_flux_in_air)
+    # > rsdt (toa_incoming_shortwave_flux)
 
     # Interpolating precipitation to the target grid
     # Read the target cube, which contains target grid and target elevation
@@ -205,20 +202,20 @@ def main(cfg):
 
     ## Processing precipitation
     logger.info("Processing variable precipitation_flux")
-    pr = all_vars['precipitation_flux']
+    pr = all_vars['pr']
     pr_dem = preproc.regrid(pr, target_grid=dem, scheme='linear')
 
     ## Processing temperature
     logger.info("Processing variable temperature")
-    tas = all_vars['air_temperature']
+    tas = all_vars['tas']
     tas_dem = regrid_temperature(tas, oro, dem)
 
     ## Processing Reference EvapoTranspiration (PET)
     logger.info("Processing variable PET")
-    t2m = all_vars['air_temperature']
-    msl = all_vars['air_pressure_at_mean_sea_level']
-    ssrd = all_vars['surface_downwelling_shortwave_flux_in_air']
-    tisr = all_vars['toa_incoming_shortwave_flux']
+    t2m = all_vars['tas']
+    msl = all_vars['psl']
+    ssrd = all_vars['rsds']
+    tisr = all_vars['rsdt']
     pet = debruin_PET(t2m, msl, ssrd, tisr)
     pet.var_name = 'potential_evapotranspiration'
     pet_dem = preproc.regrid(pet, target_grid=dem, scheme='linear')
