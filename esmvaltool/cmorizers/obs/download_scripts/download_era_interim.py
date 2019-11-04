@@ -277,7 +277,8 @@ def cli():
     _get_monthly_data(MONTH_PARAMS, MONTH_TIMESTEPS,
                       years, server, era_interim_dir)
     _get_invariant_data(INVARIANT_PARAMS, server, era_interim_dir)
-    _get_land_data(LAND_PARAMS, LAND_TIMESTEPS, years, server, era_interim_land_dir)
+    _get_land_data(LAND_PARAMS, LAND_TIMESTEPS,
+                      years, server, era_interim_land_dir)
 
 
 if __name__ == "__main__":
