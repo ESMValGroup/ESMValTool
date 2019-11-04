@@ -48,9 +48,9 @@ seasons <- params$seasons
 power_curves <- params$power_curves
 
 
-no_of_years <- length(start_year:end_year)
+no_of_years <- length(seq(start_year, end_year, 1))
 var0 <- unlist(var0)
-for (i in 1:length(model_names)) {
+for (i in seq(1, length(model_names), 1)) {
   data_nc <- nc_open(fullpath_filenames[i])
   data <- ncvar_get(data_nc, var0)
 
@@ -66,7 +66,8 @@ for (i in 1:length(model_names)) {
     "units"
   )$value, 11, 29))
   nc_close(data_nc)
-  time <- as.Date(time, origin = substr(start_date, 1, 10), calendar = calendar)
+  time <- as.Date(time, origin = substr(start_date, 1, 10),
+                  calendar = calendar)
   time <- as.POSIXct(time, format = "%Y-%m-%d")
   time_dim <- which(names(dim(data)) == "time")
   time <- as.PCICt(time, cal = calendar)
@@ -78,7 +79,7 @@ for (i in 1:length(model_names)) {
     if (length(pos) > 0) {
       time <- time[-pos]
       data <- apply(
-        data, c(1:length(dim(data)))[-time_dim],
+        data, c(seq(1, length(dim(data)), 1))[-time_dim],
         function(x) {
           x[-pos]
         }
@@ -198,7 +199,7 @@ for (i in 1:length(model_names)) {
     longname = "season of the year: DJF, MAM, JJA, SON"
   )
   dimcurve <- ncdim_def(
-    name = "curve", units = "name", vals = 1:5,
+    name = "curve", units = "name", vals = seq(1, 5, 1),
     longname = "Power curves of considered turbines"
   )
   names(dim(seas_data_cf_all)) <- c("curve", "time", "lat", "lon")
