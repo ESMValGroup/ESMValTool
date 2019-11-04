@@ -26,10 +26,11 @@ REQUIREMENTS = {
         'cdo',
         'cf-units',
         'cython',
-        'jinja2',
+        'ecmwf-api-client',
         'eofs',
         'esmvalcore>=2.0.0b2,<2.1',
         'fiona',
+        'jinja2',
         'matplotlib<3',
         'nc-time-axis',  # needed by iris.plot
         'netCDF4',
@@ -42,6 +43,7 @@ REQUIREMENTS = {
         'stratify',
         'xarray>=0.12',
         'xesmf',
+        'xlrd',
         'xlsxwriter',
     ],
     # Test dependencies

@@ -6,6 +6,7 @@ channels:
 
 dependencies:
   # Python packages that cannot be installed from PyPI:
+  - gdal
   - esmvalcore>=2.0.0b2,<2.1
   # Non-Python dependencies
   - graphviz
