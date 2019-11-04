@@ -36,7 +36,6 @@ def create_provenance_record():
 def get_input_cubes(cfg):
     """ Return a dict with all (preprocessed) input files """
     #TODO:
-    # - Add concat as option instead of default?
     # - Use short_name instead of standard_name
     # - Load multiple years in one iris statement, not a loop
 
@@ -48,17 +47,10 @@ def get_input_cubes(cfg):
     all_vars = {}
     for standard_name in grouped_input_data:
         logger.info("Loading variable %s", standard_name)
-
-        # Combine multiple years into a singe iris cube
-        all_years = []
-        for attributes in grouped_input_data[standard_name]:
-            input_file = attributes['filename']
-            cube = iris.load_cube(input_file)
-            all_years.append(cube)
-            provenance['ancestors'].append(input_file)
-        allyears = iris.cube.CubeList(all_years).concatenate_cube()
-
+        input_files = [attr['filename'] for attr in grouped_input_data[standard_name]]
+        allyears = iris.load_cubes(input_files).concatenate_cube()
         all_vars[standard_name] = allyears
+        provenance['ancestors'].append(input_files)
     return all_vars, provenance
 
 def geopotential_to_height(geopotential):
@@ -234,8 +226,6 @@ def main(cfg):
     # Save output
     # Output format: "wflow_local_forcing_ERA5_Meuse_1990_2018.nc"
     dataset = iris.cube.CubeList([pr_dem, tas_dem, pet_dem])
-    print('####################')
-    print(cfg)
     output_file = get_diagnostic_filename('wflow_local_forcing_'
         # + '_' + cfg['dataset'] + '_' + cfg['basin'] + '_' + cfg['start_year'] + '_' + cfg['end_year'], cfg)
         + 'ERA-Interim_Meuse_2000_2001', cfg)
@@ -246,6 +236,7 @@ def main(cfg):
         provenance_logger.log(output_file, provenance)
 
     # TODO
+    # - Figure out how to pass basin name, dataset, and start/end year to output file name.
     # - Use CMORized orography as recipe variable rather than aux file
     # - Check whether the correct units are used
     # - See whether we can work with wflow pcraster .map files directly
