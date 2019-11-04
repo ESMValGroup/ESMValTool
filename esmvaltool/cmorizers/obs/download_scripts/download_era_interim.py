@@ -1,4 +1,4 @@
-"""Script to download era-interim data.
+"""Script to download era-interim and era-interim-land data.
 
 Before running the script:
 1. Install the dependency i.e. ECMWFDataServer.
@@ -115,6 +115,18 @@ MONTH_TIMESTEPS = {
     }
 }
 
+LAND_PARAMS = [
+    ('39.128', 'swvl1', 'an'),  # Volumetric soil moisture layer 1 [0-7 cm]
+]
+
+LAND_TIMESTEPS = {
+    'an': {
+        'type': 'an',
+        'time': '00:00:00/06:00:00/12:00:00/18:00:00',
+        'step': '0',
+        'levtype': 'sfc',
+    }
+}
 
 MONTH_PARAMS = [
     ('167.128', 't2m', 'an'),  # 2 metre temperature
@@ -157,6 +169,23 @@ INVARIANT_PARAMS = [
     ('172.128', 'lsm'),  # Land-sea mask
 ]
 
+def _get_land_data(params, timesteps, years, server, era_interim_land_dir):
+    for param_id, symbol, timestep in params:
+        frequency = 'monthly'
+        for year in years:
+            server.retrieve({
+                'class': 'ei',
+                'dataset': 'interim_land',
+                # All months of a year eg. 19900101/.../19901101/19901201
+                'date': '/'.join([f'{year}{m:02}01' for m in range(1, 13)]),
+                'expver': '2',
+                'grid': '0.25/0.25',
+                'param': param_id,
+                'format': 'netcdf',
+                'target': f'{era_interim_land_dir}/ERA-Interim-Land_{symbol}'
+                          f'_{frequency}_{year}.nc',
+                **timesteps[timestep]
+            })
 
 def _get_daily_data(params, timesteps, years, server, era_interim_dir):
     for param_id, symbol, timestep in params:
@@ -238,6 +267,8 @@ def cli():
         os.path.expandvars(os.path.expanduser(config['rootpath']['RAWOBS'])))
     era_interim_dir = f'{rawobs_dir}/Tier3/ERA-Interim'
     os.makedirs(era_interim_dir, exist_ok=True)
+    era_interim_land_dir = f'{rawobs_dir}/Tier3/ERA-Interim-Land'
+    os.makedirs(era_interim_land_dir, exist_ok=True)
 
     years = range(args.start_year, args.end_year + 1)
     server = ECMWFDataServer()
@@ -246,6 +277,7 @@ def cli():
     _get_monthly_data(MONTH_PARAMS, MONTH_TIMESTEPS,
                       years, server, era_interim_dir)
     _get_invariant_data(INVARIANT_PARAMS, server, era_interim_dir)
+    _get_land_data(LAND_PARAMS, LAND_TIMESTEPS, years, server, era_interim_land_dir)
 
 
 if __name__ == "__main__":
