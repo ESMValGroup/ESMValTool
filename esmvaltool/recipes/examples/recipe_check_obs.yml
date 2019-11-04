@@ -595,13 +595,14 @@ diagnostics:
          version: 1, start_year: 1989, end_year: 1989}
     variables:
       clt: &E1hr
-          mip: E1hr
+        mip: E1hr
       evspsbl: *E1hr
       evspsblpot: *E1hr
       mrro: *E1hr
       pr: *E1hr
       prsn: *E1hr
       psl: *E1hr
+      ptype: *E1hr
       rls: *E1hr
       rsds: *E1hr
       rsdt: *E1hr
