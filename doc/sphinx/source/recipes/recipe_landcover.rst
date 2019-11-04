@@ -1,7 +1,7 @@
 .. _recipes_landcover:
 
-Landcover
-=========
+Landcover diagnostics
+=====================
 
 
 Overview
@@ -126,4 +126,3 @@ Example plots
    :width:   14cm
 
    Biases in five major land cover fractions for different regions and one experiment.
-
