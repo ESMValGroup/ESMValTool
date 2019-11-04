@@ -16,4 +16,4 @@ variables:
   sm:
     mip: E6hr
     raw: swvl1
-    file: 'eraintland_swvl1_????.nc' 
+    file: 'eraintland_swvl1_????.nc'
