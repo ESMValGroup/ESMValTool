@@ -46,3 +46,11 @@ References
 ----------
 
 * Mehran, A. et al.: Journal of Geophysical Research: Atmospheres, Volume 119, Issue 4, pp. 1695-1707, 2014.
+
+Example plots
+-------------
+
+.. figure:: /recipes/figures/quantilebias/quantilebias.png
+   :width: 10cm
+
+   Quantile bias, as defined in Mehran et al. 2014, with threshold t=75th percentile, evaluated for the CanESM2 model over the 1979-2005 period, adopting GPCP-SG v 2.3 gridded precipitation as a reference dataset. The optimal reference value is 1. Both datasets have been regridded onto a 2° regular grid.
