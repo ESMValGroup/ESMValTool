@@ -106,16 +106,11 @@ for (model_idx in c(1:(length(models_name)))) {
   )
   outfile <-
     paste0(work_dir, "/", inregname, "_", perc_lev, "qb.nc")
-  print(paste0(diag_base, ": pre-processing file: ", infile))
-
-  print(paste0(diag_base, ": ", perc_lev, " percent quantile"))
 
   # Select variable of interest
   modf <- cdo("selvar", args = varname, input = infile)
 
-  # Remap reference onto model grid
-  selectf <- cdo("selvar", args = varname, input = ref_data_file)
-  reff <- cdo("remapcon", args = modf, input = selectf)
+  reff=ref_data_file
 
   # Get (X)th percentile of reference dataset
   refminf <- cdo("timmin", input = reff)
@@ -167,7 +162,6 @@ for (model_idx in c(1:(length(models_name)))) {
       qb1f,
       refminf,
       refmaxf,
-      selectf,
       mask_mod2f,
       mask_ref2f,
       temp1f,
