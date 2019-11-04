@@ -496,7 +496,11 @@ diagnostics:
         mip: Amon
       prw:
         mip: Amon
-      ps:
+      ps_day:
+        short_name: ps
+        mip: CFday
+      ps_month:
+        short_name: ps
         mip: Amon
       psl_day:
         short_name: psl
@@ -504,6 +508,9 @@ diagnostics:
       psl_month:
         short_name: psl
         mip: Amon
+      rlds_day:
+        short_name: rlds
+        mip: day
       rsds_day:
         short_name: rsds
         mip: day
