@@ -33,6 +33,7 @@ Climate metrics and emergent constraints
 .. toctree::
    :maxdepth: 1
 
+   recipe_emergent_constraints
    recipe_cox18nature
    recipe_ecs
    recipe_perfmetrics
