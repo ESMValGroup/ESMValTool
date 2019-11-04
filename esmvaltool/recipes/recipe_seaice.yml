@@ -3,7 +3,7 @@
 ---
 documentation:
   description: |
-    Recipe for plotting sea ice diagnostics at the Arctic and Antarctic.
+    Recipe for Arctic and Atnarctic sea ice diagnostics.
 
   authors:
     - senftleben_daniel
@@ -16,6 +16,7 @@ documentation:
     - stroeve07grl
 
   projects:
+    - crescendo
     - esmval
 
 # only datasets for which historical and rcp85 data are available
