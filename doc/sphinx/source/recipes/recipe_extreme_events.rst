@@ -127,7 +127,7 @@ Example plots
 -------------
 
 .. figure:: /recipes/figures/extreme_events/gleckler.png
-   :width: 10cm
+   :width: 12cm
 
    Portrait plot of relative error metrics for the CMIP5 temperature and precipitation extreme indices evaluated over 1981-2000. Reproduces Fig. 9.37 of the IPCC AR5 report, Chapter 9.
 
