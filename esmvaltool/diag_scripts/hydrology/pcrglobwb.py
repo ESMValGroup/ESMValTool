@@ -4,6 +4,8 @@ from pathlib import Path
 
 import dask.array as da
 import iris
+import numpy as np
+import xarray as xr
 
 from esmvalcore.cmor.table import CMOR_TABLES
 from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
@@ -33,7 +35,7 @@ def get_provenance_record(ancestor_file):
     }
     return record
 
-def add_spinup_year(cube, cube_climatology):
+def add_spinup_year(cube, cube_climatology, varname):
 
     # Remove leap year day from climatology
     cube_climatology = cube_climatology.extract(iris.Constraint(day_of_year=lambda cell: cell<366))
@@ -56,6 +58,17 @@ def add_spinup_year(cube, cube_climatology):
     cube.cell_methods = ()
     cube_climatology.cell_methods = ()
 
+
+    # Set dtype
+    ds = xr.DataArray.from_iris(cube)
+    ds = ds.astype(np.float32)
+    ds_climatology = xr.DataArray.from_iris(cube_climatology)
+    ds_climatology = ds_climatology.astype(np.float32)
+
+    cube = ds.to_iris()
+    cube_climatology = ds_climatology.to_iris()
+    print(cube)
+    print(cube_climatology)
     # Create list of aux coords and remove aux coords
     coordlist = ['day_of_month',
                  'day_of_year',
@@ -95,7 +108,7 @@ def main(cfg):
         cube_climatology = iris.load_cube(input_climatology_file)
         
         # Run function to add spinup year to regular variable timeseries
-        cube = add_spinup_year(cube, cube_climatology)
+        cube = add_spinup_year(cube, cube_climatology, short_name)
 
         # Set lat from highest to lowest value
         cube = cube[:, ::-1, ...]
