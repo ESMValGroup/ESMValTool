@@ -13,7 +13,6 @@ from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
 
 logger = logging.getLogger(Path(__file__).name)
 
-
 def create_provenance_record():
     """Create a provenance record."""
     record = {
@@ -34,6 +33,34 @@ def create_provenance_record():
     }
     return record
 
+def get_input_cubes(cfg):
+    """ Return a dict with all (preprocessed) input files """
+    #TODO:
+    # - Add concat as option instead of default?
+    # - Use short_name instead of standard_name
+    # - Load multiple years in one iris statement, not a loop
+
+    provenance = create_provenance_record()
+    input_data = cfg['input_data'].values()
+    grouped_input_data = group_metadata(input_data,
+                                        'standard_name',
+                                        sort='dataset')
+    all_vars = {}
+    for standard_name in grouped_input_data:
+        logger.info("Loading variable %s", standard_name)
+
+        # Combine multiple years into a singe iris cube
+        all_years = []
+        for attributes in grouped_input_data[standard_name]:
+            input_file = attributes['filename']
+            cube = iris.load_cube(input_file)
+            all_years.append(cube)
+            provenance['ancestors'].append(input_file)
+        allyears = iris.cube.CubeList(all_years).concatenate_cube()
+
+        all_vars[standard_name] = allyears
+    return all_vars, provenance
+
 def geopotential_to_height(geopotential):
     """ Convert geopotential to geopotential height """
     gravity = iris.coords.AuxCoord(9.80665,
@@ -50,7 +77,7 @@ def lapse_rate_correction(height):
 
 def regrid_temperature(src_temp, src_height, target_height):
     """ Convert temperature to target grid with lapse rate correction """
-    #TODO: Fix issue to get rid of workaround
+    #TODO: Fix iris issue to get rid of workaround
 
     src_dtemp = lapse_rate_correction(src_height)
 
@@ -164,29 +191,9 @@ def debruin_PET(t2m, msl, ssrd, tisr):
 
 def main(cfg):
     """Process data for use as input to the wflow hydrological model """
-    input_data = cfg['input_data'].values()
-    logger.info(input_data)
-    grouped_input_data = group_metadata(input_data,
-                                        'standard_name',
-                                        sort='dataset')
-
-    provenance = create_provenance_record()
-    # Make a dictionary containing all variables
-    all_vars = {}
-    for standard_name in grouped_input_data:
-        logger.info("Loading variable %s", standard_name)
-        # Combine multiple years into a singe iris cube
-        all_years = []
-        for attributes in grouped_input_data[standard_name]:
-            input_file = attributes['filename']
-            cube = iris.load_cube(input_file)
-            all_years.append(cube)
-            provenance['ancestors'].append(input_file)
-        allyears = iris.cube.CubeList(all_years).concatenate_cube()
-        all_vars[standard_name] = allyears
-
+    all_vars, provenance = get_input_cubes(cfg)
     # These keys are now available in all_vars:
-    # print('###########3')
+    # print('############')
     # print(all_vars)
     # > air_temperature
     # > precipitation_flux
@@ -227,7 +234,9 @@ def main(cfg):
     # Save output
     # Output format: "wflow_local_forcing_ERA5_Meuse_1990_2018.nc"
     dataset = iris.cube.CubeList([pr_dem, tas_dem, pet_dem])
-    output_file = get_diagnostic_filename(Path(input_file).stem + '_wflow_local_forcing'
+    print('####################')
+    print(cfg)
+    output_file = get_diagnostic_filename('wflow_local_forcing_'
         # + '_' + cfg['dataset'] + '_' + cfg['basin'] + '_' + cfg['start_year'] + '_' + cfg['end_year'], cfg)
         + 'ERA-Interim_Meuse_2000_2001', cfg)
     iris.save(dataset, output_file, fill_value=1.e20)
@@ -237,6 +246,7 @@ def main(cfg):
         provenance_logger.log(output_file, provenance)
 
     # TODO
+    # - Use CMORized orography as recipe variable rather than aux file
     # - Check whether the correct units are used
     # - See whether we can work with wflow pcraster .map files directly
     #   (currently, we use .nc dem files that Jerom converted externally)
