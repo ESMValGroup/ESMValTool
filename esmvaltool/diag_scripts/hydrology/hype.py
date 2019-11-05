@@ -18,8 +18,11 @@ from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
 logger = logging.getLogger(Path(__file__).name)
 
 
-def get_provenance_record(ancestor_file):
+def get_provenance_record(attributes):
     """Create a provenance record."""
+
+    ancestor_file = attributes['filename']
+
     record = {
         'caption': "Forcings for the Hype hydrological model.",
         'domains': ['global'],
@@ -35,6 +38,7 @@ def get_provenance_record(ancestor_file):
         'ancestors': [ancestor_file],
     }
     return record
+
 
 def get_output_stem(attributes):
     
@@ -52,6 +56,33 @@ def get_output_stem(attributes):
     return stem
 
 
+def get_data_times_and_ids(attributes):
+    input_file = attributes['filename']
+
+    cube = iris.load_cube(input_file)
+
+    data = numpy.array(cube.core_data()).T
+
+    print("units:", attributes["units"])
+
+    # ad-hoc fix of precipitation:
+    if attributes["short_name"] == "pr":
+        if attributes["units"]=="kg m-2 s-1":
+            data*=86400
+        elif not attributes["units"]=="mm day-1":
+            raise Exception("possible units error")
+              
+
+    # Round times to integer number of days
+    time_coord = cube.coord('time')
+    time_coord.points = da.floor(time_coord.core_points())
+    time_coord.bounds = None
+
+    times = [str(x.point.date()) for x in time_coord.cells()]
+    ids = cube.coord('shape_id').core_points()
+
+    return data,times,ids
+
 def main(cfg):
     """Process data for use as input to the HYPE hydrological model."""
     input_data = cfg['input_data'].values()
@@ -64,29 +95,18 @@ def main(cfg):
         for attributes in grouped_input_data[standard_name]:
             logger.info("Processing dataset %s", attributes['dataset'])
 
-            input_file = attributes['filename']
             output_file = get_diagnostic_filename(get_output_stem(attributes),
                                                   cfg, 'txt')
 
-            cube = iris.load_cube(input_file)
+            data, times, ids = get_data_times_and_ids(attributes)
 
-            # Round times to integer number of days
-            time_coord = cube.coord('time')
-            time_coord.points = da.floor(time_coord.core_points())
-            time_coord.bounds = None
-
-            # Save data
-            times = [str(x.point.date()) for x in time_coord.cells()]
-            ids = cube.coord('shape_id').core_points()
-
-            frame = pandas.DataFrame(numpy.array(cube.core_data()).T,
-                                     index=times, columns=ids)
+            frame = pandas.DataFrame(data, index=times, columns=ids)
 
             frame.to_csv(output_file, sep=' ', index_label="DATE",
                          float_format='%.3f')
 
             # Store provenance
-            provenance_record = get_provenance_record(input_file)
+            provenance_record = get_provenance_record(attributes)
             with ProvenanceLogger(cfg) as provenance_logger:
                 provenance_logger.log(output_file, provenance_record)
 
