@@ -1,19 +1,19 @@
 .. _recipes_extreme_events:
 
-Extreme Events Indices - Computation of ETCCDI extreme indices and plotting
-=====================================================================================
+Extreme Events Indices (ETCCDI)
+===============================
 
 
 Overview
 --------
 
 This diagnostic uses the standard climdex.pcic.ncdf R library to
-compute the 27 climate change indices specified by 
+compute the 27 climate change indices specified by
 the joint CCl/CLIVAR/JCOMM Expert Team (ET) on Climate Change Detection and Indices http://etccdi.pacificclimate.org/.
 The needed input fields are daily average precipitation flux and minimum, maximum and average daily surface temperatures.
 The recipe reproduces panels of figure 9.37 of the IPCC AR5 report, producing both a Gleckler plot,
-with relative error metrics for the CMIP5 temperature and precipitation extreme indices, 
-and timeseries plots comparing the ensemble spread with observations. 
+with relative error metrics for the CMIP5 temperature and precipitation extreme indices,
+and timeseries plots comparing the ensemble spread with observations.
 For plotting 1 to 4 observational reference datasets are supported. If no observational reference datasets are given, the plotting routines do not work, however, index generation without plotting is still possible.
 All datasets are regridded to a common grid and considered only over land.
 
@@ -103,10 +103,10 @@ Additional optional setting controlling the plots:
 Variables
 ---------
 
-* tas (atmos, daily mean, longitude latitude time) 
-* tasmin (atmos, daily minimum, longitude latitude time) 
-* tasmax (atmos, daily maximum, longitude latitude time) 
-* pr (atmos, daily mean, longitude latitude time) 
+* tas (atmos, daily mean, longitude latitude time)
+* tasmin (atmos, daily minimum, longitude latitude time)
+* tasmax (atmos, daily maximum, longitude latitude time)
+* pr (atmos, daily mean, longitude latitude time)
 
 
 Observations and reformat scripts
@@ -118,9 +118,9 @@ None.
 References
 ----------
 
-* Zhang, X., Alexander, L., Hegerl, G. C., Jones, P., Klein Tank, A., Peterson, T. C., Trewin, B., Zwiers, F. W., Indices for monitoring changes in extremes based on daily temperature and precipitation data, WIREs Clim. Change, doi:10.1002/wcc.147, 2011  
+* Zhang, X., Alexander, L., Hegerl, G. C., Jones, P., Klein Tank, A., Peterson, T. C., Trewin, B., Zwiers, F. W., Indices for monitoring changes in extremes based on daily temperature and precipitation data, WIREs Clim. Change, doi:10.1002/wcc.147, 2011
 
-* Sillmann, J., V. V. Kharin, X. Zhang, and F. W. Zwiers, Climate extreme indices in the CMIP5 multi-model ensemble. Part 1: Model evaluation in the present climate. J. Geophys. Res., doi:10.1029/2012JD018390, 2013 
+* Sillmann, J., V. V. Kharin, X. Zhang, and F. W. Zwiers, Climate extreme indices in the CMIP5 multi-model ensemble. Part 1: Model evaluation in the present climate. J. Geophys. Res., doi:10.1029/2012JD018390, 2013
 
 
 Example plots
