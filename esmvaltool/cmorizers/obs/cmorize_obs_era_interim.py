@@ -192,6 +192,7 @@ def _compute_daily(cube):
             'tasmin',
             'pr',
             'rsds',
+            'rlds',
             'hfds',
             'evspsbl',
             'rsdt',
@@ -210,6 +211,7 @@ def _compute_daily(cube):
     elif cube.var_name in {
             'pr',
             'rsds',
+            'rlds',
             'hfds',
             'evspsbl',
             'rsdt',
