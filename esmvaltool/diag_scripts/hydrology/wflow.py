@@ -195,7 +195,6 @@ def main(cfg):
 
     # Read source orography (add era5 later) and try to make it cmor compatible
     orog = all_vars['orog']
-    print(orog)
 
     ## Processing precipitation
     logger.info("Processing variable precipitation_flux")
@@ -205,10 +204,7 @@ def main(cfg):
     ## Processing temperature
     logger.info("Processing variable temperature")
     tas = all_vars['tas']
-    print(tas)
     tas_dem = regrid_temperature(tas, orog, dem)
-    print(dem)
-    print(tas_dem)
 
     ## Processing Reference EvapoTranspiration (PET)
     logger.info("Processing variable PET")
