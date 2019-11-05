@@ -156,6 +156,19 @@ diagnostics:
     scripts: null
 
 
+  GCP:
+    description: GCP check
+    variables:
+      nbp:
+        mip: Lmon
+      fgco2:
+        mip: Omon
+    additional_datasets:
+      - {dataset: GCP, project: OBS, tier: 2, type: reanaly, version: 2018,
+         start_year: 1959, end_year: 2017, frequency: yr}
+    scripts: null
+
+
   GHCN:
     description: GHCN check
     variables:
@@ -258,12 +271,14 @@ diagnostics:
   NSIDC-0116:
     description: NSIDC-0116 check
     variables:
+      areacello:
+        mip: fx
       usi:
-        fx_files: [areacello]
+        mip: day
       vsi:
-        fx_files: [areacello]
+        mip: day
     additional_datasets:
-      - {dataset: NSIDC-0116-nh, project: OBS, mip: day, tier: 3,
+      - {dataset: NSIDC-0116-nh, project: OBS, tier: 3,
          type: reanaly, version: "4.1", start_year: 1978, end_year: 2018}
       - {dataset: NSIDC-0116-sh, project: OBS, tier: 3,
          type: reanaly, version: "4.1", start_year: 1978, end_year: 2018}
@@ -277,6 +292,19 @@ diagnostics:
     additional_datasets:
       - {dataset: PATMOS-x, project: OBS, mip: Amon, tier: 2,
          type: sat, version: NOAA, start_year: 1982, end_year: 2016}
+    scripts: null
+
+
+  PIOMAS:
+    description: PIOMAS
+    variables:
+      sithick:
+        mip: day
+      areacello:
+        mip: fx
+    additional_datasets:
+      - {dataset: PIOMAS, project: OBS, tier: 2,
+         type: reanaly, version: 2.1, start_year: 1979, end_year: 2018}
     scripts: null
 
 
@@ -432,91 +460,194 @@ diagnostics:
     variables:
       clivi:
         mip: Amon
-        fx_files: [sftlf]
-      clt:
+      clt_day:
+        short_name: clt
+        mip: day
+      clt_month:
+        short_name: clt
         mip: Amon
       clwvi:
         mip: Amon
+      evspsbl_day:
+        short_name: evspsbl
+        mip: Eday
+      evspsbl_month:
+        short_name: evspsbl
+        mip: Amon
       hfds:
         mip: Omon
+      hur:
+        mip: Amon
       hus:
         mip: Amon
-      pr_month:
-        short_name: pr
-        mip: Amon
+      orog:
+        mip: fx
       pr_day:
         short_name: pr
         mip: day
+      pr_month:
+        short_name: pr
+        mip: Amon
+      prsn_day:
+        short_name: prsn
+        mip: day
+      prsn_month:
+        short_name: prsn
+        mip: Amon
       prw:
         mip: Amon
       ps:
         mip: Amon
-      psl_month:
-        short_name: psl
-        mip: Amon
       psl_day:
         short_name: psl
         mip: day
-      ta:
+      psl_month:
+        short_name: psl
         mip: Amon
-      tas_month:
-        short_name: tas
+      rsds_day:
+        short_name: rsds
+        mip: day
+      rsds_month:
+        short_name: rsds
+        mip: Amon
+      rsdt_day:
+        short_name: rsdt
+        mip: CFday
+      rsdt_month:
+        short_name: rsdt
+        mip: Amon
+      rss_day:
+        short_name: rss
+        mip: day
+      rss_month:
+        short_name: rss
+        mip: Emon
+      sftlf:
+        mip: fx
+      ta:
         mip: Amon
       tas_day:
         short_name: tas
         mip: day
-      tasmin:
-        mip: day
+      tas_month:
+        short_name: tas
+        mip: Amon
       tasmax:
+        mip: day
+      tas_month:
+        short_name: tas
+        mip: Amon
+      tasmin:
         mip: day
       tauu:
         mip: Amon
       tauv:
         mip: Amon
-      ts:
+      tdps_day:
+        short_name: tdps
+        mip: Eday
+      tdps_month:
+        short_name: tdps
+        mip: Emon
+      tos:
+        mip: Omon
+      ts_day:
+        short_name: ts
+        mip: Eday
+      ts_month:
+        short_name: ts
         mip: Amon
+      tsn:
+        mip: LImon
+      tsn:
+        mip: Eday
       ua:
+        mip: Amon
+      uas_day:
+        short_name: uas
+        mip: day
+      uas_month:
+        short_name: uas
         mip: Amon
       va:
         mip: Amon
+      vas_day:
+        short_name: vas
+        mip: day
+      vas_month:
+        short_name: vas
+        mip: Amon
       wap:
         mip: Amon
-      zg:
+      zg_day:
+        short_name: zg
+        mip: day
+      zg_month:
+        short_name: zg
         mip: Amon
-      tos:
-        mip: Omon
     additional_datasets:
-      - {dataset: ERA-Interim, project: OBS, tier: 3,
+      - {dataset: ERA-Interim, project: OBS6, tier: 3,
          type: reanaly, version: 1, start_year: 1979, end_year: 2018}
     scripts: null
 
 
   ERA5:
-    description: ERA5 check check
-    variables:
-      clt:
-      evspsbl:
-      evspsblpot:
-      mrro:
-      pr:
-      prsn:
-      psl:
-      rls:
-      rsds:
-      rsdt:
-      rss:
-      uas:
-      vas:
-      tas:
-      tasmax:
-      tasmin:
-      tdps:
-      ts:
-      tsn:
+    description: ERA5 check
     additional_datasets:
-      - {project: OBS6, dataset: ERA5, mip: E1hr,
-         frequency: 1hr, tier: 3, type: reanaly, version: 1,
-         start_year: 1990, end_year: 1990}
+      - {project: OBS6, dataset: ERA5, tier: 3, type: reanaly, 
+         version: 1, start_year: 1990, end_year: 1990}
+    variables:
+      clt: &E1hr
+        mip: E1hr
+      evspsbl: *E1hr
+      evspsblpot: *E1hr
+      mrro: *E1hr
+      pr: *E1hr
+      prsn: *E1hr
+      psl: *E1hr
+      ptype: *E1hr
+      rls: *E1hr
+      rsds: *E1hr
+      rsdt: *E1hr
+      rss: *E1hr
+      uas: *E1hr
+      vas: *E1hr
+      tas: *E1hr
+      tasmax: *E1hr
+      tasmin: *E1hr
+      tdps: *E1hr
+      ts: *E1hr
+      tsn: *E1hr
+      orog:
+        mip: fx
+    scripts: null
+
+
+  HWSD:
+    description: HWSD check
+    variables:
+      areacella:
+        mip: fx
+      cSoil:
+        mip: Lmon
+      sftlf:
+        mip: fx
+    additional_datasets:
+      - {dataset: HWSD, project: OBS, tier: 3, type: reanaly, version: 1.2,
+         start_year: 2000, end_year: 2000}
+    scripts: null
+
+
+  JMA-TRANSCOM:
+    description: JMA-TRANSCOM check
+    variables:
+      nbp:
+        mip: Lmon
+      fgco2:
+        mip: Omon
+    additional_datasets:
+      - {dataset: JMA-TRANSCOM, project: OBS, tier: 3, type: reanaly,
+         version: 2018, start_year: 1985, end_year: 2016}
     scripts: null
 
 
@@ -570,6 +701,16 @@ diagnostics:
     additional_datasets:
       - {dataset: MODIS, project: OBS, tier: 3,
          type: sat, version: MYD08-M3, start_year: 2003, end_year: 2018}
+    scripts: null
+
+
+  NDP:
+    description: NDP check
+    variables:
+      cVeg:
+    additional_datasets:
+      - {dataset: NDP, project: OBS, tier: 3, mip: Lmon,
+         type: reanaly, version: 017b, start_year: 2000, end_year: 2000}
     scripts: null
 
 
