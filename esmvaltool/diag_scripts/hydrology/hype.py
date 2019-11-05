@@ -83,6 +83,7 @@ def get_data_times_and_ids(attributes):
 
     return data,times,ids
 
+
 def main(cfg):
     """Process data for use as input to the HYPE hydrological model."""
     input_data = cfg['input_data'].values()
