@@ -36,6 +36,21 @@ def get_provenance_record(ancestor_file):
     }
     return record
 
+def get_output_stem(attributes):
+    
+    short_to_stem=dict(tas="Tobs",
+                       tasmin="TMINobs",
+                       tasmax="TMAXobs",
+                       pr="Pobs")
+    
+    shortname=attributes["short_name"]
+    if shortname in short_to_stem:
+        stem = short_to_stem[shortname]
+    else:
+        stem = Path(attributes['filename']).stem + '_hype'
+        
+    return stem
+
 
 def main(cfg):
     """Process data for use as input to the HYPE hydrological model."""
@@ -48,7 +63,11 @@ def main(cfg):
         logger.info("Processing variable %s", standard_name)
         for attributes in grouped_input_data[standard_name]:
             logger.info("Processing dataset %s", attributes['dataset'])
+
             input_file = attributes['filename']
+            output_file = get_diagnostic_filename(get_output_stem(attributes),
+                                                  cfg, 'txt')
+
             cube = iris.load_cube(input_file)
 
             # Round times to integer number of days
@@ -62,9 +81,6 @@ def main(cfg):
 
             frame = pandas.DataFrame(numpy.array(cube.core_data()).T,
                                      index=times, columns=ids)
-
-            output_file = get_diagnostic_filename(Path(input_file).stem +
-                                                  '_hype', cfg, 'txt')
 
             frame.to_csv(output_file, sep=' ', index_label="DATE",
                          float_format='%.3f')
