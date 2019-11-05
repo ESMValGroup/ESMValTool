@@ -93,7 +93,7 @@ def regrid_temperature(src_temp, src_height, target_height):
     target_temp.var_name = src_temp.var_name
     return target_temp
 
-def debruin_PET(t2m, msl, ssrd, tisr):
+def debruin_PET(tas, psl, rsds, rsdt):
     """ Determine De Bruin (2016) reference evaporation
 
     Implement equation 6 from De Bruin (10.1175/JHM-D-15-0006.1)
@@ -158,18 +158,18 @@ def debruin_PET(t2m, msl, ssrd, tisr):
         return tmp1 * tmp2
 
     # Unit checks:
-    msl = preproc.convert_units(msl,'hPa')
-    t2m = preproc.convert_units(t2m,'degC')
+    psl = preproc.convert_units(psl,'hPa')
+    tas = preproc.convert_units(tas,'degC')
 
     # Variable derivation
-    delta_svp = tetens_derivative(t2m)
+    delta_svp = tetens_derivative(tas)
     # gamma = rv/rd * cp*msl/lambda_
     # iris.exceptions.NotYetImplementedError: coord / coord
-    gamma = rv.points[0]/rd.points[0] * cp*msl/lambda_
+    gamma = rv.points[0]/rd.points[0] * cp*psl/lambda_
 
     # Renaming for consistency with paper
-    kdown = ssrd
-    kdown_ext = tisr
+    kdown = rsds
+    kdown_ext = rsdt
 
     # Equation 6
     rad_term = (1-0.23)*kdown - cs*kdown/kdown_ext
@@ -181,8 +181,6 @@ def main(cfg):
     """Process data for use as input to the wflow hydrological model """
     all_vars, provenance = get_input_cubes(cfg)
     # These keys are now available in all_vars:
-    # NOTE: I think these are dataset-specific,
-    # but the CMIP general name is not in cfg/input_data
     # print('############')
     # print(all_vars)
     # > tas (air_temperature)
@@ -212,11 +210,11 @@ def main(cfg):
 
     ## Processing Reference EvapoTranspiration (PET)
     logger.info("Processing variable PET")
-    t2m = all_vars['tas']
-    msl = all_vars['psl']
-    ssrd = all_vars['rsds']
-    tisr = all_vars['rsdt']
-    pet = debruin_PET(t2m, msl, ssrd, tisr)
+    tas = all_vars['tas']
+    psl = all_vars['psl']
+    rsds = all_vars['rsds']
+    rsdt = all_vars['rsdt']
+    pet = debruin_PET(tas, psl, rsds, rsdt)
     pet.var_name = 'potential_evapotranspiration'
     pet_dem = preproc.regrid(pet, target_grid=dem, scheme='linear')
 
