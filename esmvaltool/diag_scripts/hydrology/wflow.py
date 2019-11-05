@@ -181,13 +181,14 @@ def main(cfg):
     """Process data for use as input to the wflow hydrological model """
     all_vars, provenance = get_input_cubes(cfg)
     # These keys are now available in all_vars:
-    # print('############')
-    # print(all_vars)
+    print('############')
+    print(all_vars)
     # > tas (air_temperature)
     # > pr (precipitation_flux)
     # > psl (air_pressure_at_mean_sea_level)
     # > rsds (surface_downwelling_shortwave_flux_in_air)
     # > rsdt (toa_incoming_shortwave_flux)
+    # > orog (surface_altitude)
 
     # Interpolating precipitation to the target grid
     # Read the target cube, which contains target grid and target elevation
@@ -195,8 +196,7 @@ def main(cfg):
     dem = iris.load_cube(dem_path)
 
     # Read source orography (add era5 later) and try to make it cmor compatible
-    era_orography_path = os.path.join(cfg['auxiliary_data_dir'], cfg['source_orography'])
-    oro = iris.load_cube(era_orography_path)
+    orog = all_vars['orog']
 
     ## Processing precipitation
     logger.info("Processing variable precipitation_flux")
@@ -206,7 +206,7 @@ def main(cfg):
     ## Processing temperature
     logger.info("Processing variable temperature")
     tas = all_vars['tas']
-    tas_dem = regrid_temperature(tas, oro, dem)
+    tas_dem = regrid_temperature(tas, orog, dem)
 
     ## Processing Reference EvapoTranspiration (PET)
     logger.info("Processing variable PET")

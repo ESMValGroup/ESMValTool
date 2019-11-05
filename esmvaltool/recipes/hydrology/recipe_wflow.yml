@@ -31,13 +31,14 @@ diagnostics:
   diagnostic_daily:
     description: WFlow input preprocessor for daily data
     additional_datasets:
-      - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
+      - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1,
+         start_year: 2000, end_year: 2000}
     variables:
       tas: &var_daily
         mip: day
-        start_year: 2000
-        end_year: 2000
       pr: *var_daily
+      orog:
+        mip: fx
       # evspsblpot:  # doesn't exist.
       # Reconstruct evspsblpot using:
       psl: *var_daily
@@ -53,7 +54,6 @@ diagnostics:
         startyear: '2000'
         endyear: '2000'
         dem_file: 'wflow_dem_Meuse.nc' # currently in shapes_et_al repo
-        source_orography: 'era_interim_orography_modified.nc' # i.e. geopotential
 
   # diagnostic_hourly:
   #   description: WFlow input preprocessor for hourly data
