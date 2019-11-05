@@ -1,5 +1,5 @@
 # ESMValTool
-# recipe_ExtremeEvents.yml 
+# recipe_ExtremeEvents.yml
 ---
 documentation:
   description: |
@@ -8,21 +8,21 @@ documentation:
      shown in the IPCC_AR4 report
 
   authors:
-    - broe_bj
-    - sand_ma
-    - mohr_cw
-    - arno_en
-    - hard_jo
+    - broetz_bjoern
+    - sandstad_marit
+    - mohr_christianwilhelm
+    - arnone_enrico
+    - vonhardenberg_jost
 
   maintainer:
-    - sand_ma
+    - sandstad_marit
 
   references:
-    - zhang-2011
+    - zhang11wcc
 
   projects:
-    - crescendo   
-    - c3s-magic  
+    - crescendo
+    - c3s-magic
 
 #preprocessor:
 #  prep0:
@@ -57,7 +57,7 @@ datasets:
   - {dataset: CESM1-CAM5, project: CMIP5, exp: historical,  ensemble: r1i1p1, start_year: 1981, end_year: 2000}
 
 # - {dataset: EOBS, project: OBS, type: reanaly, version: 1, start_year: 1981, end_year: 2005, tier: 3}
-  - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1, start_year: 1981, end_year: 2000, tier: 3}
+  - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, start_year: 1981, end_year: 2000, tier: 3}
 
 diagnostics:
   extreme_events:
@@ -71,7 +71,7 @@ diagnostics:
         mip: day
       tasmin:
         mip: day
-    
+
     scripts:
       main:
         script: extreme_events/extreme_events.R

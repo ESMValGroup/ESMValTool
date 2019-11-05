@@ -27,7 +27,8 @@ An approproate preprocessor for a 3D+time field would be::
       extract_levels:
         levels:  [100., ]
         scheme: linear_extrap
-      time_average:
+      climate_statistics:
+        operator: mean
 
 This diagnostic also requires the ``exper_model``, ``exper_model`` and
 ``observational_dataset`` keys in the recipe::

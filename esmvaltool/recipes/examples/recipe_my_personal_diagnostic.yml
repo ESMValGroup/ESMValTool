@@ -11,10 +11,10 @@ documentation:
     esmvaltool/diag_scripts/examples/my_little_diagnostic.py
 
   authors:
-    - pred_va
+    - predoi_valeriu
 
   maintainer:
-    - pred_va
+    - predoi_valeriu
 
 datasets:
   - {dataset: MPI-ESM-LR,  project: CMIP5, exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
@@ -33,7 +33,12 @@ diagnostics:
       ta:
         preprocessor: pp
         mip: Amon
-        fx_files: [sftlf, sftof, areacello]
+      sftlf:
+        mip: fx
+      sftof:
+        mip: fx
+      areacello:
+        mip: fx
     scripts:
       my_diagnostic:
         script: /path/to/your/my_little_diagnostic.py

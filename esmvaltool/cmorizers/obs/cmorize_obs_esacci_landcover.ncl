@@ -29,8 +29,8 @@
 ;    generate a time series over their time range of validity.
 ;
 ; Modification history
-;    20190110-A_righ_ma: rewritten in NCL for v2.
-;    20160714-A_muel_bn: written.
+;    20190110-righi_mattia: rewritten in NCL for v2.
+;    20160714-benjamin_mueller: written.
 ;
 ; #############################################################################
 loadscript(getenv("esmvaltool_root") + \
