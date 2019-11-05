@@ -10,16 +10,17 @@ from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
                                             group_metadata, run_diagnostic)
 
 logger = logging.getLogger(Path(__file__).name)
+from esmvalcore import preprocessor as preproc
 
-
-def get_provenance_record(ancestor_file):
+def create_provenance_record():
     """Create a provenance record."""
     record = {
-        'caption': "Forcings for the marrmot hydrological model.",
+        'caption': "Forcings for the wflow hydrological model.",
         'domains': ['global'],
         'authors': [
             'kalverla_peter',
             'camphuijsen_jaro',
+            # 'alidoost_sarah',
         ],
         'projects': [
             'ewatercycle',
@@ -27,50 +28,159 @@ def get_provenance_record(ancestor_file):
         'references': [
             'acknow_project',
         ],
-        'ancestors': [ancestor_file],
+        'ancestors': [],
     }
     return record
 
+def debruin_PET(tas, psl, rsds, rsdt, **kwargs):
+    """ Determine De Bruin (2016) reference evaporation
+
+    Implement equation 6 from De Bruin (10.1175/JHM-D-15-0006.1)
+    Implementation using iris.
+    """
+    # Definition of constants
+    rv = iris.coords.AuxCoord(461.51,
+        long_name='Gas constant water vapour',
+        # source='Wallace and Hobbs (2006), 2.6 equation 3.14',
+        units='J K-1 kg-1')
+
+    rd = iris.coords.AuxCoord(287.0,
+        long_name='Gas constant dry air',
+        # source='Wallace and Hobbs (2006), 2.6 equation 3.14',
+        units='J K-1 kg-1')
+
+    lambda_ = iris.coords.AuxCoord(2.5e6,
+        long_name='Latent heat of vaporization',
+        # source='Wallace and Hobbs 2006',
+        units='J kg-1')
+
+    cp = iris.coords.AuxCoord(1004,
+        long_name='Specific heat of dry air constant pressure',
+        # source='Wallace and Hobbs 2006',
+        units='J K-1 kg-1')
+
+    beta = iris.coords.AuxCoord(20,
+        long_name='Correction Constant',
+        # source='De Bruin (2016), section 4a',
+        units='W m-2')
+
+    cs = iris.coords.AuxCoord(110,
+        long_name = 'Empirical constant',
+        # source = 'De Bruin (2016), section 4a',
+        units = 'W m-2')
+
+    def tetens_derivative(temp):
+        """ Derivative of Teten's formula for saturated vapor pressure.
+
+        Tetens formula (https://en.wikipedia.org/wiki/Tetens_equation) :=
+        es(T) = e0 * exp(a * T / (T + b))
+
+        Derivate (checked with Wolfram alpha)
+        des / dT = a * b * e0 * exp(a * T / (b + T)) / (b + T)^2
+        """
+        # Assert temperature is in degC
+        temp = preproc.convert_units(temp,'degC')
+
+        e0 = iris.coords.AuxCoord(6.112,
+            long_name='Saturated vapour pressure at 273 Kelvin',
+            units='hPa')
+        emp_a = 17.67 # empirical constant a
+        emp_b = iris.coords.AuxCoord(243.5,
+            long_name='Empirical constant b in Tetens formula',
+            units='degC')
+        exponent = iris.analysis.maths.exp(emp_a * temp / (emp_b + temp))
+        # return emp_a * emp_b * e0 * exponent / (emp_b + temp)**2
+        # iris.exceptions.NotYetImplementedError: coord * coord (emp_b * e0)
+        # workaround:
+        tmp1 = emp_a * emp_b
+        tmp2 = e0 * exponent / (emp_b + temp)**2
+        return tmp1 * tmp2
+
+    # Unit checks:
+    psl = preproc.convert_units(psl,'hPa')
+    tas = preproc.convert_units(tas,'degC')
+
+    # Variable derivation
+    delta_svp = tetens_derivative(tas)
+    # gamma = rv/rd * cp*msl/lambda_
+    # iris.exceptions.NotYetImplementedError: coord / coord
+    gamma = rv.points[0]/rd.points[0] * cp*psl/lambda_
+
+    # Renaming for consistency with paper
+    kdown = rsds
+    kdown_ext = rsdt
+
+    # Equation 6
+    rad_term = (1-0.23)*kdown - cs*kdown/kdown_ext
+    ref_evap = delta_svp / (delta_svp + gamma) * rad_term + beta
+
+    return ref_evap/lambda_
+
+def get_input_cubes(cfg):
+    """ Return a dict with all (preprocessed) input files """
+    provenance = create_provenance_record()
+    input_data = cfg['input_data'].values()
+    grouped_input_data = group_metadata(input_data,
+                                        'short_name',
+                                        sort='dataset')
+    all_vars = {}
+    for short_name in grouped_input_data:
+        logger.info("Loading variable %s", short_name)
+        input_files = [attr['filename'] for attr in grouped_input_data[short_name]]
+        allyears = iris.load_cubes(input_files).concatenate_cube()
+        all_vars[short_name] = allyears
+        provenance['ancestors'].append(input_files)
+    return all_vars, provenance
 
 def main(cfg):
     """Process data for use as input to the marrmot hydrological model """
-    input_data = cfg['input_data'].values()
-    logger.info(input_data)
-    grouped_input_data = group_metadata(input_data,
-                                        'standard_name',
-                                        sort='dataset')
+    all_vars, provenance = get_input_cubes(cfg)
+    # These keys are now available in all_vars:
+    # > tas (air_temperature)
+    # > pr (precipitation_flux)
+    # > psl (air_pressure_at_mean_sea_level)
+    # > rsds (surface_downwelling_shortwave_flux_in_air)
+    # > rsdt (toa_incoming_shortwave_flux)
 
-    # for now just open and save the input/output
-    for standard_name in grouped_input_data:
-        logger.info("Processing variable %s", standard_name)
-        for attributes in grouped_input_data[standard_name]:
-            logger.info("Processing dataset %s", attributes['dataset'])
-            input_file = attributes['filename']
-            cube = iris.load_cube(input_file)
+    ## Processing temperature
+    logger.info("Processing variable tas")
+    tas = all_vars['tas']
+    tas_accumulated = preproc.area_statistics(tas, operator='mean')
 
-            # Do stuff
-            # - Marrmot is a collection of lumped models, so we need
-            #   accumulated values of each variable.
-            # - Unit conversion: P = mm/d, PET = mm/d, T = K
-            # - Output format:
-            # >> A Matlab structure with fields 'precip', 'pet', 'temp',
-            # >> and 'delta_t'. 'precip', 'pet', and 'temp' are vectors
-            # >> of size 1x[length of time period] each. 'delta_t' is a
-            # >> scalar of size 1x1 that specifies the time resolution
-            # >> of the 'precip', 'pet' and 'temp' vectors in units [days].
-            # >>
-            # >> A vector with initial values for each of the model stores,
-            # >> of size 1x[number of stores].
+    ## Processing Precipitation (pr)
+    logger.info("Processing variable pr")
+    pr = all_vars['pr']
+    pr_accumulated = preproc.area_statistics(pr, operator='mean')
 
-            # Save data
-            output_file = get_diagnostic_filename(
-                Path(input_file).stem + '_marrmot', cfg)
-            iris.save(cube, output_file, fill_value=1.e20)
+    ## Processing Reference EvapoTranspiration (PET)
+    logger.info("Processing variable PET")
+    pet = debruin_PET(**all_vars)
+    pet.var_name = 'potential_evapotranspiration'
+    pet_accumulated = preproc.area_statistics(pet, operator='mean')
 
-            # Store provenance
-            provenance_record = get_provenance_record(input_file)
-            with ProvenanceLogger(cfg) as provenance_logger:
-                provenance_logger.log(output_file, provenance_record)
+    # Save output
+    cubelist = iris.cube.CubeList([pr_accumulated, tas_accumulated, pet_accumulated])
+    # add temp to matlab structure
+    output_file = get_diagnostic_filename('marrmot_input', cfg)
+    iris.save(cubelist, output_file, fill_value=1.e20)
+
+    # Store provenance
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(output_file, provenance)
+
+    # Do stuff
+    # - Marrmot is a collection of lumped models, so we need
+    #   accumulated values of each variable.
+    # - Unit conversion: P = mm/d, PET = mm/d, T = K
+    # - Output format:
+    # >> A Matlab structure with fields 'precip', 'pet', 'temp',
+    # >> and 'delta_t'. 'precip', 'pet', and 'temp' are vectors
+    # >> of size 1x[length of time period] each. 'delta_t' is a
+    # >> scalar of size 1x1 that specifies the time resolution
+    # >> of the 'precip', 'pet' and 'temp' vectors in units [days].
+    # >>
+    # >> A vector with initial values for each of the model stores,
+    # >> of size 1x[number of stores].
 
 
 if __name__ == '__main__':
