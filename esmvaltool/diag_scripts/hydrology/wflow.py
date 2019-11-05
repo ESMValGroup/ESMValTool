@@ -93,7 +93,7 @@ def regrid_temperature(src_temp, src_height, target_height):
     target_temp.var_name = src_temp.var_name
     return target_temp
 
-def debruin_PET(tas, psl, rsds, rsdt):
+def debruin_PET(tas, psl, rsds, rsdt, **kwargs):
     """ Determine De Bruin (2016) reference evaporation
 
     Implement equation 6 from De Bruin (10.1175/JHM-D-15-0006.1)
@@ -214,7 +214,7 @@ def main(cfg):
     psl = all_vars['psl']
     rsds = all_vars['rsds']
     rsdt = all_vars['rsdt']
-    pet = debruin_PET(tas, psl, rsds, rsdt)
+    pet = debruin_PET(**all_vars)
     pet.var_name = 'potential_evapotranspiration'
     pet_dem = preproc.regrid(pet, target_grid=dem, scheme='linear')
 
