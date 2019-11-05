@@ -67,7 +67,7 @@ def main(cfg):
                                                   '_hype', cfg, 'txt')
 
             frame.to_csv(output_file, sep=' ', index_label="DATE",
-                          float_format='%.3f')
+                         float_format='%.3f')
 
             # Store provenance
             provenance_record = get_provenance_record(input_file)
