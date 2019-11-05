@@ -219,7 +219,9 @@ def main(cfg):
     cubelist = iris.cube.CubeList([pr_dem, tas_dem, pet_dem])
     basin = cfg['basin_name']
     dataset = cfg['dataset']
-    description = '_'.join(['wflow_local_forcing', dataset, basin, 'startyear', 'endyear'])
+    startyear = cfg['startyear']
+    endyear = cfg['endyear']
+    description = '_'.join(['wflow_local_forcing', dataset, basin, startyear, endyear])
     output_file = get_diagnostic_filename(description, cfg)
     iris.save(cubelist, output_file, fill_value=1.e20)
     # Store provenance
@@ -227,13 +229,11 @@ def main(cfg):
         provenance_logger.log(output_file, provenance)
 
     # TODO
-    # - Figure out how to pass basin name, dataset, and start/end year to output file name.
     # - Use CMORized orography as recipe variable rather than aux file
     # - Check whether the correct units are used
     # - See whether we can work with wflow pcraster .map files directly
     #   (currently, we use .nc dem files that Jerom converted externally)
     # - Compare output to prepared input during workshop
-    # - Save the output files with correct variable- and file-names
 
 
 if __name__ == '__main__':

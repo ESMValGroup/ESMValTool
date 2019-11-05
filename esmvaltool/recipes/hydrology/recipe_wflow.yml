@@ -50,6 +50,8 @@ diagnostics:
         script: hydrology/wflow.py
         basin_name: Meuse
         dataset: ERA-Interim
+        startyear: '2000'
+        endyear: '2000'
         dem_file: 'wflow_dem_Meuse.nc' # currently in shapes_et_al repo
         source_orography: 'era_interim_orography_modified.nc' # i.e. geopotential
 
