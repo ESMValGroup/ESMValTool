@@ -41,37 +41,36 @@ def get_provenance_record(attributes):
 
 
 def get_output_stem(attributes):
-    
-    short_to_stem=dict(tas="Tobs",
-                       tasmin="TMINobs",
-                       tasmax="TMAXobs",
-                       pr="Pobs")
-    
-    shortname=attributes["short_name"]
+    """ get output file stem, specific to HYPE """
+
+    short_to_stem = dict(tas="Tobs",
+                         tasmin="TMINobs",
+                         tasmax="TMAXobs",
+                         pr="Pobs")
+
+    shortname = attributes["short_name"]
     if shortname in short_to_stem:
         stem = short_to_stem[shortname]
     else:
         stem = Path(attributes['filename']).stem + '_hype'
-        
+
     return stem
 
 
 def get_data_times_and_ids(attributes):
+    """ get the data table to be written and the times and indices """
     input_file = attributes['filename']
 
     cube = iris.load_cube(input_file)
 
     data = numpy.array(cube.core_data()).T
 
-    print("units:", attributes["units"])
-
     # ad-hoc fix of precipitation:
     if attributes["short_name"] == "pr":
-        if attributes["units"]=="kg m-2 s-1":
-            data*=86400
-        elif not attributes["units"]=="mm day-1":
+        if attributes["units"] == "kg m-2 s-1":
+            data *= 86400
+        elif not attributes["units"] == "mm day-1":
             raise Exception("possible units error")
-              
 
     # Round times to integer number of days
     time_coord = cube.coord('time')
@@ -81,7 +80,7 @@ def get_data_times_and_ids(attributes):
     times = [str(x.point.date()) for x in time_coord.cells()]
     ids = cube.coord('shape_id').core_points()
 
-    return data,times,ids
+    return data, times, ids
 
 
 def main(cfg):
