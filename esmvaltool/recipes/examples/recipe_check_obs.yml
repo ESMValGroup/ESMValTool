@@ -271,12 +271,12 @@ diagnostics:
   NSIDC-0116:
     description: NSIDC-0116 check
     variables:
+      areacello:
+        mip: fx
       usi:
         mip: day
       vsi:
         mip: day
-      areacello:
-        mip: fx
     additional_datasets:
       - {dataset: NSIDC-0116-nh, project: OBS, tier: 3,
          type: reanaly, version: "4.1", start_year: 1978, end_year: 2018}
@@ -534,6 +534,9 @@ diagnostics:
         mip: Amon
       tasmax:
         mip: day
+      tas_month:
+        short_name: tas
+        mip: Amon
       tasmin:
         mip: day
       tauu:
