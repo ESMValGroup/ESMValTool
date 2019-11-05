@@ -63,8 +63,8 @@ def main(cfg):
             frame = pandas.DataFrame(numpy.array(cube.core_data()).T,
                                      index=times, columns=ids)
 
-            output_file = get_diagnostic_filename(
-                Path(input_file).stem + '_hype', cfg, 'txt')
+            output_file = get_diagnostic_filename(Path(input_file).stem +
+                                                  '_hype', cfg, 'txt')
 
             frame.to_csv(output_file, sep=' ', index_label="DATE",
                           float_format='%.3f')
