@@ -36,6 +36,10 @@ variables:
     mip: E1hr
     raw: sf
     file: 'era5_snowfall_*_hourly.nc'
+  ps:
+    mip: E1hr
+    raw: sp
+    file: 'era5_surface_pressure_*_hourly.nc'
   psl:
     mip: E1hr
     raw: msl
@@ -48,6 +52,10 @@ variables:
     mip: E1hr
     raw: msnlwrf
     file: 'era5_mean_surface_net_long_wave_radiation_flux_*_hourly.nc'
+  rlds:
+    mip: E1hr
+    raw: strd
+    file: 'era5_surface_thermal_radiation_downwards_*_hourly.nc'
   rsds:
     mip: E1hr
     raw: ssrd

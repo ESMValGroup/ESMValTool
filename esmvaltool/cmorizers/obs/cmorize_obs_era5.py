@@ -100,10 +100,10 @@ def _fix_units(cube):
         # and add missing 'per hour'
         cube.units = cube.units * 'kg m-3 h-1'
         cube.data = cube.core_data() * 1000.
-    if cube.var_name in {'ssr', 'ssrd', 'tisr'}:
+    if cube.var_name in {'ssr', 'ssrd', 'strd', 'tisr'}:
         # Add missing 'per hour'
         cube.units = cube.units * 'h-1'
-    if cube.var_name in {'msnlwrf', 'ssrd', 'tisr', 'ssr'}:
+    if cube.var_name in {'msnlwrf', 'ssrd', 'strd', 'tisr', 'ssr'}:
         # Radiation fluxes are positive in downward direction
         cube.attributes['positive'] = 'down'
     if cube.var_name == 'ptype':
