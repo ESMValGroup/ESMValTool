@@ -210,22 +210,18 @@ def main(cfg):
 
     ## Processing Reference EvapoTranspiration (PET)
     logger.info("Processing variable PET")
-    tas = all_vars['tas']
-    psl = all_vars['psl']
-    rsds = all_vars['rsds']
-    rsdt = all_vars['rsdt']
     pet = debruin_PET(**all_vars)
     pet.var_name = 'potential_evapotranspiration'
     pet_dem = preproc.regrid(pet, target_grid=dem, scheme='linear')
 
     # Save output
     # Output format: "wflow_local_forcing_ERA5_Meuse_1990_2018.nc"
-    dataset = iris.cube.CubeList([pr_dem, tas_dem, pet_dem])
-    output_file = get_diagnostic_filename('wflow_local_forcing_'
-        # + '_' + cfg['dataset'] + '_' + cfg['basin'] + '_' + cfg['start_year'] + '_' + cfg['end_year'], cfg)
-        + 'ERA-Interim_Meuse_2000_2001', cfg)
-    iris.save(dataset, output_file, fill_value=1.e20)
-
+    cubelist = iris.cube.CubeList([pr_dem, tas_dem, pet_dem])
+    basin = cfg['basin_name']
+    dataset = cfg['dataset']
+    description = '_'.join(['wflow_local_forcing', dataset, basin, 'startyear', 'endyear'])
+    output_file = get_diagnostic_filename(description, cfg)
+    iris.save(cubelist, output_file, fill_value=1.e20)
     # Store provenance
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(output_file, provenance)
