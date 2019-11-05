@@ -181,8 +181,6 @@ def main(cfg):
     """Process data for use as input to the wflow hydrological model """
     all_vars, provenance = get_input_cubes(cfg)
     # These keys are now available in all_vars:
-    print('############')
-    print(all_vars)
     # > tas (air_temperature)
     # > pr (precipitation_flux)
     # > psl (air_pressure_at_mean_sea_level)
@@ -215,7 +213,7 @@ def main(cfg):
     ## Processing Reference EvapoTranspiration (PET)
     logger.info("Processing variable PET")
     pet = debruin_PET(**all_vars)
-    pet.var_name = 'potential_evapotranspiration'
+    pet.var_name = 'pet'
     pet_dem = preproc.regrid(pet, target_grid=dem, scheme='linear')
 
     # Save output
@@ -233,7 +231,6 @@ def main(cfg):
         provenance_logger.log(output_file, provenance)
 
     # TODO
-    # - Use CMORized orography as recipe variable rather than aux file
     # - Check whether the correct units are used
     # - See whether we can work with wflow pcraster .map files directly
     #   (currently, we use .nc dem files that Jerom converted externally)

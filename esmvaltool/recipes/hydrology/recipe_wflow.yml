@@ -49,37 +49,37 @@ diagnostics:
         endyear: '2000'
         dem_file: 'wflow/wflow_dem_Meuse.nc' # currently in shapes_et_al repo
 
-  diagnostic_hourly:
-    description: WFlow input preprocessor for hourly data
-    additional_datasets:
-      - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1,
-         start_year: 1990, end_year: 1990}
-    variables:
-      tas:
-        mip: E1hr
-        preprocessor: hourly_mean
-      pr:
-        mip: E1hr
-        preprocessor: hourly_mean
-      orog:
-        mip: fx
-      # Reconstruct evspsblpot similar to ERA-Interim:
-      psl:
-        mip: E1hr
-        preprocessor: hourly_mean
-      rsds:
-        mip: E1hr
-        preprocessor: hourly_mean
-      rsdt:
-        mip: E1hr
-        preprocessor: hourly_mean
-    scripts:
-      script:
-        script: hydrology/wflow.py
-        basin_name: Meuse
-        dataset: ERA5
-        startyear: '1990'
-        endyear: '1990'
-        dem_file: 'wflow/wflow_dem_Meuse.nc' # currently in shapes_et_al repo
+  # diagnostic_hourly:
+  #   description: WFlow input preprocessor for hourly data
+  #   additional_datasets:
+  #     - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1,
+  #        start_year: 1990, end_year: 1990}
+  #   variables:
+  #     tas:
+  #       mip: E1hr
+  #       preprocessor: hourly_mean
+  #     pr:
+  #       mip: E1hr
+  #       preprocessor: hourly_mean
+  #     orog:
+  #       mip: fx
+  #     # Reconstruct evspsblpot similar to ERA-Interim:
+  #     psl:
+  #       mip: E1hr
+  #       preprocessor: hourly_mean
+  #     rsds:
+  #       mip: E1hr
+  #       preprocessor: hourly_mean
+  #     rsdt:
+  #       mip: E1hr
+  #       preprocessor: hourly_mean
+  #   scripts:
+  #     script:
+  #       script: hydrology/wflow.py
+  #       basin_name: Meuse
+  #       dataset: ERA5
+  #       startyear: '1990'
+  #       endyear: '1990'
+  #       dem_file: 'wflow/wflow_dem_Meuse.nc' # currently in shapes_et_al repo
 
 
