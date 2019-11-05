@@ -38,7 +38,7 @@ def get_provenance_record(ancestor_file):
 
 
 def main(cfg):
-    """Process data for use as input to the PCR-GLOBWB hydrological model."""
+    """Process data for use as input to the HYPE hydrological model."""
     input_data = cfg['input_data'].values()
     grouped_input_data = group_metadata(input_data,
                                         'standard_name',
