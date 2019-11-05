@@ -33,9 +33,10 @@ import numpy as np
 # specific imports for this diagnostic
 from sklearn import linear_model
 
-from esmvaltool.diag_scripts.shared import (group_metadata, run_diagnostic,
-                                            ProvenanceLogger)
-from esmvaltool.diag_scripts.shared._base import get_plot_filename
+from esmvaltool.diag_scripts.shared import (group_metadata,
+                                            run_diagnostic,
+                                            ProvenanceLogger,
+                                            get_plot_filename)
 
 # This part sends debug statements to stdout
 logger = logging.getLogger(os.path.basename(__file__))
