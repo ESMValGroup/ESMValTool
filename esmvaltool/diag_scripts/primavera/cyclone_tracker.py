@@ -1,6 +1,7 @@
 import os
 import logging
 import string
+import shutil
 
 import iris
 import iris.cube
@@ -51,6 +52,25 @@ class CycloneTracker(object):
             months = set(psl.coord('month_number').points)
             total = [psl, ua, va, uas, vas, ta, zg]
 
+            output = '{project}_' \
+                     '{dataset}_' \
+                     '{mip}_' \
+                     '{exp}_' \
+                     '{ensemble}_' \
+                     'cyclone_information_' \
+                     '{start}_' \
+                     '{end}.txt'.format(project=data[alias][0]['project'],
+                                        dataset=data[alias][0]['dataset'],
+                                        exp=data[alias][0]['exp'],
+                                        mip=data[alias][0]['mip'],
+                                        ensemble=data[alias][0]['ensemble'],
+                                        start=data[alias][0]['start_year'],
+                                        end=data[alias][0]['end_year'])
+
+            output_file = open(
+                os.path.join(self.cfg[n.WORK_DIR], output), 'wb'
+                )
+
             for month in months:
                 total_month = []
                 for i, variable in enumerate(total):
@@ -58,13 +78,28 @@ class CycloneTracker(object):
                 for year in years:
                     total_year = []
                     for i, variable in enumerate(total_month):
-                        total_year.append(variable.extract(iris.Constraint(year=year)))
-                        total_year[i].coord('time').convert_units('hours since {0}-{1}-1 00:00:00'.format(year, month))
+                        total_year.append(variable.extract(
+                            iris.Constraint(year=year)))
+                        total_year[i].coord('time').convert_units(
+                            'hours since {0}-{1}-1 00:00:00'.format(
+                                year,
+                                month)
+                                )
                     for i, var in enumerate(total):
-                        total[i].coord('time').convert_units('hours since {0}-{1}-1 00:00:00'.format(year, month))
+                        total[i].coord('time').convert_units(
+                            'hours since {0}-{1}-1 00:00:00'.format(
+                                year,
+                                month)
+                                )
 
-                    filename = '{dataset}_{year}{month}'.format(dataset=data[alias][0]['dataset'], year=year, month=format(month, '02d'))
-                    input_path = os.path.join(self.cfg[n.WORK_DIR], filename+'.nc')
+                    filename = '{dataset}_{year}{month}.nc'.format(
+                        dataset=data[alias][0]['dataset'],
+                        year=year,
+                        month=format(month, '02d')
+                        )
+                    input_path = os.path.join(
+                        self.cfg[n.WORK_DIR],
+                        filename)
                     iris.save(total_year, input_path)
                     day = psl.coord('time').cell(0).point.day
                     hour = psl.coord('time').cell(0).point.hour
@@ -79,6 +114,9 @@ class CycloneTracker(object):
                     os.chdir(path)
                     args = self.tracker_exe + ' < namelist'
                     os.system(args)
+                    shutil.copyfileobj(open('fort.66', 'rb'), output_file)
+            output_file.close()
+
 
     def write_fort15(self, path, time):
         fort15_file = open(os.path.join(path, 'fort.15'), 'w')
@@ -109,7 +147,7 @@ class CycloneTracker(object):
         namelist_file.write('  atcfnum=81, \n')
         namelist_file.write('  atcfname=\'test\', \n')
         namelist_file.write('  atcfymdh={0}{1:02d}0100, \n'.format(year, month))
-        namelist_file.write('  atcffreq=2400, \n') #frquencia en centenes d'hora 2400
+        namelist_file.write('  atcffreq=60000, \n') #frquencia en centenes d'hora 2400
         namelist_file.write('/\n')
         namelist_file.write('&trackerinfo \n')
         namelist_file.write('  trkrinfo%westbd={0}, \n'.format(self.westbd))
@@ -143,7 +181,7 @@ class CycloneTracker(object):
         namelist_file.write('  use_waitfor=\'n\', \n')
         namelist_file.write('/\n')
         namelist_file.write('&verbose \n')
-        namelist_file.write('  3, \n')#.format(self.verb))
+        namelist_file.write('  verb={0}, \n'.format(self.verb))
         namelist_file.write('/')
         namelist_file.close()
 
