@@ -4,6 +4,7 @@ from pathlib import Path
 
 # import dask.array as da
 import iris
+import scipy.io as sio
 
 from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
                                             get_diagnostic_filename,
@@ -32,7 +33,7 @@ def create_provenance_record():
     }
     return record
 
-def debruin_PET(tas, psl, rsds, rsdt, **kwargs):
+def debruin_pet(tas, psl, rsds, rsdt):
     """ Determine De Bruin (2016) reference evaporation
 
     Implement equation 6 from De Bruin (10.1175/JHM-D-15-0006.1)
@@ -144,41 +145,42 @@ def main(cfg):
 
     ## Processing temperature
     logger.info("Processing variable tas")
-    tas = all_vars['tas']
-    tas_accumulated = preproc.area_statistics(tas, operator='mean')
+    temp = all_vars['tas']
+    temp = preproc.area_statistics(temp, operator='mean')
 
     ## Processing Precipitation (pr)
     logger.info("Processing variable pr")
-    pr = all_vars['pr']
-    pr_accumulated = preproc.area_statistics(pr, operator='mean')
+    precip = all_vars['pr']
+    precip = preproc.area_statistics(precip, operator='mean')
 
     ## Processing Reference EvapoTranspiration (PET)
     logger.info("Processing variable PET")
-    pet = debruin_PET(**all_vars)
+    pet = debruin_pet(**all_vars)
     pet.var_name = 'potential_evapotranspiration'
-    pet_accumulated = preproc.area_statistics(pet, operator='mean')
-
-    # Save output
-    cubelist = iris.cube.CubeList([pr_accumulated, tas_accumulated, pet_accumulated])
-    # add temp to matlab structure
-    output_file = get_diagnostic_filename('marrmot_input', cfg)
-    iris.save(cubelist, output_file, fill_value=1.e20)
+    pet = preproc.area_statistics(pet, operator='mean')
+    
+    # # Save output
+    # cubelist = iris.cube.CubeList([pr_accumulated, tas_accumulated, pet_accumulated])
+    # # add temp to matlab structure
+    # output_file = get_diagnostic_filename('marrmot_input', cfg)
+    # iris.save(cubelist, output_file, fill_value=1.e20)
+    
+    ## Save to matlab structure
+    mdict = {
+        'delta_t': 1,  # this could also be extracted from the cube    
+        'precip': precip.data,
+        'pet': pet.data,
+        'temp': temp.data,
+        }
+    output_file = get_diagnostic_filename('marrmot_input.mat', cfg, extension='.mat')
+    sio.savemat(output_file, mdict)
 
     # Store provenance
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(output_file, provenance)
 
     # Do stuff
-    # - Marrmot is a collection of lumped models, so we need
-    #   accumulated values of each variable.
-    # - Unit conversion: P = mm/d, PET = mm/d, T = K
-    # - Output format:
-    # >> A Matlab structure with fields 'precip', 'pet', 'temp',
-    # >> and 'delta_t'. 'precip', 'pet', and 'temp' are vectors
-    # >> of size 1x[length of time period] each. 'delta_t' is a
-    # >> scalar of size 1x1 that specifies the time resolution
-    # >> of the 'precip', 'pet' and 'temp' vectors in units [days].
-    # >>
+    # - Unit conversion: P = mm/d, PET = mm/d, T = K 
     # >> A vector with initial values for each of the model stores,
     # >> of size 1x[number of stores].
 

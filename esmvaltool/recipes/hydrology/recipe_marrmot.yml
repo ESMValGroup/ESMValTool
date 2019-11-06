@@ -45,8 +45,6 @@ diagnostics:
         end_year: 2000
         preprocessor: daily
       pr: *var_daily
-      # evspsblpot:  # doesn't exist.
-      # Reconstruct evspsblpot using:
       psl: *var_daily
       rsds: *var_daily
       rsdt:
