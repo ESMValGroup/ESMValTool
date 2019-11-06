@@ -64,6 +64,7 @@ diagnostics:
     variables:
       orog:
         mip: fx
+        preprocessor: crop_basin
       tas:
         mip: E1hr
         preprocessor: hourly_mean
