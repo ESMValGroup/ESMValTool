@@ -14,6 +14,11 @@ documentation:
 
 preprocessors:
   hourly_mean:
+    extract_region:
+      start_longitude: 3
+      end_longitude: 7
+      start_latitude: 47
+      end_latitude: 52
     extract_time:
       end_year: 1990
       end_month: 1
