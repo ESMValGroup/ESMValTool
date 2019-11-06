@@ -51,10 +51,6 @@ def add_spinup_year(cube, cube_climatology, varname):
 
     # Round times to integer number of days
     time_coord = cube_climatology.coord('time')
-<<<<<<< Updated upstream
-=======
-    print(time_coord.dtype)
->>>>>>> Stashed changes
     time_coord.points = da.floor(time_coord.core_points())
     time_coord.bounds = None
     
@@ -64,21 +60,15 @@ def add_spinup_year(cube, cube_climatology, varname):
 
 
     # Set dtype
-    ds = xr.DataArray.from_iris(cube)
-    ds = ds.astype(np.float32)
-    ds_climatology = xr.DataArray.from_iris(cube_climatology)
-    ds_climatology = ds_climatology.astype(np.float32)
+    cube.data = cube.core_data().astype('float32')
+    cube_climatology.data = cube_climatology.core_data().astype('float32')
+    # ds = xr.DataArray.from_iris(cube)
+    # ds = ds.astype(np.float32)
+    # ds_climatology = xr.DataArray.from_iris(cube_climatology)
+    # ds_climatology = ds_climatology.astype(np.float32)
+    # cube = ds.to_iris()
+    # cube_climatology = ds_climatology.to_iris()
 
-    cube = ds.to_iris()
-    cube_climatology = ds_climatology.to_iris()
-    print(cube)
-<<<<<<< Updated upstream
-    print(cube_climatology)
-=======
-    print(cube.coord('time'))
-    print(cube_climatology)
-    print(cube_climatology.coord('time'))
->>>>>>> Stashed changes
     # Create list of aux coords and remove aux coords
     coordlist = ['day_of_month',
                  'day_of_year',
@@ -88,6 +78,17 @@ def add_spinup_year(cube, cube_climatology, varname):
     for coordname in coordlist:
         cube.remove_coord(coordname)
         cube_climatology.remove_coord(coordname)
+
+    for coord_name in 'latitude', 'longitude', 'time':
+        coord = cube.coord(coord_name)
+        coord.points = coord.core_points().astype('float32')
+        coord.bounds = None
+        coord.guess_bounds()
+        coord_climatology = cube_climatology.coord(coord_name)
+        coord_climatology.points = coord_climatology.core_points().astype('float32')
+        coord_climatology.bounds = None
+        coord_climatology.guess_bounds()
+
 
     # Create CubeList and concatenate
     cube_list = iris.cube.CubeList([cube, cube_climatology])
@@ -111,53 +112,35 @@ def main(cfg):
         time_coord = cube.coord('time')
         time_coord.points = da.floor(time_coord.core_points())
         time_coord.bounds = None
+        time_coord.guess_bounds()
 
         # Select and load in cube climatology variable timeseries
-<<<<<<< Updated upstream
         metadata_climatology = select_metadata(input_data, variable_group=short_name+'_climatology')[0]
         input_climatology_file = metadata_climatology['filename']
         cube_climatology = iris.load_cube(input_climatology_file)
         
         # Run function to add spinup year to regular variable timeseries
         cube = add_spinup_year(cube, cube_climatology, short_name)
-=======
-        # metadata_climatology = select_metadata(input_data, variable_group=short_name+'_climatology')[0]
-        # input_climatology_file = metadata_climatology['filename']
-        # cube_climatology = iris.load_cube(input_climatology_file)
-        
-        # Run function to add spinup year to regular variable timeseries
-        # cube = add_spinup_year(cube, cube_climatology, short_name)
->>>>>>> Stashed changes
 
         # Set lat from highest to lowest value
         cube = cube[:, ::-1, ...]
 
         # Unit conversion 'kg m-3 day-1' to 'm' precip
-<<<<<<< Updated upstream
         if short_name == "pr":
             cube.units = cube.units / 'kg m-3 day-1'
             cube.data = cube.core_data() / 1000
-=======
-        # if short_name == "pr":
-        #     cube.units = cube.units / 'kg m-3 day-1'
-        #     cube.data = cube.core_data() / 1000
->>>>>>> Stashed changes
 
         # Save data
         output_file = get_diagnostic_filename(
             Path(input_file).stem + '_pcrglobwb', cfg)
         iris.save(cube, output_file, fill_value=1.e20)
 
+
+        print(cube)
         # Store provenance
-<<<<<<< Updated upstream
         provenance_record = get_provenance_record([input_file,input_climatology_file])
         with ProvenanceLogger(cfg) as provenance_logger:
             provenance_logger.log(output_file, provenance_record)
-=======
-        # provenance_record = get_provenance_record([input_file,input_climatology_file])
-        # with ProvenanceLogger(cfg) as provenance_logger:
-        #     provenance_logger.log(output_file, provenance_record)
->>>>>>> Stashed changes
 
 
 if __name__ == '__main__':
