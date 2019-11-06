@@ -75,7 +75,6 @@ for (i in seq(1, length(model_names), 1)) {
     time <- as.character(time)
     jdays <- as.numeric(strftime(time, format = "%j"))
     pos <- which(substr(time, 6, 10) == "02-29")
-    print(dim(data))
     if (length(pos) > 0) {
       time <- time[-pos]
       data <- apply(
