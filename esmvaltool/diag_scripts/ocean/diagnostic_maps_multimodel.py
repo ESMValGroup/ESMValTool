@@ -26,6 +26,7 @@ Author: lovato_tomas
 """
 import logging
 import os
+from pprint import pformat
 
 import cartopy.crs as ccrs
 import iris
@@ -36,9 +37,37 @@ import numpy as np
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 from esmvaltool.diag_scripts.ocean import diagnostic_tools as diagtools
 from esmvaltool.diag_scripts.shared import run_diagnostic
+from esmvaltool.diag_scripts.shared._base import ProvenanceLogger
 
-# This part sends debug statements to stdout
 logger = logging.getLogger(os.path.basename(__file__))
+
+
+def get_provenance_record(plot_file, attributes, obsname, ancestor_files):
+    """Create a provenance record describing the diagnostic data and plot."""
+    if obsname != '':
+        caption = (
+            "{long_name} bias for average between {start_year} and {end_year}".
+            format(**attributes) + " against " + obsname + " observations.")
+    else:
+        caption = (
+            "Average {long_name} between {start_year} and {end_year} ".format(
+                **attributes))
+
+    record = {
+        'caption': caption,
+        'statistics': ['mean'],
+        'domains': ['global'],
+        'plot_type': 'map',
+        'authors': [
+            'lovato_tomas',
+        ],
+        'references': [
+            'acknow_project',
+        ],
+        'plot_file': plot_file,
+        'ancestors': ancestor_files,
+    }
+    return record
 
 
 def add_map_plot(axs, plot_cube, cols):
@@ -55,17 +84,15 @@ def add_map_plot(axs, plot_cube, cols):
         Number of columns in the multipanel plot
     """
     contour_lev = 13
-    nspace = np.linspace(
-        plot_cube['range'][0],
-        plot_cube['range'][1],
-        contour_lev,
-        endpoint=True)
-    iris.plot.contourf(
-        plot_cube['cube'],
-        nspace,
-        linewidth=0,
-        cmap=plt.cm.get_cmap(plot_cube['cmap']),
-        extend=plot_cube['extend'])
+    nspace = np.linspace(plot_cube['range'][0],
+                         plot_cube['range'][1],
+                         contour_lev,
+                         endpoint=True)
+    iris.plot.contourf(plot_cube['cube'],
+                       nspace,
+                       linewidth=0,
+                       cmap=plt.cm.get_cmap(plot_cube['cmap']),
+                       extend=plot_cube['extend'])
 
     axs.coastlines()
     gls = axs.gridlines(draw_labels=False, color='black', alpha=0.4)
@@ -119,8 +146,12 @@ def make_subplots(cubes, layout, obsname, proj, fig):
             col = col + 1
 
     # Adjust subplots size & position
-    plt.subplots_adjust(
-        top=0.92, bottom=0.08, left=0.05, right=0.95, hspace=0.15, wspace=0.15)
+    plt.subplots_adjust(top=0.92,
+                        bottom=0.08,
+                        left=0.05,
+                        right=0.95,
+                        hspace=0.15,
+                        wspace=0.15)
 
     # Vertically detach OBS plot and center
     if obsname != '':
@@ -301,15 +332,24 @@ def make_multiple_plots(cfg, metadata, obsname):
 
         # Determine image filename:
         if obsname != '':
-            fn_list = ['multimodel_vs', obsname, varname, str(layer), 'maps']
+            plot_file = ['multimodel_vs', obsname, varname, str(layer), 'maps']
         else:
-            fn_list = ['multimodel', varname, str(layer), 'maps']
-        path = diagtools.folder(cfg['plot_dir']) + '_'.join(fn_list)
+            plot_file = ['multimodel', varname, str(layer), 'maps']
+        path = diagtools.folder(cfg['plot_dir']) + '_'.join(plot_file)
 
         # Saving file:
         if cfg['write_plots']:
             logger.info('Saving plots to %s', path)
             plt.savefig(path, dpi=200)
+
+        # Provenance
+        provenance_record = get_provenance_record('_'.join(plot_file),
+                                                  metadata[filenames[1]],
+                                                  obsname, filenames)
+        logger.info("Recording provenance of %s:\n%s", '_'.join(plot_file),
+                    pformat(provenance_record))
+        with ProvenanceLogger(cfg) as provenance_logger:
+            provenance_logger.log('_'.join(plot_file), provenance_record)
 
         plt.close()
 
