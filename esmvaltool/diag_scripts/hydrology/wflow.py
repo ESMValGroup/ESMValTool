@@ -231,6 +231,7 @@ def main(cfg):
     # - See whether we can work with wflow pcraster .map files directly
     #   (currently, we use .nc dem files that Jerom converted externally)
     # - Compare output to prepared input during workshop
+    # - Add extract_region preprocessor for ERA5 data
 
 
 if __name__ == '__main__':
