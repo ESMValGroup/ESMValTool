@@ -29,7 +29,9 @@ variables:
         skin_temperature
         snowfall
         surface_net_solar_radiation
+        surface_pressure
         surface_solar_radiation_downwards
+        surface_thermal_radiation_downwards
         temperature_of_snow_layer
         toa_incident_solar_radiation
         total_cloud_cover
