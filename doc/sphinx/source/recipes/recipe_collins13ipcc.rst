@@ -1,7 +1,7 @@
 .. _nml_collins:
 
-IPCC Chapter 12 selected figures
-====================================================
+IPCC AR5 Chapter 12 (selected figures)
+======================================
 
 Overview
 --------
@@ -32,7 +32,7 @@ Diagnostics are stored in diag_scripts/ipcc_ar5/
 * ch12_ts_line_mean_spread.ncl: calculates time series for one variable,
   change in future relative to base period in historical, multi-model mean as
   well as spread around it (as standard deviation).
-* ch12_plot_ts_line_mean_spread.ncl: plots the timeseries multi-model mean 
+* ch12_plot_ts_line_mean_spread.ncl: plots the timeseries multi-model mean
   and spread calculated above. As in Figure 12.5 in AR5.
 * ch12_calc_IAV_for_stippandhatch.ncl: calculates the interannual variability
   over piControl runs, either over the whole time period or in chunks over
@@ -91,7 +91,7 @@ User settings
 
    * project: CMIP5 (or CMIP6)
    * mip: variable mip, generally Amon or Omon
-  
+
 #. Script ch12_ts_line_mean_spread.ncl
 
    *Required settings (script)*
@@ -121,7 +121,7 @@ User settings
    * project: CMIP5 (or CMIP6)
    * mip: variable mip, generally Amon or Omon
 
-#. Script ch12_plot_ts_line_mean_spread.ncl: 
+#. Script ch12_plot_ts_line_mean_spread.ncl:
 
    *Required settings (script)*
 
