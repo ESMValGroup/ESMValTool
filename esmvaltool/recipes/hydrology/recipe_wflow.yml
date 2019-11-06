@@ -13,12 +13,14 @@ documentation:
   references: ['acknow_project']
 
 preprocessors:
-  hourly_mean:
+  crop_basin: &crop_basin
     extract_region:
       start_longitude: 3
       end_longitude: 7
       start_latitude: 47
       end_latitude: 52
+  hourly_mean:
+    <<: *crop_basin
     extract_time:
       end_year: 1990
       end_month: 1
@@ -52,7 +54,7 @@ diagnostics:
         dataset: ERA-Interim
         startyear: '2000'
         endyear: '2000'
-        dem_file: 'wflow/wflow_dem_Meuse.nc' # currently in shapes_et_al repo
+        dem_file: 'wflow/wflow_dem_Meuse.nc'
 
   diagnostic_hourly:
     description: WFlow input preprocessor for hourly data
@@ -85,6 +87,6 @@ diagnostics:
         dataset: ERA5
         startyear: '1990'
         endyear: '1990'
-        dem_file: 'wflow/wflow_dem_Meuse.nc' # currently in shapes_et_al repo
+        dem_file: 'wflow/wflow_dem_Meuse.nc'
 
 
