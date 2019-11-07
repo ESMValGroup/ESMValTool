@@ -169,6 +169,7 @@ INVARIANT_PARAMS = [
     ('172.128', 'lsm'),  # Land-sea mask
 ]
 
+
 def _get_land_data(params, timesteps, years, server, era_interim_land_dir):
     for param_id, symbol, timestep in params:
         frequency = 'monthly'
@@ -186,6 +187,7 @@ def _get_land_data(params, timesteps, years, server, era_interim_land_dir):
                           f'_{frequency}_{year}.nc',
                 **timesteps[timestep]
             })
+
 
 def _get_daily_data(params, timesteps, years, server, era_interim_dir):
     for param_id, symbol, timestep in params:
@@ -278,7 +280,7 @@ def cli():
                       years, server, era_interim_dir)
     _get_invariant_data(INVARIANT_PARAMS, server, era_interim_dir)
     _get_land_data(LAND_PARAMS, LAND_TIMESTEPS,
-                      years, server, era_interim_land_dir)
+                   years, server, era_interim_land_dir)
 
 
 if __name__ == "__main__":
