@@ -804,7 +804,7 @@ These files need to be reformatted using the `cmorize_obs_py` script with output
 
 
 Landschuetzer 2016
------------------
+------------------
 These data can be downloaded from:
 ftp://ftp.nodc.noaa.gov/nodc/archive/arc0105/0160558/1.1/data/0-data/spco2_1998-2011_ETH_SOM-FFN_CDIAC_G05.nc
 (last access 02/28/2019)
