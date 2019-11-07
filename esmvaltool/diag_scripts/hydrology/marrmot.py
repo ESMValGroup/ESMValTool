@@ -33,7 +33,7 @@ def create_provenance_record():
     }
     return record
 
-def debruin_pet(tas, psl, rsds, rsdt):
+def debruin_pet(tas, psl, rsds, rsdt, **kwargs):
     """ Determine De Bruin (2016) reference evaporation
 
     Implement equation 6 from De Bruin (10.1175/JHM-D-15-0006.1)
@@ -155,32 +155,34 @@ def main(cfg):
 
     ## Processing Reference EvapoTranspiration (PET)
     logger.info("Processing variable PET")
+    # TODO make it nicer
     pet = debruin_pet(**all_vars)
     pet.var_name = 'potential_evapotranspiration'
     pet = preproc.area_statistics(pet, operator='mean')
-    
+
     # # Save output
     # cubelist = iris.cube.CubeList([pr_accumulated, tas_accumulated, pet_accumulated])
     # # add temp to matlab structure
     # output_file = get_diagnostic_filename('marrmot_input', cfg)
     # iris.save(cubelist, output_file, fill_value=1.e20)
-    
+
     ## Save to matlab structure
     mdict = {
-        'delta_t': 1,  # this could also be extracted from the cube    
         'precip': precip.data,
-        'pet': pet.data,
         'temp': temp.data,
+        'pet': pet.data,
+        'delta_t': 1,  # this could also be extracted from the cube
+        'time_unit': 'day'
         }
-    output_file = get_diagnostic_filename('marrmot_input.mat', cfg, extension='.mat')
-    sio.savemat(output_file, mdict)
+    output_file = get_diagnostic_filename('marrmot_input', cfg, extension='mat')
+    sio.savemat(output_file, {'forcing': mdict})
 
     # Store provenance
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(output_file, provenance)
 
     # Do stuff
-    # - Unit conversion: P = mm/d, PET = mm/d, T = K 
+    # - Unit conversion: P = mm/d, PET = mm/d, T = K
     # >> A vector with initial values for each of the model stores,
     # >> of size 1x[number of stores].
 
