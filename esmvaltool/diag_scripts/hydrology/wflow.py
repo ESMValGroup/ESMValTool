@@ -21,7 +21,7 @@ def create_provenance_record():
         'authors': [
             'kalverla_peter',
             'camphuijsen_jaro',
-            # 'alidoost_sarah',
+            'alidoost_sarah',
         ],
         'projects': [
             'ewatercycle',
@@ -48,13 +48,6 @@ def get_input_cubes(cfg):
         all_vars[short_name] = allyears
         provenance['ancestors'].append(input_files)
     return all_vars, provenance
-
-def geopotential_to_height(geopotential):
-    """ Convert geopotential to geopotential height """
-    gravity = iris.coords.AuxCoord(9.80665,
-        long_name='Acceleration due to gravity',
-        units='m s-2')
-    return geopotential/gravity
 
 def lapse_rate_correction(height):
     """ Temperature correction over a given height interval """
@@ -222,16 +215,10 @@ def main(cfg):
     description = '_'.join(['wflow_local_forcing', dataset, basin, startyear, endyear])
     output_file = get_diagnostic_filename(description, cfg)
     iris.save(cubelist, output_file, fill_value=1.e20)
+
     # Store provenance
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(output_file, provenance)
-
-    # TODO
-    # - Check whether the correct units are used
-    # - See whether we can work with wflow pcraster .map files directly
-    #   (currently, we use .nc dem files that Jerom converted externally)
-    # - Compare output to prepared input during workshop
-    # - Add extract_region preprocessor for ERA5 data
 
 
 if __name__ == '__main__':
