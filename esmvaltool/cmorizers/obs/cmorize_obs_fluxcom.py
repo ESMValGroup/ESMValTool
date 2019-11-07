@@ -62,11 +62,11 @@ def _extract_variable(cmor_info, attrs, filepath, out_dir):
         # The following two lines are needed for iris.util.guess_coord_axis
         cube.coord('lat').standard_name = 'latitude'
         cube.coord('lon').standard_name = 'longitude'
-        cube = utils.fix_var_metadata(cube, cmor_info)
-        cube = utils.convert_timeunits(cube, 1950)
-        cube = utils.fix_coords(cube)
-        cube = utils.set_global_atts(cube, attrs)
-        cube = utils.flip_dim_coord(cube, 'latitude')
+        utils.fix_var_metadata(cube, cmor_info)
+        utils.convert_timeunits(cube, 1950)
+        utils.fix_coords(cube)
+        utils.set_global_atts(cube, attrs)
+        utils.flip_dim_coord(cube, 'latitude')
         coord = cube.coord('latitude')
         coord.bounds = np.flip(coord.bounds, axis=1)
         logger.info("Saving file")
