@@ -7,7 +7,7 @@ documentation:
     just to check correct reading of the CMORized data.
 
   authors:
-    - righ_ma
+    - righi_mattia
 
 diagnostics:
 
@@ -656,8 +656,8 @@ diagnostics:
     variables:
       gpp:
     additional_datasets:
-      - {dataset: FLUXCOM, project: OBS, tier: 3, mip: Lmon,
-         type: reanaly, version: ANN-v1, start_year: 1980, end_year: 2013}
+      - {dataset: FLUXCOM, project: OBS, mip: Lmon, tier: 3, type: reanaly,
+         version: ANN-v1, start_year: 1980, end_year: 2013}
     scripts: null
 
 
