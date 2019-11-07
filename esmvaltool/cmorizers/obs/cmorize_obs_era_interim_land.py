@@ -16,3 +16,5 @@ Download and processing instructions
 """
 
 from .cmorize_obs_era_interim import cmorization
+
+__all__ = ['cmorization']
