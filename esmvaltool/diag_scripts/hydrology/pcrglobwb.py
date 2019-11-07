@@ -58,17 +58,10 @@ def add_spinup_year(cube, cube_climatology, varname):
     cube.cell_methods = ()
     cube_climatology.cell_methods = ()
 
-
     # Set dtype
     cube.data = cube.core_data().astype('float32')
     cube_climatology.data = cube_climatology.core_data().astype('float32')
-    # ds = xr.DataArray.from_iris(cube)
-    # ds = ds.astype(np.float32)
-    # ds_climatology = xr.DataArray.from_iris(cube_climatology)
-    # ds_climatology = ds_climatology.astype(np.float32)
-    # cube = ds.to_iris()
-    # cube_climatology = ds_climatology.to_iris()
-
+   
     # Create list of aux coords and remove aux coords
     coordlist = ['day_of_month',
                  'day_of_year',
