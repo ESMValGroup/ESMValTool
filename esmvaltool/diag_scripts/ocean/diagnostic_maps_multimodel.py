@@ -301,11 +301,6 @@ def make_multiple_plots(cfg, metadata, obsname):
     # ####
     filenames = list(metadata.keys())
     varname = metadata[filenames[0]]['short_name']
-    #user_range = {'maps': None, 'diff': None}
-    #if 'maps_range' in metadata[filenames[0]]:
-    #    user_range['maps'] = metadata[filenames[0]]['maps_range']
-    #if 'diff_range' in metadata[filenames[0]]:
-    #    user_range['diff'] = metadata[filenames[0]]['diff_range']
 
     # plot setting
     layout = metadata[filenames[0]]['layout_rowcol']
