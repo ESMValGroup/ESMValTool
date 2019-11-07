@@ -42,8 +42,8 @@ preprocessors:
 
   daily_water:
     <<: *general
-    convert_units:
-      units: mm d-1
+    #~ convert_units:
+      #~ units: mm d-1
     daily_statistics:
         operator: mean
 
