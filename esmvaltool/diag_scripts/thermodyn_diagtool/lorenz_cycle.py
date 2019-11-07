@@ -51,11 +51,14 @@ References.
 import math
 import os
 import sys
+
 import numpy as np
 from cdo import Cdo
 from netCDF4 import Dataset
-from esmvaltool.diag_scripts.thermodyn_diagtool import fluxogram, \
-    fourier_coefficients
+
+import esmvaltool.diag_scripts.shared as e
+from esmvaltool.diag_scripts.thermodyn_diagtool import (fluxogram,
+                                                        fourier_coefficients)
 
 G = 9.81
 R = 287.00
@@ -384,10 +387,10 @@ def globall_cg(d3v, g_w, d_s, dims):
             aux1[l_l, i_h, :] = fac * np.real(d3v[l_l, i_h, :]) * g_w[i_h]
             aux2[l_l, i_h, :] = (fac * np.real(d3v[l_l, i_h + nhem - 1, :]) *
                                  g_w[i_h + nhem - 1])
-        aux1v[l_l, :] = (np.nansum(aux1[l_l, :, :], axis=0) / np.nansum(
-            g_w[0:nhem]) * d_s[l_l])
-        aux2v[l_l, :] = (np.nansum(aux2[l_l, :, :], axis=0) / np.nansum(
-            g_w[0:nhem]) * d_s[l_l])
+        aux1v[l_l, :] = (np.nansum(aux1[l_l, :, :], axis=0) /
+                         np.nansum(g_w[0:nhem]) * d_s[l_l])
+        aux2v[l_l, :] = (np.nansum(aux2[l_l, :, :], axis=0) /
+                         np.nansum(g_w[0:nhem]) * d_s[l_l])
     gmn[1, :] = (np.nansum(aux1v, axis=0) / np.nansum(d_s))
     gmn[2, :] = (np.nansum(aux2v, axis=0) / np.nansum(d_s))
     gmn[0, :] = 0.5 * (gmn[1, :] + gmn[2, :])
@@ -548,9 +551,9 @@ def mkaeaz(v_t, wap, t_t, ttt, ttg, p_l, lat, gam, nlat, nlev):
             t_2 = t_1
             t_1 = np.real(ttt[l_l - 1, :, 0]) - ttg[l_l - 1]
             dtdp2 = (t_2 - t_1) / (p_l[l_l] - p_l[l_l - 1])
-            dtdp[l_l, :] = (
-                (dtdp1 * (p_l[l_l] - p_l[l_l - 1]) + dtdp2 *
-                 (p_l[l_l + 1] - p_l[l_l])) / (p_l[l_l + 1] - p_l[l_l - 1]))
+            dtdp[l_l, :] = ((dtdp1 * (p_l[l_l] - p_l[l_l - 1]) + dtdp2 *
+                             (p_l[l_l + 1] - p_l[l_l])) /
+                            (p_l[l_l + 1] - p_l[l_l - 1]))
         dtdp[l_l, :] = dtdp[l_l, :] - (R / (CP * p_l[l_l]) *
                                        (ttt[l_l, :, 0] - ttg[l_l]))
     for i_l in np.arange(nlat):
@@ -614,12 +617,12 @@ def mkkekz(u_t, v_t, wap, utt, vtt, p_l, lat, nlat, ntp, nlev):
                      (p_l[l_l] - p_l[l_l - 1]))
             dvdp2 = ((np.real(vtt[l_l, :, 0] - vtt[l_l - 1, :, 0])) /
                      (p_l[l_l] - p_l[l_l - 1]))
-            dudp[l_l, :] = (
-                (dudp1 * (p_l[l_l] - p_l[l_l - 1]) + dudp2 *
-                 (p_l[l_l + 1] - p_l[l_l])) / (p_l[l_l + 1] - p_l[l_l - 1]))
-            dvdp[l_l, :] = (
-                (dvdp1 * (p_l[l_l] - p_l[l_l - 1]) + dvdp2 *
-                 (p_l[l_l + 1] - p_l[l_l])) / (p_l[l_l + 1] - p_l[l_l - 1]))
+            dudp[l_l, :] = ((dudp1 * (p_l[l_l] - p_l[l_l - 1]) + dudp2 *
+                             (p_l[l_l + 1] - p_l[l_l])) /
+                            (p_l[l_l + 1] - p_l[l_l - 1]))
+            dvdp[l_l, :] = ((dvdp1 * (p_l[l_l] - p_l[l_l - 1]) + dvdp2 *
+                             (p_l[l_l + 1] - p_l[l_l])) /
+                            (p_l[l_l + 1] - p_l[l_l - 1]))
     for i_l in np.arange(nlat):
         if i_l == 0:
             dudy[:, i_l] = ((np.real(utt[:, i_l + 1, 0] - utt[:, i_l, 0])) /
@@ -632,10 +635,12 @@ def mkkekz(u_t, v_t, wap, utt, vtt, p_l, lat, nlat, ntp, nlev):
             dvdy[:, i_l] = ((np.real(vtt[:, i_l, 0] - vtt[:, i_l - 1, 0])) /
                             (lat[i_l] - lat[i_l - 1]))
         else:
-            dudy[:, i_l] = ((np.real(utt[:, i_l + 1, 0] - utt[:, i_l - 1, 0]))
-                            / (lat[i_l + 1] - lat[i_l - 1]))
-            dvdy[:, i_l] = ((np.real(vtt[:, i_l + 1, 0] - vtt[:, i_l - 1, 0]))
-                            / (lat[i_l + 1] - lat[i_l - 1]))
+            dudy[:, i_l] = (
+                (np.real(utt[:, i_l + 1, 0] - utt[:, i_l - 1, 0])) /
+                (lat[i_l + 1] - lat[i_l - 1]))
+            dvdy[:, i_l] = (
+                (np.real(vtt[:, i_l + 1, 0] - vtt[:, i_l - 1, 0])) /
+                (lat[i_l + 1] - lat[i_l - 1]))
     dudy = dudy / AA
     dvdy = dvdy / AA
     c_1 = np.zeros([nlev, nlat, ntp - 1])
@@ -652,10 +657,12 @@ def mkkekz(u_t, v_t, wap, utt, vtt, p_l, lat, nlat, ntp, nlev):
     for i_l in np.arange(nlat):
         c_1[:, i_l, :] = dudy[:, i_l][:, np.newaxis] * u_v[:, i_l, :]
         c_2[:, i_l, :] = dvdy[:, i_l][:, np.newaxis] * v_v[:, i_l, :]
-        c_5[:, i_l, :] = (np.tan(lat[i_l]) / AA * np.real(
-            utt[:, i_l, 0])[:, np.newaxis] * (u_v[:, i_l, :]))
-        c_6[:, i_l, :] = -(np.tan(lat[i_l]) / AA * np.real(
-            vtt[:, i_l, 0])[:, np.newaxis] * (u_u[:, i_l, :]))
+        c_5[:, i_l, :] = (np.tan(lat[i_l]) / AA *
+                          np.real(utt[:, i_l, 0])[:, np.newaxis] *
+                          (u_v[:, i_l, :]))
+        c_6[:, i_l, :] = -(np.tan(lat[i_l]) / AA *
+                           np.real(vtt[:, i_l, 0])[:, np.newaxis] *
+                           (u_u[:, i_l, :]))
     for l_l in np.arange(nlev):
         c_3[l_l, :, :] = dudp[l_l, :][:, np.newaxis] * u_w[l_l, :, :]
         c_4[l_l, :, :] = dvdp[l_l, :][:, np.newaxis] * v_w[l_l, :, :]
@@ -713,13 +720,14 @@ def mkatas(u_t, v_t, wap, t_t, ttt, g_w, p_l, lat, nlat, ntp, nlev):
                 np.conj(t_v[:, i_l, :]) / (AA * (lat[i_l] - lat[i_l - 1])) *
                 (ttt[:, i_l, np.newaxis] - ttt[:, i_l - 1, np.newaxis]))
         else:
-            c_2[:, i_l, :] = (
-                t_v[:, i_l, :] / (AA * (lat[i_l + 1] - lat[i_l - 1])) *
-                np.conj(ttt[:, i_l + 1, np.newaxis] -
-                        ttt[:, i_l - 1, np.newaxis]))
+            c_2[:, i_l, :] = (t_v[:, i_l, :] /
+                              (AA * (lat[i_l + 1] - lat[i_l - 1])) *
+                              np.conj(ttt[:, i_l + 1, np.newaxis] -
+                                      ttt[:, i_l - 1, np.newaxis]))
             c_3[:, i_l, :] = (
-                np.conj(t_v[:, i_l, :]) / (AA * (lat[i_l + 1] - lat[i_l - 1]))
-                * (ttt[:, i_l + 1, np.newaxis] - ttt[:, i_l - 1, np.newaxis]))
+                np.conj(t_v[:, i_l, :]) / (AA *
+                                           (lat[i_l + 1] - lat[i_l - 1])) *
+                (ttt[:, i_l + 1, np.newaxis] - ttt[:, i_l - 1, np.newaxis]))
     for l_l in range(nlev):
         if l_l == 0:
             c_5[l_l, :, :] = (
@@ -734,16 +742,16 @@ def mkatas(u_t, v_t, wap, t_t, ttt, g_w, p_l, lat, nlat, ntp, nlev):
                    (p_l[l_l + 1] - p_l[l_l]))
             c52 = ((ttt[l_l, :, np.newaxis] - ttt[l_l - 1, :, np.newaxis]) /
                    (p_l[l_l] - p_l[l_l - 1]))
-            c_5[l_l, :, :] = (
-                (c51 * (p_l[l_l] - p_l[l_l - 1]) + c52 *
-                 (p_l[l_l + 1] - p_l[l_l])) / (p_l[l_l + 1] - p_l[l_l - 1]))
+            c_5[l_l, :, :] = ((c51 * (p_l[l_l] - p_l[l_l - 1]) + c52 *
+                               (p_l[l_l + 1] - p_l[l_l])) /
+                              (p_l[l_l + 1] - p_l[l_l - 1]))
     k_k = np.arange(0, ntp - 1)
-    at2as = (
-        ((k_k - 1)[np.newaxis, np.newaxis, :] * np.imag(c_1) /
-         (AA * np.cos(lat[np.newaxis, :, np.newaxis])) +
-         np.real(t_w * np.conj(c_5) + np.conj(t_w) * c_5) + np.real(c_2 + c_3)
-         + R / (CP * p_l[:, np.newaxis, np.newaxis]) * np.real(c_6)) *
-        g_w[:, :, np.newaxis])
+    at2as = (((k_k - 1)[np.newaxis, np.newaxis, :] * np.imag(c_1) /
+              (AA * np.cos(lat[np.newaxis, :, np.newaxis])) +
+              np.real(t_w * np.conj(c_5) + np.conj(t_w) * c_5) +
+              np.real(c_2 + c_3) + R /
+              (CP * p_l[:, np.newaxis, np.newaxis]) * np.real(c_6)) *
+             g_w[:, :, np.newaxis])
     at2as[:, :, 0] = 0.
     return at2as
 
@@ -844,8 +852,9 @@ def pr_output(varo, varname, filep, nc_f):
             # Writing NetCDF files
             fourc.extr_lat(nc_fid, w_nc_fid, 'lat')
             w_nc_fid.createDimension('wave', ntp)
-            w_nc_dim = w_nc_fid.createVariable(
-                'wave', nc_fid.variables['wave'].dtype, ('wave', ))
+            w_nc_dim = w_nc_fid.createVariable('wave',
+                                               nc_fid.variables['wave'].dtype,
+                                               ('wave', ))
             for ncattr in nc_fid.variables['wave'].ncattrs():
                 w_nc_dim.setncattr(ncattr,
                                    nc_fid.variables['wave'].getncattr(ncattr))
@@ -855,15 +864,7 @@ def pr_output(varo, varname, filep, nc_f):
         w_nc_fid.variables[varname][:] = varo
 
 
-def removeif(filename):
-    """Remove filename if it exists."""
-    try:
-        os.remove(filename)
-    except OSError:
-        pass
-
-
-def preproc_lec(model, wdir, pdir, filelist):
+def preproc_lec(model, wdir, pdir, input_data):
     """Preprocess fields for LEC computations and send it to lorenz program.
 
     This function computes the interpolation of ta, ua, va, wap daily fields to
@@ -882,43 +883,46 @@ def preproc_lec(model, wdir, pdir, filelist):
     """
     cdo = Cdo()
     fourc = fourier_coefficients
-    ta_file = filelist[13]
-    tas_file = filelist[14]
-    ua_file = filelist[16]
-    uas_file = filelist[17]
-    va_file = filelist[18]
-    vas_file = filelist[19]
-    wap_file = filelist[20]
+    ta_file = e.select_metadata(input_data, short_name='ta',
+                                dataset=model)[0]['filename']
+    tas_file = e.select_metadata(input_data, short_name='tas',
+                                 dataset=model)[0]['filename']
+    ua_file = e.select_metadata(input_data, short_name='ua',
+                                dataset=model)[0]['filename']
+    uas_file = e.select_metadata(input_data, short_name='uas',
+                                 dataset=model)[0]['filename']
+    va_file = e.select_metadata(input_data, short_name='va',
+                                dataset=model)[0]['filename']
+    vas_file = e.select_metadata(input_data, short_name='vas',
+                                 dataset=model)[0]['filename']
+    wap_file = e.select_metadata(input_data, short_name='wap',
+                                 dataset=model)[0]['filename']
     ldir = os.path.join(pdir, 'LEC_results')
     os.makedirs(ldir)
     maskorog = wdir + '/orog.nc'
     ua_file_mask = wdir + '/ua_fill.nc'
     va_file_mask = wdir + '/va_fill.nc'
     energy3_file = wdir + '/energy_short.nc'
-    cdo.setmisstoc(
-        '0',
-        input='-setmisstoc,1 -sub {0} {0}'.format(ua_file),
-        options='-b F32',
-        output=maskorog)
-    cdo.add(
-        input=('-setmisstoc,0 -selvar,ua {} '
-               '-setmisstoc,0 -mul {} -selvar,ua {}').format(
-                   ua_file, uas_file, maskorog),
-        options='-b F32',
-        output=ua_file_mask)
-    cdo.add(
-        input=('-setmisstoc,0 -selvar,va {} '
-               '-setmisstoc,0 -mul {} -selvar,ua {}').format(
-                   va_file, vas_file, maskorog),
-        options='-b F32',
-        output=va_file_mask)
-    cdo.setmisstoc(
-        '0',
-        input=('-invertlat -sellevel,10000/90000 '
-               '-merge {} {} {} {}').format(ta_file, ua_file_mask,
-                                            va_file_mask, wap_file),
-        options='-b F32',
-        output=energy3_file)
+    cdo.setmisstoc('0',
+                   input='-setmisstoc,1 -sub {0} {0}'.format(ua_file),
+                   options='-b F32',
+                   output=maskorog)
+    cdo.add(input=('-setmisstoc,0 -selvar,ua {} '
+                   '-setmisstoc,0 -mul {} -selvar,ua {}').format(
+                       ua_file, uas_file, maskorog),
+            options='-b F32',
+            output=ua_file_mask)
+    cdo.add(input=('-setmisstoc,0 -selvar,va {} '
+                   '-setmisstoc,0 -mul {} -selvar,ua {}').format(
+                       va_file, vas_file, maskorog),
+            options='-b F32',
+            output=va_file_mask)
+    cdo.setmisstoc('0',
+                   input=('-invertlat -sellevel,10000/90000 '
+                          '-merge {} {} {} {}').format(ta_file, ua_file_mask,
+                                                       va_file_mask, wap_file),
+                   options='-b F32',
+                   output=energy3_file)
     yrs = cdo.showyear(input=energy3_file)
     yrs = str(yrs)
     yrs2 = yrs.split()
@@ -936,8 +940,10 @@ def preproc_lec(model, wdir, pdir, filelist):
         tasfile_yr = wdir + '/tas_yr.nc'
         tadiag_file = wdir + '/ta_filled.nc'
         ncfile = wdir + '/fourier_coeff.nc'
-        cdo.selyear(
-            y_ro, input=energy3_file, options='-b F32', output=enfile_yr)
+        cdo.selyear(y_ro,
+                    input=energy3_file,
+                    options='-b F32',
+                    output=enfile_yr)
         cdo.selyear(y_ro, input=tas_file, options='-b F32', output=tasfile_yr)
         fourc.fourier_coeff(tadiag_file, ncfile, enfile_yr, tasfile_yr)
         diagfile = (ldir + '/{}_{}_lec_diagram.png'.format(model, y_ro))
@@ -953,6 +959,14 @@ def preproc_lec(model, wdir, pdir, filelist):
     os.remove(va_file_mask)
     os.remove(energy3_file)
     return lect
+
+
+def removeif(filename):
+    """Remove filename if it exists."""
+    try:
+        os.remove(filename)
+    except OSError:
+        pass
 
 
 def stabil(ta_gmn, p_l, nlev):
@@ -974,9 +988,9 @@ def stabil(ta_gmn, p_l, nlev):
         else:
             dtdp1 = (t_g[i_l + 1] - t_g[i_l]) / (p_l[i_l + 1] - p_l[i_l])
             dtdp2 = (t_g[i_l] - t_g[i_l - 1]) / (p_l[i_l] - p_l[i_l - 1])
-            dtdp = (
-                (dtdp1 * (p_l[i_l] - p_l[i_l - 1]) + dtdp2 *
-                 (p_l[i_l + 1] - p_l[i_l])) / (p_l[i_l + 1] - p_l[i_l - 1]))
+            dtdp = ((dtdp1 * (p_l[i_l] - p_l[i_l - 1]) + dtdp2 *
+                     (p_l[i_l + 1] - p_l[i_l])) /
+                    (p_l[i_l + 1] - p_l[i_l - 1]))
         g_s[i_l] = CP / (t_g[i_l] - p_l[i_l] * dtdp * cpdr)
     return g_s
 

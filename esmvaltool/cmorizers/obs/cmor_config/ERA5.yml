@@ -12,6 +12,12 @@ attributes:
 
 # Variables to CMORize
 variables:
+  # time independent
+  orog:
+    mip: fx
+    raw: z
+    file: 'era5_orography_*_hourly.nc'
+  # hourly frequency
   clt:
     mip: E1hr
     raw: tcc
