@@ -12,7 +12,7 @@ documentation:
   references: ['acknow_project']
 
 preprocessors:
-  daily: &daily
+  extract_catchment: &catchment
     extract_shape:
       # Lumped model: needs catchment-aggregated input data
       shapefile: rhine_meuse_hydrosheds.shp  # In aux (config-user.yml)
@@ -20,21 +20,17 @@ preprocessors:
       crop: true
     # area_statistics: # done in diag because non-linear PET functions
     #   operator: mean
-  hourly_thermodynamics:
-    <<: *daily
+  daily_mean: &mean
     daily_statistics:
       operator: mean
-  hourly_water:
-    <<: *daily
-    daily_statistics:
-      operator: sum
-  hourly_radiation:
-    <<: *daily
-    daily_statistics:
-      operator: sum
+  daily:
+    <<: *catchment
+  hourly:
+    <<: *catchment
+    <<: *mean
 
 diagnostics:
-  diagnostic_daily_data:
+  diagnostic_daily:
     description: marrmot input preprocessor for daily data
     additional_datasets:
       - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
@@ -45,6 +41,7 @@ diagnostics:
         end_year: 2000
         preprocessor: daily
       pr: *var_daily
+      # MARRMoT requires PET. Thus, we might also need psl, rsds, rsdt
       psl: *var_daily
       rsds: *var_daily
       rsdt:
@@ -54,39 +51,24 @@ diagnostics:
       script:
         script: hydrology/marrmot.py
 
-  # diagnostic_hourly_data:
-  #   description: marrmot input preprocessor for hourly data
-  #   additional_datasets:
-  #     - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1}
-  #   variables:
-  #     tas: &var_hourly
-  #       mip: E1hr
-  #       start_year: 2000
-  #       end_year: 2000
-  #       preprocessor: hourly_thermodynamics
-  #     pr:
-  #       <<: *var_hourly
-  #       preprocessor: hourly_water
-  #     # MARRMoT requires PET. Thus, we might also need...
-  #     # This is what we did for wflow for *evaporation* (PET = evapoTRANSPIration)
-  #     psl:
-  #       <<: *var_hourly
-  #       preprocessor: hourly_thermodynamics
-  #     rsds:
-  #       <<: *var_hourly
-  #       preprocessor: hourly_radiation
-  #     tdps:
-  #       <<: *var_hourly
-  #       mip: Eday
-  #       preprocessor: hourly_thermodynamics
-  #     rsdt:
-  #       <<: *var_hourly
-  #       preprocessor: hourly_radiation
-  #       mip: CFday
-  #     # Alternatively, we might use (but this is inconsistent with ERA-Interim):
-  #     evspsblpot:
-  #       <<: *var_hourly
-  #       preprocessor: hourly_water
-  #   scripts:
-  #     script:
-  #       script: hydrology/marrmot.py
+  diagnostic_hourly:
+    description: marrmot input preprocessor for hourly data
+    additional_datasets:
+      - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1}
+    variables:
+      tas: &var_hourly
+        mip: E1hr
+        start_year: 2000
+        end_year: 2000
+        preprocessor: hourly
+      pr: *var_hourly
+      # MARRMoT requires PET. Thus, we might also need psl, rsds, rsdt
+      # This is what we did for wflow for *evaporation* (PET = evapoTRANSPIration)
+      psl: *var_hourly
+      rsds: *var_hourly
+      rsdt: *var_hourly
+      # Alternatively, we might use (but this is inconsistent with ERA-Interim):
+      # evspsblpot: *var_hourly
+    scripts:
+      script:
+        script: hydrology/marrmot.py
