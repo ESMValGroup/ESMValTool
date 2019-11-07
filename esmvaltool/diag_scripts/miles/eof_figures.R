@@ -5,30 +5,63 @@
 
 # DECLARING THE FUNCTION: EXECUTION IS AT THE BOTTOM OF THE SCRIPT
 
-miles_eof_figures <- function(dataset, expid, ens, year1, year2,
-                              dataset_ref, expid_ref, ens_ref,
-                              year1_ref, year2_ref,
-                              season, FIGDIR, FILESDIR,
-                              REFDIR, PROGDIR, tele) {
-
+miles_eof_figures <- function(dataset,
+                              expid,
+                              ens,
+                              year1,
+                              year2,
+                              dataset_ref,
+                              expid_ref,
+                              ens_ref,
+                              year1_ref,
+                              year2_ref,
+                              season,
+                              FIGDIR,
+                              FILESDIR,
+                              REFDIR,
+                              PROGDIR,
+                              tele) {
   # use filebuilding script to access to file
   nomefile_exp <- file_builder(
-    FILESDIR, paste0("EOFs/", tele), "EOFs",
-    dataset, expid, ens, year1, year2, season
+    FILESDIR,
+    paste0("EOFs/", tele),
+    "EOFs",
+    dataset,
+    expid,
+    ens,
+    year1,
+    year2,
+    season
   )
 
   # check for REFDIR==FILESDIR, i.e. if we are using the
   # climatology provided by MiLES or another dataset MiLES-generated
   if (REFDIR != FILESDIR) {
     nomefile_ref <- paste0(
-      file.path(REFDIR, paste0("EOFs/", tele)), "/EOFs_",  # nolint
-      dataset_ref, "_", year1_ref, "_", year2_ref, "_", season, ".nc"
+      file.path(REFDIR, paste0("EOFs/", tele)),
+      "/EOFs_",
+      # nolint
+      dataset_ref,
+      "_",
+      year1_ref,
+      "_",
+      year2_ref,
+      "_",
+      season,
+      ".nc"
     )
   } else {
     # use file.builder to create the path of the blocking files
     nomefile_ref <- file_builder(
-      FILESDIR, paste0("EOFs/", tele), "EOFs",
-      dataset_ref, expid_ref, ens_ref, year1_ref, year2_ref, season
+      FILESDIR,
+      paste0("EOFs/", tele),
+      "EOFs",
+      dataset_ref,
+      expid_ref,
+      ens_ref,
+      year1_ref,
+      year2_ref,
+      season
     )
   }
 
@@ -65,7 +98,8 @@ miles_eof_figures <- function(dataset, expid, ens, year1, year2,
   ##########################################################
 
   # plot properties
-  info_exp <- info_builder(dataset, expid, ens, year1, year2, season)
+  info_exp <-
+    info_builder(dataset, expid, ens, year1, year2, season)
   info_ref <- info_builder(
     dataset_ref, expid_ref, ens_ref,
     year1_ref, year2_ref, season
@@ -101,8 +135,16 @@ miles_eof_figures <- function(dataset, expid, ens, year1, year2,
 
     # define figure
     figname <- fig_builder(
-      FIGDIR, paste0("EOFs/", tele), paste0("EOF", neof),
-      dataset, expid, ens, year1, year2, season, output_file_type
+      FIGDIR,
+      paste0("EOFs/", tele),
+      paste0("EOF", neof),
+      dataset,
+      expid,
+      ens,
+      year1,
+      year2,
+      season,
+      output_file_type
     )
     print(figname)
     filenames <- c(filenames, figname)
@@ -120,57 +162,121 @@ miles_eof_figures <- function(dataset, expid, ens, year1, year2,
     # plot properties
     par(plotpar)
 
-    im <- plot_prepare(ics, ipsilon, linear_exp, proj = map_projection,
-                       lat_lim = lat_lim)
-    filled_contour3(im$x, im$y, im$z,
-      xlab = im$xlab, ylab = im$ylab,
-      main = paste(info_exp), levels = lev_field,
-      color.palette = palette3, xlim = im$xlim, ylim = im$ylim,
+    im <-
+      plot_prepare(ics,
+        ipsilon,
+        linear_exp,
+        proj = map_projection,
+        lat_lim = lat_lim
+      )
+    filled_contour3(
+      im$x,
+      im$y,
+      im$z,
+      xlab = im$xlab,
+      ylab = im$ylab,
+      main = paste(info_exp),
+      levels = lev_field,
+      color.palette = palette3,
+      xlim = im$xlim,
+      ylim = im$ylim,
       axes = im$axes
     )
-    mtext(title_name, side = 3, line = .5, outer = TRUE, cex = 2, font = 2)
+    mtext(
+      title_name,
+      side = 3,
+      line = .5,
+      outer = TRUE,
+      cex = 2,
+      font = 2
+    )
     proj_addland(proj = map_projection)
-    text(varpoints[1], varpoints[2], paste("Variance Explained: ",
-      round(variance_exp[neof], 2), "%",
-      sep = ""
-    ), cex = 2)
+    text(varpoints[1],
+      varpoints[2],
+      paste("Variance Explained: ",
+        round(variance_exp[neof], 2), "%",
+        sep = ""
+      ),
+      cex = 2
+    )
 
-    im <- plot_prepare(ics, ipsilon, linear_ref, proj = map_projection,
-                       lat_lim = lat_lim)
-    filled_contour3(im$x, im$y, im$z,
-      xlab = im$xlab, ylab = im$ylab,
-      main = paste(info_ref), levels = lev_field,
-      color.palette = palette3, xlim = im$xlim, ylim = im$ylim,
+    im <-
+      plot_prepare(ics,
+        ipsilon,
+        linear_ref,
+        proj = map_projection,
+        lat_lim = lat_lim
+      )
+    filled_contour3(
+      im$x,
+      im$y,
+      im$z,
+      xlab = im$xlab,
+      ylab = im$ylab,
+      main = paste(info_ref),
+      levels = lev_field,
+      color.palette = palette3,
+      xlim = im$xlim,
+      ylim = im$ylim,
       axes = im$axes
     )
-    mtext(title_name, side = 3, line = .5, outer = TRUE, cex = 2, font = 2)
+    mtext(
+      title_name,
+      side = 3,
+      line = .5,
+      outer = TRUE,
+      cex = 2,
+      font = 2
+    )
     proj_addland(proj = map_projection)
-    image_scale3(volcano,
-      levels = lev_field, color.palette = palette3,
-      colorbar.label = "m", cex.colorbar = imgscl_colorbar,
-      cex.label = imgscl_label, colorbar.width = 1 * af,
+    image_scale3(
+      volcano,
+      levels = lev_field,
+      color.palette = palette3,
+      colorbar.label = "m",
+      cex.colorbar = imgscl_colorbar,
+      cex.label = imgscl_label,
+      colorbar.width = 1 * af,
       line.label = imgscl_line
     )
-    text(varpoints[1], varpoints[2], paste("Variance Explained: ",
-      round(variance_ref[neof], 2), "%",
-      sep = ""
-    ), cex = 2)
+    text(varpoints[1],
+      varpoints[2],
+      paste("Variance Explained: ",
+        round(variance_ref[neof], 2), "%",
+        sep = ""
+      ),
+      cex = 2
+    )
 
     # delta field plot
-    im <- plot_prepare(ics, ipsilon, linear_exp - linear_ref,
-      proj = map_projection, lat_lim = lat_lim
+    im <- plot_prepare(ics,
+      ipsilon,
+      linear_exp - linear_ref,
+      proj = map_projection,
+      lat_lim = lat_lim
     )
-    filled_contour3(im$x, im$y, im$z,
-      xlab = im$xlab, ylab = im$ylab,
-      main = paste("Difference"), levels = lev_diff,
-      color.palette = palette2, xlim = im$xlim, ylim = im$ylim,
+    filled_contour3(
+      im$x,
+      im$y,
+      im$z,
+      xlab = im$xlab,
+      ylab = im$ylab,
+      main = paste("Difference"),
+      levels = lev_diff,
+      color.palette = palette2,
+      xlim = im$xlim,
+      ylim = im$ylim,
       axes = im$axes
     )
     proj_addland(proj = map_projection)
-    image_scale3(volcano,
-      levels = lev_diff, color.palette = palette2,
-      colorbar.label = "m", cex.colorbar = imgscl_colorbar,
-      cex.label = imgscl_label, colorbar.width = 1 * af,
+    image_scale3(
+      volcano,
+      levels = lev_diff,
+      color.palette = palette2,
+      colorbar.label = "m",
+      cex.colorbar = imgscl_colorbar,
+      cex.label = imgscl_label,
+      colorbar.width = 1 * af,
       line.label = imgscl_line
     )
 
