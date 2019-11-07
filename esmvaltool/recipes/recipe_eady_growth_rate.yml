@@ -32,12 +32,10 @@ datasets:
      ensemble: r1i1p1f1, mip: Amon, grid: gn, start_year: 1950, end_year: 2014}
   - {dataset: HadGEM3-GC31-MM, project: CMIP6, exp: highresSST-present,
      ensemble: r1i1p1f1, mip: Amon, grid: gn, start_year: 1950, end_year: 2014}
-  - {dataset: MPI-ESM1-2-XR, institute: MPI-M, project: CMIP6,
-     exp: highresSST-present, ensemble: r1i1p1f1, mip: Amon, grid: gn,
-     start_year: 1950, end_year: 2014}
-  - {dataset: MPI-ESM1-2-HR, institute: MPI-M, project: CMIP6,
-     exp: highresSST-present, ensemble: r1i1p1f1, mip: Amon, grid: gn,
-     start_year: 1950, end_year: 2014}
+  - {dataset: MPI-ESM1-2-XR, project: CMIP6, exp: highresSST-present,
+     ensemble: r1i1p1f1, mip: Amon, grid: gn, start_year: 1950, end_year: 2014}
+  - {dataset: MPI-ESM1-2-HR, project: CMIP6, exp: highresSST-present,
+     ensemble: r1i1p1f1, mip: Amon, grid: gn, start_year: 1950, end_year: 2014}
 
 
 preprocessors:
