@@ -1,0 +1,91 @@
+# ESMValTool
+# recipe_era5.yml
+---
+documentation:
+  description: CMORize ERA5 data
+
+  authors:
+    - andela_bouwe
+
+  references:
+    - acknow_project
+
+  projects:
+    - ewatercycle
+
+datasets:
+  - {dataset: ERA5, project: native6, type: reanaly, version: '1', tier: 3, start_year: 1990, end_year: 1990}
+
+preprocessors:
+  daily_mean:
+    daily_statistics:
+      operator: mean
+  daily_sum:
+    daily_statistics:
+      operator: sum
+  daily_min:
+    daily_statistics:
+      operator: min
+  daily_max:
+    daily_statistics:
+      operator: max
+
+
+diagnostics:
+
+  hourly:
+    description: CMORize hourly ERA5 data
+    scripts: null
+    variables:
+      pr:
+        mip: E1hr
+      uas:
+        mip: E1hr
+      vas:
+        mip: E1hr
+      tas:
+        mip: E1hr
+      tasmin:
+        mip: E1hr
+      tasmax:
+        mip: E1hr
+
+  daily:
+    description: Create daily ERA5 data
+    scripts: null
+    variables:
+      pr:
+        mip: E1hr
+        preprocessor: daily_sum
+      uas:
+        mip: E1hr
+        preprocessor: daily_mean
+      vas:
+        mip: E1hr
+        preprocessor: daily_mean
+      tas:
+        mip: E1hr
+        preprocessor: daily_mean
+      tasmin:
+        mip: E1hr
+        preprocessor: daily_min
+      tasmax:
+        mip: E1hr
+        preprocessor: daily_max
+
+  monthly:
+    description: CMORize monthly ERA5 data
+    scripts: null
+    variables:
+      pr:
+        mip: Amon
+      uas:
+        mip: Amon
+      vas:
+        mip: Amon
+      tas:
+        mip: Amon
+      tasmin:
+        mip: Amon
+      tasmax:
+        mip: Amon
