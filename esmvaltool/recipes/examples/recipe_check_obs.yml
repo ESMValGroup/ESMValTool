@@ -604,9 +604,11 @@ diagnostics:
       mrro: *E1hr
       pr: *E1hr
       prsn: *E1hr
+      ps: *E1hr
       psl: *E1hr
       ptype: *E1hr
       rls: *E1hr
+      rlds: *E1hr
       rsds: *E1hr
       rsdt: *E1hr
       rss: *E1hr
