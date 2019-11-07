@@ -127,7 +127,6 @@ def flip_dim_coord(cube, coord_name):
     if coord.bounds is not None:
         coord.bounds = np.flip(coord.bounds, axis=0)
     cube.data = da.flip(cube.core_data(), axis=coord_idx)
-    return cube
 
 
 def read_cmor_config(dataset):
@@ -222,7 +221,7 @@ def set_global_atts(cube, attrs):
     # Additional attributes
     glob_dict.update(attrs)
     cube.attributes = glob_dict
-    return cube
+
 
 
 def var_name_constraint(var_name):
