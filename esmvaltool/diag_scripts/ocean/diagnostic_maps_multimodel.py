@@ -116,7 +116,7 @@ def add_map_plot(axs, plot_cube, cols):
         cbar.set_ticks(nspace[::2])
 
 
-def make_subplots(cubes, layout, obsname, proj, fig):
+def make_subplots(cubes, layout, obsname, fig):
     """
     Realize subplots using cubes input data.
 
@@ -128,11 +128,10 @@ def make_subplots(cubes, layout, obsname, proj, fig):
         subplot rows x cols organization
     obsname: string
         Observation data name
-    proj: ccrs object
-        map projection
     fig: object
          The matplotlib.pyplot Figure object
     """
+    proj = ccrs.Robinson(central_longitude=0)
     gsc = gridspec.GridSpec(layout[0], layout[1])
     row = 0
     col = 0
@@ -206,7 +205,7 @@ def load_cubes(filenames, obs_filename, metadata):
     return cubes, layers, obsname
 
 
-def select_cubes(cubes, layer, obsname, user_range):
+def select_cubes(cubes, layer, obsname, metadata):
     """
     Create a dictionary of input layer data & metadata to plot.
 
@@ -218,8 +217,8 @@ def select_cubes(cubes, layer, obsname, user_range):
         Data level to be plotted
     obsname: string
          Observation data name
-    user_range: dict
-         Plot ranges read from recipe
+    metadata: dict
+        the first input file dictionary
     """
     plot_cubes = {}
     list_cubes = []
@@ -258,6 +257,13 @@ def select_cubes(cubes, layer, obsname, user_range):
         mrange = diagtools.get_cube_range([list_cubes[0]])
         drange = diagtools.get_cube_range(list_cubes[1:])
 
+    # get user defined plot ranges
+    user_range = {'maps': None, 'diff': None}
+    if 'maps_range' in metadata:
+        user_range['maps'] = metadata['maps_range']
+    if 'diff_range' in metadata:
+        user_range['diff'] = metadata['diff_range']
+
     # define contour levels using ranges
     for thename in cubes:
         mrange = mrange
@@ -295,15 +301,14 @@ def make_multiple_plots(cfg, metadata, obsname):
     # ####
     filenames = list(metadata.keys())
     varname = metadata[filenames[0]]['short_name']
-    user_range = {'maps': None, 'diff': None}
-    if 'maps_range' in metadata[filenames[0]]:
-        user_range['maps'] = metadata[filenames[0]]['maps_range']
-    if 'diff_range' in metadata[filenames[0]]:
-        user_range['diff'] = metadata[filenames[0]]['diff_range']
+    #user_range = {'maps': None, 'diff': None}
+    #if 'maps_range' in metadata[filenames[0]]:
+    #    user_range['maps'] = metadata[filenames[0]]['maps_range']
+    #if 'diff_range' in metadata[filenames[0]]:
+    #    user_range['diff'] = metadata[filenames[0]]['diff_range']
 
     # plot setting
     layout = metadata[filenames[0]]['layout_rowcol']
-    proj = ccrs.Robinson(central_longitude=0)
 
     # load input data
     [cubes, layers, obsname] = load_cubes(filenames, obsname, metadata)
@@ -324,18 +329,20 @@ def make_multiple_plots(cfg, metadata, obsname):
         fig = plt.figure()
         fig.set_size_inches(layout[1] * 4., layout[0] * 2. + 2.)
 
-        # select cubes to plots
-        plot_cubes = select_cubes(cubes, layer, obsname, user_range)
+        # select cubes to plot
+        plot_cubes = select_cubes(cubes, layer, obsname,
+                                  metadata[filenames[0]])
 
-        # create subplots
-        make_subplots(plot_cubes, layout, obsname, proj, fig)
+        # create individual subplot
+        make_subplots(plot_cubes, layout, obsname, fig)
 
         # Determine image filename:
         if obsname != '':
             plot_file = ['multimodel_vs', obsname, varname, str(layer), 'maps']
         else:
             plot_file = ['multimodel', varname, str(layer), 'maps']
-        path = diagtools.folder(cfg['plot_dir']) + '_'.join(plot_file)
+        plot_file = '_'.join(plot_file)
+        path = diagtools.folder(cfg['plot_dir']) + plot_file
 
         # Saving file:
         if cfg['write_plots']:
@@ -343,13 +350,13 @@ def make_multiple_plots(cfg, metadata, obsname):
             plt.savefig(path, dpi=200)
 
         # Provenance
-        provenance_record = get_provenance_record('_'.join(plot_file),
-                                                  metadata[filenames[1]],
+        provenance_record = get_provenance_record(plot_file,
+                                                  metadata[filenames[-1]],
                                                   obsname, filenames)
-        logger.info("Recording provenance of %s:\n%s", '_'.join(plot_file),
+        logger.info("Recording provenance of %s:\n%s", plot_file,
                     pformat(provenance_record))
         with ProvenanceLogger(cfg) as provenance_logger:
-            provenance_logger.log('_'.join(plot_file), provenance_record)
+            provenance_logger.log(plot_file, provenance_record)
 
         plt.close()
 
