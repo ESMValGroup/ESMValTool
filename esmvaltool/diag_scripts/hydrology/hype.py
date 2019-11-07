@@ -1,4 +1,4 @@
-"""PCR-GLOBWB diagnostic."""
+"""HYPE diagnostic."""
 import logging
 from pathlib import Path
 
