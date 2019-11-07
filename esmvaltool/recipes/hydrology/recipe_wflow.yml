@@ -37,9 +37,11 @@ diagnostics:
     variables:
       tas: &var_daily
         mip: day
+        preprocessor: extract_region
       pr: *var_daily
       orog:
         mip: fx
+        preprocessor: extract_region
       # evspsblpot:  # doesn't exist.
       # Reconstruct evspsblpot using:
       psl: *var_daily

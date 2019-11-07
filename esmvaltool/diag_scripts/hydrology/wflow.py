@@ -56,6 +56,12 @@ def lapse_rate_correction(height):
         units='K m-1')
     return height*gamma
 
+def to_volume(mass, density=1000.):
+    rho = iris.coords.AuxCoord(density,
+        long_name='Density',
+        units='kg m-3')
+    return mass/rho
+
 def regrid_temperature(src_temp, src_height, target_height):
     """ Convert temperature to target grid with lapse rate correction """
     #TODO: Fix iris issue to get rid of workaround
@@ -204,6 +210,12 @@ def main(cfg):
     pet = debruin_PET(**all_vars)
     pet.var_name = 'pet'
     pet_dem = preproc.regrid(pet, target_grid=dem, scheme='linear')
+
+    ## Convert units
+    for cube in [pr, pet]:
+        cube = to_volume(cube, density=1000)
+        cube.convert_units('m day-1')
+    tas.convert_units('degC')
 
     # Save output
     # Output format: "wflow_local_forcing_ERA5_Meuse_1990_2018.nc"
