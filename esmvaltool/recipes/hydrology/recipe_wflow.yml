@@ -33,7 +33,7 @@ diagnostics:
     description: WFlow input preprocessor for daily data
     additional_datasets:
       - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1,
-         start_year: 1990, end_year: 2018}
+         start_year: 1990, end_year: 1990}
     variables:
       tas: &var_daily
         mip: day
@@ -55,14 +55,14 @@ diagnostics:
         basin_name: Meuse
         dataset: ERA-Interim
         startyear: '1990'
-        endyear: '2018'
+        endyear: '1990'
         dem_file: 'wflow/wflow_dem_Meuse.nc'
 
   diagnostic_hourly:
     description: WFlow input preprocessor for hourly data
     additional_datasets:
       - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1,
-         start_year: 1990, end_year: 2018}
+         start_year: 1990, end_year: 1990}
     variables:
       orog:
         mip: fx
@@ -89,7 +89,7 @@ diagnostics:
         basin_name: Meuse
         dataset: ERA5
         startyear: '1990'
-        endyear: '2018'
+        endyear: '1990'
         dem_file: 'wflow/wflow_dem_Meuse.nc'
 
 
