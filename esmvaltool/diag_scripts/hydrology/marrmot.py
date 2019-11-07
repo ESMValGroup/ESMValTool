@@ -159,7 +159,6 @@ def main(cfg):
 
     ## Processing Reference EvapoTranspiration (PET)
     logger.info("Processing variable PET")
-    # TODO make it nicer
     pet = debruin_pet(**all_vars)
     pet.var_name = 'potential_evapotranspiration'
     pet = preproc.area_statistics(pet, operator='mean')
@@ -173,6 +172,7 @@ def main(cfg):
     # iris.save(cubelist, output_file, fill_value=1.e20)
 
     ## Save to matlab structure
+    # TODO add data_orogin, time_end, time_start
     mdict = {
         'precip': precip.data,
         'temp': temp.data,
