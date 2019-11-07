@@ -15,8 +15,8 @@ documentation:
     - c3s-magic
 
 datasets:
-  - {dataset: MPI-ESM-MR,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 1950,  end_year: 2005}
-  - {dataset: bcc-csm1-1,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 1950,  end_year: 2005}
+  - {dataset: MPI-ESM-MR, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1950, end_year: 2005}
+  - {dataset: bcc-csm1-1, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1950, end_year: 2005}
 
 
 preprocessors:
@@ -35,15 +35,15 @@ diagnostics:
     scripts:
       main:
         script: magic_bsc/combined_indices.R
-        ## Weights for combining indices - if not "equal" or "NULL", must be the same length as the number of indices
-        region: Nino3.4 #Nino3, Nino3.4, Nino4, NAO or SOI  
+        # Weights for combining indices - if not "equal" or "NULL", must be the same length as the number of indices
+        region: Nino3.4  # Nino3, Nino3.4, Nino4, NAO or SOI
 
         # Compute running mean?
-        running_mean: null 
+        running_mean: null
 
-        # Compute seasons? 
+        # Compute seasons?
         moninf: 12  # First month
         monsup: 2  # Last month
 
         # Compute standarization?
-        standardized: true   
+        standardized: true
