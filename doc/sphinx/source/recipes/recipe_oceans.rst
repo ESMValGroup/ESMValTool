@@ -254,7 +254,7 @@ sea ice diagnostic is the only tool that performs a field specific evaluation.
 The diagnostic_seaice.py_ diagnostic is more fully described below.
 
 recipe_ocean_multimap.yml
-------------------------
+-------------------------
 
 The recipe_ocean_multimap.yml_ is an example recipe showing the
 diagnostic_maps_multimodel.py_ diagnostic.
@@ -486,7 +486,7 @@ An appropriate preprocessor for a 3D+time field would be:
 
 
 diagnostic_maps_multimodel.py
---------------------------------
+-----------------------------
 
 The diagnostic_maps_multimodel.py_ diagnostic makes model(s) vs observations maps
 and if data are not provided it draws only model field.
