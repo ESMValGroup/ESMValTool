@@ -21,10 +21,10 @@ preprocessors:
       end_latitude: 52
   hourly_mean:
     <<: *crop_basin
-    extract_time:
-      end_year: 1990
-      end_month: 1
-      end_day: 3
+    # extract_time:
+    #   end_year: 1990
+    #   end_month: 1
+    #   end_day: 3
     daily_statistics:
       operator: mean
 
@@ -33,7 +33,7 @@ diagnostics:
     description: WFlow input preprocessor for daily data
     additional_datasets:
       - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1,
-         start_year: 2000, end_year: 2000}
+         start_year: 1990, end_year: 2018}
     variables:
       tas: &var_daily
         mip: day
@@ -54,15 +54,15 @@ diagnostics:
         script: hydrology/wflow.py
         basin_name: Meuse
         dataset: ERA-Interim
-        startyear: '2000'
-        endyear: '2000'
+        startyear: '1990'
+        endyear: '2018'
         dem_file: 'wflow/wflow_dem_Meuse.nc'
 
   diagnostic_hourly:
     description: WFlow input preprocessor for hourly data
     additional_datasets:
       - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1,
-         start_year: 1990, end_year: 1990}
+         start_year: 1990, end_year: 2018}
     variables:
       orog:
         mip: fx
@@ -89,7 +89,7 @@ diagnostics:
         basin_name: Meuse
         dataset: ERA5
         startyear: '1990'
-        endyear: '1990'
+        endyear: '2018'
         dem_file: 'wflow/wflow_dem_Meuse.nc'
 
 
