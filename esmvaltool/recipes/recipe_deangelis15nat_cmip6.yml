@@ -1,0 +1,119 @@
+# recipe_deangelis15nat_f3_cmip6.yml
+---
+documentation:
+  description: |
+    Recipe for reproducing the plots in DeAngelis et al., 2015 Nature
+    Reduced version: only figure 3
+
+  authors:
+    - weigel_katja
+
+  references:
+    - deangelis15nat
+
+  projects:
+    - eval4cmip
+
+preprocessors:
+  spatial_mean:
+    #regrid:
+    #  target_grid: 1x1
+    #  scheme: linear
+    area_statistics:
+      operator: mean
+
+  tropical_ocean:  
+    mask_landsea:
+      mask_out: land
+    regrid:
+      target_grid: 2.5x2.5
+      scheme: linear   
+    extract_region:
+      start_latitude: -30
+      end_latitude: 30
+      start_longitude: 0
+      end_longitude: 360
+  
+  tropical:  
+    #mask_landsea:
+    #  mask_out: land
+    regrid:
+      target_grid: 2.5x2.5
+      scheme: linear   
+    extract_region:
+      start_latitude: -30
+      end_latitude: 30
+      start_longitude: 0
+      end_longitude: 360
+
+
+diagnostics:
+
+   deangelis3:
+    description: Plot fig 3 of DeAngelis et al., 2015, with observations
+    variables:
+      rsnstcs: &spatial_mean_cmip5_r1i1p1_amon_t2ms
+        preprocessor: spatial_mean
+        project: CMIP5
+        mip: Amon
+        field: T2Ms
+        derive: true
+        force_derivation: false     
+      rsnstcsnorm: &tropical_cmip5_r1i1p1_amon_t2ms
+        preprocessor: tropical_ocean
+        project: CMIP5
+        mip: Amon
+        field: T2Ms
+        derive: true
+        force_derivation: false 
+        additional_datasets:
+          - {dataset: CERES-EBAF,  project: obs4mips,  type: satellite, level: L3B,  version: Ed2-8,  start_year: 2001,  end_year: 2009,  tier: 1}
+      tas:
+        <<: *spatial_mean_cmip5_r1i1p1_amon_t2ms 
+        derive: false
+      prw:
+        <<: *tropical_cmip5_r1i1p1_amon_t2ms
+        derive: false      
+        additional_datasets:
+          - {dataset: ERA-Interim,  project: OBS6,  type: reanaly,  version: 1,  start_year: 2001,  end_year: 2009,  tier: 3}
+          # - {dataset: SSMI,  project: obs4mips,  type: satellite, level: L3,  version: RSSv07r00,  start_year: 2001,  end_year: 2009,  tier: 1}
+    additional_datasets:
+      # I tried all models used in the paper 
+      - {dataset: BCC-CSM2-MR, institute: BCC, project: CMIP6,  exp: piControl, ensemble: r1i1p1f1,  grid: gn, start_year:    1850, end_year:  1999}
+      - {dataset: BCC-CSM2-MR, institute: BCC, project: CMIP6,   exp: abrupt-4xCO2, ensemble: r1i1p1f1,  grid: gn,   start_year:    1850, end_year:  1999}
+      - {dataset: MIROC6, institute: MIROC, project: CMIP6,      exp: piControl, ensemble: r1i1p1f1,  grid: gn, start_year:    3200, end_year:  3349}
+      - {dataset: MIROC6, institute: MIROC, project: CMIP6,      exp: abrupt-4xCO2, ensemble: r1i1p1f1,  grid: gn,   start_year:    3200, end_year:  3349}
+      - {dataset: MRI-ESM2-0, institute: MRI, project: CMIP6,      exp: piControl, ensemble: r1i1p1f1,  grid: gn, start_year:    1851, end_year:  2000}
+      - {dataset: MRI-ESM2-0, institute: MRI, project: CMIP6,      exp: abrupt-4xCO2, ensemble: r1i1p1f1,  grid: gn,   start_year:    1851, end_year:  2000}
+      # - {dataset: GISS-E2-1-G, institute: NASA-GISS, project: CMIP6,      exp: piControl, ensemble: r1i1p1f1,  grid: gn, start_year:    4151, end_year:  4300}
+      # - {dataset: GISS-E2-1-G, institute: NASA-GISS, project: CMIP6,      exp: abrupt-4xCO2, ensemble: r1i1p1f1,  grid: gn,   start_year:    1851, end_year:  2000}
+      # - {dataset: GISS-E2-1-H, institute: NASA-GISS, project: CMIP6,      exp: piControl, ensemble: r1i1p1f1,  grid: gn, start_year:    3381, end_year:  3530}
+      # - {dataset: GISS-E2-1-H, institute: NASA-GISS, project: CMIP6,      exp: abrupt-4xCO2, ensemble: r1i1p1f1,  grid: gn,   start_year:    1851, end_year:  2000}
+      # 2m height for tas missing
+      # - {dataset: CESM2-WACCM, institute: NCAR, project: CMIP6,      exp: piControl, ensemble: r1i1p1f1,  grid: gn, start_year:    1, end_year:  150}
+      # - {dataset: CESM2-WACCM, institute: NCAR, project: CMIP6,      exp: abrupt-4xCO2, ensemble: r1i1p1f1,  grid: gn,   start_year:    1, end_year:  150}
+
+      - {dataset: bcc-csm1-1-m, institute: BCC,  exp: piControl, ensemble: r1i1p1,   start_year:  240, end_year:  389}
+      - {dataset: bcc-csm1-1-m, institute: BCC,  exp: abrupt4xCO2, ensemble: r1i1p1, start_year:  240, end_year:  389}
+      # - {dataset: GISS-E2-R, institute: NASA-GISS,     exp: piControl, ensemble: r1i1p1,   start_year: 3331, end_year: 3480}
+      # - {dataset: GISS-E2-R, institute: NASA-GISS,     exp: abrupt4xCO2, ensemble: r1i1p1, start_year: 1850, end_year: 1999}
+      # - {dataset: GISS-E2-H, institute: NASA-GISS,     exp: piControl, ensemble: r1i1p1,   start_year: 1200, end_year: 1349}
+      # - {dataset: GISS-E2-H, institute: NASA-GISS,     exp: abrupt4xCO2, ensemble: r1i1p1, start_year: 1850, end_year: 1999}
+      - {dataset: MIROC5, institute: MIROC,        exp: piControl, ensemble: r1i1p1,   start_year: 2100, end_year: 2249}
+      - {dataset: MIROC5, institute: MIROC,        exp: abrupt4xCO2, ensemble: r1i1p1, start_year: 2100, end_year: 2249}
+      - {dataset: MRI-CGCM3, institute: MRI,  exp: piControl, ensemble: r1i1p1,   start_year: 1851, end_year: 2000}
+      - {dataset: MRI-CGCM3, institute: MRI,  exp: abrupt4xCO2, ensemble: r1i1p1, start_year: 1851, end_year: 2000}
+
+
+    
+    scripts:
+      deangelis3:
+        script: testkw/deangelis3.py
+        plot_ecs_regression: 'True'
+        output_name: 'deangelis3'
+    
+
+  
+
+
+
