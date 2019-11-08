@@ -165,12 +165,6 @@ def main(cfg):
     # convert kg/m2/s to kg/m2/day (or mm/day)
     pet.convert_units('kg m-2 day-1')
 
-    # # Save output
-    # cubelist = iris.cube.CubeList([pr_accumulated, tas_accumulated, pet_accumulated])
-    # # add temp to matlab structure
-    # output_file = get_diagnostic_filename('marrmot_input', cfg)
-    # iris.save(cubelist, output_file, fill_value=1.e20)
-
     # Get the dataset name
     input_data = cfg['input_data'].values()
     grouped_input_data = group_metadata(input_data, 'dataset')
@@ -180,15 +174,18 @@ def main(cfg):
     basename = dataset_name + '_marrmot'
 
     ## Save to matlab structure
-    # TODO add data_orogin
     # Get the start and end times as an array with lenght 6
-    coord = temp.coord(axis='T')
-    time_start = coord.units.num2date(coord.points[0])
-    time_start = time_start.strftime("%Y %m %d %H %M %S").split()
-    time_start = [int(time) for time in time_start]
-    time_end = coord.units.num2date(coord.points[-1])
-    time_end = time_end.strftime("%Y %m %d %H %M %S").split()
-    time_end = [int(time) for time in time_end]
+    coord = temp.coord('time')
+    time_start_end = []
+    for index in 0, -1:
+        time_val = coord.units.num2date(coord.points[index])
+        time_val = time_val.strftime("%Y %m %d %H %M %S").split()
+        time_val = [float(time) for time in time_val]
+        time_start_end.append(time_val)
+
+    # Add data_origin
+    lat_lon = [temp.coord('latitude').points[0]]
+    lat_lon.append(temp.coord('longitude').points[0])
 
     # make data structure
     mdict = {
@@ -200,8 +197,9 @@ def main(cfg):
         }
     output_data = {
         'forcing': mdict,
-        'time_start': time_start,
-        'time_end': time_end
+        'time_start': time_start_end[0],
+        'time_end': time_start_end[1],
+        'data_origin': lat_lon
         }
     output_name = get_diagnostic_filename(basename, cfg, extension='mat')
     sio.savemat(output_name, output_data)
