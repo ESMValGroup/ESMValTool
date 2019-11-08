@@ -306,7 +306,8 @@ def _extract_variable(in_files, var, cfg, out_dir):
 
     # Set correct names
     cube.var_name = definition.short_name
-    cube.standard_name = definition.standard_name
+    if definition.standard_name:
+        cube.standard_name = definition.standard_name
     cube.long_name = definition.long_name
 
     _fix_units(cube, definition)
