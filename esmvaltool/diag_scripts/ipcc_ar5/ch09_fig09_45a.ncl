@@ -22,7 +22,7 @@
 ;   exp_future:      name of climate change experiment (e.g. "rcp45")
 ;
 ; Optional settings (scripts)
-;   diagminmax:      
+;   diagminmax:
 ;   legend_outside:  True, False
 ;   predef_minmax:   True, False
 ;   styleset:        "CMIP5" (if not set, this diagnostic will create its own
@@ -132,7 +132,8 @@ begin
 
   ; calculate weighted mean albedo
 
-  albmean = dim_sum_n_Wrap(alb_reg * conform(alb_reg, weights, (/1, 2/)), (/1, 2/))
+  albmean = dim_sum_n_Wrap(alb_reg * conform(alb_reg, weights, (/1, 2/)), \
+                           (/1, 2/))
   albmean!0 = "time"
   albmean&time = alb_reg&time
   delete(weights)
@@ -287,7 +288,6 @@ begin
 
     do j = 0, dimsizes(ind_present) - 1
       itest = ind(names(i, ind_future).eq.names(i, ind_present(j)))
-      print(tostring(i) + " " + tostring(j) + " " + tostring(itest) + " " + names(i, ind_present(j)))
       if (ismissing(itest)) then
         error_msg("f", DIAG_SCRIPT, "", "variable " + variables(i) \
                   + ", dataset " + names(i, ind_present(j)) \
@@ -336,7 +336,8 @@ begin
       atts@short_name = variables(jj)
 
       if (ii .eq. num_models_present) then
-        ; all observations (possibly from different sources = different datasets)
+        ; all observations
+        ; (possibly from different sources = different datasets)
         ; are processed at the same time (at ii .eq. num_models_present)
 
         atts@dataset = refname(jj)
@@ -565,7 +566,7 @@ begin
     ; t-value given the one-sided probability and the degrees of freedom
     tval = cdft_t(0.25, nx - 2)
 
-    mean_se_fit = 1.0 / nx + (xxx - rc@xave)^2 / sum((x - rc@xave)^2)
+    mean_se_fit = 1.0 / nx + (xxx - rc@xave) ^ 2 / sum((x - rc@xave) ^ 2)
     mean_conf_upper = yyy + tval * sqrt(rc@MSE * mean_se_fit)
     mean_conf_lower = yyy - tval * sqrt(rc@MSE * mean_se_fit)
 
@@ -611,7 +612,7 @@ begin
 
   if (isdefined("diagminmax")) then
     x = (/diagminmax(0), diagminmax(0), diagminmax(1), diagminmax(1), \
-          diagminmax(0)/)
+         diagminmax(0)/)
     y = (/y0, y1, y1, y0, y0/)
     res = True
     res@tfPolyDrawOrder = "Draw"

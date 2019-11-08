@@ -139,7 +139,8 @@ begin
         ; set fill value
         if (isatt(input, "missing_value")) then
           output(timeidx, :, :) = where(input.eq.input@missing_value, \
-            output@_FillValue, output(timeidx, :, :))
+                                        output@_FillValue, \
+                                        output(timeidx, :, :))
         end if
 
       end do
