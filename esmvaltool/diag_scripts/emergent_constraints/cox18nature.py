@@ -163,7 +163,7 @@ def get_provenance_record(caption, statistics, plot_type, ancestor_files):
     """Create a provenance record describing the diagnostic data and plot."""
     record = {
         'ancestors': ancestor_files,
-        'authors': ['schl_ma'],
+        'authors': ['schlund_manuel'],
         'caption': caption,
         'domains': ['global'],
         'plot_type': plot_type,

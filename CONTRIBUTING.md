@@ -27,11 +27,11 @@ To install in development mode, follow these instructions.
 ## Using the development version of the ESMValTool Core package
 
 If you need the latest developments of the ESMValTool Core package,
-you can install that into the same conda environment:
+you can install it from source into the same conda environment. First follow the steps above and then:
 
 -   Clone the ESMValTool Core github repository: `git clone git@github.com:ESMValGroup/ESMValCore`)
 -   Go to the esmvalcore directory: `cd ESMValCore`
--   Update the esmvaltool conda environment `conda env update --name esmvaltool --file environment.yml`
+-   Update the esmvaltool conda environment `conda env update --name esmvaltool --file environment.yml`. This step is only needed if the dependencies changed since the latest release, which will rarely happen.
 -   Activate the esmvaltool environment: `conda activate esmvaltool`
 -   Install `esmvalcore` in development mode: `pip install -e '.[develop]'`.
 
@@ -39,12 +39,12 @@ you can install that into the same conda environment:
 
 To run Julia diagnostics you will have to install Julia; the safest way is to use the official pre-built executable and link it in the conda environment:
 
-- Get the tarball (for v1.0.3 in this case): `wget https://julialang-s3.julialang.org/bin/linux/x64/1.0/julia-1.0.3-linux-x86_64.tar.gz`
-- Unpack the tarball: `tar xfz julia-*-linux-x86_64.tar.gz`
-- Symlink the Julia executable into the conda environment: `ln -s $PWD/julia-*/bin/julia $HOME/$ANACONDA/envs/esmvaltool/bin` (here `$ANACONDA` represents the name of your `anaconda` or `miniconda` directory, most commonly `anaconda3` or `miniconda3`)
-- Check executable location: `which julia`
-- Check Julia startup: `julia --help`
-- Optionally install the Julia diagnostics dependencies: `julia esmvaltool/install/Julia/setup.jl`
+-   Get the tarball (for v1.0.3 in this case): `wget https://julialang-s3.julialang.org/bin/linux/x64/1.0/julia-1.0.3-linux-x86_64.tar.gz`
+-   Unpack the tarball: `tar xfz julia-*-linux-x86_64.tar.gz`
+-   Symlink the Julia executable into the conda environment: `ln -s $PWD/julia-*/bin/julia $HOME/$ANACONDA/envs/esmvaltool/bin` (here `$ANACONDA` represents the name of your `anaconda` or `miniconda` directory, most commonly `anaconda3` or `miniconda3`)
+-   Check executable location: `which julia`
+-   Check Julia startup: `julia --help`
+-   Optionally install the Julia diagnostics dependencies: `julia esmvaltool/install/Julia/setup.jl`
 
 Note that sometimes, if you are under a firewall, the installation of Julia diagnostics dependencies may fail due to failure of cloning the references in `$HOME/.julia/registries/General`. To fix this issue you will have to touch the registry files: `touch $HOME/.julia/environments/v1.0/Manifest.toml && touch $HOME/.julia/environments/v1.0/Project.toml` and manually git clone the references: `git clone https://github.com/JuliaRegistries/General.git $HOME/.julia/registries/General`.
 
@@ -89,7 +89,7 @@ Because there is no standard best practices document for NCL, we use [PEP8](http
 
 ### R
 
-A document on best practices for R is [Hadley Wickham's R Style Guide](http://r-pkgs.had.co.nz/style.html). We partially check adherence to this style guide by using [lintr](https://cran.r-project.org/web/packages/lintr/index.html) on CircleCI. In the future we would also like to make use of [goodpractice](https://cran.r-project.org/web/packages/goodpractice/index.html) to assess the quality of R code.
+Best practices for R code are described in [The tidyverse style guide](https://style.tidyverse.org/). We check adherence to this style guide by using [lintr](https://cran.r-project.org/web/packages/lintr/index.html) on CircleCI. Please use [styler](https://styler.r-lib.org/) to automatically format your code according to this style guide. In the future we would also like to make use of [goodpractice](https://cran.r-project.org/web/packages/goodpractice/index.html) to assess the quality of R code.
 
 ### YAML
 
@@ -118,3 +118,10 @@ You can view the results of the automatic checks below your pull request. If one
 ### Diagnostic script contributions
 
 A pull request with diagnostic code should preferably not introduce new Codacy issues. However, we understand that there is a limit to how much time can be spend on polishing code, so up to 10 new (non-trivial) issues is still an acceptable amount.
+
+### List of authors
+
+If you make a (significant) contribution to ESMValTool, please add your name to the list of authors in CITATION.cff and regenerate the file .zenodo.json by running the command
+
+    pip install cffconvert
+    cffconvert --ignore-suspect-keys --outputformat zenodo --outfile .zenodo.json

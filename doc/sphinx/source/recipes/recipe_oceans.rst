@@ -1,7 +1,7 @@
 .. _XML_oceans:
 
-Recipes for evaluating models of the ocean
-==========================================
+Ocean diagnostics
+=================
 
 Overview
 ........
@@ -286,7 +286,7 @@ For this reason, we recommend extracting a small number of specific layers in
 the preprocessor, using the `extract_layer` preprocessor.
 
 This script can not process NetCDFs with multiple time steps. Please use the
-`time_average` preprocessor to collapse the time dimension.
+`climate_statistics` preprocessor to collapse the time dimension.
 
 This diagnostic also includes the optional arguments, `threshold` and
 `thresholds`.
@@ -311,7 +311,7 @@ For a  Global 2D field:
   .. code-block:: yaml
 
       prep_map_1:
-	time_average:
+	climate_statistics:
 
 
 For a  regional 2D field:
@@ -324,7 +324,8 @@ For a  regional 2D field:
 	      end_longitude: 30.
 	      start_latitude: -80.
 	      end_latitude: 80.
-	    time_average:
+        climate_statistics:
+          operator: mean
 
 For a  Global 3D field at the surface and 10m depth:
 
@@ -335,7 +336,8 @@ For a  Global 3D field at the surface and 10m depth:
 	  extract_levels:
 	    levels: [0., 10.]
 	    scheme: linear_horizontal_extrapolate_vertical
-	  time_average:
+      climate_statistics:
+        operator: mean
 
 
 For a multi-model comparison mean of 2D global fields including contour thresholds.
@@ -344,7 +346,8 @@ For a multi-model comparison mean of 2D global fields including contour threshol
 
 	prep_map_4:
 	  custom_order: true
-	  time_average:
+      climate_statistics:
+        operator: mean
 	  regrid:
 	    target_grid: 1x1
 	    scheme: linear
@@ -390,7 +393,8 @@ An appropriate preprocessor for a 2D field would be:
   .. code-block:: yaml
 
 	prep_quad_map:
-	    time_average:
+        climate_statistics:
+            operator: mean
 
 and an example of an appropriate diagnostic section of the recipe would be:
 
@@ -440,7 +444,7 @@ This diagnostic also includes the optional arguments, `maps_range` and
 `diff_range` to manually define plot ranges. Both arguments are a list of two floats
 to set plot range minimun and maximum values respectively for Model and Observations
 maps (Top panels) and for the Model minus Observations panel (bottom left).
-Note that if input data have negative values the Model over Observations map 
+Note that if input data have negative values the Model over Observations map
 (bottom right) is not produced.
 
 The scatter plots plot the matched model coordinate on the x axis, and the
@@ -457,7 +461,8 @@ An appropriate preprocessor for a 3D+time field would be:
 	    extract_levels:
 	      levels:  [100., ]
 	      scheme: linear_extrap
-	    time_average:
+        climate_statistics:
+          operator: mean
 	    regrid:
 	      target_grid: 1x1
 	      scheme: linear
@@ -573,7 +578,8 @@ An appropriate preprocessor for a 3D+time field would be:
 
   .. code-block:: yaml
 
-    time_average:
+    climate_statistics:
+      operator: mean
     extract_slice:
       latitude: [-50.,50.]
       longitude: 332.

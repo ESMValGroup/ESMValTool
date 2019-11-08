@@ -229,10 +229,10 @@ for immediate model intercomparison.
 
 #############################################################################
 
-20170803-A_lemb_va: Modified header with description and caveats
-20170629-A_kold_ni: Atmospheric budgets diagnostics written
-20180524-A_lemb_va: first complete working thermodynamics diagnostics
-20190325-A_lemb_va: complete updated version for ESMValTool v2.0b
+20170803-lembo_valerio: modified header with description and caveats
+20170629-koldunov_nikolay: atmospheric budgets diagnostics written
+20180524-lembo_valerio: first complete working thermodynamics diagnostics
+20190325-lembo_valerio: complete updated version for ESMValTool v2.0b
 
 #############################################################################
 """

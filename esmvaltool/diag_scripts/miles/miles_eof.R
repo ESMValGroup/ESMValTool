@@ -9,7 +9,7 @@
 # climatological figures for the chosen time period. Data are interpolated
 # on a common 2.5x2.5 grid.
 # Model data are compared against a reference field such as the
-# ECMWF ERA-Interim reanalysis. 
+# ECMWF ERA-Interim reanalysis.
 # It supports analysis for the 4 standard seasons.
 #
 # ############################################################################
@@ -18,15 +18,20 @@ library(tools)
 library(yaml)
 
 provenance_record <- function(infile) {
-  xprov <- list(ancestors = infile,
-                authors = list("hard_jo", "davi_pa", "arno_en"),
-                references = list("davini18"),
-                projects = list("c3s-magic"),
-                caption = "MiLES EOF statistics",
-                statistics = list("other"),
-                realms = list("atmos"),
-                themes = list("phys"),
-                domains = list("nh"))
+  xprov <- list(
+    ancestors = infile,
+    authors = list(
+      "vonhardenberg_jost", "davini_paolo",
+      "arnone_enrico"
+    ),
+    references = list("davini18"),
+    projects = list("c3s-magic"),
+    caption = "MiLES EOF statistics",
+    statistics = list("other"),
+    realms = list("atmos"),
+    themes = list("phys"),
+    domains = list("nh")
+  )
   return(xprov)
 }
 
@@ -65,18 +70,23 @@ work_dir <- settings$work_dir
 regridding_dir <- settings$run_dir
 plot_dir <- settings$plot_dir
 dir.create(work_dir, recursive = T, showWarnings = F)
-dir.create(regridding_dir, recursive = T, showWarnings = F)
+dir.create(regridding_dir,
+  recursive = T,
+  showWarnings = F
+)
 dir.create(plot_dir, recursive = T, showWarnings = F)
 
 # setup provenance file and list
-provenance_file <- paste0(regridding_dir, "/", "diagnostic_provenance.yml")
+provenance_file <-
+  paste0(regridding_dir, "/", "diagnostic_provenance.yml")
 provenance <- list()
 
 # extract metadata
 models_dataset <- unname(sapply(list0, "[[", "dataset"))
 models_ensemble <- unname(sapply(list0, "[[", "ensemble"))
 models_exp <- unname(sapply(list0, "[[", "exp"))
-reference_model <- unname(sapply(list0, "[[", "reference_dataset"))[1]
+reference_model <-
+  unname(sapply(list0, "[[", "reference_dataset"))[1]
 models_start_year <- unname(sapply(list0, "[[", "start_year"))
 models_end_year <- unname(sapply(list0, "[[", "end_year"))
 models_experiment <- unname(sapply(list0, "[[", "exp"))
@@ -96,9 +106,15 @@ for (model_idx in c(1:(length(models_dataset)))) {
   for (tele in teles) {
     for (seas in seasons) {
       filenames <- miles_eofs_fast(
-        dataset = dataset, expid = exp, ens = ensemble,
-        year1 = year1, year2 = year2, season = seas, tele = tele,
-        z500filename = infile, FILESDIR = work_dir,
+        dataset = dataset,
+        expid = exp,
+        ens = ensemble,
+        year1 = year1,
+        year2 = year2,
+        season = seas,
+        tele = tele,
+        z500filename = infile,
+        FILESDIR = work_dir,
         doforce = TRUE
       )
       # Set provenance for output files
@@ -113,7 +129,7 @@ for (model_idx in c(1:(length(models_dataset)))) {
 ##
 ## Make the plots
 ##
-if (write_plots) {
+if (write_plots) { # nolint
   ref_idx <- which(models_dataset == reference_model)
   if (length(ref_idx) == 0) {
     ref_idx <- length(models_dataset)
@@ -134,15 +150,27 @@ if (write_plots) {
       for (tele in teles) {
         for (seas in seasons) {
           filenames <- miles_eof_figures(
-            expid = exp, year1 = year1, year2 = year2, dataset = dataset,
-            ens = ensemble, dataset_ref = dataset_ref, expid_ref = exp_ref,
-            year1_ref = year1_ref, ens_ref = ensemble_ref,
-            year2_ref = year2_ref, season = seas, tele = tele,
-            FIGDIR = plot_dir, FILESDIR = work_dir, REFDIR = work_dir
+            expid = exp,
+            year1 = year1,
+            year2 = year2,
+            dataset = dataset,
+            ens = ensemble,
+            dataset_ref = dataset_ref,
+            expid_ref = exp_ref,
+            year1_ref = year1_ref,
+            ens_ref = ensemble_ref,
+            year2_ref = year2_ref,
+            season = seas,
+            tele = tele,
+            FIGDIR = plot_dir,
+            FILESDIR = work_dir,
+            REFDIR = work_dir
           )
           # Set provenance for output files (same as diagnostic files)
-          xprov <- provenance_record(list(climofiles[model_idx],
-                                          climofiles[ref_idx]))
+          xprov <- provenance_record(list(
+            climofiles[model_idx],
+            climofiles[ref_idx]
+          ))
           for (fname in filenames$figs) {
             provenance[[fname]] <- xprov
           }
