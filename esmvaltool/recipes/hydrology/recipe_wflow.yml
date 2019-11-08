@@ -2,13 +2,11 @@
 # recipe_wflow.yml
 ---
 documentation:
-  description: |
-    Recipe pre-processes ERA-Interim reanalyses files for use in the WFlow hydrological model.
-  authors: [
-    'kalverla_peter',
-    'camphuijsen_jaro',
-    'alidoost_sarah'
-    ]
+  description: Pre-processes climate data for the WFlow hydrological model.
+  authors:
+    - kalverla_peter
+    - camphuijsen_jaro
+    - alidoost_sarah
   projects: ['ewatercycle']
   references: ['acknow_project']
 
@@ -32,12 +30,13 @@ diagnostics:
   diagnostic_daily:
     description: WFlow input preprocessor for daily data
     additional_datasets:
-      - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1,
-         start_year: 1990, end_year: 1990}
+      - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
     variables:
       tas: &var_daily
         mip: day
         preprocessor: crop_basin
+        start_year: 1990
+        end_year: 1990
       pr: *var_daily
       orog:
         mip: fx
@@ -61,28 +60,21 @@ diagnostics:
   diagnostic_hourly:
     description: WFlow input preprocessor for hourly data
     additional_datasets:
-      - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1,
-         start_year: 1990, end_year: 1990}
+      - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1}
     variables:
       orog:
         mip: fx
         preprocessor: crop_basin
-      tas:
+      tas: &var_hourly
         mip: E1hr
         preprocessor: hourly_mean
-      pr:
-        mip: E1hr
-        preprocessor: hourly_mean
+        start_year: 1990
+        end_year: 1990
+      pr: *var_hourly
       # Reconstruct evspsblpot similar to ERA-Interim:
-      psl:
-        mip: E1hr
-        preprocessor: hourly_mean
-      rsds:
-        mip: E1hr
-        preprocessor: hourly_mean
-      rsdt:
-        mip: E1hr
-        preprocessor: hourly_mean
+      psl: *var_hourly
+      rsds: *var_hourly
+      rsdt: *var_hourly
     scripts:
       script:
         script: hydrology/wflow.py
@@ -91,5 +83,3 @@ diagnostics:
         startyear: '1990'
         endyear: '1990'
         dem_file: 'wflow/wflow_dem_Meuse.nc'
-
-
