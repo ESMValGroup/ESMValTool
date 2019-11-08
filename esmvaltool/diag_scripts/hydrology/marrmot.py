@@ -6,12 +6,12 @@ from pathlib import Path
 import iris
 import scipy.io as sio
 
+from esmvalcore import preprocessor as preproc
 from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
                                             get_diagnostic_filename,
                                             group_metadata, run_diagnostic)
 
 logger = logging.getLogger(Path(__file__).name)
-from esmvalcore import preprocessor as preproc
 
 def create_provenance_record():
     """Create a provenance record."""
@@ -32,6 +32,7 @@ def create_provenance_record():
         'ancestors': [],
     }
     return record
+
 
 def debruin_pet(tas, psl, rsds, rsdt, **kwargs):
     """ Determine De Bruin (2016) reference evaporation
@@ -117,6 +118,7 @@ def debruin_pet(tas, psl, rsds, rsdt, **kwargs):
 
     return ref_evap/lambda_
 
+
 def get_input_cubes(cfg):
     """ Return a dict with all (preprocessed) input files """
     provenance = create_provenance_record()
@@ -132,6 +134,18 @@ def get_input_cubes(cfg):
         all_vars[short_name] = allyears
         provenance['ancestors'].append(input_files)
     return all_vars, provenance
+
+
+def _get_dataset_name(cfg):
+    """ Get the dataset name """
+    input_data = cfg['input_data'].values()
+    grouped_input_data = group_metadata(input_data, 'dataset')
+    dataset_name = list(grouped_input_data.keys())
+    if len(dataset_name) == 1:
+        dataset_name = dataset_name[0]
+    basename = dataset_name + '_marrmot'
+    return basename
+
 
 def main(cfg):
     """Process data for use as input to the marrmot hydrological model """
@@ -166,12 +180,7 @@ def main(cfg):
     pet.convert_units('kg m-2 day-1')
 
     # Get the dataset name
-    input_data = cfg['input_data'].values()
-    grouped_input_data = group_metadata(input_data, 'dataset')
-    dataset_name = list(grouped_input_data.keys())
-    if len(dataset_name) == 1:
-        dataset_name = dataset_name[0]
-    basename = dataset_name + '_marrmot'
+    basename = _get_dataset_name(cfg)
 
     ## Save to matlab structure
     # Get the start and end times as an array with lenght 6
