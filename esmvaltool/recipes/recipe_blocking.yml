@@ -16,7 +16,7 @@ documentation:
     - primavera
 
 datasets:
-  - &cmip {activity: CMIP, dataset: AWI-CM-1-1-MR, project: CMIP6, mip: day,
+  - &cmip {dataset: AWI-CM-1-1-MR, project: CMIP6, mip: day,
            exp: historical, ensemble: r1i1p1f1, grid: gn,
            start_year: 1979, end_year: 2014}
   - {<<: *cmip, dataset: AWI-CM-1-1-MR, ensemble: "r[2:5]i1p1f1"}
@@ -53,7 +53,7 @@ datasets:
   - {<<: *cmip, dataset: NESM3}
   - {<<: *cmip, dataset: SAM0-UNICON}
 
-  - &HighResMIP {activity: HighResMIP, dataset: HadGEM3-GC31-LM,
+  - &HighResMIP {dataset: HadGEM3-GC31-LM,
                  project: CMIP6, mip: day, exp: highresSST-present,
                  ensemble: r1i1p1f1, grid: gn, start_year: 1979,
                  end_year: 2014}
