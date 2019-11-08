@@ -11,6 +11,18 @@
 
 ESMValTool: A community diagnostic and performance metrics tool for routine evaluation of Earth system models in CMIP
 
+# Input data
+
+ESMValTool can run with the following types of data as input:
+
+- CMIP5
+- CMIP6
+- OBS, OBS6
+- obs4mips
+- ana4mips
+- EMAC
+- CORDEX
+
 # Getting started
 
 Please see [getting started](https://esmvaltool.readthedocs.io/en/latest/getting_started/index.html) on readthedocs.
