@@ -14,6 +14,6 @@ attributes:
 # Variables to CMORize
 variables:
   sm:
-    mip: E6hr
+    mip: Lmon
     raw: swvl1
     file: 'eraintland_swvl1_????.nc'
