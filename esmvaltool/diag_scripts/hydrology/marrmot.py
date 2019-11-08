@@ -171,8 +171,26 @@ def main(cfg):
     # output_file = get_diagnostic_filename('marrmot_input', cfg)
     # iris.save(cubelist, output_file, fill_value=1.e20)
 
+    # Get the dataset name
+    input_data = cfg['input_data'].values()
+    grouped_input_data = group_metadata(input_data, 'dataset')
+    dataset_name = list(grouped_input_data.keys())
+    if len(dataset_name) == 1:
+        dataset_name = dataset_name[0]
+    basename = dataset_name + '_marrmot'
+
     ## Save to matlab structure
-    # TODO add data_orogin, time_end, time_start
+    # TODO add data_orogin
+    # Get the start and end times as an array with lenght 6
+    coord = temp.coord(axis='T')
+    time_start = coord.units.num2date(coord.points[0])
+    time_start = time_start.strftime("%Y %m %d %H %M %S").split()
+    time_start = [int(time) for time in time_start]
+    time_end = coord.units.num2date(coord.points[-1])
+    time_end = time_end.strftime("%Y %m %d %H %M %S").split()
+    time_end = [int(time) for time in time_end]
+
+    # make data structure
     mdict = {
         'precip': precip.data,
         'temp': temp.data,
@@ -180,15 +198,19 @@ def main(cfg):
         'delta_t': 1,  # this could also be extracted from the cube
         'time_unit': 'day'
         }
-    output_file = get_diagnostic_filename('marrmot_input', cfg, extension='mat')
-    sio.savemat(output_file, {'forcing': mdict})
+    output_data = {
+        'forcing': mdict,
+        'time_start': time_start,
+        'time_end': time_end
+        }
+    output_name = get_diagnostic_filename(basename, cfg, extension='mat')
+    sio.savemat(output_name, output_data)
 
     # Store provenance
     with ProvenanceLogger(cfg) as provenance_logger:
-        provenance_logger.log(output_file, provenance)
+        provenance_logger.log(output_name, provenance)
 
     # Do stuff
-    # - Unit conversion: P = mm/d, PET = mm/d, T = K
     # >> A vector with initial values for each of the model stores,
     # >> of size 1x[number of stores].
 
