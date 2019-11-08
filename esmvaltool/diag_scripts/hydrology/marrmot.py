@@ -148,14 +148,14 @@ def main(cfg):
     temp = all_vars['tas']
     temp = preproc.area_statistics(temp, operator='mean')
     # convert kelvin to celcius
-    temp.data = temp.data - 273.15
+    temp.convert_units('celsius')
 
     ## Processing Precipitation (pr)
     logger.info("Processing variable pr")
     precip = all_vars['pr']
     precip = preproc.area_statistics(precip, operator='mean')
     # convert kg/m2/s to kg/m2/day (or mm/day)
-    precip.data = precip.data * 24 * 60 * 60
+    precip.convert_units('kg m-2 day-1')
 
     ## Processing Reference EvapoTranspiration (PET)
     logger.info("Processing variable PET")
@@ -163,7 +163,7 @@ def main(cfg):
     pet.var_name = 'potential_evapotranspiration'
     pet = preproc.area_statistics(pet, operator='mean')
     # convert kg/m2/s to kg/m2/day (or mm/day)
-    pet.data = pet.data * 24 * 60 * 60
+    pet.convert_units('kg m-2 day-1')
 
     # # Save output
     # cubelist = iris.cube.CubeList([pr_accumulated, tas_accumulated, pet_accumulated])
