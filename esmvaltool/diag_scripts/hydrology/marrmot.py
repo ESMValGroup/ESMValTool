@@ -34,6 +34,34 @@ def create_provenance_record():
     return record
 
 
+def tetens_derivative(temp):
+    """ Derivative of Teten's formula for saturated vapor pressure.
+
+    Tetens formula (https://en.wikipedia.org/wiki/Tetens_equation) :=
+    es(T) = e0 * exp(a * T / (T + b))
+
+    Derivate (checked with Wolfram alpha)
+    des / dT = a * b * e0 * exp(a * T / (b + T)) / (b + T)^2
+    """
+    # Assert temperature is in degC
+    temp = preproc.convert_units(temp, 'degC')
+
+    e0_const = iris.coords.AuxCoord(6.112,
+                                    long_name='Saturated vapour pressure at 273 Kelvin',
+                                    units='hPa')
+    emp_a = 17.67 # empirical constant a
+    emp_b = iris.coords.AuxCoord(243.5,
+                                 long_name='Empirical constant b in Tetens formula',
+                                 units='degC')
+    exponent = iris.analysis.maths.exp(emp_a * temp / (emp_b + temp))
+    # return emp_a * emp_b * e0 * exponent / (emp_b + temp)**2
+    # iris.exceptions.NotYetImplementedError: coord * coord (emp_b * e0)
+    # workaround:
+    tmp1 = emp_a * emp_b
+    tmp2 = e0_const * exponent / (emp_b + temp)**2
+    return tmp1 * tmp2
+
+
 def debruin_pet(tas, psl, rsds, rsdt, **kwargs):
     """ Determine De Bruin (2016) reference evaporation
 
@@ -41,79 +69,52 @@ def debruin_pet(tas, psl, rsds, rsdt, **kwargs):
     Implementation using iris.
     """
     # Definition of constants
-    rv = iris.coords.AuxCoord(461.51,
-        long_name='Gas constant water vapour',
-        # source='Wallace and Hobbs (2006), 2.6 equation 3.14',
-        units='J K-1 kg-1')
+    rv_const = iris.coords.AuxCoord(461.51,
+                                    long_name='Gas constant water vapour',
+                                    # 'Wallace and Hobbs (2006), 2.6 equation 3.14',
+                                    units='J K-1 kg-1')
 
-    rd = iris.coords.AuxCoord(287.0,
-        long_name='Gas constant dry air',
-        # source='Wallace and Hobbs (2006), 2.6 equation 3.14',
-        units='J K-1 kg-1')
+    rd_const = iris.coords.AuxCoord(287.0,
+                                    long_name='Gas constant dry air',
+                                    # 'Wallace and Hobbs (2006), 2.6 equation 3.14',
+                                    units='J K-1 kg-1')
 
     lambda_ = iris.coords.AuxCoord(2.5e6,
-        long_name='Latent heat of vaporization',
-        # source='Wallace and Hobbs 2006',
-        units='J kg-1')
+                                   long_name='Latent heat of vaporization',
+                                   # 'Wallace and Hobbs 2006',
+                                   units='J kg-1')
 
-    cp = iris.coords.AuxCoord(1004,
-        long_name='Specific heat of dry air constant pressure',
-        # source='Wallace and Hobbs 2006',
-        units='J K-1 kg-1')
+    cp_const = iris.coords.AuxCoord(1004,
+                                    long_name='Specific heat of dry air constant pressure',
+                                    # 'Wallace and Hobbs 2006',
+                                    units='J K-1 kg-1')
 
     beta = iris.coords.AuxCoord(20,
-        long_name='Correction Constant',
-        # source='De Bruin (2016), section 4a',
-        units='W m-2')
+                                long_name='Correction Constant',
+                                # 'De Bruin (2016), section 4a',
+                                units='W m-2')
 
-    cs = iris.coords.AuxCoord(110,
-        long_name = 'Empirical constant',
-        # source = 'De Bruin (2016), section 4a',
-        units = 'W m-2')
-
-    def tetens_derivative(temp):
-        """ Derivative of Teten's formula for saturated vapor pressure.
-
-        Tetens formula (https://en.wikipedia.org/wiki/Tetens_equation) :=
-        es(T) = e0 * exp(a * T / (T + b))
-
-        Derivate (checked with Wolfram alpha)
-        des / dT = a * b * e0 * exp(a * T / (b + T)) / (b + T)^2
-        """
-        # Assert temperature is in degC
-        temp = preproc.convert_units(temp,'degC')
-
-        e0 = iris.coords.AuxCoord(6.112,
-            long_name='Saturated vapour pressure at 273 Kelvin',
-            units='hPa')
-        emp_a = 17.67 # empirical constant a
-        emp_b = iris.coords.AuxCoord(243.5,
-            long_name='Empirical constant b in Tetens formula',
-            units='degC')
-        exponent = iris.analysis.maths.exp(emp_a * temp / (emp_b + temp))
-        # return emp_a * emp_b * e0 * exponent / (emp_b + temp)**2
-        # iris.exceptions.NotYetImplementedError: coord * coord (emp_b * e0)
-        # workaround:
-        tmp1 = emp_a * emp_b
-        tmp2 = e0 * exponent / (emp_b + temp)**2
-        return tmp1 * tmp2
+    cs_const = iris.coords.AuxCoord(110,
+                                    long_name='Empirical constant',
+                                    # source = 'De Bruin (2016), section 4a',
+                                    units='W m-2')
 
     # Unit checks:
-    psl = preproc.convert_units(psl,'hPa')
-    tas = preproc.convert_units(tas,'degC')
+    psl = preproc.convert_units(psl, 'hPa')
+    tas = preproc.convert_units(tas, 'degC')
 
     # Variable derivation
     delta_svp = tetens_derivative(tas)
     # gamma = rv/rd * cp*msl/lambda_
     # iris.exceptions.NotYetImplementedError: coord / coord
-    gamma = rv.points[0]/rd.points[0] * cp*psl/lambda_
+    gamma = rv_const.points[0]/rd_const.points[0] * cp_const*psl/lambda_
 
     # Renaming for consistency with paper
     kdown = rsds
     kdown_ext = rsdt
 
     # Equation 6
-    rad_term = (1-0.23)*kdown - cs*kdown/kdown_ext
+    rad_term = (1-0.23)*kdown - cs_const*kdown/kdown_ext
     ref_evap = delta_svp / (delta_svp + gamma) * rad_term + beta
 
     return ref_evap/lambda_
