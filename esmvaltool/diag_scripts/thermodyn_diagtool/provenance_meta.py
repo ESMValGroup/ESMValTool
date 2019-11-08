@@ -27,7 +27,7 @@ def get_prov_map(attr, ancestor_files):
         'statistics': ['mean'],
         'domains': ['global'],
         'plot_type': ['geo'],
-        'authors': ['lemb_va'],
+        'authors': ['lembo_valerio'],
         'references': ['lembo16climdyn', 'lembo19gmdd', 'lucarini14revgeop'],
         'ancestors': ancestor_files,
     }
@@ -46,7 +46,7 @@ def get_prov_transp(attr, ancestor_file, plotname):
         'domains': ['global'],
         'plot_type': ['sect'],
         'plot_file': plotname,
-        'authors': ['lemb_va'],
+        'authors': ['lembo_valerio'],
         'references': ['lembo16climdyn', 'lembo19gmdd', 'lucarini14revgeop'],
         'ancestors': ancestor_file,
     }

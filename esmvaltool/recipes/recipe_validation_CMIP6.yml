@@ -13,10 +13,10 @@ documentation:
     There are no restrictions in terms of data.
 
   authors:
-    - pred_va
+    - predoi_valeriu
 
   maintainer:
-    - pred_va
+    - predoi_valeriu
 
 datasets:
   - {dataset: IPSL-CM6A-LR, project: CMIP6, mip: Amon, exp: historical, ensemble: r1i1p1f1, grid: gr, start_year: 1900, end_year: 2000}
