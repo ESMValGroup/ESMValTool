@@ -1,15 +1,21 @@
 ---
 documentation:
-  description: 'Sea ice drift evaluation'
-  authors: ['docq_da']
-  projects: [primavera]
-  references: ['docquier2017']
-  mantainer: [vega_ja]
+  description: |
+    'Sea ice drift evaluation'
+  authors:
+    - 'docquier_david'
+  projects:
+    - primavera
+  references:
+    - 'docquier2017'
+  mantainer:
+    - vegas-regidor_javier
 
 datasets:
- - {dataset: GFDL-ESM2G,  project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 1979,  end_year: 2005}
- - {dataset: MPI-ESM-LR,  project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 1979,  end_year: 2005}
-#  - {dataset: EC-EARTH,  project: CMIP5,  mip: day,  exp: historical,  ensemble: r1i1p1,  start_year: 1979,  end_year: 2005}
+  - {dataset: GFDL-ESM2G, project: CMIP5, mip: day, exp: historical,
+     ensemble: r1i1p1, start_year: 1979, end_year: 2005}
+  - {dataset: MPI-ESM-LR, project: CMIP5, mip: day, exp: historical,
+     ensemble: r1i1p1, start_year: 1979, end_year: 2005}
 
 preprocessors:
   extract:
@@ -35,7 +41,7 @@ diagnostics:
         additional_datasets:
           - {dataset: OSI-450-nh, project: OBS, type: reanaly, version: v2,
              mip: OImon, tier: 2,
-             start_year: 1979,  end_year: 2005}
+             start_year: 1979, end_year: 2005}
 
       sithick:
         mip: SIday
@@ -48,7 +54,7 @@ diagnostics:
         additional_datasets:
           - {dataset: PIOMAS, project: OBS, type: reanaly, version: 2.1,
              mip: day, tier: 2,
-             start_year: 1979,  end_year: 2005}
+             start_year: 1979, end_year: 2005}
 
       sispeed:
         mip: SIday
@@ -61,7 +67,7 @@ diagnostics:
         additional_datasets:
           - {dataset: IABP, project: OBS, type: buoy, version: v4.1,
              mip: day, tier: 2,
-             start_year: 1979,  end_year: 2005}
+             start_year: 1979, end_year: 2005}
     scripts:
       sea_ice_drift:
         script: seaice_drift/seaice_drift.py
