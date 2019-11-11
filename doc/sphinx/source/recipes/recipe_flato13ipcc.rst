@@ -54,6 +54,10 @@ following figures from Flato et al. (2013) can currently be reproduced:
       trend distributions of (c) September Arctic and (d) February Antarctic
       sea ice extent.
 
+    * Figure 9.42a: Equilibrium climate sensitivity (ECS) against the global
+      mean surface air temperature of CMIP5 models, both for the period
+      1961-1990 and for the pre-industrial control runs.
+
 Available recipes and diagnostics
 ---------------------------------
 
@@ -63,6 +67,7 @@ Recipes are stored in esmvaltool/recipes/
 
 Diagnostics are stored in esmvaltool/diag_scripts/
 
+    * climate_metrics/ecs.py: See :ref:`recipes_ecs`.
     * clouds/clouds_bias.ncl: global maps of the multi-model mean and the multi-model
       mean bias (Fig. 9.2, 9.4)
     * clouds/clouds_isccp: global maps of multi-model mean minus observations + zonal
@@ -71,11 +76,18 @@ Diagnostics are stored in esmvaltool/diag_scripts/
     * ipcc_ar5/ch09_fig09_14.py: Zonally averaged and equatorial SST (Fig. 9.14)
     * seaice/seaice_tsline.ncl: Time series of sea ice extent (Fig. 9.24a/b)
     * seaice/seaice_trends.ncl: Trend distributions of sea ice extent (Fig 9.24c/d)
+    * ipcc_ar5/ch09_fig09_42a.py: ECS vs. surface air temperature (Fig. 9.42a)
 
 User settings in recipe
 -----------------------
 
+#. Script climate_metrics/ecs.py
+
+   See :ref:`recipes_ecs`.
+
 #. Script clouds/clouds_bias.ncl
+
+#. Script clouds_bias.ncl
 
    *Required settings (scripts)*
 
@@ -144,11 +156,10 @@ User settings in recipe
    *Optional settings for script*
 
    * time_avg: type of time average (currently only "yearly" and "monthly" are
-               available).
-   * ts_anomaly: calculates anomalies with respect to the defined period;
-                 for each gird point by removing the mean for the given
-                 calendar month (requiring at least 50% of the data to be
-                 non-missing)
+     available).
+   * ts_anomaly: calculates anomalies with respect to the defined period; for
+     each gird point by removing the mean for the given calendar month
+     (requiring at least 50% of the data to be non-missing)
    * ref_start: start year of reference period for anomalies
    * ref_end: end year of reference period for anomalies
    * ref_value: if true, right panel with mean values is attached
@@ -159,8 +170,8 @@ User settings in recipe
    * y-max: set max of y-axis
    * mean_nh_sh: if true, calculate first NH and SH mean
    * volcanoes: if true, lines of main volcanic eruptions will be added
-   * run_ave: if not equal 0 than calculate running mean over this number
-              of years
+   * run_ave: if not equal 0 than calculate running mean over this number of
+     years
    * header: if true, region name as header
 
    *Required settings for variables*
@@ -205,6 +216,22 @@ User settings in recipe
    * EMs_in_lg: create a legend label for individual ensemble members (default: False)
    * fill_pole_hole: fill polar hole (typically in satellite data) with sic = 1 (default: False)
 
+#. Script ipcc_ar5/ch09_fig09_42a.py
+
+   *Required settings for script*
+
+   none
+
+   *Optional settings for script*
+
+   * save: :obj:`dict` containing keyword arguments for the function
+     :func:`matplotlib.pyplot.savefig`.
+   * axes_functions: :obj:`dict` containing methods executed for the plot's
+     :class:`matplotlib.axes.Axes` object.
+   * dataset_style: name of the style file (located in
+     :mod:`esmvaltool.diag_scripts.shared.plot.styles_python`).
+   * matplotlib_style: name of the matplotlib style file (located in
+     :mod:`esmvaltool.diag_scripts.shared.plot.styles_python.matplotlib`).
 
 Variables
 ---------
@@ -212,6 +239,7 @@ Variables
 * areacello (fx, longitude latitude)
 * pr (atmos, monthly mean, longitude latitude time)
 * rlut, rlutcs (atmos, monthly mean, longitude latitude time)
+* rsdt (atmos, monthly mean, longitude latitude time)
 * rsut, rsutcs (atmos, monthly mean, longitude latitude time)
 * sic (ocean-ice, monthly mean, longitude latitude time)
 * tas (atmos, monthly mean, longitude latitude time)
@@ -328,3 +356,12 @@ Example plots
 
    Figure 9.24a: Time series of total sea ice area and extent (accumulated) for the Arctic
    in September including multi-model mean and standard deviation.
+
+.. _fig_flato13ipcc_6:
+.. figure:: /recipes/figures/flato13ipcc/fig-9-42a.png
+   :align: center
+
+   Figure 9.42a: Equilibrium climate sensitivity (ECS) against the global mean
+   surface air temperature of CMIP5 models, both for the period 1961-1990
+   (larger symbols) and for the pre-industrial control runs (smaller symbols).
+

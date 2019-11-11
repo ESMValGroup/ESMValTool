@@ -17,6 +17,7 @@ The module provides plots for a single model of:
 import math
 import os
 from shutil import move
+
 import cartopy.crs as ccrs
 import matplotlib.pyplot as plt
 import numpy as np
@@ -24,9 +25,10 @@ from cdo import Cdo
 from matplotlib import rcParams
 from netCDF4 import Dataset
 from scipy import interpolate, stats
+
 from esmvaltool.diag_scripts.shared import ProvenanceLogger
-from esmvaltool.diag_scripts.thermodyn_diagtool import fourier_coefficients, \
-    provenance_meta
+from esmvaltool.diag_scripts.thermodyn_diagtool import (fourier_coefficients,
+                                                        provenance_meta)
 
 
 def balances(cfg, wdir, plotpath, filena, name, model):
@@ -89,10 +91,9 @@ def balances(cfg, wdir, plotpath, filena, name, model):
             lat_model = 'lat_{}'.format(model)
             pr_output(transp_mean[i, :], filename, nc_f, nameout, lat_model)
             name_model = '{}_{}'.format(nameout, model)
-            cdo.chname(
-                '{},{}'.format(nameout, name_model),
-                input=nc_f,
-                output='aux.nc')
+            cdo.chname('{},{}'.format(nameout, name_model),
+                       input=nc_f,
+                       output='aux.nc')
             move('aux.nc', nc_f)
             cdo.chname('lat,{}'.format(lat_model), input=nc_f, output='aux.nc')
             move('aux.nc', nc_f)
@@ -148,11 +149,10 @@ def balances(cfg, wdir, plotpath, filena, name, model):
         plt.title('Annual mean {}'.format(ext_name[i_f]))
         plt.xlabel('Years')
         plt.ylabel('[W/m2]')
-        axi.legend(
-            loc='upper center',
-            bbox_to_anchor=(0.5, -0.07),
-            shadow=True,
-            ncol=3)
+        axi.legend(loc='upper center',
+                   bbox_to_anchor=(0.5, -0.07),
+                   shadow=True,
+                   ncol=3)
         plt.tight_layout()
         plt.grid()
         plt.savefig(pdir + '/{}_{}_timeser.png'.format(model, name[i_f]))
@@ -385,14 +385,13 @@ def plot_climap(axi, coords, fld, title, rrange, c_m):
     axi.coastlines()
     lons = np.linspace(0, 360, len(coords[0])) - (coords[0][1] - coords[0][0])
     plt.contourf(lons, coords[1], fld, 60, transform=ccrs.PlateCarree())
-    plt.pcolor(
-        lons,
-        coords[1],
-        fld,
-        vmin=rrange[0],
-        vmax=rrange[1],
-        cmap=c_m,
-        antialiaseds='True')
+    plt.pcolor(lons,
+               coords[1],
+               fld,
+               vmin=rrange[0],
+               vmax=rrange[1],
+               cmap=c_m,
+               antialiaseds='True')
     plt.colorbar()
     plt.title(title)
     plt.grid()
@@ -548,13 +547,12 @@ def plot_mm_ebscatter(pdir, eb_list):
     plot_mm_scatter(axi, varlist, title, xlabel, ylabel)
     axi = plt.subplot(224)
     axi.set_figsize = (50, 50)
-    plt.errorbar(
-        x=atmb_all[:, 0],
-        y=surb_all[:, 0],
-        xerr=atmb_all[:, 1],
-        yerr=surb_all[:, 1],
-        fmt='none',
-        ecolor=(0, 0, 0))
+    plt.errorbar(x=atmb_all[:, 0],
+                 y=surb_all[:, 0],
+                 xerr=atmb_all[:, 1],
+                 yerr=surb_all[:, 1],
+                 fmt='none',
+                 ecolor=(0, 0, 0))
     title = '(b) Atmospheric vs. Surface budget'
     xlabel = 'F_a [W m-2]'
     ylabel = 'F_s [W m-2]'
@@ -587,13 +585,12 @@ def plot_mm_scatter(axi, varlist, title, xlabel, ylabel):
     s_l, _, _, _, _ = stats.linregress(xval, yval)
     semimaj = np.max([np.nanstd(xval), np.nanstd(yval)])
     semimin = np.min([np.nanstd(xval), np.nanstd(yval)])
-    plot_ellipse(
-        semimaj,
-        semimin,
-        phi=np.arctan(s_l),
-        x_cent=np.nanmean(xval),
-        y_cent=np.nanmean(yval),
-        a_x=axi)
+    plot_ellipse(semimaj,
+                 semimin,
+                 phi=np.arctan(s_l),
+                 x_cent=np.nanmean(xval),
+                 y_cent=np.nanmean(yval),
+                 a_x=axi)
     plt.title(title, fontsize=12)
     rcParams['axes.titlepad'] = 1
     rcParams['axes.labelpad'] = 1
@@ -602,10 +599,9 @@ def plot_mm_scatter(axi, varlist, title, xlabel, ylabel):
     d_x = 0.01 * (max(xval) - min(xval))
     d_y = 0.01 * (max(yval) - min(yval))
     for i_m in np.arange(modnum):
-        axi.annotate(
-            str(i_m + 1), (xval[i_m], yval[i_m]),
-            xytext=(xval[i_m] + d_x, yval[i_m] + d_y),
-            fontsize=12)
+        axi.annotate(str(i_m + 1), (xval[i_m], yval[i_m]),
+                     xytext=(xval[i_m] + d_x, yval[i_m] + d_y),
+                     fontsize=12)
     axi.tick_params(axis='both', which='major', labelsize=12)
     plt.subplots_adjust(hspace=.3)
     plt.grid()
@@ -637,8 +633,12 @@ def plot_mm_scatter_spec(axi, varlist, title, xlabel, ylabel):
     y_y = np.linspace(min(yval) - 0.1 * yrang, max(yval) + 0.1 * yrang, 10)
     x_m, y_m = np.meshgrid(x_x, y_y)
     z_m = x_m + y_m
-    c_p = plt.contour(
-        x_m, y_m, z_m, colors='black', linestyles='dashed', linewidths=1.)
+    c_p = plt.contour(x_m,
+                      y_m,
+                      z_m,
+                      colors='black',
+                      linestyles='dashed',
+                      linewidths=1.)
     plt.clabel(c_p, inline=True, inline_spacing=-4, fontsize=8)
     plot_mm_scatter(axi, varlist, title, xlabel, ylabel)
 
