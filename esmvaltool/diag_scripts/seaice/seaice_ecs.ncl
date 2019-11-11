@@ -29,7 +29,7 @@
 ;
 ; Modification history
 ;    20191028-lauer_axel: rewritten for v2.0
-;    20161212-A_senf_da: implemented.
+;    20161212-senftleben_daniel: implemented.
 ; #############################################################################
 
 load "$diag_scripts/../interface_scripts/interface.ncl"
