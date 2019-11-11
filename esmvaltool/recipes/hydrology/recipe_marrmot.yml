@@ -3,11 +3,12 @@
 ---
 documentation:
   description: |
-    Recipe pre-processes ERA-Interim reanalyses files for use in the MARRMoT hydrological model.
+    Recipe pre-processes ERA-Interim and ERA-5 data
+    for use in the MARRMoT hydrological model.
 
     MARRMoT is the Modular Assessment of Rainfall-Runnoff Models Toolbox ...
     https://www.geosci-model-dev.net/12/2463/2019/
-  authors: ['kalverla_peter', 'camphuijsen_jaro']
+  authors: ['kalverla_peter', 'camphuijsen_jaro', 'alidoost_sarah']
   projects: ['ewatercycle']
   references: ['acknow_project']
 
@@ -15,11 +16,9 @@ preprocessors:
   extract_catchment: &catchment
     extract_shape:
       # Lumped model: needs catchment-aggregated input data
-      shapefile: rhine_meuse_hydrosheds.shp  # In aux (config-user.yml)
+      shapefile: meuse_hydrosheds.shp  # In aux (config-user.yml)
       method: contains
       crop: true
-    # area_statistics: # done in diag because non-linear PET functions
-    #   operator: mean
   daily_mean: &mean
     daily_statistics:
       operator: mean
@@ -58,12 +57,11 @@ diagnostics:
     variables:
       tas: &var_hourly
         mip: E1hr
-        start_year: 2000
-        end_year: 2000
+        start_year: 2001
+        end_year: 2001
         preprocessor: hourly
       pr: *var_hourly
       # MARRMoT requires PET. Thus, we might also need psl, rsds, rsdt
-      # This is what we did for wflow for *evaporation* (PET = evapoTRANSPIration)
       psl: *var_hourly
       rsds: *var_hourly
       rsdt: *var_hourly
