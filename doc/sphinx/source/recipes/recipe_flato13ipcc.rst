@@ -304,7 +304,7 @@ Example plots
 .. figure:: /recipes/figures/flato13ipcc/fig-9-14.png
    :align: center
 
-   Fig. 9.14: (a) Zonally averaged sea surface temperature (SST) error
+   Figure 9.14: (a) Zonally averaged sea surface temperature (SST) error
    in CMIP5 models. (b) Equatorial SST error in CMIP5 models. (c) Zonally
    averaged multi-model mean SST error for CMIP5 together with
    inter-model standard deviation (shading). (d) Equatorial multi-model
@@ -320,13 +320,11 @@ Example plots
    :align:   center
    :width:   9cm
 
-   Sea ice extent trend distribution for the Arctic in September
-   (similar to IPCC AR5 Chapter 9, Fig. 9.24c). [seaice_trends.ncl]
+   Figure 9.24c: Sea ice extent trend distribution for the Arctic in September.
 
 .. figure::  /recipes/figures/seaice/extent_sic_Arctic_September_1960-2005.png
    :align:   center
    :width:   12cm
 
-   Time series of total sea ice area and extent (accumulated) for the Arctic in September
-   including multi-model mean and standard deviation (similar to IPCC AR5 Chapter 9, Fig. 9.24a).
-   [seaice_tsline.ncl]
+   Figure 9.24a: Time series of total sea ice area and extent (accumulated) for the Arctic
+   in September including multi-model mean and standard deviation.
