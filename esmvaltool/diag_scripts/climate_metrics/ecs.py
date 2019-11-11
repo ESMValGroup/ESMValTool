@@ -254,21 +254,17 @@ def get_provenance_record(caption):
 
 def read_external_file(cfg):
     """Read external file to get ECS."""
-    ecs = {}
-    feedback_parameter = {}
-    if not cfg.get('read_external_file'):
-        return (ecs, feedback_parameter)
-    base_dir = os.path.dirname(__file__)
-    filepath = os.path.join(base_dir, cfg['read_external_file'])
-    if os.path.isfile(filepath):
-        with open(filepath, 'r') as infile:
-            external_data = yaml.safe_load(infile)
-    else:
-        logger.error("Desired external file %s does not exist", filepath)
-        return (ecs, feedback_parameter)
+    filepath = os.path.expanduser(os.path.expandvars(
+        cfg['read_external_file']))
+    if not os.path.isabs(filepath):
+        filepath = os.path.join(os.path.dirname(__file__), filepath)
+    if not os.path.isfile(filepath):
+        raise ValueError(f"Desired external file '{filepath}' does not exist")
+    with open(filepath, 'r') as infile:
+        external_data = yaml.safe_load(infile)
     ecs = external_data.get('ecs', {})
     feedback_parameter = external_data.get('feedback_parameter', {})
-    logger.info("External file %s", filepath)
+    logger.info("Reading external file '%s'", filepath)
     logger.info("Found ECS (K):")
     logger.info("%s", pformat(ecs))
     logger.info("Found climate feedback parameters (W m-2 K-1):")
@@ -433,9 +429,10 @@ def main(cfg):
 
         # Save data
         if cfg.get('read_external_file') and dataset_name in ecs:
-            logger.info(
-                "Overwriting external given ECS and climate feedback "
-                "parameter for %s", dataset_name)
+            logger.warning(
+                "Overwriting externally given ECS and climate feedback "
+                "parameter from file '%s' for '%s'", external_file,
+                dataset_name)
         ecs[dataset_name] = -reg.intercept / (2 * reg.slope)
         feedback_parameter[dataset_name] = -reg.slope
         all_ancestors.extend(ancestor_files)

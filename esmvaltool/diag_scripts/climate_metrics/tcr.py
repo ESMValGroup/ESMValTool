@@ -18,6 +18,8 @@ Configuration options in recipe
 -------------------------------
 plot : bool, optional (default: True)
     Plot temperature vs. time.
+read_external_file : str, optional
+    Read TCR from external file.
 seaborn_settings : dict, optional
     Options for seaborn's `set()` method (affects all plots), see
     <https://seaborn.pydata.org/generated/seaborn.set.html>.
@@ -26,12 +28,14 @@ seaborn_settings : dict, optional
 
 import logging
 import os
+from pprint import pformat
 
 import cf_units
 import iris
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
+import yaml
 from scipy import stats
 
 from esmvaltool.diag_scripts.shared import (
@@ -195,7 +199,9 @@ def calculate_tcr(cfg):
 def check_input_data(cfg):
     """Check input data."""
     if not variables_available(cfg, ['tas']):
-        raise ValueError("This diagnostic needs 'tas' variable")
+        raise ValueError(
+            "This diagnostic needs variable 'tas' if 'read_external_file' is "
+            "not given")
     input_data = cfg['input_data'].values()
     project_group = group_metadata(input_data, 'project')
     projects = list(project_group.keys())
@@ -225,7 +231,24 @@ def get_provenance_record(caption):
     return record
 
 
-def write_data(cfg, tcr):
+def read_external_file(cfg):
+    """Read external file to get TCR."""
+    filepath = os.path.expanduser(os.path.expandvars(
+        cfg['read_external_file']))
+    if not os.path.isabs(filepath):
+        filepath = os.path.join(os.path.dirname(__file__), filepath)
+    if not os.path.isfile(filepath):
+        raise ValueError(f"Desired external file '{filepath}' does not exist")
+    with open(filepath, 'r') as infile:
+        external_data = yaml.safe_load(infile)
+    tcr = external_data.get('tcr', {})
+    logger.info("Reading external file '%s'", filepath)
+    logger.info("Found TCR (K):")
+    logger.info("%s", pformat(tcr))
+    return (tcr, filepath)
+
+
+def write_data(cfg, tcr, external_file=None):
     """Write netcdf files."""
     var_attr = {
         'short_name': 'tcr',
@@ -242,6 +265,8 @@ def write_data(cfg, tcr):
         datasets = select_metadata(cfg['input_data'].values(),
                                    dataset=dataset_name)
         ancestor_files.extend([d['filename'] for d in datasets])
+    if external_file is not None:
+        ancestor_files.append(external_file)
     provenance_record['ancestors'] = ancestor_files
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(path, provenance_record)
@@ -249,11 +274,24 @@ def write_data(cfg, tcr):
 
 def main(cfg):
     """Run the diagnostic."""
-    check_input_data(cfg)
     sns.set(**cfg.get('seaborn_settings', {}))
 
-    # Calculate TCR
-    tcr = calculate_tcr(cfg)
+    # Read external file if desired
+    if cfg.get('read_external_file'):
+        (tcr, external_file) = read_external_file(cfg)
+    else:
+        check_input_data(cfg)
+        tcr = {}
+        external_file = None
+
+    # Calculate TCR directly
+    new_tcr = calculate_tcr(cfg)
+    for dataset_name in new_tcr:
+        if dataset_name in tcr:
+            logger.warning(
+                "Overwriting externally given TCR from file '%s' for '%s'",
+                external_file, dataset_name)
+    tcr.update(new_tcr)
 
     # Write TCR
     write_data(cfg, tcr)

@@ -20,6 +20,10 @@ Configuration options in recipe
 dataset_style : str, optional
     Dataset style file (located in
     :mod:`esmvaltool.diag_scripts.shared.plot.styles_python`).
+log_x : bool, optional (default: False)
+    Apply logarithm to X axis (ECS).
+log_y : bool, optional (default: False)
+    Apply logarithm to Y axis (TCR).
 seaborn_settings : dict, optional
     Options for seaborn's `set()` method (affects all plots), see
     <https://seaborn.pydata.org/generated/seaborn.set.html>.
@@ -43,14 +47,18 @@ from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
 logger = logging.getLogger(os.path.basename(__file__))
 
 
-def _get_reg_line(x_cube, y_cube, xlim=(1.5, 6.0), n_points=100):
+def _get_reg_line(x_cube, y_cube, xlim=(0.0, 6.0), n_points=100):
     """Get regression line and means for two cubes."""
     reg = stats.linregress(x_cube.data, y_cube.data)
+    logger.info("Regression stats")
+    logger.info("Slope: %.2f", reg.slope)
+    logger.info("Intercept: %.2f", reg.intercept)
+    logger.info("R2: %.2f", reg.rvalue**2)
     x_reg = np.linspace(xlim[0], xlim[1], n_points)
     y_reg = reg.slope * x_reg + reg.intercept
     x_mean = np.mean(x_cube.data)
     y_mean = np.mean(y_cube.data)
-    return ((x_reg, y_reg), (x_mean, y_mean))
+    return ((x_reg, y_reg), (x_mean, y_mean), reg.rvalue)
 
 
 def get_provenance_record(project, ancestor_files):
@@ -79,11 +87,19 @@ def plot_data(cfg, ecs_cube, tcr_cube):
     (_, axes) = plt.subplots()
     project = ecs_cube.attributes['project']
 
+    # Apply logarithms if desired
+    if cfg.get('log_x'):
+        ecs_cube.data = np.ma.log(ecs_cube.data)
+    if cfg.get('log_y'):
+        tcr_cube.data = np.ma.log(tcr_cube.data)
+
     # Plot scatterplot
     for dataset_name in ecs_cube.coord('dataset').points:
         style = plot.get_dataset_style(dataset_name, cfg.get('dataset_style'))
         ecs = ecs_cube.extract(iris.Constraint(dataset=dataset_name)).data
         tcr = tcr_cube.extract(iris.Constraint(dataset=dataset_name)).data
+
+        # Plot single point
         axes.plot(ecs,
                   tcr,
                   marker=style['mark'],
@@ -93,24 +109,34 @@ def plot_data(cfg, ecs_cube, tcr_cube):
                   label=dataset_name)
 
     # Plot regression line and MMM
-    (reg_line, mmm) = _get_reg_line(ecs_cube, tcr_cube)
+    (reg_line, mmm, r_value) = _get_reg_line(ecs_cube, tcr_cube)
     axes.plot(reg_line[0], reg_line[1], 'k-')
     axes.plot(mmm[0], mmm[1], 'ro', label=f'{project} mean')
 
     # Plot appearance
     axes.set_title(f"TCR vs. ECS for {project} models")
-    axes.set_xlabel("ECS / K")
-    axes.set_ylabel("TCR / K")
-    axes.set_xlim([1.5, 6.0])
-    axes.set_ylim([0.5, 3.0])
+    if cfg.get('log_x'):
+        axes.set_xlim([0.8, 2.0])
+        axes.set_xlabel('log(ECS / K)')
+    else:
+        axes.set_xlim([1.5, 6.0])
+        axes.set_xlabel('ECS / K')
+    if cfg.get('log_y'):
+        axes.set_ylim([0.3, 1.2])
+        axes.set_ylabel('log(TCR / K)')
+    else:
+        axes.set_ylim([0.5, 3.5])
+        axes.set_ylabel('TCR / K')
     legend = axes.legend(loc='center left',
                          bbox_to_anchor=[1.05, 0.5],
                          borderaxespad=0.0,
                          ncol=2)
+    axes.text(0.05, 0.9, f'$R^2$ = {r_value**2:.2f}', transform=axes.transAxes)
 
     # Save plot
     plot_path = get_plot_filename('ch09_fig09_42b', cfg)
     plt.savefig(plot_path,
+                dpi=300,
                 orientation='landscape',
                 bbox_inches='tight',
                 additional_artists=[legend])
