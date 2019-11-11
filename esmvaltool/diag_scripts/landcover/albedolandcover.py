@@ -106,6 +106,62 @@ def _add_masks_albedolandcover(model_data, this_models_xxfracs, cfg):
     return model_data
 
 
+def _reconstruct_albedo_pixel(x_0, y_0, lc_logical):
+    # Check that the system is not over_parameterised
+    alb_lc_pixel = np.zeros((3, ))
+    alb_lc_pixel[...] = np.nan
+
+    if len(y_0) > np.sum(lc_logical.astype(int)) + 1 and\
+            np.sum(lc_logical.astype(int)) > 0:
+        # Do multiple linear regression
+        linreg = linear_model.LinearRegression().fit(x_0, y_0)
+        intercept = linreg.intercept_
+        coefficients = linreg.coef_
+
+        # Now loop again and reconstruct albedo's
+        lc_reg = 0
+        for i_0 in range(3):
+            if lc_logical[i_0]:
+                alb_lc_pixel[i_0] = intercept\
+                    + coefficients[lc_reg] * 100.
+                lc_reg = lc_reg + 1
+    return alb_lc_pixel
+
+
+def _prepare_data_for_linreg(model_data, islice, jslice):
+    lc_logical = np.full((3, ), True)
+    lc_classes = [config['params']['lc1_class'],
+                  config['params']['lc2_class'],
+                  config['params']['lc3_class']]
+    lc_data = []
+    # Loop over lc_classes
+    for i_0 in range(3):
+        current_class = lc_classes[i_0]
+        # First flatten the array
+        lc_flattened = {}
+        for varkey in current_class:
+            lc_flattened[varkey] = model_data[varkey].data[
+                islice, jslice].compressed()
+        lc_sum = sum([lc_flattened[varkey]
+                      for varkey in current_class])
+        # Now check thresholds
+        if (np.var(lc_sum) > 0. and
+                len(lc_sum) >= config['params']['mingc']):
+            lc_data.append(lc_sum)
+            lc_logical[i_0] = True
+        else:
+            logger.info("Variance zero or not enough\
+                   valid data for this landcover class")
+            lc_logical[i_0] = False
+    # Now the multiple lin reg part
+    x_0 = np.stack(lc_data)
+    x_0 = x_0.swapaxes(0, 1)
+    # Same mask, so shape is fine
+    y_0 = model_data['alb'].data[islice, jslice].compressed()
+
+    return x_0, y_0, lc_logical
+
+
 def _get_reconstructed_albedos(model_data, cfg):
     alb_lc = np.zeros((3, ) + model_data['alb'].shape)
     alb_lc[...] = np.nan
@@ -125,51 +181,13 @@ def _get_reconstructed_albedos(model_data, cfg):
             # in the neighbourhood bbox
             if (np.sum((~bbox_mask).astype(int)) >
                     cfg['params']['minnum_gc_bb']):
-                lc_logical = np.full((3, ), True)
-                lc_classes = [cfg['params']['lc1_class'],
-                              cfg['params']['lc2_class'],
-                              cfg['params']['lc3_class']]
-                lc_data = []
-                # Loop over lc_classes
-                for i_0 in range(3):
-                    current_class = lc_classes[i_0]
-                    # First flatten the array
-                    lc_flattened = {}
-                    for varkey in current_class:
-                        lc_flattened[varkey] = model_data[varkey].data[
-                            islice, jslice].compressed()
-                    lc_sum = sum([lc_flattened[varkey]
-                                  for varkey in current_class])
-                    # Now check thresholds
-                    if (np.var(lc_sum) > 0. and
-                            len(lc_sum) >= cfg['params']['mingc']):
-                        lc_data.append(lc_sum)
-                        lc_logical[i_0] = True
-                    else:
-                        logger.info("Variance zero or not enough\
-                               valid data for this landcover class")
-                        lc_logical[i_0] = False
-                # Now the multiple lin reg part
-                x_0 = np.stack(lc_data)
-                x_0 = x_0.swapaxes(0, 1)
-                # Same mask, so shape is fine
-                y_0 = model_data['alb'].data[islice, jslice].compressed()
+                x_0, y_0, lc_logical = _prepare_data_for_linreg(model_data,
+                                                                islice,
+                                                                jslice)
 
-                # Check that the system is not over_parameterised
-                if len(y_0) > np.sum(lc_logical.astype(int)) + 1 and\
-                        np.sum(lc_logical.astype(int)) > 0:
-                    # Do multiple linear regression
-                    linreg = linear_model.LinearRegression().fit(x_0, y_0)
-                    intercept = linreg.intercept_
-                    coefficients = linreg.coef_
+                alb_lc[:, i, j] = _reconstruct_albedo_pixel(x_0, y_0,
+                                                            lc_logical)
 
-                    # Now loop again and reconstruct albedo's
-                    lc_reg = 0
-                    for i_0 in range(3):
-                        if lc_logical[i_0]:
-                            alb_lc[i_0, i, j] = intercept\
-                                + coefficients[lc_reg] * 100.
-                            lc_reg = lc_reg + 1
     return alb_lc
 
 
@@ -177,8 +195,7 @@ def _write_albedochanges_to_disk(alb_lc, template_cube,
                                  datadict, cfg):
     transition_cube = template_cube
     # Remove attributes that are not applicable to derived data
-    attrs_to_be_removed = ['comment', 'modeling_realm', 'table_id']
-    for att in attrs_to_be_removed:
+    for att in ['comment', 'modeling_realm', 'table_id']:
         if att in transition_cube.attributes:
             transition_cube.attributes.pop(att)
     # Set correct unit
@@ -191,20 +208,19 @@ def _write_albedochanges_to_disk(alb_lc, template_cube,
     for ikey, jkey in it.product(result_dict.keys(), result_dict.keys()):
         if not ikey == jkey:
             # Take out Frac for readability
-            transition_name = "albedo_change_from_{0}_to_{1}".format(
-                names[ikey], names[jkey]).replace('Frac', '')
-            logger.info("Calculating: %s", transition_name)
             transition_cube.data = result_dict[jkey] - result_dict[ikey]
-            transition_cube.rename(transition_name)
+            transition_cube.rename("albedo_change_from_{0}_to_{1}".format(
+                names[ikey], names[jkey]).replace('Frac', ''))
+            logger.info("Calculated: %s", transition_cube.name())
             # Get some usefull info for constructing the filenames
             month_string = template_cube.coord('time').units.num2date(
                 template_cube.coord('time').points)[0].strftime('%b')
             basename = '{0}-{1}-{2}'.format(month_string,
                                             datadict['alb']['dataset'],
-                                            transition_name)
+                                            transition_cube.name())
             transition_cube.attributes['plottitle'] = month_string + '-'\
                 + datadict['alb']['dataset']
-            transition_cube.attributes['plotsuptitle'] = transition_name
+            transition_cube.attributes['plotsuptitle'] = transition_cube.name()
             savename_nc = os.path.join(cfg['work_dir'],
                                        '{0}.nc'.format(basename))
             logger.info("Saving file as: %s", savename_nc)
@@ -212,10 +228,9 @@ def _write_albedochanges_to_disk(alb_lc, template_cube,
 
             # Create provenance record
             # Create caption
-            caption = transition_cube.attributes['plottitle'] + ' '\
-                + transition_cube.attributes['plotsuptitle']
             prov_rec = {
-                'caption': caption,
+                'caption': transition_cube.attributes['plottitle'] + ' '
+                           + transition_cube.attributes['plotsuptitle'],
                 'statistics': ['other'],
                 'domains': ['global'],
                 'plot_type': 'other',
