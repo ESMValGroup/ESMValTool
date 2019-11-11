@@ -55,7 +55,7 @@ following figures from Flato et al. (2013) can currently be reproduced:
       1961-1990 and for the pre-industrial control runs.
 
     * Figure 9.45a: Scatterplot of springtime snow-albedo effect values in climate
-      change vs. springtime d(alpha_s)/d(T_s) values in the seasonal
+      change vs. springtime d(alpha\ :sub:`s`\)/d(T\ :sub:`s`\) values in the seasonal
       cycle in transient climate change experiments (Hall and Qu, 2006).
 
 Available recipes and diagnostics
@@ -75,7 +75,7 @@ Diagnostics are stored in esmvaltool/diag_scripts/
     * ipcc_ar5/tsline.ncl: time series of the global mean (anomaly) (Fig. 9.8)
     * ipcc_ar5/ch09_fig09_14.py: Zonally averaged and equatorial SST (Fig. 9.14)
     * ipcc_ar5/ch09_fig09_42a.py: ECS vs. surface air temperature (Fig. 9.42a)
-    * ipcc_ar5/ch09_fig09_54a.ncl: snow-albedo effect (Fig. 9.45a)
+    * ipcc_ar5/ch09_fig09_45a.ncl: snow-albedo effect (Fig. 9.45a)
 
 User settings in recipe
 -----------------------
@@ -356,6 +356,6 @@ Example plots
    :align: center
 
    Figure 9.45a: Scatterplot of springtime snow-albedo effect values in climate
-   change vs. springtime d(alpha_s)/d(T_s) values in the seasonal cycle in
-   transient climate change experiments (CMIP5 historical experiments: 1901-2000,
-   rcp45 experiments: 2101-2200).
+   change vs. springtime d(alpha\ :sub:`s`\)/d(T\ :sub:`s`\) values in the seasonal
+   cycle in transient climate change experiments (CMIP5 historical experiments:
+   1901-2000, rcp45 experiments: 2101-2200).
