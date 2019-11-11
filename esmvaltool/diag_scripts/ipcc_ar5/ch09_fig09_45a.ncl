@@ -22,7 +22,7 @@
 ;   exp_future:      name of climate change experiment (e.g. "rcp45")
 ;
 ; Optional settings (scripts)
-;   diagminmax:
+;   diagminmax:      observational uncertainty (min and max)
 ;   legend_outside:  True, False
 ;   styleset:        "CMIP5" (if not set, this diagnostic will create its own
 ;                    color table and symbols for plotting)

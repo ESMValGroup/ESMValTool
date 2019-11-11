@@ -54,6 +54,10 @@ following figures from Flato et al. (2013) can currently be reproduced:
       mean surface air temperature of CMIP5 models, both for the period
       1961-1990 and for the pre-industrial control runs.
 
+    * Figure 9.45a: Scatterplot of springtime snow-albedo effect values in climate
+      change vs. springtime d(alpha_s)/d(T_s) values in the seasonal
+      cycle in transient climate change experiments (Hall and Qu, 2006).
+
 Available recipes and diagnostics
 ---------------------------------
 
@@ -71,6 +75,7 @@ Diagnostics are stored in esmvaltool/diag_scripts/
     * ipcc_ar5/tsline.ncl: time series of the global mean (anomaly) (Fig. 9.8)
     * ipcc_ar5/ch09_fig09_14.py: Zonally averaged and equatorial SST (Fig. 9.14)
     * ipcc_ar5/ch09_fig09_42a.py: ECS vs. surface air temperature (Fig. 9.42a)
+    * ipcc_ar5/ch09_fig09_54a.ncl: snow-albedo effect (Fig. 9.45a)
 
 User settings in recipe
 -----------------------
@@ -196,6 +201,33 @@ User settings in recipe
    * matplotlib_style: name of the matplotlib style file (located in
      :mod:`esmvaltool.diag_scripts.shared.plot.styles_python.matplotlib`).
 
+#. Script ipcc_ar5/ch09_fig09_45a.py
+
+   *Required settings for script*
+
+   * exp_presentday: name of present-day experiment (e.g. "historical")
+   * exp_future: name of climate change experiment (e.g. "rcp45")
+
+   *Optional settings for script*
+
+   * diagminmax: observational uncertainty (min and max)
+   * legend_outside: create extra file with legend (true, false)
+   * styleset: e.g. "CMIP5" (if not set, this diagnostic will create its own
+     color table and symbols for plotting)
+   * suffix: string to be added to output filenames
+   * xmax: upper limit of x-axis (default = automatic)
+   * xmin: lower limit of x-axis (default = automatic)
+   * ymax: upper limit of y-axis (default = automatic)
+   * ymin: lower limit of y-axis (default = automatic)
+
+   *Required settings for variables*
+
+   * ref_model: name of reference data set
+
+   *Optional settings for variables*
+
+   none
+
 Variables
 ---------
 
@@ -203,6 +235,7 @@ Variables
 * pr (atmos, monthly mean, longitude latitude time)
 * rlut, rlutcs (atmos, monthly mean, longitude latitude time)
 * rsdt (atmos, monthly mean, longitude latitude time)
+* rsuscs, rsdscs (atmos, monthly mean, longitude latitude time)
 * rsut, rsutcs (atmos, monthly mean, longitude latitude time)
 * tos (ocean, monthly mean, longitude, latitude, time)
 
@@ -219,6 +252,7 @@ instructions.*
 * GPCP-SG (pr - obs4mips)
 * HadCRUT4 (tas - esmvaltool/utils/cmorizers/obs/cmorize_obs_hadcrut4.ncl)
 * HadISST (tos - esmvaltool/utils/cmorizers/obs/cmorize_obs_hadisst.ncl)
+* ISCCP-FH (rsuscs, rsdscs, rsdt - esmvaltool/utils/cmorizers/obs/cmorize_obs_isccp_fh.ncl)
 
 
 References
@@ -233,6 +267,10 @@ References
   Plattner, M. Tignor, S.K. Allen, J. Boschung, A. Nauels, Y. Xia, V. Bex and
   P.M. Midgley (eds.)]. Cambridge University Press, Cambridge, United Kingdom
   and New York, NY, USA.
+
+* Hall, A., and X. Qu, 2006: Using the current seasonal cycle to constrain
+  snow albedo feedback in future climate change, Geophys. Res. Lett., 33,
+  L03502, doi:10.1029/2005GL025127.
 
 * Jones et al., 2013: Attribution of observed historical near-surface temperature
   variations to anthropogenic and natural causes using CMIP5 simulations. Journal
@@ -312,3 +350,12 @@ Example plots
    Figure 9.42a: Equilibrium climate sensitivity (ECS) against the global mean
    surface air temperature of CMIP5 models, both for the period 1961-1990
    (larger symbols) and for the pre-industrial control runs (smaller symbols).
+
+.. _fig_flato13ipcc_7:
+.. figure:: /recipes/figures/flato13ipcc/fig-9-45a.png
+   :align: center
+
+   Figure 9.45a: Scatterplot of springtime snow-albedo effect values in climate
+   change vs. springtime d(alpha_s)/d(T_s) values in the seasonal cycle in
+   transient climate change experiments (CMIP5 historical experiments: 1901-2000,
+   rcp45 experiments: 2101-2200).
