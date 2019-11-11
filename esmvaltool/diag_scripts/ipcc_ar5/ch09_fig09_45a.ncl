@@ -24,10 +24,13 @@
 ; Optional settings (scripts)
 ;   diagminmax:
 ;   legend_outside:  True, False
-;   predef_minmax:   True, False
 ;   styleset:        "CMIP5" (if not set, this diagnostic will create its own
 ;                    color table and symbols for plotting)
 ;   suffix:          string to be added to output filenames
+;   xmax:            upper limit of x-axis (default = automatic)
+;   xmin:            lower limit of x-axis (default = automatic)
+;   ymax:            upper limit of y-axis (default = automatic)
+;   ymin:            lower limit of y-axis (default = automatic)
 ;
 ; Required settings (variables)
 ;   ref_model:       name of reference data set
@@ -245,7 +248,6 @@ begin
   ; Set default values for non-required diag_script_info attributes
 
   set_default_att(diag_script_info, "legend_outside", False)
-  set_default_att(diag_script_info, "predef_minmax", False)
 
   ; reference datasets
 
@@ -336,8 +338,7 @@ begin
       atts@short_name = variables(jj)
 
       if (ii .eq. num_models_present) then
-        ; all observations
-        ; (possibly from different sources = different datasets)
+        ; all observations (possibly from different sources)
         ; are processed at the same time (at ii .eq. num_models_present)
 
         atts@dataset = refname(jj)
@@ -408,6 +409,11 @@ begin
       end do
 
       result = snowalbedo_precalc(tas, alb, rad, lsdata)
+
+      delete(tas)
+      delete(alb)
+      delete(rad)
+
       alb_seas_future = result[0]
       t2_seas_future = result[1]
       delete(result)
@@ -520,7 +526,8 @@ begin
   colors(nx - 1) = "(/1.00, 0.00, 0.00/)"  ; red
   markers(nx - 1) = new_index
 
-  ; Collect data
+  ; Collect data (annotations, colors and markers are defined for
+  ; model datasets only)
 
   data_arr = new((/2, nx/), float)
   data_arr!0 = "statistic"
@@ -532,9 +539,9 @@ begin
   data_arr(1, :) = (/ydata/)
   data_arr@units = (/xdata@units, ydata@units/)
   data_arr@legend_outside = diag_script_info@legend_outside
-  data_arr@colors = colors
-  data_arr@markers = markers
-  data_arr@annots = ds_names
+  data_arr@colors = colors(0: nx - 2)
+  data_arr@markers = markers(0: nx - 2)
+  data_arr@annots = ds_names(0: nx - 2)
 
   yregmin = 999.9
   yregmax = -999.9
@@ -589,20 +596,26 @@ begin
   end if
 
   ; if requested by user, use predefined min/max for x- and y-axis
-  ; depending on diagnostic
 
-  if (diag_script_info@predef_minmax) then
-    data_arr@trYMinF = -1.7
-    data_arr@trYMaxF = -0.3
-    data_arr@trXMinF = -1.7
+  if (isatt(diag_script_info, "xmax")) then
     data_arr@trXMaxF = -0.3
-    data_arr@trXReverse = True  ; flip x axis
-    data_arr@trYReverse = True  ; flip y axis
   end if
+  if (isatt(diag_script_info, "xmin")) then
+    data_arr@trXMinF = -1.7
+  end if
+  if (isatt(diag_script_info, "ymax")) then
+    data_arr@trYMaxF = -0.3
+  end if
+  if (isatt(diag_script_info, "ymin")) then
+    data_arr@trYMinF = -1.7
+  end if
+
+  data_arr@trXReverse = True  ; flip x axis
+  data_arr@trYReverse = True  ; flip y axis
 
   ; draw scatter plot
   data_arr@res_tiMainString = ""
-  plot = scatterplot_markers(wks, data_arr, var0, input_file_info)
+  plot = scatterplot_markers(wks, data_arr(:, 0:nx - 2), var0, input_file_info)
 
   ydelta = ymax - ymin
   y0 = min((/ymin - 0.5 * ydelta, yregmin/))
@@ -670,6 +683,7 @@ begin
   ; mandatory netCDF output
 
   nc_filename = work_dir + outfile + ".nc"
+
   data_arr@diag_script = (/DIAG_SCRIPT/)
   data_arr@var = "snowalbedofeedback"
   nc_outfile = ncdf_write(data_arr, nc_filename)
