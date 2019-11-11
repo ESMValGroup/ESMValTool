@@ -51,7 +51,9 @@ begin
   var0 = info[0]@short_name
   datasets = metadata_att_as_array(info, "dataset")
   ensembles = metadata_att_as_array(info, "ensemble")
-  exps = metadata_att_as_array(info, "exp")
+  tmpexps = metadata_att_as_array(info, "exp")
+  exps = where(.not.ismissing(tmpexps), tmpexps, "")
+  delete(tmpexps)
   dim_MOD = dimsizes(datasets)
   att@mip = "fx"
   areainfo = select_metadata_by_atts(input_file_info, att)  ; area
