@@ -869,7 +869,7 @@ diagnostics:
       - {dataset: NorESM1-M}
       - {dataset: NorESM1-ME}
     scripts:
-      fig09-24:
+      fig09-24a:
         script: seaice/seaice_tsline.ncl
         # "Arctic" or "Antarctic"; entire hemisphere will be evaluated
         region: "Arctic"

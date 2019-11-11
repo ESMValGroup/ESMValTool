@@ -316,7 +316,7 @@ Example plots
    reference for the error calculation (a), (b), and (c); and for
    observations in (d).
 
-. figure::  /recipes/figures/seaice/trend_sic_extend_Arctic_September_histogram.png
+.. figure::  /recipes/figures/seaice/trend_sic_extend_Arctic_September_histogram.png
    :align:   center
    :width:   9cm
 
