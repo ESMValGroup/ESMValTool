@@ -31,79 +31,121 @@
 # thick:     line thickness
 ###############################################################################
 
+AWI-CM-1-1-MR:
+  avgstd: 0
+  color: '#d99694'
+  dash: '-'
+  facecolor: none
+  mark: ^
+  thick: 1
 BCC-CSM2-MR:
   avgstd: 0
-  color: '#94191e'
+  color: '#984b07'
   dash: '-'
   facecolor: none
   mark: o
   thick: 1
+BCC-ESM1:
+  avgstd: 0
+  color: '#984b07'
+  dash: '-'
+  facecolor: none
+  mark: s
+  thick: 1
+CAMS-CSM1-0:
+  avgstd: 0
+  color: '#f79646'
+  dash: --
+  facecolor: none
+  mark: s
+  thick: 1
 CanESM5:
   avgstd: 0
-  color: '#1e4c24'
+  color: '#00b050'
   dash: --
   facecolor: none
   mark: s
   thick: 1
 CNRM-CM6-1:
   avgstd: 0
-  color: '#91d67e'
+  color: '#9bbb59'
   dash: '-'
   facecolor: none
   mark: o
   thick: 1
 CNRM-ESM2-1:
   avgstd: 0
-  color: '#1e4c24'
+  color: '#9bbb59'
   dash: --
   facecolor: none
   mark: s
   thick: 1
 CESM2:
   avgstd: 0
-  color: '#43b2d8'
+  color: '#00b0f0'
   dash: ':'
   facecolor: none
   mark: ^
   thick: 1
 CESM2-WACCM:
   avgstd: 0
-  color: '#43b2d8'
+  color: '#00b0f0'
   dash: -.
   facecolor: none
-  mark: +
+  mark: s
+  thick: 1
+E3SM-1-0:
+  avgstd: 0
+  color: '#f79646'
+  dash: ':'
+  facecolor: none
+  mark: o
+  thick: 1
+EC-Earth3-Veg:
+  avgstd: 0
+  color: '#d99694'
+  dash: ':'
+  facecolor: none
+  mark: s
   thick: 1
 GFDL-AM4:
   avgstd: 0
-  color: '#23366d'
+  color: '#295d91'
   dash: ':'
   facecolor: none
   mark: ^
   thick: 1
 GFDL-CM4:
   avgstd: 0
-  color: '#23366d'
+  color: '#295d91'
   dash: --
   facecolor: none
   mark: s
   thick: 1
+GFDL-ESM4:
+  avgstd: 0
+  color: '#295d91'
+  dash: --
+  facecolor: none
+  mark: o
+  thick: 1
 GISS-E2-1-G:
   avgstd: 0
-  color: '#771d7b'
+  color: '#b3a2c7'
   dash: ':'
   facecolor: none
   mark: ^
   thick: 1
 GISS-E2-1-H:
   avgstd: 0
-  color: '#771d7b'
+  color: '#b3a2c7'
   dash: '-'
   facecolor: none
   mark: o
   thick: 1
 HadGEM3-GC31-LL:
   avgstd: 0
-  color: '#7a8b26'
+  color: '#4f6228'
   dash: ':'
   facecolor: none
   mark: ^
@@ -117,10 +159,10 @@ INM-CM5-0:
   thick: 1
 IPSL-CM6A-LR:
   avgstd: 0
-  color: '#5b53ae'
+  color: '#002060'
   dash: '-'
   facecolor: none
-  mark: o
+  mark: ^
   thick: 1
 IPSL-CM6A-MR:
   avgstd: 0
@@ -138,28 +180,49 @@ IPSL-CM6B-LR:
   thick: 1
 MIROC6:
   avgstd: 0
-  color: '#b85fb6'
+  color: '#7031a0'
   dash: --
   facecolor: none
   mark: s
   thick: 1
+MIROC-ES2L:
+  avgstd: 0
+  color: '#7031a0'
+  dash: --
+  facecolor: none
+  mark: o
+  thick: 1
+MPI-ESM1-2-HR:
+  avgstd: 0
+  color: '#00b0f0'
+  dash: --
+  facecolor: none
+  mark: o
+  thick: 1
 MRI-ESM2-0:
   avgstd: 0
-  color: '#adff2f'
+  color: '#c3d69b'
+  dash: --
+  facecolor: none
+  mark: ^
+  thick: 1
+NESM3:
+  avgstd: 0
+  color: '#00843c'
   dash: --
   facecolor: none
   mark: ^
   thick: 1
 SAM0-UNICON:
   avgstd: 0
-  color: '#4dbb37'
+  color: '#ffc000'
   dash: '-'
   facecolor: none
-  mark: o
+  mark: ^
   thick: 1
 UKESM1-0-LL:
   avgstd: 0
-  color: '#7a8b26'
+  color: '#4f6228'
   dash: '-'
   facecolor: none
   mark: o
