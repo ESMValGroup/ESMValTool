@@ -112,7 +112,7 @@ def _regrid_dataset(in_dir, var, cfg):
         # Do renaming for consistency of coordinate names
         input_ds = input_ds.rename({'latitude': 'lat', 'longitude': 'lon'})
         # Select uppermoist soil level (index 0)
-        input_da = input_ds[var['raw']].isel(level=0)
+        input_da = input_ds[var['raw']].isel(soilLayer=0)
         logger.info("Regridding... ")
         # A workaround to avoid spreading of nan values,
         # related to Github issue
