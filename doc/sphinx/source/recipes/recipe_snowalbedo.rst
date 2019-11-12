@@ -12,7 +12,7 @@ cycle in transient climate change experiments following Hall and Qu (2006).
 
 The strength of the snow-albedo effect is quantified by the variation in net
 incoming shortwave radiation (Q) with surface air temperature (T\ :sub:`s`\) due
-to changes in surface albedo alpha\ :sub:`s`\:
+to changes in surface albedo :math:`\alpha_s`:
 
 .. math::
 
