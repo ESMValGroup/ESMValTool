@@ -182,7 +182,6 @@ def lorenz(outpath, model, year, filenc, plotfile, logfile):
     output(ae2az, d_s, filenc, 'ae2az', nc_f)
     nc_f = outpath + '/ke2kz_tmap_{}_{}.nc'.format(model, year)
     output(ke2kz, d_s, filenc, 'ke2kz', nc_f)
-    close(logfile, 'w')
     return lec_strength
 
 
