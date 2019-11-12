@@ -403,12 +403,10 @@ Example plots
    surface air temperature of CMIP5 models, both for the period 1961-1990
    (larger symbols) and for the pre-industrial control runs (smaller symbols).
 
-.. _fig_flato13ipcc_7:
 .. figure:: /recipes/figures/flato13ipcc/fig-9-45a.png
    :align: center
 
    Figure 9.45a: Scatterplot of springtime snow-albedo effect values in climate
-   change vs. springtime d(alpha\ :sub:`s`\)/d(T\ :sub:`s`\) values in the seasonal
-   cycle in transient climate change experiments (CMIP5 historical experiments:
-   1901-2000, rcp45 experiments: 2101-2200).
-
+   change vs. springtime :math:`\Delta \alpha_s`/:math:`\Delta T_s` values in
+   the seasonal cycle in transient climate change experiments (CMIP5 historical
+   experiments: 1901-2000, RCP4.5 experiments: 2101-2200).
