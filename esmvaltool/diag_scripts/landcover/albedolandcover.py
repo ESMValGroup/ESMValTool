@@ -229,8 +229,9 @@ def _write_albedochanges_to_disk(alb_lc, template_cube,
             # Create provenance record
             # Create caption
             prov_rec = {
-                'caption': transition_cube.attributes['plottitle'] + ' '
-                           + transition_cube.attributes['plotsuptitle'],
+                'caption': '{0} {1}'.format(
+                    transition_cube.attributes['plottitle'],
+                    transition_cube.attributes['plotsuptitle']),
                 'statistics': ['other'],
                 'domains': ['global'],
                 'plot_type': 'other',
@@ -243,7 +244,8 @@ def _write_albedochanges_to_disk(alb_lc, template_cube,
                 ],
             }
             with ProvenanceLogger(cfg) as provenance_logger:
-                provenance_logger.log(savename_nc, prov_rec)
+                provenance_logger.log(os.path.join(cfg['work_dir'], basename),
+                                      prov_rec)
 
 
 def _plot_cube(cube, cfg):
