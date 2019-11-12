@@ -182,7 +182,7 @@ def lorenz(outpath, model, year, filenc, plotfile, logfile):
     output(ae2az, d_s, filenc, 'ae2az', nc_f)
     nc_f = outpath + '/ke2kz_tmap_{}_{}.nc'.format(model, year)
     output(ke2kz, d_s, filenc, 'ke2kz', nc_f)
-    log.close()
+    close(logfile, 'w')
     return lec_strength
 
 
@@ -421,6 +421,7 @@ def init(logfile, filep):
         log.write('#      LORENZ     ENERGY    CYCLE                      #\n')
         log.write('#                                                      #\n')
         log.write('########################################################\n')
+        log.close()
     with Dataset(filep) as dataset0:
         t_a = dataset0.variables['ta'][:, :, :, :]
         u_a = dataset0.variables['ua'][:, :, :, :]
@@ -475,6 +476,7 @@ def init(logfile, filep):
         log.write('  \n')
         log.write('                            I GLOBAL I NORTH I SOUTH I\n')
         log.write('------------------------------------------------------\n')
+        log.close()
     return ta_c, ua_c, va_c, wap_c, dims, lev, lat, log
 
 
@@ -1149,3 +1151,4 @@ def write_to_tab(logfile, name, vared, varzon):
         log.write(' {} EDDY(KW) {: 4.3f}  {: 4.3f}  {: 4.3f}\n'.format(
             name, vared[3][0], vared[3][1], vared[3][2]))
         log.write('--------------------------------------\n')
+        log.close()
