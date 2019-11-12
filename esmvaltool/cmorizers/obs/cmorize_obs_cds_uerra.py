@@ -5,7 +5,7 @@ Tier
 Source
    https://cds.climate.copernicus.eu/cdsapp#!/dataset/reanalysis-uerra-europe-soil-levels
 Last access
-   20190822
+   20191104
 
 Download and processing instructions
    - Open in a browser the data source as specified above
@@ -101,11 +101,12 @@ def _regrid_dataset(in_dir, var, cfg):
     in front of filename.
     """
     workdir = cfg['work_dir']
-    filelist = glob.glob(os.path.join(in_dir, var['file']))
+    # Match any year here
+    filepattern = var['file'].format(year='????')
+    filelist = glob.glob(os.path.join(in_dir, filepattern))
     for infile in filelist:
         _, infile_tail = os.path.split(infile)
-        outfile = os.path.join(workdir, infile_tail.replace(
-            'uerra', 'uerra_regridded'))
+        outfile = os.path.join(workdir, infile_tail)
         targetgrid_ds = xr.DataArray.from_iris(
             _stock_cube(cfg['custom']['regrid']))
         input_ds = xr.open_dataset(infile)
@@ -157,7 +158,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user):
         for year in range(1979, 2019):
             # File concatenation
             filelist = glob.glob(os.path.join(
-                cfg['work_dir'], 'uerra_regridded_volumetric_soil_moisture_{0}.nc'.format(year)))
+                cfg['work_dir'], var['file'].format(year=year)))
             if filelist:
                 logger.info(
                     "Concatenating files over time for year %s", year)
