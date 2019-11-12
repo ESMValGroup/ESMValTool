@@ -157,7 +157,7 @@ def cmorization(in_dir, out_dir, cfg, cfg_user):
         for year in range(1979, 2019):
             # File concatenation
             filelist = glob.glob(os.path.join(
-                cfg['work_dir'], 'uerra_regridded_{0}??.nc'.format(year)))
+                cfg['work_dir'], 'uerra_regridded_volumetric_soil_moisture_{0}.nc'.format(year)))
             if filelist:
                 logger.info(
                     "Concatenating files over time for year %s", year)
