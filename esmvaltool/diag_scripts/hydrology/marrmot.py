@@ -126,7 +126,7 @@ def debruin_pet(var_dict):
     ref_evap = delta_svp / (delta_svp + gamma) * rad_term + beta
 
     # 1 W m-2 = 86400 J m-2 day-1
-    pet = ref_evap * 86400 /lambda_
+    pet = ref_evap * 86400 / lambda_
     pet.var_name = 'potential_evapotranspiration'
     pet.units = 'kg m-2 day-1'  # equivalent to mm/day
     return pet
