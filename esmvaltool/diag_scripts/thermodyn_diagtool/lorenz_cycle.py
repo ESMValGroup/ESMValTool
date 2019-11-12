@@ -166,7 +166,7 @@ def lorenz(outpath, model, year, filenc, plotfile, logfile):
     ke2kz_st = mkkekz(ua_tmn, va_tmn, wap_tmn, ua_tmn, va_tmn, lev, y_l, nlat,
                       ntp, nlev)
     ke2kz_stgmn = globall_cg(ke2kz_st, g_w, d_s, dims)
-    table(ke2kz_stgmn, ntp, 'KZ <-> KE (stat)', logfile, flag=1)
+    # table(ke2kz_stgmn, ntp, 'KZ <-> KE (stat)', logfile, flag=1)
     list_diag = [
         ape_tgmn, ape_stgmn, ek_tgmn, ek_stgmn, ae2az_tgmn, ae2az_stgmn,
         a2k_tgmn, a2k_stgmn, at2as_tgmn, kt2ks_tgmn, ke2kz_tgmn, ke2kz_stgmn
@@ -414,7 +414,7 @@ def init(logfile, filep):
     filenc: name of the file containing the input fields;
     logfile: name of the file containing the table as a .txt file.
     """
-    with open(logfile, 'w') as log:
+    with open(logfile, 'a') as log:
         log.write('########################################################\n')
         log.write('#                                                      #\n')
         log.write('#      LORENZ     ENERGY    CYCLE                      #\n')
