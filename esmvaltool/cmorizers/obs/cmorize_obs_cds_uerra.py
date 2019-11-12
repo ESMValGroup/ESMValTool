@@ -60,6 +60,10 @@ def _cmorize_dataset(in_file, var, cfg, out_dir):
     cube = iris.load_cube(str(in_file),
                           constraint=utils.var_name_constraint(var['raw']))
 
+    cube.remove_coord('time')  # Time has strange values, so use
+                               # forecast_reference_time instead
+    cube.coord('forecast_reference_time').rename('time')
+
     # The following lines are essential before applying
     # the common function fix_coords
     # Convert time calendar from proleptic_gregorian to gregorian
@@ -142,44 +146,30 @@ def cmorization(in_dir, out_dir, cfg, cfg_user):
     cfg['work_dir'] = cfg_user['work_dir']
     # If it doesn't exist, create it
     if not os.path.isdir(cfg['work_dir']):
-        logger.info("Creating working directory for regridding: %s",
-                    cfg['work_dir'])
+        logger.info(f"Creating working directory for regridding: {cfg['work_dir']}")
         os.mkdir(cfg['work_dir'])
 
     for short_name, var in cfg['variables'].items():
         var['short_name'] = short_name
-        logger.info("Processing var %s", short_name)
+        logger.info(f"Processing var {short_name}")
 
         # Regridding
         logger.info("Start regridding to: %s", cfg['custom']['regrid'])
         _regrid_dataset(in_dir, var, cfg)
         logger.info("Finished regridding")
 
+        logger.info("Start CMORizing")
         for year in range(1979, 2019):
             # File concatenation
-            filelist = glob.glob(os.path.join(
-                cfg['work_dir'], var['file'].format(year=year)))
-            if filelist:
-                logger.info(
-                    "Concatenating files over time for year %s", year)
-                cubelist = iris.load(filelist)
-            else:
-                logger.info("No files found for year %s", year)
-                continue
-            for cube in cubelist:
-                cube.remove_coord('time')  # Time has strange values, so use
-                # forecast_reference_time instead
-                cube.coord('forecast_reference_time').rename('time')
-
-            cube_concatenated = cubelist.concatenate()[0]
-
             in_file = os.path.join(cfg['work_dir'],
-                                   'concatenated_{0}.nc'.format(year))
-            logger.info("Saving as: %s", in_file)
-            iris.save(cube_concatenated, in_file)
+                                   var['file'].format(year=year))
+            if os.path.isfile(in_file):
+                # Read in the full dataset here from 'workdir'
+                logger.info(f"Start CMORization of file {in_file}")
+                _cmorize_dataset(in_file, var, cfg, out_dir)
+                logger.info(f"Finished processing year {year}")
+            else:
+                logger.info(f"No files found for year {year}")
+                continue
 
-            # Read in the full dataset here from 'workdir'
-            logger.info("CMORizing")
-            logger.info("Start CMORization of file %s", in_file)
-            _cmorize_dataset(in_file, var, cfg, out_dir)
-            logger.info("Finished processing year %s", year)
+            logger.info("Finished CMORIZATION")
