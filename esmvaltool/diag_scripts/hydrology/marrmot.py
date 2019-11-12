@@ -81,6 +81,7 @@ def get_constants(psl):
                                     long_name='Gas constant dry air',
                                     units='J K-1 kg-1')
 
+    # Latent heat of vaporization in J kg-1 (or J m-2 day-1)
     lambda_ = iris.coords.AuxCoord(2.5e6,
                                    long_name='Latent heat of vaporization',
                                    units='J kg-1')
@@ -121,10 +122,13 @@ def debruin_pet(var_dict):
     kdown_ext = var_dict['rsdt']
     # Equation 6
     rad_term = (1-0.23)*kdown - cs_const*kdown/kdown_ext
+    # the unit is W m-2
     ref_evap = delta_svp / (delta_svp + gamma) * rad_term + beta
 
-    pet = ref_evap/lambda_
+    # 1 W m-2 = 86400 J m-2 day-1
+    pet = ref_evap * 86400 /lambda_
     pet.var_name = 'potential_evapotranspiration'
+    pet.units = 'kg m-2 day-1'  # equivalent to mm/day
     return pet
 
 
@@ -188,18 +192,18 @@ def main(cfg):
     all_vars, provenance = get_input_cubes(cfg)
 
     # Processing variables and unit conversion
+    # Unit of the fluxes in marrmot should be in kg m-2 day-1 (or mm/day)
     logger.info("Processing variable tas")
     temp = preproc.area_statistics(all_vars['tas'], operator='mean')
     temp.convert_units('celsius')
 
     logger.info("Processing variable pr")
     precip = preproc.area_statistics(all_vars['pr'], operator='mean')
-    precip.convert_units('kg m-2 day-1')
+    precip.convert_units('kg m-2 day-1')  # equivalent to mm/day
 
     logger.info("Processing variable PET")
     all_vars['pet'] = debruin_pet(all_vars)
     pet = preproc.area_statistics(all_vars['pet'], operator='mean')
-    pet.convert_units('kg m-2 day-1')
 
     # Get the dataset name
     basename = _get_dataset_name(cfg)
