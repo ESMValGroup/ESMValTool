@@ -22,6 +22,7 @@ def create_provenance_record():
             'kalverla_peter',
             'camphuijsen_jaro',
             'alidoost_sarah',
+            'aerts_jerom',
         ],
         'projects': [
             'ewatercycle',
@@ -109,9 +110,10 @@ def debruin_PET(tas, psl, rsds, rsdt, **kwargs):
         # source='Wallace and Hobbs (2006), 2.6 equation 3.14',
         units='J K-1 kg-1')
 
-    lambda_ = iris.coords.AuxCoord(2.5e6,
+    lambda_ = iris.coords.AuxCoord(2.5e6/86400,
         long_name='Latent heat of vaporization',
-        # source='Wallace and Hobbs 2006',
+        # source='Wallace and Hobbs 2006' divide by 86400 for seconds,
+        # copy de Bruin method from Marmot model diag
         units='J kg-1')
 
     cp = iris.coords.AuxCoord(1004,
@@ -212,10 +214,15 @@ def main(cfg):
     pet_dem = preproc.regrid(pet, target_grid=dem, scheme='linear')
 
     ## Convert units
-    for cube in [pr, pet]:
-        cube = to_volume(cube, density=1000)
-        cube.convert_units('m day-1')
-    tas.convert_units('degC')
+    pet_dem.data = pet_dem.data /1000
+    pet_dem.units = 'm day-1'
+
+    pr_dem.convert_units('kg m-2 day-1')
+    pr_dem.data = pr_dem.data /1000
+    pr_dem.units = 'm day-1'
+
+    tas_dem.convert_units('degC')
+
 
     # Save output
     # Output format: "wflow_local_forcing_ERA5_Meuse_1990_2018.nc"
