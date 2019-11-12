@@ -23,21 +23,19 @@ The diagnostic calculates scatterplots of simulated springtime
 vs. simulated springtime :math:`\Delta \alpha_s`/:math:`\Delta T_s` values in the
 seasonal cycle (abscissa).
 
-Ordinate values: the change in April alpha\ :sub:`s`\ (future projection - historical)
+Ordinate values: the change in April alpha\ :sub:`s` (future projection - historical)
 averaged over NH land masses poleward of 30°N is divided by the change in
-April T\ :sub:`s`\ (future projection - historical) averaged over the same region.
-The change in :math:`\alpha_s` (or T\ :sub:`s`\) is defined as the difference between
-22nd-century-mean as (T\ :sub:`s`\) and 20th-century-mean :math:`\alpha_s`. Values of
-:math:`\alpha_s` are weighted by April incoming insolation (I\ :sub:`t`\) prior to averaging.
+April T\ :sub:`s` (future projection - historical) averaged over the same region.
+The change in :math:`\alpha_s` (or T\ :sub:`s`) is defined as the difference between
+22nd-century-mean as (T\ :sub:`s`) and 20th-century-mean :math:`\alpha_s`. Values of
+:math:`\alpha_s` are weighted by April incoming insolation (I\ :sub:`t`) prior to averaging.
 
 Abscissa values: the seasonal cycle :math:`\Delta \alpha_s`/:math:`\Delta T_s`
 values, based on 20th century climatological means, are calculated by
 dividing the difference between April and May as averaged over NH continents
-poleward of 30°N by the difference between April and May T\ :sub:`s`\ averaged over the
+poleward of 30°N by the difference between April and May T\ :sub:`s` averaged over the
 same area. Values of as were weighted by April incoming insolation prior to
 averaging.
-
-Figure resembles IPCC AR5 Fig. 9.45a (Flato et al., 2013).
 
 
 Available recipes and diagnostics
@@ -125,7 +123,6 @@ References
 Example plots
 -------------
 
-.. _fig_flato13ipcc_7:
 .. figure:: /recipes/figures/flato13ipcc/fig-9-45a.png
    :align: center
 
