@@ -130,7 +130,7 @@ Example plots
    :align: center
 
    Scatterplot of springtime snow-albedo effect values in climate
-   change vs. springtime d(alpha\ :sub:`s`\)/d(T\ :sub:`s`\) values in the seasonal
-   cycle in transient climate change experiments (CMIP5 historical experiments:
-   1901-2000, rcp45 experiments: 2101-2200). Similar to IPCC AR5 Chapter 9
-   (Flato et al., 2013), Figure 9.45a.
+   change vs. springtime :math:`\Delta \alpha_s`/:math:`\Delta T_s` values in
+   the seasonal cycle in transient climate change experiments (CMIP5 historical
+   experiments: 1901-2000, rcp45 experiments: 2101-2200). Similar to IPCC AR5
+   Chapter 9 (Flato et al., 2013), Figure 9.45a.
