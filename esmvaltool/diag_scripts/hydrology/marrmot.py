@@ -50,7 +50,7 @@ def tetens_derivative(temp):
     e0_const = iris.coords.AuxCoord(6.112,
                                     long_name='Saturated vapour pressure',
                                     units='hPa')
-    emp_a = 17.67 # empirical constant a
+    emp_a = 17.67  # empirical constant a
 
     # Empirical constant b in Tetens formula
     emp_b = iris.coords.AuxCoord(243.5,
@@ -102,6 +102,7 @@ def get_constants(psl):
     # iris.exceptions.NotYetImplementedError: coord / coord
     gamma = rv_const.points[0] / rd_const.points[0] * cp_const * psl / lambda_
     return gamma, cs_const, beta, lambda_
+
 
 def debruin_pet(var_dict):
     """ Determine De Bruin (2016) reference evaporation
@@ -176,38 +177,33 @@ def _get_extra_info(cube):
 
 
 def main(cfg):
-    """Process data for use as input to the marrmot hydrological model """
+    """Process data for use as input to the marrmot hydrological model
+    These variables are needed in all_vars:
+    tas (air_temperature)
+    pr (precipitation_flux)
+    psl (air_pressure_at_mean_sea_level)
+    rsds (surface_downwelling_shortwave_flux_in_air)
+    rsdt (toa_incoming_shortwave_flux)
+    """
     all_vars, provenance = get_input_cubes(cfg)
-    # These keys are now available in all_vars:
-    # > tas (air_temperature)
-    # > pr (precipitation_flux)
-    # > psl (air_pressure_at_mean_sea_level)
-    # > rsds (surface_downwelling_shortwave_flux_in_air)
-    # > rsdt (toa_incoming_shortwave_flux)
 
-    ## Processing temperature
+    # Processing variables and unit conversion
     logger.info("Processing variable tas")
     temp = preproc.area_statistics(all_vars['tas'], operator='mean')
-    # convert kelvin to celcius
     temp.convert_units('celsius')
 
-    ## Processing Precipitation (pr)
     logger.info("Processing variable pr")
     precip = preproc.area_statistics(all_vars['pr'], operator='mean')
-    # convert kg/m2/s to kg/m2/day (or mm/day)
     precip.convert_units('kg m-2 day-1')
 
-    ## Processing Reference EvapoTranspiration (PET)
     logger.info("Processing variable PET")
     all_vars['pet'] = debruin_pet(all_vars)
     pet = preproc.area_statistics(all_vars['pet'], operator='mean')
-    # convert kg/m2/s to kg/m2/day (or mm/day)
     pet.convert_units('kg m-2 day-1')
 
     # Get the dataset name
     basename = _get_dataset_name(cfg)
 
-    ## Save to matlab structure
     # Get the start and end times and latitude longitude
     time_start_end, lat_lon = _get_extra_info(temp)
 
@@ -225,6 +221,8 @@ def main(cfg):
         'time_end': time_start_end[1],
         'data_origin': lat_lon
         }
+
+    # Save to matlab structure
     output_name = get_diagnostic_filename(basename, cfg, extension='mat')
     sio.savemat(output_name, output_data)
 
