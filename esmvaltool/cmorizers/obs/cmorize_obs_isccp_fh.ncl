@@ -27,7 +27,7 @@ loadscript(getenv("esmvaltool_root") + \
 begin
 
   ; Script name (for logger)
-  DIAG_SCRIPT = "cmorize_obs_ISCCP-FH.ncl"
+  DIAG_SCRIPT = "cmorize_obs_isccp_fh.ncl"
 
   ; Source name
   OBSNAME = "ISCCP-FH"
