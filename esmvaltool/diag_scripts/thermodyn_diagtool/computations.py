@@ -35,6 +35,7 @@ import numpy as np
 from cdo import Cdo
 from netCDF4 import Dataset
 
+import esmvaltool.diag_scripts.shared as e
 from esmvaltool.diag_scripts.thermodyn_diagtool import mkthe
 
 L_C = 2501000  # latent heat of condensation
@@ -67,43 +68,35 @@ def baroceff(model, wdir, aux_file, toab_file, te_file):
     loss_file = wdir + '/{}_maskLoss.nc'.format(model)
     cdo.ltc('0', input=toab_file, output=loss_file)
     toabgain_file = wdir + '/{}_toabGain.nc'.format(model)
-    cdo.setrtomiss(
-        '-1000,0',
-        input='-mul {} {}'.format(toab_file, gain_file),
-        output=toabgain_file)
+    cdo.setrtomiss('-1000,0',
+                   input='-mul {} {}'.format(toab_file, gain_file),
+                   output=toabgain_file)
     toabloss_file = wdir + '/{}_toabLoss.nc'.format(model)
-    cdo.setrtomiss(
-        '0,1000',
-        input='-mul {} {}'.format(toab_file, loss_file),
-        output=toabloss_file)
+    cdo.setrtomiss('0,1000',
+                   input='-mul {} {}'.format(toab_file, loss_file),
+                   output=toabloss_file)
     tegain_file = wdir + '/{}_teGain.nc'.format(model)
-    cdo.setrtomiss(
-        '-1000,0',
-        input='-mul {} {}'.format(te_file, gain_file),
-        output=tegain_file)
+    cdo.setrtomiss('-1000,0',
+                   input='-mul {} {}'.format(te_file, gain_file),
+                   output=tegain_file)
     teloss_file = wdir + '/{}_teLoss.nc'.format(model)
-    cdo.setrtomiss(
-        '-1000,0',
-        input='-mul {} {}'.format(te_file, loss_file),
-        output=teloss_file)
+    cdo.setrtomiss('-1000,0',
+                   input='-mul {} {}'.format(te_file, loss_file),
+                   output=teloss_file)
     tegainm_file = wdir + '/{}_teGainm.nc'.format(model)
-    cdo.div(
-        input='-fldmean {0} -fldmean -div {0} {1} '.format(
-            toabgain_file, tegain_file),
+    cdo.div(input='-fldmean {0} -fldmean -div {0} {1} '.format(
+        toabgain_file, tegain_file),
         output=tegainm_file)
     telossm_file = wdir + '/{}_teLossm.nc'.format(model)
-    cdo.div(
-        input='-fldmean {0} -fldmean -div {0} {1} '.format(
-            toabloss_file, teloss_file),
+    cdo.div(input='-fldmean {0} -fldmean -div {0} {1} '.format(
+        toabloss_file, teloss_file),
         output=telossm_file)
     aux_baroceff_file = (wdir + '/{}_aux_barocEff.nc'.format(model))
-    cdo.sub(
-        input='-reci {} -reci {}'.format(telossm_file, tegainm_file),
-        output=aux_baroceff_file)
+    cdo.sub(input='-reci {} -reci {}'.format(telossm_file, tegainm_file),
+            output=aux_baroceff_file)
     baroceff_file = wdir + '/{}_barocEff.nc'.format(model)
-    cdo.div(
-        input='{} -mulc,0.5 -add -reci {} -reci {}'.format(
-            aux_baroceff_file, tegainm_file, telossm_file),
+    cdo.div(input='{} -mulc,0.5 -add -reci {} -reci {}'.format(
+        aux_baroceff_file, tegainm_file, telossm_file),
         output=baroceff_file)
     with Dataset(baroceff_file) as f_l:
         baroc = f_l.variables['toab'][0, 0, 0]
@@ -116,7 +109,7 @@ def baroceff(model, wdir, aux_file, toab_file, te_file):
     return baroc
 
 
-def budgets(model, wdir, aux_file, filelist):
+def budgets(model, wdir, aux_file, input_data):
     """Compute radiative budgets from radiative and heat fluxes.
 
     The function computes TOA and surface energy budgets from radiative and
@@ -135,15 +128,24 @@ def budgets(model, wdir, aux_file, filelist):
     - filelist: a list of file names containing the input fields;
     """
     cdo = Cdo()
-    hfls_file = filelist[0]
-    hfss_file = filelist[1]
-    rlds_file = filelist[6]
-    rlus_file = filelist[7]
-    rlut_file = filelist[8]
-    rsds_file = filelist[9]
-    rsdt_file = filelist[10]
-    rsus_file = filelist[11]
-    rsut_file = filelist[12]
+    hfls_file = e.select_metadata(input_data, short_name='hfls',
+                                  dataset=model)[0]['filename']
+    hfss_file = e.select_metadata(input_data, short_name='hfss',
+                                  dataset=model)[0]['filename']
+    rlds_file = e.select_metadata(input_data, short_name='rlds',
+                                  dataset=model)[0]['filename']
+    rlus_file = e.select_metadata(input_data, short_name='rlus',
+                                  dataset=model)[0]['filename']
+    rlut_file = e.select_metadata(input_data, short_name='rlut',
+                                  dataset=model)[0]['filename']
+    rsds_file = e.select_metadata(input_data, short_name='rsds',
+                                  dataset=model)[0]['filename']
+    rsus_file = e.select_metadata(input_data, short_name='rsus',
+                                  dataset=model)[0]['filename']
+    rsdt_file = e.select_metadata(input_data, short_name='rsdt',
+                                  dataset=model)[0]['filename']
+    rsut_file = e.select_metadata(input_data, short_name='rsut',
+                                  dataset=model)[0]['filename']
     toab_file = wdir + '/{}_toab.nc'.format(model)
     toab_gmean_file = wdir + '/{}_toab_gmean.nc'.format(model)
     surb_file = wdir + '/{}_surb.nc'.format(model)
@@ -152,18 +154,16 @@ def budgets(model, wdir, aux_file, filelist):
     atmb_file = wdir + '/{}_atmb.nc'.format(model)
     atmb_gmean_file = wdir + '/{}_atmb_gmean.nc'.format(model)
     removeif(aux_file)
-    cdo.sub(
-        input="-sub {} {} {}".format(rsdt_file, rsut_file, rlut_file),
-        output=aux_file)
+    cdo.sub(input="-sub {} {} {}".format(rsdt_file, rsut_file, rlut_file),
+            output=aux_file)
     toab_gmean = write_eb('rsdt', 'toab', aux_file, toab_file, toab_gmean_file)
     toab_ymm_file = wdir + '/{}_toab_ymm.nc'.format(model)
     cdo.yearmonmean(input=toab_file, output=toab_ymm_file)
     # Surface energy budget
     removeif(aux_file)
     cdo.add(input=" {} {}".format(rsds_file, rlds_file), output=aux_surb_file)
-    cdo.sub(
-        input="-sub -sub -sub {} {} {} {} {}".format(
-            aux_surb_file, rsus_file, rlus_file, hfls_file, hfss_file),
+    cdo.sub(input="-sub -sub -sub {} {} {} {} {}".format(
+        aux_surb_file, rsus_file, rlus_file, hfls_file, hfss_file),
         output=aux_file)
     surb_gmean = write_eb('rsds', 'surb', aux_file, surb_file, surb_gmean_file)
     # Atmospheric energy budget
@@ -178,10 +178,14 @@ def budgets(model, wdir, aux_file, filelist):
     ]
     for filen in filenames:
         os.remove(filen)
-    return eb_gmean, eb_file, toab_ymm_file
+    input_list = [
+        hfls_file, hfss_file, rlds_file, rlus_file, rlut_file, rsds_file,
+        rsdt_file, rsus_file, rsut_file
+    ]
+    return input_list, eb_gmean, eb_file, toab_ymm_file
 
 
-def direntr(logger, model, wdir, filelist, aux_file, lect, lec, flags):
+def direntr(logger, model, wdir, input_data, aux_file, te_file, lect, flags):
     """Compute the material entropy production with the direct method.
 
     The function computes the material entropy production with the direct
@@ -206,7 +210,9 @@ def direntr(logger, model, wdir, filelist, aux_file, lect, lec, flags):
     and energy budgets are computed, if the material entropy production has to
     be computed, if using the indirect, the direct method, or both methods;
     """
-    _, _, _, aux_files = mkthe.init_mkthe(model, wdir, filelist, flags)
+    lec = flags[1]
+    aux_files = mkthe.init_mkthe_direntr(model, wdir, input_data, te_file,
+                                         flags)
     htop_file = aux_files[1]
     prr_file = aux_files[2]
     tabl_file = aux_files[3]
@@ -214,10 +220,14 @@ def direntr(logger, model, wdir, filelist, aux_file, lect, lec, flags):
     tcloud_file = aux_files[5]
     tcolumn_file = aux_files[6]
     tlcl_file = aux_files[7]
-    hfls_file = filelist[0]
-    hfss_file = filelist[1]
-    prsn_file = filelist[4]
-    ts_file = filelist[15]
+    hfls_file = e.select_metadata(input_data, short_name='hfls',
+                                  dataset=model)[0]['filename']
+    hfss_file = e.select_metadata(input_data, short_name='hfss',
+                                  dataset=model)[0]['filename']
+    prsn_file = e.select_metadata(input_data, short_name='prsn',
+                                  dataset=model)[0]['filename']
+    ts_file = e.select_metadata(input_data, short_name='ts',
+                                dataset=model)[0]['filename']
     logger.info('Computation of the material entropy '
                 'production with the direct method\n')
     logger.info('1. Sensible heat fluxes\n')
@@ -298,8 +308,8 @@ def entr(filelist, nin, nout, entr_file, entr_mean_file):
     tem_file = filelist[1]
     aux_file = filelist[2]
     removeif(aux_file)
-    cdo.timmean(
-        input='-yearmonmean -monmean -div {} {}'.format(en_file, tem_file),
+    cdo.timmean(input='-yearmonmean -monmean -div {} {}'.format(
+        en_file, tem_file),
         options='-b F32',
         output=aux_file)
     entr_gmean = write_eb(nin, nout, aux_file, entr_file, entr_mean_file)
@@ -330,7 +340,7 @@ def evapentr(model, wdir, infile, aux_file):
     return evapentr_gmean, evapentr_file
 
 
-def indentr(model, wdir, infile, aux_file, toab_gmean):
+def indentr(model, wdir, infile, input_data, aux_file, toab_gmean):
     """Compute the material entropy production with the indirect method.
 
     The function computes the material entropy production with the indirect
@@ -350,26 +360,33 @@ def indentr(model, wdir, infile, aux_file, toab_gmean):
     - toab_gmean: the climatological annaul mean TOA energy budget;
     """
     cdo = Cdo()
+    rlds_file = e.select_metadata(input_data, short_name='rlds',
+                                  dataset=model)[0]['filename']
+    rlus_file = e.select_metadata(input_data, short_name='rlus',
+                                  dataset=model)[0]['filename']
+    rsds_file = e.select_metadata(input_data, short_name='rsds',
+                                  dataset=model)[0]['filename']
+    rsus_file = e.select_metadata(input_data, short_name='rsus',
+                                  dataset=model)[0]['filename']
+    ts_file = e.select_metadata(input_data, short_name='ts',
+                                dataset=model)[0]['filename']
     horzentropy_file = wdir + '/{}_horizEntropy.nc'.format(model)
     vertenergy_file = wdir + '/{}_verticalEnergy.nc'.format(model)
     vertentropy_file = wdir + '/{}_verticalEntropy.nc'.format(model)
     vertentropy_mean_file = wdir + '/{}_vertEntropy_gmean.nc'.format(model)
     horzentropy_mean_file = wdir + '/{}_horizEntropy_gmean.nc'.format(model)
     removeif(aux_file)
-    cdo.yearmonmean(
-        input='-mulc,-1 -div -subc,{}  {}  {}'.format(
-            np.nanmean(toab_gmean), infile[5], infile[4]),
+    cdo.yearmonmean(input='-mulc,-1 -div -subc,{}  {}  {}'.format(
+        np.nanmean(toab_gmean), infile[1], infile[0]),
         output=aux_file)
     horzentr_mean = write_eb('toab', 'shor', aux_file, horzentropy_file,
                              horzentropy_mean_file)
-    cdo.yearmonmean(
-        input=' -add {} -sub {} -add {} {}'.format(infile[0], infile[2],
-                                                   infile[1], infile[3]),
+    cdo.yearmonmean(input=' -add {} -sub {} -add {} {}'.format(
+        rlds_file, rsds_file, rlus_file, rsus_file),
         output=vertenergy_file)
-    cdo.mul(
-        input='{} -sub -yearmonmean -reci {} -yearmonmean -reci {}'.format(
-            vertenergy_file, infile[4], infile[6]),
-        output=aux_file)
+    cdo.mul(input='{} -sub -yearmonmean -reci {} -yearmonmean -reci {}'.format(
+        vertenergy_file, infile[0], ts_file),
+            output=aux_file)
     vertentr_mean = write_eb('rlds', 'sver', aux_file, vertentropy_file,
                              vertentropy_mean_file)
     remove_files = [
@@ -473,28 +490,24 @@ def mask_precip(model, wdir, infile):
     masksnow_file = wdir + '/{}_maskprecs.nc'.format(model)
     cdo.gtc('1.0E-7', input=prsn_file, options=' -b F32', output=masksnow_file)
     prrmask_file = wdir + '/{}_prr_masked.nc'.format(model)
-    cdo.mul(
-        input='{} {}'.format(maskrain_file, prr_file),
-        options='-b F32',
-        output=prrmask_file)
+    cdo.mul(input='{} {}'.format(maskrain_file, prr_file),
+            options='-b F32',
+            output=prrmask_file)
     prsnmask_file = wdir + '/{}_prsn_masked.nc'.format(model)
-    cdo.mul(
-        input='{} {}'.format(masksnow_file, prsn_file),
-        options='-b F32',
-        output=prsnmask_file)
+    cdo.mul(input='{} {}'.format(masksnow_file, prsn_file),
+            options='-b F32',
+            output=prsnmask_file)
     # Temperatures of the rainfall and snowfall clouds
     tliq_file = wdir + '/{}_tliq.nc'.format(model)
-    cdo.setrtomiss(
-        '-1000,0',
-        input='-mul {} {}'.format(tlcl_file, maskrain_file),
-        options='-b F32',
-        output=tliq_file)
+    cdo.setrtomiss('-1000,0',
+                   input='-mul {} {}'.format(tlcl_file, maskrain_file),
+                   options='-b F32',
+                   output=tliq_file)
     tsol_file = wdir + '/{}_tsol.nc'.format(model)
-    cdo.setrtomiss(
-        '-1000,0',
-        input='-mul {} {}'.format(tlcl_file, masksnow_file),
-        options='-b F32',
-        output=tsol_file)
+    cdo.setrtomiss('-1000,0',
+                   input='-mul {} {}'.format(tlcl_file, masksnow_file),
+                   options='-b F32',
+                   output=tsol_file)
     tdegl_file = wdir + '/{}_tliqdeg.nc'.format(model)
     cdo.subc('273.15', input=tliq_file, options='-b F32', output=tdegl_file)
     tdegs_file = wdir + '/{}_tsoldeg.nc'.format(model)
@@ -503,30 +516,26 @@ def mask_precip(model, wdir, infile):
     maskice_file = wdir + '/{}_maskice.nc'.format(model)
     cdo.ltc('0.0', input=tdegl_file, options='-b F32', output=maskice_file)
     ticer_file = wdir + '/{}_t_icerain_file'.format(model)
-    cdo.setrtomiss(
-        '-1000,0',
-        input='-mul {} {}'.format(tliq_file, maskice_file),
-        options='-b F32',
-        output=ticer_file)
+    cdo.setrtomiss('-1000,0',
+                   input='-mul {} {}'.format(tliq_file, maskice_file),
+                   options='-b F32',
+                   output=ticer_file)
     prrice_file = wdir + '/{}_prr_ice_file.nc'.format(model)
-    cdo.mul(
-        input='{} {}'.format(maskice_file, prr_file),
-        options='-b F32',
-        output=prrice_file)
+    cdo.mul(input='{} {}'.format(maskice_file, prr_file),
+            options='-b F32',
+            output=prrice_file)
     # Mask for vapor cloud and temperature for phase changes from vapor to snow
     maskvap_file = wdir + '/{}_maskvap.nc'.format(model)
     cdo.gtc('0.0', input=tdegs_file, options='-b F32', output=maskvap_file)
     tvaps_file = wdir + '/{}_t_vapsnow.nc'.format(model)
-    cdo.setrtomiss(
-        '-1000,0',
-        input='-mul {} {}'.format(tsol_file, maskvap_file),
-        options='-b F32',
-        output=tvaps_file)
+    cdo.setrtomiss('-1000,0',
+                   input='-mul {} {}'.format(tsol_file, maskvap_file),
+                   options='-b F32',
+                   output=tvaps_file)
     prsnvap_file = wdir + '/{}_prsn_vap.nc'.format(model)
-    cdo.mul(
-        input='{} {}'.format(maskvap_file, prsn_file),
-        options='-b F32',
-        output=prsnvap_file)
+    cdo.mul(input='{} {}'.format(maskvap_file, prsn_file),
+            options='-b F32',
+            output=prsnvap_file)
     remove_files = [
         maskrain_file, masksnow_file, tliq_file, tsol_file, tdegl_file,
         tdegs_file, maskice_file, ticer_file, prrice_file, maskvap_file,
@@ -564,20 +573,22 @@ def meltentr(model, wdir, latsnow_file, aux_file):
     latmelt_file = (wdir + '/{}_latentEnergy_snowmelt.nc'.format(model))
     meltentr_file = (wdir + '/{}_snowmelt_entr.nc'.format(model))
     meltentr_mean_file = wdir + '/{}_snowmeltEntropy_gmean.nc'.format(model)
-    cdo.mulc(
-        str(L_S),
-        input='-divc,{} {}'.format(str(LC_SUB), latsnow_file),
-        options='-b F32',
-        output=latmelt_file)
+    cdo.mulc(str(L_S),
+             input='-divc,{} {}'.format(str(LC_SUB), latsnow_file),
+             options='-b F32',
+             output=latmelt_file)
     cdo.timmean(
         input='-yearmonmean -monmean -setmisstoc,0 -divc,273.15 {}'.format(
             latmelt_file),
         options='-b F32',
         output=aux_file)
-    cdo.chname(
-        'prsn,smelt', input=aux_file, options='-b F32', output=meltentr_file)
-    cdo.fldmean(
-        input=meltentr_file, options='-b F32', output=meltentr_mean_file)
+    cdo.chname('prsn,smelt',
+               input=aux_file,
+               options='-b F32',
+               output=meltentr_file)
+    cdo.fldmean(input=meltentr_file,
+                options='-b F32',
+                output=meltentr_mean_file)
     with Dataset(meltentr_mean_file) as f_l:
         meltentr_gmean = f_l.variables['smelt'][0, 0, 0]
     meltentr_gmean = masktonull(meltentr_gmean)
@@ -614,12 +625,11 @@ def potentr(model, wdir, infile, aux_file):
     poten_file = wdir + '/{}_potEnergy_drop.nc'.format(model)
     potentr_file = wdir + '/{}_pot_drop_entr.nc'.format(model)
     potentr_mean_file = wdir + '/{}_potEnergy_drop_gmean.nc'.format(model)
-    cdo.mulc(
-        GRAV,
-        input='-mul {} -add {} {}'.format(htop_file, prrmask_file,
-                                          prsnmask_file),
-        options='-b F32',
-        output=poten_file)
+    cdo.mulc(GRAV,
+             input='-mul {} -add {} {}'.format(htop_file, prrmask_file,
+                                               prsnmask_file),
+             options='-b F32',
+             output=poten_file)
     flist = [poten_file, tcolumn_file, aux_file]
     potentr_gmean = entr(flist, 'htop', 'spotp', potentr_file,
                          potentr_mean_file)
@@ -650,11 +660,10 @@ def rainentr(model, wdir, infile, aux_file):
     latrain_file = wdir + '/{}_latentEnergy_rain.nc'.format(model)
     rainentr_file = wdir + '/{}_rain_entr.nc'.format(model)
     rainentr_mean_file = wdir + '/{}_rainEntropy_gmean.nc'.format(model)
-    cdo.mulc(
-        str(L_C),
-        input='-setmisstoc,0 {}'.format(prrmask_file),
-        options='-b F32',
-        output=latrain_file)
+    cdo.mulc(str(L_C),
+             input='-setmisstoc,0 {}'.format(prrmask_file),
+             options='-b F32',
+             output=latrain_file)
     flist = [latrain_file, infile[1], aux_file]
     rainentr_gmean = entr(flist, 'prr', 'srain', rainentr_file,
                           rainentr_mean_file)
@@ -691,10 +700,9 @@ def sensentr(model, wdir, infile, aux_file):
     difftemp_file = wdir + '/{}_difftemp_bl.nc'.format(model)
     sensentr_file = (wdir + '/{}_sens_entr.nc'.format(model))
     sensentr_mean_file = wdir + '/{}_sensEntropy_gmean.nc'.format(model)
-    cdo.reci(
-        input='-sub -reci {}  -reci {}'.format(infile[1], infile[2]),
-        options='-b F32',
-        output=difftemp_file)
+    cdo.reci(input='-sub -reci {}  -reci {}'.format(infile[1], infile[2]),
+             options='-b F32',
+             output=difftemp_file)
     flist = [infile[0], difftemp_file, aux_file]
     sensentr_gmean = entr(flist, 'hfss', 'ssens', sensentr_file,
                           sensentr_mean_file)
@@ -725,11 +733,10 @@ def snowentr(model, wdir, infile, aux_file):
     latsnow_file = wdir + '/{}_latentEnergy_snow.nc'.format(model)
     snowentr_file = wdir + '/{}_snow_entr.nc'.format(model)
     snowentr_mean_file = wdir + '/{}_snowEntropy_gmean.nc'.format(model)
-    cdo.mulc(
-        str(LC_SUB),
-        input='-setmisstoc,0 {}'.format(prsnmask_file),
-        options='-b F32',
-        output=latsnow_file)
+    cdo.mulc(str(LC_SUB),
+             input='-setmisstoc,0 {}'.format(prsnmask_file),
+             options='-b F32',
+             output=latsnow_file)
     flist = [latsnow_file, infile[1], aux_file]
     snowentr_gmean = entr(flist, 'prsn', 'ssnow', snowentr_file,
                           snowentr_mean_file)
@@ -738,7 +745,7 @@ def snowentr(model, wdir, infile, aux_file):
     return snowentr_gmean, latsnow_file, snowentr_file
 
 
-def wmbudg(model, wdir, aux_file, filelist, auxlist):
+def wmbudg(model, wdir, aux_file, input_data, auxlist):
     """Compute the water mass and latent energy budgets.
 
     This function computes the annual mean water mass and latent energy budgets
@@ -755,26 +762,31 @@ def wmbudg(model, wdir, aux_file, filelist, auxlist):
     - auxlist: a list of auxiliary files;
     """
     cdo = Cdo()
+    hfls_file = e.select_metadata(input_data, short_name='hfls',
+                                  dataset=model)[0]['filename']
+    pr_file = e.select_metadata(input_data, short_name='pr',
+                                dataset=model)[0]['filename']
+    prsn_file = e.select_metadata(input_data, short_name='prsn',
+                                  dataset=model)[0]['filename']
     wmbudg_file = wdir + '/{}_wmb.nc'.format(model)
     wm_gmean_file = wdir + '/{}_wmb_gmean.nc'.format(model)
     latene_file = wdir + '/{}_latent.nc'.format(model)
     latene_gmean_file = wdir + '/{}_latent_gmean.nc'.format(model)
     removeif(aux_file)
-    cdo.sub(input="{} {}".format(auxlist[0], filelist[3]), output=aux_file)
+    cdo.sub(input="{} {}".format(auxlist[0], pr_file), output=aux_file)
     wmass_gmean = write_eb('hfls', 'wmb', aux_file, wmbudg_file, wm_gmean_file)
     removeif(aux_file)
-    cdo.sub(
-        input="{} -add -mulc,{} {} -mulc,{} {}".format(
-            filelist[0], str(LC_SUB), filelist[4], str(L_C), auxlist[2]),
-        output=aux_file)
+    cdo.sub(input="{} -add -mulc,{} {} -mulc,{} {}".format(
+        hfls_file, str(LC_SUB), prsn_file, str(L_C), auxlist[1]),
+            output=aux_file)
     latent_gmean = write_eb('hfls', 'latent', aux_file, latene_file,
                             latene_gmean_file)
     varlist = [wmass_gmean, latent_gmean]
-    filelist = [wmbudg_file, latene_file]
+    fileout = [wmbudg_file, latene_file]
     remove_files = [wm_gmean_file, latene_gmean_file]
     for filen in remove_files:
         os.remove(filen)
-    return varlist, filelist
+    return varlist, fileout
 
 
 def write_eb(namein, nameout, aux_file, d3_file, gmean_file):
