@@ -8,12 +8,37 @@ Overview
 
 The recipe recipe_snowalbedo.yml computes the springtime snow-albedo
 feedback values in climate change versus springtime values in the seasonal
-cycle in transient climate change experiments. Figure resembles IPCC AR5
-Fig. 9.45a (Flato et al., 2013).
+cycle in transient climate change experiments following Hall and Qu (2006).
 
-Scatterplot of springtime snow-albedo effect values in climate
-      change vs. springtime d(alpha\ :sub:`s`\)/d(T\ :sub:`s`\) values in the seasonal
-      cycle in transient climate change experiments (Hall and Qu, 2006).
+The strength of the snow-albedo effect is quantified by the variation in net
+incoming shortwave radiation (Q) with surface air temperature (T\ :sub:`s`\) due
+to changes in surface albedo alpha\ :sub:`s`\:
+
+.. math::
+
+   \left( \frac{\partial Q}{\partial T_s} \right) = -I_t \cdot \frac{\partial \alpha_p}{\partial \alpha_s} \cdot \frac{\Delta \alpha_s}{\Delta T_s}
+
+The diagnostic calculates scatterplots of simulated springtime
+:math:`\Delta \alpha_s`/:math:`\Delta T_s` values in climate change (ordinate)
+vs. simulated springtime :math:`\Delta \alpha_s`/:math:`\Delta T_s` values in the
+seasonal cycle (abscissa).
+
+Ordinate values: the change in April alpha\ :sub:`s`\ (future projection - historical)
+averaged over NH land masses poleward of 30°N is divided by the change in
+April T\ :sub:`s`\ (future projection - historical) averaged over the same region.
+The change in :math:`\alpha_s` (or T\ :sub:`s`\) is defined as the difference between
+22nd-century-mean as (T\ :sub:`s`\) and 20th-century-mean :math:`\alpha_s`. Values of
+:math:`\alpha_s` are weighted by April incoming insolation (I\ :sub:`t`\) prior to averaging.
+
+Abscissa values: the seasonal cycle :math:`\Delta \alpha_s`/:math:`\Delta T_s`
+values, based on 20th century climatological means, are calculated by
+dividing the difference between April and May as averaged over NH continents
+poleward of 30°N by the difference between April and May T\ :sub:`s`\ averaged over the
+same area. Values of as were weighted by April incoming insolation prior to
+averaging.
+
+Figure resembles IPCC AR5 Fig. 9.45a (Flato et al., 2013).
+
 
 Available recipes and diagnostics
 ---------------------------------
