@@ -104,13 +104,12 @@ def _regrid_dataset(in_dir, var, cfg):
     This function regrids each file and write to disk appending 'regrid'
     in front of filename.
     """
-    workdir = cfg['work_dir']
     # Match any year here
     filepattern = var['file'].format(year='????')
     filelist = glob.glob(os.path.join(in_dir, filepattern))
     for infile in filelist:
         _, infile_tail = os.path.split(infile)
-        outfile = os.path.join(workdir, infile_tail)
+        outfile = os.path.join(cfg['work_dir'], infile_tail)
         targetgrid_ds = xr.DataArray.from_iris(
             _stock_cube(cfg['custom']['regrid']))
         input_ds = xr.open_dataset(infile)
