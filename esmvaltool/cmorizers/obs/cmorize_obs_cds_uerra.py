@@ -60,8 +60,8 @@ def _cmorize_dataset(in_file, var, cfg, out_dir):
     cube = iris.load_cube(str(in_file),
                           constraint=utils.var_name_constraint(var['raw']))
 
-    cube.remove_coord('time')  # Time has strange values, so use
-                               # forecast_reference_time instead
+    # Time has strange values, so use forecast_reference_time instead
+    cube.remove_coord('time')
     cube.coord('forecast_reference_time').rename('time')
 
     # The following lines are essential before applying
@@ -145,7 +145,8 @@ def cmorization(in_dir, out_dir, cfg, cfg_user):
     cfg['work_dir'] = cfg_user['work_dir']
     # If it doesn't exist, create it
     if not os.path.isdir(cfg['work_dir']):
-        logger.info(f"Creating working directory for regridding: {cfg['work_dir']}")
+        logger.info("Creating working directory for "
+                    f"regridding: {cfg['work_dir']}")
         os.mkdir(cfg['work_dir'])
 
     for short_name, var in cfg['variables'].items():
