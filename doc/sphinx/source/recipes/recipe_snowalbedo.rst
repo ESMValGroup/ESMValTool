@@ -9,7 +9,6 @@ Overview
 The recipe recipe_snowalbedo.yml computes the springtime snow-albedo
 feedback values in climate change versus springtime values in the seasonal
 cycle in transient climate change experiments following Hall and Qu (2006).
-
 The strength of the snow-albedo effect is quantified by the variation in net
 incoming shortwave radiation (Q) with surface air temperature (T\ :sub:`s`\) due
 to changes in surface albedo :math:`\alpha_s`:
@@ -18,12 +17,12 @@ to changes in surface albedo :math:`\alpha_s`:
 
    \left( \frac{\partial Q}{\partial T_s} \right) = -I_t \cdot \frac{\partial \alpha_p}{\partial \alpha_s} \cdot \frac{\Delta \alpha_s}{\Delta T_s}
 
-The diagnostic calculates scatterplots of simulated springtime
+The diagnostic produces scatterplots of simulated springtime
 :math:`\Delta \alpha_s`/:math:`\Delta T_s` values in climate change (ordinate)
 vs. simulated springtime :math:`\Delta \alpha_s`/:math:`\Delta T_s` values in the
 seasonal cycle (abscissa).
 
-Ordinate values: the change in April alpha\ :sub:`s` (future projection - historical)
+Ordinate values: the change in April :math:`\alpha_s` (future projection - historical)
 averaged over NH land masses poleward of 30°N is divided by the change in
 April T\ :sub:`s` (future projection - historical) averaged over the same region.
 The change in :math:`\alpha_s` (or T\ :sub:`s`) is defined as the difference between
@@ -129,5 +128,5 @@ Example plots
    Scatterplot of springtime snow-albedo effect values in climate
    change vs. springtime :math:`\Delta \alpha_s`/:math:`\Delta T_s` values in
    the seasonal cycle in transient climate change experiments (CMIP5 historical
-   experiments: 1901-2000, rcp45 experiments: 2101-2200). Similar to IPCC AR5
+   experiments: 1901-2000, RCP4.5 experiments: 2101-2200). Similar to IPCC AR5
    Chapter 9 (Flato et al., 2013), Figure 9.45a.
