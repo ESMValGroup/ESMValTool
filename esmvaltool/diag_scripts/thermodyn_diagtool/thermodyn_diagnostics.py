@@ -242,6 +242,7 @@ for immediate model intercomparison.
 import logging
 import os
 import warnings
+
 import numpy as np
 
 import esmvaltool.diag_scripts.shared as e
@@ -444,10 +445,7 @@ def main(cfg):
         logger.info('Done\n')
         # Water mass budget
         if wat == 'True':
-            (wm_file,
-             wmb_all[i_m, 0],
-             wmb_all[i_m, 1],
-             latent_all[i_m, 0],
+            (wm_file, wmb_all[i_m, 0], wmb_all[i_m, 1], latent_all[i_m, 0],
              latent_all[i_m, 1]) = compute_water_mass_budget(
                  cfg, wdir_up, pdir, model, wdir, input_data, flags, aux_file)
         if lsm == 'True':
