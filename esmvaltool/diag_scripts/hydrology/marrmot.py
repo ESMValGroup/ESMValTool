@@ -12,6 +12,7 @@ from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
 
 logger = logging.getLogger(Path(__file__).name)
 
+
 def create_provenance_record():
     """Create a provenance record."""
     record = {
