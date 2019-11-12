@@ -26,14 +26,14 @@ Ordinate values: the change in April :math:`\alpha_s` (future projection - histo
 averaged over NH land masses poleward of 30°N is divided by the change in
 April T\ :sub:`s` (future projection - historical) averaged over the same region.
 The change in :math:`\alpha_s` (or T\ :sub:`s`) is defined as the difference between
-22nd-century-mean as (T\ :sub:`s`) and 20th-century-mean :math:`\alpha_s`. Values of
+22nd-century-mean :math:`\alpha_s`: (T\ :sub:`s`) and 20th-century-mean :math:`\alpha_s`. Values of
 :math:`\alpha_s` are weighted by April incoming insolation (I\ :sub:`t`) prior to averaging.
 
 Abscissa values: the seasonal cycle :math:`\Delta \alpha_s`/:math:`\Delta T_s`
 values, based on 20th century climatological means, are calculated by
-dividing the difference between April and May as averaged over NH continents
+dividing the difference between April and May :math:`\alpha_s`: averaged over NH continents
 poleward of 30°N by the difference between April and May T\ :sub:`s` averaged over the
-same area. Values of as were weighted by April incoming insolation prior to
+same area. Values of :math:`\alpha_s`: are weighted by April incoming insolation prior to
 averaging.
 
 
