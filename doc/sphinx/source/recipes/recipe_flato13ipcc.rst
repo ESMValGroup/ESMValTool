@@ -75,7 +75,7 @@ Diagnostics are stored in esmvaltool/diag_scripts/
     * ipcc_ar5/tsline.ncl: time series of the global mean (anomaly) (Fig. 9.8)
     * ipcc_ar5/ch09_fig09_14.py: Zonally averaged and equatorial SST (Fig. 9.14)
     * ipcc_ar5/ch09_fig09_42a.py: ECS vs. surface air temperature (Fig. 9.42a)
-    * ipcc_ar5/ch09_fig09_45a.ncl: snow-albedo effect (Fig. 9.45a)
+    * emergent_constraints/snowalbedo.ncl: snow-albedo effect (Fig. 9.45a)
 
 User settings in recipe
 -----------------------
@@ -201,7 +201,7 @@ User settings in recipe
    * matplotlib_style: name of the matplotlib style file (located in
      :mod:`esmvaltool.diag_scripts.shared.plot.styles_python.matplotlib`).
 
-#. Script ipcc_ar5/ch09_fig09_45a.py
+#. Script emergent_constraints/snowalbedo.ncl
 
    *Required settings for script*
 

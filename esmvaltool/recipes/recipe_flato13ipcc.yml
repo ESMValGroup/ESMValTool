@@ -1084,7 +1084,7 @@ diagnostics:
       - {dataset: NorESM1-M, exp: rcp45, start_year: 2101, end_year: 2200}
     scripts:
       fig09_45a:
-        script: ipcc_ar5/ch09_fig09_45a.ncl
+        script: emergent_constraints/snowalbedo.ncl
         exp_presentday: historical
         exp_future: rcp45
         legend_outside: false
