@@ -1,0 +1,111 @@
+# ESMValTool
+# recipe_wflow.yml
+---
+documentation:
+  description: Pre-processes climate data for the WFlow hydrological model.
+  authors:
+    - kalverla_peter
+    - camphuijsen_jaro
+    - alidoost_sarah
+  projects: ['ewatercycle']
+  references: ['acknow_project']
+
+preprocessors:
+  crop_basin: &crop_basin
+    extract_region:
+      start_longitude: -77.5
+      end_longitude: -70
+      start_latitude: 40
+      end_latitude: 47.5
+  hourly_mean:
+    <<: *crop_basin
+    # extract_time:
+    #   end_year: 1990
+    #   end_month: 1
+    #   end_day: 3
+    daily_statistics:
+      operator: mean
+
+diagnostics:
+  diagnostic_daily:
+    description: WFlow input preprocessor for daily data
+    additional_datasets:
+      - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
+    variables:
+      orog:
+        mip: fx
+        start_year: 1990
+        end_year: 1990
+        preprocessor: crop_basin
+      tas: &var_daily
+        mip: day
+        preprocessor: crop_basin
+        start_year: 1990
+        end_year: 1990
+      pr: *var_daily
+      # evspsblpot:  # doesn't exist.
+      # Reconstruct evspsblpot using:
+      psl: *var_daily
+      rsds: *var_daily
+      rsdt:
+        <<: *var_daily
+        mip: CFday
+    scripts:
+      wflow:
+        script: hydrology/wflow_rainfarm.py
+        ancestors: [orog, tas, psl, rsds, rsdt, rainfarm]
+        basin_name: Merrimack
+        dataset: ERA-Interim
+        startyear: '2000'
+        endyear: '2018'
+        dem_file: 'wflow/wflow_dem_Merrimack.nc'
+        
+      rainfarm:
+        script: rainfarm/rainfarm.jl
+        ancestors: [pr]
+        slope: 1.7             # spatial spectral slope (set to 0 to compute from large scales)
+        nens: 1                # number of ensemble members to be calculated
+        nf: 2                  # subdivisions for downscaling
+        conserv_glob: false    # conserve precipitation over full domain (choose either glob or smooth, glob has priority)
+        conserv_smooth: true   # conserve precipitation using convolution (if neither is chosen box conservation is used)
+        weights_climo: CHELSA_prec_V1.2_land.nc   # orographic weights: set to false (or omit) or path to a fine-scale precipitation climatology file
+
+
+  diagnostic_hourly:
+    description: WFlow input preprocessor for hourly data
+    additional_datasets:
+      - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1}
+    variables:
+      # orog:
+      #   mip: fx
+      #   preprocessor: crop_basin
+      tas: &var_hourly
+        mip: E1hr
+        frequency: 1hr
+        preprocessor: hourly_mean
+        start_year: 2000
+        end_year: 2018
+      pr: *var_hourly
+      # Reconstruct evspsblpot similar to ERA-Interim:
+      psl: *var_hourly
+      rsds: *var_hourly
+      rsdt: *var_hourly
+    scripts:
+      script:
+        script: hydrology/wflow_rainfarm.py
+        ancestors: [orog, tas, psl, rsds, rsdt, rainfarm]
+        basin_name: Merrimack
+        dataset: ERA5
+        startyear: '2000'
+        endyear: '2018'
+        dem_file: 'wflow/wflow_dem_Merrimack.nc'
+
+      rainfarm:
+        script: rainfarm/rainfarm.jl
+        ancestors: [pr]
+        slope: 1.7             # spatial spectral slope (set to 0 to compute from large scales)
+        nens: 2                # number of ensemble members to be calculated
+        nf: 8                  # subdivisions for downscaling
+        conserv_glob: false    # conserve precipitation over full domain (choose either glob or smooth, glob has priority)
+        conserv_smooth: true   # conserve precipitation using convolution (if neither is chosen box conservation is used)
+        weights_climo: CHELSA_prec_V1.2_land.nc   # orographic weights: set to false (or omit) or path to a fine-scale precipitation climatology file
