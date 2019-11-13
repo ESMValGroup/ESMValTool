@@ -1,24 +1,17 @@
+
 import os
-import logging
-import string
 import shutil
 
 import iris
-import iris.cube
 import iris.analysis
+import iris.cube
 import iris.util
-
-import numpy as np
-
-from dask import array as da
-
-import subprocess
+from esmvalcore.preprocessor._time import extract_month
 
 import esmvaltool.diag_scripts.shared
 import esmvaltool.diag_scripts.shared.names as n
 from esmvaltool.diag_scripts.shared import group_metadata
 
-from esmvalcore.preprocessor._time import extract_month
 
 class CycloneTracker(object):
     def __init__(self, config):
@@ -75,9 +68,8 @@ class CycloneTracker(object):
                                         start=data[alias][0]['start_year'],
                                         end=data[alias][0]['end_year'])
 
-            output_file = open(
-                os.path.join(self.cfg[n.WORK_DIR], output), 'wb'
-                )
+            output_file = open(os.path.join(self.cfg[n.WORK_DIR], output),
+                               'wb')
 
             for month in months:
                 total_month = []
@@ -86,36 +78,28 @@ class CycloneTracker(object):
                 for year in years:
                     total_year = []
                     for i, variable in enumerate(total_month):
-                        total_year.append(variable.extract(
-                            iris.Constraint(year=year)))
+                        total_year.append(
+                            variable.extract(iris.Constraint(year=year)))
                         total_year[i].coord('time').convert_units(
                             'hours since {0}-{1}-1 00:00:00'.format(
-                                year,
-                                month)
-                                )
+                                year, month))
                     for i, var in enumerate(total):
                         total[i].coord('time').convert_units(
                             'hours since {0}-{1}-1 00:00:00'.format(
-                                year,
-                                month)
-                                )
+                                year, month))
 
                     filename = '{dataset}_{year}{month}'.format(
                         dataset=data[alias][0]['dataset'],
                         year=year,
-                        month=format(month, '02d')
-                        )
-                    input_path = os.path.join(
-                        self.cfg[n.WORK_DIR],
-                        filename+'.nc')
+                        month=format(month, '02d'))
+                    input_path = os.path.join(self.cfg[n.WORK_DIR],
+                                              filename + '.nc')
                     iris.save(total_year, input_path)
-                    day = psl.coord('time').cell(0).point.day
-                    hour = psl.coord('time').cell(0).point.hour
                     time = total_year[0].coord('time').points
                     path = os.path.join(self.cfg['run_dir'], filename)
                     if not os.path.isdir(path):
-                         print(path)
-                         os.makedirs(path)
+                        print(path)
+                        os.makedirs(path)
                     os.system('ln -s {0} {1}/fort.11'.format(input_path, path))
                     self.write_namelist(path, month, year)
                     self.write_fort15(path, time)
@@ -126,11 +110,11 @@ class CycloneTracker(object):
                     shutil.copyfileobj(open('fort.66', 'rb'), output_file)
             output_file.close()
 
-
     def write_fort15(self, path, time):
         fort15_file = open(os.path.join(path, 'fort.15'), 'w')
         for timestep, value in enumerate(time):
-            fort15_file.write('{0:4} {1:5}\n'.format(timestep+1, int(value*60)))
+            fort15_file.write('{0:4} {1:5}\n'.format(timestep + 1,
+                                                     int(value * 60)))
         fort15_file.close()
 
     def write_fort14(self, path):
@@ -155,19 +139,24 @@ class CycloneTracker(object):
         namelist_file.write('&atcfinfo \n')
         namelist_file.write('  atcfnum=81, \n')
         namelist_file.write('  atcfname=\'test\', \n')
-        namelist_file.write('  atcfymdh={0}{1:02d}0100, \n'.format(year, month))
-        namelist_file.write('  atcffreq={0}, \n'.format(self.atcffreq)) 
+        namelist_file.write('  atcfymdh={0}{1:02d}0100, \n'.format(
+            year, month))
+        namelist_file.write('  atcffreq={0}, \n'.format(self.atcffreq))
         namelist_file.write('/\n')
         namelist_file.write('&trackerinfo \n')
         namelist_file.write('  trkrinfo%westbd={0}, \n'.format(self.westbd))
         namelist_file.write('  trkrinfo%eastbd={0}, \n'.format(self.eastbd))
         namelist_file.write('  trkrinfo%northbd={0}, \n'.format(self.northbd))
         namelist_file.write('  trkrinfo%southbd={0}, \n'.format(self.southbd))
-        namelist_file.write('  trkrinfo%type=\'{0}\', \n'.format(self.tracktype))
-        namelist_file.write('  trkrinfo%mslpthresh={0}, \n'.format(self.mslpthresh))
+        namelist_file.write('  trkrinfo%type=\'{0}\', \n'.format(
+            self.tracktype))
+        namelist_file.write('  trkrinfo%mslpthresh={0}, \n'.format(
+            self.mslpthresh))
         namelist_file.write('  trkrinfo%choose_t2=\'y\', \n')
-        namelist_file.write('  trkrinfo%mslpthresh2={0}, \n'.format(self.mslpthresh2))
-        namelist_file.write('  trkrinfo%v850thresh={0}, \n'.format(self.v850thresh))
+        namelist_file.write('  trkrinfo%mslpthresh2={0}, \n'.format(
+            self.mslpthresh2))
+        namelist_file.write('  trkrinfo%v850thresh={0}, \n'.format(
+            self.v850thresh))
         namelist_file.write('  trkrinfo%gridtype=\'global\', \n')
         namelist_file.write('  trkrinfo%contint={0}, \n'.format(self.contint))
         namelist_file.write('  trkrinfo%out_vit=\'y\', \n')
@@ -193,6 +182,7 @@ class CycloneTracker(object):
         namelist_file.write('  verb={0}, \n'.format(self.verb))
         namelist_file.write('/')
         namelist_file.close()
+
 
 def main():
     with esmvaltool.diag_scripts.shared.run_diagnostic() as config:
