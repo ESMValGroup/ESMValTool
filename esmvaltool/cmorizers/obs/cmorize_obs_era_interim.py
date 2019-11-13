@@ -110,7 +110,7 @@ def _fix_units(cube, definition):
         cube.units = 'm'  # fix invalid units
         cube.units = cube.units * 'kg m-3 day-1'
         cube.data = cube.core_data() * 1000.
-    if cube.var_name in {'hfds', 'rss', 'rsds', 'rsdt'}:
+    if cube.var_name in {'hfds', 'rss', 'rsds', 'rsdt', 'rlds'}:
         # Add missing 'per day'
         cube.units = cube.units * 'day-1'
         # Radiation fluxes are positive in downward direction
@@ -192,6 +192,7 @@ def _compute_daily(cube):
             'tasmin',
             'pr',
             'rsds',
+            'rlds',
             'hfds',
             'evspsbl',
             'rsdt',
@@ -210,6 +211,7 @@ def _compute_daily(cube):
     elif cube.var_name in {
             'pr',
             'rsds',
+            'rlds',
             'hfds',
             'evspsbl',
             'rsdt',

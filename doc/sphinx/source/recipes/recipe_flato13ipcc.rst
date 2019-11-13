@@ -50,6 +50,10 @@ following figures from Flato et al. (2013) can currently be reproduced:
       (5 deg north to 5 deg south) mean error, and multi model mean for zonal error
       and equatorial mean.
 
+    * Figure 9.24: Time series of (a) Arctic and (b) Antarctic sea ice extent;
+      trend distributions of (c) September Arctic and (d) February Antarctic
+      sea ice extent.
+
     * Figure 9.42a: Equilibrium climate sensitivity (ECS) against the global
       mean surface air temperature of CMIP5 models, both for the period
       1961-1990 and for the pre-industrial control runs.
@@ -70,6 +74,8 @@ Diagnostics are stored in esmvaltool/diag_scripts/
       averages of individual models, multi-model mean and observations (Fig. 9.5)
     * ipcc_ar5/tsline.ncl: time series of the global mean (anomaly) (Fig. 9.8)
     * ipcc_ar5/ch09_fig09_14.py: Zonally averaged and equatorial SST (Fig. 9.14)
+    * seaice/seaice_tsline.ncl: Time series of sea ice extent (Fig. 9.24a/b)
+    * seaice/seaice_trends.ncl: Trend distributions of sea ice extent (Fig 9.24c/d)
     * ipcc_ar5/ch09_fig09_42a.py: ECS vs. surface air temperature (Fig. 9.42a)
 
 User settings in recipe
@@ -78,6 +84,8 @@ User settings in recipe
 #. Script climate_metrics/ecs.py
 
    See :ref:`recipes_ecs`.
+
+#. Script clouds/clouds_bias.ncl
 
 #. Script clouds_bias.ncl
 
@@ -108,7 +116,7 @@ User settings in recipe
    * variable "pr-mmday": diag_scripts/shared/plots/rgb/ipcc-precip.rgb,
      diag_scripts/shared/plot/rgb/ipcc-precip-delta.rgb
 
-#. Script clouds_ipcc.ncl
+#. Script clouds/clouds_ipcc.ncl
 
    *Required settings (scripts)*
 
@@ -179,6 +187,35 @@ User settings in recipe
 
    * e.g. diag_scripts/shared/plot/styles/cmip5.style
 
+#. Script seaice/seaice_trends.ncl
+
+   *Required settings (scripts)*
+
+   * month: selected month (1, 2, ..., 12) or annual mean ("A")
+   * region: region to be analyzed ( "Arctic" or "Antarctic")
+
+   *Optional settings (scripts)*
+
+   * fill_pole_hole: fill observational hole at North pole, Default: False
+
+   *Optional settings (variables)*
+
+   * ref_model: array of references plotted as vertical lines
+
+#. Script seaice/seaice_tsline.ncl
+
+   *Required settings (scripts)*
+
+   * region: Arctic, Antarctic
+   * month: annual mean (A), or month number (3 = March, for Antarctic; 9 = September for Arctic)
+
+   *Optional settings (scripts)*
+
+   * styleset: for plot_type cycle only (cmip5, cmip6, default)
+   * multi_model_mean: plot multi-model mean and standard deviation (default: False)
+   * EMs_in_lg: create a legend label for individual ensemble members (default: False)
+   * fill_pole_hole: fill polar hole (typically in satellite data) with sic = 1 (default: False)
+
 #. Script ipcc_ar5/ch09_fig09_42a.py
 
    *Required settings for script*
@@ -199,11 +236,13 @@ User settings in recipe
 Variables
 ---------
 
-* tas (atmos, monthly mean, longitude latitude time)
+* areacello (fx, longitude latitude)
 * pr (atmos, monthly mean, longitude latitude time)
 * rlut, rlutcs (atmos, monthly mean, longitude latitude time)
 * rsdt (atmos, monthly mean, longitude latitude time)
 * rsut, rsutcs (atmos, monthly mean, longitude latitude time)
+* sic (ocean-ice, monthly mean, longitude latitude time)
+* tas (atmos, monthly mean, longitude latitude time)
 * tos (ocean, monthly mean, longitude, latitude, time)
 
 
@@ -218,7 +257,7 @@ instructions.*
 * ERA-Interim (tas, ta, ua, va, zg, hus - esmvaltool/utils/cmorizers/obs/cmorize_obs_ERA-Interim.ncl)
 * GPCP-SG (pr - obs4mips)
 * HadCRUT4 (tas - esmvaltool/utils/cmorizers/obs/cmorize_obs_hadcrut4.ncl)
-* HadISST (tos - esmvaltool/utils/cmorizers/obs/cmorize_obs_hadisst.ncl)
+* HadISST (sic, tos - esmvaltool/utils/cmorizers/obs/cmorize_obs_hadisst.ncl)
 
 
 References
@@ -293,7 +332,7 @@ Example plots
 .. figure:: /recipes/figures/flato13ipcc/fig-9-14.png
    :align: center
 
-   Fig. 9.14: (a) Zonally averaged sea surface temperature (SST) error
+   Figure 9.14: (a) Zonally averaged sea surface temperature (SST) error
    in CMIP5 models. (b) Equatorial SST error in CMIP5 models. (c) Zonally
    averaged multi-model mean SST error for CMIP5 together with
    inter-model standard deviation (shading). (d) Equatorial multi-model
@@ -305,6 +344,19 @@ Example plots
    reference for the error calculation (a), (b), and (c); and for
    observations in (d).
 
+.. figure::  /recipes/figures/seaice/trend_sic_extend_Arctic_September_histogram.png
+   :align:   center
+   :width:   9cm
+
+   Figure 9.24c: Sea ice extent trend distribution for the Arctic in September.
+
+.. figure::  /recipes/figures/seaice/extent_sic_Arctic_September_1960-2005.png
+   :align:   center
+   :width:   12cm
+
+   Figure 9.24a: Time series of total sea ice area and extent (accumulated) for the Arctic
+   in September including multi-model mean and standard deviation.
+
 .. _fig_flato13ipcc_6:
 .. figure:: /recipes/figures/flato13ipcc/fig-9-42a.png
    :align: center
@@ -312,3 +364,4 @@ Example plots
    Figure 9.42a: Equilibrium climate sensitivity (ECS) against the global mean
    surface air temperature of CMIP5 models, both for the period 1961-1990
    (larger symbols) and for the pre-industrial control runs (smaller symbols).
+
