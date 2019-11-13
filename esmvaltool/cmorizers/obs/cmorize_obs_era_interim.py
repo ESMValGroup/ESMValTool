@@ -95,7 +95,7 @@ import iris
 import numpy as np
 
 from esmvalcore.cmor.table import CMOR_TABLES
-from esmvalcore.preprocessor import daily_statistics
+from esmvalcore.preprocessor import daily_statistics, monthly_statistics
 
 from . import utilities as utils
 
@@ -178,6 +178,13 @@ def _fix_monthly_time_coord(cube):
     coord.points = 0.5 * (start + end)
     coord.bounds = np.column_stack([start, end])
 
+def _compute_monthly(cube):
+    """Convert various frequencies to daily frequency.
+
+    ERA-Interim-Land is in 6hr freq need to convert to monthly
+
+    """
+    return monthly_statistics(cube, operator='mean')
 
 def _compute_daily(cube):
     """Convert various frequencies to daily frequency.
@@ -320,7 +327,13 @@ def _extract_variable(in_files, var, cfg, out_dir):
     cube = _fix_coordinates(cube, definition)
 
     if 'mon' in var['mip']:
-        _fix_monthly_time_coord(cube)
+        # Distinguish between ERA-Interim and ERA-Interim-Land
+        if attributes['dataset_id']=='ERA-Interim':
+            _fix_monthly_time_coord(cube)
+        elif attributes['dataset_id']=='ERA-Interim-Land':
+            cube = _compute_monthly(cube)
+        else:
+            raise ValueError("Unknown dataset_id for this script: {attributes['dataset_id']}")
 
     if 'day' in var['mip']:
         cube = _compute_daily(cube)

@@ -16,4 +16,4 @@ variables:
   sm:
     mip: Lmon
     raw: swvl1
-    file: 'eraintland_swvl1_????.regridded.land.tmean1m.nc'
+    file: 'eraintland_swvl1_????.nc'
