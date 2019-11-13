@@ -57,12 +57,6 @@ def lapse_rate_correction(height):
         units='K m-1')
     return height*gamma
 
-def to_volume(mass, density=1000.):
-    rho = iris.coords.AuxCoord(density,
-        long_name='Density',
-        units='kg m-3')
-    return mass/rho
-
 def regrid_temperature(src_temp, src_height, target_height):
     """ Convert temperature to target grid with lapse rate correction """
     #TODO: Fix iris issue to get rid of workaround
@@ -110,7 +104,7 @@ def debruin_PET(tas, psl, rsds, rsdt, **kwargs):
         # source='Wallace and Hobbs (2006), 2.6 equation 3.14',
         units='J K-1 kg-1')
 
-    lambda_ = iris.coords.AuxCoord(2.5e6/86400,
+    lambda_ = iris.coords.AuxCoord(2.5e6,
         long_name='Latent heat of vaporization',
         # source='Wallace and Hobbs 2006' divide by 86400 for seconds,
         # copy de Bruin method from Marmot model diag
@@ -213,13 +207,14 @@ def main(cfg):
     pet.var_name = 'pet'
     pet_dem = preproc.regrid(pet, target_grid=dem, scheme='linear')
 
-    ## Convert units
-    pet_dem.data = pet_dem.data /1000
-    pet_dem.units = 'm day-1'
+    ## Convert units   
+    pet_dem.units = pet_dem.units / 'kg m-3'
+    pet_dem.data = pet_dem.core_data() / 1000.
+    pet_dem.convert_units('mm day-1')
 
-    pr_dem.convert_units('kg m-2 day-1')
-    pr_dem.data = pr_dem.data /1000
-    pr_dem.units = 'm day-1'
+    pr_dem.units = pr_dem.units / 'kg m-3'
+    pr_dem.data = pr_dem.core_data() / 1000.
+    pr_dem.convert_units('mm day-1')
 
     tas_dem.convert_units('degC')
 
