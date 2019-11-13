@@ -51,7 +51,7 @@ diagnostics:
   diagnostic_daily_data:
     description: HYPE input preprocessor for daily data
     additional_datasets:
-        - {dataset: ERA-Interim, project: OBS, tier: 3, type: reanaly, version: 1}
+        - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
     variables:
       tas: &var_daily
         mip: day
@@ -74,7 +74,7 @@ diagnostics:
   diagnostic_hourly_data:
     description: HYPE input preprocessor for hourly data
     additional_datasets:
-        - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
+        - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1}
     variables:
       tas: &var_hourly
         mip: E1hr

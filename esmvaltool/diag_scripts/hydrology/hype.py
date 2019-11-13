@@ -6,8 +6,6 @@ import dask.array as da
 import iris
 
 import numpy
-# daskframe is possible if
-# pip install 'fsspec>=0.3.3'
 import pandas
 
 

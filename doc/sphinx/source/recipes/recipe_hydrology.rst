@@ -58,7 +58,7 @@ HYPE
 ****
 
 The hydrological catchment model HYPE simulates water flow and substances on their way from precipitation through soil, river and lakes to the river outlet.
-HYPE is developed at the Swedish Meteorological and Hydrological Institute. The recipe pre-processes ERA-Interim reanalyses data for use in the HYPE.
+HYPE is developed at the Swedish Meteorological and Hydrological Institute. The recipe pre-processes ERA-Interim and ERA5 data for use in HYPE.
 
 
 Available recipes and diagnostics
@@ -88,14 +88,17 @@ Variables
 
 #. recipe_hype.yml
 
-   * tas (atmos, daily, longitude, latitude, time)
-   * pr (atmos, daily, longitude, latitude, time)
+   * tas (atmos, daily or hourly, longitude, latitude, time)
+   * tasmin (atmos, daily or hourly, longitude, latitude, time)
+   * tasmax (atmos, daily or hourly, longitude, latitude, time)
+   * pr (atmos, daily or hourly, longitude, latitude, time)
 
 Observations and reformat scripts
 ---------------------------------
 *Note: see headers of cmorization scripts (in esmvaltool/utils/cmorizers/obs) for download instructions.*
 
-*  ERA-Interim (tas, pr - esmvaltool/utils/cmorizers/obs/cmorize_obs_ERA-Interim.ncl)
+*  ERA-Interim (tas, tasmin, tasmax, pr - esmvaltool/cmorizers/obs/cmorize_obs_era/cmorize_obs_era_interim.py)
+*  ERA5 (tas, tasmin, tasmax, pr - esmvaltool/cmorizers/obs/cmorize_obs_era/cmorize_obs_era5.py )
 
 References
 ----------
