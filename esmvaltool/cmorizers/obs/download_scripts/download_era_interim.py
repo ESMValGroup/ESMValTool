@@ -163,7 +163,7 @@ INVARIANT_PARAMS = [
 
 def _get_land_data(params, timesteps, years, server, era_interim_land_dir):
     for param_id, symbol, timestep in params:
-        frequency = 'daily'
+        frequency = '6hourly'
         for year in years:
             server.retrieve({
                 'class': 'ei',
@@ -181,7 +181,7 @@ def _get_land_data(params, timesteps, years, server, era_interim_land_dir):
 
 def _get_daily_data(params, timesteps, years, server, era_interim_dir):
     for param_id, symbol, timestep in params:
-        frequency = '6hourly'
+        frequency = 'daily'
         for year in years:
             server.retrieve({
                 'class': 'ei',
