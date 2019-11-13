@@ -341,6 +341,7 @@ def _extract_variable(in_files, var, cfg, out_dir):
             cube = iris.util.squeeze(cube)
             cube.remove_coord('time')
 
+    # Specific to ERA Interim Land
     elif attributes['dataset_id']=='ERA-Interim-Land':
         if 'mon' in var['mip']:
             cube = _compute_monthly(cube)
