@@ -385,7 +385,7 @@ authors:
   vanulft_bert:
     name: van Ulft, Bert
     institute: KNMI, Netherlands
-    email: bert.van.ulft 'at' knmi.nl
+    orcid: https://orcid.org/0000-0001-8653-2312
   verhoeven_stefan:
     name: Verhoeven, Stefan
     institute: NLeSC, Netherlands
@@ -678,6 +678,7 @@ references:
   cds-xco2: "Buchwitz et al., Adv. Astronaut. Sci. Technol., doi:10.1007/s42423-018-0004-6, 2018."
   ceres-syn1deg: "Wielicki et al., Bull. Amer. Meteor. Soc., doi:10.1175/1520-0477(1996)077<0853:CATERE>2.0.CO;2, 1996."
   cru: "Harris et al., Int. J. Climatol., doi:10.1002/joc.3711, 2014."
+  duveiller2018: "Duveiller et al., Sci. Data, doi:10.1038/sdata.2018.14, 2018."
   eppley-vgpm-modis: "Behrenfeld and Falkowski, Limnol. Oceanogr., doi:10.4319/lo.1997.42.1.0001, 1997."
   era-interim: "Dee et al., Q. J. Roy. Meteor. Soc., doi:10.1002/qj.828, 2011."
   era5: "Copernicus Climate Change Service (C3S) (2017): ERA5: Fifth generation of ECMWF atmospheric reanalyses of the global climate. Copernicus Climate Change Service Climate Data Store (CDS)"
