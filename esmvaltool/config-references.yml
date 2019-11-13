@@ -638,6 +638,7 @@ references:
   lloyd-hughes02jclim: "Lloyd-Hughes, B. and Saunders, M. A., Int. J. Climatol., 22, 1571-1592, doi:10.1002/joc.846, 2002."
   locarini10usgov: "Locarnini, R. A. et al., World Ocean Atlas 2009, Volume 1: Temperature. S. Levitus, Ed. NOAA Atlas NESDIS 68, U.S. Government Printing Office, Washington, D.C., 184 pp.,2010."
   lucarini14revgeop: "Lucarini et al., Rev. Geophys., 52, 809-859, doi:https://doi.org/10.1002/2013RG000446"
+  massonnet12tc: "Massonnet, F. et al., The Cryosphere, 6, 1383-1394, doi: 10.5194/tc-6-1383-2012, 2012."
   mehran14jgr: "Mehran, A. et al., J. Geophys. Res., 119, 4, 1695-1707, doi: 10.1002/2013JD021152, 2014."
   manubens: "Manubens, N., et al., ENVIRON MODELL SOFTW 103, 29-42. doi:10.1016/j.envsoft.2018.01.018"
   mckee93: "McKee, T. B. and Doesken, N. J. and Kleist, J.  In Proceedings of the 8th Conference on Applied Climatology, 17(22), 179-183, Boston, MA: American Meteorological Society, 1993."
@@ -690,6 +691,7 @@ references:
   esacci-ozone: "Loyola et al., Int. J. Remote Sens. doi:10.1080/01431160902825016, 2009."
   esacci-soilmoisture: "Liu et al., Hydrol. Earth Syst. Sci., doi:10.5194/hess-15-425-2011, 2011."
   esacci-sst: "Merchant et al., Geosci. Data J., doi:10.1002/gdj3.20, 2014."
+  fluxcom: "Jung et al., Scientific Data 6:74, doi:10.1038/s41597-019-0076-8, 2019."
   gcp: "Le Quéré et al., Earth Syst. Sci. Data, doi:10.5194/essd-10-2141-2018, 2018."
   ghcn: "Jones and Moberg, J. Clim., doi:10.1175/1520-0442(2003)016<0206:HALSSA>2.0.CO;2, 2003."
   hadcrut3: "Brohan et al., J. Geophys. Res., doi:10.1029/2005JD006548, 2006."
@@ -778,6 +780,7 @@ plot_types:
   circle: different overlapping circles
   diurn: diurnal cycle
   geo: geographical distribution
+  histogram: histogram
   portrait: portrait diagram
   polar: polar-stereographic plot
   scatter: scatter plot

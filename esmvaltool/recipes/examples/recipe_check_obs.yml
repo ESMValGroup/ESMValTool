@@ -496,7 +496,11 @@ diagnostics:
         mip: Amon
       prw:
         mip: Amon
-      ps:
+      ps_day:
+        short_name: ps
+        mip: CFday
+      ps_month:
+        short_name: ps
         mip: Amon
       psl_day:
         short_name: psl
@@ -504,6 +508,9 @@ diagnostics:
       psl_month:
         short_name: psl
         mip: Amon
+      rlds_day:
+        short_name: rlds
+        mip: day
       rsds_day:
         short_name: rsds
         mip: day
@@ -604,9 +611,11 @@ diagnostics:
       mrro: *E1hr
       pr: *E1hr
       prsn: *E1hr
+      ps: *E1hr
       psl: *E1hr
       ptype: *E1hr
       rls: *E1hr
+      rlds: *E1hr
       rsds: *E1hr
       rsdt: *E1hr
       rss: *E1hr
@@ -648,6 +657,16 @@ diagnostics:
     additional_datasets:
       - {dataset: JMA-TRANSCOM, project: OBS, tier: 3, type: reanaly,
          version: 2018, start_year: 1985, end_year: 2016}
+    scripts: null
+
+
+  FLUXCOM:
+    description: FLUXCOM check
+    variables:
+      gpp:
+    additional_datasets:
+      - {dataset: FLUXCOM, project: OBS, mip: Lmon, tier: 3, type: reanaly,
+         version: ANN-v1, start_year: 1980, end_year: 2013}
     scripts: null
 
 
