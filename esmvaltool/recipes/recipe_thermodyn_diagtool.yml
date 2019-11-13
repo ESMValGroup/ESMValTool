@@ -75,6 +75,8 @@ diagnostics:
         mip: day
       ta:
         mip: day
+      sftlf:
+        mip: fx
       ua:
         mip: day
       va:

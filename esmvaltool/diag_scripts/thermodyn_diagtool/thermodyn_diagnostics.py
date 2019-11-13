@@ -274,6 +274,37 @@ warnings.filterwarnings("ignore", message="numpy.dtype size changed")
 logger = logging.getLogger(os.path.basename(__file__))
 
 
+def compute_water_mass_budget(cfg, wdir_up, pdir, model, wdir, input_data,
+                              flags, aux_file):
+    logger.info('Computing water mass and latent energy budgets\n')
+    aux_list = mkthe.init_mkthe_wat(model, wdir, input_data, flags)
+    wm_gmean, wm_file = computations.wmbudg(model, wdir, aux_file, input_data,
+                                            aux_list)
+    wm_time_mean = np.nanmean(wm_gmean[0])
+    wm_time_std = np.nanstd(wm_gmean[0])
+    logger.info('Water mass budget: %s\n', wm_time_mean)
+    latent_time_mean = np.nanmean(wm_gmean[1])
+    latent_time_std = np.nanstd(wm_gmean[1])
+    logger.info('Latent energy budget: %s\n', latent_time_mean)
+    logger.info('Done\n')
+    logger.info('Plotting the water mass and latent energy budgets\n')
+    plot_script.balances(cfg, wdir_up, pdir, [wm_file[0], wm_file[1]],
+                         ['wmb', 'latent'], model)
+    logger.info('Done\n')
+    for filen in aux_list:
+        os.remove(filen)
+    return (wm_file, wm_time_mean, wm_time_std, latent_time_mean,
+            latent_time_std)
+
+
+def compute_land_ocean(model, wdir, file, sftlf_fx, name):
+    ocean_mean, land_mean = computations.landoc_budg(model, wdir, file,
+                                                     sftlf_fx, name)
+    logger.info('%s budget over oceans: %s\n', name, ocean_mean)
+    logger.info('%s budget over land: %s\n', name, land_mean)
+    return (ocean_mean, land_mean)
+
+
 def main(cfg):
     """Execute the program.
 

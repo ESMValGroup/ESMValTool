@@ -5,6 +5,7 @@
 ;  Check the header of each routine for documentation.
 ;
 ;  Contents:
+;     function calc_yod
 ;     function sea_ice_area
 ;
 ; #############################################################################
@@ -172,4 +173,92 @@ begin
 
   return(SIA)
 
+end
+
+; #############################################################################
+undef("calc_yod")
+function calc_yod(SIE:float,
+                  threshold[1]:float,
+                  cons_years[1]:integer)
+;
+; Arguments:
+;   SIE:        sea ice extent (one value per year), must be of type float
+;   threshold:  threshold value of sea ice extent in million km^2 (usually 1.)
+;   cons_years: number of consecutive years in which SIE must be < threshold
+;
+; Return value:
+;   first year of cons_years years in which SIE < threshold, type of SIE
+;
+; Description:
+;   Calculates year of near disappearance of (Arctic) sea ice (YOD). YOD is
+;     defined as the first year of five consecutive years in which September
+;     Arctic sea ice extent is below 1 million square kilometres. Returns
+;     missing value if no YOD occurs in the given timeseries.
+;     This function allows the user to specify a different threshold and
+;     number of consecutive years.
+;
+; Caveats
+;   (September Arctic) sea ice extent as input expected, must be calculated
+;     from sic beforehand. Input must be of one-dimensional: 'time' or 'year'.
+;   If function returns a missing value, it is set to be of type float. Make
+;     sure that your script recognizes the output correctly as missing.
+;
+; Modification history:
+;    20180827-senftleben_daniel: written.
+;
+local funcname, scriptname, verbosity, SIE_smoo, a, itime, iyod
+
+begin
+
+  funcname = "calc_yod"
+  scriptname = "diag_scripts/seaice/seaice_aux.ncl"
+  enter_msg(scriptname, funcname)
+
+  ; check input
+  if (SIE!0.ne."year") then
+    if (SIE!0.eq."time") then  ; need 'year'
+      utc_date = cd_calendar(SIE&time, 0)
+      SIE!0    = "year"
+      SIE&year = utc_date(:, 0)
+      delete(utc_date)
+    else
+      error_msg("f", scriptname, "", \
+                "Input array must have time coordinate" + \
+                " 'time' or 'year'")
+    end if
+  end if
+
+  ; calculate 5-year running mean of input data
+  SIE_smoo = runave(SIE, 5, 0)
+  copy_VarMeta(SIE, SIE_smoo)
+  copy_VarCoords(SIE, SIE_smoo)
+
+  ; calculate YOD
+  a = 0
+  do itime = 0, dimsizes(SIE_smoo&year) - 1
+    if (ismissing(SIE_smoo(itime))) then
+      a = 0
+      continue
+    end if
+    if (SIE_smoo(itime).lt.threshold) then
+      a = a + 1
+      if (a.eq.cons_years) then
+        iyod = itime - cons_years + 1
+        break
+      else
+        continue
+      end if
+    else
+      a = 0
+    end if
+  end do
+
+  ; return YOD
+  if (isdefined("iyod")) then
+    return_value = tofloat(SIE_smoo&year(iyod))
+  else
+    return_value = SIE@_FillValue
+  end if
+
+  return(return_value)
 end
