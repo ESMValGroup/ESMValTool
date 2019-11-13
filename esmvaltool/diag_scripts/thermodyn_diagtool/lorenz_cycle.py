@@ -85,7 +85,7 @@ def lorenz(outpath, model, year, filenc, plotfile, logfile):
         plotfile: name of the file that will contain the flux diagram;
         logfile: name of the file containing the table as a .txt file.
     """
-    ta_c, ua_c, va_c, wap_c, dims, lev, lat, log = init(logfile, filenc)
+    ta_c, ua_c, va_c, wap_c, dims, lev, lat = init(logfile, filenc)
     nlev = int(dims[0])
     ntime = int(dims[1])
     nlat = int(dims[2])
@@ -139,7 +139,7 @@ def lorenz(outpath, model, year, filenc, plotfile, logfile):
     ek_tgmn = averages_comp(e_k, g_w, d_s, dims)
     table(ek_tgmn, ntp, 'TOT. KIN. EN.    ', logfile, flag=0)
     ape_tgmn = averages_comp(ape, g_w, d_s, dims)
-    table(ape_tgmn, ntp, 'TOT. POT. EN.   ', logfile, flag=0)
+    table(ape_tgmn, ntp, 'TOT. POT. EN.     ', logfile, flag=0)
     a2k_tgmn = averages_comp(a2k, g_w, d_s, dims)
     table(a2k_tgmn, ntp, 'KE -> APE (trans) ', logfile, flag=1)
     ae2az_tgmn = averages_comp(ae2az, g_w, d_s, dims)
@@ -414,7 +414,7 @@ def init(logfile, filep):
     filenc: name of the file containing the input fields;
     logfile: name of the file containing the table as a .txt file.
     """
-    with open(logfile, 'a') as log:
+    with open(logfile, 'w') as log:
         log.write('########################################################\n')
         log.write('#                                                      #\n')
         log.write('#      LORENZ     ENERGY    CYCLE                      #\n')
@@ -454,7 +454,7 @@ def init(logfile, filep):
     ua_c = ua_r + 1j * ua_i
     va_c = va_r + 1j * va_i
     wap_c = wap_r + 1j * wap_i
-    with open(logfile, 'a') as log:
+    with open(logfile, 'a+') as log:
         log.write(' \n')
         log.write(' \n')
         log.write('INPUT DATA:\n')
@@ -476,7 +476,7 @@ def init(logfile, filep):
         log.write('                            I GLOBAL I NORTH I SOUTH I\n')
         log.write('------------------------------------------------------\n')
         log.close()
-    return ta_c, ua_c, va_c, wap_c, dims, lev, lat, log
+    return ta_c, ua_c, va_c, wap_c, dims, lev, lat
 
 
 def makek(u_t, v_t):
@@ -1131,7 +1131,7 @@ def write_to_tab(logfile, name, vared, varzon):
     varzon: an array containing the zonal mean component;
     """
     vartot = varzon + vared[0]
-    with open(logfile, 'a') as log:
+    with open(logfile, 'a+') as log:
         log.write(' {} TOTAL    {: 4.3f}  {: 4.3f}  {: 4.3f}\n'.format(
             name, vartot[0], vartot[1], vartot[2]))
         log.write('--------------------------------------\n')

@@ -185,13 +185,13 @@ def entropy(plotpath, filename, name, ext_name, model):
     elif ext_name == 'Evaporation entropy production':
         rangec = [0, 1]
         c_m = 'YlOrBr'
-    elif ext_name == 'Rainfall precipitation entropy production':
+    elif ext_name == 'Rainfall entropy production':
         rangec = [0, 1]
         c_m = 'YlOrBr'
-    elif ext_name == 'Snowfall precipitation entropy production':
+    elif ext_name == 'Snowfall entropy production':
         rangec = [0, 0.25]
         c_m = 'YlOrBr'
-    elif ext_name == 'Snow melting entropy production':
+    elif ext_name == 'Snowmelt entropy production':
         rangec = [0, 0.05]
         c_m = 'YlOrBr'
     elif ext_name == 'Potential energy entropy production':
@@ -359,13 +359,13 @@ def plot_climap_eb(model, pdir, coords, tmean, ext_name):
     rangect = [-100, 100]
     fig = plt.figure(figsize=(12, 22))
     axi = plt.subplot(311, projection=ccrs.PlateCarree())
-    title = 'Climatological Mean {} (W/m2)'.format(ext_name[0])
+    title = '{} (W/m2)'.format(ext_name[0])
     plot_climap(axi, coords, tmean[0, :, :], title, rangect, 'bwr')
     axi = plt.subplot(312, projection=ccrs.PlateCarree())
-    title = 'Climatological Mean {} (W/m2)'.format(ext_name[1])
+    title = '{} (W/m2)'.format(ext_name[1])
     plot_climap(axi, coords, tmean[1, :, :], title, rangect, 'bwr')
     axi = plt.subplot(313, projection=ccrs.PlateCarree())
-    title = 'Climatological Mean {} (W/m2)'.format(ext_name[2])
+    title = '{} (W/m2)'.format(ext_name[2])
     plot_climap(axi, coords, tmean[2, :, :], title, rangect, 'bwr')
     plt.savefig(pdir + '/{}_energy_climap.png'.format(model))
     plt.close(fig)
@@ -386,13 +386,13 @@ def plot_climap_wm(model, pdir, coords, tmean, ext_name, name):
     rangecl = [-150, 150]
     fig = plt.figure()
     axi = plt.subplot(111, projection=ccrs.PlateCarree())
-    title = 'Climatological Mean {} (Km m-2 s-1)'.format(ext_name[0])
+    title = '{} (Km m-2 s-1)'.format(ext_name[0])
     plot_climap(axi, coords, tmean[0, :, :], title, rangecw, 'bwr')
     plt.savefig(pdir + '/{}_{}_climap.png'.format(model, name[0]))
     plt.close(fig)
     fig = plt.figure()
     axi = plt.subplot(111, projection=ccrs.PlateCarree())
-    title = 'Climatological Mean {} (W/m2)'.format(ext_name[1])
+    title = '{} (W/m2)'.format(ext_name[1])
     plot_climap(axi, coords, tmean[1, :, :], title, rangecl, 'bwr')
     plt.savefig(pdir + '/{}_{}_climap.png'.format(model, name[1]))
     plt.close(fig)
@@ -420,7 +420,7 @@ def plot_climap(axi, coords, fld, title, rrange, c_m):
                cmap=c_m,
                antialiaseds='True')
     plt.colorbar()
-    plt.title(title, fontsize=16)
+    plt.title(title, fontsize=14)
     plt.grid()
 
 
