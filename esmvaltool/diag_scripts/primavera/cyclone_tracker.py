@@ -24,6 +24,7 @@ class CycloneTracker(object):
     def __init__(self, config):
         self.cfg = config
         self.filenames = esmvaltool.diag_scripts.shared.Datasets(self.cfg)
+        self.atcffreq = None
         self.westbd = self.cfg['westbd']
         self.eastbd = self.cfg['eastbd']
         self.northbd = self.cfg['northbd']
@@ -48,10 +49,17 @@ class CycloneTracker(object):
             vas = iris.load_cube(var['vas'][0]['filename'])
             ta = iris.load_cube(var['ta'][0]['filename'])
             zg = iris.load_cube(var['zg'][0]['filename'])
+            freq = psl.attributes['frequency']
+            if freq in '6hrPt':
+                print('true')
+            if 'day' in freq:
+                self.atcffreq = '2400'
+            if '6hr' in freq:
+                self.atcffreq = '600'
             years = set(psl.coord('year').points)
             months = set(psl.coord('month_number').points)
-            total = [psl, ua, va, uas, vas, ta, zg]
 
+            total = [psl, ua, va, uas, vas, ta, zg]
             output = '{project}_' \
                      '{dataset}_' \
                      '{mip}_' \
@@ -92,20 +100,21 @@ class CycloneTracker(object):
                                 month)
                                 )
 
-                    filename = '{dataset}_{year}{month}.nc'.format(
+                    filename = '{dataset}_{year}{month}'.format(
                         dataset=data[alias][0]['dataset'],
                         year=year,
                         month=format(month, '02d')
                         )
                     input_path = os.path.join(
                         self.cfg[n.WORK_DIR],
-                        filename)
+                        filename+'.nc')
                     iris.save(total_year, input_path)
                     day = psl.coord('time').cell(0).point.day
                     hour = psl.coord('time').cell(0).point.hour
                     time = total_year[0].coord('time').points
                     path = os.path.join(self.cfg['run_dir'], filename)
                     if not os.path.isdir(path):
+                         print(path)
                          os.makedirs(path)
                     os.system('ln -s {0} {1}/fort.11'.format(input_path, path))
                     self.write_namelist(path, month, year)
@@ -147,7 +156,7 @@ class CycloneTracker(object):
         namelist_file.write('  atcfnum=81, \n')
         namelist_file.write('  atcfname=\'test\', \n')
         namelist_file.write('  atcfymdh={0}{1:02d}0100, \n'.format(year, month))
-        namelist_file.write('  atcffreq=60000, \n') #frquencia en centenes d'hora 2400
+        namelist_file.write('  atcffreq={0}, \n'.format(self.atcffreq)) 
         namelist_file.write('/\n')
         namelist_file.write('&trackerinfo \n')
         namelist_file.write('  trkrinfo%westbd={0}, \n'.format(self.westbd))
