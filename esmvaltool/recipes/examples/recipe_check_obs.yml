@@ -271,12 +271,12 @@ diagnostics:
   NSIDC-0116:
     description: NSIDC-0116 check
     variables:
+      areacello:
+        mip: fx
       usi:
         mip: day
       vsi:
         mip: day
-      areacello:
-        mip: fx
     additional_datasets:
       - {dataset: NSIDC-0116-nh, project: OBS, tier: 3,
          type: reanaly, version: "4.1", start_year: 1978, end_year: 2018}
@@ -507,7 +507,11 @@ diagnostics:
         mip: Amon
       prw:
         mip: Amon
-      ps:
+      ps_day:
+        short_name: ps
+        mip: CFday
+      ps_month:
+        short_name: ps
         mip: Amon
       psl_day:
         short_name: psl
@@ -515,6 +519,9 @@ diagnostics:
       psl_month:
         short_name: psl
         mip: Amon
+      rlds_day:
+        short_name: rlds
+        mip: day
       rsds_day:
         short_name: rsds
         mip: day
@@ -545,6 +552,9 @@ diagnostics:
         mip: Amon
       tasmax:
         mip: day
+      tas_month:
+        short_name: tas
+        mip: Amon
       tasmin:
         mip: day
       tauu:
@@ -602,29 +612,34 @@ diagnostics:
   ERA5:
     description: ERA5 check check
     variables:
-      clt:
-      evspsbl:
-      evspsblpot:
-      mrro:
-      pr:
-      prsn:
-      psl:
-      rls:
-      rsds:
-      rsdt:
-      rss:
-      uas:
-      vas:
-      tas:
-      tasmax:
-      tasmin:
-      tdps:
-      ts:
-      tsn:
+      clt: &E1hr
+        mip: E1hr
+      evspsbl: *E1hr
+      evspsblpot: *E1hr
+      mrro: *E1hr
+      pr: *E1hr
+      prsn: *E1hr
+      ps: *E1hr
+      psl: *E1hr
+      ptype: *E1hr
+      rls: *E1hr
+      rlds: *E1hr
+      rsds: *E1hr
+      rsdt: *E1hr
+      rss: *E1hr
+      uas: *E1hr
+      vas: *E1hr
+      tas: *E1hr
+      tasmax: *E1hr
+      tasmin: *E1hr
+      tdps: *E1hr
+      ts: *E1hr
+      tsn: *E1hr
+      orog:
+        mip: fx
     additional_datasets:
-      - {dataset: ERA5, project: OBS6, mip: E1hr, frequency: 1hr, tier: 3,
-         type: reanaly, version: 1,
-         start_year: 1990, end_year: 1990}
+      - {dataset: ERA5, project: OBS6, frequency: 1hr, tier: 3,
+         type: reanaly, version: 1, start_year: 1990, end_year: 1990}
     scripts: null
 
 
@@ -653,6 +668,16 @@ diagnostics:
     additional_datasets:
       - {dataset: JMA-TRANSCOM, project: OBS, tier: 3, type: reanaly,
          version: 2018, start_year: 1985, end_year: 2016}
+    scripts: null
+
+
+  FLUXCOM:
+    description: FLUXCOM check
+    variables:
+      gpp:
+    additional_datasets:
+      - {dataset: FLUXCOM, project: OBS, mip: Lmon, tier: 3, type: reanaly,
+         version: ANN-v1, start_year: 1980, end_year: 2013}
     scripts: null
 
 
