@@ -43,8 +43,6 @@ class CycloneTracker(object):
             ta = iris.load_cube(var['ta'][0]['filename'])
             zg = iris.load_cube(var['zg'][0]['filename'])
             freq = psl.attributes['frequency']
-            if freq in '6hrPt':
-                print('true')
             if 'day' in freq:
                 self.atcffreq = '2400'
             if '6hr' in freq:
