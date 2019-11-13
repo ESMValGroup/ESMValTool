@@ -119,15 +119,6 @@ LAND_PARAMS = [
     ('39.128', 'swvl1', 'an'),  # Volumetric soil moisture layer 1 [0-7 cm]
 ]
 
-LAND_TIMESTEPS = {
-    'an': {
-        'type': 'an',
-        'time': '00:00:00/06:00:00/12:00:00/18:00:00',
-        'step': '0',
-        'levtype': 'sfc',
-    }
-}
-
 MONTH_PARAMS = [
     ('167.128', 't2m', 'an'),  # 2 metre temperature
     ('228.128', 'tp', 'accu'),  # Total precipitation
@@ -172,13 +163,12 @@ INVARIANT_PARAMS = [
 
 def _get_land_data(params, timesteps, years, server, era_interim_land_dir):
     for param_id, symbol, timestep in params:
-        frequency = 'monthly'
+        frequency = 'daily'
         for year in years:
             server.retrieve({
                 'class': 'ei',
                 'dataset': 'interim_land',
-                # All months of a year eg. 19900101/.../19901101/19901201
-                'date': '/'.join([f'{year}{m:02}01' for m in range(1, 13)]),
+                'date': f'{year}-01-01/to/{year}-12-31',
                 'expver': '2',
                 'grid': '0.25/0.25',
                 'param': param_id,
@@ -191,7 +181,7 @@ def _get_land_data(params, timesteps, years, server, era_interim_land_dir):
 
 def _get_daily_data(params, timesteps, years, server, era_interim_dir):
     for param_id, symbol, timestep in params:
-        frequency = 'daily'
+        frequency = '6hourly'
         for year in years:
             server.retrieve({
                 'class': 'ei',
@@ -279,7 +269,7 @@ def cli():
     _get_monthly_data(MONTH_PARAMS, MONTH_TIMESTEPS,
                       years, server, era_interim_dir)
     _get_invariant_data(INVARIANT_PARAMS, server, era_interim_dir)
-    _get_land_data(LAND_PARAMS, LAND_TIMESTEPS,
+    _get_land_data(LAND_PARAMS, DAY_TIMESTEPS,
                    years, server, era_interim_land_dir)
 
 
