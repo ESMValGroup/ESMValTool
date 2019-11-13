@@ -185,7 +185,6 @@ def init_mkthe_direntr(model, wdir, input_data, te_file, flags):
             vasmn_file = wdir + '/{}_uas_mm.nc'.format(model)
             vasmn_file = mon_from_day(wdir, model, 'vas', vas_file)
             vas_file = vasmn_file
-        evspsbl_file, prr_file = wfluxes(model, wdir, input_data)
         mk_list = [
             ts_file, hus_file, ps_file, uas_file, vas_file, hfss_file, te_file
         ]
