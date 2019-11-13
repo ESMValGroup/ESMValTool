@@ -330,21 +330,22 @@ def _extract_variable(in_files, var, cfg, out_dir):
 
     cube = _fix_coordinates(cube, definition)
 
-    if 'mon' in var['mip']:
-        # Distinguish between ERA-Interim and ERA-Interim-Land
-        if attributes['dataset_id']=='ERA-Interim':
+    if attributes['dataset_id']=='ERA-Interim':
+        if 'mon' in var['mip']:
             _fix_monthly_time_coord(cube)
-        elif attributes['dataset_id']=='ERA-Interim-Land':
+
+        if 'day' in var['mip']:
+            cube = _compute_daily(cube)
+    
+        if 'fx' in var['mip']:
+            cube = iris.util.squeeze(cube)
+            cube.remove_coord('time')
+
+    elif attributes['dataset_id']=='ERA-Interim-Land':
+        if 'mon' in var['mip']:
             cube = _compute_monthly(cube)
-        else:
-            raise ValueError("Unknown dataset_id for this script: {attributes['dataset_id']}")
-
-    if 'day' in var['mip']:
-        cube = _compute_daily(cube)
-
-    if 'fx' in var['mip']:
-        cube = iris.util.squeeze(cube)
-        cube.remove_coord('time')
+    else:
+        raise ValueError("Unknown dataset_id for this script: {attributes['dataset_id']}")
 
     # Convert units if required
     cube.convert_units(definition.units)
