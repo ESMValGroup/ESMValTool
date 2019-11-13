@@ -184,7 +184,11 @@ def _compute_monthly(cube):
     ERA-Interim-Land is in 6hr freq need to convert to monthly
 
     """
-    return monthly_statistics(cube, operator='mean')
+    cube = monthly_statistics(cube, operator='mean')
+    # Remove monthly statistics aux coordinates
+    cube.remove_coord(cube.coord('month_number'))
+    cube.remove_coord(cube.coord('year'))
+    return cube
 
 def _compute_daily(cube):
     """Convert various frequencies to daily frequency.
@@ -383,6 +387,7 @@ def _get_in_files_by_year(in_dir, var):
 
 def _run(jobs, n_workers):
     """Run CMORization jobs using n_workers."""
+    n_workers = 1 #TODO take out again
     if n_workers == 1:
         for job in jobs:
             _extract_variable(*job)
