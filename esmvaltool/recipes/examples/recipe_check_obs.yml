@@ -164,8 +164,8 @@ diagnostics:
       fgco2:
         mip: Omon
     additional_datasets:
-      - {dataset: GCP, project: OBS, tier: 2, type: reanaly, version: 2018,
-         start_year: 1959, end_year: 2017, frequency: yr}
+      - {dataset: GCP, project: OBS, frequency: yr, tier: 2,
+         type: reanaly, version: 2018, start_year: 1959, end_year: 2017}
     scripts: null
 
 
@@ -369,7 +369,10 @@ diagnostics:
     variables:
       sm:
     additional_datasets:
-      - { dataset: cds-uerra-reanalysis, type: reanaly, project: OBS, mip: Lmon, version: UERRA-HARMONIE, tier: 3, start_year: 1979, end_year: 2018}
+      - {dataset: CDS-UERRA, project: OBS6, mip: E6hr, frequency: 6hr, tier: 3,
+         type: reanaly, version: UERRA-HARMONIE,
+         start_year: 1979, end_year: 2018}
+    scripts: null
 
 
   CDS-XCH4:
@@ -619,8 +622,8 @@ diagnostics:
       ts:
       tsn:
     additional_datasets:
-      - {project: OBS6, dataset: ERA5, mip: E1hr,
-         frequency: 1hr, tier: 3, type: reanaly, version: 1,
+      - {dataset: ERA5, project: OBS6, mip: E1hr, frequency: 1hr, tier: 3,
+         type: reanaly, version: 1,
          start_year: 1990, end_year: 1990}
     scripts: null
 
