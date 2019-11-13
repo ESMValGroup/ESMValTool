@@ -1,5 +1,7 @@
 """PROGRAM FOR LEC COMPUTATION.
 
+Program for computing and plotting the Lorenz Energy Cycle.
+
 The module contains the following functions:
     - lorenz: it is the main program, calling functions that compute the
               reservoirs and conversion terms, storing them separately in

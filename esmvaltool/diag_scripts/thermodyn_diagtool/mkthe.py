@@ -2,21 +2,22 @@
 
 Module for computation of the auxiliary variables needed by the tool.
 
-Here the thermodynamic diagnostic tool script computes
-some auxiliary variables.
-
-It computes equivalent potential temperatures and temperatures representative
-of the sensible and latent heat exchanges in the lower layers of the
-troposphere. Estimates of the boundary layer height and lifting condensation
-level are also provided.
-
-It ingests monthly mean fields of:
-- specific humidity (near-surface or 3D) (hus);
-- skin temperature (ts);
-- surface pressure (ps);
-- near-surface horizontal velocity (uas and vas);
-- surface turbulent sensible heat fluxes (hfss);
-- emission temperature (te).
+It contains the following functions:
+- init_mkthe_te: compute emission temperature from OLR;
+- init_mkthe_wat: initialise wfluxes;
+- init_mkthe_lec: compute monthly mean near-surface zonal and meridional
+                  velocities when daily means are provided;
+- init_mkthe_direntr: compute auxiliary files needed for material entropy
+                      production retrieval with the direct method;
+- input_fields: obtain input fields for mkthe_main;
+- mkthe_main: obtain equivalent potential temperatures, temperatures
+              representative of the sensible and latent heat exchanges in
+              the lower layers of the troposphere, boundary layer height and
+              lifting condensation level temperature.
+- mon_from_day: obtain monthly means from daily means;
+- wfluxes: obtain evaporation and precipitation from precipitation and latent
+           heat fluxes;
+- write_output: write auxiliary fields to NetCDF file;
 
 @author: Valerio Lembo, valerio.lembo@uni-hamburg.de, Universitat Hamburg, 2018
 """
@@ -144,6 +145,7 @@ def init_mkthe_direntr(model, wdir, input_data, te_file, flags):
             (1: indirect, 2, direct, 3: both));
 
     Returns:
+    -------
     A list of files cotiaining the components of the MEP with the direct
     method.
     """
@@ -286,11 +288,15 @@ def input_fields(wdir, file_list):
 def mkthe_main(wdir, file_list, modelname):
     """Compute the auxiliary variables for the Thermodynamic diagnostic tool.
 
+    It computes equivalent potential temperatures and temperatures
+    representative of the sensible and latent heat exchanges in the lower
+    layers of the troposphere. Estimates of the boundary layer height and
+    lifting condensation level are also provided.
+
     Arguments:
     ---------
     wdir: the working directory path;
-    file_list: the list of file containing ts, hus,
-               ps, uas, vas, hfss, te;
+    file_list: the list of file containing ts, hus, ps, uas, vas, hfss, te;
     modelname: the name of the model from which the fields are;
 
     Returns
@@ -365,13 +371,13 @@ def removeif(filename):
 
 
 def wfluxes(model, wdir, input_data):
-    """Compute auxiliary fields and perform time averaging of existing fields.
+    """Compute evaporation and rainfall mass fluxes.
 
     Arguments:
     ---------
     model: the model name;
     wdir: the working directory where the outputs are stored;
-    filelist: a list of file names containing the input fields;
+    input_data: a dictionary of file names containing the input fields;
 
     Returns
     ------
@@ -385,14 +391,9 @@ def wfluxes(model, wdir, input_data):
                                 dataset=model)[0]['filename']
     prsn_file = e.select_metadata(input_data, short_name='prsn',
                                   dataset=model)[0]['filename']
-    #
-    #    hfls_file = filelist[0]
-    #    pr_file = filelist[3]
-    #    prsn_file = filelist[4]
     aux_file = wdir + '/aux.nc'
     evspsbl_file = (wdir + '/{}_evspsbl.nc'.format(model))
     cdo.divc(str(L_C), input="{}".format(hfls_file), output=evspsbl_file)
-    # Rainfall precipitation
     prr_file = wdir + '/{}_prr.nc'.format(model)
     cdo.sub(input="{} {}".format(pr_file, prsn_file), output=aux_file)
     cdo.chname('pr,prr', input=aux_file, output=prr_file)

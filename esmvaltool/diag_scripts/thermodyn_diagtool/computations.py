@@ -53,6 +53,7 @@ def baroceff(model, wdir, aux_file, toab_file, te_file):
     is a net energy loss (after Lucarini et al., 2011).
 
     Arguments:
+    ----------
     - model: the model name;
     - wdir: the working directory where the outputs are stored;
     - aux_file: the name of a dummy aux. file to be used for computations;
@@ -60,6 +61,12 @@ def baroceff(model, wdir, aux_file, toab_file, te_file):
       (time,lon,lat);
     - te_file: a file containing the annual mean emission temperature
       (time,lon,lat);
+
+    Returns
+    -------
+    The annual mean baroclinic efficiency (after Lucarini et al. 2011).
+
+    @author: Valerio Lembo, Hamburg University, 2018.
     """
     cdo = Cdo()
     removeif(aux_file)
@@ -122,10 +129,19 @@ def budgets(model, wdir, aux_file, input_data):
     atmb = toab - atmb
 
     Arguments:
+    ----------
     - model: the model name;
     - wdir: the working directory where the outputs are stored;
     - aux_file: the name of a dummy aux. file to be used for computations;
     - filelist: a list of file names containing the input fields;
+
+    Returns
+    -------
+    The list of input files, the global mean budget time series, a file
+    containing the budget fields, a file containing the annual mean TOA budget
+    value;
+
+    @author: Valerio Lembo, Hamburg University, 2018.
     """
     cdo = Cdo()
     hfls_file = e.select_metadata(input_data, short_name='hfls',
@@ -197,18 +213,24 @@ def direntr(logger, model, wdir, input_data, aux_file, te_file, lect, flags):
     (time,lat,lon) fields.
 
     Arguments:
-    - logger: the log file where the global mean values are printed out;
-    - model: the model name;
-    - wdir: the working directory where the outputs are stored;
-    - filelist: the list containing all the input files;
-    - aux_file: the name of a dummy aux. file to be used for computations;
-    - lect: the annual mean value of the LEC strength;
-    - lec: a flag having y (yes) value if the LEC is computed, n (no) if not.
-    In the latter case, a reference value of 0.010 W*m-2*K-1 is given for the
-    material entropy production related to the kinetic energy dissipation;
-    - flags: a list of flags containing information on whether the water mass
-    and energy budgets are computed, if the material entropy production has to
-    be computed, if using the indirect, the direct method, or both methods;
+    ----------
+    logger: the log file where the global mean values are printed out;
+    model: the model name;
+    wdir: the working directory where the outputs are stored;
+    filelist: the list containing all the input files;
+    aux_file: the name of a dummy aux. file to be used for computations;
+    lect: the annual mean value of the LEC strength;
+    flags: a list of flags containing information on whether the water mass
+           and energy budgets are computed, if the material entropy production
+           has to be computed, if using the indirect, the direct method, or
+           both methods;
+
+    Returns
+    -------
+    The annual mean entropy production with the direct method, the degree of
+    irreversibility, the list of input files for the computation.
+
+    @author: Valerio Lembo, Hamburg University, 2018.
     """
     lec = flags[1]
     aux_files = mkthe.init_mkthe_direntr(model, wdir, input_data, te_file,
@@ -295,13 +317,20 @@ def entr(filelist, nin, nout, entr_file, entr_mean_file):
     files.
 
     Arguments:
-    - filelist: a list of file containing the name of the energy file, of the
-      temperature file and of an auxiliary file needed for computation;
-    - nin: the variable name of the input energy fields;
-    - nout: the variable name to attribute to the entropy flux in the NC file;
-    - entr_file: the name of the file containing the 3D entropy fluxes;
-    - entr_mean_file: the name of the file containing the global annual mean
-      entropy value;
+    ----------
+    filelist: a list of file containing the name of the energy file, of the
+              temperature file and of an auxiliary file needed for computation;
+    nin: the variable name of the input energy fields;
+    nout: the variable name to attribute to the entropy flux in the NC file;
+    entr_file: the name of the file containing the 3D entropy fluxes;
+    entr_mean_file: the name of the file containing the global annual mean
+                    entropy value;
+
+    Returns
+    -------
+    The annual global mean value of entropy.
+
+    @author: Valerio Lembo, Hamburg University, 2018.
     """
     cdo = Cdo()
     en_file = filelist[0]
@@ -324,11 +353,19 @@ def evapentr(model, wdir, infile, aux_file):
     obtained with the direct method (after Lucarini et al., 2011).
 
     Arguments:
+    ----------
     - model: the model name;
     - wdir: the working directory where the outputs are stored;
     - infile: a list of file containing hfls and ts, respectively
       (with dimensions (time,lat,lon);
     - aux_file: the name of a dummy aux. file to be used for computations;
+
+    Returns
+    -------
+    The global annual mean entropy production related to evaporation, the
+    file containing it.
+
+    @author: Valerio Lembo, Hamburg University, 2018.
     """
     evapentr_file = wdir + '/{}_evap_entr.nc'.format(model)
     evapentr_mean_file = wdir + '/{}_evapEntropy_gmean.nc'.format(model)
@@ -350,14 +387,22 @@ def indentr(model, wdir, infile, input_data, aux_file, toab_gmean):
     file.
 
     Arguments:
-    - model: the model name;
-    - wdir: the working directory where the outputs are stored;
-    - infile: a list of files, containing each the fields rlds, rlus, rsds,
-      rsus, emission temperature (te), TOA energy budget (toab) and ts;
-    - toab_file: a file containing the annual mean TOA energy budgets
-      (time,lon,lat);
-    - aux_file: the name of a dummy aux. file to be used for computations;
-    - toab_gmean: the climatological annaul mean TOA energy budget;
+    ----------
+    model: the model name;
+    wdir: the working directory where the outputs are stored;
+    infile: a list of files, containing each the fields rlds, rlus, rsds,
+            rsus, emission temperature (te), TOA energy budget (toab) and ts;
+    toab_file: a file containing the annual mean TOA energy budgets
+              (time,lon,lat);
+    aux_file: the name of a dummy aux. file to be used for computations;
+    toab_gmean: the climatological annaul mean TOA energy budget;
+
+    Returns
+    -------
+    The annual mean vertical and horizontal components of the entropy
+    production with the indirect method, the file containing them.
+
+    @author: Valerio Lembo, Hamburg University, 2018.
     """
     cdo = Cdo()
     rlds_file = e.select_metadata(input_data, short_name='rlds',
@@ -404,11 +449,19 @@ def kinentr(logger, aux_file, tasvert_file, lect, lec):
     kinetic energy dissipation, through the intensity of the LEC.
 
     Arguments:
-    - aux_file: the name of a dummy aux. file to be used for computations;
-    - tasvert_file: a file containing the vertically integrated boundary layer
-      temperature;
-    - lect: an array containing the annual mean LEC intensity;
-    - lec: a flag marking whether the LEC has been previously computed or not
+    ----------
+    aux_file: the name of a dummy aux. file to be used for computations;
+    tasvert_file: a file containing the vertically integrated boundary layer
+                  temperature;
+    lect: an array containing the annual mean LEC intensity;
+    lec: a flag marking whether the LEC has been previously computed or not
+
+    Returns
+    -------
+    The global annual mean entropy production related to kinetic energy
+    dissipation.
+
+    @author: Valerio Lembo, Hamburg University, 2018.
     """
     cdo = Cdo()
     removeif(aux_file)
@@ -435,11 +488,18 @@ def landoc_budg(model, wdir, infile, mask, name):
     """Compute budgets separately on land and oceans.
 
     Arguments:
-    - model: the model name;
-    - wdir: the working directory where the outputs are stored;
-    - infile: the file containing the original budget field as (time,lat,lon);
-    - mask: the file containing the land-sea mask;
-    - name: the variable name as in the input file;
+    ----------
+    model: the model name;
+    wdir: the working directory where the outputs are stored;
+    infile: the file containing the original budget field as (time,lat,lon);
+    mask: the file containing the land-sea mask;
+    name: the variable name as in the input file;
+
+    Returns
+    -------
+    The mean budgets over land and over oceans.
+
+    @author: Valerio Lembo, Hamburg University, 2018.
     """
     cdo = Cdo()
     ocean_file = wdir + '/{}_{}_ocean.nc'.format(model, name)
@@ -475,10 +535,18 @@ def mask_precip(model, wdir, infile):
     cycle in the atmosphere.
 
     Arguments:
-    - model: the model name;
-    - wdir: the working directory where the outputs are stored;
-    - infile: a list of input file, containing rainfall precipitation (prr) and
-      prsn, respectively (dimensions (time,lat,lon));
+    ----------
+    model: the model name;
+    wdir: the working directory where the outputs are stored;
+    infile: a list of input file, containing rainfall precipitation (prr) and
+            prsn, respectively (dimensions (time,lat,lon));
+
+    Returns
+    -------
+    The files containing masked rainfall and snowfall precipitation fields,
+    respectively.
+
+    @author: Valerio Lembo, Hamburg University, 2018.
     """
     cdo = Cdo()
     prr_file = infile[0]
@@ -563,10 +631,18 @@ def meltentr(model, wdir, latsnow_file, aux_file):
     obtained with the direct method (after Lucarini et al., 2011).
 
     Arguments:
+    ----------
     - model: the model name;
     - wdir: the working directory where the outputs are stored;
     - infile: the latent energy associated with snowfall precipitation;
     - aux_file: the name of a dummy aux. file to be used for computations;
+
+    Returns
+    -------
+    The global annual mean entropy production related to evaporation, the
+    file containing it.
+
+    @author: Valerio Lembo, Hamburg University, 2018.
     """
     cdo = Cdo()
     removeif(aux_file)
@@ -608,13 +684,21 @@ def potentr(model, wdir, infile, aux_file):
     to the energy exchanges of a model "normally".
 
     Arguments:
-    - model: the model name;
-    - wdir: the working directory where the outputs are stored;
-    - infile: a list of files containing the height of the bondary layer top
-      (htop), the masked rainfall precipitation (prrmask), the masked snowfall
-      precipitation (prsnmask), the temperature of the vertical column between
-      the cloud top and the ground (tcolumn);
-    - aux_file: the name of a dummy aux. file to be used for computations;
+    ----------
+    model: the model name;
+    wdir: the working directory where the outputs are stored;
+    infile: a list of files containing the height of the bondary layer top
+            (htop), the masked rainfall precipitation (prrmask), the masked
+            snowfall precipitation (prsnmask), the temperature of the vertical
+            column between the cloud top and the ground (tcolumn);
+    aux_file: the name of a dummy aux. file to be used for computations;
+
+    Returns
+    -------
+    The global annual mean entropy production related to potential energy of
+    the droplet, the file containing it.
+
+    @author: Valerio Lembo, Hamburg University, 2018.
     """
     cdo = Cdo()
     removeif(aux_file)
@@ -648,11 +732,19 @@ def rainentr(model, wdir, infile, aux_file):
     direct method (after Lucarini et al., 2011).
 
     Arguments:
-    - model: the model name;
-    - wdir: the working directory where the outputs are stored;
-    - infile: a list of file containing the masked rainfall precipitation
-      (prrmask) and the temperature of the cloud (tcloud);
-    - aux_file: the name of a dummy aux. file to be used for computations;
+    ----------
+    model: the model name;
+    wdir: the working directory where the outputs are stored;
+    infile: a list of file containing the masked rainfall precipitation
+            (prrmask) and the temperature of the cloud (tcloud);
+    aux_file: the name of a dummy aux. file to be used for computations;
+
+    Returns
+    -------
+    The global annual mean entropy production related to rainfall, the
+    file containing it.
+
+    @author: Valerio Lembo, Hamburg University, 2018.
     """
     cdo = Cdo()
     prrmask_file = infile[0]
@@ -690,11 +782,19 @@ def sensentr(model, wdir, infile, aux_file):
     direct method (after Lucarini et al., 2011).
 
     Arguments:
-    - model: the model name;
-    - wdir: the working directory where the outputs are stored;
-    - infile: a list of file containing hfss, the temperature at the boundary
-    layer top (tabl), ts, respectively (with dimensions (time,lat,lon);
-    - aux_file: the name of a dummy aux. file to be used for computations;
+    ----------
+    model: the model name;
+    wdir: the working directory where the outputs are stored;
+    infile: a list of file containing hfss, the temperature at the boundary
+            layer top (tabl), ts, respectively (with dimensions (time,lat,lon);
+    aux_file: the name of a dummy aux. file to be used for computations;
+
+    Returns
+    -------
+    The global annual mean entropy production related to sensible heat fluxes,
+    the file containing it.
+
+    @author: Valerio Lembo, Hamburg University, 2018.
     """
     cdo = Cdo()
     difftemp_file = wdir + '/{}_difftemp_bl.nc'.format(model)
@@ -721,11 +821,19 @@ def snowentr(model, wdir, infile, aux_file):
     direct method (after Lucarini et al., 2011).
 
     Arguments:
-    - model: the model name;
-    - wdir: the working directory where the outputs are stored;
-    - infile: a list of file containing the masked snowfall precipitation
-      (prsnmask) and the temperature of the cloud (tcloud);
-    - aux_file: the name of a dummy aux. file to be used for computations;
+    ----------
+    model: the model name;
+    wdir: the working directory where the outputs are stored;
+    infile: a list of file containing the masked snowfall precipitation
+            (prsnmask) and the temperature of the cloud (tcloud);
+    aux_file: the name of a dummy aux. file to be used for computations;
+
+    Returns
+    -------
+    The global annual mean entropy production related to snowfall, the
+    file containing it.
+
+    @author: Valerio Lembo, Hamburg University, 2018.
     """
     cdo = Cdo()
     prsnmask_file = infile[0]
@@ -755,11 +863,19 @@ def wmbudg(model, wdir, aux_file, input_data, auxlist):
     a NetCDF file.
 
     Arguments:
-    - model: the model name;
-    - wdir: the working directory where the outputs are stored;
-    - aux_file: the name of a dummy aux. file to be used for computations;
-    - filelist: a list of file names containing the input fields;
-    - auxlist: a list of auxiliary files;
+    ----------
+    model: the model name;
+    wdir: the working directory where the outputs are stored;
+    aux_file: the name of a dummy aux. file to be used for computations;
+    input_data: a dictionary of file names containing the input fields;
+    auxlist: a list of auxiliary files;
+
+    Returns
+    -------
+    A list containing global mean water mass and latent energy values, a list
+    of files containing them.
+
+    @author: Valerio Lembo, Hamburg University, 2018.
     """
     cdo = Cdo()
     hfls_file = e.select_metadata(input_data, short_name='hfls',
@@ -793,12 +909,19 @@ def write_eb(namein, nameout, aux_file, d3_file, gmean_file):
     """Change variable name in the NetCDF file and compute averages.
 
     Arguments:
-    - namein: initial name of the variable;
-    - nameout: final name of the variable;
-    - aux_file: the name of an auxiliary file;
-    - d3_file: the file containing (time,lat,lon) fields;
-    - gmean_file: the name of a file where to put the annual and globally
-      averaged fields;
+    ----------
+    namein: initial name of the variable;
+    nameout: final name of the variable;
+    aux_file: the name of an auxiliary file;
+    d3_file: the file containing (time,lat,lon) fields;
+    gmean_file: the name of a file where to put the annual and globally
+                averaged fields;
+
+    Returns
+    -------
+    A global annual mean value of the budget.
+
+    @author: Valerio Lembo, Hamburg University, 2018.
     """
     cdo = Cdo()
     ch_name = '{},{}'.format(namein, nameout)
