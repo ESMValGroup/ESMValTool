@@ -87,9 +87,9 @@ function select_metadata_by_atts(info:list,
 ; References
 ;
 ; Modification history
-;   20190507-A_laue_ax: missing attributes are now allowed; a warning message
-;                       is issued for each missing attribute
-;   20181106_A-righ_ma: written.
+;    20190507-lauer_axel: missing attributes are now allowed; a warning
+;                         message is issued for each missing attribute.
+;    20181106-righi_mattia: written.
 ;
 local funcname, scriptname, ninfo, natts, l_flag, ii, jj, ca
 begin
@@ -148,7 +148,7 @@ function select_metadata_by_name(info:list,
 ; References
 ;
 ; Modification history
-;   20181105_A-righ_ma: written.
+;    20181105-righi_mattia: written.
 ;
 local funcname, scriptname
 begin
@@ -184,9 +184,9 @@ function metadata_att_as_array(inlist:list,
 ; References
 ;
 ; Modification history
-;    20181119-A_laue_ax: missing attributes are now allowed; error message is
-;                        only issued if all attributes are missing
-;    20180711-A_righ_ma: written
+;    20181119-lauer_axel: missing attributes are now allowed; error message is
+;                         only issued if all attributes are missing.
+;    20180711-righi_mattia: written.
 ;
 local funcname, scriptname
 begin
@@ -208,6 +208,11 @@ begin
       out(ii) = inlist[ii]@$att$
     end if
   end do
+
+  if (.not.(isdefined("out"))) then
+    error_msg("f", scriptname, funcname, "attribute " + att + " not " + \
+              "found in list element(s)")
+  end if
 
   if (all(ismissing(out))) then
     error_msg("f", scriptname, funcname, "attribute " + att + " not " + \

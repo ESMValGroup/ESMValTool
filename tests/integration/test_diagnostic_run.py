@@ -120,7 +120,7 @@ def test_diagnostic_run(tmp_path, script_file, script):
     recipe = dedent("""
         documentation:
           description: Recipe with no data.
-          authors: [ande_bo]
+          authors: [andela_bouwe]
 
         diagnostics:
           diagnostic_name:

@@ -18,11 +18,11 @@
 ;    Put all files under a single directory (no subdirectories with years).
 ;
 ; Modification history
-;    20190201-A_righ_ma: adapted to v2, use new input data version 4.2.
-;    20160824-A_laue_ax: added processing of volumetric soil moisture
-;                        content (sm, smStderr).
-;    20160721-A_laue_ax: use daily files, added processing of uncertainty.
-;    20150523-A_righ_ma: written.
+;    20190201-righi_mattia: adapted to v2, use new input data version 4.2.
+;    20160824-lauer_axel: added processing of volumetric soil moisture
+;                         content (sm, smStderr).
+;    20160721-lauer_axel: use daily files, added processing of uncertainty.
+;    20150523-righi_mattia: written.
 ;
 ; #############################################################################
 loadscript(getenv("esmvaltool_root") + \
@@ -66,7 +66,8 @@ begin
 
   ; Global attributes
   SOURCE = "ftp://anon-ftp.ceda.ac.uk/neodc/esacci/soil_moisture/data/"
-  REF = ""
+  REF = \
+    "Liu et al., Hydrol. Earth Syst. Sci., doi:10.5194/hess-15-425-2011, 2011."
   COMMENT = ""
 
 end
