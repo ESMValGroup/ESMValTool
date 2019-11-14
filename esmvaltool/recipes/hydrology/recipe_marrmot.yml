@@ -36,8 +36,8 @@ diagnostics:
     variables:
       tas: &var_daily
         mip: day
-        start_year: 2000
-        end_year: 2000
+        start_year: 1990
+        end_year: 2018
         preprocessor: daily
       pr: *var_daily
       # MARRMoT requires PET. Thus, we might also need psl, rsds, rsdt
@@ -57,8 +57,8 @@ diagnostics:
     variables:
       tas: &var_hourly
         mip: E1hr
-        start_year: 2001
-        end_year: 2001
+        start_year: 1990
+        end_year: 2018
         preprocessor: hourly
       pr: *var_hourly
       # MARRMoT requires PET. Thus, we might also need psl, rsds, rsdt
