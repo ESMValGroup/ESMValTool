@@ -1,5 +1,6 @@
 
 import os
+import logging
 import shutil
 
 import iris
@@ -11,7 +12,9 @@ from esmvalcore.preprocessor._time import extract_month
 import esmvaltool.diag_scripts.shared
 import esmvaltool.diag_scripts.shared.names as n
 from esmvaltool.diag_scripts.shared import group_metadata
+from esmvaltool.diag_scripts.shared import ProvenanceLogger
 
+logger = logging.getLogger(os.path.basename(__file__))
 
 class CycloneTracker(object):
     def __init__(self, config):
@@ -107,6 +110,10 @@ class CycloneTracker(object):
                     os.system(args)
                     shutil.copyfileobj(open('fort.66', 'rb'), output_file)
             output_file.close()
+            self.write_provenance(
+                alias, data, os.path.join(self.cfg[n.WORK_DIR], output)
+                )
+
 
     def write_fort15(self, path, time):
         fort15_file = open(os.path.join(path, 'fort.15'), 'w')
@@ -181,6 +188,25 @@ class CycloneTracker(object):
         namelist_file.write('/')
         namelist_file.close()
 
+    def write_provenance(self, alias, data, output_file):
+        ancestors = []
+        for i in range(len(data[alias])):
+            ancestors.append(data[alias][i]['filename'])
+        caption = ("Cyclone tracker output between "
+                   "{start} and {end} according to {dataset}").format(
+                       start=data[alias][0]['start_year'],
+                       end=data[alias][0]['end_year'],
+                       dataset=data[alias][0]['dataset']
+                   )
+        record = {
+            'caption': caption,
+            'domains': ['global'],
+            'authors': ['caron_louis-philippe'],
+            'references': ['primavera'],
+            'ancestors': ancestors
+            }
+        with ProvenanceLogger(self.cfg) as provenance_logger:
+            provenance_logger.log(output_file, record)
 
 def main():
     with esmvaltool.diag_scripts.shared.run_diagnostic() as config:
