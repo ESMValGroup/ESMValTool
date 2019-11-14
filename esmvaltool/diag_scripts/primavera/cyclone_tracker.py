@@ -16,6 +16,7 @@ from esmvaltool.diag_scripts.shared import ProvenanceLogger
 
 logger = logging.getLogger(os.path.basename(__file__))
 
+
 class CycloneTracker(object):
     def __init__(self, config):
         self.cfg = config
@@ -114,7 +115,6 @@ class CycloneTracker(object):
                 alias, data, os.path.join(self.cfg[n.WORK_DIR], output)
                 )
 
-
     def write_fort15(self, path, time):
         fort15_file = open(os.path.join(path, 'fort.15'), 'w')
         for timestep, value in enumerate(time):
@@ -207,6 +207,7 @@ class CycloneTracker(object):
             }
         with ProvenanceLogger(self.cfg) as provenance_logger:
             provenance_logger.log(output_file, record)
+
 
 def main():
     with esmvaltool.diag_scripts.shared.run_diagnostic() as config:
