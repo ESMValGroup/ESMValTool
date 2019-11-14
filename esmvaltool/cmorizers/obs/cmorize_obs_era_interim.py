@@ -335,17 +335,16 @@ def _extract_variable(in_files, var, cfg, out_dir):
             _fix_monthly_time_coord(cube)
         if 'day' in var['mip']:
             cube = _compute_daily(cube)
-    
         if 'fx' in var['mip']:
             cube = iris.util.squeeze(cube)
             cube.remove_coord('time')
 
     # Specific to ERA Interim Land
     elif attributes['dataset_id']=='ERA-Interim-Land':
-        cube.coord('latitude').var_name = 'lat'
-        cube.coord('longitude').var_name = 'lon'
         if 'mon' in var['mip']:
             cube = _compute_monthly(cube)
+        if 'day' in var['mip']:
+            cube = _compute_daily(cube)
     else:
         raise ValueError("Unknown dataset_id for this script: {attributes['dataset_id']}")
 
@@ -390,7 +389,6 @@ def _get_in_files_by_year(in_dir, var):
 
 def _run(jobs, n_workers):
     """Run CMORization jobs using n_workers."""
-    n_workers = 1 #TODO take out again
     if n_workers == 1:
         for job in jobs:
             _extract_variable(*job)

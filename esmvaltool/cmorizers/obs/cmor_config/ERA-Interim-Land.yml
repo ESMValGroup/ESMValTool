@@ -15,12 +15,12 @@ attributes:
 variables:
   sm_daily:
     short_name: sm
-    mip: E6hr
+    mip: CFday
     raw: swvl1
-    file: 'eraintland_swvl1_1979.nc'
+    file: 'eraintland_swvl1_????.nc'
   sm_monthly:
     short_name: sm
     mip: Lmon
     raw: swvl1
-    file: 'eraintland_swvl1_1979.nc'
+    file: 'eraintland_swvl1_????.nc'
 
