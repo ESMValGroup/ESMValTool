@@ -145,8 +145,8 @@ def _fix_coordinates(cube, definition):
     if 'height10m' in definition.dimensions:
         utils.add_scalar_height_coord(cube, 10.)
 
-    for axis in 'T', 'X', 'Y', 'Z':
-        coord_def = definition.coordinates.get(axis)
+    for definition_axis,axis in zip(['time','longitude','latitude'],['T','X','Y']):
+        coord_def = definition.coordinates.get(definition_axis)
         if coord_def:
             coord = cube.coord(axis=axis)
             if axis == 'T':
@@ -333,7 +333,6 @@ def _extract_variable(in_files, var, cfg, out_dir):
     if attributes['dataset_id']=='ERA-Interim':
         if 'mon' in var['mip']:
             _fix_monthly_time_coord(cube)
-
         if 'day' in var['mip']:
             cube = _compute_daily(cube)
     
@@ -343,6 +342,8 @@ def _extract_variable(in_files, var, cfg, out_dir):
 
     # Specific to ERA Interim Land
     elif attributes['dataset_id']=='ERA-Interim-Land':
+        cube.coord('latitude').var_name = 'lat'
+        cube.coord('longitude').var_name = 'lon'
         if 'mon' in var['mip']:
             cube = _compute_monthly(cube)
     else:
