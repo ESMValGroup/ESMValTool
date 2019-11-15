@@ -111,7 +111,8 @@ Variables
 Observations and reformat scripts
 ---------------------------------
 
-*Note: (1) obs4mips data can be used directly without any preprocessing; (2) see headers of cmorization scripts (in esmvaltool/utils/cmorizers/obs) for non-obs4mips data for download instructions.*
+The following list shows the currently supported observational data sets for this recipe with their variable names and the reference to their respective reformat scripts in brackets. Please, note that obs4mips data can be used directly without any reformating. For non-obs4mips data see headers of cmorization scripts (in `/esmvaltool/cmorizers/obs/
+<https://github.com/ESMValGroup/ESMValTool/blob/version2_development/esmvaltool/cmorizers/obs/>`_) for download instructions.
 
 * AIRS (hus - obs4mips)
 * CERES-EBAF (rlut, rlutcs, rsut, rsutcs - obs4mips)
