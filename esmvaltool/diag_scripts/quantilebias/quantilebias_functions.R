@@ -364,7 +364,7 @@ graphics_startup <- function(figname, output_file_type, plot_size) {
       height = plot_size[2],
       onefile = T
     )
-  } else if ( (tolower(output_file_type) == "eps") |
+  } else if ((tolower(output_file_type) == "eps") |
     (tolower(output_file_type) == "epsi") |
     (tolower(output_file_type) == "ps")) {
     setEPS(
