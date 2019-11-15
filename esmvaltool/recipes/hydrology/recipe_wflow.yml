@@ -7,22 +7,22 @@ documentation:
     - kalverla_peter
     - camphuijsen_jaro
     - alidoost_sarah
+    - aerts_jerom
+    - andela_bouwe
   projects: ['ewatercycle']
   references: ['acknow_project']
 
 preprocessors:
   crop_basin: &crop_basin
-    extract_region:
+    extract_region: &region
       start_longitude: 3
       end_longitude: 7
       start_latitude: 47
       end_latitude: 52
   hourly_mean:
     <<: *crop_basin
-    # extract_time:
-    #   end_year: 1990
-    #   end_month: 1
-    #   end_day: 3
+    daily_statistics:
+      operator: mean
 
 diagnostics:
   diagnostic_daily:
@@ -50,9 +50,7 @@ diagnostics:
       script:
         script: hydrology/wflow.py
         basin_name: Meuse
-        dataset: ERA-Interim
-        startyear: '1990'
-        endyear: '1990'
+        region: *region
         dem_file: 'wflow/wflow_dem_Meuse.nc'
 
   diagnostic_hourly:
@@ -77,7 +75,5 @@ diagnostics:
       script:
         script: hydrology/wflow.py
         basin_name: Meuse
-        dataset: ERA5
-        startyear: '1990'
-        endyear: '1990'
+        region: *region
         dem_file: 'wflow/wflow_dem_Meuse.nc'
