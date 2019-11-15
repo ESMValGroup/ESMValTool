@@ -110,7 +110,7 @@ for (model_idx in c(1:(length(models_name)))) {
   # Select variable of interest
   modf <- cdo("selvar", args = varname, input = infile)
 
-  reff=ref_data_file
+  reff <- ref_data_file
 
   # Get (X)th percentile of reference dataset
   refminf <- cdo("timmin", input = reff)
