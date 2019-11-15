@@ -20,6 +20,7 @@ documentation:
 
 datasets:
    - {dataset: CanESM2, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1979, end_year: 2005}
+   - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.3, tier: 1, start_year: 1979, end_year: 2005}
 
 preprocessors:
   mask_regrid_preproc:
@@ -37,8 +38,6 @@ diagnostics:
         preprocessor: mask_regrid_preproc 
         reference_dataset: "GPCP-SG"
         mip: Amon
-        additional_datasets:
-          - {dataset: GPCP-SG, project: obs4mips, level: L3, version: v2.3, tier: 1, start_year: 1979, end_year: 2005}
 
     scripts:
       main:
