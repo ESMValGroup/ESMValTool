@@ -3,6 +3,7 @@ import logging
 from pathlib import Path
 
 import iris
+import numpy as np
 
 from esmvalcore.preprocessor import extract_region, regrid
 from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
@@ -79,7 +80,7 @@ def save(cubes, dataset, provenance, cfg):
 
 def lapse_rate_correction(height):
     """Temperature correction over a given height interval."""
-    gamma = iris.coords.AuxCoord(0.0065,
+    gamma = iris.coords.AuxCoord(np.float32(0.0065),
                                  long_name='Environmental lapse rate',
                                  units='K m-1')
     return height * gamma
@@ -194,6 +195,7 @@ def debruin_pet(tas, psl, rsds, rsdt):
     ref_evap = delta_svp / (delta_svp + gamma) * rad_term + beta
 
     pet = ref_evap / lambda_
+    pet.data = pet.core_data().astype(np.float32)
     pet.var_name = 'pet'
     return pet
 
