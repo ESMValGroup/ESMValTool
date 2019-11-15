@@ -35,10 +35,7 @@ Variables
 Observations and reformat scripts
 ---------------------------------
 
-*Note: (1) obs4mips data can be used directly without any preprocessing;
-(2) see headers of reformat scripts for non-obs4mips data for download
-instructions.*
-
+None. 
 
 References
 ----------
@@ -52,4 +49,5 @@ Example plots
 .. figure::  /recipes/figures/cvdp/nam.prreg.ann.png
    :align:   center
 
-   Atmospheric Modes of Variability; pr (annual)
+   Regression of the precipitation anomalies (PR) onto the Northern Annular 
+   Mode (NAM) index for the period of 1900-2005 for 31 CMIP5 models. 
