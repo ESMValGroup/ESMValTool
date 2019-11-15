@@ -139,23 +139,9 @@ References
 Example plots
 -------------
 
-.. centered:: |pic_permetrics1| |pic_permetrics2|
-
-.. |pic_permetrics1| image:: /recipes/figures/perfmetrics/perfmetrics_fig_1.png
-   :width: 50%
-
-.. |pic_permetrics2| image:: /recipes/figures/perfmetrics/perfmetrics_fig_2.png
-   :width: 30%
-
-.. centered:: |pic_permetrics3| |pic_permetrics4|
-
-.. |pic_permetrics3| image:: /recipes/figures/perfmetrics/perfmetrics_fig_3.png
-   :width: 30%
-
-.. |pic_permetrics4| image:: /recipes/figures/perfmetrics/perfmetrics_fig_4.png
-   :width: 52%
-
 .. figure:: /recipes/figures/perfmetrics/perfmetrics_fig_5.png
-   :width: 75%
+   :width: 90%
    :align: center
+
+   Relative space-time root-mean-square deviation (RMSD) calculated from the climatological seasonal cycle of CMIP5 simulations. A relative performance is displayed, with blue shading indicating better and red shading indicating worse performance than the median of all model results. A diagonal split of a grid square shows the relative error with respect to the reference data set (lower right triangle) and the alternative data set (upper left triangle). White boxes are used when data are not available for a given model and variable. 
 
