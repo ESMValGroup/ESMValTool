@@ -11,7 +11,7 @@ documentation:
     - vonhardenberg_jost
 
 datasets:
-  - {dataset: EC-EARTH, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1997, end_year: 1997}
+  - {dataset: CESM1-CAM5, project: CMIP5, exp: historical, ensemble: r1i1p1, start_year: 1997, end_year: 1997}
 
 preprocessors:
   preproc:
@@ -21,9 +21,9 @@ diagnostics:
   example:
     description: Example diagnostic written in Julia
     variables:
-      pr:
+      tas:
         preprocessor: preproc
-        reference_dataset: "EC-EARTH"
+        reference_dataset: "CESM1-CAM5"
         mip: Amon
 
     scripts:
