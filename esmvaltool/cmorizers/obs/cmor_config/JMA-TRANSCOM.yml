@@ -1,0 +1,24 @@
+---
+# Filename
+filename: 'jma_2018.tar.gz'
+binary_prefix: 'jma_2018'
+
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: JMA-TRANSCOM
+  version: '2018'
+  tier: 3
+  modeling_realm: reanaly
+  project_id: OBS
+  source: 'http://www.globalcarbonatlas.org/en/content/atmospheric-inversions'
+  reference: 'jma-transcom'
+  comment: ''
+
+# Variables to cmorize
+variables:
+  nbp:
+    mip: Lmon
+    positive: down
+  fgco2:
+    mip: Omon
+    positive: down

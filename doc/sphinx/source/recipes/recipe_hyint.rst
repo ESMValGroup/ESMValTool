@@ -1,7 +1,7 @@
 .. _recipes_hyint:
 
 Hydroclimatic intensity and extremes (HyInt)
-==============================================
+============================================
 
 
 Overview
