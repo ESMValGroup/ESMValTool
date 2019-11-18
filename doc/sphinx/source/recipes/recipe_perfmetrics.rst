@@ -140,27 +140,27 @@ Example plots
 -------------
 
 .. figure:: /recipes/figures/perfmetrics/perfmetrics_fig_1.png
-   :width: 50%
+   :width: 90%
 
-   Annual cycle of temperature climatology at 850 hPa averaged globally
+   Annual cycle of temperature climatology at 850 hPa averaged globally for a set of model simulations and reanalysis data.
 
 .. figure:: /recipes/figures/perfmetrics/perfmetrics_fig_2.png
-   :width: 30%
+   :width: 90%
 
-   Taylor diagram of global temperature (ta) and longwave cloud radiative effect (lwcre)
+   Taylor diagram of global temperature (ta) and longwave cloud radiative effect (lwcre) for a set of model simulations with respect to observations marked as REF. 
 
 .. figure:: /recipes/figures/perfmetrics/perfmetrics_fig_3.png
-   :width: 30%
+   :width: 90%
 
    Annual mean of zonally averaged temperature profile for the difference of a model simulation and a reanalysis dataset. Differences between the two fields which are not statistically significant according to the t test (95 % confidence level) are masked out in gray.
 
 .. figure:: /recipes/figures/perfmetrics/perfmetrics_fig_4.png
-   :width: 52%
+   :width: 90%
 
    Annual climatology of the Top of the Atmosphere shortwave cloud radiative effect of an observational dataset.
 
 .. figure:: /recipes/figures/perfmetrics/perfmetrics_fig_5.png
-   :width: 75%
+   :width: 90%
    :align: center
 
    Relative space-time root-mean-square deviation (RMSD) calculated from the climatological seasonal cycle of CMIP5 simulations. A relative performance is displayed, with blue shading indicating better and red shading indicating worse performance than the median of all model results. A diagonal split of a grid square shows the relative error with respect to the reference data set (lower right triangle) and the alternative data set (upper left triangle). White boxes are used when data are not available for a given model and variable. 
