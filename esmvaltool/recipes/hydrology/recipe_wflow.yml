@@ -15,10 +15,10 @@ documentation:
 preprocessors:
   crop_basin: &crop_basin
     extract_region: &region
-      start_longitude: 3
-      end_longitude: 7
-      start_latitude: 47
-      end_latitude: 52
+      start_longitude: -0.75
+      end_longitude: 6.75
+      start_latitude: 47.25
+      end_latitude: 52.5
   hourly_mean:
     <<: *crop_basin
     daily_statistics:
