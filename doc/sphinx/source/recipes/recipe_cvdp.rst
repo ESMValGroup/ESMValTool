@@ -21,7 +21,7 @@ Diagnostics are stored in diag_scripts/cvdp/
 User settings in recipe
 -----------------------
 
-The recipe can be run with several model data sets and ensembles. Multi-model mean statistics are currently not supported.
+The recipe can be run with several data sets including different model ensembles, multi-model mean statistics are currently not supported.
 
 Variables
 ---------
@@ -50,4 +50,4 @@ Example plots
    :align:   center
 
    Regression of the precipitation anomalies (PR) onto the Northern Annular 
-   Mode (NAM) index for the period of 1900-2005 for 31 CMIP5 models. 
+   Mode (NAM) index for the time period 1900-2005 for 30 CMIP5 models and observations (GPCP (pr) / IFS-Cy31r2 (psl); time period 1984-2005).
