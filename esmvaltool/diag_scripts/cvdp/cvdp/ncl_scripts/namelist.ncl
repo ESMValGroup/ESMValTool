@@ -377,12 +377,12 @@ begin
   end if 
 
   do gg = 0,nsim-1
-     fsst = systemfunc("bash -c 'ls "+paths(gg)+"*{MOC_,MOC.,msftmyz.,msftmyz_,stfmmc.,stfmmc_}*.nc 2> /dev/null'")   ; /dev/null suppresses all standard error output
+     fsst = systemfunc("bash -c 'ls "+paths(gg)+"*{MOC_,MOC.,msftmyz.,msftmyz_,msftmz.,msftmz_,stfmmc.,stfmmc_}*.nc 2> /dev/null'")   ; /dev/null suppresses all standard error output
      if (dimsizes(fsst).eq.1) then
         namelist_moc(gg+maxnumobs) =  names(gg)+" | "+fsst(0)+" | "+syear(gg)+" | "+eyear(gg)   ; grab first file
      else
-        tpath = str_sub_str(paths(gg),"/*/","/{MOC,msftmyz,stfmmc}/")
-        namelist_moc(gg+maxnumobs) =  names(gg)+" | "+tpath+"*{MOC_,MOC.,msftmyz.,msftmyz_,stfmmc.,stfmmc_}*.nc | "+syear(gg)+" | "+eyear(gg)
+        tpath = str_sub_str(paths(gg),"/*/","/{MOC,msftmyz,msftmz,stfmmc}/")
+        namelist_moc(gg+maxnumobs) =  names(gg)+" | "+tpath+"*{MOC_,MOC.,msftmyz.,msftmyz_,msftmz.,msftmz_,stfmmc.,stfmmc_}*.nc | "+syear(gg)+" | "+eyear(gg)
         delete(tpath)
      end if
      delete(fsst)
@@ -414,12 +414,12 @@ begin
   end if 
 
   do gg = 0,nsim-1
-     fsst = systemfunc("bash -c 'ls "+paths(gg)+"*{aice_nh.,aice.,sic_,sic.,.CN.,_CN_}*.nc 2> /dev/null'")   ; /dev/null suppresses all standard error output
+     fsst = systemfunc("bash -c 'ls "+paths(gg)+"*{aice_nh.,aice.,sic_,sic.,.CN.,_CN_,siconc.,siconc_}*.nc 2> /dev/null'")   ; /dev/null suppresses all standard error output
      if (dimsizes(fsst).eq.1) then
         namelist_aice_nh(gg+maxnumobs) =  names(gg)+" | "+fsst(0)+" | "+syear(gg)+" | "+eyear(gg)   ; grab first file
      else
-        tpath = str_sub_str(paths(gg),"/*/","/{aice,sic,aice_nh,CN}/")
-        namelist_aice_nh(gg+maxnumobs) =  names(gg)+" | "+tpath+"*{aice_nh.,aice.,sic_,sic.,.CN.,_CN_}*.nc | "+syear(gg)+" | "+eyear(gg)
+        tpath = str_sub_str(paths(gg),"/*/","/{aice,sic,aice_nh,CN,siconc}/")
+        namelist_aice_nh(gg+maxnumobs) =  names(gg)+" | "+tpath+"*{aice_nh.,aice.,sic_,sic.,.CN.,_CN_,siconc.,siconc_}*.nc | "+syear(gg)+" | "+eyear(gg)
         delete(tpath)
      end if
      delete(fsst)
@@ -450,12 +450,12 @@ begin
   end if 
 
   do gg = 0,nsim-1
-     fsst = systemfunc("bash -c 'ls "+paths(gg)+"*{aice_sh.,aice.,sic_,sic.,.CN.,_CN_}*.nc 2> /dev/null'")   ; /dev/null suppresses all standard error output
+     fsst = systemfunc("bash -c 'ls "+paths(gg)+"*{aice_sh.,aice.,sic_,sic.,.CN.,_CN_,siconc.,siconc_}*.nc 2> /dev/null'")   ; /dev/null suppresses all standard error output
      if (dimsizes(fsst).eq.1) then
         namelist_aice_sh(gg+maxnumobs) =  names(gg)+" | "+fsst(0)+" | "+syear(gg)+" | "+eyear(gg)   ; grab first file
      else
-        tpath = str_sub_str(paths(gg),"/*/","/{aice,sic,aice_sh,CN}/")
-        namelist_aice_sh(gg+maxnumobs) =  names(gg)+" | "+tpath+"*{aice_sh.,aice.,sic_,sic.,.CN.,_CN_}*.nc | "+syear(gg)+" | "+eyear(gg)
+        tpath = str_sub_str(paths(gg),"/*/","/{aice,sic,aice_sh,CN,siconc}/")
+        namelist_aice_sh(gg+maxnumobs) =  names(gg)+" | "+tpath+"*{aice_sh.,aice.,sic_,sic.,.CN.,_CN_,siconc.,siconc_}*.nc | "+syear(gg)+" | "+eyear(gg)
         delete(tpath)
      end if
      delete(fsst)

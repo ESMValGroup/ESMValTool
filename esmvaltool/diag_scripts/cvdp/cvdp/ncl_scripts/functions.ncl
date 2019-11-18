@@ -200,27 +200,17 @@ begin
   arr!1 = "lat"
   arr!2 = "lon"
   
-  if (isatt(arr,"valid_range")) then    ; check to make sure data is in valid range. Reset to stay within the valid range if needed.
-;     print("Data outside valid_range in "+zpath+", resetting data to be within valid_range")
-     arr = where(arr.lt.arr@valid_range(0),arr@valid_range(0),arr)
-     arr = where(arr.gt.arr@valid_range(1),arr@valid_range(1),arr)
-  end if
+;  if (isatt(arr,"valid_range")) then    ; check to make sure data is in valid range. Reset to stay within the valid range if needed.
+;     if (type(arr@valid_range).eq.type(arr)) then                      ; Coding added in v5.0.0 but removed in v5.1.0 due to valid_range attributes not always being correct. 
+;        arr = where(arr.lt.arr@valid_range(0),arr@valid_range(0),arr)  ; (By convention they should be, and should be the same type as the variable itself.) 
+;        arr = where(arr.gt.arr@valid_range(1),arr@valid_range(1),arr)  ; This resulted in error outs. Added check to verify type of attribute and variable are same, 
+;     end if                                                            ; before deciding to remove this section of code.
+;  end if
   
   if (any(abs(arr).ge.1.e20)) then   ; check for inf values or values way out of range, reset to _FillValue.
      print("Values greater than 1.e20 or less than -1.e20 detected in "+zpath+", resetting to _FillValue")
      arr = where(abs(arr).ge.1.e20,arr@_FillValue,arr)
   end if
-       
-;  if (.not.iscoord(arr,"lat")) then
-;     print("The data might have 2D latitudes. The functions.ncl coding is not set up to handle this, exiting from data_read_in.ncl")
-;     print("zpath")
-;     exit
-;  end if
-;  if (.not.iscoord(arr,"lon")) then
-;     print("The data might have 2D longitudes. The functions.ncl coding is not set up to handle this, exiting from data_read_in.ncl")
-;     print("zpath")
-;  exit
-;  end if
      
   if (yearS.lt.sydata.or.yearE.gt.eydata) then
      print("Requested "+yearS+"-"+yearE+" time span is outside the input file "+zpath+" time span of "+sydata+"-"+eydata+"")
@@ -373,7 +363,7 @@ function data_read_in_ocean_MOC(zpath:string,vn:string,yearS:integer,yearE:integ
 local zpath,vn,cpath0,ta,tfiles,c,arr,farr,yearS,yearE,mocheck,dimC,lev
 begin
   if (vn.eq."MOC") then
-     vname = (/"MOC","msftmyz","stfmmc"/)
+     vname = (/"MOC","msftmyz","stfmmc","msftmz"/)
   end if
 
   if (ismissing(zpath) ) then
@@ -502,12 +492,10 @@ begin
      delete(lev)
   end if
   
-  
-  if (isatt(arr,"valid_range")) then    ; check to make sure data is in valid range. Reset to stay within the valid range if needed.
-;     print("Data outside valid_range in "+zpath+", resetting data to be within valid_range")
-     arr = where(arr.lt.arr@valid_range(0),arr@valid_range(0),arr)
-     arr = where(arr.gt.arr@valid_range(1),arr@valid_range(1),arr)
-  end if
+;  if (isatt(arr,"valid_range")) then    ; check to make sure data is in valid range. Reset to stay within the valid range if needed.
+;     arr = where(arr.lt.arr@valid_range(0),arr@valid_range(0),arr)   ; See note about removed valid_range check up above. 
+;     arr = where(arr.gt.arr@valid_range(1),arr@valid_range(1),arr)   
+;  end if
   
   if (any(abs(arr).ge.1.e20)) then   ; check for inf values or values way out of range, reset to _FillValue.
      print("Values greater than 1.e20 or less than -1.e20 detected in "+zpath+", resetting to _FillValue")
@@ -618,10 +606,10 @@ function data_read_in_ice(zpath:string,vn:string,yearS:integer,yearE:integer)
 local zpath,vn,cpath0,ta,tfiles,c,arr,farr,yearS,yearE,mocheck,dimC,lev
 begin
   if (vn.eq."aice_nh") then
-     vname = (/"aice_nh","aice","sic","SIC","CN","ice","icec"/)
+     vname = (/"aice_nh","aice","sic","SIC","CN","ice","icec","siconc"/)
   end if
   if (vn.eq."aice_sh") then
-     vname = (/"aice_sh","aice","sic","SIC","CN","ice","icec"/)
+     vname = (/"aice_sh","aice","sic","SIC","CN","ice","icec","siconc"/)
   end if
 
   if (ismissing(zpath) ) then
@@ -1149,6 +1137,9 @@ begin
   end if
 
   if (isatt(zarr,"_FillValue")) then      ; set missing_value = _FillValue
+     if (isatt(zarr,"missing_value")) then
+        delete(zarr@missing_value)
+     end if
      zarr@missing_value = zarr@_FillValue
   end if
   
