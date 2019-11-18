@@ -1,0 +1,329 @@
+# recipe_wenzel14jgr.xml
+---
+documentation:
+
+  description: |
+    This recipe reproduces most of the figures of Wenzel et al. (2014).
+
+  authors:
+    - wenzel_sabrina
+
+  references:
+    - wenzel14jgr
+
+  projects:
+    - embrace
+
+preprocessors:
+
+  noop:
+    {}
+
+  landmask: &landmask
+    mask_landsea:
+      mask_out: sea
+
+  landmask: &seamask
+    mask_landsea:
+      mask_out: land
+
+  land_fraction_weighting: &land_fraction_weighting
+    weighting_landsea_fraction:
+      area_type: land
+      strict: false
+
+  sea_fraction_weighting: &sea_fraction_weighting
+    weighting_landsea_fraction:
+      area_type: sea
+      strict: false
+
+diagnostics:
+  
+  ### Wenzel et al. 2014, Fig. 01: Quantities used to diagnose GAMMA_LT #########################
+
+  diag_tsline_1pct: &Carbon_tsline
+    description: Wenzel et al. 2014, Fig. 01a: integrated NBP in the idealized coupled simulation
+    themes:
+      - phys
+    realms:
+      - land
+    variables: 
+      nbp: &nbp
+        preprocessor: land_fraction_weighting
+        project: CMIP5
+        mip: Lmon
+        exp: 1pctCO2
+        ensemble: r1i1p1
+        start_year: 1851
+        end_year: 1989
+        plot_units: GtC
+        cumulate: True
+    additional_datasets: &datastet
+      - {dataset: CanESM2}
+      - {dataset: CESM1-BGC}
+      - {dataset: GFDL-ESM2M}
+      - {dataset: HadGEM2-ES}
+      - {dataset: IPSL-CM5A-LR}
+      - {dataset: MIROC-ESM}
+      - {dataset: MPI-ESM-LR}
+      - {dataset: NorESM1-ME}
+    scripts:
+      carbon_tsline: &idealized_carbon
+        script: carbon_ec/carbon_tsline.ncl
+        ts_minlat: -30
+        ts_maxlat: 30
+        ts_minlon: 0
+        ts_maxlon: 360
+        multi_model_mean: False
+        ts_maxyear: "1989"
+        ts_minyear: "1850"
+        time_avg: "yearly"
+        ts_anomaly: "anom"
+        area_opper: "sum"
+        styleset: CMIP5       # Plot style
+
+  diag_tsline_esmFix: 
+        <<: *Carbon_tsline
+        description: Wenzel et al. 2014, Fig. 01b: integrated NBP in the idealized coupled simulation
+        variables:
+          <<: *nbp
+          exp: esmFixClim
+
+  diag_tsline_tas: 
+    description: Wenzel et al. 2014, Fig. 01c: near surface temerature idealized coupled simulation
+    themes:
+      - phys
+    realms:
+      - atmos
+      variables:
+        tas:
+          project: CMIP5
+          mip: Amon
+          exp: 1pctCO2
+          ensemble: r1i1p1
+          start_year: 1851
+          end_year: 1989
+      additional_datasets:
+        <<: *datastet
+      scripts:
+        tsline:
+          script: ipcc_ar5/tsline.ncl
+          ts_minlat: -30
+          ts_maxlat: 30
+          ts_minlon: 0
+          ts_maxlon: 360
+          multi_model_mean: False
+          ts_maxyear: "1989"
+          ts_minyear: "1850"
+          time_avg: "yearly"
+          ts_anomaly: "anom"
+          styleset: CMIP5       # Plot style
+
+  ### Wenzel et al. 2014, Fig. 02: Quantities used to diagnose GAMMA_IAV #########################  
+
+  diag_tsline_gamma: &tsline_gamma 
+    description: Wenzel et al. 2014, Fig. 02a: integrated NBP in the idealized coupled simulation
+    themes:
+      - phys
+    realms:
+      - land
+      variables:
+        nbp:
+          preprocessor: land_fraction_weighting
+          project: CMIP5
+          mip: Lmon
+          exp: 1pctCO2
+          ensemble: r1i1p1
+          start_year: 1890
+          end_year: 1989
+          plot_units: GtC
+      additional_datasets:
+        <<: *datastet
+      scripts:
+        tsline: &historical_carbon
+          <<: *idealized_carbon
+          script: ipcc_ar5/tsline.ncl
+          ts_maxyear: "2005"
+          ts_minyear: "1960"
+          runave: 2
+                  
+  diag_tsline_esmHist: 
+        <<: *tsline_gamma
+        description: Wenzel et al. 2014, Fig. 02b: integrated NBP in the historical coupled simulation
+        variables:
+          <<: *nbp
+          exp: esmHistorical
+          start_year: 1960
+          end_year: 2005
+
+          
+  diag_tsline_gamma: &tsline_fgcos 
+    description: Wenzel et al. 2014, Fig. 02c: integrated NBP in the idealized coupled simulation
+    themes:
+      - phys
+    realms:
+      - land
+      variables:
+        fgco2: &fgco2
+          preprocessor: sea_fraction_weighting
+          project: CMIP5
+          mip: Omon
+          exp: 1pctCO2
+          ensemble: r1i1p1
+          start_year: 1890
+          end_year: 1989
+          plot_units: GtC
+      additional_datasets:
+        <<: *datastet
+      scripts:
+        tsline:
+          <<: *historical_carbon
+                   
+  diag_tsline_esmHist: 
+        <<: *tsline_gamma
+        description: Wenzel et al. 2014, Fig. 02d: integrated FGCO2 in the historical coupled simulation
+        variables:
+          <<: *fgco2
+          exp: esmHistorical
+          start_year: 1960
+          end_year: 2005
+          
+  diag_tsline_gtas: &tsline_tas
+    description: Wenzel et al. 2014, Fig. 02e: near surface temerature idealized coupled simulation
+    themes:
+      - phys
+    realms:
+      - atmos
+      variables:
+        tas: &tas
+          preprocessor: regridding
+          project: CMIP5
+          mip: Amon
+          exp: 1pctCO2
+          ensemble: r1i1p1
+          start_year: 1890
+          end_year: 1989
+      additional_datasets:
+        <<: *datastet
+      scripts:
+        tsline:
+          <<: *historical_carbon
+          ts_minlat: -90
+          ts_maxlat: 90
+
+  diag_tsline_esmHist: 
+        <<: *tsline_tas
+        description: Wenzel et al. 2014, Fig. 02f: near surface temerature historical coupled simulation
+        variables:
+          <<: *tas
+          exp: esmHistorical
+          start_year: 1960
+          end_year: 2005
+
+  ### Wenzel et al. 2014, Fig. 03/04: Diagnose GAMMA_IAV from each model #########################
+
+
+
+  
+#<diag>
+#  <description> preprocess and save co2flux and tas in climo_dir </description>
+#  <variable_def_dir>               ./variable_defs/    </variable_def_dir>
+#  <variable MIP="Lmon">                         nbp    </variable>
+#  <variable MIP="Omon">                       fgco2    </variable>
+#  <variable MIP="Amon">                         tas    </variable>
+#  <field_type>                                 T2Ms    </field_type>
+#  <diag_script_cfg_dir>           ./nml/cfg_carbon/    </diag_script_cfg_dir>
+#  <!-- !!! NOTE1: in diag_scripts/create_co2flux.ncl: please adjust fx-filepath
+#  (lines: 154, 158, 188, 193) to local file path !!! -->
+
+#  <model> CMIP5_ETHZ CanESM2      MIP_VAR_DEF esmHistorical r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5  </model>
+#  <model> CMIP5_ETHZ CESM1-BGC    MIP_VAR_DEF esmHistorical r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5 </model>
+#  <model> CMIP5_ETHZ GFDL-ESM2M   MIP_VAR_DEF esmHistorical r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5 </model>
+#  <model> CMIP5_ETHZ HadGEM2-ES   MIP_VAR_DEF esmHistorical r1i1p1 1960 2004 @{MODELPATH}/ETHZ_CMIP5 </model>
+#  <model> CMIP5_ETHZ IPSL-CM5A-LR MIP_VAR_DEF esmHistorical r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5 </model>
+#  <model> CMIP5_ETHZ MIROC-ESM    MIP_VAR_DEF esmHistorical r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5 </model>
+#  <model> CMIP5_ETHZ MPI-ESM-LR   MIP_VAR_DEF esmHistorical r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5 </model>
+#  <model> CMIP5_ETHZ NorESM1-ME   MIP_VAR_DEF esmHistorical r1i1p1 1960 2005 @{MODELPATH}/ETHZ_CMIP5 </model>
+
+#  <diag_script cfg="cfg_carbon_G_IAV.ncl"> create_co2flux.ncl </diag_script>
+    
+#    <tags> R_land, R_atmos, R_ocean, T_carbon, T_chem, T_ghg, T_phys </tags>
+#</diag>
+
+#<diag>
+#  <description> Wenzel et al. 2014, Fig. 03/04: correlates to variables and saves in outpu </description>
+#  <variable_def_dir>                ./variable_defs/             </variable_def_dir>
+#  <variable ref_model="GCP"  exclude="NCEP"> co2flux             </variable>
+#  <variable ref_model="NCEP" exclude="GCP">      tas             </variable>
+#  <field_type>                                   T0M             </field_type>
+#  <field_type>                                  T2Ms             </field_type>
+#  <diag_script_cfg_dir>            ./nml/cfg_carbon/             </diag_script_cfg_dir>
+
+#  <model id="GCP">  OBS   GCP    reanaly   1    1959 2005 @{OBSPATH}/Tier2/GCP  </model>
+#  <model id="NCEP"> OBS   NCEP   reanaly   1    1959 2005 @{OBSPATH}/Tier2/NCEP </model>
+
+#  <model> CMIP5 CanESM2      Amon esmHistorical r1i1p1 1960 2005 @{CLIMOPATH}/CMIP5_ETHZ </model>
+#  <model> CMIP5 CESM1-BGC    Amon esmHistorical r1i1p1 1960 2005 @{CLIMOPATH}/CMIP5_ETHZ </model>
+#  <model> CMIP5 GFDL-ESM2M   Amon esmHistorical r1i1p1 1960 2005 @{CLIMOPATH}/CMIP5_ETHZ </model>
+#  <model> CMIP5 HadGEM2-ES   Amon esmHistorical r1i1p1 1960 2004 @{CLIMOPATH}/CMIP5_ETHZ </model>
+#  <model> CMIP5 IPSL-CM5A-LR Amon esmHistorical r1i1p1 1960 2005 @{CLIMOPATH}/CMIP5_ETHZ </model>
+#  <model> CMIP5 MIROC-ESM    Amon esmHistorical r1i1p1 1960 2005 @{CLIMOPATH}/CMIP5_ETHZ </model>
+#  <model> CMIP5 MPI-ESM-LR   Amon esmHistorical r1i1p1 1960 2005 @{CLIMOPATH}/CMIP5_ETHZ </model>
+#  <model> CMIP5 NorESM1-ME   Amon esmHistorical r1i1p1 1960 2005 @{CLIMOPATH}/CMIP5_ETHZ </model>
+
+#  <diag_script cfg="cfg_carbon_G_IAV.ncl">  carbon_corr_2var.ncl </diag_script>
+    
+#    <tags> R_land, R_atmos, R_ocean, T_carbon, T_chem, T_ghg, T_phys </tags>
+#</diag>
+
+#<!-- ############################################################################# -->
+#<!-- Wenzel et al. 2014, Fig. 05: Diagnose GAMMA_LT and create Emergent Constraint -->
+#<!-- ############################################################################# -->
+
+#<diag>
+#  <description> Dummy diagnostic to preprocess NBP for carbon_constraint.ncl </description>
+#  <variable_def_dir>               ./variable_defs/    </variable_def_dir>
+#  <variable >                                   NBP    </variable>
+#  <field_type>                                 T2Ms    </field_type>
+#  <diag_script_cfg_dir>           ./nml/cfg_carbon/    </diag_script_cfg_dir>
+
+#  <model> CMIP5_ETHZ CanESM2      Lmon esmFixClim1 r1i1p1 1880 1960 @{MODELPATH}/ETHZ_CMIP5 </model>
+#  <model> CMIP5_ETHZ CESM1-BGC    Lmon esmFixClim1 r1i1p1 1880 1960 @{MODELPATH}/ETHZ_CMIP5 </model>
+#  <model> CMIP5_ETHZ GFDL-ESM2M   Lmon esmFixClim1 r1i1p1 1880 1960 @{MODELPATH}/ETHZ_CMIP5 </model>
+#  <model> CMIP5_ETHZ HadGEM2-ES   Lmon esmFixClim1 r1i1p1 1880 1960 @{MODELPATH}/ETHZ_CMIP5 </model>
+#  <model> CMIP5_ETHZ IPSL-CM5A-LR Lmon esmFixClim1 r1i1p1 1880 1960 @{MODELPATH}/ETHZ_CMIP5 </model>
+#  <model> CMIP5_ETHZ MIROC-ESM    Lmon esmFixClim1 r1i1p1 1880 1960 @{MODELPATH}/ETHZ_CMIP5 </model>
+#  <model> CMIP5_ETHZ MPI-ESM-LR   Lmon esmFixClim1 r1i1p1 1880 1960 @{MODELPATH}/ETHZ_CMIP5 </model>
+#  <model> CMIP5_ETHZ NorESM1-ME   Lmon esmFixClim1 r1i1p1 1880 1960 @{MODELPATH}/ETHZ_CMIP5 </model>
+
+#  <diag_script cfg="cfg_carbon_G_LT.ncl"> carbon_dummy.ncl </diag_script>
+#</diag>
+
+#<diag>
+#  <description> Wenzel et al. 2014, Fig. 05: correlates to variables and calculated PDF </description>
+#  <variable_def_dir>               ./variable_defs/    </variable_def_dir>
+#  <variable MIP="Lmon">                         NBP    </variable>
+#  <variable MIP="Amon">                         tas    </variable>
+#  <field_type>                                 T2Ms    </field_type>
+#  <diag_script_cfg_dir>           ./nml/cfg_carbon/    </diag_script_cfg_dir>
+
+#  <model> CMIP5_ETHZ CanESM2      MIP_VAR_DEF 1pctCO2 r1i1p1 1880 1960 @{MODELPATH}/ETHZ_CMIP5 </model>
+#  <model> CMIP5_ETHZ CESM1-BGC    MIP_VAR_DEF 1pctCO2 r1i1p1 1880 1960 @{MODELPATH}/ETHZ_CMIP5 </model>
+#  <model> CMIP5_ETHZ GFDL-ESM2M   MIP_VAR_DEF 1pctCO2 r1i1p1 1880 1960 @{MODELPATH}/ETHZ_CMIP5 </model>
+#  <model> CMIP5_ETHZ HadGEM2-ES   MIP_VAR_DEF 1pctCO2 r1i1p1 1880 1960 @{MODELPATH}/ETHZ_CMIP5 </model>
+#  <model> CMIP5_ETHZ IPSL-CM5A-LR MIP_VAR_DEF 1pctCO2 r1i1p1 1880 1960 @{MODELPATH}/ETHZ_CMIP5 </model>
+#  <model> CMIP5_ETHZ MIROC-ESM    MIP_VAR_DEF 1pctCO2 r1i1p1 1880 1960 @{MODELPATH}/ETHZ_CMIP5 </model>
+#  <model> CMIP5_ETHZ MPI-ESM-LR   MIP_VAR_DEF 1pctCO2 r1i1p1 1880 1960 @{MODELPATH}/ETHZ_CMIP5 </model>
+#  <model> CMIP5_ETHZ NorESM1-ME   MIP_VAR_DEF 1pctCO2 r1i1p1 1880 1960 @{MODELPATH}/ETHZ_CMIP5 </model>
+
+#  <diag_script cfg="cfg_carbon_G_LT.ncl"> carbon_constraint.ncl </diag_script>
+    
+#    <tags> R_land, R_atmos, R_ocean, T_carbon, T_chem, T_ghg, T_phys, T_EC </tags>
+#</diag>
+
+#</DIAGNOSTICS>
+
+#</namelist>
+
+
+
