@@ -139,26 +139,22 @@ References
 Example plots
 -------------
 
-.. centered:: |pic_permetrics1| |pic_permetrics2|
-
-.. |pic_permetrics1| image:: /recipes/figures/perfmetrics/perfmetrics_fig_1.png
+.. figure:: /recipes/figures/perfmetrics/perfmetrics_fig_1.png
    :width: 50%
 
    Annual cycle of temperature climatology at 850 hPa averaged globally
 
-.. |pic_permetrics2| image:: /recipes/figures/perfmetrics/perfmetrics_fig_2.png
+.. figure:: /recipes/figures/perfmetrics/perfmetrics_fig_2.png
    :width: 30%
 
    Taylor diagram of global temperature (ta) and longwave cloud radiative effect (lwcre)
 
-.. centered:: |pic_permetrics3| |pic_permetrics4|
-
-.. |pic_permetrics3| image:: /recipes/figures/perfmetrics/perfmetrics_fig_3.png
+.. figure:: /recipes/figures/perfmetrics/perfmetrics_fig_3.png
    :width: 30%
 
    Annual mean of zonally averaged temperature profile for the difference of a model simulation and a reanalysis dataset. Differences between the two fields which are not statistically significant according to the t test (95 % confidence level) are masked out in gray.
 
-.. |pic_permetrics4| image:: /recipes/figures/perfmetrics/perfmetrics_fig_4.png
+.. figure:: /recipes/figures/perfmetrics/perfmetrics_fig_4.png
    :width: 52%
 
    Annual climatology of the Top of the Atmosphere shortwave cloud radiative effect of an observational dataset.
