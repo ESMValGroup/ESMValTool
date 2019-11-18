@@ -21,7 +21,7 @@ Diagnostics are stored in diag_scripts/cvdp/
 User settings in recipe
 -----------------------
 
-The recipe can be run with several model data sets and ensembles. Multi-model mean statistics are currently not supported.
+The recipe can be run with several data sets including different model ensembles, multi-model mean statistics are currently not supported.
 
 Variables
 ---------
