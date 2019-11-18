@@ -142,22 +142,22 @@ Example plots
 .. figure:: /recipes/figures/perfmetrics/perfmetrics_fig_1.png
    :width: 90%
 
-   Annual cycle of temperature climatology at 850 hPa averaged globally for a set of model simulations and reanalysis data.
+   Annual cycle of globally averaged temperature at 850 hPa (time period 1980-2005) for different CMIP5 models (historical simulation) (thin colored lines) in comparison to ERA-Interim (thick yellow line) and NCEP (thick black dashed line) reanalysis data.
 
 .. figure:: /recipes/figures/perfmetrics/perfmetrics_fig_2.png
    :width: 90%
 
-   Taylor diagram of global temperature (ta) and longwave cloud radiative effect (lwcre) for a set of model simulations with respect to observations marked as REF. 
+   Taylor diagram of globally averaged temperature at 850 hPa (ta) and longwave cloud radiative effect (lwcre) for different CMIP5 models (historical simulation, 1980-2005). Reference data (REF) are ERA-Interim for temperature (1980-2005) and CERES-EBAF (2001-2012) for longwave cloud radiative effect.
 
 .. figure:: /recipes/figures/perfmetrics/perfmetrics_fig_3.png
    :width: 90%
 
-   Annual mean of zonally averaged temperature profile for the difference of a model simulation and a reanalysis dataset. Differences between the two fields which are not statistically significant according to the t test (95 % confidence level) are masked out in gray.
+   Difference in annual mean of zonally averaged temperature (time period 1980-2005) between the CMIP5 model MPI-ESM-MR (historical simulation) and ERA-Interim. Stippled areas indicdate differences that are statistically significant at a 95% confidence level.
 
 .. figure:: /recipes/figures/perfmetrics/perfmetrics_fig_4.png
    :width: 90%
 
-   Annual climatology of the Top of the Atmosphere shortwave cloud radiative effect of an observational dataset.
+   Annual mean (2001-2012) of the shortwave cloud radiative effect from CERES-EBAF.
 
 .. figure:: /recipes/figures/perfmetrics/perfmetrics_fig_5.png
    :width: 90%
