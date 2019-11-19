@@ -1,15 +1,26 @@
 ---
 documentation:
-  description: 'Extreme precipitation'
-  authors: ['vega_ja']
-  projects: [esmval]
-  references: ['contact_authors']
-  mantainer: [vega_ja]
+  description:
+    'Extreme precipitation'
+  authors:
+    -
+  projects:
+    - primavera
+  references:
+    - contact_authors
+  mantainer:
+    - vegas-regidor_javier
 
 datasets:
- - {dataset: HadGEM3-GC31-LM, project: CMIP6, activity: HighResMIP, mip: day,  exp: highresSST-present, ensemble: r1i1p1f1, start_year: 1950, end_year: 2014}
- - {dataset: HadGEM3-GC31-MM, project: CMIP6, activity: HighResMIP, mip: day,  exp: highresSST-present, ensemble: r1i1p1f1, start_year: 1950, end_year: 2014}
- - {dataset: HadGEM3-GC31-HM, project: CMIP6, activity: HighResMIP, mip: day,  exp: highresSST-present, ensemble: r1i1p1f1, start_year: 1950, end_year: 2014}
+  - {dataset: HadGEM3-GC31-LM, project: CMIP6, mip: day,
+     exp: highresSST-present, ensemble: r1i1p1f1,
+     start_year: 1950, end_year: 2014}
+  - {dataset: HadGEM3-GC31-MM, project: CMIP6, mip: day,
+     exp: highresSST-present, ensemble: r1i1p1f1,
+     start_year: 1950, end_year: 2014}
+  - {dataset: HadGEM3-GC31-HM, project: CMIP6, mip: day,
+     exp: highresSST-present, ensemble: r1i1p1f1,
+     start_year: 1950, end_year: 2014}
 
 preprocessors:
   season:
@@ -37,6 +48,6 @@ diagnostics:
 
     scripts:
       extreme_precipitation:
-        script: extreme_precipitation/extreme_precipitation.py
+        script: primavera/extreme_precipitation/extreme_precipitation.py
         return_period: [2, 5, 10, 20, 30, 50]
         confidence_interval: 0.05
