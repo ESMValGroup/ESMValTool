@@ -35,7 +35,7 @@ function UNIQ(a)
 ; Reference
 ;
 ; Modification history
-;    20130419-A_gott_kl: written.
+;    20130419-gottschaldt_klaus-dirk: written.
 ;
 local funcname, scriptname, a, i, u, doubles, idx
 begin

@@ -1,13 +1,13 @@
 .. _recipes_validation:
 
-Validation with Zonal and Meridional Means
-==========================================
+Zonal and Meridional Means
+==========================
 
 Overview
 --------
 
-This functional diagnostic takes two models designated by CONTROL and EXPERIMENT and comparares them via a number of
-anayses. Optionally a number of observational datasets can be added for processing. There are three types of standard analysis:
+This functional diagnostic takes two models designated by CONTROL and EXPERIMENT and compares them via a number of
+analyses. Optionally a number of observational datasets can be added for processing. There are three types of standard analysis:
 lat_lon, meridional_mean and zonal_mean. Each of these diagnostics can be run on a separate basis (each an entry to diagnostics/scripts).
 The lat_lon analysis produces the following plots: a simple global plot for each variable for each dataset, a global plot for the
 difference between CONTROL and EXPERIMENT, a global plot for the difference between CONTROL and each of the observational datasets.
@@ -17,7 +17,7 @@ in each plot, for the entire duration of time specified and also, if the user wi
 At least regridding on a common grid for all model and observational datasets should be performed in preprocessing (if datasets
 are on different grids). Also note that currently it is not allowed to use the same dataset (with varying parameters like experiment
 or ensemble) for both CONTROL and EXPERIMENT (the use case for comparison between different experiments or ensembles for the same model
-will be implemented in a future release). 
+will be implemented in a future release).
 
 Available recipes and diagnostics
 -----------------------------------
