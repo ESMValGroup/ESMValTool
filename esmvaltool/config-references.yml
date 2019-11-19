@@ -102,6 +102,10 @@ authors:
     name: Bock, Lisa
     institute: DLR, Germany
     orcid: https://orcid.org/0000-0001-7058-5938
+  boe_julien:
+    name: Boe, Julien
+    institute: CERFACS, France
+    orcid:
   bojovic_dragana:
     name: Bojovic, Dragana
     institute: BSC, Spain
@@ -245,6 +249,9 @@ authors:
   lledo_llorenc:
     name: Lledo, Llorenc
     institute: BSC, Spain
+    orcid:
+  loosveldt-tomas_saskia:
+    name: Loosveldt-Tomas, Saskia
     orcid:
   lorenz_ruth:
     name: Lorenz, Ruth
@@ -704,6 +711,7 @@ projects:
   esmval: DLR project ESMVal
   eval4cmip: DLR and University of Bremen project funded by the Initiative and Networking Fund of the Helmholtz Society
   ewatercycle: eWaterCycle project
+  primavera: EU H2020 project PRIMAVERA
   qa4ecv: QA4ECV
   trr181: DFG Project TRR-181
   ukesm: UKESM, UK Earth System Model project (NERC)
