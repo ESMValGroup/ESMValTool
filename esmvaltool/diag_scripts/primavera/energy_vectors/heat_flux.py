@@ -8,8 +8,9 @@ import iris.coord_categorisation as ic
 from esmvaltool.diag_scripts.shared import run_diagnostic, group_metadata
 from esmvaltool.diag_scripts.shared import names as n
 from esmvaltool.diag_scripts.shared.plot import quickplot
-from esmvaltool.diag_scripts.energy_vectors.common import (low_pass_weights,
-                                                           lanczos_filter)
+from esmvaltool.diag_scripts.primavera.energy_vectors.common import (
+    low_pass_weights,
+    lanczos_filter)
 
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -87,7 +88,7 @@ class HeatFlux(object):
         heat_flux.attributes['filtering'] = \
             "Lanczos filtering with window width=%s (%s days)" % (
                 len(filter_weights), self.window
-        )
+                )
         heat_flux.var_name = 'vptp'
         return heat_flux
 

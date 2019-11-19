@@ -9,7 +9,7 @@ import iris.coord_categorisation as ic
 from esmvaltool.diag_scripts.shared import run_diagnostic, group_metadata
 from esmvaltool.diag_scripts.shared import names as NAMES
 from esmvaltool.diag_scripts.shared.plot import quickplot
-from esmvaltool.diag_scripts.energy_vectors.common import (
+from esmvaltool.diag_scripts.primavera.energy_vectors.common import (
     low_pass_weights, lanczos_filter
 )
 

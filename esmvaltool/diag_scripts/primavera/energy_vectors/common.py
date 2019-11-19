@@ -1,4 +1,5 @@
 import numpy as np
+import iris
 
 from iris.analysis import SUM
 
@@ -68,6 +69,6 @@ def lanczos_filter(cube, weights):
     for coord in ['time', 'forecast_period']:
         try:
             cube_filtered.coord(coord).bounds = None
-        except Exception:
+        except iris.exceptions.CoordinateNotFoundError:
             pass
     return cube_filtered
