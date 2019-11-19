@@ -173,9 +173,9 @@ def _setup_work(rose_config_template, recipe_files,
                 config_file, main_dir, default_suite, log_level):
     """Write the new rose conf file per suite."""
     # Build the ConfigParser object
-    Config = ConfigParser.ConfigParser()
-    Config.optionxform = str
-    Config.read(rose_config_template)
+    config = ConfigParser.ConfigParser()
+    config.optionxform = str
+    config.read(rose_config_template)
 
     # set the main work dir
     if not os.path.exists(main_dir):
@@ -216,14 +216,14 @@ def _setup_work(rose_config_template, recipe_files,
     logger.info("Use user config file %s", config_file)
 
     # write the file
-    Config.set('jinja2:suite.rc', 'INPUT_DIR',
+    config.set('jinja2:suite.rc', 'INPUT_DIR',
                '"' + main_dir + '"')
-    Config.set('jinja2:suite.rc', 'OUTPUT_DIR', '"' + out_dir + '"')
-    Config.set('jinja2:suite.rc', 'RECIPES', str(recipes_field))
+    config.set('jinja2:suite.rc', 'OUTPUT_DIR', '"' + out_dir + '"')
+    config.set('jinja2:suite.rc', 'RECIPES', str(recipes_field))
     with open(os.path.join(rose_suite, 'rose-suite.conf'), 'w') as r_c:
         logger.info("Writing rose-suite.conf file %s",
                     os.path.join(rose_suite, 'rose-suite.conf'))
-        Config.write(r_c)
+        config.write(r_c)
 
     return rose_suite
 

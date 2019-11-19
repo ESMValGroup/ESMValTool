@@ -12,7 +12,6 @@ import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 import numpy as np
 from cartopy.mpl.gridliner import LATITUDE_FORMATTER
-from matplotlib.patches import Rectangle
 
 from esmvaltool.diag_scripts.autoassess.loaddata import load_run_ss
 

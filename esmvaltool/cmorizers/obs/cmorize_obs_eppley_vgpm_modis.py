@@ -14,7 +14,7 @@ Download and processing instructions
    (no subdirectories with years) in ${RAWOBS}/Tier2/Eppley-VGPM-MODIS
 
 Modification history
-   20190515-A_lova_to: written.
+   20190515-lovato_tomas: written.
 
 """
 
