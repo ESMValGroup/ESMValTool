@@ -80,24 +80,24 @@ class LandAtmosInteractions(object):
                                               end_year=end_year)
 
             iris.save(cubelist, os.path.join(self.cfg[n.WORK_DIR], filename))
-            for cube in cubelist:
-                plotname = '{project}_' \
-                           '{dataset}_' \
-                           '{experiment}_' \
-                           '{longname}_' \
-                           '{start_year}_' \
-                           '{end_year}'.format(project=project,
-                                               dataset=dataset,
-                                               experiment=experiment,
-                                               longname=cube.long_name,
-                                               start_year=start_year,
-                                               end_year=end_year)
+#            for cube in cubelist:
+#                plotname = '{project}_' \
+#                           '{dataset}_' \
+#                           '{experiment}_' \
+#                           '{longname}_' \
+#                           '{start_year}_' \
+#                           '{end_year}'.format(project=project,
+#                                               dataset=dataset,
+#                                               experiment=experiment,
+#                                               longname=cube.long_name,
+#                                               start_year=start_year,
+#                                               end_year=end_year)
 
-                pm = plotmap.PlotMap()
-                pm.plot_cube(cube, 
-                             outdir=self.cfg[n.PLOT_DIR], 
-                             file_format=self.cfg[n.OUTPUT_FILE_TYPE], 
-                             img_template=plotname)
+#                pm = plotmap.PlotMap()
+#                pm.plot_cube(cube,
+#                             outdir=self.cfg[n.PLOT_DIR],
+#                             file_format=self.cfg[n.OUTPUT_FILE_TYPE],
+#                             img_template=plotname)
 
 
 

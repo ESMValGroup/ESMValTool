@@ -11,13 +11,18 @@ documentation:
     esmvaltool/diag_scripts/examples/my_little_diagnostic.py
 
   authors:
-    - pred_va
+    - boe_julien
 
-  maintainer:
-    - pred_va
+  projects:
+    - primavera
+
+    maintainer:
+    - loosveldt_tomas-saskia
 
 datasets:
-  - {activity: HighResMIP, dataset: HadGEM3-GC31-LM,  project: CMIP6, mip: Amon, exp: highresSST-present,  ensemble: r1i1p1f1, grid: gn,  start_year: 2000,  end_year: 2002}
+  - {dataset: HadGEM3-GC31-LM,  project: CMIP6, mip: Amon,
+     exp: highresSST-present,  ensemble: r1i1p1f1, grid: gn,
+     start_year: 2000,  end_year: 2002}
 
 preprocessors:
   ppsummer:
@@ -67,7 +72,7 @@ diagnostics:
 
     scripts:
       interactions:
-        script: primavera/land_atmos_interactions.py
+        script: primavera/interactions/land_atmos_interactions.py
         target_grid: '/gws/nopw/j04/primavera1/cache/jboe/WP1/FOR_INTERP/landsea_mask_ERAI.nc'
 
   detrended_interactions:
@@ -97,7 +102,7 @@ diagnostics:
 
     scripts:
       detrended_interactions:
-        script: primavera/land_atmos_interactions.py
+        script: primavera/interactions/land_atmos_interactions.py
         target_grid: '/gws/nopw/j04/primavera1/cache/jboe/WP1/FOR_INTERP/landsea_mask_ERAI.nc'
 
 
