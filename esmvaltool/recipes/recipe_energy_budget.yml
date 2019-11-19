@@ -84,7 +84,7 @@ diagnostics:
         preprocessor: global_mean
     scripts:
       energy_budget:
-        script: primavera/energy_budget.py
+        script: primavera/energy_budget/energy_budget.py
         plot_template: plot_templates/energy_budget_template.png
 
   land_energy_budget:
@@ -112,7 +112,7 @@ diagnostics:
         preprocessor: land_mean
     scripts:
       energy_budget_land:
-        script: primavera/energy_budget.py
+        script: primavera/energy_budget/energy_budget.py
         plot_template: plot_templates/energy_budget_template.png
 
   ocean_energy_budget:
@@ -140,5 +140,5 @@ diagnostics:
         preprocessor: ocean_mean
     scripts:
       energy_budget_ocean:
-        script: primavera/energy_budget.py
+        script: primavera/energy_budget/energy_budget.py
         plot_template:
