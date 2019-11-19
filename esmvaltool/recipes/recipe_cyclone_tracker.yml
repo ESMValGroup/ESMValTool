@@ -18,7 +18,8 @@ documentation:
 
 
 datasets:
-  - {project: CMIP6, activity: HighResMIP, mip: day, institute: ECMWF, dataset: ECMWF-IFS-HR, exp: hist-1950, ensemble: r1i1p1f1, grid: gr, start_year: 2005, end_year: 2005}
+  - {project: CMIP6, mip: day, dataset: ECMWF-IFS-HR, exp: hist-1950,
+     ensemble: r1i1p1f1, grid: gr, start_year: 2005, end_year: 2005}
 
 preprocessors:
   ppregrid:
@@ -81,7 +82,7 @@ diagnostics:
         wcore_depth: 1.0
         verb: 1
         tracker_exe: /home/users/sloosvel/BSC-Cyclone-Tracker/gfdl-vortextracker/trk_exec/tracker.exe
-        script: primavera/cyclone_tracker.py
+        script: primavera/cyclone_tracker/cyclone_tracker.py
 
 #      postprocess:
 #        scale: #1min 10min, 1hour, 3hours
