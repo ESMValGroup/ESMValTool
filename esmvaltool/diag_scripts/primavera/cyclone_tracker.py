@@ -45,6 +45,8 @@ class CycloneTracker(object):
             uas = iris.load_cube(var['uas'][0]['filename'])
             vas = iris.load_cube(var['vas'][0]['filename'])
             ta = iris.load_cube(var['ta'][0]['filename'])
+            ta = ta.collapsed('air_pressure', iris.analysis.MEAN)
+            ta.coords('air_pressure')[0].points = [40100]
             zg = iris.load_cube(var['zg'][0]['filename'])
             freq = psl.attributes['frequency']
             if 'day' in freq:

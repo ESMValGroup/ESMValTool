@@ -36,7 +36,7 @@ preprocessors:
 
   ppta:
     extract_levels:
-      levels: [50000, 30000, 5000]
+      levels: [50000,45000,40000,35000,30000]
       scheme: linear
     regrid:
       target_grid: 1x1
