@@ -16,12 +16,12 @@ documentation:
   projects:
     - primavera
 
-    maintainer:
+  maintainer:
     - loosveldt_tomas-saskia
 
 datasets:
-  - {dataset: HadGEM3-GC31-LM,  project: CMIP6, mip: Amon,
-     exp: highresSST-present,  ensemble: r1i1p1f1, grid: gn,
+  - {dataset: HadGEM3-GC31-LL,  project: CMIP6,
+     exp: piControl,  ensemble: r1i1p1f1, grid: gn,
      start_year: 2000,  end_year: 2002}
 
 preprocessors:
@@ -68,12 +68,13 @@ diagnostics:
       mrso:
         mip: Lmon
         preprocessor: ppmrso
-        fx_files: [sftlf]
+      sftlf:
+        mip: fx
 
     scripts:
       interactions:
         script: primavera/interactions/land_atmos_interactions.py
-        target_grid: '/gws/nopw/j04/primavera1/cache/jboe/WP1/FOR_INTERP/landsea_mask_ERAI.nc'
+        target_grid: '1x1'
 
   detrended_interactions:
     variables:
@@ -98,12 +99,13 @@ diagnostics:
       mrso:
         mip: Lmon
         preprocessor: ppmrsodetrend
-        fx_files: [sftlf]
+      sftlf:
+
 
     scripts:
       detrended_interactions:
         script: primavera/interactions/land_atmos_interactions.py
-        target_grid: '/gws/nopw/j04/primavera1/cache/jboe/WP1/FOR_INTERP/landsea_mask_ERAI.nc'
+        target_grid: '1x1' # in MxN degrees
 
 
 
