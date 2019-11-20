@@ -409,7 +409,8 @@ for (j in 1:4) { # nolint
           toptitle = title,
           sizetit = 0.5,
           brks = breaks,
-          fileout = filepng
+          fileout = filepng,
+          colNA = "white"
         )
         # Set provenance for output files
         xprov <-
