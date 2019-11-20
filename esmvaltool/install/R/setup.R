@@ -82,6 +82,10 @@ install <- function(package, info){
       log("Installing ", package, "from Git")
       remotes::install_git(info$url, ref=info$ref)
     }
+    if(info$origin == 'url'){
+      log("Installing ", package, "from URL")
+      remotes::install_url(info$url)
+    }
     if(info$origin == 'cran'){
       log("Installing version", info$version, "of", package, "from CRAN")
       devtools::install_version(

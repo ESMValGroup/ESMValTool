@@ -25,6 +25,11 @@
 #     url: my_repo_url
 #     ref: my_branch_commit_or_tag
 
+# From a generic URL:
+#   mypackage:
+#     origin: url
+#     url: my_repo_url
+
 abind:
 akima:
 climdex.pcic:
@@ -40,6 +45,8 @@ maps:
 multiApply:
 ncdf4:
 ncdf4.helpers:
+  origin: url
+  url: https://cran.r-project.org/src/contrib/Archive/ncdf4.helpers/ncdf4.helpers_0.3-3.tar.gz
 PCICt:
 plyr:
 RColorBrewer:
