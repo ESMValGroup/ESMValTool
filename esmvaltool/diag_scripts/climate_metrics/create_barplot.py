@@ -184,8 +184,8 @@ def main(cfg):
         input_files = []
         for pattern in patterns:
             input_files.extend(io.get_all_ancestor_files(cfg, pattern=pattern))
-            if not input_files:
-                raise ValueError("No input files found")
+    if not input_files:
+        raise ValueError("No input files found")
     logger.info("Found input files:\n%s", pformat(input_files))
 
     # Iterate over all files and extract data

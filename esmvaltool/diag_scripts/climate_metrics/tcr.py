@@ -157,9 +157,8 @@ def calculate_tcr(cfg):
                                   exp='piControl',
                                   dataset=dataset['dataset'])
         if not pi_data:
-            raise ValueError(
-                f"No 'piControl' data available for dataset "
-                f"'{dataset['dataset']}'")
+            raise ValueError(f"No 'piControl' data available for dataset "
+                             f"'{dataset['dataset']}'")
 
         onepct_cube = iris.load_cube(dataset['filename'])
         pi_cube = iris.load_cube(pi_data[0]['filename'])
@@ -231,7 +230,8 @@ def read_external_file(cfg):
     if not os.path.isabs(filepath):
         filepath = os.path.join(os.path.dirname(__file__), filepath)
     if not os.path.isfile(filepath):
-        raise ValueError(f"Desired external file '{filepath}' does not exist")
+        raise FileNotFoundError(
+            f"Desired external file '{filepath}' does not exist")
     with open(filepath, 'r') as infile:
         external_data = yaml.safe_load(infile)
     tcr = external_data.get('tcr', {})

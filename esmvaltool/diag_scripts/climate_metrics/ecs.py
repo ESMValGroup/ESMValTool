@@ -258,7 +258,8 @@ def read_external_file(cfg):
     if not os.path.isabs(filepath):
         filepath = os.path.join(os.path.dirname(__file__), filepath)
     if not os.path.isfile(filepath):
-        raise ValueError(f"Desired external file '{filepath}' does not exist")
+        raise FileNotFoundError(
+            f"Desired external file '{filepath}' does not exist")
     with open(filepath, 'r') as infile:
         external_data = yaml.safe_load(infile)
     ecs = external_data.get('ecs', {})
