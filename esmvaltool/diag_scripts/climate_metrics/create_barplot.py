@@ -47,9 +47,52 @@ import seaborn as sns
 from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
                                             get_diagnostic_filename,
                                             get_plot_filename, io,
-                                            iris_helpers, plot, run_diagnostic)
+                                            iris_helpers, run_diagnostic)
 
 logger = logging.getLogger(os.path.basename(__file__))
+
+
+def get_all_data(cfg, input_files):
+    """Get all data."""
+    metadata = None
+    all_data = {}
+    all_files = []
+    for filename in input_files:
+        all_files.append(filename)
+        cube = iris.load_cube(filename)
+        try:
+            cube.coord('dataset')
+        except iris.exceptions.CoordinateNotFoundError:
+            logger.warning(
+                "File '%s' does not contain necessary coordinate 'dataset'",
+                filename)
+            continue
+        logger.info("Processing '%s'", filename)
+
+        # Sort coordinate 'dataset'
+        [cube] = iris_helpers.intersect_dataset_coordinates([cube])
+
+        # Add to data dictionary
+        if cfg.get('label_attribute') in cube.attributes:
+            label = cube.attributes[cfg.get('label_attribute')]
+        else:
+            label = filename
+        all_data[label] = (cube.coord('dataset').points, cube.data)
+
+        # Check cube metadata
+        new_metadata = {
+            'long_name': cube.long_name,
+            'units': cube.units,
+            'var_name': cube.var_name.upper(),
+        }
+        if metadata is None:
+            metadata = new_metadata
+        else:
+            if metadata != new_metadata:
+                logger.warning(
+                    "Got differing metadata for the different input files, "
+                    "'%s' and '%s'", metadata, new_metadata)
+    return (all_data, all_files, metadata)
 
 
 def get_provenance_record(caption, ancestor_files, **kwargs):
@@ -70,12 +113,6 @@ def plot_data(cfg, all_data, metadata):
         return None
     logger.debug("Plotting barplot")
     (_, axes) = plt.subplots(figsize=(8, 4))
-
-    # TODO: REMOVE
-    all_data = {
-        'CMIP6': all_data['CMIP6'],
-        'CMIP5': all_data['CMIP5'],
-    }
 
     # Plot
     all_pos = []
@@ -123,11 +160,18 @@ def plot_data(cfg, all_data, metadata):
     return plot_path
 
 
-def write_data(cfg, cube):
+def write_data(cfg, all_data, metadata):
     """Write netcdf file."""
-    cube.attributes.pop('provenance', None)
-    netcdf_path = get_diagnostic_filename(cube.var_name, cfg)
-    io.iris_save(cube, netcdf_path)
+    new_data = {}
+    for (label, xy_data) in all_data.items():
+        for (idx, dataset_name) in enumerate(xy_data[0]):
+            key = f'{label}-{dataset_name}'
+            value = xy_data[1][idx]
+            new_data[key] = value
+    netcdf_path = get_diagnostic_filename(metadata['var_name'], cfg)
+    var_attrs = metadata.copy()
+    var_attrs['short_name'] = var_attrs.pop('var_name')
+    io.save_scalar_data(new_data, netcdf_path, var_attrs)
     return netcdf_path
 
 
@@ -146,63 +190,22 @@ def main(cfg):
     logger.info("Found input files:\n%s", pformat(input_files))
 
     # Iterate over all files and extract data
-    metadata = None
-    all_data = {}
-    for filename in input_files:
-        cube = iris.load_cube(filename)
-        try:
-            cube.coord('dataset')
-        except iris.exceptions.CoordinateNotFoundError:
-            logger.warning(
-                "File '%s' does not contain necessary coordinate 'dataset'",
-                filename)
-            continue
-        logger.info("Processing '%s'", filename)
-
-        # Sort coordinate 'dataset'
-        [cube] = iris_helpers.intersect_dataset_coordinates([cube])
-
-        # Add to data dictionary
-        if cfg.get('label_attribute') in cube.attributes:
-            label = cube.attributes[cfg.get('label_attribute')]
-        else:
-            label = filename
-        all_data[label] = (cube.coord('dataset').points, cube.data)
-
-        # Check cube metadata
-        new_metadata = {
-            'long_name': cube.long_name,
-            'units': cube.units,
-            'var_name': cube.var_name.upper(),
-        }
-        if metadata is None:
-            metadata = new_metadata
-        else:
-            if metadata != new_metadata:
-                logger.warning(
-                    "Got differing metadata for the different input files, "
-                    "'%s' and '%s'", metadata, new_metadata)
-
-    # Create plot
-    plot_data(cfg, all_data, metadata)
+    (all_data, all_files, metadata) = get_all_data(cfg, input_files)
 
     # Create plot and netcdf file
-    # plot_path = plot_data(cfg, cube)
-    # netcdf_path = write_data(cfg, cube)
+    plot_path = plot_data(cfg, all_data, metadata)
+    netcdf_path = write_data(cfg, all_data, metadata)
 
-    # # Provenance
-    # project = cube.attributes.get('project')
-    # caption = "{}{} for multiple datasets".format(
-    #     cube.long_name, '' if project is None else f' for {project}')
-    # provenance_record = get_provenance_record(caption, [filename])
-    # if plot_path is not None:
-    #     provenance_record.update({
-    #         'plot_file': plot_path,
-    #         'plot_types': ['bar'],
-    #     })
-    # with ProvenanceLogger(cfg) as provenance_logger:
-    #     provenance_logger.log(netcdf_path, provenance_record)
-    # break
+    # Provenance
+    caption = f"{metadata['long_name']} for multiple datasets."
+    provenance_record = get_provenance_record(caption, all_files)
+    if plot_path is not None:
+        provenance_record.update({
+            'plot_file': plot_path,
+            'plot_types': ['bar'],
+        })
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(netcdf_path, provenance_record)
 
 
 if __name__ == '__main__':

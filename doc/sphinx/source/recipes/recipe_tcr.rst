@@ -29,6 +29,8 @@ Recipes are stored in recipes/
 Diagnostics are stored in diag_scripts/
 
    * climate_metrics/tcr.py
+   * climate_metrics/create_barplot.py
+   * climate_metrics/create_scatterplot.py
 
 
 User settings in recipe
@@ -48,6 +50,15 @@ User settings in recipe
    * ``seaborn_settings``, *dict*, optional: Options for seaborn's ``set()``
      method (affects all plots), see
      https://seaborn.pydata.org/generated/seaborn.set.html.
+
+#. Script climate_metrics/create_barplot.py
+
+   See :ref:`recipes_ecs`.
+
+#. Script climate_metrics/create_scatterplot.py
+
+   See :ref:`recipes_ecs`.
+
 
 
 Variables

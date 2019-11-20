@@ -142,7 +142,7 @@ def main(cfg):
 
     # Provenance
     project = cube.attributes.get('project')
-    caption = "{}{} for multiple datasets".format(
+    caption = "{}{} for multiple datasets.".format(
         cube.long_name, '' if project is None else f' for {project}')
     provenance_record = get_provenance_record(caption, [input_file])
     if plot_path is not None:

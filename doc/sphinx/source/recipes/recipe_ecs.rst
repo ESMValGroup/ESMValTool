@@ -27,6 +27,8 @@ Recipes are stored in recipes/
 Diagnostics are stored in diag_scripts/
 
    * climate_metrics/ecs.py
+   * climate_metrics/create_barplot.py
+   * climate_metrics/create_scatterplot.py
 
 
 User settings in recipe
@@ -46,6 +48,33 @@ User settings in recipe
    * ``seaborn_settings``, *dict*, optional: Options for seaborn's ``set()``
      method (affects all plots), see
      https://seaborn.pydata.org/generated/seaborn.set.html.
+
+#. Script climate_metrics/create_barplot.py
+
+   * ``label_attribute``, *str*, optional: Attribute of the cube which is used
+     as label for the different input files in the barplot.
+   * ``patterns``, *list of str*, optional: Patterns to filter list of input
+     files.
+   * ``seaborn_settings``, *dict*, optional: Options for seaborn's ``set()``
+     method (affects all plots), see
+     https://seaborn.pydata.org/generated/seaborn.set.html.
+   * ``sort_ascending``, *bool*, optional (default: ``False``): Sort bars in
+     ascending order.
+   * ``sort_descending``, *bool*, optional (default: ``False``): Sort bars in
+     descending order.
+   * ``value_labels``, *bool*, optional (default: ``False``): Label bars with
+     value of that bar.
+   * ``y_range``, *list of float*, optional: Range for the Y axis of the plot.
+
+#. Script climate_metrics/create_scatterplot.py
+
+   * ``dataset_style``, *str*, optional: Name of the style file (located in
+     :mod:`esmvaltool.diag_scripts.shared.plot.styles_python`).
+   * ``pattern``, *str*, optional: Pattern to filter list of input files.
+   * ``seaborn_settings``, *dict*, optional: Options for seaborn's ``set()``
+     method (affects all plots), see
+     https://seaborn.pydata.org/generated/seaborn.set.html.
+   * ``y_range``, *list of float*, optional: Range for the Y axis of the plot.
 
 
 Variables
