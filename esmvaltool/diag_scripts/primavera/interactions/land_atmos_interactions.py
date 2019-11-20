@@ -10,6 +10,7 @@ import iris.util
 import esmvaltool.diag_scripts.shared
 import esmvaltool.diag_scripts.shared.names as n
 from esmvaltool.diag_scripts.shared import group_metadata
+from esmvaltool.diag_scripts.shared._base import ProvenanceLogger
 
 from esmvalcore.preprocessor import regrid, mask_landsea, extract_season
 logger = logging.getLogger(os.path.basename(__file__))
@@ -73,6 +74,29 @@ class LandAtmosInteractions(object):
                                               end_year=end_year)
 
             iris.save(cubelist, os.path.join(self.cfg[n.WORK_DIR], filename))
+            caption = ("{script} between {start} and {end}"
+                       "according to {dataset}").format(
+                           script=self.output_name.split('_'),
+                           start=start_year,
+                           end=end_year,
+                           dataset=dataset
+                      )
+            ancestors = []
+            for i in range(len(data[alias])):
+                ancestors.append(data[alias][i]['filename'])
+            record = {
+                'caption': caption,
+                'domains': ['global'],
+                'autors': ['boe_julien'],
+                'references': ['acknow_project'],
+                'ancestors': ancestors
+                }
+            with ProvenanceLogger(self.cfg) as provenance_logger:
+                provenance_logger.log(
+                    os.path.join(self.cfg[n.WORK_DIR],filename), record)
+
+
+
 #            for cube in cubelist:
 #                plotname = '{project}_' \
 #                           '{dataset}_' \
