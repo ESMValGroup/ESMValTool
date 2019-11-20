@@ -75,3 +75,5 @@ Example plots
 
 .. _fig_multimodprod:
 .. figure::  /recipes/figures/multimodel_products/tas_JUN_multimodel-anomaly_2006_2099_1961_1990.png
+
+Multi-model mean anomaly of 2-m air temperature during the future projection 2006-2099 in June considering the reference period 1961-1990 (colours). Crosses indicate that the 80% of models agree in the sign of the multi-model mean anomaly. The models selected are BCC-CSM1-1, MPI-ESM-MR and MIROC5 in the r1i1p1 ensembles for the RCP 2.6 scenario.
