@@ -162,9 +162,9 @@ class EadyGrowthRate(object):
                        end=end,
                        dataset=dataset
                    )
+        ancestors = []
         for i in range(len(data[alias])):
-            ancestors = [data[alias][i]['filename']]
-
+            ancestors.append(data[alias][i]['filename'])
         record = {
             'caption': caption,
             'domains': ['global'],
