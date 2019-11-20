@@ -7,15 +7,11 @@ import iris.analysis
 from iris.analysis import stats
 import iris.util
 
-from scipy import signal
-
 import esmvaltool.diag_scripts.shared
 import esmvaltool.diag_scripts.shared.names as n
 from esmvaltool.diag_scripts.shared import group_metadata
 
-from esmvalcore.preprocessor._regrid_esmpy import regrid
-from esmvalcore.preprocessor._mask import mask_landsea
-from esmvalcore.preprocessor._time import extract_season
+from esmvalcore.preprocessor import regrid, mask_landsea, extract_season
 logger = logging.getLogger(os.path.basename(__file__))
 
 
@@ -25,7 +21,6 @@ class LandAtmosInteractions(object):
         self.filenames = esmvaltool.diag_scripts.shared.Datasets(self.cfg)
         self.output_name = None
         self.target_grid = self.cfg.get('target_grid')
-        self.grid_cube = None
         self.sftlf = None
 
     def compute(self):
@@ -39,9 +34,7 @@ class LandAtmosInteractions(object):
             clt = iris.load_cube(var['clt'][0]['filename'])
             tas = iris.load_cube(var['tas'][0]['filename'])
             mrso = iris.load_cube(var['mrso'][0]['filename'])
-            self.sftlf = [var['mrso'][0]['fx_files']['sftlf']]
-
-            self.grid_cube = iris.load_cube(self.target_grid)
+            self.sftlf = iris.load_cube(var['sftlf'][0]['filename'])
 
             clim_ef, stdv_ef = self.evaporative_fraction_stats(hfls, hfss)
 
@@ -62,7 +55,7 @@ class LandAtmosInteractions(object):
 
     def save(self, cubelist, alias, data):
         if self.output_name:
-            project = data[alias][0]
+            project = data[alias][0]['project']
             dataset = data[alias][0]['dataset']
             experiment = data[alias][0]['exp']
             start_year = data[alias][0]['start_year']
@@ -161,13 +154,10 @@ class LandAtmosInteractions(object):
         return correlation, mrso_correlation
 
     def mask_and_regrid(self, var):
-        always_use_ne_mask = False
-        if self.sftlf is None:
-            always_use_ne_mask = True
-        var = mask_landsea(var, self.sftlf, 'sea', always_use_ne_mask)
+        var = mask_landsea(var, self.sftlf, 'sea')
         var = regrid(var,
-                     self.grid_cube,
-                     method='area_weighted')
+                     self.target_grid,
+                     scheme='area_weighted')
         return var
 
 def main():
