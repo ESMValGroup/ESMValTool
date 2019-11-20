@@ -102,7 +102,6 @@ class CycloneTracker(object):
                     time = total_year[0].coord('time').points
                     path = os.path.join(self.cfg['run_dir'], filename)
                     if not os.path.isdir(path):
-                        print(path)
                         os.makedirs(path)
                     os.system('ln -s {0} {1}/fort.11'.format(input_path, path))
                     self.write_namelist(path, month, year)
