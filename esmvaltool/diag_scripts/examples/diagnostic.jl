@@ -84,7 +84,7 @@ function compute_diagnostic(metadata, varname, diag_base, parameter,
                        " ", start_year, "-", end_year)
         plotmap(lon, lat, var, title = title, proj = "robinson", clabel = units)
         savefig(plotfile)
-        xprov["plot_file"] = plotfile 
+        xprov["plot_file"] = plotfile
         provenance[outfile] = xprov
     end
     return provenance
