@@ -4,8 +4,8 @@
 
 Description
 -----------
-Calculate and plot the equilibrium climate sensitivity (ECS) vs. the transient
-climate response (TCR) (see IPCC AR5 WG1 ch.9, fig. 9.42b).
+Calculate and plot the transient climate response (TCR) vs. the equilibrium
+climate sensitivity (ECS) (see IPCC AR5 WG1 ch.9, fig. 9.42b).
 
 Author
 ------
@@ -65,8 +65,8 @@ def get_provenance_record(project, ancestor_files):
     """Create a provenance record describing the diagnostic data and plot."""
     record = {
         'caption':
-        (f'Equilibrium climate sensitivity (ECS) against transient climate '
-         f'response of {project} models.'),
+        (f'Transient climate response (TCR) against equilibrium climate '
+         f'sensitivity (ECS) for {project} models.'),
         'statistics': ['mean'],
         'domains': ['global'],
         'authors': ['schlund_manuel'],

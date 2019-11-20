@@ -1,4 +1,3 @@
-9.# ESMValTool
 # recipe_flato13ipcc.yml
 ---
 documentation:
@@ -1412,25 +1411,3 @@ diagnostics:
         <<: *fig09_42b_script
         ancestors: ['ecs_cmip6/ecs', 'tcr_cmip6/tcr']
         dataset_style: cmip6
-
-  fig09-42_table_cmip5:
-    description: Create table including TCR, ECS and feedback parameters for CMIP5 models.
-    themes:
-      - phys
-    realms:
-      - atmos
-    scripts:
-      fig09-42_table:
-        script: climate_metrics/create_table.py
-        ancestors: ['ecs_cmip5/ecs', 'tcr_cmip5/tcr']
-
-  fig09-42_table_cmip6:
-    description: Create table including TCR, ECS and feedback parameters for CMIP6 models.
-    themes:
-      - phys
-    realms:
-      - atmos
-    scripts:
-      fig09-42_table:
-        script: climate_metrics/create_table.py
-        ancestors: ['ecs_cmip6/ecs', 'tcr_cmip6/tcr']

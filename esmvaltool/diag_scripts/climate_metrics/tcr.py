@@ -19,7 +19,8 @@ Configuration options in recipe
 plot : bool, optional (default: True)
     Plot temperature vs. time.
 read_external_file : str, optional
-    Read TCR from external file.
+    Read TCR from external file. The path can be given relative to this
+    diagnostic script or as absolute path.
 seaborn_settings : dict, optional
     Options for seaborn's `set()` method (affects all plots), see
     <https://seaborn.pydata.org/generated/seaborn.set.html>.

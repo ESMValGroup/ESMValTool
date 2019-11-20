@@ -20,7 +20,8 @@ Configuration options in recipe
 calculate_mmm : bool, optional (default: True)
     Calculate multi-model mean ECS.
 read_external_file : str, optional
-    Read ECS from external file.
+    Read ECS and feedback parameters from external file. The path can be given
+    relative to this diagnostic script or as absolute path.
 seaborn_settings : dict, optional
     Options for seaborn's `set()` method (affects all plots), see
     <https://seaborn.pydata.org/generated/seaborn.set.html>.

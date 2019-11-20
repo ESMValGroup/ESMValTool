@@ -17,8 +17,6 @@ CRESCENDO
 
 Configuration options in recipe
 -------------------------------
-save : dict, optional
-    Keyword arguments for the `fig.saveplot()` function.
 axes_functions : dict, optional
     Keyword arguments for the plot appearance functions.
 dataset_style : str, optional
@@ -27,6 +25,8 @@ dataset_style : str, optional
 matplotlib_style : str, optional
     Dataset style file (located in
     :mod:`esmvaltool.diag_scripts.shared.plot.styles_python.matplotlib`).
+save : dict, optional
+    Keyword arguments for the `fig.saveplot()` function.
 seaborn_settings : dict, optional
     Options for seaborn's `set()` method (affects all plots), see
     <https://seaborn.pydata.org/generated/seaborn.set.html>.
