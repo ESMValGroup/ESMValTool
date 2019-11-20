@@ -164,7 +164,8 @@ for (j in 1:4) { # nolint
         historical_data,
         calendar = calendar,
         qtiles = quantile,
-        ncores = detectCores() - 1
+        ncores = detectCores() - 1,
+        na.rm = TRUE
       )
       str(thresholds)
       base_index <- Climdex(
@@ -381,8 +382,9 @@ for (j in 1:4) { # nolint
 
         breaks <-
           seq(
-            -1 * ceiling(max(abs(data))), ceiling(max(abs(data))),
-            2 * ceiling(max(abs(data))) / 16
+            -1 * ceiling(max(abs(data), na.rm = TRUE)), 
+            ceiling(max(abs(data), na.rm = TRUE)),
+            2 * ceiling(max(abs(data), na.rm = TRUE)) / 16
           )
         filepng <- paste0(
           plot_dir,
