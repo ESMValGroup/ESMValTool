@@ -382,7 +382,7 @@ for (j in 1:4) { # nolint
 
         breaks <-
           seq(
-            -1 * ceiling(max(abs(data), na.rm = TRUE)), 
+            -1 * ceiling(max(abs(data), na.rm = TRUE)),
             ceiling(max(abs(data), na.rm = TRUE)),
             2 * ceiling(max(abs(data), na.rm = TRUE)) / 16
           )
