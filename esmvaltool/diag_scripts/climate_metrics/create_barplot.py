@@ -63,10 +63,9 @@ def get_all_data(cfg, input_files):
         try:
             cube.coord('dataset')
         except iris.exceptions.CoordinateNotFoundError:
-            logger.warning(
-                "File '%s' does not contain necessary coordinate 'dataset'",
-                filename)
-            continue
+            raise iris.exceptions.CoordinateNotFoundError(
+                f"File '{filename}' does not contain necessary coordinate "
+                f"'dataset'")
         logger.info("Processing '%s'", filename)
 
         # Sort coordinate 'dataset'
@@ -89,9 +88,9 @@ def get_all_data(cfg, input_files):
             metadata = new_metadata
         else:
             if metadata != new_metadata:
-                logger.warning(
-                    "Got differing metadata for the different input files, "
-                    "'%s' and '%s'", metadata, new_metadata)
+                raise ValueError(
+                    f"Got differing metadata for the different input files, "
+                    f"{metadata} and {new_metadata}")
     return (all_data, all_files, metadata)
 
 

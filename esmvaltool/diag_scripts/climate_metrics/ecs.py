@@ -88,21 +88,20 @@ def _get_anomaly_data(input_data):
 
             # Check if all experiments are available
             if not data_4x:
-                logger.warning("No '%s' data available for '%s' of '%s'",
-                               EXP_4XCO2[project], var, dataset_name)
-                continue
+                raise ValueError(
+                    f"No '{EXP_4XCO2[project]}' data available for '{var}' of "
+                    f"'{dataset_name}'")
             if not data_pic:
-                logger.warning(
-                    "No 'piControl' data available for '%s' of '%s'", var,
-                    dataset_name)
-                continue
+                raise ValueError(
+                    f"No 'piControl' data available for '{var}' of "
+                    f"'{dataset_name}'")
 
             # Calculate anomaly, extract correct years and save it
             cube = _calculate_anomaly(data_4x, data_pic)
             if cube.ndim != 1:
                 raise ValueError(
                     f"This diagnostic supports only 1D (time), input data, "
-                    "got {cube.ndim}D data")
+                    f"got {cube.ndim}D data")
             new_input_data.append({
                 **data_4x[0],
                 'ancestors': [data_4x[0]['filename'], data_pic[0]['filename']],
@@ -143,15 +142,14 @@ def _get_multi_model_mean(input_data):
             try:
                 cube = dataset['cube']
             except KeyError:
-                logger.warning(
-                    "No data for '%s' of dataset '%s', ignoring it for multi-"
-                    "model mean", var, dataset['dataset'])
-                continue
+                raise KeyError(
+                    f"No data for '{var}' of dataset '{dataset['dataset']}' "
+                    f"for multi-model mean calculation")
             if cube.ndim > 1:
-                logger.error(
-                    "Calculation of multi-model mean not supported for input "
-                    "data with more than one dimension (which should be time)")
-                return input_data
+                raise ValueError(
+                    f"Calculation of multi-model mean not supported for input "
+                    f"data with more than one dimension (which should be "
+                    f"time), got {cube.ndim:d}-dimensional cube")
             ancestors.extend(dataset['ancestors'])
             dataset_names.append(dataset['dataset'])
             mmm.append(cube.data)
@@ -406,9 +404,7 @@ def main(cfg):
     for dataset_name in tas_data:
         logger.info("Processing '%s'", dataset_name)
         if dataset_name not in rtnt_data:
-            logger.warning("No 'rtnt' data for '%s' available, skipping",
-                           dataset_name)
-            continue
+            raise ValueError(f"No 'rtnt' data for '{dataset_name}' available")
         tas_cube = tas_data[dataset_name][0]['cube']
         rtnt_cube = rtnt_data[dataset_name][0]['cube']
         ancestor_files = (tas_data[dataset_name][0]['ancestors'] +

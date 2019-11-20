@@ -82,8 +82,7 @@ def plot_data(cfg, hist_cubes, pi_cubes, ecs_cube):
     for dataset in hist_cubes:
         ecs = ecs_cube.extract(iris.Constraint(dataset=dataset))
         if ecs is None:
-            logger.warning("No ECS data for '%s' available, skipping", dataset)
-            continue
+            raise ValueError(f"No ECS data for '{dataset}' available")
 
         # Historical data
         x_data.append(ecs.data)
@@ -130,8 +129,7 @@ def write_data(cfg, hist_cubes, pi_cubes, ecs_cube):
     for dataset in list(hist_cubes):
         ecs = ecs_cube.extract(iris.Constraint(dataset=dataset))
         if ecs is None:
-            logger.warning("No ECS data for '%s' available, skipping", dataset)
-            continue
+            raise ValueError(f"No ECS data for '{dataset}' available")
         datasets.append(dataset)
         data_ecs.append(ecs.data)
         data_hist.append(hist_cubes[dataset].data)

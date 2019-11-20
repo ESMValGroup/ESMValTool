@@ -56,25 +56,21 @@ def _get_anomaly_cube(onepct_cube, pi_cube):
 
     # Check cube
     if onepct_cube.ndim != 1:
-        logger.warning(
-            "This diagnostics needs 1D cubes, got %iD cube for '1pctCO2' "
-            "experiment", onepct_cube.ndim)
-        return None
+        raise ValueError(
+            f"This diagnostics needs 1D cubes, got {onepct_cube.ndim:d}D cube "
+            f"for '1pctCO2' experiment")
     if pi_cube.ndim != 1:
-        logger.warning(
-            "This diagnostics needs 1D cubes, got %iD cube for 'piControl' "
-            "experiment", onepct_cube.ndim)
-        return None
+        raise ValueError(
+            f"This diagnostics needs 1D cubes, got {pi_cube.ndim:d}D cube for "
+            f"'piControl' experiment")
     if onepct_cube.shape != pi_cube.shape:
-        logger.warning(
-            "Cube shapes of '1pctCO2' and 'piControl' are not identical, got "
-            "%s and %s", onepct_cube.shape, pi_cube.shape)
-        return None
+        raise ValueError(
+            f"Cube shapes of '1pctCO2' and 'piControl' are not identical, got "
+            f"{onepct_cube.shape} and {pi_cube.shape}")
     if onepct_cube.shape[0] < END_YEAR_IDX:
-        logger.warning(
-            "Cubes need at least %d points for TCR calculation, got only %d",
-            END_YEAR_IDX, onepct_cube.shape[0])
-        return None
+        raise ValueError(
+            f"Cubes need at least {END_YEAR_IDX:d} points for TCR "
+            f"calculation, got only {onepct_cube.shape[0]:d}")
 
     # Calculate anomaly
     reg = stats.linregress(pi_cube.coord('year').points, pi_cube.data)
@@ -161,19 +157,15 @@ def calculate_tcr(cfg):
                                   exp='piControl',
                                   dataset=dataset['dataset'])
         if not pi_data:
-            logger.warning(
-                "Skipping dataset '%s', no 'piControl' data available",
-                dataset['dataset'])
-            continue
+            raise ValueError(
+                f"No 'piControl' data available for dataset "
+                f"'{dataset['dataset']}'")
 
         onepct_cube = iris.load_cube(dataset['filename'])
         pi_cube = iris.load_cube(pi_data[0]['filename'])
 
         # Get anomaly cube
         anomaly_cube = _get_anomaly_cube(onepct_cube, pi_cube)
-        if anomaly_cube is None:
-            logger.warning("Skipping dataset '%s'", dataset['dataset'])
-            continue
 
         # Calculate TCR
         tas_2x = anomaly_cube[START_YEAR_IDX:END_YEAR_IDX].collapsed(

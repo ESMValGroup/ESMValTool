@@ -179,8 +179,8 @@ def main(cfg):
     project = ecs_cube.attributes['project']
 
     # Remove missing data and use equal coordinate
-    [ecs_cube, tcr_cube
-     ] = iris_helpers.intersect_dataset_coordinates([ecs_cube, tcr_cube])
+    [ecs_cube, tcr_cube] = iris_helpers.intersect_dataset_coordinates(
+        [ecs_cube, tcr_cube])
 
     # Create plot
     plot_path = plot_data(cfg, ecs_cube, tcr_cube)
