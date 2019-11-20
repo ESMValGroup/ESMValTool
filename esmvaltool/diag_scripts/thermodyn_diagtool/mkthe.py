@@ -150,11 +150,9 @@ def init_mkthe_direntr(model, wdir, input_data, te_file, flags):
     method.
     """
     cdo = Cdo()
-    wat = flags[0]
     met = flags[3]
     if met in {'2', '3'}:
-        if wat == 'False':
-            evspsbl_file, prr_file = wfluxes(model, wdir, input_data)
+        evspsbl_file, prr_file = wfluxes(model, wdir, input_data)
         hfss_file = e.select_metadata(input_data,
                                       short_name='hfss',
                                       dataset=model)[0]['filename']
