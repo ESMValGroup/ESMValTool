@@ -76,15 +76,22 @@ begin
   ; Input data
   INFO0 = select_metadata_by_name(input_file_info, var0)
   ALL_DATASETS = metadata_att_as_array(INFO0, "dataset")
-  is_multi_dim = .not. isStrSubset(INFO0[0]@field, "0")
+
+  ; Rank of input data
+  dummy_data = read_data(INFO0[0])
+  rank = dimsizes(dimsizes(dummy_data))
+  if (rank .gt. 1) then
+    is_multi_dim = True
+  else
+    is_multi_dim = False
+  end if
+  delete([/dummy_data, rank/])
 
   ; OBS
-  atts := True
-  atts@project = "OBS"
-  OBS = select_metadata_by_atts(INFO0, atts)
+  OBS = get_obs_list(INFO0)
   if (ListCount(OBS) .lt. 1) then
-    error_msg("f", DIAG_SCRIPT, "", "this diagnostic supports only one " + \
-              "variable, processing " + VAR0@short_name)
+    error_msg("f", DIAG_SCRIPT, "", "this diagnostic needs at least one " + \
+              "OBS dataset")
   end if
   OBS_DATASETS = metadata_att_as_array(OBS, "dataset")
   DIM_OBS = dimsizes(OBS_DATASETS)
@@ -712,7 +719,7 @@ begin
       max_dim = max((/dimsizes(coef), dimsizes(mder_coefs(pt - 1, 1:))/))
       tmp_mder_coefs = mder_coefs
       tmp_names = names_used_diags
-      tmpt  = idx_used_diags
+      tmpt = idx_used_diags
       delete([/mder_coefs, names_used_diags, idx_used_diags/])
 
       mder_coefs = new((/pt + 1, max_dim + 1/), typeof(tmp_mder_coefs))

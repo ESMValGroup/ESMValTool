@@ -240,14 +240,15 @@ begin
       ; Iterate over datasets
       dim_info = ListCount(INFO0)
       do idat = 0, dim_info - 1
-        info = INFO0[idat]
+        info0 = INFO0[idat]
+        info1 = INFO1[idat]
 
         ; Check datasets
-        if (isatt(info, "ensemble")) then
-          fail = ((info@dataset .ne. INFO1[idat]@dataset) .or. \
-                  (info@ensemble .ne. INFO1[idat]@ensemble))
+        if (isatt(info0, "ensemble") .and. isatt(info1, "ensemble")) then
+          fail = ((info0@dataset .ne. info1@dataset) .or. \
+                  (info0@ensemble .ne. info1@ensemble))
         else
-          fail = (info@dataset .ne. INFO1[idat]@dataset)
+          fail = (info0@dataset .ne. info1@dataset)
         end if
         if (fail) then
           error_msg("f", DIAG_SCRIPT, "", "derivation of 'mmstf' not " + \
@@ -255,9 +256,9 @@ begin
         end if
 
         ; Check if variable was already derived
-        f = addfile(info@filename, "r")
+        f = addfile(info0@filename, "r")
         if isfilevar(f, new_var) then
-          log_info("Variable " + new_var + " for " + info@dataset + \
+          log_info("Variable " + new_var + " for " + info0@dataset + \
                    " already derived, skipping")
           copy_VarAtts(VAR0, INFO0[idat])
           delete(f)
@@ -265,8 +266,8 @@ begin
         end if
 
         ; Read data
-        ps = read_data(info)
-        va = read_data(INFO1[idat])
+        ps = read_data(info0)
+        va = read_data(info1)
         copy_VarAtts(VAR0, INFO0[idat])
         if (dimsizes(va&lat) .ne. dimsizes(ps&lat)) then
           tmp = ps({time|:}, {lat|va&lat}, {lon|:})
@@ -298,7 +299,7 @@ begin
         outvar&lat = va&lat
         outvar@var = new_var
         outvar@diag_script = DIAG_SCRIPT
-        ncdf_outfile = ncdf_write(outvar, info@filename)
+        ncdf_outfile = ncdf_write(outvar, info0@filename)
         delete([/va, ps, pr, pidx, vt2b, outvar, ncdf_outfile/])
       end do
     else

@@ -16,6 +16,58 @@ documentation:
     - crescendo
 
 
+DATASET_ANCHOR: &datasets
+  - {dataset: ACCESS1-0,      ensemble: r1i1p1}
+  - {dataset: ACCESS1-3,      ensemble: r1i1p1}
+  - {dataset: bcc-csm1-1,     ensemble: r1i1p1}
+  - {dataset: bcc-csm1-1-m,   ensemble: r1i1p1}
+  - {dataset: BNU-ESM,        ensemble: r1i1p1}
+  - {dataset: CanESM2,        ensemble: r1i1p1}
+  - {dataset: CanESM2,        ensemble: r2i1p1}
+  - {dataset: CanESM2,        ensemble: r3i1p1}
+  - {dataset: CanESM2,        ensemble: r4i1p1}
+  - {dataset: CanESM2,        ensemble: r5i1p1}
+  - {dataset: CESM1-BGC,      ensemble: r1i1p1}
+  - {dataset: CESM1-CAM5,     ensemble: r1i1p1}
+  - {dataset: CESM1-CAM5,     ensemble: r2i1p1}
+  - {dataset: CESM1-CAM5,     ensemble: r3i1p1}
+  - {dataset: CMCC-CMS,       ensemble: r1i1p1}
+  - {dataset: CNRM-CM5,       ensemble: r1i1p1}
+  - {dataset: CSIRO-Mk3-6-0,  ensemble: r1i1p1}
+  - {dataset: CSIRO-Mk3-6-0,  ensemble: r2i1p1}
+  - {dataset: CSIRO-Mk3-6-0,  ensemble: r3i1p1}
+  - {dataset: CSIRO-Mk3-6-0,  ensemble: r4i1p1}
+  - {dataset: CSIRO-Mk3-6-0,  ensemble: r5i1p1}
+  - {dataset: CSIRO-Mk3-6-0,  ensemble: r6i1p1}
+  - {dataset: CSIRO-Mk3-6-0,  ensemble: r7i1p1}
+  - {dataset: CSIRO-Mk3-6-0,  ensemble: r8i1p1}
+  - {dataset: CSIRO-Mk3-6-0,  ensemble: r9i1p1}
+  - {dataset: CSIRO-Mk3-6-0,  ensemble: r10i1p1}
+  - {dataset: GFDL-CM3,       ensemble: r1i1p1}
+  - {dataset: GFDL-ESM2G,     ensemble: r1i1p1}
+  - {dataset: GFDL-ESM2M,     ensemble: r1i1p1}
+  - {dataset: HadGEM2-AO,     ensemble: r1i1p1}
+  - {dataset: inmcm4,         ensemble: r1i1p1}
+  - {dataset: IPSL-CM5A-LR,   ensemble: r1i1p1}
+  - {dataset: IPSL-CM5A-LR,   ensemble: r2i1p1}
+  - {dataset: IPSL-CM5A-LR,   ensemble: r3i1p1}
+  - {dataset: IPSL-CM5A-LR,   ensemble: r4i1p1}
+  - {dataset: IPSL-CM5A-MR,   ensemble: r1i1p1}
+  - {dataset: IPSL-CM5B-LR,   ensemble: r1i1p1}
+  - {dataset: MIROC5,         ensemble: r1i1p1}
+  - {dataset: MIROC5,         ensemble: r2i1p1}
+  - {dataset: MIROC-ESM,      ensemble: r1i1p1}
+  - {dataset: MIROC-ESM-CHEM, ensemble: r1i1p1}
+  - {dataset: MPI-ESM-LR,     ensemble: r1i1p1}
+  - {dataset: MPI-ESM-LR,     ensemble: r2i1p1}
+  - {dataset: MPI-ESM-LR,     ensemble: r3i1p1}
+  - {dataset: MPI-ESM-MR,     ensemble: r1i1p1}
+  - {dataset: MPI-ESM-MR,     ensemble: r2i1p1}
+  - {dataset: MPI-ESM-MR,     ensemble: r3i1p1}
+  - {dataset: MRI-CGCM3,      ensemble: r1i1p1}
+  - {dataset: NorESM1-M,      ensemble: r1i1p1}
+
+
 preprocessors:
 
   sh:
@@ -98,61 +150,13 @@ diagnostics:
         exp: historical
         start_year: 1979
         end_year: 2005
-    additional_datasets: &ta_datasets
-      - {dataset: ERA-Interim,    project: OBS, type: reanaly, version: 1, tier: 3}
-      - {dataset: ACCESS1-0,      ensemble: r1i1p1}
-      - {dataset: ACCESS1-3,      ensemble: r1i1p1}
-      - {dataset: bcc-csm1-1,     ensemble: r1i1p1}
-      - {dataset: bcc-csm1-1-m,   ensemble: r1i1p1}
-      - {dataset: BNU-ESM,        ensemble: r1i1p1}
-      - {dataset: CanESM2,        ensemble: r1i1p1}
-      - {dataset: CanESM2,        ensemble: r2i1p1}
-      - {dataset: CanESM2,        ensemble: r3i1p1}
-      - {dataset: CanESM2,        ensemble: r4i1p1}
-      - {dataset: CanESM2,        ensemble: r5i1p1}
-      - {dataset: CESM1-BGC,      ensemble: r1i1p1}
-      - {dataset: CESM1-CAM5,     ensemble: r1i1p1}
-      - {dataset: CESM1-CAM5,     ensemble: r2i1p1}
-      - {dataset: CESM1-CAM5,     ensemble: r3i1p1}
-      - {dataset: CMCC-CMS,       ensemble: r1i1p1}
-      - {dataset: CNRM-CM5,       ensemble: r1i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  ensemble: r1i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  ensemble: r2i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  ensemble: r3i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  ensemble: r4i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  ensemble: r5i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  ensemble: r6i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  ensemble: r7i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  ensemble: r8i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  ensemble: r9i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  ensemble: r10i1p1}
-      - {dataset: GFDL-CM3,       ensemble: r1i1p1}
-      - {dataset: GFDL-ESM2G,     ensemble: r1i1p1}
-      - {dataset: GFDL-ESM2M,     ensemble: r1i1p1}
-      - {dataset: HadGEM2-AO,     ensemble: r1i1p1}
-      - {dataset: inmcm4,         ensemble: r1i1p1}
-      - {dataset: IPSL-CM5A-LR,   ensemble: r1i1p1}
-      - {dataset: IPSL-CM5A-LR,   ensemble: r2i1p1}
-      - {dataset: IPSL-CM5A-LR,   ensemble: r3i1p1}
-      - {dataset: IPSL-CM5A-LR,   ensemble: r4i1p1}
-      - {dataset: IPSL-CM5A-MR,   ensemble: r1i1p1}
-      - {dataset: IPSL-CM5B-LR,   ensemble: r1i1p1}
-      - {dataset: MIROC5,         ensemble: r1i1p1}
-      - {dataset: MIROC5,         ensemble: r2i1p1}
-      - {dataset: MIROC-ESM,      ensemble: r1i1p1}
-      - {dataset: MIROC-ESM-CHEM, ensemble: r1i1p1}
-      - {dataset: MPI-ESM-LR,     ensemble: r1i1p1}
-      - {dataset: MPI-ESM-LR,     ensemble: r2i1p1}
-      - {dataset: MPI-ESM-LR,     ensemble: r3i1p1}
-      - {dataset: MPI-ESM-MR,     ensemble: r1i1p1}
-      - {dataset: MPI-ESM-MR,     ensemble: r2i1p1}
-      - {dataset: MPI-ESM-MR,     ensemble: r3i1p1}
-      - {dataset: MRI-CGCM3,      ensemble: r1i1p1}
-      - {dataset: NorESM1-M,      ensemble: r1i1p1}
+        additional_datasets:
+          - {dataset: ERA-Interim,    project: OBS6, type: reanaly, version: 1, tier: 3}
+    additional_datasets: *datasets
     scripts:
       ta_sp100: &ta_sp100
         script: austral_jet/main.ncl
-        average_ens: true
+        average_ens: false
         styleset: CMIP5
         season: ['ONDJ']
         e13fig10_yr_min: 1979
@@ -171,7 +175,9 @@ diagnostics:
       ta:
         <<: *mean_sp100_cmip5_amon_t3m_historical_1979_2005
         preprocessor: mean_ng100
-    additional_datasets: *ta_datasets
+        additional_datasets:
+          - {dataset: ERA-Interim,    project: OBS6, type: reanaly, version: 1, tier: 3}
+    additional_datasets: *datasets
     scripts:
       ta_ng100: &ta_ng100
         <<: *ta_sp100
@@ -189,7 +195,9 @@ diagnostics:
       ta:
         <<: *mean_sp100_cmip5_amon_t3m_historical_1979_2005
         preprocessor: mean_trop250
-    additional_datasets: *ta_datasets
+        additional_datasets:
+          - {dataset: ERA-Interim,    project: OBS6, type: reanaly, version: 1, tier: 3}
+    additional_datasets: *datasets
     scripts:
       ta_trop250: &ta_trop250
         <<: *ta_sp100
@@ -211,7 +219,9 @@ diagnostics:
         start_year: 1979
         end_year: 2005
         derive: true
-    additional_datasets: *ta_datasets
+        additional_datasets:
+          - {dataset: ERA-Interim,    project: OBS6, type: reanaly, version: 1, tier: 3}
+    additional_datasets: *datasets
     scripts:
       uajet_sh850: &uajet_sh850
         <<: *ta_sp100
@@ -232,7 +242,9 @@ diagnostics:
         exp: historical
         start_year: 1979
         end_year: 2005
-    additional_datasets: *ta_datasets
+        additional_datasets:
+          - {dataset: ERA-Interim,    project: OBS6, type: reanaly, version: 1, tier: 3}
+    additional_datasets: *datasets
     scripts:
       tpp_sh50: &tpp_sh50
         <<: *ta_sp100
@@ -252,9 +264,13 @@ diagnostics:
     variables:
       va:
         <<: *cmip5_amon_t3m_historical_1979_2005
+        additional_datasets:
+          - {dataset: ERA-Interim,    project: OBS6, type: reanaly, version: 1, tier: 3}
       ps:
         <<: *cmip5_amon_t3m_historical_1979_2005
-    additional_datasets: *ta_datasets
+        additional_datasets:
+          - {dataset: ERA-Interim,    project: OBS6, type: reanaly, version: 1, tier: 3}
+    additional_datasets: *datasets
     scripts:
       mmstf_sh500: &mmstf_sh500
         <<: *ta_sp100
@@ -280,57 +296,9 @@ diagnostics:
         start_year: 2000
         end_year: 2005
         derive: true
-    additional_datasets:
-      - {dataset: CERES-EBAF,     project: obs4mips, level: L3B, version: Ed2-7, tier: 1, start_year: 2001}
-      - {dataset: ACCESS1-0,      ensemble: r1i1p1}
-      - {dataset: ACCESS1-3,      ensemble: r1i1p1}
-      - {dataset: bcc-csm1-1,     ensemble: r1i1p1}
-      - {dataset: bcc-csm1-1-m,   ensemble: r1i1p1}
-      - {dataset: BNU-ESM,        ensemble: r1i1p1}
-      - {dataset: CanESM2,        ensemble: r1i1p1}
-      - {dataset: CanESM2,        ensemble: r2i1p1}
-      - {dataset: CanESM2,        ensemble: r3i1p1}
-      - {dataset: CanESM2,        ensemble: r4i1p1}
-      - {dataset: CanESM2,        ensemble: r5i1p1}
-      - {dataset: CESM1-BGC,      ensemble: r1i1p1}
-      - {dataset: CESM1-CAM5,     ensemble: r1i1p1}
-      - {dataset: CESM1-CAM5,     ensemble: r2i1p1}
-      - {dataset: CESM1-CAM5,     ensemble: r3i1p1}
-      - {dataset: CMCC-CMS,       ensemble: r1i1p1}
-      - {dataset: CNRM-CM5,       ensemble: r1i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  ensemble: r1i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  ensemble: r2i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  ensemble: r3i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  ensemble: r4i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  ensemble: r5i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  ensemble: r6i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  ensemble: r7i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  ensemble: r8i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  ensemble: r9i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  ensemble: r10i1p1}
-      - {dataset: GFDL-CM3,       ensemble: r1i1p1}
-      - {dataset: GFDL-ESM2G,     ensemble: r1i1p1}
-      - {dataset: GFDL-ESM2M,     ensemble: r1i1p1}
-      - {dataset: HadGEM2-AO,     ensemble: r1i1p1}
-      - {dataset: inmcm4,         ensemble: r1i1p1}
-      - {dataset: IPSL-CM5A-LR,   ensemble: r1i1p1}
-      - {dataset: IPSL-CM5A-LR,   ensemble: r2i1p1}
-      - {dataset: IPSL-CM5A-LR,   ensemble: r3i1p1}
-      - {dataset: IPSL-CM5A-LR,   ensemble: r4i1p1}
-      - {dataset: IPSL-CM5A-MR,   ensemble: r1i1p1}
-      - {dataset: IPSL-CM5B-LR,   ensemble: r1i1p1}
-      - {dataset: MIROC5,         ensemble: r1i1p1}
-      - {dataset: MIROC5,         ensemble: r2i1p1}
-      - {dataset: MIROC-ESM,      ensemble: r1i1p1}
-      - {dataset: MIROC-ESM-CHEM, ensemble: r1i1p1}
-      - {dataset: MPI-ESM-LR,     ensemble: r1i1p1}
-      - {dataset: MPI-ESM-LR,     ensemble: r2i1p1}
-      - {dataset: MPI-ESM-LR,     ensemble: r3i1p1}
-      - {dataset: MPI-ESM-MR,     ensemble: r1i1p1}
-      - {dataset: MPI-ESM-MR,     ensemble: r2i1p1}
-      - {dataset: MPI-ESM-MR,     ensemble: r3i1p1}
-      - {dataset: MRI-CGCM3,      ensemble: r1i1p1}
-      - {dataset: NorESM1-M,      ensemble: r1i1p1}
+        additional_datasets:
+          - {dataset: CERES-EBAF,     project: obs4mips, level: L3B, version: Ed2-7, tier: 1, start_year: 2001}
+    additional_datasets: *datasets
     scripts:
       asr_sh: &asr_sh
         <<: *ta_sp100
@@ -349,111 +317,58 @@ diagnostics:
     variables:
       uajet:
         <<: *cmip5_amon_t0m_historical_1979_2005
-    additional_datasets:
-      # OBS
-      - {dataset: ERA-Interim,    project: OBS, type: reanaly, version: 1, tier: 3, end_year: 2012}
-      # HISTORICAL
-      - {dataset: ACCESS1-0,      ensemble: r1i1p1}
-      - {dataset: ACCESS1-3,      ensemble: r1i1p1}
-      # Cannot concatenate cubes
-      - {dataset: bcc-csm1-1,     ensemble: r1i1p1}
-      - {dataset: bcc-csm1-1-m,   ensemble: r1i1p1}
-      - {dataset: BNU-ESM,        ensemble: r1i1p1}
-      - {dataset: CanESM2,        ensemble: r1i1p1}
-      - {dataset: CanESM2,        ensemble: r2i1p1}
-      - {dataset: CanESM2,        ensemble: r3i1p1}
-      - {dataset: CanESM2,        ensemble: r4i1p1}
-      - {dataset: CanESM2,        ensemble: r5i1p1}
-      - {dataset: CESM1-BGC,      ensemble: r1i1p1}
-      - {dataset: CESM1-CAM5,     ensemble: r1i1p1}
-      - {dataset: CESM1-CAM5,     ensemble: r2i1p1}
-      - {dataset: CESM1-CAM5,     ensemble: r3i1p1}
-      - {dataset: CMCC-CMS,       ensemble: r1i1p1}
-      - {dataset: CNRM-CM5,       ensemble: r1i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  ensemble: r1i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  ensemble: r2i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  ensemble: r3i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  ensemble: r4i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  ensemble: r5i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  ensemble: r6i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  ensemble: r7i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  ensemble: r8i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  ensemble: r9i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  ensemble: r10i1p1}
-      - {dataset: GFDL-CM3,       ensemble: r1i1p1}
-      - {dataset: GFDL-ESM2G,     ensemble: r1i1p1}
-      - {dataset: GFDL-ESM2M,     ensemble: r1i1p1}
-      - {dataset: HadGEM2-AO,     ensemble: r1i1p1}
-      - {dataset: inmcm4,         ensemble: r1i1p1}
-      - {dataset: IPSL-CM5A-LR,   ensemble: r1i1p1}
-      - {dataset: IPSL-CM5A-LR,   ensemble: r2i1p1}
-      - {dataset: IPSL-CM5A-LR,   ensemble: r3i1p1}
-      - {dataset: IPSL-CM5A-LR,   ensemble: r4i1p1}
-      - {dataset: IPSL-CM5A-MR,   ensemble: r1i1p1}
-      - {dataset: IPSL-CM5B-LR,   ensemble: r1i1p1}
-      - {dataset: MIROC5,         ensemble: r1i1p1}
-      - {dataset: MIROC5,         ensemble: r2i1p1}
-      - {dataset: MIROC-ESM,      ensemble: r1i1p1}
-      - {dataset: MIROC-ESM-CHEM, ensemble: r1i1p1}
-      - {dataset: MPI-ESM-LR,     ensemble: r1i1p1}
-      - {dataset: MPI-ESM-LR,     ensemble: r2i1p1}
-      - {dataset: MPI-ESM-LR,     ensemble: r3i1p1}
-      - {dataset: MPI-ESM-MR,     ensemble: r1i1p1}
-      - {dataset: MPI-ESM-MR,     ensemble: r2i1p1}
-      - {dataset: MPI-ESM-MR,     ensemble: r3i1p1}
-      - {dataset: MRI-CGCM3,      ensemble: r1i1p1}
-      - {dataset: NorESM1-M,      ensemble: r1i1p1}
-      # RCP 4.5
-      - {dataset: ACCESS1-0,      exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
-      - {dataset: ACCESS1-3,      exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
-      # Cannot concatenate cubes
-      - {dataset: bcc-csm1-1,     exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
-      - {dataset: bcc-csm1-1-m,   exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
-      - {dataset: BNU-ESM,        exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
-      - {dataset: CanESM2,        exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
-      - {dataset: CanESM2,        exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r2i1p1}
-      - {dataset: CanESM2,        exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r3i1p1}
-      - {dataset: CanESM2,        exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r4i1p1}
-      - {dataset: CanESM2,        exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r5i1p1}
-      - {dataset: CESM1-BGC,      exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
-      - {dataset: CESM1-CAM5,     exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
-      - {dataset: CESM1-CAM5,     exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r2i1p1}
-      - {dataset: CESM1-CAM5,     exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r3i1p1}
-      - {dataset: CMCC-CMS,       exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
-      - {dataset: CNRM-CM5,       exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r2i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r3i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r4i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r5i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r6i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r7i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r8i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r9i1p1}
-      - {dataset: CSIRO-Mk3-6-0,  exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r10i1p1}
-      - {dataset: GFDL-CM3,       exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
-      - {dataset: GFDL-ESM2G,     exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
-      - {dataset: GFDL-ESM2M,     exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
-      - {dataset: HadGEM2-AO,     exp: rcp45, start_year: 2006, end_year: 2099, ensemble: r1i1p1}
-      - {dataset: inmcm4,         exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
-      - {dataset: IPSL-CM5A-LR,   exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
-      - {dataset: IPSL-CM5A-LR,   exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r2i1p1}
-      - {dataset: IPSL-CM5A-LR,   exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r3i1p1}
-      - {dataset: IPSL-CM5A-LR,   exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r4i1p1}
-      - {dataset: IPSL-CM5A-MR,   exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
-      - {dataset: IPSL-CM5B-LR,   exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
-      - {dataset: MIROC5,         exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
-      - {dataset: MIROC5,         exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r2i1p1}
-      - {dataset: MIROC-ESM,      exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
-      - {dataset: MIROC-ESM-CHEM, exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
-      - {dataset: MPI-ESM-LR,     exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
-      - {dataset: MPI-ESM-LR,     exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r2i1p1}
-      - {dataset: MPI-ESM-LR,     exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r3i1p1}
-      - {dataset: MPI-ESM-MR,     exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
-      - {dataset: MPI-ESM-MR,     exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r2i1p1}
-      - {dataset: MPI-ESM-MR,     exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r3i1p1}
-      - {dataset: MRI-CGCM3,      exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
-      - {dataset: NorESM1-M,      exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+        additional_datasets:
+          - {dataset: ERA-Interim,    project: OBS6, type: reanaly, version: 1, tier: 3, end_year: 2012}
+          - {dataset: ACCESS1-0,      exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+          - {dataset: ACCESS1-3,      exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+          - {dataset: bcc-csm1-1,     exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+          - {dataset: bcc-csm1-1-m,   exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+          - {dataset: BNU-ESM,        exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+          - {dataset: CanESM2,        exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+          - {dataset: CanESM2,        exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r2i1p1}
+          - {dataset: CanESM2,        exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r3i1p1}
+          - {dataset: CanESM2,        exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r4i1p1}
+          - {dataset: CanESM2,        exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r5i1p1}
+          - {dataset: CESM1-BGC,      exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+          - {dataset: CESM1-CAM5,     exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+          - {dataset: CESM1-CAM5,     exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r2i1p1}
+          - {dataset: CESM1-CAM5,     exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r3i1p1}
+          - {dataset: CMCC-CMS,       exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+          - {dataset: CNRM-CM5,       exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+          - {dataset: CSIRO-Mk3-6-0,  exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+          - {dataset: CSIRO-Mk3-6-0,  exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r2i1p1}
+          - {dataset: CSIRO-Mk3-6-0,  exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r3i1p1}
+          - {dataset: CSIRO-Mk3-6-0,  exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r4i1p1}
+          - {dataset: CSIRO-Mk3-6-0,  exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r5i1p1}
+          - {dataset: CSIRO-Mk3-6-0,  exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r6i1p1}
+          - {dataset: CSIRO-Mk3-6-0,  exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r7i1p1}
+          - {dataset: CSIRO-Mk3-6-0,  exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r8i1p1}
+          - {dataset: CSIRO-Mk3-6-0,  exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r9i1p1}
+          - {dataset: CSIRO-Mk3-6-0,  exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r10i1p1}
+          - {dataset: GFDL-CM3,       exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+          - {dataset: GFDL-ESM2G,     exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+          - {dataset: GFDL-ESM2M,     exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+          - {dataset: HadGEM2-AO,     exp: rcp45, start_year: 2006, end_year: 2099, ensemble: r1i1p1}
+          - {dataset: inmcm4,         exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+          - {dataset: IPSL-CM5A-LR,   exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+          - {dataset: IPSL-CM5A-LR,   exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r2i1p1}
+          - {dataset: IPSL-CM5A-LR,   exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r3i1p1}
+          - {dataset: IPSL-CM5A-LR,   exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r4i1p1}
+          - {dataset: IPSL-CM5A-MR,   exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+          - {dataset: IPSL-CM5B-LR,   exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+          - {dataset: MIROC5,         exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+          - {dataset: MIROC5,         exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r2i1p1}
+          - {dataset: MIROC-ESM,      exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+          - {dataset: MIROC-ESM-CHEM, exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+          - {dataset: MPI-ESM-LR,     exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+          - {dataset: MPI-ESM-LR,     exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r2i1p1}
+          - {dataset: MPI-ESM-LR,     exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r3i1p1}
+          - {dataset: MPI-ESM-MR,     exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+          - {dataset: MPI-ESM-MR,     exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r2i1p1}
+          - {dataset: MPI-ESM-MR,     exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r3i1p1}
+          - {dataset: MRI-CGCM3,      exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+          - {dataset: NorESM1-M,      exp: rcp45, start_year: 2006, end_year: 2100, ensemble: r1i1p1}
+    additional_datasets: *datasets
     scripts:
       absolute_correlation: &absolute_correlation
         <<: *ta_sp100

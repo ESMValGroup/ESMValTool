@@ -66,7 +66,16 @@ begin
   ; Input data
   INFO0 = select_metadata_by_name(input_file_info, var0)
   ALL_DATASETS = metadata_att_as_array(INFO0, "dataset")
-  is_multi_dim = .not. isStrSubset(INFO0[0]@field, "0")
+
+  ; Rank of input data
+  dummy_data = read_data(INFO0[0])
+  rank = dimsizes(dimsizes(dummy_data))
+  if (rank .gt. 1) then
+    is_multi_dim = True
+  else
+    is_multi_dim = False
+  end if
+  delete([/dummy_data, rank/])
 
   ; CMIP5 models
   atts := True

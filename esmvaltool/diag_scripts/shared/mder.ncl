@@ -7,6 +7,7 @@
 ; ones. Check the header of each routine for documentation.
 ;
 ; Contents:
+;     function get_obs_list: get list of OBS datasets
 ;     function diag_file_name: filename of calculated diagnostic.
 ;     function integrate_time_units: temporally integrates units.
 ;     function mder_output_desired: check if MDER output is desired.
@@ -15,6 +16,45 @@
 ;     function regress_stepwise: does stepwise regression on diagnostics.
 ;
 ; #############################################################################
+
+
+; #############################################################################
+undef("get_obs_list")
+function get_obs_list(input_list: list)
+;
+; Arguments:
+;     input_list: List of input metadata
+;
+; Return value:
+;     list: All OBS datasets.
+;
+; Description:
+;     Returns OBS and OBS6 datasets.
+;
+; Modification history:
+;     20191120_schlund_manuel: written.
+;
+local atts, obs, obs6
+
+begin
+
+  funcname = "get_obs_list"
+  scriptname = "diag_scripts/shared/mder.ncl"
+  enter_msg(scriptname, funcname)
+
+  atts := True
+  atts@project = "OBS"
+  obs = select_metadata_by_atts(input_list, atts)
+  atts@project = "OBS6"
+  obs6 = select_metadata_by_atts(input_list, atts)
+  do iobs = 0, ListCount(obs6) - 1
+    ListAppend(obs, obs6[iobs])
+  end do
+
+  leave_msg(scriptname, funcname)
+  return(obs)
+
+end
 
 
 ; #############################################################################

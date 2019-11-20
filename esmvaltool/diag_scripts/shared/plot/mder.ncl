@@ -24,6 +24,8 @@ load "$NCARG_ROOT/lib/ncarg/nclscripts/csm/shea_util.ncl"
 load "$diag_scripts/shared/plot/style.ncl"
 load "$diag_scripts/shared/plot/scatterplot.ncl"
 
+load "$diag_scripts/shared/mder.ncl"
+
 
 ; #############################################################################
 undef("error_bar_plot")
@@ -346,9 +348,7 @@ begin
 
   ; Define line colors (first color is used for the observations)
   dashes = project_style(items, diag_script_info, "dashes")
-  atts := True
-  atts@project = "OBS"
-  obs = select_metadata_by_atts(items, atts)
+  obs = get_obs_list(items)
   dim_obs = ListCount(obs)
 
   if (any(calc_type .eq. (/"pos", "int"/))) then
