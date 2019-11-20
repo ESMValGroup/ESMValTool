@@ -74,7 +74,7 @@ diagnostics:
     scripts:
       interactions:
         script: primavera/interactions/land_atmos_interactions.py
-        target_grid: '1x1'
+        target_grid: '1x1' # in MxN degrees
 
   detrended_interactions:
     variables:
@@ -100,6 +100,7 @@ diagnostics:
         mip: Lmon
         preprocessor: ppmrsodetrend
       sftlf:
+        mip: fx
 
 
     scripts:
