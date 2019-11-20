@@ -71,6 +71,8 @@ A list of the datasets for which a cmorizers is available is provided in the fol
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | CDS-SATELLITE-SOIL-MOISTURE  | sm (Lmon), smStderr (Lmon)                                                                           |   3  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
+| CDS-UERRA                    | sm (E6hr)                                                                                            |   3  | Python          |
++------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | CDS-XCH4                     | xch4 (Amon)                                                                                          |   3  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | CDS-XCO2                     | xco2 (Amon)                                                                                          |   3  | NCL             |
@@ -84,12 +86,12 @@ A list of the datasets for which a cmorizers is available is provided in the fol
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | Eppley-VGPM-MODIS            | intpp (Omon)                                                                                         |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
-| ERA5                         | clt, evspsbl, evspsblpot, mrro, pr, prsn, psl, ptype, rls, rsds, rsdt, rss, uas, vas, tas, tasmax,   |   3  | Python          |
-|                              | tasmin, tdps, ts, tsn (E1hr), orog (fx)                                                              |      |                 |
+| ERA5                         | clt, evspsbl, evspsblpot, mrro, pr, prsn, ps, psl, ptype, rls, rlds, rsds, rsdt, rss, uas, vas, tas, |   3  | Python          |
+|                              | tasmax, tasmin, tdps, ts, tsn (E1hr), orog (fx)                                                      |      |                 |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
-| ERA-Interim                  | clivi, clt, clwvi, evspsbl, hur, hus, pr, prsn, prw, ps, psl, rsds, rsdt, ta, tas, tauu, tauv, ts,   |   3  | Python          |
-|                              | ua, uas, va, vas, wap, zg (Amon), rsdt (CFday), clt, pr, prsn, psl, rsds, rss, tas, tasmax, tasmin,  |      |                 |
-|                              | uas, vas, zg (day), evspsbl, tdps, ts, tsn, rss, tdps (Eday), tsn (LImon), hfds, tos (Omon),         |      |                 |
+| ERA-Interim                  | clivi, clt, clwvi, evspsbl, hur, hus, pr, prsn, prw, ps, psl, rlds, rsds, rsdt, ta, tas, tauu, tauv, |   3  | Python          |
+|                              | ts, ua, uas, va, vas, wap, zg (Amon), ps, rsdt (CFday), clt, pr, prsn, psl, rsds, rss, tas, tasmax,  |      |                 |
+|                              | tasmin, uas, vas, zg (day), evspsbl, tdps, ts, tsn, rss, tdps (Eday), tsn (LImon), hfds, tos (Omon), |      |                 |
 |                              | orog, sftlf (fx)                                                                                     |      |                 |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | ESACCI-AEROSOL               | abs550aer, od550aer, od550aerStderr, od550lt1aer, od870aer, od870aerStderr (aero)                    |   2  | NCL             |
@@ -107,6 +109,8 @@ A list of the datasets for which a cmorizers is available is provided in the fol
 | ESACCI-SOILMOISTURE          | dos, dosStderr, sm, smStderr (Lmon)                                                                  |   2  | NCL             |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | ESACCI-SST                   | ts, tsStderr (Amon)                                                                                  |   2  | NCL             |
++------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
+| FLUXCOM                      | gpp (Lmon)                                                                                           |   3  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+
 | GCP                          | fgco2 (Omon), nbp (Lmon)                                                                             |   2  | Python          |
 +------------------------------+------------------------------------------------------------------------------------------------------+------+-----------------+

@@ -43,11 +43,21 @@ variables:
     mip: day
     raw: sf
     file: 'ERA-Interim_sf_daily_*.nc'
+  ps_day:
+    short_name: ps
+    mip: CFday
+    raw: sp
+    file: 'ERA-Interim_sp_daily_*.nc'
   psl_day:
     short_name: psl
     mip: day
     raw: msl
     file: 'ERA-Interim_msl_daily_*.nc'
+  rlds_day:
+    short_name: rlds
+    mip: day
+    raw: strd
+    file: 'ERA-Interim_strd_daily_*.nc'
   rsds_day:
     short_name: rsds
     mip: day
@@ -165,7 +175,8 @@ variables:
     mip: Amon
     raw: sf
     file: 'ERA-Interim_sf_monthly_*.nc'
-  ps:
+  ps_month:
+    short_name: ps
     mip: Amon
     raw: sp
     file: 'ERA-Interim_sp_monthly_*.nc'

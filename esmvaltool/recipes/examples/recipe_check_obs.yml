@@ -164,8 +164,8 @@ diagnostics:
       fgco2:
         mip: Omon
     additional_datasets:
-      - {dataset: GCP, project: OBS, tier: 2, type: reanaly, version: 2018,
-         start_year: 1959, end_year: 2017, frequency: yr}
+      - {dataset: GCP, project: OBS, frequency: yr, tier: 2,
+         type: reanaly, version: 2018, start_year: 1959, end_year: 2017}
     scripts: null
 
 
@@ -364,6 +364,17 @@ diagnostics:
     scripts: null
 
 
+  CDS-UERRA:
+    description: CDS-UERRA check
+    variables:
+      sm:
+    additional_datasets:
+      - {dataset: CDS-UERRA, project: OBS6, mip: E6hr, frequency: 6hr, tier: 3,
+         type: reanaly, version: UERRA-HARMONIE,
+         start_year: 1979, end_year: 2018}
+    scripts: null
+
+
   CDS-XCH4:
     description: CDS-XCH4 check
     variables:
@@ -496,7 +507,11 @@ diagnostics:
         mip: Amon
       prw:
         mip: Amon
-      ps:
+      ps_day:
+        short_name: ps
+        mip: CFday
+      ps_month:
+        short_name: ps
         mip: Amon
       psl_day:
         short_name: psl
@@ -504,6 +519,9 @@ diagnostics:
       psl_month:
         short_name: psl
         mip: Amon
+      rlds_day:
+        short_name: rlds
+        mip: day
       rsds_day:
         short_name: rsds
         mip: day
@@ -592,10 +610,7 @@ diagnostics:
 
 
   ERA5:
-    description: ERA5 check
-    additional_datasets:
-      - {project: OBS6, dataset: ERA5, tier: 3, type: reanaly, 
-         version: 1, start_year: 1990, end_year: 1990}
+    description: ERA5 check check
     variables:
       clt: &E1hr
         mip: E1hr
@@ -604,9 +619,11 @@ diagnostics:
       mrro: *E1hr
       pr: *E1hr
       prsn: *E1hr
+      ps: *E1hr
       psl: *E1hr
       ptype: *E1hr
       rls: *E1hr
+      rlds: *E1hr
       rsds: *E1hr
       rsdt: *E1hr
       rss: *E1hr
@@ -620,6 +637,9 @@ diagnostics:
       tsn: *E1hr
       orog:
         mip: fx
+    additional_datasets:
+      - {dataset: ERA5, project: OBS6, frequency: 1hr, tier: 3,
+         type: reanaly, version: 1, start_year: 1990, end_year: 1990}
     scripts: null
 
 
@@ -648,6 +668,16 @@ diagnostics:
     additional_datasets:
       - {dataset: JMA-TRANSCOM, project: OBS, tier: 3, type: reanaly,
          version: 2018, start_year: 1985, end_year: 2016}
+    scripts: null
+
+
+  FLUXCOM:
+    description: FLUXCOM check
+    variables:
+      gpp:
+    additional_datasets:
+      - {dataset: FLUXCOM, project: OBS, mip: Lmon, tier: 3, type: reanaly,
+         version: ANN-v1, start_year: 1980, end_year: 2013}
     scripts: null
 
 
