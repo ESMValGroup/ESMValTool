@@ -5,10 +5,10 @@ documentation:
     time series and the full variable
 
   authors:
-    - vega_ja
+    - vegas-regidor_javier
 
   maintainer:
-    - vega_ja
+    - vegas-regidor_javier
 
   references:
     - contact_authors
@@ -18,17 +18,23 @@ documentation:
 
 datasets:
   - {dataset: EC-Earth3-HR, institute: EC-Earth-Consortium, grid: gn,
-     project: PRIMAVERA, exp: spinup-1950,  ensemble: r1i1p1f1,
-     start_year: 1950,  end_year: 1999, frequency: 'mon',
-     mesh_file:  '/gws/nopw/j04/primavera1/masks/mesh_masks/EC-Earth-Consortium/mesh_mask_nemo.Ec3.2_O25L75.nc'}
+     project: PRIMAVERA, exp: spinup-1950, ensemble: r1i1p1f1,
+     start_year: 1950, end_year: 1999, frequency: 'mon',
+     mesh_file: "/gws/nopw/j04/primavera1/masks/mesh_masks/\
+                 EC-Earth-Consortium/mesh_mask_nemo.Ec3.2_O25L75.nc"}
   # - {dataset: EC-Earth3-LR, institute: EC-Earth-Consortium, grid: gn,
-  #    project: PRIMAVERA, exp: control-1950,  ensemble: r1i1p1f1, version: v20180501,
-  #    start_year: 1950,  end_year: 1999,
-  #    mesh_file:  '/gws/nopw/j04/primavera1/masks/mesh_masks/EC-Earth-Consortium/mesh_mask_nemo.Ec3.2_O1L75.nc'}
-  - {dataset: GFDL-ESM2G,  project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1950,  end_year: 1999}
-  - {dataset: MPI-ESM-LR,  project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1950,  end_year: 1999}
-  - {dataset: EC-EARTH,  project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 1950,  end_year: 1999}
-#  - {dataset: ERA-Interim, project: OBS,    tier: 3,    type: reanaly,    version: 1,        start_year: 2000,  end_year: 2002}
+  #    project: PRIMAVERA, exp: control-1950, ensemble: r1i1p1f1,
+  #    version: v20180501, start_year: 1950, end_year: 1999,
+  #    mesh_file: "/gws/nopw/j04/primavera1/masks/mesh_masks/\
+  #                 EC-Earth-Consortium/mesh_mask_nemo.Ec3.2_O1L75.nc"}
+  - {dataset: GFDL-ESM2G, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1950, end_year: 1999}
+  - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1950, end_year: 1999}
+  - {dataset: EC-EARTH, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1950, end_year: 1999}
+# - {dataset: ERA-Interim, project: OBS, tier: 3, type: reanaly, version: 1,
+#    start_year: 2000, end_year: 2002}
 
 preprocessors:
   extract:
@@ -45,29 +51,29 @@ diagnostics:
         fx_files: [areacello, thkcello]
     scripts:
       ocean_heat_content_0_300:
-        script: ocean_heat_content/ocean_heat_content.py
+        script: primavera/ocean_heat_content/ocean_heat_content.py
         title: "Python example diagnostic"
         min_depth: 0
         max_depth: 300
-        compute_2D: False
-        compute_2D_monthly_clim: True
-        compute_1D: True
-        compute_1D_monthly_clim: True
+        compute_2D: false
+        compute_2D_monthly_clim: true
+        compute_1D: true
+        compute_1D_monthly_clim: true
       ocean_heat_content_300_1000:
-        script: ocean_heat_content/ocean_heat_content.py
+        script: primavera/ocean_heat_content/ocean_heat_content.py
         title: "Python example diagnostic"
         min_depth: 300
         max_depth: 1000
-        compute_2D: False
-        compute_2D_monthly_clim: True
-        compute_1D: True
-        compute_1D_monthly_clim: True
+        compute_2D: false
+        compute_2D_monthly_clim: true
+        compute_1D: true
+        compute_1D_monthly_clim: true
       ocean_heat_content_1000_3000:
-        script: ocean_heat_content/ocean_heat_content.py
+        script: primavera/ocean_heat_content/ocean_heat_content.py
         title: "Python example diagnostic"
         min_depth: 1000
         max_depth: 3000
-        compute_2D: False
-        compute_2D_monthly_clim: True
-        compute_1D: True
-        compute_1D_monthly_clim: True
+        compute_2D: false
+        compute_2D_monthly_clim: true
+        compute_1D: true
+        compute_1D_monthly_clim: true
