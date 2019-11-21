@@ -1,0 +1,100 @@
+#ESMValTool
+---
+documentation:
+  description: |
+    This is an example recipe for a personal diagnostic.
+    You can run any Python diagnostic of your choice
+    without installing ESMValTool as developer or git pushing.
+    Simply include the full path to your script of choice in script,
+    see example /path/to/your/my_little_diagnostic.py
+    An example personal diagnostic can be found in
+    esmvaltool/diag_scripts/examples/my_little_diagnostic.py
+
+  authors:
+    - predoi_valeriu
+
+  maintainer:
+    - predoi_valeriu
+
+
+datasets:
+  - {project: CMIP6, mip: day, dataset: ECMWF-IFS-HR, exp: hist-1950,
+     ensemble: r1i1p1f1, grid: gr, start_year: 2005, end_year: 2005}
+
+preprocessors:
+  ppregrid:
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+
+  ppwind:
+    extract_levels:
+      levels: [85000, 70000, 50000]
+      scheme: linear
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+
+  ppta:
+    extract_levels:
+      levels: [50000,45000,40000,35000,30000]
+      scheme: linear
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+
+  ppzg:
+    extract_levels:
+      levels: [90000, 30000, 5000]
+      scheme: linear
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+
+diagnostics:
+  tracker:
+    variables:
+      psl:
+        preprocessor: ppregrid
+      ua:
+        preprocessor: ppwind
+      va:
+        preprocessor: ppwind
+      uas:
+        preprocessor: ppregrid
+      vas:
+        preprocessor: ppregrid
+      ta:
+        preprocessor: ppta
+      zg:
+        preprocessor: ppzg
+    scripts:
+      preproccess:
+        westbd: 100
+        eastbd: 370
+        northbd: 30
+        southbd: 0
+        type: 'tcgen'
+        mslpthresh: 0.01
+        mslpthresh2: 101000
+        v850thresh: 5
+        contint: 100.0
+        wcore_depth: 1.0
+        verb: 1
+        tracker_exe: /home/users/sloosvel/BSC-Cyclone-Tracker/gfdl-vortextracker/trk_exec/tracker.exe
+        script: primavera/cyclone_tracker/cyclone_tracker.py
+
+#      postprocess:
+#        scale: #1min 10min, 1hour, 3hours
+#        lat_max: 40
+#        time_min: 48
+#        wind_min: 1.38
+#        max_landfall: 5
+#        no_cores: 5
+#        script: primavera/postprocess.R
+
+
+
+
+
+
