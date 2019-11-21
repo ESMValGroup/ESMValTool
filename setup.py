@@ -37,6 +37,7 @@ REQUIREMENTS = {
         'numpy',
         'pandas',
         'pyyaml',
+        'rpy2',
         'scitools-iris>=2.2',
         'scikit-learn',
         'shapely',

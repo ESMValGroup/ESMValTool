@@ -1,0 +1,53 @@
+---
+documentation:
+  description:
+    'Extreme precipitation'
+  authors:
+    - vegas-regidor_javier
+  projects:
+    - primavera
+  references:
+    - contact_authors
+  mantainer:
+    - vegas-regidor_javier
+
+datasets:
+  - {dataset: HadGEM3-GC31-LM, project: CMIP6, mip: day,
+     exp: highresSST-present, ensemble: r1i1p1f1,
+     start_year: 1950, end_year: 2014}
+  - {dataset: HadGEM3-GC31-MM, project: CMIP6, mip: day,
+     exp: highresSST-present, ensemble: r1i1p1f1,
+     start_year: 1950, end_year: 2014}
+  - {dataset: HadGEM3-GC31-HM, project: CMIP6, mip: day,
+     exp: highresSST-present, ensemble: r1i1p1f1,
+     start_year: 1950, end_year: 2014}
+
+preprocessors:
+  season:
+    extract_time:
+      start_year: 1950
+      start_month: 3
+      end_year: 2014
+      end_month: 11
+    extract_region:
+      start_longitude: 220
+      end_longitude: 320
+      start_latitude: 30
+      end_latitude: 80
+    seasonal_statistics:
+      operator: max
+
+diagnostics:
+  extreme_precipitation:
+    description: Extreme precipitation
+
+    variables:
+      pr:
+        preprocessor: season
+        grid: gn
+
+    scripts:
+      extreme_precipitation:
+        script: primavera/extreme_precipitation/extreme_precipitation.py
+        return_period: [2, 5, 10, 20, 30, 50]
+        confidence_interval: 0.05
