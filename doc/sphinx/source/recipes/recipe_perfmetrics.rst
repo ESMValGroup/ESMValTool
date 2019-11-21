@@ -111,7 +111,8 @@ Variables
 Observations and reformat scripts
 ---------------------------------
 
-*Note: (1) obs4mips data can be used directly without any preprocessing; (2) see headers of cmorization scripts (in esmvaltool/utils/cmorizers/obs) for non-obs4mips data for download instructions.*
+The following list shows the currently used observational data sets for this recipe with their variable names and the reference to their respective reformat scripts in parentheses. Please note that obs4mips data can be used directly without any reformating. For non-obs4mips data see headers of cmorization scripts (in `/esmvaltool/cmorizers/obs/
+<https://github.com/ESMValGroup/ESMValTool/blob/version2_development/esmvaltool/cmorizers/obs/>`_) for downloading and processing instructions.
 
 * AIRS (hus - obs4mips)
 * CERES-EBAF (rlut, rlutcs, rsut, rsutcs - obs4mips)
@@ -138,23 +139,28 @@ References
 Example plots
 -------------
 
-.. centered:: |pic_permetrics1| |pic_permetrics2|
+.. figure:: /recipes/figures/perfmetrics/perfmetrics_fig_1.png
+   :width: 90%
 
-.. |pic_permetrics1| image:: /recipes/figures/perfmetrics/perfmetrics_fig_1.png
-   :width: 50%
+   Annual cycle of globally averaged temperature at 850 hPa (time period 1980-2005) for different CMIP5 models (historical simulation) (thin colored lines) in comparison to ERA-Interim (thick yellow line) and NCEP (thick black dashed line) reanalysis data.
 
-.. |pic_permetrics2| image:: /recipes/figures/perfmetrics/perfmetrics_fig_2.png
-   :width: 30%
+.. figure:: /recipes/figures/perfmetrics/perfmetrics_fig_2.png
+   :width: 90%
 
-.. centered:: |pic_permetrics3| |pic_permetrics4|
+   Taylor diagram of globally averaged temperature at 850 hPa (ta) and longwave cloud radiative effect (lwcre) for different CMIP5 models (historical simulation, 1980-2005). Reference data (REF) are ERA-Interim for temperature (1980-2005) and CERES-EBAF (2001-2012) for longwave cloud radiative effect.
 
-.. |pic_permetrics3| image:: /recipes/figures/perfmetrics/perfmetrics_fig_3.png
-   :width: 30%
+.. figure:: /recipes/figures/perfmetrics/perfmetrics_fig_3.png
+   :width: 90%
 
-.. |pic_permetrics4| image:: /recipes/figures/perfmetrics/perfmetrics_fig_4.png
-   :width: 52%
+   Difference in annual mean of zonally averaged temperature (time period 1980-2005) between the CMIP5 model MPI-ESM-MR (historical simulation) and ERA-Interim. Stippled areas indicdate differences that are statistically significant at a 95% confidence level.
+
+.. figure:: /recipes/figures/perfmetrics/perfmetrics_fig_4.png
+   :width: 90%
+
+   Annual mean (2001-2012) of the shortwave cloud radiative effect from CERES-EBAF.
 
 .. figure:: /recipes/figures/perfmetrics/perfmetrics_fig_5.png
-   :width: 75%
+   :width: 90%
    :align: center
 
+   Relative space-time root-mean-square deviation (RMSD) calculated from the climatological seasonal cycle of CMIP5 simulations. A relative performance is displayed, with blue shading indicating better and red shading indicating worse performance than the median of all model results. A diagonal split of a grid square shows the relative error with respect to the reference data set (lower right triangle) and the alternative data set (upper left triangle). White boxes are used when data are not available for a given model and variable. 
