@@ -1,0 +1,144 @@
+# ESMValTool
+---
+documentation:
+  description: |
+    Recipe to compute energy budgets in global, land and ocean domains.
+    The path to the Trenberth Diagram template needs to be provided to
+    generate the plot. If left empty, the output will be a netCDF file per
+    model containing the budget variables.
+
+  authors:
+    - vanniere_benoit
+
+  maintainer:
+    - loosveldt-tomas_saskia
+
+  projects:
+    - primavera
+
+datasets:
+  - {dataset: CNRM-CM6-1, project: CMIP6, exp: highresSST-present,
+     ensemble: r1i1p1f2, mip: Amon, grid: gr, start_year: 1950, end_year: 2014}
+  - {dataset: CNRM-CM6-1-HR, project: CMIP6, exp: highresSST-present,
+     ensemble: r1i1p1f2, mip: Amon, grid: gr, start_year: 1950, end_year: 2014}
+  - {dataset: ECMWF-IFS-HR, project: CMIP6, exp: highresSST-present,
+     ensemble: r1i1p1f1, mip: Amon, grid: gr, start_year: 1950, end_year: 2014}
+  - {dataset: ECMWF-IFS-LR, project: CMIP6, exp: highresSST-present,
+     ensemble: r1i1p1f1, mip: Amon, grid: gr, start_year: 1950, end_year: 2014}
+  - {dataset: HadGEM3-GC31-HM, project: CMIP6, exp: highresSST-present,
+     ensemble: r1i1p1f1, mip: Amon, grid: gn, start_year: 1950, end_year: 2014}
+  - {dataset: HadGEM3-GC31-LM, project: CMIP6, exp: highresSST-present,
+     ensemble: r1i1p1f1, mip: Amon, grid: gn, start_year: 1950, end_year: 2014}
+  - {dataset: HadGEM3-GC31-MM, project: CMIP6, exp: highresSST-present,
+     ensemble: r1i1p1f1, mip: Amon, grid: gn, start_year: 1950, end_year: 2014}
+  - {dataset: MPI-ESM1-2-XR, project: CMIP6, exp: highresSST-present,
+     ensemble: r1i1p1f1, mip: Amon, grid: gn, start_year: 1950, end_year: 2014}
+  - {dataset: MPI-ESM1-2-HR, project: CMIP6, exp: highresSST-present,
+     ensemble: r1i1p1f1, mip: Amon, grid: gn, start_year: 1950, end_year: 2014}
+
+
+preprocessors:
+  global_mean:
+    area_statistics:
+      operator: mean
+    climate_statistics:
+
+  land_mean:
+    mask_landsea:
+      mask_out: sea
+    area_statistics:
+      operator: mean
+    climate_statistics:
+
+  ocean_mean:
+    mask_landsea:
+      mask_out: land
+    area_statistics:
+      operator: mean
+    climate_statistics:
+
+
+diagnostics:
+  global_energy_budget:
+    description: "Energy budget"
+    variables:
+      rsdt:
+        preprocessor: global_mean
+      rsut:
+        preprocessor: global_mean
+      rsds:
+        preprocessor: global_mean
+      rsns:
+        derive: true
+        preprocessor: global_mean
+      rlut:
+        preprocessor: global_mean
+      rlds:
+        preprocessor: global_mean
+      rlns:
+        derive: true
+        preprocessor: global_mean
+      hfss:
+        preprocessor: global_mean
+      hfls:
+        preprocessor: global_mean
+    scripts:
+      energy_budget:
+        script: primavera/energy_budget/energy_budget.py
+        plot_template: plot_templates/energy_budget_template.png
+
+  land_energy_budget:
+    description: "Energy budget excluding ocean domain"
+    variables:
+      rsdt:
+        preprocessor: land_mean
+      rsut:
+        preprocessor: land_mean
+      rsds:
+        preprocessor: land_mean
+      rsns:
+        derive: true
+        preprocessor: land_mean
+      rlut:
+        preprocessor: land_mean
+      rlds:
+        preprocessor: land_mean
+      rlns:
+        derive: true
+        preprocessor: land_mean
+      hfss:
+        preprocessor: land_mean
+      hfls:
+        preprocessor: land_mean
+    scripts:
+      energy_budget_land:
+        script: primavera/energy_budget/energy_budget.py
+        plot_template: plot_templates/energy_budget_template.png
+
+  ocean_energy_budget:
+    description: "Energy budget excluding land domain"
+    variables:
+      rsdt:
+        preprocessor: ocean_mean
+      rsut:
+        preprocessor: ocean_mean
+      rsds:
+        preprocessor: ocean_mean
+      rsns:
+        derive: true
+        preprocessor: ocean_mean
+      rlut:
+        preprocessor: ocean_mean
+      rlds:
+        preprocessor: ocean_mean
+      rlns:
+        derive: true
+        preprocessor: ocean_mean
+      hfss:
+        preprocessor: ocean_mean
+      hfls:
+        preprocessor: ocean_mean
+    scripts:
+      energy_budget_ocean:
+        script: primavera/energy_budget/energy_budget.py
+        plot_template:
