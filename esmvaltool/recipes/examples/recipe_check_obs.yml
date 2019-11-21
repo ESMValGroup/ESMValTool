@@ -284,6 +284,52 @@ diagnostics:
          type: reanaly, version: "4.1", start_year: 1978, end_year: 2018}
     scripts: null
 
+  OSI-450:
+    description: OSI 450 monthly data
+    variables:
+      sic:
+        preproc: nopp
+        mip: Omon
+        fx_files: [areacello]
+    additional_datasets:
+      - {dataset: OSI-450-nh, project: OBS, tier: 2, type: reanaly, version: 2, start_year: 1948, end_year: 2018}
+      - {dataset: OSI-450-sh, project: OBS, tier: 2, type: reanaly, version: 2, start_year: 1948, end_year: 2018}
+    scripts: null
+
+  OSI-450-daily:
+    description: OSI 450 daily data
+    variables:
+      sic:
+        preproc: nopp
+        mip: day
+        fx_files: [areacello]
+    additional_datasets:
+      - {dataset: OSI-450-nh, project: OBS, tier: 2, type: reanaly, version: 2, start_year: 1948, end_year: 2018}
+      - {dataset: OSI-450-sh, project: OBS, tier: 2, type: reanaly, version: 2, start_year: 1948, end_year: 2018}
+    scripts: null
+
+  OSI-407:
+    description: OSI 407 monthly data
+    variables:
+      sic:
+        preproc: nopp
+        mip: Omon
+    additional_datasets:
+      - {dataset: OSI-407-nh, project: OBS, tier: 2, type: reanaly, version: 2, start_year: 1948, end_year: 2018}
+      - {dataset: OSI-407-sh, project: OBS, tier: 2, type: reanaly, version: 2, start_year: 1948, end_year: 2018}
+    scripts: null
+
+  OSI-407-daily:
+    description: OSI 407 daily data
+    variables:
+      sic:
+        preproc: nopp
+        mip: day
+    additional_datasets:
+      - {dataset: OSI-407-nh, project: OBS, tier: 2, type: reanaly, version: 2, start_year: 1948, end_year: 2018}
+      - {dataset: OSI-407-sh, project: OBS, tier: 2, type: reanaly, version: 2, start_year: 1948, end_year: 2018}
+    scripts: null
+
 
   PATMOS-x:
     description: PATMOS-x check

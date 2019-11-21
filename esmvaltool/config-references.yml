@@ -166,6 +166,10 @@ authors:
     name: Demory, Marie-Estelle
     institute: ETH Zurich, Switzerland
     orcid: https://orcid.org/0000-0002-5764-3248
+  docquier_david:
+    name: Docquier, David
+    institute: UC Louvain, Belgium
+    orcid:
   ehbrecht_carsten:
     name: Ehbrecht, Carsten
     institute: DKRZ, Germany
@@ -625,6 +629,7 @@ references:
   davini18: "Davini, P. MiLES - Mid Latitude Evaluation System. Zenodo. doi:10.5281/zenodo.1237837, 2018"
   deangelis15nat: "DeAngelis, A. M. et al., Nature, 528(7581), 249-253, doi:10.1038/nature15770, 2015."
   demora2018gmd: "de Mora et al., Geosci. Model Dev., 11, 4215-4240, doi:10.5194/gmd-11-4215-2018, 2018."
+  docquier2017: " Docquier, D., Massonnet, F., Barthélemy, A., Tandon, N. F., Lecomte, O., and Fichefet, T.: Relationships between Arctic sea ice drift and strength modelled by NEMO-LIM3.6, The Cryosphere, 11, 2829-2846, https://doi.org/10.5194/tc-11-2829-2017, 2017. "
   dong08grl: "Dong, S. et al., J. Geophys. Res., 113, C06013, doi:10.1029/2006JC004051, 2008."
   donofrio14jh: "D'Onofrio et al., J of Hydrometeorology 15, 830-843, 2014."
   duemenil00mpimr: "Duemenil Gates et al., Observed historical discharge data from major rivers for climate model validation. Max Planck Institute for Meteorology Report 307, Hamburg, Germany, 2000."
@@ -730,6 +735,8 @@ references:
   ndp: "Gibbs, H. K., doi:10.3334/CDIAC/lue.ndp017.2006, 2006."
   niwa-bs: "Bodeker et al., Atmos. Chem. Phys., doi:10.5194/acp-5-2603-2005, 2005."
   nsidc-0116: "Tschudi, M., W. N. Meier, J. S. Stewart, C. Fowler, and J. Maslanik. 2019. Polar Pathfinder Daily 25 km EASE-Grid Sea Ice Motion Vectors, Version 4. [Indicate subset used]. Boulder, Colorado USA. NASA National Snow and Ice Data Center Distributed Active Archive Center. doi: https://doi.org/10.5067/INAWUWO7QH7B. [Date Accessed]."
+  osi-409: "EUMETSAT Global sea ice concentration climate data records 1978-2015 (v1.2, 2015) doi: 10.15770/EUM_SAF_OSI_0001 and 10.15770/EUM_SAF_OSI_0005"
+  osi-450: "EUMETSAT Global sea ice concentration climate data record 1979-2015 (v2.0, 2017). doi: 10.15770/EUM_SAF_OSI_0008"
   patmos-x: "Heidinger et al., Bull. Amer. Meteor. Soc., doi:10.1175/BAMS-D-12-00246.1, 2013."
   piomas: "Zhang, J. et al., Mon. Wea. Rev. doi:10.1175/1520-0493(2003)131<0845:MGSIWA>2.0.CO;2, 2013."
   uwisc: "O'Dell et al., J. Clim., doi:10.1175/2007JCLI1958.1, 2008."
@@ -746,6 +753,8 @@ projects:
   dlrveu2: DLR project VEU2
   embrace: EU FP7 project EMBRACE
   esmval: DLR project ESMVal
+  primavera: EU H2020 project PRIMAVERA
+  applicate: EU H2020 project APPLICATE
   eval4cmip: DLR and University of Bremen project funded by the Initiative and Networking Fund of the Helmholtz Society
   ewatercycle: eWaterCycle project
   primavera: EU H2020 project PRIMAVERA
