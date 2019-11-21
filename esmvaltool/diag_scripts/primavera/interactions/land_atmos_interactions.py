@@ -7,12 +7,13 @@ import iris.analysis
 from iris.analysis import stats
 import iris.util
 
+from esmvalcore.preprocessor import regrid, mask_landsea, extract_season
+
 import esmvaltool.diag_scripts.shared
 import esmvaltool.diag_scripts.shared.names as n
 from esmvaltool.diag_scripts.shared import group_metadata
 from esmvaltool.diag_scripts.shared._base import ProvenanceLogger
 
-from esmvalcore.preprocessor import regrid, mask_landsea, extract_season
 logger = logging.getLogger(os.path.basename(__file__))
 
 
@@ -35,7 +36,15 @@ class LandAtmosInteractions(object):
             clt = iris.load_cube(var['clt'][0]['filename'])
             tas = iris.load_cube(var['tas'][0]['filename'])
             mrso = iris.load_cube(var['mrso'][0]['filename'])
-            self.sftlf = iris.load_cube(var['sftlf'][0]['filename'])
+            sftlf = var['sftlf'][0]['filename']
+            preproc_dir = os.path.dirname(sftlf)
+            os.system('ln -s {0} {1}/sftlf_{2}.nc'.format(
+                sftlf, preproc_dir, alias)
+                     )
+            self.sftlf = [os.path.join(
+                preproc_dir, 'sftlf_{alias}.nc'.format(alias=alias)
+                )]
+
 
             clim_ef, stdv_ef = self.evaporative_fraction_stats(hfls, hfss)
 
@@ -80,7 +89,7 @@ class LandAtmosInteractions(object):
                            start=start_year,
                            end=end_year,
                            dataset=dataset
-                      )
+                       )
             ancestors = []
             for i in range(len(data[alias])):
                 ancestors.append(data[alias][i]['filename'])
@@ -93,7 +102,7 @@ class LandAtmosInteractions(object):
                 }
             with ProvenanceLogger(self.cfg) as provenance_logger:
                 provenance_logger.log(
-                    os.path.join(self.cfg[n.WORK_DIR],filename), record)
+                    os.path.join(self.cfg[n.WORK_DIR], filename), record)
 
 
 
