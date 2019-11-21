@@ -12,6 +12,9 @@ PCR-GLOBWB
 **********
 PCR-GLOBWB (PCRaster Global Water Balance) is a large-scale hydrological model intended for global to regional studies and developed at the Department of Physical Geography, Utrecht University (Netherlands). The recipe pre-processes ERA-Interim reanalyses data for use in the PCR-GLOBWB.
 
+SUMMA
+**********
+SUMMA (Structure for Unifying Multiple Modeling Alternatives) is a hydrologic modeling framework `<https://summa.readthedocs.io>`_. The recipe pre-processes ERA-Interim and ERA5 reanalyses data for use in the SUMMA.
 
 Available recipes and diagnostics
 ---------------------------------
@@ -19,10 +22,12 @@ Available recipes and diagnostics
 Recipes are stored in esmvaltool/recipes/hydrology
 
     * recipe_pcrglobwb.yml
+    * recipe_summa.yml
 
 Diagnostics are stored in esmvaltool/diag_scripts/hydrology
 
     * pcrglobwb.py
+    * summa.py
 
 
 User settings in recipe
@@ -35,10 +40,22 @@ User settings in recipe
    * start_year: 1979
    * end_year: 1979
 
+#. recipe_summa.yml
+
+   *Required preprocessor settings:*
+
+   * start_year: 1990
+   * end_year: 2018
+
 Variables
 ---------
 
 #. recipe_pcrglobwb.yml
+
+   * tas (atmos, daily, longitude, latitude, time)
+   * pr (atmos, daily, longitude, latitude, time)
+
+#. recipe_summa.yml
 
    * tas (atmos, daily, longitude, latitude, time)
    * pr (atmos, daily, longitude, latitude, time)

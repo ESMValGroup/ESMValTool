@@ -1,0 +1,105 @@
+# ESMValTool
+# recipe_summa.yml
+---
+documentation:
+  description: |
+    Recipe pre-processes ERA-Interim and ERA5 files for use in the SUMMA hydrological model.
+
+    Summa is ...
+     #Target variable units:
+        # - precip: kg m-2 s-1
+        # - radiation: w m-2
+        # - temperature: K
+        # - wind speed: m s-1
+        # - pressure: Pa
+        # - specific humidity: g g-1
+
+  authors: [
+            'kalverla_peter',
+            'camphuijsen_jaro',
+            'alidoost_sarah'
+            ]
+  projects: ['ewatercycle']
+  references: ['acknow_project']
+
+
+preprocessors:
+  extract_bbox: &Meuse_bbox
+  # current coordinates are for the Meuse basin
+    extract_region:
+      start_longitude: 3
+      end_longitude: 7
+      start_latitude: 47
+      end_latitude: 52
+  regrid: &regrid
+    regrid:
+      target_grid: 0.25x0.25
+      lon_offset: true
+      lat_offset: true
+      scheme: linear
+  extract_catchment: &Meuse
+    extract_shape:
+      shapefile: meuse_hydrosheds.shp
+      method: contains
+      crop: true
+  # save_memory: &save_memory
+  #   extract_time:
+  #     end_year: 2000
+  #     end_month: 1
+  #     end_day: 3
+  daily_mean: &mean
+    daily_statistics:
+      operator: mean
+  hourly_mean:
+    <<: *Meuse_bbox
+    <<: *Meuse
+    <<: *mean
+  daily:
+    <<: *Meuse_bbox
+    <<: *regrid
+    <<: *Meuse
+
+diagnostics:
+  diagnostic_daily:
+    description: SUMMA input preprocessor for daily data
+    additional_datasets:
+      - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
+    variables:
+      tas: &var_daily
+        mip: day
+        start_year: 2000
+        end_year: 2000
+        preprocessor: daily
+      uas: *var_daily
+      vas: *var_daily
+      pr: *var_daily
+      tdps:
+        <<: *var_daily
+        mip: Eday
+      rsds: *var_daily
+      rlds: *var_daily
+      ps: *var_daily
+    scripts:
+      script:
+        script: hydrology/summa.py
+
+  diagnostic_hourly:
+    description: SUMMA input preprocessor for hourly data
+    additional_datasets:
+      - {dataset: ERA5, project: OBS6, tier: 3, type: reanaly, version: 1}
+    variables:
+      uas: &var_hourly
+        mip: E1hr
+        start_year: 2000
+        end_year: 2000
+        preprocessor: hourly_mean
+      vas: *var_hourly
+      tas: *var_hourly
+      tdps: *var_hourly
+      pr: *var_hourly
+      rsds: *var_hourly
+      rlds: *var_hourly
+      ps: *var_hourly
+    scripts:
+      script:
+        script: hydrology/summa.py
