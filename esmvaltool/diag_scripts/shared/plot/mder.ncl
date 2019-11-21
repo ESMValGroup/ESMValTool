@@ -907,7 +907,7 @@ function diag_scatter(res_in[1] : logical, \
 ;     future_diag: [dim_datasets], target diagnostic of projections, can have
 ;                  attribute "future_exp" for plot title.
 ;     target_var: name of target variable, needs attribute 'units'.
-;    items: list of input_file_info metadata
+;     items: list of input_file_info metadata
 ;
 ; Modification history:
 ;     20180806_A-schl_ma: ported to v2.0.
@@ -952,6 +952,35 @@ begin
     plot = scatterplot(wks, x_var, target_var, False, False, items)
     draw(plot)
     frame(wks)
+
+    ; Write ncdf file
+    work_dir = config_user_info@work_dir
+    system("mkdir -p " + work_dir)
+    new_path = work_dir + target_var + "_" + diags(id) + ".nc"
+    x_var!0 = "variable"
+    x_var&variable = (/diags(id), target_var/)
+    x_var@var = "value"
+    x_var@diag_script = DIAG_SCRIPT
+    x_var@ncdf = new_path
+    outfile = ncdf_write(x_var, new_path)
+
+    ; Provenance tracking
+    if (isStrSubset(diags(id), "_t")) then
+      statistics := (/"trend"/)
+    else if(isStrSubset(diags(id), "_c")) then
+      statistics := (/"mean", "clim"/)
+    else
+      statistics := (/"mean"/)
+    end if
+    end if
+    authors = (/"schlund_manuel"/)
+    domain = diag_script_info@domain
+    plot_type = "scatter"
+    references = (/"wenzel16jclim"/)
+    caption = "Scatterplot between " + target_var + " and " + diags(id) + "."
+    ancestors = metadata_att_as_array(items, "filename")
+    log_provenance(outfile, plotnames(id), caption, statistics, domain, \
+                   plot_type, authors, references, ancestors)
   end do
 
   leave_msg(scriptname, funcname)

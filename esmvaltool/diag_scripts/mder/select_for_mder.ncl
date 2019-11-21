@@ -1,24 +1,30 @@
 ; #############################################################################
 ; mder/select_for_mder.ncl
 ; #############################################################################
-; DIAGNOSTIC SCRIPT SELECTING MDER DIAGNOSTICS
-; Author: Sabrina Wenzel (DLR, Germany)
-; EMBRACE project PIs: Veronika Eyring (DLR, Germany)
-;                      Klaus Wyser (SMHI, Sweden)
-; #############################################################################
 ;
 ; Description:
 ;     Collects output from other diagnostics and saves them in a temporary
 ;     file. It requires precalculation by other diagnostic scripts.
 ;
 ; Required diag_script_info attributes:
-;     region: selected region.
-;     time_avg: type of time average.
-;     wdiag: Diagnostic names.
+;     ref_dataset: reference dataset.
+;     wdiag: diagnostic names.
+;     domain: domain of the diagnostic (used for provenance tracking).
+;
+; Optional diag_script_info attributes:
+;     average_ens: average over ensemble members of the same model (default:
+;                  False).
+;     derive_var: derive variable.
+;
+; Caveats:
+;     "warning: in unique_labels_min (diag_scripts/shared/plot/style.ncl), Add
+;     more attributes to prio to make labels unique! Continuing with non-unique
+;     labels" is normal when using "average_ens = true".
 ;
 ; Modification history:
-;     20180718-A_schl_ma: ported to v2.0.
-;     20131203-A_wenz_sa: written based on perfmetrics_grading.ncl.
+;     20191121-schlund_manuel: added new provenance tracking.
+;     20180718-schlund_manuel: ported to v2.0.
+;     20131203-wenzel_sabrina: written based on perfmetrics_grading.ncl.
 ;
 ; #############################################################################
 
@@ -83,9 +89,16 @@ end
 begin
 
   ; Required attributes
-  req_atts = (/"wdiag"/)
+  req_atts = (/"wdiag", "domain", "ref_dataset"/)
   exit_if_missing_atts(diag_script_info, req_atts)
   DIM_DIAG = dimsizes(diag_script_info@wdiag)
+
+  ; Provenance
+  AUTHORS = (/"wenzel_sabrina", "schlund_manuel"/)
+  DOMAIN = diag_script_info@domain
+  PLOT_TYPE = "missing"
+  PLOT_FILE = "missing"
+  REFERENCES = (/"wenzel16jclim"/)
 
   ; Get reference dataset(s)
   ref_dataset = diag_script_info@ref_dataset
@@ -98,8 +111,22 @@ begin
 
   ; Iterate over all diagnostics
   do dd = 0, DIM_DIAG - 1
+    ANCESTORS := new(DIM_DAT, string)
     opt@wdiag := diag_script_info@wdiag(dd)
     var0_new = opt@wdiag
+
+    ; Caption and statistics
+    if (isStrSubset(opt@wdiag, "_t")) then
+      statistics := (/"trend", "stddev"/)
+      caption = "Trend in " + var0 + "."
+    else if(isStrSubset(opt@wdiag, "_c")) then
+      statistics := (/"mean", "clim", "stddev"/)
+      caption = "Climatological mean in " + var0 + "."
+    else
+      statistics := (/"mean", "stddev"/)
+      caption = "Mean in " + var0 + "."
+    end if
+    end if
 
     ; Output file
     work_dir = config_user_info@work_dir
@@ -128,6 +155,7 @@ begin
       if (fileexists(new_path)) then
         log_info("Reading " + new_path)
         data_temp = ncdf_read(new_path, var0)
+        ANCESTORS(idat) = new_path
 
         ; Define data array in the first iteration
         if (.not. isdefined("data")) then
@@ -216,6 +244,10 @@ begin
     ; Write NetCDF output
     ncdf_outfile = ncdf_write(val, val@ncdf_file)
     delete(val)
+
+    ; Provenance tracking
+    log_provenance(ncdf_outfile, PLOT_FILE, caption, statistics, DOMAIN, \
+                   PLOT_TYPE, AUTHORS, REFERENCES, ANCESTORS)
   end do
 
   leave_msg(DIAG_SCRIPT, "")

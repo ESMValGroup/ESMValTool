@@ -1,9 +1,6 @@
 ; #############################################################################
 ; austral_jet/asr.ncl
 ; #############################################################################
-; Author: Sabrina Zechlau (DLR, Germany)
-; ESMVal project PI: Veronika Eyring (DLR, Germany)
-; #############################################################################
 ;
 ; Description:
 ;     Calculates the absorbed shortwave correlation gradient and saves output
@@ -13,16 +10,20 @@
 ;     season: specify season of year.
 ;
 ; Optional diag_script_info attributes:
+;     average_ens: average over ensemble members of the same model.
 ;     wdiag: if the diagnostics will be used for the MDER a diagnostic name
 ;            name is needed.
 ;     wdiag_title: this name will apper in the figure title.
 ;
 ; Caveats:
-;     Modifies input_file_info@dataset.
+;     "warning: in unique_labels_min (diag_scripts/shared/plot/style.ncl), Add
+;     more attributes to prio to make labels unique! Continuing with non-unique
+;     labels" is normal when using "average_ens = true".
 ;
 ; Modification history
-;     20180725_A-schl_ma: ported to v2.0
-;     201303??_A-wenz_sa: written.
+;     20191121-schlund_manuel: added new provenance tracking.
+;     20180725-schlund_manuel: ported to v2.0
+;     201303??-wenzel_sabrina: written.
 ;
 ; #############################################################################
 
@@ -64,6 +65,19 @@ begin
     DATASETS := unique_labels_min(INFO0, (/"dataset", "ensemble"/))
   end if
   DIM_DAT = dimsizes(DATASETS)
+
+  ; Directories
+  work_dir = config_user_info@work_dir
+  system("mkdir -p " + work_dir)
+  system("mkdir -p " + config_user_info@plot_dir)
+
+  ; Provenance
+  AUTHORS = (/"wenzel_sabrina", "schlund_manuel"/)
+  STATISTICS = (/"mean", "clim", "stddev"/)
+  DOMAIN = "sh"
+  PLOT_TYPE = "errorbar"
+  REFERENCES = (/"wenzel16jclim"/)
+  ANCESTORS = metadata_att_as_array(INFO0, "filename")
 
   log_info("++++++++++++++++++++++++++++++++++++++++++")
   log_info(DIAG_SCRIPT + " (var: " + var0 + ")")
@@ -121,7 +135,7 @@ begin
       atts@dataset = DATASETS(idat)
       info := select_metadata_by_atts(INFO0, atts)
     else
-      info = NewList("lifo")
+      info := NewList("lifo")
       ListAppend(info, INFO0[idat])
     end if
 
@@ -171,9 +185,6 @@ begin
     thicks = project_style(INFO0, diag_script_info, "thicks")
     lg_labels = unique_labels_min(INFO0, (/"dataset", "ensemble"/))
     plot_file = config_user_info@plot_dir + var0 + "_" + season
-
-    ; Create directory
-    system("mkdir -p " + config_user_info@plot_dir)
 
     ; Plotting instances
     wks = gsn_open_wks(file_type, plot_file)
@@ -256,24 +267,19 @@ begin
     draw(plot)
     frame(wks)
 
-    ; ; Add meta data (TODO)
-    ; climofiles = new(DIM_DAT, string)
-    ; do ii = 0, DIM_DAT - 1
-    ;   climofiles(ii) = interface_get_inpaths(ii) + "/" + \
-    ;                    interface_get_infile(var0, field_type0, ii)
-    ; end do
-    ; id = diag_script + "_" + var0
-    ; contrib_authors = (/"A_zech_sa", "A_schl_ma"/)
-    ; alldatasetnames = DATASETS
-    ; alltags = array_append_record(tags,
-    ;                               (/"DM_sh", "ST_mean", "ST_clim", \
-    ;                               "ST_range", "PT_errorbar", "PT_scatter", \
-    ;                               "T_clouds"/), 0)
-    ; caption = season + " ASR gradient for " + lat_string + \
-    ;           ", similar to Wenzel et al., JClim, 2016, SI"
-    ; ESMValMD(plot_file + "." + file_type, alltags, caption, id, var0, \
-    ;          alldatasetnames, climofiles, diag_script, contrib_authors)
-    ; delete([/alltags, caption, id, climofiles, alldatasetnames/])
+    ; Write ncdf file
+    new_path = work_dir + "asr_gradient_" + season + ".nc"
+    val_grad@var = var0
+    val_grad@diag_script = DIAG_SCRIPT
+    val_grad@ncdf = new_path
+    outfile_grad = ncdf_write(val_grad, new_path)
+
+    ; Provenance tracking
+    plot_path = plot_file + "." + file_type
+    caption = season + " ASR " + lat_string + " gradient (" + \
+      diag_script_info@wdiag_title(0) + ")."
+    log_provenance(outfile_grad, plot_path, caption, STATISTICS, \
+                   DOMAIN, PLOT_TYPE, AUTHORS, REFERENCES, ANCESTORS)
   end if
 
   ; ---------------------------------------------------------------------------
@@ -285,6 +291,8 @@ begin
     work_dir = output@work_dir
     opt = diag_script_info
     log_info(opt@wdiag)
+    plot_path = "missing"
+    plot_type = "missing"
 
     ; Iterate over all datasets
     do idat = 0, DIM_DAT - 1
@@ -304,6 +312,13 @@ begin
       val@ncdf = new_path
       ncdf_outfile = ncdf_write(val, new_path)
       delete([/val, new_path/])
+
+      ; Provenance tracking
+      caption = season + " ASR " + lat_string + " gradient (" + \
+        diag_script_info@wdiag_title(0) + ") of " + DATASETS(idat) + "."
+      log_provenance(ncdf_outfile, plot_path, caption, STATISTICS, \
+                     DOMAIN, plot_type, AUTHORS, REFERENCES, \
+                     info@filename)
     end do
   end if
 

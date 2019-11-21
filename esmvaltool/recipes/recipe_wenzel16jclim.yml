@@ -156,7 +156,8 @@ diagnostics:
     scripts:
       ta_sp100: &ta_sp100
         script: austral_jet/main.ncl
-        average_ens: false
+        domain: sh
+        average_ens: true
         styleset: CMIP5
         season: ['ONDJ']
         e13fig10_yr_min: 1979

@@ -1,9 +1,6 @@
 ; #############################################################################
 ; austral_jet/main.ncl
 ; #############################################################################
-; Author: Sabrina Zechlau (DLR, Germany)
-; ESMVal project PI: Veronika Eyring (DLR, Germany)
-; #############################################################################
 ;
 ; Description:
 ;     This script is based on the diagnostic eyring13jclim.ncl but
@@ -20,28 +17,41 @@
 ;
 ; Required diag_script_info attributes:
 ;     styleset: style set ("DEFAULT", "CMIP5").
-;     e13fig10_season: seasons (n-element array of strings, "ANN", "JAN",
-;                      "FEB", "MAR", "DJF", "SON", etc.).
+;     season: seasons (n-element array of strings, "ANN", "JAN", "FEB", "MAR",
+;                      "DJF", "SON", etc.).
 ;
 ; Optional diag_script_info attributes:
+;     average_ens: average over ensemble members of the same model (default:
+;                  False).
 ;     rsondes: a set of additional observations can be added to the plot
 ;              but will not be saved for the MDER diagnostics.
+;     rsondes_file: path to additional observations, required when rsondes is
+;                   set
+;     e13fig10_yr_min: minimum year for plot, required when rsondes is set.
+;     e13fig10_yr_max: maximum year for plot, required when rsondes is set.
 ;     wdiag: if the diagnostics will be used for the MDER a diagnostic name
 ;            name is needed.
 ;     wdiag_title: this name will apper in the figure title.
+;     derive_var: derive variable (one of "tpp", "mmstf")
+;     derive_latrange: latitude range for derived variable, required when
+;                      derive_var is set.
+;     derive_lev: level for derived variable, required when derive_var is set.
 ;
 ; Caveats:
-;     Modifies input_file_info@dataset.
+;     "warning: in unique_labels_min (diag_scripts/shared/plot/style.ncl), Add
+;     more attributes to prio to make labels unique! Continuing with non-unique
+;     labels" is normal when using "average_ens = true".
 ;
 ; Modification history:
-;     20180716_A_schl_ma: ported to v2.0.
-;     20180329_A-wenz_sa: modified original script (eyring13jclim.ncl) to
-;                         austral-jet_diags.ncl.
-;     20170816_A_bock_ls: added tags for reporting.
-;     20151209_A-laue_ax: code clean-up, added call to write_references,
-;                         several bugfixes for processing zonal wind (ua)
-;                         and handling missing variable attribute "units".
-;     201510??_A-cion_ir: written.
+;     20191121-schlund_manuel: added new provenance tracking.
+;     20180716-schlund_manuel: ported to v2.0.
+;     20180329-wenzel_sabrina: modified original script (eyring13jclim.ncl) to
+;                              austral-jet_diags.ncl.
+;     20170816-bock_lisa: added tags for reporting.
+;     20151209-lauer_axel: code clean-up, added call to write_references,
+;                          several bugfixes for processing zonal wind (ua)
+;                          and handling missing variable attribute "units".
+;     201510??-cionni_irene: written.
 ;
 ; #############################################################################
 
@@ -84,17 +94,22 @@ begin
   end if
   DIM_DAT = dimsizes(DATASETS)
 
+  ; Directories
+  work_dir = config_user_info@work_dir
+  system("mkdir -p " + work_dir)
+  system("mkdir -p " + config_user_info@plot_dir)
+
+  ; Provenance
+  AUTHORS = (/"cionni_irene", "lauer_axel", "bock_lisa", "wenzel_sabrina", \
+             "schlund_manuel"/)
+  DOMAIN = "sh"
+  PLOT_TYPE = "errorbar"
+  REFERENCES = (/"wenzel16jclim"/)
+  ANCESTORS = metadata_att_as_array(INFO0, "filename")
+
   log_info("++++++++++++++++++++++++++++++++++++++++++")
   log_info(DIAG_SCRIPT + " (var: " + var0 + ")")
   log_info("++++++++++++++++++++++++++++++++++++++++++")
-
-  ; Write references (TODO)
-  ; write_references(DIAG_SCRIPT, \
-  ;                  "A_zech_sa", \
-  ;                  "A_schl_ma", \
-  ;                  "D_wenzel16jclim", \
-  ;                  "", \
-  ;                  "P_embrace")
 
 end
 
@@ -355,7 +370,7 @@ begin
       atts@dataset = DATASETS(idat)
       info := select_metadata_by_atts(INFO0, atts)
     else
-      info = NewList("lifo")
+      info := NewList("lifo")
       ListAppend(info, INFO0[idat])
     end if
 
@@ -552,9 +567,6 @@ begin
     plot_file2 = config_user_info@plot_dir + DIAG_SCRIPT + "_" + var0 + \
       "_" + season + "_climmean"
 
-    ; Create directory
-    system("mkdir -p " + config_user_info@plot_dir)
-
     ; Plotting instances
     wks1 = gsn_open_wks(file_type, plot_file1)
     wks2 = gsn_open_wks(file_type, plot_file2)
@@ -646,25 +658,19 @@ begin
     draw(plot1)
     frame(wks1)
 
-    ; ; Add meta data (TODO)
-    ; climofiles = new(DIM_DAT, string)
-    ; do ii = 0, DIM_DAT - 1
-    ;     climofiles(ii) = interface_get_inpaths(ii) + "/" + \
-    ;                      interface_get_infile(var0, field_type0, ii)
-    ; end do
-    ; id = DIAG_SCRIPT + "_" + var0
-    ; contrib_authors = (/"A_zech_sa", "A_schl_ma"/)
-    ; alldatasetnames = DATASETS
-    ; alltags = array_append_record(tags, \
-    ;                               (/"DM_sh", "ST_mean", "ST_clim", \
-    ;                               "ST_range", "PT_errorbar", \
-    ;                               "PT_scatter"/), 0)
-    ; caption = "Trends in " + season + " " + var0 + " anomalies at " \
-    ;           + lev/100 + " hPa for " + lat_string + \
-    ;           ", similar to Wenzel et al., JClim, 2016, SI"
-    ; ESMValMD(plot_file1 + "." + file_type, alltags, caption, id, var0, \
-    ;          alldatasetnames, climofiles, DIAG_SCRIPT, contrib_authors)
-    ; delete([/alltags, caption/])
+    ; Write ncdf file
+    new_path = work_dir + "trend_" + season + "_" + var0 + ".nc"
+    val_trend@var = var0
+    val_trend@diag_script = DIAG_SCRIPT
+    val_trend@ncdf = new_path
+    outfile_trend = ncdf_write(val_trend, new_path)
+
+    ; Provenance tracking
+    plot_path = plot_file1 + "." + file_type
+    caption = "Trends in " + season + " " + var0 + "."
+    statistics := (/"trend", "stddev"/)
+    log_provenance(outfile_trend, plot_path, caption, statistics, \
+                   DOMAIN, PLOT_TYPE, AUTHORS, REFERENCES, ANCESTORS)
 
     ; -------------------------------------------------------------------------
     ; Plot 2: Climatological mean
@@ -704,17 +710,19 @@ begin
     draw(plot2)
     frame(wks2)
 
-    ; ; Add meta data (TODO)
-    ; alltags = array_append_record(tags, \
-    ;                               (/"DM_sh", "ST_mean", "ST_clim", \
-    ;                               "ST_range", "PT_errorbar", \
-    ;                               "PT_scatter"/), 0)
-    ; caption = "Climatological mean in " + season + " " + var0 + \
-    ;           " anomalies at " + lev/100 + " hPa for " + lat_string + \
-    ;           ", similar to Wenzel et al., JClim, 2016, SI"
-    ; ESMValMD(plot_file2 + "." + file_type, alltags, caption, id, var0, \
-    ;          alldatasetnames, climofiles, DIAG_SCRIPT, contrib_authors)
-    ; delete([/alltags, caption, id, climofiles, alldatasetnames/])
+    ; Write ncdf file
+    new_path = work_dir + "mean_" + season + "_" + var0 + ".nc"
+    val_mean@var = var0
+    val_mean@diag_script = DIAG_SCRIPT
+    val_mean@ncdf = new_path
+    outfile_mean = ncdf_write(val_mean, new_path)
+
+    ; Provenance tracking
+    plot_path = plot_file2 + "." + file_type
+    caption = "Climatological mean in " + season + " " + var0 + "."
+    statistics := (/"mean", "clim", "stddev"/)
+    log_provenance(outfile_mean, plot_path, caption, statistics, \
+                   DOMAIN, PLOT_TYPE, AUTHORS, REFERENCES, ANCESTORS)
   end if
 
   ; ---------------------------------------------------------------------------
@@ -723,8 +731,10 @@ begin
 
   output = mder_output_desired()
   if (output) then
-    work_dir = output@work_dir
+    work_dir := output@work_dir
     opt = diag_script_info
+    plot_path = "missing"
+    plot_type = "missing"
 
     ; Iterate over all desired diagnostics
     do dd = 0, dimsizes(diag_script_info@wdiag) - 1
@@ -741,9 +751,15 @@ begin
         if (isStrSubset(opt@wdiag, "_t")) then
           val = val_trend(case|:, dataset|idat)
           val@units = "(" + VAR0@units + "/dec)"
+          statistics := (/"trend", "stddev"/)
+          caption = "Trend in " + season + " " + var0 + " of " + \
+                    DATASETS(idat) + "."
         else if(isStrSubset(opt@wdiag, "_c")) then
           val = val_mean(case|:, dataset|idat)
           val@units = "(" + VAR0@units + ")"
+          statistics := (/"mean", "clim", "stddev"/)
+          caption = "Climatological mean in " + season + " " + var0 + \
+                    " of " + DATASETS(idat) + "."
         else
           error_msg("f", DIAG_SCRIPT, "", "Diagnostic " + opt@wdiag + \
                     "not supported for MDER output")
@@ -759,6 +775,11 @@ begin
         val@ncdf = new_path
         ncdf_outfile = ncdf_write(val, new_path)
         delete([/val, new_path/])
+
+        ; Provenance tracking
+        log_provenance(ncdf_outfile, plot_path, caption, statistics, \
+                       DOMAIN, plot_type, AUTHORS, REFERENCES, \
+                       info@filename)
       end do
     end do
   end if

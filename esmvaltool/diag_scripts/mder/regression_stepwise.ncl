@@ -1,10 +1,6 @@
 ; #############################################################################
 ; mder/regression_stepwise.ncl
 ; #############################################################################
-; MULTIPLE DIAGNOSTIC ENSEMBLE REGRESSION
-; Author: Sabrina Wenzel (DLR, Germany)
-; ESMVal project PI: Veronika Eyring (DLR, Germany)
-; #############################################################################
 ;
 ; Description:
 ;     This routine computes weights for a set of models listed in the
@@ -28,22 +24,29 @@
 ;     time_oper: select for operation in time_operation function.
 ;     time_opt: select for option in time_operation function.
 ;     calc_type: trend/pos.
-;     wregr: exit criterion for stepwise regression (True/False).
-;     wexit: exit criterion for stepwise regression (True/False).
+;     domain: domain of the diagnostic (used for provenance tracking).
 ;
 ; Optional diag_script_info attributes:
+;     average_ens: average over ensemble members of the same model (default:
+;                  False).
 ;     smooth: smoothes time period with 1-2-1 filter.
-;     iter: iteration for smoothing.
+;     iter: numer of iteration for smoothing (required when "smooth" is set).
 ;     cross_validation_mode: perform cross validation.
 ;     p_value: p value for F-test in stepwise regression (default: p=0.05).
 ;     plot_units: convert variable to these units.
+;     region: the region to be averaged (required for multidimensional input).
+;     area_oper: operation in area_operation function (required for
+;                multidimensional input).
 ;
 ; Caveats:
+;     "warning: in unique_labels_min (diag_scripts/shared/plot/style.ncl), Add
+;     more attributes to prio to make labels unique! Continuing with non-unique
+;     labels" is normal when using "average_ens = true".
 ;
 ; Modification history
-;     20180806_A-schl_ma: ported to v2.0.
-;     201808??_A-senf_da: added option to plot log-linear regression.
-;     201303??_A-wenz_sa: written.
+;     20191121-schlund_manuel: added new provenance tracking.
+;     20180806-schlund_manuel: ported to v2.0.
+;     201303??-wenzel_sabrina: written.
 ;
 ; #############################################################################
 
@@ -145,6 +148,12 @@ begin
   end if
   DIM_MOD = dimsizes(MODELS)
 
+  ; Directories
+  work_dir = config_user_info@work_dir
+  plot_dir = config_user_info@plot_dir
+  system("mkdir -p " + work_dir)
+  system("mkdir -p " + config_user_info@plot_dir)
+
   log_info("++++++++++++++++++++++++++++++++++++++++++")
   log_info(DIAG_SCRIPT + " (var: " + var0 + ")")
   log_info("++++++++++++++++++++++++++++++++++++++++++")
@@ -178,7 +187,7 @@ begin
 
   ; Required attributes
   req_atts = (/"p_time", "p_step", "scal_time", "time_oper", "time_opt", \
-              "calc_type"/)
+              "calc_type", "domain"/)
   exit_if_missing_atts(diag_script_info, req_atts)
   p_time = diag_script_info@p_time
   p_step = diag_script_info@p_step
@@ -187,6 +196,12 @@ begin
   time_opt = diag_script_info@time_opt
   calc_type = diag_script_info@calc_type
   dim_p_time = dimsizes(p_time)
+
+  ; Provenance
+  AUTHORS = (/"wenzel_sabrina", "schlund_manuel"/)
+  DOMAIN = diag_script_info@domain
+  STATISTICS = (/"mder"/)
+  REFERENCES = (/"wenzel16jclim"/)
 
   ; For multi-dimensional variables, 'region' and 'area_oper' are required
   if (is_multi_dim) then
@@ -224,11 +239,7 @@ begin
     cross_validation_mode = diag_script_info@cross_validation_mode
   end if
 
-  ; Output dirs
-  plot_dir = config_user_info@plot_dir
-  work_dir = config_user_info@work_dir
-  system("mkdir -p " + plot_dir)
-  system("mkdir -p " + work_dir)
+  ; Plot numbering
   plot_num = integertochar(ispan(97, 122, 1))
   filename = "CMPI5_" + var0 + \
     "-" + calc_type + "_" + future_exp + "_" + (p_step + 1) + "ystep"
@@ -251,6 +262,7 @@ begin
   ; ---------------------------------------------------------------------------
 
   ; Call the variable of interest and save in one array YY
+  ANCESTORS = new(DIM_MOD * 2, string)
   do imod = 0, DIM_MOD - 1
     log_info(MODELS(imod))
 
@@ -272,6 +284,10 @@ begin
     data_fut = get_average(info_fut)
     info_hist := info_hist[0]
     info_fut := info_fut[0]
+
+    ; Get filenames
+    ANCESTORS(2 * imod) = info_hist@filename
+    ANCESTORS(2 * imod + 1) = info_fut@filename
 
     ; Process multi-dimensional variables
     if (is_multi_dim) then
@@ -394,6 +410,7 @@ begin
   do iobs = 0, DIM_OBS - 1
     log_info(OBS_DATASETS(iobs))
     info = OBS[iobs]
+    ANCESTORS := array_append_record(ANCESTORS, info@filename, 0)
 
     ; Read observational data
     data_obs = read_data(info)
@@ -472,6 +489,7 @@ begin
       0)
   end do
   file_list := file_list(1:)
+  ANCESTORS := array_append_record(ANCESTORS, file_list, 0)
 
   ; Create diagnostic arrays
   DIM_DIAG = dimsizes(file_list)
@@ -491,14 +509,6 @@ begin
     do imod = 0, DIM_MOD - 1
       do idat = 0, dimsizes(data_temp&datasets) - 1
 
-        ; Check if data_temp dataset labels are different
-        if (isStrSubset(MODELS(imod), "_") .and. .not. \
-            isStrSubset(data_temp&datasets(idat), "_")) then
-          dataset_name = str_split(MODELS(imod), "_")
-          MODELS(imod) = dataset_name(0)
-          delete(dataset_name)
-        end if
-
         ; Add data if datasets match
         if (MODELS(imod) .eq. data_temp&datasets(idat)) then
           diag_a(idiag, imod) = data_temp(0, idat, 0)
@@ -511,6 +521,7 @@ begin
                       "'diagnostics'")
           end if
         end if
+
       end do
     end do
 
@@ -525,7 +536,7 @@ begin
     end if
     delete(data_temp)
 
-    ; FIXME: degrees of freedom are hardcoded (26)
+    ; FIXME: degrees of freedom are hardcoded (26)?
     log_info(wdiag(idiag) + ": OBS: +/- 95% conv.: " + obs0(idiag) + \
              " +/- " + (cdft_t(0.05 / 2.0, 26) * obs0_std(idiag)) + \
              " MODELS: " + (avg(diag_a(idiag, :))) + " +/- " + \
@@ -544,12 +555,16 @@ begin
       end if
     else
       missing_datasets := ind(ismissing(diag_a(idiag, :)))
-      error_msg("w", DIAG_SCRIPT, "", \
-                "in diagnostic " + wdiag(idiag) + \
+      error_msg("w", DIAG_SCRIPT, "", "in diagnostic " + wdiag(idiag) + \
                 ", some datasets are missing: " + \
                 diag_a&datasets(missing_datasets))
     end if
   end do
+  if (.not. isvar("good_diag_idx")) then
+    error_msg("f", DIAG_SCRIPT, "", "no diagnostic without missing " + \
+              "datasets given")
+  end if
+
   log_info("")
 
   ; Save "good" diagnostics without missing datasets
@@ -674,12 +689,12 @@ begin
                 (transpose(x) - transpose(x) # m # transpose(n)))
 
     ; Confidence interval
-    cfint = cdft_t(0.05 / 2.0, df) ^ 2 * \
+    cfint1 = cdft_t(0.05 / 2.0, df) ^ 2 * \
       (1.0 + xobs # inverse_matrix(transpose(D) # D) # transpose(xobs))
     SSE1 := y # (Id - D # inverse_matrix(transpose(D) # D) # transpose(D))
-    sigmae := (1.0 / df) * SSE1
-    tmp_cf := cfint(0, 0) * sigmae
-    delete(cfint)
+    sigmae1 := (1.0 / df) * SSE1
+    tmp_cf := cfint1(0, 0) * sigmae1
+    delete([/SSE1, sigmae1, cfint1/])
 
     ; Weighted mean and std
     y_weight := (weights # y)
@@ -863,9 +878,10 @@ begin
     end do
 
     ; Error
-    SSE = xx(:, ppt) # (Id - D # inverse_matrix(transpose(D) # D) # \
-                        transpose(D)) # transpose(xx(:, ppt))
-    sigmae2 = sqrt((1.0 / df) * SSE)
+    SSE2 = xx(:, ppt) # (Id - D # inverse_matrix(transpose(D) # D) # \
+                         transpose(D))
+    sigmae2 = (1.0 / df) * SSE2
+    delete(SSE2)
 
     ; Calculate 95% confidence interval bounds
     miny = min(xx(:, ppt)) - 1.1 * (max(xx(:, ppt)) - min(xx(:, ppt)))
@@ -874,16 +890,19 @@ begin
     delete([/miny, maxy/])
     do ti = 0, dimsizes(nfit) - 1
       hlp(0, 1:) = (/hlp_tmp(:, ti)/)
-      yfit_std(ppt, 0, ti) = yfit_reg(ppt, ti) + cdft_t(0.05 / 2.0, df) * \
-        sigmae2 * sqrt(1.0 + hlp # inverse_matrix(transpose(D) # D) # \
-                       transpose(hlp))
-      yfit_std(ppt, 1, ti) = yfit_reg(ppt, ti) - cdft_t(0.05 /2.0, df) * \
-        sigmae2 * sqrt(1.0 + hlp # inverse_matrix(transpose(D) # D) # \
-                       transpose(hlp))
+      cfint2 = cdft_t(0.05 / 2.0, df) ^ 2 * ( \
+        1.0 + hlp # inverse_matrix(transpose(D) # D) # transpose(hlp))
+      cfint2 := cfint2(0, 0) * sigmae2
+      cfint2 := sqrt(cfint2 # xx(:, ppt))
+
+      yfit_std(ppt, 0, ti) = yfit_reg(ppt, ti) + cfint2
+      yfit_std(ppt, 1, ti) = yfit_reg(ppt, ti) - cfint2
+
+      delete(cfint2)
     end do
 
     ; Clean up
-    delete([/xgood, hlp_tmp, hlp, x_diag, good_diag, x, D, df, SSE, sigmae2/])
+    delete([/xgood, hlp_tmp, hlp, x_diag, good_diag, x, D, df, sigmae2/])
   end do
 
   ; Plot squared differences between ensemble mean and the total change in
@@ -1003,6 +1022,13 @@ begin
       weights_out@var = "weight"
       weights_out@description = "Weights from MDER"
       weights_file = ncdf_write(weights_out, weights_path)
+
+      ; Provenance tracking
+      plot_path = "missing"
+      plot_type = "missing"
+      caption = "MDER model weights for target variable " + var0
+      log_provenance(weights_file, plot_path, caption, STATISTICS, \
+                     DOMAIN, plot_type, AUTHORS, REFERENCES, ANCESTORS)
       delete([/weights_out, weights_path, weights_file/])
     end do
   end if
@@ -1045,26 +1071,27 @@ begin
                            YStg, wks, "draw", NEW_INFO)
     log_info("Wrote " + path_1)
 
-    ; TODO: Add meta data
-    ; climofiles = new(DIM_MOD, string)
-    ; do ii = 0, DIM_MOD - 1
-    ;   climofiles(ii) = interface_get_inpaths(ii) + "/" + \
-    ;                    interface_get_infile(var0, field_type0, ii)
-    ; end do
-    ; alldatasetnames = MODELS
-    ; zz = diag_script + "_" + var0
-    ; contrib_authors = (/"A_wenz_sa, A_schl_ma"/)
-    ; alltags = array_append_record(tags, (/"ST_mder", "ST_corr", \
-    ;                                      "ST_range", "ST_stddev", \
-    ;                                      "PT_times", "DM_sh"/), 0)
-    ; caption = "Time series of " + var0 + " for " + \
-    ;   input_file_info@ensemble(0) + \
-    ;   " scenario, similar to Wenzel et al., JClim, 2016, fig. 5"
-    ; ESMValMD(path_1, alltags, caption, zz, var0, alldatasetnames, \
-    ;          climofiles, diag_script, contrib_authors)
-    ; delete([/alltags, caption, wks, path_1/])
+    ; Write ncdf file
+    new_path = work_dir + plot_name_1 + ".nc"
+    YY@var = var0
+    YY@diag_script = DIAG_SCRIPT
+    YY@ncdf = new_path
+    outfile = ncdf_write(YY, new_path)
+
+    ; Provenance tracking
+    caption = "Time series of " + var0 + " for " + future_exp + "."
+    plot_type = (/"times"/)
+    log_provenance(outfile, path_1, caption, STATISTICS, DOMAIN, plot_type, \
+                   AUTHORS, REFERENCES, ANCESTORS)
 
     ; MDER scatter plots for all time periods
+    y_mder_results!0 = "time"
+    y_mder_results!1 = "dataset"
+    y_mder_results&time = p_time
+    data_dim = (/"constant", "OBS"/)
+    data_dim := array_append_record(data_dim, MODELS, 0)
+    y_mder_results&dataset = data_dim
+    delete(data_dim)
     do ppt = 0, dimsizes(p_time) - 1
       plot_name_2 = filename + "_FIG2" + plot_num(ppt)
       path_2 = plot_dir + plot_name_2 + "." + file_type
@@ -1081,18 +1108,20 @@ begin
                                 MainStg, XStg, YStg, wks, "draw", INFO0)
       log_info("Wrote " + path_2)
 
-      ; TODO: Add meta data
-      ; alltags = array_append_record(tags, (/"ST_mder", "ST_corr", \
-      ;                                      "ST_range", "ST_stddev", \
-      ;                                      "ST_corr", "PT_scatter", \
-      ;                                      "T_EC", "DM_sh"/), 0)
-      ; caption = "Scatterplot showing the correlation between future " + \
-      ;           var0 + " and the quantity resulting from MDER " + \
-      ;           "analysis on the x-axes, similar to Wenzel et al., " + \
-      ;           "JClim, 2016, fig. 3"
-      ; ESMValMD(path_2, alltags, caption, zz, var0, \
-      ;          alldatasetnames, climofiles, diag_script, contrib_authors)
-      ; delete([/alltags, caption, wks, path_2/])
+      ; Write ncdf file
+      new_path = work_dir + plot_name_2 + ".nc"
+      y_mder_results@var = var0
+      y_mder_results@diag_script = DIAG_SCRIPT
+      y_mder_results@ncdf = new_path
+      outfile = ncdf_write(y_mder_results, new_path)
+
+      ; Provenance tracking
+      caption = "Scatterplot showing the correlation between " + \
+                "future " + var0 + " and the quantity resulting from MDER " + \
+                "analysis on the X axis for " + future_exp + "."
+      plot_type = (/"scatter"/)
+      log_provenance(outfile, path_2, caption, STATISTICS, DOMAIN, plot_type, \
+                     AUTHORS, REFERENCES, ANCESTORS)
     end do
 
     ; Boxplot of RMSE of different weigting methods incl pseudoreality check
@@ -1117,17 +1146,33 @@ begin
                                wks, "draw")
     log_info("Wrote " + path_3)
 
-    ; TODO: Add meta data
-    ; alltags = array_append_record(tags, (/"ST_mder", "ST_rmsd", \
-    ;                                      "ST_stddev", "ST_mean", "PT_bar", \
-    ;                                      "PT_errorbar", "DM_sh"/), 0)
-    ; caption = "RMSE difference between the ensemble mean future " + \
-    ;   "climatological mean " + var0 + "and its equivalent in " + \
-    ;   "pseudoreality under " + input_file_info@ensemble(0) + \
-    ;   " scenario, similar to Wenzel et al., JClim, 2016, fig. 4"
-    ; ESMValMD(path_3, alltags, caption, zz, var0, alldatasetnames, \
-    ;          climofiles,  ;          diag_script, contrib_authors)
-    ; delete([/alltags, caption, zz, climofiles, alldatasetnames, path_3/])
+    ; Write ncdf file
+    new_path = work_dir + plot_name_3 + ".nc"
+    prePRE!0 = "type"
+    prePRE!1 = "pseudo_reality_obs"
+    do pt = 0, dimsizes(p_time) - 1
+      if (isvar("dim_type")) then
+        dim_type := array_append_record(dim_type, (/"uMMM " + p_time(pt), \
+                                                   "wMMM " + p_time(pt)/), 0)
+      else
+        dim_type := (/"uMMM " + p_time(pt), "wMMM " + p_time(pt)/)
+      end if
+    end do
+    prePRE&type = dim_type
+    dim_PRE = dimsizes(prePRE)
+    prePRE&pseudo_reality_obs = ispan(0, dim_PRE(1) - 1, 1)
+    prePRE@var = var0
+    prePRE@diag_script = DIAG_SCRIPT
+    prePRE@ncdf = new_path
+    outfile = ncdf_write(prePRE, new_path)
+
+    ; Provenance tracking
+    caption = "RMSE difference between the ensemble mean future " + \
+      "climatological mean " + var0 + " and its equivalent in " + \
+      "pseudo-reality under " + future_exp + "."
+    plot_type = (/"box"/)
+    log_provenance(outfile, path_3, caption, STATISTICS, DOMAIN, plot_type, \
+                   AUTHORS, REFERENCES, ANCESTORS)
   end if
 
   leave_msg(DIAG_SCRIPT, "")

@@ -1,10 +1,6 @@
 ; #############################################################################
 ; mder/absolute_correlation.ncl
 ; #############################################################################
-; MULTIPLE DIAGNOSTIC ENSEMBLE REGRESSION
-; Author: Sabrina Wenzel (DLR, Germany)
-; ESMVal project PI: Veronika Eyring (DLR, Germany)
-; #############################################################################
 ;
 ; Description:
 ;     This routine calculates absolute correlation coefficients s between all
@@ -22,19 +18,25 @@
 ;     time_oper: operation in time_operation function.
 ;     time_opt: option in time_operation function.
 ;     calc_type: trend/pos/int.
-;     region: the region to be averaged (only necessary for multi-dimensional
-;             variables).
-;     area_oper: operation in area_operation function (only necessary for
-;                multi-dimensional variables).
+;     domain: domain of the diagnostic (used for provenance tracking).
 ;
 ; Optional diag_script_info attributes:
+;     average_ens: average over ensemble members of the same model (default:
+;                  False).
 ;     plot_units: convert variable to these units.
+;     region: the region to be averaged (required for multidimensional input).
+;     area_oper: operation in area_operation function (required for
+;                multidimensional input).
 ;
 ; Caveats:
+;     "warning: in unique_labels_min (diag_scripts/shared/plot/style.ncl), Add
+;     more attributes to prio to make labels unique! Continuing with non-unique
+;     labels" is normal when using "average_ens = true".
 ;
 ; Modification history:
-;     20180726_A-schl_ma: ported to v2.0.
-;     201307??_A-wenz_sa: written.
+;     20191121-schlund_manuel: added new provenance tracking.
+;     20180726-schlund_manuel: ported to v2.0.
+;     201307??-wenzel_sabrina: written.
 ;
 ; #############################################################################
 
@@ -126,6 +128,12 @@ begin
   end if
   DIM_MOD = dimsizes(MODELS)
 
+  ; Directories
+  work_dir = config_user_info@work_dir
+  plot_dir = config_user_info@plot_dir
+  system("mkdir -p " + work_dir)
+  system("mkdir -p " + config_user_info@plot_dir)
+
   log_info("++++++++++++++++++++++++++++++++++++++++++")
   log_info(DIAG_SCRIPT + " (var: " + var0 + ")")
   log_info("++++++++++++++++++++++++++++++++++++++++++")
@@ -146,7 +154,7 @@ begin
 
   ; Required attributes
   req_atts = (/"p_time", "p_step", "scal_time", "time_oper", "time_opt", \
-              "calc_type"/)
+              "calc_type", "domain"/)
   exit_if_missing_atts(diag_script_info, req_atts)
   p_time = diag_script_info@p_time
   p_step = diag_script_info@p_step
@@ -155,6 +163,13 @@ begin
   time_opt = diag_script_info@time_opt
   calc_type = diag_script_info@calc_type
   dim_p_time = dimsizes(p_time)
+
+  ; Provenance
+  AUTHORS = (/"wenzel_sabrina", "schlund_manuel"/)
+  DOMAIN = diag_script_info@domain
+  PLOT_TYPE = "errorbar"
+  STATISTICS = (/"corr"/)
+  REFERENCES = (/"wenzel16jclim"/)
 
   ; For multi-dimensional variables, 'region' and 'area_oper' are required
   if (is_multi_dim) then
@@ -176,9 +191,7 @@ begin
     end if
   end if
 
-  ; Output dir
-  plot_dir = config_user_info@plot_dir
-  system("mkdir -p " + plot_dir)
+  ; Plot numbering
   plot_num = integertochar(ispan(97, 122, 1))
 
   ; Output arrays
@@ -190,6 +203,7 @@ begin
   ; ---------------------------------------------------------------------------
 
   ; Call the variable of interest and merge to one timeline
+  ANCESTORS = new(DIM_MOD * 2, string)
   do imod = 0, DIM_MOD - 1
     log_info(MODELS(imod))
 
@@ -211,6 +225,10 @@ begin
     data_fut = get_average(info_fut)
     info_hist := info_hist[0]
     info_fut := info_fut[0]
+
+    ; Get filenames
+    ANCESTORS(2 * imod) = info_hist@filename
+    ANCESTORS(2 * imod + 1) = info_fut@filename
 
     ; Process multi-dimensional variables
     if (is_multi_dim) then
@@ -327,6 +345,7 @@ begin
       0)
   end do
   file_list := file_list(1:)
+  ANCESTORS := array_append_record(ANCESTORS, file_list, 0)
 
   ; Create diagnostic arrays
   DIM_DIAG = dimsizes(file_list)
@@ -342,14 +361,6 @@ begin
     do imod = 0, DIM_MOD - 1
       do idat = 0, dimsizes(data_temp&datasets) - 1
 
-        ; Check if data_temp dataset labels are different
-        if (isStrSubset(MODELS(imod), "_") .and. .not. \
-            isStrSubset(data_temp&datasets(idat), "_")) then
-          dataset_name = str_split(MODELS(imod), "_")
-          MODELS(imod) = dataset_name(0)
-          delete(dataset_name)
-        end if
-
         ; Add data if datasets match
         if (MODELS(imod) .eq. data_temp&datasets(idat)) then
           diag_all(idiag, imod) = data_temp(0, idat, 0)
@@ -361,6 +372,7 @@ begin
                       "'diagnostics'")
           end if
         end if
+
       end do
     end do
     delete(data_temp)
@@ -454,31 +466,19 @@ begin
       plot = error_bar_plot(acorr, corr_sig, wdiag, diag_sign(pt, :), \
                             MainStg, YStg, wks, "draw")
 
-      ; TODO: Add meta data
-      ; climofiles = new(DIM_MOD, string)
-      ; do ii = 0, DIM_MOD - 1
-      ;   climofiles(ii) = interface_get_inpaths(ii) + "/" + \
-      ;     interface_get_infile(var0, field_type0, ii)
-      ; end do
-      ; alltags = array_append_record(tags, \
-      ;                               (/"ST_mder","ST_spectrum", "ST_corr", \
-      ;                                "ST_range", "PT_errorbar", \
-      ;                                "PT_scatter", "DM_et", "DM_global", \
-      ;                                "DM_polar", "DM_sh", "DM_trop"/), \
-      ;                                0)
-      ; alldatasetnames = input_file_info@dataset
-      ; caption = "Absolute values of the correlation coefficient between " + \
-      ;   var0  + " and pressent-day diagnostics, similar to Wenzel et " + \
-      ;   "al., JClim, 2016, fig. 2"
-      ; id = diag_script + "_" + var0
-      ; contrib_authors = (/"A_wenz_sa", "A_schl_ma"/)
-      ;
-      ; ESMValMD(plot_dir + filename + "." + file_type, alltags, caption, id, \
-      ;          var0, alldatasetnames, climofiles, diag_script, \
-      ;          contrib_authors)
-      ;
-      ; delete([/alltags, caption, id, climofiles, alldatasetnames, wks, \
-      ;         plot, MainStg, acorr/])
+      ; Write ncdf file
+      new_path = work_dir + filename + ".nc"
+      acorr@var = var0
+      acorr@diag_script = DIAG_SCRIPT
+      acorr@ncdf = new_path
+      outfile_acorr = ncdf_write(acorr, new_path)
+
+      ; Provenance tracking
+      plot_path = plot_dir + filename + "." + file_type
+      caption = "Absolute values of the correlation coefficient between " + \
+        var0 + " and multiple present-day diagnostics."
+      log_provenance(outfile_acorr, plot_path, caption, STATISTICS, \
+                     DOMAIN, PLOT_TYPE, AUTHORS, REFERENCES, ANCESTORS)
     end if
 
     ; Restore old order
