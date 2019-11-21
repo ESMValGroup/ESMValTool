@@ -771,6 +771,8 @@ def plot_mm_summaryscat(pdir, summary_varlist):
     ylabel = r'S$_{dir}$ [W m-2 K-1]'
     varlist = [indentr_all, matentr_all[:, 0]]
     plot_mm_scatter(axi, varlist, title, xlabel, ylabel)
+    axi.set(xlim=(min(indentr_all)-0.003, max(indentr_all)+0.003),
+            ylim=(min(matentr_all)-0.003, max(matentr_all)+0.003))
     axi = plt.subplot(325)
     title = '(e) Indirect vs. emission temperature'
     xlabel = r'T$_E$ [K]'
