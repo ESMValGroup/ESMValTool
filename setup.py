@@ -40,6 +40,7 @@ REQUIREMENTS = {
         'scitools-iris>=2.2',
         'scikit-learn',
         'shapely',
+        'SkillMetrics',
         'stratify',
         'xarray>=0.12',
         'xesmf',
