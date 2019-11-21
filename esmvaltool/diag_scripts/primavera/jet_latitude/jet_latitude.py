@@ -1,6 +1,6 @@
 import os
 import logging
-from math import pi, sin, cos, ceil
+from math import pi, sin, ceil
 
 import matplotlib.pyplot as plt
 
