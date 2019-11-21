@@ -70,10 +70,10 @@ diagnostics:
              start_year: 1979, end_year: 2005}
     scripts:
       sea_ice_drift:
-        script: seaice_drift/seaice_drift.py
+        script: primavera/seaice_drift/seaice_drift.py
         latitude_treshold: 50
       sea_ice_drift_SCICEX:
-        script: seaice_drift/seaice_drift.py
+        script: primavera/seaice_drift/seaice_drift.py
         # lon, lat tuples
         polygon:
           - [-15., 87.]

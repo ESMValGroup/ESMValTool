@@ -101,7 +101,7 @@ diagnostics:
         preprocessor: extract
     scripts:
       blocking1D:
-        script: blocking/blocking.py
+        script: primavera/blocking/blocking.py
         title: "Blocking diagnostic 1D"
         compute_2d: false
         compute_1d: true
@@ -114,7 +114,7 @@ diagnostics:
         max_color_scale: 10
 
       blocking2D:
-        script: blocking/blocking.py
+        script: primavera/blocking/blocking.py
         title: "Blocking diagnostic 2D"
         compute_2d: true
         compute_1d: false
