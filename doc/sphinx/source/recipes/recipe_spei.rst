@@ -1,7 +1,7 @@
 .. _recipes_spei:
 
-SPEI
-====
+Standardized Precipitation-Evapotranspiration Index (SPEI)
+==========================================================
 
 Overview
 --------

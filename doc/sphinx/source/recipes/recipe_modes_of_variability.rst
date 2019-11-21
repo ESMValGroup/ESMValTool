@@ -86,6 +86,6 @@ Example plots
    :align:   center
    :width:   14cm
 
-
+Four modes of variability for autumn (September-October-November) in the North Atlantic European Sector for the RCP 8.5 scenario using BCC-CSM1-1 future projection during the period 2020-2075. The frequency of occurrence of each variability mode is indicated in the title of each map.
 
 

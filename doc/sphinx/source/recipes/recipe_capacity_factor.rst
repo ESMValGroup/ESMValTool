@@ -75,3 +75,4 @@ Example plots
    :align:   center
    :width:   14cm
 
+Wind capacity factor for five turbines: Enercon E70 (top-left), Gamesa G80 (middle-top), Gamesa G87 (top-right), Vestas V100 (bottom-left) and Vestas V110 (middle-bottom) using the IPSL-CM5A-MR simulations for the r1p1i1 ensemble for the rcp8.5 scenario during the period 2021-2050.

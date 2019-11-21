@@ -1,7 +1,7 @@
 .. _XML_oceans:
 
-Recipes for evaluating models of the ocean
-==========================================
+Ocean diagnostics
+=================
 
 Overview
 ........
