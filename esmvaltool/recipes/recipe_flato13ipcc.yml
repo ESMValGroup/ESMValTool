@@ -1,16 +1,18 @@
-# ESMValTool
+9.# ESMValTool
 # recipe_flato13ipcc.yml
 ---
 documentation:
 
   description: |
     Reproducing selected figures from IPCC AR5, chap. 9 (Flato et al., 2013)
-    9.2, 9.4, 9.5, 9.8, 9.42a.
+    9.2, 9.4, 9.5, 9.8, 9.14, 9.24, 9.42a.
 
   authors:
     - bock_lisa
     - lauer_axel
     - schlund_manuel
+    - senftleben_daniel
+    - zimmermann_klaus
 
   maintainer:
     - righi_mattia
@@ -50,6 +52,35 @@ preprocessors:
       statistics: [mean]
       exclude: [reference_dataset]
 
+  zonal_mean:
+    custom_order: true
+    climate_statistics:
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    zonal_means:
+      coordinate: longitude
+      mean_type: mean
+    convert_units:
+      units: degC
+
+  equatorial:
+    custom_order: true
+    climate_statistics:
+    regrid:
+      target_grid: 1x1
+      scheme: linear
+    extract_region:
+      start_longitude: 0.
+      end_longitude: 360.
+      start_latitude: -5.
+      end_latitude: 5.
+    zonal_means:
+      coordinate: latitude
+      mean_type: mean
+    convert_units:
+      units: degC
+
 diagnostics:
 
   # **********************************************************************
@@ -72,7 +103,7 @@ diagnostics:
         reference_dataset: ERA-Interim
         mip: Amon
     additional_datasets:
-      - {dataset: ERA-Interim, project: OBS, type: reanaly, version: 1,
+      - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1,
          start_year: 1986, end_year: 2005, tier: 3}
       - {dataset: ACCESS1-0, project: CMIP5, exp: historical, ensemble: r1i1p1,
          start_year: 1986, end_year: 2005}
@@ -618,7 +649,6 @@ diagnostics:
         preprocessor: clim_ref
         reference_dataset: HadCRUT4
         mip: Amon
-        field: T2Ms
         project: CMIP5
         exp: [historical, rcp45]
         ensemble: r1i1p1
@@ -707,6 +737,180 @@ diagnostics:
         volcanoes: True
         styleset: CMIP5       # Plot style
 
+  # **********************************************************************
+  # Flato et al. (2013) - IPCC AR5, chap. 9
+  # similar to fig. 9.14
+  # **********************************************************************
+  # SST zonal mean and equatorial, multi model mean
+  # **********************************************************************
+
+  fig09-14:
+    description: |
+      IPCC AR5 Ch. 9, Fig. 9.14 (sst error, zonal mean and equatorial)
+    themes:
+      - phys
+    realms:
+      - ocean
+    variables:
+      tos_zm: &fig09_14_settings
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        mip: Omon
+        short_name: tos
+        preprocessor: zonal_mean
+        reference_dataset: HadISST
+        start_year: 1979
+        end_year: 1999
+      tos_eq:
+        <<: *fig09_14_settings
+        preprocessor: equatorial
+    additional_datasets:
+      - {dataset: HadISST, project: OBS, type: reanaly, version: 1, tier: 2}
+      - {dataset: ACCESS1-0}
+      - {dataset: ACCESS1-3}
+      - {dataset: bcc-csm1-1}
+      - {dataset: bcc-csm1-1-m}
+      - {dataset: CanCM4}
+      - {dataset: CanESM2}
+      - {dataset: CCSM4}
+      - {dataset: CESM1-BGC}
+      - {dataset: CESM1-CAM5-1-FV2}
+      - {dataset: CESM1-FASTCHEM}
+      - {dataset: CESM1-WACCM}
+      - {dataset: CMCC-CESM}
+      - {dataset: CMCC-CM}
+      - {dataset: CMCC-CMS}
+      - {dataset: CNRM-CM5}
+      - {dataset: CSIRO-Mk3-6-0}
+      - {dataset: EC-EARTH}
+      - {dataset: FGOALS-g2}
+      - {dataset: FIO-ESM}
+      - {dataset: GFDL-CM2p1}
+      - {dataset: GFDL-CM3}
+      - {dataset: GFDL-ESM2G}
+      - {dataset: GFDL-ESM2M}
+      - {dataset: GISS-E2-H}
+      - {dataset: GISS-E2-R}
+      - {dataset: HadCM3}
+      - {dataset: HadGEM2-AO}
+      - {dataset: HadGEM2-CC}
+      - {dataset: HadGEM2-ES}
+      - {dataset: IPSL-CM5A-LR}
+      - {dataset: IPSL-CM5A-MR}
+      - {dataset: IPSL-CM5B-LR}
+      - {dataset: MIROC5}
+      - {dataset: MPI-ESM-LR}
+      - {dataset: MPI-ESM-MR}
+      - {dataset: MPI-ESM-P}
+      - {dataset: NorESM1-M}
+      - {dataset: NorESM1-ME}
+    scripts:
+      fig09-14:
+        script: ipcc_ar5/ch09_fig09_14.py
+
+  # ***********************************************************************
+  # Flato et al. (2013) - IPCC AR5, chap. 9
+  # similar to fig. 9.24a/b
+  # ***********************************************************************
+  # 9.24a/b: time series of Arctic and Antarctic sea ice extent
+  # 9.24c/d: trend distribution of September/February Arctic/Antarctic
+  #          sea ice extent
+  # ***********************************************************************
+
+  fig09-24:
+    description: timeseries and trend distributions of sea ice extent
+    themes:
+      - seaIce
+    realms:
+      - seaIce
+    variables:
+      sic:
+        mip: OImon
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 1960
+        end_year: 2005
+        additional_datasets:
+          - {dataset: HadISST, project: OBS, type: reanaly, version: 1, tier: 2}
+      areacello:
+        mip: fx
+        project: CMIP5
+        exp: historical
+        ensemble: r0i0p0
+        start_year: 1960
+        end_year: 2005
+    additional_datasets:
+      - {dataset: ACCESS1-0}
+      - {dataset: ACCESS1-3}
+      - {dataset: bcc-csm1-1}
+      - {dataset: bcc-csm1-1-m}
+      - {dataset: CanESM2}
+      - {dataset: CCSM4}
+      - {dataset: CESM1-CAM5}
+      - {dataset: CNRM-CM5}
+      - {dataset: CSIRO-Mk3-6-0}
+      - {dataset: FGOALS-g2}
+      - {dataset: GFDL-CM3}
+      - {dataset: GFDL-ESM2G}
+      - {dataset: GFDL-ESM2M}
+      - {dataset: inmcm4}
+      - {dataset: IPSL-CM5A-LR}
+      - {dataset: IPSL-CM5A-MR}
+      - {dataset: IPSL-CM5B-LR}
+      - {dataset: MIROC5}
+      - {dataset: MIROC-ESM}
+      - {dataset: MIROC-ESM-CHEM}
+      - {dataset: MPI-ESM-LR}
+      - {dataset: MPI-ESM-MR}
+      - {dataset: MRI-CGCM3}
+      - {dataset: MRI-ESM1}
+      - {dataset: NorESM1-M}
+      - {dataset: NorESM1-ME}
+    scripts:
+      fig09-24a:
+        script: seaice/seaice_tsline.ncl
+        # "Arctic" or "Antarctic"; entire hemisphere will be evaluated
+        region: "Arctic"
+        # A = annual mean, 3 = March, 9 = September
+        month: "9"
+        # "CMIP5", "DEFAULT"
+        styleset: "CMIP5"
+        # Plot multi-model mean & std dev
+        multi_model_mean: true
+        # Create legend label for each individual ensemble member
+        EMs_in_lg: false
+        # Fill polar hole in data with sic = 1.
+        fill_pole_hole: true
+      fig09-24b:
+        script: seaice/seaice_tsline.ncl
+        # "Arctic" or "Antarctic"; entire hemisphere will be evaluated
+        region: "Antarctic"
+        # A = annual mean, 3 = March, 9 = September
+        month: "3"
+        # "CMIP5", "DEFAULT"
+        styleset: "CMIP5"
+        # Plot multi-model mean & std dev
+        multi_model_mean: true
+        # Create legend label for each individual ensemble member
+        EMs_in_lg: false
+        # Fill polar hole in data with sic = 1.
+        fill_pole_hole: false
+      fig09-24c:
+        script: seaice/seaice_trends.ncl
+        # "Arctic" or "Antarctic"; entire hemisphere will be evaluated
+        region: "Arctic"
+        # A = annual mean, 3 = March, 9 = September
+        month: "9"
+        # Fill polar hole in data with sic = 1.
+        fill_pole_hole: true
+      fig09-24d:
+        script: seaice/seaice_trends.ncl
+        # "Arctic" or "Antarctic"; entire hemisphere will be evaluated
+        region: "Antarctic"
+        # A = annual mean, 3 = March, 9 = September
+        month: "2"
 
   # **********************************************************************
   # Flato et al. (2013) - IPCC AR5, chap. 9
@@ -731,39 +935,50 @@ diagnostics:
         <<: *ecs_settings
         derive: true
     additional_datasets:
-      - {dataset: bcc-csm1-1, exp: piControl, start_year: 160, end_year: 309}
-      - {dataset: bcc-csm1-1, exp: abrupt4xCO2, start_year: 160, end_year: 309}
-      - {dataset: bcc-csm1-1-m, exp: piControl, start_year: 240, end_year: 389}
-      - {dataset: bcc-csm1-1-m, exp: abrupt4xCO2, start_year: 240, end_year: 389}
-      - {dataset: CanESM2, exp: piControl, start_year: 2015, end_year: 2164}
-      - {dataset: CanESM2, exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
-      - {dataset: CCSM4, exp: piControl, start_year: 800, end_year: 949}
-      - {dataset: CCSM4, exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
-      - {dataset: CNRM-CM5, exp: piControl, start_year: 1850, end_year: 1999}
-      - {dataset: CNRM-CM5, exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
-      - {dataset: CSIRO-Mk3-6-0, exp: piControl, start_year: 1, end_year: 150}
-      - {dataset: CSIRO-Mk3-6-0, exp: abrupt4xCO2, start_year: 1, end_year: 150}
-      - {dataset: GFDL-CM3, exp: piControl, start_year: 1, end_year: 150}
-      - {dataset: GFDL-CM3, exp: abrupt4xCO2, start_year: 1, end_year: 150}
-      - {dataset: GISS-E2-H, exp: piControl, start_year: 1200, end_year: 1349}
-      - {dataset: GISS-E2-H, exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
-      - {dataset: GISS-E2-R, exp: piControl, start_year: 3331, end_year: 3480}
-      - {dataset: GISS-E2-R, exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
-      - {dataset: inmcm4, exp: piControl, start_year: 2090, end_year: 2239}
-      - {dataset: inmcm4, exp: abrupt4xCO2, start_year: 2090, end_year: 2239}
-      - {dataset: IPSL-CM5A-LR, exp: piControl, start_year: 1850, end_year: 1999}
-      - {dataset: IPSL-CM5A-LR, exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
-      - {dataset: IPSL-CM5B-LR, exp: piControl, start_year: 1850, end_year: 1999}
-      - {dataset: IPSL-CM5B-LR, exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
-      - {dataset: MIROC5, exp: piControl, start_year: 2100, end_year: 2249}
-      - {dataset: MIROC5, exp: abrupt4xCO2, start_year: 2100, end_year: 2249}
-      - {dataset: MIROC-ESM, exp: piControl, start_year: 1800, end_year: 1949}
-      - {dataset: MIROC-ESM, exp: abrupt4xCO2, start_year: 1, end_year: 150}
-      - {dataset: MPI-ESM-LR, exp: piControl, start_year: 2015, end_year: 2164}
-      - {dataset: MPI-ESM-LR, exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
-      # Day is out of range for month (wait for iris > 2.0)
-      # - {dataset: ACCESS1-0, exp: piControl, start_year: 300, end_year: 449}
-      # - {dataset: ACCESS1-0, exp: abrupt4xCO2, start_year: 300, end_year: 449}
+      - {dataset: ACCESS1-0,     exp: piControl,   start_year:  300, end_year:  449}
+      - {dataset: ACCESS1-0,     exp: abrupt4xCO2, start_year:  300, end_year:  449}
+      - {dataset: bcc-csm1-1,    exp: piControl,   start_year:  160, end_year:  309}
+      - {dataset: bcc-csm1-1,    exp: abrupt4xCO2, start_year:  160, end_year:  309}
+      - {dataset: bcc-csm1-1-m,  exp: piControl,   start_year:  240, end_year:  389}
+      - {dataset: bcc-csm1-1-m,  exp: abrupt4xCO2, start_year:  240, end_year:  389}
+      - {dataset: CanESM2,       exp: piControl,   start_year: 2321, end_year: 2470}
+      - {dataset: CanESM2,       exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
+      # Wrong start year for piControl? (branch_time = 2.)
+      - {dataset: CCSM4,         exp: piControl,   start_year:  250, end_year:  399}
+      - {dataset: CCSM4,         exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
+      - {dataset: CNRM-CM5,      exp: piControl,   start_year: 1850, end_year: 1999}
+      - {dataset: CNRM-CM5,      exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
+      - {dataset: CSIRO-Mk3-6-0, exp: piControl,   start_year:  104, end_year:  253}
+      - {dataset: CSIRO-Mk3-6-0, exp: abrupt4xCO2, start_year:    1, end_year:  150}
+      - {dataset: GFDL-CM3,      exp: piControl,   start_year:    1, end_year:  150}
+      - {dataset: GFDL-CM3,      exp: abrupt4xCO2, start_year:    1, end_year:  150}
+      - {dataset: GFDL-ESM2G,    exp: piControl,   start_year:    1, end_year:  150}
+      - {dataset: GFDL-ESM2G,    exp: abrupt4xCO2, start_year:    1, end_year:  150}
+      - {dataset: GFDL-ESM2M,    exp: piControl,   start_year:    1, end_year:  150}
+      - {dataset: GFDL-ESM2M,    exp: abrupt4xCO2, start_year:    1, end_year:  150}
+      - {dataset: GISS-E2-H,     exp: piControl,   start_year: 2660, end_year: 2809}
+      - {dataset: GISS-E2-H,     exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
+      - {dataset: GISS-E2-R,     exp: piControl,   start_year: 4200, end_year: 4349}
+      - {dataset: GISS-E2-R,     exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
+      # Experiments start at 1859-12-01
+      - {dataset: HadGEM2-ES,    exp: piControl,   start_year: 1860, end_year: 2009}
+      - {dataset: HadGEM2-ES,    exp: abrupt4xCO2, start_year: 1860, end_year: 2009}
+      - {dataset: inmcm4,        exp: piControl,   start_year: 2090, end_year: 2239}
+      - {dataset: inmcm4,        exp: abrupt4xCO2, start_year: 2090, end_year: 2239}
+      - {dataset: IPSL-CM5B-LR,  exp: piControl,   start_year: 1850, end_year: 1999}
+      - {dataset: IPSL-CM5B-LR,  exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
+      - {dataset: MIROC5,        exp: piControl,   start_year: 2100, end_year: 2249}
+      - {dataset: MIROC5,        exp: abrupt4xCO2, start_year: 2100, end_year: 2249}
+      - {dataset: MIROC-ESM,     exp: piControl,   start_year: 1880, end_year: 2029}
+      - {dataset: MIROC-ESM,     exp: abrupt4xCO2, start_year:    1, end_year:  150}
+      - {dataset: MPI-ESM-LR,    exp: piControl,   start_year: 1880, end_year: 2029}
+      - {dataset: MPI-ESM-LR,    exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
+      - {dataset: MPI-ESM-P,     exp: piControl,   start_year: 1866, end_year: 2015}
+      - {dataset: MPI-ESM-P,     exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
+      - {dataset: MRI-CGCM3,     exp: piControl,   start_year: 1891, end_year: 2040}
+      - {dataset: MRI-CGCM3,     exp: abrupt4xCO2, start_year: 1851, end_year: 2000}
+      - {dataset: NorESM1-M,     exp: piControl,   start_year:  700, end_year:  849}
+      - {dataset: NorESM1-M,     exp: abrupt4xCO2, start_year:    1, end_year:  150}
     scripts:
       ecs: &ecs_script
         script: climate_metrics/ecs.py
@@ -779,40 +994,51 @@ diagnostics:
       tas:
         <<: *ecs_settings
     additional_datasets:
-      - {dataset: bcc-csm1-1, exp: piControl, start_year: 160, end_year: 309}
-      - {dataset: bcc-csm1-1, exp: historical, start_year: 1961, end_year: 1990}
-      - {dataset: bcc-csm1-1-m, exp: piControl, start_year: 240, end_year: 389}
-      - {dataset: bcc-csm1-1-m, exp: historical, start_year: 1961, end_year: 1990}
-      - {dataset: CanESM2, exp: piControl, start_year: 2015, end_year: 2164}
-      - {dataset: CanESM2, exp: historical, start_year: 1961, end_year: 1990}
-      - {dataset: CCSM4, exp: piControl, start_year: 800, end_year: 949}
-      - {dataset: CCSM4, exp: historical, start_year: 1961, end_year: 1990}
-      - {dataset: CNRM-CM5, exp: piControl, start_year: 1850, end_year: 1999}
-      - {dataset: CNRM-CM5, exp: historical, start_year: 1961, end_year: 1990}
-      - {dataset: CSIRO-Mk3-6-0, exp: piControl, start_year: 1, end_year: 150}
-      - {dataset: CSIRO-Mk3-6-0, exp: historical, start_year: 1961, end_year: 1990}
-      - {dataset: GFDL-CM3, exp: piControl, start_year: 1, end_year: 150}
-      - {dataset: GFDL-CM3, exp: historical, start_year: 1961, end_year: 1990}
-      - {dataset: GISS-E2-H, exp: piControl, start_year: 1200, end_year: 1349}
-      - {dataset: GISS-E2-H, exp: historical, start_year: 1961, end_year: 1990}
-      - {dataset: GISS-E2-R, exp: piControl, start_year: 3331, end_year: 3480}
-      - {dataset: GISS-E2-R, exp: historical, start_year: 1961, end_year: 1990}
-      - {dataset: inmcm4, exp: piControl, start_year: 2090, end_year: 2239}
-      - {dataset: inmcm4, exp: historical, start_year: 1961, end_year: 1990}
-      - {dataset: IPSL-CM5A-LR, exp: piControl, start_year: 1850, end_year: 1999}
-      - {dataset: IPSL-CM5A-LR, exp: historical, start_year: 1961, end_year: 1990}
-      - {dataset: IPSL-CM5B-LR, exp: piControl, start_year: 1850, end_year: 1999}
-      - {dataset: IPSL-CM5B-LR, exp: historical, start_year: 1961, end_year: 1990}
-      - {dataset: MIROC5, exp: piControl, start_year: 2100, end_year: 2249}
-      - {dataset: MIROC5, exp: historical, start_year: 1961, end_year: 1990}
-      - {dataset: MIROC-ESM, exp: piControl, start_year: 1800, end_year: 1949}
-      - {dataset: MIROC-ESM, exp: historical, start_year: 1961, end_year: 1990}
-      - {dataset: MPI-ESM-LR, exp: piControl, start_year: 2015, end_year: 2164}
-      - {dataset: MPI-ESM-LR, exp: historical, start_year: 1961, end_year: 1990}
-      # Day is out of range for month (wait for iris > 2.0)
-      # - {dataset: ACCESS1-0, exp: piControl, start_year: 300, end_year: 449}
-      # - {dataset: ACCESS1-0, exp: historical, start_year: 1961,
-      #    end_year: 1990}
+          - {dataset: ACCESS1-0,     exp: piControl,  start_year:  300, end_year:  449}
+          - {dataset: ACCESS1-0,     exp: historical, start_year: 1961, end_year: 1990}
+          # Wrong start year for piControl (must be 407)
+          - {dataset: bcc-csm1-1,    exp: piControl,  start_year:  160, end_year:  299}
+          - {dataset: bcc-csm1-1,    exp: historical, start_year: 1961, end_year: 1990}
+          # Wrong start year for piControl (must be 344)
+          - {dataset: bcc-csm1-1-m,  exp: piControl,  start_year:  240, end_year:  379}
+          - {dataset: bcc-csm1-1-m,  exp: historical, start_year: 1961, end_year: 1990}
+          - {dataset: CanESM2,       exp: piControl,  start_year: 2321, end_year: 2470}
+          - {dataset: CanESM2,       exp: historical, start_year: 1961, end_year: 1990}
+          - {dataset: CCSM4,         exp: piControl,  start_year:  937, end_year: 1086}
+          - {dataset: CCSM4,         exp: historical, start_year: 1961, end_year: 1990}
+          - {dataset: CNRM-CM5,      exp: piControl,  start_year: 2250, end_year: 2399}
+          - {dataset: CNRM-CM5,      exp: historical, start_year: 1961, end_year: 1990}
+          - {dataset: CSIRO-Mk3-6-0, exp: piControl,  start_year:   81, end_year:  230}
+          - {dataset: CSIRO-Mk3-6-0, exp: historical, start_year: 1961, end_year: 1990}
+          - {dataset: GFDL-CM3,      exp: piControl,  start_year:    1, end_year:  150}
+          - {dataset: GFDL-CM3,      exp: historical, start_year: 1961, end_year: 1990}
+          - {dataset: GFDL-ESM2G,    exp: piControl,  start_year:  162, end_year:  311}
+          - {dataset: GFDL-ESM2G,    exp: historical, start_year: 1961, end_year: 1990}
+          - {dataset: GFDL-ESM2M,    exp: piControl,  start_year:  162, end_year:  311}
+          - {dataset: GFDL-ESM2M,    exp: historical, start_year: 1961, end_year: 1990}
+          - {dataset: GISS-E2-H,     exp: piControl,  start_year: 2410, end_year: 2559}
+          - {dataset: GISS-E2-H,     exp: historical, start_year: 1961, end_year: 1990}
+          - {dataset: GISS-E2-R,     exp: piControl,  start_year: 3981, end_year: 4130}
+          - {dataset: GISS-E2-R,     exp: historical, start_year: 1961, end_year: 1990}
+          - {dataset: HadGEM2-ES,    exp: piControl,  start_year: 1860, end_year: 2009}
+          - {dataset: HadGEM2-ES,    exp: historical, start_year: 1961, end_year: 1990}
+          - {dataset: inmcm4,        exp: piControl,  start_year: 1850, end_year: 1999}
+          - {dataset: inmcm4,        exp: historical, start_year: 1961, end_year: 1990}
+          - {dataset: IPSL-CM5B-LR,  exp: piControl,  start_year: 1850, end_year: 1999}
+          - {dataset: IPSL-CM5B-LR,  exp: historical, start_year: 1961, end_year: 1990}
+          - {dataset: MIROC5,        exp: piControl,  start_year: 2411, end_year: 2560}
+          - {dataset: MIROC5,        exp: historical, start_year: 1961, end_year: 1990}
+          - {dataset: MIROC-ESM,     exp: piControl,  start_year: 1880, end_year: 2029}
+          - {dataset: MIROC-ESM,     exp: historical, start_year: 1961, end_year: 1990}
+          - {dataset: MPI-ESM-LR,    exp: piControl,  start_year: 1880, end_year: 2029}
+          - {dataset: MPI-ESM-LR,    exp: historical, start_year: 1961, end_year: 1990}
+          # Parent experiment of historical is NOT piControl, but past1000
+          - {dataset: MPI-ESM-P,     exp: piControl,  start_year: 2850, end_year: 2999}
+          - {dataset: MPI-ESM-P,     exp: historical, start_year: 1961, end_year: 1990}
+          - {dataset: MRI-CGCM3,     exp: piControl,  start_year: 1950, end_year: 2099}
+          - {dataset: MRI-CGCM3,     exp: historical, start_year: 1961, end_year: 1990}
+          - {dataset: NorESM1-M,     exp: piControl,  start_year:  700, end_year:  849}
+          - {dataset: NorESM1-M,     exp: historical, start_year: 1961, end_year: 1990}
     scripts:
       fig09-42a: &fig09_42a_script
         script: ipcc_ar5/ch09_fig09_42a.py

@@ -33,7 +33,12 @@ diagnostics:
       ta:
         preprocessor: pp
         mip: Amon
-        fx_files: [sftlf, sftof, areacello]
+      sftlf:
+        mip: fx
+      sftof:
+        mip: fx
+      areacello:
+        mip: fx
     scripts:
       my_diagnostic:
         script: /path/to/your/my_little_diagnostic.py
