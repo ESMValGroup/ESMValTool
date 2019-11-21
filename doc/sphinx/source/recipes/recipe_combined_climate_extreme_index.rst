@@ -92,3 +92,5 @@ Example plots
 .. figure::  /recipes/figures/combined_climate_extreme_index/t90p_IPSL-CM5A-LR_rcp85_2020_2040.png
    :align:   center
    :width:   14cm
+
+Average change in the heat component (t90p metric) of the Combined Climate Extreme Index for the 2020-2040 compared to the 1971-2000 reference period for the RCP 8.5 scenario simulated by MPI-ESM-MR.
