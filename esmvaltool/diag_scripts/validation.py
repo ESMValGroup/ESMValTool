@@ -4,8 +4,6 @@ Validation Diagnostic
 This diagnostic uses two datasets (control and experiment),
 applies operations on their data, and plots one against the other.
 It can optionally use a number of OBS, OBS4MIPS datasets.
-
-This diagnostic uses CMIP5 data; to switch to CMIP6 change _CMIP_TYPE
 """
 
 import logging
@@ -20,12 +18,9 @@ import numpy as np
 from esmvaltool.diag_scripts.shared import (apply_supermeans,
                                             get_control_exper_obs,
                                             group_metadata, run_diagnostic)
-from esmvaltool.preprocessor import extract_region, extract_season
+from esmvalcore.preprocessor import extract_region, extract_season
 
 logger = logging.getLogger(os.path.basename(__file__))
-
-
-_CMIP_TYPE = 'CMIP5'
 
 
 def plot_contour(cube, plt_title, file_name):
@@ -213,9 +208,10 @@ def main(cfg):
     for short_name in grouped_input_data:
         logger.info("Processing variable %s", short_name)
 
+        cmip_era = cfg["cmip_era"]
         # get the control, experiment and obs dicts
         ctrl, exper, obs = get_control_exper_obs(short_name, input_data,
-                                                 cfg, _CMIP_TYPE)
+                                                 cfg, cmip_era)
         # set a plot key holding info on var and data set names
         plot_key = short_name + '_' + ctrl['dataset'] \
             + '_vs_' + exper['dataset']

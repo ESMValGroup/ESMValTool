@@ -8,10 +8,10 @@
 ;
 ; #############################################################################
 
-load "./interface_scripts/auxiliary.ncl"
-load "./interface_scripts/logging.ncl"
+load "$diag_scripts/../interface_scripts/auxiliary.ncl"
+load "$diag_scripts/../interface_scripts/logging.ncl"
 
-load "./diag_scripts/shared/plot/aux_plotting.ncl"
+load "$diag_scripts/shared/plot/aux_plotting.ncl"
 
 ; #############################################################################
 undef("contourplot")
@@ -44,7 +44,7 @@ function contourplot(wks_in[1],
 ;    Input via netCDF not yet implemented.
 ;
 ; Modification history
-;    20131217-A_vanu_be: written, largely copied from countour_map.ncl
+;    20131217-vanulft_bert: written, largely copied from countour_map.ncl.
 ;
 local data, defaults, diag_script, funcname, res, res_new, scriptname, \
   source, varname, wks, wks_in

@@ -1,15 +1,15 @@
 # ESMValTool
 # recipe_concatenate_exps.yml
 ---
-documentation: 
+documentation:
   description: |
     Concatenate time series of different experiments at the preprocessor level.
-    
+
   authors:
-    - schl_ma
+    - schlund_manuel
 
   maintainer:
-    - schl_ma
+    - schlund_manuel
 
 datasets:
   - {dataset: CanESM2}
@@ -25,7 +25,6 @@ diagnostics:
       tas: &variable_settings
         project: CMIP5
         mip: Amon
-        field: T2Ms
         ensemble: r1i1p1
         exp: historical
         start_year: 1950

@@ -9,7 +9,7 @@ Annual 'Supermeans' are averages over several full years.
 """
 
 import os.path
-import six
+
 import cf_units
 import iris
 import iris.coord_categorisation
@@ -20,13 +20,9 @@ import numpy as np
 class NoBoundsError(ValueError):
     """Return error and pass."""
 
-    pass
-
 
 class InvalidPeriod(ValueError):
     """Return error and pass."""
-
-    pass
 
 
 def get_supermean(name, season, data_dir, obs_flag=None):
@@ -255,7 +251,7 @@ def _add_categorised_coord(cube,
         units of the category value, typically 'no_unit' or '1'.
     """
     # Interpret coord, if given as a name
-    if isinstance(from_coord, six.string_types):
+    if isinstance(from_coord, str):
         from_coord = cube.coord(from_coord)
 
     if cube.coords(name):

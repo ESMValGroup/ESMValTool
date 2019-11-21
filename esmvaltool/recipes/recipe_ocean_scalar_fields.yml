@@ -9,10 +9,10 @@ documentation:
     fields into the ocean. This work based on the BGC-val toolkit GMD-2018-103.
 
   authors:
-    - demo_le
+    - demora_lee
 
   maintainer:
-    - schl_ma
+    - demora_lee
 
   references:
     - demora2018gmd
@@ -46,7 +46,6 @@ diagnostics:
     description: sea_water_transport_across_line
     variables:
       mfo: # sea_water_transport_across_line
-        field: TO0M
         mip: Omon
     scripts:
       Regional_Ocean_Surface_mean_timeseries:

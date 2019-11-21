@@ -487,7 +487,7 @@ def missing_whitespace(logical_line):
     for index in range(len(line) - 1):
         char = line[index]
         if char in ',;:' and line[index + 1] not in WHITESPACE:
-            before = line[:index]
+            # before = line[:index]
             if char == ':':
                 continue  # Slice syntax, no space required
             if char == ',' and line[index + 1] == ')':
@@ -755,6 +755,8 @@ def whitespace_before_parameters(logical_line, tokens):
             (prev_type == tokenize.NAME or prev_text in '}])') and
             # Syntax "class A (B):" is allowed, but avoid it
             (index < 2 or tokens[index - 2][1] != 'class') and
+            # Syntax "elseif (": is allowed (special case NCL 6.5.0)
+            (tokens[index - 1][1] != 'elseif') and
                 # Allow "return (a.foo for a in range(5))"
                 not keyword.iskeyword(prev_text)):
             yield prev_end, "E211 whitespace before '%s'" % text

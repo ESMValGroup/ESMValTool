@@ -9,12 +9,12 @@ documentation:
     at https://doi.org/10.5281/zenodo.2025776
 
   authors:
-    - hage_st
-    - loew_al
-    - stac_to
+    - hagemann_stefan
+    - loew_alexander
+    - stacke_tobias
 
   maintainer:
-    - righ_ma
+    - righi_mattia
 
   references:
     - duemenil00mpimr
@@ -35,13 +35,10 @@ diagnostics:
     variables:
       evspsbl:
         mip: Amon
-        field: T2Ms
       mrro:
         mip: Lmon
-        field: T2Ms
       pr:
         mip: Amon
-        field: T2Ms
     scripts:
       catchment_analysis:
         script: runoff_et/catchment_analysis.py

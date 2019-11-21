@@ -14,6 +14,8 @@ MONTH = 'month_number'
 TIME = 'time'
 YEAR = 'year'
 
+ACTIVITY = 'activity'
+ALIAS = 'alias'
 DATASET = 'dataset'
 EXP = 'exp'
 LONG_NAME = 'long_name'

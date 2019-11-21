@@ -34,25 +34,23 @@
 ; Caveats
 ;
 ; Modification history
-;    20181107-A_righ_ma: revised and extended to include new metadata handling
-;    20151027-A_laue_ax: moved call to 'write_references' to the beginning
-;                        of the code
-;    20150325-A_laue_ax: modified reference tags used for acknowledgements
-;                        (projects, observations, etc)
-;    20140312-A_righ_ma: adapted to new time_operations structure
-;    20130618-A_gott_kl: adjusted to r738 of
-;                        https://svn.dlr.de/ESM-Diagnostic/sources/trunk
-;    20121130-A_gott_kl: written
+;    20181107-righi_mattia: revised and extended to include new metadata
+;                           handling
+;    20151027-lauer_axel: moved call to 'write_references' to the beginning
+;                         of the code
+;    20150325-lauer_axel: modified reference tags used for acknowledgements
+;                         (projects, observations, etc)
+;    20140312-righi_mattia: adapted to new time_operations structure
+;    20121130-gottschaldt_klaus-dirk: written
 ;
 ; #############################################################################
 
-load "interface_scripts/interface.ncl"  ; load metadata
+load "$diag_scripts/../interface_scripts/interface.ncl"  ; load metadata
 
-load "./diag_scripts/shared/statistics.ncl"  ; load statistics functions
+load "$diag_scripts/shared/statistics.ncl"  ; load statistics functions
 
-load "./diag_scripts/shared/plot/style.ncl"  ; load plot style functions
-load "./diag_scripts/shared/plot/contour_maps.ncl"  ; load plot function
-
+load "$diag_scripts/shared/plot/style.ncl"  ; load plot style functions
+load "$diag_scripts/shared/plot/contour_maps.ncl"  ; load plot function
 
 begin
 
@@ -62,7 +60,7 @@ begin
   ; Shortcuts to current variable and field
   ; For multiple variables, use different indices of variable_info
   var0 = variable_info[0]@short_name
-  field_type0 = variable_info[0]@field
+  info0 = select_metadata_by_name(input_file_info, var0)
 
   ; The number of variables is the size of the variable_info list
   n_variables = ListCount(variable_info)
@@ -79,7 +77,6 @@ begin
   ; Retrieve metadata items by attribute (short_name and field)
   atts = True
   atts@short_name = var0
-  atts@field = field_type0
   info = select_metadata_by_atts(input_file_info, atts)
   delete(atts)
 
@@ -94,17 +91,9 @@ begin
   dataset = read_data(info[0])
   printVarSummary(dataset)
 
-  ; Read fx-variable for the second dataset in the list
-  ; fx-variable are specified in the recipe, the field is returned as a list
-  ; where also auxiliary coordinates are stored (if available).
-  ; If no fx-variable is found a missing value is returned
-  fx_var = read_fx_data(info[1], "sftlf")
-  printVarSummary(fx_var)
-
   ; Retrieve metadata item for the reference dataset
   atts = True
   atts@short_name = var0
-  atts@field = field_type0
   atts@dataset = variable_info[0]@reference_dataset
   info_ref = select_metadata_by_atts(input_file_info, atts)
   delete(atts)
@@ -186,5 +175,16 @@ begin
   ; Option 2: pass data via netCDF file
   ; -> useful for non-NCL routines & metrics
   ; map = contour_map("dummy_for_wks", ncdf_outfile,"dummy_for_var")
+
+  ; Call provenance logger
+  log_provenance(ncdf_outfile, \
+                 map@outfile, \
+                 "Mean of variable: " + var0, \
+                 "mean", \
+                 "global", \
+                 "geo", \
+                 (/"righi_mattia", "gottschaldt_klaus-dirk"/), \
+                 (/"acknow_author"/), \
+                 metadata_att_as_array(info0, "filename"))
 
 end

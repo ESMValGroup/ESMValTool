@@ -1,0 +1,43 @@
+---
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: WOA
+  version: '2013v2'
+  tier: 2
+  modeling_realm: clim
+  project_id: OBS
+  source: 'https://data.nodc.noaa.gov/woa/WOA13/DATAv2/'
+  reference: 'woa'
+  comment: ''
+
+# Variables to cmorize (here use only filename prefix)
+variables:
+  thetao:
+    mip: Omon
+    raw: t_an
+    file: woa13_decav81B0_t
+  so:
+    mip: Omon
+    raw: s_an
+    file: woa13_decav81B0_s
+  o2:
+    mip: Oyr
+    raw: o_an
+    file: woa13_all_o
+  no3:
+    mip: Oyr
+    raw: n_an
+    file: woa13_all_n
+  po4:
+    mip: Oyr
+    raw: p_an
+    file: woa13_all_p
+  si:
+    mip: Oyr
+    raw: i_an
+    file: woa13_all_i
+
+# Custom dictionary for this cmorizer
+custom:
+  # years to be analyzed
+  years: [2000, ]

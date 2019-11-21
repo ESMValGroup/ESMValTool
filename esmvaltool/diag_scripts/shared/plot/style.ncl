@@ -15,8 +15,8 @@
 ;
 ; #############################################################################
 
-load "./interface_scripts/auxiliary.ncl"
-load "./interface_scripts/logging.ncl"
+load "$diag_scripts/../interface_scripts/auxiliary.ncl"
+load "$diag_scripts/../interface_scripts/logging.ncl"
 
 ; #############################################################################
 undef("project_style")
@@ -56,11 +56,11 @@ function project_style(items: list,
 ; References
 ;
 ; Modification history
-;    20150512-A_righ_ma: modified to read style info from external style
-;                        files, instead of using hard-coded values in the
-;                        code. Functionalities of the project_styleset and
-;                        project_style_<styleset> functions porteed here.
-;    20130419-A_gott_kl: written.
+;    20150512-righi_mattia: modified to read style info from external style
+;                           files, instead of using hard-coded values in the
+;                           code. Functionalities of the project_styleset and
+;                           project_style_<styleset> functions porteed here.
+;    20130419-gottschaldt_klaus-dirk: written.
 ;
 local funcname, scriptname, result, info, flag, styleset, stylefile, tmp, sty
 begin
@@ -71,17 +71,6 @@ begin
 
   ; Check for the available dictonary keys to be used for the annotations
   dkeys = (/"dataset", "ensemble", "exp", "mip"/)
-  l_dkeys = new(dimsizes(dkeys), logical)
-  l_dkeys = True
-  do jj = 0, dimsizes(dkeys) - 1
-    do ii = 0, ListCount(items) - 1
-      if (.not.isatt(items[ii], dkeys(jj))) then
-        l_dkeys(jj) = False
-        break
-      end if
-    end do
-  end do
-  ckeys = dkeys(ind(l_dkeys))
 
   ; Style information for this flag available as diag_script_info@$flag$
   if (isatt(info, flag)) then
@@ -99,7 +88,7 @@ begin
 
   ; Styleset defined, search for corresponding style file
   styleset = str_lower(styleset)
-  stylefile = "./diag_scripts/shared/plot/styles/" + styleset + ".style"
+  stylefile = "$diag_scripts/shared/plot/styles/" + styleset + ".style"
   if (.not.fileexists(stylefile)) then
     error_msg("f", scriptname, funcname, \
               "style file " + stylefile + " not found")
@@ -113,12 +102,12 @@ begin
   if (flag.eq."annots") then
 
     ; Start with highest priority
-    result = metadata_att_as_array(items, ckeys(0))
+    result = metadata_att_as_array(items, dkeys(0))
 
     unique = get_unique_values(result)
     iprio = 1
     do while (dimsizes(unique) .ne. dimsizes(result))
-      if (iprio .eq. dimsizes(l_dkeys)) then
+      if (iprio .eq. dimsizes(dkeys)) then
         error_msg("w", scriptname, funcname, "non-unique labels in dataset" + \
                   "annotations")
         unique := result
@@ -126,7 +115,7 @@ begin
         do i = 0, dimsizes(unique) - 1
           index = ind(result .eq. unique(i))
           if (dimsizes(index) .gt. 1) then  ; More than one occurence
-            append = metadata_att_as_array(items, ckeys(iprio))
+            append = metadata_att_as_array(items, dkeys(iprio))
             result(index) = result(index) + "_" + append(index)
           end if
           delete(index)
@@ -403,7 +392,7 @@ function gsnColorRange(lower:numeric,
 ;    http://www.ncl.ucar.edu/Applications/Scripts/contoursym_4.ncl
 ;
 ; Modification history
-;    20130422-A_gott_kl: written.
+;    20130422-gottschaldt_klaus-dirk: written.
 ;
 local funcname, scriptname, nboxes_left, nboxes_right, ncolors_left, \
   ncolors_right, output, color_start
@@ -474,7 +463,7 @@ function format_units(str[1]: string)
 ; References
 ;
 ; Modification history
-;    20140320-A_righ_ma: written.
+;    20140320-righi_mattia: written.
 ;
 local funcname, scriptname, loc_str
 begin
@@ -535,7 +524,7 @@ function set_log_ticks(fmin[1]:numeric,
 ; References
 ;
 ; Modification history
-;    20141003-A_righ_ma: written.
+;    20141003-righi_mattia: written.
 ;
 local funcname, scriptname, omin, omax, rmin, rmax, om, tmp, arr
 begin
@@ -625,7 +614,7 @@ function sort_alphabetically(orig_names[*], idx_exclude, dest_exclude)
 ; References
 ;
 ; Modification history
-;    20151028-A_righ:ma: written.
+;    20151028-righi_mattia: written.
 ;
 begin
 

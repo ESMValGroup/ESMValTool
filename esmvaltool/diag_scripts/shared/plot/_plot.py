@@ -61,10 +61,9 @@ def get_path_to_mpl_style(style_file=None):
     """Get path to matplotlib style file."""
     if style_file is None:
         style_file = 'default.mplstyle'
-    if not isinstance(style_file, str):
-        raise TypeError("Invalid input: {} is not a "
-                        "string".format(style_file))
-    base_dir = os.path.dirname(__file__)
+    if not style_file.endswith('.mplstyle'):
+        style_file += '.mplstyle'
+    base_dir = os.path.dirname(os.path.realpath(__file__))
     filepath = os.path.join(base_dir, 'styles_python', 'matplotlib',
                             style_file)
     logger.debug("Using matplotlib style: %s", filepath)
@@ -73,10 +72,11 @@ def get_path_to_mpl_style(style_file=None):
 
 def get_dataset_style(dataset, style_file=None):
     """Retrieve the style information for the given dataset."""
-    # Default path
     if style_file is None:
         style_file = 'cmip5.yml'
-    base_dir = os.path.dirname(__file__)
+    if not style_file.endswith('.yml'):
+        style_file += '.yml'
+    base_dir = os.path.dirname(os.path.realpath(__file__))
     default_dir = os.path.join(base_dir, 'styles_python')
 
     # Check if style_file is valid
@@ -196,7 +196,7 @@ def multi_dataset_scatterplot(x_data, y_data, datasets, filepath, **kwargs):
 
     # Plot data
     for (idx, dataset) in enumerate(datasets):
-        style = get_dataset_style(dataset, kwargs.get('dataset_styles_file'))
+        style = get_dataset_style(dataset, kwargs.get('dataset_style_file'))
 
         # Fix problem when plotting ps file
         facecolor = style['color'] if filepath.endswith('ps') else \
@@ -222,7 +222,7 @@ def multi_dataset_scatterplot(x_data, y_data, datasets, filepath, **kwargs):
 
 
 def scatterplot(x_data, y_data, filepath, **kwargs):
-    """Plot a multi dataset scatterplot.
+    """Plot a scatterplot.
 
     Notes
     -----

@@ -1,0 +1,103 @@
+###############################################################################
+# PYTHON STYLE FILE
+# cmip6.yml
+# created by 'convert_ncl_style.py'.
+###############################################################################
+# This file defines plot attributes for certain datasets.
+#
+# Template:
+#
+# DATASET:
+#   avgstd: 0
+#   color: '#ffffff'
+#   dash: --
+#   facecolor: none
+#   mark: x
+#   thick: 1
+#
+# DATASET:   dataset name (same as given in the main recipe)
+# avgstd:    0 = takes part in the calculation of mean and stddev
+#            1 = does not take part in the calculation of mean and stddev
+#            (usually 0 for models, 1 for observations/reanalysis)
+# color:     hex RGB or RGBA string (e.g. #0f0fa1), see
+#            http://www.ncl.ucar.edu/Applications/Scripts/rgb.txt
+#            https://www.ncl.ucar.edu/Document/glossary.shtml#RGB
+#            https://www.ncl.ucar.edu/Document/glossary.shtml#RGBA
+# dash:      matplotlib dash pattern (linestyle)
+# facecolor: Color of the filling (none = no filling)
+# mark:      marker string for markers (used in matplotlib), see
+#            https://matplotlib.org/api/markers_api.html
+#            https://www.ncl.ucar.edu/Document/Graphics/Images/markers.png
+# thick:     line thickness
+###############################################################################
+
+BCC-CSM2-MR:
+  avgstd: 0
+  color: '#94191e'
+  dash: '-'
+  facecolor: none
+  mark: o
+  thick: 1
+CNRM-CM6-1:
+  avgstd: 0
+  color: '#1e4c24'
+  dash: --
+  facecolor: none
+  mark: s
+  thick: 1
+GFDL-AM4:
+  avgstd: 0
+  color: '#23366d'
+  dash: '-'
+  facecolor: none
+  mark: o
+  thick: 1
+GISS-E2-1-G:
+  avgstd: 0
+  color: '#771d7b'
+  dash: '-'
+  facecolor: none
+  mark: o
+  thick: 1
+IPSL-CM6A-LR:
+  avgstd: 0
+  color: '#5b53ae'
+  dash: '-'
+  facecolor: none
+  mark: o
+  thick: 1
+IPSL-CM6A-MR:
+  avgstd: 0
+  color: '#5b53ae'
+  dash: --
+  facecolor: none
+  mark: s
+  thick: 1
+IPSL-CM6B-LR:
+  avgstd: 0
+  color: '#5b53ae'
+  dash: ':'
+  facecolor: none
+  mark: ^
+  thick: 1
+MIROC6:
+  avgstd: 0
+  color: '#b85fb6'
+  dash: --
+  facecolor: none
+  mark: s
+  thick: 1
+MRI-ESM2-0:
+  avgstd: 0
+  color: '#adff2f'
+  dash: --
+  facecolor: none
+  mark: ^
+  thick: 1
+default:
+  avgstd: 0
+  color: '#000000'
+  dash: '-'
+  facecolor: '#000000'
+  mark: o
+  thick: 1

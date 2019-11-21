@@ -9,7 +9,7 @@
 ;
 ; #############################################################################
 
-load "./interface_scripts/logging.ncl"
+load "$diag_scripts/../interface_scripts/logging.ncl"
 
 ; #############################################################################
 undef("convert_units")
@@ -37,8 +37,8 @@ function convert_units(var:numeric,
 ;
 ; References
 ;
-; Modification history:
-;    20150216-A_righ_ma: written.
+; Modification history
+;    20150216-righi_mattia: written.
 ;
 local funcname, scriptname
 begin
