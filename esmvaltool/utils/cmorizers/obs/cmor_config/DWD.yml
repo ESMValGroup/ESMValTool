@@ -1,0 +1,23 @@
+---
+# Common global attributes for Cmorizer output
+attributes:
+  dataset_id: DWD
+  version: 'CDC'
+  tier: 2
+  modeling_realm: clim
+  project_id: OBS
+  source: '/media/bmueller/Daten/DWD'
+  reference: 'dwd'
+  network: "DWD"
+  comment: ''
+  field: 'TOIs'
+
+# Variables to cmorize (here use only filename prefix)
+variables:
+  tas:
+    mip: Amon
+    raw: TT_TU_MN009
+
+## Custom dictionary for this cmorizer
+#custom:
+
