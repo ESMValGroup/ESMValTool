@@ -1,0 +1,88 @@
+# ESMValTool
+---
+documentation:
+  description: |
+    Recipe to compute the annual, summer and winter Eady Growth Rates. The
+    output produces netcdf files for each model and season.
+
+
+  authors:
+    - sanchez-gomez_emilia
+
+  maintainer:
+    - loosveldt-tomas_saskia
+
+  projects:
+    - primavera
+
+datasets:
+  - {dataset: CMCC-CM2-HR4, project: CMIP6, exp: highresSST-present,
+     ensemble: r1i1p1f1, mip: Amon, grid: gn, start_year: 1950, end_year: 2014}
+  - {dataset: CNRM-CM6-1, project: CMIP6, exp: highresSST-present,
+     ensemble: r1i1p1f2, mip: Amon, grid: gr, start_year: 1950, end_year: 2014}
+  - {dataset: CNRM-CM6-1-HR, project: CMIP6, exp: highresSST-present,
+     ensemble: r1i1p1f2, mip: Amon, grid: gr, start_year: 1950, end_year: 2014}
+  - {dataset: ECMWF-IFS-HR, project: CMIP6, exp: highresSST-present,
+     ensemble: r1i1p1f1, mip: Amon, grid: gr, start_year: 1950, end_year: 2014}
+  - {dataset: ECMWF-IFS-LR, project: CMIP6, exp: highresSST-present,
+     ensemble: r1i1p1f1, mip: Amon, grid: gr, start_year: 1950, end_year: 2014}
+  - {dataset: HadGEM3-GC31-HM, project: CMIP6, exp: highresSST-present,
+     ensemble: r1i1p1f1, mip: Amon, grid: gn, start_year: 1950, end_year: 2014}
+  - {dataset: HadGEM3-GC31-LM, project: CMIP6, exp: highresSST-present,
+     ensemble: r1i1p1f1, mip: Amon, grid: gn, start_year: 1950, end_year: 2014}
+  - {dataset: HadGEM3-GC31-MM, project: CMIP6, exp: highresSST-present,
+     ensemble: r1i1p1f1, mip: Amon, grid: gn, start_year: 1950, end_year: 2014}
+  - {dataset: MPI-ESM1-2-XR, project: CMIP6, exp: highresSST-present,
+     ensemble: r1i1p1f1, mip: Amon, grid: gn, start_year: 1950, end_year: 2014}
+  - {dataset: MPI-ESM1-2-HR, project: CMIP6, exp: highresSST-present,
+     ensemble: r1i1p1f1, mip: Amon, grid: gn, start_year: 1950, end_year: 2014}
+
+
+preprocessors:
+  annual_mean:
+    annual_statistics:
+  summer_mean:
+    extract_season:
+      season: 'JJA'
+    seasonal_statistics:
+  winter_mean:
+    extract_season:
+      season: 'DJF'
+    seasonal_statistics:
+
+diagnostics:
+  annual_egr:
+    variables:
+      ta:
+        preprocessor: annual_mean
+      zg:
+        preprocessor: annual_mean
+      ua:
+        preprocessor: annual_mean
+    scripts:
+      annual_eady_growth_rate:
+        script: primavera/eady_growth_rate/eady_growth_rate.py
+
+  summer_egr:
+    variables:
+      ta:
+        preprocessor: summer_mean
+      zg:
+        preprocessor: summer_mean
+      ua:
+        preprocessor: summer_mean
+    scripts:
+      summer_eady_growth_rate:
+        script: primavera/eady_growth_rate/eady_growth_rate.py
+
+  winter_egr:
+    variables:
+      ta:
+        preprocessor: winter_mean
+      zg:
+        preprocessor: winter_mean
+      ua:
+        preprocessor: winter_mean
+    scripts:
+      winter_eady_growth_rate:
+        script: primavera/eady_growth_rate/eady_growth_rate.py

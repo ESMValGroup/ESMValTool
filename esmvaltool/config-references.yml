@@ -256,6 +256,7 @@ authors:
     orcid:
   loosveldt-tomas_saskia:
     name: Loosveldt-Tomas, Saskia
+    institute: BSC, Spain
     orcid:
   lorenz_ruth:
     name: Lorenz, Ruth
@@ -349,6 +350,10 @@ authors:
     name: Roehrig, Romain
     institute: MeteoFr, France
     orcid: https://orcid.org/0000-0002-3903-3841
+  sanchez-gomez_emilia:
+    name: Sanchez, Emilia
+    institute: CERFACS, France
+    orcid:
   serva_federico:
     name: Serva, Federico
     institute: CNR, Italy
@@ -713,6 +718,7 @@ references:
   piomas: "Zhang, J. et al., Mon. Wea. Rev. doi:10.1175/1520-0493(2003)131<0845:MGSIWA>2.0.CO;2, 2013."
   uwisc: "O'Dell et al., J. Clim., doi:10.1175/2007JCLI1958.1, 2008."
   woa: "Locarnini et al., World Ocean Atlas 2013, Volume 1: Temperature, NOAA Atlas NESDIS 73, 2013."
+
 
 projects:
   c3s-magic: Copernicus Climate Change Service 34a Lot 2 (MAGIC) project
