@@ -762,6 +762,7 @@ projects:
   primavera: EU H2020 project PRIMAVERA
   trr181: DFG Project TRR-181
   ukesm: UKESM, UK Earth System Model project (NERC)
+  primavera: EU H2020 project PRIMAVERA
 
 realms:
   aerosol: aerosol

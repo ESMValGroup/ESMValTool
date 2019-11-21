@@ -1,0 +1,79 @@
+---
+documentation:
+  description: |
+    Computes ocean heat content in a set of given layers and outputs both the
+    time series and the full variable
+
+  authors:
+    - vegas-regidor_javier
+
+  maintainer:
+    - vegas-regidor_javier
+
+  references:
+    - contact_authors
+
+  projects:
+    - primavera
+
+datasets:
+  - {dataset: EC-Earth3-HR, institute: EC-Earth-Consortium, grid: gn,
+     project: PRIMAVERA, exp: spinup-1950, ensemble: r1i1p1f1,
+     start_year: 1950, end_year: 1999, frequency: 'mon',
+     mesh_file: "/gws/nopw/j04/primavera1/masks/mesh_masks/\
+                 EC-Earth-Consortium/mesh_mask_nemo.Ec3.2_O25L75.nc"}
+  # - {dataset: EC-Earth3-LR, institute: EC-Earth-Consortium, grid: gn,
+  #    project: PRIMAVERA, exp: control-1950, ensemble: r1i1p1f1,
+  #    version: v20180501, start_year: 1950, end_year: 1999,
+  #    mesh_file: "/gws/nopw/j04/primavera1/masks/mesh_masks/\
+  #                 EC-Earth-Consortium/mesh_mask_nemo.Ec3.2_O1L75.nc"}
+  - {dataset: GFDL-ESM2G, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1950, end_year: 1999}
+  - {dataset: MPI-ESM-LR, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1950, end_year: 1999}
+  - {dataset: EC-EARTH, project: CMIP5, exp: historical, ensemble: r1i1p1,
+     start_year: 1950, end_year: 1999}
+# - {dataset: ERA-Interim, project: OBS, tier: 3, type: reanaly, version: 1,
+#    start_year: 2000, end_year: 2002}
+
+preprocessors:
+  extract:
+    save:
+      optimize_access: i j
+
+diagnostics:
+  ocean_heat_content:
+    description: Ocean heat content
+    variables:
+      thetao:
+        mip: Omon
+        field: T3MO
+        fx_files: [areacello, thkcello]
+    scripts:
+      ocean_heat_content_0_300:
+        script: primavera/ocean_heat_content/ocean_heat_content.py
+        title: "Python example diagnostic"
+        min_depth: 0
+        max_depth: 300
+        compute_2D: false
+        compute_2D_monthly_clim: true
+        compute_1D: true
+        compute_1D_monthly_clim: true
+      ocean_heat_content_300_1000:
+        script: primavera/ocean_heat_content/ocean_heat_content.py
+        title: "Python example diagnostic"
+        min_depth: 300
+        max_depth: 1000
+        compute_2D: false
+        compute_2D_monthly_clim: true
+        compute_1D: true
+        compute_1D_monthly_clim: true
+      ocean_heat_content_1000_3000:
+        script: primavera/ocean_heat_content/ocean_heat_content.py
+        title: "Python example diagnostic"
+        min_depth: 1000
+        max_depth: 3000
+        compute_2D: false
+        compute_2D_monthly_clim: true
+        compute_1D: true
+        compute_1D_monthly_clim: true
