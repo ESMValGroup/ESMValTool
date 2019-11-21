@@ -339,6 +339,7 @@ begin
       ; but is same for both area and extent anyway
       if (diag_script_info@legend_outside) then
         val_area@legend_outside = True
+        wks_area@legendfile = config_user_info@plot_dir + out_ext + "_legend"
       end if
     else
       diag_script_info@legend_outside = False
