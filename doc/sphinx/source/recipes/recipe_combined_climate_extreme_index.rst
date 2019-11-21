@@ -1,7 +1,7 @@
 .. _recipes_extreme_index:
 
 Combined Climate Extreme Index
-====================================================
+==============================
 
 Overview
 --------
@@ -29,7 +29,7 @@ Recipes are stored in recipes/
 
 Diagnostics are stored in diag_scripts/magic_bsc/
 
-* extreme_index.r
+* extreme_index.R
 
 
 User settings
@@ -93,5 +93,4 @@ Example plots
    :align:   center
    :width:   14cm
 
-
-
+Average change in the heat component (t90p metric) of the Combined Climate Extreme Index for the 2020-2040 compared to the 1971-2000 reference period for the RCP 8.5 scenario simulated by MPI-ESM-MR.

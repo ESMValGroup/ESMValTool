@@ -50,6 +50,7 @@ diagnostics:
       lat_lon:
         script: validation.py
         title: ""
+        cmip_era: CMIP5
         control_model: MPI-ESM-LR
         exper_model: NorESM1-M
         observational_datasets: ['CERES-EBAF'] # list of at least one element; if no OBS wanted comment out
@@ -58,6 +59,7 @@ diagnostics:
       zonal_mean:
         script: validation.py
         title: ""
+        cmip_era: CMIP5
         control_model: MPI-ESM-LR
         exper_model: NorESM1-M
         observational_datasets: ['CERES-EBAF'] # list of at least one element; if no OBS wanted comment out
@@ -66,6 +68,7 @@ diagnostics:
       meridional_mean:
         script: validation.py
         title: ""
+        cmip_era: CMIP5
         control_model: MPI-ESM-LR
         exper_model: NorESM1-M
         observational_datasets: ['CERES-EBAF'] # list of at least one element; if no OBS wanted comment out
