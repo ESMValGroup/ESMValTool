@@ -1747,8 +1747,8 @@ function filter121(var:numeric, \
 ;     Smoothes a time series by 1-2-1 filter in iter time steps.
 ;
 ; Modification history
-;     20180807_A-schl_ma: ported to v2.0
-;     20140721_A-wenz_sa: written.
+;     20180807-schlund_manuel: ported to v2.0
+;     20140721-wenzel_sabrina: written.
 ;
 local yy_sm, y_sm0, n_max
 begin

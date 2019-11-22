@@ -51,9 +51,9 @@ function error_bar_plot(Ydata[*] : numeric, \
 ;          "panel": returnes plotvalue for pannel plot.
 ;
 ; Modification history:
-;     20180726_A-schl_ma: ported to v2.0.
-;     201402??_A-wenz_sa: written.
-;     201411??_A-wenz_sa: added collor code for pos and ne values.
+;     20180726-schlund_manuel: ported to v2.0.
+;     201402??-wenzel_sabrina: written.
+;     201411??-wenzel_sabrina: added collor code for pos and ne values.
 ;
 local plot, ti, error_bar, error_barend, DIM_VAR
 begin
@@ -164,8 +164,8 @@ function time_raster_plot(Ydata[*][*] : numeric, \
 ;          "panel": returnes plotvalue for pannel plot.
 ;
 ; Modification history
-;     20180726_A-schl_ma: ported to v2.0.
-;     201504??_A-wenz_sa: written.
+;     20180726-schlund_manuel: ported to v2.0.
+;     201504??-wenzel_sabrina: written.
 ;
 local plot, ti, error_bar, error_barend, DIM_VAR, pxi
 begin
@@ -317,8 +317,8 @@ function weight_lin_plot(Ydata[*][*] : numeric, \
 ;    items: list of input_file_info metadata
 ;
 ; Modification history
-;     20180726_A-schl_ma: ported to v2.0.
-;     201410??_A-wenz_sa: written.
+;     20180726-schlund_manuel: ported to v2.0.
+;     201410??-wenzel_sabrina: written.
 ;
 local plot_array, plot, ploto, lbid, annoid, wtmmm, ummm, colors, dashes, \
   thicks, plot_num, res, bres, tline, zline, wmmm, atts, obs, dim_obs, \
@@ -910,8 +910,9 @@ function diag_scatter(res_in[1] : logical, \
 ;     items: list of input_file_info metadata
 ;
 ; Modification history:
-;     20180806_A-schl_ma: ported to v2.0.
-;     201806??_A-senf_da: written.
+;     20191121-schlund_manuel: added provenance tracking.
+;     20180806-schlund_manuel: ported to v2.0.
+;     201806??-senftleben_daniel: written.
 ;
 local dim_diag, dim_model, diags, datasets, x_var, wks, plot
 begin

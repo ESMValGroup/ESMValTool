@@ -32,7 +32,7 @@ function get_obs_list(input_list: list)
 ;     Returns OBS and OBS6 datasets.
 ;
 ; Modification history:
-;     20191120_schlund_manuel: written.
+;     20191120-schlund_manuel: written.
 ;
 local atts, obs, obs6
 
@@ -77,8 +77,8 @@ function diag_file_name(filename[1]: string, \
 ;     Provides a file name for the calculation results of diagsnostics.
 ;
 ; Modification history:
-;     20180717_A-schl_ma: ported to v2.0.
-;     20140723_A-wenz_sa: written.
+;     20180717-schlund_manuel: ported to v2.0.
+;     20140723-wenzel_sabrina: written.
 ;
 local outname
 
@@ -155,7 +155,7 @@ function integrate_time_units(units[1] : string, \
 ;     "m/s2".
 ;
 ; Modification history:
-;     20180927_A-schl_ma: written.
+;     20180927-schlund_manuel: written.
 ;
 local allowed_time_units, allowed_prefixes, allowed_suffixes, iu, ip, \
       matches, dim_time, all_matches, all_lengths
@@ -269,7 +269,7 @@ function mder_output_desired()
 ;     Checks if MDER output of diagnostic is desired.
 ;
 ; Modification history:
-;     20180906_A-schl_ma: written.
+;     20180906-schlund_manuel: written.
 ;
 local out
 
@@ -352,8 +352,8 @@ function reg_multlin_stats_rap(Y[*]: numeric, \
 ;         b@pval = pval.
 ;
 ; Modification history:
-;     20180808_A-schl_ma: ported to v2.0.
-;     2013????_A-wenz_sa: written.
+;     20180808-schlund_manuel: ported to v2.0.
+;     2013????-wenzel_sabrina: written.
 ;
 local dimXP, N, NP, NY, M, T, Y, X, b, B, rankXP, Yavg, Yvar, Ystd, Xavg, \
       Xvar, Xstd, Yest, n, m, Yres, SST, SSE, SSR, MST, MSE, MSR, SE, Frat, \
@@ -484,7 +484,7 @@ begin
   Yres = Yest-Y                 ; residuals (array operation)
 
                                 ; SS ==> Sum of Squares
-  SST = sum((Y - Yavg) ^ 2)         ; total SS [dof = N - 1]
+  SST = sum((Y - Yavg) ^ 2)     ; total SS [dof = N - 1]
   SSR = sum((Yest - Yavg) ^ 2)  ; regression SS [dof = NP]
   SSE = sum(Yres ^ 2)           ; residual SS [dof = N - NP - 1]
 
@@ -653,8 +653,8 @@ function regress_stepwise(xarr_f[*][*]: numeric, \
 ;     optionally diag_scripts@p_value.
 ;
 ; Modification history:
-;     20180807_A-schl_ma: ported to v2.0.
-;     201303??_A-wenz_sa: written.
+;     20180807-schlund_manuel: ported to v2.0.
+;     201303??-wenzel_sabrina: written.
 ;
 local p_value, im, wregr, wexit, dim_diag, dim_dat, f_value_b, ssr0, sst, \
       used_diags, iiter, igd, jgd, nii, cvf, xarr, yarr

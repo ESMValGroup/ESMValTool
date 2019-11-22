@@ -19,14 +19,11 @@
 ;    function extend_var_at
 ;    function remove_index
 ;    procedure set_default_att
-;    function filter_attrs
-;    procedure write_ignore_warnings
-;    function get_ref_dataset_idx
+;    function empty_str
 ;    function get_average
 ;    function unique_labels_min
 ;    function unique_labels_all
 ;    funcname get_unique_items
-;    function empty_str
 ;
 ; #############################################################################
 
@@ -1108,7 +1105,7 @@ function get_average(items: list)
 ; References
 ;
 ; Modification history
-;    20181217-A-schl_ma: written
+;    20181217-schlund_manuel: written
 ;
 local funcname, scriptname, dim_dat, dim_array, rank, data_array, data
 begin
@@ -1187,8 +1184,8 @@ function unique_labels_min(items: list, \
 ; References
 ;
 ; Modification history
-;    20181217-A-schl_ma: adapated to new NCL interface of v2.0.
-;    20130422-A_gott_kl: written.
+;    20181217-schlund_manuel: adapated to new NCL interface of v2.0.
+;    20130422-gottschaldt_klaus-dirk: written.
 ;
 local funcname, scriptname, prio, result, unique, iprio, index
 begin
@@ -1255,8 +1252,8 @@ function unique_labels_all(items: list, \
 ; References
 ;
 ; Modification history
-;    20181217-A-schl_ma: adapated to new NCL interface of v2.0.
-;    20130422-A_gott_kl: written.
+;    20181217-schlund_manuel: adapated to new NCL interface of v2.0.
+;    20130422-gottschaldt_klaus-dirk: written.
 ;
 local funcname, scriptname, prio, result, unique, iprio, index
 begin
@@ -1317,7 +1314,7 @@ function get_unique_items(items: list,
 ; References
 ;
 ; Modification history
-;    20181218-A-schl_ma: written
+;    20181218-schlund_manuel: written
 ;
 local items, prio, funcname, scriptname, unique_labels, ilist, unique_list, \
   atts, info
