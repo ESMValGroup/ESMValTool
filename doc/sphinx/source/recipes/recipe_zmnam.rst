@@ -70,9 +70,9 @@ Example plots
 .. figure:: /recipes/figures/zmnam/zmnam_reg.png
    :width: 10cm
 
-   Example output: time series of the zonal-mean NAM index.
+   Regression map of the zonal-mean NAM index onto geopotential height, for a selected pressure level (250 hPa) for the MPI-ESM-MR model (CMIP5 AMIP experiment, period 1979-2008). Negative values are shaded in grey.
 
 .. figure:: /recipes/figures/zmnam/zmnam_ts.png
    :width: 10cm
 
-   Example output: regression map for a selected pressure level.
+   Time series of the zonal-mean NAM index for a selected pressure level (250 hPa) for the MPI-ESM-MR model (CMIP5 AMIP experiment, period 1979-2008).
