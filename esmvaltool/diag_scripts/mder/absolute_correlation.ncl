@@ -3,18 +3,18 @@
 ; #############################################################################
 ;
 ; Description:
-;     This routine calculates absolute correlation coefficients s between all
-;     diagnostics, calculated for a present-day period, called in the namelist
-;     and a future variable of interest.
+;     This routine calculates absolute correlation coefficients between all
+;     diagnostics, calculated for a present-day period.
 ;
 ;     Calls one plotscript:
-;     Plots the absolute correlation coefficient between the variable of
-;     interest and present-day diagnostic.
+;     + Plots the absolute correlation coefficient between the variable of
+;       interest and present-day diagnostic.
 ;
 ; Required diag_script_info attributes:
-;     p_time: time range for projections.
-;     p_step: averaging time range for target period.
-;     scal_time: a year to scale the timeseries with.
+;     p_time: start years for future projections.
+;     p_step: time range for future projections.
+;     scal_time: Time range for base period used in anomaly calculations when
+;                "calc_type = 'trend'".
 ;     time_oper: operation in time_operation function.
 ;     time_opt: option in time_operation function.
 ;     calc_type: trend/pos/int.
@@ -23,10 +23,12 @@
 ; Optional diag_script_info attributes:
 ;     average_ens: average over ensemble members of the same model (default:
 ;                  False).
-;     plot_units: convert variable to these units.
 ;     region: the region to be averaged (required for multidimensional input).
 ;     area_oper: operation in area_operation function (required for
 ;                multidimensional input).
+;
+; Optional variable_info attributes:
+;     plot_units: convert variable to these units.
 ;
 ; Caveats:
 ;     "warning: in unique_labels_min (diag_scripts/shared/plot/style.ncl), Add

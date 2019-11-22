@@ -151,7 +151,7 @@ diagnostics:
         start_year: 1979
         end_year: 2005
         additional_datasets:
-          - {dataset: ERA-Interim,    project: OBS6, type: reanaly, version: 1, tier: 3}
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, tier: 3}
     additional_datasets: *datasets
     scripts:
       ta_sp100: &ta_sp100
@@ -177,7 +177,7 @@ diagnostics:
         <<: *mean_sp100_cmip5_amon_t3m_historical_1979_2005
         preprocessor: mean_ng100
         additional_datasets:
-          - {dataset: ERA-Interim,    project: OBS6, type: reanaly, version: 1, tier: 3}
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, tier: 3}
     additional_datasets: *datasets
     scripts:
       ta_ng100: &ta_ng100
@@ -197,7 +197,7 @@ diagnostics:
         <<: *mean_sp100_cmip5_amon_t3m_historical_1979_2005
         preprocessor: mean_trop250
         additional_datasets:
-          - {dataset: ERA-Interim,    project: OBS6, type: reanaly, version: 1, tier: 3}
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, tier: 3}
     additional_datasets: *datasets
     scripts:
       ta_trop250: &ta_trop250
@@ -221,7 +221,7 @@ diagnostics:
         end_year: 2005
         derive: true
         additional_datasets:
-          - {dataset: ERA-Interim,    project: OBS6, type: reanaly, version: 1, tier: 3}
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, tier: 3}
     additional_datasets: *datasets
     scripts:
       uajet_sh850: &uajet_sh850
@@ -244,7 +244,7 @@ diagnostics:
         start_year: 1979
         end_year: 2005
         additional_datasets:
-          - {dataset: ERA-Interim,    project: OBS6, type: reanaly, version: 1, tier: 3}
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, tier: 3}
     additional_datasets: *datasets
     scripts:
       tpp_sh50: &tpp_sh50
@@ -266,11 +266,11 @@ diagnostics:
       va:
         <<: *cmip5_amon_t3m_historical_1979_2005
         additional_datasets:
-          - {dataset: ERA-Interim,    project: OBS6, type: reanaly, version: 1, tier: 3}
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, tier: 3}
       ps:
         <<: *cmip5_amon_t3m_historical_1979_2005
         additional_datasets:
-          - {dataset: ERA-Interim,    project: OBS6, type: reanaly, version: 1, tier: 3}
+          - {dataset: ERA-Interim, project: OBS6, type: reanaly, version: 1, tier: 3}
     additional_datasets: *datasets
     scripts:
       mmstf_sh500: &mmstf_sh500
@@ -298,7 +298,7 @@ diagnostics:
         end_year: 2005
         derive: true
         additional_datasets:
-          - {dataset: CERES-EBAF,     project: obs4mips, level: L3B, version: Ed2-7, tier: 1, start_year: 2001}
+          - {dataset: CERES-EBAF, project: obs4mips, level: L3B, version: Ed2-7, tier: 1, start_year: 2001}
     additional_datasets: *datasets
     scripts:
       asr_sh: &asr_sh

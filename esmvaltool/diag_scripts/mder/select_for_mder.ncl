@@ -7,9 +7,9 @@
 ;     file. It requires precalculation by other diagnostic scripts.
 ;
 ; Required diag_script_info attributes:
-;     ref_dataset: reference dataset.
 ;     wdiag: diagnostic names.
 ;     domain: domain of the diagnostic (used for provenance tracking).
+;     ref_dataset: reference dataset.
 ;
 ; Optional diag_script_info attributes:
 ;     average_ens: average over ensemble members of the same model (default:

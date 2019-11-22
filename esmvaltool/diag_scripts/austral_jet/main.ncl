@@ -25,10 +25,10 @@
 ;                  False).
 ;     rsondes: a set of additional observations can be added to the plot
 ;              but will not be saved for the MDER diagnostics.
-;     rsondes_file: path to additional observations, required when rsondes is
+;     rsondes_file: paths to additional observations, required when rsondes is
 ;                   set
-;     e13fig10_yr_min: minimum year for plot, required when rsondes is set.
-;     e13fig10_yr_max: maximum year for plot, required when rsondes is set.
+;     rsondes_yr_min: minimum year for plot, required when rsondes is set.
+;     rsondes_yr_max: maximum year for plot, required when rsondes is set.
 ;     wdiag: if the diagnostics will be used for the MDER a diagnostic name
 ;            name is needed.
 ;     wdiag_title: this name will apper in the figure title.
@@ -132,17 +132,17 @@ begin
 
   ; Additional observations
   if (isatt(diag_script_info, "rsondes")) then
-    if(isatt(diag_script_info, "e13fig10_yr_min")) then
-      year_min = diag_script_info@e13fig10_yr_min
+    if(isatt(diag_script_info, "rsondes_yr_min")) then
+      year_min = diag_script_info@rsondes_yr_min
     else
       error_msg("f", DIAG_SCRIPT, "", "plot requires attribute " + \
-                "'e13fig10_yr_min' in recipe if 'rsondes' is given")
+                "'rsondes_yr_min' in recipe if 'rsondes' is given")
     end if
-    if(isatt(diag_script_info, "e13fig10_yr_max")) then
-      year_max = diag_script_info@e13fig10_yr_max
+    if(isatt(diag_script_info, "rsondes_yr_max")) then
+      year_max = diag_script_info@rsondes_yr_max
     else
       error_msg("f", DIAG_SCRIPT, "", "plot requires attribute " + \
-                "'e13fig10_yr_max' in recipe if 'rsondes' is given")
+                "'rsondes_yr_max' in recipe if 'rsondes' is given")
     end if
   end if
 

@@ -3,24 +3,23 @@
 ; #############################################################################
 ;
 ; Description:
-;     This routine computes weights for a set of models listed in the
-;     recipe recipes/recipe_wenzel16jclim.xml following the multiple diagnostic
-;     ensemble regression (MDER) described by Karpechko et al. 2013.
-;     The script calls a variable of interest from different models (which
-;     shall be weighted) and additionally several diagnostics which are
+;     This routine computes weights for a set of climate models following the
+;     multiple diagnostic ensemble regression (MDER) described by Karpechko et
+;     al. 2013. The script calls a variable of interest from different models
+;     (which shall be weighted) and additionally several diagnostics which are
 ;     specified in the recipe for computig the weights.
 ;     Calls three plotscripts:
-;     + Plots the absolute correlation coefficient between the variable of
-;       interest and present-day diagnostic.
-;     + Scatter plot of the climatological mean of the variable of interest
-;       and the result of the MDER.
 ;     + Timeseries of the variable of interest including the multi-model
 ;       mean, the weighted and unweighted model ensemble.
+;     + Scatter plot of the climatological mean of the variable of interest
+;       and the result of the MDER.
+;     + Boxplot of RMSE in a pseudo-reality out-of-sample testing.
 ;
 ; Required diag_script_info attributes:
-;     p_time: time range for projections.
-;     p_step: averaging time range for target period.
-;     scal_time: a year to scale the timeseries with.
+;     p_time: start years for future projections.
+;     p_step: time range for future projections.
+;     scal_time: Time range for base period used in anomaly calculations when
+;                "calc_type = 'trend'".
 ;     time_oper: select for operation in time_operation function.
 ;     time_opt: select for option in time_operation function.
 ;     calc_type: trend/pos.
@@ -30,13 +29,14 @@
 ;     average_ens: average over ensemble members of the same model (default:
 ;                  False).
 ;     smooth: smoothes time period with 1-2-1 filter.
-;     iter: numer of iteration for smoothing (required when "smooth" is set).
+;     iter: number of iteration for smoothing (required when "smooth" is set).
 ;     cross_validation_mode: perform cross validation.
-;     p_value: p value for F-test in stepwise regression (default: p=0.05).
-;     plot_units: convert variable to these units.
 ;     region: the region to be averaged (required for multidimensional input).
 ;     area_oper: operation in area_operation function (required for
 ;                multidimensional input).
+
+; Optional variable_info attributes:
+;     plot_units: convert variable to these units.
 ;
 ; Caveats:
 ;     "warning: in unique_labels_min (diag_scripts/shared/plot/style.ncl), Add
