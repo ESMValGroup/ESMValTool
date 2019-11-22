@@ -216,7 +216,7 @@ def main(cfg):
         'precip': precip.data,
         'temp': temp.data,
         'pet': pet.data,
-        'delta_t': 1,  # this could also be extracted from the cube
+        'delta_t_days': 1,  # this could also be extracted from the cube
         'time_unit': 'day'
         }
     output_data = {
