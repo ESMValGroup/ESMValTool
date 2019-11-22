@@ -734,7 +734,7 @@ begin
     work_dir := output@work_dir
     opt = diag_script_info
     plot_path = "missing"
-    plot_type = "missing"
+    plot_type = ""
 
     ; Iterate over all desired diagnostics
     do dd = 0, dimsizes(diag_script_info@wdiag) - 1

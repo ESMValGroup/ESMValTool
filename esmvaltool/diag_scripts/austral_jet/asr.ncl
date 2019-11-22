@@ -292,7 +292,7 @@ begin
     opt = diag_script_info
     log_info(opt@wdiag)
     plot_path = "missing"
-    plot_type = "missing"
+    plot_type = ""
 
     ; Iterate over all datasets
     do idat = 0, DIM_DAT - 1

@@ -1025,7 +1025,7 @@ begin
 
       ; Provenance tracking
       plot_path = "missing"
-      plot_type = "missing"
+      plot_type = ""
       caption = "MDER model weights for target variable " + var0
       log_provenance(weights_file, plot_path, caption, STATISTICS, \
                      DOMAIN, plot_type, AUTHORS, REFERENCES, ANCESTORS)

@@ -96,7 +96,7 @@ begin
   ; Provenance
   AUTHORS = (/"wenzel_sabrina", "schlund_manuel"/)
   DOMAIN = diag_script_info@domain
-  PLOT_TYPE = "missing"
+  PLOT_TYPE = ""
   PLOT_FILE = "missing"
   REFERENCES = (/"wenzel16jclim"/)
 
