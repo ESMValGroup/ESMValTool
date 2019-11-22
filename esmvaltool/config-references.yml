@@ -634,6 +634,7 @@ references:
   lloyd-hughes02jclim: "Lloyd-Hughes, B. and Saunders, M. A., Int. J. Climatol., 22, 1571-1592, doi:10.1002/joc.846, 2002."
   locarini10usgov: "Locarnini, R. A. et al., World Ocean Atlas 2009, Volume 1: Temperature. S. Levitus, Ed. NOAA Atlas NESDIS 68, U.S. Government Printing Office, Washington, D.C., 184 pp.,2010."
   lucarini14revgeop: "Lucarini et al., Rev. Geophys., 52, 809-859, doi:https://doi.org/10.1002/2013RG000446"
+  massonnet12tc: "Massonnet, F. et al., The Cryosphere, 6, 1383-1394, doi: 10.5194/tc-6-1383-2012, 2012."
   mehran14jgr: "Mehran, A. et al., J. Geophys. Res., 119, 4, 1695-1707, doi: 10.1002/2013JD021152, 2014."
   manubens: "Manubens, N., et al., ENVIRON MODELL SOFTW 103, 29-42. doi:10.1016/j.envsoft.2018.01.018"
   mckee93: "McKee, T. B. and Doesken, N. J. and Kleist, J.  In Proceedings of the 8th Conference on Applied Climatology, 17(22), 179-183, Boston, MA: American Meteorological Society, 1993."
@@ -670,6 +671,7 @@ references:
   aura-tes: "Beer, R., IEEE Trans. Geosci. Remote Sens., doi:10.1109/TGRS.2005.863716, 2006."
   cds-satellite-lai-fapar: "Baret et al., Remote Sens. Environ., doi:10.1016/j.rse.2007.02.018, 2007.OB"
   cds-satellite-soil-moisture: "Gruber et al., Earth Syst. Sci. Data, doi: 10.5194/essd-11-717-2019, 2019."
+  cds-uerra: "http://datastore.copernicus-climate.eu/c3s/published-forms/c3sprod/reanalysis-uerra-europe-single-levels/D322_Lot1.4.1.2_User_guides_v3.1.pdf"
   cds-xch4: "Buchwitz et al., Adv. Astronaut. Sci. Technol., doi:10.1007/s42423-018-0004-6, 2018."
   cds-xco2: "Buchwitz et al., Adv. Astronaut. Sci. Technol., doi:10.1007/s42423-018-0004-6, 2018."
   ceres-syn1deg: "Wielicki et al., Bull. Amer. Meteor. Soc., doi:10.1175/1520-0477(1996)077<0853:CATERE>2.0.CO;2, 1996."
@@ -775,6 +777,7 @@ plot_types:
   circle: different overlapping circles
   diurn: diurnal cycle
   geo: geographical distribution
+  histogram: histogram
   portrait: portrait diagram
   polar: polar-stereographic plot
   scatter: scatter plot

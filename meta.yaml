@@ -61,6 +61,7 @@ requirements:
     - pyyaml
     - scikit-learn
     - shapely
+    - xesmf
     - xarray>=0.12.0
     - yamale  # in esmvalgroup channel
     - fiona
