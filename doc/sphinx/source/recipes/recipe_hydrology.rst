@@ -41,15 +41,20 @@ User settings in recipe
    * start_year: 1979
    * end_year: 1979
 
-
 #. recipe_wflow.yml
 
    *Required preprocessor settings:*
 
-   * extract_region: the region specified here should match the catchment
-   * daily_statistics: if the frequency of the input data is not daily, it
-     should be converted to daily using the preprocessor function
-     daily_statistics with ``operator: mean``.
+      * extract_region: the region specified here should match the catchment
+      * daily_statistics: if the frequency of the input data is not daily, it
+        should be converted to daily using the preprocessor function
+        daily_statistics with ``operator: mean``.
+
+   *Required diagnostic script settings:*
+
+	    * basin_name: name of the catchment
+	    * dem_file: netcdf file containing a digital elevation model with
+	      elevation in meters and coordinates latitude and longitude.
 
 Variables
 ---------
