@@ -12,6 +12,11 @@ PCR-GLOBWB
 **********
 PCR-GLOBWB (PCRaster Global Water Balance) is a large-scale hydrological model intended for global to regional studies and developed at the Department of Physical Geography, Utrecht University (Netherlands). The recipe pre-processes ERA-Interim reanalyses data for use in the PCR-GLOBWB.
 
+wflow_sbm and wflow_topoflex
+****************************
+Forcing data for the `wflow_sbm <https://wflow.readthedocs.io/en/latest/wflow_sbm.html>`_
+and `wflow_topoflex <https://wflow.readthedocs.io/en/latest/wflow_topoflex.html>`_
+hydrological models can be prepared using recipe_wflow.yml.
 
 Available recipes and diagnostics
 ---------------------------------
@@ -19,11 +24,12 @@ Available recipes and diagnostics
 Recipes are stored in esmvaltool/recipes/hydrology
 
     * recipe_pcrglobwb.yml
+    * recipe_wflow.yml
 
 Diagnostics are stored in esmvaltool/diag_scripts/hydrology
 
     * pcrglobwb.py
-
+    * wflow.py
 
 User settings in recipe
 -----------------------
@@ -35,6 +41,16 @@ User settings in recipe
    * start_year: 1979
    * end_year: 1979
 
+
+#. recipe_wflow.yml
+
+   *Required preprocessor settings:*
+
+   * extract_region: the region specified here should match the catchment
+   * daily_statistics: if the frequency of the input data is not daily, it
+     should be converted to daily using the preprocessor function
+     daily_statistics with ``operator: mean``.
+
 Variables
 ---------
 
@@ -43,11 +59,21 @@ Variables
    * tas (atmos, daily, longitude, latitude, time)
    * pr (atmos, daily, longitude, latitude, time)
 
+#. recipe_wflow.yml
+
+   * orog (fx, longitude, latitude)
+   * pr (atmos, daily or hourly mean, longitude, latitude, time)
+   * psl (atmos, daily or hourly mean, longitude, latitude, time)
+   * rsds (atmos, daily or hourly mean, longitude, latitude, time)
+   * rsdt (atmos, daily or hourly mean, longitude, latitude, time)
+   * tas (atmos, daily or hourly mean, longitude, latitude, time)
+
 Observations and reformat scripts
 ---------------------------------
 *Note: see headers of cmorization scripts (in esmvaltool/utils/cmorizers/obs) for download instructions.*
 
-*  ERA-Interim (tas, pr - esmvaltool/utils/cmorizers/obs/cmorize_obs_ERA-Interim.ncl)
+*  ERA-Interim (esmvaltool/cmorizers/obs/cmorize_obs_era_interim.py)
+*  ERA5 (esmvaltool/cmorizers/obs/cmorize_obs_era5.py)
 
 References
 ----------
