@@ -2,6 +2,7 @@
 import logging
 from pathlib import Path
 
+import numpy as np
 import iris
 import scipy.io as sio
 
@@ -212,17 +213,18 @@ def main(cfg):
     time_start_end, lat_lon = _get_extra_info(temp)
 
     # make data structure
+    # delta_t_days could also be extracted from the cube
     forcing_dict = {
         'precip': precip.data,
         'temp': temp.data,
         'pet': pet.data,
-        'delta_t_days': 1,  # this could also be extracted from the cube
+        'delta_t_days': np.array(1).astype('uint8'),
         'time_unit': 'day'
         }
     output_data = {
         'forcing': forcing_dict,
-        'time_start': time_start_end[0],
-        'time_end': time_start_end[1],
+        'time_start': np.array(time_start_end[0]).astype('uint16'),
+        'time_end': np.array(time_start_end[1]).astype('uint16'),
         'data_origin': lat_lon
         }
 
