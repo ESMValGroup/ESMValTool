@@ -2,7 +2,6 @@
 import logging
 from pathlib import Path
 
-import numpy as np
 import iris
 import scipy.io as sio
 
@@ -218,13 +217,13 @@ def main(cfg):
         'precip': precip.data,
         'temp': temp.data,
         'pet': pet.data,
-        'delta_t_days': np.array(1).astype('uint8'),
+        'delta_t_days': float(1),
         'time_unit': 'day'
         }
     output_data = {
         'forcing': forcing_dict,
-        'time_start': np.array(time_start_end[0]).astype('uint16'),
-        'time_end': np.array(time_start_end[1]).astype('uint16'),
+        'time_start': time_start_end[0],
+        'time_end': time_start_end[1],
         'data_origin': lat_lon
         }
 
