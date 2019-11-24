@@ -12,19 +12,22 @@ documentation:
     - koldunov_nikolay
 
   references:
-    - acknow_project
+    - contact_authors
 
   projects:
     - trr181
+    - applicate
 
 # Model problems
 # bcc-csm1-1 - lon and lat in rotated grid coordinates, not usable
 # GFDL-ESM2G - lon and lat in rotated grid coordinates, not usable
 datasets:
+  - {dataset: MPI-ESM-LR}
+  - {dataset: MPI-ESM-MR}
   # - {dataset: bcc-csm1-1,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
   # - {dataset: GFDL-ESM2G,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
-  - {dataset: MPI-ESM-LR,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
-  - {dataset: MPI-ESM-MR,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+  # - {dataset: MPI-ESM-LR,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
+  # - {dataset: MPI-ESM-MR,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
   # - {dataset: CCSM4,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2001}
   # - {dataset: CanESM2,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
   # - {dataset: CMCC-CM,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
@@ -37,35 +40,37 @@ datasets:
   # - {dataset: HadGEM2-ES,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
 
 
-preprocessors:
-
-  preprocessor1: {}
-
 diagnostics:
 
   arctic_ocean:
     description: Derive ocean variables
     variables:
+      areacello:
+        project: CMIP5
+        mip: fx
+        exp: historical
+        ensemble: r0i0p0
+        start_year: 2000
+        end_year: 2002
       thetao:
-        preprocessor: preprocessor1
         mip: Omon
-        field: T3OM
-        fx_files: [areacello]
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 2002
+        end_year: 2005
       so:
-        preprocessor: preprocessor1
         mip: Omon
-        field: T3OM
-        fx_files: [areacello]
-      # uo:
-      #   preprocessor: preprocessor1
-      #   field: T3OM
-      # vo:
-      #   preprocessor: preprocessor1
-      #   field: T3OM
+        project: CMIP5
+        exp: historical
+        ensemble: r1i1p1
+        start_year: 2002
+        end_year: 2005
+
     additional_datasets:
       - {dataset: PHC,        project: OBS6,    tier: 2,    type: clim,    version: 3,        start_year: 1950,  end_year: 1950}
     scripts:
-      script1: &Global_Ocean_surface_map
+      arctic_ocean_main:
         script: arctic_ocean/arctic_ocean.py
         # Define if we calculate data for Hovmoeller diagrams.
         # This data are also needed for mean vertical profiles.

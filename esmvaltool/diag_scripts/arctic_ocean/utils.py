@@ -116,8 +116,9 @@ def get_fx_filenames(config, variable, fx_var):
     """Extract fx file names."""
     areacello_fxdataset = {}
     for _, value in config['input_data'].items():
-        if value['short_name'] == variable:
-            areacello_fxdataset[value['dataset']] = value['fx_files'][fx_var]
+        if value['short_name'] == fx_var:
+            print(value['filename'])
+            areacello_fxdataset[value['dataset']] = value['filename']
     return areacello_fxdataset
 
 
