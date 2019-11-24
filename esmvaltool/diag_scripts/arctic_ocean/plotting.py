@@ -21,8 +21,9 @@ from esmvaltool.diag_scripts.arctic_ocean.getdata import (load_meta,
 from esmvaltool.diag_scripts.arctic_ocean.interpolation import (
     closest_depth, interpolate_esmf)
 from esmvaltool.diag_scripts.arctic_ocean.utils import (dens_back, genfilename,
-                                                        point_distance)
-
+                                                        point_distance,
+                                                        get_provenance_record)
+from esmvaltool.diag_scripts.shared._base import (ProvenanceLogger)
 logger = logging.getLogger(os.path.basename(__file__))
 
 mpl.use('agg')
@@ -113,7 +114,8 @@ def label_and_conversion(cmor_var, data):
     return cb_label, data
 
 
-def hofm_plot(model_filenames,
+def hofm_plot(cfg,
+              model_filenames,
               cmor_var,
               max_level,
               region,
@@ -193,11 +195,11 @@ def hofm_plot(model_filenames,
 
         # plot an image for the model on the axis (ax[ind])
         image = axis[index].contourf(months,
-                                 depth,
-                                 hofdata,
-                                 cmap=cmap,
-                                 levels=levels,
-                                 extend='both')
+                                     depth,
+                                     hofdata,
+                                     cmap=cmap,
+                                     levels=levels,
+                                     extend='both')
         # Generate tick marks with years that looks ok
         ygap = int((np.round(series_lenght / 12.) / 5) * 12)
         year_indexes = list(range(series_lenght)[::ygap])
@@ -214,7 +216,7 @@ def hofm_plot(model_filenames,
         axis[index].tick_params(axis='y', labelsize=15)
 
         # Add a colorbar
-        cb = figure.colorbar(image, axis=axis[index], pad=0.01)
+        cb = figure.colorbar(image, ax=axis[index], pad=0.01)
         cb.set_label(cb_label, rotation='vertical', size=15)
         cb.ax.tick_params(labelsize=15)
 
@@ -224,12 +226,24 @@ def hofm_plot(model_filenames,
     # tighten the layout
     plt.tight_layout()
     # generate the path to the output file
-    pltoutname = genfilename(diagplotdir,
-                             cmor_var,
-                             region=region,
-                             data_type='hofm')
+    data_info = {}
+    data_info['basedir'] = diagplotdir
+    data_info['variable'] = cmor_var
+    data_info['region'] = region
+    data_info['ori_file'] = [ifilename]
+    data_info['areacello'] = None
+    data_info['mmodel'] = None
+    pltoutname = genfilename(**data_info, data_type='hofm')
+    # pltoutname = genfilename(diagplotdir,
+    #                          cmor_var,
+    #                          region=region,
+    #                          data_type='hofm')
     # save figure
     plt.savefig(pltoutname, dpi=100)
+    print(data_info)
+    provenance_record = get_provenance_record(data_info, 'hofm', 'png')
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(pltoutname + '.png', provenance_record)
 
 
 def tsplot_plot(model_filenames,

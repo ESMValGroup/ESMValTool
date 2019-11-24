@@ -268,8 +268,14 @@ def get_provenance_record(attributes, data_type, file_type):
     if data_type == 'hofm' and file_type == 'npy':
         caption = ("Data for Hovmoeller diagram. "
                    "Region: {region}. Model: {mmodel} ".format(**attributes))
+    elif data_type == 'hofm' and file_type == 'png':
+        caption = ("Hovmoeller diagram. "
+                   "Region: {region}. Model: {mmodel} ".format(**attributes))
     elif data_type == 'transect' and file_type == 'npy':
         caption = ("Data for Transect. "
+                   "Region: {region}. Model: {mmodel} ".format(**attributes))
+    elif data_type == 'tsplot' and file_type == 'npy':
+        caption = ("Data for TS diagram. "
                    "Region: {region}. Model: {mmodel} ".format(**attributes))
     else:
         caption = "None"
