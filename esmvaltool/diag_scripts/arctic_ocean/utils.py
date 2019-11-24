@@ -112,7 +112,7 @@ def get_clim_model_filenames(config, variable):
     return model_filenames
 
 
-def get_fx_filenames(config, variable, fx_var):
+def get_fx_filenames(config, fx_var):
     """Extract fx file names."""
     areacello_fxdataset = {}
     for _, value in config['input_data'].items():

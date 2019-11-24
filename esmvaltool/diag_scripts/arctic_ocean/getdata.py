@@ -152,7 +152,7 @@ def hofm_data(cfg, model_filenames, mmodel, cmor_var, region):
     None
     """
     logger.info("Extract  %s data for %s, region %s", cmor_var, mmodel, region)
-    areacello_fx = get_fx_filenames(cfg, 'thetao', 'areacello')
+    areacello_fx = get_fx_filenames(cfg, 'areacello')
     metadata = load_meta(datapath=model_filenames[mmodel],
                          fxpath=areacello_fx[mmodel])
 

@@ -159,10 +159,10 @@ def hofm_plot(model_filenames,
     if observations:
         del model_filenames[observations]
     # creata basis for the muli panel figure
-    fig, ax = create_plot(model_filenames, ncols=ncols)
+    figure, axis = create_plot(model_filenames, ncols=ncols)
 
     # plot data on the figure, axis by axis
-    for ind, mmodel in enumerate(model_filenames):
+    for index, mmodel in enumerate(model_filenames):
         logger.info("Plot  %s data for %s, region %s", cmor_var, mmodel,
                     region)
         # generate input filenames that
@@ -192,7 +192,7 @@ def hofm_plot(model_filenames,
         months, depth = np.meshgrid(range(series_lenght), lev[0:lev_limit])
 
         # plot an image for the model on the axis (ax[ind])
-        image = ax[ind].contourf(months,
+        image = axis[index].contourf(months,
                                  depth,
                                  hofdata,
                                  cmap=cmap,
@@ -202,25 +202,25 @@ def hofm_plot(model_filenames,
         ygap = int((np.round(series_lenght / 12.) / 5) * 12)
         year_indexes = list(range(series_lenght)[::ygap])
         year_value = []
-        for index in year_indexes:
-            year_value.append(time[index].year)
+        for index_year in year_indexes:
+            year_value.append(time[index_year].year)
 
         # set properties of the axis
-        ax[ind].set_xticks(year_indexes)
-        ax[ind].set_xticklabels(year_value, size=15)
-        ax[ind].set_title(mmodel, size=20)
-        ax[ind].set_ylabel('m', size=15, rotation='horizontal')
-        ax[ind].invert_yaxis()
-        ax[ind].tick_params(axis='y', labelsize=15)
+        axis[index].set_xticks(year_indexes)
+        axis[index].set_xticklabels(year_value, size=15)
+        axis[index].set_title(mmodel, size=20)
+        axis[index].set_ylabel('m', size=15, rotation='horizontal')
+        axis[index].invert_yaxis()
+        axis[index].tick_params(axis='y', labelsize=15)
 
         # Add a colorbar
-        cb = fig.colorbar(image, ax=ax[ind], pad=0.01)
+        cb = figure.colorbar(image, axis=axis[index], pad=0.01)
         cb.set_label(cb_label, rotation='vertical', size=15)
         cb.ax.tick_params(labelsize=15)
 
     # delete unused axis
-    for delind in range(ind + 1, len(ax)):
-        fig.delaxes(ax[delind])
+    for delind in range(index + 1, len(axis)):
+        figure.delaxes(axis[delind])
     # tighten the layout
     plt.tight_layout()
     # generate the path to the output file
@@ -298,12 +298,13 @@ def tsplot_plot(model_filenames,
             temp = temp - 273.15
 
         # plot the background
-        cs = plt.contour(si2,
-                         ti2,
-                         dens,
-                         colors='k',
-                         levels=np.linspace(dens.min(), dens.max(), 15),
-                         alpha=0.3)
+        contour_plot = plt.contour(si2,
+                                   ti2,
+                                   dens,
+                                   colors='k',
+                                   levels=np.linspace(dens.min(), dens.max(),
+                                                      15),
+                                   alpha=0.3)
         # plot the scatter plot
         plt.scatter(salt[::],
                     temp[::],
@@ -313,7 +314,7 @@ def tsplot_plot(model_filenames,
                     edgecolors='none',
                     vmax=max_level)
         # adjust the plot
-        plt.clabel(cs, fontsize=12, inline=1, fmt='%1.1f')
+        plt.clabel(contour_plot, fontsize=12, inline=1, fmt='%1.1f')
         plt.xlim(33, 36.)
         plt.ylim(-2.1, 6)
         plt.xlabel('Salinity', size=20)
@@ -376,7 +377,7 @@ def plot_profile(model_filenames,
     """
     level_clim = Dataset(model_filenames[observations]).variables['lev'][:]
     plt.figure(figsize=(5, 6))
-    ax = plt.subplot(111)
+    axis = plt.subplot(111)
 
     color = iter(cmap(np.linspace(0, 1, len(model_filenames))))
     lev_limit_clim = level_clim[level_clim <= max_level].shape[0] + 1
@@ -441,9 +442,9 @@ def plot_profile(model_filenames,
     plt.ylim(0, max_level)
 
     # we shift the legend and plot it
-    box = ax.get_position()
-    ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
-    ax.legend(loc='center left', bbox_to_anchor=(1, 0.5), fontsize=10)
+    box = axis.get_position()
+    axis.set_position([box.x0, box.y0, box.width * 0.8, box.height])
+    axis.legend(loc='center left', bbox_to_anchor=(1, 0.5), fontsize=10)
 
     plt.gca().invert_yaxis()
     pltoutname = genfilename(diagplotdir, cmor_var, 'MULTIMODEL', region,
@@ -500,9 +501,11 @@ def plot2d_original_grid(model_filenames,
     ------
     None
     """
-    fig, ax = create_plot(model_filenames, ncols=ncols, projection=projection)
+    figure, axis = create_plot(model_filenames,
+                               ncols=ncols,
+                               projection=projection)
 
-    for ind, mmodel in enumerate(model_filenames):
+    for index, mmodel in enumerate(model_filenames):
         logger.info("Plot plot2d_original_grid %s for %s", cmor_var, mmodel)
 
         ifilename = genfilename(diagworkdir,
@@ -532,11 +535,12 @@ def plot2d_original_grid(model_filenames,
 
         left, right, down, upper = bbox
 
-        ax[ind].set_extent([left, right, down, upper], crs=ccrs.PlateCarree())
+        axis[index].set_extent([left, right, down, upper],
+                               crs=ccrs.PlateCarree())
         # Only pcolormesh is working for now with cartopy,
         # contourf is failing to plot curvilinear meshes,
         # let along the unstructures ones.
-        image = ax[ind].pcolormesh(
+        image = axis[index].pcolormesh(
             lon2d,
             lat2d,
             data,
@@ -546,26 +550,27 @@ def plot2d_original_grid(model_filenames,
             cmap=cmap,
         )
 
-        ax[ind].add_feature(
+        axis[index].add_feature(
             cfeature.GSHHSFeature(levels=[1],
                                   scale="low",
                                   facecolor="lightgray"))
-        ax[ind].set_title("{}, {} m".format(mmodel, np.round(depth_target, 1)),
-                          size=18)
-        ax[ind].set_rasterization_zorder(-1)
+        axis[index].set_title("{}, {} m".format(mmodel,
+                                                np.round(depth_target, 1)),
+                              size=18)
+        axis[index].set_rasterization_zorder(-1)
 
     # delete unused axis
-    for delind in range(ind + 1, len(ax)):
-        fig.delaxes(ax[delind])
+    for delind in range(index + 1, len(axis)):
+        figure.delaxes(axis[delind])
 
     # set common colorbar
-    cb = fig.colorbar(image,
-                      orientation='horizontal',
-                      ax=ax,
-                      pad=0.01,
-                      shrink=0.9)
-    cb.set_label(cb_label, rotation='horizontal', size=18)
-    cb.ax.tick_params(labelsize=18)
+    colorbar = figure.colorbar(image,
+                               orientation='horizontal',
+                               ax=axis,
+                               pad=0.01,
+                               shrink=0.9)
+    colorbar.set_label(cb_label, rotation='horizontal', size=18)
+    colorbar.ax.tick_params(labelsize=18)
 
     if not explicit_depths:
         plot_type = 'plot2d_{}_depth'.format(str(depth))
@@ -624,7 +629,9 @@ def plot2d_bias(model_filenames,
     None
     """
     # setupa a base figure
-    fig, ax = create_plot(model_filenames, ncols=ncols, projection=projection)
+    figure, axis = create_plot(model_filenames,
+                               ncols=ncols,
+                               projection=projection)
     # get the filename of observations
     ifilename_obs = genfilename(diagworkdir,
                                 cmor_var,
@@ -644,7 +651,8 @@ def plot2d_bias(model_filenames,
     model_filenames = model_filenames.copy()
     del model_filenames[observations]
     # loop over models
-    for ind, mmodel in enumerate(model_filenames):
+    index = None
+    for index, mmodel in enumerate(model_filenames):
         logger.info("Plot plot2d_bias %s for %s", cmor_var, mmodel)
         # get the filename with the mean generated by the `timemean`
         ifilename = genfilename(diagworkdir,
@@ -663,11 +671,12 @@ def plot2d_bias(model_filenames,
         model_mean = model_mean + interpolated
         # set the map extent
         left, right, down, upper = bbox
-        ax[ind].set_extent([left, right, down, upper], crs=ccrs.PlateCarree())
+        axis[index].set_extent([left, right, down, upper],
+                               crs=ccrs.PlateCarree())
         # Only pcolormesh is working for now with cartopy,
         # contourf is failing to plot curvilinear meshes,
         # let along the unstructures ones.
-        image = ax[ind].contourf(
+        image = axis[index].contourf(
             lonc,
             latc,
             interpolated - data_obs,
@@ -679,22 +688,23 @@ def plot2d_bias(model_filenames,
             cmap=cmap,
         )
         # fill continents
-        ax[ind].add_feature(
+        axis[index].add_feature(
             cfeature.GSHHSFeature(levels=[1],
                                   scale="low",
                                   facecolor="lightgray"))
 
-        ax[ind].set_title("{}, {} m".format(mmodel, int(target_depth)),
-                          size=18)
-        ax[ind].set_rasterization_zorder(-1)
+        axis[index].set_title("{}, {} m".format(mmodel, int(target_depth)),
+                              size=18)
+        axis[index].set_rasterization_zorder(-1)
     # calculate the model mean and plot it
-    if ind:
-        ind = ind
+    if index:
+        index = index
     else:
-        ind = 0
+        index = 0
     model_mean = model_mean / len(model_filenames)
-    ax[ind + 1].set_extent([left, right, down, upper], crs=ccrs.PlateCarree())
-    image = ax[ind + 1].contourf(
+    axis[index + 1].set_extent([left, right, down, upper],
+                               crs=ccrs.PlateCarree())
+    image = axis[index + 1].contourf(
         lonc,
         latc,
         model_mean - data_obs,
@@ -706,21 +716,22 @@ def plot2d_bias(model_filenames,
         cmap=cmo.balance,
     )
 
-    ax[ind + 1].add_feature(
+    axis[index + 1].add_feature(
         cfeature.GSHHSFeature(levels=[1], scale="low", facecolor="lightgray"))
 
-    ax[ind + 1].set_title("Model mean bias, {} m".format(int(target_depth)),
-                          size=18)
-    ax[ind + 1].set_rasterization_zorder(-1)
+    axis[index + 1].set_title("Model mean bias, {} m".format(
+        int(target_depth)),
+                              size=18)
+    axis[index + 1].set_rasterization_zorder(-1)
     # delete the axis that are not needed
-    for delind in range(ind + 2, len(ax)):
-        fig.delaxes(ax[delind])
+    for delind in range(index + 2, len(axis)):
+        figure.delaxes(axis[delind])
     # set common colorbar
-    cb = fig.colorbar(image,
-                      orientation='horizontal',
-                      ax=ax,
-                      pad=0.01,
-                      shrink=0.9)
+    cb = figure.colorbar(image,
+                         orientation='horizontal',
+                         ax=axis,
+                         pad=0.01,
+                         shrink=0.9)
     cb.set_label(cb_label, rotation='horizontal', size=18)
     cb.ax.tick_params(labelsize=18)
     # save the picture
@@ -755,10 +766,10 @@ def plot_aw_core_stat(aw_core_parameters, diagplotdir):
     """
     logger.info("Plot AW core statistics")
     # Convert dictionary to pandas Dataframe
-    df = pd.DataFrame(aw_core_parameters).transpose()
+    dataframe = pd.DataFrame(aw_core_parameters).transpose()
 
     plt.figure()
-    df.maxvalue.plot(kind='barh')
+    dataframe.maxvalue.plot(kind='barh')
     plt.xlabel(r'$^{\circ}$C')
     pltoutname = genfilename(diagplotdir,
                              variable='aw-core-temp',
@@ -769,7 +780,7 @@ def plot_aw_core_stat(aw_core_parameters, diagplotdir):
     plt.savefig(pltoutname, dpi=100)
 
     plt.figure()
-    df.maxvalue_depth.plot(kind='barh')
+    dataframe.maxvalue_depth.plot(kind='barh')
     plt.xlabel('m')
     pltoutname = genfilename(diagplotdir,
                              variable='aw-core-depth',
@@ -809,23 +820,25 @@ def transect_map(region,
     logger.info("Create transect map for region %s", region)
     lon_s4new, lat_s4new = transect_points(region, mult=mult)
     dist = point_distance(lon_s4new, lat_s4new)
-    fig, ax = plt.subplots(1,
-                           1,
-                           subplot_kw=dict(projection=projection),
-                           constrained_layout=True)
+    figure, axis = plt.subplots(1,
+                                1,
+                                subplot_kw=dict(projection=projection),
+                                constrained_layout=True)
 
-    ax.set_extent(bbox, crs=ccrs.PlateCarree())
-    image = ax.scatter(lon_s4new,
-                       lat_s4new,
-                       s=10,
-                       c=dist,
-                       transform=ccrs.PlateCarree(),
-                       cmap=cm.Spectral,
-                       edgecolors='none')
-    ax.coastlines(resolution="50m")
+    axis.set_extent(bbox, crs=ccrs.PlateCarree())
+    image = axis.scatter(lon_s4new,
+                         lat_s4new,
+                         s=10,
+                         c=dist,
+                         transform=ccrs.PlateCarree(),
+                         cmap=cm.Spectral,
+                         edgecolors='none')
+    axis.coastlines(resolution="50m")
 
-    cb = fig.colorbar(image, ax=ax)
-    cb.set_label('Along-track distance, km', rotation='vertical', size=15)
+    colorbar = figure.colorbar(image, ax=axis)
+    colorbar.set_label('Along-track distance, km',
+                       rotation='vertical',
+                       size=15)
     pltoutname = genfilename(diagplotdir,
                              'allvars',
                              region=region,
@@ -867,23 +880,24 @@ def transect_plot(model_filenames,
     None
 
     """
-    fig, ax = create_plot(model_filenames, ncols=ncols)
+    figure, axis = create_plot(model_filenames, ncols=ncols)
 
     # get transect positions and calculate distances between points
     lon_s4new, lat_s4new = transect_points(region, mult=2)
     dist = point_distance(lon_s4new, lat_s4new)
 
     # loop over models
-    for ind, mmodel in enumerate(model_filenames):
+    index = None
+    for index, mmodel in enumerate(model_filenames):
         logger.info("Plot  %s data for %s, region %s", cmor_var, mmodel,
                     region)
         # construct file names and get the data
         ifilename = genfilename(diagworkdir, cmor_var, mmodel, region,
                                 'transect', '.npy')
         ifilename_depth = genfilename(diagworkdir, 'depth', mmodel, region,
-                                      'transect_'+cmor_var, '.npy')
+                                      'transect_' + cmor_var, '.npy')
         ifilename_dist = genfilename(diagworkdir, 'distance', mmodel, region,
-                                     'transect_'+cmor_var, '.npy')
+                                     'transect_' + cmor_var, '.npy')
 
         data = np.load(ifilename, allow_pickle=True)
         data = np.ma.masked_equal(data.T, 0)
@@ -894,29 +908,29 @@ def transect_plot(model_filenames,
         # index of the maximum depth
         lev_limit = lev[lev <= max_level].shape[0] + 1
 
-        image = ax[ind].contourf(dist,
-                                 lev[:lev_limit],
-                                 data[:lev_limit, :],
-                                 levels=levels,
-                                 extend='both',
-                                 cmap=cmap)
+        image = axis[index].contourf(dist,
+                                     lev[:lev_limit],
+                                     data[:lev_limit, :],
+                                     levels=levels,
+                                     extend='both',
+                                     cmap=cmap)
         # plot settings
-        ax[ind].set_ylabel('Depth, m', size=15, rotation='vertical')
-        ax[ind].set_xlabel('Along-track distance, km',
-                           size=15,
-                           rotation='horizontal')
-        ax[ind].set_title(mmodel, size=20)
-        ax[ind].set_ylim(max_level, 0)
+        axis[index].set_ylabel('Depth, m', size=15, rotation='vertical')
+        axis[index].set_xlabel('Along-track distance, km',
+                               size=15,
+                               rotation='horizontal')
+        axis[index].set_title(mmodel, size=20)
+        axis[index].set_ylim(max_level, 0)
         # ax[ind].invert_yaxis()
-        ax[ind].tick_params(axis='both', labelsize=15)
+        axis[index].tick_params(axis='both', labelsize=15)
         # color bar settings
-        cb = fig.colorbar(image, ax=ax[ind], pad=0.01)
-        cb.set_label(cb_label, rotation='vertical', size=15)
-        cb.ax.tick_params(labelsize=15)
+        colorbar = figure.colorbar(image, ax=axis[index], pad=0.01)
+        colorbar.set_label(cb_label, rotation='vertical', size=15)
+        colorbar.ax.tick_params(labelsize=15)
     # fig.set_constrained_layout_pads(w_pad=2./30., h_pad=2./30.,
     #     hspace=10, wspace=10)
-    for delind in range(ind + 1, len(ax)):
-        fig.delaxes(ax[delind])
+    for delind in range(index + 1, len(axis)):
+        figure.delaxes(axis[delind])
 
     pltoutname = genfilename(diagplotdir,
                              cmor_var,
