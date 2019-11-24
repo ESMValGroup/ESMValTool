@@ -349,6 +349,34 @@ def tsplot_extract_data(mmodel, observations, metadata_t, metadata_s, ind):
     return level_pp, level_pp_s
 
 
+def tsplot_save_data(cfg, data_info, temp, salt, depth_model):
+
+    ofiles = {}
+    data_info['variable'] = 'thetao'
+    ofiles['ofilename_t'] = genfilename(**data_info, data_type='tsplot')
+    np.save(ofiles['ofilename_t'], temp)
+    provenance_record = get_provenance_record(data_info, 'tsplot', 'npy')
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(ofiles['ofilename_t'] + '.npy',
+                              provenance_record)
+
+    data_info['variable'] = 'so'
+    ofiles['ofilename_s'] = genfilename(**data_info, data_type='tsplot')
+    np.save(ofiles['ofilename_s'], salt)
+    provenance_record = get_provenance_record(data_info, 'tsplot', 'npy')
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(ofiles['ofilename_s'] + '.npy',
+                              provenance_record)
+
+    data_info['variable'] = 'depth'
+    ofiles['ofilename_depth'] = genfilename(**data_info, data_type='tsplot')
+    np.save(ofiles['ofilename_depth'], depth_model)
+    provenance_record = get_provenance_record(data_info, 'tsplot', 'npy')
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(ofiles['ofilename_depth'] + '.npy',
+                              provenance_record)
+
+
 def tsplot_data(cfg, mmodel, region, observations='PHC'):
     """Extract data for TS plots from one specific model.
 
@@ -412,16 +440,14 @@ def tsplot_data(cfg, mmodel, region, observations='PHC'):
         depth_model = np.hstack((depth_model, depth_temp))
 
     # Saves the data to individual files
-    ofiles = {}
-    ofiles['ofilename_t'] = genfilename(cfg['work_dir'], 'thetao', mmodel,
-                                        region, 'tsplot')
-    ofiles['ofilename_s'] = genfilename(cfg['work_dir'], 'so', mmodel, region,
-                                        'tsplot')
-    ofiles['ofilename_depth'] = genfilename(cfg['work_dir'], 'depth', mmodel,
-                                            region, 'tsplot')
-    np.save(ofiles['ofilename_t'], temp)
-    np.save(ofiles['ofilename_s'], salt)
-    np.save(ofiles['ofilename_depth'], depth_model)
+    data_info = {}
+    data_info['basedir'] = cfg['work_dir']
+    data_info['mmodel'] = mmodel
+    data_info['region'] = region
+    data_info['levels'] = metadata_t['lev']
+    data_info['ori_file'] = [ifilename_t, ifilename_s]
+    data_info['areacello'] = None
+    tsplot_save_data(cfg, data_info, temp, salt, depth_model)
 
     metadata_t['datafile'].close()
     metadata_s['datafile'].close()
