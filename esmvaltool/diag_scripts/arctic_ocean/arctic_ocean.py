@@ -262,6 +262,36 @@ def run_plot2d(cfg, diagworkdir, diagplotdir):
             plot2d_original_grid(cfg, plot_params)
 
 
+def plot2d_bias_params(cfg, plot2d_bias_var, var_number, observations):
+    model_filenames = get_clim_model_filenames(cfg, plot2d_bias_var)
+    model_filenames = OrderedDict(
+        sorted(model_filenames.items(), key=lambda t: t[0]))
+    # setup the color map
+    if cfg['plot2d_bias_cmap']:
+        cmap = get_cmap(cfg['plot2d_bias_cmap'][var_number])
+    else:
+        cmap = get_cmap('Spectral_r')
+    # setup the number of columns
+    if cfg['plot2d_bias_ncol']:
+        ncols = cfg['plot2d_bias_ncol']
+    else:
+        ncols = 3
+    # setup color limits
+    vmin, vmax, sstep, roundlimit = cfg['plot2d_bias_limits'][var_number]
+
+    plot_params = {}
+    plot_params['variable'] = plot2d_bias_var
+    plot_params['model_filenames'] = model_filenames
+    plot_params['cmap'] = cmap
+    plot_params['ncols'] = ncols
+    plot_params['levels'] = np.round(np.linspace(vmin, vmax, sstep),
+                                     roundlimit)
+    plot_params['dpi']=100
+    plot_params['observations']=observations
+    plot_params['projection']=ccrs.NorthPolarStereo()
+    plot_params['bbox']= (-180, 180, 60, 90)
+    return plot_params
+
 
 def run_plot2d_bias(cfg, diagworkdir, diagplotdir, observations):
     """Plot model biases over depth.
@@ -280,34 +310,12 @@ def run_plot2d_bias(cfg, diagworkdir, diagplotdir, observations):
     # loop over variables
     for var_number, plot2d_bias_var in enumerate(cfg['plot2d_bias_vars']):
 
-        model_filenames = get_clim_model_filenames(cfg, plot2d_bias_var)
-        model_filenames = OrderedDict(
-            sorted(model_filenames.items(), key=lambda t: t[0]))
-        # setup the color map
-        if cfg['plot2d_bias_cmap']:
-            cmap = get_cmap(cfg['plot2d_bias_cmap'][var_number])
-        else:
-            cmap = get_cmap('Spectral_r')
-        # setup the number of columns
-        if cfg['plot2d_bias_ncol']:
-            ncols = cfg['plot2d_bias_ncol']
-        else:
-            ncols = 3
-        # setup color limits
-        vmin, vmax, sstep, roundlimit = cfg['plot2d_bias_limits'][var_number]
+        plot_params = plot2d_bias_params(cfg, plot2d_bias_var, var_number, observations)
+
         # loop over depths
         for depth in cfg['plot2d_bias_depths']:
-            plot2d_bias(model_filenames,
-                        plot2d_bias_var,
-                        depth,
-                        diagworkdir,
-                        diagplotdir,
-                        cmap,
-                        levels=np.round(np.linspace(vmin, vmax, sstep),
-                                        roundlimit),
-                        dpi=100,
-                        observations=observations,
-                        ncols=ncols)
+            plot_params['depth'] = depth
+            plot2d_bias(cfg, plot_params)
 
 
 def run_transects(cfg, diagworkdir, diagplotdir):
@@ -502,18 +510,18 @@ def main(cfg):
     run_plot2d(cfg, diagworkdir, diagplotdir)
 
     # # Plot model biases over depth
-    # run_plot2d_bias(cfg, diagworkdir, diagplotdir, observations)
+    run_plot2d_bias(cfg, diagworkdir, diagplotdir, observations)
 
     # # Plot transects
     # run_transects(cfg, diagworkdir, diagplotdir)
 
     # # Calculate depth and temperature of the Atlantic Water core
     # # and make plots.
-    aw_core_parameters = run_aw_core(cfg, diagworkdir, diagplotdir)
+    # aw_core_parameters = run_aw_core(cfg, diagworkdir, diagplotdir)
 
     # # Plot temperature spatial distribution at the depth of the
     # # atlantic water core in different models
-    run_aw_core_2d(cfg, diagworkdir, diagplotdir, aw_core_parameters)
+    # run_aw_core_2d(cfg, diagworkdir, diagplotdir, aw_core_parameters)
 
     # # Plot TS diagrams
     # run_tsdiag(cfg, diagworkdir, diagplotdir, observations)

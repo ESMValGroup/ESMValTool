@@ -71,8 +71,7 @@ def genfilename(basedir,
     return ifilename
 
 
-def timmean(cfg, model_filenames, mmodel, cmor_var,
-            observations='PHC'):
+def timmean(cfg, model_filenames, mmodel, cmor_var, observations='PHC'):
     """Create time mean of input data with cdo.
 
     Parameters
@@ -112,8 +111,7 @@ def timmean(cfg, model_filenames, mmodel, cmor_var,
 
     provenance_record = get_provenance_record(attributes, 'timmean', 'nc')
     with ProvenanceLogger(cfg) as provenance_logger:
-        provenance_logger.log(ofilename,
-                            provenance_record)
+        provenance_logger.log(ofilename, provenance_record)
 
 
 def get_clim_model_filenames(config, variable):
@@ -298,6 +296,9 @@ def get_provenance_record(attributes, data_type, file_type):
                    "Region: {region}. Model: {mmodel} ".format(**attributes))
     elif data_type == 'plot2d' and file_type == 'png':
         caption = ("Map of spatial distribution. "
+                   "Region: {region}. Model: {mmodel} ".format(**attributes))
+    elif data_type == 'plot2d_bias' and file_type == 'png':
+        caption = ("Map of spatial distribution of bias. "
                    "Region: {region}. Model: {mmodel} ".format(**attributes))
     else:
         caption = "None"
