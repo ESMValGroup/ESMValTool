@@ -34,6 +34,7 @@ import cartopy.crs as ccrs
 import matplotlib as mpl
 from matplotlib import cm
 import numpy as np
+import pickle
 
 from esmvaltool.diag_scripts.arctic_ocean.getdata import (aw_core, hofm_data,
                                                           transect_data,
@@ -83,58 +84,60 @@ def run_hofm_data(cfg):
             hofm_data(cfg, model_filenames, mmodel, hofm_var, region)
 
 
-def run_hofm_plot(cfg, diagworkdir, diagplotdir, observations):
+def hofm_plot_params(cfg, hofm_var, var_number, observations):
+    model_filenames = get_clim_model_filenames(cfg, hofm_var)
+    model_filenames = OrderedDict(
+        sorted(model_filenames.items(), key=lambda t: t[0]))
+    # remove "model" that contain observations,
+    # since there will be no monthly data
+    model_filenames = model_filenames.copy()
+    if observations:
+        del model_filenames[observations]
+    # set the color map if not default
+    if cfg['hofm_cmap']:
+        cmap = get_cmap(cfg['hofm_cmap'][var_number])
+    else:
+        cmap = get_cmap('Spectral_r')
+    # set the number of columns in the output figure
+    # if defined
+    if cfg['hofm_ncol']:
+        ncols = cfg['hofm_ncol']
+    else:
+        ncols = 3
+    # get the levels for plots of this variable
+    vmin, vmax, sstep, roundlimit = cfg['hofm_limits'][var_number]
+    plot_params = {}
+    plot_params['variable'] = hofm_var
+    plot_params['model_filenames'] = model_filenames
+    plot_params['cmap'] = cmap
+    plot_params['ncols'] = ncols
+    plot_params['levels'] = np.round(np.linspace(vmin, vmax, sstep),
+                                     roundlimit)
+    plot_params['observations'] = observations
+
+    return plot_params
+
+
+def run_hofm_plot(cfg, observations):
     """Plot Hovmoeller diagrams for each variable.
 
     Parameters
     ----------
     cfg: dict
         configuration dictionary ESMValTool format.
-    diagworkdir: str
-        path to the diagnostic work directory.
-    diagplotdir: str
-        path to the diagnostic plot directory.
     observations: str
         name of the observation data set
     """
     # loop over variables
     for var_number, hofm_var in enumerate(cfg['hofm_vars']):
-        # get dictionary with model names as key and path to the
-        # preprocessed file as a value
-        model_filenames = get_clim_model_filenames(cfg, hofm_var)
-        model_filenames = OrderedDict(
-            sorted(model_filenames.items(), key=lambda t: t[0]))
-        # set the color map if not default
-        if cfg['hofm_cmap']:
-            cmap = get_cmap(cfg['hofm_cmap'][var_number])
-        else:
-            cmap = get_cmap('Spectral_r')
-        # set the number of columns in the output figure
-        # if defined
-        if cfg['hofm_ncol']:
-            ncols = cfg['hofm_ncol']
-        else:
-            ncols = 3
-        # get the levels for plots of this variable
-        vmin, vmax, sstep, roundlimit = cfg['hofm_limits'][var_number]
+        plot_params = hofm_plot_params(cfg, hofm_var, var_number, observations)
 
         # loop over models and regions
-        for mmodel, region in itertools.product(model_filenames,
-                                                cfg['hofm_regions']):
-            logger.info("Plotting Model: %s for Region: %s, Variable %s",
-                        mmodel, region, hofm_var)
-            # actual plotting happens here
-            hofm_plot(model_filenames,
-                      hofm_var,
-                      cfg['hofm_depth'],
-                      region,
-                      diagworkdir,
-                      diagplotdir,
-                      levels=np.round(np.linspace(vmin, vmax, sstep),
-                                      roundlimit),
-                      ncols=ncols,
-                      cmap=cmap,
-                      observations=observations)
+        for region in cfg['hofm_regions']:
+            logger.info("Plotting Hovmoeller: for Region: %s, Variable %s",
+                        region, hofm_var)
+            plot_params['region'] = region
+            hofm_plot(cfg, plot_params)
 
 
 def run_mean(cfg, diagworkdir, observations):
@@ -422,9 +425,7 @@ def run_tsdiag(cfg, diagworkdir, diagplotdir, observations):
         # this function will generate files with T and S points
         # selected from the region untill `tsdiag_depth` for
         # every model.
-        tsplot_data(cfg, mmodel,
-                    region,
-                    observations=observations)
+        tsplot_data(cfg, mmodel, region, observations=observations)
     # setting the number of columns for the plot
     if cfg['tsdiag_ncol']:
         ncols = cfg['tsdiag_ncol']
@@ -446,8 +447,8 @@ def run_tsdiag(cfg, diagworkdir, diagplotdir, observations):
 def main(cfg):
     """Compute the time average for each input model."""
     # for debuging save the configuration in a pickle file
-    # with open('cfg_NK.joblib', 'wb') as handle:
-    #     pickle.dump(cfg, handle, protocol=pickle.HIGHEST_PROTOCOL)
+    with open('cfg_NK.joblib', 'wb') as handle:
+        pickle.dump(cfg, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
     # sets the directories
     diagworkdir = cfg['work_dir']
@@ -461,40 +462,40 @@ def main(cfg):
 
     # get the names of fx filenames (for now are the same for
     # all variables (this is why "thetao" is hardcoded))
-    areacello_fx = get_fx_filenames(cfg, 'thetao', 'areacello')
+    areacello_fx = get_fx_filenames(cfg, 'areacello')
     logger.info("areacello_fx files: %s", areacello_fx)
 
     # Extract data for Hovmoeller diagrams
     run_hofm_data(cfg)
 
     # Plot Hovmoeller diagrams for each variable
-    run_hofm_plot(cfg, diagworkdir, diagplotdir, observations)
+    run_hofm_plot(cfg, observations)
 
-    # Create timemean
-    run_mean(cfg, diagworkdir, observations)
+    # # Create timemean
+    # run_mean(cfg, diagworkdir, observations)
 
-    # Plot average vertical profiles for regions
-    run_profiles(cfg, diagworkdir, diagplotdir, observations)
+    # # Plot average vertical profiles for regions
+    # run_profiles(cfg, diagworkdir, diagplotdir, observations)
 
-    # Plot 2d maps on original grid
-    run_plot2d(cfg, diagworkdir, diagplotdir)
+    # # Plot 2d maps on original grid
+    # run_plot2d(cfg, diagworkdir, diagplotdir)
 
-    # Plot model biases over depth
-    run_plot2d_bias(cfg, diagworkdir, diagplotdir, observations)
+    # # Plot model biases over depth
+    # run_plot2d_bias(cfg, diagworkdir, diagplotdir, observations)
 
-    # Plot transects
-    run_transects(cfg, diagworkdir, diagplotdir)
+    # # Plot transects
+    # run_transects(cfg, diagworkdir, diagplotdir)
 
-    # Calculate depth and temperature of the Atlantic Water core
-    # and make plots.
-    aw_core_parameters = run_aw_core(cfg, diagworkdir, diagplotdir)
+    # # Calculate depth and temperature of the Atlantic Water core
+    # # and make plots.
+    # aw_core_parameters = run_aw_core(cfg, diagworkdir, diagplotdir)
 
-    # Plot temperature spatial distribution at the depth of the
-    # atlantic water core in different models
-    run_aw_core_2d(cfg, diagworkdir, diagplotdir, aw_core_parameters)
+    # # Plot temperature spatial distribution at the depth of the
+    # # atlantic water core in different models
+    # run_aw_core_2d(cfg, diagworkdir, diagplotdir, aw_core_parameters)
 
-    # Plot TS diagrams
-    run_tsdiag(cfg, diagworkdir, diagplotdir, observations)
+    # # Plot TS diagrams
+    # run_tsdiag(cfg, diagworkdir, diagplotdir, observations)
 
 
 if __name__ == '__main__':

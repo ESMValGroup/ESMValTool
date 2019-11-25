@@ -114,17 +114,17 @@ def label_and_conversion(cmor_var, data):
     return cb_label, data
 
 
-def hofm_plot(cfg,
-              model_filenames,
-              cmor_var,
-              max_level,
-              region,
-              diagworkdir,
-              diagplotdir,
-              levels,
-              ncols=3,
-              cmap=cm.Spectral_r,
-              observations='PHC'):
+def year_ticks(series_lenght, time):
+
+    ygap = int((np.round(series_lenght / 12.) / 5) * 12)
+    year_indexes = list(range(series_lenght)[::ygap])
+    year_value = []
+    for index_year in year_indexes:
+        year_value.append(time[index_year].year)
+    return year_indexes, year_value
+
+
+def hofm_plot(cfg, plot_params):
     """Plot Hovmoeller diagram from data at diagworkdir.
 
     Parameters
@@ -155,37 +155,37 @@ def hofm_plot(cfg,
     -------
     None
     """
-    # remove "model" that contain observations,
-    # since there will be no monthly data
-    model_filenames = model_filenames.copy()
-    if observations:
-        del model_filenames[observations]
-    # creata basis for the muli panel figure
-    figure, axis = create_plot(model_filenames, ncols=ncols)
+
+    # create a basis for the muli panel figure
+    figure, axis = create_plot(plot_params['model_filenames'],
+                               ncols=plot_params['ncols'])
 
     # plot data on the figure, axis by axis
-    for index, mmodel in enumerate(model_filenames):
-        logger.info("Plot  %s data for %s, region %s", cmor_var, mmodel,
-                    region)
+    for index, mmodel in enumerate(plot_params['model_filenames']):
+        logger.info("Plot  %s data for %s, region %s", plot_params['variable'],
+                    mmodel, plot_params['region'])
         # generate input filenames that
         # the data prepared by `hofm_data` function
-        ifilename = genfilename(diagworkdir, cmor_var, mmodel, region, 'hofm',
-                                '.npy')
-        ifilename_levels = genfilename(diagworkdir, cmor_var, mmodel, region,
-                                       'levels', '.npy')
-        ifilename_time = genfilename(diagworkdir, cmor_var, mmodel, region,
-                                     'time', '.npy')
+
+        ifilename = genfilename(cfg['work_dir'], plot_params['variable'],
+                                mmodel, plot_params['region'], 'hofm', '.npy')
+        ifilename_levels = genfilename(cfg['work_dir'],
+                                       plot_params['variable'], mmodel,
+                                       plot_params['region'], 'levels', '.npy')
+        ifilename_time = genfilename(cfg['work_dir'], plot_params['variable'],
+                                     mmodel, plot_params['region'], 'time',
+                                     '.npy')
         # load the data
         hofdata = np.load(ifilename, allow_pickle=True)
         lev = np.load(ifilename_levels, allow_pickle=True)
         time = np.load(ifilename_time, allow_pickle=True)
 
         # convert data if needed and get labeles for colorbars
-        cb_label, hofdata = label_and_conversion(cmor_var, hofdata)
+        cb_label, hofdata = label_and_conversion(plot_params['variable'], hofdata)
 
         # find index of the model level closes to the `max_level`
         # and add 1, to make a plot look better
-        lev_limit = lev[lev <= max_level].shape[0] + 1
+        lev_limit = lev[lev <= cfg['hofm_depth']].shape[0] + 1
 
         # get the length of the time series
         series_lenght = time.shape[0]
@@ -197,15 +197,11 @@ def hofm_plot(cfg,
         image = axis[index].contourf(months,
                                      depth,
                                      hofdata,
-                                     cmap=cmap,
-                                     levels=levels,
+                                     cmap=plot_params['cmap'],
+                                     levels=plot_params['levels'],
                                      extend='both')
         # Generate tick marks with years that looks ok
-        ygap = int((np.round(series_lenght / 12.) / 5) * 12)
-        year_indexes = list(range(series_lenght)[::ygap])
-        year_value = []
-        for index_year in year_indexes:
-            year_value.append(time[index_year].year)
+        year_indexes, year_value = year_ticks(series_lenght, time)
 
         # set properties of the axis
         axis[index].set_xticks(year_indexes)
@@ -226,22 +222,15 @@ def hofm_plot(cfg,
     # tighten the layout
     plt.tight_layout()
     # generate the path to the output file
-    data_info = {}
-    data_info['basedir'] = diagplotdir
-    data_info['variable'] = cmor_var
-    data_info['region'] = region
-    data_info['ori_file'] = [ifilename]
-    data_info['areacello'] = None
-    data_info['mmodel'] = None
-    pltoutname = genfilename(**data_info, data_type='hofm')
-    # pltoutname = genfilename(diagplotdir,
-    #                          cmor_var,
-    #                          region=region,
-    #                          data_type='hofm')
-    # save figure
+    plot_params['basedir'] = cfg['plot_dir']
+    plot_params['ori_file'] = [ifilename]
+    plot_params['areacello'] = None
+    plot_params['mmodel'] = None
+
+    pltoutname = genfilename(**plot_params, data_type='hofm')
+
     plt.savefig(pltoutname, dpi=100)
-    print(data_info)
-    provenance_record = get_provenance_record(data_info, 'hofm', 'png')
+    provenance_record = get_provenance_record(plot_params, 'hofm', 'png')
     with ProvenanceLogger(cfg) as provenance_logger:
         provenance_logger.log(pltoutname + '.png', provenance_record)
 
