@@ -24,7 +24,7 @@ Configuration options in recipe
 See documentation
 
 """
-
+import cartopy.crs as ccrs
 import itertools
 import logging
 import os
@@ -162,10 +162,27 @@ def run_mean(cfg, diagworkdir, observations):
             sorted(model_filenames.items(), key=lambda t: t[0]))
         # loop over models
         for model in model_filenames:
-            timmean(cfg,model_filenames,
+            timmean(cfg,
+                    model_filenames,
                     model,
                     hofm_var,
                     observations=observations)
+
+
+def plot_profile_params(cfg, hofm_var, observations):
+    model_filenames = get_clim_model_filenames(cfg, hofm_var)
+    model_filenames = OrderedDict(
+        sorted(model_filenames.items(), key=lambda t: t[0]))
+
+    plot_params = {}
+
+    plot_params['variable'] = hofm_var
+    plot_params['model_filenames'] = model_filenames
+    plot_params['cmap'] = cm.Set2
+    plot_params['dpi'] = 100
+    plot_params['observations'] = observations
+
+    return plot_params
 
 
 def run_profiles(cfg, diagworkdir, diagplotdir, observations):
@@ -184,20 +201,43 @@ def run_profiles(cfg, diagworkdir, diagplotdir, observations):
     """
     # loop over variables
     for hofm_var in cfg['hofm_vars']:
-        model_filenames = get_clim_model_filenames(cfg, hofm_var)
-        model_filenames = OrderedDict(
-            sorted(model_filenames.items(), key=lambda t: t[0]))
+        plot_params = plot_profile_params(cfg, hofm_var, observations)
         # loop over regions
         for region in cfg['hofm_regions']:
-            plot_profile(model_filenames,
-                         hofm_var,
-                         cfg['hofm_depth'],
-                         region,
-                         diagworkdir,
-                         diagplotdir,
-                         cmap=cm.Set2,
-                         dpi=100,
-                         observations=observations)
+            plot_params['region'] = region
+            plot_profile(cfg, plot_params)
+
+
+def plot2d_params(cfg, plot2d_var, var_number):
+    model_filenames = get_clim_model_filenames(cfg, plot2d_var)
+    model_filenames = OrderedDict(
+        sorted(model_filenames.items(), key=lambda t: t[0]))
+    # set the color map
+    if cfg['plot2d_cmap']:
+        cmap = get_cmap(cfg['plot2d_cmap'][var_number])
+    else:
+        cmap = get_cmap('Spectral_r')
+    # set the number of columns in the plot
+    if cfg['plot2d_ncol']:
+        ncols = cfg['plot2d_ncol']
+    else:
+        ncols = 4
+    # create color limits for the plot
+    vmin, vmax, sstep, roundlimit = cfg['plot2d_limits'][var_number]
+    # loop over depths
+    plot_params = {}
+    plot_params['variable'] = plot2d_var
+    plot_params['model_filenames'] = model_filenames
+    plot_params['cmap'] = cmap
+    plot_params['ncols'] = ncols
+    plot_params['levels'] = np.round(np.linspace(vmin, vmax, sstep),
+                                     roundlimit)
+    plot_params['dpi'] = 100
+    plot_params['explicit_depths'] = None
+    plot_params['projection'] = ccrs.NorthPolarStereo()
+    plot_params['bbox'] = (-180, 180, 60, 90)
+
+    return plot_params
 
 
 def run_plot2d(cfg, diagworkdir, diagplotdir):
@@ -214,34 +254,13 @@ def run_plot2d(cfg, diagworkdir, diagplotdir):
     """
     # loop over variables
     for var_number, plot2d_var in enumerate(cfg['plot2d_vars']):
-        model_filenames = get_clim_model_filenames(cfg, plot2d_var)
-        model_filenames = OrderedDict(
-            sorted(model_filenames.items(), key=lambda t: t[0]))
-        # set the color map
-        if cfg['plot2d_cmap']:
-            cmap = get_cmap(cfg['plot2d_cmap'][var_number])
-        else:
-            cmap = get_cmap('Spectral_r')
-        # set the number of columns in the plot
-        if cfg['plot2d_ncol']:
-            ncols = cfg['plot2d_ncol']
-        else:
-            ncols = 4
-        # create color limits for the plot
-        vmin, vmax, sstep, roundlimit = cfg['plot2d_limits'][var_number]
-        # loop over depths
+
+        plot_params = plot2d_params(cfg, plot2d_var, var_number)
+
         for depth in cfg['plot2d_depths']:
-            plot2d_original_grid(model_filenames,
-                                 plot2d_var,
-                                 depth,
-                                 levels=np.round(
-                                     np.linspace(vmin, vmax, sstep),
-                                     roundlimit),
-                                 diagworkdir=diagworkdir,
-                                 diagplotdir=diagplotdir,
-                                 cmap=cmap,
-                                 dpi=100,
-                                 ncols=ncols)
+            plot_params['depth'] = depth
+            plot2d_original_grid(cfg, plot_params)
+
 
 
 def run_plot2d_bias(cfg, diagworkdir, diagplotdir, observations):
@@ -387,17 +406,20 @@ def run_aw_core_2d(cfg, diagworkdir, diagplotdir, aw_core_parameters):
     aw_core_parameters = aw_core(model_filenames, diagworkdir, 'EB', 'thetao')
     # this is now just using plot2d_original_grid with
     # additional `explicit_depths` parameter
-    plot2d_original_grid(
-        model_filenames,
-        cmor_var="thetao",
-        depth=0,
-        levels=np.round(np.linspace(-2, 2.3, 41), 1),
-        diagworkdir=diagworkdir,
-        diagplotdir=diagplotdir,
-        cmap=cm.Spectral_r,
-        dpi=100,
-        explicit_depths=aw_core_parameters,
-    )
+    plot_params = {}
+    plot_params['variable'] = 'thetao'
+    plot_params['model_filenames'] = model_filenames
+    plot_params['depth'] = 0
+    plot_params['cmap'] = cm.Spectral_r
+    plot_params['ncols'] = 4
+    plot_params['levels'] = np.round(np.linspace(-2, 2.3, 41), 1)
+    plot_params['dpi'] = 100
+    plot_params['explicit_depths'] = aw_core_parameters
+    plot_params['projection'] = ccrs.NorthPolarStereo()
+    plot_params['bbox'] = (-180, 180, 60, 90)
+
+    plot2d_original_grid(cfg, plot_params)
+
 
 
 def run_tsdiag(cfg, diagworkdir, diagplotdir, observations):
@@ -465,36 +487,36 @@ def main(cfg):
     logger.info("areacello_fx files: %s", areacello_fx)
 
     # Extract data for Hovmoeller diagrams
-    run_hofm_data(cfg)
+    # run_hofm_data(cfg)
 
-    # Plot Hovmoeller diagrams for each variable
-    run_hofm_plot(cfg, observations)
+    # # Plot Hovmoeller diagrams for each variable
+    # run_hofm_plot(cfg, observations)
 
-    # # Create timemean
-    run_mean(cfg, diagworkdir, observations)
+    # # # Create timemean
+    # run_mean(cfg, diagworkdir, observations)
 
     # # Plot average vertical profiles for regions
-    run_profiles(cfg, diagworkdir, diagplotdir, observations)
+    # run_profiles(cfg, diagworkdir, diagplotdir, observations)
 
     # Plot 2d maps on original grid
     run_plot2d(cfg, diagworkdir, diagplotdir)
 
-    # Plot model biases over depth
-    run_plot2d_bias(cfg, diagworkdir, diagplotdir, observations)
+    # # Plot model biases over depth
+    # run_plot2d_bias(cfg, diagworkdir, diagplotdir, observations)
 
-    # Plot transects
-    run_transects(cfg, diagworkdir, diagplotdir)
+    # # Plot transects
+    # run_transects(cfg, diagworkdir, diagplotdir)
 
-    # Calculate depth and temperature of the Atlantic Water core
-    # and make plots.
+    # # Calculate depth and temperature of the Atlantic Water core
+    # # and make plots.
     aw_core_parameters = run_aw_core(cfg, diagworkdir, diagplotdir)
 
-    # Plot temperature spatial distribution at the depth of the
-    # atlantic water core in different models
+    # # Plot temperature spatial distribution at the depth of the
+    # # atlantic water core in different models
     run_aw_core_2d(cfg, diagworkdir, diagplotdir, aw_core_parameters)
 
-    # Plot TS diagrams
-    run_tsdiag(cfg, diagworkdir, diagplotdir, observations)
+    # # Plot TS diagrams
+    # run_tsdiag(cfg, diagworkdir, diagplotdir, observations)
 
 
 if __name__ == '__main__':

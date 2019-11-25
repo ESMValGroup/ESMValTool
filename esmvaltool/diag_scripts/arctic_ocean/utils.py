@@ -296,6 +296,9 @@ def get_provenance_record(attributes, data_type, file_type):
     elif data_type == 'profile' and file_type == 'png':
         caption = ("Mean vertical profile. "
                    "Region: {region}. Model: {mmodel} ".format(**attributes))
+    elif data_type == 'plot2d' and file_type == 'png':
+        caption = ("Map of spatial distribution. "
+                   "Region: {region}. Model: {mmodel} ".format(**attributes))
     else:
         caption = "None"
 

@@ -63,23 +63,23 @@ def create_plot(model_filenames, ncols=3, projection=None, nplots_increment=0):
     # and PlateCaree
     if projection:
         figsize = (5 * ncols, 1.55 * nrows * ncols)
-        fig, ax = plt.subplots(nrows,
-                               ncols,
-                               figsize=figsize,
-                               subplot_kw=dict(projection=projection),
-                               constrained_layout=True)
+        figure, axis = plt.subplots(nrows,
+                                    ncols,
+                                    figsize=figsize,
+                                    subplot_kw=dict(projection=projection),
+                                    constrained_layout=True)
     # this workd well for usual plots
     else:
         figsize = (10 * ncols, 2.5 * nrows * ncols)
-        fig, ax = plt.subplots(nrows, ncols, figsize=figsize)
+        figure, axis = plt.subplots(nrows, ncols, figsize=figsize)
     # if you have more than one axis, flatten the array
     # this way it is easier to handle it.
-    if isinstance(ax, np.ndarray):
-        ax = ax.flatten()
+    if isinstance(axis, np.ndarray):
+        axis = axis.flatten()
     # if only one axis is created wrap it in a list.
     else:
-        ax = [ax]
-    return fig, ax
+        axis = [axis]
+    return figure, axis
 
 
 def label_and_conversion(cmor_var, data):
@@ -213,9 +213,9 @@ def hofm_plot(cfg, plot_params):
         axis[index].tick_params(axis='y', labelsize=15)
 
         # Add a colorbar
-        cb = figure.colorbar(image, ax=axis[index], pad=0.01)
-        cb.set_label(cb_label, rotation='vertical', size=15)
-        cb.ax.tick_params(labelsize=15)
+        colorbar = figure.colorbar(image, ax=axis[index], pad=0.01)
+        colorbar.set_label(cb_label, rotation='vertical', size=15)
+        colorbar.ax.tick_params(labelsize=15)
 
     # delete unused axis
     for delind in range(index + 1, len(axis)):
@@ -326,10 +326,10 @@ def tsplot_plot(model_filenames,
         plt.xticks(size=15)
         plt.yticks(size=15)
         # setup the colorbar
-        cb = plt.colorbar(pad=0.03)
-        cb.ax.get_yaxis().labelpad = 15
-        cb.set_label('depth, m', rotation=270, size=20)
-        cb.ax.tick_params(labelsize=15)
+        colorbar = plt.colorbar(pad=0.03)
+        colorbar.ax.get_yaxis().labelpad = 15
+        colorbar.set_label('depth, m', rotation=270, size=20)
+        colorbar.ax.tick_params(labelsize=15)
 
         plt.title(mmodel, size=20)
         nplot = nplot + 1
@@ -453,7 +453,7 @@ def plot_profile(cfg, plot_params):
     plot_params['areacello'] = None
     plot_params['mmodel'] = None
 
-    pltoutname = genfilename(cfg['work_dir'], plot_params['variable'],
+    pltoutname = genfilename(cfg['plot_dir'], plot_params['variable'],
                              'MULTIMODEL', plot_params['region'], 'profile')
 
     plt.savefig(pltoutname, dpi=plot_params['dpi'], bbox_inches='tight')
@@ -462,18 +462,7 @@ def plot_profile(cfg, plot_params):
         provenance_logger.log(pltoutname + '.png', provenance_record)
 
 
-def plot2d_original_grid(model_filenames,
-                         cmor_var,
-                         depth,
-                         levels,
-                         diagworkdir,
-                         diagplotdir,
-                         cmap,
-                         dpi=100,
-                         explicit_depths=None,
-                         projection=ccrs.NorthPolarStereo(),
-                         bbox=(-180, 180, 60, 90),
-                         ncols=4):
+def plot2d_original_grid(cfg, plot_params):
     """Plot 2d maps on original grid using cartopy.
 
     Parameters
@@ -511,15 +500,16 @@ def plot2d_original_grid(model_filenames,
     ------
     None
     """
-    figure, axis = create_plot(model_filenames,
-                               ncols=ncols,
-                               projection=projection)
+    figure, axis = create_plot(plot_params['model_filenames'],
+                               ncols=plot_params['ncols'],
+                               projection=plot_params['projection'])
 
-    for index, mmodel in enumerate(model_filenames):
-        logger.info("Plot plot2d_original_grid %s for %s", cmor_var, mmodel)
+    for index, mmodel in enumerate(plot_params['model_filenames']):
+        logger.info("Plot plot2d_original_grid %s for %s",
+                    plot_params['variable'], mmodel)
 
-        ifilename = genfilename(diagworkdir,
-                                cmor_var,
+        ifilename = genfilename(cfg['work_dir'],
+                                plot_params['variable'],
                                 mmodel,
                                 data_type='timmean',
                                 extension='.nc')
@@ -530,20 +520,26 @@ def plot2d_original_grid(model_filenames,
         lat2d = metadata['lat2d']
         lev = metadata['lev']
 
-        if not explicit_depths:
-            depth_target, level_target = closest_depth(lev, depth)
+        print(plot_params)
+
+        if plot_params['explicit_depths'] == None:
+            depth_target, level_target = closest_depth(lev,
+                                                       plot_params['depth'])
         else:
-            level_target = explicit_depths[mmodel]['maxvalue_index']
+            level_target = plot_params['explicit_depths'][mmodel][
+                'maxvalue_index']
             depth_target = lev[level_target]
 
-        if datafile.variables[cmor_var].ndim < 4:
-            data = datafile.variables[cmor_var][level_target, :, :]
+        if datafile.variables[plot_params['variable']].ndim < 4:
+            data = datafile.variables[
+                plot_params['variable']][level_target, :, :]
         else:
-            data = datafile.variables[cmor_var][0, level_target, :, :]
+            data = datafile.variables[
+                plot_params['variable']][0, level_target, :, :]
 
-        cb_label, data = label_and_conversion(cmor_var, data)
+        cb_label, data = label_and_conversion(plot_params['variable'], data)
 
-        left, right, down, upper = bbox
+        left, right, down, upper = plot_params['bbox']
 
         axis[index].set_extent([left, right, down, upper],
                                crs=ccrs.PlateCarree())
@@ -554,10 +550,10 @@ def plot2d_original_grid(model_filenames,
             lon2d,
             lat2d,
             data,
-            vmin=levels[0],
-            vmax=levels[-1],
+            vmin=plot_params['levels'][0],
+            vmax=plot_params['levels'][-1],
             transform=ccrs.PlateCarree(),
-            cmap=cmap,
+            cmap=plot_params['cmap'],
         )
 
         axis[index].add_feature(
@@ -582,17 +578,27 @@ def plot2d_original_grid(model_filenames,
     colorbar.set_label(cb_label, rotation='horizontal', size=18)
     colorbar.ax.tick_params(labelsize=18)
 
-    if not explicit_depths:
-        plot_type = 'plot2d_{}_depth'.format(str(depth))
+    if not plot_params['explicit_depths']:
+        plot_type = 'plot2d_{}_depth'.format(str(plot_params['depth']))
     else:
         plot_type = "plot2d_different_levels"
 
     # save the figure
-    pltoutname = genfilename(diagplotdir,
-                             cmor_var,
+    pltoutname = genfilename(cfg['plot_dir'],
+                             plot_params['variable'],
                              "MULTIMODEL",
                              data_type=plot_type)
-    plt.savefig(pltoutname, dpi=dpi)
+
+    plot_params['basedir'] = cfg['plot_dir']
+    plot_params['ori_file'] = [ifilename]
+    plot_params['areacello'] = None
+    plot_params['mmodel'] = None
+    plot_params['region'] = "Global"
+    plt.savefig(pltoutname, dpi=plot_params['dpi'])
+
+    provenance_record = get_provenance_record(plot_params, 'plot2d', 'png')
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(pltoutname + '.png', provenance_record)
 
 
 def plot2d_bias(model_filenames,
@@ -737,13 +743,13 @@ def plot2d_bias(model_filenames,
     for delind in range(index + 2, len(axis)):
         figure.delaxes(axis[delind])
     # set common colorbar
-    cb = figure.colorbar(image,
-                         orientation='horizontal',
-                         ax=axis,
-                         pad=0.01,
-                         shrink=0.9)
-    cb.set_label(cb_label, rotation='horizontal', size=18)
-    cb.ax.tick_params(labelsize=18)
+    colorbar = figure.colorbar(image,
+                               orientation='horizontal',
+                               ax=axis,
+                               pad=0.01,
+                               shrink=0.9)
+    colorbar.set_label(cb_label, rotation='horizontal', size=18)
+    colorbar.ax.tick_params(labelsize=18)
     # save the picture
     pltoutname = genfilename(diagplotdir,
                              cmor_var,
