@@ -60,6 +60,7 @@ requirements:
     - python-stratify
     - pyyaml
     - scikit-learn
+    - seaborn
     - shapely
     - xesmf
     - xarray>=0.12.0
