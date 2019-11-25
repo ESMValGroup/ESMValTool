@@ -5,7 +5,7 @@
 Description
 -----------
 Create scatterplot for different datasets of a single variable. This diagnostic
-needs preprocessed 1D cubes with single dimension `dataset`.
+needs preprocessed 1D cubes with single dimension ``dataset``.
 
 Author
 ------
@@ -23,7 +23,7 @@ dataset_style : str, optional
 pattern : str, optional
     Pattern to filter list of input data.
 seaborn_settings : dict, optional
-    Options for seaborn's `set()` method (affects all plots), see
+    Options for :func:`seaborn.set` (affects all plots), see
     <https://seaborn.pydata.org/generated/seaborn.set.html>.
 y_range : list of float, optional
     Range for the y axis in the plot.

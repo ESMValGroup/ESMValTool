@@ -26,9 +26,9 @@ matplotlib_style : str, optional
     Dataset style file (located in
     :mod:`esmvaltool.diag_scripts.shared.plot.styles_python.matplotlib`).
 save : dict, optional
-    Keyword arguments for the `fig.saveplot()` function.
+    Keyword arguments for :func:`matplotlib.pyplot.savefig`.
 seaborn_settings : dict, optional
-    Options for seaborn's `set()` method (affects all plots), see
+    Options for :func:`seaborn.set` (affects all plots), see
     <https://seaborn.pydata.org/generated/seaborn.set.html>.
 
 """

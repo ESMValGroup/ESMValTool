@@ -25,7 +25,7 @@ log_x : bool, optional (default: False)
 log_y : bool, optional (default: False)
     Apply logarithm to Y axis (TCR).
 seaborn_settings : dict, optional
-    Options for seaborn's `set()` method (affects all plots), see
+    Options for :func:`seaborn.set` (affects all plots), see
     <https://seaborn.pydata.org/generated/seaborn.set.html>.
 
 """
@@ -179,8 +179,8 @@ def main(cfg):
     project = ecs_cube.attributes['project']
 
     # Remove missing data and use equal coordinate
-    [ecs_cube, tcr_cube] = iris_helpers.intersect_dataset_coordinates(
-        [ecs_cube, tcr_cube])
+    [ecs_cube, tcr_cube
+     ] = iris_helpers.intersect_dataset_coordinates([ecs_cube, tcr_cube])
 
     # Create plot
     plot_path = plot_data(cfg, ecs_cube, tcr_cube)

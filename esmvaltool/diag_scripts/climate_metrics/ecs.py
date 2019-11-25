@@ -23,7 +23,7 @@ read_external_file : str, optional
     Read ECS and feedback parameters from external file. The path can be given
     relative to this diagnostic script or as absolute path.
 seaborn_settings : dict, optional
-    Options for seaborn's `set()` method (affects all plots), see
+    Options for :func:`seaborn.set` (affects all plots), see
     <https://seaborn.pydata.org/generated/seaborn.set.html>.
 
 """
@@ -112,7 +112,7 @@ def _get_anomaly_data(input_data):
 
 
 def _get_data_time_last(cube):
-    """Get data of `cube` with time axis as last dimension."""
+    """Get data of ``cube`` with time axis as last dimension."""
     return np.moveaxis(cube.data, cube.coord_dims('time')[0], -1)
 
 

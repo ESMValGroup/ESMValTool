@@ -5,7 +5,7 @@
 Description
 -----------
 Create barplot for different datasets of a single variable. This diagnostic
-needs preprocessed 1D cubes with single dimension `dataset`.
+needs preprocessed 1D cubes with single dimension ``dataset``.
 
 Author
 ------
@@ -22,7 +22,7 @@ label_attribute : str, optional
 patterns : list of str, optional
     Patterns to filter list of input data.
 seaborn_settings : dict, optional
-    Options for seaborn's `set()` method (affects all plots), see
+    Options for :func:`seaborn.set` (affects all plots), see
     <https://seaborn.pydata.org/generated/seaborn.set.html>.
 sort_ascending : bool, optional (default: False)
     Sort bars in ascending order.
