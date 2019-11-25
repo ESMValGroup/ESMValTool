@@ -55,8 +55,11 @@ following figures from Flato et al. (2013) can currently be reproduced:
       sea ice extent.
 
     * Figure 9.42a: Equilibrium climate sensitivity (ECS) against the global
-      mean surface air temperature of CMIP5 models, both for the period
-      1961-1990 and for the pre-industrial control runs.
+      mean surface air temperature, both for the period 1961-1990 and for the
+      pre-industrial control runs.
+
+    * Figure 9.42b: Transient climate response (TCR) against equilibrium climate
+      sensitivity (ECS).
 
     * Figure 9.45a: Scatterplot of springtime snow-albedo effect values in climate
       change vs. springtime d(alpha\ :sub:`s`\)/d(T\ :sub:`s`\) values in the seasonal
@@ -81,6 +84,7 @@ Diagnostics are stored in esmvaltool/diag_scripts/
     * seaice/seaice_tsline.ncl: Time series of sea ice extent (Fig. 9.24a/b)
     * seaice/seaice_trends.ncl: Trend distributions of sea ice extent (Fig 9.24c/d)
     * ipcc_ar5/ch09_fig09_42a.py: ECS vs. surface air temperature (Fig. 9.42a)
+    * ipcc_ar5/ch09_fig09_42b.py: TCR vs. ECS (Fig. 9.42b)
     * emergent_constraints/snowalbedo.ncl: snow-albedo effect (Fig. 9.45a)
 
 User settings in recipe
@@ -229,14 +233,31 @@ User settings in recipe
 
    *Optional settings for script*
 
-   * save: :obj:`dict` containing keyword arguments for the function
-     :func:`matplotlib.pyplot.savefig`.
    * axes_functions: :obj:`dict` containing methods executed for the plot's
      :class:`matplotlib.axes.Axes` object.
    * dataset_style: name of the style file (located in
      :mod:`esmvaltool.diag_scripts.shared.plot.styles_python`).
    * matplotlib_style: name of the matplotlib style file (located in
      :mod:`esmvaltool.diag_scripts.shared.plot.styles_python.matplotlib`).
+   * save: :obj:`dict` containing keyword arguments for the function
+     :func:`matplotlib.pyplot.savefig`.
+   * seaborn_settings: Options for seaborn's ``set()`` method (affects all
+     plots), see https://seaborn.pydata.org/generated/seaborn.set.html.
+
+#. Script ipcc_ar5/ch09_fig09_42b.py
+
+   *Required settings for script*
+
+   none
+
+   *Optional settings for script*
+
+   * dataset_style: name of the style file (located in
+     :mod:`esmvaltool.diag_scripts.shared.plot.styles_python`).
+   * log_x: Apply logarithm to X axis (ECS).
+   * log_y: Apply logarithm to Y axis (TCR).
+   * seaborn_settings: Options for seaborn's ``set()`` method (affects all
+     plots), see https://seaborn.pydata.org/generated/seaborn.set.html.
 
 #. Script emergent_constraints/snowalbedo.ncl
 
@@ -396,12 +417,19 @@ Example plots
    in September including multi-model mean and standard deviation.
 
 .. _fig_flato13ipcc_6:
-.. figure:: /recipes/figures/flato13ipcc/fig-9-42a.png
+.. figure:: /recipes/figures/flato13ipcc/figure-9-42a.png
    :align: center
 
    Figure 9.42a: Equilibrium climate sensitivity (ECS) against the global mean
    surface air temperature of CMIP5 models, both for the period 1961-1990
    (larger symbols) and for the pre-industrial control runs (smaller symbols).
+
+.. _fig_flato13ipcc_7:
+.. figure:: /recipes/figures/flato13ipcc/fig-9-42b.png
+   :align: center
+
+   Figure 9.42b: Transient climate response (TCR) against equilibrium climate
+   sensitivity (ECS) for CMIP5 models.
 
 .. figure:: /recipes/figures/flato13ipcc/fig-9-45a.png
    :align: center
@@ -410,3 +438,4 @@ Example plots
    change vs. springtime :math:`\Delta \alpha_s`/:math:`\Delta T_s` values in
    the seasonal cycle in transient climate change experiments (CMIP5 historical
    experiments: 1901-2000, RCP4.5 experiments: 2101-2200).
+

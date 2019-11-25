@@ -39,6 +39,7 @@ Climate metrics and emergent constraints
    recipe_ecs
    recipe_perfmetrics
    recipe_smpi
+   recipe_tcr
 
 IPCC
 ^^^^

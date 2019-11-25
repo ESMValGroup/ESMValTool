@@ -164,8 +164,8 @@ diagnostics:
       fgco2:
         mip: Omon
     additional_datasets:
-      - {dataset: GCP, project: OBS, tier: 2, type: reanaly, version: 2018,
-         start_year: 1959, end_year: 2017, frequency: yr}
+      - {dataset: GCP, project: OBS, frequency: yr, tier: 2,
+         type: reanaly, version: 2018, start_year: 1959, end_year: 2017}
     scripts: null
 
 
@@ -360,6 +360,17 @@ diagnostics:
     additional_datasets:
       - {dataset: CDS-SATELLITE-SOIL-MOISTURE, project: OBS, mip: day, tier: 3,
          type: sat, version: COMBINED-TCDR-v201812.0.0,
+         start_year: 1979, end_year: 2018}
+    scripts: null
+
+
+  CDS-UERRA:
+    description: CDS-UERRA check
+    variables:
+      sm:
+    additional_datasets:
+      - {dataset: CDS-UERRA, project: OBS6, mip: E6hr, frequency: 6hr, tier: 3,
+         type: reanaly, version: UERRA-HARMONIE,
          start_year: 1979, end_year: 2018}
     scripts: null
 
@@ -599,10 +610,7 @@ diagnostics:
 
 
   ERA5:
-    description: ERA5 check
-    additional_datasets:
-      - {project: OBS6, dataset: ERA5, tier: 3, type: reanaly, 
-         version: 1, start_year: 1990, end_year: 1990}
+    description: ERA5 check check
     variables:
       clt: &E1hr
         mip: E1hr
@@ -629,6 +637,9 @@ diagnostics:
       tsn: *E1hr
       orog:
         mip: fx
+    additional_datasets:
+      - {dataset: ERA5, project: OBS6, frequency: 1hr, tier: 3,
+         type: reanaly, version: 1, start_year: 1990, end_year: 1990}
     scripts: null
 
 
