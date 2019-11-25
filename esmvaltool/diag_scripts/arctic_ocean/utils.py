@@ -293,6 +293,9 @@ def get_provenance_record(attributes, data_type, file_type):
     elif data_type == 'timmean' and file_type == 'nc':
         caption = ("Global time mean. "
                    "Region: {region}. Model: {mmodel} ".format(**attributes))
+    elif data_type == 'profile' and file_type == 'png':
+        caption = ("Mean vertical profile. "
+                   "Region: {region}. Model: {mmodel} ".format(**attributes))
     else:
         caption = "None"
 

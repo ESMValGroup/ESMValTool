@@ -343,15 +343,7 @@ def tsplot_plot(model_filenames,
     plt.savefig(pltoutname, dpi=100)
 
 
-def plot_profile(model_filenames,
-                 cmor_var,
-                 max_level,
-                 region,
-                 diagworkdir,
-                 diagplotdir,
-                 cmap=cm.Set2,
-                 dpi=100,
-                 observations='PHC'):
+def plot_profile(cfg, plot_params):
     """Plot profiles.
 
     From previously calculated data for Hovmoeller diagrams.
@@ -379,39 +371,43 @@ def plot_profile(model_filenames,
     -------
     None
     """
-    level_clim = Dataset(model_filenames[observations]).variables['lev'][:]
+    level_clim = Dataset(plot_params['model_filenames'][
+        plot_params['observations']]).variables['lev'][:]
     plt.figure(figsize=(5, 6))
     axis = plt.subplot(111)
 
-    color = iter(cmap(np.linspace(0, 1, len(model_filenames))))
-    lev_limit_clim = level_clim[level_clim <= max_level].shape[0] + 1
+    color = iter(plot_params['cmap'](np.linspace(
+        0, 1, len(plot_params['model_filenames']))))
+    lev_limit_clim = level_clim[level_clim <= cfg['hofm_depth']].shape[0] + 1
 
-    mean_profile = np.zeros(
-        (level_clim[:lev_limit_clim].shape[0], len(model_filenames) - 1))
+    mean_profile = np.zeros((level_clim[:lev_limit_clim].shape[0],
+                             len(plot_params['model_filenames']) - 1))
     mean_profile_counter = 0
 
-    for mmodel in model_filenames:
-        logger.info("Plot profile %s data for %s, region %s", cmor_var, mmodel,
-                    region)
+    for mmodel in plot_params['model_filenames']:
+        logger.info("Plot profile %s data for %s, region %s",
+                    plot_params['variable'], mmodel, plot_params['region'])
         # construct input filenames
-        ifilename = genfilename(diagworkdir, cmor_var, mmodel, region, 'hofm',
-                                '.npy')
-        ifilename_levels = genfilename(diagworkdir, cmor_var, mmodel, region,
-                                       'levels', '.npy')
+        ifilename = genfilename(cfg['work_dir'], plot_params['variable'],
+                                mmodel, plot_params['region'], 'hofm', '.npy')
+        ifilename_levels = genfilename(cfg['work_dir'],
+                                       plot_params['variable'], mmodel,
+                                       plot_params['region'], 'levels', '.npy')
         # load data
         hofdata = np.load(ifilename, allow_pickle=True)
         lev = np.load(ifilename_levels, allow_pickle=True)
 
         # convert data if needed and set labeles
-        cb_label, hofdata = label_and_conversion(cmor_var, hofdata)
+        cb_label, hofdata = label_and_conversion(plot_params['variable'],
+                                                 hofdata)
 
         # set index for maximum level (max_level+1)
-        lev_limit = lev[lev <= max_level].shape[0] + 1
+        lev_limit = lev[lev <= cfg['hofm_depth']].shape[0] + 1
 
         # calculate mean profile
         profile = (hofdata)[:, :].mean(axis=1)
 
-        if mmodel != observations:
+        if mmodel != plot_params['observations']:
             next_color = next(color)
         else:
             next_color = 'k'
@@ -421,7 +417,7 @@ def plot_profile(model_filenames,
         # interpolate to standard levels and add to mean profile
         profile_interpolated = np.interp(level_clim[:lev_limit_clim],
                                          lev[0:lev_limit], profile)
-        if mmodel != observations:
+        if mmodel != plot_params['observations']:
 
             print('include {} in to the mean'.format(mmodel))
             mean_profile[:, mean_profile_counter] = profile_interpolated
@@ -443,7 +439,7 @@ def plot_profile(model_filenames,
     plt.xlabel(cb_label, size=12, rotation='horizontal')
     plt.ylabel('m', size=12, rotation='horizontal')
 
-    plt.ylim(0, max_level)
+    plt.ylim(0, cfg['hofm_depth'])
 
     # we shift the legend and plot it
     box = axis.get_position()
@@ -451,9 +447,19 @@ def plot_profile(model_filenames,
     axis.legend(loc='center left', bbox_to_anchor=(1, 0.5), fontsize=10)
 
     plt.gca().invert_yaxis()
-    pltoutname = genfilename(diagplotdir, cmor_var, 'MULTIMODEL', region,
-                             'profile')
-    plt.savefig(pltoutname, dpi=dpi, bbox_inches='tight')
+
+    plot_params['basedir'] = cfg['plot_dir']
+    plot_params['ori_file'] = [ifilename]
+    plot_params['areacello'] = None
+    plot_params['mmodel'] = None
+
+    pltoutname = genfilename(cfg['work_dir'], plot_params['variable'],
+                             'MULTIMODEL', plot_params['region'], 'profile')
+
+    plt.savefig(pltoutname, dpi=plot_params['dpi'], bbox_inches='tight')
+    provenance_record = get_provenance_record(plot_params, 'profile', 'png')
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(pltoutname + '.png', provenance_record)
 
 
 def plot2d_original_grid(model_filenames,
