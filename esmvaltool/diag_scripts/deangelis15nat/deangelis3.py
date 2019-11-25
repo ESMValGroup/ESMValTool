@@ -2,8 +2,10 @@
 # -*- coding: utf-8 -*-
 
 
-"""Calculates radiative constraint on hydrologic cycle intensification
- following DeAngelis et al. (2015).
+""".
+
+Calculates radiative constraint on hydrologic cycle intensification
+following DeAngelis et al. (2015).
 
 ###############################################################################
 testkw/deangelis3.py
@@ -11,7 +13,9 @@ Author: Katja Weigel (IUP, Uni Bremen, Germany)
 EVal4CMIP project
 ###############################################################################
 
+
 Description
+
 -----------
     Calculates radiative constraint on hydrologic cycle intensification
     following DeAngelis et al. (2015).
@@ -42,7 +46,7 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 
 def set_axx_deangelis4(axx, ylen, ytickstrs, x_obs, dx_obs):
-    """Axis settings for deangelis 4"""
+    """Axis settings for deangelis 4."""
     axx.set_xlabel(r'clr-dSWA/dPW (% kg$^{-1}$ m$^2$)')
     axx.set_xlim([0.02, 0.13])
     axx.set_xticks(np.linspace(0.02, 0.12, 6))
@@ -68,7 +72,7 @@ def set_axx_deangelis4(axx, ylen, ytickstrs, x_obs, dx_obs):
 
 
 def set_axx_deangelis3b(axx, x_obs, dx_obs):
-    """Axis settings for deangelis 3b"""
+    """Axis settings for deangelis 3b."""
     axx.set_xlabel(r'clr-dSWA/dPW (% kg$^{-1}$ m$^2$)')
     axx.set_ylabel(r'clr-dSWA/dT (W m$^{-2}$ K$^{-1}$)')
     axx.set_xlim([0.0, 0.13])
@@ -93,7 +97,7 @@ def set_axx_deangelis3b(axx, x_obs, dx_obs):
 
 
 def plot_deangelis_fig3a(cfg, dataset_name, data, reg_prw, reg_obs):
-    """Plot DeAngelis Fig. 3a"""
+    """Plot DeAngelis Fig. 3a."""
     filepath = os.path.join(cfg['plot_dir'], dataset_name + 'fig3a.' +
                             cfg['output_file_type'])
 
@@ -141,7 +145,7 @@ def plot_deangelis_fig3a(cfg, dataset_name, data, reg_prw, reg_obs):
 
 
 def plot_deangelis_fig3b(cfg, data_model, reg_prw_obs):
-    """Plot DeAngelis Fig. 3a and 4"""
+    """Plot DeAngelis Fig. 3a and 4."""
     # Fig 4
 
     # Set dictionary modelkey vs number from DeAngelis et al., 2015
@@ -283,8 +287,7 @@ def plot_deangelis_fig3b(cfg, data_model, reg_prw_obs):
 
 
 def make_grid_prw(grid_pwx, data_prw_obs, data_rsnstcsnorm_obs):
-    """Grid rsnstcsnorm based on prw grid"""
-
+    """Grid rsnstcsnorm based on prw grid."""
     gridded_rsnstcsnorm_obs = np.zeros(len(grid_pwx), dtype=float)
 
     for jjj, bincenter in enumerate(grid_pwx):
@@ -296,8 +299,7 @@ def make_grid_prw(grid_pwx, data_prw_obs, data_rsnstcsnorm_obs):
 
 
 def reform_data_iris_deangelis3b4(input_data):
-    """Extract data from IRIS cubes and average or reformat them"""
-
+    """Extract data from IRIS cubes and average or reformat them."""
     # Model data for 'tas', 'rsnstcs'
     cubes = {}
     for my_short_name in ['tas', 'rsnstcs']:
@@ -355,8 +357,7 @@ def reform_data_iris_deangelis3b4(input_data):
 
 def substract_and_reg_deangelis(cfg, cubes, grid_pw,
                                 reg_prw_obs):
-    """Substract piControl from abrupt4xCO2 for all models and variables"""
-
+    """Substract piControl from abrupt4xCO2 for all models and variables."""
     data_model = OrderedDict()
 
     model_tub_tas_pi = []
@@ -406,7 +407,7 @@ def substract_and_reg_deangelis(cfg, cubes, grid_pw,
 def main(cfg):
     """Run the diagnostic.
 
-    Parameters
+    Parameters :
     ----------
     cfg : dict
         Configuration dictionary of the recipe.
