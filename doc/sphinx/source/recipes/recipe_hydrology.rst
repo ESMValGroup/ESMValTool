@@ -46,6 +46,8 @@ User settings in recipe
 
    *Required preprocessor settings:*
 
+   The settings below should not be changed.
+
         *extract_shape:*
 
             * shapefile: meuse_hydrosheds.shp (MARRMoT is a hydrological Lumped model that needs catchment-aggregated forcing data. The catchment is provided as a shapefile in Auxiliary folder in config-user.yml. The name of the shapefile is set in the recipe, here. For example, meuse_hydrosheds.shp).
@@ -56,8 +58,6 @@ User settings in recipe
 
             * operator: mean (MARRMoT needs daily forcing data. Hourly forcing data are converted to daily values by mean operator).
 
-
-   *Required diagnostic settings:*
 
     There are two diagnostics for daily and hourly data. Currently, the recipe only supports ERA-Interim as daily data and ERA5 as hourly data. The settings are as:
 
@@ -83,7 +83,7 @@ Variables
    * tas ( longitude, latitude, time)
    * pr (longitude, latitude, time)
 
-  MARRMoT requires potential evapotranspiration (PET). Thus, it might also need psl, rsds, rsdt to be used in debruin function (De Bruin et al. 2016).
+  MARRMoT requires potential evapotranspiration (PET). Currently, the recipe only supports ERA-Interim as daily data and ERA5 as hourly data. The variable PET is not available in ERA-Interim archive. Thus, we use debruin function (De Bruin et al. 2016) to obtain PET using both ERA-Interim and ERA5. This function needs psl, rsds, and rsdt variables.
 
    * psl (longitude, latitude, time)
    * rsds (longitude, latitude, time)
