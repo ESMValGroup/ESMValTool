@@ -16,6 +16,8 @@ import pyproj
 import seawater as sw
 from cdo import Cdo
 
+from esmvaltool.diag_scripts.shared._base import (ProvenanceLogger)
+
 mpl.use('agg')
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -69,20 +71,20 @@ def genfilename(basedir,
     return ifilename
 
 
-def timmean(model_filenames, mmodel, cmor_var, diagworkdir,
+def timmean(cfg, model_filenames, mmodel, cmor_var,
             observations='PHC'):
     """Create time mean of input data with cdo.
 
     Parameters
     ----------
+    cfg: dict
+        configuration dictionary ESMValTool format.
     model_filenames: OrderedDict
         OrderedDict with model names as keys and input files as values.
     mmodel: str
         model name that will be processed
     cmor_var: str
         name of the CMOR variable
-    diagworkdir: str
-        path to the working directory
     observations: str
         name of observational/climatology data set.
 
@@ -92,7 +94,7 @@ def timmean(model_filenames, mmodel, cmor_var, diagworkdir,
     """
     logger.info("Calculate timmean %s for %s", cmor_var, mmodel)
     cdo = Cdo()
-    ofilename = genfilename(diagworkdir,
+    ofilename = genfilename(cfg['work_dir'],
                             cmor_var,
                             mmodel,
                             data_type='timmean',
@@ -101,6 +103,17 @@ def timmean(model_filenames, mmodel, cmor_var, diagworkdir,
         cdo.timmean(input=model_filenames[mmodel], output=ofilename)
     else:
         shutil.copy2(model_filenames[mmodel], ofilename)
+
+    attributes = {}
+    attributes['region'] = 'global'
+    attributes['mmodel'] = mmodel
+    attributes['ori_file'] = model_filenames[mmodel]
+    attributes['areacello'] = None
+
+    provenance_record = get_provenance_record(attributes, 'timmean', 'nc')
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(ofilename,
+                            provenance_record)
 
 
 def get_clim_model_filenames(config, variable):
@@ -276,6 +289,9 @@ def get_provenance_record(attributes, data_type, file_type):
                    "Region: {region}. Model: {mmodel} ".format(**attributes))
     elif data_type == 'tsplot' and file_type == 'npy':
         caption = ("Data for TS diagram. "
+                   "Region: {region}. Model: {mmodel} ".format(**attributes))
+    elif data_type == 'timmean' and file_type == 'nc':
+        caption = ("Global time mean. "
                    "Region: {region}. Model: {mmodel} ".format(**attributes))
     else:
         caption = "None"

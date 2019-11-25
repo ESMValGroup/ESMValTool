@@ -162,10 +162,9 @@ def run_mean(cfg, diagworkdir, observations):
             sorted(model_filenames.items(), key=lambda t: t[0]))
         # loop over models
         for model in model_filenames:
-            timmean(model_filenames,
+            timmean(cfg,model_filenames,
                     model,
                     hofm_var,
-                    diagworkdir,
                     observations=observations)
 
 
@@ -472,30 +471,30 @@ def main(cfg):
     run_hofm_plot(cfg, observations)
 
     # # Create timemean
-    # run_mean(cfg, diagworkdir, observations)
+    run_mean(cfg, diagworkdir, observations)
 
     # # Plot average vertical profiles for regions
-    # run_profiles(cfg, diagworkdir, diagplotdir, observations)
+    run_profiles(cfg, diagworkdir, diagplotdir, observations)
 
-    # # Plot 2d maps on original grid
-    # run_plot2d(cfg, diagworkdir, diagplotdir)
+    # Plot 2d maps on original grid
+    run_plot2d(cfg, diagworkdir, diagplotdir)
 
-    # # Plot model biases over depth
-    # run_plot2d_bias(cfg, diagworkdir, diagplotdir, observations)
+    # Plot model biases over depth
+    run_plot2d_bias(cfg, diagworkdir, diagplotdir, observations)
 
-    # # Plot transects
-    # run_transects(cfg, diagworkdir, diagplotdir)
+    # Plot transects
+    run_transects(cfg, diagworkdir, diagplotdir)
 
-    # # Calculate depth and temperature of the Atlantic Water core
-    # # and make plots.
-    # aw_core_parameters = run_aw_core(cfg, diagworkdir, diagplotdir)
+    # Calculate depth and temperature of the Atlantic Water core
+    # and make plots.
+    aw_core_parameters = run_aw_core(cfg, diagworkdir, diagplotdir)
 
-    # # Plot temperature spatial distribution at the depth of the
-    # # atlantic water core in different models
-    # run_aw_core_2d(cfg, diagworkdir, diagplotdir, aw_core_parameters)
+    # Plot temperature spatial distribution at the depth of the
+    # atlantic water core in different models
+    run_aw_core_2d(cfg, diagworkdir, diagplotdir, aw_core_parameters)
 
-    # # Plot TS diagrams
-    # run_tsdiag(cfg, diagworkdir, diagplotdir, observations)
+    # Plot TS diagrams
+    run_tsdiag(cfg, diagworkdir, diagplotdir, observations)
 
 
 if __name__ == '__main__':

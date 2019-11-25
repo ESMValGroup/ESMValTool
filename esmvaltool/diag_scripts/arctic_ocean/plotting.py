@@ -181,7 +181,8 @@ def hofm_plot(cfg, plot_params):
         time = np.load(ifilename_time, allow_pickle=True)
 
         # convert data if needed and get labeles for colorbars
-        cb_label, hofdata = label_and_conversion(plot_params['variable'], hofdata)
+        cb_label, hofdata = label_and_conversion(plot_params['variable'],
+                                                 hofdata)
 
         # find index of the model level closes to the `max_level`
         # and add 1, to make a plot look better
