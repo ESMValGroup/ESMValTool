@@ -332,6 +332,9 @@ def plot_rlnst_regression(cfg, dataset_name, data, variables, regs):
         'y−int  = {:.2f}, '.format(regs["hfss"].intercept) + \
         'r = {:.2f}'.format(regs["hfss"].rvalue)
 
+    axhline_dict = {'y': 0, 'linestyle': 'dashed', 'color': 'k',
+                    'linewidth': 2.0}
+
     e.plot.scatterplot(
         [data[0], np.linspace(0.0, 7.0, 2), data[0], np.linspace(0.0, 7.0, 2),
          data[0], np.linspace(0.0, 7.0, 2), data[0], np.linspace(0.0, 7.0, 2)],
@@ -379,8 +382,7 @@ def plot_rlnst_regression(cfg, dataset_name, data, variables, regs):
                         'set_xlim': [0, 7.0],
                         'set_ylim': [-5.0, 17.0],
                         'set_yticks': np.linspace(-4, 16, 11),
-                        'axhline': {'y': 0, 'linestyle': 'dashed',
-                                    'color': 'k', 'linewidth': 2.0},
+                        'axhline': axhline_dict,
                         'legend': {'loc': 2}})
 
 
