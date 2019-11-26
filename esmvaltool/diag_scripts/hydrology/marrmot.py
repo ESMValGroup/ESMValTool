@@ -132,34 +132,20 @@ def debruin_pet(var_dict):
     return pet
 
 
-def get_input_cubes(cfg):
+def get_input_cubes(metadata):
     """ Return a dict with all (preprocessed) input files """
     provenance = create_provenance_record()
-    input_data = cfg['input_data'].values()
-    grouped_input_data = group_metadata(input_data,
-                                        'short_name',
-                                        sort='dataset')
     all_vars = {}
-    for short_name in grouped_input_data:
+    for attributes in metadata:
+        short_name = attributes['short_name']
+        if short_name in all_vars:
+            raise ValueError(
+                f"Multiple input files found for variable '{short_name}'.")
+        filename = attributes['filename']
         logger.info("Loading variable %s", short_name)
-        input_files = [
-            attr['filename'] for attr in grouped_input_data[short_name]
-            ]
-        allyears = iris.load_cubes(input_files).concatenate_cube()
-        all_vars[short_name] = allyears
-        provenance['ancestors'].append(input_files)
+        all_vars[short_name] = iris.load_cube(filename)
+        provenance['ancestors'].append(filename)
     return all_vars, provenance
-
-
-def _get_dataset_name(cfg):
-    """ Get the dataset name """
-    input_data = cfg['input_data'].values()
-    grouped_input_data = group_metadata(input_data, 'dataset')
-    dataset_name = list(grouped_input_data.keys())
-    if len(dataset_name) == 1:
-        dataset_name = dataset_name[0]
-    basename = dataset_name + '_marrmot'
-    return basename
 
 
 def _get_extra_info(cube):
@@ -169,14 +155,15 @@ def _get_extra_info(cube):
     coord = cube.coord('time')
     time_start_end = []
     for index in 0, -1:
-        time_val = coord.units.num2date(coord.points[index])
-        time_val = time_val.strftime("%Y %m %d %H %M %S").split()
+        time_val = coord.cell(index).point
+        time_val = [time_val.year, time_val.month, time_val.day,
+                    time_val.minute, time_val.second]
         time_val = [float(time) for time in time_val]
         time_start_end.append(time_val)
 
     # Add data_origin
-    lat_lon = [cube.coord('latitude').points[0]]
-    lat_lon.append(cube.coord('longitude').points[0])
+    lat_lon = [cube.coord(name).points[0]
+               for name in ('latitude', 'longitude')]
     return time_start_end, lat_lon
 
 
@@ -189,55 +176,51 @@ def main(cfg):
     rsds (surface_downwelling_shortwave_flux_in_air)
     rsdt (toa_incoming_shortwave_flux)
     """
-    all_vars, provenance = get_input_cubes(cfg)
+    input_metadata = cfg['input_data'].values()
+    for dataset, metadata in group_metadata(input_metadata, 'dataset').items():
+        all_vars, provenance = get_input_cubes(metadata)
 
-    # Processing variables and unit conversion
-    # Unit of the fluxes in marrmot should be in kg m-2 day-1 (or mm/day)
-    logger.info("Processing variable tas")
-    temp = preproc.area_statistics(all_vars['tas'], operator='mean')
-    temp.convert_units('celsius')
+        # Processing variables and unit conversion
+        # Unit of the fluxes in marrmot should be in kg m-2 day-1 (or mm/day)
+        logger.info("Processing variable tas")
+        temp = preproc.area_statistics(all_vars['tas'], operator='mean')
+        temp.convert_units('celsius')
 
-    logger.info("Processing variable pr")
-    precip = preproc.area_statistics(all_vars['pr'], operator='mean')
-    precip.convert_units('kg m-2 day-1')  # equivalent to mm/day
+        logger.info("Processing variable pr")
+        precip = preproc.area_statistics(all_vars['pr'], operator='mean')
+        precip.convert_units('kg m-2 day-1')  # equivalent to mm/day
 
-    logger.info("Processing variable PET")
-    all_vars['pet'] = debruin_pet(all_vars)
-    pet = preproc.area_statistics(all_vars['pet'], operator='mean')
+        logger.info("Processing variable PET")
+        all_vars['pet'] = debruin_pet(all_vars)
+        pet = preproc.area_statistics(all_vars['pet'], operator='mean')
 
-    # Get the dataset name
-    basename = _get_dataset_name(cfg)
+        # Get the start and end times and latitude longitude
+        time_start_end, lat_lon = _get_extra_info(temp)
 
-    # Get the start and end times and latitude longitude
-    time_start_end, lat_lon = _get_extra_info(temp)
+        # make data structure
+        # delta_t_days could also be extracted from the cube
+        forcing_dict = {
+            'precip': precip.data,
+            'temp': temp.data,
+            'pet': pet.data,
+            'delta_t_days': float(1),
+            'time_unit': 'day'
+            }
+        output_data = {
+            'forcing': forcing_dict,
+            'time_start': time_start_end[0],
+            'time_end': time_start_end[1],
+            'data_origin': lat_lon
+            }
 
-    # make data structure
-    # delta_t_days could also be extracted from the cube
-    forcing_dict = {
-        'precip': precip.data,
-        'temp': temp.data,
-        'pet': pet.data,
-        'delta_t_days': float(1),
-        'time_unit': 'day'
-        }
-    output_data = {
-        'forcing': forcing_dict,
-        'time_start': time_start_end[0],
-        'time_end': time_start_end[1],
-        'data_origin': lat_lon
-        }
+        # Save to matlab structure
+        output_name = get_diagnostic_filename(dataset + '_marrmot',
+                                              cfg, extension='mat')
+        sio.savemat(output_name, output_data)
 
-    # Save to matlab structure
-    output_name = get_diagnostic_filename(basename, cfg, extension='mat')
-    sio.savemat(output_name, output_data)
-
-    # Store provenance
-    with ProvenanceLogger(cfg) as provenance_logger:
-        provenance_logger.log(output_name, provenance)
-
-    # Do stuff
-    # >> A vector with initial values for each of the model stores,
-    # >> of size 1x[number of stores].
+        # Store provenance
+        with ProvenanceLogger(cfg) as provenance_logger:
+            provenance_logger.log(output_name, provenance)
 
 
 if __name__ == '__main__':
