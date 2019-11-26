@@ -43,8 +43,10 @@ Future projections
 
    recipe_emergent_constraints
    recipe_cox18nature
+   recipe_snowalbedo
    recipe_ecs
    recipe_wenzel16jclim
+   recipe_tcr
 
 IPCC
 ^^^^
