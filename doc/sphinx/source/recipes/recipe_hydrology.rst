@@ -50,7 +50,7 @@ User settings in recipe
 
         *extract_shape:*
 
-            * shapefile: meuse_hydrosheds.shp (MARRMoT is a hydrological Lumped model that needs catchment-aggregated forcing data. The catchment is provided as a shapefile in Auxiliary folder in config-user.yml. The name of the shapefile is set in the recipe, here. For example, meuse_hydrosheds.shp).
+            * shapefile: meuse_hydrosheds.shp (MARRMoT is a hydrological Lumped model that needs catchment-aggregated forcing data. The catchment is provided as a shapefile, the path can be relative to ``auxiliary_data_dir`` as defined in config-user.yml.).
             * method: contains
             * crop: true
 
