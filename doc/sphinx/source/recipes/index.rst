@@ -35,6 +35,7 @@ Climate metrics and emergent constraints
 
    recipe_emergent_constraints
    recipe_cox18nature
+   recipe_snowalbedo
    recipe_ecs
    recipe_perfmetrics
    recipe_smpi
