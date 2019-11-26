@@ -300,6 +300,12 @@ def get_provenance_record(attributes, data_type, file_type):
     elif data_type == 'plot2d_bias' and file_type == 'png':
         caption = ("Map of spatial distribution of bias. "
                    "Region: {region}. Model: {mmodel} ".format(**attributes))
+    elif data_type == 'transect_map' and file_type == 'png':
+        caption = ("Map of the transect points. "
+                   "Region: {region}. Model: {mmodel} ".format(**attributes))
+    elif data_type == 'transect' and file_type == 'png':
+        caption = ("Vertical transect. "
+                   "Region: {region}. Model: {mmodel} ".format(**attributes))
     else:
         caption = "None"
 

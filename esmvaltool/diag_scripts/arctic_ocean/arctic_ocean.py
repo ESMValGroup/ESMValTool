@@ -286,10 +286,10 @@ def plot2d_bias_params(cfg, plot2d_bias_var, var_number, observations):
     plot_params['ncols'] = ncols
     plot_params['levels'] = np.round(np.linspace(vmin, vmax, sstep),
                                      roundlimit)
-    plot_params['dpi']=100
-    plot_params['observations']=observations
-    plot_params['projection']=ccrs.NorthPolarStereo()
-    plot_params['bbox']= (-180, 180, 60, 90)
+    plot_params['dpi'] = 100
+    plot_params['observations'] = observations
+    plot_params['projection'] = ccrs.NorthPolarStereo()
+    plot_params['bbox'] = (-180, 180, 60, 90)
     return plot_params
 
 
@@ -310,12 +310,49 @@ def run_plot2d_bias(cfg, diagworkdir, diagplotdir, observations):
     # loop over variables
     for var_number, plot2d_bias_var in enumerate(cfg['plot2d_bias_vars']):
 
-        plot_params = plot2d_bias_params(cfg, plot2d_bias_var, var_number, observations)
+        plot_params = plot2d_bias_params(cfg, plot2d_bias_var, var_number,
+                                         observations)
 
         # loop over depths
         for depth in cfg['plot2d_bias_depths']:
             plot_params['depth'] = depth
             plot2d_bias(cfg, plot_params)
+
+
+def transect_plot_params(cfg, trans_var, var_number):
+    model_filenames = get_clim_model_filenames(cfg, trans_var)
+    model_filenames = OrderedDict(
+        sorted(model_filenames.items(), key=lambda t: t[0]))
+    # loop over regions
+    for mmodel, region in itertools.product(model_filenames,
+                                            cfg['transects_regions']):
+        # ploting a transect
+        transect_data(cfg, mmodel, trans_var, region)
+    # setup a color map
+    if cfg['transects_cmap']:
+        cmap = get_cmap(cfg['transects_cmap'][var_number])
+    else:
+        cmap = get_cmap('Spectral_r')
+    # setup number of columns
+    if cfg['transects_ncol']:
+        ncols = cfg['transects_ncol']
+    else:
+        ncols = 3
+    # setup color limits
+    vmin, vmax, sstep, roundlimit = cfg['transects_limits'][var_number]
+
+    plot_params = {}
+    plot_params['variable'] = trans_var
+    plot_params['model_filenames'] = model_filenames
+    plot_params['cmap'] = cmap
+    plot_params['ncols'] = ncols
+    plot_params['levels'] = np.round(np.linspace(vmin, vmax, sstep),
+                                     roundlimit)
+    plot_params['dpi'] = 100
+    plot_params['projection'] = ccrs.NorthPolarStereo()
+    plot_params['bbox'] = (-180, 180, 60, 90)
+
+    return plot_params
 
 
 def run_transects(cfg, diagworkdir, diagplotdir):
@@ -332,45 +369,21 @@ def run_transects(cfg, diagworkdir, diagplotdir):
     """
     # First plot the map woth transect points for each "region"
     for region in cfg['transects_regions']:
-        transect_map(region,
-                     diagplotdir,
+        transect_map(cfg,
+                     region,
                      projection=ccrs.NorthPolarStereo(),
                      bbox=[-180, 180, 60, 90],
                      mult=2)
     # loop over variables
     for var_number, trans_var in enumerate(cfg['transects_vars']):
-        model_filenames = get_clim_model_filenames(cfg, trans_var)
-        model_filenames = OrderedDict(
-            sorted(model_filenames.items(), key=lambda t: t[0]))
-        # loop over regions
-        for mmodel, region in itertools.product(model_filenames,
-                                                cfg['transects_regions']):
-            # ploting a transect
-            transect_data(cfg, mmodel, trans_var, region)
-        # setup a color map
-        if cfg['transects_cmap']:
-            cmap = get_cmap(cfg['transects_cmap'][var_number])
-        else:
-            cmap = get_cmap('Spectral_r')
-        # setup number of columns
-        if cfg['transects_ncol']:
-            ncols = cfg['transects_ncol']
-        else:
-            ncols = 3
-        # setup color limits
-        vmin, vmax, sstep, roundlimit = cfg['transects_limits'][var_number]
+
+        plot_params = transect_plot_params(cfg, trans_var, var_number)
+
         # loop over regions
         for region in cfg['transects_regions']:
-            transect_plot(model_filenames,
-                          trans_var,
-                          cfg['transects_depth'],
-                          region,
-                          diagworkdir,
-                          diagplotdir,
-                          levels=np.round(np.linspace(vmin, vmax, sstep),
-                                          roundlimit),
-                          ncols=ncols,
-                          cmap=cmap)
+            plot_params['region'] = region
+            transect_plot(cfg, plot_params)
+
 
 
 def run_aw_core(cfg, diagworkdir, diagplotdir):
@@ -427,7 +440,6 @@ def run_aw_core_2d(cfg, diagworkdir, diagplotdir, aw_core_parameters):
     plot_params['bbox'] = (-180, 180, 60, 90)
 
     plot2d_original_grid(cfg, plot_params)
-
 
 
 def run_tsdiag(cfg, diagworkdir, diagplotdir, observations):
@@ -507,13 +519,13 @@ def main(cfg):
     # run_profiles(cfg, diagworkdir, diagplotdir, observations)
 
     # Plot 2d maps on original grid
-    run_plot2d(cfg, diagworkdir, diagplotdir)
+    # run_plot2d(cfg, diagworkdir, diagplotdir)
 
     # # Plot model biases over depth
-    run_plot2d_bias(cfg, diagworkdir, diagplotdir, observations)
+    # run_plot2d_bias(cfg, diagworkdir, diagplotdir, observations)
 
     # # Plot transects
-    # run_transects(cfg, diagworkdir, diagplotdir)
+    run_transects(cfg, diagworkdir, diagplotdir)
 
     # # Calculate depth and temperature of the Atlantic Water core
     # # and make plots.
