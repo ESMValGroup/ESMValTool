@@ -24,7 +24,7 @@ Configuration options in recipe
 See documentation
 
 """
-import cartopy.crs as ccrs
+
 import itertools
 import logging
 import os
@@ -34,7 +34,6 @@ import cartopy.crs as ccrs
 import matplotlib as mpl
 from matplotlib import cm
 import numpy as np
-import pickle
 
 from esmvaltool.diag_scripts.arctic_ocean.getdata import (aw_core, hofm_data,
                                                           transect_data,
@@ -140,15 +139,13 @@ def run_hofm_plot(cfg, observations):
             hofm_plot(cfg, plot_params)
 
 
-def run_mean(cfg, diagworkdir, observations):
+def run_mean(cfg, observations):
     """Create time mean.
 
     Parameters
     ----------
     cfg: dict
         configuration dictionary ESMValTool format.
-    diagworkdir: str
-        path to the diagnostic work directory.
     observations: str
         name of the observation data set
     """
@@ -185,17 +182,13 @@ def plot_profile_params(cfg, hofm_var, observations):
     return plot_params
 
 
-def run_profiles(cfg, diagworkdir, diagplotdir, observations):
+def run_profiles(cfg, observations):
     """Plot average vertical profiles for regions.
 
     Parameters
     ----------
     cfg: dict
         configuration dictionary ESMValTool format.
-    diagworkdir: str
-        path to the diagnostic work directory.
-    diagplotdir: str
-        path to the diagnostic plot directory.
     observations: str
         name of the observation data set
     """
@@ -240,17 +233,13 @@ def plot2d_params(cfg, plot2d_var, var_number):
     return plot_params
 
 
-def run_plot2d(cfg, diagworkdir, diagplotdir):
+def run_plot2d(cfg):
     """Plot 2d maps on original grid.
 
     Parameters
     ----------
     cfg: dict
         configuration dictionary ESMValTool format.
-    diagworkdir: str
-        path to the diagnostic work directory.
-    diagplotdir: str
-        path to the diagnostic plot directory.
     """
     # loop over variables
     for var_number, plot2d_var in enumerate(cfg['plot2d_vars']):
@@ -293,17 +282,13 @@ def plot2d_bias_params(cfg, plot2d_bias_var, var_number, observations):
     return plot_params
 
 
-def run_plot2d_bias(cfg, diagworkdir, diagplotdir, observations):
+def run_plot2d_bias(cfg, observations):
     """Plot model biases over depth.
 
     Parameters
     ----------
     cfg: dict
         configuration dictionary ESMValTool format.
-    diagworkdir: str
-        path to the diagnostic work directory.
-    diagplotdir: str
-        path to the diagnostic plot directory.
     observations: str
         name of the observation data set
     """
@@ -355,17 +340,13 @@ def transect_plot_params(cfg, trans_var, var_number):
     return plot_params
 
 
-def run_transects(cfg, diagworkdir, diagplotdir):
+def run_transects(cfg):
     """Plot transects.
 
     Parameters
     ----------
     cfg: dict
         configuration dictionary ESMValTool format.
-    diagworkdir: str
-        path to the diagnostic work directory.
-    diagplotdir: str
-        path to the diagnostic plot directory.
     """
     # First plot the map woth transect points for each "region"
     for region in cfg['transects_regions']:
@@ -385,37 +366,29 @@ def run_transects(cfg, diagworkdir, diagplotdir):
             transect_plot(cfg, plot_params)
 
 
-def run_aw_core(cfg, diagworkdir, diagplotdir):
+def run_aw_core(cfg):
     """Calculate depth and temperature of the Atlantic Water core.
 
     Parameters
     ----------
     cfg: dict
         configuration dictionary ESMValTool format.
-    diagworkdir: str
-        path to the diagnostic work directory.
-    diagplotdir: str
-        path to the diagnostic plot directory.
     """
     model_filenames = get_clim_model_filenames(cfg, 'thetao')
     model_filenames = OrderedDict(
         sorted(model_filenames.items(), key=lambda t: t[0]))
-    aw_core_parameters = aw_core(model_filenames, diagworkdir, 'EB', 'thetao')
-    plot_aw_core_stat(aw_core_parameters, diagplotdir)
+    aw_core_parameters = aw_core(model_filenames, cfg['work_dir'], 'EB', 'thetao')
+    plot_aw_core_stat(aw_core_parameters, cfg['plot_dir'])
     return aw_core_parameters
 
 
-def run_aw_core_2d(cfg, diagworkdir, diagplotdir, aw_core_parameters):
+def run_aw_core_2d(cfg, aw_core_parameters):
     """Plot temperature spatial distribution at AW core depth.
 
     Parameters
     ----------
     cfg: dict
         configuration dictionary ESMValTool format.
-    diagworkdir: str
-        path to the diagnostic work directory.
-    diagplotdir: str
-        path to the diagnostic plot directory.
     aw_core_parameters: dict
         dictionary that contain AW core parameters generated
         by run_aw_core function.
@@ -423,7 +396,7 @@ def run_aw_core_2d(cfg, diagworkdir, diagplotdir, aw_core_parameters):
     model_filenames = get_clim_model_filenames(cfg, 'thetao')
     model_filenames = OrderedDict(
         sorted(model_filenames.items(), key=lambda t: t[0]))
-    aw_core_parameters = aw_core(model_filenames, diagworkdir, 'EB', 'thetao')
+    aw_core_parameters = aw_core(model_filenames, cfg['work_dir'], 'EB', 'thetao')
     # this is now just using plot2d_original_grid with
     # additional `explicit_depths` parameter
     plot_params = {}
@@ -459,17 +432,13 @@ def tsdiag_plot_parameters(cfg):
     return plot_params
 
 
-def run_tsdiag(cfg, diagworkdir, diagplotdir, observations):
+def run_tsdiag(cfg, observations):
     """Plot TS diagrams.
 
     Parameters
     ----------
     cfg: dict
         configuration dictionary ESMValTool format.
-    diagworkdir: str
-        path to the diagnostic work directory.
-    diagplotdir: str
-        path to the diagnostic plot directory.
     observations: str
         name of the observation data set
     """
@@ -491,8 +460,8 @@ def run_tsdiag(cfg, diagworkdir, diagplotdir, observations):
 def main(cfg):
     """Compute the time average for each input model."""
     # for debuging save the configuration in a pickle file
-    with open('cfg_NK.joblib', 'wb') as handle:
-        pickle.dump(cfg, handle, protocol=pickle.HIGHEST_PROTOCOL)
+    # with open('cfg_NK.joblib', 'wb') as handle:
+    #     pickle.dump(cfg, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
     # sets the directories
     diagworkdir = cfg['work_dir']
@@ -510,36 +479,36 @@ def main(cfg):
     logger.info("areacello_fx files: %s", areacello_fx)
 
     # Extract data for Hovmoeller diagrams
-    # run_hofm_data(cfg)
+    run_hofm_data(cfg)
 
     # # Plot Hovmoeller diagrams for each variable
-    # run_hofm_plot(cfg, observations)
+    run_hofm_plot(cfg, observations)
 
-    # # # Create timemean
-    # run_mean(cfg, diagworkdir, observations)
+    # # Create timemean
+    run_mean(cfg, observations)
 
-    # # Plot average vertical profiles for regions
-    # run_profiles(cfg, diagworkdir, diagplotdir, observations)
+    # Plot average vertical profiles for regions
+    run_profiles(cfg, observations)
 
-    # Plot 2d maps on original grid
-    # run_plot2d(cfg, diagworkdir, diagplotdir)
+    #Plot 2d maps on original grid
+    run_plot2d(cfg)
 
-    # # Plot model biases over depth
-    # run_plot2d_bias(cfg, diagworkdir, diagplotdir, observations)
+    # Plot model biases over depth
+    run_plot2d_bias(cfg, observations)
 
-    # # Plot transects
-    # run_transects(cfg, diagworkdir, diagplotdir)
+    # Plot transects
+    run_transects(cfg)
 
-    # # Calculate depth and temperature of the Atlantic Water core
-    # # and make plots.
-    # aw_core_parameters = run_aw_core(cfg, diagworkdir, diagplotdir)
+    # Calculate depth and temperature of the Atlantic Water core
+    # and make plots.
+    aw_core_parameters = run_aw_core(cfg)
 
-    # # Plot temperature spatial distribution at the depth of the
-    # # atlantic water core in different models
-    # run_aw_core_2d(cfg, diagworkdir, diagplotdir, aw_core_parameters)
+    # Plot temperature spatial distribution at the depth of the
+    # atlantic water core in different models
+    run_aw_core_2d(cfg, aw_core_parameters)
 
     # # Plot TS diagrams
-    run_tsdiag(cfg, diagworkdir, diagplotdir, observations)
+    run_tsdiag(cfg, observations)
 
 
 if __name__ == '__main__':

@@ -506,7 +506,7 @@ def plot2d_original_grid(cfg, plot_params):
     figure, axis = create_plot(plot_params['model_filenames'],
                                ncols=plot_params['ncols'],
                                projection=plot_params['projection'])
-
+    index = None
     for index, mmodel in enumerate(plot_params['model_filenames']):
         logger.info("Plot plot2d_original_grid %s for %s",
                     plot_params['variable'], mmodel)
@@ -523,7 +523,7 @@ def plot2d_original_grid(cfg, plot_params):
         lat2d = metadata['lat2d']
         lev = metadata['lev']
 
-        if plot_params['explicit_depths'] == None:
+        if not plot_params['explicit_depths']:
             depth_target, level_target = closest_depth(lev,
                                                        plot_params['depth'])
         else:
