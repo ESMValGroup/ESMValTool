@@ -663,6 +663,7 @@ references:
   weedon14wrr: "Weedon, G. P. et al., Water Resour. Res., 50, 7505-7514, doi:10.1002/2014WR015638, 2014."
   weigel: "Weigel, A P., et al., Q. J. Royal Meteorol. Soc. 134, 630, 241-260. doi:10.1002/qj.210"
   wenzel14jgr: "Wenzel et al., J. Geophys. Res. Biogeosci., 119(5), doi:2013JG002591, 2014."
+  wenzel16jclim: "Wenzel et al., J. Climate, 29, doi:10.1175/JCLI-D-15-0412.1, 2016."
   williams09climdyn: "Williams and Webb, Clim. Dynam., 33, 141-157, doi:10.1007/s00382-008-0443-1, 2009."
   zhang11wcc: "Zhang et al., WIREs Clim. Change, doi:10.1002/wcc.147, 2011."
   # Observations
@@ -787,6 +788,7 @@ plot_types:
   times: time series
   zonal: zonal mean
   pro: profile  # (any other kind of line chart)
+  box: boxplot
   other: other plot types
 
 statistics:
@@ -806,4 +808,5 @@ statistics:
   median: median
   detrend: detrend
   smpi: single metric performance index statistics
+  mder: multiple diagnostic ensemble regression
   other: other statistics
