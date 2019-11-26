@@ -16,23 +16,12 @@ documentation:
 
 preprocessors:
 
-  noop:
-    {}
-
-  landmask: &landmask
-    mask_landsea:
-      mask_out: sea
-
-  landmask: &seamask
-    mask_landsea:
-      mask_out: land
-
-  land_fraction_weighting: &land_fraction_weighting
+  land_fraction_weighting:
     weighting_landsea_fraction:
       area_type: land
       strict: false
 
-  sea_fraction_weighting: &sea_fraction_weighting
+  sea_fraction_weighting:
     weighting_landsea_fraction:
       area_type: sea
       strict: false
@@ -42,13 +31,13 @@ diagnostics:
   ### Wenzel et al. 2014, Fig. 01: Quantities used to diagnose GAMMA_LT #########################
 
   diag_tsline_1pct: &Carbon_tsline
-    description: Wenzel et al. 2014, Fig. 01a: integrated NBP in the idealized coupled simulation
+    description: Fig 1a integrated NBP in the idealized coupled simulation
     themes:
       - phys
     realms:
       - land
     variables: 
-      nbp: &nbp
+      nbp: &var_nbp
         preprocessor: land_fraction_weighting
         project: CMIP5
         mip: Lmon
@@ -58,7 +47,7 @@ diagnostics:
         end_year: 1989
         plot_units: GtC
         cumulate: True
-    additional_datasets: &datastet
+    additional_datasets: &var_datastet
       - {dataset: CanESM2}
       - {dataset: CESM1-BGC}
       - {dataset: GFDL-ESM2M}
@@ -83,142 +72,163 @@ diagnostics:
         styleset: CMIP5       # Plot style
 
   diag_tsline_esmFix: 
-        <<: *Carbon_tsline
-        description: Wenzel et al. 2014, Fig. 01b: integrated NBP in the idealized coupled simulation
-        variables:
-          <<: *nbp
-          exp: esmFixClim
+    description: Fig 1b integrated NBP in the idealized coupled simulation
+    themes:
+      - phys
+    realms:
+      - land
+    variables:
+      <<: *var_nbp
+      exp: esmFixClim
+    additional_datasets:
+      <<: *var_datastet
+    scripts:
+      <<: *idealized_carbon
 
-  diag_tsline_tas: 
-    description: Wenzel et al. 2014, Fig. 01c: near surface temerature idealized coupled simulation
+  diag_tsline_tas:
+    description: Fig 1c near surface temerature idealized coupled simulation
     themes:
       - phys
     realms:
       - atmos
-      variables:
-        tas:
-          project: CMIP5
-          mip: Amon
-          exp: 1pctCO2
-          ensemble: r1i1p1
-          start_year: 1851
-          end_year: 1989
-      additional_datasets:
-        <<: *datastet
-      scripts:
-        tsline:
-          script: ipcc_ar5/tsline.ncl
-          ts_minlat: -30
-          ts_maxlat: 30
-          ts_minlon: 0
-          ts_maxlon: 360
-          multi_model_mean: False
-          ts_maxyear: "1989"
-          ts_minyear: "1850"
-          time_avg: "yearly"
-          ts_anomaly: "anom"
-          styleset: CMIP5       # Plot style
+    variables:
+      tas: &var_tas
+        project: CMIP5
+        mip: Amon
+        exp: 1pctCO2
+        ensemble: r1i1p1
+        start_year: 1851
+        end_year: 1989
+    additional_datasets:
+      <<: *var_datastet
+    scripts:
+      tas_tsline:
+        script: ipcc_ar5/tsline.ncl
+        ts_minlat: -30
+        ts_maxlat: 30
+        ts_minlon: 0
+        ts_maxlon: 360
+        multi_model_mean: False
+        ts_maxyear: "1989"
+        ts_minyear: "1850"
+        time_avg: "yearly"
+        ts_anomaly: "anom"
+        styleset: CMIP5       # Plot style
 
   ### Wenzel et al. 2014, Fig. 02: Quantities used to diagnose GAMMA_IAV #########################  
 
-  diag_tsline_gamma: &tsline_gamma 
-    description: Wenzel et al. 2014, Fig. 02a: integrated NBP in the idealized coupled simulation
+  diag_tsline_gamma:
+    description: Fig 2a integrated NBP in the idealized coupled simulation
     themes:
       - phys
     realms:
       - land
-      variables:
-        nbp:
-          preprocessor: land_fraction_weighting
-          project: CMIP5
-          mip: Lmon
-          exp: 1pctCO2
-          ensemble: r1i1p1
-          start_year: 1890
-          end_year: 1989
-          plot_units: GtC
-      additional_datasets:
-        <<: *datastet
-      scripts:
-        tsline: &historical_carbon
-          <<: *idealized_carbon
-          script: ipcc_ar5/tsline.ncl
-          ts_maxyear: "2005"
-          ts_minyear: "1960"
-          runave: 2
+    variables:
+      nbp:
+        preprocessor: land_fraction_weighting
+        project: CMIP5
+        mip: Lmon
+        exp: 1pctCO2
+        ensemble: r1i1p1
+        start_year: 1890
+        end_year: 1989
+        plot_units: GtC
+    additional_datasets:
+      <<: *var_datastet
+    scripts:
+      tsline: &historical_carbon
+        <<: *idealized_carbon
+        script: ipcc_ar5/tsline.ncl
+        ts_maxyear: "2005"
+        ts_minyear: "1960"
+        runave: 2
                   
   diag_tsline_esmHist: 
-        <<: *tsline_gamma
-        description: Wenzel et al. 2014, Fig. 02b: integrated NBP in the historical coupled simulation
-        variables:
-          <<: *nbp
-          exp: esmHistorical
-          start_year: 1960
-          end_year: 2005
-
-          
-  diag_tsline_gamma: &tsline_fgcos 
-    description: Wenzel et al. 2014, Fig. 02c: integrated NBP in the idealized coupled simulation
+    description: Fig 2b integrated NBP in the historical coupled simulation
     themes:
       - phys
     realms:
       - land
-      variables:
-        fgco2: &fgco2
-          preprocessor: sea_fraction_weighting
-          project: CMIP5
-          mip: Omon
-          exp: 1pctCO2
-          ensemble: r1i1p1
-          start_year: 1890
-          end_year: 1989
-          plot_units: GtC
-      additional_datasets:
-        <<: *datastet
-      scripts:
-        tsline:
-          <<: *historical_carbon
+    variables:
+      <<: *var_nbp
+      exp: esmHistorical
+      start_year: 1960
+      end_year: 2005
+    additional_datasets:
+      <<: *var_datastet
+    scripts:
+      <<: *historical_carbon
+          
+  diag_tsline_gamma: &tsline_fgcos 
+    description: Fig 2c integrated NBP in the idealized coupled simulation
+    themes:
+      - phys
+    realms:
+      - land
+    variables:
+      fgco2: &var_fgco2
+        preprocessor: sea_fraction_weighting
+        project: CMIP5
+        mip: Omon
+        exp: 1pctCO2
+        ensemble: r1i1p1
+        start_year: 1890
+        end_year: 1989
+        plot_units: GtC
+    additional_datasets:
+      <<: *var_datastet
+    scripts:
+      tsline:
+        <<: *historical_carbon
                    
   diag_tsline_esmHist: 
-        <<: *tsline_gamma
-        description: Wenzel et al. 2014, Fig. 02d: integrated FGCO2 in the historical coupled simulation
-        variables:
-          <<: *fgco2
-          exp: esmHistorical
-          start_year: 1960
-          end_year: 2005
+    description: Fig 2d integrated FGCO2 in the historical coupled simulation
+    variables:
+      <<: *var_fgco2
+      exp: esmHistorical
+      start_year: 1960
+      end_year: 2005
+    additional_datasets:
+      <<: *var_datastet
+    scripts:
+      tsline:
+        <<: *historical_carbon
           
-  diag_tsline_gtas: &tsline_tas
-    description: Wenzel et al. 2014, Fig. 02e: near surface temerature idealized coupled simulation
+  diag_tsline_tas: &tsline_tas
+    description: Fig 2e near surface temerature idealized coupled simulation
     themes:
       - phys
     realms:
       - atmos
-      variables:
-        tas: &tas
-          preprocessor: regridding
-          project: CMIP5
-          mip: Amon
-          exp: 1pctCO2
-          ensemble: r1i1p1
-          start_year: 1890
-          end_year: 1989
-      additional_datasets:
-        <<: *datastet
-      scripts:
-        tsline:
-          <<: *historical_carbon
-          ts_minlat: -90
-          ts_maxlat: 90
+    variables:
+      tas:
+        <<: *var_tas
+        exp: 1pctCO2
+        start_year: 1890
+        end_year: 1989
+    additional_datasets:
+      <<: *var_datastet
+    scripts:
+      tsline:
+        <<: *historical_carbon
+        ts_minlat: -90
+        ts_maxlat: 90
 
   diag_tsline_esmHist: 
-        <<: *tsline_tas
-        description: Wenzel et al. 2014, Fig. 02f: near surface temerature historical coupled simulation
-        variables:
-          <<: *tas
-          exp: esmHistorical
-          start_year: 1960
-          end_year: 2005
+    <<: *tsline_tas
+    description: Fig 2f near surface temerature historical coupled simulation
+    variables:
+      <<: *var_tas
+      exp: esmHistorical
+      start_year: 1960
+      end_year: 2005
+    additional_datasets:
+      <<: *var_datastet
+    scripts:
+      tsline:
+        <<: *historical_carbon
+        ts_minlat: -90
+        ts_maxlat: 90
 
   ### Wenzel et al. 2014, Fig. 03/04: Diagnose GAMMA_IAV from each model #########################
 
