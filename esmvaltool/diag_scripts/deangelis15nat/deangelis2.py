@@ -2,8 +2,10 @@
 # -*- coding: utf-8 -*-
 
 
-"""Calculates radiative constraint on hydrologic cycle intensification
- following DeAngelis et al. (2015).
+""".
+
+Calculates radiative constraint on hydrologic cycle intensification
+following DeAngelis et al. (2015).
 
 ###############################################################################
 testkw/deangelis2.py
@@ -191,7 +193,6 @@ def plot_slope_regression(cfg, data_model):
 
 def plot_slope_regression_all(cfg, data_model):
     """Scatter plot of linear regression slope, all variables (exfig2a)."""
-
     if not (cfg[n.WRITE_PLOTS] and cfg.get('plot_ecs_regression')):
         return
 
@@ -301,7 +302,6 @@ def plot_slope_regression_all(cfg, data_model):
 
 def plot_rlnst_regression(cfg, dataset_name, data, variables, regs):
     """Plot linear regression used to calculate ECS."""
-
     if not (cfg[n.WRITE_PLOTS] and cfg.get('plot_ecs_regression')):
         return
 
@@ -379,16 +379,13 @@ def plot_rlnst_regression(cfg, dataset_name, data, variables, regs):
                         'set_xlim': [0, 7.0],
                         'set_ylim': [-5.0, 17.0],
                         'set_yticks': np.linspace(-4, 16, 11),
-                        'axhline': {'y': 0, 'color': 'k',
-                                    'linewidth': 2.0,
-                                    'linestyle': 'dashed'},
+                        'axhline': {'y': 0, 'linestyle': 'dashed',
+                                    'color': 'k', 'linewidth': 2.0},
                         'legend': {'loc': 2}})
 
 
-
 def substract_and_reg_deangelis2(cfg, data, var):
-    """Substract piControl from abrupt4xCO2 for all models and variables"""
-
+    """Substract piControl from abrupt4xCO2 for all models and variables."""
     model_nrs = dict([('ACCESS1-0', 1), ('ACCESS1-3', 2),
                       ('bcc-csm1-1', 3),
                       ('bcc-csm1-1-m', 4), ('CanESM2', 5),
@@ -460,7 +457,7 @@ ABRUPT4XCO2 = 'abrupt4xCO2'
 def main(cfg):
     """Run the diagnostic.
 
-    Parameters
+    Parameters :
     ----------
     cfg : dict
         Configuration dictionary of the recipe.
