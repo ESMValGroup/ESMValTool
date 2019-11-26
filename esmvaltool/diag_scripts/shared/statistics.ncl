@@ -1833,20 +1833,17 @@ begin
     if (rank .eq. 4) then
       copy_VarCoords(data, data_array(0, :, :, :, :))
       data_array(idat, :, :, :, :) = (/data/)
-    else if (rank .eq. 3) then
+    elseif (rank .eq. 3) then
       copy_VarCoords(data, data_array(0, :, :, :))
       data_array(idat, :, :, :) = (/data/)
-    else if (rank .eq. 2) then
+    elseif (rank .eq. 2) then
       copy_VarCoords(data, data_array(0, :, :))
       data_array(idat, :, :) = (/data/)
-    else if (rank .eq. 1) then
+    elseif (rank .eq. 1) then
       copy_VarCoords(data, data_array(0, :))
       data_array(idat, :) = (/data/)
     else
       error_msg("f", scriptname, funcname, "unsupported rank " + rank)
-    end if
-    end if
-    end if
     end if
   end do
 
