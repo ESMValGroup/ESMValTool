@@ -13,20 +13,16 @@ documentation:
   references: ['acknow_project']
 
 preprocessors:
-  extract_catchment: &catchment
+  daily: &daily
     extract_shape:
       # Lumped model: needs catchment-aggregated input data
       shapefile: meuse_hydrosheds.shp  # In aux (config-user.yml)
       method: contains
       crop: true
-  daily_mean: &mean
+  hourly:
+    <<: *daily
     daily_statistics:
       operator: mean
-  daily:
-    <<: *catchment
-  hourly:
-    <<: *catchment
-    <<: *mean
 
 diagnostics:
   diagnostic_daily:
@@ -40,7 +36,7 @@ diagnostics:
         end_year: 2018
         preprocessor: daily
       pr: *var_daily
-      # MARRMoT requires PET. Thus, we might also need psl, rsds, rsdt
+      # MARRMoT requires PET. Thus, we need psl, rsds, rsdt
       psl: *var_daily
       rsds: *var_daily
       rsdt:
@@ -61,12 +57,10 @@ diagnostics:
         end_year: 2018
         preprocessor: hourly
       pr: *var_hourly
-      # MARRMoT requires PET. Thus, we might also need psl, rsds, rsdt
+      # MARRMoT requires PET. Thus, we need psl, rsds, rsdt
       psl: *var_hourly
       rsds: *var_hourly
       rsdt: *var_hourly
-      # Alternatively, we might use (but this is inconsistent with ERA-Interim):
-      # evspsblpot: *var_hourly
     scripts:
       script:
         script: hydrology/marrmot.py
