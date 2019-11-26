@@ -385,7 +385,6 @@ def run_transects(cfg, diagworkdir, diagplotdir):
             transect_plot(cfg, plot_params)
 
 
-
 def run_aw_core(cfg, diagworkdir, diagplotdir):
     """Calculate depth and temperature of the Atlantic Water core.
 
@@ -442,6 +441,24 @@ def run_aw_core_2d(cfg, diagworkdir, diagplotdir, aw_core_parameters):
     plot2d_original_grid(cfg, plot_params)
 
 
+def tsdiag_plot_parameters(cfg):
+    # get the dictionary with model file names
+    model_filenames = get_clim_model_filenames(cfg, 'thetao')
+    model_filenames = OrderedDict(
+        sorted(model_filenames.items(), key=lambda t: t[0]))
+    # setting the number of columns for the plot
+    if cfg['tsdiag_ncol']:
+        ncols = cfg['tsdiag_ncol']
+    else:
+        ncols = 3
+
+    plot_params = {}
+    plot_params['model_filenames'] = model_filenames
+    plot_params['ncols'] = ncols
+    plot_params['cmap'] = cm.Set1
+    return plot_params
+
+
 def run_tsdiag(cfg, diagworkdir, diagplotdir, observations):
     """Plot TS diagrams.
 
@@ -456,33 +473,19 @@ def run_tsdiag(cfg, diagworkdir, diagplotdir, observations):
     observations: str
         name of the observation data set
     """
-    # get the dictionary with model file names
-    model_filenames = get_clim_model_filenames(cfg, 'thetao')
-    model_filenames = OrderedDict(
-        sorted(model_filenames.items(), key=lambda t: t[0]))
+    plot_params = tsdiag_plot_parameters(cfg)
     # loop over models and regions
-    for mmodel, region in itertools.product(model_filenames,
+    for mmodel, region in itertools.product(plot_params['model_filenames'],
                                             cfg['tsdiag_regions']):
         # this function will generate files with T and S points
         # selected from the region untill `tsdiag_depth` for
         # every model.
         tsplot_data(cfg, mmodel, region, observations=observations)
-    # setting the number of columns for the plot
-    if cfg['tsdiag_ncol']:
-        ncols = cfg['tsdiag_ncol']
-    else:
-        ncols = 3
+
     # actually plot TS diagrams
     for region in cfg['tsdiag_regions']:
-        tsplot_plot(
-            model_filenames,
-            cfg['tsdiag_depth'],
-            region,
-            diagworkdir,
-            diagplotdir,
-            ncols=ncols,
-            cmap=cm.Set1,
-        )
+        plot_params['region'] = region
+        tsplot_plot(cfg, plot_params)
 
 
 def main(cfg):
@@ -525,7 +528,7 @@ def main(cfg):
     # run_plot2d_bias(cfg, diagworkdir, diagplotdir, observations)
 
     # # Plot transects
-    run_transects(cfg, diagworkdir, diagplotdir)
+    # run_transects(cfg, diagworkdir, diagplotdir)
 
     # # Calculate depth and temperature of the Atlantic Water core
     # # and make plots.
@@ -536,7 +539,7 @@ def main(cfg):
     # run_aw_core_2d(cfg, diagworkdir, diagplotdir, aw_core_parameters)
 
     # # Plot TS diagrams
-    # run_tsdiag(cfg, diagworkdir, diagplotdir, observations)
+    run_tsdiag(cfg, diagworkdir, diagplotdir, observations)
 
 
 if __name__ == '__main__':

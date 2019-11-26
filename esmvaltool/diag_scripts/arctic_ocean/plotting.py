@@ -236,13 +236,7 @@ def hofm_plot(cfg, plot_params):
         provenance_logger.log(pltoutname + '.png', provenance_record)
 
 
-def tsplot_plot(model_filenames,
-                max_level,
-                region,
-                diagworkdir,
-                diagplotdir,
-                ncols=3,
-                cmap=cm.Set1):
+def tsplot_plot(cfg, plot_params):
     """Plot a TS diagram.
 
     Parameters
@@ -270,8 +264,8 @@ def tsplot_plot(model_filenames,
     None
     """
     # Setup a figure
-    nplots = len(model_filenames)
-    ncols = float(ncols)
+    nplots = len(plot_params['model_filenames'])
+    ncols = float(plot_params['ncols'])
     nrows = math.ceil(nplots / ncols)
     ncols = int(ncols)
     nrows = int(nrows)
@@ -279,15 +273,16 @@ def tsplot_plot(model_filenames,
     plt.figure(figsize=(8 * ncols, 2 * nrows * ncols))
 
     # loop over models
-    for mmodel in model_filenames:
-        logger.info("Plot  tsplot data for %s, region %s", mmodel, region)
+    for mmodel in plot_params['model_filenames']:
+        logger.info("Plot  tsplot data for %s, region %s", mmodel,
+                    plot_params['region'])
         # load mean data created by `tsplot_data`
-        ifilename_t = genfilename(diagworkdir, 'thetao', mmodel, region,
-                                  'tsplot', '.npy')
-        ifilename_s = genfilename(diagworkdir, 'so', mmodel, region, 'tsplot',
-                                  '.npy')
-        ifilename_depth = genfilename(diagworkdir, 'depth', mmodel, region,
-                                      'tsplot', '.npy')
+        ifilename_t = genfilename(cfg['work_dir'], 'thetao', mmodel,
+                                  plot_params['region'], 'tsplot', '.npy')
+        ifilename_s = genfilename(cfg['work_dir'], 'so', mmodel,
+                                  plot_params['region'], 'tsplot', '.npy')
+        ifilename_depth = genfilename(cfg['work_dir'], 'depth', mmodel,
+                                      plot_params['region'], 'tsplot', '.npy')
 
         temp = np.load(ifilename_t, allow_pickle=True)
         salt = np.load(ifilename_s, allow_pickle=True)
@@ -314,9 +309,9 @@ def tsplot_plot(model_filenames,
                     temp[::],
                     c=depth,
                     s=3.0,
-                    cmap=cmap,
+                    cmap=plot_params['cmap'],
                     edgecolors='none',
-                    vmax=max_level)
+                    vmax=cfg['tsdiag_depth'])
         # adjust the plot
         plt.clabel(contour_plot, fontsize=12, inline=1, fmt='%1.1f')
         plt.xlim(33, 36.)
@@ -336,11 +331,19 @@ def tsplot_plot(model_filenames,
 
     plt.tight_layout()
     # save the plot
-    pltoutname = genfilename(diagplotdir,
+    pltoutname = genfilename(cfg['plot_dir'],
                              'tsplot',
-                             region=region,
+                             region=plot_params['region'],
                              data_type='tsplot')
     plt.savefig(pltoutname, dpi=100)
+    plot_params['basedir'] = cfg['plot_dir']
+    plot_params['ori_file'] = [ifilename_t]
+    plot_params['areacello'] = None
+    plot_params['mmodel'] = None
+
+    provenance_record = get_provenance_record(plot_params, 'tsplot', 'png')
+    with ProvenanceLogger(cfg) as provenance_logger:
+        provenance_logger.log(pltoutname + '.png', provenance_record)
 
 
 def plot_profile(cfg, plot_params):

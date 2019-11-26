@@ -306,6 +306,9 @@ def get_provenance_record(attributes, data_type, file_type):
     elif data_type == 'transect' and file_type == 'png':
         caption = ("Vertical transect. "
                    "Region: {region}. Model: {mmodel} ".format(**attributes))
+    elif data_type == 'tsplot' and file_type == 'png':
+        caption = ("TS diagram. "
+                   "Region: {region}. Model: {mmodel} ".format(**attributes))
     else:
         caption = "None"
 
