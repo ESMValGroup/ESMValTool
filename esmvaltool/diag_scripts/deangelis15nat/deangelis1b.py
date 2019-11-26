@@ -2,8 +2,11 @@
 # -*- coding: utf-8 -*-
 
 
-"""Calculates radiative constraint on hydrologic cycle intensification
- following DeAngelis et al. (2015).
+""".
+
+Calculates radiative constraint on hydrologic cycle intensification
+following DeAngelis et al. (2015).
+
 
 ###############################################################################
 testkw/deangelis1b.py
@@ -13,6 +16,7 @@ EVal4CMIP project
 
 Description
 -----------
+
     Calculates radiative constraint on hydrologic cycle intensification
     following DeAngelis et al. (2015).
     Based on diag_scripts/climate_metrics/ecs.py by Manuel Schlund
@@ -83,7 +87,8 @@ def plot_bar_kw(cfg, dd1, dd2, dd3):
 def main(cfg):
     """Run the diagnostic.
 
-    Parameters
+    Parameters :
+
     ----------
     cfg : dict
         Configuration dictionary of the recipe.
@@ -125,7 +130,7 @@ def main(cfg):
     data_var_pi = OrderedDict()
     data_var_4co2 = OrderedDict()
     data_var_rcp85 = OrderedDict()
-    varvar = ['lvp', 'rlnst', 'rsnst', 'hfss'] # var.short_names()
+    varvar = ['lvp', 'rlnst', 'rsnst', 'hfss']   # var.short_names()
 
     for jvar in varvar:
         data_var_pi[jvar] = 0.0
