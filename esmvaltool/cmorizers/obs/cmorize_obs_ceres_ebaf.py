@@ -59,4 +59,3 @@ def cmorization(in_dir, out_dir, cfg, _):
     for (short_name, var) in cfg['variables'].items():
         logger.info("CMORizing variable '%s'", short_name)
         _extract_variable(short_name, var, cfg, raw_filepath, out_dir)
-
