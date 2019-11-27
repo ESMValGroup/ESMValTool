@@ -13,9 +13,9 @@
 ;    Only handles one variable at a time
 ;
 ; Modification history
-;    20181105-A_lore_ru: ported to v2
-;    20171002-A_lore_ru: Added tags for searching
-;    20170523-A_lore_ru: written for ESMValTool
+;    20181105-A_lorenz_ruth: ported to v2
+;    20171002-A_lorenz_ruth: Added tags for searching
+;    20170523-A_lorenz_ruth: written for ESMValTool
 ;                        based on IPCC AR5 scripts.
 ;
 ; #############################################################################
@@ -35,10 +35,9 @@ begin
   ; ##############################################################
   enter_msg(DIAG_SCRIPT, "")
 
-  ; 'datasets', 'variables' and 'field_types' are fetched from the
+  ; 'datasets', 'variables' are fetched from the
   ; above 'interface.ncl' file
   var0 = variable_info[0]@short_name
-  field_type0 = variable_info[0]@field
   info_items = select_metadata_by_name(input_file_info, var0)
   dim_MOD = ListCount(info_items)
   dim_VAR = ListCount(variable_info)
@@ -387,13 +386,13 @@ begin
             "change. Similar to Figure 12.12" + \
             " of Collins et al. (2013)."
   statistics = ("mean")
-  domain = ("glob")
-  plottype = ("zonal")
-  authors = (/"lore_ru"/)
+  domains = ("global")
+  plot_types = ("zonal")
+  authors = (/"lorenz_ruth"/)
   references = (/"collins13ipcc"/)
   infiles = metadata_att_as_array(info_items, "filename")
-  log_provenance(nc_file, plot_file, caption, statistics, domain, plottype, \
-                 authors, references, infiles)
+  log_provenance(nc_file, plot_file, caption, statistics, domains, \
+                 plot_types, authors, references, infiles)
 
   leave_msg(DIAG_SCRIPT, "")
 end
