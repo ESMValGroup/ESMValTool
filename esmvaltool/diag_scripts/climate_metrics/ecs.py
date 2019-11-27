@@ -212,6 +212,8 @@ def check_input_data(cfg):
 def preprocess_data(cfg):
     """Extract input data."""
     input_data = deepcopy(list(cfg['input_data'].values()))
+    if not input_data:
+        return ([], [])
 
     # Use 'rtmt' instead of 'rtmt' if necessary
     for dataset in input_data:
@@ -366,9 +368,13 @@ def write_data(ecs_data, feedback_parameter_data, ancestor_files, cfg):
             'units': cf_units.Unit('W m-2 K-1'),
         },
     ]
-    attrs = {
-        'project': list(cfg['input_data'].values())[0]['project'],
-    }
+    input_data = list(cfg['input_data'].values())
+    if input_data:
+        attrs = {
+            'project': input_data[0]['project'],
+        }
+    else:
+        attrs = {}
     if RTMT_DATASETS:
         attrs['net_toa_radiation'] = (
             f"For datasets {RTMT_DATASETS}, 'rtmt' (net top of model "
