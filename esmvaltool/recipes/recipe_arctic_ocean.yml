@@ -24,6 +24,16 @@ documentation:
 datasets:
   - {dataset: MPI-ESM-LR}
   - {dataset: MPI-ESM-MR}
+  - {dataset: CCSM4}
+  - {dataset: CanESM2}
+  - {dataset: CMCC-CM}
+  - {dataset: ACCESS1-3}
+  - {dataset: ACCESS1-0}
+  - {dataset: CSIRO-Mk3-6-0}
+  - {dataset: IPSL-CM5A-LR}
+  - {dataset: IPSL-CM5A-MR}
+  - {dataset: HadCM3}
+  - {dataset: HadGEM2-ES}
   # - {dataset: bcc-csm1-1,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
   # - {dataset: GFDL-ESM2G,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
   # - {dataset: MPI-ESM-LR,  project: CMIP5,  mip: Omon,  exp: historical,  ensemble: r1i1p1,  start_year: 2000,  end_year: 2002}
