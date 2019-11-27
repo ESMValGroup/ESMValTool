@@ -115,6 +115,7 @@ def label_and_conversion(cmor_var, data):
 
 
 def year_ticks(series_lenght, time):
+    """Create tick marks with year values."""
 
     ygap = int((np.round(series_lenght / 12.) / 5) * 12)
     year_indexes = list(range(series_lenght)[::ygap])
@@ -161,6 +162,7 @@ def hofm_plot(cfg, plot_params):
                                ncols=plot_params['ncols'])
 
     # plot data on the figure, axis by axis
+    index = None
     for index, mmodel in enumerate(plot_params['model_filenames']):
         logger.info("Plot  %s data for %s, region %s", plot_params['variable'],
                     mmodel, plot_params['region'])

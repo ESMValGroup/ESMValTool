@@ -84,6 +84,8 @@ def run_hofm_data(cfg):
 
 
 def hofm_plot_params(cfg, hofm_var, var_number, observations):
+    """Prepeare configuration for Hovmoeller plot."""
+
     model_filenames = get_clim_model_filenames(cfg, hofm_var)
     model_filenames = OrderedDict(
         sorted(model_filenames.items(), key=lambda t: t[0]))
@@ -167,6 +169,8 @@ def run_mean(cfg, observations):
 
 
 def plot_profile_params(cfg, hofm_var, observations):
+    """Prepeare configuration for profile plot."""
+
     model_filenames = get_clim_model_filenames(cfg, hofm_var)
     model_filenames = OrderedDict(
         sorted(model_filenames.items(), key=lambda t: t[0]))
@@ -202,6 +206,8 @@ def run_profiles(cfg, observations):
 
 
 def plot2d_params(cfg, plot2d_var, var_number):
+    """Prepeare configuration for plot2d."""
+
     model_filenames = get_clim_model_filenames(cfg, plot2d_var)
     model_filenames = OrderedDict(
         sorted(model_filenames.items(), key=lambda t: t[0]))
@@ -252,6 +258,8 @@ def run_plot2d(cfg):
 
 
 def plot2d_bias_params(cfg, plot2d_bias_var, var_number, observations):
+    """Prepeare configuration for plot2d bias."""
+
     model_filenames = get_clim_model_filenames(cfg, plot2d_bias_var)
     model_filenames = OrderedDict(
         sorted(model_filenames.items(), key=lambda t: t[0]))
@@ -305,6 +313,8 @@ def run_plot2d_bias(cfg, observations):
 
 
 def transect_plot_params(cfg, trans_var, var_number):
+    """Prepeare configuration for transect plot."""
+
     model_filenames = get_clim_model_filenames(cfg, trans_var)
     model_filenames = OrderedDict(
         sorted(model_filenames.items(), key=lambda t: t[0]))
@@ -377,7 +387,8 @@ def run_aw_core(cfg):
     model_filenames = get_clim_model_filenames(cfg, 'thetao')
     model_filenames = OrderedDict(
         sorted(model_filenames.items(), key=lambda t: t[0]))
-    aw_core_parameters = aw_core(model_filenames, cfg['work_dir'], 'EB', 'thetao')
+    aw_core_parameters = aw_core(model_filenames, cfg['work_dir'], 'EB',
+                                 'thetao')
     plot_aw_core_stat(aw_core_parameters, cfg['plot_dir'])
     return aw_core_parameters
 
@@ -396,7 +407,8 @@ def run_aw_core_2d(cfg, aw_core_parameters):
     model_filenames = get_clim_model_filenames(cfg, 'thetao')
     model_filenames = OrderedDict(
         sorted(model_filenames.items(), key=lambda t: t[0]))
-    aw_core_parameters = aw_core(model_filenames, cfg['work_dir'], 'EB', 'thetao')
+    aw_core_parameters = aw_core(model_filenames, cfg['work_dir'], 'EB',
+                                 'thetao')
     # this is now just using plot2d_original_grid with
     # additional `explicit_depths` parameter
     plot_params = {}
@@ -415,6 +427,8 @@ def run_aw_core_2d(cfg, aw_core_parameters):
 
 
 def tsdiag_plot_parameters(cfg):
+    """Prepeare configuration for TS plots."""
+
     # get the dictionary with model file names
     model_filenames = get_clim_model_filenames(cfg, 'thetao')
     model_filenames = OrderedDict(
@@ -462,10 +476,6 @@ def main(cfg):
     # for debuging save the configuration in a pickle file
     # with open('cfg_NK.joblib', 'wb') as handle:
     #     pickle.dump(cfg, handle, protocol=pickle.HIGHEST_PROTOCOL)
-
-    # sets the directories
-    diagworkdir = cfg['work_dir']
-    diagplotdir = cfg['plot_dir']
 
     logger.info("Starting APPLICATE/TRR Arctic Ocean diagnostics")
 

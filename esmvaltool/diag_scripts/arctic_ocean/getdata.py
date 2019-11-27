@@ -96,6 +96,7 @@ def hofm_extract_region(metadata, cmor_var, indexes, level, time=0):
 
 
 def hofm_save_data(cfg, data_info, oce_hofm):
+    """Save data for Hovmoeller diagrams."""
 
     ofiles = {}
     ofiles['ofilename'] = genfilename(**data_info, data_type='hofm')
@@ -185,6 +186,8 @@ def hofm_data(cfg, model_filenames, mmodel, cmor_var, region):
 
 
 def transect_level(datafile, cmor_var, level, grid, locstream):
+    """Interpolation for one level of transect."""
+
     sourcefield = ESMF.Field(
         grid,
         staggerloc=ESMF.StaggerLoc.CENTER,
@@ -223,6 +226,7 @@ def transect_level(datafile, cmor_var, level, grid, locstream):
 
 
 def transect_save_data(cfg, data_info, secfield, lon_s4new, lat_s4new):
+    """Save data for transects."""
 
     ofiles = {}
     ofiles['ofilename'] = genfilename(**data_info, data_type='transect')
@@ -334,7 +338,8 @@ def transect_data(cfg, mmodel, cmor_var, region, mult=2):
 
 
 def tsplot_extract_data(mmodel, observations, metadata_t, metadata_s, ind):
-    """Extracts level data from the files."""
+    """Extracts level data from the files for TS plots."""
+
     if mmodel != observations:
         level_pp = metadata_t['datafile'].variables['thetao'][0, ind, :, :]
         level_pp_s = metadata_s['datafile'].variables['so'][0, ind, :, :]
@@ -350,6 +355,7 @@ def tsplot_extract_data(mmodel, observations, metadata_t, metadata_s, ind):
 
 
 def tsplot_save_data(cfg, data_info, temp, salt, depth_model):
+    """Save data for TS plots."""
 
     ofiles = {}
     data_info['variable'] = 'thetao'
@@ -389,8 +395,6 @@ def tsplot_data(cfg, mmodel, region, observations='PHC'):
         maximum level (depth) of TS data to be used
     region: str
         region as defined in `hofm_regions`
-    diagworkdir: str
-        working directory
     observations: str
         name of the observations
 

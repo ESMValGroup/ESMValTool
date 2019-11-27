@@ -63,6 +63,8 @@ def weighting(distance):
 
 
 def define_esmf_field(ifile, data_onlevel, name):
+    """Define ESMF field from netCDF file."""
+
     grid_obs = ESMF.Grid(filename=ifile, filetype=ESMF.FileFormat.GRIDSPEC)
     mask_obs = grid_obs.add_item(ESMF.GridItem.MASK)
     mask_obs[:] = data_onlevel.mask.astype('int').T
@@ -75,6 +77,7 @@ def define_esmf_field(ifile, data_onlevel, name):
 
 
 def add_esmf_cyclic(metadata_obs, data_onlevel, interpolated):
+    """Add cyclic points to interpolated data."""
 
     data_onlevel_cyc, lon_obs_cyc = add_cyclic_point(
         data_onlevel, coord=metadata_obs['lon2d'][0, :])
@@ -87,6 +90,7 @@ def add_esmf_cyclic(metadata_obs, data_onlevel, interpolated):
 
 
 def esmf_regriding(sourcefield, distfield, metadata_obs, data_onlev_obs):
+    """Use ESMF fields to do the regriding."""
     # define the regrider
     regrid = ESMF.Regrid(
         sourcefield,
