@@ -53,36 +53,38 @@
 ; Caveats
 ;
 ; Modification history
-;    20190405-A_righ_ma: added provenance logging
-;    20190315-A_hass_bg: extended to smpi metric
-;    20180503-A_righ_ma: completely rewritten and modularized
-;    20171215-A_righ_ma: merged with perfmetrics_grading and
-;                        permetrics_taylor.ncl
-;    20171124-A_righ_ma: completely revised to adapt it to the new backend
-;                        (level selection, regridding and masking now done
-;                        by the python preprocessor)
-;    20161220-A_laue_ax: added option to set map projection for lat-lon plots
-;                        (diag_script_info@projection)
-;                        added option to choose how to plot t-test results:
-;                        stippling or masking out in gray (lat-lon plots only)
-;    20161019-A_laue_ax: changed plotting of t-test results:
-;                        now stippling significant grid cells (old version:
-;                        masking out non-significant values in gray)
-;    20160628-A_righ_ma: moving ref_model specification from cfg- files to
+;    20190405-righi_mattia: added provenance logging
+;    20190315-hassler_birgit: extended to smpi metric
+;    20180503-righi_mattia: completely rewritten and modularized
+;    20171215-righi_mattia: merged with perfmetrics_grading and
+;                           permetrics_taylor.ncl
+;    20171124-righi_mattia: completely revised to adapt it to the new backend
+;                           (level selection, regridding and masking now done
+;                           by the python preprocessor)
+;    20161220-lauer_axel: added option to set map projection for lat-lon plots
+;                         (diag_script_info@projection)
+;                         added option to choose how to plot t-test results:
+;                         stippling or masking out in gray (lat-lon plots only)
+;    20161019-lauer_axel: changed plotting of t-test results:
+;                         now stippling significant grid cells (old version:
+;                         masking out non-significant values in gray)
+;    20160628-righi_mattia: moving ref_model specification from cfg- files to
 ;                        recipe file
-;    20160628-A_senf_da: added regridding for irregular grids (ESMF_regrid).
-;    20151027-A_laue_ax: moved call to 'write_references' to the beginning
-;                        of the code.
-;    20151013-A_righ_ma: fixed t-test mask in lat-lon difference plots.
-;    20150325-A_laue_ax: modified reference tags used for acknowledgements
-;                        (projects, observations, etc.).
-;    20150119-A-gott_kl: removed "grid", "region" from req_atts
-;                        (for T2Ms vmrco).
-;    20150113-A_gott_kl: reconciled generalised regridding with T1* & T0*
-;    20140905-A_righ_ma: consistent regridding and missing values mask.
-;    20140701-A_gott_kl: Adapted for T1M.
-;    20140630-A_gott_kl: Adapted for T0Ms.
-;    20131203-A_fran_fr: written.
+;    20160628-senftleben_daniel: added regridding for irregular grids
+;                                (ESMF_regrid).
+;    20151027-lauer_axel: moved call to 'write_references' to the beginning
+;                         of the code.
+;    20151013-righi_mattia: fixed t-test mask in lat-lon difference plots.
+;    20150325-lauer_axel: modified reference tags used for acknowledgements
+;                         (projects, observations, etc.).
+;    20150119-gottschaldt_klaus-dirk: removed "grid", "region" from req_atts
+;                                     (for T2Ms vmrco).
+;    20150113-gottschaldt_klaus-dirk: reconciled generalised regridding with
+;                                     T1* & T0*
+;    20140905-righi_mattia: consistent regridding and missing values mask.
+;    20140701-gottschaldt_klaus-dirk: Adapted for T1M.
+;    20140630-gottschaldt_klaus-dirk: Adapted for T0Ms.
+;    20131203-frank_franziska: written.
 ;
 ; #############################################################################
 
@@ -264,25 +266,83 @@ begin
 
     do met = 0, nmetrics - 1
 
-      if (diag_script_info@metric(met).eq."taylor") then
-        metric = taylor
-      else
-        metric = grading(met, :, :, :)
-      end if
+      if (diag_script_info@metric(met).eq."RMSD") then
 
-      ; Apply normalization
-      if (diag_script_info@metric(met).ne."taylor" .and. \
-          diag_script_info@metric(met).ne."SMPI") then
+        metric = grading(met, :, :, :)
+        metric@title = diag_script_info@metric(met) + " metric"
+        metric@long_name = \
+          "Grading table of metric " + diag_script_info@metric(met)
+        metric@var = "grade"
+
+        ; Normalization
         do iobs = 0, nobs - 1
           metric(:, :, iobs) = \
             normalize_metric(metric(:, :, iobs), \
                              diag_script_info@normalization(met))
         end do
-      end if
 
-      ; Special case, SMPI normalization
-      if (diag_script_info@metric(met).eq."SMPI") then
-        ens_idx = new(dimsizes(smpi&models), integer)
+        ; Reduce dimensionality if no alternative dataset
+        if (.not.l_altern) then
+          metric := metric(:, :, 0)
+          delete(metric@reference)
+        end if
+
+        ; Provenance information
+        statistics = (/"rmsd"/)
+        authors = (/"frank_franziska", "righi_mattia", "eyring_veronika"/)
+        references = (/"righi15gmd", "gleckler08jgr"/)
+
+      elseif (diag_script_info@metric(met).eq."BIAS") then
+
+        metric = grading(met, :, :, :)
+        metric@title = diag_script_info@metric(met) + " metric"
+        metric@long_name = \
+          "Grading table of metric " + diag_script_info@metric(met)
+        metric@var = "grade"
+
+        ; Normalization
+        do iobs = 0, nobs - 1
+          metric(:, :, iobs) = \
+            normalize_metric(metric(:, :, iobs), \
+                             diag_script_info@normalization(met))
+        end do
+
+        ; Reduce dimensionality if no alternative dataset
+        if (.not.l_altern) then
+          metric := metric(:, :, 0)
+          delete(metric@reference)
+        end if
+
+        ; Provenance information
+        statistics = (/"diff"/)
+        authors = (/"frank_franziska", "righi_mattia", "eyring_veronika"/)
+        references = (/"righi15gmd", "gleckler08jgr"/)
+
+      elseif (diag_script_info@metric(met).eq."taylor") then
+
+        metric = taylor
+        metric@title = diag_script_info@metric(met) + " metric"
+        metric@long_name = \
+          "Grading table of metric " + diag_script_info@metric(met)
+        metric@var = "grade"
+
+        ; Provenance information
+        statistics = (/"rmsd", "corr"/)
+        authors = (/"frank_franziska", "righi_mattia", "eyring_veronika"/)
+        references = (/"righi15gmd", "gleckler08jgr"/)
+
+      elseif (diag_script_info@metric(met).eq."SMPI") then
+
+        metric = smpi
+        metric@title = "metrics"
+        metric@long_name = "1 variable's Performance Index for " + \
+          "the Single Model Performance Index"
+        metric@var = "performance_index"
+        metric@invar = var0
+        metric@ensemble_name = diag_script_info@normalization(met)
+
+        ; Normalization
+        ens_idx = new(dimsizes(metric&models), integer)
         atts = True
         atts@project = diag_script_info@normalization(met)
         info = select_metadata_by_atts(input_file_info, atts)
@@ -299,58 +359,37 @@ begin
                     ") found")
         end if
         ens_idx := ens_idx(ind(.not.ismissing(ens_idx)))
-        ; Apply normalization
-        do iboot = 0, dimsizes(smpi&bootstrap_member)-1
-          smpi(iboot, :) = smpi(iboot, :) / avg(smpi(iboot, ens_idx))
+        do iboot = 0, dimsizes(metric&bootstrap_member)-1
+          metric(iboot, :) = metric(iboot, :) / avg(metric(iboot, ens_idx))
         end do
-      end if
 
-      ; Reduce dimensionality if no alternative dataset
-      if (.not.l_altern .and. diag_script_info@metric(met).ne."taylor") then
-        metric := metric(:, :, 0)
-        delete(metric@reference)
-      end if
-
-      ; Attach attributes to results and write NetCDF output
-      if (diag_script_info@metric(met).eq."SMPI") then
-
-        smpi@title = "metrics"
-        smpi@long_name = "1 variable's Performance Index for " + \
-          "the Single Model Performance Index"
-        smpi@metric = diag_script_info@metric(met)
-        smpi@diag_script = (/DIAG_SCRIPT/)
-        smpi@var = "performance_index"
-        smpi@invar = var0
-        smpi@region = region@name
-        smpi@ensemble_name = diag_script_info@normalization(met)
-        smpi@num_preproc_files = dimsizes(preproc_files)
-        do imod = 0, smpi@num_preproc_files - 1
-          num_preproc = "preproc_file_" + imod
-          smpi@$num_preproc$ = preproc_files(imod)
-        end do
-        smpi@ncdf_dir = ncdf_dir(met)
-
-        ncdf_outfile = ncdf_write(smpi, smpi@ncdf_dir)
+        ; Provenance information
+        statistics = "smpi"
+        authors = (/"gier_bettina", "hassler_birgit"/)
+        references = (/"rk2008bams"/)
 
       else
-
-        metric@title = diag_script_info@metric(met) + " metric"
-        metric@long_name = \
-          "Grading table of metric " + diag_script_info@metric(met)
-        metric@metric = diag_script_info@metric(met)
-        metric@diag_script = (/DIAG_SCRIPT/)
-        metric@var = "grade"
-        metric@region = region@name
-        metric@num_preproc_files = dimsizes(preproc_files)
-        do imod = 0, metric@num_preproc_files - 1
-          num_preproc = "preproc_file_" + imod
-          metric@$num_preproc$ = preproc_files(imod)
-        end do
-        metric@ncdf_dir = ncdf_dir(met)
-
-        ncdf_outfile = ncdf_write(metric, metric@ncdf_dir)
-
+        error_msg("f", DIAG_SCRIPT, "", "unrecognized metric " + \
+                  diag_script_info@metric(met))
       end if
+
+      ; Common attributes
+      metric@metric = diag_script_info@metric(met)
+      metric@diag_script = (/DIAG_SCRIPT/)
+      metric@region = region@name
+      metric@num_preproc_files = dimsizes(preproc_files)
+      do imod = 0, metric@num_preproc_files - 1
+        num_preproc = "preproc_file_" + imod
+        metric@$num_preproc$ = preproc_files(imod)
+      end do
+      metric@ncdf_dir = ncdf_dir(met)
+      ncdf_outfile = ncdf_write(metric, metric@ncdf_dir)
+
+      ; Call provenance logger
+      log_provenance(ncdf_outfile, "n/a", "n/a", statistics, \
+                     diag_script_info@region, "other", authors, references, \
+                     preproc_files)
+      delete([/statistics, authors, references/])
 
       ; Write results of temporary grading list
       temp_dir = config_user_info@work_dir + "/" + \

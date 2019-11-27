@@ -1,7 +1,7 @@
 ---
 documentation:
   description: 'Calculates the SPI and SPEI drought indices.'
-  authors: ['berg_pe']
+  authors: ['berg_peter']
   projects: ['c3s-magic']
   references: ['acknow_project']
 
@@ -44,7 +44,7 @@ diagnostics:
       tas: *var
     scripts:
       spi:
-        script: droughtindex/diag_spi.r
+        script: droughtindex/diag_spi.R
         ancestors: [pr]
       spei:
-        script: droughtindex/diag_spei.r
+        script: droughtindex/diag_spei.R

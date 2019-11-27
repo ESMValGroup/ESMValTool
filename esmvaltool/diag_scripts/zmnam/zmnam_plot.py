@@ -185,20 +185,24 @@ def zmnam_plot(file_gh_mo, datafolder, figfolder, src_props,
         mpl.rcParams['contour.negative_linestyle'] = 'solid'
         plt.contour(lonw, lat, slopew, levels=regr_levs,
                     colors='k', transform=ccrs.PlateCarree(),
-                    zorder=5)
+                    zorder=1)
 
         # Invisible contours, only for labels.
-        # Workaround for cartopy issue, as of Dec 18
+        # Change zorder for cartopy/matplotlib label issue, as of June 2019
         inv_map = plt.contour(lonw, lat, slopew, levels=regr_levs,
                               colors='k', transform=ccrs.PlateCarree(),
-                              zorder=10)
+                              zorder=15)
 
         mpl.rcParams['contour.negative_linestyle'] = 'dashed'
 
         for cmap in inv_map.collections:
             cmap.set_visible(False)
 
-        plt.clabel(inv_map, fontsize=8, fmt='%1.0f', zorder=15)
+        # Add contour labels over white boxes
+        clabs = plt.clabel(inv_map, fontsize=8, fmt='%1.0f', zorder=30)
+        bbox_dict = dict(boxstyle='square,pad=0',
+                         edgecolor='none', fc='white', zorder=25)
+        clabs = [txt.set_bbox(bbox_dict) for txt in clabs]
 
         axis.coastlines()
         axis.set_global()
