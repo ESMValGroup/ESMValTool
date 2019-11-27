@@ -500,7 +500,7 @@ def main(cfg):
     # Plot average vertical profiles for regions
     run_profiles(cfg, observations)
 
-    #Plot 2d maps on original grid
+    # Plot 2d maps on original grid
     run_plot2d(cfg)
 
     # Plot model biases over depth
