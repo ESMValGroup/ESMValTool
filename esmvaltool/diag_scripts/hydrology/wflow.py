@@ -4,6 +4,7 @@ from pathlib import Path
 
 import iris
 import numpy as np
+from osgeo import gdal
 
 from esmvalcore.preprocessor import extract_region, regrid
 from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
@@ -200,6 +201,56 @@ def debruin_pet(tas, psl, rsds, rsdt):
     return pet
 
 
+def load_dem(filename):
+    """Load DEM into iris cube."""
+    logger.info("Reading digital elevation model from %s", filename)
+    if filename.suffix.lower() == '.nc':
+        return iris.load_cube(str(filename))
+
+    if filename.suffix.lower() == '.map':
+        return _load_pcraster_dem(filename)
+
+    raise ValueError(f"Unknown file format {filename}. Supported formats are "
+                     "'.nc' and '.map'.")
+
+
+def _load_pcraster_dem(filename):
+    """Load DEM from a PCRASTER .map file."""
+    dataset = gdal.Open(str(filename))
+    lon_offset, lon_step, _, lat_offset, _, lat_step = dataset.GetGeoTransform(
+    )
+    lon_size, lat_size = dataset.RasterXSize, dataset.RasterYSize
+    data = dataset.ReadAsArray()
+    dataset = None
+
+    lons = lon_offset + lon_step * np.arange(lon_size)
+    lats = lat_offset + lat_step * np.arange(lat_size)
+
+    lon_coord = iris.coords.DimCoord(
+        lons,
+        var_name='lon',
+        standard_name='longitude',
+        units='degrees',
+    )
+    lat_coord = iris.coords.DimCoord(
+        lats,
+        var_name='lat',
+        standard_name='latitude',
+        units='degrees',
+    )
+
+    cube = iris.cube.Cube(
+        data,
+        var_name='height',
+        units='m',
+        dim_coords_and_dims=[
+            (lat_coord, 0),
+            (lon_coord, 1),
+        ],
+    )
+    return cube
+
+
 def main(cfg):
     """Process data for use as input to the wflow hydrological model."""
     input_metadata = cfg['input_data'].values()
@@ -217,7 +268,7 @@ def main(cfg):
         # Interpolating precipitation to the target grid
         # Read the target cube, which contains target grid and target elevation
         dem_path = Path(cfg['auxiliary_data_dir']) / cfg['dem_file']
-        dem = iris.load_cube(str(dem_path))
+        dem = load_dem(dem_path)
         dem = extract_region(dem, **cfg['region'])
 
         logger.info("Processing variable precipitation_flux")
