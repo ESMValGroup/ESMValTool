@@ -127,11 +127,11 @@ Example plots
 -------------
 
 .. figure:: /recipes/figures/extreme_events/gleckler.png
-   :width: 10cm
+   :width: 12cm
 
-Portrait plot of relative error metrics for the CMIP5 temperature and precipitation extreme indices. Reproduces Fig. 9.37 of the IPCC AR5 report, Chapter 9.
+   Portrait plot of relative error metrics for the CMIP5 temperature and precipitation extreme indices evaluated over 1981-2000. Reproduces Fig. 9.37 of the IPCC AR5 report, Chapter 9.
 
 .. figure:: /recipes/figures/extreme_events/cdd_timeseries.png
    :width: 10cm
 
-Timeseries of Consecutive Dry Days index for CMIP5 models.
+   Timeseries of the Consecutive Dry Days index over 1981-2000 for a selection of CMIP5 models, the CMIP5 multi-model mean (CMIP) and ERA-Interim. Shading is used to reproduce the multi-model spread.

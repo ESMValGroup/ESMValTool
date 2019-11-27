@@ -77,9 +77,11 @@ DAY_PARAMS = [
     ('166.128', 'v10', 'an'),  # 10 metre V wind component
     ('168.128', 'd2m', 'an'),  # 2 metre dewpoint temperature
     ('151.128', 'msl', 'an'),  # Mean sea level pressure
+    ('134.128', 'sp', 'an'),  # Surface pressure
     ('144.128', 'sf', 'accu'),  # Snowfall
     ('176.128', 'ssr', 'accu'),  # Surface net solar radiation
     ('169.128', 'ssrd', 'accu'),  # Surface solar radiation downwards
+    ('175.128', 'strd', 'accu'),  # Surface thermal radiation downwards
     ('205.128', 'ro', 'accu'),  # Runoff
     ('238.128', 'tsn', 'an'),  # Temperature of snow layer
     ('212.128', 'tisr', 'accu'),  # TOA incident solar radiation
@@ -136,7 +138,6 @@ MONTH_PARAMS = [
     ('57.162', 'p57.162', 'an'),  # Vertical integral of cloud frozen water
     ('137.128', 'tcwv', 'an'),  # Total column water vapour
     ('134.128', 'sp', 'an'),  # Surface pressure
-    ('151.128', 'msl', 'an'),  # Mean sea level pressure
     ('229.128', 'iews', 'fc'),  # Inst. eastward turbulent surface stress
     ('230.128', 'inss', 'fc'),  # Inst. northward turbulent surface stress
     ('34.128', 'sst', 'an'),  # Sea surface temperature
