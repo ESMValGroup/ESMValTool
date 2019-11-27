@@ -1,7 +1,7 @@
 .. _recipes_cvdp:
 
-The Climate Variability Diagnostics Package (CVDP)
-==================================================
+Climate Variability Diagnostics Package (CVDP)
+==============================================
 
 Overview
 --------
@@ -21,7 +21,7 @@ Diagnostics are stored in diag_scripts/cvdp/
 User settings in recipe
 -----------------------
 
-Currently, the recipe must be used with a single dataset entry.
+The recipe can be run with several data sets including different model ensembles, multi-model mean statistics are currently not supported.
 
 Variables
 ---------
@@ -35,10 +35,7 @@ Variables
 Observations and reformat scripts
 ---------------------------------
 
-*Note: (1) obs4mips data can be used directly without any preprocessing;
-(2) see headers of reformat scripts for non-obs4mips data for download
-instructions.*
-
+None. 
 
 References
 ----------
@@ -52,4 +49,5 @@ Example plots
 .. figure::  /recipes/figures/cvdp/nam.prreg.ann.png
    :align:   center
 
-   Atmospheric Modes of Variability; pr (annual)
+   Regression of the precipitation anomalies (PR) onto the Northern Annular 
+   Mode (NAM) index for the time period 1900-2005 for 30 CMIP5 models and observations (GPCP (pr) / IFS-Cy31r2 (psl); time period 1984-2005).
