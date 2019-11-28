@@ -1,7 +1,7 @@
 .. _nml_collins:
 
-IPCC Chapter 12 selected figures
-====================================================
+IPCC AR5 Chapter 12 (selected figures)
+======================================
 
 Overview
 --------
@@ -21,55 +21,61 @@ Available recipes and diagnostics
 
 Recipes are stored in recipes/
 
-* recipe_collins13ipcc.xml
+* recipe_collins13ipcc.yml
 
-Diagnostics are stored in diag_scripts/ipcc_ar5/
+Diagnostics are stored in diag_scripts/
 
-* ch12_map_diff_each_model_fig12-9.ncl: calculates the difference between
+* ipcc_ar5/ch12_map_diff_each_model_fig12-9.ncl: calculates the difference between
   future and historical runs for one scenario for each given model
   individually on their native grid and plots all of them in one Figure.
   As in Figure 12.9 in AR5.
-* ch12_ts_line_mean_spread.ncl: calculates time series for one variable,
+* ipcc_ar5/ch12_ts_line_mean_spread.ncl: calculates time series for one variable,
   change in future relative to base period in historical, multi-model mean as
   well as spread around it (as standard deviation).
-* ch12_plot_ts_line_mean_spread.ncl: plots the timeseries multi-model mean 
+* ipcc_ar5/ch12_plot_ts_line_mean_spread.ncl: plots the timeseries multi-model mean
   and spread calculated above. As in Figure 12.5 in AR5.
-* ch12_calc_IAV_for_stippandhatch.ncl: calculates the interannual variability
+* ipcc_ar5/ch12_calc_IAV_for_stippandhatch.ncl: calculates the interannual variability
   over piControl runs, either over the whole time period or in chunks over
   some years.
-* ch12_calc_map_diff_mmm_stippandhatch.ncl: calculates the difference between
+* ipcc_ar5/ch12_calc_map_diff_mmm_stippandhatch.ncl: calculates the difference between
   future and historical periods for each given model and then calculates
   multi-model mean as well as significance. Significant is where the
   multi-model mean change is greater than two standard deviations of the
   internal variability and where at least 90% of the models agree on the
   sign of change. Not significant is where the multi-model mean change is
   less than one standard deviation of internal variability.
-* ch12_plot_map_diff_mmm_stipp.ncl: plots multi-model mean maps calculated
+* ipcc_ar5/ch12_plot_map_diff_mmm_stipp.ncl: plots multi-model mean maps calculated
   above including stippling where significant and hatching where not
   significant. As in Figure 12.11 in AR5.
-* ch12_calc_zonal_cont_diff_mmm_stippandhatch.ncl: calculates zonal means
+* ipcc_ar5/ch12_calc_zonal_cont_diff_mmm_stippandhatch.ncl: calculates zonal means
   and the difference between future and historical periods for each given
   model and then calculates multi-model mean as well as significance as above.
-* ch12_plot_zonal_diff_mmm_stipp.ncl: plots the multi-model mean zonal plots
+* ipcc_ar5/ch12_plot_zonal_diff_mmm_stipp.ncl: plots the multi-model mean zonal plots
   calculated above including stippling where significant and hatching where
   not significant. As in Figure 12.12 in AR5.
-* ch12_calc_map_diff_scaleT_mmm_stipp.ncl: calculates the change in variable
+* ipcc_ar5/ch12_calc_map_diff_scaleT_mmm_stipp.ncl: calculates the change in variable
   between future and historical period normalized by gloabl mean temperature
   change of each given model and scenario. Then averages over all realizations
   and calculates significance. Significant is where the mean change averaged
   over all realizations is larger than the 95% percentile of the distribution
   of models (assumed to be gaussian). Can be plotted using
-  ch12_plot_map_diff_mmm_stipp.ncl.
-* ch12_snw_area_change_fig12-32.ncl: calculate snow area extent in a region
+  ipcc_ar5/ch12_plot_map_diff_mmm_stipp.ncl.
+* seaice/seaice_ecs.ncl: scatter plot of historical trend in September
+  Arctic sea ice extent (SSIE) vs historical long-term mean SSIE (similar to
+  Fig. 12.31a in AR5) and historical SSIE trend vs YOD RCP8.5 (similar to Fig. 12.31d
+  in AR5).
+* seaice/seaice_yod.ncl: calculation of year of near disappearance of Arctic sea ice
+  (similar to Fig 12.31e in AR5)
+* ipcc_ar5/ch12_snw_area_change_fig12-32.ncl: calculate snow area extent in a region
   (e.g Northern Hemisphere) and season (e.g. Northern Hemisphere spring March
   & April) relative to a reference period (e.g 1986-2005) and spread over
   models as in Fig. 12.32 of IPCC AR5. Can be plotted using
-  ch12_plot_ts_line_mean_spread.ncl.
+  ipcc_ar5/ch12_plot_ts_line_mean_spread.ncl.
 
 User settings
 -------------
 
-#. Script ch12_map_diff_each_model_fig12-9.ncl
+#. Script ipcc_ar5/ch12_map_diff_each_model_fig12-9.ncl
 
    *Required settings (script)*
 
@@ -91,9 +97,8 @@ User settings
 
    * project: CMIP5 (or CMIP6)
    * mip: variable mip, generally Amon or Omon
-   * field: T2Ms
-  
-#. Script ch12_ts_line_mean_spread.ncl
+
+#. Script ipcc_ar5/ch12_ts_line_mean_spread.ncl
 
    *Required settings (script)*
 
@@ -121,9 +126,8 @@ User settings
 
    * project: CMIP5 (or CMIP6)
    * mip: variable mip, generally Amon or Omon
-   * field: T2Ms
 
-#. Script ch12_plot_ts_line_mean_spread.ncl: 
+#. Script ipcc_ar5/ch12_plot_ts_line_mean_spread.ncl:
 
    *Required settings (script)*
 
@@ -137,7 +141,7 @@ User settings
    * ymax: maximum value on y-axis
    * colormap: alternative colormap, path to rgb file or ncl name
 
-#. Script ch12_calc_IAV_for_stippandhatch.ncl:
+#. Script ipcc_ar5/ch12_calc_IAV_for_stippandhatch.ncl:
 
    *Required settings (script)*
 
@@ -156,18 +160,17 @@ User settings
 
    * project: CMIP5 (or CMIP6)
    * mip: variable mip, generally Amon or Omon
-   * field: T2Ms or T3Ms
    * exp: piControl
-   * preprocessor: which preprocessor to use, depends on field, for T2Ms
-     preprocessor only needs to regrid, for T3Ms we need to extract levels
+   * preprocessor: which preprocessor to use, depends on dimension of variable,
+     for 2D preprocessor only needs to regrid, for 3D we need to extract levels
      either based on reference_dataset or specify levels.
 
    *Optional settings (variables)*
 
    * reference_dataset: the reference dataset for level extraction in case of
-     field T3Ms.
+     3D variables.
 
-#. Script ch12_calc_map_diff_mmm_stippandhatch.ncl:
+#. Script ipcc_ar5/ch12_calc_map_diff_mmm_stippandhatch.ncl:
 
    *Required settings (script)*
 
@@ -191,10 +194,9 @@ User settings
 
    * project: CMIP5 (or CMIP6)
    * mip: variable mip, generally Amon or Omon
-   * field: T2Ms
    * preprocessor: which preprocessor to use, preprocessor only needs to regrid
 
-#. Script ch12_plot_map_diff_mmm_stipp.ncl:
+#. Script ipcc_ar5/ch12_plot_map_diff_mmm_stipp.ncl:
 
    *Required settings (script)*
 
@@ -216,7 +218,7 @@ User settings
      varname + time_avg
    * units: units written next to colorbar, e.g (~F35~J~F~C)
 
-#. Script ch12_calc_zonal_cont_diff_mmm_stippandhatch.ncl:
+#. Script ipcc_ar5/ch12_calc_zonal_cont_diff_mmm_stippandhatch.ncl:
 
    *Required settings (script)*
 
@@ -242,7 +244,6 @@ User settings
 
    * project: CMIP5 (or CMIP6)
    * mip: variable mip, generally Amon or Omon
-   * field: T3Ms
    * preprocessor: which preprocessor to use, preprocessor needs to regrid,
      extract leves and calculate the zonal mean.
 
@@ -250,7 +251,7 @@ User settings
 
    * reference_dataset: the reference dataset for level extraction
 
-#. Script ch12_plot_zonal_diff_mmm_stipp.ncl:
+#. Script ipcc_ar5/ch12_plot_zonal_diff_mmm_stipp.ncl:
 
    *Required settings (script)*
 
@@ -277,7 +278,7 @@ User settings
      * base_cnMinLevel: minimum contour line
      * base_cnMaxLevel: maximum contour line
 
-#. Script ch12_calc_map_diff_scaleT_mmm_stipp.ncl:
+#. Script ipcc_ar5/ch12_calc_map_diff_scaleT_mmm_stipp.ncl:
 
    *Required settings (script)*
 
@@ -296,10 +297,9 @@ User settings
 
    * project: CMIP5 (or CMIP6)
    * mip: variable mip, generally Amon or Omon
-   * field: T2Ms
    * preprocessor: which preprocessor to use, preprocessor only needs to regrid
 
-#. Script ch12_snw_area_change_fig12-32.ncl:
+#. Script ipcc_ar5/ch12_snw_area_change_fig12-32.ncl:
 
    *Required settings (script)*
 
@@ -330,33 +330,69 @@ User settings
 
    * project: CMIP5 (or CMIP6)
    * mip: variable mip, LImon
-   * field: T2Ms
    * fx_files: [sftlf, sftgif]
+
+#. Script seaice/seaice_ecs.ncl
+
+   *Required settings (scripts)*
+
+   * hist_exp: name of historical experiment (string)
+   * month: selected month (1, 2, ..., 12) or annual mean ("A")
+   * rcp_exp: name of RCP experiment (string)
+   * region: region to be analyzed ( "Arctic" or "Antarctic")
+
+   *Optional settings (scripts)*
+
+   * fill_pole_hole: fill observational hole at North pole (default: False)
+   * styleset: color style (e.g. "CMIP5")
+
+   *Optional settings (variables)*
+
+   * reference_dataset: reference dataset
+
+#. Script seaice/seaice_yod.ncl
+
+   *Required settings (scripts)*
+
+   * month: selected month (1, 2, ..., 12) or annual mean ("A")
+   * region: region to be analyzed ( "Arctic" or "Antarctic")
+
+   *Optional settings (scripts)*
+
+   * fill_pole_hole: fill observational hole at North pole, Default: False
+   * wgt_file: netCDF containing pre-determined model weights
+
+   *Optional settings (variables)*
+
+   * ref_model: array of references plotted as vertical lines
+
 
 Variables
 ---------
 
 *Note: These are the variables tested and used in IPCC AR5. However, the code is flexible and in theory other variables of the same kind can be used.*
 
-* tas (atmos, monthly mean, longitude latitude time)
-* pr (atmos, monthly mean, longitude latitude time)
-* rlut, rsut, rtmt (atmos, monthly mean, longitude latitude time)
-* hurs (atmos, monthly mean, longitude latitude time)
+* areacello (fx, longitude latitude)
 * clt (atmos, monthly mean, longitude latitude time)
-* psl (atmos, monthly mean, longitude latitude time)
 * evspsbl (atmos, monthly mean, longitude latitude time)
-* mrsos (land, monthly mean, longitude latitude time)
+* hurs (atmos, monthly mean, longitude latitude time)
 * mrro (land, monthly mean, longitude latitude time)
+* mrsos (land, monthly mean, longitude latitude time)
+* pr (atmos, monthly mean, longitude latitude time)
+* psl (atmos, monthly mean, longitude latitude time)
+* rlut, rsut, rtmt (atmos, monthly mean, longitude latitude time)
+* sic (ocean-ice, monthly mean, longitude latitude time)
+* snw (land, monthly mean, longitude latitude time)
 * sos (ocean, monthly mean, longitude latitude time)
 * ta (atmos, monthly mean, longitude latitude lev time)
-* ua (atmos, monthly mean, longitude latitude lev time)
+* tas (atmos, monthly mean, longitude latitude time)
 * thetao (ocean, monthly mean, longitude latitude lev time)
-* snw (land, monthly mean, longitude latitude time)
+* ua (atmos, monthly mean, longitude latitude lev time)
 
 Observations and reformat scripts
 ---------------------------------
 
-*Note: No observations are used since the comparison is between historical and scenario runs.*
+* HadISST (sic - esmvaltool/utils/cmorizers/obs/cmorize_obs_HadISST.ncl)
 
 Reference
 ---------
@@ -409,3 +445,18 @@ Example plots
 
    Temperature change patterns scaled to 1°C of global mean surface
    temperature change.
+
+.. figure::  /recipes/figures/seaice/SSIE-MEAN_vs_YOD_sic_extend_Arctic_September_1960-2100.png
+   :align:   center
+   :width:   9cm
+
+   Scatter plot of mean historical September Arctic sea ice extent vs 1st year of disappearance
+   (RCP8.5) (similar to IPCC AR5 Chapter 12, Fig. 12.31a).
+
+.. figure::  /recipes/figures/seaice/timeseries_rcp85.png
+   :align:   center
+   :width:   12cm
+
+   Time series of September Arctic sea ice extent for individual CMIP5 models,
+   multi-model mean and multi-model standard deviation, year of disappearance
+   (similar to IPCC AR5 Chapter 12, Fig. 12.31e).

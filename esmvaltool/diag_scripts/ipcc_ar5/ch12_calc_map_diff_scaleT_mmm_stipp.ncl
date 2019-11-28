@@ -37,8 +37,8 @@
 ;    Only handles one variable at a time
 ;
 ; Modification history
-;    20180618-A_lore_ru: refactored for v2, fixed calculation of stippling
-;    20161027-A_lore_ru: written for ESMValTool
+;    20180618-A_lorenz_ruth: refactored for v2, fixed calculation of stippling
+;    20161027-A_lorenz_ruth: written for ESMValTool
 ;
 ; #############################################################################
 ; A temporary file written by the invoking Python script
@@ -58,8 +58,7 @@ begin
   ; ##############################################################
   enter_msg(DIAG_SCRIPT, "")
 
-  ; 'datasets', 'variables' and 'field_types' are fetched from the
-  ; above 'interface.ncl' file
+  ; 'datasets', 'variables' are fetched from the above 'interface.ncl' file
   var0 = variable_info[0]@short_name
   info_items = select_metadata_by_name(input_file_info, var0)
   dim_MOD = ListCount(info_items)
@@ -164,14 +163,13 @@ begin
     else
       data1(imod, :, :, :) = tmp_seas(diag_script_info@seasons, :, :)
     end if
-  else if ((diag_script_info@time_avg .eq. "seasonalclim") .and. \
-           (dim_seas .eq. 4)) then
+  elseif ((diag_script_info@time_avg .eq. "seasonalclim") .and. \
+          (dim_seas .eq. 4)) then
     data1(imod, :, :, :) = time_operations(A0, -1, -1, "average", \
                                            diag_script_info@time_avg, True)
   else
     data1(imod, 0, :, :) = time_operations(A0, -1, -1, "average", \
                                            diag_script_info@time_avg, True)
-  end if
   end if
   rad = (4.0 * atan(1.0) / 180.0)
   do imod = 0, dim_MOD - 1
@@ -195,14 +193,13 @@ begin
           data1(imod, :, :, :) = tmp_seas(diag_script_info@seasons, :, :)
         end if
         delete(tmp_seas)
-      else if ((diag_script_info@time_avg .eq. "seasonalclim") .and. \
-               (dim_seas .eq. 4)) then
+      elseif ((diag_script_info@time_avg .eq. "seasonalclim") .and. \
+              (dim_seas .eq. 4)) then
         data1(imod, :, :, :) = time_operations(A0, -1, -1, "average", \
                                                diag_script_info@time_avg, True)
       else
         data1(imod, 0, :, :) = time_operations(A0, -1, -1, "average", \
                                                diag_script_info@time_avg, True)
-      end if
       end if
     end if
     delete(A0_temp)

@@ -8,18 +8,23 @@ documentation:
     future and present (no observations included), timeseries,
     changes scaled by mean global temperature change.
     Only a subset of models are included for most examples!
+    Diagnostic IAV_calc_thetao (zonal ocean temperature, variable thetao) needs
+    a lot of memory, make sure you have enough memory available to read
+    piControl runs or exclude! 
 
   authors:
-    - lore_ru
+    - lorenz_ruth
+    - senftleben_daniel
 
   maintainer:
-    - lore_ru
+    - lorenz_ruth
 
   references:
     - collins13ipcc
 
   projects:
     - crescendo
+    - esmval
 
 preprocessors:
   preproc_map:
@@ -93,7 +98,6 @@ diagnostics:
     variables:
       tas:
         mip: Amon
-        field: T2Ms
         project: CMIP5
         ensemble: r1i1p1
         exp: historical
@@ -157,7 +161,6 @@ diagnostics:
         project: CMIP5
         ensemble: r1i1p1
         mip: Amon
-        field: T2Ms
         exp: historical
     additional_datasets:
       - {dataset: bcc-csm1-1-m,     start_year: 1850, end_year: 2005}
@@ -405,7 +408,6 @@ diagnostics:
         project: CMIP5
         ensemble: r1i1p1
         mip: Amon
-        field: T2Ms
         exp: historical
     additional_datasets:
       - {dataset: CanESM2,       start_year: 1850, end_year: 2005}
@@ -419,6 +421,7 @@ diagnostics:
       - {dataset: CanESM2,       exp: rcp26, start_year: 2006, end_year: 2100}
       - {dataset: CCSM4,         exp: rcp26, start_year: 2006, end_year: 2100}
       - {dataset: CSIRO-Mk3-6-0, exp: rcp26, start_year: 2006, end_year: 2100}
+      - {dataset: IPSL-CM5A-LR,  exp: rcp26, start_year: 2006, end_year: 2100}
       - {dataset: MPI-ESM-LR,    exp: rcp26, start_year: 2006, end_year: 2100}
 
       - {dataset: CanESM2,       exp: rcp45, start_year: 2006, end_year: 2100}
@@ -501,7 +504,6 @@ diagnostics:
     variables:
       rlut:
         mip: Amon
-        field: T2Ms
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
@@ -598,7 +600,6 @@ diagnostics:
     variables:
       rtmt:
         mip: Amon
-        field: T2Ms
         project: CMIP5
         exp: historical
         ensemble: r1i1p1
@@ -699,7 +700,6 @@ diagnostics:
         preprocessor: preproc_map
         project: CMIP5
         mip: Amon
-        field: T2Ms
         exp: piControl
         ensemble: r1i1p1
     additional_datasets:
@@ -745,7 +745,6 @@ diagnostics:
         project: CMIP5
         ensemble : r1i1p1
         mip: Amon
-        field: T2Ms
     additional_datasets:
       - {dataset: GFDL-ESM2G, exp: historical, start_year: 1986, end_year: 2005}
       - {dataset: MPI-ESM-LR, exp: historical, start_year: 1986, end_year: 2005}
@@ -831,7 +830,6 @@ diagnostics:
         preprocessor: preproc_map
         project: CMIP5
         mip: Amon
-        field: T2Ms
         exp: piControl
         ensemble: r1i1p1
     additional_datasets:
@@ -872,7 +870,6 @@ diagnostics:
         project: CMIP5
         ensemble: r1i1p1
         mip: Amon
-        field: T2Ms
         exp: historical
     additional_datasets:
       - {dataset: CSIRO-Mk3-6-0, start_year: 1986, end_year: 2005}
@@ -964,7 +961,6 @@ diagnostics:
         preprocessor: preproc_map
         project: CMIP5
         mip: Amon
-        field: T2Ms
         exp: piControl
         ensemble: r1i1p1
     additional_datasets:
@@ -1017,7 +1013,6 @@ diagnostics:
         project: CMIP5
         ensemble: r1i1p1
         mip: Amon
-        field: T2Ms
         exp: historical
     additional_datasets:
 
@@ -1103,7 +1098,6 @@ diagnostics:
         preprocessor: preproc_map
         project: CMIP5
         mip: Amon
-        field: T2Ms
         exp: piControl
         ensemble: r1i1p1
     additional_datasets:
@@ -1156,7 +1150,6 @@ diagnostics:
         project: CMIP5
         ensemble: r1i1p1
         mip: Amon
-        field: T2Ms
         exp: historical
     additional_datasets:
 
@@ -1244,7 +1237,6 @@ diagnostics:
         preprocessor: preproc_map
         project: CMIP5
         mip: Amon
-        field: T2Ms
         exp: piControl
         ensemble: r1i1p1
     additional_datasets:
@@ -1297,7 +1289,6 @@ diagnostics:
         project: CMIP5
         ensemble: r1i1p1
         mip: Amon
-        field: T2Ms
         exp: historical
     additional_datasets:
 
@@ -1385,7 +1376,6 @@ diagnostics:
         preprocessor: preproc_map
         project: CMIP5
         mip: Amon
-        field: T2Ms
         exp: piControl
         ensemble: r1i1p1
     additional_datasets:
@@ -1429,7 +1419,6 @@ diagnostics:
         project: CMIP5
         ensemble : r1i1p1
         mip: Amon
-        field: T2Ms
     additional_datasets:
       - {dataset: GFDL-ESM2G, exp: historical, start_year: 1986, end_year: 2005}
       - {dataset: MPI-ESM-LR, exp: historical, start_year: 1986, end_year: 2005}
@@ -1515,7 +1504,6 @@ diagnostics:
         preprocessor: preproc_map
         project: CMIP5
         mip: Amon
-        field: T2Ms
         exp: piControl
         ensemble: r1i1p1
     additional_datasets:
@@ -1559,7 +1547,6 @@ diagnostics:
         project: CMIP5
         ensemble : r1i1p1
         mip: Amon
-        field: T2Ms
     additional_datasets:
       - {dataset: GFDL-ESM2G, exp: historical, start_year: 1986, end_year: 2005}
       - {dataset: MPI-ESM-LR, exp: historical, start_year: 1986, end_year: 2005}
@@ -1649,7 +1636,6 @@ diagnostics:
         preprocessor: preproc_map
         project: CMIP5
         mip: Amon
-        field: T2Ms
         exp: piControl
         ensemble: r1i1p1
     additional_datasets:
@@ -1701,7 +1687,6 @@ diagnostics:
         project: CMIP5
         ensemble: r1i1p1
         mip: Amon
-        field: T2Ms
     additional_datasets:
       - {dataset: CESM1-CAM5, exp: historical, start_year: 1986, end_year: 2005}
       - {dataset: GFDL-ESM2G, exp: historical, start_year: 1986, end_year: 2005}
@@ -1786,7 +1771,6 @@ diagnostics:
         preprocessor: preproc_map
         project: CMIP5
         mip: Omon
-        field: T2Ms
         exp: piControl
         ensemble: r1i1p1
     additional_datasets:
@@ -1828,7 +1812,6 @@ diagnostics:
         project: CMIP5
         ensemble: r1i1p1
         mip: Omon
-        field: T2Ms
         exp: historical
     additional_datasets:
       - {dataset: CSIRO-Mk3-6-0,  start_year: 1986, end_year: 2005}
@@ -1940,7 +1923,6 @@ diagnostics:
         reference_dataset: CanESM2
         project: CMIP5
         mip: Amon
-        field: T3Ms
         ensemble: r1i1p1
         exp: piControl
     additional_datasets:
@@ -1978,7 +1960,6 @@ diagnostics:
         reference_dataset: CanESM2
         project: CMIP5
         mip: Amon
-        field: T3Ms
         ensemble: r1i1p1
     additional_datasets:
       - {dataset: CanESM2,    exp: historical, start_year: 1986, end_year: 2005}
@@ -2059,7 +2040,6 @@ diagnostics:
         reference_dataset: CanESM2
         project: CMIP5
         mip: Amon
-        field: T3Ms
         exp: piControl
         ensemble: r1i1p1
     additional_datasets:
@@ -2097,7 +2077,6 @@ diagnostics:
         reference_dataset: CanESM2
         project: CMIP5
         mip: Amon
-        field: T3Ms
         ensemble: r1i1p1
     additional_datasets:
       - {dataset: CanESM2,    exp: historical, start_year: 1986, end_year: 2005}
@@ -2185,11 +2164,10 @@ diagnostics:
         preprocessor: preproc_ocean
         project: CMIP5
         mip: Omon
-        field: T3Ms
         exp: piControl
         ensemble: r1i1p1
     additional_datasets:
-      - {dataset: CanESM2,       start_year: 2015, end_year: 3010}
+      - {dataset: CanESM2,       start_year: 2015, end_year: 2515}
       - {dataset: CSIRO-Mk3-6-0, start_year:    1, end_year:  500}
       - {dataset: HadGEM2-CC,    start_year: 1860, end_year: 2099}
 
@@ -2208,8 +2186,6 @@ diagnostics:
         # (default total time period)
         periodlength: 20.
 
-
-  ###  Mean air temperature change in one RCP for multi model mean ############
   thetao_change_mmm:
     description: Air temperature change for RCPs, periods,
                  significance as zonal plots.
@@ -2223,7 +2199,6 @@ diagnostics:
         reference_dataset: CanESM2
         project: CMIP5
         mip: Omon
-        field: T3Ms
         ensemble: r1i1p1
         exp: historical
     additional_datasets:
@@ -2296,7 +2271,6 @@ diagnostics:
         preprocessor: preproc_map_land
         project: CMIP5
         mip: Lmon
-        field: T2Ms
         exp: piControl
         ensemble: r1i1p1
     additional_datasets:
@@ -2334,7 +2308,6 @@ diagnostics:
         preprocessor: preproc_map_land
         project: CMIP5
         mip: Lmon
-        field: T2Ms
         ensemble: r1i1p1
         exp: historical
     additional_datasets:
@@ -2442,18 +2415,17 @@ diagnostics:
         preprocessor: preproc_map_land
         project: CMIP5
         mip: Lmon
-        field: T2Ms
         exp: piControl
         ensemble: r1i1p1
     additional_datasets:
       - {dataset: bcc-csm1-1,     start_year:    1, end_year:  500}
       - {dataset: bcc-csm1-1-m,   start_year:    1, end_year:  400}
-      - {dataset: BNU-ESM,        start_year: 1450, end_year: 2008}
+#      - {dataset: BNU-ESM,        start_year: 1450, end_year: 2008}
       - {dataset: CanESM2,        start_year: 2015, end_year: 3010}
       - {dataset: CESM1-CAM5,     start_year:    1, end_year:  319}
       - {dataset: CNRM-CM5,       start_year: 1850, end_year: 2699}
       - {dataset: CSIRO-Mk3-6-0,  start_year:    1, end_year:  500}
-      - {dataset: inmcm4,         start_year: 1850, end_year: 2349}
+#      - {dataset: inmcm4,         start_year: 1850, end_year: 2349}
       - {dataset: IPSL-CM5A-LR,   start_year: 1800, end_year: 2799}
       - {dataset: IPSL-CM5A-MR,   start_year: 1800, end_year: 2099}
       - {dataset: IPSL-CM5B-LR,   start_year: 1830, end_year: 2129}
@@ -2495,7 +2467,6 @@ diagnostics:
         project: CMIP5
         ensemble: r1i1p1
         mip: Lmon
-        field: T2Ms
         exp: historical
     additional_datasets:
       - {dataset: CanESM2,       start_year: 1986, end_year: 2005}
@@ -2602,7 +2573,6 @@ diagnostics:
         preprocessor: preproc_map
         project: CMIP5
         mip: Amon
-        field: T2Ms
         exp: piControl
         ensemble: r1i1p1
     additional_datasets:
@@ -2655,7 +2625,6 @@ diagnostics:
         project: CMIP5
         ensemble: r1i1p1
         mip: Amon
-        field: T2Ms
         exp: historical
     additional_datasets:
       - {dataset: CanESM2,       start_year: 1986, end_year: 2005}
@@ -2767,7 +2736,6 @@ diagnostics:
         project: CMIP5
         ensemble: r1i1p1
         mip: Amon
-        field: T2Ms
         exp: historical
     additional_datasets:
       - {dataset: CCSM4,        start_year: 1986, end_year: 2005}
@@ -2867,14 +2835,12 @@ diagnostics:
         preprocessor: preproc_map
         project: CMIP5
         mip: Amon
-        field: T2Ms
         ensemble: r1i1p1
         exp: historical
       pr:
         preprocessor: preproc_map
         project: CMIP5
         mip: Amon
-        field: T2Ms
         ensemble: r1i1p1
         exp: historical
     additional_datasets:
@@ -2972,10 +2938,18 @@ diagnostics:
       snw:
         project: CMIP5
         mip: LImon
-        field: T2Ms
         ensemble: r1i1p1
         exp: historical
-        fx_files: [sftlf, sftgif]
+      sftlf:
+        project: CMIP5
+        mip: fx
+        exp: historical
+        ensemble: r0i0p0
+      sftgif:
+        project: CMIP5
+        mip: fx
+        exp: historical
+        ensemble: r0i0p0
 
     additional_datasets:
       - {dataset: CanESM2,       start_year: 1980, end_year: 2005}
@@ -3064,3 +3038,160 @@ diagnostics:
 
         ### Required attributes
         ancestors: ['snw', 'ch12_calc_ts_snw_area_change']
+
+  # **********************************************************************
+  # Collins et al. (2013) - IPCC AR5, chap. 12
+  # similar to fig. 12.31a/d
+  # **********************************************************************
+  # Emergent constraints for September Arctic sea ice extent
+  # **********************************************************************
+
+  fig12-31ad:
+    description: Emergent constraints for September Arctic sea ice extent
+    themes:
+      - seaIce
+    realms:
+      - seaIce
+    variables:
+      sic:
+        mip: OImon
+        project: CMIP5
+        ensemble: r1i1p1
+        reference_dataset: HadISST
+        additional_datasets:
+          - {dataset: HadISST, project: OBS, type: reanaly, version: 1, tier: 2, start_year: 1960, end_year: 2005}
+      areacello:
+        mip: fx
+        project: CMIP5
+        ensemble: r0i0p0
+    additional_datasets:
+      - {dataset: ACCESS1-0, exp: historical, start_year: 1960, end_year: 2005}
+      - {dataset: ACCESS1-0, exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: ACCESS1-3, exp: historical, start_year: 1960, end_year: 2005}
+      - {dataset: ACCESS1-3, exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: bcc-csm1-1, exp: historical, start_year: 1960, end_year: 2005}
+      - {dataset: bcc-csm1-1, exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: bcc-csm1-1-m, exp: historical, start_year: 1960, end_year: 2005}
+      - {dataset: bcc-csm1-1-m, exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: CanESM2, exp: historical, start_year: 1960, end_year: 2005}
+      - {dataset: CanESM2, exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: CCSM4, exp: historical, start_year: 1960, end_year: 2005}
+      - {dataset: CCSM4, exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: CESM1-CAM5, exp: historical, start_year: 1960, end_year: 2005}
+      - {dataset: CESM1-CAM5, exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: CNRM-CM5, exp: historical, start_year: 1960, end_year: 2005}
+      - {dataset: CNRM-CM5, exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: CSIRO-Mk3-6-0, exp: historical, start_year: 1960, end_year: 2005}
+      - {dataset: CSIRO-Mk3-6-0, exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: FGOALS-g2, exp: historical, start_year: 1960, end_year: 2005}
+      - {dataset: FGOALS-g2, exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: GFDL-CM3, exp: historical, start_year: 1960, end_year: 2005}
+      - {dataset: GFDL-CM3, exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: GFDL-ESM2G, exp: historical, start_year: 1960, end_year: 2005}
+      - {dataset: GFDL-ESM2G, exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: GFDL-ESM2M, exp: historical, start_year: 1960, end_year: 2005}
+      - {dataset: GFDL-ESM2M, exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: inmcm4, exp: historical, start_year: 1960, end_year: 2005}
+      - {dataset: inmcm4, exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: IPSL-CM5A-LR, exp: historical, start_year: 1960, end_year: 2005}
+      - {dataset: IPSL-CM5A-LR, exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: IPSL-CM5A-MR, exp: historical, start_year: 1960, end_year: 2005}
+      - {dataset: IPSL-CM5A-MR, exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: IPSL-CM5B-LR, exp: historical, start_year: 1960, end_year: 2005}
+      - {dataset: IPSL-CM5B-LR, exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: MIROC5, exp: historical, start_year: 1960, end_year: 2005}
+      - {dataset: MIROC5, exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: MIROC-ESM, exp: historical, start_year: 1960, end_year: 2005}
+      - {dataset: MIROC-ESM, exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: MIROC-ESM-CHEM, exp: historical, start_year: 1960, end_year: 2005}
+      - {dataset: MIROC-ESM-CHEM, exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: MPI-ESM-LR, exp: historical, start_year: 1960, end_year: 2005}
+      - {dataset: MPI-ESM-LR, exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: MPI-ESM-MR, exp: historical, start_year: 1960, end_year: 2005}
+      - {dataset: MPI-ESM-MR, exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: MRI-CGCM3, exp: historical, start_year: 1960, end_year: 2005}
+      - {dataset: MRI-CGCM3, exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: MRI-ESM1, exp: historical, start_year: 1960, end_year: 2005}
+      - {dataset: MRI-ESM1, exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: NorESM1-M, exp: historical, start_year: 1960, end_year: 2005}
+      - {dataset: NorESM1-M, exp: rcp85, start_year: 2006, end_year: 2100}
+      - {dataset: NorESM1-ME, exp: historical, start_year: 1960, end_year: 2005}
+      - {dataset: NorESM1-ME, exp: rcp85, start_year: 2006, end_year: 2100}
+    scripts:
+      fig12-31ad:
+        script: seaice/seaice_ecs.ncl
+        # "Arctic" or "Antarctic"; entire hemisphere will be evaluated
+        region: "Arctic"
+        # A = annual mean, 3 = March, 9 = September
+        month: "9"
+        # Fill polar hole in data with sic = 1.
+        fill_pole_hole: true
+        hist_exp: "historical"
+        rcp_exp: "rcp85"
+        styleset: "CMIP5"
+
+  # **********************************************************************
+  # Collins et al. (2013) - IPCC AR5, chap. 12
+  # similar to fig. 12.31e
+  # **********************************************************************
+  # year of near disappearance of September Arctic sea ice
+  # **********************************************************************
+
+  fig12-31e:
+    description: year of near disappearance of September Arctic sea ice
+    themes:
+      - seaIce
+    realms:
+      - seaIce
+    variables:
+      sic:
+        mip: OImon
+        project: CMIP5
+        exp: rcp85
+        ensemble: r1i1p1
+        start_year: 2006
+        end_year: 2100
+      areacello:
+        mip: fx
+        project: CMIP5
+        exp: historical
+        ensemble: r0i0p0
+        start_year: 2006
+        end_year: 2100
+    additional_datasets:
+      - {dataset: ACCESS1-0}
+      - {dataset: ACCESS1-3}
+      - {dataset: bcc-csm1-1}
+      - {dataset: bcc-csm1-1-m}
+      - {dataset: CanESM2}
+      - {dataset: CCSM4}
+      - {dataset: CESM1-CAM5}
+      - {dataset: CNRM-CM5}
+      - {dataset: CSIRO-Mk3-6-0}
+      - {dataset: FGOALS-g2}
+      - {dataset: GFDL-CM3}
+      - {dataset: GFDL-ESM2G}
+      - {dataset: GFDL-ESM2M}
+      - {dataset: inmcm4}
+      - {dataset: IPSL-CM5A-LR}
+      - {dataset: IPSL-CM5A-MR}
+      - {dataset: IPSL-CM5B-LR}
+      - {dataset: MIROC5}
+      - {dataset: MIROC-ESM}
+      - {dataset: MIROC-ESM-CHEM}
+      - {dataset: MPI-ESM-LR}
+      - {dataset: MPI-ESM-MR}
+      - {dataset: MRI-CGCM3}
+      - {dataset: MRI-ESM1}
+      - {dataset: NorESM1-M}
+      - {dataset: NorESM1-ME}
+    scripts:
+      fig12-31e:
+        script: seaice/seaice_yod.ncl
+        # "Arctic" or "Antarctic"; entire hemisphere will be evaluated
+        region: "Arctic"
+        # A = annual mean, 3 = March, 9 = September
+        month: "9"
+        # Fill polar hole in data with sic = 1.
+        fill_pole_hole: true
+
