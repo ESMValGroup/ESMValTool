@@ -35,7 +35,7 @@ akima:
 climdex.pcic:
 climdex.pcic.ncdf:
   origin: github
-  path: pacificclimate/climdex.pcic.ncdf@*release
+  path: ESMValGroup/climdex.pcic.ncdf@*release
 ClimProjDiags:
 dotCall64:
 functional:
