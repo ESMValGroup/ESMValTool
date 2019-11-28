@@ -39,7 +39,6 @@ mapproj:
 maps:
 multiApply:
 ncdf4:
-ncdf4.helpers:
 PCICt:
 plyr:
 RColorBrewer:
@@ -49,4 +48,3 @@ snow:
 SPEI:
 tools:
 udunits2:
-yaml:
