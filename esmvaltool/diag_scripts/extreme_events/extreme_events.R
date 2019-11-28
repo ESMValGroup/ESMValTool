@@ -28,6 +28,7 @@ library(ncdf4)
 library(ncdf4.helpers)
 library(scales)
 library(RColorBrewer) # nolint
+library(climdex.pcic.ncdf)
 
 provenance_record <- function(infile) {
   xprov <- list(
@@ -50,15 +51,6 @@ provenance_record <- function(infile) {
 }
 
 diag_scripts_dir <- Sys.getenv("diag_scripts")
-climdex_src <-
-  paste0(
-    diag_scripts_dir,
-    "/extreme_events/climdex.pcic.ncdf/R/ncdf.R"
-  ) # nolint
-source(paste0(
-  diag_scripts_dir,
-  "/extreme_events/climdex.pcic.ncdf/R/ncdf.R"
-)) # nolint
 source(paste0(diag_scripts_dir, "/shared/external.R")) # nolint
 source(paste0(diag_scripts_dir, "/extreme_events/cfg_climdex.R")) # nolint
 source(paste0(diag_scripts_dir, "/extreme_events/cfg_extreme.R")) # nolint
@@ -308,8 +300,7 @@ for (model_idx in c(1:length(models_name))) { # nolint
       verbose = TRUE,
       climdex.vars.subset = indices,
       climdex.time.resolution = timeres,
-      max.vals.millions = chunk,
-      src = climdex_src
+      max.vals.millions = chunk
     )
 
     # Set provenance for output files
