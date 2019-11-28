@@ -581,7 +581,6 @@ references:
   acknow_project: "Please acknowledge the project(s)."
   alexander: "Alexander L.V., et al., J. Geophys. Res., 111, D05109, doi:10.1029/2005JD006290"
   anav13jclim: "Anav et al., J. Clim., 26, 6801-6843, doi:10.1175/JCLI-D-12-00417.1, 2013."
-  andrews12grl: "Andrews et al., Geophys. Res. Lett., 39, L09712, doi:10.1029/2012GL051607, 2012."
   antonov10usgov: "Antonov, J. I. et al., World Ocean Atlas 2009, Volume 2: Salinity. S. Levitus, Ed. NOAA Atlas NESDIS 69, U.S. Government Printing Office, Washington, D.C., 184 pp., 2010."
   aquila11gmd: "Aquila et al., Geosci. Model Dev. 4, 325-355, doi:10.5194/gmd-4-325-2011, 2011."
   bakker14essd: "Bakker, D. C. E. et al., Earth Syst. Sci. Data, 6, 69-90, doi:10.5194/essd-6-69-2014, 2014."
@@ -611,7 +610,10 @@ references:
   giorgi14jgr: "Giorgi et al., J. Geophys. Res. Atmos., 119, 11695-11708, doi:10.1002/ 2014JD022238, 2014."
   gleckler08jgr: "Gleckler et al., J. Geophys. Res., 113, D06104, doi:10.1029/2007JD008972, 2008."
   goswami99qjrms: "Goswami, B., V. Krishnamurthy, and H. Annamalai, Q. J. R. Meteorol. Soc., 125, 611-633, doi:10.1002/qj.49712555412, 1999."
+  gregory04grl: "Gregory et al., Geophys. Res. Lett., 31, L03205, doi:10.1029/2003GL018747, 2004"
+  gregory08jgr: "Gregory, J. M. and Forster, P. M., J. Geophys. Res., 113, doi:10.1029/2008JD010405, 2008."
   hagemann13james: "Hagemann et al., J. Adv. Model. Earth Syst., 5, doi:10.1029/2012MS000173, 2013."
+  hall06grl: "Hall, A. et al., Geophys. Res. Lett., doi:10.1029/2005GL025127, 2006."
   jones13jgr: "Jones et al., J. Geophys. Res. Atmos., 118, 4001-4024, doi:10.1002/jgrd.50239, 2013."
   jones15james: "Jones et al., J. Adv. Model. Earth Syst., 7, 1554-1575, doi:10.1002/2014MS000416, 2015."
   kerry06jclim: "Kerry H. et al, J. Climate, 19, 3681-3703, doi:10.1175/JCLI3814.1, 2006."
@@ -661,6 +663,7 @@ references:
   weedon14wrr: "Weedon, G. P. et al., Water Resour. Res., 50, 7505-7514, doi:10.1002/2014WR015638, 2014."
   weigel: "Weigel, A P., et al., Q. J. Royal Meteorol. Soc. 134, 630, 241-260. doi:10.1002/qj.210"
   wenzel14jgr: "Wenzel et al., J. Geophys. Res. Biogeosci., 119(5), doi:2013JG002591, 2014."
+  wenzel16jclim: "Wenzel et al., J. Climate, 29, doi:10.1175/JCLI-D-15-0412.1, 2016."
   williams09climdyn: "Williams and Webb, Clim. Dynam., 33, 141-157, doi:10.1007/s00382-008-0443-1, 2009."
   zhang11wcc: "Zhang et al., WIREs Clim. Change, doi:10.1002/wcc.147, 2011."
   # Observations
@@ -670,6 +673,7 @@ references:
   cds-uerra: "http://datastore.copernicus-climate.eu/c3s/published-forms/c3sprod/reanalysis-uerra-europe-single-levels/D322_Lot1.4.1.2_User_guides_v3.1.pdf"
   cds-xch4: "Buchwitz et al., Adv. Astronaut. Sci. Technol., doi:10.1007/s42423-018-0004-6, 2018."
   cds-xco2: "Buchwitz et al., Adv. Astronaut. Sci. Technol., doi:10.1007/s42423-018-0004-6, 2018."
+  ceres-ebaf: "Loeb et al., J. Climate, doi:10.1175/JCLI-D-17-0208.1, 2018."
   ceres-syn1deg: "Wielicki et al., Bull. Amer. Meteor. Soc., doi:10.1175/1520-0477(1996)077<0853:CATERE>2.0.CO;2, 1996."
   cru: "Harris et al., Int. J. Climatol., doi:10.1002/joc.3711, 2014."
   duveiller2018: "Duveiller et al., Sci. Data, doi:10.1038/sdata.2018.14, 2018."
@@ -785,6 +789,7 @@ plot_types:
   times: time series
   zonal: zonal mean
   pro: profile  # (any other kind of line chart)
+  box: boxplot
   other: other plot types
 
 statistics:
@@ -804,4 +809,5 @@ statistics:
   median: median
   detrend: detrend
   smpi: single metric performance index statistics
+  mder: multiple diagnostic ensemble regression
   other: other statistics
