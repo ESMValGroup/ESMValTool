@@ -30,7 +30,9 @@ variables:
         skin_temperature
         snowfall
         surface_net_solar_radiation
+        surface_pressure
         surface_solar_radiation_downwards
+        surface_thermal_radiation_downwards
         temperature_of_snow_layer
         toa_incident_solar_radiation
         total_cloud_cover
@@ -110,10 +112,10 @@ def _fix_units(cube):
         # and add missing 'per hour'
         cube.units = cube.units * 'kg m-3 h-1'
         cube.data = cube.core_data() * 1000.
-    if cube.var_name in {'ssr', 'ssrd', 'tisr'}:
+    if cube.var_name in {'ssr', 'ssrd', 'strd', 'tisr'}:
         # Add missing 'per hour'
         cube.units = cube.units * 'h-1'
-    if cube.var_name in {'msnlwrf', 'ssrd', 'tisr', 'ssr'}:
+    if cube.var_name in {'msnlwrf', 'ssrd', 'strd', 'tisr', 'ssr'}:
         # Radiation fluxes are positive in downward direction
         cube.attributes['positive'] = 'down'
     if cube.var_name == 'ptype':

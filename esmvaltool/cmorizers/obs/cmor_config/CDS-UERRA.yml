@@ -1,0 +1,23 @@
+---
+
+# Common global attributes for Cmorizer output
+attributes:
+  frequency: 6h
+  dataset_id: CDS-UERRA
+  version: 'UERRA-HARMONIE'
+  tier: 3
+  modeling_realm: reanaly
+  project_id: OBS6
+  source: 'https://cds.climate.copernicus.eu/cdsapp#!/dataset/reanalysis-uerra-europe-soil-levels?tab=form'
+  reference: 'cds-uerra'
+  comment: 'This dataset has been regridded for usage in ESMValTool'
+
+custom:
+  regrid: 0.25x0.25
+
+# Variables to cmorize
+variables:
+  sm:
+    mip: E6hr
+    raw: vsw
+    file: cds-uerra_volumetric_soil_moisture_{year}.nc
