@@ -1,25 +1,12 @@
-# Distribution / packaging
-.Python
-build/
+
 c
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-env/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
+*.pyc
 *.orig
 *.tmp
-MANIFEST
+config_private_BM_local.xml
+config_private.xml
+curr_trace_indent.txt
+ncl.interface
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -29,26 +16,24 @@ __pycache__/
 # C extensions
 *.so
 
-# Created by editors
-*~
-\#*
-\.\#*
-*.swp
-
-# Created by PyCharm
-.idea/
-
-# eclipse/pydev
-.project
-.pydevproject
-.settings
-
-#Create by VSCode
-.vscode
-
-#pytest
-.cache
-.pytest_cache
+# Distribution / packaging
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -68,7 +53,7 @@ htmlcov/
 .cache
 nosetests.xml
 coverage.xml
-*.cover
+*,cover
 .hypothesis/
 
 # Jupyter Notebook
@@ -78,27 +63,18 @@ coverage.xml
 *.orig
 /c
 /tests/data/**
-test-reports/
 /test_bash.sh
 /python_test_out.txt
 
+# Editor Backup
+*~
+
+# Temporary folders
+work/*
+interface_data/*
+
 # Build folder
+doc/sphinx/source/diag_scripts/**
+doc/sphinx/source/plot_scripts/**
 doc/sphinx/build
-doc/sphinx/source/_sidebar.rst.inc
-doc/sphinx/source/gallery.rst
 
-# Data files
-*.nc
-*.nc4
-*.grb
-*.grib
-*.RData
-*.Rdata
-*.Rhistory
-*.rdata
-*.pkl
-
-# ESMF log files
-*.ESMF_LogFile
-.Rproj.user
-esmvaltool.Rproj

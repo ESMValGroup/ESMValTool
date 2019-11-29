@@ -1,0 +1,22 @@
+SOURCE: CMIP5 (adapted from od550aer)
+=============
+variable_entry:    od550dust
+!============
+modeling_realm:    aerosol
+!----------------------------------
+! Variable attributes:
+!----------------------------------
+standard_name:     atmosphere_optical_thickness_due_to_dust
+units:             1
+cell_methods:      time: mean
+cell_measures:     area: areacella
+long_name:         Dust Optical Thickness at 550 nm
+comment:           AOD from dust
+!----------------------------------
+! Additional variable information:
+!----------------------------------
+dimensions:        longitude latitude time
+out_name:          od550aer
+type:              real
+!----------------------------------
+!
