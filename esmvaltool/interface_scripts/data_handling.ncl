@@ -60,7 +60,7 @@ begin
 
   ; Check that variable is in the file
   if (.not. isfilevar(fin, info_item@short_name)) then
-    error_msg("f", scriptname, funcname, "variable " + variable + \
+    error_msg("f", scriptname, funcname, "variable " + info_item@short_name + \
               " not found in file " + infile)
   end if
 
