@@ -66,7 +66,7 @@ def save(cubes, dataset, provenance, cfg):
     basename = '_'.join([
         'wflow_local_forcing',
         dataset,
-        cfg['basin_name'],
+        cfg['basin'],
         str(start_year),
         str(end_year),
     ])

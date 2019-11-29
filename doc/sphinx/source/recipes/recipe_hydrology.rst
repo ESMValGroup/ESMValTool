@@ -84,7 +84,7 @@ User settings in recipe
 
    *Required diagnostic script settings:*
 
-	    * basin_name: name of the catchment
+	    * basin: name of the catchment
 	    * dem_file: netcdf file containing a digital elevation model with
 	      elevation in meters and coordinates latitude and longitude.
 

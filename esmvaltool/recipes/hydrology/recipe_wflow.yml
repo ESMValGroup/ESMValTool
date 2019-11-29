@@ -49,7 +49,7 @@ diagnostics:
     scripts:
       script:
         script: hydrology/wflow.py
-        basin_name: Meuse
+        basin: Meuse
         region: *region
         dem_file: 'wflow/wflow_dem_Meuse.nc'
 
@@ -74,6 +74,6 @@ diagnostics:
     scripts:
       script:
         script: hydrology/wflow.py
-        basin_name: Meuse
+        basin: Meuse
         region: *region
         dem_file: 'wflow/wflow_dem_Meuse.nc'
