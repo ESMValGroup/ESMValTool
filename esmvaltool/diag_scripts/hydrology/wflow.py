@@ -67,7 +67,7 @@ def save(cubes, dataset, provenance, cfg):
     start_year = time_coord.cell(0).point.year
     end_year = time_coord.cell(-1).point.year
     basename = '_'.join([
-        'wflow_local_forcing',
+        'wflow',
         dataset,
         cfg['basin'],
         str(start_year),
@@ -163,15 +163,8 @@ def main(cfg):
 
     for dataset, metadata in group_metadata(input_metadata, 'dataset').items():
         all_vars, provenance = get_input_cubes(metadata)
-        # These keys are now available in all_vars:
-        # > tas (air_temperature)
-        # > pr (precipitation_flux)
-        # > psl (air_pressure_at_mean_sea_level)
-        # > rsds (surface_downwelling_shortwave_flux_in_air)
-        # > rsdt (toa_incoming_shortwave_flux)
-        # > orog (surface_altitude)
 
-        # Interpolating precipitation to the target grid
+        # Interpolating variables onto the dem grid
         # Read the target cube, which contains target grid and target elevation
         dem_path = Path(cfg['auxiliary_data_dir']) / cfg['dem_file']
         dem = load_dem(dem_path)
