@@ -262,8 +262,7 @@ undef("scatterplot3D")
 function scatterplot3D(wks_in[1],
                        source,
                        varname[1]:string,
-                       levels[*]:numeric,
-                       inlist:list)
+                       levels[*]:numeric)
 ;
 ; Arguments
 ;    wks_in: workstation ("graphic" object or default will be used).
