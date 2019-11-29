@@ -35,7 +35,7 @@ def create_provenance_record():
 
 
 def tetens_derivative(temp):
-    """ Derivative of Teten's formula for saturated vapor pressure.
+    """Compute the derivative of Teten's formula for saturated vapor pressure.
 
     Tetens formula (https://en.wikipedia.org/wiki/Tetens_equation) :=
     es(T) = e0 * exp(a * T / (T + b))
@@ -66,7 +66,8 @@ def tetens_derivative(temp):
 
 
 def get_constants(psl):
-    """
+    """Define constants to compute De Bruin (2016) reference evaporation.
+
     The Definition of rv and rd constants is provided in
     Wallace and Hobbs (2006), 2.6 equation 3.14.
     The Definition of lambda and cp is provided in Wallace and Hobbs 2006.
@@ -106,7 +107,8 @@ def get_constants(psl):
 
 
 def debruin_pet(var_dict):
-    """ Determine De Bruin (2016) reference evaporation
+    """Compute De Bruin (2016) reference evaporation.
+
     Implement equation 6 from De Bruin (10.1175/JHM-D-15-0006.1)
     """
     # Unit checks:
@@ -121,19 +123,18 @@ def debruin_pet(var_dict):
     kdown = var_dict['rsds']
     kdown_ext = var_dict['rsdt']
     # Equation 6
-    rad_term = (1-0.23)*kdown - cs_const*kdown/kdown_ext
+    rad_term = (1 - 0.23) * kdown - cs_const * kdown / kdown_ext
     # the unit is W m-2
     ref_evap = delta_svp / (delta_svp + gamma) * rad_term + beta
 
-    # 1 W m-2 = 86400 J m-2 day-1
-    pet = ref_evap * 86400 / lambda_
+    pet = ref_evap / lambda_
     pet.var_name = 'potential_evapotranspiration'
-    pet.units = 'kg m-2 day-1'  # equivalent to mm/day
+    pet.convert_units('kg m-2 day-1')  # equivalent to mm/day
     return pet
 
 
 def get_input_cubes(metadata):
-    """ Return a dict with all (preprocessed) input files """
+    """Return a dict with all (preprocessed) input files."""
     provenance = create_provenance_record()
     all_vars = {}
     for attributes in metadata:
@@ -149,26 +150,36 @@ def get_input_cubes(metadata):
 
 
 def _get_extra_info(cube):
-    """ Get the start and end times as an array with length 6
+    """Get start/end time and origin of cube.
+
+    Get the start and end times as an array with length 6
     and get latitude and longitude as an array with length 2
     """
     coord = cube.coord('time')
     time_start_end = []
     for index in 0, -1:
         time_val = coord.cell(index).point
-        time_val = [time_val.year, time_val.month, time_val.day,
-                    time_val.minute, time_val.second]
+        time_val = [
+            time_val.year,
+            time_val.month,
+            time_val.day,
+            time_val.hour,
+            time_val.minute,
+            time_val.second,
+        ]
         time_val = [float(time) for time in time_val]
         time_start_end.append(time_val)
 
     # Add data_origin
-    lat_lon = [cube.coord(name).points[0]
-               for name in ('latitude', 'longitude')]
+    lat_lon = [
+        cube.coord(name).points[0] for name in ('latitude', 'longitude')
+    ]
     return time_start_end, lat_lon
 
 
 def main(cfg):
-    """Process data for use as input to the marrmot hydrological model
+    """Process data for use as input to the marrmot hydrological model.
+
     These variables are needed in all_vars:
     tas (air_temperature)
     pr (precipitation_flux)
@@ -199,23 +210,28 @@ def main(cfg):
 
         # make data structure
         # delta_t_days could also be extracted from the cube
-        forcing_dict = {
-            'precip': precip.data,
-            'temp': temp.data,
-            'pet': pet.data,
-            'delta_t_days': float(1),
-            'time_unit': 'day'
-            }
         output_data = {
-            'forcing': forcing_dict,
+            'forcing': {
+                'precip': precip.data,
+                'temp': temp.data,
+                'pet': pet.data,
+                'delta_t_days': float(1),
+                'time_unit': 'day',
+            },
             'time_start': time_start_end[0],
             'time_end': time_start_end[1],
-            'data_origin': lat_lon
-            }
+            'data_origin': lat_lon,
+        }
 
         # Save to matlab structure
-        output_name = get_diagnostic_filename(dataset + '_marrmot',
-                                              cfg, extension='mat')
+        basename = '_'.join([
+            'marrmot',
+            dataset,
+            cfg['basin'],
+            str(int(output_data['time_start'][0])),
+            str(int(output_data['time_end'][0])),
+        ])
+        output_name = get_diagnostic_filename(basename, cfg, extension='mat')
         sio.savemat(output_name, output_data)
 
         # Store provenance

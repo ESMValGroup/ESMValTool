@@ -44,29 +44,25 @@ User settings in recipe
 
 #. recipe_marrmot.yml
 
+   There are two diagnostics, one for daily and one for hourly data.
+
    *Required preprocessor settings:*
 
-   The settings below should not be changed.
+      The settings below should not be changed.
 
-        *extract_shape:*
+      *extract_shape:*
 
-            * shapefile: meuse_hydrosheds.shp (MARRMoT is a hydrological Lumped model that needs catchment-aggregated forcing data. The catchment is provided as a shapefile, the path can be relative to ``auxiliary_data_dir`` as defined in config-user.yml.).
-            * method: contains
-            * crop: true
+         * shapefile: meuse_hydrosheds.shp (MARRMoT is a hydrological Lumped model that needs catchment-aggregated forcing data. The catchment is provided as a shapefile, the path can be relative to ``auxiliary_data_dir`` as defined in config-user.yml.).
+         * method: contains
+         * crop: true
 
-        *daily_statistics:*
+      *daily_statistics:*
 
-            * operator: mean (MARRMoT needs daily forcing data. Hourly forcing data are converted to daily values by mean operator).
+         * operator: mean (MARRMoT needs daily forcing data. Hourly forcing data are converted to daily values by mean operator).
 
+   *Required diagnostic script settings:*
 
-    There are two diagnostics for daily and hourly data. Currently, the recipe only supports ERA-Interim as daily data and ERA5 as hourly data. The settings are as:
-
-        * additional_datasets: {dataset: ERA-Interim or ERA5, project: OBS6, tier: 3, type: reanaly, version: 1}
-        * variables: (the cmor name of the required variables by MARRMoT).
-        * mip: (the cmor table name related to the required variable).
-        * preprocessor: (the supported preprocessor is hourly or daily).
-        * start_year: 1979 (the start year of the forcing data).
-        * end_year: 1979 (the end year of the forcing data).
+      * basin: Name of the catchment
 
 
 Variables
@@ -83,7 +79,7 @@ Variables
    * tas ( longitude, latitude, time)
    * pr (longitude, latitude, time)
 
-  MARRMoT requires potential evapotranspiration (PET). Currently, the recipe only supports ERA-Interim as daily data and ERA5 as hourly data. The variable PET is not available in ERA-Interim archive. Thus, we use debruin function (De Bruin et al. 2016) to obtain PET using both ERA-Interim and ERA5. This function needs psl, rsds, and rsdt variables.
+  MARRMoT requires potential evapotranspiration (PET). The variable PET is not available in ERA-Interim archive. Thus, we use the debruin function (De Bruin et al. 2016) to obtain PET using both ERA-Interim and ERA5. This function needs the psl, rsds, and rsdt variables.
 
    * psl (longitude, latitude, time)
    * rsds (longitude, latitude, time)

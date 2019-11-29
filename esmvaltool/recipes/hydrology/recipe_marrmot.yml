@@ -45,6 +45,7 @@ diagnostics:
     scripts:
       script:
         script: hydrology/marrmot.py
+        basin: Meuse
 
   diagnostic_hourly:
     description: marrmot input preprocessor for hourly data
@@ -64,3 +65,4 @@ diagnostics:
     scripts:
       script:
         script: hydrology/marrmot.py
+        basin: Meuse
