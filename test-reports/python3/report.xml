@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?><testsuite errors="15" failures="0" name="pytest" skipped="0" tests="15" time="16.151"><testcase classname="" file="esmvaltool/diag_scripts/qualassess/DUMMY_C3S_511_MPQB.py" name="esmvaltool.diag_scripts.qualassess.DUMMY_C3S_511_MPQB" time="0.000"><error message="collection failure">esmvaltool/diag_scripts/qualassess/DUMMY_C3S_511_MPQB.py:39: in &lt;module&gt;
+    from auxiliary.c3s_511_basic import Basic_Diagnostic_MP
+E   ModuleNotFoundError: No module named &apos;auxiliary&apos;</error></testcase><testcase classname="" file="esmvaltool/diag_scripts/qualassess/DUMMY_C3S_511_SPQB.py" name="esmvaltool.diag_scripts.qualassess.DUMMY_C3S_511_SPQB" time="0.000"><error message="collection failure">esmvaltool/diag_scripts/qualassess/DUMMY_C3S_511_SPQB.py:39: in &lt;module&gt;
+    from auxiliary.c3s_511_basic import Basic_Diagnostic_SP
+E   ModuleNotFoundError: No module named &apos;auxiliary&apos;</error></testcase><testcase classname="" file="esmvaltool/diag_scripts/qualassess/ex_C3S_511_SPQB.py" name="esmvaltool.diag_scripts.qualassess.ex_C3S_511_SPQB" time="0.000"><error message="collection failure">esmvaltool/diag_scripts/qualassess/ex_C3S_511_SPQB.py:39: in &lt;module&gt;
+    from auxiliary.c3s_511_ex import ex_Diagnostic_SP
+E   ModuleNotFoundError: No module named &apos;auxiliary&apos;</error></testcase><testcase classname="" file="esmvaltool/diag_scripts/qualassess/ta_C3S_511_SPQB.py" name="esmvaltool.diag_scripts.qualassess.ta_C3S_511_SPQB" time="0.000"><error message="collection failure">esmvaltool/diag_scripts/qualassess/ta_C3S_511_SPQB.py:39: in &lt;module&gt;
+    from auxiliary.c3s_511_ta import ta_Diagnostic_SP
+E   ModuleNotFoundError: No module named &apos;auxiliary&apos;</error></testcase><testcase classname="" file="esmvaltool/diag_scripts/qualassess/auxiliary/c3s_511_DUMMY.py" name="esmvaltool.diag_scripts.qualassess.auxiliary.c3s_511_DUMMY" time="0.000"><error message="collection failure">esmvaltool/diag_scripts/qualassess/auxiliary/c3s_511_DUMMY.py:6: in &lt;module&gt;
+    from c3s_511_basic import Basic_Diagnostic
+E   ModuleNotFoundError: No module named &apos;c3s_511_basic&apos;</error></testcase><testcase classname="" file="esmvaltool/diag_scripts/qualassess/auxiliary/libs/MD_old/ESMValMD.py" name="esmvaltool.diag_scripts.qualassess.auxiliary.libs.MD_old.ESMValMD" time="0.000"><error message="collection failure">esmvaltool/diag_scripts/qualassess/auxiliary/libs/MD_old/ESMValMD.py:8: in &lt;module&gt;
+    from .METAdata import METAdata
+E   ImportError: attempted relative import with no known parent package</error></testcase><testcase classname="" file="esmvaltool/diag_scripts/qualassess/auxiliary/libs/MD_old/esmval_lib.py" name="esmvaltool.diag_scripts.qualassess.auxiliary.libs.MD_old.esmval_lib" time="0.000"><error message="collection failure">esmvaltool/diag_scripts/qualassess/auxiliary/libs/MD_old/esmval_lib.py:11: in &lt;module&gt;
+    import projects
+E   ModuleNotFoundError: No module named &apos;projects&apos;</error></testcase><testcase classname="" file="esmvaltool/diag_scripts/qualassess/auxiliary/libs/MD_old/grid_operations.py" name="esmvaltool.diag_scripts.qualassess.auxiliary.libs.MD_old.grid_operations" time="0.000"><error message="collection failure">esmvaltool/diag_scripts/qualassess/auxiliary/libs/MD_old/grid_operations.py:10: in &lt;module&gt;
+    from constants import Constant
+E   ModuleNotFoundError: No module named &apos;constants&apos;</error></testcase><testcase classname="" file="esmvaltool/diag_scripts/qualassess/auxiliary/libs/MD_old/running_MD_for_ncl_from_command.py" name="esmvaltool.diag_scripts.qualassess.auxiliary.libs.MD_old.running_MD_for_ncl_from_command" time="0.000"><error message="collection failure">esmvaltool/diag_scripts/qualassess/auxiliary/libs/MD_old/running_MD_for_ncl_from_command.py:9: in &lt;module&gt;
+    from ESMValMD import ESMValMD
+esmvaltool/diag_scripts/qualassess/auxiliary/libs/MD_old/ESMValMD.py:8: in &lt;module&gt;
+    from .METAdata import METAdata
+E   ImportError: attempted relative import with no known parent package</error></testcase><testcase classname="" file="esmvaltool/diag_scripts/qualassess/auxiliary/libs/MD_old/running_MD_for_ncl_with_file.py" name="esmvaltool.diag_scripts.qualassess.auxiliary.libs.MD_old.running_MD_for_ncl_with_file" time="0.000"><error message="collection failure">esmvaltool/diag_scripts/qualassess/auxiliary/libs/MD_old/running_MD_for_ncl_with_file.py:9: in &lt;module&gt;
+    from ESMValMD import nclFileMD
+esmvaltool/diag_scripts/qualassess/auxiliary/libs/MD_old/ESMValMD.py:8: in &lt;module&gt;
+    from .METAdata import METAdata
+E   ImportError: attempted relative import with no known parent package</error></testcase><testcase classname="" file="esmvaltool/diag_scripts/qualassess/auxiliary/libs/TempStab/bfast.py" name="esmvaltool.diag_scripts.qualassess.auxiliary.libs.TempStab.bfast" time="0.000"><error message="collection failure">/home/bmueller/anaconda2/envs/esmvaltool/lib/python3.6/site-packages/py/_path/local.py:668: in pyimport
+    __import__(modname)
+E     File &quot;/media/bmueller/Work/GIT/ESMValTool_V2_c3s511/esmvaltool/diag_scripts/qualassess/auxiliary/libs/TempStab/bfast.py&quot;, line 161
+E       print &apos;**&apos;, i
+E                ^
+E   SyntaxError: Missing parentheses in call to &apos;print&apos;. Did you mean print(&apos;**&apos;, i)?</error></testcase><testcase classname="" file="esmvaltool/diag_scripts/qualassess/auxiliary/toolbox_scripts/toolbox_1D_ERA5.py" name="esmvaltool.diag_scripts.qualassess.auxiliary.toolbox_scripts.toolbox_1D_ERA5" time="0.000"><error message="collection failure">/home/bmueller/anaconda2/envs/esmvaltool/lib/python3.6/site-packages/py/_path/local.py:668: in pyimport
+    __import__(modname)
+E     File &quot;/media/bmueller/Work/GIT/ESMValTool_V2_c3s511/esmvaltool/diag_scripts/qualassess/auxiliary/toolbox_scripts/toolbox_1D_ERA5.py&quot;, line 22
+E       return datas
+E                  ^
+E   SyntaxError: &apos;return&apos; outside function</error></testcase><testcase classname="" file="esmvaltool/diag_scripts/qualassess/auxiliary/toolbox_scripts/toolbox_3D_ERA5.py" name="esmvaltool.diag_scripts.qualassess.auxiliary.toolbox_scripts.toolbox_3D_ERA5" time="0.000"><error message="collection failure">/home/bmueller/anaconda2/envs/esmvaltool/lib/python3.6/site-packages/py/_path/local.py:668: in pyimport
+    __import__(modname)
+E     File &quot;/media/bmueller/Work/GIT/ESMValTool_V2_c3s511/esmvaltool/diag_scripts/qualassess/auxiliary/toolbox_scripts/toolbox_3D_ERA5.py&quot;, line 31
+E       return datas
+E                  ^
+E   SyntaxError: &apos;return&apos; outside function</error></testcase><testcase classname="" file="esmvaltool/diag_scripts/qualassess/auxiliary/v1_tests/test_c3s_511_basic.py" name="esmvaltool.diag_scripts.qualassess.auxiliary.v1_tests.test_c3s_511_basic" time="0.000"><error message="collection failure">esmvaltool/diag_scripts/qualassess/auxiliary/v1_tests/test_c3s_511_basic.py:15: in &lt;module&gt;
+    from auxiliary import info, error, print_header, ncl_version_check
+E   ModuleNotFoundError: No module named &apos;auxiliary&apos;</error><error message="collection failure">ImportError while importing test module &apos;/media/bmueller/Work/GIT/ESMValTool_V2_c3s511/esmvaltool/diag_scripts/qualassess/auxiliary/v1_tests/test_c3s_511_basic.py&apos;.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+esmvaltool/diag_scripts/qualassess/auxiliary/v1_tests/test_c3s_511_basic.py:15: in &lt;module&gt;
+    from auxiliary import info, error, print_header, ncl_version_check
+E   ModuleNotFoundError: No module named &apos;auxiliary&apos;</error></testcase></testsuite>
