@@ -108,10 +108,18 @@ Variables
 
    * orog (fx, longitude, latitude)
    * pr (atmos, daily or hourly mean, longitude, latitude, time)
+   * tas (atmos, daily or hourly mean, longitude, latitude, time)
+
+   Either potential evapotranspiration can be provided:
+
+   * evspsblpot(atmos, daily or hourly mean, longitude, latitude, time)
+
+   or it can be derived from tas, psl, rsds, and rsdt using the De Bruin formula, in that case the following variables need to be provided:
+
    * psl (atmos, daily or hourly mean, longitude, latitude, time)
    * rsds (atmos, daily or hourly mean, longitude, latitude, time)
    * rsdt (atmos, daily or hourly mean, longitude, latitude, time)
-   * tas (atmos, daily or hourly mean, longitude, latitude, time)
+
 
 
 Observations and reformat scripts
