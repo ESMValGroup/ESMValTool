@@ -1,4 +1,4 @@
-# recipe_deangelis15nat_f3.yml
+# recipe_deangelis15nat.yml
 ---
 documentation:
   description: |
@@ -58,8 +58,10 @@ diagnostics:
         <<: *spatial_mean_cmip5_r1i1p1_amon_t2ms
         derive: false
     additional_datasets:
-      - {dataset: GFDL-CM3, exp: piControl, start_year: 1, end_year: 150}
-      - {dataset: GFDL-CM3, exp: rcp85, start_year: 2091, end_year: 2100}
+      - {dataset: GFDL-CM3, exp: piControl, start_year: 1,
+         end_year: 150}
+      - {dataset: GFDL-CM3, exp: rcp85, start_year: 2091,
+         end_year: 2100}
       - {dataset: GFDL-CM3, exp: abrupt4xCO2, start_year: 141, end_year: 150}
 
       # ACCESS1-0 and ACCESS1-3 not working, error in time check,
@@ -236,7 +238,7 @@ diagnostics:
       - {dataset: CCSM4, exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
       - {dataset: CNRM-CM5, exp: piControl, start_year: 1850, end_year: 1999}
       - {dataset: CNRM-CM5, exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
-      #CNRM-CM5-2 only 140 years available
+      # CNRM-CM5-2 only 140 years available
       # - {dataset: CNRM-CM5-2, exp: piControl, start_year: 1850, end_year: 1989}
       # - {dataset: CNRM-CM5-2, exp: abrupt4xCO2, start_year: 1850, end_year: 1989}
       - {dataset: GFDL-ESM2G, exp: piControl, start_year: 1, end_year: 150}
@@ -254,13 +256,13 @@ diagnostics:
       # - {dataset: HadGEM2-ES, exp: abrupt4xCO2, start_year: 1861, end_year: 2010}
       - {dataset: inmcm4, exp: piControl, start_year: 2090, end_year: 2239}
       - {dataset: inmcm4, exp: abrupt4xCO2, start_year: 2090, end_year: 2239}
-      #IPSL-CM5A-LR not working
+      # IPSL-CM5A-LR not working
       # Not working (latest version does not contain all variables)
       # - {dataset: IPSL-CM5A-LR, exp: piControl, start_year: 1850, end_year: 1999}
       # piControl does not exist for all data from 1850 on (e.g. hfls)
       # - {dataset: IPSL-CM5A-LR, exp: piControl, start_year: 2400, end_year: 2549}
       # - {dataset: IPSL-CM5A-LR, exp: abrupt4xCO2, start_year: 1850, end_year: 1999}
-      #IPSL-CM5A-MR only 140 years available
+      # IPSL-CM5A-MR only 140 years available
       - {dataset: IPSL-CM5A-MR, exp: piControl, start_year: 1850, end_year: 1989}
       - {dataset: IPSL-CM5A-MR, exp: abrupt4xCO2, start_year: 1850, end_year: 1989}
       - {dataset: IPSL-CM5B-LR, exp: piControl, start_year: 1850, end_year: 1999}
