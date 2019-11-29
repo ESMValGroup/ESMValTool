@@ -73,6 +73,7 @@ Ocean
    recipe_cvdp
    recipe_combined_indices
    recipe_oceans
+   recipe_russell18jgr
 
 Other
 ^^^^^
