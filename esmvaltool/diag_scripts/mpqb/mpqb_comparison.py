@@ -3,6 +3,7 @@ import logging
 import os
 import warnings
 from pprint import pformat
+import yaml
 
 import iris
 import numpy as np
