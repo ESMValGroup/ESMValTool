@@ -7,6 +7,7 @@ import numpy as np
 from osgeo import gdal
 
 from esmvalcore.preprocessor import extract_region, regrid
+from esmvaltool.diag_scripts.hydrology.derive_evspsblpot import debruin_pet
 from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
                                             get_diagnostic_filename,
                                             group_metadata, run_diagnostic)
@@ -49,7 +50,9 @@ def get_input_cubes(metadata):
                 f"Multiple input files found for variable '{short_name}'.")
         filename = attributes['filename']
         logger.info("Loading variable %s", short_name)
-        all_vars[short_name] = iris.load_cube(filename)
+        cube = iris.load_cube(filename)
+        cube.attributes.clear()
+        all_vars[short_name] = cube
         provenance['ancestors'].append(filename)
 
     return all_vars, provenance
@@ -102,103 +105,6 @@ def regrid_temperature(src_temp, src_height, target_height):
     target_temp.data = target_slt.core_data() - target_dtemp.core_data()
 
     return target_temp
-
-
-def tetens_derivative(temp):
-    """Compute derivative of Teten's formula for saturated vapor pressure.
-
-    Tetens formula (https://en.wikipedia.org/wiki/Tetens_equation) :=
-    es(T) = e0 * exp(a * T / (T + b))
-
-    Derivative (checked with Wolfram alpha)
-    des / dT = a * b * e0 * exp(a * T / (b + T)) / (b + T)^2
-    """
-    # Ensure temperature is in degC
-    temp.convert_units('degC')
-
-    e0 = iris.coords.AuxCoord(
-        6.112,
-        long_name='Saturated vapour pressure at 273 Kelvin',
-        units='hPa')
-    emp_a = 17.67  # empirical constant a
-    emp_b = iris.coords.AuxCoord(
-        243.5,
-        long_name='Empirical constant b in Tetens formula',
-        units='degC')
-    exponent = iris.analysis.maths.exp(emp_a * temp / (emp_b + temp))
-    # return emp_a * emp_b * e0 * exponent / (emp_b + temp)**2
-    # iris.exceptions.NotYetImplementedError: coord * coord (emp_b * e0)
-    # workaround:
-    tmp1 = emp_a * emp_b
-    tmp2 = e0 * exponent / (emp_b + temp)**2
-    return tmp1 * tmp2
-
-
-def debruin_pet(tas, psl, rsds, rsdt):
-    """Determine De Bruin (2016) reference evaporation.
-
-    Implement equation 6 from De Bruin (10.1175/JHM-D-15-0006.1)
-    """
-    # Definition of constants
-    rv = iris.coords.AuxCoord(
-        461.51,
-        long_name='Gas constant water vapour',
-        # source='Wallace and Hobbs (2006), 2.6 equation 3.14',
-        units='J K-1 kg-1')
-
-    rd = iris.coords.AuxCoord(
-        287.0,
-        long_name='Gas constant dry air',
-        # source='Wallace and Hobbs (2006), 2.6 equation 3.14',
-        units='J K-1 kg-1')
-
-    lambda_ = iris.coords.AuxCoord(
-        2.5e6,
-        long_name='Latent heat of vaporization',
-        # source='Wallace and Hobbs 2006' divide by 86400 for seconds,
-        # copy de Bruin method from Marmot model diag
-        units='J kg-1')
-
-    cp = iris.coords.AuxCoord(
-        1004,
-        long_name='Specific heat of dry air constant pressure',
-        # source='Wallace and Hobbs 2006',
-        units='J K-1 kg-1')
-
-    beta = iris.coords.AuxCoord(
-        20,
-        long_name='Correction Constant',
-        # source='De Bruin (2016), section 4a',
-        units='W m-2')
-
-    cs = iris.coords.AuxCoord(
-        110,
-        long_name='Empirical constant',
-        # source = 'De Bruin (2016), section 4a',
-        units='W m-2')
-
-    # Unit checks:
-    psl.convert_units('hPa')
-    tas.convert_units('degC')
-
-    # Variable derivation
-    delta_svp = tetens_derivative(tas)
-    # gamma = rv/rd * cp*msl/lambda_
-    # iris.exceptions.NotYetImplementedError: coord / coord
-    gamma = rv.points[0] / rd.points[0] * cp * psl / lambda_
-
-    # Renaming for consistency with paper
-    kdown = rsds
-    kdown_ext = rsdt
-
-    # Equation 6
-    rad_term = (1 - 0.23) * kdown - cs * kdown / kdown_ext
-    ref_evap = delta_svp / (delta_svp + gamma) * rad_term + beta
-
-    pet = ref_evap / lambda_
-    pet.data = pet.core_data().astype(np.float32)
-    pet.var_name = 'pet'
-    return pet
 
 
 def load_dem(filename):
@@ -269,6 +175,13 @@ def main(cfg):
         # Read the target cube, which contains target grid and target elevation
         dem_path = Path(cfg['auxiliary_data_dir']) / cfg['dem_file']
         dem = load_dem(dem_path)
+        logger.info(
+            "DEM region: lon [%s, %s] lat [%s, %s]",
+            dem.coord('longitude').points[0],
+            dem.coord('longitude').points[-1],
+            dem.coord('latitude').points[0],
+            dem.coord('latitude').points[-1],
+        )
         dem = extract_region(dem, **cfg['region'])
 
         logger.info("Processing variable precipitation_flux")
@@ -277,14 +190,19 @@ def main(cfg):
         logger.info("Processing variable temperature")
         tas_dem = regrid_temperature(all_vars['tas'], all_vars['orog'], dem)
 
-        logger.info("Processing variable Reference EvapoTranspiration (PET)")
-        pet = debruin_pet(
-            tas=all_vars['tas'],
-            psl=all_vars['psl'],
-            rsds=all_vars['rsds'],
-            rsdt=all_vars['rsdt'],
-        )
+        logger.info("Processing variable potential evapotranspiration")
+        if 'evspsblpot' in all_vars:
+            pet = all_vars['evspsblpot']
+        else:
+            logger.info("Potential evapotransporation not available, deriving")
+            pet = debruin_pet(
+                tas=all_vars['tas'],
+                psl=all_vars['psl'],
+                rsds=all_vars['rsds'],
+                rsdt=all_vars['rsdt'],
+            )
         pet_dem = regrid(pet, target_grid=dem, scheme='linear')
+        pet_dem.var_name = 'pet'
 
         logger.info("Converting units")
         pet_dem.units = pet_dem.units / 'kg m-3'
