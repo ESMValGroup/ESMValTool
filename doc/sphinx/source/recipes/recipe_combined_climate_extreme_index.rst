@@ -1,7 +1,7 @@
 .. _recipes_extreme_index:
 
 Combined Climate Extreme Index
-====================================================
+==============================
 
 Overview
 --------
@@ -29,7 +29,7 @@ Recipes are stored in recipes/
 
 Diagnostics are stored in diag_scripts/magic_bsc/
 
-* extreme_index.r
+* extreme_index.R
 
 
 User settings
@@ -92,6 +92,3 @@ Example plots
 .. figure::  /recipes/figures/combined_climate_extreme_index/t90p_IPSL-CM5A-LR_rcp85_2020_2040.png
    :align:   center
    :width:   14cm
-
-
-

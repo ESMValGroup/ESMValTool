@@ -1,7 +1,7 @@
 .. _nml_collins:
 
-IPCC Chapter 12 selected figures
-====================================================
+IPCC AR5 Chapter 12 (selected figures)
+======================================
 
 Overview
 --------
@@ -21,7 +21,7 @@ Available recipes and diagnostics
 
 Recipes are stored in recipes/
 
-* recipe_collins13ipcc.xml
+* recipe_collins13ipcc.yml
 
 Diagnostics are stored in diag_scripts/ipcc_ar5/
 
@@ -32,7 +32,7 @@ Diagnostics are stored in diag_scripts/ipcc_ar5/
 * ch12_ts_line_mean_spread.ncl: calculates time series for one variable,
   change in future relative to base period in historical, multi-model mean as
   well as spread around it (as standard deviation).
-* ch12_plot_ts_line_mean_spread.ncl: plots the timeseries multi-model mean 
+* ch12_plot_ts_line_mean_spread.ncl: plots the timeseries multi-model mean
   and spread calculated above. As in Figure 12.5 in AR5.
 * ch12_calc_IAV_for_stippandhatch.ncl: calculates the interannual variability
   over piControl runs, either over the whole time period or in chunks over
@@ -91,8 +91,7 @@ User settings
 
    * project: CMIP5 (or CMIP6)
    * mip: variable mip, generally Amon or Omon
-   * field: T2Ms
-  
+
 #. Script ch12_ts_line_mean_spread.ncl
 
    *Required settings (script)*
@@ -121,9 +120,8 @@ User settings
 
    * project: CMIP5 (or CMIP6)
    * mip: variable mip, generally Amon or Omon
-   * field: T2Ms
 
-#. Script ch12_plot_ts_line_mean_spread.ncl: 
+#. Script ch12_plot_ts_line_mean_spread.ncl:
 
    *Required settings (script)*
 
@@ -156,16 +154,15 @@ User settings
 
    * project: CMIP5 (or CMIP6)
    * mip: variable mip, generally Amon or Omon
-   * field: T2Ms or T3Ms
    * exp: piControl
-   * preprocessor: which preprocessor to use, depends on field, for T2Ms
-     preprocessor only needs to regrid, for T3Ms we need to extract levels
+   * preprocessor: which preprocessor to use, depends on dimension of variable,
+     for 2D preprocessor only needs to regrid, for 3D we need to extract levels
      either based on reference_dataset or specify levels.
 
    *Optional settings (variables)*
 
    * reference_dataset: the reference dataset for level extraction in case of
-     field T3Ms.
+     3D variables.
 
 #. Script ch12_calc_map_diff_mmm_stippandhatch.ncl:
 
@@ -191,7 +188,6 @@ User settings
 
    * project: CMIP5 (or CMIP6)
    * mip: variable mip, generally Amon or Omon
-   * field: T2Ms
    * preprocessor: which preprocessor to use, preprocessor only needs to regrid
 
 #. Script ch12_plot_map_diff_mmm_stipp.ncl:
@@ -242,7 +238,6 @@ User settings
 
    * project: CMIP5 (or CMIP6)
    * mip: variable mip, generally Amon or Omon
-   * field: T3Ms
    * preprocessor: which preprocessor to use, preprocessor needs to regrid,
      extract leves and calculate the zonal mean.
 
@@ -296,7 +291,6 @@ User settings
 
    * project: CMIP5 (or CMIP6)
    * mip: variable mip, generally Amon or Omon
-   * field: T2Ms
    * preprocessor: which preprocessor to use, preprocessor only needs to regrid
 
 #. Script ch12_snw_area_change_fig12-32.ncl:
@@ -330,7 +324,6 @@ User settings
 
    * project: CMIP5 (or CMIP6)
    * mip: variable mip, LImon
-   * field: T2Ms
    * fx_files: [sftlf, sftgif]
 
 Variables

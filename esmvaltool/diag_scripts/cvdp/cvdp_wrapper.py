@@ -35,8 +35,10 @@ def setup_driver(cfg):
             search_results = re.findall(pattern, line)
             if search_results == []:
                 continue
-            return re.sub(
-                r'".+?"', '"{0}"'.format(value), search_results[0], count=1)
+            return re.sub(r'".+?"',
+                          '"{0}"'.format(value),
+                          search_results[0],
+                          count=1)
 
         return line
 
@@ -53,7 +55,7 @@ def setup_driver(cfg):
         new_driver_file.write("".join(content))
 
 
-def create_link(cfg, inpath):
+def create_link(cfg, inpath, _name):
     """Create link for the input file.
 
     The link matches the naming convention of the cvdp package.
@@ -62,12 +64,11 @@ def create_link(cfg, inpath):
     cfg: configuration dict
     inpath: path to infile
     """
-
-    def _create_link_name(inpath):
+    def _create_link_name():
         tail = os.path.split(inpath)[1]
         search_result = re.search(r'[0-9]{4}-[0-9]{4}', tail).group(0)
-        return tail.replace(search_result,
-                            "{0}01-{1}12".format(*search_result.split('-')))
+        return _name + "_" + tail.replace(
+            search_result, "{0}01-{1}12".format(*search_result.split('-')))
 
     if not os.path.isfile(inpath):
         raise DiagnosticError("Path {0} does not exist".format(inpath))
@@ -77,7 +78,7 @@ def create_link(cfg, inpath):
     if not os.path.isdir(lnk_dir):
         os.mkdir(lnk_dir)
 
-    link = os.path.join(lnk_dir, _create_link_name(inpath))
+    link = os.path.join(lnk_dir, _create_link_name())
     if not os.path.exists(link):
         os.symlink(inpath, link)
 
@@ -88,15 +89,15 @@ def setup_namelist(cfg):
     """Set the namelist file of the cvdp package."""
     input_data = cfg['input_data'].values()
     selection = select_metadata(input_data, project='CMIP5')
-    grouped_selection = group_metadata(selection, 'dataset')
+    grouped_selection = group_metadata(selection, 'alias')
 
     content = []
-    for key, attributes in grouped_selection.items():
+    for _, attributes in grouped_selection.items():
         for item in attributes:
-            create_link(cfg, item["filename"])
+            create_link(cfg, item["filename"], item['alias'])
         ppath = "{0}/".format(cfg['lnk_dir'])
         content.append("{0} | {1} | {2} | {3}\n".format(
-            key, ppath, attributes[0]["start_year"],
+            attributes[0]["alias"], ppath, attributes[0]["start_year"],
             attributes[0]["end_year"]))
 
     namelist = os.path.join(cfg['run_dir'], "namelist")
@@ -107,7 +108,6 @@ def setup_namelist(cfg):
 
 def log_functions(func):
     """Decorater to check functions."""
-
     def inner():
         """Inner function."""
         ret = func()
@@ -265,7 +265,6 @@ def _get_global_ancestors(cfg):
 
 def set_provenance(cfg):
     """Add provenance to all image files that the cvdp package creates."""
-
     def _get_provenance_record(filename, ancestors):
         return {
             'caption': _get_caption(filename),

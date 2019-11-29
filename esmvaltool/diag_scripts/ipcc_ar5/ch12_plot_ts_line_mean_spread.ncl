@@ -14,10 +14,10 @@
 ;    rcp4.5, rcp6.0, rcp8.5)
 ;
 ; Modification history
-;    20171002-A_lore_ru: Added tags for searching
-;    20170523-A_lore_ru: separated plotting from calculations
-;    20160625-A_lore_ru: adapted to ESMValTool in ts_line_collins_ipcc_ch12
-;    20130506-A_sedl_ja: written for IPCC AR5.
+;    20171002-A_lorenz_ruth: Added tags for searching
+;    20170523-A_lorenz_ruth: separated plotting from calculations
+;    20160625-A_lorenz_ruth: adapted to ESMValTool in ts_line_collins_ipcc_ch12
+;    20130506-A_sedlacek_jan: written for IPCC AR5.
 ;
 ; #############################################################################
 
@@ -34,10 +34,8 @@ begin
   ; ##############################################################
   enter_msg(DIAG_SCRIPT, "")
 
-  ; 'models', 'variables' and 'field_types' are fetched from the
-  ; above 'interface.ncl' file
+  ; 'models', 'variables' are fetched from the above 'interface.ncl' file
   var0 = variable_info[0]@short_name
-  field_type0 = variable_info[0]@field
   info_items = select_metadata_by_name(input_file_info, var0)
   dim_MOD = ListCount(info_items)
   dim_VAR = ListCount(variable_info)
@@ -276,13 +274,13 @@ begin
     " the figure indicate the number of different models " + \
     "contributing to the different time periods."
   statistics = ("mean")
-  domain = ("glob")
-  plottype = ("times")
-  authors = (/"lore_ru"/)
+  domains = ("global")
+  plot_types = ("times")
+  authors = (/"lorenz_ruth"/)
   references = (/"collins13ipcc"/)
   infiles = metadata_att_as_array(info_items, "filename")
-  log_provenance(nc_file, plot_file, caption, statistics, domain, plottype, \
-                 authors, references, infiles)
+  log_provenance(nc_file, plot_file, caption, statistics, domains, \
+                 plot_types, authors, references, infiles)
 
   leave_msg(DIAG_SCRIPT, "")
 end
