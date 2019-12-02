@@ -26,7 +26,9 @@ pkg_mirror <- "https://cloud.r-project.org"
 log("Using mirror: ", pkg_mirror)
 
 # install the yaml package fist to handle the yaml-file
-install.packages("yaml", repos = pkg_mirror)
+if (!require('yaml')){
+  install.packages("yaml", repos = pkg_mirror)
+}
 
 # get the script path
 initial_options <- commandArgs(trailingOnly = FALSE)
