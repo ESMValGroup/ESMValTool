@@ -6,6 +6,7 @@ import iris
 import scipy.io as sio
 
 from esmvalcore import preprocessor as preproc
+from esmvaltool.diag_scripts.hydrology.derive_evspsblpot import debruin_pet
 from esmvaltool.diag_scripts.shared import (ProvenanceLogger,
                                             get_diagnostic_filename,
                                             group_metadata, run_diagnostic)
@@ -32,105 +33,6 @@ def create_provenance_record():
         'ancestors': [],
     }
     return record
-
-
-def tetens_derivative(temp):
-    """Compute the derivative of Teten's formula for saturated vapor pressure.
-
-    Tetens formula (https://en.wikipedia.org/wiki/Tetens_equation) :=
-    es(T) = e0 * exp(a * T / (T + b))
-
-    Derivate (checked with Wolfram alpha)
-    des / dT = a * b * e0 * exp(a * T / (b + T)) / (b + T)^2
-    """
-    # Assert temperature is in degC
-    temp = preproc.convert_units(temp, 'degC')
-
-    # Saturated vapour pressure at 273 Kelvin
-    e0_const = iris.coords.AuxCoord(6.112,
-                                    long_name='Saturated vapour pressure',
-                                    units='hPa')
-    emp_a = 17.67  # empirical constant a
-
-    # Empirical constant b in Tetens formula
-    emp_b = iris.coords.AuxCoord(243.5,
-                                 long_name='Empirical constant b',
-                                 units='degC')
-    exponent = iris.analysis.maths.exp(emp_a * temp / (emp_b + temp))
-    # return emp_a * emp_b * e0 * exponent / (emp_b + temp)**2
-    # iris.exceptions.NotYetImplementedError: coord * coord (emp_b * e0)
-    # workaround:
-    tmp1 = emp_a * emp_b
-    tmp2 = e0_const * exponent / (emp_b + temp)**2
-    return tmp1 * tmp2
-
-
-def get_constants(psl):
-    """Define constants to compute De Bruin (2016) reference evaporation.
-
-    The Definition of rv and rd constants is provided in
-    Wallace and Hobbs (2006), 2.6 equation 3.14.
-    The Definition of lambda and cp is provided in Wallace and Hobbs 2006.
-    The Definition of beta and cs is provided in De Bruin (2016), section 4a.
-    """
-    # Definition of constants
-    rv_const = iris.coords.AuxCoord(461.51,
-                                    long_name='Gas constant water vapour',
-                                    units='J K-1 kg-1')
-
-    rd_const = iris.coords.AuxCoord(287.0,
-                                    long_name='Gas constant dry air',
-                                    units='J K-1 kg-1')
-
-    # Latent heat of vaporization in J kg-1 (or J m-2 day-1)
-    lambda_ = iris.coords.AuxCoord(2.5e6,
-                                   long_name='Latent heat of vaporization',
-                                   units='J kg-1')
-
-    # Specific heat of dry air constant pressure
-    cp_const = iris.coords.AuxCoord(1004,
-                                    long_name='Specific heat of dry air',
-                                    units='J K-1 kg-1')
-
-    beta = iris.coords.AuxCoord(20,
-                                long_name='Correction Constant',
-                                units='W m-2')
-
-    cs_const = iris.coords.AuxCoord(110,
-                                    long_name='Empirical constant',
-                                    units='W m-2')
-
-    # gamma = rv/rd * cp*msl/lambda_
-    # iris.exceptions.NotYetImplementedError: coord / coord
-    gamma = rv_const.points[0] / rd_const.points[0] * cp_const * psl / lambda_
-    return gamma, cs_const, beta, lambda_
-
-
-def debruin_pet(var_dict):
-    """Compute De Bruin (2016) reference evaporation.
-
-    Implement equation 6 from De Bruin (10.1175/JHM-D-15-0006.1)
-    """
-    # Unit checks:
-    psl = preproc.convert_units(var_dict['psl'], 'hPa')
-    tas = preproc.convert_units(var_dict['tas'], 'degC')
-
-    # Variable derivation
-    delta_svp = tetens_derivative(tas)
-    gamma, cs_const, beta, lambda_ = get_constants(psl)
-
-    # the definition of the radiation components according to the paper:
-    kdown = var_dict['rsds']
-    kdown_ext = var_dict['rsdt']
-    # Equation 6
-    rad_term = (1 - 0.23) * kdown - cs_const * kdown / kdown_ext
-    # the unit is W m-2
-    ref_evap = delta_svp / (delta_svp + gamma) * rad_term + beta
-
-    pet = ref_evap / lambda_
-    pet.var_name = 'potential_evapotranspiration'
-    pet.convert_units('kg m-2 day-1')  # equivalent to mm/day
-    return pet
 
 
 def get_input_cubes(metadata):
@@ -193,6 +95,16 @@ def main(cfg):
 
         # Processing variables and unit conversion
         # Unit of the fluxes in marrmot should be in kg m-2 day-1 (or mm/day)
+        logger.info("Processing variable PET")
+        pet = debruin_pet(
+            psl=all_vars['psl'],
+            rsds=all_vars['rsds'],
+            rsdt=all_vars['rsdt'],
+            tas=all_vars['tas'],
+        )
+        pet = preproc.area_statistics(pet, operator='mean')
+        pet.convert_units('kg m-2 day-1')  # equivalent to mm/day
+
         logger.info("Processing variable tas")
         temp = preproc.area_statistics(all_vars['tas'], operator='mean')
         temp.convert_units('celsius')
@@ -200,10 +112,6 @@ def main(cfg):
         logger.info("Processing variable pr")
         precip = preproc.area_statistics(all_vars['pr'], operator='mean')
         precip.convert_units('kg m-2 day-1')  # equivalent to mm/day
-
-        logger.info("Processing variable PET")
-        all_vars['pet'] = debruin_pet(all_vars)
-        pet = preproc.area_statistics(all_vars['pet'], operator='mean')
 
         # Get the start and end times and latitude longitude
         time_start_end, lat_lon = _get_extra_info(temp)
