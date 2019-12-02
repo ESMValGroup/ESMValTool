@@ -17,6 +17,7 @@ Download and processing instructions
     - Setup download with wget: https://disc.gsfc.nasa.gov/data-access#mac_linux_wget
     - Download with: 
         wget --load-cookies ~/.urs_cookies --save-cookies ~/.urs_cookies --auth-no-challenge=on --keep-session-cookies --content-disposition https://goldsmr4.gesdisc.eosdis.nasa.gov/data/MERRA2_DIURNAL/M2TUNXLND.5.12.4/1980/MERRA2_100.tavgU_2d_lnd_Nx.198001.nc4
+    - Download variable SFMC (for file specifications see here: https://gmao.gsfc.nasa.gov/pubs/docs/Bosilovich785.pdf)
 
 """
 
