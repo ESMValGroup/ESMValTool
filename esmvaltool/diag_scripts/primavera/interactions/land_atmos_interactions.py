@@ -36,15 +36,7 @@ class LandAtmosInteractions(object):
             clt = iris.load_cube(var['clt'][0]['filename'])
             tas = iris.load_cube(var['tas'][0]['filename'])
             mrso = iris.load_cube(var['mrso'][0]['filename'])
-            sftlf = var['sftlf'][0]['filename']
-            preproc_dir = os.path.dirname(sftlf)
-            os.system('ln -s {0} {1}/sftlf_{2}.nc'.format(
-                sftlf, preproc_dir, alias)
-                     )
-            self.sftlf = [os.path.join(
-                preproc_dir, 'sftlf_{alias}.nc'.format(alias=alias)
-                )]
-
+            self.sftlf = [var['sftlf'][0]['filename']]
 
             clim_ef, stdv_ef = self.evaporative_fraction_stats(hfls, hfss)
 
