@@ -18,10 +18,12 @@ Please discuss your idea with the development team before getting started, to av
 New recipe/diagnostic
 
 -   [ ] Add documentation for the recipe to the `doc/sphinx/source/recipes` folder and add a new entry to index.rst
+-   [ ] Add provenance information
 
 Modified recipe/diagnostic
 
 -   [ ] Update documentation for the recipe to the `doc/sphinx/source/recipes` folder
+-   [ ] Update provenance information if needed
 -   [ ] Assign the author(s) of the affected recipe(s) as reviewer(s)
 
 New data reformatting script

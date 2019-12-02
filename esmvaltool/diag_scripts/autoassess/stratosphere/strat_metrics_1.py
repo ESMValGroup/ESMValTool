@@ -158,59 +158,66 @@ def calc_qbo_index(qbo):
     counterup = len(indiciesup)
     counterdown = len(indiciesdown)
 
-    # Did we start on an upwards or downwards cycle?
-    if indiciesdown[0] < indiciesup[0]:
-        (kup, kdown) = (0, 1)
+    if indiciesdown and indiciesup:
+        # Did we start on an upwards or downwards cycle?
+        if indiciesdown[0] < indiciesup[0]:
+            (kup, kdown) = (0, 1)
+        else:
+            (kup, kdown) = (1, 0)
+        # Translate upwards and downwards indices into U wind values
+        periodsmin = counterup - kup
+        periodsmax = counterdown - kdown
+        valsup = np.zeros(periodsmax)
+        valsdown = np.zeros(periodsmin)
+        for i in range(periodsmin):
+            valsdown[i] = np.amin(ufin[indiciesdown[i]:indiciesup[i + kup]])
+        for i in range(periodsmax):
+            valsup[i] = np.amax(ufin[indiciesup[i]:indiciesdown[i + kdown]])
+        # Calculate eastward QBO amplitude
+        counter = 0
+        totvals = 0
+        # valsup limit was initially hardcoded to +10.0
+        for i in range(periodsmax):
+            if valsup[i] > 0.:
+                totvals = totvals + valsup[i]
+                counter = counter + 1
+        if counter == 0:
+            ampl_east = 0.
+        else:
+            totvals = totvals / counter
+            ampl_east = totvals
+        # Calculate westward QBO amplitude
+        counter = 0
+        totvals = 0
+        for i in range(periodsmin):
+            # valdown limit was initially hardcoded to -20.0
+            if valsdown[i] < 0.:
+                totvals = totvals + valsdown[i]
+                counter = counter + 1
+        if counter == 0:
+            ampl_west = 0.
+        else:
+            totvals = totvals / counter
+            ampl_west = -totvals
+        # Calculate QBO period, set to zero if no full oscillations in data
+        period1 = 0.0
+        period2 = 0.0
+        if counterdown > 1:
+            period1 = (indiciesdown[counterdown - 1] - indiciesdown[0]) / (
+                counterdown - 1)
+        if counterup > 1:
+            period2 = \
+                (indiciesup[counterup - 1] - indiciesup[0]) / (counterup - 1)
+        # Pick larger oscillation period
+        if period1 < period2:
+            period = period2
+        else:
+            period = period1
     else:
-        (kup, kdown) = (1, 0)
-    # Translate upwards and downwards indices into U wind values
-    periodsmin = counterup - kup
-    periodsmax = counterdown - kdown
-    valsup = np.zeros(periodsmax)
-    valsdown = np.zeros(periodsmin)
-    for i in range(periodsmin):
-        valsdown[i] = np.amin(ufin[indiciesdown[i]:indiciesup[i + kup]])
-    for i in range(periodsmax):
-        valsup[i] = np.amax(ufin[indiciesup[i]:indiciesdown[i + kdown]])
-    # Calculate eastward QBO amplitude
-    counter = 0
-    totvals = 0
-    # valsup limit was initially hardcoded to +10.0
-    for i in range(periodsmax):
-        if valsup[i] > 0.:
-            totvals = totvals + valsup[i]
-            counter = counter + 1
-    if counter == 0:
-        ampl_east = 0.
-    else:
-        totvals = totvals / counter
-        ampl_east = totvals
-    # Calculate westward QBO amplitude
-    counter = 0
-    totvals = 0
-    for i in range(periodsmin):
-        # valdown limit was initially hardcoded to -20.0
-        if valsdown[i] < 0.:
-            totvals = totvals + valsdown[i]
-            counter = counter + 1
-    if counter == 0:
-        ampl_west = 0.
-    else:
-        totvals = totvals / counter
-        ampl_west = -totvals
-    # Calculate QBO period, set to zero if no full oscillations in data
-    period1 = 0.0
-    period2 = 0.0
-    if counterdown > 1:
-        period1 = (indiciesdown[counterdown - 1] - indiciesdown[0]) / (
-            counterdown - 1)
-    if counterup > 1:
-        period2 = (indiciesup[counterup - 1] - indiciesup[0]) / (counterup - 1)
-    # Pick larger oscillation period
-    if period1 < period2:
-        period = period2
-    else:
-        period = period1
+        period = 0.0
+        ampl_west = 0.0
+        ampl_east = 0.0
+
     return (period, ampl_west, ampl_east)
 
 
