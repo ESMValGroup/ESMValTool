@@ -38,8 +38,8 @@ default_pp_maps: &pp_maps
   <<: *mpqbregridder
   mask_landsea:
     mask_out: sea
-  mask_glaciated:
-    mask_out: glaciated
+#  mask_glaciated:
+#    mask_out: glaciated
 
 # Additional preprocessor for
 # line plots

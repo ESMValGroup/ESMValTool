@@ -44,6 +44,7 @@ REQUIREMENTS = {
         'xarray>=0.12',
         'xlrd',
         'xlsxwriter',
+        'SkillMetrics',
     ],
     # Test dependencies
     # Execute 'python setup.py test' to run tests

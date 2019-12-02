@@ -7,14 +7,14 @@ from pprint import pformat
 import iris
 import numpy as np
 
-from diag1d import (absdiffaxismean1d, pearsonr1d, reldiffaxismean1d, rmsd1d,
+from esmvaltool.diag_scripts.shared.trend_mpqb_common.diag1d import (absdiffaxismean1d, pearsonr1d, reldiffaxismean1d, rmsd1d,
                     ubrmsd1d)
 from esmvaltool.diag_scripts.shared import group_metadata, run_diagnostic
 from esmvaltool.diag_scripts.shared._base import (ProvenanceLogger,
                                                   get_diagnostic_filename,
                                                   get_plot_filename)
 from mpqb_plots import get_ecv_plot_config, mpqb_mapplot
-from sharedutils import parallel_apply_along_axis
+from esmvaltool.diag_scripts.shared.trend_mpqb_common.sharedutils import parallel_apply_along_axis
 
 logger = logging.getLogger(os.path.basename(__file__))
 
