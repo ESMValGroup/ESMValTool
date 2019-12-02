@@ -16,6 +16,15 @@ MARRMoT
 **********
 MARRMoT (Modular Assessment of Rainfall-Runoff Models Toolbox) is a rainfall-runoff model comparison framework that allows objective comparison between different conceptual hydrological model structures https://github.com/wknoben/MARRMoT. The recipe pre-processes ERA-Interim and ERA5 reanalyses data for use in the MARRMoT.
 
+MARRMoT requires potential evapotranspiration (evspsblpot). The variable evspsblpot is not available in ERA-Interim. Thus, we use the debruin function (De Bruin et al. 2016) to obtain evspsblpot using both ERA-Interim and ERA5. This function needs the variables tas, psl, rsds, and rsdt as input.
+
+wflow_sbm and wflow_topoflex
+****************************
+Forcing data for the `wflow_sbm <https://wflow.readthedocs.io/en/latest/wflow_sbm.html>`_
+and `wflow_topoflex <https://wflow.readthedocs.io/en/latest/wflow_topoflex.html>`_
+hydrological models can be prepared using recipe_wflow.yml.
+
+
 Available recipes and diagnostics
 ---------------------------------
 
@@ -23,11 +32,13 @@ Recipes are stored in esmvaltool/recipes/hydrology
 
     * recipe_pcrglobwb.yml
     * recipe_marrmot.yml
+    * recipe_wflow.yml
 
 Diagnostics are stored in esmvaltool/diag_scripts/hydrology
 
     * pcrglobwb.py
     * marrmot.py
+    * wflow.py
 
 
 User settings in recipe
@@ -39,8 +50,6 @@ User settings in recipe
 
    * start_year: 1979
    * end_year: 1979
-
-
 
 #. recipe_marrmot.yml
 
@@ -64,6 +73,20 @@ User settings in recipe
 
       * basin: Name of the catchment
 
+#. recipe_wflow.yml
+
+   *Required preprocessor settings:*
+
+      * extract_region: the region specified here should match the catchment
+      * daily_statistics: if the frequency of the input data is not daily, it
+        should be converted to daily using the preprocessor function
+        daily_statistics with ``operator: mean``.
+
+   *Required diagnostic script settings:*
+
+	    * basin: name of the catchment
+	    * dem_file: netcdf file containing a digital elevation model with
+	      elevation in meters and coordinates latitude and longitude.
 
 Variables
 ---------
@@ -73,26 +96,38 @@ Variables
    * tas (atmos, daily, longitude, latitude, time)
    * pr (atmos, daily, longitude, latitude, time)
 
-
 #. recipe_marrmot.yml
 
-   * tas ( longitude, latitude, time)
-   * pr (longitude, latitude, time)
+   * pr (atmos, daily or hourly mean, longitude, latitude, time)
+   * psl (atmos, daily or hourly mean, longitude, latitude, time)
+   * rsds (atmos, daily or hourly mean, longitude, latitude, time)
+   * rsdt (atmos, daily or hourly mean, longitude, latitude, time)
+   * tas (atmos, daily or hourly mean, longitude, latitude, time)
 
-  MARRMoT requires potential evapotranspiration (PET). The variable PET is not available in ERA-Interim archive. Thus, we use the debruin function (De Bruin et al. 2016) to obtain PET using both ERA-Interim and ERA5. This function needs the psl, rsds, and rsdt variables.
+#. recipe_wflow.yml
 
-   * psl (longitude, latitude, time)
-   * rsds (longitude, latitude, time)
-   * rsdt (longitude, latitude, time)
+   * orog (fx, longitude, latitude)
+   * pr (atmos, daily or hourly mean, longitude, latitude, time)
+   * tas (atmos, daily or hourly mean, longitude, latitude, time)
+
+   Either potential evapotranspiration can be provided:
+
+   * evspsblpot(atmos, daily or hourly mean, longitude, latitude, time)
+
+   or it can be derived from tas, psl, rsds, and rsdt using the De Bruin formula, in that case the following variables need to be provided:
+
+   * psl (atmos, daily or hourly mean, longitude, latitude, time)
+   * rsds (atmos, daily or hourly mean, longitude, latitude, time)
+   * rsdt (atmos, daily or hourly mean, longitude, latitude, time)
+
 
 
 Observations and reformat scripts
 ---------------------------------
 *Note: see headers of cmorization scripts (in esmvaltool/cmorizers/obs) for download instructions.*
 
-*  ERA-Interim (esmvaltool/cmorizers/obs/cmorize_obs_ERA-Interim.py)
-*  ERA5 (esmvaltool/cmorizers/obs/cmorize_obs_ERA5.py)
-
+*  ERA-Interim (esmvaltool/cmorizers/obs/cmorize_obs_era_interim.py)
+*  ERA5 (esmvaltool/cmorizers/obs/cmorize_obs_era5.py)
 
 Output
 ---------
@@ -104,6 +139,9 @@ Output
 
     The forcing data, the start and end times of the forcing data, the latitude and longitude of the catchment are saved in a .mat file as a data structure readable by MATLAB or Octave.
 
+#. recipe_wflow.yml
+
+	The forcing data, stored in a single NetCDF file.
 
 References
 ----------
