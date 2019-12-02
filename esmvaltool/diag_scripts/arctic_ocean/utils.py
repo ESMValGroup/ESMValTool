@@ -11,7 +11,6 @@ import cmocean.cm as cmo
 import matplotlib as mpl
 import matplotlib.cm as cm
 import numpy as np
-import palettable
 import pyproj
 import seawater as sw
 from cdo import Cdo
@@ -221,17 +220,19 @@ def get_cmap(cmap_name):
     Additional custom colormap for salinity is provided:
     - "custom_salinity1"
     """
+    cm.register_cmap(name='cubehelix3',
+                     data=mpl._cm.cubehelix(gamma=1.0, s=2.0, r=1.0, h=3))
+
     if cmap_name in cmo.cmapnames:
         colormap = cmo.cmap_d[cmap_name]
     elif cmap_name in cm.datad:
         colormap = cm.get_cmap(cmap_name)
     elif cmap_name == "custom_salinity1":
-        colormap = shiftedcolormap(
-            palettable.cubehelix.cubehelix3_16.mpl_colormap,
-            start=0,
-            midpoint=0.89,
-            stop=0.9,
-            name='shiftedcmap')
+        colormap = shiftedcolormap(cm.get_cmap("cubehelix3"),
+                                   start=0,
+                                   midpoint=0.89,
+                                   stop=0.9,
+                                   name='shiftedcmap')
     else:
         raise ValueError('Get unrecognised name for the colormap `{}`.\
                             Colormaps should be from standard matplotlib \

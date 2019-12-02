@@ -37,7 +37,6 @@ REQUIREMENTS = {
         'netCDF4',
         'numpy<=1.15.4',
         'pandas',
-        'palettable',
         'pyyaml',
         'scitools-iris>=2.2',
         'scikit-learn',
