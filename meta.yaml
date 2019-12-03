@@ -51,6 +51,7 @@ requirements:
     - eofs
     - esmpy
     - esmvalcore>=2.0.0b3,<2.1
+    - gsw
     - jinja2
     - matplotlib
     - nc-time-axis
@@ -61,7 +62,6 @@ requirements:
     - python-stratify
     - pyyaml
     - scikit-learn
-    - seawater
     - seaborn
     - shapely
     - xesmf

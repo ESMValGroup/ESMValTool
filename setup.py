@@ -31,6 +31,7 @@ REQUIREMENTS = {
         'eofs',
         'esmvalcore>=2.0.0b3,<2.1',
         'fiona',
+        'gsw',
         'jinja2',
         'matplotlib<3',
         'nc-time-axis',  # needed by iris.plot
@@ -40,7 +41,6 @@ REQUIREMENTS = {
         'pyyaml',
         'scitools-iris>=2.2',
         'scikit-learn',
-        'seawater',
         'seaborn',
         'shapely',
         'stratify',
