@@ -46,7 +46,7 @@
 ;;    - not tested for any observation models.
 ;;  
 ;; Modification history
-;;   20190510 - A_russ_jo, A_pand_am - written and implemented for ESMValToolv2
+;;   20190510 - russell_joellen, pandde_amarjiit - written and implemented for ESMValToolv2
 ;;
 ;;
 ;;############################################################################
@@ -159,7 +159,7 @@ begin
                  "mean", \
                  "sh", \
                  "zonal", \
-                 "russ_jo", \
+                 "russell_joellen", \
                  "russell18jgr", \
                   infile_path )
  

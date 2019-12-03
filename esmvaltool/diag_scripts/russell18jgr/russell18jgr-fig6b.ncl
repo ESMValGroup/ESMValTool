@@ -51,7 +51,7 @@
 ;;
 ;; Modification history
 ;;     
-;;   20190510 -A_russ_jo, A_pand_am -   written and implemented for ESMValTool v2.
+;;   20190510 -russell_joellen, pandde_amarjiit -   written and implemented for ESMValTool v2.
 ;;
 ;;#############################################################################
 
@@ -587,7 +587,7 @@ begin
                  "mean", \
                  "sh",   \
                  (/"bar", "vert"/) ,  \
-                 "russ_jo", \
+                 "russell_joellen", \
                  "russell18jgr", \
                 (/ vo_inputfile_paths(iii) , thetao_inputfile_paths(iii), so_inputfile_paths(iii) /)  )
   end do

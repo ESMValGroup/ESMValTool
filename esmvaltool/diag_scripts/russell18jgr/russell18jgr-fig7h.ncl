@@ -35,7 +35,7 @@
 ;; 
 ;; Modification history
 ;;
-;;   20190510 -A_russ_jo, A_pand_am -   written and implemented for ESMValTool v2.
+;;   20190510 -russell_joellen, pandde_amarjiit -   written and implemented for ESMValTool v2.
 ;;
 ;;    
 ;;#############################################################################

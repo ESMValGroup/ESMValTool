@@ -61,7 +61,7 @@
 ;;  
 ;; Modification history
 ;;    
-;;   20190510 - A_russ_jo, A_pand_am - written and implemented for ESMValTool v2.
+;;   20190510 - russell_joellen, pandde_amarjiit - written and implemented for ESMValTool v2.
 ;;
 ;;#############################################################################
 
@@ -333,7 +333,7 @@ begin
                   "mean", \
                   "sh", \
                   "scatter", \
-                  "russ_jo", \
+                  "russell_joellen", \
                   "russell18jgr", \
                   (/fgco2_inputfile_paths(idd), hfds_inputfile_paths(idd)/))
 
