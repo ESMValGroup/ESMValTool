@@ -36,7 +36,7 @@ REQUIREMENTS = {
         'matplotlib<3',
         'nc-time-axis',  # needed by iris.plot
         'netCDF4',
-        'numpy<=1.15.4',
+        'numpy',
         'pandas',
         'pyyaml',
         'scitools-iris>=2.2',
