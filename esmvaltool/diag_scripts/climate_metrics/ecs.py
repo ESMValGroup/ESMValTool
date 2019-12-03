@@ -379,7 +379,7 @@ def write_data(ecs_data, feedback_parameter_data, ancestor_files, cfg):
         attrs['net_toa_radiation'] = (
             f"For datasets {RTMT_DATASETS}, 'rtmt' (net top of model "
             f"radiation) instead of 'rtnt' (net top of atmosphere radiation) "
-            "is used due to lack of data. These two variables might differ.")
+            f"is used due to lack of data. These two variables might differ.")
     data_available = False
     for (idx, var_attr) in enumerate(var_attrs):
         if not data[idx]:
