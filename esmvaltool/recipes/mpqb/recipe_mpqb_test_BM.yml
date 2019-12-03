@@ -21,6 +21,10 @@ timeperiod: &timeperiod
 #  - {dataset: CDS-UERRA, type: reanaly, project: OBS6, mip: E6hr,
 #     version: UERRA-HARMONIE, tier: 3, frequency: 6hr, <<: *timeperiod}
 
+mmm_stat: &mmm_stat
+  multi_model_statistics:
+    span: overlap
+    statistics: [mean] #[median]
 
 mpqbregridder: &mpqbregridder
   regrid:
@@ -38,6 +42,7 @@ default_pp_maps: &pp_maps
   <<: *mpqbregridder
   mask_landsea:
     mask_out: sea
+  <<: *mmm_stat
 #  mask_glaciated:
 #    mask_out: glaciated
 
@@ -89,6 +94,9 @@ preprocessors:
 
   pp_mpqb_sm:
     <<: *pp_maps
+    
+  pp_mpqb_lai:
+    <<: *pp_maps
 
   pp_mpqb_sm_std:
     anomalies:
@@ -133,7 +141,7 @@ diagnostics:
     description: mapplots
     variables:
       lai:
-        preprocessor: pp_mpqb_sm
+        preprocessor: pp_mpqb_lai
         project: CMIP5
         mip: Lmon
         ensemble: r1i1p1
@@ -143,6 +151,7 @@ diagnostics:
         
     scripts:
       mpqb:
+        reference_dataset: MultiModelMean
         script: mpqb/mpqb_comparison.py
         script: mpqb/taylordiagram.py
 #    additional_datasets:

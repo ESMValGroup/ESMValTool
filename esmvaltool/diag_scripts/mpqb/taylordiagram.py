@@ -24,11 +24,9 @@ logger = logging.getLogger(os.path.basename(__file__))
 
 
 def main(cfg):
-    # read recipe config
-    with open(os.path.join(os.path.split(__file__)[0],'recipe_cfg.yml')) as handle:
-        recipe_cfg = yaml.safe_load(handle)
-        reference_dataset = recipe_cfg['reference_dataset']
-
+    # read referenece data set
+    reference_dataset = cfg['reference_dataset']
+    
     # Read all datasets that are provided.
     # Get a description of the preprocessed data that we will use as input.
     input_data = cfg['input_data'].values()
