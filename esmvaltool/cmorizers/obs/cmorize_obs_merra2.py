@@ -24,6 +24,7 @@ from os import cpu_count
 from pathlib import Path
 from warnings import catch_warnings, filterwarnings
 
+import cf_units
 import glob
 import iris
 import os
@@ -36,7 +37,64 @@ from . import utilities as utils
 
 logger = logging.getLogger(__name__)
 
+def _fix_time_monthly(cube):
+    """ This function fixes the time coordinate by setting it to the 15th of each month """
+    # Read dataset time unit and calendar from file
+    dataset_time_unit = str(cube.coord('time').units)
+    dataset_time_calender = cube.coord('time').units.calendar
+    # Convert datetime
+    time_as_datetime = cf_units.num2date(cube.coord('time').core_points(),
+                                  dataset_time_unit,
+                                  dataset_time_calender)
+    newtime = []
+    for timepoint in time_as_datetime:
+        midpoint = datetime(timepoint.year,timepoint.month, 15)
+        newtime.append(midpoint)
 
+    newtime = cf_units.date2num(newtime,
+                                dataset_time_unit,
+                                dataset_time_calender)
+    # Put them on the file
+    cube.coord('time').points = newtime
+    cube.coord('time').bounds = None
+    return cube
+
+
+def _load_cube(in_files, var):
+    var_constraint = iris.Constraint(cube_func=(lambda c: c.var_name == var['raw']))
+    cube_list = iris.load_raw(in_files)#,constraint=var_constraint)
+    selected = [c for c in cube_list if c.var_name == var['raw']]
+    selected = iris.cube.CubeList(selected)
+
+    drop_attrs = ['History', 'Filename', 'Comment', 'RangeBeginningDate', 'RangeEndingDate', 'GranuleID', 'ProductionDateTime', 'Source']
+    drop_time_attrs = ['begin_date', 'begin_time', 'time_increment', 'valid_range', 'vmax', 'vmin']
+    for c in selected:
+        for attr in drop_attrs:
+            c.attributes.pop(attr)
+        for attr in drop_time_attrs:
+            c.coord('time').attributes.pop(attr) # = None
+        c.coord('time').points = c.coord('time').core_points().astype('float64')
+
+    from iris.util import unify_time_units
+    unify_time_units(selected)
+    cube = selected.concatenate_cube()
+    return cube
+
+def _fix_coordinates(cube, definition):
+    """Fix coordinates."""
+    for coord_name in ['time', 'lat', 'lon']:
+        coord_def = definition.coordinates.get(coord_name)
+        if coord_def:
+            coord = cube.coord(coord_name)
+            if coord_name == 'time':
+                coord.convert_units('days since 1850-1-1 00:00:00.0')
+            coord.standard_name = coord_def.standard_name
+            coord.var_name = coord_def.out_name
+            coord.long_name = coord_def.long_name
+            coord.points = coord.core_points().astype('float64')
+            if len(coord.points) > 1:
+                coord.guess_bounds()
+    return cube
 
 
 def _extract_variable(in_files, var, cfg, out_dir):
@@ -47,40 +105,27 @@ def _extract_variable(in_files, var, cfg, out_dir):
     cmor_table = CMOR_TABLES[attributes['project_id']]
     definition = cmor_table.get_variable(var['mip'], var['short_name'])
 
-#    cube = _load_cube(in_files, var)
-    var_constraint = iris.Constraint(cube_func=(lambda c: c.var_name == var['raw']))
-    cube_list = iris.load_raw(in_files)#,constraint=var_constraint)
-    selected = [c for c in cube_list if c.var_name == var['raw']]
-    selected = iris.cube.CubeList(selected)
-
-    drop_attrs = ['History', 'Filename', 'Comment', 'RangeBeginningDate', 'RangeEndingDate', 'GranuleID', 'ProductionDateTime']
-    for c in selected:
-        for attr in drop_attrs:
-            c.attributes.pop(attr)
-    # Needed before merging
-    from iris.util import unify_time_units
-    unify_time_units(selected)
-    # TODO remove strange attributes to time coordinates 
-    # selected[1].coord('time')
-
-    import IPython;IPython.embed()
-    selected.concatenate_cube()
-
-
+    cube = _load_cube(in_files, var)
 
     utils.set_global_atts(cube, attributes)
 
     # Set correct names
     cube.var_name = definition.short_name
-    cube.standard_name = definition.standard_name
+    #cube.standard_name = definition.standard_name
     cube.long_name = definition.long_name
 
-    _fix_units(cube, definition)
+    # Fix units
+    cube.units = definition.units
 
     # Fix data type
     cube.data = cube.core_data().astype('float32')
 
     cube = _fix_coordinates(cube, definition)
+
+    cube.coord('latitude').attributes = None
+    cube.coord('longitude').attributes = None
+
+    cube = _fix_time_monthly(cube)
 
     logger.debug("Saving cube\n%s", cube)
     utils.save_variable(
@@ -92,21 +137,15 @@ def _extract_variable(in_files, var, cfg, out_dir):
     )
     logger.info("Finished CMORizing %s", ', '.join(in_files))
 
-
-
 def cmorization(in_dir, out_dir, cfg, config_user):
-    """Run CMORizer for MERRA-2."""
-    cfg['attributes']['comment'] = cfg['attributes']['comment'].strip().format(
-        year=datetime.now().year)
+    """Run CMORizer for MERRA2."""
     cfg.pop('cmor_table')
 
-    year = '2018'
-
-    for short_name, var in cfg['variables'].items():
-        if 'short_name' not in var:
-            var['short_name'] = short_name
-        # Now get list of files
-        filepattern = os.path.join(in_dir, var['file'].format(year=year))
-        in_files = glob.glob(filepattern)
-        _extract_variable(in_files, var, cfg, out_dir)
-
+    for year in range(1980,2019):
+        for short_name, var in cfg['variables'].items():
+            if 'short_name' not in var:
+                var['short_name'] = short_name
+            # Now get list of files
+            filepattern = os.path.join(in_dir, var['file'].format(year=year))
+            in_files = glob.glob(filepattern)
+            _extract_variable(in_files, var, cfg, out_dir)

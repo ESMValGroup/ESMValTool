@@ -1,21 +1,21 @@
 ---
 # Global attributes of NetCDF file
 attributes:
-  dataset_id: MERRA-2
+  dataset_id: MERRA2
   project_id: OBS6
   tier: 3
   version: '1'
   modeling_realm: reanaly
   source: ''
-  reference: 'merra-2'
+  reference: 'merra2'
   comment: |
     'Contains modified MERRA-2 data'
 
 # Variables to CMORize
 variables:
   # daily frequency
-  clt_day:
-    short_name: clt
+  sm_monthly:
+    short_name: sm
     mip: Lmon
     raw: SFMC
     file: 'MERRA2_?00.tavgM_2d_lnd_Nx.{year}??.nc4'
