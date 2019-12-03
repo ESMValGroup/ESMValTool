@@ -24,7 +24,7 @@ timeperiod: &timeperiod
 mmm_stat: &mmm_stat
   multi_model_statistics:
     span: overlap
-    statistics: [mean] #[median]
+    statistics: [mean, median]
 
 mpqbregridder: &mpqbregridder
   regrid:
@@ -101,7 +101,7 @@ preprocessors:
   pp_mpqb_sm_std:
     anomalies:
       period: monthly
-      standardize: true
+#      standardize: true
     <<: *pp_maps
 
   pp_lineplots:
@@ -111,7 +111,7 @@ preprocessors:
   pp_lineplots_std:
     anomalies:
       period: monthly
-      standardize: true
+#      standardize: true
     <<: *pp_maps
     <<: *pp_line
 
@@ -135,6 +135,13 @@ preprocessors:
     annual_statistics:
       operator: std_dev
 
+lai_cmip_def: &laidef
+  project: CMIP5
+  mip: Lmon
+  ensemble: r1i1p1
+  exp: historical
+  start_year: 1990
+  end_year: 2000
 
 diagnostics:
   mapplots:
@@ -142,112 +149,93 @@ diagnostics:
     variables:
       lai:
         preprocessor: pp_mpqb_lai
-        project: CMIP5
-        mip: Lmon
-        ensemble: r1i1p1
-        exp: historical
-        start_year: 1990
-        end_year: 2000
-        
+        <<: *laidef
     scripts:
       mpqb:
-        reference_dataset: MultiModelMean
+        reference_dataset: MultiModelMedian
         script: mpqb/mpqb_comparison.py
+      mpqb_taylor:
+        reference_dataset: MultiModelMedian
         script: mpqb/taylordiagram.py
-#    additional_datasets:
-#      - <<: *uerra
-#  lineplots:
-#    description: lineplots
-#    variables:
-#      sm:
-#        preprocessor: pp_lineplots
-#        mip: Lmon
-#    scripts:
-#      lineplot:
-#        script: mpqb/mpqb_lineplot.py
-#  lineplots_europe:
-#    description: lineplots_europe
-#    variables:
-#      sm:
-#        preprocessor: pp_lineplots
-#        mip: Lmon
-#    additional_datasets:
-#      - <<: *uerra
-#    scripts:
-#      lineplot:
-#        script: mpqb/mpqb_lineplot.py
-#  mapplots_std:
-#    description: mapplots
-#    variables:
-#      sm:
-#        preprocessor: pp_mpqb_sm_std
-#        mip: Lmon
-#    scripts:
-#      mpqb:
-#        script: mpqb/mpqb_comparison.py
-#    additional_datasets:
-#      - <<: *uerra
-#  lineplots_std:
-#    description: lineplots_std
-#    variables:
-#      sm:
-#        preprocessor: pp_lineplots_std
-#        mip: Lmon
-#    scripts:
-#      lineplot:
-#        script: mpqb/mpqb_lineplot.py
-#  lineplots_europe_std:
-#    description: lineplots_europe_std
-#    variables:
-#      sm:
-#        preprocessor: pp_lineplots_std
-#        mip: Lmon
-#    additional_datasets:
-#      - <<: *uerra
-#    scripts:
-#      lineplot:
-#        script: mpqb/mpqb_lineplot.py
-#  maps_yearmean:
-#    description: auxiliary maps (trend; climatology)
-#    variables:
-#      sm:
-#        preprocessor: pp_mpqb_yearmean
-#        mip: Lmon
-#    additional_datasets:
-#      - <<: *uerra
-#    scripts:
-#      aux_maps:
-#        script: mpqb/mpqb_auxmaps.py
-#  maps_yearmin:
-#    description: auxiliary maps (trend; climatology)
-#    variables:
-#      sm:
-#        preprocessor: pp_mpqb_yearmin
-#        mip: Lmon
-#    additional_datasets:
-#      - <<: *uerra
-#    scripts:
-#      aux_maps:
-#        script: mpqb/mpqb_auxmaps.py
-#  maps_yearmax:
-#    description: auxiliary maps (trend; climatology)
-#    variables:
-#      sm:
-#        preprocessor: pp_mpqb_yearmax
-#        mip: Lmon
-#    additional_datasets:
-#      - <<: *uerra
-#    scripts:
-#      aux_maps:
-#        script: mpqb/mpqb_auxmaps.py
-#  maps_yearstddev:
-#    description: auxiliary maps (trend; climatology)
-#    variables:
-#      sm:
-#        preprocessor: pp_mpqb_yearstddev
-#        mip: Lmon
-#    additional_datasets:
-#      - <<: *uerra
-#    scripts:
-#      aux_maps:
-#        script: mpqb/mpqb_auxmaps.py
+  lineplots:
+    description: lineplots
+    variables:
+      lai:
+        preprocessor: pp_lineplots
+        <<: *laidef
+    scripts:
+      lineplot:
+        script: mpqb/mpqb_lineplot.py
+  lineplots_europe:
+    description: lineplots_europe
+    variables:
+      lai:
+        preprocessor: pp_lineplots
+        <<: *laidef
+    scripts:
+      lineplot:
+        script: mpqb/mpqb_lineplot.py
+  mapplots_std:
+    description: mapplots
+    variables:
+      lai:
+        preprocessor: pp_mpqb_sm_std
+        <<: *laidef
+    scripts:
+      mpqb:
+        reference_dataset: MultiModelMedian
+        script: mpqb/mpqb_comparison.py
+  lineplots_std:
+    description: lineplots_std
+    variables:
+      lai:
+        preprocessor: pp_lineplots_std
+        <<: *laidef
+    scripts:
+      lineplot:
+        script: mpqb/mpqb_lineplot.py
+  lineplots_europe_std:
+    description: lineplots_europe_std
+    variables:
+      lai:
+        preprocessor: pp_lineplots_std
+        <<: *laidef
+    scripts:
+      lineplot:
+        script: mpqb/mpqb_lineplot.py
+  maps_yearmean:
+    description: auxiliary maps (trend; climatology)
+    variables:
+      lai:
+        preprocessor: pp_mpqb_yearmean
+        <<: *laidef
+    scripts:
+      aux_maps:
+        script: mpqb/mpqb_auxmaps.py
+  maps_yearmin:
+    description: auxiliary maps (trend; climatology)
+    variables:
+      lai:
+        preprocessor: pp_mpqb_yearmin
+        <<: *laidef
+    scripts:
+      aux_maps:
+        script: mpqb/mpqb_auxmaps.py
+  maps_yearmax:
+    description: auxiliary maps (trend; climatology)
+    variables:
+      lai:
+        preprocessor: pp_mpqb_yearmax
+        <<: *laidef
+    scripts:
+      aux_maps:
+        script: mpqb/mpqb_auxmaps.py
+  maps_yearstddev:
+    description: auxiliary maps (trend; climatology)
+    variables:
+      lai:
+        preprocessor: pp_mpqb_yearstddev
+        <<: *laidef
+    scripts:
+      aux_maps:
+        script: mpqb/mpqb_auxmaps.py

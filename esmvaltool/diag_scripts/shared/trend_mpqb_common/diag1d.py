@@ -1,6 +1,5 @@
 import numpy as np
 from scipy.stats import pearsonr
-from statsmodels.tsa.stattools import acf
 from scipy.stats import norm
 from scipy.stats.mstats import linregress
 from scipy.signal import detrend
@@ -18,6 +17,10 @@ def pearsonr1d(a,b):
 
 def rmsd1d(a,b):
     result = np.sqrt(np.nanmean((a-b)**2))
+    return result
+
+def ubrmsd1d(a,b):
+    result = np.sqrt(np.nanmean(((a-np.nanmean(a))-(b-np.nanmean(b)))**2))
     return result
 
 def absdiffaxismean1d(a,b):
@@ -48,6 +51,7 @@ def weatherhead1d(inputdata,trend_magnitude=None):
     -----------
     [1] Weatherhead, Betsy & C. Reinsel, Gregory & C. Tiao, George & Meng, Xiao-Li & Choi, Dongseok & Cheang, Wai-Kwong & Keller, Teddie & DeLuisi, John & Wuebbles, Donald & Kerr, J & J. Miller, Alvin & Oltmans, Samuel. (1998). Factors affecting the detection of trends: Statistical considerations and applications to environmental data. Journal of Geophysical Research. 1031. 17149-17162. 10.1029/98JD00995.
     """
+    from statsmodels.tsa.stattools import acf
     # Return nan if any nan in array
     if np.any(~np.isfinite(inputdata)):
         return np.nan, np.nan, np.nan
@@ -208,3 +212,4 @@ def theilslopes1d(y,x=None):
         return medslope
     else:
         return np.nan
+

@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """Python example diagnostic."""
 import logging
 import os

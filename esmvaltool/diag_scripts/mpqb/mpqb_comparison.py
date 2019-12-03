@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """Python example diagnostic."""
 import logging
 import os
@@ -6,6 +7,7 @@ from pprint import pformat
 
 import iris
 import numpy as np
+import yaml
 
 from esmvaltool.diag_scripts.shared.trend_mpqb_common.diag1d import (absdiffaxismean1d, pearsonr1d, reldiffaxismean1d, rmsd1d,
                     ubrmsd1d)
@@ -130,10 +132,8 @@ def compute_diagnostic(filename):
 
 def main():
     """MPQB diagnostics."""
-    # read recipe config
-    with open(os.path.join(os.path.split(__file__)[0], 'recipe_cfg.yml')) as handle:
-        recipe_cfg = yaml.safe_load(handle)
-        reference_dataset = recipe_cfg['reference_dataset']
+    # read referenece data set
+    reference_dataset = cfg['reference_dataset']
 
     # The metrics to be calculated.
     metrics_to_calculate = ['pearsonr', 'rmsd', 'absdiff', 'reldiff', 'ubrmsd']

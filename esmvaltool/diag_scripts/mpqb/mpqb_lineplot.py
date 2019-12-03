@@ -1,8 +1,9 @@
+#!/usr/bin/env python
 """Python example diagnostic."""
 import logging
 import os
 from pprint import pformat
-from sharedutils import parallel_apply_along_axis
+from esmvaltool.diag_scripts.shared.trend_mpqb_common.sharedutils import parallel_apply_along_axis
 from esmvaltool.diag_scripts.shared.trend_mpqb_common.diag1d import *
 import numpy as np
 
