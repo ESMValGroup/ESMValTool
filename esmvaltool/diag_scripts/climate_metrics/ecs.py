@@ -380,7 +380,14 @@ def write_data(ecs_data, feedback_parameter_data, ancestor_files, cfg):
             f"For datasets {RTMT_DATASETS}, 'rtmt' (net top of model "
             f"radiation) instead of 'rtnt' (net top of atmosphere radiation) "
             "is used due to lack of data. These two variables might differ.")
+    data_available = False
     for (idx, var_attr) in enumerate(var_attrs):
+        if not data[idx]:
+            logger.info(
+                "Skipping writing of '%s' for all models, no data available",
+                var_attr['short_name'])
+            continue
+        data_available = True
         path = get_diagnostic_filename(var_attr['short_name'], cfg)
         io.save_scalar_data(data[idx], path, var_attr, attributes=attrs)
         caption = "{long_name} for multiple climate models.".format(**var_attr)
@@ -388,6 +395,8 @@ def write_data(ecs_data, feedback_parameter_data, ancestor_files, cfg):
         provenance_record['ancestors'] = ancestor_files
         with ProvenanceLogger(cfg) as provenance_logger:
             provenance_logger.log(path, provenance_record)
+    if not data_available:
+        raise ValueError("No input data given")
 
 
 def main(cfg):
