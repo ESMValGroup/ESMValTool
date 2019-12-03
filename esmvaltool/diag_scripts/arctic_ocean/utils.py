@@ -12,7 +12,7 @@ import matplotlib as mpl
 import matplotlib.cm as cm
 import numpy as np
 import pyproj
-import gsw
+import seawater as sw
 from cdo import Cdo
 
 from esmvaltool.diag_scripts.shared._base import (ProvenanceLogger)
@@ -203,14 +203,12 @@ def dens_back(smin, smax, tmin, tmax):
     xdim = round((smax - smin) / 0.1 + 1, 0)
     ydim = round((tmax - tmin) + 1, 0)
 
-    pressure = np.zeros((int(ydim * 10), int(xdim * 10)))
-
     ti_size = np.linspace(tmin, tmax, ydim * 10)
     si_size = np.linspace(smin, smax, xdim * 10)
 
     si2d, ti2d = np.meshgrid(si_size, ti_size)
 
-    dens = gsw.rho(si2d, ti2d, pressure) - 1000
+    dens = sw.dens0(si2d, ti2d) - 1000
     return si2d, ti2d, dens
 
 
