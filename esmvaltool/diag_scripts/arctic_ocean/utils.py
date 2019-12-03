@@ -12,7 +12,6 @@ import matplotlib as mpl
 import matplotlib.cm as cm
 import numpy as np
 import pyproj
-import seawater as sw
 import gsw
 from cdo import Cdo
 
