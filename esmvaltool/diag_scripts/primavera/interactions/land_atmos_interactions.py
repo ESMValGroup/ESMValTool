@@ -36,15 +36,7 @@ class LandAtmosInteractions(object):
             clt = iris.load_cube(var['clt'][0]['filename'])
             tas = iris.load_cube(var['tas'][0]['filename'])
             mrso = iris.load_cube(var['mrso'][0]['filename'])
-            sftlf = var['sftlf'][0]['filename']
-            preproc_dir = os.path.dirname(sftlf)
-            os.system('ln -s {0} {1}/sftlf_{2}.nc'.format(
-                sftlf, preproc_dir, alias)
-                     )
-            self.sftlf = [os.path.join(
-                preproc_dir, 'sftlf_{alias}.nc'.format(alias=alias)
-                )]
-
+            self.sftlf = [var['sftlf'][0]['filename']]
 
             clim_ef, stdv_ef = self.evaporative_fraction_stats(hfls, hfss)
 
@@ -55,8 +47,7 @@ class LandAtmosInteractions(object):
             self.save([clim_ef, stdv_ef], alias, data)
 
             metrics = self.compute_correlation_metrics(
-                hfls, rsds, rlds, clt, tas, mrso
-                )
+                hfls, rsds, rlds, clt, tas, mrso)
             if 'detrend' in self.cfg[n.SCRIPT]:
                 self.output_name = 'detrended_correlation_metrics'
             else:
@@ -88,8 +79,7 @@ class LandAtmosInteractions(object):
                            script=self.output_name.split('_'),
                            start=start_year,
                            end=end_year,
-                           dataset=dataset
-                       )
+                           dataset=dataset)
             ancestors = []
             for i in range(len(data[alias])):
                 ancestors.append(data[alias][i]['filename'])
@@ -98,13 +88,10 @@ class LandAtmosInteractions(object):
                 'domains': ['global'],
                 'autors': ['boe_julien'],
                 'references': ['acknow_project'],
-                'ancestors': ancestors
-                }
+                'ancestors': ancestors}
             with ProvenanceLogger(self.cfg) as provenance_logger:
                 provenance_logger.log(
                     os.path.join(self.cfg[n.WORK_DIR], filename), record)
-
-
 
 #            for cube in cubelist:
 #                plotname = '{project}_' \
@@ -124,9 +111,6 @@ class LandAtmosInteractions(object):
 #                             outdir=self.cfg[n.PLOT_DIR],
 #                             file_format=self.cfg[n.OUTPUT_FILE_TYPE],
 #                             img_template=plotname)
-
-
-
     def compute_correlation_metrics(self, hfls, rsds, rlds, clt, tas, mrso):
         corr_hfls_rad = self.heat_radiation_stats(hfls, rsds, rlds)
         corr_clt_tas = self.cloud_temperature_stats(clt, tas)
@@ -192,6 +176,7 @@ class LandAtmosInteractions(object):
                      self.target_grid,
                      scheme='area_weighted')
         return var
+
 
 def main():
     with esmvaltool.diag_scripts.shared.run_diagnostic() as config:
