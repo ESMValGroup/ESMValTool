@@ -4,7 +4,7 @@ attributes:
   dataset_id: MERRA2
   project_id: OBS6
   tier: 3
-  version: '1'
+  version: '5.12.4'
   modeling_realm: reanaly
   source: ''
   reference: 'merra2'
@@ -13,7 +13,7 @@ attributes:
 
 # Variables to CMORize
 variables:
-  # daily frequency
+  # monthly frequency
   sm_monthly:
     short_name: sm
     mip: Lmon
